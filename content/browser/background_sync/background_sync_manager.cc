@@ -485,11 +485,6 @@ void BackgroundSyncManager::UnregisterForOriginImpl(
         service_worker_and_registration.first);
   }
 
-  for (auto service_worker_registration_id :
-       service_worker_registrations_affected) {
-    active_registrations_.erase(service_worker_registration_id);
-  }
-
   if (service_worker_registrations_affected.empty()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                   std::move(callback));
@@ -507,13 +502,17 @@ void BackgroundSyncManager::UnregisterForOriginImpl(
     StoreRegistrations(
         service_worker_registration_id,
         base::BindOnce(&BackgroundSyncManager::UnregisterForOriginDidStore,
-                       weak_ptr_factory_.GetWeakPtr(), barrier_closure));
+                       weak_ptr_factory_.GetWeakPtr(),
+                       service_worker_registration_id, barrier_closure));
   }
 }
 
 void BackgroundSyncManager::UnregisterForOriginDidStore(
+    int64_t service_worker_registration_id_to_remove,
     base::OnceClosure done_closure,
     blink::ServiceWorkerStatusCode status) {
+  active_registrations_.erase(service_worker_registration_id_to_remove);
+
   if (status == blink::ServiceWorkerStatusCode::kErrorNotFound) {
     // The service worker registration is gone.
     std::move(done_closure).Run();

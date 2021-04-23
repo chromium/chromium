@@ -430,8 +430,10 @@ class CONTENT_EXPORT BackgroundSyncManager
   // associated with |origin|.
   void UnregisterForOriginImpl(const url::Origin& origin,
                                base::OnceClosure callback);
-  void UnregisterForOriginDidStore(base::OnceClosure done_closure,
-                                   blink::ServiceWorkerStatusCode status);
+  void UnregisterForOriginDidStore(
+      int64_t service_worker_registration_id_to_remove,
+      base::OnceClosure done_closure,
+      blink::ServiceWorkerStatusCode status);
   void UnregisterForOriginScheduleDelayedProcessing(base::OnceClosure callback);
 
   base::OnceClosure MakeEmptyCompletion();
