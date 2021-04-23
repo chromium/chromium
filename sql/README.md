@@ -173,6 +173,13 @@ Format statements like so.
      "INSERT INTO infos(origin,last_modified,secure) "
        "VALUES (?,?,?)";
      // clang-format on
+
+  static constexpr char kSelectSql[] =
+     // clang-format off
+     "SELECT origin,last_modified,secure FROM origins "
+       "WHERE last_modified > ? "
+       "ORDER BY last_modified";
+     // clang-format on
 ```
 
 * SQLite keywords should use ALL CAPS. This makes SQL query literals easier to
@@ -192,6 +199,30 @@ Format statements like so.
 * [`INSERT` statements](https://sqlite.org/lang_insert.html) should list all the
   table columns by name, in the same order as the corresponding `CREATE TABLE`
   statements.
+
+* [`SELECT` statements](https://sqlite.org/lang_select.html) should list the
+  desired table columns by name, in the same order as the corresponding
+  `CREATE TABLE` statements. `SELECT *` is strongly discouraged, at least until
+  we have schema checks on database opens.
+
+* [`SELECT` statements](https://sqlite.org/lang_select.html) that retrieve more
+  than one row should include an
+  [`ORDER BY` clause](https://sqlite.org/lang_select.html#the_order_by_clause)
+  to clarify the implicit ordering.
+  * SELECTs whose outer loop is a table search or table scan implicitly order
+    results by [rowid](https://sqlite.org/lang_createtable.html#rowid) or, in
+    the case of [`WITHOUT ROWID`](https://sqlite.org/withoutrowid.html) tables,
+    by the table's primary key.
+  * SELECTs whose outer loop is an index scan or index search order results
+    according to that index.
+
+* [`CREATE INDEX` statements](https://sqlite.org/lang_createindex.html) should
+  immediately follow the
+  [`CREATE TABLE` statement](https://sqlite.org/lang_createtable.html) for the
+  indexed table.
+
+* Explicit `CREATE UNIQUE INDEX` statements should be preferred to
+  [`UNIQUE` constraints on `CREATE TABLE`](https://sqlite.org/lang_createtable.html#unique_constraints).
 
 * Values must either be embedded in the SQL statement string literal, or bound
   using [parameters](https://www.sqlite.org/lang_expr.html#varparam).
@@ -235,6 +266,8 @@ primary key reuse would be unacceptable.
 
 ### Discouraged features
 
+#### PRAGMA statements
+
 [`PRAGMA` statements](https://www.sqlite.org/pragma.html) should never be used
 directly. Chrome's SQLite abstraction layer should be modified to support the
 desired effects instead.
@@ -243,6 +276,8 @@ Direct `PRAGMA` use limits our ability to customize and secure our SQLite build.
 `PRAGMA` statements may turn on code paths with less testing / fuzzing coverage.
 Furthermore, some `PRAGMA` statements invalidate previously compiled queries,
 reducing the efficiency of Chrome's compiled query cache.
+
+#### Foreign key constraints
 
 [SQL foreign key constraints](https://sqlite.org/foreignkeys.html) should not be
 used. All data validation should be performed using explicit `SELECT` statements
@@ -260,6 +295,19 @@ After
 to disable SQLite's foreign key support using
 [SQLITE_OMIT_FOREIGN_KEY](https://sqlite.org/compile.html#omit_foreign_key).
 
+#### CHECK constraints
+
+[SQL CHECK constraints](https://sqlite.org/lang_createtable.html#check_constraints)
+should not be used, for the same reasons as foreign key constraints. The
+equivalent checks should be performed in C++, typically using `DCHECK`.
+
+After
+[WebSQL](https://www.w3.org/TR/webdatabase/) is removed from Chrome, we plan
+to disable SQLite's CHECK constraint support using
+[SQLITE_OMIT_CHECK](https://sqlite.org/compile.html#omit_check).
+
+#### Triggers
+
 [SQL triggers](https://sqlite.org/lang_createtrigger.html) should not be used.
 
 Triggers significantly increase the difficulty of reviewing and maintaining
@@ -268,6 +316,55 @@ Chrome features that use them.
 After [WebSQL](https://www.w3.org/TR/webdatabase/) is removed from Chrome, we
 plan to disable SQLite's trigger support using
 [SQLITE_OMIT_TRIGGER](https://sqlite.org/compile.html#omit_trigger).
+
+#### Common Table Expressions
+
+[SQL Common Table Expressions (CTEs)](https://sqlite.org/lang_with.html) should
+not be used. Chrome's SQL schemas and queries should be simple enough that
+the factoring afforded by
+[ordinary CTEs](https://sqlite.org/lang_with.html#ordinary_common_table_expressions)
+is not necessary.
+[Recursive CTEs](https://sqlite.org/lang_with.html#recursive_common_table_expressions)
+should be implemented in C++.
+
+Common Table Expressions do not open up any query optimizations that would not
+be available otherwise, and make it more difficult to review / analyze queries.
+
+#### Views
+
+SQL views, managed by the
+[`CREATE VIEW` statement](https://www.sqlite.org/lang_createview.html) and the
+[`DROP VIEW` statement](https://www.sqlite.org/lang_dropview.html), should not
+be used. Chrome's SQL schemas and queries should be simple enough that the
+factoring afforded by views is not necessary.
+
+Views are syntactic sugar, and do not open up any new SQL capabilities. SQL
+statements on views are more difficult to understand and maintain, because of
+the extra layer of indirection.
+
+After
+[WebSQL](https://www.w3.org/TR/webdatabase/) is removed from Chrome, we plan
+to disable SQLite's VIEW support using
+[SQLITE_OMIT_VIEW](https://www.sqlite.org/compile.html#omit_view).
+
+#### Compound SELECT statements
+
+[Compound SELECT statements](https://www.sqlite.org/lang_select.html#compound_select_statements)
+should not be used. Such statements should be broken down into
+[simple SELECT statements](https://www.sqlite.org/lang_select.html#simple_select_processing),
+and the operators `UNION`, `UNION ALL`, `INTERSECT` and `EXCEPT` should be
+implemented in C++.
+
+A single compound SELECT statement is more difficult to review and properly
+unit-test than the equivalent collection of simple SELECT statements.
+Furthermore, the compound SELECT statement operators can be implemented more efficiently in C++ than in SQLite's bytecode interpreter (VDBE).
+
+After
+[WebSQL](https://www.w3.org/TR/webdatabase/) is removed from Chrome, we plan
+to disable SQLite's compound SELECT support using
+[SQLITE_OMIT_COMPOUND_SELECT](https://www.sqlite.org/compile.html#omit_compound_select).
+
+#### ATTACH DATABASE statements
 
 [`ATTACH DATABASE` statements](https://www.sqlite.org/lang_attach.html) should
 not be used. Each Chrome feature should store its data in a single database.
