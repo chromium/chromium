@@ -37,9 +37,11 @@ void TopToolbarSceneLayer::UpdateToolbarLayer(
     jint toolbar_background_color,
     jint url_bar_resource_id,
     jint url_bar_color,
+    jfloat x_offset,
     jfloat content_offset,
     bool show_shadow,
-    bool visible) {
+    bool visible,
+    bool anonymize) {
   // If the toolbar layer has not been created yet, create it.
   if (!toolbar_layer_) {
     ui::ResourceManager* resource_manager =
@@ -54,8 +56,8 @@ void TopToolbarSceneLayer::UpdateToolbarLayer(
     return;
 
   toolbar_layer_->PushResource(toolbar_resource_id, toolbar_background_color,
-                               false, url_bar_color, url_bar_resource_id,
-                               content_offset, false, !show_shadow);
+                               anonymize, url_bar_color, url_bar_resource_id,
+                               x_offset, content_offset, false, !show_shadow);
 }
 
 void TopToolbarSceneLayer::UpdateProgressBar(

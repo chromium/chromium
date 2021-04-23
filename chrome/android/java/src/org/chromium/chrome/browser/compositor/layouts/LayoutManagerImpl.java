@@ -477,10 +477,12 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
      * @param creator                  A {@link TabCreatorManager} instance.
      * @param controlContainer         A {@link ControlContainer} for browser controls' layout.
      * @param dynamicResourceLoader    A {@link DynamicResourceLoader} instance.
+     * @param topUiColorProvider       A theme color provider for the top browser controls.
      */
     public void init(TabModelSelector selector, TabCreatorManager creator,
             @Nullable ControlContainer controlContainer,
-            DynamicResourceLoader dynamicResourceLoader) {
+            DynamicResourceLoader dynamicResourceLoader,
+            TopUiThemeColorProvider topUiColorProvider) {
         LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
 
         // Build Layouts

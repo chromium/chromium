@@ -1328,7 +1328,8 @@ public class CompositorViewHolder extends FrameLayout
             TabModelSelector tabModelSelector, TabCreatorManager tabCreatorManager) {
         assert mLayoutManager != null;
         mLayoutManager.init(tabModelSelector, tabCreatorManager, mControlContainer,
-                mCompositorView.getResourceManager().getDynamicResourceLoader());
+                mCompositorView.getResourceManager().getDynamicResourceLoader(),
+                mTopUiThemeColorProvider);
 
         mTabModelSelector = tabModelSelector;
         tabModelSelector.addObserver(new TabModelSelectorObserver() {

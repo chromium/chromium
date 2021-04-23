@@ -35,9 +35,11 @@ class TopToolbarSceneLayer : public SceneLayer {
       jint toolbar_background_color,
       jint url_bar_resource_id,
       jint url_bar_color,
+      jfloat x_offset,
       jfloat y_offset,
       bool show_shadow,
-      bool visible);
+      bool visible,
+      bool anonymize);
 
   // Update the progress bar.
   void UpdateProgressBar(JNIEnv* env,

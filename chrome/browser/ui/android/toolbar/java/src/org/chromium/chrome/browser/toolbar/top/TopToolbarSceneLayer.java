@@ -43,9 +43,11 @@ class TopToolbarSceneLayer extends SceneOverlayLayer {
                 model.get(TopToolbarOverlayProperties.TOOLBAR_BACKGROUND_COLOR),
                 model.get(TopToolbarOverlayProperties.URL_BAR_RESOURCE_ID),
                 model.get(TopToolbarOverlayProperties.URL_BAR_COLOR),
+                model.get(TopToolbarOverlayProperties.X_OFFSET),
                 model.get(TopToolbarOverlayProperties.Y_OFFSET),
                 model.get(TopToolbarOverlayProperties.SHOW_SHADOW),
-                model.get(TopToolbarOverlayProperties.VISIBLE));
+                model.get(TopToolbarOverlayProperties.VISIBLE),
+                model.get(TopToolbarOverlayProperties.ANONYMIZE));
 
         DrawingInfo progressInfo = model.get(TopToolbarOverlayProperties.PROGRESS_BAR_INFO);
         if (progressInfo == null) return;
@@ -87,8 +89,8 @@ class TopToolbarSceneLayer extends SceneOverlayLayer {
                 SceneLayer contentTree);
         void updateToolbarLayer(long nativeTopToolbarSceneLayer, TopToolbarSceneLayer caller,
                 ResourceManager resourceManager, int resourceId, int toolbarBackgroundColor,
-                int urlBarResourceId, int urlBarColor, float contentOffset, boolean showShadow,
-                boolean visible);
+                int urlBarResourceId, int urlBarColor, float xOffset, float contentOffset,
+                boolean showShadow, boolean visible, boolean anonymize);
         void updateProgressBar(long nativeTopToolbarSceneLayer, TopToolbarSceneLayer caller,
                 int progressBarX, int progressBarY, int progressBarWidth, int progressBarHeight,
                 int progressBarColor, int progressBarBackgroundX, int progressBarBackgroundY,

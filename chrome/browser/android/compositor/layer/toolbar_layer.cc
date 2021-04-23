@@ -30,6 +30,7 @@ void ToolbarLayer::PushResource(int toolbar_resource_id,
                                 bool anonymize,
                                 int toolbar_textbox_background_color,
                                 int url_bar_background_resource_id,
+                                float x_offset,
                                 float y_offset,
                                 bool show_debug,
                                 bool clip_shadow) {
@@ -106,7 +107,7 @@ void ToolbarLayer::PushResource(int toolbar_resource_id,
   else if (!show_debug && debug_layer_->parent())
     debug_layer_->RemoveFromParent();
 
-  layer_->SetPosition(gfx::PointF(0, y_offset));
+  layer_->SetPosition(gfx::PointF(x_offset, y_offset));
 }
 
 int ToolbarLayer::GetIndexOfLayer(scoped_refptr<cc::Layer> layer) {

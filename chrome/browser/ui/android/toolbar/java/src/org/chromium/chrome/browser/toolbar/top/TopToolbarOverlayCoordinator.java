@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
@@ -45,15 +46,18 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
             ObservableSupplier<Tab> tabSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<ResourceManager> resourceManagerSupplier,
-            TopUiThemeColorProvider topUiThemeColorProvider, boolean isGridTabSwitcherEnabled) {
+            TopUiThemeColorProvider topUiThemeColorProvider,
+            @LayoutType int layoutToShowOn, boolean isVisibilityManuallyControlled) {
         mModel = new PropertyModel.Builder(TopToolbarOverlayProperties.ALL_KEYS)
                          .with(TopToolbarOverlayProperties.RESOURCE_ID, R.id.control_container)
                          .with(TopToolbarOverlayProperties.URL_BAR_RESOURCE_ID,
                                  R.drawable.modern_location_bar)
                          .with(TopToolbarOverlayProperties.VISIBLE, true)
+                         .with(TopToolbarOverlayProperties.X_OFFSET, 0)
                          .with(TopToolbarOverlayProperties.Y_OFFSET,
                                  browserControlsStateProvider.getTopControlOffset()
                                          + browserControlsStateProvider.getTopControlsMinHeight())
+                         .with(TopToolbarOverlayProperties.ANONYMIZE, false)
                          .build();
         mSceneLayer = new TopToolbarSceneLayer(resourceManagerSupplier);
         mChangeProcessor =
@@ -61,7 +65,7 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
 
         mMediator = new TopToolbarOverlayMediator(mModel, context, layoutManager,
                 progressInfoCallback, tabSupplier, browserControlsStateProvider,
-                topUiThemeColorProvider, isGridTabSwitcherEnabled);
+                topUiThemeColorProvider, layoutToShowOn, isVisibilityManuallyControlled);
     }
 
     /**
@@ -70,6 +74,21 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
      */
     public void setIsAndroidViewVisible(boolean isVisible) {
         mMediator.setIsAndroidViewVisible(isVisible);
+    }
+
+    /** @param visible Whether the overlay and shadow should be visible despite other signals. */
+    public void setManualVisibility(boolean visible) {
+        mMediator.setManualVisibility(visible);
+    }
+
+    /** @param xOffset The x offset of the toolbar. */
+    public void setXOffset(float xOffset) {
+        mMediator.setXOffset(xOffset);
+    }
+
+    /** @param anonymize Whether the URL should be hidden when the layer is rendered. */
+    public void setAnonymize(boolean anonymize) {
+        mMediator.setAnonymize(anonymize);
     }
 
     /** Clean up this component. */
