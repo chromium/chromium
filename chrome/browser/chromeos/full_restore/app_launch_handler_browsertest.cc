@@ -51,6 +51,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/app_window/native_app_window.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/window_open_disposition.h"
@@ -628,6 +629,35 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, RestoreChromeApp) {
       break;
     run_loop.Run();
   }
+}
+
+IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, RestoreMinimizedChromeApp) {
+  ::full_restore::SetActiveProfilePath(profile()->GetPath());
+
+  // Create the restore data.
+  const extensions::Extension* extension =
+      LoadAndLaunchPlatformApp("launch", "Launched");
+  ASSERT_TRUE(extension);
+  SaveChromeAppLaunchInfo(extension->id());
+
+  extensions::AppWindow* app_window = CreateAppWindow(profile(), extension);
+  ASSERT_TRUE(app_window);
+
+  // Save app window as minimized.
+  SaveWindowInfo(app_window->GetNativeWindow(), 1u,
+                 chromeos::WindowStateType::kMinimized);
+
+  WaitForAppLaunchInfoSaved();
+
+  // Read from the restore data.
+  auto app_launch_handler = std::make_unique<AppLaunchHandler>(profile());
+  app_launch_handler->SetShouldRestore();
+  content::RunAllTasksUntilIdle();
+
+  // Tests that the created window is minimized.
+  app_window = CreateAppWindow(browser()->profile(), extension);
+  ASSERT_TRUE(app_window);
+  EXPECT_TRUE(app_window->GetBaseWindow()->IsMinimized());
 }
 
 IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest,

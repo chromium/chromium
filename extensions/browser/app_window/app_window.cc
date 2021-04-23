@@ -311,8 +311,6 @@ void AppWindow::Init(const GURL& url,
     // notifies observers of the window being hidden.
     Hide();
   } else {
-    Show(SHOW_INACTIVE);
-
     // These states may cause the window to show, so they are ignored if the
     // window is initially hidden.
     if (new_params.state == ui::SHOW_STATE_FULLSCREEN)
