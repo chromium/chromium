@@ -8,6 +8,7 @@
     <script src="../resources/testharnessreport.js"></script>
     <script src="resources/audit-util.js"></script>
     <script src="resources/audit.js"></script>
+    <script src="../resources/sab-polyfill.js"></script>
   </head>
   <body>
     <script id="layout-test-code">
@@ -66,8 +67,8 @@
             'context.createBuffer(1, 1, 2999)')
             .throw(DOMException, 'NotSupportedError');
         should(
-            () => context.createBuffer(1, 1, 384001),
-            'context.createBuffer(1, 1, 384001)')
+            () => context.createBuffer(1, 1, 768001),
+            'context.createBuffer(1, 1, 768001)')
             .throw(DOMException, 'NotSupportedError');
         should(
             () => context.createBuffer(1, 1, 1e6),
@@ -83,8 +84,8 @@
             'context.createBuffer(1, 1, 192000)')
             .notThrow();
         should(
-            () => context.createBuffer(1, 1, 384000),
-            'context.createBuffer(1, 1, 384000)')
+            () => context.createBuffer(1, 1, 768000),
+            'context.createBuffer(1, 1, 768000)')
             .notThrow();
         // Invalid number of frames: NotSupportedError
         should(

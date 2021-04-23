@@ -1,11 +1,12 @@
-CONSOLE WARNING: line 138: The ScriptProcessorNode is deprecated. Use AudioWorkletNode instead. (https://bit.ly/audio-worklet)
-CONSOLE WARNING: line 142: The ScriptProcessorNode is deprecated. Use AudioWorkletNode instead. (https://bit.ly/audio-worklet)
-CONSOLE WARNING: line 347: The provided value 'fancy' is not a valid enum value of type ChannelCountMode.
-CONSOLE WARNING: line 353: The provided value 'undefined' is not a valid enum value of type ChannelInterpretation.
-CONSOLE WARNING: line 523: The provided value '9x' is not a valid enum value of type OverSampleType.
-CONSOLE WARNING: line 769: The provided value 'junk' is not a valid enum value of type ChannelCountMode.
-CONSOLE WARNING: line 779: The ScriptProcessorNode is deprecated. Use AudioWorkletNode instead. (https://bit.ly/audio-worklet)
-CONSOLE WARNING: line 800: The provided value 'junk' is not a valid enum value of type ChannelCountMode.
+CONSOLE WARNING: line 4: SharedArrayBuffer will require cross-origin isolation as of M91, around May 2021. See https://developer.chrome.com/blog/enabling-shared-array-buffer/ for more details.
+CONSOLE WARNING: line 139: The ScriptProcessorNode is deprecated. Use AudioWorkletNode instead. (https://bit.ly/audio-worklet)
+CONSOLE WARNING: line 143: The ScriptProcessorNode is deprecated. Use AudioWorkletNode instead. (https://bit.ly/audio-worklet)
+CONSOLE WARNING: line 348: The provided value 'fancy' is not a valid enum value of type ChannelCountMode.
+CONSOLE WARNING: line 354: The provided value 'undefined' is not a valid enum value of type ChannelInterpretation.
+CONSOLE WARNING: line 524: The provided value '9x' is not a valid enum value of type OverSampleType.
+CONSOLE WARNING: line 770: The provided value 'junk' is not a valid enum value of type ChannelCountMode.
+CONSOLE WARNING: line 780: The ScriptProcessorNode is deprecated. Use AudioWorkletNode instead. (https://bit.ly/audio-worklet)
+CONSOLE WARNING: line 801: The provided value 'junk' is not a valid enum value of type ChannelCountMode.
 This is a testharness.js-based test.
 PASS # AUDIT TASK RUNNER STARTED.
 PASS Executing "initialize"
@@ -42,14 +43,14 @@ PASS   context.createBuffer(99, 1, context.sampleRate) threw NotSupportedError: 
 PASS   context.createBuffer(0, 1, context.sampleRate) threw NotSupportedError: "Failed to execute 'createBuffer' on 'BaseAudioContext': The number of channels provided (0) is outside the range [1, 32].".
 PASS   context.createBuffer(1, 1, 1) threw NotSupportedError: "Failed to execute 'createBuffer' on 'BaseAudioContext': The sample rate provided (1) is outside the range [3000, 768000].".
 PASS   context.createBuffer(1, 1, 2999) threw NotSupportedError: "Failed to execute 'createBuffer' on 'BaseAudioContext': The sample rate provided (2999) is outside the range [3000, 768000].".
-FAIL X context.createBuffer(1, 1, 384001) did not throw an exception. assert_true: expected true got false
+PASS   context.createBuffer(1, 1, 768001) threw NotSupportedError: "Failed to execute 'createBuffer' on 'BaseAudioContext': The sample rate provided (768001) is outside the range [3000, 768000].".
 PASS   context.createBuffer(1, 1, 1e6) threw NotSupportedError: "Failed to execute 'createBuffer' on 'BaseAudioContext': The sample rate provided (1.00000e+6) is outside the range [3000, 768000].".
 PASS   context.createBuffer(1, 1, 3000) did not throw an exception.
 PASS   context.createBuffer(1, 1, 192000) did not throw an exception.
-PASS   context.createBuffer(1, 1, 384000) did not throw an exception.
+PASS   context.createBuffer(1, 1, 768000) did not throw an exception.
 PASS   context.createBuffer(1, 0, context.sampleRate) threw NotSupportedError: "Failed to execute 'createBuffer' on 'BaseAudioContext': The number of frames provided (0) is less than or equal to the minimum bound (0).".
 PASS   context.createBuffer(new ArrayBuffer(100), true) threw TypeError: "Failed to execute 'createBuffer' on 'BaseAudioContext': 3 arguments required, but only 2 present.".
-FAIL < [createBuffer] 1 out of 11 assertions were failed. assert_true: expected true got false
+PASS < [createBuffer] All assertions passed. (total 11 assertions)
 PASS > [createMediaElementSource] 
 PASS   context.createMediaElementSource(null) threw TypeError: "Failed to execute 'createMediaElementSource' on 'AudioContext': parameter 1 is not of type 'HTMLMediaElement'.".
 PASS < [createMediaElementSource] All assertions passed. (total 1 assertions)
@@ -103,8 +104,12 @@ PASS   AnalyserNode.getFloatFrequencyData(null) threw TypeError: "Failed to exec
 PASS   AnalyserNode.getByteFrequencyData(null) threw TypeError: "Failed to execute 'getByteFrequencyData' on 'AnalyserNode': parameter 1 is not of type 'Uint8Array'.".
 PASS   AnalyserNode.getFloatTimeDomainData(null) threw TypeError: "Failed to execute 'getFloatTimeDomainData' on 'AnalyserNode': parameter 1 is not of type 'Float32Array'.".
 PASS   AnalyserNode.getByteTimeDomainData(null) threw TypeError: "Failed to execute 'getByteTimeDomainData' on 'AnalyserNode': parameter 1 is not of type 'Uint8Array'.".
+PASS   AnalyserNode.getFloatFrequencyData(SharedArrayBuffer view) threw TypeError: "Failed to execute 'getFloatFrequencyData' on 'AnalyserNode': The provided ArrayBufferView value must not be shared.".
+PASS   AnalyserNode.getByteFrequencyData(SharedArrayBuffer view) threw TypeError: "Failed to execute 'getByteFrequencyData' on 'AnalyserNode': The provided ArrayBufferView value must not be shared.".
+PASS   AnalyserNode.getFloatTimeDomainData(SharedArrayBuffer view) threw TypeError: "Failed to execute 'getFloatTimeDomainData' on 'AnalyserNode': The provided ArrayBufferView value must not be shared.".
+PASS   AnalyserNode.getByteTimeDomainData(SharedArrayBuffer view) threw TypeError: "Failed to execute 'getByteTimeDomainData' on 'AnalyserNode': The provided ArrayBufferView value must not be shared.".
 PASS   AudioBuffer.getChannelData(2) threw IndexSizeError: "Failed to execute 'getChannelData' on 'AudioBuffer': channel index (2) exceeds number of channels (1)".
-PASS < [createAnalyser] All assertions passed. (total 24 assertions)
+PASS < [createAnalyser] All assertions passed. (total 28 assertions)
 PASS > [Init test nodes] Create test nodes for the following tests
 PASS   node = context.createGain() did not throw an exception.
 PASS   node2 = context.createGain() did not throw an exception.
@@ -139,7 +144,10 @@ PASS   node.getFrequencyResponse(new Float32Array(1), new Float32Array(1), new F
 PASS   node.getFrequencyResponse(null, new Float32Array(1), new Float32Array(1)) threw TypeError: "Failed to execute 'getFrequencyResponse' on 'BiquadFilterNode': parameter 1 is not of type 'Float32Array'.".
 PASS   node.getFrequencyResponse(new Float32Array(1), null, new Float32Array(1)) threw TypeError: "Failed to execute 'getFrequencyResponse' on 'BiquadFilterNode': parameter 2 is not of type 'Float32Array'.".
 PASS   node.getFrequencyResponse(new Float32Array(1), new Float32Array(1), null) threw TypeError: "Failed to execute 'getFrequencyResponse' on 'BiquadFilterNode': parameter 3 is not of type 'Float32Array'.".
-PASS < [biquad] All assertions passed. (total 4 assertions)
+PASS   node.getFrequencyResponse(shared_view, nonshared_view, nonshared_view) threw TypeError: "Failed to execute 'getFrequencyResponse' on 'BiquadFilterNode': The provided ArrayBufferView value must not be shared.".
+PASS   node.getFrequencyResponse(nonshared_view, shared_view, nonshared_view) threw TypeError: "Failed to execute 'getFrequencyResponse' on 'BiquadFilterNode': The provided ArrayBufferView value must not be shared.".
+PASS   node.getFrequencyResponse(nonshared_view, nonshared_view, shared_view) threw TypeError: "Failed to execute 'getFrequencyResponse' on 'BiquadFilterNode': The provided ArrayBufferView value must not be shared.".
+PASS < [biquad] All assertions passed. (total 7 assertions)
 PASS > [offline-audio-context] supports 32 channels
 PASS   new OfflineAudioContext(32, 100, context.sampleRate) did not throw an exception.
 PASS < [offline-audio-context] All assertions passed. (total 1 assertions)
@@ -268,6 +276,6 @@ PASS   osc.noteOff is equal to undefined.
 PASS   source.noteOn is equal to undefined.
 PASS   source.noteOff is equal to undefined.
 PASS < [misc] All assertions passed. (total 4 assertions)
-FAIL # AUDIT TASK RUNNER FINISHED: 1 out of 24 tasks were failed. assert_true: expected true got false
+PASS # AUDIT TASK RUNNER FINISHED: 24 tasks ran successfully.
 Harness: the test ran to completion.
 
