@@ -31,7 +31,9 @@ V8TestingScope::V8TestingScope(const KURL& url)
       handle_scope_(GetIsolate()),
       context_(GetScriptState()->GetContext()),
       context_scope_(GetContext()),
-      try_catch_(GetIsolate()) {
+      try_catch_(GetIsolate()),
+      microtasks_scope_(GetIsolate(),
+                        v8::MicrotasksScope::kDoNotRunMicrotasks) {
   GetFrame().GetSettings()->SetScriptEnabled(true);
 }
 

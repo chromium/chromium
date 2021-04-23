@@ -283,6 +283,10 @@ class AudioWorkletGlobalScopeTest : public PageTestBase,
         global_scope->ScriptController()->GetScriptState();
 
     ScriptState::Scope scope(script_state);
+    v8::Isolate* isolate = script_state->GetIsolate();
+    EXPECT_TRUE(isolate);
+    v8::MicrotasksScope microtasks_scope(
+        isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
 
     String source_code =
         R"JS(

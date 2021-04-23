@@ -49,6 +49,7 @@ class V8TestingScope {
   v8::Local<v8::Context> context_;
   v8::Context::Scope context_scope_;
   v8::TryCatch try_catch_;
+  v8::MicrotasksScope microtasks_scope_;
   DummyExceptionStateForTesting exception_state_;
 };
 
