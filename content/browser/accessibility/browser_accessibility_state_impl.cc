@@ -35,6 +35,10 @@ constexpr int kAutoDisableAccessibilityTimeSecs = 30;
 // before auto-disabling accessibility.
 constexpr int kAutoDisableAccessibilityEventCount = 3;
 
+// Updating Active/Inactive time on every accessibility api calls would not be
+// good for perf. Instead, delay the update task.
+constexpr int kOnAccessibilityUsageUpdateDelaySecs = 1;
+
 // IMPORTANT!
 // These values are written to logs.  Do not renumber or delete
 // existing items; add new entries to the end of the list.
@@ -215,6 +219,21 @@ void BrowserAccessibilityStateImpl::OnOtherThreadDone() {
     std::move(background_thread_done_callback_).Run();
 }
 
+void BrowserAccessibilityStateImpl::UpdateAccessibilityActivityTask() {
+  base::TimeTicks now = ui::EventTimeForNow();
+  accessibility_last_usage_time_ = now;
+  if (accessibility_active_start_time_.is_null())
+    accessibility_active_start_time_ = now;
+  // If accessibility was enabled but inactive until now, log the amount
+  // of time between now and the last API usage.
+  if (!accessibility_inactive_start_time_.is_null()) {
+    base::UmaHistogramLongTimes("Accessibility.InactiveTime",
+                                now - accessibility_inactive_start_time_);
+    accessibility_inactive_start_time_ = base::TimeTicks();
+  }
+  accessibility_update_task_pending_ = false;
+}
+
 void BrowserAccessibilityStateImpl::OnAXModeAdded(ui::AXMode mode) {
   AddAccessibilityModeFlags(mode);
 }
@@ -226,10 +245,6 @@ ui::AXMode BrowserAccessibilityStateImpl::GetAccessibilityMode() {
 void BrowserAccessibilityStateImpl::OnUserInputEvent() {
   // No need to do anything if accessibility is off, or if it was forced on.
   if (accessibility_mode_.is_mode_off() || force_renderer_accessibility_)
-    return;
-
-  // Check if the feature to auto-disable accessibility is even enabled.
-  if (!features::IsAutoDisableAccessibilityEnabled())
     return;
 
   // If we get at least kAutoDisableAccessibilityEventCount user input
@@ -248,19 +263,48 @@ void BrowserAccessibilityStateImpl::OnUserInputEvent() {
 
   if (now - first_user_input_event_time_ >
       base::TimeDelta::FromSeconds(kAutoDisableAccessibilityTimeSecs)) {
-    base::UmaHistogramCounts1000("Accessibility.AutoDisabled.EventCount",
-                                 user_input_event_count_);
-    DCHECK(!accessibility_enabled_time_.is_null());
-    base::UmaHistogramLongTimes("Accessibility.AutoDisabled.EnabledTime",
-                                now - accessibility_enabled_time_);
-    accessibility_disabled_time_ = now;
-    DisableAccessibility();
+    if (!accessibility_active_start_time_.is_null()) {
+      base::UmaHistogramLongTimes(
+          "Accessibility.ActiveTime",
+          accessibility_last_usage_time_ - accessibility_active_start_time_);
+
+      // This will help track the time accessibility spends enabled, but
+      // inactive.
+      if (!features::IsAutoDisableAccessibilityEnabled())
+        accessibility_inactive_start_time_ = accessibility_last_usage_time_;
+
+      accessibility_active_start_time_ = base::TimeTicks();
+    }
+
+    // Check if the feature to auto-disable accessibility is even enabled.
+    if (features::IsAutoDisableAccessibilityEnabled()) {
+      base::UmaHistogramCounts1000("Accessibility.AutoDisabled.EventCount",
+                                   user_input_event_count_);
+      DCHECK(!accessibility_enabled_time_.is_null());
+      base::UmaHistogramLongTimes("Accessibility.AutoDisabled.EnabledTime",
+                                  now - accessibility_enabled_time_);
+
+      accessibility_disabled_time_ = now;
+      DisableAccessibility();
+    }
   }
 }
 
 void BrowserAccessibilityStateImpl::OnAccessibilityApiUsage() {
   // See OnUserInputEvent for how this is used to disable accessibility.
   user_input_event_count_ = 0;
+
+  // See comment above kOnAccessibilityUsageUpdateDelaySecs for why we post a
+  // delayed task.
+  if (!accessibility_update_task_pending_) {
+    accessibility_update_task_pending_ = true;
+    GetUIThreadTaskRunner({})->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            &BrowserAccessibilityStateImpl::UpdateAccessibilityActivityTask,
+            base::Unretained(this)),
+        base::TimeDelta::FromSeconds(kOnAccessibilityUsageUpdateDelaySecs));
+  }
 }
 
 void BrowserAccessibilityStateImpl::UpdateUniqueUserHistograms() {}

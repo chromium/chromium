@@ -16,6 +16,7 @@
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/browser_accessibility_manager_mac.h"
 #include "content/public/browser/ax_event_notification_details.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "ui/accessibility/ax_tree_update.h"
@@ -121,6 +122,8 @@ class BrowserAccessibilityMacTest : public ui::CocoaTest {
   ui::AXNodeData root_;
   base::scoped_nsobject<BrowserAccessibilityCocoa> accessibility_;
   std::unique_ptr<BrowserAccessibilityManager> manager_;
+
+  const content::BrowserTaskEnvironment task_environment_;
 };
 
 // Standard hit test.

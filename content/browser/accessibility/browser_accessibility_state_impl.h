@@ -123,6 +123,8 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
 
   void OnOtherThreadDone();
 
+  void UpdateAccessibilityActivityTask();
+
   ui::AXMode accessibility_mode_;
 
   base::TimeDelta histogram_delay_;
@@ -133,6 +135,9 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   bool ui_thread_done_ = false;
   bool other_thread_done_ = false;
   base::RepeatingClosure background_thread_done_callback_;
+
+  // Whether there is a pending task to run UpdateAccessibilityActivityTask.
+  bool accessibility_update_task_pending_ = false;
 
   // Whether the force-renderer-accessibility flag is enabled.
   // Cached here so that we don't have to check base::CommandLine in
@@ -150,6 +155,15 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // user input events within a 30-second period and no
   base::TimeTicks first_user_input_event_time_;
   int user_input_event_count_ = 0;
+
+  // The time accessibility became active, used to calculate active time.
+  base::TimeTicks accessibility_active_start_time_;
+
+  // The time accessibility became inactive, used to calculate inactive time.
+  base::TimeTicks accessibility_inactive_start_time_;
+
+  // The last time accessibility was active, used to calculate active time.
+  base::TimeTicks accessibility_last_usage_time_;
 
   // The time accessibility was enabled, for statistics.
   base::TimeTicks accessibility_enabled_time_;

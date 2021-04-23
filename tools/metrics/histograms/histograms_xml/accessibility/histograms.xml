@@ -21,6 +21,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<histogram name="Accessibility.ActiveTime" units="ms"
+    expires_after="2021-09-30">
+  <owner>dmazzoni@chromium.org</owner>
+  <owner>janewman@microsoft.com</owner>
+  <summary>
+    The amount of time accessibility was enabled and actively used. Reported
+    when we switch states from active to inactive.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.Android.AnimationsEnabled2"
     enum="AccessibilityAndroidAnimationsEnabled" expires_after="M85">
   <obsolete>
@@ -655,6 +665,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     <variant name="NameLength"/>
     <variant name="NonStopNameLength"/>
   </token>
+</histogram>
+
+<histogram name="Accessibility.InactiveTime" units="ms"
+    expires_after="2021-09-30">
+  <owner>dmazzoni@chromium.org</owner>
+  <owner>janewman@microsoft.com</owner>
+  <summary>
+    The amount of time accessibility was enabled but not actively used. Reported
+    when we switch states from inactive to active. This histogram will not be
+    logged if the auto-disable accessibility feature is enabled.
+  </summary>
 </histogram>
 
 <histogram name="Accessibility.iOS.NewLargerTextCategory" enum="BooleanHit"
