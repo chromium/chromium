@@ -176,8 +176,6 @@ bool KeyboardEventManager::HandleAccessKey(const WebKeyboardEvent& evt) {
 
 WebInputEventResult KeyboardEventManager::KeyEvent(
     const WebKeyboardEvent& initial_key_event) {
-  frame_->GetChromeClient().ClearToolTip(*frame_);
-
   if (initial_key_event.windows_key_code == VK_CAPITAL)
     CapsLockStateMayHaveChanged();
 

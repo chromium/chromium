@@ -37,22 +37,43 @@ class TooltipWidgetMonitor {
     observer_ = std::make_unique<views::AnyWidgetObserver>(
         views::test::AnyWidgetTestPasskey());
     observer_->set_shown_callback(base::BindRepeating(
-        &TooltipWidgetMonitor::OnWidgetShown, base::Unretained(this)));
+        &TooltipWidgetMonitor::OnTooltipShown, base::Unretained(this)));
+    observer_->set_closing_callback(base::BindRepeating(
+        &TooltipWidgetMonitor::OnTooltipClosed, base::Unretained(this)));
   }
   TooltipWidgetMonitor(const TooltipWidgetMonitor&) = delete;
   TooltipWidgetMonitor& operator=(const TooltipWidgetMonitor&) = delete;
   ~TooltipWidgetMonitor() = default;
 
+  bool IsWidgetActive() const { return active_widget_; }
+
   void WaitUntilTooltipShown() {
-    if (!active_widget_)
-      run_loop_.Run();
+    if (!active_widget_) {
+      run_loop_ = std::make_unique<base::RunLoop>();
+      run_loop_->Run();
+    }
   }
 
-  void OnWidgetShown(views::Widget* widget) {
+  void WaitUntilTooltipClosed() {
+    if (active_widget_) {
+      run_loop_ = std::make_unique<base::RunLoop>();
+      run_loop_->Run();
+    }
+  }
+
+  void OnTooltipShown(views::Widget* widget) {
     if (widget->GetName() == TooltipAura::kWidgetName) {
       active_widget_ = widget;
-      if (run_loop_.running())
-        run_loop_.Quit();
+      if (run_loop_ && run_loop_->running())
+        run_loop_->Quit();
+    }
+  }
+
+  void OnTooltipClosed(views::Widget* widget) {
+    if (active_widget_ == widget) {
+      active_widget_ = nullptr;
+      if (run_loop_ && run_loop_->running())
+        run_loop_->Quit();
     }
   }
 
@@ -62,7 +83,7 @@ class TooltipWidgetMonitor {
   // that already occurred.
   views::Widget* active_widget_ = nullptr;
   std::unique_ptr<views::AnyWidgetObserver> observer_;
-  base::RunLoop run_loop_;
+  std::unique_ptr<base::RunLoop> run_loop_;
 };  // class TooltipWidgetMonitor
 
 // Browser tests for tooltips on platforms that use TooltipAura to display the
@@ -152,4 +173,27 @@ IN_PROC_BROWSER_TEST_F(TooltipBrowserTest, ShowTooltipFromWebContent) {
 
   // TODO(bebeaudr): Trigger a tooltip by setting focus with the keyboard on
   // that web content button.
+}
+
+IN_PROC_BROWSER_TEST_F(TooltipBrowserTest, HideTooltipOnKeyPress) {
+  if (SkipTestForOldWinVersion())
+    return;
+
+  NavigateToURL("/tooltip.html");
+  std::u16string expected_text = u"my tooltip";
+
+  // First, trigger the tooltip from the cursor.
+  gfx::Point position = WebContentPositionToScreenCoordinate(10, 10);
+  event_generator()->MoveMouseTo(position);
+  tooltip_monitor()->WaitUntilTooltipShown();
+  EXPECT_TRUE(helper()->IsTooltipVisible());
+  EXPECT_EQ(expected_text, helper()->GetTooltipText());
+
+  // Second, send a key press event to test whether the tooltip gets hidden.
+  EXPECT_TRUE(tooltip_monitor()->IsWidgetActive());
+  event_generator()->PressKey(ui::VKEY_A, 0);
+  tooltip_monitor()->WaitUntilTooltipClosed();
+  EXPECT_FALSE(helper()->IsTooltipVisible());
+
+  // TODO(bebeaudr): Also try it with a keyboard triggered tooltip.
 }
