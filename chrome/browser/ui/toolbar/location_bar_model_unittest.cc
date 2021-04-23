@@ -35,14 +35,6 @@
 
 namespace {
 
-// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
-// function.
-GURL GetViewSourceURL(const char* path) {
-  GURL::Replacements replace_path;
-  replace_path.SetPathStr(path);
-  return GURL("view-source:").ReplaceComponents(replace_path);
-}
-
 struct TestItem {
   GURL url;
   const std::string expected_formatted_full_url;
@@ -53,7 +45,7 @@ struct TestItem {
 const std::vector<TestItem>& TestItems() {
   static base::NoDestructor<std::vector<TestItem>> items{{
       {
-          GetViewSourceURL("http://www.google.com"),
+          GURL("view-source:http://www.google.com"),
           "view-source:www.google.com",
           "view-source:www.google.com",
       },
@@ -62,7 +54,7 @@ const std::vector<TestItem>& TestItems() {
           "",
       },
       {
-          GetViewSourceURL(chrome::kChromeUINewTabURL),
+          GURL(std::string("view-source:") + chrome::kChromeUINewTabURL),
           "view-source:" +
               content::GetWebUIURLString(chrome::kChromeUINewTabHost),
       },
