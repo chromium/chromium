@@ -603,17 +603,18 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
 
   RunUntilIdle();
 
-  ASSERT_THAT(
-      profile_store().stored_passwords(),
-      ElementsAre(Pair(form.signon_realm, ElementsAre(form, other_form))));
+  ASSERT_THAT(profile_store().stored_passwords(),
+              ElementsAre(Pair(form.signon_realm,
+                               UnorderedElementsAre(form, other_form))));
 
   ASSERT_THAT(account_store().stored_passwords(),
               ElementsAre(Pair(account_store_form.signon_realm,
                                ElementsAre(account_store_form))));
 
-  EXPECT_THAT(presenter().GetUsernamesForRealm(
-                  form.signon_realm, /*is_using_account_store=*/false),
-              ElementsAre(form.username_value, other_form.username_value));
+  EXPECT_THAT(
+      presenter().GetUsernamesForRealm(form.signon_realm,
+                                       /*is_using_account_store=*/false),
+      UnorderedElementsAre(form.username_value, other_form.username_value));
 
   EXPECT_THAT(presenter().GetUsernamesForRealm(account_store_form.signon_realm,
                                                /*is_using_account_store=*/true),
