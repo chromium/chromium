@@ -13,20 +13,113 @@ mimicking a native app install on their respective operating system.
 ### User entry points
 
 Sites that meet our install promotion requirements will have an install prompt
-appear in the omnibox on the right.  
- - Example site: https://developers.google.com/  
+appear in the omnibox on the right.
+ - Example site: https://developers.google.com/
 Users can also install any site they like via `Menu > More tools > Create
 shortcut...`.
 
+Users can see all of their web apps on chrome://apps (viewable on non-ChromeOS).
 
 ### Developer interface
 
 Sites customise how their installed site integrates at the OS level using a
-[web app manifest](https://www.w3.org/TR/appmanifest/).  
+[web app manifest](https://www.w3.org/TR/appmanifest/).
 See developer guides for in depth overviews:
  - https://web.dev/progressive-web-apps/
  - https://web.dev/codelab-make-installable/
 
+## Terms & Phrases
+
+### Manifest, or WebManifest
+
+This refers to the the document described by the [appmanifest](https://www.w3.org/TR/appmanifest/) spec, with some extra features described by [manifest-incubations](https://wicg.github.io/manifest-incubations/index.html). This document describes metadata and developer configuration of an installable webapp.
+
+### Manifest Link
+
+A manifest link is something that looks like this in a html document:
+```html
+<link rel="manifest" href="manifest.webmanifest">
+```
+This link ties the manifest to the document, and subsequently used in the spec algorithms defined in [appmanifest](https://www.w3.org/TR/appmanifest/) or [manifest-incubations](https://wicg.github.io/manifest-incubations/index.html) to describe the webapp and determine if it is installable.
+
+### Installable
+
+If a document or page is considered "installable", then the user agent can create some form of installed web app for that page. To be installable, [web_app::CanCreateWebApp](https://source.chromium.org/search?q=web_app::CanCreateWebApp) must return true, where:
+* The user profile must allow webapps to be installed
+* The web contents of the page must not be crashed
+* The last navigation on the web contents must not be an error (like a 404)
+* The url must be `http`, `https`, or `chrome-extension`
+
+This is different than [promotable](#promotable) below, which determines if Chrome will promote installation of the page.
+
+### Promotable
+
+A document is considered "promotable" if it fulfils a set of criteria. This criteria may change to further encourage a better user experience for installable web apps. There are also a few optional checks that depend on the promotability checker. This general criteria as of 2021/04/20:
+* The document contains a manifest link.
+* The linked manifest can be [processed](https://www.w3.org/TR/appmanifest/#processing) according to the spec and is valid.
+* The processed manifest contains the fields:
+  * `name`
+  * `start_url`
+  * `icons` with at least one icon with a valid response that is a parsable image.
+  * `display` field that is not `"browser"`
+* "Serviceworker check": The `start_url` is 'controlled' (can be served by) a [serviceworker](https://developers.google.com/web/ilt/pwa/introduction-to-service-worker). **Optionally turned off** 
+* "Engagement check": The user has engaged with, or interacted with, the page or origin a certain amount (currently at least one click and some seconds on the site). **Optionally turned off** 
+
+Notes:
+* Per spec, the document origin and the `start_url` origin must match.
+* Per spec, the `start_url` origin does not have to match the `manifest_url` origin
+* The `start_url` could be different than the `document_url`.
+
+### Scope
+
+Scope refers to the prefix that a WebApp controls. All paths at or nested inside of a WebApp's scope is thought of as "controlled" or "in-scope" of that WebApp. This is a simple string prefix match. For example, if `scope` is `/my-app`, then the following will be "in-scope":
+* `/my-app/index.html`
+* `/my-app/sub/dir/hello.html`
+* `/my-app-still-prefixed/index.html` (Note: if the scope was `/my-app/`, then this would not be out-of-scope)
+
+And the following will "out-of-scope":
+* `/my-other-app/index.html`
+* `/index.html`
+
+### Display Mode
+
+The `display` of a webapp determines how the developer would like the app to look like to the user. See the [spec](https://www.w3.org/TR/appmanifest/#display-modes) for how the `display` member is processed in the manifest and what the display modes mean.
+
+### User Display Mode
+
+In addition to the developer-specified [`display`](#display-mode), the user can specify how they want a WebApp to be displayed, with the only option being whether to "open in a window" or not. Internally, this is expressed in the same display mode enumeration type as [`display`](#display-mode), but only the `kStandalone` and `kBrowser` values are used to specify "open in a window" and "do not open in a window", respectively.
+
+#### Effective Display Mode
+The psuedocode to determine the ACTUAL display mode a WebApp is displayed is:
+
+```js
+if (user_display_mode == kStandalone)
+  return developer_specified_display_mode;
+else
+  return kBrowser; // Open in a tab.
+```
+
+#### Open-in-window
+This refers to the user specifying that a WebApp should open in the developer specified display mode.
+
+#### Open-in-browser-tab
+This refers to the user specifying that a WebApp should NOT open in a window, and thus the WebApp, if launched, will just be opened in a browser tab.
+
+### Placeholder app
+There are some webapps which are managed by external sources - for example, the enterprise policy force-install apps, or the system web apps for ChromeOS. These are generally not installed by user interaction, and the WebAppProvider needs to install something for each of these apps.
+
+Sometimes, the installation of these apps can fail because the install url is not reachable (usually a cert or login needs to occur, and the url is redirected). When this happens, the system [can](https://source.chromium.org/search?q=ExternalInstallOptions::install_placeholder) install a "placeholder" app, which is a fake application that, when launched navigates to the install url of the application, given by the external app manager.
+
+When any web contents, either in-(placeholder)-app or in the browser, successfully [navigates](https://source.chromium.org/search?q=WebAppTabHelper::ReinstallPlaceholderAppIfNecessary) to a install url that the placeholder app is installed for, the web app installation is restarted for the true app, and after that installation succeeds the placeholder app is uninstalled.
+
+### Locally Installed
+When signing into a non-ChromeOS device, all web apps are installed but not **locally installed**. This means that OS integration is not triggered (so there are no platform shortcuts created), install icons will still show up for the app websites, and the app icon will appear greyed out on chrome://apps.
+
+For an app to become locally installed, the user must do one of the following:
+* Navigate to `chrome://apps`, find the greyed-out icon of the app, right click on it, and select "Install".
+* Follow any of the normal installation routes to install that app (e.g. visit the app page in the browser and interact with the omnibox install icon)
+
+This was done because on non-ChromeOS devices it was considered a bad user experience to fully install all of the profile's web apps (creating platform shortcuts, etc), as this might not be expected by the user.
 
 ## What makes up Chromium's implementation?
 
@@ -62,7 +155,7 @@ stored on an `Extension`. See `WebAppRegistrar`'s sibling
 implementation. Since the backing object was decided based on the feature flag
 `kDesktopPWAsWithoutExtensions` the rest of the logic had to go through a
 generic interface [`AppRegistrar`](components/app_registrar.h) with a separate
-getter for each field.  
+getter for each field.
 Note that the Extensions based implementation is obsolete and needs cleaning up.
 
 
@@ -97,6 +190,7 @@ metadata to [disk](web_app_database.h) and deploy OS integrations (like
 [file handlers](components/file_handler_manager.h)) using the
 [`OsIntegrationManager`](components/os_integration_manager.h).
 
+This also manages the uninstallation process.
 
 ### [`WebAppUiManager`](../ui/web_applications/web_app_ui_manager_impl.h)
 
@@ -107,6 +201,16 @@ injects the dependency at link time (see
 [`WebAppUiManager::Create()`](https://source.chromium.org/search?q=WebAppUiManager::Create)'s
 declaration and definition locations).
 
+## Deep Dives
+
+* [Installation Sources & Pipeline](docs/installation_pipeline.md)
+* TODO: Uninstallation
+* TODO: Manifest Update
+
+## Testing
+
+TODO: How to write a unit test.
+TODO: How to write a browser test.
 
 ## Debugging
 
