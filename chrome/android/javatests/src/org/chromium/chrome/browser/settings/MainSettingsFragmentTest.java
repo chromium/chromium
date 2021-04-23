@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 import android.text.TextUtils;
 import android.view.View;
@@ -53,7 +54,6 @@ import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
 import org.chromium.chrome.browser.language.settings.LanguageSettings;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
-import org.chromium.chrome.browser.notifications.settings.NotificationSettings;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_manager.settings.PasswordSettings;
@@ -239,7 +239,12 @@ public class MainSettingsFragmentTest {
         assertSettingsExists(MainSettings.PREF_PASSWORDS, PasswordSettings.class);
         assertSettingsExists("autofill_payment_methods", AutofillPaymentMethodsFragment.class);
         assertSettingsExists("autofill_addresses", AutofillProfilesFragment.class);
-        assertSettingsExists(MainSettings.PREF_NOTIFICATIONS, NotificationSettings.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            assertSettingsExists(MainSettings.PREF_NOTIFICATIONS, null);
+        } else {
+            Assert.assertNull("Notification setting should be hidden",
+                    mMainSettings.findPreference(MainSettings.PREF_NOTIFICATIONS));
+        }
         assertSettingsExists(MainSettings.PREF_HOMEPAGE, HomepageSettings.class);
         assertSettingsExists(MainSettings.PREF_UI_THEME, ThemeSettingsFragment.class);
 
@@ -292,7 +297,12 @@ public class MainSettingsFragmentTest {
         assertSettingsExists(MainSettings.PREF_PASSWORDS, PasswordSettings.class);
         assertSettingsExists("autofill_payment_methods", AutofillPaymentMethodsFragment.class);
         assertSettingsExists("autofill_addresses", AutofillProfilesFragment.class);
-        assertSettingsExists(MainSettings.PREF_NOTIFICATIONS, NotificationSettings.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            assertSettingsExists(MainSettings.PREF_NOTIFICATIONS, null);
+        } else {
+            Assert.assertNull("Notification setting should be hidden",
+                    mMainSettings.findPreference(MainSettings.PREF_NOTIFICATIONS));
+        }
         assertSettingsExists(MainSettings.PREF_HOMEPAGE, HomepageSettings.class);
         assertSettingsExists(MainSettings.PREF_UI_THEME, ThemeSettingsFragment.class);
 

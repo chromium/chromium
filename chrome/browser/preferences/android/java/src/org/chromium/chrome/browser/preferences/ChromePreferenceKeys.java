@@ -651,13 +651,6 @@ public final class ChromePreferenceKeys {
     public static final String PERSISTENT_OFFLINE_CONTENT_AVAILABILITY_STATUS =
             "Chrome.OfflineIndicatorV2.HasPersistentOfflineContent";
 
-    public static final String PREFETCH_HAS_NEW_PAGES = "prefetch_notification_has_new_pages";
-    public static final String PREFETCH_IGNORED_NOTIFICATION_COUNTER =
-            "prefetch_notification_ignored_counter";
-    public static final String PREFETCH_NOTIFICATION_ENABLED = "prefetch_notification_enabled";
-    public static final String PREFETCH_NOTIFICATION_TIME = "prefetch_notification_shown_time";
-    public static final String PREFETCH_OFFLINE_COUNTER = "prefetch_notification_offline_counter";
-
     /**
      * Whether the PriceAlertsMessageCard is enabled.
      */

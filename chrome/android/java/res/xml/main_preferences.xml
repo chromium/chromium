@@ -81,7 +81,6 @@
         android:order="13"
         android:title="@string/prefs_safety_check"/>
     <Preference
-        android:fragment="org.chromium.chrome.browser.notifications.settings.NotificationSettings"
         android:key="notifications"
         android:order="14"
         android:title="@string/prefs_notifications"/>

@@ -20,7 +20,6 @@
 #include "chrome/browser/offline_pages/android/cct_origin_observer.h"
 #include "chrome/browser/offline_pages/android/offline_page_archive_publisher_impl.h"
 #include "chrome/browser/offline_pages/download_archive_manager.h"
-#include "chrome/browser/offline_pages/fresh_offline_content_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/common/chrome_constants.h"
@@ -88,8 +87,6 @@ std::unique_ptr<KeyedService> OfflinePageModelFactory::BuildServiceInstanceFor(
           std::move(publisher), background_task_runner);
 
   CctOriginObserver::AttachToOfflinePageModel(model.get());
-
-  FreshOfflineContentObserver::AttachToOfflinePageModel(model.get());
 
   return model;
 }

@@ -22,7 +22,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"
 #include "chrome/browser/offline_pages/prefetch/prefetch_service_factory.h"
-#include "chrome/browser/offline_pages/prefetch/prefetched_pages_notifier.h"
 #include "chrome/browser/offline_pages/request_coordinator_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -290,17 +289,6 @@ void OfflineInternalsUIMessageHandler::HandleCancelNwake(
     RejectJavascriptCallback(*callback_id,
                              base::Value("No prefetch service available."));
   }
-}
-
-void OfflineInternalsUIMessageHandler::HandleShowPrefetchNotification(
-    const base::ListValue* args) {
-  AllowJavascript();
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
-
-  offline_pages::ShowPrefetchedContentNotification(
-      GURL("https://www.example.com"));
-  ResolveJavascriptCallback(*callback_id, base::Value("Scheduled."));
 }
 
 void OfflineInternalsUIMessageHandler::HandleGeneratePageBundle(
@@ -641,11 +629,6 @@ void OfflineInternalsUIMessageHandler::RegisterMessages() {
       "cancelNwake",
       base::BindRepeating(&OfflineInternalsUIMessageHandler::HandleCancelNwake,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "showPrefetchNotification",
-      base::BindRepeating(
-          &OfflineInternalsUIMessageHandler::HandleShowPrefetchNotification,
-          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "generatePageBundle",
       base::BindRepeating(

@@ -30,7 +30,6 @@
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"
 #include "chrome/browser/offline_pages/offline_page_tab_helper.h"
 #include "chrome/browser/offline_pages/offline_page_utils.h"
-#include "chrome/browser/offline_pages/prefetch/prefetched_pages_notifier.h"
 #include "chrome/browser/offline_pages/recent_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
@@ -134,19 +133,6 @@ void SingleOfflinePageItemCallback(
 
   if (result)
     j_result = JNI_SavePageRequest_ToJavaOfflinePageItem(env, *result);
-  base::android::RunObjectCallbackAndroid(j_callback_obj, j_result);
-}
-
-void CheckForNewOfflineContentCallback(
-    const base::Time& pages_created_after,
-    const ScopedJavaGlobalRef<jobject>& j_callback_obj,
-    const OfflinePageModel::MultipleOfflinePageItemResult& result) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  std::u16string relevant_host =
-      ExtractRelevantHostFromOfflinePageItemList(pages_created_after, result);
-  ScopedJavaLocalRef<jstring> j_result =
-      base::android::ConvertUTF16ToJavaString(env, relevant_host);
-
   base::android::RunObjectCallbackAndroid(j_callback_obj, j_result);
 }
 
@@ -728,20 +714,6 @@ ScopedJavaLocalRef<jobject> OfflinePageBridge::GetOfflinePage(
 
   return offline_pages::android::OfflinePageBridge::ConvertToJavaOfflinePage(
       env, *offline_page);
-}
-
-void OfflinePageBridge::CheckForNewOfflineContent(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const jlong j_timestamp_millis,
-    const JavaParamRef<jobject>& j_callback_obj) {
-  base::Time pages_created_after = base::Time::FromJavaTime(j_timestamp_millis);
-  ScopedJavaGlobalRef<jobject> j_callback_ref(j_callback_obj);
-  PageCriteria criteria;
-  criteria.supported_by_downloads = true;
-  offline_page_model_->GetPagesWithCriteria(
-      criteria, base::BindOnce(&CheckForNewOfflineContentCallback,
-                               pages_created_after, j_callback_ref));
 }
 
 void OfflinePageBridge::GetLoadUrlParamsByOfflineId(

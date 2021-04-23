@@ -89,9 +89,6 @@ class OfflineInternalsUIMessageHandler : public content::WebUIMessageHandler {
   // Cancels an NWake signal.
   void HandleCancelNwake(const base::ListValue* args);
 
-  // Shows an example prefetching notification.
-  void HandleShowPrefetchNotification(const base::ListValue* args);
-
   // Sends and processes the request to generate page bundle.
   void HandleGeneratePageBundle(const base::ListValue* args);
 

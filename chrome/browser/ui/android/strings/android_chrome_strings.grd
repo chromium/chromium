@@ -722,18 +722,6 @@ CHAR-LIMIT guidelines:
       <message name="IDS_PREFS_NOTIFICATIONS" desc="Title for Notification preferences.">
         Notifications
       </message>
-      <message name="IDS_NOTIFICATIONS_CONTENT_SUGGESTIONS_TITLE" desc="Title for the preference to turn on/off content suggestions notifications.">
-        Content suggestions
-      </message>
-      <message name="IDS_NOTIFICATIONS_CONTENT_SUGGESTIONS_SUMMARY" desc="Summary for preference to turn on/off content suggestions notifications.">
-        Based on your browsing history
-      </message>
-      <message name="IDS_NOTIFICATIONS_FROM_WEBSITES_TITLE" desc="Summary for the preference to link to the per-website notification settings.">
-        From websites
-      </message>
-      <message name="IDS_NOTIFICATIONS_CONTENT_SUGGESTIONS_SUMMARY_DISABLED" desc="Summary for the disabled preference to turn on/off content suggestions notifications when search and site suggestions are disabled.">
-        Search and site suggestions disabled
-      </message>
 
       <!-- Themes settings -->
       <message name="IDS_THEME_SETTINGS" desc="Title for the Theme settings. [CHAR-LIMIT=32]">
@@ -3246,14 +3234,6 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       <!-- Offline pages -->
       <message name="IDS_OFFLINE_PAGES_VIEWING_OFFLINE_PAGE" desc="Text explaining that the user is viewing an offline copy of a web page.">
         Viewing an offline copy of this page
-      </message>
-
-      <message name="IDS_OFFLINE_PAGES_PREFETCH_NOTIFICATION_TITLE" desc="Title text of a notification that informs the user that there is web content available to view in Chrome even while offline">
-        View offline in <ph name="APP_NAME">%1$s<ex>Chrome</ex></ph>
-      </message>
-
-      <message name="IDS_OFFLINE_PAGES_PREFETCH_NOTIFICATION_TEXT" desc="Text inside a notification explaining the sites that fresh offline web pages originate from.">
-        <ph name="DOMAIN_NAME"><ex>www.example.com</ex>%1$s</ph> and more sites
       </message>
 
       <message name="IDS_OFFLINE_PAGES_AUTO_FETCH_IN_PROGRESS_NOTIFICATION_TEXT" desc="Text inside a notification explaining that one or more pages will be fetched when the device is online. [ICU Syntax]">

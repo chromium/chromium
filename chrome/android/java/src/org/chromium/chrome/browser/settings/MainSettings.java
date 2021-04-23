@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
-import org.chromium.chrome.browser.offlinepages.prefetch.PrefetchConfiguration;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
@@ -180,16 +179,12 @@ public class MainSettings extends PreferenceFragmentCompat
                 intent.putExtra(Settings.EXTRA_APP_PACKAGE,
                         ContextUtils.getApplicationContext().getPackageName());
                 startActivity(intent);
-                // We handle the click so the default action (opening NotificationsPreference)
-                // isn't triggered.
+                // We handle the click so the default action isn't triggered.
                 return true;
             });
-        } else if (!PrefetchConfiguration.isPrefetchingFlagEnabled()) {
-            // The Notifications Preferences page currently contains the Content Suggestions
-            // Notifications setting (used only by the Offline Prefetch feature) and an entry to the
-            // per-website notification settings page. The latter can be accessed from Site
-            // Settings, so we only show the entry to the Notifications Preferences page if the
-            // Prefetching feature flag is enabled.
+        } else {
+            // The per-website notification settings page. The latter can be accessed from Site
+            // Settings, so we don't need to show this here.
             getPreferenceScreen().removePreference(findPreference(PREF_NOTIFICATIONS));
         }
 

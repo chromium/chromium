@@ -31,7 +31,7 @@ enum class SchedulerClientType {
   kWebUI = 1,
   // Chrome update notification.
   kChromeUpdate = 2,
-  // Offline prefetch notification.
+  // Offline prefetch notification. (Deprecated)
   kPrefetch = 3,
   // Reading list weekly notification.
   kReadingList = 4,

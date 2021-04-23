@@ -194,12 +194,6 @@ class OfflinePageBridge : public OfflinePageModel::Observer,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& j_web_contents);
 
-  void CheckForNewOfflineContent(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const jlong j_timestamp_millis,
-      const base::android::JavaParamRef<jobject>& j_callback_obj);
-
   void GetLoadUrlParamsByOfflineId(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,

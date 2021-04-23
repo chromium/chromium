@@ -24,8 +24,6 @@
 #include "chrome/browser/android/reading_list/reading_list_notification_service_factory.h"
 #include "chrome/browser/notifications/scheduler/display_agent_android.h"
 #include "chrome/browser/notifications/scheduler/notification_background_task_scheduler_android.h"
-#include "chrome/browser/offline_pages/prefetch/notifications/prefetch_notification_client.h"
-#include "chrome/browser/offline_pages/prefetch/notifications/prefetch_notification_service_factory.h"
 #include "chrome/browser/reading_list/android/reading_list_notification_client.h"
 #include "chrome/browser/reading_list/android/reading_list_notification_service.h"
 #include "chrome/browser/updates/update_notification_client.h"
@@ -48,16 +46,6 @@ RegisterClients(ProfileKey* key) {
   client_registrar->RegisterClient(
       notifications::SchedulerClientType::kChromeUpdate,
       std::move(chrome_update_client));
-
-  // Register PrefetchNotificationClient.
-  auto prefetch_notification_service_getter =
-      base::BindRepeating(&PrefetchNotificationServiceFactory::GetForKey, key);
-  auto prefetch_client =
-      std::make_unique<offline_pages::prefetch::PrefetchNotificationClient>(
-          std::move(prefetch_notification_service_getter));
-  client_registrar->RegisterClient(
-      notifications::SchedulerClientType::kPrefetch,
-      std::move(prefetch_client));
 
   // Register reading list client.
   if (ReadingListNotificationService::IsEnabled()) {
