@@ -642,6 +642,19 @@ TEST_F(HistoryURLProviderTest, WhatYouTyped) {
           base::size(results_6));
 }
 
+// Test that the exact history match does not lose username/password
+// credentials.
+TEST_F(HistoryURLProviderTest, WhatYouTyped_Exact_URLPreservesUsernameAndPassword) {
+  const UrlAndLegalDefault results_1[] = {{"https://user@wytih/", true}};
+  RunTest(u"https://user@wytih", std::string(), false, results_1,
+          base::size(results_1));
+
+  const UrlAndLegalDefault results_2[] = {
+      {"https://user:pass@www.wytih/file", true}};
+  RunTest(u"https://user:pass@www.wytih/file", std::string(), false, results_2,
+          base::size(results_2));
+}
+
 // Test that file: URLs are handled appropriately on each platform.
 // url_formatter has per-platform logic for Windows vs POSIX, and
 // AutocompleteInput has special casing for iOS.

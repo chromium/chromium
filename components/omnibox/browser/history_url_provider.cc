@@ -758,10 +758,15 @@ void HistoryURLProvider::DoAutocomplete(history::HistoryBackend* backend,
       PromoteOrCreateShorterSuggestion(db, params);
 
   // Check whether what the user typed appears in history.
-  const bool can_check_history_for_exact_match =
+  const GURL& what_you_typed_url = params->what_you_typed_match.destination_url;
+  bool can_check_history_for_exact_match =
       // Checking what_you_typed_match.destination_url.is_valid() tells us
       // whether VerbatimMatchForInput succeeded in constructing a valid match.
-      params->what_you_typed_match.destination_url.is_valid() &&
+      what_you_typed_url.is_valid() &&
+      // We shouldn't match if the URL embedded username/password credentials,
+      // since it will be lost in FixupExactSuggestion.
+      !what_you_typed_url.has_username() &&
+      !what_you_typed_url.has_password() &&
       // Additionally, in the case where the user has typed "foo.com" and
       // visited (but not typed) "foo/", and the input is "foo", the first pass
       // will fall into the FRONT_HISTORY_MATCH case for "foo.com" but the
