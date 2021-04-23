@@ -135,6 +135,9 @@ class WebBundleURLLoaderClient : public network::mojom::URLLoaderClient {
   }
 
   void OnComplete(const network::URLLoaderCompletionStatus& status) override {
+    if (status.error_code != net::OK) {
+      factory_->OnWebBundleFetchFailed();
+    }
     if (completed_)
       return;
     wrapped_->OnComplete(status);
@@ -735,6 +738,13 @@ void WebBundleURLLoaderFactory::MaybeReportLoadResult(
   base::UmaHistogramEnumeration("SubresourceWebBundles.LoadResult", result);
   web_bundle_handle_->OnWebBundleLoadFinished(
       result == SubresourceWebBundleLoadResult::kSuccess);
+}
+
+void WebBundleURLLoaderFactory::OnWebBundleFetchFailed() {
+  ReportErrorAndCancelPendingLoaders(
+      SubresourceWebBundleLoadResult::kWebBundleFetchFailed,
+      mojom::WebBundleErrorType::kWebBundleFetchFailed,
+      "Failed to fetch the Web Bundle.");
 }
 
 }  // namespace network

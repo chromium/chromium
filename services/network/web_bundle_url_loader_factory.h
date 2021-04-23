@@ -26,7 +26,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
     kMetadataParseError = 1,
     kMemoryQuotaExceeded = 2,
     kServingConstraintsNotMet = 3,
-    kMaxValue = kServingConstraintsNotMet,
+    kWebBundleFetchFailed = 4,
+    kMaxValue = kWebBundleFetchFailed,
   };
 
   WebBundleURLLoaderFactory(
@@ -54,6 +55,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
       const ResourceRequest& url_request,
       mojo::PendingRemote<mojom::URLLoaderClient> client,
       mojo::Remote<mojom::TrustedHeaderClient> trusted_header_client);
+
+  void OnWebBundleFetchFailed();
 
  private:
   class BundleDataSource;
@@ -101,7 +104,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
   base::Optional<SubresourceWebBundleLoadResult> load_result_;
   bool data_completed_ = false;
   std::vector<base::WeakPtr<URLLoader>> pending_loaders_;
-
   base::WeakPtrFactory<WebBundleURLLoaderFactory> weak_ptr_factory_{this};
 };
 
