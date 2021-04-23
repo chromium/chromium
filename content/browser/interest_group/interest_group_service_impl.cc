@@ -40,6 +40,13 @@ void InterestGroupServiceImpl::CreateMojoService(
 
 void InterestGroupServiceImpl::JoinInterestGroup(
     blink::mojom::InterestGroupPtr group) {
+  // If the interest group API is not allowed for this origin do nothing.
+  if (!GetContentClient()->browser()->IsInterestGroupAPIAllowed(
+          render_frame_host()->GetBrowserContext(), origin(),
+          group->owner.GetURL())) {
+    return;
+  }
+
   // TODO(crbug.com/1200981): Either also check these renderer-side, or report
   // to devtools to get a better error debugging experience.
   if (origin().scheme() != url::kHttpsScheme)
@@ -73,10 +80,18 @@ void InterestGroupServiceImpl::JoinInterestGroup(
 
 void InterestGroupServiceImpl::LeaveInterestGroup(const url::Origin& owner,
                                                   const std::string& name) {
-  if (owner != origin())
+  // If the interest group API is not allowed for this origin do nothing.
+  if (!GetContentClient()->browser()->IsInterestGroupAPIAllowed(
+          render_frame_host()->GetBrowserContext(), origin(), owner.GetURL())) {
     return;
-  if (origin().scheme() != url::kHttpsScheme)
+  }
+
+  if (origin().scheme() != url::kHttpsScheme) {
     return;
+  }
+  if (owner != origin()) {
+    return;
+  }
   interest_group_manager_.LeaveInterestGroup(owner, name);
 }
 
