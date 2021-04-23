@@ -628,6 +628,7 @@
         android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
     </activity>  # DIFF-ANCHOR: 66a0be05
     <activity  # DIFF-ANCHOR: a1fac31f
+        android:excludeFromRecents="true"
         android:exported="true"
         android:label="@string/cablev2_activity_title"
         android:launchMode="singleTop"
