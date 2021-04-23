@@ -1092,6 +1092,18 @@ try_.chromium_linux_builder(
 )
 
 try_.chromium_linux_builder(
+    name = "linux-experimental-next-rel",
+    branch_selector = branches.STANDARD_MILESTONE,
+    builderless = not settings.is_main,
+    goma_jobs = goma.jobs.J150,
+    main_list_view = "try",
+    tryjob = try_.job(
+        experiment_percentage = 10,
+    ),
+    use_clang_coverage = True,
+)
+
+try_.chromium_linux_builder(
     name = "linux-blink-heap-concurrent-marking-tsan-rel",
 )
 
