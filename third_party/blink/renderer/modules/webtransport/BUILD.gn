@@ -12,8 +12,6 @@ blink_modules_sources("webtransport") {
     "incoming_stream.h",
     "outgoing_stream.cc",
     "outgoing_stream.h",
-    "quic_transport.cc",
-    "quic_transport.h",
     "receive_stream.cc",
     "receive_stream.h",
     "send_stream.cc",
@@ -30,9 +28,9 @@ source_set("unit_tests") {
     "bidirectional_stream_test.cc",
     "incoming_stream_test.cc",
     "outgoing_stream_test.cc",
-    "quic_transport_test.cc",
     "test_utils.cc",
     "test_utils.h",
+    "web_transport_test.cc",
   ]
 
   configs += [

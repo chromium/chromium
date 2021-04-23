@@ -1,27 +1,52 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBTRANSPORT_WEB_TRANSPORT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBTRANSPORT_WEB_TRANSPORT_H_
 
-#include "base/time/time.h"
+#include <stdint.h>
+
+#include "base/containers/span.h"
 #include "base/types/pass_key.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/system/data_pipe.h"
+#include "services/network/public/mojom/quic_transport.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/webtransport/quic_transport.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
+class ExceptionState;
+class ReadableStream;
+class ReadableStreamDefaultControllerWithScriptScope;
+class ScriptPromise;
+class ScriptPromiseResolver;
 class ScriptState;
+class WebTransportCloseInfo;
+class WebTransportOptions;
+class WebTransportStream;
+class WritableStream;
 
+// https://wicg.github.io/web-transport/#web-transport
 class MODULES_EXPORT WebTransport final
     : public ScriptWrappable,
-      public ActiveScriptWrappable<WebTransport> {
+      public ActiveScriptWrappable<WebTransport>,
+      public ExecutionContextLifecycleObserver,
+      public network::mojom::blink::QuicTransportHandshakeClient,
+      public network::mojom::blink::QuicTransportClient {
   DEFINE_WRAPPERTYPEINFO();
+  USING_PRE_FINALIZER(WebTransport, Dispose);
 
  public:
   using PassKey = base::PassKey<WebTransport>;
@@ -30,58 +55,126 @@ class MODULES_EXPORT WebTransport final
                               WebTransportOptions*,
                               ExceptionState&);
 
-  WebTransport(PassKey, QuicTransport*);
+  WebTransport(PassKey, ScriptState*, const String& url);
   ~WebTransport() override;
 
   // WebTransport IDL implementation.
-  ScriptPromise createUnidirectionalStream(ScriptState* script_state,
-                                           ExceptionState& exception_state) {
-    return quic_transport_->createSendStream(script_state, exception_state);
-  }
-  ReadableStream* incomingUnidirectionalStreams() {
-    return quic_transport_->receiveStreams();
-  }
+  ScriptPromise createUnidirectionalStream(ScriptState*, ExceptionState&);
+  ReadableStream* incomingUnidirectionalStreams();
 
-  ScriptPromise createBidirectionalStream(ScriptState* script_state,
-                                          ExceptionState& exception_state) {
-    return quic_transport_->createBidirectionalStream(script_state,
-                                                      exception_state);
-  }
-  ReadableStream* incomingBidirectionalStreams() {
-    return quic_transport_->receiveBidirectionalStreams();
-  }
-  WritableStream* datagramWritable() {
-    return quic_transport_->sendDatagrams();
-  }
-  ReadableStream* datagramReadable() {
-    return quic_transport_->receiveDatagrams();
-  }
-  void close(const WebTransportCloseInfo* close_info) {
-    quic_transport_->close(close_info);
-  }
-  ScriptPromise ready() { return quic_transport_->ready(); }
-  ScriptPromise closed() { return quic_transport_->closed(); }
+  ScriptPromise createBidirectionalStream(ScriptState*, ExceptionState&);
+  ReadableStream* incomingBidirectionalStreams();
 
-  bool HasPendingActivity() const override {
-    return quic_transport_->HasPendingActivity();
-  }
+  WritableStream* datagramWritable();
+  ReadableStream* datagramReadable();
+  void close(const WebTransportCloseInfo*);
+  ScriptPromise ready() { return ready_; }
+  ScriptPromise closed() { return closed_; }
+  void setDatagramWritableQueueExpirationDuration(double ms);
 
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(quic_transport_);
-    ScriptWrappable::Trace(visitor);
-  }
+  // WebTransportHandshakeClient implementation
+  void OnConnectionEstablished(
+      mojo::PendingRemote<network::mojom::blink::QuicTransport>,
+      mojo::PendingReceiver<network::mojom::blink::QuicTransportClient>)
+      override;
+  void OnHandshakeFailed(network::mojom::blink::QuicTransportErrorPtr) override;
 
-  ExecutionContext* GetExecutionContext() const {
-    return quic_transport_->GetExecutionContext();
-  }
+  // WebTransportClient implementation
+  void OnDatagramReceived(base::span<const uint8_t> data) override;
+  void OnIncomingStreamClosed(uint32_t stream_id, bool fin_received) override;
 
-  void setDatagramWritableQueueExpirationDuration(double ms) {
-    return quic_transport_->SetDatagramWritableQueueExpirationDuration(
-        base::TimeDelta::FromMillisecondsD(ms));
-  }
+  // Implementation of ExecutionContextLifecycleObserver
+  void ContextDestroyed() final;
+
+  // Implementation of WebTransport::HasPendingActivity()
+  bool HasPendingActivity() const override;
+
+  // Forwards a SendFin() message to the mojo interface.
+  void SendFin(uint32_t stream_id);
+
+  // Forwards a AbortStream() message to the mojo interface.
+  void AbortStream(uint32_t stream_id);
+
+  // Removes the reference to a stream.
+  void ForgetStream(uint32_t stream_id);
+
+  // ScriptWrappable implementation
+  void Trace(Visitor* visitor) const override;
 
  private:
-  const Member<QuicTransport> quic_transport_;
+  class DatagramUnderlyingSink;
+  class DatagramUnderlyingSource;
+  class StreamVendingUnderlyingSource;
+  class ReceiveStreamVendor;
+  class BidirectionalStreamVendor;
+
+  WebTransport(ScriptState*, const String& url, ExecutionContext* context);
+
+  void Init(const String& url, const WebTransportOptions&, ExceptionState&);
+
+  // Reset the WebTransport object and all associated streams.
+  void ResetAll();
+
+  void Dispose();
+  void OnConnectionError();
+  void RejectPendingStreamResolvers();
+  void OnCreateSendStreamResponse(ScriptPromiseResolver*,
+                                  mojo::ScopedDataPipeProducerHandle,
+                                  bool succeeded,
+                                  uint32_t stream_id);
+  void OnCreateBidirectionalStreamResponse(ScriptPromiseResolver*,
+                                           mojo::ScopedDataPipeProducerHandle,
+                                           mojo::ScopedDataPipeConsumerHandle,
+                                           bool succeeded,
+                                           uint32_t stream_id);
+
+  bool cleanly_closed_ = false;
+  Member<ReadableStream> received_datagrams_;
+  Member<ReadableStreamDefaultControllerWithScriptScope>
+      received_datagrams_controller_;
+
+  // This corresponds to the [[SentDatagrams]] internal slot in the standard.
+  Member<WritableStream> outgoing_datagrams_;
+
+  const Member<ScriptState> script_state_;
+
+  const KURL url_;
+
+  // Map from stream_id to SendStream, ReceiveStream or BidirectionalStream.
+  // Intentionally keeps streams reachable by GC as long as they are open.
+  // This doesn't support stream ids of 0xfffffffe or larger.
+  // TODO(ricea): Find out if such large stream ids are possible.
+  HeapHashMap<uint32_t,
+              Member<WebTransportStream>,
+              WTF::DefaultHash<uint32_t>::Hash,
+              WTF::UnsignedWithZeroKeyHashTraits<uint32_t>>
+      stream_map_;
+
+  HeapMojoRemote<network::mojom::blink::QuicTransport> quic_transport_;
+  HeapMojoReceiver<network::mojom::blink::QuicTransportHandshakeClient,
+                   WebTransport>
+      handshake_client_receiver_;
+  HeapMojoReceiver<network::mojom::blink::QuicTransportClient, WebTransport>
+      client_receiver_;
+  Member<ScriptPromiseResolver> ready_resolver_;
+  ScriptPromise ready_;
+  Member<ScriptPromiseResolver> closed_resolver_;
+  ScriptPromise closed_;
+
+  // Tracks resolvers for in-progress createSendStream() and
+  // createBidirectionalStream() operations so they can be rejected.
+  HeapHashSet<Member<ScriptPromiseResolver>> create_stream_resolvers_;
+
+  // The [[ReceivedStreams]] slot.
+  // https://w3c.github.io/webtransport/#webtransport-receivedstreams
+  Member<ReadableStream> received_streams_;
+  Member<StreamVendingUnderlyingSource> received_streams_underlying_source_;
+
+  Member<ReadableStream> received_bidirectional_streams_;
+  Member<StreamVendingUnderlyingSource>
+      received_bidirectional_streams_underlying_source_;
+
+  const uint64_t inspector_transport_id_;
 };
 
 }  // namespace blink

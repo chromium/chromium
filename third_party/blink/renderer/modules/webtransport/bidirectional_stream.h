@@ -18,7 +18,7 @@
 namespace blink {
 
 class ScriptState;
-class QuicTransport;
+class WebTransport;
 
 class MODULES_EXPORT BidirectionalStream final : public ScriptWrappable,
                                                  public WebTransportStream,
@@ -29,7 +29,7 @@ class MODULES_EXPORT BidirectionalStream final : public ScriptWrappable,
   // BidirectionalStream doesn't have a JavaScript constructor. It is only
   // constructed from C++.
   explicit BidirectionalStream(ScriptState*,
-                               QuicTransport*,
+                               WebTransport*,
                                uint32_t stream_id,
                                mojo::ScopedDataPipeProducerHandle,
                                mojo::ScopedDataPipeConsumerHandle);
@@ -75,7 +75,7 @@ class MODULES_EXPORT BidirectionalStream final : public ScriptWrappable,
 
   const Member<OutgoingStream> outgoing_stream_;
   const Member<IncomingStream> incoming_stream_;
-  const Member<QuicTransport> quic_transport_;
+  const Member<WebTransport> web_transport_;
   const uint32_t stream_id_;
 };
 

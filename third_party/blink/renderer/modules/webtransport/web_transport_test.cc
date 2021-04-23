@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/webtransport/quic_transport.h"
+#include "third_party/blink/renderer/modules/webtransport/web_transport.h"
 
 #include <array>
 #include <memory>
@@ -139,7 +139,7 @@ class MockQuicTransport : public network::mojom::blink::QuicTransport {
   mojo::Receiver<network::mojom::blink::QuicTransport> receiver_;
 };
 
-class QuicTransportTest : public ::testing::Test {
+class WebTransportTest : public ::testing::Test {
  public:
   using AcceptUnidirectionalStreamCallback =
       base::OnceCallback<void(uint32_t, mojo::ScopedDataPipeConsumerHandle)>;
@@ -153,7 +153,7 @@ class QuicTransportTest : public ::testing::Test {
         &scope.GetExecutionContext()->GetBrowserInterfaceBroker();
     interface_broker_->SetBinderForTesting(
         mojom::blink::QuicTransportConnector::Name_,
-        base::BindRepeating(&QuicTransportTest::BindConnector,
+        base::BindRepeating(&WebTransportTest::BindConnector,
                             weak_ptr_factory_.GetWeakPtr()));
   }
 
@@ -161,17 +161,17 @@ class QuicTransportTest : public ::testing::Test {
     return MakeGarbageCollected<WebTransportOptions>();
   }
 
-  // Creates a QuicTransport object with the given |url|.
-  QuicTransport* Create(const V8TestingScope& scope,
-                        const String& url,
-                        WebTransportOptions* options) {
+  // Creates a WebTransport object with the given |url|.
+  WebTransport* Create(const V8TestingScope& scope,
+                       const String& url,
+                       WebTransportOptions* options) {
     AddBinder(scope);
-    return QuicTransport::Create(scope.GetScriptState(), url, options,
-                                 ASSERT_NO_EXCEPTION);
+    return WebTransport::Create(scope.GetScriptState(), url, options,
+                                ASSERT_NO_EXCEPTION);
   }
 
-  // Connects a QuicTransport object. Runs the event loop.
-  void ConnectSuccessfully(QuicTransport* quic_transport) {
+  // Connects a WebTransport object. Runs the event loop.
+  void ConnectSuccessfully(WebTransport* web_transport) {
     DCHECK(!mock_quic_transport_) << "Only one connection supported, sorry";
 
     test::RunPendingTasks();
@@ -214,19 +214,19 @@ class QuicTransportTest : public ::testing::Test {
     test::RunPendingTasks();
   }
 
-  // Creates, connects and returns a QuicTransport object with the given |url|.
+  // Creates, connects and returns a WebTransport object with the given |url|.
   // Runs the event loop.
-  QuicTransport* CreateAndConnectSuccessfully(
+  WebTransport* CreateAndConnectSuccessfully(
       const V8TestingScope& scope,
       const String& url,
       WebTransportOptions* options = EmptyOptions()) {
-    auto* quic_transport = Create(scope, url, options);
-    ConnectSuccessfully(quic_transport);
-    return quic_transport;
+    auto* web_transport = Create(scope, url, options);
+    ConnectSuccessfully(web_transport);
+    return web_transport;
   }
 
   SendStream* CreateSendStreamSuccessfully(const V8TestingScope& scope,
-                                           QuicTransport* quic_transport) {
+                                           WebTransport* web_transport) {
     EXPECT_CALL(*mock_quic_transport_, CreateStream(_, _, _))
         .WillOnce([this](mojo::ScopedDataPipeConsumerHandle handle, Unused,
                          base::OnceCallback<void(bool, uint32_t)> callback) {
@@ -236,7 +236,8 @@ class QuicTransportTest : public ::testing::Test {
 
     auto* script_state = scope.GetScriptState();
     ScriptPromise send_stream_promise =
-        quic_transport->createSendStream(script_state, ASSERT_NO_EXCEPTION);
+        web_transport->createUnidirectionalStream(script_state,
+                                                  ASSERT_NO_EXCEPTION);
     ScriptPromiseTester tester(script_state, send_stream_promise);
 
     tester.WaitUntilSettled();
@@ -264,8 +265,8 @@ class QuicTransportTest : public ::testing::Test {
   }
 
   ReceiveStream* ReadReceiveStream(const V8TestingScope& scope,
-                                   QuicTransport* quic_transport) {
-    ReadableStream* streams = quic_transport->receiveStreams();
+                                   WebTransport* web_transport) {
+    ReadableStream* streams = web_transport->incomingUnidirectionalStreams();
 
     v8::Local<v8::Value> v8value = ReadValueFromStream(scope, streams);
 
@@ -299,46 +300,46 @@ class QuicTransportTest : public ::testing::Test {
   uint32_t next_stream_id_ = 0;
   mojo::ScopedDataPipeConsumerHandle send_stream_consumer_handle_;
 
-  base::WeakPtrFactory<QuicTransportTest> weak_ptr_factory_{this};
+  base::WeakPtrFactory<WebTransportTest> weak_ptr_factory_{this};
 };
 
-TEST_F(QuicTransportTest, FailWithNullURL) {
+TEST_F(WebTransportTest, FailWithNullURL) {
   V8TestingScope scope;
   auto& exception_state = scope.GetExceptionState();
-  QuicTransport::Create(scope.GetScriptState(), String(), EmptyOptions(),
-                        exception_state);
+  WebTransport::Create(scope.GetScriptState(), String(), EmptyOptions(),
+                       exception_state);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(static_cast<int>(DOMExceptionCode::kSyntaxError),
             exception_state.Code());
 }
 
-TEST_F(QuicTransportTest, FailWithEmptyURL) {
+TEST_F(WebTransportTest, FailWithEmptyURL) {
   V8TestingScope scope;
   auto& exception_state = scope.GetExceptionState();
-  QuicTransport::Create(scope.GetScriptState(), String(""), EmptyOptions(),
-                        exception_state);
+  WebTransport::Create(scope.GetScriptState(), String(""), EmptyOptions(),
+                       exception_state);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(static_cast<int>(DOMExceptionCode::kSyntaxError),
             exception_state.Code());
   EXPECT_EQ("The URL '' is invalid.", exception_state.Message());
 }
 
-TEST_F(QuicTransportTest, FailWithNoScheme) {
+TEST_F(WebTransportTest, FailWithNoScheme) {
   V8TestingScope scope;
   auto& exception_state = scope.GetExceptionState();
-  QuicTransport::Create(scope.GetScriptState(), String("no-scheme"),
-                        EmptyOptions(), exception_state);
+  WebTransport::Create(scope.GetScriptState(), String("no-scheme"),
+                       EmptyOptions(), exception_state);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(static_cast<int>(DOMExceptionCode::kSyntaxError),
             exception_state.Code());
   EXPECT_EQ("The URL 'no-scheme' is invalid.", exception_state.Message());
 }
 
-TEST_F(QuicTransportTest, FailWithHttpsURL) {
+TEST_F(WebTransportTest, FailWithHttpsURL) {
   V8TestingScope scope;
   auto& exception_state = scope.GetExceptionState();
-  QuicTransport::Create(scope.GetScriptState(), String("http://example.com/"),
-                        EmptyOptions(), exception_state);
+  WebTransport::Create(scope.GetScriptState(), String("http://example.com/"),
+                       EmptyOptions(), exception_state);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(static_cast<int>(DOMExceptionCode::kSyntaxError),
             exception_state.Code());
@@ -346,33 +347,33 @@ TEST_F(QuicTransportTest, FailWithHttpsURL) {
             exception_state.Message());
 }
 
-TEST_F(QuicTransportTest, FailWithNoHost) {
+TEST_F(WebTransportTest, FailWithNoHost) {
   V8TestingScope scope;
   auto& exception_state = scope.GetExceptionState();
-  QuicTransport::Create(scope.GetScriptState(), String("https:///"),
-                        EmptyOptions(), exception_state);
+  WebTransport::Create(scope.GetScriptState(), String("https:///"),
+                       EmptyOptions(), exception_state);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(static_cast<int>(DOMExceptionCode::kSyntaxError),
             exception_state.Code());
   EXPECT_EQ("The URL 'https:///' is invalid.", exception_state.Message());
 }
 
-TEST_F(QuicTransportTest, FailWithURLFragment) {
+TEST_F(WebTransportTest, FailWithURLFragment) {
   V8TestingScope scope;
   auto& exception_state = scope.GetExceptionState();
-  QuicTransport::Create(scope.GetScriptState(),
-                        String("https://example.com/#failing"), EmptyOptions(),
-                        exception_state);
+  WebTransport::Create(scope.GetScriptState(),
+                       String("https://example.com/#failing"), EmptyOptions(),
+                       exception_state);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(static_cast<int>(DOMExceptionCode::kSyntaxError),
             exception_state.Code());
   EXPECT_EQ(
       "The URL contains a fragment identifier ('#failing'). Fragment "
-      "identifiers are not allowed in QuicTransport URLs.",
+      "identifiers are not allowed in WebTransport URLs.",
       exception_state.Message());
 }
 
-TEST_F(QuicTransportTest, FailByCSP) {
+TEST_F(WebTransportTest, FailByCSP) {
   V8TestingScope scope;
   auto& exception_state = scope.GetExceptionState();
   scope.GetExecutionContext()
@@ -382,8 +383,8 @@ TEST_F(QuicTransportTest, FailByCSP) {
           network::mojom::ContentSecurityPolicyType::kEnforce,
           network::mojom::ContentSecurityPolicySource::kHTTP,
           *(scope.GetExecutionContext()->GetSecurityOrigin())));
-  QuicTransport::Create(scope.GetScriptState(), String("https://example.com/"),
-                        EmptyOptions(), exception_state);
+  WebTransport::Create(scope.GetScriptState(), String("https://example.com/"),
+                       EmptyOptions(), exception_state);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(static_cast<int>(DOMExceptionCode::kSecurityError),
             exception_state.Code());
@@ -391,7 +392,7 @@ TEST_F(QuicTransportTest, FailByCSP) {
             exception_state.Message());
 }
 
-TEST_F(QuicTransportTest, PassCSP) {
+TEST_F(WebTransportTest, PassCSP) {
   V8TestingScope scope;
   // This doesn't work without the https:// prefix, even thought it should
   // according to
@@ -404,15 +405,15 @@ TEST_F(QuicTransportTest, PassCSP) {
           network::mojom::ContentSecurityPolicyType::kEnforce,
           network::mojom::ContentSecurityPolicySource::kHTTP,
           *(scope.GetExecutionContext()->GetSecurityOrigin())));
-  QuicTransport::Create(scope.GetScriptState(), String("https://example.com/"),
-                        EmptyOptions(), exception_state);
+  WebTransport::Create(scope.GetScriptState(), String("https://example.com/"),
+                       EmptyOptions(), exception_state);
   EXPECT_FALSE(exception_state.HadException());
 }
 
-TEST_F(QuicTransportTest, SendConnect) {
+TEST_F(WebTransportTest, SendConnect) {
   V8TestingScope scope;
   AddBinder(scope);
-  auto* quic_transport = QuicTransport::Create(
+  auto* web_transport = WebTransport::Create(
       scope.GetScriptState(), String("https://example.com/"), EmptyOptions(),
       ASSERT_NO_EXCEPTION);
 
@@ -422,32 +423,32 @@ TEST_F(QuicTransportTest, SendConnect) {
   ASSERT_EQ(1u, args.size());
   EXPECT_EQ(KURL("https://example.com/"), args[0].url);
   EXPECT_TRUE(args[0].fingerprints.IsEmpty());
-  EXPECT_TRUE(quic_transport->HasPendingActivity());
+  EXPECT_TRUE(web_transport->HasPendingActivity());
 }
 
-TEST_F(QuicTransportTest, SuccessfulConnect) {
+TEST_F(WebTransportTest, SuccessfulConnect) {
   V8TestingScope scope;
-  auto* quic_transport =
+  auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
   ScriptPromiseTester ready_tester(scope.GetScriptState(),
-                                   quic_transport->ready());
+                                   web_transport->ready());
 
-  EXPECT_TRUE(quic_transport->HasPendingActivity());
+  EXPECT_TRUE(web_transport->HasPendingActivity());
 
   ready_tester.WaitUntilSettled();
   EXPECT_TRUE(ready_tester.IsFulfilled());
 }
 
-TEST_F(QuicTransportTest, FailedConnect) {
+TEST_F(WebTransportTest, FailedConnect) {
   V8TestingScope scope;
   AddBinder(scope);
-  auto* quic_transport = QuicTransport::Create(
+  auto* web_transport = WebTransport::Create(
       scope.GetScriptState(), String("https://example.com/"), EmptyOptions(),
       ASSERT_NO_EXCEPTION);
   ScriptPromiseTester ready_tester(scope.GetScriptState(),
-                                   quic_transport->ready());
+                                   web_transport->ready());
   ScriptPromiseTester closed_tester(scope.GetScriptState(),
-                                    quic_transport->closed());
+                                    web_transport->closed());
 
   test::RunPendingTasks();
 
@@ -460,12 +461,12 @@ TEST_F(QuicTransportTest, FailedConnect) {
   handshake_client->OnHandshakeFailed(nullptr);
 
   test::RunPendingTasks();
-  EXPECT_FALSE(quic_transport->HasPendingActivity());
+  EXPECT_FALSE(web_transport->HasPendingActivity());
   EXPECT_TRUE(ready_tester.IsRejected());
   EXPECT_TRUE(closed_tester.IsRejected());
 }
 
-TEST_F(QuicTransportTest, SendConnectWithFingerprint) {
+TEST_F(WebTransportTest, SendConnectWithFingerprint) {
   V8TestingScope scope;
   AddBinder(scope);
   auto* fingerprints = MakeGarbageCollected<RTCDtlsFingerprint>();
@@ -475,8 +476,8 @@ TEST_F(QuicTransportTest, SendConnectWithFingerprint) {
       "39:D6:64:FA:08:B9:77:37");
   auto* options = MakeGarbageCollected<WebTransportOptions>();
   options->setServerCertificateFingerprints({fingerprints});
-  QuicTransport::Create(scope.GetScriptState(), String("https://example.com/"),
-                        options, ASSERT_NO_EXCEPTION);
+  WebTransport::Create(scope.GetScriptState(), String("https://example.com/"),
+                       options, ASSERT_NO_EXCEPTION);
 
   test::RunPendingTasks();
 
@@ -489,107 +490,100 @@ TEST_F(QuicTransportTest, SendConnectWithFingerprint) {
             "C0:84:39:D6:64:FA:08:B9:77:37");
 }
 
-TEST_F(QuicTransportTest, CloseDuringConnect) {
+TEST_F(WebTransportTest, CloseDuringConnect) {
   V8TestingScope scope;
   AddBinder(scope);
-  auto* quic_transport = QuicTransport::Create(
+  auto* web_transport = WebTransport::Create(
       scope.GetScriptState(), String("https://example.com/"), EmptyOptions(),
       ASSERT_NO_EXCEPTION);
   ScriptPromiseTester ready_tester(scope.GetScriptState(),
-                                   quic_transport->ready());
+                                   web_transport->ready());
   ScriptPromiseTester closed_tester(scope.GetScriptState(),
-                                    quic_transport->closed());
+                                    web_transport->closed());
 
   test::RunPendingTasks();
 
   auto args = connector_.TakeConnectArgs();
   ASSERT_EQ(1u, args.size());
 
-  quic_transport->close(nullptr);
+  web_transport->close(nullptr);
 
   test::RunPendingTasks();
 
-  EXPECT_FALSE(quic_transport->HasPendingActivity());
+  EXPECT_FALSE(web_transport->HasPendingActivity());
   EXPECT_TRUE(ready_tester.IsRejected());
   EXPECT_TRUE(closed_tester.IsFulfilled());
 }
 
-TEST_F(QuicTransportTest, CloseAfterConnection) {
+TEST_F(WebTransportTest, CloseAfterConnection) {
   V8TestingScope scope;
-  auto* quic_transport =
+  auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
   ScriptPromiseTester ready_tester(scope.GetScriptState(),
-                                   quic_transport->ready());
+                                   web_transport->ready());
   ScriptPromiseTester closed_tester(scope.GetScriptState(),
-                                    quic_transport->closed());
+                                    web_transport->closed());
 
   WebTransportCloseInfo close_info;
   close_info.setErrorCode(42);
   close_info.setReason("because");
-  quic_transport->close(&close_info);
+  web_transport->close(&close_info);
 
   test::RunPendingTasks();
 
   // TODO(ricea): Check that the close info is sent through correctly, once we
   // start sending it.
 
-  EXPECT_FALSE(quic_transport->HasPendingActivity());
+  EXPECT_FALSE(web_transport->HasPendingActivity());
   EXPECT_TRUE(ready_tester.IsFulfilled());
   EXPECT_TRUE(closed_tester.IsFulfilled());
 
   // Calling close again does nothing.
-  quic_transport->close(nullptr);
+  web_transport->close(nullptr);
 }
 
 // A live connection will be kept alive even if there is no explicit reference.
 // When the underlying connection is shut down, the connection will be swept.
-TEST_F(QuicTransportTest, GarbageCollection) {
+TEST_F(WebTransportTest, GarbageCollection) {
   V8TestingScope scope;
 
-  WeakPersistent<QuicTransport> quic_transport;
-
-  // Temporary workaround to keep this test working while QuicTransport still
-  // exists but isn't an ActiveScriptWrappable.
-  // TODO(ricea): Remove this once the test has been moved to WebTransport.
-  Persistent<QuicTransport> persistent;
+  WeakPersistent<WebTransport> web_transport;
 
   {
-    // The streams created when creating a QuicTransport create some v8 handles.
+    // The streams created when creating a WebTransport create some v8 handles.
     // To ensure these are collected, we need to create a handle scope. This is
     // not a problem for garbage collection in normal operation.
     v8::HandleScope handle_scope(scope.GetIsolate());
-    persistent = CreateAndConnectSuccessfully(scope, "https://example.com");
-    quic_transport = persistent.Get();
+    web_transport = CreateAndConnectSuccessfully(scope, "https://example.com");
   }
 
   // Pretend the stack is empty. This will avoid accidentally treating any
-  // copies of the |quic_transport| pointer as references.
+  // copies of the |web_transport| pointer as references.
   ThreadState::Current()->CollectAllGarbageForTesting();
 
-  EXPECT_TRUE(quic_transport);
+  EXPECT_TRUE(web_transport);
 
-  quic_transport->close(nullptr);
-  persistent = nullptr;
+  web_transport->close(nullptr);
 
   test::RunPendingTasks();
 
   ThreadState::Current()->CollectAllGarbageForTesting();
 
-  EXPECT_FALSE(quic_transport);
+  EXPECT_FALSE(web_transport);
 }
 
-TEST_F(QuicTransportTest, GarbageCollectMojoConnectionError) {
+TEST_F(WebTransportTest, GarbageCollectMojoConnectionError) {
   V8TestingScope scope;
 
-  WeakPersistent<QuicTransport> quic_transport;
+  WeakPersistent<WebTransport> web_transport;
 
   {
     v8::HandleScope handle_scope(scope.GetIsolate());
-    quic_transport = CreateAndConnectSuccessfully(scope, "https://example.com");
+    web_transport = CreateAndConnectSuccessfully(scope, "https://example.com");
   }
 
   ScriptPromiseTester closed_tester(scope.GetScriptState(),
-                                    quic_transport->closed());
+                                    web_transport->closed());
 
   // Closing the server-side of the pipe causes a mojo connection error.
   client_remote_.reset();
@@ -598,13 +592,13 @@ TEST_F(QuicTransportTest, GarbageCollectMojoConnectionError) {
 
   ThreadState::Current()->CollectAllGarbageForTesting();
 
-  EXPECT_FALSE(quic_transport);
+  EXPECT_FALSE(web_transport);
   EXPECT_TRUE(closed_tester.IsRejected());
 }
 
-TEST_F(QuicTransportTest, SendDatagram) {
+TEST_F(WebTransportTest, SendDatagram) {
   V8TestingScope scope;
-  auto* quic_transport =
+  auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
 
   EXPECT_CALL(*mock_quic_transport_, SendDatagram(ElementsAre('A'), _))
@@ -613,7 +607,7 @@ TEST_F(QuicTransportTest, SendDatagram) {
         std::move(callback).Run(true);
       }));
 
-  auto* writable = quic_transport->sendDatagrams();
+  auto* writable = web_transport->datagramWritable();
   auto* script_state = scope.GetScriptState();
   auto* writer = writable->getWriter(script_state, ASSERT_NO_EXCEPTION);
   auto* chunk = DOMUint8Array::Create(1);
@@ -627,11 +621,11 @@ TEST_F(QuicTransportTest, SendDatagram) {
   EXPECT_TRUE(tester.Value().IsUndefined());
 }
 
-TEST_F(QuicTransportTest, BackpressureForOutgoingDatagrams) {
+TEST_F(WebTransportTest, BackpressureForOutgoingDatagrams) {
   V8TestingScope scope;
   auto* const options = MakeGarbageCollected<WebTransportOptions>();
   options->setDatagramWritableHighWaterMark(3);
-  auto* quic_transport =
+  auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com", options);
 
   EXPECT_CALL(*mock_quic_transport_, SendDatagram(_, _))
@@ -642,7 +636,7 @@ TEST_F(QuicTransportTest, BackpressureForOutgoingDatagrams) {
             std::move(callback).Run(true);
           }));
 
-  auto* writable = quic_transport->sendDatagrams();
+  auto* writable = web_transport->datagramWritable();
   auto* script_state = scope.GetScriptState();
   auto* writer = writable->getWriter(script_state, ASSERT_NO_EXCEPTION);
 
@@ -694,11 +688,11 @@ TEST_F(QuicTransportTest, BackpressureForOutgoingDatagrams) {
   EXPECT_EQ(promise4.V8Promise()->State(), v8::Promise::kFulfilled);
 }
 
-TEST_F(QuicTransportTest, SendDatagramBeforeConnect) {
+TEST_F(WebTransportTest, SendDatagramBeforeConnect) {
   V8TestingScope scope;
-  auto* quic_transport = Create(scope, "https://example.com", EmptyOptions());
+  auto* web_transport = Create(scope, "https://example.com", EmptyOptions());
 
-  auto* writable = quic_transport->sendDatagrams();
+  auto* writable = web_transport->datagramWritable();
   auto* script_state = scope.GetScriptState();
   auto* writer = writable->getWriter(script_state, ASSERT_NO_EXCEPTION);
   auto* chunk = DOMUint8Array::Create(1);
@@ -707,7 +701,7 @@ TEST_F(QuicTransportTest, SendDatagramBeforeConnect) {
       writer->write(script_state, ScriptValue::From(script_state, chunk),
                     ASSERT_NO_EXCEPTION);
 
-  ConnectSuccessfully(quic_transport);
+  ConnectSuccessfully(web_transport);
 
   // No datagram is sent.
 
@@ -717,15 +711,15 @@ TEST_F(QuicTransportTest, SendDatagramBeforeConnect) {
   EXPECT_TRUE(tester.Value().IsUndefined());
 }
 
-TEST_F(QuicTransportTest, SendDatagramAfterClose) {
+TEST_F(WebTransportTest, SendDatagramAfterClose) {
   V8TestingScope scope;
-  auto* quic_transport =
+  auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
 
-  quic_transport->close(nullptr);
+  web_transport->close(nullptr);
   test::RunPendingTasks();
 
-  auto* writable = quic_transport->sendDatagrams();
+  auto* writable = web_transport->datagramWritable();
   auto* script_state = scope.GetScriptState();
   auto* writer = writable->getWriter(script_state, ASSERT_NO_EXCEPTION);
 
@@ -766,9 +760,9 @@ Vector<uint8_t> GetValueAsVector(ScriptState* script_state,
   return result;
 }
 
-TEST_F(QuicTransportTest, ReceiveDatagramBeforeRead) {
+TEST_F(WebTransportTest, ReceiveDatagramBeforeRead) {
   V8TestingScope scope;
-  auto* quic_transport =
+  auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
 
   const std::array<uint8_t, 1> chunk = {'A'};
@@ -776,7 +770,7 @@ TEST_F(QuicTransportTest, ReceiveDatagramBeforeRead) {
 
   test::RunPendingTasks();
 
-  auto* readable = quic_transport->receiveDatagrams();
+  auto* readable = web_transport->datagramReadable();
   auto* script_state = scope.GetScriptState();
   auto* reader =
       readable->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
@@ -788,11 +782,11 @@ TEST_F(QuicTransportTest, ReceiveDatagramBeforeRead) {
   EXPECT_THAT(GetValueAsVector(script_state, tester.Value()), ElementsAre('A'));
 }
 
-TEST_F(QuicTransportTest, ReceiveDatagramDuringRead) {
+TEST_F(WebTransportTest, ReceiveDatagramDuringRead) {
   V8TestingScope scope;
-  auto* quic_transport =
+  auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
-  auto* readable = quic_transport->receiveDatagrams();
+  auto* readable = web_transport->datagramReadable();
   auto* script_state = scope.GetScriptState();
   auto* reader =
       readable->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
@@ -810,9 +804,9 @@ TEST_F(QuicTransportTest, ReceiveDatagramDuringRead) {
 
 // This test documents the current behaviour. If you improve the behaviour,
 // change the test!
-TEST_F(QuicTransportTest, DatagramsAreDropped) {
+TEST_F(WebTransportTest, DatagramsAreDropped) {
   V8TestingScope scope;
-  auto* quic_transport =
+  auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
 
   // Chunk 'A' gets placed in the readable queue.
@@ -826,7 +820,7 @@ TEST_F(QuicTransportTest, DatagramsAreDropped) {
   // Make sure that the calls have run.
   test::RunPendingTasks();
 
-  auto* readable = quic_transport->receiveDatagrams();
+  auto* readable = web_transport->datagramReadable();
   auto* script_state = scope.GetScriptState();
   auto* reader =
       readable->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
@@ -861,9 +855,9 @@ bool ValidConsumerHandle(const mojo::ScopedDataPipeConsumerHandle& handle) {
   return handle.is_valid();
 }
 
-TEST_F(QuicTransportTest, CreateSendStream) {
+TEST_F(WebTransportTest, CreateSendStream) {
   V8TestingScope scope;
-  auto* quic_transport =
+  auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
 
   EXPECT_CALL(*mock_quic_transport_,
@@ -875,8 +869,8 @@ TEST_F(QuicTransportTest, CreateSendStream) {
       });
 
   auto* script_state = scope.GetScriptState();
-  ScriptPromise send_stream_promise =
-      quic_transport->createSendStream(script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromise send_stream_promise = web_transport->createUnidirectionalStream(
+      script_state, ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, send_stream_promise);
 
   tester.WaitUntilSettled();
@@ -887,24 +881,24 @@ TEST_F(QuicTransportTest, CreateSendStream) {
   EXPECT_TRUE(send_stream);
 }
 
-TEST_F(QuicTransportTest, CreateSendStreamBeforeConnect) {
+TEST_F(WebTransportTest, CreateSendStreamBeforeConnect) {
   V8TestingScope scope;
 
   auto* script_state = scope.GetScriptState();
-  auto* quic_transport = QuicTransport::Create(
+  auto* web_transport = WebTransport::Create(
       script_state, "https://example.com", EmptyOptions(), ASSERT_NO_EXCEPTION);
   auto& exception_state = scope.GetExceptionState();
   ScriptPromise send_stream_promise =
-      quic_transport->createSendStream(script_state, exception_state);
+      web_transport->createUnidirectionalStream(script_state, exception_state);
   EXPECT_TRUE(send_stream_promise.IsEmpty());
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(static_cast<int>(DOMExceptionCode::kNetworkError),
             exception_state.Code());
 }
 
-TEST_F(QuicTransportTest, CreateSendStreamFailure) {
+TEST_F(WebTransportTest, CreateSendStreamFailure) {
   V8TestingScope scope;
-  auto* quic_transport =
+  auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
 
   EXPECT_CALL(*mock_quic_transport_, CreateStream(_, _, _))
@@ -914,8 +908,8 @@ TEST_F(QuicTransportTest, CreateSendStreamFailure) {
       });
 
   auto* script_state = scope.GetScriptState();
-  ScriptPromise send_stream_promise =
-      quic_transport->createSendStream(script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromise send_stream_promise = web_transport->createUnidirectionalStream(
+      script_state, ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, send_stream_promise);
 
   tester.WaitUntilSettled();
@@ -927,57 +921,45 @@ TEST_F(QuicTransportTest, CreateSendStreamFailure) {
   EXPECT_EQ(exception->message(), "Failed to create send stream.");
 }
 
-// Every active stream is kept alive by the QuicTransport object.
-TEST_F(QuicTransportTest, SendStreamGarbageCollection) {
+// Every active stream is kept alive by the WebTransport object.
+TEST_F(WebTransportTest, SendStreamGarbageCollection) {
   V8TestingScope scope;
 
-  WeakPersistent<QuicTransport> quic_transport;
+  WeakPersistent<WebTransport> web_transport;
   WeakPersistent<SendStream> send_stream;
 
-  // Temporary workaround to keep this test working while QuicTransport still
-  // exists but isn't an ActiveScriptWrappable.
-  // TODO(ricea): Remove this once the test has been moved to WebTransport.
-  Persistent<QuicTransport> persistent;
-
   {
-    // The streams created when creating a QuicTransport or SendStream create
+    // The streams created when creating a WebTransport or SendStream create
     // some v8 handles. To ensure these are collected, we need to create a
     // handle scope. This is not a problem for garbage collection in normal
     // operation.
     v8::HandleScope handle_scope(scope.GetIsolate());
 
-    persistent = CreateAndConnectSuccessfully(scope, "https://example.com");
-    quic_transport = persistent.Get();
-    send_stream = CreateSendStreamSuccessfully(scope, quic_transport);
+    web_transport = CreateAndConnectSuccessfully(scope, "https://example.com");
+    send_stream = CreateSendStreamSuccessfully(scope, web_transport);
   }
 
   ThreadState::Current()->CollectAllGarbageForTesting();
 
-  EXPECT_TRUE(quic_transport);
+  EXPECT_TRUE(web_transport);
   EXPECT_TRUE(send_stream);
 
-  quic_transport->close(nullptr);
-  persistent = nullptr;
+  web_transport->close(nullptr);
 
   test::RunPendingTasks();
 
   ThreadState::Current()->CollectAllGarbageForTesting();
 
-  EXPECT_FALSE(quic_transport);
+  EXPECT_FALSE(web_transport);
   EXPECT_FALSE(send_stream);
 }
 
 // A live stream will be kept alive even if there is no explicit reference.
 // When the underlying connection is shut down, the connection will be swept.
-TEST_F(QuicTransportTest, SendStreamGarbageCollectionLocalClose) {
+TEST_F(WebTransportTest, SendStreamGarbageCollectionLocalClose) {
   V8TestingScope scope;
 
   WeakPersistent<SendStream> send_stream;
-
-  // Temporary workaround to keep this test working while QuicTransport still
-  // exists but isn't an ActiveScriptWrappable.
-  // TODO(ricea): Remove this once the test has been moved to WebTransport.
-  Persistent<QuicTransport> persistent;
 
   {
     // The writable stream created when creating a SendStream creates some
@@ -985,8 +967,9 @@ TEST_F(QuicTransportTest, SendStreamGarbageCollectionLocalClose) {
     // scope. This is not a problem for garbage collection in normal operation.
     v8::HandleScope handle_scope(scope.GetIsolate());
 
-    persistent = CreateAndConnectSuccessfully(scope, "https://example.com");
-    send_stream = CreateSendStreamSuccessfully(scope, persistent.Get());
+    auto* web_transport =
+        CreateAndConnectSuccessfully(scope, "https://example.com");
+    send_stream = CreateSendStreamSuccessfully(scope, web_transport);
   }
 
   // Pretend the stack is empty. This will avoid accidentally treating any
@@ -1008,21 +991,17 @@ TEST_F(QuicTransportTest, SendStreamGarbageCollectionLocalClose) {
   EXPECT_FALSE(send_stream);
 }
 
-TEST_F(QuicTransportTest, SendStreamGarbageCollectionRemoteClose) {
+TEST_F(WebTransportTest, SendStreamGarbageCollectionRemoteClose) {
   V8TestingScope scope;
 
   WeakPersistent<SendStream> send_stream;
 
-  // Temporary workaround to keep this test working while QuicTransport still
-  // exists but isn't an ActiveScriptWrappable.
-  // TODO(ricea): Remove this once the test has been moved to WebTransport.
-  Persistent<QuicTransport> persistent;
-
   {
     v8::HandleScope handle_scope(scope.GetIsolate());
 
-    persistent = CreateAndConnectSuccessfully(scope, "https://example.com");
-    send_stream = CreateSendStreamSuccessfully(scope, persistent.Get());
+    auto* web_transport =
+        CreateAndConnectSuccessfully(scope, "https://example.com");
+    send_stream = CreateSendStreamSuccessfully(scope, web_transport);
   }
 
   ThreadState::Current()->CollectAllGarbageForTesting();
@@ -1041,16 +1020,11 @@ TEST_F(QuicTransportTest, SendStreamGarbageCollectionRemoteClose) {
 
 // A live stream will be kept alive even if there is no explicit reference.
 // When the underlying connection is shut down, the connection will be swept.
-TEST_F(QuicTransportTest, ReceiveStreamGarbageCollectionCancel) {
+TEST_F(WebTransportTest, ReceiveStreamGarbageCollectionCancel) {
   V8TestingScope scope;
 
   WeakPersistent<ReceiveStream> receive_stream;
   mojo::ScopedDataPipeProducerHandle producer;
-
-  // Temporary workaround to keep this test working while QuicTransport still
-  // exists but isn't an ActiveScriptWrappable.
-  // TODO(ricea): Remove this once the test has been moved to WebTransport.
-  Persistent<QuicTransport> persistent;
 
   {
     // The readable stream created when creating a ReceiveStream creates some
@@ -1058,10 +1032,11 @@ TEST_F(QuicTransportTest, ReceiveStreamGarbageCollectionCancel) {
     // scope. This is not a problem for garbage collection in normal operation.
     v8::HandleScope handle_scope(scope.GetIsolate());
 
-    persistent = CreateAndConnectSuccessfully(scope, "https://example.com");
+    auto* web_transport =
+        CreateAndConnectSuccessfully(scope, "https://example.com");
 
     producer = DoAcceptUnidirectionalStream();
-    receive_stream = ReadReceiveStream(scope, persistent.Get());
+    receive_stream = ReadReceiveStream(scope, web_transport);
   }
 
   // Pretend the stack is empty. This will avoid accidentally treating any
@@ -1090,23 +1065,19 @@ TEST_F(QuicTransportTest, ReceiveStreamGarbageCollectionCancel) {
   EXPECT_FALSE(receive_stream);
 }
 
-TEST_F(QuicTransportTest, ReceiveStreamGarbageCollectionRemoteClose) {
+TEST_F(WebTransportTest, ReceiveStreamGarbageCollectionRemoteClose) {
   V8TestingScope scope;
 
   WeakPersistent<ReceiveStream> receive_stream;
   mojo::ScopedDataPipeProducerHandle producer;
 
-  // Temporary workaround to keep this test working while QuicTransport still
-  // exists but isn't an ActiveScriptWrappable.
-  // TODO(ricea): Remove this once the test has been moved to WebTransport.
-  Persistent<QuicTransport> persistent;
-
   {
     v8::HandleScope handle_scope(scope.GetIsolate());
 
-    persistent = CreateAndConnectSuccessfully(scope, "https://example.com");
+    auto* web_transport =
+        CreateAndConnectSuccessfully(scope, "https://example.com");
     producer = DoAcceptUnidirectionalStream();
-    receive_stream = ReadReceiveStream(scope, persistent.Get());
+    receive_stream = ReadReceiveStream(scope, web_transport);
   }
 
   ThreadState::Current()->CollectAllGarbageForTesting();
@@ -1135,24 +1106,20 @@ TEST_F(QuicTransportTest, ReceiveStreamGarbageCollectionRemoteClose) {
 // that the order of the data pipe being reset and the OnIncomingStreamClosed
 // message is reversed. It is important that the object is not collected until
 // both events have happened.
-TEST_F(QuicTransportTest, ReceiveStreamGarbageCollectionRemoteCloseReverse) {
+TEST_F(WebTransportTest, ReceiveStreamGarbageCollectionRemoteCloseReverse) {
   V8TestingScope scope;
 
   WeakPersistent<ReceiveStream> receive_stream;
   mojo::ScopedDataPipeProducerHandle producer;
 
-  // Temporary workaround to keep this test working while QuicTransport still
-  // exists but isn't an ActiveScriptWrappable.
-  // TODO(ricea): Remove this once the test has been moved to WebTransport.
-  Persistent<QuicTransport> persistent;
-
   {
     v8::HandleScope handle_scope(scope.GetIsolate());
 
-    persistent = CreateAndConnectSuccessfully(scope, "https://example.com");
+    auto* web_transport =
+        CreateAndConnectSuccessfully(scope, "https://example.com");
 
     producer = DoAcceptUnidirectionalStream();
-    receive_stream = ReadReceiveStream(scope, persistent.Get());
+    receive_stream = ReadReceiveStream(scope, web_transport);
   }
 
   ThreadState::Current()->CollectAllGarbageForTesting();
@@ -1176,11 +1143,11 @@ TEST_F(QuicTransportTest, ReceiveStreamGarbageCollectionRemoteCloseReverse) {
   EXPECT_FALSE(receive_stream);
 }
 
-TEST_F(QuicTransportTest, CreateSendStreamAbortedByClose) {
+TEST_F(WebTransportTest, CreateSendStreamAbortedByClose) {
   V8TestingScope scope;
 
   auto* script_state = scope.GetScriptState();
-  auto* quic_transport =
+  auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
 
   base::OnceCallback<void(bool, uint32_t)> create_stream_callback;
@@ -1190,13 +1157,13 @@ TEST_F(QuicTransportTest, CreateSendStreamAbortedByClose) {
         create_stream_callback = std::move(callback);
       });
 
-  ScriptPromise send_stream_promise =
-      quic_transport->createSendStream(script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromise send_stream_promise = web_transport->createUnidirectionalStream(
+      script_state, ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, send_stream_promise);
 
   test::RunPendingTasks();
 
-  quic_transport->close(nullptr);
+  web_transport->close(nullptr);
   std::move(create_stream_callback).Run(true, 0);
 
   tester.WaitUntilSettled();
@@ -1206,16 +1173,16 @@ TEST_F(QuicTransportTest, CreateSendStreamAbortedByClose) {
 
 // ReceiveStream functionality is thoroughly tested in incoming_stream_test.cc.
 // This test just verifies that the creation is done correctly.
-TEST_F(QuicTransportTest, CreateReceiveStream) {
+TEST_F(WebTransportTest, CreateReceiveStream) {
   V8TestingScope scope;
 
   auto* script_state = scope.GetScriptState();
-  auto* quic_transport =
+  auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
 
   mojo::ScopedDataPipeProducerHandle producer = DoAcceptUnidirectionalStream();
 
-  ReceiveStream* receive_stream = ReadReceiveStream(scope, quic_transport);
+  ReceiveStream* receive_stream = ReadReceiveStream(scope, web_transport);
 
   const char data[] = "what";
   uint32_t num_bytes = 4u;
@@ -1226,7 +1193,7 @@ TEST_F(QuicTransportTest, CreateReceiveStream) {
   EXPECT_EQ(num_bytes, 4u);
 
   producer.reset();
-  quic_transport->OnIncomingStreamClosed(/*stream_id=*/0, true);
+  web_transport->OnIncomingStreamClosed(/*stream_id=*/0, true);
 
   auto* reader = receive_stream->readable()->GetDefaultReaderForTesting(
       script_state, ASSERT_NO_EXCEPTION);
@@ -1249,23 +1216,23 @@ TEST_F(QuicTransportTest, CreateReceiveStream) {
               ElementsAre('w', 'h', 'a', 't'));
 }
 
-TEST_F(QuicTransportTest, CreateReceiveStreamThenClose) {
+TEST_F(WebTransportTest, CreateReceiveStreamThenClose) {
   V8TestingScope scope;
 
   auto* script_state = scope.GetScriptState();
-  auto* quic_transport =
+  auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
 
   mojo::ScopedDataPipeProducerHandle producer = DoAcceptUnidirectionalStream();
 
-  ReceiveStream* receive_stream = ReadReceiveStream(scope, quic_transport);
+  ReceiveStream* receive_stream = ReadReceiveStream(scope, web_transport);
 
   auto* reader = receive_stream->readable()->GetDefaultReaderForTesting(
       script_state, ASSERT_NO_EXCEPTION);
   ScriptPromise read_promise = reader->read(script_state, ASSERT_NO_EXCEPTION);
   ScriptPromiseTester read_tester(script_state, read_promise);
 
-  quic_transport->close(nullptr);
+  web_transport->close(nullptr);
 
   read_tester.WaitUntilSettled();
   EXPECT_TRUE(read_tester.IsRejected());
@@ -1280,16 +1247,16 @@ TEST_F(QuicTransportTest, CreateReceiveStreamThenClose) {
             "The stream was aborted by the remote server");
 }
 
-TEST_F(QuicTransportTest, CreateReceiveStreamThenRemoteClose) {
+TEST_F(WebTransportTest, CreateReceiveStreamThenRemoteClose) {
   V8TestingScope scope;
 
   auto* script_state = scope.GetScriptState();
-  auto* quic_transport =
+  auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
 
   mojo::ScopedDataPipeProducerHandle producer = DoAcceptUnidirectionalStream();
 
-  ReceiveStream* receive_stream = ReadReceiveStream(scope, quic_transport);
+  ReceiveStream* receive_stream = ReadReceiveStream(scope, web_transport);
 
   auto* reader = receive_stream->readable()->GetDefaultReaderForTesting(
       script_state, ASSERT_NO_EXCEPTION);
@@ -1312,11 +1279,11 @@ TEST_F(QuicTransportTest, CreateReceiveStreamThenRemoteClose) {
 }
 
 // BidirectionalStreams are thoroughly tested in bidirectional_stream_test.cc.
-// Here we just test the QuicTransport APIs.
-TEST_F(QuicTransportTest, CreateBidirectionalStream) {
+// Here we just test the WebTransport APIs.
+TEST_F(WebTransportTest, CreateBidirectionalStream) {
   V8TestingScope scope;
 
-  auto* quic_transport =
+  auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
 
   EXPECT_CALL(
@@ -1329,8 +1296,8 @@ TEST_F(QuicTransportTest, CreateBidirectionalStream) {
 
   auto* script_state = scope.GetScriptState();
   ScriptPromise bidirectional_stream_promise =
-      quic_transport->createBidirectionalStream(script_state,
-                                                ASSERT_NO_EXCEPTION);
+      web_transport->createBidirectionalStream(script_state,
+                                               ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, bidirectional_stream_promise);
 
   tester.WaitUntilSettled();
@@ -1341,10 +1308,10 @@ TEST_F(QuicTransportTest, CreateBidirectionalStream) {
   EXPECT_TRUE(bidirectional_stream);
 }
 
-TEST_F(QuicTransportTest, ReceiveBidirectionalStream) {
+TEST_F(WebTransportTest, ReceiveBidirectionalStream) {
   V8TestingScope scope;
 
-  auto* quic_transport =
+  auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
 
   mojo::ScopedDataPipeProducerHandle outgoing_producer;
@@ -1361,7 +1328,7 @@ TEST_F(QuicTransportTest, ReceiveBidirectionalStream) {
       .Run(next_stream_id_++, std::move(incoming_consumer),
            std::move(outgoing_producer));
 
-  ReadableStream* streams = quic_transport->receiveBidirectionalStreams();
+  ReadableStream* streams = web_transport->incomingBidirectionalStreams();
 
   v8::Local<v8::Value> v8value = ReadValueFromStream(scope, streams);
 
@@ -1370,17 +1337,19 @@ TEST_F(QuicTransportTest, ReceiveBidirectionalStream) {
   EXPECT_TRUE(bidirectional_stream);
 }
 
-TEST_F(QuicTransportTest, SetDatagramWritableQueueExpirationDuration) {
+TEST_F(WebTransportTest, SetDatagramWritableQueueExpirationDuration) {
   V8TestingScope scope;
 
-  auto* quic_transport =
+  auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
 
-  constexpr base::TimeDelta duration = base::TimeDelta::FromMilliseconds(40);
+  constexpr double kDuration = 40;
+  constexpr base::TimeDelta kDurationDelta =
+      base::TimeDelta::FromMillisecondsD(kDuration);
   EXPECT_CALL(*mock_quic_transport_,
-              SetOutgoingDatagramExpirationDuration(duration));
+              SetOutgoingDatagramExpirationDuration(kDurationDelta));
 
-  quic_transport->SetDatagramWritableQueueExpirationDuration(duration);
+  web_transport->setDatagramWritableQueueExpirationDuration(kDuration);
 
   test::RunPendingTasks();
 }

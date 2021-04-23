@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "third_party/blink/renderer/modules/webtransport/quic_transport.h"
+#include "third_party/blink/renderer/modules/webtransport/web_transport.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -15,14 +15,14 @@
 namespace blink {
 
 ReceiveStream::ReceiveStream(ScriptState* script_state,
-                             QuicTransport* quic_transport,
+                             WebTransport* web_transport,
                              uint32_t stream_id,
                              mojo::ScopedDataPipeConsumerHandle handle)
     : incoming_stream_(MakeGarbageCollected<IncomingStream>(
           script_state,
           WTF::Bind(&ReceiveStream::OnAbort, WrapWeakPersistent(this)),
           std::move(handle))),
-      quic_transport_(quic_transport),
+      web_transport_(web_transport),
       stream_id_(stream_id) {}
 
 void ReceiveStream::OnIncomingStreamClosed(bool fin_received) {
@@ -39,13 +39,13 @@ void ReceiveStream::ContextDestroyed() {
 
 void ReceiveStream::Trace(Visitor* visitor) const {
   visitor->Trace(incoming_stream_);
-  visitor->Trace(quic_transport_);
+  visitor->Trace(web_transport_);
   ScriptWrappable::Trace(visitor);
   WebTransportStream::Trace(visitor);
 }
 
 void ReceiveStream::OnAbort() {
-  quic_transport_->ForgetStream(stream_id_);
+  web_transport_->ForgetStream(stream_id_);
 }
 
 }  // namespace blink

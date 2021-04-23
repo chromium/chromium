@@ -17,7 +17,7 @@
 
 namespace blink {
 
-class QuicTransport;
+class WebTransport;
 class ScriptState;
 
 class MODULES_EXPORT SendStream final : public ScriptWrappable,
@@ -29,7 +29,7 @@ class MODULES_EXPORT SendStream final : public ScriptWrappable,
   // SendStream doesn't have a JavaScript constructor. It is only constructed
   // from C++.
   explicit SendStream(ScriptState*,
-                      QuicTransport*,
+                      WebTransport*,
                       uint32_t stream_id,
                       mojo::ScopedDataPipeProducerHandle);
   ~SendStream() override;
@@ -61,7 +61,7 @@ class MODULES_EXPORT SendStream final : public ScriptWrappable,
 
  private:
   const Member<OutgoingStream> outgoing_stream_;
-  const Member<QuicTransport> quic_transport_;
+  const Member<WebTransport> web_transport_;
   const uint32_t stream_id_;
 };
 

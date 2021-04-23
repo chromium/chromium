@@ -17,7 +17,7 @@
 namespace blink {
 
 class ScriptState;
-class QuicTransport;
+class WebTransport;
 
 // Implementation of ReceiveStream from the standard:
 // https://wicg.github.io/web-transport/#receive-stream.
@@ -30,7 +30,7 @@ class MODULES_EXPORT ReceiveStream final : public ScriptWrappable,
   // ReceiveStream doesn't have a JavaScript constructor. It is only
   // constructed from C++.
   explicit ReceiveStream(ScriptState*,
-                         QuicTransport*,
+                         WebTransport*,
                          uint32_t stream_id,
                          mojo::ScopedDataPipeConsumerHandle);
 
@@ -59,7 +59,7 @@ class MODULES_EXPORT ReceiveStream final : public ScriptWrappable,
   void OnAbort();
 
   const Member<IncomingStream> incoming_stream_;
-  const Member<QuicTransport> quic_transport_;
+  const Member<WebTransport> web_transport_;
   const uint32_t stream_id_;
 };
 
