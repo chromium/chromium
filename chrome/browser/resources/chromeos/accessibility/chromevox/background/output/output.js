@@ -2728,14 +2728,15 @@ Output.RULES = {
     cell: {
       enter: {
         speak: `$cellIndexText $node(tableCellColumnHeaders) $nameFromNode
-            $state`,
+            $roleDescription $state`,
         braille: `$state $cellIndexText $node(tableCellColumnHeaders)
-            $nameFromNode`,
+            $nameFromNode $roleDescription`,
       },
       speak: `$name $cellIndexText $node(tableCellColumnHeaders)
-          $state $description`,
+          $roleDescription $state $description`,
       braille: `$state
-          $name $cellIndexText $node(tableCellColumnHeaders) $description
+          $name $cellIndexText $node(tableCellColumnHeaders) $roleDescription
+          $description
           $if($selected, @aria_selected_true)`
     },
     checkBox: {
@@ -2836,7 +2837,7 @@ Output.RULES = {
           $if($selected, @aria_selected_true, @aria_selected_false)
           $restriction $description`
     },
-    paragraph: {speak: `$nameOrDescendants`},
+    paragraph: {speak: `$nameOrDescendants $roleDescription`},
     radioButton: {
       speak: `$if($checked, $earcon(CHECK_ON), $earcon(CHECK_OFF))
           $if($checked, @describe_radio_selected($name),

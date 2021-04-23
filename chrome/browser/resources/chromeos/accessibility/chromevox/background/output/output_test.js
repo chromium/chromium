@@ -953,6 +953,20 @@ TEST_F('ChromeVoxOutputE2ETest', 'RoleDescription', function() {
 });
 
 SYNC_TEST_F('ChromeVoxOutputE2ETest', 'ValidateCommonProperties', function() {
+  // If you fail this test, you likely need to insert a $state, $restriction or
+  // $description into the output rules for the printed roles. Typically,
+  // $description goes towards the end of the output rule, though this depends
+  // on the role. For example, it could make sense to put $description before
+  // $value or $state.
+
+  // You can also add the role to be excluded from this check. You are
+  // encouraged to write a more intelligent output rule to provide friendlier
+  // feedback. For example, 'not selected apple item 2 out of 3' coming from a
+  // message template like '@smart_selection($state, $name, $indexInParent,
+  // $childCount)'.
+  // In such cases, you are responsible for ensuring you include all states and
+  // descriptions somewhere in the output.
+
   const stateStr = '$state';
   const restrictionStr = '$restriction';
   const descStr = '$description';
@@ -1033,20 +1047,44 @@ SYNC_TEST_F('ChromeVoxOutputE2ETest', 'ValidateCommonProperties', function() {
       0, missingDescription.length,
       'Unexpected missing descriptions for output rules ' +
           missingDescription.join(' '));
+});
 
-  // If you fail this test, you likely need to insert a $state, $restriction or
-  // $description into the output rules for the printed roles. Typically,
-  // $description goes towards the end of the output rule, though this depends
-  // on the role. For example, it could make sense to put $description before
-  // $value or $state.
-
+SYNC_TEST_F('ChromeVoxOutputE2ETest', 'ValidateRoles', function() {
+  // If you fail this test, you likely need to insert a $role or
+  // $roledescription into the output rules for the printed roles. Typically,
+  // roles can be omitted (intentionally), but role descriptions cannot by W3C
+  // spec (valid on all base markup). However, not all roles come from the web.
+  //
   // You can also add the role to be excluded from this check. You are
   // encouraged to write a more intelligent output rule to provide friendlier
-  // feedback. For example, 'not selected apple item 2 out of 3' coming from a
-  // message template like '@smart_selection($state, $name, $indexInParent,
-  // $childCount)'.
-  // In such cases, you are responsible for ensuring you include all states and
-  // descriptions somewhere in the output.
+  // feedback, but keep in mind role descriptions are required on all web-based
+  // role.
+
+  const roleOrRoleDescStr = '$role';
+  const missingRole = [];
+  const allowedMissingRoles = [
+    RoleType.CLIENT, RoleType.GENERIC_CONTAINER, RoleType.EMBEDDED_OBJECT,
+    RoleType.IME_CANDIDATE, RoleType.INLINE_TEXT_BOX, RoleType.LINE_BREAK,
+    RoleType.LIST_MARKER, RoleType.ROOT_WEB_AREA, RoleType.STATIC_TEXT,
+    RoleType.WINDOW
+  ];
+  for (const key in Output.RULES.navigate) {
+    if (allowedMissingRoles.indexOf(key) !== -1) {
+      continue;
+    }
+    const speak = Output.RULES.navigate[key].speak;
+    if (!speak) {
+      continue;
+    }
+
+    if (speak.indexOf(roleOrRoleDescStr) === -1) {
+      missingRole.push(key);
+    }
+  }
+  assertEquals(
+      0, missingRole.length,
+      'Unexpected missing role or role description for output rules ' +
+          missingRole.join(' '));
 });
 
 TEST_F('ChromeVoxOutputE2ETest', 'InlineBraille', function() {
