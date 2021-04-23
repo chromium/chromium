@@ -24,8 +24,9 @@ public class MessageBannerProperties {
     public static final WritableObjectPropertyKey<Runnable> ON_SECONDARY_ACTION =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
-    public static final WritableObjectPropertyKey<String> DESCRIPTION =
+    public static final WritableObjectPropertyKey<CharSequence> DESCRIPTION =
             new WritableObjectPropertyKey<>();
+
     public static final WritableObjectPropertyKey<Drawable> ICON =
             new WritableObjectPropertyKey<>();
     public static final WritableIntPropertyKey ICON_RESOURCE_ID = new WritableIntPropertyKey();

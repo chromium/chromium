@@ -5,7 +5,11 @@
 package org.chromium.components.messages;
 
 import android.app.Activity;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.ViewGroup.LayoutParams;
 
@@ -30,7 +34,6 @@ import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 
 import java.util.List;
-
 /**
  * Render tests for Message Banner.
  */
@@ -98,5 +101,32 @@ public class MessageBannerRenderTest extends DummyUiActivityTestCase {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { getActivity().setContentView(view, params); });
         mRenderTestRule.render(view, "message_banner_basic_with_secondary_icon");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest", "Messages"})
+    public void testBasic_withSpannableDescription() throws Exception {
+        Activity activity = getActivity();
+        Drawable drawable = ApiCompatibilityUtils.getDrawable(
+                activity.getResources(), android.R.drawable.ic_delete);
+        SpannableString spannable = new SpannableString("Dummy Spannable Description!");
+        StyleSpan boldSpan = new StyleSpan(Typeface.BOLD);
+        spannable.setSpan(boldSpan, 0, spannable.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+        PropertyModel model = new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                                      .with(MessageBannerProperties.ICON, drawable)
+                                      .with(MessageBannerProperties.TITLE, "Primary Title")
+                                      .with(MessageBannerProperties.DESCRIPTION, spannable)
+                                      .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "Action")
+                                      .build();
+        MessageBannerView view = (MessageBannerView) LayoutInflater.from(activity).inflate(
+                R.layout.message_banner_view, null, false);
+        PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
+        LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT,
+                activity.getResources().getDimensionPixelSize(R.dimen.message_banner_height));
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { getActivity().setContentView(view, params); });
+        mRenderTestRule.render(view, "message_banner_basic_with_spannable_description");
     }
 }
