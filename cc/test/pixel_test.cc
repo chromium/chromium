@@ -252,7 +252,7 @@ viz::ResourceId PixelTest::AllocateAndFillSoftwareResource(
   return child_resource_provider_->ImportResource(
       viz::TransferableResource::MakeSoftware(shared_bitmap_id, size,
                                               viz::RGBA_8888),
-      viz::SingleReleaseCallback::Create(base::DoNothing()));
+      base::DoNothing());
 }
 
 void PixelTest::SetUpGLWithoutRenderer(

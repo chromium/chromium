@@ -336,7 +336,7 @@ TEST_F(StructTraitsTest, CopyOutputRequest_TextureRequest) {
   base::RunLoop run_loop_for_release;
   output->SendResult(std::make_unique<CopyOutputTextureResult>(
       result_rect, mailbox, sync_token, gfx::ColorSpace::CreateSRGB(),
-      SingleReleaseCallback::Create(base::BindOnce(
+      base::BindOnce(
           [](base::OnceClosure quit_closure,
              const gpu::SyncToken& expected_sync_token,
              const gpu::SyncToken& sync_token, bool is_lost) {
@@ -344,7 +344,7 @@ TEST_F(StructTraitsTest, CopyOutputRequest_TextureRequest) {
             EXPECT_FALSE(is_lost);
             std::move(quit_closure).Run();
           },
-          run_loop_for_release.QuitClosure(), sync_token))));
+          run_loop_for_release.QuitClosure(), sync_token)));
 
   // Wait for the result to be delivered to the other side: The
   // CopyOutputRequest callback will be called, at which point
@@ -1254,7 +1254,7 @@ TEST_F(StructTraitsTest, CopyOutputResult_Texture) {
                             71234838);
   sync_token.SetVerifyFlush();
   base::RunLoop run_loop;
-  auto callback = SingleReleaseCallback::Create(base::BindOnce(
+  auto callback = base::BindOnce(
       [](base::OnceClosure quit_closure,
          const gpu::SyncToken& expected_sync_token,
          const gpu::SyncToken& sync_token, bool is_lost) {
@@ -1262,7 +1262,7 @@ TEST_F(StructTraitsTest, CopyOutputResult_Texture) {
         EXPECT_TRUE(is_lost);
         std::move(quit_closure).Run();
       },
-      run_loop.QuitClosure(), sync_token));
+      run_loop.QuitClosure(), sync_token);
   gpu::Mailbox mailbox;
   mailbox.SetName(mailbox_name);
   std::unique_ptr<CopyOutputResult> input =
@@ -1281,9 +1281,8 @@ TEST_F(StructTraitsTest, CopyOutputResult_Texture) {
   EXPECT_EQ(output->GetTextureResult()->sync_token, sync_token);
   EXPECT_EQ(output->GetTextureResult()->color_space, result_color_space);
 
-  std::unique_ptr<SingleReleaseCallback> out_callback =
-      output->TakeTextureOwnership();
-  out_callback->Run(sync_token, true /* is_lost */);
+  ReleaseCallback out_callback = output->TakeTextureOwnership();
+  std::move(out_callback).Run(sync_token, true /* is_lost */);
   // If the CopyOutputResult callback is called (which is the intended
   // behaviour), this will exit. Otherwise, this test will time out and fail.
   run_loop.Run();

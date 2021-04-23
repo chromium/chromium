@@ -16,10 +16,6 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/xr_webgl_drawing_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
-namespace viz {
-class SingleReleaseCallback;
-}
-
 namespace blink {
 
 class ExceptionState;

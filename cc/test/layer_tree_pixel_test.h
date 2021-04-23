@@ -16,7 +16,6 @@
 #include "cc/trees/effect_node.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/transform_node.h"
-#include "components/viz/common/resources/single_release_callback.h"
 #include "ui/gl/gl_implementation.h"
 
 class SkBitmap;

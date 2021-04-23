@@ -122,11 +122,9 @@ static ResourceId CreateResourceInLayerTree(
   auto resource = TransferableResource::MakeGL(
       gpu::Mailbox::Generate(), GL_LINEAR, GL_TEXTURE_2D, gpu::SyncToken(),
       size, is_overlay_candidate);
-  auto release_callback = SingleReleaseCallback::Create(
-      base::BindRepeating([](const gpu::SyncToken&, bool) {}));
 
-  ResourceId resource_id = child_resource_provider->ImportResource(
-      resource, std::move(release_callback));
+  ResourceId resource_id =
+      child_resource_provider->ImportResource(resource, base::DoNothing());
 
   return resource_id;
 }

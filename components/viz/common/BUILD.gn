@@ -248,8 +248,6 @@ viz_component("common") {
     "resources/returned_resource.h",
     "resources/shared_bitmap.cc",
     "resources/shared_bitmap.h",
-    "resources/single_release_callback.cc",
-    "resources/single_release_callback.h",
     "resources/transferable_resource.cc",
     "resources/transferable_resource.h",
     "skia_helper.cc",

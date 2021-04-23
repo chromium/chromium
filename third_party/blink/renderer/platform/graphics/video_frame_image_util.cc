@@ -6,7 +6,7 @@
 
 #include "build/build_config.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
-#include "components/viz/common/resources/single_release_callback.h"
+#include "components/viz/common/resources/release_callback.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "media/base/video_frame.h"
@@ -157,7 +157,7 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
         kN32_SkColorType, kUnpremul_SkAlphaType, std::move(sk_color_space));
 
     // Hold a ref by storing it in the release callback.
-    auto release_callback = viz::SingleReleaseCallback::Create(WTF::Bind(
+    auto release_callback = WTF::Bind(
         [](scoped_refptr<media::VideoFrame> frame,
            base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
            const gpu::SyncToken& sync_token, bool is_lost) {
@@ -167,7 +167,7 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
           media::WaitAndReplaceSyncTokenClient client(ri);
           frame->UpdateReleaseSyncToken(&client);
         },
-        frame, SharedGpuContext::ContextProviderWrapper()));
+        frame, SharedGpuContext::ContextProviderWrapper());
 
     return AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
         frame->mailbox_holder(0).mailbox, frame->mailbox_holder(0).sync_token,

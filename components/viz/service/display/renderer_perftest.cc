@@ -190,8 +190,8 @@ TransferableResource CreateTestTexture(
       false /* is_overlay_candidate */);
   gl_resource.format = RGBA_8888;
   gl_resource.color_space = gfx::ColorSpace();
-  auto release_callback = SingleReleaseCallback::Create(base::BindOnce(
-      &DeleteSharedImage, std::move(child_context_provider), mailbox));
+  auto release_callback = base::BindOnce(
+      &DeleteSharedImage, std::move(child_context_provider), mailbox);
   gl_resource.id = child_resource_provider->ImportResource(
       gl_resource, std::move(release_callback));
   return gl_resource;

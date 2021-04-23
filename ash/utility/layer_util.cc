@@ -25,8 +25,7 @@ void CopyCopyOutputResultToLayer(
           copy_result->GetTextureResult()->mailbox, GL_LINEAR, GL_TEXTURE_2D,
           copy_result->GetTextureResult()->sync_token, layer_size,
           /*is_overlay_candidate=*/false);
-  std::unique_ptr<viz::SingleReleaseCallback> release_callback =
-      copy_result->TakeTextureOwnership();
+  viz::ReleaseCallback release_callback = copy_result->TakeTextureOwnership();
   target_layer->SetTransferableResource(
       transferable_resource, std::move(release_callback), layer_size);
 }

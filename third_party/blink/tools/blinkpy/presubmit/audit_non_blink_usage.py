@@ -930,6 +930,7 @@ _CONFIG = [
             'media::PIXEL_FORMAT_Y16',
             'media::VideoFrame',
             'viz::RasterContextProvider',
+            'viz::ReleaseCallback',
             'viz::TransferableResource',
         ],
     },
@@ -1133,8 +1134,8 @@ _CONFIG = [
             'gpu::SharedImageInterface',
             'gpu::SyncToken',
             'viz::RasterContextProvider',
+            'viz::ReleaseCallback',
             'viz::ResourceFormat',
-            'viz::SingleReleaseCallback',
             'media::.+',
             'libyuv::.+',
         ]

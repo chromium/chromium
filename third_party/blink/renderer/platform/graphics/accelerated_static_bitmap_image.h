@@ -10,15 +10,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
+#include "components/viz/common/resources/release_callback.h"
 #include "third_party/blink/renderer/platform/graphics/mailbox_ref.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 
 struct SkImageInfo;
-
-namespace viz {
-class SingleReleaseCallback;
-}  // namespace viz
 
 namespace blink {
 class MailboxTextureBacking;
@@ -69,7 +66,7 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::PlatformThreadRef context_thread_ref,
       scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
-      std::unique_ptr<viz::SingleReleaseCallback> release_callback);
+      viz::ReleaseCallback release_callback);
 
   bool CurrentFrameKnownToBeOpaque() override;
   IntSize Size() const override;
@@ -141,7 +138,7 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::PlatformThreadRef context_thread_ref,
       scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
-      std::unique_ptr<viz::SingleReleaseCallback> release_callback);
+      viz::ReleaseCallback release_callback);
 
   void CreateImageFromMailboxIfNeeded();
   void InitializeTextureBacking(GLuint shared_image_texture_id);

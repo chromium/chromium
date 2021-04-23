@@ -146,7 +146,7 @@ WebGPUSwapBufferProvider::GetContextProviderWeakPtr() const {
 bool WebGPUSwapBufferProvider::PrepareTransferableResource(
     cc::SharedBitmapIdRegistrar* bitmap_registrar,
     viz::TransferableResource* out_resource,
-    std::unique_ptr<viz::SingleReleaseCallback>* out_release_callback) {
+    viz::ReleaseCallback* out_release_callback) {
   DCHECK(!neutered_);
   if (!current_swap_buffer_ || neutered_) {
     return false;
@@ -188,10 +188,9 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
 
   // This holds a ref on the SwapBuffers that will keep it alive until the
   // mailbox is released (and while the release callback is running).
-  auto func = WTF::Bind(&WebGPUSwapBufferProvider::MailboxReleased,
-                        scoped_refptr<WebGPUSwapBufferProvider>(this),
-                        current_swap_buffer_);
-  *out_release_callback = viz::SingleReleaseCallback::Create(std::move(func));
+  *out_release_callback = WTF::Bind(
+      &WebGPUSwapBufferProvider::MailboxReleased,
+      scoped_refptr<WebGPUSwapBufferProvider>(this), current_swap_buffer_);
 
   current_swap_buffer_ = nullptr;
   wire_texture_id_ = 0;

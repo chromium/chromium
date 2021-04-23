@@ -10285,7 +10285,7 @@ class BlendStateCheckLayer : public LayerImpl {
     resource_id_ = resource_provider_->ImportResource(
         viz::TransferableResource::MakeSoftware(
             viz::SharedBitmap::GenerateId(), gfx::Size(1, 1), viz::RGBA_8888),
-        viz::SingleReleaseCallback::Create(base::DoNothing()));
+        base::DoNothing());
     SetBounds(gfx::Size(10, 10));
     SetDrawsContent(true);
   }

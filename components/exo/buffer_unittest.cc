@@ -14,7 +14,6 @@
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_helper.h"
 #include "components/viz/common/gpu/context_provider.h"
-#include "components/viz/common/resources/single_release_callback.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/env.h"

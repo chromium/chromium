@@ -13,25 +13,24 @@
 
 namespace {
 
-// This class retains the SingleReleaseCallback of the CopyOutputResult that is
-// being sent over mojo. A PendingRemote<TextureReleaser> that talks to this
-// impl object will be sent over mojo instead of the release_callback_ (which is
-// not serializable). Once the client calls Release, the release_callback_ will
-// be called. An object of this class will remain alive until the MessagePipe
+// This class retains the ReleaseCallback of the CopyOutputResult that is being
+// sent over mojo. A PendingRemote<TextureReleaser> that talks to this impl
+// object will be sent over mojo instead of the release_callback_ (which is not
+// serializable). Once the client calls Release, the release_callback_ will be
+// called. An object of this class will remain alive until the MessagePipe
 // attached to it goes away (i.e. SelfOwnedReceiver is used).
 class TextureReleaserImpl : public viz::mojom::TextureReleaser {
  public:
-  explicit TextureReleaserImpl(
-      std::unique_ptr<viz::SingleReleaseCallback> release_callback)
+  explicit TextureReleaserImpl(viz::ReleaseCallback release_callback)
       : release_callback_(std::move(release_callback)) {}
 
   // mojom::TextureReleaser implementation:
   void Release(const gpu::SyncToken& sync_token, bool is_lost) override {
-    release_callback_->Run(sync_token, is_lost);
+    std::move(release_callback_).Run(sync_token, is_lost);
   }
 
  private:
-  std::unique_ptr<viz::SingleReleaseCallback> release_callback_;
+  viz::ReleaseCallback release_callback_;
 };
 
 void Release(mojo::PendingRemote<viz::mojom::TextureReleaser> pending_remote,
@@ -214,13 +213,13 @@ bool StructTraits<viz::mojom::CopyOutputResultDataView,
       if (!releaser)
         return false;  // Illegal to provide texture without Releaser.
 
-      // Returns a result with a SingleReleaseCallback that will return
-      // here and proxy the callback over mojo to the CopyOutputResult's
-      // origin via a mojo::Remote<viz::mojom::TextureReleaser> remote.
+      // Returns a result with a ReleaseCallback that will return here and proxy
+      // the callback over mojo to the CopyOutputResult's origin via a
+      // mojo::Remote<viz::mojom::TextureReleaser> remote.
       *out_p = std::make_unique<viz::CopyOutputTextureResult>(
           rect, *mailbox, *sync_token, *color_space,
-          viz::SingleReleaseCallback::Create(
-              base::BindOnce(&Release, std::move(releaser))));
+
+          base::BindOnce(&Release, std::move(releaser)));
       return true;
     }
 

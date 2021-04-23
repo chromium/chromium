@@ -1064,9 +1064,9 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
         &SkiaOutputSurfaceImplOnGpu::DestroySharedImageOnImplThread,
         weak_ptr_factory_.GetWeakPtr(), std::move(representation),
         context_state_);
-    auto main_callback = SingleReleaseCallback::Create(base::BindOnce(
-        &PostTaskFromMainToImplThread, base::ThreadTaskRunnerHandle::Get(),
-        std::move(release_callback)));
+    auto main_callback = base::BindOnce(&PostTaskFromMainToImplThread,
+                                        base::ThreadTaskRunnerHandle::Get(),
+                                        std::move(release_callback));
     request->SendResult(std::make_unique<CopyOutputTextureResult>(
         geometry.result_bounds, mailbox, gpu::SyncToken(), color_space,
         std::move(main_callback)));

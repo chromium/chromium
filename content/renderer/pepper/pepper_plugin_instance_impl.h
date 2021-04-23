@@ -476,7 +476,7 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   bool PrepareTransferableResource(
       cc::SharedBitmapIdRegistrar* bitmap_registrar,
       viz::TransferableResource* transferable_resource,
-      std::unique_ptr<viz::SingleReleaseCallback>* release_callback) override;
+      viz::ReleaseCallback* release_callback) override;
 
   // RenderFrameObserver
   void AccessibilityModeChanged(const ui::AXMode& mode) override;

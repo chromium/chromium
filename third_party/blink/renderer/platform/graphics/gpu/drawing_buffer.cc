@@ -338,7 +338,7 @@ DrawingBuffer::RegisteredBitmap DrawingBuffer::CreateOrRecycleBitmap(
 bool DrawingBuffer::PrepareTransferableResource(
     cc::SharedBitmapIdRegistrar* bitmap_registrar,
     viz::TransferableResource* out_resource,
-    std::unique_ptr<viz::SingleReleaseCallback>* out_release_callback) {
+    viz::ReleaseCallback* out_release_callback) {
   ScopedStateRestorer scoped_state_restorer(this);
   bool force_gpu_result = false;
   return PrepareTransferableResourceInternal(
@@ -348,7 +348,7 @@ bool DrawingBuffer::PrepareTransferableResource(
 bool DrawingBuffer::PrepareTransferableResourceInternal(
     cc::SharedBitmapIdRegistrar* bitmap_registrar,
     viz::TransferableResource* out_resource,
-    std::unique_ptr<viz::SingleReleaseCallback>* out_release_callback,
+    viz::ReleaseCallback* out_release_callback,
     bool force_gpu_result) {
   DCHECK(state_restorer_);
   if (destruction_in_progress_) {
@@ -390,7 +390,7 @@ bool DrawingBuffer::PrepareTransferableResourceInternal(
 bool DrawingBuffer::FinishPrepareTransferableResourceSoftware(
     cc::SharedBitmapIdRegistrar* bitmap_registrar,
     viz::TransferableResource* out_resource,
-    std::unique_ptr<viz::SingleReleaseCallback>* out_release_callback) {
+    viz::ReleaseCallback* out_release_callback) {
   DCHECK(state_restorer_);
   RegisteredBitmap registered = CreateOrRecycleBitmap(bitmap_registrar);
 
@@ -419,9 +419,9 @@ bool DrawingBuffer::FinishPrepareTransferableResourceSoftware(
   // This holds a ref on the DrawingBuffer that will keep it alive until the
   // mailbox is released (and while the release callback is running). It also
   // owns the SharedBitmap.
-  auto func = base::BindOnce(&DrawingBuffer::MailboxReleasedSoftware,
-                             weak_factory_.GetWeakPtr(), std::move(registered));
-  *out_release_callback = viz::SingleReleaseCallback::Create(std::move(func));
+  *out_release_callback =
+      base::BindOnce(&DrawingBuffer::MailboxReleasedSoftware,
+                     weak_factory_.GetWeakPtr(), std::move(registered));
 
   contents_changed_ = false;
   ResetBuffersToAutoClear();
@@ -430,7 +430,7 @@ bool DrawingBuffer::FinishPrepareTransferableResourceSoftware(
 
 bool DrawingBuffer::FinishPrepareTransferableResourceGpu(
     viz::TransferableResource* out_resource,
-    std::unique_ptr<viz::SingleReleaseCallback>* out_release_callback) {
+    viz::ReleaseCallback* out_release_callback) {
   DCHECK(state_restorer_);
   if (webgl_version_ > kWebGL1) {
     state_restorer_->SetPixelUnpackBufferBindingDirty();
@@ -524,7 +524,7 @@ bool DrawingBuffer::FinishPrepareTransferableResourceGpu(
     // mailbox is released (and while the release callback is running).
     auto func = base::BindOnce(&DrawingBuffer::NotifyMailboxReleasedGpu,
                                color_buffer_for_mailbox);
-    *out_release_callback = viz::SingleReleaseCallback::Create(std::move(func));
+    *out_release_callback = std::move(func);
   }
 
   // Point |m_frontColorBuffer| to the buffer that we are now presenting.
@@ -593,7 +593,7 @@ scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
   ScopedStateRestorer scoped_state_restorer(this);
 
   viz::TransferableResource transferable_resource;
-  std::unique_ptr<viz::SingleReleaseCallback> release_callback;
+  viz::ReleaseCallback release_callback;
   constexpr bool force_gpu_result = true;
   if (!PrepareTransferableResourceInternal(nullptr, &transferable_resource,
                                            &release_callback,
@@ -693,10 +693,9 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportLowLatencyCanvasResource(
   }
 
   return ExternalCanvasResource::Create(
-      canvas_resource_buffer->mailbox, /*release_callback=*/nullptr,
-      gpu::SyncToken(), canvas_resource_buffer->size, texture_target_,
-      resource_params, context_provider_->GetWeakPtr(), resource_provider,
-      kLow_SkFilterQuality,
+      canvas_resource_buffer->mailbox, viz::ReleaseCallback(), gpu::SyncToken(),
+      canvas_resource_buffer->size, texture_target_, resource_params,
+      context_provider_->GetWeakPtr(), resource_provider, kLow_SkFilterQuality,
       /*is_origin_top_left=*/opengl_flip_y_extension_,
       /*is_overlay_candidate=*/true);
 }
@@ -708,7 +707,7 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportCanvasResource() {
   // Using PrepareTransferableResourceInternal, with force_gpu_result as we
   // will use this ExportCanvasResource only for gpu_composited content.
   viz::TransferableResource out_resource;
-  std::unique_ptr<viz::SingleReleaseCallback> out_release_callback;
+  viz::ReleaseCallback out_release_callback;
   const bool force_gpu_result = true;
   if (!PrepareTransferableResourceInternal(
           nullptr, &out_resource, &out_release_callback, force_gpu_result))

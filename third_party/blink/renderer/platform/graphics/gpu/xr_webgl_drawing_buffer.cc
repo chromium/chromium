@@ -610,11 +610,8 @@ XRWebGLDrawingBuffer::TransferToStaticBitmapImage() {
 
   // This holds a ref on the XRWebGLDrawingBuffer that will keep it alive
   // until the mailbox is released (and while the callback is running).
-  auto func =
+  viz::ReleaseCallback release_callback =
       base::BindOnce(&XRWebGLDrawingBuffer::NotifyMailboxReleased, buffer);
-
-  std::unique_ptr<viz::SingleReleaseCallback> release_callback =
-      viz::SingleReleaseCallback::Create(std::move(func));
   const SkImageInfo sk_image_info =
       SkImageInfo::MakeN32Premul(size_.Width(), size_.Height());
 

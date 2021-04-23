@@ -170,8 +170,7 @@ void SurfaceSavedFrame::CompleteSavedFrameForTesting(
     ReleaseCallback release_callback) {
   frame_result_.emplace();
   frame_result_->root_result.mailbox = gpu::Mailbox::GenerateForSharedImage();
-  frame_result_->root_result.release_callback =
-      SingleReleaseCallback::Create(std::move(release_callback));
+  frame_result_->root_result.release_callback = std::move(release_callback);
   frame_result_->root_result.rect = gfx::Rect(kDefaultTextureSizeForTesting);
   frame_result_->root_result.target_transform.MakeIdentity();
   frame_result_->root_result.is_software = true;
@@ -192,7 +191,7 @@ SurfaceSavedFrame::OutputCopyResult::OutputCopyResult(
 
 SurfaceSavedFrame::OutputCopyResult::~OutputCopyResult() {
   if (release_callback)
-    release_callback->Run(sync_token, /*is_lost=*/false);
+    std::move(release_callback).Run(sync_token, /*is_lost=*/false);
 }
 
 SurfaceSavedFrame::OutputCopyResult&

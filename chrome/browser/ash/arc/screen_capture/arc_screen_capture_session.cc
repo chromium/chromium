@@ -72,13 +72,13 @@ struct ArcScreenCaptureSession::PendingBuffer {
 struct ArcScreenCaptureSession::DesktopTexture {
   DesktopTexture(GLuint texture,
                  gfx::Size size,
-                 std::unique_ptr<viz::SingleReleaseCallback> release_callback)
+                 viz::ReleaseCallback release_callback)
       : texture_(texture),
         size_(size),
         release_callback_(std::move(release_callback)) {}
   const GLuint texture_;
   gfx::Size size_;
-  std::unique_ptr<viz::SingleReleaseCallback> release_callback_;
+  viz::ReleaseCallback release_callback_;
 };
 
 // static
@@ -288,8 +288,7 @@ void ArcScreenCaptureSession::OnDesktopCaptured(
       result->GetTextureResult()->sync_token.GetConstData());
   GLuint src_texture = gl->CreateAndConsumeTextureCHROMIUM(
       result->GetTextureResult()->mailbox.name);
-  std::unique_ptr<viz::SingleReleaseCallback> release_callback =
-      result->TakeTextureOwnership();
+  viz::ReleaseCallback release_callback = result->TakeTextureOwnership();
 
   std::unique_ptr<DesktopTexture> desktop_texture =
       std::make_unique<DesktopTexture>(src_texture, result->size(),
@@ -329,7 +328,7 @@ void ArcScreenCaptureSession::CopyDesktopTextureToGpuBuffer(
   if (desktop_texture->release_callback_) {
     gpu::SyncToken sync_token;
     gl->GenSyncTokenCHROMIUM(sync_token.GetData());
-    desktop_texture->release_callback_->Run(sync_token, false);
+    std::move(desktop_texture->release_callback_).Run(sync_token, false);
   }
 
   context_provider->ContextSupport()->SignalQuery(

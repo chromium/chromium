@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/resources/shared_bitmap_id_registrar.h"
+#include "components/viz/common/resources/release_callback.h"
 #include "content/common/content_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
@@ -34,7 +35,6 @@ class Rect;
 
 namespace viz {
 class RasterContextProvider;
-class SingleReleaseCallback;
 struct TransferableResource;
 }
 
@@ -78,7 +78,7 @@ class CONTENT_EXPORT PepperGraphics2DHost
   bool PrepareTransferableResource(
       cc::SharedBitmapIdRegistrar* bitmap_registrar,
       viz::TransferableResource* transferable_resource,
-      std::unique_ptr<viz::SingleReleaseCallback>* release_callback);
+      viz::ReleaseCallback* release_callback);
   void AttachedToNewLayer();
 
   // Notifications about the view's progress painting.  See PluginInstance.

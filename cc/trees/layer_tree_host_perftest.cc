@@ -23,7 +23,6 @@
 #include "cc/test/layer_tree_test.h"
 #include "cc/test/test_layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_impl.h"
-#include "components/viz/common/resources/single_release_callback.h"
 #include "components/viz/test/paths.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
@@ -324,10 +323,9 @@ class BrowserCompositorInvalidateLayerTreePerfTest
     name_stream << "name" << next_fence_sync_;
     gpu_mailbox.SetName(
         reinterpret_cast<const int8_t*>(name_stream.str().c_str()));
-    std::unique_ptr<viz::SingleReleaseCallback> callback =
-        viz::SingleReleaseCallback::Create(base::BindOnce(
-            &BrowserCompositorInvalidateLayerTreePerfTest::ReleaseMailbox,
-            base::Unretained(this)));
+    auto callback = base::BindOnce(
+        &BrowserCompositorInvalidateLayerTreePerfTest::ReleaseMailbox,
+        base::Unretained(this));
 
     gpu::SyncToken next_sync_token(gpu::CommandBufferNamespace::GPU_IO,
                                    gpu::CommandBufferId::FromUnsafeValue(1),

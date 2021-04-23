@@ -52,8 +52,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   bool PrepareTransferableResource(
       cc::SharedBitmapIdRegistrar* bitmap_registrar,
       viz::TransferableResource* out_resource,
-      std::unique_ptr<viz::SingleReleaseCallback>* out_release_callback)
-      override;
+      viz::ReleaseCallback* out_release_callback) override;
 
  private:
   // Holds resources and synchronization for one of the swapchain images.

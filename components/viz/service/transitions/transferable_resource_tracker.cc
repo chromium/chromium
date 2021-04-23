@@ -11,8 +11,8 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/resource_id.h"
-#include "components/viz/common/resources/single_release_callback.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
@@ -129,18 +129,19 @@ TransferableResourceTracker::TransferableResourceHolder::
 TransferableResourceTracker::TransferableResourceHolder::
     TransferableResourceHolder(TransferableResourceHolder&& other) = default;
 TransferableResourceTracker::TransferableResourceHolder::
-    TransferableResourceHolder(
-        const TransferableResource& resource,
-        std::unique_ptr<SingleReleaseCallback> release_callback)
+    TransferableResourceHolder(const TransferableResource& resource,
+                               ReleaseCallback release_callback)
     : resource(resource),
       release_callback(std::move(release_callback)),
       ref_count(1u) {}
 
 TransferableResourceTracker::TransferableResourceHolder::
     ~TransferableResourceHolder() {
-  if (release_callback)
-    release_callback->Run(resource.mailbox_holder.sync_token,
-                          /*is_lost=*/false);
+  if (release_callback) {
+    std::move(release_callback)
+        .Run(resource.mailbox_holder.sync_token,
+             /*is_lost=*/false);
+  }
 }
 
 TransferableResourceTracker::TransferableResourceHolder&

@@ -261,13 +261,11 @@ TEST_F(TextureLayerTest, ShutdownWithResource) {
     layer->SetIsDrawable(true);
     layer->SetBounds(gfx::Size(10, 10));
     if (gpu) {
-      layer->SetTransferableResource(
-          test_data_.resource1_,
-          viz::SingleReleaseCallback::Create(test_data_.release_callback1_));
+      layer->SetTransferableResource(test_data_.resource1_,
+                                     test_data_.release_callback1_);
     } else {
-      layer->SetTransferableResource(
-          test_data_.sw_resource_,
-          viz::SingleReleaseCallback::Create(test_data_.sw_release_callback_));
+      layer->SetTransferableResource(test_data_.sw_resource_,
+                                     test_data_.sw_release_callback_);
     }
 
     viz::ParentLocalSurfaceIdAllocator allocator;
@@ -339,9 +337,8 @@ TEST_F(TextureLayerWithResourceTest, ReplaceMailboxOnMainThreadBeforeCommit) {
   Mock::VerifyAndClearExpectations(layer_tree_host_.get());
 
   EXPECT_CALL(*layer_tree_host_, SetNeedsCommit()).Times(AtLeast(1));
-  test_layer->SetTransferableResource(
-      test_data_.resource1_,
-      viz::SingleReleaseCallback::Create(test_data_.release_callback1_));
+  test_layer->SetTransferableResource(test_data_.resource1_,
+                                      test_data_.release_callback1_);
   Mock::VerifyAndClearExpectations(layer_tree_host_.get());
 
   EXPECT_CALL(*layer_tree_host_, SetNeedsCommit()).Times(AtLeast(1));
@@ -349,9 +346,8 @@ TEST_F(TextureLayerWithResourceTest, ReplaceMailboxOnMainThreadBeforeCommit) {
       test_data_.mock_callback_,
       Release(test_data_.mailbox_name1_, test_data_.sync_token1_, false))
       .Times(1);
-  test_layer->SetTransferableResource(
-      test_data_.resource2_,
-      viz::SingleReleaseCallback::Create(test_data_.release_callback2_));
+  test_layer->SetTransferableResource(test_data_.resource2_,
+                                      test_data_.release_callback2_);
   Mock::VerifyAndClearExpectations(layer_tree_host_.get());
   Mock::VerifyAndClearExpectations(&test_data_.mock_callback_);
 
@@ -365,9 +361,8 @@ TEST_F(TextureLayerWithResourceTest, ReplaceMailboxOnMainThreadBeforeCommit) {
   Mock::VerifyAndClearExpectations(&test_data_.mock_callback_);
 
   EXPECT_CALL(*layer_tree_host_, SetNeedsCommit()).Times(AtLeast(1));
-  test_layer->SetTransferableResource(
-      test_data_.sw_resource_,
-      viz::SingleReleaseCallback::Create(test_data_.sw_release_callback_));
+  test_layer->SetTransferableResource(test_data_.sw_resource_,
+                                      test_data_.sw_release_callback_);
   Mock::VerifyAndClearExpectations(layer_tree_host_.get());
   Mock::VerifyAndClearExpectations(&test_data_.mock_callback_);
 
@@ -381,9 +376,8 @@ TEST_F(TextureLayerWithResourceTest, ReplaceMailboxOnMainThreadBeforeCommit) {
 
   // Test destructor.
   EXPECT_CALL(*layer_tree_host_, SetNeedsCommit()).Times(AtLeast(1));
-  test_layer->SetTransferableResource(
-      test_data_.resource1_,
-      viz::SingleReleaseCallback::Create(test_data_.release_callback1_));
+  test_layer->SetTransferableResource(test_data_.resource1_,
+                                      test_data_.release_callback1_);
 }
 
 class TextureLayerMailboxHolderTest : public TextureLayerTest {
@@ -403,15 +397,14 @@ class TextureLayerMailboxHolderTest : public TextureLayerTest {
   }
 
   void CreateMainRef() {
-    main_ref_ = TestMailboxHolder::Create(
-        test_data_.resource1_,
-        viz::SingleReleaseCallback::Create(test_data_.release_callback1_));
+    main_ref_ = TestMailboxHolder::Create(test_data_.resource1_,
+                                          test_data_.release_callback1_);
   }
 
   void ReleaseMainRef() { main_ref_ = nullptr; }
 
   void CreateImplRef(
-      std::unique_ptr<viz::SingleReleaseCallback>* impl_ref,
+      viz::ReleaseCallback* impl_ref,
       scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner) {
     *impl_ref = main_ref_->holder()->GetCallbackForImplThread(
         std::move(main_thread_task_runner));
@@ -435,7 +428,7 @@ TEST_F(TextureLayerMailboxHolderTest, TwoCompositors_BothReleaseThenMain) {
 
   // The texture layer is attached to compositor1, and passes a reference to its
   // impl tree.
-  std::unique_ptr<viz::SingleReleaseCallback> compositor1;
+  viz::ReleaseCallback compositor1;
   main_thread_.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&TextureLayerMailboxHolderTest::CreateImplRef,
                                 base::Unretained(this), &compositor1,
@@ -443,7 +436,7 @@ TEST_F(TextureLayerMailboxHolderTest, TwoCompositors_BothReleaseThenMain) {
 
   // Then the texture layer is removed and attached to compositor2, and passes a
   // reference to its impl tree.
-  std::unique_ptr<viz::SingleReleaseCallback> compositor2;
+  viz::ReleaseCallback compositor2;
   main_thread_.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&TextureLayerMailboxHolderTest::CreateImplRef,
                                 base::Unretained(this), &compositor2,
@@ -454,8 +447,8 @@ TEST_F(TextureLayerMailboxHolderTest, TwoCompositors_BothReleaseThenMain) {
 
   // The compositors both destroy their impl trees before the main thread layer
   // is destroyed.
-  compositor1->Run(SyncTokenFromUInt(100), false);
-  compositor2->Run(SyncTokenFromUInt(200), false);
+  std::move(compositor1).Run(SyncTokenFromUInt(100), false);
+  std::move(compositor2).Run(SyncTokenFromUInt(200), false);
 
   Wait(main_thread_);
 
@@ -488,7 +481,7 @@ TEST_F(TextureLayerMailboxHolderTest, TwoCompositors_MainReleaseBetween) {
 
   // The texture layer is attached to compositor1, and passes a reference to its
   // impl tree.
-  std::unique_ptr<viz::SingleReleaseCallback> compositor1;
+  viz::ReleaseCallback compositor1;
   main_thread_.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&TextureLayerMailboxHolderTest::CreateImplRef,
                                 base::Unretained(this), &compositor1,
@@ -496,7 +489,7 @@ TEST_F(TextureLayerMailboxHolderTest, TwoCompositors_MainReleaseBetween) {
 
   // Then the texture layer is removed and attached to compositor2, and passes a
   // reference to its impl tree.
-  std::unique_ptr<viz::SingleReleaseCallback> compositor2;
+  viz::ReleaseCallback compositor2;
   main_thread_.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&TextureLayerMailboxHolderTest::CreateImplRef,
                                 base::Unretained(this), &compositor2,
@@ -506,7 +499,7 @@ TEST_F(TextureLayerMailboxHolderTest, TwoCompositors_MainReleaseBetween) {
   Mock::VerifyAndClearExpectations(&test_data_.mock_callback_);
 
   // One compositor destroys their impl tree.
-  compositor1->Run(SyncTokenFromUInt(100), false);
+  std::move(compositor1).Run(SyncTokenFromUInt(100), false);
 
   // Then the main thread reference is destroyed.
   main_thread_.task_runner()->PostTask(
@@ -524,7 +517,7 @@ TEST_F(TextureLayerMailboxHolderTest, TwoCompositors_MainReleaseBetween) {
               Release(test_data_.mailbox_name1_, SyncTokenFromUInt(200), true))
       .Times(1);
 
-  compositor2->Run(SyncTokenFromUInt(200), true);
+  std::move(compositor2).Run(SyncTokenFromUInt(200), true);
   Wait(main_thread_);
   Mock::VerifyAndClearExpectations(&test_data_.mock_callback_);
 }
@@ -542,7 +535,7 @@ TEST_F(TextureLayerMailboxHolderTest, TwoCompositors_MainReleasedFirst) {
 
   // The texture layer is attached to compositor1, and passes a reference to its
   // impl tree.
-  std::unique_ptr<viz::SingleReleaseCallback> compositor1;
+  viz::ReleaseCallback compositor1;
   main_thread_.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&TextureLayerMailboxHolderTest::CreateImplRef,
                                 base::Unretained(this), &compositor1,
@@ -550,7 +543,7 @@ TEST_F(TextureLayerMailboxHolderTest, TwoCompositors_MainReleasedFirst) {
 
   // Then the texture layer is removed and attached to compositor2, and passes a
   // reference to its impl tree.
-  std::unique_ptr<viz::SingleReleaseCallback> compositor2;
+  viz::ReleaseCallback compositor2;
   main_thread_.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&TextureLayerMailboxHolderTest::CreateImplRef,
                                 base::Unretained(this), &compositor2,
@@ -565,7 +558,7 @@ TEST_F(TextureLayerMailboxHolderTest, TwoCompositors_MainReleasedFirst) {
                                 base::Unretained(this)));
 
   // One compositor destroys their impl tree.
-  compositor2->Run(SyncTokenFromUInt(200), false);
+  std::move(compositor2).Run(SyncTokenFromUInt(200), false);
 
   Wait(main_thread_);
 
@@ -578,7 +571,7 @@ TEST_F(TextureLayerMailboxHolderTest, TwoCompositors_MainReleasedFirst) {
               Release(test_data_.mailbox_name1_, SyncTokenFromUInt(100), true))
       .Times(1);
 
-  compositor1->Run(SyncTokenFromUInt(100), true);
+  std::move(compositor1).Run(SyncTokenFromUInt(100), true);
   Wait(main_thread_);
   Mock::VerifyAndClearExpectations(&test_data_.mock_callback_);
 }
@@ -688,10 +681,9 @@ class TextureLayerImplWithMailboxThreadedCallback : public LayerTreeTest {
 
   void SetMailbox(char mailbox_char) {
     EXPECT_EQ(true, main_thread_.CalledOnValidThread());
-    std::unique_ptr<viz::SingleReleaseCallback> callback =
-        viz::SingleReleaseCallback::Create(base::BindOnce(
-            &TextureLayerImplWithMailboxThreadedCallback::ReleaseCallback,
-            base::Unretained(this), mailbox_char));
+    viz::ReleaseCallback callback = base::BindOnce(
+        &TextureLayerImplWithMailboxThreadedCallback::ReleaseCallback,
+        base::Unretained(this), mailbox_char);
 
     const gfx::Size size(64, 64);
     auto resource = viz::TransferableResource::MakeGL(
@@ -785,49 +777,47 @@ TEST_F(TextureLayerImplWithResourceTest, TestWillDraw) {
   // Hardware mode.
   {
     std::unique_ptr<TextureLayerImpl> impl_layer = CreateTextureLayer();
-    impl_layer->SetTransferableResource(
-        test_data_.resource1_,
-        viz::SingleReleaseCallback::Create(test_data_.release_callback1_));
+    impl_layer->SetTransferableResource(test_data_.resource1_,
+                                        test_data_.release_callback1_);
     EXPECT_TRUE(WillDraw(impl_layer.get(), DRAW_MODE_HARDWARE));
   }
 
   {
     std::unique_ptr<TextureLayerImpl> impl_layer =
         TextureLayerImpl::Create(host_impl_.active_tree(), 1);
-    impl_layer->SetTransferableResource(viz::TransferableResource(), nullptr);
+    impl_layer->SetTransferableResource(viz::TransferableResource(),
+                                        viz::ReleaseCallback());
     EXPECT_FALSE(WillDraw(impl_layer.get(), DRAW_MODE_HARDWARE));
   }
 
   // Software mode.
   {
     std::unique_ptr<TextureLayerImpl> impl_layer = CreateTextureLayer();
-    impl_layer->SetTransferableResource(
-        test_data_.resource1_,
-        viz::SingleReleaseCallback::Create(test_data_.release_callback1_));
+    impl_layer->SetTransferableResource(test_data_.resource1_,
+                                        test_data_.release_callback1_);
     EXPECT_FALSE(WillDraw(impl_layer.get(), DRAW_MODE_SOFTWARE));
   }
 
   {
     std::unique_ptr<TextureLayerImpl> impl_layer = CreateTextureLayer();
-    impl_layer->SetTransferableResource(viz::TransferableResource(), nullptr);
+    impl_layer->SetTransferableResource(viz::TransferableResource(),
+                                        viz::ReleaseCallback());
     EXPECT_FALSE(WillDraw(impl_layer.get(), DRAW_MODE_SOFTWARE));
   }
 
   {
     // Software resource.
     std::unique_ptr<TextureLayerImpl> impl_layer = CreateTextureLayer();
-    impl_layer->SetTransferableResource(
-        test_data_.sw_resource_,
-        viz::SingleReleaseCallback::Create(test_data_.sw_release_callback_));
+    impl_layer->SetTransferableResource(test_data_.sw_resource_,
+                                        test_data_.sw_release_callback_);
     EXPECT_TRUE(WillDraw(impl_layer.get(), DRAW_MODE_SOFTWARE));
   }
 
   // Resourceless software mode.
   {
     std::unique_ptr<TextureLayerImpl> impl_layer = CreateTextureLayer();
-    impl_layer->SetTransferableResource(
-        test_data_.resource1_,
-        viz::SingleReleaseCallback::Create(test_data_.release_callback1_));
+    impl_layer->SetTransferableResource(test_data_.resource1_,
+                                        test_data_.release_callback1_);
     EXPECT_FALSE(WillDraw(impl_layer.get(), DRAW_MODE_RESOURCELESS_SOFTWARE));
   }
 }
@@ -842,9 +832,8 @@ TEST_F(TextureLayerImplWithResourceTest, TestImplLayerCallbacks) {
       pending_layer->CreateLayerImpl(host_impl_.active_tree()));
   ASSERT_TRUE(active_layer);
 
-  pending_layer->SetTransferableResource(
-      test_data_.resource1_,
-      viz::SingleReleaseCallback::Create(test_data_.release_callback1_));
+  pending_layer->SetTransferableResource(test_data_.resource1_,
+                                         test_data_.release_callback1_);
 
   // Test multiple commits without an activation. The resource wasn't used so
   // the original sync token is returned.
@@ -852,9 +841,8 @@ TEST_F(TextureLayerImplWithResourceTest, TestImplLayerCallbacks) {
       test_data_.mock_callback_,
       Release(test_data_.mailbox_name1_, test_data_.sync_token1_, false))
       .Times(1);
-  pending_layer->SetTransferableResource(
-      test_data_.resource2_,
-      viz::SingleReleaseCallback::Create(test_data_.release_callback2_));
+  pending_layer->SetTransferableResource(test_data_.resource2_,
+                                         test_data_.release_callback2_);
   Mock::VerifyAndClearExpectations(&test_data_.mock_callback_);
 
   // Test callback after activation.
@@ -862,9 +850,8 @@ TEST_F(TextureLayerImplWithResourceTest, TestImplLayerCallbacks) {
   active_layer->DidBecomeActive();
 
   EXPECT_CALL(test_data_.mock_callback_, Release(_, _, _)).Times(0);
-  pending_layer->SetTransferableResource(
-      test_data_.resource1_,
-      viz::SingleReleaseCallback::Create(test_data_.release_callback1_));
+  pending_layer->SetTransferableResource(test_data_.resource1_,
+                                         test_data_.release_callback1_);
   Mock::VerifyAndClearExpectations(&test_data_.mock_callback_);
 
   EXPECT_CALL(test_data_.mock_callback_,
@@ -878,7 +865,8 @@ TEST_F(TextureLayerImplWithResourceTest, TestImplLayerCallbacks) {
   EXPECT_CALL(test_data_.mock_callback_,
               Release(test_data_.mailbox_name1_, _, false))
       .Times(1);
-  pending_layer->SetTransferableResource(viz::TransferableResource(), nullptr);
+  pending_layer->SetTransferableResource(viz::TransferableResource(),
+                                         viz::ReleaseCallback());
   pending_layer->PushPropertiesTo(active_layer.get());
   active_layer->DidBecomeActive();
   Mock::VerifyAndClearExpectations(&test_data_.mock_callback_);
@@ -889,9 +877,8 @@ TEST_F(TextureLayerImplWithResourceTest, TestImplLayerCallbacks) {
       test_data_.mock_callback_,
       Release(test_data_.mailbox_name1_, test_data_.sync_token1_, false))
       .Times(1);
-  pending_layer->SetTransferableResource(
-      test_data_.resource1_,
-      viz::SingleReleaseCallback::Create(test_data_.release_callback1_));
+  pending_layer->SetTransferableResource(test_data_.resource1_,
+                                         test_data_.release_callback1_);
 }
 
 TEST_F(TextureLayerImplWithResourceTest,
@@ -902,14 +889,14 @@ TEST_F(TextureLayerImplWithResourceTest,
   EXPECT_CALL(test_data_.mock_callback_,
               Release(test_data_.mailbox_name1_, _, false))
       .Times(1);
-  impl_layer->SetTransferableResource(
-      test_data_.resource1_,
-      viz::SingleReleaseCallback::Create(test_data_.release_callback1_));
+  impl_layer->SetTransferableResource(test_data_.resource1_,
+                                      test_data_.release_callback1_);
   impl_layer->DidBecomeActive();
   EXPECT_TRUE(impl_layer->WillDraw(
       DRAW_MODE_HARDWARE, host_impl_.active_tree()->resource_provider()));
   impl_layer->DidDraw(host_impl_.active_tree()->resource_provider());
-  impl_layer->SetTransferableResource(viz::TransferableResource(), nullptr);
+  impl_layer->SetTransferableResource(viz::TransferableResource(),
+                                      viz::ReleaseCallback());
 }
 
 // Checks that TextureLayer::Update does not cause an extra commit when setting
@@ -922,7 +909,7 @@ class TextureLayerNoExtraCommitForMailboxTest
   bool PrepareTransferableResource(
       SharedBitmapIdRegistrar* bitmap_registrar,
       viz::TransferableResource* resource,
-      std::unique_ptr<viz::SingleReleaseCallback>* release_callback) override {
+      viz::ReleaseCallback* release_callback) override {
     if (layer_tree_host()->SourceFrameNumber() == 1) {
       // Once this has been committed, the resource will be released.
       *resource = viz::TransferableResource();
@@ -933,9 +920,9 @@ class TextureLayerNoExtraCommitForMailboxTest
     *resource = viz::TransferableResource::MakeGL(
         MailboxFromChar('1'), GL_LINEAR, GL_TEXTURE_2D,
         SyncTokenFromUInt(0x123), size, false /* is_overlay_candidate */);
-    *release_callback = viz::SingleReleaseCallback::Create(base::BindOnce(
+    *release_callback = base::BindOnce(
         &TextureLayerNoExtraCommitForMailboxTest::ResourceReleased,
-        base::Unretained(this)));
+        base::Unretained(this));
     return true;
   }
 
@@ -1000,15 +987,15 @@ class TextureLayerChangeInvisibleMailboxTest
   bool PrepareTransferableResource(
       SharedBitmapIdRegistrar* bitmap_registrar,
       viz::TransferableResource* resource,
-      std::unique_ptr<viz::SingleReleaseCallback>* release_callback) override {
+      viz::ReleaseCallback* release_callback) override {
     ++prepare_called_;
     if (!resource_changed_)
       return false;
     resource_changed_ = false;
     *resource = resource_;
-    *release_callback = viz::SingleReleaseCallback::Create(base::BindOnce(
+    *release_callback = base::BindOnce(
         &TextureLayerChangeInvisibleMailboxTest::ResourceReleased,
-        base::Unretained(this)));
+        base::Unretained(this));
     return true;
   }
 
@@ -1128,14 +1115,14 @@ class TextureLayerReleaseResourcesBase
   bool PrepareTransferableResource(
       SharedBitmapIdRegistrar* bitmap_registrar,
       viz::TransferableResource* resource,
-      std::unique_ptr<viz::SingleReleaseCallback>* release_callback) override {
+      viz::ReleaseCallback* release_callback) override {
     constexpr gfx::Size size(64, 64);
     *resource = viz::TransferableResource::MakeGL(
         MailboxFromChar('1'), GL_LINEAR, GL_TEXTURE_2D, SyncTokenFromUInt(1),
         size, false /* is_overlay_candidate */);
-    *release_callback = viz::SingleReleaseCallback::Create(
+    *release_callback =
         base::BindOnce(&TextureLayerReleaseResourcesBase::ResourceReleased,
-                       base::Unretained(this)));
+                       base::Unretained(this));
     return true;
   }
 
@@ -1204,10 +1191,9 @@ class TextureLayerWithResourceMainThreadDeleted : public LayerTreeTest {
 
   void SetMailbox(char mailbox_char) {
     EXPECT_EQ(true, main_thread_.CalledOnValidThread());
-    std::unique_ptr<viz::SingleReleaseCallback> callback =
-        viz::SingleReleaseCallback::Create(base::BindOnce(
-            &TextureLayerWithResourceMainThreadDeleted::ReleaseCallback,
-            base::Unretained(this)));
+    viz::ReleaseCallback callback = base::BindOnce(
+        &TextureLayerWithResourceMainThreadDeleted::ReleaseCallback,
+        base::Unretained(this));
     constexpr gfx::Size size(64, 64);
     auto resource = viz::TransferableResource::MakeGL(
         MailboxFromChar(mailbox_char), GL_LINEAR, GL_TEXTURE_2D,
@@ -1276,10 +1262,9 @@ class TextureLayerWithResourceImplThreadDeleted : public LayerTreeTest {
 
   void SetMailbox(char mailbox_char) {
     EXPECT_EQ(true, main_thread_.CalledOnValidThread());
-    std::unique_ptr<viz::SingleReleaseCallback> callback =
-        viz::SingleReleaseCallback::Create(base::BindOnce(
-            &TextureLayerWithResourceImplThreadDeleted::ReleaseCallback,
-            base::Unretained(this)));
+    viz::ReleaseCallback callback = base::BindOnce(
+        &TextureLayerWithResourceImplThreadDeleted::ReleaseCallback,
+        base::Unretained(this));
     constexpr gfx::Size size(64, 64);
     auto resource = viz::TransferableResource::MakeGL(
         MailboxFromChar(mailbox_char), GL_LINEAR, GL_TEXTURE_2D,
@@ -1346,7 +1331,7 @@ class StubTextureLayerClient : public TextureLayerClient {
   bool PrepareTransferableResource(
       SharedBitmapIdRegistrar* bitmap_registrar,
       viz::TransferableResource* resource,
-      std::unique_ptr<viz::SingleReleaseCallback>* release_callback) override {
+      viz::ReleaseCallback* release_callback) override {
     return false;
   }
 };
@@ -1455,8 +1440,7 @@ class SoftwareTextureLayerSwitchTreesTest : public SoftwareTextureLayerTest {
         texture_layer_->SetTransferableResource(
             viz::TransferableResource::MakeSoftware(id_, gfx::Size(1, 1),
                                                     viz::RGBA_8888),
-            viz::SingleReleaseCallback::Create(
-                base::BindOnce([](const gpu::SyncToken&, bool) {})));
+            base::BindOnce([](const gpu::SyncToken&, bool) {}));
         break;
       case 2:
         // When the layer is removed from the tree, the bitmap should be
@@ -1559,8 +1543,7 @@ class SoftwareTextureLayerPurgeMemoryTest : public SoftwareTextureLayerTest {
         texture_layer_->SetTransferableResource(
             viz::TransferableResource::MakeSoftware(id_, gfx::Size(1, 1),
                                                     viz::RGBA_8888),
-            viz::SingleReleaseCallback::Create(
-                base::BindOnce([](const gpu::SyncToken&, bool) {})));
+            base::BindOnce([](const gpu::SyncToken&, bool) {}));
         break;
       case 2:
         // Draw again after OnPurgeMemory() was called on the impl thread so we
@@ -1644,8 +1627,7 @@ class SoftwareTextureLayerMultipleRegisterTest
         texture_layer_->SetTransferableResource(
             viz::TransferableResource::MakeSoftware(id1_, gfx::Size(1, 1),
                                                     viz::RGBA_8888),
-            viz::SingleReleaseCallback::Create(
-                base::BindOnce([](const gpu::SyncToken&, bool) {})));
+            base::BindOnce([](const gpu::SyncToken&, bool) {}));
         break;
       case 2:
         // Drop one registration, and force a commit and SubmitCompositorFrame
@@ -1746,8 +1728,7 @@ class SoftwareTextureLayerRegisterUnregisterTest
         texture_layer_->SetTransferableResource(
             viz::TransferableResource::MakeSoftware(id1_, gfx::Size(1, 1),
                                                     viz::RGBA_8888),
-            viz::SingleReleaseCallback::Create(
-                base::BindOnce([](const gpu::SyncToken&, bool) {})));
+            base::BindOnce([](const gpu::SyncToken&, bool) {}));
         break;
       case 2:
         // Drop the other registration.
@@ -1834,9 +1815,9 @@ class SoftwareTextureLayerLoseFrameSinkTest : public SoftwareTextureLayerTest {
         texture_layer_->SetTransferableResource(
             viz::TransferableResource::MakeSoftware(id_, gfx::Size(1, 1),
                                                     viz::RGBA_8888),
-            viz::SingleReleaseCallback::Create(base::BindOnce(
+            base::BindOnce(
                 &SoftwareTextureLayerLoseFrameSinkTest::ReleaseCallback,
-                base::Unretained(this))));
+                base::Unretained(this)));
         EXPECT_FALSE(released_);
         break;
       case 2:
@@ -1947,8 +1928,7 @@ class SoftwareTextureLayerUnregisterRegisterTest
         texture_layer_->SetTransferableResource(
             viz::TransferableResource::MakeSoftware(id_, gfx::Size(1, 1),
                                                     viz::RGBA_8888),
-            viz::SingleReleaseCallback::Create(
-                base::BindOnce([](const gpu::SyncToken&, bool) {})));
+            base::BindOnce([](const gpu::SyncToken&, bool) {}));
         break;
       case 2:
         // Release the TransferableResource before shutdown.

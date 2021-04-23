@@ -743,11 +743,10 @@ void PepperPluginInstanceImpl::PassCommittedTextureToTextureLayer() {
   if (committed_texture_.mailbox_holder.mailbox.IsZero())
     return;
 
-  std::unique_ptr<viz::SingleReleaseCallback> callback(
-      viz::SingleReleaseCallback::Create(base::BindOnce(
-          &PepperPluginInstanceImpl::FinishedConsumingCommittedTexture,
-          weak_factory_.GetWeakPtr(), committed_texture_,
-          committed_texture_graphics_3d_)));
+  viz::ReleaseCallback callback(base::BindOnce(
+      &PepperPluginInstanceImpl::FinishedConsumingCommittedTexture,
+      weak_factory_.GetWeakPtr(), committed_texture_,
+      committed_texture_graphics_3d_));
 
   IncrementTextureReferenceCount(committed_texture_);
   texture_layer_->SetTransferableResource(committed_texture_,
@@ -2058,7 +2057,7 @@ void PepperPluginInstanceImpl::UpdateLayer(bool force_creation) {
 bool PepperPluginInstanceImpl::PrepareTransferableResource(
     cc::SharedBitmapIdRegistrar* bitmap_registrar,
     viz::TransferableResource* transferable_resource,
-    std::unique_ptr<viz::SingleReleaseCallback>* release_callback) {
+    viz::ReleaseCallback* release_callback) {
   if (!bound_graphics_2d_platform_)
     return false;
   return bound_graphics_2d_platform_->PrepareTransferableResource(

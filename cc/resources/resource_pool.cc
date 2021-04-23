@@ -340,9 +340,8 @@ bool ResourcePool::PrepareForExport(const InUsePoolResource& in_use_resource) {
   transferable.color_space = resource->color_space();
   resource->set_resource_id(resource_provider_->ImportResource(
       std::move(transferable),
-      viz::SingleReleaseCallback::Create(base::BindOnce(
-          &ResourcePool::OnResourceReleased, weak_ptr_factory_.GetWeakPtr(),
-          resource->unique_id()))));
+      base::BindOnce(&ResourcePool::OnResourceReleased,
+                     weak_ptr_factory_.GetWeakPtr(), resource->unique_id())));
   return true;
 }
 

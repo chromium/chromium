@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "components/viz/common/resources/single_release_callback.h"
+#include "components/viz/common/resources/release_callback.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_interface.h"
@@ -54,7 +54,7 @@ AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::PlatformThreadRef context_thread_ref,
     scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
-    std::unique_ptr<viz::SingleReleaseCallback> release_callback) {
+    viz::ReleaseCallback release_callback) {
   return base::AdoptRef(new AcceleratedStaticBitmapImage(
       mailbox, sync_token, shared_image_texture_id, sk_image_info,
       texture_target, is_origin_top_left, ImageOrientationEnum::kDefault,
@@ -73,7 +73,7 @@ AcceleratedStaticBitmapImage::AcceleratedStaticBitmapImage(
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::PlatformThreadRef context_thread_ref,
     scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
-    std::unique_ptr<viz::SingleReleaseCallback> release_callback)
+    viz::ReleaseCallback release_callback)
     : StaticBitmapImage(orientation),
       mailbox_(mailbox),
       sk_image_info_(sk_image_info),

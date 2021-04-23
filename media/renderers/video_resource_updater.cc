@@ -522,8 +522,7 @@ void VideoResourceUpdater::ObtainFrameResources(
   for (size_t i = 0; i < external_resources.resources.size(); ++i) {
     viz::ResourceId resource_id = resource_provider_->ImportResource(
         external_resources.resources[i],
-        viz::SingleReleaseCallback::Create(
-            std::move(external_resources.release_callbacks[i])));
+        std::move(external_resources.release_callbacks[i]));
     frame_resources_.emplace_back(resource_id,
                                   external_resources.resources[i].size);
   }

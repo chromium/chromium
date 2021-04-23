@@ -35,7 +35,7 @@
 #include "cc/layers/texture_layer.h"
 #include "cc/test/skia_common.h"
 #include "cc/test/stub_decode_cache.h"
-#include "components/viz/common/resources/single_release_callback.h"
+#include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_gles2_interface.h"
@@ -200,7 +200,7 @@ TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxWhenContextIsLost) {
   test_context_provider_->TestContextGL()->set_context_lost(true);
 
   viz::TransferableResource resource;
-  std::unique_ptr<viz::SingleReleaseCallback> release_callback;
+  viz::ReleaseCallback release_callback;
   EXPECT_FALSE(bridge->PrepareTransferableResource(nullptr, &resource,
                                                    &release_callback));
 }
@@ -224,7 +224,7 @@ TEST_F(Canvas2DLayerBridgeTest,
   bridge->Restore();
 
   viz::TransferableResource resource;
-  std::unique_ptr<viz::SingleReleaseCallback> release_callback;
+  viz::ReleaseCallback release_callback;
   EXPECT_FALSE(bridge->PrepareTransferableResource(nullptr, &resource,
                                                    &release_callback));
 }
@@ -237,18 +237,18 @@ TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxAndLoseResource) {
         MakeBridge(IntSize(300, 150), RasterMode::kGPU, CanvasColorParams());
     bridge->FinalizeFrame();
     viz::TransferableResource resource;
-    std::unique_ptr<viz::SingleReleaseCallback> release_callback;
+    viz::ReleaseCallback release_callback;
     EXPECT_TRUE(bridge->PrepareTransferableResource(nullptr, &resource,
                                                     &release_callback));
 
     bool lost_resource = true;
-    release_callback->Run(gpu::SyncToken(), lost_resource);
+    std::move(release_callback).Run(gpu::SyncToken(), lost_resource);
   }
 
   // Retry with mailbox released while bridge destruction is in progress.
   {
     viz::TransferableResource resource;
-    std::unique_ptr<viz::SingleReleaseCallback> release_callback;
+    viz::ReleaseCallback release_callback;
 
     {
       std::unique_ptr<Canvas2DLayerBridge> bridge =
@@ -265,13 +265,13 @@ TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxAndLoseResource) {
     // Before fixing crbug.com/411864, the following line would cause a memory
     // use after free that sometimes caused a crash in normal builds and
     // crashed consistently with ASAN.
-    release_callback->Run(gpu::SyncToken(), lost_resource);
+    std::move(release_callback).Run(gpu::SyncToken(), lost_resource);
   }
 }
 
 TEST_F(Canvas2DLayerBridgeTest, ReleaseCallbackWithNullContextProviderWrapper) {
   viz::TransferableResource resource;
-  std::unique_ptr<viz::SingleReleaseCallback> release_callback;
+  viz::ReleaseCallback release_callback;
 
   {
     std::unique_ptr<Canvas2DLayerBridge> bridge =
@@ -287,7 +287,7 @@ TEST_F(Canvas2DLayerBridgeTest, ReleaseCallbackWithNullContextProviderWrapper) {
   // This is the test to make sure that ReleaseMailboxImageResource() handles
   // null context_provider_wrapper properly.
   SharedGpuContext::ContextProviderWrapper();
-  release_callback->Run(gpu::SyncToken(), lost_resource);
+  std::move(release_callback).Run(gpu::SyncToken(), lost_resource);
 }
 
 TEST_F(Canvas2DLayerBridgeTest, RasterModeHint) {
@@ -697,7 +697,7 @@ TEST_F(Canvas2DLayerBridgeTest, DISABLED_PrepareMailboxWhileHibernating)
 
   // Test PrepareTransferableResource() while hibernating
   viz::TransferableResource resource;
-  std::unique_ptr<viz::SingleReleaseCallback> release_callback;
+  viz::ReleaseCallback release_callback;
   EXPECT_FALSE(bridge->PrepareTransferableResource(nullptr, &resource,
                                                    &release_callback));
   EXPECT_TRUE(bridge->IsValid());
@@ -719,7 +719,7 @@ TEST_F(Canvas2DLayerBridgeTest, ResourceRecycling) {
       .gpu_memory_buffer_formats.Add(gfx::BufferFormat::BGRA_8888);
 
   viz::TransferableResource resources[3];
-  std::unique_ptr<viz::SingleReleaseCallback> callbacks[3];
+  viz::ReleaseCallback callbacks[3];
   PaintFlags flags;
 
   std::unique_ptr<Canvas2DLayerBridge> bridge =
@@ -738,7 +738,7 @@ TEST_F(Canvas2DLayerBridgeTest, ResourceRecycling) {
 
   // Now release the first resource and draw again. It should be reused due to
   // recycling.
-  callbacks[0]->Run(gpu::SyncToken(), false);
+  std::move(callbacks[0]).Run(gpu::SyncToken(), false);
   bridge->GetPaintCanvas()->drawLine(0, 0, 2, 2, flags);
   DrawSomething(bridge.get());
   ASSERT_TRUE(bridge->PrepareTransferableResource(nullptr, &resources[2],
@@ -746,8 +746,8 @@ TEST_F(Canvas2DLayerBridgeTest, ResourceRecycling) {
   EXPECT_EQ(resources[0].mailbox_holder.mailbox,
             resources[2].mailbox_holder.mailbox);
 
-  callbacks[1]->Run(gpu::SyncToken(), false);
-  callbacks[2]->Run(gpu::SyncToken(), false);
+  std::move(callbacks[1]).Run(gpu::SyncToken(), false);
+  std::move(callbacks[2]).Run(gpu::SyncToken(), false);
 }
 
 TEST_F(Canvas2DLayerBridgeTest, NoResourceRecyclingWhenPageHidden) {
@@ -758,7 +758,7 @@ TEST_F(Canvas2DLayerBridgeTest, NoResourceRecyclingWhenPageHidden) {
       .gpu_memory_buffer_formats.Add(gfx::BufferFormat::BGRA_8888);
 
   viz::TransferableResource resources[2];
-  std::unique_ptr<viz::SingleReleaseCallback> callbacks[2];
+  viz::ReleaseCallback callbacks[2];
   PaintFlags flags;
 
   std::unique_ptr<Canvas2DLayerBridge> bridge =
@@ -776,7 +776,7 @@ TEST_F(Canvas2DLayerBridgeTest, NoResourceRecyclingWhenPageHidden) {
 
   // Now release the first resource and mark the page hidden. The recycled
   // resource should be dropped.
-  callbacks[0]->Run(gpu::SyncToken(), false);
+  std::move(callbacks[0]).Run(gpu::SyncToken(), false);
   EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 2u);
   bridge->SetIsInHiddenPage(true);
   EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 1u);
@@ -784,7 +784,7 @@ TEST_F(Canvas2DLayerBridgeTest, NoResourceRecyclingWhenPageHidden) {
   // Release second frame, this resource is not released because its the current
   // render target for the canvas. It should only be released if the canvas is
   // hibernated.
-  callbacks[1]->Run(gpu::SyncToken(), false);
+  std::move(callbacks[1]).Run(gpu::SyncToken(), false);
   EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 1u);
 }
 
@@ -796,7 +796,7 @@ TEST_F(Canvas2DLayerBridgeTest, ReleaseResourcesAfterBridgeDestroyed) {
       .gpu_memory_buffer_formats.Add(gfx::BufferFormat::BGRA_8888);
 
   viz::TransferableResource resource;
-  std::unique_ptr<viz::SingleReleaseCallback> release_callback;
+  viz::ReleaseCallback release_callback;
 
   std::unique_ptr<Canvas2DLayerBridge> bridge =
       MakeBridge(IntSize(300, 150), RasterMode::kGPU, CanvasColorParams());
@@ -807,9 +807,8 @@ TEST_F(Canvas2DLayerBridgeTest, ReleaseResourcesAfterBridgeDestroyed) {
   bridge.reset();
   EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 1u);
   constexpr bool lost_resource = false;
-  release_callback->Run(gpu::SyncToken(), lost_resource);
+  std::move(release_callback).Run(gpu::SyncToken(), lost_resource);
   EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 0u);
-  release_callback = nullptr;
 }
 
 TEST_F(Canvas2DLayerBridgeTest, EnsureCCImageCacheUse) {
@@ -945,16 +944,16 @@ TEST_F(Canvas2DLayerBridgeTest,
   ASSERT_TRUE(bridge->layer_for_testing());
 
   viz::TransferableResource resource;
-  std::unique_ptr<viz::SingleReleaseCallback> release_callback;
+  viz::ReleaseCallback release_callback;
   EXPECT_TRUE(bridge->PrepareTransferableResource(nullptr, &resource,
                                                   &release_callback));
   bridge->layer_for_testing()->SetTransferableResource(
       resource, std::move(release_callback));
 
-  std::unique_ptr<viz::SingleReleaseCallback> release_callback2;
+  viz::ReleaseCallback release_callback2;
   EXPECT_FALSE(bridge->PrepareTransferableResource(nullptr, &resource,
                                                    &release_callback2));
-  EXPECT_EQ(release_callback2, nullptr);
+  EXPECT_FALSE(release_callback2);
 }
 class CustomFakeCanvasResourceHost : public FakeCanvasResourceHost {
  public:

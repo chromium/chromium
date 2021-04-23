@@ -356,10 +356,9 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
 
   // Set new TransferableResource for this layer. This method only supports
   // a gpu-backed |resource|.
-  void SetTransferableResource(
-      const viz::TransferableResource& resource,
-      std::unique_ptr<viz::SingleReleaseCallback> release_callback,
-      gfx::Size texture_size_in_dip);
+  void SetTransferableResource(const viz::TransferableResource& resource,
+                               viz::ReleaseCallback release_callback,
+                               gfx::Size texture_size_in_dip);
   void SetTextureSize(gfx::Size texture_size_in_dip);
   void SetTextureFlipped(bool flipped);
   bool TextureFlipped() const;
@@ -470,7 +469,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   bool PrepareTransferableResource(
       cc::SharedBitmapIdRegistrar* bitmap_registar,
       viz::TransferableResource* resource,
-      std::unique_ptr<viz::SingleReleaseCallback>* release_callback) override;
+      viz::ReleaseCallback* release_callback) override;
 
   float device_scale_factor() const { return device_scale_factor_; }
 
@@ -736,7 +735,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
 
   // The callback to release the mailbox. This is only set after
   // SetTransferableResource() is called, before we give it to the TextureLayer.
-  std::unique_ptr<viz::SingleReleaseCallback> transfer_release_callback_;
+  viz::ReleaseCallback transfer_release_callback_;
 
   // The size of the frame or texture in DIP, set when SetShowDelegatedContent
   // or SetTransferableResource() was called.

@@ -22,10 +22,10 @@
 #include "build/build_config.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
+#include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/resources/shared_bitmap.h"
-#include "components/viz/common/resources/single_release_callback.h"
 #include "components/viz/service/display/shared_bitmap_manager.h"
 #include "components/viz/test/test_shared_bitmap_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -108,9 +108,8 @@ TEST_F(DisplayResourceProviderSoftwareTest, ReadSoftwareResources) {
 
   MockReleaseCallback release;
   ResourceId resource_id = child_resource_provider_->ImportResource(
-      resource,
-      SingleReleaseCallback::Create(base::BindOnce(
-          &MockReleaseCallback::Released, base::Unretained(&release))));
+      resource, base::BindOnce(&MockReleaseCallback::Released,
+                               base::Unretained(&release)));
   EXPECT_NE(kInvalidResourceId, resource_id);
 
   // Transfer resources to the parent.

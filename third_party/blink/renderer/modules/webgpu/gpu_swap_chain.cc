@@ -61,7 +61,7 @@ void GPUSwapChain::SetFilterQuality(SkFilterQuality filter_quality) {
 
 scoped_refptr<StaticBitmapImage> GPUSwapChain::TransferToStaticBitmapImage() {
   viz::TransferableResource transferable_resource;
-  std::unique_ptr<viz::SingleReleaseCallback> release_callback;
+  viz::ReleaseCallback release_callback;
   if (!swap_buffers_->PrepareTransferableResource(
           nullptr, &transferable_resource, &release_callback)) {
     // If we can't get a mailbox, return an transparent black ImageBitmap.

@@ -609,7 +609,7 @@ void PepperGraphics2DHost::ReleaseTextureCallback(
 bool PepperGraphics2DHost::PrepareTransferableResource(
     cc::SharedBitmapIdRegistrar* bitmap_registrar,
     viz::TransferableResource* transferable_resource,
-    std::unique_ptr<viz::SingleReleaseCallback>* release_callback) {
+    viz::ReleaseCallback* release_callback) {
   // Reuse the |main_thread_context_| if it is not lost. If it is lost, we can't
   // reuse the shared images, they are invalid. If the compositing mode changed,
   // the context will be lost also, so we get both together.
@@ -720,9 +720,9 @@ bool PepperGraphics2DHost::PrepareTransferableResource(
     image_data_->Unmap();
     swizzled.reset();
 
-    *release_callback = viz::SingleReleaseCallback::Create(
+    *release_callback =
         base::BindOnce(&ReleaseTextureCallback, this->AsWeakPtr(),
-                       main_thread_context_, size, gpu_mailbox));
+                       main_thread_context_, size, gpu_mailbox);
     *transferable_resource = viz::TransferableResource::MakeGL(
         std::move(gpu_mailbox), GL_LINEAR, texture_target,
         std::move(out_sync_token), size, overlays_supported);
@@ -760,9 +760,9 @@ bool PepperGraphics2DHost::PrepareTransferableResource(
 
   *transferable_resource = viz::TransferableResource::MakeSoftware(
       shared_bitmap->id(), pixel_image_size, viz::RGBA_8888);
-  *release_callback = viz::SingleReleaseCallback::Create(base::BindOnce(
+  *release_callback = base::BindOnce(
       &PepperGraphics2DHost::ReleaseSoftwareCallback, this->AsWeakPtr(),
-      std::move(shared_bitmap), std::move(registration)));
+      std::move(shared_bitmap), std::move(registration));
   composited_output_modified_ = false;
   return true;
 }

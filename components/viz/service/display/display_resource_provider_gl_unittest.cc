@@ -19,9 +19,9 @@
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "components/viz/client/client_resource_provider.h"
+#include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/returned_resource.h"
-#include "components/viz/common/resources/single_release_callback.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_gles2_interface.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -171,8 +171,8 @@ TEST_F(DisplayResourceProviderGLTest, ReadLockCountStopsReturnToChildOrDelete) {
   MockReleaseCallback release;
   TransferableResource tran = CreateResource(RGBA_8888);
   ResourceId id1 = child_resource_provider_->ImportResource(
-      tran, SingleReleaseCallback::Create(base::BindOnce(
-                &MockReleaseCallback::Released, base::Unretained(&release))));
+      tran, base::BindOnce(&MockReleaseCallback::Released,
+                           base::Unretained(&release)));
 
   std::vector<ReturnedResource> returned_to_child;
   int child_id =
@@ -234,8 +234,8 @@ TEST_F(DisplayResourceProviderGLTest, ReadLockFenceStopsReturnToChildOrDelete) {
   TransferableResource tran1 = CreateResource(RGBA_8888);
   tran1.read_lock_fences_enabled = true;
   ResourceId id1 = child_resource_provider_->ImportResource(
-      tran1, SingleReleaseCallback::Create(base::BindOnce(
-                 &MockReleaseCallback::Released, base::Unretained(&release))));
+      tran1, base::BindOnce(&MockReleaseCallback::Released,
+                            base::Unretained(&release)));
 
   std::vector<ReturnedResource> returned_to_child;
   int child_id =
@@ -286,14 +286,14 @@ TEST_F(DisplayResourceProviderGLTest, ReadLockFenceDestroyChild) {
   TransferableResource tran1 = CreateResource(RGBA_8888);
   tran1.read_lock_fences_enabled = true;
   ResourceId id1 = child_resource_provider_->ImportResource(
-      tran1, SingleReleaseCallback::Create(base::BindOnce(
-                 &MockReleaseCallback::Released, base::Unretained(&release))));
+      tran1, base::BindOnce(&MockReleaseCallback::Released,
+                            base::Unretained(&release)));
 
   TransferableResource tran2 = CreateResource(RGBA_8888);
   tran2.read_lock_fences_enabled = false;
   ResourceId id2 = child_resource_provider_->ImportResource(
-      tran2, SingleReleaseCallback::Create(base::BindOnce(
-                 &MockReleaseCallback::Released, base::Unretained(&release))));
+      tran2, base::BindOnce(&MockReleaseCallback::Released,
+                            base::Unretained(&release)));
 
   std::vector<ReturnedResource> returned_to_child;
   int child_id =
@@ -361,8 +361,8 @@ TEST_F(DisplayResourceProviderGLTest,
   for (auto& id : ids) {
     TransferableResource tran = CreateResource(RGBA_8888);
     id = child_resource_provider_->ImportResource(
-        tran, SingleReleaseCallback::Create(base::BindOnce(
-                  &MockReleaseCallback::Released, base::Unretained(&release))));
+        tran, base::BindOnce(&MockReleaseCallback::Released,
+                             base::Unretained(&release)));
   }
   std::vector<ResourceId> resource_ids_to_transfer(ids, ids + kTotalResources);
 
@@ -496,9 +496,8 @@ class ResourceProviderTestImportedResourceGLFilters {
 
     MockReleaseCallback release;
     ResourceId resource_id = child_resource_provider->ImportResource(
-        resource,
-        SingleReleaseCallback::Create(base::BindOnce(
-            &MockReleaseCallback::Released, base::Unretained(&release))));
+        resource, base::BindOnce(&MockReleaseCallback::Released,
+                                 base::Unretained(&release)));
     EXPECT_NE(kInvalidResourceId, resource_id);
 
     testing::Mock::VerifyAndClearExpectations(child_gl);
@@ -610,8 +609,7 @@ TEST_F(DisplayResourceProviderGLTest, ReceiveGLTextureExternalOES) {
   EXPECT_CALL(*child_gl, CreateAndConsumeTextureCHROMIUM(_)).Times(0);
 
   gpu::Mailbox gpu_mailbox = gpu::Mailbox::Generate();
-  std::unique_ptr<SingleReleaseCallback> callback =
-      SingleReleaseCallback::Create(base::DoNothing());
+  ReleaseCallback callback = base::DoNothing();
 
   constexpr gfx::Size size(64, 64);
   auto resource = TransferableResource::MakeGL(

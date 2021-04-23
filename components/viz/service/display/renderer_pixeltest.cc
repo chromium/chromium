@@ -114,8 +114,8 @@ ResourceId CreateGpuResource(scoped_refptr<ContextProvider> context_provider,
       false /* is_overlay_candidate */);
   gl_resource.format = format;
   gl_resource.color_space = std::move(color_space);
-  auto release_callback = SingleReleaseCallback::Create(
-      base::BindOnce(&DeleteSharedImage, std::move(context_provider), mailbox));
+  auto release_callback =
+      base::BindOnce(&DeleteSharedImage, std::move(context_provider), mailbox);
   return resource_provider->ImportResource(gl_resource,
                                            std::move(release_callback));
 }
@@ -264,7 +264,7 @@ void CreateTestTwoColoredTextureDrawQuad(
     resource = child_resource_provider->ImportResource(
         TransferableResource::MakeSoftware(shared_bitmap_id, rect.size(),
                                            RGBA_8888),
-        SingleReleaseCallback::Create(base::DoNothing()));
+        base::DoNothing());
 
     auto span = mapping.GetMemoryAsSpan<uint32_t>(pixels.size());
     std::copy(pixels.begin(), pixels.end(), span.begin());
@@ -325,7 +325,7 @@ void CreateTestTextureDrawQuad(
     resource = child_resource_provider->ImportResource(
         TransferableResource::MakeSoftware(shared_bitmap_id, rect.size(),
                                            RGBA_8888),
-        SingleReleaseCallback::Create(base::DoNothing()));
+        base::DoNothing());
 
     auto span = mapping.GetMemoryAsSpan<uint32_t>(pixels.size());
     std::copy(pixels.begin(), pixels.end(), span.begin());
@@ -407,22 +407,18 @@ void CreateTestYUVVideoDrawQuad_FromVideoFrame(
 
   ResourceId resource_y = child_resource_provider->ImportResource(
       resources.resources[media::VideoFrame::kYPlane],
-      SingleReleaseCallback::Create(
-          std::move(resources.release_callbacks[media::VideoFrame::kYPlane])));
+      std::move(resources.release_callbacks[media::VideoFrame::kYPlane]));
   ResourceId resource_u = child_resource_provider->ImportResource(
       resources.resources[media::VideoFrame::kUPlane],
-      SingleReleaseCallback::Create(
-          std::move(resources.release_callbacks[media::VideoFrame::kUPlane])));
+      std::move(resources.release_callbacks[media::VideoFrame::kUPlane]));
   ResourceId resource_v = child_resource_provider->ImportResource(
       resources.resources[media::VideoFrame::kVPlane],
-      SingleReleaseCallback::Create(
-          std::move(resources.release_callbacks[media::VideoFrame::kVPlane])));
+      std::move(resources.release_callbacks[media::VideoFrame::kVPlane]));
   ResourceId resource_a = kInvalidResourceId;
   if (with_alpha) {
     resource_a = child_resource_provider->ImportResource(
         resources.resources[media::VideoFrame::kAPlane],
-        SingleReleaseCallback::Create(std::move(
-            resources.release_callbacks[media::VideoFrame::kAPlane])));
+        std::move(resources.release_callbacks[media::VideoFrame::kAPlane]));
   }
 
   std::vector<ResourceId> resource_ids_to_transfer;
@@ -517,8 +513,7 @@ void CreateTestY16TextureDrawQuad_FromVideoFrame(
   EXPECT_EQ(1u, resources.release_callbacks.size());
 
   ResourceId resource_y = child_resource_provider->ImportResource(
-      resources.resources[0],
-      SingleReleaseCallback::Create(std::move(resources.release_callbacks[0])));
+      resources.resources[0], std::move(resources.release_callbacks[0]));
 
   // Transfer resources to the parent, and get the resource map.
   std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =

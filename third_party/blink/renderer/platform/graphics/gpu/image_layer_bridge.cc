@@ -124,7 +124,7 @@ void ImageLayerBridge::Dispose() {
 bool ImageLayerBridge::PrepareTransferableResource(
     cc::SharedBitmapIdRegistrar* bitmap_registrar,
     viz::TransferableResource* out_resource,
-    std::unique_ptr<viz::SingleReleaseCallback>* out_release_callback) {
+    viz::ReleaseCallback* out_release_callback) {
   if (disposed_)
     return false;
 
@@ -185,7 +185,7 @@ bool ImageLayerBridge::PrepareTransferableResource(
     auto func =
         WTF::Bind(&ImageLayerBridge::ResourceReleasedGpu,
                   WrapWeakPersistent(this), std::move(image_for_compositor));
-    *out_release_callback = viz::SingleReleaseCallback::Create(std::move(func));
+    *out_release_callback = std::move(func);
   } else {
     // Readback if needed and retain the readback in image_ to prevent future
     // readbacks
@@ -223,7 +223,7 @@ bool ImageLayerBridge::PrepareTransferableResource(
     }
     auto func = WTF::Bind(&ImageLayerBridge::ResourceReleasedSoftware,
                           WrapWeakPersistent(this), std::move(registered));
-    *out_release_callback = viz::SingleReleaseCallback::Create(std::move(func));
+    *out_release_callback = std::move(func);
   }
 
   return true;

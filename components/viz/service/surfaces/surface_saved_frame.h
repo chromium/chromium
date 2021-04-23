@@ -14,7 +14,7 @@
 #include "base/time/time.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
-#include "components/viz/common/resources/single_release_callback.h"
+#include "components/viz/common/resources/release_callback.h"
 #include "components/viz/service/viz_service_export.h"
 
 namespace viz {
@@ -48,7 +48,7 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
     bool is_software = false;
 
     // Release callback used to return a GPU texture.
-    std::unique_ptr<SingleReleaseCallback> release_callback;
+    ReleaseCallback release_callback;
   };
 
   struct FrameResult {

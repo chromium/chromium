@@ -12,7 +12,6 @@
 #include "build/build_config.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/resource_format_utils.h"
-#include "components/viz/common/resources/single_release_callback.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
@@ -122,14 +121,13 @@ static void ReleaseFrameResources(
 
 bool CanvasResource::PrepareTransferableResource(
     viz::TransferableResource* out_resource,
-    std::unique_ptr<viz::SingleReleaseCallback>* out_callback,
+    viz::ReleaseCallback* out_callback,
     MailboxSyncMode sync_mode) {
   DCHECK(IsValid());
 
   DCHECK(out_callback);
-  auto func =
+  *out_callback =
       WTF::Bind(&ReleaseFrameResources, provider_, base::WrapRefCounted(this));
-  *out_callback = viz::SingleReleaseCallback::Create(std::move(func));
 
   if (!out_resource)
     return true;
@@ -624,10 +622,10 @@ scoped_refptr<StaticBitmapImage> CanvasResourceRasterSharedImage::Bitmap() {
   // Note that the code in CanvasResourceProvider::RecycleResource also uses the
   // ref-count on the resource as a proxy for a read lock to allow recycling the
   // resource once all refs have been released.
-  auto release_callback = viz::SingleReleaseCallback::Create(
+  auto release_callback =
       base::BindOnce(&OnBitmapImageDestroyed,
                      scoped_refptr<CanvasResourceRasterSharedImage>(this),
-                     has_read_ref_on_texture));
+                     has_read_ref_on_texture);
 
   scoped_refptr<StaticBitmapImage> image;
 
@@ -952,10 +950,10 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSkiaDawnSharedImage::Bitmap() {
   // Note that the code in CanvasResourceProvider::RecycleResource also uses the
   // ref-count on the resource as a proxy for a read lock to allow recycling the
   // resource once all refs have been released.
-  auto release_callback = viz::SingleReleaseCallback::Create(
+  auto release_callback =
       base::BindOnce(&OnBitmapImageDestroyed,
                      scoped_refptr<CanvasResourceSkiaDawnSharedImage>(this),
-                     has_read_ref_on_texture));
+                     has_read_ref_on_texture);
 
   scoped_refptr<StaticBitmapImage> image;
 
@@ -1036,7 +1034,7 @@ CanvasResourceSkiaDawnSharedImage::ContextProviderWrapper() const {
 //==============================================================================
 scoped_refptr<ExternalCanvasResource> ExternalCanvasResource::Create(
     const gpu::Mailbox& mailbox,
-    std::unique_ptr<viz::SingleReleaseCallback> release_callback,
+    viz::ReleaseCallback release_callback,
     gpu::SyncToken sync_token,
     const IntSize& size,
     GLenum texture_target,
@@ -1077,12 +1075,12 @@ scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
 
   // The |release_callback| keeps a ref on this resource to ensure the backing
   // shared image is kept alive until the lifetime of the image.
-  auto release_callback = viz::SingleReleaseCallback::Create(base::BindOnce(
+  auto release_callback = base::BindOnce(
       [](scoped_refptr<ExternalCanvasResource> resource,
          const gpu::SyncToken& sync_token, bool is_lost) {
         // Do nothing but hold onto the refptr.
       },
-      base::RetainedRef(this)));
+      base::RetainedRef(this));
 
   return AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
       mailbox_, GetSyncToken(), /*shared_image_texture_id=*/0u,
@@ -1093,7 +1091,7 @@ scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
 
 void ExternalCanvasResource::TearDown() {
   if (release_callback_)
-    release_callback_->Run(GetSyncToken(), resource_is_lost_);
+    std::move(release_callback_).Run(GetSyncToken(), resource_is_lost_);
   Abandon();
 }
 
@@ -1133,7 +1131,7 @@ ExternalCanvasResource::ContextProviderWrapper() const {
 
 ExternalCanvasResource::ExternalCanvasResource(
     const gpu::Mailbox& mailbox,
-    std::unique_ptr<viz::SingleReleaseCallback> out_callback,
+    viz::ReleaseCallback out_callback,
     gpu::SyncToken sync_token,
     const IntSize& size,
     GLenum texture_target,
@@ -1193,11 +1191,11 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSwapChain::Bitmap() {
 
   // The |release_callback| keeps a ref on this resource to ensure the backing
   // shared image is kept alive until the lifetime of the image.
-  auto release_callback = viz::SingleReleaseCallback::Create(base::BindOnce(
+  auto release_callback = base::BindOnce(
       [](scoped_refptr<CanvasResourceSwapChain>, const gpu::SyncToken&, bool) {
         // Do nothing but hold onto the refptr.
       },
-      base::RetainedRef(this)));
+      base::RetainedRef(this));
 
   return AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
       back_buffer_mailbox_, GetSyncToken(), shared_texture_id, image_info,

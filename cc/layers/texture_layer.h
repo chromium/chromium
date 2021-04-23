@@ -15,18 +15,14 @@
 #include "cc/layers/layer.h"
 #include "cc/resources/cross_thread_shared_bitmap.h"
 #include "cc/resources/shared_bitmap_id_registrar.h"
+#include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/transferable_resource.h"
 
 namespace gpu {
 struct SyncToken;
 }
 
-namespace viz {
-class SingleReleaseCallback;
-}
-
 namespace cc {
-class SingleReleaseCallback;
 class TextureLayer;
 class TextureLayerClient;
 
@@ -62,7 +58,7 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
 
     // Gets a viz::ReleaseCallback that can be called from another thread. Note:
     // the caller must ensure the callback is called.
-    std::unique_ptr<viz::SingleReleaseCallback> GetCallbackForImplThread(
+    viz::ReleaseCallback GetCallbackForImplThread(
         scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner);
 
    protected:
@@ -71,7 +67,7 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
     // Protected visiblity so only TextureLayer and unit tests can create these.
     static std::unique_ptr<MainThreadReference> Create(
         const viz::TransferableResource& resource,
-        std::unique_ptr<viz::SingleReleaseCallback> release_callback);
+        viz::ReleaseCallback release_callback);
     virtual ~TransferableResourceHolder();
 
    private:
@@ -79,7 +75,7 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
     friend class MainThreadReference;
     explicit TransferableResourceHolder(
         const viz::TransferableResource& resource,
-        std::unique_ptr<viz::SingleReleaseCallback> release_callback);
+        viz::ReleaseCallback release_callback);
 
     void InternalAddRef();
     void InternalRelease();
@@ -98,7 +94,7 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
     int posted_internal_derefs_ = 0;
 #endif
     viz::TransferableResource resource_;
-    std::unique_ptr<viz::SingleReleaseCallback> release_callback_;
+    viz::ReleaseCallback release_callback_;
 
     // This lock guards the sync_token_ and is_lost_ fields because they can be
     // accessed on both the impl and main thread. We do this to ensure that the
@@ -150,9 +146,8 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
   void SetForceTextureToOpaque(bool opaque);
 
   // Code path for plugins which supply their own mailbox.
-  void SetTransferableResource(
-      const viz::TransferableResource& resource,
-      std::unique_ptr<viz::SingleReleaseCallback> release_callback);
+  void SetTransferableResource(const viz::TransferableResource& resource,
+                               viz::ReleaseCallback release_callback);
 
   void SetNeedsDisplayRect(const gfx::Rect& dirty_rect) override;
 
@@ -185,7 +180,7 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
  private:
   void SetTransferableResourceInternal(
       const viz::TransferableResource& resource,
-      std::unique_ptr<viz::SingleReleaseCallback> release_callback,
+      viz::ReleaseCallback release_callback,
       bool requires_commit);
 
   // Friends to give access to UnregisterSharedBitmapId().

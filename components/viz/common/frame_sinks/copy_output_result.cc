@@ -64,9 +64,8 @@ const CopyOutputResult::TextureResult* CopyOutputResult::GetTextureResult()
   return nullptr;
 }
 
-std::unique_ptr<SingleReleaseCallback>
-CopyOutputResult::TakeTextureOwnership() {
-  return nullptr;
+ReleaseCallback CopyOutputResult::TakeTextureOwnership() {
+  return ReleaseCallback();
 }
 
 bool CopyOutputResult::ReadI420Planes(uint8_t* y_out,
@@ -177,7 +176,7 @@ CopyOutputTextureResult::CopyOutputTextureResult(
     const gpu::Mailbox& mailbox,
     const gpu::SyncToken& sync_token,
     const gfx::ColorSpace& color_space,
-    std::unique_ptr<SingleReleaseCallback> release_callback)
+    ReleaseCallback release_callback)
     : CopyOutputResult(Format::RGBA_TEXTURE, rect, false),
       texture_result_(mailbox, sync_token, color_space),
       release_callback_(std::move(release_callback)) {
@@ -189,7 +188,7 @@ CopyOutputTextureResult::CopyOutputTextureResult(
 
 CopyOutputTextureResult::~CopyOutputTextureResult() {
   if (release_callback_)
-    release_callback_->Run(gpu::SyncToken(), false);
+    std::move(release_callback_).Run(gpu::SyncToken(), false);
 }
 
 const CopyOutputResult::TextureResult*
@@ -197,8 +196,7 @@ CopyOutputTextureResult::GetTextureResult() const {
   return &texture_result_;
 }
 
-std::unique_ptr<SingleReleaseCallback>
-CopyOutputTextureResult::TakeTextureOwnership() {
+ReleaseCallback CopyOutputTextureResult::TakeTextureOwnership() {
   texture_result_.mailbox = gpu::Mailbox();
   texture_result_.sync_token = gpu::SyncToken();
   texture_result_.color_space = gfx::ColorSpace();

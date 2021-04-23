@@ -6,7 +6,7 @@
 
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "components/viz/common/resources/single_release_callback.h"
+#include "components/viz/common/resources/release_callback.h"
 #include "components/viz/test/test_context_provider.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -34,8 +34,7 @@ TEST(TextureDeleterTest, Destroy) {
   EXPECT_TRUE(context_provider->HasOneRef());
   EXPECT_EQ(1u, sii->shared_image_count());
 
-  std::unique_ptr<SingleReleaseCallback> cb =
-      deleter->GetReleaseCallback(context_provider, mailbox);
+  ReleaseCallback cb = deleter->GetReleaseCallback(context_provider, mailbox);
   EXPECT_FALSE(context_provider->HasOneRef());
   EXPECT_EQ(1u, sii->shared_image_count());
 
@@ -47,7 +46,7 @@ TEST(TextureDeleterTest, Destroy) {
 
   // Run the scoped release callback before destroying it, but it won't do
   // anything.
-  cb->Run(gpu::SyncToken(), false);
+  std::move(cb).Run(gpu::SyncToken(), false);
 }
 
 TEST(TextureDeleterTest, NullTaskRunner) {
@@ -67,12 +66,11 @@ TEST(TextureDeleterTest, NullTaskRunner) {
   EXPECT_TRUE(context_provider->HasOneRef());
   EXPECT_EQ(1u, sii->shared_image_count());
 
-  std::unique_ptr<SingleReleaseCallback> cb =
-      deleter->GetReleaseCallback(context_provider, mailbox);
+  ReleaseCallback cb = deleter->GetReleaseCallback(context_provider, mailbox);
   EXPECT_FALSE(context_provider->HasOneRef());
   EXPECT_EQ(1u, sii->shared_image_count());
 
-  cb->Run(gpu::SyncToken(), false);
+  std::move(cb).Run(gpu::SyncToken(), false);
 
   // With no task runner the callback will immediately drops its ref on the
   // ContextProvider and delete the shared image.

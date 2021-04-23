@@ -20,8 +20,8 @@
 #include "base/optional.h"
 #include "build/build_config.h"
 #include "components/viz/client/client_resource_provider.h"
+#include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/returned_resource.h"
-#include "components/viz/common/resources/single_release_callback.h"
 #include "components/viz/test/test_context_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -130,8 +130,8 @@ TEST_F(DisplayResourceProviderSkiaTest, LockForExternalUse) {
   TransferableResource gl_resource = TransferableResource::MakeGL(
       mailbox, GL_LINEAR, GL_TEXTURE_2D, sync_token1, size,
       false /* is_overlay_candidate */);
-  ResourceId id1 = child_resource_provider_->ImportResource(
-      gl_resource, SingleReleaseCallback::Create(base::DoNothing()));
+  ResourceId id1 =
+      child_resource_provider_->ImportResource(gl_resource, base::DoNothing());
   std::vector<ReturnedResource> returned_to_child;
   int child_id =
       resource_provider_->CreateChild(GetReturnCallback(&returned_to_child));
@@ -210,8 +210,8 @@ TEST_F(DisplayResourceProviderSkiaTest, LockForExternalUseWebView) {
   TransferableResource gl_resource = TransferableResource::MakeGL(
       mailbox, GL_LINEAR, GL_TEXTURE_2D, sync_token1, size,
       false /* is_overlay_candidate */);
-  ResourceId id1 = child_resource_provider_->ImportResource(
-      gl_resource, SingleReleaseCallback::Create(base::DoNothing()));
+  ResourceId id1 =
+      child_resource_provider_->ImportResource(gl_resource, base::DoNothing());
   std::vector<ReturnedResource> returned_to_child;
   int child_id =
       resource_provider_->CreateChild(GetReturnCallback(&returned_to_child));
@@ -314,8 +314,8 @@ TEST_F(DisplayResourceProviderSkiaTest,
   TransferableResource tran1 = CreateResource(RGBA_8888);
   tran1.read_lock_fences_enabled = true;
   ResourceId id1 = child_resource_provider_->ImportResource(
-      tran1, SingleReleaseCallback::Create(base::BindOnce(
-                 &MockReleaseCallback::Released, base::Unretained(&release))));
+      tran1, base::BindOnce(&MockReleaseCallback::Released,
+                            base::Unretained(&release)));
 
   std::vector<ReturnedResource> returned_to_child;
   int child_id =
@@ -366,14 +366,14 @@ TEST_F(DisplayResourceProviderSkiaTest, ReadLockFenceDestroyChild) {
   TransferableResource tran1 = CreateResource(RGBA_8888);
   tran1.read_lock_fences_enabled = true;
   ResourceId id1 = child_resource_provider_->ImportResource(
-      tran1, SingleReleaseCallback::Create(base::BindOnce(
-                 &MockReleaseCallback::Released, base::Unretained(&release))));
+      tran1, base::BindOnce(&MockReleaseCallback::Released,
+                            base::Unretained(&release)));
 
   TransferableResource tran2 = CreateResource(RGBA_8888);
   tran2.read_lock_fences_enabled = false;
   ResourceId id2 = child_resource_provider_->ImportResource(
-      tran2, SingleReleaseCallback::Create(base::BindOnce(
-                 &MockReleaseCallback::Released, base::Unretained(&release))));
+      tran2, base::BindOnce(&MockReleaseCallback::Released,
+                            base::Unretained(&release)));
 
   std::vector<ReturnedResource> returned_to_child;
   int child_id =
@@ -441,8 +441,8 @@ TEST_F(DisplayResourceProviderSkiaTest,
   for (auto& id : ids) {
     TransferableResource tran = CreateResource(RGBA_8888);
     id = child_resource_provider_->ImportResource(
-        tran, SingleReleaseCallback::Create(base::BindOnce(
-                  &MockReleaseCallback::Released, base::Unretained(&release))));
+        tran, base::BindOnce(&MockReleaseCallback::Released,
+                             base::Unretained(&release)));
   }
   std::vector<ResourceId> resource_ids_to_transfer(ids, ids + kTotalResources);
 

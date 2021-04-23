@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_image_bitmap_handler.h"
+
+#include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/null_task_runner.h"
 #include "base/test/task_environment.h"
@@ -34,14 +36,11 @@ gpu::SyncToken GenTestSyncToken(GLbyte id) {
 
 scoped_refptr<StaticBitmapImage> CreateBitmap() {
   auto mailbox = gpu::Mailbox::GenerateForSharedImage();
-  auto release_callback = viz::SingleReleaseCallback::Create(
-      base::BindOnce([](const gpu::SyncToken&, bool) {}));
   return AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
       mailbox, GenTestSyncToken(100), 0, SkImageInfo::MakeN32Premul(100, 100),
       GL_TEXTURE_2D, true, SharedGpuContext::ContextProviderWrapper(),
       base::PlatformThread::CurrentRef(),
-      base::MakeRefCounted<base::NullTaskRunner>(),
-      std::move(release_callback));
+      base::MakeRefCounted<base::NullTaskRunner>(), base::DoNothing());
 }
 
 bool GPUUploadingPathSupported() {

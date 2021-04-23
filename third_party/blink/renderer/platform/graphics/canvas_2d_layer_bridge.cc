@@ -590,7 +590,7 @@ bool Canvas2DLayerBridge::Restore() {
 bool Canvas2DLayerBridge::PrepareTransferableResource(
     cc::SharedBitmapIdRegistrar* bitmap_registrar,
     viz::TransferableResource* out_resource,
-    std::unique_ptr<viz::SingleReleaseCallback>* out_release_callback) {
+    viz::ReleaseCallback* out_release_callback) {
   DCHECK(layer_);  // This explodes if FinalizeFrame() was not called.
 
   frames_since_last_commit_ = 0;
@@ -624,8 +624,7 @@ bool Canvas2DLayerBridge::PrepareTransferableResource(
     // If the resource did not change, the release will be handled correctly
     // when the callback from the previous frame is dispatched. But run the
     // |out_release_callback| to release the ref acquired above.
-    (*out_release_callback)->Run(gpu::SyncToken(), false /* is_lost */);
-    *out_release_callback = nullptr;
+    std::move(*out_release_callback).Run(gpu::SyncToken(), false /* is_lost */);
     return false;
   }
 

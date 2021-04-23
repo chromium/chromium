@@ -114,8 +114,8 @@ class SkiaReadbackPixelTest : public cc::PixelTest,
         mailbox, GL_LINEAR, GL_TEXTURE_2D, sync_token, size,
         /*is_overlay_candidate=*/false);
     gl_resource.format = format;
-    auto release_callback = SingleReleaseCallback::Create(
-        base::BindOnce(&DeleteSharedImage, child_context_provider_, mailbox));
+    auto release_callback =
+        base::BindOnce(&DeleteSharedImage, child_context_provider_, mailbox);
     return child_resource_provider_->ImportResource(
         gl_resource, std::move(release_callback));
   }

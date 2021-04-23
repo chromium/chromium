@@ -232,7 +232,7 @@ Layer::~Layer() {
     content_layer_->ClearClient();
   cc_layer_->RemoveFromParent();
   if (transfer_release_callback_)
-    transfer_release_callback_->Run(gpu::SyncToken(), false);
+    std::move(transfer_release_callback_).Run(gpu::SyncToken(), false);
 
   ResetSubtreeReflectedLayer();
 }
@@ -299,8 +299,7 @@ std::unique_ptr<Layer> Layer::Mirror() {
     // freed up until the original layer releases it.
     mirror->SetTransferableResource(
         transfer_resource_,
-        viz::SingleReleaseCallback::Create(base::BindOnce(
-            [](const gpu::SyncToken& sync_token, bool is_lost) {})),
+        base::BindOnce([](const gpu::SyncToken& sync_token, bool is_lost) {}),
         frame_size_in_dip_);
   }
 
@@ -927,10 +926,9 @@ bool Layer::ContainsMirrorForTest(Layer* mirror) const {
   return it != mirrors_.end();
 }
 
-void Layer::SetTransferableResource(
-    const viz::TransferableResource& resource,
-    std::unique_ptr<viz::SingleReleaseCallback> release_callback,
-    gfx::Size texture_size_in_dip) {
+void Layer::SetTransferableResource(const viz::TransferableResource& resource,
+                                    viz::ReleaseCallback release_callback,
+                                    gfx::Size texture_size_in_dip) {
   DCHECK(type_ == LAYER_TEXTURED || type_ == LAYER_SOLID_COLOR);
   DCHECK(!resource.mailbox_holder.mailbox.IsZero());
   DCHECK(release_callback);
@@ -948,7 +946,7 @@ void Layer::SetTransferableResource(
     frame_size_in_dip_ = gfx::Size();
   }
   if (transfer_release_callback_)
-    transfer_release_callback_->Run(gpu::SyncToken(), false);
+    std::move(transfer_release_callback_).Run(gpu::SyncToken(), false);
   transfer_release_callback_ = std::move(release_callback);
   transfer_resource_ = resource;
   SetTextureSize(texture_size_in_dip);
@@ -958,8 +956,7 @@ void Layer::SetTransferableResource(
     // should be able to release the texture resource.
     mirror->dest()->SetTransferableResource(
         transfer_resource_,
-        viz::SingleReleaseCallback::Create(base::BindOnce(
-            [](const gpu::SyncToken& sync_token, bool is_lost) {})),
+        base::BindOnce([](const gpu::SyncToken& sync_token, bool is_lost) {}),
         frame_size_in_dip_);
   }
 }
@@ -1068,8 +1065,7 @@ void Layer::SetShowSolidColorContent() {
 
   transfer_resource_ = viz::TransferableResource();
   if (transfer_release_callback_) {
-    transfer_release_callback_->Run(gpu::SyncToken(), false);
-    transfer_release_callback_.reset();
+    std::move(transfer_release_callback_).Run(gpu::SyncToken(), false);
   }
   RecomputeDrawsContentAndUVRect();
 
@@ -1342,7 +1338,7 @@ bool Layer::FillsBoundsCompletely() const { return fills_bounds_completely_; }
 bool Layer::PrepareTransferableResource(
     cc::SharedBitmapIdRegistrar* bitmap_registar,
     viz::TransferableResource* resource,
-    std::unique_ptr<viz::SingleReleaseCallback>* release_callback) {
+    viz::ReleaseCallback* release_callback) {
   if (!transfer_release_callback_)
     return false;
   *resource = transfer_resource_;

@@ -1150,14 +1150,14 @@ class LayerTreeHostCopyRequestTestCreatesSharedImage
   }
 
   void AfterTest() override {
-    release_->Run(gpu::SyncToken(), false);
+    std::move(release_).Run(gpu::SyncToken(), false);
 
     // Except the copy to have made a new shared image.
     EXPECT_EQ(num_shared_images_without_readback_ + 1,
               num_shared_images_with_readback_);
   }
 
-  std::unique_ptr<viz::SingleReleaseCallback> release_;
+  viz::ReleaseCallback release_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

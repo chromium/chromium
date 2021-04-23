@@ -120,12 +120,11 @@ class LayerTreeHostReadbackPixelTest
     gpu::SyncToken sync_token = result->GetTextureResult()->sync_token;
     gfx::ColorSpace color_space = result->GetTextureResult()->color_space;
     EXPECT_EQ(result->GetTextureResult()->color_space, output_color_space_);
-    std::unique_ptr<viz::SingleReleaseCallback> release_callback =
-        result->TakeTextureOwnership();
+    viz::ReleaseCallback release_callback = result->TakeTextureOwnership();
 
     SkBitmap bitmap =
         CopyMailboxToBitmap(result->size(), mailbox, sync_token, color_space);
-    release_callback->Run(gpu::SyncToken(), false);
+    std::move(release_callback).Run(gpu::SyncToken(), false);
 
     ReadbackResultAsBitmap(std::make_unique<viz::CopyOutputSkBitmapResult>(
         result->rect(), std::move(bitmap)));

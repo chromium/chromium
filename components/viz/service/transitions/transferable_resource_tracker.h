@@ -9,8 +9,8 @@
 #include <memory>
 #include <vector>
 
+#include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/resource_id.h"
-#include "components/viz/common/resources/single_release_callback.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/service/surfaces/surface_saved_frame.h"
 #include "components/viz/service/viz_service_export.h"
@@ -95,15 +95,14 @@ class VIZ_SERVICE_EXPORT TransferableResourceTracker {
   struct TransferableResourceHolder {
     TransferableResourceHolder();
     TransferableResourceHolder(TransferableResourceHolder&& other);
-    TransferableResourceHolder(
-        const TransferableResource& resource,
-        std::unique_ptr<SingleReleaseCallback> release_callback);
+    TransferableResourceHolder(const TransferableResource& resource,
+                               ReleaseCallback release_callback);
     ~TransferableResourceHolder();
 
     TransferableResourceHolder& operator=(TransferableResourceHolder&& other);
 
     TransferableResource resource;
-    std::unique_ptr<SingleReleaseCallback> release_callback;
+    ReleaseCallback release_callback;
     uint8_t ref_count = 0u;
   };
 

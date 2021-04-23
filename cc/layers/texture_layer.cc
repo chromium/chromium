@@ -15,7 +15,6 @@
 #include "cc/layers/texture_layer_client.h"
 #include "cc/layers/texture_layer_impl.h"
 #include "cc/trees/layer_tree_host.h"
-#include "components/viz/common/resources/single_release_callback.h"
 
 namespace cc {
 
@@ -35,7 +34,7 @@ void TextureLayer::ClearClient() {
 }
 
 void TextureLayer::ClearTexture() {
-  SetTransferableResource(viz::TransferableResource(), nullptr);
+  SetTransferableResource(viz::TransferableResource(), viz::ReleaseCallback());
 }
 
 std::unique_ptr<LayerImpl> TextureLayer::CreateLayerImpl(
@@ -89,7 +88,7 @@ void TextureLayer::SetForceTextureToOpaque(bool opaque) {
 
 void TextureLayer::SetTransferableResourceInternal(
     const viz::TransferableResource& resource,
-    std::unique_ptr<viz::SingleReleaseCallback> release_callback,
+    viz::ReleaseCallback release_callback,
     bool requires_commit) {
   DCHECK(resource.mailbox_holder.mailbox.IsZero() || !holder_ref_ ||
          resource != holder_ref_->holder()->resource());
@@ -114,7 +113,7 @@ void TextureLayer::SetTransferableResourceInternal(
 
 void TextureLayer::SetTransferableResource(
     const viz::TransferableResource& resource,
-    std::unique_ptr<viz::SingleReleaseCallback> release_callback) {
+    viz::ReleaseCallback release_callback) {
   bool requires_commit = true;
   SetTransferableResourceInternal(resource, std::move(release_callback),
                                   requires_commit);
@@ -155,7 +154,7 @@ bool TextureLayer::Update() {
   bool updated = Layer::Update();
   if (client_) {
     viz::TransferableResource resource;
-    std::unique_ptr<viz::SingleReleaseCallback> release_callback;
+    viz::ReleaseCallback release_callback;
     if (client_->PrepareTransferableResource(this, &resource,
                                              &release_callback)) {
       // Already within a commit, no need to do another one immediately.
@@ -195,7 +194,7 @@ void TextureLayer::PushPropertiesTo(LayerImpl* layer) {
   texture_layer->SetForceTextureToOpaque(force_texture_to_opaque_);
   if (needs_set_resource_) {
     viz::TransferableResource resource;
-    std::unique_ptr<viz::SingleReleaseCallback> release_callback;
+    viz::ReleaseCallback release_callback;
     if (holder_ref_) {
       TransferableResourceHolder* holder = holder_ref_->holder();
       resource = holder->resource();
@@ -270,7 +269,7 @@ TextureLayer::TransferableResourceHolder::MainThreadReference::
 
 TextureLayer::TransferableResourceHolder::TransferableResourceHolder(
     const viz::TransferableResource& resource,
-    std::unique_ptr<viz::SingleReleaseCallback> release_callback)
+    viz::ReleaseCallback release_callback)
     : resource_(resource),
       release_callback_(std::move(release_callback)),
       sync_token_(resource.mailbox_holder.sync_token) {}
@@ -291,14 +290,14 @@ TextureLayer::TransferableResourceHolder::~TransferableResourceHolder() {
     // We run the ReleaseCallback in that case assuming the MessageLoop is being
     // destroyed on the main thread.
     DCHECK(main_thread_checker_.CalledOnValidThread());
-    release_callback_->Run(sync_token_, is_lost_);
+    std::move(release_callback_).Run(sync_token_, is_lost_);
   }
 }
 
 std::unique_ptr<TextureLayer::TransferableResourceHolder::MainThreadReference>
 TextureLayer::TransferableResourceHolder::Create(
     const viz::TransferableResource& resource,
-    std::unique_ptr<viz::SingleReleaseCallback> release_callback) {
+    viz::ReleaseCallback release_callback) {
   return std::make_unique<MainThreadReference>(
       new TransferableResourceHolder(resource, std::move(release_callback)));
 }
@@ -311,16 +310,16 @@ void TextureLayer::TransferableResourceHolder::Return(
   is_lost_ = is_lost;
 }
 
-std::unique_ptr<viz::SingleReleaseCallback>
+viz::ReleaseCallback
 TextureLayer::TransferableResourceHolder::GetCallbackForImplThread(
     scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner) {
   // We can't call GetCallbackForImplThread if we released the main thread
   // reference.
   DCHECK_GT(internal_references_, 0);
   InternalAddRef();
-  return viz::SingleReleaseCallback::Create(
-      base::BindOnce(&TransferableResourceHolder::ReturnAndReleaseOnImplThread,
-                     this, std::move(main_thread_task_runner)));
+  return base::BindOnce(
+      &TransferableResourceHolder::ReturnAndReleaseOnImplThread, this,
+      std::move(main_thread_task_runner));
 }
 
 void TextureLayer::TransferableResourceHolder::InternalAddRef() {
@@ -336,9 +335,8 @@ void TextureLayer::TransferableResourceHolder::InternalRelease() {
   }
 #endif
   if (!--internal_references_) {
-    release_callback_->Run(sync_token_, is_lost_);
+    std::move(release_callback_).Run(sync_token_, is_lost_);
     resource_ = viz::TransferableResource();
-    release_callback_ = nullptr;
   }
 }
 

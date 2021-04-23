@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 
 #include "base/run_loop.h"
-#include "components/viz/common/resources/single_release_callback.h"
+#include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/test/test_gpu_memory_buffer_manager.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -30,14 +30,14 @@ TEST(CanvasResourceTest, PrepareTransferableResource_SharedBitmap) {
                                          kLow_SkFilterQuality);
   EXPECT_TRUE(!!canvas_resource);
   viz::TransferableResource resource;
-  std::unique_ptr<viz::SingleReleaseCallback> release_callback;
+  viz::ReleaseCallback release_callback;
   bool success = canvas_resource->PrepareTransferableResource(
       &resource, &release_callback, kUnverifiedSyncToken);
 
   EXPECT_TRUE(success);
   EXPECT_TRUE(resource.is_software);
 
-  release_callback->Run(gpu::SyncToken(), false);
+  std::move(release_callback).Run(gpu::SyncToken(), false);
 }
 
 }  // namespace blink

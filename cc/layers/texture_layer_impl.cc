@@ -20,7 +20,6 @@
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/platform_color.h"
-#include "components/viz/common/resources/single_release_callback.h"
 
 namespace cc {
 
@@ -233,7 +232,7 @@ void TextureLayerImpl::SetUVBottomRight(const gfx::PointF& bottom_right) {
 
 void TextureLayerImpl::SetTransferableResource(
     const viz::TransferableResource& resource,
-    std::unique_ptr<viz::SingleReleaseCallback> release_callback) {
+    viz::ReleaseCallback release_callback) {
   DCHECK_EQ(resource.mailbox_holder.mailbox.IsZero(), !release_callback);
   FreeTransferableResource();
   transferable_resource_ = resource;
@@ -282,11 +281,10 @@ void TextureLayerImpl::FreeTransferableResource() {
     if (release_callback_) {
       // We didn't use the resource, but the client might need the SyncToken
       // before it can use the resource with its own GL context.
-      release_callback_->Run(transferable_resource_.mailbox_holder.sync_token,
-                             false);
+      std::move(release_callback_)
+          .Run(transferable_resource_.mailbox_holder.sync_token, false);
     }
     transferable_resource_ = viz::TransferableResource();
-    release_callback_ = nullptr;
   } else if (resource_id_) {
     DCHECK(!own_resource_);
     auto* resource_provider = layer_tree_impl()->resource_provider();

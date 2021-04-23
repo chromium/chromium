@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "base/threading/thread_checker.h"
-#include "components/viz/common/resources/single_release_callback.h"
+#include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/viz_common_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
@@ -91,7 +91,7 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
         : mailbox(mailbox), sync_token(sync_token), color_space(color_space) {}
   };
   virtual const TextureResult* GetTextureResult() const;
-  virtual std::unique_ptr<SingleReleaseCallback> TakeTextureOwnership();
+  virtual ReleaseCallback TakeTextureOwnership();
 
   // Copies the image planes of an I420_PLANES result to the caller-provided
   // memory. Returns true if successful, or false if: 1) this result is empty,
@@ -169,28 +169,27 @@ class VIZ_COMMON_EXPORT CopyOutputSkBitmapResult : public CopyOutputResult {
   DISALLOW_COPY_AND_ASSIGN(CopyOutputSkBitmapResult);
 };
 
-// Subclass of CopyOutputResult that holds a reference to a texture (via
-// a mailbox). The owner of the result must take ownership of the texture
-// if it wants to use it by calling TakeTextureOwnership(), and then call the
-// SingleReleaseCallback when the texture will no longer be used to release
-// ownership and allow the texture to be reused or destroyed. If ownership is
-// not claimed, it will be released when this class is destroyed.
+// Subclass of CopyOutputResult that holds a reference to a texture (via a
+// mailbox). The owner of the result must take ownership of the texture if it
+// wants to use it by calling TakeTextureOwnership(), and then call the
+// ReleaseCallback when the texture will no longer be used to release ownership
+// and allow the texture to be reused or destroyed. If ownership is not claimed,
+// it will be released when this class is destroyed.
 class VIZ_COMMON_EXPORT CopyOutputTextureResult : public CopyOutputResult {
  public:
-  CopyOutputTextureResult(
-      const gfx::Rect& rect,
-      const gpu::Mailbox& mailbox,
-      const gpu::SyncToken& sync_token,
-      const gfx::ColorSpace& color_space,
-      std::unique_ptr<SingleReleaseCallback> release_callback);
+  CopyOutputTextureResult(const gfx::Rect& rect,
+                          const gpu::Mailbox& mailbox,
+                          const gpu::SyncToken& sync_token,
+                          const gfx::ColorSpace& color_space,
+                          ReleaseCallback release_callback);
   ~CopyOutputTextureResult() override;
 
   const TextureResult* GetTextureResult() const override;
-  std::unique_ptr<SingleReleaseCallback> TakeTextureOwnership() override;
+  ReleaseCallback TakeTextureOwnership() override;
 
  private:
   TextureResult texture_result_;
-  std::unique_ptr<SingleReleaseCallback> release_callback_;
+  ReleaseCallback release_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(CopyOutputTextureResult);
 };

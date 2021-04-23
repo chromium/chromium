@@ -4,9 +4,10 @@
 
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 
+#include "base/callback_helpers.h"
 #include "base/test/null_task_runner.h"
 #include "base/test/task_environment.h"
-#include "components/viz/common/resources/single_release_callback.h"
+#include "components/viz/common/resources/release_callback.h"
 #include "components/viz/test/test_gles2_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -49,15 +50,12 @@ gpu::SyncToken GenTestSyncToken(GLbyte id) {
 
 scoped_refptr<StaticBitmapImage> CreateBitmap() {
   auto mailbox = gpu::Mailbox::GenerateForSharedImage();
-  auto release_callback = viz::SingleReleaseCallback::Create(
-      base::BindOnce([](const gpu::SyncToken&, bool) {}));
 
   return AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
       mailbox, GenTestSyncToken(100), 0, SkImageInfo::MakeN32Premul(100, 100),
       GL_TEXTURE_2D, true, SharedGpuContext::ContextProviderWrapper(),
       base::PlatformThread::CurrentRef(),
-      base::MakeRefCounted<base::NullTaskRunner>(),
-      std::move(release_callback));
+      base::MakeRefCounted<base::NullTaskRunner>(), base::DoNothing());
 }
 
 class AcceleratedStaticBitmapImageTest : public Test {

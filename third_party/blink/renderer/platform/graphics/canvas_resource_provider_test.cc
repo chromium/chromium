@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 
-#include "components/viz/common/resources/single_release_callback.h"
+#include "components/viz/common/resources/release_callback.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_gles2_interface.h"
 #include "components/viz/test/test_gpu_memory_buffer_manager.h"
@@ -203,12 +203,12 @@ TEST_F(CanvasResourceProviderTest,
 
   // Resource recycled.
   viz::TransferableResource transferable_resource;
-  std::unique_ptr<viz::SingleReleaseCallback> release_callback;
+  viz::ReleaseCallback release_callback;
   ASSERT_TRUE(resource->PrepareTransferableResource(
       &transferable_resource, &release_callback, kUnverifiedSyncToken));
   auto* resource_ptr = resource.get();
   resource = nullptr;
-  release_callback->Run(sync_token, false);
+  std::move(release_callback).Run(sync_token, false);
 
   provider->Canvas()->clear(SK_ColorBLACK);
   auto resource_again = provider->ProduceCanvasResource();
@@ -403,10 +403,11 @@ TEST_F(CanvasResourceProviderTest,
   gpu::Mailbox mailbox = gpu::Mailbox::Generate();
   scoped_refptr<ExternalCanvasResource> resource =
       ExternalCanvasResource::Create(
-          mailbox, nullptr, gpu::SyncToken(), kSize, GL_TEXTURE_2D,
-          kColorParams, SharedGpuContext::ContextProviderWrapper(),
-          provider->CreateWeakPtr(), kMedium_SkFilterQuality,
-          true /*is_origin_top_left*/, true /*is_overlay_candidate*/);
+          mailbox, viz::ReleaseCallback(), gpu::SyncToken(), kSize,
+          GL_TEXTURE_2D, kColorParams,
+          SharedGpuContext::ContextProviderWrapper(), provider->CreateWeakPtr(),
+          kMedium_SkFilterQuality, true /*is_origin_top_left*/,
+          true /*is_overlay_candidate*/);
 
   // NewOrRecycledResource() would return nullptr before an ImportResource().
   EXPECT_TRUE(provider->ImportResource(resource));

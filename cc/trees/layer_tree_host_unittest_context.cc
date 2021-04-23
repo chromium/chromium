@@ -35,7 +35,6 @@
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/single_thread_proxy.h"
 #include "components/viz/client/client_resource_provider.h"
-#include "components/viz/common/resources/single_release_callback.h"
 #include "components/viz/test/fake_output_surface.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_gles2_interface.h"
@@ -922,9 +921,8 @@ class LayerTreeHostContextTestDontUseLostResources
         mailbox, GL_LINEAR, GL_TEXTURE_2D, sync_token, size,
         false /* is_overlay_candidate */);
     texture->SetTransferableResource(
-        resource, viz::SingleReleaseCallback::Create(base::BindOnce(
-                      &LayerTreeHostContextTestDontUseLostResources::
-                          EmptyReleaseCallback)));
+        resource, base::BindOnce(&LayerTreeHostContextTestDontUseLostResources::
+                                     EmptyReleaseCallback));
     root->AddChild(texture);
 
     scoped_refptr<PictureLayer> mask = PictureLayer::Create(&client_);

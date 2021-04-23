@@ -13,8 +13,8 @@
 #include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
+#include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/resource_format.h"
-#include "components/viz/common/resources/single_release_callback.h"
 #include "services/viz/public/mojom/compositing/frame_timing_details.mojom-blink.h"
 #include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom-blink.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
@@ -42,13 +42,13 @@ struct CanvasResourceDispatcher::FrameResource {
   FrameResource() = default;
   ~FrameResource() {
     if (release_callback)
-      release_callback->Run(sync_token, is_lost);
+      std::move(release_callback).Run(sync_token, is_lost);
   }
 
   // TODO(junov):  What does this do?
   bool spare_lock = true;
 
-  std::unique_ptr<viz::SingleReleaseCallback> release_callback;
+  viz::ReleaseCallback release_callback;
   gpu::SyncToken sync_token;
   bool is_lost = false;
 };
