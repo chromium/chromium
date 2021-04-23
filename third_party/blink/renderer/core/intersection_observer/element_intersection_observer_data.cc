@@ -9,20 +9,6 @@
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_controller.h"
 
-// This appears in several files and needs to be moved to a shared header.
-struct RecordReplayCompareMemberByPointerId {
-  template <typename T>
-  bool operator()(const T& a, const T& b) const {
-    if (recordreplay::IsRecordingOrReplaying()) {
-      int ida = recordreplay::PointerId(a.Get());
-      int idb = recordreplay::PointerId(b.Get());
-      CHECK(ida && idb);
-      return ida < idb;
-    }
-    return a < b;
-  }
-};
-
 namespace blink {
 
 ElementIntersectionObserverData::ElementIntersectionObserverData() = default;
@@ -85,7 +71,7 @@ bool ElementIntersectionObserverData::ComputeIntersectionsForTarget(
   }
 
   std::sort(observations_to_process.begin(), observations_to_process.end(),
-            RecordReplayCompareMemberByPointerId());
+            recordreplay::CompareMemberByPointerId());
 
   for (auto& observation : observations_to_process) {
     observation->ComputeIntersection(flags);

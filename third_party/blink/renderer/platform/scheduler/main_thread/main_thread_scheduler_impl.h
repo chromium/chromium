@@ -78,19 +78,6 @@ class PageSchedulerImpl;
 class TaskQueueThrottler;
 class WebRenderWidgetSchedulingState;
 
-template <typename T>
-struct RecordReplayCompareRefptrByPointerId {
-  bool operator()(const scoped_refptr<T>& a, const scoped_refptr<T>& b) const {
-    if (recordreplay::IsRecordingOrReplaying()) {
-      int ida = recordreplay::PointerId(a.get());
-      int idb = recordreplay::PointerId(b.get());
-      CHECK(ida && idb);
-      return ida < idb;
-    }
-    return a < b;
-  }
-};
-
 class PLATFORM_EXPORT MainThreadSchedulerImpl
     : public ThreadSchedulerImpl,
       public AgentSchedulingStrategy::Delegate,
@@ -851,7 +838,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   using TaskQueueVoterMap = std::map<
       scoped_refptr<MainThreadTaskQueue>,
       std::unique_ptr<base::sequence_manager::TaskQueue::QueueEnabledVoter>,
-      RecordReplayCompareRefptrByPointerId<MainThreadTaskQueue>>;
+      recordreplay::CompareRefptrByPointerId<MainThreadTaskQueue>>;
 
   TaskQueueVoterMap task_runners_;
 

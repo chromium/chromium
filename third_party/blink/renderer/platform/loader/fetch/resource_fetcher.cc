@@ -2069,19 +2069,6 @@ void ResourceFetcher::SetDefersLoading(WebURLLoader::DeferType defers) {
     loader->SetDefersLoading(defers);
 }
 
-struct RecordReplayCompareMemberByPointerId {
-  template <typename T>
-  bool operator()(const T& a, const T& b) const {
-    if (recordreplay::IsRecordingOrReplaying()) {
-      int ida = recordreplay::PointerId(a.Get());
-      int idb = recordreplay::PointerId(b.Get());
-      CHECK(ida && idb);
-      return ida < idb;
-    }
-    return a < b;
-  }
-};
-
 void ResourceFetcher::UpdateAllImageResourcePriorities() {
   TRACE_EVENT0(
       "blink",
@@ -2091,7 +2078,7 @@ void ResourceFetcher::UpdateAllImageResourcePriorities() {
   for (Resource* resource : not_loaded_image_resources_) {
     entries.push_back(resource);
   }
-  std::sort(entries.begin(), entries.end(), RecordReplayCompareMemberByPointerId());
+  std::sort(entries.begin(), entries.end(), recordreplay::CompareMemberByPointerId());
 
   HeapVector<Member<Resource>> to_be_removed;
   for (Resource* resource : entries) {

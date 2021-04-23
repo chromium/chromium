@@ -76,6 +76,36 @@ struct CompareByPointerId {
   }
 };
 
+template <typename T>
+class scoped_refptr;
+
+template <typename T>
+struct CompareRefptrByPointerId {
+  bool operator()(const scoped_refptr<T>& a, const scoped_refptr<T>& b) const {
+    if (IsRecordingOrReplaying()) {
+      int ida = PointerId(a.get());
+      int idb = PointerId(b.get());
+      CHECK(ida && idb);
+      return ida < idb;
+    }
+    return a < b;
+  }
+};
+
+// For use with blink WeakMember and Member.
+template <typename T>
+struct CompareMemberByPointerId {
+  bool operator()(const T& a, const T& b) const {
+    if (recordreplay::IsRecordingOrReplaying()) {
+      int ida = recordreplay::PointerId(a.Get());
+      int idb = recordreplay::PointerId(b.Get());
+      CHECK(ida && idb);
+      return ida < idb;
+    }
+    return a < b;
+  }
+};
+
 } // namespace recordreplay
 
 #endif // BASE_RECORD_REPLAY_H_
