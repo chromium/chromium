@@ -9,6 +9,7 @@
 // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
 #pragma clang max_tokens_here 750000
 
+#include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/bind.h"
 #include "base/check_op.h"
@@ -583,10 +584,13 @@ String ParkableStringImpl::UnparkInternal() {
   //
   // (1) is data corruption, and (2) is OOM. In all cases, we cannot
   // recover the string we need, nothing else to do than to abort.
-  //
-  // Stability sheriffs: If you see this, this is likely an OOM.
-  CHECK(compression::GzipUncompress(compressed_string_piece,
-                                    uncompressed_string_piece));
+  if (!compression::GzipUncompress(compressed_string_piece,
+                                   uncompressed_string_piece)) {
+    // Since this is almost always OOM, report it as such. We don't have
+    // certainty, but memory corruption should be much rarer, and could make us
+    // crash anywhere else.
+    OOM_CRASH(uncompressed_string_piece.size());
+  }
 
   base::TimeDelta elapsed = timer.Elapsed();
   manager.RecordUnparkingTime(elapsed);
