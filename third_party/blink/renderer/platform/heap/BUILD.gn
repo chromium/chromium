@@ -262,6 +262,7 @@ source_set("blink_heap_unittests_sources") {
     "test/concurrent_marking_test.cc",
     "test/heap_compact_test.cc",
     "test/heap_linked_stack_test.cc",
+    "test/heap_test.cc",
     "test/heap_traits_test.cc",
     "test/incremental_marking_test.cc",
     "test/persistent_test.cc",
@@ -269,12 +270,6 @@ source_set("blink_heap_unittests_sources") {
     "test/write_barrier_perftest.cc",
   ]
 
-  # TODO(1056170): Remove branch after implementing
-  # v8_wrapper/heap_test_utilities.* as tests should work for both
-  # implementations.
-  if (!enable_blink_heap_use_v8_oilpan) {
-    sources += [ "test/heap_test.cc" ]
-  }
   if (!enable_blink_heap_use_v8_oilpan) {
     sources += [
       "impl/test/card_table_test.cc",
@@ -306,6 +301,7 @@ source_set("blink_heap_unittests_sources") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//gin:gin",
     "//mojo/core/embedder:embedder",
     "//skia:test_fonts",
     "//testing/gmock",

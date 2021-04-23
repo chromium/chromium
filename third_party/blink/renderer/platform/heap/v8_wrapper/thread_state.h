@@ -75,8 +75,6 @@ class PLATFORM_EXPORT ThreadState final {
 
   // Attaches a ThreadState to the main-thread.
   static ThreadState* AttachMainThread();
-  // Attaches a ThreadState to the main-thread using the given platform.
-  static ThreadState* AttachMainThreadForTesting(v8::Platform*);
   // Attaches a ThreadState to the currently running thread. Must not be the
   // main thread and must be called after AttachMainThread().
   static ThreadState* AttachCurrentThread();
@@ -91,13 +89,6 @@ class PLATFORM_EXPORT ThreadState final {
   ALWAYS_INLINE cppgc::HeapHandle& heap_handle() const { return heap_handle_; }
   ALWAYS_INLINE v8::CppHeap& cpp_heap() const { return *cpp_heap_; }
   ALWAYS_INLINE v8::Isolate* GetIsolate() const { return isolate_; }
-
-  // Forced garbage collection for testing:
-  //
-  // Collects garbage as long as live memory decreases (capped at 5).
-  void CollectAllGarbageForTesting(
-      BlinkGC::StackState stack_state =
-          BlinkGC::StackState::kNoHeapPointersOnStack);
 
   void SafePoint(BlinkGC::StackState);
 
@@ -123,9 +114,19 @@ class PLATFORM_EXPORT ThreadState final {
       base::OnceCallback<void(size_t allocated_node_bytes,
                               size_t allocated_css_bytes)>);
 
+  bool IsIncrementalMarking();
+
+  // Forced garbage collection for testing:
+  //
+  // Collects garbage as long as live memory decreases (capped at 5).
+  void CollectAllGarbageForTesting(
+      BlinkGC::StackState stack_state =
+          BlinkGC::StackState::kNoHeapPointersOnStack);
+
   void EnableDetachedGarbageCollectionsForTesting();
 
-  bool IsIncrementalMarking();
+  static ThreadState* AttachMainThreadForTesting(v8::Platform*);
+  static ThreadState* AttachCurrentThreadForTesting(v8::Platform*);
 
  private:
   // Main-thread ThreadState avoids TLS completely by using a regular global.

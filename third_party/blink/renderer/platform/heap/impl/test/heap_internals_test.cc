@@ -6,6 +6,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/heap_stats_collector.h"
 #include "third_party/blink/renderer/platform/heap/heap_test_objects.h"
@@ -2085,6 +2086,23 @@ TEST_F(HeapInternalsTest, IsGarbageCollected) {
       "HeapDeque");
 }
 
+TEST_F(HeapInternalsTest, ShrinkVector) {
+  // Regression test: https://crbug.com/823289
+
+  HeapVector<Member<IntWrapper>> vector;
+  vector.ReserveCapacity(32);
+  for (int i = 0; i < 4; i++) {
+    vector.push_back(MakeGarbageCollected<IntWrapper>(i));
+  }
+
+  ConservativelyCollectGarbage(BlinkGC::kConcurrentAndLazySweeping);
+
+  // The following call tries to promptly free the left overs. In the buggy
+  // scenario that would create a free HeapObjectHeader that is assumed to be
+  // black which it is not.
+  vector.ShrinkToFit();
+}
+
 TEST_F(HeapInternalsTest, GarbageCollectedInConstruction) {
   using O = ObjectWithCallbackBeforeInitializer<IntWrapper>;
   MakeGarbageCollected<O>(base::BindOnce([](O* thiz) {
@@ -2108,6 +2126,58 @@ TEST_F(HeapInternalsTest, PersistentAssignsDeletedValue) {
   Persistent<IntWrapper> pre_initialized(MakeGarbageCollected<IntWrapper>(1));
   pre_initialized = deleted;
   PreciselyCollectGarbage();
+}
+
+namespace {
+struct HeapHashMapWrapper final : GarbageCollected<HeapHashMapWrapper> {
+  HeapHashMapWrapper() {
+    for (int i = 0; i < 100; ++i) {
+      map_.insert(MakeGarbageCollected<IntWrapper>(i),
+                  NonTriviallyDestructible());
+    }
+  }
+  // This should call ~HeapHapMap() -> ~HashMap() -> ~HashTable().
+  ~HeapHashMapWrapper() = default;
+
+  void Trace(Visitor* visitor) const { visitor->Trace(map_); }
+
+ private:
+  struct NonTriviallyDestructible {
+    ~NonTriviallyDestructible() {}
+  };
+  HeapHashMap<Member<IntWrapper>, NonTriviallyDestructible> map_;
+};
+}  // namespace
+
+TEST_F(HeapInternalsTest, AccessDeletedBackingStore) {
+  // Regression test: https://crbug.com/985443
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      blink::features::kBlinkHeapConcurrentSweeping);
+  ClearOutOldGarbage();
+
+  ThreadState* thread_state = ThreadState::Current();
+
+  auto* map = MakeGarbageCollected<HeapHashMapWrapper>();
+  // Run marking.
+  PreciselyCollectGarbage(BlinkGC::kConcurrentAndLazySweeping);
+  // Perform complete sweep on hash_arena.
+  BaseArena* hash_arena =
+      thread_state->Heap().Arena(BlinkGC::kHashTableArenaIndex);
+  {
+    ThreadState::AtomicPauseScope scope(thread_state);
+    ScriptForbiddenScope script_forbidden_scope;
+    ThreadState::SweepForbiddenScope sweep_forbidden(thread_state);
+    hash_arena->CompleteSweep();
+  }
+  BaseArena* map_arena = PageFromObject(map)->Arena();
+  // Sweep normal arena, but don't call finalizers.
+  while (!map_arena->ConcurrentSweepOnePage()) {
+  }
+  // Now complete sweeping with PerformIdleLazySweep and call finalizers.
+  while (thread_state->IsSweepingInProgress()) {
+    thread_state->PerformIdleLazySweep(base::TimeTicks::Max());
+  }
 }
 
 namespace {

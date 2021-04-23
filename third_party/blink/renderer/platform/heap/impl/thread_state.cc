@@ -216,6 +216,10 @@ ThreadState* ThreadState::AttachCurrentThread() {
   return new ThreadState();
 }
 
+ThreadState* ThreadState::AttachCurrentThreadForTesting(v8::Platform*) {
+  return AttachCurrentThread();
+}
+
 void ThreadState::DetachCurrentThread() {
   ThreadState* state = Current();
   DCHECK(!state->IsMainThread());

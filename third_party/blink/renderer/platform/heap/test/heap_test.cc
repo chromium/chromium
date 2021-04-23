@@ -30,12 +30,13 @@
 
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "gin/public/v8_platform.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/heap_test_objects.h"
+#include "third_party/blink/renderer/platform/heap/heap_test_platform.h"
 #include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -43,6 +44,11 @@
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
+#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
+
+#if BUILDFLAG(USE_V8_OILPAN)
+#include "v8/include/cppgc/internal/api-constants.h"
+#endif
 
 namespace blink {
 
@@ -318,6 +324,7 @@ namespace {
 class ThreadedTesterBase {
  protected:
   static void Test(ThreadedTesterBase* tester) {
+    HeapTestingPlatformAdapter platform_for_threads(gin::V8Platform::Get());
     std::unique_ptr<Thread> threads[kNumberOfThreads];
     for (auto& thread : threads) {
       thread = Platform::Current()->CreateThread(
@@ -325,7 +332,8 @@ class ThreadedTesterBase {
               .SetThreadNameForTest("blink gc testing thread"));
       PostCrossThreadTask(
           *thread->GetTaskRunner(), FROM_HERE,
-          CrossThreadBindOnce(ThreadFunc, CrossThreadUnretained(tester)));
+          CrossThreadBindOnce(ThreadFunc, CrossThreadUnretained(tester),
+                              CrossThreadUnretained(&platform_for_threads)));
     }
     tester->done_.Wait();
     delete tester;
@@ -348,8 +356,8 @@ class ThreadedTesterBase {
   std::atomic_int gc_count_{0};
 
  private:
-  static void ThreadFunc(ThreadedTesterBase* tester) {
-    ThreadState::AttachCurrentThread();
+  static void ThreadFunc(ThreadedTesterBase* tester, v8::Platform* platform) {
+    ThreadState::AttachCurrentThreadForTesting(platform);
     tester->RunThread();
     ThreadState::DetachCurrentThread();
     if (!tester->threads_to_finish_.Decrement())
@@ -603,11 +611,23 @@ TEST_F(HeapTest, ThreadPersistent) {
   ThreadPersistentHeapTester::Test();
 }
 
+namespace {
+size_t GetOverallObjectSize() {
+#if BUILDFLAG(USE_V8_OILPAN)
+  return ThreadState::Current()
+      ->cpp_heap()
+      .CollectStatistics(cppgc::HeapStatistics::DetailLevel::kDetailed)
+      .used_size_bytes;
+#else   // !BUILDFLAG(USE_V8_OILPAN)
+  return ThreadState::Current()->Heap().ObjectPayloadSizeForTesting();
+#endif  // !BUILDFLAG(USE_V8_OILPAN)
+}
+}  // namespace
+
 TEST_F(HeapTest, HashMapOfMembers) {
   ClearOutOldGarbage();
-  ThreadHeap& heap = ThreadState::Current()->Heap();
   IntWrapper::destructor_calls_ = 0;
-  size_t initial_object_payload_size = heap.ObjectPayloadSizeForTesting();
+  size_t initial_object_payload_size = GetOverallObjectSize();
   {
     typedef HeapHashMap<Member<IntWrapper>, Member<IntWrapper>,
                         DefaultHash<Member<IntWrapper>>::Hash,
@@ -619,11 +639,11 @@ TEST_F(HeapTest, HashMapOfMembers) {
         MakeGarbageCollected<HeapObjectIdentityMap>();
 
     map->clear();
-    size_t after_set_was_created = heap.ObjectPayloadSizeForTesting();
-    EXPECT_TRUE(after_set_was_created > initial_object_payload_size);
+    size_t after_set_was_created = GetOverallObjectSize();
+    EXPECT_GT(after_set_was_created, initial_object_payload_size);
 
     PreciselyCollectGarbage();
-    size_t after_gc = heap.ObjectPayloadSizeForTesting();
+    size_t after_gc = GetOverallObjectSize();
     EXPECT_EQ(after_gc, after_set_was_created);
 
     // If the additions below cause garbage collections, these
@@ -633,8 +653,8 @@ TEST_F(HeapTest, HashMapOfMembers) {
 
     map->insert(one, one);
 
-    size_t after_one_add = heap.ObjectPayloadSizeForTesting();
-    EXPECT_TRUE(after_one_add > after_gc);
+    size_t after_one_add = GetOverallObjectSize();
+    EXPECT_GT(after_one_add, after_gc);
 
     HeapObjectIdentityMap::iterator it(map->begin());
     HeapObjectIdentityMap::iterator it2(map->begin());
@@ -650,8 +670,8 @@ TEST_F(HeapTest, HashMapOfMembers) {
     // stack scanning as that could find a pointer to the
     // old backing.
     PreciselyCollectGarbage();
-    size_t after_add_and_gc = heap.ObjectPayloadSizeForTesting();
-    EXPECT_TRUE(after_add_and_gc >= after_one_add);
+    size_t after_add_and_gc = GetOverallObjectSize();
+    EXPECT_GE(after_add_and_gc, after_one_add);
 
     EXPECT_EQ(map->size(), 2u);  // Two different wrappings of '1' are distinct.
 
@@ -663,7 +683,7 @@ TEST_F(HeapTest, HashMapOfMembers) {
     EXPECT_EQ(gotten->Value(), one->Value());
     EXPECT_EQ(gotten, one);
 
-    size_t after_gc2 = heap.ObjectPayloadSizeForTesting();
+    size_t after_gc2 = GetOverallObjectSize();
     EXPECT_EQ(after_gc2, after_add_and_gc);
 
     IntWrapper* dozen = nullptr;
@@ -675,22 +695,22 @@ TEST_F(HeapTest, HashMapOfMembers) {
       if (i == 12)
         dozen = i_wrapper;
     }
-    size_t after_adding1000 = heap.ObjectPayloadSizeForTesting();
-    EXPECT_TRUE(after_adding1000 > after_gc2);
+    size_t after_adding1000 = GetOverallObjectSize();
+    EXPECT_GT(after_adding1000, after_gc2);
 
     IntWrapper* gross(map->at(dozen));
     EXPECT_EQ(gross->Value(), 144);
 
     // This should clear out any junk backings created by all the adds.
     PreciselyCollectGarbage();
-    size_t after_gc3 = heap.ObjectPayloadSizeForTesting();
-    EXPECT_TRUE(after_gc3 <= after_adding1000);
+    size_t after_gc3 = GetOverallObjectSize();
+    EXPECT_LE(after_gc3, after_adding1000);
   }
 
   PreciselyCollectGarbage();
   // The objects 'one', anotherOne, and the 999 other pairs.
   EXPECT_EQ(IntWrapper::destructor_calls_, 2000);
-  size_t after_gc4 = heap.ObjectPayloadSizeForTesting();
+  size_t after_gc4 = GetOverallObjectSize();
   EXPECT_EQ(after_gc4, initial_object_payload_size);
 }
 
@@ -879,16 +899,15 @@ class Container final : public GarbageCollected<Container> {
 }  // namespace
 
 TEST_F(HeapTest, HeapVectorOnStackLargeObjectPageSized) {
+#if BUILDFLAG(USE_V8_OILPAN)
+  static constexpr size_t kLargeObjectSizeThreshold =
+      cppgc::internal::api_constants::kLargeObjectSizeThreshold;
+#endif  // !BUILDFLAG(USE_V8_OILPAN)
   ClearOutOldGarbage();
-  // Try to allocate a vector of a size that will end exactly where the
-  // LargeObjectPage ends.
   using Container = HeapVector<Member<IntWrapper>>;
   Container vector;
-  wtf_size_t size =
-      (kLargeObjectSizeThreshold + BlinkGuardPageSize() -
-       static_cast<wtf_size_t>(LargeObjectPage::PageHeaderSize()) -
-       sizeof(HeapObjectHeader)) /
-      sizeof(Container::ValueType);
+  wtf_size_t size = (kLargeObjectSizeThreshold + sizeof(Container::ValueType)) /
+                    sizeof(Container::ValueType);
   vector.ReserveCapacity(size);
   for (unsigned i = 0; i < size; ++i)
     vector.push_back(MakeGarbageCollected<IntWrapper>(i));
@@ -2792,6 +2811,12 @@ TEST_F(HeapTest, IndirectStrongToWeak) {
 }
 
 class AllocatesOnAssignment : public GarbageCollected<AllocatesOnAssignment> {
+#if BUILDFLAG(USE_V8_OILPAN)
+  static constexpr auto kHashTableDeletedValue = cppgc::kSentinelPointer;
+#else   // !USE_V8_OILPAN
+  static constexpr auto kHashTableDeletedValue = WTF::kHashTableDeletedValue;
+#endif  // !USE_V8_OILPAN
+
  public:
   AllocatesOnAssignment(std::nullptr_t) : value_(nullptr) {}
   AllocatesOnAssignment(int x) : value_(MakeGarbageCollected<IntWrapper>(x)) {}
@@ -2805,14 +2830,23 @@ class AllocatesOnAssignment : public GarbageCollected<AllocatesOnAssignment> {
   enum DeletedMarker { kDeletedValue };
 
   AllocatesOnAssignment(const AllocatesOnAssignment& other) {
-    if (!ThreadState::Current()->IsGCForbidden())
-      TestSupportingGC::ConservativelyCollectGarbage();
+#if !BUILDFLAG(USE_V8_OILPAN)
+    DCHECK(!ThreadState::Current()->IsGCForbidden());
+#endif
+    TestSupportingGC::ConservativelyCollectGarbage();
     value_ = MakeGarbageCollected<IntWrapper>(other.value_->Value());
   }
 
-  AllocatesOnAssignment(DeletedMarker) : value_(WTF::kHashTableDeletedValue) {}
+  explicit AllocatesOnAssignment(DeletedMarker)
+      : value_(kHashTableDeletedValue) {}
 
-  inline bool IsDeleted() const { return value_.IsHashTableDeletedValue(); }
+  inline bool IsDeleted() const {
+#if BUILDFLAG(USE_V8_OILPAN)
+    return value_ == cppgc::kSentinelPointer;
+#else   // !USE_V8_OILPAN
+    return value_.IsHashTableDeletedValue();
+#endif  // !USE_V8_OILPAN
+  }
 
   void Trace(Visitor* visitor) const { visitor->Trace(value_); }
 
@@ -3156,84 +3190,17 @@ TEST_F(HeapTest, HeapHashMapCallsDestructor) {
   EXPECT_TRUE(string.Impl()->HasOneRef());
 }
 
-TEST_F(HeapTest, ShrinkVector) {
-  // Regression test: https://crbug.com/823289
-
-  HeapVector<Member<IntWrapper>> vector;
-  vector.ReserveCapacity(32);
-  for (int i = 0; i < 4; i++) {
-    vector.push_back(MakeGarbageCollected<IntWrapper>(i));
-  }
-
-  ConservativelyCollectGarbage(BlinkGC::kConcurrentAndLazySweeping);
-
-  // The following call tries to promptly free the left overs. In the buggy
-  // scenario that would create a free HeapObjectHeader that is assumed to be
-  // black which it is not.
-  vector.ShrinkToFit();
-}
-
-namespace {
-struct HeapHashMapWrapper final : GarbageCollected<HeapHashMapWrapper> {
-  HeapHashMapWrapper() {
-    for (int i = 0; i < 100; ++i) {
-      map_.insert(MakeGarbageCollected<IntWrapper>(i),
-                  NonTriviallyDestructible());
-    }
-  }
-  // This should call ~HeapHapMap() -> ~HashMap() -> ~HashTable().
-  ~HeapHashMapWrapper() = default;
-
-  void Trace(Visitor* visitor) const { visitor->Trace(map_); }
-
- private:
-  struct NonTriviallyDestructible {
-    ~NonTriviallyDestructible() {}
-  };
-  HeapHashMap<Member<IntWrapper>, NonTriviallyDestructible> map_;
-};
-}  // namespace
-
-TEST_F(HeapTest, AccessDeletedBackingStore) {
-  // Regression test: https://crbug.com/985443
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      blink::features::kBlinkHeapConcurrentSweeping);
-  ClearOutOldGarbage();
-
-  ThreadState* thread_state = ThreadState::Current();
-
-  auto* map = MakeGarbageCollected<HeapHashMapWrapper>();
-  // Run marking.
-  PreciselyCollectGarbage(BlinkGC::kConcurrentAndLazySweeping);
-  // Perform complete sweep on hash_arena.
-  BaseArena* hash_arena =
-      thread_state->Heap().Arena(BlinkGC::kHashTableArenaIndex);
-  {
-    ThreadState::AtomicPauseScope scope(thread_state);
-    ScriptForbiddenScope script_forbidden_scope;
-    ThreadState::SweepForbiddenScope sweep_forbidden(thread_state);
-    hash_arena->CompleteSweep();
-  }
-  BaseArena* map_arena = PageFromObject(map)->Arena();
-  // Sweep normal arena, but don't call finalizers.
-  while (!map_arena->ConcurrentSweepOnePage()) {
-  }
-  // Now complete sweeping with PerformIdleLazySweep and call finalizers.
-  while (thread_state->IsSweepingInProgress()) {
-    thread_state->PerformIdleLazySweep(base::TimeTicks::Max());
-  }
-}
-
 namespace {
 class FakeCSSValue : public GarbageCollected<FakeCSSValue> {
  public:
+#if !BUILDFLAG(USE_V8_OILPAN)
   template <typename T>
   static void* AllocateObject(size_t size) {
     return ThreadState::Current()->Heap().AllocateOnArenaIndex(
         ThreadState::Current(), size, BlinkGC::kCSSValueArenaIndex,
         GCInfoTrait<GCInfoFoldedType<FakeCSSValue>>::Index(), "FakeCSSValue");
   }
+#endif
   virtual void Trace(Visitor*) const {}
   char* Data() { return data_; }
 
@@ -3244,12 +3211,14 @@ class FakeCSSValue : public GarbageCollected<FakeCSSValue> {
 
 class FakeNode : public GarbageCollected<FakeNode> {
  public:
+#if !BUILDFLAG(USE_V8_OILPAN)
   template <typename T>
   static void* AllocateObject(size_t size) {
     return ThreadState::Current()->Heap().AllocateOnArenaIndex(
         ThreadState::Current(), size, BlinkGC::kNodeArenaIndex,
         GCInfoTrait<GCInfoFoldedType<FakeNode>>::Index(), "FakeNode");
   }
+#endif
   virtual void Trace(Visitor*) const {}
   char* Data() { return data_; }
 
@@ -3258,6 +3227,26 @@ class FakeNode : public GarbageCollected<FakeNode> {
   char data_[kLength];
 };
 }  // namespace
+
+#if BUILDFLAG(USE_V8_OILPAN)
+}  // namespace blink
+
+namespace cppgc {
+
+template <>
+struct SpaceTrait<blink::FakeCSSValue> {
+  using Space = blink::CSSValueSpace;
+};
+
+template <>
+struct SpaceTrait<blink::FakeNode> {
+  using Space = blink::NodeSpace;
+};
+
+}  // namespace cppgc
+
+namespace blink {
+#endif
 
 // TODO(1181269): Enable for the library once implemented.
 #if !BUILDFLAG(USE_V8_OILPAN)

@@ -109,6 +109,14 @@ ThreadState* ThreadState::AttachCurrentThread() {
 }
 
 // static
+ThreadState* ThreadState::AttachCurrentThreadForTesting(
+    v8::Platform* platform) {
+  ThreadState* thread_state = new ThreadState(platform);
+  thread_state->EnableDetachedGarbageCollectionsForTesting();
+  return thread_state;
+}
+
+// static
 void ThreadState::DetachCurrentThread() {
   auto* state = ThreadState::Current();
   DCHECK(state);
@@ -207,7 +215,11 @@ void ThreadState::EnableDetachedGarbageCollectionsForTesting() {
   cpp_heap().EnableDetachedGarbageCollectionsForTesting();
   // Detached GCs cannot rely on the V8 platform being initialized which is
   // needed by cppgc to perform a garbage collection.
-  v8::V8::InitializePlatform(gin::V8Platform::Get());
+  static bool v8_platform_initialized = false;
+  if (!v8_platform_initialized) {
+    v8::V8::InitializePlatform(gin::V8Platform::Get());
+    v8_platform_initialized = true;
+  }
 }
 
 bool ThreadState::IsIncrementalMarking() {

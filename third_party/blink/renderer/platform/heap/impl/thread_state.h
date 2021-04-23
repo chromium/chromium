@@ -194,6 +194,7 @@ class PLATFORM_EXPORT ThreadState final {
   // call thread can start using the garbage collected heap infrastructure.
   // It also has to periodically check for safepoints.
   static ThreadState* AttachCurrentThread();
+  static ThreadState* AttachCurrentThreadForTesting(v8::Platform* platform);
 
   // Disassociate attached ThreadState from the current thread. The thread
   // can no longer use the garbage collected heap after this call.
