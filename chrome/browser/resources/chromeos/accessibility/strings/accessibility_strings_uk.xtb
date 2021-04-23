@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">Проведіть двома пальцями вгору</translation>
 <translation id="1126928665165112660">Без курсиву</translation>
 <translation id="113582498867142724">Збірка <ph name="TAG" /> з такою кількістю елементів: <ph name="NUM" /></translation>
-<translation id="1146441463334103638">Увімкнути або вимкнути екран</translation>
 <translation id="1156488781945104845">Поточний час</translation>
 <translation id="1161762950103988776">Перехід</translation>
 <translation id="1164857107703583584">Команди переходу полегшують навігацію веб-сторінкою.</translation>
@@ -256,6 +255,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}one{+#}few{+#}many{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Можна також провести одним пальцем справа наліво, щоб перейти до попереднього елемента. Спробуйте зараз.</translation>
 <translation id="280499067616661124">Пошук ChromeVox на сторінці</translation>
+<translation id="2808001342598757276">Активувати екран</translation>
 <translation id="2811019999044652585">Щоб переходити між частинами екрана, наприклад перейти на панель інструментів чи системну область, натисніть Control+Forward. На Chromebook клавіша Forward розташована прямо над клавішею цифри 2.</translation>
 <translation id="2811204574343810641">Рядок</translation>
 <translation id="2816868829355607410">Практика: команди переходу</translation>
@@ -302,7 +302,6 @@
 <translation id="3082249673510793544">Прокрутити назад</translation>
 <translation id="3084806535845658316">без озвучення введення тексту</translation>
 <translation id="3086746722712840547">примітка</translation>
-<translation id="308736057934395497">Вимикає екран, щоб інші люди не могли бачити його вміст. Завдяки цьому покращує захист конфіденційності. Екран завжди можна ввімкнути знову, одночасно натиснувши клавіші пошуку та збільшення яскравості.</translation>
 <translation id="3090227230165225418">Сповіщати про завантаження</translation>
 <translation id="3090532668523289635">група</translation>
 <translation id="3093176084511590672">Наступний орієнтир</translation>
@@ -313,7 +312,6 @@
 <translation id="3109724472072898302">Згорнуто</translation>
 <translation id="311015743332597320">Проведіть чотирма пальцями праворуч</translation>
 <translation id="3112457281078985179">Щоб увімкнути чи вимкнути ChromeVox, натисніть комбінацію клавіш Control+Alt+Z.</translation>
-<translation id="3115800313647508384">Вимкнути екран?</translation>
 <translation id="3131002934070407451">Зачитувати числа як:</translation>
 <translation id="3134461040845705080">лише читання</translation>
 <translation id="3137663468179739624">Оливковий</translation>
@@ -721,6 +719,7 @@
 <translation id="6034000775414344507">Світло-сірий</translation>
 <translation id="6036135911048686884">Торкніться опції Огляд</translation>
 <translation id="6037602951055904232">На задній план</translation>
+<translation id="6044160928851315051">Дезактивувати екран</translation>
 <translation id="6082768461603900813">Основна навігація</translation>
 <translation id="609281021724813947">Немає попереднього повзунка</translation>
 <translation id="6100239002225743044">Перемістити на рядок вище</translation>
@@ -791,7 +790,6 @@
 <translation id="6696967141280706829">Передмова</translation>
 <translation id="6697092096875747123">Попереднє комбіноване вікно</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{знак оклику}one{# знак оклику}few{# знаки оклику}many{# знаків оклику}other{# знаку оклику}}</translation>
-<translation id="670717715607710284">Вимкнути екран</translation>
 <translation id="6710213216561001401">Назад</translation>
 <translation id="6714813999819678458">Попередній заголовок рівня 2</translation>
 <translation id="6730312624811567147">Використовуйте комбінацію клавіші пошуку зі стрілкою праворуч або ліворуч як клавішу Home або End, комбінацію клавіш пошуку та Control зі стрілкою праворуч чи ліворуч як клавіші Control Home або End, а клавішу пошуку зі стрілкою вгору чи вниз – як клавіші Page Up або Page Down</translation>
@@ -993,7 +991,6 @@
 <translation id="816818801578874684">Це перший заголовок. Щоб перейти до наступного, натисніть клавішу пошуку + H.</translation>
 <translation id="8173092779156526980">Проведіть чотирма пальцями ліворуч</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{підкреслення}one{# підкреслення}few{# підкреслення}many{# підкреслень}other{# underscores}}</translation>
-<translation id="817529114347680055">Увімкнути екран</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">рядок</translation>
 <translation id="8186185314313222077">увімкнути або вимкнути повноекранний режим</translation>
@@ -1016,6 +1013,7 @@
 <translation id="8316881042119029234">Старе мереживо</translation>
 <translation id="8324974933005349667">Персоналізувати налаштування синтезу мовлення</translation>
 <translation id="8326783648485765113">Зелена галявина</translation>
+<translation id="8328063869313048659">Увімкнути або вимкнути темний екран</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{фунт}one{# символ фунта}few{# символи фунта}many{# символів фунта}other{# pound signs}}</translation>
 <translation id="8378855320830505539">Регіон</translation>
 <translation id="8382679411218029383">Вбудоване автозавершення та список</translation>

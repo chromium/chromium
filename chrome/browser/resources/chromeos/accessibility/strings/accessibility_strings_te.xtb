@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">రెండు వేళ్లతో పైకి స్వైప్ చేయండి</translation>
 <translation id="1126928665165112660">ఇటాలిక్ కాదు</translation>
 <translation id="113582498867142724"><ph name="NUM" /> అంశాలు గల <ph name="TAG" /> సేకరణ</translation>
-<translation id="1146441463334103638">స్క్రీన్‌ను ఆన్, ఆఫ్ టోగుల్ చేయండి</translation>
 <translation id="1156488781945104845">ప్రస్తుత సమయం</translation>
 <translation id="1161762950103988776">దాటివేయి</translation>
 <translation id="1164857107703583584">వెబ్ పేజీ ద్వారా సమర్థవంతంగా నావిగేట్ చేయడానికి దాటవేసే కమాండ్‌లను ఉపయోగించవచ్చు.</translation>
@@ -257,6 +256,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">మునుపటి ఐటెమ్‌కు వెళ్లడానికి మీరు ఒక వేలుతో కుడి నుండి ఎడమ వైపునకు స్వైప్ చేయవచ్చు. దీన్ని ఇప్పుడే ట్రై చేయండి.</translation>
 <translation id="280499067616661124">ChromeVox శోధన పేజీ</translation>
+<translation id="2808001342598757276">స్క్రీన్‌ను కాంతివంతంగా చేస్తుంది</translation>
 <translation id="2811019999044652585">స్క్రీన్‌పై ఉండే సాధనాల బార్‌లు లేదా సిస్టమ్ ట్రే వంటి మిగిలిన అంశాలకు వెళ్లడానికి, Control+ఫార్వర్డ్ బటన్‌ను నొక్కండి. Chromebookలో, ఫార్వర్డ్ కీ అనేది 2 సంఖ్య కీకి ఎగువన ఉంటుంది.</translation>
 <translation id="2811204574343810641">అడ్డు వరుస</translation>
 <translation id="2816868829355607410">సాధన ప్రాంతం: దాటవేసే కమాండ్‌లు</translation>
@@ -303,7 +303,6 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="3082249673510793544">వెనుకకు స్క్రోల్ చేస్తుంది</translation>
 <translation id="3084806535845658316">టైపింగ్ అనుకరణ లేదు</translation>
 <translation id="3086746722712840547">note</translation>
-<translation id="308736057934395497">ఇది మీ స్క్రీన్‌ను ఇతరులకు కనిపించకుండా ఆపివేయడం ద్వారా గోప్యతను మెరుగుపరుస్తుంది. Search + ప్రకాశాన్ని పెంచు కీలను నొక్కడం ద్వారా మీరు స్క్రీన్‌ను ఎల్లప్పుడూ తిరిగి ఆన్ చేయవచ్చు.</translation>
 <translation id="3090227230165225418">డౌన్‌లోడ్ నోటిఫికేషన్‌లను ప్రకటించు</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">తరువాత మైలురాయి</translation>
@@ -314,7 +313,6 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="3109724472072898302">కుదించబడింది</translation>
 <translation id="311015743332597320">నాలుగు వేళ్లతో కుడివైపునకు స్వైప్ చేయండి</translation>
 <translation id="3112457281078985179">ChromeVoxని ఆన్ లేదా ఆఫ్ చేయడానికి, Control+Alt+Z ఉపయోగించండి.</translation>
-<translation id="3115800313647508384">స్క్రీన్‌ను ఆఫ్ చేయాలా?</translation>
 <translation id="3131002934070407451">సంఖ్యలను ఇలా చదవాలి:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">ఆలివ్ రంగు</translation>
@@ -722,6 +720,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="6034000775414344507">లేత బూడిద రంగు</translation>
 <translation id="6036135911048686884">'అన్వేషించండి'ని తాకండి</translation>
 <translation id="6037602951055904232">ముందుకు ప్యాన్ చేయండి</translation>
+<translation id="6044160928851315051">స్క్రీన్‌ను కాంతిహీనంగా చేస్తుంది</translation>
 <translation id="6082768461603900813">ప్రాథమిక నావిగేషన్</translation>
 <translation id="609281021724813947">మునుపటి స్లయిడర్ లేదు</translation>
 <translation id="6100239002225743044">ఒక పంక్తి పైకి జరుపు</translation>
@@ -792,7 +791,6 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="6696967141280706829">ముందుమాట</translation>
 <translation id="6697092096875747123">మునుపటి కాంబో పెట్టె</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{ఆశ్చర్యార్థక గుర్తు}other{# ఆశ్చర్యార్థక గుర్తులు}}</translation>
-<translation id="670717715607710284">స్క్రీన్ ఆఫ్‌ చేయండి</translation>
 <translation id="6710213216561001401">మునుపటి</translation>
 <translation id="6714813999819678458">మునుపటి స్థాయి 2 శీర్షిక</translation>
 <translation id="6730312624811567147">Home లేదా End బదులుగా Search Left లేదా Rightను, Control Home లేదా Endకు బదులుగా Search Control Left లేదా Rightను, Page Up లేదా Downకు బదులుగా Search Up లేదా Downను ఉపయోగించండి</translation>
@@ -995,7 +993,6 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="816818801578874684">ఇది మొదటి హెడ్డింగ్. తర్వాతి హెడ్డింగ్‌కు వెళ్ళడానికి సెర్చ్ + Hను నొక్కండి.</translation>
 <translation id="8173092779156526980">నాలుగు వేళ్లతో ఎడమవైపునకు స్వైప్ చేయండి</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{అండర్‌స్కోర్ గుర్తు}other{# అండర్‌స్కోర్ గుర్తులు}}</translation>
-<translation id="817529114347680055">స్క్రీన్‌ను ఆన్ చేయండి</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">అడ్డు</translation>
 <translation id="8186185314313222077">పూర్తి స్క్రీన్‌ను టోగుల్ చేస్తుంది</translation>
@@ -1018,6 +1015,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="8316881042119029234">పాత జల్తారు రంగు</translation>
 <translation id="8324974933005349667">వచనం నుండి ప్రసంగం సెట్టింగ్‌లను వ్యక్తిగతీకరించండి</translation>
 <translation id="8326783648485765113">పచ్చిక బయలు ఆకుపచ్చ</translation>
+<translation id="8328063869313048659">ముదురు నలుపు స్క్రీన్‌ని టోగుల్ చేయండి</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{పౌండ్ గుర్తు}other{# పౌండ్ గుర్తులు}}</translation>
 <translation id="8378855320830505539">ప్రాంతం</translation>
 <translation id="8382679411218029383">స్వీయపూర్తి ఇన్‌లైన్ మరియు జాబితా</translation>

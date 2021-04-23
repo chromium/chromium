@@ -920,6 +920,7 @@
 <translation id="1974821797477522211">Povezivanje s mrežom</translation>
 <translation id="1975841812214822307">Ukloni...</translation>
 <translation id="1976150099241323601">Prijavi se na sigurnosni uređaj</translation>
+<translation id="1976928778492259496">Senzor otiska prsta nalazi se s lijeve strane uređaja <ph name="DEVICE_TYPE" />. Dodirnite ga lagano bilo kojim prstom.</translation>
 <translation id="1977965994116744507">Približite telefon da biste otključali <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978057560491495741">Ukloni adresu</translation>
 <translation id="1979095679518582070">Isključivanje te značajke ne utječe na mogućnost uređaja da šalje informacije koje su potrebne za ključne usluge kao što su ažuriranja sustava i sigurnost.</translation>
@@ -1974,6 +1975,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="313205617302240621">Zaboravili ste zaporku?</translation>
 <translation id="3132277757485842847">Nismo uspjeli održati vezu s vašim telefonom. Provjerite je li telefon u blizini, je li otključan i jesu li na njemu uključeni Bluetooth i Wi-Fi.</translation>
 <translation id="3132996321662585180">Osvježi svaki dan</translation>
+<translation id="3134393957315651797">Odaberite stanje za eksperiment <ph name="EXPERIMENT_NAME" />. Opis eksperimenta: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">PIN nije važeći. Preostao vam je sljedeći broj pokušaja: <ph name="RETRIES" />.</translation>
 <translation id="313963229645891001">Preuzimanje, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Zadani žuti avatar</translation>
@@ -6624,6 +6626,7 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8398877366907290961">Svejedno nastavi</translation>
 <translation id="8400146488506985033">Upravljaj korisnicima</translation>
 <translation id="8401432541486058167">Unesite PIN za pametnu karticu.</translation>
+<translation id="8404893580027489425">Senzor otiska prsta nalazi se s desne strane uređaja <ph name="DEVICE_TYPE" />. Dodirnite ga lagano bilo kojim prstom.</translation>
 <translation id="8405046151008197676">Primite najzanimljivije dijelove najnovijeg ažuriranja</translation>
 <translation id="8407199357649073301">Razina zapisnika:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> mreža, povezivanje</translation>

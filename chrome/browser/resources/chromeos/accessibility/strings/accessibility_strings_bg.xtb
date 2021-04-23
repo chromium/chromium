@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">Прекарайте два пръста нагоре</translation>
 <translation id="1126928665165112660">Текст без курсив</translation>
 <translation id="113582498867142724">Колекция от <ph name="TAG" /> с/ъс <ph name="NUM" /> елемента</translation>
-<translation id="1146441463334103638">Включване или изключване на екрана</translation>
 <translation id="1156488781945104845">Текущ час</translation>
 <translation id="1161762950103988776">Преминаване</translation>
 <translation id="1164857107703583584">Командите за преминаване могат да се използват за ефективно придвижване в уеб страниците.</translation>
@@ -256,6 +255,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+ #}other{+ #}}</translation>
 <translation id="2792200646155001340">Можете също да прекарате пръст от дясно наляво, за да се върнете към предишния елемент. Изпробвайте жеста сега.</translation>
 <translation id="280499067616661124">Търсене в страницата чрез ChromeVox</translation>
+<translation id="2808001342598757276">Отмяна на потъмняването на екрана</translation>
 <translation id="2811019999044652585">За да преминете към други части на екрана, като ленти с инструменти или системната област, натиснете Control + „напред“. На Chromebook клавишът „напред“ е точно над клавиша с цифрата 2.</translation>
 <translation id="2811204574343810641">Ред</translation>
 <translation id="2816868829355607410">Област за упражнения: команди за преминаване</translation>
@@ -302,7 +302,6 @@
 <translation id="3082249673510793544">Превъртане назад</translation>
 <translation id="3084806535845658316">без ехо при въвеждане</translation>
 <translation id="3086746722712840547">забележка</translation>
-<translation id="308736057934395497">Тази опция подобрява поверителността, като изключва екрана, за да не е видим за други хора. Можете да го включите отново по всяко време, като натиснете клавиша „търсене“ + този за увеличаване на яркостта.</translation>
 <translation id="3090227230165225418">Съобщаване на известия за изтегляне</translation>
 <translation id="3090532668523289635">група</translation>
 <translation id="3093176084511590672">Следващият ориентир</translation>
@@ -313,7 +312,6 @@
 <translation id="3109724472072898302">Свито</translation>
 <translation id="311015743332597320">Прекарайте четири пръста надясно</translation>
 <translation id="3112457281078985179">За да включите или изключите ChromeVox, използвайте Control + Alt + Z.</translation>
-<translation id="3115800313647508384">Да се изключи ли екранът?</translation>
 <translation id="3131002934070407451">Четене на числата като:</translation>
 <translation id="3134461040845705080">само за четене</translation>
 <translation id="3137663468179739624">маслинено</translation>
@@ -721,6 +719,7 @@
 <translation id="6034000775414344507">светлосиво</translation>
 <translation id="6036135911048686884">Изследване с докосване</translation>
 <translation id="6037602951055904232">Панорамно придвижване напред</translation>
+<translation id="6044160928851315051">Потъмняване на екрана</translation>
 <translation id="6082768461603900813">Основна навигация</translation>
 <translation id="609281021724813947">Няма предишен плъзгач</translation>
 <translation id="6100239002225743044">Преместване нагоре с един ред</translation>
@@ -791,7 +790,6 @@
 <translation id="6696967141280706829">Предисловие</translation>
 <translation id="6697092096875747123">Предишният разгъващ се списък</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{удивителен знак}other{# удивителни знака}}</translation>
-<translation id="670717715607710284">Изключване на екрана</translation>
 <translation id="6710213216561001401">Предишно</translation>
 <translation id="6714813999819678458">Предишното заглавие от второ ниво</translation>
 <translation id="6730312624811567147">Използвайте Търсене и стрелка за наляво или надясно за Home или End; Търсене, Control и стрелка за наляво или надясно за Control Home или Control End; Търсене и стрелка за нагоре или надолу за Page Up или Page Down</translation>
@@ -994,7 +992,6 @@
 <translation id="816818801578874684">Това е първото заглавие. Натиснете клавиша „търсене“ + H, за да преминете към следващото.</translation>
 <translation id="8173092779156526980">Прекарайте четири пръста наляво</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{долна черта}other{# долни черти}}</translation>
-<translation id="817529114347680055">Включване на екрана</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">ред</translation>
 <translation id="8186185314313222077">превключване на режима на цял екран</translation>
@@ -1017,6 +1014,7 @@
 <translation id="8316881042119029234">шампанско</translation>
 <translation id="8324974933005349667">Персонализиране на настройките за синтезиран говор</translation>
 <translation id="8326783648485765113">тревистозелено</translation>
+<translation id="8328063869313048659">Превключване на тъмния екран</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{знак диез}other{# знака диез}}</translation>
 <translation id="8378855320830505539">Област</translation>
 <translation id="8382679411218029383">Автоматично довършване – вградено и в списък</translation>

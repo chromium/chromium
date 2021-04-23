@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">দুটা আঙুলি ওপৰলৈ ছোৱাইপ কৰক</translation>
 <translation id="1126928665165112660">ইটালিক নহয়</translation>
 <translation id="113582498867142724"><ph name="NUM" />টা বস্তুযুক্ত <ph name="TAG" />ৰ সংগ্ৰহ</translation>
-<translation id="1146441463334103638">স্ক্ৰীন অন অথবা অফ কৰাটো ট’গ’ল কৰক</translation>
 <translation id="1156488781945104845">বর্তমান সময়ৰ</translation>
 <translation id="1161762950103988776">Jump</translation>
 <translation id="1164857107703583584">এখন ৱেব পৃষ্ঠাত দক্ষতাৰে নেভিগে'ট কৰিবলৈ পোনপটীয়াকৈ যোৱাৰ নিৰ্দেশনাসমূহ ব্যৱহাৰ কৰিব পাৰি।</translation>
@@ -256,6 +255,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}one{+#}other{+#}}</translation>
 <translation id="2792200646155001340">আপুনি পূৰ্বৱৰ্তী বস্তুটোলৈ যাবলৈ এটা আঙুলিৰে সোঁফালৰ পৰা বাওঁফাললৈ ছোৱাইপ কৰিবও পাৰে। এইটো এতিয়াই কৰি চাওক।</translation>
 <translation id="280499067616661124">পৃষ্ঠাটোত ChromeVoxৰে সন্ধান কৰক</translation>
+<translation id="2808001342598757276">গাঢ়তা নাইকিয়া কৰা স্ক্ৰীণ</translation>
 <translation id="2811019999044652585">সঁজুলিদণ্ড বা ছিষ্টেম ট্ৰেইৰ দৰে স্ক্ৰীণৰ আন অংশলৈ যাবলৈ Control+Forward হেঁচক৷ Chromebookত, ফৰৱাৰ্ড কীটো সংখ্যা ২ কীৰ ওপৰত থাকে৷</translation>
 <translation id="2811204574343810641">শাৰী</translation>
 <translation id="2816868829355607410">অনুশীলনৰ ক্ষেত্ৰ: পোনপটীয়াকৈ যোৱাৰ নিৰ্দেশ</translation>
@@ -302,7 +302,6 @@
 <translation id="3082249673510793544">পিছলৈ স্ক্ৰ’ল কৰক</translation>
 <translation id="3084806535845658316">কোনো টাইপিং ইক’ নাই</translation>
 <translation id="3086746722712840547">টোকা</translation>
-<translation id="308736057934395497">এইটোৱে আপোনাৰ স্ক্ৰীনখন অন্য লোকে নেদেখাকৈ অফ কৰি গোপনীয়তা উন্নত কৰে। আপুনি সন্ধান কৰা আৰু উজ্জ্বলতা বঢ়োৱা বুটাম দুটা একেলগে টিপি যিকোনো সময়তে স্ক্ৰীনখন পুনৰ অন কৰিব পাৰে।</translation>
 <translation id="3090227230165225418">ডাউনল'ড সম্পর্কীয় জাননী ঘোষণা কৰক</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">পৰৱর্তী লেণ্ডমার্ক</translation>
@@ -313,7 +312,6 @@
 <translation id="3109724472072898302">সংকুচিত কৰা আছে</translation>
 <translation id="311015743332597320">চাৰিটা আঙুলিৰে সোঁফাললৈ ছোৱাইপ কৰক</translation>
 <translation id="3112457281078985179">ChromeVox অন বা অফ কৰিবলৈ, Control+Alt+Z ব্যৱহাৰ কৰক৷</translation>
-<translation id="3115800313647508384">স্ক্ৰীন অফ কৰিবনে?</translation>
 <translation id="3131002934070407451">নম্বৰসমূহ এইদৰে পঢ়ক:</translation>
 <translation id="3134461040845705080">ৰীড্‌অন্‌লী</translation>
 <translation id="3137663468179739624">জলফাইৰঙী</translation>
@@ -720,6 +718,7 @@
 <translation id="6034000775414344507">পাতল ধোঁৱাবৰণীয়া</translation>
 <translation id="6036135911048686884">স্পৰ্শেৰে অন্বেষণ কৰা</translation>
 <translation id="6037602951055904232">পেন ফৰৱার্ড</translation>
+<translation id="6044160928851315051">গাঢ় কৰা স্ক্ৰীণ</translation>
 <translation id="6082768461603900813">মূল নেভিগেশ্বন</translation>
 <translation id="609281021724813947">কোনো পূৰ্বৱৰ্তী শ্লাইডাৰ নাই</translation>
 <translation id="6100239002225743044">এটা শাৰী ওপৰলৈ যাওক</translation>
@@ -790,7 +789,6 @@
 <translation id="6696967141280706829">পাতনি</translation>
 <translation id="6697092096875747123">পূৰ্বৱৰ্তী ক'ম্ব' বাকছ</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{ভাববোধক চিহ্ন}one{# ভাববোধক চিহ্নসমূহ}other{# ভাববোধক চিহ্নসমূহ}}</translation>
-<translation id="670717715607710284">স্ক্ৰীন অফ কৰক</translation>
 <translation id="6710213216561001401">পূৰ্বৱৰ্তী</translation>
 <translation id="6714813999819678458">পূর্বৱর্তী স্তৰ ২ৰ শিৰোনাম</translation>
 <translation id="6730312624811567147">Home অথবা Endৰ বাবে Search Left অথবা Right, Control Home অথবা Endৰ বাবে Search Control Left অথবা Right, Page Up অথবা Downৰ বাবে Search Up অথবা Down ব্যৱহাৰ কৰক</translation>
@@ -993,7 +991,6 @@
 <translation id="816818801578874684">এইটো প্ৰথম শিৰোনাম। পৰৱৰ্তী শিৰোনামলৈ যাবলৈ ছাৰ্চ + এইছ টিপক।</translation>
 <translation id="8173092779156526980">চাৰিটা আঙুলিৰে বাওঁফাললৈ ছোৱাইপ কৰক</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{আণ্ডাৰস্ক’ৰ}one{#টা আণ্ডাৰস্ক’ৰ}other{#টা আণ্ডাৰস্ক’ৰ}}</translation>
-<translation id="817529114347680055">স্ক্ৰীন অন আছে</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">শাৰী</translation>
 <translation id="8186185314313222077">পূৰ্ণ স্ক্ৰীণ ট’গল কৰক</translation>
@@ -1016,6 +1013,7 @@
 <translation id="8316881042119029234">অ'ল্ড লেচ</translation>
 <translation id="8324974933005349667">’পাঠৰ পৰা কথন’-ৰ ছেটিং ব্যক্তিগতকৰণ কৰক</translation>
 <translation id="8326783648485765113">ঘাঁহনিৰ দৰে সেউজীয়া</translation>
+<translation id="8328063869313048659">গাঢ় স্ক্ৰীন ট’গল কৰক</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{পাউণ্ড}one{#টা পাউণ্ড চিহ্ন}other{#টা পাউণ্ড চিহ্ন}}</translation>
 <translation id="8378855320830505539">অঞ্চল</translation>
 <translation id="8382679411218029383">স্বয়ংক্রিয়ভাৱে সম্পূৰ্ণ হোৱা ইনলাইন আৰু তালিকা</translation>

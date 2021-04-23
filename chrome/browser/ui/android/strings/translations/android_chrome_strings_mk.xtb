@@ -248,6 +248,7 @@
 <translation id="2612676031748830579">Број на картичка</translation>
 <translation id="2625189173221582860">Лозинката е копирана</translation>
 <translation id="2631006050119455616">Заштедено</translation>
+<translation id="2645657967708199252">Вашата <ph name="CONNECTION_TYPE" /> врска може да го забави преземањето</translation>
 <translation id="2647434099613338025">Додајте јазик</translation>
 <translation id="2650751991977523696">Дали да се преземе датотеката повторно?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# аудиодатотека}one{# аудиодатотека}other{# аудиодатотеки}}</translation>
@@ -260,6 +261,7 @@
 <translation id="2718846868787000099">За да се прикажат содржини за вашите претпочитани јазици, сајтовите што ги посетувате можат да ги видат вашите претпочитања</translation>
 <translation id="2723001399770238859">аудио</translation>
 <translation id="2728754400939377704">Подреди според сајт</translation>
+<translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">Допрете даден збор за да пребарувате веднаш или за да видите слични дејства</translation>
 <translation id="2760989362628427051">Вклучува темна тема кога е вклучена темната тема или „Штедачот на батерија“ на уредот</translation>
 <translation id="2762000892062317888">пред малку</translation>
@@ -304,7 +306,6 @@
 <translation id="3016635187733453316">Проверете дали уредов е поврзан на интернет</translation>
 <translation id="3029704984691124060">Лозинките-фрази не се совпаѓаат</translation>
 <translation id="3031225630520268969">Кориснички интерфејс за согласност за гласовно пребарување со „Помошникот“</translation>
-<translation id="3034163383943672781">Преземањето ќе започне на <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Побарајте помош<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Стигнете на сајтов побрзо следниот пат</translation>
 <translation id="305593374596241526">Локацијата е исклучена, вклучете ја во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
@@ -437,6 +438,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="3943557322767080599">Прикажувај потсетници за најавување на Chrome при најавување на сметката на Google</translation>
 <translation id="395206256282351086">Пребарувањето и предлозите за сајтови се оневозможени</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome ќе ја вчита страницата кога ќе биде спремна}one{Chrome ќе ги вчита страниците кога ќе бидат спремни}other{Chrome ќе ги вчита страниците кога ќе бидат спремни}}</translation>
+<translation id="3962957115499249330">Ќе видите известување кога преземањево ќе започне на Wi-Fi.</translation>
 <translation id="3963007978381181125">Шифрирањето на лозинката не ги вклучува начините на плаќање и адресите од Google Pay. Само некој што ја има вашата лозинка може да ги чита вашите шифрирани податоци. Лозинката не се испраќа, ниту зачувува во Google. Доколку ја заборавите лозинката или сакате да ја промените поставкава, ќе треба да ја ресетирате синхронизацијата. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome не може да ги провери вашите лозинки</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> ќе се отвори во Chrome. Ако продолжите, се согласувате со <ph name="BEGIN_LINK1" />Условите за користење на Google<ph name="END_LINK1" />и <ph name="BEGIN_LINK2" />Дополнителните услови за користење на Google Chrome и Chrome OS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Известувањето за приватност за сметките на Google управувани со Family Link<ph name="END_LINK3" /> исто така важи.</translation>
@@ -480,6 +482,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="4256782883801055595">Лиценци за отворен код</translation>
 <translation id="4263656433980196874">Корисничкиот интерфејс за согласност за гласовно пребарување со „Помошникот“ е отворен на цел екран</translation>
 <translation id="4269820728363426813">Копирај адреса на врска</translation>
+<translation id="4290281343757112331">Да се преземе подоцна?</translation>
 <translation id="4298388696830689168">Поврзани сајтови</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Основи</translation>
@@ -622,6 +625,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="5191251636205085390">Дознајте за новите технологии што имаат за цел да ги заменат колачињата на трети лица и контролирајте ги</translation>
 <translation id="5193988420012215838">Копирано во привремената меморија</translation>
 <translation id="5199929503336119739">Работен профил</translation>
+<translation id="5201464744567315552">Ќе видите известување кога преземањево ќе започне во <ph name="TIME" />.</translation>
 <translation id="5204967432542742771">Внеси лозинка</translation>
 <translation id="5210286577605176222">Скокнете на претходната картичка</translation>
 <translation id="5210365745912300556">Затвори ја картичката</translation>
@@ -632,6 +636,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="5230560987958996918"><ph name="SITE" /> сака да скенира за уреди со Bluetooth во близина. Најдени се следниве уреди:</translation>
 <translation id="5233638681132016545">Нова картичка</translation>
 <translation id="5250483651202458397">Слика од екранот. Допрете за да се затвори.</translation>
+<translation id="5262378156578470238">Ќе видите известување кога преземањево ќе започне на <ph name="DATE" />.</translation>
 <translation id="526421993248218238">Страницава не може да се вчита</translation>
 <translation id="5271967389191913893">Уредот не може да ја отвори содржината за да се преземе.</translation>
 <translation id="5292796745632149097">Испрати до</translation>
@@ -701,7 +706,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="572328651809341494">Неодамнешни картички</translation>
 <translation id="5723735397759933332">Lite-режимот отсега ќе ви штеди повеќе интернет со оптимизирање слики на HTTPS-страниците.</translation>
 <translation id="5726692708398506830">Зголеми сѐ што се наоѓа на страницата</translation>
-<translation id="5732819098735351888">Преземањето ќе започне преку Wi-Fi.</translation>
 <translation id="5733983706093266635">Не може да се создаде QR-код. URL-адресата има повеќе од <ph name="CHARACTER_LIMIT" /> знаци.</translation>
 <translation id="5748802427693696783">Префрлено на стандардни картички</translation>
 <translation id="5749068826913805084">На Chrome му треба пристап до меморијата за да презема датотеки.</translation>
@@ -780,7 +784,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="6159335304067198720"><ph name="PERCENT" /> заштеда на податоци</translation>
 <translation id="6186394685773237175">Не се најдени компромитирани лозинки</translation>
 <translation id="6192907950379606605">Добивајте описи на слики</translation>
-<translation id="6206830853671714236">Изберете кога да се преземе</translation>
 <translation id="6210748933810148297">Не сте <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Преглед на страницава</translation>
 <translation id="6218096829563201111">Пребарај слични производи <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
@@ -914,6 +917,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="6981982820502123353">Пристапност</translation>
 <translation id="6989267951144302301">Не може да се преземе</translation>
 <translation id="6995899638241819463">Добијте предупредување ако лозинките се откриени при упад во податоците</translation>
+<translation id="7001056293070445572">Датотекава е голема (<ph name="FILE_SIZE" />)</translation>
 <translation id="7015203776128479407">Првичното поставување на синхронизацијата не беше завршено. Синхронизацијата е исклучена.</translation>
 <translation id="7022756207310403729">Отвори во прелистувач</translation>
 <translation id="702463548815491781">Препорачано при вклучен TalkBack или „Пристап со прекинувачи“</translation>
@@ -1028,6 +1032,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="7791543448312431591">Додај</translation>
 <translation id="7798392620021911922">Вратени се <ph name="TAB_COUNT" /> картички</translation>
 <translation id="780301667611848630">Не, фала</translation>
+<translation id="7808889146555843082">Со бришењето на лозинкава нема да се избрише вашата сметка на <ph name="SITE" />. Променете ја лозинката или избришете ја сметката на <ph name="SITE" /> за да ја заштитите од другите.</translation>
 <translation id="7810647596859435254">Отвори со…</translation>
 <translation id="7815484226266492798">Копче за долга слика од екранот</translation>
 <translation id="7821588508402923572">Заштедата на сообраќајот ќе се појави тука</translation>
@@ -1175,12 +1180,14 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="8699120352855309748">Не нуди превод за овие јазици</translation>
 <translation id="8712637175834984815">Сфатив</translation>
 <translation id="8725066075913043281">Обидете се повторно</translation>
+<translation id="8730621377337864115">Готово</translation>
 <translation id="8748850008226585750">Содржината е скриена</translation>
 <translation id="8773160212632396039">Се обработува барањето</translation>
 <translation id="8788265440806329501">Историјата на навигација е затворена</translation>
 <translation id="8788968922598763114">Повторно отворете ја последната затворена картичка</translation>
 <translation id="8798449543960971550">Прочитано</translation>
 <translation id="8812260976093120287">На некои веб-сајтови, може да плаќате со горенаведените поддржани апликации за плаќање на вашиот уред.</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">Содржините на картичката „Преглед“ не се видливи.</translation>
 <translation id="8820817407110198400">Обележувачи</translation>
 <translation id="883806473910249246">Грешка при преземањето на содржината.</translation>
@@ -1218,10 +1225,10 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="9063523880881406963">Исклучи „Барај локација на работна површина“</translation>
 <translation id="9065203028668620118">Измени</translation>
 <translation id="9065383040763568503">Складирани податоци за кои Chrome смета дека не се важни (на пр., сајтови без зачувани поставки или коишто не ги посетувате често)</translation>
-<translation id="9069543557624799859">Преземањето ќе започне во <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Нема непрочитани страници</translation>
 <translation id="9070377983101773829">Започнете гласовно пребарување</translation>
 <translation id="9074336505530349563">За да добивате персонализирани содржини предложени од Google, најавете се и вклучете ја синхронизацијата</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Синхронизирање</translation>
 <translation id="9086455579313502267">Не може да се пристапи на мрежата</translation>
 <translation id="9100505651305367705">Понуди прикажување статии во поедноставен приказ ако е поддржано</translation>

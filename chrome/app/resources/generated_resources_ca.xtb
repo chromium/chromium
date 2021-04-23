@@ -919,6 +919,7 @@
 <translation id="1974821797477522211">Connecta't a la xarxa</translation>
 <translation id="1975841812214822307">Suprimeix...</translation>
 <translation id="1976150099241323601">Inici de sessió al dispositiu de seguretat</translation>
+<translation id="1976928778492259496">El sensor d'empremtes digitals és a la part esquerra del <ph name="DEVICE_TYPE" />. Toca'l lleugerament amb un dit.</translation>
 <translation id="1977965994116744507">Acosta el telèfon per desbloquejar <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978057560491495741">Suprimeix l'adreça</translation>
 <translation id="1979095679518582070">Si aquesta funció es desactiva, no afectarà la capacitat d'aquest dispositiu d'enviar la informació necessària per rebre serveis bàsics, com ara seguretat i actualitzacions del sistema.</translation>
@@ -1972,6 +1973,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="313205617302240621">Has oblidat la contrasenya?</translation>
 <translation id="3132277757485842847">No hem pogut mantenir la connexió amb el teu telèfon. Comprova que sigui a prop teu, que estigui desbloquejat i que tingui el Bluetooth i la Wi‑Fi activats.</translation>
 <translation id="3132996321662585180">Actualitza diàriament</translation>
+<translation id="3134393957315651797">Selecciona un estat per a l'experiment <ph name="EXPERIMENT_NAME" />. Descripció de l'experiment: <ph name="EXPERIMENT_DESCRIPTION" />.</translation>
 <translation id="3138624403379688522">El PIN no és vàlid. Et queden <ph name="RETRIES" /> intents.</translation>
 <translation id="313963229645891001">S'està baixant, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Avatar groc predeterminat</translation>
@@ -2961,7 +2963,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4252899949534773101">El Bluetooth està desactivat</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" />: el contingut de les pestanyes es comparteix</translation>
 <translation id="4253183225471855471">No s'ha trobat cap xarxa. Insereix la SIM i reinicia el dispositiu abans de tornar-ho a provar.</translation>
-<translation id="4254813446494774748">Idioma de la traducció:</translation>
+<translation id="4254813446494774748">Idioma de traducció:</translation>
 <translation id="425573743389990240">Velocitat de descàrrega de la bateria en watts (un valor negatiu significa que la bateria s'està carregant)</translation>
 <translation id="4256316378292851214">De&amp;sa el vídeo com a...</translation>
 <translation id="4258348331913189841">Sistemes de fitxers</translation>
@@ -6623,6 +6625,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8398877366907290961">Continua igualment</translation>
 <translation id="8400146488506985033">Gestiona persones</translation>
 <translation id="8401432541486058167">Proporciona el PIN que està associat a la teva targeta intel·ligent.</translation>
+<translation id="8404893580027489425">El sensor d'empremtes digitals és a la part dreta del <ph name="DEVICE_TYPE" />. Toca'l lleugerament amb un dit.</translation>
 <translation id="8405046151008197676">Descobreix les novetats més destacades de la darrera actualització</translation>
 <translation id="8407199357649073301">Nivell de registre:</translation>
 <translation id="8408068190360279472">Xarxa <ph name="NETWORK_TYPE" /> (connectant)</translation>

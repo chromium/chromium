@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">以兩隻手指向上滑動</translation>
 <translation id="1126928665165112660">唔係斜體</translation>
 <translation id="113582498867142724">「<ph name="TAG" />」集 (共 <ph name="NUM" /> 個項目)</translation>
-<translation id="1146441463334103638">開或者閂螢幕</translation>
 <translation id="1156488781945104845">目前時間</translation>
 <translation id="1161762950103988776">跳轉</translation>
 <translation id="1164857107703583584">跳轉指令可用於快速瀏覽網頁。</translation>
@@ -256,6 +255,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">如要移至上一個項目，亦可以單指由右至左滑動。立即試試吧。</translation>
 <translation id="280499067616661124">ChromeVox 從網頁中尋找</translation>
+<translation id="2808001342598757276">取消校暗螢幕</translation>
 <translation id="2811019999044652585">如要跳到畫面上的其他部分 (例如工具列或系統列)，請按 Control + Forward 鍵。Chromebook 的 Forward 鍵位於數字 2 鍵的正上方。</translation>
 <translation id="2811204574343810641">列</translation>
 <translation id="2816868829355607410">練習區：跳轉指令</translation>
@@ -302,7 +302,6 @@
 <translation id="3082249673510793544">向後捲動</translation>
 <translation id="3084806535845658316">沒有輸入語音回應</translation>
 <translation id="3086746722712840547">注意事項</translation>
-<translation id="308736057934395497">此操作會關閉螢幕，防止其他人看到螢幕畫面，因此有助保護私隱。您可隨時按搜尋鍵 + 校光亮度鍵來重新開啟螢幕。</translation>
 <translation id="3090227230165225418">朗讀下載通知</translation>
 <translation id="3090532668523289635">群組</translation>
 <translation id="3093176084511590672">下一個地標</translation>
@@ -313,7 +312,6 @@
 <translation id="3109724472072898302">已收合</translation>
 <translation id="311015743332597320">以四隻手指向右滑動</translation>
 <translation id="3112457281078985179">如要開啟或關閉 ChromeVox，請按 Control + Alt + Z 鍵。</translation>
-<translation id="3115800313647508384">要關閉螢幕嗎？</translation>
 <translation id="3131002934070407451">朗讀數字方式：</translation>
 <translation id="3134461040845705080">唯讀</translation>
 <translation id="3137663468179739624">橄欖綠色</translation>
@@ -721,6 +719,7 @@
 <translation id="6034000775414344507">淺灰色</translation>
 <translation id="6036135911048686884">輕觸探索</translation>
 <translation id="6037602951055904232">向前平移</translation>
+<translation id="6044160928851315051">校暗螢幕</translation>
 <translation id="6082768461603900813">基本導覽操作</translation>
 <translation id="609281021724813947">冇上一個滑桿</translation>
 <translation id="6100239002225743044">上移一行</translation>
@@ -791,7 +790,6 @@
 <translation id="6696967141280706829">前言</translation>
 <translation id="6697092096875747123">上一個下拉式方塊</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{感嘆號}other{# 個感嘆號}}</translation>
-<translation id="670717715607710284">閂螢幕</translation>
 <translation id="6710213216561001401">上一個</translation>
 <translation id="6714813999819678458">上一個第 2 級標題</translation>
 <translation id="6730312624811567147">用搜尋掣加向左掣或向右掣嚟取代 Home 掣或者 End 掣，用搜尋掣，Control 掣加向左掣或者向右掣嚟取代 Control 掣加 Home 掣或者 End 掣，用搜尋掣加向上掣或者向下掣嚟取代 Page Up 掣或者 Page Down 掣</translation>
@@ -993,7 +991,6 @@
 <translation id="816818801578874684">這是第一個標題。按下搜尋鍵 + H 鍵可前往下一個標題。</translation>
 <translation id="8173092779156526980">以四隻手指向左滑動</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{1 個底線}other{# 個底線}}</translation>
-<translation id="817529114347680055">開螢幕</translation>
 <translation id="8179976553408161302">Enter 鍵</translation>
 <translation id="8184828902145951186">列</translation>
 <translation id="8186185314313222077">切換全螢幕</translation>
@@ -1016,6 +1013,7 @@
 <translation id="8316881042119029234">米白色</translation>
 <translation id="8324974933005349667">個人化「文字轉語音」設定</translation>
 <translation id="8326783648485765113">草綠色</translation>
+<translation id="8328063869313048659">切換去昏暗螢幕</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{1 個英鎊符號}other{# 個英鎊符號}}</translation>
 <translation id="8378855320830505539">區域</translation>
 <translation id="8382679411218029383">自動完成內嵌元素和清單</translation>

@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">Stryg opad med to fingre</translation>
 <translation id="1126928665165112660">Ikke kursiv</translation>
 <translation id="113582498867142724"><ph name="TAG" />-samling med <ph name="NUM" /> elementer</translation>
-<translation id="1146441463334103638">Slå skærmen til eller fra</translation>
 <translation id="1156488781945104845">Aktuel tid</translation>
 <translation id="1161762950103988776">Hop</translation>
 <translation id="1164857107703583584">Hoppekommandoer kan bruges til at navigere effektivt på en webside.</translation>
@@ -256,6 +255,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}one{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Du kan også stryge med én finger fra højre mod venstre for at gå til det forrige element. Prøv det nu.</translation>
 <translation id="280499067616661124">ChromeVox-fund på siden</translation>
+<translation id="2808001342598757276">Gør skærmen lys igen</translation>
 <translation id="2811019999044652585">Tryk på Ctrl+frem for at gå til andre områder på skærmen, som f.eks. værktøjslinjer eller systembakken. På Chromebook finder du tasten Frem lige over tasten med totallet.</translation>
 <translation id="2811204574343810641">Række</translation>
 <translation id="2816868829355607410">Øveområde: Hoppekommandoer</translation>
@@ -302,7 +302,6 @@
 <translation id="3082249673510793544">Rul tilbage</translation>
 <translation id="3084806535845658316">intet indtastningsekko</translation>
 <translation id="3086746722712840547">bmrk</translation>
-<translation id="308736057934395497">Dette forbedrer beskyttelsen af personlige oplysninger ved at slukke din skærm, så den ikke kan ses af andre. Du kan altid tænde skærmen igen ved at trykke på Søg + Lysstyrke op.</translation>
 <translation id="3090227230165225418">Vis notifikationer om downloads</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">Næste orienteringspunkt</translation>
@@ -313,7 +312,6 @@
 <translation id="3109724472072898302">Skjult</translation>
 <translation id="311015743332597320">Stryg til højre med fire fingre</translation>
 <translation id="3112457281078985179">Tryk på Ctrl+Alt+Z for at slå ChromeVox til eller fra.</translation>
-<translation id="3115800313647508384">Vil du slukke skærmen?</translation>
 <translation id="3131002934070407451">Læs tal som:</translation>
 <translation id="3134461040845705080">skrv.bsk</translation>
 <translation id="3137663468179739624">Olivengrøn</translation>
@@ -721,6 +719,7 @@
 <translation id="6034000775414344507">Lysegrå</translation>
 <translation id="6036135911048686884">Tryk for at udforske</translation>
 <translation id="6037602951055904232">Panorer fremad</translation>
+<translation id="6044160928851315051">Gør skærmen mørk</translation>
 <translation id="6082768461603900813">Grundlæggende navigation</translation>
 <translation id="609281021724813947">Der er ingen forrige skydere</translation>
 <translation id="6100239002225743044">Gå én linje op</translation>
@@ -791,7 +790,6 @@
 <translation id="6696967141280706829">Forord</translation>
 <translation id="6697092096875747123">Forrige kombifelt</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{udråbstegn}one{# udråbstegn}other{# udråbstegn}}</translation>
-<translation id="670717715607710284">Sluk skærmen</translation>
 <translation id="6710213216561001401">Forrige</translation>
 <translation id="6714813999819678458">Forrige niveau 2-overskrift</translation>
 <translation id="6730312624811567147">Brug Søg og venstrepil eller højrepil for Home og End. Brug Søg, Control og venstrepil eller højrepil for Control Home og End. Brug Søg og pil op eller ned for Page Up og Page Down</translation>
@@ -994,7 +992,6 @@
 <translation id="816818801578874684">Dette er den første overskrift. Tryk på søgetasten+H for at gå til næste overskrift.</translation>
 <translation id="8173092779156526980">Stryg til venstre med fire fingre</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{understregning}one{# understregninger}other{# understregninger}}</translation>
-<translation id="817529114347680055">Tænd skærm</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">rk</translation>
 <translation id="8186185314313222077">slå fuld skærm til eller fra</translation>
@@ -1017,6 +1014,7 @@
 <translation id="8316881042119029234">Gullighvid</translation>
 <translation id="8324974933005349667">Tilpas indstillinger for tekstoplæsning</translation>
 <translation id="8326783648485765113">Plænegrøn</translation>
+<translation id="8328063869313048659">Slå mørk skærm til/fra</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{pund}one{# pund-tegn}other{# pund-tegn}}</translation>
 <translation id="8378855320830505539">Område</translation>
 <translation id="8382679411218029383">Autofuldførelse på linje og på liste</translation>

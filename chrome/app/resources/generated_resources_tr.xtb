@@ -919,6 +919,7 @@
 <translation id="1974821797477522211">Ağa bağlan</translation>
 <translation id="1975841812214822307">Kaldır...</translation>
 <translation id="1976150099241323601">Güvenlik Cihazında oturum açın</translation>
+<translation id="1976928778492259496">Parmak izi sensörü, <ph name="DEVICE_TYPE" /> cihazınızın sol tarafındadır. Herhangi bir parmağınızla bu tuşa hafifçe dokunun.</translation>
 <translation id="1977965994116744507"><ph name="DEVICE_TYPE" /> cihazınızın kilidini açmak için telefonunuzu cihaza yaklaştırın.</translation>
 <translation id="1978057560491495741">Adresi kaldır</translation>
 <translation id="1979095679518582070">Bu özelliğin kapatılması, bu cihazın sistem güncellemeleri ve güvenlik gibi önemli hizmetler için gereken bilgileri gönderme özelliğini etkilemez.</translation>
@@ -1972,6 +1973,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="313205617302240621">Şifrenizi mi unuttunuz?</translation>
 <translation id="3132277757485842847">Telefonunuzla bağlantıyı sürdüremedik. Telefonunuzun yakında bulunduğundan, kilidinin ve Bluetooth ile Kablosuz bağlantının da açık olduğundan emin olun.</translation>
 <translation id="3132996321662585180">Günlük olarak yenile</translation>
+<translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> denemesi için deneme durumu seçin. Deneme açıklaması: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Geçersiz PIN. <ph name="RETRIES" /> deneme hakkınız kaldı.</translation>
 <translation id="313963229645891001">İndiriliyor, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Varsayılan sarı avatar</translation>
@@ -6622,6 +6624,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8398877366907290961">Yine de devam et</translation>
 <translation id="8400146488506985033">Kişileri yönet</translation>
 <translation id="8401432541486058167">Akıllı kartınızla ilişkilendirilen PIN'i girin.</translation>
+<translation id="8404893580027489425">Parmak izi sensörü, <ph name="DEVICE_TYPE" /> cihazınızın sağ tarafındadır. Herhangi bir parmağınızla bu tuşa hafifçe dokunun.</translation>
 <translation id="8405046151008197676">En yeni güncellemeden öne çıkanları alın</translation>
 <translation id="8407199357649073301">Günlük Düzeyi:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> ağı, bağlanıyor</translation>

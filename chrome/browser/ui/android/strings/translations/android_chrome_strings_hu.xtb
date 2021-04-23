@@ -248,6 +248,7 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="2612676031748830579">Kártyaszám</translation>
 <translation id="2625189173221582860">Jelszó vágólapra másolva</translation>
 <translation id="2631006050119455616">Megtakarított</translation>
+<translation id="2645657967708199252">A(z) <ph name="CONNECTION_TYPE" /> kapcsolat lassíthatja a letöltést.</translation>
 <translation id="2647434099613338025">Nyelv hozzáadása</translation>
 <translation id="2650751991977523696">Letölti újra a fájlt?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# hangfájl}other{# hangfájl}}</translation>
@@ -260,6 +261,7 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="2718846868787000099">A felkeresett webhelyek láthatják az Ön preferenciáit, hogy a kívánt nyelveken jeleníthessék meg a tartalmakat</translation>
 <translation id="2723001399770238859">audio</translation>
 <translation id="2728754400939377704">Rendezés webhely szerint</translation>
+<translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">Az azonnali kereséshez koppintson a kívánt szóra, vagy tekintse meg a kapcsolódó műveleteket</translation>
 <translation id="2760989362628427051">Sötét téma bekapcsolása, amikor az eszköz sötét témája vagy Akkumulátorkímélő módja be van kapcsolva</translation>
 <translation id="2762000892062317888">éppen most</translation>
@@ -304,7 +306,6 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="3016635187733453316">Ellenőrizze, hogy az eszköz csatlakozik-e az internethez</translation>
 <translation id="3029704984691124060">Az összetett jelszavak nem egyeznek</translation>
 <translation id="3031225630520268969">A Segéd hangalapú kereséssel kapcsolatos hozzájárulási kezelőfelülete</translation>
-<translation id="3034163383943672781">A letöltés indításának időpontja: <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Kérjen segítséget<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Következő alkalommal gyorsabban juthat el erre a webhelyre</translation>
 <translation id="305593374596241526">A Helyadatok szolgáltatás ki van kapcsolva; bekapcsolhatja az <ph name="BEGIN_LINK" />Android-beállításokban<ph name="END_LINK" />.</translation>
@@ -437,6 +438,7 @@ A Privacy Sandbox még mindig aktív fejlesztés alatt áll, és csak egyes rég
 <translation id="3943557322767080599">Chrome bejelentkezési értesítések, amikor bejelentkezik Google-fiókjába</translation>
 <translation id="395206256282351086">Keresési és webhelyjavaslatok letiltva</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{A Chrome betölti az oldalt, amint lehetséges}other{A Chrome betölti az oldalakat, amint lehetséges}}</translation>
+<translation id="3962957115499249330">Értesítést kap, amikor ez a letöltés elindul Wi-Fi-hálózaton.</translation>
 <translation id="3963007978381181125">Az összetett jelszavas titkosítás nem tartalmazza a Google Payben megadott fizetési módokat és címeket. Titkosított adatait csak az olvashatja el, aki rendelkezik az Ön összetett jelszavával. Az összetett jelszót a Google nem kapja meg, és nem is tárolja. Ha elfelejtette összetett jelszavát, vagy módosítaná ezt a beállítást, alaphelyzetbe kell állítania a szinkronizálást. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="3969142555815019568">A Chrome nem tudja ellenőrizni a jelszavakat</translation>
 <translation id="3974987681202239636">A(z) <ph name="APP_NAME" /> a Chrome-ban fog megnyílni. A továbblépéssel elfogadja a <ph name="BEGIN_LINK1" />Google Általános Szerződési Feltételeket<ph name="END_LINK1" />, valamint <ph name="BEGIN_LINK2" />A Google Chrome és a Chrome OS Kiegészítő Általános Szerződési Feltételeit<ph name="END_LINK2" />. A <ph name="BEGIN_LINK3" />Family Link szolgáltatással kezelt Google-fiókokra vonatkozó adatvédelmi közlemény<ph name="END_LINK3" /> is érvényben van.</translation>
@@ -480,6 +482,7 @@ A Privacy Sandbox még mindig aktív fejlesztés alatt áll, és csak egyes rég
 <translation id="4256782883801055595">Nyílt forráskódú licencek</translation>
 <translation id="4263656433980196874">A Segéd hangalapú kereséssel kapcsolatos hozzájárulási kezelőfelülete teljes magasságban megnyitva</translation>
 <translation id="4269820728363426813">Link másolása</translation>
+<translation id="4290281343757112331">Inkább később töltené le?</translation>
 <translation id="4298388696830689168">Összekapcsolt webhelyek</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Alapok</translation>
@@ -622,6 +625,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5191251636205085390">További információ a harmadik felektől származó cookie-k leváltását célzó új technológiákról és a kezelésükről</translation>
 <translation id="5193988420012215838">Vágólapra másolva</translation>
 <translation id="5199929503336119739">Munkaprofil</translation>
+<translation id="5201464744567315552">Értesítést kap, amikor ez a letöltés elindul ekkor: <ph name="TIME" />.</translation>
 <translation id="5204967432542742771">Írja be a jelszót</translation>
 <translation id="5210286577605176222">Ugrás az előző lapra</translation>
 <translation id="5210365745912300556">Lap bezárása</translation>
@@ -632,6 +636,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5230560987958996918">A(z) <ph name="SITE" /> szeretné megkeresni a közeli Bluetooth-eszközöket. A következő eszközöket találta:</translation>
 <translation id="5233638681132016545">Új lap</translation>
 <translation id="5250483651202458397">Képernyőkép. Koppintson a bezáráshoz.</translation>
+<translation id="5262378156578470238">Értesítést kap, amikor ez a letöltés elindul ekkor: <ph name="DATE" />.</translation>
 <translation id="526421993248218238">Nem lehet betölteni az oldalt</translation>
 <translation id="5271967389191913893">Az eszköz nem tudja megnyitni a letölteni kívánt tartalmat.</translation>
 <translation id="5292796745632149097">Küldés a következőre:</translation>
@@ -701,7 +706,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="572328651809341494">Nemrég megnyitott lapok</translation>
 <translation id="5723735397759933332">Az Egyszerűsített mód mostantól még tovább csökkenti az adatforgalmat a HTTPS-oldalakon lévő képek optimalizálásával.</translation>
 <translation id="5726692708398506830">Minden nagyítása az oldalon</translation>
-<translation id="5732819098735351888">A letöltés Wi-Fi-hálózaton indul el.</translation>
 <translation id="5733983706093266635">Nem lehet létrehozni QR-kódot. Az URL több mint <ph name="CHARACTER_LIMIT" /> karakterből áll.</translation>
 <translation id="5748802427693696783">Szabványos lapokra váltva</translation>
 <translation id="5749068826913805084">A Chrome-nak tárhelyhozzáférésre van szüksége a fájlok letöltéséhez.</translation>
@@ -780,7 +784,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="6159335304067198720"><ph name="PERCENT" />-os adatmegtakarítás</translation>
 <translation id="6186394685773237175">Nincs nyilvánosságra került jelszó</translation>
 <translation id="6192907950379606605">Képleírások lekérése</translation>
-<translation id="6206830853671714236">Letöltés időpontjának kiválasztása</translation>
 <translation id="6210748933810148297">Nem <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Az oldal előnézete</translation>
 <translation id="6218096829563201111">Hasonló termékek keresése <ph name="BEGIN_NEW" />Új<ph name="END_NEW" /></translation>
@@ -914,6 +917,7 @@ Az inkognitó-munkamenet adatai csak <ph name="BEGIN_BOLD2" />az összes inkogni
 <translation id="6981982820502123353">Kisegítő lehetőségek</translation>
 <translation id="6989267951144302301">A letöltés sikertelen</translation>
 <translation id="6995899638241819463">Figyelmeztetés, ha jelszavai adatvédelmi incidens során nyilvánosságra kerülnek</translation>
+<translation id="7001056293070445572">Ez egy nagy méretű fájl (<ph name="FILE_SIZE" />)</translation>
 <translation id="7015203776128479407">A szinkronizálás kezdeti beállítása nem fejeződött be. A szinkronizálás ki van kapcsolva.</translation>
 <translation id="7022756207310403729">Megnyitás böngészőben</translation>
 <translation id="702463548815491781">Ajánlott, amikor a TalkBack vagy a Kapcsolóalapú hozzáférés be van kapcsolva</translation>
@@ -1028,6 +1032,7 @@ Az inkognitó-munkamenet adatai csak <ph name="BEGIN_BOLD2" />az összes inkogni
 <translation id="7791543448312431591">Hozzáadás</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> lap visszaállítva</translation>
 <translation id="780301667611848630">Köszönöm, nem</translation>
+<translation id="7808889146555843082">A jelszó eltávolításával nem törli fiókját a következő domainről: <ph name="SITE" />. Ha szeretné megőrizni fiókja biztonságát, módosítsa a jelszót, vagy törölje a fiókot a(z) <ph name="SITE" /> domainről.</translation>
 <translation id="7810647596859435254">Megnyitás ezzel:</translation>
 <translation id="7815484226266492798">Hosszú képernyőkép</translation>
 <translation id="7821588508402923572">Itt látható a megtakarított adatmennyiség</translation>
@@ -1175,12 +1180,14 @@ Az inkognitó-munkamenet adatai csak <ph name="BEGIN_BOLD2" />az összes inkogni
 <translation id="8699120352855309748">Ne ajánlja fel a fordítást ezekről a nyelvekről</translation>
 <translation id="8712637175834984815">Sikerült</translation>
 <translation id="8725066075913043281">Újrapróbálás</translation>
+<translation id="8730621377337864115">Kész</translation>
 <translation id="8748850008226585750">Tartalom elrejtve</translation>
 <translation id="8773160212632396039">Kérés feldolgozása folyamatban van</translation>
 <translation id="8788265440806329501">Bezárta a navigációs előzményeket</translation>
 <translation id="8788968922598763114">A legutóbb bezárt lap újranyitása</translation>
 <translation id="8798449543960971550">Olvasás</translation>
 <translation id="8812260976093120287">Bizonyos webhelyeken fizethet eszközén a fenti támogatott fizetési alkalmazásokkal.</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">Az előnézeti lap tartalmát nem lehet megtekinteni.</translation>
 <translation id="8820817407110198400">Könyvjelzők</translation>
 <translation id="883806473910249246">Hiba történt a tartalom letöltésekor.</translation>
@@ -1218,10 +1225,10 @@ Az inkognitó-munkamenet adatai csak <ph name="BEGIN_BOLD2" />az összes inkogni
 <translation id="9063523880881406963">Kapcsolja ki az Asztali webhely kérése funkciót</translation>
 <translation id="9065203028668620118">Szerkesztés</translation>
 <translation id="9065383040763568503">A Chrome által nem fontosnak ítélt tárolt adatok (például a mentett beállítások nélküli vagy ritkán megnyitott webhelyek)</translation>
-<translation id="9069543557624799859">Letöltés kezdete: <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Nincsenek olvasatlan oldalak</translation>
 <translation id="9070377983101773829">Hangalapú keresés indítása</translation>
 <translation id="9074336505530349563">A Google által javasolt, személyre szabott tartalmak fogadásához jelentkezzen be, és kapcsolja be a szinkronizálást</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Szinkronizálás</translation>
 <translation id="9086455579313502267">Nem sikerült elérni a hálózatot</translation>
 <translation id="9100505651305367705">Felajánlja, hogy egyszerűsített nézetben jeleníti meg a cikkeket (ha támogatott a funkció)</translation>

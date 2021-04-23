@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">Svep uppåt med två fingrar</translation>
 <translation id="1126928665165112660">Inte kursiv</translation>
 <translation id="113582498867142724"><ph name="TAG" />-samling med <ph name="NUM" /> objekt</translation>
-<translation id="1146441463334103638">Aktivera eller inaktivera skärmen</translation>
 <translation id="1156488781945104845">Aktuell tid</translation>
 <translation id="1161762950103988776">Hoppa</translation>
 <translation id="1164857107703583584">Med hoppkommandon kan du effektivt navigera genom en webbsida.</translation>
@@ -256,6 +255,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Du kan även gå tillbaka till föregående alternativ genom att svepa från höger till vänster med ett finger. Testa nu.</translation>
 <translation id="280499067616661124">Hitta på sidan med ChromeVox</translation>
+<translation id="2808001342598757276">Tänd skärmen</translation>
 <translation id="2811019999044652585">Hoppa till andra delar av skärmen, t.ex. verktygsfält eller systemfältet, genom att trycka på Ctrl + framåt. På en Chromebook sitter framåttangenten precis ovanför tangenten 2.</translation>
 <translation id="2811204574343810641">Rad</translation>
 <translation id="2816868829355607410">Övningsområde: Hoppkommandon</translation>
@@ -302,7 +302,6 @@
 <translation id="3082249673510793544">Rulla bakåt</translation>
 <translation id="3084806535845658316">inget eko vid inmatning</translation>
 <translation id="3086746722712840547">anm</translation>
-<translation id="308736057934395497">Detta förbättrar integriteten genom att inaktivera skärmen så att andra inte kan se den. Du kan aktivera skärmen igen när du vill genom att trycka på Sök + Öka ljusstyrkan.</translation>
 <translation id="3090227230165225418">Visa nedladdningsaviseringar</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">Nästa landmärke</translation>
@@ -313,7 +312,6 @@
 <translation id="3109724472072898302">Komprimerat</translation>
 <translation id="311015743332597320">Svep åt höger med fyra fingrar</translation>
 <translation id="3112457281078985179">Slå på eller stäng av ChromeVox genom att trycka på Ctrl + Alt + Z.</translation>
-<translation id="3115800313647508384">Vill du stänga av skärmen?</translation>
 <translation id="3131002934070407451">Läs upp nummer som:</translation>
 <translation id="3134461040845705080">skrivskydd</translation>
 <translation id="3137663468179739624">Olivgrön</translation>
@@ -721,6 +719,7 @@
 <translation id="6034000775414344507">Ljusgrå</translation>
 <translation id="6036135911048686884">Tryck och dra för att utforska</translation>
 <translation id="6037602951055904232">Panorera framåt</translation>
+<translation id="6044160928851315051">Släck skärmen</translation>
 <translation id="6082768461603900813">Grundläggande navigering</translation>
 <translation id="609281021724813947">Det finns inget föregående skjutreglage</translation>
 <translation id="6100239002225743044">Flytta uppåt en rad</translation>
@@ -791,7 +790,6 @@
 <translation id="6696967141280706829">Företal</translation>
 <translation id="6697092096875747123">Föregående kombinationsruta</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{utropstecken}other{# utropstecken}}</translation>
-<translation id="670717715607710284">Skärm av</translation>
 <translation id="6710213216561001401">Föregående</translation>
 <translation id="6714813999819678458">Föregående rubrik på nivå 2</translation>
 <translation id="6730312624811567147">Söktangenten plus vänsterpil eller högerpil motsvarar Home-tangenten respektive End-tangenten. Tangenterna Sök och Ctrl plus vänsterpil eller högerpil motsvarar Ctrl Home respektive Ctrl End. Söktangenten plus uppåtpil eller nedåtpil motsvarar tangenterna PageUp respektive PageDown</translation>
@@ -994,7 +992,6 @@
 <translation id="816818801578874684">Det här är den första rubriken. Tryck på Sök + H för att fortsätta till nästa rubrik.</translation>
 <translation id="8173092779156526980">Svep åt vänster med fyra fingrar</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{understreck}other{# understreck}}</translation>
-<translation id="817529114347680055">Skärm på</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">rad</translation>
 <translation id="8186185314313222077">helskärmsläge av/på</translation>
@@ -1017,6 +1014,7 @@
 <translation id="8316881042119029234">Blekt gulorange</translation>
 <translation id="8324974933005349667">Anpassa inställningarna för text till tal</translation>
 <translation id="8326783648485765113">Gräsgrön</translation>
+<translation id="8328063869313048659">Aktivera och inaktivera mörk skärm</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{nummertecken}other{# nummertecken}}</translation>
 <translation id="8378855320830505539">Område</translation>
 <translation id="8382679411218029383">Autoslutför med både direktinfogning och lista</translation>

@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">രണ്ട് വിരലുകൾ ഉപയോഗിച്ച് മുകളിലോട്ട് സ്വൈപ്പ് ചെയ്യുക</translation>
 <translation id="1126928665165112660">ഇറ്റാലിക്ക് അല്ല</translation>
 <translation id="113582498867142724"><ph name="NUM" /> ഇനങ്ങളുള്ള <ph name="TAG" /> ശേഖരം</translation>
-<translation id="1146441463334103638">സ്ക്രീൻ ഓണാക്കൽ അല്ലെങ്കിൽ ഓഫാക്കൽ മാറ്റുക</translation>
 <translation id="1156488781945104845">നിലവിലെ സമയം</translation>
 <translation id="1161762950103988776">Jump</translation>
 <translation id="1164857107703583584">വെബ് പേജിലൂടെ ഫലപ്രദമായി നാവിഗേറ്റ് ചെയ്യാൻ ജമ്പ് കമാൻഡുകൾ ഉപയോഗിക്കാം.</translation>
@@ -256,6 +255,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">ഒരു വിരൽ വലത്തുനിന്ന് ഇടത്തേക്ക് സ്വൈപ്പ് ചെയ്ത് മുമ്പത്തെ ഇനത്തിലേക്ക് നീങ്ങാനും നിങ്ങൾക്ക് കഴിയും. ഇപ്പോൾ ശ്രമിക്കുക.</translation>
 <translation id="280499067616661124">ChromeVox പേജിൽ കണ്ടെത്തുക</translation>
+<translation id="2808001342598757276">സ്‌ക്രീൻ ഓണാക്കുക</translation>
 <translation id="2811019999044652585">സ്‌ക്രീനിലെ ടൂൾബാറുകളോ സിസ്‌റ്റം ട്രേയോ പോലുള്ള മറ്റ് ഭാഗങ്ങളിലേക്ക് പോകാൻ, കൺട്രോൾ+ഫോർവേഡ് അമർത്തുക. Chromebook-ൽ, നമ്പർ 2 കീയുടെ തൊട്ടുമുകളിലുള്ളതാണ് ഫോർവേഡ് കീ.</translation>
 <translation id="2811204574343810641">വരി</translation>
 <translation id="2816868829355607410">പരിശീലന വിഭാഗം: ജമ്പ് കമാൻഡുകൾ</translation>
@@ -302,7 +302,6 @@
 <translation id="3082249673510793544">പുറകിലേക്ക് സ്‌ക്രോൾ ചെയ്യുക</translation>
 <translation id="3084806535845658316">ടൈപ്പുചെയ്യൽ എക്കോകളൊന്നുമില്ല</translation>
 <translation id="3086746722712840547">note</translation>
-<translation id="308736057934395497">മറ്റുള്ളവർക്ക് കാണാനാകാത്തവിധം നിങ്ങളുടെ സ്‌ക്രീൻ ഓഫാക്കുന്നതിലൂടെ ഇത് സ്വകാര്യത വർദ്ധിപ്പിക്കുന്നു. Search + Brightness up അമർത്തി നിങ്ങൾക്ക് ഏതുസമയത്തും സ്ക്രീൻ വീണ്ടും ഓണാക്കാം.</translation>
 <translation id="3090227230165225418">ഡൗൺലോഡ് അറിയിപ്പുകൾ പ്രഖ്യാപിക്കുക</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">അടുത്ത ലാൻഡ്‌മാർക്ക്</translation>
@@ -313,7 +312,6 @@
 <translation id="3109724472072898302">ചുരുക്കിയത്</translation>
 <translation id="311015743332597320">നാല് വിരലുകൾ ഉപയോഗിച്ച് വലത്തേക്ക് സ്വൈപ്പ് ചെയ്യുക</translation>
 <translation id="3112457281078985179">ChromeVox ഓണാക്കാനോ ഓഫാക്കാനോ, കൺട്രോൾ+Alt+Z ഉപയോഗിക്കുക.</translation>
-<translation id="3115800313647508384">സ്ക്രീൻ ഓഫാക്കണോ?</translation>
 <translation id="3131002934070407451">നമ്പറുകൾ ഇനിപ്പറയുന്നതായി വായിക്കുക:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">ഒലിവ്</translation>
@@ -721,6 +719,7 @@
 <translation id="6034000775414344507">ഇളം ചാരനിറം</translation>
 <translation id="6036135911048686884">അടുത്തറിയുക സ്‌പർശിക്കുക</translation>
 <translation id="6037602951055904232">മുന്നിലേക്ക് പാൻ ചെയ്യുക</translation>
+<translation id="6044160928851315051">സ്‌ക്രീൻ ഓഫാക്കുക</translation>
 <translation id="6082768461603900813">അടിസ്ഥാന നാവിഗേഷൻ</translation>
 <translation id="609281021724813947">മുൻ സ്ലൈഡർ ഒന്നുമില്ല</translation>
 <translation id="6100239002225743044">ഒരു വരി മുകളിലോട്ട് നീക്കുക</translation>
@@ -791,7 +790,6 @@
 <translation id="6696967141280706829">പീഠിക</translation>
 <translation id="6697092096875747123">മുൻ കോംബോ ബോക്സ്</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{ആശ്ചര്യചിഹ്നം}other{# ആശ്ചര്യചിഹ്നങ്ങൾ}}</translation>
-<translation id="670717715607710284">സ്ക്രീൻ ഓഫാക്കുക</translation>
 <translation id="6710213216561001401">മുമ്പത്തേത്</translation>
 <translation id="6714813999819678458">മുൻ നില 2 ശീർഷകം</translation>
 <translation id="6730312624811567147">ഹോമിനോ അവസാനിപ്പിക്കുന്നതിനോ ഇടത്തോട്ടോ വലത്തോട്ടോ ഉളള തിരയൽ ഉപയോഗിക്കുക, ഹോം നിയന്ത്രിക്കുന്നതിനോ അവസാനിപ്പിക്കുന്നതിനോ ഇടത്തോട്ടോ വലത്തോട്ടോ ഉള്ള തിരയൽ നിയന്ത്രണം ഉപയോഗിക്കുക, പേജ് മുകളിലേക്കോ താഴേക്കോ നീക്കാൻ മുകളിലോട്ടോ താഴോട്ടോ ഉള്ള തിരയൽ ഉപയോഗിക്കാം</translation>
@@ -993,7 +991,6 @@
 <translation id="816818801578874684">ഇതാണ് ആദ്യത്തെ തലക്കെട്ട്. അടുത്ത തലക്കെട്ടിലേക്ക് പോകാൻ തിരയൽ + H അമർത്തുക.</translation>
 <translation id="8173092779156526980">നാല് വിരലുകൾ ഉപയോഗിച്ച് ഇടത്തേക്ക് സ്വൈപ്പ് ചെയ്യുക</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{അടിവര}other{# അടിവരകൾ}}</translation>
-<translation id="817529114347680055">സ്ക്രീൻ ഓണാക്കുക</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">വരി</translation>
 <translation id="8186185314313222077">പൂർണ്ണ സ്‌ക്രീൻ ടോഗിൾ ചെയ്യുക</translation>
@@ -1016,6 +1013,7 @@
 <translation id="8316881042119029234">ഓൾഡ് ലേസ്</translation>
 <translation id="8324974933005349667">ടെക്‌സ്‌റ്റ്-ടു-സ്‌പീച്ച് ക്രമീകരണം വ്യക്തിപരമാക്കുക</translation>
 <translation id="8326783648485765113">ലോൺ ഗ്രീൻ</translation>
+<translation id="8328063869313048659">ഡാർക്ക് സ്‌ക്രീൻ മാറ്റുക</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{പൗണ്ട്}other{# പൗണ്ട് അടയാളങ്ങൾ}}</translation>
 <translation id="8378855320830505539">പ്രദേശം</translation>
 <translation id="8382679411218029383">സ്വയമേവയുള്ള പൂർത്തിയാക്കൽ ഇൻലൈനും ലിസ്റ്റും</translation>

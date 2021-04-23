@@ -916,6 +916,7 @@
 <translation id="1974821797477522211">Conectarse a una red</translation>
 <translation id="1975841812214822307">Eliminar…</translation>
 <translation id="1976150099241323601">Acceder al dispositivo de seguridad</translation>
+<translation id="1976928778492259496">El sensor de huellas dactilares se encuentra del lado izquierdo de tu <ph name="DEVICE_TYPE" />. Tócalo suavemente con un dedo.</translation>
 <translation id="1977965994116744507">Acerca el teléfono para desbloquear tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978057560491495741">Quitar dirección</translation>
 <translation id="1979095679518582070">Aunque esta función esté desactivada, este dispositivo podrá enviar la información necesaria para los servicios esenciales, como seguridad y actualizaciones del sistema.</translation>
@@ -1970,6 +1971,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="313205617302240621">¿Olvidaste la contraseña?</translation>
 <translation id="3132277757485842847">No se pudo mantener la conexión con tu teléfono. Asegúrate de que esté cerca, desbloqueado y tenga las conexiones Bluetooth y Wi-Fi activadas.</translation>
 <translation id="3132996321662585180">Actualizar todos los días</translation>
+<translation id="3134393957315651797">Selecciona el estado del experimento <ph name="EXPERIMENT_NAME" />. Descripción del experimento: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">El PIN no es válido. Te quedan <ph name="RETRIES" /> intentos.</translation>
 <translation id="313963229645891001">Descargando, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Avatar amarillo predeterminado</translation>
@@ -6620,6 +6622,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8398877366907290961">Continuar de todos modos</translation>
 <translation id="8400146488506985033">Administrar personas</translation>
 <translation id="8401432541486058167">Proporciona el PIN asociado a tu tarjeta inteligente.</translation>
+<translation id="8404893580027489425">El sensor de huellas dactilares se encuentra del lado derecho de tu <ph name="DEVICE_TYPE" />. Tócalo suavemente con un dedo.</translation>
 <translation id="8405046151008197676">Conoce las novedades de la última actualización</translation>
 <translation id="8407199357649073301">Nivel de registro:</translation>
 <translation id="8408068190360279472">Red <ph name="NETWORK_TYPE" />, conectando</translation>

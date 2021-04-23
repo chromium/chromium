@@ -1474,6 +1474,7 @@
 
       このポリシーを false に設定した場合、<ph name="BOREALIS_NAME" /> を使用できません。それ以外の場合（ポリシーが未設定のままか、true に設定した場合）、他のポリシーや設定で無効となっていなければ、<ph name="BOREALIS_NAME" /> を使用できます。</translation>
 <translation id="2964373560810620158">ユーザーに <ph name="LACROS_NAME" /> ブラウザの使用を許可しない</translation>
+<translation id="2968177167006045252">サイトに SharedArrayBuffers の使用を許可する</translation>
 <translation id="2969797921412053304">このポリシーでは、ログイン画面の SAML フロー中にデバイス識別情報のリモート証明書の使用を許可する URL を設定します。
 
       具体的に、URL がこのポリシーの指定パターンの 1 つに一致する場合、その URL ではリモート証明書の要求に対する応答を含む HTTP ヘッダーを受信し、デバイスの識別情報と状態を認証することができます。
@@ -1600,6 +1601,7 @@
 <translation id="3072847235228302527">デバイスのローカル アカウントの利用規約を設定する</translation>
 <translation id="3083259245974004342">パスワード保護</translation>
 <translation id="3086995894968271156"><ph name="PRODUCT_NAME" /> で Cast Receiver を設定します。</translation>
+<translation id="3087346703976541109">クロスオリジン分離コンテキスト以外で SharedArrayBuffers を使用できるかどうかを指定する</translation>
 <translation id="3088557424854005813">認証</translation>
 <translation id="3091832372132789233">主に外部電源に接続しているデバイスのバッテリーを充電する。</translation>
 <translation id="3092059499596000593">システムのデフォルト プリンタを印刷プレビューのデフォルトの選択肢とする</translation>
@@ -2964,6 +2966,7 @@
       true に設定した場合は、各 CPU のモデル名、アーキテクチャ、
       最大クロック速度が報告されます。</translation>
 <translation id="5124368997194894978">AC（交流電流）電源接続時の起動を有効にします</translation>
+<translation id="5130213897914754028">サイトに SharedArrayBuffers の使用を許可しない</translation>
 <translation id="5141670636904227950">ログイン画面で有効にする画面拡大鏡のデフォルトのタイプを設定する</translation>
 <translation id="5142301680741828703"><ph name="PRODUCT_FRAME_NAME" /> で次の URL パターンを常に表示する</translation>
 <translation id="514870861066611127">このポリシーでは、ユーザーを識別できる情報（OS のログイン、<ph name="PRODUCT_NAME" /> プロフィールのログイン、<ph name="PRODUCT_NAME" /> プロフィール名、<ph name="PRODUCT_NAME" /> プロフィールのパス、<ph name="PRODUCT_NAME" /> 実行ファイルのパスなど）について、レポートを作成するかどうかを管理します。
@@ -3704,6 +3707,9 @@
 <translation id="6111936128861357925">恐竜のイースター エッグゲームを許可する</translation>
 <translation id="6123052603197028610">タイムスタンプを取得するために Google サーバーへクエリを送信することを許可しない</translation>
 <translation id="6132506775968708399">サードパーティ Cookie をブロックする</translation>
+<translation id="6132739217670763962">
+      クロスオリジン分離コンテキスト以外で SharedArrayBuffers を使用できるかどうかを指定します。ウェブの互換性に関する理由から、Chrome 91 以降（2021-05-25）では、SharedArrayBuffers を使用する際にクロスオリジンの分離が必要となります。詳しくはこちらをご覧ください。
+      https://developer.chrome.com/blog/enabling-shared-array-buffer/</translation>
 <translation id="6133088669883929098">すべてのサイトにキー生成の使用を許可する</translation>
 <translation id="6135398260575578389">セーフ ブラウジングを強化モードで有効にする。このモードではセキュリティが強化されますが、より多くの閲覧情報を Google に提供する必要があります。</translation>
 <translation id="6135895880862759946">ユーザーに <ph name="LACROS_NAME" /> ブラウザでの予備のプロフィールの作成とゲストモードの使用を許可する</translation>

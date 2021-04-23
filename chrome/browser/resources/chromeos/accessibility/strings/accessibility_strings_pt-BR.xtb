@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">Deslize para cima usando dois dedos</translation>
 <translation id="1126928665165112660">Sem itálico</translation>
 <translation id="113582498867142724">Coleção de <ph name="TAG" /> com <ph name="NUM" /> itens</translation>
-<translation id="1146441463334103638">Ligar/desligar a tela</translation>
 <translation id="1156488781945104845">Hora atual</translation>
 <translation id="1161762950103988776">Pular</translation>
 <translation id="1164857107703583584">Os comandos de salto podem ser usados para navegar por uma página da Web com eficiência.</translation>
@@ -256,6 +255,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}one{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Você também pode deslizar um dedo da direita para a esquerda para voltar ao item anterior. Faça um teste.</translation>
 <translation id="280499067616661124">Encontrar na página do ChromeVox</translation>
+<translation id="2808001342598757276">Desfaz o escurecimento da tela</translation>
 <translation id="2811019999044652585">Para ir para outras partes da tela, como barras de ferramentas ou a bandeja do sistema, pressione Control+Avançar. Em um Chromebook, a tecla Avançar fica imediatamente acima da tecla número 2.</translation>
 <translation id="2811204574343810641">Linha</translation>
 <translation id="2816868829355607410">Área para prática: comandos de salto</translation>
@@ -302,7 +302,6 @@
 <translation id="3082249673510793544">Rolar para trás</translation>
 <translation id="3084806535845658316">sem eco de digitação</translation>
 <translation id="3086746722712840547">note</translation>
-<translation id="308736057934395497">Ao desativar a tela para que ela não fique visível para outras pessoas, você aumenta a privacidade. Para ligá-la novamente, pressione Pesquisa + aumentar brilho.</translation>
 <translation id="3090227230165225418">Anunciar notificações de download</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">Próximo ponto de referência</translation>
@@ -313,7 +312,6 @@
 <translation id="3109724472072898302">Recolhido</translation>
 <translation id="311015743332597320">Deslize para a direita usando quatro dedos</translation>
 <translation id="3112457281078985179">Para ativar ou desativar o ChromeVox, use Control+Alt+Z.</translation>
-<translation id="3115800313647508384">Desligar a tela?</translation>
 <translation id="3131002934070407451">Ler números como:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">Verde-oliva</translation>
@@ -721,6 +719,7 @@
 <translation id="6034000775414344507">Cinza-claro</translation>
 <translation id="6036135911048686884">Toque para explorar</translation>
 <translation id="6037602951055904232">Mover para a frente</translation>
+<translation id="6044160928851315051">Escurece a tela</translation>
 <translation id="6082768461603900813">Navegação básica</translation>
 <translation id="609281021724813947">Nenhum controle deslizante anterior</translation>
 <translation id="6100239002225743044">Subir uma linha</translation>
@@ -791,7 +790,6 @@
 <translation id="6696967141280706829">Prefácio</translation>
 <translation id="6697092096875747123">Caixa de combinação anterior</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{ponto de exclamação}one{# ponto de exclamação}other{# pontos de exclamação}}</translation>
-<translation id="670717715607710284">Tela desligada</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6714813999819678458">Cabeçalho de nível 2 anterior</translation>
 <translation id="6730312624811567147">Use Pesquisar+seta para a esquerda ou direita como a tecla Home ou End, Pesquisar+Control+seta para a esquerda ou direita como Control+Home ou End e Pesquisar+seta para cima ou para baixo como Page Up ou Page Down</translation>
@@ -994,7 +992,6 @@
 <translation id="816818801578874684">Este é o primeiro cabeçalho. Pressione a tecla de pesquisa + H para ir até o próximo cabeçalho.</translation>
 <translation id="8173092779156526980">Deslize para a esquerda usando quatro dedos</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{sublinhado}one{# sublinhados}other{# sublinhados}}</translation>
-<translation id="817529114347680055">Tela ativada</translation>
 <translation id="8179976553408161302">Entrar</translation>
 <translation id="8184828902145951186">linha</translation>
 <translation id="8186185314313222077">alternar para o modo tela cheia</translation>
@@ -1017,6 +1014,7 @@
 <translation id="8316881042119029234">Palha</translation>
 <translation id="8324974933005349667">Personalizar configurações de conversão de texto em voz</translation>
 <translation id="8326783648485765113">Verde-grama</translation>
+<translation id="8328063869313048659">Alternar para o modo de tela escura</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{sinal de cerquilha}one{# indicadores de cerquilha}other{# indicadores de cerquilha}}</translation>
 <translation id="8378855320830505539">Região</translation>
 <translation id="8382679411218029383">Preenchimento automático em linha e lista</translation>

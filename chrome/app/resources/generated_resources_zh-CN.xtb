@@ -916,6 +916,7 @@
 <translation id="1974821797477522211">连接到网络</translation>
 <translation id="1975841812214822307">移除…</translation>
 <translation id="1976150099241323601">登录安全设备</translation>
+<translation id="1976928778492259496">指纹传感器位于您 <ph name="DEVICE_TYPE" />的左侧。请用任一根手指轻触它。</translation>
 <translation id="1977965994116744507">需将您的手机靠近您的 <ph name="DEVICE_TYPE" />，才能为其解锁。</translation>
 <translation id="1978057560491495741">移除地址</translation>
 <translation id="1979095679518582070">关闭这项功能，设备仍然可以发送基本服务（例如系统更新和安全服务）所需的信息。</translation>
@@ -984,7 +985,7 @@
 <translation id="205560151218727633">Google 助理徽标</translation>
 <translation id="2058456167109518507">检测到的设备</translation>
 <translation id="2059913712424898428">时区</translation>
-<translation id="2060375639911876205">移除 eSIM 卡个人资料</translation>
+<translation id="2060375639911876205">移除 eSIM 卡配置文件</translation>
 <translation id="2065405795449409761">Chrome 正受到自动测试软件的控制。</translation>
 <translation id="2071393345806050157">没有本地日志文件。</translation>
 <translation id="2071692954027939183">由于您通常不允许显示通知，系统已自动屏蔽通知</translation>
@@ -1968,6 +1969,7 @@
 <translation id="313205617302240621">忘记了密码？</translation>
 <translation id="3132277757485842847">我们无法保持与您手机的连接。请确保您的手机就在附近、处于解锁状态，且已开启蓝牙和 Wi-Fi。</translation>
 <translation id="3132996321662585180">每日刷新</translation>
+<translation id="3134393957315651797">请为实验“<ph name="EXPERIMENT_NAME" />”选择实验状态。实验说明：<ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">PIN 码无效。您还有 <ph name="RETRIES" /> 次尝试机会。</translation>
 <translation id="313963229645891001">正在下载，<ph name="STATUS" /></translation>
 <translation id="3139925690611372679">默认的黄色头像</translation>
@@ -2879,7 +2881,7 @@
 <translation id="4131410914670010031">黑白色</translation>
 <translation id="413193092008917129">网络诊断例程</translation>
 <translation id="4132183752438206707">在 Google Play 商店中查找所需应用</translation>
-<translation id="4132364317545104286">重命名 eSIM 卡个人资料</translation>
+<translation id="4132364317545104286">重命名 eSIM 卡配置文件</translation>
 <translation id="4133076602192971179">打开应用以更改密码</translation>
 <translation id="4136203100490971508">护眼模式将于日出时自动关闭</translation>
 <translation id="41365691917097717">继续操作会启用 ADB 调试，以创建和测试 Android 应用。请注意，此操作会允许安装未经 Google 验证的 Android 应用，而且一旦安装就无法停用，除非将设备恢复到出厂设置。</translation>
@@ -6616,6 +6618,7 @@
 <translation id="8398877366907290961">仍然继续</translation>
 <translation id="8400146488506985033">管理用户</translation>
 <translation id="8401432541486058167">请提供与您的智能卡关联的 PIN 码。</translation>
+<translation id="8404893580027489425">指纹传感器位于您 <ph name="DEVICE_TYPE" />的右侧。请用任一根手指轻触它。</translation>
 <translation id="8405046151008197676">了解最近更新的主要内容</translation>
 <translation id="8407199357649073301">日志级别：</translation>
 <translation id="8408068190360279472">“<ph name="NETWORK_TYPE" />”类型的网络，正在连接</translation>
@@ -6740,7 +6743,7 @@
 <translation id="8551588720239073785">日期和时间设置</translation>
 <translation id="8553342806078037065">管理其他用户</translation>
 <translation id="8554899698005018844">无语言</translation>
-<translation id="8555195867496021627">无可用的 eSIM 卡个人资料。您可在<ph name="BEGIN_LINK" />此处<ph name="END_LINK" />下载一份新的个人资料。</translation>
+<translation id="8555195867496021627">无可用的 eSIM 卡配置文件。您可在<ph name="BEGIN_LINK" />此处<ph name="END_LINK" />下载一份新的配置文件。</translation>
 <translation id="8557022314818157177">连续轻触您的安全密钥，直到您的指纹被捕获</translation>
 <translation id="8557930019681227453">由应用缓存指定的网址</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{在新窗口中打开全部书签(&amp;N)}=1{在新窗口中打开(&amp;N)}other{在新窗口中打开全部（{COUNT} 个）书签(&amp;N)}}</translation>

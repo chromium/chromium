@@ -920,6 +920,7 @@
 <translation id="1974821797477522211">Opret forbindelse til netværk</translation>
 <translation id="1975841812214822307">Fjern...</translation>
 <translation id="1976150099241323601">Log ind på sikkerhedsenhed</translation>
+<translation id="1976928778492259496">Fingeraftrykslæseren sidder til venstre på din <ph name="DEVICE_TYPE" />. Tryk let på den med en finger.</translation>
 <translation id="1977965994116744507">Flyt din telefon tættere på din <ph name="DEVICE_TYPE" /> for at låse den op.</translation>
 <translation id="1978057560491495741">Fjern adresse</translation>
 <translation id="1979095679518582070">Deaktivering af denne funktion påvirker ikke denne enheds evne til at sende oplysninger, der skal bruges til vigtige tjenester som f.eks. systemopdateringer og sikkerhed.</translation>
@@ -1974,6 +1975,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="313205617302240621">Har du glemt din adgangskode?</translation>
 <translation id="3132277757485842847">Vi kunne ikke bevare forbindelsen til din telefon. Sørg for, at din telefon er i nærheden, at den er låst op, og at Bluetooth og Wi-Fi er aktiveret.</translation>
 <translation id="3132996321662585180">Opdater dagligt</translation>
+<translation id="3134393957315651797">Vælg eksperimenttilstand for eksperimentet <ph name="EXPERIMENT_NAME" />. Beskrivelse af eksperiment: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Pinkoden er ugyldig. Du har <ph name="RETRIES" /> forsøg tilbage.</translation>
 <translation id="313963229645891001">Downloader – <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Gul standardavatar</translation>
@@ -4810,7 +4812,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Prøv igen</translation>
 <translation id="6377268785556383139">1 resultat for "<ph name="SEARCH_TEXT" />"</translation>
-<translation id="6380143666419481200">Godkend og fortsæt</translation>
+<translation id="6380143666419481200">Acceptér og fortsæt</translation>
 <translation id="6384275966486438344">Skifte dine søgeindstillinger til: <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Unavngivet gruppe – 1 fane}one{Unavngivet gruppe – # fane}other{Unavngivet gruppe – # faner}}</translation>
 <translation id="6385149369087767061">Opret forbindelse til internettet, og prøv igen</translation>
@@ -6623,6 +6625,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8398877366907290961">Fortsæt alligevel</translation>
 <translation id="8400146488506985033">Administrer personer</translation>
 <translation id="8401432541486058167">Brug den pinkode, der hører til dit chipkort.</translation>
+<translation id="8404893580027489425">Fingeraftrykslæseren sidder til højre på din <ph name="DEVICE_TYPE" />. Tryk let på den med en finger.</translation>
 <translation id="8405046151008197676">Få højdepunkter fra den seneste opdatering</translation>
 <translation id="8407199357649073301">Logfilsniveau:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" />-netværk, opretter forbindelse</translation>

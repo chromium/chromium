@@ -922,6 +922,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1974821797477522211">Vzpostavitev povezave z omrežjem</translation>
 <translation id="1975841812214822307">Odstrani ...</translation>
 <translation id="1976150099241323601">Prijava v varnostno napravo</translation>
+<translation id="1976928778492259496">Tipalo prstnih odtisov je na levi strani naprave <ph name="DEVICE_TYPE" />. Rahlo se ga dotaknite s poljubnim prstom.</translation>
 <translation id="1977965994116744507">Približajte telefon, če želite odkleniti napravo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978057560491495741">Odstrani naslov</translation>
 <translation id="1979095679518582070">Izklop te funkcije ne vpliva na zmožnost te naprave, da pošilja podatke, potrebne za ključne storitve, kot so posodobitve in varnost sistema.</translation>
@@ -1976,6 +1977,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="313205617302240621">Ste pozabili geslo?</translation>
 <translation id="3132277757485842847">Ni bilo mogoče ohraniti povezave s telefonom. Preverite, ali imate telefon v bližini, ali je vklopljen in ima vklopljeno povezavo Bluetooth in omrežje Wi-Fi.</translation>
 <translation id="3132996321662585180">Dnevno osveževanje</translation>
+<translation id="3134393957315651797">Izberite stanje preizkusa za preizkus <ph name="EXPERIMENT_NAME" />. Opis preizkusa: <ph name="EXPERIMENT_DESCRIPTION" />.</translation>
 <translation id="3138624403379688522">Neveljavna koda PIN. Imate še toliko poskusov: <ph name="RETRIES" />.</translation>
 <translation id="313963229645891001">Prenašanje, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Privzeti rumeni avatar</translation>
@@ -6628,6 +6630,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8398877366907290961">Vseeno nadaljuj</translation>
 <translation id="8400146488506985033">Upravljanje ljudi</translation>
 <translation id="8401432541486058167">Navedite kodo PIN, povezano s pametno kartico.</translation>
+<translation id="8404893580027489425">Tipalo prstnih odtisov je na desni strani naprave <ph name="DEVICE_TYPE" />. Rahlo se ga dotaknite s poljubnim prstom.</translation>
 <translation id="8405046151008197676">Oglejte si najzanimivejše dele najnovejše posodobitve</translation>
 <translation id="8407199357649073301">Raven beleženja:</translation>
 <translation id="8408068190360279472">Omrežje <ph name="NETWORK_TYPE" />, vzpostavljanje povezave</translation>

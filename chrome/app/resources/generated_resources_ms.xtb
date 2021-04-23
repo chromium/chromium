@@ -919,6 +919,7 @@
 <translation id="1974821797477522211">Sambung ke rangkaian</translation>
 <translation id="1975841812214822307">Alih keluar...</translation>
 <translation id="1976150099241323601">Log masuk ke Peranti Keselamatan</translation>
+<translation id="1976928778492259496">Penderia cap jari terletak di sisi sebelah kiri <ph name="DEVICE_TYPE" /> anda. Sentuh dengan lembut menggunakan mana-mana jari.</translation>
 <translation id="1977965994116744507">Rapatkan telefon anda untuk membuka kunci <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="1978057560491495741">Alih keluar alamat</translation>
 <translation id="1979095679518582070">Tindakan mematikan ciri ini tidak menjejaskan keupayaan peranti ini untuk menghantar maklumat yang diperlukan untuk perkhidmatan penting seperti kemas kini sistem dan keselamatan.</translation>
@@ -1973,6 +1974,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="313205617302240621">Terlupa kata laluan?</translation>
 <translation id="3132277757485842847">Kami tidak dapat mengekalkan sambungan dengan telefon anda. Pastikan telefon anda berada berdekatan, dibuka kunci dan Bluetooth serta Wi-Fi dihidupkan.</translation>
 <translation id="3132996321662585180">Muat semula setiap hari</translation>
+<translation id="3134393957315651797">Pilih status percubaan untuk percubaan <ph name="EXPERIMENT_NAME" />. Perihalan percubaan: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">PIN tidak sah. Anda mempunyai <ph name="RETRIES" /> percubaan lagi.</translation>
 <translation id="313963229645891001">Memuat turun, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Avatar kuning lalai</translation>
@@ -6624,6 +6626,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8398877366907290961">Teruskan juga</translation>
 <translation id="8400146488506985033">Urus orang</translation>
 <translation id="8401432541486058167">Sediakan PIN yang dikaitkan dengan kad pintar anda.</translation>
+<translation id="8404893580027489425">Penderia cap jari terletak di sisi sebelah kanan <ph name="DEVICE_TYPE" /> anda. Sentuh dengan lembut menggunakan mana-mana jari.</translation>
 <translation id="8405046151008197676">Dapatkan sorotan daripada kemas kini terbaharu</translation>
 <translation id="8407199357649073301">Tahap Log:</translation>
 <translation id="8408068190360279472">Rangkaian <ph name="NETWORK_TYPE" />, menyambung</translation>

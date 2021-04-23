@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">Balayer l'écran vers le haut avec deux doigts</translation>
 <translation id="1126928665165112660">Pas en italique</translation>
 <translation id="113582498867142724">Collection de <ph name="TAG" /> avec <ph name="NUM" /> éléments</translation>
-<translation id="1146441463334103638">Activer ou désactiver l'écran</translation>
 <translation id="1156488781945104845">Heure actuelle</translation>
 <translation id="1161762950103988776">Accéder</translation>
 <translation id="1164857107703583584">Vous pouvez utiliser les commandes d'accès direct pour naviguer efficacement au sein d'une page Web.</translation>
@@ -256,6 +255,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+ #}one{+ #}other{+ #}}</translation>
 <translation id="2792200646155001340">Essayez maintenant de passer à l'élément précédent en balayant l'écran de droite à gauche avec un doigt.</translation>
 <translation id="280499067616661124">Fonctionnalité "Rechercher sur la page" de ChromeVox</translation>
+<translation id="2808001342598757276">Rétablir la luminosité de l'écran</translation>
 <translation id="2811019999044652585">Pour accéder directement à d'autres parties de l'écran, comme les barres d'outils ou la barre d'état système, appuyez sur Ctrl+touche d'avance rapide. Sur un Chromebook, la touche d'avance rapide se trouve immédiatement au-dessus de la touche numérotée 2.</translation>
 <translation id="2811204574343810641">Ligne</translation>
 <translation id="2816868829355607410">Section d'entraînement : commandes d'accès direct</translation>
@@ -302,7 +302,6 @@
 <translation id="3082249673510793544">Faire défiler vers l'arrière</translation>
 <translation id="3084806535845658316">aucun écho de saisie</translation>
 <translation id="3086746722712840547">remarque</translation>
-<translation id="308736057934395497">Cela permet d'améliorer la confidentialité en éteignant l'écran pour que les autres ne puissent pas le voir. Vous pouvez le rallumer à tout moment en appuyant sur Rechercher+Augmenter la luminosité.</translation>
 <translation id="3090227230165225418">Annoncer les notifications de téléchargement</translation>
 <translation id="3090532668523289635">groupe</translation>
 <translation id="3093176084511590672">Repère suivant</translation>
@@ -313,7 +312,6 @@
 <translation id="3109724472072898302">Réduit</translation>
 <translation id="311015743332597320">Balayer l'écran vers la droite avec quatre doigts</translation>
 <translation id="3112457281078985179">Pour activer ou désactiver ChromeVox, appuyez sur Ctrl+Alt+Z.</translation>
-<translation id="3115800313647508384">Éteindre l'écran ?</translation>
 <translation id="3131002934070407451">Lire les nombres comme :</translation>
 <translation id="3134461040845705080">lecture seule</translation>
 <translation id="3137663468179739624">Olive</translation>
@@ -721,6 +719,7 @@
 <translation id="6034000775414344507">Gris clair</translation>
 <translation id="6036135911048686884">Explorez au toucher</translation>
 <translation id="6037602951055904232">Panoramique avant</translation>
+<translation id="6044160928851315051">Asssombrir l'écran</translation>
 <translation id="6082768461603900813">Navigation de base</translation>
 <translation id="609281021724813947">Aucun curseur précédent</translation>
 <translation id="6100239002225743044">Monter d'une ligne</translation>
@@ -791,7 +790,6 @@
 <translation id="6696967141280706829">Préface</translation>
 <translation id="6697092096875747123">Liste déroulante précédente</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{point d'exclamation}one{# point d'exclamation}other{# points d'exclamation}}</translation>
-<translation id="670717715607710284">Éteindre l'écran</translation>
 <translation id="6710213216561001401">Précédent</translation>
 <translation id="6714813999819678458">En-tête précédent de niveau 2</translation>
 <translation id="6730312624811567147">Utilisez la touche de recherche et la flèche de gauche ou de droite pour la touche Accueil ou Fin, ou la touche de recherche, Contrôle, flèche de gauche ou de droite pour la combinaison Contrôle Accueil ou Contrôle Fin, ou la touche de recherche, flèche vers le haut ou flèche le bas pour la touche Page précédente ou Page suivante</translation>
@@ -994,7 +992,6 @@
 <translation id="816818801578874684">Ceci est le premier titre. Appuyez sur Recherche+H pour accéder au titre suivant.</translation>
 <translation id="8173092779156526980">Balayer l'écran vers la gauche avec quatre doigts</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{trait de soulignement}one{# trait de soulignement}other{# traits de soulignement}}</translation>
-<translation id="817529114347680055">Activer l'écran</translation>
 <translation id="8179976553408161302">Entrée</translation>
 <translation id="8184828902145951186">ligne</translation>
 <translation id="8186185314313222077">activer/désactiver le mode plein écran</translation>
@@ -1017,6 +1014,7 @@
 <translation id="8316881042119029234">Dentelle ancienne</translation>
 <translation id="8324974933005349667">Personnaliser les paramètres de synthèse vocale</translation>
 <translation id="8326783648485765113">Vert pelouse</translation>
+<translation id="8328063869313048659">Activer/Désactiver l'écran sombre</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{dièse}one{# dièse}other{# dièses}}</translation>
 <translation id="8378855320830505539">Section</translation>
 <translation id="8382679411218029383">Saisie semi-automatique intégrée ou sous forme de liste</translation>

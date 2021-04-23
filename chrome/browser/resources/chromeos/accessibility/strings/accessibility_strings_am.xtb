@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">ሁለት ጣቶችን ወደ ላይ ያንሸራትቱ</translation>
 <translation id="1126928665165112660">ሰያፍ አይደለም</translation>
 <translation id="113582498867142724">የ<ph name="TAG" /> ስብስብ ከ<ph name="NUM" /> ንጥሎች ጋር</translation>
-<translation id="1146441463334103638">ማያ ገጹን ያብሩ ወይም ያጥፉ</translation>
 <translation id="1156488781945104845">የአሁኑ ሰዓት</translation>
 <translation id="1161762950103988776">ዝለል</translation>
 <translation id="1164857107703583584">የዝላይ ትዕዛዞች አንድ ድረ-ገጽን በቅልጥፍና ለመዳሰስ ስራ ላይ ሊውሉ ይችላሉ።</translation>
@@ -256,6 +255,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}one{+#}other{+#}}</translation>
 <translation id="2792200646155001340">እንዲሁም ወደ ቀዳሚው ንጥል ለመሄድ አንድ ጣትን ከቀኝ ወደ ግራ ማንሸራተት ይችላሉ። አሁኑኑ ይሞክሩት።</translation>
 <translation id="280499067616661124">ChromeVox በገጽ ውስጥ ያግኙ</translation>
+<translation id="2808001342598757276">ማያ ገጹን አታጨልም</translation>
 <translation id="2811019999044652585">እንደ የመሣሪያ አሞሌዎች ወይም የሥርዓት ትሪ ወዳሉ ሌሎች የማያ ገጽ ክፍሎች ለመዝለል Control+Forward ይጫኑ። በChromebook ላይ የForward ቁልፍ ልክ ቁጥር 2 ቁልፍ በላይ ነው።</translation>
 <translation id="2811204574343810641">ረድፍ</translation>
 <translation id="2816868829355607410">የመለማመጃ ቦታ፦ የዝላይ ትዕዛዞች</translation>
@@ -302,7 +302,6 @@
 <translation id="3082249673510793544">ወደኋላ አሸብልል</translation>
 <translation id="3084806535845658316">ምንም የትየባ ማስተጋባት የለም</translation>
 <translation id="3086746722712840547">note</translation>
-<translation id="308736057934395497">ይህ ለሌሎች እንዳይታይ ማያ ገጽዎን በማጥፋት ግላዊነትን ያሻሽላል። ፍለጋ + ብሩህነት ጨምርን በመጫን ማያ ገጹን ሁልጊዜ መልሰው ማብራት ይችላሉ።</translation>
 <translation id="3090227230165225418">የማውረድ ማሳወቂያዎችን ያስታውቁ</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">ቀጣይ የመሬት ምልክት</translation>
@@ -313,7 +312,6 @@
 <translation id="3109724472072898302">ተሰብስቧል</translation>
 <translation id="311015743332597320">አራት ጣቶችን ወደ ቀኝ ያንሸራትቱ</translation>
 <translation id="3112457281078985179">ChromeVoxን ለማብራት ወይም ለማጥፋት Control+Alt+Z ይጠቀሙ።</translation>
-<translation id="3115800313647508384">ማያ ገጽ ይጥፋ?</translation>
 <translation id="3131002934070407451">ቁጥሮችን እንደዚህ አንብባቸው፦</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">ወይራ</translation>
@@ -721,6 +719,7 @@
 <translation id="6034000775414344507">ፈካ ያለ ግራጫ</translation>
 <translation id="6036135911048686884">በንክኪ ያስሱ</translation>
 <translation id="6037602951055904232">ወደፊት አንፏቅቅ</translation>
+<translation id="6044160928851315051">ማያ ገጹን አጨልም</translation>
 <translation id="6082768461603900813">መሠረታዊ አሰሳ</translation>
 <translation id="609281021724813947">ምንም ቀዳሚ ተንሸራታች የለም</translation>
 <translation id="6100239002225743044">አንድ መስመር ወደ ላይ</translation>
@@ -791,7 +790,6 @@
 <translation id="6696967141280706829">መቅድም</translation>
 <translation id="6697092096875747123">ቀዳሚ ጥምድ ሳጥን</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{ቃለ-አጋኖ}one{# ቃለ-አጋኖዎች}other{# ቃለ-አጋኖዎች}}</translation>
-<translation id="670717715607710284">ማያ ገጽ ጠፍቷል</translation>
 <translation id="6710213216561001401">ቀዳሚ</translation>
 <translation id="6714813999819678458">ቀዳሚ የደረጃ 2 ርዕስ</translation>
 <translation id="6730312624811567147">ለመነሻ ወይም መጨረሻ ፍለጋ ግራ ወይም ፍለጋ ቀኝ ይጠቀሙ፣ ለControl መነሻ ወይም መጨረሻ Control ግራ ወይም ቀኝ፣ ለገጽ ወደ ላይ ወይም ታች ፍለጋ ላይ ወይም ታች ይጠቀሙ</translation>
@@ -994,7 +992,6 @@
 <translation id="816818801578874684">ይህ የመጀመሪያው ርዕስ ነው። ወደ ቀጣዩ ርዕስ ለመሄድ Search + H ን ይጫኑ።</translation>
 <translation id="8173092779156526980">አራት ጣቶችን ወደ ግራ ያንሸራትቱ</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{ሰረዘዘብጥ}one{# ሰረዘዘብጦች}other{# ሰረዘዘብጦች}}</translation>
-<translation id="817529114347680055">ማያ በርቷል</translation>
 <translation id="8179976553408161302">አስገባ</translation>
 <translation id="8184828902145951186">ረድፍ</translation>
 <translation id="8186185314313222077">ሙሉ ማያ ገጽ ቀያይር</translation>
@@ -1017,6 +1014,7 @@
 <translation id="8316881042119029234">አሮጌ ጫማ ማሰሪያ</translation>
 <translation id="8324974933005349667">የጽሑፍ-ወደ-ንግግር ቅንብሮችን ግላዊነት አላብስ</translation>
 <translation id="8326783648485765113">የሣር ሜዳ አረንጓዴ</translation>
+<translation id="8328063869313048659">ጨለማ ማያ ገጽን ይቀያይሩ</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{መሰላል}one{# የመሰላል ምልክቶች}other{# የመሰላል ምልክቶች}}</translation>
 <translation id="8378855320830505539">ክልል</translation>
 <translation id="8382679411218029383">ራስ-አጠናቅቅ መስመር ውስጥ እና ዝርዝር</translation>

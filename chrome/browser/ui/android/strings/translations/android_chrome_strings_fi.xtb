@@ -248,6 +248,7 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="2612676031748830579">Kortin numero</translation>
 <translation id="2625189173221582860">Salasana kopioitu</translation>
 <translation id="2631006050119455616">Säästetty</translation>
+<translation id="2645657967708199252">Yhteytesi (<ph name="CONNECTION_TYPE" />) saattaa hidastaa lataamista</translation>
 <translation id="2647434099613338025">Lisää kieli</translation>
 <translation id="2650751991977523696">Ladataanko tiedosto uudelleen?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# äänitiedosto}other{# äänitiedostoa}}</translation>
@@ -260,6 +261,7 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="2718846868787000099">Avaamasi sivustot voivat nähdä asetuksesi, jotta ne voivat näyttää sisältöä haluamillasi kielillä</translation>
 <translation id="2723001399770238859">ääni</translation>
 <translation id="2728754400939377704">Lajittele sivuston mukaan</translation>
+<translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">Napauta sanaa etsiäksesi välittömästi tai nähdäksesi asiaan liittyviä toimia.</translation>
 <translation id="2760989362628427051">Ota tumma teema käyttöön, kun laitteen tumma teema tai virransäästö on käytössä</translation>
 <translation id="2762000892062317888">äsken</translation>
@@ -304,7 +306,6 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="3016635187733453316">Varmista, että laite on yhteydessä internetiin</translation>
 <translation id="3029704984691124060">Tunnuslauseet eivät vastaa toisiaan.</translation>
 <translation id="3031225630520268969">Assistantin puhehaun suostumus-UI</translation>
-<translation id="3034163383943672781">Lataus alkaa <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Tutustu ohjeisiin<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Siirry ensi kerralla tälle sivustolle nopeammin</translation>
 <translation id="305593374596241526">Sijainti on pois päältä. Voit laittaa sen päälle <ph name="BEGIN_LINK" />Android-asetuksista<ph name="END_LINK" />.</translation>
@@ -437,6 +438,7 @@ Privacy Sandboxia kehitetään yhä aktiivisesti, ja se on saatavilla vain tiety
 <translation id="3943557322767080599">Näytä Chromen kirjautumiskehotteita kirjautuessasi Google-tilille</translation>
 <translation id="395206256282351086">Haku- ja sivustoehdotukset on poistettu käytöstä.</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome lataa sivusi, kun se on valmis}other{Chrome lataa sivusi, kun ne ovat valmiina}}</translation>
+<translation id="3962957115499249330">Näet ilmoituksen, kun tämä lataus alkaa Wi-Fin kautta.</translation>
 <translation id="3963007978381181125">Google Payn maksutapoja tai osoitteita ei salata tunnuslauseella. Salattua dataa voidaan lukea vain tunnuslauseesi avulla. Tunnuslausetta ei lähetetä Googlelle eikä Google tallenna sitä. Jos unohdat tunnuslauseesi tai haluat muokata tätä asetusta, synkronointi täytyy nollata. <ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome ei voi tarkistaa salasanojasi</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> avautuu Chromessa. Jatkamalla hyväksyt <ph name="BEGIN_LINK1" />Googlen käyttöehdot<ph name="END_LINK1" /> ja <ph name="BEGIN_LINK2" />Chromen ja Chrome-käyttöjärjestelmän lisäkäyttöehdot<ph name="END_LINK2" />. Myös <ph name="BEGIN_LINK3" />Family Linkillä ylläpidettyjen Google-tilien tietosuojailmoitusta<ph name="END_LINK3" /> sovelletaan.</translation>
@@ -480,6 +482,7 @@ Privacy Sandboxia kehitetään yhä aktiivisesti, ja se on saatavilla vain tiety
 <translation id="4256782883801055595">Avoimen lähdekoodin käyttöluvat</translation>
 <translation id="4263656433980196874">Assistantin puhehaun suostumus-UI avattu koko näytön kokoisena</translation>
 <translation id="4269820728363426813">Kopioi linkin osoite</translation>
+<translation id="4290281343757112331">Ladataan myöhemmin?</translation>
 <translation id="4298388696830689168">Linkitetyt sivustot</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Perustiedot</translation>
@@ -622,6 +625,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5191251636205085390">Lue lisää uusista teknologioista, joilla on tarkoitus korvata kolmannen osapuolen evästeet, ja tee haluamasi valinnat</translation>
 <translation id="5193988420012215838">Kopioitu leikepöydälle</translation>
 <translation id="5199929503336119739">Työprofiili</translation>
+<translation id="5201464744567315552">Näet ilmoituksen, kun tämä lataus alkaa klo <ph name="TIME" />.</translation>
 <translation id="5204967432542742771">Lisää salasana</translation>
 <translation id="5210286577605176222">Siirry edelliselle välilehdelle</translation>
 <translation id="5210365745912300556">Sulje välilehti</translation>
@@ -632,6 +636,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5230560987958996918"><ph name="SITE" /> haluaa etsiä lähellä olevia Bluetooth-laitteita. Seuraavat laitteet löydettiin:</translation>
 <translation id="5233638681132016545">Uusi välilehti</translation>
 <translation id="5250483651202458397">Kuvakaappaus. Sulje napauttamalla.</translation>
+<translation id="5262378156578470238">Näet ilmoituksen, kun tämä lataus alkaa <ph name="DATE" />.</translation>
 <translation id="526421993248218238">Sivun lataaminen epäonnistui</translation>
 <translation id="5271967389191913893">Laite ei voi avata ladattavaa sisältöä.</translation>
 <translation id="5292796745632149097">Lähetä:</translation>
@@ -701,7 +706,6 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="572328651809341494">Hiljattain suljetut välilehdet</translation>
 <translation id="5723735397759933332">Yksinkertaistettu tila vähentää datankäyttöä optimoimalla kuvat HTTPS-sivuilla.</translation>
 <translation id="5726692708398506830">Suurenna sivun kaikki sisältö</translation>
-<translation id="5732819098735351888">Lataus alkaa Wi-Fi-verkossa.</translation>
 <translation id="5733983706093266635">QR-koodin luominen ei onnistu. URL-osoitteessa on yli <ph name="CHARACTER_LIMIT" /> merkkiä.</translation>
 <translation id="5748802427693696783">Vaihdettiin näkyviin tavalliset välilehdet.</translation>
 <translation id="5749068826913805084">Chrome tarvitsee tallennustilan käyttöoikeuden tiedostojen lataamiseen.</translation>
@@ -780,7 +784,6 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="6159335304067198720"><ph name="PERCENT" /> vähemmän tiedonsiirtoa</translation>
 <translation id="6186394685773237175">Vaarantuneita salasanoja ei löytynyt</translation>
 <translation id="6192907950379606605">Muodosta kuvaselitykset</translation>
-<translation id="6206830853671714236">Valitse latausajankohta</translation>
 <translation id="6210748933810148297">Etkö ole <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Tätä sivua esikatsellaan</translation>
 <translation id="6218096829563201111">Hae samanlaisia tuotteita <ph name="BEGIN_NEW" />Uusi<ph name="END_NEW" /></translation>
@@ -914,6 +917,7 @@ Incognito-käyttökerran data tyhjennetään Chromesta vain, kun <ph name="BEGIN
 <translation id="6981982820502123353">Esteettömyys</translation>
 <translation id="6989267951144302301">Lataus epäonnistui</translation>
 <translation id="6995899638241819463">Varoita, jos salasanoja vaarantuu tietosuojaloukkauksessa</translation>
+<translation id="7001056293070445572">Tämä tiedosto on suuri (<ph name="FILE_SIZE" />)</translation>
 <translation id="7015203776128479407">Synkronoinnin ensimääritystä ei tehty loppuun. Synkronointi on pois päältä.</translation>
 <translation id="7022756207310403729">Avaa selaimessa</translation>
 <translation id="702463548815491781">Suositellaan käytettäväksi, kun TalkBack tai Kytkimen käyttö on päällä</translation>
@@ -1028,6 +1032,7 @@ Incognito-käyttökerran data tyhjennetään Chromesta vain, kun <ph name="BEGIN
 <translation id="7791543448312431591">Lisää</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> välilehteä palautettu</translation>
 <translation id="780301667611848630">Ei kiitos</translation>
+<translation id="7808889146555843082">Vaikka poistat salasanan, tiliäsi (<ph name="SITE" />) ei poisteta. Vaihda salasana tai poista tili (<ph name="SITE" />), jotta se pysyy turvassa muilta.</translation>
 <translation id="7810647596859435254">Avaa sovelluksessa…</translation>
 <translation id="7815484226266492798">Pitkä kuvakaappaus</translation>
 <translation id="7821588508402923572">Datasäästösi näkyvät täällä</translation>
@@ -1175,12 +1180,14 @@ Incognito-käyttökerran data tyhjennetään Chromesta vain, kun <ph name="BEGIN
 <translation id="8699120352855309748">Älä ehdota näiden kielten kääntämistä</translation>
 <translation id="8712637175834984815">Ymmärretty</translation>
 <translation id="8725066075913043281">Yritä uudelleen</translation>
+<translation id="8730621377337864115">Valmis</translation>
 <translation id="8748850008226585750">Sisältö piilotettu</translation>
 <translation id="8773160212632396039">Pyyntöä käsitellään</translation>
 <translation id="8788265440806329501">Navigointihistoria suljettu</translation>
 <translation id="8788968922598763114">Avaa viimeksi suljettu välilehti uudelleen</translation>
 <translation id="8798449543960971550">Lue</translation>
 <translation id="8812260976093120287">Tietyt sivustot tukevat yllä mainittuja laitteesi yhteensopivia maksusovelluksia.</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">Esikatseluvälilehden sisältö ei ole katsottavissa.</translation>
 <translation id="8820817407110198400">Kirjanmerkit</translation>
 <translation id="883806473910249246">Sisältöä ladattaessa tapahtui virhe.</translation>
@@ -1218,10 +1225,10 @@ Incognito-käyttökerran data tyhjennetään Chromesta vain, kun <ph name="BEGIN
 <translation id="9063523880881406963">Poista käytöstä Käytä tietokoneversiota</translation>
 <translation id="9065203028668620118">Muokkaa</translation>
 <translation id="9065383040763568503">Tallennettu data, jota Chrome ei pidä tärkeänä (esim. sivustot, joilla ei ole tallennettuja asetuksia tai joilla et käy usein)</translation>
-<translation id="9069543557624799859">Lataus alkaa klo <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Ei sivuja lukematta</translation>
 <translation id="9070377983101773829">Aloita puhehaku</translation>
 <translation id="9074336505530349563">Kirjaudu sisään ja ota synkronointi käyttöön, niin näet Googlen suosittelemaa yksilöllistä sisältöä</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Synkronoidaan</translation>
 <translation id="9086455579313502267">Ei yhteyttä verkkoon.</translation>
 <translation id="9100505651305367705">Tarjoa yksinkertaistettua näkymää, jos artikkeli tukee sitä</translation>

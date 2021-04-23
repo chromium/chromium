@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">Sveip to fingre opp</translation>
 <translation id="1126928665165112660">Ikke kursivert</translation>
 <translation id="113582498867142724">Samling av <ph name="TAG" /> med <ph name="NUM" /> elementer</translation>
-<translation id="1146441463334103638">Slå skjermen på eller av</translation>
 <translation id="1156488781945104845">Klokkeslettet nå</translation>
 <translation id="1161762950103988776">Hopp</translation>
 <translation id="1164857107703583584">Hoppkommandoer kan brukes til å navigere effektivt på nettsider.</translation>
@@ -256,6 +255,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Du kan også sveipe fra høyre til venstre med én finger for å gå til forrige element. Prøv nå.</translation>
 <translation id="280499067616661124">Søk på siden med ChromeVox</translation>
+<translation id="2808001342598757276">Gjør skjermen lysere</translation>
 <translation id="2811019999044652585">For å gå til andre deler av skjermen – f.eks. verktøyradene eller systemfeltet – trykk på Control+Fremover. Fremover-tasten på Chromebook er plassert rett over 2-tasten.</translation>
 <translation id="2811204574343810641">Rad</translation>
 <translation id="2816868829355607410">Øvelsesområde: hoppkommandoer</translation>
@@ -302,7 +302,6 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="3082249673510793544">Rull bakover</translation>
 <translation id="3084806535845658316">uten inntastingsekko</translation>
 <translation id="3086746722712840547">note</translation>
-<translation id="308736057934395497">Dette gir deg bedre personvern ved å slå av skjermen din, slik at den ikke er synlig for andre. Du kan alltid slå skjermen på igjen ved å trykke på søketasten + lysstyrke opp.</translation>
 <translation id="3090227230165225418">Les opp nedlastingsvarsler</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">Neste landemerke</translation>
@@ -313,7 +312,6 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="3109724472072898302">Skjult</translation>
 <translation id="311015743332597320">Sveip fire fingre til høyre</translation>
 <translation id="3112457281078985179">For å slå ChromeVox på eller av, trykk på Control+Alt+Z.</translation>
-<translation id="3115800313647508384">Vil du slå av skjermen?</translation>
 <translation id="3131002934070407451">Les tall som:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">Oliven</translation>
@@ -721,6 +719,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="6034000775414344507">Lysegrå</translation>
 <translation id="6036135911048686884">Utforsk ved å trykke</translation>
 <translation id="6037602951055904232">Panorer frem</translation>
+<translation id="6044160928851315051">Gjør skjermen mørk</translation>
 <translation id="6082768461603900813">Grunnleggende navigering</translation>
 <translation id="609281021724813947">Det finnes ingen tidligere glidebrytere</translation>
 <translation id="6100239002225743044">Flytt opp én linje</translation>
@@ -791,7 +790,6 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="6696967141280706829">Forord</translation>
 <translation id="6697092096875747123">Forrige kombinasjonsfelt</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{utropstegn}other{# utropstegn}}</translation>
-<translation id="670717715607710284">Skjerm av</translation>
 <translation id="6710213216561001401">Forrige</translation>
 <translation id="6714813999819678458">Forrige overskrift på nivå 2</translation>
 <translation id="6730312624811567147">Bruk Søk venstre eller høyre for Home eller End, Søk Ctrl venstre eller høyre for Ctrl Home eller End, Søk opp eller ned for Page Up eller Down</translation>
@@ -994,7 +992,6 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="816818801578874684">Dette er den første overskriften. Trykk på søketasten + H for å gå til neste overskrift.</translation>
 <translation id="8173092779156526980">Sveip fire fingre til venstre</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{understrek}other{# understreker}}</translation>
-<translation id="817529114347680055">Skjerm på</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">rad</translation>
 <translation id="8186185314313222077">slå av/på fullskjerm</translation>
@@ -1017,6 +1014,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="8316881042119029234">Gammel blonde</translation>
 <translation id="8324974933005349667">Gi innstillingene for tekst til tale et personlig preg</translation>
 <translation id="8326783648485765113">Plengrønn</translation>
+<translation id="8328063869313048659">Slå av/på mørk skjerm</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{firkanttegn}other{# firkanttegn}}</translation>
 <translation id="8378855320830505539">Region</translation>
 <translation id="8382679411218029383">Autofullføring – innebygd og liste</translation>

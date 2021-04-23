@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">ປັດສອງນິ້ວມືຂຶ້ນເທິງ</translation>
 <translation id="1126928665165112660">ບໍ່ເປັນຕົວອຽງ</translation>
 <translation id="113582498867142724"><ph name="TAG" /> ການ​ເກັບ​ກໍາ​ດ້ວຍ <ph name="NUM" /> ລາຍ​ການ</translation>
-<translation id="1146441463334103638">ເປີດ ຫຼື ປິດໜ້າຈໍ</translation>
 <translation id="1156488781945104845">ເວລາປັດຈຸບັນ</translation>
 <translation id="1161762950103988776">ໂດດ​</translation>
 <translation id="1164857107703583584">ສາມາດໃຊ້ຄຳສັ່ງຂ້າມເພື່ອໄປຍັງສ່ວນຕ່າງໆໃນໜ້າເວັບໄດ້ຢ່າງມີປະສິດທິພາບ.</translation>
@@ -256,6 +255,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">ນອກຈາກນັ້ນ, ທ່ານຍັງສາມາດປັດດ້ວຍນິ້ວດຽວຈາກຂວາຫາຊ້າຍເພື່ອເລື່ອນໄປລາຍການກ່ອນໜ້າໄດ້ນຳ. ລອງເຮັດຕອນນີ້.</translation>
 <translation id="280499067616661124">ໜ້າຊອກຫາໃນ ChromeVox</translation>
+<translation id="2808001342598757276">ເຊົາເຮັດໃຫ້ໜ້າຈໍມືດລົງ</translation>
 <translation id="2811019999044652585">ເພື່ອໂດດໄປຫາສ່ວນອື່ນຂອງໜ້າຈໍ ເຊັ່ນວ່າ ແຖບເຄື່ອງມື ຫຼື ຖາດລະບົບ, ໃຫ້ກົດ Control+Forward. ໃນ Chromebook, ປຸ່ມ Forward ຢູ່ເທິງຕິດກັບປຸ່ມເລກ 2.</translation>
 <translation id="2811204574343810641">ແຖວ</translation>
 <translation id="2816868829355607410">ພື້ນທີ່ຝຶກປະຕິບັດ: ຄຳສັ່ງຂ້າມ</translation>
@@ -302,7 +302,6 @@
 <translation id="3082249673510793544">ເລື່ອນກັບຄືນ</translation>
 <translation id="3084806535845658316">ບໍ່ມີສຽງເອໂກໃນການພິມ</translation>
 <translation id="3086746722712840547">ບັນທຶກ</translation>
-<translation id="308736057934395497">ນີ້ຈະປັບປຸງຄວາມເປັນສ່ວນຕົວໂດຍການປິດໜ້າຈໍຂອງທ່ານເພື່ອບໍ່ໃຫ້ສະແດງໃຫ້ຄົນອື່ນເຫັນ. ທ່ານສາມາດເປີດໜ້າຈໍກັບມາຕອນໃດກໍໄດ້ໂດຍການກົດປຸ່ມຊອກຫາ + ເພີ່ມຄວາມສະຫວ່າງຂຶ້ນ.</translation>
 <translation id="3090227230165225418">ປະກາດການແຈ້ງເຕືອນການດາວໂຫຼດ</translation>
 <translation id="3090532668523289635">ກຸ່ມ</translation>
 <translation id="3093176084511590672">ຫຼັກ​ເຂດຕໍ່​ໄປ</translation>
@@ -313,7 +312,6 @@
 <translation id="3109724472072898302">ຫຍໍ້ລົງ</translation>
 <translation id="311015743332597320">ປັດສີ່ນິ້ວມືໄປຂວາ</translation>
 <translation id="3112457281078985179">ເພື່ອເປີດ ຫຼື ປິດ ChromeVox, ໃຫ້ໃຊ້ Control+Alt+Z.</translation>
-<translation id="3115800313647508384">ປິດໜ້າຈໍບໍ?</translation>
 <translation id="3131002934070407451">ອ່ານໝາຍເລກເປັນ:</translation>
 <translation id="3134461040845705080">ອ່ານເທົ່ານັ້ນ</translation>
 <translation id="3137663468179739624">ສີໂອລິບ</translation>
@@ -721,6 +719,7 @@
 <translation id="6034000775414344507">ສີເທົາອ່ອນ</translation>
 <translation id="6036135911048686884">ແຕະສຳຫຼວດ</translation>
 <translation id="6037602951055904232">ແພນໄປຕໍ່</translation>
+<translation id="6044160928851315051">ເຮັດໃຫ້ໜ້າຈໍມືດລົງ</translation>
 <translation id="6082768461603900813">ການນຳທາງພື້ນຖານ</translation>
 <translation id="609281021724813947">ບໍ່ມີຕົວເລື່ອນຜ່ານມາ</translation>
 <translation id="6100239002225743044">ຍ້າຍຂຶ້ນໜຶ່ງແຖວ</translation>
@@ -791,7 +790,6 @@
 <translation id="6696967141280706829">ຄຳນຳ</translation>
 <translation id="6697092096875747123">ກ່ອງຄອມໂບຜ່ານ​ມາ​</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{ເຄື່ອງໝາຍທ້ວງ}other{ເຄື່ອງໝາຍທ້ວງ # ອັນ}}</translation>
-<translation id="670717715607710284">ໜ້າຈໍປິດຢູ່</translation>
 <translation id="6710213216561001401">ຜ່ານມາ</translation>
 <translation id="6714813999819678458">ຫົວຂໍ້ລະ​ດັບ​ 2 ຜ່ານ​ມາ</translation>
 <translation id="6730312624811567147">ໃຊ້ປຸ່ມຊອກຫາ ແລະ ລູກສອນຊ້າຍ ຫຼື ຂວາເພື່ອໄປຫາຈຸດເລີ່ມຕົ້ນ ຫຼື ຈຸດສິ້ນສຸດ, ໃຊ້ປຸ່ມຊອກຫາ ປຸ່ມ Control ແລະ ລູກສອນຊ້າຍ ຫຼື ຂວາເພື່ອຄວບຄຸມຈຸດເລີ່ມຕົ້ນ ຫຼື ຈຸດສິ້ນສຸດ, ໃຊ້ປຸ່ມຊອກຫາ ແລະ ລູກສອນຂຶ້ນ ຫຼື ລົງເພື່ອເລື່ອນໜ້າຂຶ້ນ ຫຼື ລົງ</translation>
@@ -993,7 +991,6 @@
 <translation id="816818801578874684">ນີ້ແມ່ນຫົວຂໍ້ທຳອິດ. ກົດປຸ່ມຊອກຫາ + H ເພື່ອໄປຍັງຫົວຂໍ້ຕໍ່ໄປ.</translation>
 <translation id="8173092779156526980">ປັດໄປຊ້າຍດ້ວຍສີ່ນິ້ວມື</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{ ເສັ້ນຂີດຢູ່ກ້ອງ}other{ # ເສັ້ນຂີດຢູ່ກ້ອງ}}</translation>
-<translation id="817529114347680055">ເປີດໜ້າຈໍ</translation>
 <translation id="8179976553408161302">ປ້ອນເຂົ້າ</translation>
 <translation id="8184828902145951186">ແຖວ</translation>
 <translation id="8186185314313222077">ສະ​ຫຼັບ​ເຕັມ​ໜ້າ​ຈໍ</translation>
@@ -1016,6 +1013,7 @@
 <translation id="8316881042119029234">ສີສົ້ມໂອນເລດ</translation>
 <translation id="8324974933005349667">ປັບແຕ່ງການຕັ້ງຄ່າການປ່ຽນຂໍ້ຄວາມເປັນສຽງເວົ້າ</translation>
 <translation id="8326783648485765113">ສີຂຽວໃບຫຍ້າ</translation>
+<translation id="8328063869313048659">ປິດເປີດໜ້າຈໍມືດ</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{ ປອນ}other{ # ສັນຍາລັກປອນ}}</translation>
 <translation id="8378855320830505539">ພາກພື້ນ</translation>
 <translation id="8382679411218029383">ໃນແຖວ ແລະລາຍຊື່ການຕື່ມເຕັມອັດຕະໂນມັດ</translation>

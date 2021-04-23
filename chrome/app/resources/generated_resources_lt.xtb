@@ -922,6 +922,7 @@
 <translation id="1974821797477522211">Prisijungimas prie tinklo</translation>
 <translation id="1975841812214822307">Pašalinti...</translation>
 <translation id="1976150099241323601">Prisijungti prie apsaugos įrenginio</translation>
+<translation id="1976928778492259496">Kontrolinio kodo jutiklis yra įrenginio „<ph name="DEVICE_TYPE" />“ kairėje pusėje. Lengvai jį palieskite bet kuriuo pirštu.</translation>
 <translation id="1977965994116744507">Kad atrakintumėte „<ph name="DEVICE_TYPE" />“, arčiau padėkite telefoną.</translation>
 <translation id="1978057560491495741">Pašalinti adresą</translation>
 <translation id="1979095679518582070">Išjungus šią funkciją vis tiek galima siųsti šio įrenginio informaciją, reikalingą pagrindinėms paslaugoms, pvz., sistemos naujiniams ir saugai.</translation>
@@ -1976,6 +1977,7 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="313205617302240621">Pamiršote slaptažodį?</translation>
 <translation id="3132277757485842847">Nepavyko išlaikyti ryšio su jūsų telefonu. Įsitikinkite, kad telefonas netoliese, atrakintas ir jame įjungtas „Bluetooth“ bei „Wi-Fi“ ryšys.</translation>
 <translation id="3132996321662585180">Atnaujinti kasdien</translation>
+<translation id="3134393957315651797">Pasirinkite eksperimento būseną, skirtą eksperimentui „<ph name="EXPERIMENT_NAME" />“. Eksperimento aprašas: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Netinkamas PIN kodas. Liko bandymų: <ph name="RETRIES" />.</translation>
 <translation id="313963229645891001">Atsisiunčiama: <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Numatytasis geltonas pseudoportretas</translation>
@@ -6627,6 +6629,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8398877366907290961">Vis tiek tęsti</translation>
 <translation id="8400146488506985033">Tvarkyti žmones</translation>
 <translation id="8401432541486058167">Nurodykite su išmaniąja kortele susietą PIN kodą.</translation>
+<translation id="8404893580027489425">Kontrolinio kodo jutiklis yra įrenginio „<ph name="DEVICE_TYPE" />“ dešinėje pusėje. Lengvai jį palieskite bet kuriuo pirštu.</translation>
 <translation id="8405046151008197676">Gaukite svarbiausios informacijos apie paskiausią naujinį</translation>
 <translation id="8407199357649073301">Žurnalo lygis:</translation>
 <translation id="8408068190360279472">Tinklas: <ph name="NETWORK_TYPE" />, jungiamasi</translation>

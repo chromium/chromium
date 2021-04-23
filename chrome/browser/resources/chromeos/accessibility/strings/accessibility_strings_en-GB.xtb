@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">Swipe two fingers up</translation>
 <translation id="1126928665165112660">Not italic</translation>
 <translation id="113582498867142724"><ph name="TAG" /> collection with <ph name="NUM" /> items</translation>
-<translation id="1146441463334103638">Toggle screen on or off</translation>
 <translation id="1156488781945104845">Current time</translation>
 <translation id="1161762950103988776">Jump</translation>
 <translation id="1164857107703583584">Jump commands can be used to efficiently navigate through a web page.</translation>
@@ -256,6 +255,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">You can also swipe one finger from right to left to move to the previous item. Try it now.</translation>
 <translation id="280499067616661124">ChromeVox find in page</translation>
+<translation id="2808001342598757276">Undarken screen</translation>
 <translation id="2811019999044652585">To jump to other parts of the screen, like toolbars or the system tray, press Control+Forward. On a Chromebook, the Forward key is immediately above the number 2 key.</translation>
 <translation id="2811204574343810641">Row</translation>
 <translation id="2816868829355607410">Practice area: jump commands</translation>
@@ -302,7 +302,6 @@
 <translation id="3082249673510793544">Scroll back</translation>
 <translation id="3084806535845658316">no typing echo</translation>
 <translation id="3086746722712840547">note</translation>
-<translation id="308736057934395497">This improves privacy by turning off your screen so that it isn’t visible to others. You can always turn the screen back on by pressing Search + Brightness up.</translation>
 <translation id="3090227230165225418">Announce download notifications</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">Next landmark</translation>
@@ -313,7 +312,6 @@
 <translation id="3109724472072898302">Collapsed</translation>
 <translation id="311015743332597320">Swipe four fingers right</translation>
 <translation id="3112457281078985179">To turn ChromeVox on or off, use Control+Alt+Z.</translation>
-<translation id="3115800313647508384">Turn off screen?</translation>
 <translation id="3131002934070407451">Read numbers as:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">Olive</translation>
@@ -721,6 +719,7 @@
 <translation id="6034000775414344507">Light grey</translation>
 <translation id="6036135911048686884">Touch explore</translation>
 <translation id="6037602951055904232">Pan forward</translation>
+<translation id="6044160928851315051">Darken screen</translation>
 <translation id="6082768461603900813">Basic Navigation</translation>
 <translation id="609281021724813947">No previous slider</translation>
 <translation id="6100239002225743044">Move up one line</translation>
@@ -791,7 +790,6 @@
 <translation id="6696967141280706829">Preface</translation>
 <translation id="6697092096875747123">Previous combo box</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{exclamation}other{# exclamations}}</translation>
-<translation id="670717715607710284">Screen off</translation>
 <translation id="6710213216561001401">Previous</translation>
 <translation id="6714813999819678458">Previous level 2 heading</translation>
 <translation id="6730312624811567147">Use search left or right for home or end, search control left or right for control home or end, search up or down for page up or down</translation>
@@ -994,7 +992,6 @@
 <translation id="816818801578874684">This is the first heading. Press Search + H to go to the next heading.</translation>
 <translation id="8173092779156526980">Swipe four fingers left</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{underscore}other{# underscores}}</translation>
-<translation id="817529114347680055">Screen on</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">row</translation>
 <translation id="8186185314313222077">toggle full screen</translation>
@@ -1017,6 +1014,7 @@
 <translation id="8316881042119029234">Old Lace</translation>
 <translation id="8324974933005349667">Personalise Text-to-Speech settings</translation>
 <translation id="8326783648485765113">Lawn green</translation>
+<translation id="8328063869313048659">Toggle dark screen</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{pound}other{# pound signs}}</translation>
 <translation id="8378855320830505539">Region</translation>
 <translation id="8382679411218029383">Auto-completion inline and list</translation>

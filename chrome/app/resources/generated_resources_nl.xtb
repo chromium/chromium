@@ -919,6 +919,7 @@
 <translation id="1974821797477522211">Verbinding maken met netwerk</translation>
 <translation id="1975841812214822307">Verwijderen...</translation>
 <translation id="1976150099241323601">Inloggen bij beveiligingsapparaat</translation>
+<translation id="1976928778492259496">De vingerafdruksensor bevindt zich aan de linkerkant van je <ph name="DEVICE_TYPE" />. Raak deze kort aan met een vinger.</translation>
 <translation id="1977965994116744507">Plaats je telefoon dichterbij om je <ph name="DEVICE_TYPE" /> te ontgrendelen.</translation>
 <translation id="1978057560491495741">Adres verwijderen</translation>
 <translation id="1979095679518582070">Als je deze functie uitzet, heeft dit geen gevolgen voor de mogelijkheid van dit apparaat om de informatie te sturen die nodig is voor essentiële services zoals systeemupdates en beveiliging.</translation>
@@ -1972,6 +1973,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="313205617302240621">Wachtwoord vergeten?</translation>
 <translation id="3132277757485842847">We kunnen de verbinding met je telefoon niet in stand houden. Zorg dat je telefoon in de buurt en ontgrendeld is en dat bluetooth en wifi aanstaan.</translation>
 <translation id="3132996321662585180">Dagelijks vernieuwen</translation>
+<translation id="3134393957315651797">Selecteer de experimentstatus voor het experiment <ph name="EXPERIMENT_NAME" />. Beschrijving experiment: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Ongeldige pincode. Je hebt nog <ph name="RETRIES" /> pogingen.</translation>
 <translation id="313963229645891001">Downloaden: <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Standaard gele avatar</translation>
@@ -6621,6 +6623,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8398877366907290961">Toch doorgaan</translation>
 <translation id="8400146488506985033">Mensen beheren</translation>
 <translation id="8401432541486058167">Geef de pincode op die hoort bij je smartkaart.</translation>
+<translation id="8404893580027489425">De vingerafdruksensor zit aan de rechterkant van je <ph name="DEVICE_TYPE" />. Raak deze kort aan met een vinger.</translation>
 <translation id="8405046151008197676">Ontvang de hoogtepunten van de nieuwste update</translation>
 <translation id="8407199357649073301">Logniveau:</translation>
 <translation id="8408068190360279472">Netwerk: <ph name="NETWORK_TYPE" />, verbinden</translation>

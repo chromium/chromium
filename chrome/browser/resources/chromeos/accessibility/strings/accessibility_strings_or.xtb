@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">ଦୁଇଟି ଆଙ୍ଗୁଠିକୁ ଉପରକୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ</translation>
 <translation id="1126928665165112660">ଇଟାଲିକ୍ ନୁହେଁ</translation>
 <translation id="113582498867142724"><ph name="NUM" />ଟି ଆଇଟମ୍‌ ସହିତ <ph name="TAG" /> ସଂଗ୍ରହ</translation>
-<translation id="1146441463334103638">ସ୍କ୍ରିନ୍ ଚାଲୁ କିମ୍ବା ବନ୍ଦ କରିବାକୁ ଟୋଗଲ୍ କରନ୍ତୁ</translation>
 <translation id="1156488781945104845">ବର୍ତ୍ତମାନର ସମୟ</translation>
 <translation id="1161762950103988776">ଜମ୍ପ୍</translation>
 <translation id="1164857107703583584">ଏକ ୱେବ୍ ପୃଷ୍ଠାରେ ଅଧିକ ଭଲ ଭାବେ ନାଭିଗେଟ୍ କରିବା ପାଇଁ ଜମ୍ପ୍ କମାଣ୍ଡଗୁଡ଼ିକୁ ବ୍ୟବହାର କରାଯାଇପାରିବ।</translation>
@@ -256,6 +255,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">ପୂର୍ବବର୍ତ୍ତୀ ଆଇଟମକୁ ମୁଭ୍ କରିବା ପାଇଁ ଆପଣ ଗୋଟିଏ ଆଙ୍ଗୁଠିରେ ଡାହାଣରୁ ବାମକୁ ସ୍ୱାଇପ୍ ମଧ୍ୟ କରିପାରିବେ। ବର୍ତ୍ତମାନ ଏହାକୁ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ।</translation>
 <translation id="280499067616661124">ପୃଷ୍ଠାରେ ChromeVox ଖୋଜନ୍ତୁ</translation>
+<translation id="2808001342598757276">ସ୍କ୍ରିନ୍‌କୁ ପୂର୍ବବତ୍ କରନ୍ତୁ</translation>
 <translation id="2811019999044652585">ସ୍କ୍ରିନ୍‌ର ଅନ୍ୟଭାଗଗୁଡ଼ିକ ଯେପରିକି, ଟୁଲ୍‌ବାର୍ କିମ୍ବା ସିଷ୍ଟମ୍ ଟ୍ରେ ଆଦିକୁ ଯିବା ପାଇଁ, Control+Forward କୀ ଦବାନ୍ତୁ। ଏକ Chromebookରେ, ଫରୱାର୍ଡ କୀ, 2 ନମ୍ବର କୀ'ର ଠିକ୍ ଉପରେ ଅଛି।</translation>
 <translation id="2811204574343810641">ଧାଡ଼ି</translation>
 <translation id="2816868829355607410">ଅଭ୍ୟାସ କ୍ଷେତ୍ର: ଜମ୍ପ୍ କମାଣ୍ଡଗୁଡ଼ିକ</translation>
@@ -302,7 +302,6 @@
 <translation id="3082249673510793544">ପଛକୁ ସ୍କ୍ରୋଲ୍‌ କରନ୍ତୁ</translation>
 <translation id="3084806535845658316">କୌଣସି ଟାଇପିଂ ଇକୋ ନାହିଁ</translation>
 <translation id="3086746722712840547">ଟିପ୍ପଣୀ</translation>
-<translation id="308736057934395497">ଏହା ଆପଣଙ୍କ ସ୍କ୍ରିନକୁ ବନ୍ଦ କରି ଗୋପନୀୟତାକୁ ଉନ୍ନତ କରେ ଯାହା ଫଳରେ ଏହା ଅନ୍ୟମାନଙ୍କୁ ଦୃଶ୍ୟମାନ ହୁଏ ନାହିଁ। ଆପଣ 'ସନ୍ଧାନ + ଉଜ୍ଜ୍ୱଳତା ବଢ଼ାନ୍ତୁ' ବଟନ୍ ଦବାଇ ସର୍ବଦା ସ୍କ୍ରିନକୁ ପୁଣି ଚାଲୁ କରିପାରିବେ।</translation>
 <translation id="3090227230165225418">ଡାଉନ୍‌ଲୋଡ୍ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ଘୋଷଣା କରନ୍ତୁ</translation>
 <translation id="3090532668523289635">ଗ୍ରୁପ୍</translation>
 <translation id="3093176084511590672">ପରବର୍ତ୍ତୀ ଲ୍ୟାଣ୍ଡମାର୍କ</translation>
@@ -313,7 +312,6 @@
 <translation id="3109724472072898302">ସଙ୍କୁଚିତ କରାଗଲା</translation>
 <translation id="311015743332597320">ଚାରି ଆଙ୍ଗୁଠିରେ ଡାହାଣକୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ</translation>
 <translation id="3112457281078985179">ChromeVoxକୁ ଚାଲୁ କିମ୍ବା ବନ୍ଦ କରିବାକୁ Control+Alt+Zକୁ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
-<translation id="3115800313647508384">ସ୍କ୍ରିନ୍ ବନ୍ଦ କରିବେ?</translation>
 <translation id="3131002934070407451">ନମ୍ବରକୁ ଏପରି ଭାବେ ପଢ଼ନ୍ତୁ:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">ଅଲିଭ୍</translation>
@@ -721,6 +719,7 @@
 <translation id="6034000775414344507">ହାଲ୍‌କା ଧୂସର</translation>
 <translation id="6036135911048686884">ଏକ୍ସପ୍ଲୋର୍ କରିବାକୁ ସ୍ପର୍ଶ କରନ୍ତୁ</translation>
 <translation id="6037602951055904232">ପ୍ୟାନ୍ ଫର୍‌ୱାର୍ଡ କରନ୍ତୁ</translation>
+<translation id="6044160928851315051">ସ୍କ୍ରିନ୍‌କୁ କଳା କରନ୍ତୁ</translation>
 <translation id="6082768461603900813">ମୌଳିକ ନାଭିଗେସନ୍</translation>
 <translation id="609281021724813947">କୌଣସି ପୂର୍ବବର୍ତ୍ତୀ ସ୍ଲାଇଡର୍ ନାହିଁ</translation>
 <translation id="6100239002225743044">ଗୋଟିଏ ଲାଇନ୍ ଉପରକୁ ନିଅନ୍ତୁ</translation>
@@ -791,7 +790,6 @@
 <translation id="6696967141280706829">ମୁଖବନ୍ଧ</translation>
 <translation id="6697092096875747123">ପୂର୍ବବର୍ତ୍ତୀ କମ୍ୱୋ ବକ୍ସ</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{ବିସ୍ମୟସୂଚକ ଚିହ୍ନ}other{#ଟି ବିସ୍ମୟସୂଚକ ଚିହ୍ନ}}</translation>
-<translation id="670717715607710284">ସ୍କ୍ରିନ୍ ବନ୍ଦ ଅଛି</translation>
 <translation id="6710213216561001401">ପୂର୍ବବର୍ତ୍ତୀ</translation>
 <translation id="6714813999819678458">ପୂର୍ବବର୍ତ୍ତୀ ସ୍ତର 2 ଶୀର୍ଷକ</translation>
 <translation id="6730312624811567147">Home କିମ୍ବା End ପାଇଁ Search Left କିମ୍ବା Right, Control Home କିମ୍ବା End ପାଇଁ Search Control Left କିମ୍ବା Right, Page Up କିମ୍ବା Down ପାଇଁ Search Up କିମ୍ବା Down ବ୍ୟବହାର କରନ୍ତୁ</translation>
@@ -994,7 +992,6 @@
 <translation id="816818801578874684">ଏହା ପ୍ରଥମ ହେଡିଂ ଅଟେ। ପରବର୍ତ୍ତୀ ହେଡିଂକୁ ଯିବା ପାଇଁ Search + H କୀ ଦବାନ୍ତୁ।</translation>
 <translation id="8173092779156526980">ଚାରି ଆଙ୍ଗୁଠିରେ ବାମକୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{ଟି ଅଣ୍ଡରସ୍କୋର୍‌}other{#ଟି ଅଣ୍ଡରସ୍କୋର୍‌}}</translation>
-<translation id="817529114347680055">ସ୍କ୍ରିନ୍ ଚାଲୁ ଅଛି</translation>
 <translation id="8179976553408161302">ପ୍ରବେଶ</translation>
 <translation id="8184828902145951186">ଧାଡ଼ି</translation>
 <translation id="8186185314313222077">ପୂର୍ଣ୍ଣସ୍କ୍ରିନ୍ ଟୋଗଲ୍ କରନ୍ତୁ</translation>
@@ -1017,6 +1014,7 @@
 <translation id="8316881042119029234">ପୁରୁଣା ଲେସ୍</translation>
 <translation id="8324974933005349667">ଟେକ୍ସଟ୍‍ରୁ ସ୍ପିଚ୍ ସେଟିଂସ୍‍କୁ ବ୍ୟକ୍ତିଗତ କରନ୍ତୁ</translation>
 <translation id="8326783648485765113">ଲନ୍ ସବୁଜ</translation>
+<translation id="8328063869313048659">ଡାର୍କ୍ ସ୍କ୍ରିନ୍ ଟୋଗଲ୍ କରନ୍ତୁ</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{ପାଉଣ୍ଡ}other{#ଟି ପାଉଣ୍ଡ ଚିହ୍ନ}}</translation>
 <translation id="8378855320830505539">ଅଞ୍ଚଳ</translation>
 <translation id="8382679411218029383">ସ୍ୱତଃସମ୍ପୂର୍ଣ୍ଣ ଇନ୍‍ଲାଇନ୍ ଓ ତାଲିକା</translation>

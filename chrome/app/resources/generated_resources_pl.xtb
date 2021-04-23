@@ -917,6 +917,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1974821797477522211">Łączenie z siecią</translation>
 <translation id="1975841812214822307">Usuń...</translation>
 <translation id="1976150099241323601">Zaloguj się do urządzenia zabezpieczającego</translation>
+<translation id="1976928778492259496">Czytnik linii papilarnych znajduje się po lewej stronie urządzenia <ph name="DEVICE_TYPE" />. Dotknij go delikatnie dowolnym palcem.</translation>
 <translation id="1977965994116744507">Aby odblokować system, <ph name="DEVICE_TYPE" /> i telefon muszą być bliżej siebie.</translation>
 <translation id="1978057560491495741">Usuń adres</translation>
 <translation id="1979095679518582070">Wyłączenie tej funkcji nie ogranicza wysyłania przez to urządzenie informacji potrzebnych do działania kluczowych usług, takich jak aktualizacje systemu czy zabezpieczenia.</translation>
@@ -1970,6 +1971,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="313205617302240621">Nie pamiętasz hasła?</translation>
 <translation id="3132277757485842847">Nie udało się utrzymać połączenia z Twoim telefonem. Sprawdź, czy telefon jest w pobliżu, jest odblokowany i ma włączone Bluetooth oraz Wi-Fi.</translation>
 <translation id="3132996321662585180">Odświeżaj codziennie</translation>
+<translation id="3134393957315651797">Wybierz stan eksperymentu <ph name="EXPERIMENT_NAME" />. Opis eksperymentu: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Nieprawidłowy kod PIN. Pozostałe próby: <ph name="RETRIES" />.</translation>
 <translation id="313963229645891001">Pobieram, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Domyślny żółty awatar</translation>
@@ -6620,6 +6622,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8398877366907290961">Kontynuuj mimo wszystko</translation>
 <translation id="8400146488506985033">Zarządzaj użytkownikami</translation>
 <translation id="8401432541486058167">Wpisz kod PIN powiązany z Twoją kartą elektroniczną.</translation>
+<translation id="8404893580027489425">Czytnik linii papilarnych znajduje się po prawej stronie urządzenia <ph name="DEVICE_TYPE" />. Dotknij go delikatnie dowolnym palcem.</translation>
 <translation id="8405046151008197676">Poznaj najważniejsze ulepszenia z najnowszej aktualizacji</translation>
 <translation id="8407199357649073301">Poziom rejestrowania:</translation>
 <translation id="8408068190360279472">Sieć <ph name="NETWORK_TYPE" />, łączę</translation>

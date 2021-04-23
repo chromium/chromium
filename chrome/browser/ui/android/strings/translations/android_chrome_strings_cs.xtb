@@ -247,6 +247,7 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="2612676031748830579">Číslo karty</translation>
 <translation id="2625189173221582860">Heslo bylo zkopírováno</translation>
 <translation id="2631006050119455616">Uloženo</translation>
+<translation id="2645657967708199252">Vaše připojení <ph name="CONNECTION_TYPE" /> může zpomalovat stahování</translation>
 <translation id="2647434099613338025">Přidat jazyk</translation>
 <translation id="2650751991977523696">Stáhnout soubor znovu?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# zvukový soubor}few{# zvukové soubory}many{# zvukového souboru}other{# zvukových souborů}}</translation>
@@ -259,6 +260,7 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="2718846868787000099">Navštívené weby vidí vaše předvolby, aby vám mohly zobrazovat obsah v preferovaných jazycích</translation>
 <translation id="2723001399770238859">zvuk</translation>
 <translation id="2728754400939377704">Seřadit podle webu</translation>
+<translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">Klepnutím na slovo můžete okamžitě vyhledávat nebo zobrazit související akce</translation>
 <translation id="2760989362628427051">Zapnout tmavý motiv, když je na zařízení zapnutý tmavý motiv nebo spořič baterie</translation>
 <translation id="2762000892062317888">právě teď</translation>
@@ -303,7 +305,6 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="3016635187733453316">Zkontrolujte, zda je toto zařízení připojeno k internetu</translation>
 <translation id="3029704984691124060">Heslové fráze se neshodují</translation>
 <translation id="3031225630520268969">Uživatelské rozhraní souhlasu s hlasovým vyhledáváním pomocí Asistenta</translation>
-<translation id="3034163383943672781">Stahování bude zahájeno <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Zobrazit nápovědu<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Příště tento web můžete mít při ruce</translation>
 <translation id="305593374596241526">Určování polohy je vypnuté, zapnete jej v <ph name="BEGIN_LINK" />nastavení zařízení Android<ph name="END_LINK" />.</translation>
@@ -436,6 +437,7 @@ Privacy Sandbox se stále aktivně vyvíjí a je dostupný jen ve vybraných ob
 <translation id="3943557322767080599">Zobrazovat výzvy k přihlášení do Chromu, když se přihlásíte k účtu Google</translation>
 <translation id="395206256282351086">Návrhy vyhledávacích dotazů a webů jsou vypnuty</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome stránku načte, až bude připraven}few{Chrome stránky načte, až bude připraven}many{Chrome stránky načte, až bude připraven}other{Chrome stránky načte, až bude připraven}}</translation>
+<translation id="3962957115499249330">Až stahování začne (přes Wi-Fi), zobrazí se oznámení.</translation>
 <translation id="3963007978381181125">Šifrování pomocí heslové fráze se nevztahuje na platební metody a adresy ze služby Google Pay. Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslovou frázi. Heslová fráze se neodesílá do Googlu a není na Googlu uložena. Pokud ji zapomenete nebo toto nastavení budete chtít změnit, bude nutné synchronizaci resetovat. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome nemůže zkontrolovat vaše hesla</translation>
 <translation id="3974987681202239636">Aplikace <ph name="APP_NAME" /> se otevře v Chromu. Pokračováním vyjadřujete souhlas se <ph name="BEGIN_LINK1" />smluvními podmínkami společnosti Google<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />doplňujícími smluvními podmínkami prohlížeče Chrome a systému Chrome OS<ph name="END_LINK2" />. Platí také <ph name="BEGIN_LINK3" />upozornění ve věci ochrany soukromí pro účty Google spravované prostřednictvím služby Family<ph name="END_LINK3" />.</translation>
@@ -479,6 +481,7 @@ Privacy Sandbox se stále aktivně vyvíjí a je dostupný jen ve vybraných ob
 <translation id="4256782883801055595">Licence open source</translation>
 <translation id="4263656433980196874">Uživatelské rozhraní souhlasu s hlasovým vyhledáváním pomocí Asistenta otevřené na celou výšku</translation>
 <translation id="4269820728363426813">Zkopírovat adresu odkazu</translation>
+<translation id="4290281343757112331">Stáhnout raději později?</translation>
 <translation id="4298388696830689168">Propojené weby</translation>
 <translation id="4303044213806199882">snimek_obrazovky_chrome_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Základy</translation>
@@ -621,6 +624,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5191251636205085390">Další informace o správa nových technologií, které mají za cíl nahradit soubory cookie třetích stran</translation>
 <translation id="5193988420012215838">Zkopírováno do schránky</translation>
 <translation id="5199929503336119739">Pracovní profil</translation>
+<translation id="5201464744567315552">Až stahování začne (<ph name="TIME" />), zobrazí se oznámení.</translation>
 <translation id="5204967432542742771">Zadejte heslo</translation>
 <translation id="5210286577605176222">Přejít na předchozí kartu</translation>
 <translation id="5210365745912300556">Zavřít kartu</translation>
@@ -631,6 +635,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5230560987958996918">Web <ph name="SITE" /> chce vyhledat zařízení Bluetooth v okolí. Byla nalezena následující zařízení:</translation>
 <translation id="5233638681132016545">Nová karta</translation>
 <translation id="5250483651202458397">Snímek obrazovky. Klepnutím zavřete.</translation>
+<translation id="5262378156578470238">Až stahování začne (<ph name="DATE" />), zobrazí se oznámení.</translation>
 <translation id="526421993248218238">Stránku nelze načíst</translation>
 <translation id="5271967389191913893">Zařízení obsah ke stažení nemůže otevřít.</translation>
 <translation id="5292796745632149097">Odeslat do zařízení</translation>
@@ -700,7 +705,6 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="572328651809341494">Nedávno použité karty</translation>
 <translation id="5723735397759933332">Zjednodušený režim vám teď ušetří více dat, protože optimalizuje obrázky na stránkách HTTPS.</translation>
 <translation id="5726692708398506830">Zvětšit veškerý obsah stránky</translation>
-<translation id="5732819098735351888">Stahování bude zahájeno při připojení k Wi-Fi.</translation>
 <translation id="5733983706093266635">QR kód nelze vytvořit. Adresa URL je delší než <ph name="CHARACTER_LIMIT" /> znaků.</translation>
 <translation id="5748802427693696783">Přepnuto na standardní karty</translation>
 <translation id="5749068826913805084">Aby bylo možné stahovat soubory, Chrome potřebuje přístup k úložišti.</translation>
@@ -779,7 +783,6 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="6159335304067198720">Úspora dat: <ph name="PERCENT" /></translation>
 <translation id="6186394685773237175">Nebylo nalezeno žádné prolomené heslo</translation>
 <translation id="6192907950379606605">Zobrazovat popisy obrázků</translation>
-<translation id="6206830853671714236">Vyberte, kdy chcete stahovat</translation>
 <translation id="6210748933810148297">Nejste <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Zobrazování náhledu této stránky</translation>
 <translation id="6218096829563201111">Vyhledat podobné produkty <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>
@@ -912,6 +915,7 @@ Data z anonymní relace budou vymazána jedině po <ph name="BEGIN_BOLD2" />zav
 <translation id="6981982820502123353">Usnadnění</translation>
 <translation id="6989267951144302301">Stažení se nezdařilo</translation>
 <translation id="6995899638241819463">Upozorňovat v případě vyzrazení hesel při porušení zabezpečení</translation>
+<translation id="7001056293070445572">Tento soubor je velký (<ph name="FILE_SIZE" />)</translation>
 <translation id="7015203776128479407">Počáteční nastavení synchronizace nebylo dokončeno. Synchronizace je vypnutá.</translation>
 <translation id="7022756207310403729">Otevřít v prohlížeči</translation>
 <translation id="702463548815491781">Doporučeno, když je zapnuta funkce TalkBack nebo přístup pomocí přepínačů</translation>
@@ -1026,6 +1030,7 @@ Data z anonymní relace budou vymazána jedině po <ph name="BEGIN_BOLD2" />zav
 <translation id="7791543448312431591">Přidat</translation>
 <translation id="7798392620021911922">Obnovené karty: <ph name="TAB_COUNT" /></translation>
 <translation id="780301667611848630">Ne, děkuji</translation>
+<translation id="7808889146555843082">Odstraněním tohoto hesla nesmažete svůj účet na webu <ph name="SITE" />. Pokud chcete ochránit svá data, změňte své heslo nebo účet na <ph name="SITE" /> smažte.</translation>
 <translation id="7810647596859435254">Otevřít v aplikaci…</translation>
 <translation id="7815484226266492798">Dlouhý snímek obrazovky</translation>
 <translation id="7821588508402923572">Zde se budou zobrazovat vaše úspory dat</translation>
@@ -1173,12 +1178,14 @@ Data z anonymní relace budou vymazána jedině po <ph name="BEGIN_BOLD2" />zav
 <translation id="8699120352855309748">Nenabízet překlad do těchto jazyků</translation>
 <translation id="8712637175834984815">Hotovo</translation>
 <translation id="8725066075913043281">Zkusit znovu</translation>
+<translation id="8730621377337864115">Hotovo</translation>
 <translation id="8748850008226585750">Skrytý obsah</translation>
 <translation id="8773160212632396039">Požadavek se zpracovává</translation>
 <translation id="8788265440806329501">Historie navigace je zavřená</translation>
 <translation id="8788968922598763114">Znovu otevřít naposledy zavřenou kartu</translation>
 <translation id="8798449543960971550">Čtení</translation>
 <translation id="8812260976093120287">Na některých webech můžete platit pomocí výše uvedených podporovaných platebních aplikací v zařízení.</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">Obsah karty náhledu nelze zobrazit.</translation>
 <translation id="8820817407110198400">Záložky</translation>
 <translation id="883806473910249246">Při stahování obsahu došlo k chybě.</translation>
@@ -1216,10 +1223,10 @@ Data z anonymní relace budou vymazána jedině po <ph name="BEGIN_BOLD2" />zav
 <translation id="9063523880881406963">Vypnout funkci Verzi webu pro PC</translation>
 <translation id="9065203028668620118">Upravit</translation>
 <translation id="9065383040763568503">Uložená data, která Chrome nepovažuje za důležitá (např. weby bez uložených nastavení nebo weby, které nenavštěvujete často)</translation>
-<translation id="9069543557624799859">Stahování bude zahájeno v <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Žádné nepřečtené stránky</translation>
 <translation id="9070377983101773829">Spustit hlasové vyhledávání</translation>
 <translation id="9074336505530349563">Chcete-li od Googlu získat personalizované návrhy obsahu, zapněte synchronizaci</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Synchronizace</translation>
 <translation id="9086455579313502267">Nelze získat přístup k síti.</translation>
 <translation id="9100505651305367705">Nabízet zjednodušené zobrazení článků (pokud je podporováno)</translation>

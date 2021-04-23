@@ -248,6 +248,7 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="2612676031748830579">Kortnummer</translation>
 <translation id="2625189173221582860">Passordet er kopiert</translation>
 <translation id="2631006050119455616">Spart</translation>
+<translation id="2645657967708199252"><ph name="CONNECTION_TYPE" />-tilkoblingen din kan gjøre at nedlastingen går tregt</translation>
 <translation id="2647434099613338025">Legg til språk</translation>
 <translation id="2650751991977523696">Vil du laste ned filen på nytt?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# lydfil}other{# lydfiler}}</translation>
@@ -260,6 +261,7 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="2718846868787000099">For å kunne vise innhold på språkene du foretrekker, kan nettstedene du besøker, se preferansene dine</translation>
 <translation id="2723001399770238859">lyd</translation>
 <translation id="2728754400939377704">Sortér etter nettsted</translation>
+<translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">Trykk på et ord for å søke umiddelbart eller se relaterte handlinger</translation>
 <translation id="2760989362628427051">Slå på mørkt tema når batterisparing eller enhetsinnstillingen for mørkt tema er på</translation>
 <translation id="2762000892062317888">akkurat nå</translation>
@@ -304,7 +306,6 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="3016635187733453316">Kontrollér at enheten er koblet til internett</translation>
 <translation id="3029704984691124060">Passordfrasene stemmer ikke overens</translation>
 <translation id="3031225630520268969">UI for samtykke til talesøk med assistenten</translation>
-<translation id="3034163383943672781">Nedlastingen starter <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Få hjelp<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Åpne dette nettstedet raskere neste gang</translation>
 <translation id="305593374596241526">Posisjon er slått av. Slå den på i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
@@ -437,6 +438,7 @@ Privacy Sandbox er fremdeles under aktiv utvikling og er tilgjengelig i utvalgte
 <translation id="3943557322767080599">Vis påloggingsbilde for Chrome når du logger på Google-kontoen din</translation>
 <translation id="395206256282351086">Nettsteds- og søkeforslag er slått av</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome laster inn siden når den er klar}other{Chrome laster inn sidene når de er klare}}</translation>
+<translation id="3962957115499249330">Du ser et varsel når denne nedlastingen starter over Wi-Fi.</translation>
 <translation id="3963007978381181125">Kryptering av passordfraser inkluderer ikke betalingsmåter og adresser fra Google Pay. Bare personer som har passordfrasen din, kan lese de krypterte dataene dine. Passordfrasen blir verken sendt til Google eller lagret. Hvis du glemmer den, må du tilbakestille synkroniseringen. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome kan ikke sjekke passordene dine</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> åpnes i Chrome. Ved å fortsette samtykker du i <ph name="BEGIN_LINK1" />Googles vilkår for bruk<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />tilleggsvilkårene for bruk av Google Chrome og Chrome OS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Merknaden om personvern for Google-kontoer som administreres via Family Link<ph name="END_LINK3" />, gjelder også.</translation>
@@ -480,6 +482,7 @@ Privacy Sandbox er fremdeles under aktiv utvikling og er tilgjengelig i utvalgte
 <translation id="4256782883801055595">Lisenser for åpen kildekode</translation>
 <translation id="4263656433980196874">UI for samtykke til talesøk med assistenten er åpnet i full høyde</translation>
 <translation id="4269820728363426813">Kopiér linkadressen</translation>
+<translation id="4290281343757112331">Vil du laste den ned senere i stedet?</translation>
 <translation id="4298388696830689168">Tilknyttede nettsteder</translation>
 <translation id="4303044213806199882">chrome_skjermdump_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Generelt</translation>
@@ -622,6 +625,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5191251636205085390">Finn ut om og kontrollér nye teknologier som tar sikte på å erstatte tredjeparts informasjonskapsler</translation>
 <translation id="5193988420012215838">Kopiert til utklippstavlen</translation>
 <translation id="5199929503336119739">Jobbprofil</translation>
+<translation id="5201464744567315552">Du ser et varsel når denne nedlastingen starter <ph name="TIME" />.</translation>
 <translation id="5204967432542742771">Skriv inn passordet</translation>
 <translation id="5210286577605176222">Gå til den forrige fanen</translation>
 <translation id="5210365745912300556">Lukk fanen</translation>
@@ -632,6 +636,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5230560987958996918"><ph name="SITE" /> vil søke etter Bluetooth-enheter i nærheten. Fant disse enhetene:</translation>
 <translation id="5233638681132016545">Ny fane</translation>
 <translation id="5250483651202458397">Skjermdump. Trykk for å lukke.</translation>
+<translation id="5262378156578470238">Du ser et varsel når denne nedlastingen starter <ph name="DATE" />.</translation>
 <translation id="526421993248218238">Kan ikke laste inn denne siden</translation>
 <translation id="5271967389191913893">Enheten kan ikke åpne innholdet som skal lastes ned.</translation>
 <translation id="5292796745632149097">Send til</translation>
@@ -701,7 +706,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="572328651809341494">Nylige faner</translation>
 <translation id="5723735397759933332">Forenklet modus sparer nå mer data ved å optimalisere bilder på HTTPS-sider.</translation>
 <translation id="5726692708398506830">Gjør alt på siden større</translation>
-<translation id="5732819098735351888">Nedlastingen starter når du er tilkoblet Wi-Fi.</translation>
 <translation id="5733983706093266635">Kan ikke lage QR-koden. Nettadressen er lengre enn <ph name="CHARACTER_LIMIT" /> tegn.</translation>
 <translation id="5748802427693696783">Byttet til standardfaner</translation>
 <translation id="5749068826913805084">Chrome må ha lagringstilgang for å laste ned filer.</translation>
@@ -780,7 +784,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="6159335304067198720"><ph name="PERCENT" /> datasparing</translation>
 <translation id="6186394685773237175">Fant ingen passord som er utsatt for sikkerhetsbrudd</translation>
 <translation id="6192907950379606605">Få bildebeskrivelser</translation>
-<translation id="6206830853671714236">Velg når du vil laste ned</translation>
 <translation id="6210748933810148297">Ikke <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Forhåndsviser denne siden</translation>
 <translation id="6218096829563201111">Søk lignende produkter <ph name="BEGIN_NEW" />Ny<ph name="END_NEW" /></translation>
@@ -914,6 +917,7 @@ Dataene fra inkognitoøkten fjernes ikke fra Chrome før du <ph name="BEGIN_BOLD
 <translation id="6981982820502123353">Tilgjengelighet</translation>
 <translation id="6989267951144302301">Kunne ikke laste ned</translation>
 <translation id="6995899638241819463">Få en advarsel hvis passord blir avdekket i databrudd</translation>
+<translation id="7001056293070445572">Denne filen er stor (<ph name="FILE_SIZE" />)</translation>
 <translation id="7015203776128479407">Innledende synkroniseringsoppsett ble ikke fullført. Synkronisering er slått av.</translation>
 <translation id="7022756207310403729">Åpne i nettleseren</translation>
 <translation id="702463548815491781">Anbefalt når TalkBack eller brytertilgang er på</translation>
@@ -1028,6 +1032,7 @@ Dataene fra inkognitoøkten fjernes ikke fra Chrome før du <ph name="BEGIN_BOLD
 <translation id="7791543448312431591">Legg til</translation>
 <translation id="7798392620021911922">Gjenopprettet <ph name="TAB_COUNT" /> faner</translation>
 <translation id="780301667611848630">Nei takk</translation>
+<translation id="7808889146555843082">Sletting av dette passordet sletter ikke kontoen din på <ph name="SITE" />. Endre passordet eller slett kontoen på <ph name="SITE" /> for å beskytte den mot andre.</translation>
 <translation id="7810647596859435254">Åpne med…</translation>
 <translation id="7815484226266492798">Lang skjermdump</translation>
 <translation id="7821588508402923572">Datasparingen din vises her</translation>
@@ -1175,12 +1180,14 @@ Dataene fra inkognitoøkten fjernes ikke fra Chrome før du <ph name="BEGIN_BOLD
 <translation id="8699120352855309748">Ikke tilby å oversette disse språkene</translation>
 <translation id="8712637175834984815">Skjønner</translation>
 <translation id="8725066075913043281">Prøv igjen</translation>
+<translation id="8730621377337864115">Ferdig</translation>
 <translation id="8748850008226585750">Innholdet er skjult</translation>
 <translation id="8773160212632396039">Behandler forespørselen</translation>
 <translation id="8788265440806329501">Navigasjonsloggen er lukket</translation>
 <translation id="8788968922598763114">Åpne den sist lukkede fanen på nytt</translation>
 <translation id="8798449543960971550">Lest</translation>
 <translation id="8812260976093120287">På noen nettsteder kan du betale med de støttede betalingsappene ovenfor på enheten din.</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">Innholdet på forhåndsvisningsfanen kan ikke vises.</translation>
 <translation id="8820817407110198400">Bokmerker</translation>
 <translation id="883806473910249246">Det oppsto en feil under nedlastingen av innholdet.</translation>
@@ -1218,10 +1225,10 @@ Dataene fra inkognitoøkten fjernes ikke fra Chrome før du <ph name="BEGIN_BOLD
 <translation id="9063523880881406963">Slå av Bruk skrivebordsversjon</translation>
 <translation id="9065203028668620118">Endre</translation>
 <translation id="9065383040763568503">Lagrede data som Chrome ikke tror er viktige (for eksempel nettsteder uten lagrede innstillinger eller som du ikke besøker ofte)</translation>
-<translation id="9069543557624799859">Nedlastingen starter kl. <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Ingen uleste sider</translation>
 <translation id="9070377983101773829">Start talesøk</translation>
 <translation id="9074336505530349563">For å få forslag om personlig tilpasset innhold fra Google, slå på synkronisering</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Synkroniserer</translation>
 <translation id="9086455579313502267">Fikk ikke tilgang til nettverket</translation>
 <translation id="9100505651305367705">Tilby å vise artikler i forenklet visning, når det støttes</translation>

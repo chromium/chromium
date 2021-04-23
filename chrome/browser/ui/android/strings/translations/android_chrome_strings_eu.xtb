@@ -248,6 +248,7 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="2612676031748830579">Txartelaren zenbakia</translation>
 <translation id="2625189173221582860">Kopiatu da pasahitza</translation>
 <translation id="2631006050119455616">Aurreztuta</translation>
+<translation id="2645657967708199252">Baliteke polikiago deskargatzea <ph name="CONNECTION_TYPE" /> konexioa dela eta</translation>
 <translation id="2647434099613338025">Gehitu hizkuntza bat</translation>
 <translation id="2650751991977523696">Fitxategia berriro deskargatu nahi duzu?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# audio-fitxategi}other{# audio-fitxategi}}</translation>
@@ -260,6 +261,7 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="2718846868787000099">Edukia hobetsitako hizkuntzetan erakusteko, bisitatzen dituzun webguneek zure hobespenak ikus ditzakete</translation>
 <translation id="2723001399770238859">audioa</translation>
 <translation id="2728754400939377704">Ordenatu webgunearen arabera</translation>
+<translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">Sakatu hitz bat bilaketa egiteko edo lotutako ekintzak ikusteko</translation>
 <translation id="2760989362628427051">Aktibatu gai iluna gailuaren gai iluna edo bateria-aurrezlea aktibatuta dagoenean</translation>
 <translation id="2762000892062317888">oraintxe</translation>
@@ -304,7 +306,6 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="3016635187733453316">Ziurtatu gailua Internetera konektatuta dagoela</translation>
 <translation id="3029704984691124060">Pasaesaldiak ez datoz bat</translation>
 <translation id="3031225630520268969">Ahozko bilaketa egite aldera Laguntzailea eginbideari baimena emateko erabiltzaile-interfazea</translation>
-<translation id="3034163383943672781">Deskarga egun honetan hasiko da: <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Lortu laguntza<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Sartu webgune honetan bizkorrago hurrengoan</translation>
 <translation id="305593374596241526">Kokapena desaktibatuta dago; aktiba ezazu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
@@ -437,6 +438,7 @@ Privacy Sandbox garapen-prozesuan dago oraindik eta lurralde jakin batzuetan bai
 <translation id="3943557322767080599">Erakutsi saioa hasteko Chrome-ren onarpen-mezuak Google-ko kontuan saioa hasten duzunean</translation>
 <translation id="395206256282351086">Desgaituta daude bilaketen eta webguneen iradokizunak</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Gailua konektatu egiten denean kargatuko du Chrome-k orria}other{Gailua konektatu egiten denean kargatuko ditu Chrome-k orriak}}</translation>
+<translation id="3962957115499249330">Jakinarazpen bat ikusiko duzu wifi bidez deskargatzen hasten denean.</translation>
 <translation id="3963007978381181125">Pasaesaldi bidezko enkriptatzeak ez ditu hartzen barne Google Pay-ko ordainketa-metodoak eta helbideak. Pasaesaldia dutenek soilik irakur ditzakete enkriptatutako datuak. Pasaesaldia ez da bidaltzen Google-ra, ezta bertan gordetzen ere. Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, sinkronizazioa berrezarri beharko duzu. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome-k ezin ditu egiaztatu pasahitzak</translation>
 <translation id="3974987681202239636">Chrome-n irekiko da <ph name="APP_NAME" />. Aurrera egiten baduzu, onartu egingo dituzu <ph name="BEGIN_LINK1" />Google-ren Zerbitzu-baldintzak<ph name="END_LINK1" /> eta <ph name="BEGIN_LINK2" />Google Chrome-ren eta Chrome OS-en Zerbitzu-baldintza gehigarriak<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Family Link aplikazioaren bidez kudeatutako Google-ko kontuen Pribatutasun-oharra<ph name="END_LINK3" /> aplikatzen da ere.</translation>
@@ -480,6 +482,7 @@ Privacy Sandbox garapen-prozesuan dago oraindik eta lurralde jakin batzuetan bai
 <translation id="4256782883801055595">Kode irekiko lizentziak</translation>
 <translation id="4263656433980196874">Altuera osoan ireki da ahozko bilaketa egite aldera Laguntzailea eginbideari baimena emateko erabiltzaile-interfazea</translation>
 <translation id="4269820728363426813">Kopiatu estekaren helbidea</translation>
+<translation id="4290281343757112331">Nahiago duzu geroago deskargatu?</translation>
 <translation id="4298388696830689168">Estekatutako webguneak</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Oinarrizko informazioa</translation>
@@ -622,6 +625,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5191251636205085390">Kontrolatu hirugarrenen cookieak ordezteko helburua duten teknologia berriak eta lortu haiei buruzko informazio gehiago</translation>
 <translation id="5193988420012215838">Arbelean kopiatuta</translation>
 <translation id="5199929503336119739">Laneko profila</translation>
+<translation id="5201464744567315552">Jakinarazpen bat ikusiko duzu deskargatzen hasten denean (<ph name="TIME" />).</translation>
 <translation id="5204967432542742771">Idatzi pasahitza</translation>
 <translation id="5210286577605176222">Saltatu aurreko fitxara</translation>
 <translation id="5210365745912300556">Itxi fitxa</translation>
@@ -632,6 +636,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5230560987958996918"><ph name="SITE" /> webguneak inguruko Bluetooth bidezko gailuak bilatu nahi ditu. Gailu hauek aurkitu dira:</translation>
 <translation id="5233638681132016545">Fitxa berria</translation>
 <translation id="5250483651202458397">Pantaila-argazkia. Sakatu ixteko.</translation>
+<translation id="5262378156578470238">Jakinarazpen bat ikusiko duzu deskargatzen hasten denean (<ph name="DATE" />).</translation>
 <translation id="526421993248218238">Ezin da kargatu orria</translation>
 <translation id="5271967389191913893">Gailuak ezin du ireki deskargatu beharreko edukia.</translation>
 <translation id="5292796745632149097">Bidali hona:</translation>
@@ -701,7 +706,6 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="572328651809341494">Azken fitxak</translation>
 <translation id="5723735397759933332">Oinarrizko moduari esker, datu gehiago aurreztuko dituzu HTTPS orrietan irudiak optimizatuta.</translation>
 <translation id="5726692708398506830">Handitu orriko eduki guztia</translation>
-<translation id="5732819098735351888">Wifia erabiltzean hasiko da deskarga.</translation>
 <translation id="5733983706093266635">Ezin da sortu QR kodea. URLak <ph name="CHARACTER_LIMIT" /> karaktere baino gehiago ditu.</translation>
 <translation id="5748802427693696783">Fitxa arruntetara aldatu da</translation>
 <translation id="5749068826913805084">Chrome-k memorian sartzeko baimena behar du fitxategiak deskargatu ahal izateko.</translation>
@@ -780,7 +784,6 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="6159335304067198720">Datuen <ph name="PERCENT" /> aurreztu da</translation>
 <translation id="6186394685773237175">Ez da aurkitu arriskuan dagoen pasahitzik</translation>
 <translation id="6192907950379606605">Lortu irudi-deskribapenak</translation>
-<translation id="6206830853671714236">Erabaki noiz deskargatu fitxategia</translation>
 <translation id="6210748933810148297">Ez al zara <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Orria aurreikusten</translation>
 <translation id="6218096829563201111">Bilatu antzeko produktuak <ph name="BEGIN_NEW" />Berria<ph name="END_NEW" /></translation>
@@ -914,6 +917,7 @@ Ezkutuko moduko saioaren datuak <ph name="BEGIN_BOLD2" />ezkutuko moduko fitxa g
 <translation id="6981982820502123353">Erabilerraztasuna</translation>
 <translation id="6989267951144302301">Ezin izan da deskargatu</translation>
 <translation id="6995899638241819463">Abisatu pasahitzak arriskuan badaude datuen isilpekotasuna urratu delako</translation>
+<translation id="7001056293070445572">Fitxategi handia da (<ph name="FILE_SIZE" />)</translation>
 <translation id="7015203776128479407">Oraindik ez da amaitu hasierako sinkronizazioaren konfigurazioa. Sinkronizazioa desaktibatuta dago.</translation>
 <translation id="7022756207310403729">Ireki arakatzailean</translation>
 <translation id="702463548815491781">TalkBack edo Erabilerraztasun-osagarria aktibatuta daudenean gomendatua</translation>
@@ -1028,6 +1032,7 @@ Ezkutuko moduko saioaren datuak <ph name="BEGIN_BOLD2" />ezkutuko moduko fitxa g
 <translation id="7791543448312431591">Gehitu</translation>
 <translation id="7798392620021911922">Leheneratu egin dira <ph name="TAB_COUNT" /> fitxa</translation>
 <translation id="780301667611848630">Ez, eskerrik asko</translation>
+<translation id="7808889146555843082">Pasahitza ezabatzen baduzu ere, ez da ezabatuko <ph name="SITE" /> webguneko kontua. <ph name="SITE" /> domeinuko kontua babestuta mantentzeko, ezaba ezazu edo alda iezaiozu pasahitza.</translation>
 <translation id="7810647596859435254">Ireki honekin…</translation>
 <translation id="7815484226266492798">Orri osoaren pantaila-argazkia</translation>
 <translation id="7821588508402923572">Hemen agertuko da zenbat datu aurreztu dituzun</translation>
@@ -1175,12 +1180,14 @@ Ezkutuko moduko saioaren datuak <ph name="BEGIN_BOLD2" />ezkutuko moduko fitxa g
 <translation id="8699120352855309748">Ez eskaini hizkuntza hauek itzultzea</translation>
 <translation id="8712637175834984815">Ados</translation>
 <translation id="8725066075913043281">Saiatu berriro</translation>
+<translation id="8730621377337864115">Eginda</translation>
 <translation id="8748850008226585750">Ezkutatuta dago edukia</translation>
 <translation id="8773160212632396039">Eskaera prozesatzen</translation>
 <translation id="8788265440806329501">Nabigazio-historia itxita dago</translation>
 <translation id="8788968922598763114">Ireki itxitako azken fitxa</translation>
 <translation id="8798449543960971550">Irakurrita</translation>
 <translation id="8812260976093120287">Webgune batzuetan, gailuko ordainketa-aplikazio bateragarri horiek erabil ditzakezu ordainketak egiteko.</translation>
+<translation id="8814190375133053267">Wi-Fi konexioa</translation>
 <translation id="881688628773363275">Ezin da ikusi aurrebista-fitxaren edukia.</translation>
 <translation id="8820817407110198400">Laster-markak</translation>
 <translation id="883806473910249246">Errore bat gertatu da edukia deskargatzen.</translation>
@@ -1218,10 +1225,10 @@ Ezkutuko moduko saioaren datuak <ph name="BEGIN_BOLD2" />ezkutuko moduko fitxa g
 <translation id="9063523880881406963">Desaktibatu ordenagailuetarako webgunea eskatzeko aukera</translation>
 <translation id="9065203028668620118">Editatu</translation>
 <translation id="9065383040763568503">Chrome-k garrantzi gabekotzat jotzen dituen gordetako datuak (hala nola ezarpenik gordeta ez daukaten webguneetakoak edo maiz bisitatzen ez dituzun webguneetakoak)</translation>
-<translation id="9069543557624799859">Deskarga ordu honetan hasiko da: <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Ez dago irakurri gabeko orririk</translation>
 <translation id="9070377983101773829">Aktibatu ahozko bilaketa</translation>
 <translation id="9074336505530349563">Google-k iradokitzen duen eduki pertsonalizatua jasotzeko, hasi saioa eta aktibatu sinkronizazioa</translation>
+<translation id="9074739597929991885">Bluetooth-a</translation>
 <translation id="9086302186042011942">Sinkronizatzen</translation>
 <translation id="9086455579313502267">Ezin da atzitu sarea</translation>
 <translation id="9100505651305367705">Eskaini artikuluak ikuspegi sinplifikatuan erakusteko aukera, halakorik onartzen bada</translation>

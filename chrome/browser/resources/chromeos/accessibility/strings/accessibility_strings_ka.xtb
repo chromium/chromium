@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">ორი თითით გადაფურცვლა ზემოთ</translation>
 <translation id="1126928665165112660">დაუხრელი</translation>
 <translation id="113582498867142724"><ph name="TAG" /> კოლექცია <ph name="NUM" /> ელემენტით</translation>
-<translation id="1146441463334103638">ეკრანის ჩართვა ან გამორთვა</translation>
 <translation id="1156488781945104845">მიმდინარე დრო</translation>
 <translation id="1161762950103988776">გადასვლა</translation>
 <translation id="1164857107703583584">გადასვლის ბრძანებების მეშვეობით შესაძლებელია ეფექტური ნავიგაცია ვებგვერდზე.</translation>
@@ -256,6 +255,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">წინა ერთეულზე გადასასვლელად შეგიძლიათ ერთი თითით მარჯვნიდან მარცხნივ გადაფურცვლაც. ცადეთ ახლავე.</translation>
 <translation id="280499067616661124">ChromeVox-ის გვერდზე ძიების ფუნქცია</translation>
+<translation id="2808001342598757276">ეკრანის დაბნელების გაუქმება</translation>
 <translation id="2811019999044652585">ეკრანის ისეთ ნაწილებზე გადასასვლელად, როგორიცაა ხელსაწყოთა ზოლები ან სისტემური არე, დააჭირეთ კლავიშთა კომბინაციას: Control + წინ. Chromebook-ზე კლავიში „წინ“ 2-იანის თავზე მდებარეობს.</translation>
 <translation id="2811204574343810641">სტრიქონი</translation>
 <translation id="2816868829355607410">პრაქტიკის არე: გადასვლის ბრძანებები</translation>
@@ -302,7 +302,6 @@
 <translation id="3082249673510793544">უკან გადაადგილება</translation>
 <translation id="3084806535845658316">აკრეფისის ექო არ არის</translation>
 <translation id="3086746722712840547">შენიშვნა</translation>
-<translation id="308736057934395497">კონფიდენციალურობის გაუმჯობესების მიზნით, თქვენი ეკრანი გამოირთვება, რომ სხვებმა ვერ ნახონ. ეკრანის ხელახლა ჩართვას ნებისმიერ დროს შეძლებთ კლავიშთა კომბინაციით Search + სიკაშკაშის აწევა.</translation>
 <translation id="3090227230165225418">ჩამოტვირთვის შეტყობინებების გამოცხადება</translation>
 <translation id="3090532668523289635">ჯგუფი</translation>
 <translation id="3093176084511590672">შემდეგი ორიენტირი</translation>
@@ -313,7 +312,6 @@
 <translation id="3109724472072898302">აკეცილი</translation>
 <translation id="311015743332597320">ოთხი თითით გადაფურცვლა მარჯვნივ</translation>
 <translation id="3112457281078985179">ChromeVox-ის ჩასართავად ან გამოსართავად, გამოიყენეთ კლავიშთა კომბინაცია: Control + Alt + Z.</translation>
-<translation id="3115800313647508384">გსურთ ეკრანის გამორთვა?</translation>
 <translation id="3131002934070407451">რიცხვების წაკითხვა, როგორც:</translation>
 <translation id="3134461040845705080">მხოლოდ წაკითხვადი</translation>
 <translation id="3137663468179739624">ზეთისხილისფერი</translation>
@@ -721,6 +719,7 @@
 <translation id="6034000775414344507">ღია ნაცრისფერი</translation>
 <translation id="6036135911048686884">შეხებით დათვალიერება</translation>
 <translation id="6037602951055904232">წინ გადაწევა</translation>
+<translation id="6044160928851315051">ეკრანის დაბნელება</translation>
 <translation id="6082768461603900813">ძირითადი ნავიგაცია</translation>
 <translation id="609281021724813947">წინა სლაიდერი არ არის</translation>
 <translation id="6100239002225743044">ერთი ხაზით ზემოთ გადასვლა</translation>
@@ -791,7 +790,6 @@
 <translation id="6696967141280706829">წინათქმა</translation>
 <translation id="6697092096875747123">წინა კომბო-ველი</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{ძახილის ნიშანი}other{# ძახილის ნიშანი}}</translation>
-<translation id="670717715607710284">ეკრანის გამორთვა</translation>
 <translation id="6710213216561001401">წინა</translation>
 <translation id="6714813999819678458">წინა მე-2 დონის სათაური</translation>
 <translation id="6730312624811567147">გამოიყენეთ კლავიშთა კომბინაცია Search და ისარი მარცხნივ ან მარჯვნივ Home ან End კლავიშის ასამოქმედებლად, კლავიშთა კომბინაცია Search Control და ისარი მარცხნივ ან მარჯვნივ კლავიშთა კომბინაციის Control Home ან Control End ასამოქმედებლად, კლავიშთა კომბინაცია Search და ისარი ზემოთ ან ქვემოთ Page Up ან Page Down კლავიშის ასამოქმედებლად</translation>
@@ -993,7 +991,6 @@
 <translation id="816818801578874684">ეს არის პირველი სათაური. შემდეგ სათაურზე გადასასვლელად დააჭირეთ კლავიშთა კომბინაციას Search + H.</translation>
 <translation id="8173092779156526980">ოთხი თითით გადაფურცვლა მარცხნივ</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{ქვეტირე}other{# ქვეტირეები}}</translation>
-<translation id="817529114347680055">ეკრანის ჩართვა</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">მწკრივი</translation>
 <translation id="8186185314313222077">სრულ ეკრანზე გადართვა</translation>
@@ -1016,6 +1013,7 @@
 <translation id="8316881042119029234">ძველი მაქმანისფერი</translation>
 <translation id="8324974933005349667">ტექსტის გახმოვანების პარამეტრების პერსონალიზება</translation>
 <translation id="8326783648485765113">მოლისფერი</translation>
+<translation id="8328063869313048659">მუქი ეკრანის რეჟიმის გადართვა</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{ფუნტი}other{# ფუნტის ნიშანი}}</translation>
 <translation id="8378855320830505539">რეგიონი</translation>
 <translation id="8382679411218029383">ავტომატური შევსების თანმიმდევრობა და სია</translation>

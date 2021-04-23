@@ -248,6 +248,7 @@
 <translation id="2612676031748830579">Номер карты</translation>
 <translation id="2625189173221582860">Пароль скопирован</translation>
 <translation id="2631006050119455616">Сэкономлено</translation>
+<translation id="2645657967708199252">По сети <ph name="CONNECTION_TYPE" /> данные могут скачиваться медленно.</translation>
 <translation id="2647434099613338025">Добавить язык</translation>
 <translation id="2650751991977523696">Скачать файл ещё раз?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# аудиофайл}one{# аудиофайл}few{# аудиофайла}many{# аудиофайлов}other{# аудиофайла}}</translation>
@@ -260,6 +261,7 @@
 <translation id="2718846868787000099">Сайты, которые вы посещаете, могут видеть выбранные вами настройки, чтобы показывать контент на нужном языке.</translation>
 <translation id="2723001399770238859">аудио</translation>
 <translation id="2728754400939377704">Сортировать по имени домена</translation>
+<translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">Нажмите на слово, чтобы увидеть связанные с ним результаты поиска и действия.</translation>
 <translation id="2760989362628427051">Использовать тёмную тему, когда на устройстве включена тёмная тема или режим энергосбережения.</translation>
 <translation id="2762000892062317888">только что</translation>
@@ -304,7 +306,6 @@
 <translation id="3016635187733453316">Убедитесь, что устройство подключено к Интернету.</translation>
 <translation id="3029704984691124060">Кодовые фразы не совпадают</translation>
 <translation id="3031225630520268969">Окно, где требуется разрешить использование Ассистента для голосового поиска</translation>
-<translation id="3034163383943672781">Скачивание начнется <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Справка<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">В следующий раз вы сможете открыть этот сайт быстрее.</translation>
 <translation id="305593374596241526">Определение местоположения отключено. Включите его в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
@@ -437,6 +438,7 @@
 <translation id="3943557322767080599">Предлагать войти в Chrome после входа в аккаунт Google</translation>
 <translation id="395206256282351086">Подсказки запросов и сайтов отключены</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Страница будет загружена при подключении к сети}one{Страницы будут загружены при подключении к сети}few{Страницы будут загружены при подключении к сети}many{Страницы будут загружены при подключении к сети}other{Страницы будут загружены при подключении к сети}}</translation>
+<translation id="3962957115499249330">Когда начнется скачивание по Wi-Fi, вы увидите уведомление.</translation>
 <translation id="3963007978381181125">Шифрование с помощью кодовой фразы не применяется к способам оплаты и адресам из Google Pay. Доступ к зашифрованным данным будет только у тех, кто знает кодовую фразу. Она не пересылается и не хранится в Google. Если вы забудете фразу или решите изменить эту настройку, вам придется сбросить параметры синхронизации. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Браузеру Chrome не удается проверить пароли.</translation>
 <translation id="3974987681202239636">Приложение "<ph name="APP_NAME" />" откроется в Chrome. Продолжая, вы принимаете <ph name="BEGIN_LINK1" />Условия использования Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнительные условия использования Chrome и Chrome OS<ph name="END_LINK2" />. Кроме этих документов, также действует <ph name="BEGIN_LINK3" />Примечание о конфиденциальности данных в аккаунтах Google, управляемых с помощью Family Link<ph name="END_LINK3" />.</translation>
@@ -480,6 +482,7 @@
 <translation id="4256782883801055595">Лицензии на ПО с открытым кодом</translation>
 <translation id="4263656433980196874">Окно, где требуется разрешить использование Ассистента для голосового поиска, открыто на весь экран</translation>
 <translation id="4269820728363426813">Копировать адрес ссылки</translation>
+<translation id="4290281343757112331">Скачать позже?</translation>
 <translation id="4298388696830689168">Связанные сайты</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Основные</translation>
@@ -622,6 +625,7 @@
 <translation id="5191251636205085390">Узнайте больше о новых технологиях, которые придут на смену сторонним файлам cookie.</translation>
 <translation id="5193988420012215838">Скопировано в буфер обмена.</translation>
 <translation id="5199929503336119739">Рабочий профиль</translation>
+<translation id="5201464744567315552">Когда в <ph name="TIME" /> начнется скачивание, вы увидите уведомление.</translation>
 <translation id="5204967432542742771">Введите пароль</translation>
 <translation id="5210286577605176222">Перейти к предыдущей вкладке</translation>
 <translation id="5210365745912300556">Закрыть вкладку</translation>
@@ -632,6 +636,7 @@
 <translation id="5230560987958996918">Сайт <ph name="SITE" /> ищет устройства Bluetooth поблизости. Обнаружены следующие устройства:</translation>
 <translation id="5233638681132016545">Новая вкладка</translation>
 <translation id="5250483651202458397">Скриншот. Нажмите, чтобы закрыть.</translation>
+<translation id="5262378156578470238">Когда <ph name="DATE" /> начнется скачивание, вы увидите уведомление.</translation>
 <translation id="526421993248218238">Не удалось загрузить страницу</translation>
 <translation id="5271967389191913893">Не удается открыть скачанный контент.</translation>
 <translation id="5292796745632149097">Куда отправить</translation>
@@ -701,7 +706,6 @@
 <translation id="572328651809341494">Недавние вкладки</translation>
 <translation id="5723735397759933332">Упрощенный режим позволяет экономить больше трафика благодаря оптимизации изображений на страницах с поддержкой HTTPS.</translation>
 <translation id="5726692708398506830">Увеличить масштаб страницы</translation>
-<translation id="5732819098735351888">Скачивание начнется, когда будет установлено подключение по Wi-Fi.</translation>
 <translation id="5733983706093266635">Не удалось создать QR-код. Количество символов в URL больше допустимого (<ph name="CHARACTER_LIMIT" />).</translation>
 <translation id="5748802427693696783">Переключено на обычные вкладки</translation>
 <translation id="5749068826913805084">Для скачивания файлов браузеру Chrome требуется доступ к хранилищу.</translation>
@@ -780,7 +784,6 @@
 <translation id="6159335304067198720">Сэкономлено: <ph name="PERCENT" /></translation>
 <translation id="6186394685773237175">Раскрытых паролей не найдено.</translation>
 <translation id="6192907950379606605">Описывать изображения</translation>
-<translation id="6206830853671714236">Выберите, когда начать скачивание</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> не ваш аккаунт?</translation>
 <translation id="6211386937064921208">Включен режим предпросмотра.</translation>
 <translation id="6218096829563201111">Искать похожие товары<ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
@@ -914,6 +917,7 @@
 <translation id="6981982820502123353">Спец. возможности</translation>
 <translation id="6989267951144302301">Не удалось скачать</translation>
 <translation id="6995899638241819463">Сообщать, если пароли были раскрыты в результате утечки данных</translation>
+<translation id="7001056293070445572">Файл большого размера (<ph name="FILE_SIZE" />).</translation>
 <translation id="7015203776128479407">Первоначальная настройка синхронизации не завершена. Синхронизация выключена.</translation>
 <translation id="7022756207310403729">Открыть в браузере</translation>
 <translation id="702463548815491781">Рекомендовано при включенных функциях TalkBack и Switch Access</translation>
@@ -1028,6 +1032,7 @@
 <translation id="7791543448312431591">Добавить</translation>
 <translation id="7798392620021911922">Восстановлено вкладок: <ph name="TAB_COUNT" /></translation>
 <translation id="780301667611848630">Спасибо, не надо</translation>
+<translation id="7808889146555843082">Это действие не приведет к удалению вашего аккаунта на сайте <ph name="SITE" />. Чтобы защитить от злоумышленников свои данные на сайте <ph name="SITE" />, удалите аккаунт или измените пароль.</translation>
 <translation id="7810647596859435254">Открыть с помощью...</translation>
 <translation id="7815484226266492798">Длинный скриншот</translation>
 <translation id="7821588508402923572">Здесь появятся данные об экономии трафика</translation>
@@ -1175,12 +1180,14 @@
 <translation id="8699120352855309748">Не предлагать переводить страницы на этих языках</translation>
 <translation id="8712637175834984815">Готово</translation>
 <translation id="8725066075913043281">Повторить попытку</translation>
+<translation id="8730621377337864115">Готово</translation>
 <translation id="8748850008226585750">Содержимое скрыто</translation>
 <translation id="8773160212632396039">Запрос обрабатывается</translation>
 <translation id="8788265440806329501">История переходов закрыта</translation>
 <translation id="8788968922598763114">Открыть последнюю закрытую вкладку</translation>
 <translation id="8798449543960971550">Прочитано</translation>
 <translation id="8812260976093120287">На некоторых сайтах вы можете совершать платежи со своего устройства с помощью перечисленных выше приложений.</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">Контент вкладки предпросмотра недоступен для показа.</translation>
 <translation id="8820817407110198400">Закладки</translation>
 <translation id="883806473910249246">При скачивании контента произошла ошибка.</translation>
@@ -1218,10 +1225,10 @@
 <translation id="9063523880881406963">Выключить полную версию сайта</translation>
 <translation id="9065203028668620118">Изменить</translation>
 <translation id="9065383040763568503">Маловажные данные, например относящиеся к сайтам, которые вы редко посещаете или на которых не сохранили настройки.</translation>
-<translation id="9069543557624799859">Скачивание начнется в <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Непрочитанных страниц не найдено</translation>
 <translation id="9070377983101773829">Голосовой поиск</translation>
 <translation id="9074336505530349563">Чтобы мы могли рекомендовать вам интересный контент, войдите в аккаунт и включите синхронизацию.</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Выполняется синхронизация</translation>
 <translation id="9086455579313502267">Нет доступа к сети</translation>
 <translation id="9100505651305367705">Предлагать упрощенный просмотр статей, если он поддерживается</translation>

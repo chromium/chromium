@@ -920,6 +920,7 @@
 <translation id="1974821797477522211">Se connecter au réseau</translation>
 <translation id="1975841812214822307">Supprimer…</translation>
 <translation id="1976150099241323601">Se connecter au dispositif de sécurité</translation>
+<translation id="1976928778492259496">Le lecteur d'empreinte digitale se trouve sur le côté gauche de votre <ph name="DEVICE_TYPE" />. Appuyez dessus légèrement avec n'importe quel doigt.</translation>
 <translation id="1977965994116744507">Rapprochez votre téléphone pour déverrouiller votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978057560491495741">Supprimer l'adresse</translation>
 <translation id="1979095679518582070">La désactivation de cette fonctionnalité n'empêche pas cet appareil d'envoyer les informations nécessaires pour bénéficier de services essentiels tels que les mises à jour et la sécurité du système.</translation>
@@ -1974,6 +1975,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="313205617302240621">Mot de passe oublié ?</translation>
 <translation id="3132277757485842847">Nous n'avons pas pu maintenir la connexion avec votre téléphone. Vérifiez qu'il est déverrouillé et à proximité, et que le Bluetooth et le Wi-Fi sont activés.</translation>
 <translation id="3132996321662585180">Actualiser quotidiennement</translation>
+<translation id="3134393957315651797">Sélectionnez l'état du test pour <ph name="EXPERIMENT_NAME" />. Description du test : <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Code PIN incorrect. Il vous reste <ph name="RETRIES" /> tentatives.</translation>
 <translation id="313963229645891001">Téléchargement en cours : <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Avatar jaune par défaut</translation>
@@ -6625,6 +6627,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8398877366907290961">Poursuivre quand même</translation>
 <translation id="8400146488506985033">Gérer les utilisateurs</translation>
 <translation id="8401432541486058167">Utilisez le code associé à votre carte à puce.</translation>
+<translation id="8404893580027489425">Le lecteur d'empreinte digitale se trouve sur le côté droit de votre <ph name="DEVICE_TYPE" />. Appuyez dessus légèrement avec n'importe quel doigt.</translation>
 <translation id="8405046151008197676">Découvrez les nouveautés de la dernière mise à jour</translation>
 <translation id="8407199357649073301">Niveau de consignation :</translation>
 <translation id="8408068190360279472">Réseau <ph name="NETWORK_TYPE" /> : connexion…</translation>

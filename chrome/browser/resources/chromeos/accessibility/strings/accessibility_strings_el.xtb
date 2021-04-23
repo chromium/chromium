@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">Σύρετε δύο δάκτυλα προς τα πάνω</translation>
 <translation id="1126928665165112660">Δεν είναι πλάγια γραφή</translation>
 <translation id="113582498867142724">Συλλογή <ph name="TAG" /> με <ph name="NUM" /> στοιχεία</translation>
-<translation id="1146441463334103638">Ενεργοποίηση ή απενεργοποίηση οθόνης</translation>
 <translation id="1156488781945104845">Τρέχουσα ώρα</translation>
 <translation id="1161762950103988776">Μετάβαση</translation>
 <translation id="1164857107703583584">Οι εντολές μετάβασης μπορούν να χρησιμοποιηθούν για την αποτελεσματική πλοήγηση σε μια ιστοσελίδα.</translation>
@@ -257,6 +256,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Μπορείτε να σύρετε με ένα δάχτυλο από τα δεξιά προς τα αριστερά για να μετακινηθείτε στο προηγούμενο στοιχείο. Δοκιμάστε το τώρα.</translation>
 <translation id="280499067616661124">Εύρεση στη σελίδα του ChromeVox</translation>
+<translation id="2808001342598757276">Ενεργοποίηση φωτισμού οθόνης</translation>
 <translation id="2811019999044652585">Για μετάβαση σε άλλα σημεία της οθόνης, όπως οι γραμμές εργαλείων ή η περιοχή ειδοποιήσεων, πατήστε Control+πλήκτρο εμπρός. Στο Chromebook, το πλήκτρο εμπρός βρίσκεται ακριβώς πάνω από το πλήκτρο με τον αριθμό 2.</translation>
 <translation id="2811204574343810641">Σειρά</translation>
 <translation id="2816868829355607410">Περιοχή εξάσκησης: εντολές μετάβασης</translation>
@@ -303,7 +303,6 @@
 <translation id="3082249673510793544">Κάντε κύλιση προς τα πίσω</translation>
 <translation id="3084806535845658316">χωρίς εκφώνηση πληκτρολόγησης</translation>
 <translation id="3086746722712840547">σημείωση</translation>
-<translation id="308736057934395497">Αυτό βελτιώνει το απόρρητο απενεργοποιώντας την οθόνη σας για να μην είναι ορατή στους άλλους. Μπορείτε να ενεργοποιήσετε ξανά την οθόνη πατώντας τα πλήκτρα Αναζήτηση + Αύξηση φωτεινότητας.</translation>
 <translation id="3090227230165225418">Ανακοίνωση ειδοποιήσεων λήψης</translation>
 <translation id="3090532668523289635">ομάδα</translation>
 <translation id="3093176084511590672">Επόμενο ορόσημο</translation>
@@ -314,7 +313,6 @@
 <translation id="3109724472072898302">Συμπτυγμένο</translation>
 <translation id="311015743332597320">Σύρετε με τέσσερα δάχτυλα προς τα δεξιά.</translation>
 <translation id="3112457281078985179">Για ενεργοποίηση ή απενεργοποίηση του ChromeVox, χρησιμοποιήστε τον συνδυασμό Control+Alt+Z.</translation>
-<translation id="3115800313647508384">Απενεργοποίηση οθόνης;</translation>
 <translation id="3131002934070407451">Ανάγνωση αριθμών ως:</translation>
 <translation id="3134461040845705080">μόνο για ανάγνωση</translation>
 <translation id="3137663468179739624">Λαδί</translation>
@@ -722,6 +720,7 @@
 <translation id="6034000775414344507">Ανοιχτό γκρι</translation>
 <translation id="6036135911048686884">Εξερεύνηση μέσω αφής</translation>
 <translation id="6037602951055904232">Μετακίνηση προς τα εμπρός</translation>
+<translation id="6044160928851315051">Απενεργοποίηση φωτισμού οθόνης</translation>
 <translation id="6082768461603900813">Βασική πλοήγηση</translation>
 <translation id="609281021724813947">Δεν υπάρχει προηγούμενο ρυθμιστικό.</translation>
 <translation id="6100239002225743044">Μετακίνηση προς τα πάνω κατά μία γραμμή</translation>
@@ -792,7 +791,6 @@
 <translation id="6696967141280706829">Πρόλογος</translation>
 <translation id="6697092096875747123">Προηγούμενο σύνθετο πλαίσιο</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{θαυμαστικό}other{# θαυμαστικά}}</translation>
-<translation id="670717715607710284">Η οθόνη απενεργοποιήθηκε</translation>
 <translation id="6710213216561001401">Προηγούμενο</translation>
 <translation id="6714813999819678458">Επικεφαλίδα προηγούμενου επιπέδου 2</translation>
 <translation id="6730312624811567147">Χρησιμοποιήστε τους συνδυασμούς πλήκτρων Αναζήτηση και αριστερό βέλος ή δεξί βέλος για Home ή End, Αναζήτηση Control και αριστερό ή δεξί βέλος για Control Home ή End, Αναζήτηση και επάνω βέλος ή κάτω βέλος για Page Up ή Down.</translation>
@@ -995,7 +993,6 @@
 <translation id="816818801578874684">Αυτή είναι η πρώτη επικεφαλίδα. Πιέστε Αναζήτηση + H για να μεταβείτε στην επόμενη επικεφαλίδα.</translation>
 <translation id="8173092779156526980">Σύρετε με τέσσερα δάχτυλα προς τα αριστερά.</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{σύμβολο υπογράμμισης}other{# σύμβολα υπογράμμισης}}</translation>
-<translation id="817529114347680055">Ενεργοποίηση οθόνης</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">σειρά</translation>
 <translation id="8186185314313222077">εναλλαγή πλήρους οθόνης</translation>
@@ -1018,6 +1015,7 @@
 <translation id="8316881042119029234">Παλιά δαντέλα</translation>
 <translation id="8324974933005349667">Εξατομίκευση ρυθμίσεων μετατροπής κειμένου σε ομιλία</translation>
 <translation id="8326783648485765113">Πράσινο χλόης</translation>
+<translation id="8328063869313048659">Εναλλαγή σκούρης οθόνης</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{σύμβολο λίρας}other{# σύμβολα λίρας}}</translation>
 <translation id="8378855320830505539">Περιοχή</translation>
 <translation id="8382679411218029383">Ενσωματωμένη αυτόματη συμπλήρωση και λίστα</translation>

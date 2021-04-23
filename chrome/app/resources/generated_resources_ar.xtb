@@ -923,6 +923,7 @@
 <translation id="1974821797477522211">الاتصال بالشبكة</translation>
 <translation id="1975841812214822307">إزالة...</translation>
 <translation id="1976150099241323601">تسجيل الدخول إلى جهاز الأمان</translation>
+<translation id="1976928778492259496">مستشعر بصمات الإصبع في الجانب الأيسر من جهاز <ph name="DEVICE_TYPE" />. يمكنك لمسه برفقٍ بأي إصبع.</translation>
 <translation id="1977965994116744507">اجعل هاتفك قريبًا منك لإلغاء قفل جهاز <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978057560491495741">إزالة العنوان</translation>
 <translation id="1979095679518582070">لن يؤثر إيقاف هذه الميزة في قدرة هذا الجهاز على إرسال المعلومات اللازمة للحصول على خدمات ضرورية مثل تحديثات النظام والأمان.</translation>
@@ -1978,6 +1979,7 @@
 <translation id="313205617302240621">هل نسيت كلمة المرور؟</translation>
 <translation id="3132277757485842847">‏تعذَّر علينا المحافظة على الاتصال بهاتفك. يُرجى التأكد من أن هاتفك قريب وغير مُقفل وتم تفعيل بلوتوث وWi-Fi فيه.</translation>
 <translation id="3132996321662585180">إعادة التحميل يوميًا</translation>
+<translation id="3134393957315651797">يمكنك اختيار حالة للتجربة <ph name="EXPERIMENT_NAME" />. وصف التجربة: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">رقم التعريف الشخصي غير صحيح. يتبقى لديك <ph name="RETRIES" /> محاولة.</translation>
 <translation id="313963229645891001">جارٍ التنزيل، <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">الصورة الرمزية التلقائية الصفراء</translation>
@@ -6626,6 +6628,7 @@
 <translation id="8398877366907290961">المتابعة على كلّ حال</translation>
 <translation id="8400146488506985033">إدارة الأشخاص</translation>
 <translation id="8401432541486058167">عليك تقديم رقم التعريف الشخصي المرتبط بالبطاقة الذكية التابعة لك.</translation>
+<translation id="8404893580027489425">مستشعر بصمات الإصبع في الجانب الأيمن من جهاز <ph name="DEVICE_TYPE" />. يمكنك لمسه برفقٍ بأي إصبع.</translation>
 <translation id="8405046151008197676">الحصول على السمات المميزة من آخر تحديث</translation>
 <translation id="8407199357649073301">مستوى السجلّ:</translation>
 <translation id="8408068190360279472">شبكة <ph name="NETWORK_TYPE" />، جارٍ الاتصال</translation>

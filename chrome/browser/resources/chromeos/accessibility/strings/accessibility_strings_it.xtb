@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">Scorri verso l'alto con due dita</translation>
 <translation id="1126928665165112660">Non corsivo</translation>
 <translation id="113582498867142724">Raccolta <ph name="TAG" /> con <ph name="NUM" /> elementi</translation>
-<translation id="1146441463334103638">Attiva o disattiva lo schermo</translation>
 <translation id="1156488781945104845">Ora corrente</translation>
 <translation id="1161762950103988776">Collegamenti</translation>
 <translation id="1164857107703583584">I comandi di spostamento possono essere utilizzati per navigare in modo efficiente in una pagina web.</translation>
@@ -256,6 +255,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Puoi anche scorrere con un dito da destra verso sinistra per passare all'elemento precedente. Prova ora.</translation>
 <translation id="280499067616661124">Funzione Trova nella pagina di ChromeVox</translation>
+<translation id="2808001342598757276">Riattiva accessibilità schermo</translation>
 <translation id="2811019999044652585">Per passare ad altre parti dello schermo, ad esempio alle barre degli strumenti o alla barra delle applicazioni, premi CTRL + Avanti. Sul Chromebook il tasto Avanti si trova subito sopra il tasto con il numero 2.</translation>
 <translation id="2811204574343810641">Riga</translation>
 <translation id="2816868829355607410">Area di esercizio: comandi di spostamento</translation>
@@ -302,7 +302,6 @@
 <translation id="3082249673510793544">Scorri indietro</translation>
 <translation id="3084806535845658316">eco digitazione non impostata</translation>
 <translation id="3086746722712840547">nota</translation>
-<translation id="308736057934395497">Questa opzione migliora la privacy disattivando il tuo schermo in modo che altre persone non possano vederlo. Puoi riattivare lo schermo in qualsiasi momento premendo il tasto per la ricerca + Aumenta luminosità.</translation>
 <translation id="3090227230165225418">Annuncia notifiche di download</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">Punto di riferimento successivo</translation>
@@ -313,7 +312,6 @@
 <translation id="3109724472072898302">Compresso</translation>
 <translation id="311015743332597320">Scorri verso destra con quattro dita</translation>
 <translation id="3112457281078985179">Per attivare o disattivare ChromeVox utilizza CTRL + ALT + Z.</translation>
-<translation id="3115800313647508384">Vuoi disattivare lo schermo?</translation>
 <translation id="3131002934070407451">Leggi i numeri come:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">Oliva</translation>
@@ -721,6 +719,7 @@
 <translation id="6034000775414344507">Grigio chiaro</translation>
 <translation id="6036135911048686884">Esplora al tocco</translation>
 <translation id="6037602951055904232">Panoramica avanti</translation>
+<translation id="6044160928851315051">Disattiva accessibilità schermo</translation>
 <translation id="6082768461603900813">Navigazione di base</translation>
 <translation id="609281021724813947">Nessun dispositivo di scorrimento precedente</translation>
 <translation id="6100239002225743044">Sposta in alto di una riga</translation>
@@ -791,7 +790,6 @@
 <translation id="6696967141280706829">Prefazione</translation>
 <translation id="6697092096875747123">Casella combinata precedente</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{punto esclamativo}other{# punti esclamativi}}</translation>
-<translation id="670717715607710284">Schermo disattivato</translation>
 <translation id="6710213216561001401">Precedente</translation>
 <translation id="6714813999819678458">Intestazione livello 2 precedente</translation>
 <translation id="6730312624811567147">Utilizza il tasto per la ricerca con freccia sinistra o destra per HOME oppure FINE, il tasto per la ricerca, CTRL, freccia sinistra o destra per CTRL HOME oppure FINE, il tasto per la ricerca e freccia su o giù per Pagina su o Pagina giù</translation>
@@ -994,7 +992,6 @@
 <translation id="816818801578874684">Questa è la prima intestazione. Premi il tasto per la ricerca + H per passare a quella successiva.</translation>
 <translation id="8173092779156526980">Scorri verso sinistra con quattro dita</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{carattere di sottolineatura}other{# caratteri di sottolineatura}}</translation>
-<translation id="817529114347680055">Schermo attivo</translation>
 <translation id="8179976553408161302">Invio</translation>
 <translation id="8184828902145951186">riga</translation>
 <translation id="8186185314313222077">attiva/disattiva schermo intero</translation>
@@ -1017,6 +1014,7 @@
 <translation id="8316881042119029234">Merletto antico</translation>
 <translation id="8324974933005349667">Personalizza le impostazioni di sintesi vocale</translation>
 <translation id="8326783648485765113">Verde prato</translation>
+<translation id="8328063869313048659">Attiva/disattiva schermo scuro</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{cancelletto}other{# simboli cancelletto}}</translation>
 <translation id="8378855320830505539">Regione</translation>
 <translation id="8382679411218029383">Completamento automatico incorporato ed elenco</translation>

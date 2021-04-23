@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">Glisează cu două degete în sus</translation>
 <translation id="1126928665165112660">Fără cursiv</translation>
 <translation id="113582498867142724">Colecția <ph name="TAG" /> cu <ph name="NUM" /> elemente</translation>
-<translation id="1146441463334103638">Pornește sau oprește ecranul</translation>
 <translation id="1156488781945104845">Ora actuală</translation>
 <translation id="1161762950103988776">Accesează</translation>
 <translation id="1164857107703583584">Comenzile de navigare pot fi folosite pentru a naviga eficient într-o pagină web.</translation>
@@ -256,6 +255,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}few{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Poți să glisezi cu un deget de la dreapta la stânga pentru a trece la elementul următor. Încearcă acum.</translation>
 <translation id="280499067616661124">Găsește în pagină cu ChromeVox</translation>
+<translation id="2808001342598757276">Activează ecranul</translation>
 <translation id="2811019999044652585">Pentru a trece la alte părți ale ecranului, cum ar fi bare de instrumente sau bara de sistem, apasă pe Ctrl + tasta Înainte. Pe Chromebook, tasta Înainte se află imediat deasupra tastei 2.</translation>
 <translation id="2811204574343810641">Rând</translation>
 <translation id="2816868829355607410">Zonă pentru exersare: comenzi de navigare</translation>
@@ -302,7 +302,6 @@
 <translation id="3082249673510793544">Derulează înapoi</translation>
 <translation id="3084806535845658316">fără ecou la tastare</translation>
 <translation id="3086746722712840547">notă</translation>
-<translation id="308736057934395497">Această opțiune îți protejează confidențialitatea prin dezactivarea ecranului în așa fel încât să nu fie vizibil pentru ceilalți. Poți oricând să redeschizi ecranul dacă apeși pe tasta căutare + tasta de creștere a luminozității.</translation>
 <translation id="3090227230165225418">Anunță notificările pentru descărcări</translation>
 <translation id="3090532668523289635">grup</translation>
 <translation id="3093176084511590672">Reperul următor</translation>
@@ -313,7 +312,6 @@
 <translation id="3109724472072898302">Restrâns</translation>
 <translation id="311015743332597320">Glisează cu patru degete la dreapta</translation>
 <translation id="3112457281078985179">Pentru a activa sau a dezactiva ChromeVox, folosește Ctrl + Alt + Z.</translation>
-<translation id="3115800313647508384">Oprești ecranul?</translation>
 <translation id="3131002934070407451">Citește numerele ca:</translation>
 <translation id="3134461040845705080">numai în citire</translation>
 <translation id="3137663468179739624">Măsliniu</translation>
@@ -721,6 +719,7 @@
 <translation id="6034000775414344507">Gri deschis</translation>
 <translation id="6036135911048686884">Explorează prin atingere</translation>
 <translation id="6037602951055904232">Deplasează înainte</translation>
+<translation id="6044160928851315051">Dezactivează ecranul</translation>
 <translation id="6082768461603900813">Navigarea de bază</translation>
 <translation id="609281021724813947">Nu există un glisor anterior</translation>
 <translation id="6100239002225743044">Mută în sus cu un rând</translation>
@@ -791,7 +790,6 @@
 <translation id="6696967141280706829">Prefață</translation>
 <translation id="6697092096875747123">Caseta combo anterioară</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{semn de exclamare}few{# semne de exclamare}other{# de semne de exclamare}}</translation>
-<translation id="670717715607710284">Oprește ecranul</translation>
 <translation id="6710213216561001401">Înapoi</translation>
 <translation id="6714813999819678458">Titlul de nivel 2 anterior</translation>
 <translation id="6730312624811567147">Folosește tasta de căutare și săgeata spre stânga sau spre dreapta pentru Home sau End, tasta de căutare, Control și săgeata spre stânga sau spre dreapta pentru Control Home sau End, tasta de căutare și săgeata în sus sau în jos pentru Page Up sau Down</translation>
@@ -994,7 +992,6 @@
 <translation id="816818801578874684">Acesta este primul titlu. Apasă tasta de căutare + H pentru a naviga la următorul titlu.</translation>
 <translation id="8173092779156526980">Glisează cu patru degete la stânga</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{caracter de subliniere}few{# caractere de subliniere}other{# de caractere de subliniere}}</translation>
-<translation id="817529114347680055">Pornește ecranul</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">rând</translation>
 <translation id="8186185314313222077">activează/dezactivează ecranul complet</translation>
@@ -1017,6 +1014,7 @@
 <translation id="8316881042119029234">Dantelă veche</translation>
 <translation id="8324974933005349667">Personalizează setările redării vocale a textului</translation>
 <translation id="8326783648485765113">Verde gazon</translation>
+<translation id="8328063869313048659">Activează/dezactivează ecranul întunecat</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{liră}few{# semne liră}other{# de semne de liră}}</translation>
 <translation id="8378855320830505539">Regiune</translation>
 <translation id="8382679411218029383">Completare automată inline și listă</translation>

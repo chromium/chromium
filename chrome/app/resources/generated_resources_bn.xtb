@@ -920,6 +920,7 @@
 <translation id="1974821797477522211">নেটওয়ার্কে সংযোগ করুন</translation>
 <translation id="1975841812214822307">সরান...</translation>
 <translation id="1976150099241323601">সিকিউরিটি ডিভাইসে সাইন-ইন করুন</translation>
+<translation id="1976928778492259496">আপনার <ph name="DEVICE_TYPE" />-এর বাঁদিকে আঙ্গুলের ছাপের সেন্সর আছে। যেকোনও আঙ্গুল দিয়ে সেটি আলতো করে টাচ করুন।</translation>
 <translation id="1977965994116744507">আপনার <ph name="DEVICE_TYPE" /> আনলক করতে আপনার ফোন কাছাকাছি আনুন।</translation>
 <translation id="1978057560491495741">ঠিকানা সরিয়ে দিন</translation>
 <translation id="1979095679518582070">এই ফিচারটি বন্ধ করে দিলেও এই ডিভাইসটি সিস্টেম আপডেট এবং নিরাপত্তার জন্য প্রয়োজনীয় পরিষেবা সম্পর্কিত তথ্য পাঠাতে পারে।</translation>
@@ -1972,6 +1973,7 @@
 <translation id="313205617302240621">পাসওয়ার্ড ভুলে গেছেন?</translation>
 <translation id="3132277757485842847">আমরা আপনার ফোনে সাথে কানেক্ট করে রাখতে পারছি না। আপনার ফোন কাছাকাছি, আনলক অবস্থায় রয়েছে কিনা এবং তাতে ব্লুটুথ আর ওয়াই-ফাই চালু আছে কিনা দেখে নিন।</translation>
 <translation id="3132996321662585180">প্রতিদিন রিফ্রেশ করুন</translation>
+<translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> পরীক্ষার জন্য স্ট্যাটাস বেছে নিন। পরীক্ষার বিবরণ: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">ভুল পিন দিয়েছেন। আপনি আর <ph name="RETRIES" /> বার চেষ্টা করতে পারবেন।</translation>
 <translation id="313963229645891001">ডাউনলোড হচ্ছে: <ph name="STATUS" /> বাকি</translation>
 <translation id="3139925690611372679">ডিফল্ট হলুদ রঙের অবতার</translation>
@@ -6620,6 +6622,7 @@
 <translation id="8398877366907290961">যাইহোক এগিয়ে যান</translation>
 <translation id="8400146488506985033">ব্যক্তিগণকে পরিচালনা করুন</translation>
 <translation id="8401432541486058167">আপনার স্মার্ট কার্ডের পিন নম্বরটি দিন।</translation>
+<translation id="8404893580027489425">আপনার <ph name="DEVICE_TYPE" />-এর ডানদিকে আঙ্গুলের ছাপের সেন্সর আছে। যেকোনও আঙ্গুল দিয়ে সেটি আলতো করে টাচ করুন।</translation>
 <translation id="8405046151008197676">লেটেস্ট আপডেটের হাইলাইটগুলি দেখুন</translation>
 <translation id="8407199357649073301">লগ লেভেল:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> নেটওয়ার্ক, কানেক্ট করা হচ্ছে</translation>

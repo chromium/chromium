@@ -1522,6 +1522,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 
       Jika kebijakan disetel ke salah (false), <ph name="BOREALIS_NAME" /> tidak akan tersedia. Sebaliknya (jika kebijakan tidak disetel atau disetel ke benar (true)), <ph name="BOREALIS_NAME" /> akan tersedia jika dan hanya jika tidak ada kebijakan atau setelan lain yang menonaktifkannya.</translation>
 <translation id="2964373560810620158">Cegah pengguna menggunakan browser <ph name="LACROS_NAME" /></translation>
+<translation id="2968177167006045252">Izinkan situs menggunakan SharedArrayBuffer</translation>
 <translation id="2969797921412053304">Kebijakan ini mengonfigurasi URL yang akan diberi akses untuk menggunakan pengesahan identitas perangkat dari jarak jauh selama alur SAML berlangsung pada layar login.
 
       Khususnya, jika URL cocok dengan salah satu pola yang diberikan melalui kebijakan ini, URL akan diizinkan menerima header HTTP yang berisi respons untuk verifikasi pengesahan jarak jauh, yang mengesahkan identitas dan status perangkat.
@@ -1664,6 +1665,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="3072847235228302527">Menyetel Persyaratan Layanan untuk akun lokal perangkat</translation>
 <translation id="3083259245974004342">Perlindungan sandi</translation>
 <translation id="3086995894968271156">Mengonfigurasi Penerima Cast di <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3087346703976541109">Menentukan apakah SharedArrayBuffer dapat digunakan dalam konteks yang tidak diisolasi lintas asal</translation>
 <translation id="3088557424854005813">Pengesahan</translation>
 <translation id="3091832372132789233">Mengisi daya baterai untuk perangkat yang terutama terhubung ke sumber daya eksternal.</translation>
 <translation id="3092059499596000593">Gunakan printer default sistem sebagai pilihan default dalam Pratinjau Cetak</translation>
@@ -3060,6 +3062,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
       Jika ditetapkan ke true, nama model CPU, arsitektur, dan kecepatan maksimum jam akan
       dilaporkan untuk setiap CPU.</translation>
 <translation id="5124368997194894978">Aktifkan booting pada tegangan AC (arus bolak-balik)</translation>
+<translation id="5130213897914754028">Cegah situs menggunakan SharedArrayBuffer</translation>
 <translation id="5141670636904227950">Menyetel jenis lup default yang diaktifkan di layar masuk</translation>
 <translation id="5142301680741828703">Selalu mengurai pola URL berikut di <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="514870861066611127">Kebijakan ini mengontrol apakah informasi yang dapat digunakan untuk mengidentifikasi pengguna akan dilaporkan atau tidak, misalnya login OS, login Profil <ph name="PRODUCT_NAME" />, nama Profil <ph name="PRODUCT_NAME" />, jalur Profil <ph name="PRODUCT_NAME" />, dan jalur eksekusi <ph name="PRODUCT_NAME" />.
@@ -3848,6 +3851,12 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="6111936128861357925">Izinkan Game Dinosaur Easter Egg</translation>
 <translation id="6123052603197028610">Jangan izinkan kueri ke server Google untuk mengambil stempel waktu</translation>
 <translation id="6132506775968708399">Blokir cookie pihak ketiga</translation>
+<translation id="6132739217670763962">
+      Menentukan apakah SharedArrayBuffer dapat digunakan dalam konteks yang tidak diisolasi
+      lintas asal. Chrome akan memerlukan isolasi lintas asal saat menggunakan
+      SharedArrayBuffer mulai dari Chrome 91 dan selanjutnya (25-05-2021) untuk alasan
+      Kompatibilitas Web. Detail tambahan dapat ditemukan di:
+      https://developer.chrome.com/blog/enabling-shared-array-buffer/.</translation>
 <translation id="6133088669883929098">Izinkan semua situs menggunakan pembuatan kunci</translation>
 <translation id="6135398260575578389">Safe Browsing aktif dalam mode yang disempurnakan. Mode ini memberikan keamanan yang lebih baik, tetapi perlu membagikan lebih banyak informasi penjelajahan kepada Google.</translation>
 <translation id="6135895880862759946">Izinkan pengguna membuat profil sekunder dan menggunakan mode tamu di browser <ph name="LACROS_NAME" /></translation>

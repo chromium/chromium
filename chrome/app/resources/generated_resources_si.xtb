@@ -917,6 +917,7 @@
 <translation id="1974821797477522211">ජාලයට සබැඳීම</translation>
 <translation id="1975841812214822307">ඉවත් කරන්න...</translation>
 <translation id="1976150099241323601">ආරක්ෂක උපාංගයට පිවිසෙන්න</translation>
+<translation id="1976928778492259496">ඇඟිලි සලකුණු සංවේදකය ඔබගේ <ph name="DEVICE_TYPE" /> හි වම් අත පැත්තේ ඇත. ඕනෑම ඇඟිල්ලකින් එය සුළුවෙන් ස්පර්ශ කරන්න.</translation>
 <translation id="1977965994116744507">ඔබගේ දුරකථනය ඔබගේ <ph name="DEVICE_TYPE" /> අගුලු හැරීමට සමීපයට ගෙන එන්න.</translation>
 <translation id="1978057560491495741">ලිපිනය ඉවත් කරන්න</translation>
 <translation id="1979095679518582070">මෙම විශේෂාංගය අක්‍රිය කිරීම මෙම උපාංගයේ පද්ධති යාවත්කාලීන කිරීම සහ ආරක්‍ෂාව වැනි අත්‍යවශ්‍ය සේවාවලට තොරතුරු යැවීමේ හැකියාවට බලපෑමක් නොකරයි.</translation>
@@ -1970,6 +1971,7 @@
 <translation id="313205617302240621">මුරපදය අමතක ද?</translation>
 <translation id="3132277757485842847">ඔබගේ දුරකථනය සමඟ සම්බන්ධතාවක් පවත්වා ගැනීමට අපට නොහැකි විය. ඔබගේ දුරකථනය අවට, අගුලු හැර, බ්ලූටූත් සහ Wi-Fi ක්‍රියාත්මකව තිබෙන බව සහතික කර ගන්න.</translation>
 <translation id="3132996321662585180">දිනපතා නැවුම් කරන්න</translation>
+<translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> අත්හදා බැලීම සඳහා අත්හදා බැලීමේ තත්ත්වය තෝරන්න. අත්හදා බැලීමේ විස්තරය: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">අවලංගු PIN එකකි. ඔබට උත්සාහයන් <ph name="RETRIES" />ක් ඉතිරිව ඇත.</translation>
 <translation id="313963229645891001">බාගනිමින්, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">පෙරනිමි කහ නියුරුව</translation>
@@ -6618,6 +6620,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8398877366907290961">කෙසේ හෝ කරගෙන යන්න</translation>
 <translation id="8400146488506985033">පුද්ගලයින් කළමනාකරණය කරන්න</translation>
 <translation id="8401432541486058167">ඔබේ ස්මාර්ට් කාඩ්පත හා සම්බන්ධ රහස් අංකය ලබා දෙන්න.</translation>
+<translation id="8404893580027489425">ඇඟිලි සලකුණු සංවේදකය ඔබගේ <ph name="DEVICE_TYPE" /> හි දකුණු අත පැත්තේ ඇත. ඕනෑම ඇඟිල්ලකින් එය සුළුවෙන් ස්පර්ශ කරන්න.</translation>
 <translation id="8405046151008197676">නවතම යාවත්කාලීනයෙන් උද්දීපන ලබා ගන්න</translation>
 <translation id="8407199357649073301">ලොග මට්ටම:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> ජාලය, සම්බන්ධ කෙරේ</translation>

@@ -1495,6 +1495,7 @@
 
       如果此政策设为 false，<ph name="BOREALIS_NAME" /> 会处于不可用状态。否则（如果此政策未设置或设为 true），仅当未被任何其他政策或设置停用时，<ph name="BOREALIS_NAME" /> 才可用。</translation>
 <translation id="2964373560810620158">阻止用户使用 <ph name="LACROS_NAME" /> 浏览器</translation>
+<translation id="2968177167006045252">允许网站使用 SharedArrayBuffers</translation>
 <translation id="2969797921412053304">此政策用于配置哪些网址有权在登录屏幕上的 SAML 流程中对设备身份执行远程认证。
 
       具体而言，如果某个网址与通过此政策提供的格式之一匹配，该网址就能接收 HTTP 标头（包含对远程认证质询的响应），以认证设备身份和设备状态。
@@ -1632,6 +1633,7 @@
 <translation id="3072847235228302527">为设备本地帐号设置服务条款</translation>
 <translation id="3083259245974004342">密码保护</translation>
 <translation id="3086995894968271156">在 <ph name="PRODUCT_NAME" />中配置 Cast 接收器。</translation>
+<translation id="3087346703976541109">指定 SharedArrayBuffers 可否用在未进行跨域隔离的情境中</translation>
 <translation id="3088557424854005813">认证</translation>
 <translation id="3091832372132789233">为主要连接到外部电源的设备的电池充电。</translation>
 <translation id="3092059499596000593">在打印预览中将系统默认打印机设为默认选项</translation>
@@ -3014,6 +3016,7 @@
       如果此政策设为 false 或未设置，系统将不会报告这些信息。
       如果此政策设为 true，系统将会报告每个 CPU 的型号名称、架构和最快时钟速度。</translation>
 <translation id="5124368997194894978">启用“接通 AC（交流电）时启动”</translation>
+<translation id="5130213897914754028">阻止网站使用 SharedArrayBuffers</translation>
 <translation id="5141670636904227950">设置登录屏幕上启用的默认放大镜类型</translation>
 <translation id="5142301680741828703">总是通过“<ph name="PRODUCT_FRAME_NAME" />”呈现以下网址格式</translation>
 <translation id="514870861066611127">此政策旨在控制是否报告可用于识别用户身份的信息，例如操作系统登录、<ph name="PRODUCT_NAME" /> 个人资料登录、<ph name="PRODUCT_NAME" /> 个人资料名称、<ph name="PRODUCT_NAME" /> 个人资料路径和 <ph name="PRODUCT_NAME" /> 可执行文件路径。
@@ -3774,6 +3777,8 @@
 <translation id="6111936128861357925">允许用户玩恐龙复活节彩蛋游戏</translation>
 <translation id="6123052603197028610">不允许向 Google 服务器发送检索时间戳的查询</translation>
 <translation id="6132506775968708399">禁用第三方 Cookie</translation>
+<translation id="6132739217670763962">
+      指定 SharedArrayBuffers 可否用在未进行跨域隔离的情境中。出于网络兼容性方面的原因，从 Chrome 91 (2021-05-25) 开始，Chrome 会要求网站在使用 SharedArrayBuffers 时进行跨域隔离。如需了解更多详情，请访问 https://developer.chrome.com/blog/enabling-shared-array-buffer/。</translation>
 <translation id="6133088669883929098">允许所有网站使用密钥生成功能</translation>
 <translation id="6135398260575578389">“安全浏览”功能会处于开启状态且会在增强模式下运行。此模式可提高安全性，但需与 Google 分享更多浏览信息。</translation>
 <translation id="6135895880862759946">允许用户在 <ph name="LACROS_NAME" /> 浏览器中创建次级个人资料以及使用访客模式</translation>

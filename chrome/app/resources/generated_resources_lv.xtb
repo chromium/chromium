@@ -921,6 +921,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1974821797477522211">Savienojuma izveide ar tīklu</translation>
 <translation id="1975841812214822307">Noņemt...</translation>
 <translation id="1976150099241323601">Pierakstīties drošības ierīcē</translation>
+<translation id="1976928778492259496">Pirksta nospieduma sensors atrodas ierīces (<ph name="DEVICE_TYPE" />) kreisajā pusē. Viegli pieskarieties tam ar jebkuru pirkstu.</translation>
 <translation id="1977965994116744507">Pietuviniet tālruni, lai atbloķētu ierīci (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="1978057560491495741">Adreses noņemšana</translation>
 <translation id="1979095679518582070">Izslēdzot šo funkciju, netiek ietekmēta ierīces spēja nosūtīt informāciju, kas nepieciešama būtiskiem pakalpojumiem, piemēram, sistēmas atjauninājumiem un drošībai.</translation>
@@ -1975,6 +1976,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="313205617302240621">Vai aizmirsāt paroli?</translation>
 <translation id="3132277757485842847">Nevarēja uzturēt savienojumu ar jūsu tālruni. Tālrunim ir jāatrodas tuvumā, tam jābūt atbloķētam, un tajā ir jābūt ieslēgtam Bluetooth un Wi-Fi savienojumam.</translation>
 <translation id="3132996321662585180">Atsvaidzināt katru dienu</translation>
+<translation id="3134393957315651797">Atlasiet eksperimenta <ph name="EXPERIMENT_NAME" /> statusu. Eksperimenta apraksts: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">PIN nav derīgs. Atlikuši <ph name="RETRIES" /> mēģinājumi.</translation>
 <translation id="313963229645891001">Notiek lejupielāde: <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Noklusējuma iemiesojums dzeltenā krāsā</translation>
@@ -6624,6 +6626,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8398877366907290961">Turpināt jebkurā gadījumā</translation>
 <translation id="8400146488506985033">Pārvaldīt personas</translation>
 <translation id="8401432541486058167">Norādiet PIN, kas ir saistīts ar jūsu viedkarti.</translation>
+<translation id="8404893580027489425">Pirksta nospieduma sensors atrodas ierīces (<ph name="DEVICE_TYPE" />) labajā pusē. Viegli pieskarieties tam ar jebkuru pirkstu.</translation>
 <translation id="8405046151008197676">Iegūstiet svarīgāko informāciju no jaunākā atjauninājuma</translation>
 <translation id="8407199357649073301">Žurnāla līmenis:</translation>
 <translation id="8408068190360279472">Tīkls: <ph name="NETWORK_TYPE" />, notiek savienojuma izveide</translation>

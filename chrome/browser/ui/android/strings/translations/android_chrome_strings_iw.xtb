@@ -248,6 +248,7 @@
 <translation id="2612676031748830579">מספר הכרטיס</translation>
 <translation id="2625189173221582860">הסיסמה הועתקה</translation>
 <translation id="2631006050119455616">חסכת</translation>
+<translation id="2645657967708199252">חיבור ה-<ph name="CONNECTION_TYPE" /> עשוי להאט את ההורדה</translation>
 <translation id="2647434099613338025">להוספת שפה</translation>
 <translation id="2650751991977523696">האם להוריד את הקובץ שוב?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{קובץ אודיו אחד (#)}two{# קובצי אודיו}many{# קובצי אודיו}other{# קובצי אודיו}}</translation>
@@ -260,6 +261,7 @@
 <translation id="2718846868787000099">כדי שנוכל להציג תוכן בשפות המועדפות עליך, ההעדפות שלך גלויות לאתרים שביקרת בהם</translation>
 <translation id="2723001399770238859">אודיו</translation>
 <translation id="2728754400939377704">מיון לפי אתר</translation>
+<translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">כדי לחפש באופן מיידי או לראות פעולות קשורות, צריך להקיש על מילה</translation>
 <translation id="2760989362628427051">עיצוב כהה מופעל כשבמכשיר פועלת האפשרות 'עיצוב כהה' או 'חיסכון בסוללה'</translation>
 <translation id="2762000892062317888">ברגע זה</translation>
@@ -304,7 +306,6 @@
 <translation id="3016635187733453316">יש לוודא שהמכשיר הזה מחובר לאינטרנט</translation>
 <translation id="3029704984691124060">ביטויי הסיסמה אינם תואמים</translation>
 <translation id="3031225630520268969">‏הסכמה לחיפוש קולי של Assistant בממשק משתמש</translation>
-<translation id="3034163383943672781">ההורדה תתחיל בתאריך <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />קבלת עזרה<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">בפעם הבאה ניתן יהיה להיכנס לאתר מהר יותר</translation>
 <translation id="305593374596241526">‏הגישה למיקום כבויה. יש להפעיל אותה ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
@@ -437,6 +438,7 @@
 <translation id="3943557322767080599">‏הצגה של הודעות כניסה ל-Chrome לאחר כניסה לחשבון Google</translation>
 <translation id="395206256282351086">ההצעות למונחי חיפוש ואתרים הושבתו</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{‏Chrome יטען את הדף כשיהיה מוכן}two{‏Chrome יטען את הדפים כשיהיו מוכנים}many{‏Chrome יטען את הדפים כשיהיו מוכנים}other{‏Chrome יטען את הדפים כשיהיו מוכנים}}</translation>
+<translation id="3962957115499249330">‏תוצג לך התראה כשההורדה הזו תתחיל דרך Wi-Fi.</translation>
 <translation id="3963007978381181125">‏הצפנה באמצעות ביטוי סיסמה לא כוללת אמצעי תשלום וכתובות מ-Google Pay. רק מי שיודע את ביטוי הסיסמה שלך יכול לקרוא את הנתונים המוצפנים. ביטוי הסיסמה לא נשלח אל Google והיא אינה מאחסנת אותו. אם שוכחים את ביטוי הסיסמה או רוצים לשנות את ההגדרה הזו, צריך לאפס את הסנכרון. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">‏ל-Chrome אין אפשרות לבדוק את הסיסמאות שלך</translation>
 <translation id="3974987681202239636">‏האפליקציה <ph name="APP_NAME" /> תיפתח ב-Chrome. המשך הפעולה מבטא הסכמה ל<ph name="BEGIN_LINK1" />תנאים ולהגבלות של Google<ph name="END_LINK1" /> ול<ph name="BEGIN_LINK2" />תנאים ולהגבלות הנוספים של Google Chrome ו-Chrome OS<ph name="END_LINK2" />. על פעולה זו חלה גם <ph name="BEGIN_LINK3" />הודעת הפרטיות לגבי חשבונות Google המנוהלים באמצעות Family Link<ph name="END_LINK3" />.</translation>
@@ -480,6 +482,7 @@
 <translation id="4256782883801055595">רישיונות קוד פתוח</translation>
 <translation id="4263656433980196874">‏ההסכמה לחיפוש קולי של Assistant בממשק משתמש נפתחה בגובה מלא</translation>
 <translation id="4269820728363426813">העתקת כתובת של קישור</translation>
+<translation id="4290281343757112331">להוריד מאוחר יותר במקום זאת?</translation>
 <translation id="4298388696830689168">אתרים מקושרים</translation>
 <translation id="4303044213806199882">‎chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" />‎</translation>
 <translation id="4307992518367153382">היסודות</translation>
@@ -622,6 +625,7 @@
 <translation id="5191251636205085390">‏מידע על טכנולוגיות חדשות שמיועדות להחליף קובצי cookie של צד שלישי והוראות לשליטה בהן.</translation>
 <translation id="5193988420012215838">הועתק אל הלוח</translation>
 <translation id="5199929503336119739">פרופיל עבודה</translation>
+<translation id="5201464744567315552">תוצג לך התראה כשההורדה הזו תתחיל בשעה <ph name="TIME" />.</translation>
 <translation id="5204967432542742771">הזנת סיסמה</translation>
 <translation id="5210286577605176222">חזרה לכרטיסייה הקודמת</translation>
 <translation id="5210365745912300556">סגירת כרטיסייה</translation>
@@ -632,6 +636,7 @@
 <translation id="5230560987958996918">‏<ph name="SITE" /> מבקש לבצע סריקה כדי לאתר מכשירי Bluetooth בקרבת מקום. המכשירים הבאים נמצאו:</translation>
 <translation id="5233638681132016545">כרטיסייה חדשה</translation>
 <translation id="5250483651202458397">צילום מסך. אפשר להקיש כדי לסגור.</translation>
+<translation id="5262378156578470238">תוצג לך התראה כשההורדה הזו תתחיל בתאריך <ph name="DATE" />.</translation>
 <translation id="526421993248218238">לא ניתן לטעון את הדף</translation>
 <translation id="5271967389191913893">המכשיר לא מצליח לפתוח את התוכן להורדה.</translation>
 <translation id="5292796745632149097">שליחה אל</translation>
@@ -701,7 +706,6 @@
 <translation id="572328651809341494">כרטיסיות אחרונות</translation>
 <translation id="5723735397759933332">‏מצב הטעינה המהירה מאפשר לך לשפר את החיסכון בנתונים על ידי אופטימיזציה של התמונות בדפי HTTPS.</translation>
 <translation id="5726692708398506830">הגדלת כל מה שמופיע בדף</translation>
-<translation id="5732819098735351888">‏ההורדה תתחיל בחיבור Wi-Fi.</translation>
 <translation id="5733983706093266635">‏לא ניתן ליצור קוד אימות. כתובת ה-URL מכילה יותר מ-<ph name="CHARACTER_LIMIT" /> תווים.</translation>
 <translation id="5748802427693696783">הוחלף לכרטיסיות רגילות</translation>
 <translation id="5749068826913805084">‏לצורך הורדת קבצים, Chrome זקוק לגישה לאחסון.</translation>
@@ -780,7 +784,6 @@
 <translation id="6159335304067198720">חיסכון בצריכת נתונים בשיעור של <ph name="PERCENT" /></translation>
 <translation id="6186394685773237175">לא נמצאו סיסמאות שנחשפו</translation>
 <translation id="6192907950379606605">ליצירת תיאורי תמונות</translation>
-<translation id="6206830853671714236">בחירת מועד ההורדה</translation>
 <translation id="6210748933810148297">אינך <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">מוצגת תצוגה מקדימה של הדף</translation>
 <translation id="6218096829563201111">חיפוש מוצרים דומים <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
@@ -914,6 +917,7 @@
 <translation id="6981982820502123353">נגישות</translation>
 <translation id="6989267951144302301">ההורדה נכשלה</translation>
 <translation id="6995899638241819463">הצגת אזהרה אם סיסמאות נחשפות עקב פרצה באבטחת מידע</translation>
+<translation id="7001056293070445572">הקובץ הזה גדול (<ph name="FILE_SIZE" />)</translation>
 <translation id="7015203776128479407">הגדרת הסנכרון הראשונית לא הושלמה. הסנכרון מושבת.</translation>
 <translation id="7022756207310403729">פתיחה בדפדפן</translation>
 <translation id="702463548815491781">‏מומלץ אם הפעלת TalkBack או גישה באמצעות מתג</translation>
@@ -1028,6 +1032,7 @@
 <translation id="7791543448312431591">הוספה</translation>
 <translation id="7798392620021911922">שוחזרו <ph name="TAB_COUNT" /> כרטיסיות</translation>
 <translation id="780301667611848630">לא תודה</translation>
+<translation id="7808889146555843082">מחיקת הסיסמה הזו לא תגרום למחיקת החשבון שלך באתר <ph name="SITE" />. כדי למנוע את החשיפה של הסיסמה, כדאי לשנות אותה או למחוק את החשבון שלך ב-<ph name="SITE" />.</translation>
 <translation id="7810647596859435254">פתיחה באמצעות...</translation>
 <translation id="7815484226266492798">צילום מסך ארוך</translation>
 <translation id="7821588508402923572">ערכי החיסכון בנתונים יופיעו כאן</translation>
@@ -1175,12 +1180,14 @@
 <translation id="8699120352855309748">אין להציג את ההצעה לתרגם את השפות האלה</translation>
 <translation id="8712637175834984815">הבנתי</translation>
 <translation id="8725066075913043281">ניסיון חוזר</translation>
+<translation id="8730621377337864115">בוצע</translation>
 <translation id="8748850008226585750">התוכן מוסתר</translation>
 <translation id="8773160212632396039">עיבוד הבקשה מתבצע</translation>
 <translation id="8788265440806329501">היסטוריית הניווט סגורה</translation>
 <translation id="8788968922598763114">פתיחה מחדש של הכרטיסייה האחרונה שנסגרה</translation>
 <translation id="8798449543960971550">נקראו</translation>
 <translation id="8812260976093120287">באתרים מסוימים ניתן לשלם דרך המכשיר באמצעות אפליקציות התשלום הנתמכות שמופיעות למעלה.</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">לא ניתן לצפות בתוכן של כרטיסיית 'התצוגה המקדימה'.</translation>
 <translation id="8820817407110198400">סימניות</translation>
 <translation id="883806473910249246">אירעה שגיאה בזמן הורדת התוכן.</translation>
@@ -1218,10 +1225,10 @@
 <translation id="9063523880881406963">כיבוי של 'בקשת אתר עבור מחשב שולחני'</translation>
 <translation id="9065203028668620118">עריכה</translation>
 <translation id="9065383040763568503">‏נתונים מאוחסנים שלא מוגדרים כחשובים ב-Chrome (למשל: אתרים ללא הגדרות שמורות או כאלה שתדירות הביקור בהם נמוכה)</translation>
-<translation id="9069543557624799859">ההורדה תתחיל בשעה <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">אין דפים שלא נקראו</translation>
 <translation id="9070377983101773829">ביצוע חיפוש קולי</translation>
 <translation id="9074336505530349563">‏כדי לקבל מ-Google הצעות לתוכן מותאם אישית, יש להיכנס ולהפעיל את הסנכרון</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">הסנכרון מתבצע</translation>
 <translation id="9086455579313502267">אין אפשרות לגשת לרשת</translation>
 <translation id="9100505651305367705">יש להציע הצגת מאמרים בתצוגה פשוטה, כשהאפשרות נתמכת</translation>

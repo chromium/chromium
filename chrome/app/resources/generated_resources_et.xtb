@@ -919,6 +919,7 @@
 <translation id="1974821797477522211">Võrguga ühendamine</translation>
 <translation id="1975841812214822307">Eemalda ...</translation>
 <translation id="1976150099241323601">Turvaseadmesse sisselogimine</translation>
+<translation id="1976928778492259496">Sõrmejäljeandur on seadme <ph name="DEVICE_TYPE" /> vasakus servas. Puudutage seda õrnalt mis tahes sõrmega.</translation>
 <translation id="1977965994116744507">Seadme <ph name="DEVICE_TYPE" /> avamiseks tooge oma telefon lähemale.</translation>
 <translation id="1978057560491495741">Eemalda aadress</translation>
 <translation id="1979095679518582070">Kui lülitate selle funktsiooni välja, saab seade endiselt saata oluliste teenuste (nagu süsteemivärskendused ja turvalisus) kasutamiseks vajalikku teavet.</translation>
@@ -1973,6 +1974,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="313205617302240621">Kas olete parooli unustanud?</translation>
 <translation id="3132277757485842847">Meil ei õnnestunud teie telefoniga ühendust hoida. Veenduge, et teie telefon oleks läheduses, avatud ning Bluetooth ja WiFi oleksid sisse lülitatud.</translation>
 <translation id="3132996321662585180">Värskendatakse iga päev</translation>
+<translation id="3134393957315651797">Valige katse <ph name="EXPERIMENT_NAME" /> olek. Eksperimendi kirjeldus: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Vale PIN-kood. Teil on veel <ph name="RETRIES" /> katset.</translation>
 <translation id="313963229645891001">Allalaadimine, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Kollane vaikeavatar</translation>
@@ -6623,6 +6625,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8398877366907290961">Jätka ikkagi</translation>
 <translation id="8400146488506985033">Halda inimesi</translation>
 <translation id="8401432541486058167">Sisestage oma kiipkaardi PIN-kood.</translation>
+<translation id="8404893580027489425">Sõrmejäljeandur on seadme <ph name="DEVICE_TYPE" /> paremas servas. Puudutage seda õrnalt mis tahes sõrmega.</translation>
 <translation id="8405046151008197676">Vaadake viimase värskenduse esiletõstetud teavet</translation>
 <translation id="8407199357649073301">Logimistase:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" />-võrk, ühendamine</translation>

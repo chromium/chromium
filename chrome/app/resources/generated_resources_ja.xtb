@@ -919,6 +919,7 @@
 <translation id="1974821797477522211">ネットワークへの接続</translation>
 <translation id="1975841812214822307">削除...</translation>
 <translation id="1976150099241323601">セキュリティ デバイスへのログイン</translation>
+<translation id="1976928778492259496">指紋認証センサーは <ph name="DEVICE_TYPE" /> の左側にあります。いずれかの指で軽く触れてください。</translation>
 <translation id="1977965994116744507"><ph name="DEVICE_TYPE" /> のロックを解除するにはスマートフォンを近づけます。</translation>
 <translation id="1978057560491495741">住所を削除</translation>
 <translation id="1979095679518582070">この機能をオフにしても、システム アップデートやセキュリティといった重要なサービスで必要な情報はデバイスから引き続き送信されます。</translation>
@@ -1973,6 +1974,7 @@
 <translation id="313205617302240621">パスワードを忘れた場合</translation>
 <translation id="3132277757485842847">スマートフォンとの接続を維持できませんでした。Bluetooth 搭載のスマートフォンが近くにあり、Wi-Fi がオンになっていて、ロックも解除されていることを確認してください。</translation>
 <translation id="3132996321662585180">毎日更新する</translation>
+<translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> テストの試験運用機能の状態を選択します。テストの説明: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">無効な PIN です。入力できるのはあと <ph name="RETRIES" /> 回です。</translation>
 <translation id="313963229645891001">ダウンロードしています。<ph name="STATUS" /></translation>
 <translation id="3139925690611372679">デフォルトの黄のアバター</translation>
@@ -6623,6 +6625,7 @@
 <translation id="8398877366907290961">このまま続行</translation>
 <translation id="8400146488506985033">ユーザーを管理</translation>
 <translation id="8401432541486058167">スマートカードに関連付けられている PIN を入力してください。</translation>
+<translation id="8404893580027489425">指紋認証センサーは <ph name="DEVICE_TYPE" /> の右側にあります。いずれかの指で軽く触れてください。</translation>
 <translation id="8405046151008197676">最新のアップデートの概要をご確認ください</translation>
 <translation id="8407199357649073301">ログレベル:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> ネットワーク、接続中</translation>

@@ -917,6 +917,7 @@ xizmatlarini sizga moslashtirish maqsadlarida foydalanishi mumkin. Bu ruxsatni m
 <translation id="1974821797477522211">Tarmoqqa ulanish</translation>
 <translation id="1975841812214822307">O‘chirish...</translation>
 <translation id="1976150099241323601">Havfsizlik qurilmasiga kirish</translation>
+<translation id="1976928778492259496">Barmoq izi sensori <ph name="DEVICE_TYPE" /> qurilmasining chap orqasida joylashgan. Istalgan barmoq bilan unga asta tegining.</translation>
 <translation id="1977965994116744507"><ph name="DEVICE_TYPE" /> qurilmasini qulfdan chiqarish uchun telefoningizni yaqinlashtiring.</translation>
 <translation id="1978057560491495741">Manzilni olib tashlash</translation>
 <translation id="1979095679518582070">Bu funksiya faol boʻlmasa ham tizim yangilanishlari va xavfsizlik kabi asosiy xizmatlarni yaxshilash maqsadida qurilma axborotlari yuborilaveradi.</translation>
@@ -1971,6 +1972,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="313205617302240621">Parol esdan chiqdimi?</translation>
 <translation id="3132277757485842847">Telefon bilan ulanish uzilib qoldi. Telefoningiz yoningizda, qulflanmagan va undagi Bluetooth, Wi-Fi yoniqligini tekshiring.</translation>
 <translation id="3132996321662585180">Kunlik yangilash</translation>
+<translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> tajribaviy funksiyasi holatini tanlang. Tajriba tavsifi: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">PIN kod xato. Sizda <ph name="RETRIES" /> ta urinish qoldi.</translation>
 <translation id="313963229645891001">Yuklab olinmoqda, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Standart sariq avatar</translation>
@@ -6619,6 +6621,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8398877366907290961">Davom etish</translation>
 <translation id="8400146488506985033">Foydalanuvchilarni boshqarish</translation>
 <translation id="8401432541486058167">Smart kartangiz PIN kodini kiriting.</translation>
+<translation id="8404893580027489425">Barmoq izi sensori <ph name="DEVICE_TYPE" /> qurilmasining oʻng orqasida joylashgan. Istalgan barmoq bilan unga asta tegining.</translation>
 <translation id="8405046151008197676">Oxirgi yangilanishdagi asosiy oʻzgarishlar</translation>
 <translation id="8407199357649073301">Jurnalga yozish darajasi:</translation>
 <translation id="8408068190360279472">Tarmoq: <ph name="NETWORK_TYPE" />, ulanmoqda</translation>

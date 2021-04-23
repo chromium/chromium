@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">Vuốt lên trên bằng hai ngón tay</translation>
 <translation id="1126928665165112660">Không in nghiêng</translation>
 <translation id="113582498867142724">Bộ sưu tập <ph name="TAG" /> có <ph name="NUM" /> mục</translation>
-<translation id="1146441463334103638">Bật hoặc tắt màn hình</translation>
 <translation id="1156488781945104845">Thời gian hiện tại</translation>
 <translation id="1161762950103988776">Nhảy</translation>
 <translation id="1164857107703583584">Bạn có thể dùng các lệnh chuyển để thao tác hiệu quả trên một trang web.</translation>
@@ -256,6 +255,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{Hơn # mục}other{Hơn # mục}}</translation>
 <translation id="2792200646155001340">Bạn cũng có thể vuốt bằng một ngón tay từ bên phải sang bên trái để chuyển đến mục trước. Hãy thử ngay.</translation>
 <translation id="280499067616661124">ChromeVox tìm trong trang</translation>
+<translation id="2808001342598757276">Làm sáng màn hình</translation>
 <translation id="2811019999044652585">Để chuyển tới các phần khác của màn hình, như thanh công cụ hoặc khay hệ thống, nhấn phím Control+Forward. Trên Chromebook, phím Forward ở ngay phía trên phím số 2.</translation>
 <translation id="2811204574343810641">Hàng</translation>
 <translation id="2816868829355607410">Khu vực thực hành: Các lệnh chuyển</translation>
@@ -302,7 +302,6 @@
 <translation id="3082249673510793544">Cuộn lùi</translation>
 <translation id="3084806535845658316">không nói khi nhập</translation>
 <translation id="3086746722712840547">ghi chú</translation>
-<translation id="308736057934395497">Lệnh này giúp bảo vệ quyền riêng tư tốt hơn bằng cách tắt màn hình để những người khác không thấy được. Bạn có thể bật lại màn hình bất cứ lúc nào bằng cách nhấn tổ hợp phím Tìm kiếm + Tăng độ sáng.</translation>
 <translation id="3090227230165225418">Công bố các thông báo tải xuống</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">Điểm mốc tiếp theo</translation>
@@ -313,7 +312,6 @@
 <translation id="3109724472072898302">Đã thu gọn</translation>
 <translation id="311015743332597320">Vuốt sang phải bằng 4 ngón tay</translation>
 <translation id="3112457281078985179">Để bật hoặc tắt ChromeVox, sử dụng phím Control+Alt+Z.</translation>
-<translation id="3115800313647508384">Tắt màn hình?</translation>
 <translation id="3131002934070407451">Đọc số dưới dạng:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">Màu xanh ô liu</translation>
@@ -721,6 +719,7 @@
 <translation id="6034000775414344507">Xám nhạt</translation>
 <translation id="6036135911048686884">Chạm để khám phá</translation>
 <translation id="6037602951055904232">Xoay về phía trước</translation>
+<translation id="6044160928851315051">Làm tối màn hình</translation>
 <translation id="6082768461603900813">Di chuyển cơ bản</translation>
 <translation id="609281021724813947">Không có thanh trượt nào trước đó</translation>
 <translation id="6100239002225743044">Chuyển lên một dòng</translation>
@@ -791,7 +790,6 @@
 <translation id="6696967141280706829">Lời nói đầu</translation>
 <translation id="6697092096875747123">Hộp kết hợp trước</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{dấu chấm than}other{# dấu chấm than}}</translation>
-<translation id="670717715607710284">Tắt màn hình</translation>
 <translation id="6710213216561001401">Trước</translation>
 <translation id="6714813999819678458">Tiêu đề cấp 2 trước</translation>
 <translation id="6730312624811567147">Sử dụng tổ hợp phím Tìm kiếm Mũi tên trái hoặc phải để thay thế phím Home hoặc End, Tìm kiếm Control Mũi tên trái hoặc Mũi tên phải để thay thế phím Control Home hoặc End, Tìm kiếm Mũi tên lên hoặc xuống để thay thế phím Page Up hoặc Down</translation>
@@ -994,7 +992,6 @@
 <translation id="816818801578874684">Đây là tiêu đề đầu tiên. Hãy nhấn tổ hợp phím Tìm kiếm + H để chuyển đến tiêu đề tiếp theo.</translation>
 <translation id="8173092779156526980">Vuốt sang trái bằng 4 ngón tay</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{dấu gạch dưới}other{# dấu gạch dưới}}</translation>
-<translation id="817529114347680055">Bật màn hình</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">hàng</translation>
 <translation id="8186185314313222077">chuyển đổi chế độ toàn màn hình</translation>
@@ -1017,6 +1014,7 @@
 <translation id="8316881042119029234">Màu ren cũ</translation>
 <translation id="8324974933005349667">Cá nhân hóa các tùy chọn cài đặt Văn bản sang lời nói</translation>
 <translation id="8326783648485765113">Màu xanh cỏ</translation>
+<translation id="8328063869313048659">Bật/tắt màn hình tối</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{dấu thăng}other{# dấu thăng}}</translation>
 <translation id="8378855320830505539">Khu vực</translation>
 <translation id="8382679411218029383">Tự động hoàn thành nội dòng và danh sách</translation>

@@ -922,6 +922,7 @@
 <translation id="1974821797477522211">Падключыцца да сеткі</translation>
 <translation id="1975841812214822307">Выдаліць...</translation>
 <translation id="1976150099241323601">Уваход на прыладу бяспекі</translation>
+<translation id="1976928778492259496">Сканер адбіткаў пальцаў знаходзіцца на левым баку прылады <ph name="DEVICE_TYPE" />. Злёгку дакраніцеся да яго любым пальцам.</translation>
 <translation id="1977965994116744507">Паднясіце свой тэлефон бліжэй, каб разблакіраваць <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978057560491495741">Выдаленне адраса</translation>
 <translation id="1979095679518582070">Калі вы выключыце гэту функцыю, прылада ўсё роўна будзе адпраўляць даныя, неабходныя для працы асноўных сэрвісаў, такіх як абнаўленне сістэмы і бяспека прылады.</translation>
@@ -1975,6 +1976,7 @@
 <translation id="313205617302240621">Забылі пароль?</translation>
 <translation id="3132277757485842847">Нам не ўдалося захаваць падключэнне да вашага тэлефона. Упэўніцеся, што ён разблакіраваны, знаходзіцца паблізу і на ім уключаны Bluetooth і Wi-Fi.</translation>
 <translation id="3132996321662585180">Абнаўляць штодзень</translation>
+<translation id="3134393957315651797">Выберыце стан для эксперымента "<ph name="EXPERIMENT_NAME" />". Апісанне эксперымента: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Няправільны PIN-код. Засталося спроб: <ph name="RETRIES" />.</translation>
 <translation id="313963229645891001">Ідзе спампоўванне, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Стандартны жоўты аватар</translation>
@@ -6624,6 +6626,7 @@
 <translation id="8398877366907290961">Усё роўна працягнуць</translation>
 <translation id="8400146488506985033">Кіраваць данымі карыстальнікаў</translation>
 <translation id="8401432541486058167">Укажыце PIN-код, звязаны з разумнай карткай.</translation>
+<translation id="8404893580027489425">Сканер адбіткаў пальцаў знаходзіцца на правым баку прылады <ph name="DEVICE_TYPE" />. Злёгку дакраніцеся да яго любым пальцам.</translation>
 <translation id="8405046151008197676">Атрымайце асноўную інфармацыю пра апошняе абнаўленне</translation>
 <translation id="8407199357649073301">Узровень гісторыі:</translation>
 <translation id="8408068190360279472">Тып сеткі – <ph name="NETWORK_TYPE" />, ідзе падключэнне</translation>

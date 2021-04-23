@@ -248,6 +248,7 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="2612676031748830579">Kaardi number</translation>
 <translation id="2625189173221582860">Parool on kopeeritud</translation>
 <translation id="2631006050119455616">Säästetud</translation>
+<translation id="2645657967708199252">Teie <ph name="CONNECTION_TYPE" />-ühendus võib allalaadimist aeglustada</translation>
 <translation id="2647434099613338025">Lisa keel</translation>
 <translation id="2650751991977523696">Kas soovite faili uuesti alla laadida?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# helifail}other{# helifaili}}</translation>
@@ -260,6 +261,7 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="2718846868787000099">Sisu kuvamiseks teie eelistatud keeltes näevad teie külastatavad saidid teie eelistusi</translation>
 <translation id="2723001399770238859">heli</translation>
 <translation id="2728754400939377704">Sordi saidi alusel</translation>
+<translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">Puudutage sõna, et kohe otsida või seotud toiminguid näha</translation>
 <translation id="2760989362628427051">Aktiveeri tume teema, kui tume teema või akusäästja on seadmes sisse lülitatud</translation>
 <translation id="2762000892062317888">just praegu</translation>
@@ -304,7 +306,6 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="3016635187733453316">Veenduge, et seadmel oleks internetiühendus</translation>
 <translation id="3029704984691124060">Paroolid ei ühti</translation>
 <translation id="3031225630520268969">Assistendi häälotsingu sisu kasutajaliides</translation>
-<translation id="3034163383943672781">Allalaadimine algab <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Küsige abi<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Liikuge järgmine kord sellele saidile kiiremini</translation>
 <translation id="305593374596241526">Asukoht on välja lülitatud. Lülitage see sisse <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
@@ -437,6 +438,7 @@ Privaatsuse liivakast on endiselt arendusjärgus ja saadaval vaid valitud piirko
 <translation id="3943557322767080599">Kuva Google'i kontole sisse logides Chrome'i sisselogimisviibad</translation>
 <translation id="395206256282351086">Otsingu- ja saidisoovitused on keelatud</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome laadib teie lehe, kui see on valmis}other{Chrome laadib teie lehed, kui need on valmis}}</translation>
+<translation id="3962957115499249330">Kui see allalaadimine WiFi-võrgus algab, näete märguannet.</translation>
 <translation id="3963007978381181125">Parooli krüpteerimine ei hõlma Google Pay makseviise ega aadresse. Teie krüpteeritud andmeid saavad lugeda vaid need, kes teavad teie parooli – seda ei saadeta Google'ile ja Google ei talleta seda. Kui unustate parooli või soovite seda seadet muuta, tuleb teil sünkroonimine lähtestada. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome ei saa teie paroole kontrollida</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> avaneb Chrome'is. Jätkates nõustute <ph name="BEGIN_LINK1" />Google'i teenusetingimustega<ph name="END_LINK1" /> ning <ph name="BEGIN_LINK2" />Google Chrome'i ja Chrome OS-i lisateenusetingimustega<ph name="END_LINK2" />. Kehtib ka <ph name="BEGIN_LINK3" />Family Linkiga hallatavate Google’i kontode privaatsusteatis<ph name="END_LINK3" />.</translation>
@@ -480,6 +482,7 @@ Privaatsuse liivakast on endiselt arendusjärgus ja saadaval vaid valitud piirko
 <translation id="4256782883801055595">Avatud lähtekoodi litsentsid</translation>
 <translation id="4263656433980196874">Assistendi häälotsingu sisu kasutajaliides on avatud täiskõrgusel</translation>
 <translation id="4269820728363426813">Kopeeri lingi aadress</translation>
+<translation id="4290281343757112331">Kas laadida alla hiljem?</translation>
 <translation id="4298388696830689168">Lingitud saidid</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Põhiteave</translation>
@@ -622,6 +625,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5191251636205085390">Vaadake lisateavet uute tehnoloogiate kohta, mille eesmärk on kolmandate osapoolte küpsisefailid asendada, ja õppige neid haldama.</translation>
 <translation id="5193988420012215838">Kopeeritud lõikelauale</translation>
 <translation id="5199929503336119739">Tööprofiil</translation>
+<translation id="5201464744567315552">Kui see allalaadimine kell <ph name="TIME" /> algab, näete märguannet.</translation>
 <translation id="5204967432542742771">Sisestage parool</translation>
 <translation id="5210286577605176222">Eelmisele vahelehele liikumine</translation>
 <translation id="5210365745912300556">Sule vaheleht</translation>
@@ -632,6 +636,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5230560987958996918"><ph name="SITE" /> soovib otsida läheduses olevaid Bluetooth-seadmeid. Leiti järgmised seadmed:</translation>
 <translation id="5233638681132016545">Uus vaheleht</translation>
 <translation id="5250483651202458397">Ekraanipilt. Puudutage sulgemiseks.</translation>
+<translation id="5262378156578470238">Kui see allalaadimine kuupäeval <ph name="DATE" /> algab, näete märguannet.</translation>
 <translation id="526421993248218238">Seda lehte ei saa laadida</translation>
 <translation id="5271967389191913893">Seade ei saa allalaaditavat sisu avada.</translation>
 <translation id="5292796745632149097">Saatmine</translation>
@@ -701,7 +706,6 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="572328651809341494">Hiljutised vahelehed</translation>
 <translation id="5723735397759933332">Lihtsustatud režiim säästab nüüd rohkem andmemahtu, optimeerides HTTPS-lehtedel kujutisi.</translation>
 <translation id="5726692708398506830">Lehel kuvatud sisu suurendamine</translation>
-<translation id="5732819098735351888">Allalaadimine algab WiFi kaudu.</translation>
 <translation id="5733983706093266635">QR-koodi ei saa luua. URL on pikem kui <ph name="CHARACTER_LIMIT" /> tähemärki.</translation>
 <translation id="5748802427693696783">Tavapärased vahelehed on aktiveeritud</translation>
 <translation id="5749068826913805084">Chrome vajab failide allalaadimiseks juurdepääsu salvestusruumile.</translation>
@@ -780,7 +784,6 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="6159335304067198720">Andmemahu kokkuhoid: <ph name="PERCENT" /></translation>
 <translation id="6186394685773237175">Ohustatud paroole ei leitud</translation>
 <translation id="6192907950379606605">Piltide kirjelduste saamine</translation>
-<translation id="6206830853671714236">Valige, millal alla laadida</translation>
 <translation id="6210748933810148297">Kas pole <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Selle lehe eelvaade</translation>
 <translation id="6218096829563201111">Otsige sarnaseid tooteid <ph name="BEGIN_NEW" />Uus<ph name="END_NEW" /></translation>
@@ -914,6 +917,7 @@ Inkognito seanssidest saadud andmed kustutatakse Chrome'ist ainult siis, kui <ph
 <translation id="6981982820502123353">Juurdepääsetavus</translation>
 <translation id="6989267951144302301">Ei saanud alla laadida</translation>
 <translation id="6995899638241819463">Hoiata mind, kui paroolid andmetega seotud rikkumise käigus avalikustatakse</translation>
+<translation id="7001056293070445572">See fail on suur (<ph name="FILE_SIZE" />)</translation>
 <translation id="7015203776128479407">Sünkroonimise algseadistust ei viidud lõpule. Sünkroonimine on välja lülitatud.</translation>
 <translation id="7022756207310403729">Avamine brauseris</translation>
 <translation id="702463548815491781">Soovitatav juhul, kui TalkBack või lülitiga juurdepääs on sisse lülitatud</translation>
@@ -1028,6 +1032,7 @@ Inkognito seanssidest saadud andmed kustutatakse Chrome'ist ainult siis, kui <ph
 <translation id="7791543448312431591">Lisa</translation>
 <translation id="7798392620021911922">Taastati <ph name="TAB_COUNT" /> vahelehte</translation>
 <translation id="780301667611848630">Ei, aitäh</translation>
+<translation id="7808889146555843082">Selle parooli eemaldamisel ei kustutata teie kontot saidil <ph name="SITE" />. Muutke oma parooli või kustutage saidil <ph name="SITE" /> olev konto, et parooli kaitsta.</translation>
 <translation id="7810647596859435254">Ava rakendusega …</translation>
 <translation id="7815484226266492798">Pikk ekraanipilt</translation>
 <translation id="7821588508402923572">Siin kuvatakse teie säästetud andmemaht</translation>
@@ -1175,12 +1180,14 @@ Inkognito seanssidest saadud andmed kustutatakse Chrome'ist ainult siis, kui <ph
 <translation id="8699120352855309748">Ära paku nende keelte tõlkimist</translation>
 <translation id="8712637175834984815">Selge</translation>
 <translation id="8725066075913043281">Proovi uuesti</translation>
+<translation id="8730621377337864115">Valmis</translation>
 <translation id="8748850008226585750">Sisu on peidetud</translation>
 <translation id="8773160212632396039">Taotluse töötlemine</translation>
 <translation id="8788265440806329501">Navigeerimisajalugu on suletud</translation>
 <translation id="8788968922598763114">Viimati suletud vahelehe uuesti avamine</translation>
 <translation id="8798449543960971550">Loetud</translation>
 <translation id="8812260976093120287">Mõnel veebisaidil saate maksta ülalolevate teie seadmes toetatud makserakendustega.</translation>
+<translation id="8814190375133053267">WiFi</translation>
 <translation id="881688628773363275">Eelvaate vahelehe sisu ei saa vaadata.</translation>
 <translation id="8820817407110198400">Järjehoidjad</translation>
 <translation id="883806473910249246">Sisu allalaadimisel ilmnes viga.</translation>
@@ -1218,10 +1225,10 @@ Inkognito seanssidest saadud andmed kustutatakse Chrome'ist ainult siis, kui <ph
 <translation id="9063523880881406963">Valiku Taotle arvutisaiti väljalülitamine</translation>
 <translation id="9065203028668620118">Muuda</translation>
 <translation id="9065383040763568503">Salvestatud andmed, mida Chrome peab ebaoluliseks (nt saidid, mida külastate harva või millel ei ole salvestatud seadeid)</translation>
-<translation id="9069543557624799859">Allalaadimine algab <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Pole lugemata lehti</translation>
 <translation id="9070377983101773829">Häälotsingu alustamine</translation>
 <translation id="9074336505530349563">Google'i soovitatud isikupärastatud sisu hankimiseks logige sisse ja lülitage sünkroonimine sisse</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Sünkroonimine</translation>
 <translation id="9086455579313502267">Ei saa võrgule juurdepääsu</translation>
 <translation id="9100505651305367705">Pakutakse artiklite kuvamist lihtsustatud vaates, kui seda toetatakse</translation>

@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">Potiahnite dvoma prstami nahor</translation>
 <translation id="1126928665165112660">Text nie je kurzíva</translation>
 <translation id="113582498867142724">Počet položiek v zbierke <ph name="TAG" />: <ph name="NUM" /></translation>
-<translation id="1146441463334103638">Prepínačom môžete obrazovku zapnúť alebo vypnúť</translation>
 <translation id="1156488781945104845">Aktuálny čas</translation>
 <translation id="1161762950103988776">Preskočenie</translation>
 <translation id="1164857107703583584">Príkazmi na preskočenie môžete účinne prechádzať na webovej stránke.</translation>
@@ -256,6 +255,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}few{+#}many{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Ak chcete prejsť na predchádzajúcu položku, môžete tiež potiahnuť prstom sprava doľava. Vyskúšajte to.</translation>
 <translation id="280499067616661124">Vyhľadávanie ChromeVox na stránke</translation>
+<translation id="2808001342598757276">Zrušiť stmavenie obrazovky</translation>
 <translation id="2811019999044652585">Ak chcete preskočiť na ďalšie časti obrazovky, napríklad na panel s nástrojmi alebo oblasť oznámení, stlačte kombináciu klávesov Ctrl + Dopredu. Kláves Dopredu sa na Chromebooku nachádza priamo nad klávesom s číslicou 2.</translation>
 <translation id="2811204574343810641">Riadok</translation>
 <translation id="2816868829355607410">Oblasť na precvičovanie: príkazy na preskočenie</translation>
@@ -302,7 +302,6 @@
 <translation id="3082249673510793544">Posunúť vzad</translation>
 <translation id="3084806535845658316">bez zvukovej odozvy na zadávanie textu</translation>
 <translation id="3086746722712840547">poznámka</translation>
-<translation id="308736057934395497">Zvyšuje to súkromie, pretože sa vypne obrazovka, takže ju ostatní neuvidia. Môžete ju kedykoľvek znova zapnúť stlačením kombinácie tlačidiel vyhľadávania a zvýšenia jasu.</translation>
 <translation id="3090227230165225418">Zobrazovať upozornenia na sťahovanie</translation>
 <translation id="3090532668523289635">skupina</translation>
 <translation id="3093176084511590672">Ďalší orientačný bod</translation>
@@ -313,7 +312,6 @@
 <translation id="3109724472072898302">Zbalené</translation>
 <translation id="311015743332597320">Potiahnite štyrmi prstami doprava</translation>
 <translation id="3112457281078985179">Ak chcete zapnúť alebo vypnúť čítačku ChromeVox, stlačte kombináciu klávesov Control + Alt + Z.</translation>
-<translation id="3115800313647508384">Chcete obrazovku vypnúť?</translation>
 <translation id="3131002934070407451">Čítať čísla ako:</translation>
 <translation id="3134461040845705080">iba na čítanie</translation>
 <translation id="3137663468179739624">Olivová</translation>
@@ -721,6 +719,7 @@
 <translation id="6034000775414344507">Svetlosivá</translation>
 <translation id="6036135911048686884">Skúmanie klepnutím</translation>
 <translation id="6037602951055904232">Posunúť zobrazenie dopredu</translation>
+<translation id="6044160928851315051">Stmaviť obrazovku</translation>
 <translation id="6082768461603900813">Základná navigácia</translation>
 <translation id="609281021724813947">Žiadny predchádzajúci posúvač</translation>
 <translation id="6100239002225743044">Posunúť o riadok nahor</translation>
@@ -791,7 +790,6 @@
 <translation id="6696967141280706829">Predslov</translation>
 <translation id="6697092096875747123">Predchádzajúce rozbaľovacie pole</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{výkričník}few{# výkričníky}many{# výkričníka}other{# výkričníkov}}</translation>
-<translation id="670717715607710284">Obrazovka je vypnutá</translation>
 <translation id="6710213216561001401">Späť</translation>
 <translation id="6714813999819678458">Predchádzajúci nadpis 2. úrovne</translation>
 <translation id="6730312624811567147">Kombinácia klávesov Hľadať + šípka doľava alebo doprava slúži ako Home alebo End, kombinácia Hľadať + Ctrl + šípka doľava alebo doprava funguje ako Ctrl Home alebo Ctrl End, kombinácia klávesov Hľadať + šípka nahor alebo nadol slúži ako Page Up alebo Page Down</translation>
@@ -993,7 +991,6 @@
 <translation id="816818801578874684">Toto je prvý nadpis. Na ďalší prejdete stlačením klávesa vyhľadávania + H.</translation>
 <translation id="8173092779156526980">Potiahnite štyrmi prstami doľava</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{podčiarkovník}few{# podčiarkovníky}many{# underscores}other{# podčiarkovníkov}}</translation>
-<translation id="817529114347680055">Zapnutá obrazovka</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">riadok</translation>
 <translation id="8186185314313222077">prepnutie na celú obrazovku</translation>
@@ -1016,6 +1013,7 @@
 <translation id="8316881042119029234">Svetlobéžová</translation>
 <translation id="8324974933005349667">Prispôsobiť nastavenia prevodu textu na reč</translation>
 <translation id="8326783648485765113">Trávniková zelená</translation>
+<translation id="8328063869313048659">Prepnúť tmavú obrazovku</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{mriežka}few{# mriežky}many{# pound signs}other{# mriežok}}</translation>
 <translation id="8378855320830505539">Oblasť</translation>
 <translation id="8382679411218029383">Vložené automatické dopĺňanie a zoznam</translation>

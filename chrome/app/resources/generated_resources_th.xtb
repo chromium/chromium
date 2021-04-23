@@ -919,6 +919,7 @@
 <translation id="1974821797477522211">เชื่อมต่อกับเครือข่าย</translation>
 <translation id="1975841812214822307">นำออก...</translation>
 <translation id="1976150099241323601">ลงชื่อเข้าใช้อุปกรณ์รักษาความปลอดภัย</translation>
+<translation id="1976928778492259496">เซ็นเซอร์ลายนิ้วมืออยู่ทางด้านซ้ายมือของ <ph name="DEVICE_TYPE" /> ให้แตะเบาๆ ด้วยนิ้วใดก็ได้</translation>
 <translation id="1977965994116744507">นำโทรศัพท์เข้ามาใกล้ๆ เพื่อปลดล็อก <ph name="DEVICE_TYPE" /></translation>
 <translation id="1978057560491495741">นำที่อยู่ออก</translation>
 <translation id="1979095679518582070">การปิดฟีเจอร์นี้จะไม่ส่งผลต่อความสามารถของอุปกรณ์ในการส่งข้อมูลที่จำเป็นต่อบริการสำคัญ เช่น การอัปเดตระบบและการรักษาความปลอดภัย</translation>
@@ -1973,6 +1974,7 @@
 <translation id="313205617302240621">ลืมรหัสผ่าน</translation>
 <translation id="3132277757485842847">เราคงการเชื่อมต่อกับโทรศัพท์ไว้ไม่ได้ ตรวจสอบว่าโทรศัพท์อยู่ใกล้ๆ ปลดล็อกอยู่ และเปิดบลูทูธกับ Wi-Fi ไว้</translation>
 <translation id="3132996321662585180">รีเฟรชทุกวัน</translation>
+<translation id="3134393957315651797">เลือกสถานะการทดสอบสำหรับการทดสอบ <ph name="EXPERIMENT_NAME" /> คำอธิบายการทดสอบ: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">PIN ไม่ถูกต้อง คุณลองได้อีก <ph name="RETRIES" /> ครั้ง</translation>
 <translation id="313963229645891001">กำลังดาวน์โหลด <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">รูปโปรไฟล์เริ่มต้นสีเหลือง</translation>
@@ -6623,6 +6625,7 @@
 <translation id="8398877366907290961">ดำเนินการต่อ</translation>
 <translation id="8400146488506985033">จัดการบุคคล</translation>
 <translation id="8401432541486058167">ใส่ PIN ที่เชื่อมโยงกับสมาร์ทการ์ดของคุณ</translation>
+<translation id="8404893580027489425">เซ็นเซอร์ลายนิ้วมืออยู่ทางด้านขวามือของ <ph name="DEVICE_TYPE" /> ให้แตะเบาๆ ด้วยนิ้วใดก็ได้</translation>
 <translation id="8405046151008197676">ดูไฮไลต์จากอัปเดตล่าสุด</translation>
 <translation id="8407199357649073301">ระดับบันทึก:</translation>
 <translation id="8408068190360279472">เครือข่าย <ph name="NETWORK_TYPE" /> กำลังเชื่อมต่อ</translation>

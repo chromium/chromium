@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">손가락 두 개를 사용하여 위로 스와이프</translation>
 <translation id="1126928665165112660">기울임꼴 아님</translation>
 <translation id="113582498867142724"><ph name="NUM" />개 항목을 포함한 <ph name="TAG" /> 컬렉션</translation>
-<translation id="1146441463334103638">화면 켜기 또는 끄기</translation>
 <translation id="1156488781945104845">현재 시간</translation>
 <translation id="1161762950103988776">점프</translation>
 <translation id="1164857107703583584">점프 명령어를 사용하면 웹페이지를 효율적으로 탐색할 수 있습니다.</translation>
@@ -256,6 +255,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{#개 이상}other{#개 이상}}</translation>
 <translation id="2792200646155001340">또한 한 손가락을 오른쪽에서 왼쪽으로 스와이프하여 이전 항목으로 이동할 수 있습니다. 지금 해 보세요.</translation>
 <translation id="280499067616661124">ChromeVox 페이지에서 찾기</translation>
+<translation id="2808001342598757276">화면을 다시 밝게 합니다.</translation>
 <translation id="2811019999044652585">툴바 또는 작업표시줄 등 화면의 다른 부분으로 바로 이동하려면 Control+Forward 키를 누릅니다. Chromebook에서 Forward 키는 숫자 2 키 바로 위에 있습니다.</translation>
 <translation id="2811204574343810641">행</translation>
 <translation id="2816868829355607410">연습 영역: 점프 명령어</translation>
@@ -302,7 +302,6 @@
 <translation id="3082249673510793544">뒤로 스크롤</translation>
 <translation id="3084806535845658316">입력 에코 없음</translation>
 <translation id="3086746722712840547">note</translation>
-<translation id="308736057934395497">다른 사람이 볼 수 없도록 화면을 꺼서 개인정보 보호 기능을 향상합니다. 언제든지 검색 버튼과 밝게 버튼을 함께 누르면 화면을 다시 켤 수 있습니다.</translation>
 <translation id="3090227230165225418">다운로드 알림 표시</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">다음 랜드마크</translation>
@@ -313,7 +312,6 @@
 <translation id="3109724472072898302">접힘</translation>
 <translation id="311015743332597320">손가락 네 개를 사용하여 오른쪽으로 스와이프</translation>
 <translation id="3112457281078985179">ChromeVox를 사용 또는 사용 중지하려면 Control+Alt+Z를 사용합니다.</translation>
-<translation id="3115800313647508384">화면을 끄시겠습니까?</translation>
 <translation id="3131002934070407451">숫자 읽는 방식:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">올리브</translation>
@@ -721,6 +719,7 @@
 <translation id="6034000775414344507">연한 회색</translation>
 <translation id="6036135911048686884">터치하여 탐색</translation>
 <translation id="6037602951055904232">앞으로 이동</translation>
+<translation id="6044160928851315051">화면을 어둡게 합니다.</translation>
 <translation id="6082768461603900813">기본 탐색</translation>
 <translation id="609281021724813947">이전 슬라이더가 없습니다</translation>
 <translation id="6100239002225743044">한 줄 위로 이동</translation>
@@ -791,7 +790,6 @@
 <translation id="6696967141280706829">머리말</translation>
 <translation id="6697092096875747123">이전 콤보 상자</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{느낌표}other{느낌표 #개}}</translation>
-<translation id="670717715607710284">화면 꺼짐</translation>
 <translation id="6710213216561001401">이전</translation>
 <translation id="6714813999819678458">이전 수준 2 제목</translation>
 <translation id="6730312624811567147">Search와 왼쪽 또는 오른쪽 키가 Home 또는 End 키, Search와 Control 왼쪽 또는 오른쪽 키가 Control Home 또는 End 키, Search와 위쪽 또는 아래쪽 키가 Page Up 또는 Down 키 역할을 합니다</translation>
@@ -993,7 +991,6 @@
 <translation id="816818801578874684">첫 번째 제목입니다. 다음 제목으로 이동하려면 검색 키 + H 키를 누르세요.</translation>
 <translation id="8173092779156526980">손가락 네 개를 사용하여 왼쪽으로 스와이프</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{밑줄}other{밑줄 기호 #개}}</translation>
-<translation id="817529114347680055">화면 켜짐</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">행</translation>
 <translation id="8186185314313222077">전체화면 전환</translation>
@@ -1016,6 +1013,7 @@
 <translation id="8316881042119029234">올드 레이스</translation>
 <translation id="8324974933005349667">TTS(텍스트 음성 변환) 설정 맞춤설정</translation>
 <translation id="8326783648485765113">잔디색</translation>
+<translation id="8328063869313048659">어두운 화면 전환</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{파운드 기호}other{파운드 기호 #개}}</translation>
 <translation id="8378855320830505539">지역</translation>
 <translation id="8382679411218029383">자동완성 본문 및 목록</translation>

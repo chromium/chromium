@@ -916,6 +916,7 @@
 <translation id="1974821797477522211">Lidhu me rrjetin</translation>
 <translation id="1975841812214822307">Hiq...</translation>
 <translation id="1976150099241323601">Identifikohu në pajisjen e sigurisë</translation>
+<translation id="1976928778492259496">Sensori i gjurmës së gishtit është në anën e majtë të pajisjes sate <ph name="DEVICE_TYPE" />. Preke lehtë me një gisht.</translation>
 <translation id="1977965994116744507">Afroje telefonin më shumë për të shkyçur pajisjen tënde <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978057560491495741">Hiq adresën</translation>
 <translation id="1979095679518582070">Çaktivizimi i kësaj veçorie nuk ndikon në aftësinë e kësaj pajisjeje për të dërguar informacionin e nevojshëm për shërbimet bazë, siç janë përditësimet dhe siguria e sistemit.</translation>
@@ -1969,6 +1970,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="313205617302240621">E harrove fjalëkalimin?</translation>
 <translation id="3132277757485842847">Nuk ishim në gjendje të ruanim një lidhje me telefonin tënd. Sigurohu që telefoni yt të jetë pranë, i shkyçur dhe të ketë të aktivizuar Bluetooth-in dhe Wi-Fi.</translation>
 <translation id="3132996321662585180">Rifresko çdo ditë</translation>
+<translation id="3134393957315651797">Zgjidh gjendjen e eksperimentit për eksperimentin <ph name="EXPERIMENT_NAME" />. Përshkrimi i eksperimentit: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Kodi PIN i pavlefshëm Të kanë mbetur edhe <ph name="RETRIES" /> përpjekje.</translation>
 <translation id="313963229645891001">Po shkarkon, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Avatari i parazgjedhur i verdhë</translation>
@@ -6617,6 +6619,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8398877366907290961">Vazhdo gjithsesi</translation>
 <translation id="8400146488506985033">Menaxho kontaktet</translation>
 <translation id="8401432541486058167">Jep kodin PIN të lidhur me kartën tënde smart.</translation>
+<translation id="8404893580027489425">Sensori i gjurmës së gishtit është në anën e djathtë të pajisjes sate <ph name="DEVICE_TYPE" />. Preke lehtë me një gisht.</translation>
 <translation id="8405046151008197676">Merr pikat kryesore nga përditësimi i fundit</translation>
 <translation id="8407199357649073301">Niveli i identifikimit:</translation>
 <translation id="8408068190360279472">Rrjeti <ph name="NETWORK_TYPE" />, po lidhet</translation>

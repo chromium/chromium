@@ -921,6 +921,7 @@
 <translation id="1974821797477522211">Pripojiť k sieti</translation>
 <translation id="1975841812214822307">Odstrániť...</translation>
 <translation id="1976150099241323601">Prihlásenie do zabezpečeného zariadenia</translation>
+<translation id="1976928778492259496">Senzor odtlačkov prstov je na ľavej strane zariadenia <ph name="DEVICE_TYPE" />. Zľahka sa ho dotknite ľubovoľným prstom.</translation>
 <translation id="1977965994116744507">Ak chcete odomknúť zariadenie <ph name="DEVICE_TYPE" />, priblížte k nemu svoj telefón.</translation>
 <translation id="1978057560491495741">Odstránenie adresy</translation>
 <translation id="1979095679518582070">Vypnutím tejto funkcie neovplyvníte schopnosť tohto zariadenia odosielať informácie potrebné na fungovanie základných služieb, ako sú aktualizácie systému a zabezpečenie.</translation>
@@ -1974,6 +1975,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="313205617302240621">Zabudli ste heslo?</translation>
 <translation id="3132277757485842847">Nepodarilo sa udržať pripojenie k vášmu telefónu. Uistite sa, že je telefón nablízku, odomknutý a má zapnuté rozhranie Bluetooth a pripojenie Wi‑Fi.</translation>
 <translation id="3132996321662585180">Obnovovať denne</translation>
+<translation id="3134393957315651797">Vyberte stav experimentu <ph name="EXPERIMENT_NAME" />. Popis experimentu: <ph name="EXPERIMENT_DESCRIPTION" />.</translation>
 <translation id="3138624403379688522">Neplatný kód PIN. Zostáva vám tento počet pokusov: <ph name="RETRIES" />.</translation>
 <translation id="313963229645891001">Sťahuje sa: <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Predvolený žltý avatar</translation>
@@ -6623,6 +6625,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8398877366907290961">Pokračovať!</translation>
 <translation id="8400146488506985033">Spravovať ľudí</translation>
 <translation id="8401432541486058167">Zadajte PIN spojený s vašou inteligentnou kartou.</translation>
+<translation id="8404893580027489425">Senzor odtlačkov prstov je na pravej strane zariadenia <ph name="DEVICE_TYPE" />. Zľahka sa ho dotknite ľubovoľným prstom.</translation>
 <translation id="8405046151008197676">Získajte zhrnutie najdôležitejších súčastí poslednej aktualizácie</translation>
 <translation id="8407199357649073301">Úroveň denníka:</translation>
 <translation id="8408068190360279472">Sieť <ph name="NETWORK_TYPE" /> sa pripája</translation>

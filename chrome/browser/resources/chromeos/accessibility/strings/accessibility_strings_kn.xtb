@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">ಎರಡು ಬೆರಳುಗಳಿಂದ ಮೇಲಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ</translation>
 <translation id="1126928665165112660">ಇಟಾಲಿಕ್ ಅಲ್ಲ</translation>
 <translation id="113582498867142724"><ph name="NUM" /> ಐಟಂಗಳೊಂದಿಗೆ <ph name="TAG" /> ಸಂಗ್ರಹಣೆ</translation>
-<translation id="1146441463334103638">ಸ್ಕ್ರೀನ್ ಆನ್ ಅಥವಾ ಆಫ್ ಮಾಡಿ</translation>
 <translation id="1156488781945104845">ಪ್ರಸ್ತುತ ಸಮಯ</translation>
 <translation id="1161762950103988776">Jump</translation>
 <translation id="1164857107703583584">ವೆಬ್ ಪುಟ ಒಂದರ ಮೂಲಕ ಪರಿಣಾಮಕಾರಿಯಾಗಿ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ಜಂಪ್ ಕಮಾಂಡ್‌ಗಳನ್ನು ಬಳಸಬಹುದು.</translation>
@@ -256,6 +255,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}one{+#}other{+#}}</translation>
 <translation id="2792200646155001340">ಹಿಂದಿನ ಐಟಂಗೆ ತೆರಳಲು, ನೀವು ಒಂದು ಬೆರಳನ್ನು ಬಲದಿಂದ ಎಡಕ್ಕೂ ಸಹ ಸ್ವೈಪ್ ಮಾಡಬಹುದು. ಇದನ್ನು ಈಗ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="280499067616661124">ChromeVox ಪುಟದಲ್ಲಿ ಹುಡುಕಿ</translation>
+<translation id="2808001342598757276">ಅನ್‌ಡಾರ್ಕನ್ ಸ್ಕ್ರೀನ್</translation>
 <translation id="2811019999044652585">ಪರಿಕರ ಪಟ್ಟಿ ಮತ್ತು ಸಿಸ್ಟಂ ಟ್ರೇನಂತಹ ಪರದೆಯ ಇತರೆ ಭಾಗಗಳಿಗೆ ಹೋಗಲು, Control+ಫಾರ್ವರ್ಡ್ ಒತ್ತಿ. Chromebook ನಲ್ಲಿ, ಸಂಖ್ಯೆ 2 ಕೀ ಮೇಲ್ಭಾಗದಲ್ಲಿಯೇ ಫಾರ್ವರ್ಡ್ ಕೀ ಇರುತ್ತದೆ.</translation>
 <translation id="2811204574343810641">ಸಾಲು</translation>
 <translation id="2816868829355607410">ಅಭ್ಯಾಸ ಪ್ರದೇಶ: ಜಂಪ್ ಕಮಾಂಡ್‌ಗಳು</translation>
@@ -302,7 +302,6 @@
 <translation id="3082249673510793544">ಹಿಂದಕ್ಕೆ ಸ್ಕ್ರಾಲ್ ಮಾಡಿ</translation>
 <translation id="3084806535845658316">ಯಾವುದೇ ಟೈಪಿಂಗ್ ಎಕೋ ಇಲ್ಲ</translation>
 <translation id="3086746722712840547">ಟಿಪ್ಪಣಿ</translation>
-<translation id="308736057934395497">ಇದು ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ ಅನ್ನು ಆಫ್ ಮಾಡುವ ಮೂಲಕ ಗೌಪ್ಯತೆಯನ್ನು ಸುಧಾರಿಸುತ್ತದೆ, ಇದರಿಂದ ಅದು ಇತರರಿಗೆ ಗೋಚರಿಸುವುದಿಲ್ಲ. ಹುಡುಕಾಟ + ಪ್ರಖರತೆ ಹೆಚ್ಚಿಸುವ ಕೀಗಳನ್ನು ಒತ್ತುವ ಮೂಲಕ ನೀವು ಯಾವಾಗ ಬೇಕಾದರೂ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಮರಳಿ ಆನ್ ಮಾಡಬಹುದು.</translation>
 <translation id="3090227230165225418">ಡೌನ್‌ಲೋಡ್ ಅಧಿಸೂಚನೆಗಳನ್ನು ಪ್ರಕಟಿಸಿ</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">ಮುಂದಿನ ಹೆಗ್ಗುರುತು</translation>
@@ -313,7 +312,6 @@
 <translation id="3109724472072898302">ಕುಗ್ಗಿಸಿದ</translation>
 <translation id="311015743332597320">ನಾಲ್ಕು ಬೆರಳುಗಳಿಂದ ಬಲಕ್ಕೆ ಸ್ವೈಪ್‌ ಮಾಡಿ</translation>
 <translation id="3112457281078985179">ChromeVox ಅನ್ನು ಆನ್ ಅಥವಾ ಆಫ್ ಮಾಡಲು, Control+Alt+Z ಬಳಸಿ.</translation>
-<translation id="3115800313647508384">ಸ್ಕ್ರೀನ್ ಆಫ್ ಮಾಡಬೇಕೇ?</translation>
 <translation id="3131002934070407451">ಸಂಖ್ಯೆಗಳನ್ನು ಹೀಗೆ ಓದಿ:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">ಆಲಿವ್</translation>
@@ -721,6 +719,7 @@
 <translation id="6034000775414344507">ತಿಳಿ ಬೂದು</translation>
 <translation id="6036135911048686884">ಸ್ಪರ್ಶಿಸಿ ಮತ್ತು ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಮಾಡಿ</translation>
 <translation id="6037602951055904232">ಮುಂದಕ್ಕೆ ಪ್ಯಾನ್ ಮಾಡಿ</translation>
+<translation id="6044160928851315051">ಡಾರ್ಕನ್ ಸ್ಕ್ರೀನ್</translation>
 <translation id="6082768461603900813">ಬೇಸಿಕ್ ನ್ಯಾವಿಗೇಶನ್</translation>
 <translation id="609281021724813947">ಯಾವುದೇ ಹಿಂದಿನ ಸ್ಲೈಡರ್ ಇಲ್ಲ</translation>
 <translation id="6100239002225743044">ಒಂದು ಸಾಲು ಮೇಲಕ್ಕೆ ಸರಿಸಿ</translation>
@@ -791,7 +790,6 @@
 <translation id="6696967141280706829">ಮುನ್ನುಡಿ</translation>
 <translation id="6697092096875747123">ಹಿಂದಿನ ಕಾಂಬೊ ಬಾಕ್ಸ್</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{ಆಶ್ಚರ್ಯಸೂಚಕ }one{# ಆಶ್ಚರ್ಯಸೂಚಕಗಳು}other{# ಆಶ್ಚರ್ಯಸೂಚಕಗಳು}}</translation>
-<translation id="670717715607710284">ಸ್ಕ್ರೀನ್ ಆಫ್</translation>
 <translation id="6710213216561001401">ಹಿಂದಿನದು</translation>
 <translation id="6714813999819678458">ಹಿಂದಿನ ಹಂತದ 2 ಶಿರೋನಾಮೆ</translation>
 <translation id="6730312624811567147">ಹೋಮ್ ಅಥವಾ ಎಂಡ್‌ಗಾಗಿ ಹುಡುಕಾಟ ಎಡ ಅಥವಾ ಬಲ, ಕಂಟ್ರೋಲ್ ಹೋಮ್ ಅಥವಾ ಎಂಡ್‌ಗಾಗಿ ಹುಡುಕಾಟ ಕಂಟ್ರೋಲ್ ಎಡ ಅಥವಾ ಬಲ, ಪುಟ ಮೇಲೆ ಅಥವಾ ಕೆಳಗೆ ಮಾಡಲು ಹುಡುಕಾಟ ಮೇಲೆ ಅಥವಾ ಕೆಳಗೆ ಬಳಸಿ</translation>
@@ -993,7 +991,6 @@
 <translation id="816818801578874684">ಇದು ಮೊದಲ ಶೀರ್ಷಿಕೆ. ಮುಂದಿನ ಶೀರ್ಷಿಕೆಗೆ ಹೋಗಲು ಹುಡುಕಾಟ + H ಅನ್ನು ಒತ್ತಿರಿ.</translation>
 <translation id="8173092779156526980">ನಾಲ್ಕು ಬೆರಳುಗಳಿಂದ ಎಡಕ್ಕೆ ಸ್ವೈಪ್‌ ಮಾಡಿ</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{ಅಂಡರ್‌ಸ್ಕೋರ್}one{# ಅಂಡರ್‌ಸ್ಕೋರ್‌ಗಳು}other{# ಅಂಡರ್‌ಸ್ಕೋರ್‌ಗಳು}}</translation>
-<translation id="817529114347680055">ಸ್ಕ್ರೀನ್ ಆನ್ ಆಗಿದೆ</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">ಸಾಲು</translation>
 <translation id="8186185314313222077">ಪೂರ್ಣ ಪರದೆಯನ್ನು ಟಾಗಲ್ ಮಾಡಿ</translation>
@@ -1016,6 +1013,7 @@
 <translation id="8316881042119029234">ಓಲ್ಡ್ ಲೇಸ್</translation>
 <translation id="8324974933005349667">ಪಠ್ಯದಿಂದ ಧ್ವನಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸಿ</translation>
 <translation id="8326783648485765113">ಹುಲ್ಲುಹಾಸಿನ ಹಸಿರು</translation>
+<translation id="8328063869313048659">ಡಾರ್ಕ್ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{ಪೌಂಡ್ ಚಿಹ್ನೆಗಳು}one{# ಪೌಂಡ್ ಚಿಹ್ನೆಗಳು}other{# ಪೌಂಡ್ ಚಿಹ್ನೆಗಳು}}</translation>
 <translation id="8378855320830505539">ಪ್ರದೇಶ</translation>
 <translation id="8382679411218029383">ಸ್ವಯಂಪೂರ್ಣಗೊಳಿಸುವಿಕೆ ಇನ್‌ಲೈನ್ ಮತ್ತು ಪಟ್ಟಿ</translation>

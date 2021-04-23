@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">Prelazak dvama prstima prema gore</translation>
 <translation id="1126928665165112660">Nije kurziv</translation>
 <translation id="113582498867142724"><ph name="TAG" /> zbirka sa sljedećim brojem stavki: <ph name="NUM" /></translation>
-<translation id="1146441463334103638">Uključite ili isključite zaslon</translation>
 <translation id="1156488781945104845">Trenutačno vrijeme</translation>
 <translation id="1161762950103988776">Skok</translation>
 <translation id="1164857107703583584">Naredbe za preskakanje mogu se koristiti za učinkovito kretanje web-stranicama.</translation>
@@ -256,6 +255,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}one{+#}few{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Za pomicanje na prethodnu stavku također možete prijeći jednim prstom zdesna ulijevo. Isprobajte odmah.</translation>
 <translation id="280499067616661124">Traženje na stranici uz ChromeVox</translation>
+<translation id="2808001342598757276">Poništi zatamnjenje zaslona</translation>
 <translation id="2811019999044652585">Za prelazak na ostale dijelove zaslona, primjerice alatne trake ili traku sustava, pritisnite tipke Control i naprijed. Tipka  za naprijed na Chromebooku nalazi se neposredno iznad tipke broja 2.</translation>
 <translation id="2811204574343810641">Redak</translation>
 <translation id="2816868829355607410">Područje za vježbu: naredbe za preskakanje</translation>
@@ -302,7 +302,6 @@
 <translation id="3082249673510793544">Pomicanje unatrag</translation>
 <translation id="3084806535845658316">nema odjeka tipkanja</translation>
 <translation id="3086746722712840547">napom</translation>
-<translation id="308736057934395497">Time se poboljšava privatnost isključivanjem zaslona kako ne bi bio svima vidljiv. Zaslon uvijek možete ponovo uključiti tako da pritisnete tipke Pretraživanje + Pojačavanje svjetline.</translation>
 <translation id="3090227230165225418">Najavi obavijesti o preuzimanju</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">Sljedeći orijentir</translation>
@@ -313,7 +312,6 @@
 <translation id="3109724472072898302">Sažeto</translation>
 <translation id="311015743332597320">Prijeđite s četiri prsta udesno</translation>
 <translation id="3112457281078985179">ChromeVox možete uključiti ili isključiti pritiskom tipki Control + Alt + Z.</translation>
-<translation id="3115800313647508384">Isključiti zaslon?</translation>
 <translation id="3131002934070407451">Čitaj brojeve kao:</translation>
 <translation id="3134461040845705080">samozačitanje</translation>
 <translation id="3137663468179739624">Maslinasta</translation>
@@ -721,6 +719,7 @@
 <translation id="6034000775414344507">Svijetlosiva</translation>
 <translation id="6036135911048686884">Istražite dodirom</translation>
 <translation id="6037602951055904232">Pomiči se prema naprijed</translation>
+<translation id="6044160928851315051">Zatamni zaslon</translation>
 <translation id="6082768461603900813">Osnovno kretanje</translation>
 <translation id="609281021724813947">Nema prethodnog klizača</translation>
 <translation id="6100239002225743044">Premjesti jedan redak prema gore</translation>
@@ -791,7 +790,6 @@
 <translation id="6696967141280706829">Predgovor</translation>
 <translation id="6697092096875747123">Prethodni kombinirani okvir</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{uskličnik}one{# uskličnik}few{# uskličnika}other{# uskličnika}}</translation>
-<translation id="670717715607710284">Isključi zaslon</translation>
 <translation id="6710213216561001401">Prethodno</translation>
 <translation id="6714813999819678458">Prethodni naslov razine 2</translation>
 <translation id="6730312624811567147">Koristite tipku za pretraživanje i lijevu ili desnu strelicu za tipke Home ili End, tipku za pretraživanje, tipku Control i lijevu ili desnu strelicu za kombinaciju tipki Control Home ili Control End, tipku za pretraživanje i strelicu prema gore ili dolje za tipku Page Up ili Page Down</translation>
@@ -994,7 +992,6 @@
 <translation id="816818801578874684">Ovo je prvi naslov. Pritisnite tipku za pretraživanje i H da biste prešli na sljedeći naslov.</translation>
 <translation id="8173092779156526980">Prijeđite s četiri prsta ulijevo</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{donja crta}one{# donja crta}few{# donje crte}other{# donjih crta}}</translation>
-<translation id="817529114347680055">Uključi zaslon</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">redak</translation>
 <translation id="8186185314313222077">prebacivanje na cijeli zaslon</translation>
@@ -1017,6 +1014,7 @@
 <translation id="8316881042119029234">Boja stare čipke</translation>
 <translation id="8324974933005349667">Prilagodite postavke pretvaranja teksta u govor</translation>
 <translation id="8326783648485765113">Zelena kao trava</translation>
+<translation id="8328063869313048659">Uključivanje/isključivanje tamnog zaslona</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{znak funte}one{# znak funte}few{# znaka funte}other{# znakova funte}}</translation>
 <translation id="8378855320830505539">Regija</translation>
 <translation id="8382679411218029383">Automatsko dovršavanje retka i popisa</translation>

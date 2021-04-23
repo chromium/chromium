@@ -916,6 +916,7 @@
 <translation id="1974821797477522211">Желіге қосылу</translation>
 <translation id="1975841812214822307">Жою…</translation>
 <translation id="1976150099241323601">Қауіпсіздік құрылғысына кіру</translation>
+<translation id="1976928778492259496">Саусақ ізін оқу сканері <ph name="DEVICE_TYPE" /> құрылғысының сол жағында орналасқан. Оны кез келген саусақпен түртіңіз.</translation>
 <translation id="1977965994116744507"><ph name="DEVICE_TYPE" /> құрылғысының құлпын ашу үшін телефонды жақындатыңыз.</translation>
 <translation id="1978057560491495741">Мекенжайды өшіру</translation>
 <translation id="1979095679518582070">Бұл мүмкіндікті өшіріп қойсаңыз, құрылғының маңызды қызметтерге (мысалы, жүйенің жаңа нұсқалары және қауіпсіздік) қажетті ақпаратты жіберу мүмкіндігіне әсер етпейді.</translation>
@@ -1969,6 +1970,7 @@
 <translation id="313205617302240621">Құпия сөзді ұмытып қалдыңыз ба?</translation>
 <translation id="3132277757485842847">Телефоныңызбен байланыс орнату мүмкін болмады. Телефоныңыз жаныңызда, құлпы ашық және Bluetooth бен Wi-Fi қосылып тұруы керек.</translation>
 <translation id="3132996321662585180">Күнделікті жаңарту</translation>
+<translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> экспериментінің күйін таңдаңыз. Эксперименттің сипаттамасы: <ph name="EXPERIMENT_DESCRIPTION" />.</translation>
 <translation id="3138624403379688522">PIN коды жарамсыз. <ph name="RETRIES" /> әрекет қалды.</translation>
 <translation id="313963229645891001">Жүктеп алынуда, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Әдепкі сары түсті аватар</translation>
@@ -6618,6 +6620,7 @@
 <translation id="8398877366907290961">Бәрібір жалғастыру</translation>
 <translation id="8400146488506985033">Адамдарды басқару</translation>
 <translation id="8401432541486058167">Смарт картаңызбен байланыстырылған PIN кодын көрсетіңіз.</translation>
+<translation id="8404893580027489425">Саусақ ізін оқу сканері <ph name="DEVICE_TYPE" /> құрылғысының оң жағында орналасқан. Оны кез келген саусақпен түртіңіз.</translation>
 <translation id="8405046151008197676">Ең соңғы нұсқаға қатысты негізгі ақпарат алыңыз.</translation>
 <translation id="8407199357649073301">Журнал деңгейі:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> желісі, жалғануда</translation>

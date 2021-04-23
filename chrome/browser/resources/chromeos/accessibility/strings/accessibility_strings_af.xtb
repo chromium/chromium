@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">Swiep twee vingers boontoe</translation>
 <translation id="1126928665165112660">Nie skuinsdruk nie</translation>
 <translation id="113582498867142724"><ph name="TAG" /> versameling met <ph name="NUM" /> items</translation>
-<translation id="1146441463334103638">Wissel skerm aan of af</translation>
 <translation id="1156488781945104845">Huidige tyd</translation>
 <translation id="1161762950103988776">Spring</translation>
 <translation id="1164857107703583584">Springopdragte kan gebruik word om doeltreffend deur 'n webbladsy te navigeer.</translation>
@@ -256,6 +255,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Jy kan ook een vinger van regs na links swiep om na die vorige item te beweeg. Probeer dit nou.</translation>
 <translation id="280499067616661124">ChromeVox vind in bladsy</translation>
+<translation id="2808001342598757276">Verlig skerm</translation>
 <translation id="2811019999044652585">Druk Control+Vorentoe om na ander dele van die skerm, soos nutsbalke of die stelsellaai, te spring. Die Vorentoe-sleutel is direk bokant die nommer 2-sleutel op 'n Chromebook.</translation>
 <translation id="2811204574343810641">Ry</translation>
 <translation id="2816868829355607410">Oefenarea: springopdragte</translation>
@@ -302,7 +302,6 @@
 <translation id="3082249673510793544">Rollees terug</translation>
 <translation id="3084806535845658316">geen tikeggo nie</translation>
 <translation id="3086746722712840547">nota</translation>
-<translation id="308736057934395497">Dit verbeter privaatheid deur jou skerm af te skakel sodat ander dit nie kan sien nie. Jy kan die skerm altyd weer aanskakel deur Soek + Verhoog Helderheid te druk.</translation>
 <translation id="3090227230165225418">Kondig aflaaikennisgewings aan</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">Volgende landmerk</translation>
@@ -313,7 +312,6 @@
 <translation id="3109724472072898302">Ingevou</translation>
 <translation id="311015743332597320">Swiep vier vingers na regs</translation>
 <translation id="3112457281078985179">Gebruik Control+Alt+Z om ChromeVox aan of af te skakel.</translation>
-<translation id="3115800313647508384">Skakel skerm af?</translation>
 <translation id="3131002934070407451">Lees getalle as:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">Olyf</translation>
@@ -721,6 +719,7 @@
 <translation id="6034000775414344507">Liggrys</translation>
 <translation id="6036135911048686884">Raak Verken</translation>
 <translation id="6037602951055904232">Swenk vorentoe</translation>
+<translation id="6044160928851315051">Verdonker skerm</translation>
 <translation id="6082768461603900813">Basiese navigasie</translation>
 <translation id="609281021724813947">Geen vorige glyer nie</translation>
 <translation id="6100239002225743044">Skuif een reël op</translation>
@@ -791,7 +790,6 @@
 <translation id="6696967141280706829">Voorwoord</translation>
 <translation id="6697092096875747123">Vorige kombinasiekassie</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{uitroep}other{# uitroepe}}</translation>
-<translation id="670717715607710284">Skerm af</translation>
 <translation id="6710213216561001401">Vorige</translation>
 <translation id="6714813999819678458">Vorige vlak 2-opskrif</translation>
 <translation id="6730312624811567147">Gebruik Search Links of Regs vir Home of End, Search Control Links of Regs vir Control Home of End, Search Op of Af vir Page Up of Down</translation>
@@ -994,7 +992,6 @@
 <translation id="816818801578874684">Dit is die eerste opskrif. Druk Search + H om na die volgende opskrif toe te gaan.</translation>
 <translation id="8173092779156526980">Swiep vier vingers na links</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{onderstreep}other{# onderstrepe}}</translation>
-<translation id="817529114347680055">Skerm aan</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">ry</translation>
 <translation id="8186185314313222077">wissel volskerm</translation>
@@ -1017,6 +1014,7 @@
 <translation id="8316881042119029234">Oukant</translation>
 <translation id="8324974933005349667">Gepersonaliseerde teks-na-spraak-instellings</translation>
 <translation id="8326783648485765113">Grasgroen</translation>
+<translation id="8328063869313048659">Wissel donker skerm</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{pond}other{# pondtekens}}</translation>
 <translation id="8378855320830505539">Streek</translation>
 <translation id="8382679411218029383">Outovoltooiing inlyn en lys</translation>

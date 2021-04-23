@@ -1495,6 +1495,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 
       Wenn die Richtlinie auf „false“ gesetzt ist, steht <ph name="BOREALIS_NAME" /> nicht zur Verfügung. Wenn die Richtlinie nicht konfiguriert oder auf „true“ gesetzt ist, ist <ph name="BOREALIS_NAME" /> verfügbar, sofern die Richtlinie nicht durch eine andere Richtlinie oder Einstellung außer Kraft gesetzt wird.</translation>
 <translation id="2964373560810620158">Verhindern, dass Nutzer den <ph name="LACROS_NAME" />-Browser verwenden</translation>
+<translation id="2968177167006045252">Websites die Nutzung von „SharedArrayBuffers“ erlauben</translation>
 <translation id="2969797921412053304">Mit dieser Richtlinie wird festgelegt, welche URLs während des SAML-Flows auf dem Anmeldebildschirm die Remote-Attestierung der Geräteidentität verwenden dürfen.
 
       Eine URL darf HTTP-Header mit einer Antwort auf eine Remote-Nachweisabfrage zur Identitätsbestätigung empfangen, wenn sie mit einem der in dieser Richtlinie festgelegten Muster übereinstimmt. Dadurch werden die Geräteidentität und der Gerätestatus bestätigt.
@@ -1637,6 +1638,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="3072847235228302527">Nutzungsbedingungen für ein lokales Gerätekonto festlegen</translation>
 <translation id="3083259245974004342">Passwortschutz</translation>
 <translation id="3086995894968271156">Konfigurieren von Cast Receiver in <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3087346703976541109">Legt fest, ob „SharedArrayBuffers“ in einem nicht ursprungsübergreifend isolierten Kontext verwendet werden kann</translation>
 <translation id="3088557424854005813">Attestierung</translation>
 <translation id="3091832372132789233">Lädt den Akku von Geräten auf, die vorwiegend an eine externe Stromquelle angeschlossen werden.</translation>
 <translation id="3092059499596000593">Systemstandarddrucker als Standardeinstellung in der Druckvorschau verwenden</translation>
@@ -3030,6 +3032,7 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
       Wird die Richtlinie auf "false" gesetzt oder nicht konfiguriert, werden keine Informationen ausgegeben.
       Wenn sie auf "true" gesetzt wird, werden der Modellname, die Architektur und die maximale Taktung aller CPUs ausgegeben.</translation>
 <translation id="5124368997194894978">Starten bei anliegender Netzspannung aktivieren</translation>
+<translation id="5130213897914754028">Websites die Nutzung von „SharedArrayBuffers“ nicht erlauben</translation>
 <translation id="5141670636904227950">Standardtyp für die Lupe festlegen, die auf der Anmeldeseite aktiviert ist</translation>
 <translation id="5142301680741828703">Folgende URL-Muster immer in <ph name="PRODUCT_FRAME_NAME" /> darstellen</translation>
 <translation id="514870861066611127">Mit dieser Richtlinie wird festgelegt, ob personenbezogene Daten gesendet werden, zum Beispiel die Anmeldedaten für das Betriebssystem oder das <ph name="PRODUCT_NAME" />-Profil, der <ph name="PRODUCT_NAME" />-Profilname, der <ph name="PRODUCT_NAME" />-Profilpfad und der ausführbare Pfad für <ph name="PRODUCT_NAME" />.
@@ -3807,6 +3810,8 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="6111936128861357925">Easter Egg-Dinosaurierspiel zulassen</translation>
 <translation id="6123052603197028610">Anfragen an Google-Server dürfen keine Zeitstempel abrufen</translation>
 <translation id="6132506775968708399">Drittanbieter-Cookies blockieren</translation>
+<translation id="6132739217670763962">
+      Legt fest, ob „SharedArrayBuffers“ in einem nicht ursprungsübergreifend isolierten Kontext verwendet werden kann. Chrome setzt bei der Verwendung von „SharedArrayBuffers“ aus Gründen der Webkompatibilität ab Version 91 (25.05.2021) die ursprungsübergreifende Isolierung voraus. Weitere Informationen finden Sie hier: https://developer.chrome.com/blog/enabling-shared-array-buffer/.</translation>
 <translation id="6133088669883929098">Schlüsselgenerierung für alle Websites zulassen</translation>
 <translation id="6135398260575578389">Safe Browsing ist im erweiterten Modus aktiv. Dieser bietet einen besseren Schutz. Es müssen jedoch mehr Browserdaten mit Google geteilt werden.</translation>
 <translation id="6135895880862759946">Nutzern erlauben, sekundäre Profile zu erstellen und den Gastmodus im <ph name="LACROS_NAME" />-Browser zu verwenden</translation>

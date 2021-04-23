@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">Przesuń dwoma palcami w górę</translation>
 <translation id="1126928665165112660">Bez kursywy</translation>
 <translation id="113582498867142724">Kolekcja elementów <ph name="TAG" />. Liczba elementów: <ph name="NUM" /></translation>
-<translation id="1146441463334103638">Włącz/wyłącz ekran</translation>
 <translation id="1156488781945104845">Bieżąca godzina</translation>
 <translation id="1161762950103988776">Przejdź</translation>
 <translation id="1164857107703583584">Polecenia nawigacyjne ułatwiają poruszanie się po stronach internetowych.</translation>
@@ -256,6 +255,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+ #}few{+ #}many{+ #}other{+ #}}</translation>
 <translation id="2792200646155001340">Możesz też przesunąć jednym palcem z prawej do lewej, aby przejść do poprzedniego elementu. Zrób to teraz.</translation>
 <translation id="280499067616661124">ChromeVox – znajdź na stronie</translation>
+<translation id="2808001342598757276">Włącz ekran</translation>
 <translation id="2811019999044652585">Aby przejść do innego elementu ekranu, np. paska narzędzi lub obszaru powiadomień, naciśnij Ctrl + Dalej. W Chromebooku klawisz Dalej znajduje się tuż nad cyfrą 2.</translation>
 <translation id="2811204574343810641">Wiersz</translation>
 <translation id="2816868829355607410">Obszar ćwiczenia: polecenia nawigacyjne</translation>
@@ -302,7 +302,6 @@
 <translation id="3082249673510793544">Przewiń do tyłu</translation>
 <translation id="3084806535845658316">bez odczytywania podczas pisania</translation>
 <translation id="3086746722712840547">note</translation>
-<translation id="308736057934395497">To polecenie pozwala lepiej chronić prywatność, wyłączając Twój ekran, tak aby nikt nie mógł go zobaczyć. Zawsze możesz włączyć go ponownie, naciskając Wyszukaj + przycisk zwiększania jasności.</translation>
 <translation id="3090227230165225418">Powiadamiaj głosowo o pobieraniu</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">Następny punkt orientacyjny</translation>
@@ -313,7 +312,6 @@
 <translation id="3109724472072898302">Zwinięty</translation>
 <translation id="311015743332597320">Przesuń 4 palcami w prawo</translation>
 <translation id="3112457281078985179">Aby włączyć lub wyłączyć czytnik ChromeVox, naciśnij Ctrl + Alt + Z.</translation>
-<translation id="3115800313647508384">Wyłączyć ekran?</translation>
 <translation id="3131002934070407451">Odczytuj numery jako:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">Oliwkowy</translation>
@@ -721,6 +719,7 @@
 <translation id="6034000775414344507">Jasnoszary</translation>
 <translation id="6036135911048686884">Dotknij, by poznać.</translation>
 <translation id="6037602951055904232">Przesuń do przodu</translation>
+<translation id="6044160928851315051">Wygaś ekran</translation>
 <translation id="6082768461603900813">Podstawowa nawigacja</translation>
 <translation id="609281021724813947">Nie ma poprzedniego suwaka</translation>
 <translation id="6100239002225743044">Przejdź jeden wiersz wyżej</translation>
@@ -791,7 +790,6 @@
 <translation id="6696967141280706829">Wstęp</translation>
 <translation id="6697092096875747123">Poprzednie pole złożone</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{wykrzyknik}few{# wykrzykniki}many{# wykrzykników}other{# wykrzyknika}}</translation>
-<translation id="670717715607710284">Ekran wyłączony</translation>
 <translation id="6710213216561001401">Poprzedni</translation>
 <translation id="6714813999819678458">Poprzedni nagłówek poziomu 2</translation>
 <translation id="6730312624811567147">Klawisz wyszukiwania i strzałka w lewo lub prawo to klawisz Home lub End. Klawisz wyszukiwania, Control i strzałka w lewo lub prawo to Control z klawiszem Home lub End. Klawisz wyszukiwania i strzałka w górę lub w dół to klawisz Page Up lub Page Down</translation>
@@ -993,7 +991,6 @@
 <translation id="816818801578874684">To jest pierwszy nagłówek. Aby przejść do następnego, naciśnij klawisz wyszukiwania + H.</translation>
 <translation id="8173092779156526980">Przesuń 4 palcami w lewo</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{podkreślenie}few{# znaki podkreślenia}many{# znaków podkreślenia}other{# underscores}}</translation>
-<translation id="817529114347680055">Ekran włączony</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">wiersz</translation>
 <translation id="8186185314313222077">przełącz pełny ekran</translation>
@@ -1016,6 +1013,7 @@
 <translation id="8316881042119029234">Stare koronki</translation>
 <translation id="8324974933005349667">Dostosuj ustawienia zamiany tekstu na mowę</translation>
 <translation id="8326783648485765113">Zielony trawiasty</translation>
+<translation id="8328063869313048659">Włącz lub wyłącz ciemny ekran</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{funt}few{# znaki funta}many{# znaków funta}other{# pound signs}}</translation>
 <translation id="8378855320830505539">Region</translation>
 <translation id="8382679411218029383">Autouzupełnianie tekstu i listy</translation>

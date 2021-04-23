@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">Perbraukite dviem pirštais aukštyn</translation>
 <translation id="1126928665165112660">Ne kursyvas</translation>
 <translation id="113582498867142724"><ph name="TAG" /> rinkinys, kuriame yra <ph name="NUM" /> element.</translation>
-<translation id="1146441463334103638">Išjungti arba įjungti ekraną</translation>
 <translation id="1156488781945104845">Dabartinis laikas</translation>
 <translation id="1161762950103988776">Perėjimas</translation>
 <translation id="1164857107703583584">Naudojant perėjimo komandas galima efektyviai naršyti tinklalapį.</translation>
@@ -256,6 +255,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{dar #}one{dar #}few{dar #}many{dar #}other{dar #}}</translation>
 <translation id="2792200646155001340">Be to, galite perbraukti vienu pirštu iš dešinės į kairę, kad pereitumėte prie ankstesnio elemento. Išbandykite dabar.</translation>
 <translation id="280499067616661124">„ChromeVox“ radimas puslapyje</translation>
+<translation id="2808001342598757276">Pašviesinti ekraną</translation>
 <translation id="2811019999044652585">Jei norite pereiti į kitas ekrano dalis, pvz., įrankių juostas ar sistemos juostelę, paspauskite „Control“ ir „Forward“. „Chromebook“ klavišas „Forward“ yra iškart virš skaičiaus 2 klavišo.</translation>
 <translation id="2811204574343810641">Eilutė</translation>
 <translation id="2816868829355607410">Praktinių užduočių sritis: perėjimo komandos</translation>
@@ -302,7 +302,6 @@
 <translation id="3082249673510793544">Slinkti atgal</translation>
 <translation id="3084806535845658316">nėra įvedimo aido</translation>
 <translation id="3086746722712840547">pastaba</translation>
-<translation id="308736057934395497">Geriau užtikrinamas privatumas, išjungiant ekraną, kad kiti jo nematytų. Ekraną galite bet kada vėl įjungti paspausdami paieškos ir šviesumo mažinimo mygtukus.</translation>
 <translation id="3090227230165225418">Pateikti atsisiuntimo pranešimus</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">Kitas orientyras</translation>
@@ -313,7 +312,6 @@
 <translation id="3109724472072898302">Suskleista</translation>
 <translation id="311015743332597320">Perbraukite keturiais pirštais dešinėn</translation>
 <translation id="3112457281078985179">Jei norite įjungti arba išjungti „ChromeVox“, naudokite klavišus „Control“ + „Alt“ + Z.</translation>
-<translation id="3115800313647508384">Išjungti ekraną?</translation>
 <translation id="3131002934070407451">Skaityti numerius kaip:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">Alyvuogių spalva</translation>
@@ -721,6 +719,7 @@
 <translation id="6034000775414344507">Šviesiai pilka</translation>
 <translation id="6036135911048686884">Palieskite „Naršyti“.</translation>
 <translation id="6037602951055904232">Stumti pirmyn</translation>
+<translation id="6044160928851315051">Patamsinti ekraną</translation>
 <translation id="6082768461603900813">Pagrindinės naršymo funkcijos</translation>
 <translation id="609281021724813947">Nėra ankstesnio šliaužiklio</translation>
 <translation id="6100239002225743044">Perkelti į viršų per vieną eilutę</translation>
@@ -791,7 +790,6 @@
 <translation id="6696967141280706829">Įvadas</translation>
 <translation id="6697092096875747123">Ankstesnis išskleidžiamasis sąrašas</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{šauktukas}one{# šauktukas}few{# šauktukai}many{# šauktuko}other{# šauktukų}}</translation>
-<translation id="670717715607710284">Ekranas išjungtas</translation>
 <translation id="6710213216561001401">Ankstesnė</translation>
 <translation id="6714813999819678458">Ankstesnė 2 lygio antraštė</translation>
 <translation id="6730312624811567147">Naudokite paieškos klavišą ir rodyklę į kairę arba į dešinę, norėdami atlikti klavišo „Home“ ar „End“ funkcijas; „Search Control“ ir rodyklę į kairę arba į dešinę, norėdami atlikti klavišo „Control Home“ ar „End“ funkcijas; paieškos klavišą ir rodyklę į viršų arba į apačią, norėdami atlikti klavišo „Page Up“ ar „Page Down“ funkcijas</translation>
@@ -994,7 +992,6 @@
 <translation id="816818801578874684">Tai yra pirmoji antraštė. Jei norite pereiti prie kitos antraštės, paspauskite paieškos klavišą ir H.</translation>
 <translation id="8173092779156526980">Perbraukite keturiais pirštais kairėn</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{apatinis brūkšnys}one{# apatinis brūkšnys}few{# apatiniai brūkšniai}many{# underscores}other{# apatinių brūkšnių}}</translation>
-<translation id="817529114347680055">Ekranas įjungtas</translation>
 <translation id="8179976553408161302">Įvesti</translation>
 <translation id="8184828902145951186">eil.</translation>
 <translation id="8186185314313222077">viso ekrano režimo perjungimas</translation>
@@ -1017,6 +1014,7 @@
 <translation id="8316881042119029234">Šviesiai kreminė spalva</translation>
 <translation id="8324974933005349667">Suasmeninkite teksto į kalbą nustatymus</translation>
 <translation id="8326783648485765113">Žolės žalumo spalva</translation>
+<translation id="8328063869313048659">Perjungti tamsų ekraną</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{grotelių ženklas}one{# grotelių ženklas}few{# grotelių ženklai}many{# pound signs}other{# grotelių ženklas}}</translation>
 <translation id="8378855320830505539">Regionas</translation>
 <translation id="8382679411218029383">Automatinis eilutės ir sąrašo užbaigimas</translation>

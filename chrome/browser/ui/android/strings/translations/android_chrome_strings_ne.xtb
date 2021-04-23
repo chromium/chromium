@@ -304,7 +304,6 @@
 <translation id="3016635187733453316">यो डिभाइस इन्टरनेटमा जोडिएको कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="3029704984691124060">पासफ्रेजहरू मेल खाँदैनन्</translation>
 <translation id="3031225630520268969">सहायकको प्रयोग गरी भ्वाइस सर्च गर्ने कुराको सहमति लिने UI</translation>
-<translation id="3034163383943672781"><ph name="DATE" /> मा डाउनलोड सुरु हुने छ।</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />मद्दत प्राप्त गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">अर्को पटक यो साइट अझ छिटो खोल्नुहोस्</translation>
 <translation id="305593374596241526">स्थानसम्बन्धी सुविधा निष्क्रिय छ; <ph name="BEGIN_LINK" />Android का सेटिङहरू<ph name="END_LINK" /> मा गई यसलाई सक्रिय गर्नुहोस्।</translation>
@@ -700,7 +699,6 @@
 <translation id="572328651809341494">हालका ट्याबहरू</translation>
 <translation id="5723735397759933332">लाइट मोडले अब HTTPS पृष्ठमा भएका फोटोहरू अप्टिमाइज गरी तपाईंले गर्ने डेटाको खपत अझ कम गर्छ।</translation>
 <translation id="5726692708398506830">पृष्ठमा रहेको सबै कुरालाई अझ ठुलो बनाउनुहोस्</translation>
-<translation id="5732819098735351888">Wi-Fi मा कनेक्ट भएका बेला डाउनलोड सुरु हुने छ।</translation>
 <translation id="5733983706093266635">QR कोड सिर्जना गर्न सकिएन। URL मा <ph name="CHARACTER_LIMIT" /> भन्दा बढी वर्ण प्रयोग गरिएको छ।</translation>
 <translation id="5748802427693696783">मानक ट्याबहरूमा स्विच गरियो</translation>
 <translation id="5749068826913805084">Chromeलाई फाइलहरु डाउनलोड गर्न भण्डारणको पहुँच आवश्यक छ ।</translation>
@@ -779,7 +777,6 @@
 <translation id="6159335304067198720"><ph name="PERCENT" /> डेटा बचत</translation>
 <translation id="6186394685773237175">अरूले देखेको कुनै पनि पासवर्ड फेला परेन</translation>
 <translation id="6192907950379606605">फोटोका विवरणहरू पाउनुहोस्</translation>
-<translation id="6206830853671714236">कहिले डाउनलोड गर्नु पर्ने हो छनौट गर्नुहोस्</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> होइन?</translation>
 <translation id="6211386937064921208">यो पृष्ठको प्रिभ्यु हेरिँदै छ</translation>
 <translation id="6218096829563201111">उस्तै उत्पादनहरू खोज्नुहोस् <ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /></translation>
@@ -1027,6 +1024,7 @@
 <translation id="7791543448312431591">थप्नुहोस्</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> वटा ट्याब रिस्टोर गरिए</translation>
 <translation id="780301667611848630">भयो, धन्यवाद</translation>
+<translation id="7808889146555843082">तपाईंले यो पासवर्ड मेटाउनुभयो भने <ph name="SITE" /> मा रहेको तपाईंको खाता मेटिने छैन। <ph name="SITE" /> मा रहेको तपाईंको खाता अन्य मान्छेहरूबाट सुरक्षित राख्न आफ्नो पासवर्ड परिवर्तन गर्नुहोस् वा उक्त खाता मेटाउनुहोस्।</translation>
 <translation id="7810647596859435254">निम्नमार्फत खोल्नुहोस्…</translation>
 <translation id="7815484226266492798">लामो स्क्रिनसट</translation>
 <translation id="7821588508402923572">तपाईंले बचत गर्नुभएको डेटा यहाँ देखिने छ</translation>
@@ -1174,12 +1172,14 @@
 <translation id="8699120352855309748">यी भाषाहरू अनुवाद गर्ने प्रस्ताव नगरियोस्</translation>
 <translation id="8712637175834984815">भयो</translation>
 <translation id="8725066075913043281">पुन: प्रयास गर्नुहोस्</translation>
+<translation id="8730621377337864115">गरियो</translation>
 <translation id="8748850008226585750">सामग्रीहरू लुकाइएका छन्</translation>
 <translation id="8773160212632396039">अनुरोधसम्बन्धी प्रक्रिया अघि बढाइँदै छ</translation>
 <translation id="8788265440806329501">नेभिगेसनको इतिहास बन्द गरियो</translation>
 <translation id="8788968922598763114">पछिल्लो पटक बन्द गरिएको ट्याब पुनः खोल्नुहोस्</translation>
 <translation id="8798449543960971550">पढिसकिएको</translation>
 <translation id="8812260976093120287">केही वेबसाइटहरूमा तपाईंले माथि समर्थन गरिएका भुक्तानी सम्बन्धी अनुप्रयोगहरूमार्फत आफ्नो यन्त्रमा भुक्तानी गर्न सक्नुहुन्छ।</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">ट्याबका सामग्री प्रिभ्यू गर्ने सुविधा उपलब्ध छैन।</translation>
 <translation id="8820817407110198400">बुकमार्कहरू</translation>
 <translation id="883806473910249246">उक्त सामग्री डाउलोड गर्ने क्रममा एउटा त्रुटि भयो।</translation>
@@ -1217,10 +1217,10 @@
 <translation id="9063523880881406963">अनुरोध डेस्कटप साइट बन्द गर्नुहोस्</translation>
 <translation id="9065203028668620118">सम्पादन गर्नुहोस</translation>
 <translation id="9065383040763568503">Chrome लाई महत्त्वपूर्ण छैन जस्तो लागेको भण्डारण गरिएका डेटा (जस्तै सेटिङ सुरक्षित नगरिएका साइट वा तपाईंले खासै नखोल्ने साइटका भण्डारण गरिएका डेटा)</translation>
-<translation id="9069543557624799859"><ph name="TIME" /> मा डाउनलोड सुरु हुने छ।</translation>
 <translation id="9069999660519089861">सबै लेख पढिसकिएको छ</translation>
 <translation id="9070377983101773829">आवाज खोजी सुरु गर्नुहोस्</translation>
 <translation id="9074336505530349563">Google ले सिफारिस गरेका वैयक्तीकृत सामग्री प्राप्त गर्न साइन इन गरी सिंक गर्ने सुविधा सक्रिय गर्नुहोस्।</translation>
+<translation id="9074739597929991885">ब्लुटुथ</translation>
 <translation id="9086302186042011942">समक्रमण गर्दै</translation>
 <translation id="9086455579313502267">सञ्जाल पहुँच गर्न सकेन</translation>
 <translation id="9100505651305367705">समर्थित भएको बेला लेखहरूलाई सरलीकृत दृश्यमा देखाउने प्रस्ताव गर्नुहोस्</translation>

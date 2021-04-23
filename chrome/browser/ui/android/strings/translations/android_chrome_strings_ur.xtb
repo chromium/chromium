@@ -248,6 +248,7 @@
 <translation id="2612676031748830579">کارڈ نمبر</translation>
 <translation id="2625189173221582860">پاس ورڈ کاپی ہو گیا</translation>
 <translation id="2631006050119455616">بچت ہوئی</translation>
+<translation id="2645657967708199252">آپ کے <ph name="CONNECTION_TYPE" /> کنکشن سے آپ کا ڈاؤن لوڈ سست ہو سکتا ہے</translation>
 <translation id="2647434099613338025">زبان شامل کریں</translation>
 <translation id="2650751991977523696">فائل دوبارہ ڈاؤن لوڈ کریں؟</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# آڈیو فائل}other{# آڈیو فائلیں}}</translation>
@@ -260,6 +261,7 @@
 <translation id="2718846868787000099">اپنی ترجیحی زبانوں میں مواد دکھانے کے لیے، آپ جو سائٹس ملاحظہ کرتے ہیں وہ آپ کی ترجیحات دیکھ سکتی ہیں</translation>
 <translation id="2723001399770238859">آڈیو</translation>
 <translation id="2728754400939377704">سائٹ کے لحاظ سے ترتیب دیں</translation>
+<translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">فوری تلاش یا متعلقہ کارروائی کے لیے کسی لفظ پر تھپتھپائیں</translation>
 <translation id="2760989362628427051">اپنے آلہ کے بیٹری سیور یا گہری تھیم کے آن ہونے پر گہری تھیم آن کریں</translation>
 <translation id="2762000892062317888">ابھی ابھی</translation>
@@ -304,7 +306,6 @@
 <translation id="3016635187733453316">یہ یقینی بنائیں کہ آپ کا آلہ انٹرنیٹ سے منسلک ہے</translation>
 <translation id="3029704984691124060">پاس فریزز مماثل نہیں ہیں</translation>
 <translation id="3031225630520268969">‏اسسٹنٹ صوتی تلاش کی رضامندی ui</translation>
-<translation id="3034163383943672781">ڈاؤن لوڈ <ph name="DATE" /> کو شروع ہوگا۔</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />مدد حاصل کریں<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">اگلی بار اس سائٹ تک زیادہ تیزی سے رسائی حاصل کریں</translation>
 <translation id="305593374596241526">‏مقام آف ہے، <ph name="BEGIN_LINK" />Android کی ترتیبات<ph name="END_LINK" /> میں اسے آن کریں۔</translation>
@@ -437,6 +438,7 @@
 <translation id="3943557322767080599">‏اپنے Google اکاؤنٹ میں سائن ان کرنے پر Chrome سائن ان پرامپٹس دکھائیں</translation>
 <translation id="395206256282351086">تلاش اور سائٹ کی تجاویز غیر فعال ہیں</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{‏آپ کا صفحہ تیار ہونے پر Chrome اسے لوڈ کرے گا}other{‏آپ کے صفحات تیار ہونے پر Chrome انہیں لوڈ کرے گا}}</translation>
+<translation id="3962957115499249330">‏Wi-Fi پر جب یہ ڈاؤن لوڈ شروع ہوگا تو آپ کو ایک اطلاع دکھائی دے گی۔</translation>
 <translation id="3963007978381181125">‏پاس فریز کی مرموز کاری میں Google Pay سے ادائيگی کے طریقے اور پتے شامل نہیں ہوتے ہیں۔ آپ کے پاس فریز کا حامل شخص ہی آپ کے مرموز کردہ ڈیٹا کو پڑھ سکتا ہے۔ پاس فریز Google کو نہیں بھیجا جاتا ہے اور نہ ہی Google اسے اسٹور کرتا ہے۔ اگر آپ اپنا پاس فریز بھول جاتے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو آپ کو مطابقت پذیری کو دوبارہ ترتیب دینے کی ضرورت ہوگی۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">‏Chrome آپ کے پاس ورڈز چیک نہیں کر سکتا ہے</translation>
 <translation id="3974987681202239636">‏<ph name="APP_NAME" /> Chrome میں کھلے گی۔ جاری رکھ کر آپ، <ph name="BEGIN_LINK1" />Google کی سروس کی شرائط<ph name="END_LINK1" />، اور <ph name="BEGIN_LINK2" />Google Chrome اور Chrome OS کی اضافی سروس کی شرائط سے اتفاق کرتے ہیں<ph name="END_LINK2" />۔ <ph name="BEGIN_LINK3" />Google اکاؤنٹس کے لیے Family Link سے نظم کردہ رازداری کا نوٹس<ph name="END_LINK3" /> بھی لاگو ہوتا ہے۔</translation>
@@ -480,6 +482,7 @@
 <translation id="4256782883801055595">اوپن سورس لائسنسز</translation>
 <translation id="4263656433980196874">‏اسسٹنٹ صوتی تلاش رضامندی ui پوری اونچائی پر کھلی ہوئی ہے</translation>
 <translation id="4269820728363426813">لنک کا پتہ کاپی کریں</translation>
+<translation id="4290281343757112331">اس کے بجائے آپ بعد میں ڈاؤن لوڈ کریں؟</translation>
 <translation id="4298388696830689168">لنک کردہ سائٹس</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">بنیادی باتیں</translation>
@@ -622,6 +625,7 @@
 <translation id="5191251636205085390">ان نئی ٹیکنالوجیز کے بارے میں جانیں اور کنٹرول کریں جن کا مقصد فریق ثالث کے کوکیز کو تبدیل کرنا ہے</translation>
 <translation id="5193988420012215838">آپ کے کلپ بورڈ پر کاپی کر دیا گیا</translation>
 <translation id="5199929503336119739">دفتری پروفائل</translation>
+<translation id="5201464744567315552"><ph name="TIME" /> کو جب یہ ڈاؤن لوڈ شروع ہوگا تو آپ کو ایک اطلاع دکھائی دے گی۔</translation>
 <translation id="5204967432542742771">پاس ورڈ درج کریں</translation>
 <translation id="5210286577605176222">پچھلے ٹیب پر جائیں</translation>
 <translation id="5210365745912300556">ٹیب بند کریں</translation>
@@ -632,6 +636,7 @@
 <translation id="5230560987958996918"><ph name="SITE" /> قریبی بلوٹوتھ آلات کے لیے اسکین کرنا چاہتی ہے، مندرجہ ذیل آلات ملے ہیں:</translation>
 <translation id="5233638681132016545">نیا ٹیب</translation>
 <translation id="5250483651202458397">اسکرین شاٹ۔ بند کرنے کے لئے تھپتھپائیں۔</translation>
+<translation id="5262378156578470238"><ph name="DATE" /> کو جب یہ ڈاؤن لوڈ شروع ہوگا تو آپ کو ایک اطلاع دکھائی دے گی۔</translation>
 <translation id="526421993248218238">اس صفحہ کو لوڈ نہیں کیا جا سکتا</translation>
 <translation id="5271967389191913893">آلہ ڈاؤن لوڈ کیے جانے والے مواد کو نہیں کھول سکتا۔</translation>
 <translation id="5292796745632149097">اس پر بھیجیں</translation>
@@ -701,7 +706,6 @@
 <translation id="572328651809341494">حالیہ ٹیبز</translation>
 <translation id="5723735397759933332">‏لائٹ وضع اب HTTPS صفحات پر تصاویر کو بہتر بنا کر آپ کیلئے مزید ڈیٹا کی بچت کرتی ہے۔</translation>
 <translation id="5726692708398506830">صفحہ پر موجود ہر چیز کو اور بڑا کریں</translation>
-<translation id="5732819098735351888">‏ڈاؤن لوڈ Wi-Fi پر شروع ہوگا۔</translation>
 <translation id="5733983706093266635">‏QR کوڈ تخلیق نہیں کیا جا سکا۔ URL <ph name="CHARACTER_LIMIT" /> حروف سے زیادہ ہے۔</translation>
 <translation id="5748802427693696783">معیاری ٹیبز میں سوئچ کر دیا گیا</translation>
 <translation id="5749068826913805084">‏Chrome کو فائلیں ڈاؤن لوڈ کرنے کیلئے اسٹوریج تک رسائی درکار ہے۔</translation>
@@ -780,7 +784,6 @@
 <translation id="6159335304067198720"><ph name="PERCENT" /> ڈیٹا کی سیونگز</translation>
 <translation id="6186394685773237175">کوئی متاثرہ پاس ورڈ نہیں ملا</translation>
 <translation id="6192907950379606605">تصویری تفصیلات حاصل کریں</translation>
-<translation id="6206830853671714236">ڈاؤن لوڈ کرنے کا وقت منتخب کریں</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> نہیں؟</translation>
 <translation id="6211386937064921208">اس صفحہ کا پیش منظر دکھایا جا رہا ہے</translation>
 <translation id="6218096829563201111">ملتے جلتے پروڈکٹس تلاش کریں <ph name="BEGIN_NEW" />نیا<ph name="END_NEW" /></translation>
@@ -914,6 +917,7 @@
 <translation id="6981982820502123353">ایکسیسبیلٹی</translation>
 <translation id="6989267951144302301">ڈاؤن لوڈ نہیں کیا جا سکا</translation>
 <translation id="6995899638241819463">اگر پاس ورڈز ڈیٹا کی خلاف ورزی میں افشاء ہوتے ہیں تو وارننگ حاصل کریں</translation>
+<translation id="7001056293070445572">یہ فائل بڑی ہے (<ph name="FILE_SIZE" />)</translation>
 <translation id="7015203776128479407">مطابقت پذیری کا ابتدائی سیٹ اپ مکمل نہیں ہوا۔ مطابقت پذیری آف ہے۔</translation>
 <translation id="7022756207310403729">براؤزر میں کھولیں</translation>
 <translation id="702463548815491781">‏TalkBack یا سوئچ رسائی آن ہونے پر تجویز کردہ</translation>
@@ -1028,6 +1032,7 @@
 <translation id="7791543448312431591">شامل کریں</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> ٹیبز کو بحال کیا گیا</translation>
 <translation id="780301667611848630">نہیں شکریہ</translation>
+<translation id="7808889146555843082">اس پاس ورڈ کو حذف کرنے سے آپ کا اکاؤنٹ <ph name="SITE" /> سے حذف نہیں ہوگا۔ اپنا اکاؤنٹ دوسروں سے محفوظ رکھنے کیلئے اپنا پاس ورڈ تبدیل کریں یا <ph name="SITE" /> سے اپنا اکاؤنٹ حذف کریں۔</translation>
 <translation id="7810647596859435254">اس کے ساتھ کھولیں…</translation>
 <translation id="7815484226266492798">طویل اسکرین شاٹ</translation>
 <translation id="7821588508402923572">آپ کے ڈیٹا کی بچتیں یہاں دکھائی دیں گی</translation>
@@ -1175,12 +1180,14 @@
 <translation id="8699120352855309748">ان زبانوں کو ترجمہ کرنے کی پیشکش نہ کریں</translation>
 <translation id="8712637175834984815">سمجھ آ گئی</translation>
 <translation id="8725066075913043281">دوبارہ کوشش کریں</translation>
+<translation id="8730621377337864115">ہوگیا</translation>
 <translation id="8748850008226585750">مواد مخفی ہیں</translation>
 <translation id="8773160212632396039">درخواست پر کارروائی ہو رہی ہے</translation>
 <translation id="8788265440806329501">نیویگیشن کی سرگزشت بند ہے</translation>
 <translation id="8788968922598763114">آخری بند کردہ ٹیب دوبارہ کھولیں</translation>
 <translation id="8798449543960971550">پڑھا ہوا</translation>
 <translation id="8812260976093120287">کچھ ویب سائٹس پر، آپ اپنے آلہ پر اوپر موجود تعاون یافتہ ادائیگی ایپس کے ساتھ ادائیگی کر سکتے ہیں۔</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">پیش منظر کے ٹیب کا مواد قابل ملاحظہ نہیں ہے۔</translation>
 <translation id="8820817407110198400">بُک مارکس</translation>
 <translation id="883806473910249246">مواد ڈاؤن لوڈ کرتے وقت ایک خرابی پیش آ گئی۔</translation>
@@ -1218,10 +1225,10 @@
 <translation id="9063523880881406963">ڈیسک ٹاپ سائٹ کی درخواست کو آف کریں</translation>
 <translation id="9065203028668620118">تبدیل کریں</translation>
 <translation id="9065383040763568503">‏اسٹور شدہ وہ ڈیٹا جسے Chrome اہم نہیں سمجھتا ہے (جیسے، بغیر محفوظ کردہ ترتیبات والی سائٹس یا وہ جنہیں آپ اکثر ملاحظہ نہیں کرتے ہیں)</translation>
-<translation id="9069543557624799859">ڈاؤن لوڈ <ph name="TIME" /> بجے شروع ہوگا۔</translation>
 <translation id="9069999660519089861">کوئی بغیر پڑھا ہوا صفحہ نہیں ہے</translation>
 <translation id="9070377983101773829">صوتی تلاش شروع کریں</translation>
 <translation id="9074336505530349563">‏Google کی جانب سے تجویز کردہ ذاتی نوعیت کا مواد حاصل کرنے کیلئے، سائن ان کریں اور سِنک کو آن کریں</translation>
+<translation id="9074739597929991885">بلوٹوتھ</translation>
 <translation id="9086302186042011942">مطابقت پذیری کی جا رہی ہے</translation>
 <translation id="9086455579313502267">نیٹ ورک تک رسائی حاصل کرنے سے قاصر</translation>
 <translation id="9100505651305367705">تعاون یافتہ ہو نے پر، سادہ منظر میں مضامین دکھانے کی پیشکش کریں</translation>

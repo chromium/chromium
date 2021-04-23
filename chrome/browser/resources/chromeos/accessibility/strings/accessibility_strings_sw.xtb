@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">Telezesha vidole viwili kuelekea juu</translation>
 <translation id="1126928665165112660">Si italiki</translation>
 <translation id="113582498867142724"><ph name="TAG" /> mkusanyiko ulio na vipengee <ph name="NUM" /></translation>
-<translation id="1146441463334103638">Washa au uzime skrini</translation>
 <translation id="1156488781945104845">Saa ya sasa</translation>
 <translation id="1161762950103988776">Ruka</translation>
 <translation id="1164857107703583584">Unaweza kutumia amri za kuruka kusogeza kwenye sehemu mbalimbali za ukurasa wa wavuti kwa urahisi.</translation>
@@ -256,6 +255,7 @@ Ili ufungue menyu ya kivinjari cha Chrome, bonyeza Alt+F.</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Unaweza pia kutelezesha kidole kimoja kutoka kulia kuelekea kushoto ili uende kwenye kipengee kilichotangulia. Jaribu sasa.</translation>
 <translation id="280499067616661124">Tafuta ChromeVox katika ukurasa</translation>
+<translation id="2808001342598757276">Ongeza mwanga kwenye skrini</translation>
 <translation id="2811019999044652585">Ili kuruka kwenda sehemu nyingine ya skrini, kama vile upau wa vidhibiti au ubao wa aikoni, bonyeza kitufe cha Dhibiti + Mbele. Kitufe cha Sambaza kinapatikana juu ya kitufe cha nambari 2 kwenye Chromebook.</translation>
 <translation id="2811204574343810641">Safu mlalo</translation>
 <translation id="2816868829355607410">Sehemu ya mazoezi: Amri za kuruka</translation>
@@ -302,7 +302,6 @@ Ili ufungue menyu ya kivinjari cha Chrome, bonyeza Alt+F.</translation>
 <translation id="3082249673510793544">Sogeza nyuma</translation>
 <translation id="3084806535845658316">hakuna mwangwi wa kuchapa</translation>
 <translation id="3086746722712840547">dokezo</translation>
-<translation id="308736057934395497">Hali hii huboresha faragha kwa kuzima skrini yako ili isionekane na wengine. Unaweza kuwasha skrini tena wakati wowote kwa kubonyeza kitufe cha Utafutaji pamoja na kitufe cha kuongeza Mwangaza.</translation>
 <translation id="3090227230165225418">Bainisha arifa za upakuaji</translation>
 <translation id="3090532668523289635">kikundi</translation>
 <translation id="3093176084511590672">Kivutio kinachofuata</translation>
@@ -313,7 +312,6 @@ Ili ufungue menyu ya kivinjari cha Chrome, bonyeza Alt+F.</translation>
 <translation id="3109724472072898302">Imekunjwa</translation>
 <translation id="311015743332597320">Telezesha vidole vinne kuelekea kulia</translation>
 <translation id="3112457281078985179">Ili kuwasha au kuzima ChromeVox, tumia Control+Alt+Z.</translation>
-<translation id="3115800313647508384">Ungependa kuzima skrini?</translation>
 <translation id="3131002934070407451">Soma nambari ukitumia muundo wa:</translation>
 <translation id="3134461040845705080">soma tu</translation>
 <translation id="3137663468179739624">Rangi ya zeituni</translation>
@@ -721,6 +719,7 @@ Ili ufungue menyu ya kivinjari cha Chrome, bonyeza Alt+F.</translation>
 <translation id="6034000775414344507">Kijivu Isiyokolea</translation>
 <translation id="6036135911048686884">Gusa 'gundua'</translation>
 <translation id="6037602951055904232">Elekeza mbele</translation>
+<translation id="6044160928851315051">Punguza mwanga kwenye skrini</translation>
 <translation id="6082768461603900813">Usogezaji wa Kawaida</translation>
 <translation id="609281021724813947">Hakuna kitelezi kilichotangulia</translation>
 <translation id="6100239002225743044">Sogeza juu kwa mstari mmoja</translation>
@@ -791,7 +790,6 @@ Ili ufungue menyu ya kivinjari cha Chrome, bonyeza Alt+F.</translation>
 <translation id="6696967141280706829">Dibaji</translation>
 <translation id="6697092096875747123">Kikasha mseto kilichotangulia</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{alama hisi}other{alama hisi #}}</translation>
-<translation id="670717715607710284">Skrini imezimwa</translation>
 <translation id="6710213216561001401">Iliyopita</translation>
 <translation id="6714813999819678458">Kichwa cha ngazi ya 2 kilichotangulia</translation>
 <translation id="6730312624811567147">Tumia kitufe cha 'Search Left' au 'Search Right' badala ya 'Home' au 'End', 'Search Control Left' au 'Search Control Right' badala ya 'Control Home' au 'Control End', 'Search Up' au 'Search Down' badala ya 'Page Up' au 'Page Down'</translation>
@@ -994,7 +992,6 @@ Ili ufungue menyu ya kivinjari cha Chrome, bonyeza Alt+F.</translation>
 <translation id="816818801578874684">Hiki ndicho kichwa cha kwanza. Bonyeza kitufe cha Utafutaji na herufi 'H' ili uende kwenye kichwa kinachofuata.</translation>
 <translation id="8173092779156526980">Telezesha vidole vinne kuelekea kushoto</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{kistari cha chini}other{vistari # vya chini}}</translation>
-<translation id="817529114347680055">Skrini imewashwa</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">safu mlalo</translation>
 <translation id="8186185314313222077">geuza skrini nzima</translation>
@@ -1017,6 +1014,7 @@ Ili ufungue menyu ya kivinjari cha Chrome, bonyeza Alt+F.</translation>
 <translation id="8316881042119029234">Waridi Hafifu</translation>
 <translation id="8324974933005349667">Weka mapendeleo kwenye mipangilio ya Ubadilishaji wa Maandishi kwenda Usemi</translation>
 <translation id="8326783648485765113">Kijani cha Uani</translation>
+<translation id="8328063869313048659">Washa/zima skrini nyeusi</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{pauni}other{alama # za pauni}}</translation>
 <translation id="8378855320830505539">Eneo</translation>
 <translation id="8382679411218029383">Inayojijaza kiotomatiki kulingana na maandishi na orodha</translation>

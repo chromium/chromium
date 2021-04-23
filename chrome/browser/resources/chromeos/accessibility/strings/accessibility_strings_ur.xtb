@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">دو انگلیوں سے اوپر کی طرف سوائپ کریں</translation>
 <translation id="1126928665165112660">ترچھا نہیں ہے</translation>
 <translation id="113582498867142724"><ph name="NUM" /> آئٹمز کے ساتھ <ph name="TAG" /> مجموعہ</translation>
-<translation id="1146441463334103638">ٹوگل کر کے اسکرین آن یا آف کریں</translation>
 <translation id="1156488781945104845">موجودہ وقت</translation>
 <translation id="1161762950103988776">جمپ</translation>
 <translation id="1164857107703583584">جمپ کمانڈز کو کسی ویب صفحے کو مؤثر طریقے سے نیویگیٹ کرنے کیلئے استعمال کیا
@@ -257,6 +256,7 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="2783001728278437613">{COUNT,plural, =1{‎+#‎}other{‎+#‎}}</translation>
 <translation id="2792200646155001340">آپ گزشتہ آئٹم پر جانے کے لیے ایک انگلی کو دائیں سے بائیں بھی سوائپ کر سکتے ہیں۔ اسے ابھی آزمائیں۔</translation>
 <translation id="280499067616661124">‏ChromeVox صفحہ میں تلاش کریں</translation>
+<translation id="2808001342598757276">اسکرین کا اندھیرا پن ختم کریں</translation>
 <translation id="2811019999044652585">‏اسکرین کے دوسرے حصوں پر جانے کیلئے، مثلاً ٹول بارز یا سسٹم ٹرے، Control+فارورڈ کو دبائیں۔ Chromebook پر، فارورڈ کلید بالکل نمبر 2 کلید کے اوپر ہوتی ہے۔</translation>
 <translation id="2811204574343810641">قطار</translation>
 <translation id="2816868829355607410">پریکٹیس کرنے کی جگہ: جمپ کمانڈز</translation>
@@ -303,7 +303,6 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="3082249673510793544">پیچھے سکرول کریں</translation>
 <translation id="3084806535845658316">ٹائپنگ میں کوئی ایکو نہیں ہے</translation>
 <translation id="3086746722712840547">نوٹ</translation>
-<translation id="308736057934395497">‏آپ کی اسکرین کو آف کر کے یہ رازداری کو بہتر بناتا ہے اس لیے یہ دوسروں کو دکھائی نہیں دیتا۔ آپ کبھی بھی Search + Brightness up کو دباکر دوبارہ اسکرین آن کر سکتے ہیں۔</translation>
 <translation id="3090227230165225418">ڈاؤن لوڈ کی اطلاعات کا اعلان کریں</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">اگلا نمایاں مقام</translation>
@@ -314,7 +313,6 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="3109724472072898302">سکیڑا گیا</translation>
 <translation id="311015743332597320">چار انگلیوں سے دائیں طرف سوائپ کریں</translation>
 <translation id="3112457281078985179">‏ChromeVox کو آن یا آف کرنے کیلئے، Control+Alt+Z استعمال کریں۔</translation>
-<translation id="3115800313647508384">اسکرین آف کریں؟</translation>
 <translation id="3131002934070407451">نمبرز کو ذيل کے بطور پڑھیں:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">زیتون</translation>
@@ -722,6 +720,7 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="6034000775414344507">ہلکا خاکستری</translation>
 <translation id="6036135911048686884">ٹچ کر کے دریافت کریں</translation>
 <translation id="6037602951055904232">پین فارورڈ</translation>
+<translation id="6044160928851315051">اسکرین پر اندھیرا کریں</translation>
 <translation id="6082768461603900813">بنیادی نیویگیشن</translation>
 <translation id="609281021724813947">کوئی پچھلا سلائیڈر نہیں ہے</translation>
 <translation id="6100239002225743044">ایک لائن اوپر منتقل کریں</translation>
@@ -792,7 +791,6 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="6696967141280706829">دیباچہ</translation>
 <translation id="6697092096875747123">پچھلا کومبو باکس</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{فجائیہ}other{# فجائیے}}</translation>
-<translation id="670717715607710284">اسکرین آف کریں</translation>
 <translation id="6710213216561001401">گزشتہ</translation>
 <translation id="6714813999819678458">سطح 2 کی پچھلی سرخی</translation>
 <translation id="6730312624811567147">ہوم یا اینڈ کیلئے سرچ کلید کے ساتھ بائیں یا دائیں تیر والی کلید استعمال کریں، کنٹرول ہوم یا اینڈ کیلئے سرچ اور کنٹرول کلیدوں کے ساتھ بائیں یا دائیں تیر کی کلید استعمال کریں، پیج اَپ یا ڈاؤن کیلئے سرچ کلید کے ساتھ اوپر یا نیچے کے تیر والی کلید استعمال کریں</translation>
@@ -995,7 +993,6 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="816818801578874684">‏یہ پہلی سرخی ہے۔ دوسری سرخی پر جانے کیلئے Search + H دبائیں۔</translation>
 <translation id="8173092779156526980">چار انگلیوں سے بائیں طرف سوائپ کریں</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{انڈر اسکور}other{# انڈر اسکورز}}</translation>
-<translation id="817529114347680055">اسکرین آن کریں</translation>
 <translation id="8179976553408161302">انٹر</translation>
 <translation id="8184828902145951186">قطار</translation>
 <translation id="8186185314313222077">پوری اسکرین ٹوگل کریں</translation>
@@ -1018,6 +1015,7 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="8316881042119029234">پرانے لیس نما</translation>
 <translation id="8324974933005349667">ٹیکسٹ ٹو اسپیچ کی ترتیبات کو ذاتی نوعیت کا بنائیں</translation>
 <translation id="8326783648485765113">لان سبز</translation>
+<translation id="8328063869313048659">تاریک اسکرین ٹوگل کریں</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{پاؤنڈ}other{# پاؤنڈ کے نشانات}}</translation>
 <translation id="8378855320830505539">علاقہ</translation>
 <translation id="8382679411218029383">ان لائن اور فہرست میں خودکار تکمیل</translation>

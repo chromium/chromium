@@ -248,6 +248,7 @@
 <translation id="2612676031748830579">કાર્ડ નંબર</translation>
 <translation id="2625189173221582860">પાસવર્ડ કૉપિ કર્યો</translation>
 <translation id="2631006050119455616">બચાવેલ</translation>
+<translation id="2645657967708199252">તમારું <ph name="CONNECTION_TYPE" /> કનેક્શન કદાચ ડાઉનલોડ કરવાની તમારી પ્રક્રિયાને ધીમી કરી શકે છે</translation>
 <translation id="2647434099613338025">ભાષા ઉમેરો</translation>
 <translation id="2650751991977523696">ફાઇલને ફરીથી ડાઉનલોડ કરીએ?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ઑડિયો ફાઇલ}one{# ઑડિયો ફાઇલો}other{# ઑડિયો ફાઇલો}}</translation>
@@ -260,6 +261,7 @@
 <translation id="2718846868787000099">તમારી પસંદગીની ભાષાઓમાં કન્ટેન્ટ બતાવવા માટે, તમે મુલાકાત લો તે સાઇટ તમારી પસંદગીઓ જોઈ શકશે</translation>
 <translation id="2723001399770238859">ઑડિઓ</translation>
 <translation id="2728754400939377704">સાઇટ અનુસાર સૉર્ટ કરો</translation>
+<translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">ઝટપટ શોધ કરવા માટે શબ્દ પર ટૅપ કરો અથવા સંબંધિત ક્રિયાઓ જુઓ</translation>
 <translation id="2760989362628427051">જ્યારે તમારા ડિવાઇસની ઘેરી થીમ અથવા બૅટરી સેવર ચાલુ હોય ત્યારે ઘેરી થીમ ચાલુ કરો</translation>
 <translation id="2762000892062317888">હમણાં જ</translation>
@@ -304,7 +306,6 @@
 <translation id="3016635187733453316">ખાતરી કરો કે આ ડિવાઇસ ઇન્ટરનેટ સાથે કનેક્ટ કરેલું છે</translation>
 <translation id="3029704984691124060">પાસફ્રેઝેસ મેળ ખાતા નથી</translation>
 <translation id="3031225630520268969">Assistant વૉઇસ શોધની સંમતિ માટેનું UI</translation>
-<translation id="3034163383943672781">ડાઉનલોડ <ph name="DATE" />ના રોજ શરૂ થશે.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />સહાય મેળવો<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">આગલી વખતે આ સાઇટ પર ઝડપથી ઍક્સેસ મેળવો</translation>
 <translation id="305593374596241526">સ્થાન બંધ છે, તેને <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં ચાલુ કરો.</translation>
@@ -437,6 +438,7 @@
 <translation id="3943557322767080599">તમે તમારા Google એકાઉન્ટમાં સાઇન ઇન કરો ત્યારે Chromeમાં સાઇન ઇન માટેના સંકેતો બતાવો</translation>
 <translation id="395206256282351086">શોધ અને સાઇટ સૂચનો બંધ છે</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{તૈયાર હશે ત્યારે Chrome તમારું પેજ લોડ કરશે}one{તૈયાર હશે ત્યારે Chrome તમારાં પેજ લોડ કરશે}other{તૈયાર હશે ત્યારે Chrome તમારાં પેજ લોડ કરશે}}</translation>
+<translation id="3962957115499249330">આ ડાઉનલોડ જ્યારે વાઇ-ફાઇ પર શરૂ થાય, ત્યારે તમે નોટિફિકેશન જોશો.</translation>
 <translation id="3963007978381181125">પાસફ્રેઝ એન્ક્રિપ્શનમાં Google Payની ચુકવણી પદ્ધતિઓ અને ઍડ્રેસ સામેલ હોતા નથી. માત્ર તમારા પાસફ્રેઝ ધરાવતી કોઈ વ્યક્તિ જ તમારા એન્ક્રિપ્ટ કરેલા ડેટાને વાંચી શકે છે. Googleને પાસફ્રેઝ મોકલવામાં આવતો નથી કે તેના દ્વારા સંગ્રહિત કરવામાં આવતો નથી. જો તમે તમારો પાસફ્રેઝ ભૂલી જાઓ અથવા આ સેટિંગ બદલવા માંગતા હો, તો તમારે સિંકને રીસેટ કરવું પડશે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome તમારા પાસવર્ડ ચેક કરી શકતું નથી</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> Chromeમાં ખૂલશે. આગળ વધીને, તમે <ph name="BEGIN_LINK1" />Googleની સેવાની શરતો<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />Google Chrome તથા Chrome OSની વધારાની સેવાની શરતો<ph name="END_LINK2" /> સાથે સંમત થાઓ છો. <ph name="BEGIN_LINK3" />Family Link વડે મેનેજ કરવામાં આવતા Google એકાઉન્ટ માટેની પ્રાઇવસી નોટિસ<ph name="END_LINK3" /> પણ લાગુ.</translation>
@@ -480,6 +482,7 @@
 <translation id="4256782883801055595">ઓપન સોર્સ લાઇસન્સ</translation>
 <translation id="4263656433980196874">Assistant વૉઇસ શોધની સંમતિ માટેનું UI સંપૂર્ણ ઊંચાઈએ ખોલ્યું</translation>
 <translation id="4269820728363426813">લિંક સરનામું કૉપિ કરો</translation>
+<translation id="4290281343757112331">તેના બદલે પછીથી ડાઉનલોડ કરીએ?</translation>
 <translation id="4298388696830689168">લિંક કરેલી સાઇટ</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">પાયાગત</translation>
@@ -622,6 +625,7 @@
 <translation id="5191251636205085390">ત્રીજા પક્ષની કુકીને બદલે વાપરવાના ઉદ્દેશ્યથી બનાવવામાં આવેલી નવી ટેક્નોલોજી વિશે જાણો અને તેમને નિયંત્રિત કરો</translation>
 <translation id="5193988420012215838">તમારા ક્લિપબોર્ડ પર કૉપિ કરવામાં આવી</translation>
 <translation id="5199929503336119739">ઑફિસની પ્રોફાઇલ</translation>
+<translation id="5201464744567315552">આ ડાઉનલોડ જ્યારે <ph name="TIME" /> વાગ્યે શરૂ થાય, ત્યારે તમને નોટિફિકેશન પ્રાપ્ત થશે.</translation>
 <translation id="5204967432542742771">પાસવર્ડ દાખલ કરો</translation>
 <translation id="5210286577605176222">પાછલી ટૅબ પર જાઓ</translation>
 <translation id="5210365745912300556">ટૅબ બંધ કરો</translation>
@@ -632,6 +636,7 @@
 <translation id="5230560987958996918"><ph name="SITE" /> નજીકના બ્લૂટૂથ ડિવાઇસ માટે સ્કૅન કરવા માગે છે. નીચે મુજબના ડિવાઇસ મળ્યા છે:</translation>
 <translation id="5233638681132016545">નવું ટૅબ</translation>
 <translation id="5250483651202458397">સ્ક્રીનશૉટ. બંધ કરવા માટે ટૅપ કરો.</translation>
+<translation id="5262378156578470238">આ ડાઉનલોડ જ્યારે <ph name="DATE" />ના રોજ શરૂ થાય, ત્યારે તમે નોટિફિકેશન જોશો.</translation>
 <translation id="526421993248218238">આ પેજ લોડ કરી શકાતું નથી</translation>
 <translation id="5271967389191913893">ડિવાઇસ, ડાઉનલોડ કરવાની કન્ટેન્ટ ખોલી શકતું નથી.</translation>
 <translation id="5292796745632149097">આના પર મોકલો</translation>
@@ -701,7 +706,6 @@
 <translation id="572328651809341494">તાજેતરના ટેબ્સ</translation>
 <translation id="5723735397759933332">હવે લાઇટ મોડ HTTPS પેજ પર છબીઓને ઑપ્ટિમાઇઝ કરવાથી, તમારો વધુ ડેટા બચે છે.</translation>
 <translation id="5726692708398506830">પૃષ્ઠ પરની તમામ સામગ્રીને મોટી કરો</translation>
-<translation id="5732819098735351888">ડાઉનલોડ વાઇ-ફાઇ પર ચાલુ થશે.</translation>
 <translation id="5733983706093266635">QR કોડ બનાવી શકતાં નથી. URL <ph name="CHARACTER_LIMIT" />થી વધુ અક્ષરો ધરાવે છે.</translation>
 <translation id="5748802427693696783">માનક ટૅબ્સ પર સ્વિચ કરેલ છે</translation>
 <translation id="5749068826913805084">ફાઇલો ડાઉનલોડ કરવા માટે Chrome ને સ્ટોરેજ ઍક્સેસની જરૂર છે.</translation>
@@ -780,7 +784,6 @@
 <translation id="6159335304067198720"><ph name="PERCENT" /> ડેટા બચત</translation>
 <translation id="6186394685773237175">ચેડાં કરાયેલો કોઈ પાસવર્ડ મળ્યો નથી</translation>
 <translation id="6192907950379606605">છબીના વર્ણનો મેળવો</translation>
-<translation id="6206830853671714236">ડાઉનલોડ કરવાનો સમય પસંદ કરો</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> નથી?</translation>
 <translation id="6211386937064921208">આ પેજનો પ્રીવ્યૂ કરી રહ્યાં છીએ</translation>
 <translation id="6218096829563201111">આના જેવી પ્રોડક્ટ શોધો <ph name="BEGIN_NEW" />નવું<ph name="END_NEW" /></translation>
@@ -914,6 +917,7 @@
 <translation id="6981982820502123353">ઍક્સેસિબિલિટી</translation>
 <translation id="6989267951144302301">ડાઉનલોડ ન કરી શક્યા</translation>
 <translation id="6995899638241819463">જો ડેટા ઉલ્લંઘનમાં પાસવર્ડ જાહેર થાય તો તમને ચેતવણી આપવામાં આવે છે</translation>
+<translation id="7001056293070445572">જ્યારે ફાઇલ (<ph name="FILE_SIZE" />)થી મોટી હોય</translation>
 <translation id="7015203776128479407">આરંભિક સિંક સેટઅપ પૂરું થયું નથી. સિંક કરવાનું બંધ છે.</translation>
 <translation id="7022756207310403729">બ્રાઉઝરમાં ખોલો</translation>
 <translation id="702463548815491781">જ્યારે ટૉકબૅક અથવા સ્વિચ ઍક્સેસ ચાલુ હોય ત્યારે આપેલ સુઝાવ</translation>
@@ -1028,6 +1032,7 @@
 <translation id="7791543448312431591">ઉમેરો</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> ટૅબ રિસ્ટોર કરી</translation>
 <translation id="780301667611848630">નહીં, આભાર</translation>
+<translation id="7808889146555843082">આ પાસવર્ડ ડિલીટ કરવાથી <ph name="SITE" /> પરનું તમારું એકાઉન્ટ ડિલીટ થશે નહીં. <ph name="SITE" /> પરનું તમારું એકાઉન્ટ ડિલીટ કરો અથવા તમારો પાસવર્ડ બદલો કે જેથી તેને અન્ય લોકોથી સુરક્ષિત રાખી શકાય.</translation>
 <translation id="7810647596859435254">આની સાથે ખોલો…</translation>
 <translation id="7815484226266492798">લાંબો સ્ક્રીનશૉટ</translation>
 <translation id="7821588508402923572">તમારી ડેટા બચત અહીં દેખાશે</translation>
@@ -1175,12 +1180,14 @@
 <translation id="8699120352855309748">આ ભાષાઓનો અનુવાદ કરવાની ઑફર કરશો નહીં</translation>
 <translation id="8712637175834984815">સમજાઈ ગયું</translation>
 <translation id="8725066075913043281">ફરી પ્રયાસ કરો</translation>
+<translation id="8730621377337864115">થઈ ગયું</translation>
 <translation id="8748850008226585750">સામગ્રીઓ છુપાવેલ છે</translation>
 <translation id="8773160212632396039">વિનંતી પર પ્રક્રિયા ચાલુ છે</translation>
 <translation id="8788265440806329501">નૅવિગેશન ઇતિહાસ બંધ છે</translation>
 <translation id="8788968922598763114">છેલ્લે બંધ કરેલ ટૅબ ફરીથી ખોલો</translation>
 <translation id="8798449543960971550">વાંચેલાં</translation>
 <translation id="8812260976093120287">કેટલીક વેબસાઇટ પર, તમે સમર્થિત ચુકવણી ઍપ્લિકેશનો વડે ચુકવણી કરી શકો છો.</translation>
+<translation id="8814190375133053267">વાઇ-ફાઇ</translation>
 <translation id="881688628773363275">પ્રીવ્યૂ ટૅબનું કન્ટેન્ટ જોઈ શકાતું નથી.</translation>
 <translation id="8820817407110198400">બુકમાર્ક</translation>
 <translation id="883806473910249246">કન્ટેન્ટ ડાઉનલોડ કરતી વખતે એક ભૂલ આવી.</translation>
@@ -1218,10 +1225,10 @@
 <translation id="9063523880881406963">વિનંતી ડેસ્કટૉપ સાઇટ બંધ કરો</translation>
 <translation id="9065203028668620118">ફેરફાર કરો</translation>
 <translation id="9065383040763568503">Chromeને મહત્ત્વનો ન લાગતો હોય તેવો સ્ટોર કરેલો ડેટા (દા.ત., કોઇ સાચવેલા સેટિંગ ન હોય તેવી અથવા વારંવાર મુલાકાત ન લેવાતી હોય તેવી સાઇટ)</translation>
-<translation id="9069543557624799859"><ph name="TIME" /> વાગ્યે ડાઉનલોડ શરૂ થશે.</translation>
 <translation id="9069999660519089861">વાંચ્યા વગરનું કોઈ પેજ નથી</translation>
 <translation id="9070377983101773829">વૉઇસ શોધ પ્રારંભ કરો</translation>
 <translation id="9074336505530349563">Google દ્વારા સૂચવેલ વ્યક્તિગત કરેલ કન્ટેન્ટ મેળવવા માટે, સાઇન ઇન કરો અને સિંક કરવાનું ચાલુ કરો</translation>
+<translation id="9074739597929991885">બ્લૂટૂથ</translation>
 <translation id="9086302186042011942">સમન્વય કરી રહ્યું છે</translation>
 <translation id="9086455579313502267">નેટવર્ક ઍક્સેસ કરવામાં અક્ષમ છે</translation>
 <translation id="9100505651305367705">જ્યારે સપોર્ટ કરતું હોય, ત્યારે લેખો સરળ દૃશ્યમાં બતાવવાનું ઑફર કરો</translation>

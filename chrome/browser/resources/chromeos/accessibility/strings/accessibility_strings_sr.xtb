@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">Превлачите нагоре помоћу два прста</translation>
 <translation id="1126928665165112660">Није курзив</translation>
 <translation id="113582498867142724">Колекција <ph name="TAG" /> са <ph name="NUM" /> ставке(и)</translation>
-<translation id="1146441463334103638">Укључите или искључите екран</translation>
 <translation id="1156488781945104845">Тренутно време</translation>
 <translation id="1161762950103988776">Прелазак</translation>
 <translation id="1164857107703583584">Команде за прелазак могу да се користе за ефикасно кретање кроз веб-страницу.</translation>
@@ -256,6 +255,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{и још #}one{и још #}few{и још #}other{и још #}}</translation>
 <translation id="2792200646155001340">Можете и да превучете помоћу једног прста здесна налево да бисте прешли на претходну ставку. Испробајте.</translation>
 <translation id="280499067616661124">Функција ChromeVox-а Пронађи на страници</translation>
+<translation id="2808001342598757276">Осветли екран</translation>
 <translation id="2811019999044652585">Да бисте прелазили на друге делове екрана, као што су траке с алаткама или системска палета, притисните Control + тастер за кретање унапред. Тастер за кретање унапред на Chromebook-у се налази одмах изнад тастера са бројем 2.</translation>
 <translation id="2811204574343810641">Ред</translation>
 <translation id="2816868829355607410">Област за вежбање: команде за прелазак</translation>
@@ -302,7 +302,6 @@
 <translation id="3082249673510793544">Помера уназад</translation>
 <translation id="3084806535845658316">нема одјека знакова</translation>
 <translation id="3086746722712840547">белешка</translation>
-<translation id="308736057934395497">Овим се побољшава приватност тако што се искључује екран, па други не могу да га виде. Увек можете да поново укључите екран помоћу тастера за претрагу и тастера за повећавање осветљености.</translation>
 <translation id="3090227230165225418">Најави обавештења о преузимањима</translation>
 <translation id="3090532668523289635">група</translation>
 <translation id="3093176084511590672">Следеће обележје</translation>
@@ -313,7 +312,6 @@
 <translation id="3109724472072898302">Скупљено</translation>
 <translation id="311015743332597320">Превуците удесно помоћу четири прста</translation>
 <translation id="3112457281078985179">Да бисте укључили или искључили ChromeVox, користите Control + Alt + Z.</translation>
-<translation id="3115800313647508384">Желите да искључите екран?</translation>
 <translation id="3131002934070407451">Читај бројеве као:</translation>
 <translation id="3134461040845705080">само за читање</translation>
 <translation id="3137663468179739624">Маслинаста</translation>
@@ -721,6 +719,7 @@
 <translation id="6034000775414344507">Светлосива</translation>
 <translation id="6036135911048686884">Истражите додиром</translation>
 <translation id="6037602951055904232">Померање унапред</translation>
+<translation id="6044160928851315051">Затамни екран</translation>
 <translation id="6082768461603900813">Основно кретање</translation>
 <translation id="609281021724813947">Нема претходног клизача</translation>
 <translation id="6100239002225743044">Помери нагоре за један ред</translation>
@@ -791,7 +790,6 @@
 <translation id="6696967141280706829">Предговор</translation>
 <translation id="6697092096875747123">Претходни комбиновани оквир</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{знак узвика}one{# знак узвика}few{# знака узвика}other{# знакова узвика}}</translation>
-<translation id="670717715607710284">Искључи екран</translation>
 <translation id="6710213216561001401">Претходно</translation>
 <translation id="6714813999819678458">Претходно заглавље 2. нивоа</translation>
 <translation id="6730312624811567147">Користите тастер за претрагу и стрелицу улево или удесно за тастере Home или End, тастер за претрагу, тастер Control и стрелицу улево или удесно за комбинације тастера Control Home или Control End, тастер за претрагу и стрелицу нагоре или надоле за тастере Page Up или Page Down</translation>
@@ -994,7 +992,6 @@
 <translation id="816818801578874684">Ово је први наслов. Притисните тастер за претрагу + H да бисте прешли на следећи наслов.</translation>
 <translation id="8173092779156526980">Превуците улево помоћу четири прста</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{доња црта}one{# доња црта}few{# доње црте}other{# доњих црта}}</translation>
-<translation id="817529114347680055">Укључи екран</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">ред</translation>
 <translation id="8186185314313222077">укључи/искључи цео екран</translation>
@@ -1017,6 +1014,7 @@
 <translation id="8316881042119029234">Боја старе чипке</translation>
 <translation id="8324974933005349667">Персонализујте подешавања претварања текста у говор</translation>
 <translation id="8326783648485765113">Травнатозелена</translation>
+<translation id="8328063869313048659">Укључује/искључује тамни екран</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{знак „тараба“}one{# знак „тараба“}few{# знака „тараба“}other{# знакова „тараба“}}</translation>
 <translation id="8378855320830505539">Област</translation>
 <translation id="8382679411218029383">Аутоматско довршавање уметнутог текста и листе</translation>

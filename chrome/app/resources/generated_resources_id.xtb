@@ -919,6 +919,7 @@
 <translation id="1974821797477522211">Sambungkan ke jaringan</translation>
 <translation id="1975841812214822307">Buang...</translation>
 <translation id="1976150099241323601">Login ke Peranti Keamanan</translation>
+<translation id="1976928778492259496">Sensor sidik jari berada di bagian kiri <ph name="DEVICE_TYPE" />. Sentuh sensor menggunakan jari mana pun.</translation>
 <translation id="1977965994116744507">Dekatkan ponsel untuk membuka kunci <ph name="DEVICE_TYPE" /> Anda.</translation>
 <translation id="1978057560491495741">Hapus alamat</translation>
 <translation id="1979095679518582070">Menonaktifkan fitur ini tidak memengaruhi kemampuan perangkat ini dalam mengirimkan informasi yang diperlukan bagi layanan penting seperti keamanan dan update sistem.</translation>
@@ -1973,6 +1974,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="313205617302240621">Lupa sandi?</translation>
 <translation id="3132277757485842847">Kami tidak dapat mempertahankan koneksi dengan ponsel Anda. Pastikan ponsel berada di dekat Anda, tidak terkunci, serta Bluetooth dan Wi-Fi aktif.</translation>
 <translation id="3132996321662585180">Refresh tiap hari</translation>
+<translation id="3134393957315651797">Pilih status eksperimen untuk eksperimen <ph name="EXPERIMENT_NAME" />. Deskripsi eksperimen: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">PIN tidak valid. Tersisa <ph name="RETRIES" /> upaya lagi.</translation>
 <translation id="313963229645891001">Mendownload, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Avatar kuning default</translation>
@@ -6623,6 +6625,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8398877366907290961">Tetap lanjutkan</translation>
 <translation id="8400146488506985033">Kelola orang</translation>
 <translation id="8401432541486058167">Masukkan PIN yang terkait dengan kartu smart Anda.</translation>
+<translation id="8404893580027489425">Sensor sidik jari berada di bagian kanan <ph name="DEVICE_TYPE" />. Sentuh sensor menggunakan jari mana pun.</translation>
 <translation id="8405046151008197676">Dapatkan sorotan dari update terakhir</translation>
 <translation id="8407199357649073301">Tingkat Log:</translation>
 <translation id="8408068190360279472">Jaringan <ph name="NETWORK_TYPE" />, menyambungkan</translation>

@@ -1519,6 +1519,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
       Si cette règle est définie sur "False", <ph name="BOREALIS_NAME" /> ne sera pas disponible. Si la règle est définie sur "True" ou n'est pas définie, <ph name="BOREALIS_NAME" /> sera disponible si et seulement si aucune autre règle ni aucun autre paramètre ne le désactivent.</translation>
 <translation id="2964373560810620158">Empêcher les utilisateurs de se servir du navigateur <ph name="LACROS_NAME" /></translation>
+<translation id="2968177167006045252">Autoriser les sites à utiliser SharedArrayBuffers</translation>
 <translation id="2969797921412053304">Cette règle permet de déterminer quelles URL sont autorisées à procéder à une attestation à distance de l'identité de l'appareil concerné pendant le flux SAML sur l'écran de connexion.
 
       Plus précisément, si une URL correspond à l'un des formats spécifiés dans cette règle, elle pourra recevoir un en-tête HTTP contenant une réponse à une attestation à distance (qui certifie l'identité et l'état de l'appareil concerné).
@@ -1645,6 +1646,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="3072847235228302527">Définir les conditions d'utilisation d'un compte local de l'appareil</translation>
 <translation id="3083259245974004342">Protection par mot de passe</translation>
 <translation id="3086995894968271156">Configurer le récepteur Cast dans <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3087346703976541109">Indique si SharedArrayBuffers peut être utilisé dans un contexte non isolé multi-origine</translation>
 <translation id="3088557424854005813">Attestation</translation>
 <translation id="3091832372132789233">Recharge de la batterie des appareils connectés principalement à une source d'alimentation externe.</translation>
 <translation id="3092059499596000593">Définir l'imprimante système par défaut comme celle par défaut dans l'aperçu avant impression</translation>
@@ -3032,6 +3034,7 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
       Si la règle est définie sur "False" ou n'est pas définie, ces informations ne sont pas transmises.
       Si elle est définie sur "True", le modèle de chaque processeur ainsi que son architecture et la cadence maximale de son horloge sont transmis.</translation>
 <translation id="5124368997194894978">Activer le démarrage au branchement de l'alimentation CA (courant alternatif)</translation>
+<translation id="5130213897914754028">Empêcher les sites d'utiliser SharedArrayBuffers</translation>
 <translation id="5141670636904227950">Activer la loupe plein écran sur l'écran de connexion</translation>
 <translation id="5142301680741828703">Toujours rendre les formats d'URL suivants dans <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="514870861066611127">Cette règle détermine si les informations exploitables à des fins d'identification des utilisateurs, telles que la connexion au système d'exploitation, la connexion au profil <ph name="PRODUCT_NAME" />, le nom du profil <ph name="PRODUCT_NAME" />, le chemin d'accès au profil <ph name="PRODUCT_NAME" /> et le chemin d'accès exécutable <ph name="PRODUCT_NAME" />, doivent être enregistrées.
@@ -3821,6 +3824,12 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="6111936128861357925">Autoriser le jeu Easter Egg du dinosaure</translation>
 <translation id="6123052603197028610">Ne pas autoriser l'envoi de requêtes aux serveurs Google visant à récupérer les horodatages</translation>
 <translation id="6132506775968708399">Bloquer les cookies tiers</translation>
+<translation id="6132739217670763962">
+      Indique si SharedArrayBuffers peut être utilisé
+      dans un contexte non isolé multi-origine. Pour des raisons de compatibilité Web, Chrome nécessitera
+      un contexte isolé multi-origine lors de l'utilisation de SharedArrayBuffers à partir de Chrome 91
+      (25/05/2021). Pour en savoir plus, accédez à la page
+      https://developer.chrome.com/blog/enabling-shared-array-buffer/.</translation>
 <translation id="6133088669883929098">Autoriser tous les sites à utiliser la génération de clé</translation>
 <translation id="6135398260575578389">La navigation sécurisée est active et en mode de protection renforcée. Ce mode offre une meilleure sécurité, mais nécessite de partager plus d'informations de navigation avec Google.</translation>
 <translation id="6135895880862759946">Autoriser les utilisateurs à créer des profils secondaires et à utiliser le mode Invité dans le navigateur <ph name="LACROS_NAME" /></translation>

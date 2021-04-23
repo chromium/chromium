@@ -916,6 +916,7 @@ Hatua hii haiathiri programu au maudhui kwenye vifaa vingine.</translation>
 <translation id="1974821797477522211">Unganisha kwenye mtandao</translation>
 <translation id="1975841812214822307">Ondoa...</translation>
 <translation id="1976150099241323601">Ingia kwenye Kifaa Salama</translation>
+<translation id="1976928778492259496">Kitambua alama ya kidole kiko kwenye upande wa kushoto wa <ph name="DEVICE_TYPE" /> yako. Kiguse taratibu ukitumia kidole chochote.</translation>
 <translation id="1977965994116744507">Sogeza simu yako karibu ili ukifungue kifaa chako cha <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978057560491495741">Ondoa anwani</translation>
 <translation id="1979095679518582070">Hatua ya kuzima kipengele hiki haiathiri uwezo wa kifaa hiki wa kutuma maelezo yanayohitajika kutekeleza huduma muhimu kama vile masasisho ya mfumo na usalama.</translation>
@@ -1970,6 +1971,7 @@ na vitufe vya Ctrl, Alt pamoja na kitufe cha kupunguza Mwangaza ili usogeze mbal
 <translation id="313205617302240621">Je, umesahau nenosiri lako?</translation>
 <translation id="3132277757485842847">Tumeshindwa kudumisha muunganisho na simu yako. Hakikisha kwamba simu yako iko karibu, umeifungua na umewasha Bluetooth na Wi-Fi.</translation>
 <translation id="3132996321662585180">Onyesha upya kila siku</translation>
+<translation id="3134393957315651797">Chagua hali ya jaribio la <ph name="EXPERIMENT_NAME" />. Maelezo ya jaribio: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">PIN si sahihi. Umebakisha majaribio <ph name="RETRIES" />.</translation>
 <translation id="313963229645891001">Inapakua, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Ishara chaguomsingi manjano</translation>
@@ -6620,6 +6622,7 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="8398877366907290961">Endelea licha ya hayo</translation>
 <translation id="8400146488506985033">Simamia watu</translation>
 <translation id="8401432541486058167">Weka PIN inayohusiana na kadi yako mahiri.</translation>
+<translation id="8404893580027489425">Kitambua alama ya kidole kiko kwenye upande wa kulia wa <ph name="DEVICE_TYPE" /> yako. Kiguse taratibu ukitumia kidole chochote.</translation>
 <translation id="8405046151008197676">Pata muhtasari kutoka kwenye sasisho la hivi punde</translation>
 <translation id="8407199357649073301">Kiwango cha Kumbukumbu:</translation>
 <translation id="8408068190360279472">Mtandao wa <ph name="NETWORK_TYPE" />, inaunganisha</translation>

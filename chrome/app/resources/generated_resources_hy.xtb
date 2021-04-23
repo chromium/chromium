@@ -921,6 +921,7 @@
 <translation id="1974821797477522211">Միացում ցանցին</translation>
 <translation id="1975841812214822307">Հեռացնել…</translation>
 <translation id="1976150099241323601">Մուտք անվտանգության սարք</translation>
+<translation id="1976928778492259496">Մատնահետքի սկաները գտնվում է ձեր <ph name="DEVICE_TYPE" /> սարքի ձախ մասում։ Մատով թեթևակի հպեք դրան։</translation>
 <translation id="1977965994116744507"><ph name="DEVICE_TYPE" /> սարքն ապակողպելու համար մոտեցրեք հեռախոսը։</translation>
 <translation id="1978057560491495741">Հասցեի հեռացում</translation>
 <translation id="1979095679518582070">Այս գործառույթն անջատելու դեպքում ձեր սարքը նախկինի պես կուղարկի տվյալներ, որոնք անհրաժեշտ են հիմնական ծառայություններին (օրինակ՝ համակարգային թարմացումներին ու անվտանգությանը)։</translation>
@@ -1974,6 +1975,7 @@
 <translation id="313205617302240621">Մոռացե՞լ եք գաղտնաբառը:</translation>
 <translation id="3132277757485842847">Ձեր հեռախոսի հետ կապն ընդհատվել է։ Համոզվեք, որ այն մոտակայքում է, ապակողպված է, և որ Bluetooth-ն ու Wi-Fi-ը միացված են։</translation>
 <translation id="3132996321662585180">Թարմացնել ամեն օր</translation>
+<translation id="3134393957315651797">Ընտրեք «<ph name="EXPERIMENT_NAME" />» փորձարկման կարգավիճակը։ Փորձարկման նկարագրությունը՝ <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">PIN կոդն անվավեր է։ Մնաց <ph name="RETRIES" /> փորձ։</translation>
 <translation id="313963229645891001">Ներբեռնում, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Կանխադրված դեղին ավատար</translation>
@@ -6625,6 +6627,7 @@
 <translation id="8398877366907290961">Շարունակել</translation>
 <translation id="8400146488506985033">Օգտատերերի կառավարում</translation>
 <translation id="8401432541486058167">Մուտքագրեք PIN կոդը, որը կապված է ձեր խելացի քարտի հետ։</translation>
+<translation id="8404893580027489425">Մատնահետքի սկաները գտնվում է ձեր <ph name="DEVICE_TYPE" /> սարքի աջ մասում։ Մատով թեթևակի հպեք դրան։</translation>
 <translation id="8405046151008197676">Ծանոթացեք վերջին թարմացման մասին հիմնական տեղեկություններին</translation>
 <translation id="8407199357649073301">Գրառման մակարդակը՝</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> ցանց, միացում…</translation>

@@ -248,6 +248,7 @@
 <translation id="2612676031748830579">Номер на картата</translation>
 <translation id="2625189173221582860">Паролата е копирана</translation>
 <translation id="2631006050119455616">Спестени</translation>
+<translation id="2645657967708199252">Вашата <ph name="CONNECTION_TYPE" /> връзка може да забавя изтеглянето</translation>
 <translation id="2647434099613338025">Добавяне на език</translation>
 <translation id="2650751991977523696">Да се изтегли ли отново файлът?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# аудиофайл}other{# аудиофайла}}</translation>
@@ -260,6 +261,7 @@
 <translation id="2718846868787000099">Сайтовете, които посещавате, могат да виждат предпочитанията ви, за да ви показват съдържание на предпочитаните от вас езици</translation>
 <translation id="2723001399770238859">звук</translation>
 <translation id="2728754400939377704">Сортиране по сайт</translation>
+<translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">Докоснете дума, за да извършите незабавно търсене, или вижте свързаните действия</translation>
 <translation id="2760989362628427051">Включване на тъмната тема, когато тъмната тема на устройството или режимът за запазване на батерията в него са включени</translation>
 <translation id="2762000892062317888">току-що</translation>
@@ -304,7 +306,6 @@
 <translation id="3016635187733453316">Уверете се, че това устройство е свързано с интернет</translation>
 <translation id="3029704984691124060">Пропуските не са идентични</translation>
 <translation id="3031225630520268969">Потребителски интерфейс за даване на съгласие за ползване на Асистент при гласови търсения</translation>
-<translation id="3034163383943672781">Изтеглянето ще стартира на <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Получете помощ<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Стигнете до този сайт по-бързо следващия път</translation>
 <translation id="305593374596241526">Местоположението е изключено. Включете го от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
@@ -437,6 +438,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="3943557322767080599">Показване на подкани за влизане в Chrome, когато влизате в профила си в Google</translation>
 <translation id="395206256282351086">Предложенията за търсене и сайтове са деактивирани</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome ще зареди страницата при готовност}other{Chrome ще зареди страниците при готовност}}</translation>
+<translation id="3962957115499249330">Ще видите известие, когато изтеглянето започне през Wi-Fi.</translation>
 <translation id="3963007978381181125">Шифроването с пропуск не включва начините на плащане и адресите от Google Pay. Само някой с пропуска ви може да прочете шифрованите ви данни – той не се изпраща до Google, нито се съхранява от нас. Ако го забравите или искате да промените тази настройка, ще се наложи да нулирате синхронизирането. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome не може да провери паролите ви</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> ще се отвори в Chrome. С продължаването си приемате <ph name="BEGIN_LINK1" />Общите условия на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_LINK2" />. В сила е и <ph name="BEGIN_LINK3" />Съобщението за поверителност за профилите в Google, управлявани чрез Family Link<ph name="END_LINK3" />.</translation>
@@ -480,6 +482,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="4256782883801055595">Лицензи за отворен код</translation>
 <translation id="4263656433980196874">Потребителският интерфейс за даване на съгласие за ползване на Асистент при гласови търсения е отворен на пълната височина</translation>
 <translation id="4269820728363426813">Копиране на адреса на връзката</translation>
+<translation id="4290281343757112331">Да се изтегли ли по-късно вместо това?</translation>
 <translation id="4298388696830689168">Свързани сайтове</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Основни положения</translation>
@@ -622,6 +625,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="5191251636205085390">Научете повече за новите технологии, които имат за цел да заменят „бисквитките“ на трети страни, и как да ги контролирате</translation>
 <translation id="5193988420012215838">Копирано в буферната памет</translation>
 <translation id="5199929503336119739">Служебен потребителски профил</translation>
+<translation id="5201464744567315552">Ще видите известие, когато изтеглянето започне в <ph name="TIME" />.</translation>
 <translation id="5204967432542742771">Въведете парола</translation>
 <translation id="5210286577605176222">Преминаване към предишния раздел</translation>
 <translation id="5210365745912300556">Затваряне на раздела</translation>
@@ -632,6 +636,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="5230560987958996918"><ph name="SITE" /> иска да сканира за устройства с Bluetooth в близост. Намерени са следните:</translation>
 <translation id="5233638681132016545">Нов раздел</translation>
 <translation id="5250483651202458397">Екранна снимка. Докоснете за затваряне.</translation>
+<translation id="5262378156578470238">Ще видите известие, когато изтеглянето започне на <ph name="DATE" />.</translation>
 <translation id="526421993248218238">Тази страница не може да се зареди</translation>
 <translation id="5271967389191913893">Устройството не може да отвори съдържанието за изтегляне.</translation>
 <translation id="5292796745632149097">Изпращане до</translation>
@@ -701,7 +706,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="572328651809341494">Скорошни раздели</translation>
 <translation id="5723735397759933332">С олекотения режим вече спестявате повече данни, тъй като изображенията на HTTPS страниците се оптимизират.</translation>
 <translation id="5726692708398506830">Уголемяване на всички елементи на страницата</translation>
-<translation id="5732819098735351888">Изтеглянето ще стартира при връзка с Wi-Fi мрежа.</translation>
 <translation id="5733983706093266635">Не може да се създаде QR код. URL адресът е повече от <ph name="CHARACTER_LIMIT" /> знака.</translation>
 <translation id="5748802427693696783">Превключихте към стандартните раздели</translation>
 <translation id="5749068826913805084">Chrome се нуждае от достъп до хранилището, за да изтегля файлове.</translation>
@@ -780,7 +784,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="6159335304067198720"><ph name="PERCENT" /> икономия на данни</translation>
 <translation id="6186394685773237175">Няма намерени компрометирани пароли</translation>
 <translation id="6192907950379606605">Описания на изображенията</translation>
-<translation id="6206830853671714236">Избиране на време за изтегляне</translation>
 <translation id="6210748933810148297">Не сте <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Страницата се визуализира</translation>
 <translation id="6218096829563201111">Търсене на под. продукти <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
@@ -914,6 +917,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="6981982820502123353">Достъпност</translation>
 <translation id="6989267951144302301">Неуспешно изтегляне</translation>
 <translation id="6995899638241819463">Предупреждение за разкрити пароли при нарушение на сигурността на данните</translation>
+<translation id="7001056293070445572">Този файл е голям (<ph name="FILE_SIZE" />)</translation>
 <translation id="7015203776128479407">Първоначалното настройване на синхронизирането не бе завършено. Синхронизирането е изключено.</translation>
 <translation id="7022756207310403729">Отваряне в браузъра</translation>
 <translation id="702463548815491781">Препоръчва се, когато TalkBack или достъпът с превключване са задействани</translation>
@@ -1028,6 +1032,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="7791543448312431591">Добавяне</translation>
 <translation id="7798392620021911922">Бяха възстановени <ph name="TAB_COUNT" /> раздела</translation>
 <translation id="780301667611848630">Не, благодаря</translation>
+<translation id="7808889146555843082">Изтриването на тази парола няма да премахне профила ви за <ph name="SITE" />. За да го защитите от други хора, променете паролата си или изтрийте профила си за <ph name="SITE" />.</translation>
 <translation id="7810647596859435254">Отваряне със…</translation>
 <translation id="7815484226266492798">Дълга екранна снимка</translation>
 <translation id="7821588508402923572">Тук ще се показва количеството икономисани данни</translation>
@@ -1175,12 +1180,14 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="8699120352855309748">Да не се предлага превод от тези езици</translation>
 <translation id="8712637175834984815">Разбрах</translation>
 <translation id="8725066075913043281">Опитайте отново</translation>
+<translation id="8730621377337864115">Готово</translation>
 <translation id="8748850008226585750">Съдържанието е скрито</translation>
 <translation id="8773160212632396039">Заявката се обработва</translation>
 <translation id="8788265440806329501">Историята на навигацията е затворена</translation>
 <translation id="8788968922598763114">Повторно отваряне на последно затворения раздел</translation>
 <translation id="8798449543960971550">Прочетени</translation>
 <translation id="8812260976093120287">На някои уебсайтове можете да извършвате плащания чрез посочените по-горе поддържани приложения за плащане на устройството ви.</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">Не е възможна визуализация на съдържанието на раздела.</translation>
 <translation id="8820817407110198400">Отметки</translation>
 <translation id="883806473910249246">При изтеглянето на съдържанието възникна грешка.</translation>
@@ -1218,10 +1225,10 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="9063523880881406963">Изключване на функцията за заявяване на настолни сайтове</translation>
 <translation id="9065203028668620118">Редактиране</translation>
 <translation id="9065383040763568503">Съхранявани данни, които Chrome не счита за важни (напр. рядко посещавани сайтове или такива без запазени настройки)</translation>
-<translation id="9069543557624799859">Изтеглянето ще стартира в <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Няма непрочетени страници</translation>
 <translation id="9070377983101773829">Стартиране на гласово търсене</translation>
 <translation id="9074336505530349563">Влезте в профила си и включете синхронизирането, за да получавате персонализирано съдържание, предлагано от Google</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Синхронизира се</translation>
 <translation id="9086455579313502267">Няма достъп до мрежата</translation>
 <translation id="9100505651305367705">Извеждане на предложение статиите да се показват в опростен изглед, когато се поддържа</translation>

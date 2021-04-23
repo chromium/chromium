@@ -919,6 +919,7 @@
 <translation id="1974821797477522211">Collegati alla rete</translation>
 <translation id="1975841812214822307">Rimuovi...</translation>
 <translation id="1976150099241323601">Accedi a dispositivo di sicurezza</translation>
+<translation id="1976928778492259496">Il sensore di impronte digitali si trova sul lato sinistro del tuo <ph name="DEVICE_TYPE" />. Toccalo leggermente con un dito.</translation>
 <translation id="1977965994116744507">Avvicina il telefono per sbloccare il tuo dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978057560491495741">Rimuovi indirizzo</translation>
 <translation id="1979095679518582070">La disattivazione di questa funzionalità non influisce sulla capacità del dispositivo di inviare le informazioni necessarie per i servizi essenziali, ad esempio gli aggiornamenti di sistema e sicurezza.</translation>
@@ -1972,6 +1973,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="313205617302240621">Hai dimenticato la password?</translation>
 <translation id="3132277757485842847">Impossibile mantenere una connessione col telefono. Assicurati che il tuo telefono sia nelle vicinanze, sbloccato e che il Bluetooth e il Wi-Fi siano attivi.</translation>
 <translation id="3132996321662585180">Aggiorna ogni giorno</translation>
+<translation id="3134393957315651797">Seleziona lo stato dell'esperimento <ph name="EXPERIMENT_NAME" />. Descrizione dell'esperimento: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">PIN non valido. Hai ancora <ph name="RETRIES" /> tentativi a disposizione.</translation>
 <translation id="313963229645891001">Download in corso, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Avatar giallo predefinito</translation>
@@ -6621,6 +6623,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8398877366907290961">Procedi comunque</translation>
 <translation id="8400146488506985033">Gestisci utenti</translation>
 <translation id="8401432541486058167">Specifica il PIN associato alla tua smart card.</translation>
+<translation id="8404893580027489425">Il sensore di impronte digitali si trova sul lato destro del tuo <ph name="DEVICE_TYPE" />. Toccalo leggermente con un dito.</translation>
 <translation id="8405046151008197676">Scopri le novità principali dell'ultimo aggiornamento</translation>
 <translation id="8407199357649073301">Livello di log:</translation>
 <translation id="8408068190360279472">Rete <ph name="NETWORK_TYPE" />, collegamento in corso</translation>

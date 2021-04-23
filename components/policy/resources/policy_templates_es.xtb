@@ -1522,6 +1522,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
       Si se le asigna el valor false, <ph name="BOREALIS_NAME" /> no estará disponible. Si, por el contrario, se le asigna el valor true o no se le asigna ningún valor, <ph name="BOREALIS_NAME" /> estará disponible únicamente si no lo desactiva otra política o ajuste.</translation>
 <translation id="2964373560810620158">Evitar que los usuarios usen el navegador <ph name="LACROS_NAME" /></translation>
+<translation id="2968177167006045252">Permitir que los sitios usen SharedArrayBuffers</translation>
 <translation id="2969797921412053304">Esta política define las URL a las que se otorgará acceso para usar la atestación remota de identidades de dispositivos durante el flujo de SAML en la pantalla de inicio de sesión.
 
       En concreto, si una URL coincide con uno de los patrones proporcionados a través de esta política, la URL podrá recibir un encabezado HTTP con una respuesta a una prueba de atestación remota, certificando la identidad y el estado del dispositivo.
@@ -1664,6 +1665,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="3072847235228302527">Establecer los Términos del Servicio para una cuenta de dispositivo local</translation>
 <translation id="3083259245974004342">Protección de contraseñas</translation>
 <translation id="3086995894968271156">Configura Cast Receiver en <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3087346703976541109">Especifica si SharedArrayBuffers se puede usar en un contexto que no está aislado en orígenes cruzados</translation>
 <translation id="3088557424854005813">Atestación</translation>
 <translation id="3091832372132789233">Carga la batería de los dispositivos que están conectados principalmente a una fuente de alimentación externa.</translation>
 <translation id="3092059499596000593">Utilizar la impresora predeterminada del sistema como opción predeterminada en la vista previa de impresión</translation>
@@ -3061,6 +3063,7 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
       Si se le asigna el valor "true", se enviará información sobre el nombre del modelo, la arquitectura y la velocidad máxima de reloj
       de cada CPU.</translation>
 <translation id="5124368997194894978">Habilitar el inicio con CA (corriente alterna)</translation>
+<translation id="5130213897914754028">Impedir que los sitios usen SharedArrayBuffers</translation>
 <translation id="5141670636904227950">Establecer el tipo de lupa predeterminada habilitada en la pantalla de inicio de sesión</translation>
 <translation id="5142301680741828703">Mostrar siempre los patrones de URL indicados a continuación en <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="514870861066611127">Esta política determina si se recoge información que se pueda usar para identificar a usuarios, como el inicio de sesión en el SO, el inicio de sesión en el perfil de <ph name="PRODUCT_NAME" />, el nombre de perfil de <ph name="PRODUCT_NAME" />, la ruta del perfil de <ph name="PRODUCT_NAME" /> y la ruta del ejecutable de <ph name="PRODUCT_NAME" />.
@@ -3847,6 +3850,12 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="6111936128861357925">Permitir el juego del huevo de pascua de dinosaurio</translation>
 <translation id="6123052603197028610">No permitir que las consultas a los servidores de Google obtengan marcas de tiempo</translation>
 <translation id="6132506775968708399">Bloquear cookies de terceros</translation>
+<translation id="6132739217670763962">
+      Especifica si SharedArrayBuffers se puede usar en un contexto que no está aislado
+      en orígenes cruzados. Chrome requerirá el aislamiento en orígenes cruzados cuando se use
+      SharedArrayBuffers a partir de Chrome 91 (25-05-2021) por motivos de compatibilidad
+      con la Web. Información adicional disponible en:
+      https://developer.chrome.com/blog/enabling-shared-array-buffer/.</translation>
 <translation id="6133088669883929098">Permitir que todos los sitios utilicen la generación de claves</translation>
 <translation id="6135398260575578389">Navegación segura está activa en modo mejorado. Este modo proporciona mayor seguridad, pero requiere compartir más información de navegación con Google.</translation>
 <translation id="6135895880862759946">Permite que los usuarios creen perfiles secundarios y que usen el modo invitados en el navegador <ph name="LACROS_NAME" /></translation>

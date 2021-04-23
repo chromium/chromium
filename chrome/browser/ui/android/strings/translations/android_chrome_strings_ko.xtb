@@ -248,6 +248,7 @@
 <translation id="2612676031748830579">카드번호</translation>
 <translation id="2625189173221582860">비밀번호 복사됨</translation>
 <translation id="2631006050119455616">절약</translation>
+<translation id="2645657967708199252"><ph name="CONNECTION_TYPE" /> 연결로 인해 다운로드가 느려질 수 있습니다</translation>
 <translation id="2647434099613338025">언어 추가</translation>
 <translation id="2650751991977523696">파일을 다시 다운로드하시겠습니까?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{오디오 파일 #개}other{오디오 파일 #개}}</translation>
@@ -260,6 +261,7 @@
 <translation id="2718846868787000099">콘텐츠를 기본 언어로 표시하기 위해 방문하는 사이트에서 기본 설정을 확인할 수 있습니다.</translation>
 <translation id="2723001399770238859">오디오</translation>
 <translation id="2728754400939377704">사이트별 정렬</translation>
+<translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">단어를 탭하여 즉시 검색하거나 관련 작업을 확인하세요</translation>
 <translation id="2760989362628427051">기기의 어두운 테마 또는 절전 모드가 켜지면 어두운 테마를 사용 설정합니다.</translation>
 <translation id="2762000892062317888">방금 전</translation>
@@ -304,7 +306,6 @@
 <translation id="3016635187733453316">이 기기가 인터넷에 연결되어 있는지 확인하세요.</translation>
 <translation id="3029704984691124060">암호가 일치하지 않습니다.</translation>
 <translation id="3031225630520268969">어시스턴트 음성 검색 동의 UI</translation>
-<translation id="3034163383943672781"><ph name="DATE" />에 다운로드가 시작됩니다.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />도움 받기<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">다음번에 이 사이트로 빠르게 이동합니다.</translation>
 <translation id="305593374596241526">위치가 사용 중지되었습니다. <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서 사용 설정하세요.</translation>
@@ -437,6 +438,7 @@
 <translation id="3943557322767080599">Google 계정에 로그인하면 Chrome 로그인 메시지 표시</translation>
 <translation id="395206256282351086">검색 및 사이트 추천이 사용 중지됨</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{준비가 완료되면 Chrome에서 페이지를 로드합니다.}other{준비가 완료되면 Chrome에서 페이지를 로드합니다.}}</translation>
+<translation id="3962957115499249330">Wi-Fi를 통해 다운로드가 시작되면 알림이 표시됩니다.</translation>
 <translation id="3963007978381181125">Google Pay 결제 수단 및 주소는 암호로 암호화되지 않습니다. 암호를 아는 사람만 암호화된 데이터를 읽을 수 있습니다. 암호는 Google로 전송되거나 Google에 저장되지 않습니다. 암호가 기억나지 않거나 이 설정을 변경하려면 동기화를 재설정해야 합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome에서 비밀번호를 확인할 수 없습니다.</translation>
 <translation id="3974987681202239636"><ph name="APP_NAME" /> 앱이 Chrome에서 열립니다. 계속하면 <ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" />과 <ph name="BEGIN_LINK2" />Chrome 및 Chrome OS 추가 서비스 약관<ph name="END_LINK2" />에 동의하는 것으로 간주됩니다. <ph name="BEGIN_LINK3" />Family Link로 관리되는 Google 계정에 관한 개인정보처리방침<ph name="END_LINK3" />도 적용됩니다.</translation>
@@ -480,6 +482,7 @@
 <translation id="4256782883801055595">오픈소스 라이선스</translation>
 <translation id="4263656433980196874">어시스턴트 음성 검색 동의 UI가 전체 높이로 열림</translation>
 <translation id="4269820728363426813">링크 주소 복사</translation>
+<translation id="4290281343757112331">대신 나중에 다운로드하시겠습니까?</translation>
 <translation id="4298388696830689168">연결된 사이트</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">기본설정</translation>
@@ -622,6 +625,7 @@
 <translation id="5191251636205085390">타사 쿠키를 대체하는 것을 목표로 하는 새로운 기술을 알아보고 관리하세요.</translation>
 <translation id="5193988420012215838">클립보드에 복사됨</translation>
 <translation id="5199929503336119739">직장용 프로필</translation>
+<translation id="5201464744567315552"><ph name="TIME" />에 다운로드가 시작되면 알림이 표시됩니다.</translation>
 <translation id="5204967432542742771">비밀번호 입력</translation>
 <translation id="5210286577605176222">이전 탭으로 이동</translation>
 <translation id="5210365745912300556">탭 닫기</translation>
@@ -632,6 +636,7 @@
 <translation id="5230560987958996918"><ph name="SITE" />에서 주변 블루투스 기기를 검색하려고 합니다. 다음 기기가 발견되었습니다.</translation>
 <translation id="5233638681132016545">새 탭</translation>
 <translation id="5250483651202458397">스크린샷입니다. 닫으려면 탭하세요.</translation>
+<translation id="5262378156578470238"><ph name="DATE" />에 다운로드가 시작되면 알림이 표시됩니다.</translation>
 <translation id="526421993248218238">이 페이지를 로드할 수 없습니다.</translation>
 <translation id="5271967389191913893">기기에서 다운로드하려는 콘텐츠를 열 수 없습니다.</translation>
 <translation id="5292796745632149097">전송할 기기</translation>
@@ -701,7 +706,6 @@
 <translation id="572328651809341494">최근 탭</translation>
 <translation id="5723735397759933332">라이트 모드에서는 HTTPS 페이지의 이미지를 최적화하여 더 많은 데이터를 절약할 수 있습니다.</translation>
 <translation id="5726692708398506830">페이지의 모든 항목 확대</translation>
-<translation id="5732819098735351888">Wi-Fi에 연결되면 다운로드가 시작됩니다.</translation>
 <translation id="5733983706093266635">QR 코드를 만들 수 없습니다. URL이 <ph name="CHARACTER_LIMIT" />자(영문 기준)를 초과합니다.</translation>
 <translation id="5748802427693696783">일반 탭으로 전환됨</translation>
 <translation id="5749068826913805084">Chrome에서 파일을 다운로드하려면 저장소 액세스 권한이 있어야 합니다.</translation>
@@ -780,7 +784,6 @@
 <translation id="6159335304067198720"><ph name="PERCENT" /> 데이터 절약</translation>
 <translation id="6186394685773237175">유출된 비밀번호가 없습니다.</translation>
 <translation id="6192907950379606605">이미지 설명 보기</translation>
-<translation id="6206830853671714236">다운로드 시간 선택</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" />이(가) 아닌가요?</translation>
 <translation id="6211386937064921208">페이지 미리보기입니다.</translation>
 <translation id="6218096829563201111">비슷한 상품 검색 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
@@ -914,6 +917,7 @@
 <translation id="6981982820502123353">접근성</translation>
 <translation id="6989267951144302301">다운로드할 수 없음</translation>
 <translation id="6995899638241819463">데이터 유출로 인해 비밀번호가 노출된 경우 알림</translation>
+<translation id="7001056293070445572">파일이 너무 큼(<ph name="FILE_SIZE" />)</translation>
 <translation id="7015203776128479407">초기 동기화 설정이 완료되지 않았습니다. 동기화가 사용 중지되었습니다.</translation>
 <translation id="7022756207310403729">브라우저에서 열기</translation>
 <translation id="702463548815491781">음성 안내 지원 또는 스위치 제어를 사용 중일 때 권장됩니다.</translation>
@@ -1028,6 +1032,7 @@
 <translation id="7791543448312431591">추가</translation>
 <translation id="7798392620021911922">탭 <ph name="TAB_COUNT" />개를 복원했습니다.</translation>
 <translation id="780301667611848630">취소</translation>
+<translation id="7808889146555843082">비밀번호를 삭제해도 <ph name="SITE" /> 계정은 삭제되지 않습니다. 비밀번호를 변경하거나 <ph name="SITE" /> 계정을 삭제하여 보안을 유지하세요.</translation>
 <translation id="7810647596859435254">연결 프로그램...</translation>
 <translation id="7815484226266492798">긴 스크린샷</translation>
 <translation id="7821588508402923572">절약한 데이터 양이 여기에 표시됩니다</translation>
@@ -1175,12 +1180,14 @@
 <translation id="8699120352855309748">번역할지 묻지 않을 언어</translation>
 <translation id="8712637175834984815">확인</translation>
 <translation id="8725066075913043281">다시 시도하세요</translation>
+<translation id="8730621377337864115">완료</translation>
 <translation id="8748850008226585750">숨겨진 콘텐츠</translation>
 <translation id="8773160212632396039">요청 처리 중입니다.</translation>
 <translation id="8788265440806329501">탐색 기록 닫힘</translation>
 <translation id="8788968922598763114">마지막으로 닫은 탭 다시 열기</translation>
 <translation id="8798449543960971550">읽음</translation>
 <translation id="8812260976093120287">일부 웹사이트에서는 위의 결제 앱을 사용하여 내 기기에서 결제할 수 있습니다.</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">미리보기 탭 콘텐츠를 볼 수 없습니다.</translation>
 <translation id="8820817407110198400">북마크</translation>
 <translation id="883806473910249246">콘텐츠를 다운로드하는 중에 오류가 발생했습니다.</translation>
@@ -1218,10 +1225,10 @@
 <translation id="9063523880881406963">데스크톱 버전으로 보기 사용 중지</translation>
 <translation id="9065203028668620118">수정</translation>
 <translation id="9065383040763568503">Chrome에서 중요하다고 간주하지 않는 저장된 데이터(예: 저장된 설정이 없거나 사용자가 자주 방문하지 않는 사이트)</translation>
-<translation id="9069543557624799859"><ph name="TIME" />에 다운로드가 시작됩니다.</translation>
 <translation id="9069999660519089861">읽지 않은 페이지 없음</translation>
 <translation id="9070377983101773829">음성 검색 시작</translation>
 <translation id="9074336505530349563">Google에서 추천하는 맞춤 콘텐츠를 보려면 로그인하고 동기화를 사용 설정하세요.</translation>
+<translation id="9074739597929991885">블루투스</translation>
 <translation id="9086302186042011942">동기화 중</translation>
 <translation id="9086455579313502267">네트워크에 액세스할 수 없습니다.</translation>
 <translation id="9100505651305367705">지원되는 경우 간단히 보기로 기사를 표시하는 기능 제공</translation>

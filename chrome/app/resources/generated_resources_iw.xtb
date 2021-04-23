@@ -918,6 +918,7 @@
 <translation id="1974821797477522211">התחברות לרשת</translation>
 <translation id="1975841812214822307">הסרה...</translation>
 <translation id="1976150099241323601">צריך להיכנס אל התקן אבטחה</translation>
+<translation id="1976928778492259496">חיישן טביעות האצבע מופיע בצד שמאל של מכשיר <ph name="DEVICE_TYPE" /> שלך. יש לגעת בו בעדינות באחת האצבעות.</translation>
 <translation id="1977965994116744507">יש לקרב את הטלפון כדי לבטל את הנעילה של <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978057560491495741">הסרת הכתובת</translation>
 <translation id="1979095679518582070">השבתת התכונה הזו לא משפיעה על היכולת של המכשיר הזה לשלוח את המידע הדרוש עבור שירותים חיוניים, כמו אבטחה ועדכוני מערכת.</translation>
@@ -1973,6 +1974,7 @@
 <translation id="313205617302240621">שכחת את הסיסמה?</translation>
 <translation id="3132277757485842847">‏לא הצלחנו לשמור על החיבור לטלפון שלך. יש לוודא שהטלפון נמצא בקרבת מקום, אינו נעול, ושה-Bluetooth וה-Wi-Fi פועלים.</translation>
 <translation id="3132996321662585180">רענון מדי יום</translation>
+<translation id="3134393957315651797">יש לבחור מצב לניסוי <ph name="EXPERIMENT_NAME" />. תיאור הניסוי: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">קוד האימות לא חוקי. נותרו לך עוד <ph name="RETRIES" /> ניסיונות.</translation>
 <translation id="313963229645891001">בהורדה, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">דמות ברירת מחדל צהובה</translation>
@@ -6624,6 +6626,7 @@
 <translation id="8398877366907290961">להמשיך בכל זאת</translation>
 <translation id="8400146488506985033">ניהול משתמשים</translation>
 <translation id="8401432541486058167">עליך לציין את קוד האימות המשויך לכרטיס החכם שלך.</translation>
+<translation id="8404893580027489425">חיישן טביעות האצבע מופיע בצד ימין של מכשיר <ph name="DEVICE_TYPE" /> שלך. יש לגעת בו בעדינות באחת האצבעות.</translation>
 <translation id="8405046151008197676">ריכזנו עבורך את הפרטים החשובים לגבי העדכון האחרון</translation>
 <translation id="8407199357649073301">רמת הרישום ביומן:</translation>
 <translation id="8408068190360279472">רשת <ph name="NETWORK_TYPE" />, מתבצעת התחברות</translation>

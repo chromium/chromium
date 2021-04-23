@@ -248,6 +248,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="2612676031748830579">Numer karty</translation>
 <translation id="2625189173221582860">Hasło zostało skopiowane</translation>
 <translation id="2631006050119455616">Zaoszczędzono</translation>
+<translation id="2645657967708199252">Połączenie <ph name="CONNECTION_TYPE" /> może spowalniać pobieranie</translation>
 <translation id="2647434099613338025">Dodaj język</translation>
 <translation id="2650751991977523696">Czy pobrać plik ponownie?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# plik dźwiękowy}few{# pliki dźwiękowe}many{# plików dźwiękowych}other{# pliku dźwiękowego}}</translation>
@@ -260,6 +261,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="2718846868787000099">Odwiedzane witryny będą miały dostęp do Twoich ustawień, by mogły pokazywać zawartość w wybranym przez Ciebie języku</translation>
 <translation id="2723001399770238859">dźwięk</translation>
 <translation id="2728754400939377704">Sortuj według witryny</translation>
+<translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">Kliknij słowo, by szybko je wyszukać lub wyświetlić powiązane czynności</translation>
 <translation id="2760989362628427051">Włącz ciemny motyw, gdy urządzenie ma włączony ciemny motyw lub Oszczędzanie baterii</translation>
 <translation id="2762000892062317888">przed chwilą</translation>
@@ -304,7 +306,6 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="3016635187733453316">Sprawdź, czy to urządzenie jest połączone z internetem</translation>
 <translation id="3029704984691124060">Hasła nie pasują do siebie</translation>
 <translation id="3031225630520268969">Ekran wyrażenia zgody na wyszukiwanie głosowe z pomocą Asystenta</translation>
-<translation id="3034163383943672781">Pobieranie rozpocznie się <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Poproś o pomoc<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Następnym razem otwórz tę stronę szybciej</translation>
 <translation id="305593374596241526">Lokalizacja jest wyłączona. Włącz ją w <ph name="BEGIN_LINK" />Ustawieniach Androida<ph name="END_LINK" />.</translation>
@@ -437,6 +438,7 @@ Prace nad rozwojem Piaskownicy prywatności wciąż trwają. Jest ona dostępna 
 <translation id="3943557322767080599">Podczas logowania się na konto Google będą występować prośby o zalogowanie się w Chrome</translation>
 <translation id="395206256282351086">Podpowiadanie stron internetowych i wyszukiwanych słów jest wyłączone</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome wczyta stronę, gdy będzie gotowa}few{Chrome wczyta strony, gdy będą gotowe}many{Chrome wczyta strony, gdy będą gotowe}other{Chrome wczyta strony, gdy będą gotowe}}</translation>
+<translation id="3962957115499249330">Gdy rozpocznie się to pobieranie przez Wi-Fi, zobaczysz powiadomienie.</translation>
 <translation id="3963007978381181125">Szyfrowanie hasłem nie obejmuje form płatności ani adresów w Google Pay. Twoje zaszyfrowane dane może odczytać tylko ktoś znający hasło. Google nie otrzyma Twojego hasła ani nie będzie go przechowywać. Jeśli je zapomnisz lub zechcesz zmienić to ustawienie, konieczne będzie zresetowanie synchronizacji. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome nie może sprawdzić Twoich haseł</translation>
 <translation id="3974987681202239636">Aplikacja <ph name="APP_NAME" /> zostanie otwarta w Chrome. Przechodząc dalej, wyrażasz zgodę na <ph name="BEGIN_LINK1" />Warunki korzystania z usług Google<ph name="END_LINK1" /> oraz <ph name="BEGIN_LINK2" />Dodatkowe warunki korzystania z Google Chrome i Chrome OS<ph name="END_LINK2" />. Obowiązują też <ph name="BEGIN_LINK3" />Informacje na temat ochrony prywatności na kontach Google zarządzanych przez Family Link<ph name="END_LINK3" />.</translation>
@@ -480,6 +482,7 @@ Prace nad rozwojem Piaskownicy prywatności wciąż trwają. Jest ona dostępna 
 <translation id="4256782883801055595">Licencje open source</translation>
 <translation id="4263656433980196874">Ekran wyrażenia zgody na wyszukiwanie głosowe z pomocą Asystenta został otwarty na pełną wysokość</translation>
 <translation id="4269820728363426813">Kopiuj adres linku</translation>
+<translation id="4290281343757112331">Pobrać później?</translation>
 <translation id="4298388696830689168">Połączone strony</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Podstawowe</translation>
@@ -622,6 +625,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5191251636205085390">Poznaj nowe technologie, które będą używane zamiast plików cookie innych firm, i naucz się je kontrolować</translation>
 <translation id="5193988420012215838">Skopiowane do schowka</translation>
 <translation id="5199929503336119739">Profil służbowy</translation>
+<translation id="5201464744567315552">Gdy to pobieranie rozpocznie się o <ph name="TIME" />, zobaczysz powiadomienie.</translation>
 <translation id="5204967432542742771">Wpisz hasło</translation>
 <translation id="5210286577605176222">Przejdź do poprzedniej karty</translation>
 <translation id="5210365745912300556">Zamknij kartę</translation>
@@ -632,6 +636,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5230560987958996918"><ph name="SITE" /> chce wyszukać urządzenia Bluetooth w pobliżu. Znaleziono te urządzenia:</translation>
 <translation id="5233638681132016545">Nowa karta</translation>
 <translation id="5250483651202458397">Zrzut ekranu. Kliknij, by zamknąć.</translation>
+<translation id="5262378156578470238">Gdy to pobieranie rozpocznie się <ph name="DATE" />, zobaczysz powiadomienie.</translation>
 <translation id="526421993248218238">Nie udało się wczytać tej strony</translation>
 <translation id="5271967389191913893">Na tym urządzeniu nie można otworzyć treści, które chcesz pobrać.</translation>
 <translation id="5292796745632149097">Wyślij na</translation>
@@ -701,7 +706,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="572328651809341494">Ostatnie karty</translation>
 <translation id="5723735397759933332">Wersja uproszczona oszczędza teraz więcej danych dzięki optymalizacji obrazów na stronach HTTPS.</translation>
 <translation id="5726692708398506830">Powiększ całą zawartość strony</translation>
-<translation id="5732819098735351888">Pobieranie rozpocznie się po połączeniu z siecią Wi-Fi.</translation>
 <translation id="5733983706093266635">Nie można utworzyć kodu QR. URL ma za dużo znaków – ponad <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="5748802427693696783">Przełączono na karty standardowe</translation>
 <translation id="5749068826913805084">Chrome musi mieć dostęp do pamięci, by pobierać pliki.</translation>
@@ -780,7 +784,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="6159335304067198720">Oszczędność danych: <ph name="PERCENT" /></translation>
 <translation id="6186394685773237175">Nie znaleziono przejętych haseł</translation>
 <translation id="6192907950379606605">Pobieraj opisy obrazów</translation>
-<translation id="6206830853671714236">Wybierz, kiedy pobrać</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> to nie Ty?</translation>
 <translation id="6211386937064921208">Wyświetlam podgląd tej strony</translation>
 <translation id="6218096829563201111">Znajdź podobne produkty <ph name="BEGIN_NEW" />Nowość<ph name="END_NEW" /></translation>
@@ -914,6 +917,7 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="6981982820502123353">Ułatwienia dostępu</translation>
 <translation id="6989267951144302301">Nie udało się pobrać</translation>
 <translation id="6995899638241819463">Ostrzegaj, jeśli wskutek naruszenia bezpieczeństwa danych doszło do ujawnienia haseł</translation>
+<translation id="7001056293070445572">Plik jest duży (<ph name="FILE_SIZE" />)</translation>
 <translation id="7015203776128479407">Nie ukończono początkowej konfiguracji synchronizacji. Synchronizacja jest wyłączona.</translation>
 <translation id="7022756207310403729">Otwórz w przeglądarce</translation>
 <translation id="702463548815491781">Zalecane, gdy włączono TalkBack lub Switch Access</translation>
@@ -1028,6 +1032,7 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="7798392620021911922">Liczba przywróconych kart: <ph name="TAB_COUNT" /></translation>
 <translation id="780301667611848630">Nie, dziękuję</translation>
+<translation id="7808889146555843082">Usunięcie tego hasła nie spowoduje usunięcia Twojego konta w serwisie <ph name="SITE" />. Aby uniemożliwić innym osobom dostęp do konta w serwisie <ph name="SITE" />, usuń je lub zmień do niego hasło.</translation>
 <translation id="7810647596859435254">Otwórz za pomocą…</translation>
 <translation id="7815484226266492798">Długi zrzut ekranu</translation>
 <translation id="7821588508402923572">Tutaj będą widoczne informacje o zaoszczędzonych danych</translation>
@@ -1175,12 +1180,14 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="8699120352855309748">Nie proponuj tłumaczenia tych języków</translation>
 <translation id="8712637175834984815">Rozumiem</translation>
 <translation id="8725066075913043281">Spróbuj ponownie</translation>
+<translation id="8730621377337864115">Gotowe</translation>
 <translation id="8748850008226585750">Treści ukryte</translation>
 <translation id="8773160212632396039">Przetwarzanie żądania</translation>
 <translation id="8788265440806329501">Historia nawigacji jest zamknięta</translation>
 <translation id="8788968922598763114">Ponownie otwórz ostatnio zamknięte karty</translation>
 <translation id="8798449543960971550">Przeczytane</translation>
 <translation id="8812260976093120287">Używając swojego urządzenia, na niektórych stronach możesz płacić za pomocą powyższych obsługiwanych aplikacji do płatności.</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">Nie można wyświetlić zawartości karty podglądu.</translation>
 <translation id="8820817407110198400">Zakładki</translation>
 <translation id="883806473910249246">Podczas pobierania treści wystąpił błąd.</translation>
@@ -1218,10 +1225,10 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="9063523880881406963">Wyłącz opcję „Wersja na komputer”</translation>
 <translation id="9065203028668620118">Edytuj</translation>
 <translation id="9065383040763568503">Zapisane dane, które Chrome uznaje za nieistotne (np. witryny, które rzadko odwiedzasz lub które nie mają zapisanych ustawień).</translation>
-<translation id="9069543557624799859">Pobieranie rozpocznie się o <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Nie ma nieprzeczytanych stron</translation>
 <translation id="9070377983101773829">Rozpocznij wyszukiwanie głosowe</translation>
 <translation id="9074336505530349563">Aby uzyskać dostęp do spersonalizowanej treści proponowanej przez Google, zaloguj się i włącz synchronizację</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Synchronizuję</translation>
 <translation id="9086455579313502267">Nie można uzyskać dostępu do sieci</translation>
 <translation id="9100505651305367705">Proponuj wyświetlanie artykułów w widoku uproszczonym, gdy jest obsługiwany</translation>

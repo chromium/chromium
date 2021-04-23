@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">दुई औँलाले माथि स्वाइप गर्नुहोस्</translation>
 <translation id="1126928665165112660">इटालिक होइन</translation>
 <translation id="113582498867142724"><ph name="TAG" /> संग संग्रह <ph name="NUM" /> बस्तुहरू</translation>
-<translation id="1146441463334103638">टगल गरेर स्क्रिन अन वा अफ गरियोस्</translation>
 <translation id="1156488781945104845">हालको समय</translation>
 <translation id="1161762950103988776">जम्प</translation>
 <translation id="1164857107703583584">जम्प कमान्डहरू प्रयोग गरी कुनै वेब पेजमा कुशलतापूर्वक नेभिगेट गर्न सकिन्छ।</translation>
@@ -256,6 +255,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">तपाईं अघिल्लो वस्तुमा जान एक औँलाले दायाँबाट बायाँतिर स्वाइप गर्न पनि सक्नुहुन्छ। अहिले नै यसो गरी हेर्नुहोस्।</translation>
 <translation id="280499067616661124">ChromeVox प्राप्त गरिने पृष्ठ</translation>
+<translation id="2808001342598757276">भिजुअल प्रदर्शनलाई सक्रिय गर्नुहोस्</translation>
 <translation id="2811019999044652585">प्रणालीको ट्रे जस्ता उक्त स्क्रिनका अन्य भागहरूमा जान कन्ट्रोल+फरवार्ड थिच्नुहोस्। Chromebook मा यो फरवार्ड कुञ्जी २ नम्बरको कुञ्जीको ठिक माथितिर हुन्छ।</translation>
 <translation id="2811204574343810641">पंक्ति</translation>
 <translation id="2816868829355607410">अभ्यास गर्ने क्षेत्र: जम्प कमान्डहरू</translation>
@@ -302,7 +302,6 @@
 <translation id="3082249673510793544">पछाडि स्क्रोल गर्नुहोस्</translation>
 <translation id="3084806535845658316">टाइपिङ प्रतिध्वनि छैन</translation>
 <translation id="3086746722712840547">द्रष्टव्य</translation>
-<translation id="308736057934395497">यसले तपाईंको स्क्रिन अरूले देख्न नसकून् भन्नाका खातिर तपाईंको स्क्रिन अफ गरेर तपाईंको गोपनीयताको सुरक्षा अझ सुदृढ बनाउँछ। तपाईं खोज बटनसँगै स्क्रिनको चमक बढाउने बटन थिचेर जुनसुकै बेला स्क्रिन पुनः अन गर्न सक्नुहुन्छ।</translation>
 <translation id="3090227230165225418">डाउनलोडसम्बन्धी सूचना प्रकाशित गर्नुहोस्</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">अर्को ल्याङ्डमार्क</translation>
@@ -313,7 +312,6 @@
 <translation id="3109724472072898302">ध्वस्त भएको</translation>
 <translation id="311015743332597320">चार औँलाले दायाँतिर स्वाइप गर्नुहोस्</translation>
 <translation id="3112457281078985179">ChromeVox लाई सकिय वा निष्क्रिय पार्न कन्ट्रोल+Alt +Z को प्रयोग गर्नुहोस्।</translation>
-<translation id="3115800313647508384">स्क्रिन अफ गर्ने हो?</translation>
 <translation id="3131002934070407451">सङ्ख्याहरू निम्न तरिकाले पढ्नुहोस्:</translation>
 <translation id="3134461040845705080">आरडी मात्रै</translation>
 <translation id="3137663468179739624">ओलिव</translation>
@@ -721,6 +719,7 @@
 <translation id="6034000775414344507">हल्का खैरो</translation>
 <translation id="6036135911048686884">छोएर अन्वेषण गर्नुहोस्</translation>
 <translation id="6037602951055904232">अगाडि प्यान गर्नुहोस्</translation>
+<translation id="6044160928851315051">भिजुअल प्रदर्शनलाई निष्क्रिय पार्नुहोस्</translation>
 <translation id="6082768461603900813">आधारभूत नेभिगेसन</translation>
 <translation id="609281021724813947">अघिल्लो कुनै पनि स्लाइडर छैन</translation>
 <translation id="6100239002225743044">एक लाइन माथि सार्नुहोस्</translation>
@@ -791,7 +790,6 @@
 <translation id="6696967141280706829">भूमिका</translation>
 <translation id="6697092096875747123">अघिल्लो कम्बो बाकस</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{विष्मय}other{# विष्मयहरू}}</translation>
-<translation id="670717715607710284">स्क्रिन अफ गरियोस्</translation>
 <translation id="6710213216561001401">अघिल्लो</translation>
 <translation id="6714813999819678458">अधिल्लो चरण 2 शीर्षक</translation>
 <translation id="6730312624811567147">सिरान वा फेदमा जान Search Left वा Right प्रयोग गर्नुहोस्, Control Home वा End मा जान Search Control Left वा Right प्रयोग गर्नुहोस्, माथिल्लो वा तल्लो पृष्ठमा जान Search Up वा Down प्रयोग गर्नुहोस्</translation>
@@ -994,7 +992,6 @@
 <translation id="816818801578874684">यो पहिलो शीर्षक हो। अर्को शीर्षकमा जान Search + H की थिच्नुहोस्।</translation>
 <translation id="8173092779156526980">चार औँलाले बायाँतिर स्वाइप गर्नुहोस्</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{ अन्डरस्कोर}other{ # अन्डरस्कोरहरू}}</translation>
-<translation id="817529114347680055">स्क्रिन अन गरियोस्</translation>
 <translation id="8179976553408161302">प्रविष्टि गर्नुहोस्</translation>
 <translation id="8184828902145951186">पङ्क्ति</translation>
 <translation id="8186185314313222077">फुल स्क्रिन टगल गर्नुहोस्</translation>
@@ -1017,6 +1014,7 @@
 <translation id="8316881042119029234">पुरानो लेस</translation>
 <translation id="8324974933005349667">पाठवाचकका सेटिङहरूलाई वैयक्तीकृत गर्नुहोस्</translation>
 <translation id="8326783648485765113">दुबो जस्तो हरियो</translation>
+<translation id="8328063869313048659">अँध्यारो स्क्रिन टगल गर्नुहोस्</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{पाउन्ड}other{# पाउन्ड चिन्हहरू}}</translation>
 <translation id="8378855320830505539">क्षेत्र</translation>
 <translation id="8382679411218029383">स्वत: पूर्णता रेखा र सूची</translation>

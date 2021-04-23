@@ -248,6 +248,7 @@
 <translation id="2612676031748830579">カード番号</translation>
 <translation id="2625189173221582860">パスワードがコピーされました</translation>
 <translation id="2631006050119455616">削減量</translation>
+<translation id="2645657967708199252"><ph name="CONNECTION_TYPE" /> 接続ではダウンロードに時間がかかる可能性があります</translation>
 <translation id="2647434099613338025">言語の追加</translation>
 <translation id="2650751991977523696">ファイルをもう一度ダウンロードしますか？</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# 件の音声ファイル}other{# 件の音声ファイル}}</translation>
@@ -260,6 +261,7 @@
 <translation id="2718846868787000099">ご希望の言語でコンテンツを表示するため、アクセス先のサイトには設定内容が伝えられます</translation>
 <translation id="2723001399770238859">音声</translation>
 <translation id="2728754400939377704">サイトで並べ替え</translation>
+<translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">単語をタップすると、検索をすばやく実行したり、関連する操作メニューを確認したりできます</translation>
 <translation id="2760989362628427051">デバイスのダークテーマまたはバッテリー セーバーがオンのときにダークテーマをオンにする</translation>
 <translation id="2762000892062317888">たった今</translation>
@@ -304,7 +306,6 @@
 <translation id="3016635187733453316">このデバイスがインターネットに接続していることを確認してください</translation>
 <translation id="3029704984691124060">パスフレーズが一致しません</translation>
 <translation id="3031225630520268969">アシスタントの音声検索の同意ダイアログ</translation>
-<translation id="3034163383943672781"><ph name="DATE" /> にダウンロードを開始します。</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />ヘルプ<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">次回からこのサイトにすばやくアクセスできます</translation>
 <translation id="305593374596241526">位置情報が OFF になっています。<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />で ON にしてください。</translation>
@@ -437,6 +438,7 @@
 <translation id="3943557322767080599">Google アカウントへのログイン時に Chrome のログイン メッセージを表示する</translation>
 <translation id="395206256282351086">検索とサイトの候補の表示が無効</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{準備ができると Chrome でページが読み込まれます}other{準備ができると Chrome でページが読み込まれます}}</translation>
+<translation id="3962957115499249330">Wi-Fi 接続時にこのダウンロードが開始されると通知が表示されます。</translation>
 <translation id="3963007978381181125">パスフレーズ暗号化の対象に Google Pay のお支払い方法と住所は含まれません。パスフレーズを知っているユーザーだけが暗号化データを読み取ることができます。パスフレーズが Google に送信されたり Google で保存されたりすることはありません。パスフレーズを忘れた場合や、この設定を変更する場合は、同期をリセットする必要があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome でパスワードを確認できません</translation>
 <translation id="3974987681202239636">Chrome で <ph name="APP_NAME" /> を開きます。続行すると、<ph name="BEGIN_LINK1" />Google 利用規約<ph name="END_LINK1" />と <ph name="BEGIN_LINK2" />Google Chrome および Chrome OS 追加利用規約<ph name="END_LINK2" />に同意したことになります。また、<ph name="BEGIN_LINK3" />ファミリー リンクで管理する Google アカウントのプライバシーに関するお知らせ<ph name="END_LINK3" />も適用されます。</translation>
@@ -480,6 +482,7 @@
 <translation id="4256782883801055595">オープンソース ライセンス</translation>
 <translation id="4263656433980196874">アシスタントの音声検索の同意ダイアログが画面全体に表示されています</translation>
 <translation id="4269820728363426813">リンクアドレスをコピー</translation>
+<translation id="4290281343757112331">後でダウンロードしますか？</translation>
 <translation id="4298388696830689168">リンク済みのサイト</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">基本設定</translation>
@@ -622,6 +625,7 @@
 <translation id="5191251636205085390">サードパーティの Cookie に代わる新しい技術の詳細と管理方法について</translation>
 <translation id="5193988420012215838">クリップボードにコピーされました</translation>
 <translation id="5199929503336119739">仕事用プロファイル</translation>
+<translation id="5201464744567315552"><ph name="TIME" /> にこのダウンロードが開始されると通知が表示されます。</translation>
 <translation id="5204967432542742771">パスワードを入力</translation>
 <translation id="5210286577605176222">前のタブに移動する</translation>
 <translation id="5210365745912300556">タブを閉じる</translation>
@@ -632,6 +636,7 @@
 <translation id="5230560987958996918"><ph name="SITE" /> が近くの Bluetooth デバイスのスキャンを求めています。検出済みのデバイスは次のとおりです。</translation>
 <translation id="5233638681132016545">新しいタブ</translation>
 <translation id="5250483651202458397">スクリーンショット。タップすると閉じます。</translation>
+<translation id="5262378156578470238"><ph name="DATE" /> にこのダウンロードが開始されると通知が表示されます。</translation>
 <translation id="526421993248218238">ページを読み込めません</translation>
 <translation id="5271967389191913893">デバイスでダウンロード コンテンツを開くことができません。</translation>
 <translation id="5292796745632149097">送信先</translation>
@@ -701,7 +706,6 @@
 <translation id="572328651809341494">最近使ったタブ</translation>
 <translation id="5723735397759933332">ライトモードで HTTPS ページの画像が最適化されるようになり、データをさらに節約できるようになりました。</translation>
 <translation id="5726692708398506830">ページ上のすべての要素を拡大する</translation>
-<translation id="5732819098735351888">Wi-Fi 接続時にダウンロードを開始します。</translation>
 <translation id="5733983706093266635">QR コードを作成できません。URL が <ph name="CHARACTER_LIMIT" /> 文字を超えています。</translation>
 <translation id="5748802427693696783">標準のタブに切り替えました</translation>
 <translation id="5749068826913805084">Chrome でファイルをダウンロードするにはストレージへのアクセス権が必要です。</translation>
@@ -780,7 +784,6 @@
 <translation id="6159335304067198720"><ph name="PERCENT" /> のデータを削減</translation>
 <translation id="6186394685773237175">漏洩した可能性のあるパスワードは見つかりませんでした</translation>
 <translation id="6192907950379606605">画像の説明文を取得する</translation>
-<translation id="6206830853671714236">ダウンロード日時の選択</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> ではありませんか？</translation>
 <translation id="6211386937064921208">このページのプレビューを表示しています</translation>
 <translation id="6218096829563201111">同じような商品を検索 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
@@ -914,6 +917,7 @@
 <translation id="6981982820502123353">ユーザー補助機能</translation>
 <translation id="6989267951144302301">ダウンロードできませんでした</translation>
 <translation id="6995899638241819463">データ侵害によりパスワードが漏洩した場合に警告する</translation>
+<translation id="7001056293070445572">サイズの大きいファイルです（<ph name="FILE_SIZE" />）</translation>
 <translation id="7015203776128479407">最初の同期設定が終了していません。同期は無効です。</translation>
 <translation id="7022756207310403729">ブラウザで開く</translation>
 <translation id="702463548815491781">TalkBack またはスイッチ アクセスを有効にしている場合におすすめです</translation>
@@ -1028,6 +1032,7 @@
 <translation id="7791543448312431591">追加</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> 個のタブを復元しました</translation>
 <translation id="780301667611848630">いいえ</translation>
+<translation id="7808889146555843082">このパスワードを削除しても、<ph name="SITE" /> のアカウントは削除されません。セキュリティを確保するため、パスワードを変更するか、<ph name="SITE" /> のアカウントを削除してください。</translation>
 <translation id="7810647596859435254">アプリで開く…</translation>
 <translation id="7815484226266492798">ロング スクリーンショット</translation>
 <translation id="7821588508402923572">データ節約量がここに表示されます</translation>
@@ -1175,12 +1180,14 @@
 <translation id="8699120352855309748">これらの言語を翻訳するか尋ねない</translation>
 <translation id="8712637175834984815">閉じる</translation>
 <translation id="8725066075913043281">やり直し</translation>
+<translation id="8730621377337864115">完了</translation>
 <translation id="8748850008226585750">メッセージは非表示です</translation>
 <translation id="8773160212632396039">リクエストの処理中</translation>
 <translation id="8788265440806329501">ナビゲーション履歴は閉じられています</translation>
 <translation id="8788968922598763114">最後に閉じたタブを開く</translation>
 <translation id="8798449543960971550">既読</translation>
 <translation id="8812260976093120287">一部のウェブサイトでは、デバイスでサポートされている上記のお支払いアプリを使って支払いができます。</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">タブのコンテンツのプレビューを表示できません。</translation>
 <translation id="8820817407110198400">ブックマーク</translation>
 <translation id="883806473910249246">コンテンツのダウンロード中にエラーが発生しました。</translation>
@@ -1218,10 +1225,10 @@
 <translation id="9063523880881406963">[PC 版サイトを見る] をオフにします</translation>
 <translation id="9065203028668620118">編集</translation>
 <translation id="9065383040763568503">Chrome で重要度が低いと判断される保存データ（設定を保存していないサイトやアクセス頻度の少ないサイトのデータなど）</translation>
-<translation id="9069543557624799859">ダウンロードは <ph name="TIME" /> に開始します。</translation>
 <translation id="9069999660519089861">未読ページはありません</translation>
 <translation id="9070377983101773829">音声検索を開始</translation>
 <translation id="9074336505530349563">ユーザーに合わせた Google からのおすすめコンテンツを表示するには、ログインして同期を有効にします</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">同期しています</translation>
 <translation id="9086455579313502267">ネットワークにアクセスできません</translation>
 <translation id="9100505651305367705">記事の簡易表示がサポートされている場合、簡易表示を提案します</translation>

@@ -915,6 +915,7 @@
 <translation id="1974821797477522211">Şəbəkəyə qoşulun</translation>
 <translation id="1975841812214822307">Silin...</translation>
 <translation id="1976150099241323601">Təhlükəsizlik Cihazına daxil olun</translation>
+<translation id="1976928778492259496">Barmaq izi sensoru <ph name="DEVICE_TYPE" /> cihazınızın sol tərəfindədir. Barmağınızla ona yavaşca toxunun.</translation>
 <translation id="1977965994116744507"><ph name="DEVICE_TYPE" /> cihazını kiliddən çıxarmaq üçün telefonunuzu yaxın tutun.</translation>
 <translation id="1978057560491495741">Ünvanı silin</translation>
 <translation id="1979095679518582070">Bu xüsusiyyəti söndürmək bu cihazın sistem yeniləmələri və təhlükəsizlik kimi vacib xidmətlər üçün lazım olan məlumatları göndərmə imkanına təsir göstərmir.</translation>
@@ -1967,6 +1968,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="313205617302240621">Şifrəni unutdunuz?</translation>
 <translation id="3132277757485842847">Telefonunuzla bağlantını itirdik. Telefonunuzun yaxınlıqda olduğuna, kiliddən çıxarılmış olduğuna, Bluetooth və Wi-Fi'ın aktiv olduğuna əmin olun.</translation>
 <translation id="3132996321662585180">Gündəlik yeniləyin</translation>
+<translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> təcrübəsi üçün təcrübə vəziyyətini seçin. Təcrübə təsviri: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Yanlış PIN. <ph name="RETRIES" /> cəhdiniz qalıb.</translation>
 <translation id="313963229645891001">Endirilir, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Defolt sarı avatar</translation>
@@ -6612,6 +6614,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8398877366907290961">Hər halda davam edin</translation>
 <translation id="8400146488506985033">İnsanları idarə edin</translation>
 <translation id="8401432541486058167">Smart kartınızla əlaqəli PIN daxil edin.</translation>
+<translation id="8404893580027489425">Barmaq izi sensoru <ph name="DEVICE_TYPE" /> cihazınızın sağ tərəfindədir. Barmağınızla ona yavaşca toxunun.</translation>
 <translation id="8405046151008197676">Ən yeni güncəlləmə ilə bağlı yenilikləri əldə edin</translation>
 <translation id="8407199357649073301">Giriş Səviyyəsi:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> şəbəkəsi, qoşulur</translation>

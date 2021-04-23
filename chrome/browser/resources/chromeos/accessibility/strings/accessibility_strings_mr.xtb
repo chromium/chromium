@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">दोन बोटांनी वरच्या दिशेला स्वाइप करा</translation>
 <translation id="1126928665165112660">तिर्यक नाही</translation>
 <translation id="113582498867142724"><ph name="NUM" /> आयटमसह <ph name="TAG" /> संकलन</translation>
-<translation id="1146441463334103638">स्क्रीन सुरू किंवा बंद करा वर टॉगल करा</translation>
 <translation id="1156488781945104845">वर्तमान वेळ</translation>
 <translation id="1161762950103988776">Jump</translation>
 <translation id="1164857107703583584">जंप कमांड वेब पेजद्वारे चांगल्याप्रकारे नेव्हिगेट करण्यासाठी वापरल्या जाऊ शकतात.</translation>
@@ -256,6 +255,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{आणखी #}other{आणखी #}}</translation>
 <translation id="2792200646155001340">मागील आयटमवर जाण्यासाठी तुम्ही एका बोटाने उजवीकडून डावीकडेदेखील स्वाइप करू शकता. आता करून पाहा.</translation>
 <translation id="280499067616661124">पृष्ठामध्ये ChromeVox शोधा</translation>
+<translation id="2808001342598757276">स्क्रीन सुरू करा</translation>
 <translation id="2811019999044652585">टूलबार किंवा सिस्टम ट्रे सारख्या स्क्रीनच्या अन्य भागांवर जाण्यासाठी, Control+पुढे जा की, दाबा. Chromebook वर, पुढे जा की, अंक 2 की, च्या वर असते.</translation>
 <translation id="2811204574343810641">पंक्ती</translation>
 <translation id="2816868829355607410">सराव क्षेत्र: जंप कमांड</translation>
@@ -302,7 +302,6 @@
 <translation id="3082249673510793544">मागे स्क्रोल करा</translation>
 <translation id="3084806535845658316">कोणताही टायपिंग प्रतिध्वनी नाही</translation>
 <translation id="3086746722712840547">टीप</translation>
-<translation id="308736057934395497">हे तुमची स्क्रीन बंद करून तुमच्या गोपनीयतेमध्ये सुधारणा करते जेणेकरून ती इतरांना दिसणार नाही. तुम्ही Search + Brightness up दाबून नेहमी स्क्रीन पुन्हा सुरू करू शकता.</translation>
 <translation id="3090227230165225418">डाउनलोड सूचनांची घोषणा करा</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">पुढील महत्त्वाची खूण</translation>
@@ -313,7 +312,6 @@
 <translation id="3109724472072898302">संकुचित केलेले</translation>
 <translation id="311015743332597320">चार बोटांनी उजवीकडे स्वाइप करा</translation>
 <translation id="3112457281078985179">ChromeVox सुरू किंवा बंद करण्यासाठी, Control+Alt+Z वापरा.</translation>
-<translation id="3115800313647508384">स्क्रीन बंद करायची आहे का?</translation>
 <translation id="3131002934070407451">संख्या याप्रमाणे वाचा:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">ऑलिव्ह</translation>
@@ -721,6 +719,7 @@
 <translation id="6034000775414344507">फिकट राखाडी</translation>
 <translation id="6036135911048686884">टच एक्सप्लोर</translation>
 <translation id="6037602951055904232">फॉरवर्ड करणे पॅन करा</translation>
+<translation id="6044160928851315051">स्क्रीन बंद करा</translation>
 <translation id="6082768461603900813">मूलभूत नेव्हिगेशन</translation>
 <translation id="609281021724813947">मागील स्‍लायडर नाही</translation>
 <translation id="6100239002225743044">एक ओळ वर जा</translation>
@@ -791,7 +790,6 @@
 <translation id="6696967141280706829">प्रस्तावना</translation>
 <translation id="6697092096875747123">मागील कॉम्बो बॉक्स</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{उद्गार चिन्ह}other{# उद्गार चिन्हेे}}</translation>
-<translation id="670717715607710284">स्क्रीन बंद करा</translation>
 <translation id="6710213216561001401">मागील</translation>
 <translation id="6714813999819678458">मागील स्तर 2 शीर्षक</translation>
 <translation id="6730312624811567147">Home किंवा End साठी Search Left किंवा Right, Control Home किंवा End साठी Search Control Left किंवा Right, Page Up किंवा Down साठी Search Up किंवा Down वापरा</translation>
@@ -994,7 +992,6 @@
 <translation id="816818801578874684">हे पहिले शीर्षक आहे. पुढील शीर्षकावर जाण्यासाठी Search + H दाबा.</translation>
 <translation id="8173092779156526980">चार बोटांनी डावीकडे स्वाइप करा</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{अंडरस्कोअर}other{# अंडरस्कोअर}}</translation>
-<translation id="817529114347680055">स्क्रीन सुरू करा</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">पंक्ती</translation>
 <translation id="8186185314313222077">फुल स्क्रीन टॉगल करा</translation>
@@ -1017,6 +1014,7 @@
 <translation id="8316881042119029234">हलका पिवळा</translation>
 <translation id="8324974933005349667">टेक्‍स्‍ट टू स्‍पीच सेटिंग्ज पर्सनलाइझ करा</translation>
 <translation id="8326783648485765113">गावठी हिरवा</translation>
+<translation id="8328063869313048659">गडद स्क्रीन टॉगल करा</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{पाउंड}other{# पाउंड चिन्हे}}</translation>
 <translation id="8378855320830505539">प्रदेश</translation>
 <translation id="8382679411218029383">ऑटोकंप्लीशन इनलाइन आणि सूची</translation>

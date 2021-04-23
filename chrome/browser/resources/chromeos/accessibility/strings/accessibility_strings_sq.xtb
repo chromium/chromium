@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">Rrëshqit shpejt dy gishta lart</translation>
 <translation id="1126928665165112660">Jo kursiv</translation>
 <translation id="113582498867142724"><ph name="TAG" /> grumbullim me <ph name="NUM" /> artikuj</translation>
-<translation id="1146441463334103638">Aktivizo ose çaktivizo ekranin</translation>
 <translation id="1156488781945104845">Ora aktuale</translation>
 <translation id="1161762950103988776">Kërce</translation>
 <translation id="1164857107703583584">Komandat e kërcimit mund të përdoren për të naviguar me efikasitet nëpër një faqe uebi</translation>
@@ -256,6 +255,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Mund të rrëshqasësh shpejt po ashtu një gisht nga e djathta në të majtë për të kaluar tek artikulli i mëparshëm. Provoje tani.</translation>
 <translation id="280499067616661124">Gjej në faqe me ChromeVox</translation>
+<translation id="2808001342598757276">Hiq errësimin e ekranit</translation>
 <translation id="2811019999044652585">Për të kërcyer te pjesë të tjera të ekranit, siç janë shiritat e veglave ose tabakaja e sistemit, shtyp Control+Përpara. Në Chromebook, tasti "Përpara" ndodhet menjëherë mbi tastin me numër 2.</translation>
 <translation id="2811204574343810641">Rreshti</translation>
 <translation id="2816868829355607410">Zona praktike: Komandat e kërcimit</translation>
@@ -302,7 +302,6 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="3082249673510793544">Lëviz prapa</translation>
 <translation id="3084806535845658316">nuk ka jehonë të shkrimit</translation>
 <translation id="3086746722712840547">shënim</translation>
-<translation id="308736057934395497">Kjo përmirëson privatësinë duke e fikur ekranin që të mos jetë i dukshëm për të tjerët. Ekranin mund ta fikësh gjithnjë duke shtypur "Kërko + Ndriçimi lart".</translation>
 <translation id="3090227230165225418">Jep njoftimet e shkarkimit</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">Pika tjetër e referimit</translation>
@@ -313,7 +312,6 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="3109724472072898302">Palosur</translation>
 <translation id="311015743332597320">Rrëshqit shpejt katër gishta djathtas</translation>
 <translation id="3112457281078985179">Për të aktivizuar ose çaktivizuar ChromeVox, përdor Control+Alt+Z.</translation>
-<translation id="3115800313647508384">Të fiket ekrani?</translation>
 <translation id="3131002934070407451">Lexo numrat si:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">Ulliri</translation>
@@ -721,6 +719,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="6034000775414344507">Gri e çelur</translation>
 <translation id="6036135911048686884">Prek "Eksploro"</translation>
 <translation id="6037602951055904232">Lëviz para</translation>
+<translation id="6044160928851315051">Errëso ekranin</translation>
 <translation id="6082768461603900813">Navigimi bazë</translation>
 <translation id="609281021724813947">Nuk ka asnjë rrëshqitës të mëparshëm</translation>
 <translation id="6100239002225743044">Lëviz lart një rresht</translation>
@@ -791,7 +790,6 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="6696967141280706829">Parathënie</translation>
 <translation id="6697092096875747123">Kutia e mëparshme e kombinuar</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{pikëçuditje}other{# pikëçuditje}}</translation>
-<translation id="670717715607710284">Ekrani është i fikur</translation>
 <translation id="6710213216561001401">Prapa</translation>
 <translation id="6714813999819678458">Titulli i mëparshëm i nivelit 2</translation>
 <translation id="6730312624811567147">Përdor "Kërko" dhe shigjetat "Majtas" ose "Djathtas" për "Kreu" ose "Fundi", "Kërko" dhe CTRL dhe shigjetat "Majtas" ose "Djathtas" për CTRL dhe "Kreu" ose "Fundi", "Kërko" dhe shigjetat "Lart" ose "Poshtë" për të kaluar te "Faqja lart" ose "Faqja poshtë"</translation>
@@ -994,7 +992,6 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="816818801578874684">Ky është titulli i parë. Shtyp Search + H për të shkuar te titulli tjetër.</translation>
 <translation id="8173092779156526980">Rrëshqit shpejt katër gishta majtas</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{nënvizim}other{# nënvizime}}</translation>
-<translation id="817529114347680055">Ekrani aktiv</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">rreshti</translation>
 <translation id="8186185314313222077">kalo në ekranin e plotë</translation>
@@ -1017,6 +1014,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="8316881042119029234">Lidhëse blu</translation>
 <translation id="8324974933005349667">Personalizo cilësimet e "Tekstit në ligjërim"</translation>
 <translation id="8326783648485765113">E gjelbër lëndine</translation>
+<translation id="8328063869313048659">Aktivizo ose çaktivizo ekranin e errët</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{thurje}other{# shenja thurjeje}}</translation>
 <translation id="8378855320830505539">Rajoni</translation>
 <translation id="8382679411218029383">Plotësimi automatik brenda linjës dhe lista</translation>

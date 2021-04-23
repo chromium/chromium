@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">Z dvema prstoma povlecite gor</translation>
 <translation id="1126928665165112660">Ni ležeče</translation>
 <translation id="113582498867142724">Zbirka <ph name="TAG" /> s toliko elementi: <ph name="NUM" /></translation>
-<translation id="1146441463334103638">Vklop ali izklop zaslona</translation>
 <translation id="1156488781945104845">Trenutna ura</translation>
 <translation id="1161762950103988776">Skok</translation>
 <translation id="1164857107703583584">Z ukazi za preskakovanje se lahko učinkovito pomikate po spletni strani.</translation>
@@ -256,6 +255,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}one{+#}two{+#}few{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Na prejšnji element se lahko pomaknete tudi tako, da z enim prstom povlečete z desne proti levi. Preizkusite.</translation>
 <translation id="280499067616661124">Iskanje na strani s ChromeVoxom</translation>
+<translation id="2808001342598757276">Preklic zatemnitve zaslona</translation>
 <translation id="2811019999044652585">Če želite preklopiti na druge dele zaslona, kot so orodne vrstice ali sistemska vrstica, pritisnite tipki Control in Forward. Pri Chromebookih je tipka Forward tipka nad tipko za številko 2.</translation>
 <translation id="2811204574343810641">Vrstica</translation>
 <translation id="2816868829355607410">Območje za vajo: Ukazi za preskakovanje</translation>
@@ -302,7 +302,6 @@
 <translation id="3082249673510793544">Pomik nazaj</translation>
 <translation id="3084806535845658316">brez izgovarjanja ob vnosu</translation>
 <translation id="3086746722712840547">opmb</translation>
-<translation id="308736057934395497">Z izklopom zaslona se poveča zasebnost, saj vsebina ni vidna drugim. Zaslon lahko kadar koli znova vklopite s pritiskom tipke za iskanje in tipke za povečanje svetlosti.</translation>
 <translation id="3090227230165225418">Najava obvestil za prenos</translation>
 <translation id="3090532668523289635">skp</translation>
 <translation id="3093176084511590672">Naslednji mejnik</translation>
@@ -313,7 +312,6 @@
 <translation id="3109724472072898302">Strnjeno</translation>
 <translation id="311015743332597320">S štirimi prsti povlecite v desno</translation>
 <translation id="3112457281078985179">Če želite vklopiti ali izklopiti ChromeVox, uporabite kombinacijo tipk Control in Alt ter črke Z.</translation>
-<translation id="3115800313647508384">Ali želite izklopiti zaslon?</translation>
 <translation id="3131002934070407451">Preberi številke kot:</translation>
 <translation id="3134461040845705080">samo br</translation>
 <translation id="3137663468179739624">Olivna</translation>
@@ -721,6 +719,7 @@
 <translation id="6034000775414344507">Svetlo siva</translation>
 <translation id="6036135911048686884">Raziskovanje z dotikom</translation>
 <translation id="6037602951055904232">Panoramsko premikanje naprej</translation>
+<translation id="6044160928851315051">Zatemnitev zaslona</translation>
 <translation id="6082768461603900813">Osnovno pomikanje</translation>
 <translation id="609281021724813947">Ni prejšnjega drsnika</translation>
 <translation id="6100239002225743044">Premik navzgor za eno vrstico</translation>
@@ -791,7 +790,6 @@
 <translation id="6696967141280706829">Predgovor</translation>
 <translation id="6697092096875747123">Prejšnje kombinirano polje</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{klicaj}one{# klicaj}two{# klicaja}few{# klicaji}other{# klicajev}}</translation>
-<translation id="670717715607710284">Zaslon je izklopljen</translation>
 <translation id="6710213216561001401">Prejšnji</translation>
 <translation id="6714813999819678458">Prejšnji naslov na ravni 2</translation>
 <translation id="6730312624811567147">Uporabite tipko za iskanje in levo ali desno za tipko Home ali End, tipko za iskanje, tipko Control in levo ali desno za tipko Control in Home ali End, tipko za iskanje in gor ali dol za tipko Page Up ali Down</translation>
@@ -994,7 +992,6 @@
 <translation id="816818801578874684">To je prvi naslov. Pritisnite tipko za iskanje + tipko H, da odprete naslednji naslov.</translation>
 <translation id="8173092779156526980">S štirimi prsti povlecite v levo</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{podčrtaj}one{# podčrtaj}two{# podčrtaja}few{# podčrtaji}other{# podčrtajev}}</translation>
-<translation id="817529114347680055">Zaslon vklopljen</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">vrstica</translation>
 <translation id="8186185314313222077">preklop celozaslonskega načina</translation>
@@ -1017,6 +1014,7 @@
 <translation id="8316881042119029234">Svetlo bež</translation>
 <translation id="8324974933005349667">Prilagajanje nastavitev pretvorbe besedila v govor</translation>
 <translation id="8326783648485765113">Travnato zelena</translation>
+<translation id="8328063869313048659">Preklop temnega zaslona</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{lojtra}one{# lojtra}two{# lojtri}few{# lojtre}other{# lojter}}</translation>
 <translation id="8378855320830505539">Območje</translation>
 <translation id="8382679411218029383">Samodokončanje v vrstici in s seznama</translation>

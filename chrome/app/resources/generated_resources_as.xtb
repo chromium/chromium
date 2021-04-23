@@ -917,6 +917,7 @@
 <translation id="1974821797477522211">নেটৱৰ্কৰ লগত সংযোগ কৰক</translation>
 <translation id="1975841812214822307">আঁতৰাওক...</translation>
 <translation id="1976150099241323601">সুৰক্ষা প্ৰদানকাৰী ডিভাইচত ছাইন ইন কৰক</translation>
+<translation id="1976928778492259496">ফিংগাৰপ্ৰিণ্ট ছেন্সৰটো আপোনাৰ <ph name="DEVICE_TYPE" />ৰ বাওঁফালে আছে। যিকোনো এটা আঙুলিৰে এইটো লাহেকৈ স্পৰ্শ কৰক।</translation>
 <translation id="1977965994116744507">আপোনাৰ <ph name="DEVICE_TYPE" />.আনলক কৰিবলৈ আপোনাৰ ফ’নটো ওচৰলৈ আনক।</translation>
 <translation id="1978057560491495741">ঠিকনাটো আঁতৰাওক</translation>
 <translation id="1979095679518582070">এই সুবিধাটো বন্ধ কৰিলেও আপোনাৰ ডিভাইচটোৱে ছিষ্টেম আপডে’ট আৰু সুৰক্ষাৰ দৰে অত্যাৱশ্যকীয় সেৱাসমূহৰ বাবে দৰকাৰী তথ্য পঠিওৱাৰ ক্ষেত্ৰত কোনো প্ৰভাৱ নপৰে।</translation>
@@ -1970,6 +1971,7 @@
 <translation id="313205617302240621">পাছৱৰ্ড পাহৰিলে নেকি?</translation>
 <translation id="3132277757485842847">আমি আপোনাৰ ফ’নটোৰ সৈতে সংযোগ বজাই ৰাখিব নোৱাৰিলোঁ। নিশ্চিত হৈ লওক যে আপোনাৰ ফ’নটো ওচৰত আছে, আনলক কৰা আছে আৰু ব্লুটুথ আৰু ৱাই-ফাই অন কৰা আছে।</translation>
 <translation id="3132996321662585180">দৈনিক ৰিফ্ৰেশ্ব কৰক</translation>
+<translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> পৰীক্ষণৰ বাবে পৰীক্ষণৰ স্থিতি বাছনি কৰক। পৰীক্ষণৰ বিৱৰণ: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">অমান্য পিন। আপোনাৰ <ph name="RETRIES" /> টা প্ৰয়াস বাকী আছে।</translation>
 <translation id="313963229645891001">ডাউনল'ড হৈ আছে, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">ডিফ’ল্ট হালধীয়া অৱতাৰ</translation>
@@ -6606,6 +6608,7 @@
 <translation id="8398877366907290961">যিকোনো প্ৰকাৰে অব্যাহত ৰাখক</translation>
 <translation id="8400146488506985033">লোক পৰিচালনা কৰক</translation>
 <translation id="8401432541486058167">আপোনাৰ স্মাৰ্ট কাৰ্ডখনৰ সৈতে জড়িত পিনটো দিয়ক।</translation>
+<translation id="8404893580027489425">ফিংগাৰপ্ৰিণ্ট ছেন্সৰটো আপোনাৰ <ph name="DEVICE_TYPE" />ৰ সোঁফালে আছে। যিকোনো এটা আঙুলিৰে এইটো লাহেকৈ স্পৰ্শ কৰক।</translation>
 <translation id="8405046151008197676">শেহতীয়া আপডে'টটোত হোৱা পৰিৱর্তনবোৰৰ সাৰাংশ পাওক</translation>
 <translation id="8407199357649073301">লগৰ স্তৰ:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> নেটৱৰ্ক, সংযোগ কৰি থকা হৈছে</translation>

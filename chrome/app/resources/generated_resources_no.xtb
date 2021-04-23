@@ -916,6 +916,7 @@
 <translation id="1974821797477522211">Koble til nettverk</translation>
 <translation id="1975841812214822307">Fjern</translation>
 <translation id="1976150099241323601">Logg på sikkerhetsenhet</translation>
+<translation id="1976928778492259496">Fingeravtrykkssensoren er på venstre side av <ph name="DEVICE_TYPE" />. Trykk forsiktig på den med hvilken som helst finger.</translation>
 <translation id="1977965994116744507">Hold telefonen nærmere for å låse opp <ph name="DEVICE_TYPE" />-enheten.</translation>
 <translation id="1978057560491495741">Fjern adresse</translation>
 <translation id="1979095679518582070">Enhetens evne til å sende informasjonen som kreves for nødvendige tjenester, for eksempel systemoppdateringer og sikkerhet, påvirkes ikke hvis du slår av denne funksjonen.</translation>
@@ -1970,6 +1971,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="313205617302240621">Glemt passordet?</translation>
 <translation id="3132277757485842847">Vi kunne ikke opprettholde tilkoblingen til telefonen. Sørg for at telefonen er i nærheten, at den er opplåst, og at Bluetooth og Wi-Fi er slått på.</translation>
 <translation id="3132996321662585180">Oppdater daglig</translation>
+<translation id="3134393957315651797">Velg eksperimenttilstand for <ph name="EXPERIMENT_NAME" />-eksperimentet. Beskrivelse av eksperimentet: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Ugyldig PIN-kode. Du har <ph name="RETRIES" /> forsøk igjen.</translation>
 <translation id="313963229645891001">Laster ned, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Gult standardbrukerbilde</translation>
@@ -6618,6 +6620,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8398877366907290961">Fortsett likevel</translation>
 <translation id="8400146488506985033">Administrer personer</translation>
 <translation id="8401432541486058167">Oppgi PIN-koden som er tilknyttet smartkortet ditt.</translation>
+<translation id="8404893580027489425">Fingeravtrykkssensoren er på høyre side av <ph name="DEVICE_TYPE" />. Trykk forsiktig på den med hvilken som helst finger.</translation>
 <translation id="8405046151008197676">Se høydepunktene i den nyeste oppdateringen</translation>
 <translation id="8407199357649073301">Loggnivå:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" />-nettverk – kobler til</translation>

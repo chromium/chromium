@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">দুই আঙ্গুল দিয়ে উপরের দিকে সোয়াইপ করুন</translation>
 <translation id="1126928665165112660">ইটালিক নয়</translation>
 <translation id="113582498867142724"><ph name="NUM" />টি আইটেমের সঙ্গে <ph name="TAG" /> সংগ্রহ</translation>
-<translation id="1146441463334103638">স্ক্রিন চালু বা বন্ধ থাকায় টগল করুন</translation>
 <translation id="1156488781945104845">বর্তমান সময়</translation>
 <translation id="1161762950103988776">Jump</translation>
 <translation id="1164857107703583584">কোনও ওয়েব পৃষ্ঠার মধ্যে দ্রুত নেভিগেট করতে জাম্প কমান্ড ব্যবহার করা হতে পারে।</translation>
@@ -256,6 +255,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{আরও #টি}one{আরও #টি}other{আরও #টি}}</translation>
 <translation id="2792200646155001340">এছাড়াও আপনি আগের আইটেমে ফিরে যেতে এক আঙুল দিয়ে ডানদিক থেকে বাঁদিকে সোয়াইপ করতে পারেন। এখনই করে দেখুন।</translation>
 <translation id="280499067616661124">ChromeVox পৃষ্ঠাতে খুঁজুন</translation>
+<translation id="2808001342598757276">স্ক্রীনে আলো বাড়ান</translation>
 <translation id="2811019999044652585">স্ক্রিনের অন্যান্য অংশে যেমন টুল দণ্ড বা সিস্টেম ট্রেতে যাওয়ার জন্য কন্ট্রোল + ফরোয়ার্ড টিপুন। Chromebook-এ ফরোয়ার্ড কী 'সংখ্যা কী ২'-এর ঠিক উপরে।</translation>
 <translation id="2811204574343810641">সারি</translation>
 <translation id="2816868829355607410">অনুশীলন ক্ষেত্র: জাম্প কমান্ড</translation>
@@ -302,7 +302,6 @@
 <translation id="3082249673510793544">স্ক্রল করে ফিরে যান</translation>
 <translation id="3084806535845658316">কোনো টাইপিং ইকো নেই</translation>
 <translation id="3086746722712840547">দ্রষ্টব্য</translation>
-<translation id="308736057934395497">আপনার স্ক্রিন বন্ধ রেখে এটি গোপনীয়তা বাড়ায় যাতে অন্য কেউ দেখতে না পান। সার্চ ও উজ্জ্বলতা বাড়ানোর বোতাম একসাথে প্রেস করে আপনি সব সময়ই স্ক্রিন চালু করতে পারবেন।</translation>
 <translation id="3090227230165225418">ডাউনলোড করার বিজ্ঞপ্তি ঘোষণা করুন</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">পরবর্তী ল্যান্ডমার্ক</translation>
@@ -313,7 +312,6 @@
 <translation id="3109724472072898302">সঙ্কুচিত</translation>
 <translation id="311015743332597320">চারটি আঙুল দিয়ে ডানদিকে সোয়াইপ করুন</translation>
 <translation id="3112457281078985179">ChromeVox চালু বা বন্ধ করার জন্য, Control+Alt+Z ব্যবহার করুন।</translation>
-<translation id="3115800313647508384">স্ক্রিন বন্ধ করবেন?</translation>
 <translation id="3131002934070407451">এই হিসেবে নম্বরগুলি পড়ো:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">জলপাই</translation>
@@ -721,6 +719,7 @@
 <translation id="6034000775414344507">হালকা ধূসর</translation>
 <translation id="6036135911048686884">টাচ করার মাধ্যমে কোনও টেক্সট পড়ে শোনানো</translation>
 <translation id="6037602951055904232">প্যান ফরওয়ার্ড</translation>
+<translation id="6044160928851315051">স্ক্রীনে আলো কমান</translation>
 <translation id="6082768461603900813">প্রাথমিক নেভিগেশান</translation>
 <translation id="609281021724813947">কোনও পূর্ববর্তী স্লাইডার নেই</translation>
 <translation id="6100239002225743044">টেক্সটের কার্সার এক লাইন উপরে নিয়ে যান</translation>
@@ -791,7 +790,6 @@
 <translation id="6696967141280706829">মুখবন্ধ</translation>
 <translation id="6697092096875747123">পূর্ববর্তী কম্বো বাক্স</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{টি বিস্ময়সূচক চিহ্ন}one{#টি বিস্ময়সূচক চিহ্ন}other{#টি বিস্ময়সূচক চিহ্ন}}</translation>
-<translation id="670717715607710284">স্ক্রিন বন্ধ করো</translation>
 <translation id="6710213216561001401">আগের</translation>
 <translation id="6714813999819678458">পূর্ববর্তী স্তর ২ শিরোনাম</translation>
 <translation id="6730312624811567147">'হোম' বা 'এন্ড'-এ যেতে সার্চের সাথে বাম অথবা ডানদিকের তীরচিহ্ন বোতামটি টিপুন, কন্ট্রোল হোম অথবা এন্ডের জন্য সার্চ কন্ট্রোলের সাথে বাম অথবা ডানদিকের তীরচিহ্ন বোতামটি টিপুন, পেজ আপ ও পেজ ডাউনের জন্য সার্চের সাথে উপরের বা নিচের তীরচিহ্ন বোতামটি টিপুন</translation>
@@ -994,7 +992,6 @@
 <translation id="816818801578874684">এটি প্রথম শিরোনাম। পরবর্তী শিরোনামে যেতে Search + H কী প্রেস করুন।</translation>
 <translation id="8173092779156526980">চারটি আঙুল দিয়ে বাঁদিকে সোয়াইপ করুন</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{আন্ডারস্কোর}one{#টি আন্ডারস্কোর}other{#টি আন্ডারস্কোর}}</translation>
-<translation id="817529114347680055">স্ক্রিন চালু করো</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">সারি</translation>
 <translation id="8186185314313222077">ফুল স্ক্রিন টগল করুন</translation>
@@ -1017,6 +1014,7 @@
 <translation id="8316881042119029234">পুরনো লেস</translation>
 <translation id="8324974933005349667">টেক্সট টু স্পিচ সেটিংস ব্যক্তিগতকৃত করুন</translation>
 <translation id="8326783648485765113">ঘাসের সবুজ</translation>
+<translation id="8328063869313048659">ডার্ক স্ক্রিন টগল করুন</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{পাউন্ড}one{#টি পাউন্ড চিহ্ন}other{#টি পাউন্ড চিহ্ন}}</translation>
 <translation id="8378855320830505539">অঞ্চল</translation>
 <translation id="8382679411218029383">স্বতসম্পূর্ণ ইনলাইন এবং তালিকা</translation>

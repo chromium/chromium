@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">Swipe met twee vingers omhoog</translation>
 <translation id="1126928665165112660">Niet cursief</translation>
 <translation id="113582498867142724"><ph name="TAG" />-collectie met <ph name="NUM" /> items</translation>
-<translation id="1146441463334103638">Scherm aan- of uitzetten</translation>
 <translation id="1156488781945104845">Huidige tijd</translation>
 <translation id="1161762950103988776">Jump</translation>
 <translation id="1164857107703583584">Met navigatieopdrachten kun je makkelijk op een webpagina navigeren.</translation>
@@ -256,6 +255,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Je kunt ook met 1 vinger van rechts naar links swipen om naar het vorige item te gaan. Probeer het nu.</translation>
 <translation id="280499067616661124">Zoeken op pagina in ChromeVox</translation>
+<translation id="2808001342598757276">Donkerder maken van scherm ongedaan maken</translation>
 <translation id="2811019999044652585">Als je naar andere delen van het scherm (zoals werkbalken of het systeemvak) wilt springen, druk je op Ctrl + Vooruit. De vooruittoets op de Chromebook bevindt zich meteen boven de cijfertoets 2.</translation>
 <translation id="2811204574343810641">Rij</translation>
 <translation id="2816868829355607410">Oefengedeelte: Navigatieopdrachten</translation>
@@ -302,7 +302,6 @@
 <translation id="3082249673510793544">Terug scrollen</translation>
 <translation id="3084806535845658316">geen typecho</translation>
 <translation id="3086746722712840547">opmerking</translation>
-<translation id="308736057934395497">Hiermee wordt de privacy verbeterd door je scherm uit te zetten zodat anderen het niet kunnen bekijken. Je kunt het scherm altijd weer aanzetten door op Zoeken + Helderheid omhoog te drukken.</translation>
 <translation id="3090227230165225418">Downloadmeldingen aankondigen</translation>
 <translation id="3090532668523289635">groep</translation>
 <translation id="3093176084511590672">Volgend oriëntatiepunt</translation>
@@ -313,7 +312,6 @@
 <translation id="3109724472072898302">Samengevouwen</translation>
 <translation id="311015743332597320">Swipe met vier vingers naar rechts</translation>
 <translation id="3112457281078985179">Gebruik Ctrl+Alt+Z om ChromeVox aan of uit te zetten.</translation>
-<translation id="3115800313647508384">Scherm uitzetten?</translation>
 <translation id="3131002934070407451">Nummers lezen als:</translation>
 <translation id="3134461040845705080">alleen-lezen</translation>
 <translation id="3137663468179739624">Olijf</translation>
@@ -721,6 +719,7 @@
 <translation id="6034000775414344507">Lichtgrijs</translation>
 <translation id="6036135911048686884">Verkennen via aanraking</translation>
 <translation id="6037602951055904232">Vooruit schuiven</translation>
+<translation id="6044160928851315051">Scherm donkerder maken</translation>
 <translation id="6082768461603900813">Basisnavigatie</translation>
 <translation id="609281021724813947">Geen vorige schuifregelaar</translation>
 <translation id="6100239002225743044">Eén regel omhoog gaan</translation>
@@ -791,7 +790,6 @@
 <translation id="6696967141280706829">Voorwoord</translation>
 <translation id="6697092096875747123">Vorige keuzelijst met invoervak</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{uitroepteken}other{# uitroeptekens}}</translation>
-<translation id="670717715607710284">Scherm uit</translation>
 <translation id="6710213216561001401">Vorige</translation>
 <translation id="6714813999819678458">Vorige kop voor niveau 2</translation>
 <translation id="6730312624811567147">Gebruik Zoeken + pijl-links of -rechts voor Home of End, Zoeken + Ctrl + pijl-links of -rechts voor Ctrl + Home of End, Zoeken + pijl-omhoog of -omlaag voor Page Up of Down</translation>
@@ -993,7 +991,6 @@
 <translation id="816818801578874684">Dit is de eerste kop. Druk op Zoeken + H om naar de volgende kop te gaan.</translation>
 <translation id="8173092779156526980">Swipe met vier vingers naar links</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{underscore}other{# underscores}}</translation>
-<translation id="817529114347680055">Scherm aan</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">rij</translation>
 <translation id="8186185314313222077">volledig scherm aan/uit</translation>
@@ -1016,6 +1013,7 @@
 <translation id="8316881042119029234">Vergeeld kant</translation>
 <translation id="8324974933005349667">Tekst-naar-spraak-instellingen personaliseren</translation>
 <translation id="8326783648485765113">Grasgroen</translation>
+<translation id="8328063869313048659">Donker scherm aan- of uitzetten</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{hekje}other{# hekjes}}</translation>
 <translation id="8378855320830505539">Regio</translation>
 <translation id="8382679411218029383">Automatisch inline en lijst aanvullen</translation>

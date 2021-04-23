@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">التمرير السريع بإصبعين إلى الأعلى</translation>
 <translation id="1126928665165112660">غير مائل</translation>
 <translation id="113582498867142724">مجموعة من <ph name="TAG" /> تشتمل على <ph name="NUM" /> من العناصر</translation>
-<translation id="1146441463334103638">التبديل بين إيقاف الشاشة وتشغيلها</translation>
 <translation id="1156488781945104845">الوقت الحالي</translation>
 <translation id="1161762950103988776">الانتقال السريع</translation>
 <translation id="1164857107703583584">استخدِم طلبات الانتقال السريع للتنقُّل بسهولة في صفحة ويب.</translation>
@@ -257,6 +256,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{بالإضافة إلى عنصر واحد}zero{بالإضافة إلى # عنصر}two{بالإضافة إلى عنصرَين (#)}few{بالإضافة إلى # عناصر}many{بالإضافة إلى # عنصرًا}other{بالإضافة إلى # عنصر}}</translation>
 <translation id="2792200646155001340">يمكنك أيضًا تمرير إصبع واحد من اليسار إلى اليمين للانتقال إلى العنصر السابق. جرِّب ذلك الآن.</translation>
 <translation id="280499067616661124">‏البحث في صفحة ChromeVox</translation>
+<translation id="2808001342598757276">إلغاء تعتيم الشاشة</translation>
 <translation id="2811019999044652585">‏للانتقال السريع إلى أجزاء أخرى من الشاشة، مثل أشرطة الأدوات أو لوحة النظام، اضغط على Control+Forward، على جهاز Chromebook، يوجد مفتاح Forward أعلى مفتاح رقم 2 مباشرةً.</translation>
 <translation id="2811204574343810641">صف</translation>
 <translation id="2816868829355607410">التدريب العملي: طلبات الانتقال السريع</translation>
@@ -303,7 +303,6 @@
 <translation id="3082249673510793544">التمرير للخلف</translation>
 <translation id="3084806535845658316">ليس هناك صدى للكتابة</translation>
 <translation id="3086746722712840547">note</translation>
-<translation id="308736057934395497">يساعد هذا الأمر في تحسين مستوى الخصوصية من خلال إيقاف الشاشة لكي لا يرى الآخرون المحتوى المعروض عليها. ويمكنك متى شئت إعادة تشغيلها بالضغط على زرَّي "بحث" + "رفع مستوى السطوع".</translation>
 <translation id="3090227230165225418">الإعلان عن تنزيل الإشعارات</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">المَعلم التالي</translation>
@@ -314,7 +313,6 @@
 <translation id="3109724472072898302">مصغّر</translation>
 <translation id="311015743332597320">مرِّر سريعًا بأربعة أصابع إلى يسار الشاشة.</translation>
 <translation id="3112457281078985179">‏لتفعيل ChromeVox أو إيقاف تشغيله، استخدم Control+Alt+Z.</translation>
-<translation id="3115800313647508384">هل تريد إيقاف الشاشة؟</translation>
 <translation id="3131002934070407451">طريقة قراءة الأرقام:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">زيتوني</translation>
@@ -722,6 +720,7 @@
 <translation id="6034000775414344507">رمادي فاتح</translation>
 <translation id="6036135911048686884">اللمس للاستكشاف</translation>
 <translation id="6037602951055904232">تحريك للأمام</translation>
+<translation id="6044160928851315051">تعتيم الشاشة</translation>
 <translation id="6082768461603900813">التنقل الأساسي</translation>
 <translation id="609281021724813947">ليس هناك شريط تمرير سابق.</translation>
 <translation id="6100239002225743044">نقل للأعلى سطر واحد</translation>
@@ -792,7 +791,6 @@
 <translation id="6696967141280706829">تمهيد</translation>
 <translation id="6697092096875747123">مربع التحرير والسرد السابق</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{علامة تعجب واحدة}zero{# علامة تعجب}two{علامتا تعجب (#)}few{# علامات تعجب}many{# علامة تعجب}other{# علامة تعجب}}</translation>
-<translation id="670717715607710284">إيقاف الشاشة</translation>
 <translation id="6710213216561001401">السابق</translation>
 <translation id="6714813999819678458">عنوان المستوى الثاني السابق</translation>
 <translation id="6730312624811567147">‏يمكنك استخدام الزر Search مع السهم المتجه لليسار أو لليمين كبديل عن Home أو End، وSearch مع Control والسهم المتجه لليسار أو لليمين كبديل عن Control Home أو Control End، وكذلك Search مع السهم المتجه للأعلى أو للأسفل لتحريك الصفحة للأعلى أو للأسفل.</translation>
@@ -994,7 +992,6 @@
 <translation id="816818801578874684">‏هذا هو العنوان الأول. اضغط على مفتاح البحث + حرف H للانتقال إلى العنوان التالي.</translation>
 <translation id="8173092779156526980">مرِّر سريعًا بأربعة أصابع إلى يمين الشاشة.</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{شرطة سفلية واحدة}zero{# underscores}two{شرطتان سفليتان (#)}few{# شرطات سفلية}many{# شرطة سفلية}other{# من الشرطات السفلية}}</translation>
-<translation id="817529114347680055">تفعيل الشاشة</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">الصف</translation>
 <translation id="8186185314313222077">تبديل وضع ملء الشاشة</translation>
@@ -1017,6 +1014,7 @@
 <translation id="8316881042119029234">برتقالي مصفر عتيق</translation>
 <translation id="8324974933005349667">تخصيص إعدادات ميزة "تحويل النص إلى كلام"</translation>
 <translation id="8326783648485765113">أخضر عشبي</translation>
+<translation id="8328063869313048659">تبديل الشاشة المعتمة</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{علامة جنيه واحدة}zero{# pound signs}two{علامتا جنيه (#)}few{# علامات جنيه}many{# علامة جنيه}other{# من علامات الجنيه}}</translation>
 <translation id="8378855320830505539">منطقة</translation>
 <translation id="8382679411218029383">إكمال تلقائي على السطر وعلى هيئة قائمة</translation>

@@ -916,6 +916,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1974821797477522211">Mit Netzwerk verbinden</translation>
 <translation id="1975841812214822307">Entfernen...</translation>
 <translation id="1976150099241323601">In Sicherheitsgerät anmelden</translation>
+<translation id="1976928778492259496">Der Fingerabdrucksensor befindet sich auf der linken Seite Ihres <ph name="DEVICE_TYPE" />. Berühren Sie ihn leicht mit dem Finger.</translation>
 <translation id="1977965994116744507">Verringern Sie den Abstand zwischen Smartphone und <ph name="DEVICE_TYPE" />, um das Gerät zu entsperren.</translation>
 <translation id="1978057560491495741">Adresse entfernen</translation>
 <translation id="1979095679518582070">Wenn Sie diese Funktion deaktivieren, kann dieses Gerät weiterhin Informationen senden, die für grundlegende Dienste wie Systemupdates und -sicherheit erforderlich sind.</translation>
@@ -1969,6 +1970,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="313205617302240621">Passwort vergessen?</translation>
 <translation id="3132277757485842847">Die Verbindung zu Ihrem Smartphone konnte nicht aufrechterhalten werden. Ihr Smartphone muss sich in der Nähe befinden, entsperrt sein und Bluetooth und WLAN müssen aktiviert sein.</translation>
 <translation id="3132996321662585180">Täglich aktualisieren</translation>
+<translation id="3134393957315651797">Wählen Sie den Teststatus für den Test „<ph name="EXPERIMENT_NAME" />“ aus. Testbeschreibung: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Ungültige PIN. Du hast noch <ph name="RETRIES" /> Versuche.</translation>
 <translation id="313963229645891001">Wird heruntergeladen, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Gelber Standardavatar</translation>
@@ -6618,6 +6620,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8398877366907290961">Trotzdem fortfahren</translation>
 <translation id="8400146488506985033">Nutzer verwalten</translation>
 <translation id="8401432541486058167">Geben Sie die PIN für Ihre Smartcard an.</translation>
+<translation id="8404893580027489425">Der Fingerabdrucksensor befindet sich auf der rechten Seite Ihres <ph name="DEVICE_TYPE" />. Berühren Sie ihn leicht mit dem Finger.</translation>
 <translation id="8405046151008197676">Wichtiges zum letzten Update ansehen</translation>
 <translation id="8407199357649073301">Protokollebene:</translation>
 <translation id="8408068190360279472">Netzwerk: <ph name="NETWORK_TYPE" />, Verbindung wird hergestellt</translation>

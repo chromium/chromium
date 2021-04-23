@@ -918,6 +918,7 @@
 <translation id="1974821797477522211">Повежите се са мрежом</translation>
 <translation id="1975841812214822307">Уклони...</translation>
 <translation id="1976150099241323601">Пријава на безбедносни уређај</translation>
+<translation id="1976928778492259496">Сензор за отисак прста се налази на левој страни уређаја <ph name="DEVICE_TYPE" />. Лагано га додирните било којим прстом.</translation>
 <translation id="1977965994116744507">Приближите телефон да бисте откључали <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978057560491495741">Уклоните адресу</translation>
 <translation id="1979095679518582070">Искључивање ове функције не утиче на могућност овог уређаја да шаље информације потребне за основне услуге, на пример, ажурирања система и безбедност.</translation>
@@ -1972,6 +1973,7 @@
 <translation id="313205617302240621">Заборавили сте лозинку?</translation>
 <translation id="3132277757485842847">Нисмо успели да одржимо везу са телефоном. Уверите се да је телефон у близини, да је откључан и да су Bluetooth и WiFi укључени.</translation>
 <translation id="3132996321662585180">Освежавај дневно</translation>
+<translation id="3134393957315651797">Изаберите стање за експеримент <ph name="EXPERIMENT_NAME" />. Опис експеримента: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Неважећи PIN. Преосталих покушаја: <ph name="RETRIES" />.</translation>
 <translation id="313963229645891001">Преузима се, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Подразумевани жути аватар</translation>
@@ -6623,6 +6625,7 @@
 <translation id="8398877366907290961">Ипак настави</translation>
 <translation id="8400146488506985033">Управљај људима</translation>
 <translation id="8401432541486058167">Наведите PIN који је повезан са паметном картицом.</translation>
+<translation id="8404893580027489425">Сензор за отисак прста се налази на десној страни уређаја <ph name="DEVICE_TYPE" />. Лагано га додирните било којим прстом.</translation>
 <translation id="8405046151008197676">Погледајте резиме најновијег ажурирања</translation>
 <translation id="8407199357649073301">Ниво евиденције:</translation>
 <translation id="8408068190360279472">Мрежа <ph name="NETWORK_TYPE" />, повезује се</translation>

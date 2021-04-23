@@ -248,6 +248,7 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="2612676031748830579">Número do cartão</translation>
 <translation id="2625189173221582860">Senha copiada</translation>
 <translation id="2631006050119455616">Salvo</translation>
+<translation id="2645657967708199252">Sua conexão <ph name="CONNECTION_TYPE" /> pode deixar o download mais lento</translation>
 <translation id="2647434099613338025">Adicionar idioma</translation>
 <translation id="2650751991977523696">Fazer o download do arquivo novamente?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# arquivo de áudio}one{# arquivo de áudio}other{# arquivos de áudio}}</translation>
@@ -260,6 +261,7 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="2718846868787000099">Os sites que você visita podem ver suas preferências para exibir conteúdo nos seus idiomas preferidos</translation>
 <translation id="2723001399770238859">áudio</translation>
 <translation id="2728754400939377704">Classificar por site</translation>
+<translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">Toque em uma palavra para pesquisar instantaneamente ou ver as ações relacionadas</translation>
 <translation id="2760989362628427051">Ativa o tema escuro quando essa opção ou a "Economia de bateria" do dispositivo está ativada</translation>
 <translation id="2762000892062317888">agora mesmo</translation>
@@ -304,7 +306,6 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="3016635187733453316">Verifique se o dispositivo está conectado à Internet</translation>
 <translation id="3029704984691124060">As senhas não correspondem</translation>
 <translation id="3031225630520268969">IU de consentimento para a pesquisa por voz do Assistente</translation>
-<translation id="3034163383943672781">O download será feito em <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Receber ajuda<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">Acesse o site mais rapidamente na próxima vez</translation>
 <translation id="305593374596241526">A Localização está desativada. Ative-a nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
@@ -437,6 +438,7 @@ Essa tecnologia ainda está em desenvolvimento ativo e está disponível apenas 
 <translation id="3943557322767080599">Mostrar solicitações de login do Chrome quando você fizer login na sua Conta do Google</translation>
 <translation id="395206256282351086">Sugestões de pesquisa e sites desativadas</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{O Chrome carregará sua página quando ela estiver pronta}one{O Chrome carregará sua página quando ela estiver pronta}other{O Chrome carregará suas páginas quando elas estiverem prontas}}</translation>
+<translation id="3962957115499249330">Você receberá uma notificação quando o download começar via Wi-Fi.</translation>
 <translation id="3963007978381181125">A criptografia por senha longa não inclui formas de pagamento e endereços do Google Pay. Só alguém com acesso a sua senha longa pode ler seus dados criptografados. Essa senha não é enviada ou armazenada pelo Google. Se você esquecer essa senha ou quiser alterar essa configuração, será necessário redefinir a sincronização. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Não é possível verificar suas senhas com o Chrome</translation>
 <translation id="3974987681202239636">O app <ph name="APP_NAME" /> será aberto no Chrome. Ao continuar, você concorda com os <ph name="BEGIN_LINK1" />Termos de Serviço do Google<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Serviço adicionais do Google Chrome e do Chrome OS<ph name="END_LINK2" />. O <ph name="BEGIN_LINK3" />Aviso de privacidade para Contas do Google gerenciadas no Family Link<ph name="END_LINK3" /> também é aplicável.</translation>
@@ -480,6 +482,7 @@ Essa tecnologia ainda está em desenvolvimento ativo e está disponível apenas 
 <translation id="4256782883801055595">Licenças de código aberto</translation>
 <translation id="4263656433980196874">IU de consentimento para a pesquisa por voz do Assistente aberta no tamanho máximo</translation>
 <translation id="4269820728363426813">Copiar endereço do link</translation>
+<translation id="4290281343757112331">Fazer o download mais tarde?</translation>
 <translation id="4298388696830689168">Sites vinculados</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">Básico</translation>
@@ -623,6 +626,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5191251636205085390">Descubra e controle novas tecnologias para substituir cookies de terceiros</translation>
 <translation id="5193988420012215838">Copiado para a área de transferência</translation>
 <translation id="5199929503336119739">Perfil de trabalho</translation>
+<translation id="5201464744567315552">Você receberá uma notificação quando o download começar, às <ph name="TIME" />.</translation>
 <translation id="5204967432542742771">Insira a senha</translation>
 <translation id="5210286577605176222">Ir para a guia anterior</translation>
 <translation id="5210365745912300556">Fechar guia</translation>
@@ -633,6 +637,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5230560987958996918">Solicitação de <ph name="SITE" /> para procurar dispositivos Bluetooth próximos. Os seguintes dispositivos foram encontrados:</translation>
 <translation id="5233638681132016545">Nova guia</translation>
 <translation id="5250483651202458397">Captura de tela. Toque para fechar.</translation>
+<translation id="5262378156578470238">Você receberá uma notificação quando o download começar, em <ph name="DATE" />.</translation>
 <translation id="526421993248218238">Não foi possível carregar a página</translation>
 <translation id="5271967389191913893">Não é possível abrir no dispositivo o conteúdo a ser transferido por download.</translation>
 <translation id="5292796745632149097">Enviar para</translation>
@@ -702,7 +707,6 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="572328651809341494">Guias recentes</translation>
 <translation id="5723735397759933332">Agora, o Modo Lite economiza mais dados para você com a otimização de imagens em páginas HTTPS.</translation>
 <translation id="5726692708398506830">Aumentar tudo na página</translation>
-<translation id="5732819098735351888">O download será iniciado quando houver uma conexão Wi-Fi.</translation>
 <translation id="5733983706093266635">Não é possível criar o código QR. O URL tem mais de <ph name="CHARACTER_LIMIT" /> caracteres.</translation>
 <translation id="5748802427693696783">Alternada para guias padrão</translation>
 <translation id="5749068826913805084">O Chrome precisa de acesso para fazer o download e armazenar arquivos.</translation>
@@ -781,7 +785,6 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="6159335304067198720">Economia de dados de <ph name="PERCENT" /></translation>
 <translation id="6186394685773237175">Não foram encontradas senhas comprometidas</translation>
 <translation id="6192907950379606605">Ver descrições de imagens</translation>
-<translation id="6206830853671714236">Escolha quando fazer o download</translation>
 <translation id="6210748933810148297">Não é <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Visualizando esta página</translation>
 <translation id="6218096829563201111">Pesquisar itens similares <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
@@ -915,6 +918,7 @@ Os dados da sessão anônima só serão excluídos do Chrome quando você <ph na
 <translation id="6981982820502123353">Acessibilidade</translation>
 <translation id="6989267951144302301">Falha no download</translation>
 <translation id="6995899638241819463">Avisar se suas senhas forem expostas em uma violação de dados</translation>
+<translation id="7001056293070445572">Esse arquivo é grande (<ph name="FILE_SIZE" />)</translation>
 <translation id="7015203776128479407">A configuração de sincronização inicial não foi concluída. A sincronização está desativada.</translation>
 <translation id="7022756207310403729">Abrir no navegador</translation>
 <translation id="702463548815491781">Recomendado quando o TalkBack ou o acesso com interruptor estão ativados</translation>
@@ -1029,6 +1033,7 @@ Os dados da sessão anônima só serão excluídos do Chrome quando você <ph na
 <translation id="7791543448312431591">Adicionar</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> guias restauradas</translation>
 <translation id="780301667611848630">Não</translation>
+<translation id="7808889146555843082">Remover a senha não excluirá a conta em <ph name="SITE" />. Mude a senha ou exclua a conta em <ph name="SITE" /> para protegê-la.</translation>
 <translation id="7810647596859435254">Abrir com…</translation>
 <translation id="7815484226266492798">Captura de tela longa</translation>
 <translation id="7821588508402923572">Sua economia de dados será exibida aqui</translation>
@@ -1176,12 +1181,14 @@ Os dados da sessão anônima só serão excluídos do Chrome quando você <ph na
 <translation id="8699120352855309748">Não oferecer a opção de traduzir estes idiomas</translation>
 <translation id="8712637175834984815">Entendi</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>
+<translation id="8730621377337864115">Concluído</translation>
 <translation id="8748850008226585750">Conteúdo oculto</translation>
 <translation id="8773160212632396039">Processando a solicitação</translation>
 <translation id="8788265440806329501">O histórico de navegação está fechado</translation>
 <translation id="8788968922598763114">Reabrir a última guia fechada</translation>
 <translation id="8798449543960971550">Lidas</translation>
 <translation id="8812260976093120287">Em alguns websites, é possível pagar no seu dispositivo com os apps de pagamento compatíveis acima.</translation>
+<translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881688628773363275">O conteúdo da guia de visualização não pode ser exibido.</translation>
 <translation id="8820817407110198400">Favoritos</translation>
 <translation id="883806473910249246">Ocorreu um erro durante o download do conteúdo.</translation>
@@ -1219,10 +1226,10 @@ Os dados da sessão anônima só serão excluídos do Chrome quando você <ph na
 <translation id="9063523880881406963">Desativar "Ver versão para computador"</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9065383040763568503">Dados armazenados que não parecem ser importantes para o Chrome. Por exemplo, sites sem configurações salvas ou que você não visita com frequência</translation>
-<translation id="9069543557624799859">O download começará às <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Não há páginas não lidas</translation>
 <translation id="9070377983101773829">Iniciar pesquisa por voz</translation>
 <translation id="9074336505530349563">Para receber conteúdo personalizado sugerido pelo Google, ative a sincronização</translation>
+<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9086302186042011942">Sincronizando</translation>
 <translation id="9086455579313502267">Não foi possível acessar a rede</translation>
 <translation id="9100505651305367705">Oferecer para mostrar artigos em uma versão simplificada, quando compatível.</translation>

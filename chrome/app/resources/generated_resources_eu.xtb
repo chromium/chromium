@@ -919,6 +919,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1974821797477522211">Konektatu sarera</translation>
 <translation id="1975841812214822307">Kendu…</translation>
 <translation id="1976150099241323601">Hasi saioa segurtasun-gailuan</translation>
+<translation id="1976928778492259496"><ph name="DEVICE_TYPE" /> gailuaren ezkerreko aldean dago hatz-marken sentsorea. Uki ezazu edozein hatzekin leuntasunez.</translation>
 <translation id="1977965994116744507"><ph name="DEVICE_TYPE" /> gailua desblokeatzeko, hurbildu telefonoa.</translation>
 <translation id="1978057560491495741">Kendu helbidea</translation>
 <translation id="1979095679518582070">Eginbidea desaktibatuta ere, gailu honek beharrezko informazioa bidaltzen jarraitu ahal izango du funtsezko zerbitzuak jasotzeko, hala nola sistemaren eguneratzeak eta segurtasuna.</translation>
@@ -1972,6 +1973,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="313205617302240621">Pasahitza ahaztu zaizu?</translation>
 <translation id="3132277757485842847">Ezin izan dugu mantendu gailua telefonoarekin konektatuta. Ziurtatu telefonoa hurbil eta desblokeatuta dagoela, eta Bluetooth-a eta wifia aktibatuta dauzkala.</translation>
 <translation id="3132996321662585180">Freskatu egunero</translation>
+<translation id="3134393957315651797">Hautatu <ph name="EXPERIMENT_NAME" /> probaren egoera. Probaren azalpena: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">PIN kodeak ez du balio. <ph name="RETRIES" /> saiakera gelditzen zaizkizu.</translation>
 <translation id="313963229645891001">Deskargatzen (<ph name="STATUS" />)</translation>
 <translation id="3139925690611372679">Abatar hori lehenetsia</translation>
@@ -6621,6 +6623,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8398877366907290961">Jarraitu, hala ere</translation>
 <translation id="8400146488506985033">Kudeatu jendea</translation>
 <translation id="8401432541486058167">Eman txartel adimendunarekin lotutako PIN kodea.</translation>
+<translation id="8404893580027489425"><ph name="DEVICE_TYPE" /> gailuaren eskuineko aldean dago hatz-marken sentsorea. Uki ezazu edozein hatzekin leuntasunez.</translation>
 <translation id="8405046151008197676">Irakurri azken eguneratzeari buruzko datu aipagarriak</translation>
 <translation id="8407199357649073301">Erregistro-maila:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> sarea. Konektatzen.</translation>

@@ -920,6 +920,7 @@
 <translation id="1974821797477522211">Поврзете се на мрежа</translation>
 <translation id="1975841812214822307">Отстрани...</translation>
 <translation id="1976150099241323601">Најавете се на безбедносниот уред</translation>
+<translation id="1976928778492259496">Сензорот за отпечатоци е на левата страна од вашиот <ph name="DEVICE_TYPE" />. Допрете го нежно со кој било прст.</translation>
 <translation id="1977965994116744507">Приближете го вашиот телефон за да го отклучите вашиот <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978057560491495741">Отстранување на адресата</translation>
 <translation id="1979095679518582070">Исклучувањето на функцијава нема да влијае врз способноста на уредов да ги испраќа информациите што се потребни за основните услуги, како што се ажурирањата на системот и безбедноста.</translation>
@@ -1974,6 +1975,7 @@
 <translation id="313205617302240621">Ја заборавивте лозинката?</translation>
 <translation id="3132277757485842847">Не можевме да ја одржиме врската со вашиот телефон. Проверете дали телефонот е во близина, отклучен и со вклучени Bluetooth и Wi-Fi.</translation>
 <translation id="3132996321662585180">Освежувај дневно</translation>
+<translation id="3134393957315651797">Изберете состојба на експериментот за <ph name="EXPERIMENT_NAME" />. Опис на експериментот: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Погрешен PIN. Имате уште <ph name="RETRIES" /> обиди.</translation>
 <translation id="313963229645891001">Преземање, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Стандарден жолт аватар</translation>
@@ -6626,6 +6628,7 @@
 <translation id="8398877366907290961">Сепак продолжи</translation>
 <translation id="8400146488506985033">Управувај со луѓе</translation>
 <translation id="8401432541486058167">Наведете го PIN-кодот што е поврзан со вашата паметна картичка.</translation>
+<translation id="8404893580027489425">Сензорот за отпечатоци е на десната страна од вашиот <ph name="DEVICE_TYPE" />. Допрете го нежно со кој било прст.</translation>
 <translation id="8405046151008197676">Дознајте ги најдобрите карактеристики од најновото ажурирање</translation>
 <translation id="8407199357649073301">Ниво на евиденција:</translation>
 <translation id="8408068190360279472">Мрежа со <ph name="NETWORK_TYPE" />, се поврзува</translation>

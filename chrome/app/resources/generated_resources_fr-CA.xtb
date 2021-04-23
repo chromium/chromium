@@ -919,6 +919,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="1974821797477522211">Se connecter au réseau</translation>
 <translation id="1975841812214822307">Supprimer...</translation>
 <translation id="1976150099241323601">Connexion au dispositif de sécurité</translation>
+<translation id="1976928778492259496">Le capteur d'empreintes digitales se trouve sur le côté gauche de votre <ph name="DEVICE_TYPE" />. Touchez-le doucement avec n'importe quel doigt.</translation>
 <translation id="1977965994116744507">Rapprochez votre téléphone de votre <ph name="DEVICE_TYPE" /> pour le déverrouiller.</translation>
 <translation id="1978057560491495741">Retirer l'adresse</translation>
 <translation id="1979095679518582070">La désactivation de cette fonctionnalité n'empêche pas cet appareil d'envoyer les données nécessaires aux services essentiels, comme les mises à jour du système et la sécurité.</translation>
@@ -1974,6 +1975,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="313205617302240621">Mot de passe oublié?</translation>
 <translation id="3132277757485842847">Nous n'avons pas pu maintenir une connexion avec votre téléphone. Assurez-vous que votre téléphone est à proximité, qu'il est déverrouillé et que le Bluetooth et le Wi-Fi sont activés.</translation>
 <translation id="3132996321662585180">Actualiser quotidiennement</translation>
+<translation id="3134393957315651797">Sélectionner l'état de la fonctionnalité expérimentale <ph name="EXPERIMENT_NAME" />. Description de la fonctionnalité expérimentale : <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">NIP incorrect. Il vous reste <ph name="RETRIES" /> tentatives.</translation>
 <translation id="313963229645891001">Téléchargement en cours : <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Avatar jaune par défaut</translation>
@@ -6622,6 +6624,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8398877366907290961">Continuer</translation>
 <translation id="8400146488506985033">Gérer les personnes</translation>
 <translation id="8401432541486058167">Entrez le NIP associé à votre carte à puce.</translation>
+<translation id="8404893580027489425">Le capteur d'empreintes digitales se trouve sur le côté droit de votre <ph name="DEVICE_TYPE" />. Touchez-le doucement avec n'importe quel doigt.</translation>
 <translation id="8405046151008197676">Consultez les faits saillants de la dernière mise à jour</translation>
 <translation id="8407199357649073301">Niveau de journalisation :</translation>
 <translation id="8408068190360279472">Réseau <ph name="NETWORK_TYPE" />; connexion en cours…</translation>

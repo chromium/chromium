@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">İki barmağınızla yuxarı çəkin</translation>
 <translation id="1126928665165112660">Kursiv deyil</translation>
 <translation id="113582498867142724"><ph name="NUM" />  element ilə <ph name="TAG" /> kolleksiyası</translation>
-<translation id="1146441463334103638">Ekranı aktiv və ya deaktiv edin</translation>
 <translation id="1156488781945104845">Cari vaxt</translation>
 <translation id="1161762950103988776">Keçid</translation>
 <translation id="1164857107703583584">Veb səhifədə səmərəli qaydada naviqasiya etmək üçün keçid əmrlərindən istifadə etmək mümkündür.</translation>
@@ -256,6 +255,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Həmçinin əvvəlki elementə keçmək üçün bir barmağınızı sağdan sola sürüşdürə bilərsiniz. İndi sınayın.</translation>
 <translation id="280499067616661124">ChromeVox səhifədə tapma</translation>
+<translation id="2808001342598757276">Ekranın tündlüyünü azaldın</translation>
 <translation id="2811019999044652585">Ekranın digər hissələrinə, məsələn, alətlər paneli və ya sistem seçimlərinə keçmək üçün Control+Forward basın. Chromebook'da Forward düyməsi 2 rəqəminin tam üstündədir.</translation>
 <translation id="2811204574343810641">Sıra</translation>
 <translation id="2816868829355607410">Təcrübə sahəsi: Keçid əmrləri</translation>
@@ -302,7 +302,6 @@
 <translation id="3082249673510793544">Geri sürüşdürün</translation>
 <translation id="3084806535845658316">çap exosu yoxdur</translation>
 <translation id="3086746722712840547">qeyd</translation>
-<translation id="308736057934395497">Bu, başqalarına görünməməsi üçün ekranınızı söndürərək məxfiliyi artırır. Axtarış + Parlaqlığı artırma seçiminə basaraq həmişə ekranı yenidən aktiv edə bilərsiniz.</translation>
 <translation id="3090227230165225418">Endirmə bildirişlərini paylaşın</translation>
 <translation id="3090532668523289635">qrp</translation>
 <translation id="3093176084511590672">Növbəti orientir</translation>
@@ -313,7 +312,6 @@
 <translation id="3109724472072898302">Yığcamlaşdı</translation>
 <translation id="311015743332597320">Barmaqlarınızı sağa sürüşdürün</translation>
 <translation id="3112457281078985179">ChromeVox'u aktiv və ya deaktiv etmək üçün Control+Alt+Z istifadə edin.</translation>
-<translation id="3115800313647508384">Ekran deaktiv edilsin?</translation>
 <translation id="3131002934070407451">Nömrələri belə oxuyun:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">Zeytun</translation>
@@ -721,6 +719,7 @@
 <translation id="6034000775414344507">Açıq-boz</translation>
 <translation id="6036135911048686884">Toxunaraq araşdırma</translation>
 <translation id="6037602951055904232">Pan irəli</translation>
+<translation id="6044160928851315051">Ekranı tündləşdirin</translation>
 <translation id="6082768461603900813">Əsas Naviqasiya</translation>
 <translation id="609281021724813947">Öncəki slayder yoxdur</translation>
 <translation id="6100239002225743044">Bir sətir yuxarı köçürün</translation>
@@ -791,7 +790,6 @@
 <translation id="6696967141280706829">Ön söz</translation>
 <translation id="6697092096875747123">Öncəki kombo xanası</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{nida}other{# nida}}</translation>
-<translation id="670717715607710284">Ekran deaktivdir</translation>
 <translation id="6710213216561001401">Əvvəlki</translation>
 <translation id="6714813999819678458">Öncəki səviyyə 2 başlığı</translation>
 <translation id="6730312624811567147">Home və ya End üçün Search Left və ya Right, Control Home və ya End üçün Search Control Left və ya Right, Yuxarı Səhifə və ya Aşağı üçün Search Up və ya Down düymələrindən istifadə edin</translation>
@@ -994,7 +992,6 @@
 <translation id="816818801578874684">Bu, birinci başlıqdır. Növbəti başlığa keçmək üçün Axtarış + H üzərinə basın.</translation>
 <translation id="8173092779156526980">Barmaqlarınızı sola sürüşdürün</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{alt xətt}other{# alt xətt}}</translation>
-<translation id="817529114347680055">Ekran aktivdir</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">cər</translation>
 <translation id="8186185314313222077">tam ekrana keçin</translation>
@@ -1017,6 +1014,7 @@
 <translation id="8316881042119029234">Açıq-sarı</translation>
 <translation id="8324974933005349667">Mətndən-Nitqə ayarlarını fərdiləşdirin</translation>
 <translation id="8326783648485765113">Çəmən Yaşılı</translation>
+<translation id="8328063869313048659">Tünd ekranı yandırıb-söndürün</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{funt}other{# funt işarəsi}}</translation>
 <translation id="8378855320830505539">Region</translation>
 <translation id="8382679411218029383">Avto tamamlama sətiriçi və siyahısı</translation>

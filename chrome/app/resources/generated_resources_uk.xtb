@@ -922,6 +922,7 @@
 <translation id="1974821797477522211">Під’єднатися до мережі</translation>
 <translation id="1975841812214822307">Видалити…</translation>
 <translation id="1976150099241323601">Увійти в пристрій безпеки</translation>
+<translation id="1976928778492259496">Сканер відбитків пальців розташовано на лівому боці пристрою <ph name="DEVICE_TYPE" />. Злегка торкніться його будь-яким пальцем.</translation>
 <translation id="1977965994116744507">Щоб розблокувати свій пристрій <ph name="DEVICE_TYPE" />, розташуйте телефон ближче.</translation>
 <translation id="1978057560491495741">Видалити адресу</translation>
 <translation id="1979095679518582070">Якщо вимкнути цю функцію, пристрій усе одно зможе надсилати інформацію, потрібну для отримання важливих послуг, як-от оновлень системи та засобів безпеки.</translation>
@@ -1976,6 +1977,7 @@
 <translation id="313205617302240621">Забули пароль?</translation>
 <translation id="3132277757485842847">Зв'язок із телефоном утрачено. Переконайтеся, що ваш телефон поблизу й розблокований, а Bluetooth і Wi-Fi увімкнено.</translation>
 <translation id="3132996321662585180">Оновлювати щодня</translation>
+<translation id="3134393957315651797">Виберіть статус експерименту "<ph name="EXPERIMENT_NAME" />". Опис експерименту: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Недійсний PIN-код. Залишилося спроб: <ph name="RETRIES" />.</translation>
 <translation id="313963229645891001">Завантаження: <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Стандартний жовтий аватар</translation>
@@ -6626,6 +6628,7 @@
 <translation id="8398877366907290961">Продовжити</translation>
 <translation id="8400146488506985033">Керувати користувачами</translation>
 <translation id="8401432541486058167">Укажіть PIN-код, зв'язаний із вашою розумною карткою.</translation>
+<translation id="8404893580027489425">Сканер відбитків пальців розташовано на правому боці пристрою <ph name="DEVICE_TYPE" />. Злегка торкніться його будь-яким пальцем.</translation>
 <translation id="8405046151008197676">Отримайте інформацію про останнє оновлення</translation>
 <translation id="8407199357649073301">Рівень журналу:</translation>
 <translation id="8408068190360279472">Мережа <ph name="NETWORK_TYPE" />: підключення</translation>

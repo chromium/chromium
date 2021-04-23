@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">Mag-swipe pataas gamit ang dalawang daliri</translation>
 <translation id="1126928665165112660">Hindi naka-italic</translation>
 <translation id="113582498867142724">Koleksyon ng <ph name="TAG" /> na may <ph name="NUM" /> (na) item</translation>
-<translation id="1146441463334103638">I-on o i-off ang screen</translation>
 <translation id="1156488781945104845">Kasalukuyang oras</translation>
 <translation id="1161762950103988776">Lumaktaw</translation>
 <translation id="1164857107703583584">Magagamit ang mga jump command para mahusay na mag-navigate sa isang web page.</translation>
@@ -256,6 +255,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}one{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Puwede ka ring mag-swipe ng isang daliri pakaliwa para lumipat sa nakaraang item. Subukan ito ngayon.</translation>
 <translation id="280499067616661124">May nakitang ChromeVox sa page</translation>
+<translation id="2808001342598757276">Itigil ang pagpapadilim ng screen</translation>
 <translation id="2811019999044652585">Upang pumunta sa iba pang mga bahagi ng screen, tulad ng mga toolbar o system tray, pindutin ang Control+Forward. Sa isang Chromebook, ang Forward key ay nasa itaas lang ng number 2 na key.</translation>
 <translation id="2811204574343810641">Row</translation>
 <translation id="2816868829355607410">Lugar ng pagsasanay: Mga jump command</translation>
@@ -302,7 +302,6 @@
 <translation id="3082249673510793544">Mag-scroll pabalik</translation>
 <translation id="3084806535845658316">walang echo ng pagta-type</translation>
 <translation id="3086746722712840547">note</translation>
-<translation id="308736057934395497">Pinapahusay nito ang privacy sa pamamagitan ng pag-off ng iyong screen para hindi ito nakikita ng iba. Puwede mong i-on ulit ang screen kahit kailan sa pamamagitan ng pagpindot sa Paghahanap + Dagdagan ang liwanag.</translation>
 <translation id="3090227230165225418">Ianunsyo ang mga notification ng pag-download</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">Susunod na landmark</translation>
@@ -313,7 +312,6 @@
 <translation id="3109724472072898302">Naka-collapse</translation>
 <translation id="311015743332597320">Mag-swipe pakanan gamit ang apat na daliri</translation>
 <translation id="3112457281078985179">Upang i-on o i-off ang ChromeVox, gamitin ang Control+Alt+Z.</translation>
-<translation id="3115800313647508384">I-off ang screen?</translation>
 <translation id="3131002934070407451">Basahin ang mga numero bilang:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">Olive</translation>
@@ -721,6 +719,7 @@
 <translation id="6034000775414344507">Light Grey</translation>
 <translation id="6036135911048686884">Pindutin ang mag-explore</translation>
 <translation id="6037602951055904232">I-pan paharap</translation>
+<translation id="6044160928851315051">Padilimin ang screen</translation>
 <translation id="6082768461603900813">Basic na Pag-navigate</translation>
 <translation id="609281021724813947">Walang nakaraang slider</translation>
 <translation id="6100239002225743044">Umakyat nang isang linya</translation>
@@ -791,7 +790,6 @@
 <translation id="6696967141280706829">Preface</translation>
 <translation id="6697092096875747123">Nakaraang combo box</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{tandang-padamdam}one{# tandang-padamdam}other{# na tandang-padamdam}}</translation>
-<translation id="670717715607710284">I-off ang screen</translation>
 <translation id="6710213216561001401">Nauna</translation>
 <translation id="6714813999819678458">Nakaraang heading sa antas 2</translation>
 <translation id="6730312624811567147">Gamitin ang Maghanap Pakaliwa o Pakanan para sa Home o End, Maghanap ng Kontrol Pakaliwa o Pakanan para sa Control Home o End, at Maghanap Pataas o Pababa para sa Page Up o Down</translation>
@@ -994,7 +992,6 @@
 <translation id="816818801578874684">Ito ang unang heading. Pindutin ang Search + H para pumunta sa susunod na heading.</translation>
 <translation id="8173092779156526980">Mag-swipe pakaliwa gamit ang apat na daliri</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{underscore}one{# underscore}other{# na underscore}}</translation>
-<translation id="817529114347680055">Naka-on ang screen</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">row</translation>
 <translation id="8186185314313222077">i-toggle ang full screen</translation>
@@ -1017,6 +1014,7 @@
 <translation id="8316881042119029234">Old Lace</translation>
 <translation id="8324974933005349667">I-personalize ang mga setting ng Text-to-Speech</translation>
 <translation id="8326783648485765113">Lawn Green</translation>
+<translation id="8328063869313048659">I-toggle ang madilim na screen</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{pound}one{# pound sign}other{# na pound sign}}</translation>
 <translation id="8378855320830505539">Rehiyon</translation>
 <translation id="8382679411218029383">Inline at listahan ng autocompletion</translation>

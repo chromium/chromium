@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">ਦੋ ਉਂਗਲਾਂ ਉੱਪਰ ਵੱਲ ਸਵਾਈਪ ਕਰੋ</translation>
 <translation id="1126928665165112660">ਕੋਈ ਤਿਰਛੀ ਲਿਖਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="113582498867142724"><ph name="NUM" /> ਆਈਟਮਾਂ ਵਾਲਾ <ph name="TAG" /> ਕਲੈਕਸ਼ਨ</translation>
-<translation id="1146441463334103638">ਸਕ੍ਰੀਨ ਨੂੰ ਚਾਲੂ ਜਾਂ ਬੰਦ ਵਿਚਕਾਰ ਟੌਗਲ ਕਰੋ</translation>
 <translation id="1156488781945104845">ਵਰਤਮਾਨ ਸਮਾਂ</translation>
 <translation id="1161762950103988776">ਜੰਪ</translation>
 <translation id="1164857107703583584">ਜੰਪ ਆਦੇਸ਼ ਵੈੱਬ ਪੰਨੇ ਵਿੱਚ ਕੁਸ਼ਲਤਾ ਨਾਲ ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ ਵਰਤੇ ਜਾ ਸਕਦੇ ਹਨ।</translation>
@@ -256,6 +255,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}one{+#}other{+#}}</translation>
 <translation id="2792200646155001340">ਤੁਸੀਂ ਪਿਛਲੀ ਆਈਟਮ 'ਤੇ ਜਾਣ ਲਈ ਇੱਕ ਉਂਗਲ ਨਾਲ ਸੱਜੇ ਤੋ ਖੱਬੇ ਸਵਾਈਪ ਵੀ ਕਰ ਸਕਦੇ ਹੋ। ਹੁਣੇ ਵਰਤ ਕੇ ਦੇਖੋ।</translation>
 <translation id="280499067616661124">ਪੰਨੇ ਵਿੱਚ ChromeVox ਲੱਭਤ</translation>
+<translation id="2808001342598757276">ਸਕ੍ਰੀਨ ਨੂੰ ਹਲਕਾ ਕਰੋ</translation>
 <translation id="2811019999044652585">ਸਕ੍ਰੀਨ ਦੇ ਦੂਜੇ ਹਿੱਸਿਆਂ, ਜਿਵੇਂ ਟੂਲਬਾਰ ਜਾਂ ਸਿਸਟਮ ਟ੍ਰੇਅ, 'ਤੇ ਜਾਣ ਲਈ, Control+Forward ਦਬਾਓ। Chromebook 'ਤੇ, Forward ਕੁੰਜੀ ਨੰਬਰ 2 ਕੁੰਜੀ ਦੇ ਬਿਲਕੁਲ ਉੱਪਰ ਹੈ।</translation>
 <translation id="2811204574343810641">ਕਤਾਰ</translation>
 <translation id="2816868829355607410">ਅਭਿਆਸ ਖੇਤਰ: ਜੰਪ ਆਦੇਸ਼</translation>
@@ -302,7 +302,6 @@
 <translation id="3082249673510793544">ਪਿੱਛੇ ਵੱਲ ਸਕ੍ਰੋਲ ਕਰੋ</translation>
 <translation id="3084806535845658316">ਕੋਈ ਟਾਈਪਿੰਗ ਧੁਨੀ ਨਹੀਂ</translation>
 <translation id="3086746722712840547">ਨੋਟ</translation>
-<translation id="308736057934395497">ਇਹ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਨੂੰ ਬੰਦ ਕਰਕੇ ਪਰਦੇਦਾਰੀ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਂਦਾ ਹੈ ਤਾਂ ਜੋ ਇਹ ਹੋਰਾਂ ਨੂੰ ਨਾ ਦਿਖਾਈ ਦੇਵੇ। ਤੁਸੀਂ ਹਮੇਸ਼ਾਂ ਖੋਜੋ + ਚਮਕ ਵਧਾਓ ਬਟਨ ਨੂੰ ਦਬਾ ਕੇ ਸਕ੍ਰੀਨ ਨੂੰ ਵਾਪਸ ਚਾਲੂ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="3090227230165225418">ਡਾਊਨਲੋਡ ਸੂਚਨਾਵਾਂ ਬਾਰੇ ਸੂਚਿਤ ਕਰੋ</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">ਅਗਲਾ ਮਾਰਗ ਦਰਸ਼ਨ ਚਿੰਨ੍ਹ</translation>
@@ -313,7 +312,6 @@
 <translation id="3109724472072898302">ਨਸ਼ਟ ਹੋਇਆ</translation>
 <translation id="311015743332597320">ਚਾਰ ਉਂਗਲਾਂ ਸੱਜੇ ਪਾਸੇ ਵੱਲ ਸਵਾਈਪ ਕਰੋ</translation>
 <translation id="3112457281078985179">ChromeVox ਨੂੰ ਚਾਲੂ ਜਾਂ ਬੰਦ ਕਰਨ ਲਈ, ਕੰਟਰੋਲ+Alt+Z ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
-<translation id="3115800313647508384">ਕੀ ਸਕ੍ਰੀਨ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
 <translation id="3131002934070407451">ਨੰਬਰਾਂ ਨੂੰ ਇਸ ਤਰ੍ਹਾਂ ਪੜ੍ਹੋ:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">ਜੈਤੂਨੀ ਰੰਗਾ</translation>
@@ -721,6 +719,7 @@
 <translation id="6034000775414344507">ਹਲਕਾ ਸਲੇਟੀ</translation>
 <translation id="6036135911048686884">ਪੜਚੋਲ ਕਰਨ ਲਈ ਸਪਰਸ਼ ਕਰੋ</translation>
 <translation id="6037602951055904232">ਪੈਨ ਫਾਰਵਰਡ</translation>
+<translation id="6044160928851315051">ਸਕ੍ਰੀਨ ਨੂੰ ਗੂੜ੍ਹਾ ਕਰੋ</translation>
 <translation id="6082768461603900813">ਮੁੱਢਲਾ ਆਵਾਗੌਣ</translation>
 <translation id="609281021724813947">ਕੋਈ ਪਿਛਲਾ ਸਲਾਈਡਰ ਨਹੀਂ</translation>
 <translation id="6100239002225743044">ਇੱਕ ਲਾਈਨ ਉੱਪਰ ਵੱਲ ਲਿਜਾਓ</translation>
@@ -791,7 +790,6 @@
 <translation id="6696967141280706829">ਪ੍ਰਸਤਾਵਨਾ</translation>
 <translation id="6697092096875747123">ਪਿਛਲਾ ਕੌਂਬੋ ਬਾਕਸ</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{ਵਿਸਮਕ ਚਿੰਨ੍ਹ}one{# ਵਿਸਮਕ ਚਿੰਨ੍ਹ}other{# ਵਿਸਮਕ ਚਿੰਨ੍ਹ}}</translation>
-<translation id="670717715607710284">ਸਕ੍ਰੀਨ ਬੰਦ ਕਰੋ</translation>
 <translation id="6710213216561001401">ਪਿਛਲਾ</translation>
 <translation id="6714813999819678458">ਪਿਛਲਾ ਪੱਧਰ 2 ਸਿਰਲੇਖ</translation>
 <translation id="6730312624811567147">Home ਜਾਂ End ਦੀ ਥਾਂ Search ਕੁੰਜੀ ਨਾਲ Left ਜਾਂ Right ਵਰਤੋ, Control Home ਜਾਂ End ਦੀ ਥਾਂ Search Control Left ਜਾਂ Right ਵਰਤੋ, Page Up ਜਾਂ Down ਦੀ ਥਾਂ Search Up ਜਾਂ Down ਵਰਤੋ</translation>
@@ -994,7 +992,6 @@
 <translation id="816818801578874684">ਇਹ ਪਹਿਲਾ ਸਿਰਲੇਖ ਹੈ। ਅਗਲੇ ਸਿਰਲੇਖ 'ਤੇ ਜਾਣ ਲਈ Search + H ਦਬਾਓ।</translation>
 <translation id="8173092779156526980">ਚਾਰ ਉਂਗਲਾਂ ਖੱਬੇ ਪਾਸੇ ਵੱਲ ਸਵਾਈਪ ਕਰੋ</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{ਅੰਡਰਸਕੋਰ}one{# ਅੰਡਰਸਕੋਰ}other{# ਅੰਡਰਸਕੋਰ}}</translation>
-<translation id="817529114347680055">ਸਕ੍ਰੀਨ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="8179976553408161302">ਦਰਜ ਕਰੋ</translation>
 <translation id="8184828902145951186">ਕਤਾਰ</translation>
 <translation id="8186185314313222077">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਟੌਗਲ ਕਰੋ</translation>
@@ -1017,6 +1014,7 @@
 <translation id="8316881042119029234">ਘਸਮੈਲਾ ਚਿੱਟਾ</translation>
 <translation id="8324974933005349667">'ਲਿਖਤ ਤੋਂ ਬੋਲੀ' ਸੈਟਿੰਗਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਓ</translation>
 <translation id="8326783648485765113">ਘਾਹੀ ਹਰਾ</translation>
+<translation id="8328063869313048659">ਗੂੜ੍ਹੀ ਸਕ੍ਰੀਨ ਨੂੰ ਟੌਗਲ ਕਰੋ</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{ਪੌਂਡ}one{# ਪੌਂਡ ਚਿੰਨ੍ਹ}other{# ਪੌਂਡ ਚਿੰਨ੍ਹ}}</translation>
 <translation id="8378855320830505539">ਖੇਤਰ</translation>
 <translation id="8382679411218029383">ਸਵੈ-ਮੁਕੰਮਲ ਇਨਲਾਈਨ ਅਤੇ ਸੂਚੀ</translation>

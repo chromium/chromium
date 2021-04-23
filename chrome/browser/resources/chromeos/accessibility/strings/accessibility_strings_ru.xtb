@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">Проведите двумя пальцами вверх</translation>
 <translation id="1126928665165112660">Не курсив</translation>
 <translation id="113582498867142724">Элементов в коллекции "<ph name="TAG" />": <ph name="NUM" /></translation>
-<translation id="1146441463334103638">Включить или отключить экран</translation>
 <translation id="1156488781945104845">Текущее время</translation>
 <translation id="1161762950103988776">Переход</translation>
 <translation id="1164857107703583584">Команды для быстрого перехода упрощают навигацию на веб-страницах.</translation>
@@ -256,6 +255,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}one{+#}few{+#}many{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Чтобы перейти к предыдущему элементу, можно провести одним пальцем справа налево. Потренируйтесь на этом экране.</translation>
 <translation id="280499067616661124">Поиск на странице (ChromeVox)</translation>
+<translation id="2808001342598757276">Включить экран</translation>
 <translation id="2811019999044652585">Чтобы перемещаться между разными частями экрана, например панелью инструментов и областью уведомлений, нажимайте CTRL + ВПЕРЕД. Клавиша ВПЕРЕД на Chromebook расположена над клавишей 2.</translation>
 <translation id="2811204574343810641">Строка.</translation>
 <translation id="2816868829355607410">Практические задания: команды для быстрого перехода</translation>
@@ -302,7 +302,6 @@
 <translation id="3082249673510793544">Прокрутить назад.</translation>
 <translation id="3084806535845658316">Без озвучивания.</translation>
 <translation id="3086746722712840547">note</translation>
-<translation id="308736057934395497">После отключения экрана никто не сможет видеть ваши данные. Вы сможете снова его включить, нажав Поиск + Увеличить яркость.</translation>
 <translation id="3090227230165225418">Объявлять уведомления о скачиваниях</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">Перейти к следующему ориентиру</translation>
@@ -313,7 +312,6 @@
 <translation id="3109724472072898302">Свернуто</translation>
 <translation id="311015743332597320">Проведите четырьмя пальцами вправо</translation>
 <translation id="3112457281078985179">Чтобы включить или отключить ChromeVox, нажмите CTRL + ALT + Z.</translation>
-<translation id="3115800313647508384">Отключить экран?</translation>
 <translation id="3131002934070407451">Озвучивать числа:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">Оливковый</translation>
@@ -721,6 +719,7 @@
 <translation id="6034000775414344507">Светло-серый</translation>
 <translation id="6036135911048686884">Озвучивание при нажатии</translation>
 <translation id="6037602951055904232">Перейти вперед</translation>
+<translation id="6044160928851315051">Затемнить экран</translation>
 <translation id="6082768461603900813">Навигация</translation>
 <translation id="609281021724813947">Предыдущего ползунка нет</translation>
 <translation id="6100239002225743044">Перейти на строку вверх</translation>
@@ -791,7 +790,6 @@
 <translation id="6696967141280706829">Вступление</translation>
 <translation id="6697092096875747123">Перейти к предыдущему полю со списком</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{восклицательный знак}one{# восклицательный знак}few{# восклицательных знака}many{# восклицательных знаков}other{# восклицательного знака}}</translation>
-<translation id="670717715607710284">Отключить экран</translation>
 <translation id="6710213216561001401">Назад</translation>
 <translation id="6714813999819678458">Перейти к предыдущему заголовку второго уровня</translation>
 <translation id="6730312624811567147">Используйте клавишу поиска и стрелку влево или вправо, чтобы перейти в начало или конец страницы; клавишу поиска, Ctrl и стрелку влево или вправо – чтобы перейти в начало или конец строки; клавишу поиска и стрелку вверх или вниз – для прокрутки страницы</translation>
@@ -993,7 +991,6 @@
 <translation id="816818801578874684">Это первый заголовок. Чтобы перейти к следующему заголовку, нажмите Поиск + H.</translation>
 <translation id="8173092779156526980">Проведите четырьмя пальцами влево</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{символ подчеркивания}one{# символ подчеркивания}few{# символа подчеркивания}many{# символов подчеркивания}other{# underscores}}</translation>
-<translation id="817529114347680055">Экран включен</translation>
 <translation id="8179976553408161302">ВВОД</translation>
 <translation id="8184828902145951186">стрк</translation>
 <translation id="8186185314313222077">включить полноэкранный режим</translation>
@@ -1016,6 +1013,7 @@
 <translation id="8316881042119029234">Старое кружево</translation>
 <translation id="8324974933005349667">Открыть настройки озвучивания текста</translation>
 <translation id="8326783648485765113">Зеленая лужайка</translation>
+<translation id="8328063869313048659">Включить или выключить темный экран</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{решетка}one{# решетка}few{# решетки}many{# решеток}other{# pound signs}}</translation>
 <translation id="8378855320830505539">Регион</translation>
 <translation id="8382679411218029383">Строка и список автозаполнения</translation>

@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">Ikkita barmoq bilan tepaga suring</translation>
 <translation id="1126928665165112660">Qiya emas</translation>
 <translation id="113582498867142724">“<ph name="TAG" />” to‘plamidagi elementlar soni: <ph name="NUM" /></translation>
-<translation id="1146441463334103638">Ekranni yoqish yoki oʻchirish</translation>
 <translation id="1156488781945104845">Joriy vaqt</translation>
 <translation id="1161762950103988776">Borish</translation>
 <translation id="1164857107703583584">Oʻtish buyruqlaridan veb-sahifalarga oson oʻtishda foydalanish mumkin.</translation>
@@ -255,6 +254,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Shuningdek, avvalgi elementga qaytish uchun bir barmoq bilan chapga surish mumkin. Hoziroq sinang.</translation>
 <translation id="280499067616661124">Sahifadan qidirish (ChromeVox)</translation>
+<translation id="2808001342598757276">Ekranni yoritish</translation>
 <translation id="2811019999044652585">Asboblar yoki tizim panellari kabi ekranning boshqa qismlariga o‘tish uchun “Control + Forward” tugmalarini bosing. Chromebook qurilmalarida “Forward” tugmasi “2” tugmasining tepasida joylashgan.</translation>
 <translation id="2811204574343810641">Qator</translation>
 <translation id="2816868829355607410">Amaliy mashqlar: Oʻtish buyruqlari</translation>
@@ -301,7 +301,6 @@
 <translation id="3082249673510793544">Orqaga varaqlash</translation>
 <translation id="3084806535845658316">ovozsiz</translation>
 <translation id="3086746722712840547">note</translation>
-<translation id="308736057934395497">Ekranni oʻchirish orqali axborotni boshqalardan berkitadi va maxfiylikni oshiradi. Istalgan vaqtda Qidiruv + Yorqinlik tugmalarini bosib, ekranni yoqishingiz mumkin.</translation>
 <translation id="3090227230165225418">Yuklanma bildirishnomalari xabar qilinsin</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">Keyingi mo‘ljal</translation>
@@ -312,7 +311,6 @@
 <translation id="3109724472072898302">Yig‘ilgan</translation>
 <translation id="311015743332597320">Toʻrtta barmoq bilan oʻngga suring</translation>
 <translation id="3112457281078985179">ChromeVox funksiyasini yoqish yoki o‘chirib qo‘yish uchun “Control + Alt + Z” tugmalar birikmasidan foydalaning.</translation>
-<translation id="3115800313647508384">Ekran oʻchirilsinmi?</translation>
 <translation id="3131002934070407451">Raqamlarni oʻqish:</translation>
 <translation id="3134461040845705080">rdonly</translation>
 <translation id="3137663468179739624">Kuzgi yashil</translation>
@@ -720,6 +718,7 @@
 <translation id="6034000775414344507">Och kulrang</translation>
 <translation id="6036135911048686884">Sensorli tanishuv</translation>
 <translation id="6037602951055904232">Oldinga o‘tish</translation>
+<translation id="6044160928851315051">Ekranni xiralashtirish</translation>
 <translation id="6082768461603900813">Asosiy navigatsiya</translation>
 <translation id="609281021724813947">Avvalgi slayder mavjud emas</translation>
 <translation id="6100239002225743044">Bitta tepadagi qatorga oʻtish</translation>
@@ -790,7 +789,6 @@
 <translation id="6696967141280706829">So‘zboshi</translation>
 <translation id="6697092096875747123">Avvalgi ro‘yxatli maydon</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{undov belgisi}other{# ta undov belgisi}}</translation>
-<translation id="670717715607710284">Ekranni oʻchirish</translation>
 <translation id="6710213216561001401">Avvalgi</translation>
 <translation id="6714813999819678458">Avvalgi 2chi darajali sarlavha yo‘q</translation>
 <translation id="6730312624811567147">Home yoki End tugmalari oʻrniga Search va Chapga yoki Oʻngga, Control Home yoki End tugmalari oʻrniga Search Control va Chapga yoki Oʻngga, Page Up yoki Down tugmalari oʻrniga Search va Tepaga yoki Pastga strelkalardan foydalaning</translation>
@@ -993,7 +991,6 @@
 <translation id="816818801578874684">Bu birinchi sarlavha. Keyingi sarlavhaga oʻtish uchun Qidiruv + H tugmalarini bosing.</translation>
 <translation id="8173092779156526980">Toʻrtta barmoq bilan chapga suring</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{tagiga chizish belgisi}other{# ta tagiga chizish belgisi}}</translation>
-<translation id="817529114347680055">Ekranning ishlashi</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">qator</translation>
 <translation id="8186185314313222077">to‘liq ekran rejimiga o‘tish</translation>
@@ -1016,6 +1013,7 @@
 <translation id="8316881042119029234">Oq suyakrang</translation>
 <translation id="8324974933005349667">Nutq sintezatori sozlamalarini moslash</translation>
 <translation id="8326783648485765113">Yorqin yashil</translation>
+<translation id="8328063869313048659">Toʻq ekranga almashtirish tugmasi</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{funt}other{# ta funt belgisi}}</translation>
 <translation id="8378855320830505539">Hudud</translation>
 <translation id="8382679411218029383">Avto-to‘ldirish qatori va ro‘yxati</translation>

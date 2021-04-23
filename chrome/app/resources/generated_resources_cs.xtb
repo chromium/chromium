@@ -1973,6 +1973,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="313205617302240621">Zapomněli jste heslo?</translation>
 <translation id="3132277757485842847">Nepodařilo se nám zachovat spojení s telefonem. Zkontrolujte, zda je telefon poblíž, zda je odemknutý a zda na něm je zapnuté rozhraní Bluetooth a Wi-Fi.</translation>
 <translation id="3132996321662585180">Každý den obnovit</translation>
+<translation id="3134393957315651797">Vyberte stav experimentální funkce <ph name="EXPERIMENT_NAME" />. Popis experimentální funkce: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Neplatný kód PIN. Počet zbývajících pokusů: <ph name="RETRIES" />.</translation>
 <translation id="313963229645891001">Stahování: <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Výchozí žlutý avatar</translation>

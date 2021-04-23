@@ -919,6 +919,7 @@
 <translation id="1974821797477522211">Ligar à rede</translation>
 <translation id="1975841812214822307">Remover...</translation>
 <translation id="1976150099241323601">Iniciar sessão no Dispositivo de segurança</translation>
+<translation id="1976928778492259496">O sensor de impressões digitais está do lado esquerdo do <ph name="DEVICE_TYPE" />. Toque levemente no mesmo com qualquer dedo.</translation>
 <translation id="1977965994116744507">Aproxime o telemóvel para desbloquear o <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978057560491495741">Remover endereço</translation>
 <translation id="1979095679518582070">A desativação desta funcionalidade não afeta a capacidade de o dispositivo enviar as informações necessárias para serviços essenciais, como atualizações do sistema e segurança.</translation>
@@ -1973,6 +1974,7 @@ Pretende pará-lo?</translation>
 <translation id="313205617302240621">Esqueceu-se da palavra-passe?</translation>
 <translation id="3132277757485842847">Não foi possível manter uma ligação ao seu telemóvel. Certifique-se de que o telemóvel está próximo, desbloqueado e com o Bluetooth e o Wi-Fi ativados.</translation>
 <translation id="3132996321662585180">Atualizar diariamente</translation>
+<translation id="3134393957315651797">Selecione o estado da experiência <ph name="EXPERIMENT_NAME" />. Descrição da experiência: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">PIN inválido. Tem mais <ph name="RETRIES" /> tentativas.</translation>
 <translation id="313963229645891001">A transferir… <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Avatar amarelo predefinido</translation>
@@ -6623,6 +6625,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8398877366907290961">Prosseguir</translation>
 <translation id="8400146488506985033">Gerir pessoas</translation>
 <translation id="8401432541486058167">Indique o PIN que está associado ao seu cartão inteligente.</translation>
+<translation id="8404893580027489425">O sensor de impressões digitais está do lado direito do <ph name="DEVICE_TYPE" />. Toque levemente no mesmo com qualquer dedo.</translation>
 <translation id="8405046151008197676">Obtenha os destaques da atualização mais recente.</translation>
 <translation id="8407199357649073301">Nível de registo:</translation>
 <translation id="8408068190360279472">Rede <ph name="NETWORK_TYPE" />, a ligar…</translation>

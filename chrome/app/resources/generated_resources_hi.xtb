@@ -920,6 +920,7 @@
 <translation id="1974821797477522211">नेटवर्क से कनेक्ट करें</translation>
 <translation id="1975841812214822307">निकालें...</translation>
 <translation id="1976150099241323601">सुरक्षा डिवाइस में साइन इन करें</translation>
+<translation id="1976928778492259496">फ़िंगरप्रिंट सेंसर, आपके <ph name="DEVICE_TYPE" /> की बाईं ओर है. इसे किसी भी उंगली से हल्के से छुएं.</translation>
 <translation id="1977965994116744507">अपने <ph name="DEVICE_TYPE" /> को अनलॉक करने के लिए अपने फ़ोन को पास लाएं.</translation>
 <translation id="1978057560491495741">पता हटाएं</translation>
 <translation id="1979095679518582070">इस सुविधा को बंद करने के बाद भी यह डिवाइस, सिस्टम अपडेट, और सुरक्षा जैसी ज़रूरी सेवाएं पाने के लिए जानकारी भेज सकेगा.</translation>
@@ -1973,6 +1974,7 @@
 <translation id="313205617302240621">पासवर्ड भूल गए?</translation>
 <translation id="3132277757485842847">डिवाइस आपके फ़ोन से बार-बार डिसकनेक्ट हो रहा है. पक्का करें कि आपका फ़ोन आस-पास है और अनलॉक है. साथ ही, यह भी कि उस पर ब्लूटूथ और वाई-फ़ाई चालू हैं.</translation>
 <translation id="3132996321662585180">हर रोज़ रीफ्रेश करें</translation>
+<translation id="3134393957315651797">एक्सपेरिमेंट <ph name="EXPERIMENT_NAME" /> के लिए, एक्सपेरिमेंट की स्थिति चुनें. एक्सपेरिमेंट का ब्यौरा: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">आपने गलत पिन डाला है. आप <ph name="RETRIES" /> बार और कोशिश कर सकते हैं.</translation>
 <translation id="313963229645891001">फ़ाइल डाउनलोड हो रही है, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">डिफ़ॉल्ट पीला अवतार</translation>
@@ -6621,6 +6623,7 @@
 <translation id="8398877366907290961">फिर भी आगे बढ़ें</translation>
 <translation id="8400146488506985033">लोगों को प्रबंधित करें</translation>
 <translation id="8401432541486058167">ऐसा पिन डालें जो आपके स्मार्ट कार्ड से जुड़ा हुआ हो.</translation>
+<translation id="8404893580027489425">फ़िंगरप्रिंट सेंसर, आपके <ph name="DEVICE_TYPE" /> की दाईं ओर है. इसे किसी भी उंगली से हल्के से छुएं.</translation>
 <translation id="8405046151008197676">हाल ही के अपडेट की खास बातें जानें</translation>
 <translation id="8407199357649073301">लॉग लेवल:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> नेटवर्क, कनेक्ट हो रहा है</translation>

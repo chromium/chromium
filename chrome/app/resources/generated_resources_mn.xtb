@@ -915,6 +915,7 @@
 <translation id="1974821797477522211">Сүлжээнд холбогдох</translation>
 <translation id="1975841812214822307">Устгах...</translation>
 <translation id="1976150099241323601">Аюулгүй байдлын төхөөрөмж рүү нэвтэрнэ үү.</translation>
+<translation id="1976928778492259496">Хурууны хээ мэдрэгч нь таны <ph name="DEVICE_TYPE" />-н зүүн гар талд байна. Үүнд дурын хуруугаар зөөлөн хүрнэ үү.</translation>
 <translation id="1977965994116744507"><ph name="DEVICE_TYPE" />-н түгжээг тайлахын тулд утсаа ойртуулна уу.</translation>
 <translation id="1978057560491495741">Хаяг хасах</translation>
 <translation id="1979095679518582070">Энэ онцлогийг унтраах нь системийн шинэчлэлт, аюулгүй байдал зэрэг чухал үйлчилгээнд шаардлагатай мэдээлэл илгээх энэ төхөөрөмжийн чадварт нөлөөлөхгүй.</translation>
@@ -1968,6 +1969,7 @@
 <translation id="313205617302240621">Нууц үгээ мартсан уу?</translation>
 <translation id="3132277757485842847">Бид таны утасны холболтыг хадгалж чадсангүй. Таны утас ойрхон, түгжээг нь тайлсан, Bluetooth, Wi-Fi-г нь асаасан эсэхийг шалгана уу.</translation>
 <translation id="3132996321662585180">Өдөр бүр сэргээх</translation>
+<translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> туршилтад туршилтын төлөвийг сонгоно уу. Туршилтын тайлбар: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">ПИН буруу байна. Танд <ph name="RETRIES" /> оролдлого үлдлээ.</translation>
 <translation id="313963229645891001">Татаж байна, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Өгөгдмөл шар аватар</translation>
@@ -6613,6 +6615,7 @@
 <translation id="8398877366907290961">Ямарч байсан үргэлжлүүлье</translation>
 <translation id="8400146488506985033">Хүмүүсийг удирдах</translation>
 <translation id="8401432541486058167">Таны ухаалаг карттай холбоотой ПИН-г оруулна уу.</translation>
+<translation id="8404893580027489425">Хурууны хээ мэдрэгч нь таны <ph name="DEVICE_TYPE" />-н баруун гар талд байна. Үүнд дурын хуруугаар зөөлөн хүрнэ үү.</translation>
 <translation id="8405046151008197676">Хамгийн сүүлийн шинэчлэлтийн талаар тодруулга авах</translation>
 <translation id="8407199357649073301">Логийн түвшин:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> сүлжээ, холбогдож байна</translation>

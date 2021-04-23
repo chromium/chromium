@@ -920,6 +920,7 @@
 <translation id="1974821797477522211">ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="1975841812214822307">ਹਟਾਓ...</translation>
 <translation id="1976150099241323601">ਸੁਰੱਖਿਆ ਡੀਵਾਈਸ 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
+<translation id="1976928778492259496">ਫਿੰਗਰਪ੍ਰਿੰਟ ਸੈਂਸਰ ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> ਦੇ ਖੱਬੇ ਪਾਸੇ ਹੈ। ਇਸਨੂੰ ਕਿਸੇ ਵੀ ਉਂਗਲ ਨਾਲ ਹਲਕਾ ਜਿਹਾ ਸਪਰਸ਼ ਕਰੋ।</translation>
 <translation id="1977965994116744507">ਆਪਣੀ <ph name="DEVICE_TYPE" /> ਨੂੰ ਅਣਲਾਕ ਕਰਨ ਲਈ ਫ਼ੋਨ ਨੂੰ ਨੇੜੇ ਲਿਆਓ।</translation>
 <translation id="1978057560491495741">ਪਤਾ ਹਟਾਓ</translation>
 <translation id="1979095679518582070">ਇਸ ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਬੰਦ ਕਰਨ ਨਾਲ ਇਸ ਡੀਵਾਈਸ ਦੀਆਂ ਜ਼ਰੂਰੀ ਸੇਵਾਵਾਂ ਜਿਵੇਂ ਕਿ ਸਿਸਟਮ ਅੱਪਡੇਟ ਅਤੇ ਸੁਰੱਖਿਆ ਲਈ ਜ਼ਰੂਰੀ ਜਾਣਕਾਰੀ ਨੂੰ ਭੇਜਣ ਦੀ ਸਮਰੱਥਾ 'ਤੇ ਕੋਈ ਅਸਰ ਨਹੀਂ ਪੈਂਦਾ।</translation>
@@ -1972,6 +1973,7 @@
 <translation id="313205617302240621">ਕੀ ਪਾਸਵਰਡ ਭੁੱਲ ਗਏ ਹੋ?</translation>
 <translation id="3132277757485842847">ਅਸੀਂ ਤੁਹਾਡੇ ਫ਼ੋਨ ਨਾਲ ਇੱਕ ਕਨੈਕਸ਼ਨ ਬਰਕਰਾਰ ਨਹੀਂ ਰੱਖ ਸਕੇ। ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡਾ ਫ਼ੋਨ ਨਜ਼ਦੀਕ ਹੈ, ਅਣਲਾਕ ਹੈ ਅਤੇ ਉਸਦਾ ਬਲੂਟੁੱਥ ਅਤੇ ਵਾਈ-ਫਾਈ ਚਾਲੂ ਹੈ।</translation>
 <translation id="3132996321662585180">ਰੋਜ਼ਾਨਾ ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
+<translation id="3134393957315651797">ਪ੍ਰਯੋਗ <ph name="EXPERIMENT_NAME" /> ਲਈ, ਪ੍ਰਯੋਗ ਦੀ ਸਥਿਤੀ ਚੁਣੋ। ਪ੍ਰਯੋਗ ਦਾ ਵਰਣਨ: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">ਅਵੈਧ ਪਿੰਨ। ਤੁਹਾਡੇ ਕੋਲ <ph name="RETRIES" /> ਕੋਸ਼ਿਸ਼ਾਂ ਬਾਕੀ ਹਨ।</translation>
 <translation id="313963229645891001">ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">ਪੂਰਵ-ਨਿਰਧਾਰਤ ਪੀਲਾ ਅਵਤਾਰ</translation>
@@ -6619,6 +6621,7 @@
 <translation id="8398877366907290961">ਫੇਰ ਵੀ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="8400146488506985033">ਲੋਕਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="8401432541486058167">ਆਪਣੇ ਸਮਾਰਟ ਕਾਰਡ ਨਾਲ ਸੰਬੰਧਿਤ ਪਿੰਨ ਮੁਹੱਈਆ ਕਰਵਾਓ</translation>
+<translation id="8404893580027489425">ਫਿੰਗਰਪ੍ਰਿੰਟ ਸੈਂਸਰ ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> ਦੇ ਸੱਜੇ ਪਾਸੇ ਹੈ। ਇਸਨੂੰ ਕਿਸੇ ਵੀ ਉਂਗਲ ਨਾਲ ਹਲਕਾ ਜਿਹਾ ਸਪਰਸ਼ ਕਰੋ।</translation>
 <translation id="8405046151008197676">ਨਵੀਨਤਮ ਅੱਪਡੇਟ ਤੋਂ ਝਲਕੀਆਂ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="8407199357649073301">ਲੌਗ ਪੱਧਰ:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> ਨੈੱਟਵਰਕ, ਕਨੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>

@@ -918,6 +918,7 @@
 <translation id="1974821797477522211">Conectarse á rede</translation>
 <translation id="1975841812214822307">Eliminar...</translation>
 <translation id="1976150099241323601">Iniciar sesión no dispositivo de seguranza</translation>
+<translation id="1976928778492259496">O sensor de impresión dixital atópase no lateral esquerdo do dispositivo (<ph name="DEVICE_TYPE" />). Tócao suavemente con calquera dedo.</translation>
 <translation id="1977965994116744507">Achega o teléfono para desbloquear o <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978057560491495741">Quitar enderezo</translation>
 <translation id="1979095679518582070">A desactivación desta función non afecta á capacidade deste dispositivo de enviar a información necesaria para servizos esenciais, como as actualizacións do sistema e a seguranza.</translation>
@@ -1971,6 +1972,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="313205617302240621">Esqueciches o contrasinal?</translation>
 <translation id="3132277757485842847">Non puidemos manter a conexión co teu teléfono. Asegúrate de que estea preto e desbloqueado, e comproba que teña o Bluetooth e a wifi activados.</translation>
 <translation id="3132996321662585180">Actualizar diariamente</translation>
+<translation id="3134393957315651797">Seleccionar estado do experimento <ph name="EXPERIMENT_NAME" />. Descrición do experimento: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">O PIN non é válido. Quédanche <ph name="RETRIES" /> intentos.</translation>
 <translation id="313963229645891001">Descargando, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Avatar amarelo predeterminado</translation>
@@ -6620,6 +6622,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8398877366907290961">Continuar igualmente</translation>
 <translation id="8400146488506985033">Xestionar persoas</translation>
 <translation id="8401432541486058167">Introduce o PIN asociado á túa tarxeta intelixente.</translation>
+<translation id="8404893580027489425">O sensor de impresión dixital atópase no lateral dereito do dispositivo (<ph name="DEVICE_TYPE" />). Tócao suavemente con calquera dedo.</translation>
 <translation id="8405046151008197676">Descubre o máis destacado da última actualización</translation>
 <translation id="8407199357649073301">Nivel de rexistro:</translation>
 <translation id="8408068190360279472">Rede de tipo <ph name="NETWORK_TYPE" />, conectando</translation>

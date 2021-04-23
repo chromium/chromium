@@ -1514,6 +1514,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 
       Se il criterio viene impostato su falso, <ph name="BOREALIS_NAME" /> non sarà disponibile. In caso contrario (se il criterio non viene configurato o se viene impostato su vero) <ph name="BOREALIS_NAME" /> sarà disponibile soltanto se non viene disattivato da altri criteri o impostazioni.</translation>
 <translation id="2964373560810620158">Impedisci agli utenti di usare il browser <ph name="LACROS_NAME" /></translation>
+<translation id="2968177167006045252">Consenti ai siti di utilizzare il criterio SharedArrayBuffers</translation>
 <translation id="2969797921412053304">Questo criterio consente di configurare gli URL a cui verrà concesso l'accesso per usare l'attestazione remota dell'identità del dispositivo durante il flusso SAML nella schermata di accesso.
 
       Nello specifico, se un URL corrisponde a uno dei pattern specificati tramite questo criterio, l'URL potrà ricevere un'intestazione HTTP contenente una risposta a una richiesta di attestazione remota, che attesta l'identità e lo stato del dispositivo.
@@ -1645,6 +1646,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 <translation id="3072847235228302527">Imposta i Termini di servizio di un account locale del dispositivo</translation>
 <translation id="3083259245974004342">Protezione della password</translation>
 <translation id="3086995894968271156">Consente di configurare Cast Receiver in <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3087346703976541109">Consente di specificare se il criterio SharedArrayBuffers può essere utilizzato in un contesto isolato da tutte le origini</translation>
 <translation id="3088557424854005813">Attestazione</translation>
 <translation id="3091832372132789233">Carica la batteria dei dispositivi che sono principalmente collegati a una fonte di alimentazione esterna.</translation>
 <translation id="3092059499596000593">Usa la stampante di sistema come scelta predefinita in Anteprima di stampa</translation>
@@ -3037,6 +3039,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
       Se il criterio viene impostato su false o non viene impostato, le informazioni non vengono segnalate.
       Se viene impostato su true, per ogni CPU vengono segnalate informazioni quali nome del modello, architettura e velocità di clock massima.</translation>
 <translation id="5124368997194894978">Attiva avvio tramite CA (corrente alternata)</translation>
+<translation id="5130213897914754028">Impedisci ai siti di utilizzare il criterio SharedArrayBuffers</translation>
 <translation id="5141670636904227950">Impostazione tipo di ingrandimento dello schermo predefinito attivato nella schermata di accesso</translation>
 <translation id="5142301680741828703">Visualizza sempre i seguenti schemi di URL in <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="514870861066611127">Questo criterio consente di stabilire se segnalare o meno le informazioni che possono essere utilizzate per identificare gli utenti, ad esempio i dati di accesso al sistema operativo, i dati di accesso del profilo <ph name="PRODUCT_NAME" />, il nome del profilo <ph name="PRODUCT_NAME" />, il percorso del profilo <ph name="PRODUCT_NAME" /> e il percorso eseguibile di <ph name="PRODUCT_NAME" />.
@@ -3800,6 +3803,12 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 <translation id="6111936128861357925">Attiva il gioco del dinosauro</translation>
 <translation id="6123052603197028610">Non consentire query ai server Google per recuperare i timestamp</translation>
 <translation id="6132506775968708399">Blocca cookie di terze parti</translation>
+<translation id="6132739217670763962">
+      Consente di specificare se il criterio SharedArrayBuffers può essere utilizzato in un contesto
+      isolato da tutte le origini. Chrome richiede l'isolamento da tutte le origini se il criterio
+      SharedArrayBuffers viene utilizzato con Chrome 91 e versioni successive (dal 25-05-2021) per motivi di compatibilità
+      web. Ulteriori dettagli sono disponibili all'indirizzo:
+      https://developer.chrome.com/blog/enabling-shared-array-buffer/.</translation>
 <translation id="6133088669883929098">Consenti a tutti i siti di utilizzare la generazione di chiavi</translation>
 <translation id="6135398260575578389">Navigazione sicura è attiva in modalità potenziata. Questa modalità fornisce maggior sicurezza, ma non richiede la condivisione di ulteriori dati di navigazione con Google.</translation>
 <translation id="6135895880862759946">Gli utenti possono creare profili secondari e usare la modalità ospite nel browser <ph name="LACROS_NAME" /></translation>

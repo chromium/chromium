@@ -22,7 +22,6 @@
 <translation id="1120938014254001895">બે આંગળી ઉપરની બાજુ સ્વાઇપ કરો</translation>
 <translation id="1126928665165112660">ઇટાલિક નથી</translation>
 <translation id="113582498867142724"><ph name="NUM" /> આઇટમ્સ સાથેનો <ph name="TAG" /> સંગ્રહ</translation>
-<translation id="1146441463334103638">સ્ક્રીનને ચાલુ કે બંધ એમ ટૉગલ કરો</translation>
 <translation id="1156488781945104845">હાલનો સમય</translation>
 <translation id="1161762950103988776">Jump</translation>
 <translation id="1164857107703583584">જમ્પ આદેશોનો ઉપયોગ વેેબ પેજ પર વધુ કાર્યક્ષમતાથી નૅવિગેટ કરવા માટે થઈ શકે છે.</translation>
@@ -256,6 +255,7 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}one{+#}other{+#}}</translation>
 <translation id="2792200646155001340">પાછળની આઇટમ પર જવા માટે, તમે એક આંગળીથી ડાબેથી જમણે સ્વાઇપ પણ કરી શકો છો. હમણાં જ અજમાવી જુઓ.</translation>
 <translation id="280499067616661124">ChromeVox પૃષ્ઠમાં શોધો</translation>
+<translation id="2808001342598757276">ડાર્ક ન કરેલી સ્ક્રીન</translation>
 <translation id="2811019999044652585">ટુલબાર અથવા સિસ્ટમ ટ્રે જેવા સ્ક્રીનના બીજા ભાગ પર જવા માટે, Control+ફોરવર્ડ દબાવો. Chromebook પર, ફોરવર્ડ કી એ નંબર 2 કીની એકદમ ઉપરની કી છે.</translation>
 <translation id="2811204574343810641">પંક્તિ</translation>
 <translation id="2816868829355607410">અભ્યાસ ક્ષેત્ર: જમ્પ આદેશો</translation>
@@ -302,7 +302,6 @@
 <translation id="3082249673510793544">પાછળ સ્ક્રોલ કરો</translation>
 <translation id="3084806535845658316">કોઈ લખાણ પડઘો નથી</translation>
 <translation id="3086746722712840547">નોંધ</translation>
-<translation id="308736057934395497">આમ કરવાથી તમારી સ્ક્રીન બંધ થઈ જશે જેથી તે અન્ય કોઈને દેખાઈ શકશે નહીં અને સરવાળે તમારી પ્રાઇવસીનું રક્ષણ થશે. તમે શોધ + બ્રાઇટનેસ વધારવાની કી દબાવીને હંમેશાં સ્ક્રીન ફરી ચાલુ કરી શકો છો.</translation>
 <translation id="3090227230165225418">ડાઉનલોડ નોટિફિકેશનની ઘોષણા કરો</translation>
 <translation id="3090532668523289635">grp</translation>
 <translation id="3093176084511590672">આગલી સ્થળનિશાની</translation>
@@ -313,7 +312,6 @@
 <translation id="3109724472072898302">સંકુચિત</translation>
 <translation id="311015743332597320">ચાર આંગળીઓ વડે જમણે સ્વાઇપ કરો</translation>
 <translation id="3112457281078985179">ChromeVox ને ચાલુ કે બંધ કરવા માટે, Control+Alt+Z નો ઉપયોગ કરો.</translation>
-<translation id="3115800313647508384">સ્ક્રીન બંધ કરીએ?</translation>
 <translation id="3131002934070407451">નંબરને આ તરીકે વાંચો:</translation>
 <translation id="3134461040845705080">ફક્ત વાંચવા માટે</translation>
 <translation id="3137663468179739624">ઓલિવ</translation>
@@ -721,6 +719,7 @@
 <translation id="6034000775414344507">આછો ગ્રે</translation>
 <translation id="6036135911048686884">ટચ વિશે વધુ જાણો</translation>
 <translation id="6037602951055904232">આગળની તરફ પેન કરો</translation>
+<translation id="6044160928851315051">ડાર્ક કરેલી સ્ક્રીન</translation>
 <translation id="6082768461603900813">મૂળભૂત નૅવિગેશન</translation>
 <translation id="609281021724813947">કોઈ પાછલું સ્લાઇડર નથી</translation>
 <translation id="6100239002225743044">એક લાઇન ઉપર ખસેડો</translation>
@@ -791,7 +790,6 @@
 <translation id="6696967141280706829">પ્રસ્તાવના</translation>
 <translation id="6697092096875747123">પાછલું કોમ્બો બૉક્સ</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{ઉદ્ગારવાચક ચિહ્ન}one{# ઉદ્ગારવાચક ચિહ્ન}other{# ઉદ્ગારવાચક ચિહ્ન}}</translation>
-<translation id="670717715607710284">સ્ક્રીન બંધ કરો</translation>
 <translation id="6710213216561001401">પાછલી</translation>
 <translation id="6714813999819678458">પાછલું લેવલ 2 શીર્ષક</translation>
 <translation id="6730312624811567147">Home કે End કી માટે શોધ અને જમણી કે ડાબી ઍરો કી, Control Home કે End માટે કંટ્રોલ અને ડાબી કે જમણી ઍરો કી, પેજ ઉપર કે નીચે કરવા શોધ અને ઉપર કે નીચેની ઍરો કીનો ઉપયોગ કરો</translation>
@@ -994,7 +992,6 @@
 <translation id="816818801578874684">આ પહેલું મથાળું છે. આગલા મથાળા પર જવા માટે શોધ + H દબાવો.</translation>
 <translation id="8173092779156526980">ચાર આંગળીઓ વડે ડાબે સ્વાઇપ કરો</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{અંડરસ્કોર}one{# અંડરસ્કોર}other{# અંડરસ્કોર}}</translation>
-<translation id="817529114347680055">સ્ક્રીન ચાલુ કરો</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8184828902145951186">પંક્તિ</translation>
 <translation id="8186185314313222077">પૂર્ણ સ્ક્રીન ટોગલ કરો</translation>
@@ -1017,6 +1014,7 @@
 <translation id="8316881042119029234">જૂની લેસ</translation>
 <translation id="8324974933005349667">'ટેક્સ્ટ-ટૂ-સ્પીચ' સેટિંગને વ્યક્તિગત કરો</translation>
 <translation id="8326783648485765113">ઘેરો લીલો</translation>
+<translation id="8328063869313048659">ઘેરી સ્ક્રીનને ટૉગલ કરો</translation>
 <translation id="8345569862449483843">{COUNT,plural, =1{પાઉન્ડ}one{# પાઉન્ડની નિશાની}other{# પાઉન્ડની નિશાની}}</translation>
 <translation id="8378855320830505539">પ્રદેશ</translation>
 <translation id="8382679411218029383">સ્વતઃપૂર્ણ ઇનલાઇન અને સૂચિ</translation>

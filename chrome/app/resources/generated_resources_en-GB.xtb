@@ -919,6 +919,7 @@
 <translation id="1974821797477522211">Connect to network</translation>
 <translation id="1975841812214822307">Remove...</translation>
 <translation id="1976150099241323601">Sign in to Security Device</translation>
+<translation id="1976928778492259496">The fingerprint sensor is on the left-hand side of your <ph name="DEVICE_TYPE" />. Touch it lightly with any finger.</translation>
 <translation id="1977965994116744507">Bring your phone closer to unlock your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1978057560491495741">Remove address</translation>
 <translation id="1979095679518582070">Turning off this feature doesn't affect this device's ability to send the information needed for essential services such as system updates and security.</translation>
@@ -1973,6 +1974,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="313205617302240621">Forgot password?</translation>
 <translation id="3132277757485842847">We were unable to maintain a connection with your phone. Make sure that your phone is nearby, unlocked and has Bluetooth and Wi-Fi turned on.</translation>
 <translation id="3132996321662585180">Refresh daily</translation>
+<translation id="3134393957315651797">Select experiment state for the <ph name="EXPERIMENT_NAME" /> experiment. Experiment description: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Invalid PIN. You have <ph name="RETRIES" /> remaining attempts.</translation>
 <translation id="313963229645891001">Downloading, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Default yellow avatar</translation>
@@ -6623,6 +6625,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8398877366907290961">Proceed anyway</translation>
 <translation id="8400146488506985033">Manage people</translation>
 <translation id="8401432541486058167">Provide the PIN that’s associated with your smart card.</translation>
+<translation id="8404893580027489425">The fingerprint sensor is on the right-hand side of your <ph name="DEVICE_TYPE" />. Touch it lightly with any finger.</translation>
 <translation id="8405046151008197676">Get highlights from the latest update</translation>
 <translation id="8407199357649073301">Log level:</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> network, connecting</translation>

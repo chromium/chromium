@@ -1497,6 +1497,7 @@
 
       如果將這項政策設為 False，<ph name="BOREALIS_NAME" /> 就不適用於該使用者。如果不設定這項政策或設為 True，<ph name="BOREALIS_NAME" /> 只要未遭到其他政策或設定所停用，便適用於這位使用者。</translation>
 <translation id="2964373560810620158">禁止使用者使用 <ph name="LACROS_NAME" /> 瀏覽器</translation>
+<translation id="2968177167006045252">允許網站使用 SharedArrayBuffers</translation>
 <translation id="2969797921412053304">這項政策會設定哪些網址可在登入畫面的 SAML 流程中，取得使用裝置身分遠端認證機制的存取權。
 
       具體來說，如果網址符合這項政策提供的其中一種模式，系統會允許該網址接收 HTTP 標頭 (其中包含對遠端認證機制驗證問題的回覆)，以認證裝置身分及裝置狀態。
@@ -1633,6 +1634,7 @@
 <translation id="3072847235228302527">為裝置本機帳戶設定《服務條款》</translation>
 <translation id="3083259245974004342">密碼保護功能</translation>
 <translation id="3086995894968271156">設定「<ph name="PRODUCT_NAME" />」的 Cast 接收器</translation>
+<translation id="3087346703976541109">指定 SharedArrayBuffers 是否可用於非跨來源隔離內容</translation>
 <translation id="3088557424854005813">認證</translation>
 <translation id="3091832372132789233">對主要連線至外部電源的裝置進行充電。</translation>
 <translation id="3092059499596000593">將系統預設印表機設為列印預覽的預設選項</translation>
@@ -3011,6 +3013,7 @@
       如果將這項政策設為 False 或不予設定，系統將不會回報這項資訊。
       如果設為 True，則系統會回報每個 CPU 的型號名稱、架構和最高時脈速度。</translation>
 <translation id="5124368997194894978">啟用「連接 AC (交流電) 電源時啟動」功能</translation>
+<translation id="5130213897914754028">禁止網站使用 SharedArrayBuffers</translation>
 <translation id="5141670636904227950">設定啟用的螢幕放大鏡在登入畫面的預設類型</translation>
 <translation id="5142301680741828703">一律算繪下列 <ph name="PRODUCT_FRAME_NAME" /> 中的網址模式</translation>
 <translation id="514870861066611127">這項政策可控管系統是否要回報能用於辨識使用者身分的資訊，例如 OS 登入資訊、<ph name="PRODUCT_NAME" /> 設定檔登入資訊、<ph name="PRODUCT_NAME" /> 設定檔名稱、<ph name="PRODUCT_NAME" /> 設定檔路徑和 <ph name="PRODUCT_NAME" /> 執行檔路徑。
@@ -3759,6 +3762,8 @@
 <translation id="6111936128861357925">允許 Dinosaur Easter Egg Game (恐龍復活節彩蛋遊戲)</translation>
 <translation id="6123052603197028610">不允許向 Google 伺服器發送擷取時間戳記的查詢</translation>
 <translation id="6132506775968708399">封鎖第三方 Cookie</translation>
+<translation id="6132739217670763962">
+      指定 SharedArrayBuffers 是否可用於非跨來源隔離內容。基於網路相容性原因，Chrome 自 91 版 (2021 年 5 月 25 日推出) 起在使用 SharedArrayBuffers 時會要求跨來源隔離。詳情請前往：https://developer.chrome.com/blog/enabling-shared-array-buffer/。</translation>
 <translation id="6133088669883929098">允許所有網站使用金鑰產生功能</translation>
 <translation id="6135398260575578389">已啟用強化模式中的安全瀏覽功能。這個模式可提供更完善的安全防護機制，但使用者必須提供更多瀏覽資訊給 Google。</translation>
 <translation id="6135895880862759946">允許使用者在 <ph name="LACROS_NAME" /> 瀏覽器中建立次要設定檔及使用訪客模式</translation>

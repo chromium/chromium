@@ -248,6 +248,7 @@
 <translation id="2612676031748830579">কার্ড নম্বর</translation>
 <translation id="2625189173221582860">পাসওয়ার্ড কপি করা হয়েছে</translation>
 <translation id="2631006050119455616">সংরক্ষিত হয়েছে</translation>
+<translation id="2645657967708199252">আপনার <ph name="CONNECTION_TYPE" /> কানেকশনের ফলে ডাউনলোডের স্পিড কম হতে পারে</translation>
 <translation id="2647434099613338025">ভাষা যুক্ত করুন</translation>
 <translation id="2650751991977523696">আবার ফাইল ডাউনলোড করবেন?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{#টি অডিও ফাইল}one{#টি অডিও ফাইল}other{#টি অডিও ফাইল}}</translation>
@@ -260,6 +261,7 @@
 <translation id="2718846868787000099">আপনার পছন্দের ভাষায় কন্টেন্ট দেখাতে, আপনি যেসব সাইট ভিজিট করেন সেগুলি আপনার ভাষার পছন্দ দেখতে পাবে</translation>
 <translation id="2723001399770238859">অডিও</translation>
 <translation id="2728754400939377704">সাইট অনুযায়ী সাজান</translation>
+<translation id="2739256783402597439">2G</translation>
 <translation id="2744248271121720757">ঝটপট সার্চ এবং সম্পর্কিত অ্যাকশন দেখতে একটি শব্দ ট্যাপ করুন</translation>
 <translation id="2760989362628427051">আপনার ডিভাইসে গাঢ় থিম বা ব্যাটারি সেভার চালু থাকলে, গাঢ় থিম চালু করুন</translation>
 <translation id="2762000892062317888">এখনই</translation>
@@ -304,7 +306,6 @@
 <translation id="3016635187733453316">এই ডিভাইসটি ইন্টারনেটে কানেক্ট করা আছে কিনা দেখে নিন</translation>
 <translation id="3029704984691124060">পাসফ্রেজসমূহ মেলে না</translation>
 <translation id="3031225630520268969">Assistant-এ ভয়েস সার্চ করার সম্মতি দেওয়ার UI</translation>
-<translation id="3034163383943672781"><ph name="DATE" />-এ ডাউনলোড শুরু হবে।</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />সহায়তা পান<ph name="END_LINK" /></translation>
 <translation id="3046945242843292318">পরবর্তী সময়ে এই সাইটে আরও তাড়াতাড়ি যান</translation>
 <translation id="305593374596241526">লোকেশনটি বন্ধ, <ph name="BEGIN_LINK" />Android সেটিংস<ph name="END_LINK" /> থেকে এটি চালু করুন।</translation>
@@ -437,6 +438,7 @@
 <translation id="3943557322767080599">আপনার Google অ্যাকাউন্টে সাইন-ইন করলে Chrome সাইন-ইন প্রম্পট দেখুন</translation>
 <translation id="395206256282351086">সার্চ এবং সাইটের প্রস্তাবনা অক্ষম করা আছে</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{রেডি হলেই Chrome আপনার পৃষ্ঠা লোড করবে}one{রেডি হলেই Chrome আপনার পৃষ্ঠা লোড করবে}other{রেডি হলেই Chrome আপনার পৃষ্ঠা লোড করবে}}</translation>
+<translation id="3962957115499249330">ওয়াই-ফাই ব্যবহার করে এই ডাউনলোড শুরু হলে আপনাকে একটি বিজ্ঞপ্তি পাঠানো হবে।</translation>
 <translation id="3963007978381181125">পাসফ্রেজ এনক্রিপশনে Google Pay-এর পেমেন্ট পদ্ধতি ও ঠিকানা অন্তর্ভুক্ত থাকে না। 
 আপনার পাসফ্রেজ আছে এমন কেউই শুধু আপনার এনক্রিপ্ট করা ডেটা পড়তে পারবেন। 
 পাসফ্রেজ Google-এ পাঠানো হয় না বা Google তা সংরক্ষণ করে না। পাসফ্রেজ ভুলে গেলে বা এই সেটিং পরিবর্তন করতে চাইলে, আপনাকে সিঙ্ক রিসেট করতে হবে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
@@ -482,6 +484,7 @@
 <translation id="4256782883801055595">ওপেন সোর্স লাইসেন্স</translation>
 <translation id="4263656433980196874">Assistant-এ ভয়েস সার্চ করার সম্মতি দেওয়ার UI সম্পূর্ণ স্ক্রিন জুড়ে খুলেছে</translation>
 <translation id="4269820728363426813">লিঙ্ক অ্যাড্রেস কপি করুন</translation>
+<translation id="4290281343757112331">এর বদলে পরে ডাউনলোড করতে চান?</translation>
 <translation id="4298388696830689168">লিঙ্ক করা সাইট</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="4307992518367153382">বুনিয়াদি</translation>
@@ -624,6 +627,7 @@
 <translation id="5191251636205085390">থার্ড-পার্টি কুকি সরানোর নতুন প্রযুক্তি ও তা নিয়ন্ত্রণ সংক্রান্ত তথ্যগুলি জানুন</translation>
 <translation id="5193988420012215838">আপনার ক্লিপবোর্ডে কপি করা হয়েছে</translation>
 <translation id="5199929503336119739">কর্মস্থলের প্রোফাইল</translation>
+<translation id="5201464744567315552"><ph name="TIME" />-এ ডাউনলোড শুরু হলে আপনাকে একটি বিজ্ঞপ্তি পাঠানো হবে।</translation>
 <translation id="5204967432542742771">পাসওয়ার্ড প্রবেশ করান</translation>
 <translation id="5210286577605176222">পূর্ববর্তী ট্যাবে চলে যান</translation>
 <translation id="5210365745912300556">ট্যাব বন্ধ করুন</translation>
@@ -634,6 +638,7 @@
 <translation id="5230560987958996918">কাছাকাছি থাকা ব্লুটুথ ডিভাইসগুলিকে <ph name="SITE" /> স্ক্যান করতে চায়, এই ডিভাইসগুলি পাওয়া গেছে:</translation>
 <translation id="5233638681132016545">নতুন ট্যাব</translation>
 <translation id="5250483651202458397">স্ক্রিনশট। বন্ধ করতে ট্যাপ করুন।</translation>
+<translation id="5262378156578470238"><ph name="DATE" />-এ ডাউনলোড শুরু হলে আপনাকে একটি বিজ্ঞপ্তি পাঠানো হবে।</translation>
 <translation id="526421993248218238">পৃষ্ঠাটি লোড করা যাচ্ছে না</translation>
 <translation id="5271967389191913893">ডাউনলোড করা কন্টেন্ট ডিভাইস খুলতে পারবে না৷</translation>
 <translation id="5292796745632149097">এতে পাঠান:</translation>
@@ -703,7 +708,6 @@
 <translation id="572328651809341494">সাম্প্রতিক ট্যাবগুলি</translation>
 <translation id="5723735397759933332">লাইট মোড সেটিংয়ের মাধ্যমে আপনি HTTPS পৃষ্ঠাতে ছবি অপ্টিমাইজ করে এখন আরও ডেটা সেভ করতে পারেন।</translation>
 <translation id="5726692708398506830">পৃষ্ঠাতে থাকা সবকিছুকে বড় করুন</translation>
-<translation id="5732819098735351888">ওয়াই-ফাই নেটওয়ার্কে কানেক্ট হলেই ডাউনলোড শুরু হবে।</translation>
 <translation id="5733983706093266635">QR কোড তৈরি করা যায়নি। ইউআরএলটিতে <ph name="CHARACTER_LIMIT" />টির বেশি অক্ষর আছে।</translation>
 <translation id="5748802427693696783">স্ট্যান্ডার্ড ট্যাবে পাল্টানো হয়েছে</translation>
 <translation id="5749068826913805084">ফাইল ডাউনলোড করতে Chrome-এর জন্য স্টোরেজ অ্যাক্সেস প্রয়োজন।</translation>
@@ -782,7 +786,6 @@
 <translation id="6159335304067198720"><ph name="PERCENT" /> ডেটা সঞ্চয়</translation>
 <translation id="6186394685773237175">কোনও চুরি হয়ে যাওয়া পাসওয়ার্ড খুঁজে পাওয়া যায়নি</translation>
 <translation id="6192907950379606605">ছবির বিবরণ পান</translation>
-<translation id="6206830853671714236">কোন সময় ডাউনলোড করবেন, তা বেছে নিন</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> না?</translation>
 <translation id="6211386937064921208">এই পৃষ্ঠা প্রিভিউ করছেন</translation>
 <translation id="6218096829563201111">এইধরনের প্রোডাক্ট খুঁজুন <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /></translation>
@@ -916,6 +919,7 @@
 <translation id="6981982820502123353">ব্যবহারযোগ্যতা</translation>
 <translation id="6989267951144302301">ডাউনলোড করা যায়নি</translation>
 <translation id="6995899638241819463">আপনার পাসওয়ার্ড কোনও ডেটা নিরাপত্তা লঙ্ঘনের কারণে সর্বজনীনভাবে প্রকাশ হলে তা আপনাকে জানানো হবে</translation>
+<translation id="7001056293070445572">এই ফাইলটি বড় (<ph name="FILE_SIZE" />)</translation>
 <translation id="7015203776128479407">সিঙ্কের প্রাথমিক সেট-আপ সম্পূর্ণ হয়নি। সিঙ্ক বন্ধ আছে।</translation>
 <translation id="7022756207310403729">ব্রাউজারে খুলুন</translation>
 <translation id="702463548815491781">'টকব্যাক' অথবা 'অ্যাক্সেস পরিবর্তন করুন' চালু করা থাকলে এটি করার সাজেশন পাবেন</translation>
@@ -1030,6 +1034,7 @@
 <translation id="7791543448312431591">জুড়ুন</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" />টি ট্যাব ফিরিয়ে আনা হয়েছে</translation>
 <translation id="780301667611848630">না থাক</translation>
+<translation id="7808889146555843082">এই পাসওয়ার্ডটি মুছে দিলেও, <ph name="SITE" />-এ থাকা আপনার অ্যাকাউন্ট মুছে যাবে না। অন্যদের কাছ থেকে গোপন রাখতে, <ph name="SITE" />-এ আপনার দেওয়া পাসওয়ার্ড পরিবর্তন করুন বা অ্যাকাউন্ট মুছে দিন।</translation>
 <translation id="7810647596859435254">এর মাধ্যমে খুলুন...</translation>
 <translation id="7815484226266492798">বড় স্ক্রিনশট নেওয়ার বোতাম</translation>
 <translation id="7821588508402923572">আপনি কত ডেটা সেভ করেছেন তা এখানে দেখা যাবে</translation>
@@ -1177,12 +1182,14 @@
 <translation id="8699120352855309748">এইসব ভাষায় অনুবাদ হবে না</translation>
 <translation id="8712637175834984815">বুঝেছি</translation>
 <translation id="8725066075913043281">আবার চেষ্টা করুন</translation>
+<translation id="8730621377337864115">হয়ে গেছে</translation>
 <translation id="8748850008226585750">সামগ্রী লুকানো আছে</translation>
 <translation id="8773160212632396039">অনুরোধ প্রসেস করা হচ্ছে</translation>
 <translation id="8788265440806329501">নেভিগেশনের ইতিহাস বন্ধ করা হয়েছে</translation>
 <translation id="8788968922598763114">সব শেষে বন্ধ করা ট্যাবটি পুনরায় খুলুন</translation>
 <translation id="8798449543960971550">পড়া হয়েছে</translation>
 <translation id="8812260976093120287">কিছু ওয়েবসাইটে আপনি উপরের সমর্থিত পেমেন্ট অ্যাপ্লিকেশান দিয়ে অর্থপ্রদান করতে পারেন।</translation>
+<translation id="8814190375133053267">ওয়াই-ফাই</translation>
 <translation id="881688628773363275">ট্যাব কন্টেন্ট প্রিভিউ করার বিকল্প উপলভ্য নেই।</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="883806473910249246">কন্টেন্ট ডাউনলোড করার সময় একটি ত্রুটি ঘটেছে৷</translation>
@@ -1220,10 +1227,10 @@
 <translation id="9063523880881406963">ডেস্কটপ সাইটের অনুরোধ বন্ধ করুন</translation>
 <translation id="9065203028668620118">সম্পাদনা</translation>
 <translation id="9065383040763568503">Chrome গুরুত্বহীন বলে মনে করে এমন সেভ করা ডেটা (যেমন, সেটিংস সেভ করা নেই এমন সাইট অথবা আপনি ঘনঘন দেখেন না এমন সাইট)</translation>
-<translation id="9069543557624799859"><ph name="TIME" />-এ ডাউনলোড শুরু হবে।</translation>
 <translation id="9069999660519089861">সব পৃষ্ঠা পড়া হয়েছে</translation>
 <translation id="9070377983101773829">ভয়েস সার্চ শুরু করুন</translation>
 <translation id="9074336505530349563">Google-এর প্রস্তাবিত ব্যক্তিগতকৃত কন্টেন্ট পাওয়ার জন্য সাইন-ইন করে সিঙ্ক বিকল্প চালু করুন</translation>
+<translation id="9074739597929991885">ব্লুটুথ</translation>
 <translation id="9086302186042011942">সিঙ্ক হচ্ছে</translation>
 <translation id="9086455579313502267">নেটওয়ার্কটি অ্যাক্সেস করতে অক্ষম</translation>
 <translation id="9100505651305367705">সমর্থিত হলে সরলীকৃত ভিউতে নিবন্ধগুলি দেখানোর প্রস্তাব দিন</translation>
