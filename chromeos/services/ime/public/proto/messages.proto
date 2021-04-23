@@ -220,6 +220,7 @@ message CompletionCandidate {
 // Protobuf version of SuggestionMode in
 // chromeos/services/ime/public/mojom/input_engine.mojom
 enum SuggestionMode {
+  SUGGESTION_MODE_UNSPECIFIED = 0;
   SUGGESTION_MODE_COMPLETION = 1;
   SUGGESTION_MODE_PREDICTION = 2;
 }
@@ -227,6 +228,7 @@ enum SuggestionMode {
 // Protobuf version of SuggestionType in
 // chromeos/services/ime/public/mojom/input_engine.mojom
 enum SuggestionType {
+  SUGGESTION_TYPE_UNSPECIFIED = 0;
   SUGGESTION_TYPE_ASSISTIVE_PERSONAL_INFO = 1;
   SUGGESTION_TYPE_ASSISTIVE_EMOJI = 2;
   SUGGESTION_TYPE_MULTI_WORD = 3;
