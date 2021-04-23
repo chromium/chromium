@@ -9,15 +9,6 @@
 
 namespace mojo_base {
 
-namespace {
-
-// In the case of shared memory allocation failure, we still attempt to fall
-// back onto inline bytes unless the buffer size exceeds a very large threshold,
-// given by this constant.
-constexpr size_t kMaxFallbackInlineBytes = 127 * 1024 * 1024;
-
-}  // namespace
-
 namespace internal {
 
 BigBufferSharedMemoryRegion::BigBufferSharedMemoryRegion() = default;
@@ -61,21 +52,10 @@ void TryCreateSharedMemory(
         return;
       }
     }
-
-    if (size > kMaxFallbackInlineBytes) {
-      // The data is too large to even bother with inline fallback, so we
-      // instead produce an invalid buffer. This will always fail validation on
-      // the receiving end.
-      *storage_type = BigBuffer::StorageType::kInvalidBuffer;
-
-      // TODO(crbug.com/1076341): Remove this temporary CHECK to investigate
-      // some bad IPC reports likely caused by this path.
-      CHECK(false);
-      return;
-    }
   }
 
-  // We can use inline memory.
+  // We can use inline memory, either because the data was small or shared
+  // memory allocation failed.
   *storage_type = BigBuffer::StorageType::kBytes;
 }
 
