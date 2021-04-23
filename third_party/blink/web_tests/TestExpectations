@@ -2439,6 +2439,10 @@ crbug.com/980872 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection
 crbug.com/1156408 external/wpt/webrtc/RTCPeerConnection-relay-canvas.https.html [ Pass Failure Timeout ]
 crbug.com/1156408 external/wpt/webrtc/RTCPeerConnection-capture-video.https.html [ Pass Failure Timeout ]
 
+# WebRTC: Disable DataChannel tests while new features are added to WebRTC.
+crbug.com/webrtc/12697 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/datachannel-emptystring.html [ Pass Failure ]
+crbug.com/webrtc/12697 external/wpt/webrtc/datachannel-emptystring.html [ Pass Failure ]
+
 crbug.com/1074547 external/wpt/css/css-transitions/transitioncancel-002.html [ Timeout ]
 
 crbug.com/1024156 external/wpt/css/css-pseudo/cascade-highlight-004.html [ Failure ]
