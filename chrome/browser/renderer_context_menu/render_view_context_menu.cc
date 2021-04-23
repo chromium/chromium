@@ -225,6 +225,14 @@
 #include "chrome/browser/ash/arc/intent_helper/open_with_menu.h"
 #include "chrome/browser/ash/arc/intent_helper/start_smart_selection_action_menu.h"
 #include "chrome/browser/renderer_context_menu/quick_answers_menu_observer.h"
+#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
+#include "ui/aura/window.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+#include "ui/aura/window.h"
 #endif
 
 using base::UserMetricsAction;
@@ -1784,6 +1792,15 @@ void RenderViewContextMenu::AppendEditableItems() {
   }
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto* service = chromeos::LacrosService::Get();
+  if (service && service->IsAvailable<crosapi::mojom::ClipboardHistory>()) {
+    menu_model_.AddItemWithStringId(
+        IDC_CONTENT_CLIPBOARD_HISTORY_MENU,
+        IDS_CONTEXT_MENU_SHOW_CLIPBOARD_HISTORY_MENU);
+  }
+#endif
+
   if (!has_misspelled_word) {
     menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_SELECTALL,
                                     IDS_CONTENT_CONTEXT_SELECTALL);
@@ -2185,11 +2202,16 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       if (chromeos::features::IsClipboardHistoryEnabled())
         return ash::ClipboardHistoryController::Get()->CanShowMenu();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+    {
+      auto* service = chromeos::LacrosService::Get();
+      return service &&
+             service->IsAvailable<crosapi::mojom::ClipboardHistory>();
+    }
 #else
       NOTREACHED();
 #endif
       return false;
-
     default:
       NOTREACHED();
       return false;
@@ -2533,7 +2555,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
     }
 
     case IDC_CONTENT_CLIPBOARD_HISTORY_MENU: {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
       // Calculate the anchor point in screen coordinates.
       gfx::Point anchor_point_in_screen =
           GetRenderFrameHost()->GetNativeView()->GetBoundsInScreen().origin();
@@ -2548,9 +2570,23 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       else
         source_type = ui::MENU_SOURCE_KEYBOARD;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       ash::ClipboardHistoryController::Get()->ShowMenu(
           gfx::Rect(anchor_point_in_screen, gfx::Size()), source_type,
-          ash::ClipboardHistoryController::ShowSource::kRenderViewContextMenu);
+          crosapi::mojom::ClipboardHistoryControllerShowSource::
+              kRenderViewContextMenu);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+      {
+        auto* service = chromeos::LacrosService::Get();
+        if (service &&
+            service->IsAvailable<crosapi::mojom::ClipboardHistory>()) {
+          service->GetRemote<crosapi::mojom::ClipboardHistory>()->ShowClipboard(
+              gfx::Rect(anchor_point_in_screen, gfx::Size()), source_type,
+              crosapi::mojom::ClipboardHistoryControllerShowSource::
+                  kRenderViewContextMenu);
+        }
+      }
+#endif
 #else
       NOTREACHED();
 #endif

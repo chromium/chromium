@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/observer_list_types.h"
+#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "ui/base/ui_base_types.h"
 
 namespace base {
@@ -32,30 +33,11 @@ class ScopedClipboardHistoryPause;
 // clipboard history menu.
 class ASH_PUBLIC_EXPORT ClipboardHistoryController {
  public:
-  // The different ways the multipaste menu can be shown. These values are
-  // written to logs. New enum values can be added, but existing enums must
-  // never be renumbered, deleted, or reused.
-  enum class ShowSource {
-    // Shown by the accelerator.
-    kAccelerator = 0,
-
-    // Shown by a render view's context menu.
-    kRenderViewContextMenu = 1,
-
-    // Shown by a textfield's context menu.
-    kTextfieldContextMenu = 2,
-
-    // Shown by the virtual keyboard.
-    kVirtualKeyboard = 3,
-
-    // Insert new types above this line.
-    kMaxValue = kVirtualKeyboard
-  };
-
   class Observer : public base::CheckedObserver {
    public:
     // Called when the clipboard history menu is shown.
-    virtual void OnClipboardHistoryMenuShown(ShowSource show_source) {}
+    virtual void OnClipboardHistoryMenuShown(
+        crosapi::mojom::ClipboardHistoryControllerShowSource show_source) {}
     // Called when the user pastes from the clipboard history menu.
     virtual void OnClipboardHistoryPasted() {}
     // Called when the clipboard history changes.
@@ -77,9 +59,10 @@ class ASH_PUBLIC_EXPORT ClipboardHistoryController {
 
   // Shows the clipboard history menu triggered by `source_type` at the
   // specified position.
-  virtual void ShowMenu(const gfx::Rect& anchor_rect,
-                        ui::MenuSourceType source_type,
-                        ShowSource show_source) = 0;
+  virtual void ShowMenu(
+      const gfx::Rect& anchor_rect,
+      ui::MenuSourceType source_type,
+      crosapi::mojom::ClipboardHistoryControllerShowSource show_source) = 0;
 
   // Whether 'new' feature badge should be applied to clipboard menu.
   virtual bool ShouldShowNewFeatureBadge() const = 0;

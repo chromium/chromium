@@ -188,6 +188,9 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
   ConstructRemote<crosapi::mojom::Clipboard, &Crosapi::BindClipboard,
                   Crosapi::MethodMinVersions::kBindClipboardMinVersion>();
   ConstructRemote<
+      crosapi::mojom::ClipboardHistory, &Crosapi::BindClipboardHistory,
+      Crosapi::MethodMinVersions::kBindClipboardHistoryMinVersion>();
+  ConstructRemote<
       crosapi::mojom::DeviceAttributes, &Crosapi::BindDeviceAttributes,
       Crosapi::MethodMinVersions::kBindDeviceAttributesMinVersion>();
   ConstructRemote<crosapi::mojom::Feedback,

@@ -298,7 +298,7 @@ void ClipboardNudgeController::HandleNudgeShown() {
 }
 
 void ClipboardNudgeController::OnClipboardHistoryMenuShown(
-    ClipboardHistoryController::ShowSource show_source) {
+    crosapi::mojom::ClipboardHistoryControllerShowSource show_source) {
   if (last_shown_time_.ShouldLogFeatureOpenTime()) {
     base::TimeDelta time_since_shown =
         last_shown_time_.GetTimeSinceShown(GetTime());
@@ -311,11 +311,15 @@ void ClipboardNudgeController::OnClipboardHistoryMenuShown(
   }
   if (new_feature_last_shown_time_.ShouldLogFeatureOpenTime()) {
     switch (show_source) {
-      case ClipboardHistoryController::ShowSource::kAccelerator:
-      case ClipboardHistoryController::ShowSource::kVirtualKeyboard:
+      case crosapi::mojom::ClipboardHistoryControllerShowSource::kAccelerator:
+      case crosapi::mojom::ClipboardHistoryControllerShowSource::
+          kVirtualKeyboard:
+      case crosapi::mojom::ClipboardHistoryControllerShowSource::kUnknown:
         break;
-      case ClipboardHistoryController::ShowSource::kRenderViewContextMenu:
-      case ClipboardHistoryController::ShowSource::kTextfieldContextMenu:
+      case crosapi::mojom::ClipboardHistoryControllerShowSource::
+          kRenderViewContextMenu:
+      case crosapi::mojom::ClipboardHistoryControllerShowSource::
+          kTextfieldContextMenu:
         base::TimeDelta time_since_shown =
             new_feature_last_shown_time_.GetTimeSinceShown(GetTime());
         // Tracks the amount of time between showing the user the new badge and

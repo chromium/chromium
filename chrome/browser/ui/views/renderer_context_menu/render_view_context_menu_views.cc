@@ -257,6 +257,8 @@ bool RenderViewContextMenuViews::GetAcceleratorForCommandId(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       *accel = ui::Accelerator(ui::VKEY_V, ui::EF_COMMAND_DOWN);
       return true;
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+      return false;
 #else
       NOTREACHED();
       return false;

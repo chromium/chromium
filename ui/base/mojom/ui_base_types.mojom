@@ -29,6 +29,7 @@ enum ModalType {
 
 // It's mapped to ui::MenuSourceType. Any new type here needs to be synced
 // with ui::MenuSourceType in ui_base_types.h.
+[Stable, Extensible, Default=NONE]
 enum MenuSourceType {
   NONE,
   MOUSE,

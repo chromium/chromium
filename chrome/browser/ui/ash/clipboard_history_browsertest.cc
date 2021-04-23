@@ -23,6 +23,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -368,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
   ASSERT_EQ(3, GetContextMenu()->GetMenuItemsCount());
   histogram_tester.ExpectUniqueSample(
       "Ash.ClipboardHistory.ContextMenu.ShowMenu",
-      ash::ClipboardHistoryController::ShowSource::kAccelerator, 1);
+      crosapi::mojom::ClipboardHistoryControllerShowSource::kAccelerator, 1);
 
   // The history menu's first item should be selected as default after the menu
   // shows. Meanwhile, its delete button should not show.

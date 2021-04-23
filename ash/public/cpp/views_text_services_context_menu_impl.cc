@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
+#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/pointer/touch_editing_controller.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -67,7 +68,8 @@ void ViewsTextServicesContextMenuImpl::ExecuteCommand(int command_id,
 
     clipboard_history_controller->ShowMenu(
         client()->GetCaretBounds(), source_type,
-        ClipboardHistoryController::ShowSource::kTextfieldContextMenu);
+        crosapi::mojom::ClipboardHistoryControllerShowSource::
+            kTextfieldContextMenu);
     return;
   }
 

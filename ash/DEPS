@@ -56,6 +56,7 @@ include_rules = [
   "+chromeos/components/security_token_pin",
   "+chromeos/components/sensors",
   "+chromeos/crosapi/cpp/crosapi_constants.h",
+  "+chromeos/crosapi/mojom",
   "+chromeos/dbus/initialize_dbus_client.h",
   "+chromeos/dbus/audio",
   "+chromeos/dbus/hammerd",

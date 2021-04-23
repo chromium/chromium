@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
+#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "ui/base/clipboard/clipboard_observer.h"
 #include "ui/compositor/layer_animation_observer.h"
 
@@ -72,7 +73,8 @@ class ASH_EXPORT ClipboardNudgeController
 
   // ClipboardHistoryControllerImpl:
   void OnClipboardHistoryMenuShown(
-      ClipboardHistoryController::ShowSource show_source) override;
+      crosapi::mojom::ClipboardHistoryControllerShowSource show_source)
+      override;
   void OnClipboardHistoryPasted() override;
 
   // Shows the nudge widget.

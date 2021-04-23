@@ -182,6 +182,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::BrowserServiceHost>(),
     MakeInterfaceVersionEntry<crosapi::mojom::CertDatabase>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Clipboard>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::ClipboardHistory>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Crosapi>(),
     MakeInterfaceVersionEntry<crosapi::mojom::DeviceAttributes>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Feedback>(),
@@ -220,7 +221,7 @@ constexpr bool HasDuplicatedUuid() {
 }
 
 static_assert(
-    crosapi::mojom::Crosapi::Version_ == 22,
+    crosapi::mojom::Crosapi::Version_ == 23,
     "if you add a new crosapi, please add it to the version map here");
 static_assert(!HasDuplicatedUuid(),
               "Each Crosapi Mojom interface should have unique UUID.");

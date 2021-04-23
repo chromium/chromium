@@ -16,6 +16,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/clipboard_non_backed.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -314,7 +315,8 @@ TEST_F(ClipboardNudgeControllerTest, ShowMenuAfterNudges_LogsOpenNudgeMetrics) {
   ShowNudgeForType(ClipboardNudgeType::kZeroStateNudge);
   ShowNudgeForType(ClipboardNudgeType::kNewFeatureBadge);
   nudge_controller_->OnClipboardHistoryMenuShown(
-      ClipboardHistoryController::ShowSource::kRenderViewContextMenu);
+      crosapi::mojom::ClipboardHistoryControllerShowSource::
+          kRenderViewContextMenu);
 
   histograms().ExpectTotalCount(kOnboardingNudge_OpenTime, 1);
   histograms().ExpectTotalCount(kZeroStateNudge_OpenTime, 1);
@@ -332,7 +334,8 @@ TEST_F(ClipboardNudgeControllerTest, PasteAfterNudges_LogsPasteNudgeMetrics) {
   ShowNudgeForType(ClipboardNudgeType::kZeroStateNudge);
   ShowNudgeForType(ClipboardNudgeType::kNewFeatureBadge);
   nudge_controller_->OnClipboardHistoryMenuShown(
-      ClipboardHistoryController::ShowSource::kRenderViewContextMenu);
+      crosapi::mojom::ClipboardHistoryControllerShowSource::
+          kRenderViewContextMenu);
   nudge_controller_->OnClipboardHistoryPasted();
 
   histograms().ExpectTotalCount(kOnboardingNudge_OpenTime, 1);
@@ -348,7 +351,8 @@ TEST_F(ClipboardNudgeControllerTest, PasteAfterNudges_LogsPasteNudgeMetrics) {
 TEST_F(ClipboardNudgeControllerTest, OnboardingNudge_DoesNotLogOtherMetrics) {
   ShowNudgeForType(ClipboardNudgeType::kOnboardingNudge);
   nudge_controller_->OnClipboardHistoryMenuShown(
-      ClipboardHistoryController::ShowSource::kRenderViewContextMenu);
+      crosapi::mojom::ClipboardHistoryControllerShowSource::
+          kRenderViewContextMenu);
   nudge_controller_->OnClipboardHistoryPasted();
 
   histograms().ExpectTotalCount(kOnboardingNudge_OpenTime, 1);
@@ -364,7 +368,8 @@ TEST_F(ClipboardNudgeControllerTest, OnboardingNudge_DoesNotLogOtherMetrics) {
 TEST_F(ClipboardNudgeControllerTest, ZeroStateNudge_DoesNotLogOtherMetrics) {
   ShowNudgeForType(ClipboardNudgeType::kZeroStateNudge);
   nudge_controller_->OnClipboardHistoryMenuShown(
-      ClipboardHistoryController::ShowSource::kRenderViewContextMenu);
+      crosapi::mojom::ClipboardHistoryControllerShowSource::
+          kRenderViewContextMenu);
   nudge_controller_->OnClipboardHistoryPasted();
 
   histograms().ExpectTotalCount(kOnboardingNudge_OpenTime, 0);
@@ -380,7 +385,8 @@ TEST_F(ClipboardNudgeControllerTest, ZeroStateNudge_DoesNotLogOtherMetrics) {
 TEST_F(ClipboardNudgeControllerTest, NewFeatureBadge_DoesNotLogOtherMetrics) {
   ShowNudgeForType(ClipboardNudgeType::kNewFeatureBadge);
   nudge_controller_->OnClipboardHistoryMenuShown(
-      ClipboardHistoryController::ShowSource::kRenderViewContextMenu);
+      crosapi::mojom::ClipboardHistoryControllerShowSource::
+          kRenderViewContextMenu);
   nudge_controller_->OnClipboardHistoryPasted();
 
   histograms().ExpectTotalCount(kOnboardingNudge_OpenTime, 0);
@@ -398,10 +404,12 @@ TEST_F(ClipboardNudgeControllerTest, SecondTimeAction_DoesNotLogNudgeMetrics) {
   ShowNudgeForType(ClipboardNudgeType::kZeroStateNudge);
   ShowNudgeForType(ClipboardNudgeType::kNewFeatureBadge);
   nudge_controller_->OnClipboardHistoryMenuShown(
-      ClipboardHistoryController::ShowSource::kRenderViewContextMenu);
+      crosapi::mojom::ClipboardHistoryControllerShowSource::
+          kRenderViewContextMenu);
   nudge_controller_->OnClipboardHistoryPasted();
   nudge_controller_->OnClipboardHistoryMenuShown(
-      ClipboardHistoryController::ShowSource::kRenderViewContextMenu);
+      crosapi::mojom::ClipboardHistoryControllerShowSource::
+          kRenderViewContextMenu);
   nudge_controller_->OnClipboardHistoryPasted();
 
   histograms().ExpectTotalCount(kOnboardingNudge_OpenTime, 1);
@@ -418,13 +426,15 @@ TEST_F(ClipboardNudgeControllerTest, ShowNudgeTwice_LogsMetricsTwoTimes) {
   ShowNudgeForType(ClipboardNudgeType::kZeroStateNudge);
   ShowNudgeForType(ClipboardNudgeType::kNewFeatureBadge);
   nudge_controller_->OnClipboardHistoryMenuShown(
-      ClipboardHistoryController::ShowSource::kRenderViewContextMenu);
+      crosapi::mojom::ClipboardHistoryControllerShowSource::
+          kRenderViewContextMenu);
   nudge_controller_->OnClipboardHistoryPasted();
   ShowNudgeForType(ClipboardNudgeType::kOnboardingNudge);
   ShowNudgeForType(ClipboardNudgeType::kZeroStateNudge);
   ShowNudgeForType(ClipboardNudgeType::kNewFeatureBadge);
   nudge_controller_->OnClipboardHistoryMenuShown(
-      ClipboardHistoryController::ShowSource::kRenderViewContextMenu);
+      crosapi::mojom::ClipboardHistoryControllerShowSource::
+          kRenderViewContextMenu);
   nudge_controller_->OnClipboardHistoryPasted();
 
   histograms().ExpectTotalCount(kOnboardingNudge_OpenTime, 2);
@@ -441,10 +451,12 @@ TEST_F(ClipboardNudgeControllerTest,
        NewFeatureBadgeOpen_LogsByWithContextMenuSource) {
   ShowNudgeForType(ClipboardNudgeType::kNewFeatureBadge);
   nudge_controller_->OnClipboardHistoryMenuShown(
-      ClipboardHistoryController::ShowSource::kRenderViewContextMenu);
+      crosapi::mojom::ClipboardHistoryControllerShowSource::
+          kRenderViewContextMenu);
   ShowNudgeForType(ClipboardNudgeType::kNewFeatureBadge);
   nudge_controller_->OnClipboardHistoryMenuShown(
-      ClipboardHistoryController::ShowSource::kTextfieldContextMenu);
+      crosapi::mojom::ClipboardHistoryControllerShowSource::
+          kTextfieldContextMenu);
 
   histograms().ExpectTotalCount(kNewBadge_OpenTime, 2);
 }
@@ -453,9 +465,9 @@ TEST_F(ClipboardNudgeControllerTest,
        NewFeatureBadgeOpen_DoesNotLogsWithNotContextMenuSource) {
   ShowNudgeForType(ClipboardNudgeType::kNewFeatureBadge);
   nudge_controller_->OnClipboardHistoryMenuShown(
-      ClipboardHistoryController::ShowSource::kAccelerator);
+      crosapi::mojom::ClipboardHistoryControllerShowSource::kAccelerator);
   nudge_controller_->OnClipboardHistoryMenuShown(
-      ClipboardHistoryController::ShowSource::kVirtualKeyboard);
+      crosapi::mojom::ClipboardHistoryControllerShowSource::kVirtualKeyboard);
 
   histograms().ExpectTotalCount(kNewBadge_OpenTime, 0);
 }

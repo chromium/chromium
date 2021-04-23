@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/crosapi/browser_service_host_ash.h"
 #include "chrome/browser/ash/crosapi/cert_database_ash.h"
 #include "chrome/browser/ash/crosapi/clipboard_ash.h"
+#include "chrome/browser/ash/crosapi/clipboard_history_ash.h"
 #include "chrome/browser/ash/crosapi/device_attributes_ash.h"
 #include "chrome/browser/ash/crosapi/feedback_ash.h"
 #include "chrome/browser/ash/crosapi/file_manager_ash.h"
@@ -58,6 +59,7 @@ CrosapiAsh::CrosapiAsh()
       browser_service_host_ash_(std::make_unique<BrowserServiceHostAsh>()),
       cert_database_ash_(std::make_unique<CertDatabaseAsh>()),
       clipboard_ash_(std::make_unique<ClipboardAsh>()),
+      clipboard_history_ash_(std::make_unique<ClipboardHistoryAsh>()),
       device_attributes_ash_(std::make_unique<DeviceAttributesAsh>()),
       feedback_ash_(std::make_unique<FeedbackAsh>()),
       file_manager_ash_(std::make_unique<FileManagerAsh>()),
@@ -222,6 +224,11 @@ void CrosapiAsh::BindTestController(
 void CrosapiAsh::BindClipboard(
     mojo::PendingReceiver<mojom::Clipboard> receiver) {
   clipboard_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindClipboardHistory(
+    mojo::PendingReceiver<mojom::ClipboardHistory> receiver) {
+  clipboard_history_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindDeviceAttributes(

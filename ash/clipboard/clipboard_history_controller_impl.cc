@@ -221,16 +221,13 @@ void ClipboardHistoryControllerImpl::ShowMenuByAccelerator() {
   }
 
   ShowMenu(CalculateAnchorRect(), ui::MENU_SOURCE_KEYBOARD,
-           ShowSource::kAccelerator);
+           crosapi::mojom::ClipboardHistoryControllerShowSource::kAccelerator);
 }
 
-gfx::Rect ClipboardHistoryControllerImpl::GetMenuBoundsInScreenForTest() const {
-  return context_menu_->GetMenuBoundsInScreenForTest();
-}
-
-void ClipboardHistoryControllerImpl::ShowMenu(const gfx::Rect& anchor_rect,
-                                              ui::MenuSourceType source_type,
-                                              ShowSource show_source) {
+void ClipboardHistoryControllerImpl::ShowMenu(
+    const gfx::Rect& anchor_rect,
+    ui::MenuSourceType source_type,
+    crosapi::mojom::ClipboardHistoryControllerShowSource show_source) {
   if (IsMenuShowing() || !CanShowMenu())
     return;
 
@@ -275,6 +272,10 @@ void ClipboardHistoryControllerImpl::ShowMenu(const gfx::Rect& anchor_rect,
 
   for (auto& observer : observers_)
     observer.OnClipboardHistoryMenuShown(show_source);
+}
+
+gfx::Rect ClipboardHistoryControllerImpl::GetMenuBoundsInScreenForTest() const {
+  return context_menu_->GetMenuBoundsInScreenForTest();
 }
 
 bool ClipboardHistoryControllerImpl::ShouldShowNewFeatureBadge() const {
