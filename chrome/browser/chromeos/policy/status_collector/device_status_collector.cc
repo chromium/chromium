@@ -2653,13 +2653,19 @@ void DeviceStatusCollector::OnSubmittedSuccessfully() {
 }
 
 bool DeviceStatusCollector::ShouldReportActivityTimes() const {
-  return report_activity_times_;
+  // This function is used for checking if a message about activity reporting
+  // should be displayed to a user in the transparency panel. User activity for
+  // a current user is reported only if the user is managed by the same
+  // organization as a device.
+  return report_activity_times_ && !GetUserForActivityReporting().empty();
 }
 bool DeviceStatusCollector::ShouldReportNetworkInterfaces() const {
   return report_network_interfaces_;
 }
 bool DeviceStatusCollector::ShouldReportUsers() const {
-  return report_users_;
+  // For more details, see comment in
+  // DeviceStatusCollector::ShouldReportActivityTimes() function.
+  return report_users_ && !GetUserForActivityReporting().empty();
 }
 bool DeviceStatusCollector::ShouldReportHardwareStatus() const {
   return report_hardware_status_;
