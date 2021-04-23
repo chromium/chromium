@@ -5,6 +5,9 @@
 #include "third_party/blink/renderer/core/layout/ng/svg/ng_svg_text_layout_algorithm.h"
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_length.h"
+#include "third_party/blink/renderer/core/svg/svg_length_context.h"
+#include "third_party/blink/renderer/core/svg/svg_text_content_element.h"
 
 namespace blink {
 
@@ -109,7 +112,7 @@ void NGSVGTextLayoutAlgorithm::Layout(
   AdjustPositionsDxDy(items);
 
   // 5. Apply ‘textLength’ attribute
-  // TODO(crbug.com/1179585): Implement this step.
+  ApplyTextLengthAttribute(items);
 
   // 6. Adjust positions: x, y
   AdjustPositionsXY(items);
@@ -254,6 +257,223 @@ void NGSVGTextLayoutAlgorithm::AdjustPositionsDxDy(
     result_[i].x = css_positions_[i].X() + shift.X() * scaling_factor;
     result_[i].y = css_positions_[i].Y() + shift.Y() * scaling_factor;
   }
+}
+
+struct SVGTextLengthContext {
+  DISALLOW_NEW();
+  wtf_size_t start_index;
+  float text_length;
+  Member<const LayoutObject> layout_object;
+  void Trace(Visitor* visitor) const { visitor->Trace(layout_object); }
+};
+
+}  // namespace blink
+
+WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::SVGTextLengthContext)
+
+namespace blink {
+
+void NGSVGTextLayoutAlgorithm::ApplyTextLengthAttribute(
+    const NGFragmentItemsBuilder::ItemWithOffsetList& items) {
+  // TODO(crbug.com/1179585): Traversing LayoutObject ancestors in a layout
+  // algorithm is not preferable. We should consider moving this part to
+  // NGSVGTextLayoutAttributesBuilder.
+
+  VectorOf<SVGTextLengthContext> context_stack;
+  // Start indexes of the highest textLength elements which were already
+  // handled by ResolveTextLength().
+  Vector<wtf_size_t> resolved_descendant_node_starts;
+  const LayoutObject* last_parent = nullptr;
+  for (wtf_size_t index = 0; index < result_.size(); ++index) {
+    const LayoutObject* layout_object =
+        items[result_[index].item_index]->GetLayoutObject();
+    DCHECK(IsA<LayoutText>(layout_object));
+    if (last_parent == layout_object->Parent())
+      continue;
+    last_parent = layout_object->Parent();
+    VectorOfPairs<float, const LayoutObject> text_length_ancestors =
+        CollectTextLengthAncestors(items, index, layout_object);
+
+    // Find a common part of context_stack and text_length_ancestors.
+    wtf_size_t common_size = 0;
+    for (const auto& ancestor : text_length_ancestors) {
+      if (common_size >= context_stack.size())
+        break;
+      if (context_stack[common_size].layout_object != ancestor.second)
+        break;
+      ++common_size;
+    }
+    // Pop uncommon part of context_stack.
+    while (context_stack.size() > common_size) {
+      const auto& context = context_stack.back();
+      ResolveTextLength(items, context.text_length, context.start_index, index,
+                        resolved_descendant_node_starts);
+      context_stack.pop_back();
+    }
+    // Push uncommon part of text_length_ancestors.
+    for (wtf_size_t p = common_size; p < text_length_ancestors.size(); ++p) {
+      context_stack.push_back(
+          SVGTextLengthContext{index, text_length_ancestors[p].first,
+                               text_length_ancestors[p].second});
+    }
+  }
+  while (!context_stack.IsEmpty()) {
+    const auto& context = context_stack.back();
+    ResolveTextLength(items, context.text_length, context.start_index,
+                      result_.size(), resolved_descendant_node_starts);
+    context_stack.pop_back();
+  }
+}
+
+// Collects ancestors with a valid textLength attribute up until the IFC.
+// The result is a list of pairs of scaled textLength value and LayoutObject
+// in the reversed order of distance from the specified |layout_object|.
+VectorOfPairs<float, const LayoutObject>
+NGSVGTextLayoutAlgorithm::CollectTextLengthAncestors(
+    const NGFragmentItemsBuilder::ItemWithOffsetList& items,
+    wtf_size_t index,
+    const LayoutObject* layout_object) const {
+  DCHECK(layout_object);
+  VectorOfPairs<float, const LayoutObject> ancestors;
+  do {
+    layout_object = layout_object->Parent();
+    if (auto* element =
+            DynamicTo<SVGTextContentElement>(layout_object->GetNode())) {
+      if (element->TextLengthIsSpecifiedByUser()) {
+        float text_length = element->textLength()->CurrentValue()->Value(
+            SVGLengthContext(element));
+        // text_length is 0.0 if the textLength attribute has an invalid
+        // string. Legacy SVG <text> skips textLength processing if the
+        // attribute is "0" or invalid. Firefox skips textLength processing if
+        // textLength value is smaller than the intrinsic width of the text.
+        // This code follows the legacy behavior.
+        if (text_length > 0.0f) {
+          ancestors.push_back(std::make_pair(
+              text_length * ScalingFactorAt(items, index), layout_object));
+        }
+      }
+    }
+  } while (layout_object != inline_node_.GetLayoutBlockFlow());
+  ancestors.Reverse();
+  return ancestors;
+}
+
+// The implementation of step 2 of "Procedure: resolve text length"
+// in "5. Apply 'textLength' attribute".
+//
+// This function is called for elements with textLength in the order of
+// closed tags. e.g.
+//     <text textLength="...">
+//       <tspan textLength="...">...</tspan>
+//       <tspan textLength="...">...</tspan>
+//     </text>
+//    1. Called for the first <tspan>.
+//    2. Called for the second <tspan>.
+//    3. Called for the <text>.
+void NGSVGTextLayoutAlgorithm::ResolveTextLength(
+    const NGFragmentItemsBuilder::ItemWithOffsetList& items,
+    float text_length,
+    wtf_size_t i,
+    wtf_size_t j_plus_1,
+    Vector<wtf_size_t>& resolved_descendant_node_starts) {
+  // 2.1. Let a = +Infinity and b = −Infinity.
+  float min_position = std::numeric_limits<float>::infinity();
+  float max_position = -std::numeric_limits<float>::infinity();
+
+  // 2.2. Let i and j be the global index of the first character and last
+  // characters in node, respectively.
+  // ==> They are computed in ApplyTextLengthAttribute().
+
+  // 2.3. For each index k in the range [i, j] where the "addressable" flag of
+  // result[k] is true:
+  for (wtf_size_t k = i; k < j_plus_1; ++k) {
+    // 2.3.1. If the character at k is a linefeed or carriage return, return. No
+    // adjustments due to ‘textLength’ are made to a node with a forced line
+    // break.
+    // ==> We don't support white-space:pre yet. crbug.com/366558.
+
+    // 2.3.2. Let pos = the x coordinate of the position in result[k], if the
+    // "horizontal" flag is true, and the y coordinate otherwise.
+    float min_char_pos = horizontal_ ? *result_[k].x : *result_[k].y;
+
+    // 2.3.3. Let advance = the advance of the typographic character
+    // corresponding to character k.
+    PhysicalSize item_size = items[result_[k].item_index]->Size();
+    float inline_size = horizontal_ ? item_size.width : item_size.height;
+    // 2.3.4. Set a = min(a, pos, pos + advance).
+    min_position = std::min(min_position, min_char_pos);
+    // 2.3.5. Set b = max(b, pos, pos + advance).
+    max_position = std::max(max_position, min_char_pos + inline_size);
+  }
+  // 2.4. If a != +Infinity then:
+  if (min_position == std::numeric_limits<float>::infinity())
+    return;
+  // 2.4.1. Find the distance delta = ‘textLength’ computed value − (b − a).
+  const float delta = text_length - (max_position - min_position);
+
+  // TODO(crbug.com/1179585): Implement lengthAdjust="spacingAndGlyphs". The
+  // following code handles only lengthAdjust="spacing".
+
+  // 2.4.2. Find n, the total number of typographic characters in this node
+  // including any descendant nodes that are not resolved descendant nodes or
+  // within a resolved descendant node.
+  auto n = std::count_if(result_.begin() + i, result_.begin() + j_plus_1,
+                         [](const auto& info) {
+                           return !info.middle && !info.text_length_resolved;
+                         });
+  // 2.4.3. Let n = n + number of resolved descendant nodes − 1.
+  n += std::count_if(resolved_descendant_node_starts.begin(),
+                     resolved_descendant_node_starts.end(),
+                     [i, j_plus_1](const auto& start_index) {
+                       return i <= start_index && start_index < j_plus_1;
+                     }) -
+       1;
+  // 2.4.4. Find the per-character adjustment small-delta = delta/n.
+  float character_delta = n != 0 ? delta / n : delta;
+  // 2.4.5. Let shift = 0.
+  float shift = 0.0f;
+  // 2.4.6. For each index k in the range [i,j]:
+  for (wtf_size_t k = i; k < j_plus_1; ++k) {
+    // 2.4.6.1. Add shift to the x coordinate of the position in result[k], if
+    // the "horizontal" flag is true, and to the y coordinate otherwise.
+    if (horizontal_)
+      *result_[k].x += shift;
+    else
+      *result_[k].y += shift;
+    // 2.4.6.2. If the "middle" flag for result[k] is not true and k is not a
+    // character in a resolved descendant node other than the first character
+    // then shift = shift + small-delta.
+    if (!result_[k].middle &&
+        (std::any_of(resolved_descendant_node_starts.begin(),
+                     resolved_descendant_node_starts.end(),
+                     [k](auto offset) { return offset == k; }) ||
+         !result_[k].text_length_resolved))
+      shift += character_delta;
+    result_[k].text_length_resolved = true;
+  }
+  // We should shift characters until the end of this text chunk.
+  // Note: This is not defined by the algorithm. But it seems major SVG
+  // engines work so.
+  for (wtf_size_t k = j_plus_1; k < result_.size(); ++k) {
+    if (result_[k].anchored_chunk)
+      break;
+    if (horizontal_)
+      *result_[k].x += shift;
+    else
+      *result_[k].y += shift;
+  }
+
+  // Remove resolved_descendant_node_starts entries for descendant nodes,
+  // and register an entry for this node.
+  auto* new_end =
+      std::remove_if(resolved_descendant_node_starts.begin(),
+                     resolved_descendant_node_starts.end(),
+                     [i, j_plus_1](const auto& start_index) {
+                       return i <= start_index && start_index < j_plus_1;
+                     });
+  resolved_descendant_node_starts.erase(new_end,
+                                        resolved_descendant_node_starts.end());
+  resolved_descendant_node_starts.push_back(i);
 }
 
 void NGSVGTextLayoutAlgorithm::AdjustPositionsXY(

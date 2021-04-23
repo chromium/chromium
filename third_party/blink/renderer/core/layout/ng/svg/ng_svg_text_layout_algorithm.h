@@ -27,6 +27,18 @@ class NGSVGTextLayoutAlgorithm {
                 const NGFragmentItemsBuilder::ItemWithOffsetList& items);
   void AdjustPositionsDxDy(
       const NGFragmentItemsBuilder::ItemWithOffsetList& items);
+  void ApplyTextLengthAttribute(
+      const NGFragmentItemsBuilder::ItemWithOffsetList& items);
+  VectorOfPairs<float, const LayoutObject> CollectTextLengthAncestors(
+      const NGFragmentItemsBuilder::ItemWithOffsetList& items,
+      wtf_size_t index,
+      const LayoutObject* layout_object) const;
+  void ResolveTextLength(
+      const NGFragmentItemsBuilder::ItemWithOffsetList& items,
+      float text_length,
+      wtf_size_t i,
+      wtf_size_t j_plus_1,
+      Vector<wtf_size_t>& resolved_descendant_node_starts);
   void AdjustPositionsXY(
       const NGFragmentItemsBuilder::ItemWithOffsetList& items);
   void ApplyAnchoring(const NGFragmentItemsBuilder::ItemWithOffsetList& items);
@@ -50,6 +62,8 @@ class NGSVGTextLayoutAlgorithm {
     bool hidden = false;
     bool middle = false;
     bool anchored_chunk = false;
+
+    bool text_length_resolved = false;
     wtf_size_t item_index = WTF::kNotFound;
   };
   // This data member represents "result" defined in the specification, but it
