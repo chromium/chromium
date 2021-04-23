@@ -25,9 +25,14 @@ class CORE_EXPORT HTMLParserMetrics {
 
   void AddYieldInterval(base::TimeDelta elapsed_time);
 
-  void ReportMetricsAtParseEnd();
+  void AddInput(unsigned length);
+
+  void ReportMetricsAtParseEnd(bool background_parsing);
 
  private:
+  void ReportBackgroundParsingUMA();
+  void ReportForcedSynchronousParsingUMA();
+
   // UKM System data.
   const int64_t source_id_;
   ukm::UkmRecorder* const recorder_;
@@ -47,6 +52,10 @@ class CORE_EXPORT HTMLParserMetrics {
   base::TimeDelta accumulated_yield_intervals_;  // Constructed with 0 value
   base::TimeDelta min_yield_interval_ = base::TimeDelta::Max();
   base::TimeDelta max_yield_interval_;  // Constructed with 0 value
+
+  // Track total number of characters parsed in one instantiation of the
+  // parser.
+  unsigned input_character_count = 0;
 
   DISALLOW_COPY_AND_ASSIGN(HTMLParserMetrics);
 };

@@ -431,11 +431,12 @@ HTMLDocumentParser::HTMLDocumentParser(Document& document,
   DCHECK(!RuntimeEnabledFeatures::ForceSynchronousHTMLParsingEnabled() ||
          !CanParseAsynchronously());
 
-  // Report metrics for async document parsing only. The document
-  // must be main frame to meet UKM requirements, and must have a high
-  // resolution clock for high quality data.
-  if (sync_policy == kAllowAsynchronousParsing && document.GetFrame() &&
-      document.GetFrame()->IsMainFrame() &&
+  // Report metrics for async document parsing or forced synchronous parsing.
+  // The document must be main frame to meet UKM requirements, and must have a
+  // high resolution clock for high quality data.
+  if ((sync_policy == kAllowAsynchronousParsing ||
+       sync_policy == kAllowDeferredParsing) &&
+      document.GetFrame() && document.GetFrame()->IsMainFrame() &&
       base::TimeTicks::IsHighResolution()) {
     metrics_reporter_ = std::make_unique<HTMLParserMetrics>(
         document.UkmSourceID(), document.UkmRecorder());
@@ -572,6 +573,15 @@ void HTMLDocumentParser::DeferredPumpTokenizerIfPossible() {
   TRACE_EVENT2("blink", "HTMLDocumentParser::DeferredPumpTokenizerIfPossible",
                "parser", (void*)this, "state",
                task_runner_state_->GetStateAsString());
+
+  // This method is called when the post task is executed, marking the end of
+  // a yield. Report the yielded time.
+  DCHECK(yield_timer_);
+  if (metrics_reporter_) {
+    metrics_reporter_->AddYieldInterval(yield_timer_->Elapsed());
+  }
+  yield_timer_.reset();
+
   bool should_call_delay_end =
       task_runner_state_->GetState() ==
       HTMLDocumentParserState::DeferredParserState::kScheduledWithEndIfDelayed;
@@ -607,11 +617,15 @@ void HTMLDocumentParser::PumpTokenizerIfPossible() {
   } else if (task_runner_state_->ShouldAttemptToEndOnEOF()) {
     // Fall into this branch if ::Finish has been previously called and we've
     // just finished asynchronously parsing everything.
+    if (metrics_reporter_)
+      metrics_reporter_->ReportMetricsAtParseEnd(false);
     AttemptToEnd();
   } else if (task_runner_state_->ShouldEndIfDelayed()) {
     // If we did not exceed the budget or parsed everything there was to
     // parse, check if we should complete the document.
     if (task_runner_state_->ShouldComplete() || IsStopped() || IsStopping()) {
+      if (metrics_reporter_)
+        metrics_reporter_->ReportMetricsAtParseEnd(false);
       EndIfDelayed();
     } else {
       ScheduleEndIfDelayed();
@@ -973,7 +987,7 @@ void HTMLDocumentParser::PumpPendingSpeculations() {
     metrics_reporter_->AddChunk(session.ElapsedTime(),
                                 session.ProcessedElementTokens());
     if (reached_end_of_file)
-      metrics_reporter_->ReportMetricsAtParseEnd();
+      metrics_reporter_->ReportMetricsAtParseEnd(true);
   }
 }
 
@@ -1017,6 +1031,8 @@ bool HTMLDocumentParser::PumpTokenizer() {
   bool should_yield = false;
   int budget = max_tokenization_budget_;
 
+  base::ElapsedTimer chunk_parsing_timer_;
+  unsigned tokens_parsed = 0;
   while (!should_yield) {
     const auto next_token_status = CanTakeNextToken();
     if (next_token_status == NoTokens) {
@@ -1040,6 +1056,7 @@ bool HTMLDocumentParser::PumpTokenizer() {
       if (!tokenizer_->NextToken(input_.Current(), Token()))
         break;
       budget--;
+      tokens_parsed++;
     }
     ConstructTreeFromHTMLToken();
     if (!should_run_until_completion && !IsPaused()) {
@@ -1053,8 +1070,13 @@ bool HTMLDocumentParser::PumpTokenizer() {
     DCHECK(IsStopped() || Token().IsUninitialized());
   }
 
-  if (IsStopped())
+  if (IsStopped()) {
+    if (metrics_reporter_ && tokens_parsed) {
+      metrics_reporter_->AddChunk(chunk_parsing_timer_.Elapsed(),
+                                  tokens_parsed);
+    }
     return false;
+  }
 
   // There should only be PendingText left since the tree-builder always flushes
   // the task queue before returning. In case that ever changes, crash.
@@ -1072,6 +1094,10 @@ bool HTMLDocumentParser::PumpTokenizer() {
       }
       ScanAndPreload(preload_scanner_.get());
     }
+  }
+
+  if (metrics_reporter_ && tokens_parsed) {
+    metrics_reporter_->AddChunk(chunk_parsing_timer_.Elapsed(), tokens_parsed);
   }
 
   // should_run_until_completion implies that we should not yield
@@ -1094,6 +1120,8 @@ void HTMLDocumentParser::SchedulePumpTokenizer() {
                            WrapPersistent(this)));
   task_runner_state_->SetState(
       HTMLDocumentParserState::DeferredParserState::kScheduled);
+
+  yield_timer_ = std::make_unique<base::ElapsedTimer>();
 }
 
 void HTMLDocumentParser::ScheduleEndIfDelayed() {
@@ -1109,6 +1137,7 @@ void HTMLDocumentParser::ScheduleEndIfDelayed() {
         FROM_HERE,
         WTF::Bind(&HTMLDocumentParser::DeferredPumpTokenizerIfPossible,
                   WrapPersistent(this)));
+    yield_timer_ = std::make_unique<base::ElapsedTimer>();
   }
   // If a pump is already scheduled, it's OK to just upgrade it to one
   // which calls EndIfDelayed afterwards.
@@ -1323,6 +1352,10 @@ void HTMLDocumentParser::Append(const String& input_source) {
   input_.AppendToEnd(source);
   task_runner_state_->SetHaveSeenFirstByte();
 
+  // Add input_source.length() to "file size" metric.
+  if (metrics_reporter_)
+    metrics_reporter_->AddInput(input_source.length());
+
   if (InPumpSession()) {
     // We've gotten data off the network in a nested write. We don't want to
     // consume any more of the input stream now.  Do not worry.  We'll consume
@@ -1330,7 +1363,9 @@ void HTMLDocumentParser::Append(const String& input_source) {
     return;
   }
 
-  // Schedule a tokenizer pump to process this new data.
+  // Schedule a tokenizer pump to process this new data. We schedule to give
+  // paint a chance to happen, and because devtools somehow depends on it
+  // for js loads.
   if (task_runner_state_->GetMode() ==
           ParserSynchronizationPolicy::kAllowDeferredParsing &&
       !task_runner_state_->ShouldComplete()) {

@@ -1118,6 +1118,34 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Blink.HTMLParsing.ChunkCount2" units="chunks"
+    expires_after="2021-10-04">
+  <owner>schenney@chromium.org</owner>
+  <owner>dom-dev@chromium.org</owner>
+  <summary>
+    The number of chunks parsed while loading a page. Each chunk represents a
+    piece of the HTML content that can be loaded without blocking or yielding.
+    This version is for Forced Synchronous HTML Parsing.
+
+    This histogram does not record metrics on machines with low-resolution
+    clocks.
+  </summary>
+</histogram>
+
+<histogram name="Blink.HTMLParsing.InputCharacterCount" units="characters"
+    expires_after="2021-10-04">
+  <owner>schenney@chromium.org</owner>
+  <owner>dom-dev@chromium.org</owner>
+  <summary>
+    The number of characters processed while parsing a document during page
+    load. This is computed as the sum of all the characters appended to the
+    input string sequence for the parser.
+
+    This histogram does not record metrics on machines with low-resolution
+    clocks.
+  </summary>
+</histogram>
+
 <histogram name="Blink.HTMLParsing.ParsingTimeMax" units="microseconds"
     expires_after="2021-10-04">
   <owner>schenney@chromium.org</owner>
@@ -1125,6 +1153,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     While parsing a page, the maximum time used to parse a single chunk before
     being blocked, yielding or completing, in microseconds.
+
+    This histogram does not record metrics on machines with low-resolution
+    clocks.
+  </summary>
+</histogram>
+
+<histogram name="Blink.HTMLParsing.ParsingTimeMax2" units="microseconds"
+    expires_after="2021-10-04">
+  <owner>schenney@chromium.org</owner>
+  <owner>dom-dev@chromium.org</owner>
+  <summary>
+    While parsing a page, the maximum time used to parse a single chunk before
+    being blocked, yielding or completing, in microseconds. This version is for
+    Forced Synchronous HTML Parsing.
 
     This histogram does not record metrics on machines with low-resolution
     clocks.
@@ -1144,6 +1186,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Blink.HTMLParsing.ParsingTimeMin2" units="microseconds"
+    expires_after="2021-10-04">
+  <owner>schenney@chromium.org</owner>
+  <owner>dom-dev@chromium.org</owner>
+  <summary>
+    While parsing a page, the minimum time used to parse a single chunk before
+    being blocked, yielding or completing, in microseconds. This version is for
+    Forced Synchronous HTML Parsing.
+
+    This histogram does not record metrics on machines with low-resolution
+    clocks.
+  </summary>
+</histogram>
+
 <histogram name="Blink.HTMLParsing.ParsingTimeTotal" units="microseconds"
     expires_after="2021-10-04">
   <owner>schenney@chromium.org</owner>
@@ -1157,12 +1213,43 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Blink.HTMLParsing.ParsingTimeTotal2" units="microseconds"
+    expires_after="2021-10-04">
+  <owner>schenney@chromium.org</owner>
+  <owner>dom-dev@chromium.org</owner>
+  <summary>
+    While parsing a page, the total amount of time spent in the
+    HTMLDocumentParser performing parsing, in microseconds. This version is for
+    Forced Synchronous HTML Parsing.
+
+    This histogram does not record metrics on machines with low-resolution
+    clocks.
+  </summary>
+</histogram>
+
 <histogram name="Blink.HTMLParsing.TokensParsedAverage" units="tokens"
     expires_after="2021-10-04">
   <owner>schenney@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
   <summary>
     While parsing a page, the average number of tokens parsed across all chunks.
+
+    This histogram does not record metrics on machines with low-resolution
+    clocks.
+  </summary>
+</histogram>
+
+<histogram name="Blink.HTMLParsing.TokensParsedAverage2" units="tokens"
+    expires_after="2021-10-04">
+  <owner>schenney@chromium.org</owner>
+  <owner>dom-dev@chromium.org</owner>
+  <summary>
+    While parsing a page, the average number of tokens parsed across all chunks.
+    This version is for Forced Synchronous HTML Parsing. This version is for
+    Forced Synchronous HTML Parsing.
+
+    This histogram does not record metrics on machines with low-resolution
+    clocks.
   </summary>
 </histogram>
 
@@ -1172,6 +1259,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>dom-dev@chromium.org</owner>
   <summary>
     While parsing a page, the maximum number of tokens parsed as a chunk.
+
+    This histogram does not record metrics on machines with low-resolution
+    clocks.
+  </summary>
+</histogram>
+
+<histogram name="Blink.HTMLParsing.TokensParsedMax2" units="tokens"
+    expires_after="2021-10-04">
+  <owner>schenney@chromium.org</owner>
+  <owner>dom-dev@chromium.org</owner>
+  <summary>
+    While parsing a page, the maximum number of tokens parsed as a chunk. This
+    version is for Forced Synchronous HTML Parsing.
+
+    This histogram does not record metrics on machines with low-resolution
+    clocks.
   </summary>
 </histogram>
 
@@ -1181,6 +1284,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>dom-dev@chromium.org</owner>
   <summary>
     While parsing a page, the minimum number of tokens parsed as a chunk.
+
+    This histogram does not record metrics on machines with low-resolution
+    clocks.
+  </summary>
+</histogram>
+
+<histogram name="Blink.HTMLParsing.TokensParsedMin2" units="tokens"
+    expires_after="2021-10-04">
+  <owner>schenney@chromium.org</owner>
+  <owner>dom-dev@chromium.org</owner>
+  <summary>
+    While parsing a page, the minimum number of tokens parsed as a chunk. This
+    version is for Forced Synchronous HTML Parsing.
+
+    This histogram does not record metrics on machines with low-resolution
+    clocks.
   </summary>
 </histogram>
 
@@ -1191,6 +1310,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     While parsing a page, the average time between parsing of two chunks, in
     microseconds. Will not be recorded if only one chunk was parsed.
+
+    This histogram does not record metrics on machines with low-resolution
+    clocks.
+  </summary>
+</histogram>
+
+<histogram name="Blink.HTMLParsing.YieldedTimeAverage2" units="microseconds"
+    expires_after="2021-10-04">
+  <owner>schenney@chromium.org</owner>
+  <owner>dom-dev@chromium.org</owner>
+  <summary>
+    While parsing a page, the average time between parsing of two chunks, in
+    microseconds. Will not be recorded if only one chunk was parsed. This
+    version is for Forced Synchronous HTML Parsing.
 
     This histogram does not record metrics on machines with low-resolution
     clocks.
@@ -1210,6 +1343,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Blink.HTMLParsing.YieldedTimeMax2" units="microseconds"
+    expires_after="2021-10-04">
+  <owner>schenney@chromium.org</owner>
+  <owner>dom-dev@chromium.org</owner>
+  <summary>
+    While parsing a page, the maximum time between parsing of two chunks, in
+    microseconds. Will not be recorded if only one chunk was parsed. This
+    version is for Forced Synchronous HTML Parsing.
+
+    This histogram does not record metrics on machines with low-resolution
+    clocks.
+  </summary>
+</histogram>
+
 <histogram name="Blink.HTMLParsing.YieldedTimeMin" units="microseconds"
     expires_after="2021-10-04">
   <owner>schenney@chromium.org</owner>
@@ -1217,6 +1364,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     While parsing a page, the minimum time between parsing of two chunks, in
     microseconds. Will not be recorded if only one chunk was parsed.
+
+    This histogram does not record metrics on machines with low-resolution
+    clocks.
+  </summary>
+</histogram>
+
+<histogram name="Blink.HTMLParsing.YieldedTimeMin2" units="microseconds"
+    expires_after="2021-10-04">
+  <owner>schenney@chromium.org</owner>
+  <owner>dom-dev@chromium.org</owner>
+  <summary>
+    While parsing a page, the minimum time between parsing of two chunks, in
+    microseconds. Will not be recorded if only one chunk was parsed. This
+    version is for Forced Synchronous HTML Parsing.
 
     This histogram does not record metrics on machines with low-resolution
     clocks.
