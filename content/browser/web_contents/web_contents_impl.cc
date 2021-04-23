@@ -948,18 +948,18 @@ WebContentsImpl::~WebContentsImpl() {
   // Shutdown the primary FrameTree.
   frame_tree_.Shutdown();
 
-  // Shutdown the non-primary FrameTrees. Currently the only instances of these
-  // are prerendering FrameTrees.
+  // Shutdown the non-primary FrameTrees.
+  //
   // Do this here rather than relying on the owner of the FrameTree to shutdown
   // on WebContentsDestroyed(), so that all the FrameTrees are shutdown at the
   // same time for consistency. Also, destroying a FrameTree results in other
   // observer functions like RenderFrameDeleted() being called, which are not
   // expected to be called after WebContentsDestroyed().
-  // TODO(https://crbug.com/1194865, https://crbug.com/1170619): Destroy the
-  // PrerenderHostRegistry here once it becomes per-WebContentsImpl instance,
-  // instead of calling AbandonAllHostsForWebContents() on it.
+  //
+  // Currently the only instances of the non-primary FrameTrees are for
+  // prerendering. Shutdown them by destructing PrerenderHostRegistry.
   if (blink::features::IsPrerender2Enabled())
-    prerender_host_registry_->AbandonAllHostsForWebContents(*this);
+    prerender_host_registry_.reset();
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   // Call this before WebContentsDestroyed() is broadcasted since

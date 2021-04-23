@@ -21,13 +21,11 @@ namespace content {
 
 class FrameTreeNode;
 class RenderFrameHostImpl;
-class WebContentsImpl;
 
 // Prerender2:
 // PrerenderHostRegistry creates and retains a prerender host, and reserves it
 // for NavigationRequest to activate the prerendered page. This is created and
-// owned by StoragePartitionImpl.
-// TODO(https://crbug.com/1170619): Tie the registry with WebContentsImpl.
+// owned by WebContentsImpl.
 //
 // The APIs of this class are categorized into two: APIs for triggers and APIs
 // for activators.
@@ -90,10 +88,6 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   void AbandonHostAsync(int frame_tree_node_id,
                         PrerenderHost::FinalStatus final_status);
 
-  // TODO(https://crbug.com/1194865): Remove the following method once the
-  // workaround in the call site is removed.
-  void AbandonAllHostsForWebContents(const WebContentsImpl& web_contents);
-
   // For activators.
   // Reserves the host to activate for a navigation for the given FrameTreeNode.
   // Returns the root frame tree node id of the prerendered page, which can be
@@ -105,12 +99,9 @@ class CONTENT_EXPORT PrerenderHostRegistry {
                             FrameTreeNode& frame_tree_node);
 
   // For activators.
-  // Activates the host reserved by ReserveHostToActivate().
-  // - For MPArch, this returns the BackForwardCacheImpl::Entry containing the
-  //   page that was activated on success, or nullptr on failure.
-  // - For multiple WebContents, this always returns nullptr.
-  // TODO(crbug.com/1183519): Remove multiple WebContents
-  // implementation after MPArch activation is sufficiently stable.
+  // Activates the host reserved by ReserveHostToActivate() and returns the
+  // BackForwardCacheImpl::Entry containing the page that was activated on
+  // success, or nullptr on failure.
   //
   // `current_render_frame_host` is the RenderFrameHostImpl that will be swapped
   // out and destroyed by the activation.

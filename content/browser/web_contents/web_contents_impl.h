@@ -2156,7 +2156,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // renderer dialog.
   int suppress_unresponsive_renderer_count_ = 0;
 
-  const std::unique_ptr<PrerenderHostRegistry> prerender_host_registry_;
+  std::unique_ptr<PrerenderHostRegistry> prerender_host_registry_;
 
   std::unique_ptr<power_scheduler::PowerModeVoter> audible_power_mode_voter_;
 
