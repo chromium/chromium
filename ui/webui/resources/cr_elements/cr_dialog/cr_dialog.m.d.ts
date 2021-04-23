@@ -15,9 +15,6 @@ interface CrDialogElement extends CrContainerShadowBehavior, LegacyElementMixin,
   noCancel: boolean|null|undefined;
   showCloseButton: boolean|null|undefined;
   showOnAttach: boolean|null|undefined;
-  ready(): void;
-  attached(): void;
-  detached(): void;
   showModal(): void;
   cancel(): void;
   close(): void;
