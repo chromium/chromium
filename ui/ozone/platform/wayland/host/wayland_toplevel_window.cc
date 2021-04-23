@@ -25,9 +25,7 @@
 #include "ui/platform_window/extensions/wayland_extension.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(jamescook): The nogncheck is to work around false-positive failures on
-// the code search bot. Remove after https://crrev.com/c/2432137 lands.
-#include "chromeos/crosapi/cpp/crosapi_constants.h"  // nogncheck
+#include "chromeos/crosapi/cpp/crosapi_constants.h"
 #endif
 
 namespace ui {
