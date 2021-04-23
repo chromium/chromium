@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
 #include "chrome/browser/chromeos/crostini/crostini_simple_types.h"
 #include "chrome/browser/chromeos/crostini/crostini_types.mojom.h"
@@ -28,6 +29,7 @@ class CrostiniStartupStatus
 
   // Called when startup is complete.
   void OnCrostiniRestarted(crostini::CrostiniResult result);
+  void OnCrostiniConnected(crostini::CrostiniResult result);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(CrostiniStartupStatusTest, TestNotVerbose);
@@ -49,6 +51,7 @@ class CrostiniStartupStatus
   int spinner_index_ = 0;
   int stage_index_ = 0;
   int end_of_line_index_ = 0;
+  std::unique_ptr<base::RepeatingTimer> show_progress_timer_;
 
   base::WeakPtrFactory<CrostiniStartupStatus> weak_factory_{this};
 };

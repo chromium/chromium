@@ -8,6 +8,8 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/metrics/histogram_base.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/chromeos/crostini/crostini_simple_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -34,6 +36,7 @@ class CrostiniStartupStatusTest : public testing::Test {
 
   std::vector<std::string> output_;
   bool done_ = false;
+  base::HistogramTester histogram_tester_{};
 };
 
 TEST_F(CrostiniStartupStatusTest, TestNotVerbose) {
@@ -41,10 +44,16 @@ TEST_F(CrostiniStartupStatusTest, TestNotVerbose) {
   startup_status->OnStageStarted(InstallerState::kStart);
   startup_status->OnStageStarted(InstallerState::kInstallImageLoader);
   startup_status->OnCrostiniRestarted(crostini::CrostiniResult::SUCCESS);
+  startup_status->OnCrostiniConnected(crostini::CrostiniResult::SUCCESS);
 
-  EXPECT_EQ(output_.size(), 1u);
+  ASSERT_EQ(output_.size(), 1u);
   // CR, delete line, default color, show cursor.
   EXPECT_EQ(output_[0], "\r\x1b[K\x1b[0m\x1b[?25h");
+
+  histogram_tester_.ExpectBucketCount("Crostini.AppLaunchResult",
+                                      crostini::CrostiniResult::SUCCESS, 1);
+  histogram_tester_.ExpectBucketCount("Crostini.AppLaunchResult.Terminal",
+                                      crostini::CrostiniResult::SUCCESS, 1);
 }
 
 TEST_F(CrostiniStartupStatusTest, TestVerbose) {
@@ -52,8 +61,9 @@ TEST_F(CrostiniStartupStatusTest, TestVerbose) {
   startup_status->OnStageStarted(InstallerState::kStart);
   startup_status->OnStageStarted(InstallerState::kInstallImageLoader);
   startup_status->OnCrostiniRestarted(crostini::CrostiniResult::SUCCESS);
+  startup_status->OnCrostiniConnected(crostini::CrostiniResult::SUCCESS);
 
-  ASSERT_EQ(output_.size(), 5u);
+  ASSERT_EQ(output_.size(), 6u);
   // Hide cursor, init progress.
   EXPECT_EQ(output_[0], "\x1b[?25l\x1b[35m[          ] ");
 
@@ -64,12 +74,22 @@ TEST_F(CrostiniStartupStatusTest, TestVerbose) {
   EXPECT_EQ(output_[2],
             "\r\x1b[35m[=\x1b[11C\x1b[K\x1b[33mChecking the virtual machine ");
 
-  // CR, purple, progress, forward 2, erase, green, done, symbol, CRLF.
+  // CR, purple, progress, forward 11, erase, yellow, container connect
+  // pseudo-stage.
   EXPECT_EQ(output_[3],
+            "\r\x1B[35m[=\x1B[11C\x1B[K\x1B[33mConnecting to the container ");
+
+  // CR, purple, progress, forward 2, erase, green, done, symbol, CRLF.
+  EXPECT_EQ(output_[4],
             "\r\x1b[35m[==========\x1b[2C\x1b[K\x1b[1;32mReady\r\n ");
 
   // CR, delete line, default color, show cursor;
-  EXPECT_EQ(output_[4], "\r\x1b[K\x1b[0m\x1b[?25h");
+  EXPECT_EQ(output_[5], "\r\x1b[K\x1b[0m\x1b[?25h");
+
+  histogram_tester_.ExpectBucketCount("Crostini.AppLaunchResult",
+                                      crostini::CrostiniResult::SUCCESS, 1);
+  histogram_tester_.ExpectBucketCount("Crostini.AppLaunchResult.Terminal",
+                                      crostini::CrostiniResult::SUCCESS, 1);
 }
 
 }  // namespace extensions

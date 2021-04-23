@@ -206,6 +206,9 @@ TerminalPrivateAPI::GetFactoryInstance() {
 }
 
 TerminalPrivateOpenTerminalProcessFunction::
+    TerminalPrivateOpenTerminalProcessFunction() = default;
+
+TerminalPrivateOpenTerminalProcessFunction::
     ~TerminalPrivateOpenTerminalProcessFunction() = default;
 
 ExtensionFunction::ResponseAction
@@ -272,20 +275,18 @@ TerminalPrivateOpenTerminalProcessFunction::OpenProcess(
 
     auto* mgr = crostini::CrostiniManager::GetForProfile(profile);
     bool verbose = !mgr->GetContainerInfo(container_id).has_value();
-    auto observer = std::make_unique<CrostiniStartupStatus>(
+    startup_status_ = std::make_unique<CrostiniStartupStatus>(
         base::BindRepeating(&NotifyProcessOutput, browser_context(), startup_id,
                             api::terminal_private::ToString(
                                 api::terminal_private::OUTPUT_TYPE_STDOUT)),
         verbose);
-    // Save copy of pointer for RestartObserver before moving object.
-    CrostiniStartupStatus* observer_ptr = observer.get();
-    observer->ShowProgressAtInterval();
+    startup_status_->ShowProgressAtInterval();
     mgr->RestartCrostini(
         container_id,
         base::BindOnce(
             &TerminalPrivateOpenTerminalProcessFunction::OnCrostiniRestarted,
-            this, std::move(observer), user_id_hash, std::move(cmdline)),
-        observer_ptr);
+            this, user_id_hash, std::move(cmdline)),
+        startup_status_.get());
   } else {
     // command=[unrecognized].
     return RespondNow(Error("Invalid process name: " + process_name));
@@ -294,7 +295,6 @@ TerminalPrivateOpenTerminalProcessFunction::OpenProcess(
 }
 
 void TerminalPrivateOpenTerminalProcessFunction::OnCrostiniRestarted(
-    std::unique_ptr<CrostiniStartupStatus> startup_status,
     const std::string& user_id_hash,
     base::CommandLine cmdline,
     crostini::CrostiniResult result) {
@@ -305,7 +305,7 @@ void TerminalPrivateOpenTerminalProcessFunction::OnCrostiniRestarted(
     Respond(Error(msg));
     return;
   }
-  startup_status->OnCrostiniRestarted(result);
+  startup_status_->OnCrostiniRestarted(result);
   if (result == crostini::CrostiniResult::SUCCESS) {
     OpenVmshellProcess(user_id_hash, std::move(cmdline));
   } else {
@@ -392,6 +392,11 @@ void TerminalPrivateOpenTerminalProcessFunction::OpenOnRegistryTaskRunner(
 void TerminalPrivateOpenTerminalProcessFunction::RespondOnUIThread(
     bool success,
     const std::string& terminal_id) {
+  if (startup_status_) {
+    startup_status_->OnCrostiniConnected(
+        success ? crostini::CrostiniResult::SUCCESS
+                : crostini::CrostiniResult::VSH_CONNECT_FAILED);
+  }
   auto* contents = GetSenderWebContents();
   if (!contents) {
     LOG(WARNING) << "content is closed before returning opened process";

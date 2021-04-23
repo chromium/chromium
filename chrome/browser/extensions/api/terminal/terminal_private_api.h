@@ -47,6 +47,7 @@ class TerminalPrivateOpenTerminalProcessFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("terminalPrivate.openTerminalProcess",
                              TERMINALPRIVATE_OPENTERMINALPROCESS)
+  TerminalPrivateOpenTerminalProcessFunction();
 
  protected:
   ~TerminalPrivateOpenTerminalProcessFunction() override;
@@ -60,7 +61,6 @@ class TerminalPrivateOpenTerminalProcessFunction : public ExtensionFunction {
 
  private:
   void OnCrostiniRestarted(
-      std::unique_ptr<CrostiniStartupStatus> startup_status,
       const std::string& user_id_hash,
       base::CommandLine cmdline,
       crostini::CrostiniResult result);
@@ -89,6 +89,7 @@ class TerminalPrivateOpenTerminalProcessFunction : public ExtensionFunction {
                                 base::CommandLine cmdline,
                                 const std::string& user_id_hash);
   void RespondOnUIThread(bool success, const std::string& terminal_id);
+  std::unique_ptr<CrostiniStartupStatus> startup_status_;
 };
 
 // Opens new vmshell process. Returns the new terminal id.

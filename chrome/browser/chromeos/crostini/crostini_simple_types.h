@@ -92,7 +92,8 @@ enum class CrostiniResult {
   NEED_UPDATE = 62,
   SHARE_PATHS_FAILED = 63,
   UNREGISTERED_APPLICATION = 64,
-  kMaxValue = UNREGISTERED_APPLICATION,
+  VSH_CONNECT_FAILED = 65,
+  kMaxValue = VSH_CONNECT_FAILED,
   // When adding a new value, check you've followed the steps in the comment at
   // the top of this enum.
 };
