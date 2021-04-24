@@ -24,12 +24,14 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.policy.EnterpriseInfo;
 import org.chromium.chrome.browser.policy.EnterpriseInfo.OwnedState;
 import org.chromium.components.policy.PolicyService;
@@ -241,6 +243,27 @@ public class SkipTosDialogPolicyListenerUnitTest {
         // Signals should be ignore since #destroy happened.
         assertPolicyCheckNotComplete();
         assertHistogramsRecorded(false, false);
+    }
+
+    @Test
+    public void testDestroy_WithOutstandingOnAvailable() {
+        // Inspired by a crash in https://crbug.com/1200979.
+        CallbackHelper onAvailabileCallbackHelper = new CallbackHelper();
+        mSkipTosDialogPolicyListener.onAvailable((b) -> onAvailabileCallbackHelper.notifyCalled());
+
+        // While #onResult would normally result in the #onAvailable callback being run, the
+        // callback is actually posted to a Handler and run asynchronously. Robolectric typically
+        // runs all callbacks synchronously, so pause the ShadowLooper to stop this.
+        ShadowLooper.pauseMainLooper();
+        mPolicyLoadListenerCallback.onResult(false);
+        Assert.assertEquals(0, onAvailabileCallbackHelper.getCallCount());
+
+        // Now call #destroy() which means the #onAvailable should never be run, on which our
+        // callers assume/depend. #unPauseMainLooper() will cause anything posted to Handlers to be
+        // run synchronously, after which it is safe for us to check/assert.
+        mSkipTosDialogPolicyListener.destroy();
+        ShadowLooper.unPauseMainLooper();
+        Assert.assertEquals(0, onAvailabileCallbackHelper.getCallCount());
     }
 
     @Test

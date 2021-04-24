@@ -140,7 +140,11 @@ class SkipTosDialogPolicyListener implements OneshotSupplier<Boolean> {
 
     @Override
     public Boolean onAvailable(Callback<Boolean> callback) {
-        return mSkipTosDialogPolicySupplier.onAvailable(callback);
+        // This supplier posts callbacks to an inner Handler to avoid reentrancy, but this opens the
+        // possibility of set -> destroy -> callback run, which would violate our public interface.
+        // Wrapping incoming callback to ensure it cannot be run after destroy().
+        return mSkipTosDialogPolicySupplier.onAvailable(
+                mCallbackController.makeCancelable(callback));
     }
 
     /**
