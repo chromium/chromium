@@ -6,11 +6,13 @@
 
 #include <algorithm>
 
+#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shelf/shelf.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_tray_icon.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/i18n/rtl.h"
@@ -137,17 +139,18 @@ HoldingSpaceTrayIconPreview::HoldingSpaceTrayIconPreview(
       container_(container),
       item_(item),
       use_small_previews_(ShouldUseSmallPreviews()) {
-  const gfx::Size size(GetPreviewSize());
-  contents_image_ = gfx::ImageSkia(
-      std::make_unique<ContentsImageSource>(item->image().GetImageSkia(size)),
-      size);
+  // Initialize the `contents_image_`.
+  OnHoldingSpaceItemImageChanged();
+
   item_deletion_subscription_ = item->AddDeletionCallback(base::BindRepeating(
       &HoldingSpaceTrayIconPreview::OnHoldingSpaceItemDeleted,
       base::Unretained(this)));
+
   image_subscription_ =
       item->image().AddImageSkiaChangedCallback(base::BindRepeating(
           &HoldingSpaceTrayIconPreview::OnHoldingSpaceItemImageChanged,
           base::Unretained(this)));
+
   container_observer_.Observe(container_);
 }
 
@@ -384,7 +387,14 @@ void HoldingSpaceTrayIconPreview::OnShelfConfigChanged() {
   OnHoldingSpaceItemImageChanged();
 }
 
-// TODO(crbug.com/1142572): Support theming.
+void HoldingSpaceTrayIconPreview::OnThemeChanged() {
+  // Invalidate `contents_image_` so that file type icons will use the correct
+  // foreground color to contrast the preview's background. Note that this will
+  // trigger `layer()` invalidation at which time the background will be painted
+  // in the appropriate color for the current theme.
+  OnHoldingSpaceItemImageChanged();
+}
+
 void HoldingSpaceTrayIconPreview::OnPaintLayer(
     const ui::PaintContext& context) {
   const gfx::Rect contents_bounds = gfx::Rect(GetPreviewSize());
@@ -395,10 +405,14 @@ void HoldingSpaceTrayIconPreview::OnPaintLayer(
   // Background.
   // NOTE: The background radius is shrunk by a single pixel to avoid being
   // painted outside `contents_image_` bounds as might otherwise occur due to
-  // pixel rounding. Failure to do so could result in white paint artifacts.
+  // pixel rounding. Failure to do so could result in paint artifacts. Also
+  // note that the background is white when dark/light mode feature is disabled.
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setColor(SK_ColorWHITE);
+  flags.setColor(features::IsDarkLightModeEnabled()
+                     ? AshColorProvider::Get()->GetBaseLayerColor(
+                           AshColorProvider::BaseLayerType::kOpaque)
+                     : SK_ColorWHITE);
   flags.setLooper(gfx::CreateShadowDrawLooper(GetShadowDetails().values));
   canvas->DrawCircle(
       gfx::PointF(contents_bounds.CenterPoint()),
@@ -441,15 +455,18 @@ void HoldingSpaceTrayIconPreview::OnViewIsDeleting(views::View* view) {
 }
 
 void HoldingSpaceTrayIconPreview::OnHoldingSpaceItemImageChanged() {
-  const gfx::Size size(GetPreviewSize());
   if (item_) {
-    contents_image_ = gfx::ImageSkia(std::make_unique<ContentsImageSource>(
-                                         item_->image().GetImageSkia(size)),
-                                     size);
+    // NOTE: The preview's background is white when the dark/light mode feature
+    // is disabled. Otherwise, the preview's background depends on theming.
+    const gfx::Size size(GetPreviewSize());
+    contents_image_ = gfx::ImageSkia(
+        std::make_unique<ContentsImageSource>(item_->image().GetImageSkia(
+            size, /*dark_background=*/features::IsDarkLightModeEnabled() &&
+                      AshColorProvider::Get()->IsDarkModeEnabled())),
+        size);
   } else {
     contents_image_ = gfx::ImageSkia();
   }
-
   InvalidateLayer();
 }
 

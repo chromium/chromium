@@ -176,6 +176,16 @@ gfx::Size HoldingSpaceTrayIcon::CalculatePreferredSize() const {
       /*vertical=*/gfx::Size(kTrayItemSize, primary_axis_size));
 }
 
+void HoldingSpaceTrayIcon::OnThemeChanged() {
+  views::View::OnThemeChanged();
+
+  for (auto& preview_by_id : previews_by_id_)
+    preview_by_id.second->OnThemeChanged();
+
+  for (auto& preview : removed_previews_)
+    preview->OnThemeChanged();
+}
+
 void HoldingSpaceTrayIcon::InitLayout() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 

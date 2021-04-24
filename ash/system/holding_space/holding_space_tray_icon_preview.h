@@ -72,6 +72,9 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
   // Invoked when the `shelf_` configuration has changed.
   void OnShelfConfigChanged();
 
+  // Invoked when the theme of the parent `container_` has changed.
+  void OnThemeChanged();
+
   // Returns the holding space `item_` visually represented by this preview.
   const HoldingSpaceItem* item() const { return item_; }
 
