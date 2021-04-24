@@ -60,6 +60,7 @@ component("service") {
     "//build:chromecast_buildflags",
     "//components/viz/common",
     "//gpu/config",
+    "//gpu/ipc/common",
     "//ipc",
     "//ui/base",
     "//ui/display",
@@ -83,8 +84,8 @@ component("service") {
     "//gpu/command_buffer/service",
     "//gpu/command_buffer/service:gles2",
     "//gpu/config",
-    "//gpu/ipc/common",
     "//gpu/vulkan:buildflags",
+    "//mojo/public/cpp/bindings",
   ]
   libs = []
   ldflags = []

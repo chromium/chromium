@@ -97,6 +97,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncCallRestrictions {
   // Android requires synchronous processing when overlay surfaces are
   // destroyed, else behavior is undefined.
   friend class content::AndroidOverlaySyncHelper;
+  // GpuChannelHost uses a few sync IPCs, grandfathered in from legacy IPC.
+  friend class gpu::GpuChannelHost;
   // END ALLOWED USAGE.
 
 #if ENABLE_SYNC_CALL_RESTRICTIONS

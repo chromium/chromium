@@ -51,15 +51,19 @@ GpuChannelHost::GpuChannelHost(
           this,
           static_cast<int32_t>(
               GpuChannelReservedRoutes::kImageDecodeAccelerator)) {
+  mojo::PendingAssociatedRemote<mojom::GpuChannel> channel;
+  auto receiver = channel.InitWithNewEndpointAndPassReceiver();
   if (io_thread_->BelongsToCurrentThread()) {
-    listener_->Initialize(std::move(handle), io_thread_);
-    DCHECK(io_thread_->BelongsToCurrentThread());
+    listener_->Initialize(std::move(handle), std::move(receiver), io_thread_);
   } else {
     io_thread_->PostTask(
         FROM_HERE,
         base::BindOnce(&Listener::Initialize, base::Unretained(listener_.get()),
-                       std::move(handle), io_thread_));
+                       std::move(handle), std::move(receiver), io_thread_));
   }
+
+  gpu_channel_ = mojo::SharedAssociatedRemote<mojom::GpuChannel>(
+      std::move(channel), io_thread_);
 
   next_image_id_.GetNext();
   for (int32_t i = 0;
@@ -69,6 +73,10 @@ GpuChannelHost::GpuChannelHost(
 #if defined(OS_MAC)
   gpu::SetMacOSSpecificTextureTarget(gpu_info.macos_specific_texture_target);
 #endif  // defined(OS_MAC)
+}
+
+mojom::GpuChannel& GpuChannelHost::GetGpuChannel() {
+  return *gpu_channel_.get();
 }
 
 bool GpuChannelHost::Send(IPC::Message* msg) {
@@ -167,7 +175,8 @@ void GpuChannelHost::VerifyFlush(uint32_t deferred_message_id) {
   InternalFlush(deferred_message_id);
 
   if (deferred_message_id > verified_deferred_message_id_) {
-    Send(new GpuChannelMsg_Nop());
+    base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
+    GetGpuChannel().Flush();
     verified_deferred_message_id_ = flushed_deferred_message_id_;
   }
 }
@@ -245,11 +254,11 @@ int32_t GpuChannelHost::GenerateRouteID() {
 }
 
 void GpuChannelHost::CrashGpuProcessForTesting() {
-  Send(new GpuChannelMsg_CrashForTesting());
+  GetGpuChannel().CrashForTesting();
 }
 
 void GpuChannelHost::TerminateGpuProcessForTesting() {
-  Send(new GpuChannelMsg_TerminateForTesting());
+  GetGpuChannel().TerminateForTesting();
 }
 
 std::unique_ptr<ClientSharedImageInterface>
@@ -286,6 +295,7 @@ GpuChannelHost::Listener::Listener() = default;
 
 void GpuChannelHost::Listener::Initialize(
     mojo::ScopedMessagePipeHandle handle,
+    mojo::PendingAssociatedReceiver<mojom::GpuChannel> receiver,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) {
   channel_ = IPC::ChannelMojo::Create(
       std::move(handle), IPC::Channel::MODE_CLIENT, this, io_task_runner,
@@ -294,6 +304,8 @@ void GpuChannelHost::Listener::Initialize(
   DCHECK(channel_);
   bool result = channel_->Connect();
   DCHECK(result);
+  channel_->GetAssociatedInterfaceSupport()->GetRemoteAssociatedInterface(
+      std::move(receiver));
 }
 
 GpuChannelHost::Listener::~Listener() {

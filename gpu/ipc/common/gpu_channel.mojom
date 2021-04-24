@@ -1,0 +1,33 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module gpu.mojom;
+
+// Main control interface for a GPU process connection. For now an instance of
+// this interface is associated with each C++ GpuChannel/Host's underlying
+// IPC::Channel interface. Eventually it will replace the IPC::Channel.
+interface GpuChannel {
+  // Crashes the GPU process in a similar way to how chrome://gpucrash does.
+  // This is only supported in testing environments with the GPU benchmarking
+  // extension enabled and is otherwise ignored.
+  //
+  // NOTE: It's important to handle this message early, on the IO thread, in
+  // case the main thread is hung. This is the purpose of this message:
+  // generating minidumps on the bots, which are symbolized later by the test
+  // harness.
+  CrashForTesting();
+
+  // Terminates the GPU process with an exit code of 0. This message is handled
+  // only in tests when the GPU benchmarking extension is enabled. Its purpose
+  // is to enable test coverage of scenarios where the GPU process is
+  // intentionally terminated with an exit code of 0.
+  TerminateForTesting();
+
+  // A simple no-op message used as a fence to ensure all previously sent
+  // messages have been received.
+  //
+  // NoInterrupt is safe on this message because it's handled immediately on the
+  // GPU IO thread, which is never allowed to block.
+  [Sync, NoInterrupt] Flush() => ();
+};

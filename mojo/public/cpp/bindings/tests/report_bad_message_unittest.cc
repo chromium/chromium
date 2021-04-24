@@ -156,34 +156,6 @@ TEST_P(ReportBadMessageTest, ResponseAsync) {
   EXPECT_TRUE(error);
 }
 
-TEST_P(ReportBadMessageTest, ResponseSync) {
-  bool error = false;
-  SetErrorHandler(base::BindLambdaForTesting([&] { error = true; }));
-
-  SyncMessageResponseContext context;
-  remote()->RequestResponseSync();
-
-  EXPECT_FALSE(error);
-  context.ReportBadMessage("i don't like this response");
-  EXPECT_TRUE(error);
-}
-
-TEST_P(ReportBadMessageTest, ResponseSyncDeferred) {
-  bool error = false;
-  SetErrorHandler(base::BindLambdaForTesting([&] { error = true; }));
-
-  ReportBadMessageCallback bad_message_callback;
-  {
-    SyncMessageResponseContext context;
-    remote()->RequestResponseSync();
-    bad_message_callback = context.GetBadMessageCallback();
-  }
-
-  EXPECT_FALSE(error);
-  std::move(bad_message_callback).Run("nope nope nope");
-  EXPECT_TRUE(error);
-}
-
 INSTANTIATE_MOJO_BINDINGS_TEST_SUITE_P(ReportBadMessageTest);
 
 }  // namespace

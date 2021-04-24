@@ -124,6 +124,7 @@ source_set("ipc_common_sources") {
 
   public_deps = [
     ":command_buffer_traits_sources",
+    ":gpu_channel_mojom",
     ":gpu_peak_memory",
     ":interfaces_cpp_sources",
     ":memory_stats_sources",
@@ -221,6 +222,18 @@ source_set("vulkan_types") {
   all_dependent_configs =
       [ "//third_party/vulkan-deps/vulkan-headers/src:vulkan_headers_config" ]
   configs += [ "//gpu:gpu_implementation" ]
+}
+
+mojom("gpu_channel_mojom") {
+  sources = [ "gpu_channel.mojom" ]
+
+  # Unlike some definitions in ":interfaces_mojom", these bindings are never
+  # used in Blink. We disable variants to simplify the dependency graph.
+  disable_variants = true
+
+  export_class_attribute = "GPU_EXPORT"
+  export_header = "gpu/gpu_export.h"
+  cpp_configs = [ "//gpu:gpu_implementation" ]
 }
 
 mojom("interfaces") {
@@ -657,4 +670,16 @@ source_set("mojom_traits") {
     sources += [ "vulkan_ycbcr_info_mojom_traits.h" ]
   }
   configs += [ "//gpu:gpu_implementation" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_gpu_channel.cc",
+    "mock_gpu_channel.h",
+  ]
+  public_deps = [
+    ":interfaces",
+    "//testing/gmock",
+  ]
 }

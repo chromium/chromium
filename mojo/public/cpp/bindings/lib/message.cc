@@ -34,10 +34,6 @@ base::LazyInstance<
     base::SequenceLocalStorageSlot<internal::MessageDispatchContext*>>::Leaky
     g_sls_message_dispatch_context = LAZY_INSTANCE_INITIALIZER;
 
-base::LazyInstance<
-    base::SequenceLocalStorageSlot<SyncMessageResponseContext*>>::Leaky
-    g_sls_sync_response_context = LAZY_INSTANCE_INITIALIZER;
-
 void DoNotifyBadMessage(Message message, const std::string& error) {
   message.NotifyBadMessage(error);
 }
@@ -560,30 +556,6 @@ bool PassThroughFilter::Accept(Message* message) {
   return true;
 }
 
-SyncMessageResponseContext::SyncMessageResponseContext()
-    : outer_context_(current()) {
-  g_sls_sync_response_context.Get().emplace(this);
-}
-
-SyncMessageResponseContext::~SyncMessageResponseContext() {
-  DCHECK_EQ(current(), this);
-  g_sls_sync_response_context.Get().emplace(outer_context_);
-}
-
-// static
-SyncMessageResponseContext* SyncMessageResponseContext::current() {
-  return g_sls_sync_response_context.Get().GetOrCreateValue();
-}
-
-void SyncMessageResponseContext::ReportBadMessage(const std::string& error) {
-  GetBadMessageCallback().Run(error);
-}
-
-ReportBadMessageCallback SyncMessageResponseContext::GetBadMessageCallback() {
-  DCHECK(!response_.IsNull());
-  return base::BindOnce(&DoNotifyBadMessage, std::move(response_));
-}
-
 void ReportBadMessage(const std::string& error) {
   internal::MessageDispatchContext* context =
       internal::MessageDispatchContext::current();
@@ -620,13 +592,6 @@ MessageDispatchContext* MessageDispatchContext::current() {
 ReportBadMessageCallback MessageDispatchContext::GetBadMessageCallback() {
   DCHECK(!message_->IsNull());
   return base::BindOnce(&DoNotifyBadMessage, std::move(*message_));
-}
-
-// static
-void SyncMessageResponseSetup::SetCurrentSyncResponseMessage(Message* message) {
-  SyncMessageResponseContext* context = SyncMessageResponseContext::current();
-  if (context)
-    context->response_ = std::move(*message);
 }
 
 }  // namespace internal

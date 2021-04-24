@@ -72,11 +72,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageDispatchContext {
   DISALLOW_COPY_AND_ASSIGN(MessageDispatchContext);
 };
 
-class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) SyncMessageResponseSetup {
- public:
-  static void SetCurrentSyncResponseMessage(Message* message);
-};
-
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
 size_t ComputeSerializedMessageSize(uint32_t flags,
                                     size_t payload_size,

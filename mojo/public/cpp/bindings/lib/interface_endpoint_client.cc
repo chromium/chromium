@@ -351,8 +351,6 @@ void ThreadSafeInterfaceEndpointClientProxy::SendMessageWithResponder(
     return;
   }
 
-  SyncCallRestrictions::AssertSyncCallAllowed();
-
   // If the Remote is bound to this sequence, send the message immediately and
   // let Remote use its own internal sync waiting mechanism.
   if (task_runner_->RunsTasksInCurrentSequence()) {
@@ -388,6 +386,7 @@ void ThreadSafeInterfaceEndpointClientProxy::SendMessageWithResponder(
   if (allow_interrupt) {
     // In the common case where interrupts are allowed, we watch cooperatively
     // with other potential endpoints on the same thread.
+    SyncCallRestrictions::AssertSyncCallAllowed();
     SyncEventWatcher watcher(&response->event, base::DoNothing());
     const bool* stop_flags[] = {&response->received, &response->cancelled};
     watcher.SyncWatch(stop_flags, base::size(stop_flags));

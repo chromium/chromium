@@ -35,11 +35,14 @@ source_set("ipc_client_sources") {
     "//gpu/command_buffer/client:client_sources",
     "//gpu/command_buffer/common:common_sources",
     "//gpu/config:config_sources",
-    "//gpu/ipc/common:ipc_common_sources",
+    "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//ui/gfx:color_space",
     "//ui/gfx/geometry",
     "//ui/gl",
   ]
-  public_deps = [ "//ipc" ]
+  public_deps = [
+    "//gpu/ipc/common:ipc_common_sources",
+    "//ipc",
+  ]
 }

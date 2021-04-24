@@ -399,8 +399,6 @@ bool {{class_name}}_{{method.name}}_HandleSyncResponse::Accept(
           out_{{param.name}}_
 {%-       endfor %});
       *result_ = true;
-      mojo::internal::SyncMessageResponseSetup::SetCurrentSyncResponseMessage(
-          message);
       return true;
     }
   }
@@ -417,8 +415,6 @@ bool {{class_name}}_{{method.name}}_HandleSyncResponse::Accept(
 {%-       for param in method.response_parameters %}
   *out_{{param.name}}_ = std::move(p_{{param.name}});
 {%-       endfor %}
-  mojo::internal::SyncMessageResponseSetup::SetCurrentSyncResponseMessage(
-      message);
   *result_ = true;
   return true;
 }

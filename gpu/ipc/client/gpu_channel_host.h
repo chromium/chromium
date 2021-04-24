@@ -26,9 +26,11 @@
 #include "gpu/gpu_export.h"
 #include "gpu/ipc/client/image_decode_accelerator_proxy.h"
 #include "gpu/ipc/client/shared_image_interface_proxy.h"
+#include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/message_filter.h"
 #include "ipc/message_router.h"
+#include "mojo/public/cpp/bindings/shared_associated_remote.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
 namespace IPC {
@@ -76,6 +78,9 @@ class GPU_EXPORT GpuChannelHost
   }
 
   int channel_id() const { return channel_id_; }
+
+  // Virtual for testing.
+  virtual mojom::GpuChannel& GetGpuChannel();
 
   // The GPU stats reported by the GPU process.
   const gpu::GPUInfo& gpu_info() const { return gpu_info_; }
@@ -160,11 +165,11 @@ class GPU_EXPORT GpuChannelHost
   class GPU_EXPORT Listener : public IPC::Listener {
    public:
     Listener();
-
     ~Listener() override;
 
     // Called on the IO thread.
     void Initialize(mojo::ScopedMessagePipeHandle handle,
+                    mojo::PendingAssociatedReceiver<mojom::GpuChannel> receiver,
                     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
 
     // Called on the IO thread.
@@ -253,6 +258,7 @@ class GPU_EXPORT GpuChannelHost
   // with base::Unretained(listener_).
   std::unique_ptr<Listener, base::OnTaskRunnerDeleter> listener_;
 
+  mojo::SharedAssociatedRemote<mojom::GpuChannel> gpu_channel_;
   SharedImageInterfaceProxy shared_image_interface_;
 
   // A client-side helper to send image decode requests to the GPU process.
