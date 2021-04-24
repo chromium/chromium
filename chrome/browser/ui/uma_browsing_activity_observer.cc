@@ -95,10 +95,14 @@ void UMABrowsingActivityObserver::LogTimeBeforeUpdate() const {
       UpgradeDetector::GetInstance()->upgrade_detected_time();
   if (upgrade_detected_time.is_null())
     return;
-  const base::Time now = base::Time::Now();
-  UMA_HISTOGRAM_EXACT_LINEAR(
-      "UpgradeDetector.DaysBeforeUpgrade",
-      base::TimeDelta(now - upgrade_detected_time).InDays(), 30);
+  const base::TimeDelta time_since_upgrade =
+      base::Time::Now() - upgrade_detected_time;
+  constexpr int kMaxDays = 30;
+  base::UmaHistogramExactLinear("UpgradeDetector.DaysBeforeUpgrade",
+                                base::TimeDelta(time_since_upgrade).InDays(),
+                                kMaxDays);
+  base::UmaHistogramCounts1000("UpgradeDetector.HoursBeforeUpgrade",
+                               base::TimeDelta(time_since_upgrade).InHours());
 }
 
 void UMABrowsingActivityObserver::LogRenderProcessHostCount() const {
