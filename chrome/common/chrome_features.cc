@@ -16,6 +16,13 @@ namespace features {
 
 // All features in alphabetical order.
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// If enabled device status collector will add the type of session (Affiliated
+// User, Kiosks, Managed Guest Sessions) to the device status report.
+const base::Feature kActivityReportingSessionType{
+    "ActivityReportingSessionType", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // defined(IS_CHROMEOS_ASH)
+
 #if defined(OS_ANDROID)
 // Enables showing an adaptive action button in the top toolbar.
 const base::Feature kAdaptiveButtonInTopToolbar{
