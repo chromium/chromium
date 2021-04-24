@@ -515,6 +515,8 @@ class CORE_EXPORT NGMinMaxConstraintSpaceBuilder final {
                   is_new_fc) {
     SetOrthogonalFallbackInlineSizeIfNeeded(parent_style, child, &delegate_);
     delegate_.SetCacheSlot(NGCacheSlot::kMeasure);
+    if (parent_space.IsInColumnBfc() && !child.CreatesNewFormattingContext())
+      delegate_.SetIsInColumnBfc();
   }
 
   void SetAvailableBlockSize(LayoutUnit block_size) {

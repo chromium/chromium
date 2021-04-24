@@ -30,6 +30,9 @@ class CORE_EXPORT NGColumnLayoutAlgorithm
       const MinMaxSizesFloatInput&) const override;
 
  private:
+  MinMaxSizesResult ComputeSpannersMinMaxSizes(
+      const NGBlockNode& search_parent) const;
+
   // Lay out as many children as we can. If |kNeedsEarlierBreak| is returned, it
   // means that we ran out of space at an unappealing location, and need to
   // relayout and break earlier (because we have a better breakpoint there). If

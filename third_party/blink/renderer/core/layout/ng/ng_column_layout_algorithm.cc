@@ -339,9 +339,40 @@ MinMaxSizesResult NGColumnLayoutAlgorithm::ComputeMinMaxSizes(
   LayoutUnit column_gap = ResolveUsedColumnGap(LayoutUnit(), Style());
   result.sizes += column_gap * (column_count - 1);
 
-  // TODO(mstensho): Need to include spanners.
+  // The block layout algorithm skips spanners for min/max calculation (since
+  // they shouldn't be part of the column-count multiplication above). Calculate
+  // min/max inline-size for spanners now.
+  result.sizes.Encompass(ComputeSpannersMinMaxSizes(Node()).sizes);
 
   result.sizes += BorderScrollbarPadding().InlineSum();
+  return result;
+}
+
+MinMaxSizesResult NGColumnLayoutAlgorithm::ComputeSpannersMinMaxSizes(
+    const NGBlockNode& search_parent) const {
+  MinMaxSizesResult result;
+  for (NGLayoutInputNode child = search_parent.FirstChild(); child;
+       child = child.NextSibling()) {
+    const NGBlockNode* child_block = DynamicTo<NGBlockNode>(&child);
+    if (!child_block)
+      continue;
+    MinMaxSizesResult child_result;
+    if (!child_block->IsColumnSpanAll()) {
+      // Spanners don't need to be a direct child of the multicol container, but
+      // they need to be in its formatting context.
+      if (child_block->CreatesNewFormattingContext())
+        continue;
+      child_result = ComputeSpannersMinMaxSizes(*child_block);
+    } else {
+      NGMinMaxConstraintSpaceBuilder builder(
+          ConstraintSpace(), Style(), *child_block, /* is_new_fc */ true);
+      builder.SetAvailableBlockSize(ChildAvailableSize().block_size);
+      const NGConstraintSpace child_space = builder.ToConstraintSpace();
+      child_result = ComputeMinAndMaxContentContribution(Style(), *child_block,
+                                                         child_space);
+    }
+    result.sizes.Encompass(child_result.sizes);
+  }
   return result;
 }
 
