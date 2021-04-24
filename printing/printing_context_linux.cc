@@ -19,8 +19,8 @@ namespace printing {
 
 namespace {
 
-// Function pointer for creating print dialogs. |callback| is only used when
-// |show_dialog| is true.
+// Function pointer for creating print dialogs. `callback` is only used when
+// `show_dialog` is true.
 PrintDialogGtkInterface* (*create_dialog_func_)(PrintingContextLinux* context) =
     nullptr;
 

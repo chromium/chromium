@@ -174,12 +174,12 @@ CreateDevModeWithColor(HANDLE printer,
                        const std::wstring& printer_name,
                        bool color);
 
-// Creates new DEVMODE. If |in| is not NULL copy settings from there.
+// Creates new DEVMODE. If `in` is not NULL copy settings from there.
 PRINTING_EXPORT std::unique_ptr<DEVMODE, base::FreeDeleter> CreateDevMode(
     HANDLE printer,
     DEVMODE* in);
 
-// Prompts for new DEVMODE. If |in| is not NULL copy settings from there.
+// Prompts for new DEVMODE. If `in` is not NULL copy settings from there.
 PRINTING_EXPORT std::unique_ptr<DEVMODE, base::FreeDeleter> PromptDevMode(
     HANDLE printer,
     const std::wstring& printer_name,

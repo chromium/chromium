@@ -53,7 +53,7 @@ class PRINTING_EXPORT PrintingContextChromeos : public PrintingContext {
   PrintingContextChromeos(Delegate* delegate,
                           std::unique_ptr<CupsConnection> connection);
 
-  // Lazily initializes |printer_|.
+  // Lazily initializes `printer_`.
   Result InitializeDevice(const std::string& device);
 
   const std::unique_ptr<CupsConnection> connection_;

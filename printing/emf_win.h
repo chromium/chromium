@@ -45,10 +45,10 @@ class PRINTING_EXPORT Emf : public Metafile {
   void Close();
 
   // Generates a new metafile that will record every GDI command, and will
-  // be saved to |metafile_path|.
+  // be saved to `metafile_path`.
   bool InitToFile(const base::FilePath& metafile_path);
 
-  // Initializes the Emf with the data in |metafile_path|.
+  // Initializes the Emf with the data in `metafile_path`.
   bool InitFromFile(const base::FilePath& metafile_path);
 
   // Metafile methods.
@@ -57,7 +57,7 @@ class PRINTING_EXPORT Emf : public Metafile {
 
   // Inserts a custom GDICOMMENT records indicating StartPage/EndPage calls
   // (since StartPage and EndPage do not work in a metafile DC). Only valid
-  // when hdc_ is non-NULL. |page_size|, |content_area|, and |scale_factor| are
+  // when hdc_ is non-NULL. `page_size`, `content_area`, and `scale_factor` are
   // ignored.
   void StartPage(const gfx::Size& page_size,
                  const gfx::Rect& content_area,
@@ -139,9 +139,9 @@ class PRINTING_EXPORT Emf::Enumerator {
   // Iterator type used for iterating the records.
   typedef std::vector<Record>::const_iterator const_iterator;
 
-  // Enumerates the records at construction time. |hdc| and |rect| are
+  // Enumerates the records at construction time. `hdc` and `rect` are
   // both optional at the same time or must both be valid.
-  // Warning: |emf| must be kept valid for the time this object is alive.
+  // Warning: `emf` must be kept valid for the time this object is alive.
   Enumerator(const Emf& emf, HDC hdc, const RECT* rect);
   Enumerator(const Enumerator&) = delete;
   Enumerator& operator=(const Enumerator&) = delete;

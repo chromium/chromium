@@ -43,18 +43,18 @@ class PRINTING_EXPORT CupsConnection {
   // Returns a vector of all the printers configure on the CUPS server.
   virtual std::vector<std::unique_ptr<CupsPrinter>> GetDests() = 0;
 
-  // Returns a printer for |printer_name| from the connected server.
+  // Returns a printer for `printer_name` from the connected server.
   virtual std::unique_ptr<CupsPrinter> GetPrinter(
       const std::string& printer_name) = 0;
 
-  // Queries CUPS for printer queue status for |printer_ids|.  Populates |jobs|
+  // Queries CUPS for printer queue status for `printer_ids`.  Populates `jobs`
   // with said information with one QueueStatus per printer_id.  Returns true if
-  // all the queries were successful.  In the event of failure, |jobs| will be
+  // all the queries were successful.  In the event of failure, `jobs` will be
   // unchanged.
   virtual bool GetJobs(const std::vector<std::string>& printer_ids,
                        std::vector<QueueStatus>* jobs) = 0;
 
-  // Queries CUPS for printer status for |printer_id|.
+  // Queries CUPS for printer status for `printer_id`.
   // Returns true if the query was successful.
   virtual bool GetPrinterStatus(const std::string& printer_id,
                                 PrinterStatus* printer_status) = 0;

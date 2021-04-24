@@ -117,7 +117,7 @@ constexpr std::array<const char* const, 7> kPrinterInfoAndStatus{
      kDocumentFormatSupported, kPrinterState, kPrinterStateReasons,
      kPrinterStateMessage}};
 
-// Converts an IPP attribute |attr| to the appropriate JobState enum.
+// Converts an IPP attribute `attr` to the appropriate JobState enum.
 CupsJob::JobState ToJobState(ipp_attribute_t* attr) {
   DCHECK_EQ(IPP_TAG_ENUM, ippGetValueTag(attr));
   int state = ippGetInteger(attr, 0);
@@ -186,7 +186,7 @@ const std::map<base::StringPiece, PReason>& GetLabelToReason() {
   return kLabelToReason;
 }
 
-// Returns the Reason cooresponding to the string |reason|.  Returns
+// Returns the Reason corresponding to the string `reason`.  Returns
 // UNKOWN_REASON if the string is not recognized.
 PrinterStatus::PrinterReason::Reason ToReason(base::StringPiece reason) {
   const auto& enum_map = GetLabelToReason();
@@ -194,7 +194,7 @@ PrinterStatus::PrinterReason::Reason ToReason(base::StringPiece reason) {
   return entry != enum_map.end() ? entry->second : PReason::kUnknownReason;
 }
 
-// Returns the Severity cooresponding to |severity|.  Returns UNKNOWN_SEVERITY
+// Returns the Severity corresponding to `severity`.  Returns UNKNOWN_SEVERITY
 // if the strin gis not recognized.
 PSeverity ToSeverity(base::StringPiece severity) {
   if (severity == kSeverityError)
@@ -209,7 +209,7 @@ PSeverity ToSeverity(base::StringPiece severity) {
   return PSeverity::kUnknownSeverity;
 }
 
-// Parses the |reason| string into a PrinterReason.  Splits the string based on
+// Parses the `reason` string into a PrinterReason.  Splits the string based on
 // the last '-' to determine severity.  If a recognized severity is not
 // included, severity is assumed to be ERROR per RFC2911.
 PrinterStatus::PrinterReason ToPrinterReason(base::StringPiece reason) {
@@ -242,7 +242,7 @@ PrinterStatus::PrinterReason ToPrinterReason(base::StringPiece reason) {
   return parsed;
 }
 
-// Populates |collection| with the collection of strings in |attr|.
+// Populates `collection` with the collection of strings in `attr`.
 void ParseCollection(ipp_attribute_t* attr,
                      std::vector<std::string>* collection) {
   int count = ippGetCount(attr);
@@ -254,8 +254,8 @@ void ParseCollection(ipp_attribute_t* attr,
   }
 }
 
-// Parse a field for the CupsJob |job| from IPP attribute |attr| using the
-// attribute name |name|.
+// Parse a field for the CupsJob `job` from IPP attribute `attr` using the
+// attribute name `name`.
 void ParseField(ipp_attribute_t* attr, base::StringPiece name, CupsJob* job) {
   DCHECK(!name.empty());
   if (name == kJobId) {
@@ -276,7 +276,7 @@ void ParseField(ipp_attribute_t* attr, base::StringPiece name, CupsJob* job) {
   }
 }
 
-// Returns a new CupsJob allocated in |jobs| with |printer_id| populated.
+// Returns a new CupsJob allocated in `jobs` with `printer_id` populated.
 CupsJob* NewJob(const std::string& printer_id, std::vector<CupsJob>* jobs) {
   jobs->emplace_back();
   CupsJob* job = &jobs->back();
@@ -305,7 +305,7 @@ void ParseJobs(ipp_t* response,
   }
 }
 
-// Extracts PrinterInfo fields from |response| and populates |printer_info|.
+// Extracts PrinterInfo fields from `response` and populates `printer_info`.
 // Returns true if at least printer-make-and-model and ipp-versions-supported
 // were read.
 bool ParsePrinterInfo(ipp_t* response, PrinterInfo* printer_info) {
@@ -355,7 +355,7 @@ bool ParsePrinterInfo(ipp_t* response, PrinterInfo* printer_info) {
   return !printer_info->make_and_model.empty();
 }
 
-// Returns true if |status| represents a complete failure in the IPP request.
+// Returns true if `status` represents a complete failure in the IPP request.
 bool StatusError(ipp_status_e status) {
   return status != IPP_STATUS_OK &&
          status != IPP_STATUS_OK_IGNORED_OR_SUBSTITUTED;
@@ -391,12 +391,12 @@ void ParseJobsResponse(ipp_t* response,
   }
 }
 
-// Returns an IPP response for a Get-Printer-Attributes request to |http|.  For
-// print servers, |printer_uri| is used as the printer-uri value.
-// |resource_path| specifies the path portion of the server URI.
-// |num_attributes| is the number of attributes in |attributes| which should be
-// a list of IPP attributes.  |status| is updated with status code for the
-// request.  A successful request will have the |status| IPP_STATUS_OK.
+// Returns an IPP response for a Get-Printer-Attributes request to `http`.  For
+// print servers, `printer_uri` is used as the printer-uri value.
+// `resource_path` specifies the path portion of the server URI.
+// `num_attributes` is the number of attributes in `attributes` which should be
+// a list of IPP attributes.  `status` is updated with status code for the
+// request.  A successful request will have the `status` IPP_STATUS_OK.
 ScopedIppPtr GetPrinterAttributes(http_t* http,
                                   const std::string& printer_uri,
                                   const std::string& resource_path,

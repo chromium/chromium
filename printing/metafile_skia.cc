@@ -141,7 +141,7 @@ void MetafileSkia::StartPage(const gfx::Size& page_size,
   cc::PaintCanvas* canvas = data_->recorder.beginRecording(
       inverse_scale * physical_page_size.width(),
       inverse_scale * physical_page_size.height());
-  // Recording canvas is owned by the |data_->recorder|.  No ref() necessary.
+  // Recording canvas is owned by the `data_->recorder`.  No ref() necessary.
   if (content_area != gfx::Rect(page_size) ||
       page_orientation != mojom::PageOrientation::kUpright) {
     canvas->scale(inverse_scale, inverse_scale);
@@ -211,8 +211,8 @@ bool MetafileSkia::FinishDocument() {
                                                data_->typeface_content_info);
       doc = SkMakeMultiPictureDocument(&stream, &procs);
       // It is safe to use base::Unretained(this) because the callback
-      // is only used by |canvas| in the following loop which has shorter
-      // lifetime than |this|.
+      // is only used by `canvas` in the following loop which has shorter
+      // lifetime than `this`.
       custom_callback = base::BindRepeating(
           &MetafileSkia::CustomDataToSkPictureCallback, base::Unretained(this));
       break;

@@ -173,7 +173,7 @@ TEST(PdfMetafileCgTest, Pdf) {
 
   // Test browser-side constructor.
   PdfMetafileCg pdf2;
-  // TODO(thestig): Make |buffer| uint8_t and avoid the base::as_bytes() call.
+  // TODO(thestig): Make `buffer` uint8_t and avoid the base::as_bytes() call.
   EXPECT_TRUE(pdf2.InitFromData(base::as_bytes(base::make_span(buffer))));
 
   // Get the first 4 characters from pdf2.

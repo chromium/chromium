@@ -15,7 +15,7 @@
 namespace printing {
 
 bool Image::LoadMetafile(const Metafile& metafile) {
-  // Load only the first page of |metafile|, just like Windows.
+  // Load only the first page of `metafile`, just like Windows.
   const unsigned int page_number = 1;
   gfx::Rect rect(metafile.GetPageBounds(page_number));
   if (rect.width() < 1 || rect.height() < 1)

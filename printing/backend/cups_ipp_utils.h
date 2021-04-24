@@ -17,7 +17,7 @@ namespace printing {
 
 class CupsConnection;
 
-// Creates a CUPS connection using |print_backend_settings|.
+// Creates a CUPS connection using `print_backend_settings`.
 std::unique_ptr<CupsConnection> CreateConnection(
     const base::Value* print_backend_settings);
 

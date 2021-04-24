@@ -110,7 +110,7 @@ TEST(PrintBackendCupsTest, EligibleDestTypes) {
   EXPECT_FALSE(IsDestTypeEligible(CUPS_PRINTER_DISCOVERED));
   EXPECT_TRUE(IsDestTypeEligible(CUPS_PRINTER_LOCAL));
 
-  // Try combos. |CUPS_PRINTER_LOCAL| has a value of 0, but keep these test
+  // Try combos. `CUPS_PRINTER_LOCAL` has a value of 0, but keep these test
   // cases in the event that the constant values change in CUPS.
   EXPECT_FALSE(IsDestTypeEligible(CUPS_PRINTER_LOCAL | CUPS_PRINTER_FAX));
   EXPECT_FALSE(IsDestTypeEligible(CUPS_PRINTER_LOCAL | CUPS_PRINTER_SCANNER));

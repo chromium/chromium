@@ -50,9 +50,9 @@ class PRINTING_EXPORT MetafilePlayer {
   virtual bool SafePlayback(printing::NativeDrawingContext hdc) const = 0;
 
 #elif defined(OS_MAC)
-  // Renders the given page into |rect| in the given context.
-  // Pages use a 1-based index. |autorotate| determines whether the source PDF
-  // should be autorotated to fit on the destination page. |fit_to_page|
+  // Renders the given page into `rect` in the given context.
+  // Pages use a 1-based index. `autorotate` determines whether the source PDF
+  // should be autorotated to fit on the destination page. `fit_to_page`
   // determines whether the source PDF should be scaled to fit on the
   // destination page.
   virtual bool RenderPage(unsigned int page_number,
@@ -93,12 +93,12 @@ class PRINTING_EXPORT Metafile : public MetafilePlayer {
   // rendering resources.
   virtual bool Init() = 0;
 
-  // Initializes the metafile with |data|. Returns true on success.
+  // Initializes the metafile with `data`. Returns true on success.
   // Note: It should only be called from within the browser process.
   virtual bool InitFromData(base::span<const uint8_t> data) = 0;
 
-  // Prepares a context for rendering a new page with the given |page_size|,
-  // |content_area| and a |scale_factor| to use for the drawing. The units are
+  // Prepares a context for rendering a new page with the given `page_size`,
+  // `content_area` and a `scale_factor` to use for the drawing. The units are
   // in points (=1/72 in).
   virtual void StartPage(const gfx::Size& page_size,
                          const gfx::Rect& content_area,
@@ -118,8 +118,8 @@ class PRINTING_EXPORT Metafile : public MetafilePlayer {
   // has been called.
   virtual uint32_t GetDataSize() const = 0;
 
-  // Copies the first |dst_buffer_size| bytes of the underlying data stream into
-  // |dst_buffer|. This function should ONLY be called after Close() is invoked.
+  // Copies the first `dst_buffer_size` bytes of the underlying data stream into
+  // `dst_buffer`. This function should ONLY be called after Close() is invoked.
   // Returns true if the copy succeeds.
   virtual bool GetData(void* dst_buffer, uint32_t dst_buffer_size) const = 0;
 
@@ -130,8 +130,8 @@ class PRINTING_EXPORT Metafile : public MetafilePlayer {
 
 #if defined(OS_WIN)
   // "Plays" the EMF buffer in a HDC. It is the same effect as calling the
-  // original GDI function that were called when recording the EMF. |rect| is in
-  // "logical units" and is optional. If |rect| is NULL, the natural EMF bounds
+  // original GDI function that were called when recording the EMF. `rect` is in
+  // "logical units" and is optional. If `rect` is NULL, the natural EMF bounds
   // are used.
   // Note: Windows has been known to have stack buffer overflow in its GDI
   // functions, whether used directly or indirectly through precompiled EMF

@@ -43,26 +43,26 @@ class PRINTING_EXPORT PrintingContextMac : public PrintingContext {
   printing::NativeDrawingContext context() const override;
 
  private:
-  // Initializes PrintSettings from |print_info_|. This must be called
-  // after changes to |print_info_| in order for the changes to take effect in
+  // Initializes PrintSettings from `print_info_`. This must be called
+  // after changes to `print_info_` in order for the changes to take effect in
   // printing.
   // This function ignores the page range information specified in the print
-  // info object and use |settings_.ranges| instead.
+  // info object and use `settings_.ranges` instead.
   void InitPrintSettingsFromPrintInfo();
 
-  // Returns the set of page ranges constructed from |print_info_|.
+  // Returns the set of page ranges constructed from `print_info_`.
   PageRanges GetPageRangesFromPrintInfo();
 
-  // Updates |print_info_| to use the given printer.
+  // Updates `print_info_` to use the given printer.
   // Returns true if the printer was set.
   bool SetPrinter(const std::string& device_name);
 
-  // Updates |print_info_| page format with paper selected by user. If paper was
+  // Updates `print_info_` page format with paper selected by user. If paper was
   // not selected, default system paper is used.
   // Returns true if the paper was set.
   bool UpdatePageFormatWithPaperInfo();
 
-  // Updates |print_info_| page format with |paper|.
+  // Updates `print_info_` page format with `paper`.
   // Returns true if the paper was set.
   bool UpdatePageFormatWithPaper(PMPaper paper, PMPageFormat page_format);
 
@@ -70,12 +70,12 @@ class PRINTING_EXPORT PrintingContextMac : public PrintingContext {
   // Returns true if the print job destination type is set.
   bool SetPrintPreviewJob();
 
-  // Sets |copies| in PMPrintSettings.
+  // Sets `copies` in PMPrintSettings.
   // Returns true if the number of copies is set.
   bool SetCopiesInPrintSettings(int copies);
 
-  // Sets |collate| in PMPrintSettings.
-  // Returns true if |collate| is set.
+  // Sets `collate` in PMPrintSettings.
+  // Returns true if `collate` is set.
   bool SetCollateInPrintSettings(bool collate);
 
   // Sets orientation in native print info object.

@@ -65,7 +65,7 @@ class MockPrintingContextWin : public PrintingContextSystemDialogWin {
 
  protected:
   // This is a fake PrintDlgEx implementation that sets the right fields in
-  // |lppd| to trigger a bug in older revisions of PrintingContext.
+  // `lppd` to trigger a bug in older revisions of PrintingContext.
   HRESULT ShowPrintDialog(PRINTDLGEX* lppd) override {
     // The interesting bits:
     // Pretend the user hit print

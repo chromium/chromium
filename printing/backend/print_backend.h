@@ -117,9 +117,9 @@ struct PRINTING_EXPORT PrinterSemanticCapsAndDefaults {
   bool collate_capable = false;
   bool collate_default = false;
 
-  // If |copies_max| > 1, copies are supported.
-  // If |copies_max| = 1, copies are not supported.
-  // |copies_max| should never be < 1.
+  // If `copies_max` > 1, copies are supported.
+  // If `copies_max` = 1, copies are not supported.
+  // `copies_max` should never be < 1.
   int32_t copies_max = 1;
 
   std::vector<mojom::DuplexMode> duplex_modes;
@@ -179,13 +179,13 @@ class PRINTING_EXPORT PrintBackend
   virtual std::string GetDefaultPrinterName() = 0;
 
   // Gets the basic printer info for a specific printer. Implementations must
-  // check |printer_name| validity in the same way as IsValidPrinter().
+  // check `printer_name` validity in the same way as IsValidPrinter().
   virtual bool GetPrinterBasicInfo(const std::string& printer_name,
                                    PrinterBasicInfo* printer_info) = 0;
 
   // Gets the semantic capabilities and defaults for a specific printer.
   // This is usually a lighter implementation than GetPrinterCapsAndDefaults().
-  // Implementations must check |printer_name| validity in the same way as
+  // Implementations must check `printer_name` validity in the same way as
   // IsValidPrinter().
   // NOTE: on some old platforms (WinXP without XPS pack)
   // GetPrinterCapsAndDefaults() will fail, while this function will succeed.

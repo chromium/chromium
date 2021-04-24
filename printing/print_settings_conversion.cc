@@ -27,7 +27,7 @@ namespace printing {
 
 namespace {
 
-// Note: If this code crashes, then the caller has passed in invalid |settings|.
+// Note: If this code crashes, then the caller has passed in invalid `settings`.
 // Fix the caller, instead of trying to avoid the crash here.
 PageMargins GetCustomMarginsFromJobSettings(const base::Value& settings) {
   PageMargins margins_in_points;

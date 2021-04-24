@@ -70,7 +70,7 @@ TEST(EmfTest, DC) {
 
   // Playback the data.
   Emf emf;
-  // TODO(thestig): Make |data| uint8_t and avoid the base::as_bytes() call.
+  // TODO(thestig): Make `data` uint8_t and avoid the base::as_bytes() call.
   EXPECT_TRUE(emf.InitFromData(base::as_bytes(base::make_span(data))));
   HDC hdc = CreateCompatibleDC(nullptr);
   EXPECT_TRUE(hdc);
@@ -165,7 +165,7 @@ TEST_F(EmfPrintingTest, PageBreak) {
   di.lpszDocName = L"Test Job";
   int job_id = ::StartDoc(dc.Get(), &di);
   Emf emf;
-  // TODO(thestig): Make |data| uint8_t and avoid the base::as_bytes() call.
+  // TODO(thestig): Make `data` uint8_t and avoid the base::as_bytes() call.
   EXPECT_TRUE(emf.InitFromData(base::as_bytes(base::make_span(data))));
   EXPECT_TRUE(emf.SafePlayback(dc.Get()));
   ::EndDoc(dc.Get());

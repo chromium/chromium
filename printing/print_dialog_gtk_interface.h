@@ -24,18 +24,18 @@ class PrintDialogGtkInterface {
   // Tell the dialog to use the default print setting.
   virtual void UseDefaultSettings() = 0;
 
-  // Updates the dialog to use |settings|. Only used when printing without the
+  // Updates the dialog to use `settings`. Only used when printing without the
   // system print dialog. E.g. for Print Preview.
   virtual void UpdateSettings(std::unique_ptr<PrintSettings> settings) = 0;
 
-  // Shows the dialog and handles the response with |callback|. Only used when
+  // Shows the dialog and handles the response with `callback`. Only used when
   // printing with the native print dialog.
   virtual void ShowDialog(
       gfx::NativeView parent_view,
       bool has_selection,
       PrintingContextLinux::PrintSettingsCallback callback) = 0;
 
-  // Prints the document named |document_name| contained in |metafile|.
+  // Prints the document named `document_name` contained in `metafile`.
   // Called from the print worker thread. Once called, the
   // PrintDialogGtkInterface instance should not be reused.
   virtual void PrintDocument(const MetafilePlayer& metafile,

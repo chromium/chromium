@@ -47,7 +47,7 @@ bool IsUriSecure(base::StringPiece uri) {
          base::StartsWith(uri, "usb:") || base::StartsWith(uri, "ippusb:");
 }
 
-// Returns a new char buffer which is a null-terminated copy of |value|.  The
+// Returns a new char buffer which is a null-terminated copy of `value`.  The
 // caller owns the returned string.
 char* DuplicateString(base::StringPiece value) {
   char* dst = new char[value.size() + 1];
@@ -114,20 +114,20 @@ void ReportEnumUsage(const std::string& attribute_name) {
   base::UmaHistogramEnumeration("Printing.CUPS.IppAttributes", it->second);
 }
 
-// Given an integral |value| expressed in PWG units (1/100 mm), returns
+// Given an integral `value` expressed in PWG units (1/100 mm), returns
 // the same value expressed in device units.
 int PwgUnitsToDeviceUnits(int value, float micrometers_per_device_unit) {
   return ConvertUnitDouble(value, micrometers_per_device_unit, 10);
 }
 
-// Given a |media_size|, the specification of the media's |margins|, and
+// Given a `media_size`, the specification of the media's `margins`, and
 // the number of micrometers per device unit, returns the rectangle
 // bounding the apparent printable area of said media.
 gfx::Rect RepresentPrintableArea(const gfx::Size& media_size,
                                  const CupsPrinter::CupsMediaMargins& margins,
                                  float micrometers_per_device_unit) {
   // These values express inward encroachment by margins, away from the
-  // edges of the |media_size|.
+  // edges of the `media_size`.
   int left_bound =
       PwgUnitsToDeviceUnits(margins.left, micrometers_per_device_unit);
   int bottom_bound =

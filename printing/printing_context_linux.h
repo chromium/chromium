@@ -31,7 +31,7 @@ class PRINTING_EXPORT PrintingContextLinux : public PrintingContext {
   static void SetPdfPaperSizeFunction(
       gfx::Size (*get_pdf_paper_size)(PrintingContextLinux* context));
 
-  // Prints the document contained in |metafile|.
+  // Prints the document contained in `metafile`.
   void PrintDocument(const MetafilePlayer& metafile);
 
   // Initializes with predefined settings.

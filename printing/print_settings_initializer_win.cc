@@ -117,7 +117,7 @@ void PrintSettingsInitializerWin::InitPrintSettings(
   DCHECK_EQ(GetDeviceCaps(hdc, SCALINGFACTORX), 0);
   DCHECK_EQ(GetDeviceCaps(hdc, SCALINGFACTORY), 0);
 
-  // Initialize |page_setup_device_units_|.
+  // Initialize `page_setup_device_units_`.
   // Blink doesn't support different dpi settings in X and Y axis. However,
   // some printers use them. So, to avoid a bad page calculation, scale page
   // size components based on the dpi in the appropriate dimension.

@@ -12,13 +12,13 @@ namespace printing {
 
 namespace {
 
-// Checks whether |printable_area| can be used to form a valid symmetrical
+// Checks whether `printable_area` can be used to form a valid symmetrical
 // printable area, so that margin_left equals margin_right, and margin_top
 // equals margin_bottom.  For example if
 // printable_area.x() * 2 >= page_size.width(), then the
 // content_width = page_size.width() - 2 * printable_area.x() would be zero or
 // negative, which is invalid.
-// |page_size| is the physical page size that includes margins.
+// `page_size` is the physical page size that includes margins.
 bool IsValidPrintableArea(const gfx::Size& page_size,
                           const gfx::Rect& printable_area) {
   return !printable_area.IsEmpty() && printable_area.x() >= 0 &&

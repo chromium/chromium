@@ -185,7 +185,7 @@ void GetColorModelForModel(mojom::ColorModel color_model,
 
 #if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
 std::string GetIppColorModelForModel(mojom::ColorModel color_model) {
-  // Accept |kUnknownColorModel| for consistency with GetColorModelForModel().
+  // Accept `kUnknownColorModel` for consistency with GetColorModelForModel().
   if (color_model == mojom::ColorModel::kUnknownColorModel)
     return CUPS_PRINT_COLOR_MODE_MONOCHROME;
 

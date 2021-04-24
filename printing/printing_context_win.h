@@ -23,7 +23,7 @@ class PRINTING_EXPORT PrintingContextWin : public PrintingContext {
   PrintingContextWin& operator=(const PrintingContextWin&) = delete;
   ~PrintingContextWin() override;
 
-  // Prints the document contained in |metafile|.
+  // Prints the document contained in `metafile`.
   void PrintDocument(const std::wstring& device_name,
                      const MetafileSkia& metafile);
 

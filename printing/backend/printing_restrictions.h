@@ -38,7 +38,7 @@ enum class PinModeRestriction {
 };
 
 // Dictionary key for printing policies.
-// Must coincide with the name of field in |print_preview.Policies| in
+// Must coincide with the name of field in `print_preview.Policies` in
 // chrome/browser/resources/print_preview/data/destination.js
 PRINTING_EXPORT extern const char kAllowedColorModes[];
 PRINTING_EXPORT extern const char kAllowedDuplexModes[];
@@ -56,7 +56,7 @@ enum class BackgroundGraphicsModeRestriction {
   kDisabled = 2,
 };
 
-// Dictionary keys to be used with |kPrintingPaperSizeDefault| policy.
+// Dictionary keys to be used with `kPrintingPaperSizeDefault` policy.
 PRINTING_EXPORT extern const char kPaperSizeName[];
 PRINTING_EXPORT extern const char kPaperSizeNameCustomOption[];
 PRINTING_EXPORT extern const char kPaperSizeCustomSize[];

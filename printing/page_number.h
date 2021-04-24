@@ -46,10 +46,10 @@ class PRINTING_EXPORT PageNumber {
   // The page range to follow.
   const PageRanges* ranges_;
 
-  // The next page to be printed. |kInvalidPageIndex| when not printing.
+  // The next page to be printed. `kInvalidPageIndex` when not printing.
   uint32_t page_number_;
 
-  // The next page to be printed. |kInvalidPageIndex| when not used. Valid only
+  // The next page to be printed. `kInvalidPageIndex` when not used. Valid only
   // if document()->settings().range.empty() is false.
   uint32_t page_range_index_;
 

@@ -46,7 +46,7 @@ std::unique_ptr<PrintingContext> PrintingContext::Create(Delegate* delegate) {
 #if BUILDFLAG(ENABLE_PRINTING)
   return std::make_unique<PrintingContextSystemDialogWin>(delegate);
 #else
-  // The code in printing/ is still built when the GN |enable_basic_printing|
+  // The code in printing/ is still built when the GN `enable_basic_printing`
   // variable is set to false. Just return PrintingContextWin as a dummy
   // context.
   return std::make_unique<PrintingContextWin>(delegate);

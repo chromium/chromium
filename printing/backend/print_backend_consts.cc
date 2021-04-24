@@ -7,7 +7,7 @@
 #include "printing/backend/print_backend_consts.h"
 
 // TODO(dhoss): Evaluate removing the strings used as keys for
-// |PrinterBasicInfo.options| in favor of fields in PrinterBasicInfo.
+// `PrinterBasicInfo.options` in favor of fields in PrinterBasicInfo.
 const char kCUPSBlocking[] = "cups_blocking";
 const char kCUPSEncryption[] = "cups_encryption";
 const char kCUPSEnterprisePrinter[] = "cupsEnterprisePrinter";

@@ -136,7 +136,7 @@ void LoadPaper(const wchar_t* printer,
     default_size.set_height(devmode->dmPaperLength * kToUm);
 
   if (!default_size.IsEmpty()) {
-    // Reset default paper if |dmPaperWidth| or |dmPaperLength| does not
+    // Reset default paper if `dmPaperWidth` or `dmPaperLength` does not
     // match default paper set by.
     if (default_size != caps->default_paper.size_um)
       caps->default_paper = PrinterSemanticCapsAndDefaults::Paper();

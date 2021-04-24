@@ -27,24 +27,24 @@
 
 namespace printing {
 
-// Convert from |color_mode| into a |color_model|.  An invalid |color_mode|
-// will give a result of |mojom::ColorModel::kUnknownColorModel|.
+// Convert from `color_mode` into a `color_model`.  An invalid `color_mode`
+// will give a result of `mojom::ColorModel::kUnknownColorModel`.
 PRINTING_EXPORT mojom::ColorModel ColorModeToColorModel(int color_mode);
 
-// Returns true if |color_model| is color and false if it is B&W.  Callers
-// are not supposed to pass in |mojom::ColorModel::kUnknownColorModel|, but
+// Returns true if `color_model` is color and false if it is B&W.  Callers
+// are not supposed to pass in `mojom::ColorModel::kUnknownColorModel`, but
 // if they do then the result will be base::nullopt.
 PRINTING_EXPORT base::Optional<bool> IsColorModelSelected(
     mojom::ColorModel color_model);
 
 #if defined(USE_CUPS)
-// Get the color model setting name and value for the |color_model|.
+// Get the color model setting name and value for the `color_model`.
 PRINTING_EXPORT void GetColorModelForModel(mojom::ColorModel color_model,
                                            std::string* color_setting_name,
                                            std::string* color_value);
 
 #if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
-// Convert from |color_model| to a print-color-mode value from PWG 5100.13.
+// Convert from `color_model` to a print-color-mode value from PWG 5100.13.
 PRINTING_EXPORT std::string GetIppColorModelForModel(
     mojom::ColorModel color_model);
 #endif
@@ -114,7 +114,7 @@ class PRINTING_EXPORT PrintSettings {
   const RequestedMedia& requested_media() const { return requested_media_; }
 
   // Set printer printable area in in device units.
-  // Some platforms already provide flipped area. Set |landscape_needs_flip|
+  // Some platforms already provide flipped area. Set `landscape_needs_flip`
   // to false on those platforms to avoid double flipping.
   // This method assumes correct DPI is already set.
   void SetPrinterPrintableArea(const gfx::Size& physical_size_device_units,

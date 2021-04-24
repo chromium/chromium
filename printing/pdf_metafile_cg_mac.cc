@@ -22,7 +22,7 @@ using base::ScopedCFTypeRef;
 
 namespace {
 
-// Rotate a page by |num_rotations| * 90 degrees, counter-clockwise.
+// Rotate a page by `num_rotations` * 90 degrees, counter-clockwise.
 void RotatePage(CGContextRef context, const CGRect& rect, int num_rotations) {
   switch (num_rotations) {
     case 0:
@@ -144,7 +144,7 @@ bool PdfMetafileCg::FinishDocument() {
   DCHECK(!page_is_open_);
 
 #ifndef NDEBUG
-  // Check that the context will be torn down properly; if it's not, |pdf_data|
+  // Check that the context will be torn down properly; if it's not, `pdf_data`
   // will be incomplete and generate invalid PDF files/documents.
   if (context_.get()) {
     CFIndex extra_retain_count = CFGetRetainCount(context_.get()) - 1;

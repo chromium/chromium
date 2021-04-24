@@ -27,7 +27,7 @@ PRINTING_EXPORT std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
     const base::Value& job_settings);
 
 // Use for debug only, because output is not completely consistent with format
-// of |PrintSettingsFromJobSettings| input.
+// of `PrintSettingsFromJobSettings` input.
 void PrintSettingsToJobSettingsDebug(const PrintSettings& settings,
                                      base::DictionaryValue* job_settings);
 

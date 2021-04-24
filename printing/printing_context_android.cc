@@ -32,7 +32,7 @@ namespace printing {
 
 namespace {
 
-// Sets the page sizes for a |PrintSettings| object.  |width| and |height|
+// Sets the page sizes for a `PrintSettings` object.  `width` and `height`
 // arguments should be in device units.
 void SetSizes(PrintSettings* settings, int dpi, int width, int height) {
   gfx::Size physical_size_device_units(width, height);
