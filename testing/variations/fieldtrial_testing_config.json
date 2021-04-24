@@ -4540,45 +4540,61 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledDefault",
-                    "params": {
-                        "colorful_mic": "false",
-                        "min_agsa_version": "12.8.4"
-                    },
-                    "enable_features": [
-                        "OmniboxAssistantVoiceSearch"
-                    ]
-                },
-                {
                     "name": "EnabledColorfulMic",
                     "params": {
                         "colorful_mic": "true",
-                        "min_agsa_version": "12.8.4"
+                        "min_agsa_version": "12.13.8"
                     },
                     "enable_features": [
+                        "OmniboxAssistantVoiceSearch"
+                    ],
+                    "disable_features": [
+                        "LensCameraAssistedSearch"
+                    ]
+                },
+                {
+                    "name": "EnabledLensThenDefaultMic",
+                    "params": {
+                        "disableOnIncognito": "true",
+                        "enableCameraAssistedSearchOnLowEndDevice": "false",
+                        "enableCameraAssistedSearchOnTablet": "false",
+                        "minAgsaVersionForLensCameraAssistedSearch": "12.13.8",
+                        "searchBoxStartVariantForLensCameraAssistedSearch": "true"
+                    },
+                    "enable_features": [
+                        "LensCameraAssistedSearch"
+                    ],
+                    "disable_features": [
                         "OmniboxAssistantVoiceSearch"
                     ]
                 },
                 {
-                    "name": "AlwaysMicWithAssistant",
+                    "name": "EnabledDefaultMicThenLens",
                     "params": {
-                        "colorful_mic": "false",
-                        "min_agsa_version": "12.8.4"
+                        "disableOnIncognito": "true",
+                        "enableCameraAssistedSearchOnLowEndDevice": "false",
+                        "enableCameraAssistedSearchOnTablet": "false",
+                        "minAgsaVersionForLensCameraAssistedSearch": "12.13.8",
+                        "searchBoxStartVariantForLensCameraAssistedSearch": "false"
                     },
                     "enable_features": [
-                        "OmniboxAssistantVoiceSearch",
-                        "VoiceButtonInTopToolbar",
-                        "VoiceSearchAudioCapturePolicy"
+                        "LensCameraAssistedSearch"
+                    ],
+                    "disable_features": [
+                        "OmniboxAssistantVoiceSearch"
                     ]
                 },
                 {
-                    "name": "AlwaysMicWithoutAssistant",
+                    "name": "EnabledDefaultMicThenLensOnLowEndDevices",
                     "params": {
-                        "min_agsa_version": "12.8.4"
+                        "disableOnIncognito": "true",
+                        "enableCameraAssistedSearchOnLowEndDevice": "true",
+                        "enableCameraAssistedSearchOnTablet": "false",
+                        "minAgsaVersionForLensCameraAssistedSearch": "12.13.8",
+                        "searchBoxStartVariantForLensCameraAssistedSearch": "false"
                     },
                     "enable_features": [
-                        "VoiceButtonInTopToolbar",
-                        "VoiceSearchAudioCapturePolicy"
+                        "LensCameraAssistedSearch"
                     ],
                     "disable_features": [
                         "OmniboxAssistantVoiceSearch"
