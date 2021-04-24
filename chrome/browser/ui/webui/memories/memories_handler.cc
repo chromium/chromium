@@ -8,10 +8,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "chrome/browser/history_clusters/memories_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/history_clusters/core/memories_features.h"
-#include "components/history_clusters/core/memories_service.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -59,6 +60,10 @@ MemoriesHandler::MemoriesHandler(
       page_handler_(this, std::move(pending_page_handler)) {
   DCHECK(profile_);
   DCHECK(web_contents_);
+
+  auto* memory_service = MemoriesServiceFactory::GetForBrowserContext(profile_);
+  DCHECK(memory_service);
+  service_observation_.Observe(memory_service);
 }
 
 MemoriesHandler::~MemoriesHandler() = default;
@@ -99,6 +104,18 @@ void MemoriesHandler::QueryMemories(
     QueryHistoryService(std::move(query_params), {},
                         std::move(result_callback));
 #endif
+  }
+}
+
+void MemoriesHandler::OnMemoriesDebugMessage(const std::string& message) {
+  // Ignore messages if all the debug flags are off.
+  if (!base::FeatureList::IsEnabled(history_clusters::kDebug) &&
+      !history_clusters::RemoteModelEndpointForDebugging().is_valid()) {
+    return;
+  }
+
+  if (content::RenderFrameHost* rfh = web_contents_->GetMainFrame()) {
+    rfh->AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kInfo, message);
   }
 }
 

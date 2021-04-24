@@ -27,8 +27,9 @@ using MemoriesCallback = base::OnceCallback<void(Memories)>;
 // |MemoriesVisit|s and parses the response into |mojom::MemoryPtr|s.
 class MemoriesRemoteModelHelper {
  public:
-  explicit MemoriesRemoteModelHelper(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  MemoriesRemoteModelHelper(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      base::RepeatingCallback<void(const std::string&)> debug_logger);
   ~MemoriesRemoteModelHelper();
 
   // POSTs |visits| to |endpoint_| and invokes |callback| with the retrieved
@@ -52,6 +53,9 @@ class MemoriesRemoteModelHelper {
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   // Used to make requests.
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  // Used to log debug messages.
+  base::RepeatingCallback<void(const std::string&)> debug_logger_;
 };
 
 }  // namespace history_clusters

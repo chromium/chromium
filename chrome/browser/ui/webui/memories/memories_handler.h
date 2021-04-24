@@ -9,8 +9,10 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/webui/memories/memories.mojom.h"
 #include "components/history_clusters/core/memories.mojom.h"
+#include "components/history_clusters/core/memories_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -33,7 +35,8 @@ class QueryResults;
 #endif
 
 // Handles bidirectional communication between memories page and the browser.
-class MemoriesHandler : public history_clusters::mojom::PageHandler {
+class MemoriesHandler : public history_clusters::mojom::PageHandler,
+                        public history_clusters::MemoriesService::Observer {
  public:
   MemoriesHandler(mojo::PendingReceiver<history_clusters::mojom::PageHandler>
                       pending_page_handler,
@@ -48,6 +51,9 @@ class MemoriesHandler : public history_clusters::mojom::PageHandler {
       mojo::PendingRemote<history_clusters::mojom::Page> pending_page) override;
   void QueryMemories(
       history_clusters::mojom::QueryParamsPtr query_params) override;
+
+  // history_clusters::MemoriesService::Observer:
+  void OnMemoriesDebugMessage(const std::string& message) override;
 
  private:
   // Called with |memory_mojoms| and |continuation_query_params| when the
@@ -78,6 +84,11 @@ class MemoriesHandler : public history_clusters::mojom::PageHandler {
 
   Profile* profile_;
   content::WebContents* web_contents_;
+
+  // Used to observe the service.
+  base::ScopedObservation<history_clusters::MemoriesService,
+                          history_clusters::MemoriesService::Observer>
+      service_observation_{this};
 
   mojo::Remote<history_clusters::mojom::Page> page_;
   mojo::Receiver<history_clusters::mojom::PageHandler> page_handler_;

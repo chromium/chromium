@@ -18,13 +18,33 @@ namespace history_clusters {
 
 MemoriesService::MemoriesService(
     history::HistoryService* history_service,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : remote_model_helper_(
-          std::make_unique<MemoriesRemoteModelHelper>(url_loader_factory)) {}
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  // Can't do this in initialization list, because |weak_ptr_factory_| usage.
+  // TODO(tommycli): Investigate if we can simplify some lifetime issues with
+  // using free-lambdas within |remote_model_helper_|.
+  remote_model_helper_ = std::make_unique<MemoriesRemoteModelHelper>(
+      url_loader_factory,
+      base::BindRepeating(&MemoriesService::NotifyDebugMessage,
+                          weak_ptr_factory_.GetWeakPtr()));
+}
 
 MemoriesService::~MemoriesService() = default;
 
 void MemoriesService::Shutdown() {}
+
+void MemoriesService::AddObserver(Observer* obs) {
+  observers_.AddObserver(obs);
+}
+
+void MemoriesService::RemoveObserver(Observer* obs) {
+  observers_.RemoveObserver(obs);
+}
+
+void MemoriesService::NotifyDebugMessage(const std::string& message) const {
+  for (Observer& obs : observers_) {
+    obs.OnMemoriesDebugMessage(message);
+  }
+}
 
 MemoriesVisit& MemoriesService::GetIncompleteVisit(int64_t nav_id) {
   DCHECK(HasIncompleteVisit(nav_id));

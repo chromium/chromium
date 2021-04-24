@@ -10,6 +10,7 @@
 #include "base/json/json_writer.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/history_clusters/core/memories_features.h"
@@ -138,8 +139,11 @@ Memories ValueToMemories(const std::vector<MemoriesVisit>& visits,
 }  // namespace
 
 MemoriesRemoteModelHelper::MemoriesRemoteModelHelper(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : url_loader_(nullptr), url_loader_factory_(url_loader_factory) {}
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    base::RepeatingCallback<void(const std::string&)> debug_logger)
+    : url_loader_(nullptr),
+      url_loader_factory_(url_loader_factory),
+      debug_logger_(debug_logger) {}
 
 MemoriesRemoteModelHelper::~MemoriesRemoteModelHelper() = default;
 
@@ -156,13 +160,20 @@ void MemoriesRemoteModelHelper::GetMemories(
   std::string request_body;
   base::JSONWriter::Write(VisitsToValue(visits), &request_body);
   auto request = CreateRequest(endpoint);
+  debug_logger_.Run(
+      base::StringPrintf("MemoriesRemoteModelHelper::GetMemories request = %s",
+                         request_body.c_str()));
   url_loader_ = CreateLoader(CreateRequest(endpoint), request_body);
 
   url_loader_->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(
-          [](const std::vector<MemoriesVisit>& visits,
+          [](base::RepeatingCallback<void(const std::string&)> debug_logger,
+             const std::vector<MemoriesVisit>& visits,
              MemoriesCallback callback, std::unique_ptr<std::string> response) {
+            debug_logger.Run(base::StringPrintf(
+                "MemoriesRemoteModelHelper::GetMemories response = %s",
+                response ? response->c_str() : "nullptr"));
             if (!response) {
               std::move(callback).Run({});
               return;
@@ -181,7 +192,7 @@ void MemoriesRemoteModelHelper::GetMemories(
                     visits)
                     .Then(std::move(callback)));
           },
-          visits, std::move(callback)),
+          debug_logger_, visits, std::move(callback)),
       kMaxExpectedResponseSize);
 }
 

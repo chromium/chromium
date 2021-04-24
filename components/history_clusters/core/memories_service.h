@@ -12,6 +12,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history_clusters/core/memories.mojom.h"
 #include "components/history_clusters/core/visit_data.h"
@@ -25,6 +26,11 @@ class MemoriesRemoteModelHelper;
 // This Service is the API for UIs to fetch Chrome Memories.
 class MemoriesService : public KeyedService {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnMemoriesDebugMessage(const std::string& message) = 0;
+  };
+
   explicit MemoriesService(
       history::HistoryService* history_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
@@ -34,6 +40,13 @@ class MemoriesService : public KeyedService {
 
   // KeyedService:
   void Shutdown() override;
+
+  // Used to add and remove observers.
+  void AddObserver(Observer* obs);
+  void RemoveObserver(Observer* obs);
+
+  // Notifies the observers of a debug message being available.
+  void NotifyDebugMessage(const std::string& message) const;
 
   // TODO(manukh) |MemoriesService| should be responsible for constructing the
   //  MemoriesVisit rather than exposing these methods which are used by
@@ -90,6 +103,11 @@ class MemoriesService : public KeyedService {
   // instead.
   std::unique_ptr<MemoriesRemoteModelHelper> remote_model_helper_;
 
+  // A list of observers for this service.
+  base::ObserverList<Observer> observers_;
+
+  // Weak pointers issued from this factory never get invalidated before the
+  // service is destroyed.
   base::WeakPtrFactory<MemoriesService> weak_ptr_factory_{this};
 };
 
