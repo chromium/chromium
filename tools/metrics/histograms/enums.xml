@@ -32221,6 +32221,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3881" label="CrossOriginEmbedderPolicyCorsOrCredentialless"/>
   <int value="3882" label="PostMessageFromSecureToSecure"/>
   <int value="3883" label="PostMessageFromInsecureToInsecure"/>
+  <int value="3884" label="WebAppManifestProtocolHandlers"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

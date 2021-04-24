@@ -12,30 +12,35 @@
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
+#include "chrome/browser/web_applications/components/protocol_handler_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
-#include "components/services/app_service/public/cpp/url_handler_info.h"
+#include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
 
-namespace web_app {
+namespace {
 
 constexpr char kUseCounterHistogram[] = "Blink.UseCounter.Features";
 
-blink::mojom::WebFeature url_handling_feature =
-    blink::mojom::WebFeature::kWebAppManifestUrlHandlers;
+blink::mojom::WebFeature protocol_handling_feature =
+    blink::mojom::WebFeature::kWebAppManifestProtocolHandlers;
 
-class WebAppUrlHandlingBrowserTest : public WebAppNavigationBrowserTest {
+}  // namespace
+
+namespace web_app {
+
+class WebAppProtocolHandlingBrowserTest : public WebAppNavigationBrowserTest {
  public:
-  WebAppUrlHandlingBrowserTest() {
+  WebAppProtocolHandlingBrowserTest() {
     os_hooks_supress_ = OsIntegrationManager::ScopedSuppressOsHooksForTesting();
     scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kWebAppEnableUrlHandlers);
+        blink::features::kWebAppEnableProtocolHandlers);
   }
 
-  ~WebAppUrlHandlingBrowserTest() override = default;
+  ~WebAppProtocolHandlingBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     WebAppNavigationBrowserTest::SetUpOnMainThread();
@@ -47,7 +52,7 @@ class WebAppUrlHandlingBrowserTest : public WebAppNavigationBrowserTest {
     page_load_metrics::PageLoadMetricsTestWaiter metrics_waiter(
         browser()->tab_strip_model()->GetActiveWebContents());
     if (await_metric)
-      metrics_waiter.AddWebFeatureExpectation(url_handling_feature);
+      metrics_waiter.AddWebFeatureExpectation(protocol_handling_feature);
 
     AppId app_id = web_app::InstallWebAppFromPage(browser(), start_url);
     if (await_metric)
@@ -56,10 +61,14 @@ class WebAppUrlHandlingBrowserTest : public WebAppNavigationBrowserTest {
     return app_id;
   }
 
-  WebAppProviderBase& provider() {
-    auto* provider = WebAppProviderBase::GetProviderBase(browser()->profile());
-    DCHECK(provider);
-    return *provider;
+  web_app::WebAppProviderBase* provider() {
+    return WebAppProviderBase::GetProviderBase(browser()->profile());
+  }
+
+  web_app::ProtocolHandlerManager& protocol_handler_manager() {
+    return provider()
+        ->os_integration_manager()
+        .protocol_handler_manager_for_testing();
   }
 
  protected:
@@ -70,43 +79,44 @@ class WebAppUrlHandlingBrowserTest : public WebAppNavigationBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebAppUrlHandlingBrowserTest, BasicUrlHandlers) {
+IN_PROC_BROWSER_TEST_F(WebAppProtocolHandlingBrowserTest,
+                       BasicProtocolHandlers) {
   AppId app_id = InstallTestApp(
       "/banners/"
-      "manifest_test_page.html?manifest=manifest_url_handlers.json",
+      "manifest_test_page.html?manifest=manifest_protocol_handlers.json",
       /*await_metric=*/true);
-  apps::UrlHandlers url_handlers =
-      provider().registrar().GetAppUrlHandlers(app_id);
+  std::vector<apps::ProtocolHandlerInfo> protocol_handlers =
+      protocol_handler_manager().GetAppProtocolHandlerInfos(app_id);
 
-  // One handler has an invalid host so it shouldn't be in the result.
-  ASSERT_EQ(3u, url_handlers.size());
-  EXPECT_TRUE(base::Contains(
-      url_handlers,
-      apps::UrlHandlerInfo(url::Origin::Create(GURL("https://test.com")),
-                           /*has_origin_wildcard=*/false)));
-  EXPECT_TRUE(base::Contains(
-      url_handlers,
-      apps::UrlHandlerInfo(url::Origin::Create(GURL("https://example.com")),
-                           /*has_origin_wildcard=*/false)));
-  EXPECT_TRUE(base::Contains(
-      url_handlers,
-      apps::UrlHandlerInfo(url::Origin::Create(GURL("https://example.com")),
-                           /*has_origin_wildcard=*/true)));
+  // Two handlers have invalid properties so they shouldn't be in the result.
+  apps::ProtocolHandlerInfo protocol_handler1;
+  protocol_handler1.protocol = "mailto";
+  protocol_handler1.url = GURL(embedded_test_server()->GetURL(
+      "/banners/manifest_protocol_handlers.json?mailto=%s"));
+
+  apps::ProtocolHandlerInfo protocol_handler2;
+  protocol_handler2.protocol = "web+testing";
+  protocol_handler2.url = GURL(embedded_test_server()->GetURL(
+      "/banners/manifest_protocol_handlers.json?testing=%s"));
+
+  ASSERT_EQ(2u, protocol_handlers.size());
+  EXPECT_TRUE(base::Contains(protocol_handlers, protocol_handler1));
+  EXPECT_TRUE(base::Contains(protocol_handlers, protocol_handler2));
 
   histogram_tester_.ExpectBucketCount(kUseCounterHistogram,
-                                      url_handling_feature, 1);
+                                      protocol_handling_feature, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppUrlHandlingBrowserTest, NoUrlHandlers) {
+IN_PROC_BROWSER_TEST_F(WebAppProtocolHandlingBrowserTest, NoProtocolHandlers) {
   AppId app_id =
       InstallTestApp("/banners/manifest_test_page.html?manifest=manifest.json",
                      /*await_metric=*/false);
-  apps::UrlHandlers url_handlers =
-      provider().registrar().GetAppUrlHandlers(app_id);
-  ASSERT_EQ(0u, url_handlers.size());
+  std::vector<apps::ProtocolHandlerInfo> protocol_handlers =
+      protocol_handler_manager().GetAppProtocolHandlerInfos(app_id);
+  ASSERT_EQ(0u, protocol_handlers.size());
 
   histogram_tester_.ExpectBucketCount(kUseCounterHistogram,
-                                      url_handling_feature, 0);
+                                      protocol_handling_feature, 0);
 }
 
 }  // namespace web_app

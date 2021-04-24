@@ -1,0 +1,29 @@
+{
+  "name": "Manifest test app",
+  "icons": [
+    {
+      "src": "launcher-icon-1x.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "manifest_test_page.html",
+  "display": "fullscreen",
+  "protocol_handlers": [
+    {
+      "protocol": "mailto",
+      "url": "?mailto=%s"
+    },
+    {
+      "protocol": "web+testing",
+      "url": "?testing=%s"
+    },
+    {
+      "protocol": "web+notoken",
+      "url": "/?"
+    },
+    {
+      "protocol": "web+nourl"
+    }
+  ]
+}
