@@ -22,13 +22,16 @@ namespace content {
 namespace test {
 namespace {
 
-PrerenderHostRegistry& GetPrerenderHostRegistry(content::WebContents* tab) {
+PrerenderHostRegistry& GetPrerenderHostRegistry(
+    content::WebContents* web_contents) {
   EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
-  return *static_cast<WebContentsImpl*>(tab)->GetPrerenderHostRegistry();
+  return *static_cast<WebContentsImpl*>(web_contents)
+              ->GetPrerenderHostRegistry();
 }
 
-PrerenderHost* GetPrerenderHostById(content::WebContents* tab, int host_id) {
-  auto& registry = GetPrerenderHostRegistry(tab);
+PrerenderHost* GetPrerenderHostById(content::WebContents* web_contents,
+                                    int host_id) {
+  auto& registry = GetPrerenderHostRegistry(web_contents);
   return registry.FindNonReservedHostById(host_id);
 }
 
@@ -37,8 +40,9 @@ PrerenderHost* GetPrerenderHostById(content::WebContents* tab, int host_id) {
 class PrerenderHostRegistryObserverImpl
     : public PrerenderHostRegistry::Observer {
  public:
-  explicit PrerenderHostRegistryObserverImpl(content::WebContents* tab) {
-    observation_.Observe(&GetPrerenderHostRegistry(tab));
+  explicit PrerenderHostRegistryObserverImpl(
+      content::WebContents& web_contents) {
+    observation_.Observe(&GetPrerenderHostRegistry(&web_contents));
   }
 
   // Returns immediately if `url` was ever triggered before.
@@ -79,8 +83,9 @@ class PrerenderHostRegistryObserverImpl
 };
 
 PrerenderHostRegistryObserver::PrerenderHostRegistryObserver(
-    content::WebContents* tab)
-    : impl_(std::make_unique<PrerenderHostRegistryObserverImpl>(tab)) {}
+    content::WebContents& web_contents)
+    : impl_(std::make_unique<PrerenderHostRegistryObserverImpl>(web_contents)) {
+}
 
 PrerenderHostRegistryObserver::~PrerenderHostRegistryObserver() = default;
 
@@ -90,8 +95,9 @@ void PrerenderHostRegistryObserver::WaitForTrigger(const GURL& gurl) {
 
 class PrerenderHostObserverImpl : public PrerenderHost::Observer {
  public:
-  explicit PrerenderHostObserverImpl(content::WebContents* tab, int host_id) {
-    observation_.Observe(GetPrerenderHostById(tab, host_id));
+  explicit PrerenderHostObserverImpl(content::WebContents& web_contents,
+                                     int host_id) {
+    observation_.Observe(GetPrerenderHostById(&web_contents, host_id));
   }
 
   void OnActivated() override {
@@ -133,9 +139,10 @@ class PrerenderHostObserverImpl : public PrerenderHost::Observer {
   bool was_activated_ = false;
 };
 
-PrerenderHostObserver::PrerenderHostObserver(content::WebContents* tab,
+PrerenderHostObserver::PrerenderHostObserver(content::WebContents& web_contents,
                                              int prerender_host)
-    : impl_(std::make_unique<PrerenderHostObserverImpl>(tab, prerender_host)) {}
+    : impl_(std::make_unique<PrerenderHostObserverImpl>(web_contents,
+                                                        prerender_host)) {}
 
 PrerenderHostObserver::~PrerenderHostObserver() = default;
 
@@ -151,16 +158,11 @@ bool PrerenderHostObserver::was_activated() {
   return impl_->was_activated();
 }
 
-PrerenderTestHelper::PrerenderTestHelper(const content::WebContents::Getter& fn,
-                                         const std::string& prerendering_impl)
-    : get_web_contents_fn_(fn) {
-  std::map<std::string, std::string> parameters;
-  parameters["implementation"] = prerendering_impl;
-  feature_list_.InitAndEnableFeatureWithParameters(blink::features::kPrerender2,
-                                                   parameters);
-}
 PrerenderTestHelper::PrerenderTestHelper(const content::WebContents::Getter& fn)
-    : PrerenderTestHelper(fn, "mparch") {}
+    : get_web_contents_fn_(fn) {
+  feature_list_.InitAndEnableFeature(blink::features::kPrerender2);
+}
+
 PrerenderTestHelper::~PrerenderTestHelper() = default;
 
 void PrerenderTestHelper::SetUpOnMainThread(
@@ -189,7 +191,7 @@ void PrerenderTestHelper::WaitForPrerenderLoadCompletion(const GURL& gurl) {
   PrerenderHost* host = registry.FindHostByUrlForTesting(gurl);
   // Wait for the host to be created if it hasn't yet.
   if (!host) {
-    PrerenderHostRegistryObserver observer(GetWebContents());
+    PrerenderHostRegistryObserver observer(*GetWebContents());
     observer.WaitForTrigger(gurl);
     host = registry.FindHostByUrlForTesting(gurl);
     ASSERT_NE(host, nullptr);

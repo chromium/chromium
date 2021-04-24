@@ -28,9 +28,9 @@
 namespace favicon {
 namespace {
 
+using testing::_;
 using testing::Return;
 using testing::SizeIs;
-using testing::_;
 
 void TestFetchFaviconForPage(
     content::WebContents* web_contents,
@@ -120,9 +120,6 @@ TEST_F(ContentFaviconDriverTest, ShouldNotCauseImageDownload) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(web_contents_tester()->HasPendingDownloadImage(kIconURL));
-
-  // Nevertheless, we expect the list exposed via favicon_urls().
-  EXPECT_THAT(favicon_driver->favicon_urls(), SizeIs(1));
 }
 
 // Test that Favicon is not requested repeatedly during the same session if
@@ -153,25 +150,6 @@ TEST_F(ContentFaviconDriverTest, ShouldDownloadSecondIfFirstUnavailable) {
   // Verify a  download request is pending for the second image.
   EXPECT_FALSE(web_contents_tester()->HasPendingDownloadImage(kIconURL));
   EXPECT_TRUE(web_contents_tester()->HasPendingDownloadImage(kOtherIconURL));
-}
-
-// Test that ContentFaviconDriver ignores updated favicon URLs if there is no
-// last committed entry. This occurs when script is injected in about:blank.
-// See crbug.com/520759 for more details
-TEST_F(ContentFaviconDriverTest, FaviconUpdateNoLastCommittedEntry) {
-  ASSERT_EQ(nullptr, web_contents()->GetController().GetLastCommittedEntry());
-
-  std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
-  favicon_urls.push_back(blink::mojom::FaviconURL::New(
-      GURL("http://www.google.ca/favicon.ico"),
-      blink::mojom::FaviconIconType::kFavicon, kEmptyIconSizes));
-  favicon::ContentFaviconDriver* driver =
-      favicon::ContentFaviconDriver::FromWebContents(web_contents());
-  static_cast<content::WebContentsObserver*>(driver)->DidUpdateFaviconURL(
-      web_contents()->GetMainFrame(), favicon_urls);
-
-  // Test that ContentFaviconDriver ignored the favicon url update.
-  EXPECT_TRUE(driver->favicon_urls().empty());
 }
 
 using ContentFaviconDriverTestNoFaviconService =

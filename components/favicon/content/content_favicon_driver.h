@@ -30,12 +30,6 @@ class ContentFaviconDriver
  public:
   ~ContentFaviconDriver() override;
 
-  // Returns the current tab's favicon URLs. If this is empty,
-  // DidUpdateFaviconURL has not yet been called for the current navigation.
-  std::vector<blink::mojom::FaviconURL> favicon_urls() const {
-    return favicon_urls_.value_or(std::vector<blink::mojom::FaviconURL>());
-  }
-
   // FaviconDriver implementation.
   gfx::Image GetFavicon() const override;
   bool FaviconIsValid() const override;
@@ -80,15 +74,8 @@ class ContentFaviconDriver
       content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void DocumentOnLoadCompletedInMainFrame(
-      content::RenderFrameHost* render_frame_host) override;
 
-  bool document_on_load_completed_;
   GURL bypass_cache_page_url_;
-  // nullopt until the actual list is reported via DidUpdateFaviconURL().
-  base::Optional<std::vector<blink::mojom::FaviconURL>> favicon_urls_;
-  // Web Manifest URL or empty URL if none.
-  GURL manifest_url_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
