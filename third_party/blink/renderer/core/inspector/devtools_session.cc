@@ -360,35 +360,33 @@ void DevToolsSession::Trace(Visitor* visitor) const {
 
 blink::mojom::blink::DevToolsMessagePtr DevToolsSession::FinalizeMessage(
     std::vector<uint8_t> message) const {
-  recordreplay::Assert("DevToolsSession::FinalizeMessage %lu", message.size());
   std::vector<uint8_t> message_to_send = std::move(message);
   if (!session_id_.IsEmpty()) {
     crdtp::Status status = crdtp::cbor::AppendString8EntryToCBORMap(
         crdtp::SpanFrom(kSessionId), crdtp::SpanFrom(session_id_.Ascii()),
         &message_to_send);
     CHECK(status.ok()) << status.ToASCIIString();
-    recordreplay::Assert("DevToolsSession::FinalizeMessage #1 %lu", message_to_send.size());
   }
   if (!client_expects_binary_responses_) {
     std::vector<uint8_t> json;
     crdtp::Status status =
         crdtp::json::ConvertCBORToJSON(crdtp::SpanFrom(message_to_send), &json);
     CHECK(status.ok()) << status.ToASCIIString();
-
-    // Devtools message contents can vary when replaying due to different
-    // behavior handling messages from the record/replay driver using the
-    // devtools protocol. We don't want this to influence Mojo, so force
-    // the message contents to match up.
-    if (recordreplay::IsRecordingOrReplaying()) {
-      size_t nbytes = recordreplay::RecordReplayValue("DevToolsSession::FinalizeMessage", json.size());
-      json.resize(nbytes);
-      recordreplay::RecordReplayBytes("DevToolsSession::FinalizeMessage", &json[0], json.size());
-    }
-
     message_to_send = std::move(json);
-    recordreplay::Assert("DevToolsSession::FinalizeMessage #2 %lu", message_to_send.size());
   }
-  recordreplay::Assert("DevToolsSession::FinalizeMessage #3 %lu", message_to_send.size());
+
+  // Devtools message contents can vary when replaying due to different
+  // behavior handling messages from the record/replay driver using the
+  // devtools protocol. We don't want this to influence Mojo, so force
+  // the message contents to match up.
+  if (recordreplay::IsRecordingOrReplaying()) {
+    size_t nbytes = recordreplay::RecordReplayValue("DevToolsSession::FinalizeMessage",
+                                                    message_to_send.size());
+    message_to_send.resize(nbytes);
+    recordreplay::RecordReplayBytes("DevToolsSession::FinalizeMessage",
+                                    &message_to_send[0], message_to_send.size());
+  }
+
   auto mojo_msg = mojom::blink::DevToolsMessage::New();
   mojo_msg->data = std::move(message_to_send);
   return mojo_msg;
