@@ -758,6 +758,11 @@ void FieldTrialList::CreateTrialsFromCommandLine(
     int fd_key) {
   global_->create_trials_from_command_line_called_ = true;
 
+  // Field trials are disabled when recording/replaying.
+  if (recordreplay::IsRecordingOrReplaying()) {
+    return;
+  }
+
 #if defined(OS_WIN) || defined(OS_FUCHSIA) || defined(OS_MAC)
   if (cmd_line.HasSwitch(field_trial_handle_switch)) {
     std::string switch_value =
