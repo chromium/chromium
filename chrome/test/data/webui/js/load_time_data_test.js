@@ -70,15 +70,17 @@ suite('LoadTimeDataModuleTest', function() {
   });
 
   test('unescapedDollarSign', function() {
+    const error = 'Unexpected condition on ' + window.location.href +
+        ': Unescaped $ found in localized string.';
     /** @param {string} label */
     const assertSubstitutionThrows = function(label) {
       assertThrows(() => {
         loadTimeData.getSubstitutedStringPieces(label);
-      }, 'Assertion failed: Unescaped $ found in localized string.');
+      }, error);
 
       assertThrows(() => {
         loadTimeData.substituteString(label);
-      }, 'Assertion failed: Unescaped $ found in localized string.');
+      }, error);
     };
 
     assertSubstitutionThrows('$');
