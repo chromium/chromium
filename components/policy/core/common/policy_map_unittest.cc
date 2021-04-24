@@ -639,11 +639,9 @@ TEST_F(PolicyMapTest, MergeValuesList) {
   expected_list_merged.Set(kTestPolicyName6, expected_case6.DeepCopy());
   expected_list_merged.Set(kTestPolicyName7, expected_case7.DeepCopy());
 
-  PolicyMap list_merged;
-  list_merged.CopyFrom(policy_not_merged);
+  PolicyMap list_merged = policy_not_merged.Clone();
 
-  PolicyMap list_merged_wildcard;
-  list_merged_wildcard.CopyFrom(policy_not_merged);
+  PolicyMap list_merged_wildcard = policy_not_merged.Clone();
 
   // Merging with no restrictions specified
   PolicyListMerger empty_policy_list({});
@@ -663,8 +661,7 @@ TEST_F(PolicyMapTest, MergeValuesList) {
   list_merged.MergeValues({&good_policy_list});
   EXPECT_TRUE(list_merged.Equals(expected_list_merged));
 
-  PolicyMap expected_list_merged_wildcard;
-  expected_list_merged_wildcard.CopyFrom(expected_list_merged);
+  PolicyMap expected_list_merged_wildcard = expected_list_merged.Clone();
   expected_list_merged_wildcard.Set(kTestPolicyName5, case5.DeepCopy());
   list_merged_wildcard.MergeValues({&wildcard_policy_list});
   EXPECT_TRUE(list_merged_wildcard.Equals(expected_list_merged_wildcard));
@@ -846,11 +843,9 @@ TEST_F(PolicyMapTest, MergeDictionaryValues) {
   expected_list_merged.Set(kTestPolicyName6, expected_case6.DeepCopy());
   expected_list_merged.Set(kTestPolicyName7, expected_case7.DeepCopy());
 
-  PolicyMap list_merged;
-  list_merged.CopyFrom(policy_not_merged);
+  PolicyMap list_merged = policy_not_merged.Clone();
 
-  PolicyMap list_merged_wildcard;
-  list_merged_wildcard.CopyFrom(policy_not_merged);
+  PolicyMap list_merged_wildcard = policy_not_merged.Clone();
 
   // Merging with no restrictions specified
   PolicyDictionaryMerger empty_policy_list({});
@@ -876,8 +871,7 @@ TEST_F(PolicyMapTest, MergeDictionaryValues) {
   list_merged.MergeValues({&good_policy_list});
   EXPECT_TRUE(list_merged.Equals(expected_list_merged));
 
-  PolicyMap expected_list_merged_wildcard;
-  expected_list_merged_wildcard.CopyFrom(expected_list_merged);
+  PolicyMap expected_list_merged_wildcard = expected_list_merged.Clone();
   expected_list_merged_wildcard.Set(kTestPolicyName5, case5.DeepCopy());
   expected_list_merged_wildcard.Set(kTestPolicyName7, case7.DeepCopy());
   list_merged_wildcard.MergeValues({&wildcard_policy_list});
@@ -945,8 +939,7 @@ TEST_F(PolicyMapTest, MergeValuesGroup) {
   policy_not_merged.Set(policy::key::kExtensionInstallForcelist,
                         cloud_machine_recommended.DeepCopy());
 
-  PolicyMap group_merged;
-  group_merged.CopyFrom(policy_not_merged);
+  PolicyMap group_merged = policy_not_merged.Clone();
   PolicyGroupMerger group_merger;
   group_merged.MergeValues({&group_merger});
 

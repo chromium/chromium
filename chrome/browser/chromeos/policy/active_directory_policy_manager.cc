@@ -159,7 +159,7 @@ void ActiveDirectoryPolicyManager::PublishPolicy() {
   std::unique_ptr<PolicyBundle> bundle = std::make_unique<PolicyBundle>();
   PolicyMap& policy_map =
       bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
-  policy_map.CopyFrom(store_->policy_map());
+  policy_map = store_->policy_map().Clone();
   if (extension_policy_service_ && extension_policy_service_->policy())
     bundle->MergeFrom(*extension_policy_service_->policy());
 

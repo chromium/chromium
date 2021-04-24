@@ -316,9 +316,9 @@ void ManagedValueStoreCache::OnPolicyUpdated(const policy::PolicyNamespace& ns,
   }
 
   GetBackendTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&ManagedValueStoreCache::UpdatePolicyOnBackend,
-                                base::Unretained(this), ns.component_id,
-                                current.DeepCopy()));
+      FROM_HERE,
+      base::BindOnce(&ManagedValueStoreCache::UpdatePolicyOnBackend,
+                     base::Unretained(this), ns.component_id, current.Clone()));
 }
 
 // static
@@ -334,17 +334,17 @@ policy::PolicyDomain ManagedValueStoreCache::GetPolicyDomain(Profile* profile) {
 
 void ManagedValueStoreCache::UpdatePolicyOnBackend(
     const std::string& extension_id,
-    std::unique_ptr<policy::PolicyMap> current_policy) {
+    const policy::PolicyMap& current_policy) {
   DCHECK(IsOnBackendSequence());
 
-  if (!HasStore(extension_id) && current_policy->empty()) {
+  if (!HasStore(extension_id) && current_policy.empty()) {
     // Don't create the store now if there are no policies configured for this
     // extension. If the extension uses the storage.managed API then the store
     // will be created at RunWithValueStoreForExtension().
     return;
   }
 
-  GetStoreFor(extension_id)->SetCurrentPolicy(*current_policy);
+  GetStoreFor(extension_id)->SetCurrentPolicy(current_policy);
 }
 
 PolicyValueStore* ManagedValueStoreCache::GetStoreFor(

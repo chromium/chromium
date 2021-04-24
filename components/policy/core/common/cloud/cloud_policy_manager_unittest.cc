@@ -174,8 +174,8 @@ class CloudPolicyManagerTest : public testing::Test {
     // Set up a policy map for testing.
     policy_map_.Set("key", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                     POLICY_SOURCE_CLOUD, base::Value("value"), nullptr);
-    expected_bundle_.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
-        .CopyFrom(policy_map_);
+    expected_bundle_.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string())) =
+        policy_map_.Clone();
 
     policy_.payload().mutable_searchsuggestenabled()->set_value(false);
     policy_.Build();
@@ -221,7 +221,7 @@ TEST_F(CloudPolicyManagerTest, InitAndShutdown) {
   manager_->CheckAndPublishPolicy();
   Mock::VerifyAndClearExpectations(&observer_);
 
-  store_.policy_map_.CopyFrom(policy_map_);
+  store_.policy_map_ = policy_map_.Clone();
   store_.policy_ = std::make_unique<em::PolicyData>(policy_.policy_data());
   EXPECT_CALL(observer_, OnUpdatePolicy(manager_.get()));
   store_.NotifyStoreLoaded();
@@ -262,7 +262,7 @@ TEST_F(CloudPolicyManagerTest, RegistrationAndFetch) {
   client->NotifyPolicyFetched();
   Mock::VerifyAndClearExpectations(&store_);
 
-  store_.policy_map_.CopyFrom(policy_map_);
+  store_.policy_map_ = policy_map_.Clone();
   EXPECT_CALL(observer_, OnUpdatePolicy(manager_.get()));
   store_.NotifyStoreLoaded();
   Mock::VerifyAndClearExpectations(&observer_);
@@ -277,7 +277,7 @@ TEST_F(CloudPolicyManagerTest, Update) {
   PolicyBundle empty_bundle;
   EXPECT_TRUE(empty_bundle.Equals(manager_->policies()));
 
-  store_.policy_map_.CopyFrom(policy_map_);
+  store_.policy_map_ = policy_map_.Clone();
   EXPECT_CALL(observer_, OnUpdatePolicy(manager_.get()));
   store_.NotifyStoreLoaded();
   Mock::VerifyAndClearExpectations(&observer_);
@@ -320,7 +320,7 @@ TEST_F(CloudPolicyManagerTest, RefreshSuccessful) {
   manager_->RefreshPolicies();
   Mock::VerifyAndClearExpectations(client);
   Mock::VerifyAndClearExpectations(&observer_);
-  store_.policy_map_.CopyFrom(policy_map_);
+  store_.policy_map_ = policy_map_.Clone();
 
   // A stray reload should be suppressed until the refresh completes.
   EXPECT_CALL(observer_, OnUpdatePolicy(_)).Times(0);

@@ -35,7 +35,7 @@ void PolicyBundle::CopyFrom(const PolicyBundle& other) {
 
   Clear();
   for (const auto& entry_other : other) {
-    policy_bundle_[entry_other.first].CopyFrom(entry_other.second);
+    policy_bundle_[entry_other.first] = entry_other.second.Clone();
   }
 }
 
@@ -60,7 +60,7 @@ void PolicyBundle::MergeFrom(const PolicyBundle& other) {
       ++it_this;
     } else if (it_other->first < it_this->first) {
       // |other| has a PolicyMap that |this| doesn't; copy it.
-      policy_bundle_[it_other->first].CopyFrom(it_other->second);
+      policy_bundle_[it_other->first] = it_other->second.Clone();
       ++it_other;
     } else {
       NOTREACHED();
@@ -69,7 +69,7 @@ void PolicyBundle::MergeFrom(const PolicyBundle& other) {
 
   // Add extra PolicyMaps at the end.
   while (it_other != end_other) {
-    policy_bundle_[it_other->first].CopyFrom(it_other->second);
+    policy_bundle_[it_other->first] = it_other->second.Clone();
     ++it_other;
   }
 }

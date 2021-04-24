@@ -229,10 +229,9 @@ const PolicyMap::Entry& PolicyMap::EntryConflict::entry() const {
 }
 
 PolicyMap::PolicyMap() = default;
-
-PolicyMap::~PolicyMap() {
-  Clear();
-}
+PolicyMap::PolicyMap(PolicyMap&&) noexcept = default;
+PolicyMap& PolicyMap::operator=(PolicyMap&&) noexcept = default;
+PolicyMap::~PolicyMap() = default;
 
 const PolicyMap::Entry* PolicyMap::Get(const std::string& policy) const {
   auto entry = map_.find(policy);
@@ -333,18 +332,12 @@ void PolicyMap::Swap(PolicyMap* other) {
   map_.swap(other->map_);
 }
 
-void PolicyMap::CopyFrom(const PolicyMap& other) {
-  DCHECK_NE(this, &other);
+PolicyMap PolicyMap::Clone() const {
+  PolicyMap clone;
+  for (const auto& it : map_)
+    clone.Set(it.first, it.second.DeepCopy());
 
-  Clear();
-  for (const auto& it : other)
-    Set(it.first, it.second.DeepCopy());
-}
-
-std::unique_ptr<PolicyMap> PolicyMap::DeepCopy() const {
-  std::unique_ptr<PolicyMap> copy(new PolicyMap());
-  copy->CopyFrom(*this);
-  return copy;
+  return clone;
 }
 
 void PolicyMap::MergeFrom(const PolicyMap& other) {

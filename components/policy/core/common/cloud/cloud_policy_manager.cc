@@ -122,7 +122,7 @@ void CloudPolicyManager::CheckAndPublishPolicy() {
 }
 
 void CloudPolicyManager::GetChromePolicy(PolicyMap* policy_map) {
-  policy_map->CopyFrom(store()->policy_map());
+  *policy_map = store()->policy_map().Clone();
 }
 
 void CloudPolicyManager::CreateComponentCloudPolicyService(

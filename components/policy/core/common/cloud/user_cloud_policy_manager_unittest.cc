@@ -38,8 +38,8 @@ class UserCloudPolicyManagerTest : public testing::Test {
     // Set up a policy map for testing.
     policy_map_.Set("key", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                     POLICY_SOURCE_CLOUD, base::Value("value"), nullptr);
-    expected_bundle_.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
-        .CopyFrom(policy_map_);
+    expected_bundle_.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string())) =
+        policy_map_.Clone();
   }
 
   void TearDown() override {
@@ -83,7 +83,7 @@ TEST_F(UserCloudPolicyManagerTest, DisconnectAndRemovePolicy) {
   // Load policy, make sure it goes away when DisconnectAndRemovePolicy() is
   // called.
   CreateManager();
-  store_->policy_map_.CopyFrom(policy_map_);
+  store_->policy_map_ = policy_map_.Clone();
   EXPECT_CALL(observer_, OnUpdatePolicy(manager_.get())).Times(2);
   store_->NotifyStoreLoaded();
   EXPECT_TRUE(expected_bundle_.Equals(manager_->policies()));

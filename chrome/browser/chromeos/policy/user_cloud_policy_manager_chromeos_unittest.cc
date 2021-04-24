@@ -121,7 +121,7 @@ class UserCloudPolicyManagerChromeOSTest
     std::unique_ptr<MockCloudPolicyStore> store =
         std::make_unique<MockCloudPolicyStore>();
     store->policy_ = std::make_unique<em::PolicyData>(policy_data_);
-    store->policy_map_.CopyFrom(policy_map_);
+    store->policy_map_ = policy_map_.Clone();
     store->NotifyStoreLoaded();
     CreateManager(std::move(store), fetch_timeout,
                   PolicyEnforcement::kPolicyRequired);
@@ -183,8 +183,8 @@ class UserCloudPolicyManagerChromeOSTest
     policy_map_.Set(key::kHomepageLocation, POLICY_LEVEL_MANDATORY,
                     POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                     base::Value("http://chromium.org"), nullptr);
-    expected_bundle_.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
-        .CopyFrom(policy_map_);
+    expected_bundle_.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string())) =
+        policy_map_.Clone();
 
     // Create fake policy blobs to deliver to the client.
     em::DeviceRegisterResponse* register_response =
@@ -340,7 +340,7 @@ class UserCloudPolicyManagerChromeOSTest
       // Notifying that the store has cached the fetched policy completes the
       // process, and initializes the manager.
       EXPECT_CALL(observer_, OnUpdatePolicy(manager_.get()));
-      store_->policy_map_.CopyFrom(policy_map_);
+      store_->policy_map_ = policy_map_.Clone();
       store_->NotifyStoreLoaded();
     }
     EXPECT_TRUE(manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
@@ -799,7 +799,7 @@ TEST_P(UserCloudPolicyManagerChromeOSTest, BlockingRefreshFetchWithTimeout) {
   EXPECT_FALSE(manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
   EXPECT_CALL(observer_, OnUpdatePolicy(manager_.get()));
   store_->policy_ = std::make_unique<em::PolicyData>(policy_data_);
-  store_->policy_map_.CopyFrom(policy_map_);
+  store_->policy_map_ = policy_map_.Clone();
 
   // Mock out the initial policy fetch and have it trigger a timeout.
   FetchPolicy(base::BindOnce(&MockCloudPolicyStore::NotifyStoreLoaded,
@@ -1185,7 +1185,7 @@ class UserCloudPolicyManagerChromeOSChildTest
   // Sets the initially cached data and initializes the CloudPolicyService.
   void LoadStoreWithCachedData() {
     store_->policy_ = std::make_unique<em::PolicyData>(policy_data_);
-    store_->policy_map_.CopyFrom(policy_map_);
+    store_->policy_map_ = policy_map_.Clone();
     store_->NotifyStoreLoaded();
     EXPECT_TRUE(manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
   }

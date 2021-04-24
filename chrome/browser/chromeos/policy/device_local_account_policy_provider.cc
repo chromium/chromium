@@ -134,8 +134,8 @@ void DeviceLocalAccountPolicyProvider::UpdateFromBroker() {
     store_initialized_ |= broker->core()->store()->is_initialized();
     if (!waiting_for_policy_refresh_) {
       // Copy policy from the broker.
-      bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
-          .CopyFrom(broker->core()->store()->policy_map());
+      bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string())) =
+          broker->core()->store()->policy_map().Clone();
       external_data_manager_ = broker->external_data_manager();
 
       if (broker->component_policy_service())

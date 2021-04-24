@@ -393,19 +393,19 @@ TEST_P(Configuration3rdPartyPolicyProviderTest, Load3rdParty) {
                       test_harness_->policy_source(), policy_dict.Clone(),
                       nullptr);
   PolicyBundle expected_bundle;
-  expected_bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
-      .CopyFrom(expected_policy);
+  expected_bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string())) =
+      expected_policy.Clone();
   expected_policy.Clear();
   expected_policy.LoadFrom(&policy_dict,
                            test_harness_->policy_level(),
                            test_harness_->policy_scope(),
                            test_harness_->policy_source());
   expected_bundle.Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS,
-                                      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"))
-      .CopyFrom(expected_policy);
+                                      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")) =
+      expected_policy.Clone();
   expected_bundle.Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS,
-                                      "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"))
-      .CopyFrom(expected_policy);
+                                      "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")) =
+      expected_policy.Clone();
   EXPECT_TRUE(provider_->policies().Equals(expected_bundle));
 }
 

@@ -879,7 +879,7 @@ TEST_F(DeviceLocalAccountPolicyProviderTest, Policy) {
 
   PolicyBundle expected_policy_bundle;
   expected_policy_bundle.Get(PolicyNamespace(
-      POLICY_DOMAIN_CHROME, std::string())).CopyFrom(expected_policy_map_);
+      POLICY_DOMAIN_CHROME, std::string())) = expected_policy_map_.Clone();
   EXPECT_TRUE(expected_policy_bundle.Equals(provider_->policies()));
 
   // Make sure the Dinosaur game is disabled by default. This ensures the

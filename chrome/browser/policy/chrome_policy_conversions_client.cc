@@ -227,8 +227,7 @@ Value ChromePolicyConversionsClient::GetDeviceLocalAccountPolicies() {
 
     // Make a copy that can be modified, since some policy values are modified
     // before being displayed.
-    PolicyMap map;
-    map.CopyFrom(cloud_policy_store->policy_map());
+    PolicyMap map = cloud_policy_store->policy_map().Clone();
 
     // Get a list of all the errors in the policy values.
     const ConfigurationPolicyHandlerList* handler_list =

@@ -203,7 +203,7 @@ TEST_F(PolicyServiceTest, NotifyObservers) {
                        POLICY_SOURCE_PLATFORM, base::Value(15), nullptr);
 
   PolicyMap expectedCurrent;
-  expectedCurrent.CopyFrom(expectedPrevious);
+  expectedCurrent = expectedPrevious.Clone();
   expectedCurrent.Set("aaa", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                       POLICY_SOURCE_CLOUD, base::Value(123), nullptr);
   policy0_.Set("aaa", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
@@ -223,7 +223,7 @@ TEST_F(PolicyServiceTest, NotifyObservers) {
       PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()), expectedCurrent));
 
   // New policy.
-  expectedPrevious.CopyFrom(expectedCurrent);
+  expectedPrevious = expectedCurrent.Clone();
   expectedCurrent.Set("bbb", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                       POLICY_SOURCE_CLOUD, base::Value(456), nullptr);
   policy0_.Set("bbb", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
@@ -236,7 +236,7 @@ TEST_F(PolicyServiceTest, NotifyObservers) {
   Mock::VerifyAndClearExpectations(&observer);
 
   // Removed policy.
-  expectedPrevious.CopyFrom(expectedCurrent);
+  expectedPrevious = expectedCurrent.Clone();
   expectedCurrent.Erase("bbb");
   policy0_.Erase("bbb");
   EXPECT_CALL(observer, OnPolicyUpdated(PolicyNamespace(POLICY_DOMAIN_CHROME,
@@ -247,7 +247,7 @@ TEST_F(PolicyServiceTest, NotifyObservers) {
   Mock::VerifyAndClearExpectations(&observer);
 
   // Changed policy.
-  expectedPrevious.CopyFrom(expectedCurrent);
+  expectedPrevious = expectedCurrent.Clone();
   expectedCurrent.Set("aaa", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                       POLICY_SOURCE_CLOUD, base::Value(789), nullptr);
   policy0_.Set("aaa", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
@@ -286,18 +286,18 @@ TEST_F(PolicyServiceTest, NotifyObserversInMultipleNamespaces) {
   previous_policy_map.Set("migrated", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                           POLICY_SOURCE_PLATFORM, base::Value(15), nullptr);
   PolicyMap policy_map;
-  policy_map.CopyFrom(previous_policy_map);
+  policy_map = previous_policy_map.Clone();
   policy_map.Set("policy", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                  POLICY_SOURCE_CLOUD, base::Value("value"), nullptr);
 
   auto bundle = std::make_unique<PolicyBundle>();
   // The initial setup includes a policy for chrome that is now changing.
-  bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
-      .CopyFrom(policy_map);
-  bundle->Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kExtension0))
-      .CopyFrom(policy_map);
-  bundle->Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kExtension1))
-      .CopyFrom(policy_map);
+  bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string())) =
+      policy_map.Clone();
+  bundle->Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kExtension0)) =
+      policy_map.Clone();
+  bundle->Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kExtension1)) =
+      policy_map.Clone();
 
   const PolicyMap kEmptyPolicyMap;
   EXPECT_CALL(
@@ -322,16 +322,16 @@ TEST_F(PolicyServiceTest, NotifyObserversInMultipleNamespaces) {
 
   // Chrome policy stays the same, kExtension0 is gone, kExtension1 changes,
   // and kExtension2 is new.
-  previous_policy_map.CopyFrom(policy_map);
+  previous_policy_map = policy_map.Clone();
   bundle = std::make_unique<PolicyBundle>();
-  bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
-      .CopyFrom(policy_map);
+  bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string())) =
+      policy_map.Clone();
   policy_map.Set("policy", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
                  POLICY_SOURCE_CLOUD, base::Value("another value"), nullptr);
-  bundle->Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kExtension1))
-      .CopyFrom(policy_map);
-  bundle->Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kExtension2))
-      .CopyFrom(policy_map);
+  bundle->Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kExtension1)) =
+      policy_map.Clone();
+  bundle->Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kExtension2)) =
+      policy_map.Clone();
 
   EXPECT_CALL(chrome_observer, OnPolicyUpdated(_, _, _)).Times(0);
   EXPECT_CALL(

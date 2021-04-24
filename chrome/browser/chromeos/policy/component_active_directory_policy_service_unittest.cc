@@ -174,7 +174,7 @@ class ComponentActiveDirectoryPolicyServiceTest : public testing::Test {
 
   std::unique_ptr<PolicyBundle> ExpectedBundle() {
     auto expected_bundle = std::make_unique<PolicyBundle>();
-    expected_bundle->Get(kTestExtensionNS).CopyFrom(expected_policy_);
+    expected_bundle->Get(kTestExtensionNS) = expected_policy_.Clone();
     return expected_bundle;
   }
 
@@ -415,8 +415,8 @@ TEST_F(ComponentActiveDirectoryPolicyServiceTest,
 
   // We should have received policy for both namespaces.
   PolicyBundle expected_bundle;
-  expected_bundle.Get(kTestExtensionNS).CopyFrom(expected_policy_);
-  expected_bundle.Get(kTestExtensionNS2).CopyFrom(expected_policy_);
+  expected_bundle.Get(kTestExtensionNS) = expected_policy_.Clone();
+  expected_bundle.Get(kTestExtensionNS2) = expected_policy_.Clone();
   CheckPolicyMatches(expected_bundle);
 }
 

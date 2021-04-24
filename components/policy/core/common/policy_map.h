@@ -173,7 +173,11 @@ class POLICY_EXPORT PolicyMap {
   typedef PolicyMapType::iterator iterator;
 
   PolicyMap();
-  virtual ~PolicyMap();
+  PolicyMap(const PolicyMap&) = delete;
+  PolicyMap& operator=(const PolicyMap&) = delete;
+  PolicyMap(PolicyMap&& other) noexcept;
+  PolicyMap& operator=(PolicyMap&& other) noexcept;
+  ~PolicyMap();
 
   // Returns a weak reference to the entry currently stored for key |policy|,
   // or NULL if untrusted or not found. Ownership is retained by the PolicyMap.
@@ -239,11 +243,8 @@ class POLICY_EXPORT PolicyMap {
   // Swaps the internal representation of |this| with |other|.
   void Swap(PolicyMap* other);
 
-  // |this| becomes a copy of |other|. Any existing policies are dropped.
-  void CopyFrom(const PolicyMap& other);
-
   // Returns a copy of |this|.
-  std::unique_ptr<PolicyMap> DeepCopy() const;
+  PolicyMap Clone() const;
 
   // Merges policies from |other| into |this|. Existing policies are only
   // overridden by those in |other| if they have a higher priority, as defined
@@ -292,8 +293,6 @@ class POLICY_EXPORT PolicyMap {
       bool deletion_value);
 
   PolicyMapType map_;
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyMap);
 };
 
 }  // namespace policy

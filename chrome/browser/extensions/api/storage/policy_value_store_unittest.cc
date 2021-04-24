@@ -135,14 +135,13 @@ class PolicyValueStoreTest : public testing::Test {
     GetBackendTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(&PolicyValueStoreTest::SetCurrentPolicyOnBackendSequence,
-                       base::Unretained(this), policies.DeepCopy()));
+                       base::Unretained(this), policies.Clone()));
     content::RunAllTasksUntilIdle();
   }
 
-  void SetCurrentPolicyOnBackendSequence(
-      std::unique_ptr<policy::PolicyMap> policies) {
+  void SetCurrentPolicyOnBackendSequence(const policy::PolicyMap& policies) {
     DCHECK(IsOnBackendSequence());
-    store_->SetCurrentPolicy(*policies);
+    store_->SetCurrentPolicy(policies);
   }
 
   base::ScopedTempDir scoped_temp_dir_;

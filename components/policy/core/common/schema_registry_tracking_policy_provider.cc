@@ -99,7 +99,7 @@ void SchemaRegistryTrackingPolicyProvider::OnUpdatePolicy(
     // Always pass on the Chrome policy, even if the components are not ready
     // yet.
     const PolicyNamespace chrome_ns(POLICY_DOMAIN_CHROME, "");
-    bundle->Get(chrome_ns).CopyFrom(delegate_->policies().Get(chrome_ns));
+    bundle->Get(chrome_ns) = delegate_->policies().Get(chrome_ns).Clone();
   }
 
   UpdatePolicy(std::move(bundle));

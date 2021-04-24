@@ -145,32 +145,32 @@ TEST(PolicyBundleTest, MergeFrom) {
   PolicyMap policy0;
   AddTestPoliciesWithParams(
       &policy0, kPolicy0, 0u, POLICY_LEVEL_RECOMMENDED, POLICY_SCOPE_USER);
-  bundle0.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
-      .CopyFrom(policy0);
-  bundle0.Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kExtension0))
-      .CopyFrom(policy0);
-  bundle0.Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kExtension3))
-      .CopyFrom(policy0);
+  bundle0.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string())) =
+      policy0.Clone();
+  bundle0.Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kExtension0)) =
+      policy0.Clone();
+  bundle0.Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kExtension3)) =
+      policy0.Clone();
 
   PolicyMap policy1;
   AddTestPoliciesWithParams(
       &policy1, kPolicy1, 1u, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE);
-  bundle1.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
-      .CopyFrom(policy1);
-  bundle1.Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kExtension1))
-      .CopyFrom(policy1);
-  bundle1.Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kExtension3))
-      .CopyFrom(policy1);
+  bundle1.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string())) =
+      policy1.Clone();
+  bundle1.Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kExtension1)) =
+      policy1.Clone();
+  bundle1.Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kExtension3)) =
+      policy1.Clone();
 
   PolicyMap policy2;
   AddTestPoliciesWithParams(
       &policy2, kPolicy2, 2u, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER);
-  bundle2.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
-      .CopyFrom(policy2);
-  bundle2.Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kExtension2))
-      .CopyFrom(policy2);
-  bundle2.Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kExtension3))
-      .CopyFrom(policy2);
+  bundle2.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string())) =
+      policy2.Clone();
+  bundle2.Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kExtension2)) =
+      policy2.Clone();
+  bundle2.Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kExtension3)) =
+      policy2.Clone();
 
   // Merge in order of decreasing priority.
   PolicyBundle merged;

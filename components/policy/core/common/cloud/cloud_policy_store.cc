@@ -80,7 +80,7 @@ void CloudPolicyStore::SetExternalDataManager(
 void CloudPolicyStore::SetPolicyMapForTesting(const PolicyMap& policy_map) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  policy_map_.CopyFrom(policy_map);
+  policy_map_ = policy_map.Clone();
   NotifyStoreLoaded();
 }
 

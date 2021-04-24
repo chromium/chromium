@@ -338,10 +338,11 @@ void UpdatePolicyViaMockPolicyProvider(
     policy::MockConfigurationPolicyProvider* mock_policy_provider) {
   const std::string policy_item_value =
       MakeForceInstallPolicyItemValue(extension_id, update_manifest_url);
-  policy::PolicyMap policy_map;
-  policy_map.CopyFrom(
-      mock_policy_provider->policies().Get(policy::PolicyNamespace(
-          policy::POLICY_DOMAIN_CHROME, /*component_id=*/std::string())));
+  policy::PolicyMap policy_map =
+      mock_policy_provider->policies()
+          .Get(policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME,
+                                       /*component_id=*/std::string()))
+          .Clone();
   policy::PolicyMap::Entry* const existing_entry =
       policy_map.GetMutable(policy::key::kExtensionInstallForcelist);
   if (existing_entry) {

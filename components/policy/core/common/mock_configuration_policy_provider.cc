@@ -24,8 +24,8 @@ MockConfigurationPolicyProvider::~MockConfigurationPolicyProvider() {}
 void MockConfigurationPolicyProvider::UpdateChromePolicy(
     const PolicyMap& policy) {
   std::unique_ptr<PolicyBundle> bundle = std::make_unique<PolicyBundle>();
-  bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
-      .CopyFrom(policy);
+  bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string())) =
+      policy.Clone();
   UpdatePolicy(std::move(bundle));
   bool spin_run_loop = base::CurrentThread::IsSet();
 #if defined(OS_IOS)
@@ -40,8 +40,8 @@ void MockConfigurationPolicyProvider::UpdateExtensionPolicy(
     const PolicyMap& policy,
     const std::string& extension_id) {
   std::unique_ptr<PolicyBundle> bundle = std::make_unique<PolicyBundle>();
-  bundle->Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, extension_id))
-      .CopyFrom(policy);
+  bundle->Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, extension_id)) =
+      policy.Clone();
   UpdatePolicy(std::move(bundle));
   if (base::CurrentThread::IsSet())
     base::RunLoop().RunUntilIdle();

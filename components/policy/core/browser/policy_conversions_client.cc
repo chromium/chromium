@@ -76,7 +76,6 @@ base::Value PolicyConversionsClient::GetChromePolicies() {
   DCHECK(HasUserPolicies());
 
   PolicyService* policy_service = GetPolicyService();
-  PolicyMap map;
 
   auto* schema_registry = GetPolicySchemaRegistry();
   if (!schema_registry) {
@@ -90,7 +89,7 @@ base::Value PolicyConversionsClient::GetChromePolicies() {
 
   // Make a copy that can be modified, since some policy values are modified
   // before being displayed.
-  map.CopyFrom(policy_service->GetPolicies(policy_namespace));
+  PolicyMap map = policy_service->GetPolicies(policy_namespace).Clone();
 
   // Get a list of all the errors in the policy values.
   const ConfigurationPolicyHandlerList* handler_list = GetHandlerList();

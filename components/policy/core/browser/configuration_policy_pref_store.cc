@@ -132,9 +132,10 @@ void ConfigurationPolicyPrefStore::Refresh() {
 
 PrefValueMap* ConfigurationPolicyPrefStore::CreatePreferencesFromPolicies() {
   std::unique_ptr<PrefValueMap> prefs(new PrefValueMap);
-  PolicyMap filtered_policies;
-  filtered_policies.CopyFrom(policy_service_->GetPolicies(
-      PolicyNamespace(POLICY_DOMAIN_CHROME, std::string())));
+  PolicyMap filtered_policies =
+      policy_service_
+          ->GetPolicies(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
+          .Clone();
   filtered_policies.EraseNonmatching(base::BindRepeating(&IsLevel, level_));
 
   std::unique_ptr<PolicyErrorMap> errors = std::make_unique<PolicyErrorMap>();

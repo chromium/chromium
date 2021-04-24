@@ -47,8 +47,7 @@ void PolicyCacheUpdater::OnPolicyUpdated(const PolicyNamespace& ns,
 }
 
 void PolicyCacheUpdater::UpdateCache(const PolicyMap& current_policy_map) {
-  PolicyMap policy_map;
-  policy_map.CopyFrom(current_policy_map);
+  PolicyMap policy_map = current_policy_map.Clone();
   PolicyErrorMap errors;
   std::set<std::string> future_policies;
   handler_list_->ApplyPolicySettings(policy_map,

@@ -284,7 +284,7 @@ void PolicyUITest::UpdateProviderPolicyForNamespace(
     const policy::PolicyMap& policy) {
   std::unique_ptr<policy::PolicyBundle> bundle =
       std::make_unique<policy::PolicyBundle>();
-  bundle->Get(policy_namespace).CopyFrom(policy);
+  bundle->Get(policy_namespace) = policy.Clone();
   provider_.UpdatePolicy(std::move(bundle));
 }
 

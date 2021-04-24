@@ -52,12 +52,12 @@ void ConfigurationPolicyHandlerList::ApplyPolicySettings(
   // This function is used both to apply the policy settings, and to check them
   // and list errors. As such it must get all the errors even if it isn't
   // applying the policies.
-  std::unique_ptr<PolicyMap> filtered_policies = policies.DeepCopy();
+  PolicyMap filtered_policies = policies.Clone();
   base::flat_set<std::string> enabled_future_policies =
       allow_future_policies_ ? base::flat_set<std::string>()
                              : ValueToStringSet(policies.GetValue(
                                    key::kEnableExperimentalPolicies));
-  filtered_policies->EraseMatching(base::BindRepeating(
+  filtered_policies.EraseMatching(base::BindRepeating(
       &ConfigurationPolicyHandlerList::FilterOutUnsupportedPolicies,
       base::Unretained(this), enabled_future_policies, future_policies));
 
@@ -70,14 +70,14 @@ void ConfigurationPolicyHandlerList::ApplyPolicySettings(
     parameters_callback_.Run(&parameters);
 
   for (const auto& handler : handlers_) {
-    if (handler->CheckPolicySettings(*filtered_policies, errors) && prefs) {
-      handler->ApplyPolicySettingsWithParameters(
-          *filtered_policies, parameters, prefs);
+    if (handler->CheckPolicySettings(filtered_policies, errors) && prefs) {
+      handler->ApplyPolicySettingsWithParameters(filtered_policies, parameters,
+                                                 prefs);
     }
   }
 
   if (details_callback_ && deprecated_policies) {
-    for (const auto& key_value : *filtered_policies) {
+    for (const auto& key_value : filtered_policies) {
       const PolicyDetails* details = details_callback_.Run(key_value.first);
       if (details && details->is_deprecated)
         deprecated_policies->insert(key_value.first);
