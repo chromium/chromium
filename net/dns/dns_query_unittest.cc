@@ -5,8 +5,10 @@
 #include "net/dns/dns_query.h"
 
 #include <memory>
+#include <string>
 #include <tuple>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/stl_util.h"
 #include "net/base/io_buffer.h"
 #include "net/dns/dns_util.h"
@@ -286,6 +288,103 @@ TEST(DnsQueryParseTest, FailsInvalidQueries) {
     EXPECT_FALSE(ParseAndCreateDnsQueryFromRawPacket(testcase.data,
                                                      testcase.size, &query));
   }
+}
+
+TEST(DnsQueryParseTest, ParsesLongName) {
+  const char kHeader[] =
+      "\x6f\x15"   // ID
+      "\x00\x00"   // FLAGS
+      "\x00\x01"   // 1 question
+      "\x00\x00"   // 0 answers
+      "\x00\x00"   // 0 authority records
+      "\x00\x00";  // 0 additional records
+
+  std::string long_name;
+  for (int i = 0; i <= dns_protocol::kMaxNameLength - 10; i += 10) {
+    long_name.append("\x09loongname");
+  }
+  uint8_t remaining = dns_protocol::kMaxNameLength - long_name.size() - 1;
+  long_name.append(1, remaining);
+  for (int i = 0; i < remaining; ++i) {
+    long_name.append("a", 1);
+  }
+  ASSERT_LE(long_name.size(),
+            static_cast<size_t>(dns_protocol::kMaxNameLength));
+  long_name.append("\x00", 1);
+
+  std::string data(kHeader, sizeof(kHeader) - 1);
+  data.append(long_name);
+  data.append(
+      "\x00\x01"   // TYPE=A
+      "\x00\x01",  // CLASS=IN
+      4);
+
+  auto packet = base::MakeRefCounted<IOBufferWithSize>(data.size());
+  memcpy(packet->data(), data.data(), data.size());
+  DnsQuery query(packet);
+
+  EXPECT_TRUE(query.Parse(data.size()));
+}
+
+TEST(DnsQueryParseTest, FailsTooLongName) {
+  const char kHeader[] =
+      "\x5f\x15"   // ID
+      "\x00\x00"   // FLAGS
+      "\x00\x01"   // 1 question
+      "\x00\x00"   // 0 answers
+      "\x00\x00"   // 0 authority records
+      "\x00\x00";  // 0 additional records
+
+  std::string long_name;
+  for (int i = 0; i <= dns_protocol::kMaxNameLength; i += 10) {
+    long_name.append("\x09loongname");
+  }
+  ASSERT_GT(long_name.size(),
+            static_cast<size_t>(dns_protocol::kMaxNameLength));
+  long_name.append("\x00", 1);
+
+  std::string data(kHeader, sizeof(kHeader) - 1);
+  data.append(long_name);
+  data.append(
+      "\x00\x01"   // TYPE=A
+      "\x00\x01",  // CLASS=IN
+      4);
+
+  auto packet = base::MakeRefCounted<IOBufferWithSize>(data.size());
+  memcpy(packet->data(), data.data(), data.size());
+  DnsQuery query(packet);
+
+  EXPECT_FALSE(query.Parse(data.size()));
+}
+
+TEST(DnsQueryParseTest, FailsTooLongSingleLabelName) {
+  const char kHeader[] =
+      "\x5f\x15"   // ID
+      "\x00\x00"   // FLAGS
+      "\x00\x01"   // 1 question
+      "\x00\x00"   // 0 answers
+      "\x00\x00"   // 0 authority records
+      "\x00\x00";  // 0 additional records
+
+  std::string long_name;
+  long_name.append(1, static_cast<char>(dns_protocol::kMaxNameLength));
+  long_name.append(dns_protocol::kMaxNameLength, 'a');
+  ASSERT_GT(long_name.size(),
+            static_cast<size_t>(dns_protocol::kMaxNameLength));
+  long_name.append("\x00", 1);
+
+  std::string data(kHeader, sizeof(kHeader) - 1);
+  data.append(long_name);
+  data.append(
+      "\x00\x01"   // TYPE=A
+      "\x00\x01",  // CLASS=IN
+      4);
+
+  auto packet = base::MakeRefCounted<IOBufferWithSize>(data.size());
+  memcpy(packet->data(), data.data(), data.size());
+  DnsQuery query(packet);
+
+  EXPECT_FALSE(query.Parse(data.size()));
 }
 
 }  // namespace

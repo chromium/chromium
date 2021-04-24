@@ -112,14 +112,20 @@ static const uint16_t kMDnsClassMask = 0x7FFF;
 // RFC 1035, section 3.1: To simplify implementations, the total length of
 // a domain name in wire form (i.e., label octets and label length octets) is
 // restricted to 255 octets or less.
+//
+// Note that RFC 1035 is ambiguous over whether or not this limit includes the
+// final zero-length terminating label, but RFC 6762 unambiguously uses the
+// more permissive interpretation of not including the terminating label against
+// the limit for mDNS and argues in RFC 6762 Appendix C that that is the correct
+// interpretation for unicast DNS. To avoid overcomplicating logic, Chrome
+// universally uses the more permissive RFC 6762 interpretation for all parsing.
 static const int kMaxNameLength = 255;
 
 // The maximum number of ASCII characters allowed in a domain in dotted form,
-// derived from `kMaxNameLength` above by subtracting two from the count to
-// correspond to the first and last byte, which, except in the case of a
-// fully-qualified domain name (where the last byte encodes '.'), are not
-// available to encode characters.
-static const uint16_t kMaxCharNameLength = 253;
+// derived from `kMaxNameLength` above by subtracting one from the count to
+// correspond to the first byte, which is not available to encode characters and
+// does not correspond to a dot after conversion.
+static const uint16_t kMaxCharNameLength = 254;
 
 // RFC 1035, section 2.3.4: labels 63 octets or less.
 // Section 3.1: Each label is represented as a one octet length field followed

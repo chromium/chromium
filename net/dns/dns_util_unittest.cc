@@ -321,25 +321,6 @@ TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectCharMinLabels) {
 
 TEST_F(DNSUtilTest, DnsDomainToStringShouldHandleLongName) {
   std::string dns_name;
-  for (int i = 0; i < dns_protocol::kMaxNameLength - 1;
-       i += (dns_protocol::kMaxLabelLength + 1)) {
-    int label_size = std::min(dns_protocol::kMaxNameLength - 2 - i,
-                              dns_protocol::kMaxLabelLength);
-    dns_name += static_cast<char>(label_size);
-    for (int j = 0; j < label_size; ++j) {
-      dns_name += 'a';
-    }
-  }
-  ASSERT_EQ(dns_name.size(),
-            static_cast<size_t>(dns_protocol::kMaxNameLength - 1));
-
-  EXPECT_NE(DnsDomainToString(dns_name), base::nullopt);
-  base::BigEndianReader reader(dns_name.c_str(), dns_name.size());
-  EXPECT_NE(DnsDomainToString(reader), base::nullopt);
-}
-
-TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectTooLongName) {
-  std::string dns_name;
   for (int i = 0; i < dns_protocol::kMaxNameLength;
        i += (dns_protocol::kMaxLabelLength + 1)) {
     int label_size = std::min(dns_protocol::kMaxNameLength - 1 - i,
@@ -351,31 +332,31 @@ TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectTooLongName) {
   }
   ASSERT_EQ(dns_name.size(), static_cast<size_t>(dns_protocol::kMaxNameLength));
 
-  EXPECT_EQ(DnsDomainToString(dns_name), base::nullopt);
+  EXPECT_NE(DnsDomainToString(dns_name), base::nullopt);
   base::BigEndianReader reader(dns_name.c_str(), dns_name.size());
-  EXPECT_EQ(DnsDomainToString(reader), base::nullopt);
+  EXPECT_NE(DnsDomainToString(reader), base::nullopt);
 }
 
-TEST_F(DNSUtilTest, DnsDomainToStringShouldHandleLongCompleteName) {
+TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectTooLongName) {
   std::string dns_name;
-  for (int i = 0; i < dns_protocol::kMaxNameLength - 1;
+  for (int i = 0; i < dns_protocol::kMaxNameLength + 1;
        i += (dns_protocol::kMaxLabelLength + 1)) {
-    int label_size = std::min(dns_protocol::kMaxNameLength - 2 - i,
+    int label_size = std::min(dns_protocol::kMaxNameLength - i,
                               dns_protocol::kMaxLabelLength);
     dns_name += static_cast<char>(label_size);
     for (int j = 0; j < label_size; ++j) {
       dns_name += 'a';
     }
   }
-  dns_name += '\0';
-  ASSERT_EQ(dns_name.size(), static_cast<size_t>(dns_protocol::kMaxNameLength));
+  ASSERT_EQ(dns_name.size(),
+            static_cast<size_t>(dns_protocol::kMaxNameLength + 1));
 
-  EXPECT_NE(DnsDomainToString(dns_name), base::nullopt);
+  EXPECT_EQ(DnsDomainToString(dns_name), base::nullopt);
   base::BigEndianReader reader(dns_name.c_str(), dns_name.size());
-  EXPECT_NE(DnsDomainToString(reader), base::nullopt);
+  EXPECT_EQ(DnsDomainToString(reader), base::nullopt);
 }
 
-TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectTooLongCompleteName) {
+TEST_F(DNSUtilTest, DnsDomainToStringShouldHandleLongCompleteName) {
   std::string dns_name;
   for (int i = 0; i < dns_protocol::kMaxNameLength;
        i += (dns_protocol::kMaxLabelLength + 1)) {
@@ -389,6 +370,26 @@ TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectTooLongCompleteName) {
   dns_name += '\0';
   ASSERT_EQ(dns_name.size(),
             static_cast<size_t>(dns_protocol::kMaxNameLength + 1));
+
+  EXPECT_NE(DnsDomainToString(dns_name), base::nullopt);
+  base::BigEndianReader reader(dns_name.c_str(), dns_name.size());
+  EXPECT_NE(DnsDomainToString(reader), base::nullopt);
+}
+
+TEST_F(DNSUtilTest, DnsDomainToStringShouldRejectTooLongCompleteName) {
+  std::string dns_name;
+  for (int i = 0; i < dns_protocol::kMaxNameLength + 1;
+       i += (dns_protocol::kMaxLabelLength + 1)) {
+    int label_size = std::min(dns_protocol::kMaxNameLength - i,
+                              dns_protocol::kMaxLabelLength);
+    dns_name += static_cast<char>(label_size);
+    for (int j = 0; j < label_size; ++j) {
+      dns_name += 'a';
+    }
+  }
+  dns_name += '\0';
+  ASSERT_EQ(dns_name.size(),
+            static_cast<size_t>(dns_protocol::kMaxNameLength + 2));
 
   EXPECT_EQ(DnsDomainToString(dns_name), base::nullopt);
   base::BigEndianReader reader(dns_name.c_str(), dns_name.size());

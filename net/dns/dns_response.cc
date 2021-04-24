@@ -149,7 +149,7 @@ unsigned DnsRecordParser::ReadName(const void* const vpos,
 
   if (out) {
     out->clear();
-    out->reserve(dns_protocol::kMaxNameLength);
+    out->reserve(dns_protocol::kMaxCharNameLength);
   }
 
   for (;;) {
@@ -185,19 +185,19 @@ unsigned DnsRecordParser::ReadName(const void* const vpos,
       case dns_protocol::kLabelDirect: {
         uint8_t label_len = *p;
         ++p;
-        // Add one octet for the length and |label_len| for the number of
-        // following octets.
-        encoded_name_len += 1 + label_len;
-        if (encoded_name_len > dns_protocol::kMaxNameLength) {
-          VLOG(1) << kAbortMsg << " Name is too long.";
-          return 0;
-        }
         // Note: root domain (".") is NOT included.
         if (label_len == 0) {
           if (consumed == 0) {
             consumed = p - pos;
           }  // else we set |consumed| before first jump
           return consumed;
+        }
+        // Add one octet for the length and |label_len| for the number of
+        // following octets.
+        encoded_name_len += 1 + label_len;
+        if (encoded_name_len > dns_protocol::kMaxNameLength) {
+          VLOG(1) << kAbortMsg << " Name is too long.";
+          return 0;
         }
         if (p + label_len >= end) {
           VLOG(1) << kAbortMsg << " Truncated or missing label.";
@@ -207,6 +207,7 @@ unsigned DnsRecordParser::ReadName(const void* const vpos,
           if (!out->empty())
             out->append(".");
           out->append(p, label_len);
+          DCHECK_LE(out->size(), dns_protocol::kMaxCharNameLength);
         }
         p += label_len;
         seen += 1 + label_len;

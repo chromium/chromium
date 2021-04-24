@@ -6,11 +6,14 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/big_endian.h"
+#include "base/check.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "net/base/io_buffer.h"
 #include "net/dns/dns_query.h"
@@ -111,6 +114,10 @@ TEST(DnsRecordParserTest, ReadNameFail) {
 // which must be non-null.
 std::vector<uint8_t> BuildRfc1034Name(const size_t name_len,
                                       std::string* dotted_str) {
+  // Impossible length. If length not zero, need at least 2 to allow label
+  // length and label contents.
+  CHECK_NE(name_len, 1u);
+
   CHECK(dotted_str != nullptr);
   auto ChoosePrintableCharLambda = [](uint8_t n) { return n % 26 + 'A'; };
   const size_t max_label_len = 63;
@@ -118,21 +125,18 @@ std::vector<uint8_t> BuildRfc1034Name(const size_t name_len,
 
   dotted_str->clear();
   while (data.size() < name_len) {
-    // Write the null label representing the root node.
-    if (data.size() == name_len - 1) {
-      data.push_back(0);
-      break;
-    }
-
     // Compute the size of the next label.
     //
-    // Suppose |name_len| is 8 and |data.size()| is 4. We want |label_len| to be
-    // 2 so that we are correctly aligned to put 0 in the final position.
-    //
-    //    3  'A' 'B' 'C'  _   _   _   _
-    //    0   1   2   3   4   5   6   7
-    const size_t label_len =
-        std::min(name_len - data.size() - 2, max_label_len);
+    // No need to account for next label length because the final zero length is
+    // not considered included in overall length.
+    size_t label_len = std::min(name_len - data.size() - 1, max_label_len);
+    // Need to ensure the remainder is not 1 because that would leave room for a
+    // label length but not a label.
+    if (name_len - data.size() - label_len - 1 == 1) {
+      CHECK_GT(label_len, 1u);
+      label_len -= 1;
+    }
+
     // Write the length octet
     data.push_back(label_len);
 
@@ -155,23 +159,28 @@ std::vector<uint8_t> BuildRfc1034Name(const size_t name_len,
     dotted_str->pop_back();
 
   CHECK(data.size() == name_len);
+
+  // Final zero-length label (not considered included in overall length).
+  data.push_back(0);
+
   return data;
 }
 
 TEST(DnsRecordParserTest, ReadNameGoodLength) {
-  const size_t name_len_cases[] = {1, 10, 40, 250, 254, 255};
+  const size_t name_len_cases[] = {2, 10, 40, 250, 254, 255};
 
   for (auto name_len : name_len_cases) {
     std::string expected_name;
     const std::vector<uint8_t> data_vector =
         BuildRfc1034Name(name_len, &expected_name);
+    ASSERT_EQ(data_vector.size(), name_len + 1);
     const uint8_t* data = data_vector.data();
 
-    DnsRecordParser parser(data, name_len, 0);
+    DnsRecordParser parser(data, data_vector.size(), 0);
     ASSERT_TRUE(parser.IsValid());
 
     std::string out;
-    EXPECT_EQ(name_len, parser.ReadName(data, &out));
+    EXPECT_EQ(data_vector.size(), parser.ReadName(data, &out));
     EXPECT_EQ(expected_name, out);
   }
 }
@@ -183,9 +192,10 @@ TEST(DnsRecordParserTest, ReadNameTooLongFail) {
     std::string expected_name;
     const std::vector<uint8_t> data_vector =
         BuildRfc1034Name(name_len, &expected_name);
+    ASSERT_EQ(data_vector.size(), name_len + 1);
     const uint8_t* data = data_vector.data();
 
-    DnsRecordParser parser(data, name_len, 0);
+    DnsRecordParser parser(data, data_vector.size(), 0);
     ASSERT_TRUE(parser.IsValid());
 
     std::string out;
@@ -239,6 +249,48 @@ TEST(DnsRecordParserTest, ReadRecord) {
   parser = DnsRecordParser(data, sizeof(data) - 2, 0);
   EXPECT_TRUE(parser.ReadRecord(&record));
   EXPECT_FALSE(parser.AtEnd());
+  EXPECT_FALSE(parser.ReadRecord(&record));
+}
+
+TEST(DnsRecordParserTest, ReadsRecordWithLongName) {
+  std::string dotted_name;
+  const std::vector<uint8_t> dns_name =
+      BuildRfc1034Name(dns_protocol::kMaxNameLength, &dotted_name);
+
+  std::string data(reinterpret_cast<const char*>(dns_name.data()),
+                   dns_name.size());
+  data.append(
+      "\x00\x01"           // TYPE=A
+      "\x00\x01"           // CLASS=IN
+      "\x00\x01\x51\x80"   // TTL=1 day
+      "\x00\x04"           // RDLENGTH=4 bytes
+      "\xc0\xa8\x00\x01",  // 192.168.0.1
+      14);
+
+  DnsRecordParser parser(data.data(), data.size(), 0);
+
+  DnsResourceRecord record;
+  EXPECT_TRUE(parser.ReadRecord(&record));
+}
+
+TEST(DnsRecordParserTest, RejectRecordWithTooLongName) {
+  std::string dotted_name;
+  const std::vector<uint8_t> dns_name =
+      BuildRfc1034Name(dns_protocol::kMaxNameLength + 1, &dotted_name);
+
+  std::string data(reinterpret_cast<const char*>(dns_name.data()),
+                   dns_name.size());
+  data.append(
+      "\x00\x01"           // TYPE=A
+      "\x00\x01"           // CLASS=IN
+      "\x00\x01\x51\x80"   // TTL=1 day
+      "\x00\x04"           // RDLENGTH=4 bytes
+      "\xc0\xa8\x00\x01",  // 192.168.0.1
+      14);
+
+  DnsRecordParser parser(data.data(), data.size(), 0);
+
+  DnsResourceRecord record;
   EXPECT_FALSE(parser.ReadRecord(&record));
 }
 
@@ -563,6 +615,73 @@ TEST(DnsResponseTest, InitParseWithoutQueryPacketTooShort) {
   memcpy(resp.io_buffer()->data(), response_data, sizeof(response_data));
 
   EXPECT_FALSE(resp.InitParseWithoutQuery(sizeof(response_data)));
+}
+
+TEST(DnsResponseTest, InitParseAllowsQuestionWithLongName) {
+  const char kResponseHeader[] =
+      "\x02\x45"   // ID=581
+      "\x81\x80"   // Standard query response, RA, no error
+      "\x00\x01"   // 1 question
+      "\x00\x00"   // 0 answers
+      "\x00\x00"   // 0 authority records
+      "\x00\x00";  // 0 additional records
+
+  std::string dotted_name;
+  const std::vector<uint8_t> dns_name =
+      BuildRfc1034Name(dns_protocol::kMaxNameLength, &dotted_name);
+
+  std::string response_data(kResponseHeader, sizeof(kResponseHeader) - 1);
+  response_data.append(reinterpret_cast<const char*>(dns_name.data()),
+                       dns_name.size());
+  response_data.append(
+      "\x00\x01"   // TYPE=A
+      "\x00\x01",  // CLASS=IN)
+      4);
+
+  DnsResponse resp1;
+  memcpy(resp1.io_buffer()->data(), response_data.data(), response_data.size());
+
+  EXPECT_TRUE(resp1.InitParseWithoutQuery(response_data.size()));
+
+  DnsQuery query(
+      581,
+      base::StringPiece(reinterpret_cast<const char*>(dns_name.data()),
+                        dns_name.size()),
+      dns_protocol::kTypeA);
+
+  DnsResponse resp2(resp1.io_buffer(), response_data.size());
+  EXPECT_TRUE(resp2.InitParse(response_data.size(), query));
+}
+
+TEST(DnsResponseTest, InitParseRejectsQuestionWithTooLongName) {
+  const char kResponseHeader[] =
+      "\x02\x45"   // ID
+      "\x81\x80"   // Standard query response, RA, no error
+      "\x00\x01"   // 1 question
+      "\x00\x00"   // 0 answers
+      "\x00\x00"   // 0 authority records
+      "\x00\x00";  // 0 additional records
+
+  std::string dotted_name;
+  const std::vector<uint8_t> dns_name =
+      BuildRfc1034Name(dns_protocol::kMaxNameLength + 1, &dotted_name);
+
+  std::string response_data(kResponseHeader, sizeof(kResponseHeader) - 1);
+  response_data.append(reinterpret_cast<const char*>(dns_name.data()),
+                       dns_name.size());
+  response_data.append(
+      "\x00\x01"   // TYPE=A
+      "\x00\x01",  // CLASS=IN)
+      4);
+
+  DnsResponse resp;
+  memcpy(resp.io_buffer()->data(), response_data.data(), response_data.size());
+
+  // Need to use InitParseWithoutQuery because DnsQuery disallows being created
+  // with too long of a name, so `InitParse(query)` could only ever test that
+  // responses are rejected when the contained question doesn't match the
+  // expected query.
+  EXPECT_FALSE(resp.InitParseWithoutQuery(response_data.size()));
 }
 
 TEST(DnsResponseWriteTest, SingleARecordAnswer) {

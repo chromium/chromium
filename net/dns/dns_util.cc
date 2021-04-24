@@ -169,7 +169,10 @@ base::Optional<std::string> DnsDomainToString(base::BigEndianReader& reader,
     base::StringPiece label;
     if (!reader.ReadU8LengthPrefixed(&label))
       return base::nullopt;
-    octets_read += label.size() + 1;
+
+    // Final zero-length label not included in size enforcement.
+    if (label.size() != 0)
+      octets_read += label.size() + 1;
 
     if (label.size() > dns_protocol::kMaxLabelLength)
       return base::nullopt;
@@ -188,10 +191,9 @@ base::Optional<std::string> DnsDomainToString(base::BigEndianReader& reader,
   if (require_complete)
     return base::nullopt;
 
-  // If terminating zero-length label was not included in the input, it still
-  // counts against the max name length.
-  if (octets_read + 1 > dns_protocol::kMaxNameLength)
-    return base::nullopt;
+  // If terminating zero-length label was not included in the input, no need to
+  // recheck against max name length because terminating zero-length label does
+  // not count against the limit.
 
   return ret;
 }

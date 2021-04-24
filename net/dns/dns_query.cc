@@ -256,13 +256,18 @@ bool DnsQuery::ReadHeader(base::BigEndianReader* reader,
 bool DnsQuery::ReadName(base::BigEndianReader* reader, std::string* out) {
   DCHECK(out != nullptr);
   out->clear();
-  out->reserve(dns_protocol::kMaxNameLength);
+  out->reserve(dns_protocol::kMaxNameLength + 1);
   uint8_t label_length;
   if (!reader->ReadU8(&label_length)) {
     return false;
   }
-  out->append(reinterpret_cast<char*>(&label_length), 1);
   while (label_length) {
+    if (out->size() + 1 + label_length > dns_protocol::kMaxNameLength) {
+      return false;
+    }
+
+    out->append(reinterpret_cast<char*>(&label_length), 1);
+
     base::StringPiece label;
     if (!reader->ReadPiece(&label, label_length)) {
       return false;
@@ -271,8 +276,9 @@ bool DnsQuery::ReadName(base::BigEndianReader* reader, std::string* out) {
     if (!reader->ReadU8(&label_length)) {
       return false;
     }
-    out->append(reinterpret_cast<char*>(&label_length), 1);
   }
+  DCHECK_LE(out->size(), static_cast<size_t>(dns_protocol::kMaxNameLength));
+  out->append(1, '\0');
   return true;
 }
 
