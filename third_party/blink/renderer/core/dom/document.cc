@@ -982,6 +982,9 @@ AtomicString Document::ConvertLocalName(const AtomicString& name) {
 // SVGElementFactory because they don't support prefixes correctly.
 Element* Document::CreateRawElement(const QualifiedName& qname,
                                     CreateElementFlags flags) {
+  recordreplay::Assert("Document::CreateRawElement %s %s",
+                       qname.NamespaceURI().Utf8().c_str(),
+                       qname.LocalName().Utf8().c_str());
   Element* element = nullptr;
   if (qname.NamespaceURI() == html_names::xhtmlNamespaceURI) {
     // https://html.spec.whatwg.org/C/#elements-in-the-dom:element-interface
