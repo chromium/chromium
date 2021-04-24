@@ -41,18 +41,18 @@ ResizeToggleMenu::ResizeToggleMenu(views::Widget* widget,
     : widget_(widget), pref_delegate_(pref_delegate) {
   model_ = MakeMenuModel();
   adapter_ = std::make_unique<views::MenuModelAdapter>(model_.get());
-  auto* root_view = adapter_->CreateMenu();
+  root_view_ = adapter_->CreateMenu();
 
   const auto currentMode = PredictCurrentMode(widget_);
   if (currentMode) {
-    auto* item = root_view->GetMenuItemByID(*currentMode);
+    auto* item = root_view_->GetMenuItemByID(*currentMode);
     item->SetSelected(true);
   }
 
   menu_runner_ = std::make_unique<views::MenuRunner>(
-      root_view, views::MenuRunner::CONTEXT_MENU |
-                     views::MenuRunner::USE_TOUCHABLE_LAYOUT |
-                     views::MenuRunner::FIXED_ANCHOR);
+      root_view_, views::MenuRunner::CONTEXT_MENU |
+                      views::MenuRunner::USE_TOUCHABLE_LAYOUT |
+                      views::MenuRunner::FIXED_ANCHOR);
 
   const gfx::Rect client_view_rect =
       widget_->client_view()->GetBoundsInScreen();
