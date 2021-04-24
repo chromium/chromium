@@ -3064,8 +3064,11 @@
         'additional_compile_targets': [
           'chrome',
         ],
+        'mixins': [
+          'enable_resultdb',
+        ],
         'test_suites': {
-          'gtest_tests': 'lacros_all_tast_tests_amd64_generic',
+          'gtest_tests': 'lacros_device_or_vm_tests_fyi',
         },
         'os_type': 'chromeos'
       },

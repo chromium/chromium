@@ -4150,6 +4150,14 @@
       },
     },
 
+    'lacros_device_or_vm_gtests': {
+      'aura_unittests': {},
+      'cc_unittests': {},
+      'interactive_ui_tests': {},
+      'ozone_unittests': {},
+      'vaapi_unittest': {},
+    },
+
     'lacros_skylab_poc': {
       'mainline_lacros_tast_tests': {
         'tast_expr': '("group:mainline" && "dep:lacros")',
@@ -7204,8 +7212,14 @@
       },
     },
 
-    'lacros_all_tast_tests_amd64_generic': {
+    # TODO(crbug.com/1195415): Add EVE variant once HW arrives and is deployed.
+    'lacros_device_or_vm_tests_fyi': {
       'lacros_all_tast_tests': {
+        'variants': [
+          'LACROS_AMD64_GENERIC',
+        ]
+      },
+      'lacros_device_or_vm_gtests': {
         'variants': [
           'LACROS_AMD64_GENERIC',
         ]
