@@ -17,6 +17,7 @@
 #include "media/blink/buffered_data_source_host_impl.h"
 #include "media/blink/multibuffer_reader.h"
 #include "net/base/net_errors.h"
+#include "url/gurl.h"
 
 namespace {
 

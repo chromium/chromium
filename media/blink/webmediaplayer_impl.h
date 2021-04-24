@@ -24,8 +24,6 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "cc/layers/surface_layer.h"
-#include "components/viz/common/gpu/raster_context_provider.h"
 #include "media/base/cdm_config.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/media_observer.h"
@@ -39,17 +37,13 @@
 #include "media/blink/learning_experiment_helper.h"
 #include "media/blink/media_blink_export.h"
 #include "media/blink/multibuffer_data_source.h"
-#include "media/blink/power_status_helper.h"
 #include "media/blink/smoothness_helper.h"
 #include "media/blink/video_frame_compositor.h"
 #include "media/blink/webmediaplayer_params.h"
-#include "media/filters/pipeline_controller.h"
-#include "media/learning/common/media_learning_tasks.h"
 #include "media/mojo/mojom/playback_events_recorder.mojom.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/cpp/media_position.h"
-#include "third_party/blink/public/common/media/display_type.h"
 #include "third_party/blink/public/platform/media/webmediaplayer_delegate.h"
 #include "third_party/blink/public/platform/web_audio_source_provider.h"
 #include "third_party/blink/public/platform/web_content_decryption_module_result.h"
@@ -75,12 +69,26 @@ namespace cc {
 class VideoLayer;
 }
 
+namespace gfx {
+class Size;
+}
+
+namespace learning {
+class LearningTaskController;
+}
+
+namespace viz {
+class RasterContextProvider;
+}
+
 namespace media {
 class CdmContextRef;
 class ChunkDemuxer;
 class VideoDecodeStatsReporter;
 class MediaLog;
 class MemoryDumpProviderProxy;
+class PipelineController;
+class PowerStatusHelper;
 class UrlIndex;
 class VideoFrameCompositor;
 

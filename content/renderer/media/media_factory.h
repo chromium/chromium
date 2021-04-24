@@ -13,8 +13,6 @@
 #include "components/viz/common/surfaces/surface_id.h"
 #include "media/base/renderer_factory_selector.h"
 #include "media/base/routing_token_callback.h"
-#include "media/blink/url_index.h"
-#include "media/blink/webmediaplayer_params.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/buildflags.h"
 #include "media/mojo/clients/mojo_renderer_factory.h"
@@ -52,6 +50,8 @@ class MediaLog;
 class MediaObserver;
 class RemotePlaybackClientWrapper;
 class RendererWebMediaPlayerDelegate;
+class ResourceFetchContext;
+class UrlIndex;
 class WebEncryptedMediaClientImpl;
 }
 

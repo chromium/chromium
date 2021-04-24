@@ -20,7 +20,8 @@
 #include "media/base/tuneable.h"
 #include "media/blink/media_blink_export.h"
 #include "media/blink/url_index.h"
-#include "url/gurl.h"
+
+class GURL;
 
 namespace base {
 class SingleThreadTaskRunner;

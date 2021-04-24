@@ -17,7 +17,6 @@
 #include "base/strings/string_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/blink/cache_util.h"
-#include "media/blink/media_blink_export.h"
 #include "media/blink/resource_fetch_context.h"
 #include "media/blink/url_index.h"
 #include "net/http/http_byte_range.h"

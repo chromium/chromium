@@ -23,6 +23,7 @@
 #include "media/mojo/mojom/video_decode_stats_recorder.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace media {
 

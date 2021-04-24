@@ -19,15 +19,12 @@
 #include "media/base/media_permission.h"
 #include "media/base/mime_util.h"
 #include "media/media_buildflags.h"
-#include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/web_media_key_system_configuration.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/modules/media/webmediaplayer_util.h"
 #include "third_party/blink/public/web/web_local_frame.h"
-#include "url/gurl.h"
-#include "url/origin.h"
 
 namespace media {
 

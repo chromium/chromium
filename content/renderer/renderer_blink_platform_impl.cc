@@ -62,7 +62,6 @@
 #include "media/audio/audio_output_device.h"
 #include "media/base/media_permission.h"
 #include "media/base/media_switches.h"
-#include "media/blink/webcontentdecryptionmodule_impl.h"
 #include "media/filters/stream_parser_factory.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "media/webrtc/webrtc_switches.h"

@@ -13,12 +13,12 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/time/time.h"
-#include "media/filters/source_buffer_parse_warnings.h"
 #include "third_party/blink/public/platform/web_source_buffer.h"
 
 namespace media {
 class ChunkDemuxer;
 class MediaTracks;
+enum class SourceBufferParseWarning;
 
 class WebSourceBufferImpl : public blink::WebSourceBuffer {
  public:
