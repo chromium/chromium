@@ -5,7 +5,6 @@
 #include "ui/base/clipboard/clipboard_monitor.h"
 
 #include "build/chromeos_buildflags.h"
-#include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_observer.h"
 
 namespace ui {

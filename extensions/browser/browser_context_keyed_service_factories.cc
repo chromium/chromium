@@ -44,8 +44,11 @@
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/updater/update_service_factory.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "extensions/browser/api/clipboard/clipboard_api.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_private_api.h"
 #include "extensions/browser/api/vpn_provider/vpn_service_factory.h"
 #include "extensions/browser/api/webcam_private/webcam_private_api.h"
@@ -66,7 +69,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   AudioAPI::GetFactoryInstance();
   BluetoothAPI::GetFactoryInstance();
   BluetoothPrivateAPI::GetFactoryInstance();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   ClipboardAPI::GetFactoryInstance();
 #endif
   api::BluetoothSocketEventDispatcher::GetFactoryInstance();
