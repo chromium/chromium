@@ -18,7 +18,7 @@ namespace arc {
 namespace {
 
 constexpr gfx::Size kPortraitPhoneDp(412, 732);
-constexpr gfx::Size kLandscapeTabletDp(1200, 800);
+constexpr gfx::Size kLandscapeTabletDp(1064, 600);
 
 using ResizeCallback = base::OnceCallback<void(views::Widget*)>;
 
