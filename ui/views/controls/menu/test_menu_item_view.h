@@ -21,8 +21,6 @@ class TestMenuItemView : public MenuItemView {
 
   using MenuItemView::AddEmptyMenus;
 
-  using MenuItemView::GetMinorIconColor;
-
   void set_has_mnemonics(bool has_mnemonics) { has_mnemonics_ = has_mnemonics; }
 
   bool show_mnemonics() { return show_mnemonics_; }
