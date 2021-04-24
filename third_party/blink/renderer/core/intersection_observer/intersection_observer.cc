@@ -508,7 +508,7 @@ void IntersectionObserver::Deliver() {
   for (auto& observation : observations_)
     observations_vector.push_back(observation);
   std::sort(observations_vector.begin(), observations_vector.end(),
-            recordreplay::CompareMemberByPointerId());
+            recordreplay::CompareMemberByPointerId<Member<IntersectionObservation>>());
 
   for (auto& observation : observations_vector)
     observation->TakeRecords(entries);

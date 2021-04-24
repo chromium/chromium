@@ -46,7 +46,7 @@ class ResourceClientWalker {
 
     // Sort by pointer ID when recording/replaying to ensure a consistent iteration order.
     std::sort(client_vector_.begin(), client_vector_.end(),
-              recordreplay::CompareMemberByPointerId());
+              recordreplay::CompareMemberByPointerId<Member<ResourceClient>>());
   }
 
   T* Next() {

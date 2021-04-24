@@ -58,7 +58,7 @@ void IntersectionObserverController::DeliverNotifications(
       intersection_observers_being_invoked.push_back(observer);
   }
   std::sort(intersection_observers_being_invoked.begin(), intersection_observers_being_invoked.end(),
-            recordreplay::CompareMemberByPointerId());
+            recordreplay::CompareMemberByPointerId<Member<IntersectionObserver>>());
   for (auto& observer : intersection_observers_being_invoked) {
     pending_intersection_observers_.erase(observer);
     observer->Deliver();
@@ -77,7 +77,7 @@ bool IntersectionObserverController::ComputeIntersections(
     HeapVector<Member<IntersectionObserver>> observers_to_process;
     CopyToVector(tracked_explicit_root_observers_, observers_to_process);
     std::sort(observers_to_process.begin(), observers_to_process.end(),
-              recordreplay::CompareMemberByPointerId());
+              recordreplay::CompareMemberByPointerId<Member<IntersectionObserver>>());
     for (auto& observer : observers_to_process) {
       if (observer->HasObservations()) {
         SCOPED_UMA_AND_UKM_TIMER(ukm_aggregator, observer->GetUkmMetricId());
@@ -91,7 +91,7 @@ bool IntersectionObserverController::ComputeIntersections(
     HeapVector<Member<IntersectionObservation>> observations_to_process;
     CopyToVector(tracked_implicit_root_observations_, observations_to_process);
     std::sort(observations_to_process.begin(), observations_to_process.end(),
-              recordreplay::CompareMemberByPointerId());
+              recordreplay::CompareMemberByPointerId<Member<IntersectionObservation>>());
     for (auto& observation : observations_to_process) {
       SCOPED_UMA_AND_UKM_TIMER(ukm_aggregator,
                                observation->Observer()->GetUkmMetricId());

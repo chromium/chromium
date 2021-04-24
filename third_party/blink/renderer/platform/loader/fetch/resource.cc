@@ -68,7 +68,7 @@ void NotifyFinishObservers(
   HeapVector<Member<ResourceFinishObserver>> observers_vector;
   CopyToVector(*observers, observers_vector);
   std::sort(observers_vector.begin(), observers_vector.end(),
-            recordreplay::CompareMemberByPointerId());
+            recordreplay::CompareMemberByPointerId<Member<ResourceFinishObserver>>());
   for (const auto& observer : observers_vector)
     observer->NotifyFinished();
 }

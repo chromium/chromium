@@ -71,7 +71,7 @@ bool ElementIntersectionObserverData::ComputeIntersectionsForTarget(
   }
 
   std::sort(observations_to_process.begin(), observations_to_process.end(),
-            recordreplay::CompareMemberByPointerId());
+            recordreplay::CompareMemberByPointerId<Member<IntersectionObservation>>());
 
   for (auto& observation : observations_to_process) {
     observation->ComputeIntersection(flags);

@@ -96,7 +96,7 @@ void SVGDocumentExtensions::DispatchSVGLoadEventToOutermostSVGElements() {
   HeapVector<Member<SVGSVGElement>> time_containers;
   CopyToVector(time_containers_, time_containers);
   std::sort(time_containers.begin(), time_containers.end(),
-            recordreplay::CompareMemberByPointerId());
+            recordreplay::CompareMemberByPointerId<Member<SVGSVGElement>>());
   for (const auto& container : time_containers) {
     SVGSVGElement* outer_svg = container.Get();
     if (!outer_svg->IsOutermostSVGSVGElement())

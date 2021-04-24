@@ -2078,7 +2078,8 @@ void ResourceFetcher::UpdateAllImageResourcePriorities() {
   for (Resource* resource : not_loaded_image_resources_) {
     entries.push_back(resource);
   }
-  std::sort(entries.begin(), entries.end(), recordreplay::CompareMemberByPointerId());
+  std::sort(entries.begin(), entries.end(),
+            recordreplay::CompareMemberByPointerId<Member<Resource>>());
 
   HeapVector<Member<Resource>> to_be_removed;
   for (Resource* resource : entries) {
