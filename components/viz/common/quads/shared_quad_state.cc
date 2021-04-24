@@ -4,6 +4,7 @@
 
 #include "components/viz/common/quads/shared_quad_state.h"
 
+#include "base/record_replay.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
@@ -30,6 +31,13 @@ void SharedQuadState::SetAll(const gfx::Transform& quad_to_target_transform,
                              float opacity,
                              SkBlendMode blend_mode,
                              int sorting_context_id) {
+  recordreplay::Assert("SharedQuadState::SetAll #1 %d %d %.2f %d %d",
+                       is_clipped, are_contents_opaque, opacity, blend_mode, sorting_context_id);
+  recordreplay::Assert("SharedQuadState::SetAll #2 %s", quad_to_target_transform.ToString().c_str());
+  recordreplay::Assert("SharedQuadState::SetAll #3 %s", quad_layer_rect.ToString().c_str());
+  recordreplay::Assert("SharedQuadState::SetAll #4 %s", visible_quad_layer_rect.ToString().c_str());
+  recordreplay::Assert("SharedQuadState::SetAll #5 %s", clip_rect.ToString().c_str());
+  recordreplay::Assert("SharedQuadState::SetAll #6 %s", mask_filter_info.ToString().c_str());
   this->quad_to_target_transform = quad_to_target_transform;
   this->quad_layer_rect = quad_layer_rect;
   this->visible_quad_layer_rect = visible_quad_layer_rect;
