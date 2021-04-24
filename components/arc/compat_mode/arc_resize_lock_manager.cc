@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/memory/singleton.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "components/arc/compat_mode/resize_confirmation_dialog.h"
 
 namespace arc {
 
@@ -113,31 +112,9 @@ bool ArcResizeLockManager::OnResizeButtonPressed(views::Widget* widget) {
     return false;
   }
 
-  const auto* app_id = widget->GetNativeWindow()->GetProperty(ash::kAppIDKey);
-  if (app_id && pref_delegate_ &&
-      !pref_delegate_->GetResizeLockNeedsConfirmation(*app_id)) {
-    // The user has already agreed not to show the dialog again.
-    widget->Maximize();
-    return true;
-  }
+  resize_toggle_menu_ =
+      std::make_unique<ResizeToggleMenu>(widget, pref_delegate_);
 
-  // Set target app window as parent so that the dialog will destroyed
-  // together when the app window is destroyed (e.g. app crashed).
-  ShowResizeConfirmationDialog(
-      /*parent=*/widget->GetNativeWindow(),
-      base::BindOnce(
-          [](views::Widget* widget, ArcResizeLockPrefDelegate* delegate,
-             bool accepted, bool do_not_ask_again) {
-            if (accepted) {
-              const auto* app_id =
-                  widget->GetNativeWindow()->GetProperty(ash::kAppIDKey);
-              if (do_not_ask_again && app_id && delegate)
-                delegate->SetResizeLockNeedsConfirmation(*app_id, false);
-
-              widget->Maximize();
-            }
-          },
-          widget, pref_delegate_));
   return true;
 }
 

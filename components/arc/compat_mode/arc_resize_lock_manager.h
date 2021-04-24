@@ -9,6 +9,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "components/arc/compat_mode/arc_resize_lock_pref_delegate.h"
+#include "components/arc/compat_mode/resize_toggle_menu.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
@@ -66,6 +67,8 @@ class ArcResizeLockManager : public KeyedService,
   virtual void DisableResizeLock(aura::Window* window);
 
   ArcResizeLockPrefDelegate* pref_delegate_{nullptr};
+
+  std::unique_ptr<ResizeToggleMenu> resize_toggle_menu_;
 
   base::ScopedObservation<aura::Env, aura::EnvObserver> env_observation{this};
 
