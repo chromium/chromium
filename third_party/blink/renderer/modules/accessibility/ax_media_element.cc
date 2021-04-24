@@ -46,7 +46,7 @@ String AccessibilityMediaElement::TextAlternative(
 }
 
 bool AccessibilityMediaElement::CanHaveChildren() const {
-  return HasControls();
+  return true;
 }
 
 bool AccessibilityMediaElement::ComputeAccessibilityIsIgnored(

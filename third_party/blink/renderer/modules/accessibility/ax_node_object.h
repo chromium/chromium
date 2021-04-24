@@ -90,7 +90,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
 
   // Check object role or purpose.
   bool IsAutofillAvailable() const override;
-  bool IsControllingVideoElement() const;
   bool IsDefault() const final;
   bool IsFieldset() const final;
   bool IsHovered() const final;

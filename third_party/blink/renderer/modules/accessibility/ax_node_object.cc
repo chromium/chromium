@@ -113,7 +113,6 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_position.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_range.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_relation_cache.h"
-#include "third_party/blink/renderer/modules/media_controls/elements/media_control_elements_helper.h"
 #include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
@@ -1133,15 +1132,6 @@ bool AXNodeObject::IsControl() const {
   auto* element = DynamicTo<Element>(node);
   return ((element && element->IsFormControlElement()) ||
           AXObject::IsARIAControl(AriaRoleAttribute()));
-}
-
-bool AXNodeObject::IsControllingVideoElement() const {
-  Node* node = GetNode();
-  if (!node)
-    return true;
-
-  return IsA<HTMLVideoElement>(
-      MediaControlElementsHelper::ToParentMediaElement(node));
 }
 
 bool AXNodeObject::IsAutofillAvailable() const {
