@@ -2062,6 +2062,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3264544094376351444">Fuente Sans-serif</translation>
 <translation id="3264582393905923483">Contexto</translation>
 <translation id="3265459715026181080">Cerrar ventana</translation>
+<translation id="3266022278425892773">Entorno de desarrollo de Linux</translation>
 <translation id="3266274118485960573">Se está ejecutando la verificación de seguridad.</translation>
 <translation id="3267726687589094446">Seguir permitiendo las descargas automáticas de varios archivos</translation>
 <translation id="3268451620468152448">Pestañas abiertas</translation>
@@ -3648,6 +3649,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="5051836348807686060">Los idiomas seleccionados no son compatibles con el corrector ortográfico</translation>
 <translation id="5052499409147950210">Editar sitio</translation>
 <translation id="5053962746715621840">Buscar imagen con Google Lens</translation>
+<translation id="5056950756634735043">Conectando al contenedor</translation>
 <translation id="5057110919553308744">Cuando haces clic en la extensión</translation>
 <translation id="5057403786441168405">Administra las cuentas en las que accediste. En función de los permisos, es posible que los sitios web, las apps y las extensiones en Chrome y Google Play usen estas cuentas para personalizar tu experiencia. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Restringir el acceso</translation>
@@ -6093,7 +6095,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7807067443225230855">Búsqueda y Asistente</translation>
 <translation id="7807711621188256451">Permitir siempre que <ph name="HOST" /> acceda a la cámara</translation>
-<translation id="7809278638132552546">Entorno de desarrollo de Linux (Beta)</translation>
 <translation id="7810202088502699111">Se bloquearon las ventanas emergentes en esta página.</translation>
 <translation id="781167124805380294">Transmitir <ph name="FILE_NAME" /></translation>
 <translation id="7814277578404816512">Conoce las novedades de tu <ph name="DEVICE_TYPE" /></translation>
@@ -6310,7 +6311,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8032244173881942855">No se puede transmitir la pestaña</translation>
 <translation id="8033827949643255796">seleccionados</translation>
 <translation id="8033958968890501070">Se agotó el tiempo de espera</translation>
-<translation id="8036049989879571495">Configura el entorno de desarrollo de Linux (Beta)</translation>
 <translation id="8037117027592400564">Leer todo el texto hablado con la síntesis de voz</translation>
 <translation id="8037357227543935929">Preguntar (predeterminado)</translation>
 <translation id="803771048473350947">Archivo</translation>

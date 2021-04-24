@@ -2063,6 +2063,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3264544094376351444">Sans-serif shrift</translation>
 <translation id="3264582393905923483">Kontekst</translation>
 <translation id="3265459715026181080">Oynani yopish</translation>
+<translation id="3266022278425892773">Linux dasturlash muhiti</translation>
 <translation id="3266274118485960573">Xavfsizlik tekshiruvi bajarilmoqda.</translation>
 <translation id="3267726687589094446">Bir necha fayllarni birdaniga avtomatik yuklab olishga hali ham ruxsat berilsin</translation>
 <translation id="3268451620468152448">Ochiq ichki oynalar</translation>
@@ -3649,6 +3650,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5051836348807686060">Tanlangan tilda imlo tekshirilmaydi</translation>
 <translation id="5052499409147950210">Saytni tahrirlash</translation>
 <translation id="5053962746715621840">Google Lens yordamida rasm qidirish</translation>
+<translation id="5056950756634735043">Konteynerga ulanmoqda</translation>
 <translation id="5057110919553308744">Kengaytma bosilganda</translation>
 <translation id="5057403786441168405">Kirilgan hisoblaringizni boshqaring. Chrome va Google Play marketdagi saytlar, ilovalar va kengaytmalar bu hisoblardan berilgan ruxsatlar asosida xizmatlarni sizga yanada mosroq va qulayroq qilishda foydalanishi mumkin. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Kirishni taqiqlash</translation>
@@ -6093,7 +6095,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="7805768142964895445">Holat</translation>
 <translation id="7807067443225230855">Qidiruv va assistent</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> saytiga kameradan foydalanishga doim ruxsat berish</translation>
-<translation id="7809278638132552546">Linux dasturlash muhiti (Beta)</translation>
 <translation id="7810202088502699111">Qalqib chiquvchi oynalar bloklandi.</translation>
 <translation id="781167124805380294">Translatsiya qilish: <ph name="FILE_NAME" /></translation>
 <translation id="7814277578404816512"><ph name="DEVICE_TYPE" /> qurilmangizdagi oʻzgarishlar bilan tanishing</translation>
@@ -6309,7 +6310,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8032244173881942855">Sahifani translatsiya qilib bo‘lmadi.</translation>
 <translation id="8033827949643255796">tanlandi</translation>
 <translation id="8033958968890501070">Vaqt tugadi</translation>
-<translation id="8036049989879571495">Linux dasturlash muhitini (Beta) sozlash</translation>
 <translation id="8037117027592400564">Nutq sintezatori orqali barcha matnni ovozli o‘qish</translation>
 <translation id="8037357227543935929">So‘ralsin (standart sozlama)</translation>
 <translation id="803771048473350947">Fayl</translation>

@@ -2064,6 +2064,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3264544094376351444">Sans-serif yazı tipi</translation>
 <translation id="3264582393905923483">Bağlam</translation>
 <translation id="3265459715026181080">Pencereyi Kapat</translation>
+<translation id="3266022278425892773">Linux geliştirme ortamı</translation>
 <translation id="3266274118485960573">Güvenlik kontrolü çalışıyor.</translation>
 <translation id="3267726687589094446">Otomatik olarak birden fazla dosya indirilmesine izin vermeye devam et</translation>
 <translation id="3268451620468152448">Açık Sekmeler</translation>
@@ -3650,6 +3651,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="5051836348807686060">Yazım denetimi, seçtiğiniz diller için desteklenmiyor</translation>
 <translation id="5052499409147950210">Siteyi düzenle</translation>
 <translation id="5053962746715621840">Google Lens ile Resim Ara</translation>
+<translation id="5056950756634735043">Kapsayıcıya bağlanıyor</translation>
 <translation id="5057110919553308744">Uzantıyı tıkladığınızda</translation>
 <translation id="5057403786441168405">Oturum açtığınız hesaplarınızı yönetin. Chrome ve Google Play'deki web siteleri, uygulamalar ve uzantılar, izinlere bağlı olarak deneyiminizi özelleştirmek için bu hesapları kullanabilirler. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Oturum açma özelliğini kısıtla</translation>
@@ -6096,7 +6098,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7805768142964895445">Durum</translation>
 <translation id="7807067443225230855">Arama ve Asistan</translation>
 <translation id="7807711621188256451">Kameranıza <ph name="HOST" /> tarafından erişilmesine her zaman izin verin</translation>
-<translation id="7809278638132552546">Linux geliştirme ortamı (Beta)</translation>
 <translation id="7810202088502699111">Bu sayfadaki pop-up'lar engellendi.</translation>
 <translation id="781167124805380294"><ph name="FILE_NAME" /> dosyasını yayınlayın</translation>
 <translation id="7814277578404816512"><ph name="DEVICE_TYPE" /> cihazınızdaki yenilikler</translation>
@@ -6312,7 +6313,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8032244173881942855">Sekme yayınlanamıyor.</translation>
 <translation id="8033827949643255796">seçildi</translation>
 <translation id="8033958968890501070">Zaman aşımı</translation>
-<translation id="8036049989879571495">Linux geliştirme ortamını (Beta) kurun</translation>
 <translation id="8037117027592400564">Sentezlenmiş konuşma özelliği kullanılarak söylenen tüm metni okuma</translation>
 <translation id="8037357227543935929">Sor (varsayılan)</translation>
 <translation id="803771048473350947">Dosya</translation>

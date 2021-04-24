@@ -2064,6 +2064,7 @@
 <translation id="3264544094376351444">Sans-serif შრიფტი</translation>
 <translation id="3264582393905923483">კონტექსტი</translation>
 <translation id="3265459715026181080">ფანჯრის დახურვა</translation>
+<translation id="3266022278425892773">Linux-ის გარემო დეველოპერებისთვის</translation>
 <translation id="3266274118485960573">მიმდინარეობს უსაფრთხოების შემოწმება.</translation>
 <translation id="3267726687589094446">რამდენიმე ფაილის ავტომატური ჩამოტვირთვის დაშვების გაგრძელება</translation>
 <translation id="3268451620468152448">გახსნილი ჩანართები</translation>
@@ -3650,6 +3651,7 @@
 <translation id="5051836348807686060">მართლწერის შემოწმება მხარდაუჭერელია თქვენ მიერ არჩეული ენებისთვის</translation>
 <translation id="5052499409147950210">საიტის რედაქტირება</translation>
 <translation id="5053962746715621840">სურათის ძიება Google Lens-ით</translation>
+<translation id="5056950756634735043">მიმდინარეობს კონტეინერთან დაკავშირება</translation>
 <translation id="5057110919553308744">გაფართოებაზე დაწკაპუნებისას</translation>
 <translation id="5057403786441168405">მართეთ თქვენი სისტემაში შესული ანგარიშები. მინიჭებული ნებართვების მიხედვით, Chrome-სა და Google Play-ში არსებულმა ვებსაიტებმა, აპებმა თუ გაფართოებებმა შეიძლება გამოიყენოს აღნიშნული ანგარიშები სერვისებით სარგებლობის პროცესის თქვენზე მოსარგებად. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">შესვლის შეზღუდვა</translation>
@@ -6095,7 +6097,6 @@
 <translation id="7805768142964895445">სტატუსი</translation>
 <translation id="7807067443225230855">ძიება და ასისტენტი</translation>
 <translation id="7807711621188256451">ყოველთვის მიეცით <ph name="HOST" />-ს თქვენს კამერაზე წვდომის ნება</translation>
-<translation id="7809278638132552546">Linux-ის შემუშავების გარემო (ბეტა)</translation>
 <translation id="7810202088502699111">კონტექსტური ფანჯრები დაბლოკილია ამ გვერდზე.</translation>
 <translation id="781167124805380294"><ph name="FILE_NAME" />-ის ტრანსლირება</translation>
 <translation id="7814277578404816512">იხილეთ, რა არის ახალი თქვენს <ph name="DEVICE_TYPE" />-ში</translation>
@@ -6311,7 +6312,6 @@
 <translation id="8032244173881942855">ჩანართის ტრანსლირება შეუძლებელია.</translation>
 <translation id="8033827949643255796">არჩეულია</translation>
 <translation id="8033958968890501070">დრო ამოიწურა</translation>
-<translation id="8036049989879571495">დააყენეთ Linux-ის შემუშავების გარემო (ბეტა)</translation>
 <translation id="8037117027592400564">წარმოთქმული ტექსტის წაკითხვა სინთეზირებული მეტყველების გამოყენებით</translation>
 <translation id="8037357227543935929">შეკითხვა (ნაგულისხმევი)</translation>
 <translation id="803771048473350947">ფაილი</translation>

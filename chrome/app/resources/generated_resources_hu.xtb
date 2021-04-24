@@ -2064,6 +2064,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3264544094376351444">Talp nélküli betűtípus</translation>
 <translation id="3264582393905923483">Kontextus</translation>
 <translation id="3265459715026181080">Ablak bezárása</translation>
+<translation id="3266022278425892773">Linux fejlesztői környezet</translation>
 <translation id="3266274118485960573">A biztonsági ellenőrzés éppen fut.</translation>
 <translation id="3267726687589094446">Több fájl automatikus letöltésének engedélyezése továbbra is</translation>
 <translation id="3268451620468152448">Megnyitott lapok</translation>
@@ -3649,6 +3650,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="5051836348807686060">A helyesírás-ellenőrzés nem támogatott a kiválasztott nyelveken</translation>
 <translation id="5052499409147950210">Webhely szerkesztése</translation>
 <translation id="5053962746715621840">Képek keresése a Google Lens segítségével</translation>
+<translation id="5056950756634735043">Csatlakozás a tárolóhoz</translation>
 <translation id="5057110919553308744">Amikor a bővítményre kattint</translation>
 <translation id="5057403786441168405">Kezelheti a bejelentkezett fiókjait. A webhelyek, az alkalmazások, a Chrome-bővítmények és a Google Play – az engedélyektől függően – ezeket a fiókokat használhatják az élmény személyre szabására. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="5059241099014281248">Korlátozott bejelentkezés</translation>
@@ -6096,7 +6098,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7805768142964895445">Állapot</translation>
 <translation id="7807067443225230855">Keresés és a Segéd</translation>
 <translation id="7807711621188256451">A(z) <ph name="HOST" /> mindig hozzáférhet az Ön kamerájához</translation>
-<translation id="7809278638132552546">Linux fejlesztői környezet (Béta)</translation>
 <translation id="7810202088502699111">Az előugró ablakok le vannak tiltva ezen az oldalon.</translation>
 <translation id="781167124805380294"><ph name="FILE_NAME" /> átküldése</translation>
 <translation id="7814277578404816512">Tekintse meg a(z) <ph name="DEVICE_TYPE" /> újdonságait</translation>
@@ -6313,7 +6314,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8032244173881942855">Nem lehet átküldeni a lapot.</translation>
 <translation id="8033827949643255796">kijelölve</translation>
 <translation id="8033958968890501070">Időtúllépés</translation>
-<translation id="8036049989879571495">Linux fejlesztői környezet (béta) beállítása</translation>
 <translation id="8037117027592400564">Az összes szöveg felolvasása szintetizált beszéddel kimondva</translation>
 <translation id="8037357227543935929">Kérdezzen rá (alapértelmezés szerint)</translation>
 <translation id="803771048473350947">Fájl</translation>

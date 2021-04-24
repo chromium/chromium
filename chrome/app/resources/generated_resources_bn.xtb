@@ -2064,6 +2064,7 @@
 <translation id="3264544094376351444">Sans-Serif হরফ</translation>
 <translation id="3264582393905923483">প্রসঙ্গ</translation>
 <translation id="3265459715026181080">উইন্ডো বন্ধ করুন</translation>
+<translation id="3266022278425892773">লিনাক্স ডেভেলপমেন্ট এনভায়রনমেন্ট</translation>
 <translation id="3266274118485960573">নিরাপত্তা সংক্রান্ত পরীক্ষা চালানো হচ্ছে।</translation>
 <translation id="3267726687589094446">একাধিক ফাইলের অটোমেটিক ডাউনলোডের মঞ্জুরি দেওয়া জারি রাখুন</translation>
 <translation id="3268451620468152448">ওপেন ট্যাব</translation>
@@ -3078,6 +3079,7 @@
 <translation id="4392896746540753732">কনফিগারেশন ফাইল এডিট করুন</translation>
 <translation id="4394049700291259645">বন্ধ</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{সবকটি &amp;খুলুন}=1{বুকমার্ক &amp;খুলুন}one{সবকটি ({COUNT}টি) &amp;খুলুন}other{সবকটি ({COUNT}টি) &amp;খুলুন}}</translation>
+<translation id="4398131717714042083">সার্চ বক্স থেকে ইতিহাস ও অটোকমপ্লিট করার ডেটা মুছে যাবে</translation>
 <translation id="439817266247065935">আপনার ডিভাইস সঠিকভাবে বন্ধ করা হয়নি। Linux অ্যাপ ব্যবহার করার জন্য Linux রিস্টার্ট করুন।</translation>
 <translation id="4400367121200150367">যে সাইটগুলি কখনও পাসওয়ার্ড সংরক্ষণ করে না সেগুলি এখানে দেখা যাবে</translation>
 <translation id="4400632832271803360">সবথেকে উপরের-সারির কীগুলির আচরণ পরিবর্তন করতে লঞ্চার কী ধরে থাকুন</translation>
@@ -3648,6 +3650,7 @@
 <translation id="5051836348807686060">আপনার বেছে নেওয়া ভাষায় বানান পরীক্ষা করা যাবে না</translation>
 <translation id="5052499409147950210">সাইট সম্পাদনা করুন</translation>
 <translation id="5053962746715621840">Google Lens ব্যবহার করে ছবি সার্চ করুন</translation>
+<translation id="5056950756634735043">কন্টেনারে কানেক্ট করা হচ্ছে</translation>
 <translation id="5057110919553308744">যখন আপনি এক্সটেনশনে ক্লিক করেন</translation>
 <translation id="5057403786441168405">আপনার সাইন-ইন করা অ্যাকাউন্টগুলি ম্যানেজ করুন। আপনার অনুমতি পাওয়ার উপর নির্ভর করে, আপনার পছন্দ অনুযায়ী অভিজ্ঞতা প্রদান করতে, Chrome ও Google Play-তে থাকা ওয়েবসাইট, অ্যাপ ও এক্সটেনশন এই অ্যাকাউন্টগুলি ব্যবহার করতে পারে। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">সাইন-ইন করা সীমিত করুন</translation>
@@ -5061,6 +5064,7 @@
 <translation id="6651237644330755633">ওয়েবসাইটগুলিকে শনাক্ত করার জন্য এই শংসপত্রটিকে বিশ্বাস করুন</translation>
 <translation id="6651495917527016072">আপনার ফোনের সাথে ওয়াই-ফাই নেটওয়ার্ক সিঙ্ক করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">Chrome <ph name="MS_AD_NAME" /> ইন্টিগ্রেশন শুধুমাত্র x86_64 প্ল্যাটফর্মে সমর্থিত। ARM অথবা x86 প্ল্যাটফর্মে তৈরি Chromebook এ এই কাজটি করা যাবে না।</translation>
+<translation id="66537479323396140">সার্চ বক্স থেকে ইতিহাস ও অটোকমপ্লিট করার ডেটা মুছে যাবে। <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> লিঙ্কে আপনার Google অ্যাকাউন্টের অন্যান্য ধরনের ব্রাউজিংয়ের ইতিহাস থাকতে পারে।</translation>
 <translation id="6654509035557065241">পছন্দের নেটওয়ার্ক</translation>
 <translation id="6655190889273724601">ডেভেলপার মোড</translation>
 <translation id="6655458902729017087">অ্যাকাউন্টগুলি লুকান</translation>
@@ -5927,6 +5931,7 @@
 <translation id="7636919061354591437">এই ডিভাইসে ইনস্টল করুন</translation>
 <translation id="7637593984496473097">ডিস্কে যথেষ্ট জায়গা নেই</translation>
 <translation id="7638605456503525968">সিরিয়াল পোর্ট</translation>
+<translation id="7639914187072011620">সার্ভার থেকে SAML রিডাইরেক্ট ইউআরএল পাওয়া যায়নি</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> স্বয়ংক্রিয়ভাবে আপনার সংরক্ষণ করা পাসওয়ার্ড দিয়ে উপযুক্ত সাইটগুলিতে আপনাকে প্রবেশ করায়।</translation>
 <translation id="7642778300616172920">ব্যক্তিগত কোনও কিছু দেখতে চাই না</translation>
 <translation id="7643842463591647490">{0,plural, =1{#টি খোলা উইন্ডো}one{#টি খোলা উইন্ডো}other{#টি খোলা উইন্ডো}}</translation>
@@ -6091,7 +6096,6 @@
 <translation id="7805768142964895445">স্থিতি</translation>
 <translation id="7807067443225230855">সার্চ এবং সহায়ক</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> কে সর্বদা আপনার ক্যামেরা অ্যাক্সেস করতে অনুমতি দিন</translation>
-<translation id="7809278638132552546">Linux ডেভেলপমেন্ট এনভায়রনমেন্ট (বিটা)</translation>
 <translation id="7810202088502699111">এই পৃষ্ঠাতে পপ-আপগুলি ব্লক করা হয়েছে৷</translation>
 <translation id="781167124805380294"><ph name="FILE_NAME" /> কাস্ট করুন</translation>
 <translation id="7814277578404816512"><ph name="DEVICE_TYPE" />-এ নতুন কী আছে দেখুন</translation>
@@ -6308,7 +6312,6 @@
 <translation id="8032244173881942855">ট্যাব কাস্ট করতে অক্ষম৷</translation>
 <translation id="8033827949643255796">নির্বাচিত</translation>
 <translation id="8033958968890501070">সময় শেষ হয়ে গেছে</translation>
-<translation id="8036049989879571495">Linux ডেভেলপ করার বিকল্প সেট আপ করুন (বিট)</translation>
 <translation id="8037117027592400564">সিন্থেসাইজড স্পিচ ব্যবহার করে কথিত সব পাঠ্য পড়ুন</translation>
 <translation id="8037357227543935929">জিজ্ঞাসা করুন (ডিফল্ট)</translation>
 <translation id="803771048473350947">ফাইল</translation>

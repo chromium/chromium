@@ -2065,6 +2065,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3264544094376351444">Seriifideta font</translation>
 <translation id="3264582393905923483">Kontekst</translation>
 <translation id="3265459715026181080">Sulge aken</translation>
+<translation id="3266022278425892773">Linuxi arenduskeskkond</translation>
 <translation id="3266274118485960573">Ohutuskontroll on käimas.</translation>
 <translation id="3267726687589094446">Luba ka edaspidi mitme faili automaatset allalaadimist</translation>
 <translation id="3268451620468152448">Avatud vahelehed</translation>
@@ -3651,6 +3652,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="5051836348807686060">Õigekirjakontrolli teie valitud keelte puhul ei toetata</translation>
 <translation id="5052499409147950210">Saidi muutmine</translation>
 <translation id="5053962746715621840">Pildi otsimine Google Lensiga</translation>
+<translation id="5056950756634735043">Ühenduse loomine konteineriga</translation>
 <translation id="5057110919553308744">Laiendusel klõpsamisel</translation>
 <translation id="5057403786441168405">Hallake oma sisselogitud kontosid. Veebisaidid, rakendused ja laiendused Chrome’is ning Google Plays võivad olenevalt lubadest kasutada neid kontosid teie kasutuskogemuse isikupärastamiseks. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Sisselogimise piiramine</translation>
@@ -6096,7 +6098,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="7805768142964895445">Olek</translation>
 <translation id="7807067443225230855">Otsing ja assistent</translation>
 <translation id="7807711621188256451">Luba saidil <ph name="HOST" /> alati kaamera juurde pääseda</translation>
-<translation id="7809278638132552546">Linuxi arenduskeskkond (beetaversioon)</translation>
 <translation id="7810202088502699111">Hüpikaknad blokeeriti sellel lehel.</translation>
 <translation id="781167124805380294">Faili <ph name="FILE_NAME" /> ülekandmine</translation>
 <translation id="7814277578404816512">Vaadake, mis on seadmes <ph name="DEVICE_TYPE" /> uut</translation>
@@ -6313,7 +6314,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8032244173881942855">Vahelehte ei õnnestu üle kanda.</translation>
 <translation id="8033827949643255796">valitud</translation>
 <translation id="8033958968890501070">Ajalõpp</translation>
-<translation id="8036049989879571495">Linuxi arenduskeskkonna (beetaversiooni) seadistamine</translation>
 <translation id="8037117027592400564">Kogu kõnesünteesil põhineva teksti lugemine</translation>
 <translation id="8037357227543935929">Küsi (vaikimisi)</translation>
 <translation id="803771048473350947">Fail</translation>

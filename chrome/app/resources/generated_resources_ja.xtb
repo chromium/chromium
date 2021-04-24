@@ -2065,6 +2065,7 @@
 <translation id="3264544094376351444">Sans Serif フォント</translation>
 <translation id="3264582393905923483">コンテキスト</translation>
 <translation id="3265459715026181080">ウインドウを閉じる</translation>
+<translation id="3266022278425892773">Linux 開発環境</translation>
 <translation id="3266274118485960573">安全確認を実行しています。</translation>
 <translation id="3267726687589094446">複数ファイルの自動ダウンロードを今後も許可する</translation>
 <translation id="3268451620468152448">開いているタブ</translation>
@@ -3651,6 +3652,7 @@
 <translation id="5051836348807686060">選択した言語ではスペルチェックを使用できません</translation>
 <translation id="5052499409147950210">サイトの編集</translation>
 <translation id="5053962746715621840">Google レンズで画像を検索</translation>
+<translation id="5056950756634735043">コンテナに接続しています</translation>
 <translation id="5057110919553308744">拡張機能をクリックしたとき</translation>
 <translation id="5057403786441168405">ログインしているアカウントを管理します。Chrome と Google Play のウェブサイト、アプリ、拡張機能では、許可されている場合に、これらのアカウントを使用してユーザー エクスペリエンスのカスタマイズが行われることがあります。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">ログイン制限</translation>
@@ -6096,7 +6098,6 @@
 <translation id="7805768142964895445">ステータス</translation>
 <translation id="7807067443225230855">検索とアシスタント</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> によるカメラへのアクセスを常に許可する</translation>
-<translation id="7809278638132552546">Linux 開発環境（ベータ版）</translation>
 <translation id="7810202088502699111">このページのポップアップはブロックされました。</translation>
 <translation id="781167124805380294"><ph name="FILE_NAME" /> のキャスト</translation>
 <translation id="7814277578404816512"><ph name="DEVICE_TYPE" /> の新機能のご案内</translation>
@@ -6313,7 +6314,6 @@
 <translation id="8032244173881942855">タブをキャストできません。</translation>
 <translation id="8033827949643255796">選択しました</translation>
 <translation id="8033958968890501070">タイムアウト</translation>
-<translation id="8036049989879571495">Linux 開発環境（ベータ版）のセットアップ</translation>
 <translation id="8037117027592400564">合成音声で読み上げたすべてのテキストの読み取り</translation>
 <translation id="8037357227543935929">確認（デフォルト）</translation>
 <translation id="803771048473350947">ファイル</translation>

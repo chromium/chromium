@@ -2065,6 +2065,7 @@
 <translation id="3264544094376351444">Sans-Serif ಫಾಂಟ್</translation>
 <translation id="3264582393905923483">ಸಂದರ್ಭ</translation>
 <translation id="3265459715026181080">ವಿಂಡೋ ಮುಚ್ಚು</translation>
+<translation id="3266022278425892773">Linux ಡೆವಲಪ್‌ಮೆಂಟ್ ಎನ್ವಿರಾನ್‌ಮೆಂಟ್</translation>
 <translation id="3266274118485960573">ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆ ರನ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="3267726687589094446">ಬಹು ಫೈಲ್‌ಗಳ ಸ್ವಯಂಚಾಲಿತ ಡೌನ್‌ಲೋಡ್‌‌ಗಳನ್ನು ಅನುಮತಿಸುವುದನ್ನು ಮುಂದುವರಿಸು</translation>
 <translation id="3268451620468152448">ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳು</translation>
@@ -3081,6 +3082,7 @@
 <translation id="4392896746540753732">ಕಾನ್ಫಿಗರೇಶನ್ ಫೈಲ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="4394049700291259645">ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{ಎಲ್ಲವನ್ನೂ &amp;ತೆರೆಯಿರಿ}=1{ಬುಕ್‌ಮಾರ್ಕ್ &amp;ತರೆಯಿರಿ}one{ಎಲ್ಲಾ ({COUNT}) ಗಳನ್ನು &amp;ತೆರೆಯಿರಿ}other{ಎಲ್ಲಾ ({COUNT}) ಗಳನ್ನು &amp;ತೆರೆಯಿರಿ}}</translation>
+<translation id="4398131717714042083">ಹುಡುಕಾಟ ಪೆಟ್ಟಿಗೆಯಲ್ಲಿರುವ ಇತಿಹಾಸ ಮತ್ತು ಸ್ವಯಂಪೂರ್ಣಗೊಳಿಸುವಿಕೆಗಳನ್ನು ತೆರವುಗೊಳಿಸುತ್ತದೆ</translation>
 <translation id="439817266247065935">ನಿಮ್ಮ ಸಾಧನವು ಸರಿಯಾಗಿ ಶಟ್-ಡೌನ್ ಆಗಲಿಲ್ಲ. Linux ಆ್ಯಪ್‌ಗಳನ್ನು ಬಳಸಲು, Linux ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="4400367121200150367">ಎಂದಿಗೂ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಉಳಿಸದೆ ಇರುವಂತಹ ಸೈಟ್‌ಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ</translation>
 <translation id="4400632832271803360">ಮೇಲಿನ-ಸಾಲುಗಳ ಕೀಗಳ ನಡವಳಿಕೆಯನ್ನು ಬದಲಿಸಲು ಲಾಂಚರ್ ಕೀ ಅನ್ನು ಒತ್ತಿ ಹಿಡಿಯಿರಿ</translation>
@@ -3652,6 +3654,7 @@
 <translation id="5051836348807686060">ನೀವು ಆಯ್ಕೆ ಮಾಡಿರುವ ಭಾಷೆಗಳಲ್ಲಿ ಕಾಗುಣಿತ ಪರೀಕ್ಷೆಯು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ</translation>
 <translation id="5052499409147950210">ಸೈಟ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="5053962746715621840">Google Lens ಬಳಸಿಕೊಂಡು ಚಿತ್ರವನ್ನು ಹುಡುಕಿ</translation>
+<translation id="5056950756634735043">ಕಂಟೇನರ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="5057110919553308744">ನೀವು ವಿಸ್ತರಣೆಯನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿದಾಗ</translation>
 <translation id="5057403786441168405">ನಿಮ್ಮ ಸೈನ್ ಇನ್ ಮಾಡಿದ ಖಾತೆಗಳನ್ನು ನಿರ್ವಹಿಸಿ. Chrome ಮತ್ತು Google Play ನಲ್ಲಿನ ವೆಬ್‌ಸೈಟ್‌ಗಳು, ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ವಿಸ್ತರಣೆಗಳ ಅನುಮತಿಗಳನ್ನು ಆಧರಿಸಿ, ನಿಮ್ಮ ಅನುಭವವನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಲು ಈ ಖಾತೆಗಳನ್ನು ಬಳಸಬಹುದು. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">ಸೈನ್-ಇನ್ ನಿಂರ್ಬಂಧಿಸಿ</translation>
@@ -5065,6 +5068,7 @@
 <translation id="6651237644330755633">ವೆಬ್‌ಸೈಟ್‌ಗಳನ್ನು ಗುರುತಿಸುವುದಕ್ಕಾಗಿ ಈ ಪ್ರಮಾಣಪತ್ರವನ್ನು ನಂಬಿರಿ</translation>
 <translation id="6651495917527016072">ನಿಮ್ಮ ಫೋನ್ ಮೂಲಕ ವೈ-ಫೈ ನೆಟ್‌ವರ್ಕ್‌ಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">Chrome <ph name="MS_AD_NAME" /> ಪ್ಲಾಟ್‌ಫಾರ್ಮ್‌ಗಳಲ್ಲಿ ಬೆಂಬಲಿತವಾಗಿರುವುದಿಲ್ಲ. ARM ಅಥವಾ x86 ಪ್ಲಾಟ್‌ಫಾರ್ಮ್‌ ನಲ್ಲಿ ನಿರ್ಮಿತವಾದ Chromebooks ಈ ಕಾರ್ಯವಿಧಾನವನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ.</translation>
+<translation id="66537479323396140">ಹುಡುಕಾಟ ಪೆಟ್ಟಿಗೆಯಲ್ಲಿರುವ ಇತಿಹಾಸ ಮತ್ತು ಸ್ವಯಂಪೂರ್ಣಗೊಳಿಸುವಿಕೆಗಳನ್ನು ತೆರವುಗೊಳಿಸುತ್ತದೆ. ನಿಮ್ಮ Google ಖಾತೆಯು <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> ನಲ್ಲಿ ಇತರ ವಿಧಗಳ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ಹೊಂದಿರಬಹುದು.</translation>
 <translation id="6654509035557065241">ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಆದ್ಯತೆ ನೀಡಿ</translation>
 <translation id="6655190889273724601">ಡೆವೆಲಪರ್ ಮೋಡ್</translation>
 <translation id="6655458902729017087">ಖಾತೆಗಳನ್ನು ಮರೆಮಾಡು</translation>
@@ -5932,6 +5936,7 @@
 <translation id="7636919061354591437">ಈ ಸಾಧನದಲ್ಲಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ</translation>
 <translation id="7637593984496473097">ಸಾಕಷ್ಟು ಡಿಸ್ಕ್ ಸ್ಥಳಾವಕಾಶವಿಲ್ಲ</translation>
 <translation id="7638605456503525968">ಸೀರಿಯಲ್ ಪೋರ್ಟ್‌ಗಳು</translation>
+<translation id="7639914187072011620">ಸರ್ವರ್‌ನಿಂದ SAML ಮರುನಿರ್ದೇಶನದ URL ಅನ್ನು ಪಡೆದುಕೊಳ್ಳಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="764017888128728">ನೀವು ಉಳಿಸಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳ ಮೂಲಕ ಅರ್ಹರಾಗಿರುವ ಸೈಟ್‌ಗಳಿಗೆ <ph name="PASSWORD_MANAGER_BRAND" /> ನಿಮ್ಮನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡುತ್ತದೆ.</translation>
 <translation id="7642778300616172920">ಸೂಕ್ಷ್ಮ ವಿಷಯವನ್ನು ಮರೆಮಾಡು</translation>
 <translation id="7643842463591647490">{0,plural, =1{# ತೆರೆದ ವಿಂಡೋ}one{# ತೆರೆದ ವಿಂಡೋಗಳು}other{# ತೆರೆದ ವಿಂಡೋಗಳು}}</translation>
@@ -6096,7 +6101,6 @@
 <translation id="7805768142964895445">ಸ್ಥಿತಿ</translation>
 <translation id="7807067443225230855">ಹುಡುಕಾಟ ಮತ್ತು ಅಸಿಸ್ಟೆಂಟ್</translation>
 <translation id="7807711621188256451">ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಪ್ರವೇಶಿಸಲು <ph name="HOST" /> ಅನ್ನು ಯಾವಾಗಲೂ ಅನುಮತಿಸಿ</translation>
-<translation id="7809278638132552546">Linux ಡೆವಲಪ್‌ಮೆಂಟ್ ಎನ್ವಿರಾನ್‌ಮೆಂಟ್ (ಬೀಟಾ ಆವೃತ್ತಿ)</translation>
 <translation id="7810202088502699111">ಈ ಪುಟದಲ್ಲಿ ಪಾಪ್-ಅಪ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ.</translation>
 <translation id="781167124805380294"><ph name="FILE_NAME" /> ಅನ್ನು ಬಿತ್ತರಿಸಿ</translation>
 <translation id="7814277578404816512"><ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ಹೊಸದೇನಿದೆ ಎಂದು ನೋಡಿ</translation>
@@ -6310,7 +6314,6 @@
 <translation id="8032244173881942855">ಟ್ಯಾಬ್‌‌ಗೆ ಬಿತ್ತರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="8033827949643255796">ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8033958968890501070">ಅವಧಿ ಮೀರಿದೆ</translation>
-<translation id="8036049989879571495">Linux ಡೆವಲಪ್‌ಮೆಂಟ್ ಎನ್ವಿರಾನ್‌ಮೆಂಟ್ ಅನ್ನು ಸೆಟಪ್ ಮಾಡಿ (ಬೀಟಾ)</translation>
 <translation id="8037117027592400564">ಸಂಯೋಜನೆ ಗೊಳಿಸಿದ ಧ್ವನಿಯನ್ನು ಬಳಸಿಕೊಂಡು ಮಾತನಾಡುವ ಎಲ್ಲಾ ಪಠ್ಯವನ್ನು ಓದಿ</translation>
 <translation id="8037357227543935929">ಕೇಳು (ಡಿಫಾಲ್ಟ್)</translation>
 <translation id="803771048473350947">ಫೈಲ್</translation>

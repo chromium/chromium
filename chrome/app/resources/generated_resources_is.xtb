@@ -2065,6 +2065,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3264544094376351444">Sans-serif letur</translation>
 <translation id="3264582393905923483">Samhengi</translation>
 <translation id="3265459715026181080">Loka glugga</translation>
+<translation id="3266022278425892773">Linux-forritunarumhverfi</translation>
 <translation id="3266274118485960573">Öryggisathugun er í gangi.</translation>
 <translation id="3267726687589094446">Halda áfram að leyfa sjálfvirkt niðurhal margra skráa</translation>
 <translation id="3268451620468152448">Opna flipa</translation>
@@ -3651,6 +3652,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5051836348807686060">Villuleit er ekki studd á þeim tungumálum sem þú valdir</translation>
 <translation id="5052499409147950210">Breyta vefsvæði</translation>
 <translation id="5053962746715621840">Leita í mynd með Google linsu</translation>
+<translation id="5056950756634735043">Tengist geyminum</translation>
 <translation id="5057110919553308744">Þegar þú smellir á viðbótina</translation>
 <translation id="5057403786441168405">Stjórnaðu innskráðum reikningum þínum. Vefsvæði, forrit og viðbætur í Chrome og Google Play geta notað þessa reikninga til að sérsníða upplifun þína, eftir því hvaða heimildir eru veittar. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Takmarka innskráningu</translation>
@@ -6096,7 +6098,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7805768142964895445">Staða</translation>
 <translation id="7807067443225230855">Leit og aðstoðarmaður</translation>
 <translation id="7807711621188256451">Veita <ph name="HOST" /> alltaf aðgang að myndavélinni</translation>
-<translation id="7809278638132552546">Linux-forritunarumhverfi (tilraunaútgáfa)</translation>
 <translation id="7810202088502699111">Sprettigluggar voru útilokaðir á þessari síðu.</translation>
 <translation id="781167124805380294">Senda út <ph name="FILE_NAME" /></translation>
 <translation id="7814277578404816512">Skoða nýjungar í <ph name="DEVICE_TYPE" /></translation>
@@ -6312,7 +6313,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8032244173881942855">Ekki er hægt að senda út flipann.</translation>
 <translation id="8033827949643255796">valið</translation>
 <translation id="8033958968890501070">Tímamörk</translation>
-<translation id="8036049989879571495">Setja upp Linux-forritunarumhverfi (tilraunaútgáfa)</translation>
 <translation id="8037117027592400564">Lesa allan talaðan texta með talgervli</translation>
 <translation id="8037357227543935929">Spyrja (sjálfgefið)</translation>
 <translation id="803771048473350947">Skrá</translation>

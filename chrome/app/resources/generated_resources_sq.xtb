@@ -2061,6 +2061,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3264544094376351444">Shkrimi sans-serif</translation>
 <translation id="3264582393905923483">Konteksti</translation>
 <translation id="3265459715026181080">Mbyll dritaren</translation>
+<translation id="3266022278425892773">Ambient zhvillimi për Linux</translation>
 <translation id="3266274118485960573">Po ekzekutohet kontrolli i sigurisë.</translation>
 <translation id="3267726687589094446">Vazhdo të lejosh shkarkimet automatike të shumë skedarëve</translation>
 <translation id="3268451620468152448">Hap skedat</translation>
@@ -3647,6 +3648,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5051836348807686060">Kontrolli drejtshkrimor nuk mbështetet për gjuhët që zgjodhe</translation>
 <translation id="5052499409147950210">Modifiko sajtin</translation>
 <translation id="5053962746715621840">Kërko imazhin me "Lenten e Google"</translation>
+<translation id="5056950756634735043">Lidhja me kontejnerin</translation>
 <translation id="5057110919553308744">Kur klikon te shtesa</translation>
 <translation id="5057403786441168405">Menaxho llogaritë ku je identifikuar. Sajtet e uebit, aplikacionet dhe shtesat në Chrome dhe Google Play mund t'i përdorin këto llogari për të personalizuar përvojën tënde, në varësi të lejeve. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Kufizo identifikimin</translation>
@@ -6091,7 +6093,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7805768142964895445">Statusi</translation>
 <translation id="7807067443225230855">Kërkimi dhe "Asistenti"</translation>
 <translation id="7807711621188256451">Lejo gjithmonë që <ph name="HOST" /> të qaset në kamerën tënde</translation>
-<translation id="7809278638132552546">Mjedisi i zhvillimit të Linux (Beta)</translation>
 <translation id="7810202088502699111">Dritaret kërcyese u bllokuan në këtë faqe.</translation>
 <translation id="781167124805380294">Transmeto <ph name="FILE_NAME" /></translation>
 <translation id="7814277578404816512">Shiko se çfarë ka të re në pajisjen tënde <ph name="DEVICE_TYPE" /></translation>
@@ -6307,7 +6308,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8032244173881942855">Skeda nuk mund të transmetohet.</translation>
 <translation id="8033827949643255796">u zgjodh</translation>
 <translation id="8033958968890501070">Skadimi</translation>
-<translation id="8036049989879571495">Konfiguro mjedisin e zhvillimit të Linux (Beta)</translation>
 <translation id="8037117027592400564">Lexo të gjithë tekstin e folur duke përdorur ligjërimin e sintetizuar</translation>
 <translation id="8037357227543935929">Pyet (parazgjedhja)</translation>
 <translation id="803771048473350947">Skedar</translation>

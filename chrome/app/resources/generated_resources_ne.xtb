@@ -2060,6 +2060,7 @@
 <translation id="3264544094376351444">सान्स-सेरिफ फन्ट</translation>
 <translation id="3264582393905923483">सन्दर्भ</translation>
 <translation id="3265459715026181080">सन्झ्याल बन्द गर्नुहोस्</translation>
+<translation id="3266022278425892773">Linux डेभलपमेन्ट इनभारमेन्ट</translation>
 <translation id="3266274118485960573">सुरक्षा जाँच हुँदै छ।</translation>
 <translation id="3267726687589094446">धेरै फाइलहरूको स्वत: डाउनलोडलाई अनुमति दिन जारी राख्नुहोस्</translation>
 <translation id="3268451620468152448">ट्याबहरू खोल्नुहोस्</translation>
@@ -6080,7 +6081,6 @@
 <translation id="7805768142964895445">स्थिति</translation>
 <translation id="7807067443225230855">खोज र सहायक</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> लाई तपाईंको क्यामेराको पहुँच गर्ने अनुमति सँधै दिनुहोस्</translation>
-<translation id="7809278638132552546">Linux डेभलपमेन्ट इनभारमेन्ट (बिटा)</translation>
 <translation id="7810202088502699111">पप-अप यो पेजमा अवरुद्ध भएको थियो ।</translation>
 <translation id="781167124805380294"><ph name="FILE_NAME" /> लाई Cast गर्नुहोस्</translation>
 <translation id="7814277578404816512">तपाईंको <ph name="DEVICE_TYPE" /> मा के के नयाँ सुविधाहरू छन् भनी हेर्नुहोस्</translation>
@@ -6296,7 +6296,6 @@
 <translation id="8032244173881942855">ट्याब लाई cast गर्न असमर्थ।</translation>
 <translation id="8033827949643255796">चयन गरिएको</translation>
 <translation id="8033958968890501070">समयावधि सकियो</translation>
-<translation id="8036049989879571495">Linux डेभलपमेन्ट इनभारमेन्ट (बिटा संस्करण) सेटअप गर्नुहोस्</translation>
 <translation id="8037117027592400564">बोलिएका सबै पाठहरूलाई संश्लेषण गरिएको बोली प्रयोग गरेर पढ्नुहोस्</translation>
 <translation id="8037357227543935929">सोध्नुहोस् (डिफल्ट मान)</translation>
 <translation id="803771048473350947">फाइल</translation>

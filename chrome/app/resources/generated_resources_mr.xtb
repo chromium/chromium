@@ -2064,6 +2064,7 @@
 <translation id="3264544094376351444">Sans-serif font</translation>
 <translation id="3264582393905923483">संदर्भ</translation>
 <translation id="3265459715026181080">विंडो बंद करा</translation>
+<translation id="3266022278425892773">Linux डेव्हलमेंट पर्यावरण</translation>
 <translation id="3266274118485960573">सुरक्षा तपासणी रन होत आहे.</translation>
 <translation id="3267726687589094446">एकाधिक फायलींच्या स्वयंचलित डाउनलोडिंगला अनुमती देणे सुरू ठेवा</translation>
 <translation id="3268451620468152448">उघडे Tabs</translation>
@@ -3077,6 +3078,7 @@
 <translation id="4392896746540753732">कॉंफिगरेशन फाइल संपादित करा</translation>
 <translation id="4394049700291259645">अक्षम करा</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{Open all}=1{बुकमार्क उघडा}other{सर्व ({COUNT}) उघडा}}</translation>
+<translation id="4398131717714042083">सर्च बॉक्समधील इतिहास आणि ऑटोकंप्लीशन साफ करते</translation>
 <translation id="439817266247065935">तुमचे डिव्हाइस योग्य प्रकारे बंद झाले नाही. Linux अ‍ॅप्स वापरण्यासाठी Linux रीस्टार्ट करा.</translation>
 <translation id="4400367121200150367">ज्या साइट पासवर्ड सेव्ह करत नाहीत त्या येथे दिसून येतील</translation>
 <translation id="4400632832271803360">शीर्ष-पंक्ती की चे वर्तन स्विच करण्यासाठी लाँचर की धरून ठेवा.</translation>
@@ -3647,6 +3649,7 @@
 <translation id="5051836348807686060">तुम्ही निवडलेल्या भाषांसाठी स्पेल चेक सपोर्ट करत नाही</translation>
 <translation id="5052499409147950210">साइट संपादित करा</translation>
 <translation id="5053962746715621840">Google Lens वापरून इमेज शोधा</translation>
+<translation id="5056950756634735043">कंटेनरशी कनेक्ट करत आहे</translation>
 <translation id="5057110919553308744">तुम्ही एक्स्टेंशनवर क्लिक करता तेव्हा</translation>
 <translation id="5057403786441168405">तुमची साइन-इन केलेली खाती व्यवस्थापित करा. परवानग्या असल्यास, Chrome आणि Google Play मधील अ‍ॅप्स, वेबसाइट आणि एक्स्टेंशन तुमचा अनुभव कस्टमाइझ करण्यासाठी ही खाती वापरू शकतील. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">साइन इन मर्यादित करा</translation>
@@ -5060,6 +5063,7 @@
 <translation id="6651237644330755633">वेबसाइट ओळखण्‍यासाठी या सर्टिफिकेटवर विश्‍वास ठेवा</translation>
 <translation id="6651495917527016072">तुमच्या फोनसह वाय-फाय नेटवर्क सिंक करा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">Chrome <ph name="MS_AD_NAME" /> संकलन फक्‍त x86_64 प्‍लॅटफॉर्मला सपोर्ट करते. कोणत्‍याही ARM किंवा x86 प्‍लॅटफॉर्मवर बनवलेले Chromebooks ही सुविधा देत नाही.</translation>
+<translation id="66537479323396140">सर्च बॉक्समधील इतिहास आणि ऑटोकंप्लीशन साफ करते. तुमच्या Google खाते मध्ये <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> वर ब्राउझिंग इतिहासाचे इतर प्रकार असू शकतात.</translation>
 <translation id="6654509035557065241">नेटवर्कला प्राधान्य द्या</translation>
 <translation id="6655190889273724601">डेव्हलपर मोड</translation>
 <translation id="6655458902729017087">खाती लपवा</translation>
@@ -5926,6 +5930,7 @@
 <translation id="7636919061354591437">या डिव्हाइसवर इंस्टॉल करा</translation>
 <translation id="7637593984496473097">डिस्कमध्ये पुरेशी जागा नाही</translation>
 <translation id="7638605456503525968">सिरीअल पोर्ट</translation>
+<translation id="7639914187072011620">सर्व्हरवरून SAML रीडिरेक्ट URL मिळवता आली नाही</translation>
 <translation id="764017888128728">तुम्ही सेव्ह केलेल्या संकेतशब्दासह <ph name="PASSWORD_MANAGER_BRAND" /> स्वयंचलितपणे तुम्हाला पात्र असलेल्या साइटमध्ये साइन इन करते.</translation>
 <translation id="7642778300616172920">संवेदनशील आशय लपवा</translation>
 <translation id="7643842463591647490">{0,plural, =1{# खुली विंडो}other{# खुल्या विंडो}}</translation>
@@ -6089,7 +6094,6 @@
 <translation id="7805768142964895445">स्थिती</translation>
 <translation id="7807067443225230855">शोध आणि साहाय्यक</translation>
 <translation id="7807711621188256451">तुमचा कॅमेरा ॲक्सेस करण्यासाठी <ph name="HOST" /> ला नेहमी परवानगी द्या</translation>
-<translation id="7809278638132552546">Linux डेव्हलपमेंट पद्धत (बीटा)</translation>
 <translation id="7810202088502699111">या पेजवर पॉप-अप अवरोधित केलेले होते.</translation>
 <translation id="781167124805380294"><ph name="FILE_NAME" /> कास्ट करा</translation>
 <translation id="7814277578404816512">तुमच्या <ph name="DEVICE_TYPE" /> मध्ये काय नवीन आहे ते पहा</translation>
@@ -6306,7 +6310,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8032244173881942855">टॅब कास्ट करण्यात अक्षम.</translation>
 <translation id="8033827949643255796">निवडलेले</translation>
 <translation id="8033958968890501070">वेळ संपली</translation>
-<translation id="8036049989879571495">Linux डेव्हलपमेंट पद्धत (Beta) सेट करा</translation>
 <translation id="8037117027592400564">संकालित भाषण वापरून बोललेला सर्व मजकूर वाचा</translation>
 <translation id="8037357227543935929">विचारा (डीफॉल्ट)</translation>
 <translation id="803771048473350947">फाइल</translation>

@@ -2061,6 +2061,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3264544094376351444">Schriftart Sans-Serif</translation>
 <translation id="3264582393905923483">Kontext</translation>
 <translation id="3265459715026181080">Fenster schließen</translation>
+<translation id="3266022278425892773">Linux-Entwicklungsumgebung</translation>
 <translation id="3266274118485960573">Der Sicherheitscheck wird ausgeführt.</translation>
 <translation id="3267726687589094446">Weiterhin automatisches Herunterladen mehrerer Dateien zulassen</translation>
 <translation id="3268451620468152448">Geöffnete Tabs</translation>
@@ -3647,6 +3648,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5051836348807686060">Die Rechtschreibprüfung wird für die ausgewählten Sprachen nicht unterstützt</translation>
 <translation id="5052499409147950210">Website bearbeiten</translation>
 <translation id="5053962746715621840">Bild mit Google Lens suchen</translation>
+<translation id="5056950756634735043">Verbindung zum Container wird hergestellt</translation>
 <translation id="5057110919553308744">Wenn die Erweiterung angeklickt wird</translation>
 <translation id="5057403786441168405">Hier können Sie Ihre angemeldeten Konten verwalten. Websites, Apps und Erweiterungen in Chrome und Google Play können diese Konten verwenden, um Ihnen – je nach den jeweiligen Berechtigungen – personalisierte Inhalte anzuzeigen. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Anmeldung beschränken</translation>
@@ -5113,7 +5115,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6715803357256707211">Bei der Installation Ihrer Linux-Anwendung ist ein Fehler aufgetreten. Klicken Sie auf die Benachrichtigung, um Details zu sehen.</translation>
 <translation id="671619610707606484">Dadurch werden <ph name="TOTAL_USAGE" /> an von Websites gespeicherten Daten gelöscht</translation>
 <translation id="671928215901716392">Sperren</translation>
-<translation id="6721678857435001674">Den Hersteller und das Modell Ihres Sicherheitsschlüssels anzeigen</translation>
+<translation id="6721678857435001674">Den Hersteller und das Modell Ihres Sicherheitsschlüssels auslesen</translation>
 <translation id="6721972322305477112">&amp;Ablage</translation>
 <translation id="672208878794563299">Diese Website fragt beim nächsten Mal wieder.</translation>
 <translation id="6723661294526996303">Lesezeichen und Einstellungen importieren...</translation>
@@ -6092,7 +6094,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7807067443225230855">Suche und Assistant</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> immer Zugriff auf Ihre Kamera gestatten</translation>
-<translation id="7809278638132552546">Linux-Entwicklungsumgebung (Beta)</translation>
 <translation id="7810202088502699111">Pop-ups wurden auf dieser Seite blockiert.</translation>
 <translation id="781167124805380294"><ph name="FILE_NAME" /> streamen</translation>
 <translation id="7814277578404816512">Neuigkeiten auf Ihrem <ph name="DEVICE_TYPE" /> ansehen</translation>
@@ -6309,7 +6310,6 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8032244173881942855">Tab kann nicht gestreamt werden.</translation>
 <translation id="8033827949643255796">Ausgewählt</translation>
 <translation id="8033958968890501070">Zeitüberschreitung</translation>
-<translation id="8036049989879571495">Linux-Entwicklungsumgebung (Beta) einrichten</translation>
 <translation id="8037117027592400564">Alle mit künstlicher Sprachausgabe gesprochenen Texte lesen</translation>
 <translation id="8037357227543935929">Nachfragen (Standard)</translation>
 <translation id="803771048473350947">Datei</translation>
@@ -7125,7 +7125,7 @@ Drücken Sie zum Entfernen der Zuweisung eine bereits zugewiesene Schaltertaste.
 <translation id="8944964446326379280"><ph name="APP_NAME" /> teilt ein Fenster mit <ph name="TAB_NAME" />.</translation>
 <translation id="8945274638472141382">Symbolgröße</translation>
 <translation id="8946359700442089734">Die Debugging-Funktionen wurden auf diesem <ph name="IDS_SHORT_PRODUCT_NAME" />-Gerät nicht vollständig aktiviert.</translation>
-<translation id="8948939328578167195"><ph name="WEBSITE" /> möchte den Hersteller und das Modell Ihres Sicherheitsschlüssels aufrufen</translation>
+<translation id="8948939328578167195"><ph name="WEBSITE" /> möchte den Hersteller und das Modell Ihres Sicherheitsschlüssels auslesen</translation>
 <translation id="895054485242522631">Websites dürfen Bewegungssensoren verwenden</translation>
 <translation id="8951256747718668828">Die Wiederherstellung konnte aufgrund eines Fehlers nicht abgeschlossen werden</translation>
 <translation id="8951465597020890363">Gastmodus trotzdem beenden?</translation>

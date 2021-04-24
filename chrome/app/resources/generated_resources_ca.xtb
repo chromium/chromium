@@ -2064,6 +2064,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3264544094376351444">Tipus de lletra Sans-serif</translation>
 <translation id="3264582393905923483">Context</translation>
 <translation id="3265459715026181080">Tanca la finestra</translation>
+<translation id="3266022278425892773">Entorn de desenvolupament de Linux</translation>
 <translation id="3266274118485960573">S'està executant una comprovació de seguretat.</translation>
 <translation id="3267726687589094446">Continua permetent la baixada automàtica de diversos fitxers</translation>
 <translation id="3268451620468152448">Pestanyes obertes</translation>
@@ -3649,6 +3650,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5051836348807686060">El corrector ortogràfic no és compatible amb els idiomes que has seleccionat</translation>
 <translation id="5052499409147950210">Edita el lloc</translation>
 <translation id="5053962746715621840">Cerca una imatge amb Google Lens</translation>
+<translation id="5056950756634735043">S'està connectant al contenidor</translation>
 <translation id="5057110919553308744">Quan facis clic a l'extensió</translation>
 <translation id="5057403786441168405">Gestiona els comptes en què tens la sessió iniciada. És possible que els llocs web, les aplicacions i les extensions de Chrome i Google Play utilitzin aquests comptes per personalitzar la teva experiència, en funció dels permisos. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Restringeix l'inici de sessió</translation>
@@ -6096,7 +6098,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7805768142964895445">Estat</translation>
 <translation id="7807067443225230855">Cerca i Assistent</translation>
 <translation id="7807711621188256451">Permet sempre que <ph name="HOST" /> accedeixi a la càmera</translation>
-<translation id="7809278638132552546">Entorn de desenvolupament de Linux (versió beta)</translation>
 <translation id="7810202088502699111">S'han bloquejat finestres emergents en aquesta pàgina.</translation>
 <translation id="781167124805380294">Emet <ph name="FILE_NAME" /></translation>
 <translation id="7814277578404816512">Consulta les novetats que hi ha al teu dispositiu <ph name="DEVICE_TYPE" /></translation>
@@ -6313,7 +6314,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8032244173881942855">No es pot emetre la pestanya.</translation>
 <translation id="8033827949643255796">seleccionats</translation>
 <translation id="8033958968890501070">Temps d'espera esgotat</translation>
-<translation id="8036049989879571495">Configura un entorn de desenvolupament de Linux (versió beta)</translation>
 <translation id="8037117027592400564">Llegeix tot el text en veu alta mitjançant una síntesi de veu</translation>
 <translation id="8037357227543935929">Pregunta (opció predeterminada)</translation>
 <translation id="803771048473350947">Fitxer</translation>

@@ -2060,6 +2060,7 @@
 <translation id="3264544094376351444">Sans-serif 字体</translation>
 <translation id="3264582393905923483">上下文</translation>
 <translation id="3265459715026181080">关闭窗口</translation>
+<translation id="3266022278425892773">Linux 开发环境</translation>
 <translation id="3266274118485960573">正在运行安全检查。</translation>
 <translation id="3267726687589094446">继续允许自动下载多个文件</translation>
 <translation id="3268451620468152448">打开的标签页</translation>
@@ -3645,6 +3646,7 @@
 <translation id="5051836348807686060">所选语言不支持拼写检查</translation>
 <translation id="5052499409147950210">修改网站</translation>
 <translation id="5053962746715621840">使用 Google 智能镜头搜索图片</translation>
+<translation id="5056950756634735043">正在连接到容器</translation>
 <translation id="5057110919553308744">当您点击此扩展程序时</translation>
 <translation id="5057403786441168405">管理您登录过的帐号。Chrome 和 Google Play 中的网站、应用和扩展程序可能会使用这些帐号为您定制专属体验，具体取决于所获权限。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">限制登录</translation>
@@ -6090,7 +6092,6 @@
 <translation id="7805768142964895445">状态</translation>
 <translation id="7807067443225230855">Google 搜索和 Google 助理</translation>
 <translation id="7807711621188256451">始终允许 <ph name="HOST" /> 使用您的摄像头</translation>
-<translation id="7809278638132552546">Linux 开发环境（Beta 版）</translation>
 <translation id="7810202088502699111">已拦截此网页上的弹出式窗口。</translation>
 <translation id="781167124805380294">投射“<ph name="FILE_NAME" />”</translation>
 <translation id="7814277578404816512">了解 <ph name="DEVICE_TYPE" /> 的新变化</translation>
@@ -6307,7 +6308,6 @@
 <translation id="8032244173881942855">无法投射标签页。</translation>
 <translation id="8033827949643255796">已选中</translation>
 <translation id="8033958968890501070">已超时</translation>
-<translation id="8036049989879571495">设置 Linux 开发环境（Beta 版）</translation>
 <translation id="8037117027592400564">读取使用合成语音说出的所有文字</translation>
 <translation id="8037357227543935929">询问（默认）</translation>
 <translation id="803771048473350947">文件</translation>

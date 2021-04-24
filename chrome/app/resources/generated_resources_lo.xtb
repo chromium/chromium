@@ -2063,6 +2063,7 @@
 <translation id="3264544094376351444">ຟອນ Sans-serif</translation>
 <translation id="3264582393905923483">ສະພາບການ</translation>
 <translation id="3265459715026181080">ປິດໜ້າ​ຕ່າງ</translation>
+<translation id="3266022278425892773">ສະພາບແວດລ້ອມການພັດທະນາ Linux</translation>
 <translation id="3266274118485960573">ການກວດສອບຄວາມປອດໄພພວມດຳເນີນຢູ່.</translation>
 <translation id="3267726687589094446">ສືບຕໍ່ອະນຸຍາດການດາວໂຫຼດຫຼາຍໄຟລ໌ອັດຕະໂນມັດ</translation>
 <translation id="3268451620468152448">ເປີດ​ແຖບ</translation>
@@ -3649,6 +3650,7 @@
 <translation id="5051836348807686060">ບໍ່ຮອງຮັບການກວດການສະກົດຄຳສຳລັບພາສາທີ່ທ່ານເລືອກ</translation>
 <translation id="5052499409147950210">ແກ້ໄຂເວັບໄຊ</translation>
 <translation id="5053962746715621840">ຊອກຫາຮູບພາບດ້ວຍ Google Lens</translation>
+<translation id="5056950756634735043">ກຳລັງເຊື່ອມຕໍ່ຫາກ່ອງບັນຈຸ</translation>
 <translation id="5057110919553308744">ເມື່ອທ່ານຄລິກສ່ວນຂະຫຍາຍ</translation>
 <translation id="5057403786441168405">ຈັດການບັນຊີທີ່ເຂົ້າສູ່ລະບົບຂອງທ່ານ. ເວັບໄຊ, ແອັບ ແລະ ສ່ວນຂະຫຍາຍໃນ Chrome ແລະ Google Play ອາດຈະໃຊ້ບັນຊີເຫຼົ່ານີ້ເພື່ອປັບແຕ່ງປະສົບການຂອງທ່ານ, ໂດຍຂຶ້ນກັບການອະນຸຍາດ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">ຈຳກັດການເຂົ້າສູ່ລະບົບ</translation>
@@ -6093,7 +6095,6 @@
 <translation id="7805768142964895445">ສະ​ຖາ​ນະ​</translation>
 <translation id="7807067443225230855">ການຊອກຫາ ແລະ ຜູ້ຊ່ວຍ</translation>
 <translation id="7807711621188256451">​ອະ​ນຸ​ຍາດ​ໃຫ້ <ph name="HOST" /> ເຂົ້າຫາກ້ອງ​ຖ່າຍ​ຮູບ​ຂອງ​ທ່ານທຸກຄັ້ງ</translation>
-<translation id="7809278638132552546">ສະພາບແວດລ້ອມການພັດທະນາ Linux (ເບຕ້າ)</translation>
 <translation id="7810202088502699111">ປັອບອັບຖືກບລັອກຢູ່​ເທິງ​ຫນ້າ​ນີ້.</translation>
 <translation id="781167124805380294">ສົ່ງສັນຍານ <ph name="FILE_NAME" /></translation>
 <translation id="7814277578404816512">ເບິ່ງວ່າມີຫຍັງໃໝ່ໃນ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
@@ -6309,7 +6310,6 @@
 <translation id="8032244173881942855">ບໍ່ສາມາດສົ່ງສັນຍານແຖບໄດ້.</translation>
 <translation id="8033827949643255796">ເລືອກແລ້ວ</translation>
 <translation id="8033958968890501070">ໝົດເວລາ</translation>
-<translation id="8036049989879571495">ຕັ້ງຄ່າສະພາບແວດລ້ອມການພັດທະນາ Linux (ເບຕ້າ)</translation>
 <translation id="8037117027592400564">ອ່ານຂໍ້ຄວາມທັງໝົດທີ່ໄດ້ເວົ້າໃນລະຫວ່າງການໃຊ້ຄໍາເວົ້າທີ່ຊິງໂຄຣໄນແລ້ວ</translation>
 <translation id="8037357227543935929">ຖາມ (ຄ່າເລີ່ມຕົ້ນ)</translation>
 <translation id="803771048473350947">ໄຟລ໌</translation>

@@ -2066,6 +2066,7 @@
 <translation id="3264544094376351444">Sans-serif տառատեսակ</translation>
 <translation id="3264582393905923483">Համատեքստ</translation>
 <translation id="3265459715026181080">Close Window</translation>
+<translation id="3266022278425892773">Լինուքսի մշակման միջավայր</translation>
 <translation id="3266274118485960573">Անվտանգության ստուգումը դեռ չի ավարտվել։</translation>
 <translation id="3267726687589094446">Շարունակել թույլ տալ բազմակի ֆայլերի ավտոմատ ներբեռնումը</translation>
 <translation id="3268451620468152448">Բաց ներդիրները</translation>
@@ -3653,6 +3654,7 @@
 <translation id="5051836348807686060">Ուղղագրության ստուգումը չի աջակցվում ձեր ընտրած լեզուների համար</translation>
 <translation id="5052499409147950210">Փոփոխեք կայքը</translation>
 <translation id="5053962746715621840">Որոնել պատկերը Google Տեսապակու օգնությամբ</translation>
+<translation id="5056950756634735043">Միացում կոնտեյներին</translation>
 <translation id="5057110919553308744">Երբ դուք սեղմում եք ընդլայնման վրա</translation>
 <translation id="5057403786441168405">Կառավարեք հաշիվները, որոնք մուտք եք գործել։ Chrome-ի և Google Play-ի կայքերը, հավելվածներն ու ընդլայնումները կարող են օգտագործել այս հաշիվները՝ ձեր աշխատանքն ըստ ձեր թույլտվությունների անհատականացնելու համար։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Սահմանափակ մուտք</translation>
@@ -6099,7 +6101,6 @@
 <translation id="7805768142964895445">Կարգավիճակ</translation>
 <translation id="7807067443225230855">Որոնում և Օգնական</translation>
 <translation id="7807711621188256451">Միշտ թույլ տալ <ph name="HOST" />-ին օգտագործել տեսախցիկը</translation>
-<translation id="7809278638132552546">Լինուքսի մշակման միջավայր (բետա)</translation>
 <translation id="7810202088502699111">Ելնող պատուհաններն արգելափակված են այս էջում:</translation>
 <translation id="781167124805380294">Հեռարձակել «<ph name="FILE_NAME" />» ֆայլը</translation>
 <translation id="7814277578404816512">Ինչ նոր բան կա <ph name="DEVICE_TYPE" />-ում</translation>
@@ -6315,7 +6316,6 @@
 <translation id="8032244173881942855">Չհաջողվեց հեռարձակել ներդիրը:</translation>
 <translation id="8033827949643255796">ընտրվեց</translation>
 <translation id="8033958968890501070">Ժամանակը սպառվել է</translation>
-<translation id="8036049989879571495">Կարգավորեք Լինուքսի մշակման միջավայրը (բետա)</translation>
 <translation id="8037117027592400564">Տեքստի ընթերցում սինթեզված խոսքի միջոցով</translation>
 <translation id="8037357227543935929">Հարցնել (կանխադրված)</translation>
 <translation id="803771048473350947">Ֆայլ</translation>

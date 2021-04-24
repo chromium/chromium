@@ -2065,6 +2065,7 @@
 <translation id="3264544094376351444">Sans-serif</translation>
 <translation id="3264582393905923483">컨텍스트</translation>
 <translation id="3265459715026181080">창 닫기</translation>
+<translation id="3266022278425892773">Linux 개발 환경</translation>
 <translation id="3266274118485960573">안전 확인을 실행 중입니다.</translation>
 <translation id="3267726687589094446">여러 파일을 자동으로 다운로드하도록 계속 허용</translation>
 <translation id="3268451620468152448">열린 탭</translation>
@@ -3649,6 +3650,7 @@
 <translation id="5051836348807686060">선택한 언어의 맞춤법 검사가 지원되지 않습니다.</translation>
 <translation id="5052499409147950210">사이트 수정</translation>
 <translation id="5053962746715621840">Google 렌즈로 이미지 검색하기</translation>
+<translation id="5056950756634735043">컨테이너에 연결 중입니다.</translation>
 <translation id="5057110919553308744">확장 프로그램을 클릭할 경우</translation>
 <translation id="5057403786441168405">로그인된 계정을 관리하세요. 웹사이트, 앱, Chrome 확장 프로그램 및 Google Play에서 권한에 따라 이 계정을 사용하여 사용 환경을 맞춤설정할 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">로그인 제한</translation>
@@ -6094,7 +6096,6 @@
 <translation id="7805768142964895445">상태</translation>
 <translation id="7807067443225230855">검색 및 어시스턴트</translation>
 <translation id="7807711621188256451"><ph name="HOST" />에서 카메라에 액세스하도록 항상 허용</translation>
-<translation id="7809278638132552546">Linux 개발 환경(베타)</translation>
 <translation id="7810202088502699111">이 페이지에서 팝업이 차단되었습니다.</translation>
 <translation id="781167124805380294"><ph name="FILE_NAME" /> 전송</translation>
 <translation id="7814277578404816512"><ph name="DEVICE_TYPE" />의 새로운 기능 알아보기</translation>
@@ -6311,7 +6312,6 @@
 <translation id="8032244173881942855">탭을 전송할 수 없습니다.</translation>
 <translation id="8033827949643255796">선택됨</translation>
 <translation id="8033958968890501070">시간 초과</translation>
-<translation id="8036049989879571495">Linux 개발 환경(베타) 설정</translation>
 <translation id="8037117027592400564">음성 출력 기능을 사용한 모든 음성 텍스트 조회</translation>
 <translation id="8037357227543935929">요청(기본값)</translation>
 <translation id="803771048473350947">파일</translation>

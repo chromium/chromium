@@ -2063,6 +2063,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3264544094376351444">Tipo de letra sen serifas</translation>
 <translation id="3264582393905923483">Contexto</translation>
 <translation id="3265459715026181080">Pechar ventá</translation>
+<translation id="3266022278425892773">Contorno de programación de Linux</translation>
 <translation id="3266274118485960573">Estase executando a Revisión de seguranza.</translation>
 <translation id="3267726687589094446">Continuar permitindo as descargas automáticas de varios ficheiros</translation>
 <translation id="3268451620468152448">Pestanas abertas</translation>
@@ -3649,6 +3650,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5051836348807686060">O corrector ortográfico non é compatible cos idiomas que seleccionaches</translation>
 <translation id="5052499409147950210">Editar sitio</translation>
 <translation id="5053962746715621840">Buscar imaxe con Google Lens</translation>
+<translation id="5056950756634735043">Conectando co contedor</translation>
 <translation id="5057110919553308744">Cando fagas clic na extensión</translation>
 <translation id="5057403786441168405">Xestiona as contas nas que teñas a sesión iniciada. O sitios web, as aplicacións e as extensións de Chrome e Google Play poden utilizar estas contas para personalizar a túa experiencia, dependendo dos permisos. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Restrinxir inicio de sesión</translation>
@@ -6094,7 +6096,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7807067443225230855">Busca e Asistente</translation>
 <translation id="7807711621188256451">Permitir sempre a <ph name="HOST" /> acceder á túa cámara</translation>
-<translation id="7809278638132552546">Contorno de programación de Linux (beta)</translation>
 <translation id="7810202088502699111">Bloqueáronse as ventás emerxentes nesta páxina.</translation>
 <translation id="781167124805380294">Emitir <ph name="FILE_NAME" /></translation>
 <translation id="7814277578404816512">Descubre as novidades do teu <ph name="DEVICE_TYPE" /></translation>
@@ -6310,7 +6311,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8032244173881942855">Non se puido emitir a pestana.</translation>
 <translation id="8033827949643255796">seleccionados</translation>
 <translation id="8033958968890501070">Tempo de espera esgotado</translation>
-<translation id="8036049989879571495">Configurar o contorno de programación de Linux (beta)</translation>
 <translation id="8037117027592400564">Ler o texto falado coa síntese de voz</translation>
 <translation id="8037357227543935929">Preguntar (predeterminado)</translation>
 <translation id="803771048473350947">Ficheiro</translation>

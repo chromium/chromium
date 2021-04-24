@@ -2066,6 +2066,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3264544094376351444">Sans-serif-skrifttype</translation>
 <translation id="3264582393905923483">Kontekst</translation>
 <translation id="3265459715026181080">Luk vindue</translation>
+<translation id="3266022278425892773">Linux-udviklingsmiljø</translation>
 <translation id="3266274118485960573">Der udføres et sikkerhedstjek.</translation>
 <translation id="3267726687589094446">Fortsæt med at tillade automatiske downloads af flere filer</translation>
 <translation id="3268451620468152448">Åbne faner</translation>
@@ -3652,6 +3653,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5051836348807686060">Stavekontrol understøttes ikke for de sprog, du har valgt</translation>
 <translation id="5052499409147950210">Rediger website</translation>
 <translation id="5053962746715621840">Søg efter billede med Google Lens</translation>
+<translation id="5056950756634735043">Opretter forbindelse til containeren</translation>
 <translation id="5057110919553308744">Når du klikker på udvidelsen</translation>
 <translation id="5057403786441168405">Administrer de konti, hvor du er logget ind. Websites, apps og udvidelser i Chrome og Google Play kan bruge disse konti til at tilpasse din oplevelse afhængigt af tilladelserne. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Begræns login</translation>
@@ -6096,7 +6098,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7807067443225230855">Søgning og Assistent</translation>
 <translation id="7807711621188256451">Tillad altid, at <ph name="HOST" /> har adgang til dit kamera</translation>
-<translation id="7809278638132552546">Linux-udviklingsmiljø (beta)</translation>
 <translation id="7810202088502699111">Pop op-vinduer blev blokeret på denne side.</translation>
 <translation id="781167124805380294">Cast <ph name="FILE_NAME" /></translation>
 <translation id="7814277578404816512">Se nyheder på din <ph name="DEVICE_TYPE" /></translation>
@@ -6313,7 +6314,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8032244173881942855">Fanen kunne ikke castes.</translation>
 <translation id="8033827949643255796">valgt</translation>
 <translation id="8033958968890501070">Timeout</translation>
-<translation id="8036049989879571495">Konfigurer Linux-udviklingsmiljø (beta)</translation>
 <translation id="8037117027592400564">Læs hele teksten højt ved hjælp af talesyntese</translation>
 <translation id="8037357227543935929">Spørg (standardindstilling)</translation>
 <translation id="803771048473350947">Fil</translation>

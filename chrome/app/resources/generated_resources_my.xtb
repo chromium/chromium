@@ -2066,6 +2066,7 @@
 <translation id="3264544094376351444">Sans-serif ဖောင့်</translation>
 <translation id="3264582393905923483">အခြေအနေ</translation>
 <translation id="3265459715026181080">ဝင်ဒိုး ပိတ်ရန်</translation>
+<translation id="3266022278425892773">Linux ဆော့ဖ်ဝဲရေးဆွဲမှု ပတ်ဝန်းကျင်</translation>
 <translation id="3266274118485960573">လုံခြုံရေး စစ်ဆေးနေသည်။</translation>
 <translation id="3267726687589094446">ဖိုင်များစွာ တပြိုင်နက် အလိုအလျောက် ဒေါင်းလုဒ် ပြုလုပ်မှုကို ဆက်လက် ခွင့်ပြုမည်</translation>
 <translation id="3268451620468152448">တဲဘ်များ ဖွင့်ရန်</translation>
@@ -3651,6 +3652,7 @@
 <translation id="5051836348807686060">သင်ရွေးချယ်ထားသော ဘာသာစကားများအတွက် စာလုံးပေါင်းစစ်ဆေးခြင်းကို ပံ့ပိုးမထားပါ</translation>
 <translation id="5052499409147950210">ဝဘ်ဆိုက်ကို တည်းဖြတ်ရန်</translation>
 <translation id="5053962746715621840">Google Lens ဖြင့် ပုံရှာဖွေခြင်း</translation>
+<translation id="5056950756634735043">ကွန်တိန်နာနှင့် ချိတ်ဆက်နေသည်</translation>
 <translation id="5057110919553308744">နောက်ဆက်တွဲကို သင်နှိပ်သည့်အခါ</translation>
 <translation id="5057403786441168405">သင်လက်မှတ်ထိုးဝင်ထားသည့် အကောင့်များကို စီမံခန့်ခွဲပါ။ ခွင့်ပြုချက်များအပေါ် အခြေခံပြီး သင့်စိတ်ကြိုက်ပြင်ဆင် အသုံးပြုနိုင်ရန် Chrome နှင့် Google Play ရှိ ဝဘ်ဆိုက်၊ အက်ပ်၊ နောက်ဆက်တွဲများက ဤအကောင့်များကို အသုံးပြုနိုင်သည်။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">လက်မှတ်ထိုးဝင်မှု ကန့်သတ်ရန်</translation>
@@ -6094,7 +6096,6 @@
 <translation id="7805768142964895445">အခြေအနေ</translation>
 <translation id="7807067443225230855">Search နှင့် Assistant</translation>
 <translation id="7807711621188256451"><ph name="HOST" />အား သင့် ကင်မရာကို ရယူသုံးမှု အမြဲတမ်း ခွင့်ပြုရန်</translation>
-<translation id="7809278638132552546">Linux ဆော့ဖ်ဝဲရေးဆွဲမှု ပတ်ဝန်းကျင် (စမ်းသပ်ဆော့ဖ်ဝဲ)</translation>
 <translation id="7810202088502699111">ဤစာမျက်နှာတွင် ပေါ့ပ်အာ့ပ်များ ပိတ်ဆို့ထားသည်။</translation>
 <translation id="781167124805380294"><ph name="FILE_NAME" /> ကို ကာစ်လုပ်ရန်</translation>
 <translation id="7814277578404816512"><ph name="DEVICE_TYPE" /> ရှိ ပါဝင်သည့် အကြောင်းအရာအသစ်များကို ကြည့်ပါ</translation>
@@ -6310,7 +6311,6 @@
 <translation id="8032244173881942855">တဘ်ကို ကာစ်တ်မလုပ်နိုင်ပါ။</translation>
 <translation id="8033827949643255796">ရွေးထား</translation>
 <translation id="8033958968890501070">အချိန်ကုန်သွားသည်</translation>
-<translation id="8036049989879571495">Linux ဆော့ဖ်ဝဲရေးဆွဲမှု ပတ်ဝန်းကျင် (စမ်းသပ်ဆော့ဖ်ဝဲ) ကို စနစ်ထည့်သွင်းခြင်း</translation>
 <translation id="8037117027592400564">ဖန်တီး နှုတ်စကားကို အသုံးပြုပြီး ပြောကြားခဲ့သည့် စာသား အားလုံးကို ဖတ်ရန်</translation>
 <translation id="8037357227543935929">မေးရန် (မူရင်း)</translation>
 <translation id="803771048473350947">ဖိုင်</translation>

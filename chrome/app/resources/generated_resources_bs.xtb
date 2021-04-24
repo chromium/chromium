@@ -2066,6 +2066,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3264544094376351444">Sans-serif font</translation>
 <translation id="3264582393905923483">Kontekst</translation>
 <translation id="3265459715026181080">Zatvori prozor</translation>
+<translation id="3266022278425892773">Linuxovo okruženje za razvoj</translation>
 <translation id="3266274118485960573">Sigurnosna provjera je u toku.</translation>
 <translation id="3267726687589094446">Nastavi dozvoljavanje automatskih preuzimanja višestrukih fajlova</translation>
 <translation id="3268451620468152448">Otvorene kartice</translation>
@@ -3652,6 +3653,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="5051836348807686060">Alat za provjeru pravopisa nije podržan za odabrane jezike</translation>
 <translation id="5052499409147950210">Uredite web lokaciju</translation>
 <translation id="5053962746715621840">Pretraži sliku pomoću Google Objektiva</translation>
+<translation id="5056950756634735043">Povezivanje sa spremnikom</translation>
 <translation id="5057110919553308744">Kada kliknete na ekstenziju</translation>
 <translation id="5057403786441168405">Upravljajte računima na kojima ste prijavljeni. U zavisnosti od odobrenja, web lokacije, aplikacije i ekstenzije na Chromeu i Google Playu mogu koristiti ove račune da prilagode vaše iskustvo. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Ograniči prijavu</translation>
@@ -6097,7 +6099,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="7805768142964895445">Status</translation>
 <translation id="7807067443225230855">Pretraživanje i Asistent</translation>
 <translation id="7807711621188256451">Uvijek dozvolite web lokaciji <ph name="HOST" /> da pristupa vašoj kameri</translation>
-<translation id="7809278638132552546">Linuxovo okruženje za razvoj (Beta)</translation>
 <translation id="7810202088502699111">Skočni prozori su blokirani na ovoj stranici.</translation>
 <translation id="781167124805380294">Emitiranje datoteke <ph name="FILE_NAME" /></translation>
 <translation id="7814277578404816512">Pogledajte šta je novo na uređaju <ph name="DEVICE_TYPE" /></translation>
@@ -6314,7 +6315,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8032244173881942855">Nije moguće emitirati karticu.</translation>
 <translation id="8033827949643255796">odabrano</translation>
 <translation id="8033958968890501070">Vrijeme je isteklo</translation>
-<translation id="8036049989879571495">Postavite Linuxovo okruženje za razvoj (Beta)</translation>
 <translation id="8037117027592400564">Čitaj naglas sav tekst koristeći sintetizirani glas</translation>
 <translation id="8037357227543935929">Pitaj (zadano)</translation>
 <translation id="803771048473350947">Fajl</translation>

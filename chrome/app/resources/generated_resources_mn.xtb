@@ -2060,6 +2060,7 @@
 <translation id="3264544094376351444">Sans-serif фонт</translation>
 <translation id="3264582393905923483">Хам сэдэв</translation>
 <translation id="3265459715026181080">Цонхыг хаах</translation>
+<translation id="3266022278425892773">Linux-н хөгжүүлэлтийн орчин</translation>
 <translation id="3266274118485960573">Аюулгүй байдлын шалгалт хийж байна.</translation>
 <translation id="3267726687589094446">Олон тооны файлуудыг автоматаар татаж авахыг үргэлжүүлэн зөвшөөрөх</translation>
 <translation id="3268451620468152448">Цонхнуудыг нээх</translation>
@@ -3645,6 +3646,7 @@
 <translation id="5051836348807686060">Таны сонгосон хэл дээр зөв бичгийн дүрмийн алдаа шалгагч нь дэмжигдээгүй байна</translation>
 <translation id="5052499409147950210">Сайтыг засах</translation>
 <translation id="5053962746715621840">Google Дурангаар зураг хайх</translation>
+<translation id="5056950756634735043">Агуулагчтай холбогдож байна</translation>
 <translation id="5057110919553308744">Та өргөтгөл гэснийг товших үед</translation>
 <translation id="5057403786441168405">Нэвтэрсэн бүртгэлүүдээ удирдана уу. Chrome болон Google Play-н вебсайт, апп болон өргөтгөл нь зөвшөөрлөөс хамаарч, таны хэрэглээг өөрчлөхийн тулд эдгээр бүртгэлийг ашиглаж болзошгүй. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Нэвтрэхийг хязгаарлах</translation>
@@ -6089,7 +6091,6 @@
 <translation id="7805768142964895445">Байр байдал</translation>
 <translation id="7807067443225230855">Хайлт болон Туслах</translation>
 <translation id="7807711621188256451"><ph name="HOST" />-д таны камерт нэвтрэх зөвшөөрөл олгох</translation>
-<translation id="7809278638132552546">Linux-н хөгжүүлэлтийн орчин (Бета)</translation>
 <translation id="7810202088502699111">Зар сурталчилгааг энэ хуудсанд хориглосон байна.</translation>
 <translation id="781167124805380294"><ph name="FILE_NAME" />-г дамжуулах</translation>
 <translation id="7814277578404816512"><ph name="DEVICE_TYPE" /> дээрээ шинэ зүйл юу байгааг харах</translation>
@@ -6304,7 +6305,6 @@
 <translation id="8032244173881942855">Табыг дамжуулах боломжгүй.</translation>
 <translation id="8033827949643255796">Сонгогдсон</translation>
 <translation id="8033958968890501070">Хугацаа хэтэрсэн</translation>
-<translation id="8036049989879571495">Linux-н хөгжүүлэлтийн орчныг тохируулах (Бета)</translation>
 <translation id="8037117027592400564">Нэгтгэсэн яриаг ашиглан яригдсан бүх текстийг унш</translation>
 <translation id="8037357227543935929">Асуух (өгөгдмөл)</translation>
 <translation id="803771048473350947">Файл</translation>

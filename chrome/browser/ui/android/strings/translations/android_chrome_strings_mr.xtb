@@ -234,6 +234,7 @@
 <translation id="2517472476991765520">स्कॅन करा</translation>
 <translation id="2518590038762162553">लाइट मोडमध्ये, Chrome पेज आणखी जलद लोड करते आणि ६० टक्के कमी डेटा वापरते. तुम्ही भेट दिलेली पेज ऑप्टिमाइझ करण्यासाठी, Chrome तुमचे वेब ट्रॅफिक Google ला पाठवते. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">तुम्ही भेट दिलेल्या पेजच्या URL Google ला पाठवते</translation>
+<translation id="2527779675047087889">क्लिपबोर्डवरील आशय लपवा</translation>
 <translation id="2532336938189706096">वेब दृश्य</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> आयटम हटवले</translation>
 <translation id="2536728043171574184">या पेजची ऑफलाइन प्रत पाहत आहे</translation>
@@ -314,6 +315,7 @@
 <translation id="3062802207422175757">Chrome वरील तुमच्या स्वारस्यांविषयी लेख</translation>
 <translation id="3070005020161560471">आपोआप भाषांतर करा</translation>
 <translation id="3089395242580810162">गुप्त टॅबमध्ये उघडा</translation>
+<translation id="3091010850649238832">क्लिपबोर्डवरील आशय दाखवा</translation>
 <translation id="3098745985164956033">तुमच्यासाठी वर्णनांमध्ये सुधारणा करण्याकरिता काही इमेज Google कडे पाठवल्या जातात</translation>
 <translation id="3114507951000454849">आजच्या बातम्या वाचा <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">घोषणा</translation>
@@ -865,6 +867,7 @@
 <translation id="661266467055912436">तुमच्यासाठी आणि वेबवरील प्रत्येकजणासाठी सुरक्षिततेत सुधारणा करते.</translation>
 <translation id="6618554661997243500">तुमच्यासाठी टॉप साइट आणि स्टोरी पाहण्यासाठी, होम बटणावर टॅप करा</translation>
 <translation id="6627583120233659107">फोल्डर संपादित करा</translation>
+<translation id="6635718764393004944"><ph name="DSE" /> हे तुमचे शोध इंजीन आहे. लागू असल्यास, तुमचा शोध इतिहास हटवण्यासाठी, त्यांच्या सूचना पहा.</translation>
 <translation id="663674369910034433">गोपनीयता, सुरक्षा आणि डेटा संग्रह यांच्याशी संबंधित आणखी सेटिंग्जसाठी, <ph name="BEGIN_LINK1" />सिंक<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />Google सेवा<ph name="END_LINK2" /> पाहा</translation>
 <translation id="6643016212128521049">साफ करा</translation>
 <translation id="6643649862576733715">वाचवलेल्या डेटानुसार क्रमाने लावा</translation>

@@ -2062,6 +2062,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3264544094376351444">Bezpatkové písmo</translation>
 <translation id="3264582393905923483">Kontext</translation>
 <translation id="3265459715026181080">Zavřít okno</translation>
+<translation id="3266022278425892773">Vývojové prostředí Linux</translation>
 <translation id="3266274118485960573">Bezpečnostní kontrola je spuštěna.</translation>
 <translation id="3267726687589094446">I nadále povolovat automatické stahování několika souborů</translation>
 <translation id="3268451620468152448">Otevřené karty</translation>
@@ -3647,6 +3648,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5051836348807686060">V jazycích, které jste zadali, není kontrola pravopisu podporována</translation>
 <translation id="5052499409147950210">Upravit web</translation>
 <translation id="5053962746715621840">Vyhledat obrázek pomocí Google Lens</translation>
+<translation id="5056950756634735043">Připojování ke kontejneru</translation>
 <translation id="5057110919553308744">Když kliknete na rozšíření</translation>
 <translation id="5057403786441168405">Spravujte účty, ve kterých jste přihlášeni. V závislosti na oprávněních vám weby, aplikace a rozšíření v Chromu a na Google Play pomocí těchto účtů mohou přizpůsobovat prostředí. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Omezit přihlášení</translation>
@@ -6088,7 +6090,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7805768142964895445">Stav</translation>
 <translation id="7807067443225230855">Vyhledávání a Asistent</translation>
 <translation id="7807711621188256451">Vždy povolit webu <ph name="HOST" /> přístup ke kameře</translation>
-<translation id="7809278638132552546">Vývojové prostředí Linux (Beta)</translation>
 <translation id="7810202088502699111">Na této stránce byla zablokována vyskakovací okna.</translation>
 <translation id="781167124805380294">Odeslat soubor <ph name="FILE_NAME" /></translation>
 <translation id="7814277578404816512">Podívejte se, co je na zařízení <ph name="DEVICE_TYPE" /> nového</translation>
@@ -6305,7 +6306,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8032244173881942855">Kartu nelze odeslat.</translation>
 <translation id="8033827949643255796">vybráno</translation>
 <translation id="8033958968890501070">Vypršel časový limit</translation>
-<translation id="8036049989879571495">Nastavte vývojářské prostředí Linuxu (beta)</translation>
 <translation id="8037117027592400564">Číst veškerý text vyslovovaný pomocí syntetické řeči</translation>
 <translation id="8037357227543935929">Zeptat se (výchozí)</translation>
 <translation id="803771048473350947">Soubor</translation>

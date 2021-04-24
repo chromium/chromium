@@ -2064,6 +2064,7 @@
 <translation id="3264544094376351444">Sans-serif 字型</translation>
 <translation id="3264582393905923483">內容</translation>
 <translation id="3265459715026181080">關閉視窗</translation>
+<translation id="3266022278425892773">Linux 開發環境</translation>
 <translation id="3266274118485960573">執行緊安全檢查。</translation>
 <translation id="3267726687589094446">繼續允許自動下載多個檔案</translation>
 <translation id="3268451620468152448">開啟的分頁</translation>
@@ -3650,6 +3651,7 @@
 <translation id="5051836348807686060">您所選取的語言不支援拼字檢查功能</translation>
 <translation id="5052499409147950210">編輯網站</translation>
 <translation id="5053962746715621840">使用「Google 智能鏡頭」搜尋圖片</translation>
+<translation id="5056950756634735043">正在連線至容器</translation>
 <translation id="5057110919553308744">當您點擊擴充程式時</translation>
 <translation id="5057403786441168405">管理已登入的帳戶。視乎權限而定，Chrome 和 Google Play 的網站、應用程式和擴充程式可能使用這些帳戶自訂您的體驗。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">限制登入</translation>
@@ -6095,7 +6097,6 @@
 <translation id="7805768142964895445">狀態</translation>
 <translation id="7807067443225230855">搜尋和助理功能</translation>
 <translation id="7807711621188256451">永遠允許 <ph name="HOST" /> 存取您的相機</translation>
-<translation id="7809278638132552546">Linux 開發環境 (Beta 版本)</translation>
 <translation id="7810202088502699111">系統已封鎖此網頁的彈出式視窗。</translation>
 <translation id="781167124805380294">投放 <ph name="FILE_NAME" /></translation>
 <translation id="7814277578404816512">查看 <ph name="DEVICE_TYPE" /> 的新功能</translation>
@@ -6312,7 +6313,6 @@
 <translation id="8032244173881942855">無法投放分頁。</translation>
 <translation id="8033827949643255796">已選取</translation>
 <translation id="8033958968890501070">逾時</translation>
-<translation id="8036049989879571495">設定 Linux 開發環境 (Beta 版本)</translation>
 <translation id="8037117027592400564">讀取使用合成語音朗讀的所有文字</translation>
 <translation id="8037357227543935929">要求 (預設)</translation>
 <translation id="803771048473350947">檔案</translation>

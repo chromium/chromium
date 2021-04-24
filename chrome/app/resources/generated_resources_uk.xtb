@@ -2068,6 +2068,7 @@
 <translation id="3264544094376351444">Шрифт Sans-serif</translation>
 <translation id="3264582393905923483">Контекст</translation>
 <translation id="3265459715026181080">Закрити вікно</translation>
+<translation id="3266022278425892773">Середовище Linux для розробки</translation>
 <translation id="3266274118485960573">Триває перевірка безпеки.</translation>
 <translation id="3267726687589094446">Надалі дозволяти автоматичне завантаження декількох файлів</translation>
 <translation id="3268451620468152448">Відкриті вкладки</translation>
@@ -3654,6 +3655,7 @@
 <translation id="5051836348807686060">Перевірка орфографії не підтримується для вибраних мов</translation>
 <translation id="5052499409147950210">Редагувати сайт</translation>
 <translation id="5053962746715621840">Шукати зображення через Google Об'єктив</translation>
+<translation id="5056950756634735043">Підключення до контейнера</translation>
 <translation id="5057110919553308744">Коли ви натискаєте розширення</translation>
 <translation id="5057403786441168405">Керуйте обліковими записами, у які ви ввійшли. За їх допомогою веб-сайти, додатки й розширення в Chrome і Google Play можуть персоналізувати налаштування, залежно від наданих дозволів. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Обмежити вхід</translation>
@@ -6099,7 +6101,6 @@
 <translation id="7805768142964895445">Статус</translation>
 <translation id="7807067443225230855">Пошук і Асистент</translation>
 <translation id="7807711621188256451">Завжди дозволяти хосту <ph name="HOST" /> доступ до вашої камери</translation>
-<translation id="7809278638132552546">Середовище для розробки Linux (бета-версія)</translation>
 <translation id="7810202088502699111">На цій сторінці спливаючі вікна заблоковано.</translation>
 <translation id="781167124805380294">Транслювати файл <ph name="FILE_NAME" /></translation>
 <translation id="7814277578404816512">Що нового на <ph name="DEVICE_TYPE" /></translation>
@@ -6316,7 +6317,6 @@
 <translation id="8032244173881942855">Не вдається транслювати вкладку.</translation>
 <translation id="8033827949643255796">виділено</translation>
 <translation id="8033958968890501070">Час очікування минув</translation>
-<translation id="8036049989879571495">Налаштувати середовище для розробки Linux (бета)</translation>
 <translation id="8037117027592400564">Читати весь текст, відтворений за допомогою синтезованого мовлення</translation>
 <translation id="8037357227543935929">Запитувати (за умовчанням)</translation>
 <translation id="803771048473350947">Файл</translation>

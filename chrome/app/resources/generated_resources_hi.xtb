@@ -2065,6 +2065,7 @@
 <translation id="3264544094376351444">Sans-serif फ़ॉन्ट</translation>
 <translation id="3264582393905923483">प्रसंग</translation>
 <translation id="3265459715026181080">विंडो बंद करें</translation>
+<translation id="3266022278425892773">Linux डेवलपमेंट एनवायरमेंट</translation>
 <translation id="3266274118485960573">सुरक्षा जांच हो रही है.</translation>
 <translation id="3267726687589094446">एकाधिक फ़ाइलों के स्वचालित डाउनलोड की अनुमति देना जारी रखें</translation>
 <translation id="3268451620468152448">खुले सत्र</translation>
@@ -3650,6 +3651,7 @@
 <translation id="5051836348807686060">आपकी चुनी गई भाषा के लिए वर्तनी जाँचने की सुविधा काम नहीं करती है</translation>
 <translation id="5052499409147950210">साइट में बदलाव करें</translation>
 <translation id="5053962746715621840">Google Lens से इमेज खोजें</translation>
+<translation id="5056950756634735043">कंटेनर से जोड़ा जा रहा है</translation>
 <translation id="5057110919553308744">जब आप एक्सटेंशन को क्लिक करते हैं</translation>
 <translation id="5057403786441168405">अपने साइन इन किए गए खातों को प्रबंधित करें. वेबसाइट, ऐप्लिकेशन, और Chrome या Google Play के एक्सटेंशन, इन खातों का इस्तेमाल आपके अनुभव को आपकी पसंद के मुताबिक बनाने के लिए कर सकते हैं. ये आपकी अनुमतियों के आधार पर ऐसा करते हैं. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">साइन-इन करने पर पाबंदी लगाएं</translation>
@@ -6094,7 +6096,6 @@
 <translation id="7805768142964895445">स्थिति</translation>
 <translation id="7807067443225230855">सर्च और Assistant</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> को हमेशा अपने कैमरे को एक्सेस करने की अनुमति दें</translation>
-<translation id="7809278638132552546">Linux डेवलपमेंट एनवायरमेंट (बीटा)</translation>
 <translation id="7810202088502699111">इस पेज पर पॉप-अप अवरोधित किए गए थे.</translation>
 <translation id="781167124805380294"><ph name="FILE_NAME" /> कास्ट करें</translation>
 <translation id="7814277578404816512">देखें कि आपके <ph name="DEVICE_TYPE" /> पर नया क्या है</translation>
@@ -6311,7 +6312,6 @@
 <translation id="8032244173881942855">टैब कास्ट करने में असमर्थ.</translation>
 <translation id="8033827949643255796">चयनित</translation>
 <translation id="8033958968890501070">समय खत्म</translation>
-<translation id="8036049989879571495">Linux डेवलपमेंट एनवायरमेंट (बीटा वर्शन) सेट अप करना</translation>
 <translation id="8037117027592400564">संश्लेषित बोली का उपयोग करके बोला गया सभी लेख पढ़ें</translation>
 <translation id="8037357227543935929">पूछें (डिफ़ॉल्ट)</translation>
 <translation id="803771048473350947">फ़ाइल</translation>

@@ -2061,6 +2061,7 @@
 <translation id="3264544094376351444">Sans-serif қаріпі</translation>
 <translation id="3264582393905923483">Мәнмәтін</translation>
 <translation id="3265459715026181080">Терезені жабу</translation>
+<translation id="3266022278425892773">Linux әзірлеуші ортасы</translation>
 <translation id="3266274118485960573">Қауіпсіздік шарасы қосулы.</translation>
 <translation id="3267726687589094446">Бірнеше файлды автоматты жүктеуге берілген рұқсат күшін сақтау</translation>
 <translation id="3268451620468152448">Ашық қойындылар</translation>
@@ -3076,6 +3077,7 @@
 <translation id="4392896746540753732">Конфигурация файлын өзгерту</translation>
 <translation id="4394049700291259645">Өшіру</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Барлығын ашу}=1{&amp;Бетбелгіні ашу}other{&amp;Барлығын ({COUNT}) ашу}}</translation>
+<translation id="4398131717714042083">Іздеу өрісіндегі тарихты және автотолтыруды өшіреді.</translation>
 <translation id="439817266247065935">Құрылғыңыз дұрыс өшірілмеді. Linux қолданбаларын пайдалану үшін Linux жүйесін қайта қосыңыз.</translation>
 <translation id="4400367121200150367">Құпия сөздерді ешқашан сақтамайтын сайттар тізімі осы жерге шығады</translation>
 <translation id="4400632832271803360">Жоғарғы қатардағы пернелердің әрекетін ауыстыру үшін қосқыш пернесін басып тұрыңыз</translation>
@@ -3646,6 +3648,7 @@
 <translation id="5051836348807686060">Таңдалған тілдер үшін емлені тексеру функциясы қолданылмайды.</translation>
 <translation id="5052499409147950210">Сайтты өзгерту</translation>
 <translation id="5053962746715621840">Google Lens арқылы сурет іздеу</translation>
+<translation id="5056950756634735043">Контейнерге қосылуда</translation>
 <translation id="5057110919553308744">Кеңейтім басылғанда</translation>
 <translation id="5057403786441168405">Кірген есептік жазбаларды басқарыңыз. Рұқсаттарыңызға байланысты мүмкіндігіңізді реттеу үшін веб-сайттар, қолданбалар, Chrome және Google Play кеңейтімдері осы есептік жазбаларды пайдалануы мүмкін. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Кіруді шектеу</translation>
@@ -5058,6 +5061,7 @@
 <translation id="6651237644330755633">Вебсайттарды анықтауда осы сертификатқа сену</translation>
 <translation id="6651495917527016072">Wi-Fi желілерін телефонмен синхрондау. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">Chrome <ph name="MS_AD_NAME" /> интеграциясына тек x86_64 платформаларында қолдау көрсетіледі. ARM немесе x86 платформасында орнатылған Chromebook құрылғыларында бұл функция жұмыс істемейді.</translation>
+<translation id="66537479323396140">Іздеу өрісіндегі тарихты және автотолтыруды өшіреді. <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> бетінде Google есептік жазбасымен браузерді қолдану тарихының басқа да үлгілері болуы мүмкін.</translation>
 <translation id="6654509035557065241">Қалаған желіні таңдау</translation>
 <translation id="6655190889273724601">Әзірлеуші режимі</translation>
 <translation id="6655458902729017087">Есептік жазбаларды жасыру</translation>
@@ -5924,6 +5928,7 @@
 <translation id="7636919061354591437">Осы құрылғыда орнату</translation>
 <translation id="7637593984496473097">Дискіде орын жеткіліксіз.</translation>
 <translation id="7638605456503525968">Сериялық порттар</translation>
+<translation id="7639914187072011620">Серверден SAML стандартының бағыты ауысатын URL мекенжайы алынбады.</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> сақталған құпия сөздермен тиісті сайттарға автоматты түрде кіргізеді.</translation>
 <translation id="7642778300616172920">Құпия мәліметті жасыру</translation>
 <translation id="7643842463591647490">{0,plural, =1{# терезе ашық}other{# терезе ашық}}</translation>
@@ -6089,7 +6094,6 @@
 <translation id="7805768142964895445">Күйі</translation>
 <translation id="7807067443225230855">Іздеу және Assistant</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> үшін камераға кіру рұқсатын әрдайым беру</translation>
-<translation id="7809278638132552546">Linux жүйесінің әзірлеу ортасы (бета нұсқасы)</translation>
 <translation id="7810202088502699111">Қалқымалы терезелерге бұл бетте тыйым салынған.</translation>
 <translation id="781167124805380294"><ph name="FILE_NAME" /> файлын трансляциялау</translation>
 <translation id="7814277578404816512"><ph name="DEVICE_TYPE" /> құрылғысындағы жаңалықтарды көріңіз</translation>
@@ -6305,7 +6309,6 @@
 <translation id="8032244173881942855">Қойындыны трансляциялау мүмкін емес.</translation>
 <translation id="8033827949643255796">таңдалды</translation>
 <translation id="8033958968890501070">Уақыт өтіп кетті</translation>
-<translation id="8036049989879571495">Linux әзірлеуші ортасын реттеу (бета нұсқасы)</translation>
 <translation id="8037117027592400564">Синтезделген сөйлеу арқылы айтылған барлық мәтінді оқу</translation>
 <translation id="8037357227543935929">Сұрау (әдепкі)</translation>
 <translation id="803771048473350947">Файл</translation>

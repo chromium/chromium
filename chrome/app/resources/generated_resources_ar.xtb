@@ -2070,6 +2070,7 @@
 <translation id="3264544094376351444">‏خط Sans-serif</translation>
 <translation id="3264582393905923483">السياق</translation>
 <translation id="3265459715026181080">إغلاق الإطار</translation>
+<translation id="3266022278425892773">‏بيئة تطوير نظام التشغيل Linux</translation>
 <translation id="3266274118485960573">"تأكيد السلامة" قيد التشغيل.</translation>
 <translation id="3267726687589094446">متابعة السماح بعمليات التنزيل التلقائية لعدة ملفات</translation>
 <translation id="3268451620468152448">علامات التبويب المفتوحة</translation>
@@ -3083,6 +3084,7 @@
 <translation id="4392896746540753732">تعديل ملف الضبط</translation>
 <translation id="4394049700291259645">إيقاف</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;فتح كل العناوين}=1{&amp;فتح إشارة مرجعية واحدة}two{&amp;فتح كِلا العنوانَين ({COUNT})}few{&amp;فتح كل الـ ({COUNT}) عناوين}many{&amp;فتح كل الـ ({COUNT}) عنوانًا}other{&amp;فتح كل الـ ({COUNT}) عنوان}}</translation>
+<translation id="4398131717714042083">سيتم محو السجلّ وعمليات الإكمال التلقائي في مربّع البحث.</translation>
 <translation id="439817266247065935">‏لم يتم إيقاف تشغيل جهازك بالشكل الملائم. أعِد تشغيل نظام التشغيل Linux لاستخدام تطبيقاته.</translation>
 <translation id="4400367121200150367">ستظهر هنا المواقع الإلكترونية التي لا يتم حفظ كلمات المرور لها مطلقًا</translation>
 <translation id="4400632832271803360">‏اضغط على مفتاح Launcher باستمرار لتبديل سلوك مفاتيح الصف العلوي</translation>
@@ -3653,6 +3655,7 @@
 <translation id="5051836348807686060">لا تتوفر ميزة التدقيق الإملائي للغات التي اخترتها.</translation>
 <translation id="5052499409147950210">تعديل موقع إلكتروني</translation>
 <translation id="5053962746715621840">‏البحث عن صورة باستخدام "عدسة Google"</translation>
+<translation id="5056950756634735043">جارٍ الاتصال بالحاوية</translation>
 <translation id="5057110919553308744">عند النقر على "الإضافة"</translation>
 <translation id="5057403786441168405">‏يمكنك إدارة حساباتك التي سجّلت الدخول إليها. وبناءً على الأذونات، قد تستخدم المواقع الإلكترونية والتطبيقات والإضافات في Chrome وGoogle Play هذه الحسابات لتخصيص تجربتك. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">حظر تسجيل الدخول على مستخدمين محددين</translation>
@@ -5065,6 +5068,7 @@
 <translation id="6651237644330755633">الوثوق بهذه الشهادة لتحديد هوية المواقع الإلكترونية</translation>
 <translation id="6651495917527016072">‏يمكنك مزامنة شبكات Wi-Fi مع هاتفك. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">‏يتم دعم دمج Chrome <ph name="MS_AD_NAME" /> على الأنظمة الأساسية x86_64 فقط. ولا تدعم أجهزة Chromebook التي تم إنشاؤها في أعلى ARM أو النظام الأساسي x86 هذه الوظيفة.</translation>
+<translation id="66537479323396140">‏يتم محو السجلّ وعمليات الإكمال التلقائي في مربّع البحث. وقد يتضمّن حسابك على Google نماذج أخرى من سجلّ التصفّح على <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6654509035557065241">اختيار الشبكة كمفضَّلة</translation>
 <translation id="6655190889273724601">وضع مطوّر البرامج</translation>
 <translation id="6655458902729017087">إخفاء الحسابات</translation>
@@ -5931,6 +5935,7 @@
 <translation id="7636919061354591437">تثبيت على هذا الجهاز</translation>
 <translation id="7637593984496473097">لا تتوفّر مساحة كافية على القرص.</translation>
 <translation id="7638605456503525968">المنافذ التسلسلية</translation>
+<translation id="7639914187072011620">‏تعذَّر جلب عنوان URL لإعادة التوجيه وفقًا لمعيار SAML من الخادم.</translation>
 <translation id="764017888128728">يعمل <ph name="PASSWORD_MANAGER_BRAND" /> على تسجيل دخولك تلقائيًا إلى المواقع المؤهلة باستخدام كلمات المرور التي حفظتها.</translation>
 <translation id="7642778300616172920">إخفاء المحتوى الحسّاس</translation>
 <translation id="7643842463591647490">{0,plural, =1{هناك نافذة واحدة مفتوحة (#).}zero{هناك # نافذة مفتوحة.}two{هناك نافذتان مفتوحتان (#).}few{هناك # نوافذ مفتوحة.}many{هناك # نافذة مفتوحة.}other{هناك # نافذة مفتوحة.}}</translation>
@@ -6096,7 +6101,6 @@
 <translation id="7805768142964895445">الحالة</translation>
 <translation id="7807067443225230855">البحث والمساعدة</translation>
 <translation id="7807711621188256451">السماح دائمًا لـ <ph name="HOST" /> بالدخول إلى الكاميرا</translation>
-<translation id="7809278638132552546">‏بيئة تطوير أدوات Linux (إصدار تجريبي)</translation>
 <translation id="7810202088502699111">تم منع عرض النوافذ المنبثقة في هذه الصفحة.</translation>
 <translation id="781167124805380294">إرسال <ph name="FILE_NAME" /></translation>
 <translation id="7814277578404816512">الاطّلاع على الميزات الجديدة على جهاز <ph name="DEVICE_TYPE" /></translation>
@@ -6313,7 +6317,6 @@
 <translation id="8032244173881942855">يتعذّر إرسال علامة التبويب.</translation>
 <translation id="8033827949643255796">تم التحديد</translation>
 <translation id="8033958968890501070">انتهاء المهلة</translation>
-<translation id="8036049989879571495">‏إعداد بيئة تطوير نظام التشغيل Linux (الإصدار التجريبي)</translation>
 <translation id="8037117027592400564">قراءة جميع النصوص المنطوقة باستخدام الكلام المركب</translation>
 <translation id="8037357227543935929">الطلب (تلقائي)</translation>
 <translation id="803771048473350947">ملف</translation>

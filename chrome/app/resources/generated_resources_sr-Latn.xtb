@@ -2064,6 +2064,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3264544094376351444">Font Sans-serif</translation>
 <translation id="3264582393905923483">Kontekst</translation>
 <translation id="3265459715026181080">Zatvori prozor</translation>
+<translation id="3266022278425892773">Linux okruženje za programiranje</translation>
 <translation id="3266274118485960573">Bezbednosna provera je pokrenuta.</translation>
 <translation id="3267726687589094446">Nastavi da dozvoljavaš automatska preuzimanja više datoteka</translation>
 <translation id="3268451620468152448">Otvorene kartice</translation>
@@ -3650,6 +3651,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="5051836348807686060">Provera pravopisa nije podržana za jezike koje ste izabrali</translation>
 <translation id="5052499409147950210">Izmenite sajt</translation>
 <translation id="5053962746715621840">Potražite sliku pomoću Google objektiva</translation>
+<translation id="5056950756634735043">Povezuje se sa kontejnerom</translation>
 <translation id="5057110919553308744">Kada kliknete na dodatak</translation>
 <translation id="5057403786441168405">Upravljajte nalozima na koje ste prijavljeni. Veb-sajtovi, aplikacije i dodaci u Chrome-u i na Google Play-u mogu da koriste te naloge za prilagođavanje doživljaja, u zavisnosti od dozvola. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Ograničite prijavljivanje</translation>
@@ -6096,7 +6098,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7807067443225230855">Pretraga i Pomoćnik</translation>
 <translation id="7807711621188256451">Uvek dozvoli da <ph name="HOST" /> pristupa kameri</translation>
-<translation id="7809278638132552546">Linux okruženje za programiranje (beta)</translation>
 <translation id="7810202088502699111">Iskačući prozori su blokirani na ovoj stranici.</translation>
 <translation id="781167124805380294">Prebacite <ph name="FILE_NAME" /></translation>
 <translation id="7814277578404816512">Pogledajte šta je novo na uređaju <ph name="DEVICE_TYPE" /></translation>
@@ -6313,7 +6314,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8032244173881942855">Nije uspelo prebacivanje kartice.</translation>
 <translation id="8033827949643255796">izabrano</translation>
 <translation id="8033958968890501070">Vreme je isteklo</translation>
-<translation id="8036049989879571495">Podesite Linux okruženje za programiranje (beta)</translation>
 <translation id="8037117027592400564">Čitanje svog teksta izgovorenog pomoću sintetizovanog govora</translation>
 <translation id="8037357227543935929">Pitaj (podrazumevano)</translation>
 <translation id="803771048473350947">Datoteka</translation>

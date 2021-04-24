@@ -2064,6 +2064,7 @@
 <translation id="3264544094376351444">Фонт Sans-serif</translation>
 <translation id="3264582393905923483">Контекст</translation>
 <translation id="3265459715026181080">Затвори прозор</translation>
+<translation id="3266022278425892773">Linux окружење за програмирање</translation>
 <translation id="3266274118485960573">Безбедносна провера је покренута.</translation>
 <translation id="3267726687589094446">Настави да дозвољаваш аутоматска преузимања више датотека</translation>
 <translation id="3268451620468152448">Отворене картице</translation>
@@ -3650,6 +3651,7 @@
 <translation id="5051836348807686060">Провера правописа није подржана за језике које сте изабрали</translation>
 <translation id="5052499409147950210">Измените сајт</translation>
 <translation id="5053962746715621840">Потражите слику помоћу Google објектива</translation>
+<translation id="5056950756634735043">Повезује се са контејнером</translation>
 <translation id="5057110919553308744">Када кликнете на додатак</translation>
 <translation id="5057403786441168405">Управљајте налозима на које сте пријављени. Веб-сајтови, апликације и додаци у Chrome-у и на Google Play-у могу да користе те налоге за прилагођавање доживљаја, у зависности од дозвола. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Ограничите пријављивање</translation>
@@ -6096,7 +6098,6 @@
 <translation id="7805768142964895445">Статус</translation>
 <translation id="7807067443225230855">Претрага и Помоћник</translation>
 <translation id="7807711621188256451">Увек дозволи да <ph name="HOST" /> приступа камери</translation>
-<translation id="7809278638132552546">Linux окружење за програмирање (бета)</translation>
 <translation id="7810202088502699111">Искачући прозори су блокирани на овој страници.</translation>
 <translation id="781167124805380294">Пребаците <ph name="FILE_NAME" /></translation>
 <translation id="7814277578404816512">Погледајте шта је ново на уређају <ph name="DEVICE_TYPE" /></translation>
@@ -6313,7 +6314,6 @@
 <translation id="8032244173881942855">Није успело пребацивање картице.</translation>
 <translation id="8033827949643255796">изабрано</translation>
 <translation id="8033958968890501070">Време је истекло</translation>
-<translation id="8036049989879571495">Подесите Linux окружење за програмирање (бета)</translation>
 <translation id="8037117027592400564">Читање свог текста изговореног помоћу синтетизованог говора</translation>
 <translation id="8037357227543935929">Питај (подразумевано)</translation>
 <translation id="803771048473350947">Датотека</translation>

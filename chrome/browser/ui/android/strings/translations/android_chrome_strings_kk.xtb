@@ -234,6 +234,7 @@
 <translation id="2517472476991765520">Іздеу</translation>
 <translation id="2518590038762162553">Lite режимінде Chrome браузері беттерді жылдамырақ жүктейді және трафикті 60%-ға дейін аз жұмсайды. Кірген беттерді оңтайландыру үшін Chrome интернет трафигін Google-ға жібереді. <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">Кірген беттердің URL мекенжайларын Google-ға жібереді</translation>
+<translation id="2527779675047087889">Буфердің мазмұндарын жасыру</translation>
 <translation id="2532336938189706096">Веб-көрініс</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> элемент жойылды.</translation>
 <translation id="2536728043171574184">Бұл беттің желіден тыс күйдегі көшірмесі көрсетілуде</translation>
@@ -314,6 +315,7 @@
 <translation id="3062802207422175757">Chrome браузеріндегі қызығушылықтарыңызға сай мақалалар</translation>
 <translation id="3070005020161560471">Автоматты түрде аударылатындар</translation>
 <translation id="3089395242580810162">Инкогнито қойындысында ашу</translation>
+<translation id="3091010850649238832">Буфердің мазмұндарын көрсету</translation>
 <translation id="3098745985164956033">Сипаттамаларды жақсарту үшін Google-ға біраз суреттер жіберіледі.</translation>
 <translation id="3114507951000454849">Бүгінгінің жаңалықтарын оқыңыз <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Хабарландырулар</translation>
@@ -865,6 +867,7 @@ Google есептік жазбасының шолу тарихы басқа Goog
 <translation id="661266467055912436">Интернеттегі сіздің және басқалардың қауіпсіздігін күшейтеді.</translation>
 <translation id="6618554661997243500">Көп қолданылатын сайттар мен қызықты жаңалықтарды көру үшін "Hегізгі экран" түймесін басыңыз.</translation>
 <translation id="6627583120233659107">Қалтаны өзгерту</translation>
+<translation id="6635718764393004944">Іздеу жүйеңіз — <ph name="DSE" />. Қажет болса іздеу тарихын жою үшін нұсқауларды қараңыз.</translation>
 <translation id="663674369910034433">Құпиялылыққа, қауіпсіздікке және дерек жинауға қатысты басқа да параметрлерді <ph name="BEGIN_LINK1" />Синхрондау<ph name="END_LINK1" /> және <ph name="BEGIN_LINK2" />Google қызметтері<ph name="END_LINK2" /> бөлімінен қараңыз.</translation>
 <translation id="6643016212128521049">Тазалау</translation>
 <translation id="6643649862576733715">Үнемделген деректер көлемі бойынша сұрыптау</translation>

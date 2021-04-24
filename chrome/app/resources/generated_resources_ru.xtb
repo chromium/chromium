@@ -2065,6 +2065,7 @@
 <translation id="3264544094376351444">Шрифты без засечек</translation>
 <translation id="3264582393905923483">Контекст</translation>
 <translation id="3265459715026181080">Закрыть окно</translation>
+<translation id="3266022278425892773">Среда разработки Linux</translation>
 <translation id="3266274118485960573">Выполняется проверка безопасности.</translation>
 <translation id="3267726687589094446">По-прежнему разрешать автоматическое скачивание нескольких файлов</translation>
 <translation id="3268451620468152448">Вкладки</translation>
@@ -3651,6 +3652,7 @@
 <translation id="5051836348807686060">Проверка правописания не поддерживается для выбранных языков.</translation>
 <translation id="5052499409147950210">Изменение сайта</translation>
 <translation id="5053962746715621840">Выполнить поиск по изображению, используя Google Объектив</translation>
+<translation id="5056950756634735043">Подключение к контейнеру…</translation>
 <translation id="5057110919553308744">При нажатии на расширение</translation>
 <translation id="5057403786441168405">Управляйте аккаунтами, в которые вы вошли. При наличии разрешений сайты, приложения и расширения в Chrome и Google Play могут использовать данные этих аккаунтов для персонализации сервисов. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Ограниченный вход</translation>
@@ -6096,7 +6098,6 @@
 <translation id="7805768142964895445">Состояние</translation>
 <translation id="7807067443225230855">Поиск и Ассистент</translation>
 <translation id="7807711621188256451">Всегда предоставлять <ph name="HOST" /> доступ к моей камере</translation>
-<translation id="7809278638132552546">Среда разработки Linux (бета)</translation>
 <translation id="7810202088502699111">Всплывающие окна были заблокированы. </translation>
 <translation id="781167124805380294">Трансляция файла "<ph name="FILE_NAME" />"</translation>
 <translation id="7814277578404816512">Что нового в <ph name="DEVICE_TYPE" /></translation>
@@ -6313,7 +6314,6 @@
 <translation id="8032244173881942855">Невозможно транслировать вкладку</translation>
 <translation id="8033827949643255796">Выделено.</translation>
 <translation id="8033958968890501070">Время истекло</translation>
-<translation id="8036049989879571495">Настройка среды разработки Linux (бета)</translation>
 <translation id="8037117027592400564">Доступ к тексту, произнесенному синтезатором речи</translation>
 <translation id="8037357227543935929">Спрашивать (по умолчанию)</translation>
 <translation id="803771048473350947">Файл</translation>

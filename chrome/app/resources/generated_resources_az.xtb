@@ -2059,6 +2059,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3264544094376351444">Sans-serif şrifti</translation>
 <translation id="3264582393905923483">Məzmun</translation>
 <translation id="3265459715026181080">Pəncərəni Bağlayın</translation>
+<translation id="3266022278425892773">Linux inkişaf mühiti</translation>
 <translation id="3266274118485960573">Təhlükəsizlik yoxlanışı icra olunur.</translation>
 <translation id="3267726687589094446">Çoxsaylı faylların avtomatik endirilməsinə icazə verməyə davam edin</translation>
 <translation id="3268451620468152448">Panelləri Açın</translation>
@@ -3072,6 +3073,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4392896746540753732">Konfiqurasiya faylına düzəliş edin</translation>
 <translation id="4394049700291259645">Deaktiv edin</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Hamısını açın}=1{&amp;Əlfəcini açın}other{&amp;Hamısını açın ({COUNT})}}</translation>
+<translation id="4398131717714042083">Axtarış bölməsindəki tarixçə və avtomatik tamamlamaları silir</translation>
 <translation id="439817266247065935">Cihazınız düzgün qaydada söndürülməyib. Linux tətbiqlərindən istifadə etmək üçün Linux'u yenidən başladın.</translation>
 <translation id="4400367121200150367">Parolları heç vaxt yadda saxlamayan saytlar burada görünəcək</translation>
 <translation id="4400632832271803360">Üst sıradakı düymələrin funksiyasını dəyişmək üçün Başladıcı düyməsini basıb saxlayın</translation>
@@ -3642,6 +3644,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="5051836348807686060">Seçdiyiniz dillərdə orfoqrafik yoxlanış dəstəklənmir</translation>
 <translation id="5052499409147950210">Sayta düzəliş edin</translation>
 <translation id="5053962746715621840">Google Linza ilə Şəkil Axtarın</translation>
+<translation id="5056950756634735043">Konteynerə qoşulur</translation>
 <translation id="5057110919553308744">Artırmaya kliklədiyiniz vaxt</translation>
 <translation id="5057403786441168405">Giriş edilən hesablarınızı idarə edin. Chrome və Google Play'dəki veb saytlar, tətbiqlər və artırmalar icazələrdən asılı olaraq təcrübənizi fərdiləşdirmək üçün bu hesablardan istifadə edə bilər. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="5059241099014281248">Girişi məhdudlaşdırın</translation>
@@ -5052,6 +5055,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="6651237644330755633">Veb sayt tanınması üçün bu sertifikata inanın</translation>
 <translation id="6651495917527016072">Wi-Fi şəbəkələrini telefonunuzla sinxronlaşdırın. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="665355505818177700">Chrome <ph name="MS_AD_NAME" /> inteqrasiyası yalnız x86_64 platformalarında dəstəklənir. ARM və ya x86 platforması üzərində hazırlanmış Chromebook'lar bu funksionallığı dəstəkləmir.</translation>
+<translation id="66537479323396140">Axtarış bölməsindəki tarixçə və avtomatik tamamlamaları silir. Google Hesabının <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> bölməsində başqa axtarış tarixçəsinin formaları ola bilər.</translation>
 <translation id="6654509035557065241">Şəbəkə tərcih edin</translation>
 <translation id="6655190889273724601">Developer rejimi</translation>
 <translation id="6655458902729017087">Hesabları Gizlədin</translation>
@@ -5918,6 +5922,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="7636919061354591437">Bu cihazda quraşdırın</translation>
 <translation id="7637593984496473097">Kifayət qədər disk yaddaşı yoxdur</translation>
 <translation id="7638605456503525968">Seriya portları</translation>
+<translation id="7639914187072011620">SAML yönləndirmə keçidini serverdən əldə etmək alınmadı</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> yadda saxladığınız parollarla uyğun saytlara avtomatik daxil edir.</translation>
 <translation id="7642778300616172920">Həssas məlumatı gizlədin</translation>
 <translation id="7643842463591647490">{0,plural, =1{# açıq pəncərə}other{# açıq pəncərə}}</translation>
@@ -6083,7 +6088,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="7805768142964895445">Status</translation>
 <translation id="7807067443225230855">Axtarış və Assistent</translation>
 <translation id="7807711621188256451">Kameranıza daxil olmaq üçün həmişə <ph name="HOST" /> hostuna icazə verin</translation>
-<translation id="7809278638132552546">Linux tərtibat mühiti (Beta)</translation>
 <translation id="7810202088502699111">Bu səhifədə popaplar bloklanıb.</translation>
 <translation id="781167124805380294"><ph name="FILE_NAME" /> faylını yayımlayın</translation>
 <translation id="7814277578404816512"><ph name="DEVICE_TYPE" /> cihazındakı yeniliklərə baxın</translation>
@@ -6299,7 +6303,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8032244173881942855">Tabeli yayımlamaq mümkün olmadı.</translation>
 <translation id="8033827949643255796">seçilib</translation>
 <translation id="8033958968890501070">Vaxtın bitməsi</translation>
-<translation id="8036049989879571495">Linux (Beta) tərtibat mühitini ayarlayın</translation>
 <translation id="8037117027592400564">Sintetik nitq işlədərək bütün mətni oxuyun</translation>
 <translation id="8037357227543935929">Soruşun (defolt)</translation>
 <translation id="803771048473350947">Fayl</translation>
