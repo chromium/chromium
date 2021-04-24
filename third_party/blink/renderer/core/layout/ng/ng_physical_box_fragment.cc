@@ -452,15 +452,15 @@ NGPhysicalBoxFragment::RareData::RareData(NGBoxFragmentBuilder* builder,
     multicols_with_pending_oofs.insert(
         multicol.key,
         MakeGarbageCollected<NGMulticolWithPendingOOFs<PhysicalOffset>>(
-            value.multicol_offset.ConvertToPhysical(
+            value->multicol_offset.ConvertToPhysical(
                 builder->Style().GetWritingDirection(), size, PhysicalSize()),
             NGContainingBlock<PhysicalOffset>(
-                value.fixedpos_containing_block.offset.ConvertToPhysical(
+                value->fixedpos_containing_block.offset.ConvertToPhysical(
                     builder->Style().GetWritingDirection(), size,
-                    value.fixedpos_containing_block.fragment
-                        ? value.fixedpos_containing_block.fragment->Size()
+                    value->fixedpos_containing_block.fragment
+                        ? value->fixedpos_containing_block.fragment->Size()
                         : PhysicalSize()),
-                value.fixedpos_containing_block.fragment)));
+                value->fixedpos_containing_block.fragment)));
   }
   if (builder->table_grid_rect_)
     table_grid_rect = *builder->table_grid_rect_;

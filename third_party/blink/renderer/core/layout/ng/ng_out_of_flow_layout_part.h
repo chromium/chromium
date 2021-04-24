@@ -212,7 +212,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   void HandleMulticolsWithPendingOOFs(NGBoxFragmentBuilder* container_builder);
   void LayoutOOFsInMulticol(
       const NGBlockNode& multicol,
-      const NGMulticolWithPendingOOFs<LogicalOffset>& multicol_info);
+      const NGMulticolWithPendingOOFs<LogicalOffset>* multicol_info);
 
   // Layout the OOF nodes that are descendants of a fragmentation context root.
   // |multicol_children| holds the children of an inner multicol if

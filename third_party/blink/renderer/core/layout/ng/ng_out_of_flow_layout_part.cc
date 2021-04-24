@@ -556,7 +556,7 @@ void NGOutOfFlowLayoutPart::HandleMulticolsWithPendingOOFs(
 
 void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
     const NGBlockNode& multicol,
-    const NGMulticolWithPendingOOFs<LogicalOffset>& multicol_info) {
+    const NGMulticolWithPendingOOFs<LogicalOffset>* multicol_info) {
   HeapVector<NGLogicalOutOfFlowPositionedNode> oof_nodes_to_layout;
   HeapVector<MulticolChildInfo> multicol_children;
 
@@ -564,7 +564,7 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
   const NGBlockBreakToken* previous_multicol_break_token = nullptr;
 
   LayoutUnit column_inline_progression = kIndefiniteSize;
-  LogicalOffset multicol_offset = multicol_info.multicol_offset;
+  LogicalOffset multicol_offset = multicol_info->multicol_offset;
 
   NGConstraintSpace multicol_constraint_space =
       CreateConstraintSpaceForMulticol(multicol);
@@ -645,7 +645,7 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
     for (const auto& descendant :
          multicol_box_fragment->OutOfFlowPositionedFragmentainerDescendants()) {
       if (oof_nodes_to_layout.IsEmpty() &&
-          multicol_info.fixedpos_containing_block.fragment &&
+          multicol_info->fixedpos_containing_block.fragment &&
           previous_multicol_break_token) {
         // At this point, the multicol offset is the offset from the fixedpos
         // containing block to the first multicol fragment holding OOF
@@ -699,7 +699,8 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
                         &multicol_container_builder)
       .LayoutFragmentainerDescendants(
           &oof_nodes_to_layout, column_inline_progression,
-          multicol_info.fixedpos_containing_block.fragment, &multicol_children);
+          multicol_info->fixedpos_containing_block.fragment,
+          &multicol_children);
 
   // Any descendants should have been handled in
   // LayoutFragmentainerDescendants(). However, if there were any candidates
@@ -708,7 +709,7 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
   DCHECK(!multicol_container_builder.HasOutOfFlowPositionedDescendants());
   DCHECK(!multicol_container_builder.HasOutOfFlowFragmentainerDescendants());
   multicol_container_builder.TransferOutOfFlowCandidates(
-      container_builder_, multicol_offset, &multicol_info);
+      container_builder_, multicol_offset, multicol_info);
 
   // Handle any inner multicols with OOF descendants that may have propagated up
   // while laying out the direct OOF descendants of the current multicol.

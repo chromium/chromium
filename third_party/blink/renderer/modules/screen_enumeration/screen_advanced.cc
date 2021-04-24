@@ -130,9 +130,9 @@ const String& ScreenAdvanced::id() const {
   return g_empty_string;
 }
 
-HeapVector<String> ScreenAdvanced::pointerTypes() const {
+Vector<String> ScreenAdvanced::pointerTypes() const {
   NOTIMPLEMENTED_LOG_ONCE();
-  return HeapVector<String>();
+  return Vector<String>();
 }
 
 const String& ScreenAdvanced::label() const {

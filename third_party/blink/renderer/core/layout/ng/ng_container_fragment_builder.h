@@ -48,7 +48,8 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
 
   using ChildrenVector = HeapVector<ChildWithOffset, 4>;
   using MulticolCollection =
-      HeapHashMap<Member<LayoutBox>, NGMulticolWithPendingOOFs<LogicalOffset>>;
+      HeapHashMap<Member<LayoutBox>,
+                  Member<NGMulticolWithPendingOOFs<LogicalOffset>>>;
 
   LayoutUnit BfcLineOffset() const { return bfc_line_offset_; }
   void SetBfcLineOffset(LayoutUnit bfc_line_offset) {
@@ -142,8 +143,8 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   // store such inner multicols for later use.
   void AddMulticolWithPendingOOFs(
       const NGBlockNode& multicol,
-      const NGMulticolWithPendingOOFs<LogicalOffset>& multicol_info =
-          NGMulticolWithPendingOOFs<LogicalOffset>());
+      NGMulticolWithPendingOOFs<LogicalOffset>* multicol_info =
+          MakeGarbageCollected<NGMulticolWithPendingOOFs<LogicalOffset>>());
 
   void SwapOutOfFlowPositionedCandidates(
       HeapVector<NGLogicalOutOfFlowPositionedNode>* candidates);

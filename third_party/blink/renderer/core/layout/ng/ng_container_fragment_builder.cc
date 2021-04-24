@@ -226,7 +226,7 @@ void NGContainerFragmentBuilder::SwapOutOfFlowPositionedCandidates(
 
 void NGContainerFragmentBuilder::AddMulticolWithPendingOOFs(
     const NGBlockNode& multicol,
-    const NGMulticolWithPendingOOFs<LogicalOffset>& multicol_info) {
+    NGMulticolWithPendingOOFs<LogicalOffset>* multicol_info) {
   DCHECK(To<LayoutBlockFlow>(multicol.GetLayoutBox())->MultiColumnFlowThread());
   auto it = multicols_with_pending_oofs_.find(multicol.GetLayoutBox());
   if (it != multicols_with_pending_oofs_.end())
@@ -396,9 +396,10 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
       }
       AddMulticolWithPendingOOFs(
           NGBlockNode(multicol.key),
-          {multicol_offset, NGContainingBlock<LogicalOffset>(
-                                fixedpos_containing_block_offset,
-                                fixedpos_containing_block_fragment)});
+          MakeGarbageCollected<NGMulticolWithPendingOOFs<LogicalOffset>>(
+              multicol_offset, NGContainingBlock<LogicalOffset>(
+                                   fixedpos_containing_block_offset,
+                                   fixedpos_containing_block_fragment)));
     }
   }
 

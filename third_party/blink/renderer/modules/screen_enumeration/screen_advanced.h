@@ -39,7 +39,7 @@ class MODULES_EXPORT ScreenAdvanced final : public Screen {
   bool isInternal() const;
   float devicePixelRatio() const;
   const String& id() const override;
-  HeapVector<String> pointerTypes() const;
+  Vector<String> pointerTypes() const;
   const String& label() const;
 
   // Not web-exposed; for internal usage only (see Screen).

@@ -644,7 +644,7 @@ void NGBoxFragmentBuilder::AdjustFixedposContainingBlockForInnerMulticols() {
   LayoutUnit previous_consumed_block_size =
       PreviousBreakToken()->ConsumedBlockSize();
   for (auto& multicol : multicols_with_pending_oofs_) {
-    NGMulticolWithPendingOOFs<LogicalOffset>& value = multicol.value;
+    NGMulticolWithPendingOOFs<LogicalOffset>& value = *multicol.value;
     if (!value.fixedpos_containing_block.fragment) {
       value.fixedpos_containing_block.offset.block_offset -=
           previous_consumed_block_size;
