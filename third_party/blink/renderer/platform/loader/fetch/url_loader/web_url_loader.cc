@@ -22,6 +22,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/optional.h"
+#include "base/record_replay.h"
 #include "base/sequence_checker.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
@@ -768,11 +769,17 @@ WebURLLoader::WebURLLoader(
                            std::move(unfreezable_task_runner_handle),
                            std::move(url_loader_factory),
                            std::move(keep_alive_handle),
-                           back_forward_cache_loader_helper)) {}
+                           back_forward_cache_loader_helper)) {
+  recordreplay::RegisterPointer(this);
+}
 
-WebURLLoader::WebURLLoader() = default;
+WebURLLoader::WebURLLoader() {
+  recordreplay::RegisterPointer(this);
+}
 
 WebURLLoader::~WebURLLoader() {
+  recordreplay::Assert("WebURLLoader::~WebURLLoader %lu", recordreplay::PointerId(this));
+  recordreplay::UnregisterPointer(this);
   Cancel();
 }
 
