@@ -45,6 +45,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -498,12 +499,14 @@ public class FirstRunIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1197556")
     public void testResetOnBackPress() throws Exception {
         testResetOnBackPressImpl(true);
     }
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1197556")
     public void testResetOnBackPress_NoUmaAccepted() throws Exception {
         testResetOnBackPressImpl(false);
     }
