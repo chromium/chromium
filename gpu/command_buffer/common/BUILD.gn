@@ -45,6 +45,28 @@ group("webgpu") {
   public_deps = [ ":webgpu_sources" ]
 }
 
+# Minimal set of definitions which don't have GPU dependencies outside of this
+# directory.
+source_set("common_base_sources") {
+  visibility = [ "//gpu/*" ]
+  sources = [
+    "command_buffer_id.h",
+    "constants.h",
+    "context_result.cc",
+    "context_result.h",
+    "mailbox_holder.cc",
+    "mailbox_holder.h",
+    "sync_token.cc",
+    "sync_token.h",
+  ]
+  public_deps = [
+    ":mailbox",
+    "//base",
+    "//base/util/type_safety",
+  ]
+  configs += [ "//gpu:gpu_implementation" ]
+}
+
 source_set("common_sources") {
   visibility = [ "//gpu/*" ]
 
@@ -58,13 +80,9 @@ source_set("common_sources") {
     "cmd_buffer_common.cc",
     "cmd_buffer_common.h",
     "command_buffer.h",
-    "command_buffer_id.h",
     "common_cmd_format.h",
-    "constants.h",
     "context_creation_attribs.cc",
     "context_creation_attribs.h",
-    "context_result.cc",
-    "context_result.h",
     "debug_marker_manager.cc",
     "debug_marker_manager.h",
     "discardable_handle.cc",
@@ -74,8 +92,6 @@ source_set("common_sources") {
     "gpu_memory_buffer_support.h",
     "id_allocator.cc",
     "id_allocator.h",
-    "mailbox_holder.cc",
-    "mailbox_holder.h",
     "presentation_feedback_utils.cc",
     "presentation_feedback_utils.h",
     "scheduling_priority.cc",
@@ -86,8 +102,6 @@ source_set("common_sources") {
     "swap_buffers_complete_params.cc",
     "swap_buffers_complete_params.h",
     "swap_buffers_flags.h",
-    "sync_token.cc",
-    "sync_token.h",
     "texture_in_use_response.h",
     "thread_local.h",
     "time.h",
@@ -96,6 +110,7 @@ source_set("common_sources") {
   configs += [ "//gpu:gpu_implementation" ]
 
   public_deps = [
+    ":common_base_sources",
     ":mailbox",
     "//base/util/type_safety",
     "//mojo/public/cpp/system",

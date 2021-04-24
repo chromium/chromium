@@ -57,6 +57,19 @@ source_set("command_buffer_traits_sources") {
   }
 }
 
+source_set("memory_stats_sources") {
+  sources = [
+    "memory_stats.cc",
+    "memory_stats.h",
+  ]
+  public_deps = [ "//base" ]
+  configs += [ "//gpu:gpu_implementation" ]
+}
+
+source_set("gpu_peak_memory") {
+  sources = [ "gpu_peak_memory.h" ]
+}
+
 source_set("ipc_common_sources") {
   # External code should depend on this via //gpu/ipc/common above rather than
   # depending on this directly or the component build will break.
@@ -77,10 +90,7 @@ source_set("ipc_common_sources") {
     "gpu_param_traits.cc",
     "gpu_param_traits.h",
     "gpu_param_traits_macros.h",
-    "gpu_peak_memory.h",
     "gpu_watchdog_timeout.h",
-    "memory_stats.cc",
-    "memory_stats.h",
     "result_codes.h",
   ]
 
@@ -114,6 +124,9 @@ source_set("ipc_common_sources") {
 
   public_deps = [
     ":command_buffer_traits_sources",
+    ":gpu_peak_memory",
+    ":interfaces_cpp_sources",
+    ":memory_stats_sources",
     ":surface_handle_type",
     ":vulkan_ycbcr_info",
     "//ipc",
@@ -250,68 +263,7 @@ mojom("interfaces") {
     enabled_features += [ "has_gpu_revision_info" ]
   }
 
-  shared_cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "gpu.mojom.Mailbox"
-          cpp = "::gpu::Mailbox"
-        },
-      ]
-      traits_headers = [ "mailbox_mojom_traits.h" ]
-      traits_public_deps = [ ":shared_mojom_traits" ]
-    },
-    {
-      types = [
-        {
-          mojom = "gpu.mojom.MailboxHolder"
-          cpp = "::gpu::MailboxHolder"
-        },
-      ]
-      traits_headers = [ "mailbox_holder_mojom_traits.h" ]
-      traits_public_deps = [
-        ":mojom_traits",
-        ":shared_mojom_traits",
-        "//gpu/command_buffer/common",
-      ]
-    },
-    {
-      types = [
-        {
-          mojom = "gpu.mojom.SyncToken"
-          cpp = "::gpu::SyncToken"
-        },
-      ]
-      traits_headers = [ "sync_token_mojom_traits.h" ]
-      traits_public_deps = [
-        ":mojom_traits",
-        "//gpu/command_buffer/common",
-      ]
-    },
-  ]
-
-  if (is_win) {
-    shared_cpp_typemaps += [
-      {
-        types = [
-          {
-            mojom = "gpu.mojom.Luid"
-            cpp = "::LUID"
-          },
-        ]
-        traits_headers = [ "luid_mojom_traits.h" ]
-        traits_public_deps = [
-          ":mojom_traits",
-          "//gpu/config",
-        ]
-      },
-    ]
-  }
-
-  cpp_typemaps = shared_cpp_typemaps
-  blink_cpp_typemaps = shared_cpp_typemaps
-
-  cpp_typemaps += [
+  cpp_typemaps = [
     {
       types = [
         {
@@ -320,7 +272,7 @@ mojom("interfaces") {
         },
       ]
       traits_headers = [ "gpu_command_buffer_traits.h" ]
-      traits_public_deps = [ ":command_buffer_traits" ]
+      traits_public_deps = [ ":command_buffer_traits_sources" ]
     },
     {
       types = [
@@ -330,7 +282,7 @@ mojom("interfaces") {
         },
       ]
       traits_headers = [ "context_result_mojom_traits.h" ]
-      traits_public_deps = [ "//gpu/command_buffer/common" ]
+      traits_public_deps = [ "//gpu/command_buffer/common:common_base_sources" ]
     },
     {
       types = [
@@ -374,7 +326,7 @@ mojom("interfaces") {
       traits_sources = [ "gpu_feature_info_mojom_traits.cc" ]
       traits_headers = [ "gpu_feature_info_mojom_traits.h" ]
       traits_public_deps = [
-        "//gpu/config",
+        "//gpu/config:config_sources",
         "//ui/gfx/geometry/mojom",
       ]
     },
@@ -420,7 +372,7 @@ mojom("interfaces") {
       traits_sources = [ "gpu_info_mojom_traits.cc" ]
       traits_headers = [ "gpu_info_mojom_traits.h" ]
       traits_public_deps = [
-        "//gpu/config",
+        "//gpu/config:config_sources",
         "//ui/gfx/geometry/mojom",
       ]
     },
@@ -432,7 +384,37 @@ mojom("interfaces") {
         },
       ]
       traits_headers = [ "gpu_peak_memory_mojom_traits.h" ]
-      traits_public_deps = [ ":common" ]
+      traits_public_deps = [ ":gpu_peak_memory" ]
+    },
+    {
+      types = [
+        {
+          mojom = "gpu.mojom.Mailbox"
+          cpp = "::gpu::Mailbox"
+        },
+      ]
+      traits_headers = [ "mailbox_mojom_traits.h" ]
+      traits_public_deps = [ ":mojom_traits" ]
+    },
+    {
+      types = [
+        {
+          mojom = "gpu.mojom.MailboxHolder"
+          cpp = "::gpu::MailboxHolder"
+        },
+      ]
+      traits_headers = [ "mailbox_holder_mojom_traits.h" ]
+      traits_public_deps = [ ":mojom_traits" ]
+    },
+    {
+      types = [
+        {
+          mojom = "gpu.mojom.SyncToken"
+          cpp = "::gpu::SyncToken"
+        },
+      ]
+      traits_headers = [ "sync_token_mojom_traits.h" ]
+      traits_public_deps = [ ":mojom_traits" ]
     },
     {
       types = [
@@ -470,9 +452,81 @@ mojom("interfaces") {
     },
   ]
 
+  blink_cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "gpu.mojom.Mailbox"
+          cpp = "::gpu::Mailbox"
+        },
+      ]
+      traits_headers = [ "mailbox_mojom_traits.h" ]
+      traits_public_deps = [ "//gpu" ]
+    },
+    {
+      types = [
+        {
+          mojom = "gpu.mojom.MailboxHolder"
+          cpp = "::gpu::MailboxHolder"
+        },
+      ]
+      traits_headers = [ "mailbox_holder_mojom_traits.h" ]
+      traits_public_deps = [ "//gpu" ]
+    },
+    {
+      types = [
+        {
+          mojom = "gpu.mojom.SyncToken"
+          cpp = "::gpu::SyncToken"
+        },
+      ]
+      traits_headers = [ "sync_token_mojom_traits.h" ]
+      traits_public_deps = [ "//gpu" ]
+    },
+  ]
+
+  if (is_win) {
+    cpp_typemaps += [
+      {
+        types = [
+          {
+            mojom = "gpu.mojom.Luid"
+            cpp = "::LUID"
+          },
+        ]
+        traits_headers = [ "luid_mojom_traits.h" ]
+        traits_public_deps = [
+          ":mojom_traits",
+          "//gpu/config:config_sources",
+        ]
+      },
+    ]
+    blink_cpp_typemaps += [
+      {
+        types = [
+          {
+            mojom = "gpu.mojom.Luid"
+            cpp = "::LUID"
+          },
+        ]
+        traits_headers = [ "luid_mojom_traits.h" ]
+        traits_public_deps = [ "//gpu" ]
+      },
+    ]
+  }
+
+  cpp_proxy_target = ":common"
+  export_class_attribute = "GPU_EXPORT"
+  export_header = "gpu/gpu_export.h"
+  cpp_configs = [ "//gpu:gpu_implementation" ]
+
   export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
   export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
   export_header_blink = "third_party/blink/public/platform/web_common.h"
+
+  # Because we use the export helpers above, our shared C++ sources target will
+  # be a component. This gives it a globally unique library name.
+  component_output_prefix = "gpu_common_interfaces"
 }
 
 mojom("gpu_preferences_interface") {
@@ -551,9 +605,13 @@ mojom("vulkan_interface") {
       types = generated_vulkan_type_mappings
       traits_sources = [ "vulkan_types_mojom_traits.cc" ]
       traits_headers = [ "vulkan_types_mojom_traits.h" ]
-      traits_public_deps = [ ":vulkan_types_mojom_traits" ]
+      traits_public_deps = [ ":vulkan_types" ]
     },
   ]
+
+  export_class_attribute = "GPU_EXPORT"
+  export_header = "gpu/gpu_export.h"
+  cpp_configs = [ "//gpu:gpu_implementation" ]
 
   webui_module_path = "/"
 }
@@ -572,55 +630,31 @@ mojom("test_interfaces") {
   }
 }
 
-source_set("vulkan_types_mojom_traits") {
-  sources = [ "vulkan_types_mojom_traits.h" ]
-
-  deps = [
-    ":vulkan_interface_shared_cpp_sources",
-    ":vulkan_types",
-  ]
-}
-
 source_set("mojom_traits") {
+  # External dependents on these traits should depend on //gpu/ipc/common.
+  visibility = [ ":*" ]
+
   sources = [
     "context_result_mojom_traits.h",
     "gpu_peak_memory_mojom_traits.h",
     "mailbox_holder_mojom_traits.h",
+    "mailbox_mojom_traits.cc",
     "mailbox_mojom_traits.h",
     "memory_stats_mojom_traits.h",
     "surface_handle_mojom_traits.h",
     "sync_token_mojom_traits.h",
   ]
-  deps = [
-    ":interfaces_shared_cpp_sources",
+  public_deps = [
+    ":gpu_peak_memory",
+    ":interfaces_shared",
+    ":memory_stats_sources",
     ":surface_handle_type",
     ":vulkan_ycbcr_info",
-    "//gpu/command_buffer/common",
-    "//gpu/ipc/common",
+    "//gpu/command_buffer/common:common_base_sources",
     "//mojo/public/cpp/bindings:bindings",
   ]
   if (is_android) {
     sources += [ "vulkan_ycbcr_info_mojom_traits.h" ]
   }
-  if (is_win) {
-    sources += [ "luid_mojom_traits.h" ]
-  }
-  if (enable_vulkan) {
-    deps += [ ":vulkan_types_mojom_traits" ]
-  }
-}
-
-component("shared_mojom_traits") {
-  output_name = "gpu_shared_mojom_traits"
-  sources = [
-    "mailbox_mojom_traits.cc",
-    "mailbox_mojom_traits.h",
-  ]
-  defines = [ "IS_GPU_SHARED_MOJOM_TRAITS_IMPL" ]
-  public_deps = [
-    ":interfaces_shared",
-    "//base",
-    "//gpu/command_buffer/common",
-    "//mojo/public/cpp/bindings",
-  ]
+  configs += [ "//gpu:gpu_implementation" ]
 }

@@ -6,12 +6,13 @@
 #define GPU_IPC_COMMON_SYNC_TOKEN_MOJOM_TRAITS_H_
 
 #include "gpu/command_buffer/common/sync_token.h"
+#include "gpu/gpu_export.h"
 #include "gpu/ipc/common/sync_token.mojom-shared.h"
 
 namespace mojo {
 
 template <>
-struct StructTraits<gpu::mojom::SyncTokenDataView, gpu::SyncToken> {
+struct GPU_EXPORT StructTraits<gpu::mojom::SyncTokenDataView, gpu::SyncToken> {
   static bool verified_flush(const gpu::SyncToken& token) {
     DCHECK(!token.HasData() || token.verified_flush());
     return token.verified_flush();

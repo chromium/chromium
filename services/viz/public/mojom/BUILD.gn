@@ -449,7 +449,7 @@ mojom("mojom") {
       traits_headers = [ "//services/viz/public/cpp/compositing/transferable_resource_mojom_traits.h" ]
       traits_public_deps = [ "//components/viz/common" ]
       traits_deps = [
-        "//gpu/ipc/common:mojom_traits",
+        "//gpu/ipc/common",
         "//ui/gfx/geometry/mojom",
       ]
     },
@@ -546,6 +546,7 @@ mojom("mojom") {
       traits_public_deps = [
         "//components/viz/common",
         "//gpu/ipc/common:interfaces",
+        "//gpu/ipc/common:interfaces_blink",
         "//services/viz/public/mojom",
         "//skia/public/mojom",
         "//ui/gfx/geometry/mojom",

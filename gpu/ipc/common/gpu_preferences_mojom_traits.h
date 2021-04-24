@@ -9,6 +9,7 @@
 #include "build/chromeos_buildflags.h"
 
 #include "gpu/config/gpu_preferences.h"
+#include "gpu/gpu_export.h"
 #include "gpu/ipc/common/gpu_preferences.mojom-shared.h"
 #include "ui/gfx/mojom/buffer_types_mojom_traits.h"
 
@@ -21,7 +22,7 @@
 namespace mojo {
 
 template <>
-struct EnumTraits<gpu::mojom::GrContextType, gpu::GrContextType> {
+struct GPU_EXPORT EnumTraits<gpu::mojom::GrContextType, gpu::GrContextType> {
   static gpu::mojom::GrContextType ToMojom(gpu::GrContextType input) {
     switch (input) {
       case gpu::GrContextType::kGL:
@@ -57,8 +58,8 @@ struct EnumTraits<gpu::mojom::GrContextType, gpu::GrContextType> {
 };
 
 template <>
-struct EnumTraits<gpu::mojom::VulkanImplementationName,
-                  gpu::VulkanImplementationName> {
+struct GPU_EXPORT EnumTraits<gpu::mojom::VulkanImplementationName,
+                             gpu::VulkanImplementationName> {
   static gpu::mojom::VulkanImplementationName ToMojom(
       gpu::VulkanImplementationName input) {
     switch (input) {
@@ -95,7 +96,8 @@ struct EnumTraits<gpu::mojom::VulkanImplementationName,
 };
 
 template <>
-struct StructTraits<gpu::mojom::GpuPreferencesDataView, gpu::GpuPreferences> {
+struct GPU_EXPORT
+    StructTraits<gpu::mojom::GpuPreferencesDataView, gpu::GpuPreferences> {
   static bool Read(gpu::mojom::GpuPreferencesDataView prefs,
                    gpu::GpuPreferences* out) {
     out->disable_accelerated_video_decode =

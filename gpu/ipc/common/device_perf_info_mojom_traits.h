@@ -9,12 +9,14 @@
 
 #include "build/build_config.h"
 #include "gpu/config/device_perf_info.h"
+#include "gpu/gpu_export.h"
 
 namespace mojo {
 
 #if defined(OS_WIN)
 template <>
-struct EnumTraits<gpu::mojom::Direct3DFeatureLevel, D3D_FEATURE_LEVEL> {
+struct GPU_EXPORT
+    EnumTraits<gpu::mojom::Direct3DFeatureLevel, D3D_FEATURE_LEVEL> {
   static gpu::mojom::Direct3DFeatureLevel ToMojom(
       D3D_FEATURE_LEVEL d3d_feature_level);
   static bool FromMojom(gpu::mojom::Direct3DFeatureLevel input,
@@ -23,7 +25,7 @@ struct EnumTraits<gpu::mojom::Direct3DFeatureLevel, D3D_FEATURE_LEVEL> {
 #endif  // OS_WIN
 
 template <>
-struct EnumTraits<gpu::mojom::HasDiscreteGpu, gpu::HasDiscreteGpu> {
+struct GPU_EXPORT EnumTraits<gpu::mojom::HasDiscreteGpu, gpu::HasDiscreteGpu> {
   static gpu::mojom::HasDiscreteGpu ToMojom(
       gpu::HasDiscreteGpu has_discrete_gpu);
   static bool FromMojom(gpu::mojom::HasDiscreteGpu input,
@@ -31,7 +33,8 @@ struct EnumTraits<gpu::mojom::HasDiscreteGpu, gpu::HasDiscreteGpu> {
 };
 
 template <>
-struct StructTraits<gpu::mojom::DevicePerfInfoDataView, gpu::DevicePerfInfo> {
+struct GPU_EXPORT
+    StructTraits<gpu::mojom::DevicePerfInfoDataView, gpu::DevicePerfInfo> {
   static bool Read(gpu::mojom::DevicePerfInfoDataView data,
                    gpu::DevicePerfInfo* out);
 

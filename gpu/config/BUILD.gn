@@ -237,6 +237,9 @@ source_set("config_sources") {
       "//ui/gfx/linux:gpu_memory_buffer_support_x11",
     ]
   }
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
 }
 
 if (is_android) {

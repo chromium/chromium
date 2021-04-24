@@ -554,8 +554,7 @@ source_set("shared_mojom_traits") {
 
   public_deps = [
     ":mojom_shared",
-    "//gpu/ipc/common:common",
-    "//gpu/ipc/common:mojom_traits",
+    "//gpu/ipc/common",
     "//media",
     "//media/base/ipc:ipc",
     "//mojo/public/mojom/base",

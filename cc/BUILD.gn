@@ -913,7 +913,7 @@ cc_test("cc_perftests") {
     "//gpu/command_buffer/client:raster",
     "//gpu/command_buffer/client:raster_interface",
     "//gpu/ipc:gl_in_process_context",
-    "//gpu/ipc/common:mojom_traits",
+    "//gpu/ipc/common",
     "//media",
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",

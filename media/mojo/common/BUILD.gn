@@ -19,7 +19,7 @@ source_set("common") {
   deps = [
     ":mojo_shared_buffer_video_frame",
     "//base",
-    "//gpu/ipc/common:mojom_traits",
+    "//gpu/ipc/common",
     "//media",
     "//media/mojo/mojom",
     "//mojo/public/cpp/bindings",
