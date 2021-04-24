@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/process/memory.h"
+#include "base/record_replay.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/base/math_util.h"
 #include "cc/paint/image_provider.h"
@@ -100,6 +101,7 @@ void SoftwareRenderer::BeginDrawingFrame() {
 }
 
 void SoftwareRenderer::FinishDrawingFrame() {
+  recordreplay::Assert("SoftwareRenderer::FinishDrawingFrame Start");
   TRACE_EVENT0("viz", "SoftwareRenderer::FinishDrawingFrame");
   current_framebuffer_canvas_.reset();
   current_canvas_ = nullptr;
@@ -107,6 +109,7 @@ void SoftwareRenderer::FinishDrawingFrame() {
   if (root_canvas_)
     output_device_->EndPaint();
   root_canvas_ = nullptr;
+  recordreplay::Assert("SoftwareRenderer::FinishDrawingFrame Done");
 }
 
 void SoftwareRenderer::SwapBuffers(SwapFrameData swap_frame_data) {
