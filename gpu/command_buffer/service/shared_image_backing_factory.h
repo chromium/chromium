@@ -51,6 +51,7 @@ class SharedImageBackingFactory {
       gfx::GpuMemoryBufferHandle handle,
       gfx::BufferFormat format,
       SurfaceHandle surface_handle,
+      uint32_t plane,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,

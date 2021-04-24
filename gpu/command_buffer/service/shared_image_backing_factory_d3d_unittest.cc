@@ -904,11 +904,12 @@ TEST_F(SharedImageBackingFactoryD3DTest, CreateSharedImageFromHandle) {
   const auto color_space = gfx::ColorSpace::CreateSRGB();
   const uint32_t usage = SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_DISPLAY;
   const gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
+  const uint32_t plane = gfx::kDefaultBufferPlane;
   const GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   const SkAlphaType alpha_type = kPremul_SkAlphaType;
   auto backing = shared_image_factory_->CreateSharedImage(
       mailbox, 0, std::move(gpu_memory_buffer_handle), format, surface_handle,
-      size, color_space, surface_origin, alpha_type, usage);
+      plane, size, color_space, surface_origin, alpha_type, usage);
   ASSERT_NE(backing, nullptr);
 
   EXPECT_EQ(backing->format(), viz::RGBA_8888);

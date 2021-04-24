@@ -272,8 +272,8 @@ bool PresenterImageX11::Initialize(
   auto mailbox = gpu::Mailbox::GenerateForSharedImage();
   if (!factory->CreateSharedImage(
           mailbox, 0, std::move(gmb_handle), BufferFormat(format),
-          deps->GetSurfaceHandle(), size, color_space, kTopLeft_GrSurfaceOrigin,
-          kPremul_SkAlphaType, shared_image_usage)) {
+          deps->GetSurfaceHandle(), gfx::kDefaultBufferPlane, size, color_space,
+          kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, shared_image_usage)) {
     DLOG(ERROR) << "CreateSharedImage failed.";
     return false;
   }

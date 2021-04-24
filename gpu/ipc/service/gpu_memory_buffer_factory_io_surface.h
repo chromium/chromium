@@ -53,6 +53,7 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryIOSurface
   // Overridden from ImageFactory:
   scoped_refptr<gl::GLImage> CreateImageForGpuMemoryBuffer(
       gfx::GpuMemoryBufferHandle handle,
+      uint32_t plane,
       const gfx::Size& size,
       gfx::BufferFormat format,
       int client_id,

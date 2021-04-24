@@ -52,6 +52,12 @@ bool IsImageSizeValidForGpuMemoryBufferFormat(const gfx::Size& size,
   return false;
 }
 
+GPU_EXPORT bool IsPlaneValidForGpuMemoryBufferFormat(uint32_t plane,
+                                                     gfx::BufferFormat format) {
+  // TODO(https://crbug.com/1201865): Allow non-default planes.
+  return plane == gfx::kDefaultBufferPlane;
+}
+
 uint32_t GetPlatformSpecificTextureTarget() {
 #if defined(OS_MAC)
   return macos_specific_texture_target;

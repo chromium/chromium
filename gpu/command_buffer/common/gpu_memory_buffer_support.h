@@ -51,6 +51,10 @@ GPU_EXPORT bool IsImageSizeValidForGpuMemoryBufferFormat(
     const gfx::Size& size,
     gfx::BufferFormat format);
 
+// Returns true if |plane| is a valid plane index for |format|.
+GPU_EXPORT bool IsPlaneValidForGpuMemoryBufferFormat(uint32_t plane,
+                                                     gfx::BufferFormat format);
+
 // Returns the texture target to use with native GpuMemoryBuffers.
 GPU_EXPORT uint32_t GetPlatformSpecificTextureTarget();
 

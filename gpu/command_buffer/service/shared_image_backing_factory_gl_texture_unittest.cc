@@ -860,6 +860,7 @@ class SharedImageBackingFactoryGLTextureWithGMBTest
   // gpu::ImageFactory implementation.
   scoped_refptr<gl::GLImage> CreateImageForGpuMemoryBuffer(
       gfx::GpuMemoryBufferHandle handle,
+      uint32_t plane,
       const gfx::Size& size,
       gfx::BufferFormat format,
       int client_id,
@@ -868,6 +869,8 @@ class SharedImageBackingFactoryGLTextureWithGMBTest
     if (handle.type != gfx::NATIVE_PIXMAP)
       return nullptr;
     if (client_id != kClientId)
+      return nullptr;
+    if (!gpu::IsPlaneValidForGpuMemoryBufferFormat(plane, format))
       return nullptr;
     return base::MakeRefCounted<StubImage>(size, format);
   }
@@ -887,8 +890,9 @@ TEST_P(SharedImageBackingFactoryGLTextureWithGMBTest,
 
   gfx::GpuMemoryBufferHandle handle;
   auto backing = backing_factory_->CreateSharedImage(
-      mailbox, kClientId, std::move(handle), format, kNullSurfaceHandle, size,
-      color_space, surface_origin, alpha_type, usage);
+      mailbox, kClientId, std::move(handle), format, kNullSurfaceHandle,
+      gfx::kDefaultBufferPlane, size, color_space, surface_origin, alpha_type,
+      usage);
   EXPECT_FALSE(backing);
 }
 
@@ -912,8 +916,9 @@ TEST_P(SharedImageBackingFactoryGLTextureWithGMBTest,
   gfx::GpuMemoryBufferHandle handle;
   handle.type = gfx::NATIVE_PIXMAP;
   auto backing = backing_factory_->CreateSharedImage(
-      mailbox, kClientId, std::move(handle), format, kNullSurfaceHandle, size,
-      color_space, surface_origin, alpha_type, usage);
+      mailbox, kClientId, std::move(handle), format, kNullSurfaceHandle,
+      gfx::kDefaultBufferPlane, size, color_space, surface_origin, alpha_type,
+      usage);
   if (!can_create_scanout_or_gmb_shared_image(get_format())) {
     EXPECT_FALSE(backing);
     return;
@@ -968,8 +973,9 @@ TEST_P(SharedImageBackingFactoryGLTextureWithGMBTest,
       gfx::RowSizeForBufferFormat(size.width(), format, 0));
 
   auto backing = backing_factory_->CreateSharedImage(
-      mailbox, kClientId, std::move(handle), format, kNullSurfaceHandle, size,
-      color_space, surface_origin, alpha_type, usage);
+      mailbox, kClientId, std::move(handle), format, kNullSurfaceHandle,
+      gfx::kDefaultBufferPlane, size, color_space, surface_origin, alpha_type,
+      usage);
   if (!can_create_scanout_or_gmb_shared_image(get_format())) {
     EXPECT_FALSE(backing);
     return;
@@ -1001,8 +1007,9 @@ TEST_P(SharedImageBackingFactoryGLTextureWithGMBTest,
   gfx::GpuMemoryBufferHandle handle;
   handle.type = gfx::NATIVE_PIXMAP;
   auto backing = backing_factory_->CreateSharedImage(
-      mailbox, kClientId, std::move(handle), format, kNullSurfaceHandle, size,
-      color_space, surface_origin, alpha_type, usage);
+      mailbox, kClientId, std::move(handle), format, kNullSurfaceHandle,
+      gfx::kDefaultBufferPlane, size, color_space, surface_origin, alpha_type,
+      usage);
   if (!can_create_scanout_or_gmb_shared_image(get_format())) {
     EXPECT_FALSE(backing);
     return;

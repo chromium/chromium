@@ -292,8 +292,8 @@ void SharedImageInterfaceInProcess::CreateGMBSharedImageOnGpuThread(
   SurfaceHandle surface_handle = kNullSurfaceHandle;
   if (!shared_image_factory_->CreateSharedImage(
           mailbox, kDisplayCompositorClientId, std::move(handle), format,
-          surface_handle, size, color_space, surface_origin, alpha_type,
-          usage)) {
+          surface_handle, gfx::kDefaultBufferPlane, size, color_space,
+          surface_origin, alpha_type, usage)) {
     // Signal errors by losing the command buffer.
     // Signal errors by losing the command buffer.
     command_buffer_helper_->SetError();

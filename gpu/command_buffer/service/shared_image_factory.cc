@@ -277,6 +277,7 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
                                            gfx::GpuMemoryBufferHandle handle,
                                            gfx::BufferFormat format,
                                            SurfaceHandle surface_handle,
+                                           uint32_t plane,
                                            const gfx::Size& size,
                                            const gfx::ColorSpace& color_space,
                                            GrSurfaceOrigin surface_origin,
@@ -291,8 +292,8 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
   if (!factory)
     return false;
   auto backing = factory->CreateSharedImage(
-      mailbox, client_id, std::move(handle), format, surface_handle, size,
-      color_space, surface_origin, alpha_type, usage);
+      mailbox, client_id, std::move(handle), format, surface_handle, plane,
+      size, color_space, surface_origin, alpha_type, usage);
   if (backing)
     backing->OnWriteSucceeded();
   return RegisterBacking(std::move(backing), allow_legacy_mailbox);

@@ -20,6 +20,7 @@
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
+#include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/gl_context.h"
 
 namespace gpu {
@@ -103,6 +104,7 @@ bool SharedImageStub::CreateSharedImage(const Mailbox& mailbox,
                                         gfx::GpuMemoryBufferHandle handle,
                                         gfx::BufferFormat format,
                                         SurfaceHandle surface_handle,
+                                        uint32_t plane,
                                         const gfx::Size& size,
                                         const gfx::ColorSpace& color_space,
                                         GrSurfaceOrigin surface_origin,
@@ -120,9 +122,9 @@ bool SharedImageStub::CreateSharedImage(const Mailbox& mailbox,
     OnError();
     return false;
   }
-  if (!factory_->CreateSharedImage(mailbox, client_id, std::move(handle),
-                                   format, surface_handle, size, color_space,
-                                   surface_origin, alpha_type, usage)) {
+  if (!factory_->CreateSharedImage(
+          mailbox, client_id, std::move(handle), format, surface_handle, plane,
+          size, color_space, surface_origin, alpha_type, usage)) {
     LOG(ERROR) << "SharedImageStub: Unable to create shared image";
     OnError();
     return false;
@@ -196,7 +198,6 @@ void SharedImageStub::OnCreateSharedImage(
   if (!factory_->CreateSharedImage(params.mailbox, params.format, params.size,
                                    params.color_space, params.surface_origin,
                                    params.alpha_type, gpu::kNullSurfaceHandle,
-
                                    params.usage)) {
     LOG(ERROR) << "SharedImageStub: Unable to create shared image";
     OnError();
@@ -270,12 +271,20 @@ void SharedImageStub::OnCreateGMBSharedImage(
     GpuChannelMsg_CreateGMBSharedImage_Params params) {
   TRACE_EVENT2("gpu", "SharedImageStub::OnCreateGMBSharedImage", "width",
                params.size.width(), "height", params.size.height());
+
+  if (!gpu::IsPlaneValidForGpuMemoryBufferFormat(params.plane, params.format)) {
+    LOG(ERROR) << "Invalid plane " << params.plane << " for "
+               << gfx::BufferFormatToString(params.format);
+    return;
+  }
+
   // TODO(piman): add support for SurfaceHandle (for backbuffers for ozone/drm).
   constexpr SurfaceHandle surface_handle = kNullSurfaceHandle;
-  if (!CreateSharedImage(
-          params.mailbox, channel_->client_id(), std::move(params.handle),
-          params.format, surface_handle, params.size, params.color_space,
-          params.surface_origin, params.alpha_type, params.usage)) {
+  if (!CreateSharedImage(params.mailbox, channel_->client_id(),
+                         std::move(params.handle), params.format,
+                         surface_handle, params.plane, params.size,
+                         params.color_space, params.surface_origin,
+                         params.alpha_type, params.usage)) {
     return;
   }
 

@@ -31,6 +31,12 @@ enum class BufferFormat {
   LAST = P010
 };
 
+// This argument may be used to specify the default plane for texture access to
+// a GpuMemoryBuffer. For single plane buffer formats, this refers to that
+// single plane. For multiplanar buffer formats, this refers to the RGB texture
+// view of the GpuMemoryBuffer.
+constexpr uint32_t kDefaultBufferPlane = 0xffffff;
+
 // The usage mode affects how a buffer can be used. Only buffers created with
 // *_CPU_READ_WRITE_* can be mapped into the client's address space and accessed
 // by the CPU. SCANOUT implies GPU_READ_WRITE.

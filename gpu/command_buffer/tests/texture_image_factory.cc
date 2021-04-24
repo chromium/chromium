@@ -67,6 +67,7 @@ class TextureImage : public gl::GLImage {
 
 scoped_refptr<gl::GLImage> TextureImageFactory::CreateImageForGpuMemoryBuffer(
     gfx::GpuMemoryBufferHandle handle,
+    uint32_t plane,
     const gfx::Size& size,
     gfx::BufferFormat format,
     int client_id,

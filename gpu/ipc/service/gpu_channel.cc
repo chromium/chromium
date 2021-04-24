@@ -851,9 +851,12 @@ uint64_t GpuChannel::GetMemoryUsage() const {
 
 scoped_refptr<gl::GLImage> GpuChannel::CreateImageForGpuMemoryBuffer(
     gfx::GpuMemoryBufferHandle handle,
+    uint32_t plane,
     const gfx::Size& size,
     gfx::BufferFormat format,
     SurfaceHandle surface_handle) {
+  if (!gpu::IsPlaneValidForGpuMemoryBufferFormat(plane, format))
+    return nullptr;
   switch (handle.type) {
     case gfx::SHARED_MEMORY_BUFFER: {
       if (!base::IsValueInRangeForNumericType<size_t>(handle.stride))
@@ -873,8 +876,8 @@ scoped_refptr<gl::GLImage> GpuChannel::CreateImageForGpuMemoryBuffer(
 
       return manager->gpu_memory_buffer_factory()
           ->AsImageFactory()
-          ->CreateImageForGpuMemoryBuffer(std::move(handle), size, format,
-                                          client_id_, surface_handle);
+          ->CreateImageForGpuMemoryBuffer(std::move(handle), plane, size,
+                                          format, client_id_, surface_handle);
     }
   }
 }

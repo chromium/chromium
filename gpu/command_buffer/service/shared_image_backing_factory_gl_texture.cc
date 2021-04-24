@@ -236,6 +236,7 @@ SharedImageBackingFactoryGLTexture::CreateSharedImage(
     gfx::GpuMemoryBufferHandle handle,
     gfx::BufferFormat buffer_format,
     SurfaceHandle surface_handle,
+    uint32_t plane,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
@@ -249,6 +250,12 @@ SharedImageBackingFactoryGLTexture::CreateSharedImage(
 
   if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, buffer_format)) {
     LOG(ERROR) << "Invalid image size " << size.ToString() << " for "
+               << gfx::BufferFormatToString(buffer_format);
+    return nullptr;
+  }
+
+  if (!gpu::IsPlaneValidForGpuMemoryBufferFormat(plane, buffer_format)) {
+    LOG(ERROR) << "Invalid plane " << plane << " for "
                << gfx::BufferFormatToString(buffer_format);
     return nullptr;
   }
@@ -353,7 +360,8 @@ scoped_refptr<gl::GLImage> SharedImageBackingFactoryGLTexture::MakeGLImage(
     return nullptr;
 
   return image_factory_->CreateImageForGpuMemoryBuffer(
-      std::move(handle), size, format, client_id, surface_handle);
+      std::move(handle), gfx::kDefaultBufferPlane, size, format, client_id,
+      surface_handle);
 }
 
 bool SharedImageBackingFactoryGLTexture::CanImportGpuMemoryBuffer(

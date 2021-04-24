@@ -450,6 +450,7 @@ int32_t CommandBufferProxyImpl::CreateImage(ClientBuffer buffer,
   GpuCommandBufferMsg_CreateImage_Params params;
   params.id = new_id;
   params.gpu_memory_buffer = std::move(handle);
+  params.plane = gfx::kDefaultBufferPlane;
   params.size = gfx::Size(width, height);
   params.format = gpu_memory_buffer->GetFormat();
   params.image_release_count = image_fence_sync;

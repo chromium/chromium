@@ -43,6 +43,7 @@
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
 #include "gpu/ipc/service/image_transport_surface.h"
+#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gl/gl_bindings.h"
@@ -540,8 +541,15 @@ void GLES2CommandBufferStub::OnCreateImage(
     return;
   }
 
+  if (!gpu::IsPlaneValidForGpuMemoryBufferFormat(params.plane, format)) {
+    LOG(ERROR) << "Invalid plane " << params.plane << " for "
+               << gfx::BufferFormatToString(format);
+    return;
+  }
+
   scoped_refptr<gl::GLImage> image = channel()->CreateImageForGpuMemoryBuffer(
-      std::move(params.gpu_memory_buffer), size, format, surface_handle_);
+      std::move(params.gpu_memory_buffer), params.plane, size, format,
+      surface_handle_);
   if (!image.get())
     return;
 

@@ -442,6 +442,7 @@ std::unique_ptr<SharedImageBacking> WrappedSkImageFactory::CreateSharedImage(
     gfx::GpuMemoryBufferHandle handle,
     gfx::BufferFormat buffer_format,
     SurfaceHandle surface_handle,
+    uint32_t plane,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
@@ -456,6 +457,12 @@ std::unique_ptr<SharedImageBacking> WrappedSkImageFactory::CreateSharedImage(
 
   if (gfx::NumberOfPlanesForLinearBufferFormat(buffer_format) != 1) {
     DLOG(ERROR) << "Invalid image format.";
+    return nullptr;
+  }
+
+  if (!gpu::IsPlaneValidForGpuMemoryBufferFormat(plane, buffer_format)) {
+    DLOG(ERROR) << "Invalid plane " << plane << " for "
+                << gfx::BufferFormatToString(buffer_format);
     return nullptr;
   }
 
