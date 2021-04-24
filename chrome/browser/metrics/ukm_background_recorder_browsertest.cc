@@ -18,11 +18,7 @@
 
 namespace {
 
-// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
-// function.
-url::Origin VisitedOrigin() {
-  return url::Origin::Create(GURL("https://foobar.com"));
-}
+constexpr char kVisitedUrl[] = "https://foobar.com/baz";
 
 void DidGetRecordResult(base::OnceClosure quit_closure,
                         base::Optional<ukm::SourceId>* out_result,
@@ -46,8 +42,7 @@ class UkmBackgroundRecorderBrowserTest : public InProcessBrowserTest {
     // Adds the URL to the history so that UKM events for this origin are
     // recorded.
     background_recorder_service_->history_service_->AddPage(
-        GURL(VisitedOrigin().GetURL().spec() + "baz"), base::Time::Now(),
-        history::SOURCE_BROWSED);
+        GURL(kVisitedUrl), base::Time::Now(), history::SOURCE_BROWSED);
   }
 
  protected:
@@ -72,17 +67,12 @@ class UkmBackgroundRecorderBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(UkmBackgroundRecorderBrowserTest,
                        SourceIdReturnedWhenOriginInHistory) {
   // Check visited origin.
-  {
-    auto source_id = GetSourceId(VisitedOrigin());
-    ASSERT_TRUE(source_id);
-    EXPECT_NE(*source_id, ukm::kInvalidSourceId);
-    EXPECT_EQ(ukm::GetSourceIdType(*source_id), ukm::SourceIdType::HISTORY_ID);
-  }
+  auto source_id = GetSourceId(url::Origin::Create(GURL(kVisitedUrl)));
+  ASSERT_TRUE(source_id);
+  EXPECT_NE(*source_id, ukm::kInvalidSourceId);
+  EXPECT_EQ(ukm::GetSourceIdType(*source_id), ukm::SourceIdType::HISTORY_ID);
 
   // Check unvisited origin.
-  {
-    auto origin = url::Origin::Create(GURL("https://notvisited.com"));
-    auto source_id = GetSourceId(origin);
-    EXPECT_FALSE(source_id);
-  }
+  EXPECT_FALSE(
+      GetSourceId(url::Origin::Create(GURL("https://notvisited.com"))));
 }
