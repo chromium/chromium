@@ -1527,8 +1527,12 @@
     },
     {
       // This flag enables the Manifest parser to handle URL Protocols.
+      // Also enabled when blink::features::kWebAppEnableProtocolHandlers is
+      // overridden on the command line (or via edge://flags).
       name: "ParseUrlProtocolHandler",
-      status: "test",
+      status: "experimental",
+      origin_trial_feature_name: "ParseUrlProtocolHandler",
+      origin_trial_os: ["win", "mac", "linux"],
     },
     {
       name: "PassPaintVisualRectToCompositor",
