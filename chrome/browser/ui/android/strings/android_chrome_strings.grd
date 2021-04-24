@@ -3404,10 +3404,10 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
         Refine: <ph name="REFINE_TEXT">%1$s<ex>The meaning of life</ex></ph>
       </message>
       <message name="IDS_ACCESSIBILITY_OMNIBOX_CONCEAL_CLIPBOARD_CONTENTS" desc="Content description for the omnibox clipboard conceal button.">
-        Conceal Clipboard Contents
+        Hide clipboard contents
       </message>
       <message name="IDS_ACCESSIBILITY_OMNIBOX_REVEAL_CLIPBOARD_CONTENTS" desc="Content description for the omnibox clipboard reveal button.">
-        Reveal Clipboard Contents
+        Show clipboard contents
       </message>
       <message name="IDS_ACCESSIBILITY_OMNIBOX_SWITCH_TO_TAB" desc="Content description for the omnibox switch to tab button.">
         Switch To Tab
