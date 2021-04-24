@@ -55,6 +55,8 @@ void SVGDocumentExtensions::ServiceOnAnimationFrame(Document& document) {
 void SVGDocumentExtensions::ServiceAnimations() {
   HeapVector<Member<SVGSVGElement>> time_containers;
   CopyToVector(time_containers_, time_containers);
+  std::sort(time_containers.begin(), time_containers.end(),
+            recordreplay::CompareMemberByPointerId<Member<SVGSVGElement>>());
   for (const auto& container : time_containers)
     container->TimeContainer()->ServiceAnimations();
 
@@ -80,6 +82,8 @@ void SVGDocumentExtensions::StartAnimations() {
   // to avoid this. See https://webkit.org/b/53704
   HeapVector<Member<SVGSVGElement>> time_containers;
   CopyToVector(time_containers_, time_containers);
+  std::sort(time_containers.begin(), time_containers.end(),
+            recordreplay::CompareMemberByPointerId<Member<SVGSVGElement>>());
   for (const auto& container : time_containers) {
     SMILTimeContainer* time_container = container->TimeContainer();
     if (!time_container->IsStarted())
