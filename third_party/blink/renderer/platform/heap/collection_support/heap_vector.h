@@ -21,17 +21,25 @@ class HeapVector final : public GarbageCollected<HeapVector<T, inlineCapacity>>,
   HeapVector() = default;
 
   explicit HeapVector(wtf_size_t size)
-      : Vector<T, inlineCapacity, HeapAllocator>(size) {}
+      : Vector<T, inlineCapacity, HeapAllocator>(size) {
+    CheckType();
+  }
 
   HeapVector(wtf_size_t size, const T& val)
-      : Vector<T, inlineCapacity, HeapAllocator>(size, val) {}
+      : Vector<T, inlineCapacity, HeapAllocator>(size, val) {
+    CheckType();
+  }
 
   template <wtf_size_t otherCapacity>
   HeapVector(const HeapVector<T, otherCapacity>& other)  // NOLINT
-      : Vector<T, inlineCapacity, HeapAllocator>(other) {}
+      : Vector<T, inlineCapacity, HeapAllocator>(other) {
+    CheckType();
+  }
 
   HeapVector(const HeapVector& other)
-      : Vector<T, inlineCapacity, HeapAllocator>(other) {}
+      : Vector<T, inlineCapacity, HeapAllocator>(other) {
+    CheckType();
+  }
 
   HeapVector& operator=(const HeapVector& other) {
     Vector<T, inlineCapacity, HeapAllocator>::operator=(other);
@@ -39,7 +47,9 @@ class HeapVector final : public GarbageCollected<HeapVector<T, inlineCapacity>>,
   }
 
   HeapVector(HeapVector&& other) noexcept
-      : Vector<T, inlineCapacity, HeapAllocator>(std::move(other)) {}
+      : Vector<T, inlineCapacity, HeapAllocator>(std::move(other)) {
+    CheckType();
+  }
 
   HeapVector& operator=(HeapVector&& other) noexcept {
     Vector<T, inlineCapacity, HeapAllocator>::operator=(std::move(other));
@@ -47,10 +57,11 @@ class HeapVector final : public GarbageCollected<HeapVector<T, inlineCapacity>>,
   }
 
   HeapVector(std::initializer_list<T> elements)
-      : Vector<T, inlineCapacity, HeapAllocator>(elements) {}
+      : Vector<T, inlineCapacity, HeapAllocator>(elements) {
+    CheckType();
+  }
 
   void Trace(Visitor* visitor) const {
-    CheckType();
     Vector<T, inlineCapacity, HeapAllocator>::Trace(visitor);
   }
 

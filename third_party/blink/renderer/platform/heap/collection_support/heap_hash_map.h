@@ -32,10 +32,9 @@ class HeapHashMap final : public GarbageCollected<HeapHashMap<KeyArg,
   DISALLOW_NEW();
 
  public:
-  HeapHashMap() = default;
+  HeapHashMap() { CheckType(); }
 
   void Trace(Visitor* visitor) const {
-    CheckType();
     HashMap<KeyArg, MappedArg, HashArg, KeyTraitsArg, MappedTraitsArg,
             HeapAllocator>::Trace(visitor);
   }

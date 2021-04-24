@@ -29,10 +29,9 @@ class HeapLinkedHashSet final
   }
 
  public:
-  HeapLinkedHashSet() = default;
+  HeapLinkedHashSet() { CheckType(); }
 
   void Trace(Visitor* v) const {
-    CheckType();
     LinkedHashSet<ValueArg, TraitsArg, HeapAllocator>::Trace(v);
   }
 };

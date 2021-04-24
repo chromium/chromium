@@ -21,9 +21,10 @@ class HeapDeque final : public GarbageCollected<HeapDeque<T>>,
   DISALLOW_NEW();
 
  public:
-  HeapDeque() = default;
+  HeapDeque() { CheckType(); }
 
   explicit HeapDeque(wtf_size_t size) : Deque<T, 0, HeapAllocator>(size) {
+    CheckType();
   }
 
   HeapDeque(wtf_size_t size, const T& val)
@@ -39,7 +40,6 @@ class HeapDeque final : public GarbageCollected<HeapDeque<T>>,
   HeapDeque(const HeapDeque<T>& other) : Deque<T, 0, HeapAllocator>(other) {}
 
   void Trace(Visitor* visitor) const {
-    CheckType();
     Deque<T, 0, HeapAllocator>::Trace(visitor);
   }
 

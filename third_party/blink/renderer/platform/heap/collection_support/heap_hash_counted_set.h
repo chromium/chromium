@@ -21,10 +21,9 @@ class HeapHashCountedSet final
   DISALLOW_NEW();
 
  public:
-  HeapHashCountedSet() = default;
+  HeapHashCountedSet() { CheckType(); }
 
   void Trace(Visitor* visitor) const {
-    CheckType();
     HashCountedSet<Value, HashFunctions, Traits, HeapAllocator>::Trace(visitor);
   }
 

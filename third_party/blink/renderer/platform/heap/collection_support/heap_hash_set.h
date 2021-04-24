@@ -21,10 +21,9 @@ class HeapHashSet final
   DISALLOW_NEW();
 
  public:
-  HeapHashSet() = default;
+  HeapHashSet() { CheckType(); }
 
   void Trace(Visitor* visitor) const {
-    CheckType();
     HashSet<ValueArg, HashArg, TraitsArg, HeapAllocator>::Trace(visitor);
   }
 

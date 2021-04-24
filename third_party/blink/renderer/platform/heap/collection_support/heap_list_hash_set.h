@@ -86,10 +86,9 @@ class HeapListHashSet final
                          HashArg,
                          HeapListHashSetAllocator> {
  public:
-  HeapListHashSet() = default;
+  HeapListHashSet() { CheckType(); }
 
   void Trace(Visitor* v) const {
-    CheckType();
     ListHashSet<ValueArg, inlineCapacity, HashArg,
                 HeapListHashSetAllocator>::Trace(v);
   }

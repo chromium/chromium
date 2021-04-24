@@ -48,7 +48,7 @@ namespace blink {
 template <typename T>
 class HeapLinkedStack final : public GarbageCollected<HeapLinkedStack<T>> {
  public:
-  HeapLinkedStack() = default;
+  HeapLinkedStack() { CheckType(); }
 
   inline size_t size() const;
   inline bool IsEmpty() const;
@@ -58,7 +58,6 @@ class HeapLinkedStack final : public GarbageCollected<HeapLinkedStack<T>> {
   inline void Pop();
 
   void Trace(Visitor* visitor) const {
-    CheckType();
     visitor->Trace(head_);
   }
 
