@@ -1796,7 +1796,8 @@ class PrefetchProxyTabHelperRedirectWithDecoyTest
   PrefetchProxyTabHelperRedirectWithDecoyTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kIsolatePrerenders,
-        {{"ineligible_decoy_request_probability", "1"}});
+        {{"ineligible_decoy_request_probability", "1"},
+         {"max_srp_prefetches", "2"}});
   }
 };
 
