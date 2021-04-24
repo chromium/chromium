@@ -2502,4 +2502,41 @@ TEST_F(NetworkStateHandlerTest, IsProfileNetworksLoaded) {
   EXPECT_EQ(5u, networks.size());
 }
 
+TEST_F(NetworkStateHandlerTest, GetNetworkListAfterUpdateManagedList) {
+  const char kCellularServicePath[] = "/service/cellular_2";
+  const char kCellularServiceGuid[] = "cellular_2_guid";
+  const char kCellularServiceName[] = "cellular_2";
+
+  // Add a second active cellular network.
+  AddService(kCellularServicePath, kCellularServiceGuid, kCellularServiceName,
+             shill::kTypeCellular, shill::kStateIdle);
+  // Wait for network to be added.
+  base::RunLoop().RunUntilIdle();
+  network_state_handler_->SetNetworkConnectRequested(kCellularServicePath,
+                                                     true);
+
+  // Verify that GetNetworkListByType lists active networks first.
+  NetworkStateHandler::NetworkStateList network_list;
+  network_state_handler_->GetNetworkListByType(
+      NetworkTypePattern::Cellular(), /*configured_only=*/false,
+      /*visible_only=*/false, /*limit=*/0, &network_list);
+  EXPECT_EQ(2u, network_list.size());
+  EXPECT_EQ(kCellularServicePath, network_list[0]->path());
+  EXPECT_EQ(kShillManagerClientStubCellular, network_list[1]->path());
+
+  // Verify that GetNetworkListByType returns networks correctly when called
+  // immediately after an UpdateManagedList call before a
+  // ManagedStateListChanged call.
+  network_state_handler_->UpdateManagedList(
+      ManagedState::ManagedType::MANAGED_TYPE_NETWORK,
+      base::Value::AsListValue(manager_test_->GetEnabledServiceList()));
+  base::RunLoop().RunUntilIdle();
+  network_state_handler_->GetNetworkListByType(
+      NetworkTypePattern::Cellular(), /*configured_only=*/false,
+      /*visible_only=*/false, /*limit=*/0, &network_list);
+  EXPECT_EQ(2u, network_list.size());
+  EXPECT_EQ(kCellularServicePath, network_list[0]->path());
+  EXPECT_EQ(kShillManagerClientStubCellular, network_list[1]->path());
+}
+
 }  // namespace chromeos

@@ -1288,6 +1288,11 @@ void NetworkStateHandler::UpdateManagedList(ManagedState::ManagedType type,
   if (type != ManagedState::ManagedType::MANAGED_TYPE_NETWORK)
     return;
 
+  // Network list is explicitly sorted in ManagedListChanged() which is notified
+  // after this method. But this ensures that any intervening calls to
+  // GetNetworkList* methods will use the sorted list.
+  network_list_sorted_ = false;
+
   // Remove associations Tether NetworkStates had with now removed Wi-Fi
   // NetworkStates.
   for (auto& iter : managed_map) {
