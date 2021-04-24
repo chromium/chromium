@@ -7,14 +7,17 @@ package org.chromium.chrome.browser.autofill_assistant;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FieldTrialList;
+import org.chromium.base.Function;
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -30,6 +33,7 @@ import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.external_intents.ExternalNavigationDelegate.IntentToAutofillAllowingAppResult;
 
 /** Facade for starting Autofill Assistant on a custom tab. */
 public class AutofillAssistantFacade {
@@ -245,5 +249,29 @@ public class AutofillAssistantFacade {
     public static boolean isAutofillAssistantByIntentTriggeringEnabled(Intent intent) {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ASSISTANT_CHROME_ENTRY)
                 && AutofillAssistantFacade.isAutofillAssistantEnabled(intent);
+    }
+
+    public static @IntentToAutofillAllowingAppResult int shouldAllowOverrideWithApp(
+            Intent intent, Function<Intent, Boolean> canExternalAppHandleIntent) {
+        TriggerContext triggerContext =
+                TriggerContext.newBuilder().fromBundle(intent.getExtras()).build();
+        if (!triggerContext.allowAppOverride()) {
+            return IntentToAutofillAllowingAppResult.NONE;
+        }
+        if (canExternalAppHandleIntent.apply(intent)) {
+            return IntentToAutofillAllowingAppResult.DEFER_TO_APP_NOW;
+        }
+
+        String originalDeeplink = triggerContext.getOriginalDeeplink();
+        if (TextUtils.isEmpty(originalDeeplink)) {
+            return IntentToAutofillAllowingAppResult.NONE;
+        }
+        Intent originalDeeplinkIntent = new Intent(Intent.ACTION_VIEW);
+        originalDeeplinkIntent.setData(Uri.parse(originalDeeplink));
+        if (canExternalAppHandleIntent.apply(originalDeeplinkIntent)) {
+            return IntentToAutofillAllowingAppResult.DEFER_TO_APP_LATER;
+        }
+
+        return IntentToAutofillAllowingAppResult.NONE;
     }
 }

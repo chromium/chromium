@@ -343,6 +343,7 @@ android_library("test_java") {
     "//components/autofill_assistant/browser:proto_java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/widget/android:java",
+    "//components/external_intents/android:java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
     "//net/android:net_java_test_support",

@@ -10,6 +10,7 @@ import android.content.pm.ResolveInfo;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Function;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.external_intents.ExternalNavigationDelegate;
@@ -200,6 +201,13 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     @Override
     public boolean isIntentToAutofillAssistant(Intent intent) {
         return false;
+    }
+
+    @Override
+    public @IntentToAutofillAllowingAppResult int isIntentToAutofillAssistantAllowingApp(
+            ExternalNavigationParams params, Intent targetIntent,
+            Function<Intent, Boolean> canExternalAppHandleIntent) {
+        return IntentToAutofillAllowingAppResult.NONE;
     }
 
     @Override

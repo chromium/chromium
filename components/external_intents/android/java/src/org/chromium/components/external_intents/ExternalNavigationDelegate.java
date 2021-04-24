@@ -11,6 +11,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Function;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -220,6 +221,33 @@ public interface ExternalNavigationDelegate {
      * @return Whether the Intent points to Autofill Assistant
      */
     boolean isIntentToAutofillAssistant(Intent intent);
+
+    /**
+     * Used by isIntentToAutofillAssistantAllowingApp() below.
+     */
+    @IntDef({IntentToAutofillAllowingAppResult.NONE,
+            IntentToAutofillAllowingAppResult.DEFER_TO_APP_NOW,
+            IntentToAutofillAllowingAppResult.DEFER_TO_APP_LATER})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface IntentToAutofillAllowingAppResult {
+        int NONE = 0;
+        // Skip handling with Autofill Assistant and expect an external intent to be launched.
+        int DEFER_TO_APP_NOW = 1;
+        // Skip handling with Autofill Assistant and expect an external intent to be launched after
+        // a redirect.
+        int DEFER_TO_APP_LATER = 2;
+    }
+
+    /**
+     * @param params The external navigation params
+     * @param targetIntent The intent to launch
+     * @param canExternalAppHandleIntent The checker whether or not an external app can handle the
+     * provided intent
+     * @return Whether the Intent to Autofill Assistant allows override with an app.
+     */
+    @IntentToAutofillAllowingAppResult
+    int isIntentToAutofillAssistantAllowingApp(ExternalNavigationParams params, Intent targetIntent,
+            Function<Intent, Boolean> canExternalAppHandleIntent);
 
     /**
      * Gives the embedder a chance to handle the intent via the autofill assistant.
