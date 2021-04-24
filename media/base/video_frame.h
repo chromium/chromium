@@ -604,6 +604,12 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
  protected:
   friend class base::RefCountedThreadSafe<VideoFrame>;
 
+  enum class FrameControlType {
+    kNone,
+    kEos,
+    kVideoHole,
+  };
+
   // Clients must use the static factory/wrapping methods to create a new frame.
   // Derived classes should create their own factory/wrapping methods, and use
   // this constructor to do basic initialization.
@@ -611,7 +617,8 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
              StorageType storage_type,
              const gfx::Rect& visible_rect,
              const gfx::Size& natural_size,
-             base::TimeDelta timestamp);
+             base::TimeDelta timestamp,
+             FrameControlType frame_control_type = FrameControlType::kNone);
 
   virtual ~VideoFrame();
 
@@ -629,6 +636,15 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   }
 
  private:
+  // The constructor of VideoFrame should use IsValidConfigInternal()
+  // instead of the public IsValidConfig() to check the config, because we can
+  // create special video frames that won't pass the check by IsValidConfig().
+  static bool IsValidConfigInternal(VideoPixelFormat format,
+                                    FrameControlType frame_control_type,
+                                    const gfx::Size& coded_size,
+                                    const gfx::Rect& visible_rect,
+                                    const gfx::Size& natural_size);
+
   static scoped_refptr<VideoFrame> CreateFrameInternal(
       VideoPixelFormat format,
       const gfx::Size& coded_size,

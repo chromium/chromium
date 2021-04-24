@@ -291,6 +291,11 @@ TEST(VideoFrame, CreateFrame) {
   // Test an empty frame.
   frame = VideoFrame::CreateEOSFrame();
   EXPECT_TRUE(frame->metadata().end_of_stream);
+
+  // Test an video hole frame.
+  frame = VideoFrame::CreateVideoHoleFrame(base::UnguessableToken::Create(),
+                                           size, kTimestamp);
+  ASSERT_TRUE(frame);
 }
 
 TEST(VideoFrame, CreateZeroInitializedFrame) {

@@ -291,33 +291,8 @@ bool VideoFrame::IsValidConfig(VideoPixelFormat format,
                                const gfx::Size& coded_size,
                                const gfx::Rect& visible_rect,
                                const gfx::Size& natural_size) {
-  // Check maximum limits for all formats.
-  int coded_size_area = coded_size.GetCheckedArea().ValueOrDefault(INT_MAX);
-  int natural_size_area = natural_size.GetCheckedArea().ValueOrDefault(INT_MAX);
-  static_assert(limits::kMaxCanvas < INT_MAX, "");
-  if (coded_size_area > limits::kMaxCanvas ||
-      coded_size.width() > limits::kMaxDimension ||
-      coded_size.height() > limits::kMaxDimension || visible_rect.x() < 0 ||
-      visible_rect.y() < 0 || visible_rect.right() > coded_size.width() ||
-      visible_rect.bottom() > coded_size.height() ||
-      natural_size_area > limits::kMaxCanvas ||
-      natural_size.width() > limits::kMaxDimension ||
-      natural_size.height() > limits::kMaxDimension) {
-    return false;
-  }
-
-  // Make sure new formats are properly accounted for in the method.
-  static_assert(PIXEL_FORMAT_MAX == 33,
-                "Added pixel format, please review IsValidConfig()");
-
-  if (format == PIXEL_FORMAT_UNKNOWN) {
-    return coded_size.IsEmpty() && visible_rect.IsEmpty() &&
-           natural_size.IsEmpty();
-  }
-
-  // Check that software-allocated buffer formats are not empty.
-  return !coded_size.IsEmpty() && !visible_rect.IsEmpty() &&
-         !natural_size.IsEmpty();
+  return IsValidConfigInternal(format, FrameControlType::kNone, coded_size,
+                               visible_rect, natural_size);
 }
 
 // static
@@ -336,9 +311,9 @@ scoped_refptr<VideoFrame> VideoFrame::CreateVideoHoleFrame(
     const gfx::Size& natural_size,
     base::TimeDelta timestamp) {
   auto layout = VideoFrameLayout::Create(PIXEL_FORMAT_UNKNOWN, natural_size);
-  scoped_refptr<VideoFrame> frame =
-      new VideoFrame(*layout, StorageType::STORAGE_OPAQUE,
-                     gfx::Rect(natural_size), natural_size, timestamp);
+  scoped_refptr<VideoFrame> frame = new VideoFrame(
+      *layout, StorageType::STORAGE_OPAQUE, gfx::Rect(natural_size),
+      natural_size, timestamp, FrameControlType::kVideoHole);
   frame->metadata().overlay_plane_id = overlay_plane_id;
   return frame;
 }
@@ -913,8 +888,9 @@ scoped_refptr<VideoFrame> VideoFrame::CreateEOSFrame() {
     DLOG(ERROR) << "Invalid layout.";
     return nullptr;
   }
-  scoped_refptr<VideoFrame> frame = new VideoFrame(
-      *layout, STORAGE_UNKNOWN, gfx::Rect(), gfx::Size(), kNoTimestamp);
+  scoped_refptr<VideoFrame> frame =
+      new VideoFrame(*layout, STORAGE_UNKNOWN, gfx::Rect(), gfx::Size(),
+                     kNoTimestamp, FrameControlType::kEos);
   frame->metadata().end_of_stream = true;
   return frame;
 }
@@ -1322,7 +1298,8 @@ VideoFrame::VideoFrame(const VideoFrameLayout& layout,
                        StorageType storage_type,
                        const gfx::Rect& visible_rect,
                        const gfx::Size& natural_size,
-                       base::TimeDelta timestamp)
+                       base::TimeDelta timestamp,
+                       FrameControlType frame_control_type)
     : layout_(layout),
       storage_type_(storage_type),
       visible_rect_(Intersection(visible_rect, gfx::Rect(layout.coded_size()))),
@@ -1332,8 +1309,8 @@ VideoFrame::VideoFrame(const VideoFrameLayout& layout,
 #endif
       timestamp_(timestamp),
       unique_id_(g_unique_id_generator.GetNext()) {
-  DCHECK(IsValidConfig(format(), storage_type, coded_size(), visible_rect_,
-                       natural_size_));
+  DCHECK(IsValidConfigInternal(format(), frame_control_type, coded_size(),
+                               visible_rect_, natural_size_));
   DCHECK(visible_rect_ == visible_rect)
       << "visible_rect " << visible_rect.ToString() << " exceeds coded_size "
       << coded_size().ToString();
@@ -1383,6 +1360,46 @@ gfx::Size VideoFrame::DetermineAlignedSize(VideoPixelFormat format,
 }
 
 // static
+bool VideoFrame::IsValidConfigInternal(VideoPixelFormat format,
+                                       FrameControlType frame_control_type,
+                                       const gfx::Size& coded_size,
+                                       const gfx::Rect& visible_rect,
+                                       const gfx::Size& natural_size) {
+  // Check maximum limits for all formats.
+  int coded_size_area = coded_size.GetCheckedArea().ValueOrDefault(INT_MAX);
+  int natural_size_area = natural_size.GetCheckedArea().ValueOrDefault(INT_MAX);
+  static_assert(limits::kMaxCanvas < INT_MAX, "");
+  if (coded_size_area > limits::kMaxCanvas ||
+      coded_size.width() > limits::kMaxDimension ||
+      coded_size.height() > limits::kMaxDimension || visible_rect.x() < 0 ||
+      visible_rect.y() < 0 || visible_rect.right() > coded_size.width() ||
+      visible_rect.bottom() > coded_size.height() ||
+      natural_size_area > limits::kMaxCanvas ||
+      natural_size.width() > limits::kMaxDimension ||
+      natural_size.height() > limits::kMaxDimension) {
+    return false;
+  }
+
+  // Make sure new formats are properly accounted for in the method.
+  static_assert(PIXEL_FORMAT_MAX == 33,
+                "Added pixel format, please review AreSizesValid()");
+  switch (frame_control_type) {
+    case FrameControlType::kNone:
+      // Check that software-allocated buffer formats are not empty.
+      return !coded_size.IsEmpty() && !visible_rect.IsEmpty() &&
+             !natural_size.IsEmpty();
+    case FrameControlType::kEos:
+      DCHECK_EQ(format, PIXEL_FORMAT_UNKNOWN);
+      return coded_size.IsEmpty() && visible_rect.IsEmpty() &&
+             natural_size.IsEmpty();
+    case FrameControlType::kVideoHole:
+      DCHECK_EQ(format, PIXEL_FORMAT_UNKNOWN);
+      return !coded_size.IsEmpty() && !visible_rect.IsEmpty() &&
+             !natural_size.IsEmpty();
+  }
+}
+
+// static
 scoped_refptr<VideoFrame> VideoFrame::CreateFrameInternal(
     VideoPixelFormat format,
     const gfx::Size& coded_size,
@@ -1390,9 +1407,10 @@ scoped_refptr<VideoFrame> VideoFrame::CreateFrameInternal(
     const gfx::Size& natural_size,
     base::TimeDelta timestamp,
     bool zero_initialize_memory) {
-  // Since we're creating a new frame (and allocating memory for it ourselves),
-  // we can pad the requested |coded_size| if necessary if the request does not
-  // line up on sample boundaries. See discussion at http://crrev.com/1240833003
+  // Since we're creating a new frame (and allocating memory for it
+  // ourselves), we can pad the requested |coded_size| if necessary if the
+  // request does not line up on sample boundaries. See discussion at
+  // http://crrev.com/1240833003
   const gfx::Size new_coded_size = DetermineAlignedSize(format, coded_size);
   auto layout = VideoFrameLayout::CreateWithStrides(
       format, new_coded_size, ComputeStrides(format, new_coded_size));
@@ -1466,8 +1484,8 @@ bool VideoFrame::AllocateMemory(bool zero_initialize_memory) {
   data = base::bits::Align(data, layout_.buffer_addr_align());
   DCHECK_LE(data + buffer_size, private_data_.get() + allocation_size);
 
-  // Note that if layout.buffer_sizes is specified, color planes' layout is the
-  // same as buffers'. See CalculatePlaneSize() for detail.
+  // Note that if layout.buffer_sizes is specified, color planes' layout is
+  // the same as buffers'. See CalculatePlaneSize() for detail.
   for (size_t plane = 0, offset = 0; plane < NumPlanes(format()); ++plane) {
     data_[plane] = data + offset;
     offset += plane_size[plane];
