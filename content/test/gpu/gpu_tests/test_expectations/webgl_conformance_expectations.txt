@@ -736,6 +736,10 @@ crbug.com/1091562 [ chromeos-board-kevin ] * [ RetryOnFailure ]
 # Flaky driver crash on AMD.
 crbug.com/1186499 [ chromeos chromeos-board-amd64-generic ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ RetryOnFailure ]
 
+# Flaky test on chromeos-amd64-generic-rel.
+crbug.com/1202015 [ chromeos chromeos-board-amd64-generic ] conformance/glsl/constructors/glsl-construct-vec3.html [ RetryOnFailure ]
+
+
 ###########################
 # Lacros/Wayland failures #
 ###########################
