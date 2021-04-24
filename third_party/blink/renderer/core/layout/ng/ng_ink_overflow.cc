@@ -40,7 +40,7 @@ unsigned NGInkOverflow::read_unset_as_none_ = 0;
 NGInkOverflow::~NGInkOverflow() {
   // Because |Type| is kept outside of the instance, callers must call |Reset|
   // before destructing.
-  DCHECK(type_ == kNotSet || type_ == kNone) << type_;
+  DCHECK(type_ == kNotSet || type_ == kNone || type_ == kInvalidated) << type_;
 }
 #endif
 
@@ -49,6 +49,7 @@ NGInkOverflow::NGInkOverflow(Type source_type, const NGInkOverflow& source) {
   new (this) NGInkOverflow();
   switch (source_type) {
     case kNotSet:
+    case kInvalidated:
     case kNone:
       break;
     case kSmallSelf:
@@ -77,6 +78,7 @@ NGInkOverflow::NGInkOverflow(Type source_type, NGInkOverflow&& source) {
   new (this) NGInkOverflow();
   switch (source_type) {
     case kNotSet:
+    case kInvalidated:
     case kNone:
       break;
     case kSmallSelf:
@@ -104,9 +106,10 @@ NGInkOverflow::NGInkOverflow(Type source_type, NGInkOverflow&& source) {
 
 NGInkOverflow::Type NGInkOverflow::Reset(Type type, Type new_type) {
   CheckType(type);
-  DCHECK(new_type == kNotSet || new_type == kNone);
+  DCHECK(new_type == kNotSet || new_type == kNone || new_type == kInvalidated);
   switch (type) {
     case kNotSet:
+    case kInvalidated:
     case kNone:
     case kSmallSelf:
     case kSmallContents:
@@ -134,6 +137,7 @@ PhysicalRect NGInkOverflow::Self(Type type, const PhysicalSize& size) const {
   CheckType(type);
   switch (type) {
     case kNotSet:
+    case kInvalidated:
 #if DCHECK_IS_ON()
       if (!read_unset_as_none_)
         NOTREACHED();
@@ -159,6 +163,7 @@ PhysicalRect NGInkOverflow::Contents(Type type,
   CheckType(type);
   switch (type) {
     case kNotSet:
+    case kInvalidated:
 #if DCHECK_IS_ON()
       if (!read_unset_as_none_)
         NOTREACHED();
@@ -186,6 +191,7 @@ PhysicalRect NGInkOverflow::SelfAndContents(Type type,
   CheckType(type);
   switch (type) {
     case kNotSet:
+    case kInvalidated:
 #if DCHECK_IS_ON()
       if (!read_unset_as_none_)
         NOTREACHED();
@@ -261,6 +267,7 @@ NGInkOverflow::Type NGInkOverflow::SetSingle(Type type,
       Reset(type);
       FALLTHROUGH;
     case kNotSet:
+    case kInvalidated:
     case kNone:
     case kSmallSelf:
     case kSmallContents:
@@ -313,6 +320,7 @@ NGInkOverflow::Type NGInkOverflow::Set(Type type,
       Reset(type);
       FALLTHROUGH;
     case kNotSet:
+    case kInvalidated:
     case kNone:
     case kSmallSelf:
     case kSmallContents:
@@ -334,7 +342,7 @@ NGInkOverflow::Type NGInkOverflow::SetTextInkOverflow(
     const PhysicalSize& size,
     PhysicalRect* ink_overflow_out) {
   CheckType(type);
-  DCHECK_EQ(type, kNotSet);
+  DCHECK(type == kNotSet || type == kInvalidated);
   base::Optional<PhysicalRect> ink_overflow =
       ComputeTextInkOverflow(text_info, style, size);
   if (!ink_overflow) {

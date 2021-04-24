@@ -1110,6 +1110,12 @@ PhysicalRect NGPhysicalBoxFragment::ComputeSelfInkOverflow() const {
   return ink_overflow;
 }
 
+#if DCHECK_IS_ON()
+void NGPhysicalBoxFragment::InvalidateInkOverflow() {
+  ink_overflow_type_ = ink_overflow_.Invalidate(InkOverflowType());
+}
+#endif
+
 void NGPhysicalBoxFragment::AddSelfOutlineRects(
     const PhysicalOffset& additional_offset,
     NGOutlineType outline_type,

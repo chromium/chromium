@@ -56,6 +56,7 @@ class CORE_EXPORT NGInkOverflow {
  public:
   enum Type {
     kNotSet,
+    kInvalidated,
     kNone,
     kSmallSelf,
     kSelf,
@@ -87,8 +88,8 @@ class CORE_EXPORT NGInkOverflow {
 
   // Reset to |kNone|.
   Type Reset(Type type) { return Reset(type, kNone); }
-  // Reset to |kNotSet|.
-  Type Invalidate(Type type) { return Reset(type, kNotSet); }
+  // Reset to |kInvalidated|.
+  Type Invalidate(Type type) { return Reset(type, kInvalidated); }
 
   // Set self ink overflow rect.
   // If |this| had contents ink overflow, it is cleared.

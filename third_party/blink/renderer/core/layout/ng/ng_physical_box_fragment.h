@@ -289,7 +289,8 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     return static_cast<NGInkOverflow::Type>(ink_overflow_type_);
   }
   bool IsInkOverflowComputed() const {
-    return InkOverflowType() != NGInkOverflow::kNotSet;
+    return InkOverflowType() != NGInkOverflow::kNotSet &&
+           InkOverflowType() != NGInkOverflow::kInvalidated;
   }
   bool HasInkOverflow() const {
     return InkOverflowType() != NGInkOverflow::kNone;
@@ -397,6 +398,9 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     void RecalcInkOverflow(const PhysicalRect& contents) {
       fragment_.RecalcInkOverflow(contents);
     }
+#if DCHECK_IS_ON()
+    void InvalidateInkOverflow() { fragment_.InvalidateInkOverflow(); }
+#endif
 
    private:
     friend class NGPhysicalBoxFragment;
@@ -415,6 +419,10 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   void RecalcInkOverflow();
   // |RecalcInkOverflow| using the given contents ink overflow rect.
   void RecalcInkOverflow(const PhysicalRect& contents);
+
+#if DCHECK_IS_ON()
+  void InvalidateInkOverflow();
+#endif
 
  private:
   static size_t AdditionalByteSize(wtf_size_t num_fragment_items,

@@ -1169,6 +1169,9 @@ void PaintLayer::SetNeedsCheckRasterInvalidation() {
 
 void PaintLayer::SetNeedsVisualOverflowRecalc() {
   DCHECK(IsSelfPaintingLayer());
+#if DCHECK_IS_ON()
+  GetLayoutObject().InvalidateVisualOverflow();
+#endif
   needs_visual_overflow_recalc_ = true;
   MarkAncestorChainForFlagsUpdate();
 }

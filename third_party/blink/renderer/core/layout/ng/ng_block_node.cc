@@ -1428,6 +1428,9 @@ void NGBlockNode::CopyFragmentItemsToLayoutBox(
             maybe_flipped_offset.ToLayoutPoint());
         if (UNLIKELY(layout_box->HasSelfPaintingLayer()))
           layout_box->Layer()->SetNeedsVisualOverflowRecalc();
+#if DCHECK_IS_ON()
+        layout_box->InvalidateVisualOverflow();
+#endif
         continue;
       }
 

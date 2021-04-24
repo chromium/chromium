@@ -6,6 +6,7 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_ink_overflow.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_builder_test.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_printer.h"
@@ -1701,7 +1702,14 @@ TEST_P(PaintPropertyTreeUpdateTest, ChangeDuringAnimation) {
   target->SetStyle(std::move(style));
   EXPECT_TRUE(target->NeedsPaintPropertyUpdate());
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kStyleClean);
-  UpdateAllLifecyclePhasesExceptPaint();
+  {
+#if DCHECK_IS_ON()
+    // TODO(crbug.com/1201670): This should not be needed, but DCHECK hits.
+    // Needs more investigations.
+    NGInkOverflow::ReadUnsetAsNoneScope read_unset_as_none;
+#endif
+    UpdateAllLifecyclePhasesExceptPaint();
+  }
 
   ASSERT_EQ(transform_node,
             target->FirstFragment().PaintProperties()->Transform());

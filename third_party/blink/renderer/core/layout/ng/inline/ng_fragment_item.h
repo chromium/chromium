@@ -454,7 +454,8 @@ class CORE_EXPORT NGFragmentItem final {
     return static_cast<NGInkOverflow::Type>(ink_overflow_type_);
   }
   bool IsInkOverflowComputed() const {
-    return InkOverflowType() != NGInkOverflow::kNotSet;
+    return InkOverflowType() != NGInkOverflow::kNotSet &&
+           InkOverflowType() != NGInkOverflow::kInvalidated;
   }
   bool HasInkOverflow() const {
     return InkOverflowType() != NGInkOverflow::kNone;

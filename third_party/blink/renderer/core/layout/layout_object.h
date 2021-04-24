@@ -2112,6 +2112,11 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // PaintLayer descendants.
   virtual void RecalcVisualOverflow();
   void RecalcNormalFlowChildVisualOverflowIfNeeded();
+#if DCHECK_IS_ON()
+  // Enables DCHECK to ensure that the visual overflow for |this| is computed.
+  // The actual invalidation is maintained in |PaintLayer|.
+  void InvalidateVisualOverflow();
+#endif
 
   // Subclasses must reimplement this method to compute the size and position
   // of this object and all its descendants.
