@@ -2717,7 +2717,8 @@ Output.RULES = {
           $state`
     },
     alertDialog: {
-      enter: `$earcon(ALERT_MODAL) $name $state $description $textContent`,
+      enter: `$earcon(ALERT_MODAL) $name $state $description $roleDescription
+          $textContent`,
       speak: `$earcon(ALERT_MODAL) $name $nameOrTextContent $description $state
           $role`
     },
@@ -2762,7 +2763,7 @@ Output.RULES = {
           $description`
     },
     group: {
-      enter: `$nameFromNode $state $restriction $description`,
+      enter: `$nameFromNode $roleDescription $state $restriction $description`,
       speak: `$nameOrDescendants $value $state $restriction $roleDescription
           $description`,
       leave: ``
@@ -2848,7 +2849,7 @@ Output.RULES = {
     rootWebArea: {enter: `$name`, speak: `$if($name, $name, @web_content)`},
     region: {speak: `$state $nameOrTextContent $description $roleDescription`},
     row: {
-      enter: `$node(tableRowHeader)`,
+      enter: `$node(tableRowHeader) $roleDescription`,
       speak: `$name $node(activeDescendant) $value $state $restriction $role
           $if($selected, @aria_selected_true) $description`
     },
@@ -2865,7 +2866,7 @@ Output.RULES = {
           $if($selected, @aria_selected_true)`,
     },
     table: {
-      enter: `@table_summary($name,
+      enter: `$roleDescription @table_summary($name,
           $if($ariaRowCount, $ariaRowCount, $tableRowCount),
           $if($ariaColumnCount, $ariaColumnCount, $tableColumnCount))
           $node(tableHeader)`

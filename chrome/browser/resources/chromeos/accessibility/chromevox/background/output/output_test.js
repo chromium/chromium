@@ -1055,6 +1055,9 @@ SYNC_TEST_F('ChromeVoxOutputE2ETest', 'ValidateRoles', function() {
   // roles can be omitted (intentionally), but role descriptions cannot by W3C
   // spec (valid on all base markup). However, not all roles come from the web.
   //
+  // Some enter rules do not need roles, depending on how they are used such as
+  // if their speak rule is always triggered during navigation e.g. buttons.
+  //
   // You can also add the role to be excluded from this check. You are
   // encouraged to write a more intelligent output rule to provide friendlier
   // feedback, but keep in mind role descriptions are required on all web-based
@@ -1073,11 +1076,15 @@ SYNC_TEST_F('ChromeVoxOutputE2ETest', 'ValidateRoles', function() {
       continue;
     }
     const speak = Output.RULES.navigate[key].speak;
-    if (!speak) {
-      continue;
+    let enter = Output.RULES.navigate[key].enter;
+    if (enter && enter.speak) {
+      enter = enter.speak;
     }
 
-    if (speak.indexOf(roleOrRoleDescStr) === -1) {
+    if (speak && speak.indexOf(roleOrRoleDescStr) === -1) {
+      missingRole.push(key);
+    }
+    if (enter && enter.indexOf(roleOrRoleDescStr) === -1) {
       missingRole.push(key);
     }
   }
