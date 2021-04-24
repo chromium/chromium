@@ -91,8 +91,12 @@ bool IsDirtyControl(const ListedElement& control) {
 void FormControlState::SerializeTo(Vector<String>& state_vector) const {
   DCHECK(!IsFailure());
   state_vector.push_back(String::Number(values_.size()));
-  for (const auto& value : values_)
+  recordreplay::Assert("FormControlState::SerializeTo #1 %lu", values_.size());
+  for (const auto& value : values_) {
+    recordreplay::Assert("FormControlState::SerializeTo #2 %d %s",
+                         value.IsNull(), value.Utf8().c_str());
     state_vector.push_back(value.IsNull() ? g_empty_string : value);
+  }
 }
 
 FormControlState FormControlState::Deserialize(
@@ -270,10 +274,14 @@ std::unique_ptr<SavedFormState> SavedFormState::Deserialize(
 
 void SavedFormState::SerializeTo(Vector<String>& state_vector) const {
   state_vector.push_back(String::Number(control_state_count_));
+  recordreplay::Assert("SavedFormState::SerializeTo #1 %lu", control_state_count_);
   for (const auto& form_control : state_for_new_controls_) {
     const ControlKey& key = form_control.key;
     const Deque<FormControlState>& queue = form_control.value;
     for (const FormControlState& form_control_state : queue) {
+      recordreplay::Assert("SavedFormState::SerializeTo #2 %lu %lu",
+                           key.GetName()->length(),
+                           key.GetType()->length());
       state_vector.push_back(key.GetName());
       state_vector.push_back(key.GetType());
       form_control_state.SerializeTo(state_vector);
@@ -482,6 +490,8 @@ Vector<String> DocumentState::ToStateVector() {
   state_vector.ReserveInitialCapacity(GetControlList().size() * 4);
   state_vector.push_back(FormStateSignature());
   for (const auto& saved_form_state : *state_map) {
+    recordreplay::Assert("DocumentState::ToStateVector %s",
+                         saved_form_state.key.Utf8().c_str());
     state_vector.push_back(saved_form_state.key);
     saved_form_state.value->SerializeTo(state_vector);
   }
