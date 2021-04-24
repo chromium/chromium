@@ -109,7 +109,7 @@
 #endif
 
 #if defined(OS_WIN)
-#include "base/win/windows_version.h"
+#include "media/cdm/win/media_foundation_cdm.h"
 #include "media/mojo/clients/win/media_foundation_renderer_client_factory.h"
 #endif  // defined(OS_WIN)
 
@@ -717,7 +717,8 @@ MediaFactory::CreateRendererFactorySelector(
 #endif
 
 #if defined(OS_WIN)
-  if (base::win::GetVersion() >= base::win::Version::WIN10_20H1) {
+  // Only use MediaFoundationRenderer when MediaFoundationCdm is available.
+  if (media::MediaFoundationCdm::IsAvailable()) {
     factory_selector->AddFactory(
         FactoryType::kMediaFoundation,
         std::make_unique<media::MediaFoundationRendererClientFactory>(

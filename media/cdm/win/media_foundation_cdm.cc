@@ -12,6 +12,7 @@
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_propvariant.h"
 #include "base/win/win_util.h"
+#include "base/win/windows_version.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/cdm_promise.h"
 #include "media/base/win/mf_cdm_proxy.h"
@@ -221,6 +222,11 @@ class CdmProxyImpl
 };
 
 }  // namespace
+
+// static
+bool MediaFoundationCdm::IsAvailable() {
+  return base::win::GetVersion() >= base::win::Version::WIN10_20H1;
+}
 
 MediaFoundationCdm::MediaFoundationCdm(
     Microsoft::WRL::ComPtr<IMFContentDecryptionModule> mf_cdm,
