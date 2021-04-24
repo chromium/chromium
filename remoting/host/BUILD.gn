@@ -28,7 +28,6 @@ group("all") {
 
   if (!is_chromeos_ash && !is_chromeos_lacros && !is_android && !is_ios) {
     deps += [
-      "//remoting/host:remote_open_url",
       "//remoting/host:remoting_native_messaging_host",
       "//remoting/host:remoting_native_messaging_manifests",
       "//remoting/host:remoting_start_host",
@@ -999,23 +998,5 @@ if (enable_me2me_host) {
   } else {
     group("remoting_me2me_host_archive") {
     }
-  }
-}
-
-if (enable_me2me_host) {
-  executable("remote_open_url") {
-    sources = [
-      "remote_open_url_client.cc",
-      "remote_open_url_client.h",
-      "remote_open_url_main.cc",
-    ]
-    deps = [
-      ":host",
-      ":logging",
-      "//base",
-      "//mojo/core/embedder:embedder",
-      "//remoting/host/mojom",
-      "//url",
-    ]
   }
 }
