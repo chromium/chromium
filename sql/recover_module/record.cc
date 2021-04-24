@@ -246,7 +246,7 @@ bool RecordReader::ReadValue(int column_index,
     DCHECK(!header.has_inline_value);
 
     uint8_t* const value_bytes = new uint8_t[size];
-    if (!payload_reader_->ReadPayload(offset, size, value_bytes)) {
+    if (size > 0 && !payload_reader_->ReadPayload(offset, size, value_bytes)) {
       delete[] value_bytes;
       return false;
     }

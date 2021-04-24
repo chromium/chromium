@@ -993,8 +993,8 @@ TEST_F(RecoverModuleTest, TextEncodings) {
   ASSERT_TRUE(db().Execute("CREATE TABLE encodings(t TEXT)"));
 
   const std::vector<std::string> values = {
-      u8"Mjollnir", u8"Mjölnir", u8"Mjǫlnir",
-      u8"Mjölner",  u8"Mjølner", u8"ハンマー",
+      "",          "a",         u8"ö",       u8"Mjollnir", u8"Mjölnir",
+      u8"Mjǫlnir", u8"Mjölner", u8"Mjølner", u8"ハンマー",
   };
 
   sql::Statement insert(
@@ -1014,6 +1014,46 @@ TEST_F(RecoverModuleTest, TextEncodings) {
     ASSERT_TRUE(select.Step());
     EXPECT_EQ(static_cast<int>(i + 1), select.ColumnInt(0));
     EXPECT_EQ(values[i], select.ColumnString(1));
+  }
+  EXPECT_FALSE(select.Step());
+}
+
+TEST_F(RecoverModuleTest, BlobEncodings) {
+  ASSERT_TRUE(db().Execute("CREATE TABLE blob_encodings(t BLOB)"));
+
+  const std::vector<std::vector<uint8_t>> values = {
+      {},           {0x00},       {0x01},
+      {0x42},       {0xff},       {0x00, 0x00},
+      {0x00, 0x01}, {0x00, 0xff}, {0x42, 0x43, 0x44, 0x45, 0x46},
+  };
+
+  sql::Statement insert(
+      db().GetUniqueStatement("INSERT INTO blob_encodings VALUES(?)"));
+  for (const std::vector<uint8_t>& value : values) {
+    // std::vector::data() returns nullptr for empty vectors. Unfortunately,
+    // sqlite3_bind_blob() always interprets null data as a NULL value. In this
+    // case, we really want to write an empty blob, so we need to pass non-null
+    // data.
+    const uint8_t* blob_data =
+        (value.size() > 0) ? value.data() : values[1].data();
+
+    insert.BindBlob(0, blob_data, value.size());
+    ASSERT_TRUE(insert.Run());
+    insert.Reset(/* clear_bound_vars= */ true);
+  }
+
+  ASSERT_TRUE(
+      db().Execute("CREATE VIRTUAL TABLE temp.recover_blob_encodings "
+                   "USING recover(blob_encodings, t BLOB)"));
+  sql::Statement select(
+      db().GetUniqueStatement("SELECT rowid, t FROM recover_blob_encodings"));
+  for (size_t i = 0; i < values.size(); ++i) {
+    ASSERT_TRUE(select.Step());
+    EXPECT_EQ(static_cast<int>(i + 1), select.ColumnInt(0));
+
+    std::vector<uint8_t> column_value;
+    EXPECT_TRUE(select.ColumnBlobAsVector(1, &column_value));
+    EXPECT_EQ(values[i], column_value);
   }
   EXPECT_FALSE(select.Step());
 }
