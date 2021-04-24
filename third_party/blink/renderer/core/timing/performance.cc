@@ -130,6 +130,7 @@ Performance::Performance(
           task_runner_,
           this,
           &Performance::FireResourceTimingBufferFull) {
+  recordreplay::RegisterPointer(this);
   unix_at_zero_monotonic_ = ConvertSecondsToDOMHighResTimeStamp(
       base::DefaultClock::GetInstance()->Now().ToDoubleT() -
       tick_clock_->NowTicks().since_origin().InSecondsF());
@@ -140,7 +141,9 @@ Performance::Performance(
   }
 }
 
-Performance::~Performance() = default;
+Performance::~Performance() {
+  recordreplay::UnregisterPointer(this);
+}
 
 const AtomicString& Performance::InterfaceName() const {
   return event_target_names::kPerformance;
@@ -920,12 +923,14 @@ ScriptPromise Performance::profile(ScriptState* script_state,
 }
 
 void Performance::RegisterPerformanceObserver(PerformanceObserver& observer) {
+  recordreplay::Assert("Performance::RegisterPerformanceObserver %lu", recordreplay::PointerId(this));
   observer_filter_options_ |= observer.FilterOptions();
   observers_.insert(&observer);
 }
 
 void Performance::UnregisterPerformanceObserver(
     PerformanceObserver& old_observer) {
+  recordreplay::Assert("Performance::UnregisterPerformanceObserver %lu", recordreplay::PointerId(this));
   observers_.erase(&old_observer);
   UpdatePerformanceObserverFilterOptions();
 }
@@ -938,7 +943,7 @@ void Performance::UpdatePerformanceObserverFilterOptions() {
 }
 
 void Performance::NotifyObserversOfEntry(PerformanceEntry& entry) const {
-  recordreplay::Assert("Performance::NotifyObserversOfEntry Start");
+  recordreplay::Assert("Performance::NotifyObserversOfEntry Start %lu", recordreplay::PointerId(this));
   DCHECK(entry.EntryTypeEnum() != PerformanceEntry::kEvent ||
          RuntimeEnabledFeatures::EventTimingEnabled(GetExecutionContext()));
   bool observer_found = false;
