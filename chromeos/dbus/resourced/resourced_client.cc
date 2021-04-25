@@ -39,12 +39,17 @@ class ResourcedClientImpl : public ResourcedClient {
   void GetMemoryMarginsKB(
       DBusMethodCallback<MemoryMarginsKB> callback) override;
 
+  void SetGameMode(bool state, DBusMethodCallback<bool> callback) override;
+
  private:
   // D-Bus response handlers:
   void HandleAvailableResponse(DBusMethodCallback<uint64_t> callback,
                                dbus::Response* response);
   void HandleMarginsResponse(DBusMethodCallback<MemoryMarginsKB> callback,
                              dbus::Response* response);
+  void HandleSetGameModeResponse(DBusMethodCallback<bool> callback,
+                                 bool status,
+                                 dbus::Response* response);
 
   // Member variables.
   dbus::ObjectProxy* proxy_ = nullptr;
@@ -94,6 +99,18 @@ void ResourcedClientImpl::HandleMarginsResponse(
       MemoryMarginsKB{.critical = critical, .moderate = moderate});
 }
 
+// Response will be true if entering game mode, false if exiting.
+void ResourcedClientImpl::HandleSetGameModeResponse(
+    DBusMethodCallback<bool> callback,
+    bool status,
+    dbus::Response* response) {
+  if (!response) {
+    std::move(callback).Run(base::nullopt);
+    return;
+  }
+  std::move(callback).Run(status);
+}
+
 void ResourcedClientImpl::GetAvailableMemoryKB(
     DBusMethodCallback<uint64_t> callback) {
   dbus::MethodCall method_call(resource_manager::kResourceManagerInterface,
@@ -112,6 +129,19 @@ void ResourcedClientImpl::GetMemoryMarginsKB(
       &method_call, kResourcedDBusTimeoutMilliseconds,
       base::BindOnce(&ResourcedClientImpl::HandleMarginsResponse,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ResourcedClientImpl::SetGameMode(bool status,
+                                      DBusMethodCallback<bool> callback) {
+  dbus::MethodCall method_call(resource_manager::kResourceManagerInterface,
+                               resource_manager::kSetGameModeMethod);
+  dbus::MessageWriter writer(&method_call);
+  writer.AppendByte(status);
+
+  proxy_->CallMethod(
+      &method_call, kResourcedDBusTimeoutMilliseconds,
+      base::BindOnce(&ResourcedClientImpl::HandleSetGameModeResponse,
+                     weak_factory_.GetWeakPtr(), std::move(callback), status));
 }
 
 }  // namespace

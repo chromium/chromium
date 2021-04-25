@@ -50,6 +50,9 @@ class COMPONENT_EXPORT(RESOURCED) ResourcedClient {
   virtual void GetMemoryMarginsKB(
       DBusMethodCallback<MemoryMarginsKB> callback) = 0;
 
+  // Attempt to enter game mode is state is true, exit if state is false.
+  virtual void SetGameMode(bool state, DBusMethodCallback<bool> callback) = 0;
+
  protected:
   ResourcedClient();
   virtual ~ResourcedClient();

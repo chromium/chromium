@@ -7,6 +7,7 @@
 #include "ash/shell.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
+#include "chromeos/dbus/resourced/resourced_client.h"
 #include "ui/views/widget/widget.h"
 
 namespace borealis {
@@ -65,7 +66,7 @@ void BorealisGameModeController::WindowTracker::OnPostWindowStateTypeChange(
 void BorealisGameModeController::WindowTracker::UpdateGameModeStatus(
     ash::WindowState* window_state) {
   if (!game_mode_ && window_state->IsFullscreen()) {
-    game_mode_ = std::make_unique<ScopedGameMode>();
+    game_mode_ = std::make_unique<GameModeEnabler>();
   } else if (game_mode_ && !window_state->IsFullscreen()) {
     game_mode_.reset();
   }
@@ -78,24 +79,31 @@ void BorealisGameModeController::WindowTracker::OnWindowDestroying(
   game_mode_.reset();
 }
 
-BorealisGameModeController::ScopedGameMode*
-BorealisGameModeController::WindowTracker::GetGameMode() {
-  return game_mode_.get();
+BorealisGameModeController::GameModeEnabler::GameModeEnabler() {
+  if (chromeos::ResourcedClient::Get()) {
+    chromeos::ResourcedClient::Get()->SetGameMode(
+        true, base::BindOnce(&GameModeEnabler::OnSetGameMode));
+  }
 }
 
-BorealisGameModeController::ScopedGameMode*
-BorealisGameModeController::GetGameModeForTesting() {
-  if (focused_)
-    return focused_->GetGameMode();
-  return nullptr;
+BorealisGameModeController::GameModeEnabler::~GameModeEnabler() {
+  if (chromeos::ResourcedClient::Get()) {
+    chromeos::ResourcedClient::Get()->SetGameMode(
+        false, base::BindOnce(&GameModeEnabler::OnSetGameMode));
+  }
 }
 
-BorealisGameModeController::ScopedGameMode::ScopedGameMode() {
-  LOG(ERROR) << "Entering Game Mode";
-}
-
-BorealisGameModeController::ScopedGameMode::~ScopedGameMode() {
-  LOG(ERROR) << "Exiting Game Mode";
+// State is true if entering game mode, false if exiting.
+void BorealisGameModeController::GameModeEnabler::OnSetGameMode(
+    base::Optional<bool> state) {
+  if (!state.has_value()) {
+    LOG(ERROR) << "Failed to set Game Mode";
+    // TODO(b/186184700): Remove logging for entering/exiting game mode.
+  } else if (state.value()) {
+    LOG(ERROR) << "Entered Game Mode";
+  } else {
+    LOG(ERROR) << "Exited Game Mode";
+  }
 }
 
 }  // namespace borealis

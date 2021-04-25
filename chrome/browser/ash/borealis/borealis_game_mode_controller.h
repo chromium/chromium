@@ -8,6 +8,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_observer.h"
 #include "base/scoped_observation.h"
+#include "chromeos/dbus/resourced/resourced_client.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/client/focus_client.h"
 
@@ -39,11 +40,13 @@ class BorealisGameModeController : public aura::client::FocusChangeObserver {
   void OnWindowFocused(aura::Window* gained_focus,
                        aura::Window* lost_focus) override;
 
-  // TODO(b/179961266) replace with sending actual messages to enter game mode.
-  class ScopedGameMode {
+  class GameModeEnabler {
    public:
-    ScopedGameMode();
-    ~ScopedGameMode();
+    GameModeEnabler();
+    ~GameModeEnabler();
+
+   private:
+    static void OnSetGameMode(base::Optional<bool> dbus_response);
   };
 
   class WindowTracker : public ash::WindowStateObserver,
@@ -61,7 +64,6 @@ class BorealisGameModeController : public aura::client::FocusChangeObserver {
         ash::WindowState* window_state,
         chromeos::WindowStateType old_type) override;
 
-    BorealisGameModeController::ScopedGameMode* GetGameMode();
     void UpdateGameModeStatus(ash::WindowState* window_state);
 
    private:
@@ -69,10 +71,8 @@ class BorealisGameModeController : public aura::client::FocusChangeObserver {
         window_state_observer_{this};
     base::ScopedObservation<aura::Window, aura::WindowObserver>
         window_observer_{this};
-    std::unique_ptr<BorealisGameModeController::ScopedGameMode> game_mode_;
+    std::unique_ptr<BorealisGameModeController::GameModeEnabler> game_mode_;
   };
-
-  ScopedGameMode* GetGameModeForTesting();
 
  private:
   base::ScopedObservation<aura::client::FocusClient,

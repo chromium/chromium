@@ -24,4 +24,15 @@ void FakeResourcedClient::GetMemoryMarginsKB(
       FROM_HERE, base::BindOnce(std::move(callback), base::nullopt));
 }
 
+void FakeResourcedClient::SetGameMode(bool status,
+                                      DBusMethodCallback<bool> callback) {
+  if (status) {
+    enter_game_mode_count_++;
+  } else {
+    exit_game_mode_count_++;
+  }
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), set_game_mode_response_));
+}
+
 }  // namespace chromeos
