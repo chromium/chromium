@@ -537,14 +537,6 @@ void ChromeDownloadManagerDelegateTest::VerifyMixedContentExtensionOverride(
                         kInsecureDownloadHistogramTargetInsecure, histograms);
 }
 
-// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
-// function.
-GURL ForceGoogleSafeSearch(const GURL& url) {
-  GURL new_url;
-  safe_search_util::ForceGoogleSafeSearch(url, &new_url);
-  return new_url;
-}
-
 }  // namespace
 
 TEST_F(ChromeDownloadManagerDelegateTest, LastSavePath) {
@@ -1264,10 +1256,7 @@ TEST_F(ChromeDownloadManagerDelegateTest, WithHistoryDbNextId) {
 }
 
 TEST_F(ChromeDownloadManagerDelegateTest, SanitizeGoogleSearchLink) {
-  static const GURL kGoogleSearchUrl("https://www.google.com/search?q=google");
-  static const GURL kGoogleSearchUrlSanitized(
-      ForceGoogleSafeSearch(kGoogleSearchUrl));
-
+  const GURL kGoogleSearchUrl("https://www.google.com/search?q=google");
   for (auto is_safe_search_enabled : {true, false}) {
     auto* prefs = profile()->GetPrefs();
     prefs->SetBoolean(prefs::kForceGoogleSafeSearch, is_safe_search_enabled);
@@ -1276,9 +1265,10 @@ TEST_F(ChromeDownloadManagerDelegateTest, SanitizeGoogleSearchLink) {
                                            TRAFFIC_ANNOTATION_FOR_TESTS);
 
     delegate()->SanitizeDownloadParameters(&params);
-    const auto& actual_url =
-        is_safe_search_enabled ? kGoogleSearchUrlSanitized : kGoogleSearchUrl;
-    EXPECT_EQ(params.url(), actual_url);
+    GURL expected_url = kGoogleSearchUrl;
+    if (is_safe_search_enabled)
+      safe_search_util::ForceGoogleSafeSearch(expected_url, &expected_url);
+    EXPECT_EQ(params.url(), expected_url);
   }
 }
 
