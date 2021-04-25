@@ -450,6 +450,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="5602622065581044566">Bolgar (fonetik klaviatura)</translation>
 <translation id="5605830556594064952">AQSH (Dvorak)</translation>
 <translation id="5625294776298156701">Tamil (Tamil99 klaviaturasi)</translation>
+<translation id="5633226425545095130">Bu fayl koʻchirilsa, u <ph name="DESTINATION_NAME" /> jildiga ruxsati bor barcha foydalanuvchilarga ulashiladi.</translation>
 <translation id="5649768706273821470">Tinglash</translation>
 <translation id="5678784840044122290">Linux ilovasi terminal ichida ham ishlaydi, shuningdek, Launcherda ham ikonkasi chiqadi.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Arxiv yoki virtual disk uzilmadi<ph name="END_BOLD" />
@@ -724,6 +725,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8395901698320285466">O‘lchamlar</translation>
 <translation id="8437209419043462667">Ingliz (AQSH)</translation>
 <translation id="8456681095658380701">Yaroqsiz nom</translation>
+<translation id="8459404855768962328">Bu fayl nusxalansa, u <ph name="DESTINATION_NAME" /> jildiga ruxsati bor barcha foydalanuvchilarga ulashiladi.</translation>
 <translation id="8461467696380332069">Fayl ustida oʻng tugmani bosing va javon ichidagi fayllarga tezkor kirish uchun “Javonga mahkamlash” bandini tanlang.</translation>
 <translation id="8463494891489624050">Vyetnam (VIQR klaviaturasi)</translation>
 <translation id="8466234950814670489">Tar arxivi</translation>

@@ -77,6 +77,7 @@
 <translation id="147113415845704694">“Bugungi ob-havo qanday?” deb soʻrang</translation>
 <translation id="1477626028522505441">Serverdagi turli muammolar tufayli “<ph name="FILE_NAME" />” fayli yuklab olinmadi.</translation>
 <translation id="1492417797159476138">Bu sayt uchun login allaqachon saqlangan</translation>
+<translation id="1493287004536771723"><ph name="SITE_NAME" /> tasmasiga obuna boʻlgansiz</translation>
 <translation id="1506061864768559482">Qidiruv tizimi</translation>
 <translation id="1513352483775369820">Xatcho‘plar va qidiruv tarixi</translation>
 <translation id="1513858653616922153">Parolni o‘chirish</translation>
@@ -275,6 +276,7 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google hisobingizga<ph name="END_LINK" /> saqlangan parollarni ko‘rish va boshqarish</translation>
 <translation id="2818669890320396765">Xatcho‘plarni barcha qurilmalaringizda sinxronlash uchun hisobingizga kiring va sinxronizatsiyani yoqing</translation>
 <translation id="2827278682606527653">Quyi bildirgi menyu yarim hajmda ochildi</translation>
+<translation id="2830783625999891985">Vaqtincha xotira kontenti berkitildi</translation>
 <translation id="2839327205551510876"><ph name="SITE_NAME" /> mavzusiga obuna bekor qilindi</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 kun oldin tekshirilgan}other{# kun oldin tekshirilgan}}</translation>
 <translation id="2842985007712546952">Ota jild</translation>
@@ -390,6 +392,7 @@ Privacy Sandbox hali ishlab chiqish jarayonida va ayrim mamlakatlarda mavjud. Ho
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB bo‘sh</translation>
 <translation id="3549657413697417275">Tarix ichidan qidirish</translation>
 <translation id="3557336313807607643">Kontaktlarga saqlash</translation>
+<translation id="3563767357928833671">Vaqtincha xotira kontenti chiqarildi</translation>
 <translation id="3566923219790363270">Chrome hali ham VR rejimga tayyorlanmoqda. Chromeni keyinroq qayta ishga tushirish.</translation>
 <translation id="3568688522516854065">Boshqa qurilmalaringizdagi brauzer sahifalarini ko‘rish uchun hisobingizga kiring va sinxronizatsiyani yoqing</translation>
 <translation id="3587482841069643663">Barchasi</translation>
@@ -543,6 +546,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="4684427112815847243">Hamma narsa sinxronlansin</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 va yana <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ta}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 va yana <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ta}}</translation>
 <translation id="4696983787092045100">Matnni qurilmalaringizga yuborish</translation>
+<translation id="4697543623252708062">Tez orada yangi varaq ochilganda <ph name="SITE_NAME" /> hikoyalari chiqadi. Kuzatuvdagi saytlarni Kuzatuvlar boshqaruvi orqali tahrirlash mumkin.</translation>
 <translation id="4698034686595694889"><ph name="APP_NAME" /> orqali oflayn ochish mumkin</translation>
 <translation id="4699172675775169585">Keshda saqlangan tavsirlar va boshqa fayllar</translation>
 <translation id="4714588616299687897">Trafigingizni 60% gacha tejang</translation>
@@ -1219,6 +1223,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8993760627012879038">Yangi varaqni inkognito rejimida ochish</translation>
 <translation id="8996847606757455498">Boshqa provayderni tanlang</translation>
 <translation id="8998729206196772491"><ph name="MANAGED_DOMAIN" /> domenida boshqariladigan hisobga kirish bilan siz administratorga Chrome ma’lumotlaringizni boshqarishiga rozilik bildirasiz. Barcha Chrome ma’lumotlaringiz bu hisobga butunlay bog‘langan. Agar hisobdan chiqadigan bo‘lsangiz, bu qurilmadagi barcha ma’lumotlaringiz o‘chib ketadi, lekin Google hisobingizda saqlanib qoladi.</translation>
+<translation id="9000233047676755924">Endi yangi varaq ochilganda <ph name="SITE_NAME" /> hikoyalari chiqadi. Kuzatuvdagi saytlarni Kuzatuvlar boshqaruvi orqali tahrirlash mumkin.</translation>
 <translation id="9022774213089566801">Eng koʻp ochilgan</translation>
 <translation id="9028914725102941583">Qurilmalararo ulashish uchun sinxronizatsiyani yoqing</translation>
 <translation id="9040142327097499898">Bu qurilmada bildirishnomalar yoniq, lekin joylashuv moduli o‘chiq.</translation>

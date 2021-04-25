@@ -302,6 +302,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3486220673238053218">ta’rif</translation>
 <translation id="3510164367642747937">Sichqoncha kursori ajratib ko‘rsatilsin</translation>
 <translation id="3513798432020909783">Hisobni <ph name="MANAGER_EMAIL" /> boshqaradi</translation>
+<translation id="3552189655002856821">Wi-Fi yoqilmagan</translation>
 <translation id="3563775809269155755">Hotspotni yoqish</translation>
 <translation id="3571734092741541777">Sozlash</translation>
 <translation id="3573179567135747900">"<ph name="FROM_LOCALE" />" tiliga qaytarish (qayta yuklash kerak bo‘ladi)</translation>
@@ -349,6 +350,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3899995891769452915">Ovoz bilan yozish</translation>
 <translation id="3900355044994618856">Sessiya yakunlanmoqda, <ph name="SESSION_TIME_REMAINING" /> qoldi</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> tarmog‘iga ulanilmoqda</translation>
+<translation id="3923494859158167397">Mobil tarmoqlar sozlanmagan</translation>
 <translation id="3943857333388298514">Joylash</translation>
 <translation id="394485226368336402">Audio sozlamalari</translation>
 <translation id="3945319193631853098">Sozlashni yakunlash uchun bosing</translation>
@@ -379,6 +381,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="4195877955194704651">Avtomatik bosish menyusi</translation>
 <translation id="4197790712631116042">Yoqilmagan</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> mavjud emas.</translation>
+<translation id="4209973997261364186">Wi-Fi yoqildi</translation>
 <translation id="4212472694152630271">PIN kod kiritish</translation>
 <translation id="4215497585250573029">VPN sozlamalari</translation>
 <translation id="4217571870635786043">Ovoz bilan yozish</translation>
@@ -555,6 +558,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="5689633613396158040">Tungi rejim xira yorugʻlikda koʻzlarni charchatmaslikka yordam beradi. Tungi rejimni rejalashtirish yoki undan butunlay chiqish uchun bu yerga bosing.</translation>
 <translation id="5691772641933328258">Barmoq izi aniqlanmadi</translation>
 <translation id="5710450975648804523">Bezovta qilinmasin rejimi yoniq</translation>
+<translation id="571295407079589142">Mobil internet yoqilmagan</translation>
 <translation id="573413375004481890">Bu qurilma barcha displeylaringiz bilan mos emasligi sababli bittasidan uzildi</translation>
 <translation id="574392208103952083">O‘rtacha</translation>
 <translation id="5744083938413354016">Teginib tortish</translation>

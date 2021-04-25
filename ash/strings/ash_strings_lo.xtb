@@ -302,6 +302,7 @@
 <translation id="3486220673238053218">ຄໍາ​ນິ​ຍາມ</translation>
 <translation id="3510164367642747937">ໝາຍເຄີເຊີເມົ້າ</translation>
 <translation id="3513798432020909783">ບັນຊີທີ່ຈັດການໂດຍ <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3552189655002856821">ປິດ Wi-Fi ແລ້ວ</translation>
 <translation id="3563775809269155755">ເປີດການນຳໃຊ້ຮັອດສະປອດ</translation>
 <translation id="3571734092741541777">ຕັ້ງຄ່າ</translation>
 <translation id="3573179567135747900">ປ່ຽນ​​ກັບ​ຄືນ​ໄປຫາ "<ph name="FROM_LOCALE" />" (ຕ້ອງການໃຫ້ປິດເປີດຄືນໃໝ່)</translation>
@@ -349,6 +350,7 @@
 <translation id="3899995891769452915">ການປ້ອນ​ຂໍ້ມູນ​ດ້ວຍສຽງ</translation>
 <translation id="3900355044994618856">ເຊດຊັນຂອງທ່ານຈະສິ້ນສຸດໃນ <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">ກໍາລເຊື່ອມຕໍ່ກັບ <ph name="NAME" /></translation>
+<translation id="3923494859158167397">ບໍ່ໄດ້ຕັ້ງຄ່າເຄືອຂ່າຍມືຖື</translation>
 <translation id="3943857333388298514">ແປະໃສ່</translation>
 <translation id="394485226368336402">ການຕັ້ງຄ່າສຽງ</translation>
 <translation id="3945319193631853098">ແຕະເພື່ອສຳເລັດການຕັ້ງຄ່າ</translation>
@@ -379,6 +381,7 @@
 <translation id="4195877955194704651">ປຸ່ມຄລິກອັດຕະໂນມັດ</translation>
 <translation id="4197790712631116042">ປິດ</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> ບໍ່ສາມາດໃຊ້ໄດ້.</translation>
+<translation id="4209973997261364186">ເປີດໃຊ້ Wi-Fi ແລ້ວ</translation>
 <translation id="4212472694152630271">ປ່ຽນໄປໃຊ້ PIN</translation>
 <translation id="4215497585250573029">ການຕັ້ງຄ່າ VPN</translation>
 <translation id="4217571870635786043">ການພິມຕາມຄຳບອກ</translation>
@@ -555,6 +558,7 @@
 <translation id="5689633613396158040">ແສງກາງຄືນເຮັດໃຫ້ມັນງ່າຍກວ່າໃນການເບິ່ງໜ້າຈໍຂອງທ່ານ ຫຼື ອ່ານໃນແສງທີ່ມືດ. ແຕະເພື່ອປ່ຽນວ່າຈະເປີດແສງກາງຄືນເວລາໃດ ຫຼື ປິດມັນໄປເລີຍກໍໄດ້.</translation>
 <translation id="5691772641933328258">ບໍ່ຮູ້ຈັກລາຍນິ້ວມື</translation>
 <translation id="5710450975648804523">ໂໝດຫ້າມລົບກວນເປີດຢູ່</translation>
+<translation id="571295407079589142">ອິນເຕີເນັດມືຖືປິດຢູ່</translation>
 <translation id="573413375004481890">ອຸປະກອນນີ້ບໍ່ສາມາດຮອງຮັບຈໍສະແດງທັງໝົດຂອງທ່ານໄດ້, ສະນັ້ນລະບົບໄດ້ຕັດການເຊື່ອມຕໍ່ອັນໜຶ່ງອອກແລ້ວ</translation>
 <translation id="574392208103952083">ສື່ກາງ</translation>
 <translation id="5744083938413354016">ແຕະລາກ</translation>

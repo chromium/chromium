@@ -77,6 +77,7 @@
 <translation id="147113415845704694">Try 'What’s the weather today?'</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> download failed due to server issues.</translation>
 <translation id="1492417797159476138">You already saved this username for this site</translation>
+<translation id="1493287004536771723">You’re following <ph name="SITE_NAME" /></translation>
 <translation id="1506061864768559482">Search engine</translation>
 <translation id="1513352483775369820">Bookmarks and web history</translation>
 <translation id="1513858653616922153">Delete password</translation>
@@ -275,6 +276,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="281504910091592009">View and manage saved passwords in your <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">To get your bookmarks on all your devices, sign in and turn on sync</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
+<translation id="2830783625999891985">Clipboard contents hidden</translation>
 <translation id="2839327205551510876">Unfollowed <ph name="SITE_NAME" /></translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Checked 1 day ago}other{Checked # days ago}}</translation>
 <translation id="2842985007712546952">Parent folder</translation>
@@ -390,6 +392,7 @@ Privacy Sandbox is still in active development and is available in selected regi
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB available</translation>
 <translation id="3549657413697417275">Search your history</translation>
 <translation id="3557336313807607643">Add to contacts</translation>
+<translation id="3563767357928833671">Clipboard contents shown</translation>
 <translation id="3566923219790363270">Chrome is still preparing for VR. Restart Chrome later.</translation>
 <translation id="3568688522516854065">To get your tabs from your other devices, sign in and turn on sync</translation>
 <translation id="3587482841069643663">All</translation>
@@ -543,6 +546,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4684427112815847243">Sync everything</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> more}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> more}}</translation>
 <translation id="4696983787092045100">Send text to Your Devices</translation>
+<translation id="4697543623252708062">Soon, you’ll see stories from <ph name="SITE_NAME" /> when you open a new tab. You can control the sites that you’re following in Manage Follows.</translation>
 <translation id="4698034686595694889">View offline in <ph name="APP_NAME" /></translation>
 <translation id="4699172675775169585">Cached images and files</translation>
 <translation id="4714588616299687897">Save up to 60% of your data</translation>
@@ -1219,6 +1223,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="8993760627012879038">Open a new tab in Incognito mode</translation>
 <translation id="8996847606757455498">Choose another provider</translation>
 <translation id="8998729206196772491">You are signing in with an account managed by <ph name="MANAGED_DOMAIN" /> and giving its administrator control over your Chrome data. Your data will become permanently tied to this account. Signing out of Chrome will delete your data from this device, but it will remain stored in your Google Account.</translation>
+<translation id="9000233047676755924">You’ll now see stories from <ph name="SITE_NAME" /> when you open a new tab. You can control the sites that you’re following in Manage Follows.</translation>
 <translation id="9022774213089566801">Frequently visited</translation>
 <translation id="9028914725102941583">Turn on sync to share across devices</translation>
 <translation id="9040142327097499898">Notifications are allowed. Location is off for this device.</translation>

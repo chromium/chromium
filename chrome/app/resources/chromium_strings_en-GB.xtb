@@ -143,6 +143,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="5653831366781983928">Please restart Chromium now</translation>
 <translation id="5698481217667032250">Display Chromium in this language</translation>
 <translation id="5820394555380036790">Chromium OS</translation>
+<translation id="5854740544000584380">Chromium OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />, as is <ph name="BEGIN_LINK_LINUX_OSS" />Linux development environment<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="5862307444128926510">Welcome to Chromium</translation>
 <translation id="5895138241574237353">Restart</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Network sign-in</translation>

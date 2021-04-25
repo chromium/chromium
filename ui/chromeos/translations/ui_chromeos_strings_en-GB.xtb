@@ -451,6 +451,7 @@
 <translation id="5602622065581044566">Bulgarian with phonetic keyboard</translation>
 <translation id="5605830556594064952">US Dvorak</translation>
 <translation id="5625294776298156701">Tamil with Tamil99 keyboard</translation>
+<translation id="5633226425545095130">Moving this item will share it with everyone who can see the shared folder '<ph name="DESTINATION_NAME" />'.</translation>
 <translation id="5649768706273821470">Listen</translation>
 <translation id="5678784840044122290">The Linux application will be available within your Terminal and may also show an icon in your Launcher.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Can't disconnect from an archive or virtual disk<ph name="END_BOLD" />
@@ -725,6 +726,7 @@
 <translation id="8395901698320285466">Dimensions</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8456681095658380701">Invalid name</translation>
+<translation id="8459404855768962328">Copying this item will share it with everyone who can see the shared folder '<ph name="DESTINATION_NAME" />'.</translation>
 <translation id="8461467696380332069">Right-click a file, and select 'Pin to shelf' for quick access to your files in shelf.</translation>
 <translation id="8463494891489624050">Vietnamese VIQR</translation>
 <translation id="8466234950814670489">Tar archive</translation>
