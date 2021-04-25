@@ -1074,6 +1074,12 @@ try_.chromium_linux_builder(
 )
 
 try_.chromium_linux_builder(
+    name = "linux-1mbu-compile-fyi-rel",
+    # TODO(crbug.com/1199853): Configure 1mbu mode through an input property
+    # for this builder.
+)
+
+try_.chromium_linux_builder(
     name = "linux-annotator-rel",
 )
 
