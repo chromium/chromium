@@ -5,6 +5,8 @@
 #ifndef UI_GFX_BUFFER_TYPES_H_
 #define UI_GFX_BUFFER_TYPES_H_
 
+#include <stdint.h>
+
 #include <tuple>
 
 namespace gfx {
