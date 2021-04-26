@@ -1,4 +1,5 @@
 masonf@chromium.org
+jarhar@chromium.org
 
 per-file *_mojom_traits*.*=set noparent
 per-file *_mojom_traits*.*=file://ipc/SECURITY_OWNERS
