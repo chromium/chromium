@@ -263,6 +263,13 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
     state_saver.emplace(context);
     context.Scale(1 / scaling_factor, 1 / scaling_factor);
   }
+  if (const auto* svg_data = text_item.SVGFragmentData()) {
+    if (!svg_data->transform.IsIdentity()) {
+      if (!state_saver)
+        state_saver.emplace(context);
+      context.ConcatCTM(svg_data->transform);
+    }
+  }
   NGTextPainter text_painter(context, font, fragment_paint_info, visual_rect,
                              text_origin, box_rect, is_horizontal);
   NGHighlightPainter highlight_painter(

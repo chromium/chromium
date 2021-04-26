@@ -9,6 +9,8 @@
 
 namespace blink {
 
+struct SVGTextLengthContext;
+
 class NGSVGTextLayoutAlgorithm {
   STACK_ALLOCATED();
 
@@ -29,14 +31,13 @@ class NGSVGTextLayoutAlgorithm {
       const NGFragmentItemsBuilder::ItemWithOffsetList& items);
   void ApplyTextLengthAttribute(
       const NGFragmentItemsBuilder::ItemWithOffsetList& items);
-  VectorOfPairs<float, const LayoutObject> CollectTextLengthAncestors(
+  HeapVector<SVGTextLengthContext> CollectTextLengthAncestors(
       const NGFragmentItemsBuilder::ItemWithOffsetList& items,
       wtf_size_t index,
       const LayoutObject* layout_object) const;
   void ResolveTextLength(
       const NGFragmentItemsBuilder::ItemWithOffsetList& items,
-      float text_length,
-      wtf_size_t i,
+      const SVGTextLengthContext& length_context,
       wtf_size_t j_plus_1,
       Vector<wtf_size_t>& resolved_descendant_node_starts);
   void AdjustPositionsXY(
@@ -65,6 +66,7 @@ class NGSVGTextLayoutAlgorithm {
 
     bool text_length_resolved = false;
     float inline_size = 0.0f;
+    float length_adjust_scale = 1.0f;
     wtf_size_t item_index = WTF::kNotFound;
   };
   // This data member represents "result" defined in the specification, but it
