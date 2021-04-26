@@ -16,7 +16,9 @@ class RasterizeAndRecordMicroUnitTest(legacy_page_test_case.LegacyPageTestCase):
      i.e. it only checks if the metrics are present and non-zero.
   """
 
-  @decorators.Disabled('win', 'chromeos', 'linux')
+  # Fails or flaky on some bots.  See http://crbug.com/956798
+  # TODO(crbug.com/1197307): Re-enable on mojave.
+  @decorators.Disabled('win', 'chromeos', 'linux', 'mojave')
   def testRasterizeAndRecordMicro(self):
     pate_test = rasterize_and_record_micro.RasterizeAndRecordMicro(
         rasterize_repeat=1, record_repeat=1, start_wait_time=0.0,
