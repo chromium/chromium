@@ -2360,9 +2360,6 @@ crbug.com/965409 external/wpt/css/css-font-loading/fontface-descriptor-updates.h
 # Linux draws antialiasing differently when overlaying two text layers.
 crbug.com/785230 [ Linux ] external/wpt/css/css-text-decor/text-decoration-thickness-ink-skip-dilation.html [ Failure ]
 
-# Implement support for percentage values in scale
-crbug.com/1029997 external/wpt/css/css-transforms/transform-scale-percent-001.html [ Failure ]
-
 crbug.com/1002514 external/wpt/web-share/share-sharePromise-internal-slot.https.html [ Failure Crash ]
 
 crbug.com/1029514 external/wpt/html/semantics/embedded-content/the-video-element/resize-during-playback.html [ Pass Failure ]
