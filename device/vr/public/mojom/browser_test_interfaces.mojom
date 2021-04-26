@@ -109,6 +109,8 @@ struct EventData {
 // tests.  The test interface lives in the browser process, and may be consumed
 // by the device utility process.
 // It is only implemented when running in browser tests.
+// In general, methods here should be sync so that we can better mimic the
+// underlying runtimes, who may make these queries/notifications synchronously.
 interface XRTestHook {
   // Notifies the test anytime the XR runtime receives a frame with the data
   // that was submitted.
@@ -151,6 +153,15 @@ interface XRTestHook {
 // It is always hosted in the XRDevice process, but only has effects while
 // running in browser tests with mock implementations of runtimes.
 interface XRServiceTestHook {
+  // We want to ensure that the test hook is set before attempting to request a
+  // session, so that we can deterministically guarantee that we're using the
+  // test runtime (and when), and not accidentally getting the product runtime
+  // or returning garbage data from the test runtime. Thus this method needs to
+  // remain sync, since this is a different mojo pipe than is used to create the
+  // session, so ordering of the method calls would not otherwise be guaranteed.
+  // This allows the tests to be written in a more straightforward and easily
+  // debuggable manner, rather than relying on waiting for the async callback to
+  // continue with the test.
   [Sync] SetTestHook(pending_remote<XRTestHook>? hook) => ();
 
   // Called by tests to trigger a termination of the Device Service Process
