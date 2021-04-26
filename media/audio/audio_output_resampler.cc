@@ -16,7 +16,6 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
@@ -64,7 +63,7 @@ class OnMoreDataConverter
   double ProvideInput(AudioBus* audio_bus, uint32_t frames_delayed) override;
 
   // Source callback.
-  CheckedPtr<AudioOutputStream::AudioSourceCallback> source_callback_;
+  AudioOutputStream::AudioSourceCallback* source_callback_;
 
   // Last |delay| and |delay_timestamp| received via OnMoreData(). Used to
   // correct playback delay in ProvideInput() before calling |source_callback_|.

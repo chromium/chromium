@@ -9,7 +9,6 @@
 #include <stdint.h>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "sandbox/win/src/policy_engine_opcodes.h"
 #include "sandbox/win/src/policy_engine_params.h"
 
@@ -135,7 +134,7 @@ class PolicyProcessor {
   // Sets the currently matching action result.
   void SetInternalState(size_t index, EvalResult result);
 
-  CheckedPtr<PolicyBuffer> policy_;
+  PolicyBuffer* policy_;
   DISALLOW_COPY_AND_ASSIGN(PolicyProcessor);
 };
 

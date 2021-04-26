@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SYNC_INVALIDATIONS_INTERESTED_DATA_TYPES_MANAGER_H_
 #define COMPONENTS_SYNC_INVALIDATIONS_INTERESTED_DATA_TYPES_MANAGER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 
 #include "components/sync/base/model_type.h"
@@ -38,8 +37,7 @@ class InterestedDataTypesManager {
       SyncInvalidationsService::InterestedDataTypesAppliedCallback callback);
 
  private:
-  CheckedPtr<InterestedDataTypesHandler> interested_data_types_handler_ =
-      nullptr;
+  InterestedDataTypesHandler* interested_data_types_handler_ = nullptr;
 
   base::Optional<ModelTypeSet> data_types_;
 };

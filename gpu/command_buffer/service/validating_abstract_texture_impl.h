@@ -6,7 +6,6 @@
 #define GPU_COMMAND_BUFFER_SERVICE_VALIDATING_ABSTRACT_TEXTURE_IMPL_H_
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/service/abstract_texture.h"
 #include "gpu/gpu_gles2_export.h"
@@ -58,7 +57,7 @@ class GPU_GLES2_EXPORT ValidatingAbstractTextureImpl : public AbstractTexture {
   scoped_refptr<TextureRef> texture_ref_;
   bool decoder_managed_image_ = false;
 
-  CheckedPtr<DecoderContext> decoder_context_ = nullptr;
+  DecoderContext* decoder_context_ = nullptr;
   DestructionCB destruction_cb_;
   CleanupCallback cleanup_cb_;
 };

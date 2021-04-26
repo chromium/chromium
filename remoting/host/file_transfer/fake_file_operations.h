@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "remoting/host/file_transfer/file_operations.h"
 #include "remoting/proto/file_transfer.pb.h"
@@ -93,7 +92,7 @@ class FakeFileOperations : public FileOperations {
   class FakeFileReader;
   class FakeFileWriter;
 
-  CheckedPtr<TestIo> test_io_;
+  TestIo* test_io_;
 };
 
 }  // namespace remoting

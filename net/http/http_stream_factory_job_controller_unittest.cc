@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -328,8 +327,8 @@ class HttpStreamFactoryJobControllerTest : public TestWithTaskEnvironment {
   SpdySessionDependencies session_deps_{
       ConfiguredProxyResolutionService::CreateDirect()};
   std::unique_ptr<HttpNetworkSession> session_;
-  CheckedPtr<HttpStreamFactory> factory_ = nullptr;
-  CheckedPtr<HttpStreamFactory::JobController> job_controller_ = nullptr;
+  HttpStreamFactory* factory_ = nullptr;
+  HttpStreamFactory::JobController* job_controller_ = nullptr;
   std::unique_ptr<HttpStreamRequest> request_;
   std::unique_ptr<SequencedSocketData> tcp_data_;
   std::unique_ptr<MockQuicData> quic_data_;

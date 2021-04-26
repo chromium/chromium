@@ -5,7 +5,6 @@
 #ifndef MEDIA_FILTERS_AUDIO_TIMESTAMP_VALIDATOR_H_
 #define MEDIA_FILTERS_AUDIO_TIMESTAMP_VALIDATOR_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "media/base/audio_buffer.h"
@@ -32,7 +31,7 @@ class MEDIA_EXPORT AudioTimestampValidator {
 
  private:
   bool has_codec_delay_;
-  CheckedPtr<MediaLog> media_log_;
+  MediaLog* media_log_;
 
   // Accumulates time from decoded audio frames. We adjust the base timestamp as
   // needed for the first few buffers (stabilization period) of decoded output

@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -155,7 +154,7 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
     State& operator=(State&& other) = default;
 
     // Not-null when the engine is initialized.
-    CheckedPtr<SyncEngine> engine = nullptr;
+    SyncEngine* engine = nullptr;
 
     // Populated when the engine is initialized.
     CoreAccountInfo account_info;

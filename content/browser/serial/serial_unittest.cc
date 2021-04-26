@@ -4,7 +4,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/command_line.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -82,7 +81,7 @@ class SerialTest : public RenderViewHostImplTestHarness {
 
  private:
   SerialTestContentBrowserClient test_client_;
-  CheckedPtr<ContentBrowserClient> original_client_ = nullptr;
+  ContentBrowserClient* original_client_ = nullptr;
   device::FakeSerialPortManager port_manager_;
   SerialDelegate::Observer* observer_ = nullptr;
 

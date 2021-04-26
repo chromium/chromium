@@ -13,7 +13,6 @@
 
 #include "base/containers/contains.h"
 #include "base/format_macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -64,7 +63,7 @@ class MockLayerImpl : public LayerImpl {
   MockLayerImpl(LayerTreeImpl* tree_impl, int layer_id)
       : LayerImpl(tree_impl, layer_id), layer_impl_destruction_list_(nullptr) {}
 
-  CheckedPtr<std::vector<int>> layer_impl_destruction_list_;
+  std::vector<int>* layer_impl_destruction_list_;
 };
 
 class MockLayer : public Layer {
@@ -91,7 +90,7 @@ class MockLayer : public Layer {
       : layer_impl_destruction_list_(layer_impl_destruction_list) {}
   ~MockLayer() override = default;
 
-  CheckedPtr<std::vector<int>> layer_impl_destruction_list_;
+  std::vector<int>* layer_impl_destruction_list_;
 };
 
 void ExpectTreesAreIdentical(Layer* root_layer,

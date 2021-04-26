@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_pool.h"
 #include "base/win/scoped_handle.h"
@@ -65,7 +64,7 @@ class GPU_EXPORT GpuMemoryBufferImplDXGI : public GpuMemoryBufferImpl {
                           base::UnsafeSharedMemoryRegion region);
 
   base::win::ScopedHandle dxgi_handle_;
-  CheckedPtr<GpuMemoryBufferManager> gpu_memory_buffer_manager_;
+  GpuMemoryBufferManager* gpu_memory_buffer_manager_;
 
   // Used to create and store shared memory for data, copied via request to
   // gpu process.

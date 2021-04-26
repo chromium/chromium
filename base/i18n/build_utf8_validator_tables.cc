@@ -41,7 +41,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
@@ -137,10 +136,10 @@ class TablePrinter {
     if (values_on_this_line_ == 0) {
       fputs("   ", stream_);
     } else if (values_on_this_line_ == kMaxValuesPerLine) {
-      fprintf(stream_.get(), "  // 0x%02x\n   ", current_offset_);
+      fprintf(stream_, "  // 0x%02x\n   ", current_offset_);
       values_on_this_line_ = 0;
     }
-    fprintf(stream_.get(), " 0x%02x,", static_cast<int>(value));
+    fprintf(stream_, " 0x%02x,", static_cast<int>(value));
     ++values_on_this_line_;
     ++current_offset_;
   }
@@ -150,13 +149,13 @@ class TablePrinter {
       fputs("      ", stream_);
       ++values_on_this_line_;
     }
-    fprintf(stream_.get(), "  // 0x%02x\n", current_offset_);
+    fprintf(stream_, "  // 0x%02x\n", current_offset_);
     values_on_this_line_ = 0;
   }
 
  private:
   // stdio stream. Not owned.
-  CheckedPtr<FILE> stream_;
+  FILE* stream_;
 
   // Number of values so far printed on this line.
   int values_on_this_line_;

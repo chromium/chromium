@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/values.h"
 #include "chrome/service/cloud_print/cloud_print_url_fetcher.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
@@ -89,7 +88,7 @@ class CloudPrintAuth : public base::RefCountedThreadSafe<CloudPrintAuth>,
   friend class base::RefCountedThreadSafe<CloudPrintAuth>;
   ~CloudPrintAuth() override;
 
-  CheckedPtr<Client> client_;
+  Client* client_;
   gaia::OAuthClientInfo oauth_client_info_;
   std::unique_ptr<gaia::GaiaOAuthClient> oauth_client_;
 

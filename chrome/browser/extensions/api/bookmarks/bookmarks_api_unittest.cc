@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/api/bookmarks/bookmarks_api.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -41,7 +40,7 @@ class BookmarksApiUnittest : public ExtensionServiceTestBase {
   std::string node_id() const { return node_id_; }
 
  private:
-  CheckedPtr<bookmarks::BookmarkModel> model_ = nullptr;
+  bookmarks::BookmarkModel* model_ = nullptr;
   std::string node_id_;
 };
 

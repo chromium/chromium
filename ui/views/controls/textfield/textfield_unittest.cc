@@ -14,7 +14,6 @@
 #include "base/command_line.h"
 #include "base/format_macros.h"
 #include "base/i18n/rtl.h"
-#include "base/memory/checked_ptr.h"
 #include "base/pickle.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
@@ -143,7 +142,7 @@ class TextfieldFocuser : public View {
 
  private:
   bool consume_ = true;
-  CheckedPtr<Textfield> textfield_;
+  Textfield* textfield_;
 
   DISALLOW_COPY_AND_ASSIGN(TextfieldFocuser);
 };

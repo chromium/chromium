@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -452,7 +451,7 @@ class UpdateServiceTest : public ExtensionsTest {
   }
 
  private:
-  CheckedPtr<UpdateService> update_service_ = nullptr;
+  UpdateService* update_service_ = nullptr;
   scoped_refptr<FakeUpdateClient> update_client_;
   MockExtensionSystemFactory<FakeExtensionSystem>
       fake_extension_system_factory_;

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/query_tiles/internal/image_loader.h"
 
@@ -32,11 +31,11 @@ class CachedImageLoader : public ImageLoader {
 
   // Used to load the image bitmap for UI. Owned by ImageFetcherService.
   // Outlives TileService.
-  CheckedPtr<image_fetcher::ImageFetcher> cached_image_fetcher_;
+  image_fetcher::ImageFetcher* cached_image_fetcher_;
 
   // Used to prefetch the image in reduced mode. The data is downloaded to disk
   // without decoding. Owned by ImageFetcherService. Outlives TileService.
-  CheckedPtr<image_fetcher::ImageFetcher> reduced_mode_image_fetcher_;
+  image_fetcher::ImageFetcher* reduced_mode_image_fetcher_;
 };
 
 }  // namespace query_tiles

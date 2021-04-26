@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_base.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -97,7 +96,7 @@ class UserPolicySigninService : public UserPolicySigninServiceBase {
                                       PolicyRegistrationCallback callback);
 
   // Parent profile for this service.
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   std::unique_ptr<CloudPolicyClientRegistrationHelper> registration_helper_;
 

@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "components/ntp_tiles/custom_links_manager.h"
 
 class PrefService;
@@ -46,7 +45,7 @@ class CustomLinksStore {
 
  private:
   // The pref service used to persist the custom link data.
-  CheckedPtr<PrefService> prefs_;
+  PrefService* prefs_;
 
   DISALLOW_COPY_AND_ASSIGN(CustomLinksStore);
 };

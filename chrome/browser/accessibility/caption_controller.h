@@ -8,7 +8,6 @@
 #include <memory>
 #include <unordered_map>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/accessibility/soda_installer.h"
 #include "chrome/common/caption.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -95,7 +94,7 @@ class CaptionController : public KeyedService,
   void UpdateAccessibilityCaptionHistograms();
 
   // Owns us via the KeyedService mechanism.
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   std::unique_ptr<CaptionBubbleController> caption_bubble_controller_;

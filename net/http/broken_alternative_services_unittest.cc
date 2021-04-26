@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "net/base/network_isolation_key.h"
@@ -52,7 +51,7 @@ class BrokenAlternativeServicesTest
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
   base::TestMockTimeTaskRunner::ScopedContext test_task_runner_context_;
 
-  CheckedPtr<const base::TickClock> broken_services_clock_;
+  const base::TickClock* broken_services_clock_;
   BrokenAlternativeServices broken_services_;
 
   std::vector<BrokenAlternativeService> expired_alt_svcs_;

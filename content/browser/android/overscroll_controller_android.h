@@ -9,7 +9,6 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
@@ -92,7 +91,7 @@ class CONTENT_EXPORT OverscrollControllerAndroid
 
   void SetNeedsAnimate();
 
-  const CheckedPtr<ui::WindowAndroidCompositor> compositor_;
+  ui::WindowAndroidCompositor* const compositor_;
   const float dpi_scale_;
 
   bool enabled_;

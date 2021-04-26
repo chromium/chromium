@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -83,7 +82,7 @@ class PosterThread : public base::SimpleThread {
   }
 
  private:
-  CheckedPtr<PerfettoTaskRunner> task_runner_;
+  PerfettoTaskRunner* task_runner_;
   base::WeakPtr<TaskDestination> weak_ptr_;
   const int n_;
   const size_t sequence_number_;

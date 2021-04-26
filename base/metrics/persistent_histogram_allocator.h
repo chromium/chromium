@@ -13,7 +13,6 @@
 #include "base/atomicops.h"
 #include "base/base_export.h"
 #include "base/feature_list.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/process/process_handle.h"
@@ -80,7 +79,7 @@ class BASE_EXPORT PersistentSparseHistogramDataManager {
   bool LoadRecords(PersistentSampleMapRecords* sample_map_records);
 
   // Weak-pointer to the allocator used by the sparse histograms.
-  CheckedPtr<PersistentMemoryAllocator> allocator_;
+  PersistentMemoryAllocator* allocator_;
 
   // Iterator within the allocator for finding sample records.
   PersistentMemoryAllocator::Iterator record_iterator_ GUARDED_BY(lock_);
@@ -142,14 +141,14 @@ class BASE_EXPORT PersistentSampleMapRecords {
   friend PersistentSparseHistogramDataManager;
 
   // Weak-pointer to the parent data-manager object.
-  CheckedPtr<PersistentSparseHistogramDataManager> data_manager_;
+  PersistentSparseHistogramDataManager* data_manager_;
 
   // ID of PersistentSampleMap to which these records apply.
   const uint64_t sample_map_id_;
 
   // The current user of this set of records. It is used to ensure that no
   // more than one object is using these records at a given time.
-  CheckedPtr<const void> user_ = nullptr;
+  const void* user_ = nullptr;
 
   // This is the count of how many "records" have already been read by the
   // owning sample-map.
@@ -199,7 +198,7 @@ class BASE_EXPORT PersistentHistogramAllocator {
 
    private:
     // Weak-pointer to histogram allocator being iterated over.
-    CheckedPtr<PersistentHistogramAllocator> allocator_;
+    PersistentHistogramAllocator* allocator_;
 
     // The iterator used for stepping through objects in persistent memory.
     // It is lock-free and thread-safe which is why this class is also such.

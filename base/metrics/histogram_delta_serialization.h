@@ -11,7 +11,6 @@
 
 #include "base/base_export.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_flattener.h"
 #include "base/metrics/histogram_snapshot_manager.h"
 #include "base/threading/thread_checker.h"
@@ -52,7 +51,7 @@ class BASE_EXPORT HistogramDeltaSerialization : public HistogramFlattener {
   HistogramSnapshotManager histogram_snapshot_manager_;
 
   // Output buffer for serialized deltas.
-  CheckedPtr<std::vector<std::string>> serialized_deltas_;
+  std::vector<std::string>* serialized_deltas_;
 
   DISALLOW_COPY_AND_ASSIGN(HistogramDeltaSerialization);
 };

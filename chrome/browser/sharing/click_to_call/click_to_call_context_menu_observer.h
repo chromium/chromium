@@ -11,7 +11,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_metrics.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
@@ -36,7 +35,7 @@ class ClickToCallContextMenuObserver : public RenderViewContextMenuObserver {
     void ExecuteCommand(int command_id, int event_flags) override;
 
    private:
-    const CheckedPtr<ClickToCallContextMenuObserver> parent_;
+    ClickToCallContextMenuObserver* const parent_;
 
     DISALLOW_COPY_AND_ASSIGN(SubMenuDelegate);
   };
@@ -65,9 +64,9 @@ class ClickToCallContextMenuObserver : public RenderViewContextMenuObserver {
 
   void SendClickToCallMessage(int chosen_device_index);
 
-  CheckedPtr<RenderViewContextMenuProxy> proxy_ = nullptr;
+  RenderViewContextMenuProxy* proxy_ = nullptr;
 
-  CheckedPtr<ClickToCallUiController> controller_ = nullptr;
+  ClickToCallUiController* controller_ = nullptr;
 
   std::vector<std::unique_ptr<syncer::DeviceInfo>> devices_;
 

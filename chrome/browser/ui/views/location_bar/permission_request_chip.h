@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_PERMISSION_REQUEST_CHIP_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_PERMISSION_REQUEST_CHIP_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/location_bar/permission_chip.h"
 
 class Browser;
@@ -51,12 +50,12 @@ class PermissionRequestChip : public PermissionChip {
   // If uma metric was already recorded on the button click.
   bool already_recorded_interaction_ = false;
 
-  CheckedPtr<Browser> browser_ = nullptr;
+  Browser* browser_ = nullptr;
 
   // The time when the chip was displayed.
   base::TimeTicks chip_shown_time_;
 
-  CheckedPtr<views::BubbleDialogDelegateView> prompt_bubble_ = nullptr;
+  views::BubbleDialogDelegateView* prompt_bubble_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_PERMISSION_REQUEST_CHIP_H_

@@ -11,7 +11,6 @@
 #include <map>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/raster/task_graph_runner.h"
 
@@ -44,7 +43,7 @@ class CC_EXPORT TaskGraphWorkQueue {
     PrioritizedTask& operator=(PrioritizedTask&& other) = default;
 
     scoped_refptr<Task> task;
-    CheckedPtr<TaskNamespace> task_namespace;
+    TaskNamespace* task_namespace;
     uint16_t category;
     uint16_t priority;
   };

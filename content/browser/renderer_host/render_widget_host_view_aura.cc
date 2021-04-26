@@ -15,7 +15,6 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -163,7 +162,7 @@ class RenderWidgetHostViewAura::EventObserverForPopupExit
   }
 
  private:
-  CheckedPtr<RenderWidgetHostViewAura> rwhva_;
+  RenderWidgetHostViewAura* rwhva_;
 
   DISALLOW_COPY_AND_ASSIGN(EventObserverForPopupExit);
 };
@@ -232,7 +231,7 @@ class RenderWidgetHostViewAura::WindowObserver : public aura::WindowObserver {
   }
 
  private:
-  CheckedPtr<RenderWidgetHostViewAura> view_;
+  RenderWidgetHostViewAura* view_;
 
   DISALLOW_COPY_AND_ASSIGN(WindowObserver);
 };
@@ -280,7 +279,7 @@ class RenderWidgetHostViewAura::WindowAncestorObserver
     ancestors_.clear();
   }
 
-  CheckedPtr<RenderWidgetHostViewAura> view_;
+  RenderWidgetHostViewAura* view_;
   std::set<aura::Window*> ancestors_;
 
   DISALLOW_COPY_AND_ASSIGN(WindowAncestorObserver);

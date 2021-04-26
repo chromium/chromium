@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
@@ -51,10 +50,10 @@ class PrimaryAccountMutatorImpl : public PrimaryAccountMutator {
 
   // Pointers to the services used by the PrimaryAccountMutatorImpl. They
   // *must* outlive this instance.
-  CheckedPtr<AccountTrackerService> account_tracker_ = nullptr;
-  CheckedPtr<ProfileOAuth2TokenService> token_service_ = nullptr;
-  CheckedPtr<PrimaryAccountManager> primary_account_manager_ = nullptr;
-  CheckedPtr<PrefService> pref_service_ = nullptr;
+  AccountTrackerService* account_tracker_ = nullptr;
+  ProfileOAuth2TokenService* token_service_ = nullptr;
+  PrimaryAccountManager* primary_account_manager_ = nullptr;
+  PrefService* pref_service_ = nullptr;
   signin::AccountConsistencyMethod account_consistency_;
 };
 

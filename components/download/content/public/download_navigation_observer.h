@@ -6,7 +6,6 @@
 #define COMPONENTS_DOWNLOAD_CONTENT_PUBLIC_DOWNLOAD_NAVIGATION_OBSERVER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/download/public/background_service/navigation_monitor.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -34,7 +33,7 @@ class DownloadNavigationObserver
   void NotifyNavigationEvent(NavigationEvent navigation_event);
 
   // Used to inform the navigation events to download systems.
-  CheckedPtr<NavigationMonitor> navigation_monitor_;
+  NavigationMonitor* navigation_monitor_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

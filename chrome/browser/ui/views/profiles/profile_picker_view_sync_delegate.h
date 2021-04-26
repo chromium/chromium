@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_VIEW_SYNC_DELEGATE_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_VIEW_SYNC_DELEGATE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
@@ -68,7 +67,7 @@ class ProfilePickerViewSyncDelegate : public DiceTurnSyncOnHelper::Delegate,
   void OnEnterpriseWelcomeClosed(EnterpriseProfileWelcomeUI::ScreenType type,
                                  bool proceed);
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   bool enterprise_account_ = false;
   bool sync_disabled_ = false;
   OpenBrowserCallback open_browser_callback_;

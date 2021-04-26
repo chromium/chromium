@@ -15,7 +15,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -2948,7 +2947,7 @@ class TabBlockedStateTestBrowser
     tab_strip_model_->SetTabBlocked(index, blocked);
   }
 
-  CheckedPtr<TabStripModel> tab_strip_model_;
+  TabStripModel* tab_strip_model_;
 };
 
 class DummySingleWebContentsDialogManager
@@ -2973,7 +2972,7 @@ class DummySingleWebContentsDialogManager
   gfx::NativeWindow dialog() override { return dialog_; }
 
  private:
-  CheckedPtr<web_modal::SingleWebContentsDialogManagerDelegate> delegate_;
+  web_modal::SingleWebContentsDialogManagerDelegate* delegate_;
   gfx::NativeWindow dialog_;
 };
 
@@ -4198,7 +4197,7 @@ class TabStripModelTestWithReadLaterEnabled : public BrowserWithTestWindowTest {
  private:
   base::test::ScopedFeatureList feature_list_;
 
-  CheckedPtr<MockFeaturePromoController> mock_promo_controller_ = nullptr;
+  MockFeaturePromoController* mock_promo_controller_ = nullptr;
 };
 
 TEST_F(TabStripModelTestWithReadLaterEnabled, AddToReadLater) {

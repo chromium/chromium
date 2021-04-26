@@ -11,7 +11,6 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/profiler.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/memory.h"
 #include "base/strings/string_number_conversions.h"
@@ -74,7 +73,7 @@ void SetNameInternal(PlatformThreadId thread_id, const char* name) {
 }
 
 struct ThreadParams {
-  CheckedPtr<PlatformThread::Delegate> delegate;
+  PlatformThread::Delegate* delegate;
   bool joinable;
   ThreadPriority priority;
 };

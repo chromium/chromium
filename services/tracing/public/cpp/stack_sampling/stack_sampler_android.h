@@ -5,7 +5,6 @@
 #ifndef SERVICES_TRACING_PUBLIC_CPP_STACK_SAMPLING_STACK_SAMPLER_ANDROID_H_
 #define SERVICES_TRACING_PUBLIC_CPP_STACK_SAMPLING_STACK_SAMPLER_ANDROID_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/profiler/module_cache.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
 #include "base/profiler/stack_sampler.h"
@@ -35,7 +34,7 @@ class StackSamplerAndroid : public base::StackSampler {
 
  private:
   base::SamplingProfilerThreadToken thread_token_;
-  CheckedPtr<base::ModuleCache> module_cache_;
+  base::ModuleCache* module_cache_;
   StackUnwinderAndroid unwinder_;
 };
 

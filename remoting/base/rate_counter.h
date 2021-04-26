@@ -11,7 +11,6 @@
 
 #include "base/containers/queue.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
@@ -55,8 +54,7 @@ class RateCounter {
   // Sum of values in |data_points_|.
   int64_t sum_;
 
-  CheckedPtr<const base::TickClock> tick_clock_ =
-      base::DefaultTickClock::GetInstance();
+  const base::TickClock* tick_clock_ = base::DefaultTickClock::GetInstance();
 
   SEQUENCE_CHECKER(sequence_checker_);
 

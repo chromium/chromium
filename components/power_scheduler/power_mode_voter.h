@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "components/power_scheduler/power_mode.h"
 
@@ -68,7 +67,7 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) PowerModeVoter {
   friend class PowerModeArbiter;
   explicit PowerModeVoter(Delegate* delegate);
 
-  CheckedPtr<Delegate> delegate_;
+  Delegate* delegate_;
 };
 
 // Tracks the BeginFrame signal as well as produced and skipped frames to vote

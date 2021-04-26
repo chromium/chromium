@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -169,7 +168,7 @@ class RetryURLLoaderInterceptor {
   }
 
  private:
-  CheckedPtr<network::TestURLLoaderFactory> test_url_loader_factory_;
+  network::TestURLLoaderFactory* test_url_loader_factory_;
   int counter_ = 0;
   GURL url_;
 };

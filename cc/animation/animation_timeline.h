@@ -8,7 +8,6 @@
 #include <memory>
 #include <unordered_map>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "cc/animation/animation_export.h"
 
@@ -83,7 +82,7 @@ class CC_ANIMATION_EXPORT AnimationTimeline
   void EraseAnimation(scoped_refptr<Animation> animation);
 
   int id_;
-  CheckedPtr<AnimationHost> animation_host_;
+  AnimationHost* animation_host_;
   bool needs_push_properties_;
 
   // Impl-only AnimationTimeline has no main thread instance and lives on

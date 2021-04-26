@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/policy/core/common/cloud/resource_cache.h"
@@ -148,8 +147,8 @@ class POLICY_EXPORT ComponentCloudPolicyStore {
   // parse was successful.
   bool ParsePolicy(const std::string& data, PolicyMap* policy);
 
-  const CheckedPtr<Delegate> delegate_;
-  const CheckedPtr<ResourceCache> cache_;
+  Delegate* const delegate_;
+  ResourceCache* const cache_;
 
   // The following fields contain credentials used for validating the policy.
   std::string username_;
@@ -168,7 +167,7 @@ class POLICY_EXPORT ComponentCloudPolicyStore {
   // exposed component.
   std::map<PolicyNamespace, base::Time> stored_policy_times_;
 
-  CheckedPtr<const DomainConstants> domain_constants_;
+  const DomainConstants* domain_constants_;
 
   const PolicySource policy_source_;
 

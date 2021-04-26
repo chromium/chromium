@@ -15,7 +15,6 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/single_thread_task_runner.h"
@@ -195,7 +194,7 @@ class RemoveCookieTester {
 
   bool get_cookie_success_;
   AwaitCompletionHelper await_completion_;
-  CheckedPtr<StoragePartition> storage_partition_;
+  StoragePartition* storage_partition_;
 
   DISALLOW_COPY_AND_ASSIGN(RemoveCookieTester);
 };
@@ -237,7 +236,7 @@ class RemoveInterestGroupTester {
 
   bool get_interest_group_success_ = false;
   AwaitCompletionHelper await_completion_;
-  CheckedPtr<StoragePartitionImpl> storage_partition_;
+  StoragePartitionImpl* storage_partition_;
 
   DISALLOW_COPY_AND_ASSIGN(RemoveInterestGroupTester);
 };
@@ -379,9 +378,9 @@ class RemoveLocalStorageTester {
   }
 
   // We don't own these pointers.
-  const CheckedPtr<BrowserTaskEnvironment> task_environment_;
-  const CheckedPtr<StoragePartition> storage_partition_;
-  CheckedPtr<DOMStorageContext> dom_storage_context_;
+  BrowserTaskEnvironment* const task_environment_;
+  StoragePartition* const storage_partition_;
+  DOMStorageContext* dom_storage_context_;
 
   std::vector<content::StorageUsageInfo> infos_;
 
@@ -452,7 +451,7 @@ class RemoveCodeCacheTester {
 
   bool entry_exists_;
   AwaitCompletionHelper await_completion_;
-  CheckedPtr<GeneratedCodeCacheContext> code_cache_context_;
+  GeneratedCodeCacheContext* code_cache_context_;
   std::string received_data_;
   DISALLOW_COPY_AND_ASSIGN(RemoveCodeCacheTester);
 };
@@ -634,7 +633,7 @@ class RemovePluginPrivateDataTester {
   }
 
   // We don't own this pointer.
-  CheckedPtr<storage::FileSystemContext> filesystem_context_;
+  storage::FileSystemContext* filesystem_context_;
 
   // Keep track of the URL for the ClearKey file so that it can be written to
   // or deleted.

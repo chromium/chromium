@@ -373,7 +373,7 @@ void RemoteSuggestionsProviderImpl::ReloadSuggestions() {
       [](RemoteSuggestionsScheduler* scheduler, Status status_code) {
         scheduler->OnInteractiveFetchFinished(status_code);
       },
-      base::Unretained(remote_suggestions_scheduler_.get()));
+      base::Unretained(remote_suggestions_scheduler_));
 
   if (AreArticlesEmpty()) {
     // No reason to use a timeout to hide the loading indicator before the fetch
@@ -539,8 +539,7 @@ void RemoteSuggestionsProviderImpl::Fetch(
         scheduler->OnInteractiveFetchFinished(status_code);
         std::move(callback).Run(status_code, std::move(suggestions));
       },
-      base::Unretained(remote_suggestions_scheduler_.get()),
-      std::move(callback));
+      base::Unretained(remote_suggestions_scheduler_), std::move(callback));
 
   RequestParams params = BuildFetchParams(
       category, /*count_to_fetch=*/GetFetchMoreSuggestionsCount());

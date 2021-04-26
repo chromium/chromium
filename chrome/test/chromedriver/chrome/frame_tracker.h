@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 #include "chrome/test/chromedriver/chrome/web_view.h"
 
@@ -46,7 +45,7 @@ class FrameTracker : public DevToolsEventListener {
   std::map<std::string, int> frame_to_context_map_;
   std::map<std::string, std::unique_ptr<WebView>> frame_to_target_map_;
   std::unordered_set<std::string> attached_frames_;
-  CheckedPtr<WebView> web_view_;
+  WebView* web_view_;
 
   DISALLOW_COPY_AND_ASSIGN(FrameTracker);
 };

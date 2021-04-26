@@ -14,7 +14,6 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "storage/browser/blob/shareable_file_reference.h"
@@ -83,7 +82,7 @@ class CopyOrMoveOnSameFileSystemImpl
   }
 
  private:
-  CheckedPtr<FileSystemOperationRunner> operation_runner_;
+  FileSystemOperationRunner* operation_runner_;
   CopyOrMoveOperationDelegate::OperationType operation_type_;
   FileSystemURL src_url_;
   FileSystemURL dest_url_;

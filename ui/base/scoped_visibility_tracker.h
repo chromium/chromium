@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 
 namespace base {
@@ -35,7 +34,7 @@ class COMPONENT_EXPORT(UI_BASE) ScopedVisibilityTracker {
  private:
   void Update(bool in_foreground);
 
-  CheckedPtr<const base::TickClock> tick_clock_;
+  const base::TickClock* tick_clock_;
 
   base::TimeTicks last_time_shown_;
   base::TimeDelta foreground_duration_;

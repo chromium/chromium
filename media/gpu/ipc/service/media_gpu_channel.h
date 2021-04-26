@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/unguessable_token.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
@@ -52,7 +51,7 @@ class MediaGpuChannel : public IPC::Listener, public IPC::Sender {
                             const CreateVideoEncoderParams& params,
                             IPC::Message* reply_message);
 
-  const CheckedPtr<gpu::GpuChannel> channel_;
+  gpu::GpuChannel* const channel_;
   scoped_refptr<MediaGpuChannelFilter> filter_;
   AndroidOverlayMojoFactoryCB overlay_factory_cb_;
 

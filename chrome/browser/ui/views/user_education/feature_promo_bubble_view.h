@@ -8,7 +8,6 @@
 #include <cstddef>
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_params.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_timeout.h"
@@ -56,7 +55,7 @@ class FeaturePromoBubbleView : public views::BubbleDialogDelegateView {
 
     CreateParams& operator=(CreateParams&&);
 
-    CheckedPtr<views::View> anchor_view = nullptr;
+    views::View* anchor_view = nullptr;
     views::BubbleBorder::Arrow arrow = views::BubbleBorder::TOP_LEFT;
 
     std::u16string body_text;

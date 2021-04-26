@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 
 namespace mojo {
 
@@ -27,7 +26,7 @@ class CopyableType {
  private:
   bool copied_;
   static size_t num_instances_;
-  CheckedPtr<CopyableType> ptr_;
+  CopyableType* ptr_;
 };
 
 class MoveOnlyType {
@@ -46,7 +45,7 @@ class MoveOnlyType {
  private:
   bool moved_;
   static size_t num_instances_;
-  CheckedPtr<MoveOnlyType> ptr_;
+  MoveOnlyType* ptr_;
 
   DISALLOW_COPY_AND_ASSIGN(MoveOnlyType);
 };

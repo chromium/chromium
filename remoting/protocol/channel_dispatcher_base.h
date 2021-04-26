@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "remoting/protocol/errors.h"
 #include "remoting/protocol/message_pipe.h"
 
@@ -73,8 +72,8 @@ class ChannelDispatcherBase : public MessagePipe::EventHandler {
   void OnMessagePipeClosed() override;
 
   std::string channel_name_;
-  CheckedPtr<MessageChannelFactory> channel_factory_ = nullptr;
-  CheckedPtr<EventHandler> event_handler_ = nullptr;
+  MessageChannelFactory* channel_factory_ = nullptr;
+  EventHandler* event_handler_ = nullptr;
   bool is_connected_ = false;
 
   std::unique_ptr<MessagePipe> message_pipe_;

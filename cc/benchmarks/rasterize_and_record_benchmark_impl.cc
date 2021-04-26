@@ -10,7 +10,6 @@
 #include <limits>
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/timer/lap_timer.h"
 #include "base/values.h"
 #include "cc/layers/layer_impl.h"
@@ -136,7 +135,7 @@ class FixedInvalidationPictureLayerTilingClient
   }
 
  private:
-  CheckedPtr<PictureLayerTilingClient> base_client_;
+  PictureLayerTilingClient* base_client_;
   Region invalidation_;
 };
 

@@ -15,7 +15,6 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
@@ -104,7 +103,7 @@ class AutoDidCommitTransaction {
   ~AutoDidCommitTransaction() { backing_store_->DidCommitTransaction(); }
 
  private:
-  const CheckedPtr<IndexedDBBackingStore> backing_store_;
+  IndexedDBBackingStore* const backing_store_;
 };
 
 namespace {

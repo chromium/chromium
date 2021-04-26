@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/cookie_controls/cookie_controls_service.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/cookie_controls/cookie_controls_service_factory.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 
@@ -39,7 +38,7 @@ class CookieControlsServiceObserver : public CookieControlsService::Observer {
   }
 
  private:
-  CheckedPtr<CookieControlsService> service_;
+  CookieControlsService* service_;
   bool checked_;
 
   DISALLOW_COPY_AND_ASSIGN(CookieControlsServiceObserver);

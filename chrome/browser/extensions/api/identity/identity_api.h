@@ -11,7 +11,6 @@
 #include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -119,10 +118,10 @@ class IdentityAPI : public BrowserContextKeyedAPI,
   void FireOnAccountSignInChanged(const std::string& gaia_id,
                                   bool is_signed_in);
 
-  const CheckedPtr<Profile> profile_;
-  const CheckedPtr<signin::IdentityManager> identity_manager_;
-  const CheckedPtr<ExtensionPrefs> extension_prefs_;
-  const CheckedPtr<EventRouter> event_router_;
+  Profile* const profile_;
+  signin::IdentityManager* const identity_manager_;
+  ExtensionPrefs* const extension_prefs_;
+  EventRouter* const event_router_;
 
   IdentityMintRequestQueue mint_queue_;
   IdentityTokenCache token_cache_;

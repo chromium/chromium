@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/reading_list/core/reading_list_model_storage.h"
@@ -138,7 +137,7 @@ class ReadingListStore : public ReadingListModelStorage {
     ~ScopedBatchUpdate() override;
 
    private:
-    CheckedPtr<ReadingListStore> store_;
+    ReadingListStore* store_;
 
     DISALLOW_COPY_AND_ASSIGN(ScopedBatchUpdate);
   };

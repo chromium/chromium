@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -81,7 +80,7 @@ class DataUseTracker {
   // Returns the current date as a string with a proper formatting.
   virtual std::string GetCurrentMeasurementDateAsString() const;
 
-  CheckedPtr<PrefService> local_state_;
+  PrefService* local_state_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

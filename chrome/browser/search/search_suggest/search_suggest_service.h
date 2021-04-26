@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "chrome/browser/search/search_suggest/search_suggest_data.h"
@@ -144,7 +143,7 @@ class SearchSuggestService : public KeyedService {
 
   std::unique_ptr<SigninObserver> signin_observer_;
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   base::ObserverList<SearchSuggestServiceObserver, true>::Unchecked observers_;
 

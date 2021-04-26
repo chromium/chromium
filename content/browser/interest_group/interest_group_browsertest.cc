@@ -9,7 +9,6 @@
 #include "base/callback.h"
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -301,8 +300,8 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   base::test::ScopedFeatureList feature_list_;
   AllowlistedOriginContentBrowserClient content_browser_client_;
-  CheckedPtr<ContentBrowserClient> old_content_browser_client_;
-  CheckedPtr<InterestGroupManager> storage_;
+  ContentBrowserClient* old_content_browser_client_;
+  InterestGroupManager* storage_;
   base::Lock requests_lock_;
   std::set<GURL> received_https_test_server_requests_
       GUARDED_BY(requests_lock_);

@@ -179,7 +179,7 @@ void DeclarativeContentPageUrlConditionTracker::TrackForWebContents(
   per_web_contents_tracker_[contents] = std::make_unique<PerWebContentsTracker>(
       contents, &url_matcher_,
       base::BindRepeating(&Delegate::RequestEvaluation,
-                          base::Unretained(delegate_.get())),
+                          base::Unretained(delegate_)),
       base::BindOnce(&DeclarativeContentPageUrlConditionTracker::
                          DeletePerWebContentsTracker,
                      base::Unretained(this)));

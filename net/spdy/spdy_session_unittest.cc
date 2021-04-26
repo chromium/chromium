@@ -11,7 +11,6 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -391,8 +390,8 @@ class SpdySessionTest : public PlatformTest, public WithTaskEnvironment {
   SpdySessionDependencies session_deps_;
   std::unique_ptr<HttpNetworkSession> http_session_;
   base::WeakPtr<SpdySession> session_;
-  CheckedPtr<TestServerPushDelegate> test_push_delegate_;
-  CheckedPtr<SpdySessionPool> spdy_session_pool_;
+  TestServerPushDelegate* test_push_delegate_;
+  SpdySessionPool* spdy_session_pool_;
   const GURL test_url_;
   const url::SchemeHostPort test_server_;
   SpdySessionKey key_;

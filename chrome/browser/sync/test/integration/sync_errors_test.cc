@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -106,7 +105,7 @@ class UserEventCommitChecker : public SingleClientStatusChangeChecker {
   }
 
  private:
-  const CheckedPtr<fake_server::FakeServer> fake_server_ = nullptr;
+  fake_server::FakeServer* const fake_server_ = nullptr;
   const int64_t expected_event_time_usec_;
 };
 

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SUBRESOURCE_REDIRECT_HTTPS_IMAGE_COMPRESSION_INFOBAR_DECIDER_H_
 #define CHROME_BROWSER_SUBRESOURCE_REDIRECT_HTTPS_IMAGE_COMPRESSION_INFOBAR_DECIDER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 
 class PrefService;
@@ -51,7 +50,7 @@ class HttpsImageCompressionInfoBarDecider {
 
  private:
   // A reference to the profile's |PrefService|.
-  CheckedPtr<PrefService> pref_service_ = nullptr;
+  PrefService* pref_service_ = nullptr;
 
   // Whether the infobar infobar needs to be shown to the user.
   bool need_to_show_infobar_ = false;

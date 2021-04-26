@@ -10,7 +10,7 @@ namespace offline_items_collection {
 FilteredOfflineItemObserver::FilteredOfflineItemObserver(
     OfflineContentProvider* provider)
     : provider_(provider) {
-  observation_.Observe(provider_.get());
+  observation_.Observe(provider_);
 }
 
 FilteredOfflineItemObserver::~FilteredOfflineItemObserver() = default;

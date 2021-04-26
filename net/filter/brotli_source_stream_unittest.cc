@@ -9,7 +9,6 @@
 #include "base/bit_cast.h"
 #include "base/callback.h"
 #include "base/files/file_util.h"
-#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "net/base/io_buffer.h"
@@ -79,7 +78,7 @@ class BrotliSourceStreamTest : public PlatformTest {
   scoped_refptr<IOBufferWithSize> out_buffer_;
 
  private:
-  CheckedPtr<MockSourceStream> source_;
+  MockSourceStream* source_;
   std::unique_ptr<SourceStream> brotli_stream_;
   std::unique_ptr<base::RunLoop> loop_;
 

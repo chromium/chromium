@@ -5,7 +5,6 @@
 #include "base/barrier_closure.h"
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -48,7 +47,7 @@ class DestructionIndicator {
   void DoNothing() {}
 
  private:
-  CheckedPtr<bool> destructed_;
+  bool* destructed_;
 };
 
 TEST(BarrierClosureTest, ReleasesDoneClosureWhenDone) {

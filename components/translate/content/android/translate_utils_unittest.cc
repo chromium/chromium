@@ -6,7 +6,6 @@
 
 #include "base/android/jni_array.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/metrics/metrics_log.h"
 #include "components/translate/core/browser/mock_translate_infobar_delegate.h"
@@ -34,9 +33,9 @@ class TranslateUtilsTest : public ::testing::Test {
     env_ = base::android::AttachCurrentThread();
   }
 
-  CheckedPtr<MockTranslateInfoBarDelegateFactory> delegate_factory_;
-  CheckedPtr<MockTranslateInfoBarDelegate> delegate_;
-  CheckedPtr<JNIEnv> env_;
+  MockTranslateInfoBarDelegateFactory* delegate_factory_;
+  MockTranslateInfoBarDelegate* delegate_;
+  JNIEnv* env_;
 };
 // Tests that content languages information in the java format is correct for
 // content languages (names, native names, codes are as expected, hashcodes are

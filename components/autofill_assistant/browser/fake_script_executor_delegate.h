@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "components/autofill_assistant/browser/client_settings.h"
 #include "components/autofill_assistant/browser/script_executor_delegate.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
@@ -159,9 +158,9 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
  private:
   ClientSettings client_settings_;
   GURL current_url_;
-  CheckedPtr<Service> service_ = nullptr;
-  CheckedPtr<WebController> web_controller_ = nullptr;
-  CheckedPtr<ElementStore> element_store_ = nullptr;
+  Service* service_ = nullptr;
+  WebController* web_controller_ = nullptr;
+  ElementStore* element_store_ = nullptr;
   std::unique_ptr<TriggerContext> trigger_context_;
   std::vector<AutofillAssistantState> state_history_;
   std::string status_message_;
@@ -170,7 +169,7 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   std::unique_ptr<InfoBox> info_box_;
   std::unique_ptr<std::vector<UserAction>> user_actions_;
   std::unique_ptr<CollectUserDataOptions> last_payment_request_options_;
-  CheckedPtr<CollectUserDataOptions> payment_request_options_;
+  CollectUserDataOptions* payment_request_options_;
   std::unique_ptr<UserData> payment_request_info_;
   bool navigating_to_new_document_ = false;
   bool navigation_error_ = false;
@@ -183,7 +182,7 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   bool expand_or_collapse_value_ = false;
   bool expand_sheet_for_prompt_ = true;
   std::vector<std::string> browse_domains_;
-  CheckedPtr<UserModel> user_model_ = nullptr;
+  UserModel* user_model_ = nullptr;
 
   bool require_ui_ = false;
 

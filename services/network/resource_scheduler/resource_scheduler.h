@@ -19,7 +19,6 @@
 #include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -182,7 +181,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler {
   RequestSet unowned_requests_;
 
   // Guaranteed to be non-null.
-  CheckedPtr<const base::TickClock> tick_clock_;
+  const base::TickClock* tick_clock_;
 
   // Timer to dispatch requests that may have been queued for too long.
   base::OneShotTimer long_queued_requests_dispatch_timer_;

@@ -4,7 +4,6 @@
 
 #include "base/callback.h"
 #include "base/json/json_string_value_serializer.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
@@ -326,7 +325,7 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
  private:
   std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
-  CheckedPtr<content::BrowsingDataRemover> remover_;
+  content::BrowsingDataRemover* remover_;
   content::MockBrowsingDataRemoverDelegate delegate_;
 };
 

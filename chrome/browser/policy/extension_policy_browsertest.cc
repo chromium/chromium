@@ -7,7 +7,6 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -954,7 +953,7 @@ class MockedInstallationCollectorObserver
  private:
   extensions::InstallStageTracker::Stage stage_ =
       extensions::InstallStageTracker::Stage::CREATED;
-  CheckedPtr<const content::BrowserContext> context_;
+  const content::BrowserContext* context_;
 };
 
 }  // namespace
@@ -2822,14 +2821,14 @@ class ExtensionPolicyTest2Contexts : public PolicyTest {
   std::unique_ptr<extensions::ExtensionCacheFake> test_extension_cache1_;
   std::unique_ptr<extensions::ExtensionCacheFake> test_extension_cache2_;
   extensions::ScopedIgnoreContentVerifierForTest ignore_content_verifier_;
-  CheckedPtr<Profile> profile1_;
-  CheckedPtr<Profile> profile2_;
+  Profile* profile1_;
+  Profile* profile2_;
   MockConfigurationPolicyProvider profile1_policy_;
   MockConfigurationPolicyProvider profile2_policy_;
-  CheckedPtr<extensions::ExtensionRegistry> registry1_;
-  CheckedPtr<extensions::ExtensionRegistry> registry2_;
-  CheckedPtr<extensions::ExtensionService> service1_;
-  CheckedPtr<extensions::ExtensionService> service2_;
+  extensions::ExtensionRegistry* registry1_;
+  extensions::ExtensionRegistry* registry2_;
+  extensions::ExtensionService* service1_;
+  extensions::ExtensionService* service2_;
 };
 
 // Verifies that default policy host block/allow settings are applied as

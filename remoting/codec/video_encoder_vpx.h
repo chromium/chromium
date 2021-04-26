@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "remoting/codec/scoped_vpx_codec.h"
@@ -89,7 +88,7 @@ class VideoEncoderVpx : public VideoEncoder {
   // Used to help initialize VideoPackets from DesktopFrames.
   VideoEncoderHelper helper_;
 
-  CheckedPtr<const base::TickClock> clock_;
+  const base::TickClock* clock_;
 
   DISALLOW_COPY_AND_ASSIGN(VideoEncoderVpx);
 };

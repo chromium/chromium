@@ -19,7 +19,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
@@ -151,7 +150,7 @@ class HistoryBackendTestDelegate : public HistoryBackend::Delegate {
 
  private:
   // Not owned by us.
-  CheckedPtr<HistoryBackendTestBase> test_;
+  HistoryBackendTestBase* test_;
 };
 
 class HistoryBackendTestBase : public testing::Test {

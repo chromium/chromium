@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/base_export.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_base.h"
 
 namespace base {
@@ -92,7 +91,7 @@ class BASE_EXPORT DefaultSingleSampleMetric : public SingleSampleMetric {
   void SetSample(HistogramBase::Sample sample) override;
 
  private:
-  const CheckedPtr<HistogramBase> histogram_;
+  HistogramBase* const histogram_;
 
   // The last sample provided to SetSample(). We use -1 as a sentinel value to
   // indicate no sample has been set.

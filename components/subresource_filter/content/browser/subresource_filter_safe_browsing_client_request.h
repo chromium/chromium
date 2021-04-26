@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -79,7 +78,7 @@ class SubresourceFilterSafeBrowsingClientRequest
   const base::TimeTicks start_time_;
 
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
-  CheckedPtr<SubresourceFilterSafeBrowsingClient> client_ = nullptr;
+  SubresourceFilterSafeBrowsingClient* client_ = nullptr;
 
   // Timer to abort the safe browsing check if it takes too long.
   base::OneShotTimer timer_;

@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "device/gamepad/gamepad_export.h"
 #include "device/gamepad/gamepad_provider.h"
 
@@ -40,7 +39,7 @@ class DEVICE_GAMEPAD_EXPORT GamepadDataFetcherManager {
   typedef std::vector<GamepadDataFetcherFactory*> FactoryVector;
   FactoryVector factories_;
 
-  CheckedPtr<GamepadProvider> provider_;
+  GamepadProvider* provider_;
 };
 
 }  // namespace device

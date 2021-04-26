@@ -7,7 +7,6 @@
 
 #include <cstdint>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 
 namespace reporting {
@@ -67,7 +66,7 @@ class ScopedReservation {
   bool reserved() const;
 
  private:
-  const CheckedPtr<ResourceInterface> resource_interface_;
+  ResourceInterface* const resource_interface_;
   base::Optional<uint64_t> size_;
 };
 

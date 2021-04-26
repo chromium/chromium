@@ -8,7 +8,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 
 namespace gfx {
@@ -64,8 +63,8 @@ class DelegatedInkPointPixelTestHelper {
  private:
   void CreateInkRenderer();
 
-  CheckedPtr<DirectRenderer> renderer_ = nullptr;
-  CheckedPtr<DelegatedInkPointRendererBase> ink_renderer_ = nullptr;
+  DirectRenderer* renderer_ = nullptr;
+  DelegatedInkPointRendererBase* ink_renderer_ = nullptr;
   std::unordered_map<int32_t, std::vector<gfx::DelegatedInkPoint>> ink_points_;
   gfx::DelegatedInkMetadata metadata_;
 };

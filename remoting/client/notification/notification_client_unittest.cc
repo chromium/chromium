@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/optional.h"
 #include "base/test/mock_callback.h"
@@ -104,7 +103,7 @@ class NotificationClientTest : public ::testing::Test {
                                kTestLocale, should_ignore_dev_messages));
   }
 
-  CheckedPtr<MockJsonFetcher> fetcher_;
+  MockJsonFetcher* fetcher_;
   std::unique_ptr<NotificationClient> client_;
 };
 

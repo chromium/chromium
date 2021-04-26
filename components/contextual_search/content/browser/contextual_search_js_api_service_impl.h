@@ -6,7 +6,6 @@
 #define COMPONENTS_CONTEXTUAL_SEARCH_CONTENT_BROWSER_CONTEXTUAL_SEARCH_JS_API_SERVICE_IMPL_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/contextual_search/content/browser/contextual_search_js_api_handler.h"
 #include "components/contextual_search/content/common/mojom/contextual_search_js_api_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -42,7 +41,7 @@ class ContextualSearchJsApiServiceImpl
 
  private:
   // The UI handler for calls through the JavaScript API.
-  CheckedPtr<ContextualSearchJsApiHandler> contextual_search_js_api_handler_;
+  ContextualSearchJsApiHandler* contextual_search_js_api_handler_;
 
   DISALLOW_COPY_AND_ASSIGN(ContextualSearchJsApiServiceImpl);
 };

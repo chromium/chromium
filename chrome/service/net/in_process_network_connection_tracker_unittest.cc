@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "net/base/mock_network_change_notifier.h"
@@ -36,7 +35,7 @@ class TestNetworkConnectionObserver
       network::mojom::ConnectionType::CONNECTION_UNKNOWN;
 
  private:
-  CheckedPtr<network::NetworkConnectionTracker> tracker_;
+  network::NetworkConnectionTracker* tracker_;
 };
 
 class InProcessNetworkConnectionTrackerTest : public ::testing::Test {

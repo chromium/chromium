@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -65,7 +64,7 @@ class MinimalBrowserPersisterTest : public WebLayerBrowserTest {
   }
 
   std::unique_ptr<Browser> browser_;
-  CheckedPtr<TabImpl> tab_ = nullptr;
+  TabImpl* tab_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(MinimalBrowserPersisterTest, SingleTab) {

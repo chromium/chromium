@@ -17,7 +17,6 @@
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/optional.h"
@@ -164,7 +163,7 @@ class ForceInstallWaiter final {
 
   const ExtensionForceInstallMixin::WaitMode wait_mode_;
   const extensions::ExtensionId extension_id_;
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
   std::unique_ptr<ForceInstallPrefObserver> force_install_pref_observer_;
   std::unique_ptr<extensions::TestExtensionRegistryObserver> registry_observer_;
   std::unique_ptr<extensions::ExtensionBackgroundPageReadyObserver>

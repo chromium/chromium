@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -363,10 +362,10 @@ class PaymentsClient {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // Provided in constructor; not owned by PaymentsClient.
-  const CheckedPtr<signin::IdentityManager> identity_manager_;
+  signin::IdentityManager* const identity_manager_;
 
   // Provided in constructor; not owned by PaymentsClient.
-  const CheckedPtr<AccountInfoGetter> account_info_getter_;
+  AccountInfoGetter* const account_info_getter_;
 
   // The current request.
   std::unique_ptr<PaymentsRequest> request_;

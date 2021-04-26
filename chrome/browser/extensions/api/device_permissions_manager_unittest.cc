@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/values_test_util.h"
@@ -88,7 +87,7 @@ class DevicePermissionsManagerTest : public testing::Test {
   void TearDown() override { env_.reset(nullptr); }
 
   std::unique_ptr<extensions::TestExtensionEnvironment> env_;
-  CheckedPtr<const extensions::Extension> extension_;
+  const extensions::Extension* extension_;
   device::FakeUsbDeviceManager fake_usb_manager_;
   device::mojom::UsbDeviceInfoPtr device0_;
   device::mojom::UsbDeviceInfoPtr device1_;

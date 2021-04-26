@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_VR_ELEMENTS_TEXTURED_ELEMENT_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/vr_ui_export.h"
 #include "device/vr/gl_bindings.h"
@@ -60,7 +59,7 @@ class VR_UI_EXPORT TexturedElement : public UiElement {
   bool initialized_ = false;
 
   sk_sp<SkSurface> surface_;
-  CheckedPtr<SkiaSurfaceProvider> provider_ = nullptr;
+  SkiaSurfaceProvider* provider_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(TexturedElement);
 };

@@ -6,7 +6,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -79,7 +78,7 @@ class ScopedGeolocationOverrider::FakeGeolocation : public mojom::Geolocation {
  private:
   void RunPositionCallbackIfNeeded();
 
-  CheckedPtr<FakeGeolocationContext> context_;
+  FakeGeolocationContext* context_;
   bool needs_update_ = true;
   QueryNextPositionCallback position_callback_;
   mojo::Receiver<mojom::Geolocation> receiver_{this};

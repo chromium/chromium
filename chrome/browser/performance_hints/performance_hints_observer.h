@@ -11,7 +11,6 @@
 
 #include "base/feature_list.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
@@ -171,8 +170,8 @@ class PerformanceHintsObserver
   RewriteHandler rewrite_handler_;
 
   // Initialized in constructor. It may be null if !IsOptimizationHintsEnabled.
-  CheckedPtr<optimization_guide::OptimizationGuideDecider>
-      optimization_guide_decider_ = nullptr;
+  optimization_guide::OptimizationGuideDecider* optimization_guide_decider_ =
+      nullptr;
 
   // The URL of the main frame of the associated WebContents. This is not set if
   // the current page is an error page.

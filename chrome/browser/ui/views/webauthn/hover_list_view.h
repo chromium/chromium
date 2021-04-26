@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/ui/webauthn/hover_list_model.h"
 #include "ui/views/controls/scroll_view.h"
@@ -79,8 +78,8 @@ class HoverListView : public views::View,
   std::map<int, ListItemViews> tags_to_list_item_views_;
   std::vector<WebAuthnHoverButton*> throbber_views_;
   base::Optional<ListItemViews> placeholder_list_item_view_;
-  CheckedPtr<views::ScrollView> scroll_view_;
-  CheckedPtr<views::View> item_container_;
+  views::ScrollView* scroll_view_;
+  views::View* item_container_;
   // is_two_line_list_, if true, indicates that list items should be sized so
   // that entries with only a single line of text are as tall as entries with
   // two lines.

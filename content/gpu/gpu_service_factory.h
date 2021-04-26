@@ -6,7 +6,6 @@
 #define CONTENT_GPU_GPU_SERVICE_FACTORY_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
@@ -53,7 +52,7 @@ class GpuServiceFactory {
   base::WeakPtr<media::MediaGpuChannelManager> media_gpu_channel_manager_;
   media::AndroidOverlayMojoFactoryCB android_overlay_factory_cb_;
   // Indirectly owned by GpuChildThread.
-  CheckedPtr<gpu::GpuMemoryBufferFactory> gpu_memory_buffer_factory_;
+  gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory_;
   gpu::GpuPreferences gpu_preferences_;
   gpu::GpuDriverBugWorkarounds gpu_workarounds_;
   gpu::GpuFeatureInfo gpu_feature_info_;

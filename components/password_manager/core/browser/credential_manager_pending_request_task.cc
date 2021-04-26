@@ -333,7 +333,7 @@ void CredentialManagerPendingRequestTask::ProcessForms(
           std::move(local_results), origin_,
           base::BindOnce(
               &CredentialManagerPendingRequestTaskDelegate::SendPasswordForm,
-              base::Unretained(delegate_.get()), repeating_send_callback,
+              base::Unretained(delegate_), repeating_send_callback,
               mediation_))) {
     // Since PromptUserToChooseCredentials() does not invoke the callback when
     // returning false, `repeating_send_callback` has not been run in this

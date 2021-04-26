@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "net/base/io_buffer.h"
 #include "services/device/public/mojom/serial.mojom.h"
 
@@ -79,7 +78,7 @@ class ReceiveBuffer : public device::WritableBuffer {
   void DoneWithError(uint32_t bytes_written, int32_t error) override;
 
  private:
-  CheckedPtr<char> buffer_;
+  char* buffer_;
   const uint32_t size_;
   ReceiveCompleteCallback callback_;
 };

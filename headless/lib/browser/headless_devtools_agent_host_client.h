@@ -6,7 +6,6 @@
 #define HEADLESS_LIB_BROWSER_HEADLESS_DEVTOOLS_AGENT_HOST_CLIENT_H_
 
 #include "base/containers/span.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "content/public/browser/devtools_agent_host_client.h"
 #include "headless/public/headless_devtools_channel.h"
@@ -33,7 +32,7 @@ class HEADLESS_EXPORT HeadlessDevToolsAgentHostClient
 
  private:
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
-  CheckedPtr<HeadlessDevToolsChannel::Client> client_ = nullptr;
+  HeadlessDevToolsChannel::Client* client_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(HeadlessDevToolsAgentHostClient);
 };

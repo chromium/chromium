@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/test/gtest_util.h"
@@ -65,8 +64,7 @@ class V8ContextTrackerTest : public GraphTestHarness {
 
   ~V8ContextTrackerTest() override = default;
 
-  const CheckedPtr<execution_context::ExecutionContextRegistry> registry =
-      nullptr;
+  execution_context::ExecutionContextRegistry* const registry = nullptr;
   V8ContextTracker* const tracker = nullptr;
   MockSinglePageWithMultipleProcessesGraph mock_graph;
 };

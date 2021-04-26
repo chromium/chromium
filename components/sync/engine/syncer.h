@@ -11,7 +11,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/syncer_error.h"
 #include "components/sync/protocol/sync.pb.h"
@@ -88,7 +87,7 @@ class Syncer {
   bool HandleCycleEnd(SyncCycle* cycle,
                       sync_pb::SyncEnums::GetUpdatesOrigin origin);
 
-  const CheckedPtr<CancelationSignal> cancelation_signal_;
+  CancelationSignal* const cancelation_signal_;
 
   // Whether the syncer is in the middle of a sync attempt.
   bool is_syncing_;

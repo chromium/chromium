@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "jingle/glue/network_service_config.h"
 #include "jingle/notifier/base/notification_method.h"
@@ -51,7 +50,7 @@ struct NotifierOptions {
   jingle_glue::NetworkServiceConfig network_config;
 
   // Used to listen for network connection changes.
-  CheckedPtr<network::NetworkConnectionTracker> network_connection_tracker;
+  network::NetworkConnectionTracker* network_connection_tracker;
 };
 
 }  // namespace notifier

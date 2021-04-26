@@ -10,7 +10,6 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
@@ -363,7 +362,7 @@ class DeviceManagementService::JobImpl : public Job, public JobControl {
                           bool was_fetched_via_proxy);
   int GetRetryDelay(RetryMethod method);
 
-  CheckedPtr<DeviceManagementService> service_;
+  DeviceManagementService* service_;
   std::unique_ptr<JobConfiguration> config_;
   bool bypass_proxy_ = false;
 

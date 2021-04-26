@@ -12,7 +12,6 @@
 
 #include "base/containers/id_map.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "components/media_router/browser/android/media_router_android_bridge.h"
 #include "components/media_router/browser/media_router_base.h"
@@ -129,7 +128,7 @@ class MediaRouterAndroid : public MediaRouterBase {
     mojo::Remote<blink::mojom::PresentationConnection> peer_;
     mojo::Receiver<blink::mojom::PresentationConnection> receiver_{this};
     // |media_router_android_| owns |this|, so it will outlive |this|.
-    CheckedPtr<MediaRouterAndroid> media_router_android_;
+    MediaRouterAndroid* media_router_android_;
     MediaRoute::Id route_id_;
 
     DISALLOW_COPY_AND_ASSIGN(PresentationConnectionProxy);

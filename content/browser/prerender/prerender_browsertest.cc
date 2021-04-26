@@ -10,7 +10,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
@@ -1663,7 +1662,7 @@ class ScopedDataSaverTestContentBrowserClient
   }
 
  private:
-  CheckedPtr<ContentBrowserClient> old_client;
+  ContentBrowserClient* old_client;
 };
 
 // Tests that the data saver doesn't prevent image load in a prerendered page.

@@ -9,7 +9,6 @@
 #include <set>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "components/invalidation/public/invalidation_export.h"
@@ -130,7 +129,7 @@ class INVALIDATION_EXPORT InvalidatorRegistrarWithMemory {
 
   // This can be either a regular (Profile-attached) PrefService or the local
   // state PrefService.
-  const CheckedPtr<PrefService> prefs_;
+  PrefService* const prefs_;
 
   // The FCM sender ID.
   const std::string sender_id_;

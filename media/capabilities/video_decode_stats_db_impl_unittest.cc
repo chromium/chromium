@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -192,7 +191,7 @@ class VideoDecodeStatsDBImplTest : public ::testing::Test {
 
   // See documentation in SetUp()
   std::unique_ptr<FakeDB<DecodeStatsProto>::EntryMap> fake_db_map_;
-  CheckedPtr<FakeDB<DecodeStatsProto>> fake_db_;
+  FakeDB<DecodeStatsProto>* fake_db_;
   std::unique_ptr<VideoDecodeStatsDBImpl> stats_db_;
 
  private:

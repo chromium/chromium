@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -80,7 +79,7 @@ class SpdySessionPoolTest : public TestWithTaskEnvironment {
 
   SpdySessionDependencies session_deps_;
   std::unique_ptr<HttpNetworkSession> http_session_;
-  CheckedPtr<SpdySessionPool> spdy_session_pool_;
+  SpdySessionPool* spdy_session_pool_;
   std::vector<std::unique_ptr<SSLSocketDataProvider>> ssl_data_vector_;
 };
 
@@ -198,7 +197,7 @@ class SessionOpeningDelegate : public SpdyStream::Delegate {
   NetLogSource source_dependency() const override { return NetLogSource(); }
 
  private:
-  const CheckedPtr<SpdySessionPool> spdy_session_pool_;
+  SpdySessionPool* const spdy_session_pool_;
   const SpdySessionKey key_;
 };
 

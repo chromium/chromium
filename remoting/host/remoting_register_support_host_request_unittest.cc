@@ -4,7 +4,6 @@
 
 #include "remoting/host/remoting_register_support_host_request.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -104,7 +103,7 @@ class RemotingRegisterSupportHostTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   std::unique_ptr<RemotingRegisterSupportHostRequest> register_host_request_;
-  CheckedPtr<MockRegisterSupportHostClient> register_host_client_ = nullptr;
+  MockRegisterSupportHostClient* register_host_client_ = nullptr;
 
   std::unique_ptr<SignalStrategy> signal_strategy_;
   scoped_refptr<RsaKeyPair> key_pair_;

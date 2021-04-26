@@ -5,7 +5,6 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_REPRESENTATION_D3D_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_REPRESENTATION_D3D_H_
 
-#include "base/memory/checked_ptr.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image_manager.h"
@@ -63,7 +62,7 @@ class SharedImageRepresentationDawnD3D : public SharedImageRepresentationDawn {
  private:
   WGPUDevice device_;
   WGPUTexture texture_ = nullptr;
-  CheckedPtr<dawn_native::d3d12::ExternalImageDXGI> external_image_ = nullptr;
+  dawn_native::d3d12::ExternalImageDXGI* external_image_ = nullptr;
 
   // TODO(cwallez@chromium.org): Load procs only once when the factory is
   // created and pass a pointer to them around?

@@ -12,7 +12,6 @@
 #include "base/atomic_sequence_num.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
@@ -100,7 +99,7 @@ class TabManagerStatsCollector::SwapMetricsDelegate
   }
 
  private:
-  CheckedPtr<TabManagerStatsCollector> tab_manager_stats_collector_;
+  TabManagerStatsCollector* tab_manager_stats_collector_;
   const SessionType session_type_;
 };
 

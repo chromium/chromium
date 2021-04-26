@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "ui/views/controls/image_view.h"
@@ -59,7 +58,7 @@ class AlertIndicator : public views::ImageView {
   // parent tab's button color.  Should be called when either of these changes.
   void ResetImage(TabAlertState state);
 
-  const CheckedPtr<Tab> parent_tab_;
+  Tab* const parent_tab_;
   base::Optional<TabAlertState> alert_state_;
   std::unique_ptr<gfx::AnimationDelegate> fade_animation_delegate_;
   std::unique_ptr<gfx::Animation> fade_animation_;

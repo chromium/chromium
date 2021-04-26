@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -72,7 +71,7 @@ class MockAudioDebugFileWriter : public AudioDebugFileWriter {
   }
 
  private:
-  CheckedPtr<AudioBus> reference_data_;
+  AudioBus* reference_data_;
 
   DISALLOW_COPY_AND_ASSIGN(MockAudioDebugFileWriter);
 };

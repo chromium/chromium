@@ -82,7 +82,7 @@ AutofillProfileSyncBridge::AutofillProfileSyncBridge(
       web_data_backend_(backend) {
   DCHECK(web_data_backend_);
 
-  scoped_observation_.Observe(web_data_backend_.get());
+  scoped_observation_.Observe(web_data_backend_);
 
   LoadMetadata();
 }
@@ -249,7 +249,7 @@ base::Optional<syncer::ModelError> AutofillProfileSyncBridge::FlushSyncTracker(
 
   RETURN_IF_ERROR(tracker->FlushToLocal(
       base::BindOnce(&AutofillWebDataBackend::NotifyOfMultipleAutofillChanges,
-                     base::Unretained(web_data_backend_.get()))));
+                     base::Unretained(web_data_backend_))));
 
   std::vector<std::unique_ptr<AutofillProfile>> profiles_to_upload_to_sync;
   std::vector<std::string> profiles_to_delete_from_sync;

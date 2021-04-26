@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_sizes.h"
@@ -97,7 +96,7 @@ class ScopedPixelStore {
   }
 
  private:
-  const CheckedPtr<gl::GLApi> api_;
+  gl::GLApi* const api_;
   const GLenum name_;
   const GLint value_;
   GLint old_value_;

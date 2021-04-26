@@ -86,13 +86,13 @@ PrivetTrafficDetector::PrivetTrafficDetector(
   content::GetNetworkConnectionTracker()->AddNetworkConnectionObserver(this);
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&PrivetTrafficDetector::Helper::ScheduleRestart,
-                                base::Unretained(helper_.get())));
+                                base::Unretained(helper_)));
 }
 
 PrivetTrafficDetector::~PrivetTrafficDetector() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   content::GetNetworkConnectionTracker()->RemoveNetworkConnectionObserver(this);
-  content::GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE, helper_.get());
+  content::GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE, helper_);
 }
 
 void PrivetTrafficDetector::OnConnectionChanged(
@@ -101,7 +101,7 @@ void PrivetTrafficDetector::OnConnectionChanged(
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&PrivetTrafficDetector::Helper::HandleConnectionChanged,
-                     base::Unretained(helper_.get()), type));
+                     base::Unretained(helper_), type));
 }
 
 PrivetTrafficDetector::Helper::Helper(

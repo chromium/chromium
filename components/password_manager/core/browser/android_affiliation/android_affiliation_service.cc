@@ -26,7 +26,7 @@ AndroidAffiliationService::AndroidAffiliationService(
 AndroidAffiliationService::~AndroidAffiliationService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (backend_) {
-    backend_task_runner_->DeleteSoon(FROM_HERE, backend_.get());
+    backend_task_runner_->DeleteSoon(FROM_HERE, backend_);
     backend_ = nullptr;
   }
 }
@@ -44,8 +44,7 @@ void AndroidAffiliationService::Initialize(
   backend_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&AffiliationBackend::Initialize,
-                     base::Unretained(backend_.get()),
-                     url_loader_factory->Clone(),
+                     base::Unretained(backend_), url_loader_factory->Clone(),
                      base::Unretained(network_connection_tracker), db_path));
 }
 
@@ -57,7 +56,7 @@ void AndroidAffiliationService::GetAffiliationsAndBranding(
   DCHECK(backend_);
   backend_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&AffiliationBackend::GetAffiliationsAndBranding,
-                                base::Unretained(backend_.get()), facet_uri,
+                                base::Unretained(backend_), facet_uri,
                                 cache_miss_strategy, std::move(result_callback),
                                 base::SequencedTaskRunnerHandle::Get()));
 }
@@ -67,9 +66,9 @@ void AndroidAffiliationService::Prefetch(const FacetURI& facet_uri,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backend_);
   backend_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&AffiliationBackend::Prefetch,
-                                base::Unretained(backend_.get()), facet_uri,
-                                keep_fresh_until));
+      FROM_HERE,
+      base::BindOnce(&AffiliationBackend::Prefetch, base::Unretained(backend_),
+                     facet_uri, keep_fresh_until));
 }
 
 void AndroidAffiliationService::CancelPrefetch(
@@ -78,9 +77,9 @@ void AndroidAffiliationService::CancelPrefetch(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backend_);
   backend_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&AffiliationBackend::CancelPrefetch,
-                                base::Unretained(backend_.get()), facet_uri,
-                                keep_fresh_until));
+      FROM_HERE,
+      base::BindOnce(&AffiliationBackend::CancelPrefetch,
+                     base::Unretained(backend_), facet_uri, keep_fresh_until));
 }
 
 void AndroidAffiliationService::TrimCacheForFacetURI(
@@ -89,7 +88,7 @@ void AndroidAffiliationService::TrimCacheForFacetURI(
   DCHECK(backend_);
   backend_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&AffiliationBackend::TrimCacheForFacetURI,
-                                base::Unretained(backend_.get()), facet_uri));
+                                base::Unretained(backend_), facet_uri));
 }
 
 }  // namespace password_manager

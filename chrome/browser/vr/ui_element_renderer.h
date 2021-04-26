@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/vr/elements/controller.h"
 #include "chrome/browser/vr/elements/environment/background.h"
 #include "chrome/browser/vr/elements/environment/grid.h"
@@ -131,7 +130,7 @@ class UiElementRenderer {
   void Init();
   void FlushIfNecessary(BaseRenderer* renderer);
 
-  CheckedPtr<BaseRenderer> last_renderer_ = nullptr;
+  BaseRenderer* last_renderer_ = nullptr;
 
   std::unique_ptr<ExternalTexturedQuadRenderer>
       external_textured_quad_renderer_;

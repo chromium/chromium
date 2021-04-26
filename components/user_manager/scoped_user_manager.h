@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/user_manager/user_manager_export.h"
 
 namespace user_manager {
@@ -26,7 +25,7 @@ class USER_MANAGER_EXPORT ScopedUserManager {
 
  private:
   const std::unique_ptr<UserManager> user_manager_;
-  CheckedPtr<UserManager> previous_user_manager_ = nullptr;
+  UserManager* previous_user_manager_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedUserManager);
 };

@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -115,7 +114,7 @@ class It2MeConfirmationDialogProxyTest : public testing::Test {
   base::Thread dialog_thread_;
 
   // |dialog_| is owned by |dialog_proxy_| but we keep an alias for testing.
-  CheckedPtr<StubIt2MeConfirmationDialog> dialog_ = nullptr;
+  StubIt2MeConfirmationDialog* dialog_ = nullptr;
   std::unique_ptr<It2MeConfirmationDialogProxy> dialog_proxy_;
 };
 

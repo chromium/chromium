@@ -17,7 +17,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/process/process_handle.h"
@@ -75,7 +74,7 @@ class ChannelWinMessageQueue {
 
  private:
   base::circular_deque<Channel::MessagePtr> queue_;
-  CheckedPtr<std::atomic<uint64_t>> queue_size_sum_ = nullptr;
+  std::atomic<uint64_t>* queue_size_sum_ = nullptr;
 };
 
 class ChannelWin : public Channel,

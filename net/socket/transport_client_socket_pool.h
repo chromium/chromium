@@ -17,7 +17,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -136,7 +135,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
     ConnectJob* ReleaseJob();
 
    private:
-    const CheckedPtr<ClientSocketHandle> handle_;
+    ClientSocketHandle* const handle_;
     CompletionOnceCallback callback_;
     const ProxyAuthCallback proxy_auth_callback_;
     RequestPriority priority_;
@@ -146,7 +145,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
     const base::Optional<NetworkTrafficAnnotationTag> proxy_annotation_tag_;
     const NetLogWithSource net_log_;
     const SocketTag socket_tag_;
-    CheckedPtr<ConnectJob> job_;
+    ConnectJob* job_;
 
     DISALLOW_COPY_AND_ASSIGN(Request);
   };
@@ -558,7 +557,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
     void SanityCheck() const;
 
     const GroupId group_id_;
-    const CheckedPtr<TransportClientSocketPool> client_socket_pool_;
+    TransportClientSocketPool* const client_socket_pool_;
 
     // Total number of ConnectJobs that have never been assigned to a Request.
     // Since jobs use late binding to requests, which ConnectJobs have or have

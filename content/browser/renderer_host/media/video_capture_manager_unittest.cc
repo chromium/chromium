@@ -16,7 +16,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -101,7 +100,7 @@ class WrappedDeviceFactory : public media::FakeVideoCaptureDeviceFactory {
 
    private:
     const std::unique_ptr<media::VideoCaptureDevice> device_;
-    const CheckedPtr<WrappedDeviceFactory> factory_;
+    WrappedDeviceFactory* const factory_;
 
     DISALLOW_COPY_AND_ASSIGN(WrappedDevice);
   };
@@ -348,13 +347,13 @@ class VideoCaptureManagerTest : public testing::Test {
 #endif
 
   BrowserTaskEnvironment task_environment_;
-  CheckedPtr<ScreenlockMonitorTestSource> screenlock_monitor_source_;
+  ScreenlockMonitorTestSource* screenlock_monitor_source_;
   std::unique_ptr<ScreenlockMonitor> screenlock_monitor_;
   std::map<VideoCaptureControllerID, VideoCaptureController*> controllers_;
   scoped_refptr<VideoCaptureManager> vcm_;
   std::unique_ptr<MockMediaStreamProviderListener> listener_;
   std::unique_ptr<MockFrameObserver> frame_observer_;
-  CheckedPtr<WrappedDeviceFactory> video_capture_device_factory_;
+  WrappedDeviceFactory* video_capture_device_factory_;
   blink::MediaStreamDevices devices_;
 
  private:

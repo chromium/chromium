@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/settings/settings_manage_profile_handler.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -123,10 +122,10 @@ class ManageProfileHandlerTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
-  CheckedPtr<ProfileAttributesEntry> entry_ = nullptr;
+  ProfileAttributesEntry* entry_ = nullptr;
   content::TestWebUI web_ui_;
 
-  CheckedPtr<Profile> profile_ = nullptr;
+  Profile* profile_ = nullptr;
   std::unique_ptr<TestManageProfileHandler> handler_;
 
   void VerifyGaiaAvatar(const base::ListValue* icons, bool gaia_selected) {

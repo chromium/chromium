@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "components/sync/model/model_type_store.h"
 
 class Profile;
@@ -40,7 +39,7 @@ class WebAppDatabaseFactory : public AbstractWebAppDatabaseFactory {
   // instance.
   std::unique_ptr<syncer::ModelTypeStoreService> model_type_store_service_;
 
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
 };
 
 }  // namespace web_app

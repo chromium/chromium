@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/format_macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -58,7 +57,7 @@ class WaitForURLsDeletedObserver : public history::HistoryServiceObserver {
                      const history::DeletionInfo& deletion_info) override;
 
   // Weak. Owned by our owner.
-  CheckedPtr<base::RunLoop> runner_;
+  base::RunLoop* runner_;
 };
 
 WaitForURLsDeletedObserver::WaitForURLsDeletedObserver(base::RunLoop* runner)
@@ -108,7 +107,7 @@ class GetURLTask : public history::HistoryDBTask {
  private:
   ~GetURLTask() override {}
 
-  CheckedPtr<bool> result_storage_;
+  bool* result_storage_;
   const GURL url_;
 };
 

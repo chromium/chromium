@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -104,7 +103,7 @@ class FrameServiceBase : public Interface, public WebContentsObserver {
     delete this;
   }
 
-  const CheckedPtr<RenderFrameHost> render_frame_host_ = nullptr;
+  RenderFrameHost* const render_frame_host_ = nullptr;
   const url::Origin origin_;
   mojo::Receiver<Interface> receiver_;
 };

@@ -6,7 +6,6 @@
 #define EXTENSIONS_SHELL_BROWSER_SYSTEM_LOGS_LOG_SOURCES_BASIC_LOG_SOURCE_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 
 namespace content {
@@ -28,7 +27,7 @@ class BasicLogSource : public SystemLogsSource {
   void PopulateVersionStrings(SystemLogsResponse* response);
   void PopulateExtensionInfoLogs(SystemLogsResponse* response);
 
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   DISALLOW_COPY_AND_ASSIGN(BasicLogSource);
 };

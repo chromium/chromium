@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
@@ -72,7 +71,7 @@ class RecordingNetLogObserver : public NetLog::ThreadSafeObserver {
  private:
   mutable base::Lock lock_;
   std::vector<NetLogEntry> entry_list_;
-  const CheckedPtr<NetLog> net_log_;
+  NetLog* const net_log_;
   base::RepeatingClosure add_entry_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(RecordingNetLogObserver);

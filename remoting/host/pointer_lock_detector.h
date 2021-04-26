@@ -5,7 +5,6 @@
 #ifndef REMOTING_HOST_POINTER_LOCK_DETECTOR_H_
 #define REMOTING_HOST_POINTER_LOCK_DETECTOR_H_
 
-#include "base/memory/checked_ptr.h"
 #include "remoting/protocol/input_filter.h"
 
 namespace remoting {
@@ -26,7 +25,7 @@ class PointerLockDetector : public protocol::InputFilter {
   void InjectMouseEvent(const protocol::MouseEvent& event) override;
 
  private:
-  CheckedPtr<EventHandler> event_handler_;
+  EventHandler* event_handler_;
   bool has_triggered_ = false;
   bool is_active_ = false;
 

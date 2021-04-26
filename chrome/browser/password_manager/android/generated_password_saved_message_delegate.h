@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "components/messages/android/message_wrapper.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 
@@ -34,7 +33,7 @@ class GeneratedPasswordSavedMessageDelegate {
   friend class GeneratedPasswordSavedMessageDelegateTest;
 
   std::unique_ptr<messages::MessageWrapper> message_;
-  CheckedPtr<content::WebContents> web_contents_ = nullptr;
+  content::WebContents* web_contents_ = nullptr;
 
   void HandleDismissCallback(messages::DismissReason dismiss_reason);
   void DismissPromptInternal();

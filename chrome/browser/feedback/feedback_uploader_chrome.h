@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "components/feedback/feedback_uploader.h"
@@ -78,9 +77,9 @@ class FeedbackUploaderChrome : public FeedbackUploader {
 
   std::string access_token_;
 
-  CheckedPtr<Delegate> delegate_ = nullptr;  // Not owned.
+  Delegate* delegate_ = nullptr;  // Not owned.
 
-  CheckedPtr<content::BrowserContext> context_ = nullptr;
+  content::BrowserContext* context_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(FeedbackUploaderChrome);
 };

@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -109,7 +108,7 @@ class LargeIconServiceTest : public testing::Test {
       : scoped_set_supported_scale_factors_({ui::SCALE_FACTOR_200P}),
         mock_image_fetcher_(new NiceMock<MockImageFetcher>()),
         large_icon_service_(&mock_favicon_service_,
-                            base::WrapUnique(mock_image_fetcher_.get()),
+                            base::WrapUnique(mock_image_fetcher_),
                             /*desired_size_in_dip_for_server_requests=*/24,
                             /*icon_type_for_server_requests=*/
                             favicon_base::IconType::kTouchIcon,
@@ -120,7 +119,7 @@ class LargeIconServiceTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   ui::test::ScopedSetSupportedScaleFactors scoped_set_supported_scale_factors_;
-  CheckedPtr<NiceMock<MockImageFetcher>> mock_image_fetcher_;
+  NiceMock<MockImageFetcher>* mock_image_fetcher_;
   testing::NiceMock<MockFaviconService> mock_favicon_service_;
   LargeIconServiceImpl large_icon_service_;
   base::HistogramTester histogram_tester_;

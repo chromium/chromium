@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "weblayer/browser/weblayer_field_trials.h"
 
 class PrefService;
@@ -55,10 +54,9 @@ class FeatureListCreator {
   void SetUpFieldTrials();
 
   // Owned by BrowserProcess.
-  CheckedPtr<PrefService> local_state_;
+  PrefService* local_state_;
 
-  CheckedPtr<SystemNetworkContextManager>
-      system_network_context_manager_;  // NOT OWNED.
+  SystemNetworkContextManager* system_network_context_manager_;  // NOT OWNED.
 
   std::unique_ptr<variations::VariationsService> variations_service_;
 

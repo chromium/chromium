@@ -5,7 +5,6 @@
 #ifndef GPU_IPC_CLIENT_CLIENT_SHARED_IMAGE_INTERFACE_H_
 #define GPU_IPC_CLIENT_CLIENT_SHARED_IMAGE_INTERFACE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 
 #include "base/containers/flat_set.h"
@@ -85,7 +84,7 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
  private:
   Mailbox AddMailbox(const Mailbox& mailbox);
 
-  const CheckedPtr<SharedImageInterfaceProxy> proxy_;
+  SharedImageInterfaceProxy* const proxy_;
 
   base::Lock lock_;
   base::flat_set<Mailbox> mailboxes_ GUARDED_BY(lock_);

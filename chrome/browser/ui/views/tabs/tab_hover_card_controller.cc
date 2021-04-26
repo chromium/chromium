@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/callback_list.h"
 #include "base/feature_list.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/metrics/tab_count_metrics.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
@@ -166,7 +165,7 @@ class TabHoverCardController::EventSniffer : public ui::EventHandler,
   }
 
  private:
-  const CheckedPtr<TabHoverCardController> controller_;
+  TabHoverCardController* const controller_;
   OwnerView owner_view_;
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
@@ -387,7 +386,7 @@ views::Widget* TabHoverCardController::GetHoverCardWidget() {
 
 void TabHoverCardController::CreateHoverCard(Tab* tab) {
   hover_card_ = new TabHoverCardBubbleView(tab);
-  hover_card_observation_.Observe(hover_card_.get());
+  hover_card_observation_.Observe(hover_card_);
   event_sniffer_ = std::make_unique<EventSniffer>(this);
   slide_animator_ = std::make_unique<views::BubbleSlideAnimator>(hover_card_);
   slide_progressed_subscription_ = slide_animator_->AddSlideProgressedCallback(

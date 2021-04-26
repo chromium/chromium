@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "apps/app_lifetime_monitor.h"
-#include "base/memory/checked_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 
@@ -71,7 +70,7 @@ class AppRestoreService : public KeyedService,
   void StartObservingAppLifetime();
   void StopObservingAppLifetime();
 
-  CheckedPtr<content::BrowserContext> context_;
+  content::BrowserContext* context_;
 };
 
 }  // namespace apps

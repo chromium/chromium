@@ -12,7 +12,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
@@ -99,7 +98,7 @@ class HostService : public WtsTerminalMonitor {
 
     // Points to the observer receiving notifications about the WTS terminal
     // identified by |terminal_id|.
-    CheckedPtr<WtsTerminalObserver> observer;
+    WtsTerminalObserver* observer;
   };
 
   // The list of observers receiving session notifications.

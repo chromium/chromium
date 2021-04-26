@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "gin/runner.h"
 
 namespace gin {
@@ -57,7 +56,7 @@ class GIN_EXPORT ShellRunner : public Runner {
 
   void Run(v8::Local<v8::Script> script);
 
-  CheckedPtr<ShellRunnerDelegate> delegate_;
+  ShellRunnerDelegate* delegate_;
 
   std::unique_ptr<ContextHolder> context_holder_;
 };

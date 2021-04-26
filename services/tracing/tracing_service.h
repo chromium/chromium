@@ -5,7 +5,6 @@
 #ifndef SERVICES_TRACING_TRACING_SERVICE_H_
 #define SERVICES_TRACING_TRACING_SERVICE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -34,7 +33,7 @@ class TracingService : public mojom::TracingService {
 
  private:
   mojo::Receiver<mojom::TracingService> receiver_{this};
-  CheckedPtr<PerfettoService> perfetto_service_;
+  PerfettoService* perfetto_service_;
 };
 
 }  // namespace tracing

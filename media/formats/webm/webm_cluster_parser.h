@@ -14,7 +14,6 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/media_export.h"
 #include "media/base/media_log.h"
@@ -143,7 +142,7 @@ class MEDIA_EXPORT WebMClusterParser : public WebMParserClient {
     // on estimated durations. See http://crbug.com/396634.
     base::TimeDelta max_frame_duration_;
 
-    CheckedPtr<MediaLog> media_log_;
+    MediaLog* media_log_;
   };
 
   typedef std::map<int, Track> TextTrackMap;
@@ -317,7 +316,7 @@ class MEDIA_EXPORT WebMClusterParser : public WebMParserClient {
   // kInfiniteDuration if no buffers are currently missing duration.
   DecodeTimestamp ready_buffer_upper_bound_;
 
-  CheckedPtr<MediaLog> media_log_;
+  MediaLog* media_log_;
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(WebMClusterParser);
 };

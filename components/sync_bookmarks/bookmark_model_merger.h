@@ -13,7 +13,6 @@
 
 #include "base/guid.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 
@@ -194,9 +193,9 @@ class BookmarkModelMerger {
       size_t index,
       const std::string& suffix) const;
 
-  const CheckedPtr<bookmarks::BookmarkModel> bookmark_model_;
-  const CheckedPtr<favicon::FaviconService> favicon_service_;
-  const CheckedPtr<SyncedBookmarkTracker> bookmark_tracker_;
+  bookmarks::BookmarkModel* const bookmark_model_;
+  favicon::FaviconService* const favicon_service_;
+  SyncedBookmarkTracker* const bookmark_tracker_;
   // Preprocessed remote nodes in the form a forest where each tree's root is a
   // permanent node. Computed upon construction via BuildRemoteForest().
   const RemoteForest remote_forest_;

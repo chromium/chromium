@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_FEDERATED_LEARNING_FLOC_ELIGIBILITY_OBSERVER_H_
 #define CHROME_BROWSER_FEDERATED_LEARNING_FLOC_ELIGIBILITY_OBSERVER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "content/public/browser/render_document_host_user_data.h"
 
@@ -52,7 +51,7 @@ class FlocEligibilityObserver
 
   void OnOptInSignalObserved();
 
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 
   // |eligible_commit_| means all the commit time prerequisites are met
   // (i.e. IP was publicly routable AND permissions policy is "allow"). It can

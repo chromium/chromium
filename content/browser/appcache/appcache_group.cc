@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/appcache/appcache.h"
@@ -36,7 +35,7 @@ class AppCacheGroup::HostObserver : public AppCacheHost::Observer {
     group_->HostDestructionImminent(host);
   }
  private:
-  CheckedPtr<AppCacheGroup> group_;
+  AppCacheGroup* group_;
 };
 
 AppCacheGroup::AppCacheGroup(AppCacheStorage* storage,

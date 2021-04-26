@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/guid.h"
-#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -525,7 +524,7 @@ class Profile::ChromeVariationsClient : public variations::VariationsClient {
   }
 
  private:
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 };
 
 variations::VariationsClient* Profile::GetVariationsClient() {

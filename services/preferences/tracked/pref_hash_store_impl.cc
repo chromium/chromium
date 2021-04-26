@@ -9,7 +9,6 @@
 
 #include "base/check.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -69,8 +68,8 @@ class PrefHashStoreImpl::PrefHashStoreTransactionImpl
   bool StampSuperMac() override;
 
  private:
-  CheckedPtr<PrefHashStoreImpl> outer_;
-  CheckedPtr<HashStoreContents> contents_;
+  PrefHashStoreImpl* outer_;
+  HashStoreContents* contents_;
 
   bool super_mac_valid_;
   bool super_mac_dirty_;

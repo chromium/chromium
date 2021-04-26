@@ -13,7 +13,6 @@
 
 #include "base/bind.h"
 #include "base/containers/mru_cache.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/time/time.h"
 #include "net/third_party/quiche/src/quic/core/crypto/quic_crypto_client_config.h"
@@ -78,7 +77,7 @@ class NET_EXPORT_PRIVATE QuicClientSessionCache : public quic::SessionCache {
                             const quic::TransportParameters& params,
                             const quic::ApplicationState* application_state);
 
-  CheckedPtr<base::Clock> clock_;
+  base::Clock* clock_;
   base::MRUCache<quic::QuicServerId, Entry> cache_;
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
 };

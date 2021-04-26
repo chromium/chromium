@@ -10,7 +10,6 @@
 #include <unordered_set>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/thread_annotations.h"
@@ -109,9 +108,9 @@ class Cronet_UrlRequestImpl : public Cronet_UrlRequest {
   base::Lock lock_;
   // NetworkTask object lives on the network thread. Owned by |request_|.
   // Outlives this.
-  CheckedPtr<NetworkTasks> network_tasks_ GUARDED_BY(lock_) = nullptr;
+  NetworkTasks* network_tasks_ GUARDED_BY(lock_) = nullptr;
   // Cronet URLRequest used for this operation.
-  CheckedPtr<CronetURLRequest> request_ GUARDED_BY(lock_) = nullptr;
+  CronetURLRequest* request_ GUARDED_BY(lock_) = nullptr;
   bool started_ GUARDED_BY(lock_) = false;
   bool waiting_on_redirect_ GUARDED_BY(lock_) = false;
   bool waiting_on_read_ GUARDED_BY(lock_) = false;
@@ -193,7 +192,7 @@ class Cronet_UrlRequestImpl : public Cronet_UrlRequest {
 
   // Cronet Engine used to run network operations. Not owned, accessed from
   // client thread. Must outlive this request.
-  CheckedPtr<Cronet_EngineImpl> engine_ = nullptr;
+  Cronet_EngineImpl* engine_ = nullptr;
 
 #if DCHECK_IS_ON()
   // Event indicating Executor is properly destroying Runnables.

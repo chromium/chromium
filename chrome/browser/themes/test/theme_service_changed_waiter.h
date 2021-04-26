@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_THEMES_TEST_THEME_SERVICE_CHANGED_WAITER_H_
 #define CHROME_BROWSER_THEMES_TEST_THEME_SERVICE_CHANGED_WAITER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/themes/theme_service_observer.h"
 
@@ -32,7 +31,7 @@ class ThemeServiceChangedWaiter : public ThemeServiceObserver {
  private:
   base::RunLoop run_loop_;
 
-  const CheckedPtr<ThemeService> service_;
+  ThemeService* const service_;
 };
 
 }  // namespace test

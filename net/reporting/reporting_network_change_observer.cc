@@ -5,7 +5,6 @@
 #include "net/reporting/reporting_network_change_observer.h"
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "net/base/network_change_notifier.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_context.h"
@@ -48,7 +47,7 @@ class ReportingNetworkChangeObserverImpl
   }
 
  private:
-  CheckedPtr<ReportingContext> context_;
+  ReportingContext* context_;
 
   DISALLOW_COPY_AND_ASSIGN(ReportingNetworkChangeObserverImpl);
 };

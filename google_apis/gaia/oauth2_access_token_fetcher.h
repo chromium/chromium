@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 
 // Interface of a OAuth2 access token fetcher.
@@ -49,7 +48,7 @@ class OAuth2AccessTokenFetcher {
   void FireOnGetTokenFailure(const GoogleServiceAuthError& error);
 
  private:
-  const CheckedPtr<OAuth2AccessTokenConsumer> consumer_;
+  OAuth2AccessTokenConsumer* const consumer_;
 
   DISALLOW_COPY_AND_ASSIGN(OAuth2AccessTokenFetcher);
 };

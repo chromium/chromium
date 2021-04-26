@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_CONTAINER_OBSERVER_SET_H_
 
 #include <map>
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_impl.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_observer.h"
 
@@ -39,7 +38,7 @@ class MediaNotificationContainerObserverSet
                          const std::string& sink_id) override;
 
  private:
-  const CheckedPtr<MediaNotificationContainerObserver> owner_;
+  MediaNotificationContainerObserver* const owner_;
   std::map<std::string, MediaNotificationContainerImpl*> observed_containers_;
 };
 

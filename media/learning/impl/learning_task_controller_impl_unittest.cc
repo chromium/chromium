@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "media/learning/impl/distribution_reporter.h"
@@ -86,7 +85,7 @@ class LearningTaskControllerImplTest : public testing::Test {
 
    private:
     LearningTask task_;
-    CheckedPtr<int> num_models_ = nullptr;
+    int* num_models_ = nullptr;
     TargetValue target_value_;
 
     // Most recently provided training data.
@@ -165,8 +164,8 @@ class LearningTaskControllerImplTest : public testing::Test {
   const TargetValue predicted_target_;
   const TargetValue not_predicted_target_;
 
-  CheckedPtr<FakeDistributionReporter> reporter_raw_ = nullptr;
-  CheckedPtr<FakeTrainer> trainer_raw_ = nullptr;
+  FakeDistributionReporter* reporter_raw_ = nullptr;
+  FakeTrainer* trainer_raw_ = nullptr;
 
   LearningTask task_;
   std::unique_ptr<LearningTaskControllerImpl> controller_;

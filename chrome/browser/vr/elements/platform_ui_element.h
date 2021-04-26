@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_VR_ELEMENTS_PLATFORM_UI_ELEMENT_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/gl_texture_location.h"
 
@@ -57,7 +56,7 @@ class PlatformUiElement : public UiElement {
   GlTextureLocation texture_location() const { return texture_location_; }
 
  private:
-  CheckedPtr<PlatformUiInputDelegate> delegate_ = nullptr;
+  PlatformUiInputDelegate* delegate_ = nullptr;
   unsigned int texture_id_ = 0;
   GlTextureLocation texture_location_ = kGlTextureLocationExternal;
 

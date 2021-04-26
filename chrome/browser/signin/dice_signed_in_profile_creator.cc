@@ -8,7 +8,6 @@
 
 #include "base/check.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/scoped_observation.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -47,7 +46,7 @@ class TokensLoadedCallbackRunner : public signin::IdentityManager::Observer {
   // signin::IdentityManager::Observer implementation:
   void OnRefreshTokensLoaded() override {
     scoped_identity_manager_observer_.Reset();
-    std::move(callback_).Run(profile_.get());
+    std::move(callback_).Run(profile_);
   }
 
   void OnIdentityManagerShutdown(signin::IdentityManager* manager) override {
@@ -55,8 +54,8 @@ class TokensLoadedCallbackRunner : public signin::IdentityManager::Observer {
     std::move(callback_).Run(nullptr);
   }
 
-  CheckedPtr<Profile> profile_;
-  CheckedPtr<signin::IdentityManager> identity_manager_;
+  Profile* profile_;
+  signin::IdentityManager* identity_manager_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       scoped_identity_manager_observer_{this};
@@ -88,7 +87,7 @@ TokensLoadedCallbackRunner::TokensLoadedCallbackRunner(
   DCHECK(identity_manager_);
   DCHECK(callback_);
   DCHECK(!identity_manager_->AreRefreshTokensLoaded());
-  scoped_identity_manager_observer_.Observe(identity_manager_.get());
+  scoped_identity_manager_observer_.Observe(identity_manager_);
 }
 
 DiceSignedInProfileCreator::DiceSignedInProfileCreator(

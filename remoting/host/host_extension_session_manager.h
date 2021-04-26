@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 
 namespace remoting {
 
@@ -54,8 +53,8 @@ class HostExtensionSessionManager {
 
   // Passed to HostExtensionSessions to allow them to send messages,
   // disconnect the session, etc.
-  CheckedPtr<ClientSessionDetails> client_session_details_;
-  CheckedPtr<protocol::ClientStub> client_stub_;
+  ClientSessionDetails* client_session_details_;
+  protocol::ClientStub* client_stub_;
 
   // The HostExtensions to instantiate for the session, if it reaches the
   // authenticated state.

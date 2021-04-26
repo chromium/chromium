@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/resolver.h"
 
@@ -40,7 +39,7 @@ class EatResolverThunk : public ResolverThunk {
 
  private:
   // The entry to patch.
-  CheckedPtr<DWORD> eat_entry_;
+  DWORD* eat_entry_;
 
   DISALLOW_COPY_AND_ASSIGN(EatResolverThunk);
 };

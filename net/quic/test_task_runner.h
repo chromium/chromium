@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task_runner.h"
 #include "base/test/test_pending_task.h"
@@ -65,7 +64,7 @@ class TestTaskRunner : public base::SequencedTaskRunner {
  private:
   std::vector<PostedTask>::iterator FindNextTask();
 
-  const CheckedPtr<quic::MockClock> clock_;
+  quic::MockClock* const clock_;
   std::vector<PostedTask> tasks_;
 
   DISALLOW_COPY_AND_ASSIGN(TestTaskRunner);
