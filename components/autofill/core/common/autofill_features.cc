@@ -13,6 +13,11 @@ namespace features {
 const base::Feature kAutocompleteFilterForMeaningfulNames{
     "AutocompleteFilterForMeaningfulNames", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether to flatten and fill cross-iframe forms.
+// TODO(crbug.com/1187842) Remove once launched.
+const base::Feature kAutofillAcrossIframes{"AutofillAcrossIframes",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls if Autofill sends votes for the new address types.
 const base::Feature kAutofillAddressEnhancementVotes{
     "kAutofillAddressEnhancementVotes", base::FEATURE_DISABLED_BY_DEFAULT};
