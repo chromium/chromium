@@ -63,8 +63,11 @@ void WorkerThread::Delegate::WaitForWork(WaitableEvent* wake_up_event) {
   if (!was_signaled) {
     ThreadCache::PurgeCurrentThread();
 
-    if (sleep_time > kPurgeThreadCacheIdleDelay)
-      wake_up_event->TimedWait(sleep_time - kPurgeThreadCacheIdleDelay);
+    if (sleep_time > kPurgeThreadCacheIdleDelay) {
+      wake_up_event->TimedWait(sleep_time.is_max()
+                                   ? base::TimeDelta::Max()
+                                   : sleep_time - kPurgeThreadCacheIdleDelay);
+    }
   }
 #else
   wake_up_event->TimedWait(sleep_time);
