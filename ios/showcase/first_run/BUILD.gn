@@ -18,7 +18,7 @@ source_set("first_run") {
     "sc_first_run_scrolling_screen_view_controller.mm",
   ]
   deps = [
-    "//ios/chrome/browser/ui/first_run",
+    "//ios/chrome/browser/ui/first_run:first_run_ui",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ios/showcase/common",

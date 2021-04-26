@@ -26,13 +26,9 @@ source_set("first_run") {
   sources = [
     "first_run_coordinator.h",
     "first_run_coordinator.mm",
-    "first_run_screen_delegate.h",
     "first_run_screen_provider.h",
     "first_run_screen_provider.mm",
     "first_run_screen_type.h",
-    "first_run_screen_view_controller.h",
-    "first_run_screen_view_controller.mm",
-    "first_run_screen_view_controller_delegate.h",
     "first_run_util.h",
     "first_run_util.mm",
     "location_permissions_commands.h",
@@ -52,12 +48,6 @@ source_set("first_run") {
     "signin_screen_view_controller.mm",
     "static_file_view_controller.h",
     "static_file_view_controller.mm",
-    "sync_screen_coordinator.h",
-    "sync_screen_coordinator.mm",
-    "sync_screen_mediator.h",
-    "sync_screen_mediator.mm",
-    "sync_screen_view_controller.h",
-    "sync_screen_view_controller.mm",
     "welcome_screen_coordinator.h",
     "welcome_screen_coordinator.mm",
     "welcome_screen_view_controller.h",
@@ -70,6 +60,8 @@ source_set("first_run") {
   deps = [
     ":constants",
     ":field_trial",
+    ":first_run_ui",
+    ":screen_delegate",
     "resources:checkbox",
     "resources:checkbox_checked",
     "resources:first_run_location_permissions",
@@ -99,6 +91,7 @@ source_set("first_run") {
     "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/elements:elements_internal",
     "//ios/chrome/browser/ui/fancy_ui",
+    "//ios/chrome/browser/ui/first_run/sync",
     "//ios/chrome/browser/ui/icons",
     "//ios/chrome/browser/ui/material_components",
     "//ios/chrome/browser/ui/settings/resources:enterprise_icon",
@@ -127,6 +120,25 @@ source_set("constants") {
   sources = [
     "first_run_constants.h",
     "first_run_constants.mm",
+  ]
+}
+
+source_set("screen_delegate") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "first_run_screen_delegate.h" ]
+}
+
+source_set("first_run_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "first_run_screen_view_controller.h",
+    "first_run_screen_view_controller.mm",
+    "first_run_screen_view_controller_delegate.h",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
   ]
 }
 

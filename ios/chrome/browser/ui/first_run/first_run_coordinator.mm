@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/ui/first_run/first_run_screen_provider.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_type.h"
 #import "ios/chrome/browser/ui/first_run/signin_screen_coordinator.h"
-#import "ios/chrome/browser/ui/first_run/sync_screen_coordinator.h"
+#import "ios/chrome/browser/ui/first_run/sync/sync_screen_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/welcome_screen_coordinator.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
