@@ -15039,4 +15039,4 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
-export { Base, Debouncer, DomIf, DomRepeat, OptionalMutableDataBehavior, Polymer, PolymerElement, TemplateInstanceBase, Templatizer, afterNextRender, animationFrame, beforeNextRender, calculateSplices, dashToCamelCase, dom, enqueueDebouncer, flush, gestures$1 as gestures, html, idlePeriod, matches, microTask, mixinBehaviors, templatize, translate, useShadow };
+export { Base, Debouncer, DomIf, DomRepeat, OptionalMutableDataBehavior, Polymer, PolymerElement, TemplateInstanceBase, Templatizer, afterNextRender, animationFrame, beforeNextRender, calculateSplices, dashToCamelCase, dedupingMixin, dom, enqueueDebouncer, flush, gestures$1 as gestures, html, idlePeriod, matches, microTask, mixinBehaviors, templatize, translate, useShadow };
