@@ -108,7 +108,8 @@ const char kUseGL[] = "use-gl";
 // A string used to override the default user agent with a custom one.
 const char kUserAgent[] = "user-agent";
 
-// Directory where the browser stores the user profile.
+// Directory where the browser stores the user profile. Note that if this switch
+// is added, the session will no longer be Incognito.
 const char kUserDataDir[] = "user-data-dir";
 
 // If set the system waits the specified number of virtual milliseconds before
