@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
@@ -319,7 +320,13 @@ class AppListSyncableServiceTest : public AppListTestBase {
       model_updater_factory_scope_;
 };
 
-TEST_F(AppListSyncableServiceTest, OEMFolderForConflictingPos) {
+// Flaky on CrOS. See https://crbug.com/1202295
+#if defined(OS_CHROMEOS)
+#define MAYBE_OEMFolderForConflictingPos DISABLED_OEMFolderForConflictingPos
+#else
+#define MAYBE_OEMFolderForConflictingPos OEMFolderForConflictingPos
+#endif
+TEST_F(AppListSyncableServiceTest, MAYBE_OEMFolderForConflictingPos) {
   // Create a "web store" app.
   const std::string web_store_app_id(extensions::kWebStoreAppId);
   scoped_refptr<extensions::Extension> store =
@@ -399,7 +406,14 @@ TEST_F(AppListSyncableServiceTest, OEMItemIgnoreSyncParent) {
 
 // Verifies that an OEM apps parent ID in sync data is not overridden to the OEM
 // folder.
-TEST_F(AppListSyncableServiceTest, OEMAppParentNotOverridenInSync) {
+// Flaky on CrOS. See https://crbug.com/1202295
+#if defined(OS_CHROMEOS)
+#define MAYBE_OEMAppParentNotOverridenInSync \
+  DISABLED_OEMAppParentNotOverridenInSync
+#else
+#define MAYBE_OEMAppParentNotOverridenInSync OEMAppParentNotOverridenInSync
+#endif
+TEST_F(AppListSyncableServiceTest, MAYBE_OEMAppParentNotOverridenInSync) {
   const std::string oem_app_id = CreateNextAppId(extensions::kWebStoreAppId);
   scoped_refptr<extensions::Extension> oem_app = MakeApp(
       kOemAppName, oem_app_id, extensions::Extension::WAS_INSTALLED_BY_OEM);
