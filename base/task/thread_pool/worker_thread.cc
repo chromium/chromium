@@ -343,10 +343,9 @@ void WorkerThread::RunWorker() {
 #if defined(OS_APPLE)
     mac::ScopedNSAutoreleasePool autorelease_pool;
 #endif
-    base::Optional<HangWatchScopeEnabled> hang_watch_scope;
+    base::Optional<WatchHangsInScope> hang_watch_scope;
     if (watch_for_hangs)
-      hang_watch_scope.emplace(
-          base::HangWatchScopeEnabled::kDefaultHangWatchTime);
+      hang_watch_scope.emplace(base::WatchHangsInScope::kDefaultHangWatchTime);
 
     UpdateThreadPriority(GetDesiredThreadPriority());
 

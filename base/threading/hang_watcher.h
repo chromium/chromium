@@ -31,7 +31,7 @@
 #include "build/build_config.h"
 
 namespace base {
-class HangWatchScopeEnabled;
+class WatchHangsInScope;
 namespace internal {
 class HangWatchState;
 }  // namespace internal
@@ -39,13 +39,13 @@ class HangWatchState;
 
 namespace base {
 
-// Instantiate a HangWatchScopeEnabled in a code scope to register to be
+// Instantiate a WatchHangsInScope in a code scope to register to be
 // watched for hangs of more than |timeout| by the HangWatcher.
 //
 // Example usage:
 //
 //  void FooBar(){
-//    HangWatchScopeEnabled scope(base::TimeDelta::FromSeconds(5));
+//    WatchHangsInScope scope(base::TimeDelta::FromSeconds(5));
 //    DoWork();
 //  }
 //
@@ -53,12 +53,12 @@ namespace base {
 // inspects the thread state before Foobar returns a hang will be
 // reported.
 //
-// HangWatchScopeEnableds are typically meant to live on the stack. In some
-// cases it's necessary to keep a HangWatchScopeEnabled instance as a class
-// member but special care is required when doing so as a HangWatchScopeEnabled
+// WatchHangsInScopes are typically meant to live on the stack. In some
+// cases it's necessary to keep a WatchHangsInScope instance as a class
+// member but special care is required when doing so as a WatchHangsInScope
 // that stays alive longer than intended will generate non-actionable hang
 // reports.
-class BASE_EXPORT HangWatchScopeEnabled {
+class BASE_EXPORT WatchHangsInScope {
  public:
   // A good default value needs to be large enough to represent a significant
   // hang and avoid noise while being small enough to not exclude too many
@@ -68,67 +68,67 @@ class BASE_EXPORT HangWatchScopeEnabled {
   static const base::TimeDelta kDefaultHangWatchTime;
 
   // Constructing/destructing thread must be the same thread.
-  explicit HangWatchScopeEnabled(TimeDelta timeout);
-  ~HangWatchScopeEnabled();
+  explicit WatchHangsInScope(TimeDelta timeout);
+  ~WatchHangsInScope();
 
-  HangWatchScopeEnabled(const HangWatchScopeEnabled&) = delete;
-  HangWatchScopeEnabled& operator=(const HangWatchScopeEnabled&) = delete;
+  WatchHangsInScope(const WatchHangsInScope&) = delete;
+  WatchHangsInScope& operator=(const WatchHangsInScope&) = delete;
 
  private:
   // This object should always be constructed and destructed on the same thread.
   THREAD_CHECKER(thread_checker_);
 
-  // The deadline set by the previous HangWatchScopeEnabled created on this
-  // thread. Stored so it can be restored when this HangWatchScopeEnabled is
+  // The deadline set by the previous WatchHangsInScope created on this
+  // thread. Stored so it can be restored when this WatchHangsInScope is
   // destroyed.
   TimeTicks previous_deadline_;
 
   // Indicates whether the kIgnoreCurrentHang flag must be set upon exiting this
-  // HangWatchScopeEnabled. This is true if the
-  // kIgnoreCurrentHangWatchScopeEnabled flag was set upon entering this scope,
-  // but was cleared for this HangWatchScopeEnabled because there was no active
-  // HangWatchScopeDisabled.
+  // WatchHangsInScope. This is true if the
+  // kIgnoreCurrentWatchHangsInScope flag was set upon entering this scope,
+  // but was cleared for this WatchHangsInScope because there was no active
+  // IgnoreHangsInScope.
   bool set_hangs_ignored_on_exit_ = false;
 
 #if DCHECK_IS_ON()
-  // The previous HangWatchScopeEnabled created on this thread.
-  HangWatchScopeEnabled* previous_hang_watch_scope_enable_;
+  // The previous WatchHangsInScope created on this thread.
+  WatchHangsInScope* previous_watch_hangs_in_scope_;
 #endif
 };
 
 // Scoped object that disables hang watching on the thread. The object nullifies
-// the effect of all live HangWatchScopeEnabled instances and also that of new
-// HangWatchScopeEnabled instances created during its lifetime. Use to avoid
+// the effect of all live WatchHangsInScope instances and also that of new
+// WatchHangsInScope instances created during its lifetime. Use to avoid
 // capturing hangs for operations known to take unbounded time like waiting for
 // user input. This does not unregister the thread so when this object is
-// destroyed hang watching resumes for new HangWatchScopeEnableds.
+// destroyed hang watching resumes for new WatchHangsInScopes.
 //
 // Example usage:
 //  {
-//    HangWatchScopeEnabled scope_1;
+//    WatchHangsInScope scope_1;
 //    {
-//      HangWatchScopeEnabled scope_2;
-//      HangWatchScopeDisabled disabler;
+//      WatchHangsInScope scope_2;
+//      IgnoreHangsInScope disabler;
 //      WaitForUserInput();
-//      HangWatchScopeEnabled scope_3;
+//      WatchHangsInScope scope_3;
 //    }
 //
-//    HangWatchScopeEnabled scope_4;
+//    WatchHangsInScope scope_4;
 //  }
 //
-// HangWatchScopeEnabled scope_5;
+// WatchHangsInScope scope_5;
 //
-// In this example hang watching is disabled for HangWatchScopeEnableds 1, 2 and
+// In this example hang watching is disabled for WatchHangsInScopes 1, 2 and
 // 3 since they were either active at the time of the |disabler|'s creation or
-// created while the disabler was still active. HangWatchScopeEnableds 4 and 5
+// created while the disabler was still active. WatchHangsInScopes 4 and 5
 // are unaffected since they were created after the disabler was destroyed.
 //
-class BASE_EXPORT HangWatchScopeDisabled {
+class BASE_EXPORT IgnoreHangsInScope {
  public:
-  HangWatchScopeDisabled();
-  ~HangWatchScopeDisabled();
-  HangWatchScopeDisabled(const HangWatchScopeDisabled&) = delete;
-  HangWatchScopeDisabled& operator=(const HangWatchScopeDisabled&) = delete;
+  IgnoreHangsInScope();
+  ~IgnoreHangsInScope();
+  IgnoreHangsInScope(const IgnoreHangsInScope&) = delete;
+  IgnoreHangsInScope& operator=(const IgnoreHangsInScope&) = delete;
 
  private:
   // Will be true if the object actually disabled hang watching and
@@ -401,12 +401,12 @@ class BASE_EXPORT HangWatchDeadline {
   enum class Flag : uint64_t {
     // Minimum value for validation purposes. Not currently used.
     kMinValue = bits::LeftmostBit<uint64_t>() >> 7,
-    // Persistent because control by the lifetime of HangWatchScopeDisabled.
-    kHasActiveHangWatchScopeDisabled = bits::LeftmostBit<uint64_t>() >> 2,
+    // Persistent because control by the lifetime of IgnoreHangsInScope.
+    kHasActiveIgnoreHangsInScope = bits::LeftmostBit<uint64_t>() >> 2,
     // Persistent because if hang detection is disabled on a thread it should
     // be re-enabled manually.
-    kIgnoreCurrentHangWatchScopeEnabled = bits::LeftmostBit<uint64_t>() >> 1,
-    // Non-persistent because a new value means a new HangWatchScopeEnabled
+    kIgnoreCurrentWatchHangsInScope = bits::LeftmostBit<uint64_t>() >> 1,
+    // Non-persistent because a new value means a new WatchHangsInScope
     // started
     // after the beginning of capture. It can't be implicated in the hang so we
     // don't want it to block.
@@ -452,17 +452,17 @@ class BASE_EXPORT HangWatchDeadline {
   // not set the flag and returns false.
   bool SetShouldBlockOnHang(uint64_t old_flags, TimeTicks old_deadline);
 
-  // Sets the kHasActiveHangWatchScopeDisabled flag.
-  void SetHasActiveHangWatchScopeDisabled();
+  // Sets the kHasActiveIgnoreHangsInScope flag.
+  void SetHasActiveIgnoreHangsInScope();
 
-  // Clears the kHasActiveHangWatchScopeDisabled flag.
-  void UnsetHasActiveHangWatchScopeDisabled();
+  // Clears the kHasActiveIgnoreHangsInScope flag.
+  void UnsetHasActiveIgnoreHangsInScope();
 
-  // Sets the kIgnoreCurrentHangWatchScopeEnabled flag.
-  void SetIgnoreCurrentHangWatchScopeEnabled();
+  // Sets the kIgnoreCurrentWatchHangsInScope flag.
+  void SetIgnoreCurrentWatchHangsInScope();
 
-  // Clears the kIgnoreCurrentHangWatchScopeEnabled flag.
-  void UnsetIgnoreCurrentHangWatchScopeEnabled();
+  // Clears the kIgnoreCurrentWatchHangsInScope flag.
+  void UnsetIgnoreCurrentWatchHangsInScope();
 
   // Use to simulate the value of |bits_| changing between the calling a
   // Set* function and the moment of atomically switching the values. The
@@ -584,19 +584,19 @@ class BASE_EXPORT HangWatchState {
 
   // Mark this thread as ignored for hang watching. This means existing hang
   // watch will not trigger hangs.
-  void SetIgnoreCurrentHangWatchScopeEnabled();
+  void SetIgnoreCurrentWatchHangsInScope();
 
   // Reactivate hang watching on this thread. Should be called when all
-  // HangWatchScopeEnabled instances that were ignored have completed.
-  void UnsetIgnoreCurrentHangWatchScopeEnabled();
+  // WatchHangsInScope instances that were ignored have completed.
+  void UnsetIgnoreCurrentWatchHangsInScope();
 
   // Mark hang watching as disabled on this thread. This means new
-  // HangWatchScopeEnabled instances will not trigger hangs.
-  void SetHasActiveHangWatchScopeDisabled();
+  // WatchHangsInScope instances will not trigger hangs.
+  void SetHasActiveIgnoreHangsInScope();
 
-  // Reactivate hang watching on this thread. New HangWatchScopeEnabled
+  // Reactivate hang watching on this thread. New WatchHangsInScope
   // instances will trigger hangs.
-  void UnsetHasActiveHangWatchScopeDisabled();
+  void UnsetHasActiveIgnoreHangsInScope();
 
   // Mark the current state as having to block in its destruction until hang
   // capture completes.
@@ -611,12 +611,12 @@ class BASE_EXPORT HangWatchState {
   bool IsOverDeadline() const;
 
 #if DCHECK_IS_ON()
-  // Saves the supplied HangWatchScopeEnabled as the currently active
-  // HangWatchScopeEnabled.
-  void SetCurrentHangWatchScopeEnabled(HangWatchScopeEnabled* scope);
+  // Saves the supplied WatchHangsInScope as the currently active
+  // WatchHangsInScope.
+  void SetCurrentWatchHangsInScope(WatchHangsInScope* scope);
 
   // Retrieve the currently active scope.
-  HangWatchScopeEnabled* GetCurrentHangWatchScopeEnabled();
+  WatchHangsInScope* GetCurrentWatchHangsInScope();
 #endif
 
   PlatformThreadId GetThreadID() const;
@@ -654,7 +654,7 @@ class BASE_EXPORT HangWatchState {
   const HangWatcher::ThreadType thread_type_;
 
 #if DCHECK_IS_ON()
-  // Used to keep track of the current HangWatchScopeEnabled and detect improper
+  // Used to keep track of the current WatchHangsInScope and detect improper
   // usage. Scopes should always be destructed in reverse order from the one
   // they were constructed in. Example of improper use:
   //
@@ -664,7 +664,7 @@ class BASE_EXPORT HangWatchState {
   //   |scope| gets deallocated first, violating reverse destruction order.
   //   scope.reset();
   // }
-  HangWatchScopeEnabled* current_hang_watch_scope_enable_{nullptr};
+  WatchHangsInScope* current_watch_hangs_in_scope_{nullptr};
 #endif
 };
 

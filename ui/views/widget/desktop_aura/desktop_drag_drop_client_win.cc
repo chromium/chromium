@@ -70,7 +70,7 @@ ui::mojom::DragOperation DesktopDragDropClientWin::StartDragAndDrop(
 
   // Disable hang watching until the end of the function since the user can take
   // unbounded time to complete the drag. (http://crbug.com/806174)
-  base::HangWatchScopeDisabled disabler;
+  base::IgnoreHangsInScope disabler;
   base::TimeTicks start_time = base::TimeTicks::Now();
 
   HRESULT result = ::DoDragDrop(

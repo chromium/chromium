@@ -70,7 +70,7 @@ class BlockingThread : public DelegateSimpleThread::Delegate {
         base::HangWatcher::RegisterThread(
             base::HangWatcher::ThreadType::kUIThread);
 
-    HangWatchScopeEnabled scope(timeout_);
+    WatchHangsInScope scope(timeout_);
     wait_until_entered_scope_.Signal();
 
     unblock_thread_->Wait();
@@ -82,7 +82,7 @@ class BlockingThread : public DelegateSimpleThread::Delegate {
   void StartAndWaitForScopeEntered() {
     thread_.Start();
     // Block until this thread registered itself for hang watching and has
-    // entered a HangWatchScopeEnabled.
+    // entered a WatchHangsInScope.
     wait_until_entered_scope_.Wait();
   }
 
@@ -94,7 +94,7 @@ class BlockingThread : public DelegateSimpleThread::Delegate {
   base::DelegateSimpleThread thread_;
 
   // Will be signaled once the thread is properly registered for watching and
-  // the HangWatchScopeEnabled has been entered.
+  // the WatchHangsInScope has been entered.
   WaitableEvent wait_until_entered_scope_;
 
   // Will be signaled once ThreadMain has run.
@@ -203,21 +203,21 @@ class HangWatcherBlockingThreadTest : public HangWatcherTest {
 }  // namespace
 
 // Regression test for crbug.com/1196285
-TEST_F(HangWatcherTest, MultipleHangWatchScopeDisabledDoNotCancelOut) {
+TEST_F(HangWatcherTest, MultipleIgnoreHangsInScopeDoNotCancelOut) {
   // Register the main test thread for hang watching.
   auto unregister_thread_closure =
       HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kUIThread);
 
   // De-activate hang watching,
-  HangWatchScopeDisabled disabler;
+  IgnoreHangsInScope disabler;
 
   {
     // Redundently de-activate hang watching.
-    HangWatchScopeDisabled disabler_2;
+    IgnoreHangsInScope disabler_2;
   }
 
   // Create a hang.
-  HangWatchScopeEnabled expires_instantly(base::TimeDelta{});
+  WatchHangsInScope expires_instantly(base::TimeDelta{});
   task_environment_.FastForwardBy(kHangTime);
 
   // Trigger a monitoring on HangWatcher thread and verify results.
@@ -236,21 +236,21 @@ TEST_F(
       HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kUIThread);
 
   {
-    HangWatchScopeEnabled expires_instantly(base::TimeDelta{});
+    WatchHangsInScope expires_instantly(base::TimeDelta{});
     task_environment_.FastForwardBy(kHangTime);
 
     // De-activate hang watching,
-    HangWatchScopeDisabled disabler;
+    IgnoreHangsInScope disabler;
   }
 
-  HangWatchScopeEnabled also_expires_instantly(base::TimeDelta{});
+  WatchHangsInScope also_expires_instantly(base::TimeDelta{});
   task_environment_.FastForwardBy(kHangTime);
 
   // Trigger a monitoring on HangWatcher thread and verify results.
   hang_watcher_.SignalMonitorEventForTesting();
   monitor_event_.Wait();
 
-  // Hang is detected since the new HangWatchScopeEnabled was not covered by the
+  // Hang is detected since the new WatchHangsInScope was not covered by the
   // disabler.
   monitor_event_.Wait();
   ASSERT_TRUE(hang_event_.IsSignaled());
@@ -263,13 +263,13 @@ TEST_F(
   auto unregister_thread_closure =
       HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kUIThread);
 
-  base::Optional<HangWatchScopeDisabled> disabler;
+  base::Optional<IgnoreHangsInScope> disabler;
 
   // De-activate hang watching,
   {
-    // Start a HangWatchScopeEnabled that expires right away. Then advance
+    // Start a WatchHangsInScope that expires right away. Then advance
     // time to make sure a hang is detected.
-    HangWatchScopeEnabled expires_instantly(base::TimeDelta{});
+    WatchHangsInScope expires_instantly(base::TimeDelta{});
     task_environment_.FastForwardBy(kHangTime);
 
     disabler.emplace();
@@ -282,7 +282,7 @@ TEST_F(
   disabler.reset();
 
   // Hang is ignored since a disabler was live during the lifetime of the hung
-  // HangWatchScopeEnabled.
+  // WatchHangsInScope.
   ASSERT_FALSE(hang_event_.IsSignaled());
 }
 
@@ -293,15 +293,15 @@ TEST_F(
   auto unregister_thread_closure =
       HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kUIThread);
 
-  base::Optional<HangWatchScopeDisabled> disabler;
+  base::Optional<IgnoreHangsInScope> disabler;
 
   // De-activate hang watching,
   {
     disabler.emplace();
 
-    // Start a HangWatchScopeEnabled that expires right away. Then advance
+    // Start a WatchHangsInScope that expires right away. Then advance
     // time to make sure a hang is detected.
-    HangWatchScopeEnabled expires_instantly(base::TimeDelta{});
+    WatchHangsInScope expires_instantly(base::TimeDelta{});
     task_environment_.FastForwardBy(kHangTime);
 
     disabler.reset();
@@ -312,7 +312,7 @@ TEST_F(
   }
 
   // Hang is ignored since a disabler was live during the lifetime of the hung
-  // HangWatchScopeEnabled.
+  // WatchHangsInScope.
   ASSERT_FALSE(hang_event_.IsSignaled());
 }
 
@@ -324,11 +324,11 @@ TEST_F(
       HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kUIThread);
 
   // De-activate hang watching,
-  HangWatchScopeDisabled disabler;
+  IgnoreHangsInScope disabler;
   {
-    // Start a HangWatchScopeEnabled that expires right away. Then advance
+    // Start a WatchHangsInScope that expires right away. Then advance
     // time to make sure a hang is detected.
-    HangWatchScopeEnabled expires_instantly(base::TimeDelta{});
+    WatchHangsInScope expires_instantly(base::TimeDelta{});
     task_environment_.FastForwardBy(kHangTime);
 
     // Trigger a monitoring on HangWatcher thread and verify results.
@@ -345,14 +345,14 @@ TEST_F(HangWatcherTest, ScopeCreateTempCreateTempDestroyScopeDestroy) {
   auto unregister_thread_closure =
       HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kUIThread);
   {
-    // Start a HangWatchScopeEnabled that expires right away. Then advance
+    // Start a WatchHangsInScope that expires right away. Then advance
     // time to make sure a hang is detected.
-    HangWatchScopeEnabled expires_instantly(base::TimeDelta{});
+    WatchHangsInScope expires_instantly(base::TimeDelta{});
     task_environment_.FastForwardBy(kHangTime);
 
     {
       // De-activate hang watching,
-      HangWatchScopeDisabled disabler;
+      IgnoreHangsInScope disabler;
     }
 
     // Trigger a monitoring on HangWatcher thread and verify results.
@@ -371,13 +371,13 @@ TEST_F(
   auto unregister_thread_closure =
       HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kUIThread);
   {
-    // Start a HangWatchScopeEnabled that expires right away. Then advance
+    // Start a WatchHangsInScope that expires right away. Then advance
     // time to make sure a hang is detected.
-    HangWatchScopeEnabled expires_instantly(base::TimeDelta{});
+    WatchHangsInScope expires_instantly(base::TimeDelta{});
     task_environment_.FastForwardBy(kHangTime);
 
     // De-activate hang watching,
-    HangWatchScopeDisabled disabler;
+    IgnoreHangsInScope disabler;
 
     // Trigger a monitoring on HangWatcher thread and verify results.
     hang_watcher_.SignalMonitorEventForTesting();
@@ -388,24 +388,24 @@ TEST_F(
   ASSERT_FALSE(hang_event_.IsSignaled());
 }
 
-// Test that disabling an inner HangWatchScopeEnabled will also prevent hang
+// Test that disabling an inner WatchHangsInScope will also prevent hang
 // detection in outer scopes.
 TEST_F(HangWatcherTest, ScopeDisabledObjectInnerScope) {
   // Register the main test thread for hang watching.
   auto unregister_thread_closure =
       HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kUIThread);
 
-  // Start a HangWatchScopeEnabled that expires right away. Then advance
+  // Start a WatchHangsInScope that expires right away. Then advance
   // time to make sure a hang is detected.
-  HangWatchScopeEnabled expires_instantly(base::TimeDelta{});
+  WatchHangsInScope expires_instantly(base::TimeDelta{});
   task_environment_.FastForwardBy(kHangTime);
   {
     // De-activate hang watching,
-    HangWatchScopeDisabled disabler;
+    IgnoreHangsInScope disabler;
 
-    // Start a HangWatchScopeEnabled under the disabler that expires right away.
+    // Start a WatchHangsInScope under the disabler that expires right away.
     // Then advance time to make sure a hang is detected.
-    HangWatchScopeEnabled also_expires_instantly(base::TimeDelta{});
+    WatchHangsInScope also_expires_instantly(base::TimeDelta{});
     task_environment_.FastForwardBy(kHangTime);
   }
 
@@ -423,21 +423,21 @@ TEST_F(HangWatcherTest, NewScopeAfterDisabling) {
   auto unregister_thread_closure =
       HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kUIThread);
 
-  // Start a HangWatchScopeEnabled that expires right away. Then advance
+  // Start a WatchHangsInScope that expires right away. Then advance
   // time to make sure a hang is detected.
-  HangWatchScopeEnabled expires_instantly(base::TimeDelta{});
+  WatchHangsInScope expires_instantly(base::TimeDelta{});
   task_environment_.FastForwardBy(kHangTime);
   {
     // De-activate hang watching,
-    HangWatchScopeDisabled disabler;
+    IgnoreHangsInScope disabler;
 
-    // Start a HangWatchScopeEnabled under the disabler that expires right away.
+    // Start a WatchHangsInScope under the disabler that expires right away.
     // Then advance time to make sure a hang is detected.
-    HangWatchScopeEnabled also_expires_instantly(base::TimeDelta{});
+    WatchHangsInScope also_expires_instantly(base::TimeDelta{});
     task_environment_.FastForwardBy(kHangTime);
   }
 
-  HangWatchScopeEnabled also_expires_instantly(base::TimeDelta{});
+  WatchHangsInScope also_expires_instantly(base::TimeDelta{});
   task_environment_.FastForwardBy(kHangTime);
 
   // Trigger a monitoring on HangWatcher thread and verify results.
@@ -469,14 +469,14 @@ TEST_F(HangWatcherTest, NestedScopes) {
   // At this point we have not set any timeouts.
   {
     // Create a first timeout which is more restrictive than the default.
-    HangWatchScopeEnabled first_scope(kFirstTimeout);
+    WatchHangsInScope first_scope(kFirstTimeout);
 
     // We are on mock time. There is no time advancement and as such no hangs.
     ASSERT_FALSE(current_hang_watch_state->IsOverDeadline());
     ASSERT_EQ(current_hang_watch_state->GetDeadline(), first_deadline);
     {
       // Set a yet more restrictive deadline. Still no hang.
-      HangWatchScopeEnabled second_scope(kSecondTimeout);
+      WatchHangsInScope second_scope(kSecondTimeout);
       ASSERT_FALSE(current_hang_watch_state->IsOverDeadline());
       ASSERT_EQ(current_hang_watch_state->GetDeadline(), second_deadline);
     }
@@ -659,7 +659,7 @@ class HangWatcherSnapshotTest : public testing::Test {
 }  // namespace
 
 // Verify that the hang capture fails when marking a thread for blocking fails.
-// This simulates a HangWatchScopeEnabled completing between the time the hang
+// This simulates a WatchHangsInScope completing between the time the hang
 // was dected and the time it is recorded which would create a non-actionable
 // report.
 TEST_F(HangWatcherSnapshotTest, NonActionableReport) {
@@ -674,9 +674,9 @@ TEST_F(HangWatcherSnapshotTest, NonActionableReport) {
   auto unregister_thread_closure =
       HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kUIThread);
   {
-    // Start a HangWatchScopeEnabled that expires right away. Ensures that
+    // Start a WatchHangsInScope that expires right away. Ensures that
     // the first monitor will detect a hang.
-    HangWatchScopeEnabled expires_instantly(base::TimeDelta{});
+    WatchHangsInScope expires_instantly(base::TimeDelta{});
 
     internal::HangWatchState* current_hang_watch_state =
         internal::HangWatchState::GetHangWatchStateForCurrentThread()->Get();
@@ -725,11 +725,11 @@ TEST_F(HangWatcherSnapshotTest, DISABLED_HungThreadIDs) {
   BlockingThread blocking_thread(&monitor_event_, base::TimeDelta{});
   blocking_thread.StartAndWaitForScopeEntered();
   {
-    // Start a HangWatchScopeEnabled that expires right away. Ensures that
+    // Start a WatchHangsInScope that expires right away. Ensures that
     // the first monitor will detect a hang. This scope will naturally have a
     // later deadline than the one in |blocking_thread_| since it was created
     // after.
-    HangWatchScopeEnabled expires_instantly(base::TimeDelta{});
+    WatchHangsInScope expires_instantly(base::TimeDelta{});
 
     // Hung thread list should contain the id the blocking thread and then the
     // id of the test main thread since that is the order of increasing
@@ -755,7 +755,7 @@ TEST_F(HangWatcherSnapshotTest, DISABLED_HungThreadIDs) {
 
   // Once all recorded scopes are over creating a new one and monitoring will
   // trigger a hang detection.
-  HangWatchScopeEnabled expires_instantly(base::TimeDelta{});
+  WatchHangsInScope expires_instantly(base::TimeDelta{});
   TestIDList(ConcatenateThreadIds({test_thread_id_}));
 }
 
@@ -919,9 +919,9 @@ TEST_F(HangWatcherPeriodicMonitoringTest, NoMonitorOnOverSleep) {
 }
 
 namespace {
-class HangWatchScopeEnabledBlockingTest : public testing::Test {
+class WatchHangsInScopeBlockingTest : public testing::Test {
  public:
-  HangWatchScopeEnabledBlockingTest() {
+  WatchHangsInScopeBlockingTest() {
     feature_list_.InitWithFeaturesAndParameters(kFeatureAndParams, {});
     hang_watcher_.InitializeOnMainThread();
 
@@ -953,16 +953,16 @@ class HangWatchScopeEnabledBlockingTest : public testing::Test {
 
   void TearDown() override { hang_watcher_.UnitializeOnMainThreadForTesting(); }
 
-  HangWatchScopeEnabledBlockingTest(
-      const HangWatchScopeEnabledBlockingTest& other) = delete;
-  HangWatchScopeEnabledBlockingTest& operator=(
-      const HangWatchScopeEnabledBlockingTest& other) = delete;
+  WatchHangsInScopeBlockingTest(const WatchHangsInScopeBlockingTest& other) =
+      delete;
+  WatchHangsInScopeBlockingTest& operator=(
+      const WatchHangsInScopeBlockingTest& other) = delete;
 
   void VerifyScopesDontBlock() {
-    // Start a HangWatchScopeEnabled that cannot possibly cause a hang to be
+    // Start a WatchHangsInScope that cannot possibly cause a hang to be
     // detected.
     {
-      HangWatchScopeEnabled long_scope(kVeryLongDelta);
+      WatchHangsInScope long_scope(kVeryLongDelta);
 
       // Manually trigger a monitoring.
       hang_watcher_.SignalMonitorEventForTesting();
@@ -997,27 +997,27 @@ class HangWatchScopeEnabledBlockingTest : public testing::Test {
 };
 }  // namespace
 
-// Tests that execution is unimpeded by ~HangWatchScopeEnabled() when no capture
+// Tests that execution is unimpeded by ~WatchHangsInScope() when no capture
 // ever takes place.
-TEST_F(HangWatchScopeEnabledBlockingTest, ScopeDoesNotBlocksWithoutCapture) {
+TEST_F(WatchHangsInScopeBlockingTest, ScopeDoesNotBlocksWithoutCapture) {
   // No capture should take place so |continue_capture_| is not signaled to
   // create a test hang if one ever does.
   VerifyScopesDontBlock();
 }
 
-// Test that execution blocks in ~HangWatchScopeEnabled() for a thread under
+// Test that execution blocks in ~WatchHangsInScope() for a thread under
 // watch during the capturing of a hang.
-TEST_F(HangWatchScopeEnabledBlockingTest, ScopeBlocksDuringCapture) {
+TEST_F(WatchHangsInScopeBlockingTest, ScopeBlocksDuringCapture) {
   // The capture completing is not dependent on any test event. Signal to make
   // sure the test is not blocked.
   continue_capture_.Signal();
 
-  // Start a HangWatchScopeEnabled that expires in the past already. Ensures
+  // Start a WatchHangsInScope that expires in the past already. Ensures
   // that the first monitor will detect a hang.
   {
-    // Start a HangWatchScopeEnabled that expires right away. Ensures that the
+    // Start a WatchHangsInScope that expires right away. Ensures that the
     // first monitor will detect a hang.
-    HangWatchScopeEnabled expires_right_away(base::TimeDelta{});
+    WatchHangsInScope expires_right_away(base::TimeDelta{});
 
     // Manually trigger a monitoring.
     hang_watcher_.SignalMonitorEventForTesting();
@@ -1026,7 +1026,7 @@ TEST_F(HangWatchScopeEnabledBlockingTest, ScopeBlocksDuringCapture) {
     capture_started_.Wait();
 
     // Execution will get stuck in the outer scope because it can't escape
-    // ~HangWatchScopeEnabled() if a hang capture is under way.
+    // ~WatchHangsInScope() if a hang capture is under way.
   }
 
   // A hang was in progress so execution should have been blocked in
@@ -1052,13 +1052,12 @@ TEST_F(HangWatchScopeEnabledBlockingTest, ScopeBlocksDuringCapture) {
   NewScopeDoesNotBlockDuringCapture
 #endif
 
-// Test that execution does not block in ~HangWatchScopeEnabled() when the scope
+// Test that execution does not block in ~WatchHangsInScope() when the scope
 // was created after the start of a capture.
-TEST_F(HangWatchScopeEnabledBlockingTest,
-       MAYBE_NewScopeDoesNotBlockDuringCapture) {
-  // Start a HangWatchScopeEnabled that expires right away. Ensures that the
+TEST_F(WatchHangsInScopeBlockingTest, MAYBE_NewScopeDoesNotBlockDuringCapture) {
+  // Start a WatchHangsInScope that expires right away. Ensures that the
   // first monitor will detect a hang.
-  HangWatchScopeEnabled expires_right_away(base::TimeDelta{});
+  WatchHangsInScope expires_right_away(base::TimeDelta{});
 
   // Manually trigger a monitoring.
   hang_watcher_.SignalMonitorEventForTesting();
@@ -1068,9 +1067,9 @@ TEST_F(HangWatchScopeEnabledBlockingTest,
 
   // A scope started once a capture is already under way should not block
   // execution.
-  { HangWatchScopeEnabled also_expires_right_away(base::TimeDelta{}); }
+  { WatchHangsInScope also_expires_right_away(base::TimeDelta{}); }
 
-  // Wait for the new HangWatchScopeEnabled to be destroyed to let the capture
+  // Wait for the new WatchHangsInScope to be destroyed to let the capture
   // finish. If the new scope block waiting for the capture to finish this would
   // create a deadlock and the test would hang.
   continue_capture_.Signal();
@@ -1081,8 +1080,8 @@ namespace {
 
 constexpr std::array<HangWatchDeadline::Flag, 4> kAllFlags{
     {HangWatchDeadline::Flag::kMinValue,
-     HangWatchDeadline::Flag::kIgnoreCurrentHangWatchScopeEnabled,
-     HangWatchDeadline::Flag::kHasActiveHangWatchScopeDisabled,
+     HangWatchDeadline::Flag::kIgnoreCurrentWatchHangsInScope,
+     HangWatchDeadline::Flag::kHasActiveIgnoreHangsInScope,
      HangWatchDeadline::Flag::kShouldBlockOnHang}};
 }  // namespace
 
@@ -1123,7 +1122,7 @@ TEST_F(HangWatchDeadlineTest, SetAndClearPersistentFlag) {
   std::tie(old_flags, old_deadline) = deadline_.GetFlagsAndDeadline();
 
   // Set the flag. Operation cannot fail.
-  deadline_.SetIgnoreCurrentHangWatchScopeEnabled();
+  deadline_.SetIgnoreCurrentWatchHangsInScope();
 
   // Get new flags and deadline.
   uint64_t new_flags;
@@ -1132,7 +1131,7 @@ TEST_F(HangWatchDeadlineTest, SetAndClearPersistentFlag) {
 
   // Flag was set properly.
   ASSERT_TRUE(HangWatchDeadline::IsFlagSet(
-      HangWatchDeadline::Flag::kIgnoreCurrentHangWatchScopeEnabled, new_flags));
+      HangWatchDeadline::Flag::kIgnoreCurrentWatchHangsInScope, new_flags));
 
   // No side-effect on deadline.
   ASSERT_EQ(new_deadline, old_deadline);
@@ -1140,11 +1139,11 @@ TEST_F(HangWatchDeadlineTest, SetAndClearPersistentFlag) {
   // No side-effect on other flags.
   ASSERT_EQ(
       FlagsMinus(new_flags,
-                 HangWatchDeadline::Flag::kIgnoreCurrentHangWatchScopeEnabled),
+                 HangWatchDeadline::Flag::kIgnoreCurrentWatchHangsInScope),
       old_flags);
 
   // Clear the flag, operation cannot fail.
-  deadline_.UnsetIgnoreCurrentHangWatchScopeEnabled();
+  deadline_.UnsetIgnoreCurrentWatchHangsInScope();
 
   // Update new values.
   std::tie(new_flags, new_deadline) = deadline_.GetFlagsAndDeadline();
@@ -1199,7 +1198,7 @@ TEST_F(HangWatchDeadlineTest, SetShouldBlockOnHangDeadlineChanged) {
   ASSERT_EQ(deadline_.GetDeadline(), new_deadline);
 }
 
-// Verify that clearing a persistent (kIgnoreCurrentHangWatchScopeEnabled) when
+// Verify that clearing a persistent (kIgnoreCurrentWatchHangsInScope) when
 // the value changed succeeds and has non side-effects.
 TEST_F(HangWatchDeadlineTest, ClearIgnoreHangsDeadlineChanged) {
   AssertNoFlagsSet();
@@ -1208,10 +1207,10 @@ TEST_F(HangWatchDeadlineTest, ClearIgnoreHangsDeadlineChanged) {
   base::TimeTicks deadline;
   std::tie(flags, deadline) = deadline_.GetFlagsAndDeadline();
 
-  deadline_.SetIgnoreCurrentHangWatchScopeEnabled();
+  deadline_.SetIgnoreCurrentWatchHangsInScope();
   std::tie(flags, deadline) = deadline_.GetFlagsAndDeadline();
   ASSERT_TRUE(HangWatchDeadline::IsFlagSet(
-      HangWatchDeadline::Flag::kIgnoreCurrentHangWatchScopeEnabled, flags));
+      HangWatchDeadline::Flag::kIgnoreCurrentWatchHangsInScope, flags));
 
   // Simulate deadline change. Flags are constant.
   const base::TimeTicks new_deadline =
@@ -1223,16 +1222,16 @@ TEST_F(HangWatchDeadlineTest, ClearIgnoreHangsDeadlineChanged) {
   }));
 
   // Clearing kIgnoreHang is unafected by deadline or flags change.
-  deadline_.UnsetIgnoreCurrentHangWatchScopeEnabled();
+  deadline_.UnsetIgnoreCurrentWatchHangsInScope();
   ASSERT_FALSE(deadline_.IsFlagSet(
-      HangWatchDeadline::Flag::kIgnoreCurrentHangWatchScopeEnabled));
+      HangWatchDeadline::Flag::kIgnoreCurrentWatchHangsInScope));
 
   // New deadline that was changed concurrently is preserved.
   ASSERT_TRUE(deadline_.IsFlagSet(HangWatchDeadline::Flag::kShouldBlockOnHang));
   ASSERT_EQ(deadline_.GetDeadline(), new_deadline);
 }
 
-// Verify that setting a persistent (kIgnoreCurrentHangWatchScopeEnabled) when
+// Verify that setting a persistent (kIgnoreCurrentWatchHangsInScope) when
 // the deadline or flags changed succeeds and has non side-effects.
 TEST_F(HangWatchDeadlineTest,
        SetIgnoreCurrentHangWatchScopeEnableDeadlineChangedd) {
@@ -1253,9 +1252,9 @@ TEST_F(HangWatchDeadlineTest,
   }));
 
   // kIgnoreHang persists through value change.
-  deadline_.SetIgnoreCurrentHangWatchScopeEnabled();
+  deadline_.SetIgnoreCurrentWatchHangsInScope();
   ASSERT_TRUE(deadline_.IsFlagSet(
-      HangWatchDeadline::Flag::kIgnoreCurrentHangWatchScopeEnabled));
+      HangWatchDeadline::Flag::kIgnoreCurrentWatchHangsInScope));
 
   // New deadline and flags that changed concurrently are preserved.
   ASSERT_TRUE(deadline_.IsFlagSet(HangWatchDeadline::Flag::kShouldBlockOnHang));
@@ -1274,9 +1273,9 @@ TEST_F(HangWatchDeadlineTest, SetDeadlineWipesFlags) {
 
   std::tie(flags, deadline) = deadline_.GetFlagsAndDeadline();
 
-  deadline_.SetIgnoreCurrentHangWatchScopeEnabled();
+  deadline_.SetIgnoreCurrentWatchHangsInScope();
   ASSERT_TRUE(deadline_.IsFlagSet(
-      HangWatchDeadline::Flag::kIgnoreCurrentHangWatchScopeEnabled));
+      HangWatchDeadline::Flag::kIgnoreCurrentWatchHangsInScope));
 
   // Change the deadline.
   deadline_.SetDeadline(TimeTicks{});
@@ -1286,7 +1285,7 @@ TEST_F(HangWatchDeadlineTest, SetDeadlineWipesFlags) {
   ASSERT_FALSE(
       deadline_.IsFlagSet(HangWatchDeadline::Flag::kShouldBlockOnHang));
   ASSERT_TRUE(deadline_.IsFlagSet(
-      HangWatchDeadline::Flag::kIgnoreCurrentHangWatchScopeEnabled));
+      HangWatchDeadline::Flag::kIgnoreCurrentWatchHangsInScope));
 }
 
 }  // namespace internal
