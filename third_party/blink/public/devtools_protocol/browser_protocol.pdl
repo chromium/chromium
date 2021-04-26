@@ -668,7 +668,7 @@ experimental domain Audits
       CreationIssue
 
   # Details for a issue arising from an SAB being instantiated in, or
-  # transfered to a context that is not cross-origin isolated.
+  # transferred to a context that is not cross-origin isolated.
   type SharedArrayBufferIssueDetails extends object
     properties
       SourceCodeLocation sourceCodeLocation
@@ -1001,7 +1001,7 @@ domain Browser
         default
       # BrowserContext to set download behavior. When omitted, default browser context is used.
       optional BrowserContextID browserContextId
-      # The default path to save downloaded files to. This is requred if behavior is set to 'allow'
+      # The default path to save downloaded files to. This is required if behavior is set to 'allow'
       # or 'allowAndName'.
       optional string downloadPath
       # Whether to emit download events (defaults to false).
@@ -2591,10 +2591,10 @@ domain DOM
       # Id of the node that has been removed.
       NodeId nodeId
 
-  # Called when distrubution is changed.
+  # Called when distribution is changed.
   experimental event distributedNodesUpdated
     parameters
-      # Insertion point where distrubuted nodes were updated.
+      # Insertion point where distributed nodes were updated.
       NodeId insertionPointId
       # Distributed nodes for given insertion point.
       array of BackendNode distributedNodes
@@ -3279,10 +3279,10 @@ domain Emulation
       # True if emulation is supported.
       boolean result
 
-  # Clears the overriden device metrics.
+  # Clears the overridden device metrics.
   command clearDeviceMetricsOverride
 
-  # Clears the overriden Geolocation Position and Error.
+  # Clears the overridden Geolocation Position and Error.
   command clearGeolocationOverride
 
   # Requests that page scale factor is reset to initial values.
@@ -3444,7 +3444,7 @@ domain Emulation
       # If set the virtual time policy change should be deferred until any frame starts navigating.
       # Note any previous deferred policy change is superseded.
       optional boolean waitForNavigation
-      # If set, base::Time::Now will be overriden to initially return this value.
+      # If set, base::Time::Now will be overridden to initially return this value.
       optional Network.TimeSinceEpoch initialVirtualTime
     returns
       # Absolute timestamp at which virtual time was first enabled (up time in milliseconds).
@@ -3560,7 +3560,7 @@ experimental domain HeadlessExperimental
 # Input/Output operations for streams produced by DevTools.
 domain IO
 
-  # This is either obtained from another method or specifed as `blob:&lt;uuid&gt;` where
+  # This is either obtained from another method or specified as `blob:&lt;uuid&gt;` where
   # `&lt;uuid&gt` is an UUID of a Blob.
   type StreamHandle extends string
 
@@ -3585,7 +3585,7 @@ domain IO
       optional boolean base64Encoded
       # Data that were read.
       string data
-      # Set if the end-of-file condition occured while reading.
+      # Set if the end-of-file condition occurred while reading.
       boolean eof
 
   # Return UUID of Blob object specified by a remote object id.
@@ -5146,7 +5146,7 @@ domain Network
       optional string urlPattern
       # If set, only requests for matching resource types will be intercepted.
       optional ResourceType resourceType
-      # Stage at wich to begin intercepting requests. Default is Request.
+      # Stage at which to begin intercepting requests. Default is Request.
       optional InterceptionStage interceptionStage
 
   # Information about a signed exchange signature.
@@ -6818,7 +6818,7 @@ domain Page
       # Serialized page data.
       string data
 
-  # Clears the overriden device metrics.
+  # Clears the overridden device metrics.
   experimental deprecated command clearDeviceMetricsOverride
     # Use 'Emulation.clearDeviceMetricsOverride' instead
     redirect Emulation
@@ -6828,7 +6828,7 @@ domain Page
     # Use 'DeviceOrientation.clearDeviceOrientationOverride' instead
     redirect DeviceOrientation
 
-  # Clears the overriden Geolocation Position and Error.
+  # Clears the overridden Geolocation Position and Error.
   deprecated command clearGeolocationOverride
     # Use 'Emulation.clearGeolocationOverride' instead
     redirect Emulation
@@ -7167,7 +7167,7 @@ domain Page
         deny
         allow
         default
-      # The default path to save downloaded files to. This is requred if behavior is set to 'allow'
+      # The default path to save downloaded files to. This is required if behavior is set to 'allow'
       optional string downloadPath
 
   # Overrides the Geolocation Position or Error. Omitting any of the parameters emulates position
@@ -8033,7 +8033,7 @@ experimental domain Storage
       # Security origin.
       string origin
       # The quota size (in bytes) to override the original quota with.
-      # If this is called multiple times, the overriden quota will be equal to
+      # If this is called multiple times, the overridden quota will be equal to
       # the quotaSize provided in the final call. If this is called without
       # specifying a quotaSize, the quota will be reset to the default value for
       # the specified origin. If this is called multiple times with different
@@ -8676,7 +8676,7 @@ domain Fetch
       optional string urlPattern
       # If set, only requests for matching resource types will be intercepted.
       optional Network.ResourceType resourceType
-      # Stage at wich to begin intercepting requests. Default is Request.
+      # Stage at which to begin intercepting requests. Default is Request.
       optional RequestStage requestStage
 
   # Response HTTP header entry
@@ -8906,7 +8906,7 @@ experimental domain WebAudio
     properties
       # The current context time in second in BaseAudioContext.
       number currentTime
-      # The time spent on rendering graph divided by render qunatum duration,
+      # The time spent on rendering graph divided by render quantum duration,
       # and multiplied by 100. 100 means the audio renderer reached the full
       # capacity and glitch may occur.
       number renderCapacity
@@ -9273,8 +9273,8 @@ experimental domain Media
       PlayerId playerId
       array of PlayerError errors
 
-  # Called whenever a player is created, or when a new agent joins and recieves
-  # a list of active players. If an agent is restored, it will recieve the full
+  # Called whenever a player is created, or when a new agent joins and receives
+  # a list of active players. If an agent is restored, it will receive the full
   # list of player ids and all events again.
   event playersCreated
     parameters
