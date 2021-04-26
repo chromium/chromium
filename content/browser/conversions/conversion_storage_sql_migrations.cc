@@ -45,8 +45,8 @@ std::vector<StorableImpression> GetImpressions(sql::Database* db,
     url::Origin conversion_destination =
         DeserializeOrigin(statement.ColumnString(2));
     url::Origin reporting_origin = DeserializeOrigin(statement.ColumnString(3));
-    base::Time impression_time = DeserializeTime(statement.ColumnInt64(4));
-    base::Time expiry_time = DeserializeTime(statement.ColumnInt64(5));
+    base::Time impression_time = statement.ColumnTime(4);
+    base::Time expiry_time = statement.ColumnTime(5);
     int64_t impression_id = statement.ColumnInt64(6);
 
     // All impressions prior to the addition of the |source_type| column are

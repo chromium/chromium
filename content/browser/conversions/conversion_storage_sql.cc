@@ -169,8 +169,8 @@ void ConversionStorageSql::StoreImpression(
   statement.BindString(2, SerializeOrigin(impression.conversion_origin()));
   statement.BindString(3, serialized_conversion_destination);
   statement.BindString(4, serialized_reporting_origin);
-  statement.BindInt64(5, SerializeTime(impression.impression_time()));
-  statement.BindInt64(6, SerializeTime(impression.expiry_time()));
+  statement.BindTime(5, impression.impression_time());
+  statement.BindTime(6, impression.expiry_time());
   statement.BindInt(7, static_cast<int>(impression.source_type()));
   statement.BindInt(8, 1 /*true*/);
   statement.Run();
@@ -199,7 +199,6 @@ int ConversionStorageSql::MaybeCreateAndStoreConversionReports(
   DCHECK(!reporting_origin.opaque());
 
   base::Time current_time = clock_->Now();
-  int64_t serialized_current_time = SerializeTime(current_time);
 
   // Get all impressions that match this <reporting_origin,
   // conversion_destination> pair. Only get impressions that are active and not
@@ -216,7 +215,7 @@ int ConversionStorageSql::MaybeCreateAndStoreConversionReports(
       db_->GetCachedStatement(SQL_FROM_HERE, kGetMatchingImpressionsSql));
   statement.BindString(0, serialized_conversion_destination);
   statement.BindString(1, SerializeOrigin(reporting_origin));
-  statement.BindInt64(2, serialized_current_time);
+  statement.BindTime(2, current_time);
   // TODO(apaseltiner): Support kEvent as well as kNavigation.
   statement.BindInt(
       3, static_cast<int>(StorableImpression::SourceType::kNavigation));
@@ -240,8 +239,8 @@ int ConversionStorageSql::MaybeCreateAndStoreConversionReports(
     // happen if there is some sort of database corruption.
     if (impression_origin.opaque())
       continue;
-    base::Time impression_time = DeserializeTime(statement.ColumnInt64(4));
-    base::Time expiry_time = DeserializeTime(statement.ColumnInt64(5));
+    base::Time impression_time = statement.ColumnTime(4);
+    base::Time expiry_time = statement.ColumnTime(5);
 
     StorableImpression impression(
         impression_data, impression_origin, conversion_origin, reporting_origin,
@@ -319,8 +318,8 @@ int ConversionStorageSql::MaybeCreateAndStoreConversionReports(
     store_conversion_statement.Reset(/*clear_bound_vars=*/true);
     store_conversion_statement.BindInt64(0, *report.impression.impression_id());
     store_conversion_statement.BindString(1, report.conversion_data);
-    store_conversion_statement.BindInt64(2, serialized_current_time);
-    store_conversion_statement.BindInt64(3, SerializeTime(report.report_time));
+    store_conversion_statement.BindTime(2, current_time);
+    store_conversion_statement.BindTime(3, report.report_time);
     store_conversion_statement.BindInt(4, report.attribution_credit);
     store_conversion_statement.Run();
 
@@ -369,14 +368,14 @@ std::vector<ConversionReport> ConversionStorageSql::GetConversionsToReport(
       "C.impression_id = I.impression_id WHERE C.report_time <= ?";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kGetExpiredConversionsSql));
-  statement.BindInt64(0, SerializeTime(max_report_time));
+  statement.BindTime(0, max_report_time);
 
   std::vector<ConversionReport> conversions;
   while (statement.Step()) {
     std::string conversion_data = statement.ColumnString(0);
     int attribution_credit = statement.ColumnInt(1);
-    base::Time conversion_time = DeserializeTime(statement.ColumnInt64(2));
-    base::Time report_time = DeserializeTime(statement.ColumnInt64(3));
+    base::Time conversion_time = statement.ColumnTime(2);
+    base::Time report_time = statement.ColumnTime(3);
     int64_t conversion_id = statement.ColumnInt64(4);
     url::Origin impression_origin =
         DeserializeOrigin(statement.ColumnString(5));
@@ -384,8 +383,8 @@ std::vector<ConversionReport> ConversionStorageSql::GetConversionsToReport(
         DeserializeOrigin(statement.ColumnString(6));
     url::Origin reporting_origin = DeserializeOrigin(statement.ColumnString(7));
     std::string impression_data = statement.ColumnString(8);
-    base::Time impression_time = DeserializeTime(statement.ColumnInt64(9));
-    base::Time expiry_time = DeserializeTime(statement.ColumnInt64(10));
+    base::Time impression_time = statement.ColumnTime(9);
+    base::Time expiry_time = statement.ColumnTime(10);
     int64_t impression_id = statement.ColumnInt64(11);
     StorableImpression::SourceType source_type =
         static_cast<StorableImpression::SourceType>(statement.ColumnInt(12));
@@ -438,7 +437,7 @@ int ConversionStorageSql::DeleteExpiredImpressions() {
       "impression_id NOT IN (SELECT impression_id FROM conversions)";
   sql::Statement delete_expired_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteExpiredImpressionsSql));
-  delete_expired_statement.BindInt64(0, SerializeTime(clock_->Now()));
+  delete_expired_statement.BindTime(0, clock_->Now());
   if (!delete_expired_statement.Run())
     return 0;
   int change_count = db_->GetLastChangeCount();
@@ -507,8 +506,8 @@ void ConversionStorageSql::ClearData(
       "(C.conversion_time BETWEEN ?1 AND ?2)";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kScanCandidateData));
-  statement.BindInt64(0, SerializeTime(delete_begin));
-  statement.BindInt64(1, SerializeTime(delete_end));
+  statement.BindTime(0, delete_begin);
+  statement.BindTime(1, delete_end);
 
   std::vector<int64_t> impression_ids_to_delete;
   std::vector<int64_t> conversion_ids_to_delete;
@@ -630,8 +629,8 @@ void ConversionStorageSql::ClearAllDataInRange(base::Time delete_begin,
       "WHERE conversion_time BETWEEN ?1 AND ?2)";
   sql::Statement select_impressions_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kSelectImpressionRangeSql));
-  select_impressions_statement.BindInt64(0, SerializeTime(delete_begin));
-  select_impressions_statement.BindInt64(1, SerializeTime(delete_end));
+  select_impressions_statement.BindTime(0, delete_begin);
+  select_impressions_statement.BindTime(1, delete_end);
 
   base::flat_set<int64_t> impression_ids_to_delete;
   while (select_impressions_statement.Step()) {
@@ -657,8 +656,8 @@ void ConversionStorageSql::ClearAllDataInRange(base::Time delete_begin,
       "OR impression_id NOT IN (SELECT impression_id FROM impressions)";
   sql::Statement delete_conversions_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDeleteConversionRangeSql));
-  delete_conversions_statement.BindInt64(0, SerializeTime(delete_begin));
-  delete_conversions_statement.BindInt64(1, SerializeTime(delete_end));
+  delete_conversions_statement.BindTime(0, delete_begin);
+  delete_conversions_statement.BindTime(1, delete_end);
   if (!delete_conversions_statement.Run())
     return;
 
@@ -764,7 +763,7 @@ std::vector<StorableImpression> ConversionStorageSql::GetImpressions(
       db_->GetCachedStatement(SQL_FROM_HERE, kGetImpressionsSql));
   statement.BindInt64(0, start_impression_id);
   statement.BindInt(1, active == ImpressionFilter::kOnlyActive ? 1 : 0);
-  statement.BindInt64(2, SerializeTime(min_expiry_time));
+  statement.BindTime(2, min_expiry_time);
   statement.BindInt(3, num_impressions);
 
   std::vector<StorableImpression> impressions;
@@ -775,8 +774,8 @@ std::vector<StorableImpression> ConversionStorageSql::GetImpressions(
     url::Origin conversion_destination =
         DeserializeOrigin(statement.ColumnString(2));
     url::Origin reporting_origin = DeserializeOrigin(statement.ColumnString(3));
-    base::Time impression_time = DeserializeTime(statement.ColumnInt64(4));
-    base::Time expiry_time = DeserializeTime(statement.ColumnInt64(5));
+    base::Time impression_time = statement.ColumnTime(4);
+    base::Time expiry_time = statement.ColumnTime(5);
     int64_t impression_id = statement.ColumnInt64(6);
     StorableImpression::SourceType source_type =
         static_cast<StorableImpression::SourceType>(statement.ColumnInt(7));

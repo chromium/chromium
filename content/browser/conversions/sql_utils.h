@@ -5,9 +5,6 @@
 #ifndef CONTENT_BROWSER_CONVERSIONS_SQL_UTILS_H_
 #define CONTENT_BROWSER_CONVERSIONS_SQL_UTILS_H_
 
-#include <stdint.h>
-
-#include "base/time/time.h"
 #include "url/origin.h"
 
 namespace content {
@@ -15,10 +12,6 @@ namespace content {
 std::string SerializeOrigin(const url::Origin& origin);
 
 url::Origin DeserializeOrigin(const std::string& origin);
-
-int64_t SerializeTime(base::Time time);
-
-base::Time DeserializeTime(int64_t microseconds);
 
 }  // namespace content
 

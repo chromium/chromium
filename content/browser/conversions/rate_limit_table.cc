@@ -95,7 +95,7 @@ bool RateLimitTable::AddRateLimit(sql::Database* db,
   statement.BindString(4,
                        report.impression.ConversionDestination().Serialize());
   statement.BindString(5, report.impression.conversion_origin().Serialize());
-  statement.BindInt64(6, SerializeTime(report.conversion_time));
+  statement.BindTime(6, report.conversion_time);
   return statement.Run();
 }
 
@@ -121,7 +121,7 @@ bool RateLimitTable::IsAttributionAllowed(sql::Database* db,
       1, net::SchemefulSite(report.impression.impression_origin()).Serialize());
   statement.BindString(2,
                        report.impression.ConversionDestination().Serialize());
-  statement.BindInt64(3, SerializeTime(min_timestamp));
+  statement.BindTime(3, min_timestamp);
   if (!statement.Step())
     return false;
 
@@ -141,8 +141,8 @@ bool RateLimitTable::ClearAllDataInRange(sql::Database* db,
       "?";
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kDeleteRateLimitRangeSql));
-  statement.BindInt64(0, SerializeTime(delete_begin));
-  statement.BindInt64(1, SerializeTime(delete_end));
+  statement.BindTime(0, delete_begin);
+  statement.BindTime(1, delete_end);
   return statement.Run();
 }
 
@@ -171,8 +171,8 @@ bool RateLimitTable::ClearDataForOriginsInRange(
         "WHERE conversion_time BETWEEN ? AND ?";
     sql::Statement statement(
         db->GetCachedStatement(SQL_FROM_HERE, kScanCandidateData));
-    statement.BindInt64(0, SerializeTime(delete_begin));
-    statement.BindInt64(1, SerializeTime(delete_end));
+    statement.BindTime(0, delete_begin);
+    statement.BindTime(1, delete_end);
 
     while (statement.Step()) {
       int64_t rate_limit_id = statement.ColumnInt64(0);
@@ -214,7 +214,7 @@ int RateLimitTable::DeleteExpiredRateLimits(sql::Database* db) {
       "DELETE FROM rate_limits WHERE conversion_time <= ?";
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kDeleteExpiredRateLimits));
-  statement.BindInt64(0, SerializeTime(timestamp));
+  statement.BindTime(0, timestamp);
   if (!statement.Run())
     return 0;
   return db->GetLastChangeCount();
