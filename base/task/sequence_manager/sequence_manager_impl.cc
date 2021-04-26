@@ -198,6 +198,7 @@ SequenceManagerImpl::SequenceManagerImpl(
       empty_queues_to_reload_(associated_thread_),
       memory_corruption_sentinel_(kMemoryCorruptionSentinelValue),
       main_thread_only_(associated_thread_, settings_) {
+  recordreplay::RegisterPointer(this);
   TRACE_EVENT_OBJECT_CREATED_WITH_ID(
       TRACE_DISABLED_BY_DEFAULT("sequence_manager"), "SequenceManager", this);
   main_thread_only().selector.SetTaskQueueSelectorObserver(this);
@@ -211,6 +212,7 @@ SequenceManagerImpl::SequenceManagerImpl(
 }
 
 SequenceManagerImpl::~SequenceManagerImpl() {
+  recordreplay::UnregisterPointer(this);
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   TRACE_EVENT_OBJECT_DELETED_WITH_ID(
       TRACE_DISABLED_BY_DEFAULT("sequence_manager"), "SequenceManager", this);
@@ -1041,6 +1043,7 @@ void SequenceManagerImpl::MaybeReclaimMemory() {
 }
 
 void SequenceManagerImpl::ReclaimMemory() {
+  recordreplay::Assert("SequenceManagerImpl::ReclaimMemory %lu", recordreplay::PointerId(this));
   std::map<TimeDomain*, TimeTicks> time_domain_now;
   for (auto* const queue : main_thread_only().active_queues)
     ReclaimMemoryFromQueue(queue, &time_domain_now);
