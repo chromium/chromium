@@ -18,9 +18,9 @@ static_library("core") {
     ":mojo_bindings",
     "//base",
     "//components/history/core/browser",
+    "//components/history_clusters/core/proto",
     "//components/keyed_service/core",
     "//components/query_parser",
-    "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",
     "//url",
   ]
@@ -43,7 +43,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base/test:test_support",
     "//components/history/core/browser",
-    "//services/data_decoder/public/cpp:test_support",
+    "//components/history_clusters/core/proto",
     "//services/network:test_support",
     "//testing/gtest",
   ]

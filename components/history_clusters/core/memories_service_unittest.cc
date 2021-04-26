@@ -7,10 +7,11 @@
 #include <memory>
 #include <string>
 
+#include "base/base64.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
-#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -20,8 +21,8 @@
 #include "components/history/core/browser/url_row.h"
 #include "components/history_clusters/core/memories_features.h"
 #include "components/history_clusters/core/memories_service_test_api.h"
+#include "components/history_clusters/core/proto/clusters.pb.h"
 #include "components/history_clusters/core/visit_data.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/data_element.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -29,12 +30,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace {
+namespace history_clusters {
 
-std::string StripWhitespace(std::string str) {
-  base::EraseIf(str, base::IsAsciiWhitespace<char>);
-  return str;
-}
+namespace {
 
 // Returns a Time that's |milliseconds| milliseconds after Windows epoch.
 base::Time IntToTime(int milliseconds) {
@@ -48,12 +46,11 @@ class MemoriesServiceTest : public testing::Test {
       : shared_url_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)),
-        memories_service_(std::make_unique<history_clusters::MemoriesService>(
-            nullptr,
-            shared_url_loader_factory_)),
+        memories_service_(
+            std::make_unique<MemoriesService>(nullptr,
+                                              shared_url_loader_factory_)),
         memories_service_test_api_(
-            std::make_unique<history_clusters::MemoriesServiceTestApi>(
-                memories_service_.get())),
+            std::make_unique<MemoriesServiceTestApi>(memories_service_.get())),
         task_environment_(base::test::TaskEnvironment::MainThreadType::UI),
         run_loop_quit_(run_loop_.QuitClosure()) {}
 
@@ -65,11 +62,11 @@ class MemoriesServiceTest : public testing::Test {
     scoped_feature_list_->InitWithFeaturesAndParameters(
         {
             {
-                history_clusters::kMemories,
+                kMemories,
                 {},
             },
             {
-                history_clusters::kRemoteModelForDebugging,
+                kRemoteModelForDebugging,
                 {{"MemoriesRemoteModelEndpoint", endpoint_url}},
             },
         },
@@ -84,7 +81,7 @@ class MemoriesServiceTest : public testing::Test {
     AddVisit(visit);
   }
 
-  void AddVisit(const history_clusters::MemoriesVisit& visit) {
+  void AddVisit(const MemoriesVisit& visit) {
     auto& visit_copy =
         memories_service_->GetOrCreateIncompleteVisit(next_navigation_id_);
     visit_copy = visit;
@@ -103,18 +100,57 @@ class MemoriesServiceTest : public testing::Test {
     return std::string(element.As<network::DataElementBytes>().AsStringPiece());
   }
 
+  // Verifies that that a particular hardcoded request is in a pending request
+  // within the URL loader.
+  void VerifyHardcodedTestDataInUrlLoaderRequest() {
+    EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
+    proto::GetClustersRequest request;
+    auto* visit = request.add_visits();
+    visit->set_visit_id(2);
+    visit->set_navigation_time_ms(2);
+    visit->set_origin("https://google.com/");
+    visit->set_page_end_reason(3);
+    visit->set_url("https://google.com/");
+    visit = request.add_visits();
+    visit->set_visit_id(4);
+    visit->set_navigation_time_ms(4);
+    visit->set_origin("https://github.com/");
+    visit->set_page_end_reason(5);
+    visit->set_url("https://github.com/");
+
+    std::string encoded;
+    base::Base64Encode(request.SerializeAsString(), &encoded);
+    std::string expected_request_body =
+        base::StringPrintf("{\"data\":\"%s\"}", encoded.c_str());
+
+    EXPECT_EQ(GetPendingRequestBody(), expected_request_body);
+  }
+
+  // Fakes a particular hardcoded response from the URL loader.
+  void InjectHardcodedTestDataToUrlLoaderResponse() {
+    proto::GetClustersResponse response;
+    auto* cluster = response.add_clusters();
+    cluster->mutable_keywords()->Add("topic 1");
+    cluster->mutable_keywords()->Add("topic 2");
+    cluster->mutable_visit_ids()->Add(2);
+    cluster->mutable_visit_ids()->Add(4);
+    cluster = response.add_clusters();
+    cluster->mutable_visit_ids()->Add(4);
+
+    test_url_loader_factory_.AddResponse(kFakeEndpoint,
+                                         response.SerializeAsString());
+    EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
+  }
+
   static constexpr char kFakeEndpoint[] = "https://endpoint.com/";
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
-  std::unique_ptr<history_clusters::MemoriesService> memories_service_;
-  std::unique_ptr<history_clusters::MemoriesServiceTestApi>
-      memories_service_test_api_;
+  std::unique_ptr<MemoriesService> memories_service_;
+  std::unique_ptr<MemoriesServiceTestApi> memories_service_test_api_;
 
-  // Used to allow decoding in tests without spinning up an isolated process.
   base::test::TaskEnvironment task_environment_;
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 
   // Used to verify the async callback is invoked.
   base::RunLoop run_loop_;
@@ -133,7 +169,7 @@ TEST_F(MemoriesServiceTest, QueryMemoriesEmptyQuery) {
   auto AddVisitWithDetails = [&](int time, const GURL& url,
                                  const std::u16string title, int visit_id,
                                  int page_end_reason) {
-    history_clusters::MemoriesVisit visit;
+    MemoriesVisit visit;
     visit.visit_row.visit_time = IntToTime(time);
     visit.url_row.set_url(url);
     visit.url_row.set_title(title);
@@ -147,12 +183,12 @@ TEST_F(MemoriesServiceTest, QueryMemoriesEmptyQuery) {
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   memories_service_->QueryMemories(
-      history_clusters::mojom::QueryParams::New(),
+      mojom::QueryParams::New(),
       // This "expect" block is not run until after the fake response is sent
       // further down in this method.
       base::BindLambdaForTesting(
-          [&](history_clusters::mojom::QueryParamsPtr continuation_query_params,
-              std::vector<history_clusters::mojom::MemoryPtr> memories) {
+          [&](mojom::QueryParamsPtr continuation_query_params,
+              std::vector<mojom::MemoryPtr> memories) {
             // Verify that the continuation query params is nullptr.
             ASSERT_FALSE(!!continuation_query_params);
 
@@ -183,60 +219,8 @@ TEST_F(MemoriesServiceTest, QueryMemoriesEmptyQuery) {
             run_loop_quit_.Run();
           }));
 
-  // Verify the serialized request.
-  EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
-  EXPECT_EQ(GetPendingRequestBody(), StripWhitespace(R"(
-      {
-        "visits": [
-          {
-            "foregroundTimeSecs": 0,
-            "isFromGoogleSearch": false,
-            "navigationTimeMs": "2",
-            "origin": "https://google.com/",
-            "pageEndReason": 3,
-            "pageTransition": 0,
-            "siteEngagementScore": 0,
-            "url": "https://google.com/",
-            "visitId": "2"
-          },
-          {
-            "foregroundTimeSecs": 0,
-            "isFromGoogleSearch": false,
-            "navigationTimeMs": "4",
-            "origin": "https://github.com/",
-            "pageEndReason": 5,
-            "pageTransition": 0,
-            "siteEngagementScore": 0,
-            "url": "https://github.com/",
-            "visitId": "4"
-          }
-        ]
-      })"));
-
-  // Fake a response from the endpoint. There's a 'description' field even
-  // though we don't parse it. This is to test that we can handle extra fields.
-  test_url_loader_factory_.AddResponse(kFakeEndpoint, R"(
-      {
-        "clusters": [
-          {
-            "description": "description 1",
-            "keywords": [
-              "topic 1",
-              "topic 2"
-            ],
-            "visitIds": [
-              "2",
-              "4"
-            ]
-          },
-          {
-            "visitIds": [
-              "4"
-            ]
-          }
-        ]
-      })");
-  EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
+  VerifyHardcodedTestDataInUrlLoaderRequest();
+  InjectHardcodedTestDataToUrlLoaderResponse();
 
   // Verify the callback is invoked.
   run_loop_.Run();
@@ -248,7 +232,7 @@ TEST_F(MemoriesServiceTest, QueryMemories) {
   auto AddVisitWithDetails = [&](int time, const GURL& url,
                                  const std::u16string title, int visit_id,
                                  int page_end_reason) {
-    history_clusters::MemoriesVisit visit;
+    MemoriesVisit visit;
     visit.visit_row.visit_time = IntToTime(time);
     visit.url_row.set_url(url);
     visit.url_row.set_title(title);
@@ -260,7 +244,7 @@ TEST_F(MemoriesServiceTest, QueryMemories) {
   AddVisitWithDetails(2, GURL{"https://google.com"}, u"Google title", 2, 3);
   AddVisitWithDetails(4, GURL{"https://github.com"}, u"Github title", 4, 5);
 
-  auto query_params = history_clusters::mojom::QueryParams::New();
+  auto query_params = mojom::QueryParams::New();
   query_params->query = "Topic";
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
@@ -269,8 +253,8 @@ TEST_F(MemoriesServiceTest, QueryMemories) {
       // This "expect" block is not run until after the fake response is sent
       // further down in this method.
       base::BindLambdaForTesting(
-          [&](history_clusters::mojom::QueryParamsPtr continuation_query_params,
-              std::vector<history_clusters::mojom::MemoryPtr> memories) {
+          [&](mojom::QueryParamsPtr continuation_query_params,
+              std::vector<mojom::MemoryPtr> memories) {
             // Verify that the continuation query params is nullptr.
             ASSERT_FALSE(!!continuation_query_params);
 
@@ -294,60 +278,8 @@ TEST_F(MemoriesServiceTest, QueryMemories) {
             run_loop_quit_.Run();
           }));
 
-  // Verify the serialized request.
-  EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
-  EXPECT_EQ(GetPendingRequestBody(), StripWhitespace(R"(
-      {
-        "visits": [
-          {
-            "foregroundTimeSecs": 0,
-            "isFromGoogleSearch": false,
-            "navigationTimeMs": "2",
-            "origin": "https://google.com/",
-            "pageEndReason": 3,
-            "pageTransition": 0,
-            "siteEngagementScore": 0,
-            "url": "https://google.com/",
-            "visitId": "2"
-          },
-          {
-            "foregroundTimeSecs": 0,
-            "isFromGoogleSearch": false,
-            "navigationTimeMs": "4",
-            "origin": "https://github.com/",
-            "pageEndReason": 5,
-            "pageTransition": 0,
-            "siteEngagementScore": 0,
-            "url": "https://github.com/",
-            "visitId": "4"
-          }
-        ]
-      })"));
-
-  // Fake a response from the endpoint. There's a 'description' field even
-  // though we don't parse it. This is to test that we can handle extra fields.
-  test_url_loader_factory_.AddResponse(kFakeEndpoint, R"(
-      {
-        "clusters": [
-          {
-            "description": "description 1",
-            "keywords": [
-              "topic 1",
-              "topic 2"
-            ],
-            "visitIds": [
-              "2",
-              "4"
-            ]
-          },
-          {
-            "visitIds": [
-              "4"
-            ]
-          }
-        ]
-      })");
-  EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
+  VerifyHardcodedTestDataInUrlLoaderRequest();
+  InjectHardcodedTestDataToUrlLoaderResponse();
 
   // Verify the callback is invoked.
   run_loop_.Run();
@@ -358,10 +290,10 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyVisits) {
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   memories_service_->QueryMemories(
-      history_clusters::mojom::QueryParams::New(),
+      mojom::QueryParams::New(),
       base::BindLambdaForTesting(
-          [&](history_clusters::mojom::QueryParamsPtr continuation_query_params,
-              std::vector<history_clusters::mojom::MemoryPtr> memories) {
+          [&](mojom::QueryParamsPtr continuation_query_params,
+              std::vector<mojom::MemoryPtr> memories) {
             // Verify that the continuation query params is nullptr.
             ASSERT_FALSE(!!continuation_query_params);
             // Verify the parsed response.
@@ -384,10 +316,10 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyEndpoint) {
 
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
   memories_service_->QueryMemories(
-      history_clusters::mojom::QueryParams::New(),
+      mojom::QueryParams::New(),
       base::BindLambdaForTesting(
-          [&](history_clusters::mojom::QueryParamsPtr continuation_query_params,
-              std::vector<history_clusters::mojom::MemoryPtr> memories) {
+          [&](mojom::QueryParamsPtr continuation_query_params,
+              std::vector<mojom::MemoryPtr> memories) {
             // Verify that the continuation query params is nullptr.
             ASSERT_FALSE(!!continuation_query_params);
             // Verify the empty response.
@@ -410,10 +342,10 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyResponse) {
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   memories_service_->QueryMemories(
-      history_clusters::mojom::QueryParams::New(),
+      mojom::QueryParams::New(),
       base::BindLambdaForTesting(
-          [&](history_clusters::mojom::QueryParamsPtr continuation_query_params,
-              std::vector<history_clusters::mojom::MemoryPtr> memories) {
+          [&](mojom::QueryParamsPtr continuation_query_params,
+              std::vector<mojom::MemoryPtr> memories) {
             // Verify that the continuation query params is nullptr.
             ASSERT_FALSE(!!continuation_query_params);
             // Verify the parsed response.
@@ -424,8 +356,9 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyResponse) {
   // Verify a request is made.
   EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
 
-  // Fake a response from the endpoint.
-  test_url_loader_factory_.AddResponse(kFakeEndpoint, "");
+  // Fake an empty but valid response from the endpoint.
+  test_url_loader_factory_.AddResponse(
+      kFakeEndpoint, proto::GetClustersResponse().SerializeAsString());
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
 
   // Verify the callback is invoked.
@@ -440,10 +373,10 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithInvalidJsonResponse) {
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   memories_service_->QueryMemories(
-      history_clusters::mojom::QueryParams::New(),
+      mojom::QueryParams::New(),
       base::BindLambdaForTesting(
-          [&](history_clusters::mojom::QueryParamsPtr continuation_query_params,
-              std::vector<history_clusters::mojom::MemoryPtr> memories) {
+          [&](mojom::QueryParamsPtr continuation_query_params,
+              std::vector<mojom::MemoryPtr> memories) {
             // Verify that the continuation query params is nullptr.
             ASSERT_FALSE(!!continuation_query_params);
             // Verify the parsed response.
@@ -454,7 +387,7 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithInvalidJsonResponse) {
   // Verify a request is made.
   EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
 
-  // Fake a response from the endpoint.
+  // Fake a junk response from the endpoint.
   test_url_loader_factory_.AddResponse(kFakeEndpoint,
                                        "{waka404woko.weke) !*(&,");
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
@@ -471,10 +404,10 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyJsonResponse) {
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   memories_service_->QueryMemories(
-      history_clusters::mojom::QueryParams::New(),
+      mojom::QueryParams::New(),
       base::BindLambdaForTesting(
-          [&](history_clusters::mojom::QueryParamsPtr continuation_query_params,
-              std::vector<history_clusters::mojom::MemoryPtr> memories) {
+          [&](mojom::QueryParamsPtr continuation_query_params,
+              std::vector<mojom::MemoryPtr> memories) {
             // Verify that the continuation query params is nullptr.
             ASSERT_FALSE(!!continuation_query_params);
             // Verify the parsed response.
@@ -485,8 +418,9 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyJsonResponse) {
   // Verify a request is made.
   EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
 
-  // Fake a response from the endpoint.
-  test_url_loader_factory_.AddResponse(kFakeEndpoint, "{}");
+  // Fake an empty but valid response from the endpoint.
+  test_url_loader_factory_.AddResponse(
+      kFakeEndpoint, proto::GetClustersResponse().SerializeAsString());
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
 
   // Verify the callback is invoked.
@@ -501,20 +435,20 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithPendingRequest) {
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   memories_service_->QueryMemories(
-      history_clusters::mojom::QueryParams::New(),
+      mojom::QueryParams::New(),
       base::BindLambdaForTesting(
-          [&](history_clusters::mojom::QueryParamsPtr continuation_query_params,
-              std::vector<history_clusters::mojom::MemoryPtr> memories) {
+          [&](mojom::QueryParamsPtr continuation_query_params,
+              std::vector<mojom::MemoryPtr> memories) {
             // Verify not reached.
             EXPECT_TRUE(false);
           }));
 
   EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   memories_service_->QueryMemories(
-      history_clusters::mojom::QueryParams::New(),
+      mojom::QueryParams::New(),
       base::BindLambdaForTesting(
-          [&](history_clusters::mojom::QueryParamsPtr continuation_query_params,
-              std::vector<history_clusters::mojom::MemoryPtr> memories) {
+          [&](mojom::QueryParamsPtr continuation_query_params,
+              std::vector<mojom::MemoryPtr> memories) {
             // Verify that the continuation query params is nullptr.
             ASSERT_FALSE(!!continuation_query_params);
             // Verify the parsed response.
@@ -526,9 +460,12 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithPendingRequest) {
   EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
 
-  // Fake a response from the endpoint.
+  // Fake a response from the endpoint with two clusters.
+  proto::GetClustersResponse response;
+  response.add_clusters();
+  response.add_clusters();
   test_url_loader_factory_.AddResponse(kFakeEndpoint,
-                                       R"({"clusters": [{}, {}]})");
+                                       response.SerializeAsString());
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
 
   // Verify the callback is invoked.
@@ -536,8 +473,7 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithPendingRequest) {
 }
 
 TEST_F(MemoriesServiceTest, CompleteVisitIfReady) {
-  auto test = [&](history_clusters::RecordingStatus status,
-                  bool expected_complete) {
+  auto test = [&](RecordingStatus status, bool expected_complete) {
     auto& visit = memories_service_->GetOrCreateIncompleteVisit(0);
     visit.status = status;
     memories_service_->CompleteVisitIfReady(0);
@@ -586,7 +522,7 @@ TEST_F(MemoriesServiceTest, CompleteVisitIfReady) {
     test({true, true, true, true, false}, false);
   }
 
-  auto test_dcheck = [&](history_clusters::RecordingStatus status) {
+  auto test_dcheck = [&](RecordingStatus status) {
     auto& visit = memories_service_->GetOrCreateIncompleteVisit(0);
     visit.status = status;
     EXPECT_DCHECK_DEATH(memories_service_->CompleteVisitIfReady(0));
@@ -615,7 +551,7 @@ TEST_F(MemoriesServiceTest, CompleteVisitIfReadyWhenFeatureDisabled) {
     // When the feature is disabled, the incomplete visit should be removed but
     // not added to visits.
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(history_clusters::kMemories);
+    feature_list.InitAndDisableFeature(kMemories);
     auto& visit = memories_service_->GetOrCreateIncompleteVisit(0);
     visit.status = {true, true, true};
     memories_service_->CompleteVisitIfReady(0);
@@ -627,7 +563,7 @@ TEST_F(MemoriesServiceTest, CompleteVisitIfReadyWhenFeatureDisabled) {
     // When the feature is enabled, the incomplete visit should be removed and
     // added to visits.
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(history_clusters::kMemories);
+    feature_list.InitAndEnableFeature(kMemories);
     auto& visit = memories_service_->GetOrCreateIncompleteVisit(0);
     visit.status = {true, true, true};
     memories_service_->CompleteVisitIfReady(0);
@@ -637,3 +573,5 @@ TEST_F(MemoriesServiceTest, CompleteVisitIfReadyWhenFeatureDisabled) {
 }
 
 }  // namespace
+
+}  // namespace history_clusters

@@ -6,15 +6,15 @@
 
 #include <utility>
 
+#include "base/base64.h"
 #include "base/bind.h"
 #include "base/json/json_writer.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/history_clusters/core/memories_features.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
+#include "components/history_clusters/core/proto/clusters.pb.h"
 
 namespace history_clusters {
 
@@ -22,72 +22,32 @@ namespace {
 
 const size_t kMaxExpectedResponseSize = 1024 * 1024;
 
-// Helpers to translate from |MemoriesVisit|s to |base::Value|; and from
-// |base::Value| to |mojom::MemoryPtr|s.
+proto::GetClustersRequest CreateRequestProto(
+    const std::vector<MemoriesVisit>& visits) {
+  proto::GetClustersRequest request;
+  for (auto& visit : visits) {
+    proto::Visit* request_visit = request.add_visits();
+    request_visit->set_visit_id(visit.visit_row.visit_id);
+    request_visit->set_url(visit.url_row.url().spec());
+    request_visit->set_origin(visit.url_row.url().GetOrigin().spec());
+    request_visit->set_navigation_time_ms(
+        visit.visit_row.visit_time.ToDeltaSinceWindowsEpoch().InMilliseconds());
+    request_visit->set_page_end_reason(visit.context_signals.page_end_reason);
+    request_visit->set_page_transition(
+        static_cast<int>(visit.visit_row.transition));
 
-base::Value VisitToValue(const MemoriesVisit& visit) {
-  // bas::Value does not support long ints (i.e. int64_t), so they're cast to
-  // strings. Casting them to doubles would convert large values to scientific
-  // notation which would be problematic (i.e. impossible to distinguish x and
-  // x+1).
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("visitId",
-              base::Value(base::NumberToString(visit.visit_row.visit_id)));
-  dict.SetKey("url", base::Value(visit.url_row.url().spec()));
-  dict.SetKey("origin", base::Value(visit.url_row.url().GetOrigin().spec()));
-  dict.SetKey("foregroundTimeSecs", base::Value(0));
-  dict.SetKey("navigationTimeMs",
-              base::Value(base::NumberToString(
-                  visit.visit_row.visit_time.ToDeltaSinceWindowsEpoch()
-                      .InMilliseconds())));
-  dict.SetKey("siteEngagementScore", base::Value(0));
-  dict.SetKey("pageEndReason",
-              base::Value(visit.context_signals.page_end_reason));
-  dict.SetKey("pageTransition",
-              base::Value(static_cast<int>(visit.visit_row.transition)));
-  dict.SetKey("isFromGoogleSearch", base::Value(false));
-  // TODO(manukh) fill out:
-  //  |foregroundTimeSecs|
-  //  |siteEngagementScore|
-  //  |isFromGoogleSearch|
-  return dict;
+    // TODO(manukh) fill out:
+    //  |foreground_time_secs|
+    //  |site_engagement_score|
+    //  |is_from_google_search|
+  }
+  return request;
 }
 
-base::Value VisitsToValue(const std::vector<MemoriesVisit>& visits) {
-  base::Value visits_list(base::Value::Type::LIST);
-  for (const auto& visit : visits)
-    visits_list.Append(VisitToValue(visit));
-
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("visits", std::move(visits_list));
-  return dict;
-}
-
-// A helper method to get the values of the |base::ListValue| at |value[key]|.
-template <typename T>
-std::vector<T> FindListKeyAndCast(
-    const base::Value& value,
-    std::string key,
-    base::RepeatingCallback<T(const base::Value&)> cast_callback) {
-  const base::Value* list_ptr = value.FindListKey(key);
-  if (!list_ptr)
-    return {};
-
-  base::Value::ConstListView list = list_ptr->GetList();
-  std::vector<T> casted(list.size());
-
-  base::ranges::transform(list, casted.begin(), [&](const base::Value& value) {
-    return cast_callback.Run(value);
-  });
-  return casted;
-}
-
-mojom::VisitPtr ValueToVisit(const std::vector<MemoriesVisit>& visits,
-                             const base::Value& visit_id_value) {
+mojom::VisitPtr CreateVisitMojom(const std::vector<MemoriesVisit>& visits,
+                                 int64_t visit_id) {
   auto visit = mojom::Visit::New();
-  if (!visit_id_value.is_string() ||
-      !base::StringToInt64(visit_id_value.GetString(), &visit->id))
-    visit->id = 0;
+  visit->id = visit_id;
   const auto memory_visit_it = base::ranges::find(
       visits, visit->id,
       [](const auto& visit) { return visit.visit_row.visit_id; });
@@ -107,33 +67,30 @@ mojom::VisitPtr ValueToVisit(const std::vector<MemoriesVisit>& visits,
   return visit;
 }
 
-mojom::MemoryPtr ValueToMemory(const std::vector<MemoriesVisit>& visits,
-                               const base::Value& value) {
-  auto memory = mojom::Memory::New();
-  memory->id = base::UnguessableToken::Create();
+Memories ParseResponseProto(const std::vector<MemoriesVisit>& visits,
+                            const proto::GetClustersResponse& response_proto) {
+  Memories result;
+  for (const proto::Cluster& cluster : response_proto.clusters()) {
+    auto memory = mojom::Memory::New();
+    memory->id = base::UnguessableToken::Create();
+    for (const std::string& keyword : cluster.keywords()) {
+      memory->keywords.push_back(base::UTF8ToUTF16(keyword));
+    }
 
-  memory->top_visits = FindListKeyAndCast<mojom::VisitPtr>(
-      value, "visitIds", base::BindRepeating(&ValueToVisit, visits));
+    for (int64_t visit_id : cluster.visit_ids()) {
+      memory->top_visits.push_back(CreateVisitMojom(visits, visit_id));
+    }
 
-  memory->keywords = FindListKeyAndCast<std::u16string>(
-      value, "keywords", base::BindRepeating([](const base::Value& value) {
-        return value.is_string() ? base::UTF8ToUTF16(value.GetString()) : u"";
-      }));
+    // TODO(manukh) fill out:
+    //  |related_searches|
+    //  |related_tab_groups|
+    //  |bookmarks|
+    //  |last_visit_time|
+    //  |engagement_score|
 
-  // TODO(manukh) fill out:
-  //  |id|
-  //  |related_searches|
-  //  |related_tab_groups|
-  //  |bookmarks|
-  //  |last_visit_time|
-  //  |engagement_score|
-  return memory;
-}
-
-Memories ValueToMemories(const std::vector<MemoriesVisit>& visits,
-                         const base::Value& value) {
-  return FindListKeyAndCast<mojom::MemoryPtr>(
-      value, "clusters", base::BindRepeating(&ValueToMemory, visits));
+    result.emplace_back(std::move(memory));
+  }
+  return result;
 }
 
 }  // namespace
@@ -157,8 +114,18 @@ void MemoriesRemoteModelHelper::GetMemories(
   }
   StopPendingRequests();
 
+  // It's weird but the endpoint only accepts JSON, so wrap our serialized proto
+  // like this: {"data":"<base64-encoded-proto-serialization>"}
+  proto::GetClustersRequest request_proto = CreateRequestProto(visits);
+  std::string request_proto_base64;
+  base::Base64Encode(request_proto.SerializeAsString(), &request_proto_base64);
+
+  base::DictionaryValue container_value;
+  container_value.SetStringPath("data", request_proto_base64);
+
   std::string request_body;
-  base::JSONWriter::Write(VisitsToValue(visits), &request_body);
+  base::JSONWriter::Write(container_value, &request_body);
+
   auto request = CreateRequest(endpoint);
   debug_logger_.Run(
       base::StringPrintf("MemoriesRemoteModelHelper::GetMemories request = %s",
@@ -170,29 +137,19 @@ void MemoriesRemoteModelHelper::GetMemories(
       base::BindOnce(
           [](base::RepeatingCallback<void(const std::string&)> debug_logger,
              const std::vector<MemoriesVisit>& visits,
-             MemoriesCallback callback, std::unique_ptr<std::string> response) {
+             std::unique_ptr<std::string> response) {
             debug_logger.Run(base::StringPrintf(
                 "MemoriesRemoteModelHelper::GetMemories response = %s",
                 response ? response->c_str() : "nullptr"));
             if (!response) {
-              std::move(callback).Run({});
-              return;
+              return history_clusters::Memories();
             }
-            data_decoder::DataDecoder::ParseJsonIsolated(
-                *response,
-                base::BindOnce(
-                    [](const std::vector<MemoriesVisit>& visits,
-                       data_decoder::DataDecoder::ValueOrError value_or_error)
-                        -> Memories {
-                      return value_or_error.value
-                                 ? ValueToMemories(visits,
-                                                   value_or_error.value.value())
-                                 : Memories{};
-                    },
-                    visits)
-                    .Then(std::move(callback)));
+            proto::GetClustersResponse response_proto;
+            response_proto.ParseFromString(*response);
+            return ParseResponseProto(visits, response_proto);
           },
-          debug_logger_, visits, std::move(callback)),
+          debug_logger_, visits)
+          .Then(std::move(callback)),
       kMaxExpectedResponseSize);
 }
 

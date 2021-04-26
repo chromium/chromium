@@ -1,0 +1,49 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package history_clusters.proto;
+
+// Below this line sourced from Google3 for debug (non-production) usage only.
+
+message GetClustersRequest {
+  // Represents a set of visits.
+  repeated Visit visits = 1;
+}
+
+message GetClustersResponse {
+  // Represents a set of clusters calculated from the request.
+  repeated Cluster clusters = 1;
+}
+
+message Visit {
+  // The ID associated with this visit.
+  int64 visit_id = 1;
+  // The URL for the visit.
+  string url = 2;
+  // The origin for the visit.
+  string origin = 3;
+  // The amount of time the page load was in the foreground in seconds.
+  int64 foreground_time_secs = 4;
+  // Relative time of navigation for this page load.
+  int64 navigation_time_ms = 5;
+  // Site engagement score rounded to nearest ten.
+  int64 site_engagement_score = 6;
+  // The page end reason.
+  int64 page_end_reason = 7;
+  // Page transition.
+  int64 page_transition = 8;
+  // Whether the page load originated from Google Search.
+  bool is_from_google_search = 9;
+}
+
+message Cluster {
+  // The keywords that the cluster contains/is related to.
+  repeated string keywords = 1;
+  // The ids of each visit that is attached to this cluster where
+  // visit_id corresponds to the visit in the history table.
+  repeated int64 visit_ids = 2;
+}
