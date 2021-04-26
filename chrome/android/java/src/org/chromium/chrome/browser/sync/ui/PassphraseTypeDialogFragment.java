@@ -22,6 +22,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
 import android.widget.ListView;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -60,14 +61,18 @@ public class PassphraseTypeDialogFragment extends DialogFragment implements
 
     private String textForPassphraseType(@PassphraseType int type) {
         switch (type) {
-            case PassphraseType.IMPLICIT_PASSPHRASE: // Intentional fall through.
+            case PassphraseType.IMPLICIT_PASSPHRASE:
             case PassphraseType.KEYSTORE_PASSPHRASE:
             case PassphraseType.TRUSTED_VAULT_PASSPHRASE:
                 return getString(R.string.sync_passphrase_type_keystore);
             case PassphraseType.FROZEN_IMPLICIT_PASSPHRASE:
-                String passphraseDate = getPassphraseDateStringFromArguments();
-                String frozenPassphraseString = getString(R.string.sync_passphrase_type_frozen);
-                return String.format(frozenPassphraseString, passphraseDate);
+                @Nullable
+                Date passphraseTime = (Date) getArguments().getSerializable(ARG_PASSPHRASE_TIME);
+                DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM);
+                // It would be best to have a dedicated string if |passphraseTime| isn't available
+                // (null), but FROZEN_IMPLICIT_PASSPHRASE is rare these days anyway.
+                return String.format(getString(R.string.sync_passphrase_type_frozen),
+                        dateFormat.format(passphraseTime != null ? passphraseTime : new Date(0)));
             case PassphraseType.CUSTOM_PASSPHRASE:
                 return getString(R.string.sync_passphrase_type_custom);
             default:
@@ -145,11 +150,11 @@ public class PassphraseTypeDialogFragment extends DialogFragment implements
             "arg_is_encrypt_everything_allowed";
 
     public static PassphraseTypeDialogFragment create(@PassphraseType int currentType,
-            long passphraseTime, boolean isEncryptEverythingAllowed) {
+            @Nullable Date passphraseTime, boolean isEncryptEverythingAllowed) {
         PassphraseTypeDialogFragment dialog = new PassphraseTypeDialogFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_CURRENT_TYPE, currentType);
-        args.putLong(ARG_PASSPHRASE_TIME, passphraseTime);
+        args.putSerializable(ARG_PASSPHRASE_TIME, passphraseTime);
         args.putBoolean(ARG_IS_ENCRYPT_EVERYTHING_ALLOWED, isEncryptEverythingAllowed);
         dialog.setArguments(args);
         return dialog;
@@ -245,12 +250,6 @@ public class PassphraseTypeDialogFragment extends DialogFragment implements
             throw new IllegalStateException("Unable to find argument with current type.");
         }
         return currentType;
-    }
-
-    private String getPassphraseDateStringFromArguments() {
-        long passphraseTime = getArguments().getLong(ARG_PASSPHRASE_TIME);
-        DateFormat df = DateFormat.getDateInstance(DateFormat.MEDIUM);
-        return df.format(new Date(passphraseTime));
     }
 
     private boolean getIsEncryptEverythingAllowedFromArguments() {

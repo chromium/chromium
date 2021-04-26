@@ -60,17 +60,7 @@
     </message>
   </if>
 
-  <if expr="is_android">
-    <message name="IDS_SYNC_ENTER_PASSPHRASE_BODY_WITH_DATE_ANDROID" desc="Instructions for the dialog where the user enters their Sync passphrase.">
-      Your data was encrypted with your <ph name="BEGIN_LINK">&lt;learnmore&gt;</ph>sync passphrase<ph name="END_LINK">&lt;/learnmore&gt;</ph> on <ph name="TIME">$1<ex>Sept 1, 2012</ex></ph>. Enter it to start sync.
-    </message>
-    <message name="IDS_SYNC_ENTER_GOOGLE_PASSPHRASE_BODY_WITH_DATE_ANDROID" desc="Instructions for the dialog where the user needs to enter their previous google passphrase.">
-        Your data was encrypted with your <ph name="BEGIN_LINK">&lt;learnmore&gt;</ph>Google password<ph name="END_LINK">&lt;/learnmore&gt;</ph> as of <ph name="TIME">$1<ex>Sept 1, 2012</ex></ph>. Enter it to start sync.
-    </message>
-
-  </if>
-
-  <message name="IDS_SYNC_ENTER_PASSPHRASE_BODY" desc="Instructions for the dialog where the user enters the passphrase.">
+  <message name="IDS_SYNC_ENTER_PASSPHRASE_BODY" formatter_data="android_java"  desc="Instructions for the dialog where the user enters the passphrase.">
     Your data is encrypted with your sync passphrase. Enter it to start sync.
   </message>
 </grit-part>

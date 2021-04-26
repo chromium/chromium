@@ -14,11 +14,13 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.sync.KeyRetrievalTriggerForUMA;
 import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.PassphraseType;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -205,6 +207,11 @@ public class ProfileSyncService {
 
     public boolean getDecoupledFromAndroidMasterSync() {
         return ProfileSyncServiceJni.get().getDecoupledFromAndroidMasterSync(
+                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
+    }
+
+    public @Nullable CoreAccountInfo getAuthenticatedAccountInfo() {
+        return ProfileSyncServiceJni.get().getAuthenticatedAccountInfo(
                 mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
     }
 
@@ -402,44 +409,14 @@ public class ProfileSyncService {
     }
 
     /**
-     * Returns true if the current explicit passphrase time is defined.
+     * Returns the time the current explicit passphrase was set (if any). Null if no explicit
+     * passphrase is in use, or no time is available.
      */
-    public boolean hasExplicitPassphraseTime() {
+    public @Nullable Date getExplicitPassphraseTime() {
         assert isEngineInitialized();
-        return ProfileSyncServiceJni.get().hasExplicitPassphraseTime(
+        long timeInMilliseconds = ProfileSyncServiceJni.get().getExplicitPassphraseTime(
                 mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
-    }
-
-    /**
-     * Returns the current explicit passphrase time in milliseconds since epoch.
-     */
-    public long getExplicitPassphraseTime() {
-        assert isEngineInitialized();
-        return ProfileSyncServiceJni.get().getExplicitPassphraseTime(
-                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
-    }
-
-    public String getSyncEnterGooglePassphraseBodyWithDateText() {
-        assert isEngineInitialized();
-        return ProfileSyncServiceJni.get().getSyncEnterGooglePassphraseBodyWithDateText(
-                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
-    }
-
-    public String getSyncEnterCustomPassphraseBodyWithDateText() {
-        assert isEngineInitialized();
-        return ProfileSyncServiceJni.get().getSyncEnterCustomPassphraseBodyWithDateText(
-                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
-    }
-
-    public String getCurrentSignedInAccountText() {
-        assert isEngineInitialized();
-        return ProfileSyncServiceJni.get().getCurrentSignedInAccountText(
-                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
-    }
-
-    public String getSyncEnterCustomPassphraseBodyText() {
-        return ProfileSyncServiceJni.get().getSyncEnterCustomPassphraseBodyText(
-                mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
+        return timeInMilliseconds != 0 ? new Date(timeInMilliseconds) : null;
     }
 
     /**
@@ -672,6 +649,9 @@ public class ProfileSyncService {
                 long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
         boolean getDecoupledFromAndroidMasterSync(
                 long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
+        @Nullable
+        CoreAccountInfo getAuthenticatedAccountInfo(
+                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
         boolean isAuthenticatedAccountPrimary(
                 long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
         boolean isEngineInitialized(
@@ -695,17 +675,7 @@ public class ProfileSyncService {
         void setEncryptionPassphrase(
                 long nativeProfileSyncServiceAndroid, ProfileSyncService caller, String passphrase);
         int getPassphraseType(long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
-        boolean hasExplicitPassphraseTime(
-                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
         long getExplicitPassphraseTime(
-                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
-        String getSyncEnterGooglePassphraseBodyWithDateText(
-                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
-        String getSyncEnterCustomPassphraseBodyWithDateText(
-                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
-        String getCurrentSignedInAccountText(
-                long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
-        String getSyncEnterCustomPassphraseBodyText(
                 long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
         int[] getActiveDataTypes(long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
         int[] getChosenDataTypes(long nativeProfileSyncServiceAndroid, ProfileSyncService caller);

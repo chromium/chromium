@@ -8474,9 +8474,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <!-- Sync strings -->
 
       <!-- Shared between all the plaforms -->
-      <message name="IDS_SYNC_ACCOUNT_INFO" desc="The message that appears in the options dialog indicating that the user is signed in with the given email address.">
-        Signed in as <ph name="USER_EMAIL_ADDRESS">$1<ex>foo@gmail.com</ex></ph>.
-      </message>
       <message name="IDS_SYNC_ACCOUNT_SYNCING" desc="The message that appears in the settings page indicating that account is syncing all data types.">
         On - sync everything
       </message>

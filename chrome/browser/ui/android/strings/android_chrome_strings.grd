@@ -1761,6 +1761,15 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SYNC_ENTER_CUSTOM_PASSPHRASE_HINT_CONFIRM" desc="Hint for the passphrase confirmation field when user is to type in a passphrase. [CHAR-LIMIT=30]">
         Confirm passphrase
       </message>
+      <message name="IDS_SYNC_ENTER_PASSPHRASE_BODY_WITH_DATE_ANDROID" desc="Instructions for the dialog where the user enters their Sync passphrase.">
+        Your data was encrypted with your <ph name="BEGIN_LINK">&lt;learnmore&gt;</ph>sync passphrase<ph name="END_LINK">&lt;/learnmore&gt;</ph> on <ph name="TIME">%1$s<ex>Sept 1, 2012</ex></ph>. Enter it to start sync.
+      </message>
+      <message name="IDS_SYNC_ENTER_GOOGLE_PASSPHRASE_BODY_WITH_DATE_ANDROID" desc="Instructions for the dialog where the user needs to enter their previous google passphrase.">
+          Your data was encrypted with your <ph name="BEGIN_LINK">&lt;learnmore&gt;</ph>Google password<ph name="END_LINK">&lt;/learnmore&gt;</ph> as of <ph name="TIME">%1$s<ex>Sept 1, 2012</ex></ph>. Enter it to start sync.
+      </message>
+      <message name="IDS_SYNC_ACCOUNT_INFO"  desc="The message that appears in the options dialog indicating that the user is signed in with the given email address.">
+        Signed in as <ph name="USER_EMAIL_ADDRESS">%1$s<ex>foo@gmail.com</ex></ph>.
+      </message>
       <message name="IDS_SYNC_PASSPHRASE_CANNOT_BE_BLANK" desc="Inform user that they cannot use a blank password [CHAR-LIMIT=40]">
         This field cannot be blank
       </message>
@@ -2721,7 +2730,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
         Turn on sync
       </message>
 
-      <message name="IDS_EXTERNAL_APP_RESTRICTED_ACCESS_ERROR" desc="A message shown to the user if Chrome receives a file view request to something Chrome does not have access to view." formatter_data="android_java">
+      <message name="IDS_EXTERNAL_APP_RESTRICTED_ACCESS_ERROR" desc="A message shown to the user if Chrome receives a file view request to something Chrome does not have access to view.">
         Chrome does not have access to the requested resource.
       </message>
 

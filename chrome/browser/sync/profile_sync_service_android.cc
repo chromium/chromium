@@ -333,15 +333,6 @@ jboolean ProfileSyncServiceAndroid::SetDecryptionPassphrase(
   return sync_service_->GetUserSettings()->SetDecryptionPassphrase(key);
 }
 
-jboolean ProfileSyncServiceAndroid::HasExplicitPassphraseTime(
-    JNIEnv* env,
-    const JavaParamRef<jobject>&) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  base::Time passphrase_time =
-      sync_service_->GetUserSettings()->GetExplicitPassphraseTime();
-  return !passphrase_time.is_null();
-}
-
 jlong ProfileSyncServiceAndroid::GetExplicitPassphraseTime(
     JNIEnv* env,
     const JavaParamRef<jobject>&) {
@@ -395,6 +386,17 @@ jboolean ProfileSyncServiceAndroid::GetDecoupledFromAndroidMasterSync(
   return sync_service_->GetDecoupledFromAndroidMasterSync();
 }
 
+base::android::ScopedJavaLocalRef<jobject>
+ProfileSyncServiceAndroid::GetAuthenticatedAccountInfo(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CoreAccountInfo account_info = sync_service_->GetAuthenticatedAccountInfo();
+  return account_info.IsEmpty()
+             ? nullptr
+             : ConvertToJavaCoreAccountInfo(env, account_info);
+}
+
 jboolean ProfileSyncServiceAndroid::IsAuthenticatedAccountPrimary(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
@@ -423,59 +425,6 @@ jboolean ProfileSyncServiceAndroid::HasKeepEverythingSynced(
     const JavaParamRef<jobject>&) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return sync_service_->GetUserSettings()->IsSyncEverythingEnabled();
-}
-
-// UI string getters.
-
-ScopedJavaLocalRef<jstring>
-ProfileSyncServiceAndroid::GetSyncEnterGooglePassphraseBodyWithDateText(
-    JNIEnv* env,
-    const JavaParamRef<jobject>&) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  base::Time passphrase_time =
-      sync_service_->GetUserSettings()->GetExplicitPassphraseTime();
-  std::u16string passphrase_time_str =
-      base::TimeFormatShortDate(passphrase_time);
-  return base::android::ConvertUTF16ToJavaString(
-      env, l10n_util::GetStringFUTF16(
-               IDS_SYNC_ENTER_GOOGLE_PASSPHRASE_BODY_WITH_DATE_ANDROID,
-               passphrase_time_str));
-}
-
-ScopedJavaLocalRef<jstring>
-ProfileSyncServiceAndroid::GetSyncEnterCustomPassphraseBodyWithDateText(
-    JNIEnv* env,
-    const JavaParamRef<jobject>&) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  base::Time passphrase_time =
-      sync_service_->GetUserSettings()->GetExplicitPassphraseTime();
-  std::u16string passphrase_time_str =
-      base::TimeFormatShortDate(passphrase_time);
-  return base::android::ConvertUTF16ToJavaString(
-      env, l10n_util::GetStringFUTF16(
-               IDS_SYNC_ENTER_PASSPHRASE_BODY_WITH_DATE_ANDROID,
-               passphrase_time_str));
-}
-
-ScopedJavaLocalRef<jstring>
-ProfileSyncServiceAndroid::GetCurrentSignedInAccountText(
-    JNIEnv* env,
-    const JavaParamRef<jobject>&) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  const std::string& sync_username =
-      sync_service_->GetAuthenticatedAccountInfo().email;
-  return base::android::ConvertUTF16ToJavaString(
-      env, l10n_util::GetStringFUTF16(IDS_SYNC_ACCOUNT_INFO,
-                                      base::ASCIIToUTF16(sync_username)));
-}
-
-ScopedJavaLocalRef<jstring>
-ProfileSyncServiceAndroid::GetSyncEnterCustomPassphraseBodyText(
-    JNIEnv* env,
-    const JavaParamRef<jobject>&) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return ConvertUTF8ToJavaString(
-      env, l10n_util::GetStringUTF8(IDS_SYNC_ENTER_PASSPHRASE_BODY));
 }
 
 void ProfileSyncServiceAndroid::RecordKeyRetrievalTrigger(

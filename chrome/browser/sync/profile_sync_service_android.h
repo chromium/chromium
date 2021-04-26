@@ -111,9 +111,7 @@ class ProfileSyncServiceAndroid : public syncer::SyncServiceObserver {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& passphrase);
-  jboolean HasExplicitPassphraseTime(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>&);
+  // Returns 0 if there's no passphrase time.
   jlong GetExplicitPassphraseTime(JNIEnv* env,
                                   const base::android::JavaParamRef<jobject>&);
   void GetAllNodes(JNIEnv* env,
@@ -137,6 +135,9 @@ class ProfileSyncServiceAndroid : public syncer::SyncServiceObserver {
   jboolean GetDecoupledFromAndroidMasterSync(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
+  base::android::ScopedJavaLocalRef<jobject> GetAuthenticatedAccountInfo(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj);
   jboolean IsAuthenticatedAccountPrimary(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
@@ -151,27 +152,6 @@ class ProfileSyncServiceAndroid : public syncer::SyncServiceObserver {
   jboolean HasKeepEverythingSynced(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
-
-  // UI string getters.
-
-  base::android::ScopedJavaLocalRef<jstring>
-  GetSyncEnterGooglePassphraseBodyWithDateText(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>&);
-
-  base::android::ScopedJavaLocalRef<jstring>
-  GetSyncEnterCustomPassphraseBodyWithDateText(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>&);
-
-  base::android::ScopedJavaLocalRef<jstring> GetCurrentSignedInAccountText(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>&);
-
-  base::android::ScopedJavaLocalRef<jstring>
-  GetSyncEnterCustomPassphraseBodyText(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>&);
 
   void RecordKeyRetrievalTrigger(
       JNIEnv* env,
