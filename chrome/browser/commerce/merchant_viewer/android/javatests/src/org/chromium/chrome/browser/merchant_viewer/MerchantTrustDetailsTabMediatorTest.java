@@ -75,6 +75,9 @@ public class MerchantTrustDetailsTabMediatorTest {
     @Mock
     private Profile mMockProfile;
 
+    @Mock
+    private MerchantTrustMetrics mMockMetrics;
+
     @Captor
     private ArgumentCaptor<WebContentsDelegateAndroid> mWebContentsDelegateCaptor;
 
@@ -180,6 +183,6 @@ public class MerchantTrustDetailsTabMediatorTest {
     }
 
     private MerchantTrustDetailsTabMediator getMediatorUnderTest() {
-        return new MerchantTrustDetailsTabMediator(mMockBottomSheetController, 100);
+        return new MerchantTrustDetailsTabMediator(mMockBottomSheetController, 100, mMockMetrics);
     }
 }

@@ -32,16 +32,18 @@ public class MerchantTrustDetailsTabMediator {
     private Profile mProfile;
     private WebContentsDelegateAndroid mWebContentsDelegate;
     private WebContentsObserver mWebContentsObserver;
+    private final MerchantTrustMetrics mMetrics;
     private static final long HIDE_PROGRESS_BAR_DELAY_MS = 50;
 
     // TODO: Read from config.
     private static final boolean sShouldUsePageTitle = true;
 
     /** Creates a new instance. */
-    MerchantTrustDetailsTabMediator(
-            BottomSheetController bottomSheetController, int topControlsHeightDp) {
+    MerchantTrustDetailsTabMediator(BottomSheetController bottomSheetController,
+            int topControlsHeightDp, MerchantTrustMetrics metrics) {
         mBottomSheetController = bottomSheetController;
         mTopControlsHeightDp = topControlsHeightDp;
+        mMetrics = metrics;
     }
 
     /**
@@ -70,6 +72,11 @@ public class MerchantTrustDetailsTabMediator {
             @Override
             public void loadProgressChanged(float progress) {
                 if (mSheetContent != null) mSheetContent.setProgress(progress);
+            }
+
+            @Override
+            public void didStartNavigation(NavigationHandle navigation) {
+                mMetrics.recordNavigateLinkOnBottomSheet();
             }
 
             @Override

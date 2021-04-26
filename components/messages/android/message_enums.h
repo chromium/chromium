@@ -10,6 +10,8 @@ namespace messages {
 // List of constants describing the reasons why the message was dismissed.
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.messages
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class DismissReason {
   // Dismiss reasons that are fully controlled by clients (i.e. are not used
   // inside the Messages implementation are marked "Controlled by client" on
@@ -34,7 +36,10 @@ enum class DismissReason {
   // destroyed.
   ACTIVITY_DESTROYED = 7,
   // A message was dismissed due to the destruction of the corresponding scopes.
-  SCOPE_DESTROYED = 8
+  SCOPE_DESTROYED = 8,
+
+  // Always update MAX_VALUE to match the last reason in the list.
+  MAX_VALUE = 8
 };
 
 // The constants of message scope type.

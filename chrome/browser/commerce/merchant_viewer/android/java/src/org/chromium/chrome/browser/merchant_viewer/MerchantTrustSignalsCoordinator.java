@@ -10,9 +10,11 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.MessageClearReason;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -33,21 +35,23 @@ public class MerchantTrustSignalsCoordinator {
     private final WindowAndroid mWindowAndroid;
     private final BottomSheetController mBottomSheetController;
     private final View mLayoutView;
+    private final MerchantTrustMetrics mMetrics;
 
     /** Creates a new instance. */
     public MerchantTrustSignalsCoordinator(Context context, WindowAndroid windowAndroid,
             BottomSheetController bottomSheetController, View layoutView,
             TabModelSelector tabModelSelector, MerchantTrustMessageScheduler messageScheduler,
-            Supplier<Tab> tabSupplier) {
+            Supplier<Tab> tabSupplier, MerchantTrustMetrics metrics) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mBottomSheetController = bottomSheetController;
         mLayoutView = layoutView;
+        mMetrics = metrics;
 
         mMediator = new MerchantTrustSignalsMediator(tabModelSelector, this::maybeDisplayMessage);
         mMessageScheduler = messageScheduler;
         mDetailsTabCoordinator = new MerchantTrustDetailsTabCoordinator(
-                context, windowAndroid, bottomSheetController, tabSupplier, layoutView);
+                context, windowAndroid, bottomSheetController, tabSupplier, layoutView, mMetrics);
     }
 
     /** Cleans up internal state. */
@@ -63,11 +67,11 @@ public class MerchantTrustSignalsCoordinator {
                 && scheduledMessage.getHostName().equals(item.getHostName())) {
             MerchantTrustMessageContext replacementMessage = new MerchantTrustMessageContext(
                     scheduledMessage.getHostName(), scheduledMessage.getWebContents());
-            mMessageScheduler.clear();
+            mMessageScheduler.clear(MessageClearReason.NAVIGATE_TO_SAME_DOMAIN);
             mMessageScheduler.schedule(getMessagePropertyModel(replacementMessage.getHostName()),
                     replacementMessage, MerchantTrustMessageScheduler.MESSAGE_ENQUEUE_NO_DELAY);
         } else {
-            mMessageScheduler.clear();
+            mMessageScheduler.clear(MessageClearReason.NAVIGATE_TO_DIFFERENT_DOMAIN);
             if (!isUnfamiliarMerchant(item.getHostName())) {
                 return;
             }
@@ -84,6 +88,19 @@ public class MerchantTrustSignalsCoordinator {
 
     private PropertyModel getMessagePropertyModel(String hostname) {
         // TODO: populate the PropertyModel fields.
-        return new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS).build();
+        return new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                .with(MessageBannerProperties.ON_PRIMARY_ACTION, this::onMessageTapped)
+                .with(MessageBannerProperties.ON_DISMISSED, this::onMessageDismissed)
+                .build();
+    }
+
+    @VisibleForTesting
+    void onMessageTapped() {
+        mMetrics.recordMetricsForMessageTapped();
+    }
+
+    @VisibleForTesting
+    void onMessageDismissed(@DismissReason int dismissReason) {
+        mMetrics.recordMetricsForMessageDismissed(dismissReason);
     }
 }

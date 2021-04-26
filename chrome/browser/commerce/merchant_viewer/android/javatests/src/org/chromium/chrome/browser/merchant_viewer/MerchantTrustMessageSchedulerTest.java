@@ -25,6 +25,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.MessageClearReason;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageScopeType;
@@ -50,6 +51,9 @@ public class MerchantTrustMessageSchedulerTest {
     @Mock
     private WebContents mMockWebContents;
 
+    @Mock
+    private MerchantTrustMetrics mMockMetrics;
+
     @Test
     public void testSchedule() {
         MerchantTrustMessageScheduler scheduler = getSchedulerUnderTest();
@@ -61,11 +65,13 @@ public class MerchantTrustMessageSchedulerTest {
         doReturn(mMockWebContents).when(mockMessagesContext).getWebContents();
 
         scheduler.schedule(mockPropteryModel, mockMessagesContext, 0);
+        verify(mMockMetrics, times(1)).recordMetricsForMessagePrepared();
         Robolectric.flushForegroundThreadScheduler();
 
         verify(mMockMessageDispatcher, times(1))
                 .enqueueMessage(eq(mockPropteryModel), eq(mMockWebContents),
                         eq(MessageScopeType.NAVIGATION));
+        verify(mMockMetrics, times(1)).recordMetricsForMessageShown();
     }
 
     @Test
@@ -102,7 +108,21 @@ public class MerchantTrustMessageSchedulerTest {
         verify(mockHandler, times(1)).postDelayed(any(Runnable.class), eq(100L));
     }
 
+    @Test
+    public void testClear() {
+        MerchantTrustMessageScheduler scheduler = getSchedulerUnderTest();
+        scheduler.clear(MessageClearReason.UNKNOWN);
+        verify(mMockMetrics, times(0))
+                .recordMetricsForMessageCleared(eq(MessageClearReason.UNKNOWN));
+
+        MerchantTrustMessageContext mockMessagesContext = mock(MerchantTrustMessageContext.class);
+        scheduler.setScheduledMessageContext(mockMessagesContext);
+        scheduler.clear(MessageClearReason.UNKNOWN);
+        verify(mMockMetrics, times(1))
+                .recordMetricsForMessageCleared(eq(MessageClearReason.UNKNOWN));
+    }
+
     private MerchantTrustMessageScheduler getSchedulerUnderTest() {
-        return new MerchantTrustMessageScheduler(mMockMessageDispatcher);
+        return new MerchantTrustMessageScheduler(mMockMessageDispatcher, mMockMetrics);
     }
 }
