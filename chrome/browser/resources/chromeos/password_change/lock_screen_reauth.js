@@ -153,7 +153,6 @@ Polymer({
         params[name] = data[name];
       }
     }
-    params.doSamlRedirect = true;
     this.authenticatorParams_ = params;
     this.email_ = data.email;
     chrome.send('authenticatorLoaded');

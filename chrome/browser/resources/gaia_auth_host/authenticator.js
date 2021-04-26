@@ -205,6 +205,7 @@ cr.define('cr.login', function() {
     'samlAclUrl',
     'isSupervisedUser',  // True if the user is supervised user.
     'isDeviceOwner',     // True if the user is device owner.
+    'doSamlRedirect',    // True if the authentication is done via external IdP.
   ];
 
   // Timeout in ms to wait for the user info message. The message is used to

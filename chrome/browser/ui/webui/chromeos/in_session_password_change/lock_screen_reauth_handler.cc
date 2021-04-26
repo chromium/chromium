@@ -18,6 +18,7 @@
 #include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/login/auth/challenge_response/cert_utils.h"
 #include "chromeos/login/auth/cryptohome_key_constants.h"
+#include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -40,6 +41,21 @@ std::vector<std::string> ConvertToVector(const base::ListValue* list) {
   }
 
   return string_list;
+}
+
+bool ShouldDoSamlRedirect(const std::string& email) {
+  if (email.empty())
+    return false;
+
+  // If there's a populated email, we must check first that this user is using
+  // SAML in order to decide whether to show the interstitial page.
+  AccountId account_id =
+      user_manager::KnownUser(user_manager::UserManager::Get()->GetLocalState())
+          .GetAccountId(email, std::string() /* id */, AccountType::UNKNOWN);
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->FindUser(account_id);
+
+  return user && user->using_saml();
 }
 
 }  // namespace
@@ -157,6 +173,7 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
   params.SetString("gaiaId", context.gaia_id);
   params.SetBoolean("extractSamlPasswordAttributes",
                     login::ExtractSamlPasswordAttributesEnabled());
+  params.SetBoolean("doSamlRedirect", ShouldDoSamlRedirect(context.email));
 
   AllowJavascript();
   CallJavascriptFunction("$(\'main-element\').loadAuthenticator", params);
