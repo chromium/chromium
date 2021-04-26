@@ -240,7 +240,15 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, TabsAutomationBooleanActions) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, TabsAutomationHostsPermissions) {
+// Flaky on Mac and Windows: crbug.com/1202710
+#if defined(OS_MAC) || defined(OS_WIN)
+#define MAYBE_TabsAutomationHostsPermissions \
+  DISABLED_TabsAutomationHostsPermissions
+#else
+#define MAYBE_TabsAutomationHostsPermissions TabsAutomationHostsPermissions
+#endif
+IN_PROC_BROWSER_TEST_F(AutomationApiTest,
+                       MAYBE_TabsAutomationHostsPermissions) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(
       RunExtensionTest({.name = "automation/tests/tabs_automation_hosts",
