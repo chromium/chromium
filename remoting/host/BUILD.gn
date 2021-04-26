@@ -33,6 +33,10 @@ group("all") {
       "//remoting/host:remoting_start_host",
       "//remoting/host/it2me:remote_assistance_host",
     ]
+
+    if (enable_me2me_host && !is_win) {
+      deps += [ "//remoting/host:remote_open_url" ]
+    }
   }
 }
 
@@ -126,6 +130,18 @@ source_set("clipboard") {
   if (is_win) {
     sources += [ "clipboard_win.cc" ]
   }
+}
+
+# A source set to be shared by the host binary and the remote_open_url binary.
+source_set("remote_open_url_support") {
+  sources = [
+    "remote_open_url_constants.cc",
+    "remote_open_url_constants.h",
+  ]
+  deps = [
+    "//base",
+    "//mojo/public/cpp/platform",
+  ]
 }
 
 # This must be a static library instead of a source set because
@@ -283,8 +299,6 @@ static_library("common") {
     "register_support_host_request.h",
     "remote_input_filter.cc",
     "remote_input_filter.h",
-    "remote_open_url_constants.cc",
-    "remote_open_url_constants.h",
     "remote_open_url_message_handler.cc",
     "remote_open_url_message_handler.h",
     "remoting_register_support_host_request.cc",
@@ -331,6 +345,7 @@ static_library("common") {
     ":base",
     ":client_session_control",
     ":clipboard",
+    ":remote_open_url_support",
     "//base:i18n",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
@@ -998,5 +1013,23 @@ if (enable_me2me_host) {
   } else {
     group("remoting_me2me_host_archive") {
     }
+  }
+}
+
+if (enable_me2me_host && !is_win) {
+  executable("remote_open_url") {
+    sources = [
+      "remote_open_url_client.cc",
+      "remote_open_url_client.h",
+      "remote_open_url_main.cc",
+    ]
+    deps = [
+      ":logging",
+      ":remote_open_url_support",
+      "//base",
+      "//mojo/core/embedder:embedder",
+      "//remoting/host/mojom",
+      "//url",
+    ]
   }
 }
