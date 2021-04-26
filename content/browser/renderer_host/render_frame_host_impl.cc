@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 
 #include <algorithm>
+#include <cmath>
 #include <memory>
 #include <unordered_map>
 #include <utility>
@@ -19,6 +20,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/i18n/character_encoding.h"
 #include "base/lazy_instance.h"
+#include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/field_trial_params.h"
@@ -31,6 +33,7 @@
 #include "base/process/kill.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/system/sys_info.h"
 #include "base/task/current_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -105,6 +108,7 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/page_lifecycle_state_manager.h"
+#include "content/browser/renderer_host/recently_destroyed_hosts.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
@@ -905,6 +909,83 @@ void WriteRenderFrameImplDeletion(perfetto::EventContext& ctx,
       rfh->HasPendingCommitForCrossDocumentNavigation());
   data->set_frame_tree_node_id(rfh->GetFrameTreeNodeId());
   data->set_intent(FrameDeleteIntentionToProto(intent));
+}
+
+// Returns an experimental process shutdown delay if the SubframeShutdownDelay
+// experiment is enabled, 0 if not or if under memory pressure. This experiment
+// keeps subframe processes alive for a few seconds in case they can be reused.
+base::TimeDelta GetSubframeProcessShutdownDelay(
+    BrowserContext* browser_context) {
+  static constexpr base::TimeDelta kZeroDelay;
+  if (!base::FeatureList::IsEnabled(features::kSubframeShutdownDelay))
+    return kZeroDelay;
+
+  // Don't delay process shutdown under memory pressure. Does not cancel
+  // existing shutdown delays for processes already in delayed-shutdown state.
+  const auto* const memory_monitor = base::MemoryPressureMonitor::Get();
+  if (memory_monitor &&
+      memory_monitor->GetCurrentPressureLevel() >=
+          base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE) {
+    return kZeroDelay;
+  }
+
+  static constexpr base::TimeDelta kShortDelay =
+      base::TimeDelta::FromSeconds(2);
+  static constexpr base::TimeDelta kLongDelay = base::TimeDelta::FromSeconds(8);
+  // Added to delay if based on recent performance (i.e., |kHistoryBased| and
+  // |kHistoryBasedLong|) to account for small variations in timing.
+  static constexpr base::TimeDelta kDelayBuffer =
+      base::TimeDelta::FromSeconds(1);
+
+  switch (features::kSubframeShutdownDelayTypeParam.Get()) {
+    case features::SubframeShutdownDelayType::kConstant: {
+      return kShortDelay;
+    }
+    case features::SubframeShutdownDelayType::kConstantLong: {
+      return kLongDelay;
+    }
+    case features::SubframeShutdownDelayType::kHistoryBased: {
+      const base::TimeDelta reuse_interval =
+          RecentlyDestroyedHosts::GetPercentileReuseInterval(50,
+                                                             browser_context);
+      // If no subframe reuse has happened recently, don't delay process
+      // shutdown at all.
+      if (reuse_interval.is_zero())
+        return kZeroDelay;
+      return std::min(reuse_interval + kDelayBuffer, kLongDelay);
+    }
+    case features::SubframeShutdownDelayType::kHistoryBasedLong: {
+      const base::TimeDelta reuse_interval =
+          RecentlyDestroyedHosts::GetPercentileReuseInterval(75,
+                                                             browser_context);
+      // If no subframe reuse has happened recently, don't delay process
+      // shutdown at all.
+      if (reuse_interval.is_zero())
+        return kZeroDelay;
+      return std::min(reuse_interval + kDelayBuffer, kLongDelay);
+    }
+    case features::SubframeShutdownDelayType::kMemoryBased: {
+      // See subframe-reuse design doc for more detail on these values.
+      // docs.google.com/document/d/1x_h4Gg4ForILEj8A4rMBX6d84uHWyQ9RSXmGVqMlBTk
+      static constexpr int64_t kHighMemoryThreshold = 8000000000;
+      static constexpr int64_t kMaxMemoryThreshold = 16000000000;
+
+      const int64_t available_memory =
+          base::SysInfo::AmountOfAvailablePhysicalMemory();
+      if (available_memory <= kHighMemoryThreshold)
+        return kShortDelay;
+      if (available_memory >= kMaxMemoryThreshold)
+        return kLongDelay;
+
+      // Scale delay linearly based on where |available_memory| lies between
+      // |kHighMemoryThreshold| and |kMaxMemoryThreshold|.
+      const int64_t available_memory_factor =
+          (available_memory - kHighMemoryThreshold) /
+          (kMaxMemoryThreshold - kHighMemoryThreshold);
+      return kShortDelay + (kLongDelay - kShortDelay) * available_memory_factor;
+    }
+  }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -2573,19 +2654,35 @@ void RenderFrameHostImpl::DeleteRenderFrame(
       // process shutdown.
       DCHECK_NE(lifecycle_state(), LifecycleStateImpl::kInBackForwardCache);
 
+      base::TimeDelta subframe_shutdown_timeout =
+          delegate_->IsBeingDestroyed()
+              ? base::TimeDelta()
+              : GetSubframeProcessShutdownDelay(
+                    GetSiteInstance()->GetBrowserContext());
       // If this document has unload handlers (and isn't speculative or in the
       // back-forward cache), ensure that they have a chance to execute by
       // delaying process cleanup. This will prevent the process from shutting
       // down immediately in the case where this is the last active frame in the
       // process. See https://crbug.com/852204.
-      if (has_unload_handlers()) {
+      const base::TimeDelta unload_handler_timeout =
+          has_unload_handlers() ? subframe_unload_timeout_ : base::TimeDelta();
+
+      if (!subframe_shutdown_timeout.is_zero() ||
+          !unload_handler_timeout.is_zero()) {
+        // Don't delay shutdown longer than the maximum delay for renderer
+        // processes, enforced for security reasons (crbug.com/1177674).
+        DCHECK_LE(subframe_shutdown_timeout + unload_handler_timeout,
+                  base::TimeDelta::FromSeconds(
+                      kKeepAliveHandleFactoryTimeoutInSeconds));
+
         RenderProcessHostImpl* process =
             static_cast<RenderProcessHostImpl*>(GetProcess());
-        process->DelayProcessShutdownForUnload(subframe_unload_timeout_);
+        process->DelayProcessShutdown(subframe_shutdown_timeout,
+                                      unload_handler_timeout,
+                                      site_instance_->GetSiteInfo());
       }
-
       // If the subframe takes too long to unload, force its removal from the
-      // tree.  See https://crbug.com/950625.
+      // tree. See https://crbug.com/950625.
       subframe_unload_timer_.Start(FROM_HERE, subframe_unload_timeout_, this,
                                    &RenderFrameHostImpl::OnUnloadTimeout);
     }

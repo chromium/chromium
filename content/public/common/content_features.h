@@ -9,6 +9,7 @@
 #define CONTENT_PUBLIC_COMMON_CONTENT_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 
@@ -171,6 +172,26 @@ CONTENT_EXPORT extern const base::Feature kWebOTPAssertionFeaturePolicy;
 CONTENT_EXPORT extern const base::Feature kSpareRendererForSitePerProcess;
 CONTENT_EXPORT extern const base::Feature kStorageServiceOutOfProcess;
 CONTENT_EXPORT extern const base::Feature kStrictOriginIsolation;
+CONTENT_EXPORT extern const base::Feature kSubframeShutdownDelay;
+enum class SubframeShutdownDelayType {
+  // A flat 2s shutdown delay.
+  kConstant,
+  // A flat 8s shutdown delay.
+  kConstantLong,
+  // A variable delay from 0s to 8s based on the median interval between
+  // subframe shutdown and process reuse over the past 5 subframe navigations.
+  // A subframe that could not be reused is counted as 0s.
+  kHistoryBased,
+  // A variable delay from 0s to 8s based on the 75th-percentile interval
+  // between subframe shutdown and process reuse over the past 5 subframe
+  // navigations. A subframe that could not be reused is counted as 0s.
+  kHistoryBasedLong,
+  // A 2s base delay at 8 GB available memory or lower. Above 8 GB available
+  // memory, scales up linearly to a maximum 8s delay at 16 GB or more.
+  kMemoryBased
+};
+CONTENT_EXPORT extern const base::FeatureParam<SubframeShutdownDelayType>
+    kSubframeShutdownDelayTypeParam;
 CONTENT_EXPORT extern const base::Feature kSubresourceWebBundles;
 CONTENT_EXPORT extern const base::Feature
     kSuppressDifferentOriginSubframeJSDialogs;
