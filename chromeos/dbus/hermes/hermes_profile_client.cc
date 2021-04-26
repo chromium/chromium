@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/dbus/hermes/constants.h"
 #include "chromeos/dbus/hermes/fake_hermes_profile_client.h"
 #include "chromeos/dbus/hermes/hermes_response_status.h"
 #include "components/device_event_log/device_event_log.h"
@@ -122,7 +123,7 @@ class HermesProfileClientImpl : public HermesProfileClient {
                                  hermes::profile::kEnable);
     dbus::ObjectProxy* object_proxy = GetObject(carrier_profile_path).first;
     object_proxy->CallMethodWithErrorResponse(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        &method_call, hermes_constants::kHermesNetworkOperationTimeoutMs,
         base::BindOnce(&HermesProfileClientImpl::OnHermesStatusResponse,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
@@ -133,7 +134,7 @@ class HermesProfileClientImpl : public HermesProfileClient {
                                  hermes::profile::kDisable);
     dbus::ObjectProxy* object_proxy = GetObject(carrier_profile_path).first;
     object_proxy->CallMethodWithErrorResponse(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        &method_call, hermes_constants::kHermesNetworkOperationTimeoutMs,
         base::BindOnce(&HermesProfileClientImpl::OnHermesStatusResponse,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }

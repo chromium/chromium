@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
+#include "chromeos/dbus/hermes/constants.h"
 #include "chromeos/dbus/hermes/fake_hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_response_status.h"
 #include "components/device_event_log/device_event_log.h"
@@ -62,7 +63,7 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
     writer.AppendString(confirmation_code);
     dbus::ObjectProxy* object_proxy = GetOrCreateProperties(euicc_path).first;
     object_proxy->CallMethodWithErrorResponse(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        &method_call, hermes_constants::kHermesNetworkOperationTimeoutMs,
         base::BindOnce(&HermesEuiccClientImpl::OnProfileInstallResponse,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
@@ -78,7 +79,7 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
     writer.AppendString(confirmation_code);
     dbus::ObjectProxy* object_proxy = GetOrCreateProperties(euicc_path).first;
     object_proxy->CallMethodWithErrorResponse(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        &method_call, hermes_constants::kHermesNetworkOperationTimeoutMs,
         base::BindOnce(&HermesEuiccClientImpl::OnHermesStatusResponse,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
@@ -89,7 +90,7 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
                                  hermes::euicc::kRequestInstalledProfiles);
     dbus::ObjectProxy* object_proxy = GetOrCreateProperties(euicc_path).first;
     object_proxy->CallMethodWithErrorResponse(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        &method_call, hermes_constants::kHermesNetworkOperationTimeoutMs,
         base::BindOnce(&HermesEuiccClientImpl::OnHermesStatusResponse,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
@@ -103,7 +104,7 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
     writer.AppendString(root_smds);
     dbus::ObjectProxy* object_proxy = GetOrCreateProperties(euicc_path).first;
     object_proxy->CallMethodWithErrorResponse(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        &method_call, hermes_constants::kHermesNetworkOperationTimeoutMs,
         base::BindOnce(&HermesEuiccClientImpl::OnHermesStatusResponse,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
@@ -117,7 +118,7 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
     writer.AppendObjectPath(carrier_profile_path);
     dbus::ObjectProxy* object_proxy = GetOrCreateProperties(euicc_path).first;
     object_proxy->CallMethodWithErrorResponse(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        &method_call, hermes_constants::kHermesNetworkOperationTimeoutMs,
         base::BindOnce(&HermesEuiccClientImpl::OnHermesStatusResponse,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }

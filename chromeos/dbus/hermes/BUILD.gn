@@ -19,6 +19,8 @@ source_set("hermes_clients") {
   ]
 
   sources = [
+    "constants.cc",
+    "constants.h",
     "hermes_clients.cc",
     "hermes_clients.h",
     "hermes_euicc_client.cc",
