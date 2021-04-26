@@ -6,6 +6,7 @@
 #define COMPONENTS_POLICY_CORE_COMMON_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "components/policy/policy_export.h"
 

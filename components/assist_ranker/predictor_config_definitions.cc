@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/assist_ranker/predictor_config_definitions.h"
+
+#include "base/metrics/field_trial_params.h"
 #include "components/assist_ranker/base_predictor.h"
 
 namespace assist_ranker {

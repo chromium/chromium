@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/media_export.h"

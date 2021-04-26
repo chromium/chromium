@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/app_list/search/files/item_suggest_cache.h"
 
 #include "base/bind.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/profiles/profile.h"

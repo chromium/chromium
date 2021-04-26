@@ -5,6 +5,7 @@
 #include "chrome/browser/reputation/url_elision_policy.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "chrome/browser/reputation/local_heuristics.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
 #include "components/omnibox/common/omnibox_features.h"

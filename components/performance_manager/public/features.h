@@ -5,12 +5,13 @@
 // This header contains field trial and variations definitions for policies,
 // mechanisms and features in the performance_manager component.
 
-#include "base/feature_list.h"
-#include "base/time/time.h"
-#include "build/build_config.h"
-
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FEATURES_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FEATURES_H_
+
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
+#include "build/build_config.h"
 
 namespace performance_manager {
 namespace features {

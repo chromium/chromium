@@ -6,6 +6,7 @@
 #define COMPONENTS_BROWSER_SYNC_BROWSER_SYNC_SWITCHES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 
 namespace switches {

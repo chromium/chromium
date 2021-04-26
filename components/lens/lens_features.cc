@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/lens/lens_features.h"
+
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace lens {
 namespace features {

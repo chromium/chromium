@@ -4,6 +4,8 @@
 
 #include "chrome/browser/sharing/shared_clipboard/feature_flags.h"
 
+#include "base/metrics/field_trial_params.h"
+
 const base::Feature kSharedClipboardUI{"SharedClipboardUI",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
