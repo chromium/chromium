@@ -4,10 +4,18 @@
 
 package org.chromium.chrome.browser.customtabs.features;
 
+import static androidx.core.view.WindowInsetsCompat.Type.systemBars;
+import static androidx.core.view.WindowInsetsControllerCompat.BEHAVIOR_SHOW_BARS_BY_SWIPE;
+import static androidx.core.view.WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE;
+
 import android.app.Activity;
 import android.os.Build;
 import android.os.Handler;
 import android.view.View;
+import android.view.Window;
+
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -25,24 +33,10 @@ public class ImmersiveModeController implements WindowFocusChangedObserver, Dest
     private static final int ENTER_IMMERSIVE_MODE_ON_WINDOW_FOCUS_DELAY_MILLIS = 300;
     private static final int RESTORE_IMMERSIVE_MODE_DELAY_MILLIS = 3000;
 
-    // As per https://developer.android.com/training/system-ui/immersive.
-    private static final int IMMERSIVE_MODE_UI_FLAGS = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-            | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
-            | View.SYSTEM_UI_FLAG_LOW_PROFILE
-            | View.SYSTEM_UI_FLAG_IMMERSIVE;
-
-    private static final int IMMERSIVE_STICKY_MODE_UI_FLAGS = IMMERSIVE_MODE_UI_FLAGS
-            & ~View.SYSTEM_UI_FLAG_IMMERSIVE
-            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-
     private final Activity mActivity;
     private final Handler mHandler = new Handler();
     private final Runnable mUpdateImmersiveFlagsRunnable = this::updateImmersiveFlags;
 
-    private int mImmersiveFlags;
     private boolean mInImmersiveMode;
 
     @Inject
@@ -67,21 +61,27 @@ public class ImmersiveModeController implements WindowFocusChangedObserver, Dest
         if (mInImmersiveMode) return;
 
         mInImmersiveMode = true;
-        View decor = mActivity.getWindow().getDecorView();
-        mImmersiveFlags = sticky ? IMMERSIVE_STICKY_MODE_UI_FLAGS : IMMERSIVE_MODE_UI_FLAGS;
+        Window window = mActivity.getWindow();
+        View decor = window.getDecorView();
+
+        WindowInsetsControllerCompat insetsController =
+                WindowCompat.getInsetsController(window, decor);
+        assert insetsController != null : "Decor View isn't attached to the Window.";
+
+        if (sticky) {
+            insetsController.setSystemBarsBehavior(BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+        } else {
+            insetsController.setSystemBarsBehavior(BEHAVIOR_SHOW_BARS_BY_SWIPE);
+        }
 
         // When we enter immersive mode for the first time, register a
         // SystemUiVisibilityChangeListener that restores immersive mode. This is necessary
         // because user actions like focusing a keyboard will break out of immersive mode.
-        decor.setOnSystemUiVisibilityChangeListener(newFlags -> {
-            if ((newFlags | mImmersiveFlags) != newFlags) {
-                postSetImmersiveFlags(RESTORE_IMMERSIVE_MODE_DELAY_MILLIS);
-            }
-        });
+        decor.setOnSystemUiVisibilityChangeListener(
+                newFlags -> postSetImmersiveFlags(RESTORE_IMMERSIVE_MODE_DELAY_MILLIS));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            mActivity.getWindow().getAttributes().layoutInDisplayCutoutMode =
-                    layoutInDisplayCutoutMode;
+            window.getAttributes().layoutInDisplayCutoutMode = layoutInDisplayCutoutMode;
         }
 
         postSetImmersiveFlags(0);
@@ -106,15 +106,21 @@ public class ImmersiveModeController implements WindowFocusChangedObserver, Dest
     }
 
     private void updateImmersiveFlags() {
-        View decor = mActivity.getWindow().getDecorView();
-        int currentFlags = decor.getSystemUiVisibility();
+        Window window = mActivity.getWindow();
+        View decor = window.getDecorView();
 
-        int desiredFlags =
-                mInImmersiveMode ? currentFlags | mImmersiveFlags : currentFlags & ~mImmersiveFlags;
+        WindowInsetsControllerCompat insetsController =
+                WindowCompat.getInsetsController(window, decor);
 
-        if (currentFlags != desiredFlags) {
-            decor.setSystemUiVisibility(desiredFlags);
+        assert insetsController != null : "Decor View isn't attached to the Window.";
+
+        if (mInImmersiveMode) {
+            insetsController.hide(systemBars());
+        } else {
+            insetsController.show(systemBars());
         }
+
+        WindowCompat.setDecorFitsSystemWindows(window, !mInImmersiveMode);
     }
 
     @Override

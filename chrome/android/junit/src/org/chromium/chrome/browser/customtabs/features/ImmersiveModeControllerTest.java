@@ -80,6 +80,8 @@ public class ImmersiveModeControllerTest {
         mController.enterImmersiveMode(LAYOUT, NOT_STICKY);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         assertNotEquals(0, mSystemUiVisibility & View.SYSTEM_UI_FLAG_IMMERSIVE);
+        assertNotEquals(0, mSystemUiVisibility & View.SYSTEM_UI_FLAG_FULLSCREEN);
+        assertNotEquals(0, mSystemUiVisibility & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
     }
 
     @Test
@@ -87,6 +89,8 @@ public class ImmersiveModeControllerTest {
         mController.enterImmersiveMode(LAYOUT, STICKY);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         assertNotEquals(0, mSystemUiVisibility & View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        assertNotEquals(0, mSystemUiVisibility & View.SYSTEM_UI_FLAG_FULLSCREEN);
+        assertNotEquals(0, mSystemUiVisibility & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
     }
 
     @Test
@@ -100,7 +104,8 @@ public class ImmersiveModeControllerTest {
         mController.enterImmersiveMode(LAYOUT, NOT_STICKY);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         mController.exitImmersiveMode();
-        assertEquals(0, mSystemUiVisibility);
+        assertEquals(0, mSystemUiVisibility & View.SYSTEM_UI_FLAG_FULLSCREEN);
+        assertEquals(0, mSystemUiVisibility & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
     }
 
     @Test
@@ -108,6 +113,7 @@ public class ImmersiveModeControllerTest {
         mController.enterImmersiveMode(LAYOUT, STICKY);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         mController.exitImmersiveMode();
-        assertEquals(0, mSystemUiVisibility);
+        assertEquals(0, mSystemUiVisibility & View.SYSTEM_UI_FLAG_FULLSCREEN);
+        assertEquals(0, mSystemUiVisibility & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
     }
 }
