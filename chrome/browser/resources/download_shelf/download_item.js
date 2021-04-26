@@ -53,11 +53,18 @@ export class DownloadItemElement extends CustomElement {
     this.$('#filename').innerText =
         filePath.substring(filePath.lastIndexOf('/') + 1);
 
+    const statusTextElement = this.$('#statusText');
+    const statusText = (!item.shouldPromoteOrigin || !item.originalUrl.url) ?
+        item.statusText :
+        new URL(item.originalUrl.url).origin;
+    statusTextElement.innerText = statusText;
+
     downloadElement.dataset.state = item.state;
     switch (item.state) {
       case DownloadState.kInProgress:
-        this.progress = Number(
-            item.totalBytes > 0 ? item.receivedBytes / item.totalBytes : 0);
+        this.progress = item.totalBytes > 0 ?
+            Number(item.receivedBytes) / Number(item.totalBytes) :
+            0;
         break;
       case DownloadState.kComplete:
         this.progress = 1;

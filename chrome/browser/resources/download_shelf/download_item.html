@@ -1,11 +1,22 @@
 <style>
 :host {
-  --item-width: 245px;
+  /* The following color values are copied from
+   * ui/webui/resources/cr_elements/shared_vars_css.html
+   * because we don't want to introduce the Polymer 3 dependency
+   * to increase loading overhead from the benchmarking's perspective.
+   * If at some point pulling in Polymer becomes unavoidable then we should
+   * remove these lines and include shared_vars_css.html instead. */
+  --google-grey-refresh-700-rgb: 95, 99, 104;  /* #5f6368 */
+  --google-grey-refresh-700: rgb(var(--google-grey-refresh-700-rgb));
+  --google-grey-900-rgb: 32, 33, 36;  /* #202124 */
+  --google-grey-900: rgb(var(--google-grey-900-rgb));
+
+  --button-hover-color: rgba(var(--google-grey-900-rgb), .1);
+  --button-icon-stroke-color: var(--google-grey-refresh-700);
   --pi: 3.14159265358979;
-  --google-green-700: 76, 175, 80;
-  --google-blue-600: 30, 136, 229;
-  --google-blue-700: 25, 118, 210;
-  --google-grey-500: 158, 158, 158;
+  --spinner-color: var(--google-grey-900-rgb);
+  --text-width: 140px;
+  --transparent-button-color: rgba(0, 0, 0, 0);
 }
 
 .download-item {
@@ -15,37 +26,30 @@
   flex-direction: row;
   height: 100%;
   overflow: hidden;
-  padding: 6px 8px;
+  padding: 6px 0 6px 12px;
   position: relative;
   user-select: none;
-  width: var(--item-width);
+}
+
+.download-item:hover {
+  background-color: var(--button-hover-color);
 }
 
 .progress {
-  --width: 24px;
+  --width: 26px;
   --radius: calc(var(--width) / 2);
-  --stroke-width: 2px;
+  --stroke-width: 1.2px;
 
   --download-progress: 0;
-  --indicator-color: var(--google-blue-600);
+  --indicator-color: var(--spinner-color);
 
   align-items: center;
   display: flex;
   flex: 0 0 var(--width);
   height: var(--width);
   justify-content: center;
-  margin: 0 0 0 8px;
   position: relative;
   width: var(--width);
-}
-
-[data-state=complete] .progress {
-  --indicator-color: var(--google-green-700);
-}
-
-[data-paused] .progress,
-[data-state=interrupted] .progress {
-  --indicator-color: var(--google-grey-500);
 }
 
 .progress-indicator {
@@ -61,8 +65,8 @@
 }
 
 .progress-circle {
-  fill: rgba(var(--indicator-color), 0.15);
-  r: var(--radius);
+  fill: rgba(var(--indicator-color), 0.2);
+  r: calc(var(--radius) - var(--stroke-width) / 2.0);
 }
 
 .progress-spinner {
@@ -81,18 +85,61 @@
   stroke-width: var(--stroke-width);
 }
 
-#filename {
-  flex: 1 0 0;
-  margin-bottom: 1px;
+/* Display progress spinner only when state=DownloadState.kInProgress. */
+.download-item:not([data-state='2']) .progress-circle,
+.download-item:not([data-state='2']) .progress-spinner {
+  display: none;
+}
+
+#text-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+  padding-inline-start: 8px;
+  width: var(--text-width);
+}
+
+#filename,
+#statusText {
   overflow: hidden;
-  padding-inline-start: 14px;
+  padding-bottom: 2px;
+  padding-top: 2px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+#statusText {
+  font-size: 85%;
+}
+
+#dropdown-button {
+  background-color: var(--transparent-button-color);
+  border: none;
+  height: 32px;
+  margin: 8px;
+  width: 32px;
+}
+
+#dropdown-button:hover {
+  background-color: var(--button-hover-color)
+}
+
+#dropdown-icon {
+  fill: transparent;
+  stroke: var(--button-icon-stroke-color);
+  stroke-width: 1.2;
+}
+
 #fileIcon {
-  height: 15px;
+  height: 16px;
   position: absolute;
+}
+
+#separator {
+  background-color: rgba(255, 255, 255, .1);
+  height: 90%;
+  width: 1px;
 }
 </style>
 <div class="download-item">
@@ -103,5 +150,17 @@
     </svg>
     <img id="fileIcon">
   </div>
-  <div id="filename"></div>
+  <div id="text-container">
+    <div id="filename"></div>
+    <div id="statusText"></div>
+  </div>
+  <button id="dropdown-button">
+    <svg id="dropdown-icon" viewBox="0 0 16 16">
+      <g>
+        <path d="M 4 10 l 4 -4 l 4 4">
+        </path>
+      </g>
+    </svg>
+  </button>
+  <div id="separator"></div>
 </div>

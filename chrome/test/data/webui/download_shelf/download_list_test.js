@@ -96,7 +96,7 @@ suite('DownloadListTest', function() {
     assertEquals(4, downloadListElement.$all('download-item').length);
     listElement.style.width = oldWidth * 2 + 'px';
     await waitAfterNextRender(listElement);
-    assertEquals(7, downloadListElement.$all('download-item').length);
+    assertEquals(8, downloadListElement.$all('download-item').length);
     listElement.style.width = oldWidth + 'px';
     await waitAfterNextRender(listElement);
     assertEquals(4, downloadListElement.$all('download-item').length);

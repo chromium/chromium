@@ -41,7 +41,7 @@ DownloadShelfWebView::~DownloadShelfWebView() = default;
 
 gfx::Size DownloadShelfWebView::CalculatePreferredSize() const {
   return gfx::Tween::SizeValueBetween(shelf_animation_.GetCurrentValue(),
-                                      gfx::Size(), gfx::Size(0, 50));
+                                      gfx::Size(), gfx::Size(0, 58));
 }
 
 void DownloadShelfWebView::OnThemeChanged() {
