@@ -168,6 +168,9 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
         String iconString = getContext().getResources().getString(showContent
                         ? R.string.accessibility_omnibox_conceal_clipboard_contents
                         : R.string.accessibility_omnibox_reveal_clipboard_contents);
+        String announcementString = getContext().getResources().getString(showContent
+                        ? R.string.accessibility_omnibox_conceal_button_announcement
+                        : R.string.accessibility_omnibox_reveal_button_announcement);
         Runnable action = showContent ? ()
                 -> concealButtonClickHandler(suggestion, model)
                 : () -> revealButtonClickHandler(suggestion, model);
@@ -177,7 +180,7 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
                                 .setLarge(true)
                                 .setAllowTint(true)
                                 .build(),
-                        iconString, action)));
+                        iconString, announcementString, action)));
     }
 
     @Override

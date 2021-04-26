@@ -7,7 +7,11 @@ package org.chromium.chrome.browser.omnibox.suggestions.base;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.view.View;
+import android.view.View.AccessibilityDelegate;
+import android.view.accessibility.AccessibilityNodeInfo;
+import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
 import android.widget.ImageView;
 
 import androidx.annotation.ColorRes;
@@ -91,7 +95,6 @@ public final class BaseSuggestionViewBinder<T extends View>
 
         // Drawable retrieved once here (expensive) and will be copied multiple times (cheap).
         Drawable backgroundDrawable = getSelectableBackgroundDrawable(view, model);
-
         final List<ImageView> actionViews = view.getActionButtons();
         for (int index = 0; index < actionCount; index++) {
             final ImageView actionView = actionViews.get(index);
@@ -101,6 +104,25 @@ public final class BaseSuggestionViewBinder<T extends View>
             actionView.setBackground(copyDrawable(backgroundDrawable));
             updateIcon(actionView, action.icon,
                     ChromeColors.getPrimaryIconTintRes(!useDarkColors(model)));
+
+            actionView.setAccessibilityDelegate(new AccessibilityDelegate() {
+                @Override
+                public void onInitializeAccessibilityNodeInfo(
+                        View host, AccessibilityNodeInfo info) {
+                    super.onInitializeAccessibilityNodeInfo(host, info);
+                    info.addAction(AccessibilityAction.ACTION_CLICK);
+                }
+
+                @Override
+                public boolean performAccessibilityAction(
+                        View host, int accessibilityAction, Bundle arguments) {
+                    if (accessibilityAction == AccessibilityNodeInfo.ACTION_CLICK
+                            && action.onClickAnnouncement != null) {
+                        actionView.announceForAccessibility(action.onClickAnnouncement);
+                    }
+                    return super.performAccessibilityAction(host, accessibilityAction, arguments);
+                }
+            });
         }
     }
 

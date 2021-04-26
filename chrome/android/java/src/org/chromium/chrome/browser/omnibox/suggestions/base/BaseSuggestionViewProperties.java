@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.omnibox.suggestions.base;
 import android.content.Context;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
@@ -36,7 +38,25 @@ public class BaseSuggestionViewProperties {
     public static final class Action {
         public final SuggestionDrawableState icon;
         public final Runnable callback;
-        public final String accessibilityDescription;
+        public final @NonNull String accessibilityDescription;
+        public final @Nullable String onClickAnnouncement;
+
+        /**
+         * Create a new action for suggestion.
+         *
+         * @param icon SuggestionDrawableState describing the icon to show.
+         * @param description Content description for the action view.
+         * @param onClickAnnouncement action announcement for the action view when the action view
+         *         is clicked.
+         * @param callback Callback to invoke when user interacts with the icon.
+         */
+        public Action(@NonNull SuggestionDrawableState icon, @NonNull String description,
+                @Nullable String onClickAnnouncement, @NonNull Runnable callback) {
+            this.icon = icon;
+            this.accessibilityDescription = description;
+            this.onClickAnnouncement = onClickAnnouncement;
+            this.callback = callback;
+        }
 
         /**
          * Create a new action for suggestion.
@@ -46,9 +66,7 @@ public class BaseSuggestionViewProperties {
          * @param callback Callback to invoke when user interacts with the icon.
          */
         public Action(SuggestionDrawableState icon, String description, Runnable callback) {
-            this.icon = icon;
-            this.accessibilityDescription = description;
-            this.callback = callback;
+            this(icon, description, null, callback);
         }
 
         /**
