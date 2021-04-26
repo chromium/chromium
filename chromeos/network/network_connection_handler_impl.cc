@@ -374,7 +374,7 @@ void NetworkConnectionHandlerImpl::ConnectToNetwork(
   // an error occurs before a connect is initialted.
   network_state_handler_->SetNetworkConnectRequested(service_path, true);
 
-  if (!cellular_network_iccid.empty()) {
+  if (cellular_connection_handler_ && !cellular_network_iccid.empty()) {
     // Cellular networks require special handling before Shill can initiate a
     // connection. Prepare the network for connection before proceeding.
     cellular_connection_handler_->PrepareExistingCellularNetworkForConnection(
