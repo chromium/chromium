@@ -398,8 +398,6 @@ void RTCDataChannel::send(DOMArrayBuffer* data,
   }
 
   size_t data_length = data->ByteLength();
-  if (!data_length)
-    return;
 
   if (!(base::CheckedNumeric<unsigned>(buffered_amount_) + data_length)
            .IsValid()) {
@@ -591,7 +589,9 @@ void RTCDataChannel::OnMessage(std::unique_ptr<webrtc::DataBuffer> buffer) {
     NOTREACHED();
   } else {
     String text =
-        String::FromUTF8(buffer->data.cdata<char>(), buffer->data.size());
+        buffer->data.size() > 0
+            ? String::FromUTF8(buffer->data.cdata<char>(), buffer->data.size())
+            : g_empty_string;
     if (!text) {
       LOG(ERROR) << "Failed convert received data to UTF16";
       return;
