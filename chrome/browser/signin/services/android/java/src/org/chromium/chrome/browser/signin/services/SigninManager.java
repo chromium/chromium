@@ -173,9 +173,6 @@ public interface SigninManager {
             @Nullable SignInCallback callback);
 
     /**
-     * @deprecated use {@link #signinAndEnableSync(int, CoreAccountInfo, SignInCallback)} instead.
-     * TODO(crbug.com/1002056): Remove this version after migrating all callers to CoreAccountInfo.
-     *
      * Starts the sign-in flow, and executes the callback when finished.
      *
      * The sign-in flow goes through the following steps:
@@ -190,7 +187,6 @@ public interface SigninManager {
      * @param account The account to sign in to.
      * @param callback Optional callback for when the sign-in process is finished.
      */
-    @Deprecated
     void signinAndEnableSync(
             @SigninAccessPoint int accessPoint, Account account, @Nullable SignInCallback callback);
 

@@ -325,9 +325,6 @@ class SigninManagerImpl
     }
 
     /**
-     * @deprecated use {@link #signinAndEnableSync(int, CoreAccountInfo, SignInCallback)} instead.
-     * TODO(crbug.com/1002056): Remove this version after migrating all callers to CoreAccountInfo.
-     *
      * Starts the sign-in flow, and executes the callback when finished.
      *
      * The sign-in flow goes through the following steps:
@@ -343,7 +340,6 @@ class SigninManagerImpl
      * @param callback Optional callback for when the sign-in process is finished.
      */
     @Override
-    @Deprecated
     public void signinAndEnableSync(@SigninAccessPoint int accessPoint, Account account,
             @Nullable SignInCallback callback) {
         mAccountTrackerService.seedAccountsIfNeeded(() -> {

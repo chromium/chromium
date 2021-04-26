@@ -8,28 +8,29 @@ import androidx.annotation.MainThread;
 
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.signin.services.SigninHelper;
 import org.chromium.chrome.browser.sync.SyncController;
 import org.chromium.chrome.browser.sync.SyncErrorNotifier;
 
 /**
- * This class is used to get a singleton instance of {@link SigninHelper}.
+ * This class is used to get a singleton instance of {@link SigninChecker}.
  */
 public class SigninHelperProvider {
-    private static SigninHelper sInstance;
+    private static SigninChecker sInstance;
 
     /**
-     * @return A singleton instance of {@link SigninHelper}.
+     * @return A singleton instance of {@link SigninChecker}.
+     *
+     * TODO(crbug/1198038): Rename this class to SigninCheckerProvider
      */
     @MainThread
-    public static SigninHelper get() {
+    public static SigninChecker get() {
         if (sInstance == null) {
             // SyncController and SyncErrorNotifier must be explicitly initialized.
             // TODO(crbug.com/1156620): Move the initializations elsewhere.
             SyncErrorNotifier.get();
             SyncController.get();
             Profile profile = Profile.getLastUsedRegularProfile();
-            sInstance = new SigninHelper(IdentityServicesProvider.get().getSigninManager(profile),
+            sInstance = new SigninChecker(IdentityServicesProvider.get().getSigninManager(profile),
                     IdentityServicesProvider.get().getAccountTrackerService(profile));
         }
         return sInstance;

@@ -8,6 +8,7 @@ import android.accounts.Account;
 import android.content.Context;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import com.google.android.gms.auth.AccountChangeEvent;
@@ -29,7 +30,11 @@ public final class AccountRenameChecker {
     private static final String TAG = "AccountRenameChecker";
     private static AccountRenameChecker sInstance;
 
-    private static final class SystemDelegate {
+    /**
+     * The delegate is used to query the accounts rename event.
+     */
+    @VisibleForTesting
+    public interface Delegate {
         /**
          * Gets the new account name of the renamed account.
          * @return The new name that the given account email is renamed to or null if the given
@@ -37,7 +42,15 @@ public final class AccountRenameChecker {
          */
         @WorkerThread
         @Nullable
-        String getNewNameOfRenamedAccount(String accountEmail) {
+        String getNewNameOfRenamedAccount(String accountEmail);
+    }
+
+    private static final class SystemDelegate implements Delegate {
+        /**
+         * Gets the new account name of the renamed account.
+         */
+        @Override
+        public @Nullable String getNewNameOfRenamedAccount(String accountEmail) {
             final Context context = ContextUtils.getApplicationContext();
             try {
                 final List<AccountChangeEvent> accountChangeEvents =
@@ -54,10 +67,10 @@ public final class AccountRenameChecker {
         }
     }
 
-    private final SystemDelegate mDelegate;
+    private final Delegate mDelegate;
 
-    private AccountRenameChecker() {
-        mDelegate = new SystemDelegate();
+    private AccountRenameChecker(Delegate delegate) {
+        mDelegate = delegate;
     }
 
     /**
@@ -65,9 +78,17 @@ public final class AccountRenameChecker {
      */
     public static AccountRenameChecker get() {
         if (sInstance == null) {
-            sInstance = new AccountRenameChecker();
+            sInstance = new AccountRenameChecker(new SystemDelegate());
         }
         return sInstance;
+    }
+
+    /**
+     * Overrides the {@link Delegate} for tests.
+     */
+    @VisibleForTesting
+    public static void overrideDelegateForTests(Delegate delegate) {
+        sInstance = new AccountRenameChecker(delegate);
     }
 
     /**

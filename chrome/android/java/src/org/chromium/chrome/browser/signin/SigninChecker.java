@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.signin.services;
+package org.chromium.chrome.browser.signin;
 
 import android.accounts.Account;
 
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.TraceEvent;
+import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
+import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
+import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountRenameChecker;
 import org.chromium.components.signin.AccountUtils;
@@ -21,24 +25,27 @@ import org.chromium.components.signin.metrics.SignoutReason;
 import java.util.List;
 
 /**
- * A helper for tasks like re-signin.
- *
- * This should be merged into SigninManager when it is upstreamed.
+ * This class regroups sign-in checks when chrome starts up and when accounts change on device
  */
-public class SigninHelper
+public class SigninChecker
         implements ApplicationStatus.ApplicationStateListener, AccountTrackerService.Observer {
     private final SigninManager mSigninManager;
     private final AccountTrackerService mAccountTrackerService;
+    private final SignInCallback mSigninCallback = new SignInCallback() {
+        @Override
+        public void onSignInComplete() {
+            ProfileSyncService.get().setFirstSetupComplete(SyncFirstSetupCompleteSource.BASIC_FLOW);
+        }
+
+        @Override
+        public void onSignInAborted() {}
+    };
 
     /**
-     * Please use SigninHelperProvider to get SigninHelper instance instead of creating it
+     * Please use SigninHelperProvider to get {@link SigninChecker} instance instead of creating it
      * manually.
-     *
-     * TODO(crbug/1152460): Add integration tests for the rename flow to check that if
-     * a signed-in account A is renamed to the account B, the signed-in account will be
-     * account B.
      */
-    public SigninHelper(SigninManager signinManager, AccountTrackerService accountTrackerService) {
+    public SigninChecker(SigninManager signinManager, AccountTrackerService accountTrackerService) {
         mSigninManager = signinManager;
         mAccountTrackerService = accountTrackerService;
         ApplicationStatus.registerApplicationStateListener(this);
@@ -84,7 +91,8 @@ public class SigninHelper
                         // to a new account
                         mSigninManager.signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS, () -> {
                             mSigninManager.signinAndEnableSync(SigninAccessPoint.ACCOUNT_RENAMED,
-                                    AccountUtils.createAccountFromName(newAccountName), null);
+                                    AccountUtils.createAccountFromName(newAccountName),
+                                    mSigninCallback);
                         }, false);
                     } else {
                         // Sign out if the current primary account is not renamed
