@@ -2846,7 +2846,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
                     - (1f - urlExpansionPercent)
                             * (statusCoordinator.getStatusIconWidth()
                                     - getAdditionalOffsetForNTP());
-            // The value returned changes based on if the layout is LTR or RTL.
             // For LTR, the value is negative because the status icon is left of the url bar on the
             // x/y plane.
             // For RTL, the value is positive because the status icon is right of the url bar on the
@@ -2859,6 +2858,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
     private int getAdditionalOffsetForNTP() {
         return getResources().getDimensionPixelSize(R.dimen.location_bar_lateral_padding)
-                - getResources().getDimensionPixelSize(R.dimen.sei_location_bar_lateral_padding);
+                - getResources().getDimensionPixelSize(R.dimen.fake_search_box_lateral_padding);
     }
 }

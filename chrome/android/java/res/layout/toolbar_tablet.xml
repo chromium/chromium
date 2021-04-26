@@ -59,6 +59,7 @@
             android:layout_weight="1"
             android:layout_gravity="center_vertical"
             android:background="@drawable/modern_toolbar_text_box_background"
+            android:paddingStart="@dimen/location_bar_lateral_padding"
             android:paddingEnd="@dimen/location_bar_lateral_padding" />
 
         <ViewStub

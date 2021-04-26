@@ -25,7 +25,9 @@
         android:id="@+id/location_bar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="top" />
+        android:layout_gravity="top"
+        android:paddingStart="@dimen/location_bar_lateral_padding"
+        android:paddingEnd="@dimen/location_bar_lateral_padding"/>
 
     <LinearLayout android:id="@+id/toolbar_buttons"
         android:orientation="horizontal"

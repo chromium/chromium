@@ -89,7 +89,6 @@ public class StatusView extends LinearLayout {
         mStatusExtraSpace = findViewById(R.id.location_bar_verbose_status_extra_space);
 
         configureAccessibilityDescriptions();
-        updateSearchEngineStatusIcon();
     }
 
     void setLocationBarDataProvider(LocationBarDataProvider toolbarCommonPropertiesModel) {
@@ -98,36 +97,6 @@ public class StatusView extends LinearLayout {
 
     void setSearchEngineLogoUtils(SearchEngineLogoUtils searchEngineLogoUtils) {
         mSearchEngineLogoUtils = searchEngineLogoUtils;
-    }
-
-    /**
-     * Update information required to display the search engine icon.
-     */
-    private void updateSearchEngineStatusIcon() {
-        // TODO(crbug.com/1178959): Move this padding out to XML, make default.
-        LinearLayout.LayoutParams layoutParams =
-                new LinearLayout.LayoutParams(mIconView.getLayoutParams());
-        layoutParams.setMarginEnd(0);
-        layoutParams.width =
-                getResources().getDimensionPixelSize(R.dimen.location_bar_status_icon_width);
-        mIconView.setLayoutParams(layoutParams);
-        // Setup the padding once we're loaded, the other padding changes will happen with post-
-        // layout positioning.
-        setPaddingRelative(getPaddingStart(), getPaddingTop(),
-                getResources().getDimensionPixelOffset(R.dimen.sei_location_bar_icon_end_padding),
-                getPaddingBottom());
-        // Note: the margins and implicit padding were removed from the status view for the
-        // dse icon experiment. Moving padding values that were there to the verbose status
-        // text view and the verbose text extra space.
-        mVerboseStatusTextView.setPaddingRelative(
-                getResources().getDimensionPixelSize(
-                        R.dimen.sei_location_bar_verbose_start_padding_verbose_text),
-                mVerboseStatusTextView.getPaddingTop(), mVerboseStatusTextView.getPaddingEnd(),
-                mVerboseStatusTextView.getPaddingBottom());
-        layoutParams = new LinearLayout.LayoutParams(mStatusExtraSpace.getLayoutParams());
-        layoutParams.width = getResources().getDimensionPixelSize(
-                R.dimen.sei_location_bar_status_extra_padding_width);
-        mStatusExtraSpace.setLayoutParams(layoutParams);
     }
 
     /**
@@ -447,7 +416,7 @@ public class StatusView extends LinearLayout {
         boolean isRtl = getLayoutDirection() == LAYOUT_DIRECTION_RTL;
         if (mTouchDelegateStartOffset == 0) {
             mTouchDelegateStartOffset =
-                    getResources().getDimensionPixelSize(R.dimen.sei_location_bar_lateral_padding);
+                    getResources().getDimensionPixelSize(R.dimen.location_bar_lateral_padding);
         }
         if (mTouchDelegateEndOffset == 0) {
             mTouchDelegateEndOffset =

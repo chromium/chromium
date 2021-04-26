@@ -580,9 +580,8 @@
     </style>
 
     <style name="OmniboxIcon" parent="LocationBarButton">
-        <item name="android:layout_width">@dimen/location_bar_icon_width</item>
+        <item name="android:layout_width">@dimen/location_bar_status_icon_width</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_marginEnd">@dimen/location_bar_icon_margin_end</item>
     </style>
 
     <!-- Revamped context menu -->

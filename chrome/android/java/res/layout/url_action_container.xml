@@ -11,7 +11,7 @@
         android:layout_height="@dimen/toolbar_height_no_shadow"
         android:layout_gravity="end|center_vertical"
         android:orientation="horizontal"
-        android:layout_marginEnd="@dimen/sei_location_bar_url_action_offset">
+        android:layout_marginEnd="@dimen/location_bar_url_action_offset">
 
         <org.chromium.ui.widget.ChromeImageButton
             android:id="@+id/delete_button"

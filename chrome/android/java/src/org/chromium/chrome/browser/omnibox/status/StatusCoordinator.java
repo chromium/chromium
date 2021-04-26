@@ -96,7 +96,7 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         Resources res = mStatusView.getResources();
         mMediator.setUrlMinWidth(res.getDimensionPixelSize(R.dimen.location_bar_min_url_width)
                 + res.getDimensionPixelSize(R.dimen.location_bar_icon_width)
-                + (res.getDimensionPixelSize(R.dimen.sei_location_bar_lateral_padding) * 2));
+                + (res.getDimensionPixelSize(R.dimen.location_bar_lateral_padding) * 2));
 
         mMediator.setSeparatorFieldMinWidth(
                 res.getDimensionPixelSize(R.dimen.location_bar_status_separator_width)

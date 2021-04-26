@@ -144,8 +144,8 @@ public class StatusMediator
         mWindowAndroid = windowAndroid;
 
         mEndPaddingPixelSizeOnFocusDelta =
-                mResources.getDimensionPixelSize(R.dimen.sei_location_bar_icon_end_padding_focused)
-                - mResources.getDimensionPixelSize(R.dimen.sei_location_bar_icon_end_padding);
+                mResources.getDimensionPixelSize(R.dimen.location_bar_icon_end_padding_focused)
+                - mResources.getDimensionPixelSize(R.dimen.location_bar_icon_end_padding);
         int iconWidth = resources.getDimensionPixelSize(R.dimen.location_bar_status_icon_width);
         mTextOffsetThreshold =
                 (float) iconWidth / (iconWidth + getEndPaddingPixelSizeOnFocusDelta());

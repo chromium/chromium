@@ -98,18 +98,6 @@ public class LocationBarLayout extends FrameLayout {
 
         StatusView statusView = findViewById(R.id.location_bar_status);
         statusView.setCompositeTouchDelegate(mCompositeTouchDelegate);
-
-        // TODO(crbug.com/1178959): Move this padding out to XML, make default.
-        // Setup the padding once we're loaded, the focused padding changes will happen with
-        // post-layout positioning via setTranslation. This is a byproduct of the way we do the
-        // omnibox un/focus animation which is by writing a function f(x) where x ranges from
-        // 0 (totally unfocused) to 1 (totally focused). Positioning the location bar and its
-        // children this way doesn't affect the views' bounds (including hit rect). But these
-        // hit rects are preserved for the views that matter (the icon and the url actions
-        // container).
-        int lateralPadding =
-                getResources().getDimensionPixelOffset(R.dimen.sei_location_bar_lateral_padding);
-        setPaddingRelative(lateralPadding, getPaddingTop(), lateralPadding, getPaddingBottom());
     }
 
     @Override
