@@ -65,8 +65,8 @@ import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js
    *   autofillSynced: boolean,
    *   bookmarksRegistered: boolean,
    *   bookmarksSynced: boolean,
+   *   customPassphraseAllowed: boolean,
    *   encryptAllData: boolean,
-   *   encryptAllDataAllowed: boolean,
    *   enterPassphraseBody: (string|undefined),
    *   extensionsRegistered: boolean,
    *   extensionsSynced: boolean,
@@ -344,4 +344,3 @@ import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js
   }
 
   addSingletonGetter(SyncBrowserProxyImpl);
-

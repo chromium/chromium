@@ -100,7 +100,7 @@ public class PassphraseTypeDialogFragmentTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
-    public void testKeystoreEncryptionOptionsEncryptEverythingDisallowed() {
+    public void testKeystoreEncryptionOptionsCustomPassphraseDisallowed() {
         createFragment(PassphraseType.KEYSTORE_PASSPHRASE, false);
         assertPassphraseTypeOptions(false,
                 new TypeOptions(PassphraseType.CUSTOM_PASSPHRASE, DISABLED, UNCHECKED),
@@ -110,15 +110,15 @@ public class PassphraseTypeDialogFragmentTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
-    public void testImplicitEncryptionOptionsEncryptEverythingDisallowed() {
+    public void testImplicitEncryptionOptionsCustomPassphraseDisallowed() {
         createFragment(PassphraseType.IMPLICIT_PASSPHRASE, false);
         assertPassphraseTypeOptions(false,
                 new TypeOptions(PassphraseType.CUSTOM_PASSPHRASE, DISABLED, UNCHECKED),
                 new TypeOptions(PassphraseType.IMPLICIT_PASSPHRASE, ENABLED, CHECKED));
     }
 
-    public void createFragment(@PassphraseType int type, boolean isEncryptEverythingAllowed) {
-        mTypeFragment = PassphraseTypeDialogFragment.create(type, null, isEncryptEverythingAllowed);
+    public void createFragment(@PassphraseType int type, boolean isCustomPassphraseAllowed) {
+        mTypeFragment = PassphraseTypeDialogFragment.create(type, null, isCustomPassphraseAllowed);
         mTypeFragment.show(mSyncTestRule.getActivity().getSupportFragmentManager(), TAG);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }

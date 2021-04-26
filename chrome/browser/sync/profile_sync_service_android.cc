@@ -262,11 +262,11 @@ void ProfileSyncServiceAndroid::SetChosenDataTypes(
                                                      selected_types);
 }
 
-jboolean ProfileSyncServiceAndroid::IsEncryptEverythingAllowed(
+jboolean ProfileSyncServiceAndroid::IsCustomPassphraseAllowed(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return sync_service_->GetUserSettings()->IsEncryptEverythingAllowed();
+  return sync_service_->GetUserSettings()->IsCustomPassphraseAllowed();
 }
 
 jboolean ProfileSyncServiceAndroid::IsEncryptEverythingEnabled(

@@ -157,9 +157,9 @@ void SyncUserSettingsImpl::SetOsSyncFeatureEnabled(bool enabled) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-bool SyncUserSettingsImpl::IsEncryptEverythingAllowed() const {
+bool SyncUserSettingsImpl::IsCustomPassphraseAllowed() const {
   return !preference_provider_ ||
-         preference_provider_->IsEncryptEverythingAllowed();
+         preference_provider_->IsCustomPassphraseAllowed();
 }
 
 bool SyncUserSettingsImpl::IsEncryptEverythingEnabled() const {

@@ -544,7 +544,7 @@ void PeopleHandler::HandleSetEncryptionPassphrase(const base::ListValue* args) {
   bool successfully_set = false;
   if (passphrase.empty()) {
     successfully_set = false;
-  } else if (!sync_user_settings->IsEncryptEverythingAllowed()) {
+  } else if (!sync_user_settings->IsCustomPassphraseAllowed()) {
     successfully_set = false;
   } else if (sync_user_settings->IsUsingExplicitPassphrase()) {
     // In case a passphrase is already being used, changing to a new one isn't
@@ -979,8 +979,8 @@ void PeopleHandler::PushSyncPrefs() {
       autofill::prefs::IsPaymentsIntegrationEnabled(profile_->GetPrefs()));
   args.SetBoolean("encryptAllData",
                   sync_user_settings->IsEncryptEverythingEnabled());
-  args.SetBoolean("encryptAllDataAllowed",
-                  sync_user_settings->IsEncryptEverythingAllowed());
+  args.SetBoolean("customPassphraseAllowed",
+                  sync_user_settings->IsCustomPassphraseAllowed());
 
   // We call IsPassphraseRequired() here, instead of calling
   // IsPassphraseRequiredForPreferredDataTypes(), because we want to show the

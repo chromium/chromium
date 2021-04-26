@@ -53,7 +53,7 @@ class SyncUserSettingsImpl : public SyncUserSettings {
   void SetOsSyncFeatureEnabled(bool enabled) override;
 #endif
 
-  bool IsEncryptEverythingAllowed() const override;
+  bool IsCustomPassphraseAllowed() const override;
   bool IsEncryptEverythingEnabled() const override;
 
   ModelTypeSet GetEncryptedDataTypes() const override;

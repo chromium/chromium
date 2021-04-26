@@ -21,7 +21,7 @@ export function getSyncAllPrefs() {
     bookmarksRegistered: true,
     bookmarksSynced: true,
     encryptAllData: false,
-    encryptAllDataAllowed: true,
+    customPassphraseAllowed: true,
     enterPassphraseBody: 'Enter custom passphrase.',
     extensionsRegistered: true,
     extensionsSynced: true,

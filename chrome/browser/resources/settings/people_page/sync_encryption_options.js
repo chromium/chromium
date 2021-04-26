@@ -113,7 +113,7 @@ Polymer({
     return !!(
         (this.syncPrefs &&
          (this.syncPrefs.encryptAllData ||
-          !this.syncPrefs.encryptAllDataAllowed ||
+          !this.syncPrefs.customPassphraseAllowed ||
           this.syncPrefs.trustedVaultKeysRequired)) ||
         (this.syncStatus && this.syncStatus.supervisedUser));
   },

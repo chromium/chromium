@@ -459,7 +459,7 @@ Polymer({
     // (b) encrypting all data is not allowed (so far, only applies to
     // supervised accounts), or (c) the user is a supervised account.
     if (this.syncPrefs.encryptAllData ||
-        !this.syncPrefs.encryptAllDataAllowed ||
+        !this.syncPrefs.customPassphraseAllowed ||
         (this.syncStatus && this.syncStatus.supervisedUser)) {
       this.creatingNewPassphrase_ = false;
     }

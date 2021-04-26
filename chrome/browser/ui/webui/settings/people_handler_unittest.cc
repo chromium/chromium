@@ -273,7 +273,7 @@ class PeopleHandlerTest : public ChromeRenderViewHostTestHarness {
     ON_CALL(*mock_sync_service_->GetMockUserSettings(), GetSelectedTypes())
         .WillByDefault(Return(GetAllTypes()));
     ON_CALL(*mock_sync_service_->GetMockUserSettings(),
-            IsEncryptEverythingAllowed())
+            IsCustomPassphraseAllowed())
         .WillByDefault(Return(true));
     ON_CALL(*mock_sync_service_->GetMockUserSettings(),
             IsEncryptEverythingEnabled())
@@ -468,7 +468,7 @@ TEST_F(PeopleHandlerTest,
 
   const base::DictionaryValue* dictionary = ExpectSyncPrefsChanged();
   CheckBool(dictionary, "syncAllDataTypes", true);
-  CheckBool(dictionary, "encryptAllDataAllowed", true);
+  CheckBool(dictionary, "customPassphraseAllowed", true);
   CheckBool(dictionary, "encryptAllData", false);
   CheckBool(dictionary, "passphraseRequired", false);
   CheckBool(dictionary, "trustedVaultKeysRequired", false);
@@ -669,7 +669,7 @@ TEST_F(PeopleHandlerTest, EnterCorrectExistingPassphrase) {
           IsUsingExplicitPassphrase())
       .WillByDefault(Return(true));
   ON_CALL(*mock_sync_service_->GetMockUserSettings(),
-          IsEncryptEverythingAllowed())
+          IsCustomPassphraseAllowed())
       .WillByDefault(Return(true));
 
   EXPECT_CALL(*mock_sync_service_->GetMockUserSettings(),
@@ -698,7 +698,7 @@ TEST_F(PeopleHandlerTest, SuccessfullyCreateCustomPassphrase) {
           IsUsingExplicitPassphrase())
       .WillByDefault(Return(false));
   ON_CALL(*mock_sync_service_->GetMockUserSettings(),
-          IsEncryptEverythingAllowed())
+          IsCustomPassphraseAllowed())
       .WillByDefault(Return(true));
 
   EXPECT_CALL(*mock_sync_service_->GetMockUserSettings(),
@@ -726,7 +726,7 @@ TEST_F(PeopleHandlerTest, EnterWrongExistingPassphrase) {
           IsUsingExplicitPassphrase())
       .WillByDefault(Return(true));
   ON_CALL(*mock_sync_service_->GetMockUserSettings(),
-          IsEncryptEverythingAllowed())
+          IsCustomPassphraseAllowed())
       .WillByDefault(Return(true));
 
   EXPECT_CALL(*mock_sync_service_->GetMockUserSettings(),
@@ -755,7 +755,7 @@ TEST_F(PeopleHandlerTest, CannotCreateBlankPassphrase) {
           IsUsingExplicitPassphrase())
       .WillByDefault(Return(false));
   ON_CALL(*mock_sync_service_->GetMockUserSettings(),
-          IsEncryptEverythingAllowed())
+          IsCustomPassphraseAllowed())
       .WillByDefault(Return(true));
 
   EXPECT_CALL(*mock_sync_service_->GetMockUserSettings(),
@@ -1032,7 +1032,7 @@ TEST_F(PeopleHandlerTest, ShowSetupEncryptAllDisallowed) {
   SetupInitializedSyncService();
   SetDefaultExpectationsForConfigPage();
   ON_CALL(*mock_sync_service_->GetMockUserSettings(),
-          IsEncryptEverythingAllowed())
+          IsCustomPassphraseAllowed())
       .WillByDefault(Return(false));
 
   // This should display the sync setup dialog (not login).
@@ -1040,10 +1040,10 @@ TEST_F(PeopleHandlerTest, ShowSetupEncryptAllDisallowed) {
 
   const base::DictionaryValue* dictionary = ExpectSyncPrefsChanged();
   CheckBool(dictionary, "encryptAllData", false);
-  CheckBool(dictionary, "encryptAllDataAllowed", false);
+  CheckBool(dictionary, "customPassphraseAllowed", false);
 }
 
-TEST_F(PeopleHandlerTest, CannotCreatePassphraseIfEncryptEverythingDisallowed) {
+TEST_F(PeopleHandlerTest, CannotCreatePassphraseIfCustomPassphraseDisallowed) {
   SigninUser();
   CreatePeopleHandler();
   SetupInitializedSyncService();
@@ -1057,7 +1057,7 @@ TEST_F(PeopleHandlerTest, CannotCreatePassphraseIfEncryptEverythingDisallowed) {
           IsUsingExplicitPassphrase())
       .WillByDefault(Return(false));
   ON_CALL(*mock_sync_service_->GetMockUserSettings(),
-          IsEncryptEverythingAllowed())
+          IsCustomPassphraseAllowed())
       .WillByDefault(Return(false));
 
   EXPECT_CALL(*mock_sync_service_->GetMockUserSettings(),
@@ -1086,7 +1086,7 @@ TEST_F(PeopleHandlerTest, CannotOverwritePassphraseWithNewOne) {
           IsUsingExplicitPassphrase())
       .WillByDefault(Return(true));
   ON_CALL(*mock_sync_service_->GetMockUserSettings(),
-          IsEncryptEverythingAllowed())
+          IsCustomPassphraseAllowed())
       .WillByDefault(Return(true));
 
   EXPECT_CALL(*mock_sync_service_->GetMockUserSettings(),

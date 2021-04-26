@@ -11,7 +11,7 @@ namespace syncer {
 
 class SyncTypePreferenceProvider {
  public:
-  virtual bool IsEncryptEverythingAllowed() const = 0;
+  virtual bool IsCustomPassphraseAllowed() const = 0;
 
  protected:
   virtual ~SyncTypePreferenceProvider() {}

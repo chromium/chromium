@@ -468,14 +468,11 @@ public class ProfileSyncService {
     }
 
     /**
-     * Checks if encrypting all the data types is allowed.
-     *
-     * @return true if encrypting all data types is allowed, false if only passwords are allowed to
-     * be encrypted.
+     * @return Whether setting a custom passphrase is allowed.
      */
-    public boolean isEncryptEverythingAllowed() {
+    public boolean isCustomPassphraseAllowed() {
         assert isEngineInitialized();
-        return ProfileSyncServiceJni.get().isEncryptEverythingAllowed(
+        return ProfileSyncServiceJni.get().isCustomPassphraseAllowed(
                 mNativeProfileSyncServiceAndroid, ProfileSyncService.this);
     }
 
@@ -656,7 +653,7 @@ public class ProfileSyncService {
                 long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
         boolean isEngineInitialized(
                 long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
-        boolean isEncryptEverythingAllowed(
+        boolean isCustomPassphraseAllowed(
                 long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
         boolean isEncryptEverythingEnabled(
                 long nativeProfileSyncServiceAndroid, ProfileSyncService caller);

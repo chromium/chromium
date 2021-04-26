@@ -480,7 +480,7 @@ suite('SyncSettingsTests', function() {
     // 1) Normal user (full data encryption allowed)
     // EXPECTED: encryptionOptions enabled
     const prefs1 = getSyncAllPrefs();
-    prefs1.encryptAllDataAllowed = true;
+    prefs1.customPassphraseAllowed = true;
     webUIListenerCallback('sync-prefs-changed', prefs1);
     syncPage.syncStatus = {supervisedUser: false};
     flush();
@@ -489,11 +489,11 @@ suite('SyncSettingsTests', function() {
     assertEquals(encryptWithPassphrase.ariaDisabled, 'false');
 
     // 2) Normal user (full data encryption not allowed)
-    // encryptAllDataAllowed is usually false only for supervised
+    // customPassphraseAllowed is usually false only for supervised
     // users, but it's better to be check this case.
     // EXPECTED: encryptionOptions disabled
     const prefs2 = getSyncAllPrefs();
-    prefs2.encryptAllDataAllowed = false;
+    prefs2.customPassphraseAllowed = false;
     webUIListenerCallback('sync-prefs-changed', prefs2);
     syncPage.syncStatus = {supervisedUser: false};
     flush();
@@ -504,7 +504,7 @@ suite('SyncSettingsTests', function() {
     // 3) Supervised user (full data encryption not allowed)
     // EXPECTED: encryptionOptions disabled
     const prefs3 = getSyncAllPrefs();
-    prefs3.encryptAllDataAllowed = false;
+    prefs3.customPassphraseAllowed = false;
     webUIListenerCallback('sync-prefs-changed', prefs3);
     syncPage.syncStatus = {supervisedUser: true};
     flush();
@@ -516,7 +516,7 @@ suite('SyncSettingsTests', function() {
     // This never happens in practice, but just to be safe.
     // EXPECTED: encryptionOptions disabled
     const prefs4 = getSyncAllPrefs();
-    prefs4.encryptAllDataAllowed = true;
+    prefs4.customPassphraseAllowed = true;
     webUIListenerCallback('sync-prefs-changed', prefs4);
     syncPage.syncStatus = {supervisedUser: true};
     flush();

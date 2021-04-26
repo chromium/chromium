@@ -176,7 +176,7 @@ class SupervisedUserService : public KeyedService,
   void Shutdown() override;
 
   // SyncTypePreferenceProvider implementation:
-  bool IsEncryptEverythingAllowed() const override;
+  bool IsCustomPassphraseAllowed() const override;
 
 #if !defined(OS_ANDROID)
   // BrowserListObserver implementation:

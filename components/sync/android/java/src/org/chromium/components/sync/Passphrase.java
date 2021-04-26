@@ -46,14 +46,14 @@ public class Passphrase {
 
     /**
      * Get the types that are allowed to be enabled from the current type.
-     * @param isEncryptEverythingAllowed Whether encrypting all data is allowed.
+     * @param isCustomPassphraseAllowed Whether setting a custom passphrase is allowed.
      */
     public static List<Integer /* @Type */> getAllowedTypes(
-            @PassphraseType int type, boolean isEncryptEverythingAllowed) {
+            @PassphraseType int type, boolean isCustomPassphraseAllowed) {
         List<Integer /* @Type */> allowedTypes = new ArrayList<>();
         if (!isExplicitPassphraseType(type)) {
             allowedTypes.add(type);
-            if (isEncryptEverythingAllowed) allowedTypes.add(PassphraseType.CUSTOM_PASSPHRASE);
+            if (isCustomPassphraseAllowed) allowedTypes.add(PassphraseType.CUSTOM_PASSPHRASE);
         }
         return allowedTypes;
     }

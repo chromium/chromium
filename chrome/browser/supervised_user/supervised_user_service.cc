@@ -1001,7 +1001,7 @@ void SupervisedUserService::SetExtensionsActive() {
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-bool SupervisedUserService::IsEncryptEverythingAllowed() const {
+bool SupervisedUserService::IsCustomPassphraseAllowed() const {
   return !active_;
 }
 

@@ -44,6 +44,7 @@ import java.util.List;
 
 /**
  * Dialog to ask the user select what type of password to use for encryption.
+ * TODO(crbug.com/1202692): Consider simplifying this class. See the linked bug for details.
  */
 public class PassphraseTypeDialogFragment extends DialogFragment implements
         DialogInterface.OnClickListener, OnItemClickListener {
@@ -129,7 +130,7 @@ public class PassphraseTypeDialogFragment extends DialogFragment implements
             @PassphraseType
             int currentType = getCurrentTypeFromArguments();
             List<Integer /* @PassphraseType */> allowedTypes = Passphrase.getAllowedTypes(
-                    currentType, getIsEncryptEverythingAllowedFromArguments());
+                    currentType, getIsCustomPassphraseAllowedFromArguments());
 
             // Set the item to checked it if it is the currently selected encryption type.
             view.setChecked(positionType == currentType);
@@ -146,16 +147,16 @@ public class PassphraseTypeDialogFragment extends DialogFragment implements
 
     private static final String ARG_PASSPHRASE_TIME = "arg_passphrase_time";
 
-    private static final String ARG_IS_ENCRYPT_EVERYTHING_ALLOWED =
-            "arg_is_encrypt_everything_allowed";
+    private static final String ARG_IS_CUSTOM_PASSPHRASE_ALLOWED =
+            "arg_is_custom_passphrase_allowed";
 
     public static PassphraseTypeDialogFragment create(@PassphraseType int currentType,
-            @Nullable Date passphraseTime, boolean isEncryptEverythingAllowed) {
+            @Nullable Date passphraseTime, boolean isCustomPassphraseAllowed) {
         PassphraseTypeDialogFragment dialog = new PassphraseTypeDialogFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_CURRENT_TYPE, currentType);
         args.putSerializable(ARG_PASSPHRASE_TIME, passphraseTime);
-        args.putBoolean(ARG_IS_ENCRYPT_EVERYTHING_ALLOWED, isEncryptEverythingAllowed);
+        args.putBoolean(ARG_IS_CUSTOM_PASSPHRASE_ALLOWED, isCustomPassphraseAllowed);
         dialog.setArguments(args);
         return dialog;
     }
@@ -232,8 +233,8 @@ public class PassphraseTypeDialogFragment extends DialogFragment implements
         // small enum values.
         @PassphraseType
         int type = (int) typeId;
-        boolean isEncryptEverythingAllowed = getIsEncryptEverythingAllowedFromArguments();
-        if (Passphrase.getAllowedTypes(currentType, isEncryptEverythingAllowed).contains(type)) {
+        boolean isCustomPassphraseAllowed = getIsCustomPassphraseAllowedFromArguments();
+        if (Passphrase.getAllowedTypes(currentType, isCustomPassphraseAllowed).contains(type)) {
             if (type != currentType) {
                 Listener listener = (Listener) getTargetFragment();
                 listener.onPassphraseTypeSelected(type);
@@ -252,7 +253,7 @@ public class PassphraseTypeDialogFragment extends DialogFragment implements
         return currentType;
     }
 
-    private boolean getIsEncryptEverythingAllowedFromArguments() {
-        return getArguments().getBoolean(ARG_IS_ENCRYPT_EVERYTHING_ALLOWED);
+    private boolean getIsCustomPassphraseAllowedFromArguments() {
+        return getArguments().getBoolean(ARG_IS_CUSTOM_PASSPHRASE_ALLOWED);
     }
 }

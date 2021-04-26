@@ -94,7 +94,7 @@ class PeopleHandler : public SettingsPageUIHandler,
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest, EnterWrongExistingPassphrase);
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest, CannotCreateBlankPassphrase);
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest,
-                           CannotCreatePassphraseIfEncryptEverythingDisallowed);
+                           CannotCreatePassphraseIfCustomPassphraseDisallowed);
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest,
                            CannotOverwritePassphraseWithNewOne);
   FRIEND_TEST_ALL_PREFIXES(PeopleHandlerTest,

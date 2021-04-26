@@ -125,11 +125,11 @@ void TestSyncUserSettings::SetOsSyncFeatureEnabled(bool enabled) {
 }
 #endif
 
-bool TestSyncUserSettings::IsEncryptEverythingAllowed() const {
+bool TestSyncUserSettings::IsCustomPassphraseAllowed() const {
   return true;
 }
 
-void TestSyncUserSettings::SetEncryptEverythingAllowed(bool allowed) {}
+void TestSyncUserSettings::SetCustomPassphraseAllowed(bool allowed) {}
 
 bool TestSyncUserSettings::IsEncryptEverythingEnabled() const {
   return false;

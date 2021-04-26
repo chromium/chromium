@@ -44,7 +44,7 @@ class TestSyncUserSettings : public SyncUserSettings {
   void SetOsSyncFeatureEnabled(bool enabled) override;
 #endif
 
-  bool IsEncryptEverythingAllowed() const override;
+  bool IsCustomPassphraseAllowed() const override;
   bool IsEncryptEverythingEnabled() const override;
 
   syncer::ModelTypeSet GetEncryptedDataTypes() const override;
@@ -64,7 +64,7 @@ class TestSyncUserSettings : public SyncUserSettings {
 
   void SetFirstSetupComplete();
   void ClearFirstSetupComplete();
-  void SetEncryptEverythingAllowed(bool allowed);
+  void SetCustomPassphraseAllowed(bool allowed);
   void SetPassphraseRequired(bool required);
   void SetPassphraseRequiredForPreferredDataTypes(bool required);
   void SetTrustedVaultKeyRequired(bool required);

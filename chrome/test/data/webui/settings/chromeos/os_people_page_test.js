@@ -247,7 +247,7 @@ cr.define('settings_people_page', function() {
       const syncPage = peoplePage.$$('settings-sync-page');
       assert(syncPage);
       syncPage.syncPrefs = {
-        encryptAllDataAllowed: true,
+        customPassphraseAllowed: true,
         passphraseRequired: false,
       };
       cr.webUIListenerCallback(

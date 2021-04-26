@@ -82,9 +82,9 @@ class SyncUserSettings {
   // Note that all of this state may only be queried or modified if the Sync
   // engine is initialized.
 
-  // Whether the user is allowed to encrypt all their Sync data. For example,
-  // child accounts are not allowed to encrypt their data.
-  virtual bool IsEncryptEverythingAllowed() const = 0;
+  // Whether the user is allowed to set a custom passphrase to encrypt all
+  // their Sync data. For example, child accounts aren't allowed to do.
+  virtual bool IsCustomPassphraseAllowed() const = 0;
   // Whether we are currently set to encrypt all the Sync data.
   virtual bool IsEncryptEverythingEnabled() const = 0;
 
