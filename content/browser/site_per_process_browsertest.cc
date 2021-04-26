@@ -2186,8 +2186,13 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       iframe_node->current_frame_host()->GetRenderWidgetHost()->GetView());
 
   ScrollObserver scroll_observer(0, -5);
-  root->current_frame_host()->GetRenderWidgetHost()->AddInputEventObserver(
-      &scroll_observer);
+  base::ScopedObservation<RenderWidgetHostImpl,
+                          RenderWidgetHost::InputEventObserver,
+                          &RenderWidgetHostImpl::AddInputEventObserver,
+                          &RenderWidgetHostImpl::RemoveInputEventObserver>
+      scroll_observation_(&scroll_observer);
+  scroll_observation_.Observe(
+      root->current_frame_host()->GetRenderWidgetHost());
 
   // Now scroll the nested frame downward, this must bubble to the root since
   // the iframe source body is not scrollable.
