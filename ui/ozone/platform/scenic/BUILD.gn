@@ -16,6 +16,8 @@ source_set("scenic") {
     "overlay_manager_scenic.h",
     "ozone_platform_scenic.cc",
     "ozone_platform_scenic.h",
+    "safe_presenter.cc",
+    "safe_presenter.h",
     "scenic_gpu_host.cc",
     "scenic_gpu_host.h",
     "scenic_gpu_service.cc",

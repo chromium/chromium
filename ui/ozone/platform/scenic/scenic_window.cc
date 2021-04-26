@@ -36,6 +36,7 @@ ScenicWindow::ScenicWindow(ScenicWindowManager* window_manager,
                             ->svc()
                             ->Connect<fuchsia::ui::input3::Keyboard>()),
       scenic_session_(manager_->GetScenic()),
+      safe_presenter_(&scenic_session_),
       view_ref_(std::move(properties.view_ref_pair.view_ref)),
       view_(&scenic_session_,
             std::move(std::move(properties.view_token)),
@@ -91,10 +92,7 @@ void ScenicWindow::AttachSurfaceView(
   render_node_.DetachChildren();
   render_node_.AddChild(*surface_view_holder_);
 
-  scenic_session_.Present2(
-      /*requested_presentation_time=*/0,
-      /*requested_prediction_span=*/0,
-      [](fuchsia::scenic::scheduling::FuturePresentationTimes info) {});
+  safe_presenter_.QueuePresent();
 }
 
 gfx::Rect ScenicWindow::GetBounds() const {
@@ -120,10 +118,7 @@ void ScenicWindow::Show(bool inactive) {
 
   // Call Present2() to ensure that the scenic session commands are processed,
   // which is necessary to receive metrics event from Scenic.
-  scenic_session_.Present2(
-      /*requested_presentation_time=*/0,
-      /*requested_prediction_span=*/0,
-      [](fuchsia::scenic::scheduling::FuturePresentationTimes info) {});
+  safe_presenter_.QueuePresent();
 }
 
 void ScenicWindow::Hide() {
@@ -257,10 +252,7 @@ void ScenicWindow::UpdateSize() {
 
   // This is necessary when using vulkan because ImagePipes are presented
   // separately and we need to make sure our sizes change is committed.
-  scenic_session_.Present2(
-      /*requested_presentation_time=*/0,
-      /*requested_prediction_span=*/0,
-      [](fuchsia::scenic::scheduling::FuturePresentationTimes info) {});
+  safe_presenter_.QueuePresent();
 
   PlatformWindowDelegate::BoundsChange bounds;
   bounds.bounds = bounds_;
