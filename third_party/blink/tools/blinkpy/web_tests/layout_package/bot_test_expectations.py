@@ -237,13 +237,13 @@ class BotTestExpectations(object):
             builders.specifiers_for_builder(results_json.builder_name))
         self.filter_results_bitmap = self._get_results_filter(results_filter)
 
-    def flakes_by_path(self, only_ignore_very_flaky,
+    def flakes_by_path(self, only_consider_very_flaky,
                        ignore_bot_expected_results=False, consider_only_flaky_runs=True):
         """Sets test expectations to bot results if there are at least two distinct results."""
         flakes_by_path = {}
         for test_path, entry in self.results_json.walk_results():
             flaky_types = self._flaky_types_in_results(entry,
-                                                       only_ignore_very_flaky,
+                                                       only_consider_very_flaky,
                                                        ignore_bot_expected_results,
                                                        consider_only_flaky_runs)
             if len(flaky_types) <= 1:
@@ -316,11 +316,11 @@ class BotTestExpectations(object):
             results_by_path[test_path] = sorted(result_strings)
         return results_by_path
 
-    def expectation_lines(self, only_ignore_very_flaky):
+    def expectation_lines(self, only_consider_very_flaky):
         lines = []
         for test_path, entry in self.results_json.walk_results():
             flaky_types = self._flaky_types_in_results(entry,
-                                                       only_ignore_very_flaky)
+                                                       only_consider_very_flaky)
             if len(flaky_types) > 1:
                 line = self._line_from_test_and_flaky_types(
                     test_path, flaky_types)
@@ -353,7 +353,7 @@ class BotTestExpectations(object):
             result_index += count
         return results
 
-    def _flaky_types_in_results(self, results_entry, only_ignore_very_flaky,
+    def _flaky_types_in_results(self, results_entry, only_consider_very_flaky,
                                 ignore_bot_expected_results=False,
                                 consider_only_flaky_runs=True):
         """Returns flaky results for a single test using its results entry
@@ -361,7 +361,7 @@ class BotTestExpectations(object):
 
         args:
           results_entry: Test run results aggregated from the last N builds
-          only_ignore_very_flaky: Flag for considering only test runs
+          only_consider_very_flaky: Flag for considering only test runs
               with more than one retry
           ignore_bot_expected_results: Flag for ignoring expected results
               retrieved from the test results server
@@ -404,7 +404,7 @@ class BotTestExpectations(object):
             # If there are only two entries, then that means it failed on the first
             # try and ran as expected on the second because otherwise we'd have
             # a third entry from the next try.
-            if only_ignore_very_flaky and len(result_types) == 2:
+            if only_consider_very_flaky and len(result_types) == 2:
                 continue
 
             has_unexpected_results = False

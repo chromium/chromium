@@ -91,7 +91,7 @@ class FlakyTests(Command):
                 continue
 
             for line in expectations.expectation_lines(
-                    only_ignore_very_flaky=True):
+                    only_consider_very_flaky=True):
                 # TODO(ojan): Find a way to merge specifiers instead of removing build types.
                 # We can't just union because some specifiers will change the meaning of others.
                 # For example, it's not clear how to merge [ Mac Release ] with [ Linux Debug ].

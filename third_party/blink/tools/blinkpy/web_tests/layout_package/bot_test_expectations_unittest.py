@@ -136,7 +136,7 @@ class BotTestExpectationsTest(unittest.TestCase):
     def _assert_is_flaky(self,
                          results_string,
                          should_be_flaky,
-                         only_ignore_very_flaky,
+                         only_consider_very_flaky,
                          expected=None):
         results_json = self._results_json_from_test_data({})
         expectations = bot_test_expectations.BotTestExpectations(
@@ -149,7 +149,7 @@ class BotTestExpectationsTest(unittest.TestCase):
 
         num_actual_results = len(
             expectations._flaky_types_in_results(  # pylint: disable=protected-access
-                results_entry, only_ignore_very_flaky))
+                results_entry, only_consider_very_flaky))
         if should_be_flaky:
             self.assertGreater(num_actual_results, 1)
         else:
@@ -157,49 +157,49 @@ class BotTestExpectationsTest(unittest.TestCase):
 
     def test_basic_flaky(self):
         self._assert_is_flaky(
-            'P', should_be_flaky=False, only_ignore_very_flaky=False)
+            'P', should_be_flaky=False, only_consider_very_flaky=False)
         self._assert_is_flaky(
-            'P', should_be_flaky=False, only_ignore_very_flaky=True)
+            'P', should_be_flaky=False, only_consider_very_flaky=True)
         self._assert_is_flaky(
-            'F', should_be_flaky=False, only_ignore_very_flaky=False)
+            'F', should_be_flaky=False, only_consider_very_flaky=False)
         self._assert_is_flaky(
-            'F', should_be_flaky=False, only_ignore_very_flaky=True)
+            'F', should_be_flaky=False, only_consider_very_flaky=True)
         self._assert_is_flaky(
-            'FP', should_be_flaky=True, only_ignore_very_flaky=False)
+            'FP', should_be_flaky=True, only_consider_very_flaky=False)
         self._assert_is_flaky(
-            'FP', should_be_flaky=False, only_ignore_very_flaky=True)
+            'FP', should_be_flaky=False, only_consider_very_flaky=True)
         self._assert_is_flaky(
-            'FFP', should_be_flaky=True, only_ignore_very_flaky=False)
+            'FFP', should_be_flaky=True, only_consider_very_flaky=False)
         self._assert_is_flaky(
-            'FFP', should_be_flaky=True, only_ignore_very_flaky=True)
+            'FFP', should_be_flaky=True, only_consider_very_flaky=True)
         self._assert_is_flaky(
-            'FFT', should_be_flaky=True, only_ignore_very_flaky=False)
+            'FFT', should_be_flaky=True, only_consider_very_flaky=False)
         self._assert_is_flaky(
-            'FFT', should_be_flaky=True, only_ignore_very_flaky=True)
+            'FFT', should_be_flaky=True, only_consider_very_flaky=True)
         self._assert_is_flaky(
-            'FFF', should_be_flaky=False, only_ignore_very_flaky=False)
+            'FFF', should_be_flaky=False, only_consider_very_flaky=False)
         self._assert_is_flaky(
-            'FFF', should_be_flaky=False, only_ignore_very_flaky=True)
+            'FFF', should_be_flaky=False, only_consider_very_flaky=True)
 
         self._assert_is_flaky(
             'FT',
             should_be_flaky=True,
-            only_ignore_very_flaky=False,
+            only_consider_very_flaky=False,
             expected='TIMEOUT')
         self._assert_is_flaky(
             'FT',
             should_be_flaky=False,
-            only_ignore_very_flaky=True,
+            only_consider_very_flaky=True,
             expected='TIMEOUT')
         self._assert_is_flaky(
             'FFT',
             should_be_flaky=True,
-            only_ignore_very_flaky=False,
+            only_consider_very_flaky=False,
             expected='TIMEOUT')
         self._assert_is_flaky(
             'FFT',
             should_be_flaky=True,
-            only_ignore_very_flaky=True,
+            only_consider_very_flaky=True,
             expected='TIMEOUT')
 
     def _results_json_from_test_data(self, test_data):
@@ -220,13 +220,12 @@ class BotTestExpectationsTest(unittest.TestCase):
         return {'results': [[1, results_string]]}
 
     def _assert_expectations(self, test_data, expectations_string,
-                             only_ignore_very_flaky, **kwargs):
+                             only_consider_very_flaky, **kwargs):
         results_json = self._results_json_from_test_data(test_data)
         expectations = bot_test_expectations.BotTestExpectations(
             results_json, BuilderList({}), set('test'))
-        print expectations.flakes_by_path(only_ignore_very_flaky, **kwargs)
         self.assertEqual(
-            expectations.flakes_by_path(only_ignore_very_flaky, **kwargs),
+            expectations.flakes_by_path(only_consider_very_flaky, **kwargs),
             expectations_string)
 
     def _assert_unexpected_results(self, test_data, expectations_string):
@@ -329,7 +328,7 @@ class BotTestExpectationsTest(unittest.TestCase):
             test_data, {
                 'foo/veryflaky.html': {'FAIL', 'PASS'},
             },
-            only_ignore_very_flaky=True)
+            only_consider_very_flaky=True)
 
         self._assert_expectations(
             test_data, {
@@ -337,14 +336,14 @@ class BotTestExpectationsTest(unittest.TestCase):
                 'foo/notverflakynoexpected.html': {'FAIL', 'TIMEOUT'},
                 'foo/maybeflaky.html': {'FAIL', 'PASS'},
             },
-            only_ignore_very_flaky=False)
+            only_consider_very_flaky=False)
 
         self._assert_expectations(
             test_data, {
                 'foo/veryflaky.html': {'FAIL', 'PASS'},
                 'foo/notflakyexpected.html': {'FAIL', 'PASS'},
             },
-            only_ignore_very_flaky=True, ignore_bot_expected_results=True)
+            only_consider_very_flaky=True, ignore_bot_expected_results=True)
 
         self._assert_expectations(
             test_data, {
@@ -352,7 +351,7 @@ class BotTestExpectationsTest(unittest.TestCase):
                 'foo/notflakyexpected.html': {'FAIL', 'PASS'},
                 'foo/flakywithoutretries.html': {'FAIL', 'PASS'},
             },
-            only_ignore_very_flaky=True, ignore_bot_expected_results=True,
+            only_consider_very_flaky=True, ignore_bot_expected_results=True,
             consider_only_flaky_runs=False)
 
     def test_unexpected_results_no_unexpected(self):
