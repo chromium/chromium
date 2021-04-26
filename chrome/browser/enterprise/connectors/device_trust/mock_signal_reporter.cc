@@ -7,16 +7,16 @@
 namespace enterprise_connectors {
 
 void DeviceTrustSignalReporterForTestBase::CreateMockReportQueueAndCallback(
-    reporting::ReportQueueProvider::CreateReportQueueCallback create_queue_cb,
-    std::unique_ptr<reporting::ReportQueueConfiguration> config) {
+    std::unique_ptr<QueueConfig> config,
+    CreateQueueCallback create_queue_cb) {
   mock_queue_ = new testing::StrictMock<reporting::MockReportQueue>();
   std::move(create_queue_cb)
       .Run({std::unique_ptr<reporting::ReportQueue>(mock_queue_)});
 }
 
 void DeviceTrustSignalReporterForTestBase::FailCreateReportQueueAndCallback(
-    reporting::ReportQueueProvider::CreateReportQueueCallback create_queue_cb,
-    std::unique_ptr<reporting::ReportQueueConfiguration> config) {
+    std::unique_ptr<QueueConfig> config,
+    CreateQueueCallback create_queue_cb) {
   std::move(create_queue_cb)
       .Run(reporting::Status(reporting::error::INTERNAL,
                              "Mocked ReportQueue creation failure for tests"));
@@ -30,10 +30,10 @@ MockDeviceTrustSignalReporter::MockDeviceTrustSignalReporter() = default;
 MockDeviceTrustSignalReporter::~MockDeviceTrustSignalReporter() = default;
 
 void MockDeviceTrustSignalReporter::PostCreateReportQueueTask(
-    reporting::ReportQueueProvider::CreateReportQueueCallback create_queue_cb,
-    std::unique_ptr<reporting::ReportQueueConfiguration> config) {
-  CreateMockReportQueueAndCallback(std::move(create_queue_cb),
-                                   std::move(config));
+    std::unique_ptr<QueueConfig> config,
+    CreateQueueCallback create_queue_cb) {
+  CreateMockReportQueueAndCallback(std::move(config),
+                                   std::move(create_queue_cb));
 }
 
 }  // namespace enterprise_connectors

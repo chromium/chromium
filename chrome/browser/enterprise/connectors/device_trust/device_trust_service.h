@@ -40,8 +40,7 @@ class DeviceTrustService : public KeyedService {
   // These methods are added to facilitate testing, because this class is
   // usually created by its factory.
   void SetSignalReporterForTesting(
-      std::unique_ptr<enterprise_connectors::DeviceTrustSignalReporter>
-          reporter);
+      std::unique_ptr<DeviceTrustSignalReporter> reporter);
   using SignalReportCallback = base::OnceCallback<void(bool)>;
   void SetSignalReportCallbackForTesting(SignalReportCallback cb);
 #if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)

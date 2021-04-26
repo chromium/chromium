@@ -24,7 +24,8 @@ class DeviceTrustSignalReporter {
   // ReportQueue is posted as an asynchronous task, |done_cb| is always
   // called when ReportQueue initialization is finished, but this class
   // is only usable after |done_cb| is called back with true.
-  void Init(base::RepeatingCallback<bool()> policy_check, Callback done_cb);
+  virtual void Init(base::RepeatingCallback<bool()> policy_check,
+                    Callback done_cb);
 
   // Init() must have completed and |done_cb| above must have been called
   // without error before calling SendReport(), otherwise browser will crash.
@@ -34,18 +35,32 @@ class DeviceTrustSignalReporter {
                           Callback sent_cb) const;
 
  protected:
+  // Helper methods made virtual and protected to be overridden in unit tests:
+  virtual policy::DMToken GetDmToken() const;
+
+  using QueueConfig = reporting::ReportQueueConfiguration;
+  using QueueConfigStatusOr = reporting::StatusOr<std::unique_ptr<QueueConfig>>;
+  using CreateQueueCallback =
+      reporting::ReportQueueProvider::CreateReportQueueCallback;
+  virtual QueueConfigStatusOr CreateQueueConfiguration(
+      const std::string& dm_token,
+      base::RepeatingCallback<bool()> policy_check) const;
+  virtual void PostCreateReportQueueTask(std::unique_ptr<QueueConfig> config,
+                                         CreateQueueCallback create_queue_cb);
+
+  // Override task posted in PostCreateReportQueueTask() for tests.
+  using QueueCreation = base::OnceCallback<void(std::unique_ptr<QueueConfig>,
+                                                CreateQueueCallback)>;
+  void SetQueueCreationForTesting(QueueCreation function);
+
+ private:
   void OnCreateReportQueueResponse(
       Callback create_queue_cb,
       reporting::ReportQueueProvider::CreateReportQueueResponse
           report_queue_result);
 
-  // Helper methods made virtual to be overwritten in unit tests.
-  virtual policy::DMToken GetDmToken() const;
-  virtual void PostCreateReportQueueTask(
-      reporting::ReportQueueProvider::CreateReportQueueCallback create_queue_cb,
-      std::unique_ptr<reporting::ReportQueueConfiguration> config);
+  QueueCreation create_queue_function_;
 
- private:
   std::unique_ptr<reporting::ReportQueue> report_queue_;
 
   enum class CreateQueueStatus { NOT_STARTED, IN_PROGRESS, DONE };

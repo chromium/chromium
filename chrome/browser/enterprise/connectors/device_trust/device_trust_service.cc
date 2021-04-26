@@ -57,7 +57,8 @@ base::RepeatingCallback<bool()> DeviceTrustService::MakePolicyCheck() {
 
 void DeviceTrustService::OnPolicyUpdated() {
   if (!reporter_) {
-    return;
+    // Bypass reporter initialization because it already failed previously.
+    return OnReporterInitialized(false);
   }
 
   if (!first_report_sent_ && IsEnabled()) {  // Policy enabled for the 1st time.
@@ -73,7 +74,11 @@ void DeviceTrustService::OnPolicyUpdated() {
 void DeviceTrustService::OnReporterInitialized(bool success) {
   if (!success) {
     // Initialization failed, so reset reporter_ to prevent retrying Init().
-    reporter_.reset();
+    reporter_.reset(nullptr);
+    // Bypass SendReport and run callback with report failure.
+    if (signal_report_callback_) {
+      std::move(signal_report_callback_).Run(false);
+    }
     return;
   }
 
@@ -91,7 +96,8 @@ void DeviceTrustService::OnReporterInitialized(bool success) {
 
 void DeviceTrustService::OnSignalReported(bool success) {
   if (!success) {
-    LOG(ERROR) << "Failed to send device trust signal report.";
+    LOG(ERROR) << "Failed to send device trust signal report. Reason: "
+               << (reporter_.get() ? "Reporter failure" : "<no reporter>");
     // TODO(https://crbug.com/1186413) Handle failure cases.
   } else {
     first_report_sent_ = true;
@@ -99,8 +105,7 @@ void DeviceTrustService::OnSignalReported(bool success) {
 }
 
 void DeviceTrustService::SetSignalReporterForTesting(
-    std::unique_ptr<enterprise_connectors::DeviceTrustSignalReporter>
-        reporter) {
+    std::unique_ptr<DeviceTrustSignalReporter> reporter) {
   reporter_ = std::move(reporter);
 }
 

@@ -30,19 +30,43 @@ class DeviceTrustSignalReporterForTest
       DeviceTrustSignalReporterForTestBase;
   reporting::MockReportQueue* GetReportQueue() { return mock_queue_; }
 
-  // Mocking this method because 1) it replies on CloudPolicyClient in
-  // production, and 2) so that unit tests can mock queue creation success and
-  // failure.
-  MOCK_METHOD(void,
-              PostCreateReportQueueTask,
-              (reporting::ReportQueueProvider::CreateReportQueueCallback,
-               std::unique_ptr<reporting::ReportQueueConfiguration>));
+  MOCK_METHOD(policy::DMToken, GetDmToken, (), (const override));
+  // Invoke these to mock GetDmToken success/failure.
+  policy::DMToken GetDmTokenFailure() const {
+    // Original class' GetDmToken() would fail because BrowserDMTokenStorage
+    // depends on policy in production. But this helps us test that code branch.
+    return DeviceTrustSignalReporter::GetDmToken();
+  }
+  policy::DMToken GetDmTokenSuccess() const {
+    // The ReporterForTestBase class returns a dummy token.
+    return DeviceTrustSignalReporterForTestBase::GetDmToken();
+  }
 
-  // Invoke this method upon calling PostCreateReportQueueTask to mock queue
-  // creation success.
+  MOCK_METHOD(QueueConfigStatusOr,
+              CreateQueueConfiguration,
+              (const std::string&, base::RepeatingCallback<bool()>),
+              (const override));
+  // Invoke these to mock CreateQueueConfiguration success/failure.
+  QueueConfigStatusOr CreateQueueConfigurationSuccess(
+      const std::string& dm_token,
+      base::RepeatingCallback<bool()> policy_check) const {
+    return DeviceTrustSignalReporter::CreateQueueConfiguration(dm_token,
+                                                               policy_check);
+  }
+  QueueConfigStatusOr CreateQueueConfigurationFailure(
+      const std::string& dm_token,
+      base::RepeatingCallback<bool()> policy_check) const {
+    return reporting::ReportQueueConfiguration::Create(
+        dm_token, reporting::Destination::UNDEFINED_DESTINATION, {});
+  }
+
+  // Need to mock reporting::ReportQueueProvider::CreateQueue because 1) it
+  // replies on CloudPolicyClient in production, and 2) so that unit tests can
+  // mock queue creation success and failure.
+  using DeviceTrustSignalReporter::QueueCreation;
+  using DeviceTrustSignalReporter::SetQueueCreationForTesting;
+  // Invoke these to mock queue creation success/failure.
   using DeviceTrustSignalReporterForTestBase::CreateMockReportQueueAndCallback;
-  // Invoke this method upon calling PostCreateReportQueueTask to mock queue
-  // creation failure.
   using DeviceTrustSignalReporterForTestBase::FailCreateReportQueueAndCallback;
 };
 
@@ -59,6 +83,16 @@ class DeviceTrustSignalReporterTest : public testing::Test {
     run_loop_->Run();
   }
 
+ protected:
+  using Reporter = DeviceTrustSignalReporterForTest;
+  void ExpectQueueCreationSuccess(bool success) {
+    Reporter::QueueCreation f =
+        base::BindOnce(success ? &Reporter::CreateMockReportQueueAndCallback
+                               : &Reporter::FailCreateReportQueueAndCallback,
+                       base::Unretained(&reporter_));
+    reporter_.SetQueueCreationForTesting(std::move(f));
+  }
+
   bool PolicyCheck() {
     ++policy_checked_;
     return true;
@@ -70,8 +104,7 @@ class DeviceTrustSignalReporterTest : public testing::Test {
     std::move(quit_closure_).Run();
   }
 
- protected:
-  DeviceTrustSignalReporterForTest reporter_;
+  Reporter reporter_;
   int create_queue_callbacked_ = 0;
   int create_queue_success_ = 0;
   int policy_checked_ = 0;
@@ -89,11 +122,13 @@ class DeviceTrustSignalReporter_SendReportTest
   void SetUp() override {
     DeviceTrustSignalReporterTest::SetUp();
 
-    // Setup to create a MockReportQueue in PostCreateReportQueueTask.
-    EXPECT_CALL(reporter_, PostCreateReportQueueTask(_, _))
-        .WillRepeatedly(
-            Invoke(&reporter_, &DeviceTrustSignalReporterForTest::
-                                   CreateMockReportQueueAndCallback));
+    // Setup to successfully initialize the report queue.
+    EXPECT_CALL(reporter_, GetDmToken())
+        .WillOnce(Invoke(&reporter_, &Reporter::GetDmTokenSuccess));
+    EXPECT_CALL(reporter_, CreateQueueConfiguration(_, _))
+        .WillOnce(
+            Invoke(&reporter_, &Reporter::CreateQueueConfigurationSuccess));
+    ExpectQueueCreationSuccess(true);
 
     // Initialize the queue and the setup above should result in success.
     InitQueue();
@@ -180,14 +215,16 @@ TEST_F(DeviceTrustSignalReporter_SendReportTest, proto) {
 }
 
 class DeviceTrustSignalReporter_InitQueueTest
-    : public DeviceTrustSignalReporterTest {};
+    : public DeviceTrustSignalReporterTest {
+  void SetUp() override {}
+};
 
 TEST_F(DeviceTrustSignalReporter_InitQueueTest, Success) {
-  // Setup to create a MockReportQueue in PostCreateReportQueueTask.
-  EXPECT_CALL(reporter_, PostCreateReportQueueTask(_, _))
-      .WillRepeatedly(Invoke(
-          &reporter_,
-          &DeviceTrustSignalReporterForTest::CreateMockReportQueueAndCallback));
+  EXPECT_CALL(reporter_, GetDmToken())
+      .WillOnce(Invoke(&reporter_, &Reporter::GetDmTokenSuccess));
+  EXPECT_CALL(reporter_, CreateQueueConfiguration(_, _))
+      .WillOnce(Invoke(&reporter_, &Reporter::CreateQueueConfigurationSuccess));
+  ExpectQueueCreationSuccess(true);
 
   // Initialize the queue and the setup above should result in success.
   InitQueue();
@@ -203,25 +240,51 @@ TEST_F(DeviceTrustSignalReporter_InitQueueTest, Success) {
   ASSERT_NE(reporter_.GetReportQueue(), nullptr);
 }
 
-TEST_F(DeviceTrustSignalReporter_InitQueueTest, Failure) {
-  // Setup to fail in PostCreateReportQueueTask.
-  EXPECT_CALL(reporter_, PostCreateReportQueueTask(_, _))
-      .WillRepeatedly(Invoke(
-          &reporter_,
-          &DeviceTrustSignalReporterForTest::FailCreateReportQueueAndCallback));
+class DeviceTrustSignalReporter_InitQueueFailureTest
+    : public DeviceTrustSignalReporterTest {
+ protected:
+  void TestInitQueue() {
+    // Initialize the queue and the setup above should result in failure.
+    InitQueue();
+    ASSERT_EQ(create_queue_callbacked_, 1);
+    ASSERT_EQ(create_queue_success_, 0);
+    ASSERT_EQ(reporter_.GetReportQueue(), nullptr);
 
-  // Initialize the queue and the setup above should result in failure.
-  InitQueue();
-  ASSERT_EQ(create_queue_callbacked_, 1);
-  ASSERT_EQ(create_queue_success_, 0);
+    // Try Init() again to make sure it goes into the switch case
+    // create_queue_status_ == CreateQueueStatus::DONE but after failure.
+    InitQueue();
+    ASSERT_EQ(create_queue_callbacked_, 2);
+    ASSERT_EQ(create_queue_success_, 0);
+    ASSERT_EQ(reporter_.GetReportQueue(), nullptr);
+  }
+};
 
-  // Try Init() again to make sure it goes into the switch case
-  // create_queue_status_ == CreateQueueStatus::DONE but after failure.
-  InitQueue();
-  ASSERT_EQ(create_queue_callbacked_, 2);
-  ASSERT_EQ(create_queue_success_, 0);
+TEST_F(DeviceTrustSignalReporter_InitQueueFailureTest, InGetDmToken) {
+  EXPECT_CALL(reporter_, GetDmToken())
+      .WillOnce(Invoke(&reporter_, &Reporter::GetDmTokenFailure));
+  EXPECT_CALL(reporter_, CreateQueueConfiguration(_, _)).Times(0);
 
-  ASSERT_EQ(reporter_.GetReportQueue(), nullptr);
+  TestInitQueue();
+}
+
+TEST_F(DeviceTrustSignalReporter_InitQueueFailureTest, InCreateQueueConfig) {
+  EXPECT_CALL(reporter_, GetDmToken())
+      .WillOnce(Invoke(&reporter_, &Reporter::GetDmTokenSuccess));
+  // Setup to fail in CreateQueueConfiguration.
+  EXPECT_CALL(reporter_, CreateQueueConfiguration(_, _))
+      .WillOnce(Invoke(&reporter_, &Reporter::CreateQueueConfigurationFailure));
+
+  TestInitQueue();
+}
+
+TEST_F(DeviceTrustSignalReporter_InitQueueFailureTest, InCreateReportQueue) {
+  EXPECT_CALL(reporter_, GetDmToken())
+      .WillOnce(Invoke(&reporter_, &Reporter::GetDmTokenSuccess));
+  EXPECT_CALL(reporter_, CreateQueueConfiguration(_, _))
+      .WillOnce(Invoke(&reporter_, &Reporter::CreateQueueConfigurationSuccess));
+  ExpectQueueCreationSuccess(false);
+
+  TestInitQueue();
 }
 
 }  // namespace enterprise_connectors

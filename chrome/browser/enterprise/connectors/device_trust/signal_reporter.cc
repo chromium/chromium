@@ -6,18 +6,41 @@
 
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 
-namespace enterprise_connectors {
+namespace {
 
+using enterprise_connectors::DeviceTrustSignalReporter;
+
+// Wrap the callbacks to convert bool to Status.
 reporting::ReportQueue::EnqueueCallback MakeEnqueueCallback(
     DeviceTrustSignalReporter::Callback sent_cb) {
   return base::BindOnce(
       [](decltype(sent_cb) cb, reporting::Status status) {
+        DCHECK(status.ok()) << status;
         std::move(cb).Run(status.ok());
       },
       std::move(sent_cb));
 }
 
-DeviceTrustSignalReporter::DeviceTrustSignalReporter() = default;
+reporting::ReportQueueConfiguration::PolicyCheckCallback
+MakePolicyCheckCallback(base::RepeatingCallback<bool()> policy_check) {
+  return base::BindRepeating(
+      [=](decltype(policy_check) check) {
+        using reporting::Status;
+        constexpr auto err_code = reporting::error::PERMISSION_DENIED;
+        return check.Run() ? Status::StatusOK()
+                           : Status(err_code, "Disallowed per policy");
+      },
+      policy_check);
+}
+
+}  // namespace
+
+namespace enterprise_connectors {
+
+DeviceTrustSignalReporter::DeviceTrustSignalReporter()
+    : create_queue_function_(
+          base::BindOnce(&reporting::ReportQueueProvider::CreateQueue)) {}
+
 DeviceTrustSignalReporter::~DeviceTrustSignalReporter() = default;
 
 void DeviceTrustSignalReporter::Init(
@@ -25,8 +48,9 @@ void DeviceTrustSignalReporter::Init(
     Callback done_cb) {
   switch (create_queue_status_) {
     case CreateQueueStatus::NOT_STARTED: {
+      DCHECK(create_queue_function_);
       create_queue_status_ = CreateQueueStatus::IN_PROGRESS;
-      break;  // Break out to continue to create the ReportQueue.
+      break;  // Break out to go on to create the ReportQueue.
     }
     case CreateQueueStatus::IN_PROGRESS: {
       NOTREACHED();
@@ -43,32 +67,17 @@ void DeviceTrustSignalReporter::Init(
   // No default case so that compiler will complain if there's any new enums
   // values added.
 
-  // Wrap to convert bool to Status.
-  reporting::ReportQueueConfiguration::PolicyCheckCallback policy_cb =
-      base::BindRepeating(
-          [](decltype(policy_check) check) {
-            return check.Run()
-                       ? reporting::Status::StatusOK()
-                       : reporting::Status(reporting::error::PERMISSION_DENIED,
-                                           "Disallowed per policy");
-          },
-          policy_check);
   // Create ReportQueueConfiguration.
   policy::DMToken dm_token = GetDmToken();
-  if (!dm_token.is_valid()) {
-    LOG(ERROR) << "Failed to retrieve valid DM token";
-    create_queue_status_ = CreateQueueStatus::DONE;
-    std::move(done_cb).Run(false);
-    return;
+  QueueConfigStatusOr config_result;
+  if (dm_token.is_valid()) {
+    config_result = CreateQueueConfiguration(dm_token.value(), policy_check);
   }
-  auto config_result = reporting::ReportQueueConfiguration::Create(
-      dm_token.value(), reporting::Destination::DEVICE_TRUST_REPORTS,
-      std::move(policy_cb));
-
   // Bail out if ReportQueueConfiguration creation failed.
   if (!config_result.ok()) {
     LOG(ERROR) << "Failed to create reporting::ReportQueueConfiguration: "
-               << config_result.status() << "; DM token: " << dm_token.value();
+               << config_result.status() << "; DM token: "
+               << (dm_token.is_valid() ? dm_token.value() : "<invalid token>");
     create_queue_status_ = CreateQueueStatus::DONE;
     std::move(done_cb).Run(false);
     return;
@@ -80,8 +89,8 @@ void DeviceTrustSignalReporter::Init(
       base::BindOnce(&DeviceTrustSignalReporter::OnCreateReportQueueResponse,
                      weak_factory_.GetWeakPtr(), std::move(done_cb));
   // Asynchronously create ReportQueue.
-  PostCreateReportQueueTask(std::move(create_queue_cb),
-                            std::move(config_result.ValueOrDie()));
+  PostCreateReportQueueTask(std::move(config_result.ValueOrDie()),
+                            std::move(create_queue_cb));
 }
 
 void DeviceTrustSignalReporter::SendReport(base::Value value,
@@ -102,17 +111,15 @@ void DeviceTrustSignalReporter::SendReport(const DeviceTrustReportEvent* report,
 
 void DeviceTrustSignalReporter::OnCreateReportQueueResponse(
     Callback create_queue_cb,
-    reporting::ReportQueueProvider::CreateReportQueueResponse
-        report_queue_result) {
-  bool success = report_queue_result.ok();
+    reporting::ReportQueueProvider::CreateReportQueueResponse queue_result) {
+  bool success = queue_result.ok();
   if (success) {
-    report_queue_ = std::move(report_queue_result.ValueOrDie());
+    report_queue_ = std::move(queue_result.ValueOrDie());
   } else {
-    LOG(ERROR) << "Failed to create ReportQueue: "
-               << report_queue_result.status();
+    LOG(ERROR) << "Failed to create ReportQueue: " << queue_result.status();
   }
-  create_queue_status_ = CreateQueueStatus::DONE;
   // Set to DONE even upon failure to prevent repeated queue creation.
+  create_queue_status_ = CreateQueueStatus::DONE;
 
   std::move(create_queue_cb).Run(success);
 }
@@ -121,14 +128,27 @@ policy::DMToken DeviceTrustSignalReporter::GetDmToken() const {
   return policy::BrowserDMTokenStorage::Get()->RetrieveDMToken();
 }
 
+DeviceTrustSignalReporter::QueueConfigStatusOr
+DeviceTrustSignalReporter::CreateQueueConfiguration(
+    const std::string& dm_token,
+    base::RepeatingCallback<bool()> policy_check) const {
+  return reporting::ReportQueueConfiguration::Create(
+      dm_token, reporting::Destination::DEVICE_TRUST_REPORTS,
+      MakePolicyCheckCallback(policy_check));
+}
+
 void DeviceTrustSignalReporter::PostCreateReportQueueTask(
-    reporting::ReportQueueProvider::CreateReportQueueCallback create_queue_cb,
-    std::unique_ptr<reporting::ReportQueueConfiguration> config) {
-  auto create_queue_task =
-      base::BindOnce(&reporting::ReportQueueProvider::CreateQueue,
-                     std::move(config), std::move(create_queue_cb));
+    std::unique_ptr<QueueConfig> config,
+    CreateQueueCallback create_queue_cb) {
+  DCHECK(config);
+  DCHECK(config->CheckPolicy().ok()) << "This will prevent reporting!";
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, std::move(create_queue_task));
+      FROM_HERE, base::BindOnce(std::move(create_queue_function_),
+                                std::move(config), std::move(create_queue_cb)));
+}
+
+void DeviceTrustSignalReporter::SetQueueCreationForTesting(QueueCreation f) {
+  create_queue_function_ = std::move(f);
 }
 
 }  // namespace enterprise_connectors

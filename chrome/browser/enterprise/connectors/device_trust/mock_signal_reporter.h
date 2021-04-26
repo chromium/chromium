@@ -15,15 +15,13 @@ class DeviceTrustSignalReporterForTestBase : public DeviceTrustSignalReporter {
  protected:
   // Invoke this method upon calling PostCreateReportQueueTask to mock queue
   // creation success.
-  void CreateMockReportQueueAndCallback(
-      reporting::ReportQueueProvider::CreateReportQueueCallback create_queue_cb,
-      std::unique_ptr<reporting::ReportQueueConfiguration> config);
+  void CreateMockReportQueueAndCallback(std::unique_ptr<QueueConfig> config,
+                                        CreateQueueCallback create_queue_cb);
 
   // Invoke this method upon calling PostCreateReportQueueTask to mock queue
   // creation failure.
-  void FailCreateReportQueueAndCallback(
-      reporting::ReportQueueProvider::CreateReportQueueCallback create_queue_cb,
-      std::unique_ptr<reporting::ReportQueueConfiguration> config);
+  void FailCreateReportQueueAndCallback(std::unique_ptr<QueueConfig> config,
+                                        CreateQueueCallback create_queue_cb);
 
   // Overriding these methods as they rely on CloudPolicyClient in production.
   policy::DMToken GetDmToken() const override;
@@ -40,18 +38,18 @@ class MockDeviceTrustSignalReporter
   ~MockDeviceTrustSignalReporter() override;
 
   MOCK_METHOD(void,
-              SendReport,
-              (base::Value value, Callback sent_cb),
-              (const override));
+              Init,
+              (base::RepeatingCallback<bool()>, Callback),
+              (override));
+  MOCK_METHOD(void, SendReport, (base::Value, Callback), (const override));
   MOCK_METHOD(void,
               SendReport,
-              (const DeviceTrustReportEvent*, Callback sent_cb),
+              (const DeviceTrustReportEvent*, Callback),
               (const override));
 
  protected:
-  void PostCreateReportQueueTask(
-      reporting::ReportQueueProvider::CreateReportQueueCallback create_queue_cb,
-      std::unique_ptr<reporting::ReportQueueConfiguration> config) override;
+  void PostCreateReportQueueTask(std::unique_ptr<QueueConfig> config,
+                                 CreateQueueCallback create_queue_cb) override;
 };
 
 }  // namespace enterprise_connectors
