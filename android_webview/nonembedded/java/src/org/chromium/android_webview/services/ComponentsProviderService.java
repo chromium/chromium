@@ -84,15 +84,54 @@ public class ComponentsProviderService extends Service {
         @Override
         public void getFilesForComponent(String componentId, ResultReceiver resultReceiver) {
             final long startTime = System.currentTimeMillis();
-            getFilesForComponentInternal(componentId, new ResultReceiver(/* handler = */ null) {
-                @Override
-                protected void onReceiveResult(int resultCode, Bundle resultData) {
-                    final long requestDuration = System.currentTimeMillis() - startTime;
-                    RecordHistogram.recordTimesHistogram(
-                            HISTOGRAM_GET_FILES_DURATION, requestDuration);
-                    resultReceiver.send(resultCode, resultData);
+
+            // Note that there's no need to sanitize input because this method will check if there
+            // is an existing folder under `mDirectory` with a name that equals the received
+            // `componentId`. Because `mDirectory` is inside this application's data dir, only
+            // WebView can modify it.
+            final File[] components = mDirectory.listFiles((dir, name) -> name.equals(componentId));
+            if (components == null || components.length == 0) {
+                resultReceiver.send(RESULT_FAILED, /* resultData = */ null);
+                recordGetFilesResultAndDuration(GetFilesResultCode.FAILED_NOT_INSTALLED, startTime);
+                return;
+            }
+            assert components.length
+                    == 1 : "Only one directory should have the name " + componentId;
+
+            final File[] versions =
+                    ComponentsProviderPathUtil.getComponentsNewestFirst(components[0]);
+            if (versions == null || versions.length == 0) {
+                // This can happen if CUS created a parent directory but was killed before it could
+                // move content into it. In this case there's nothing old to delete.
+                resultReceiver.send(RESULT_FAILED, /* resultData = */ null);
+                recordGetFilesResultAndDuration(GetFilesResultCode.FAILED_NO_VERSIONS, startTime);
+                return;
+            }
+            final File versionDirectory = versions[0];
+
+            final HashMap<String, ParcelFileDescriptor> resultMap = new HashMap<>();
+            try {
+                recursivelyGetParcelFileDescriptors(
+                        versionDirectory, versionDirectory.getAbsolutePath() + "/", resultMap);
+
+                if (resultMap.isEmpty()) {
+                    Log.w(TAG, "No file descriptors found for " + componentId);
+                    resultReceiver.send(RESULT_FAILED, /* resultData = */ null);
+                    recordGetFilesResultAndDuration(GetFilesResultCode.FAILED_NO_FDS, startTime);
+                    return;
                 }
-            });
+
+                final Bundle resultData = new Bundle();
+                resultData.putSerializable(KEY_RESULT, resultMap);
+                resultReceiver.send(RESULT_OK, resultData);
+                recordGetFilesResultAndDuration(GetFilesResultCode.SUCCESS, startTime);
+            } catch (IOException exception) {
+                Log.w(TAG, exception.getMessage(), exception);
+                resultReceiver.send(RESULT_FAILED, /* resultData = */ null);
+                recordGetFilesResultAndDuration(GetFilesResultCode.FAILED_OPENING_FDS, startTime);
+            } finally {
+                closeFileDescriptors(resultMap);
+            }
         }
     };
 
@@ -149,53 +188,6 @@ public class ComponentsProviderService extends Service {
     @VisibleForTesting
     public Future<Void> getDeleteTaskForTesting() {
         return mDeleteTask;
-    }
-
-    private void getFilesForComponentInternal(String componentId, ResultReceiver resultReceiver) {
-        // Note that there's no need to sanitize input because this method will check if there is an
-        // existing folder under `mDirectory` with a name that equals the received `componentId`.
-        // Because `mDirectory` is inside this application's data dir, only WebView can modify it.
-        final File[] components = mDirectory.listFiles((dir, name) -> name.equals(componentId));
-        if (components == null || components.length == 0) {
-            resultReceiver.send(RESULT_FAILED, /* resultData = */ null);
-            recordGetFilesResult(GetFilesResultCode.FAILED_NOT_INSTALLED);
-            return;
-        }
-        assert components.length == 1 : "Only one directory should have the name " + componentId;
-
-        final File[] versions = ComponentsProviderPathUtil.getComponentsNewestFirst(components[0]);
-        if (versions == null || versions.length == 0) {
-            // This can happen if CUS created a parent directory but was killed before it could
-            // move content into it. In this case there's nothing old to delete.
-            resultReceiver.send(RESULT_FAILED, /* resultData = */ null);
-            recordGetFilesResult(GetFilesResultCode.FAILED_NO_VERSIONS);
-            return;
-        }
-        final File versionDirectory = versions[0];
-
-        final HashMap<String, ParcelFileDescriptor> resultMap = new HashMap<>();
-        try {
-            recursivelyGetParcelFileDescriptors(
-                    versionDirectory, versionDirectory.getAbsolutePath() + "/", resultMap);
-
-            if (resultMap.isEmpty()) {
-                Log.w(TAG, "No file descriptors found for " + componentId);
-                resultReceiver.send(RESULT_FAILED, /* resultData = */ null);
-                recordGetFilesResult(GetFilesResultCode.FAILED_NO_FDS);
-                return;
-            }
-
-            final Bundle resultData = new Bundle();
-            resultData.putSerializable(KEY_RESULT, resultMap);
-            resultReceiver.send(RESULT_OK, resultData);
-            recordGetFilesResult(GetFilesResultCode.SUCCESS);
-        } catch (IOException exception) {
-            Log.w(TAG, exception.getMessage(), exception);
-            resultReceiver.send(RESULT_FAILED, /* resultData = */ null);
-            recordGetFilesResult(GetFilesResultCode.FAILED_OPENING_FDS);
-        } finally {
-            closeFileDescriptors(resultMap);
-        }
     }
 
     private void recursivelyGetParcelFileDescriptors(File file, String pathPrefix,
@@ -265,8 +257,10 @@ public class ComponentsProviderService extends Service {
         return ApiHelperForN.getPendingJob(scheduler, jobId) != null;
     }
 
-    private void recordGetFilesResult(@GetFilesResultCode int result) {
+    private void recordGetFilesResultAndDuration(@GetFilesResultCode int result, long startTime) {
         RecordHistogram.recordEnumeratedHistogram(
                 HISTOGRAM_GET_FILES_RESULT, result, GetFilesResultCode.COUNT);
+        RecordHistogram.recordTimesHistogram(
+                HISTOGRAM_GET_FILES_DURATION, System.currentTimeMillis() - startTime);
     }
 }
