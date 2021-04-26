@@ -423,6 +423,8 @@ ResourceLoader::ResourceLoader(ResourceFetcher* fetcher,
       cancel_timer_(fetcher_->GetTaskRunner(),
                     this,
                     &ResourceLoader::CancelTimerFired) {
+  // Pointer registration is needed for sorting in ResourceFetcher.
+  recordreplay::RegisterPointer(this);
   DCHECK(resource_);
   DCHECK(fetcher_);
 
@@ -450,7 +452,9 @@ ResourceLoader::ResourceLoader(ResourceFetcher* fetcher,
   resource_->SetLoader(this);
 }
 
-ResourceLoader::~ResourceLoader() = default;
+ResourceLoader::~ResourceLoader() {
+  recordreplay::UnregisterPointer(this);
+}
 
 void ResourceLoader::Trace(Visitor* visitor) const {
   visitor->Trace(fetcher_);

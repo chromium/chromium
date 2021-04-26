@@ -2219,6 +2219,9 @@ void ResourceFetcher::StopFetchingInternal(StopFetchingTarget target) {
     }
   }
 
+  std::sort(loaders_to_cancel.begin(), loaders_to_cancel.end(),
+            recordreplay::CompareMemberByPointerId<Member<ResourceLoader>>());
+
   for (const auto& loader : loaders_to_cancel) {
     if (loaders_.Contains(loader) || non_blocking_loaders_.Contains(loader))
       loader->Cancel();

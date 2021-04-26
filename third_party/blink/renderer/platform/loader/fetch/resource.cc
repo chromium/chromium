@@ -160,6 +160,7 @@ Resource::Resource(const ResourceRequestHead& request,
       response_timestamp_(Now()),
       resource_request_(request),
       overhead_size_(CalculateOverheadSize()) {
+  // Pointer registration is needed for sorting in ResourceFetcher.
   recordreplay::RegisterPointer(this);
   scoped_refptr<const SecurityOrigin> top_frame_origin =
       resource_request_.TopFrameOrigin();
