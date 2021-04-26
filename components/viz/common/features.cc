@@ -65,10 +65,6 @@ const base::Feature kDynamicColorGamut{"DynamicColorGamut",
 const base::Feature kFastSolidColorDraw{"FastSolidColorDraw",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Viz for WebView architecture.
-const base::Feature kVizForWebView{"VizForWebView",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
-
 // We use this feature for default value, because enabled VizForWebView forces
 // skia renderer on and we want to have different feature state between webview
 // and chrome. This one is set by webview, while the above can be set via finch.
@@ -200,13 +196,6 @@ bool IsUsingVizForWebView() {
   // Vulkan on WebView requires viz.
   if (features::IsUsingVulkan())
     return true;
-
-  // If the feature is overridden from command line or finch we will use this
-  // value. If not we check for different state that is altered in
-  // aw_main_delegate.cc.
-  base::FeatureList* feature_list = base::FeatureList::GetInstance();
-  if (feature_list && feature_list->IsFeatureOverridden(kVizForWebView.name))
-    return base::FeatureList::IsEnabled(kVizForWebView);
 
   return base::FeatureList::IsEnabled(kVizForWebViewDefault);
 }
