@@ -150,6 +150,16 @@ std::unique_ptr<OutputSurface> OutputSurfaceProviderImpl::CreateOutputSurface(
       output_surface = SkiaOutputSurfaceImpl::Create(
           gpu_dependency, renderer_settings, debug_settings);
     }
+
+#if defined(OS_ANDROID)
+    // As with non-skia-renderer case, communicate the creation result to
+    // CompositorImplAndroid so that it can attempt to recreate the surface on
+    // failure.
+    display_client->OnContextCreationResult(
+        output_surface ? gpu::ContextResult::kSuccess
+                       : gpu::ContextResult::kSurfaceFailure);
+#endif  // defined(OS_ANDROID)
+
     if (!output_surface) {
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMECAST)
       // GPU compositing is expected to always work on Chrome OS so we should
