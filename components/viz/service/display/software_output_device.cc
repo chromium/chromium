@@ -51,12 +51,15 @@ SkCanvas* SoftwareOutputDevice::BeginPaint(const gfx::Rect& damage_rect) {
 }
 
 void SoftwareOutputDevice::EndPaint() {
+  recordreplay::Assert("SoftwareOutputDevice::EndPaint Start %d", !!surface_);
   if (recordreplay::IsRecordingOrReplaying()) {
     SkPixmap pixmap;
     if (surface_ && surface_->peekPixels(&pixmap)) {
+      recordreplay::Assert("SoftwareOutputDevice::EndPaint #1");
       RecordReplayPaintFinished(pixmap);
     }
   }
+  recordreplay::Assert("SoftwareOutputDevice::EndPaint Done");
 }
 
 gfx::VSyncProvider* SoftwareOutputDevice::GetVSyncProvider() {
