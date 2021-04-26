@@ -18,6 +18,7 @@
 #include "content/public/browser/web_ui.h"
 #include "device/fido/credential_management.h"
 #include "device/fido/credential_management_handler.h"
+#include "device/fido/fido_constants.h"
 #include "device/fido/pin.h"
 #include "device/fido/reset_request_handler.h"
 #include "device/fido/set_pin_request_handler.h"
@@ -790,7 +791,8 @@ void SecurityKeysBioEnrollmentHandler::OnEnrollmentFinished(
     std::vector<uint8_t> template_id) {
   DCHECK_EQ(state_, State::kEnrolling);
   DCHECK(!callback_id_.empty());
-  if (code == device::CtapDeviceResponseCode::kCtap2ErrKeepAliveCancel) {
+  if (code == device::CtapDeviceResponseCode::kCtap2ErrKeepAliveCancel ||
+      code == device::CtapDeviceResponseCode::kCtap2ErrFpDatabaseFull) {
     state_ = State::kReady;
     base::DictionaryValue d;
     d.SetIntKey("code", static_cast<int>(code));

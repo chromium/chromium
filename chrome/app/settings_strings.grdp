@@ -3684,6 +3684,9 @@
   <message name="IDS_SETTINGS_SECURITY_KEYS_BIO_NO_PIN" desc="An error message shown when a user attempts to enroll a fingerprint on their security key (an authentication hardware device), but the user has not set up a PIN (short, often numeric codes that are often used with, for example, ATM cards) for that security key.">
     Your security key is not protected with a PIN. To manage fingerprints, first create a PIN.
   </message>
+  <message name="IDS_SETTINGS_SECURITY_KEYS_BIO_ENROLLMENT_STORAGE_FULL" desc="An error message shown when a user attempts to enroll a fingerprint on their security key (an authentication hardware device), but the security key's internal storage for fingerprints is exhausted.">
+    Your security key can't store any more fingerprints. To add a new one, first delete an existing fingerprint.
+  </message>
   <message name="IDS_SETTINGS_SECURITY_KEYS_TOUCH_TO_CONTINUE" desc="A label instructing the user to physically touch the activation button on their security key (an authentication hardware device).">
     To continue, insert and touch your security key
   </message>

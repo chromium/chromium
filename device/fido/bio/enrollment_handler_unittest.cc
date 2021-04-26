@@ -223,7 +223,7 @@ TEST_F(BioEnrollmentHandlerTest, EnrollMax) {
       break;
   }
 
-  EXPECT_EQ(status, CtapDeviceResponseCode::kCtap2ErrKeyStoreFull);
+  EXPECT_EQ(status, CtapDeviceResponseCode::kCtap2ErrFpDatabaseFull);
   EXPECT_TRUE(template_id.empty());
 }
 

@@ -13,6 +13,7 @@ import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js
  */
 export const Ctap2Status = {
   OK: 0x0,
+  ERR_FP_DATABASE_FULL: 0x17,
   ERR_INVALID_OPTION: 0x2C,
   ERR_KEEPALIVE_CANCEL: 0x2D,
 };

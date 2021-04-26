@@ -196,6 +196,8 @@ class SecurityKeysBioEnrollmentHandler : public SecurityKeysHandlerBase {
   explicit SecurityKeysBioEnrollmentHandler(
       std::unique_ptr<device::FidoDiscoveryFactory> discovery_factory);
   void HandleStart(const base::ListValue* args);
+  void HandleProvidePIN(const base::ListValue* args);
+  void HandleStartEnrolling(const base::ListValue* args);
 
  private:
   enum class State {
@@ -218,8 +220,6 @@ class SecurityKeysBioEnrollmentHandler : public SecurityKeysHandlerBase {
                    int64_t retries,
                    base::OnceCallback<void(std::string)>);
 
-  void HandleProvidePIN(const base::ListValue* args);
-
   void HandleGetSensorInfo(const base::ListValue* args);
 
   void HandleEnumerate(const base::ListValue* args);
@@ -227,7 +227,6 @@ class SecurityKeysBioEnrollmentHandler : public SecurityKeysHandlerBase {
       device::CtapDeviceResponseCode,
       base::Optional<std::map<std::vector<uint8_t>, std::string>>);
 
-  void HandleStartEnrolling(const base::ListValue* args);
   void OnEnrollingResponse(device::BioEnrollmentSampleStatus, uint8_t);
   void OnEnrollmentFinished(device::CtapDeviceResponseCode,
                             std::vector<uint8_t> template_id);

@@ -2492,6 +2492,8 @@ void AddSecurityKeysStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_SECURITY_KEYS_BIO_ENROLLMENT_ENROLLING_LABEL},
       {"securityKeysBioEnrollmentEnrollingFailedLabel",
        IDS_SETTINGS_SECURITY_KEYS_BIO_ENROLLMENT_FAILED_LABEL},
+      {"securityKeysBioEnrollmentStorageFullLabel",
+       IDS_SETTINGS_SECURITY_KEYS_BIO_ENROLLMENT_STORAGE_FULL},
       {"securityKeysBioEnrollmentTryAgainLabel",
        IDS_SETTINGS_SECURITY_KEYS_BIO_ENROLLMENT_TRY_AGAIN_LABEL},
       {"securityKeysBioEnrollmentEnrollmentsLabel",

@@ -90,7 +90,6 @@ enum class BioEnrollmentSampleStatus : uint8_t {
   kTooShort = 0x09,
   kMergeFailure = 0x0A,
   kExists = 0x0B,
-  kDatabaseFull = 0x0C,
   kNoUserActivity = 0x0D,
   kNoUserPresenceTransition = 0x0E,
   kMin = kGood,

@@ -2182,7 +2182,7 @@ CtapDeviceResponseCode VirtualCtap2Device::OnBioEnrollment(
     case SubCmd::kEnrollBegin:
       if (mutable_state()->bio_templates.size() ==
           config_.bio_enrollment_capacity) {
-        return CtapDeviceResponseCode::kCtap2ErrKeyStoreFull;
+        return CtapDeviceResponseCode::kCtap2ErrFpDatabaseFull;
       }
       mutable_state()->bio_current_template_id = 0;
       while (mutable_state()->bio_templates.find(

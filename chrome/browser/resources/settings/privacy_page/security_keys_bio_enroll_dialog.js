@@ -282,13 +282,19 @@ Polymer({
    * @param {!EnrollmentResponse} response
    */
   onEnrollmentComplete_(response) {
-    if (response.code === Ctap2Status.ERR_KEEPALIVE_CANCEL) {
-      this.showEnrollmentsPage_();
-      return;
-    }
-    if (response.code !== Ctap2Status.OK) {
-      this.onError_(this.i18n('securityKeysBioEnrollmentEnrollingFailedLabel'));
-      return;
+    switch (response.code) {
+      case Ctap2Status.OK:
+        break;
+      case Ctap2Status.ERR_KEEPALIVE_CANCEL:
+        this.showEnrollmentsPage_();
+        return;
+      case Ctap2Status.ERR_FP_DATABASE_FULL:
+        this.onError_(this.i18n('securityKeysBioEnrollmentStorageFullLabel'));
+        return;
+      default:
+        this.onError_(
+            this.i18n('securityKeysBioEnrollmentEnrollingFailedLabel'));
+        return;
     }
 
     this.maxSamples_ = Math.max(this.maxSamples_, 1);
