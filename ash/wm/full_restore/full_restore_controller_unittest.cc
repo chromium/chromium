@@ -725,4 +725,26 @@ TEST_F(FullRestoreControllerTest, TabletSnapWindow) {
   EXPECT_EQ(restored_bounds, right_window->GetBoundsInScreen());
 }
 
+// Tests full restore behavior when a display size changes.
+TEST_F(FullRestoreControllerTest, DisplaySizeChange) {
+  constexpr int kRestoreId = 1;
+  UpdateDisplay("400x400");
+
+  // Add an entry for a window that is larger than the current display size.
+  // This simulates a user using a larger display than the one they are
+  // restoring to.
+  AddEntryToFakeFile(kRestoreId, gfx::Rect(0, 0, 800, 800),
+                     chromeos::WindowStateType::kNormal);
+
+  // Restore the window. Its bounds should be within the current display and its
+  // window state should be unaffected.
+  auto* restored_window =
+      CreateTestFullRestoredWidgetFromRestoreId(kRestoreId)->GetNativeWindow();
+  auto restored_bounds = restored_window->GetBoundsInScreen();
+  EXPECT_LE(restored_bounds.width(), 400);
+  EXPECT_LE(restored_bounds.height(), 400);
+  EXPECT_EQ(gfx::Point(0, 0), restored_bounds.origin());
+  EXPECT_TRUE(WindowState::Get(restored_window)->IsNormalStateType());
+}
+
 }  // namespace ash
