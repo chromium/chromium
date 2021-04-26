@@ -4031,8 +4031,7 @@ void NavigationRequest::CommitPageActivation() {
       return;
   } else {
     activated_entry = GetPrerenderHostRegistry().ActivateReservedHost(
-        prerender_frame_tree_node_id_, *frame_tree_node_->current_frame_host(),
-        *this);
+        prerender_frame_tree_node_id_, *this);
 
     // TODO(https://crbug.com/1181712): Determine the best way to handle
     // navigation when prerendering is cancelled during activation. This

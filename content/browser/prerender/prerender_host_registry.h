@@ -102,12 +102,8 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   // Activates the host reserved by ReserveHostToActivate() and returns the
   // BackForwardCacheImpl::Entry containing the page that was activated on
   // success, or nullptr on failure.
-  //
-  // `current_render_frame_host` is the RenderFrameHostImpl that will be swapped
-  // out and destroyed by the activation.
   std::unique_ptr<BackForwardCacheImpl::Entry> ActivateReservedHost(
       int frame_tree_node_id,
-      RenderFrameHostImpl& current_render_frame_host,
       NavigationRequest& navigation_request);
 
   RenderFrameHostImpl* GetRenderFrameHostForReservedHost(

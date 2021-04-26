@@ -172,15 +172,13 @@ RenderFrameHostImpl* PrerenderHostRegistry::GetRenderFrameHostForReservedHost(
 std::unique_ptr<BackForwardCacheImpl::Entry>
 PrerenderHostRegistry::ActivateReservedHost(
     int frame_tree_node_id,
-    RenderFrameHostImpl& current_render_frame_host,
     NavigationRequest& navigation_request) {
   auto iter =
       reserved_prerender_host_by_frame_tree_node_id_.find(frame_tree_node_id);
   CHECK(iter != reserved_prerender_host_by_frame_tree_node_id_.end());
   std::unique_ptr<PrerenderHost> prerender_host = std::move(iter->second);
   reserved_prerender_host_by_frame_tree_node_id_.erase(iter);
-  return prerender_host->ActivatePrerenderedContents(current_render_frame_host,
-                                                     navigation_request);
+  return prerender_host->Activate(navigation_request);
 }
 
 void PrerenderHostRegistry::AbandonReservedHost(int frame_tree_node_id) {

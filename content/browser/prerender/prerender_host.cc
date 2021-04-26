@@ -136,8 +136,7 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
     return frame_tree_->root()->current_frame_host();
   }
 
-  ActivateResult Activate(RenderFrameHostImpl& current_render_frame_host,
-                          NavigationRequest& navigation_request) {
+  ActivateResult Activate(NavigationRequest& navigation_request) {
     if (frame_tree_->root()->HasNavigation()) {
       // We do not yet support activation if there is an ongoing navigation in
       // the main frame as the code assumes that NavigationRequest is associated
@@ -169,7 +168,8 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
     navigation_request.SetPrerenderNavigationEntry(std::move(nav_entry));
 
     FrameTree* target_frame_tree = web_contents_.GetFrameTree();
-    DCHECK_EQ(target_frame_tree, current_render_frame_host.frame_tree());
+    DCHECK_EQ(target_frame_tree,
+              navigation_request.frame_tree_node()->frame_tree());
 
     page->render_frame_host->SetFrameTreeNode(*(target_frame_tree->root()));
     for (auto& it : page->proxy_hosts) {
@@ -291,18 +291,15 @@ void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   Observe(nullptr);
 }
 
-std::unique_ptr<BackForwardCacheImpl::Entry>
-PrerenderHost::ActivatePrerenderedContents(
-    RenderFrameHostImpl& old_render_frame_host,
+std::unique_ptr<BackForwardCacheImpl::Entry> PrerenderHost::Activate(
     NavigationRequest& navigation_request) {
-  TRACE_EVENT1("navigation", "PrerenderHost::ActivatePrerenderedContents",
-               "render_frame_host", old_render_frame_host);
+  TRACE_EVENT1("navigation", "PrerenderHost::Activate", "navigation_request",
+               &navigation_request);
 
   DCHECK(is_ready_for_activation_);
   is_ready_for_activation_ = false;
 
-  ActivateResult result =
-      page_holder_->Activate(old_render_frame_host, navigation_request);
+  ActivateResult result = page_holder_->Activate(navigation_request);
   if (result.status != FinalStatus::kActivated) {
     RecordFinalStatus(result.status);
     return nullptr;

@@ -164,8 +164,7 @@ TEST_F(PrerenderHostTest, MainFrameNavigationForReservedHost) {
   auto sim_3 = NavigationSimulatorImpl::CreateBrowserInitiated(
       kPrerenderingUrl, web_contents.get());
   sim_3->Start();
-  prerender_host->ActivatePrerenderedContents(*initiator_rfh,
-                                              *sim_3->GetNavigationHandle());
+  prerender_host->Activate(*sim_3->GetNavigationHandle());
   ExpectFinalStatus(PrerenderHost::FinalStatus::kActivated);
 }
 
@@ -214,8 +213,7 @@ TEST_F(PrerenderHostTest, SubframeNavigationForReservedHost) {
       NavigationSimulatorImpl::CreateBrowserInitiated(kPrerenderingUrl,
                                                       web_contents.get());
   sim_2->Start();
-  prerender_host->ActivatePrerenderedContents(*initiator_rfh,
-                                              *sim_2->GetNavigationHandle());
+  prerender_host->Activate(*sim_2->GetNavigationHandle());
   ExpectFinalStatus(PrerenderHost::FinalStatus::kActivated);
 
   // The subframe navigation should no longer be deferred.

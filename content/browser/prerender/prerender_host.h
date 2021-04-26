@@ -81,22 +81,16 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
 
   // Activates the prerendered page and returns BackForwardCacheImpl::Entry
   // containing the page. This must be called after this host gets ready for
-  // activation. `old_render_frame_host` is the RenderFrameHost that will be
-  // swapped out and destroyed by the activation.
-  //
-  // TODO(https://crbug.com/1170277): Potentially update implementation so that
-  // the |old_render_frame_host| parameter is not required.
+  // activation.
   //
   // TODO(https://crbug.com/1181263): Refactor BackForwardCacheImpl::Entry into
   // a generic "page" object to make clear that the same logic is also used for
   // prerendering.
-  std::unique_ptr<BackForwardCacheImpl::Entry> ActivatePrerenderedContents(
-      RenderFrameHostImpl& old_render_frame_host,
+  std::unique_ptr<BackForwardCacheImpl::Entry> Activate(
       NavigationRequest& navigation_request);
 
   // Returns the main RenderFrameHost of the prerendered page.
-  // This must be called after StartPrerendering() and before
-  // ActivatePrerenderedContents().
+  // This must be called after StartPrerendering() and before Activate().
   RenderFrameHostImpl* GetPrerenderedMainFrameHost();
 
   // Tells the reason of the destruction of this host. PrerenderHostRegistry
