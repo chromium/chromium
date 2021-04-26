@@ -162,6 +162,8 @@ void PurgeCacheOnBackgroundSequenceExcept(
 }
 
 - (void)purgeUnassociatedData {
+  if (!_taskRunner)
+    return;
   [self purgeCacheExcept:[self liveSessionIDs]];
 }
 
@@ -201,6 +203,8 @@ void PurgeCacheOnBackgroundSequenceExcept(
 
 // Returns a set of all known tab ids.
 - (NSSet*)liveSessionIDs {
+  DCHECK(_browserState) << "-liveSessionIDs called after -shutdown";
+
   NSMutableSet* liveSessionIDs = [[NSMutableSet alloc] init];
   BrowserList* browserList =
       BrowserListFactory::GetForBrowserState(self.browserState);
