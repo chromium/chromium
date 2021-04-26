@@ -44,6 +44,9 @@
 # crbug.com/1061214
 -org.chromium.chrome.browser.customtabs.CustomTabActivityTest.testHiddenTabAndChangingFragmentDontWait
 
+# crbug.com/1202977
+-org.chromium.chrome.browser.settings.MainSettingsFragmentTest.testRenderDifferentSignedInStatesWithMobileIdentityConsistency
+
 # crbug.com/1036553
 -org.chromium.chrome.browser.translate.TranslateIntentTest.*
 
