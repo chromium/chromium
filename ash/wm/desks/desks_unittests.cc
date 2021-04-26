@@ -5277,6 +5277,14 @@ class DesksMockTimeTest : public DesksTest {
   DesksMockTimeTest(const DesksMockTimeTest&) = delete;
   DesksMockTimeTest& operator=(const DesksMockTimeTest&) = delete;
   ~DesksMockTimeTest() override = default;
+
+  // DesksTest:
+  void SetUp() override {
+    // The `g_weekly_active_desks` global counter may be non-zero at the
+    // beginning of tests so reset it. See https://crbug.com/1200684.
+    Desk::SetWeeklyActiveDesks(0);
+    DesksTest::SetUp();
+  }
 };
 
 // Tests that the weekly active desks metric is properly recorded.
