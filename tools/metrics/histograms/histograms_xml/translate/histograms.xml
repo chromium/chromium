@@ -62,7 +62,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Translate.CLD3.LanguageDetected" enum="CLD3LanguageCode"
     expires_after="2021-10-10">
-  <owner>frechette@chromium.org</owner>
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Language of the input page detected by CLD3. This information is logged on
@@ -72,7 +72,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Translate.CLD3.LanguagePercentage" units="%"
     expires_after="2021-10-10">
-  <owner>frechette@chromium.org</owner>
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Percentage of the bytes that are associated with the most popular language
@@ -93,14 +93,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Translate.CompactInfobar.Event" enum="TranslateCompactUIEvent"
     expires_after="2021-10-10">
-  <owner>anthonyvd@chromium.org</owner>
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>Various user actions performed in the translate infobar.</summary>
 </histogram>
 
 <histogram name="Translate.CompactInfobar.Language.AlwaysTranslate"
     enum="CLD3LanguageCode" expires_after="2021-10-10">
-  <owner>anthonyvd@chromium.org</owner>
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Records the hashcode of the source language when always translate this
@@ -110,7 +110,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Translate.CompactInfobar.Language.MoreLanguages"
     enum="CLD3LanguageCode" expires_after="2021-10-10">
-  <owner>anthonyvd@chromium.org</owner>
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Records the hashcode of the language clicked on the more languages menu.
@@ -119,7 +119,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Translate.CompactInfobar.Language.NeverTranslate"
     enum="CLD3LanguageCode" expires_after="2021-10-10">
-  <owner>anthonyvd@chromium.org</owner>
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Records the hashcode of the source language when never translate this
@@ -129,7 +129,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Translate.CompactInfobar.Language.PageNotIn"
     enum="CLD3LanguageCode" expires_after="2021-10-10">
-  <owner>anthonyvd@chromium.org</owner>
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Records the hashcode of the language clicked on the menu to indicate the
@@ -139,7 +139,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Translate.CompactInfobar.Language.Translate"
     enum="CLD3LanguageCode" expires_after="M85">
-  <owner>anthonyvd@chromium.org</owner>
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Records the hashcode of the language clicked on the infobar.
@@ -148,7 +148,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Translate.CompactInfobar.TranslationsPerPage"
     units="translations" expires_after="2021-10-10">
-  <owner>anthonyvd@chromium.org</owner>
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Records the number of times a page is translated, every time the page is
@@ -220,7 +220,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Translate.ExplicitLanguageAsk.Event"
     enum="TranslateExplicitAskPromptEventType" expires_after="2021-10-10">
   <owner>yyushkina@google.com</owner>
-  <owner>anthonyvd@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     The events (shown, saved, cancelled) happening in the Explicit Language Ask
@@ -231,7 +230,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Translate.ExplicitLanguageAsk.LanguageAdded"
     enum="CLD3LanguageCode" expires_after="2021-10-10">
   <owner>yyushkina@google.com</owner>
-  <owner>anthonyvd@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     The languages that were added to the Accept Languages list from the Explicit
@@ -242,7 +240,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Translate.ExplicitLanguageAsk.LanguageRemoved"
     enum="CLD3LanguageCode" expires_after="2021-10-10">
   <owner>yyushkina@google.com</owner>
-  <owner>anthonyvd@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     The languages that were removed from the Accept Languages list from the
@@ -293,7 +290,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.InfobarShown" enum="BooleanHit" expires_after="M85">
-  <owner>anthonyvd@chromium.org</owner>
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     The number of times the translate infobar was shown in the old translate UI
@@ -374,7 +371,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Removed Feb 2021. Replaced with Main bucket of
     LanguageSettings.PageImpression.
   </obsolete>
-  <owner>frechette@chromium.org</owner>
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Log everytime the language settings page is shown. This can be either user
@@ -447,7 +444,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Removed 10/09/2020. Replaced with Translate.MenuTranslation.IsAvailable.
   </obsolete>
   <owner>yyushkina@google.com</owner>
-  <owner>frechette@chromium.org</owner>
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Whether the 'Translate' app menu entry is shown to the user. Emitted when
