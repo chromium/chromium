@@ -205,12 +205,6 @@ int BrowserMainPartsImpl::PreEarlyInitialization() {
   WebLayerWebappsClient::Create();
 #endif
 
-  translate::TranslateDownloadManager* download_manager =
-      translate::TranslateDownloadManager::GetInstance();
-  download_manager->set_url_loader_factory(
-      BrowserProcess::GetInstance()->GetSharedURLLoaderFactory());
-  download_manager->set_application_locale(i18n::GetApplicationLocale());
-
   return content::RESULT_CODE_NORMAL_EXIT;
 }
 
@@ -218,6 +212,12 @@ void BrowserMainPartsImpl::PostCreateThreads() {
   performance_manager_lifetime_ =
       std::make_unique<performance_manager::PerformanceManagerLifetime>(
           performance_manager::Decorators::kMinimal, base::DoNothing());
+
+  translate::TranslateDownloadManager* download_manager =
+      translate::TranslateDownloadManager::GetInstance();
+  download_manager->set_url_loader_factory(
+      BrowserProcess::GetInstance()->GetSharedURLLoaderFactory());
+  download_manager->set_application_locale(i18n::GetApplicationLocale());
 }
 
 int BrowserMainPartsImpl::PreMainMessageLoopRun() {
