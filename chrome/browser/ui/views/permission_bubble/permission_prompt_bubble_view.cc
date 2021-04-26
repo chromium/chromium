@@ -22,6 +22,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
+#include "components/permissions/permission_uma_util.h"
 #include "components/permissions/request_type.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
@@ -233,6 +234,7 @@ void PermissionPromptBubbleView::UpdateAnchorPosition() {
 
 void PermissionPromptBubbleView::SetPromptStyle(
     PermissionPromptStyle prompt_style) {
+  prompt_style_ = prompt_style;
   // If bubble hanging off the padlock icon, with no chip showing, it shouldn't
   // close on deactivate and it should stick until user makes a decision.
   // Otherwise, the chip is indicating the pending permission request and so the
@@ -352,28 +354,36 @@ base::Optional<std::u16string> PermissionPromptBubbleView::GetExtraText()
 }
 
 void PermissionPromptBubbleView::AcceptPermission() {
-  RecordDecision();
+  RecordDecision(permissions::PermissionAction::GRANTED);
   delegate_->Accept();
 }
 
 void PermissionPromptBubbleView::AcceptPermissionThisTime() {
-  RecordDecision();
+  RecordDecision(permissions::PermissionAction::GRANTED_ONCE);
   delegate_->AcceptThisTime();
 }
 
 void PermissionPromptBubbleView::DenyPermission() {
-  RecordDecision();
+  RecordDecision(permissions::PermissionAction::DENIED);
   delegate_->Deny();
 }
 
 void PermissionPromptBubbleView::ClosingPermission() {
-  RecordDecision();
+  DCHECK_EQ(prompt_style_, PermissionPromptStyle::kBubbleOnly);
+  RecordDecision(permissions::PermissionAction::DISMISSED);
   delegate_->Closing();
 }
 
-void PermissionPromptBubbleView::RecordDecision() {
+void PermissionPromptBubbleView::RecordDecision(
+    permissions::PermissionAction action) {
+  const std::string uma_suffix =
+      permissions::PermissionUmaUtil::GetPermissionActionString(action);
+  std::string time_to_decision_uma_name =
+      prompt_style_ == PermissionPromptStyle::kBubbleOnly
+          ? "Permissions.Prompt.TimeToDecision"
+          : "Permissions.Chip.TimeToDecision";
   base::UmaHistogramLongTimes(
-      "Permissions.Prompt.TimeToDecision",
+      time_to_decision_uma_name + "." + uma_suffix,
       base::TimeTicks::Now() - permission_requested_time_);
 }
 

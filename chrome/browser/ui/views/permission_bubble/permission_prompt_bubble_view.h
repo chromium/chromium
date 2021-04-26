@@ -15,6 +15,7 @@
 
 namespace permissions {
 enum class RequestType;
+enum class PermissionAction;
 }
 
 class Browser;
@@ -67,8 +68,10 @@ class PermissionPromptBubbleView : public views::BubbleDialogDelegateView {
   // Get extra information to display for the permission, if any.
   base::Optional<std::u16string> GetExtraText() const;
 
-  // Record UMA Permissions.Prompt.TimeToDecision metric.
-  void RecordDecision();
+  // Record UMA Permissions.*.TimeToDecision.|action| metric. Can be
+  // Permissions.Prompt.TimeToDecision.* or Permissions.Chip.TimeToDecision.*,
+  // depending on which UI is used.
+  void RecordDecision(permissions::PermissionAction action);
 
   // Determines whether the current request should also display an
   // "Allow only this time" option in addition to the "Allow on every visit"
@@ -79,6 +82,8 @@ class PermissionPromptBubbleView : public views::BubbleDialogDelegateView {
   permissions::PermissionPrompt::Delegate* const delegate_;
 
   base::TimeTicks permission_requested_time_;
+
+  PermissionPromptStyle prompt_style_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSION_BUBBLE_PERMISSION_PROMPT_BUBBLE_VIEW_H_

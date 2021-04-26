@@ -436,32 +436,25 @@ void PermissionUmaUtil::PermissionPromptResolved(
     PermissionPromptDisposition ui_disposition,
     base::Optional<PermissionPromptDispositionReason> ui_reason,
     base::Optional<PredictionGrantLikelihood> predicted_grant_likelihood) {
-  std::string action_string;
-
   switch (permission_action) {
     case PermissionAction::GRANTED:
       RecordPromptDecided(requests, /*accepted=*/true, /*is_one_time=*/false);
-      action_string = "Accepted";
       break;
     case PermissionAction::DENIED:
       RecordPromptDecided(requests, /*accepted=*/false, /*is_one_time*/ false);
-      action_string = "Denied";
       break;
     case PermissionAction::DISMISSED:
-      action_string = "Dismissed";
-      break;
     case PermissionAction::IGNORED:
-      action_string = "Ignored";
       break;
     case PermissionAction::GRANTED_ONCE:
       RecordPromptDecided(requests, /*accepted=*/true, /*is_one_time*/ true);
-      action_string = "AcceptedOnce";
       break;
     default:
       NOTREACHED();
       break;
   }
 
+  std::string action_string = GetPermissionActionString(permission_action);
   RecordEngagementMetric(requests, web_contents, action_string);
 
   PermissionDecisionAutoBlocker* autoblocker =
@@ -805,6 +798,26 @@ void PermissionUmaUtil::RecordTimeElapsedBetweenGrantAndRevoke(
       "Permissions.Revocation.ElapsedTimeSinceGrant." +
           PermissionUtil::GetPermissionString(type),
       delta.InSeconds(), 1, base::TimeDelta::FromDays(365).InSeconds(), 100);
+}
+
+std::string PermissionUmaUtil::GetPermissionActionString(
+    PermissionAction permission_action) {
+  switch (permission_action) {
+    case PermissionAction::GRANTED:
+      return "Accepted";
+    case PermissionAction::DENIED:
+      return "Denied";
+    case PermissionAction::DISMISSED:
+      return "Dismissed";
+    case PermissionAction::IGNORED:
+      return "Ignored";
+    case PermissionAction::GRANTED_ONCE:
+      return "AcceptedOnce";
+    default:
+      NOTREACHED();
+  }
+  NOTREACHED();
+  return std::string();
 }
 
 }  // namespace permissions
