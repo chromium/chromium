@@ -464,8 +464,7 @@ int HttpProxyClientSocket::DoReadHeadersComplete(int result) {
       // authentication code is smart enough to avoid being tricked by an
       // active network attacker.
       // The next state is intentionally not set as it should be STATE_NONE;
-      if (!SanitizeProxyAuth(&response_))
-        return ERR_TUNNEL_CONNECTION_FAILED;
+      SanitizeProxyAuth(response_);
       return HandleProxyAuthChallenge(auth_.get(), &response_, net_log_);
 
     default:
