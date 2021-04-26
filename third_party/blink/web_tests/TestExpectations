@@ -7329,3 +7329,6 @@ crbug.com/1197528 [ Linux ] pointer-lock/pointerlockchange-pointerlockerror-even
 
 # Image pixels are sometimes different on Fuchsia.
 crbug.com/1201123 [ Fuchsia ] tables/mozilla/bugs/bug1188.html [ Pass Failure ]
+
+# Sheriff 2021-04-26
+crbug.com/1202722 [ Linux ] virtual/scroll-unification/fast/events/mouseenter-mouseleave-on-drag.html [ Pass Timeout ]
