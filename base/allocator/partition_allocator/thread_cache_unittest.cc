@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -115,6 +116,11 @@ void FillThreadCacheWithMemory(size_t target_cached_memory) {
 class ThreadCacheTest : public ::testing::Test {
  protected:
   void SetUp() override {
+#if defined(PA_HAS_64_BITS_POINTERS)
+    // Another test can uninitialize the pools, so make sure they are
+    // initialized.
+    PartitionAddressSpace::Init();
+#endif
     ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
         ThreadCache::kDefaultMultiplier);
     ThreadCache::SetLargestCachedSize(ThreadCache::kLargeSizeThreshold);
