@@ -947,6 +947,101 @@ TEST_P(ParameterizedLocalCaretRectTest, AfterTrimedLineBreak) {
   EXPECT_EQ(PhysicalRect(30, 0, 1, 10), visible_position_rect);
 }
 
+// See also NGCaretPositionTest.MultiColumnSingleText
+TEST_P(ParameterizedLocalCaretRectTest, MultiColumnSingleText) {
+  LoadAhem();
+  InsertStyleElement(
+      "div { font: 10px/15px Ahem; column-count: 3; width: 20ch; }");
+  SetBodyInnerHTML("<div id=target>abc def ghi jkl mno pqr</div>");
+  // This HTML is rendered as:
+  //    abc ghi mno
+  //    def jkl
+  const auto& target = *GetElementById("target");
+  const Text& text = *To<Text>(target.firstChild());
+  const bool block_fragmentation_enabled =
+      target.GetLayoutObject()->IsLayoutNGObject();
+
+  // Note: Legacy layout caret rect is in stitch coordinate space == as if
+  // columns are laid out vertically.
+  // NG caret rect is in relative to containing box fragment.
+
+  // "abc " in column 1
+  EXPECT_EQ(PhysicalRect(0, 2, 1, 10),
+            LocalCaretRectOf(Position(text, 0)).rect);
+  EXPECT_EQ(PhysicalRect(10, 2, 1, 10),
+            LocalCaretRectOf(Position(text, 1)).rect);
+  EXPECT_EQ(PhysicalRect(20, 2, 1, 10),
+            LocalCaretRectOf(Position(text, 2)).rect);
+  EXPECT_EQ(PhysicalRect(30, 2, 1, 10),
+            LocalCaretRectOf(Position(text, 3)).rect);
+
+  // "def " in column 1
+  EXPECT_EQ(PhysicalRect(0, 17, 1, 10),
+            LocalCaretRectOf(Position(text, 4)).rect);
+  EXPECT_EQ(PhysicalRect(10, 17, 1, 10),
+            LocalCaretRectOf(Position(text, 5)).rect);
+  EXPECT_EQ(PhysicalRect(20, 17, 1, 10),
+            LocalCaretRectOf(Position(text, 6)).rect);
+  EXPECT_EQ(PhysicalRect(30, 17, 1, 10),
+            LocalCaretRectOf(Position(text, 7)).rect);
+
+  // "ghi " in column 2
+  EXPECT_EQ(block_fragmentation_enabled ? PhysicalRect(0, 2, 1, 10)
+                                        : PhysicalRect(0, 32, 1, 10),
+            LocalCaretRectOf(Position(text, 8)).rect);
+  EXPECT_EQ(block_fragmentation_enabled ? PhysicalRect(10, 2, 1, 10)
+                                        : PhysicalRect(10, 32, 1, 10),
+            LocalCaretRectOf(Position(text, 9)).rect);
+  EXPECT_EQ(block_fragmentation_enabled ? PhysicalRect(20, 2, 1, 10)
+                                        : PhysicalRect(20, 32, 1, 10),
+            LocalCaretRectOf(Position(text, 10)).rect);
+  EXPECT_EQ(block_fragmentation_enabled ? PhysicalRect(30, 2, 1, 10)
+                                        : PhysicalRect(30, 32, 1, 10),
+            LocalCaretRectOf(Position(text, 11)).rect);
+
+  // "jkl " in column 2
+  EXPECT_EQ(block_fragmentation_enabled ? PhysicalRect(0, 17, 1, 10)
+                                        : PhysicalRect(0, 47, 1, 10),
+            LocalCaretRectOf(Position(text, 12)).rect);
+  EXPECT_EQ(block_fragmentation_enabled ? PhysicalRect(10, 17, 1, 10)
+                                        : PhysicalRect(10, 47, 1, 10),
+            LocalCaretRectOf(Position(text, 13)).rect);
+  EXPECT_EQ(block_fragmentation_enabled ? PhysicalRect(20, 17, 1, 10)
+                                        : PhysicalRect(20, 47, 1, 10),
+            LocalCaretRectOf(Position(text, 14)).rect);
+  EXPECT_EQ(block_fragmentation_enabled ? PhysicalRect(30, 17, 1, 10)
+                                        : PhysicalRect(30, 47, 1, 10),
+            LocalCaretRectOf(Position(text, 15)).rect);
+
+  // "mno " in column 3
+  EXPECT_EQ(block_fragmentation_enabled ? PhysicalRect(0, 2, 1, 10)
+                                        : PhysicalRect(0, 62, 1, 10),
+            LocalCaretRectOf(Position(text, 16)).rect);
+  EXPECT_EQ(block_fragmentation_enabled ? PhysicalRect(10, 2, 1, 10)
+                                        : PhysicalRect(10, 62, 1, 10),
+            LocalCaretRectOf(Position(text, 17)).rect);
+  EXPECT_EQ(block_fragmentation_enabled ? PhysicalRect(20, 2, 1, 10)
+                                        : PhysicalRect(20, 62, 1, 10),
+            LocalCaretRectOf(Position(text, 18)).rect);
+  EXPECT_EQ(block_fragmentation_enabled ? PhysicalRect(30, 2, 1, 10)
+                                        : PhysicalRect(30, 62, 1, 10),
+            LocalCaretRectOf(Position(text, 19)).rect);
+
+  // "pqr" in column 3
+  EXPECT_EQ(block_fragmentation_enabled ? PhysicalRect(0, 17, 1, 10)
+                                        : PhysicalRect(0, 77, 1, 10),
+            LocalCaretRectOf(Position(text, 20)).rect);
+  EXPECT_EQ(block_fragmentation_enabled ? PhysicalRect(10, 17, 1, 10)
+                                        : PhysicalRect(10, 77, 1, 10),
+            LocalCaretRectOf(Position(text, 21)).rect);
+  EXPECT_EQ(block_fragmentation_enabled ? PhysicalRect(20, 17, 1, 10)
+                                        : PhysicalRect(20, 77, 1, 10),
+            LocalCaretRectOf(Position(text, 22)).rect);
+  EXPECT_EQ(block_fragmentation_enabled ? PhysicalRect(30, 17, 1, 10)
+                                        : PhysicalRect(30, 77, 1, 10),
+            LocalCaretRectOf(Position(text, 23)).rect);
+}
+
 TEST_P(ParameterizedLocalCaretRectTest,
        UnicodeBidiPlaintextWithDifferentBlockDirection) {
   LoadAhem();

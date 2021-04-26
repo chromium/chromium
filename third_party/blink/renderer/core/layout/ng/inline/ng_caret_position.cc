@@ -281,7 +281,7 @@ NGCaretPosition ComputeNGCaretPosition(const LayoutBlockFlow& context,
   NGCaretPosition candidate;
   if (layout_text && layout_text->HasInlineFragments())
     cursor.MoveTo(*layout_text);
-  for (; cursor; cursor.MoveToNext()) {
+  for (; cursor; cursor.MoveToNextIncludingFragmentainer()) {
     const CaretPositionResolution resolution =
         TryResolveCaretPositionWithFragment(cursor, offset, affinity);
 
