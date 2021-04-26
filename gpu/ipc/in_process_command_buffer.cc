@@ -1147,7 +1147,7 @@ void InProcessCommandBuffer::CreateImageOnGpuThread(
 
       scoped_refptr<gl::GLImage> image =
           image_factory_->CreateImageForGpuMemoryBuffer(
-              std::move(handle), gfx::kDefaultBufferPlane, size, format,
+              std::move(handle), size, format, gfx::BufferPlane::DEFAULT,
               kDisplayCompositorClientId, kNullSurfaceHandle);
       if (!image.get()) {
         LOG(ERROR) << "Failed to create image for buffer.";

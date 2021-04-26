@@ -750,8 +750,8 @@ SharedImageBackingFactoryAHB::CreateSharedImage(
     int client_id,
     gfx::GpuMemoryBufferHandle handle,
     gfx::BufferFormat buffer_format,
+    gfx::BufferPlane plane,
     SurfaceHandle surface_handle,
-    uint32_t plane,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
@@ -762,9 +762,8 @@ SharedImageBackingFactoryAHB::CreateSharedImage(
     NOTIMPLEMENTED();
     return nullptr;
   }
-  if (!gpu::IsPlaneValidForGpuMemoryBufferFormat(plane, buffer_format)) {
-    LOG(ERROR) << "Invalid plane " << plane << " for "
-               << gfx::BufferFormatToString(buffer_format);
+  if (plane != gfx::BufferPlane::DEFAULT) {
+    LOG(ERROR) << "Invalid plane " << gfx::BufferPlaneToString(plane);
     return nullptr;
   }
 

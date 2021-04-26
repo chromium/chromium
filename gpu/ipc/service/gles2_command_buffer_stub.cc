@@ -542,13 +542,13 @@ void GLES2CommandBufferStub::OnCreateImage(
   }
 
   if (!gpu::IsPlaneValidForGpuMemoryBufferFormat(params.plane, format)) {
-    LOG(ERROR) << "Invalid plane " << params.plane << " for "
-               << gfx::BufferFormatToString(format);
+    LOG(ERROR) << "Invalid plane " << gfx::BufferPlaneToString(params.plane)
+               << " for " << gfx::BufferFormatToString(format);
     return;
   }
 
   scoped_refptr<gl::GLImage> image = channel()->CreateImageForGpuMemoryBuffer(
-      std::move(params.gpu_memory_buffer), params.plane, size, format,
+      std::move(params.gpu_memory_buffer), size, format, params.plane,
       surface_handle_);
   if (!image.get())
     return;

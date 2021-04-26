@@ -235,8 +235,8 @@ SharedImageBackingFactoryGLTexture::CreateSharedImage(
     int client_id,
     gfx::GpuMemoryBufferHandle handle,
     gfx::BufferFormat buffer_format,
+    gfx::BufferPlane plane,
     SurfaceHandle surface_handle,
-    uint32_t plane,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
@@ -255,7 +255,7 @@ SharedImageBackingFactoryGLTexture::CreateSharedImage(
   }
 
   if (!gpu::IsPlaneValidForGpuMemoryBufferFormat(plane, buffer_format)) {
-    LOG(ERROR) << "Invalid plane " << plane << " for "
+    LOG(ERROR) << "Invalid plane " << gfx::BufferPlaneToString(plane) << " for "
                << gfx::BufferFormatToString(buffer_format);
     return nullptr;
   }
@@ -267,7 +267,7 @@ SharedImageBackingFactoryGLTexture::CreateSharedImage(
           ? GL_TEXTURE_2D
           : gpu::GetPlatformSpecificTextureTarget();
   scoped_refptr<gl::GLImage> image = MakeGLImage(
-      client_id, std::move(handle), buffer_format, surface_handle, size);
+      client_id, std::move(handle), buffer_format, plane, surface_handle, size);
   if (!image) {
     LOG(ERROR) << "Failed to create image.";
     return nullptr;
@@ -342,9 +342,12 @@ scoped_refptr<gl::GLImage> SharedImageBackingFactoryGLTexture::MakeGLImage(
     int client_id,
     gfx::GpuMemoryBufferHandle handle,
     gfx::BufferFormat format,
+    gfx::BufferPlane plane,
     SurfaceHandle surface_handle,
     const gfx::Size& size) {
   if (handle.type == gfx::SHARED_MEMORY_BUFFER) {
+    if (plane != gfx::BufferPlane::DEFAULT)
+      return nullptr;
     if (!base::IsValueInRangeForNumericType<size_t>(handle.stride))
       return nullptr;
     auto image = base::MakeRefCounted<gl::GLImageSharedMemory>(size);
@@ -360,8 +363,7 @@ scoped_refptr<gl::GLImage> SharedImageBackingFactoryGLTexture::MakeGLImage(
     return nullptr;
 
   return image_factory_->CreateImageForGpuMemoryBuffer(
-      std::move(handle), gfx::kDefaultBufferPlane, size, format, client_id,
-      surface_handle);
+      std::move(handle), size, format, plane, client_id, surface_handle);
 }
 
 bool SharedImageBackingFactoryGLTexture::CanImportGpuMemoryBuffer(

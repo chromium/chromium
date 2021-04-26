@@ -144,9 +144,9 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
 
   scoped_refptr<gl::GLImage> CreateImageForGpuMemoryBuffer(
       gfx::GpuMemoryBufferHandle handle,
-      uint32_t plane,
       const gfx::Size& size,
       gfx::BufferFormat format,
+      gfx::BufferPlane plane,
       SurfaceHandle surface_handle);
 
   void HandleMessage(const IPC::Message& msg);

@@ -332,8 +332,9 @@ void ImageDecodeAcceleratorStub::ProcessCompletedDecode(
     if (external_image_factory_for_testing_) {
       plane_image =
           external_image_factory_for_testing_->CreateImageForGpuMemoryBuffer(
-              std::move(plane_handle), gfx::kDefaultBufferPlane, plane_size,
-              plane_format, -1 /* client_id */, kNullSurfaceHandle);
+              std::move(plane_handle), plane_size, plane_format,
+              gfx::BufferPlane::DEFAULT, -1 /* client_id */,
+              kNullSurfaceHandle);
     } else {
       auto plane_pixmap = base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
           plane_size, plane_format,

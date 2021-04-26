@@ -295,4 +295,23 @@ const char* BufferFormatToString(BufferFormat format) {
   return "Invalid Format";
 }
 
+const char* BufferPlaneToString(BufferPlane format) {
+  switch (format) {
+    case BufferPlane::DEFAULT:
+      return "DEFAULT";
+    case BufferPlane::Y:
+      return "Y";
+    case BufferPlane::UV:
+      return "UV";
+    case BufferPlane::U:
+      return "U";
+    case BufferPlane::V:
+      return "V";
+  }
+  NOTREACHED() << "Invalid BufferPlane: "
+               << static_cast<typename std::underlying_type<BufferPlane>::type>(
+                      format);
+  return "Invalid Plane";
+}
+
 }  // namespace gfx

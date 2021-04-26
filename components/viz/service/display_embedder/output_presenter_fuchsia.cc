@@ -334,7 +334,7 @@ OutputPresenterFuchsia::AllocateImages(gfx::ColorSpace color_space,
     auto mailbox = gpu::Mailbox::GenerateForSharedImage();
     if (!shared_image_factory_->CreateSharedImage(
             mailbox, gpu::kDisplayCompositorClientId, std::move(gmb_handle),
-            buffer_format_, gpu::kNullSurfaceHandle, gfx::kDefaultBufferPlane,
+            buffer_format_, gfx::BufferPlane::DEFAULT, gpu::kNullSurfaceHandle,
             frame_size_, color_space, kTopLeft_GrSurfaceOrigin,
             kPremul_SkAlphaType, image_usage)) {
       return {};

@@ -53,9 +53,9 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryIOSurface
   // Overridden from ImageFactory:
   scoped_refptr<gl::GLImage> CreateImageForGpuMemoryBuffer(
       gfx::GpuMemoryBufferHandle handle,
-      uint32_t plane,
       const gfx::Size& size,
       gfx::BufferFormat format,
+      gfx::BufferPlane plane,
       int client_id,
       SurfaceHandle surface_handle) override;
   bool SupportsCreateAnonymousImage() const override;

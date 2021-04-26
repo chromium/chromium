@@ -58,6 +58,10 @@ mojom("mojom") {
           cpp = "::gfx::BufferUsageAndFormat"
         },
         {
+          mojom = "gfx.mojom.BufferPlane"
+          cpp = "::gfx::BufferPlane"
+        },
+        {
           mojom = "gfx.mojom.GpuMemoryBufferHandle"
           cpp = "::gfx::GpuMemoryBufferHandle"
           move_only = true

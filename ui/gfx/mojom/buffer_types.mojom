@@ -45,6 +45,14 @@ struct BufferUsageAndFormat {
   BufferFormat format;
 };
 
+enum BufferPlane {
+  DEFAULT,
+  Y,
+  UV,
+  U,
+  V,
+};
+
 // gfx::GpuMemoryBufferId
 struct GpuMemoryBufferId {
   int32 id;

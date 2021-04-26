@@ -120,14 +120,14 @@ ImageFactory* GpuMemoryBufferFactoryDXGI::AsImageFactory() {
 scoped_refptr<gl::GLImage>
 GpuMemoryBufferFactoryDXGI::CreateImageForGpuMemoryBuffer(
     gfx::GpuMemoryBufferHandle handle,
-    uint32_t plane,
     const gfx::Size& size,
     gfx::BufferFormat format,
+    gfx::BufferPlane plane,
     int client_id,
     SurfaceHandle surface_handle) {
   if (handle.type != gfx::DXGI_SHARED_HANDLE)
     return nullptr;
-  if (!gpu::IsPlaneValidForGpuMemoryBufferFormat(plane, format))
+  if (plane != gfx::BufferPlane::DEFAULT)
     return nullptr;
   // Transfer ownership of handle to GLImageDXGI.
   auto image = base::MakeRefCounted<gl::GLImageDXGI>(size, nullptr);

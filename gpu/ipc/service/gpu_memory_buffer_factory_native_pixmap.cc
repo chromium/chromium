@@ -159,14 +159,14 @@ ImageFactory* GpuMemoryBufferFactoryNativePixmap::AsImageFactory() {
 scoped_refptr<gl::GLImage>
 GpuMemoryBufferFactoryNativePixmap::CreateImageForGpuMemoryBuffer(
     gfx::GpuMemoryBufferHandle handle,
-    uint32_t plane,
     const gfx::Size& size,
     gfx::BufferFormat format,
+    gfx::BufferPlane plane,
     int client_id,
     SurfaceHandle surface_handle) {
   if (handle.type != gfx::NATIVE_PIXMAP)
     return nullptr;
-  if (!gpu::IsPlaneValidForGpuMemoryBufferFormat(plane, format))
+  if (plane != gfx::BufferPlane::DEFAULT)
     return nullptr;
 
   scoped_refptr<gfx::NativePixmap> pixmap;

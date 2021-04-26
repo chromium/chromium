@@ -95,14 +95,15 @@ bool GpuMemoryBufferFactoryIOSurface::SupportsCreateAnonymousImage() const {
 scoped_refptr<gl::GLImage>
 GpuMemoryBufferFactoryIOSurface::CreateImageForGpuMemoryBuffer(
     gfx::GpuMemoryBufferHandle handle,
-    uint32_t plane,
     const gfx::Size& size,
     gfx::BufferFormat format,
+    gfx::BufferPlane plane,
     int client_id,
     SurfaceHandle surface_handle) {
   if (handle.type != gfx::IO_SURFACE_BUFFER)
     return nullptr;
-  if (!gpu::IsPlaneValidForGpuMemoryBufferFormat(plane, format))
+  // TODO(https://crbug.com/1201865): Allow Y and UV planes.
+  if (plane != gfx::BufferPlane::DEFAULT)
     return nullptr;
 
   base::AutoLock lock(io_surfaces_lock_);

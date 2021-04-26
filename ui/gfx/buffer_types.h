@@ -33,12 +33,6 @@ enum class BufferFormat {
   LAST = P010
 };
 
-// This argument may be used to specify the default plane for texture access to
-// a GpuMemoryBuffer. For single plane buffer formats, this refers to that
-// single plane. For multiplanar buffer formats, this refers to the RGB texture
-// view of the GpuMemoryBuffer.
-constexpr uint32_t kDefaultBufferPlane = 0xffffff;
-
 // The usage mode affects how a buffer can be used. Only buffers created with
 // *_CPU_READ_WRITE_* can be mapped into the client's address space and accessed
 // by the CPU. SCANOUT implies GPU_READ_WRITE.
@@ -78,6 +72,26 @@ struct BufferUsageAndFormat {
 
   BufferUsage usage;
   BufferFormat format;
+};
+
+// Used to identify the plane of a GpuMemoryBuffer to use when creating a
+// SharedImage.
+enum class BufferPlane {
+  // For single-plane GpuMemoryBuffer, this refers to that single plane. For
+  // YUV_420, YUV_420_BIPLANAR, and P010 GpuMemoryBuffers, this refers to an
+  // RGB representation of the planes (either bound directly as a texture or
+  // created through an extra copy).
+  DEFAULT,
+  // The Y plane for YUV_420, YUV_420_BIPLANAR, and P010.
+  Y,
+  // The UV plane for YUV_420_BIPLANAR and P010.
+  UV,
+  // The U plane for YUV_420.
+  U,
+  // The V plane for YUV_420.
+  V,
+
+  LAST = V
 };
 
 }  // namespace gfx

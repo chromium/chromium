@@ -140,14 +140,14 @@ GpuMemoryBufferFactoryAndroidHardwareBuffer::CreateAnonymousImage(
 scoped_refptr<gl::GLImage>
 GpuMemoryBufferFactoryAndroidHardwareBuffer::CreateImageForGpuMemoryBuffer(
     gfx::GpuMemoryBufferHandle handle,
-    uint32_t plane,
     const gfx::Size& size,
     gfx::BufferFormat format,
+    gfx::BufferPlane plane,
     int client_id,
     SurfaceHandle surface_handle) {
   if (handle.type != gfx::ANDROID_HARDWARE_BUFFER)
     return nullptr;
-  if (!gpu::IsPlaneValidForGpuMemoryBufferFormat(plane, format))
+  if (plane != gfx::BufferPlane::DEFAULT)
     return nullptr;
 
   base::android::ScopedHardwareBufferHandle& buffer =

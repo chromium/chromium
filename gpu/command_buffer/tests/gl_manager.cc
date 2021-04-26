@@ -530,7 +530,7 @@ int32_t GLManager::CreateImage(ClientBuffer buffer,
       gl_image =
           gpu_memory_buffer_factory_->AsImageFactory()
               ->CreateImageForGpuMemoryBuffer(
-                  std::move(handle), gfx::kDefaultBufferPlane, size, format,
+                  std::move(handle), size, format, gfx::BufferPlane::DEFAULT,
                   gpu::kDisplayCompositorClientId, gpu::kNullSurfaceHandle);
       if (!gl_image)
         return -1;

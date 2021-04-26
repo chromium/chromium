@@ -52,10 +52,25 @@ bool IsImageSizeValidForGpuMemoryBufferFormat(const gfx::Size& size,
   return false;
 }
 
-GPU_EXPORT bool IsPlaneValidForGpuMemoryBufferFormat(uint32_t plane,
+GPU_EXPORT bool IsPlaneValidForGpuMemoryBufferFormat(gfx::BufferPlane plane,
                                                      gfx::BufferFormat format) {
-  // TODO(https://crbug.com/1201865): Allow non-default planes.
-  return plane == gfx::kDefaultBufferPlane;
+  switch (format) {
+    case gfx::BufferFormat::YVU_420:
+      return plane == gfx::BufferPlane::DEFAULT ||
+             plane == gfx::BufferPlane::Y || plane == gfx::BufferPlane::U ||
+             plane == gfx::BufferPlane::V;
+      break;
+    case gfx::BufferFormat::YUV_420_BIPLANAR:
+    case gfx::BufferFormat::P010:
+      return plane == gfx::BufferPlane::DEFAULT ||
+             plane == gfx::BufferPlane::Y || plane == gfx::BufferPlane::UV;
+      break;
+    default:
+      return plane == gfx::BufferPlane::DEFAULT;
+      break;
+  }
+  NOTREACHED();
+  return false;
 }
 
 uint32_t GetPlatformSpecificTextureTarget() {

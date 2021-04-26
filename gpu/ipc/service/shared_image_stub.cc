@@ -103,8 +103,8 @@ bool SharedImageStub::CreateSharedImage(const Mailbox& mailbox,
                                         int client_id,
                                         gfx::GpuMemoryBufferHandle handle,
                                         gfx::BufferFormat format,
+                                        gfx::BufferPlane plane,
                                         SurfaceHandle surface_handle,
-                                        uint32_t plane,
                                         const gfx::Size& size,
                                         const gfx::ColorSpace& color_space,
                                         GrSurfaceOrigin surface_origin,
@@ -123,7 +123,7 @@ bool SharedImageStub::CreateSharedImage(const Mailbox& mailbox,
     return false;
   }
   if (!factory_->CreateSharedImage(
-          mailbox, client_id, std::move(handle), format, surface_handle, plane,
+          mailbox, client_id, std::move(handle), format, plane, surface_handle,
           size, color_space, surface_origin, alpha_type, usage)) {
     LOG(ERROR) << "SharedImageStub: Unable to create shared image";
     OnError();
@@ -271,20 +271,13 @@ void SharedImageStub::OnCreateGMBSharedImage(
     GpuChannelMsg_CreateGMBSharedImage_Params params) {
   TRACE_EVENT2("gpu", "SharedImageStub::OnCreateGMBSharedImage", "width",
                params.size.width(), "height", params.size.height());
-
-  if (!gpu::IsPlaneValidForGpuMemoryBufferFormat(params.plane, params.format)) {
-    LOG(ERROR) << "Invalid plane " << params.plane << " for "
-               << gfx::BufferFormatToString(params.format);
-    return;
-  }
-
   // TODO(piman): add support for SurfaceHandle (for backbuffers for ozone/drm).
   constexpr SurfaceHandle surface_handle = kNullSurfaceHandle;
   if (!CreateSharedImage(params.mailbox, channel_->client_id(),
-                         std::move(params.handle), params.format,
-                         surface_handle, params.plane, params.size,
-                         params.color_space, params.surface_origin,
-                         params.alpha_type, params.usage)) {
+                         std::move(params.handle), params.format, params.plane,
+                         surface_handle, params.size, params.color_space,
+                         params.surface_origin, params.alpha_type,
+                         params.usage)) {
     return;
   }
 

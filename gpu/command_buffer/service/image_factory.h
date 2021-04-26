@@ -26,9 +26,9 @@ class GPU_EXPORT ImageFactory {
   // and can be used by factory implementation to verify access rights.
   virtual scoped_refptr<gl::GLImage> CreateImageForGpuMemoryBuffer(
       gfx::GpuMemoryBufferHandle handle,
-      uint32_t plane,
       const gfx::Size& size,
       gfx::BufferFormat format,
+      gfx::BufferPlane plane,
       int client_id,
       SurfaceHandle surface_handle) = 0;
 
