@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_features.h"
+#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"

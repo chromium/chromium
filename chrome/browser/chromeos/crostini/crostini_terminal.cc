@@ -9,6 +9,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/chromeos/crostini/crostini_pref_names.h"

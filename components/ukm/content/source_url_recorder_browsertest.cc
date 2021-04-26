@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"

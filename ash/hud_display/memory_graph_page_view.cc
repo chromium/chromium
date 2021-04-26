@@ -10,6 +10,7 @@
 
 #include "ash/hud_display/grid.h"
 #include "ash/hud_display/hud_constants.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/metadata/metadata_impl_macros.h"

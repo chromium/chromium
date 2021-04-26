@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_tab_helper.h"
 
 #include "base/strings/string_split.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
 #include "components/infobars/core/infobar_delegate.h"

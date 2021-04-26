@@ -5,6 +5,7 @@
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/chrome_component_updater_configurator.h"
 #include "chrome/browser/policy/policy_test_utils.h"

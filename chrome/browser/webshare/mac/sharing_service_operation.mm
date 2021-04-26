@@ -14,6 +14,7 @@
 #include "base/mac/scoped_nsobject.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/visibility_timer_tab_helper.h"

@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/cart/cart_handler.h"
 #include "chrome/browser/profiles/profile.h"

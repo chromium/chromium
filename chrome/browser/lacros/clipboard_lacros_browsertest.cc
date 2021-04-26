@@ -4,6 +4,7 @@
 
 #include "base/rand_util.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/lacros/browser_test_util.h"
 #include "chrome/browser/ui/browser.h"

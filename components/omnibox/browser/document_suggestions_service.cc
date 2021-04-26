@@ -12,6 +12,7 @@
 #include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "components/omnibox/browser/document_provider.h"
 #include "components/omnibox/common/omnibox_features.h"

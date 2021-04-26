@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"

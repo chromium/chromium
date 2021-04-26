@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "base/memory/ptr_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/policy_test_utils.h"

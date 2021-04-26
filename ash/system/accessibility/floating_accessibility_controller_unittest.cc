@@ -16,6 +16,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/barrier_closure.h"
 #include "base/callback_helpers.h"
+#include "base/strings/stringprintf.h"
 
 namespace ash {
 

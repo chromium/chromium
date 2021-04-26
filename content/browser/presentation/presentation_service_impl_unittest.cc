@@ -18,6 +18,7 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "content/browser/presentation/presentation_test_utils.h"
 #include "content/public/browser/presentation_request.h"
 #include "content/public/browser/presentation_service_delegate.h"
@@ -30,7 +31,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
-
 
 namespace content {
 

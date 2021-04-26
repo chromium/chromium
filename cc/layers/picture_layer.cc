@@ -10,6 +10,7 @@
 #include "base/auto_reset.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/picture_layer_impl.h"

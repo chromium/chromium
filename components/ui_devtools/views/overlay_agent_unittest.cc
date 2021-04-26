@@ -4,6 +4,7 @@
 
 #include "components/ui_devtools/views/overlay_agent_views.h"
 
+#include "base/strings/stringprintf.h"
 #include "components/ui_devtools/ui_devtools_unittest_utils.h"
 #include "components/ui_devtools/ui_element.h"
 #include "components/ui_devtools/views/dom_agent_views.h"

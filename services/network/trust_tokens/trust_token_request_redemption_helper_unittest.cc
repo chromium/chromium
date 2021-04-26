@@ -8,6 +8,7 @@
 
 #include "base/callback.h"
 #include "base/no_destructor.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "net/base/load_flags.h"

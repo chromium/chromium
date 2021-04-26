@@ -9,6 +9,8 @@
 
 #include <string>
 
+#include "base/strings/stringprintf.h"
+
 namespace IPC {
 
 void ParamTraits<gfx::BufferUsageAndFormat>::Write(

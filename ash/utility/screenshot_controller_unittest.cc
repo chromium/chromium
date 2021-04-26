@@ -15,6 +15,7 @@
 #include "ash/test_screenshot_delegate.h"
 #include "ash/wm/window_util.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/cursor/cursor.h"

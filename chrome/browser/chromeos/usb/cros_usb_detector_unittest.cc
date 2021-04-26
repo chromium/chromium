@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_move_support.h"
 #include "chrome/browser/ash/plugin_vm/fake_plugin_vm_features.h"

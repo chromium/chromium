@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/strings/stringprintf.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"

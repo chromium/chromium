@@ -6,6 +6,7 @@
 
 #include "base/guid.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/webview_content_extractor.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"

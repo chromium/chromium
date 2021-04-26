@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/strings/stringprintf.h"
 #include "gpu/command_buffer/common/command_buffer_id.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/command_buffer/common/sync_token.h"

@@ -15,6 +15,7 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/test/ash_test_base.h"
+#include "base/strings/stringprintf.h"
 #include "ui/message_center/message_center.h"
 
 using message_center::MessageCenter;

@@ -6,6 +6,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/profiles/profile.h"

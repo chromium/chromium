@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "components/signin/public/identity_manager/access_token_constants.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "google_apis/gaia/gaia_constants.h"

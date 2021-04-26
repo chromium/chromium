@@ -10,6 +10,7 @@
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "base/bind.h"
+#include "base/strings/stringprintf.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"

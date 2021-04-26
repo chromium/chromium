@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/stringprintf.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/devtools/devtools_instrumentation.h"

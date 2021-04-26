@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/strings/stringprintf.h"
 #include "ui/gfx/ipc/geometry/gfx_param_traits.h"
 #include "ui/gfx/range/range.h"
 

@@ -14,6 +14,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/input_method/ui/input_method_menu_item.h"
 #include "chrome/browser/chromeos/input_method/ui/input_method_menu_manager.h"

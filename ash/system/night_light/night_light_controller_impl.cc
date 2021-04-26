@@ -24,6 +24,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/ranges.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "cc/base/math_util.h"
 #include "components/prefs/pref_registry_simple.h"

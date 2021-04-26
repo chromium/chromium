@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/optional.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"

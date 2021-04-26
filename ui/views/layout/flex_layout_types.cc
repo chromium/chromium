@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/strings/stringprintf.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
 

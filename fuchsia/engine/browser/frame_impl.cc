@@ -17,6 +17,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/public/browser/browser_context.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/extensions/settings_overridden_params_providers.h"
 
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"

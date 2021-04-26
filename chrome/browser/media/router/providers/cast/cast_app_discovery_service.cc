@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/tick_clock.h"
 #include "chrome/browser/media/router/providers/cast/cast_media_route_provider_metrics.h"
 #include "components/cast_channel/cast_message_handler.h"

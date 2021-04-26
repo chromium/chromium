@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/numerics/ranges.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"

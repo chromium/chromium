@@ -13,6 +13,7 @@
 #include "base/atomic_sequence_num.h"
 #include "base/bind.h"
 #include "base/optional.h"
+#include "base/strings/stringprintf.h"
 #include "components/exo/notification.h"
 #include "components/exo/notification_surface.h"
 #include "components/exo/notification_surface_manager.h"

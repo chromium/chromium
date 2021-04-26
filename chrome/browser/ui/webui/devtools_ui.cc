@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/devtools_ui.h"
 
 #include "base/command_line.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/devtools/url_constants.h"
 #include "chrome/browser/ui/webui/devtools_ui_data_source.h"
 #include "chrome/common/chrome_switches.h"

@@ -5,6 +5,7 @@
 #include "chromeos/services/assistant/media_host.h"
 
 #include "base/notreached.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "chromeos/services/assistant/media_session/assistant_media_session.h"

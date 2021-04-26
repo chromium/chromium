@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/hash/sha1.h"
 #include "base/json/json_writer.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"

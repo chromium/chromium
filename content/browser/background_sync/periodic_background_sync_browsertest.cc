@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/stringprintf.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "content/browser/background_sync/background_sync_base_browsertest.h"

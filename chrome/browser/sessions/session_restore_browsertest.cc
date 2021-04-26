@@ -16,6 +16,7 @@
 #include "base/macros.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"

@@ -6,6 +6,7 @@
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
 #include <zircon/types.h>
 
+#include "base/strings/stringprintf.h"
 #include "content/public/test/browser_test.h"
 #include "fuchsia/base/frame_test_util.h"
 #include "fuchsia/base/mem_buffer_util.h"

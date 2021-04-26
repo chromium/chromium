@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/web_contents/web_contents_impl.h"

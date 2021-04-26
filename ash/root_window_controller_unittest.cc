@@ -23,6 +23,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/client/window_parenting_client.h"

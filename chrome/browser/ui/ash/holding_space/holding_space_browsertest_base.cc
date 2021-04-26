@@ -15,6 +15,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/scoped_observer.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"

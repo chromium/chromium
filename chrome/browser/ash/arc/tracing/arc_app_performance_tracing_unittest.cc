@@ -8,6 +8,7 @@
 
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_session.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_test_helper.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_uma_session.h"

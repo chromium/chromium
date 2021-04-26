@@ -5,6 +5,7 @@
 #include "base/callback.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/extensions/api/browsing_data/browsing_data_api.h"

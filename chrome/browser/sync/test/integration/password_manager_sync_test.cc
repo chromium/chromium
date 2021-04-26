@@ -8,6 +8,7 @@
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"

@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"

@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/optional.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/profiles/profile.h"

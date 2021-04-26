@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "content/browser/renderer_host/navigation_request.h"

@@ -17,6 +17,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"

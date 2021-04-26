@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/devtools_io_context.h"

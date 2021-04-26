@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
 #include "chrome/browser/ash/arc/accessibility/geometry_util.h"

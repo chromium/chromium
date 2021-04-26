@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/history_clusters/memories_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/history_clusters/core/memories_features.h"

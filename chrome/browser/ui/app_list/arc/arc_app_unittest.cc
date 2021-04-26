@@ -22,6 +22,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/task_runner_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"

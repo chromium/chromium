@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #import "base/test/ios/wait_util.h"

@@ -8,6 +8,7 @@
 
 #include "base/guid.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"

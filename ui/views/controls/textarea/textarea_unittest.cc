@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/events/event.h"

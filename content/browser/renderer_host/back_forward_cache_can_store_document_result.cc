@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/back_forward_cache_can_store_document_result.h"
 
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 
 namespace content {

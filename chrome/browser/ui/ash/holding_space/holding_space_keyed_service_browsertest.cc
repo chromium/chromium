@@ -19,6 +19,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "components/blocked_content/popup_blocker_tab_helper.h"
 #include "third_party/blink/public/common/switches.h"

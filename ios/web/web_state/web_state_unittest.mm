@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/metrics/histogram_tester.h"

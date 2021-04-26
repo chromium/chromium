@@ -11,6 +11,7 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/test/ash_test_base.h"
+#include "base/strings/stringprintf.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/dbus/fake_bluetooth_adapter_client.h"
 #include "device/bluetooth/dbus/fake_bluetooth_device_client.h"

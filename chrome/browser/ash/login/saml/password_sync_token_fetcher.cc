@@ -11,6 +11,7 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/account_id/account_id.h"

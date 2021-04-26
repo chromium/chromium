@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/strings/stringprintf.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/sync/trusted_vault/trusted_vault_access_token_fetcher.h"
 #include "net/base/url_util.h"

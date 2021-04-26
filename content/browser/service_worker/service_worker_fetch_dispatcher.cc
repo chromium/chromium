@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/queue.h"
 #include "base/feature_list.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/child_process_security_policy_impl.h"

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/strings/stringprintf.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/common/child_process_host.h"
 #include "extensions/common/extension.h"

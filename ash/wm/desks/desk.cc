@@ -28,6 +28,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/stl_util.h"
+#include "base/strings/stringprintf.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_tracker.h"

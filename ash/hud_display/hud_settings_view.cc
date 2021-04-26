@@ -12,6 +12,7 @@
 #include "ash/shell_delegate.h"
 #include "base/bind.h"
 #include "base/compiler_specific.h"
+#include "base/strings/stringprintf.h"
 #include "cc/debug/layer_tree_debug_state.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/host/host_frame_sink_manager.h"

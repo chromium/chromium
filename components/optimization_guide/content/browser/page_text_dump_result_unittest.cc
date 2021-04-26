@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/content/browser/page_text_dump_result.h"
 
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -5,6 +5,7 @@
 #include "chrome/browser/video_tutorials/video_tutorial_service_factory.h"
 
 #include "base/memory/singleton.h"
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"

@@ -8,6 +8,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"

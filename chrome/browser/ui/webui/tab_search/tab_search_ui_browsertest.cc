@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"

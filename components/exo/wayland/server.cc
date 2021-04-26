@@ -41,6 +41,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/strings/stringprintf.h"
 #include "build/chromeos_buildflags.h"
 #include "components/exo/display.h"
 #include "components/exo/wayland/serial_tracker.h"

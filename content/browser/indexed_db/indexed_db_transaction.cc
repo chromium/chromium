@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"

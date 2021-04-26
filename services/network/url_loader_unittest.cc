@@ -26,6 +26,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"

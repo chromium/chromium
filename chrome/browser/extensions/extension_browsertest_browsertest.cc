@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/extension_browsertest.h"
 
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "content/public/test/browser_test.h"

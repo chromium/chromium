@@ -22,6 +22,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/safe_browsing/content/base_ui_manager.h"

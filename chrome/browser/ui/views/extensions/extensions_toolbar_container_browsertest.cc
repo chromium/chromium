@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_action_runner.h"

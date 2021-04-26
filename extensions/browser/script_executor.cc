@@ -12,6 +12,7 @@
 #include "base/hash/hash.h"
 #include "base/memory/weak_ptr.h"
 #include "base/pickle.h"
+#include "base/strings/stringprintf.h"
 #include "base/types/pass_key.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"

@@ -18,6 +18,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/session_manager/session_manager_types.h"
 

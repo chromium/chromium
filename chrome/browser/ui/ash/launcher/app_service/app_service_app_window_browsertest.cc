@@ -11,6 +11,7 @@
 #include "ash/shell.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"

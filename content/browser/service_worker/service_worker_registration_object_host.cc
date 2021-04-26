@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_container_host.h"

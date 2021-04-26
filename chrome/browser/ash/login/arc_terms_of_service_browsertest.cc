@@ -11,6 +11,7 @@
 #include "base/hash/sha1.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"

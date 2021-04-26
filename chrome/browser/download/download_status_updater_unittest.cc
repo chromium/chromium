@@ -8,6 +8,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"

@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"

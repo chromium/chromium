@@ -4,6 +4,7 @@
 
 #include "chrome/browser/optimization_guide/optimization_guide_top_host_provider.h"
 
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/default_clock.h"

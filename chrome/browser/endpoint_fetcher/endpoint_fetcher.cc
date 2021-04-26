@@ -5,6 +5,7 @@
 #include "chrome/browser/endpoint_fetcher/endpoint_fetcher.h"
 
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"

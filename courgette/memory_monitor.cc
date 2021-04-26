@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 
 bool inH = true;
 struct H {

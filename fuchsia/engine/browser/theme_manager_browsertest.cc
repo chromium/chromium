@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/stringprintf.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "fuchsia/base/frame_test_util.h"

@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_util.h"
 #include "chrome/browser/extensions/extension_tab_util.h"

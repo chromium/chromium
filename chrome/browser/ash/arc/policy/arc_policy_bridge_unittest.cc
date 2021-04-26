@@ -15,6 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/enterprise/arc_data_snapshotd_delegate.h"
 #include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service.h"

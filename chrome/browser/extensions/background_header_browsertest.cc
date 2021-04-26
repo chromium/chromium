@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/json/json_reader.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"

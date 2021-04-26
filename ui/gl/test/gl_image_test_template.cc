@@ -6,6 +6,7 @@
 // to be conformant.
 
 #include "ui/gl/test/gl_image_test_template.h"
+#include "base/strings/stringprintf.h"
 
 namespace gl {
 

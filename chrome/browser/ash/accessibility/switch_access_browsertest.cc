@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ui/browser.h"

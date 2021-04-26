@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/scoped_observation.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager_factory.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"

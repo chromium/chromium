@@ -7,6 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/browser.h"

@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
