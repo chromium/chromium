@@ -150,8 +150,6 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
       return "BackForwardCache is disabled for Prerender";
     case Reason::kUserAgentOverrideDiffers:
       return "User-agent override differs";
-    case Reason::kNetworkRequestDatapipeDrainedAsDatapipe:
-      return "Network requests' datapipe has been passed to ScriptStreamer";
     case Reason::kNetworkRequestDatapipeDrainedAsBytesConsumer:
       return "Network requests' datapipe has been passed as bytes consumer";
     case Reason::kBrowsingInstanceNotSwapped:

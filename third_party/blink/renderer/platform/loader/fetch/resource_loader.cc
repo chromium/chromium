@@ -658,7 +658,8 @@ void ResourceLoader::SetDefersLoading(WebURLLoader::DeferType defers) {
         !response_body_loader_->IsSuspended()) {
       response_body_loader_->Suspend(defers);
       if (defers == WebURLLoader::DeferType::kDeferredWithBackForwardCache) {
-        response_body_loader_->EvictFromBackForwardCacheIfDrained();
+        response_body_loader_
+            ->EvictFromBackForwardCacheIfDrainedAsBytesConsumer();
       }
     }
     if (defers == WebURLLoader::DeferType::kNotDeferred &&

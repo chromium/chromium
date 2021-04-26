@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
@@ -296,19 +297,23 @@ class ResponseBodyLoader::Buffer final
 
   bool IsEmpty() const { return buffered_data_.IsEmpty(); }
 
-  // Tries to add |buffer| to |buffered_data_|. Will return false if this
-  // exceeds |max_bytes_to_read_| bytes.
-  bool AddChunk(const char* buffer, size_t available) {
-    total_bytes_read_ += available;
+  // Add |buffer| to |buffered_data_|.
+  void AddChunk(const char* buffer, size_t available) {
     TRACE_EVENT2("loading", "ResponseBodyLoader::Buffer::AddChunk",
                  "total_bytes_read", static_cast<int>(total_bytes_read_),
                  "added_bytes", static_cast<int>(available));
-    if (total_bytes_read_ > max_bytes_to_read_)
-      return false;
     Vector<char> new_chunk;
     new_chunk.Append(buffer, available);
     buffered_data_.emplace_back(std::move(new_chunk));
-    return true;
+  }
+
+  void AddToPerRequestBytes(size_t available) {
+    total_bytes_read_ += available;
+  }
+
+  // Return false if the data size exceeds |max_bytes_to_read_|.
+  bool IsUnderPerRequestBytesLimit() {
+    return total_bytes_read_ <= max_bytes_to_read_;
   }
 
   // Dispatches the frontmost chunk in |buffered_data_|. Returns the size of
@@ -401,6 +406,16 @@ void ResponseBodyLoader::DidReceiveData(base::span<const char> data) {
   if (aborted_)
     return;
 
+  if (IsSuspendedForBackForwardCache()) {
+    // Track the data size for both total per-process bytes and per-request
+    // bytes.
+    DidBufferLoadWhileInBackForwardCache(data.size());
+    if (!CanContinueBufferingWhileInBackForwardCache()) {
+      EvictFromBackForwardCache(
+          mojom::blink::RendererEvictionReason::kNetworkExceedsBufferLimit);
+    }
+  }
+
   client_->DidReceiveData(data);
 }
 
@@ -456,13 +471,15 @@ void ResponseBodyLoader::DidBufferLoadWhileInBackForwardCache(
     return;
   back_forward_cache_loader_helper_->DidBufferLoadWhileInBackForwardCache(
       num_bytes);
+  body_buffer_->AddToPerRequestBytes(num_bytes);
 }
 
 bool ResponseBodyLoader::CanContinueBufferingWhileInBackForwardCache() {
   if (!back_forward_cache_loader_helper_)
     return false;
-  return back_forward_cache_loader_helper_
-      ->CanContinueBufferingWhileInBackForwardCache();
+  return body_buffer_->IsUnderPerRequestBytesLimit() &&
+         back_forward_cache_loader_helper_
+             ->CanContinueBufferingWhileInBackForwardCache();
 }
 
 void ResponseBodyLoader::Start() {
@@ -508,14 +525,11 @@ void ResponseBodyLoader::Suspend(WebURLLoader::DeferType suspended_state) {
   }
 }
 
-void ResponseBodyLoader::EvictFromBackForwardCacheIfDrained() {
-  if (IsDrained()) {
+void ResponseBodyLoader::EvictFromBackForwardCacheIfDrainedAsBytesConsumer() {
+  if (drained_as_bytes_consumer_) {
     EvictFromBackForwardCache(
-        drained_as_datapipe_
-            ? mojom::blink::RendererEvictionReason::
-                  kNetworkRequestDatapipeDrainedAsDatapipe
-            : mojom::blink::RendererEvictionReason::
-                  kNetworkRequestDatapipeDrainedAsBytesConsumer);
+        mojom::blink::RendererEvictionReason::
+            kNetworkRequestDatapipeDrainedAsBytesConsumer);
   }
 }
 
@@ -586,8 +600,8 @@ void ResponseBodyLoader::OnStateChange() {
       if (IsSuspendedForBackForwardCache()) {
         // Save the read data into |body_buffer_| instead.
         DidBufferLoadWhileInBackForwardCache(available);
-        if (!body_buffer_->AddChunk(buffer, available) ||
-            !CanContinueBufferingWhileInBackForwardCache()) {
+        body_buffer_->AddChunk(buffer, available);
+        if (!CanContinueBufferingWhileInBackForwardCache()) {
           // We've read too much data while suspended for back-forward cache.
           // Evict the page from the back-forward cache.
           result = bytes_consumer_->EndRead(available);

@@ -48,6 +48,7 @@ class PLATFORM_EXPORT ResponseBodyLoaderDrainableInterface
   // cancels the resource loading (if |this| is associated with
   // blink::ResourceLoader). A user of this function should ensure that calling
   // the client's method doesn't lead to a reentrant problem.
+  // Note that the drained datapipe is not subject to the freezing effect.
   virtual mojo::ScopedDataPipeConsumerHandle DrainAsDataPipe(
       ResponseBodyLoaderClient** client) = 0;
 
@@ -56,6 +57,8 @@ class PLATFORM_EXPORT ResponseBodyLoaderDrainableInterface
   // been drained. Unlike DrainAsDataPipe, this function always succeeds.
   // This ResponseBodyLoader will still monitor the loading signals, and report
   // them back to the associated client asynchronously.
+  // Note that the drained BytesConsumer is subject to the freezing effect, and
+  // the loading is cancelled when freezing is for back-forward cache.
   virtual BytesConsumer& DrainAsBytesConsumer() = 0;
 
   virtual void Trace(Visitor*) const {}
@@ -113,7 +116,9 @@ class PLATFORM_EXPORT ResponseBodyLoader final
     return drained_as_datapipe_ || drained_as_bytes_consumer_;
   }
 
-  void EvictFromBackForwardCacheIfDrained();
+  // Evicts the back-forward cache entry if the response body has already been
+  // passed and drained as bytes consumer.
+  void EvictFromBackForwardCacheIfDrainedAsBytesConsumer();
 
   void Trace(Visitor*) const override;
 

@@ -4112,7 +4112,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,
 
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTestWithUnfreezableLoading,
-    PageWithDrainedDatapipeRequestsForScriptStreamerShouldBeEvicted) {
+    PageWithDrainedDatapipeRequestsForScriptStreamerShouldNotBeEvicted) {
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
                                                       "/small_script.js");
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -4142,14 +4142,58 @@ IN_PROC_BROWSER_TEST_F(
   // 2) Navigate to B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
   // Complete the response after navigating away.
+  response.Send("alert('more than 4 bytes');");
   response.Done();
 
   // 3) Go back to A.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
-                         kNetworkRequestDatapipeDrainedAsDatapipe},
-                    {}, {}, {}, FROM_HERE);
+  ExpectRestored(FROM_HERE);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheBrowserTestWithUnfreezableLoading,
+    PageWithDrainedDatapipeRequestsForScriptStreamerShouldBeEvictedIfStreamedTooMuch) {
+  net::test_server::ControllableHttpResponse response(embedded_test_server(),
+                                                      "/small_script.js");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/empty.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/empty.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  // Append the script tag.
+  EXPECT_TRUE(ExecJs(shell(), R"(
+    var script = document.createElement('script');
+    script.src = 'small_script.js'
+    document.body.appendChild(script);
+  )"));
+
+  response.WaitForRequest();
+  // Send the small_script.js but not complete, so that the datapipe is passed
+  // to ScriptStreamer upon bfcache entrance.
+  const char kHttpResponseHeader[] =
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Type: text/html; charset=utf-8\r\n"
+      "\r\n";
+  response.Send(kHttpResponseHeader);
+  response.Send("alert('more than 4 bytes');");
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+
+  // Complete the response after navigating away.
+  std::string body(kMaxBufferedBytesPerRequest + 1, '*');
+  response.Send(body);
+  response.Done();
+
+  // 3) Go back to A.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectNotRestored(
+      {BackForwardCacheMetrics::NotRestoredReason::kNetworkExceedsBufferLimit},
+      {}, {}, {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithUnfreezableLoading,

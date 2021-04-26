@@ -94,7 +94,8 @@ class BackForwardCacheMetrics
     kNavigationCancelledWhileRestoring = 41,
     kBackForwardCacheDisabledForPrerender = 42,
     kUserAgentOverrideDiffers = 43,
-    kNetworkRequestDatapipeDrainedAsDatapipe = 44,
+    // 44: kNetworkRequestDatapipeDrainedAsDatapipe was removed now that
+    // ScriptStreamer is supported.
     kNetworkRequestDatapipeDrainedAsBytesConsumer = 45,
     kForegroundCacheLimit = 46,
     kBrowsingInstanceNotSwapped = 47,
