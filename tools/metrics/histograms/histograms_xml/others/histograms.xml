@@ -18366,6 +18366,16 @@ regressions. -->
   </summary>
 </histogram>
 
+<histogram name="WebsiteSettings.Discoverability.TimeToClickHighlight"
+    units="ms" expires_after="M94">
+  <owner>eokoyomon@chromium.org</owner>
+  <owner>dullweber@chromium.org</owner>
+  <summary>
+    Records the amount of time between when the page info is opened and the
+    highlighted permissions section is clicked.
+  </summary>
+</histogram>
+
 <histogram name="WebsiteSettings.Discoverability.TimeToOpen" units="ms"
     expires_after="M94">
   <owner>eokoyomon@chromium.org</owner>

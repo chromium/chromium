@@ -33,6 +33,7 @@ public class PageInfoDiscoverabilityMetrics {
         int NUM_ENTRIES = 4;
     }
     private Long mPermissionIconShownTime;
+    private Long mPageInfoOpenedTime;
 
     public void recordDiscoverabilityAction(@DiscoverabilityAction int action) {
         RecordHistogram.recordEnumeratedHistogram("WebsiteSettings.Discoverability.Action", action,
@@ -44,9 +45,20 @@ public class PageInfoDiscoverabilityMetrics {
                 break;
             case DiscoverabilityAction.PAGE_INFO_OPENED:
                 assert mPermissionIconShownTime != null;
+                mPageInfoOpenedTime = SystemClock.elapsedRealtime();
                 RecordHistogram.recordTimesHistogram("WebsiteSettings.Discoverability.TimeToOpen",
-                        SystemClock.elapsedRealtime() - mPermissionIconShownTime);
+                        mPageInfoOpenedTime - mPermissionIconShownTime);
                 mPermissionIconShownTime = null;
+                break;
+            case DiscoverabilityAction.PERMISSIONS_OPENED:
+                // A user can open permissions multiple times but we only want to include the first
+                // time after the page info was opened.
+                if (mPageInfoOpenedTime != null) {
+                    RecordHistogram.recordMediumTimesHistogram(
+                            "WebsiteSettings.Discoverability.TimeToClickHighlight",
+                            SystemClock.elapsedRealtime() - mPageInfoOpenedTime);
+                }
+                mPageInfoOpenedTime = null;
                 break;
             default:
                 break;
