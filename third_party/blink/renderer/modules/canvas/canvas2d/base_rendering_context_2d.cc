@@ -1021,7 +1021,7 @@ void BaseRenderingContext2D::fillRect(double x,
   SkRect rect = SkRect::MakeXYWH(fx, fy, fwidth, fheight);
   Draw([rect](cc::PaintCanvas* c, const PaintFlags* flags)  // draw lambda
        { c->drawRect(rect, *flags); },
-       [&rect, this](const SkIRect& clip_bounds)  // overdraw test lambda
+       [rect, this](const SkIRect& clip_bounds)  // overdraw test lambda
        { return RectContainsTransformedRect(rect, clip_bounds); },
        rect, CanvasRenderingContext2DState::kFillPaintType,
        GetState().HasPattern(CanvasRenderingContext2DState::kFillPaintType)
