@@ -59,28 +59,4 @@ void FakeNetworkDeviceHandler::SetCellularAllowRoaming(bool allow_roaming) {}
 void FakeNetworkDeviceHandler::SetUsbEthernetMacAddressSource(
     const std::string& source) {}
 
-void FakeNetworkDeviceHandler::AddWifiWakeOnPacketConnection(
-    const net::IPEndPoint& ip_endpoint,
-    base::OnceClosure callback,
-    network_handler::ErrorCallback error_callback) {}
-
-void FakeNetworkDeviceHandler::AddWifiWakeOnPacketOfTypes(
-    const std::vector<std::string>& types,
-    base::OnceClosure callback,
-    network_handler::ErrorCallback error_callback) {}
-
-void FakeNetworkDeviceHandler::RemoveWifiWakeOnPacketConnection(
-    const net::IPEndPoint& ip_endpoint,
-    base::OnceClosure callback,
-    network_handler::ErrorCallback error_callback) {}
-
-void FakeNetworkDeviceHandler::RemoveWifiWakeOnPacketOfTypes(
-    const std::vector<std::string>& types,
-    base::OnceClosure callback,
-    network_handler::ErrorCallback error_callback) {}
-
-void FakeNetworkDeviceHandler::RemoveAllWifiWakeOnPacketConnections(
-    base::OnceClosure callback,
-    network_handler::ErrorCallback error_callback) {}
-
 }  // namespace chromeos

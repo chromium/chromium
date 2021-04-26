@@ -546,30 +546,4 @@ TEST_F(NetworkDeviceHandlerTest, ChangePin) {
       CellularMetricsLogger::SimPinOperationResult::kErrorUnknown, 1);
 }
 
-TEST_F(NetworkDeviceHandlerTest, AddWifiWakeOnPacketOfTypes) {
-  std::vector<std::string> valid_packet_types = {shill::kWakeOnTCP,
-                                                 shill::kWakeOnUDP};
-
-  network_device_handler_->AddWifiWakeOnPacketOfTypes(
-      valid_packet_types, GetSuccessCallback(), GetErrorCallback());
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(kResultSuccess, result_);
-}
-
-TEST_F(NetworkDeviceHandlerTest, AddAndRemoveWifiWakeOnPacketOfTypes) {
-  std::vector<std::string> valid_packet_types = {shill::kWakeOnTCP,
-                                                 shill::kWakeOnUDP};
-  std::vector<std::string> remove_packet_types = {shill::kWakeOnTCP};
-
-  network_device_handler_->AddWifiWakeOnPacketOfTypes(
-      valid_packet_types, GetSuccessCallback(), GetErrorCallback());
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(kResultSuccess, result_);
-
-  network_device_handler_->RemoveWifiWakeOnPacketOfTypes(
-      remove_packet_types, GetSuccessCallback(), GetErrorCallback());
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(kResultSuccess, result_);
-}
-
 }  // namespace chromeos

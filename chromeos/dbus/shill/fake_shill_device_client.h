@@ -70,25 +70,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillDeviceClient
   void Reset(const dbus::ObjectPath& device_path,
              base::OnceClosure callback,
              ErrorCallback error_callback) override;
-  void AddWakeOnPacketConnection(const dbus::ObjectPath& device_path,
-                                 const net::IPEndPoint& ip_endpoint,
-                                 base::OnceClosure callback,
-                                 ErrorCallback error_callback) override;
-  void AddWakeOnPacketOfTypes(const dbus::ObjectPath& device_path,
-                              const std::vector<std::string>& types,
-                              base::OnceClosure callback,
-                              ErrorCallback error_callback) override;
-  void RemoveWakeOnPacketConnection(const dbus::ObjectPath& device_path,
-                                    const net::IPEndPoint& ip_endpoint,
-                                    base::OnceClosure callback,
-                                    ErrorCallback error_callback) override;
-  void RemoveWakeOnPacketOfTypes(const dbus::ObjectPath& device_path,
-                                 const std::vector<std::string>& types,
-                                 base::OnceClosure callback,
-                                 ErrorCallback error_callback) override;
-  void RemoveAllWakeOnPacketConnections(const dbus::ObjectPath& device_path,
-                                        base::OnceClosure callback,
-                                        ErrorCallback error_callback) override;
   void SetUsbEthernetMacAddressSource(const dbus::ObjectPath& device_path,
                                       const std::string& source,
                                       base::OnceClosure callback,
@@ -163,15 +144,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillDeviceClient
   // Observer list for each device.
   std::map<dbus::ObjectPath, std::unique_ptr<PropertyObserverList>>
       observer_list_;
-
-  // Wake on packet connections for each device.
-  std::map<dbus::ObjectPath, std::set<net::IPEndPoint>>
-      wake_on_packet_connections_;
-
-  // Wake on packet types for each device. The string types in the value set
-  // correspond to "Wake on WiFi Packet Type Constants." in
-  // third_party/cros_system_api/dbus/shill/dbus-constants.h.
-  std::map<dbus::ObjectPath, std::set<std::string>> wake_on_packet_types_;
 
   // Current SIM PIN per device path.
   std::map<std::string, std::string> sim_pin_;

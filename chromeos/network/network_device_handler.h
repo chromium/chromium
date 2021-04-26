@@ -17,10 +17,6 @@ namespace base {
 class Value;
 }
 
-namespace net {
-class IPEndPoint;
-}
-
 namespace chromeos {
 
 class NetworkStateHandler;
@@ -166,40 +162,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkDeviceHandler {
   // Sets up USB Ethernet MAC address source. This applies to primary enabled
   // USB Ethernet device.
   virtual void SetUsbEthernetMacAddressSource(const std::string& source) = 0;
-
-  // Adds |ip_endpoint| to the list of tcp connections that the wifi device
-  // should monitor to wake the system from suspend.
-  virtual void AddWifiWakeOnPacketConnection(
-      const net::IPEndPoint& ip_endpoint,
-      base::OnceClosure callback,
-      network_handler::ErrorCallback error_callback) = 0;
-
-  // Adds |types| to the list of packet types that the device should monitor to
-  // wake the system from suspend.
-  virtual void AddWifiWakeOnPacketOfTypes(
-      const std::vector<std::string>& types,
-      base::OnceClosure callback,
-      network_handler::ErrorCallback error_callback) = 0;
-
-  // Removes |ip_endpoint| from the list of tcp connections that the wifi device
-  // should monitor to wake the system from suspend.
-  virtual void RemoveWifiWakeOnPacketConnection(
-      const net::IPEndPoint& ip_endpoint,
-      base::OnceClosure callback,
-      network_handler::ErrorCallback error_callback) = 0;
-
-  // Removes |types| from the list of packet types that the device should
-  // monitor to wake the system from suspend.
-  virtual void RemoveWifiWakeOnPacketOfTypes(
-      const std::vector<std::string>& types,
-      base::OnceClosure callback,
-      network_handler::ErrorCallback error_callback) = 0;
-
-  // Clears the list of tcp connections that the wifi device should monitor to
-  // wake the system from suspend.
-  virtual void RemoveAllWifiWakeOnPacketConnections(
-      base::OnceClosure callback,
-      network_handler::ErrorCallback error_callback) = 0;
 
   static std::unique_ptr<NetworkDeviceHandler> InitializeForTesting(
       NetworkStateHandler* network_state_handler);

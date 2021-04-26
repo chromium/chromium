@@ -76,30 +76,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockNetworkDeviceHandler
   MOCK_METHOD1(SetUsbEthernetMacAddressSource,
                void(const std::string& enabled));
 
-  MOCK_METHOD3(AddWifiWakeOnPacketConnection,
-               void(const net::IPEndPoint& ip_endpoint,
-                    base::OnceClosure callback,
-                    network_handler::ErrorCallback error_callback));
-
-  MOCK_METHOD3(AddWifiWakeOnPacketOfTypes,
-               void(const std::vector<std::string>& types,
-                    base::OnceClosure callback,
-                    network_handler::ErrorCallback error_callback));
-
-  MOCK_METHOD3(RemoveWifiWakeOnPacketOfTypes,
-               void(const std::vector<std::string>& types,
-                    base::OnceClosure callback,
-                    network_handler::ErrorCallback error_callback));
-
-  MOCK_METHOD3(RemoveWifiWakeOnPacketConnection,
-               void(const net::IPEndPoint& ip_endpoint,
-                    base::OnceClosure callback,
-                    network_handler::ErrorCallback error_callback));
-
-  MOCK_METHOD2(RemoveAllWifiWakeOnPacketConnections,
-               void(base::OnceClosure callback,
-                    network_handler::ErrorCallback error_callback));
-
  private:
   DISALLOW_COPY_AND_ASSIGN(MockNetworkDeviceHandler);
 };

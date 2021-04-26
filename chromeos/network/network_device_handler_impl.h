@@ -76,30 +76,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkDeviceHandlerImpl
 
   void SetUsbEthernetMacAddressSource(const std::string& source) override;
 
-  void AddWifiWakeOnPacketConnection(
-      const net::IPEndPoint& ip_endpoint,
-      base::OnceClosure callback,
-      network_handler::ErrorCallback error_callback) override;
-
-  void AddWifiWakeOnPacketOfTypes(
-      const std::vector<std::string>& types,
-      base::OnceClosure callback,
-      network_handler::ErrorCallback error_callback) override;
-
-  void RemoveWifiWakeOnPacketConnection(
-      const net::IPEndPoint& ip_endpoint,
-      base::OnceClosure callback,
-      network_handler::ErrorCallback error_callback) override;
-
-  void RemoveWifiWakeOnPacketOfTypes(
-      const std::vector<std::string>& types,
-      base::OnceClosure callback,
-      network_handler::ErrorCallback error_callback) override;
-
-  void RemoveAllWifiWakeOnPacketConnections(
-      base::OnceClosure callback,
-      network_handler::ErrorCallback error_callback) override;
-
   // NetworkStateHandlerObserver overrides
   void DeviceListChanged() override;
   void DevicePropertiesUpdated(const DeviceState* device) override;

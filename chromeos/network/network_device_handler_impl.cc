@@ -94,12 +94,6 @@ void SetDevicePropertyInternal(const std::string& device_path,
                      std::move(error_callback)));
 }
 
-std::unique_ptr<base::DictionaryValue> GetErrorData(const std::string& name) {
-  auto error_data = std::make_unique<base::DictionaryValue>();
-  error_data->SetString(network_handler::kErrorName, name);
-  return error_data;
-}
-
 void HandleSimPinOperationSuccess(
     const CellularMetricsLogger::SimPinOperation& pin_operation,
     base::OnceClosure callback) {
@@ -260,108 +254,6 @@ void NetworkDeviceHandlerImpl::SetUsbEthernetMacAddressSource(
   usb_ethernet_mac_address_source_ = source;
   mac_address_change_not_supported_.clear();
   ApplyUsbEthernetMacAddressSourceToShill();
-}
-
-void NetworkDeviceHandlerImpl::AddWifiWakeOnPacketConnection(
-    const net::IPEndPoint& ip_endpoint,
-    base::OnceClosure callback,
-    network_handler::ErrorCallback error_callback) {
-  const DeviceState* device_state = GetWifiDeviceState();
-  if (!device_state) {
-    if (error_callback) {
-      std::move(error_callback)
-          .Run(kErrorDeviceMissing, GetErrorData(kErrorDeviceMissing));
-    }
-    return;
-  }
-
-  NET_LOG(USER) << "Device.AddWakeOnWifi: " << device_state->path();
-  ShillDeviceClient::Get()->AddWakeOnPacketConnection(
-      dbus::ObjectPath(device_state->path()), ip_endpoint, std::move(callback),
-      base::BindOnce(&HandleShillCallFailure, device_state->path(),
-                     std::move(error_callback)));
-}
-
-void NetworkDeviceHandlerImpl::AddWifiWakeOnPacketOfTypes(
-    const std::vector<std::string>& types,
-    base::OnceClosure callback,
-    network_handler::ErrorCallback error_callback) {
-  const DeviceState* device_state = GetWifiDeviceState();
-  if (!device_state) {
-    if (error_callback) {
-      std::move(error_callback)
-          .Run(kErrorDeviceMissing, GetErrorData(kErrorDeviceMissing));
-    }
-    return;
-  }
-
-  NET_LOG(USER) << "Device.AddWifiWakeOnPacketOfTypes: " << device_state->path()
-                << " Types: " << base::JoinString(types, " ");
-  ShillDeviceClient::Get()->AddWakeOnPacketOfTypes(
-      dbus::ObjectPath(device_state->path()), types, std::move(callback),
-      base::BindOnce(&HandleShillCallFailure, device_state->path(),
-                     std::move(error_callback)));
-}
-
-void NetworkDeviceHandlerImpl::RemoveWifiWakeOnPacketConnection(
-    const net::IPEndPoint& ip_endpoint,
-    base::OnceClosure callback,
-    network_handler::ErrorCallback error_callback) {
-  const DeviceState* device_state = GetWifiDeviceState();
-  if (!device_state) {
-    if (error_callback) {
-      std::move(error_callback)
-          .Run(kErrorDeviceMissing, GetErrorData(kErrorDeviceMissing));
-    }
-    return;
-  }
-
-  NET_LOG(USER) << "Device.RemoveWakeOnWifi: " << device_state->path();
-  ShillDeviceClient::Get()->RemoveWakeOnPacketConnection(
-      dbus::ObjectPath(device_state->path()), ip_endpoint, std::move(callback),
-      base::BindOnce(&HandleShillCallFailure, device_state->path(),
-                     std::move(error_callback)));
-}
-
-void NetworkDeviceHandlerImpl::RemoveWifiWakeOnPacketOfTypes(
-    const std::vector<std::string>& types,
-    base::OnceClosure callback,
-    network_handler::ErrorCallback error_callback) {
-  const DeviceState* device_state = GetWifiDeviceState();
-  if (!device_state) {
-    if (error_callback) {
-      std::move(error_callback)
-          .Run(kErrorDeviceMissing, GetErrorData(kErrorDeviceMissing));
-    }
-    return;
-  }
-
-  NET_LOG(USER) << "Device.RemoveWifiWakeOnPacketOfTypes: "
-                << device_state->path()
-                << " Types: " << base::JoinString(types, " ");
-  ShillDeviceClient::Get()->RemoveWakeOnPacketOfTypes(
-      dbus::ObjectPath(device_state->path()), types, std::move(callback),
-      base::BindOnce(&HandleShillCallFailure, device_state->path(),
-                     std::move(error_callback)));
-}
-
-void NetworkDeviceHandlerImpl::RemoveAllWifiWakeOnPacketConnections(
-    base::OnceClosure callback,
-    network_handler::ErrorCallback error_callback) {
-  const DeviceState* device_state = GetWifiDeviceState();
-  if (!device_state) {
-    if (error_callback) {
-      std::move(error_callback)
-          .Run(kErrorDeviceMissing, GetErrorData(kErrorDeviceMissing));
-    }
-    return;
-  }
-
-  NET_LOG(USER) << "Device.RemoveAllWakeOnWifi: " << device_state->path();
-  ShillDeviceClient::Get()->RemoveAllWakeOnPacketConnections(
-      dbus::ObjectPath(device_state->path()), std::move(callback),
-      base::BindOnce(&HandleShillCallFailure, device_state->path(),
-                     std::move(error_callback)));
 }
 
 void NetworkDeviceHandlerImpl::DeviceListChanged() {
