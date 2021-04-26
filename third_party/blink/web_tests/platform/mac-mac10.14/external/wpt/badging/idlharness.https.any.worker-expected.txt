@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface Navigator: original interface defined
+PASS Partial interface Navigator: member names are unique
+PASS Partial interface mixin NavigatorID: member names are unique
+PASS Navigator includes NavigatorBadge: member names are unique
+PASS Navigator includes NavigatorID: member names are unique
+PASS Navigator includes NavigatorLanguage: member names are unique
+PASS Navigator includes NavigatorOnLine: member names are unique
+PASS Navigator includes NavigatorContentUtils: member names are unique
+PASS Navigator includes NavigatorCookies: member names are unique
+PASS Navigator includes NavigatorPlugins: member names are unique
+PASS Navigator includes NavigatorConcurrentHardware: member names are unique
+PASS WorkerNavigator includes NavigatorBadge: member names are unique
+PASS WorkerNavigator includes NavigatorID: member names are unique
+PASS WorkerNavigator includes NavigatorLanguage: member names are unique
+PASS WorkerNavigator includes NavigatorOnLine: member names are unique
+PASS WorkerNavigator includes NavigatorConcurrentHardware: member names are unique
+PASS Navigator interface: existence and properties of interface object
+FAIL WorkerNavigator interface: operation setAppBadge(optional unsigned long long) assert_own_property: interface prototype object missing non-static operation expected property "setAppBadge" missing
+FAIL WorkerNavigator interface: operation clearAppBadge() assert_own_property: interface prototype object missing non-static operation expected property "clearAppBadge" missing
+FAIL WorkerNavigator interface: navigator must inherit property "setAppBadge(optional unsigned long long)" with the proper type assert_inherits: property "setAppBadge" not found in prototype chain
+FAIL WorkerNavigator interface: calling setAppBadge(optional unsigned long long) on navigator with too few arguments must throw TypeError assert_inherits: property "setAppBadge" not found in prototype chain
+FAIL WorkerNavigator interface: navigator must inherit property "clearAppBadge()" with the proper type assert_inherits: property "clearAppBadge" not found in prototype chain
+Harness: the test ran to completion.
+

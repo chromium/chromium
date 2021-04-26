@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL Create WebSocket - Pass a URL with a space - SYNTAX_ERR should be thrown assert_throws_dom: function "function() {
+    wsocket = CreateWebSocketWithSpaceInUrl(spaceUrl)
+  }" did not throw
+Harness: the test ran to completion.
+

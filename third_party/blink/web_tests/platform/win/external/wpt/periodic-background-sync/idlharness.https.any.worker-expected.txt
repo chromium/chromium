@@ -1,0 +1,36 @@
+This is a testharness.js-based test.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface ServiceWorkerGlobalScope: original interface defined
+PASS Partial interface ServiceWorkerGlobalScope: member names are unique
+PASS Partial interface ServiceWorkerRegistration: original interface defined
+PASS Partial interface ServiceWorkerRegistration: valid exposure set
+PASS Partial interface ServiceWorkerRegistration: member names are unique
+PASS WorkerGlobalScope includes WindowOrWorkerGlobalScope: member names are unique
+PASS PeriodicSyncManager interface: existence and properties of interface object
+PASS PeriodicSyncManager interface object length
+PASS PeriodicSyncManager interface object name
+PASS PeriodicSyncManager interface: existence and properties of interface prototype object
+PASS PeriodicSyncManager interface: existence and properties of interface prototype object's "constructor" property
+PASS PeriodicSyncManager interface: existence and properties of interface prototype object's @@unscopables property
+PASS PeriodicSyncManager interface: operation register(DOMString, optional BackgroundSyncOptions)
+PASS PeriodicSyncManager interface: operation getTags()
+PASS PeriodicSyncManager interface: operation unregister(DOMString)
+FAIL PeriodicSyncManager must be primary interface of registration.periodicSync assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: registration is not defined"
+FAIL Stringification of registration.periodicSync assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: registration is not defined"
+FAIL PeriodicSyncManager interface: registration.periodicSync must inherit property "register(DOMString, optional BackgroundSyncOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: registration is not defined"
+FAIL PeriodicSyncManager interface: calling register(DOMString, optional BackgroundSyncOptions) on registration.periodicSync with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: registration is not defined"
+FAIL PeriodicSyncManager interface: registration.periodicSync must inherit property "getTags()" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: registration is not defined"
+FAIL PeriodicSyncManager interface: registration.periodicSync must inherit property "unregister(DOMString)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: registration is not defined"
+FAIL PeriodicSyncManager interface: calling unregister(DOMString) on registration.periodicSync with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: registration is not defined"
+PASS PeriodicSyncEvent interface: existence and properties of interface object
+FAIL PeriodicSyncEvent must be primary interface of new PeriodicSyncEvent("tag") assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: PeriodicSyncEvent is not defined"
+FAIL Stringification of new PeriodicSyncEvent("tag") assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: PeriodicSyncEvent is not defined"
+FAIL PeriodicSyncEvent interface: new PeriodicSyncEvent("tag") must not have property "undefined" assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: PeriodicSyncEvent is not defined"
+FAIL PeriodicSyncEvent interface: new PeriodicSyncEvent("tag") must not have property "tag" assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: PeriodicSyncEvent is not defined"
+PASS ServiceWorkerRegistration interface: attribute periodicSync
+FAIL ServiceWorkerRegistration interface: registration must inherit property "periodicSync" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: registration is not defined"
+PASS ServiceWorkerGlobalScope interface: self must not have property "onperiodicsync"
+FAIL ServiceWorkerGlobalScope interface: onperiodicsync must not have property "onperiodicsync" assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: onperiodicsync is not defined"
+Harness: the test ran to completion.
+

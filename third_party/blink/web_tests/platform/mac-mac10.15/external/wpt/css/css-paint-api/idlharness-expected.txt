@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial namespace CSS: original namespace defined
+PASS Partial namespace CSS: member names are unique
+PASS PaintRenderingContext2D includes CanvasState: member names are unique
+PASS PaintRenderingContext2D includes CanvasTransform: member names are unique
+PASS PaintRenderingContext2D includes CanvasCompositing: member names are unique
+PASS PaintRenderingContext2D includes CanvasImageSmoothing: member names are unique
+PASS PaintRenderingContext2D includes CanvasFillStrokeStyles: member names are unique
+PASS PaintRenderingContext2D includes CanvasShadowStyles: member names are unique
+PASS PaintRenderingContext2D includes CanvasRect: member names are unique
+PASS PaintRenderingContext2D includes CanvasDrawPath: member names are unique
+PASS PaintRenderingContext2D includes CanvasDrawImage: member names are unique
+PASS PaintRenderingContext2D includes CanvasPathDrawingStyles: member names are unique
+PASS PaintRenderingContext2D includes CanvasPath: member names are unique
+PASS PaintWorkletGlobalScope interface: existence and properties of interface object
+PASS PaintRenderingContext2D interface: existence and properties of interface object
+PASS PaintSize interface: existence and properties of interface object
+PASS CSS namespace: operation escape(CSSOMString)
+FAIL CSS namespace: attribute paintWorklet assert_own_property: CSS does not have property "paintWorklet" expected property "paintWorklet" missing
+Harness: the test ran to completion.
+

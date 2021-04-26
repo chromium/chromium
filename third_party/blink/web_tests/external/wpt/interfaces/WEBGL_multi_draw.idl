@@ -1,0 +1,32 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
+// Source: WebGL WEBGL_multi_draw Extension Specification (https://www.khronos.org/registry/webgl/extensions/WEBGL_multi_draw/)
+
+[Exposed=(Window,Worker), LegacyNoInterfaceObject]
+interface WEBGL_multi_draw {
+  undefined multiDrawArraysWEBGL(
+      GLenum mode,
+      (Int32Array or sequence<GLint>) firstsList, GLuint firstsOffset,
+      (Int32Array or sequence<GLsizei>) countsList, GLuint countsOffset,
+      GLsizei drawcount);
+  undefined multiDrawElementsWEBGL(
+      GLenum mode,
+      (Int32Array or sequence<GLint>) countsList, GLuint countsOffset,
+      GLenum type,
+      (Int32Array or sequence<GLsizei>) offsetsList, GLuint offsetsOffset,
+      GLsizei drawcount);
+  undefined multiDrawArraysInstancedWEBGL(
+      GLenum mode,
+      (Int32Array or sequence<GLint>) firstsList, GLuint firstsOffset,
+      (Int32Array or sequence<GLsizei>) countsList, GLuint countsOffset,
+      (Int32Array or sequence<GLsizei>) instanceCountsList, GLuint instanceCountsOffset,
+      GLsizei drawcount);
+  undefined multiDrawElementsInstancedWEBGL(
+      GLenum mode,
+      (Int32Array or sequence<GLint>) countsList, GLuint countsOffset,
+      GLenum type,
+      (Int32Array or sequence<GLsizei>) offsetsList, GLuint offsetsOffset,
+      (Int32Array or sequence<GLsizei>) instanceCountsList, GLuint instanceCountsOffset,
+      GLsizei drawcount);
+};

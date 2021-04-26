@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+PASS HTTP basic authentication should work with WebSockets
+Harness: the test ran to completion.
+

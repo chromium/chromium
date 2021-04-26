@@ -1,0 +1,284 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
+// Source: WebCodecs (https://w3c.github.io/webcodecs/)
+
+[Exposed=(Window,DedicatedWorker)]
+interface AudioDecoder {
+  constructor(AudioDecoderInit init);
+
+  readonly attribute CodecState state;
+  readonly attribute long decodeQueueSize;
+
+  undefined configure(AudioDecoderConfig config);
+  undefined decode(EncodedAudioChunk chunk);
+  Promise<undefined> flush();
+  undefined reset();
+  undefined close();
+
+  static Promise<AudioDecoderSupport> isConfigSupported(AudioDecoderConfig config);
+};
+
+dictionary AudioDecoderInit {
+  required AudioFrameOutputCallback output;
+  required WebCodecsErrorCallback error;
+};
+
+callback AudioFrameOutputCallback = undefined(AudioFrame output);
+
+[Exposed=(Window,DedicatedWorker)]
+interface VideoDecoder {
+  constructor(VideoDecoderInit init);
+
+  readonly attribute CodecState state;
+  readonly attribute long decodeQueueSize;
+
+  undefined configure(VideoDecoderConfig config);
+  undefined decode(EncodedVideoChunk chunk);
+  Promise<undefined> flush();
+  undefined reset();
+  undefined close();
+
+  static Promise<VideoDecoderSupport> isConfigSupported(VideoDecoderConfig config);
+};
+
+dictionary VideoDecoderInit {
+  required VideoFrameOutputCallback output;
+  required WebCodecsErrorCallback error;
+};
+
+callback VideoFrameOutputCallback = undefined(VideoFrame output);
+
+[Exposed=(Window,DedicatedWorker)]
+interface AudioEncoder {
+  constructor(AudioEncoderInit init);
+
+  readonly attribute CodecState state;
+  readonly attribute long encodeQueueSize;
+
+  undefined configure(AudioEncoderConfig config);
+  undefined encode(AudioFrame frame);
+  Promise<undefined> flush();
+  undefined reset();
+  undefined close();
+
+  static Promise<AudioEncoderSupport> isConfigSupported(AudioEncoderConfig config);
+};
+
+dictionary AudioEncoderInit {
+  required EncodedAudioChunkOutputCallback output;
+  required WebCodecsErrorCallback error;
+};
+
+callback EncodedAudioChunkOutputCallback = undefined(EncodedAudioChunk output);
+
+[Exposed=(Window,DedicatedWorker)]
+interface VideoEncoder {
+  constructor(VideoEncoderInit init);
+
+  readonly attribute CodecState state;
+  readonly attribute long encodeQueueSize;
+
+  undefined configure(VideoEncoderConfig config);
+  undefined encode(VideoFrame frame, optional VideoEncoderEncodeOptions options = {});
+  Promise<undefined> flush();
+  undefined reset();
+  undefined close();
+
+  static Promise<boolean> isConfigSupported(VideoEncoderConfig config);
+};
+
+dictionary VideoEncoderInit {
+  required EncodedVideoChunkOutputCallback output;
+  required WebCodecsErrorCallback error;
+};
+
+callback EncodedVideoChunkOutputCallback = undefined(EncodedVideoChunk output, VideoDecoderConfig? output_config);
+
+dictionary AudioDecoderSupport {
+  boolean supported;
+  AudioDecoderConfig config;
+};
+
+dictionary VideoDecoderSupport {
+  boolean supported;
+  VideoDecoderConfig config;
+};
+
+dictionary AudioEncoderSupport {
+  boolean supported;
+  AudioEncoderConfig config;
+};
+
+dictionary VideoEncoderSupport {
+  boolean supported;
+  VideoEncoderConfig config;
+};
+
+dictionary AudioDecoderConfig {
+  required DOMString codec;
+  required unsigned long sampleRate;
+  required unsigned long numberOfChannels;
+  BufferSource description;
+};
+
+dictionary VideoDecoderConfig {
+  required DOMString codec;
+  BufferSource description;
+  required unsigned long codedWidth;
+  required unsigned long codedHeight;
+  unsigned long cropLeft;
+  unsigned long cropTop;
+  unsigned long cropWidth;
+  unsigned long cropHeight;
+  unsigned long displayWidth;
+  unsigned long displayHeight;
+  HardwareAcceleration hardwareAcceleration = "allow";
+};
+
+dictionary AudioEncoderConfig {
+  required DOMString codec;
+  unsigned long sampleRate;
+  unsigned long numberOfChannels;
+  unsigned long long bitrate;
+};
+
+dictionary VideoEncoderConfig {
+  required DOMString codec;
+  unsigned long long bitrate;
+  required unsigned long cropWidth;
+  required unsigned long cropHeight;
+  unsigned long displayWidth;
+  unsigned long displayHeight;
+  HardwareAcceleration hardwareAcceleration = "allow";
+};
+
+enum HardwareAcceleration {
+  "allow",
+  "deny",
+  "require",
+};
+
+dictionary VideoEncoderEncodeOptions {
+  boolean keyFrame = false;
+};
+
+enum CodecState {
+  "unconfigured",
+  "configured",
+  "closed"
+};
+
+callback WebCodecsErrorCallback = undefined(DOMException error);
+
+[Exposed=(Window,DedicatedWorker)]
+interface EncodedAudioChunk {
+  constructor(EncodedAudioChunkInit init);
+  readonly attribute EncodedAudioChunkType type;
+  readonly attribute unsigned long long timestamp;  // microseconds
+  readonly attribute ArrayBuffer data;
+};
+
+dictionary EncodedAudioChunkInit {
+  required EncodedAudioChunkType type;
+  required unsigned long long timestamp;
+  required BufferSource data;
+};
+
+enum EncodedAudioChunkType {
+    "key",
+    "delta",
+};
+
+[Exposed=(Window,DedicatedWorker)]
+interface EncodedVideoChunk {
+  constructor(EncodedVideoChunkInit init);
+  readonly attribute EncodedVideoChunkType type;
+  readonly attribute unsigned long long timestamp;  // microseconds
+  readonly attribute unsigned long long? duration;  // microseconds
+  readonly attribute ArrayBuffer data;
+};
+
+dictionary EncodedVideoChunkInit {
+  required EncodedVideoChunkType type;
+  required unsigned long long timestamp;
+  unsigned long long duration;
+  required BufferSource data;
+};
+
+enum EncodedVideoChunkType {
+    "key",
+    "delta",
+};
+
+[Exposed=(Window,DedicatedWorker)]
+interface AudioFrame {
+  constructor(AudioFrameInit init);
+  readonly attribute unsigned long long timestamp;
+  readonly attribute AudioBuffer? buffer;
+  undefined close();
+};
+
+dictionary AudioFrameInit {
+  required unsigned long long timestamp;
+  required AudioBuffer buffer;
+};
+
+[Exposed=(Window,DedicatedWorker)]
+interface VideoFrame {
+  constructor(ImageBitmap imageBitmap, optional VideoFrameInit frameInit = {});
+  constructor(PixelFormat pixelFormat, sequence<(Plane or PlaneInit)> planes,
+              optional VideoFrameInit frameInit = {});
+
+  readonly attribute PixelFormat format;
+  readonly attribute FrozenArray<Plane> planes;
+  readonly attribute unsigned long codedWidth;
+  readonly attribute unsigned long codedHeight;
+  readonly attribute unsigned long cropLeft;
+  readonly attribute unsigned long cropTop;
+  readonly attribute unsigned long cropWidth;
+  readonly attribute unsigned long cropHeight;
+  readonly attribute unsigned long displayWidth;
+  readonly attribute unsigned long displayHeight;
+  readonly attribute unsigned long long? duration;
+  readonly attribute unsigned long long? timestamp;
+
+  undefined destroy();
+  VideoFrame clone();
+
+  Promise<ImageBitmap> createImageBitmap(
+    optional ImageBitmapOptions options = {});
+
+};
+
+dictionary VideoFrameInit {
+  unsigned long codedWidth;
+  unsigned long codedHeight;
+  unsigned long cropLeft;
+  unsigned long cropTop;
+  unsigned long cropWidth;
+  unsigned long cropHeight;
+  unsigned long displayWidth;
+  unsigned long displayHeight;
+  unsigned long long duration;
+  unsigned long long timestamp;
+};
+
+[Exposed=(Window,DedicatedWorker)]
+interface Plane {
+  readonly attribute unsigned long stride;
+  readonly attribute unsigned long rows;
+  readonly attribute unsigned long length;
+
+  undefined readInto(ArrayBufferView dst);
+};
+
+dictionary PlaneInit {
+  required BufferSource src;
+  required unsigned long stride;
+  required unsigned long rows;
+};
+
+enum PixelFormat {
+  "I420"
+};

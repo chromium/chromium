@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface MediaStreamTrack: original interface defined
+PASS Partial interface MediaStreamTrack: member names are unique
+PASS Partial dictionary RTCRtpSendParameters: original dictionary defined
+PASS Partial dictionary RTCRtpSendParameters: member names are unique
+PASS MediaStreamTrack interface: attribute contentHint
+PASS MediaStreamTrack interface: audioTrack must inherit property "contentHint" with the proper type
+PASS MediaStreamTrack interface: videoTrack must inherit property "contentHint" with the proper type
+Harness: the test ran to completion.
+

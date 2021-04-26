@@ -9,10 +9,13 @@ dictionary NavigatorUABrandVersion {
 };
 
 dictionary UADataValues {
+  FrozenArray<NavigatorUABrandVersion> brands;
+  boolean mobile;
   DOMString platform;
-  DOMString platformVersion;
   DOMString architecture;
+  DOMString bitness;
   DOMString model;
+  DOMString platformVersion;
   DOMString uaFullVersion;
 };
 
@@ -20,6 +23,7 @@ dictionary UADataValues {
 interface NavigatorUAData {
   readonly attribute FrozenArray<NavigatorUABrandVersion> brands;
   readonly attribute boolean mobile;
+  readonly attribute DOMString platform;
   Promise<UADataValues> getHighEntropyValues(sequence<DOMString> hints);
 };
 

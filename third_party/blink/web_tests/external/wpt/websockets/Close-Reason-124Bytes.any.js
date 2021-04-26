@@ -1,8 +1,11 @@
-// META: script=websocket.sub.js
+// META: script=constants.sub.js
+// META: variant=
+// META: variant=?wpt_flags=h2
+// META: variant=?wss
 
 var test = async_test("Create WebSocket - Close the Connection - close(code, 'reason more than 123 bytes') - SYNTAX_ERR is thrown");
 
-var wsocket = CreateWebSocket(false, false, false);
+var wsocket = CreateWebSocket(false, false);
 var isOpenCalled = false;
 
 wsocket.addEventListener('open', test.step_func(function(evt) {

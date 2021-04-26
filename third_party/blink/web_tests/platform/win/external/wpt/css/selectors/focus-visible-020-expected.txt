@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+PASS ":focus-visible" should be a valid selector
+FAIL :focus-visible doesn't match on ShadowRoot assert_not_equals: backgroundColor for DIV#host should NOT be red got disallowed value "rgb(255, 0, 0)"
+Harness: the test ran to completion.
+

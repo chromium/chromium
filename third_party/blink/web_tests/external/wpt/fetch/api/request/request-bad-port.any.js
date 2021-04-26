@@ -80,6 +80,7 @@ var BLOCKED_PORTS_LIST = [
     6668, // irc (alternate)
     6669, // irc (alternate)
     6697, // irc+tls
+    10080, // amanda
 ];
 
 BLOCKED_PORTS_LIST.map(function(a){

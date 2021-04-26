@@ -1,0 +1,75 @@
+This is a testharness.js-based test.
+Found 71 tests; 70 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS idl_test setup
+PASS idl_test validation
+PASS WebAssembly namespace: extended attributes
+PASS WebAssembly namespace: property descriptor
+PASS WebAssembly namespace: [[Extensible]] is true
+PASS WebAssembly namespace: [[Prototype]] is Object.prototype
+PASS WebAssembly namespace: typeof is "object"
+PASS WebAssembly namespace: has no length property
+PASS WebAssembly namespace: has no name property
+PASS WebAssembly namespace: operation validate(BufferSource)
+PASS WebAssembly namespace: operation compile(BufferSource)
+PASS WebAssembly namespace: operation instantiate(BufferSource, optional object)
+PASS WebAssembly namespace: operation instantiate(Module, optional object)
+PASS Module interface: existence and properties of interface object
+PASS Module interface object length
+PASS Module interface object name
+PASS Module interface: existence and properties of interface prototype object
+PASS Module interface: existence and properties of interface prototype object's "constructor" property
+PASS Module interface: existence and properties of interface prototype object's @@unscopables property
+PASS Module interface: operation exports(Module)
+PASS Module interface: operation imports(Module)
+PASS Module interface: operation customSections(Module, DOMString)
+PASS Module must be primary interface of [object WebAssembly.Module]
+PASS Stringification of [object WebAssembly.Module]
+PASS Module interface: [object WebAssembly.Module] must inherit property "exports(Module)" with the proper type
+PASS Module interface: calling exports(Module) on [object WebAssembly.Module] with too few arguments must throw TypeError
+PASS Module interface: [object WebAssembly.Module] must inherit property "imports(Module)" with the proper type
+PASS Module interface: calling imports(Module) on [object WebAssembly.Module] with too few arguments must throw TypeError
+PASS Module interface: [object WebAssembly.Module] must inherit property "customSections(Module, DOMString)" with the proper type
+PASS Module interface: calling customSections(Module, DOMString) on [object WebAssembly.Module] with too few arguments must throw TypeError
+PASS Instance interface: existence and properties of interface object
+PASS Instance interface object length
+PASS Instance interface object name
+PASS Instance interface: existence and properties of interface prototype object
+PASS Instance interface: existence and properties of interface prototype object's "constructor" property
+PASS Instance interface: existence and properties of interface prototype object's @@unscopables property
+PASS Instance interface: attribute exports
+PASS Instance must be primary interface of [object WebAssembly.Instance]
+PASS Stringification of [object WebAssembly.Instance]
+PASS Instance interface: [object WebAssembly.Instance] must inherit property "exports" with the proper type
+PASS Memory interface: existence and properties of interface object
+PASS Memory interface object length
+PASS Memory interface object name
+PASS Memory interface: existence and properties of interface prototype object
+PASS Memory interface: existence and properties of interface prototype object's "constructor" property
+PASS Memory interface: existence and properties of interface prototype object's @@unscopables property
+PASS Memory interface: operation grow(unsigned long)
+PASS Memory interface: attribute buffer
+PASS Memory must be primary interface of [object WebAssembly.Memory]
+PASS Stringification of [object WebAssembly.Memory]
+PASS Memory interface: [object WebAssembly.Memory] must inherit property "grow(unsigned long)" with the proper type
+PASS Memory interface: calling grow(unsigned long) on [object WebAssembly.Memory] with too few arguments must throw TypeError
+PASS Memory interface: [object WebAssembly.Memory] must inherit property "buffer" with the proper type
+PASS Table interface: existence and properties of interface object
+PASS Table interface object length
+PASS Table interface object name
+PASS Table interface: existence and properties of interface prototype object
+PASS Table interface: existence and properties of interface prototype object's "constructor" property
+PASS Table interface: existence and properties of interface prototype object's @@unscopables property
+PASS Table interface: operation grow(unsigned long, optional any)
+PASS Table interface: operation get(unsigned long)
+FAIL Table interface: operation set(unsigned long, optional any) assert_equals: property has wrong .length expected 1 but got 2
+PASS Table interface: attribute length
+PASS Global interface: existence and properties of interface object
+PASS Global interface object length
+PASS Global interface object name
+PASS Global interface: existence and properties of interface prototype object
+PASS Global interface: existence and properties of interface prototype object's "constructor" property
+PASS Global interface: existence and properties of interface prototype object's @@unscopables property
+PASS Global interface: operation valueOf()
+PASS Global interface: attribute value
+Harness: the test ran to completion.
+

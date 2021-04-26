@@ -1,0 +1,26 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
+// Source: WebGL WEBGL_multi_draw_instanced_base_vertex_base_instance Extension Draft Specification (https://www.khronos.org/registry/webgl/extensions/WEBGL_multi_draw_instanced_base_vertex_base_instance/)
+
+[Exposed=(Window,Worker), LegacyNoInterfaceObject]
+interface WEBGL_multi_draw_instanced_base_vertex_base_instance {
+  undefined multiDrawArraysInstancedBaseInstanceWEBGL(
+      GLenum mode,
+      (Int32Array or sequence<GLint>) firstsList, GLuint firstsOffset,
+      (Int32Array or sequence<GLsizei>) countsList, GLuint countsOffset,
+      (Int32Array or sequence<GLsizei>) instanceCountsList, GLuint instanceCountsOffset,
+      (Uint32Array or sequence<GLuint>) baseInstancesList, GLuint baseInstancesOffset,
+      GLsizei drawCount
+  );
+  undefined multiDrawElementsInstancedBaseVertexBaseInstanceWEBGL(
+      GLenum mode,
+      (Int32Array or sequence<GLsizei>) countsList, GLuint countsOffset,
+      GLenum type,
+      (Int32Array or sequence<GLsizei>) offsetsList, GLuint offsetsOffset,
+      (Int32Array or sequence<GLsizei>) instanceCountsList, GLuint instanceCountsOffset,
+      (Int32Array or sequence<GLint>) baseVerticesList, GLuint baseVerticesOffset,
+      (Uint32Array or sequence<GLuint>) baseInstancesList, GLuint baseInstancesOffset,
+      GLsizei drawCount
+  );
+};

@@ -1,0 +1,40 @@
+This is a testharness.js-based test.
+PASS Test execCommand with selection around select element
+FAIL execCommand(delete, false, "") in <div contenteditable><p>ab[c</p><select><option>d]ef</option></select></div>: shouldn't modify in <option> assert_in_array: value "<div contenteditable><p>ac</p><select><option>def</option></select></div>" not in array ["<div contenteditable><p>abc</p><select><option>def</option></select></div>", "<div contenteditable><p>ab</p><select><option>def</option></select></div>"]
+PASS execCommand(delete, false, "") in <div contenteditable><p>abc</p><select><option>d[]ef</option></select></div>: shouldn't modify in <option>
+PASS execCommand(delete, false, "") in <div contenteditable><select><option>ab[c</option></select><p>d]ef</p></div>: shouldn't modify in <option>
+PASS execCommand(delete, false, "") in <div contenteditable><p>abc</p><select><option>{}def</option></select><p>ghi</p></div>: shouldn't modify in <option>
+PASS execCommand(delete, false, "") in <div contenteditable><p>abc</p><select><option>def{}</option></select><p>ghi</p></div>: shouldn't modify in <option>
+PASS execCommand(delete, false, "") in <div contenteditable><p>abc</p><select><option>{def}</option></select><p>ghi</p></div>: shouldn't modify in <option>
+PASS execCommand(delete, false, "") in <div contenteditable><p>abc</p><select><option>{def</option><option>ghi}</option></select><p>jkl</p></div>: shouldn't join <option>s
+FAIL execCommand(delete, false, "") in <div contenteditable><p>abc</p><select>{<option>def</option>}<option>ghi</option></select><p>jkl</p></div>: shouldn't delete <option> assert_equals: expected "<div contenteditable><p>abc</p><select><option>def</option><option>ghi</option></select><p>jkl</p></div>" but got "<div contenteditable><p>abc<select><option>def</option><option>ghi</option></select></p><p>jkl</p></div>"
+PASS execCommand(delete, false, "") in <div contenteditable><p>abc</p><select><option>def</option>{<option>ghi</option>}</select><p>jkl</p></div>: shouldn't delete <option>
+FAIL execCommand(delete, false, "") in <div contenteditable><p>abc</p><select>{<option>def</option><option>ghi</option>}</select><p>jkl</p></div>: shouldn't delete <option>s nor <select> assert_equals: expected "<div contenteditable><p>abc</p><select><option>def</option><option>ghi</option></select><p>jkl</p></div>" but got "<div contenteditable><p>abc</p><p>jkl</p></div>"
+PASS execCommand(delete, false, "") in <div contenteditable><p>abc</p><select><optgroup>{<option>def</option><option>ghi</option>}</optgroup></select><p>jkl</p></div>: shouldn't delete <option>, <optgroup> nor <select>
+PASS execCommand(delete, false, "") in <div contenteditable><p>abc</p>{<select><option>def</option><option>ghi</option></select>}<p>jkl</p></div>: <select> element itself should be removable
+PASS execCommand(delete, false, "") in <div contenteditable><p>abc</p>{<select><optgroup><option>def</option><option>ghi</option></optgroup></select>}<p>jkl</p></div>: <select> element itself should be removable
+PASS execCommand(delete, false, "") in <select contenteditable>{<option>abc</option><option>def</option>}</select>: shouldn't delete <option>s
+PASS execCommand(delete, false, "") in <select><option contenteditable>{abc}</option><option>def</option></select>: shouldn't modify <option>
+PASS execCommand(delete, false, "") in <select><optgroup contenteditable>{<option>abc</option><option>def</option>}</optgroup></select>: shouldn't delete <option>s
+PASS execCommand(delete, false, "") in <select><optgroup contenteditable><option>{abc}</option><option>def</option></optgroup></select>: shouldn't delete <option>s nor optgroup
+FAIL execCommand(delete, false, "") in <div contenteditable><p>ab[c</p><select multiple><option>d]ef</option></select></div>: shouldn't modify in <option> assert_in_array: value "<div contenteditable><p>ac</p><select multiple><option>def</option></select></div>" not in array ["<div contenteditable><p>abc</p><select multiple><option>def</option></select></div>", "<div contenteditable><p>ab</p><select multiple><option>def</option></select></div>"]
+PASS execCommand(delete, false, "") in <div contenteditable><p>abc</p><select multiple><option>d[]ef</option></select></div>: shouldn't modify in <option>
+PASS execCommand(delete, false, "") in <div contenteditable><select multiple><option>ab[c</option></select><p>d]ef</p></div>: shouldn't modify in <option>
+PASS execCommand(delete, false, "") in <div contenteditable><p>abc</p><select multiple><option>{}def</option></select><p>ghi</p></div>: shouldn't modify in <option>
+PASS execCommand(delete, false, "") in <div contenteditable><p>abc</p><select multiple><option>def{}</option></select><p>ghi</p></div>: shouldn't modify in <option>
+PASS execCommand(delete, false, "") in <div contenteditable><p>abc</p><select multiple><option>{def}</option></select><p>ghi</p></div>: shouldn't modify in <option>
+PASS execCommand(delete, false, "") in <div contenteditable><p>abc</p><select multiple><option>{def</option><option>ghi}</option></select><p>jkl</p></div>: shouldn't join <option>s
+FAIL execCommand(delete, false, "") in <div contenteditable><p>abc</p><select multiple>{<option>def</option>}<option>ghi</option></select><p>jkl</p></div>: shouldn't delete <option> assert_equals: expected "<div contenteditable><p>abc</p><select multiple><option>def</option><option>ghi</option></select><p>jkl</p></div>" but got "<div contenteditable><p>abc<select multiple><option>def</option><option>ghi</option></select></p><p>jkl</p></div>"
+PASS execCommand(delete, false, "") in <div contenteditable><p>abc</p><select multiple><option>def</option>{<option>ghi</option>}</select><p>jkl</p></div>: shouldn't delete <option>
+FAIL execCommand(delete, false, "") in <div contenteditable><p>abc</p><select multiple>{<option>def</option><option>ghi</option>}</select><p>jkl</p></div>: shouldn't delete <option>s nor <select multiple> assert_equals: expected "<div contenteditable><p>abc</p><select multiple><option>def</option><option>ghi</option></select><p>jkl</p></div>" but got "<div contenteditable><p>abc</p><p>jkl</p></div>"
+PASS execCommand(delete, false, "") in <div contenteditable><p>abc</p><select multiple><optgroup>{<option>def</option><option>ghi</option>}</optgroup></select><p>jkl</p></div>: shouldn't delete <option>, <optgroup> nor <select multiple>
+PASS execCommand(delete, false, "") in <div contenteditable><p>abc</p>{<select multiple><option>def</option><option>ghi</option></select>}<p>jkl</p></div>: <select multiple> element itself should be removable
+PASS execCommand(delete, false, "") in <div contenteditable><p>abc</p>{<select multiple><optgroup><option>def</option><option>ghi</option></optgroup></select>}<p>jkl</p></div>: <select multiple> element itself should be removable
+PASS execCommand(delete, false, "") in <select multiple contenteditable>{<option>abc</option><option>def</option>}</select>: shouldn't delete <option>s
+PASS execCommand(delete, false, "") in <select multiple><option contenteditable>{abc}</option><option>def</option></select>: shouldn't modify <option>
+PASS execCommand(delete, false, "") in <select multiple><optgroup contenteditable>{<option>abc</option><option>def</option>}</optgroup></select>: shouldn't delete <option>s
+PASS execCommand(delete, false, "") in <select multiple><optgroup contenteditable><option>{abc}</option><option>def</option></optgroup></select>: shouldn't delete <option>s nor optgroup
+PASS execCommand(delete, false, "") in <optgroup contenteditable><option>{abc}</option><option>def</option></optgroup>: shouldn't delete <option>s nor optgroup
+PASS execCommand(delete, false, "") in <option contenteditable>{abc}</option>: shouldn't modify <option>
+Harness: the test ran to completion.
+

@@ -51,7 +51,6 @@ enum PermissionName {
   "accelerometer",
   "gyroscope",
   "magnetometer",
-  "clipboard-read",
   "clipboard-write",
   "display-capture",
   "nfc",

@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = TypeError: Failed to fetch
+NOTRUN default policy (derived from response)
+NOTRUN "require-corp" (derived from response)
+NOTRUN default policy (derived from owner set due to use of local scheme - blob URL)
+NOTRUN "require-corp" (derived from owner set due to use of local scheme - blob URL)
+NOTRUN default policy (derived from owner set due to use of local scheme - data URL)
+NOTRUN "require-corp" (derived from owner set due to use of local scheme - data URL)
+Harness: the test ran to completion.
+

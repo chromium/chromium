@@ -141,6 +141,9 @@ interface XRRigidTransform {
 
 [SecureContext, Exposed=Window] interface XRPose {
   [SameObject] readonly attribute XRRigidTransform transform;
+  [SameObject] readonly attribute DOMPointReadOnly? linearVelocity;
+  [SameObject] readonly attribute DOMPointReadOnly? angularVelocity;
+
   readonly attribute boolean emulatedPosition;
 };
 
@@ -266,6 +269,10 @@ interface XRReferenceSpaceEvent : Event {
 dictionary XRReferenceSpaceEventInit : EventInit {
   required XRReferenceSpace referenceSpace;
   XRRigidTransform? transform = null;
+};
+
+dictionary XRSessionSupportedPermissionDescriptor: PermissionDescriptor {
+  XRSessionMode mode;
 };
 
 dictionary XRPermissionDescriptor: PermissionDescriptor {

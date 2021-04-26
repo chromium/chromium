@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Fetch on 425 response should not be retried for non TLS early data. assert_equals: expected "ok. Request was sent 1 times. 1 connections were created." but got "ok. Request was sent 2 times. 2 connections were created."
+Harness: the test ran to completion.
+

@@ -1,0 +1,25 @@
+This is a testharness.js-based test.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface UIEvent: original interface defined
+PASS Partial interface UIEvent: member names are unique
+PASS Partial dictionary UIEventInit: original dictionary defined
+PASS Partial dictionary UIEventInit: member names are unique
+PASS Partial interface UIEvent[2]: member names are unique
+PASS Partial interface UIEvent[3]: member names are unique
+PASS Partial dictionary UIEventInit[2]: member names are unique
+PASS InputDeviceCapabilities interface: existence and properties of interface object
+PASS InputDeviceCapabilities interface object length
+PASS InputDeviceCapabilities interface object name
+PASS InputDeviceCapabilities interface: existence and properties of interface prototype object
+PASS InputDeviceCapabilities interface: existence and properties of interface prototype object's "constructor" property
+PASS InputDeviceCapabilities interface: existence and properties of interface prototype object's @@unscopables property
+PASS InputDeviceCapabilities interface: attribute firesTouchEvents
+FAIL InputDeviceCapabilities interface: attribute pointerMovementScrolls assert_true: The prototype object must have a property "pointerMovementScrolls" expected true got false
+PASS InputDeviceCapabilities must be primary interface of new InputDeviceCapabilities
+PASS Stringification of new InputDeviceCapabilities
+PASS InputDeviceCapabilities interface: new InputDeviceCapabilities must inherit property "firesTouchEvents" with the proper type
+FAIL InputDeviceCapabilities interface: new InputDeviceCapabilities must inherit property "pointerMovementScrolls" with the proper type assert_inherits: property "pointerMovementScrolls" not found in prototype chain
+PASS UIEvent interface: attribute sourceCapabilities
+Harness: the test ran to completion.
+

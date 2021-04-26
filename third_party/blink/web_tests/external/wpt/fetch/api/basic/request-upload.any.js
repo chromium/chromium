@@ -4,7 +4,7 @@
 // META: script=/common/get-host-info.sub.js
 
 function testUpload(desc, url, method, createBody, expectedBody) {
-  const requestInit = {"method": method}
+  const requestInit = {method};
   promise_test(function(test){
     const body = createBody();
     if (body) {
@@ -19,7 +19,7 @@ function testUpload(desc, url, method, createBody, expectedBody) {
 }
 
 function testUploadFailure(desc, url, method, createBody) {
-  const requestInit = {"method": method};
+  const requestInit = {method};
   promise_test(t => {
     const body = createBody();
     if (body) {
@@ -75,16 +75,7 @@ testUpload("Fetch with POST with Blob body with mime type", url,
   "POST",
   () => new Blob(["Test"], { type: "text/maybe" }),
   "Test");
-testUpload("Fetch with POST with ReadableStream", url,
-  "POST",
-  () => {
-    return new ReadableStream({start: controller => {
-      const encoder = new TextEncoder();
-      controller.enqueue(encoder.encode("Test"));
-      controller.close();
-    }})
-  },
-  "Test");
+
 testUploadFailure("Fetch with POST with ReadableStream containing String", url,
   "POST",
   () => {

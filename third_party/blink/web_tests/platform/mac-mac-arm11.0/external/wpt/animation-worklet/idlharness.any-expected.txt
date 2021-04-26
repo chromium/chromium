@@ -1,0 +1,24 @@
+This is a testharness.js-based test.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial namespace CSS: original namespace defined
+PASS Partial namespace CSS: valid exposure set
+PASS Partial namespace CSS: member names are unique
+PASS AnimationWorkletGlobalScope interface: existence and properties of interface object
+PASS WorkletAnimationEffect interface: existence and properties of interface object
+FAIL WorkletAnimation interface: existence and properties of interface object assert_equals: prototype of WorkletAnimation is not Animation expected function "function Animation() { [native code] }" but got function "function () { [native code] }"
+FAIL WorkletAnimation interface object length assert_equals: wrong value for WorkletAnimation.length expected 1 but got 2
+PASS WorkletAnimation interface object name
+FAIL WorkletAnimation interface: existence and properties of interface prototype object assert_equals: prototype of WorkletAnimation.prototype is not Animation.prototype expected object "[object Animation]" but got object "[object Object]"
+PASS WorkletAnimation interface: existence and properties of interface prototype object's "constructor" property
+PASS WorkletAnimation interface: existence and properties of interface prototype object's @@unscopables property
+PASS WorkletAnimation interface: attribute animatorName
+FAIL WorkletAnimation must be primary interface of new WorkletAnimation("name") assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'WorkletAnimation': 2 arguments required, but only 1 present."
+FAIL Stringification of new WorkletAnimation("name") assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'WorkletAnimation': 2 arguments required, but only 1 present."
+FAIL WorkletAnimation interface: new WorkletAnimation("name") must inherit property "animatorName" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "TypeError: Failed to construct 'WorkletAnimation': 2 arguments required, but only 1 present."
+PASS WorkletGroupEffect interface: existence and properties of interface object
+PASS WorkletGlobalScope interface: existence and properties of interface object
+PASS CSS namespace: operation escape(CSSOMString)
+FAIL CSS namespace: attribute animationWorklet assert_own_property: CSS does not have property "animationWorklet" expected property "animationWorklet" missing
+Harness: the test ran to completion.
+

@@ -1,0 +1,58 @@
+This is a testharness.js-based test.
+Found 54 tests; 48 PASS, 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS Single value - name is missing
+PASS Single value - empty name exists
+PASS Single value - Non-empty name exists
+PASS Null value should submit nothing
+PASS Multiple values - name content attribute is ignored
+PASS setFormValue with an empty FormData should submit nothing
+PASS Newline normalization - \n in name (urlencoded)
+PASS Newline normalization - \n in name (formdata)
+PASS Newline normalization - \r in name (urlencoded)
+PASS Newline normalization - \r in name (formdata)
+PASS Newline normalization - \r\n in name (urlencoded)
+PASS Newline normalization - \r\n in name (formdata)
+PASS Newline normalization - \n\r in name (urlencoded)
+PASS Newline normalization - \n\r in name (formdata)
+PASS Newline normalization - \n in value (urlencoded)
+PASS Newline normalization - \n in value (formdata)
+PASS Newline normalization - \r in value (urlencoded)
+PASS Newline normalization - \r in value (formdata)
+PASS Newline normalization - \r\n in value (urlencoded)
+PASS Newline normalization - \r\n in value (formdata)
+PASS Newline normalization - \n\r in value (urlencoded)
+PASS Newline normalization - \n\r in value (formdata)
+PASS Newline normalization - \n in filename (urlencoded)
+PASS Newline normalization - \n in filename (formdata)
+PASS Newline normalization - \r in filename (urlencoded)
+PASS Newline normalization - \r in filename (formdata)
+PASS Newline normalization - \r\n in filename (urlencoded)
+PASS Newline normalization - \r\n in filename (formdata)
+PASS Newline normalization - \n\r in filename (urlencoded)
+PASS Newline normalization - \n\r in filename (formdata)
+PASS Newline normalization - \n in FormData name (urlencoded)
+FAIL Newline normalization - \n in FormData name (formdata) assert_equals: expected "------WebKitFormBoundaryB0VRKIXY1CqZkfNg\r\nContent-Disposition: form-data; name=\"a%0D%0Ab\"\r\n\r\nc\r\n------WebKitFormBoundaryB0VRKIXY1CqZkfNg--\r\n" but got "------WebKitFormBoundaryB0VRKIXY1CqZkfNg\r\nContent-Disposition: form-data; name=\"a%0Ab\"\r\n\r\nc\r\n------WebKitFormBoundaryB0VRKIXY1CqZkfNg--\r\n"
+PASS Newline normalization - \r in FormData name (urlencoded)
+FAIL Newline normalization - \r in FormData name (formdata) assert_equals: expected "------WebKitFormBoundarywcJevUAJfIz3OtJ0\r\nContent-Disposition: form-data; name=\"a%0D%0Ab\"\r\n\r\nc\r\n------WebKitFormBoundarywcJevUAJfIz3OtJ0--\r\n" but got "------WebKitFormBoundarywcJevUAJfIz3OtJ0\r\nContent-Disposition: form-data; name=\"a%0Db\"\r\n\r\nc\r\n------WebKitFormBoundarywcJevUAJfIz3OtJ0--\r\n"
+PASS Newline normalization - \r\n in FormData name (urlencoded)
+PASS Newline normalization - \r\n in FormData name (formdata)
+PASS Newline normalization - \n\r in FormData name (urlencoded)
+FAIL Newline normalization - \n\r in FormData name (formdata) assert_equals: expected "------WebKitFormBoundary0reKgeVfSzjLWnrI\r\nContent-Disposition: form-data; name=\"a%0D%0A%0D%0Ab\"\r\n\r\nc\r\n------WebKitFormBoundary0reKgeVfSzjLWnrI--\r\n" but got "------WebKitFormBoundary0reKgeVfSzjLWnrI\r\nContent-Disposition: form-data; name=\"a%0A%0Db\"\r\n\r\nc\r\n------WebKitFormBoundary0reKgeVfSzjLWnrI--\r\n"
+PASS Newline normalization - \n in FormData value (urlencoded)
+FAIL Newline normalization - \n in FormData value (formdata) assert_equals: expected "------WebKitFormBoundaryQ2syVfbVE52aqDjB\r\nContent-Disposition: form-data; name=\"a\"\r\n\r\nb\r\nc\r\n------WebKitFormBoundaryQ2syVfbVE52aqDjB--\r\n" but got "------WebKitFormBoundaryQ2syVfbVE52aqDjB\r\nContent-Disposition: form-data; name=\"a\"\r\n\r\nb\nc\r\n------WebKitFormBoundaryQ2syVfbVE52aqDjB--\r\n"
+PASS Newline normalization - \r in FormData value (urlencoded)
+FAIL Newline normalization - \r in FormData value (formdata) assert_equals: expected "------WebKitFormBoundary5DqJ1URSAWyACKkN\r\nContent-Disposition: form-data; name=\"a\"\r\n\r\nb\r\nc\r\n------WebKitFormBoundary5DqJ1URSAWyACKkN--\r\n" but got "------WebKitFormBoundary5DqJ1URSAWyACKkN\r\nContent-Disposition: form-data; name=\"a\"\r\n\r\nb\rc\r\n------WebKitFormBoundary5DqJ1URSAWyACKkN--\r\n"
+PASS Newline normalization - \r\n in FormData value (urlencoded)
+PASS Newline normalization - \r\n in FormData value (formdata)
+PASS Newline normalization - \n\r in FormData value (urlencoded)
+FAIL Newline normalization - \n\r in FormData value (formdata) assert_equals: expected "------WebKitFormBoundarypg58LEH9AUOc04gh\r\nContent-Disposition: form-data; name=\"a\"\r\n\r\nb\r\n\r\nc\r\n------WebKitFormBoundarypg58LEH9AUOc04gh--\r\n" but got "------WebKitFormBoundarypg58LEH9AUOc04gh\r\nContent-Disposition: form-data; name=\"a\"\r\n\r\nb\n\rc\r\n------WebKitFormBoundarypg58LEH9AUOc04gh--\r\n"
+PASS Newline normalization - \n in FormData filename (urlencoded)
+PASS Newline normalization - \n in FormData filename (formdata)
+PASS Newline normalization - \r in FormData filename (urlencoded)
+PASS Newline normalization - \r in FormData filename (formdata)
+PASS Newline normalization - \r\n in FormData filename (urlencoded)
+PASS Newline normalization - \r\n in FormData filename (formdata)
+PASS Newline normalization - \n\r in FormData filename (urlencoded)
+PASS Newline normalization - \n\r in FormData filename (formdata)
+Harness: the test ran to completion.
+

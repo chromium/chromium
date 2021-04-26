@@ -14,5 +14,5 @@ function test_computed_style_aspect_ratio(tag, attributes, expected) {
       assert_equals(aspectRatio, expected);
     }
     elem.remove();
-  }, `${tag} with ${JSON.stringify(attributes)}`);
+  }, `Computed style test: ${tag} with ${JSON.stringify(attributes)}`);
 }

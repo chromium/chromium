@@ -1,0 +1,280 @@
+This is a testharness.js-based test.
+Found 276 tests; 196 PASS, 80 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS idl_test setup
+PASS idl_test validation
+FAIL USB device setup promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'configurations' of undefined"
+PASS Partial interface Navigator: original interface defined
+PASS Partial interface Navigator: valid exposure set
+PASS Partial interface Navigator: member names are unique
+PASS Partial interface WorkerNavigator: original interface defined
+PASS Partial interface WorkerNavigator: valid exposure set
+PASS Partial interface WorkerNavigator: member names are unique
+PASS Partial interface Navigator[2]: member names are unique
+PASS Partial interface WorkerNavigator[2]: member names are unique
+PASS Partial interface mixin NavigatorID: member names are unique
+PASS Navigator includes NavigatorID: member names are unique
+PASS Navigator includes NavigatorLanguage: member names are unique
+PASS Navigator includes NavigatorOnLine: member names are unique
+PASS Navigator includes NavigatorContentUtils: member names are unique
+PASS Navigator includes NavigatorCookies: member names are unique
+PASS Navigator includes NavigatorPlugins: member names are unique
+PASS Navigator includes NavigatorConcurrentHardware: member names are unique
+PASS WorkerNavigator includes NavigatorID: member names are unique
+PASS WorkerNavigator includes NavigatorLanguage: member names are unique
+PASS WorkerNavigator includes NavigatorOnLine: member names are unique
+PASS WorkerNavigator includes NavigatorConcurrentHardware: member names are unique
+PASS USB interface: existence and properties of interface object
+PASS USB interface object length
+PASS USB interface object name
+PASS USB interface: existence and properties of interface prototype object
+PASS USB interface: existence and properties of interface prototype object's "constructor" property
+PASS USB interface: existence and properties of interface prototype object's @@unscopables property
+PASS USB interface: attribute onconnect
+PASS USB interface: attribute ondisconnect
+PASS USB interface: operation getDevices()
+PASS USB interface: operation requestDevice(USBDeviceRequestOptions)
+PASS USB must be primary interface of navigator.usb
+PASS Stringification of navigator.usb
+PASS USB interface: navigator.usb must inherit property "onconnect" with the proper type
+PASS USB interface: navigator.usb must inherit property "ondisconnect" with the proper type
+PASS USB interface: navigator.usb must inherit property "getDevices()" with the proper type
+PASS USB interface: navigator.usb must inherit property "requestDevice(USBDeviceRequestOptions)" with the proper type
+PASS USB interface: calling requestDevice(USBDeviceRequestOptions) on navigator.usb with too few arguments must throw TypeError
+PASS USBConnectionEvent interface: existence and properties of interface object
+PASS USBConnectionEvent interface object length
+PASS USBConnectionEvent interface object name
+PASS USBConnectionEvent interface: existence and properties of interface prototype object
+PASS USBConnectionEvent interface: existence and properties of interface prototype object's "constructor" property
+PASS USBConnectionEvent interface: existence and properties of interface prototype object's @@unscopables property
+PASS USBConnectionEvent interface: attribute device
+FAIL USBConnectionEvent must be primary interface of usbConnectionEvent assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbConnectionEvent is not defined"
+FAIL Stringification of usbConnectionEvent assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbConnectionEvent is not defined"
+FAIL USBConnectionEvent interface: usbConnectionEvent must inherit property "device" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbConnectionEvent is not defined"
+PASS USBDevice interface: existence and properties of interface object
+PASS USBDevice interface object length
+PASS USBDevice interface object name
+PASS USBDevice interface: existence and properties of interface prototype object
+PASS USBDevice interface: existence and properties of interface prototype object's "constructor" property
+PASS USBDevice interface: existence and properties of interface prototype object's @@unscopables property
+PASS USBDevice interface: attribute usbVersionMajor
+PASS USBDevice interface: attribute usbVersionMinor
+PASS USBDevice interface: attribute usbVersionSubminor
+PASS USBDevice interface: attribute deviceClass
+PASS USBDevice interface: attribute deviceSubclass
+PASS USBDevice interface: attribute deviceProtocol
+PASS USBDevice interface: attribute vendorId
+PASS USBDevice interface: attribute productId
+PASS USBDevice interface: attribute deviceVersionMajor
+PASS USBDevice interface: attribute deviceVersionMinor
+PASS USBDevice interface: attribute deviceVersionSubminor
+PASS USBDevice interface: attribute manufacturerName
+PASS USBDevice interface: attribute productName
+PASS USBDevice interface: attribute serialNumber
+PASS USBDevice interface: attribute configuration
+PASS USBDevice interface: attribute configurations
+PASS USBDevice interface: attribute opened
+PASS USBDevice interface: operation open()
+PASS USBDevice interface: operation close()
+PASS USBDevice interface: operation selectConfiguration(octet)
+PASS USBDevice interface: operation claimInterface(octet)
+PASS USBDevice interface: operation releaseInterface(octet)
+PASS USBDevice interface: operation selectAlternateInterface(octet, octet)
+PASS USBDevice interface: operation controlTransferIn(USBControlTransferParameters, unsigned short)
+PASS USBDevice interface: operation controlTransferOut(USBControlTransferParameters, optional BufferSource)
+PASS USBDevice interface: operation clearHalt(USBDirection, octet)
+PASS USBDevice interface: operation transferIn(octet, unsigned long)
+PASS USBDevice interface: operation transferOut(octet, BufferSource)
+PASS USBDevice interface: operation isochronousTransferIn(octet, sequence<unsigned long>)
+PASS USBDevice interface: operation isochronousTransferOut(octet, BufferSource, sequence<unsigned long>)
+PASS USBDevice interface: operation reset()
+FAIL USBDevice must be primary interface of usbDevice assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL Stringification of usbDevice assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: usbDevice must inherit property "usbVersionMajor" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: usbDevice must inherit property "usbVersionMinor" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: usbDevice must inherit property "usbVersionSubminor" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: usbDevice must inherit property "deviceClass" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: usbDevice must inherit property "deviceSubclass" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: usbDevice must inherit property "deviceProtocol" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: usbDevice must inherit property "vendorId" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: usbDevice must inherit property "productId" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: usbDevice must inherit property "deviceVersionMajor" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: usbDevice must inherit property "deviceVersionMinor" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: usbDevice must inherit property "deviceVersionSubminor" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: usbDevice must inherit property "manufacturerName" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: usbDevice must inherit property "productName" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: usbDevice must inherit property "serialNumber" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: usbDevice must inherit property "configuration" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: usbDevice must inherit property "configurations" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: usbDevice must inherit property "opened" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: usbDevice must inherit property "open()" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: usbDevice must inherit property "close()" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: usbDevice must inherit property "selectConfiguration(octet)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: calling selectConfiguration(octet) on usbDevice with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: usbDevice must inherit property "claimInterface(octet)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: calling claimInterface(octet) on usbDevice with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: usbDevice must inherit property "releaseInterface(octet)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: calling releaseInterface(octet) on usbDevice with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: usbDevice must inherit property "selectAlternateInterface(octet, octet)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: calling selectAlternateInterface(octet, octet) on usbDevice with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: usbDevice must inherit property "controlTransferIn(USBControlTransferParameters, unsigned short)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: calling controlTransferIn(USBControlTransferParameters, unsigned short) on usbDevice with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: usbDevice must inherit property "controlTransferOut(USBControlTransferParameters, optional BufferSource)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: calling controlTransferOut(USBControlTransferParameters, optional BufferSource) on usbDevice with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: usbDevice must inherit property "clearHalt(USBDirection, octet)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: calling clearHalt(USBDirection, octet) on usbDevice with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: usbDevice must inherit property "transferIn(octet, unsigned long)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: calling transferIn(octet, unsigned long) on usbDevice with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: usbDevice must inherit property "transferOut(octet, BufferSource)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: calling transferOut(octet, BufferSource) on usbDevice with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: usbDevice must inherit property "isochronousTransferIn(octet, sequence<unsigned long>)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: calling isochronousTransferIn(octet, sequence<unsigned long>) on usbDevice with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: usbDevice must inherit property "isochronousTransferOut(octet, BufferSource, sequence<unsigned long>)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: calling isochronousTransferOut(octet, BufferSource, sequence<unsigned long>) on usbDevice with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+FAIL USBDevice interface: usbDevice must inherit property "reset()" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbDevice is not defined"
+PASS USBInTransferResult interface: existence and properties of interface object
+PASS USBInTransferResult interface object length
+PASS USBInTransferResult interface object name
+PASS USBInTransferResult interface: existence and properties of interface prototype object
+PASS USBInTransferResult interface: existence and properties of interface prototype object's "constructor" property
+PASS USBInTransferResult interface: existence and properties of interface prototype object's @@unscopables property
+PASS USBInTransferResult interface: attribute data
+PASS USBInTransferResult interface: attribute status
+PASS USBInTransferResult must be primary interface of new USBInTransferResult("ok")
+PASS Stringification of new USBInTransferResult("ok")
+PASS USBInTransferResult interface: new USBInTransferResult("ok") must inherit property "data" with the proper type
+PASS USBInTransferResult interface: new USBInTransferResult("ok") must inherit property "status" with the proper type
+PASS USBOutTransferResult interface: existence and properties of interface object
+PASS USBOutTransferResult interface object length
+PASS USBOutTransferResult interface object name
+PASS USBOutTransferResult interface: existence and properties of interface prototype object
+PASS USBOutTransferResult interface: existence and properties of interface prototype object's "constructor" property
+PASS USBOutTransferResult interface: existence and properties of interface prototype object's @@unscopables property
+PASS USBOutTransferResult interface: attribute bytesWritten
+PASS USBOutTransferResult interface: attribute status
+PASS USBOutTransferResult must be primary interface of new USBOutTransferResult("ok")
+PASS Stringification of new USBOutTransferResult("ok")
+PASS USBOutTransferResult interface: new USBOutTransferResult("ok") must inherit property "bytesWritten" with the proper type
+PASS USBOutTransferResult interface: new USBOutTransferResult("ok") must inherit property "status" with the proper type
+PASS USBIsochronousInTransferPacket interface: existence and properties of interface object
+PASS USBIsochronousInTransferPacket interface object length
+PASS USBIsochronousInTransferPacket interface object name
+PASS USBIsochronousInTransferPacket interface: existence and properties of interface prototype object
+PASS USBIsochronousInTransferPacket interface: existence and properties of interface prototype object's "constructor" property
+PASS USBIsochronousInTransferPacket interface: existence and properties of interface prototype object's @@unscopables property
+PASS USBIsochronousInTransferPacket interface: attribute data
+PASS USBIsochronousInTransferPacket interface: attribute status
+PASS USBIsochronousInTransferPacket must be primary interface of new USBIsochronousInTransferPacket("ok")
+PASS Stringification of new USBIsochronousInTransferPacket("ok")
+PASS USBIsochronousInTransferPacket interface: new USBIsochronousInTransferPacket("ok") must inherit property "data" with the proper type
+PASS USBIsochronousInTransferPacket interface: new USBIsochronousInTransferPacket("ok") must inherit property "status" with the proper type
+PASS USBIsochronousInTransferResult interface: existence and properties of interface object
+PASS USBIsochronousInTransferResult interface object length
+PASS USBIsochronousInTransferResult interface object name
+PASS USBIsochronousInTransferResult interface: existence and properties of interface prototype object
+PASS USBIsochronousInTransferResult interface: existence and properties of interface prototype object's "constructor" property
+PASS USBIsochronousInTransferResult interface: existence and properties of interface prototype object's @@unscopables property
+PASS USBIsochronousInTransferResult interface: attribute data
+PASS USBIsochronousInTransferResult interface: attribute packets
+PASS USBIsochronousInTransferResult must be primary interface of new USBIsochronousInTransferResult([])
+PASS Stringification of new USBIsochronousInTransferResult([])
+PASS USBIsochronousInTransferResult interface: new USBIsochronousInTransferResult([]) must inherit property "data" with the proper type
+PASS USBIsochronousInTransferResult interface: new USBIsochronousInTransferResult([]) must inherit property "packets" with the proper type
+PASS USBIsochronousOutTransferPacket interface: existence and properties of interface object
+PASS USBIsochronousOutTransferPacket interface object length
+PASS USBIsochronousOutTransferPacket interface object name
+PASS USBIsochronousOutTransferPacket interface: existence and properties of interface prototype object
+PASS USBIsochronousOutTransferPacket interface: existence and properties of interface prototype object's "constructor" property
+PASS USBIsochronousOutTransferPacket interface: existence and properties of interface prototype object's @@unscopables property
+PASS USBIsochronousOutTransferPacket interface: attribute bytesWritten
+PASS USBIsochronousOutTransferPacket interface: attribute status
+PASS USBIsochronousOutTransferPacket must be primary interface of new USBIsochronousOutTransferPacket("ok")
+PASS Stringification of new USBIsochronousOutTransferPacket("ok")
+PASS USBIsochronousOutTransferPacket interface: new USBIsochronousOutTransferPacket("ok") must inherit property "bytesWritten" with the proper type
+PASS USBIsochronousOutTransferPacket interface: new USBIsochronousOutTransferPacket("ok") must inherit property "status" with the proper type
+PASS USBIsochronousOutTransferResult interface: existence and properties of interface object
+PASS USBIsochronousOutTransferResult interface object length
+PASS USBIsochronousOutTransferResult interface object name
+PASS USBIsochronousOutTransferResult interface: existence and properties of interface prototype object
+PASS USBIsochronousOutTransferResult interface: existence and properties of interface prototype object's "constructor" property
+PASS USBIsochronousOutTransferResult interface: existence and properties of interface prototype object's @@unscopables property
+PASS USBIsochronousOutTransferResult interface: attribute packets
+PASS USBIsochronousOutTransferResult must be primary interface of new USBIsochronousOutTransferResult([])
+PASS Stringification of new USBIsochronousOutTransferResult([])
+PASS USBIsochronousOutTransferResult interface: new USBIsochronousOutTransferResult([]) must inherit property "packets" with the proper type
+PASS USBConfiguration interface: existence and properties of interface object
+PASS USBConfiguration interface object length
+PASS USBConfiguration interface object name
+PASS USBConfiguration interface: existence and properties of interface prototype object
+PASS USBConfiguration interface: existence and properties of interface prototype object's "constructor" property
+PASS USBConfiguration interface: existence and properties of interface prototype object's @@unscopables property
+PASS USBConfiguration interface: attribute configurationValue
+PASS USBConfiguration interface: attribute configurationName
+PASS USBConfiguration interface: attribute interfaces
+FAIL USBConfiguration must be primary interface of usbConfiguration assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbConfiguration is not defined"
+FAIL Stringification of usbConfiguration assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbConfiguration is not defined"
+FAIL USBConfiguration interface: usbConfiguration must inherit property "configurationValue" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbConfiguration is not defined"
+FAIL USBConfiguration interface: usbConfiguration must inherit property "configurationName" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbConfiguration is not defined"
+FAIL USBConfiguration interface: usbConfiguration must inherit property "interfaces" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbConfiguration is not defined"
+PASS USBInterface interface: existence and properties of interface object
+PASS USBInterface interface object length
+PASS USBInterface interface object name
+PASS USBInterface interface: existence and properties of interface prototype object
+PASS USBInterface interface: existence and properties of interface prototype object's "constructor" property
+PASS USBInterface interface: existence and properties of interface prototype object's @@unscopables property
+PASS USBInterface interface: attribute interfaceNumber
+PASS USBInterface interface: attribute alternate
+PASS USBInterface interface: attribute alternates
+PASS USBInterface interface: attribute claimed
+FAIL USBInterface must be primary interface of usbInterface assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbInterface is not defined"
+FAIL Stringification of usbInterface assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbInterface is not defined"
+FAIL USBInterface interface: usbInterface must inherit property "interfaceNumber" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbInterface is not defined"
+FAIL USBInterface interface: usbInterface must inherit property "alternate" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbInterface is not defined"
+FAIL USBInterface interface: usbInterface must inherit property "alternates" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbInterface is not defined"
+FAIL USBInterface interface: usbInterface must inherit property "claimed" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbInterface is not defined"
+PASS USBAlternateInterface interface: existence and properties of interface object
+PASS USBAlternateInterface interface object length
+PASS USBAlternateInterface interface object name
+PASS USBAlternateInterface interface: existence and properties of interface prototype object
+PASS USBAlternateInterface interface: existence and properties of interface prototype object's "constructor" property
+PASS USBAlternateInterface interface: existence and properties of interface prototype object's @@unscopables property
+PASS USBAlternateInterface interface: attribute alternateSetting
+PASS USBAlternateInterface interface: attribute interfaceClass
+PASS USBAlternateInterface interface: attribute interfaceSubclass
+PASS USBAlternateInterface interface: attribute interfaceProtocol
+PASS USBAlternateInterface interface: attribute interfaceName
+PASS USBAlternateInterface interface: attribute endpoints
+FAIL USBAlternateInterface must be primary interface of usbAlternateInterface assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbAlternateInterface is not defined"
+FAIL Stringification of usbAlternateInterface assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbAlternateInterface is not defined"
+FAIL USBAlternateInterface interface: usbAlternateInterface must inherit property "alternateSetting" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbAlternateInterface is not defined"
+FAIL USBAlternateInterface interface: usbAlternateInterface must inherit property "interfaceClass" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbAlternateInterface is not defined"
+FAIL USBAlternateInterface interface: usbAlternateInterface must inherit property "interfaceSubclass" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbAlternateInterface is not defined"
+FAIL USBAlternateInterface interface: usbAlternateInterface must inherit property "interfaceProtocol" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbAlternateInterface is not defined"
+FAIL USBAlternateInterface interface: usbAlternateInterface must inherit property "interfaceName" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbAlternateInterface is not defined"
+FAIL USBAlternateInterface interface: usbAlternateInterface must inherit property "endpoints" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbAlternateInterface is not defined"
+PASS USBEndpoint interface: existence and properties of interface object
+PASS USBEndpoint interface object length
+PASS USBEndpoint interface object name
+PASS USBEndpoint interface: existence and properties of interface prototype object
+PASS USBEndpoint interface: existence and properties of interface prototype object's "constructor" property
+PASS USBEndpoint interface: existence and properties of interface prototype object's @@unscopables property
+PASS USBEndpoint interface: attribute endpointNumber
+PASS USBEndpoint interface: attribute direction
+PASS USBEndpoint interface: attribute type
+PASS USBEndpoint interface: attribute packetSize
+FAIL USBEndpoint must be primary interface of usbEndpoint assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbEndpoint is not defined"
+FAIL Stringification of usbEndpoint assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbEndpoint is not defined"
+FAIL USBEndpoint interface: usbEndpoint must inherit property "endpointNumber" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbEndpoint is not defined"
+FAIL USBEndpoint interface: usbEndpoint must inherit property "direction" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbEndpoint is not defined"
+FAIL USBEndpoint interface: usbEndpoint must inherit property "type" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbEndpoint is not defined"
+FAIL USBEndpoint interface: usbEndpoint must inherit property "packetSize" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: usbEndpoint is not defined"
+FAIL USBPermissionResult interface: existence and properties of interface object assert_own_property: self does not have own property "USBPermissionResult" expected property "USBPermissionResult" missing
+FAIL USBPermissionResult interface object length assert_own_property: self does not have own property "USBPermissionResult" expected property "USBPermissionResult" missing
+FAIL USBPermissionResult interface object name assert_own_property: self does not have own property "USBPermissionResult" expected property "USBPermissionResult" missing
+FAIL USBPermissionResult interface: existence and properties of interface prototype object assert_own_property: self does not have own property "USBPermissionResult" expected property "USBPermissionResult" missing
+FAIL USBPermissionResult interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "USBPermissionResult" expected property "USBPermissionResult" missing
+FAIL USBPermissionResult interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "USBPermissionResult" expected property "USBPermissionResult" missing
+FAIL USBPermissionResult interface: attribute devices assert_own_property: self does not have own property "USBPermissionResult" expected property "USBPermissionResult" missing
+PASS Navigator interface: attribute usb
+PASS Navigator interface: navigator must inherit property "usb" with the proper type
+Harness: the test ran to completion.
+

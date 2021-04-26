@@ -32,7 +32,5 @@ PASS PaymentInstruments interface: operation clear()
 PASS CanMakePaymentEvent interface: existence and properties of interface object
 PASS PaymentRequestEvent interface: existence and properties of interface object
 PASS ServiceWorkerRegistration interface: attribute paymentManager
-PASS ServiceWorkerGlobalScope interface: existence and properties of interface object
-PASS ExtendableEvent interface: existence and properties of interface object
 Harness: the test ran to completion.
 

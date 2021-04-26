@@ -695,7 +695,7 @@ interface TextTrackCue : EventTarget {
 
   attribute DOMString id;
   attribute double startTime;
-  attribute double endTime;
+  attribute unrestricted double endTime;
   attribute boolean pauseOnExit;
 
   attribute EventHandler onenter;
@@ -1231,6 +1231,7 @@ interface HTMLSlotElement : HTMLElement {
   [CEReactions] attribute DOMString name;
   sequence<Node> assignedNodes(optional AssignedNodesOptions options = {});
   sequence<Element> assignedElements(optional AssignedNodesOptions options = {});
+  undefined assign((Element or Text)... nodes);
 };
 
 dictionary AssignedNodesOptions {
@@ -1738,8 +1739,8 @@ interface History {
   undefined go(optional long delta = 0);
   undefined back();
   undefined forward();
-  undefined pushState(any data, DOMString title, optional USVString? url = null);
-  undefined replaceState(any data, DOMString title, optional USVString? url = null);
+  undefined pushState(any data, DOMString unused, optional USVString? url = null);
+  undefined replaceState(any data, DOMString unused, optional USVString? url = null);
 };
 
 [Exposed=Window]
