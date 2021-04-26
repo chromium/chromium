@@ -13,7 +13,6 @@
 #include "chrome/browser/chromeos/policy/status_uploader.h"
 #include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
@@ -60,10 +59,7 @@ ChildStatusReportingService::ChildStatusReportingService(
           base::Unretained(this)));
 
   CreateStatusUploaderIfNeeded(user_cloud_policy_manager_->core()->client());
-
-  if (base::FeatureList::IsEnabled(features::kEventBasedStatusReporting)) {
-    EventBasedStatusReportingServiceFactory::GetForBrowserContext(context);
-  }
+  EventBasedStatusReportingServiceFactory::GetForBrowserContext(context);
 }
 
 ChildStatusReportingService::~ChildStatusReportingService() = default;

@@ -396,12 +396,6 @@ const base::Feature kEnterpriseReportingInChromeOS{
     "EnterpriseReportingInChromeOS", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Enables event-based status reporting for child accounts in Chrome OS.
-const base::Feature kEventBasedStatusReporting{
-    "EventBasedStatusReporting", base::FEATURE_ENABLED_BY_DEFAULT};
-#endif
-
 #if !defined(OS_ANDROID)
 // Enables real-time reporting for extension request
 const base::Feature kEnterpriseRealtimeExtensionRequest{

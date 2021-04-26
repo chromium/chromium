@@ -164,16 +164,8 @@ void ScreenTimeController::CheckTimeLimit(const std::string& source) {
   if (state.is_locked) {
     OnScreenLockByPolicy(state.active_policy, state.next_unlock_time);
     DCHECK(!state.next_unlock_time.is_null());
-    if (!session_manager::SessionManager::Get()->IsScreenLocked()) {
-      // This status report are going to be done in EventBasedStatusReporting if
-      // this feature is enabled.
-      if (!base::FeatureList::IsEnabled(features::kEventBasedStatusReporting)) {
-        VLOG(1) << "Request status report before locking screen.";
-        ChildStatusReportingServiceFactory::GetForBrowserContext(context_)
-            ->RequestImmediateStatusReport();
-      }
+    if (!session_manager::SessionManager::Get()->IsScreenLocked())
       ForceScreenLockByPolicy();
-    }
   } else {
     OnScreenLockByPolicyEnd();
     base::Optional<TimeLimitNotifier::LimitType> notification_type =
