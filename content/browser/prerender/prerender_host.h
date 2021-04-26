@@ -27,18 +27,13 @@ class RenderFrameHostImpl;
 class WebContentsImpl;
 
 // Prerender2:
-// PrerenderHost creates a new WebContents and starts prerendering with that.
-// Then navigation code is expected to find this host from PrerenderHostRegistry
-// and activate the prerendered WebContents upon navigation. This is created per
-// request from a renderer process via PrerenderProcessor or will directly be
-// created for browser-initiated prerendering (this code path is not implemented
-// yet). This is owned by PrerenderHostRegistry.
-//
-// TODO(https://crbug.com/1132746): This class has two different ways of
-// prerendering the page: a dedicated WebContents instance or using a separate
-// FrameTree instance (MPArch). You can choose one or the other via the feature
-// parameter "implementation". The MPArch code is still in its very early stages
-// but will eventually completely replace the WebContents approach.
+// PrerenderHost creates a new FrameTree in WebContents associated with the page
+// that triggered prerendering and starts prerendering. Then NavigationRequest
+// is expected to find this host from PrerenderHostRegistry and activate the
+// prerendered page upon navigation. This is created per request from a renderer
+// process via PrerenderProcessor or will directly be created for
+// browser-initiated prerendering (this code path is not implemented yet). This
+// is owned by PrerenderHostRegistry.
 class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
  public:
   class Observer : public base::CheckedObserver {
@@ -84,14 +79,10 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   // WebContentsObserver implementation:
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
 
-  // Activates the prerendered contents. This must be called after this host
-  // gets ready for activation. `old_render_frame_host` is the RenderFrameHost
-  // that will be swapped out and destroyed by the activation. For MPArch
-  // implementation, returns the activating page prepared for cross-FrameTree
-  // transfer. For multiple WebContents implementation, always returns nullptr.
-  //
-  // TODO(https://crbug.com/1154501): WebContents implementation will need to be
-  // removed.
+  // Activates the prerendered page and returns BackForwardCacheImpl::Entry
+  // containing the page. This must be called after this host gets ready for
+  // activation. `old_render_frame_host` is the RenderFrameHost that will be
+  // swapped out and destroyed by the activation.
   //
   // TODO(https://crbug.com/1170277): Potentially update implementation so that
   // the |old_render_frame_host| parameter is not required.
