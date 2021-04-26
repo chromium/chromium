@@ -195,6 +195,7 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::kGetCurrentBrowsingContextMedia,
           WebFeature::kLaxAllowingUnsafeCookies,
           WebFeature::kOpenWebDatabaseThirdPartyContext,
+          WebFeature::kOversrollBehaviorOnViewportBreaks,
           WebFeature::kPaymentRequestCSPViolation,
           WebFeature::kRequestedFileSystemPersistentThirdPartyContext,
           WebFeature::kPrefixedStorageInfoThirdPartyContext,
