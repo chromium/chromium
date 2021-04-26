@@ -199,7 +199,7 @@ def summarize_results(port_obj,
     merged_results_by_name = collections.defaultdict(list)
     for test_run_results in [initial_results] + all_retry_results:
         # all_results does not include SKIP, so we need results_by_name.
-        for test_name, result in test_run_results.results_by_name.iteritems():
+        for test_name, result in test_run_results.results_by_name.items():
             if result.type == ResultType.Skip:
                 is_unexpected = test_name in test_run_results.unexpected_results_by_name
                 merged_results_by_name[test_name].append((result,
@@ -213,7 +213,7 @@ def summarize_results(port_obj,
 
     # Finally, compute the tests dict.
     tests = {}
-    for test_name, merged_results in merged_results_by_name.iteritems():
+    for test_name, merged_results in merged_results_by_name.items():
         initial_result = merged_results[0][0]
 
         if only_include_failing and initial_result.type == ResultType.Skip:
