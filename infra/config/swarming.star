@@ -145,6 +145,8 @@ swarming.pool_realm(
     groups = [
         # Allow CI builders (mac-arm64-rel-tests) to trigger tests.
         "project-chromium-ci-task-accounts",
+        # V8 *CI* is using these Macs, too.
+        "project-v8-ci-task-accounts",
     ],
 )
 
