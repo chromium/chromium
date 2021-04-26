@@ -4871,17 +4871,22 @@ HRESULT AXPlatformNodeWin::GetTextAttributeValue(
       result->Insert<VT_BOOL>(
           GetData().HasTextStyle(ax::mojom::TextStyle::kItalic));
       break;
-    case UIA_IsReadOnlyAttributeId:
-      // Placeholder text should return the enclosing element's read-only value.
-      if (IsPlaceholderText()) {
-        AXPlatformNodeWin* parent_platform_node =
-            static_cast<AXPlatformNodeWin*>(
-                FromNativeViewAccessible(GetParent()));
-        return parent_platform_node->GetTextAttributeValue(
-            attribute_id, start_offset, end_offset, result);
+    case UIA_IsReadOnlyAttributeId: {
+      if (!IsText()) {
+        result->Insert<VT_BOOL>(GetData().IsReadOnlyOrDisabled());
+      } else {
+        // TODO(nektar): Does not work in rich text fields.
+        AXPlatformNodeWin* text_field = static_cast<AXPlatformNodeWin*>(
+            FromNativeViewAccessible(GetParent()));
+        DCHECK(text_field);
+        if (text_field->IsTextField()) {
+          result->Insert<VT_BOOL>(text_field->GetData().IsReadOnlyOrDisabled());
+        } else {
+          result->Insert<VT_BOOL>(GetData().IsReadOnlyOrDisabled());
+        }
       }
-      result->Insert<VT_BOOL>(GetData().IsReadOnlyOrDisabled());
       break;
+    }
     case UIA_IsSubscriptAttributeId:
       result->Insert<VT_BOOL>(GetData().GetTextPosition() ==
                               ax::mojom::TextPosition::kSubscript);
@@ -4968,7 +4973,7 @@ HRESULT AXPlatformNodeWin::GetAnnotationTypesAttribute(
   MarkerTypeRangeResult grammar_result = MarkerTypeRangeResult::kNone;
   MarkerTypeRangeResult spelling_result = MarkerTypeRangeResult::kNone;
 
-  if (IsText() || IsPlainTextField()) {
+  if (IsText() || IsNativeTextField()) {
     grammar_result = GetMarkerTypeFromRange(start_offset, end_offset,
                                             ax::mojom::MarkerType::kGrammar);
     spelling_result = GetMarkerTypeFromRange(start_offset, end_offset,
@@ -5178,13 +5183,13 @@ AXPlatformNodeWin::GetMarkerTypeFromRange(
     const base::Optional<int>& start_offset,
     const base::Optional<int>& end_offset,
     ax::mojom::MarkerType marker_type) {
-  DCHECK(IsText() || IsPlainTextField());
+  DCHECK(IsText() || IsNativeTextField());
   std::vector<std::pair<int, int>> relevant_ranges;
 
   if (IsText()) {
     AggregateRangesForMarkerType(this, marker_type, /*offset_ranges_amount=*/0,
                                  &relevant_ranges);
-  } else if (IsPlainTextField()) {
+  } else if (IsNativeTextField()) {
     int offset_ranges_amount = 0;
     for (AXPlatformNodeBase* static_text = GetFirstTextOnlyDescendant();
          static_text; static_text = static_text->GetNextSibling()) {
@@ -7485,7 +7490,7 @@ bool AXPlatformNodeWin::IsInaccessibleDueToAncestor() const {
 }
 
 bool AXPlatformNodeWin::ShouldHideChildrenForUIA() const {
-  if (IsPlainTextField())
+  if (IsNativeTextField())
     return true;
 
   auto role = GetData().role;
@@ -7979,14 +7984,14 @@ HRESULT AXPlatformNodeWin::AllocateComArrayFromVector(
 }
 
 bool AXPlatformNodeWin::IsPlaceholderText() const {
-  if (GetData().role != ax::mojom::Role::kStaticText)
+  if (!IsText())
     return false;
-  AXPlatformNodeWin* parent =
-      static_cast<AXPlatformNodeWin*>(FromNativeViewAccessible(GetParent()));
-  // Static text nodes are always expected to have a parent.
-  DCHECK(parent);
-  return parent->IsTextField() &&
-         parent->HasStringAttribute(ax::mojom::StringAttribute::kPlaceholder);
+  AXPlatformNodeWin* text_field = static_cast<AXPlatformNodeWin*>(
+      FromNativeViewAccessible(GetDelegate()->GetLowestPlatformAncestor()));
+  DCHECK(text_field);
+  return text_field->IsTextField() &&
+         text_field->HasStringAttribute(
+             ax::mojom::StringAttribute::kPlaceholder);
 }
 
 bool AXPlatformNodeWin::IsHyperlink() {

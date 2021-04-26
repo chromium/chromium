@@ -267,13 +267,12 @@ struct AX_BASE_EXPORT AXNodeData {
   // This data belongs to a text field that is used for entering passwords.
   bool IsPasswordField() const;
 
-  // This data belongs to a text field that doesn't accept rich text content,
-  // such as text with special formatting or styling.
-  bool IsPlainTextField() const;
+  // This data belongs to a native text field, i.e. <input> or <textarea>.
+  bool IsNativeTextField() const;
 
-  // This data belongs to a text field that accepts rich text content, such as
-  // text with special formatting or styling.
-  bool IsRichTextField() const;
+  // This data belongs to a text field that is created using the CSS
+  // "user-modify" property, or the "contenteditable" attribute.
+  bool IsNonNativeTextField() const;
 
   // Helper to determine if |GetRestriction| is either ReadOnly or Disabled.
   // By default, all nodes that can't be edited are readonly.

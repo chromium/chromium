@@ -1906,7 +1906,7 @@ std::u16string BrowserAccessibilityAndroid::GetTextChangeBeforeText() const {
 
 int BrowserAccessibilityAndroid::GetSelectionStart() const {
   int sel_start = 0;
-  if (IsPlainTextField() &&
+  if (IsNativeTextField() &&
       GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart, &sel_start)) {
     return sel_start;
   }
@@ -1928,7 +1928,7 @@ int BrowserAccessibilityAndroid::GetSelectionStart() const {
 
 int BrowserAccessibilityAndroid::GetSelectionEnd() const {
   int sel_end = 0;
-  if (IsPlainTextField() &&
+  if (IsNativeTextField() &&
       GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd, &sel_end)) {
     return sel_end;
   }
@@ -2177,7 +2177,7 @@ void BrowserAccessibilityAndroid::GetSuggestions(
   DCHECK(suggestion_starts);
   DCHECK(suggestion_ends);
 
-  if (!IsRichTextField() && !IsPlainTextField())
+  if (!IsTextField())
     return;
 
   // TODO(accessibility): using FindTextOnlyObjectsInRange or NextInTreeOrder

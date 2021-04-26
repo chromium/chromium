@@ -417,7 +417,8 @@ class AXPlatformNodeTextRangeProviderTest : public ui::AXPlatformNodeWinTest {
 
     text_field.role = ax::mojom::Role::kTextField;
     text_field.AddState(ax::mojom::State::kEditable);
-    text_field.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot, true);
+    text_field.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
+                                  "input");
     text_field.SetValue(ALL_TEXT);
     text_field.AddIntListAttribute(
         ax::mojom::IntListAttribute::kCachedLineStarts,
@@ -2901,6 +2902,9 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   ui::AXNodeData text_input_data;
   text_input_data.id = 4;
   text_input_data.role = ax::mojom::Role::kTextField;
+  text_input_data.AddState(ax::mojom::State::kEditable);
+  text_input_data.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
+                                     "input");
 
   ui::AXNodeData group2_data;
   group2_data.id = 5;
@@ -2921,6 +2925,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   ui::AXNodeData empty_text_data;
   empty_text_data.id = 7;
   empty_text_data.role = ax::mojom::Role::kStaticText;
+  empty_text_data.AddState(ax::mojom::State::kEditable);
   text_content = "";
   empty_text_data.SetName(text_content);
   ComputeWordBoundariesOffsets(text_content, word_start_offsets,
@@ -3278,11 +3283,14 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   ui::AXNodeData search_box;
   search_box.id = 13;
   search_box.role = ax::mojom::Role::kSearchBox;
+  search_box.AddState(ax::mojom::State::kEditable);
+  search_box.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "input");
   paragraph_data.child_ids.push_back(search_box.id);
 
   ui::AXNodeData search_text;
   search_text.id = 14;
   search_text.role = ax::mojom::Role::kStaticText;
+  search_text.AddState(ax::mojom::State::kEditable);
   search_text.SetName("placeholder");
   search_box.child_ids.push_back(search_text.id);
 
@@ -3968,8 +3976,8 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   input_text_data.AddIntAttribute(ax::mojom::IntAttribute::kBackgroundColor,
                                   0xFFADBEEFU);
   input_text_data.AddIntAttribute(ax::mojom::IntAttribute::kColor, 0xFFADC0DEU);
-  input_text_data.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot,
-                                   true);
+  input_text_data.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
+                                     "input");
   input_text_data.SetName("placeholder");
   input_text_data.child_ids = {13};
 
@@ -3992,8 +4000,8 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
                                    0xFFADBEEFU);
   input_text_data2.AddIntAttribute(ax::mojom::IntAttribute::kColor,
                                    0xFFADC0DEU);
-  input_text_data2.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot,
-                                    true);
+  input_text_data2.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
+                                      "input");
   input_text_data2.SetName("foo");
   input_text_data2.child_ids = {15};
 
@@ -6103,7 +6111,6 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
   text_field_4.role = ax::mojom::Role::kTextField;
   text_field_4.AddState(ax::mojom::State::kEditable);
-  text_field_4.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot, true);
   text_field_4.child_ids = {generic_container_5.id};
   text_field_4.SetValue("3.14");
 

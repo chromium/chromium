@@ -348,11 +348,11 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   // See AXNodeData::IsPasswordField().
   bool IsPasswordField() const;
 
-  // See AXNodeData::IsPlainTextField().
-  bool IsPlainTextField() const;
+  // See AXNodeData::IsNativeTextField().
+  bool IsNativeTextField() const;
 
-  // See AXNodeData::IsRichTextField().
-  bool IsRichTextField() const;
+  // See AXNodeData::IsNonNativeTextField().
+  bool IsNonNativeTextField() const;
 
   // Returns true if the accessible name was explicitly set to "" by the author
   bool HasExplicitlyEmptyName() const;
@@ -400,7 +400,7 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   gfx::NativeViewAccessible GetPreviousSibling() override;
 
   bool IsChildOfLeaf() const override;
-  bool IsDescendantOfPlainTextField() const override;
+  bool IsDescendantOfNativeTextField() const override;
   bool IsLeaf() const override;
   bool IsFocused() const override;
   bool IsInvisibleOrIgnored() const override;
@@ -526,9 +526,10 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   // collapsed.
   BrowserAccessibility* GetCollapsedMenuListPopUpButtonAncestor() const;
 
-  // If this node is within an editable region, returns the node that is at the
-  // root of that editable region, otherwise returns nullptr. In accessibility,
-  // an editable region is synonymous to a text field.
+  // If this node is within an editable region, such as a content editable,
+  // returns the node that is at the root of that editable region, otherwise
+  // returns nullptr. In accessibility, an editable region also includes all
+  // types of text fields.
   BrowserAccessibility* GetTextFieldAncestor() const;
 
   // Returns true if:
@@ -610,10 +611,8 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   // If the node has a child tree, get the root node.
   BrowserAccessibility* PlatformGetRootOfChildTree() const;
 
-#if DCHECK_IS_ON()
-  // DCHECKs to determine whether current node is valid.
-  void CheckValidity() const;
-#endif
+  // Determines whether this object is valid.
+  bool IsValid() const;
 
   // Given a set of map of spelling text attributes and a start offset, merge
   // them into the given map of existing text attributes. Merges the given

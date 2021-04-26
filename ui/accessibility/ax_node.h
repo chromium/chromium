@@ -547,9 +547,9 @@ class AX_EXPORT AXNode final {
   // an editable region is synonymous to a text field.
   AXNode* GetTextFieldAncestor() const;
 
-  // Returns true if this node is either a plain text field , or one of its
+  // Returns true if this node is either a native text field , or one of its
   // ancestors is.
-  bool IsDescendantOfPlainTextField() const;
+  bool IsDescendantOfNativeTextField() const;
 
   // Finds and returns a pointer to ordered set containing node.
   AXNode* GetOrderedSet() const;

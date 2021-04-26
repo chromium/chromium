@@ -869,15 +869,15 @@ bool IsAXSetter(SEL selector) {
 }
 
 - (NSValue*)AXSelectedTextRange {
-  // Selection might not be supported. Return (NSRange){0,0} in that case.
   int start = 0, end = 0;
-  if (_node->IsPlainTextField()) {
-    start = _node->GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart);
-    end = _node->GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd);
+  if (_node->IsNativeTextField() &&
+      _node->GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart, &start) &&
+      _node->GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd, &end)) {
+    // NSRange cannot represent the direction the text was selected in.
+    return [NSValue valueWithRange:{std::min(start, end), abs(end - start)}];
   }
 
-  // NSRange cannot represent the direction the text was selected in.
-  return [NSValue valueWithRange:{std::min(start, end), abs(end - start)}];
+  return [NSValue valueWithRange:NSMakeRange(0, 0)];
 }
 
 - (NSNumber*)AXNumberOfCharacters {

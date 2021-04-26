@@ -76,6 +76,19 @@ bool IsButton(const ax::mojom::Role role) {
          role == ax::mojom::Role::kToggleButton;
 }
 
+bool IsCellOrTableHeader(const ax::mojom::Role role) {
+  switch (role) {
+    case ax::mojom::Role::kCell:
+    case ax::mojom::Role::kColumnHeader:
+    case ax::mojom::Role::kRowHeader:
+      return true;
+    case ax::mojom::Role::kLayoutTableCell:
+      return kExposeLayoutTableAsDataTable;
+    default:
+      return false;
+  }
+}
+
 bool IsClickable(const ax::mojom::Role role) {
   switch (role) {
     case ax::mojom::Role::kButton:
@@ -117,14 +130,12 @@ bool IsClickable(const ax::mojom::Role role) {
   }
 }
 
-bool IsCellOrTableHeader(const ax::mojom::Role role) {
+bool IsComboBox(const ax::mojom::Role role) {
   switch (role) {
-    case ax::mojom::Role::kCell:
-    case ax::mojom::Role::kColumnHeader:
-    case ax::mojom::Role::kRowHeader:
+    case ax::mojom::Role::kComboBoxMenuButton:
+    case ax::mojom::Role::kComboBoxGrouping:
+    case ax::mojom::Role::kTextFieldWithComboBox:
       return true;
-    case ax::mojom::Role::kLayoutTableCell:
-      return kExposeLayoutTableAsDataTable;
     default:
       return false;
   }
@@ -611,10 +622,10 @@ bool IsText(ax::mojom::Role role) {
   }
 }
 
-bool IsComboBox(const ax::mojom::Role role) {
+bool IsTextField(ax::mojom::Role role) {
   switch (role) {
-    case ax::mojom::Role::kComboBoxMenuButton:
-    case ax::mojom::Role::kComboBoxGrouping:
+    case ax::mojom::Role::kSearchBox:
+    case ax::mojom::Role::kTextField:
     case ax::mojom::Role::kTextFieldWithComboBox:
       return true;
     default:

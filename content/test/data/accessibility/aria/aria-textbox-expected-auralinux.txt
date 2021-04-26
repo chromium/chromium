@@ -1,3 +1,5 @@
 [document web]
-++[entry] single-line selectable-text xml-roles:textbox
-++[entry] multi-line selectable-text xml-roles:textbox
+++[entry] editable multi-line selectable-text xml-roles:textbox
+++++[static] name='<newline>    TextBox1<newline>  ' editable
+++[entry] editable multi-line selectable-text xml-roles:textbox
+++++[static] name='<newline>    TextBox2<newline>  ' editable

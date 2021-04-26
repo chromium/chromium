@@ -257,11 +257,11 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   // See AXNodeData::IsTextField().
   bool IsTextField() const;
 
-  // See AXNodeData::IsPlainTextField().
-  bool IsPlainTextField() const;
+  // See AXNodeData::IsNativeTextField().
+  bool IsNativeTextField() const;
 
-  // See AXNodeData::IsRichTextField().
-  bool IsRichTextField() const;
+  // See AXNodeData::IsNonNativeTextField().
+  bool IsNonNativeTextField() const;
 
   // See AXNode::IsText().
   bool IsText() const;

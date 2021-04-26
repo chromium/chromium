@@ -749,7 +749,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest, WritableElement) {
       <!DOCTYPE html>
       <html>
       <body>
-        <div role="textbox" tabindex="0">
+        <div role="textbox" contenteditable tabindex="0">
           Some text
         </div>
       </body>

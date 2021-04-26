@@ -314,14 +314,15 @@ TEST_F(BrowserAccessibilityWinTest, TestTextBoundaries) {
   //
   // +-1 root
   //   +-2 text_field
-  //     +-3 static_text1 "One two three."
-  //     | +-4 inline_box1 "One two three."
-  //     +-5 line_break1 "\n"
-  //     +-6 static_text2 "Four five six."
-  //     | +-7 inline_box2 "Four five six."
-  //     +-8 line_break2 "\n" kIsLineBreakingObject
-  //     +-9 static_text3 "Seven eight nine."
-  //       +-10 inline_box3 "Seven eight nine."
+  //     +-3 text_container
+  //       +-4 static_text1 "One two three."
+  //     |   +-5 inline_box1 "One two three."
+  //       +-6 line_break1 "\n"
+  //       +-7 static_text2 "Four five six."
+  //     |   +-8 inline_box2 "Four five six."
+  //       +-9 line_break2 "\n" kIsLineBreakingObject
+  //       +-10 static_text3 "Seven eight nine."
+  //         +-11 inline_box3 "Seven eight nine."
   //
   std::string line1 = "One two three.";
   std::string line2 = "Four five six.";
@@ -330,39 +331,53 @@ TEST_F(BrowserAccessibilityWinTest, TestTextBoundaries) {
 
   ui::AXNodeData root;
   root.id = 1;
-  root.role = ax::mojom::Role::kRootWebArea;
-  root.child_ids.push_back(2);
-
   ui::AXNodeData text_field;
   text_field.id = 2;
+  ui::AXNodeData text_container;
+  text_container.id = 3;
+  ui::AXNodeData static_text1;
+  static_text1.id = 4;
+  ui::AXNodeData inline_box1;
+  inline_box1.id = 5;
+  ui::AXNodeData line_break1;
+  line_break1.id = 6;
+  ui::AXNodeData static_text2;
+  static_text2.id = 7;
+  ui::AXNodeData inline_box2;
+  inline_box2.id = 8;
+  ui::AXNodeData line_break2;
+  line_break2.id = 9;
+  ui::AXNodeData static_text3;
+  static_text3.id = 10;
+  ui::AXNodeData inline_box3;
+  inline_box3.id = 11;
+
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {text_field.id};
+
   text_field.role = ax::mojom::Role::kTextField;
   text_field.AddState(ax::mojom::State::kEditable);
+  text_field.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "input");
   text_field.SetValue(text_value);
   text_field.AddIntListAttribute(ax::mojom::IntListAttribute::kCachedLineStarts,
                                  {15});
-  text_field.child_ids.push_back(3);
-  text_field.child_ids.push_back(5);
-  text_field.child_ids.push_back(6);
-  text_field.child_ids.push_back(8);
-  text_field.child_ids.push_back(9);
+  text_field.child_ids = {text_container.id};
 
-  ui::AXNodeData static_text1;
-  static_text1.id = 3;
+  text_container.role = ax::mojom::Role::kGenericContainer;
+  text_container.child_ids = {static_text1.id, line_break1.id, static_text2.id,
+                              line_break2.id, static_text3.id};
+
   static_text1.role = ax::mojom::Role::kStaticText;
   static_text1.AddState(ax::mojom::State::kEditable);
   static_text1.SetName(line1);
-  static_text1.child_ids.push_back(4);
+  static_text1.child_ids = {inline_box1.id};
 
-  ui::AXNodeData inline_box1;
-  inline_box1.id = 4;
   inline_box1.role = ax::mojom::Role::kInlineTextBox;
   inline_box1.AddState(ax::mojom::State::kEditable);
   inline_box1.SetName(line1);
   inline_box1.AddIntListAttribute(ax::mojom::IntListAttribute::kWordStarts,
                                   {0, 4, 8});
 
-  ui::AXNodeData line_break1;
-  line_break1.id = 5;
   line_break1.role = ax::mojom::Role::kLineBreak;
   line_break1.AddState(ax::mojom::State::kEditable);
   line_break1.SetName("\n");
@@ -372,23 +387,17 @@ TEST_F(BrowserAccessibilityWinTest, TestTextBoundaries) {
   line_break1.AddIntAttribute(ax::mojom::IntAttribute::kPreviousOnLineId,
                               inline_box1.id);
 
-  ui::AXNodeData static_text2;
-  static_text2.id = 6;
   static_text2.role = ax::mojom::Role::kStaticText;
   static_text2.AddState(ax::mojom::State::kEditable);
   static_text2.SetName(line2);
-  static_text2.child_ids.push_back(7);
+  static_text2.child_ids = {inline_box2.id};
 
-  ui::AXNodeData inline_box2;
-  inline_box2.id = 7;
   inline_box2.role = ax::mojom::Role::kInlineTextBox;
   inline_box2.AddState(ax::mojom::State::kEditable);
   inline_box2.SetName(line2);
   inline_box2.AddIntListAttribute(ax::mojom::IntListAttribute::kWordStarts,
                                   {0, 5, 10});
 
-  ui::AXNodeData line_break2;
-  line_break2.id = 8;
   line_break2.role = ax::mojom::Role::kLineBreak;
   line_break2.AddState(ax::mojom::State::kEditable);
   line_break2.SetName("\n");
@@ -400,15 +409,11 @@ TEST_F(BrowserAccessibilityWinTest, TestTextBoundaries) {
   line_break2.AddIntAttribute(ax::mojom::IntAttribute::kPreviousOnLineId,
                               inline_box2.id);
 
-  ui::AXNodeData static_text3;
-  static_text3.id = 9;
   static_text3.role = ax::mojom::Role::kStaticText;
   static_text3.AddState(ax::mojom::State::kEditable);
   static_text3.SetName(line3);
-  static_text3.child_ids.push_back(10);
+  static_text3.child_ids = {inline_box3.id};
 
-  ui::AXNodeData inline_box3;
-  inline_box3.id = 10;
   inline_box3.role = ax::mojom::Role::kInlineTextBox;
   inline_box3.AddState(ax::mojom::State::kEditable);
   inline_box3.SetName(line3);
@@ -417,9 +422,9 @@ TEST_F(BrowserAccessibilityWinTest, TestTextBoundaries) {
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, text_field, static_text1, inline_box1,
-                           line_break1, static_text2, inline_box2, line_break2,
-                           static_text3, inline_box3),
+          MakeAXTreeUpdate(root, text_field, text_container, static_text1,
+                           inline_box1, line_break1, static_text2, inline_box2,
+                           line_break2, static_text3, inline_box3),
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibilityWin* root_obj =
@@ -690,6 +695,7 @@ TEST_F(BrowserAccessibilityWinTest, TestComplexHypertext) {
   combo_box.id = 12;
   combo_box.role = ax::mojom::Role::kTextFieldWithComboBox;
   combo_box.AddState(ax::mojom::State::kEditable);
+  combo_box.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "input");
   combo_box.SetName(base::UTF16ToUTF8(combo_box_name));
   combo_box.SetValue(base::UTF16ToUTF8(combo_box_value));
 
@@ -983,6 +989,8 @@ TEST_F(BrowserAccessibilityWinTest, TestCreateEmptyDocument) {
   ui::AXNodeData tree1_2;
   tree1_2.id = 2;
   tree1_2.role = ax::mojom::Role::kTextField;
+  tree1_2.AddState(ax::mojom::State::kEditable);
+  tree1_2.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "input");
 
   // Process a load complete.
   AXEventNotificationDetails event_bundle;
@@ -1128,85 +1136,85 @@ TEST_F(BrowserAccessibilityWinTest, TestValueAttributeInTextControls) {
   ui::AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
-  root.AddState(ax::mojom::State::kFocusable);
 
-  ui::AXNodeData combo_box, combo_box_text;
+  ui::AXNodeData combo_box, combo_box_text_container, combo_box_text;
   combo_box.id = 2;
-  combo_box_text.id = 3;
+  combo_box_text_container.id = 3;
+  combo_box_text.id = 4;
   combo_box.role = ax::mojom::Role::kTextFieldWithComboBox;
+  combo_box_text_container.role = ax::mojom::Role::kGenericContainer;
   combo_box_text.role = ax::mojom::Role::kStaticText;
   combo_box.SetName("Combo box:");
+  combo_box.SetValue("Combo box text");
   combo_box_text.SetName("Combo box text");
-  combo_box.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot, true);
+  combo_box.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "input");
   combo_box.AddState(ax::mojom::State::kEditable);
-  combo_box.AddState(ax::mojom::State::kRichlyEditable);
   combo_box.AddState(ax::mojom::State::kFocusable);
   combo_box_text.AddState(ax::mojom::State::kEditable);
-  combo_box_text.AddState(ax::mojom::State::kRichlyEditable);
-  combo_box.child_ids.push_back(combo_box_text.id);
+  combo_box.child_ids = {combo_box_text_container.id};
+  combo_box_text_container.child_ids = {combo_box_text.id};
 
-  ui::AXNodeData search_box, search_box_text, new_line;
-  search_box.id = 4;
-  search_box_text.id = 5;
-  new_line.id = 6;
+  ui::AXNodeData search_box, search_box_text_container, search_box_text,
+      new_line;
+  search_box.id = 5;
+  search_box_text_container.id = 6;
+  search_box_text.id = 7;
+  new_line.id = 8;
   search_box.role = ax::mojom::Role::kSearchBox;
+  search_box_text_container.role = ax::mojom::Role::kGenericContainer;
   search_box_text.role = ax::mojom::Role::kStaticText;
   new_line.role = ax::mojom::Role::kLineBreak;
   search_box.SetName("Search for:");
+  search_box.SetValue("Search box text\n");
   search_box_text.SetName("Search box text");
   new_line.SetName("\n");
-  search_box.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot, true);
+  search_box.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "input");
   search_box.AddState(ax::mojom::State::kEditable);
-  search_box.AddState(ax::mojom::State::kRichlyEditable);
   search_box.AddState(ax::mojom::State::kFocusable);
   search_box_text.AddState(ax::mojom::State::kEditable);
-  search_box_text.AddState(ax::mojom::State::kRichlyEditable);
   new_line.AddState(ax::mojom::State::kEditable);
-  new_line.AddState(ax::mojom::State::kRichlyEditable);
-  search_box.child_ids.push_back(search_box_text.id);
-  search_box.child_ids.push_back(new_line.id);
+  search_box.child_ids = {search_box_text_container.id};
+  search_box_text_container.child_ids = {search_box_text.id, new_line.id};
 
   ui::AXNodeData text_field, text_field_text_container;
-  text_field.id = 7;
+  text_field.id = 9;
   text_field.role = ax::mojom::Role::kTextField;
-  text_field.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot, true);
+  text_field.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "input");
   text_field.AddState(ax::mojom::State::kEditable);
   text_field.AddState(ax::mojom::State::kFocusable);
+  // Exposes a placeholder. The text container is otherwise empty.
   text_field.SetValue("Text field text");
-  // Append expected structure inside of textfield.
-  text_field_text_container.id = 70;
+  text_field_text_container.id = 10;
   text_field_text_container.role = ax::mojom::Role::kGenericContainer;
   text_field.child_ids.push_back(text_field_text_container.id);
 
   ui::AXNodeData link, link_text;
-  link.id = 8;
-  link_text.id = 9;
+  link.id = 11;
+  link_text.id = 12;
   link.role = ax::mojom::Role::kLink;
   link_text.role = ax::mojom::Role::kStaticText;
   link_text.SetName("Link text");
   link.child_ids.push_back(link_text.id);
 
   ui::AXNodeData slider, slider_text;
-  slider.id = 10;
-  slider_text.id = 11;
+  slider.id = 13;
+  slider_text.id = 14;
   slider.role = ax::mojom::Role::kSlider;
   slider_text.role = ax::mojom::Role::kStaticText;
   slider.AddFloatAttribute(ax::mojom::FloatAttribute::kValueForRange, 5.0F);
   slider_text.SetName("Slider text");
   slider.child_ids.push_back(slider_text.id);
 
-  root.child_ids.push_back(2);   // Combo box.
-  root.child_ids.push_back(4);   // Search box.
-  root.child_ids.push_back(7);   // Text field.
-  root.child_ids.push_back(8);   // Link.
-  root.child_ids.push_back(10);  // Slider.
+  root.child_ids = {combo_box.id, search_box.id, text_field.id, link.id,
+                    slider.id};
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, combo_box, combo_box_text, search_box,
-                           search_box_text, new_line, text_field,
-                           text_field_text_container, link, link_text, slider,
-                           slider_text),
+          MakeAXTreeUpdate(root, combo_box, combo_box_text_container,
+                           combo_box_text, search_box,
+                           search_box_text_container, search_box_text, new_line,
+                           text_field, text_field_text_container, link,
+                           link_text, slider, slider_text),
           test_browser_accessibility_delegate_.get()));
 
   ASSERT_NE(nullptr, manager->GetRoot());
@@ -1310,6 +1318,7 @@ TEST_F(BrowserAccessibilityWinTest, TestWordBoundariesInTextControls) {
   textarea_div.role = ax::mojom::Role::kGenericContainer;
   textarea_text.role = ax::mojom::Role::kStaticText;
   textarea.AddState(ax::mojom::State::kEditable);
+  textarea.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "textarea");
   textarea.AddState(ax::mojom::State::kFocusable);
   textarea.AddState(ax::mojom::State::kMultiline);
   textarea_div.AddState(ax::mojom::State::kEditable);
@@ -1344,6 +1353,7 @@ TEST_F(BrowserAccessibilityWinTest, TestWordBoundariesInTextControls) {
   text_field_div.role = ax::mojom::Role::kGenericContainer;
   text_field_text.role = ax::mojom::Role::kStaticText;
   text_field.AddState(ax::mojom::State::kEditable);
+  text_field.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "input");
   text_field.AddState(ax::mojom::State::kFocusable);
   text_field_div.AddState(ax::mojom::State::kEditable);
   text_field_text.AddState(ax::mojom::State::kEditable);
@@ -1838,6 +1848,7 @@ TEST_F(BrowserAccessibilityWinTest, TestCaretAndSelectionInSimpleFields) {
   combo_box.id = 2;
   combo_box.role = ax::mojom::Role::kTextFieldWithComboBox;
   combo_box.AddState(ax::mojom::State::kEditable);
+  combo_box.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "input");
   combo_box.AddState(ax::mojom::State::kFocusable);
   combo_box.SetValue("Test1");
   // Place the caret between 't' and 'e'.
@@ -1848,6 +1859,7 @@ TEST_F(BrowserAccessibilityWinTest, TestCaretAndSelectionInSimpleFields) {
   text_field.id = 3;
   text_field.role = ax::mojom::Role::kTextField;
   text_field.AddState(ax::mojom::State::kEditable);
+  text_field.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "input");
   text_field.AddState(ax::mojom::State::kFocusable);
   text_field.SetValue("Test2");
   // Select the letter 'e'.
@@ -2372,6 +2384,8 @@ TEST_F(BrowserAccessibilityWinTest, TestTextAttributesInContentEditables) {
   div_editable.id = 2;
   div_editable.role = ax::mojom::Role::kGenericContainer;
   div_editable.AddState(ax::mojom::State::kEditable);
+  div_editable.AddState(ax::mojom::State::kRichlyEditable);
+  div_editable.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot, true);
   div_editable.AddState(ax::mojom::State::kFocusable);
   div_editable.AddStringAttribute(ax::mojom::StringAttribute::kFontFamily,
                                   "Helvetica");
@@ -2380,6 +2394,7 @@ TEST_F(BrowserAccessibilityWinTest, TestTextAttributesInContentEditables) {
   text_before.id = 3;
   text_before.role = ax::mojom::Role::kStaticText;
   text_before.AddState(ax::mojom::State::kEditable);
+  text_before.AddState(ax::mojom::State::kRichlyEditable);
   text_before.SetName("Before ");
   text_before.AddTextStyle(ax::mojom::TextStyle::kBold);
   text_before.AddTextStyle(ax::mojom::TextStyle::kItalic);
@@ -2388,6 +2403,7 @@ TEST_F(BrowserAccessibilityWinTest, TestTextAttributesInContentEditables) {
   link.id = 4;
   link.role = ax::mojom::Role::kLink;
   link.AddState(ax::mojom::State::kEditable);
+  link.AddState(ax::mojom::State::kRichlyEditable);
   link.AddState(ax::mojom::State::kFocusable);
   link.AddState(ax::mojom::State::kLinked);
   link.SetName("lnk");
@@ -2397,6 +2413,7 @@ TEST_F(BrowserAccessibilityWinTest, TestTextAttributesInContentEditables) {
   link_text.id = 5;
   link_text.role = ax::mojom::Role::kStaticText;
   link_text.AddState(ax::mojom::State::kEditable);
+  link_text.AddState(ax::mojom::State::kRichlyEditable);
   link_text.AddState(ax::mojom::State::kFocusable);
   link_text.AddState(ax::mojom::State::kLinked);
   link_text.SetName("lnk");
@@ -2418,6 +2435,7 @@ TEST_F(BrowserAccessibilityWinTest, TestTextAttributesInContentEditables) {
   text_after.id = 6;
   text_after.role = ax::mojom::Role::kStaticText;
   text_after.AddState(ax::mojom::State::kEditable);
+  text_after.AddState(ax::mojom::State::kRichlyEditable);
   text_after.SetName(" after.");
   // Leave text style as normal.
 
@@ -2613,6 +2631,7 @@ TEST_F(BrowserAccessibilityWinTest,
   combo_box.id = 2;
   combo_box.role = ax::mojom::Role::kTextFieldWithComboBox;
   combo_box.AddState(ax::mojom::State::kEditable);
+  combo_box.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "input");
   combo_box.AddState(ax::mojom::State::kFocusable);
   combo_box.SetValue(value1 + value2);
 
@@ -2726,6 +2745,7 @@ TEST_F(BrowserAccessibilityWinTest, TestNewMisspellingsInSimpleTextFields) {
   combo_box.id = 2;
   combo_box.role = ax::mojom::Role::kTextFieldWithComboBox;
   combo_box.AddState(ax::mojom::State::kEditable);
+  combo_box.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "input");
   combo_box.AddState(ax::mojom::State::kFocusable);
   combo_box.SetValue(value1 + value2);
 

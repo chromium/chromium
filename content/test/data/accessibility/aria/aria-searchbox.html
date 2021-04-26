@@ -16,11 +16,11 @@
 <!DOCTYPE html>
 <html>
 <body>
-  <!-- There should be no selection on the document because the search box is
-      not content editable. -->
-  <div id="searchbox" role="searchbox" tabindex="0">ARIA role searchbox.</div>
+  <div id="searchbox" role="searchbox" contenteditable="plaintext-only">
+    ARIA role searchbox.
+  </div>
   <script>
-    var searchbox = document.getElementById('searchbox');
+    const searchbox = document.getElementById('searchbox');
     searchbox.focus();
   </script>
 </body>

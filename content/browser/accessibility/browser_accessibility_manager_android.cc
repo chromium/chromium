@@ -80,7 +80,7 @@ bool BrowserAccessibilityManagerAndroid::ShouldExposePasswordText() {
 
 BrowserAccessibility* BrowserAccessibilityManagerAndroid::GetFocus() const {
   BrowserAccessibility* focus = BrowserAccessibilityManager::GetFocus();
-  if (focus && !focus->IsPlainTextField())
+  if (focus && !focus->IsNativeTextField())
     return GetActiveDescendant(focus);
   return focus;
 }

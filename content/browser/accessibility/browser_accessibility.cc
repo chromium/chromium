@@ -51,19 +51,22 @@ BrowserAccessibility::~BrowserAccessibility() = default;
 
 namespace {
 
-// Get the text field's deepest container descendant can contain text.
-// This is the deepest generic container descendant, or the textfield itself.
-const BrowserAccessibility* GetTextContainerForPlainTextField(
+// Get the native text field's deepest container; the lowest descendant that
+// contains all its text. Returns nullptr if the text field is empty, or if it
+// is not a native text field (input or textarea).
+BrowserAccessibility* GetTextFieldInnerEditorElement(
     const BrowserAccessibility& text_field) {
-  DCHECK(text_field.IsPlainTextField());
+  if (!text_field.IsNativeTextField() || !text_field.InternalChildCount())
+    return nullptr;
 
   // Text fields wrap their static text and inline text boxes in generic
   // containers, and some, like input type=search, wrap the wrapper as well.
-  // There are several cases for the structure:
-  // 1. An empty plain text field:
+  // There are several incarnations of this structure.
+  // 1. An empty native text field:
   // -- Generic container <-- there can be any number of these in a chain.
-  //    Some empty textfields have the below structure, with empty text boxes.
-  // 2. A single line, plain text field with some text in it:
+  //    However, some empty text fields have the below structure, with empty
+  //    text boxes.
+  // 2. A single line, native text field with some text in it:
   // -- Generic container <-- there can be any number of these in a chain.
   // ---- Static text
   // ------ Inline text box children (zero or more)
@@ -73,21 +76,6 @@ const BrowserAccessibility* GetTextContainerForPlainTextField(
   //    Similar to #2, but can repeat the static text, line break children
   //    multiple times.
 
-  if (!text_field.InternalGetFirstChild()) {
-    // Known cases where this happens:
-    // - Hidden: A container of the field is aria-hidden.
-    //   See the dump tree test AccessibilityAriaHiddenFocusedInput.
-    // - Uneditable: element has an ARIA role that looks editable but doesn't
-    //   have an attached editor: <div role=textbox> with no contenteditable.
-    DCHECK(
-        text_field.GetData().IsInvisible() ||
-        !text_field.GetBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot))
-        << "A plain text field that is visible and content editable should "
-           "have children: "
-        << text_field.ToString();
-    return &text_field;
-  }
-
   BrowserAccessibility* text_container = text_field.InternalDeepestFirstChild();
 
   // Non-empty text fields expose a set of static text objects with one or more
@@ -96,23 +84,20 @@ const BrowserAccessibility* GetTextContainerForPlainTextField(
   if (text_container->GetRole() == ax::mojom::Role::kInlineTextBox)
     text_container = text_container->InternalGetParent();
 
-  // Get the parent of the static text, if any.
-  if (text_container->GetRole() == ax::mojom::Role::kStaticText)
+  // Get the parent of the static text or the line break, if any. A line break
+  // is possible when the field contains a line break as its first character.
+  if (text_container->GetRole() == ax::mojom::Role::kStaticText ||
+      text_container->GetRole() == ax::mojom::Role::kLineBreak) {
     text_container = text_container->InternalGetParent();
+  }
 
-  // Return deepest generic container descendant.
+  DCHECK(text_container);
   if (text_container->GetRole() == ax::mojom::Role::kGenericContainer)
     return text_container;
-
-  // ARIA textbox + contenteditable=plaintext-only, the input is the container.
-  if (text_container->IsPlainTextField())
-    return text_container;
-
-  NOTREACHED() << "No valid inner text container found for plain text field:"
-               << "\nTextfield: " << text_field.ToString()
-               << "\nBest text container found:" << text_container->ToString();
-
-  return text_container;
+  NOTREACHED() << "The deepest text container in all native text fields should "
+                  "always have the kGenericContainer role.\n"
+               << const_cast<BrowserAccessibility&>(text_field).ToString();
+  return nullptr;
 }
 
 int GetBoundaryTextOffsetInsideBaseAnchor(
@@ -145,17 +130,22 @@ void BrowserAccessibility::Init(BrowserAccessibilityManager* manager,
   node_ = node;
 }
 
-#if DCHECK_IS_ON()
-void BrowserAccessibility::CheckValidity() const {
-  if (IsPlainTextField())
-    GetTextContainerForPlainTextField(*this);  // Contains validity DCHECKs.
+bool BrowserAccessibility::IsValid() const {
+  // Currently we only perform validity checks on non-empty, native text fields.
+  if (IsNativeTextField() && InternalChildCount()) {
+    // If the native text field is aria-hidden then all its descendants are
+    // ignored.
+    //   See the dump tree test AccessibilityAriaHiddenFocusedInput.
+    //
+    // TODO(accessibility): We need to fix this by pruning the tree and removing
+    // the native text field if it is aria-hidden.
+    return IsInvisibleOrIgnored() || GetTextFieldInnerEditorElement(*this);
+  }
+  return true;
 }
-#endif  // DCHECK_IS_ON()
 
 void BrowserAccessibility::OnDataChanged() {
-#if DCHECK_IS_ON()
-  CheckValidity();
-#endif  // DCHECK_IS_ON()
+  DCHECK(IsValid());
 }
 
 bool BrowserAccessibility::PlatformIsLeaf() const {
@@ -568,16 +558,16 @@ gfx::Rect BrowserAccessibility::GetRootFrameHypertextRangeBoundsRect(
   DCHECK_GE(start, 0);
   DCHECK_GE(len, 0);
 
-  // Standard text fields such as textarea have an embedded div inside them that
-  // holds all the text.
-  // TODO(nektar): This is fragile! Replace with code that flattens tree.
-  if (IsPlainTextField() && InternalChildCount() == 1) {
-    const BrowserAccessibility* text_field_inner_container =
-        GetTextContainerForPlainTextField(*this);
-    if (text_field_inner_container && text_field_inner_container != this) {
-      return text_field_inner_container->GetRootFrameHypertextRangeBoundsRect(
-          start, len, clipping_behavior, offscreen_result);
-    }
+  // Native text fields such as textarea have a text container node inside them
+  // that holds all the text and do not expose any IA2 hypertext. We need to get
+  // to the flattened representation of the text in the field in order that
+  // `start` and `len` would be applicable. Non-native text fields, including
+  // ARIA-based ones expose their actual subtree and do use IA2 hypertext, so
+  // `start` and `len` would apply in those cases.
+  if (const BrowserAccessibility* text_container =
+          GetTextFieldInnerEditorElement(*this)) {
+    return text_container->GetRootFrameHypertextRangeBoundsRect(
+        start, len, clipping_behavior, offscreen_result);
   }
 
   if (GetRole() != ax::mojom::Role::kStaticText) {
@@ -1044,12 +1034,12 @@ bool BrowserAccessibility::IsPasswordField() const {
   return GetData().IsPasswordField();
 }
 
-bool BrowserAccessibility::IsPlainTextField() const {
-  return GetData().IsPlainTextField();
+bool BrowserAccessibility::IsNativeTextField() const {
+  return GetData().IsNativeTextField();
 }
 
-bool BrowserAccessibility::IsRichTextField() const {
-  return GetData().IsRichTextField();
+bool BrowserAccessibility::IsNonNativeTextField() const {
+  return GetData().IsNonNativeTextField();
 }
 
 bool BrowserAccessibility::HasExplicitlyEmptyName() const {
@@ -1573,8 +1563,8 @@ bool BrowserAccessibility::IsToplevelBrowserWindow() {
   return false;
 }
 
-bool BrowserAccessibility::IsDescendantOfPlainTextField() const {
-  return node()->IsDescendantOfPlainTextField();
+bool BrowserAccessibility::IsDescendantOfNativeTextField() const {
+  return node()->IsDescendantOfNativeTextField();
 }
 
 gfx::NativeViewAccessible BrowserAccessibility::GetLowestPlatformAncestor()
@@ -2255,7 +2245,12 @@ ui::TextAttributeMap BrowserAccessibility::GetSpellingAndGrammarAttributes()
     }
   }
 
-  if (IsPlainTextField()) {
+  // In the case of a native text field, text marker information, such as
+  // misspellings, need to be collected from all the text field's descendants
+  // and exposed on the text field itself. Otherwise, assistive software (AT)
+  // won't be able to see them because the native field's descendants are an
+  // implementation detail that is hidden from AT.
+  if (IsNativeTextField()) {
     int start_offset = 0;
     for (BrowserAccessibility* static_text =
              BrowserAccessibilityManager::NextTextOnlyObject(
@@ -2312,7 +2307,7 @@ void BrowserAccessibility::MergeSpellingAndGrammarIntoTextAttributes(
 ui::TextAttributeMap BrowserAccessibility::ComputeTextAttributeMap(
     const ui::TextAttributeList& default_attributes) const {
   ui::TextAttributeMap attributes_map;
-  if (PlatformIsLeaf() || IsPlainTextField()) {
+  if (PlatformIsLeaf()) {
     attributes_map[0] = default_attributes;
     const ui::TextAttributeMap spelling_attributes =
         GetSpellingAndGrammarAttributes();

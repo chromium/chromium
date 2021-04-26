@@ -431,7 +431,7 @@ bool AccessibilityTablePredicate(BrowserAccessibility* start,
 
 bool AccessibilityTextfieldPredicate(BrowserAccessibility* start,
                                      BrowserAccessibility* node) {
-  return (node->IsPlainTextField() || node->IsRichTextField());
+  return node->IsTextField();
 }
 
 bool AccessibilityTextStyleBoldPredicate(BrowserAccessibility* start,
@@ -451,7 +451,7 @@ bool AccessibilityTextStyleUnderlinePredicate(BrowserAccessibility* start,
 
 bool AccessibilityTreePredicate(BrowserAccessibility* start,
                                 BrowserAccessibility* node) {
-  return (node->IsPlainTextField() || node->IsRichTextField());
+  return node->IsTextField();
 }
 
 bool AccessibilityUnvisitedLinkPredicate(BrowserAccessibility* start,

@@ -159,7 +159,7 @@ class AX_EXPORT AXPlatformNodeDelegate {
 
   // Returns true if this node is either a plain text field , or one of its
   // ancestors is.
-  virtual bool IsDescendantOfPlainTextField() const = 0;
+  virtual bool IsDescendantOfNativeTextField() const = 0;
 
   // Returns true if this is a leaf node, meaning all its
   // children should not be exposed to any platform's native accessibility

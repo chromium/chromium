@@ -33,6 +33,9 @@ AX_BASE_EXPORT bool IsAlert(const ax::mojom::Role role);
 // Returns true if the provided role belongs to a native or an ARIA button.
 AX_BASE_EXPORT bool IsButton(const ax::mojom::Role role);
 
+// Returns true if the provided role belongs to a cell or a table header.
+AX_BASE_EXPORT bool IsCellOrTableHeader(const ax::mojom::Role role);
+
 // Returns true if the provided role belongs to an object on which a click
 // handler is commonly attached, or to an object that carries out an action when
 // clicked, such as activating itself, opening a dialog or closing a menu.
@@ -49,8 +52,8 @@ AX_BASE_EXPORT bool IsButton(const ax::mojom::Role role);
 // so that users will know that they could activate them if they so choose.
 AX_BASE_EXPORT bool IsClickable(const ax::mojom::Role role);
 
-// Returns true if the provided role belongs to a cell or a table header.
-AX_BASE_EXPORT bool IsCellOrTableHeader(const ax::mojom::Role role);
+// Returns true if the provided role is any of the combobox-related roles.
+AX_BASE_EXPORT bool IsComboBox(ax::mojom::Role role);
 
 // Returns true if the provided role belongs to a container with selectable
 // children.
@@ -171,8 +174,9 @@ AX_BASE_EXPORT bool IsTableRow(ax::mojom::Role role);
 // break, or inline text box.
 AX_BASE_EXPORT bool IsText(ax::mojom::Role role);
 
-// Returns true if the provided role is any of the combobox-related roles.
-AX_BASE_EXPORT bool IsComboBox(ax::mojom::Role role);
+// Returns true if the provided role belongs to a native text field, i.e.
+// <input> or <textarea>.
+AX_BASE_EXPORT bool IsTextField(ax::mojom::Role role);
 
 // Returns true if the node should be read only by default
 AX_BASE_EXPORT bool ShouldHaveReadonlyStateByDefault(

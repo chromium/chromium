@@ -1403,13 +1403,13 @@ bool AXPlatformNodeTextRangeProviderWin::HasCaretOrSelectionInPlainTextField(
   // restrict this to a plain text field as we gain nothing from using it in a
   // rich text field.
   //
-  // Note that "AXPlatformNodeDelegate::IsDescendantOfPlainTextField()" also
+  // Note that "AXPlatformNodeDelegate::IsDescendantOfNativeTextField()" also
   // returns true when this node is at the root of a plain text field, i.e. the
   // node could either be a descendant or it could be equivalent to the field's
   // root node.
   AXPlatformNodeDelegate* delegate = GetDelegate(position.get());
   return delegate && delegate->HasVisibleCaretOrSelection() &&
-         delegate->IsDescendantOfPlainTextField();
+         delegate->IsDescendantOfNativeTextField();
 }
 
 // static

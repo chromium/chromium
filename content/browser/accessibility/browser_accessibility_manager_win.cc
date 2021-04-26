@@ -253,7 +253,7 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
           // in Blink, which are not exposed to platform APIs in the
           // accessibility tree. Firing an event on such descendants will not
           // reach the assistive software.
-          if (text_field->IsPlainTextField()) {
+          if (text_field->IsNativeTextField()) {
             FireWinAccessibilityEvent(IA2_EVENT_TEXT_CARET_MOVED, text_field);
           } else {
             FireWinAccessibilityEvent(IA2_EVENT_TEXT_CARET_MOVED, focus_object);

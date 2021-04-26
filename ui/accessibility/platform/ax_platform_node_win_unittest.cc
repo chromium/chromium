@@ -627,6 +627,7 @@ TEST_F(AXPlatformNodeWinTest, IAccessibleAccValue) {
   AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kTextField;
+  root.AddState(ax::mojom::State::kEditable);
   root.AddStringAttribute(ax::mojom::StringAttribute::kValue, "Value");
   Init(root);
 
@@ -1968,6 +1969,7 @@ TEST_F(AXPlatformNodeWinTest,
   AXNodeData child1;
   child1.id = 2;
   child1.role = ax::mojom::Role::kTextField;
+  child1.AddState(ax::mojom::State::kEditable);
   child1.AddIntListAttribute(ax::mojom::IntListAttribute::kControlsIds, {3});
   root.child_ids.push_back(2);
 
@@ -4594,6 +4596,7 @@ TEST_F(AXPlatformNodeWinTest, GetPropertyValue_HelpText) {
   AXNodeData input1;
   input1.id = 2;
   input1.role = ax::mojom::Role::kTextField;
+  input1.AddState(ax::mojom::State::kEditable);
   input1.SetName("name-from-title");
   input1.AddIntAttribute(ax::mojom::IntAttribute::kNameFrom,
                          static_cast<int>(ax::mojom::NameFrom::kTitle));
@@ -4605,6 +4608,7 @@ TEST_F(AXPlatformNodeWinTest, GetPropertyValue_HelpText) {
   AXNodeData input2;
   input2.id = 3;
   input2.role = ax::mojom::Role::kTextField;
+  input2.AddState(ax::mojom::State::kEditable);
   input2.SetName("name-from-title");
   input2.AddIntAttribute(ax::mojom::IntAttribute::kNameFrom,
                          static_cast<int>(ax::mojom::NameFrom::kTitle));
@@ -4614,6 +4618,7 @@ TEST_F(AXPlatformNodeWinTest, GetPropertyValue_HelpText) {
   AXNodeData input3;
   input3.id = 4;
   input3.role = ax::mojom::Role::kTextField;
+  input3.AddState(ax::mojom::State::kEditable);
   input3.SetName("name-from-placeholder");
   input3.AddIntAttribute(ax::mojom::IntAttribute::kNameFrom,
                          static_cast<int>(ax::mojom::NameFrom::kPlaceholder));
@@ -4623,6 +4628,7 @@ TEST_F(AXPlatformNodeWinTest, GetPropertyValue_HelpText) {
   AXNodeData input4;
   input4.id = 5;
   input4.role = ax::mojom::Role::kTextField;
+  input4.AddState(ax::mojom::State::kEditable);
   input4.SetName("name-from-attribute");
   input4.AddIntAttribute(ax::mojom::IntAttribute::kNameFrom,
                          static_cast<int>(ax::mojom::NameFrom::kAttribute));
@@ -4634,6 +4640,7 @@ TEST_F(AXPlatformNodeWinTest, GetPropertyValue_HelpText) {
   AXNodeData input5;
   input5.id = 6;
   input5.role = ax::mojom::Role::kTextField;
+  input5.AddState(ax::mojom::State::kEditable);
   input5.SetName("name-from-attribute");
   input5.AddIntAttribute(ax::mojom::IntAttribute::kNameFrom,
                          static_cast<int>(ax::mojom::NameFrom::kAttribute));
@@ -4735,6 +4742,8 @@ TEST_F(AXPlatformNodeWinTest, GetPropertyValue_IsControlElement) {
                                     true);
   update.nodes[12].id = 13;
   update.nodes[12].role = ax::mojom::Role::kGenericContainer;
+  update.nodes[12].AddState(ax::mojom::State::kEditable);
+  update.nodes[12].AddState(ax::mojom::State::kRichlyEditable);
   update.nodes[12].AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot,
                                     true);
   update.nodes[13].id = 14;
@@ -5561,6 +5570,7 @@ TEST_F(AXPlatformNodeWinTest, ComputeUIAControlType) {
   AXNodeID child3_id = 4;
   child3.id = child3_id;
   child3.role = ax::mojom::Role::kTextField;
+  child3.AddState(ax::mojom::State::kEditable);
   root.child_ids.push_back(child3_id);
 
   AXNodeData child4;
@@ -5975,8 +5985,6 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
   update.nodes[1].id = text_field_with_combo_box_id;
   update.nodes[1].role = ax::mojom::Role::kTextFieldWithComboBox;
   update.nodes[1].AddState(ax::mojom::State::kEditable);
-  update.nodes[1].AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot,
-                                   true);
   update.nodes[2].id = meter_id;
   update.nodes[2].role = ax::mojom::Role::kMeter;
   update.nodes[3].id = group_with_scroll_id;
@@ -7099,6 +7107,7 @@ TEST_F(AXPlatformNodeWinTest, IValueProvider_GetValue) {
   AXNodeData child3;
   child3.id = 4;
   child3.role = ax::mojom::Role::kTextField;
+  child3.AddState(ax::mojom::State::kEditable);
   child3.AddStringAttribute(ax::mojom::StringAttribute::kValue, "test");
   child3.AddIntAttribute(ax::mojom::IntAttribute::kRestriction,
                          static_cast<int>(ax::mojom::Restriction::kReadOnly));
@@ -7164,12 +7173,14 @@ TEST_F(AXPlatformNodeWinTest, IValueProvider_SetValue) {
   AXNodeData child2;
   child2.id = 3;
   child2.role = ax::mojom::Role::kTextField;
+  child2.AddState(ax::mojom::State::kEditable);
   child2.AddStringAttribute(ax::mojom::StringAttribute::kValue, "test");
   root.child_ids.push_back(child2.id);
 
   AXNodeData child3;
   child3.id = 4;
   child3.role = ax::mojom::Role::kTextField;
+  child3.AddState(ax::mojom::State::kEditable);
   child3.AddStringAttribute(ax::mojom::StringAttribute::kValue, "test");
   child3.AddIntAttribute(ax::mojom::IntAttribute::kRestriction,
                          static_cast<int>(ax::mojom::Restriction::kReadOnly));
@@ -7221,6 +7232,7 @@ TEST_F(AXPlatformNodeWinTest, IValueProvider_IsReadOnly) {
   AXNodeData child2;
   child2.id = 3;
   child2.role = ax::mojom::Role::kTextField;
+  child2.AddState(ax::mojom::State::kEditable);
   child2.AddIntAttribute(ax::mojom::IntAttribute::kRestriction,
                          static_cast<int>(ax::mojom::Restriction::kReadOnly));
   root.child_ids.push_back(child2.id);
@@ -7228,6 +7240,7 @@ TEST_F(AXPlatformNodeWinTest, IValueProvider_IsReadOnly) {
   AXNodeData child3;
   child3.id = 4;
   child3.role = ax::mojom::Role::kTextField;
+  child3.AddState(ax::mojom::State::kEditable);
   child3.AddIntAttribute(ax::mojom::IntAttribute::kRestriction,
                          static_cast<int>(ax::mojom::Restriction::kDisabled));
   root.child_ids.push_back(child3.id);

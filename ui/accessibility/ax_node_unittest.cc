@@ -60,7 +60,7 @@ TEST(AXNodeTest, GetLowestPlatformAncestor) {
 
   text_field.role = ax::mojom::Role::kTextField;
   text_field.AddState(ax::mojom::State::kEditable);
-  text_field.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot, true);
+  text_field.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "input");
   text_field.SetValue("World");
   text_field.child_ids = {static_text_2.id};
 

@@ -1765,8 +1765,6 @@ TEST_F(AXPositionTest, AtStartAndEndOfLineInsideTextField) {
   AXNodeData text_field_data_1;
   text_field_data_1.id = 2;
   text_field_data_1.role = ax::mojom::Role::kTextField;
-  text_field_data_1.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot,
-                                     true);
   text_field_data_1.AddState(ax::mojom::State::kEditable);
   // "kIsLineBreakingObject" is not strictly necessary.
   text_field_data_1.AddBoolAttribute(
@@ -1812,8 +1810,6 @@ TEST_F(AXPositionTest, AtStartAndEndOfLineInsideTextField) {
   text_field_data_2.id = 7;
   text_field_data_2.role = ax::mojom::Role::kTextField;
   text_field_data_2.AddState(ax::mojom::State::kEditable);
-  text_field_data_2.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot,
-                                     true);
   // "kIsLineBreakingObject" is not strictly necessary.
   text_field_data_2.AddBoolAttribute(
       ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
@@ -9662,7 +9658,9 @@ TEST_F(AXPositionTest, OperatorEqualsTextPositionsInTextField) {
 
   text_field_2.role = ax::mojom::Role::kTextField;
   text_field_2.AddState(ax::mojom::State::kEditable);
-  text_field_2.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot, true);
+  text_field_2.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
+                                  "input");
+
   text_field_2.child_ids = {generic_container_3.id};
 
   generic_container_3.role = ax::mojom::Role::kGenericContainer;
@@ -9703,7 +9701,7 @@ TEST_F(AXPositionTest, OperatorEqualsTextPositionsInSearchBox) {
   g_ax_embedded_object_behavior = AXEmbeddedObjectBehavior::kExposeCharacter;
 
   // ++1 kRootWebArea
-  // ++++2 kSearchBox editable editableRoot=true
+  // ++++2 kSearchBox editable
   // ++++++3 kGenericContainer
   // ++++++++4 kGenericContainer editable
   // ++++++++++5 kStaticText editable "Hello"
@@ -9736,7 +9734,8 @@ TEST_F(AXPositionTest, OperatorEqualsTextPositionsInSearchBox) {
 
   search_box_2.role = ax::mojom::Role::kSearchBox;
   search_box_2.AddState(ax::mojom::State::kEditable);
-  search_box_2.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot, true);
+  search_box_2.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
+                                  "input");
   search_box_2.child_ids = {generic_container_3.id};
 
   generic_container_3.role = ax::mojom::Role::kGenericContainer;
@@ -10318,6 +10317,9 @@ TEST_F(AXPositionTest, CreateNextAnchorPosition) {
   AXNodeData text_field_data;
   text_field_data.id = 3;
   text_field_data.role = ax::mojom::Role::kTextField;
+  text_field_data.AddState(ax::mojom::State::kEditable);
+  text_field_data.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
+                                     "input");
 
   AXNodeData empty_text_data;
   empty_text_data.id = 4;
@@ -10867,7 +10869,6 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
                                    std::vector<int32_t>{6});
 
   text_field_4.role = ax::mojom::Role::kTextField;
-  text_field_4.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot, true);
   text_field_4.child_ids = {generic_container_5.id};
 
   generic_container_5.role = ax::mojom::Role::kGenericContainer;

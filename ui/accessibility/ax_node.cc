@@ -1392,7 +1392,7 @@ std::string AXNode::GetValueForTextField() const {
   // Some screen readers like Jaws and VoiceOver require a value to be set in
   // text fields with rich content, even though the same information is
   // available on the children.
-  if (value.empty() && data().IsRichTextField())
+  if (value.empty() && data().IsNonNativeTextField())
     return GetInnerText();
   return value;
 }
@@ -1483,7 +1483,7 @@ bool AXNode::IsLeaf() const {
   // different return values here, even though 'contenteditable' has no effect.
   // This needs to be modified from the Blink side, so 'kRichlyEditable' isn't
   // added in this case.
-  if (data().IsPlainTextField() || IsText())
+  if (data().IsNativeTextField() || IsText())
     return true;
 
   // Roles whose children are only presentational according to the ARIA and
@@ -1621,9 +1621,9 @@ AXNode* AXNode::GetTextFieldAncestor() const {
   return nullptr;
 }
 
-bool AXNode::IsDescendantOfPlainTextField() const {
+bool AXNode::IsDescendantOfNativeTextField() const {
   AXNode* text_field_node = GetTextFieldAncestor();
-  return text_field_node && text_field_node->data().IsPlainTextField();
+  return text_field_node && text_field_node->data().IsNativeTextField();
 }
 
 }  // namespace ui
