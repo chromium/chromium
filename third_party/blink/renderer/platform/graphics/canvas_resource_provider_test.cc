@@ -318,8 +318,8 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderSharedBitmap) {
 
   MockCanvasResourceDispatcherClient client;
   CanvasResourceDispatcher resource_dispatcher(
-      &client, base::ThreadTaskRunnerHandle::Get(), 1 /* client_id */,
-      1 /* sink_id */, 1 /* placeholder_canvas_id */, kSize);
+      &client, 1 /* client_id */, 1 /* sink_id */,
+      1 /* placeholder_canvas_id */, kSize);
 
   auto provider = CanvasResourceProvider::CreateSharedBitmapProvider(
       kSize, kLow_SkFilterQuality, kColorParams,

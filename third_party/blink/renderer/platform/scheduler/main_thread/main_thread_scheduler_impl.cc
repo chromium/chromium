@@ -2442,14 +2442,6 @@ MainThreadSchedulerImpl::V8TaskRunner() {
 
 scoped_refptr<base::SingleThreadTaskRunner>
 MainThreadSchedulerImpl::CompositorTaskRunner() {
-  if (scheduling_settings()
-          .mbi_compositor_task_runner_per_agent_scheduling_group) {
-    NOTREACHED() << "When MbiPerAGSCompositorTaskRunner is enabled, "
-                    "MainThreadSchedulerImpl::CompositorTaskRunner() shouldn't "
-                    "be used. We are planning to remove "
-                    "MainThreadSchedulerImpl::CompositorTaskRunner() in the "
-                    "near future.";
-  }
   return compositor_task_runner_;
 }
 
