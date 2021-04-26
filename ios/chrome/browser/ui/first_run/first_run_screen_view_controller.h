@@ -45,6 +45,12 @@
 // specific view controllers if additional buttons are used.
 @property(nonatomic, weak) id<FirstRunScreenViewControllerDelegate> delegate;
 
+// When set to YES, the primary button is temporarily replaced with a "More"
+// button that scrolls the content, until the user scrolls to the very end of
+// the content. If set to NO, the primary button behaves normally. Defaults to
+// NO.
+@property(nonatomic, assign) BOOL scrollToEndMandatory;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_FIRST_RUN_SCREEN_VIEW_CONTROLLER_H_

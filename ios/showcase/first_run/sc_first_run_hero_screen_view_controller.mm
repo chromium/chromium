@@ -27,9 +27,9 @@
       @"New FRE screen with a large hero banner and a primary button. Also "
       @"shows how to define custom buttons in the derived view controllers, "
       @"and how to dynamically change the primary button label.";
-  self.primaryActionString = @"Accept and continue";
   self.bannerImage = [UIImage imageNamed:@"Sample-banner-tall"];
   self.isTallBanner = YES;
+  self.scrollToEndMandatory = YES;
 
   // Add some screen-specific content and its constraints.
   UILabel* label = [[UILabel alloc] init];

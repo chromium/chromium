@@ -40,6 +40,7 @@
   self.primaryActionString = @"Continue";
   self.bannerImage = [UIImage imageNamed:@"Sample-banner"];
   self.isTallBanner = NO;
+  self.scrollToEndMandatory = YES;
 
   // Add some screen-specific content and its constraints.
   UILabel* label = [[UILabel alloc] init];

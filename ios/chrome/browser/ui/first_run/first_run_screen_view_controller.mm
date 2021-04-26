@@ -33,10 +33,11 @@ constexpr CGFloat kDefaultBannerMultiplier = 0.25;
 constexpr CGFloat kSubtitleBottomMarginViewHeight = 0.05;
 constexpr CGFloat kContentWidthMultiplier = 0.65;
 constexpr CGFloat kContentMaxWidth = 327;
+constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
 
 }  // namespace
 
-@interface FirstRunScreenViewController ()
+@interface FirstRunScreenViewController () <UIScrollViewDelegate>
 
 @property(nonatomic, strong) UIScrollView* scrollView;
 @property(nonatomic, strong) UIImageView* imageView;
@@ -47,6 +48,8 @@ constexpr CGFloat kContentMaxWidth = 327;
 @property(nonatomic, strong) UIButton* primaryActionButton;
 @property(nonatomic, strong) UIButton* secondaryActionButton;
 @property(nonatomic, strong) UIButton* tertiaryActionButton;
+
+@property(nonatomic, assign) BOOL didReachBottom;
 
 @end
 
@@ -227,10 +230,33 @@ constexpr CGFloat kContentMaxWidth = 327;
 
 - (void)setPrimaryActionString:(NSString*)text {
   _primaryActionString = text;
-  if (_primaryActionButton) {
+  if (_primaryActionButton &&
+      (!self.scrollToEndMandatory || self.didReachBottom)) {
     [_primaryActionButton setTitle:_primaryActionString
                           forState:UIControlStateNormal];
   }
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+  // Only add the scroll view delegate after all the view layouts are fully
+  // done.
+  dispatch_async(dispatch_get_main_queue(), ^{
+    self.scrollView.delegate = self;
+
+    // At this point, the scroll view has computed its content height. If
+    // scrolling to the end is mandatory, and the entire content is already
+    // fully visible, set |didReachBottom|. Otherwise, replace the primary
+    // button's label with the read more label.
+    if (self.scrollToEndMandatory) {
+      if ([self isScrolledToBottom]) {
+        self.didReachBottom = YES;
+      } else {
+        // TODO(crbug.com/1186762): Use final string and add localization.
+        [self.primaryActionButton setTitle:@"More - testing"
+                                  forState:UIControlStateNormal];
+      }
+    }
+  });
 }
 
 #pragma mark - Private
@@ -301,6 +327,10 @@ constexpr CGFloat kContentMaxWidth = 327;
 - (UIButton*)primaryActionButton {
   if (!_primaryActionButton) {
     _primaryActionButton = PrimaryActionButton(YES);
+    // Use |primaryActionString| even if scrolling to the end is mandatory
+    // because at the viewDidLoad stage, the scroll view hasn't computed its
+    // content height, so there is no way to know if scrolling is needed. This
+    // label will be updated at the viewDidAppear stage if necessary.
     [_primaryActionButton setTitle:self.primaryActionString
                           forState:UIControlStateNormal];
     _primaryActionButton.titleLabel.adjustsFontForContentSizeCategory = YES;
@@ -365,8 +395,51 @@ constexpr CGFloat kContentMaxWidth = 327;
   return button;
 }
 
+// Returns whether the scroll view's offset has reached the scroll view's
+// content height, indicating that the scroll view has been fully scrolled.
+- (BOOL)isScrolledToBottom {
+  CGFloat scrollPosition =
+      self.scrollView.contentOffset.y + self.scrollView.frame.size.height;
+  CGFloat scrollLimit =
+      self.scrollView.contentSize.height + self.scrollView.contentInset.bottom;
+  return scrollPosition >= scrollLimit;
+}
+
+// If scrolling to the end of the content is mandatory, this method updates the
+// primary button's label based on whether the scroll view is currently scrolled
+// to the end. If the scroll view has scrolled to the end, also sets
+// |didReachBottom|. If scrolling to the end of the content isn't mandatory, or
+// if the scroll view had already been scrolled to the end previously, this
+// method has no effect.
+- (void)updatePrimaryButtonIfReachedBottom {
+  if (self.scrollToEndMandatory && !self.didReachBottom &&
+      [self isScrolledToBottom]) {
+    self.didReachBottom = YES;
+    [self.primaryActionButton setTitle:self.primaryActionString
+                              forState:UIControlStateNormal];
+  }
+}
+
 - (void)didTapPrimaryActionButton {
-  if ([self.delegate respondsToSelector:@selector(didTapPrimaryActionButton)]) {
+  if (self.scrollToEndMandatory && !self.didReachBottom) {
+    // Calculate the offset needed to see the next content while keeping the
+    // current content partially visible.
+    CGFloat currentOffsetY = self.scrollView.contentOffset.y;
+    CGPoint targetOffset = CGPointMake(
+        0, currentOffsetY + self.scrollView.bounds.size.height *
+                                (1.0 - kPreviousContentVisibleOnScroll));
+    // Calculate the maximum possible offset. Add one point to work around some
+    // issues when the fonts are increased.
+    CGPoint bottomOffset =
+        CGPointMake(0, self.scrollView.contentSize.height -
+                           self.scrollView.bounds.size.height +
+                           self.scrollView.contentInset.bottom + 1);
+    // Scroll the the smaller of the two offsets.
+    CGPoint newOffset =
+        targetOffset.y < bottomOffset.y ? targetOffset : bottomOffset;
+    [self.scrollView setContentOffset:newOffset animated:YES];
+  } else if ([self.delegate
+                 respondsToSelector:@selector(didTapPrimaryActionButton)]) {
     [self.delegate didTapPrimaryActionButton];
   }
 }
@@ -385,6 +458,12 @@ constexpr CGFloat kContentMaxWidth = 327;
           respondsToSelector:@selector(didTapTertiaryActionButton)]) {
     [self.delegate didTapTertiaryActionButton];
   }
+}
+
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewDidScroll:(UIScrollView*)scrollView {
+  [self updatePrimaryButtonIfReachedBottom];
 }
 
 @end

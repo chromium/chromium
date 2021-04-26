@@ -10,8 +10,8 @@
 #error "This file requires ARC support."
 #endif
 
-NSString* const kButtonLabelMore = @"More";
-NSString* const kButtonLabelAccept = @"Accept and Continue";
+NSString* const kLabelContinueAs = @"Continue as Name";
+NSString* const kLabelAddAccount = @"Add Account";
 
 @interface SCFirstRunHeroScreenCoordinator () <HeroScreenDelegate>
 
@@ -30,6 +30,7 @@ NSString* const kButtonLabelAccept = @"Accept and Continue";
   self.screenViewController.delegate = self;
   self.screenViewController.modalPresentationStyle =
       UIModalPresentationFormSheet;
+  self.screenViewController.primaryActionString = kLabelAddAccount;
   [self.baseViewController setHidesBarsOnSwipe:NO];
   [self.baseViewController pushViewController:self.screenViewController
                                      animated:YES];
@@ -57,10 +58,10 @@ NSString* const kButtonLabelAccept = @"Accept and Continue";
 }
 
 - (void)didTapCustomActionButton {
-  if (self.screenViewController.primaryActionString == kButtonLabelMore) {
-    self.screenViewController.primaryActionString = kButtonLabelAccept;
+  if (self.screenViewController.primaryActionString == kLabelContinueAs) {
+    self.screenViewController.primaryActionString = kLabelAddAccount;
   } else {
-    self.screenViewController.primaryActionString = kButtonLabelMore;
+    self.screenViewController.primaryActionString = kLabelContinueAs;
   }
 }
 
