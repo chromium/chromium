@@ -159,7 +159,7 @@ static char* PaintCallback(const char* mime_type, int jpeg_quality) {
 }
 
 // Bookmark for the last point where a paint was committed on the main thread.
-static size_t gLastPaintBookmark;
+static std::atomic<size_t> gLastPaintBookmark;
 
 void RecordReplayOnCommitPaint() {
   gLastPaintBookmark = V8RecordReplayPaintStart();
@@ -172,9 +172,12 @@ void RecordReplayPaintFinished(const SkPixmap& pixmap) {
     V8RecordReplaySetPaintCallback(PaintCallback);
   }
 
-  if (gLastPaintBookmark) {
+  size_t bookmark = gLastPaintBookmark;
+  recordreplay::Assert("RecordReplayPaintFinished %lu", bookmark);
+
+  if (bookmark) {
     gCurrentPixmap = &pixmap;
-    V8RecordReplayPaintFinished(gLastPaintBookmark);
+    V8RecordReplayPaintFinished(bookmark);
     gCurrentPixmap = nullptr;
   }
 }
