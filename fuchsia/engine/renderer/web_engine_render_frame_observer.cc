@@ -4,7 +4,6 @@
 
 #include "fuchsia/engine/renderer/web_engine_render_frame_observer.h"
 
-#include "base/logging.h"
 #include "content/public/renderer/render_frame.h"
 
 WebEngineRenderFrameObserver::WebEngineRenderFrameObserver(
@@ -17,19 +16,9 @@ WebEngineRenderFrameObserver::WebEngineRenderFrameObserver(
           std::move(on_render_frame_deleted_callback)) {
   DCHECK(render_frame);
   DCHECK(on_render_frame_deleted_callback_);
-
-  // TODO(https://crbug.com/1181062): Remove this once the root cause of this
-  // bug has been found.
-  LOG(INFO) << "WebEngineRenderFrameObserver created for RenderFrame ID "
-            << routing_id();
 }
 
-WebEngineRenderFrameObserver::~WebEngineRenderFrameObserver() {
-  // TODO(https://crbug.com/1181062): Remove this once the root cause of this
-  // bug has been found.
-  LOG(INFO) << "WebEngineRenderFrameObserver deleted for RenderFrame ID "
-            << routing_id();
-}
+WebEngineRenderFrameObserver::~WebEngineRenderFrameObserver() = default;
 
 void WebEngineRenderFrameObserver::OnDestruct() {
   std::move(on_render_frame_deleted_callback_).Run(routing_id());

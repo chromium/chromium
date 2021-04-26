@@ -30,10 +30,7 @@ WebEngineURLLoaderThrottleProvider::CreateThrottles(
     int render_frame_id,
     const blink::WebURLRequest& request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // TODO(https://crbug.com/1181062): Remove this once the root cause of this
-  // bug has been found.
-  CHECK_NE(render_frame_id, MSG_ROUTING_NONE);
+  DCHECK_NE(render_frame_id, MSG_ROUTING_NONE);
 
   blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
   scoped_refptr<WebEngineURLLoaderThrottle::UrlRequestRewriteRules>& rules =
