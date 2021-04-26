@@ -907,7 +907,7 @@
       "os": {
         "type": "android"
       },
-      "gl_renderer": "Adreno \\(TM\\) 3.*",
+      "gl_renderer": ".*Adreno \\(TM\\) 3.*",
       "features": [
         "disable_program_cache"
       ]
