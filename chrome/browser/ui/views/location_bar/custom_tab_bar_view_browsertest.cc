@@ -290,8 +290,16 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest, MAYBE_IsNotCreatedInPopup) {
   EXPECT_FALSE(popup_view->toolbar()->custom_tab_bar());
 }
 
+// Flaky on linux: crbug.com/1202694
+#if defined(OS_LINUX)
+#define MAYBE_BackToAppButtonIsNotVisibleInOutOfScopePopups \
+  DISABLED_BackToAppButtonIsNotVisibleInOutOfScopePopups
+#else
+#define MAYBE_BackToAppButtonIsNotVisibleInOutOfScopePopups \
+  BackToAppButtonIsNotVisibleInOutOfScopePopups
+#endif
 IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
-                       BackToAppButtonIsNotVisibleInOutOfScopePopups) {
+                       MAYBE_BackToAppButtonIsNotVisibleInOutOfScopePopups) {
   const GURL app_url = https_server()->GetURL("app.com", "/ssl/google.html");
   const GURL out_of_scope_url = GURL("https://example.com");
 
