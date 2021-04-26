@@ -1218,7 +1218,7 @@ try_.chromium_linux_builder(
 
 try_.chromium_linux_builder(
     name = "linux-rel-dual-coverage",
-    builderless = not settings.is_main,
+    builderless = True,
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
     tryjob = try_.job(experiment_percentage = 3),
