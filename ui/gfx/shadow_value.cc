@@ -71,8 +71,7 @@ Insets ShadowValue::GetBlurRegion(const ShadowValues& shadows) {
 }
 
 // static
-ShadowValues ShadowValue::MakeRefreshShadowValues(int elevation,
-                                                  SkColor color) {
+ShadowValues ShadowValue::MakeShadowValues(int elevation, SkColor color) {
   // Refresh uses hand-tweaked shadows corresponding to a small set of
   // elevations. Use the Refresh spec and designer input to add missing shadow
   // values.

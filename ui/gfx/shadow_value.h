@@ -54,9 +54,9 @@ class GFX_EXPORT ShadowValue {
   // a uniform color.
   static Insets GetBlurRegion(const ShadowValues& shadows);
 
-  // Makes ShadowValues matching MD or Refresh shadows for the given elevation
-  // and color.
-  static ShadowValues MakeRefreshShadowValues(int elevation, SkColor color);
+  // Makes ShadowValues for the given elevation and color.
+  static ShadowValues MakeShadowValues(int elevation, SkColor color);
+  // Makes ShadowValues for MD shadows. This style is deprecated.
   static ShadowValues MakeMdShadowValues(int elevation,
                                          SkColor color = SK_ColorBLACK);
 

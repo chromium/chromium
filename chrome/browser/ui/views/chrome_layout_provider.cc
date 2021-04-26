@@ -163,8 +163,3 @@ ChromeLayoutProvider::GetControlLabelGridAlignment() const {
 bool ChromeLayoutProvider::ShouldShowWindowIcon() const {
   return false;
 }
-
-gfx::ShadowValues ChromeLayoutProvider::MakeShadowValues(int elevation,
-                                                         SkColor color) const {
-  return gfx::ShadowValue::MakeRefreshShadowValues(elevation, color);
-}

@@ -50,8 +50,8 @@ const gfx::FontList& GetDefaultFontlist() {
 }
 
 gfx::ShadowValues GetTextShadowValues() {
-  return gfx::ShadowValue::MakeRefreshShadowValues(kTextShadowElevation,
-                                                   kTextShadowColor);
+  return gfx::ShadowValue::MakeShadowValues(kTextShadowElevation,
+                                            kTextShadowColor);
 }
 
 bool IsAmbientModeTopicTypeAllowed(AmbientModeTopicType topic_type) {

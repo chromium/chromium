@@ -179,11 +179,6 @@ class VIEWS_EXPORT LayoutProvider {
   // Returns the shadow elevation metric for the given emphasis.
   virtual int GetShadowElevationMetric(Emphasis emphasis) const;
 
-  // Creates shadows for the given elevation. Use GetShadowElevationMetric for
-  // the appropriate elevation.
-  virtual gfx::ShadowValues MakeShadowValues(int elevation,
-                                             SkColor color) const;
-
  protected:
   static constexpr int kSmallDialogWidth = 320;
   static constexpr int kMediumDialogWidth = 448;

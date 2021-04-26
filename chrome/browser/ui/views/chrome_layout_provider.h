@@ -92,8 +92,6 @@ class ChromeLayoutProvider : public views::LayoutProvider {
   int GetDistanceMetric(int metric) const override;
   int GetSnappedDialogWidth(int min_width) const override;
   const views::TypographyProvider& GetTypographyProvider() const override;
-  gfx::ShadowValues MakeShadowValues(int elevation,
-                                     SkColor color) const override;
 
   // Returns the alignment used for control labels in a GridLayout; for example,
   // in this GridLayout:
