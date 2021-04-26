@@ -73,11 +73,18 @@ bool TaskQueueImpl::GuardedTaskPoster::PostTask(PostedTask task) {
   // has to do this) as it can lead to a deadlock and defer it instead.
   ScopedDeferTaskPosting disallow_task_posting;
 
+  recordreplay::Assert("TaskQueueImpl::GuardedTaskPoster::PostTask Start");
+
   auto token = operations_controller_.TryBeginOperation();
+
+  recordreplay::Assert("TaskQueueImpl::GuardedTaskPoster::PostTask #1 %d", !!token);
+
   if (!token)
     return false;
 
   outer_->PostTask(std::move(task));
+
+  recordreplay::Assert("TaskQueueImpl::GuardedTaskPoster::PostTask Done");
   return true;
 }
 
