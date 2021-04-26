@@ -28,6 +28,8 @@ class HelpAppManagerFactory : public BrowserContextKeyedServiceFactory {
   HelpAppManagerFactory& operator=(const HelpAppManagerFactory&) = delete;
 
   // BrowserContextKeyedServiceFactory:
+  content::BrowserContext* GetBrowserContextToUse(
+      content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;

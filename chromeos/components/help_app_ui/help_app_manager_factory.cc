@@ -33,6 +33,12 @@ HelpAppManagerFactory::HelpAppManagerFactory()
 
 HelpAppManagerFactory::~HelpAppManagerFactory() = default;
 
+content::BrowserContext* HelpAppManagerFactory::GetBrowserContextToUse(
+    content::BrowserContext* context) const {
+  // The service should exist in incognito mode.
+  return context;
+}
+
 KeyedService* HelpAppManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new HelpAppManager(
