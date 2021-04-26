@@ -65,7 +65,8 @@ enum class ExpectedRemoteBookmarkUpdateError {
   kUnexpectedGuid = 9,
   kParentNotFolder = 10,
   kGuidChangedForTrackedServerId = 11,
-  kMaxValue = kGuidChangedForTrackedServerId,
+  kTrackedServerIdWithoutServerTagMatchesPermanentNode = 12,
+  kMaxValue = kTrackedServerIdWithoutServerTagMatchesPermanentNode,
 };
 
 // |node| must not be nullptr.
@@ -575,6 +576,35 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
       "Sync.ProblematicServerSideBookmarks",
       /*sample=*/
       ExpectedRemoteBookmarkUpdateError::kGuidChangedForTrackedServerId,
+      /*expected_count=*/1);
+}
+
+TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
+       ShouldIgnoreMisbehavingServerWithPermanentNodeUpdateWithoutServerTag) {
+  ASSERT_THAT(tracker()->GetEntityForSyncId(kBookmarkBarId), NotNull());
+
+  // Push an update for a permanent entity, but without a unique server tag.
+  syncer::UpdateResponseDataList updates;
+  updates.push_back(CreateUpdateResponseData(
+      /*server_id=*/kBookmarkBarId,
+      /*parent_id=*/"root_id",
+      /*guid=*/bookmark_model()->bookmark_bar_node()->guid(),
+      /*title=*/"title",
+      /*is_deletion=*/false,
+      /*version=*/1,
+      /*unique_position=*/
+      syncer::UniquePosition::InitialPosition(
+          syncer::UniquePosition::RandomSuffix())));
+
+  base::HistogramTester histogram_tester;
+  updates_handler()->Process(updates,
+                             /*got_new_encryption_requirements=*/false);
+
+  histogram_tester.ExpectBucketCount(
+      "Sync.ProblematicServerSideBookmarks",
+      /*sample=*/
+      ExpectedRemoteBookmarkUpdateError::
+          kTrackedServerIdWithoutServerTagMatchesPermanentNode,
       /*expected_count=*/1);
 }
 

@@ -57,8 +57,10 @@ enum class RemoteBookmarkUpdateError {
   kParentNotFolder = 10,
   // The GUID changed for an already-tracked server ID.
   kGuidChangedForTrackedServerId = 11,
+  // An update to a permanent node received without a server-defined unique tag.
+  kTrackedServerIdWithoutServerTagMatchesPermanentNode = 12,
 
-  kMaxValue = kGuidChangedForTrackedServerId,
+  kMaxValue = kTrackedServerIdWithoutServerTagMatchesPermanentNode,
 };
 
 void LogProblematicBookmark(RemoteBookmarkUpdateError problem) {
@@ -207,10 +209,21 @@ void BookmarkRemoteUpdatesHandler::Process(
 
   for (const syncer::UpdateResponseData* update : ReorderUpdates(&updates)) {
     const syncer::EntityData& update_entity = update->entity;
-    // Only non deletions and non premanent node should have valid specifics and
-    // unique positions.
-    if (!update_entity.is_deleted() &&
-        update_entity.server_defined_unique_tag.empty()) {
+
+    // Ignore changes to the permanent nodes (e.g. bookmarks bar). We only
+    // care about their children.
+    if (!update_entity.server_defined_unique_tag.empty()) {
+      if (bookmark_tracker_->GetEntityForSyncId(update_entity.id) == nullptr) {
+        DLOG(ERROR)
+            << "Permanent nodes should have been merged during intial sync.";
+        LogProblematicBookmark(
+            RemoteBookmarkUpdateError::kPermanentNodeCreationAfterMerge);
+      }
+      continue;
+    }
+
+    // Only non-deletions should have valid specifics and unique positions.
+    if (!update_entity.is_deleted()) {
       if (!IsValidBookmarkSpecifics(update_entity.specifics.bookmark(),
                                     update_entity.is_folder)) {
         // Ignore updates with invalid specifics.
@@ -246,6 +259,20 @@ void BookmarkRemoteUpdatesHandler::Process(
         DetermineLocalTrackedEntityToUpdate(update_entity,
                                             &should_ignore_update);
     if (should_ignore_update) {
+      continue;
+    }
+
+    // Filter out permanent nodes once again (in case the server tag wasn't
+    // populated and yet the entity ID points to a permanent node). This case
+    // shoudn't be possible with a well-behaving server.
+    if (tracked_entity && tracked_entity->bookmark_node() &&
+        tracked_entity->bookmark_node()->is_permanent_node()) {
+      DLOG(ERROR) << "Ignoring update to permanent node without server defined "
+                     "unique tag for ID "
+                  << update_entity.id;
+      LogProblematicBookmark(
+          RemoteBookmarkUpdateError::
+              kTrackedServerIdWithoutServerTagMatchesPermanentNode);
       continue;
     }
 
@@ -288,11 +315,6 @@ void BookmarkRemoteUpdatesHandler::Process(
       CHECK_EQ(tracked_entity,
                bookmark_tracker_->GetEntityForSyncId(update_entity.id));
     } else {
-      // Ignore changes to the permanent nodes (e.g. bookmarks bar). We only
-      // care about their children.
-      if (bookmark_model_->is_permanent_node(tracked_entity->bookmark_node())) {
-        continue;
-      }
       ProcessUpdate(*update, tracked_entity);
       // TODO(crbug.com/516866): The below CHECK is added to debug some crashes.
       // Should be removed after figuring out the reason for the crash.
@@ -508,14 +530,7 @@ BookmarkRemoteUpdatesHandler::ProcessCreate(
     const syncer::UpdateResponseData& update) {
   const syncer::EntityData& update_entity = update.entity;
   DCHECK(!update_entity.is_deleted());
-  if (!update_entity.server_defined_unique_tag.empty()) {
-    DLOG(ERROR)
-        << "Permanent nodes should have been merged during intial sync.";
-    LogProblematicBookmark(
-        RemoteBookmarkUpdateError::kPermanentNodeCreationAfterMerge);
-    return nullptr;
-  }
-
+  DCHECK(update_entity.server_defined_unique_tag.empty());
   DCHECK(IsValidBookmarkSpecifics(update_entity.specifics.bookmark(),
                                   update_entity.is_folder));
 
@@ -565,7 +580,7 @@ void BookmarkRemoteUpdatesHandler::ProcessUpdate(
             bookmark_tracker_->GetEntityForSyncId(update_entity.id));
   // Must not be a deletion.
   DCHECK(!update_entity.is_deleted());
-
+  DCHECK(update_entity.server_defined_unique_tag.empty());
   DCHECK(IsValidBookmarkSpecifics(update_entity.specifics.bookmark(),
                                   update_entity.is_folder));
   DCHECK(!tracked_entity->IsUnsynced());
@@ -633,11 +648,9 @@ void BookmarkRemoteUpdatesHandler::ProcessDelete(
   }
 
   const bookmarks::BookmarkNode* node = tracked_entity->bookmark_node();
-  // Ignore changes to the permanent top-level nodes.  We only care about
-  // their children.
-  if (bookmark_model_->is_permanent_node(node)) {
-    return;
-  }
+  DCHECK(node);
+  // Changes to permanent nodes have been filtered out earlier.
+  DCHECK(!node->is_permanent_node());
   // Remove the entities of |node| and its children.
   RemoveEntityAndChildrenFromTracker(node);
   // Remove the node and its children from the model.
@@ -655,6 +668,9 @@ void BookmarkRemoteUpdatesHandler::ProcessConflict(
   DCHECK(tracked_entity);
   DCHECK_EQ(tracked_entity,
             bookmark_tracker_->GetEntityForSyncId(update_entity.id));
+  DCHECK(!tracked_entity->bookmark_node() ||
+         !tracked_entity->bookmark_node()->is_permanent_node());
+  DCHECK(update_entity.server_defined_unique_tag.empty());
 
   if (tracked_entity->metadata()->is_deleted() && update_entity.is_deleted()) {
     // Both have been deleted, delete the corresponding entity from the tracker.
@@ -741,6 +757,9 @@ void BookmarkRemoteUpdatesHandler::ProcessConflict(
 
 void BookmarkRemoteUpdatesHandler::RemoveEntityAndChildrenFromTracker(
     const bookmarks::BookmarkNode* node) {
+  DCHECK(node);
+  DCHECK(!node->is_permanent_node());
+
   const SyncedBookmarkTracker::Entity* entity =
       bookmark_tracker_->GetEntityForBookmarkNode(node);
   DCHECK(entity);
@@ -765,11 +784,12 @@ void BookmarkRemoteUpdatesHandler::ReuploadEntityIfNeeded(
     const SyncedBookmarkTracker::Entity* tracked_entity) {
   DCHECK(tracked_entity);
   DCHECK_EQ(tracked_entity->metadata()->server_id(), entity_data.id);
-  // Do not initiate reupload if the local entity is a tombstone or a permanent
-  // node.
+  DCHECK(!tracked_entity->bookmark_node() ||
+         !tracked_entity->bookmark_node()->is_permanent_node());
+
+  // Do not initiate reupload if the local entity is a tombstone.
   const bool is_reupload_needed =
       tracked_entity->bookmark_node() &&
-      !tracked_entity->bookmark_node()->is_permanent_node() &&
       IsBookmarkEntityReuploadNeeded(entity_data);
   base::UmaHistogramBoolean(
       "Sync.BookmarkEntityReuploadNeeded.OnIncrementalUpdate",
