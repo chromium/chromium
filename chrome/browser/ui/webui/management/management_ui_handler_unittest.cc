@@ -1260,6 +1260,7 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
 
   // When policies are set to values that enable the feature without a usable DM
   // token, nothing to report.
+  policy::SetDMTokenForTesting(policy::DMToken::CreateInvalidTokenForTesting());
   safe_browsing::SetAnalysisConnector(profile_no_domain->GetPrefs(),
                                       enterprise_connectors::FILE_ATTACHED,
                                       "[{\"service_provider\":\"google\"}]");
