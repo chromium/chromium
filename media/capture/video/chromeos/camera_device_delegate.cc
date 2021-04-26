@@ -1169,15 +1169,14 @@ void CameraDeviceDelegate::OnConstructedDefaultPreviewRequestSettings(
 
     SetFpsRangeInMetadata(&settings, target_min, target_max);
   }
-  request_manager_->StartPreview(std::move(settings));
-
-  if (!take_photo_callbacks_.empty()) {
-    TakePhotoImpl();
-  }
-
   while (!on_reconfigured_callbacks_.empty()) {
     std::move(on_reconfigured_callbacks_.front()).Run();
     on_reconfigured_callbacks_.pop();
+  }
+
+  request_manager_->StartPreview(std::move(settings));
+  if (!take_photo_callbacks_.empty()) {
+    TakePhotoImpl();
   }
 }
 
