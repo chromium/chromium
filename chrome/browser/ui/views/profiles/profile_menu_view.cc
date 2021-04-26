@@ -224,7 +224,7 @@ void ProfileMenuView::BuildMenu() {
 gfx::ImageSkia ProfileMenuView::GetSyncIcon() const {
   Profile* profile = browser()->profile();
 
-  if (!profile->IsRegularProfile())
+  if (profile->IsOffTheRecord())
     return gfx::ImageSkia();
 
   if (!IdentityManagerFactory::GetForProfile(profile)->HasPrimaryAccount(

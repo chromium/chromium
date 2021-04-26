@@ -63,7 +63,7 @@ Profile* GetPrimaryUserProfile() {
 // then no metrics uploaded.
 int GetNumSecondaryAccounts(Profile* profile) {
   // Check for incognito profiles.
-  if (!profile->IsRegularProfile())
+  if (profile->IsOffTheRecord())
     return -1;
 
   signin::IdentityManager* identity_manager =
@@ -183,7 +183,7 @@ FamilyUserMetricsProvider::GetNumSecondaryAccountsHistogramNameForTesting() {
 
 void FamilyUserMetricsProvider::ObserveIdentityManager(Profile* profile) {
   // Check for incognito profiles.
-  if (!profile->IsRegularProfile())
+  if (profile->IsOffTheRecord())
     return;
 
   signin::IdentityManager* identity_manager =

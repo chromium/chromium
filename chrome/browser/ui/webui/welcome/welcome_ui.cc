@@ -118,7 +118,7 @@ WelcomeUI::WelcomeUI(content::WebUI* web_ui, const GURL& url)
 
   // This page is not shown to incognito or guest profiles. If one should end up
   // here, we return, causing a 404-like page.
-  if (!profile || !profile->IsRegularProfile()) {
+  if (!profile || profile->IsOffTheRecord()) {
     return;
   }
 

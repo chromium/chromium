@@ -105,7 +105,7 @@ bool AmbientClientImpl::IsAmbientModeAllowed() {
   if (!HasPrimaryAccount(profile))
     return false;
 
-  if (!profile->IsRegularProfile())
+  if (profile->IsOffTheRecord())
     return false;
 
   return true;

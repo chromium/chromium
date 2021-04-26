@@ -30,7 +30,7 @@ bool CanGetDeviceAttributes() {
   if (chromeos::ProfileHelper::IsSigninProfile(profile))
     return true;
 
-  if (!profile->IsRegularProfile())
+  if (profile->IsOffTheRecord())
     return false;
 
   const user_manager::User* user =

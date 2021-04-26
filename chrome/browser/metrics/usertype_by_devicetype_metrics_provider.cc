@@ -38,8 +38,8 @@ UserSegment GetUserSegment(Profile* profile) {
     return UserSegment::kManagedGuestSession;
   }
 
-  // Check for incognito profiles.
-  if (!profile->IsRegularProfile()) {
+  // Check for off-the-record profiles.
+  if (profile->IsOffTheRecord()) {
     return UserSegment::kUnmanaged;
   }
 
