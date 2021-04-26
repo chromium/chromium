@@ -12,6 +12,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import android.os.Bundle;
@@ -61,6 +62,7 @@ import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
+import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -118,10 +120,15 @@ public class SyncConsentFragmentTest {
     @Mock
     private FirstRunPageDelegate mFirstRunPageDelegateMock;
 
+    @Mock
+    private ExternalAuthUtils mExternalAuthUtilsMock;
+
     private SyncConsentActivity mSyncConsentActivity;
 
     @Before
     public void setUp() {
+        when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
+        ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
         mActivityTestRule.setFinishActivity(true);
         mChromeActivityTestRule.startMainActivityOnBlankPage();
     }
