@@ -134,6 +134,10 @@ class ProfileImportProcess {
       AutofillClient::SaveAddressProfileOfferUserDecision decision,
       base::Optional<AutofillProfile> edited_profile = base::nullopt);
 
+  // Records UMA metrics. Should only be called after a user decision was
+  // supplied.
+  void CollectMetrics() const;
+
  private:
   // Determines the import type of |observed_profile_| with respect to
   // |existing_profiles|. Only the first profile in |existing_profiles| becomes
@@ -179,6 +183,9 @@ class ProfileImportProcess {
   // The decision the user made when prompted.
   AutofillClient::SaveAddressProfileOfferUserDecision user_decision_{
       AutofillClient::SaveAddressProfileOfferUserDecision::kUndefined};
+
+  // The appplication locale used for this import process.
+  std::string app_locale_;
 };
 
 }  // namespace autofill

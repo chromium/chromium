@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/autofill_profile_import_process.h"
+#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 
 namespace autofill {
 
 namespace {
+
+using UserDecision = AutofillClient::SaveAddressProfileOfferUserDecision;
 
 // Returns a unique import id.
 AutofillProfileImportId GetImportId() {
@@ -23,7 +26,9 @@ ProfileImportProcess::ProfileImportProcess(
     const AutofillProfile& observed_profile,
     const std::vector<AutofillProfile*>& existing_profiles,
     const std::string& app_locale)
-    : import_id_(GetImportId()), observed_profile_(observed_profile) {
+    : import_id_(GetImportId()),
+      observed_profile_(observed_profile),
+      app_locale_(app_locale) {
   DetermineProfileImportType(existing_profiles, app_locale);
 }
 
@@ -132,8 +137,7 @@ std::vector<AutofillProfile> ProfileImportProcess::GetResultingProfiles() {
   std::vector<AutofillProfile> resulting_profiles;
 
   // At this point, a user decision must have been supplied.
-  DCHECK_NE(user_decision_,
-            AutofillClient::SaveAddressProfileOfferUserDecision::kUndefined);
+  DCHECK_NE(user_decision_, UserDecision::kUndefined);
 
   // The unchanged and updated profiles should be added unconditionally.
   resulting_profiles.insert(resulting_profiles.end(),
@@ -151,23 +155,22 @@ std::vector<AutofillProfile> ProfileImportProcess::GetResultingProfiles() {
 }
 
 void ProfileImportProcess::SetUserDecision(
-    AutofillClient::SaveAddressProfileOfferUserDecision decision,
+    UserDecision decision,
     base::Optional<AutofillProfile> edited_profile) {
   // A user decision should only be supplied once.
-  DCHECK_EQ(user_decision_,
-            AutofillClient::SaveAddressProfileOfferUserDecision::kUndefined);
+  DCHECK_EQ(user_decision_, UserDecision::kUndefined);
   DCHECK(!confirmed_import_candidate_.has_value());
 
   user_decision_ = decision;
   switch (user_decision_) {
     // If the import was accepted either with or without a prompt, the import
     // candidate gets confired.
-    case AutofillClient::SaveAddressProfileOfferUserDecision::kUserNotAsked:
-    case AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted:
+    case UserDecision::kUserNotAsked:
+    case UserDecision::kAccepted:
       confirmed_import_candidate_ = import_candidate_;
       break;
 
-    case AutofillClient::SaveAddressProfileOfferUserDecision::kEdited:
+    case UserDecision::kEdited:
       // If the import candidate is supplied, the 'edited_profile' must be
       // supplied.
       DCHECK(edited_profile.has_value());
@@ -180,46 +183,44 @@ void ProfileImportProcess::SetUserDecision(
     // If the confirmable merge was declided or ignored, the original merge
     // candidate should be maintined. Note that the decline/ignore does not mean
     // that silent updates are not performed.
-    case AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined:
-    case AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored:
+    case UserDecision::kDeclined:
+    case UserDecision::kIgnored:
       confirmed_import_candidate_ = merge_candidate_;
       break;
 
-    case AutofillClient::SaveAddressProfileOfferUserDecision::kUndefined:
+    case UserDecision::kNever:
+      confirmed_import_candidate_ = merge_candidate_;
+      break;
+
+    case UserDecision::kUndefined:
       NOTREACHED();
       break;
   }
 }
 
 void ProfileImportProcess::AcceptWithoutPrompt() {
-  SetUserDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision::kUserNotAsked);
+  SetUserDecision(UserDecision::kUserNotAsked);
 }
 
 void ProfileImportProcess::AcceptWithoutEdits() {
-  SetUserDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted);
+  SetUserDecision(UserDecision::kAccepted);
 }
 
 void ProfileImportProcess::AcceptWithEdits(AutofillProfile edited_profile) {
-  SetUserDecision(AutofillClient::SaveAddressProfileOfferUserDecision::kEdited,
-                  base::make_optional(edited_profile));
+  SetUserDecision(UserDecision::kEdited, base::make_optional(edited_profile));
 }
 
 void ProfileImportProcess::Declined() {
-  SetUserDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined);
+  SetUserDecision(UserDecision::kDeclined);
 }
 
 void ProfileImportProcess::Ignore() {
-  SetUserDecision(
-      AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored);
+  SetUserDecision(UserDecision::kIgnored);
 }
 
 bool ProfileImportProcess::ProfilesChanged() const {
   // At this point, a user decision must have been supplied.
-  DCHECK_NE(user_decision_,
-            AutofillClient::SaveAddressProfileOfferUserDecision::kUndefined);
+  DCHECK_NE(user_decision_, UserDecision::kUndefined);
 
   // If there are any updated profiles, return true.
   if (updated_profiles_.size() > 0) {
@@ -232,12 +233,9 @@ bool ProfileImportProcess::ProfilesChanged() const {
   }
 
   // If the import was accepted, return true.
-  if (user_decision_ ==
-          AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted ||
-      user_decision_ ==
-          AutofillClient::SaveAddressProfileOfferUserDecision::kEdited ||
-      user_decision_ ==
-          AutofillClient::SaveAddressProfileOfferUserDecision::kUserNotAsked) {
+  if (user_decision_ == UserDecision::kAccepted ||
+      user_decision_ == UserDecision::kEdited ||
+      user_decision_ == UserDecision::kUserNotAsked) {
     return true;
   }
 
@@ -246,6 +244,36 @@ bool ProfileImportProcess::ProfilesChanged() const {
 
 void ProfileImportProcess::set_prompt_was_shown() {
   prompt_shown_ = true;
+}
+
+void ProfileImportProcess::CollectMetrics() const {
+  // Metrics should only be recorded after a user decision was supplied.
+  DCHECK_NE(user_decision_, UserDecision::kUndefined);
+
+  // For any finished import process record the type of the import.
+  AutofillMetrics::LogProfileImportType(import_type_);
+
+  // For an import process that involves prompting the user, record the
+  // decision.
+  if (ImportIsNewProfile()) {
+    AutofillMetrics::LogNewProfileImportDecision(user_decision_);
+  } else if (ImportIsMerge()) {
+    AutofillMetrics::LogProfileUpdateImportDecision(user_decision_);
+  }
+
+  // If the profile was edited by the user, record a histogram of edited types.
+  if (user_decision_ == UserDecision::kEdited) {
+    for (const auto& difference :
+         AutofillProfileComparator::GetSettingsVisibleProfileDifference(
+             import_candidate_.value(), confirmed_import_candidate_.value(),
+             app_locale_)) {
+      if (ImportIsNewProfile()) {
+        AutofillMetrics::LogNewProfileEditedType(difference.type);
+      } else {
+        AutofillMetrics::LogProfileUpdateEditedType(difference.type);
+      }
+    }
+  }
 }
 
 }  // namespace autofill

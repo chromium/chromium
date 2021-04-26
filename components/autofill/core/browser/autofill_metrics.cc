@@ -102,6 +102,58 @@ std::string PreviousSaveCreditCardPromptUserDecisionToString(
   return previous_response;
 }
 
+// Converts a server field type that can be edited in the settings to an enum
+// used for metrics.
+AutofillMetrics::EditedFieldTypeForMetrics ConvertEditedFieldTypeForMetrics(
+    ServerFieldType field_type) {
+  switch (field_type) {
+    case ServerFieldType::NAME_FULL:
+      return AutofillMetrics::EditedFieldTypeForMetrics::kName;
+      break;
+
+    case ServerFieldType::EMAIL_ADDRESS:
+      return AutofillMetrics::EditedFieldTypeForMetrics::kEmailAddress;
+      break;
+
+    case ServerFieldType::PHONE_HOME_WHOLE_NUMBER:
+      return AutofillMetrics::EditedFieldTypeForMetrics::kPhoneNumber;
+      break;
+
+    case ServerFieldType::ADDRESS_HOME_CITY:
+      return AutofillMetrics::EditedFieldTypeForMetrics::kCity;
+      break;
+
+    case ServerFieldType::ADDRESS_HOME_COUNTRY:
+      return AutofillMetrics::EditedFieldTypeForMetrics::kCountry;
+      break;
+
+    case ServerFieldType::ADDRESS_HOME_ZIP:
+      return AutofillMetrics::EditedFieldTypeForMetrics::kZip;
+      break;
+
+    case ServerFieldType::ADDRESS_HOME_STATE:
+      return AutofillMetrics::EditedFieldTypeForMetrics::kState;
+      break;
+
+    case ServerFieldType::ADDRESS_HOME_STREET_ADDRESS:
+      return AutofillMetrics::EditedFieldTypeForMetrics::kStreetAddress;
+      break;
+
+    case ServerFieldType::ADDRESS_HOME_DEPENDENT_LOCALITY:
+      return AutofillMetrics::EditedFieldTypeForMetrics::kDependentLocality;
+      break;
+
+    case ServerFieldType::NAME_HONORIFIC_PREFIX:
+      return AutofillMetrics::EditedFieldTypeForMetrics::kHonorificPrefix;
+      break;
+
+    default:
+      return AutofillMetrics::EditedFieldTypeForMetrics::kUndefined;
+      NOTREACHED();
+      break;
+  }
+}
+
 }  // namespace
 
 // First, translates |field_type| to the corresponding logical |group| from
@@ -2586,4 +2638,34 @@ void AutofillMetrics::LogNumberOfAutofilledFieldsAtSubmission(
       "Autofill.NumberOfAutofilledFieldsAtSubmission.Corrected",
       number_of_corrected_fields, 50);
 }
+
+void AutofillMetrics::LogProfileImportType(
+    AutofillProfileImportType import_type) {
+  base::UmaHistogramEnumeration("Autofill.ProfileImport.ProfileImportType",
+                                import_type);
+}
+
+void AutofillMetrics::LogNewProfileImportDecision(
+    AutofillClient::SaveAddressProfileOfferUserDecision decision) {
+  base::UmaHistogramEnumeration("Autofill.ProfileImport.NewProfileDecision",
+                                decision);
+}
+
+void AutofillMetrics::LogProfileUpdateImportDecision(
+    AutofillClient::SaveAddressProfileOfferUserDecision decision) {
+  base::UmaHistogramEnumeration("Autofill.ProfileImport.UpdateProfileDecision",
+                                decision);
+}
+
+void AutofillMetrics::LogProfileUpdateEditedType(ServerFieldType edited_type) {
+  base::UmaHistogramEnumeration(
+      "Autofill.ProfileImport.UpdateProfileEditedType",
+      ConvertEditedFieldTypeForMetrics(edited_type));
+}
+
+void AutofillMetrics::LogNewProfileEditedType(ServerFieldType edited_type) {
+  base::UmaHistogramEnumeration("Autofill.ProfileImport.NewProfileEditedType",
+                                ConvertEditedFieldTypeForMetrics(edited_type));
+}
+
 }  // namespace autofill

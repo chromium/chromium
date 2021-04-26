@@ -141,7 +141,9 @@ class AutofillClient : public RiskDataLoader {
     kAccepted,
     kEdited,
     kDeclined,
+    kNever,
     kIgnored,
+    kMaxValue = kIgnored,
   };
 
   // Used for explicitly requesting the user to enter/confirm cardholder name,

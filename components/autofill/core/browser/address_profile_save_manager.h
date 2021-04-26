@@ -65,9 +65,6 @@ class AddressProfileSaveManager {
   // import process should be continued silently.
   void MaybeOfferSavePrompt();
 
-  // To collect metrics at the end of the import process.
-  void CollectMetrics();
-
   // A pointer to the autofill client. It is assumed that the client outlives
   // the instance of this class
   AutofillClient* const client_;

@@ -4,8 +4,10 @@
 
 #include "components/autofill/core/browser/address_profile_save_manager.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_test_utils.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
@@ -19,7 +21,21 @@ namespace autofill {
 
 namespace {
 
+using UserDecision = AutofillClient::SaveAddressProfileOfferUserDecision;
+
 using structured_address::VerificationStatus;
+
+// Names of histrogram used for metric collection.
+constexpr char kProfileImportTypeHistogram[] =
+    "Autofill.ProfileImport.ProfileImportType";
+constexpr char kNewProfileEditsHistogram[] =
+    "Autofill.ProfileImport.NewProfileEditedType";
+constexpr char kProfileUpdateEditsHistogram[] =
+    "Autofill.ProfileImport.UpdateProfileEditedType";
+constexpr char kNewProfileDecisionHistogram[] =
+    "Autofill.ProfileImport.NewProfileDecision";
+constexpr char kProfileUpdateDecisionHistogram[] =
+    "Autofill.ProfileImport.UpdateProfileDecision";
 
 class MockPersonalDataManager : public TestPersonalDataManager {
  public:
@@ -47,11 +63,9 @@ class TestAddressProfileSaveManager : public AddressProfileSaveManager {
   // import process was finished.
   ProfileImportProcess* last_import();
 
-  void OnUserDecisionForTesting(
-      AutofillClient::SaveAddressProfileOfferUserDecision decision,
-      AutofillProfile edited_profile) {
-    if (decision !=
-        AutofillClient::SaveAddressProfileOfferUserDecision::kUserNotAsked) {
+  void OnUserDecisionForTesting(UserDecision decision,
+                                AutofillProfile edited_profile) {
+    if (decision != UserDecision::kUserNotAsked) {
       // If the user was asked, make sure the prompt is mared as being shown.
       pending_import()->set_prompt_was_shown();
     }
@@ -86,13 +100,15 @@ struct ImportScenarioTestCase {
   std::vector<AutofillProfile> existing_profiles;
   AutofillProfile observed_profile;
   bool is_prompt_expected;
-  AutofillClient::SaveAddressProfileOfferUserDecision user_decision;
+  UserDecision user_decision;
   AutofillProfile edited_profile;
   AutofillProfileImportType expected_import_type;
   bool is_profile_change_expected;
   base::Optional<AutofillProfile> merge_candidate;
   base::Optional<AutofillProfile> import_candidate;
   std::vector<AutofillProfile> expected_final_profiles;
+  std::vector<AutofillMetrics::EditedFieldTypeForMetrics>
+      expected_edited_types_for_metrics;
 };
 
 class AddressProfileSaveManagerTest : public testing::Test {
@@ -120,10 +136,11 @@ void AddressProfileSaveManagerTest::TestImportScenario(
     ImportScenarioTestCase& test_scenario) {
   // Assert that there is not a single profile stored in the personal data
   // manager.
-  ASSERT_TRUE(mock_personal_data_manager_.GetProfiles().size() == 0);
+  ASSERT_TRUE(mock_personal_data_manager_.GetProfiles().empty());
 
   TestAddressProfileSaveManager save_manager(&autofill_client_,
                                              &mock_personal_data_manager_);
+  base::HistogramTester histogram_tester;
 
   // Set up the expectation and response for if a prompt should be shown.
   if (test_scenario.is_prompt_expected) {
@@ -161,6 +178,54 @@ void AddressProfileSaveManagerTest::TestImportScenario(
   // Test that the merge and import candidates are correct.
   EXPECT_EQ(test_scenario.merge_candidate, last_import->merge_candidate());
   EXPECT_EQ(test_scenario.import_candidate, last_import->import_candidate());
+
+  // Test the collection of metrics.
+  histogram_tester.ExpectUniqueSample(kProfileImportTypeHistogram,
+                                      test_scenario.expected_import_type, 1);
+
+  const bool is_new_profile = test_scenario.expected_import_type ==
+                              AutofillProfileImportType::kNewProfile;
+  const bool is_confirmable_merge =
+      test_scenario.expected_import_type ==
+      AutofillProfileImportType::kConfirmableMerge;
+
+  // If the import was neither a new profile or a confirmable merge, test that
+  // the corresponing updates are unchanged.
+  if (!is_new_profile && !is_confirmable_merge) {
+    histogram_tester.ExpectTotalCount(kNewProfileEditsHistogram, 0);
+    histogram_tester.ExpectTotalCount(kNewProfileDecisionHistogram, 0);
+    histogram_tester.ExpectTotalCount(kProfileUpdateEditsHistogram, 0);
+    histogram_tester.ExpectTotalCount(kProfileUpdateDecisionHistogram, 0);
+  } else {
+    DCHECK(!is_new_profile || !is_confirmable_merge);
+
+    const std::string changed_decision_histo =
+        is_new_profile ? kNewProfileDecisionHistogram
+                       : kProfileUpdateDecisionHistogram;
+    const std::string unchanged_decision_histo =
+        !is_new_profile ? kNewProfileDecisionHistogram
+                        : kProfileUpdateDecisionHistogram;
+
+    const std::string changed_edits_histo = is_new_profile
+                                                ? kNewProfileEditsHistogram
+                                                : kProfileUpdateEditsHistogram;
+    const std::string unchanged_edits_histo =
+        !is_new_profile ? kNewProfileEditsHistogram
+                        : kProfileUpdateEditsHistogram;
+
+    histogram_tester.ExpectTotalCount(unchanged_decision_histo, 0);
+    histogram_tester.ExpectTotalCount(unchanged_edits_histo, 0);
+
+    histogram_tester.ExpectUniqueSample(changed_decision_histo,
+                                        test_scenario.user_decision, 1);
+    histogram_tester.ExpectTotalCount(
+        changed_edits_histo,
+        test_scenario.expected_edited_types_for_metrics.size());
+
+    for (auto edited_type : test_scenario.expected_edited_types_for_metrics) {
+      histogram_tester.ExpectBucketCount(changed_edits_histo, edited_type, 1);
+    }
+  }
 }
 
 // Test that a profile is correctly imported when no other profile is stored
@@ -172,8 +237,7 @@ TEST_F(AddressProfileSaveManagerTest, SaveNewProfile) {
       .existing_profiles = {},
       .observed_profile = observed_profile,
       .is_prompt_expected = true,
-      .user_decision =
-          AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
+      .user_decision = UserDecision::kAccepted,
       .expected_import_type = AutofillProfileImportType::kNewProfile,
       .is_profile_change_expected = true,
       .merge_candidate = base::nullopt,
@@ -195,14 +259,18 @@ TEST_F(AddressProfileSaveManagerTest, SaveNewProfile_Edited) {
       .existing_profiles = {},
       .observed_profile = observed_profile,
       .is_prompt_expected = true,
-      .user_decision =
-          AutofillClient::SaveAddressProfileOfferUserDecision::kEdited,
+      .user_decision = UserDecision::kEdited,
       .edited_profile = edited_profile,
       .expected_import_type = AutofillProfileImportType::kNewProfile,
       .is_profile_change_expected = true,
       .merge_candidate = base::nullopt,
       .import_candidate = observed_profile,
-      .expected_final_profiles = {edited_profile}};
+      .expected_final_profiles = {edited_profile},
+      .expected_edited_types_for_metrics = {
+          AutofillMetrics::EditedFieldTypeForMetrics::kName,
+          AutofillMetrics::EditedFieldTypeForMetrics::kStreetAddress,
+          AutofillMetrics::EditedFieldTypeForMetrics::kCity,
+          AutofillMetrics::EditedFieldTypeForMetrics::kZip}};
 
   TestImportScenario(test_scenario);
 }
@@ -215,8 +283,7 @@ TEST_F(AddressProfileSaveManagerTest, SaveNewProfile_Declined) {
       .existing_profiles = {},
       .observed_profile = observed_profile,
       .is_prompt_expected = true,
-      .user_decision =
-          AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined,
+      .user_decision = UserDecision::kDeclined,
       .expected_import_type = AutofillProfileImportType::kNewProfile,
       .is_profile_change_expected = false,
       .merge_candidate = base::nullopt,
@@ -236,8 +303,7 @@ TEST_F(AddressProfileSaveManagerTest, ImportDuplicateProfile) {
       .existing_profiles = {existing_profile},
       .observed_profile = observed_profile,
       .is_prompt_expected = false,
-      .user_decision =
-          AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
+      .user_decision = UserDecision::kAccepted,
       .expected_import_type = AutofillProfileImportType::kDuplicateImport,
       .is_profile_change_expected = false,
       .merge_candidate = base::nullopt,
@@ -279,8 +345,7 @@ TEST_F(AddressProfileSaveManagerTest, UserConfirmableMerge) {
       .existing_profiles = {mergeable_profile},
       .observed_profile = observed_profile,
       .is_prompt_expected = true,
-      .user_decision =
-          AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
+      .user_decision = UserDecision::kAccepted,
       .expected_import_type = AutofillProfileImportType::kConfirmableMerge,
       .is_profile_change_expected = true,
       .merge_candidate = mergeable_profile,
@@ -305,14 +370,18 @@ TEST_F(AddressProfileSaveManagerTest, UserConfirmableMerge_Edited) {
       .existing_profiles = {mergeable_profile},
       .observed_profile = observed_profile,
       .is_prompt_expected = true,
-      .user_decision =
-          AutofillClient::SaveAddressProfileOfferUserDecision::kEdited,
+      .user_decision = UserDecision::kEdited,
       .edited_profile = edited_profile,
       .expected_import_type = AutofillProfileImportType::kConfirmableMerge,
       .is_profile_change_expected = true,
       .merge_candidate = mergeable_profile,
       .import_candidate = import_candidate,
-      .expected_final_profiles = {edited_profile}};
+      .expected_final_profiles = {edited_profile},
+      .expected_edited_types_for_metrics = {
+          AutofillMetrics::EditedFieldTypeForMetrics::kName,
+          AutofillMetrics::EditedFieldTypeForMetrics::kStreetAddress,
+          AutofillMetrics::EditedFieldTypeForMetrics::kCity,
+          AutofillMetrics::EditedFieldTypeForMetrics::kZip}};
 
   TestImportScenario(test_scenario);
 }
@@ -329,8 +398,7 @@ TEST_F(AddressProfileSaveManagerTest, UserConfirmableMerge_Declined) {
       .existing_profiles = {mergeable_profile},
       .observed_profile = observed_profile,
       .is_prompt_expected = true,
-      .user_decision =
-          AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined,
+      .user_decision = UserDecision::kDeclined,
       .expected_import_type = AutofillProfileImportType::kConfirmableMerge,
       .is_profile_change_expected = false,
       .merge_candidate = mergeable_profile,
@@ -354,8 +422,7 @@ TEST_F(AddressProfileSaveManagerTest, UserConfirmableMergeAndDuplicate) {
       .existing_profiles = {existing_duplicate, mergeable_profile},
       .observed_profile = observed_profile,
       .is_prompt_expected = true,
-      .user_decision =
-          AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
+      .user_decision = UserDecision::kAccepted,
       .expected_import_type = AutofillProfileImportType::kConfirmableMerge,
       .is_profile_change_expected = true,
       .merge_candidate = mergeable_profile,
@@ -388,8 +455,7 @@ TEST_F(AddressProfileSaveManagerTest,
                             updateable_profile},
       .observed_profile = observed_profile,
       .is_prompt_expected = true,
-      .user_decision =
-          AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
+      .user_decision = UserDecision::kAccepted,
       .expected_import_type = AutofillProfileImportType::kConfirmableMerge,
       .is_profile_change_expected = true,
       .merge_candidate = mergeable_profile,
@@ -423,8 +489,7 @@ TEST_F(AddressProfileSaveManagerTest,
                             updateable_profile},
       .observed_profile = observed_profile,
       .is_prompt_expected = true,
-      .user_decision =
-          AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined,
+      .user_decision = UserDecision::kDeclined,
       .expected_import_type = AutofillProfileImportType::kConfirmableMerge,
       .is_profile_change_expected = true,
       .merge_candidate = mergeable_profile,
@@ -460,15 +525,19 @@ TEST_F(AddressProfileSaveManagerTest,
                             updateable_profile},
       .observed_profile = observed_profile,
       .is_prompt_expected = true,
-      .user_decision =
-          AutofillClient::SaveAddressProfileOfferUserDecision::kEdited,
+      .user_decision = UserDecision::kEdited,
       .edited_profile = edited_profile,
       .expected_import_type = AutofillProfileImportType::kConfirmableMerge,
       .is_profile_change_expected = true,
       .merge_candidate = mergeable_profile,
       .import_candidate = merged_profile,
       .expected_final_profiles = {existing_duplicate, updated_profile,
-                                  edited_profile}};
+                                  edited_profile},
+      .expected_edited_types_for_metrics = {
+          AutofillMetrics::EditedFieldTypeForMetrics::kName,
+          AutofillMetrics::EditedFieldTypeForMetrics::kStreetAddress,
+          AutofillMetrics::EditedFieldTypeForMetrics::kCity,
+          AutofillMetrics::EditedFieldTypeForMetrics::kZip}};
 
   TestImportScenario(test_scenario);
 }

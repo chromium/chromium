@@ -15,6 +15,7 @@
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/autofill_profile_import_process.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -172,6 +173,24 @@ class AutofillMetrics {
     // number.
     HAS_EXPIRATION_DATE_ONLY,
     NUM_SUBMITTED_CARD_STATE_METRICS,
+  };
+
+  // These values are persisted to UMA logs. Entries should not be renumbered
+  // and numeric values should never be reused. This is the subset of field
+  // types that can be changed in a profile change/store dialog.
+  enum class EditedFieldTypeForMetrics {
+    kUndefined = 0,
+    kName = 1,
+    kEmailAddress = 2,
+    kPhoneNumber = 3,
+    kCity = 4,
+    kCountry = 5,
+    kZip = 6,
+    kState = 7,
+    kStreetAddress = 8,
+    kDependentLocality = 9,
+    kHonorificPrefix = 10,
+    kMaxValue = kHonorificPrefix
   };
 
   // Metric to measure if a submitted card's expiration date matches the same
@@ -1578,6 +1597,23 @@ class AutofillMetrics {
   static void LogNumberOfAutofilledFieldsAtSubmission(
       size_t number_of_accepted_fields,
       size_t number_of_corrected_fields);
+
+  // Logs the type of a profile import.
+  static void LogProfileImportType(AutofillProfileImportType import_type);
+
+  // Logs the user decision for importing a new profile
+  static void LogNewProfileImportDecision(
+      AutofillClient::SaveAddressProfileOfferUserDecision decision);
+
+  // Logs the user decision for updating an exiting profile.
+  static void LogProfileUpdateImportDecision(
+      AutofillClient::SaveAddressProfileOfferUserDecision decision);
+
+  // Logs that a specific type was edited in an update prompts.
+  static void LogNewProfileEditedType(ServerFieldType edited_type);
+
+  // Logs that a specific type was edited in an update prompts.
+  static void LogProfileUpdateEditedType(ServerFieldType edited_type);
 
   // The total number of values in the |CardUploadDecisionMetric| enum. Must be
   // updated each time a new value is added.

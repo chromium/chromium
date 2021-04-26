@@ -101,11 +101,6 @@ void AddressProfileSaveManager::OnUserDecision(
   FinalizeProfileImport();
 }
 
-void AddressProfileSaveManager::CollectMetrics() {
-  DCHECK(pending_import_);
-  // TODO(1188064): Add metrics.
-}
-
 void AddressProfileSaveManager::FinalizeProfileImport() {
   DCHECK(pending_import_.has_value());
   DCHECK(personal_data_manager_);
@@ -118,7 +113,7 @@ void AddressProfileSaveManager::FinalizeProfileImport() {
     personal_data_manager_->SetProfiles(&resulting_profiles);
   }
 
-  CollectMetrics();
+  pending_import_->CollectMetrics();
   ClearPendingImport();
 }
 

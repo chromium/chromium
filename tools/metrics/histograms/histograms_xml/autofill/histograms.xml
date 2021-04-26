@@ -1388,6 +1388,64 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Autofill.ProfileImport.NewProfileDecision"
+    enum="AutofillProfileImportDecision" expires_after="M96">
+  <owner>koerber@google.com</owner>
+  <owner>src/components/autofill/OWNERS</owner>
+  <summary>
+    Logs the user's decision for storing a new address profile observed in a
+    form submission. This metric is emitted at the end of an import process once
+    the user-provided import decision is final.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.ProfileImport.NewProfileEditedType"
+    enum="AutofillProfileImportEditedType" expires_after="M96">
+  <owner>koerber@google.com</owner>
+  <owner>src/components/autofill/OWNERS</owner>
+  <summary>
+    Logs that a specific type was edited in a new profile save prompt that was
+    shown to the user when a new address profile is observed in a form
+    submission. This metric is emitted once the user-provided import decision is
+    final.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.ProfileImport.ProfileImportType"
+    enum="AutofillProfileImportType" expires_after="M96">
+  <owner>koerber@google.com</owner>
+  <owner>src/components/autofill/OWNERS</owner>
+  <summary>
+    The type of an import of an address that is observed in a form submission.
+    This metric is emitted once the import decision is final. This does not
+    necessarily mean that the user was prompted.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.ProfileImport.UpdateProfileDecision"
+    enum="AutofillProfileImportDecision" expires_after="M96">
+  <owner>koerber@google.com</owner>
+  <owner>src/components/autofill/OWNERS</owner>
+  <summary>
+    Logs the user's decision for editing an already existing address after a
+    similar profile was observed in a form submission. This metric is emitted at
+    the end of an import process once the user-provided import decision is
+    final.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.ProfileImport.UpdateProfileEditedType"
+    enum="AutofillProfileImportEditedType" expires_after="M96">
+  <owner>koerber@google.com</owner>
+  <owner>src/components/autofill/OWNERS</owner>
+  <summary>
+    Logs that a specific type was edited in a profile update prompt that was
+    shown to the user when a profile similar to an already exisintg profile was
+    observed in a form submission. This metric is emitted once the user-provided
+    import decision is final.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.ProfileSuggestionsMadeWithFormatter"
     enum="BooleanCreated" expires_after="2020-09-30">
   <owner>battre@chromium.org</owner>

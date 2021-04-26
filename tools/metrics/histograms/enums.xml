@@ -6055,6 +6055,38 @@ others/histograms.xml -->
   <int value="2" label="New profile created"/>
 </enum>
 
+<enum name="AutofillProfileImportDecision">
+  <int value="0" label="Undefined"/>
+  <int value="1" label="UserNotAsked"/>
+  <int value="2" label="Accpeted"/>
+  <int value="3" label="Edited"/>
+  <int value="4" label="Declined"/>
+  <int value="5" label="Never"/>
+  <int value="6" label="Ignored"/>
+</enum>
+
+<enum name="AutofillProfileImportEditedType">
+  <int value="0" label="Undefined"/>
+  <int value="1" label="Name"/>
+  <int value="2" label="Email"/>
+  <int value="3" label="Phone"/>
+  <int value="4" label="City"/>
+  <int value="5" label="Country"/>
+  <int value="6" label="Zip"/>
+  <int value="7" label="State"/>
+  <int value="8" label="StreetAddress"/>
+  <int value="9" label="DependentLocality"/>
+  <int value="10" label="HonorificPrefix"/>
+</enum>
+
+<enum name="AutofillProfileImportType">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="NewProfile"/>
+  <int value="2" label="DuplicateImport"/>
+  <int value="3" label="SilentUpdate"/>
+  <int value="4" label="ConfirmableMerge"/>
+</enum>
+
 <enum name="AutofillProfileSyncChangeOrigin">
   <obsolete>
     Deprecated in M77. The corresponding histogram has been deprecated.
