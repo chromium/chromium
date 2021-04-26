@@ -914,6 +914,7 @@ class IDLParser(object):
                            | identifier Null
                            | SEQUENCE '<' TypeWithExtendedAttributes '>' Null
                            | FROZENARRAY '<' TypeWithExtendedAttributes '>' Null
+                           | OBSERVABLEARRAY '<' TypeWithExtendedAttributes '>' Null
                            | RecordType Null"""
     if len(p) == 3:
       if type(p[1]) == str:
@@ -923,7 +924,14 @@ class IDLParser(object):
       p[0] = ListFromConcat(typeref, p[2])
 
     if len(p) == 6:
-      cls = 'Sequence' if p[1] == 'sequence' else 'FrozenArray'
+      if p[1] == 'sequence':
+        cls = 'Sequence'
+      elif p[1] == 'FrozenArray':
+        cls = 'FrozenArray'
+      elif p[1] == 'ObservableArray':
+        cls = 'ObservableArray'
+      else:
+        assert False
       p[0] = self.BuildProduction(cls, p, 1, p[3])
       p[0] = ListFromConcat(p[0], p[5])
 

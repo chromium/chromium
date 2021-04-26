@@ -83,6 +83,7 @@ class IDLLexer(object):
       'NaN': 'NAN',
       'null': 'NULL',
       'object': 'OBJECT',
+      'ObservableArray': 'OBSERVABLEARRAY',
       'octet': 'OCTET',
       'optional': 'OPTIONAL',
       'or': 'OR',

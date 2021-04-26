@@ -584,6 +584,18 @@ interface MyIfaceFrozenArray {
 };
 
 /** TREE
+ *Interface(MyIfaceObservableArray)
+ *  Attribute(foo)
+ *    Type()
+ *      ObservableArray()
+ *        Type()
+ *          PrimitiveType(long)
+ */
+interface MyIfaceObservableArray {
+  attribute ObservableArray<long> foo;
+};
+
+/** TREE
  *Interface(MyIfaceUnion)
  *  Attribute(foo)
  *    Type()
