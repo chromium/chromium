@@ -160,6 +160,13 @@ export class EmojiSearch extends PolymerElement {
         })).values());
   }
 
+  onContainerScroll() {
+    this.shadowRoot.getElementById('search-shadow').style.boxShadow =
+        this.shadowRoot.getElementById('container').scrollTop > 0 ?
+        'var(--cr-elevation-3)' :
+        'none';
+  }
+
   /**
    *
    * @param {!Array<!EmojiVariants>} emojiList

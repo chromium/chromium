@@ -75,11 +75,20 @@
     top: 50%;
     transform: translate(-50%, -50%);
   }
+
+  #search-shadow {
+    margin-inline-start: calc(0px - var(--emoji-picker-side-padding));
+    padding-inline-end: var(--emoji-picker-side-padding);
+    padding-inline-start: var(--emoji-picker-side-padding);
+    width: calc(var(--emoji-picker-width) - 2*var(--emoji-picker-side-padding));
+  }
 </style>
 
+<div id="search-shadow">
 <cr-search-field id="search" label="Search" autofocus="true"></cr-search-field>
+</div>
 
-<div id="container">
+<div id="container" on-scroll="onContainerScroll">
 
   <template is="dom-if" if="[[search]]">
 
