@@ -7,6 +7,7 @@
 #include <functional>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
@@ -169,7 +170,7 @@ class TabRestoreDeletionHelper : public sessions::TabRestoreServiceObserver {
  private:
   ~TabRestoreDeletionHelper() override { service_->RemoveObserver(this); }
 
-  sessions::TabRestoreService* service_;
+  CheckedPtr<sessions::TabRestoreService> service_;
   sessions::TabRestoreService::DeletionPredicate deletion_predicate_;
 
   DISALLOW_COPY_AND_ASSIGN(TabRestoreDeletionHelper);

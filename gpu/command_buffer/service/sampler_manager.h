@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/gl_utils.h"
@@ -115,7 +116,7 @@ class GPU_GLES2_EXPORT Sampler : public base::RefCounted<Sampler> {
       const FeatureInfo* feature_info, GLenum pname, GLfloat param);
 
   // The manager that owns this Sampler.
-  SamplerManager* manager_;
+  CheckedPtr<SamplerManager> manager_;
 
   GLuint client_id_;
   GLuint service_id_;

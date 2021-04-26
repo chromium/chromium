@@ -6,6 +6,7 @@
 #define COMPONENTS_HISTORY_CORE_BROWSER_ANDROID_ANDROID_URLS_SQL_HANDLER_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/history/core/browser/android/sql_handler.h"
 
 namespace history {
@@ -26,7 +27,7 @@ class AndroidURLsSQLHandler : public SQLHandler {
   bool Delete(const TableIDRows& ids_set) override;
 
  private:
-  AndroidURLsDatabase* android_urls_db_;
+  CheckedPtr<AndroidURLsDatabase> android_urls_db_;
 
   DISALLOW_COPY_AND_ASSIGN(AndroidURLsSQLHandler);
 };

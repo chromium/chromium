@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -60,7 +61,7 @@ class CONTENT_EXPORT WebContentsReceiverSet {
                           mojo::ScopedInterfaceEndpointHandle handle);
 
   base::OnceClosure remove_callback_;
-  Binder* binder_ = nullptr;
+  CheckedPtr<Binder> binder_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(WebContentsReceiverSet);
 };
@@ -167,7 +168,7 @@ class WebContentsFrameReceiverSet : public WebContentsReceiverSet {
       frame_to_receivers_map_.erase(it);
     }
 
-    Interface* const impl_;
+    const CheckedPtr<Interface> impl_;
     mojo::AssociatedReceiverSet<Interface, RenderFrameHost*> receivers_;
     std::map<RenderFrameHost*, std::vector<mojo::ReceiverId>>
         frame_to_receivers_map_;
@@ -176,7 +177,7 @@ class WebContentsFrameReceiverSet : public WebContentsReceiverSet {
   };
 
   FrameInterfaceBinder binder_;
-  RenderFrameHost* current_target_frame_for_testing_ = nullptr;
+  CheckedPtr<RenderFrameHost> current_target_frame_for_testing_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(WebContentsFrameReceiverSet);
 };

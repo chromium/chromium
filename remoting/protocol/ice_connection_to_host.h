@@ -11,6 +11,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/single_thread_task_runner.h"
@@ -82,12 +83,12 @@ class IceConnectionToHost : public ConnectionToHost,
 
   void SetState(State state, ErrorCode error);
 
-  HostEventCallback* event_callback_ = nullptr;
+  CheckedPtr<HostEventCallback> event_callback_ = nullptr;
 
   // Stub for incoming messages.
-  ClientStub* client_stub_ = nullptr;
-  ClipboardStub* clipboard_stub_ = nullptr;
-  VideoRenderer* video_renderer_ = nullptr;
+  CheckedPtr<ClientStub> client_stub_ = nullptr;
+  CheckedPtr<ClipboardStub> clipboard_stub_ = nullptr;
+  CheckedPtr<VideoRenderer> video_renderer_ = nullptr;
 
   std::unique_ptr<AudioDecodeScheduler> audio_decode_scheduler_;
 

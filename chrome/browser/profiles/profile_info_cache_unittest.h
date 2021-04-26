@@ -7,6 +7,7 @@
 
 #include <set>
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/profiles/profile_info_cache_observer.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -41,7 +42,7 @@ class ProfileNameVerifierObserver : public ProfileInfoCacheObserver {
  private:
   ProfileInfoCache* GetCache();
   std::map<base::FilePath, std::u16string> profile_names_;
-  TestingProfileManager* testing_profile_manager_;
+  CheckedPtr<TestingProfileManager> testing_profile_manager_;
 };
 
 class ProfileInfoCacheTest : public testing::Test {

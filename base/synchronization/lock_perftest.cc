@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -52,8 +53,8 @@ class Spin : public PlatformThread::Delegate {
   void Stop() { should_stop_ = true; }
 
  private:
-  Lock* lock_;
-  uint32_t* data_ GUARDED_BY(lock_);
+  CheckedPtr<Lock> lock_;
+  CheckedPtr<uint32_t> data_ GUARDED_BY(lock_);
   std::atomic<bool> should_stop_;
 };
 

@@ -9,6 +9,7 @@
 #include <algorithm>
 
 #include "base/memory/aligned_memory.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,7 +31,7 @@ class Dummy : public RefCounted<Dummy> {
     --*alive_;
   }
 
-  int* const alive_;
+  const CheckedPtr<int> alive_;
 };
 
 }  // namespace

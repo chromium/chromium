@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/checked_ptr.h"
 #include "base/unguessable_token.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/surface_range.h"
@@ -162,7 +163,7 @@ class VIZ_SERVICE_EXPORT SurfaceAllocationGroup {
 
   // We keep a pointer to SurfaceManager so we can signal when this object is
   // ready to be destroyed.
-  SurfaceManager* const surface_manager_;
+  const CheckedPtr<SurfaceManager> surface_manager_;
 
   // The last SurfaceId of this allocation group that was ever referenced by the
   // active frame of a surface.

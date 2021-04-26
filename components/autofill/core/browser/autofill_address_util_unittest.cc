@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/autofill_address_util.h"
 
 #include "base/guid.h"
+#include "base/memory/checked_ptr.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -29,7 +30,7 @@ class GetEnvelopeStyleAddressTest : public ::testing::Test {
   std::string GetLocale() { return "en-US"; }
 
  private:
-  ui::ResourceBundle* orig_resource_bundle_;
+  CheckedPtr<ui::ResourceBundle> orig_resource_bundle_;
 };
 
 TEST_F(GetEnvelopeStyleAddressTest, Sanity) {

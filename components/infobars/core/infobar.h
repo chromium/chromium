@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "ui/gfx/animation/animation_delegate_notifier.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -106,9 +107,9 @@ class InfoBar : public gfx::AnimationDelegate {
   // itself.
   void MaybeDelete();
 
-  InfoBarManager* owner_;
+  CheckedPtr<InfoBarManager> owner_;
   std::unique_ptr<InfoBarDelegate> delegate_;
-  InfoBarContainer* container_;
+  CheckedPtr<InfoBarContainer> container_;
 
   std::unique_ptr<gfx::AnimationDelegate> notifier_;
   gfx::SlideAnimation animation_;

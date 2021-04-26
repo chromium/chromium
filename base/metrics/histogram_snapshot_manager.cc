@@ -8,6 +8,7 @@
 
 #include "base/debug/alias.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_flattener.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
@@ -30,7 +31,7 @@ class MakeActive {
   ~MakeActive() { is_active_->store(false, std::memory_order_relaxed); }
 
  private:
-  std::atomic<bool>* is_active_;
+  CheckedPtr<std::atomic<bool>> is_active_;
 };
 
 }  // namespace

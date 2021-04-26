@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/viz_service_export.h"
 
@@ -51,7 +52,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderGL
     const gfx::ColorSpace& color_space() const { return color_space_; }
 
    private:
-    DisplayResourceProviderGL* const resource_provider_;
+    const CheckedPtr<DisplayResourceProviderGL> resource_provider_;
     const ResourceId resource_id_;
 
     GLuint texture_id_ = 0;
@@ -98,7 +99,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderGL
     GLuint texture_id() const { return texture_id_; }
 
    private:
-    DisplayResourceProviderGL* const resource_provider_;
+    const CheckedPtr<DisplayResourceProviderGL> resource_provider_;
     const ResourceId resource_id_;
     GLuint texture_id_ = 0;
   };
@@ -122,7 +123,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderGL
 
     void Synchronize();
 
-    gpu::gles2::GLES2Interface* gl_;
+    CheckedPtr<gpu::gles2::GLES2Interface> gl_;
     bool has_synchronized_;
   };
 
@@ -141,7 +142,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderGL
   GLenum BindForSampling(ResourceId resource_id, GLenum unit, GLenum filter);
   void WaitSyncTokenInternal(ChildResource* resource);
 
-  ContextProvider* const compositor_context_provider_;
+  const CheckedPtr<ContextProvider> compositor_context_provider_;
   const bool enable_shared_images_;
 };
 

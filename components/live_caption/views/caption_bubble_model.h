@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -93,7 +94,7 @@ class CaptionBubbleModel {
   base::Optional<gfx::Rect> context_bound_in_screen_;
 
   // The CaptionBubble observing changes to this model.
-  CaptionBubble* observer_ = nullptr;
+  CheckedPtr<CaptionBubble> observer_ = nullptr;
 };
 }  // namespace captions
 

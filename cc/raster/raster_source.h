@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/debug/rendering_stats_instrumentation.h"
 #include "cc/layers/recording_source.h"
@@ -42,7 +43,7 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
     // Specifies the sample count if MSAA is enabled for this tile.
     int msaa_sample_count = 0;
 
-    ImageProvider* image_provider = nullptr;
+    CheckedPtr<ImageProvider> image_provider = nullptr;
   };
 
   RasterSource(const RasterSource&) = delete;

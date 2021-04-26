@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -70,7 +71,7 @@ class ClipboardRecentContentGenericTest : public testing::Test {
     ui::Clipboard::DestroyClipboardForCurrentThread();
   }
 
-  ui::TestClipboard* test_clipboard_;
+  CheckedPtr<ui::TestClipboard> test_clipboard_;
 };
 
 TEST_F(ClipboardRecentContentGenericTest, RecognizesURLs) {

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/stl_util.h"
@@ -256,7 +257,7 @@ class RlzLibTest : public testing::Test {
   void ExpectReactivationRlzPingSent(bool expected);
 
   base::test::TaskEnvironment task_environment_;
-  TestRLZTrackerDelegate* delegate_;
+  CheckedPtr<TestRLZTrackerDelegate> delegate_;
   std::unique_ptr<TestRLZTracker> tracker_;
   RlzLibTestNoMachineStateHelper m_rlz_test_helper_;
 
@@ -272,7 +273,7 @@ void RlzLibTest::SetUp() {
 
   delegate_ = new TestRLZTrackerDelegate;
   tracker_ = std::make_unique<TestRLZTracker>();
-  RLZTracker::SetRlzDelegate(base::WrapUnique(delegate_));
+  RLZTracker::SetRlzDelegate(base::WrapUnique(delegate_.get()));
 
   // Make sure a non-organic brand code is set in the registry or the RLZTracker
   // is pretty much a no-op.

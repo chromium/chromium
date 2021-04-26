@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_MOCK_SIGNAL_REPORTER_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_MOCK_SIGNAL_REPORTER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signal_reporter.h"
 
 #include "components/reporting/client/mock_report_queue.h"
@@ -30,7 +31,7 @@ class DeviceTrustSignalReporterForTestBase : public DeviceTrustSignalReporter {
   // PostCreateReportQueueTask() needs to be override as well but can be
   // customized to mock queue creation success or failure.
 
-  reporting::MockReportQueue* mock_queue_{nullptr};
+  CheckedPtr<reporting::MockReportQueue> mock_queue_{nullptr};
 };
 
 class MockDeviceTrustSignalReporter

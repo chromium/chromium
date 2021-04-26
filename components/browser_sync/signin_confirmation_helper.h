@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/cancelable_task_tracker.h"
 
@@ -54,7 +55,7 @@ class SigninConfirmationHelper {
   const scoped_refptr<base::SequencedTaskRunner> origin_sequence_;
 
   // Pointer to the history service.
-  history::HistoryService* history_service_;
+  CheckedPtr<history::HistoryService> history_service_;
 
   // Used for async tasks.
   base::CancelableTaskTracker task_tracker_;

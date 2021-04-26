@@ -6,6 +6,7 @@
 #define HEADLESS_LIB_BROWSER_HEADLESS_FOCUS_CLIENT_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observer.h"
 #include "ui/aura/client/focus_client.h"
@@ -30,7 +31,7 @@ class HeadlessFocusClient : public aura::client::FocusClient,
   // Overridden from aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
 
-  aura::Window* focused_window_;
+  CheckedPtr<aura::Window> focused_window_;
   ScopedObserver<aura::Window, aura::WindowObserver> observer_manager_;
   base::ObserverList<aura::client::FocusChangeObserver>::Unchecked
       focus_observers_;

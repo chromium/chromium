@@ -13,6 +13,7 @@
 
 #include "base/check_op.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -306,11 +307,11 @@ class GPU_EXPORT CommandBufferHelper {
   // from given command buffer state.
   void UpdateCachedState(const CommandBuffer::State& state);
 
-  CommandBuffer* const command_buffer_;
+  const CheckedPtr<CommandBuffer> command_buffer_;
   int32_t ring_buffer_id_ = -1;
   uint32_t ring_buffer_size_ = 0;
   scoped_refptr<gpu::Buffer> ring_buffer_;
-  CommandBufferEntry* entries_ = nullptr;
+  CheckedPtr<CommandBufferEntry> entries_ = nullptr;
   int32_t total_entry_count_ = 0;  // the total number of entries
   int32_t immediate_entry_count_ = 0;
   int32_t token_ = 0;

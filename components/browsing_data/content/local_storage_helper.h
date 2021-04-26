@@ -15,6 +15,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "content/public/browser/dom_storage_context.h"
@@ -50,7 +51,8 @@ class LocalStorageHelper : public base::RefCounted<LocalStorageHelper> {
   friend class base::RefCounted<LocalStorageHelper>;
   virtual ~LocalStorageHelper();
 
-  content::DOMStorageContext* dom_storage_context_;  // Owned by the context
+  CheckedPtr<content::DOMStorageContext>
+      dom_storage_context_;  // Owned by the context
 
  private:
   DISALLOW_COPY_AND_ASSIGN(LocalStorageHelper);

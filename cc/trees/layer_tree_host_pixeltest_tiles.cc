@@ -44,8 +44,8 @@ class LayerTreeHostTilesPixelTest
   }
 
   void DoReadback() {
-    Layer* target =
-        readback_target_ ? readback_target_ : layer_tree_host()->root_layer();
+    Layer* target = readback_target_ ? readback_target_.get()
+                                     : layer_tree_host()->root_layer();
     target->RequestCopyOfOutput(CreateCopyOutputRequest());
   }
 

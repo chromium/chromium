@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 
 #include "base/bind.h"
@@ -132,13 +133,14 @@ class MockVideoCaptureControllerEventHandler
     if (enable_auto_return_buffer_on_buffer_ready_) {
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::BindOnce(&VideoCaptureController::ReturnBuffer,
-                                    base::Unretained(controller_), id, this,
-                                    buffer.buffer_id, feedback_));
+                                    base::Unretained(controller_.get()), id,
+                                    this, buffer.buffer_id, feedback_));
       for (const auto& scaled_buffer : scaled_buffers) {
         base::ThreadTaskRunnerHandle::Get()->PostTask(
-            FROM_HERE, base::BindOnce(&VideoCaptureController::ReturnBuffer,
-                                      base::Unretained(controller_), id, this,
-                                      scaled_buffer.buffer_id, feedback_));
+            FROM_HERE,
+            base::BindOnce(&VideoCaptureController::ReturnBuffer,
+                           base::Unretained(controller_.get()), id, this,
+                           scaled_buffer.buffer_id, feedback_));
       }
     }
   }
@@ -146,12 +148,13 @@ class MockVideoCaptureControllerEventHandler
     DoEnded(id);
     // OnEnded() must respond by (eventually) unregistering the client.
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(base::IgnoreResult(
-                                      &VideoCaptureController::RemoveClient),
-                                  base::Unretained(controller_), id, this));
+        FROM_HERE,
+        base::BindOnce(
+            base::IgnoreResult(&VideoCaptureController::RemoveClient),
+            base::Unretained(controller_.get()), id, this));
   }
 
-  VideoCaptureController* controller_;
+  CheckedPtr<VideoCaptureController> controller_;
   media::VideoPixelFormat expected_pixel_format_ = media::PIXEL_FORMAT_I420;
   gfx::ColorSpace expected_color_space_ = gfx::ColorSpace::CreateREC709();
   media::VideoCaptureFeedback feedback_;
@@ -241,7 +244,7 @@ class VideoCaptureControllerTest
   NiceMock<MockEmitLogMessageCb> emit_log_message_mock_;
   scoped_refptr<VideoCaptureController> controller_;
   std::unique_ptr<media::VideoCaptureDevice::Client> device_client_;
-  MockLaunchedVideoCaptureDevice* mock_launched_device_;
+  CheckedPtr<MockLaunchedVideoCaptureDevice> mock_launched_device_;
   const float arbitrary_frame_rate_ = 10.0f;
   const base::TimeTicks arbitrary_reference_time_ = base::TimeTicks();
   const base::TimeDelta arbitrary_timestamp_ = base::TimeDelta();

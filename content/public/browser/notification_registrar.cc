@@ -9,6 +9,7 @@
 #include <algorithm>
 
 #include "base/check_op.h"
+#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "content/browser/notification_service_impl.h"
 
@@ -17,7 +18,7 @@ namespace content {
 struct NotificationRegistrar::Record {
   bool operator==(const Record& other) const;
 
-  NotificationObserver* observer;
+  CheckedPtr<NotificationObserver> observer;
   int type;
   NotificationSource source;
 };

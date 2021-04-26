@@ -13,6 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/posix/eintr_wrapper.h"
@@ -108,7 +109,7 @@ class BaseWatcher : public MessagePumpLibevent::FdWatcher {
   void OnFileCanWriteWithoutBlocking(int /* fd */) override { NOTREACHED(); }
 
  protected:
-  MessagePumpLibevent::FdWatchController* controller_;
+  CheckedPtr<MessagePumpLibevent::FdWatchController> controller_;
 };
 
 class DeleteWatcher : public BaseWatcher {

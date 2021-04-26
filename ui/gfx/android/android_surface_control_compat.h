@@ -11,6 +11,7 @@
 #include <android/native_window.h>
 
 #include "base/files/scoped_file.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
 #include "ui/gfx/geometry/rect.h"
@@ -68,8 +69,8 @@ class GFX_EXPORT SurfaceControl {
     friend class base::RefCounted<Surface>;
     ~Surface();
 
-    ASurfaceControl* surface_ = nullptr;
-    ASurfaceControl* owned_surface_ = nullptr;
+    CheckedPtr<ASurfaceControl> surface_ = nullptr;
+    CheckedPtr<ASurfaceControl> owned_surface_ = nullptr;
 
     DISALLOW_COPY_AND_ASSIGN(Surface);
   };
@@ -81,7 +82,7 @@ class GFX_EXPORT SurfaceControl {
     SurfaceStats(SurfaceStats&& other);
     SurfaceStats& operator=(SurfaceStats&& other);
 
-    ASurfaceControl* surface = nullptr;
+    CheckedPtr<ASurfaceControl> surface = nullptr;
 
     // The fence which is signaled when the reads for the previous buffer for
     // the given |surface| are finished.

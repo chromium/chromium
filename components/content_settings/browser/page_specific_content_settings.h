@@ -13,6 +13,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -179,7 +180,7 @@ class PageSpecificContentSettings
     void WebContentsDestroyed();
 
    private:
-    content::WebContents* web_contents_;
+    CheckedPtr<content::WebContents> web_contents_;
 
     DISALLOW_COPY_AND_ASSIGN(SiteDataObserver);
   };
@@ -474,7 +475,7 @@ class PageSpecificContentSettings
 
     std::unique_ptr<Delegate> delegate_;
 
-    HostContentSettingsMap* map_;
+    CheckedPtr<HostContentSettingsMap> map_;
 
     // All currently registered |SiteDataObserver|s.
     base::ObserverList<SiteDataObserver>::Unchecked observer_list_;

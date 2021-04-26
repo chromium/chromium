@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "build/build_config.h"
 
@@ -78,7 +79,7 @@ class BASE_EXPORT ScopedMayLoadLibraryAtBackgroundPriority {
 #if defined(OS_WIN)
   // The original priority when invoking entering the scope().
   base::Optional<ThreadPriority> original_thread_priority_;
-  std::atomic_bool* const already_loaded_;
+  const CheckedPtr<std::atomic_bool> already_loaded_;
 #endif
 
   DISALLOW_COPY_AND_ASSIGN(ScopedMayLoadLibraryAtBackgroundPriority);

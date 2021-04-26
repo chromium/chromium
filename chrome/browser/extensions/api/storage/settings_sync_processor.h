@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/sync/base/model_type.h"
 #include "extensions/browser/value_store/value_store_change.h"
 
@@ -53,7 +54,7 @@ class SettingsSyncProcessor {
   const syncer::ModelType type_;
 
   // The sync processor used to send changes to sync.
-  syncer::SyncChangeProcessor* const sync_processor_;
+  const CheckedPtr<syncer::SyncChangeProcessor> sync_processor_;
 
   // Whether Init() has been called.
   bool initialized_;

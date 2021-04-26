@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
@@ -135,7 +136,7 @@ class StubNotificationDisplayService : public NotificationDisplayServiceImpl {
   base::RepeatingClosure notification_added_closure_;
   base::RepeatingClosure notification_closed_closure_;
   std::vector<NotificationData> notifications_;
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   ProcessNotificationOperationCallback process_notification_operation_delegate_;
 };

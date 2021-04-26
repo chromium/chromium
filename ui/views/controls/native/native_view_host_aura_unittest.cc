@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
@@ -462,7 +463,7 @@ class TestFocusChangeListener : public FocusChangeListener {
     did_change_focus_count_++;
   }
 
-  FocusManager* focus_manager_;
+  CheckedPtr<FocusManager> focus_manager_;
   int did_change_focus_count_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(TestFocusChangeListener);

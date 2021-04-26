@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/browser/status_icons/status_icon.h"
 #include "chrome/browser/ui/views/status_icons/status_icon_win.h"
@@ -81,7 +82,7 @@ class StatusTrayStateChangerWinTest : public testing::Test {
   std::unique_ptr<StatusTrayWin> status_tray_;
   Microsoft::WRL::ComPtr<StatusTrayStateChangerWin> tray_watcher_;
 
-  StatusIconWin* status_icon_win_;
+  CheckedPtr<StatusIconWin> status_icon_win_;
 
   DISALLOW_COPY_AND_ASSIGN(StatusTrayStateChangerWinTest);
 };

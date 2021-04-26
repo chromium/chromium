@@ -6,6 +6,7 @@
 #define COMPONENTS_BOOKMARKS_BROWSER_SCOPED_GROUP_BOOKMARK_ACTIONS_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 
 namespace bookmarks {
 
@@ -18,7 +19,7 @@ class ScopedGroupBookmarkActions {
   ~ScopedGroupBookmarkActions();
 
  private:
-  BookmarkModel* model_;
+  CheckedPtr<BookmarkModel> model_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedGroupBookmarkActions);
 };

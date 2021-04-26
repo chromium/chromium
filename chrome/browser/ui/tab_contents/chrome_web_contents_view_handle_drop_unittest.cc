@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -147,7 +148,7 @@ class ChromeWebContentsViewDelegateHandleOnPerformDrop : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
-  TestingProfile* profile_;
+  CheckedPtr<TestingProfile> profile_;
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<content::WebContents> web_contents_;
   int expected_requests_count_ = 0;

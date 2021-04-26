@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/dev_ui_browser_resources.h"
@@ -79,7 +80,7 @@ class SiteEngagementDetailsProviderImpl
 
  private:
   // The Profile* handed to us in our constructor.
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   mojo::Receiver<site_engagement::mojom::SiteEngagementDetailsProvider>
       receiver_;

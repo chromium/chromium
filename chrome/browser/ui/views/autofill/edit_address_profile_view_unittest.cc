@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill/edit_address_profile_view.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -69,8 +70,8 @@ class EditAddressProfileViewTest : public ChromeViewsTestBase {
   content::RenderViewHostTestEnabler test_render_host_factories_;
   std::unique_ptr<content::WebContents> test_web_contents_;
   std::unique_ptr<views::Widget> parent_widget_;
-  views::Widget* widget_ = nullptr;
-  EditAddressProfileView* dialog_;
+  CheckedPtr<views::Widget> widget_ = nullptr;
+  CheckedPtr<EditAddressProfileView> dialog_;
   testing::NiceMock<MockEditAddressProfileDialogController> mock_controller_;
 };
 

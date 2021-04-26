@@ -40,7 +40,7 @@ void BackgroundPageWatcher::WaitForOpenState(bool wait_for_open) {
     return;
   base::ScopedObservation<ProcessManager, ProcessManagerObserver> observer(
       this);
-  observer.Observe(process_manager_);
+  observer.Observe(process_manager_.get());
   bool* flag = wait_for_open ? &is_waiting_for_open_ : &is_waiting_for_close_;
   base::AutoReset<bool> set_flag(flag, true);
   base::RunLoop run_loop;

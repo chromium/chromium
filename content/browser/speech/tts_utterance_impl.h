@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "content/public/browser/tts_utterance.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -85,7 +86,7 @@ class CONTENT_EXPORT TtsUtteranceImpl : public TtsUtterance,
 
  private:
   // The BrowserContext that initiated this utterance.
-  BrowserContext* browser_context_;
+  CheckedPtr<BrowserContext> browser_context_;
 
   // True if the constructor was supplied with a WebContents.
   const bool was_created_with_web_contents_;
@@ -117,7 +118,7 @@ class CONTENT_EXPORT TtsUtteranceImpl : public TtsUtterance,
   GURL src_url_;
 
   // The delegate to be called when an utterance event is fired.
-  UtteranceEventDelegate* event_delegate_ = nullptr;
+  CheckedPtr<UtteranceEventDelegate> event_delegate_ = nullptr;
 
   // The parsed options.
   std::string voice_name_;

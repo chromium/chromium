@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -72,7 +73,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPBoundSocket
   net::IPEndPoint bind_address_;
 
   mojo::ReceiverId receiver_id_ = -1;
-  SocketFactory* const socket_factory_;
+  const CheckedPtr<SocketFactory> socket_factory_;
   std::unique_ptr<net::TCPSocket> socket_;
   const net::NetworkTrafficAnnotationTag traffic_annotation_;
 

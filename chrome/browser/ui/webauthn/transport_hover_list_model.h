@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/webauthn/hover_list_model.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
 
@@ -58,7 +59,7 @@ class TransportHoverListModel : public HoverListModel {
   // The human-friendly names of all paired phones.
   std::vector<std::string> phone_names_;
 
-  Delegate* const delegate_;  // Weak, may be nullptr.
+  const CheckedPtr<Delegate> delegate_;  // Weak, may be nullptr.
 
   DISALLOW_COPY_AND_ASSIGN(TransportHoverListModel);
 };

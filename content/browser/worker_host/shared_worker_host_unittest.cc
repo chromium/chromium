@@ -10,6 +10,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "content/browser/appcache/chrome_appcache_service.h"
@@ -159,7 +160,7 @@ class SharedWorkerHostTest : public testing::Test {
   BrowserTaskEnvironment task_environment_;
   TestBrowserContext browser_context_;
   MockRenderProcessHostFactory mock_render_process_host_factory_;
-  MockRenderProcessHost* mock_render_process_host_;
+  CheckedPtr<MockRenderProcessHost> mock_render_process_host_;
 
   std::unique_ptr<EmbeddedWorkerTestHelper> helper_;
   scoped_refptr<SiteInstanceImpl> site_instance_;

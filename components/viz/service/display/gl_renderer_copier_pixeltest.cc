@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "components/viz/service/display/gl_renderer_copier.h"
 
 #include <stdint.h>
@@ -227,7 +228,7 @@ class GLRendererCopierPixelTest
   SkBitmap source_bitmap_;
 
  private:
-  gpu::gles2::GLES2Interface* gl_ = nullptr;
+  CheckedPtr<gpu::gles2::GLES2Interface> gl_ = nullptr;
   std::unique_ptr<TextureDeleter> texture_deleter_;
   std::unique_ptr<GLRendererCopier> copier_;
   GLuint source_texture_ = 0;

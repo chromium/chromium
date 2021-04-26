@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 
 namespace sync_sessions {
@@ -45,8 +46,8 @@ class OpenTabsUIDelegateImpl : public OpenTabsUIDelegate {
   bool GetLocalSession(const SyncedSession** local_session) override;
 
  private:
-  const SyncSessionsClient* const sessions_client_;
-  const SyncedSessionTracker* session_tracker_;
+  const CheckedPtr<const SyncSessionsClient> sessions_client_;
+  CheckedPtr<const SyncedSessionTracker> session_tracker_;
   DeleteForeignSessionCallback delete_foreign_session_cb_;
 
   DISALLOW_COPY_AND_ASSIGN(OpenTabsUIDelegateImpl);

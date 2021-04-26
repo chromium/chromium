@@ -10,6 +10,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/vr/model/omnibox_suggestions.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
@@ -45,8 +46,8 @@ class AutocompleteController : public ::AutocompleteController::Observer {
   void OnResultChanged(::AutocompleteController* controller,
                        bool default_match_changed) override;
 
-  Profile* profile_;
-  ChromeAutocompleteProviderClient* client_;
+  CheckedPtr<Profile> profile_;
+  CheckedPtr<ChromeAutocompleteProviderClient> client_;
   std::unique_ptr<::AutocompleteController> autocomplete_controller_;
   SuggestionCallback suggestion_callback_;
   AutocompleteRequest last_request_;

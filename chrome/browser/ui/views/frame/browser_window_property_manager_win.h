@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class BrowserView;
@@ -31,7 +32,7 @@ class BrowserWindowPropertyManager {
   void OnProfileIconVersionChange();
 
   PrefChangeRegistrar profile_pref_registrar_;
-  const BrowserView* view_;
+  CheckedPtr<const BrowserView> view_;
   const HWND hwnd_;
 
 };

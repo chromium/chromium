@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "media/filters/ffmpeg_glue.h"
@@ -50,7 +51,7 @@ class MEDIA_EXPORT BlockingUrlProtocol : public FFmpegURLProtocol {
   // all outstanding access to |data_source_|. Typically Abort() is called from
   // the media thread while ffmpeg is operating on another thread.
   base::Lock data_source_lock_;
-  DataSource* data_source_;
+  CheckedPtr<DataSource> data_source_;
 
   base::RepeatingClosure error_cb_;
   const bool is_streaming_;

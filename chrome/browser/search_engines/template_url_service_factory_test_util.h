@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SEARCH_ENGINES_TEMPLATE_URL_SERVICE_FACTORY_TEST_UTIL_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 
 class TemplateURLService;
 class TestingProfile;
@@ -24,7 +25,7 @@ class TemplateURLServiceFactoryTestUtil {
   TemplateURLService* model() const;
 
  private:
-  TestingProfile* profile_;
+  CheckedPtr<TestingProfile> profile_;
 
   DISALLOW_COPY_AND_ASSIGN(TemplateURLServiceFactoryTestUtil);
 };

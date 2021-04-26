@@ -204,7 +204,7 @@ template<typename T> void StorageBlock<T>::DeleteData() {
       delete data_;
     } else {
       data_->~T();
-      delete[] reinterpret_cast<char*>(data_);
+      delete[] reinterpret_cast<char*>(data_.get());
     }
     own_data_ = false;
   }

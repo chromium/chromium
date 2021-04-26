@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_SESSION_NOTIFICATION_PRODUCER_H_
 #define CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_SESSION_NOTIFICATION_PRODUCER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_observer.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_observer_set.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_producer.h"
@@ -184,7 +185,7 @@ class MediaSessionNotificationProducer
 
     void MarkActiveIfNecessary();
 
-    MediaSessionNotificationProducer* const owner_;
+    const CheckedPtr<MediaSessionNotificationProducer> owner_;
     const std::string id_;
     std::unique_ptr<media_message_center::MediaSessionNotificationItem> item_;
 

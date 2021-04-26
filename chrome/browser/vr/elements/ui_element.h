@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/vr/audio_delegate.h"
 #include "chrome/browser/vr/databinding/binding_base.h"
 #include "chrome/browser/vr/elements/corner_radii.h"
@@ -655,7 +656,7 @@ class VR_UI_EXPORT UiElement : public gfx::FloatAnimationCurve::Target,
   gfx::Transform world_space_transform_;
   bool world_space_transform_dirty_ = false;
 
-  UiElement* parent_ = nullptr;
+  CheckedPtr<UiElement> parent_ = nullptr;
   std::vector<std::unique_ptr<UiElement>> children_;
 
   // This is true if a descendant has been added and the total list has not yet
@@ -666,7 +667,7 @@ class VR_UI_EXPORT UiElement : public gfx::FloatAnimationCurve::Target,
 
   UpdatePhase update_phase_ = kClean;
 
-  AudioDelegate* audio_delegate_ = nullptr;
+  CheckedPtr<AudioDelegate> audio_delegate_ = nullptr;
   Sounds sounds_;
 
   // Indicates that this element may be resized by parent layout elements.

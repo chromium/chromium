@@ -5,6 +5,7 @@
 #include "services/network/proxy_config_service_mojo.h"
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/task_environment.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_config_service.h"
@@ -56,7 +57,7 @@ class TestProxyConfigServiceObserver
  private:
   net::ProxyConfigWithAnnotation observed_config_;
 
-  net::ProxyConfigService* const service_;
+  const CheckedPtr<net::ProxyConfigService> service_;
   int config_changes_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(TestProxyConfigServiceObserver);

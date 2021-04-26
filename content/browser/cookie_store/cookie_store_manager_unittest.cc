@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -92,7 +93,7 @@ class CookieStoreSync {
   }
 
  private:
-  blink::mojom::CookieStore* cookie_store_service_;
+  CheckedPtr<blink::mojom::CookieStore> cookie_store_service_;
 
   DISALLOW_COPY_AND_ASSIGN(CookieStoreSync);
 };
@@ -140,7 +141,7 @@ class CookieStoreWorkerTestHelper : public EmbeddedWorkerTestHelper {
     }
 
    private:
-    CookieStoreWorkerTestHelper* const worker_helper_;
+    const CheckedPtr<CookieStoreWorkerTestHelper> worker_helper_;
 
     DISALLOW_COPY_AND_ASSIGN(ServiceWorker);
   };
@@ -161,7 +162,7 @@ class CookieStoreWorkerTestHelper : public EmbeddedWorkerTestHelper {
 
  private:
   // Set by WaitForActivateEvent(), used in OnActivateEvent().
-  base::RunLoop* quit_on_activate_ = nullptr;
+  CheckedPtr<base::RunLoop> quit_on_activate_ = nullptr;
 
   // Collects the changes reported to OnCookieChangeEvent().
   std::vector<net::CookieChangeInfo> changes_;

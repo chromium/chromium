@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/aura/scoped_window_targeter.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/test/test_window_delegate.h"
@@ -31,7 +32,7 @@ class StaticWindowTargeter : public WindowTargeter {
     return window_;
   }
 
-  Window* window_;
+  CheckedPtr<Window> window_;
 
   DISALLOW_COPY_AND_ASSIGN(StaticWindowTargeter);
 };

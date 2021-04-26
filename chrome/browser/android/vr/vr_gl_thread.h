@@ -9,6 +9,7 @@
 
 #include "base/android/java_handler_thread.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "chrome/browser/android/vr/browser_renderer_factory.h"
@@ -171,7 +172,7 @@ class VrGLThread : public base::android::JavaHandlerThread,
   // Both VrInputConnection and VrGlThread are owned by VrShell. In VrShell, we
   // made sure that this input_connection_ is up to date and destroyed after
   // VrGlThread. So it is safe to use raw pointer here.
-  VrInputConnection* input_connection_ = nullptr;
+  CheckedPtr<VrInputConnection> input_connection_ = nullptr;
 
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 

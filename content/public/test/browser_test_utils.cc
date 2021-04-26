@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/public/test/browser_test_utils.h"
+#include "base/memory/checked_ptr.h"
 
 #include <stddef.h>
 
@@ -591,7 +592,7 @@ class ResizeObserver : public RenderWidgetHostObserver {
   }
 
  private:
-  RenderWidgetHost* widget_host_;
+  CheckedPtr<RenderWidgetHost> widget_host_;
   base::RunLoop run_loop_;
   base::RepeatingCallback<bool()> is_complete_callback_;
 };
@@ -624,9 +625,9 @@ class BoundingBoxUpdateWaiter : public TextInputManager::Observer {
     run_loop_.Quit();
   }
 
-  TextInputManager* const text_input_manager_;
+  const CheckedPtr<TextInputManager> text_input_manager_;
   const gfx::Rect original_bounding_box_;
-  RenderWidgetHostViewAura* const rwhva_;
+  const CheckedPtr<RenderWidgetHostViewAura> rwhva_;
 
   base::RunLoop run_loop_;
 };
@@ -2846,7 +2847,7 @@ class FrameFocusedObserver::FrameTreeNodeObserverImpl
   }
 
  private:
-  FrameTreeNode* owner_;
+  CheckedPtr<FrameTreeNode> owner_;
   base::RunLoop run_loop_;
 };
 
@@ -2877,7 +2878,7 @@ class FrameDeletedObserver::FrameTreeNodeObserverImpl
       run_loop_.Quit();
   }
 
-  FrameTreeNode* owner_;
+  CheckedPtr<FrameTreeNode> owner_;
   base::RunLoop run_loop_;
 };
 
@@ -3194,7 +3195,7 @@ class EvictionStateWaiter : public DelegatedFrameHost::Observer {
   }
 
  private:
-  DelegatedFrameHost* delegated_frame_host_;
+  CheckedPtr<DelegatedFrameHost> delegated_frame_host_;
   DelegatedFrameHost::FrameEvictionState waited_eviction_state_;
   base::OnceClosure quit_closure_;
 

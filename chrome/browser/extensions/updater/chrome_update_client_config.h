@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "components/component_updater/configurator_impl.h"
@@ -89,9 +90,9 @@ class ChromeUpdateClientConfig : public update_client::Configurator {
       FactoryCallback factory);
 
  private:
-  content::BrowserContext* context_ = nullptr;
+  CheckedPtr<content::BrowserContext> context_ = nullptr;
   component_updater::ConfiguratorImpl impl_;
-  PrefService* pref_service_;
+  CheckedPtr<PrefService> pref_service_;
   std::unique_ptr<update_client::ActivityDataService> activity_data_service_;
   scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory_;
   scoped_refptr<update_client::CrxDownloaderFactory> crx_downloader_factory_;

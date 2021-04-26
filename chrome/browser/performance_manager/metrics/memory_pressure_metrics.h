@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_MEMORY_PRESSURE_METRICS_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_MEMORY_PRESSURE_METRICS_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/weak_ptr.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -37,7 +38,7 @@ class MemoryPressureMetrics : public GraphOwned,
   // SystemNodeObserver:
   void OnBeforeMemoryPressure(MemoryPressureLevel new_level) override;
 
-  Graph* graph_ = nullptr;
+  CheckedPtr<Graph> graph_ = nullptr;
   int system_ram_mb_ = kInvalidSysRAMValue;
 };
 

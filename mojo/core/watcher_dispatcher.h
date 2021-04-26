@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "mojo/core/dispatcher.h"
@@ -91,7 +92,7 @@ class WatcherDispatcher : public Dispatcher {
   //
   // NOTE: This pointer is only used to index |ready_watches_| and may point to
   // an invalid object. It must therefore never be dereferenced.
-  const Watch* last_watch_to_block_arming_ = nullptr;
+  CheckedPtr<const Watch> last_watch_to_block_arming_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(WatcherDispatcher);
 };

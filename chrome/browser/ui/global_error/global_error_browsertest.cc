@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
@@ -85,7 +86,7 @@ class GlobalErrorWaiter : public GlobalErrorObserver {
  public:
   explicit GlobalErrorWaiter(Profile* profile)
       : service_(GlobalErrorServiceFactory::GetForProfile(profile)) {
-    scoped_observer_.Add(service_);
+    scoped_observer_.Add(service_.get());
   }
 
   ~GlobalErrorWaiter() override = default;
@@ -100,7 +101,7 @@ class GlobalErrorWaiter : public GlobalErrorObserver {
 
  private:
   base::RunLoop run_loop_;
-  GlobalErrorService* service_;
+  CheckedPtr<GlobalErrorService> service_;
   ScopedObserver<GlobalErrorService, GlobalErrorObserver> scoped_observer_{
       this};
 

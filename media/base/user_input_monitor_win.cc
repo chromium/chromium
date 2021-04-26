@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
@@ -112,7 +113,7 @@ class UserInputMonitorWin : public UserInputMonitorBase {
   void StopKeyboardMonitoring() override;
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
-  UserInputMonitorWinCore* core_;
+  CheckedPtr<UserInputMonitorWinCore> core_;
 
   DISALLOW_COPY_AND_ASSIGN(UserInputMonitorWin);
 };
@@ -302,7 +303,7 @@ UserInputMonitorWin::UserInputMonitorWin(
       core_(new UserInputMonitorWinCore(ui_task_runner)) {}
 
 UserInputMonitorWin::~UserInputMonitorWin() {
-  if (!ui_task_runner_->DeleteSoon(FROM_HERE, core_))
+  if (!ui_task_runner_->DeleteSoon(FROM_HERE, core_.get()))
     delete core_;
 }
 

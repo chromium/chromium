@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -89,7 +90,7 @@ class COMPONENTS_DOWNLOAD_EXPORT SimpleDownloadManagerCoordinator
   void OnManagerGoingDown() override;
   void OnDownloadCreated(DownloadItem* item) override;
 
-  SimpleDownloadManager* simple_download_manager_;
+  CheckedPtr<SimpleDownloadManager> simple_download_manager_;
 
   // Object for notifying others about various download events.
   std::unique_ptr<AllDownloadEventNotifier> notifier_;

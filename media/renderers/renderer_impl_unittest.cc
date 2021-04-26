@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
@@ -359,8 +360,8 @@ class RendererImplTest : public ::testing::Test {
   base::SimpleTestTickClock test_tick_clock_;
 
   std::unique_ptr<StrictMock<MockDemuxer>> demuxer_;
-  StrictMock<MockVideoRenderer>* video_renderer_;
-  StrictMock<MockAudioRenderer>* audio_renderer_;
+  CheckedPtr<StrictMock<MockVideoRenderer>> video_renderer_;
+  CheckedPtr<StrictMock<MockAudioRenderer>> audio_renderer_;
   std::unique_ptr<RendererImpl> renderer_impl_;
   std::unique_ptr<StrictMock<MockCdmContext>> cdm_context_;
 

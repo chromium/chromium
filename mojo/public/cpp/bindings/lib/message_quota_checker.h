@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/synchronization/lock.h"
@@ -117,7 +118,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) MessageQuotaChecker
   base::Optional<size_t> GetCurrentMessagePipeQuota();
   void QuotaCheckImpl(size_t num_enqueued);
 
-  const Configuration* config_;
+  CheckedPtr<const Configuration> config_;
 
   // The time ticks when this instance was created.
   const base::TimeTicks creation_time_;

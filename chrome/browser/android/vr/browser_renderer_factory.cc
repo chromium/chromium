@@ -76,7 +76,7 @@ std::unique_ptr<BrowserRenderer> BrowserRendererFactory::Create(
       FROM_HERE,
       base::BindOnce(&GvrGraphicsDelegate::Init,
                      graphics_delegate->GetWeakPtr(),
-                     base::Unretained(params->gl_surface_created_event),
+                     base::Unretained(params->gl_surface_created_event.get()),
                      std::move(params->surface_callback),
                      params->ui_initial_state.in_web_vr));
   auto browser_renderer = std::make_unique<BrowserRenderer>(

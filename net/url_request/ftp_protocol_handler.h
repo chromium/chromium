@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "net/base/net_export.h"
 #include "net/url_request/url_request_job_factory.h"
 
@@ -46,7 +47,7 @@ class NET_EXPORT FtpProtocolHandler :
       FtpAuthCache* auth_cache);
 
   std::unique_ptr<FtpTransactionFactory> ftp_transaction_factory_;
-  FtpAuthCache* ftp_auth_cache_;
+  CheckedPtr<FtpAuthCache> ftp_auth_cache_;
 
   DISALLOW_COPY_AND_ASSIGN(FtpProtocolHandler);
 };

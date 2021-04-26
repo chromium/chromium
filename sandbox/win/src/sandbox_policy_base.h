@@ -17,6 +17,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/process/launch.h"
 #include "base/win/scoped_handle.h"
@@ -164,9 +165,9 @@ class PolicyBase final : public TargetPolicy {
   MitigationFlags delayed_mitigations_;
   bool is_csrss_connected_;
   // Object in charge of generating the low level policy.
-  LowLevelPolicy* policy_maker_;
+  CheckedPtr<LowLevelPolicy> policy_maker_;
   // Memory structure that stores the low level policy.
-  PolicyGlobal* policy_;
+  CheckedPtr<PolicyGlobal> policy_;
   // The list of dlls to unload in the target process.
   std::vector<std::wstring> blocklisted_dlls_;
   // This is a map of handle-types to names that we need to close in the

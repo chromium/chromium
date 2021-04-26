@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -205,8 +206,8 @@ struct TabStripSelectionChange {
     return selected_tabs_were_removed || old_model != new_model;
   }
 
-  content::WebContents* old_contents = nullptr;
-  content::WebContents* new_contents = nullptr;
+  CheckedPtr<content::WebContents> old_contents = nullptr;
+  CheckedPtr<content::WebContents> new_contents = nullptr;
 
   ui::ListSelectionModel old_model;
   ui::ListSelectionModel new_model;

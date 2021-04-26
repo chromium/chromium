@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -159,7 +160,7 @@ class GLScalerTestTextureHelper {
   SkBitmap DownloadTexture(GLuint texture, const gfx::Size& size);
 
  private:
-  gpu::gles2::GLES2Interface* const gl_;
+  const CheckedPtr<gpu::gles2::GLES2Interface> gl_;
   std::vector<GLuint> textures_to_delete_;
 
   DISALLOW_COPY_AND_ASSIGN(GLScalerTestTextureHelper);

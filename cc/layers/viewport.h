@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/checked_ptr.h"
 #include "cc/layers/layer_impl.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -125,7 +126,7 @@ class CC_EXPORT Viewport {
 
   void SnapPinchAnchorIfWithinMargin(const gfx::Point& anchor);
 
-  LayerTreeHostImpl* host_impl_;
+  CheckedPtr<LayerTreeHostImpl> host_impl_;
 
   bool pinch_zoom_active_;
 

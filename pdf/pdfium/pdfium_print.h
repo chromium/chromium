@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
@@ -87,7 +88,7 @@ class PDFiumPrint {
       FPDF_PAGE page_to_print,
       const PP_PrintSettings_Dev& print_settings);
 
-  PDFiumEngine* const engine_;
+  const CheckedPtr<PDFiumEngine> engine_;
 };
 
 }  // namespace chrome_pdf

@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "components/cbor/values.h"
 #include "device/fido/cbor_extract.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -29,15 +30,15 @@ bool VectorSpanEqual(const std::vector<T>& v, base::span<const T> s) {
 }
 
 struct MakeCredRequest {
-  const std::vector<uint8_t>* client_data_hash;
-  const std::string* rp_id;
-  const std::vector<uint8_t>* user_id;
-  const std::vector<cbor::Value>* cred_params;
-  const std::vector<cbor::Value>* excluded_credentials;
-  const bool* resident_key;
-  const bool* user_verification;
-  const bool* large_test;
-  const bool* negative_test;
+  CheckedPtr<const std::vector<uint8_t>> client_data_hash;
+  CheckedPtr<const std::string> rp_id;
+  CheckedPtr<const std::vector<uint8_t>> user_id;
+  CheckedPtr<const std::vector<cbor::Value>> cred_params;
+  CheckedPtr<const std::vector<cbor::Value>> excluded_credentials;
+  CheckedPtr<const bool> resident_key;
+  CheckedPtr<const bool> user_verification;
+  CheckedPtr<const bool> large_test;
+  CheckedPtr<const bool> negative_test;
 };
 
 TEST(CBORExtract, Basic) {
@@ -155,7 +156,7 @@ TEST(CBORExtract, Basic) {
 
 TEST(CBORExtract, MissingRequired) {
   struct Dummy {
-    const int64_t* value;
+    CheckedPtr<const int64_t> value;
   };
 
   static constexpr cbor_extract::StepOrByte<Dummy> kSteps[] = {
@@ -171,7 +172,7 @@ TEST(CBORExtract, MissingRequired) {
 
 TEST(CBORExtract, WrongType) {
   struct Dummy {
-    const int64_t* value;
+    CheckedPtr<const int64_t> value;
   };
 
   static constexpr cbor_extract::StepOrByte<Dummy> kSteps[] = {

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
@@ -59,8 +60,8 @@ class AppInfoPanel : public views::View {
       std::unique_ptr<views::View> key,
       std::unique_ptr<views::View> value) const;
 
-  Profile* profile_;
-  const extensions::Extension* app_;
+  CheckedPtr<Profile> profile_;
+  CheckedPtr<const extensions::Extension> app_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, AppInfoPanel, views::View)

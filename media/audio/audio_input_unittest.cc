@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/environment.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/test/test_message_loop.h"
@@ -104,8 +105,8 @@ class AudioInputTest : public testing::Test {
   }
 
   void CloseAudioInputStreamOnAudioThread() {
-    RunOnAudioThread(base::BindOnce(&AudioInputStream::Close,
-                                    base::Unretained(audio_input_stream_)));
+    RunOnAudioThread(base::BindOnce(
+        &AudioInputStream::Close, base::Unretained(audio_input_stream_.get())));
     audio_input_stream_ = nullptr;
   }
 
@@ -184,7 +185,7 @@ class AudioInputTest : public testing::Test {
 
   base::TestMessageLoop message_loop_;
   std::unique_ptr<AudioManager> audio_manager_;
-  AudioInputStream* audio_input_stream_;
+  CheckedPtr<AudioInputStream> audio_input_stream_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(AudioInputTest);

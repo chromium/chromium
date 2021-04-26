@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CHROME_BROWSER_FIELD_TRIALS_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/variations/platform_field_trials.h"
 
 class PrefService;
@@ -33,7 +34,7 @@ class ChromeBrowserFieldTrials : public variations::PlatformFieldTrials {
   void InstantiateDynamicTrials();
 
   // Weak pointer to the local state prefs store.
-  PrefService* const local_state_;
+  const CheckedPtr<PrefService> local_state_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeBrowserFieldTrials);
 };

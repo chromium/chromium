@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/policy_export.h"
@@ -82,7 +83,7 @@ class POLICY_EXPORT SchemaRegistryTrackingPolicyProvider
     READY,
   };
 
-  ConfigurationPolicyProvider* delegate_;
+  CheckedPtr<ConfigurationPolicyProvider> delegate_;
   InitializationState state_;
 
   DISALLOW_COPY_AND_ASSIGN(SchemaRegistryTrackingPolicyProvider);

@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -80,8 +81,8 @@ class ExtensionInstallDialogViewTestBase
   content::WebContents* web_contents() { return web_contents_; }
 
  private:
-  const extensions::Extension* extension_;
-  content::WebContents* web_contents_;
+  CheckedPtr<const extensions::Extension> extension_;
+  CheckedPtr<content::WebContents> web_contents_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionInstallDialogViewTestBase);
 };

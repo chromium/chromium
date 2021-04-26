@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "cc/cc_export.h"
 
 namespace viz {
@@ -30,7 +31,7 @@ class CC_EXPORT ScopedGpuRaster {
   void BeginGpuRaster();
   void EndGpuRaster();
 
-  viz::ContextProvider* context_provider_;
+  CheckedPtr<viz::ContextProvider> context_provider_;
 };
 
 }  // namespace cc

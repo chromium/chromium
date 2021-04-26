@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -138,7 +139,7 @@ struct FrameResizeObserver {
 
   FrameResizeObserver* toThis() {return this;}
 
-  RenderFrameHost* frame_host;
+  CheckedPtr<RenderFrameHost> frame_host;
   std::string msg_label;
   bool zoomed_correctly;
   double expected_inner_width;
@@ -164,7 +165,7 @@ struct ResizeObserver {
     return status_msg == "Resized";
   }
 
-  RenderFrameHost* frame_host;
+  CheckedPtr<RenderFrameHost> frame_host;
 };
 
 void WaitForResize(DOMMessageQueue& msg_queue, ResizeObserver& observer) {

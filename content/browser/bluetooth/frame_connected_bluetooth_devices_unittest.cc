@@ -5,6 +5,7 @@
 #include "content/browser/bluetooth/frame_connected_bluetooth_devices.h"
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/bluetooth/web_bluetooth_service_impl.h"
 #include "content/test/test_render_view_host.h"
@@ -118,11 +119,11 @@ class FrameConnectedBluetoothDevicesTest
   }
 
  protected:
-  FrameConnectedBluetoothDevices* map0_;
-  WebBluetoothServiceImpl* service0_;
+  CheckedPtr<FrameConnectedBluetoothDevices> map0_;
+  CheckedPtr<WebBluetoothServiceImpl> service0_;
 
-  FrameConnectedBluetoothDevices* map1_;
-  WebBluetoothServiceImpl* service1_;
+  CheckedPtr<FrameConnectedBluetoothDevices> map1_;
+  CheckedPtr<WebBluetoothServiceImpl> service1_;
 
  private:
   scoped_refptr<NiceMockBluetoothAdapter> adapter_;

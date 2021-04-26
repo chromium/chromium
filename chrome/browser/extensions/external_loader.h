@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 
 namespace base {
@@ -67,7 +68,7 @@ class ExternalLoader : public base::RefCountedThreadSafe<ExternalLoader> {
  private:
   friend class base::RefCountedThreadSafe<ExternalLoader>;
 
-  ExternalProviderImpl* owner_;  // weak
+  CheckedPtr<ExternalProviderImpl> owner_;  // weak
 
   DISALLOW_COPY_AND_ASSIGN(ExternalLoader);
 };

@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/optional.h"
 #include "base/process/process.h"
@@ -108,7 +109,7 @@ class CONTENT_EXPORT ChildProcessHostImpl
   base::Optional<mojo::OutgoingInvitation> mojo_invitation_{base::in_place};
 
   const IpcMode ipc_mode_;
-  ChildProcessHostDelegate* delegate_;
+  CheckedPtr<ChildProcessHostDelegate> delegate_;
   base::Process peer_process_;
   bool opening_channel_;  // True while we're waiting the channel to be opened.
   std::unique_ptr<IPC::Channel> channel_;

@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
@@ -186,7 +187,7 @@ class MediaRouterUI
 
    private:
     // Reference back to the owning MediaRouterUI instance.
-    MediaRouterUI* const ui_;
+    const CheckedPtr<MediaRouterUI> ui_;
 
     DISALLOW_COPY_AND_ASSIGN(UiIssuesObserver);
   };

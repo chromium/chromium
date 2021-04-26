@@ -15,6 +15,7 @@
 
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
@@ -169,7 +170,7 @@ class MEDIA_EXPORT MediaLog {
     base::Lock lock;
 
     // Original media log, or null.
-    MediaLog* media_log GUARDED_BY(lock) = nullptr;
+    CheckedPtr<MediaLog> media_log GUARDED_BY(lock) = nullptr;
 
    protected:
     friend class base::RefCountedThreadSafe<ParentLogRecord>;
@@ -208,7 +209,7 @@ class MEDIA_EXPORT LogHelper {
 
  private:
   const MediaLogMessageLevel level_;
-  MediaLog* const media_log_;
+  const CheckedPtr<MediaLog> media_log_;
   std::stringstream stream_;
 };
 

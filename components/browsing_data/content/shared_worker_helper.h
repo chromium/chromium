@@ -13,6 +13,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -65,7 +66,7 @@ class SharedWorkerHelper
  private:
   friend class base::RefCountedThreadSafe<SharedWorkerHelper>;
 
-  content::StoragePartition* storage_partition_;
+  CheckedPtr<content::StoragePartition> storage_partition_;
 
   DISALLOW_COPY_AND_ASSIGN(SharedWorkerHelper);
 };

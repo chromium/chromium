@@ -19,6 +19,7 @@
 #include "base/command_line.h"
 #include "base/guid.h"
 #include "base/i18n/time_formatting.h"
+#include "base/memory/checked_ptr.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -329,8 +330,8 @@ class PersonalDataManagerTestBase {
   scoped_refptr<AutofillWebDataService> account_database_service_;
   scoped_refptr<WebDatabaseService> profile_web_database_;
   scoped_refptr<WebDatabaseService> account_web_database_;
-  AutofillTable* profile_autofill_table_;  // weak ref
-  AutofillTable* account_autofill_table_;  // weak ref
+  CheckedPtr<AutofillTable> profile_autofill_table_;  // weak ref
+  CheckedPtr<AutofillTable> account_autofill_table_;  // weak ref
   PersonalDataLoadedObserverMock personal_data_observer_;
 };
 
@@ -502,8 +503,9 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
   }
 
   AutofillTable* GetServerDataTable() {
-    return personal_data_->IsSyncFeatureEnabled() ? profile_autofill_table_
-                                                  : account_autofill_table_;
+    return personal_data_->IsSyncFeatureEnabled()
+               ? profile_autofill_table_.get()
+               : account_autofill_table_.get();
   }
 
   void AddProfileToPersonalDataManager(const AutofillProfile& profile) {
@@ -7806,7 +7808,7 @@ class OneTimeObserver : public PersonalDataManagerObserver {
   bool IsConnected() { return manager_; }
 
  private:
-  PersonalDataManager* manager_;
+  CheckedPtr<PersonalDataManager> manager_;
 };
 
 }  // namespace

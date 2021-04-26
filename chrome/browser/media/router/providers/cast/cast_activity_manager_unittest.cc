@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -454,8 +455,8 @@ class CastActivityManagerTest : public testing::Test,
   MockCastAppDiscoveryService app_discovery_service_;
   std::unique_ptr<CastActivityManager> manager_;
   std::unique_ptr<CastSessionTracker> session_tracker_;
-  MockAppActivity* app_activity_ = nullptr;
-  MockMirroringActivity* mirroring_activity_ = nullptr;
+  CheckedPtr<MockAppActivity> app_activity_ = nullptr;
+  CheckedPtr<MockMirroringActivity> mirroring_activity_ = nullptr;
   MockAppActivityCallback app_activity_callback_ = base::DoNothing();
   const url::Origin origin_ = url::Origin::Create(GURL(kOrigin));
   const MediaSource::Id route_query_ = "theRouteQuery";

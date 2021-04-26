@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/ukm/ukm_service.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -59,7 +60,7 @@ class UkmTestHelper {
   bool HasUnsentLogs();
 
  private:
-  UkmService* const ukm_service_;
+  const CheckedPtr<UkmService> ukm_service_;
 };
 
 }  // namespace ukm

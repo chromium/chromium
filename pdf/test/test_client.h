@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "pdf/pdf_engine.h"
 
 namespace chrome_pdf {
@@ -48,7 +49,7 @@ class TestClient : public PDFEngine::Client {
  private:
   // Not owned. Expected to dangle briefly, as the engine usually is destroyed
   // before the client.
-  PDFEngine* engine_ = nullptr;
+  CheckedPtr<PDFEngine> engine_ = nullptr;
 };
 
 }  // namespace chrome_pdf

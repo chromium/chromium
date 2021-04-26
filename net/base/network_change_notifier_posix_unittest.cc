@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "base/test/task_environment.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -47,7 +48,7 @@ class NetworkChangeNotifierPosixTest : public testing::Test {
   net::NetworkChangeNotifier::DisableForTest mock_notifier_disabler_;
   std::unique_ptr<SystemDnsConfigChangeNotifier> dns_config_notifier_;
   std::unique_ptr<NetworkChangeNotifierPosix> notifier_;
-  TestDnsConfigService* dns_config_service_;
+  CheckedPtr<TestDnsConfigService> dns_config_service_;
 };
 
 class MockIPAddressObserver : public NetworkChangeNotifier::IPAddressObserver {

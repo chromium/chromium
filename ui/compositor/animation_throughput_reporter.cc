@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "cc/animation/animation.h"
@@ -129,7 +130,7 @@ class AnimationThroughputReporter::AnimationTracker
   // Whether this class should delete itself on animation ended.
   bool should_delete_ = false;
 
-  LayerAnimator* const animator_;
+  const CheckedPtr<LayerAnimator> animator_;
 
   base::Optional<ThroughputTracker> throughput_tracker_;
 

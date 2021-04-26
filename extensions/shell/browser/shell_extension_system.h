@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
@@ -96,7 +97,7 @@ class ShellExtensionSystem : public ExtensionSystem {
  private:
   void OnExtensionRegisteredWithRequestContexts(
       scoped_refptr<Extension> extension);
-  content::BrowserContext* browser_context_;  // Not owned.
+  CheckedPtr<content::BrowserContext> browser_context_;  // Not owned.
 
   // Data to be accessed on the IO thread. Must outlive process_manager_.
   scoped_refptr<InfoMap> info_map_;

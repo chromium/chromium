@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 
 namespace base {
@@ -42,8 +43,8 @@ class MobileEmulationOverrideManager : public DevToolsEventListener {
  private:
   Status ApplyOverrideIfNeeded();
 
-  DevToolsClient* client_;
-  const DeviceMetrics* overridden_device_metrics_;
+  CheckedPtr<DevToolsClient> client_;
+  CheckedPtr<const DeviceMetrics> overridden_device_metrics_;
 
   DISALLOW_COPY_AND_ASSIGN(MobileEmulationOverrideManager);
 };

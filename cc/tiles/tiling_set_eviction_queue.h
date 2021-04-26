@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/tiles/picture_layer_tiling_set.h"
 #include "cc/tiles/prioritized_tile.h"
@@ -112,7 +113,7 @@ class CC_EXPORT TilingSetEvictionQueue {
     bool GetFirstTileAndCheckIfValid(TilingIteratorType* iterator);
 
     PrioritizedTile prioritized_tile_;
-    std::vector<PictureLayerTiling*>* tilings_;
+    CheckedPtr<std::vector<PictureLayerTiling*>> tilings_;
     WhichTree tree_;
     PictureLayerTiling::PriorityRectType priority_rect_type_;
     size_t tiling_index_;

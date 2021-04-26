@@ -39,9 +39,8 @@ KeywordExtensionsDelegateImpl::KeywordExtensionsDelegateImpl(
       this,
       extensions::NOTIFICATION_EXTENSION_OMNIBOX_DEFAULT_SUGGESTION_CHANGED,
       content::Source<Profile>(profile_->GetOriginalProfile()));
-  registrar_.Add(this,
-                 extensions::NOTIFICATION_EXTENSION_OMNIBOX_INPUT_ENTERED,
-                 content::Source<Profile>(profile_));
+  registrar_.Add(this, extensions::NOTIFICATION_EXTENSION_OMNIBOX_INPUT_ENTERED,
+                 content::Source<Profile>(profile_.get()));
 }
 
 KeywordExtensionsDelegateImpl::~KeywordExtensionsDelegateImpl() {

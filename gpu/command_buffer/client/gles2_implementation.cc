@@ -26,6 +26,7 @@
 #include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/memory/checked_ptr.h"
 #include "base/numerics/safe_math.h"
 #include "base/stl_util.h"
 #include "base/strings/string_split.h"
@@ -6226,7 +6227,7 @@ void GLES2Implementation::RequestExtensionCHROMIUM(const char* extension) {
 
   struct ExtensionCheck {
     const char* extension;
-    ExtensionStatus* status;
+    CheckedPtr<ExtensionStatus> status;
   };
   const ExtensionCheck checks[] = {
       {

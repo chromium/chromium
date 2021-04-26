@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -538,7 +539,7 @@ class WidgetOwnershipTest : public WidgetTest {
   }
 
  private:
-  Widget* desktop_widget_;
+  CheckedPtr<Widget> desktop_widget_;
 
   DISALLOW_COPY_AND_ASSIGN(WidgetOwnershipTest);
 };
@@ -558,7 +559,7 @@ class OwnershipTestWidget : public Widget {
   ~OwnershipTestWidget() override { state_->widget_deleted = true; }
 
  private:
-  OwnershipTestState* state_;
+  CheckedPtr<OwnershipTestState> state_;
 
   DISALLOW_COPY_AND_ASSIGN(OwnershipTestWidget);
 };
@@ -884,16 +885,16 @@ class WidgetObserverTest : public WidgetTest, public WidgetObserver {
   const Widget* widget_bounds_changed() const { return widget_bounds_changed_; }
 
  private:
-  Widget* active_ = nullptr;
+  CheckedPtr<Widget> active_ = nullptr;
 
-  Widget* widget_closed_ = nullptr;
-  Widget* widget_activated_ = nullptr;
-  Widget* widget_deactivated_ = nullptr;
-  Widget* widget_shown_ = nullptr;
-  Widget* widget_hidden_ = nullptr;
-  Widget* widget_bounds_changed_ = nullptr;
+  CheckedPtr<Widget> widget_closed_ = nullptr;
+  CheckedPtr<Widget> widget_activated_ = nullptr;
+  CheckedPtr<Widget> widget_deactivated_ = nullptr;
+  CheckedPtr<Widget> widget_shown_ = nullptr;
+  CheckedPtr<Widget> widget_hidden_ = nullptr;
+  CheckedPtr<Widget> widget_bounds_changed_ = nullptr;
 
-  Widget* widget_to_close_on_hide_ = nullptr;
+  CheckedPtr<Widget> widget_to_close_on_hide_ = nullptr;
 };
 
 // This test appears to be flaky on Mac.
@@ -947,7 +948,7 @@ class WidgetActivationForwarder : public TestWidgetObserver {
       widget->Close();
   }
 
-  Widget* widget_to_activate_;
+  CheckedPtr<Widget> widget_to_activate_;
 
   DISALLOW_COPY_AND_ASSIGN(WidgetActivationForwarder);
 };
@@ -1568,7 +1569,7 @@ class DesktopAuraPaintWidgetTest : public DesktopWidgetTest {
   DesktopAuraTestValidPaintWidget* paint_widget() { return paint_widget_; }
 
  private:
-  DesktopAuraTestValidPaintWidget* paint_widget_ = nullptr;
+  CheckedPtr<DesktopAuraTestValidPaintWidget> paint_widget_ = nullptr;
 };
 
 TEST_F(DesktopAuraPaintWidgetTest, DesktopNativeWidgetNoPaintAfterCloseTest) {
@@ -1929,13 +1930,13 @@ class CaptureEventConsumer : public ui::EventHandler {
       widget_->SetSize(gfx::Size(200, 200));
 
       event_count_view_->SetBounds(0, 0, 200, 200);
-      widget_->GetRootView()->AddChildView(event_count_view_);
+      widget_->GetRootView()->AddChildView(event_count_view_.get());
       widget_->SetCapture(event_count_view_);
     }
   }
 
-  EventCountView* event_count_view_;
-  Widget* widget_;
+  CheckedPtr<EventCountView> event_count_view_;
+  CheckedPtr<Widget> widget_;
   DISALLOW_COPY_AND_ASSIGN(CaptureEventConsumer);
 };
 
@@ -1992,7 +1993,7 @@ class ClosingEventObserver : public ui::EventObserver {
   }
 
  private:
-  Widget* widget_;
+  CheckedPtr<Widget> widget_;
 
   DISALLOW_COPY_AND_ASSIGN(ClosingEventObserver);
 };
@@ -2012,7 +2013,7 @@ class ClosingView : public View {
   }
 
  private:
-  Widget* widget_;
+  CheckedPtr<Widget> widget_;
 
   DISALLOW_COPY_AND_ASSIGN(ClosingView);
 };
@@ -2338,7 +2339,7 @@ class CloseDestroysWidget : public Widget {
   void Detach() { destroyed_ = nullptr; }
 
  private:
-  bool* destroyed_;
+  CheckedPtr<bool> destroyed_;
   base::OnceClosure quit_closure_;
 
   DISALLOW_COPY_AND_ASSIGN(CloseDestroysWidget);
@@ -3198,7 +3199,7 @@ class DestroyedTrackingView : public View {
 
  private:
   const std::string name_;
-  std::vector<std::string>* add_to_;
+  CheckedPtr<std::vector<std::string>> add_to_;
 
   DISALLOW_COPY_AND_ASSIGN(DestroyedTrackingView);
 };
@@ -3319,7 +3320,7 @@ class FullscreenAwareFrame : public views::NonClientFrameView {
   bool fullscreen_layout_called() const { return fullscreen_layout_called_; }
 
  private:
-  views::Widget* widget_;
+  CheckedPtr<views::Widget> widget_;
   bool fullscreen_layout_called_;
 
   DISALLOW_COPY_AND_ASSIGN(FullscreenAwareFrame);

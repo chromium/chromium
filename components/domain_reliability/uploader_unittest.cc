@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -95,7 +96,7 @@ class UploadMockURLRequestJob : public net::URLRequestJob {
     info->headers = result_.response_headers;
   }
 
-  net::UploadDataStream* upload_stream_;
+  CheckedPtr<net::UploadDataStream> upload_stream_;
   scoped_refptr<net::IOBufferWithSize> upload_buffer_;
   std::string upload_data_;
   MockUploadResult result_;
@@ -212,7 +213,7 @@ class DomainReliabilityUploaderTest : public testing::Test {
       net::IsolationInfo::CreateTransient();
 
   net::TestURLRequestContext url_request_context_;
-  UploadInterceptor* interceptor_;
+  CheckedPtr<UploadInterceptor> interceptor_;
   MockTime time_;
   std::unique_ptr<DomainReliabilityUploader> uploader_;
 };

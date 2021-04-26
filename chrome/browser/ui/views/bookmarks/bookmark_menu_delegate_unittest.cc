@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
@@ -97,7 +98,7 @@ class BookmarkMenuDelegateTest : public BrowserWithTestWindowTest {
   // items of tyep SUBMENU.
   void LoadAllMenus() { LoadAllMenus(bookmark_menu_delegate_->menu()); }
 
-  BookmarkModel* model_;
+  CheckedPtr<BookmarkModel> model_;
 
   std::unique_ptr<BookmarkMenuDelegate> bookmark_menu_delegate_;
 

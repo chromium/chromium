@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
@@ -45,9 +46,9 @@ class TestProofVerifierCallback : public quic::ProofVerifierCallback {
   }
 
  private:
-  TestCompletionCallback* const comp_callback_;
-  bool* const ok_;
-  string* const error_details_;
+  const CheckedPtr<TestCompletionCallback> comp_callback_;
+  const CheckedPtr<bool> ok_;
+  const CheckedPtr<string> error_details_;
 };
 
 // RunVerification runs |verifier->VerifyProof| and asserts that the result
@@ -111,10 +112,11 @@ class TestCallback : public quic::ProofSource::Callback {
   }
 
  private:
-  bool* called_;
-  bool* ok_;
-  quic::QuicReferenceCountedPointer<quic::ProofSource::Chain>* chain_;
-  quic::QuicCryptoProof* proof_;
+  CheckedPtr<bool> called_;
+  CheckedPtr<bool> ok_;
+  CheckedPtr<quic::QuicReferenceCountedPointer<quic::ProofSource::Chain>>
+      chain_;
+  CheckedPtr<quic::QuicCryptoProof> proof_;
 };
 
 class ProofTest : public ::testing::TestWithParam<quic::ParsedQuicVersion> {};
@@ -208,8 +210,8 @@ class TestingSignatureCallback : public quic::ProofSource::SignatureCallback {
   }
 
  private:
-  bool* ok_out_;
-  std::string* signature_out_;
+  CheckedPtr<bool> ok_out_;
+  CheckedPtr<std::string> signature_out_;
 };
 
 }  // namespace

@@ -135,7 +135,7 @@ void P2PSocketUdp::Init(const net::IPEndPoint& local_address,
   DCHECK((min_port == 0 && max_port == 0) || min_port > 0);
   DCHECK_LE(min_port, max_port);
 
-  socket_ = socket_factory_.Run(net_log_);
+  socket_ = socket_factory_.Run(net_log_.get());
 
   int result = -1;
   if (min_port == 0) {
@@ -144,7 +144,7 @@ void P2PSocketUdp::Init(const net::IPEndPoint& local_address,
     for (unsigned port = min_port; port <= max_port && result < 0; ++port) {
       result = socket_->Listen(net::IPEndPoint(local_address.address(), port));
       if (result < 0 && port != max_port)
-        socket_ = socket_factory_.Run(net_log_);
+        socket_ = socket_factory_.Run(net_log_.get());
     }
   } else if (local_address.port() >= min_port &&
              local_address.port() <= max_port) {

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
@@ -75,7 +76,7 @@ class ResetPasswordHandlerImpl : public mojom::ResetPasswordHandler {
   }
 
  private:
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
   mojo::Receiver<mojom::ResetPasswordHandler> receiver_;
 
   DISALLOW_COPY_AND_ASSIGN(ResetPasswordHandlerImpl);

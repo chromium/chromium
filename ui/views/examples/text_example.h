@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/views/examples/example_base.h"
 
 namespace views {
@@ -49,34 +50,34 @@ class VIEWS_EXAMPLES_EXPORT TextExample : public ExampleBase {
   void UpdateStyle();
 
   // The content of the scroll view.
-  TextExampleView* text_view_;
+  CheckedPtr<TextExampleView> text_view_;
 
   // Combo box for horizontal text alignment.
-  Combobox* h_align_cb_;
+  CheckedPtr<Combobox> h_align_cb_;
 
   // Combo box for text eliding style.
-  Combobox* eliding_cb_;
+  CheckedPtr<Combobox> eliding_cb_;
 
   // Combo box for ampersand prefix show / hide behavior.
-  Combobox* prefix_cb_;
+  CheckedPtr<Combobox> prefix_cb_;
 
   // Combo box to choose one of the sample texts.
-  Combobox* text_cb_;
+  CheckedPtr<Combobox> text_cb_;
 
   // Combo box to choose a font weight.
-  Combobox* weight_cb_;
+  CheckedPtr<Combobox> weight_cb_;
 
   // Check box to enable/disable multiline text drawing.
-  Checkbox* multiline_checkbox_;
+  CheckedPtr<Checkbox> multiline_checkbox_;
 
   // Check box to enable/disable character break behavior.
-  Checkbox* break_checkbox_;
+  CheckedPtr<Checkbox> break_checkbox_;
 
   // Check box to enable/disable italic style.
-  Checkbox* italic_checkbox_;
+  CheckedPtr<Checkbox> italic_checkbox_;
 
   // Check box to enable/disable underline style.
-  Checkbox* underline_checkbox_;
+  CheckedPtr<Checkbox> underline_checkbox_;
 
   DISALLOW_COPY_AND_ASSIGN(TextExample);
 };

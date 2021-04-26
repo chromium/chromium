@@ -12,6 +12,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/payments/editor_view_controller.h"
 #include "chrome/browser/ui/views/payments/validation_delegate.h"
@@ -109,7 +110,7 @@ class CreditCardEditorViewController : public EditorViewController {
 
     EditorField field_;
     // Outlives this class.
-    CreditCardEditorViewController* controller_;
+    CheckedPtr<CreditCardEditorViewController> controller_;
 
     DISALLOW_COPY_AND_ASSIGN(CreditCardValidationDelegate);
   };

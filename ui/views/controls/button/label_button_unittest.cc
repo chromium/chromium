@@ -10,6 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -132,14 +133,14 @@ class LabelButtonTest : public test::WidgetTest {
   }
 
  protected:
-  TestLabelButton* button_ = nullptr;
+  CheckedPtr<TestLabelButton> button_ = nullptr;
 
   SkColor themed_normal_text_color_ = 0;
   SkColor styled_normal_text_color_ = 0;
   SkColor styled_highlight_text_color_ = 0;
 
  private:
-  Widget* test_widget_ = nullptr;
+  CheckedPtr<Widget> test_widget_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(LabelButtonTest);
 };
@@ -795,7 +796,7 @@ class InkDropLabelButtonTest : public ViewsTestBase {
 
     test_ink_drop_ = new test::TestInkDrop();
     test::InkDropHostViewTestApi(button_).SetInkDrop(
-        base::WrapUnique(test_ink_drop_));
+        base::WrapUnique(test_ink_drop_.get()));
   }
 
   void TearDown() override {
@@ -808,10 +809,10 @@ class InkDropLabelButtonTest : public ViewsTestBase {
   std::unique_ptr<Widget> widget_;
 
   // The test target.
-  LabelButton* button_ = nullptr;
+  CheckedPtr<LabelButton> button_ = nullptr;
 
   // Weak ptr, |button_| owns the instance.
-  test::TestInkDrop* test_ink_drop_ = nullptr;
+  CheckedPtr<test::TestInkDrop> test_ink_drop_ = nullptr;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(InkDropLabelButtonTest);
@@ -885,9 +886,9 @@ class LabelButtonVisualStateTest : public test::WidgetTest {
         std::make_unique<TestLabelButton>());
   }
 
-  TestLabelButton* button_ = nullptr;
-  Widget* test_widget_ = nullptr;
-  Widget* dummy_widget_ = nullptr;
+  CheckedPtr<TestLabelButton> button_ = nullptr;
+  CheckedPtr<Widget> test_widget_ = nullptr;
+  CheckedPtr<Widget> dummy_widget_ = nullptr;
   Button::ButtonState style_of_inactive_widget_;
 };
 

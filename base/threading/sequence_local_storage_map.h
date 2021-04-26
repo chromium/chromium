@@ -8,6 +8,7 @@
 #include "base/base_export.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 
 namespace base {
 namespace internal {
@@ -47,7 +48,7 @@ class BASE_EXPORT SequenceLocalStorageMap {
     void* value() const { return value_; }
 
    private:
-    void* value_;
+    CheckedPtr<void> value_;
     DestructorFunc* destructor_;
 
     DISALLOW_COPY_AND_ASSIGN(ValueDestructorPair);

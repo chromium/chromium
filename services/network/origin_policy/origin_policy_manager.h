@@ -13,6 +13,7 @@
 #include "base/component_export.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -77,7 +78,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) OriginPolicyManager
 
   // Owner of this object. It needs to always outlive this object.
   // Used for queueing reports and creating a URLLoaderFactory.
-  NetworkContext* const owner_network_context_;
+  const CheckedPtr<NetworkContext> owner_network_context_;
 
   // Exempted origins are added using AddExceptionFor.
   std::set<url::Origin> exempted_origins_;

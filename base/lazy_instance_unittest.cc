@@ -15,6 +15,7 @@
 #include "base/bind.h"
 #include "base/lazy_instance.h"
 #include "base/memory/aligned_memory.h"
+#include "base/memory/checked_ptr.h"
 #include "base/system/sys_info.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/simple_thread.h"
@@ -74,7 +75,7 @@ class SlowDelegate : public base::DelegateSimpleThread::Delegate {
   }
 
  private:
-  base::LazyInstance<SlowConstructor>::DestructorAtExit* lazy_;
+  CheckedPtr<base::LazyInstance<SlowConstructor>::DestructorAtExit> lazy_;
 };
 
 }  // namespace
@@ -262,7 +263,7 @@ class BlockingConstructorThread : public base::SimpleThread {
   }
 
  private:
-  base::LazyInstance<BlockingConstructor>::DestructorAtExit* lazy_;
+  CheckedPtr<base::LazyInstance<BlockingConstructor>::DestructorAtExit> lazy_;
   base::OnceClosure before_get_;
 };
 

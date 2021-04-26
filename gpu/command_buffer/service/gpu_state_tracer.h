@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 
 namespace gfx {
 class Size;
@@ -30,7 +31,7 @@ class GPUStateTracer {
  private:
   explicit GPUStateTracer(const ContextState* state);
 
-  const ContextState* state_;
+  CheckedPtr<const ContextState> state_;
   DISALLOW_COPY_AND_ASSIGN(GPUStateTracer);
 };
 

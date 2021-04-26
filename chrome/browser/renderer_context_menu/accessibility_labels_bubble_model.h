@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_RENDERER_CONTEXT_MENU_ACCESSIBILITY_LABELS_BUBBLE_MODEL_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/confirm_bubble_model.h"
 
 class Profile;
@@ -37,8 +38,8 @@ class AccessibilityLabelsBubbleModel : public ConfirmBubbleModel {
   // Set the profile preferences to enable or disable the feature.
   void SetPref(bool enabled);
 
-  Profile* profile_;
-  content::WebContents* web_contents_;
+  CheckedPtr<Profile> profile_;
+  CheckedPtr<content::WebContents> web_contents_;
   bool enable_always_;
 
   DISALLOW_COPY_AND_ASSIGN(AccessibilityLabelsBubbleModel);

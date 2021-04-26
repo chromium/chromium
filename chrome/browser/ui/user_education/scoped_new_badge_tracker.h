@@ -7,6 +7,8 @@
 
 #include <set>
 
+#include "base/memory/checked_ptr.h"
+
 namespace base {
 struct Feature;
 }
@@ -127,7 +129,7 @@ class ScopedNewBadgeTracker {
   void ActionPerformed(const char* action_event_name);
 
  private:
-  feature_engagement::Tracker* const tracker_;
+  const CheckedPtr<feature_engagement::Tracker> tracker_;
   std::set<const base::Feature*> active_badge_features_;
 };
 

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/messages/android/message_enums.h"
@@ -54,7 +55,7 @@ class SaveAddressProfileMessageController {
   void RunSaveAddressProfileCallback(
       AutofillClient::SaveAddressProfileOfferUserDecision decision);
 
-  content::WebContents* web_contents_ = nullptr;
+  CheckedPtr<content::WebContents> web_contents_ = nullptr;
   std::unique_ptr<messages::MessageWrapper> message_;
 
   // The profile which is being confirmed by the user.

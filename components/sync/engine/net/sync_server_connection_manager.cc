@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
 #include "components/sync/engine/net/http_post_provider_interface.h"
@@ -42,11 +43,11 @@ class Connection : public CancelationSignal::Observer {
 
   // Pointer to the factory we use for creating HttpPostProviders. We do not
   // own |factory_|.
-  HttpPostProviderFactory* const factory_;
+  const CheckedPtr<HttpPostProviderFactory> factory_;
 
   // Cancelation signal is signalled when engine shuts down. Current blocking
   // operation should be aborted.
-  CancelationSignal* const cancelation_signal_;
+  const CheckedPtr<CancelationSignal> cancelation_signal_;
 
   scoped_refptr<HttpPostProviderInterface> const post_provider_;
 
@@ -89,7 +90,7 @@ HttpResponse Connection::Init(const GURL& sync_request_url,
   }
   base::ScopedClosureRunner auto_unregister(base::BindOnce(
       &CancelationSignal::UnregisterHandler,
-      base::Unretained(cancelation_signal_), base::Unretained(this)));
+      base::Unretained(cancelation_signal_.get()), base::Unretained(this)));
 
   int net_error_code = 0;
   int http_status_code = 0;

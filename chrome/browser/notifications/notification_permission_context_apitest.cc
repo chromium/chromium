@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 
 #include "base/check.h"
@@ -47,7 +48,7 @@ class ExtensionPermissionUpdater : public ExtensionRegistryObserver {
   }
 
  private:
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   bool enabled_;
 
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>

@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
+#include "base/memory/checked_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -61,7 +62,7 @@ struct QueryNode {
   // Query URL.
   GURL url;
   // Value node with requests mapped with |url|.
-  const base::Value* node = nullptr;
+  CheckedPtr<const base::Value> node = nullptr;
 };
 
 // Gets a hexadecimal representation of a string.

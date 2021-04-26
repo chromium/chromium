@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/context_provider.h"
@@ -44,7 +45,7 @@ class ContextLostRunLoop : public viz::ContextLostObserver {
   // viz::LostContextProvider:
   void OnContextLost() override { run_loop_.Quit(); }
 
-  viz::ContextProvider* const context_provider_;
+  const CheckedPtr<viz::ContextProvider> context_provider_;
   base::RunLoop run_loop_;
 
   DISALLOW_COPY_AND_ASSIGN(ContextLostRunLoop);
@@ -79,8 +80,8 @@ class ContextTestBase : public content::ContentBrowserTest {
   }
 
  protected:
-  gpu::gles2::GLES2Interface* gl_ = nullptr;
-  gpu::ContextSupport* context_support_ = nullptr;
+  CheckedPtr<gpu::gles2::GLES2Interface> gl_ = nullptr;
+  CheckedPtr<gpu::ContextSupport> context_support_ = nullptr;
 
  private:
   scoped_refptr<viz::ContextProviderCommandBuffer> provider_;

@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/queue.h"
 #include "base/feature_list.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -426,7 +427,7 @@ class ServiceWorkerFetchDispatcher::ResponseCallback
   mojo::Receiver<blink::mojom::ServiceWorkerFetchResponseCallback> receiver_;
   base::WeakPtr<ServiceWorkerFetchDispatcher> fetch_dispatcher_;
   // Owns |this| via pending_requests_.
-  ServiceWorkerVersion* version_;
+  CheckedPtr<ServiceWorkerVersion> version_;
   // Must be set to a non-nullopt value before the corresponding mojo
   // handle is passed to the other end (i.e. before any of OnResponse*
   // is called).

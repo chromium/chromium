@@ -18,6 +18,7 @@
 #include "base/command_line.h"
 #include "base/containers/id_map.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -165,9 +166,10 @@ class GeolocationPermissionContextTests
 
   TestPermissionsClient client_;
   // owned by |manager_|
-  GeolocationPermissionContext* geolocation_permission_context_ = nullptr;
+  CheckedPtr<GeolocationPermissionContext> geolocation_permission_context_ =
+      nullptr;
   // owned by |geolocation_permission_context_|
-  TestGeolocationPermissionContextDelegate* delegate_ = nullptr;
+  CheckedPtr<TestGeolocationPermissionContextDelegate> delegate_ = nullptr;
   std::vector<std::unique_ptr<content::WebContents>> extra_tabs_;
   std::vector<std::unique_ptr<MockPermissionPromptFactory>>
       mock_permission_prompt_factories_;

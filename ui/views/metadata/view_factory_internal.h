@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "ui/base/class_property.h"
 #include "ui/views/metadata/type_conversion.h"
 #include "ui/views/metadata/view_factory_internal.h"
@@ -95,11 +96,11 @@ class ClassPropertyMoveSetter : public PropertySetterBase {
   ~ClassPropertyMoveSetter() override = default;
 
   void SetProperty(void* obj) override {
-    static_cast<TClass*>(obj)->SetProperty(property_, std::move(value_));
+    static_cast<TClass*>(obj)->SetProperty(property_.get(), std::move(value_));
   }
 
  private:
-  const ui::ClassProperty<TValue*>* property_;
+  CheckedPtr<const ui::ClassProperty<TValue*>> property_;
   TValue value_;
 };
 
