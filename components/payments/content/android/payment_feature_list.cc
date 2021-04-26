@@ -19,7 +19,7 @@ namespace {
 // Entries in this array refer to features defined in
 // components/payments/core/features.h, content/public/common/content_features.h
 // or the .h file (for Android only features).
-const base::Feature* kFeaturesExposedToJava[] = {
+const base::Feature* const kFeaturesExposedToJava[] = {
     &::features::kServiceWorkerPaymentApps,
     &::features::kWebPayments,
     &::features::kWebPaymentsMinimalUI,
@@ -41,9 +41,9 @@ const base::Feature* kFeaturesExposedToJava[] = {
 };
 
 const base::Feature* FindFeatureExposedToJava(const std::string& feature_name) {
-  for (size_t i = 0; i < base::size(kFeaturesExposedToJava); ++i) {
-    if (kFeaturesExposedToJava[i]->name == feature_name)
-      return kFeaturesExposedToJava[i];
+  for (const base::Feature* feature : kFeaturesExposedToJava) {
+    if (feature->name == feature_name)
+      return feature;
   }
   NOTREACHED() << "Queried feature cannot be found in PaymentsFeatureList: "
                << feature_name;
