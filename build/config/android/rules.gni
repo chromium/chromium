@@ -1372,6 +1372,12 @@ if (enable_java_templates) {
       testonly = true
       main_class = _main_class
       wrapper_script_name = "helper/$main_target_name"
+
+      # As of April 2021, adding -XX:TieredStopAtLevel=1 does not affect the
+      # wall time of a single robolectric shard, but does reduce the CPU time by
+      # 66%, which makes sharding more effective.
+      tiered_stop_at_level_one = true
+
       if (!defined(srcjar_deps)) {
         srcjar_deps = []
       }

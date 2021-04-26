@@ -1367,6 +1367,7 @@ if (enable_java_templates) {
   #   build_config: Path to .build_config for the jar (contains classpath).
   #   script_name: Name of the script to generate.
   #   wrapper_script_args: List of extra arguments to pass to the executable.
+  #   tiered_stop_at_level_one: Whether to pass --tiered-stop-at-level-one
   #
   template("java_binary_script") {
     action_with_pydeps(target_name) {
@@ -1400,6 +1401,10 @@ if (enable_java_templates) {
       }
       if (use_jacoco_coverage || !treat_warnings_as_errors) {
         args += [ "--noverify" ]
+      }
+      if (defined(invoker.tiered_stop_at_level_one) &&
+          invoker.tiered_stop_at_level_one) {
+        args += [ "--tiered-stop-at-level-one" ]
       }
       if (defined(invoker.wrapper_script_args)) {
         args += [ "--" ] + invoker.wrapper_script_args
@@ -4027,6 +4032,7 @@ if (enable_java_templates) {
       java_binary_script("${target_name}__java_binary_script") {
         forward_variables_from(invoker,
                                [
+                                 "tiered_stop_at_level_one",
                                  "main_class",
                                  "wrapper_script_args",
                                ])
