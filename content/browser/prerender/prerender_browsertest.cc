@@ -802,8 +802,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderIframe) {
 
 // Blank <iframe> is a special case. Tests that the blank iframe knows the
 // prerendering state as well.
-// TODO(https://crbug.com/1185965): This test is disabled for flakiness.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DISABLED_PrerenderBlankIframe) {
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderBlankIframe) {
   TestHostPrerenderingState(GetUrl("/page_with_blank_iframe.html"));
 }
 
