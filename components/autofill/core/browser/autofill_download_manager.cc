@@ -100,7 +100,7 @@ const char kDefaultAutofillServerURL[] =
 
 // The default number of days after which to reset the registry of autofill
 // events for which an upload has been sent.
-constexpr base::FeatureParam<int> kAutofillUploadThrottlingPeriodInDays(
+const base::FeatureParam<int> kAutofillUploadThrottlingPeriodInDays(
     &features::kAutofillUploadThrottling,
     switches::kAutofillUploadThrottlingPeriodInDays,
     28);
@@ -114,7 +114,7 @@ constexpr char kGoogEncodeResponseIfExecutable[] =
 constexpr char kDefaultAPIKey[] = "";
 
 // The maximum number of attempts for a given autofill request.
-constexpr base::FeatureParam<int> kAutofillMaxServerAttempts(
+const base::FeatureParam<int> kAutofillMaxServerAttempts(
     &features::kAutofillServerCommunication,
     "max-attempts",
     5);

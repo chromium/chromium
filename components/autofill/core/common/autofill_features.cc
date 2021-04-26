@@ -4,21 +4,6 @@
 
 #include "components/autofill/core/common/autofill_features.h"
 
-#include <string>
-
-#include "base/command_line.h"
-#include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-#include "components/autofill/core/common/autofill_prefs.h"
-#include "components/autofill/core/common/autofill_switches.h"
-#include "components/prefs/pref_service.h"
-#include "ui/base/l10n/l10n_util.h"
-
 namespace autofill {
 namespace features {
 
