@@ -25,6 +25,7 @@
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"

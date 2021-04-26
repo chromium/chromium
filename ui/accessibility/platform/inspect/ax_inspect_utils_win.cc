@@ -9,6 +9,7 @@
 #include <map>
 #include <string>
 
+#include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/stl_util.h"
 #include "base/strings/pattern.h"

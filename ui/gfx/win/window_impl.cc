@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/debug/alias.h"
+#include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/stl_util.h"

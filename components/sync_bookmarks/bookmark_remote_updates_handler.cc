@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/guid.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"

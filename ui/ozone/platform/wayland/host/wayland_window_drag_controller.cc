@@ -14,6 +14,7 @@
 
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"

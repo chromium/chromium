@@ -8,6 +8,7 @@
 
 #include "base/auto_reset.h"
 #include "base/big_endian.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/sync/model/mutable_data_batch.h"

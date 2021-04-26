@@ -4,6 +4,7 @@
 
 #include "components/omnibox/browser/location_bar_model_util.h"
 
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/buildflags.h"
 #include "ui/gfx/vector_icon_types.h"
