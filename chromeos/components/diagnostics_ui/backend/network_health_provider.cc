@@ -14,17 +14,20 @@ namespace chromeos {
 namespace diagnostics {
 namespace {
 
-bool IsSupportedNetworkType(network_config::mojom::NetworkType type) {
+namespace network_mojom = chromeos::network_config::mojom;
+using network_mojom::NetworkType;
+
+bool IsSupportedNetworkType(network_mojom::NetworkType type) {
   switch (type) {
-    case network_config::mojom::NetworkType::kWiFi:
-    case network_config::mojom::NetworkType::kCellular:
-    case network_config::mojom::NetworkType::kEthernet:
+    case NetworkType::kWiFi:
+    case NetworkType::kCellular:
+    case NetworkType::kEthernet:
       return true;
-    case network_config::mojom::NetworkType::kMobile:
-    case network_config::mojom::NetworkType::kTether:
-    case network_config::mojom::NetworkType::kVPN:
-    case network_config::mojom::NetworkType::kAll:
-    case network_config::mojom::NetworkType::kWireless:
+    case NetworkType::kMobile:
+    case NetworkType::kTether:
+    case NetworkType::kVPN:
+    case NetworkType::kAll:
+    case NetworkType::kWireless:
       return false;
   }
 }
@@ -49,18 +52,17 @@ void NetworkHealthProvider::OnDeviceStateListChanged() {
 }
 
 void NetworkHealthProvider::OnActiveNetworksChanged(
-    std::vector<network_config::mojom::NetworkStatePropertiesPtr>
-        active_networks) {
+    std::vector<network_mojom::NetworkStatePropertiesPtr> active_networks) {
   OnActiveNetworkStateListReceived(std::move(active_networks));
 }
 
 void NetworkHealthProvider::OnNetworkStateChanged(
-    network_config::mojom::NetworkStatePropertiesPtr network_state) {}
+    network_mojom::NetworkStatePropertiesPtr network_state) {}
 void NetworkHealthProvider::OnVpnProvidersChanged() {}
 void NetworkHealthProvider::OnNetworkCertificatesChanged() {}
 
 void NetworkHealthProvider::OnActiveNetworkStateListReceived(
-    std::vector<network_config::mojom::NetworkStatePropertiesPtr> networks) {
+    std::vector<network_mojom::NetworkStatePropertiesPtr> networks) {
   guid_to_network_map_.clear();
   for (auto& network : networks) {
     if (IsSupportedNetworkType(network->type)) {
@@ -71,7 +73,7 @@ void NetworkHealthProvider::OnActiveNetworkStateListReceived(
 }
 
 void NetworkHealthProvider::OnDeviceStateListReceived(
-    std::vector<network_config::mojom::DeviceStatePropertiesPtr> devices) {
+    std::vector<network_mojom::DeviceStatePropertiesPtr> devices) {
   device_type_map_.clear();
   for (auto& device : devices) {
     if (IsSupportedNetworkType(device->type)) {
