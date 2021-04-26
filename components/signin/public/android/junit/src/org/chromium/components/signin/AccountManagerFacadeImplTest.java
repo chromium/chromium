@@ -314,8 +314,7 @@ public class AccountManagerFacadeImplTest {
 
     private void setAccountRestrictionPatterns(String... patterns) {
         Bundle restrictions = new Bundle();
-        restrictions.putStringArray(
-                AccountManagerFacadeImpl.ACCOUNT_RESTRICTION_PATTERNS_KEY, patterns);
+        restrictions.putStringArray("RestrictAccountsToPatterns", patterns);
         mShadowUserManager.setApplicationRestrictions(mContext.getPackageName(), restrictions);
         mContext.sendBroadcast(new Intent(Intent.ACTION_APPLICATION_RESTRICTIONS_CHANGED));
     }

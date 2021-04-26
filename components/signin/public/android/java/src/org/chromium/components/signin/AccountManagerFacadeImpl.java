@@ -8,14 +8,8 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AuthenticatorDescription;
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.Build;
-import android.os.Bundle;
 import android.os.SystemClock;
-import android.os.UserManager;
 import android.text.TextUtils;
 
 import androidx.annotation.MainThread;
@@ -23,8 +17,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
-import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -43,8 +35,6 @@ import java.util.concurrent.atomic.AtomicReference;
  * AccountManagerFacade wraps our access of AccountManager in Android.
  */
 public class AccountManagerFacadeImpl implements AccountManagerFacade {
-    private static final String TAG = "Sync_Signin";
-
     /**
      * An account feature (corresponding to a Gaia service flag) that specifies whether the account
      * is a child account.
@@ -59,14 +49,13 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     @VisibleForTesting
     public static final String FEATURE_IS_USM_ACCOUNT_KEY = "service_usm";
 
-    @VisibleForTesting
-    public static final String ACCOUNT_RESTRICTION_PATTERNS_KEY = "RestrictAccountsToPatterns";
-
     private final AccountManagerDelegate mDelegate;
+    private final AccountRestrictionPatternReceiver mAccountRestrictionPatternReceiver;
+    private final AtomicReference<List<PatternMatcher>> mAccountRestrictionPatterns =
+            new AtomicReference<>();
+
     private final ObserverList<AccountsChangeObserver> mObservers = new ObserverList<>();
 
-    // These two variables should be accessed from either UI thread or during initialization phase.
-    private PatternMatcher[] mAccountRestrictionPatterns;
     private AccountManagerResult<List<Account>> mAllAccounts;
 
     private final AtomicReference<AccountManagerResult<List<Account>>> mFilteredAccounts =
@@ -84,11 +73,13 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         ThreadUtils.assertOnUiThread();
         mDelegate = delegate;
         mDelegate.attachAccountsChangeObserver(this::updateAccounts);
+        mAccountRestrictionPatternReceiver =
+                new AccountRestrictionPatternReceiver(this::onAccountRestrictionPatternsUpdated);
 
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
-            subscribeToAppRestrictionChanges();
-        }
-
+        tryGetGoogleAccounts(accounts -> {
+            RecordHistogram.recordExactLinearHistogram(
+                    "Signin.AndroidNumberOfDeviceAccounts", accounts.size(), 50);
+        });
         new InitializeTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
 
@@ -325,22 +316,6 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         new UpdateAccountsTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
 
-    private void updateAccountRestrictionPatterns() {
-        ThreadUtils.assertOnUiThread();
-        new UpdateAccountRestrictionPatternsTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
-    }
-
-    private void subscribeToAppRestrictionChanges() {
-        IntentFilter filter = new IntentFilter(Intent.ACTION_APPLICATION_RESTRICTIONS_CHANGED);
-        BroadcastReceiver receiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                updateAccountRestrictionPatterns();
-            }
-        };
-        ContextUtils.getApplicationContext().registerReceiver(receiver, filter);
-    }
-
     private AccountManagerResult<List<Account>> getAllAccounts() {
         try {
             List<Account> accounts = Arrays.asList(mDelegate.getAccountsSync());
@@ -351,10 +326,12 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     }
 
     private AccountManagerResult<List<Account>> getFilteredAccounts() {
-        if (mAllAccounts.hasException() || mAccountRestrictionPatterns == null) return mAllAccounts;
+        if (mAllAccounts.hasException() || mAccountRestrictionPatterns.get().isEmpty()) {
+            return mAllAccounts;
+        }
         ArrayList<Account> filteredAccounts = new ArrayList<>();
         for (Account account : mAllAccounts.getValue()) {
-            for (PatternMatcher pattern : mAccountRestrictionPatterns) {
+            for (PatternMatcher pattern : mAccountRestrictionPatterns.get()) {
                 if (pattern.matches(account.name)) {
                     filteredAccounts.add(account);
                     break; // Don't check other patterns
@@ -364,33 +341,8 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         return new AccountManagerResult<>(Collections.unmodifiableList(filteredAccounts));
     }
 
-    private static PatternMatcher[] getAccountRestrictionPatterns() {
-        try {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) return null;
-            String[] patterns = getAccountRestrictionPatternPostJellyBeanMr2();
-            if (patterns == null) return null;
-            ArrayList<PatternMatcher> matchers = new ArrayList<>();
-            for (String pattern : patterns) {
-                matchers.add(new PatternMatcher(pattern));
-            }
-            return matchers.toArray(new PatternMatcher[0]);
-        } catch (PatternMatcher.IllegalPatternException ex) {
-            Log.e(TAG, "Can't get account restriction patterns", ex);
-            return null;
-        }
-    }
-
-    private static String[] getAccountRestrictionPatternPostJellyBeanMr2() {
-        // This method uses AppRestrictions directly, rather than using the Policy interface,
-        // because it must be callable in contexts in which the native library hasn't been loaded.
-        Context context = ContextUtils.getApplicationContext();
-        UserManager userManager = (UserManager) context.getSystemService(Context.USER_SERVICE);
-        Bundle appRestrictions = userManager.getApplicationRestrictions(context.getPackageName());
-        return appRestrictions.getStringArray(ACCOUNT_RESTRICTION_PATTERNS_KEY);
-    }
-
-    private void setAccountRestrictionPatterns(PatternMatcher[] patternMatchers) {
-        mAccountRestrictionPatterns = patternMatchers;
+    private void onAccountRestrictionPatternsUpdated(List<PatternMatcher> patternMatchers) {
+        mAccountRestrictionPatterns.set(patternMatchers);
         mFilteredAccounts.set(getFilteredAccounts());
         fireOnAccountsChangedNotification();
     }
@@ -433,7 +385,8 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
         @Override
         protected Void doInBackground() {
-            mAccountRestrictionPatterns = getAccountRestrictionPatterns();
+            mAccountRestrictionPatterns.set(
+                    mAccountRestrictionPatternReceiver.getRestrictionPatterns());
             mAllAccounts = getAllAccounts();
             mFilteredAccounts.set(getFilteredAccounts());
             // It's important that countDown() is called on background thread and not in
@@ -444,32 +397,11 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
 
         @Override
         protected void onPostExecute(Void v) {
-            // Records number of Android accounts present on device.
-            RecordHistogram.recordExactLinearHistogram(
-                    "Signin.AndroidNumberOfDeviceAccounts", tryGetGoogleAccounts().size(), 50);
             while (!mCallbacksWaitingForAccountsFetch.isEmpty()) {
                 final Runnable runnable = mCallbacksWaitingForAccountsFetch.remove();
                 runnable.run();
             }
             fireOnAccountsChangedNotification();
-            decrementUpdateCounter();
-        }
-    }
-
-    private class UpdateAccountRestrictionPatternsTask extends AsyncTask<PatternMatcher[]> {
-        @Override
-        protected void onPreExecute() {
-            incrementUpdateCounter();
-        }
-
-        @Override
-        protected PatternMatcher[] doInBackground() {
-            return getAccountRestrictionPatterns();
-        }
-
-        @Override
-        protected void onPostExecute(PatternMatcher[] patternMatchers) {
-            setAccountRestrictionPatterns(patternMatchers);
             decrementUpdateCounter();
         }
     }
