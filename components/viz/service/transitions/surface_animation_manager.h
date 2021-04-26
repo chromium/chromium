@@ -88,6 +88,7 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
 
     std::unique_ptr<CompositorRenderPass> render_pass;
     base::Optional<CompositorRenderPassDrawQuad> draw_quad;
+    float opacity = 1.f;
   };
 
   void CreateRootAnimationCurves(const gfx::Size& output_size);

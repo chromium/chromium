@@ -26,6 +26,23 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
   using TransitionDirectiveCompleteCallback =
       base::OnceCallback<void(uint32_t)>;
 
+  struct RenderPassDrawData {
+    RenderPassDrawData() = default;
+    RenderPassDrawData(const gfx::Rect& rect,
+                       const gfx::Transform& target_transform,
+                       float opacity)
+        : rect(rect), target_transform(target_transform), opacity(opacity) {}
+
+    // This represents the region for the pixel output.
+    gfx::Rect rect;
+    // This is a transform that takes `rect` into a root render pass space. Note
+    // that this makes this result dependent on the structure of the compositor
+    // frame render pass list used to request the copy output.
+    gfx::Transform target_transform;
+    // Opacity accumulated from the original frame.
+    float opacity = 1.f;
+  };
+
   struct OutputCopyResult {
     OutputCopyResult();
     OutputCopyResult(OutputCopyResult&& other);
@@ -40,12 +57,9 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
     // Software bitmap representation.
     SkBitmap bitmap;
 
-    // This represents the region for the pixel output.
-    gfx::Rect rect;
-    // This is a transform that takes `rect` into a root render pass space. Note
-    // that this makes this result dependent on the structure of the compositor
-    // frame render pass list used to request the copy output.
-    gfx::Transform target_transform;
+    // This is information needed to draw the texture as if it was a part of the
+    // original frame.
+    RenderPassDrawData draw_data;
 
     // Is this a software or a GPU copy result?
     bool is_software = false;
@@ -88,8 +102,7 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
 
   void NotifyCopyOfOutputComplete(ResultType type,
                                   size_t shared_index,
-                                  const gfx::Rect& rect,
-                                  const gfx::Transform& target_transform,
+                                  const RenderPassDrawData& info,
                                   std::unique_ptr<CopyOutputResult> result);
 
   size_t ExpectedResultCount() const;

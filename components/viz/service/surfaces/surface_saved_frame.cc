@@ -9,7 +9,9 @@
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
+#include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
+#include "components/viz/common/transition_utils.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -18,30 +20,30 @@ namespace viz {
 namespace {
 constexpr gfx::Size kDefaultTextureSizeForTesting = gfx::Size(20, 20);
 
-struct RenderPassGeometry {
-  gfx::Rect rect;
-  gfx::Transform target_transform;
-};
-
-RenderPassGeometry GetRootRenderPassGeometry(Surface* surface) {
+SurfaceSavedFrame::RenderPassDrawData GetRootRenderPassDrawData(
+    Surface* surface) {
   const auto& frame = surface->GetActiveFrame();
   DCHECK(!frame.render_pass_list.empty());
   const auto& root_render_pass = frame.render_pass_list.back();
   return {root_render_pass->output_rect,
-          root_render_pass->transform_to_root_target};
+          root_render_pass->transform_to_root_target, 1.f};
 }
 
-RenderPassGeometry GetRenderPassGeometryInRootSpace(
+SurfaceSavedFrame::RenderPassDrawData GetRenderPassDrawDataInRootSpace(
     Surface* surface,
     const CompositorRenderPassId& render_pass_id) {
   const auto& frame = surface->GetActiveFrame();
   for (const auto& render_pass : frame.render_pass_list) {
     if (render_pass_id != render_pass->id)
       continue;
-    return {render_pass->output_rect, render_pass->transform_to_root_target};
+
+    return SurfaceSavedFrame::RenderPassDrawData(
+        render_pass->output_rect, render_pass->transform_to_root_target,
+        TransitionUtils::ComputeAccumulatedOpacity(frame.render_pass_list,
+                                                   render_pass_id));
   }
   NOTREACHED();
-  return {gfx::Rect(), gfx::Transform()};
+  return SurfaceSavedFrame::RenderPassDrawData();
 }
 
 }  // namespace
@@ -75,13 +77,13 @@ void SurfaceSavedFrame::RequestCopyOfOutput(Surface* surface) {
   // RGBA_BITMAP depending on what is native.
   constexpr auto result_format = CopyOutputRequest::ResultFormat::RGBA_TEXTURE;
 
-  const auto& root_geometry = GetRootRenderPassGeometry(surface);
+  const auto& root_draw_data = GetRootRenderPassDrawData(surface);
   // Bind kRoot and root geometry information to the callback.
   auto request = std::make_unique<CopyOutputRequest>(
       result_format,
       base::BindOnce(&SurfaceSavedFrame::NotifyCopyOfOutputComplete,
                      weak_factory_.GetWeakPtr(), ResultType::kRoot, 0,
-                     root_geometry.rect, root_geometry.target_transform));
+                     root_draw_data));
   request->set_result_task_runner(base::ThreadTaskRunnerHandle::Get());
   surface->RequestCopyOfOutputOnRootRenderPass(std::move(request));
   copy_request_count_ = 1;
@@ -91,15 +93,15 @@ void SurfaceSavedFrame::RequestCopyOfOutput(Surface* surface) {
     if (shared_pass_ids[i].is_null())
       continue;
 
-    const auto& geometry =
-        GetRenderPassGeometryInRootSpace(surface, shared_pass_ids[i]);
+    const auto& draw_data =
+        GetRenderPassDrawDataInRootSpace(surface, shared_pass_ids[i]);
     // Shared callbacks bind kShared with an index, and geometry information on
     // the callbacks.
     auto request = std::make_unique<CopyOutputRequest>(
         result_format,
         base::BindOnce(&SurfaceSavedFrame::NotifyCopyOfOutputComplete,
                        weak_factory_.GetWeakPtr(), ResultType::kShared, i,
-                       geometry.rect, geometry.target_transform));
+                       draw_data));
     request->set_result_task_runner(base::ThreadTaskRunnerHandle::Get());
     bool success = surface->RequestCopyOfOutputOnActiveFrameRenderPassId(
         std::move(request), shared_pass_ids[i]);
@@ -122,8 +124,7 @@ size_t SurfaceSavedFrame::ExpectedResultCount() const {
 void SurfaceSavedFrame::NotifyCopyOfOutputComplete(
     ResultType type,
     size_t shared_index,
-    const gfx::Rect& rect,
-    const gfx::Transform& target_transform,
+    const RenderPassDrawData& data,
     std::unique_ptr<CopyOutputResult> output_copy) {
   DCHECK_GT(copy_request_count_, 0u);
   // Even if we early out, we update the count since we are no longer waiting
@@ -155,21 +156,18 @@ void SurfaceSavedFrame::NotifyCopyOfOutputComplete(
   }
 
   DCHECK(slot);
-  DCHECK_EQ(output_copy->size(), rect.size());
+  DCHECK_EQ(output_copy->size(), data.rect.size());
   if (output_copy->format() == CopyOutputResult::Format::RGBA_BITMAP) {
     slot->bitmap = output_copy->ScopedAccessSkBitmap().GetOutScopedBitmap();
-    slot->rect = rect;
-    slot->target_transform = target_transform;
     slot->is_software = true;
   } else {
     auto output_copy_texture = *output_copy->GetTextureResult();
     slot->mailbox = output_copy_texture.mailbox;
     slot->sync_token = output_copy_texture.sync_token;
     slot->release_callback = output_copy->TakeTextureOwnership();
-    slot->rect = rect;
-    slot->target_transform = target_transform;
     slot->is_software = false;
   }
+  slot->draw_data = data;
 }
 
 base::Optional<SurfaceSavedFrame::FrameResult> SurfaceSavedFrame::TakeResult() {
@@ -184,8 +182,10 @@ void SurfaceSavedFrame::CompleteSavedFrameForTesting() {
 
   frame_result_.emplace();
   frame_result_->root_result.bitmap = std::move(bitmap);
-  frame_result_->root_result.rect = gfx::Rect(kDefaultTextureSizeForTesting);
-  frame_result_->root_result.target_transform.MakeIdentity();
+  frame_result_->root_result.draw_data.rect =
+      gfx::Rect(kDefaultTextureSizeForTesting);
+  frame_result_->root_result.draw_data.target_transform.MakeIdentity();
+  frame_result_->root_result.draw_data.opacity = 1.f;
   frame_result_->root_result.is_software = true;
 
   frame_result_->shared_results.resize(
@@ -218,8 +218,7 @@ SurfaceSavedFrame::OutputCopyResult::operator=(OutputCopyResult&& other) {
   bitmap = std::move(other.bitmap);
   other.bitmap = SkBitmap();
 
-  rect = std::move(other.rect);
-  target_transform = std::move(other.target_transform);
+  draw_data = std::move(other.draw_data);
 
   release_callback = std::move(other.release_callback);
 

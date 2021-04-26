@@ -28,10 +28,7 @@ class VIZ_SERVICE_EXPORT TransferableResourceTracker {
   // This represents a resource that is positioned somewhere on screen.
   struct VIZ_SERVICE_EXPORT PositionedResource {
     TransferableResource resource;
-    // This is the resource's initial rect.
-    gfx::Rect rect;
-    // This is the transform that takes `rect` into root render pass space.
-    gfx::Transform target_transform;
+    SurfaceSavedFrame::RenderPassDrawData draw_data;
   };
 
   // A resource frame consists of a root PositionedResource and a set of

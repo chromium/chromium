@@ -277,6 +277,8 @@ viz_component("common") {
     "switches.h",
     "traced_value.cc",
     "traced_value.h",
+    "transition_utils.cc",
+    "transition_utils.h",
     "vertical_scroll_direction.h",
     "viz_common_export.h",
     "viz_utils.cc",

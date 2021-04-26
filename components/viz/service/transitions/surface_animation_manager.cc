@@ -16,6 +16,7 @@
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "components/viz/common/transition_utils.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_saved_frame_storage.h"
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
@@ -206,7 +207,7 @@ bool SurfaceAnimationManager::ProcessAnimateDirective(
   saved_textures_.emplace(
       transferable_resource_tracker_.ImportResources(std::move(saved_frame)));
 
-  CreateRootAnimationCurves(saved_textures_->root.rect.size());
+  CreateRootAnimationCurves(saved_textures_->root.draw_data.rect.size());
   CreateSharedElementCurves();
   TickAnimations(latest_time_);
   state_ = State::kAnimating;
@@ -409,7 +410,10 @@ void SurfaceAnimationManager::CopyAndInterpolateSharedElements(
     // anything special with it.
     auto shared_it = shared_draw_data.find(pass_copy->id);
     if (shared_it != shared_draw_data.end()) {
-      shared_it->second.render_pass = std::move(pass_copy);
+      RenderPassDrawData& data = shared_it->second;
+      data.render_pass = std::move(pass_copy);
+      data.opacity = TransitionUtils::ComputeAccumulatedOpacity(
+          source_passes, data.render_pass->id);
     } else {
       interpolated_frame->render_pass_list.emplace_back(std::move(pass_copy));
     }
@@ -476,7 +480,8 @@ void SurfaceAnimationManager::CopyAndInterpolateSharedElements(
 
     if (src_texture.has_value()) {
       bool y_flipped = !src_texture->resource.is_software;
-      CreateAndAppendSrcTextureQuad(animation_pass, rect, transform, opacity,
+      CreateAndAppendSrcTextureQuad(animation_pass, rect, transform,
+                                    opacity * src_texture->draw_data.opacity,
                                     y_flipped, src_texture->resource.id);
       interpolated_frame->resource_list.push_back(src_texture->resource);
     }
@@ -493,9 +498,9 @@ void SurfaceAnimationManager::CopyAndInterpolateSharedElements(
     // Create an quad for the pass into our animation pass.
     // TODO(vmpstr): This needs to be a more sophisticated blending. See
     // crbug.com/1201251 for details.
-    CreateAndAppendSharedRenderPassDrawQuad(animation_pass, rect, transform,
-                                            1.f - opacity, pass_copy->id,
-                                            *draw_data.draw_quad);
+    CreateAndAppendSharedRenderPassDrawQuad(
+        animation_pass, rect, transform, draw_data.opacity * (1.f - opacity),
+        pass_copy->id, *draw_data.draw_quad);
 
     // Finally, add the pass into the interpolated frame. Make sure this comes
     // after CreateAndAppend* call, because we use a pass id, so we need to
@@ -796,7 +801,7 @@ void SurfaceAnimationManager::CreateSharedElementCurves() {
         gfx::CubicBezierTimingFunction::EaseType::EASE);
 
     gfx::TransformOperations transform_ops;
-    transform_ops.AppendMatrix(shared->target_transform);
+    transform_ops.AppendMatrix(shared->draw_data.target_transform);
 
     auto transform_curve = gfx::KeyframedTransformAnimationCurve::Create();
     transform_curve->set_target(&state);
@@ -810,7 +815,7 @@ void SurfaceAnimationManager::CreateSharedElementCurves() {
         gfx::KeyframeEffect::GetNextKeyframeModelId(),
         AnimationState::kSrcTransform));
 
-    const gfx::Rect& rect = shared->rect;
+    const gfx::Rect& rect = shared->draw_data.rect;
 
     auto rect_curve = gfx::KeyframedRectAnimationCurve::Create();
     rect_curve->set_target(&state);
