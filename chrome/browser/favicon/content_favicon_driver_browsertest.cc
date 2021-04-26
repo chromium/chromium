@@ -25,7 +25,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/favicon/core/favicon_handler.h"
@@ -37,13 +36,10 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
-#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "net/base/load_flags.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
 #include "net/url_request/url_request.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
@@ -54,18 +50,6 @@
 namespace {
 
 using testing::ElementsAre;
-
-std::unique_ptr<net::test_server::HttpResponse> NoContentResponseHandler(
-    const std::string& path,
-    const net::test_server::HttpRequest& request) {
-  if (path != request.relative_url)
-    return nullptr;
-
-  std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
-      new net::test_server::BasicHttpResponse);
-  http_response->set_code(net::HTTP_NO_CONTENT);
-  return std::move(http_response);
-}
 
 // Tracks which URLs are loaded and whether the requests bypass the cache.
 class TestURLLoaderInterceptor {
@@ -230,15 +214,11 @@ class PageLoadStopper : public content::WebContentsObserver {
 
 class ContentFaviconDriverTest : public InProcessBrowserTest {
  public:
-  ContentFaviconDriverTest()
-      : prerender_helper_(
-            base::BindRepeating(&ContentFaviconDriverTest::web_contents,
-                                base::Unretained(this))) {}
-  ~ContentFaviconDriverTest() override = default;
+  ContentFaviconDriverTest() {}
+  ~ContentFaviconDriverTest() override {}
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
-    prerender_helper_.SetUpOnMainThread(embedded_test_server());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -287,161 +267,9 @@ class ContentFaviconDriverTest : public InProcessBrowserTest {
     return GetFaviconForPageURL(url, icon_type, /*desired_size_in_dip=*/0);
   }
 
-  content::test::PrerenderTestHelper& prerender_helper() {
-    return prerender_helper_;
-  }
-
  private:
-  content::test::PrerenderTestHelper prerender_helper_;
-
   DISALLOW_COPY_AND_ASSIGN(ContentFaviconDriverTest);
 };
-
-IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
-                       DoNotLoadFaviconsWhilePrerendering) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL prerender_url =
-      embedded_test_server()->GetURL("/favicon/page_with_favicon.html");
-  GURL icon_url = embedded_test_server()->GetURL("/favicon/icon.png");
-  GURL initial_url =
-      embedded_test_server()->GetURL("/prerender/add_prerender.html");
-  prerender_helper().NavigatePrimaryPage(initial_url);
-
-  {
-    PendingTaskWaiter waiter(web_contents());
-    prerender_helper().AddPrerender(prerender_url);
-    waiter.Wait();
-  }
-
-  // We should not fetch the URL while prerendering.
-  prerender_helper().WaitForRequest(prerender_url, 1);
-  EXPECT_EQ(prerender_helper().GetRequestCount(icon_url), 0);
-  prerender_helper().NavigatePrimaryPage(prerender_url);
-
-  // Check that we've fetched the URL upon activation. Should not hang.
-  EXPECT_EQ(prerender_helper().GetRequestCount(prerender_url), 1);
-  prerender_helper().WaitForRequest(icon_url, 1);
-}
-
-class NoCommittedEntryWebContentsObserver
-    : public content::WebContentsObserver {
- public:
-  explicit NoCommittedEntryWebContentsObserver(
-      content::WebContents* web_contents) {
-    Observe(web_contents);
-  }
-
-  ~NoCommittedEntryWebContentsObserver() override = default;
-
-  bool DidUpdateFaviconURLWithNoCommittedEntry() const {
-    return did_update_favicon_url_with_no_committed_entry_;
-  }
-
- protected:
-  // WebContentsObserver:
-  void DidUpdateFaviconURL(
-      content::RenderFrameHost* rfh,
-      const std::vector<blink::mojom::FaviconURLPtr>& candidates) override {
-    auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
-    if (!web_contents->GetController().GetLastCommittedEntry()) {
-      did_update_favicon_url_with_no_committed_entry_ = true;
-    }
-  }
-
- private:
-  bool did_update_favicon_url_with_no_committed_entry_ = false;
-};
-
-// Observes the creation of new tabs and, upon creation, sets up both a pending
-// task waiter (to ensure that ContentFaviconDriver tasks complete) and a
-// NoCommittedEntryWebContentsObserver (to ensure that we observe the expected
-// function calls).
-class FaviconUpdateNoLastCommittedEntryTabStripObserver
-    : public TabStripModelObserver {
- public:
-  explicit FaviconUpdateNoLastCommittedEntryTabStripObserver(
-      TabStripModel* model)
-      : model_(model) {
-    model_->AddObserver(this);
-  }
-  ~FaviconUpdateNoLastCommittedEntryTabStripObserver() override {
-    model_->RemoveObserver(this);
-  }
-
-  void WaitForNewTab() {
-    if (!pending_task_waiter_)
-      run_loop_.Run();
-  }
-
-  bool DidUpdateFaviconURLWithNoCommittedEntry() const {
-    return observer_->DidUpdateFaviconURLWithNoCommittedEntry();
-  }
-
-  PendingTaskWaiter* pending_task_waiter() {
-    return pending_task_waiter_.get();
-  }
-
- protected:
-  // TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override {
-    if (change.type() != TabStripModelChange::kInserted)
-      return;
-    auto* web_contents = model_->GetActiveWebContents();
-    pending_task_waiter_ = std::make_unique<PendingTaskWaiter>(web_contents);
-    observer_ =
-        std::make_unique<NoCommittedEntryWebContentsObserver>(web_contents);
-    run_loop_.Quit();
-  }
-
- private:
-  base::RunLoop run_loop_;
-  TabStripModel* model_ = nullptr;
-  std::unique_ptr<PendingTaskWaiter> pending_task_waiter_;
-  std::unique_ptr<NoCommittedEntryWebContentsObserver> observer_;
-};
-
-// Tests that ContentFaviconDriver can handle being sent updated favicon URLs
-// if there is no last committed entry. This occurs when script is injected in
-// about:blank in a newly created window. See crbug.com/520759 for more
-// details.
-IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
-                       FaviconUpdateNoLastCommittedEntry) {
-  const char kNoContentPath[] = "/nocontent";
-  embedded_test_server()->RegisterRequestHandler(
-      base::BindRepeating(&NoContentResponseHandler, kNoContentPath));
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL empty_url = embedded_test_server()->GetURL("/empty.html");
-  GURL no_content_url = embedded_test_server()->GetURL("/nocontent");
-
-  FaviconUpdateNoLastCommittedEntryTabStripObserver observer(
-      browser()->tab_strip_model());
-
-  auto* rfh = ui_test_utils::NavigateToURLWithDisposition(
-      browser(), empty_url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-
-  EXPECT_TRUE(content::ExecJs(rfh, content::JsReplace(R"(
-        let w = window.open();
-        w.document.write('abc');
-        w.document.close();
-        w.location.href = $1;)",
-                                                      no_content_url)));
-
-  // Ensure that we have created our tab and set up the pending task waiter and
-  // web contents observer.
-  observer.WaitForNewTab();
-
-  // Wait for WebContentsObsever::DidUpdateFaviconURL() call and for any
-  // subsequent ContentFaviconDriver tasks to finish.
-  observer.pending_task_waiter()->Wait();
-
-  // We expect DidUpdateFaviconURL to be called and for no crash to ensue.
-  EXPECT_TRUE(observer.DidUpdateFaviconURLWithNoCommittedEntry());
-}
 
 // Test that when a user reloads a page ignoring the cache that the favicon is
 // is redownloaded and (not returned from either the favicon cache or the HTTP

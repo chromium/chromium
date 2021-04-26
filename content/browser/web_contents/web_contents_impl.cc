@@ -1556,7 +1556,6 @@ std::vector<WebContentsImpl*> WebContentsImpl::GetWebContentsAndAllInner() {
 void WebContentsImpl::NotifyManifestUrlChanged(
     RenderFrameHost* rfh,
     const base::Optional<GURL>& manifest_url) {
-  // TODO(crbug.com/1201237): update the app manifest code for MPArch.
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::NotifyManifestUrlChanged",
                         "render_frame_host", rfh, "manifest_url", manifest_url);
   observers_.NotifyObservers(&WebContentsObserver::DidUpdateWebManifestURL, rfh,
@@ -3185,8 +3184,8 @@ void WebContentsImpl::ExitFullscreenMode(bool will_cause_resize) {
   // required.
   if (!will_cause_resize) {
     if (RenderWidgetHostView* rwhv = GetRenderWidgetHostView()) {
-      if (RenderWidgetHost* render_widget_host = rwhv->GetRenderWidgetHost())
-        render_widget_host->SynchronizeVisualProperties();
+        if (RenderWidgetHost* render_widget_host = rwhv->GetRenderWidgetHost())
+          render_widget_host->SynchronizeVisualProperties();
     }
   }
 
@@ -4638,8 +4637,8 @@ void WebContentsImpl::SaveFrameWithHeaders(
           policy_exception_justification: "Not implemented."
         })");
   auto params = std::make_unique<download::DownloadUrlParameters>(
-      url, frame_host->GetProcess()->GetID(), frame_host->GetRoutingID(),
-      traffic_annotation);
+      url, frame_host->GetProcess()->GetID(),
+      frame_host->GetRoutingID(), traffic_annotation);
   params->set_referrer(referrer.url);
   params->set_referrer_policy(
       Referrer::ReferrerPolicyForUrlRequest(referrer.policy));
@@ -5119,6 +5118,9 @@ bool WebContentsImpl::FocusLocationBarByDefault() {
 void WebContentsImpl::DidStartNavigation(NavigationHandle* navigation_handle) {
   TRACE_EVENT1("navigation", "WebContentsImpl::DidStartNavigation",
                "navigation_handle", navigation_handle);
+  if (navigation_handle->IsInMainFrame())
+    favicon_urls_.clear();
+
   {
     SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.DidStartNavigation");
     observers_.NotifyObservers(&WebContentsObserver::DidStartNavigation,
@@ -5307,16 +5309,6 @@ void WebContentsImpl::DidFinishNavigation(NavigationHandle* navigation_handle) {
             ->IsServedFromBackForwardCache()) {
       SetWebPreferences(*web_preferences_.get());
     }
-  }
-
-  if (navigation_handle->HasCommitted() &&
-      navigation_handle->IsPrerenderedPageActivation()) {
-    // We defer favicon URL updates while prerendering. Upon activation, we
-    // must inform interested parties about our candidate favicon URLs.
-    auto* rfhi = static_cast<RenderFrameHostImpl*>(
-        navigation_handle->GetRenderFrameHost());
-    if (!rfhi->GetParent())
-      UpdateFaviconURL(rfhi, rfhi->FaviconURLs());
   }
 }
 
@@ -6005,7 +5997,7 @@ void WebContentsImpl::OnPepperPluginCrashed(RenderFrameHostImpl* source,
 
 void WebContentsImpl::UpdateFaviconURL(
     RenderFrameHostImpl* source,
-    const std::vector<blink::mojom::FaviconURLPtr>& candidates) {
+    std::vector<blink::mojom::FaviconURLPtr> candidates) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::UpdateFaviconURL",
                         "render_frame_host", source);
   // Ignore favicons for non-main frame.
@@ -6021,8 +6013,10 @@ void WebContentsImpl::UpdateFaviconURL(
   if (!source->IsCurrent())
     return;
 
+  favicon_urls_ = std::move(candidates);
+
   observers_.NotifyObservers(&WebContentsObserver::DidUpdateFaviconURL, source,
-                             candidates);
+                             favicon_urls_);
 }
 
 void WebContentsImpl::SetIsOverlayContent(bool is_overlay_content) {
@@ -6181,7 +6175,7 @@ void WebContentsImpl::LoadingStateChanged(bool to_different_document,
   int type = is_loading ? NOTIFICATION_LOAD_START : NOTIFICATION_LOAD_STOP;
   NotificationDetails det = NotificationService::NoDetails();
   if (details)
-    det = Details<LoadNotificationDetails>(details);
+      det = Details<LoadNotificationDetails>(details);
   NotificationService::current()->Notify(
       type, Source<NavigationController>(&GetController()), det);
 }
@@ -7022,8 +7016,7 @@ void WebContentsImpl::DidChangeLoadProgress() {
   // immediately if enough time has passed.
   base::TimeDelta min_delay =
       base::TimeDelta::FromMilliseconds(kMinimumDelayBetweenLoadingUpdatesMS);
-  bool delay_elapsed =
-      loading_last_progress_update_.is_null() ||
+  bool delay_elapsed = loading_last_progress_update_.is_null() ||
       base::TimeTicks::Now() - loading_last_progress_update_ > min_delay;
 
   if (load_progress == 0.0 || load_progress == 1.0 || delay_elapsed) {
@@ -7157,9 +7150,10 @@ void WebContentsImpl::DocumentOnLoadCompleted(
       render_frame_host);
 
   // TODO(avi): Remove. http://crbug.com/170921
-  NotificationService::current()->Notify(NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
-                                         Source<WebContents>(this),
-                                         NotificationService::NoDetails());
+  NotificationService::current()->Notify(
+      NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
+      Source<WebContents>(this),
+      NotificationService::NoDetails());
 }
 
 void WebContentsImpl::UpdateTitle(RenderFrameHostImpl* render_frame_host,
@@ -7516,8 +7510,7 @@ void WebContentsImpl::SubframeCrashed(
 }
 
 void WebContentsImpl::BeforeUnloadFiredFromRenderManager(
-    bool proceed,
-    const base::TimeTicks& proceed_time,
+    bool proceed, const base::TimeTicks& proceed_time,
     bool* proceed_to_fire_unload) {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::BeforeUnloadFiredFromRenderManager");
@@ -7703,7 +7696,8 @@ void WebContentsImpl::ClearWebContentsAndroid() {
   web_contents_android_.reset();
 }
 
-void WebContentsImpl::ActivateNearestFindResult(float x, float y) {
+void WebContentsImpl::ActivateNearestFindResult(float x,
+                                                float y) {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::ActivateNearestFindResult");
   GetOrCreateFindRequestManager()->ActivateNearestFindResult(x, y);
@@ -7753,8 +7747,8 @@ void WebContentsImpl::OnDialogClosed(int render_process_id,
                                      bool dialog_was_suppressed,
                                      bool success,
                                      const std::u16string& user_input) {
-  RenderFrameHostImpl* rfh =
-      RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
+  RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(render_process_id,
+                                                         render_frame_id);
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnDialogClosed",
                         "render_frame_host", rfh);
   last_dialog_suppressed_ = dialog_was_suppressed;
@@ -7814,7 +7808,7 @@ base::UnguessableToken WebContentsImpl::GetAudioGroupId() {
 
 const std::vector<blink::mojom::FaviconURLPtr>&
 WebContentsImpl::GetFaviconURLs() {
-  return GetMainFrame()->FaviconURLs();
+  return favicon_urls_;
 }
 
 // The Mac implementation  of the next two methods is in

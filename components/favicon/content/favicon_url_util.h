@@ -14,11 +14,11 @@ struct FaviconURL;
 
 // Creates a favicon::FaviconURL from a blink::mojom::FaviconURL.
 FaviconURL FaviconURLFromContentFaviconURL(
-    const blink::mojom::FaviconURLPtr& favicon_url);
+    const blink::mojom::FaviconURL& favicon_url);
 
-// Creates favicon::FaviconURLs from blink::mojom::FaviconURLPtrs.
+// Creates favicon::FaviconURLs from content::FaviconURLs.
 std::vector<FaviconURL> FaviconURLsFromContentFaviconURLs(
-    const std::vector<blink::mojom::FaviconURLPtr>& favicon_urls);
+    const std::vector<blink::mojom::FaviconURL>& favicon_urls);
 
 }  // namespace favicon
 

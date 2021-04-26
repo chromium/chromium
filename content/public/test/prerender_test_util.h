@@ -24,7 +24,7 @@ class PrerenderHostRegistryObserverImpl;
 // for a given URL.
 class PrerenderHostRegistryObserver {
  public:
-  explicit PrerenderHostRegistryObserver(content::WebContents& web_contents);
+  explicit PrerenderHostRegistryObserver(content::WebContents* tab);
   ~PrerenderHostRegistryObserver();
   PrerenderHostRegistryObserver(const PrerenderHostRegistryObserver&) = delete;
   PrerenderHostRegistryObserver& operator=(
@@ -41,7 +41,7 @@ class PrerenderHostObserverImpl;
 // destruction
 class PrerenderHostObserver {
  public:
-  PrerenderHostObserver(content::WebContents& web_contents, int host_id);
+  PrerenderHostObserver(content::WebContents* tab, int host_id);
   ~PrerenderHostObserver();
   PrerenderHostObserver(const PrerenderHostObserver&) = delete;
   PrerenderHostObserver& operator=(const PrerenderHostObserver&) = delete;
@@ -53,10 +53,13 @@ class PrerenderHostObserver {
   std::unique_ptr<PrerenderHostObserverImpl> impl_;
 };
 
-// Browser tests can use this class to more conveniently leverage prerendering.
+// Browser tests can aggregate this class to more conveniently leverage
+// prerendering.
 class PrerenderTestHelper {
  public:
   explicit PrerenderTestHelper(const content::WebContents::Getter& fn);
+  PrerenderTestHelper(const content::WebContents::Getter& fn,
+                      const std::string& prerendering_impl);
   ~PrerenderTestHelper();
   PrerenderTestHelper(const PrerenderTestHelper&) = delete;
   PrerenderTestHelper& operator=(const PrerenderTestHelper&) = delete;

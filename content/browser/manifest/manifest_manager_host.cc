@@ -90,7 +90,6 @@ void ManifestManagerHost::ManifestUrlChanged(
   if (!manifest_manager_frame_->IsCurrent())
     return;
 
-  manifest_manager_frame_->UpdateManifestURL(manifest_url);
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(manifest_manager_frame_);
   static_cast<WebContentsImpl*>(web_contents)

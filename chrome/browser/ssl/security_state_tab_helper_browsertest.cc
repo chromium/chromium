@@ -2225,7 +2225,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperPrerenderTest, InvalidPrerender) {
   // Try to prerender the page with an invalid certificate.
   auto prerender_url = test_server->GetURL("/title1.html");
   content::test::PrerenderHostRegistryObserver registry_observer(
-      *web_contents());
+      web_contents());
   content::NavigationHandleObserver nav_observer(web_contents(), prerender_url);
   prerender_helper_.AddPrerenderAsync(prerender_url);
 
@@ -2233,7 +2233,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperPrerenderTest, InvalidPrerender) {
   registry_observer.WaitForTrigger(prerender_url);
   auto prerender_id = prerender_helper_.GetHostForUrl(prerender_url);
   EXPECT_NE(content::RenderFrameHost::kNoFrameTreeNodeId, prerender_id);
-  content::test::PrerenderHostObserver host_observer(*web_contents(),
+  content::test::PrerenderHostObserver host_observer(web_contents(),
                                                      prerender_id);
 
   // Since the prerender has not yet activated, the state should still be
@@ -2286,7 +2286,7 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperPrerenderTest,
   prerender_helper_.AddPrerender(prerender_url);
   auto prerender_id = prerender_helper_.GetHostForUrl(prerender_url);
   EXPECT_NE(content::RenderFrameHost::kNoFrameTreeNodeId, prerender_id);
-  content::test::PrerenderHostObserver host_observer(*web_contents(),
+  content::test::PrerenderHostObserver host_observer(web_contents(),
                                                      prerender_id);
 
   // Since the prerender has not yet activated, the state should still be
