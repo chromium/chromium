@@ -25,12 +25,12 @@ using bookmarks::BookmarkNode;
   const BookmarkNode* _nodes[2];
   BOOL _opened[2];
 }
-- (id)initWithProfile:(Profile*)profile;
+- (instancetype)initWithProfile:(Profile*)profile;
 @end
 
 @implementation FakeBookmarkMenuController
 
-- (id)initWithProfile:(Profile*)profile {
+- (instancetype)initWithProfile:(Profile*)profile {
   if ((self = [super init])) {
     std::u16string empty;
     BookmarkModel* model = BookmarkModelFactory::GetForBrowserContext(profile);
