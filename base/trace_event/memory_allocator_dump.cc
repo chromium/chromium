@@ -35,6 +35,8 @@ MemoryAllocatorDump::MemoryAllocatorDump(
       guid_(guid),
       level_of_detail_(level_of_detail),
       flags_(Flags::DEFAULT) {
+  recordreplay::Assert("MemoryAllocatorDump::MemoryAllocatorDump %s", absolute_name.c_str());
+
   // The |absolute_name| cannot be empty.
   DCHECK(!absolute_name.empty());
 
