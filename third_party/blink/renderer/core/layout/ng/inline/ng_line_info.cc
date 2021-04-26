@@ -192,7 +192,10 @@ LayoutUnit NGLineInfo::ComputeTrailingSpaceWidth(
             item_result.shape_result->CreateShapeResult();
         float end_position = shape_result->PositionForOffset(
             end_offset - shape_result->StartIndex());
-        trailing_spaces_width += shape_result->Width() - end_position;
+        if (IsRtl(BaseDirection()))
+          trailing_spaces_width += end_position;
+        else
+          trailing_spaces_width += shape_result->Width() - end_position;
       }
     }
 
