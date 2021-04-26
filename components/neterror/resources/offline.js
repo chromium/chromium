@@ -141,6 +141,7 @@ const A11Y_STRINGS = {
 Runner.config = {
   ACCELERATION: 0.001,
   AUDIOCUE_PROXIMITY_THRESHOLD: 190,
+  AUDIOCUE_PROXIMITY_THRESHOLD_MOBILE_A11Y: 250,
   BG_CLOUD_SPEED: 0.2,
   BOTTOM_PAD: 10,
   // Scroll Y threshold at which the game can be activated.
@@ -411,25 +412,30 @@ Runner.prototype = {
     this.adjustDimensions();
     this.setSpeed();
 
+    const ariaLabel = getA11yString(A11Y_STRINGS.ariaLabel);
     this.containerEl = document.createElement('div');
+    this.containerEl.setAttribute('role', IS_MOBILE ? 'button' : 'application');
+    this.containerEl.setAttribute('tabindex', '0');
+    this.containerEl.setAttribute('title', ariaLabel);
+
     this.containerEl.className = Runner.classes.CONTAINER;
 
     // Player canvas container.
     this.canvas = createCanvas(this.containerEl, this.dimensions.WIDTH,
         this.dimensions.HEIGHT);
 
-    const ariaLabel = getA11yString(A11Y_STRINGS.ariaLabel);
-    this.canvas.setAttribute('title', ariaLabel);
-
     // Live region for game status updates.
     this.a11yStatusEl = document.createElement('span');
+    this.a11yStatusEl.className = 'offline-runner-live-region';
     this.a11yStatusEl.setAttribute('aria-live', 'assertive');
     this.a11yStatusEl.textContent = '';
     Runner.a11yStatusEl = this.a11yStatusEl;
 
-    this.canvas.appendChild(this.a11yStatusEl);
-    this.canvas.setAttribute('role', 'button');
-    this.canvas.setAttribute('tabindex', '0');
+    if (IS_IOS) {
+      this.outerContainerEl.appendChild(this.a11yStatusEl);
+    } else {
+      this.containerEl.appendChild(this.a11yStatusEl);
+    }
 
     this.generatedSoundFx = new GeneratedSoundFx();
 
@@ -582,6 +588,10 @@ Runner.prototype = {
     this.generatedSoundFx.background();
     announcePhrase(getA11yString(A11Y_STRINGS.started));
 
+    if (IS_IOS) {
+      this.containerEl.setAttribute('title', '');
+    }
+
     // Handle tabbing off the page. Pause the current game.
     document.addEventListener(Runner.events.VISIBILITY,
           this.onVisibilityChange.bind(this));
@@ -693,10 +703,11 @@ Runner.prototype = {
             this.horizon.obstacles[0].typeConfig.type != 'COLLECTABLE';
 
         if (!this.horizon.obstacles[0].jumpAlerted) {
-          const adjProximityThreshold =
-              Runner.config.AUDIOCUE_PROXIMITY_THRESHOLD +
-              (Runner.config.AUDIOCUE_PROXIMITY_THRESHOLD *
-               Math.log10(this.currentSpeed / Runner.config.SPEED));
+          const threshold = Runner.isMobileMouseInput ?
+              Runner.config.AUDIOCUE_PROXIMITY_THRESHOLD_MOBILE_A11Y :
+              Runner.config.AUDIOCUE_PROXIMITY_THRESHOLD;
+          const adjProximityThreshold = threshold +
+              (threshold * Math.log10(this.currentSpeed / Runner.config.SPEED));
 
           if (this.horizon.obstacles[0].xPos < adjProximityThreshold) {
             if (jumpObstacle) {
@@ -798,10 +809,9 @@ Runner.prototype = {
   handleCanvasKeyPress(e) {
     if (!this.activated) {
       Runner.audioCues = true;
-      this.canvas.setAttribute('aria-label', getA11yString(A11Y_STRINGS.jump));
       this.generatedSoundFx.init();
       Runner.generatedSoundFx = this.generatedSoundFx;
-      Runner.config.CLEAR_TIME *= 1.5;
+      Runner.config.CLEAR_TIME *= 1.2;
     } else if (e.keyCode && Runner.keycodes.JUMP[e.keyCode]) {
       this.onKeyDown(e);
     }
@@ -822,7 +832,7 @@ Runner.prototype = {
    */
   startListening() {
     // A11y keyboard / screen reader activation.
-    this.canvas.addEventListener(
+    this.containerEl.addEventListener(
         Runner.events.KEYDOWN, this.handleCanvasKeyPress.bind(this));
     this.canvas.addEventListener(
         Runner.events.KEYDOWN, this.preventScrolling.bind(this));
@@ -879,8 +889,10 @@ Runner.prototype = {
       if (!this.crashed && !this.paused) {
         // For a11y, screen reader activation.
         const isMobileMouseInput = IS_MOBILE &&
-            e.type === Runner.events.POINTERDOWN && e.pointerType == 'mouse' &&
-            e.target == this.canvas;
+                e.type === Runner.events.POINTERDOWN &&
+                e.pointerType == 'mouse' && e.target == this.containerEl ||
+            (IS_IOS && e.pointerType == 'touch' &&
+             document.activeElement == this.containerEl);
 
         if (Runner.keycodes.JUMP[e.keyCode] ||
             e.type === Runner.events.TOUCHSTART || isMobileMouseInput ||
@@ -905,8 +917,11 @@ Runner.prototype = {
           }
           // Start jump.
           if (!this.tRex.jumping && !this.tRex.ducking) {
-            this.playSound(this.soundFx.BUTTON_PRESS);
-            this.generatedSoundFx.cancelFootSteps();
+            if (Runner.audioCues) {
+              this.generatedSoundFx.cancelFootSteps();
+            } else {
+              this.playSound(this.soundFx.BUTTON_PRESS);
+            }
             this.tRex.startJump(this.currentSpeed);
           }
           // Ducking is disabled on alt game modes.
@@ -1081,7 +1096,9 @@ Runner.prototype = {
    */
   isLeftClickOnCanvas(e) {
     return e.button != null && e.button < 2 &&
-        e.type === Runner.events.POINTERUP && e.target === this.canvas;
+        e.type === Runner.events.POINTERUP &&
+        (e.target === this.canvas ||
+         (IS_MOBILE && Runner.audioCues && e.target === this.containerEl));
   },
 
   /**
@@ -1401,12 +1418,28 @@ Runner.isAltGameModeEnabled = function() {
 function GeneratedSoundFx() {
   this.audioCues = false;
   this.context = null;
+  this.panner = null;
 }
 
 GeneratedSoundFx.prototype = {
   init() {
     this.audioCues = true;
-    this.context = new AudioContext();
+    if (!this.context) {
+      // iOS only supports the webkit version.
+      this.context = window.webkitAudioContext ? new webkitAudioContext() :
+                                                 new AudioContext();
+      if (IS_IOS) {
+        this.context.onstatechange = (function() {
+                                       if (this.context.state != 'running') {
+                                         this.context.resume();
+                                       }
+                                     }).bind(this);
+        this.context.resume();
+      }
+      this.panner = this.context.createStereoPanner ?
+          this.context.createStereoPanner() :
+          null;
+    }
   },
 
   stopAll() {
@@ -1418,9 +1451,10 @@ GeneratedSoundFx.prototype = {
    * @param {number} frequency
    * @param {number} startTime
    * @param {number} duration
-   * @param {number=} opt_vol
+   * @param {?number=} opt_vol
+   * @param {number=} opt_pan
    */
-  playNote(frequency, startTime, duration, opt_vol) {
+  playNote(frequency, startTime, duration, opt_vol, opt_pan) {
     const osc1 = this.context.createOscillator();
     const osc2 = this.context.createOscillator();
     const volume = this.context.createGain();
@@ -1431,17 +1465,24 @@ GeneratedSoundFx.prototype = {
     volume.gain.value = 0.1;
 
     // Set up node routing
-    osc1.connect(volume);
-    osc2.connect(volume);
-    volume.connect(this.context.destination);
+    if (this.panner) {
+      this.panner.pan.value = opt_pan || 0;
+      osc1.connect(volume).connect(this.panner);
+      osc2.connect(volume).connect(this.panner);
+      this.panner.connect(this.context.destination);
+    } else {
+      osc1.connect(volume);
+      osc2.connect(volume);
+      volume.connect(this.context.destination);
+    }
 
     // Detune oscillators for chorus effect
     osc1.frequency.value = frequency + 1;
     osc2.frequency.value = frequency - 2;
 
     // Fade out
-    volume.gain.setValueAtTime(opt_vol || 0.1, startTime + duration - 0.05);
-    volume.gain.linearRampToValueAtTime(0, startTime + duration);
+    volume.gain.setValueAtTime(opt_vol || 0.01, startTime + duration - 0.05);
+    volume.gain.linearRampToValueAtTime(0.00001, startTime + duration);
 
     // Start oscillators
     osc1.start(startTime);
@@ -1463,9 +1504,9 @@ GeneratedSoundFx.prototype = {
   loopFootSteps() {
     if (this.audioCues && !this.bgSoundIntervalId) {
       this.bgSoundIntervalId = setInterval(function() {
-        this.playNote(73.42, this.context.currentTime, 0.05, 0.2);
-        this.playNote(69.30, this.context.currentTime + 0.116, 0.116, 0.2);
-      }.bind(this), 270);
+        this.playNote(73.42, this.context.currentTime, 0.05, 0.16);
+        this.playNote(69.30, this.context.currentTime + 0.116, 0.116, 0.16);
+      }.bind(this), 280);
     }
   },
 
@@ -1473,8 +1514,8 @@ GeneratedSoundFx.prototype = {
     if (this.audioCues && this.bgSoundIntervalId) {
       clearInterval(this.bgSoundIntervalId);
       this.bgSoundIntervalId = null;
-      this.playNote(103.83, this.context.currentTime, 0.116, 0.03);
-      this.playNote(116.54, this.context.currentTime + 0.116, 0.232, 0.03);
+      this.playNote(103.83, this.context.currentTime, 0.232, 0.02);
+      this.playNote(116.54, this.context.currentTime + 0.116, 0.232, 0.02);
     }
   },
 
@@ -1490,8 +1531,8 @@ GeneratedSoundFx.prototype = {
   jump() {
     if (this.audioCues) {
       const now = this.context.currentTime;
-      this.playNote(659.25, now, 0.116);
-      this.playNote(880, now + 0.116, 0.232);
+      this.playNote(659.25, now, 0.116, null, -0.6);
+      this.playNote(880, now + 0.116, 0.232, null, -0.6);
     }
   },
 };

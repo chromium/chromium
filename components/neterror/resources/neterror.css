@@ -848,6 +848,14 @@ whereas Blink does not. */
   width: 44px;
 }
 
+.offline .runner-container:focus {
+  outline: none;
+}
+
+.offline .runner-container:focus-visible {
+  outline: 3px solid var(--google-blue-300);
+}
+
 .offline .runner-canvas {
   height: 150px;
   max-width: 600px;
@@ -879,6 +887,15 @@ whereas Blink does not. */
   right: 0;
   top: 60px;
   width: fit-content;
+}
+
+.offline-runner-live-region {
+  bottom: 0;
+  color: var(--background-color);
+  display: block;
+  font-size: xx-small;
+  position: absolute;
+  text-align: center;
 }
 
 @media (max-width: 420px) {
