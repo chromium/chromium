@@ -280,6 +280,14 @@ base::Optional<bool> ChromeWebAuthenticationDelegate::
     return *testing_api_override;
   }
 
+#if defined(OS_WIN)
+  // TODO(crbug.com/908622): Enable platform authenticators in Incognito on
+  // Windows once the API allows triggering an adequate warning dialog.
+  if (render_frame_host->GetBrowserContext()->IsOffTheRecord()) {
+    return false;
+  }
+#endif
+
   // Chrome disables platform authenticators is Guest sessions. They may be
   // available (behind an additional interstitial) in Incognito mode.
   Profile* profile =
@@ -287,6 +295,7 @@ base::Optional<bool> ChromeWebAuthenticationDelegate::
   if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile()) {
     return false;
   }
+
   return base::nullopt;
 }
 

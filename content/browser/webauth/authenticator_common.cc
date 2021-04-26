@@ -24,13 +24,13 @@
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/webauth/authenticator_environment_impl.h"
+#include "content/browser/webauth/is_uvpaa.h"
 #include "content/browser/webauth/virtual_authenticator_request_delegate.h"
 #include "content/browser/webauth/virtual_fido_discovery_factory.h"
 #include "content/browser/webauth/webauth_request_security_checker.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/device_service.h"
-#include "content/public/browser/is_uvpaa.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
@@ -517,47 +517,6 @@ blink::mojom::GetAssertionAuthenticatorResponsePtr CreateGetAssertionResponse(
   }
 
   return response;
-}
-
-void IsUserVerifyingPlatformAuthenticatorAvailableImpl(
-    RenderFrameHost* render_frame_host,
-    blink::mojom::Authenticator::
-        IsUserVerifyingPlatformAuthenticatorAvailableCallback callback) {
-  // Check for a delegate override. Chrome overrides IsUVPAA() in Guest mode.
-  base::Optional<bool> is_uvpaa_override =
-      GetWebAuthenticationDelegate()
-          ->IsUserVerifyingPlatformAuthenticatorAvailableOverride(
-              render_frame_host);
-  if (is_uvpaa_override) {
-    std::move(callback).Run(*is_uvpaa_override);
-    return;
-  }
-
-#if defined(OS_MAC)
-  const base::Optional<device::fido::mac::AuthenticatorConfig> config =
-      GetWebAuthenticationDelegate()->GetTouchIdAuthenticatorConfig(
-          render_frame_host->GetBrowserContext());
-  if (!config) {
-    std::move(callback).Run(false);
-    return;
-  }
-  IsUVPlatformAuthenticatorAvailable(*config, std::move(callback));
-#elif defined(OS_WIN)
-  // TODO(crbug.com/908622): Enable platform authenticators in Incognito on
-  // Windows once the API allows triggering an adequate warning dialog.
-  if (render_frame_host->GetBrowserContext()->IsOffTheRecord()) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  IsUVPlatformAuthenticatorAvailable(
-      AuthenticatorEnvironmentImpl::GetInstance()->win_webauthn_api(),
-      std::move(callback));
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-  IsUVPlatformAuthenticatorAvailable(std::move(callback));
-#else
-  std::move(callback).Run(false);
-#endif
 }
 
 // GetAvailableTransports returns the set of transports that should be passed to
@@ -1370,17 +1329,37 @@ void AuthenticatorCommon::GetAssertion(
 void AuthenticatorCommon::IsUserVerifyingPlatformAuthenticatorAvailable(
     blink::mojom::Authenticator::
         IsUserVerifyingPlatformAuthenticatorAvailableCallback callback) {
-  auto post_done_callback = base::BindOnce(
-      [](blink::mojom::Authenticator::
-             IsUserVerifyingPlatformAuthenticatorAvailableCallback callback,
-         bool is_available) {
-        base::SequencedTaskRunnerHandle::Get()->PostTask(
-            FROM_HERE, base::BindOnce(std::move(callback), is_available));
-      },
-      std::move(callback));
+  // Check for a delegate override. Chrome overrides IsUVPAA() in Guest mode
+  // and, on Windows only, in Incognito.
+  base::Optional<bool> is_uvpaa_override =
+      GetWebAuthenticationDelegate()
+          ->IsUserVerifyingPlatformAuthenticatorAvailableOverride(
+              GetRenderFrameHost());
+  if (is_uvpaa_override) {
+    std::move(callback).Run(*is_uvpaa_override);
+    return;
+  }
 
-  IsUserVerifyingPlatformAuthenticatorAvailableImpl(
-      GetRenderFrameHost(), std::move(post_done_callback));
+  // Record IsUVPAA result in a UMA metric, but only if they're not the
+  // WebAuthenticationDelegate override value, so that results from the testing
+  // API and disabling in Guest/Off-The-Record profiles aren't counted.
+  auto uma_decorated_callback =
+      base::BindOnce([](bool available) {
+        base::UmaHistogramBoolean(
+            "WebAuthentication.IsUVPlatformAuthenticatorAvailable2", available);
+        return available;
+      }).Then(std::move(callback));
+
+#if defined(OS_MAC)
+  IsUVPlatformAuthenticatorAvailable(GetBrowserContext(),
+                                     std::move(uma_decorated_callback));
+#elif defined(OS_WIN)
+  IsUVPlatformAuthenticatorAvailable(std::move(uma_decorated_callback));
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+  IsUVPlatformAuthenticatorAvailable(std::move(uma_decorated_callback));
+#else
+  std::move(uma_decorated_callback).Run(false);
+#endif
 }
 
 void AuthenticatorCommon::Cancel() {

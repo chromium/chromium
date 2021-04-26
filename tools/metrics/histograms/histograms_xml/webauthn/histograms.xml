@@ -178,12 +178,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="WebAuthentication.IsUVPlatformAuthenticatorAvailable"
     enum="Boolean" expires_after="2021-12-01">
+  <obsolete>
+    Replaced by WebAuthentication.IsUVPlatformAuthenticatorAvailable2 in M92.
+  </obsolete>
   <owner>kenrb@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
     Record at startup whether the current system has a platform authenticator
     available; i.e. whether IsUVPAA JS call would return true or false. This
     metric is downsampled by factor 10,000 on macOS.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.IsUVPlatformAuthenticatorAvailable2"
+    enum="Boolean" expires_after="2022-05-01">
+  <owner>kenrb@chromium.org</owner>
+  <owner>martinkr@google.com</owner>
+  <summary>
+    Records the result of each Web Authentication
+    PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable() API
+    call.
   </summary>
 </histogram>
 
