@@ -6,6 +6,8 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_base_layout_algorithm_test.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 namespace blink {
@@ -29,6 +31,28 @@ TEST_F(NGFlexLayoutAlgorithmTest, DetailsFlexDoesntCrash) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
   // No crash is good.
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, ReplacedAspectRatioPrecision) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; flex-direction: column; width: 50px">
+      <svg width="29" height="22" style="width: auto; height: auto;
+                                         margin: auto"></svg>
+    </div>
+  )HTML");
+
+  NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(100), kIndefiniteSize));
+  NGBlockNode box(GetDocument().body()->GetLayoutBox());
+
+  const NGPhysicalBoxFragment* fragment = RunBlockLayoutAlgorithm(box, space);
+  EXPECT_EQ(PhysicalSize(84, 22), fragment->Size());
+  ASSERT_EQ(1u, fragment->Children().size());
+  fragment = To<NGPhysicalBoxFragment>(fragment->Children()[0].get());
+  EXPECT_EQ(PhysicalSize(50, 22), fragment->Size());
+  ASSERT_EQ(1u, fragment->Children().size());
+  EXPECT_EQ(PhysicalSize(29, 22), fragment->Children()[0]->Size());
 }
 
 TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsBasic) {

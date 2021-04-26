@@ -40,7 +40,7 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
                                      const Length& length) const;
   bool AspectRatioProvidesMainSize(const NGBlockNode& child,
                                    const Length& cross_axis_length) const;
-  double GetMainOverCrossAspectRatio(const NGBlockNode& child) const;
+  LogicalSize GetMainOverCrossAspectRatio(const NGBlockNode& child) const;
   bool DoesItemStretch(const NGBlockNode& child) const;
   // This implements the first of the additional scenarios where a flex item
   // has definite sizes when it would not if it weren't a flex item.

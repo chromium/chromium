@@ -123,6 +123,11 @@ AxisEdge CrossAxisStaticPositionEdge(const ComputedStyle& style,
   return AxisEdge::kStart;
 }
 
+LayoutUnit ComputeSizeFromAspectRatio(LayoutUnit extent,
+                                      const LogicalSize& aspect_ratio) {
+  return extent.MulDiv(aspect_ratio.inline_size, aspect_ratio.block_size);
+}
+
 }  // namespace
 
 void NGFlexLayoutAlgorithm::HandleOutOfFlowPositioned(NGBlockNode child) {
@@ -266,7 +271,7 @@ bool NGFlexLayoutAlgorithm::WillChildCrossSizeBeContainerCrossSize(
          DoesItemStretch(child);
 }
 
-double NGFlexLayoutAlgorithm::GetMainOverCrossAspectRatio(
+LogicalSize NGFlexLayoutAlgorithm::GetMainOverCrossAspectRatio(
     const NGBlockNode& child) const {
   DCHECK(child.HasAspectRatio());
   LogicalSize aspect_ratio = child.GetAspectRatio();
@@ -274,15 +279,13 @@ double NGFlexLayoutAlgorithm::GetMainOverCrossAspectRatio(
   DCHECK_GT(aspect_ratio.inline_size, 0);
   DCHECK_GT(aspect_ratio.block_size, 0);
 
-  double ratio =
-      aspect_ratio.inline_size.ToDouble() / aspect_ratio.block_size.ToDouble();
   // Multiplying by ratio will take something in the item's block axis and
   // convert it to the inline axis. We want to convert from cross size to main
   // size. If block axis and cross axis are the same, then we already have what
   // we need. Otherwise we need to use the reciprocal.
   if (!MainAxisIsInlineAxis(child))
-    ratio = 1 / ratio;
-  return ratio;
+    aspect_ratio.Transpose();
+  return aspect_ratio;
 }
 
 NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForIntrinsicBlockSize(
@@ -569,9 +572,9 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
       // TODO(dgrogan): This isn't right for non-replaced aspect-ratio items
       // with box-sizing: border-box, but it's what existing code does. Fix in a
       // follow-up CL by reusing something from ng_length_utils.
-      return LayoutUnit((cross_size - cross_axis_border_padding) *
-                            GetMainOverCrossAspectRatio(child) +
-                        main_axis_border_padding);
+      return ComputeSizeFromAspectRatio(cross_size - cross_axis_border_padding,
+                                        GetMainOverCrossAspectRatio(child)) +
+             main_axis_border_padding;
     };
 
     // The logic that calculates flex_base_border_box assumes that the used
@@ -830,7 +833,7 @@ NGFlexLayoutAlgorithm::AdjustChildSizeForAspectRatioCrossAxisMinAndMax(
     LayoutUnit cross_axis_border_padding) {
   DCHECK(child.HasAspectRatio());
 
-  double ratio = GetMainOverCrossAspectRatio(child);
+  const LogicalSize ratio = GetMainOverCrossAspectRatio(child);
   // Clamp content_suggestion by any definite min and max cross size properties
   // converted through the aspect ratio.
   const Length& cross_max_length = is_horizontal_flow_
@@ -842,7 +845,8 @@ NGFlexLayoutAlgorithm::AdjustChildSizeForAspectRatioCrossAxisMinAndMax(
   if (IsItemCrossAxisLengthDefinite(child, cross_max_length)) {
     LayoutUnit max_main_length =
         main_axis_border_padding +
-        LayoutUnit((cross_max - cross_axis_border_padding) * ratio);
+        ComputeSizeFromAspectRatio(cross_max - cross_axis_border_padding,
+                                   ratio);
     content_size_suggestion =
         std::min(max_main_length, content_size_suggestion);
   }
@@ -856,7 +860,8 @@ NGFlexLayoutAlgorithm::AdjustChildSizeForAspectRatioCrossAxisMinAndMax(
   if (IsItemCrossAxisLengthDefinite(child, cross_min_length)) {
     LayoutUnit min_main_length =
         main_axis_border_padding +
-        LayoutUnit((cross_min - cross_axis_border_padding) * ratio);
+        ComputeSizeFromAspectRatio(cross_min - cross_axis_border_padding,
+                                   ratio);
     content_size_suggestion =
         std::max(min_main_length, content_size_suggestion);
   }
@@ -952,12 +957,14 @@ const NGLayoutResult* NGFlexLayoutAlgorithm::LayoutInternal() {
         if (cross_axis_length.IsAuto() ||
             (MainAxisIsInlineAxis(flex_item.ng_input_node_) &&
              BlockLengthUnresolvable(flex_basis_space, cross_axis_length))) {
+          LogicalSize aspect_ratio =
+              GetMainOverCrossAspectRatio(flex_item.ng_input_node_);
+          aspect_ratio.Transpose();
           fixed_aspect_ratio_cross_size =
               flex_item.min_max_cross_sizes_->ClampSizeToMinAndMax(
                   flex_item.cross_axis_border_padding_ +
-                  LayoutUnit(
-                      flex_item.flexed_content_size_ /
-                      GetMainOverCrossAspectRatio(flex_item.ng_input_node_)));
+                  ComputeSizeFromAspectRatio(flex_item.flexed_content_size_,
+                                             aspect_ratio));
         }
       }
       if (is_column_) {
