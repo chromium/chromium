@@ -35,14 +35,14 @@ void RecordProcessHistograms(const char* histogram_suffix,
 #if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
     defined(OS_AIX)
   base::UmaHistogramCounts10000(
-      base::JoinString({"PerformanceMonitor.IdleWakeUps.", histogram_suffix},
+      base::JoinString({"PerformanceMonitor.IdleWakeups.", histogram_suffix},
                        ""),
       metrics.idle_wakeups);
 #endif
 #if defined(OS_MAC)
   base::UmaHistogramCounts1000(
       base::JoinString(
-          {"PerformanceMonitor.PackageExitIdleWakeUps.", histogram_suffix}, ""),
+          {"PerformanceMonitor.PackageExitIdleWakeups.", histogram_suffix}, ""),
       metrics.package_idle_wakeups);
   base::UmaHistogramCounts100000(
       base::JoinString({"PerformanceMonitor.EnergyImpact.", histogram_suffix},
