@@ -500,7 +500,11 @@ App.prototype = {
    * @private
    */
   onKeydown_(e) {
-    if (e.key == 'Enter') {
+    if (e.key === 'F10' && e.shiftKey) {
+      this.appContents_.dispatchEvent(new MouseEvent('contextmenu'));
+      e.preventDefault();
+      e.stopPropagation();
+    } else if (e.key == 'Enter') {
       chrome.send('launchApp', [
         this.appId, APP_LAUNCH.NTP_APPS_MAXIMIZED, '', 0, e.altKey, e.ctrlKey,
         e.metaKey, e.shiftKey
