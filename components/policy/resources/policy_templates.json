@@ -25525,11 +25525,17 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
         'items': {
           'type': 'string',
           'enum': [
+            '554',
             '10080',
           ],
         },
       },
       'items': [
+        {
+          'name': '554',
+          'value': '554',
+          'caption': '''port 554 (expires 2021/10/15)''',
+        },
         {
           'name': '10080',
           'value': '10080',
