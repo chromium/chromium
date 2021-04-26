@@ -65,6 +65,10 @@ WindowScaleAnimation::WindowScaleAnimation(aura::Window* window,
 }
 
 WindowScaleAnimation::~WindowScaleAnimation() {
+  // Explicitly stopping observing will prevent `OnImplicitAnimationsCompleted()`
+  // from being called.
+  StopObservingImplicitAnimations();
+
   if (!opt_callback_.is_null())
     std::move(opt_callback_).Run();
 }
