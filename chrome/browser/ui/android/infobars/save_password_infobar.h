@@ -9,13 +9,13 @@
 #include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/android/infobars/chrome_confirm_infobar.h"
+#include "components/infobars/android/confirm_infobar.h"
 #include "components/signin/public/identity_manager/account_info.h"
 
 class SavePasswordInfoBarDelegate;
 
 // The infobar to be used with SavePasswordInfoBarDelegate.
-class SavePasswordInfoBar : public ChromeConfirmInfoBar {
+class SavePasswordInfoBar : public infobars::ConfirmInfoBar {
  public:
   explicit SavePasswordInfoBar(
       std::unique_ptr<SavePasswordInfoBarDelegate> delegate,

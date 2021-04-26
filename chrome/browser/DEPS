@@ -155,6 +155,7 @@ include_rules = [
   "+components/history/core/test",
   "+components/history/metrics",
   "+components/image_fetcher/core",
+  "+components/infobars/android",
   "+components/infobars/content",
   "+components/infobars/core",
   "+components/installedapp",

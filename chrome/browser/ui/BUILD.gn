@@ -714,8 +714,6 @@ static_library("ui") {
       "android/infobars/autofill_offer_notification_infobar.h",
       "android/infobars/autofill_save_card_infobar.cc",
       "android/infobars/autofill_save_card_infobar.h",
-      "android/infobars/chrome_confirm_infobar.cc",
-      "android/infobars/chrome_confirm_infobar.h",
       "android/infobars/data_reduction_promo_infobar.cc",
       "android/infobars/data_reduction_promo_infobar.h",
       "android/infobars/download_progress_infobar.cc",

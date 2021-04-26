@@ -21,7 +21,7 @@ using base::android::JavaParamRef;
 UpdatePasswordInfoBar::UpdatePasswordInfoBar(
     std::unique_ptr<UpdatePasswordInfoBarDelegate> delegate,
     base::Optional<AccountInfo> account_info)
-    : ChromeConfirmInfoBar(std::move(delegate)) {
+    : infobars::ConfirmInfoBar(std::move(delegate)) {
   account_info_ = account_info;
 }
 

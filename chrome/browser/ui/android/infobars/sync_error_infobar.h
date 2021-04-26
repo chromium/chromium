@@ -8,9 +8,9 @@
 #include "base/android/jni_android.h"
 #include "base/macros.h"
 #include "chrome/browser/sync/sync_error_infobar_delegate_android.h"
-#include "chrome/browser/ui/android/infobars/chrome_confirm_infobar.h"
+#include "components/infobars/android/confirm_infobar.h"
 
-class SyncErrorInfoBar : public ChromeConfirmInfoBar {
+class SyncErrorInfoBar : public infobars::ConfirmInfoBar {
  public:
   explicit SyncErrorInfoBar(
       std::unique_ptr<SyncErrorInfoBarDelegateAndroid> delegate);

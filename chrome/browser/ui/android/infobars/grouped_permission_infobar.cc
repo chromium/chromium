@@ -13,6 +13,7 @@
 #include "chrome/android/chrome_jni_headers/PermissionInfoBar_jni.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/permissions/grouped_permission_infobar_delegate_android.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
@@ -64,7 +65,7 @@ ScopedJavaLocalRef<jobject> CreateRenderInfoBarHelper(
 
 GroupedPermissionInfoBar::GroupedPermissionInfoBar(
     std::unique_ptr<GroupedPermissionInfoBarDelegate> delegate)
-    : ChromeConfirmInfoBar(std::move(delegate)) {}
+    : infobars::ConfirmInfoBar(std::move(delegate)) {}
 
 GroupedPermissionInfoBar::~GroupedPermissionInfoBar() {}
 
@@ -95,9 +96,16 @@ GroupedPermissionInfoBar::CreateRenderInfoBar(
         static_cast<int>(delegate->GetContentSettingType(i)));
   }
 
+  content::WebContents* web_contents =
+      InfoBarService::WebContentsFromInfoBar(this);
+  DCHECK(web_contents);
+
+  TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
+  DCHECK(tab);
+
   return CreateRenderInfoBarHelper(
       env, permission_icon,
-      GetTab()->web_contents()->GetTopLevelNativeWindow()->GetJavaObject(),
+      tab->web_contents()->GetTopLevelNativeWindow()->GetJavaObject(),
       compact_message_text, compact_link_text, message_text, description_text,
       learn_more_link_text, primary_button_text, secondary_button_text,
       secondary_button_should_open_settings, content_settings_types);

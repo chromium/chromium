@@ -4,14 +4,25 @@
 
 #include "chrome/browser/infobars/infobar_service.h"
 
+#if defined(OS_ANDROID)
+#include "components/infobars/android/confirm_infobar.h"
+#endif
+
 InfoBarService::InfoBarService(content::WebContents* web_contents)
     : infobars::ContentInfoBarManager(web_contents) {}
 
 InfoBarService::~InfoBarService() {
 }
 
-// InfoBarService::CreateConfirmInfoBar() is implemented in platform-specific
-// files.
+// The views implementation of InfoBarService::CreateConfirmInfoBar() is in a
+// platform-specific file.
+
+#if defined(OS_ANDROID)
+std::unique_ptr<infobars::InfoBar> InfoBarService::CreateConfirmInfoBar(
+    std::unique_ptr<ConfirmInfoBarDelegate> delegate) {
+  return std::make_unique<infobars::ConfirmInfoBar>(std::move(delegate));
+}
+#endif  // if defined(OS_ANDROID)
 
 void InfoBarService::WebContentsDestroyed() {
   // The WebContents is going away; be aggressively paranoid and delete

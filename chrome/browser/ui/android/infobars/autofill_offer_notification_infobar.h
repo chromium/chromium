@@ -10,14 +10,14 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "chrome/browser/ui/android/infobars/chrome_confirm_infobar.h"
+#include "components/infobars/android/confirm_infobar.h"
 namespace autofill {
 class AutofillOfferNotificationInfoBarDelegateMobile;
 }
 
 // Android implementation of the infobar for showing offer notifications on a
 // web page when an offer exists for that merchant.
-class AutofillOfferNotificationInfoBar : public ChromeConfirmInfoBar {
+class AutofillOfferNotificationInfoBar : public infobars::ConfirmInfoBar {
  public:
   explicit AutofillOfferNotificationInfoBar(
       std::unique_ptr<autofill::AutofillOfferNotificationInfoBarDelegateMobile>
@@ -36,7 +36,7 @@ class AutofillOfferNotificationInfoBar : public ChromeConfirmInfoBar {
                               const base::android::JavaParamRef<jobject>& url);
 
  private:
-  // ChromeConfirmInfoBar:
+  // infobars::ConfirmInfoBar:
   base::android::ScopedJavaLocalRef<jobject> CreateRenderInfoBar(
       JNIEnv* env,
       const ResourceIdMapper& resource_id_mapper) override;

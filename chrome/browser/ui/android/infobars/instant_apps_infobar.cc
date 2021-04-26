@@ -12,7 +12,7 @@
 
 InstantAppsInfoBar::InstantAppsInfoBar(
     std::unique_ptr<InstantAppsInfoBarDelegate> delegate)
-    : ChromeConfirmInfoBar(std::move(delegate)) {}
+    : infobars::ConfirmInfoBar(std::move(delegate)) {}
 
 InstantAppsInfoBar::~InstantAppsInfoBar() {}
 

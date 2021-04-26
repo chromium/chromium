@@ -26,7 +26,7 @@ SafetyTipInfoBar::~SafetyTipInfoBar() {}
 
 SafetyTipInfoBar::SafetyTipInfoBar(
     std::unique_ptr<SafetyTipInfoBarDelegate> delegate)
-    : ChromeConfirmInfoBar(std::move(delegate)) {}
+    : infobars::ConfirmInfoBar(std::move(delegate)) {}
 
 ScopedJavaLocalRef<jobject> SafetyTipInfoBar::CreateRenderInfoBar(
     JNIEnv* env,

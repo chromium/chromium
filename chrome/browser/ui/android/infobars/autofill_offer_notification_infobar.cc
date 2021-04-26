@@ -25,7 +25,7 @@ using base::android::ScopedJavaLocalRef;
 AutofillOfferNotificationInfoBar::AutofillOfferNotificationInfoBar(
     std::unique_ptr<autofill::AutofillOfferNotificationInfoBarDelegateMobile>
         delegate)
-    : ChromeConfirmInfoBar(std::move(delegate)) {}
+    : infobars::ConfirmInfoBar(std::move(delegate)) {}
 
 AutofillOfferNotificationInfoBar::~AutofillOfferNotificationInfoBar() {}
 

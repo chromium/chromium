@@ -7,7 +7,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "chrome/browser/ui/android/infobars/chrome_confirm_infobar.h"
+#include "components/infobars/android/confirm_infobar.h"
 
 namespace android {
 class DuplicateDownloadInfoBarDelegate;
@@ -15,7 +15,7 @@ class DuplicateDownloadInfoBarDelegate;
 
 // A native-side implementation of an infobar to ask whether to continue
 // downloading if target file already exists.
-class DuplicateDownloadInfoBar : public ChromeConfirmInfoBar {
+class DuplicateDownloadInfoBar : public infobars::ConfirmInfoBar {
  public:
   static std::unique_ptr<infobars::InfoBar> CreateInfoBar(
       std::unique_ptr<android::DuplicateDownloadInfoBarDelegate> delegate);
