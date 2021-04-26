@@ -12,7 +12,6 @@
 #include "base/format_macros.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
-#include "base/strings/stringprintf.h"
 #include "net/base/network_interfaces.h"
 
 namespace net {

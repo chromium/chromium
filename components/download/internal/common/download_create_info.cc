@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/format_macros.h"
-#include "base/strings/stringprintf.h"
 #include "net/http/http_response_headers.h"
 
 namespace download {

@@ -11,7 +11,6 @@
 #include "base/no_destructor.h"
 #include "base/optional.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/unguessable_token.h"
 #include "net/base/load_flags.h"
 #include "net/base/network_isolation_key.h"

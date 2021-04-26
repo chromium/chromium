@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
 #include "base/task_runner_util.h"
 #include "base/time/time.h"

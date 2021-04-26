@@ -32,7 +32,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/optional.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/util/type_safety/id_type.h"
 #include "build/build_config.h"
 #include "ipc/ipc_message_start.h"

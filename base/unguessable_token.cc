@@ -9,7 +9,6 @@
 #include "base/format_macros.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
-#include "base/strings/stringprintf.h"
 
 namespace base {
 

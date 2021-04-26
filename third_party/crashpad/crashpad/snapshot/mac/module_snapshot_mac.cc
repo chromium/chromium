@@ -18,7 +18,6 @@
 #include <mach/mach.h>
 
 #include "base/files/file_path.h"
-#include "base/strings/stringprintf.h"
 #include "snapshot/mac/mach_o_image_annotations_reader.h"
 #include "snapshot/mac/mach_o_image_reader.h"
 #include "util/misc/tri_state.h"

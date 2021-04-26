@@ -10,7 +10,6 @@
 #include "base/check_op.h"
 #include "base/macros.h"
 #include "base/notreached.h"
-#include "base/strings/stringprintf.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/service/framebuffer_completeness_cache.h"
 #include "gpu/command_buffer/service/renderbuffer_manager.h"

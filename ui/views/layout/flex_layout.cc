@@ -17,7 +17,6 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/stringprintf.h"
 #include "ui/base/class_property.h"
 #include "ui/events/event_target.h"
 #include "ui/events/event_target_iterator.h"

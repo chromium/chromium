@@ -10,7 +10,6 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/strings/stringprintf.h"
 
 namespace metrics {
 

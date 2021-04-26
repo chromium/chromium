@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/task_environment.h"

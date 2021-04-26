@@ -13,7 +13,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "components/cast_certificate/cast_cert_validator.h"
 #include "components/cast_certificate/cast_crl.h"
 #include "components/cast_channel/cast_channel_enum.h"

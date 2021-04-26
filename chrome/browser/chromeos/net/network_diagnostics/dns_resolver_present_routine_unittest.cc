@@ -5,7 +5,6 @@
 #include "chrome/browser/chromeos/net/network_diagnostics/dns_resolver_present_routine.h"
 
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "chromeos/login/login_state/login_state.h"

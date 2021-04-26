@@ -7,7 +7,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
-#include "base/strings/stringprintf.h"
 #include "media/base/video_util.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"

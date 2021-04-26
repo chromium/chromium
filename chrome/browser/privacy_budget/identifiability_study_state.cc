@@ -25,7 +25,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/string_split.h"
-#include "base/strings/stringprintf.h"
 #include "chrome/browser/privacy_budget/privacy_budget_prefs.h"
 #include "chrome/common/privacy_budget/container_ops.h"
 #include "chrome/common/privacy_budget/field_trial_param_conversions.h"

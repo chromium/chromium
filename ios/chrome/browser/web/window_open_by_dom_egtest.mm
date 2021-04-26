@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/format_macros.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"

@@ -4,7 +4,6 @@
 
 #include "media/capture/content/video_capture_oracle.h"
 
-#include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {

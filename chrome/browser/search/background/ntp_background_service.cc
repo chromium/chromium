@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/strings/strcat.h"
-#include "base/strings/stringprintf.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/search/background/ntp_background.pb.h"

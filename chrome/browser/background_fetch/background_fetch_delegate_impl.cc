@@ -12,7 +12,6 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_service_factory.h"

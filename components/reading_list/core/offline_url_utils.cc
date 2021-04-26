@@ -6,7 +6,6 @@
 
 #include "base/hash/md5.h"
 #include "base/notreached.h"
-#include "base/strings/stringprintf.h"
 
 namespace {
 const base::FilePath::CharType kOfflineDirectory[] =

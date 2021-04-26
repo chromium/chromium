@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "content/public/common/content_switches.h"

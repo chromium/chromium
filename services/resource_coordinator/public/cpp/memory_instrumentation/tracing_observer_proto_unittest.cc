@@ -12,7 +12,6 @@
 
 #include "base/files/file_path.h"
 #include "base/format_macros.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/traced_value.h"

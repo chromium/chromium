@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/strings/stringprintf.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/base/math_util.h"
 #include "cc/trees/layer_tree_impl.h"

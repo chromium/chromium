@@ -4,7 +4,6 @@
 
 #include "components/sync/engine/events/commit_response_event.h"
 
-#include "base/strings/stringprintf.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 
 namespace syncer {

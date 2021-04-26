@@ -8,7 +8,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram.h"
 #include "base/optional.h"
-#include "base/strings/stringprintf.h"
 #include "base/time/clock.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_blocklist_delegate.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_blocklist_item.h"

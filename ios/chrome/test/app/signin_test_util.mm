@@ -5,7 +5,6 @@
 #include "ios/chrome/test/app/signin_test_util.h"
 
 #include "base/check.h"
-#include "base/strings/stringprintf.h"
 #import "base/test/ios/wait_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"

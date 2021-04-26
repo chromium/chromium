@@ -24,7 +24,6 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/task_runner.h"
 #include "base/threading/thread_restrictions.h"

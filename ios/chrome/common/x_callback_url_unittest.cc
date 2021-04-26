@@ -5,7 +5,6 @@
 #include "ios/chrome/common/x_callback_url.h"
 
 #include "base/stl_util.h"
-#include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 

@@ -22,7 +22,6 @@
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
-#include "base/strings/stringprintf.h"
 #include "client/client_argv_handling.h"
 
 namespace crashpad {

@@ -16,7 +16,6 @@
 #include "base/notreached.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "extensions/browser/api/declarative/deduping_factory.h"
 #include "extensions/browser/api/declarative_webrequest/request_stage.h"

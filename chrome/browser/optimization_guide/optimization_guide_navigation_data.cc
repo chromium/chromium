@@ -7,7 +7,6 @@
 #include "base/base64.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/stringprintf.h"
 #include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 #include "components/optimization_guide/core/hints_processing_util.h"
 #include "content/public/browser/navigation_handle.h"

@@ -9,7 +9,6 @@
 
 #include "base/memory/discardable_memory.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event_memory_overhead.h"
 #include "base/trace_event/traced_value.h"

@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/version.h"
 #include "build/build_config.h"

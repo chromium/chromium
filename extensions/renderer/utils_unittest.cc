@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/strings/stringprintf.h"
 #include "extensions/grit/extensions_renderer_resources.h"
 #include "extensions/renderer/module_system_test.h"
 

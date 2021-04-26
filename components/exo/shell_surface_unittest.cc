@@ -18,7 +18,6 @@
 #include "ash/wm/workspace_controller_test_api.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "components/exo/buffer.h"

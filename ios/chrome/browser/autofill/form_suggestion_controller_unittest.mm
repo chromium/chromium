@@ -9,7 +9,6 @@
 
 #include "base/mac/foundation_util.h"
 #include "base/path_service.h"
-#include "base/strings/stringprintf.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"

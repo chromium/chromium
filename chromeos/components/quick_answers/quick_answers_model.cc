@@ -4,7 +4,6 @@
 
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 
-#include "base/strings/stringprintf.h"
 
 namespace chromeos {
 namespace quick_answers {

@@ -5,7 +5,6 @@
 #include "chrome/browser/chromeos/printing/usb_printer_notification.h"
 
 #include "ash/public/cpp/notification_utils.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/notifications/notification_display_service.h"

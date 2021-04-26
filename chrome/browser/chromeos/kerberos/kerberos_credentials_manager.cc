@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/authpolicy/data_pipe_utils.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"

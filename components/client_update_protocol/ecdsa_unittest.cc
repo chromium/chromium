@@ -12,7 +12,6 @@
 
 #include "base/base64.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/stringprintf.h"
 #include "crypto/random.h"
 #include "crypto/secure_util.h"
 #include "testing/gtest/include/gtest/gtest.h"

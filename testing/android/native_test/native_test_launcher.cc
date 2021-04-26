@@ -25,7 +25,6 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/stl_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/test_support_android.h"
 #include "base/threading/thread_restrictions.h"
 #include "gtest/gtest.h"

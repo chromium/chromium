@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/stl_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "components/payments/core/features.h"
 #include "url/gurl.h"

@@ -9,7 +9,6 @@
 
 #include "base/logging.h"
 #include "base/stl_util.h"
-#include "base/strings/stringprintf.h"
 
 namespace zucchini {
 

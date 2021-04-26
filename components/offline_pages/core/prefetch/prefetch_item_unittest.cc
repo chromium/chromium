@@ -5,7 +5,6 @@
 #include "components/offline_pages/core/prefetch/prefetch_item.h"
 
 #include "base/strings/string_split.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"

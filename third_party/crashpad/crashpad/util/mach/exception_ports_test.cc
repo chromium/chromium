@@ -24,7 +24,6 @@
 #include "base/mac/scoped_mach_port.h"
 #include "base/macros.h"
 #include "base/notreached.h"
-#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "test/mac/mach_errors.h"

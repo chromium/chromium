@@ -12,7 +12,6 @@
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/strings/string_split.h"
-#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "ui/display/display.h"
 #include "ui/display/display_switches.h"

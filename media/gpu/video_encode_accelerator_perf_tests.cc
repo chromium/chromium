@@ -11,7 +11,6 @@
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/optional.h"
-#include "base/strings/stringprintf.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/media_util.h"
 #include "media/base/test_data_util.h"

@@ -6,7 +6,6 @@
 
 #include "rlz/lib/lib_values.h"
 
-#include "base/strings/stringprintf.h"
 #include "rlz/lib/assert.h"
 
 namespace rlz_lib {

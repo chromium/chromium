@@ -14,7 +14,6 @@
 
 #include "base/optional.h"
 #include "base/strings/stringize_macros.h"
-#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/buffer_format_util.h"

@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "components/cloud_devices/common/cloud_devices_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"

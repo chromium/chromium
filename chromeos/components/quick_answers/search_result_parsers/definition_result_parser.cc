@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/logging.h"
-#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 

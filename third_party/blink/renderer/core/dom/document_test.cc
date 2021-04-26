@@ -32,7 +32,6 @@
 
 #include <memory>
 
-#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"

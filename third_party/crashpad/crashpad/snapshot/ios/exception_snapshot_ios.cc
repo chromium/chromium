@@ -16,7 +16,6 @@
 
 #include "base/logging.h"
 #include "base/mac/mach_logging.h"
-#include "base/strings/stringprintf.h"
 #include "snapshot/cpu_context.h"
 #include "snapshot/mac/cpu_context_mac.h"
 #include "util/misc/from_pointer_cast.h"

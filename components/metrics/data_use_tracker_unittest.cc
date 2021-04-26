@@ -4,7 +4,6 @@
 
 #include "components/metrics/data_use_tracker.h"
 
-#include "base/strings/stringprintf.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"

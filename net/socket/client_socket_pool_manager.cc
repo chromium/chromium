@@ -10,7 +10,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
-#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "net/base/features.h"
 #include "net/base/load_flags.h"

@@ -4,7 +4,6 @@
 
 #include "chrome/renderer/extensions/tabs_hooks_delegate.h"
 
-#include "base/strings/stringprintf.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/extension.h"

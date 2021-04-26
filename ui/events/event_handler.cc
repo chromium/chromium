@@ -6,7 +6,6 @@
 
 #include "base/logging.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "ui/events/event.h"
 #include "ui/events/event_dispatcher.h"
 

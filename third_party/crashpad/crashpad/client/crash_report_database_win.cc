@@ -25,7 +25,6 @@
 
 #include "base/logging.h"
 #include "base/numerics/safe_math.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "client/settings.h"
 #include "util/file/directory_reader.h"

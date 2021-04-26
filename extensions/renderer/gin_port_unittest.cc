@@ -10,7 +10,6 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
-#include "base/strings/stringprintf.h"
 #include "content/public/common/content_features.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/port_id.h"

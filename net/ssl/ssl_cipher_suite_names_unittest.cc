@@ -5,7 +5,6 @@
 #include "net/ssl/ssl_cipher_suite_names.h"
 
 #include "base/stl_util.h"
-#include "base/strings/stringprintf.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"

@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/strings/stringprintf.h"
 #include "extensions/renderer/script_context.h"
 
 namespace extensions {

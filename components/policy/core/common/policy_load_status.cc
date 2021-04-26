@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram.h"
-#include "base/strings/stringprintf.h"
 #include "components/policy/core/common/policy_types.h"
 
 namespace policy {

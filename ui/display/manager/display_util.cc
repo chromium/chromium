@@ -12,7 +12,6 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/types/display_snapshot.h"

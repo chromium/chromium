@@ -21,7 +21,6 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
-#include "base/strings/stringprintf.h"
 #include "chromecast/base/path_utils.h"
 #include "chromecast/base/serializers.h"
 #include "chromecast/crash/linux/dump_info.h"

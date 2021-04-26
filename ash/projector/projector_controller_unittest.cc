@@ -14,7 +14,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"

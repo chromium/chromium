@@ -8,7 +8,6 @@
 #include <limits>
 
 #include "base/logging.h"
-#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"

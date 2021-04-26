@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"

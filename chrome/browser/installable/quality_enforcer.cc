@@ -9,7 +9,6 @@
 #include "base/android/jni_string.h"
 #include "base/android/jni_utils.h"
 #include "base/optional.h"
-#include "base/strings/stringprintf.h"
 #include "chrome/android/chrome_jni_headers/QualityEnforcer_jni.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"

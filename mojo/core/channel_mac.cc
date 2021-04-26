@@ -23,7 +23,6 @@
 #include "base/mac/scoped_mach_port.h"
 #include "base/mac/scoped_mach_vm.h"
 #include "base/message_loop/message_pump_for_io.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
 #include "base/trace_event/typed_macros.h"
 

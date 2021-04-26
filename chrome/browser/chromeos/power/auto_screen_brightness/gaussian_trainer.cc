@@ -14,7 +14,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/ranges.h"
-#include "base/strings/stringprintf.h"
 #include "chrome/browser/chromeos/power/auto_screen_brightness/utils.h"
 
 namespace chromeos {

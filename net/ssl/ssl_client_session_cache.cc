@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/containers/flat_set.h"
-#include "base/strings/stringprintf.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/trace_event/process_memory_dump.h"

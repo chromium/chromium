@@ -6,7 +6,6 @@
 
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/strings/stringprintf.h"
 #include "media/gpu/macros.h"
 
 #if BUILDFLAG(USE_V4L2_CODEC)

@@ -9,7 +9,6 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/notreached.h"
-#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/ash/attestation/attestation_ca_client.h"
 #include "chrome/browser/ash/attestation/machine_certificate_uploader.h"

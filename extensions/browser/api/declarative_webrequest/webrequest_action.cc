@@ -11,7 +11,6 @@
 #include "base/lazy_instance.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/api/declarative/deduping_factory.h"

@@ -5,7 +5,6 @@
 #include "ui/gfx/geometry/test/transform_test_util.h"
 
 #include "base/check.h"
-#include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gfx {

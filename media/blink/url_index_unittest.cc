@@ -9,7 +9,6 @@
 
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "media/base/media_switches.h"
 #include "media/blink/url_index.h"
 #include "testing/gtest/include/gtest/gtest.h"

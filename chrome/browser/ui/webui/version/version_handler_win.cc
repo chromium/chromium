@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/version/version_handler_win.h"
 
 #include "base/bind.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/win/windows_version.h"

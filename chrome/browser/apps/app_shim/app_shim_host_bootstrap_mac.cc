@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

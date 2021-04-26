@@ -14,7 +14,6 @@
 #include "base/callback_helpers.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "device/gamepad/gamepad_blocklist.h"

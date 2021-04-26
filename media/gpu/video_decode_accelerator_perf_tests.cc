@@ -9,7 +9,6 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
-#include "base/strings/stringprintf.h"
 #include "media/base/test_data_util.h"
 #include "media/gpu/test/video.h"
 #include "media/gpu/test/video_player/frame_renderer_dummy.h"

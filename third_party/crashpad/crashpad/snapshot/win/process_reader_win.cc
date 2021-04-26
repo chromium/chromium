@@ -20,7 +20,6 @@
 #include <memory>
 
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "util/misc/capture_context.h"
 #include "util/misc/time.h"
 #include "util/win/nt_internals.h"

@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "chrome/browser/media/router/data_decoder_util.h"
 #include "services/data_decoder/public/cpp/safe_xml_parser.h"
 #include "url/gurl.h"

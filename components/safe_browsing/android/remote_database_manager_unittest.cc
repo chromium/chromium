@@ -9,7 +9,6 @@
 
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler.h"
 #include "components/variations/variations_associated_data.h"

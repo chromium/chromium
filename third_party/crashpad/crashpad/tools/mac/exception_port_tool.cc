@@ -28,7 +28,6 @@
 #include "base/mac/mach_logging.h"
 #include "base/mac/scoped_mach_port.h"
 #include "base/macros.h"
-#include "base/strings/stringprintf.h"
 #include "tools/tool_support.h"
 #include "util/mach/bootstrap.h"
 #include "util/mach/exception_ports.h"

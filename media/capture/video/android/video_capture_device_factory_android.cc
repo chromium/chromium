@@ -10,7 +10,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "media/capture/video/android/capture_jni_headers/VideoCaptureFactory_jni.h"
 #include "media/capture/video/android/video_capture_device_android.h"
 

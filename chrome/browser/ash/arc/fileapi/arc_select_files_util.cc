@@ -6,7 +6,6 @@
 
 #include "base/logging.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace arc {

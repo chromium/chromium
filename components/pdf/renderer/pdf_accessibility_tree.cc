@@ -10,7 +10,6 @@
 #include "base/i18n/break_iterator.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "components/pdf/renderer/pdf_ax_action_target.h"
 #include "components/strings/grit/components_strings.h"

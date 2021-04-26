@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_metrics.h"

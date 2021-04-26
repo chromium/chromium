@@ -19,7 +19,6 @@
 #include "base/optional.h"
 #include "base/partition_alloc_buildflags.h"
 #include "base/rand_util.h"
-#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "components/gwp_asan/client/guarded_page_allocator.h"
 

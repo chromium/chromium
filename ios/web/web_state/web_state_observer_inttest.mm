@@ -12,7 +12,6 @@
 #import "base/ios/ns_error_util.h"
 #include "base/path_service.h"
 #include "base/scoped_observer.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"

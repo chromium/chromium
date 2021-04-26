@@ -11,7 +11,6 @@
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "services/device/public/cpp/generic_sensor/sensor_traits.h"
 

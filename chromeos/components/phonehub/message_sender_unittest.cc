@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/phonehub/proto/phonehub_api.pb.h"
 #include "chromeos/services/secure_channel/public/cpp/client/fake_connection_manager.h"

@@ -22,7 +22,6 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/optional.h"
-#include "base/strings/stringprintf.h"
 #include "components/embedder_support/android/util/input_stream.h"
 #include "components/embedder_support/android/util/response_delegate_impl.h"
 #include "components/embedder_support/android/util/web_resource_response.h"

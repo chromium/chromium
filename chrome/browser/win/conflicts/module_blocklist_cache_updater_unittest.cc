@@ -19,7 +19,6 @@
 #include "base/i18n/case_conversion.h"
 #include "base/optional.h"
 #include "base/path_service.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"

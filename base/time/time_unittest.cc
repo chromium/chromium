@@ -16,7 +16,6 @@
 #include "base/environment.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time_override.h"

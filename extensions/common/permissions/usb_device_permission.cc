@@ -10,7 +10,6 @@
 
 #include "base/check.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/behavior_feature.h"

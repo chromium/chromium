@@ -5,7 +5,6 @@
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"

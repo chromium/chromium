@@ -9,7 +9,6 @@
 #include <ostream>
 
 #include "base/bind.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"

@@ -11,7 +11,6 @@
 #include "ash/public/mojom/cros_display_config.mojom.h"
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/extensions/system_display/display_info_provider.h"
 #include "extensions/common/api/system_display.h"

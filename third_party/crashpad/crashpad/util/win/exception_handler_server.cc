@@ -24,7 +24,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/stl_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "util/file/file_writer.h"
 #include "util/misc/tri_state.h"

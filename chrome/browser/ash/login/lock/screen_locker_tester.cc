@@ -10,7 +10,6 @@
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/chrome_notification_types.h"

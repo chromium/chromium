@@ -5,7 +5,6 @@
 #include "chrome/test/media_router/media_router_integration_browsertest.h"
 
 #include "base/files/file_util.h"
-#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"

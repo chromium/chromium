@@ -6,7 +6,6 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
 #import "ios/web/common/uikit_ui_util.h"

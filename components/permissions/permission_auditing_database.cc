@@ -14,7 +14,6 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/optional.h"
-#include "base/strings/stringprintf.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"

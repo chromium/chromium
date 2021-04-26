@@ -17,7 +17,6 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_ioplugininterface.h"
 #include "base/optional.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/device_event_log/device_event_log.h"

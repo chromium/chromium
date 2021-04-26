@@ -30,7 +30,6 @@
 
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 
-#include "base/strings/stringprintf.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
