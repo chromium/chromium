@@ -100,6 +100,8 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
                      const gfx::Size& max_resolution,
                      uint32_t max_framerate_numerator = 0u,
                      uint32_t max_framerate_denominator = 1u);
+    SupportedProfile(const SupportedProfile& other) = default;
+    SupportedProfile& operator=(const SupportedProfile& other) = default;
     ~SupportedProfile();
     VideoCodecProfile profile;
     gfx::Size min_resolution;
