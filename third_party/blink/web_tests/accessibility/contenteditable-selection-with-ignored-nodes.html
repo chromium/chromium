@@ -29,7 +29,6 @@
 
 function verifySelection(anchorObject, anchorOffset, focusObject, focusOffset,
     selectionString) {
-    console.log(selectionString);
   const axTextBox = accessibilityController.accessibleElementById('textbox');
   assert_equals(axTextBox.selectionAnchorObject, anchorObject, 'anchorObject');
   assert_equals(axTextBox.selectionAnchorOffset, anchorOffset, 'anchorOffset');
