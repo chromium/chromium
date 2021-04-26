@@ -2055,6 +2055,36 @@ def CheckNoAuraWindowPropertyHInHeaders(input_api, output_api):
   return results
 
 
+def CheckNoInternalHeapIncludes(input_api, output_api):
+  """Makes sure we don't include any headers from
+  third_party/blink/renderer/platform/heap/impl or
+  third_party/blink/renderer/platform/heap/v8_wrapper from files outside of
+  third_party/blink/renderer/platform/heap
+  """
+  impl_pattern = input_api.re.compile(
+    r'^\s*#include\s*"third_party/blink/renderer/platform/heap/impl/.*"')
+  v8_wrapper_pattern = input_api.re.compile(
+    r'^\s*#include\s*"third_party/blink/renderer/platform/heap/v8_wrapper/.*"')
+  file_filter = lambda f: not input_api.re.match(
+    r"^third_party[\\/]blink[\\/]renderer[\\/]platform[\\/]heap[\\/].*",
+    f.LocalPath())
+  errors = []
+
+  for f in input_api.AffectedFiles(file_filter=file_filter):
+    for line_num, line in f.ChangedContents():
+      if impl_pattern.match(line) or v8_wrapper_pattern.match(line):
+        errors.append('    %s:%d' % (f.LocalPath(), line_num))
+
+  results = []
+  if errors:
+    results.append(output_api.PresubmitError(
+      'Do not include files from third_party/blink/renderer/platform/heap/impl'
+      ' or third_party/blink/renderer/platform/heap/v8_wrapper. Use the '
+      'relevant counterparts from third_party/blink/renderer/platform/heap',
+      errors))
+  return results
+
+
 def _CheckForVersionControlConflictsInFile(input_api, f):
   pattern = input_api.re.compile('^(?:<<<<<<<|>>>>>>>) |^=======$')
   errors = []
