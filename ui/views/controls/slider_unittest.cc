@@ -176,7 +176,8 @@ class SliderTest : public views::ViewsTestBase,
 };
 
 void SliderTest::ClickAt(int x, int y) {
-  gfx::Point point(x, y);
+  gfx::Point point =
+      slider_->GetBoundsInScreen().origin() + gfx::Vector2d(x, y);
   event_generator_->MoveMouseTo(point);
   event_generator_->ClickLeftButton();
 }
@@ -216,6 +217,7 @@ void SliderTest::SetUp() {
 
   event_generator_ =
       std::make_unique<ui::test::EventGenerator>(GetRootWindow(widget_.get()));
+  event_generator_->set_assume_window_at_origin(false);
 }
 
 void SliderTest::TearDown() {
