@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "chrome/updater/device_management/dm_response_validator.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
 namespace updater {
@@ -76,16 +77,16 @@ TranslatePolicyValidationResultSeverity(
 
 }  // namespace
 
-std::string GetRegisterBrowserRequestData(const std::string& machine_name,
-                                          const std::string& os_platform,
-                                          const std::string& os_version) {
+std::string GetRegisterBrowserRequestData() {
   enterprise_management::DeviceManagementRequest dm_request;
 
   ::enterprise_management::RegisterBrowserRequest* request =
       dm_request.mutable_register_browser_request();
-  request->set_machine_name(machine_name);
-  request->set_os_platform(os_platform);
-  request->set_os_version(os_version);
+  request->set_machine_name(policy::GetMachineName());
+  request->set_os_platform(policy::GetOSPlatform());
+  request->set_os_version(policy::GetOSVersion());
+  request->set_allocated_browser_device_identifier(
+      policy::GetBrowserDeviceIdentifier().release());
 
   return dm_request.SerializeAsString();
 }
@@ -101,6 +102,8 @@ std::string GetPolicyFetchRequestData(const std::string& policy_type,
       enterprise_management::PolicyFetchRequest::SHA256_RSA);
   policy_fetch_request->set_verification_key_hash(
       policy::kPolicyVerificationKeyHash);
+  policy_fetch_request->set_allocated_browser_device_identifier(
+      policy::GetBrowserDeviceIdentifier().release());
 
   if (policy_info.has_key_version()) {
     policy_fetch_request->set_public_key_version(policy_info.key_version());

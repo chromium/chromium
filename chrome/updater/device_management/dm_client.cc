@@ -27,7 +27,6 @@
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
-#include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/update_client/network.h"
 #include "url/gurl.h"
 
@@ -354,9 +353,7 @@ void DMClient::RegisterDevice(std::unique_ptr<Configurator> config,
   auto dm_fetch = base::MakeRefCounted<DMFetch>(std::move(config), storage);
   dm_fetch->PostRequest(kRegistrationRequestType,
                         DMFetch::TokenType::kEnrollmentToken,
-                        GetRegisterBrowserRequestData(policy::GetMachineName(),
-                                                      policy::GetOSPlatform(),
-                                                      policy::GetOSVersion()),
+                        GetRegisterBrowserRequestData(),
                         base::BindOnce(OnDMRegisterRequestComplete, dm_fetch,
                                        std::move(callback)));
 }

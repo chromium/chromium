@@ -23,9 +23,7 @@ extern const char kGoogleUpdatePolicyType[];
 
 // Returns the serialized data from a DeviceManagementRequest, which wraps
 // a RegisterBrowserRequest, to register the current device.
-std::string GetRegisterBrowserRequestData(const std::string& machine_name,
-                                          const std::string& os_platform,
-                                          const std::string& os_version);
+std::string GetRegisterBrowserRequestData();
 
 // Returns the serialized data from a DeviceManagementRequest, which wraps
 // a PolicyFetchRequest, to fetch policies for the given type.
