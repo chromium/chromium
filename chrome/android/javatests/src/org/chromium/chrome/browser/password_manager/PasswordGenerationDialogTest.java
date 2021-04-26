@@ -31,6 +31,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
+/** Test for the password manager dialog. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PasswordGenerationDialogTest {
@@ -51,8 +52,8 @@ public class PasswordGenerationDialogTest {
     public void setUp() throws InterruptedException {
         mActivityTestRule.startMainActivityOnBlankPage();
         mDialog = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            PasswordGenerationDialogCoordinator dialog =
-                    new PasswordGenerationDialogCoordinator(mActivityTestRule.getActivity());
+            PasswordGenerationDialogCoordinator dialog = new PasswordGenerationDialogCoordinator(
+                    mActivityTestRule.getActivity().getWindowAndroid());
             dialog.showDialog(
                     mGeneratedPassword, mExplanationString, mOnPasswordAcceptedOrRejectedCallback);
             return dialog;
