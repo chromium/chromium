@@ -55,8 +55,7 @@
     id<DefaultPromoCommands> defaultPromoHandler =
         HandlerForProtocol(self.dispatcher, DefaultPromoCommands);
 
-    DefaultPromoType type = MostRecentInterestDefaultPromoType();
-    switch (type) {
+    switch (appState.defaultBrowserPromoTypeToShow) {
       case DefaultPromoTypeGeneral:
         [defaultPromoHandler showDefaultBrowserFullscreenPromo];
         break;

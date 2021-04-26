@@ -97,8 +97,15 @@ bool TabsTailoredPromoEnabled();
 // Returns false otherwise.
 bool HasUserInteractedWithFullscreenPromoBefore();
 
+// Returns true if the user has interacted with a tailored Fullscreen Promo
+// previously. Returns false otherwise.
+bool HasUserInteractedWithTailoredFullscreenPromoBefore();
+
 // Logs that the user has interacted with the Fullscreen Promo.
 void LogUserInteractionWithFullscreenPromo();
+
+// Logs that the user has interacted with a Tailored Fullscreen Promo.
+void LogUserInteractionWithTailoredFullscreenPromo();
 
 // Returns true if the last URL open is within the time threshold that would
 // indicate Chrome is likely still the default browser. Returns false otherwise.
@@ -106,16 +113,16 @@ bool IsChromeLikelyDefaultBrowser();
 
 // Returns true if the past behavior of the user indicates that the user fits
 // the categorization that would likely benefit from having Chrome set as their
-// default browser for any promo type. Returns false otherwise.
-bool IsLikelyInterestedDefaultBrowserUser();
-
-// Returns true if the past behavior of the user indicates that the user fits
-// the categorization that would likely benefit from having Chrome set as their
 // default browser for the passed |type|. Returns false otherwise.
 bool IsLikelyInterestedDefaultBrowserUser(DefaultPromoType type);
 
 // Returns the most recent promo the user showed interest in. Defaults to
-// DefaultPromoTypeGeneral if no interest is found.
-DefaultPromoType MostRecentInterestDefaultPromoType();
+// DefaultPromoTypeGeneral if no interest is found. If |skipAllTabsPromo| is
+// true, this type of promo will be ignored.
+DefaultPromoType MostRecentInterestDefaultPromoType(BOOL skipAllTabsPromo);
+
+// Return YES if the user has seen a fullscreen promo recently, and shouldn't
+// see another one.
+BOOL UserInFullscreenPromoCooldown();
 
 #endif  // IOS_CHROME_BROWSER_UI_DEFAULT_PROMO_DEFAULT_BROWSER_UTILS_H_

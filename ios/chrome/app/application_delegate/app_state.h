@@ -19,6 +19,7 @@
 class ChromeBrowserState;
 @class CommandDispatcher;
 @protocol ConnectionInformation;
+typedef NS_ENUM(NSUInteger, DefaultPromoType);
 @class SceneState;
 @class MainApplicationDelegate;
 @class MemoryWarningHelper;
@@ -63,6 +64,10 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 // YES if the default browser fullscreen promo has met the qualifications to be
 // shown after the last cold start.
 @property(nonatomic) BOOL shouldShowDefaultBrowserPromo;
+
+// The type of default browser fullscreen promo that should be shown to the
+// user.
+@property(nonatomic) DefaultPromoType defaultBrowserPromoTypeToShow;
 
 // YES if the sign-out prompt should be shown to the user when the scene becomes
 // active and enters the foreground. This can happen if the policies have
