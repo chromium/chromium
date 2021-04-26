@@ -115,7 +115,10 @@ bool Dictation::OnToggleDictation() {
         language);
     base::UmaHistogramBoolean("Accessibility.CrosDictation.UsedOnDeviceSpeech",
                               false);
-    no_speech_timeout_ = kNetworkNoSpeechTimeout;
+    no_speech_timeout_ =
+        switches::IsExperimentalAccessibilityDictationListeningEnabled()
+            ? kDeviceNoSpeechTimeout
+            : kNetworkNoSpeechTimeout;
     no_new_speech_timeout_ = kNetworkNoNewSpeechTimeout;
   }
   return true;

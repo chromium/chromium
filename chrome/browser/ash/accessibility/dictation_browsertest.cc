@@ -177,9 +177,13 @@ class DictationTest : public InProcessBrowserTest,
   }
 
   base::TimeDelta GetNoSpeechTimeout() {
-    return base::TimeDelta::FromSeconds(GetParam().second == kNetworkRecognition
-                                            ? kShortNoSpeechTimeoutInSeconds
-                                            : kNoSpeechTimeoutInSeconds);
+    if (GetParam().first == kTestDefaultListening) {
+      return base::TimeDelta::FromSeconds(GetParam().second ==
+                                                  kNetworkRecognition
+                                              ? kShortNoSpeechTimeoutInSeconds
+                                              : kNoSpeechTimeoutInSeconds);
+    }
+    return base::TimeDelta::FromSeconds(kNoSpeechTimeoutInSeconds);
   }
 
   base::TimeDelta GetNoNewSpeechTimeout() {
@@ -260,11 +264,7 @@ IN_PROC_BROWSER_TEST_P(DictationTest, RecognitionEnds) {
     EXPECT_FALSE(IsDictationOff());
     base::OneShotTimer* timer = GetTimer();
     ASSERT_TRUE(timer);
-    EXPECT_EQ(
-        timer->GetCurrentDelay(),
-        base::TimeDelta::FromSeconds(GetParam().second == kNetworkRecognition
-                                         ? kShortNoSpeechTimeoutInSeconds
-                                         : kNoSpeechTimeoutInSeconds));
+    EXPECT_EQ(timer->GetCurrentDelay(), GetNoSpeechTimeout());
   }
 }
 
