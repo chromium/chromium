@@ -2919,7 +2919,13 @@ void Document::UpdateUseShadowTreesIfNeeded() {
   while (!use_elements_needing_update_.IsEmpty()) {
     HeapHashSet<Member<SVGUseElement>> elements;
     use_elements_needing_update_.swap(elements);
-    for (SVGUseElement* element : elements)
+    HeapVector<Member<SVGUseElement>> elements_vector;
+    for (SVGUseElement* element : elements) {
+      elements_vector.push_back(element);
+    }
+    std::sort(elements_vector.begin(), elements_vector.end(),
+              recordreplay::CompareMemberByPointerId<Member<SVGUseElement>>());
+    for (SVGUseElement* element : elements_vector)
       element->BuildPendingResource();
   }
 }
