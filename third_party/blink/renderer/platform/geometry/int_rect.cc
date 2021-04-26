@@ -85,8 +85,8 @@ void IntRect::Intersect(const IntRect& other) {
 
   location_.SetX(left);
   location_.SetY(top);
-  size_.SetWidth(right - left);
-  size_.SetHeight(bottom - top);
+  size_.SetWidth(base::ClampSub(right, left));
+  size_.SetHeight(base::ClampSub(bottom, top));
 }
 
 void IntRect::Unite(const IntRect& other) {
@@ -121,8 +121,8 @@ void IntRect::UniteEvenIfEmpty(const IntRect& other) {
 
   location_.SetX(left);
   location_.SetY(top);
-  size_.SetWidth(right - left);
-  size_.SetHeight(bottom - top);
+  size_.SetWidth(base::ClampSub(right, left));
+  size_.SetHeight(base::ClampSub(bottom, top));
 }
 
 void IntRect::Scale(float s) {
