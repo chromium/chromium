@@ -884,6 +884,14 @@ bool IsLiveCaptionFeatureEnabled() {
   }
 #endif
 
+#if defined(OS_WIN) && defined(ARCH_CPU_ARM64)
+  if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {
+    // The Speech On-Device API (SODA) component does not support Windows on
+    // arm64.
+    return false;
+  }
+#endif
+
   return true;
 }
 
