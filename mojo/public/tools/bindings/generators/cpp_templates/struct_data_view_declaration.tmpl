@@ -2,7 +2,7 @@
 
 class {{struct.name}}DataView {
  public:
-  {{struct.name}}DataView() {}
+  {{struct.name}}DataView() = default;
 
   {{struct.name}}DataView(
       internal::{{struct.name}}_Data* data,
