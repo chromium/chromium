@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
 
 namespace blink {
 
@@ -165,23 +165,12 @@ sk_sp<PaintRecord> CanvasFormattedText::PaintFormattedText(
   block->RecalcFragmentsVisualOverflow();
   bounds = FloatRect(block->PhysicalVisualOverflowRect());
 
-  PaintController paint_controller(PaintController::Usage::kTransient);
-  paint_controller.UpdateCurrentPaintChunkProperties(nullptr,
-                                                     PropertyTreeState::Root());
-  GraphicsContext graphics_context(paint_controller);
-  PhysicalOffset physical_offset((LayoutUnit(x)), (LayoutUnit(y)));
-  NGBoxFragmentPainter box_fragment_painter(fragment);
-  PaintInfo paint_info(graphics_context, CullRect::Infinite(),
-                       PaintPhase::kForeground, kGlobalPaintNormalPhase,
-                       kPaintLayerPaintingRenderingClipPathAsMask |
-                           kPaintLayerPaintingRenderingResourceSubtree);
-  box_fragment_painter.PaintObject(paint_info, physical_offset);
-  paint_controller.CommitNewDisplayItems();
-  paint_controller.FinishCycle();
-  sk_sp<PaintRecord> recording =
-      paint_controller.GetPaintArtifact().GetPaintRecord(
-          PropertyTreeState::Root());
-  return recording;
+  PaintRecordBuilder paint_record_builder;
+  PaintInfo paint_info(paint_record_builder.Context(), CullRect::Infinite(),
+                       PaintPhase::kForeground, kGlobalPaintNormalPhase, 0);
+  NGBoxFragmentPainter(fragment).PaintObject(
+      paint_info, PhysicalOffset(LayoutUnit(x), LayoutUnit(y)));
+  return paint_record_builder.EndRecording();
 }
 
 }  // namespace blink
