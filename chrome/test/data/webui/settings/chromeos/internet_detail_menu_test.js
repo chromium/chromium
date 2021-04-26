@@ -66,12 +66,12 @@ suite('InternetDetailMenu', function() {
     return new Promise(resolve => setTimeout(resolve));
   }
 
-  test('Do not show tripple dot when no iccid is present', async function() {
+  test('Do not show triple dot when no iccid is present', async function() {
     addEsimCellularNetwork(null, '11111111111111111111111111111111');
     await init();
 
-    let trippleDot = internetDetailMenu.$$('#moreNetworkDetail');
-    assertFalse(!!trippleDot);
+    let tripleDot = internetDetailMenu.$$('#moreNetworkDetail');
+    assertFalse(!!tripleDot);
 
     addEsimCellularNetwork('100000', '11111111111111111111111111111111');
 
@@ -81,16 +81,16 @@ suite('InternetDetailMenu', function() {
         settings.routes.NETWORK_DETAIL, params);
 
     await flushAsync();
-    trippleDot = internetDetailMenu.$$('#moreNetworkDetail');
-    assertTrue(!!trippleDot);
+    tripleDot = internetDetailMenu.$$('#moreNetworkDetail');
+    assertTrue(!!tripleDot);
   });
 
-  test('Do not show tripple dot when no eid is present', async function() {
+  test('Do not show triple dot when no eid is present', async function() {
     addEsimCellularNetwork('100000', null);
     await init();
 
-    let trippleDot = internetDetailMenu.$$('#moreNetworkDetail');
-    assertFalse(!!trippleDot);
+    let tripleDot = internetDetailMenu.$$('#moreNetworkDetail');
+    assertFalse(!!tripleDot);
 
     addEsimCellularNetwork('100000', '11111111111111111111111111111111');
 
@@ -100,8 +100,8 @@ suite('InternetDetailMenu', function() {
         settings.routes.NETWORK_DETAIL, params);
 
     await flushAsync();
-    trippleDot = internetDetailMenu.$$('#moreNetworkDetail');
-    assertTrue(!!trippleDot);
+    tripleDot = internetDetailMenu.$$('#moreNetworkDetail');
+    assertTrue(!!tripleDot);
   });
 
   test('Rename menu click', async function() {
@@ -114,21 +114,26 @@ suite('InternetDetailMenu', function() {
         settings.routes.NETWORK_DETAIL, params);
 
     await flushAsync();
-    const trippleDot = internetDetailMenu.$$('#moreNetworkDetail');
-    assertTrue(!!trippleDot);
+    const tripleDot = internetDetailMenu.$$('#moreNetworkDetail');
+    assertTrue(!!tripleDot);
 
-    trippleDot.click();
+    tripleDot.click();
     await flushAsync();
 
-    const renameBtn =
-        internetDetailMenu.shadowRoot.querySelector('cr-action-menu')
-            .querySelector('#renameBtn');
+    const actionMenu =
+        internetDetailMenu.shadowRoot.querySelector('cr-action-menu');
+    assertTrue(!!actionMenu);
+    assertTrue(actionMenu.open);
+
+    const renameBtn = actionMenu.querySelector('#renameBtn');
     assertTrue(!!renameBtn);
 
     const renameProfilePromise = test_util.eventToPromise(
         'show-esim-profile-rename-dialog', internetDetailMenu);
     renameBtn.click();
     await Promise.all([renameProfilePromise, test_util.flushTasks()]);
+
+    assertFalse(actionMenu.open);
   });
 
   test('Remove menu button click', async function() {
@@ -141,20 +146,26 @@ suite('InternetDetailMenu', function() {
         settings.routes.NETWORK_DETAIL, params);
 
     await flushAsync();
-    const trippleDot = internetDetailMenu.$$('#moreNetworkDetail');
-    assertTrue(!!trippleDot);
+    const tripleDot = internetDetailMenu.$$('#moreNetworkDetail');
+    assertTrue(!!tripleDot);
 
-    trippleDot.click();
+    tripleDot.click();
     await flushAsync();
-    const removeBtn =
-        internetDetailMenu.shadowRoot.querySelector('cr-action-menu')
-            .querySelector('#removeBtn');
+
+    const actionMenu =
+        internetDetailMenu.shadowRoot.querySelector('cr-action-menu');
+    assertTrue(!!actionMenu);
+    assertTrue(actionMenu.open);
+
+    const removeBtn = actionMenu.querySelector('#removeBtn');
     assertTrue(!!removeBtn);
 
     const removeProfilePromise = test_util.eventToPromise(
         'show-esim-remove-profile-dialog', internetDetailMenu);
     removeBtn.click();
     await Promise.all([removeProfilePromise, test_util.flushTasks()]);
+
+    assertFalse(actionMenu.open);
   });
 
   test('Menu is disabled when inhibited', async function() {
@@ -167,22 +178,22 @@ suite('InternetDetailMenu', function() {
         settings.routes.NETWORK_DETAIL, params);
 
     await flushAsync();
-    const trippleDot = internetDetailMenu.$$('#moreNetworkDetail');
-    assertTrue(!!trippleDot);
-    assertFalse(trippleDot.disabled);
+    const tripleDot = internetDetailMenu.$$('#moreNetworkDetail');
+    assertTrue(!!tripleDot);
+    assertFalse(tripleDot.disabled);
 
     internetDetailMenu.deviceState = {
       type: mojom.NetworkType.kCellular,
       deviceState: chromeos.networkConfig.mojom.DeviceStateType.kEnabled,
       inhibitReason: mojom.InhibitReason.kConnectingToProfile,
     };
-    assertTrue(trippleDot.disabled);
+    assertTrue(tripleDot.disabled);
 
     internetDetailMenu.deviceState = {
       type: mojom.NetworkType.kCellular,
       deviceState: chromeos.networkConfig.mojom.DeviceStateType.kEnabled,
       inhibitReason: mojom.InhibitReason.kNotInhibited,
     };
-    assertFalse(trippleDot.disabled);
+    assertFalse(tripleDot.disabled);
   });
 });

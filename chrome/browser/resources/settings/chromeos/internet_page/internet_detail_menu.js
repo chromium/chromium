@@ -106,6 +106,7 @@ Polymer({
    * @private
    */
   onRenameESimProfileTap_(e) {
+    this.closeMenu_();
     this.fire(
         'show-esim-profile-rename-dialog', {networkState: this.networkState_});
   },
@@ -115,7 +116,15 @@ Polymer({
    * @private
    */
   onRemoveESimProfileTap_(e) {
+    this.closeMenu_();
     this.fire(
         'show-esim-remove-profile-dialog', {networkState: this.networkState_});
-  }
+  },
+
+  /** @private */
+  closeMenu_() {
+    const actionMenu =
+        /** @type {!CrActionMenuElement} */ (this.$$('cr-action-menu'));
+    actionMenu.close();
+  },
 });
