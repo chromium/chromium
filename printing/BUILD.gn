@@ -169,16 +169,10 @@ component("printing") {
       "pdf_metafile_cg_mac.h",
       "print_settings_initializer_mac.cc",
       "print_settings_initializer_mac.h",
+      "printed_document_mac.cc",
+      "printing_context_mac.h",
+      "printing_context_mac.mm",
     ]
-
-    # Mac-Aura does not support printing.
-    if (!use_aura) {
-      sources += [
-        "printed_document_mac.cc",
-        "printing_context_mac.h",
-        "printing_context_mac.mm",
-      ]
-    }
 
     frameworks = [
       "AppKit.framework",
