@@ -1421,23 +1421,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Extensions.ForceInstalledFailureManifestInvalidErrorDetail2"
-    enum="ManifestInvalidError" expires_after="2021-09-19">
-  <owner>swapnilgupta@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
-  <owner>managed-devices@google.com</owner>
-  <summary>
-    The detailed reason why enterprise policy forced extensions had failed to
-    install because fetched update manifest was invalid. Recorded for each
-    forced extension that failed to install after 5 minutes with
-    Extensions.ForceInstalledFailureReason2 equal to MANIFEST_INVALID.
-
-    Replaced Extensions.ForceInstalledFailureManifestInvalidErrorDetail due to
-    addition of new error BAD_APP_STATUS, and some of the errors that were
-    MISSING_UPDATE_CHECK_TAG would now be reported as BAD_APP_STATUS.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.ForceInstalledFailureNoUpdatesInfo"
     enum="ExtensionNoUpdatesInfo" expires_after="2021-10-10">
   <owner>snijhara@google.com</owner>
@@ -3849,6 +3832,37 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     page. This corresponds to the
     WebContentsObserver::DocumentOnLoadCompletedInMainFrame method.
   </summary>
+</histogram>
+
+<histogram
+    name="Extensions.{ExtensionSource}ForceInstalledFailureManifestInvalidErrorDetail2"
+    enum="ManifestInvalidError" expires_after="2021-09-19">
+  <owner>swapnilgupta@google.com</owner>
+  <owner>burunduk@chromium.org</owner>
+  <owner>managed-devices@google.com</owner>
+  <summary>
+    The detailed reason why enterprise policy forced extensions had failed to
+    install because fetched update manifest was invalid. Recorded for each
+    forced extension that failed to install after 5 minutes with
+    Extensions.ForceInstalledFailureReason2 equal to MANIFEST_INVALID.
+
+    Replaced Extensions.ForceInstalledFailureManifestInvalidErrorDetail due to
+    addition of new error BAD_APP_STATUS, and some of the errors that were
+    MISSING_UPDATE_CHECK_TAG would now be reported as BAD_APP_STATUS.
+  </summary>
+  <token key="ExtensionSource">
+    <variant name=""
+        summary="Aggregated detailed failure reason for any type of extension">
+      <obsolete>
+        Deprecated as of 04/2021 as this histogram is split into variants
+        `OffStore_` and `WebStore_`.
+      </obsolete>
+    </variant>
+    <variant name="OffStore_"
+        summary="Detailed failure reason for OffStore extensions"/>
+    <variant name="WebStore_"
+        summary="Detailed failure reason for WebStore extensions"/>
+  </token>
 </histogram>
 
 </histograms>

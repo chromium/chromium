@@ -107,8 +107,10 @@ constexpr char kPossibleNonMisconfigurationFailures[] =
 constexpr char kDisableReason[] =
     "Extensions.ForceInstalledNotLoadedDisableReason";
 constexpr char kBlocklisted[] = "Extensions.ForceInstalledAndBlackListed";
-constexpr char kExtensionManifestInvalid[] =
-    "Extensions.ForceInstalledFailureManifestInvalidErrorDetail2";
+constexpr char kWebStoreExtensionManifestInvalid[] =
+    "Extensions.WebStore_ForceInstalledFailureManifestInvalidErrorDetail2";
+constexpr char kOffStoreExtensionManifestInvalid[] =
+    "Extensions.OffStore_ForceInstalledFailureManifestInvalidErrorDetail2";
 constexpr char kManifestNoUpdatesInfo[] =
     "Extensions.ForceInstalledFailureNoUpdatesInfo";
 constexpr char kExtensionManifestInvalidAppStatusError[] =
@@ -1139,8 +1141,9 @@ TEST_F(ForceInstalledMetricsTest, ExtensionManifestFetchFailedSelfHosted) {
                                       kFetchTries, 2);
 }
 
-// Errors occurred because the fetched update manifest was invalid.
-TEST_F(ForceInstalledMetricsTest, ExtensionManifestInvalid) {
+// Errors occurred because the fetched update manifest for webstore extension
+// was invalid.
+TEST_F(ForceInstalledMetricsTest, ExtensionManifestInvalidWebStore) {
   SetupForceList(/*is_from_store=*/true);
   scoped_refptr<const Extension> ext1 = CreateNewExtension(
       kExtensionName1, kExtensionId1, ExtensionStatus::kLoaded);
@@ -1152,7 +1155,25 @@ TEST_F(ForceInstalledMetricsTest, ExtensionManifestInvalid) {
   // loaded or failed.
   EXPECT_FALSE(fake_timer_->IsRunning());
   histogram_tester_.ExpectUniqueSample(
-      kExtensionManifestInvalid,
+      kWebStoreExtensionManifestInvalid,
+      ManifestInvalidError::INVALID_PROTOCOL_ON_GUPDATE_TAG, 1);
+}
+
+// Errors occurred because the fetched update manifest for offstore extension
+// was invalid.
+TEST_F(ForceInstalledMetricsTest, ExtensionManifestInvalidOffStore) {
+  SetupForceList(/*is_from_store=*/false);
+  scoped_refptr<const Extension> ext1 = CreateNewExtension(
+      kExtensionName1, kExtensionId1, ExtensionStatus::kLoaded);
+  install_stage_tracker()->ReportManifestInvalidFailure(
+      kExtensionId2,
+      ExtensionDownloaderDelegate::FailureData(
+          ManifestInvalidError::INVALID_PROTOCOL_ON_GUPDATE_TAG));
+  // ForceInstalledMetrics shuts down timer because all extension are either
+  // loaded or failed.
+  EXPECT_FALSE(fake_timer_->IsRunning());
+  histogram_tester_.ExpectUniqueSample(
+      kOffStoreExtensionManifestInvalid,
       ManifestInvalidError::INVALID_PROTOCOL_ON_GUPDATE_TAG, 1);
 }
 
@@ -1170,7 +1191,7 @@ TEST_F(ForceInstalledMetricsTest, ExtensionManifestInvalidAppStatusError) {
   // ForceInstalledMetrics shuts down timer because all extension are either
   // loaded or failed.
   EXPECT_FALSE(fake_timer_->IsRunning());
-  histogram_tester_.ExpectUniqueSample(kExtensionManifestInvalid,
+  histogram_tester_.ExpectUniqueSample(kWebStoreExtensionManifestInvalid,
                                        ManifestInvalidError::BAD_APP_STATUS, 1);
   histogram_tester_.ExpectUniqueSample(
       kExtensionManifestInvalidAppStatusError,

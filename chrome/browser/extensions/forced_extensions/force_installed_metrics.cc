@@ -243,9 +243,17 @@ void ReportDetailedFailureReasons(
   }
   if (installation.manifest_invalid_error) {
     DCHECK_EQ(failure_reason, FailureReason::MANIFEST_INVALID);
-    base::UmaHistogramEnumeration(
-        "Extensions.ForceInstalledFailureManifestInvalidErrorDetail2",
-        installation.manifest_invalid_error.value());
+    if (is_from_store) {
+      base::UmaHistogramEnumeration(
+          "Extensions.WebStore_"
+          "ForceInstalledFailureManifestInvalidErrorDetail2",
+          installation.manifest_invalid_error.value());
+    } else {
+      base::UmaHistogramEnumeration(
+          "Extensions.OffStore_"
+          "ForceInstalledFailureManifestInvalidErrorDetail2",
+          installation.manifest_invalid_error.value());
+    }
     if (installation.app_status_error) {
       base::UmaHistogramEnumeration(
           "Extensions.ForceInstalledFailureManifestInvalidAppStatusError",
