@@ -570,12 +570,8 @@ class ChannelAssociatedGroupController
       sync_watcher_->AllowWokenUpBySyncWatchOnSameSequence();
     }
 
-    bool SyncWatch(mojo::SyncWatchMode mode, const bool& should_stop) override {
+    bool SyncWatch(const bool& should_stop) override {
       DCHECK(task_runner_->RunsTasksInCurrentSequence());
-
-      // We don't support [NoInterrupt] messages on Channel-associated
-      // interfaces.
-      DCHECK_EQ(mode, mojo::SyncWatchMode::kAllowInterrupt);
 
       // It's not legal to make sync calls from the primary endpoint's thread,
       // and in fact they must only happen from the proxy task runner.
@@ -584,6 +580,12 @@ class ChannelAssociatedGroupController
 
       EnsureSyncWatcherExists();
       return sync_watcher_->SyncWatch(&should_stop);
+    }
+
+    bool SyncWatchExclusive(uint64_t request_id) override {
+      // We don't support exclusive waits on Channel-associated interfaces.
+      NOTREACHED();
+      return false;
     }
 
     void RegisterExternalSyncWaiter(uint64_t request_id) override {}

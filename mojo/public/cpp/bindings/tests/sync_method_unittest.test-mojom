@@ -35,6 +35,12 @@ interface Pinger {
   [Sync, NoInterrupt] PingNoInterrupt() => ();
 };
 
+// An Pinger with no associated interface support.
+interface SimplePinger {
+  [Sync] SimplePing() => ();
+  [Sync, NoInterrupt] SimplePingNoInterrupt() => ();
+};
+
 interface Ponger {
   [Sync] Pong() => ();
   PongAsync();

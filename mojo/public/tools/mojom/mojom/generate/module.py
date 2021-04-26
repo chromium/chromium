@@ -1671,6 +1671,13 @@ def HasSyncMethods(interface):
   return False
 
 
+def HasUninterruptableMethods(interface):
+  for method in interface.methods:
+    if not method.allow_interrupt:
+      return True
+  return False
+
+
 def ContainsHandlesOrInterfaces(kind):
   """Check if the kind contains any handles.
 

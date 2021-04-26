@@ -391,6 +391,7 @@ class Generator(generator.Generator):
         "has_callbacks": mojom.HasCallbacks,
         "has_packed_method_ordinals": HasPackedMethodOrdinals,
         "has_sync_methods": mojom.HasSyncMethods,
+        "has_uninterruptable_methods": mojom.HasUninterruptableMethods,
         "method_supports_lazy_serialization":
         self._MethodSupportsLazySerialization,
         "requires_context_for_data_view": RequiresContextForDataView,

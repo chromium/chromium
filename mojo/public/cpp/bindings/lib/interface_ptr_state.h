@@ -96,6 +96,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfacePtrStateBase {
   bool InitializeEndpointClient(
       bool passes_associated_kinds,
       bool has_sync_methods,
+      bool has_uninterruptable_methods,
       std::unique_ptr<MessageReceiver> payload_validator,
       const char* interface_name);
 
@@ -247,6 +248,7 @@ class InterfacePtrState : public InterfacePtrStateBase {
 
     if (InitializeEndpointClient(
             Interface::PassesAssociatedKinds_, Interface::HasSyncMethods_,
+            Interface::HasUninterruptableMethods_,
             std::make_unique<typename Interface::ResponseValidator_>(),
             Interface::Name_)) {
       proxy_ = std::make_unique<Proxy>(endpoint_client());

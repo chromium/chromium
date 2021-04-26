@@ -590,10 +590,7 @@ bool InterfaceEndpointClient::SendMessageWithResponder(
 #endif
 
   const bool is_sync = message->has_flag(Message::kFlagIsSync);
-  const SyncWatchMode sync_watch_mode =
-      message->has_flag(Message::kFlagNoInterrupt)
-          ? SyncWatchMode::kNoInterrupt
-          : SyncWatchMode::kAllowInterrupt;
+  const bool exclusive_wait = message->has_flag(Message::kFlagNoInterrupt);
   if (!controller_->SendMessage(message))
     return false;
 
@@ -619,7 +616,10 @@ bool InterfaceEndpointClient::SendMessageWithResponder(
 
   base::WeakPtr<InterfaceEndpointClient> weak_self =
       weak_ptr_factory_.GetWeakPtr();
-  controller_->SyncWatch(sync_watch_mode, response_received);
+  if (exclusive_wait)
+    controller_->SyncWatchExclusive(request_id);
+  else
+    controller_->SyncWatch(response_received);
   // Make sure that this instance hasn't been destroyed.
   if (weak_self) {
     DCHECK(base::Contains(sync_responses_, request_id));

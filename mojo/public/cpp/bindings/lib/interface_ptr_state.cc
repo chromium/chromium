@@ -77,6 +77,7 @@ void InterfacePtrStateBase::OnQueryVersion(
 bool InterfacePtrStateBase::InitializeEndpointClient(
     bool passes_associated_kinds,
     bool has_sync_methods,
+    bool has_uninterruptable_methods,
     std::unique_ptr<MessageReceiver> payload_validator,
     const char* interface_name) {
   // The object hasn't been bound.
@@ -84,7 +85,7 @@ bool InterfacePtrStateBase::InitializeEndpointClient(
     return false;
 
   MultiplexRouter::Config config =
-      passes_associated_kinds
+      (passes_associated_kinds || has_uninterruptable_methods)
           ? MultiplexRouter::MULTI_INTERFACE
           : (has_sync_methods
                  ? MultiplexRouter::SINGLE_INTERFACE_WITH_SYNC_METHODS

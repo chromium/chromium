@@ -392,9 +392,8 @@ interesting attributes supported today.
   woken up to dispatch other unrelated incoming `Sync` messages. This measure
   helps to avoid deadlocks. If a `Sync` message is also marked as `NoInterrupt`
   however, this behavior is disabled: instead the calling thread will only wake
-  up for messages on the same pipe, and will only dispatch such messages if they
-  are `Sync`. This attribute must be used with extreme caution, because it can
-  lead to deadlocks otherwise.
+  up for the precise message being waited upon. This attribute must be used with
+  extreme caution, because it can lead to deadlocks otherwise.
 
 * **`[Default]`**:
   The `Default` attribute may be used to specify an enumerator value that

@@ -147,20 +147,15 @@ class MultiplexRouter::InterfaceEndpoint
     sync_watcher_->AllowWokenUpBySyncWatchOnSameSequence();
   }
 
-  bool SyncWatch(SyncWatchMode mode, const bool& should_stop) override {
+  bool SyncWatch(const bool& should_stop) override {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-    if (mode == SyncWatchMode::kAllowInterrupt) {
-      EnsureSyncWatcherExists();
-      return sync_watcher_->SyncWatch(&should_stop);
-    }
+    EnsureSyncWatcherExists();
+    return sync_watcher_->SyncWatch(&should_stop);
+  }
 
-    DCHECK_EQ(mode, SyncWatchMode::kNoInterrupt);
-    while (!should_stop) {
-      if (!router_->WaitForIncomingMessage())
-        return false;
-    }
-    return true;
+  bool SyncWatchExclusive(uint64_t request_id) override {
+    return router_->ExclusiveSyncWaitForReply(id_, request_id);
   }
 
   void RegisterExternalSyncWaiter(uint64_t request_id) override {
@@ -642,8 +637,10 @@ void MultiplexRouter::EnableTestingMode() {
   connector_.set_enforce_errors_from_incoming_receiver(false);
 }
 
-bool MultiplexRouter::ShouldProcessMessageImmediately(const Message& message) {
-  // Only sync replies can possibly be allowed to process immediately.
+bool MultiplexRouter::CanUnblockExternalSyncWait(const Message& message) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Only sync replies can possibly be unblock sync waits.
   if (!message.has_flag(Message::kFlagIsResponse) ||
       !message.has_flag(Message::kFlagIsSync)) {
     return false;
@@ -654,6 +651,21 @@ bool MultiplexRouter::ShouldProcessMessageImmediately(const Message& message) {
     return false;
 
   return endpoint->UnregisterExternalSyncWaiter(message.request_id());
+}
+
+bool MultiplexRouter::CanUnblockExclusiveSameThreadSyncWait(
+    const Message& message) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(exclusive_sync_wait_);
+
+  // Only sync replies can possibly be unblock sync waits.
+  if (!message.has_flag(Message::kFlagIsResponse) ||
+      !message.has_flag(Message::kFlagIsSync)) {
+    return false;
+  }
+
+  return exclusive_sync_wait_->interface_id == message.interface_id() &&
+         exclusive_sync_wait_->request_id == message.request_id();
 }
 
 bool MultiplexRouter::Accept(Message* message) {
@@ -682,13 +694,22 @@ bool MultiplexRouter::Accept(Message* message) {
           ? ALLOW_DIRECT_CLIENT_CALLS_FOR_SYNC_MESSAGES
           : ALLOW_DIRECT_CLIENT_CALLS;
 
-  const bool can_process =
-      tasks_.empty() || ShouldProcessMessageImmediately(*message);
+  bool can_process;
+  if (exclusive_sync_wait_) {
+    can_process = CanUnblockExclusiveSameThreadSyncWait(*message);
+  } else {
+    can_process = tasks_.empty() || CanUnblockExternalSyncWait(*message);
+  }
   MessageWrapper message_wrapper(this, std::move(*message));
   const bool processed =
       can_process &&
       ProcessIncomingMessage(&message_wrapper, client_call_behavior,
                              connector_.task_runner());
+
+  if (exclusive_sync_wait_ && can_process) {
+    DCHECK(processed);
+    exclusive_sync_wait_->finished = true;
+  }
 
   if (!processed) {
     // Either the task queue is not empty or we cannot process the message
@@ -703,7 +724,7 @@ bool MultiplexRouter::Accept(Message* message) {
       if (endpoint)
         endpoint->SignalSyncMessageEvent();
     }
-  } else if (!tasks_.empty()) {
+  } else if (!tasks_.empty() && !exclusive_sync_wait_) {
     // Processing the message may result in new tasks (for error notification)
     // being added to the queue. In this case, we have to attempt to process the
     // tasks.
@@ -826,6 +847,39 @@ void MultiplexRouter::PauseInternal(bool must_resume_manually) {
   // the last Resume and we must never unpause until at least one call to Resume
   // is made.
   must_resume_manually_ = must_resume_manually_ || must_resume_manually;
+}
+
+bool MultiplexRouter::ExclusiveSyncWaitForReply(InterfaceId interface_id,
+                                                uint64_t request_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Nested exclusive sync waits should be impossible.
+  DCHECK(!exclusive_sync_wait_);
+
+  scoped_refptr<MultiplexRouter> keep_alive(this);
+  exclusive_sync_wait_.emplace();
+  exclusive_sync_wait_->interface_id = interface_id;
+  exclusive_sync_wait_->request_id = request_id;
+  while (!exclusive_sync_wait_->finished) {
+    if (!WaitForIncomingMessage()) {
+      exclusive_sync_wait_.reset();
+      return false;
+    }
+
+    MayAutoLock locker(&lock_);
+    if (!FindEndpoint(interface_id)) {
+      exclusive_sync_wait_.reset();
+      return false;
+    }
+  }
+
+  exclusive_sync_wait_.reset();
+
+  // Ensure that any deferred tasks are processed, and any deferred sync events
+  // are signalled.
+  ResumeIncomingMethodCallProcessing();
+
+  return true;
 }
 
 void MultiplexRouter::ProcessTasks(

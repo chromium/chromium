@@ -1217,7 +1217,7 @@ TEST_F(SyncMethodAssociatedTest,
   EXPECT_EQ(456, result_value);
 }
 
-class PingerImpl : public mojom::Pinger {
+class PingerImpl : public mojom::Pinger, public mojom::SimplePinger {
  public:
   PingerImpl() = default;
   ~PingerImpl() override = default;
@@ -1309,12 +1309,22 @@ class PingerImpl : public mojom::Pinger {
   }
 
   void Ping(PingCallback callback) override {
-    DoPong();
+    if (pong_sender_ && same_pipe_pong_sender_)
+      DoPong();
     std::move(callback).Run();
   }
 
   void PingNoInterrupt(PingNoInterruptCallback callback) override {
-    DoPong();
+    if (pong_sender_ && same_pipe_pong_sender_)
+      DoPong();
+    std::move(callback).Run();
+  }
+
+  void SimplePing(SimplePingCallback callback) override {
+    std::move(callback).Run();
+  }
+
+  void SimplePingNoInterrupt(SimplePingNoInterruptCallback callback) override {
     std::move(callback).Run();
   }
 
@@ -1389,13 +1399,17 @@ class SyncInterruptTest : public BindingsTestBase {
     receiver_thread_.task_runner()->PostTask(
         FROM_HERE, base::BindOnce(
                        [](PendingReceiver<mojom::Pinger> receiver,
+                          PendingReceiver<mojom::SimplePinger> simple_receiver,
                           PendingReceiver<mojom::Pinger> shared_receiver) {
                          MakeSelfOwnedReceiver(std::make_unique<PingerImpl>(),
                                                std::move(receiver));
                          MakeSelfOwnedReceiver(std::make_unique<PingerImpl>(),
+                                               std::move(simple_receiver));
+                         MakeSelfOwnedReceiver(std::make_unique<PingerImpl>(),
                                                std::move(shared_receiver));
                        },
                        pinger_.BindNewPipeAndPassReceiver(),
+                       simple_pinger_.BindNewPipeAndPassReceiver(),
                        shared_remote.InitWithNewPipeAndPassReceiver()));
 
     shared_pinger_thread_.Start();
@@ -1412,6 +1426,7 @@ class SyncInterruptTest : public BindingsTestBase {
   ~SyncInterruptTest() override = default;
 
   mojom::Pinger& pinger() { return *pinger_.get(); }
+  mojom::SimplePinger& simple_pinger() { return *simple_pinger_.get(); }
   mojom::Pinger& shared_pinger() { return *shared_pinger_.get(); }
   mojom::Pinger& shared_associated_pinger() {
     return *shared_associated_pinger_.get();
@@ -1436,6 +1451,7 @@ class SyncInterruptTest : public BindingsTestBase {
   base::Thread receiver_thread_{"Pinger Receiver Thread"};
   base::Thread shared_pinger_thread_{"Shared Pinger IO"};
   Remote<mojom::Pinger> pinger_;
+  Remote<mojom::SimplePinger> simple_pinger_;
   SharedRemote<mojom::Pinger> shared_pinger_;
   SharedAssociatedRemote<mojom::Pinger> shared_associated_pinger_;
   PongerImpl ponger_;
@@ -1466,16 +1482,50 @@ TEST_P(SyncInterruptTest, SyncCanInterruptSync) {
   EXPECT_EQ(1, same_pipe_ponger().num_sync_pongs());
 }
 
-TEST_P(SyncInterruptTest, SyncCanInterruptSyncNoInterruptOnSamePipeOnly) {
-  // Verifies that incoming sync messages can interrupt a [NoInterrupt] sync
-  // wait only if they're on the same pipe.
+TEST_P(SyncInterruptTest, NothingCanInterruptSyncNoInterrupt) {
+  // Verifies that no incoming messages can interrupt a [NoInterrupt] sync wait
+  // except for the exact reply we're waiting on.
+
   InitPonger(mojom::PongSendMode::kSyncDoNotBlockReply);
-  InitSamePipePonger(mojom::PongSendMode::kSyncBlockReply);
+  InitSamePipePonger(mojom::PongSendMode::kSyncDoNotBlockReply);
   pinger().PingNoInterrupt();
   EXPECT_EQ(0, ponger().num_async_pongs());
   EXPECT_EQ(0, ponger().num_sync_pongs());
   EXPECT_EQ(0, same_pipe_ponger().num_async_pongs());
-  EXPECT_EQ(1, same_pipe_ponger().num_sync_pongs());
+  EXPECT_EQ(0, same_pipe_ponger().num_sync_pongs());
+
+  // We also need to test an interface with no associated interface support,
+  // such as SimplePinger. Should behave the same. We send an async message
+  // first.
+  bool async_replies_expected = false;
+  bool got_first_async_reply = false;
+  simple_pinger().SimplePing(base::BindLambdaForTesting([&] {
+    EXPECT_TRUE(async_replies_expected);
+    got_first_async_reply = true;
+  }));
+
+  // This must complete without the above async reply dispatching.
+  EXPECT_TRUE(simple_pinger().SimplePingNoInterrupt());
+
+  // Now send another async Ping.
+  base::RunLoop loop;
+  auto quit = loop.QuitClosure();
+  simple_pinger().SimplePing(base::BindLambdaForTesting([&] {
+    EXPECT_TRUE(async_replies_expected);
+    loop.Quit();
+  }));
+
+  // This time send a regular sync message and then an uninterruptible one. This
+  // exercises a slightly different code path since an async reply will arrive
+  // during the regular sync wait. It should still not be dispatched.
+  EXPECT_TRUE(simple_pinger().SimplePing());
+  EXPECT_TRUE(simple_pinger().SimplePingNoInterrupt());
+
+  // Finally, confirm that if we go back to spinning a RunLoop, the deferred
+  // async replies will dispatch as expected.
+  async_replies_expected = true;
+  loop.Run();
+  EXPECT_TRUE(got_first_async_reply);
 }
 
 TEST_P(SyncInterruptTest, SharedRemoteNoInterrupt) {

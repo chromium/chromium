@@ -23,6 +23,9 @@ class {{export_attribute}} {{interface.name}}
   static constexpr uint32_t Version_ = {{interface.version}};
   static constexpr bool PassesAssociatedKinds_ = {% if interface|passes_associated_kinds %}true{% else %}false{% endif %};
   static constexpr bool HasSyncMethods_ = {% if interface|has_sync_methods %}true{% else %}false{% endif %};
+  static constexpr bool HasUninterruptableMethods_ =
+      {%- if interface|has_uninterruptable_methods %} true
+      {%- else %} false{% endif %};
 
   using Base_ = {{interface.name}}InterfaceBase;
   using Proxy_ = {{interface.name}}Proxy;

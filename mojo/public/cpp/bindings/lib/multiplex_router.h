@@ -193,9 +193,12 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) MultiplexRouter
   // Completes initialization of the MultiplexRouter.
   void BindToCurrentSequence();
 
-  // Indicates whether `message` should be processed as soon as it's received
-  // rather than ordering it against the task queue.
-  bool ShouldProcessMessageImmediately(const Message& message);
+  // Indicates whether `message` can unblock any active external sync waiter.
+  bool CanUnblockExternalSyncWait(const Message& message);
+
+  // Indicates whether `message` can unblock the current exclusive same-thread
+  // sync wait.
+  bool CanUnblockExclusiveSameThreadSyncWait(const Message& message);
 
   // MessageReceiver implementation:
   bool Accept(Message* message) override;
@@ -209,6 +212,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) MultiplexRouter
   void OnPipeConnectionError(bool force_async_dispatch);
   void OnFlushPipeSignaled(MojoResult result, const HandleSignalsState& state);
   void PauseInternal(bool must_resume_manually);
+
+  // Waits for a specific incoming message to be received and dispatched,
+  // deferring all other messages (including sync messages) until later.
+  bool ExclusiveSyncWaitForReply(InterfaceId interface_id, uint64_t request_id);
 
   // Specifies whether we are allowed to directly call into
   // InterfaceEndpointClient (given that we are already on the same sequence as
@@ -289,6 +296,16 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) MultiplexRouter
   // Active whenever dispatch is blocked by a pending remote flush.
   ScopedMessagePipeHandle active_flush_pipe_;
   base::Optional<mojo::SimpleWatcher> flush_pipe_watcher_;
+
+  // Tracks information about the current exclusive sync wait, if any, on the
+  // MultiplexRouter's primary thread. Note that exclusive off-thread sync waits
+  // are not managed by the MultiplexRouter and thus are not relevant here.
+  struct ExclusiveSyncWaitInfo {
+    InterfaceId interface_id = kInvalidInterfaceId;
+    uint64_t request_id = 0;
+    bool finished = false;
+  };
+  base::Optional<ExclusiveSyncWaitInfo> exclusive_sync_wait_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
