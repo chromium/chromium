@@ -47,6 +47,11 @@ void ExtensionsMenuButton::AddedToWidget() {
   UpdateState();
 }
 
+void ExtensionsMenuButton::OnThemeChanged() {
+  HoverButton::OnThemeChanged();
+  SetInkDropBaseColor(HoverButton::GetInkDropColor(this));
+}
+
 // ToolbarActionViewDelegateViews:
 views::View* ExtensionsMenuButton::GetAsView() {
   return this;

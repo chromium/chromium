@@ -81,6 +81,8 @@ void FootnoteContainerView::ChildVisibilityChanged(View* child) {
 }
 
 void FootnoteContainerView::ResetBackground() {
+  if (!GetWidget())
+    return;
   SkColor background_color = GetNativeTheme()->GetSystemColor(
       ui::NativeTheme::kColorId_BubbleFooterBackground);
   SetBackground(std::make_unique<HalfRoundedRectBackground>(background_color,
@@ -88,6 +90,8 @@ void FootnoteContainerView::ResetBackground() {
 }
 
 void FootnoteContainerView::ResetBorder() {
+  if (!GetWidget())
+    return;
   SetBorder(CreateSolidSidedBorder(
       1, 0, 0, 0, GetNativeTheme()->GetSystemColor(
                 ui::NativeTheme::kColorId_FootnoteContainerBorder)));
