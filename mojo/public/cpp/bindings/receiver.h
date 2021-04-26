@@ -139,6 +139,15 @@ class Receiver {
     return remote;
   }
 
+  // Like above, but the returne PendingRemote has the version annotated.
+  PendingRemote<Interface> BindNewPipeAndPassRemoteWithVersion(
+      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr)
+      WARN_UNUSED_RESULT {
+    auto remote = BindNewPipeAndPassRemote(task_runner);
+    remote.internal_state()->version = Interface::Version_;
+    return remote;
+  }
+
   // Binds this Receiver by consuming |pending_receiver|, which must be valid.
   // Must only be called on an unbound Receiver.
   //

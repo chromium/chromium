@@ -127,7 +127,7 @@ void LacrosChromeServiceImplNeverBlockingState::FusePipeCrosapi(
   crosapi_->BindBrowserServiceHost(
       browser_service_host_.BindNewPipeAndPassReceiver());
   browser_service_host_->AddBrowserService(
-      receiver_.BindNewPipeAndPassRemote());
+      receiver_.BindNewPipeAndPassRemoteWithVersion());
 }
 
 void LacrosChromeServiceImplNeverBlockingState::OnBrowserStartup(
