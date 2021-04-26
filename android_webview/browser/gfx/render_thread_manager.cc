@@ -9,7 +9,6 @@
 
 #include "android_webview/browser/gfx/compositor_frame_producer.h"
 #include "android_webview/browser/gfx/gpu_service_webview.h"
-#include "android_webview/browser/gfx/hardware_renderer_single_thread.h"
 #include "android_webview/browser/gfx/hardware_renderer_viz.h"
 #include "android_webview/browser/gfx/scoped_app_gl_state_restore.h"
 #include "android_webview/browser/gfx/task_queue_webview.h"
@@ -198,26 +197,20 @@ void RenderThreadManager::DrawOnRT(bool save_restore,
   GpuServiceWebView::GetInstance();
 
   base::Optional<ScopedAppGLStateRestore> state_restore;
-  base::Optional<ScopedAllowGL> allow_gl;
   if (!vulkan_context_provider_) {
     state_restore.emplace(ScopedAppGLStateRestore::MODE_DRAW, save_restore);
-    allow_gl.emplace();
   }
 
   if (!hardware_renderer_ && !IsInsideHardwareRelease() &&
       HasFrameForHardwareRendererOnRT()) {
-    if (::features::IsUsingVizForWebView()) {
-      RootFrameSinkGetter getter;
-      {
-        base::AutoLock lock(lock_);
-        getter = root_frame_sink_getter_;
-      }
-      DCHECK(getter);
-      hardware_renderer_ = std::make_unique<HardwareRendererViz>(
-          this, std::move(getter), vulkan_context_provider_);
-    } else {
-      hardware_renderer_ = std::make_unique<HardwareRendererSingleThread>(this);
+    RootFrameSinkGetter getter;
+    {
+      base::AutoLock lock(lock_);
+      getter = root_frame_sink_getter_;
     }
+    DCHECK(getter);
+    hardware_renderer_ = std::make_unique<HardwareRendererViz>(
+        this, std::move(getter), vulkan_context_provider_);
     hardware_renderer_->CommitFrame();
   }
 
@@ -235,11 +228,9 @@ void RenderThreadManager::DestroyHardwareRendererOnRT(bool save_restore) {
   GpuServiceWebView::GetInstance();
 
   base::Optional<ScopedAppGLStateRestore> state_restore;
-  base::Optional<ScopedAllowGL> allow_gl;
   if (!vulkan_context_provider_) {
     state_restore.emplace(ScopedAppGLStateRestore::MODE_RESOURCE_MANAGEMENT,
                           save_restore);
-    allow_gl.emplace();
   }
 
   hardware_renderer_.reset();

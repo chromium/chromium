@@ -442,9 +442,7 @@ gpu::SharedImageManager* GetSharedImageManager() {
 }
 
 viz::VizCompositorThreadRunner* GetVizCompositorThreadRunner() {
-  return ::features::IsUsingVizForWebView()
-             ? VizCompositorThreadRunnerWebView::GetInstance()
-             : nullptr;
+  return VizCompositorThreadRunnerWebView::GetInstance();
 }
 
 }  // namespace

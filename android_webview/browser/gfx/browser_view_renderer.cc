@@ -118,10 +118,8 @@ BrowserViewRenderer::BrowserViewRenderer(
       offscreen_pre_raster_(false),
       recorder_(base::MakeRefCounted<AwAttachingToWindowRecorder>()) {
   begin_frame_source_ = std::make_unique<BeginFrameSourceWebView>();
-  if (::features::IsUsingVizForWebView()) {
-    root_frame_sink_proxy_ = std::make_unique<RootFrameSinkProxy>(
-        ui_task_runner_, this, begin_frame_source_.get());
-  }
+  root_frame_sink_proxy_ = std::make_unique<RootFrameSinkProxy>(
+      ui_task_runner_, this, begin_frame_source_.get());
   UpdateBeginFrameSource();
   recorder_->Start();
 }

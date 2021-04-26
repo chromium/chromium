@@ -9,7 +9,6 @@
 #include "android_webview/browser/gfx/aw_vulkan_context_provider.h"
 #include "android_webview/browser/gfx/deferred_gpu_command_service.h"
 #include "android_webview/browser/gfx/gpu_service_webview.h"
-#include "android_webview/browser/gfx/parent_output_surface.h"
 #include "android_webview/browser/gfx/skia_output_surface_dependency_webview.h"
 #include "android_webview/browser/gfx/task_queue_webview.h"
 #include "base/callback_helpers.h"
@@ -53,6 +52,8 @@ OutputSurfaceProviderWebView::OutputSurfaceProviderWebView(
   renderer_settings_.should_clear_root_render_pass = false;
 
   renderer_settings_.use_skia_renderer = features::IsUsingSkiaRenderer();
+  LOG_IF(FATAL, !renderer_settings_.use_skia_renderer)
+      << "WebView requires skia renderer";
 
   enable_vulkan_ = features::IsUsingVulkan();
   DCHECK(!enable_vulkan_ || vulkan_context_provider_);
@@ -81,11 +82,7 @@ void OutputSurfaceProviderWebView::InitializeContext() {
   const bool is_angle =
       !enable_vulkan_ &&
       gl::GLSurfaceEGL::IsANGLEExternalContextAndSurfaceSupported();
-  // TODO(penghuang): should we support GLRenderer?
-  if (is_angle) {
-    CHECK(renderer_settings_.use_skia_renderer)
-        << "GLRenderer doesn't work with ANGLE.";
-  }
+
   if (renderer_settings_.use_skia_renderer && !enable_vulkan_) {
     // We need to draw to FBO for External Stencil support with SkiaRenderer
     gl_surface_ = base::MakeRefCounted<AwGLSurfaceExternalStencil>(is_angle);
@@ -97,54 +94,52 @@ void OutputSurfaceProviderWebView::InitializeContext() {
   bool result = gl_surface_->Initialize(gl::GLSurfaceFormat());
   DCHECK(result);
 
-  if (renderer_settings_.use_skia_renderer) {
-    auto share_group = base::MakeRefCounted<gl::GLShareGroup>();
-    gpu::GpuDriverBugWorkarounds workarounds(
-        GpuServiceWebView::GetInstance()
-            ->gpu_feature_info()
-            .enabled_gpu_driver_bug_workarounds);
-    gl::GLContextAttribs attribs;
-    // For ANGLE EGL, we need to create ANGLE context from the current native
-    // EGL context.
-    attribs.angle_create_from_external_context = is_angle;
+  auto share_group = base::MakeRefCounted<gl::GLShareGroup>();
+  gpu::GpuDriverBugWorkarounds workarounds(
+      GpuServiceWebView::GetInstance()
+          ->gpu_feature_info()
+          .enabled_gpu_driver_bug_workarounds);
+  gl::GLContextAttribs attribs;
+  // For ANGLE EGL, we need to create ANGLE context from the current native
+  // EGL context.
+  attribs.angle_create_from_external_context = is_angle;
 
-    // Skip validation when dcheck is off.
+  // Skip validation when dcheck is off.
 #if DCHECK_IS_ON()
-    attribs.can_skip_validation = false;
+  attribs.can_skip_validation = false;
 #else
-    attribs.can_skip_validation = true;
+  attribs.can_skip_validation = true;
 #endif
 
-    auto gl_context = gl::init::CreateGLContext(share_group.get(),
-                                                gl_surface_.get(), attribs);
-    gl_context->MakeCurrent(gl_surface_.get());
+  auto gl_context =
+      gl::init::CreateGLContext(share_group.get(), gl_surface_.get(), attribs);
+  gl_context->MakeCurrent(gl_surface_.get());
 
-    shared_context_state_ = base::MakeRefCounted<gpu::SharedContextState>(
-        share_group, gl_surface_, std::move(gl_context),
-        false /* use_virtualized_gl_contexts */, base::BindOnce(&OnContextLost),
-        GpuServiceWebView::GetInstance()->gpu_preferences().gr_context_type,
-        vulkan_context_provider_);
-    if (!enable_vulkan_) {
-      auto feature_info = base::MakeRefCounted<gpu::gles2::FeatureInfo>(
-          workarounds, GpuServiceWebView::GetInstance()->gpu_feature_info());
-      shared_context_state_->InitializeGL(
-          GpuServiceWebView::GetInstance()->gpu_preferences(),
-          std::move(feature_info));
-    }
-
-    // As most of the GPU resources used for compositing are created on Chrome
-    // side this affects only validation inside Skia. The workaround effectively
-    // clamps max frame buffer size that comes from Android. As we don't control
-    // frame buffer size using this workaround leads to not drawing anything on
-    // screen.
-    // TODO(vasilyt): Remove this once it handles on Skia side.
-    gpu::GpuDriverBugWorkarounds workarounds_for_skia = workarounds;
-    workarounds_for_skia.max_texture_size_limit_4096 = false;
-
-    shared_context_state_->InitializeGrContext(
+  shared_context_state_ = base::MakeRefCounted<gpu::SharedContextState>(
+      share_group, gl_surface_, std::move(gl_context),
+      false /* use_virtualized_gl_contexts */, base::BindOnce(&OnContextLost),
+      GpuServiceWebView::GetInstance()->gpu_preferences().gr_context_type,
+      vulkan_context_provider_);
+  if (!enable_vulkan_) {
+    auto feature_info = base::MakeRefCounted<gpu::gles2::FeatureInfo>(
+        workarounds, GpuServiceWebView::GetInstance()->gpu_feature_info());
+    shared_context_state_->InitializeGL(
         GpuServiceWebView::GetInstance()->gpu_preferences(),
-        workarounds_for_skia, nullptr /* gr_shader_cache */);
+        std::move(feature_info));
   }
+
+  // As most of the GPU resources used for compositing are created on Chrome
+  // side this affects only validation inside Skia. The workaround effectively
+  // clamps max frame buffer size that comes from Android. As we don't control
+  // frame buffer size using this workaround leads to not drawing anything on
+  // screen.
+  // TODO(vasilyt): Remove this once it handles on Skia side.
+  gpu::GpuDriverBugWorkarounds workarounds_for_skia = workarounds;
+  workarounds_for_skia.max_texture_size_limit_4096 = false;
+
+  shared_context_state_->InitializeGrContext(
+      GpuServiceWebView::GetInstance()->gpu_preferences(), workarounds_for_skia,
+      nullptr /* gr_shader_cache */);
 }
 
 std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
@@ -152,17 +147,11 @@ OutputSurfaceProviderWebView::CreateDisplayController() {
   DCHECK(gl_surface_)
       << "InitializeContext() must be called before CreateOutputSurface()";
 
-  if (renderer_settings_.use_skia_renderer) {
-    auto skia_dependency = std::make_unique<SkiaOutputSurfaceDependencyWebView>(
-        TaskQueueWebView::GetInstance(), GpuServiceWebView::GetInstance(),
-        shared_context_state_.get(), gl_surface_.get(),
-        vulkan_context_provider_);
-    return std::make_unique<viz::DisplayCompositorMemoryAndTaskController>(
-        std::move(skia_dependency));
-  } else {
-    return std::make_unique<viz::DisplayCompositorMemoryAndTaskController>(
-        DeferredGpuCommandService::GetInstance(), nullptr);
-  }
+  auto skia_dependency = std::make_unique<SkiaOutputSurfaceDependencyWebView>(
+      TaskQueueWebView::GetInstance(), GpuServiceWebView::GetInstance(),
+      shared_context_state_.get(), gl_surface_.get(), vulkan_context_provider_);
+  return std::make_unique<viz::DisplayCompositorMemoryAndTaskController>(
+      std::move(skia_dependency));
 }
 
 std::unique_ptr<viz::OutputSurface>
@@ -174,18 +163,8 @@ OutputSurfaceProviderWebView::CreateOutputSurface(
   DCHECK(display_compositor_controller)
       << "CreateDisplayController() must be called before "
          "CreateOutputSurface()";
-
-  if (renderer_settings_.use_skia_renderer) {
-    return viz::SkiaOutputSurfaceImpl::Create(
-        display_compositor_controller, renderer_settings_, debug_settings());
-  } else {
-    auto context_provider = AwRenderThreadContextProvider::Create(
-        gl_surface_, DeferredGpuCommandService::GetInstance(),
-        display_compositor_controller->gpu_task_scheduler(),
-        display_compositor_controller->controller_on_gpu());
-    return std::make_unique<ParentOutputSurface>(gl_surface_,
-                                                 std::move(context_provider));
-  }
+  return viz::SkiaOutputSurfaceImpl::Create(
+      display_compositor_controller, renderer_settings_, debug_settings());
 }
 
 }  // namespace android_webview

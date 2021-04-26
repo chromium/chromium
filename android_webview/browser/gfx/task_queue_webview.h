@@ -12,17 +12,6 @@
 
 namespace android_webview {
 
-// This class is used to control when to access GL.
-class ScopedAllowGL {
- public:
-  ScopedAllowGL();
-  ~ScopedAllowGL();
-
-  // Disallow copy and assign.
-  ScopedAllowGL(const ScopedAllowGL&) = delete;
-  ScopedAllowGL& operator=(const ScopedAllowGL&) = delete;
-};
-
 // In WebView, there is a single task queue that runs all tasks instead of
 // thread task runners. This is the class actually scheduling and running tasks
 // for WebView. This is used by both CommandBuffer and SkiaDDL.
@@ -56,12 +45,7 @@ class TaskQueueWebView {
   virtual void ScheduleClientTask(base::OnceClosure task) = 0;
 
  protected:
-  friend ScopedAllowGL;
-
   virtual ~TaskQueueWebView() = default;
-
-  // Called by ScopedAllowGL.
-  virtual void RunAllTasks() = 0;
 };
 
 }  // namespace android_webview
