@@ -120,6 +120,7 @@ source_set("browser_view") {
     "//ios/chrome/browser/ui/infobars:public",
     "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/ui/location_bar:location_bar_model_delegate",
+    "//ios/chrome/browser/ui/main:default_browser_scene_agent",
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/main_content:main_content_ui",
     "//ios/chrome/browser/ui/main_content:main_content_ui_broadcasting_util",

@@ -75,6 +75,7 @@
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/first_run/first_run_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_provider.h"
@@ -780,6 +781,11 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   DefaultBrowserSceneAgent* defaultBrowserAgent =
       [[DefaultBrowserSceneAgent alloc]
           initWithCommandDispatcher:mainCommandDispatcher];
+  defaultBrowserAgent.nonModalScheduler.webStateList =
+      mainBrowser->GetWebStateList();
+  defaultBrowserAgent.nonModalScheduler.overlayPresenter =
+      OverlayPresenter::FromBrowser(mainBrowser,
+                                    OverlayModality::kInfobarBanner);
   [self.sceneState addAgent:defaultBrowserAgent];
 
   [self.sceneState

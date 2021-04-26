@@ -10,6 +10,9 @@
 // Shows the non-modal default promo.
 - (void)showDefaultBrowserNonModalPromo;
 
+// Dismisses the non-modal default promo.
+- (void)dismissDefaultBrowserNonModalPromo;
+
 // Alerts the command handler that the non-modal default promo was dismissed
 // from the UI.
 - (void)defaultBrowserNonModalPromoWasDismissed;
