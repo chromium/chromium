@@ -929,6 +929,7 @@ crbug.com/958381 external/wpt/css/css-tables/tentative/paint/collapsed-border-la
 crbug.com/958381 external/wpt/css/css-tables/tentative/position-sticky-container.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-tables/tentative/rowspan-height-redistribution.html [ Failure ]
 crbug.com/958381 external/wpt/css/css-tables/tentative/table-height-redistribution.html [ Failure ]
+crbug.com/958381 external/wpt/css/css-tables/tentative/table-minmax.html [ Failure ]
 
 ### external/wpt/css/css-tables/tentative/paint/
 crbug.com/958381 external/wpt/css/css-tables/tentative/paint/background-image-column-collapsed.html [ Failure ]
