@@ -15,6 +15,7 @@
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/custom_handlers/test_protocol_handler_registry_delegate.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
@@ -68,6 +69,11 @@ class ContentSettingBubbleModelTest : public ChromeRenderViewHostTestHarness {
         std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
             web_contents()));
     InfoBarService::CreateForWebContents(web_contents());
+  }
+
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return {{HistoryServiceFactory::GetInstance(),
+             HistoryServiceFactory::GetDefaultFactory()}};
   }
 
   std::string GetDefaultAudioDevice() {
@@ -252,8 +258,6 @@ TEST_F(ContentSettingBubbleModelTest, BlockedMediastreamMicAndCamera) {
 // Tests whether a changed setting in the setting bubble is displayed again when
 // the bubble is re-opened.
 TEST_F(ContentSettingBubbleModelTest, MediastreamContentBubble) {
-  ASSERT_TRUE(profile()->CreateHistoryService());
-
   // Required to break dependency on BrowserMainLoop.
   MediaCaptureDevicesDispatcher::GetInstance()->
       DisableDeviceEnumerationForTesting();
@@ -735,8 +739,6 @@ class GeolocationContentSettingBubbleModelTest
 };
 
 TEST_F(GeolocationContentSettingBubbleModelTest, Geolocation) {
-  ASSERT_TRUE(profile()->CreateHistoryService());
-
 #if defined(OS_MAC)
   auto fake_geolocation_manager =
       std::make_unique<device::FakeGeolocationManager>();
@@ -1169,14 +1171,24 @@ TEST_F(ContentSettingBubbleModelTest, SubresourceFilter) {
   EXPECT_EQ(0U, bubble_content.media_menus.size());
 }
 
+class GenericSensorContentSettingBubbleModelTest
+    : public ContentSettingBubbleModelTest {
+ public:
+  GenericSensorContentSettingBubbleModelTest() {
+    // Enable all sensors just to avoid hardcoding the expected messages to the
+    // motion sensor-specific ones.
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kGenericSensorExtraClasses);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // Regression test for https://crbug.com/955408
 // See also: ContentSettingImageModelTest.SensorAccessPermissionsChanged
-TEST_F(ContentSettingBubbleModelTest, SensorAccessPermissionsChanged) {
-  // Enable all sensors just to avoid hardcoding the expected messages to the
-  // motion sensor-specific ones.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kGenericSensorExtraClasses);
-
+TEST_F(GenericSensorContentSettingBubbleModelTest,
+       SensorAccessPermissionsChanged) {
   WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("https://www.example.com"));
   PageSpecificContentSettings* content_settings =
