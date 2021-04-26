@@ -4,6 +4,7 @@
 
 #include "cc/document_transition/document_transition_request.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <sstream>
@@ -114,8 +115,13 @@ DocumentTransitionRequest::ConstructDirective(
         shared_element_render_pass_id_map) const {
   std::vector<viz::CompositorRenderPassId> shared_passes(shared_element_count_);
   for (uint32_t i = 0; i < shared_passes.size(); ++i) {
-    auto it = shared_element_render_pass_id_map.find(
-        DocumentTransitionSharedElementId{document_tag_, i});
+    auto it = std::find_if(
+        shared_element_render_pass_id_map.begin(),
+        shared_element_render_pass_id_map.end(),
+        [this, i](const std::pair<const DocumentTransitionSharedElementId,
+                                  viz::CompositorRenderPassId>& value) {
+          return value.first.Matches(document_tag_, i);
+        });
     if (it == shared_element_render_pass_id_map.end())
       continue;
     shared_passes[i] = it->second;

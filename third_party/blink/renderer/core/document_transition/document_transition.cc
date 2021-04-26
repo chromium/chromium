@@ -243,10 +243,13 @@ bool DocumentTransition::IsActiveElement(const Element* element) const {
 DocumentTransitionSharedElementId DocumentTransition::GetSharedElementId(
     const Element* element) const {
   DCHECK(IsActiveElement(element));
-  wtf_size_t index = active_shared_elements_.Find(element);
-  DCHECK_NE(index, kNotFound);
-  return DocumentTransitionSharedElementId{document_tag_,
-                                           static_cast<uint32_t>(index)};
+  DocumentTransitionSharedElementId result(document_tag_);
+  for (wtf_size_t i = 0; i < active_shared_elements_.size(); ++i) {
+    if (active_shared_elements_[i] == element)
+      result.AddIndex(i);
+  }
+  DCHECK(result.valid());
+  return result;
 }
 
 void DocumentTransition::VerifySharedElements() {

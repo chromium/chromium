@@ -9,15 +9,35 @@
 
 #include <tuple>
 
+#include "base/containers/flat_set.h"
+#include "cc/cc_export.h"
+
 namespace cc {
 
-struct DocumentTransitionSharedElementId {
-  uint32_t document_tag = 0u;
-  uint32_t element_index = 0u;
+class CC_EXPORT DocumentTransitionSharedElementId {
+ public:
+  DocumentTransitionSharedElementId();
+  explicit DocumentTransitionSharedElementId(uint32_t document_tag);
+  DocumentTransitionSharedElementId(const DocumentTransitionSharedElementId&);
+  DocumentTransitionSharedElementId(DocumentTransitionSharedElementId&&);
+  ~DocumentTransitionSharedElementId();
+
+  // Add a shared index to this id. It must have a valid document tag.
+  void AddIndex(uint32_t index);
+
+  // Returns true if the document tag matches this id and the index is in the
+  // list of indices for this id.
+  bool Matches(uint32_t document_tag, uint32_t index) const;
+
+  DocumentTransitionSharedElementId& operator=(
+      DocumentTransitionSharedElementId&&) = default;
+
+  DocumentTransitionSharedElementId& operator=(
+      const DocumentTransitionSharedElementId&) = default;
 
   bool operator==(const DocumentTransitionSharedElementId& other) const {
-    return element_index == other.element_index &&
-           document_tag == other.document_tag;
+    return element_indices_ == other.element_indices_ &&
+           document_tag_ == other.document_tag_;
   }
 
   bool operator!=(const DocumentTransitionSharedElementId& other) const {
@@ -25,11 +45,17 @@ struct DocumentTransitionSharedElementId {
   }
 
   bool operator<(const DocumentTransitionSharedElementId& other) const {
-    return std::tie(document_tag, element_index) <
-           std::tie(other.document_tag, other.element_index);
+    return std::tie(document_tag_, element_indices_) <
+           std::tie(other.document_tag_, other.element_indices_);
   }
 
-  bool valid() const { return document_tag != 0u; }
+  bool valid() const {
+    return document_tag_ != 0u && !element_indices_.empty();
+  }
+
+ private:
+  uint32_t document_tag_ = 0u;
+  base::flat_set<uint32_t> element_indices_;
 };
 
 }  // namespace cc

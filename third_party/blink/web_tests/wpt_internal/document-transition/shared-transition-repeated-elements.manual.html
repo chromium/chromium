@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<title>Shared transitions: repeated elements (one -> two elements and back)</title>
+<link rel="help" href="https://github.com/vmpstr/shared-element-transitions">
+<link rel="author" href="mailto:vmpstr@chromium.org">
+
+<style>
+body {
+  background: lightpink;
+}
+
+#container {
+  width: max-content;
+  position: relative;
+}
+
+.hidden { display: none; }
+
+.shape {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 1px solid black;
+  position: absolute;
+  contain: paint;
+}
+
+#yellow {
+  background: yellow;
+  left: 300px;
+  top: 50px;
+}
+#green {
+  background: green;
+  left: 50px;
+  top: 150px;
+}
+#blue {
+  background: blue;
+  left: 300px;
+  top: 250px;
+}
+</style>
+
+<input id=toggle type=button value="Toggle!"></input>
+<span>One shape becomes two and vice versa</span>
+<div id=green class=shape></div>
+<div id=blue class="shape hidden"></div>
+<div id=yellow class="shape hidden"></div>
+
+<script>
+function visibleSharedElements() {
+  if (green.classList.contains("hidden")) {
+    return [blue, yellow];
+  } else {
+    return [green, green];
+  }
+}
+
+async function runAnimation() {
+  await document.documentTransition.prepare({
+    rootTransition: "none",
+    sharedElements: visibleSharedElements()
+  });
+
+  green.classList.toggle("hidden");
+  blue.classList.toggle("hidden");
+  yellow.classList.toggle("hidden");
+
+  await document.documentTransition.start({
+    sharedElements: visibleSharedElements()
+  });
+}
+
+function init() {
+  toggle.addEventListener("click", runAnimation);
+}
+onload = init;
+</script>
