@@ -10,7 +10,11 @@
 'use strict';
 
 const reasonableNegotiationTimeMs = 1000; // 1 second
-const reasonableTotalTestTimeMs = 2000;  // The overall time for a test of this type is 10 secs, so timeout must be small
+// The overall time for a test of this type is 10 secs, so timeout must be small
+// There are 4 tests in the file, of which 2 are dynamic runtime, and 2 will
+// return failure if they take more than reasonableNegotiationTimeMs.
+// Flakiness has been observed if this limit was set to 2000.
+const reasonableTotalTestTimeMs = 1000;
 
 function maybeLog(arg) {
   // Uncomment to log performance data
@@ -69,6 +73,7 @@ async function doNegotiation(caller, callee) {
     assert_equals(caller.getSenders().length, kTrackCount);
     assert_equals(callee.getReceivers().length, kTrackCount);
     assert_less_than(timeTakenMs, reasonableNegotiationTimeMs);
+    maybeLog('Time taken for audio all at once: ' + timeTakenMs);
   }, 'Adding multiple audio tracks with addTrack(), all at once');
 
   promise_test(async t => {
@@ -113,6 +118,7 @@ async function doNegotiation(caller, callee) {
     const timeTakenMs = await doNegotiation(caller, callee);
     assert_equals(caller.getSenders().length, kTrackCount);
     assert_equals(callee.getReceivers().length, kTrackCount);
+    maybeLog('Time taken for video all at once: ' + timeTakenMs);
     assert_less_than(timeTakenMs, reasonableNegotiationTimeMs);
   }, 'Adding multiple video tracks with addTrack(), all at once');
 
