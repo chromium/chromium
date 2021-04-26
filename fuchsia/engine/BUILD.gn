@@ -605,12 +605,3 @@ executable("web_engine_shell_exec") {
 
   visibility = [ ":*" ]
 }
-
-if (is_official_build) {
-  symbol_archive("symbol_archive") {
-    deps = [ ":web_engine" ]
-    ids_txt = "$root_gen_dir/fuchsia/engine/web_engine/ids.txt"
-    archive_name =
-        "$root_gen_dir/fuchsia/engine/web_engine/web_engine.symbols.tar.bz2"
-  }
-}  # is_official_build

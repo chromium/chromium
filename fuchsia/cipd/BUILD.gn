@@ -8,6 +8,7 @@ assert(is_fuchsia)
 
 import("//build/cipd/cipd.gni")
 import("//build/util/process_version.gni")
+import("//third_party/fuchsia-sdk/sdk/build/build_id_dir.gni")
 
 # gn binary location.
 if (host_os == "mac") {
@@ -43,6 +44,7 @@ process_version("build_id") {
 #   install_mode: String, should be either "symlink" or "copy".
 #   deps: A list of targets to build prior to copying files.
 #   sources: A list of files to copy into the staging root.
+#   source_directories: A list of directories to include in the package.
 template("cipd_archive_internal") {
   forward_variables_from(invoker,
                          [
@@ -50,6 +52,7 @@ template("cipd_archive_internal") {
                            "package_basename",
                            "package_definition_basename",
                            "package_relative_path",
+                           "source_directories",
                            "sources",
                            "testonly",
                          ])
@@ -99,10 +102,7 @@ template("cipd_archive_internal") {
   if (!defined(deps)) {
     deps = []
   }
-  deps += [
-    ":${target_name}_license",
-    ":build_id",
-  ]
+  deps += [ ":${target_name}_license" ]
 
   if (!defined(sources)) {
     sources = []
@@ -133,6 +133,7 @@ template("cipd_archive") {
                              "package_definition_basename",
                              "package_relative_path",
                              "description",
+                             "source_directories",
                              "install_mode",
                              "deps",
                              "sources",
@@ -148,6 +149,7 @@ template("cipd_archive") {
                              "package_definition_basename",
                              "package_relative_path",
                              "description",
+                             "source_directories",
                              "install_mode",
                              "deps",
                              "sources",
@@ -282,30 +284,32 @@ cipd_archive("tests") {
   sources = far_sources + [ _manifest_path ]
 }
 
-cipd_archive("debug_symbols") {
+_debug_symbols_archive_name = "debug_symbols"
+
+# Construct a consolidated directory of debugging symbols using the GNU
+# .build_id structure for CIPD archival.
+_build_ids_target_dir = ".build-id"
+build_id_dir(_build_ids_target_dir) {
+  build_id_dirs = [
+    "${root_gen_dir}/fuchsia/engine/web_engine",
+    "${root_gen_dir}/fuchsia/runners/cast_runner",
+    "${root_gen_dir}/fuchsia/runners/web_runner",
+  ]
+  output_path = "${target_gen_dir}/${_debug_symbols_archive_name}/${_build_ids_target_dir}"
+  deps = [
+    "//fuchsia/engine:web_engine",
+    "//fuchsia/runners:cast_runner_pkg",
+    "//fuchsia/runners:web_runner_pkg",
+  ]
+}
+
+cipd_archive(_debug_symbols_archive_name) {
   package_basename = "debug-symbols"
-  package_definition_basename = "debug_symbols"
+  package_definition_basename = _debug_symbols_archive_name
   description = "Debugging symbols for prebuilt binaries from Chromium."
 
-  _symbol_tarballs = [
-    "${root_gen_dir}/fuchsia/engine/web_engine/web_engine.symbols.tar.bz2",
-    "${root_gen_dir}/fuchsia/runners/cast_runner/cast_runner.symbols.tar.bz2",
-    "${root_gen_dir}/fuchsia/runners/web_runner/web_runner.symbols.tar.bz2",
-  ]
-  _symbol_manifest = "$target_gen_dir/debug_symbols.json"
-  write_file(_symbol_manifest, _symbol_tarballs, "json")
-  _symbol_manifest_contents = []
-  foreach(_symbol_file, _symbol_tarballs) {
-    _symbol_manifest_contents += [ get_path_info(_symbol_file, "file") ]
-  }
-  write_file(_symbol_manifest, _symbol_manifest_contents, "json")
-
-  deps = [
-    "//fuchsia/engine:symbol_archive",
-    "//fuchsia/runners:cast_runner_symbol_archive",
-    "//fuchsia/runners:web_runner_symbol_archive",
-  ]
-  sources = [ _symbol_manifest ] + _symbol_tarballs
+  deps = [ ":${_build_ids_target_dir}" ]
+  source_directories = [ _build_ids_target_dir ]
 }
 
 cipd_archive("clear_key_cdm") {

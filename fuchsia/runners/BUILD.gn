@@ -289,19 +289,3 @@ test("web_runner_integration_tests") {
     "//build/config/fuchsia/test/web_engine_required_capabilities.test-cmx",
   ]
 }
-
-if (is_official_build) {
-  symbol_archive("cast_runner_symbol_archive") {
-    deps = [ ":cast_runner_pkg" ]
-    ids_txt = "$root_gen_dir/fuchsia/runners/cast_runner/ids.txt"
-    archive_name =
-        "$root_gen_dir/fuchsia/runners/cast_runner/cast_runner.symbols.tar.bz2"
-  }
-
-  symbol_archive("web_runner_symbol_archive") {
-    deps = [ ":web_runner_pkg" ]
-    ids_txt = "$root_gen_dir/fuchsia/runners/web_runner/ids.txt"
-    archive_name =
-        "$root_gen_dir/fuchsia/runners/web_runner/web_runner.symbols.tar.bz2"
-  }
-}  # is_official_build

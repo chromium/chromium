@@ -18,6 +18,9 @@
 #                 "symlink".
 #   deps: A list of targets to build prior to copying files.
 #   sources: A list of files to copy into the staging root.
+#   source_directories: A list of directories to include in the package. Should
+#                       only be used when listing out all the files (in a given
+#                       directory) in |sources| is unfeasible.
 #
 # Example:
 #   cipd_package_definition("chromedriver") {
@@ -33,12 +36,14 @@ template("cipd_package_definition") {
                          [
                            "deps",
                            "data",
+                           "source_directories",
                            "data_deps",
                            "sources",
                            "testonly",
                          ])
 
-  assert(defined(invoker.sources), "sources must be specified.")
+  assert(defined(sources) || defined(source_directories),
+         "At least one sources input must be specified.")
 
   _install_mode = "symlink"
   if (defined(invoker.install_mode)) {
@@ -61,15 +66,23 @@ template("cipd_package_definition") {
     "install_mode: ${_install_mode}",
     "data:",
   ]
-  foreach(source, sources) {
-    _yaml_contents += [ "  - file: " + get_path_info(source, "file") ]
+
+  if (defined(sources)) {
+    foreach(source, sources) {
+      _yaml_contents += [ "  - file: " + get_path_info(source, "file") ]
+    }
+    copy(target_name) {
+      outputs = [ "${_package_staging_dir}/{{source_file_part}}" ]
+    }
+  }
+
+  if (defined(source_directories)) {
+    foreach(directory, source_directories) {
+      _yaml_contents += [ "  - dir: " + directory ]
+    }
   }
 
   write_file("${_package_staging_dir}/${_cipd_definition_yaml}", _yaml_contents)
-
-  copy(target_name) {
-    outputs = [ "${_package_staging_dir}/{{source_file_part}}" ]
-  }
 }
 
 # Create a cipd file based on inputs and FILES.cfg config. Most of the arguments
