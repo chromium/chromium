@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_handler.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -861,6 +862,39 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   WaitForPickerClosed();
   // IPH is not shown.
   EXPECT_FALSE(ProfileSwitchPromoHasBeenShown(new_browser));
+}
+
+class ProfilePickerCreationFlowEphemeralGuestBrowserTest
+    : public ProfilePickerCreationFlowBrowserTest {
+ public:
+  ProfilePickerCreationFlowEphemeralGuestBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kEnableEphemeralGuestProfilesOnDesktop);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that a guest profile can be opened from the profile picker normally
+// when the ephemeral guest is enabled. Regression test for a crash
+// https://crbug.com/1201745.
+IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowEphemeralGuestBrowserTest,
+                       OpenGuestProfile) {
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
+  WaitForLayoutWithoutToolbar();
+  // Wait until webUI is fully initialized.
+  content::WaitForLoadStop(web_contents());
+  // Open a Guest profile. This triggered the crash https://crbug.com/1201745.
+  OpenGuestFromPicker();
+  // Browser for the guest profile is displayed.
+  Browser* new_browser = BrowserAddedWaiter(2u).Wait();
+  WaitForFirstPaint(new_browser->tab_strip_model()->GetActiveWebContents(),
+                    GURL("chrome://newtab"));
+  EXPECT_TRUE(new_browser->profile()->IsGuestSession() ||
+              new_browser->profile()->IsEphemeralGuestProfile());
+  WaitForPickerClosed();
 }
 
 class ProfilePickerEnterpriseCreationFlowBrowserTest

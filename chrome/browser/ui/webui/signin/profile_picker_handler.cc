@@ -813,6 +813,10 @@ bool ProfilePickerHandler::RemoveProfileFromList(
     const base::FilePath& profile_path) {
   auto remove_it = profiles_order_.find(profile_path);
   // Guest and omitted profiles aren't added to the list.
+  // It's possible that a profile gets marked as guest or as omitted after it
+  // had been added to the list. In that case, the profile gets removed from the
+  // list once in `OnProfileIsOmittedChanged()` but not the second time when
+  // `OnProfileWasRemoved()` is called.
   if (remove_it == profiles_order_.end())
     return false;
 
@@ -847,8 +851,6 @@ void ProfilePickerHandler::OnProfileWasRemoved(
 
 void ProfilePickerHandler::OnProfileIsOmittedChanged(
     const base::FilePath& profile_path) {
-  if (profile_path == ProfileManager::GetGuestProfilePath())
-    return;
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
