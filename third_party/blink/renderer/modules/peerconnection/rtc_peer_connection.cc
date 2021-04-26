@@ -345,6 +345,12 @@ webrtc::PeerConnectionInterface::RTCConfiguration ParseConfiguration(
   if (configuration->hasOfferExtmapAllowMixed()) {
     web_configuration.offer_extmap_allow_mixed =
         configuration->offerExtmapAllowMixed();
+    if (!web_configuration.offer_extmap_allow_mixed) {
+      // Only show a deprecation warning when set to false. The default
+      // is "true" as of M91.
+      Deprecation::CountDeprecation(
+          context, WebFeature::kRTCPeerConnectionOfferAllowExtmapMixedFalse);
+    }
   } else {
     web_configuration.offer_extmap_allow_mixed =
         base::FeatureList::IsEnabled(features::kRTCOfferExtmapAllowMixed);
