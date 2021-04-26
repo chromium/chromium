@@ -641,9 +641,8 @@ void WebRtcEventLogManager::OnLocalLogStarted(PeerConnectionKey peer_connection,
                                               const base::FilePath& file_path) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-  constexpr int kLogOutputPeriodMsForLocalLogging = 0;  // No batching.
   OnLoggingTargetStarted(LoggingTarget::kLocalLogging, peer_connection,
-                         kLogOutputPeriodMsForLocalLogging);
+                         /*output_period_ms=*/5000);
 
   if (local_logs_observer_) {
     local_logs_observer_->OnLocalLogStarted(peer_connection, file_path);
