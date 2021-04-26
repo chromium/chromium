@@ -396,6 +396,20 @@ def check_unique_testharness_basenames(repo_root, paths):
     return errors
 
 
+def check_unique_case_insensitive_paths(repo_root, paths):
+    # type: (Text, List[Text]) -> List[rules.Error]
+    seen = {}  # type: Dict[Text, Text]
+    errors = []
+    for path in paths:
+        lower_path = path.lower()
+        if lower_path in seen:
+            context = (seen[lower_path],)
+            errors.append(rules.DuplicatePathCaseInsensitive.error(path, context))
+        else:
+            seen[lower_path] = path
+    return errors
+
+
 def parse_ignorelist(f):
     # type: (IO[Text]) -> Tuple[Ignorelist, Set[Text]]
     """
@@ -1107,7 +1121,8 @@ def lint(repo_root, paths, output_format, ignore_glob=None, github_checks_output
 
 path_lints = [check_file_type, check_path_length, check_worker_collision, check_ahem_copy,
               check_mojom_js, check_tentative_directories, check_gitignore_file]
-all_paths_lints = [check_css_globally_unique, check_unique_testharness_basenames]
+all_paths_lints = [check_css_globally_unique, check_unique_testharness_basenames,
+                   check_unique_case_insensitive_paths]
 file_lints = [check_regexp_line, check_parsed, check_python_ast, check_script_metadata,
               check_ahem_system_font]
 

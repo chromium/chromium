@@ -359,6 +359,14 @@ class DuplicateBasenamePath(Rule):
     to_fix = "rename files so they have unique basename paths"
 
 
+class DuplicatePathCaseInsensitive(Rule):
+    name = "DUPLICATE-CASE-INSENSITIVE-PATH"
+    description = collapse("""
+            Path differs from path %s only in case
+    """)
+    to_fix = "rename files so they are unique irrespective of case"
+
+
 class TentativeDirectoryName(Rule):
     name = "TENTATIVE-DIRECTORY-NAME"
     description = "Directories for tentative tests must be named exactly 'tentative'"

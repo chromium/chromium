@@ -1007,6 +1007,9 @@ def build_config(override_path=None, config_cls=ConfigBuilder, **kwargs):
     if enable_http2:
         rv._default["ports"]["h2"] = [9000]
 
+    if kwargs.get("quic_transport"):
+        rv._default["ports"]["quic-transport"] = [10000]
+
     if override_path and os.path.exists(override_path):
         with open(override_path) as f:
             override_obj = json.load(f)

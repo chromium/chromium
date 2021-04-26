@@ -404,14 +404,18 @@ class BrowserInstance(object):
         if is_running:
             self.logger.debug("Stopping Firefox %s" % self.pid())
             shutdown_methods = [(True, lambda: self.runner.wait(self.shutdown_timeout)),
-                                (False, lambda: self.runner.stop(signal.SIGTERM)),
-                                (False, lambda: self.runner.stop(signal.SIGKILL))]
+                                (False, lambda: self.runner.stop(signal.SIGTERM,
+                                                                 self.shutdown_timeout))]
+            if hasattr(signal, "SIGKILL"):
+                shutdown_methods.append((False, lambda: self.runner.stop(signal.SIGKILL,
+                                                                         self.shutdown_timeout)))
             if skip_marionette:
                 shutdown_methods = shutdown_methods[1:]
             try:
                 # For Firefox we assume that stopping the runner prompts the
                 # browser to shut down. This allows the leak log to be written
-                for clean, stop_f in shutdown_methods:
+                for i, (clean, stop_f) in enumerate(shutdown_methods):
+                    self.logger.debug("Shutting down attempt %i/%i" % (i + 1, len(shutdown_methods)))
                     if not force or not clean:
                         retcode = stop_f()
                         if retcode is not None:
