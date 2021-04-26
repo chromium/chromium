@@ -12,7 +12,7 @@ namespace blink {
 
 InspectorTaskRunner::InspectorTaskRunner(
     scoped_refptr<base::SingleThreadTaskRunner> isolate_task_runner)
-    : isolate_task_runner_(isolate_task_runner) {}
+    : mutex_("InspectorTaskRunner.mutex_"), isolate_task_runner_(isolate_task_runner) {}
 
 InspectorTaskRunner::~InspectorTaskRunner() = default;
 

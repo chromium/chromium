@@ -58,9 +58,26 @@
 #include <unistd.h>
 #endif
 
+#include <dlfcn.h>
+
+static void (*gAddOrderedPthreadMutexFn)(const char*, pthread_mutex_t*);
+
+static void RecordReplayAddOrderedPthreadMutex(const char* name,
+                                               pthread_mutex_t* mutex) {
+  if (!gAddOrderedPthreadMutexFn) {
+    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayAddOrderedPthreadMutex");
+    if (!fnptr) {
+      return;
+    }
+    gAddOrderedPthreadMutexFn = reinterpret_cast<void(*)(const char*, pthread_mutex_t*)>(fnptr);
+  }
+
+  gAddOrderedPthreadMutexFn(name, mutex);
+}
+
 namespace WTF {
 
-MutexBase::MutexBase(bool recursive) {
+MutexBase::MutexBase(const char* ordered_name, bool recursive) {
   pthread_mutexattr_t attr;
   pthread_mutexattr_init(&attr);
   pthread_mutexattr_settype(
@@ -73,6 +90,10 @@ MutexBase::MutexBase(bool recursive) {
 #endif
 
   pthread_mutexattr_destroy(&attr);
+
+  if (ordered_name) {
+    RecordReplayAddOrderedPthreadMutex(ordered_name, &mutex_.internal_mutex_);
+  }
 }
 
 MutexBase::~MutexBase() {

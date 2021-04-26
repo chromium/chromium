@@ -80,7 +80,7 @@ class WTF_EXPORT MutexBase {
   PlatformMutex& Impl() { return mutex_; }
 
  protected:
-  MutexBase(bool recursive);
+  MutexBase(const char* ordered_name, bool recursive);
 
   PlatformMutex mutex_;
 
@@ -89,7 +89,7 @@ class WTF_EXPORT MutexBase {
 
 class LOCKABLE WTF_EXPORT Mutex : public MutexBase {
  public:
-  Mutex() : MutexBase(false) {}
+  Mutex(const char* ordered_name = nullptr) : MutexBase(ordered_name, false) {}
   bool TryLock() EXCLUSIVE_TRYLOCK_FUNCTION(true);
 
   // Overridden solely for the purpose of annotating them.
@@ -105,7 +105,7 @@ class LOCKABLE WTF_EXPORT Mutex : public MutexBase {
 // https://crbug.com/856641
 class WTF_EXPORT RecursiveMutex : public MutexBase {
  public:
-  RecursiveMutex() : MutexBase(true) {}
+  RecursiveMutex(const char* ordered_name = nullptr) : MutexBase(ordered_name, true) {}
   bool TryLock();
 };
 
