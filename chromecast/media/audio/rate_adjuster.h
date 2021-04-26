@@ -77,4 +77,4 @@ class RateAdjuster {
 }  // namespace media
 }  // namespace chromecast
 
-#endif  // CHROMECAST_MEDIA_AUDIO_AUDIO_FADER_H_
+#endif  // CHROMECAST_MEDIA_AUDIO_RATE_ADJUSTER_H_

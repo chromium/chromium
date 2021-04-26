@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_MEDIA_CMA_BACKEND_AUDIO_OUTPUT_STREAM_FUCHSIA_H_
-#define CHROMECAST_MEDIA_CMA_BACKEND_AUDIO_OUTPUT_STREAM_FUCHSIA_H_
+#ifndef CHROMECAST_MEDIA_CMA_BACKEND_FUCHSIA_MIXER_OUTPUT_STREAM_FUCHSIA_H_
+#define CHROMECAST_MEDIA_CMA_BACKEND_FUCHSIA_MIXER_OUTPUT_STREAM_FUCHSIA_H_
 
 #include <fuchsia/media/cpp/fidl.h>
 
@@ -70,4 +70,4 @@ class MixerOutputStreamFuchsia : public MixerOutputStream {
 }  // namespace media
 }  // namespace chromecast
 
-#endif  // CHROMECAST_MEDIA_CMA_BACKEND_AUDIO_OUTPUT_STREAM_FUCHSIA_H_
+#endif  // CHROMECAST_MEDIA_CMA_BACKEND_FUCHSIA_MIXER_OUTPUT_STREAM_FUCHSIA_H_

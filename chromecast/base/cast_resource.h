@@ -101,4 +101,4 @@ class CastResource {
 
 }  // namespace chromecast
 
-#endif
+#endif  // CHROMECAST_BASE_CAST_RESOURCE_H_

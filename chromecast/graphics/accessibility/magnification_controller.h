@@ -25,4 +25,4 @@ class MagnificationController {
 
 }  // namespace chromecast
 
-#endif  //
+#endif  // CHROMECAST_GRAPHICS_ACCESSIBILITY_MAGNIFICATION_CONTROLLER_H_

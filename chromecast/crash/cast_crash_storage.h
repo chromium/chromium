@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_CASH_CAST_CRASH_STORAGE_H_
-#define CHROMECAST_CASH_CAST_CRASH_STORAGE_H_
+#ifndef CHROMECAST_CRASH_CAST_CRASH_STORAGE_H_
+#define CHROMECAST_CRASH_CAST_CRASH_STORAGE_H_
 
 #include "base/strings/string_piece.h"
 
@@ -34,4 +34,4 @@ class CastCrashStorage {
 
 }  // namespace chromecast
 
-#endif  // CHROMECAST_CASH_CAST_CRASH_STORAGE_H_
+#endif  // CHROMECAST_CRASH_CAST_CRASH_STORAGE_H_

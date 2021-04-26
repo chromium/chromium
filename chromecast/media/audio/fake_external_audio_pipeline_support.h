@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_MEDIA_AUDIO_FAKE_EXTERNAL_AUDIO_PIPELINE_SUPPORT_H
-#define CHROMECAST_MEDIA_AUDIO_FAKE_EXTERNAL_AUDIO_PIPELINE_SUPPORT_H
+#ifndef CHROMECAST_MEDIA_AUDIO_FAKE_EXTERNAL_AUDIO_PIPELINE_SUPPORT_H_
+#define CHROMECAST_MEDIA_AUDIO_FAKE_EXTERNAL_AUDIO_PIPELINE_SUPPORT_H_
 
 #include "chromecast/public/media/external_audio_pipeline_shlib.h"
 
@@ -35,4 +35,4 @@ FakeExternalAudioPipelineSupport* GetFakeExternalAudioPipelineSupport();
 }  // namespace media
 }  // namespace chromecast
 
-#endif  // CHROMECAST_MEDIA_AUDIO_FAKE_EXTERNAL_AUDIO_PIPELINE_SUPPORT_H
+#endif  // CHROMECAST_MEDIA_AUDIO_FAKE_EXTERNAL_AUDIO_PIPELINE_SUPPORT_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_CRASH_CAST_CRASH_STORAGE_DEFAULT_H_
-#define CHROMECAST_CRASH_CAST_CRASH_STORAGE_DEFAULT_H_
+#ifndef CHROMECAST_CRASH_CAST_CRASH_STORAGE_IMPL_H_
+#define CHROMECAST_CRASH_CAST_CRASH_STORAGE_IMPL_H_
 
 #include "chromecast/crash/cast_crash_storage.h"
 
@@ -29,4 +29,4 @@ class CastCrashStorageImpl : public CastCrashStorage {
 
 }  // namespace chromecast
 
-#endif  // CHROMECAST_CRASH_CAST_CRASH_STORAGE_DEFAULT_H_
+#endif  // CHROMECAST_CRASH_CAST_CRASH_STORAGE_IMPL_H_

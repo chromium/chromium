@@ -59,4 +59,4 @@ class FrameGeneratorForTest {
 }  // namespace media
 }  // namespace chromecast
 
-#endif  // CHROMECAST_MEDIA_CMA_TEST_TEST_FRAME_GENERATOR_H_
+#endif  // CHROMECAST_MEDIA_CMA_TEST_FRAME_GENERATOR_FOR_TEST_H_

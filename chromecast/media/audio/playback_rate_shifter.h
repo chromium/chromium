@@ -74,4 +74,4 @@ class PlaybackRateShifter : public AudioProvider {
 }  // namespace media
 }  // namespace chromecast
 
-#endif  // CHROMECAST_MEDIA_AUDIO_AUDIO_FADER_H_
+#endif  // CHROMECAST_MEDIA_AUDIO_PLAYBACK_RATE_SHIFTER_H_

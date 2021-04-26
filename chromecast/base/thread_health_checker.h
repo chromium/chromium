@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_INTERNAL_SERVICE_THREAD_HEALTH_CHECKER_H_
-#define CHROMECAST_INTERNAL_SERVICE_THREAD_HEALTH_CHECKER_H_
+#ifndef CHROMECAST_BASE_THREAD_HEALTH_CHECKER_H_
+#define CHROMECAST_BASE_THREAD_HEALTH_CHECKER_H_
 
 #include <memory>
 #include <string>
@@ -79,4 +79,4 @@ class ThreadHealthChecker {
 
 }  // namespace chromecast
 
-#endif  // CHROMECAST_INTERNAL_SERVICE_THREAD_HEALTH_CHECKER_H_
+#endif  // CHROMECAST_BASE_THREAD_HEALTH_CHECKER_H_
