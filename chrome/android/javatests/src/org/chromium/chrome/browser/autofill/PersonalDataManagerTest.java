@@ -123,17 +123,23 @@ public class PersonalDataManagerTest {
         Assert.assertEquals(0, mHelper.getNumberOfProfilesForSettings());
     }
 
+    private CreditCard createLocalCreditCard(
+            String name, String number, String month, String year) {
+        return new CreditCard("" /*guid*/, "" /*origin*/, true /* isLocal */, false /* isCached */,
+                name, number, "" /*obfuscatedNumber*/, month, year, "" /* basicCardIssuerNetwork */,
+                0 /* issuerIconDrawableId */, "" /* billingAddressId */, "" /* serverId */);
+    }
+
     @Test
     @SmallTest
     @Feature({"Autofill"})
     public void testAddAndEditCreditCards() throws TimeoutException {
-        CreditCard card = new CreditCard(
-                "" /* guid */, "" /* origin */, "Visa", "1234123412341234", "", "5", "2020");
+        CreditCard card = createLocalCreditCard("Visa", "1234123412341234", "5", "2020");
         String cardOneGUID = mHelper.setCreditCard(card);
         Assert.assertEquals(1, mHelper.getNumberOfCreditCardsForSettings());
 
-        CreditCard card2 = new CreditCard("" /* guid */, "" /* origin */, "American Express",
-                "1234123412341234", "", "8", "2020");
+        CreditCard card2 =
+                createLocalCreditCard("American Express", "1234123412341234", "8", "2020");
         String cardTwoGUID = mHelper.setCreditCard(card2);
         Assert.assertEquals(2, mHelper.getNumberOfCreditCardsForSettings());
 
@@ -164,11 +170,11 @@ public class PersonalDataManagerTest {
     @SmallTest
     @Feature({"Autofill"})
     public void testAddAndEditCreditCardNickname() throws TimeoutException {
-        CreditCard cardWithoutNickname = new CreditCard("" /* guid */, "" /* origin */, "Visa",
-                "1234123412341234", "", "5", AutofillTestHelper.nextYear());
+        CreditCard cardWithoutNickname = createLocalCreditCard(
+                "Visa", "1234123412341234", "5", AutofillTestHelper.nextYear());
         String nickname = "test nickname";
-        CreditCard cardWithNickname = new CreditCard("" /* guid */, "" /* origin */,
-                "American Express", "1234123412341234", "", "8", AutofillTestHelper.nextYear());
+        CreditCard cardWithNickname = createLocalCreditCard(
+                "American Express", "1234123412341234", "8", AutofillTestHelper.nextYear());
         cardWithNickname.setNickname(nickname);
 
         String cardWithoutNicknameGuid = mHelper.setCreditCard(cardWithoutNickname);
@@ -184,9 +190,8 @@ public class PersonalDataManagerTest {
     @SmallTest
     @Feature({"Autofill"})
     public void testAddAndDeleteCreditCard() throws TimeoutException {
-        CreditCard card = new CreditCard(
-                "" /* guid */, "Chrome settings" /* origin */,
-                "Visa", "1234123412341234", "", "5", "2020");
+        CreditCard card = createLocalCreditCard("Visa", "1234123412341234", "5", "2020");
+        card.setOrigin("Chrome settings");
         String cardOneGUID = mHelper.setCreditCard(card);
         Assert.assertEquals(1, mHelper.getNumberOfCreditCardsForSettings());
 
@@ -341,14 +346,14 @@ public class PersonalDataManagerTest {
     @DisabledTest(message = "https://crbug.com/1123852")
     public void testCreditCardsFrecency() throws TimeoutException {
         // Create 3 credit cards.
-        CreditCard card1 = new CreditCard(
-                "" /* guid */, "" /* origin */, "Visa", "1234123412341234", "", "5", "2020");
+        CreditCard card1 = createLocalCreditCard("Visa", "1234123412341234", "5", "2020");
 
-        CreditCard card2 = new CreditCard("" /* guid */, "http://www.example.com" /* origin */,
-                "American Express", "1234123412341234", "", "8", "2020");
+        CreditCard card2 =
+                createLocalCreditCard("American Express", "1234123412341234", "8", "2020");
+        card2.setOrigin("http://www.example.com");
 
-        CreditCard card3 = new CreditCard("" /* guid */, "http://www.example.com" /* origin */,
-                "Mastercard", "1234123412341234", "", "11", "2020");
+        CreditCard card3 = createLocalCreditCard("Mastercard", "1234123412341234", "11", "2020");
+        card3.setOrigin("http://www.example.com");
 
         String guid1 = mHelper.setCreditCard(card1);
         String guid2 = mHelper.setCreditCard(card2);

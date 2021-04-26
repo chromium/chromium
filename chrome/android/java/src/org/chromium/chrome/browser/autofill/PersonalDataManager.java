@@ -434,15 +434,6 @@ public class PersonalDataManager {
                     0 /* issuerIconDrawableId */, "" /* billingAddressId */, "" /* serverId */);
         }
 
-        /** TODO(estade): remove this constructor. */
-        @VisibleForTesting
-        public CreditCard(String guid, String origin, String name, String number,
-                String obfuscatedNumber, String month, String year) {
-            this(guid, origin, true /* isLocal */, false /* isCached */, name, number,
-                    obfuscatedNumber, month, year, "" /* basicCardIssuerNetwork */,
-                    0 /* issuerIconDrawableId */, "" /* billingAddressId */, "" /* serverId */);
-        }
-
         @CalledByNative("CreditCard")
         public String getGUID() {
             return mGUID;
