@@ -36,6 +36,9 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_client.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/menu_button.h"
 
@@ -423,6 +426,58 @@ TEST_F(BookmarkBarViewTest, ChangeTitle) {
                                  bookmark_bar_view()->bounds().height());
   bookmark_bar_view()->Layout();
   EXPECT_EQ("a1 b1 c d1 e f1", GetStringForVisibleButtons());
+}
+
+TEST_F(BookmarkBarViewTest, DropCallbackTest) {
+  EXPECT_TRUE(BookmarkModelFactory::GetForBrowserContext(profile())->loaded());
+  AddNodesToBookmarkBarFromModelString("a b c d e f ");
+  EXPECT_EQ(0u, test_helper_->GetBookmarkButtonCount());
+
+  SizeUntilButtonsVisible(7);
+  EXPECT_EQ(6u, test_helper_->GetBookmarkButtonCount());
+
+  gfx::Point bar_loc;
+  views::View::ConvertPointToScreen(bookmark_bar_view(), &bar_loc);
+  ui::OSExchangeData drop_data;
+  drop_data.SetURL(GURL("http://www.chromium.org/"), std::u16string(u"z"));
+  ui::DropTargetEvent target_event(drop_data, gfx::PointF(bar_loc),
+                                   gfx::PointF(bar_loc),
+                                   ui::DragDropTypes::DRAG_COPY);
+  EXPECT_TRUE(bookmark_bar_view()->CanDrop(drop_data));
+  bookmark_bar_view()->OnDragUpdated(target_event);
+  auto cb = bookmark_bar_view()->GetDropCallback(target_event);
+  EXPECT_EQ("a b c d e f", GetStringForVisibleButtons());
+
+  ui::mojom::DragOperation output_drag_op;
+  std::move(cb).Run(target_event, output_drag_op);
+  EXPECT_EQ("z a b c d e f", GetStringForVisibleButtons());
+  EXPECT_EQ(output_drag_op, ui::mojom::DragOperation::kCopy);
+}
+
+TEST_F(BookmarkBarViewTest, DropCallback_InvalidatePtrTest) {
+  EXPECT_TRUE(BookmarkModelFactory::GetForBrowserContext(profile())->loaded());
+
+  SizeUntilButtonsVisible(7);
+  EXPECT_EQ(0u, test_helper_->GetBookmarkButtonCount());
+
+  gfx::Point bar_loc;
+  views::View::ConvertPointToScreen(bookmark_bar_view(), &bar_loc);
+  ui::OSExchangeData drop_data;
+  drop_data.SetURL(GURL("http://www.chromium.org/"), std::u16string(u"z"));
+  ui::DropTargetEvent target_event(drop_data, gfx::PointF(bar_loc),
+                                   gfx::PointF(bar_loc),
+                                   ui::DragDropTypes::DRAG_COPY);
+  EXPECT_TRUE(bookmark_bar_view()->CanDrop(drop_data));
+  bookmark_bar_view()->OnDragUpdated(target_event);
+  auto cb = bookmark_bar_view()->GetDropCallback(target_event);
+
+  AddNodesToBookmarkBarFromModelString("a b c d e f ");
+  EXPECT_EQ(6u, test_helper_->GetBookmarkButtonCount());
+
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(cb).Run(target_event, output_drag_op);
+  EXPECT_EQ("a b c d e f", GetStringForVisibleButtons());
+  EXPECT_EQ(output_drag_op, ui::mojom::DragOperation::kNone);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

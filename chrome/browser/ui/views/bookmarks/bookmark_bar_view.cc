@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
 #include "base/metrics/user_metrics.h"
@@ -59,6 +60,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
@@ -74,6 +76,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -1081,36 +1084,38 @@ DragOperation BookmarkBarView::OnPerformDrop(const ui::DropTargetEvent& event) {
       drop_info_->location.operation == DragOperation::kNone)
     return DragOperation::kNone;
 
-  const BookmarkNode* root =
-      (drop_info_->location.button_type == DROP_OTHER_FOLDER)
-          ? model_->other_node()
-          : model_->bookmark_bar_node();
-
-  if (drop_info_->location.index.has_value()) {
-    // TODO(sky): optimize the SchedulePaint region.
-    SchedulePaint();
-  }
-
-  const BookmarkNode* parent_node;
-  size_t index;
-  if (drop_info_->location.button_type == DROP_OTHER_FOLDER) {
-    parent_node = root;
-    index = parent_node->children().size();
-  } else if (drop_info_->location.on) {
-    parent_node = root->children()[drop_info_->location.index.value()].get();
-    index = parent_node->children().size();
-  } else {
-    parent_node = root;
-    index = drop_info_->location.index.value();
-  }
-  const bookmarks::BookmarkNodeData data = drop_info_->data;
-  DCHECK(data.is_valid());
+  size_t index = -1;
+  const bookmarks::BookmarkNode* parent_node =
+      GetParentNodeAndIndexForDrop(index);
   bool copy = drop_info_->location.operation == DragOperation::kCopy;
+  DragOperation output_drag_op = DragOperation::kNone;
+  bookmarks::BookmarkNodeData drop_data = drop_info_->data;
   drop_info_.reset();
+  PerformDrop(std::move(drop_data), parent_node, index, copy, event,
+              output_drag_op);
+  return output_drag_op;
+}
 
-  base::RecordAction(base::UserMetricsAction("BookmarkBar_DragEnd"));
-  return chrome::DropBookmarks(browser_->profile(), data, parent_node, index,
-                               copy);
+views::View::DropCallback BookmarkBarView::GetDropCallback(
+    const ui::DropTargetEvent& event) {
+  StopShowFolderDropMenuTimer();
+
+  if (bookmark_drop_menu_)
+    bookmark_drop_menu_->Cancel();
+
+  if (!drop_info_.get() ||
+      drop_info_->location.operation == DragOperation::kNone)
+    return base::NullCallback();
+
+  size_t index = -1;
+  const bookmarks::BookmarkNode* parent_node =
+      GetParentNodeAndIndexForDrop(index);
+  bool copy = drop_info_->location.operation == DragOperation::kCopy;
+  bookmarks::BookmarkNodeData drop_data = drop_info_->data;
+  drop_info_.reset();
+  return base::BindOnce(&BookmarkBarView::PerformDrop,
+                        drop_weak_ptr_factory_.GetWeakPtr(),
+                        std::move(drop_data), parent_node, index, copy);
 }
 
 void BookmarkBarView::OnThemeChanged() {
@@ -1189,6 +1194,8 @@ void BookmarkBarView::BookmarkModelBeingDeleted(BookmarkModel* model) {
   // Do minimal cleanup, presumably we'll be deleted shortly.
   model_->RemoveObserver(this);
   model_ = nullptr;
+
+  drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void BookmarkBarView::BookmarkNodeMoved(BookmarkModel* model,
@@ -1209,6 +1216,8 @@ void BookmarkBarView::BookmarkNodeMoved(BookmarkModel* model,
     StartThrobbing(new_parent->children()[new_index].get(), false);
   if (needs_layout_and_paint)
     LayoutAndPaint();
+
+  drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void BookmarkBarView::BookmarkNodeAdded(BookmarkModel* model,
@@ -1216,6 +1225,8 @@ void BookmarkBarView::BookmarkNodeAdded(BookmarkModel* model,
                                         size_t index) {
   if (BookmarkNodeAddedImpl(model, parent, index))
     LayoutAndPaint();
+
+  drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void BookmarkBarView::BookmarkNodeRemoved(BookmarkModel* model,
@@ -1228,6 +1239,8 @@ void BookmarkBarView::BookmarkNodeRemoved(BookmarkModel* model,
     bookmark_menu_->Cancel();
   if (BookmarkNodeRemovedImpl(model, parent, old_index))
     LayoutAndPaint();
+
+  drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void BookmarkBarView::BookmarkAllUserNodesRemoved(
@@ -1244,11 +1257,15 @@ void BookmarkBarView::BookmarkAllUserNodesRemoved(
   bookmark_buttons_.clear();
 
   LayoutAndPaint();
+
+  drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void BookmarkBarView::BookmarkNodeChanged(BookmarkModel* model,
                                           const BookmarkNode* node) {
   BookmarkNodeChangedImpl(model, node);
+
+  drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void BookmarkBarView::BookmarkNodeChildrenReordered(BookmarkModel* model,
@@ -1269,6 +1286,8 @@ void BookmarkBarView::BookmarkNodeChildrenReordered(BookmarkModel* model,
   }
 
   LayoutAndPaint();
+
+  drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void BookmarkBarView::BookmarkNodeFaviconChanged(BookmarkModel* model,
@@ -2080,6 +2099,47 @@ BookmarkBarView::GetPageNavigatorGetter() {
     return bookmark_bar->page_navigator_;
   };
   return base::BindRepeating(getter, weak_ptr_factory_.GetWeakPtr());
+}
+
+const BookmarkNode* BookmarkBarView::GetParentNodeAndIndexForDrop(
+    size_t& index) {
+  const BookmarkNode* root =
+      (drop_info_->location.button_type == DROP_OTHER_FOLDER)
+          ? model_->other_node()
+          : model_->bookmark_bar_node();
+
+  if (drop_info_->location.index.has_value()) {
+    // TODO(sky): optimize the SchedulePaint region.
+    SchedulePaint();
+  }
+
+  const BookmarkNode* parent_node;
+  if (drop_info_->location.button_type == DROP_OTHER_FOLDER) {
+    parent_node = root;
+    index = parent_node->children().size();
+  } else if (drop_info_->location.on) {
+    parent_node = root->children()[drop_info_->location.index.value()].get();
+    index = parent_node->children().size();
+  } else {
+    parent_node = root;
+    index = drop_info_->location.index.value();
+  }
+  return parent_node;
+}
+
+void BookmarkBarView::PerformDrop(const bookmarks::BookmarkNodeData data,
+                                  const BookmarkNode* parent_node,
+                                  const size_t index,
+                                  const bool copy,
+                                  const ui::DropTargetEvent& event,
+                                  ui::mojom::DragOperation& output_drag_op) {
+  DCHECK(data.is_valid());
+  DCHECK(parent_node);
+  DCHECK_NE(index, size_t{-1});
+
+  base::RecordAction(base::UserMetricsAction("BookmarkBar_DragEnd"));
+  output_drag_op = chrome::DropBookmarks(browser_->profile(), data, parent_node,
+                                         index, copy);
 }
 
 BEGIN_METADATA(BookmarkBarView, views::AccessiblePaneView)

@@ -26,6 +26,7 @@
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/drag_controller.h"
 #include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/view.h"
 
 class BookmarkBarViewObserver;
 class BookmarkBarViewTestHelper;
@@ -169,6 +170,8 @@ class BookmarkBarView : public views::AccessiblePaneView,
   int OnDragUpdated(const ui::DropTargetEvent& event) override;
   void OnDragExited() override;
   ui::mojom::DragOperation OnPerformDrop(
+      const ui::DropTargetEvent& event) override;
+  views::View::DropCallback GetDropCallback(
       const ui::DropTargetEvent& event) override;
   void OnThemeChanged() override;
   void VisibilityChanged(View* starting_from, bool is_visible) override;
@@ -375,6 +378,18 @@ class BookmarkBarView : public views::AccessiblePaneView,
   // change in the meantime.
   base::RepeatingCallback<content::PageNavigator*()> GetPageNavigatorGetter();
 
+  // Returns the target drop BookmarkNode parent pointer and updates `index`
+  // with the right value.
+  const bookmarks::BookmarkNode* GetParentNodeAndIndexForDrop(size_t& index);
+
+  // Drops Bookmark `data` and updates `output_drag_op` accordingly.
+  void PerformDrop(const bookmarks::BookmarkNodeData data,
+                   const bookmarks::BookmarkNode* parent_node,
+                   const size_t index,
+                   const bool copy,
+                   const ui::DropTargetEvent& event,
+                   ui::mojom::DragOperation& output_drag_op);
+
   // Needed to react to kShowAppsShortcutInBookmarkBar changes.
   PrefChangeRegistrar profile_pref_registrar_;
 
@@ -448,6 +463,10 @@ class BookmarkBarView : public views::AccessiblePaneView,
   // Returns WeakPtrs used in GetPageNavigatorGetter(). Used to ensure
   // safety if BookmarkBarView is deleted after getting the callback.
   base::WeakPtrFactory<BookmarkBarView> weak_ptr_factory_{this};
+
+  // Returns WeakPtrs used in GetDropCallback(). Used to ensure
+  // safety if `model_` is mutated after getting the callback.
+  base::WeakPtrFactory<BookmarkBarView> drop_weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_BAR_VIEW_H_
