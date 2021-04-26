@@ -4641,19 +4641,16 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, AutoResizeMessages) {
 }
 
 // Test that a guest sees the synthetic wheel events of a touchpad pinch.
-//
-// Test is flaky on Linux Ozone. See crbug.com/1201372
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-#define MAYBE_TouchpadPinchSyntheticWheelEvents \
-  DISABLED_TouchpadPinchSyntheticWheelEvents
-#else
-#define MAYBE_TouchpadPinchSyntheticWheelEvents \
-  TouchpadPinchSyntheticWheelEvents
-#endif  // defined(OS_LINUX)
-IN_PROC_BROWSER_TEST_F(WebViewTest, MAYBE_TouchpadPinchSyntheticWheelEvents) {
+IN_PROC_BROWSER_TEST_F(WebViewTest, TouchpadPinchSyntheticWheelEvents) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   LoadAppWithGuest("web_view/touchpad_pinch");
   content::WebContents* guest_contents = GetGuestWebContents();
+
+  content::WaitForHitTestData(guest_contents);
+  // Ensure the compositor thread is aware of the wheel listener.
+  content::MainThreadFrameObserver synchronize_threads(
+      guest_contents->GetRenderWidgetHostView()->GetRenderWidgetHost());
+  synchronize_threads.Wait();
 
   ExtensionTestMessageListener synthetic_wheel_listener("Seen wheel event",
                                                         false);
