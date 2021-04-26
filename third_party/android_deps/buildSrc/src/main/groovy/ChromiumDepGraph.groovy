@@ -459,12 +459,31 @@ class ChromiumDepGraph {
         }
 
         if (recurse) {
+          def childDependenciesWithArtifacts = []
+
+          dependency.children.each {
+            childDependency->
+                // Replace dependency which acts as a redirect
+                // (ex: org.jetbrains.kotlinx:kotlinx-coroutines-core) with
+                // dependencies it redirects to.
+                if (childDependency.getModuleArtifacts().isEmpty()) {
+                  if (!childDependency.children.isEmpty()) {
+                    childDependenciesWithArtifacts += childDependency.children
+                  } else {
+                    throw new IllegalStateException(
+                        "The dependency ${id} has no children and no artifacts.")
+                  }
+                } else {
+                  childDependenciesWithArtifacts += childDependency
+                }
+          }
+
           def childModules = []
-          dependency.children.each { childDependency ->
+          childDependenciesWithArtifacts.each { childDependency ->
               childModules += makeModuleId(childDependency.module)
           }
           dependencies.put(id, buildDepDescription(id, dependency, artifact, childModules))
-          dependency.children.each {
+          childDependenciesWithArtifacts.each {
               childDependency -> collectDependenciesInternal(childDependency)
           }
         } else {
