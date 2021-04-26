@@ -1072,7 +1072,8 @@ base::Value PolicyUIHandler::GetPolicyValues() {
   if (updater_policies_) {
     return policy::ArrayPolicyConversions(std::move(client))
         .EnableConvertValues(true)
-        .WithUpdaterPolicies(updater_policies_->DeepCopy())
+        .WithUpdaterPolicies(
+            std::make_unique<policy::PolicyMap>(updater_policies_->Clone()))
         .WithUpdaterPolicySchemas(GetGoogleUpdatePolicySchemas())
         .ToValue();
   }
