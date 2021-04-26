@@ -149,7 +149,7 @@ const char kChromeUIRestartURL[] = "chrome://restart/";
 const char kChromeUISafetyPixelbookURL[] = "https://g.co/Pixelbook/legal";
 const char kChromeUISafetyPixelSlateURL[] = "https://g.co/PixelSlate/legal";
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
-const char kChromeUISessionServiceInternalsHost[] = "session-service-internals";
+const char kChromeUISessionServiceInternalsPath[] = "session-service";
 #endif
 const char kChromeUISettingsHost[] = "settings";
 const char kChromeUISettingsURL[] = "chrome://settings/";
@@ -514,9 +514,6 @@ const char* const kChromeHostURLs[] = {
     kChromeUIPredictorsHost,
     kChromeUIPrefsInternalsHost,
     kChromeUIQuotaInternalsHost,
-#if BUILDFLAG(ENABLE_SESSION_SERVICE)
-    kChromeUISessionServiceInternalsHost,
-#endif
     kChromeUISignInInternalsHost,
     kChromeUISiteEngagementHost,
     kChromeUINTPTilesInternalsHost,
@@ -619,6 +616,9 @@ const char* const kChromeInternalsPathURLs[] = {
 #else
     kChromeUIInternalsWebAppPath,
 #endif  // defined(OS_ANDROID)
+#if BUILDFLAG(ENABLE_SESSION_SERVICE)
+    kChromeUISessionServiceInternalsPath,
+#endif
 };
 const size_t kNumberOfChromeInternalsPathURLs =
     base::size(kChromeInternalsPathURLs);

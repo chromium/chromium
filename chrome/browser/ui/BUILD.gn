@@ -315,8 +315,8 @@ static_library("ui") {
 
   if (enable_session_service) {
     sources += [
-      "webui/sessions/session_service_internals_ui.cc",
-      "webui/sessions/session_service_internals_ui.h",
+      "webui/internals/sessions/session_service_internals_handler.cc",
+      "webui/internals/sessions/session_service_internals_handler.h",
     ]
   }
 

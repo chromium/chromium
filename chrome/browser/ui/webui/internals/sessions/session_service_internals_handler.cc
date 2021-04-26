@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/sessions/session_service_internals_ui.h"
+#include "chrome/browser/ui/webui/internals/sessions/session_service_internals_handler.h"
 
 #include <string>
 
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_service_log.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 
 namespace {
@@ -68,33 +68,21 @@ std::string GetEventLogAsString(Profile* profile) {
   return base::JoinString(results, "\n");
 }
 
-bool ShouldHandleWebUIRequestCallback(const std::string& path) {
-  return true;
+}  // namespace
+
+// static
+bool SessionServiceInternalsHandler::ShouldHandleWebUIRequestCallback(
+    const std::string& path) {
+  return path == chrome::kChromeUISessionServiceInternalsPath;
 }
 
-void HandleWebUIRequestCallback(
-    const std::string& result,
+// static
+void SessionServiceInternalsHandler::HandleWebUIRequestCallback(
+    Profile* profile,
     const std::string& path,
     content::WebUIDataSource::GotDataCallback callback) {
   DCHECK(ShouldHandleWebUIRequestCallback(path));
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  std::string result_copy = result;
-  std::move(callback).Run(base::RefCountedString::TakeString(&result_copy));
+  std::string result = GetEventLogAsString(profile);
+  std::move(callback).Run(base::RefCountedString::TakeString(&result));
 }
-
-}  // namespace
-
-SessionServiceInternalsUI::SessionServiceInternalsUI(content::WebUI* web_ui)
-    : WebUIController(web_ui) {
-  Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource* source = content::WebUIDataSource::Create(
-      chrome::kChromeUISessionServiceInternalsHost);
-  // This page only needs raw text, and the string is on the small side.
-  source->SetRequestFilter(
-      base::BindRepeating(&ShouldHandleWebUIRequestCallback),
-      base::BindRepeating(&HandleWebUIRequestCallback,
-                          GetEventLogAsString(profile)));
-  content::WebUIDataSource::Add(profile, source);
-}
-
-SessionServiceInternalsUI::~SessionServiceInternalsUI() = default;

@@ -21,6 +21,35 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #endif  // defined(OS_ANDROID)
 
+#if BUILDFLAG(ENABLE_SESSION_SERVICE)
+#include "chrome/browser/ui/webui/internals/sessions/session_service_internals_handler.h"
+#endif
+
+namespace {
+
+bool ShouldHandleWebUIRequestCallback(const std::string& path) {
+#if BUILDFLAG(ENABLE_SESSION_SERVICE)
+  if (SessionServiceInternalsHandler::ShouldHandleWebUIRequestCallback(path))
+    return true;
+#endif
+  return false;
+}
+
+void HandleWebUIRequestCallback(
+    Profile* profile,
+    const std::string& path,
+    content::WebUIDataSource::GotDataCallback callback) {
+#if BUILDFLAG(ENABLE_SESSION_SERVICE)
+  if (SessionServiceInternalsHandler::ShouldHandleWebUIRequestCallback(path)) {
+    return SessionServiceInternalsHandler::HandleWebUIRequestCallback(
+        profile, path, std::move(callback));
+  }
+#endif
+  NOTREACHED();
+}
+
+}  // namespace
+
 InternalsUI::InternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
   profile_ = Profile::FromWebUI(web_ui);
@@ -54,6 +83,11 @@ InternalsUI::InternalsUI(content::WebUI* web_ui)
   // chrome://internals/web-app
   WebAppInternalsPageHandlerImpl::AddPageResources(source_);
 #endif  // defined(OS_ANDROID)
+
+  // chrome://internals/session-service
+  source_->SetRequestFilter(
+      base::BindRepeating(&ShouldHandleWebUIRequestCallback),
+      base::BindRepeating(&HandleWebUIRequestCallback, profile_));
 
   content::WebUIDataSource::Add(profile_, source_);
 }
