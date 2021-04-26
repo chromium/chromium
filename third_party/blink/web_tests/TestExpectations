@@ -7324,7 +7324,7 @@ crbug.com/1202040 external/wpt/html/cross-origin-embedder-policy/none.https.html
 crbug.com/1202040 virtual/plz-service-worker/external/wpt/html/cross-origin-embedder-policy/none.https.html [ Pass Failure Timeout ]
 crbug.com/1202051 virtual/scroll-unification/scrollbars/layout-viewport-scrollbars-hidden.html [ Pass Failure ]
 crbug.com/1202051 virtual/scroll-unification-prefer_compositing_to_lcd_text/scrollbars/layout-viewport-scrollbars-hidden.html [ Pass Failure ]
-crbug.com/1200751 [ Linux ] fast/peerconnection/RTCPeerConnection-addMultipleTracks.html [ Pass Failure ]
+crbug.com/1200751 [ Linux ] fast/peerconnection/RTCPeerConnection-addMultipleTracks.html [ Pass Failure Timeout ]
 crbug.com/1197528 [ Linux ] pointer-lock/pointerlockchange-pointerlockerror-events.html [ Pass Failure ]
 
 # Image pixels are sometimes different on Fuchsia.
