@@ -62,6 +62,8 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
 
   // A message to be written to a channel.
   struct MOJO_SYSTEM_IMPL_EXPORT Message {
+    virtual ~Message() = default;
+
     enum class MessageType : uint16_t {
       // An old format normal message, that uses the LegacyHeader.
       // Only used on Android and ChromeOS.
@@ -170,8 +172,6 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
                                     size_t max_handles,
                                     size_t payload_size,
                                     MessageType message_type);
-    ~Message();
-
     static MessagePtr CreateRawForFuzzing(base::span<const unsigned char> data);
 
     // Constructs a Message from serialized message data, optionally coming from
@@ -181,12 +181,12 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
         size_t data_num_bytes,
         base::ProcessHandle from_process = base::kNullProcessHandle);
 
-    const void* data() const { return data_.get(); }
+    virtual const void* data() const = 0;
     size_t data_num_bytes() const { return size_; }
 
     // The current capacity of the message buffer, not counting internal header
     // data.
-    size_t capacity() const;
+    virtual size_t capacity() const = 0;
 
     // Extends the portion of the total message capacity which contains
     // meaningful payload data. Storage capacity which falls outside of this
@@ -194,7 +194,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
     //
     // If the message's current capacity is not large enough to accommodate the
     // new payload size, it will be reallocated accordingly.
-    void ExtendPayload(size_t new_payload_size);
+    virtual void ExtendPayload(size_t new_payload_size) = 0;
 
     const void* extra_header() const;
     void* mutable_extra_header();
@@ -213,44 +213,23 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
 
     // Note: SetHandles() and TakeHandles() invalidate any previous value of
     // handles().
-    void SetHandles(std::vector<PlatformHandle> new_handles);
-    void SetHandles(std::vector<PlatformHandleInTransit> new_handles);
-    std::vector<PlatformHandleInTransit> TakeHandles();
-    size_t NumHandlesForTransit() const;
+    virtual void SetHandles(std::vector<PlatformHandle> new_handles) = 0;
+    virtual void SetHandles(
+        std::vector<PlatformHandleInTransit> new_handles) = 0;
+    virtual std::vector<PlatformHandleInTransit> TakeHandles() = 0;
+    virtual size_t NumHandlesForTransit() const = 0;
 
     void SetVersionForTest(uint16_t version_number);
 
-   private:
-    Message();
+   protected:
+    Message() = default;
 
-    Message(size_t capacity,
-            size_t max_handles,
-            size_t payload_size,
-            MessageType message_type);
-
-    // The message data buffer.
-    AlignedBuffer data_;
-
-    // The capacity of the buffer at |data_|.
-    size_t capacity_ = 0;
+    virtual void* mutable_data() const = 0;
 
     // The size of the message. This is the portion of |data_| that should
     // be transmitted if the message is written to a channel. Includes all
     // headers and user payload.
     size_t size_ = 0;
-
-    // Maximum number of handles which may be attached to this message.
-    size_t max_handles_ = 0;
-
-    std::vector<PlatformHandleInTransit> handle_vector_;
-
-#if defined(OS_WIN)
-    // On Windows, handles are serialised into the extra header section.
-    HandleEntry* handles_ = nullptr;
-#elif defined(OS_MAC)
-    // On OSX, handles are serialised into the extra header section.
-    MachPortsExtraHeader* mach_ports_header_ = nullptr;
-#endif
 
     DISALLOW_COPY_AND_ASSIGN(Message);
   };
