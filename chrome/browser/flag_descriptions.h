@@ -1807,6 +1807,9 @@ extern const char kMessagesForAndroidPasswordsDescription[];
 extern const char kMessagesForAndroidPopupBlockedName[];
 extern const char kMessagesForAndroidPopupBlockedDescription[];
 
+extern const char kMessagesForAndroidSafetyTipName[];
+extern const char kMessagesForAndroidSafetyTipDescription[];
+
 extern const char kOfflineIndicatorAlwaysHttpProbeName[];
 extern const char kOfflineIndicatorAlwaysHttpProbeDescription[];
 

@@ -22,9 +22,15 @@ extern const base::Feature kMessagesForAndroidPasswords;
 // Infobars infrastructure.
 extern const base::Feature kMessagesForAndroidPopupBlocked;
 
+// Feature that controls whether "safety tip" prompts use Messages or
+// Infobars infrastructure.
+extern const base::Feature kMessagesForAndroidSafetyTip;
+
 bool IsPasswordMessagesUiEnabled();
 
 bool IsPopupBlockedMessagesUiEnabled();
+
+bool IsSafetyTipMessagesUiEnabled();
 
 }  // namespace messages
 
