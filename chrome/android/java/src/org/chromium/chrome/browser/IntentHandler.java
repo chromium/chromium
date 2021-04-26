@@ -29,7 +29,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
-import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.IntentUtils;
@@ -38,7 +37,6 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler;
@@ -1504,16 +1502,6 @@ public class IntentHandler {
     @Nullable
     public static Intent createTrustedBringTabToFrontIntent(
             int tabId, @BringToFrontSource int bringToFrontSource) {
-        // Iterate through all {@link CustomTab}s and check whether the given tabId belongs to a
-        // {@link CustomTab}. If so, return null as the client app's task cannot be foregrounded.
-        for (Activity activity : ApplicationStatus.getRunningActivities()) {
-            if (activity instanceof CustomTabActivity
-                    && ((CustomTabActivity) activity).getActivityTab() != null
-                    && tabId == ((CustomTabActivity) activity).getActivityTab().getId()) {
-                return null;
-            }
-        }
-
         Context context = ContextUtils.getApplicationContext();
         Intent intent = new Intent(context, ChromeLauncherActivity.class);
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
