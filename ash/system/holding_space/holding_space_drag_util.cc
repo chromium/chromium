@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/rounded_image_view.h"
@@ -156,14 +157,17 @@ class DragImageItemView : public views::View {
   void OnPaintBackground(gfx::Canvas* canvas) override {
     // NOTE: The contents bounds are shrunk by a single pixel to avoid
     // painting the background outside content bounds as might otherwise occur
-    // due to pixel rounding. Failure to do so could result in white paint
-    // artifacts.
+    // due to pixel rounding. Failure to do so could result in paint artifacts.
     gfx::RectF bounds(GetContentsBounds());
     bounds.Inset(gfx::InsetsF(0.5f));
 
+    // NOTE: Background is white when the dark/light mode feature is disabled.
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
-    flags.setColor(SK_ColorWHITE);
+    flags.setColor(features::IsDarkLightModeEnabled()
+                       ? AshColorProvider::Get()->GetBaseLayerColor(
+                             AshColorProvider::BaseLayerType::kOpaque)
+                       : SK_ColorWHITE);
     flags.setLooper(gfx::CreateShadowDrawLooper(GetShadowDetails().values));
     canvas->DrawRoundRect(bounds, kDragImageItemViewCornerRadius, flags);
   }
@@ -177,7 +181,6 @@ class DragImageItemView : public views::View {
 
 // DragImageItemChipView -------------------------------------------------------
 
-// TODO(crbug.com/1139113): Support theming.
 // A `DragImageItemView` which represents a single holding space `item` as a
 // chip in the drag image for a collection of holding space item views.
 class DragImageItemChipView : public DragImageItemView {
@@ -210,9 +213,12 @@ class DragImageItemChipView : public DragImageItemView {
     icon->SetPreferredSize(gfx::Size(kDragImageItemChipViewIconSize,
                                      kDragImageItemChipViewIconSize));
 
-    // TODO(crbug.com/1156190): Support dark/light mode.
-    icon->SetImage(item->image().GetImageSkia(icon->GetPreferredSize(),
-                                              /*dark_background=*/false));
+    // NOTE: The view's background is white when the dark/light mode feature is
+    // disabled. Otherwise, the view's background depends on theming.
+    icon->SetImage(item->image().GetImageSkia(
+        icon->GetPreferredSize(),
+        /*dark_background=*/features::IsDarkLightModeEnabled() &&
+            AshColorProvider::Get()->IsDarkModeEnabled()));
 
     // Label.
     ScopedLightModeAsDefault scoped_light_mode;
@@ -248,14 +254,18 @@ class DragImageItemScreenCaptureView : public DragImageItemView {
     auto* image = AddChildView(std::make_unique<RoundedImageView>(
         kDragImageItemViewCornerRadius, RoundedImageView::Alignment::kCenter));
     image->SetPreferredSize(kDragImageItemScreenCaptureViewPreferredSize);
-    image->SetImage(item->image().GetImageSkia(image->GetPreferredSize(),
-                                               /*dark_background=*/false));
+
+    // NOTE: The view's background is white when the dark/light mode feature is
+    // disabled. Otherwise, the view's background depends on theming.
+    image->SetImage(item->image().GetImageSkia(
+        image->GetPreferredSize(),
+        /*dark_background=*/features::IsDarkLightModeEnabled() &&
+            AshColorProvider::Get()->IsDarkModeEnabled()));
   }
 };
 
 // DragImageOverflowBadge ------------------------------------------------------
 
-// TODO(crbug.com/1139113): Support theming.
 // A `views::View` which indicates the number of items being dragged in the
 // drag image for a collection of holding space items. This view is only created
 // if the number of dragged items is > `kDragImageViewMaxItemsToPaint`.
@@ -279,9 +289,14 @@ class DragImageOverflowBadge : public views::View {
   }
 
   void InitLayout(size_t count) {
+    // NOTE: If the dark/light mode feature is disabled, the overflow badge
+    // should use light mode to be consistent with the `DragItemImageView`s.
+    ScopedLightModeAsDefault scoped_light_mode;
+
     // Background.
     SetBackground(views::CreateRoundedRectBackground(
-        gfx::kGoogleBlue600,
+        AshColorProvider::Get()->GetControlsLayerColor(
+            AshColorProvider::ControlsLayerType::kFocusRingColor),
         /*radius=*/kDragImageOverflowBadgeMinimumSize.height() / 2));
 
     // Layout.
@@ -295,7 +310,9 @@ class DragImageOverflowBadge : public views::View {
 
     // Label.
     auto* label = AddChildView(CreateLabel(LabelStyle::kBadge));
-    label->SetEnabledColor(gfx::kGoogleGrey200);
+    label->SetEnabledColor(AshColorProvider::Get()->IsDarkModeEnabled()
+                               ? gfx::kGoogleGrey900
+                               : gfx::kGoogleGrey200);
     label->SetText(base::UTF8ToUTF16(base::NumberToString(count)));
   }
 };
