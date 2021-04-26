@@ -363,7 +363,7 @@ class TransactionHelper {
       ASSERT_TRUE(response != nullptr);
       EXPECT_EQ(static_cast<unsigned>(expected_answer_count_),
                 response->answer_count());
-      EXPECT_EQ(qtype_, response->qtype());
+      EXPECT_EQ(qtype_, response->GetSingleQType());
 
       DnsRecordParser parser = response->Parser();
       DnsResourceRecord record;

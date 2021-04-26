@@ -32,7 +32,10 @@ TEST(RecordParsedTest, ParseSingleRecord) {
   std::unique_ptr<const RecordParsed> record;
   const CnameRecordRdata* rdata;
 
-  parser.SkipQuestion();
+  std::string dotted_qname;
+  uint16_t qtype;
+  parser.ReadQuestion(dotted_qname, qtype);
+
   record = RecordParsed::CreateFrom(&parser, base::Time());
   EXPECT_TRUE(record != nullptr);
 
@@ -51,7 +54,10 @@ TEST(RecordParsedTest, ParseSingleRecord) {
 TEST(RecordParsedTest, CacheFlushBitCompare) {
   DnsRecordParser parser1(kT1ResponseDatagram, sizeof(kT1ResponseDatagram),
                          sizeof(dns_protocol::Header));
-  parser1.SkipQuestion();
+  std::string dotted_qname;
+  uint16_t qtype;
+  parser1.ReadQuestion(dotted_qname, qtype);
+
   std::unique_ptr<const RecordParsed> record1 =
       RecordParsed::CreateFrom(&parser1, base::Time());
 

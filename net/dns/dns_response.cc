@@ -8,6 +8,7 @@
 #include <limits>
 #include <numeric>
 #include <utility>
+#include <vector>
 
 #include "base/big_endian.h"
 #include "base/logging.h"
@@ -240,14 +241,17 @@ bool DnsRecordParser::ReadRecord(DnsResourceRecord* out) {
   return false;
 }
 
-bool DnsRecordParser::SkipQuestion() {
-  size_t consumed = ReadName(cur_, nullptr);
+bool DnsRecordParser::ReadQuestion(std::string& out_dotted_qname,
+                                   uint16_t& out_qtype) {
+  size_t consumed = ReadName(cur_, &out_dotted_qname);
   if (!consumed)
     return false;
 
   const char* next = cur_ + consumed + 2 * sizeof(uint16_t);  // QTYPE + QCLASS
   if (next > packet_ + length_)
     return false;
+
+  base::ReadBigEndian<uint16_t>(cur_ + consumed, &out_qtype);
 
   cur_ = next;
 
@@ -393,6 +397,12 @@ bool DnsResponse::InitParse(size_t nbytes, const DnsQuery& query) {
     return false;
   }
 
+  base::Optional<std::string> dotted_qname = DnsDomainToString(query.qname());
+  if (!dotted_qname.has_value())
+    return false;
+  dotted_qnames_.push_back(std::move(dotted_qname).value());
+  qtypes_.push_back(query.qtype());
+
   // Construct the parser.
   parser_ = DnsRecordParser(io_buffer_->data(), nbytes,
                             kHeaderSize + question.size());
@@ -405,18 +415,22 @@ bool DnsResponse::InitParseWithoutQuery(size_t nbytes) {
   }
   id_available_ = true;
 
-  parser_ = DnsRecordParser(io_buffer_->data(), nbytes, kHeaderSize);
-
   // Not a response?
   if ((base::NetToHost16(header()->flags) & dns_protocol::kFlagResponse) == 0)
     return false;
 
+  parser_ = DnsRecordParser(io_buffer_->data(), nbytes, kHeaderSize);
+
   unsigned qdcount = base::NetToHost16(header()->qdcount);
   for (unsigned i = 0; i < qdcount; ++i) {
-    if (!parser_.SkipQuestion()) {
+    std::string dotted_qname;
+    uint16_t qtype;
+    if (!parser_.ReadQuestion(dotted_qname, qtype)) {
       parser_ = DnsRecordParser();  // Make parser invalid again.
       return false;
     }
+    dotted_qnames_.push_back(std::move(dotted_qname));
+    qtypes_.push_back(qtype);
   }
 
   return true;
@@ -443,6 +457,11 @@ uint8_t DnsResponse::rcode() const {
   return base::NetToHost16(header()->flags) & kRcodeMask;
 }
 
+unsigned DnsResponse::question_count() const {
+  DCHECK(parser_.IsValid());
+  return base::NetToHost16(header()->qdcount);
+}
+
 unsigned DnsResponse::answer_count() const {
   DCHECK(parser_.IsValid());
   return base::NetToHost16(header()->ancount);
@@ -458,27 +477,14 @@ unsigned DnsResponse::additional_answer_count() const {
   return base::NetToHost16(header()->arcount);
 }
 
-base::StringPiece DnsResponse::qname() const {
-  DCHECK(parser_.IsValid());
-  // The response is HEADER QNAME QTYPE QCLASS ANSWER.
-  // |parser_| is positioned at the beginning of ANSWER, so the end of QNAME is
-  // two uint16_ts before it.
-  const size_t qname_size =
-      parser_.GetOffset() - 2 * sizeof(uint16_t) - kHeaderSize;
-  return base::StringPiece(io_buffer_->data() + kHeaderSize, qname_size);
+uint16_t DnsResponse::GetSingleQType() const {
+  DCHECK_EQ(qtypes().size(), 1u);
+  return qtypes().front();
 }
 
-uint16_t DnsResponse::qtype() const {
-  DCHECK(parser_.IsValid());
-  // QTYPE starts where QNAME ends.
-  const size_t type_offset = parser_.GetOffset() - 2 * sizeof(uint16_t);
-  uint16_t type;
-  base::ReadBigEndian<uint16_t>(io_buffer_->data() + type_offset, &type);
-  return type;
-}
-
-std::string DnsResponse::GetDottedName() const {
-  return DnsDomainToString(qname()).value_or("");
+base::StringPiece DnsResponse::GetSingleDottedName() const {
+  DCHECK_EQ(dotted_qnames().size(), 1u);
+  return dotted_qnames().front();
 }
 
 DnsRecordParser DnsResponse::Parser() const {

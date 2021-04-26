@@ -95,8 +95,10 @@ class NET_EXPORT_PRIVATE DnsRecordParser {
   // Parses the next resource record into |record|. Returns true if succeeded.
   bool ReadRecord(DnsResourceRecord* record);
 
-  // Skip a question section, returns true if succeeded.
-  bool SkipQuestion();
+  // Read a question section, returns true if succeeded. In `DnsResponse`,
+  // expected to be called during parse, after which the current offset will be
+  // after all questions.
+  bool ReadQuestion(std::string& out_dotted_qname, uint16_t& out_qtype);
 
  private:
   const char* packet_;
@@ -178,16 +180,27 @@ class NET_EXPORT_PRIVATE DnsResponse {
   uint16_t flags() const;  // excluding rcode
   uint8_t rcode() const;
 
+  unsigned question_count() const;
   unsigned answer_count() const;
   unsigned authority_count() const;
   unsigned additional_answer_count() const;
 
-  // Accessors to the question. The qname is unparsed.
-  base::StringPiece qname() const;
-  uint16_t qtype() const;
+  const std::vector<uint16_t>& qtypes() const {
+    DCHECK(parser_.IsValid());
+    DCHECK_EQ(question_count(), qtypes_.size());
+    return qtypes_;
+  }
+  const std::vector<std::string>& dotted_qnames() const {
+    DCHECK(parser_.IsValid());
+    DCHECK_EQ(question_count(), dotted_qnames_.size());
+    return dotted_qnames_;
+  }
 
-  // Returns qname in dotted format.
-  std::string GetDottedName() const;
+  // Shortcuts to get qtype or qname for single-query responses. Should only be
+  // used in cases where there is known to be exactly one question (e.g. because
+  // that has been validated by `InitParse()`).
+  uint16_t GetSingleQType() const;
+  base::StringPiece GetSingleDottedName() const;
 
   // Returns an iterator to the resource records in the answer section.
   // The iterator is valid only in the scope of the DnsResponse.
@@ -219,6 +232,8 @@ class NET_EXPORT_PRIVATE DnsResponse {
   // It is never updated afterwards, so can be used in accessors.
   DnsRecordParser parser_;
   bool id_available_ = false;
+  std::vector<std::string> dotted_qnames_;
+  std::vector<uint16_t> qtypes_;
 };
 
 }  // namespace net

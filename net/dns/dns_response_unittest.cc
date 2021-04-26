@@ -383,9 +383,11 @@ TEST(DnsResponseTest, InitParse) {
   EXPECT_EQ(1u, resp.additional_answer_count());
 
   // Check question access.
-  EXPECT_EQ(query->qname(), resp.qname());
-  EXPECT_EQ(query->qtype(), resp.qtype());
-  EXPECT_EQ("codereview.chromium.org", resp.GetDottedName());
+  std::string response_qname;
+  ASSERT_TRUE(DNSDomainFromDot(resp.GetSingleDottedName(), &response_qname));
+  EXPECT_EQ(query->qname(), response_qname);
+  EXPECT_EQ(query->qtype(), resp.GetSingleQType());
+  EXPECT_EQ("codereview.chromium.org", resp.GetSingleDottedName());
 
   DnsResourceRecord record;
   DnsRecordParser parser = resp.Parser();
@@ -462,8 +464,8 @@ TEST(DnsResponseTest, InitParseWithoutQuery) {
   EXPECT_EQ(kT0RecordCount, resp.answer_count());
 
   // Check question access.
-  EXPECT_EQ(kT0Qtype, resp.qtype());
-  EXPECT_EQ(kT0HostName, resp.GetDottedName());
+  EXPECT_EQ(kT0Qtype, resp.GetSingleQType());
+  EXPECT_EQ(kT0HostName, resp.GetSingleDottedName());
 
   DnsResourceRecord record;
   DnsRecordParser parser = resp.Parser();
@@ -505,7 +507,11 @@ TEST(DnsResponseTest, InitParseWithoutQueryNoQuestions) {
   EXPECT_THAT(resp.id(), testing::Optional(0xcafe));
   EXPECT_EQ(0x8180, resp.flags());
   EXPECT_EQ(0x0, resp.rcode());
+  EXPECT_EQ(0u, resp.question_count());
   EXPECT_EQ(0x1u, resp.answer_count());
+
+  EXPECT_THAT(resp.dotted_qnames(), testing::IsEmpty());
+  EXPECT_THAT(resp.qtypes(), testing::IsEmpty());
 
   DnsResourceRecord record;
   DnsRecordParser parser = resp.Parser();
@@ -551,33 +557,87 @@ TEST(DnsResponseTest, InitParseWithoutQueryInvalidFlags) {
 TEST(DnsResponseTest, InitParseWithoutQueryTwoQuestions) {
   const uint8_t response_data[] = {
       // Header
-      0xca, 0xfe,  // ID
-      0x81, 0x80,  // Standard query response, RA, no error
-      0x00, 0x02,  // 2 questions
-      0x00, 0x01,  // 2 RRs (answers)
-      0x00, 0x00,  // 0 authority RRs
-      0x00, 0x00,  // 0 additional RRs
+      0xca,
+      0xfe,  // ID
+      0x81,
+      0x80,  // Standard query response, RA, no error
+      0x00,
+      0x02,  // 2 questions
+      0x00,
+      0x01,  // 2 RRs (answers)
+      0x00,
+      0x00,  // 0 authority RRs
+      0x00,
+      0x00,  // 0 additional RRs
 
       // Question 1
-      0x0a, 'c', 'o', 'd', 'e', 'r', 'e', 'v', 'i', 'e', 'w', 0x08, 'c', 'h',
-      'r', 'o', 'm', 'i', 'u', 'm', 0x03, 'o', 'r', 'g', 0x00, 0x00,
-      0x01,        // TYPE is A.
-      0x00, 0x01,  // CLASS is IN.
+      0x0a,
+      'c',
+      'o',
+      'd',
+      'e',
+      'r',
+      'e',
+      'v',
+      'i',
+      'e',
+      'w',
+      0x08,
+      'c',
+      'h',
+      'r',
+      'o',
+      'm',
+      'i',
+      'u',
+      'm',
+      0x03,
+      'o',
+      'r',
+      'g',
+      0x00,
+      0x00,
+      0x01,  // TYPE is A.
+      0x00,
+      0x01,  // CLASS is IN.
 
       // Question 2
-      0x0b, 'c', 'o', 'd', 'e', 'r', 'e', 'v', 'i', 'e', 'w', '2', 0xc0,
-      0x18,        // pointer to "chromium.org"
-      0x00, 0x01,  // TYPE is A.
-      0x00, 0x01,  // CLASS is IN.
+      0x0b,
+      'c',
+      'o',
+      'd',
+      'e',
+      'r',
+      'e',
+      'v',
+      'i',
+      'e',
+      'w',
+      '2',
+      0xc0,
+      0x17,  // pointer to "chromium.org"
+      0x00,
+      0x01,  // TYPE is A.
+      0x00,
+      0x01,  // CLASS is IN.
 
       // Answer 1
-      0xc0, 0x0c,              // NAME is a pointer to name in Question section.
-      0x00, 0x01,              // TYPE is A.
-      0x00, 0x01,              // CLASS is IN.
-      0x00, 0x00,              // TTL (4 bytes) is 53 seconds.
-      0x00, 0x35, 0x00, 0x04,  // RDLENGTH is 4 bytes.
-      0x4a, 0x7d,              // RDATA is the IP: 74.125.95.121
-      0x5f, 0x79,
+      0xc0,
+      0x0c,  // NAME is a pointer to name in Question section.
+      0x00,
+      0x01,  // TYPE is A.
+      0x00,
+      0x01,  // CLASS is IN.
+      0x00,
+      0x00,  // TTL (4 bytes) is 53 seconds.
+      0x00,
+      0x35,
+      0x00,
+      0x04,  // RDLENGTH is 4 bytes.
+      0x4a,
+      0x7d,  // RDATA is the IP: 74.125.95.121
+      0x5f,
+      0x79,
   };
 
   DnsResponse resp;
@@ -588,7 +648,14 @@ TEST(DnsResponseTest, InitParseWithoutQueryTwoQuestions) {
   // Check header access.
   EXPECT_EQ(0x8180, resp.flags());
   EXPECT_EQ(0x0, resp.rcode());
+  EXPECT_EQ(2u, resp.question_count());
   EXPECT_EQ(0x01u, resp.answer_count());
+
+  EXPECT_THAT(resp.dotted_qnames(),
+              testing::ElementsAre("codereview.chromium.org",
+                                   "codereview2.chromium.org"));
+  EXPECT_THAT(resp.qtypes(),
+              testing::ElementsAre(dns_protocol::kTypeA, dns_protocol::kTypeA));
 
   DnsResourceRecord record;
   DnsRecordParser parser = resp.Parser();

@@ -183,6 +183,7 @@ ExtractionError ExtractResponseRecords(
     std::vector<std::unique_ptr<const RecordParsed>>* out_records,
     base::Optional<base::TimeDelta>* out_response_ttl,
     std::vector<std::string>* out_aliases) {
+  DCHECK_EQ(response.question_count(), 1u);
   DCHECK(out_records);
   DCHECK(out_response_ttl);
 
@@ -192,7 +193,7 @@ ExtractionError ExtractResponseRecords(
   DnsRecordParser parser = response.Parser();
 
   // Expected to be validated by DnsTransaction.
-  DCHECK_EQ(result_qtype, response.qtype());
+  DCHECK_EQ(result_qtype, response.GetSingleQType());
 
   AliasMap aliases;
   for (unsigned i = 0; i < response.answer_count(); ++i) {
@@ -231,7 +232,7 @@ ExtractionError ExtractResponseRecords(
 
   std::vector<std::string> out_ordered_aliases;
   ExtractionError name_and_alias_validation_error = ValidateNamesAndAliases(
-      response.GetDottedName(), aliases, records, &out_ordered_aliases);
+      response.GetSingleDottedName(), aliases, records, &out_ordered_aliases);
   if (name_and_alias_validation_error != ExtractionError::kOk)
     return name_and_alias_validation_error;
 
@@ -278,6 +279,7 @@ ExtractionError ExtractResponseRecords(
 ExtractionError ExtractAddressResults(const DnsResponse& response,
                                       uint16_t address_qtype,
                                       HostCache::Entry* out_results) {
+  DCHECK_EQ(response.question_count(), 1u);
   DCHECK(address_qtype == dns_protocol::kTypeA ||
          address_qtype == dns_protocol::kTypeAAAA);
   DCHECK(out_results);
@@ -330,9 +332,9 @@ ExtractionError ExtractAddressResults(const DnsResponse& response,
         << "aliases.front(): " << aliases.front()
         << "\ncanonical_name: " << canonical_name;
     DCHECK(base::EqualsCaseInsensitiveASCII(aliases.back(),
-                                            response.GetDottedName()))
+                                            response.GetSingleDottedName()))
         << "aliases.back(): " << aliases.back()
-        << "\nresponse.GetDottedName(): " << response.GetDottedName();
+        << "\nresponse.GetDottedName(): " << response.GetSingleDottedName();
     addresses.SetDnsAliases(std::move(aliases));
   }
 

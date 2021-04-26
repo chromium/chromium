@@ -140,7 +140,9 @@ class MDnsCacheTest : public ::testing::Test {
 TEST_F(MDnsCacheTest, InsertLookupSingle) {
   DnsRecordParser parser(kT1ResponseDatagram, sizeof(kT1ResponseDatagram),
                          sizeof(dns_protocol::Header));
-  parser.SkipQuestion();
+  std::string dotted_qname;
+  uint16_t qtype;
+  parser.ReadQuestion(dotted_qname, qtype);
 
   std::unique_ptr<const RecordParsed> record1;
   std::unique_ptr<const RecordParsed> record2;
@@ -172,7 +174,9 @@ TEST_F(MDnsCacheTest, InsertLookupSingle) {
 TEST_F(MDnsCacheTest, Expiration) {
   DnsRecordParser parser(kT1ResponseDatagram, sizeof(kT1ResponseDatagram),
                          sizeof(dns_protocol::Header));
-  parser.SkipQuestion();
+  std::string dotted_qname;
+  uint16_t qtype;
+  parser.ReadQuestion(dotted_qname, qtype);
   std::unique_ptr<const RecordParsed> record1;
   std::unique_ptr<const RecordParsed> record2;
 
@@ -345,7 +349,9 @@ TEST_F(MDnsCacheTest, AnyRRType) {
 TEST_F(MDnsCacheTest, RemoveRecord) {
   DnsRecordParser parser(kT1ResponseDatagram, sizeof(kT1ResponseDatagram),
                          sizeof(dns_protocol::Header));
-  parser.SkipQuestion();
+  std::string dotted_qname;
+  uint16_t qtype;
+  parser.ReadQuestion(dotted_qname, qtype);
 
   std::unique_ptr<const RecordParsed> record1;
   std::vector<const RecordParsed*> results;
