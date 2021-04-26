@@ -62,7 +62,7 @@ void AddUnsupportedPlatformConsoleMessage(ExecutionContext* context) {
       mojom::blink::ConsoleMessageSource::kJavaScript,
       mojom::blink::ConsoleMessageLevel::kInfo,
       "Web Bluetooth is experimental on this platform. See "
-      "https://github.com/WebBluetoothCG/web-bluetooth/blob/gh-pages/"
+      "https://github.com/WebBluetoothCG/web-bluetooth/blob/main/"
       "implementation-status.md"));
 #endif
 }
@@ -363,7 +363,7 @@ ScriptPromise Bluetooth::requestLEScan(ScriptState* script_state,
       mojom::ConsoleMessageSource::kJavaScript,
       mojom::ConsoleMessageLevel::kInfo,
       "Web Bluetooth Scanning is experimental on this platform. See "
-      "https://github.com/WebBluetoothCG/web-bluetooth/blob/gh-pages/"
+      "https://github.com/WebBluetoothCG/web-bluetooth/blob/main/"
       "implementation-status.md"));
 
   CHECK(window->IsSecureContext());

@@ -5,7 +5,7 @@ Image Capture was shipped in Chrome M59; please consult the
 [Implementation Status] if you think a feature should be available and isn't.
 
 [W3C Image Capture API]: https://w3c.github.io/mediacapture-image/
-[Implementation Status]: https://github.com/w3c/mediacapture-image/blob/master/implementation-status.md
+[Implementation Status]: https://github.com/w3c/mediacapture-image/blob/main/implementation-status.md
 
 This API is structured around the [ImageCapture class] _and_ a number of
 [extensions] to the `MediaStreamTrack` feeding it (let's call them
