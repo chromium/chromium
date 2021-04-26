@@ -95,19 +95,6 @@ const std::vector<TestUrlInfo>& TestUrlConfidenceDb() {
   return *db;
 }
 
-// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
-// function.
-GURL GenerateTestURL(size_t size) {
-  std::string prefix = "http://b/";
-  // Cannot generate an URL shorter than |prefix|.
-  DCHECK_GE(size, prefix.size());
-  size_t suffix_len = size - prefix.size();
-  std::string suffix(suffix_len, 'c');
-  GURL url(prefix + suffix);
-  DCHECK_EQ(url.spec().size(), size);
-  return url;
-}
-
 }  // end namespace
 
 namespace predictors {
@@ -549,9 +536,13 @@ TEST_F(AutocompleteActionPredictorTest,
 
 TEST_F(AutocompleteActionPredictorTest,
        RegisterTransitionalMatchesURLSizeLimits) {
-  GURL urls[] = {GenerateTestURL(10), GenerateTestURL(maximum_string_length()),
-                 GenerateTestURL(maximum_string_length() + 1),
-                 GenerateTestURL(maximum_string_length() * 10)};
+  const auto test_url = [](size_t size) {
+    const std::string kPrefix = "http://b/";
+    return GURL(kPrefix + std::string(size - kPrefix.size(), 'c'));
+  };
+  GURL urls[] = {test_url(10), test_url(maximum_string_length()),
+                 test_url(maximum_string_length() + 1),
+                 test_url(maximum_string_length() * 10)};
   ACMatches matches;
   for (const auto& url : urls) {
     AutocompleteMatch match;
