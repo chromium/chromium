@@ -236,15 +236,15 @@ select:-internal-list-box option:checked:disabled:hover {
   color: -internal-light-dark(gray, #aaa) !important;
 }
 
-input::-webkit-datetime-edit-ampm-field:focus-visible,
-input::-webkit-datetime-edit-day-field:focus-visible,
-input::-webkit-datetime-edit-hour-field:focus-visible,
-input::-webkit-datetime-edit-millisecond-field:focus-visible,
-input::-webkit-datetime-edit-minute-field:focus-visible,
-input::-webkit-datetime-edit-month-field:focus-visible,
-input::-webkit-datetime-edit-second-field:focus-visible,
-input::-webkit-datetime-edit-week-field:focus-visible,
-input::-webkit-datetime-edit-year-field:focus-visible {
+input::-webkit-datetime-edit-ampm-field:focus,
+input::-webkit-datetime-edit-day-field:focus,
+input::-webkit-datetime-edit-hour-field:focus,
+input::-webkit-datetime-edit-millisecond-field:focus,
+input::-webkit-datetime-edit-minute-field:focus,
+input::-webkit-datetime-edit-month-field:focus,
+input::-webkit-datetime-edit-second-field:focus,
+input::-webkit-datetime-edit-week-field:focus,
+input::-webkit-datetime-edit-year-field:focus {
     background-color: -internal-light-dark(highlight, #99C8FF);
     color: -internal-light-dark(highlighttext, #000000);
     outline: none;
