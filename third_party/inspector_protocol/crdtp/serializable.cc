@@ -16,7 +16,6 @@ namespace crdtp {
 std::vector<uint8_t> Serializable::Serialize() const {
   std::vector<uint8_t> out;
   AppendSerialized(&out);
-  recordreplay::Assert("Serializable::Serialize %lu", out.size());
   return out;
 }
 
