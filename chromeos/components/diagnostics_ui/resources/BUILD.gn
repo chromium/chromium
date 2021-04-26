@@ -28,6 +28,7 @@ js_type_check("closure_compile_module") {
     ":memory_card",
     ":mojo_interface_provider",
     ":mojo_utils",
+    ":network_list",
     ":overview_card",
     ":percent_bar_chart",
     ":realtime_cpu_chart",
@@ -86,6 +87,7 @@ js_library("diagnostics_app") {
     ":diagnostics_types",
     ":memory_card",
     ":mojo_interface_provider",
+    ":network_list",
     ":overview_card",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
@@ -170,6 +172,13 @@ js_library("mojo_utils") {
   ]
 }
 
+js_library("network_list") {
+  deps = [
+    ":mojo_interface_provider",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
 js_library("overview_card") {
   deps = [
     ":diagnostics_card",
@@ -238,6 +247,7 @@ html_to_js("web_components") {
     "diagnostics_shared_css.js",
     "icons.js",
     "memory_card.js",
+    "network_list.js",
     "overview_card.js",
     "percent_bar_chart.js",
     "realtime_cpu_chart.js",

@@ -13,6 +13,7 @@ import './diagnostics_fonts_css.js';
 import './diagnostics_shared_css.js';
 import './icons.js';
 import './memory_card.js';
+import './network_list.js';
 import './overview_card.js';
 import './strings.m.js';
 

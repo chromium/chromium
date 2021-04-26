@@ -58,6 +58,7 @@ const debug_suites_list = [
   'FakeSystemDataProvider',
   'FakeSystemRoutineContoller',
   'MemoryCard',
+  'NetworkList',
   'OverviewCard',
   'PercentBarChart',
   'RealtimeCpuChart',

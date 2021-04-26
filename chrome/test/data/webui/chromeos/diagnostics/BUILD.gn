@@ -27,6 +27,7 @@ js_type_check("closure_compile") {
     ":fake_system_routine_controller_test",
     ":memory_card_test",
     ":mojo_interface_provider_test",
+    ":network_list_test",
     ":overview_card_test",
     ":percent_bar_chart_test",
     ":realtime_cpu_chart_test",
@@ -188,6 +189,15 @@ js_library("mojo_interface_provider_test") {
     "//chromeos/components/diagnostics_ui/resources:fake_system_routine_controller",
     "//chromeos/components/diagnostics_ui/resources:mojo_interface_provider",
   ]
+}
+
+js_library("network_list_test") {
+  deps = [
+    "../..:chai_assert",
+    "../..:test_util.m",
+    "//chromeos/components/diagnostics_ui/resources:network_list",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
 js_library("overview_card_test") {
