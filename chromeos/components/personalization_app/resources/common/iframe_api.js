@@ -28,6 +28,7 @@ export function sendCollections(target, collections) {
 
 /**
  * Send an array of wallpaper images to chrome-untrusted://.
+ * Will clear the page if images is empty array.
  * @param {!Object} target the iframe window to send the message to.
  * @param {!Array<!chromeos.personalizationApp.mojom.WallpaperImage>} images
  */

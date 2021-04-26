@@ -13,10 +13,10 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './styles.js';
 import {assert} from '/assert.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {EventType} from '../common/constants.js';
 import {sendImages, validateReceivedSelection} from '../common/iframe_api.js';
-import {isNonEmptyArray} from '../common/utils.js';
+import {isNonEmptyArray, promisifyOnload} from '../common/utils.js';
 import {fetchImagesForCollectionHelper, getWallpaperProvider} from './mojo_interface_provider.js';
 
 let sendImagesFunction = sendImages;
@@ -41,18 +41,17 @@ export class WallpaperImages extends PolymerElement {
     return {
       collectionId: {
         type: String,
-        observer: 'collectionIdChanged_',
+        observer: 'onCollectionIdChanged_',
       },
 
       /**
-       * Used to bind/unbind the message listener when this element is shown or
-       * hidden. Also clears out the untrusted iframe when active is false.
+       * Used to bind/unbind the message listener when this element is toggled.
+       * Also hides the element when it is not active.
        */
       active: {
         type: Boolean,
         observer: 'onActiveChanged_',
       },
-
 
       /**
        * @private
@@ -85,7 +84,8 @@ export class WallpaperImages extends PolymerElement {
 
   constructor() {
     super();
-    this.onIframeLoaded_ = this.onIframeLoaded_.bind(this);
+    this.iframePromise_ = /** @type {!Promise<!HTMLIFrameElement>} */ (
+        promisifyOnload(this, 'images-iframe', afterNextRender));
     this.onImageSelected_ = this.onImageSelected_.bind(this);
     this.wallpaperProvider_ = getWallpaperProvider();
     /**
@@ -106,36 +106,43 @@ export class WallpaperImages extends PolymerElement {
    * @private
    * @param {?string} value
    */
-  collectionIdChanged_(value) {
+  async onCollectionIdChanged_(value) {
+    this.setProperties({isLoading_: true, images_: null});
     if (!value) {
-      this.images_ = null;
+      this.isLoading_ = false;
       return;
     }
 
-    if (this.cache_.has(value)) {
-      this.images_ = this.cache_.get(value);
-      return;
-    }
+    // Make sure that iframe is fully loaded.
+    const iframe = await this.iframePromise_;
 
-    this.fetchImages_(value);
-  }
+    // Fetch images from backend.
+    const images = await this.fetchImages_(value);
+    // Send images to iframe. If images is null, send empty array to clear the
+    // page instead.
+    sendImagesFunction(iframe.contentWindow, images || []);
 
-  onActiveChanged_(value) {
-    const func = value ? window.addEventListener : window.removeEventListener;
-    func('message', this.onImageSelected_);
-    this.hidden = !value;
-
-    // Reset images to empty in the untrusted iframe. Prevents a flash of old
-    // content when switching between collections.
-    const iframe = this.shadowRoot.getElementById('images-iframe');
-    if (this.hidden && iframe && iframe.contentWindow) {
-      sendImagesFunction(iframe.contentWindow, []);
-    }
+    this.setProperties({isLoading_: false, images_: images});
   }
 
   /**
    * @private
+   * @param {boolean} value
+   */
+  onActiveChanged_(value) {
+    const func = value ? window.addEventListener : window.removeEventListener;
+    func('message', this.onImageSelected_);
+    this.hidden = !value;
+  }
+
+  /**
+   * Fetch images from wallpaperProvider. If there is a cached value for the
+   * given collectionId, will read from cache instead.
+   * Returns null on failure.
+   * @private
    * @param {string} collectionId
+   * @return {!Promise<?Array<
+   *     !chromeos.personalizationApp.mojom.WallpaperImage>>}
    */
   async fetchImages_(collectionId) {
     assert(
@@ -143,23 +150,20 @@ export class WallpaperImages extends PolymerElement {
         'Collection id parameter is required');
 
     if (this.cache_.has(collectionId)) {
-      this.images_ = this.cache_.get(collectionId);
-      return;
+      return this.cache_.get(collectionId);
     }
 
-    this.setProperties({isLoading_: true, images_: null});
     try {
       const {images} = await fetchImagesForCollectionHelper(
           this.wallpaperProvider_, collectionId);
-      this.images_ = images;
-      this.cache_.set(collectionId, this.images_);
+      this.cache_.set(collectionId, images);
+      return images;
     } catch (e) {
       // TODO(b/181697575) handle errors and allow user to retry
       console.warn(
           'Fetching wallpaper collection images failed for collection id',
-          collectionId, e);
-    } finally {
-      this.isLoading_ = false;
+          collectionId);
+      return null;
     }
   }
 
@@ -181,16 +185,6 @@ export class WallpaperImages extends PolymerElement {
    */
   computeShowImages_(images, loading) {
     return !loading && isNonEmptyArray(images);
-  }
-
-  /**
-   * Called when the iframe is loaded. Guaranteed to be after the initial images
-   * loading has completed.
-   * @private
-   */
-  onIframeLoaded_() {
-    const iframe = this.shadowRoot.getElementById('images-iframe');
-    sendImagesFunction(iframe.contentWindow, this.images_);
   }
 
   /**

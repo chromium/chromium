@@ -7,7 +7,7 @@ import {selectCollection} from 'chrome://personalization/common/iframe_api.js';
 import {promisifySendCollectionsForTesting, WallpaperCollections} from 'chrome://personalization/trusted/wallpaper_collections_element.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertThrows, assertTrue} from '../../chai_assert.js';
 import {waitAfterNextRender} from '../../test_util.m.js';
-import {assertWindowObjectsEqual, baseSetup, initElement} from './personalization_app_test_utils.js';
+import {assertWindowObjectsEqual, baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
 import {TestWallpaperProvider} from './test_mojo_interface_provider.js';
 
 export function WallpaperCollectionsTest() {
@@ -21,10 +21,9 @@ export function WallpaperCollectionsTest() {
     wallpaperProvider = baseSetup();
   });
 
-  teardown(function() {
-    if (wallpaperCollectionsElement) {
-      wallpaperCollectionsElement.remove();
-    }
+  teardown(async () => {
+    await teardownElement(wallpaperCollectionsElement);
+    wallpaperCollectionsElement = null;
   });
 
   test(
@@ -32,6 +31,7 @@ export function WallpaperCollectionsTest() {
       async () => {
         wallpaperCollectionsElement =
             initElement(WallpaperCollections.is, {active: true});
+        await wallpaperProvider.whenCalled('fetchCollections');
         assertEquals(1, wallpaperProvider.getCallCount('fetchCollections'));
 
         const spinner = wallpaperCollectionsElement.shadowRoot.querySelector(
@@ -41,11 +41,11 @@ export function WallpaperCollectionsTest() {
 
         const iframe =
             wallpaperCollectionsElement.shadowRoot.querySelector('iframe');
-        assertFalse(!!iframe);
+        assertTrue(iframe.hidden);
       });
 
   test('shows wallpaper collections when loaded', async () => {
-    let sendCollectionsPromise = promisifySendCollectionsForTesting();
+    const sendCollectionsPromise = promisifySendCollectionsForTesting();
     wallpaperCollectionsElement =
         initElement(WallpaperCollections.is, {active: true});
 
@@ -56,17 +56,15 @@ export function WallpaperCollectionsTest() {
 
     // Wait for collections to be fetched.
     await wallpaperProvider.whenCalled('fetchCollections');
-    // Wait for iframe to begin rendering.
+    // Wait for iframe to load and |sendCollections| to be called.
+    const [target, data] = await sendCollectionsPromise;
     await waitAfterNextRender(wallpaperCollectionsElement);
 
     assertFalse(spinner.active);
 
     const iframe =
         wallpaperCollectionsElement.shadowRoot.querySelector('iframe');
-    assertTrue(!!iframe);
-
-    // Wait for |sendCollections| to be called.
-    const [target, data] = await sendCollectionsPromise;
+    assertFalse(iframe.hidden);
 
     assertWindowObjectsEqual(iframe.contentWindow, target);
     assertDeepEquals(wallpaperProvider.collections, data);
@@ -92,14 +90,15 @@ export function WallpaperCollectionsTest() {
     assertFalse(spinner.active);
     assertFalse(error.hidden);
 
-    // No iframe should be displayed if there is an error.
-    assertFalse(
-        !!wallpaperCollectionsElement.shadowRoot.querySelector('iframe'));
+    // Iframe should be hidden if there is an error.
+    assertTrue(
+        wallpaperCollectionsElement.shadowRoot.querySelector('iframe').hidden);
   });
 
   test(
       'calls selectCollection callback when SelectCollectionEvent is received',
       async () => {
+        const sendCollectionsPromise = promisifySendCollectionsForTesting();
         wallpaperCollectionsElement =
             initElement(WallpaperCollections.is, {active: true});
         const selectCollectionPromise = new Promise((resolve) => {
@@ -114,7 +113,7 @@ export function WallpaperCollectionsTest() {
           window.removeEventListener('message', original);
           window.addEventListener('message', patched, {once: true});
         });
-        await wallpaperProvider.whenCalled('fetchCollections');
+        await sendCollectionsPromise;
         await waitAfterNextRender(wallpaperCollectionsElement);
 
         selectCollection(window, 'id_0');
@@ -125,6 +124,7 @@ export function WallpaperCollectionsTest() {
   test(
       'throws error when invalid SelectCollectionEvent is received',
       async () => {
+        const sendCollectionsPromise = promisifySendCollectionsForTesting();
         wallpaperCollectionsElement =
             initElement(WallpaperCollections.is, {active: true});
         const original = wallpaperCollectionsElement.onCollectionSelected_;
@@ -142,7 +142,7 @@ export function WallpaperCollectionsTest() {
           window.addEventListener('message', patched, {once: true});
         });
 
-        await wallpaperProvider.whenCalled('fetchCollections');
+        await sendCollectionsPromise;
         await waitAfterNextRender(wallpaperCollectionsElement);
 
         selectCollection(window, 'does_not_exist');

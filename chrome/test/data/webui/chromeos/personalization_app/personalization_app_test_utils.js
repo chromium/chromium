@@ -10,6 +10,7 @@
 import {setWallpaperProviderForTesting} from 'chrome://personalization/trusted/mojo_interface_provider.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertTrue} from '../../chai_assert.js';
+import {flushTasks} from '../../test_util.m.js';
 import {TestWallpaperProvider} from './test_mojo_interface_provider.js';
 
 /**
@@ -26,6 +27,25 @@ export function initElement(tag, properties = {}) {
   document.body.appendChild(element);
   flush();
   return element;
+}
+
+/**
+ * Tear down an element. Make sure the iframe load callback
+ * has completed to avoid weird race condition with loading.
+ * @see {b/185905694, crbug/466089}
+ * @param {*} element
+ */
+export async function teardownElement(element) {
+  if (!element) {
+    return;
+  }
+  const iframe = await element.iframePromise_;
+  if (iframe) {
+    iframe.remove();
+    await flushTasks();
+  }
+  element.remove();
+  await flushTasks();
 }
 
 /**

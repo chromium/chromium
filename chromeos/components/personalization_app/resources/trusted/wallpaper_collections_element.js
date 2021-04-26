@@ -11,10 +11,10 @@
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './styles.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {EventType} from '../common/constants.js';
 import {sendCollections, validateReceivedSelection} from '../common/iframe_api.js';
-import {isNonEmptyArray} from '../common/utils.js';
+import {isNonEmptyArray, promisifyOnload} from '../common/utils.js';
 import {fetchCollectionsHelper, getWallpaperProvider} from './mojo_interface_provider.js';
 
 let sendCollectionsFunction = sendCollections;
@@ -82,7 +82,8 @@ export class WallpaperCollections extends PolymerElement {
 
   constructor() {
     super();
-    this.onIframeLoaded_ = this.onIframeLoaded_.bind(this);
+    this.iframePromise_ = /** @type {!Promise<!HTMLIFrameElement>} */ (
+        promisifyOnload(this, 'collections-iframe', afterNextRender));
     this.onCollectionSelected_ = this.onCollectionSelected_.bind(this);
     /** @private */
     this.wallpaperProvider_ = getWallpaperProvider();
@@ -113,9 +114,12 @@ export class WallpaperCollections extends PolymerElement {
   /** @private */
   async fetchCollections_() {
     this.setProperties({isLoading_: true, collections_: null});
+    // Make sure iframe is fully loaded.
+    const iframe = await this.iframePromise_;
     try {
       const {collections} =
           await fetchCollectionsHelper(this.wallpaperProvider_);
+      sendCollectionsFunction(iframe.contentWindow, collections);
       this.collections_ = collections;
     } catch (e) {
       console.warn('Fetching wallpaper collections failed', e);
@@ -144,16 +148,6 @@ export class WallpaperCollections extends PolymerElement {
    */
   computeShowCollections_(collections, loading) {
     return !loading && isNonEmptyArray(collections);
-  }
-
-  /**
-   * Called when the iframe is loaded. Guaranteed to be after the initial
-   * |fetchCollections_| has completed.
-   * @private
-   */
-  onIframeLoaded_() {
-    const iframe = this.shadowRoot.getElementById('collections-iframe');
-    sendCollectionsFunction(iframe.contentWindow, this.collections_);
   }
 
   /**

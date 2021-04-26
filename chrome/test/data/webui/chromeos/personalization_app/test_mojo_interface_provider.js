@@ -17,21 +17,31 @@ export class TestWallpaperProvider extends TestBrowserProxy {
     ]);
 
     /**
+     * URLs are not real but must have the correct origin to pass CSP checks.
      * @private
      * @type {?Array<!chromeos.personalizationApp.mojom.WallpaperCollection>}
      */
     this.collections_ = [
-      {id: 'id_0', name: 'zero', preview: {url: 'https://id_0'}},
-      {id: 'id_1', name: 'one', preview: {url: 'https://id_1'}},
+      {
+        id: 'id_0',
+        name: 'zero',
+        preview: {url: 'https://collections.googleusercontent.com/0'}
+      },
+      {
+        id: 'id_1',
+        name: 'one',
+        preview: {url: 'https://collections.googleusercontent.com/1'}
+      },
     ];
 
     /**
+     * URLs are not real but must have the correct origin to pass CSP checks.
      * @private
      * @type {?Array<!chromeos.personalizationApp.mojom.WallpaperImage>}
      */
     this.images_ = [
-      {url: {url: 'https://url_0/'}},
-      {url: {url: 'https://url_1/'}},
+      {url: {url: 'https://images.googleusercontent.com/0'}},
+      {url: {url: 'https://images.googleusercontent.com/1'}},
     ];
   }
 

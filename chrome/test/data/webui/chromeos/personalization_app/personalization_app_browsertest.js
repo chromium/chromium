@@ -19,5 +19,4 @@ var PersonalizationAppBrowserTest = class extends PolymerTest {
   }
 };
 
-// Disable until flaky failures are fixed: b/185905694
-TEST_F('PersonalizationAppBrowserTest', 'DISABLED_All', () => mocha.run());
+TEST_F('PersonalizationAppBrowserTest', 'All', () => mocha.run());
