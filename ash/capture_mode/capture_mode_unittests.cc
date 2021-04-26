@@ -57,6 +57,8 @@
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/capture_client_observer.h"
 #include "ui/aura/window_tracker.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/types/display_constants.h"
@@ -3085,6 +3087,24 @@ TEST_F(CaptureModeTest, AccessibilityFocusAnnotator) {
   check_a11y_overrides("bar", bar_widget, settings_widget, label_widget);
   check_a11y_overrides("label", label_widget, bar_widget, settings_widget);
   check_a11y_overrides("settings", settings_widget, label_widget, bar_widget);
+}
+
+// Tests that a captured image is written to the clipboard.
+TEST_F(CaptureModeTest, ClipboardWrite) {
+  auto* clipboard = ui::Clipboard::GetForCurrentThread();
+  ASSERT_NE(clipboard, nullptr);
+
+  const uint64_t before_sequence_number =
+      clipboard->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste);
+
+  CaptureNotificationWaiter waiter;
+  CaptureModeController::Get()->CaptureScreenshotsOfAllDisplays();
+  waiter.Wait();
+
+  const uint64_t after_sequence_number =
+      clipboard->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste);
+
+  EXPECT_NE(before_sequence_number, after_sequence_number);
 }
 
 // A test class that uses a mock time task environment.

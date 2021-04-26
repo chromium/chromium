@@ -45,8 +45,8 @@
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/aura/env.h"
-#include "ui/base/clipboard/clipboard_data.h"
-#include "ui/base/clipboard/clipboard_non_backed.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/message_center/message_center.h"
@@ -266,11 +266,8 @@ void ShowVideoRecordingStoppedNotification(bool for_hdcp) {
 
 // Copies the bitmap representation of the given |image| to the clipboard.
 void CopyImageToClipboard(const gfx::Image& image) {
-  auto* clipboard = ui::ClipboardNonBacked::GetForCurrentThread();
-  DCHECK(clipboard);
-  auto clipboard_data = std::make_unique<ui::ClipboardData>();
-  clipboard_data->SetBitmapData(image.AsBitmap());
-  clipboard->WriteClipboardData(std::move(clipboard_data));
+  ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
+      .WriteImage(image.AsBitmap());
 }
 
 }  // namespace
