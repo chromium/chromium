@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Inlines an HTML file into a JS file in at a location specified by a
+# Inlines an HTML file into a JS (or TS) file at a location specified by a
 # placeholder. This is useful for implementing Web Components using JS modules,
 # where all the HTML needs to reside in the JS file (no more HTML imports).
 
@@ -27,7 +27,9 @@ def main(argv):
 
   results = []
   for js_file in args.js_files:
-    html_file = path.basename(js_file).replace('.js', '.html')
+    # Detect file extension, since it can be either a .ts or .js file.
+    extension = path.splitext(js_file)[1]
+    html_file = path.basename(js_file).replace(extension, '.html')
     result = process_v3_ready(
         path.join(in_folder, js_file), path.join(in_folder, html_file))
 

@@ -10,6 +10,9 @@ template("html_to_js") {
     outputs = []
 
     foreach(js_file, invoker.js_files) {
+      extension = get_path_info(js_file, "extension")
+      assert(extension == "js" || extension == "ts")
+
       html_file = get_path_info(js_file, "name") + ".html"
       inputs += [
         js_file,

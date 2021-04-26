@@ -41,6 +41,9 @@ class HtmlToJsTest(unittest.TestCase):
   def testHtmlToJs(self):
     self._run_test('v3_ready.js', 'v3_ready.js', 'v3_ready_expected.js')
 
+  def testHtmlToTs(self):
+    self._run_test('v3_ready.ts', 'v3_ready.ts', 'v3_ready_expected.ts')
+
 
 if __name__ == '__main__':
   unittest.main()
