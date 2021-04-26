@@ -2436,7 +2436,7 @@ TEST_F('ChromeVoxBackgroundTest', 'NoFocusTalkBackEnabled', function() {
 });
 
 TEST_F(
-    'ChromeVoxBackgroundTest', 'DISABLED_NavigateOutOfMultiline', function() {
+    'ChromeVoxBackgroundTest', 'NavigateOutOfMultiline', function() {
       const mockFeedback = this.createMockFeedback();
       this.runWithLoadedTree(
           `
@@ -2462,6 +2462,7 @@ TEST_F(
                 // editable to be focused first):
                 .clearPendingOutput()
                 .call(contentEditable.focus.bind(contentEditable))
+                .expectSpeech(/Testing testing\s+one two three/)
                 .call(doCmd('nextLine'))
                 .expectSpeech('one two three')
                 .call(doCmd('previousLine'))
