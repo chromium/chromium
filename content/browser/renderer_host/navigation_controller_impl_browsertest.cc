@@ -7390,6 +7390,38 @@ IN_PROC_BROWSER_TEST_P(
   }
 }
 
+// Tests navigating from an error page that server-redirects to the current URL
+// (which results in an error page again).
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       ServerRedirectToSameURLErrorPage) {
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+
+  GURL fail_url(embedded_test_server()->GetURL("/empty404.html"));
+  GURL server_redirecting_url(
+      embedded_test_server()->GetURL("/server-redirect?/empty404.html"));
+
+  // Navigate to a URL that will result in an error page.
+  EXPECT_FALSE(NavigateToURL(shell(), fail_url));
+  EXPECT_EQ(1, controller.GetEntryCount());
+  NavigationEntry* last_entry = controller.GetLastCommittedEntry();
+  EXPECT_EQ(fail_url, last_entry->GetURL());
+
+  // Navigate to a URL that redirects to the same URL we're currently on, which
+  // will commit an error page again.
+  EXPECT_FALSE(NavigateToURL(shell(), server_redirecting_url, fail_url));
+
+  // The navigation will do a replacement.
+  EXPECT_EQ(1, controller.GetEntryCount());
+  EXPECT_NE(last_entry, controller.GetLastCommittedEntry());
+  last_entry = controller.GetLastCommittedEntry();
+  EXPECT_EQ(fail_url, last_entry->GetURL());
+
+  // We replaced the previous entry.
+  EXPECT_TRUE(last_entry->GetReplacedEntryData().has_value());
+  EXPECT_EQ(fail_url, last_entry->GetReplacedEntryData()->first_committed_url);
+}
+
 // Checks the contents of the redirect chain after client-side redirect to a
 // different document than the original URL.
 IN_PROC_BROWSER_TEST_P(

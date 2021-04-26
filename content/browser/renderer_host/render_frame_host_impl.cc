@@ -10074,6 +10074,20 @@ bool CalculateShouldReplaceCurrentEntry(
       (request->commit_params().page_state.IsValid());
   const bool is_error_page = (request->GetNetErrorCode() != net::OK);
 
+  // The navigation URL used by the renderer during commit time before finishing
+  // the commit will be the original URL before redirects instead of the final
+  // URL, except for error pages where kUnreachableWebDataURL is used. See
+  // RenderFrameImpl's CommitFailedNavigation and FillNavigationParamsRequest
+  // for more details.
+  GURL original_url;
+  if (is_error_page) {
+    original_url = GURL(kUnreachableWebDataURL);
+  } else {
+    original_url = !request->commit_params().original_url.is_empty()
+                       ? request->commit_params().original_url
+                       : request->common_params().url;
+  }
+
   // Predict if the renderer classified the navigation as a "back/forward"
   // navigation (WebFrameLoadType::kBackForward).
   bool will_be_classified_as_back_forward_navigation = false;
@@ -10108,15 +10122,17 @@ bool CalculateShouldReplaceCurrentEntry(
     // - Same-URL navigations will be converted into kReplaceCurrentItem in
     // DocumentLoader::CommitSameDocumentNavigationInternal().
     result |= (will_be_classified_as_back_forward_navigation ||
-               previous_url == request->GetURL());
+               previous_url == original_url);
   } else {
     if (is_error_page) {
       // For error page commits: reloads, history, and same-url navigations will
       // result in replacement if the navigation doesn't have a valid PageState.
-      // See RenderFrameImpl::CommitFailedNavigation().
-      result |=
-          !has_valid_page_state &&
-          (is_reload || is_history || last_committed_url == request->GetURL());
+      // See RenderFrameImpl::CommitFailedNavigation(). Note that we're
+      // comparing the navigation with the request's URL (final URL) instead
+      // of |original_url| because it is what is used by the check
+      // in RenderFrameImpl::CommitFailedNavigation().
+      result |= !has_valid_page_state &&
+                (is_reload || is_history || previous_url == request->GetURL());
     }
 
     // Simulate FrameLoader::DetermineFrameLoadType()'s handling of navigations
@@ -10134,7 +10150,7 @@ bool CalculateShouldReplaceCurrentEntry(
   // non-replacement commit.
   if (node->IsMainFrame() &&
       request->commit_params().current_history_list_length == 0 &&
-      (!request->GetURL().is_empty() || !node->opener())) {
+      (!original_url.is_empty() || !node->opener())) {
     result = false;
   }
 
