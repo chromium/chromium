@@ -77,6 +77,11 @@
 #include "chrome/browser/sync/wifi_configuration_sync_service_factory.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 namespace {
 
 void UpdateNetworkTimeOnUIThread(base::Time network_time,
@@ -257,6 +262,16 @@ KeyedService* ProfileSyncServiceFactory::BuildServiceInstanceFor(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (chromeos::features::IsSplitSettingsSyncEnabled())
       is_auto_start = false;
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+    // TODO(https://crbug.com/1194983): Figure out how split sync settings will
+    // work here. For now, we will mimic Ash's behaviour of having sync turned
+    // on by default.
+    if (chromeos::LacrosChromeServiceImpl::Get()
+            ->init_params()
+            ->use_new_account_manager &&
+        profile->IsMainProfile()) {
+      is_auto_start = true;
+    }
 #endif
     init_params.start_behavior = is_auto_start
                                      ? syncer::ProfileSyncService::AUTO_START

@@ -60,12 +60,13 @@ void SetPrimaryAccount(IdentityManager* identity_manager,
   const CoreAccountId account_id = account_tracker_service->SeedAccountInfo(
       /*gaia=*/device_account.key.id, device_account.raw_email);
   // TODO(https://crbug.com/1194983): Figure out how split sync settings will
-  // work here.
+  // work here. For now, we will mimic Ash's behaviour of having sync turned on
+  // by default.
   identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
-      account_id, ConsentLevel::kSignin);
+      account_id, ConsentLevel::kSync);
 
-  CHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kSignin));
-  CHECK_EQ(identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSignin).gaia,
+  CHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
+  CHECK_EQ(identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSync).gaia,
            device_account.key.id);
 }
 #endif
