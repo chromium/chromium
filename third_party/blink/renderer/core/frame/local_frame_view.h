@@ -655,14 +655,11 @@ class CORE_EXPORT LocalFrameView final
   void CrossOriginToMainFrameChanged();
   void CrossOriginToParentFrameChanged();
 
-  // The visual viewport can supply scrollbars.
-  void VisualViewportScrollbarsChanged();
-
-  void SetVisualViewportNeedsRepaint() {
-    visual_viewport_needs_repaint_ = true;
+  void SetVisualViewportOrOverlayNeedsRepaint() {
+    visual_viewport_or_overlay_needs_repaint_ = true;
   }
-  bool VisualViewportNeedsRepaint() const {
-    return visual_viewport_needs_repaint_;
+  bool VisualViewportOrOverlayNeedsRepaint() const {
+    return visual_viewport_or_overlay_needs_repaint_;
   }
 
   LayoutUnit CaretWidth() const;
@@ -1086,7 +1083,7 @@ class CORE_EXPORT LocalFrameView final
   // We won't defer again for the same document.
   bool have_deferred_commits_ = false;
 
-  bool visual_viewport_needs_repaint_ = false;
+  bool visual_viewport_or_overlay_needs_repaint_ = false;
 
   // Whether to collect layer debug information for debugging, tracing,
   // inspection, etc. Applies to local root only.

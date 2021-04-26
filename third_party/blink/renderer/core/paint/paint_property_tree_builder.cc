@@ -1412,9 +1412,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
   }
 }
 
-static bool NeedsLinkHighlightEffect(const LayoutObject& object) {
-  auto* page = object.GetFrame()->GetPage();
-  return page->GetLinkHighlight().NeedsHighlightEffect(object);
+static bool IsLinkHighlighted(const LayoutObject& object) {
+  return object.GetFrame()->GetPage()->GetLinkHighlight().IsHighlighting(
+      object);
 }
 
 // TODO(crbug.com/900241): When this bug is fixed, we should let NeedsFilter()
@@ -1707,7 +1707,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateLocalBorderBoxContext() {
   if (!NeedsPaintPropertyUpdate())
     return;
 
-  if (object_.HasLayer() || properties_) {
+  if (object_.HasLayer() || properties_ || IsLinkHighlighted(object_)) {
     DCHECK(context_.current.transform);
     DCHECK(context_.current.clip);
     DCHECK(context_.current_effect);
@@ -2367,7 +2367,7 @@ static PhysicalRect BoundingBoxInPaginationContainer(
 
   // The link highlight covers block visual overflows, continuations, etc. which
   // may intersect with more fragments than the object itself.
-  if (NeedsLinkHighlightEffect(object)) {
+  if (IsLinkHighlighted(object)) {
     local_bounds.Unite(UnionRect(object.OutlineRects(
         PhysicalOffset(), NGOutlineType::kIncludeBlockVisualOverflow)));
   }
@@ -3621,7 +3621,6 @@ bool PaintPropertyTreeBuilder::UpdateFragments() {
        NeedsFilter(object_, context_) || NeedsCssClip(object_) ||
        NeedsInnerBorderRadiusClip(object_) || NeedsOverflowClip(object_) ||
        NeedsPerspective(object_) || NeedsReplacedContentTransform(object_) ||
-       NeedsLinkHighlightEffect(object_) ||
        NeedsScrollOrScrollTranslation(object_,
                                       context_.direct_compositing_reasons));
 

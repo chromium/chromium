@@ -114,7 +114,7 @@ LinkHighlightImpl::LinkHighlightImpl(Node* node)
 
   DCHECK(GetLayoutObject());
   GetLayoutObject()->SetNeedsPaintPropertyUpdate();
-  SetPaintArtifactCompositorNeedsUpdate();
+  SetNeedsRepaintAndCompositingUpdate();
 
 #if DCHECK_IS_ON()
   effect_->SetDebugName("LinkHighlightEffect");
@@ -137,7 +137,7 @@ void LinkHighlightImpl::ReleaseResources() {
   if (auto* layout_object = GetLayoutObject())
     layout_object->SetNeedsPaintPropertyUpdate();
 
-  SetPaintArtifactCompositorNeedsUpdate();
+  SetNeedsRepaintAndCompositingUpdate();
 
   node_.Clear();
 }
@@ -251,7 +251,7 @@ void LinkHighlightImpl::UpdateAfterPrePaint() {
 
   if (fragment_count != fragments_.size()) {
     fragments_.resize(fragment_count);
-    SetPaintArtifactCompositorNeedsUpdate();
+    SetNeedsRepaintAndCompositingUpdate();
   }
 }
 
@@ -340,10 +340,12 @@ void LinkHighlightImpl::Paint(GraphicsContext& context) {
   DCHECK_EQ(index, fragments_.size());
 }
 
-void LinkHighlightImpl::SetPaintArtifactCompositorNeedsUpdate() {
+void LinkHighlightImpl::SetNeedsRepaintAndCompositingUpdate() {
   DCHECK(node_);
-  if (auto* frame_view = node_->GetDocument().View())
+  if (auto* frame_view = node_->GetDocument().View()) {
+    frame_view->SetVisualViewportOrOverlayNeedsRepaint();
     frame_view->SetPaintArtifactCompositorNeedsUpdate();
+  }
 }
 
 void LinkHighlightImpl::UpdateOpacity(float opacity) {
@@ -351,11 +353,11 @@ void LinkHighlightImpl::UpdateOpacity(float opacity) {
       effect_->Update(EffectPaintPropertyNode::Root(),
                       LinkHighlightEffectNodeState(opacity, element_id_));
   // If there is no |node_|, |ReleaseResources| has already handled the call to
-  // |SetPaintArtifactCompositorNeedsUpdate|.
+  // |SetNeedsRepaintAndCompositingUpdate|.
   if (!node_)
     return;
   if (change > PaintPropertyChangeType::kChangedOnlyCompositedValues)
-    SetPaintArtifactCompositorNeedsUpdate();
+    SetNeedsRepaintAndCompositingUpdate();
 }
 
 }  // namespace blink

@@ -63,6 +63,7 @@ class CORE_EXPORT FrameOverlay : public GraphicsLayerClient,
   };
 
   FrameOverlay(LocalFrame*, std::unique_ptr<FrameOverlay::Delegate>);
+  ~FrameOverlay() override;
 
   void UpdatePrePaint();
 

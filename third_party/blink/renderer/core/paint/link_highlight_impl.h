@@ -86,7 +86,7 @@ class CORE_EXPORT LinkHighlightImpl final : public CompositorAnimationDelegate,
  private:
   void ReleaseResources();
 
-  void SetPaintArtifactCompositorNeedsUpdate();
+  void SetNeedsRepaintAndCompositingUpdate();
   void UpdateOpacity(float opacity);
 
   class LinkHighlightFragment : private cc::ContentLayerClient {

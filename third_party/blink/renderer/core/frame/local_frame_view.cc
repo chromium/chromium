@@ -2055,10 +2055,6 @@ LayoutEmbeddedContent* LocalFrameView::GetLayoutEmbeddedContent() const {
   return frame_->OwnerLayoutObject();
 }
 
-void LocalFrameView::VisualViewportScrollbarsChanged() {
-  SetVisualViewportNeedsRepaint();
-}
-
 void LocalFrameView::UpdateGeometriesIfNeeded() {
   if (!needs_update_geometries_)
     return;
@@ -2912,14 +2908,9 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode) {
     PaintController::ScopedBenchmarkMode scoped_benchmark(*paint_controller_,
                                                           benchmark_mode);
 
-    // TODO(crbug.com/917911): Painting of overlays should not force repainting
-    // of the frame contents.
-    auto* web_local_frame_impl = WebLocalFrameImpl::FromFrame(frame_);
-    bool has_dev_tools_overlays =
-        web_local_frame_impl && web_local_frame_impl->HasDevToolsOverlays();
     if (!paint_controller_->ShouldForcePaintForBenchmark() &&
         !GetLayoutView()->Layer()->SelfOrDescendantNeedsRepaint() &&
-        !visual_viewport_needs_repaint_ && !has_dev_tools_overlays) {
+        !visual_viewport_or_overlay_needs_repaint_) {
       paint_controller_->UpdateUMACountsOnFullyCached();
     } else {
       GraphicsContext graphics_context(*paint_controller_);
@@ -2952,7 +2943,7 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode) {
 
         // Devtools overlays query the inspected page's paint data so this
         // update needs to be after other paintings.
-        if (has_dev_tools_overlays)
+        if (auto* web_local_frame_impl = WebLocalFrameImpl::FromFrame(frame_))
           web_local_frame_impl->PaintDevToolsOverlays(graphics_context);
 
         if (frame_->IsMainFrame())
@@ -2990,7 +2981,8 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode) {
             layout_view->Compositor()->PaintRootGraphicsLayer()) {
       repainted = root->PaintRecursively(
           graphics_context, pre_composited_layers_, benchmark_mode);
-      if (visual_viewport_needs_repaint_ && paint_artifact_compositor_)
+      if (visual_viewport_or_overlay_needs_repaint_ &&
+          paint_artifact_compositor_)
         paint_artifact_compositor_->SetNeedsUpdate();
 
       {
@@ -3012,7 +3004,7 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode) {
     }
   }
 
-  visual_viewport_needs_repaint_ = false;
+  visual_viewport_or_overlay_needs_repaint_ = false;
 
   needs_clear_repaint_flags |= repainted;
   ForAllNonThrottledLocalFrameViews(

@@ -99,8 +99,7 @@ void LinkHighlight::WillCloseAnimationHost() {
   animation_host_ = nullptr;
 }
 
-bool LinkHighlight::NeedsHighlightEffectInternal(
-    const LayoutObject& object) const {
+bool LinkHighlight::IsHighlightingInternal(const LayoutObject& object) const {
   DCHECK(impl_);
   return &object == impl_->GetLayoutObject();
 }

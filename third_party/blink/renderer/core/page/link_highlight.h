@@ -40,8 +40,8 @@ class CORE_EXPORT LinkHighlight final : public GarbageCollected<LinkHighlight> {
   void AnimationHostInitialized(cc::AnimationHost&);
   void WillCloseAnimationHost();
 
-  bool NeedsHighlightEffect(const LayoutObject& object) const {
-    return impl_ && NeedsHighlightEffectInternal(object);
+  bool IsHighlighting(const LayoutObject& object) const {
+    return impl_ && IsHighlightingInternal(object);
   }
 
   void UpdateBeforePrePaint();
@@ -60,7 +60,7 @@ class CORE_EXPORT LinkHighlight final : public GarbageCollected<LinkHighlight> {
     return *page_;
   }
 
-  bool NeedsHighlightEffectInternal(const LayoutObject& object) const;
+  bool IsHighlightingInternal(const LayoutObject& object) const;
 
   Member<Page> page_;
   std::unique_ptr<LinkHighlightImpl> impl_;
