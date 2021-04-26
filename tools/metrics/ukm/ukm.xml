@@ -12323,6 +12323,88 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="PerformanceAPI.Memory">
+  <owner>hpayer@chromium.org</owner>
+  <owner>mlippautz@chromium.org</owner>
+  <owner>ulan@chromium.org</owner>
+  <summary>
+    This event is associated with the performance.measureUserAgentSpecificMemory
+    API. The metrics are recorded when the memory measurement is reported to the
+    page. All values represent memory consumption in KB.
+  </summary>
+  <metric name="Dom">
+    <summary>
+      The total DOM memory measured in KB.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="JavaScript">
+    <summary>
+      The total JavaScript memory measured in KB.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="JavaScript.DedicatedWorker">
+    <summary>
+      The total JavaScript memory in the DedicatedWorker scope measured in KB.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Shared">
+    <summary>
+      The total shared memory measured in KB.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="PerformanceAPI.Memory.Legacy">
+  <owner>hpayer@chromium.org</owner>
+  <owner>mlippautz@chromium.org</owner>
+  <owner>ulan@chromium.org</owner>
+  <summary>
+    This event is associated with the performance.memory API. The metrics are
+    recorded when the memory measurement is reported to the page. All values
+    represent memory consumption in KB.
+  </summary>
+  <metric name="JavaScript">
+    <summary>
+      The JavaScript memory (usedJSHeapSize) measured in KB.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="PeriodicBackgroundSyncEventCompleted">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>

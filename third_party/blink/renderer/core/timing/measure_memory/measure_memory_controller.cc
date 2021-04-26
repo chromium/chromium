@@ -7,6 +7,7 @@
 #include <algorithm>
 #include "base/rand_util.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom-blink.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -282,6 +283,61 @@ MemoryMeasurement* ConvertResult(const WebMemoryMeasurementPtr& measurement) {
   return result;
 }
 
+bool IsDedicatedWorkerEntry(const WebMemoryBreakdownEntryPtr& breakdown_entry) {
+  for (const auto& entry : breakdown_entry->attribution) {
+    if (entry->scope == WebMemoryAttribution::Scope::kDedicatedWorker)
+      return true;
+  }
+  return false;
+}
+
+uint64_t GetDedicatedWorkerJavaScriptUkm(
+    const WebMemoryMeasurementPtr& measurement) {
+  size_t result = 0;
+  for (const auto& entry : measurement->breakdown) {
+    if (entry->memory && IsDedicatedWorkerEntry(entry)) {
+      result += entry->memory->bytes;
+    }
+  }
+  return result;
+}
+
+uint64_t GetJavaScriptUkm(const WebMemoryMeasurementPtr& measurement) {
+  size_t result = 0;
+  for (const auto& entry : measurement->breakdown) {
+    if (entry->memory) {
+      result += entry->memory->bytes;
+    }
+  }
+  return result;
+}
+
+uint64_t GetDomUkm(const WebMemoryMeasurementPtr& measurement) {
+  return measurement->blink_memory->bytes;
+}
+
+uint64_t GetSharedUkm(const WebMemoryMeasurementPtr& measurement) {
+  return measurement->shared_memory->bytes;
+}
+
+void RecordWebMemoryUkm(v8::Local<v8::Context> context,
+                        const WebMemoryMeasurementPtr& measurement) {
+  auto* execution_context = ExecutionContext::From(context);
+  if (!execution_context) {
+    // This may happen if the context was detached while the memory
+    // measurement was in progress.
+    return;
+  }
+  const uint64_t kBytesInKB = 1024;
+  ukm::builders::PerformanceAPI_Memory(execution_context->UkmSourceID())
+      .SetJavaScript(GetJavaScriptUkm(measurement) / kBytesInKB)
+      .SetJavaScript_DedicatedWorker(
+          GetDedicatedWorkerJavaScriptUkm(measurement) / kBytesInKB)
+      .SetDom(GetDomUkm(measurement) / kBytesInKB)
+      .SetShared(GetSharedUkm(measurement) / kBytesInKB)
+      .Record(execution_context->UkmRecorder());
+}
+
 }  // anonymous namespace
 
 void MeasureMemoryController::MeasurementComplete(
@@ -301,6 +357,7 @@ void MeasureMemoryController::MeasurementComplete(
   promise_resolver->Resolve(context, ToV8(result, promise_resolver, isolate_))
       .ToChecked();
   promise_resolver_.Clear();
+  RecordWebMemoryUkm(context, measurement);
 }
 
 }  // namespace blink

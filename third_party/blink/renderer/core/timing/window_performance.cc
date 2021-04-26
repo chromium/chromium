@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 
 #include "base/trace_event/common/trace_event_common.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -194,10 +195,17 @@ MemoryInfo* WindowPerformance::memory() const {
   // course over time about what changes would be implemented) can be found at
   // https://groups.google.com/a/chromium.org/forum/#!topic/blink-dev/no00RdMnGio,
   // and the relevant bug is https://crbug.com/807651.
-  return MakeGarbageCollected<MemoryInfo>(
-      Platform::Current()->IsLockedToSite()
-          ? MemoryInfo::Precision::Precise
-          : MemoryInfo::Precision::Bucketized);
+  auto* memory_info =
+      MakeGarbageCollected<MemoryInfo>(Platform::Current()->IsLockedToSite()
+                                           ? MemoryInfo::Precision::Precise
+                                           : MemoryInfo::Precision::Bucketized);
+  // Record Web Memory UKM.
+  const uint64_t kBytesInKB = 1024;
+  ukm::builders::PerformanceAPI_Memory_Legacy(
+      GetExecutionContext()->UkmSourceID())
+      .SetJavaScript(memory_info->usedJSHeapSize() / kBytesInKB)
+      .Record(GetExecutionContext()->UkmRecorder());
+  return memory_info;
 }
 
 PerformanceNavigationTiming*
