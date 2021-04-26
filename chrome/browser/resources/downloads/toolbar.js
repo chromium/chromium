@@ -84,7 +84,7 @@ Polymer({
   },
 
   /** @private */
-  onClearAllTap_() {
+  onClearAllTap_(e) {
     assert(this.canClearAll());
     this.mojoHandler_.clearAll();
     this.$.moreActionsMenu.close();
@@ -92,6 +92,9 @@ Polymer({
         this.items.some(data => !data.isDangerous && !data.isMixedContent);
     getToastManager().show(loadTimeData.getString('toastClearedAll'),
         /* hideSlotted= */ !canUndo);
+    // Stop propagating a click to the document to remove toast.
+    e.stopPropagation();
+    e.preventDefault();
   },
 
   /** @private */

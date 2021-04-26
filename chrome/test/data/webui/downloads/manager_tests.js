@@ -185,6 +185,21 @@ suite('manager tests', function() {
     assertFalse(toastManager.isToastOpen);
   });
 
+  test('toast is not hidden when itself is clicked', () => {
+    toastManager.show('');
+    assertTrue(toastManager.isToastOpen);
+    toastManager.$$('#toast').click();
+    assertTrue(toastManager.isToastOpen);
+  });
+
+  test('toast is hidden when page is clicked', () => {
+    toastManager.show('');
+    assertTrue(toastManager.isToastOpen);
+
+    document.body.click();
+    assertFalse(toastManager.isToastOpen);
+  });
+
   test('undo is not shown when removing only dangerous items', async () => {
     callbackRouterRemote.insertItems(0, [
       createDownload({isDangerous: true}),

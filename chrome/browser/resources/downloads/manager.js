@@ -104,6 +104,9 @@ Polymer({
   /** @private {?Function} */
   boundOnKeyDown_: null,
 
+  /** @private {?Function} */
+  boundOnClick_: null,
+
   /** @override */
   created() {
     const browserProxy = BrowserProxy.getInstance();
@@ -134,6 +137,9 @@ Polymer({
     this.boundOnKeyDown_ = e => this.onKeyDown_(e);
     document.addEventListener('keydown', this.boundOnKeyDown_);
 
+    this.boundOnClick_ = this.onClick_.bind(this);
+    document.addEventListener('click', this.boundOnClick_);
+
     this.loaded_.promise.then(() => {
       requestIdleCallback(function() {
         chrome.send(
@@ -144,6 +150,10 @@ Polymer({
     });
 
     this.searchService_.loadMore();
+
+    // Intercepts clicks on toast.
+    const toastManager = getToastManager();
+    toastManager.$$('#toast').onclick = e => this.onToastClicked_(e);
   },
 
   /** @override */
@@ -153,6 +163,8 @@ Polymer({
 
     document.removeEventListener('keydown', this.boundOnKeyDown_);
     this.boundOnKeyDown_ = null;
+    document.removeEventListener('click', this.boundOnClick_);
+    this.boundOnClick_ = null;
   },
 
   /** @private */
@@ -257,6 +269,14 @@ Polymer({
   },
 
   /** @private */
+  onClick_() {
+    const toastManager = getToastManager();
+    if (toastManager.isToastOpen) {
+      toastManager.hide();
+    }
+  },
+
+  /** @private */
   onClearAllCommand_() {
     if (!this.$.toolbar.canClearAll()) {
       return;
@@ -277,6 +297,12 @@ Polymer({
 
     getToastManager().hide();
     this.mojoHandler_.undo();
+  },
+
+  /** @private */
+  onToastClicked_(e) {
+    e.stopPropagation();
+    e.preventDefault();
   },
 
   /** @private */
