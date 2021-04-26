@@ -100,12 +100,6 @@ int64_t ServiceWorkerProviderContext::GetControllerVersionId() const {
   return controller_version_id_;
 }
 
-blink::mojom::ControllerServiceWorkerMode
-ServiceWorkerProviderContext::GetControllerServiceWorkerMode() const {
-  DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
-  return controller_mode_;
-}
-
 network::mojom::URLLoaderFactory*
 ServiceWorkerProviderContext::GetSubresourceLoaderFactoryInternal() {
   if (!remote_controller_ && !controller_connector_) {
@@ -177,10 +171,6 @@ ServiceWorkerProviderContext::used_features() const {
   return used_features_;
 }
 
-const std::string& ServiceWorkerProviderContext::client_id() const {
-  return client_id_;
-}
-
 const base::UnguessableToken&
 ServiceWorkerProviderContext::fetch_request_window_id() const {
   return fetch_request_window_id_;
@@ -208,18 +198,6 @@ void ServiceWorkerProviderContext::CloneWorkerClientRegistry(
         receiver) {
   DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
   worker_client_registry_receivers_.Add(this, std::move(receiver));
-}
-
-mojo::PendingRemote<blink::mojom::ServiceWorkerContainerHost>
-ServiceWorkerProviderContext::CloneRemoteContainerHost() {
-  DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
-  if (!container_host_)
-    return mojo::NullRemote();
-  mojo::PendingRemote<blink::mojom::ServiceWorkerContainerHost>
-      remote_container_host;
-  container_host_->CloneContainerHost(
-      remote_container_host.InitWithNewPipeAndPassReceiver());
-  return remote_container_host;
 }
 
 void ServiceWorkerProviderContext::OnNetworkProviderDestroyed() {
@@ -280,6 +258,43 @@ ServiceWorkerProviderContext::TakePendingWorkerTimingReceiver(int request_id) {
   auto worker_timing_receiver = std::move(iter->second);
   worker_timing_container_receivers_.erase(iter);
   return worker_timing_receiver;
+}
+
+void ServiceWorkerProviderContext::BindServiceWorkerWorkerClientRemote(
+    blink::CrossVariantMojoRemote<
+        blink::mojom::ServiceWorkerWorkerClientInterfaceBase> pending_client) {
+  RegisterWorkerClient(std::move(pending_client));
+}
+
+void ServiceWorkerProviderContext::
+    BindServiceWorkerWorkerClientRegistryReceiver(
+        blink::CrossVariantMojoReceiver<
+            blink::mojom::ServiceWorkerWorkerClientRegistryInterfaceBase>
+            receiver) {
+  CloneWorkerClientRegistry(std::move(receiver));
+}
+
+blink::CrossVariantMojoRemote<
+    blink::mojom::ServiceWorkerContainerHostInterfaceBase>
+ServiceWorkerProviderContext::CloneRemoteContainerHost() {
+  DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
+  if (!container_host_)
+    return mojo::NullRemote();
+  mojo::PendingRemote<blink::mojom::ServiceWorkerContainerHost>
+      remote_container_host;
+  container_host_->CloneContainerHost(
+      remote_container_host.InitWithNewPipeAndPassReceiver());
+  return std::move(remote_container_host);
+}
+
+blink::mojom::ControllerServiceWorkerMode
+ServiceWorkerProviderContext::GetControllerServiceWorkerMode() const {
+  DCHECK(main_thread_task_runner_->RunsTasksInCurrentSequence());
+  return controller_mode_;
+}
+
+const blink::WebString ServiceWorkerProviderContext::client_id() const {
+  return blink::WebString::FromUTF8(client_id_);
 }
 
 void ServiceWorkerProviderContext::UnregisterWorkerFetchContext(

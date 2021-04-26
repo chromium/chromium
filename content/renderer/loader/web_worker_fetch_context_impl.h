@@ -36,12 +36,11 @@ class ResourceLoadInfoNotifierWrapper;
 class URLLoaderThrottleProvider;
 class WeakWrapperResourceLoadInfoNotifier;
 class WebFrameRequestBlocker;
+class WebServiceWorkerProviderContext;
 class WebSocketHandshakeThrottleProvider;
 }  // namespace blink
 
 namespace content {
-
-class ServiceWorkerProviderContext;
 
 // This class is used for fetching resource requests from workers (dedicated
 // worker and shared worker). This class is created on the main thread and
@@ -72,7 +71,7 @@ class CONTENT_EXPORT WebWorkerFetchContextImpl
   // because it might additionally support non-NetworkService schemes (e.g.,
   // chrome-extension://).
   static scoped_refptr<WebWorkerFetchContextImpl> Create(
-      ServiceWorkerProviderContext* provider_context,
+      blink::WebServiceWorkerProviderContext* provider_context,
       const blink::RendererPreferences& renderer_preferences,
       mojo::PendingReceiver<blink::mojom::RendererPreferenceWatcher>
           watcher_receiver,
@@ -92,10 +91,10 @@ class CONTENT_EXPORT WebWorkerFetchContextImpl
   scoped_refptr<WebWorkerFetchContextImpl> CloneForNestedWorkerDeprecated(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   // For PlzDedicatedWorker. The cloned fetch context does not inherit some
-  // fields (e.g., ServiceWorkerProviderContext) from this fetch context, and
-  // instead that takes values passed from the browser process.
+  // fields (e.g., blink::WebServiceWorkerProviderContext) from this fetch
+  // context, and instead that takes values passed from the browser process.
   scoped_refptr<WebWorkerFetchContextImpl> CloneForNestedWorker(
-      ServiceWorkerProviderContext* service_worker_provider_context,
+      blink::WebServiceWorkerProviderContext* service_worker_provider_context,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_loader_factory,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
@@ -161,7 +160,7 @@ class CONTENT_EXPORT WebWorkerFetchContextImpl
   void set_site_for_cookies(const net::SiteForCookies& site_for_cookies);
   void set_top_frame_origin(const blink::WebSecurityOrigin& top_frame_origin);
 
-  void set_client_id(const std::string& client_id);
+  void set_client_id(const blink::WebString& client_id);
 
   using RewriteURLFunction = blink::WebURL (*)(base::StringPiece, bool);
   static void InstallRewriteURLFunction(RewriteURLFunction rewrite_url);
@@ -278,14 +277,14 @@ class CONTENT_EXPORT WebWorkerFetchContextImpl
   // Initialized on the worker thread when InitializeOnWorkerThread() is called.
   // This can be null if the |provider_context| passed to Create() was null or
   // already being destructed (see
-  // ServiceWorkerProviderContext::OnNetworkProviderDestroyed()).
+  // content::ServiceWorkerProviderContext::OnNetworkProviderDestroyed()).
   mojo::Remote<blink::mojom::ServiceWorkerContainerHost>
       service_worker_container_host_;
 
   // The Client#id value of the shared worker or dedicated worker (since
   // dedicated workers are not yet service worker clients, it is the parent
   // document's id in that case). Passed to ControllerServiceWorkerConnector.
-  std::string client_id_;
+  blink::WebString client_id_;
 
   // Initialized on the worker thread when InitializeOnWorkerThread() is called.
   // |loader_factory_| is used for regular loading by the worker. In

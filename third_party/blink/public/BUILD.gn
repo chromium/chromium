@@ -144,6 +144,7 @@ source_set("blink_headers") {
     "platform/modules/service_worker/web_service_worker_object_info.h",
     "platform/modules/service_worker/web_service_worker_provider.h",
     "platform/modules/service_worker/web_service_worker_provider_client.h",
+    "platform/modules/service_worker/web_service_worker_provider_context.h",
     "platform/modules/service_worker/web_service_worker_registration_object_info.h",
     "platform/modules/video_capture/web_video_capture_impl_manager.h",
     "platform/modules/webrtc/webrtc_logging.h",
