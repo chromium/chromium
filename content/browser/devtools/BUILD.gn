@@ -9,7 +9,7 @@ import("//tools/grit/grit_rule.gni")
 # Android and Fuchsia do not support DevTools front-end.
 if (!is_android && !is_fuchsia) {
   grit("devtools_resources") {
-    source = "$root_gen_dir/devtools/devtools_resources.grd"
+    source = "$root_gen_dir/third_party/devtools-frontend/src/front_end/devtools_resources.grd"
 
     # Required because the .grd is generated.
     enable_input_discovery_for_gn_analyze = false
