@@ -1103,6 +1103,33 @@ TEST_F(SiteSettingsHandlerTest, ResetCategoryPermissionForEmbargoedOrigins) {
   }
 }
 
+TEST_F(SiteSettingsHandlerTest, ResetCategoryPermissionForInvalidOrigins) {
+  constexpr char kInvalidOrigin[] = "example.com";
+  auto url = GURL(kInvalidOrigin);
+  EXPECT_FALSE(url.is_valid());
+  EXPECT_TRUE(url.is_empty());
+
+  base::ListValue set_args;
+  set_args.AppendString(kInvalidOrigin);  // Primary pattern.
+  set_args.AppendString(std::string());   // Secondary pattern.
+  set_args.AppendString(kNotifications);
+  set_args.AppendString(
+      content_settings::ContentSettingToString(CONTENT_SETTING_BLOCK));
+  set_args.AppendBoolean(false);  // Incognito.
+
+  handler()->HandleSetCategoryPermissionForPattern(&set_args);
+  ASSERT_EQ(1U, web_ui()->call_data().size());
+
+  // Reset blocked origin.
+  base::ListValue reset_args;
+  reset_args.AppendString(kInvalidOrigin);
+  reset_args.AppendString(std::string());
+  reset_args.AppendString(kNotifications);
+  reset_args.AppendBoolean(false);  // Incognito.
+  // Check that this method is not crashing for an invalid origin.
+  handler()->HandleResetCategoryPermissionForPattern(&reset_args);
+}
+
 TEST_F(SiteSettingsHandlerTest, Origins) {
   const std::string google("https://www.google.com:443");
   const std::string uma_base("WebsiteSettings.Menu.PermissionChanged");

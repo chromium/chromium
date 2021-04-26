@@ -1150,8 +1150,11 @@ void SiteSettingsHandler::HandleResetCategoryPermissionForPattern(
   }
 
   // End embargo if currently active.
-  PermissionDecisionAutoBlockerFactory::GetForProfile(profile)
-      ->RemoveEmbargoAndResetCounts(GURL(primary_pattern_string), content_type);
+  auto url = GURL(primary_pattern_string);
+  if (url.is_valid()) {
+    PermissionDecisionAutoBlockerFactory::GetForProfile(profile)
+        ->RemoveEmbargoAndResetCounts(url, content_type);
+  }
 
   content_settings::LogWebSiteSettingsPermissionChange(
       content_type, ContentSetting::CONTENT_SETTING_DEFAULT);
