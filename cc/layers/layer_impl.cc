@@ -763,7 +763,9 @@ gfx::Transform LayerImpl::ScreenSpaceTransform() const {
 }
 
 int LayerImpl::GetSortingContextId() const {
-  return GetTransformTree().Node(transform_tree_index())->sorting_context_id;
+  int rv = GetTransformTree().Node(transform_tree_index())->sorting_context_id;
+  recordreplay::Assert("LayerImpl::GetSortingContextId %d %d", transform_tree_index(), rv);
+  return rv;
 }
 
 Region LayerImpl::GetInvalidationRegionForDebugging() {
