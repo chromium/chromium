@@ -713,8 +713,6 @@ bool ThreadGroupImpl::WorkerThreadDelegateImpl::CanCleanupLockRequired(
   return !last_used_time.is_null() &&
          subtle::TimeTicksNowIgnoringOverride() - last_used_time >=
              outer_->after_start().suggested_reclaim_time &&
-         (outer_->workers_.size() > outer_->after_start().initial_max_tasks ||
-          !FeatureList::IsEnabled(kNoDetachBelowInitialCapacity)) &&
          LIKELY(!outer_->worker_cleanup_disallowed_for_testing_);
 }
 
