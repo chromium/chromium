@@ -49,7 +49,6 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-shared.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
@@ -95,6 +94,10 @@ class DecoderFactory;
 class MediaPermission;
 class GpuVideoAcceleratorFactories;
 }  // namespace media
+
+namespace network {
+class SharedURLLoaderFactory;
+}
 
 namespace v8 {
 class Context;
@@ -290,9 +293,7 @@ class BLINK_PLATFORM_EXPORT Platform {
   // network::SharedURLLoaderFactory.
   virtual std::unique_ptr<blink::WebURLLoaderFactory>
   WrapSharedURLLoaderFactory(
-      scoped_refptr<network::SharedURLLoaderFactory> factory) {
-    return nullptr;
-  }
+      scoped_refptr<network::SharedURLLoaderFactory> factory);
 
   // Returns the User-Agent string.
   virtual WebString UserAgent() { return WebString(); }

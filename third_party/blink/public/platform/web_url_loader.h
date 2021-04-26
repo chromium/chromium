@@ -41,7 +41,6 @@
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-forward.h"
@@ -57,7 +56,9 @@ class SingleThreadTaskRunner;
 }
 
 namespace network {
+class SharedURLLoaderFactory;
 struct ResourceRequest;
+struct URLLoaderCompletionStatus;
 }
 
 namespace blink {
