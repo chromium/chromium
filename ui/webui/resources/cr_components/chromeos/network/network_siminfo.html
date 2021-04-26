@@ -45,57 +45,60 @@
     </style>
 
     <!-- SIM missing UI -->
-    <div id="simMissing" class="property-box two-line"
-        hidden$="[[!showSimMissing_(deviceState)]]">
-      <div class="start layout horizontal center">
-        <iron-icon icon="cr:sim-card-alert"></iron-icon>
-        <div class="error">[[i18n('networkSimCardMissing')]]</div>
+    <template is="dom-if" if="[[eq_(State.SIM_MISSING, state_)]]" restamp>
+      <div id="simMissing" class="property-box two-line">
+        <div class="start layout horizontal center">
+          <iron-icon icon="cr:sim-card-alert"></iron-icon>
+          <div class="error">[[i18n('networkSimCardMissing')]]</div>
+        </div>
       </div>
-    </div>
+    </template>
 
     <!-- SIM locked -->
-    <div id="simLocked" class="property-box two-line"
-        hidden$="[[!showSimLocked_(deviceState, isActiveSim_)]]">
-      <div class="start layout horizontal center"
-          hidden="[[isUpdatedCellularUiEnabled_]]">
-        <iron-icon icon="cr:sim-lock"></iron-icon>
-        <div class="error">[[i18n('networkSimCardLocked')]]</div>
+    <template is="dom-if" if="[[eq_(State.SIM_LOCKED, state_)]]" restamp>
+      <div id="simLocked" class="property-box two-line">
+        <div class="start layout horizontal center"
+            hidden="[[isUpdatedCellularUiEnabled_]]">
+          <iron-icon icon="cr:sim-lock"></iron-icon>
+          <div class="error">[[i18n('networkSimCardLocked')]]</div>
+        </div>
+        <div class="separator" hidden="[[isUpdatedCellularUiEnabled_]]"></div>
+        <cr-button id="unlockPinButton"
+            on-click="onUnlockPinTap_"
+            disabled="[[disabled]]">
+          [[i18n('networkSimUnlock')]]
+        </cr-button>
       </div>
-      <div class="separator" hidden="[[isUpdatedCellularUiEnabled_]]"></div>
-      <cr-button id="unlockPinButton"
-          on-click="onUnlockPinTap_"
-          disabled="[[disabled]]">
-        [[i18n('networkSimUnlock')]]
-      </cr-button>
-    </div>
+    </template>
 
     <!-- SIM unlocked -->
-    <div class="property-box two-line"
-        hidden$="[[!showSimUnlocked_(deviceState)]]">
-      <div id="simLockToggleLabel" class="start">
-        [[i18n('networkSimLockEnable')]]
+    <template is="dom-if" if="[[eq_(State.SIM_UNLOCKED, state_)]]" restamp>
+      <div class="property-box two-line">
+        <div id="simLockToggleLabel" class="start">
+          [[i18n('networkSimLockEnable')]]
+        </div>
+        <cr-button id="changePinButton" on-click="onChangePinTap_"
+            hidden$="[[!showChangePinButton_(deviceState, isActiveSim_)]]"
+            disabled="[[disabled]]">
+          [[i18n('networkSimChangePin')]]
+        </cr-button>
+        <template is="dom-if" if="[[!isActiveSim_]]" restamp>
+          <iron-icon id="help-icon" tabindex="0" icon="cr:help-outline"
+              aria-labelledby="simLockToggleLabel inActiveSimLockTooltip">
+          </iron-icon>
+          <paper-tooltip id="inActiveSimLockTooltip" for="help-icon" position="bottom"
+              aria-hidden="true" fit-to-visible-bounds>
+              [[i18n('networkSimLockedTooltip')]]
+          </paper-tooltip>
+          <div class="separator"></div>
+        </template>
+        <cr-toggle id="simLockButton"
+            disabled="[[isSimLockButtonDisabled_(disabled, isActiveSim_)]]"
+            on-change="onSimLockEnabledChange_" checked="{{lockEnabled_}}"
+            aria-labelledby="simLockToggleLabel">
+        </cr-toggle>
       </div>
-      <cr-button id="changePinButton" on-click="onChangePinTap_"
-          hidden$="[[!showChangePinButton_(deviceState, isActiveSim_)]]"
-          disabled="[[disabled]]">
-        [[i18n('networkSimChangePin')]]
-      </cr-button>
-      <template is="dom-if" if="[[!isActiveSim_]]" restamp>
-        <iron-icon id="help-icon" tabindex="0" icon="cr:help-outline"
-            aria-labelledby="simLockToggleLabel inActiveSimLockTooltip">
-        </iron-icon>
-        <paper-tooltip id="inActiveSimLockTooltip" for="help-icon" position="bottom"
-            aria-hidden="true" fit-to-visible-bounds>
-            [[i18n('networkSimLockedTooltip')]]
-        </paper-tooltip>
-        <div class="separator"></div>
-      </template>
-      <cr-toggle id="simLockButton"
-          disabled="[[isSimLockButtonDisabled_(disabled, isActiveSim_)]]"
-          on-change="onSimLockEnabledChange_" checked="{{lockEnabled_}}"
-          aria-labelledby="simLockToggleLabel">
-      </cr-toggle>
-    </div>
+    </template>
 
     <template is="dom-if" if="[[isDialogOpen_]]" restamp>
       <sim-lock-dialogs

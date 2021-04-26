@@ -525,15 +525,14 @@ suite('InternetDetailPage', function() {
 
       Polymer.dom.flush();
 
-      const deepLinkElement =
-          internetDetailPage.$$('#cellularSimInfo').$$('#simLockButton');
+      const simInfo = internetDetailPage.$$('#cellularSimInfo');
 
       // In this rare case, wait after next render twice due to focus behavior
       // of the siminfo component.
-      await test_util.waitAfterNextRender(deepLinkElement);
-      await test_util.waitAfterNextRender(deepLinkElement);
+      await test_util.waitAfterNextRender(simInfo);
+      await test_util.waitAfterNextRender(simInfo);
       assertEquals(
-          deepLinkElement, getDeepActiveElement(),
+          simInfo.$$('#simLockButton'), getDeepActiveElement(),
           'Sim lock toggle should be focused for settingId=14.');
     });
 
