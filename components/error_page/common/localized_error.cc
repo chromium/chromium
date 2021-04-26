@@ -930,23 +930,19 @@ LocalizedError::PageState LocalizedError::GetPageState(
         l10n_util::GetStringUTF16(IDS_ERRORPAGE_DINO_GAME_START));
 
     if (EnableAltGameMode()) {
+      result.strings.SetBoolean("enableAltGameMode", true);
       // We don't know yet which scale the page will use, so both 1x and 2x
       // should be loaded.
-      AltGameImages images;
-      int alt_game_choice;
-      if (GetAltGameImages(&images, &alt_game_choice)) {
-        result.strings.SetBoolean("enableAltGameMode", true);
-        result.strings.SetString("altGameType",
-                                 base::NumberToString(alt_game_choice));
-        result.strings.SetStringPath("altGameCommonImage1x",
-                                     std::move(images.common_1x));
-        result.strings.SetStringPath("altGameCommonImage2x",
-                                     std::move(images.common_2x));
-        result.strings.SetStringPath("altGameSpecificImage1x",
-                                     std::move(images.specific_1x));
-        result.strings.SetStringPath("altGameSpecificImage2x",
-                                     std::move(images.specific_2x));
-      }
+      result.strings.SetString("altGameCommonImage1x",
+                               GetAltGameImage(/*image_id=*/0, /*scale=*/1));
+      result.strings.SetString("altGameCommonImage2x",
+                               GetAltGameImage(/*image_id=*/0, /*scale=*/2));
+      int choice = ChooseAltGame();
+      result.strings.SetString("altGameType", base::NumberToString(choice));
+      result.strings.SetString("altGameSpecificImage1x",
+                               GetAltGameImage(choice, 1));
+      result.strings.SetString("altGameSpecificImage2x",
+                               GetAltGameImage(choice, 2));
     }
   }
 
