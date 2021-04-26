@@ -128,5 +128,22 @@ group("metrics_python_tests") {
     "//components/variations/service/generate_ui_string_overrider_unittest.py",
   ]
 
+  # Add platform-specific dependencies for dirmd.
+  if (is_win) {
+    data += [
+      "//third_party/depot_tools/dirmd.bat",
+      "//third_party/depot_tools/.cipd_bin/dirmd.exe",
+      "//third_party/depot_tools/cipd_bin_setup.bat",
+      "//third_party/depot_tools/cipd_manifest.txt",
+    ]
+  } else {
+    data += [
+      "//third_party/depot_tools/dirmd",
+      "//third_party/depot_tools/.cipd_bin/dirmd",
+      "//third_party/depot_tools/cipd_bin_setup.sh",
+      "//third_party/depot_tools/cipd_manifest.txt",
+    ]
+  }
+
   data_deps = [ "//testing:test_scripts_shared" ]
 }

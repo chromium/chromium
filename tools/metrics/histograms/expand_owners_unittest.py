@@ -81,7 +81,6 @@ class ExpandOwnersTest(unittest.TestCase):
     super(ExpandOwnersTest, self).tearDown()
     shutil.rmtree(self.temp_dir)
 
-  @unittest.skip("http://crbug.com/1164985")
   def testExpandOwnersUsesMetadataOverOwners(self):
     """Checks that DIR_METADATA is used if available"""
     with open(os.path.join(self.temp_dir, 'DIR_METADATA'), "w+") as md:
