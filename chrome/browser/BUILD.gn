@@ -1096,6 +1096,8 @@ static_library("browser") {
     "performance_monitor/process_metrics_history.h",
     "performance_monitor/process_metrics_recorder.cc",
     "performance_monitor/process_metrics_recorder.h",
+    "performance_monitor/process_metrics_recorder_util.cc",
+    "performance_monitor/process_metrics_recorder_util.h",
     "performance_monitor/process_monitor.cc",
     "performance_monitor/process_monitor.h",
     "performance_monitor/system_monitor.cc",

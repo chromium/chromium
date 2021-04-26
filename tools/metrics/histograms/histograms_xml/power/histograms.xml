@@ -22,6 +22,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <variants name="UsageScenario">
+<!-- 
+Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml 
+  When changing this variant changes need to verified against histograms there.
+-->
+
   <variant name="" summary="Any scenario."/>
   <variant name=".ZeroWindow"
       summary="When chromium has no windows at all (ex: docked on macOS)"/>

@@ -47,6 +47,8 @@ class PowerMetricsReporter
   void OnFirstSampleForTesting(base::OnceClosure callback);
 
   static int64_t GetBucketForSampleForTesting(base::TimeDelta value);
+  static std::vector<const char*> GetSuffixesForTesting(
+      const UsageScenarioDataStore::IntervalData& interval_data);
 
  protected:
   // Any change to this enum should be reflected in the corresponding enums.xml
@@ -70,7 +72,15 @@ class PowerMetricsReporter
       base::TimeDelta sampling_interval,
       base::TimeDelta interval_duration,
       BatteryDischargeMode discharge_mode,
-      base::Optional<int64_t> discharge_rate_during_interval);
+      base::Optional<int64_t> discharge_rate_during_interval,
+      const std::vector<const char*>& suffixes);
+
+  // Report CPU histograms based on data in |metrics| and suffixed based on
+  // scenarios inferred from |interval_data|.
+  static void ReportCPUHistograms(
+      const UsageScenarioDataStore::IntervalData& interval_data,
+      const performance_monitor::ProcessMonitor::Metrics& metrics,
+      const std::vector<const char*>& suffixes);
 
  private:
   // performance_monitor::ProcessMonitor::Observer:
