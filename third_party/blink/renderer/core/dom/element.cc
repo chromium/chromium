@@ -687,7 +687,7 @@ Node* Element::Clone(Document& factory, CloneChildrenFlag flag) const {
 }
 
 Element& Element::CloneWithChildren(Document* nullable_factory) const {
-  recordreplay::Assert("Element::CloneWithChildren %lu", recordreplay::PointerId(this));
+  recordreplay::Assert("Element::CloneWithChildren %lu", recordreplay::PointerId((void*)this));
   Element& clone = CloneWithoutAttributesAndChildren(
       nullable_factory ? *nullable_factory : GetDocument());
   // This will catch HTML elements in the wrong namespace that are not correctly
