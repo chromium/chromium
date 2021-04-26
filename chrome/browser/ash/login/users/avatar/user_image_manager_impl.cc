@@ -10,12 +10,11 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_util.h"
@@ -66,12 +65,15 @@ static bool g_ignore_profile_data_download_delay_ = false;
 int ImageIndexToHistogramIndex(int image_index) {
   switch (image_index) {
     case user_manager::User::USER_IMAGE_EXTERNAL:
-      // TODO(ivankr): Distinguish this from selected from file.
-      return default_user_image::kHistogramImageFromCamera;
+      return default_user_image::kHistogramImageExternal;
     case user_manager::User::USER_IMAGE_PROFILE:
       return default_user_image::kHistogramImageFromProfile;
     default:
-      return image_index;
+      // Create a gap in histogram values for
+      // [kHistogramImageExternal and kHistogramImageFromProfile] block to fit.
+      if (image_index < default_user_image::kHistogramImageExternal)
+        return image_index;
+      return image_index + default_user_image::kHistogramSpecialImagesCount;
   }
 }
 
@@ -560,9 +562,9 @@ void UserImageManagerImpl::UserLoggedIn(bool user_is_new, bool user_is_local) {
       DownloadProfileImage();
     }
   } else {
-    UMA_HISTOGRAM_EXACT_LINEAR("UserImage.LoggedIn",
-                               ImageIndexToHistogramIndex(user->image_index()),
-                               default_user_image::kHistogramImagesCount);
+    base::UmaHistogramExactLinear(
+        "UserImage.LoggedIn2", ImageIndexToHistogramIndex(user->image_index()),
+        default_user_image::kHistogramImagesCount + 1);
   }
 
   user_image_sync_observer_.reset();

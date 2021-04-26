@@ -23,7 +23,9 @@
 namespace ash {
 namespace default_user_image {
 
-// Resource IDs of default user images.
+// Resource IDs of default user images. When adding new entries to this list,
+// please also update the enum ChromeOSUserImageId in the
+// tools/metrics/histograms/enums.xml.
 // clang-format off
 const int kDefaultImageResourceIDs[] = {
     IDR_LOGIN_DEFAULT_USER,
@@ -129,13 +131,11 @@ const int kLastRandomDefaultImageIndex = 47;
 
 // The order and the values of these constants are important for histograms
 // of different Chrome OS versions to be merged smoothly.
-const int kHistogramImageFromCamera = 19;
-const int kHistogramImageFromFile = 20;
-const int kHistogramImageOld = 21;
-const int kHistogramImageFromProfile = 22;
-// const int kHistogramVideoFromCamera = 23;  // Unused
-// const int kHistogramVideoFromFile = 24;  // Unused
-const int kHistogramImagesCount = kDefaultImagesCount + 6;
+const int kHistogramImageExternal = 19;
+const int kHistogramImageFromProfile = 20;
+const int kHistogramSpecialImagesCount = 2;
+const int kHistogramImagesCount =
+    kDefaultImagesCount + kHistogramSpecialImagesCount;
 
 namespace {
 
@@ -380,15 +380,6 @@ bool IsInCurrentImageSet(int index) {
   int first, last;
   GetFirstLastIndex(&first, &last);
   return index >= first && index <= last;
-}
-
-int GetDefaultImageHistogramValue(int index) {
-  DCHECK(index >= 0 && index < kDefaultImagesCount);
-  // Create a gap in histogram values for
-  // [kHistogramImageFromCamera..kHistogramImageFromProfile] block to fit.
-  if (index < kHistogramImageFromCamera)
-    return index;
-  return index + 6;
 }
 
 std::unique_ptr<base::ListValue> GetAsDictionary(bool all) {

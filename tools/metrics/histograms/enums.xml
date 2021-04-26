@@ -11006,32 +11006,98 @@ histogram as enum -->
   <summary>
     Indices of the default images as defined in
     chrome/browser/ash/login/users/default_user_image/default_user_images.cc.
-    The last three values are for taken photo, downloaded file and the image
-    previously used by user.
+    Value 19 is the image selected from file or photo. Value 20 is the profile
+    image.Values 0~18 and 21~40 are legacy default images that still used by
+    some users, but cannot be selected from Settings &gt; Personalization &gt;
+    Change device account image.
   </summary>
-  <int value="0" label="Default, Beaker"/>
-  <int value="1" label="Default, Bee"/>
-  <int value="2" label="Default, Briefcase"/>
-  <int value="3" label="Default, Circles"/>
-  <int value="4" label="Default, Cloud"/>
-  <int value="5" label="Default, Cupcake"/>
-  <int value="6" label="Default, Day"/>
-  <int value="7" label="Default, Flower"/>
-  <int value="8" label="Default, Globe"/>
-  <int value="9" label="Default, Hot air"/>
-  <int value="10" label="Default, Ladybug"/>
-  <int value="11" label="Default, Leaf"/>
-  <int value="12" label="Default, Night"/>
-  <int value="13" label="Default, Plane"/>
-  <int value="14" label="Default, Robot body"/>
-  <int value="15" label="Default, Robot head"/>
-  <int value="16" label="Default, Toolbox"/>
-  <int value="17" label="Default, User color"/>
-  <int value="18" label="Default, User enterprise"/>
-  <int value="19" label="Photo taken"/>
-  <int value="20" label="Downloaded file"/>
-  <int value="21" label="Old image"/>
-  <int value="22" label="Profile image"/>
+<!-- Please append new values to the end and do not change the order of existing value. -->
+
+  <int value="0" label="Beaker"/>
+  <int value="1" label="Bee"/>
+  <int value="2" label="Briefcase"/>
+  <int value="3" label="Circles"/>
+  <int value="4" label="Cloud"/>
+  <int value="5" label="Cupcake"/>
+  <int value="6" label="Day"/>
+  <int value="7" label="Flower"/>
+  <int value="8" label="Globe"/>
+  <int value="9" label="Hot air"/>
+  <int value="10" label="Ladybug"/>
+  <int value="11" label="Leaf"/>
+  <int value="12" label="Night"/>
+  <int value="13" label="Plane"/>
+  <int value="14" label="Robot body"/>
+  <int value="15" label="Robot head"/>
+  <int value="16" label="Toolbox"/>
+  <int value="17" label="User color"/>
+  <int value="18" label="User enterprise"/>
+  <int value="19" label="User defined"/>
+  <int value="20" label="Profile image"/>
+  <int value="21" label="Bicycle"/>
+  <int value="22" label="Bokeh"/>
+  <int value="23" label="Chess"/>
+  <int value="24" label="Coffee"/>
+  <int value="25" label="Dragonfly"/>
+  <int value="26" label="Frog"/>
+  <int value="27" label="Gazania Flower"/>
+  <int value="28" label="Jack Russell Terrier"/>
+  <int value="29" label="Jellyfish"/>
+  <int value="30" label="Kiwi"/>
+  <int value="31" label="Penguin1"/>
+  <int value="32" label="Rainbowfish"/>
+  <int value="33" label="Record player"/>
+  <int value="34" label="Upside Down"/>
+  <int value="35" label="Cat"/>
+  <int value="36" label="Penguin2"/>
+  <int value="37" label="Fox"/>
+  <int value="38" label="Snail"/>
+  <int value="39" label="Red butterfly"/>
+  <int value="40" label="Cat"/>
+  <int value="41" label="Corgi"/>
+  <int value="42" label="Rabbit"/>
+  <int value="43" label="Pink butterfly"/>
+  <int value="44" label="Monkey"/>
+  <int value="45" label="Dragon"/>
+  <int value="46" label="Elephant"/>
+  <int value="47" label="Panda"/>
+  <int value="48" label="Unicorn"/>
+  <int value="49" label="Butterflies"/>
+  <int value="50" label="Bird"/>
+  <int value="51" label="Ramen"/>
+  <int value="52" label="Tamagotchi"/>
+  <int value="53" label="Cheese"/>
+  <int value="54" label="Football"/>
+  <int value="55" label="Basketball"/>
+  <int value="56" label="Vinyl record"/>
+  <int value="57" label="Sushi"/>
+  <int value="58" label="Bike"/>
+  <int value="59" label="Sunglasses"/>
+  <int value="60" label="Pizza"/>
+  <int value="61" label="Sandwich"/>
+  <int value="62" label="Cappuccino"/>
+  <int value="63" label="Ice water"/>
+  <int value="64" label="Ice cream"/>
+  <int value="65" label="Onigiri"/>
+  <int value="66" label="Melon"/>
+  <int value="67" label="Avocado"/>
+  <int value="68" label="Landing"/>
+  <int value="69" label="Lunar"/>
+  <int value="70" label="Dots"/>
+  <int value="71" label="Spin"/>
+  <int value="72" label="Grids"/>
+  <int value="73" label="Botanist"/>
+  <int value="74" label="Burger"/>
+  <int value="75" label="Graduate"/>
+  <int value="76" label="Guitar"/>
+  <int value="77" label="Waving"/>
+  <int value="78" label="Lion"/>
+  <int value="79" label="Planet"/>
+  <int value="80" label="Instant Camera"/>
+  <int value="81" label="Robot"/>
+  <int value="82" label="Sneaker"/>
+  <int value="83" label="Van"/>
+  <int value="84" label="Watermelon"/>
 </enum>
 
 <enum name="ChromePDFViewerActions">

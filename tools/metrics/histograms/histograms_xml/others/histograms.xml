@@ -17000,7 +17000,22 @@ should be kept until we use this API.  -->
 
 <histogram name="UserImage.LoggedIn" enum="ChromeOSUserImageId"
     expires_after="M82">
+  <obsolete>
+    Removed in M92. Replaced by UserImage.LoggedIn2, with the enum
+    ChromeOSUserImageId updated.
+  </obsolete>
   <owner>achuith@chromium.org</owner>
+  <summary>
+    Distribution of the default images that existing users login with (Chrome
+    OS). One sample is taken each time the user logs in.
+  </summary>
+</histogram>
+
+<histogram name="UserImage.LoggedIn2" enum="ChromeOSUserImageId"
+    expires_after="2022-03-30">
+  <owner>achuith@chromium.org</owner>
+  <owner>alemate@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
   <summary>
     Distribution of the default images that existing users login with (Chrome
     OS). One sample is taken each time the user logs in.

@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-
 namespace base {
 class ListValue;
 }
@@ -46,17 +45,14 @@ extern const int kFirstDefaultImageIndex;
 
 /// Histogram values. ////////////////////////////////////////////////////////
 
-// Histogram value for user image taken from file.
-extern const int kHistogramImageFromFile;
-
-// Histogram value for user image taken from camera.
-extern const int kHistogramImageFromCamera;
-
-// Histogram value a previously used image from camera/file.
-extern const int kHistogramImageOld;
+// Histogram value for user image selected from file or photo.
+extern const int kHistogramImageExternal;
 
 // Histogram value for user image from G+ profile.
 extern const int kHistogramImageFromProfile;
+
+// Number of special histogram values for user images.
+extern const int kHistogramSpecialImagesCount;
 
 // Number of possible histogram values for user images.
 extern const int kHistogramImagesCount;
