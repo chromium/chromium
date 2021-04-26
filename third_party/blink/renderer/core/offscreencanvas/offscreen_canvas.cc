@@ -295,10 +295,14 @@ CanvasRenderingContext* OffscreenCanvas::GetCanvasRenderingContext(
     return nullptr;
   }
 
-  if (attributes.color_space != kSRGBCanvasColorSpaceName ||
-      attributes.pixel_format != kUint8CanvasPixelFormatName) {
-    if (auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext()))
+  if (auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext())) {
+    if (attributes.color_space != kSRGBCanvasColorSpaceName ||
+        attributes.pixel_format != kUint8CanvasPixelFormatName) {
       UseCounter::Count(window->document(), WebFeature::kCanvasUseColorSpace);
+    }
+
+    if (RuntimeEnabledFeatures::NewCanvas2DAPIEnabled())
+      UseCounter::Count(window->document(), WebFeature::kNewCanvas2DAPI);
   }
 
   // Log the aliased context type used.
