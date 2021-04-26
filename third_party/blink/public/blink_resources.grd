@@ -23,6 +23,7 @@
       <include name="IDR_UASTYLE_THEME_WIN_QUIRKS_CSS" file="../renderer/core/html/resources/win_quirks.css" type="BINDATA" compress="gzip"/>
       <include name="IDR_UASTYLE_THEME_CONTROLS_REFRESH_CSS" file="../renderer/core/html/resources/controls_refresh.css" flattenhtml="true" type="BINDATA" compress="gzip"/>
       <include name="IDR_UASTYLE_THEME_FORCED_COLORS_CSS" file="../renderer/core/html/resources/forced_colors.css" type="BINDATA" compress="gzip"/>
+      <include name="IDR_UASTYLE_POPUP_CSS" file="../renderer/core/css/popup.css" type="BINDATA" compress="gzip"/>
       <include name="IDR_UASTYLE_SVG_CSS" file="../renderer/core/css/svg.css" type="BINDATA" compress="gzip"/>
       <include name="IDR_UASTYLE_MARKER_CSS" file="../renderer/core/css/marker.css" type="BINDATA" compress="gzip"/>
       <include name="IDR_UASTYLE_MATHML_CSS" file="../renderer/core/css/mathml.css" type="BINDATA" compress="gzip"/>

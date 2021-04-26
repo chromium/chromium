@@ -996,5 +996,10 @@
     "prefix": "no-alloc-direct-call",
     "bases": ["fast/canvas", "external/wpt/html/canvas"],
     "args": ["--enable-fake-no-alloc-direct-call-for-testing"]
+  },
+  {
+    "prefix": "popup-disabled",
+    "bases": [],
+    "args": ["--stable-release-mode"]
   }
 ]

@@ -1255,26 +1255,6 @@ dialog::backdrop {
     background: rgba(0,0,0,0.1)
 }
 
-popup:not(:-internal-popup-open) {
-    display: none !important;
-}
-popup {
-    display: block;
-    position: fixed;
-    top: 0;
-    left: 0;
-    /* The rest here is copied from dialog, perhaps these shouldn't
-       apply to popup. At least the background color is nice, because
-       it obscures the backdrop. And the foreground color/border
-       help to set off the popup from the rest of the page. */
-    width: fit-content;
-    height: fit-content;
-    border: 1px solid;
-    padding: 1em;
-    background: -internal-light-dark(white, black);
-    color: -internal-light-dark(black, white);
-}
-
 slot {
     display: contents;
 }
