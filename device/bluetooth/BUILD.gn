@@ -69,7 +69,7 @@ source_set("deprecated_experimental_mojo") {
 
     # Approved clients:
     "//chrome/browser/ui/webui/bluetooth_internals:*",
-    "//chrome/browser/chromeos/nearby:bluetooth_adapter_util",
+    "//chrome/browser/chromeos/nearby:*",
 
     # Implementation tests
     # Ideally only device_unittests, however android & fushia generate

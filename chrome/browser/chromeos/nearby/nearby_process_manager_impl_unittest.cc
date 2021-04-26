@@ -15,6 +15,7 @@
 #include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/nearby/bluetooth_adapter_manager.h"
 #include "chrome/browser/chromeos/nearby/nearby_connections_dependencies_provider.h"
 #include "chrome/browser/chromeos/nearby/nearby_process_manager_factory.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
@@ -122,9 +123,14 @@ class NearbyProcessManagerImplTest : public testing::Test {
               location::nearby::api::LogMessage::Severity::kInfo);
     }
 
+    void PrepareForShutdown() override { prepare_for_shutdown_count_++; }
+
+    int prepare_for_shutdown_count() { return prepare_for_shutdown_count_; }
+
    private:
     std::unique_ptr<bluetooth::FakeAdapter> fake_adapter_;
     std::unique_ptr<sharing::MockWebRtcDependencies> webrtc_dependencies_;
+    int prepare_for_shutdown_count_ = 0;
   };
 
   NearbyProcessManagerImplTest() = default;
@@ -156,6 +162,10 @@ class NearbyProcessManagerImplTest : public testing::Test {
 
   size_t num_process_stopped_calls() const {
     return num_process_stopped_calls_;
+  }
+
+  FakeNearbyConnectionsDependenciesProvider* fake_deps_provider() {
+    return &fake_deps_provider_;
   }
 
   void VerifyBound(
@@ -206,6 +216,7 @@ TEST_F(NearbyProcessManagerImplTest, StartAndStop) {
   base::RunLoop().RunUntilIdle();
   VerifyNotBound();
   EXPECT_EQ(0u, num_process_stopped_calls());
+  EXPECT_EQ(1, fake_deps_provider()->prepare_for_shutdown_count());
 
   // Reset, then repeat process to verify it still works with multiple tries.
   fake_sharing_mojo_service()->Reset();
@@ -218,6 +229,7 @@ TEST_F(NearbyProcessManagerImplTest, StartAndStop) {
   base::RunLoop().RunUntilIdle();
   VerifyNotBound();
   EXPECT_EQ(0u, num_process_stopped_calls());
+  EXPECT_EQ(2, fake_deps_provider()->prepare_for_shutdown_count());
 }
 
 TEST_F(NearbyProcessManagerImplTest, MultipleReferences) {
@@ -239,6 +251,7 @@ TEST_F(NearbyProcessManagerImplTest, MultipleReferences) {
   base::RunLoop().RunUntilIdle();
   VerifyNotBound();
   EXPECT_EQ(0u, num_process_stopped_calls());
+  EXPECT_EQ(1, fake_deps_provider()->prepare_for_shutdown_count());
 }
 
 TEST_F(NearbyProcessManagerImplTest, ProcessStopped) {
