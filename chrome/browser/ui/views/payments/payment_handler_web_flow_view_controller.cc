@@ -207,6 +207,12 @@ PaymentHandlerWebFlowViewController::PaymentHandlerWebFlowViewController(
       dialog_manager_delegate_(payment_request_web_contents) {}
 
 PaymentHandlerWebFlowViewController::~PaymentHandlerWebFlowViewController() {
+  if (web_contents()) {
+    auto* manager = web_modal::WebContentsModalDialogManager::FromWebContents(
+        web_contents());
+    if (manager)
+      manager->SetDelegate(nullptr);
+  }
   state()->OnPaymentAppWindowClosed();
 }
 
