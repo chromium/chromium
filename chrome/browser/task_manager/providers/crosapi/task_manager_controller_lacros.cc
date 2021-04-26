@@ -136,6 +136,25 @@ void TaskManagerControllerLacros::OnTaskManagerClosed() {
     observed_task_manager()->RemoveObserver(this);
 }
 
+void TaskManagerControllerLacros::ActivateTask(const std::string& task_uuid) {
+  for (const auto& item : id_to_tasks_) {
+    if (item.second->task_uuid == task_uuid) {
+      TaskId task_id = item.first;
+      // Check if the task is still valid.
+      // Note: It is very rare but possible that lacros receives the request
+      // from ash to remove a task after the task has been removed from lacros
+      // task manager but before the cached |id_to_tasks_| is refreshed in
+      // GetTaskManagerTasks() call.
+      const auto& task_ids = observed_task_manager()->GetTaskIdsList();
+      if (std::find(task_ids.begin(), task_ids.end(), task_id) !=
+          task_ids.end()) {
+        observed_task_manager()->ActivateTask(task_id);
+      }
+      return;
+    }
+  }
+}
+
 crosapi::mojom::TaskPtr TaskManagerControllerLacros::ToMojoTask(TaskId id) {
   auto mojo_task = crosapi::mojom::Task::New();
   mojo_task->task_uuid = base::GenerateGUID();

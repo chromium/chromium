@@ -43,4 +43,8 @@ void TaskManagerLacros::SetRefreshFlags(int64_t refresh_flags) {
   task_manager_controller_->SetRefreshFlags(refresh_flags);
 }
 
+void TaskManagerLacros::ActivateTask(const std::string& task_uuid) {
+  task_manager_controller_->ActivateTask(task_uuid);
+}
+
 }  // namespace crosapi

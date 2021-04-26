@@ -21,6 +21,7 @@ class CrosapiTask : public Task {
   ~CrosapiTask() override;
 
   // task_manager::Task:
+  void Activate() override;
   void Refresh(const base::TimeDelta& update_interval,
                int64_t refresh_flags) override;
   Type GetType() const override;

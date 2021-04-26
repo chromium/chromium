@@ -57,6 +57,7 @@ void TaskManagerAsh::OnProviderVersionReady(
   const auto pair =
       task_manager_providers_.emplace(token, std::move(*provider));
   DCHECK(pair.second);
+  provider_version_ = interface_version;
   pair.first->second->SetRefreshFlags(refresh_flags_);
 }
 
@@ -82,6 +83,17 @@ void TaskManagerAsh::GetTaskManagerTasks(GetTaskManagerTasksCallback callback) {
 void TaskManagerAsh::OnTaskManagerClosed() {
   for (auto& pair : task_manager_providers_)
     pair.second->OnTaskManagerClosed();
+}
+
+void TaskManagerAsh::ActivateTask(const std::string& task_uuid) {
+  if (provider_version_ < 2) {
+    LOG(WARNING) << "Unsupported lacros task manager provider version: "
+                 << provider_version_;
+    return;
+  }
+
+  for (auto& pair : task_manager_providers_)
+    pair.second->ActivateTask(task_uuid);
 }
 
 void TaskManagerAsh::RemoveObserver() {

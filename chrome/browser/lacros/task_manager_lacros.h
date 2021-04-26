@@ -37,6 +37,7 @@ class TaskManagerLacros : public crosapi::mojom::TaskManagerProvider {
   void GetTaskManagerTasks(GetTaskManagerTasksCallback callback) override;
   void OnTaskManagerClosed() override;
   void SetRefreshFlags(int64_t refresh_flags) override;
+  void ActivateTask(const std::string& task_uuid) override;
 
   // A unique id that identifies this instance of Lacros.
   base::UnguessableToken id_;

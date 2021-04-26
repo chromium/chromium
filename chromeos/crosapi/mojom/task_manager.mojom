@@ -122,8 +122,8 @@ struct TaskGroup {
 
 // Interface for task manager provider. Implemented by lacros-chrome. Used by
 // ash-chrome to get lacros task data remotely.
-// Next version: 1
-// Next method id: 4
+// Next version: 3
+// Next method id: 5
 [Stable, Uuid="c5073375-8e4b-43c3-85ca-8813adeb0324"]
 interface TaskManagerProvider {
   // Deprecated. Use SetRefreshFlags instead.
@@ -147,6 +147,11 @@ interface TaskManagerProvider {
   // chrome/browser/task_manager/task_manager_observer.h
   [MinVersion=1]
   SetRefreshFlags@3(int64 refresh_flags);
+
+  // Activates a lacros task.
+  // |task_uuid|: task_uuid of the lacros Task to be activated.
+  [MinVersion=2]
+  ActivateTask@4(string task_uuid);
 };
 
 // Interface for task manager. Implemented by ash-chrome.

@@ -5,6 +5,9 @@
 #include "chrome/browser/task_manager/providers/crosapi/crosapi_task.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/task_manager_ash.h"
 
 namespace {
 
@@ -118,6 +121,13 @@ bool CrosapiTask::ReportsWebCacheStats() const {
 
 blink::WebCacheResourceTypeStats CrosapiTask::GetWebCacheStats() const {
   return FromMojo(mojo_task_->web_cache_stats);
+}
+
+void CrosapiTask::Activate() {
+  crosapi::CrosapiManager::Get()
+      ->crosapi_ash()
+      ->task_manager_ash()
+      ->ActivateTask(mojo_task_->task_uuid);
 }
 
 void CrosapiTask::Refresh(const base::TimeDelta& update_interval,

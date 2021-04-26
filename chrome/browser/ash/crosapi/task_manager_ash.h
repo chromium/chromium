@@ -51,6 +51,10 @@ class TaskManagerAsh : public mojom::TaskManager {
   // to the registered remote providers.
   void OnTaskManagerClosed();
 
+  // Activates the lacros task specified by |task_uuid|. Forward the call to the
+  // registered remote providers.
+  void ActivateTask(const std::string& task_uuid);
+
   void RemoveObserver();
   void SetObserver(Observer* observer);
 
@@ -81,6 +85,11 @@ class TaskManagerAsh : public mojom::TaskManager {
   Observer* observer_ = nullptr;
 
   int64_t refresh_flags_ = task_manager::REFRESH_TYPE_NONE;
+
+  // Version of the registered remote task manager providers.
+  // Note: We assume all registered remote task manager providers are in
+  // the same version.
+  uint32_t provider_version_ = -1;
 
   base::WeakPtrFactory<TaskManagerAsh> weak_factory_{this};
 };

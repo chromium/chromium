@@ -37,6 +37,9 @@ class TaskManagerControllerLacros : public TaskManagerObserver {
   // Called when task manager is closed in ash.
   void OnTaskManagerClosed();
 
+  // Activates task specified by |task_uuid|.
+  void ActivateTask(const std::string& task_uuid);
+
  private:
   using IdTaskMap = std::unordered_map<TaskId, crosapi::mojom::TaskPtr>;
 
