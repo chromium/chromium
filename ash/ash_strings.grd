@@ -2298,12 +2298,6 @@ This file contains the strings for ash.
       <message name="IDS_SHORTCUT_IME_BUBBLE_NEW" desc="the new shortcut to show the input options menu bubble in the shelf.">
         Search+Shift+K
       </message>
-      <message name="IDS_SHORTCUT_TOGGLE_HIGH_CONTRAST_OLD" desc="the old deprecated shortcut to toggle the high contrast display mode.">
-        Search+Shift+H
-      </message>
-      <message name="IDS_SHORTCUT_TOGGLE_HIGH_CONTRAST_NEW" desc="the new shortcut to toggle the high contrast display mode.">
-        Ctrl+Search+H
-      </message>
       <message name="IDS_DEPRECATED_SHOW_TASK_MANAGER_MSG"
                desc="Notification message to tell users about the deprecation of Shift+ESC shortcut to show the task manager.">
         The shortcut to open the task manager has changed. Please use <ph name="NEW_SHORTCUT">$1<ex>Search+Esc</ex></ph> instead of <ph name="OLD_SHORTCUT">$2<ex>Shift+Esc</ex></ph>.
@@ -2311,9 +2305,6 @@ This file contains the strings for ash.
       <message name="IDS_DEPRECATED_SHOW_IME_BUBBLE_MSG"
                desc="Notification message to tell users about the deprecation of Alt+Shift+K shortcut to show the input options menu bubble in the shelf.">
         The shortcut to show the input options menu bubble in the shelf has changed. Please use <ph name="NEW_SHORTCUT">$1<ex>Search+Shift+K</ex></ph> instead of <ph name="OLD_SHORTCUT">$2<ex>Alt+Shift+K</ex></ph>.
-      </message>
-      <message name="IDS_DEPRECATED_TOGGLE_HIGH_CONTRAST_MSG" desc="Notification message to tell users about the deprecation of Search+Shift+H shortcut to toggle the high contrast display mode.">
-        The shortcut to toggle High Contrast Mode has changed. Please use <ph name="NEW_SHORTCUT">$1<ex>Ctrl+Search+H</ex></ph> instead of <ph name="OLD_SHORTCUT">$2<ex>Search+Shift+H</ex></ph>.
       </message>
       <message name="IDS_DEPRECATED_SHORTCUT_TITLE" desc="Notification title to tell users that the keyboard accelerator is deprecated.">
         Shortcut change
