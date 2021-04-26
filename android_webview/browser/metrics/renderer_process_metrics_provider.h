@@ -30,4 +30,4 @@ class RendererProcessMetricsProvider : public metrics::MetricsProvider {
 
 }  // namespace android_webview
 
-#endif  // ANDROID_WEBVIEW_BROWSER_METRICS_RENDERER_PROCESS_PROVIDER_H_
+#endif  // ANDROID_WEBVIEW_BROWSER_METRICS_RENDERER_PROCESS_METRICS_PROVIDER_H_

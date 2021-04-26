@@ -55,4 +55,4 @@ class FakeApiBindingsImpl : public chromium::cast::ApiBindings {
   base::OnceClosure on_expected_port_received_;
 };
 
-#endif  // FUCHSIA_RUNNERS_CAST_TEST_API_BINDINGS_H_
+#endif  // FUCHSIA_RUNNERS_CAST_FAKE_API_BINDINGS_H_

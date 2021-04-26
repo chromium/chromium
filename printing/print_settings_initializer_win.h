@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PRINTING_PRINTING_SETTINGS_INITIALIZER_WIN_H_
-#define PRINTING_PRINTING_SETTINGS_INITIALIZER_WIN_H_
+#ifndef PRINTING_PRINT_SETTINGS_INITIALIZER_WIN_H_
+#define PRINTING_PRINT_SETTINGS_INITIALIZER_WIN_H_
 
 #include <string>
 
@@ -31,4 +31,4 @@ class PRINTING_EXPORT PrintSettingsInitializerWin {
 
 }  // namespace printing
 
-#endif  // PRINTING_PRINTING_SETTINGS_INITIALIZER_WIN_H_
+#endif  // PRINTING_PRINT_SETTINGS_INITIALIZER_WIN_H_

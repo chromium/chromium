@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef RLZ_VALUE_STORE_H_
-#define RLZ_VALUE_STORE_H_
+#ifndef RLZ_LIB_RLZ_VALUE_STORE_H_
+#define RLZ_LIB_RLZ_VALUE_STORE_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -120,4 +120,4 @@ std::string RlzStoreFilenameStr();
 
 }  // namespace rlz_lib
 
-#endif  // RLZ_VALUE_STORE_H_
+#endif  // RLZ_LIB_RLZ_VALUE_STORE_H_

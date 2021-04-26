@@ -4,8 +4,8 @@
 //
 // Helper functions used by the tests.
 
-#ifndef RLZ_TEST_RLZ_TEST_HELPERS_H
-#define RLZ_TEST_RLZ_TEST_HELPERS_H
+#ifndef RLZ_TEST_RLZ_TEST_HELPERS_H_
+#define RLZ_TEST_RLZ_TEST_HELPERS_H_
 
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
@@ -65,4 +65,4 @@ class RlzLibTestBase : public RlzLibTestNoMachineState {
 #endif
 };
 
-#endif  // RLZ_TEST_RLZ_TEST_HELPERS_H
+#endif  // RLZ_TEST_RLZ_TEST_HELPERS_H_

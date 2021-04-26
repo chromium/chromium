@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef HEADLESS_LIB_HEADLESS_CONTENT_UTILITY_CLIENT_H_
-#define HEADLESS_LIB_HEADLESS_CONTENT_UTILITY_CLIENT_H_
+#ifndef HEADLESS_LIB_UTILITY_HEADLESS_CONTENT_UTILITY_CLIENT_H_
+#define HEADLESS_LIB_UTILITY_HEADLESS_CONTENT_UTILITY_CLIENT_H_
 
 #include <string>
 
@@ -38,4 +38,4 @@ class HEADLESS_EXPORT HeadlessContentUtilityClient
 
 }  // namespace headless
 
-#endif  // HEADLESS_LIB_HEADLESS_CONTENT_UTILITY_CLIENT_H_
+#endif  // HEADLESS_LIB_UTILITY_HEADLESS_CONTENT_UTILITY_CLIENT_H_

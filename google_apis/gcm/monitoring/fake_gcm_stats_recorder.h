@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GOOGLE_APIS_GCM_MONITORING_FAKE_GCM_STATS_RECODER_H_
-#define GOOGLE_APIS_GCM_MONITORING_FAKE_GCM_STATS_RECODER_H_
+#ifndef GOOGLE_APIS_GCM_MONITORING_FAKE_GCM_STATS_RECORDER_H_
+#define GOOGLE_APIS_GCM_MONITORING_FAKE_GCM_STATS_RECORDER_H_
 
 #include <stdint.h>
 
@@ -73,4 +73,4 @@ class FakeGCMStatsRecorder : public GCMStatsRecorder {
 
 }  // namespace gcm
 
-#endif  // GOOGLE_APIS_GCM_MONITORING_FAKE_GCM_STATS_RECODER_H_
+#endif  // GOOGLE_APIS_GCM_MONITORING_FAKE_GCM_STATS_RECORDER_H_

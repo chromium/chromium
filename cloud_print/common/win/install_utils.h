@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CLOUD_PRINT_COMMON_INSTALL_UTILS_H_
-#define CLOUD_PRINT_COMMON_INSTALL_UTILS_H_
+#ifndef CLOUD_PRINT_COMMON_WIN_INSTALL_UTILS_H_
+#define CLOUD_PRINT_COMMON_WIN_INSTALL_UTILS_H_
 
 #include <wtypes.h>
 #include <string>
@@ -45,4 +45,4 @@ bool IsProgramsFilesParent(const base::FilePath& path);
 
 }  // namespace cloud_print
 
-#endif  // CLOUD_PRINT_COMMON_INSTALL_UTILS_H_
+#endif  // CLOUD_PRINT_COMMON_WIN_INSTALL_UTILS_H_

@@ -81,4 +81,4 @@ class CastStreamingDemuxer : public media::Demuxer {
   CastStreamingReceiver* const receiver_;
 };
 
-#endif  // FUCHSIA_ENGINE_RENDERER_LIBCAST_STREAMING_DEMUXER_H_
+#endif  // FUCHSIA_ENGINE_RENDERER_CAST_STREAMING_DEMUXER_H_

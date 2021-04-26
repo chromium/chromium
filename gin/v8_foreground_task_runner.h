@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef V8_FOREGROUND_TASK_RUNNER_H
-#define V8_FOREGROUND_TASK_RUNNER_H
+#ifndef GIN_V8_FOREGROUND_TASK_RUNNER_H_
+#define GIN_V8_FOREGROUND_TASK_RUNNER_H_
 
 #include "base/memory/ref_counted.h"
 #include "gin/v8_foreground_task_runner_base.h"
@@ -43,4 +43,4 @@ class V8ForegroundTaskRunner : public V8ForegroundTaskRunnerBase {
 
 }  // namespace gin
 
-#endif  // V8_FOREGROUND_TASK_RUNNER_H
+#endif  // GIN_V8_FOREGROUND_TASK_RUNNER_H_

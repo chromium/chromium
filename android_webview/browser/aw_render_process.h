@@ -60,4 +60,4 @@ class AwRenderProcess : public content::RenderProcessHostObserver,
 
 }  // namespace android_webview
 
-#endif
+#endif  // ANDROID_WEBVIEW_BROWSER_AW_RENDER_PROCESS_H_

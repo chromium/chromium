@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_EMBEDDER_SUPPORT_ANDROID_VIEW_CONTENT_VIEW_RENDER_VIEW_H_
-#define COMPONENTS_EMBEDDER_SUPPORT_ANDROID_VIEW_CONTENT_VIEW_RENDER_VIEW_H_
+#ifndef WEBLAYER_BROWSER_CONTENT_VIEW_RENDER_VIEW_H_
+#define WEBLAYER_BROWSER_CONTENT_VIEW_RENDER_VIEW_H_
 
 #include <memory>
 
@@ -96,4 +96,4 @@ class ContentViewRenderView : public content::CompositorClient {
 
 }  // namespace weblayer
 
-#endif  // COMPONENTS_EMBEDDER_SUPPORT_ANDROID_VIEW_CONTENT_VIEW_RENDER_VIEW_H_
+#endif  // WEBLAYER_BROWSER_CONTENT_VIEW_RENDER_VIEW_H_
