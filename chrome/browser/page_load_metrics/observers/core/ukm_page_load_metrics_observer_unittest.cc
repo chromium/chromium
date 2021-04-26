@@ -115,12 +115,7 @@ class UkmPageLoadMetricsObserverTest
     EXPECT_CALL(mock_network_quality_provider_, GetDownstreamThroughputKbps())
         .Times(AnyNumber())
         .WillRepeatedly(Return(int32_t()));
-    TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-        profile(),
-        base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
 
-    BookmarkModelFactory::GetInstance()->SetTestingFactory(
-        profile(), BookmarkModelFactory::GetDefaultFactory());
     bookmarks::BookmarkModel* bookmark_model =
         BookmarkModelFactory::GetForBrowserContext(profile());
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
@@ -130,6 +125,16 @@ class UkmPageLoadMetricsObserverTest
         ->SetForceEligibleTabForTesting(true);
 
     HistoryClustersTabHelper::CreateForWebContents(web_contents());
+  }
+
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return {
+        {BookmarkModelFactory::GetInstance(),
+         BookmarkModelFactory::GetDefaultFactory()},
+        {HistoryServiceFactory::GetInstance(),
+         HistoryServiceFactory::GetDefaultFactory()},
+        {TemplateURLServiceFactory::GetInstance(),
+         base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor)}};
   }
 
   MockNetworkQualityProvider& mock_network_quality_provider() {
@@ -1995,7 +2000,6 @@ TEST_F(UkmPageLoadMetricsObserverTest, IsExistingBookmark) {
 TEST_F(UkmPageLoadMetricsObserverTest, IsNewBookmark) {
   GURL url(kTestUrl1);
 
-  ASSERT_TRUE(profile()->CreateHistoryService());
   history::HistoryService* history_service =
       HistoryServiceFactory::GetForProfile(profile(),
                                            ServiceAccessType::IMPLICIT_ACCESS);
@@ -2031,7 +2035,6 @@ TEST_F(UkmPageLoadMetricsObserverTest, IsNewBookmark) {
 TEST_F(UkmPageLoadMetricsObserverTest, IsNTPCustomLink) {
   GURL url(kTestUrl1);
 
-  ASSERT_TRUE(profile()->CreateHistoryService());
   history::HistoryService* history_service =
       HistoryServiceFactory::GetForProfile(profile(),
                                            ServiceAccessType::IMPLICIT_ACCESS);
@@ -2066,7 +2069,6 @@ TEST_F(UkmPageLoadMetricsObserverTest, DurationSinceLastVisitSeconds) {
   // On the other hand this serves as a good integration test with UKM.
   GURL url(kTestUrl1);
 
-  ASSERT_TRUE(profile()->CreateHistoryService());
   history::HistoryService* history_service =
       HistoryServiceFactory::GetForProfile(profile(),
                                            ServiceAccessType::IMPLICIT_ACCESS);
