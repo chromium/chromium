@@ -19,8 +19,6 @@ const int kTraceEventGpuProcessSortIndex = -1;
 
 const int kTraceEventRendererMainThreadSortIndex = -1;
 
-const char kDoNotTrackHeader[] = "DNT";
-
 #if BUILDFLAG(ENABLE_AV1_DECODER)
 const char kFrameAcceptHeaderValue[] =
     "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,"

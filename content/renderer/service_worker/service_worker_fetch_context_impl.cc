@@ -6,11 +6,11 @@
 
 #include "base/feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "content/common/content_constants_internal.h"
 #include "content/public/common/content_features.h"
 #include "ipc/ipc_message.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
+#include "third_party/blink/public/common/loader/loader_constants.h"
 #include "third_party/blink/public/platform/internet_disconnected_web_url_loader.h"
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"
 #include "third_party/blink/public/platform/web_url_loader_factory.h"
@@ -107,8 +107,8 @@ ServiceWorkerFetchContextImpl::GetScriptLoaderFactory() {
 void ServiceWorkerFetchContextImpl::WillSendRequest(
     blink::WebURLRequest& request) {
   if (renderer_preferences_.enable_do_not_track) {
-    request.SetHttpHeaderField(blink::WebString::FromUTF8(kDoNotTrackHeader),
-                               "1");
+    request.SetHttpHeaderField(
+        blink::WebString::FromUTF8(blink::kDoNotTrackHeader), "1");
   }
   auto url_request_extra_data =
       base::MakeRefCounted<blink::WebURLRequestExtraData>();
