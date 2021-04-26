@@ -2079,23 +2079,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         return capabilitiesMask;
     }
 
-    /**
-     * Iterate over all enabled accessibility services and return their ids.
-     * @return
-     */
-    @CalledByNative
-    protected String[] getAccessibilityServiceIds() {
-        List<AccessibilityServiceInfo> services =
-                mAccessibilityManager.getEnabledAccessibilityServiceList(
-                        AccessibilityServiceInfo.FEEDBACK_ALL_MASK);
-        String[] service_ids = new String[services.size()];
-        int i = 0;
-        for (AccessibilityServiceInfo service : services) {
-            service_ids[i++] = service.getId();
-        }
-        return service_ids;
-    }
-
     @NativeMethods
     interface Natives {
         long init(WebContentsAccessibilityImpl caller, WebContents webContents);
