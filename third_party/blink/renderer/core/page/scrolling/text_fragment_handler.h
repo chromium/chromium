@@ -37,6 +37,10 @@ class CORE_EXPORT TextFragmentHandler final
   // Determine if |result| represents a click on an existing highlight.
   static bool IsOverTextFragment(HitTestResult result);
 
+  // Retrieves the text fragments matches from the fragment directive.
+  void ExtractTextFragmentsMatches(
+      ExtractTextFragmentsMatchesCallback callback) override;
+
   void Trace(Visitor*) const;
 
   TextFragmentSelectorGenerator* GetTextFragmentSelectorGenerator();

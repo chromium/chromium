@@ -57,6 +57,8 @@ class CORE_EXPORT TextFragmentFinder
 
   void Trace(Visitor*) const;
 
+  const Member<RangeInFlatTree>& FirstMatch() const { return first_match_; }
+
  protected:
   friend class TextFragmentFinderTest;
   FRIEND_TEST_ALL_PREFIXES(TextFragmentFinderTest, DOMMutation);

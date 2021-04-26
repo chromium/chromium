@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/page/scrolling/text_fragment_anchor.h"
 
 namespace blink {
 
@@ -59,6 +60,29 @@ bool TextFragmentHandler::IsOverTextFragment(HitTestResult result) {
       ToPositionInFlatTree(marker_position),
       DocumentMarker::MarkerTypes::TextFragment());
   return !markers.IsEmpty();
+}
+
+void TextFragmentHandler::ExtractTextFragmentsMatches(
+    ExtractTextFragmentsMatchesCallback callback) {
+  DCHECK(
+      base::FeatureList::IsEnabled(shared_highlighting::kSharedHighlightingV2));
+
+  Vector<String> text_fragment_matches;
+  TextFragmentAnchor* anchor(
+      static_cast<TextFragmentAnchor*>(GetTextFragmentSelectorGenerator()
+                                           ->GetFrame()
+                                           ->View()
+                                           ->GetFragmentAnchor()));
+
+  if (anchor) {
+    for (auto& finder : anchor->TextFragmentFinders()) {
+      EphemeralRangeInFlatTree potential_match =
+          finder->FirstMatch()->ToEphemeralRange();
+      text_fragment_matches.push_back(PlainText(potential_match));
+    }
+  }
+
+  std::move(callback).Run(text_fragment_matches);
 }
 
 void TextFragmentHandler::Trace(Visitor* visitor) const {

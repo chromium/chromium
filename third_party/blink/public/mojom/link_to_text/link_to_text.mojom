@@ -19,4 +19,7 @@ interface TextFragmentReceiver {
   // Dismiss all text fragments from the current main frame at the time the
   // context menu was invoked.
   RemoveFragments();
+
+  // Retrieves the text fragments matches from the fragment directive.
+  ExtractTextFragmentsMatches() => (array<string> text);
 };
