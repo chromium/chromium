@@ -77,6 +77,9 @@ void TimeDomain::SetNextWakeUpForQueue(
 
   if (wake_up) {
     // Insert a new wake-up into the heap.
+    recordreplay::Assert("TimeDomain::SetNextWakeUpForQueue #1 %lu", recordreplay::PointerId(queue));
+    recordreplay::AssertBytes("TimeDomain::SetNextWakeUpForQueue #2",
+                              &wake_up.value(), sizeof(internal::DelayedWakeUp));
     if (queue->heap_handle().IsValid()) {
       // O(log n)
       delayed_wake_up_queue_.ChangeKey(queue->heap_handle(),
@@ -87,6 +90,7 @@ void TimeDomain::SetNextWakeUpForQueue(
     }
   } else {
     // Remove a wake-up from heap if present.
+    recordreplay::Assert("TimeDomain::SetNextWakeUpForQueue #3 %lu", recordreplay::PointerId(queue));
     if (queue->heap_handle().IsValid())
       delayed_wake_up_queue_.erase(queue->heap_handle());
   }
@@ -130,8 +134,15 @@ void TimeDomain::MoveReadyDelayedTasksToWorkQueues(LazyNow* lazy_now) {
   // Wake up any queues with pending delayed work.  Note std::multimap stores
   // the elements sorted by key, so the begin() iterator points to the earliest
   // queue to wake-up.
-  while (!delayed_wake_up_queue_.empty() &&
-         delayed_wake_up_queue_.Min().wake_up.time <= lazy_now->Now()) {
+  while (true) {
+    if (delayed_wake_up_queue_.empty()) {
+      recordreplay::Assert("TimeDomain::MoveReadyDelayedTasksToWorkQueues #1");
+      break;
+    }
+    if (delayed_wake_up_queue_.Min().wake_up.time > lazy_now->Now()) {
+      recordreplay::Assert("TimeDomain::MoveReadyDelayedTasksToWorkQueues #2");
+      break;
+    }
     internal::TaskQueueImpl* queue = delayed_wake_up_queue_.Min().queue;
     queue->MoveReadyDelayedTasksToWorkQueue(lazy_now);
   }
