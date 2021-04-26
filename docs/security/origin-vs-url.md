@@ -88,16 +88,19 @@ GURL origin = url.GetOrigin();
 //      "blob:http://origin/guid-goes-here".
 // BUG: |origin| will be incorrect if |url| is an "about:blank" URL
 //      or if |url| came from a sandboxed frame.
+// BUG: |origin| will be incorrect when |url| (rather than
+//      |base_url_for_data_url|) is used when working with loadDataWithBaseUrl
+//      (see also https://crbug.com/1201514).
 // NOTE: |GURL origin| is also an anti-pattern; see the "Use correct type to
 //       represent origins" section below.
 ```
 
 **_Risky_**
 ```c++
-// If you know what you are doing (e.g., don't care about about:blank and/or
-// sandboxed frames) and really need to convert a GURL into url::Origin then
-// url::Origin::Create will correctly handle filesystem: and/or blob: URLs
-// (unlike the "bad" example above).
+// If you know what you are doing (e.g., don't care about "about:blank", about
+// sandboxed frames, or about loadDataWithBaseUrl) and really need to convert
+// a URL into an origin, then url::Origin::Create will correctly handle
+// filesystem: and/or blob: URLs (unlike the "bad" example above).
 GURL url = ...;
 url::Origin origin = url::Origin::Create(url);
 // |origin| will be "http://origin/" if |url| is a blob: or filesystem: URL
