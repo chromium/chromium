@@ -223,7 +223,26 @@ DecodeStatus V4L2ChromiumVP9Accelerator::SubmitDecode(
   v4l2_frame_params.uncompressed_header_size =
       frame_hdr->uncompressed_header_size;
   v4l2_frame_params.profile = frame_hdr->profile;
-  v4l2_frame_params.reset_frame_context = frame_hdr->reset_frame_context;
+  // As per the VP9 specification:
+  switch (frame_hdr->reset_frame_context) {
+    // "0 or 1 implies don’t reset."
+    case 0:
+    case 1:
+      v4l2_frame_params.reset_frame_context = V4L2_VP9_RESET_FRAME_CTX_NONE;
+      break;
+    // "2 resets just the context specified in the frame header."
+    case 2:
+      v4l2_frame_params.reset_frame_context = V4L2_VP9_RESET_FRAME_CTX_SPEC;
+      break;
+    // "3 reset all contexts."
+    case 3:
+      v4l2_frame_params.reset_frame_context = V4L2_VP9_RESET_FRAME_CTX_ALL;
+      break;
+    default:
+      VLOGF(1) << "Invalid reset frame context value!";
+      v4l2_frame_params.reset_frame_context = V4L2_VP9_RESET_FRAME_CTX_NONE;
+      break;
+  }
   v4l2_frame_params.frame_context_idx =
       frame_hdr->frame_context_idx_to_save_probs;
   v4l2_frame_params.bit_depth = frame_hdr->bit_depth;
