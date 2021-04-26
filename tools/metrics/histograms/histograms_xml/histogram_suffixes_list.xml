@@ -8223,6 +8223,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="In product help for passwords account storage."/>
   <suffix name="IPH_PreviewsOmniboxUI"
       label="In product help for the Previews UI in the Android Omnibox."/>
+  <suffix name="IPH_ProfileSwitch"
+      label="In product help for switching profiles using the profile menu."/>
   <suffix name="IPH_QuietNotificationPrompts"
       label="For the quiet notification prompts feature."/>
   <suffix name="IPH_ReadingListDiscovery"
