@@ -25,7 +25,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.weblayer.Browser;
 import org.chromium.weblayer.OpenUrlCallback;
@@ -59,7 +58,6 @@ public class BackgroundFetchTest {
     @Test
     @LargeTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @DisabledTest(message = "Pre-emptively disabled in case of flakes. TODO(estade): enable.")
     public void basic() throws Exception {
         Browser browser = mActivity.getBrowser();
 
@@ -93,7 +91,9 @@ public class BackgroundFetchTest {
         }, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL * 2, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
 
         // This part of the test passes locally but fails on some bots because the download never
-        // completes.
+        // completes. TODO(estade): this also fails now that permissions are extra strict, so
+        // enabling this would require side-stepping permissions for this test. See
+        // crbug.com/1189247
         //
         // Wait for the notification to indicate completion (also testing the page receives the
         // success message).
