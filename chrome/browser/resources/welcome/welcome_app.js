@@ -16,7 +16,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {navigateTo, navigateToNextStep, NavigationBehavior, NavigationBehaviorInterface, Routes} from './navigation_behavior.js';
+import {NavigationBehavior, NavigationBehaviorInterface, Routes} from './navigation_behavior.js';
 import {NuxSetAsDefaultProxyImpl} from './set_as_default/nux_set_as_default_proxy.js';
 import {BookmarkBarManager} from './shared/bookmark_proxy.js';
 import {WelcomeBrowserProxyImpl} from './welcome_browser_proxy.js';

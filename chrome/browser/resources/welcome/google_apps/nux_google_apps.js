@@ -19,7 +19,7 @@ import {isRTL} from 'chrome://resources/js/util.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {navigateTo, navigateToNextStep, NavigationBehavior, NavigationBehaviorInterface, Routes} from '../navigation_behavior.js';
+import {navigateToNextStep, NavigationBehavior, NavigationBehaviorInterface} from '../navigation_behavior.js';
 import {BookmarkBarManager, BookmarkProxy, BookmarkProxyImpl} from '../shared/bookmark_proxy.js';
 import {ModuleMetricsManager} from '../shared/module_metrics_proxy.js';
 import {BookmarkListItem, stepIndicatorModel} from '../shared/nux_types.js';

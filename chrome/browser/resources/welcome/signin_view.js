@@ -11,7 +11,7 @@ import '../strings.m.js';
 
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {navigateTo, navigateToNextStep, NavigationBehavior, NavigationBehaviorInterface, Routes} from './navigation_behavior.js';
+import {NavigationBehavior, NavigationBehaviorInterface, Routes} from './navigation_behavior.js';
 import {OnboardingBackgroundElement} from './shared/onboarding_background.js';
 import {SigninViewProxy, SigninViewProxyImpl} from './signin_view_proxy.js';
 import {WelcomeBrowserProxy, WelcomeBrowserProxyImpl} from './welcome_browser_proxy.js';
