@@ -55,6 +55,8 @@ class LayoutWorkletTest : public PageTestBase, public ParametrizedModuleTest {
 
   ScriptEvaluationResult EvaluateScriptModule(const String& source_code) {
     ScriptState* script_state = GetScriptState();
+    v8::MicrotasksScope microtasks_scope(
+        script_state->GetIsolate(), v8::MicrotasksScope::kDoNotRunMicrotasks);
     EXPECT_TRUE(script_state);
 
     KURL js_url("https://example.com/worklet.js");
