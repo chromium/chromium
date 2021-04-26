@@ -2278,7 +2278,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>speed-metrics-dev@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
-    The time from navigation start to first &quot;contentful&quot; paint.
+    The time from navigation start to first &quot;contentful&quot; paint. This
+    metric does not include all page loads. If you need all page loads, add
+    PageLoad.PaintTiming.NavigationToFirstContentfulPaint.Background.
 
     Do not modify this metric in any way without contacting
     speed-metrics-dev@chromium.org AND chrome-analysis-team@google.com.
