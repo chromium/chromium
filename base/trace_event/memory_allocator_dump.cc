@@ -17,6 +17,25 @@
 #include "third_party/perfetto/protos/perfetto/trace/memory_graph.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pbzero.h"
 
+#include <dlfcn.h>
+
+static void (*gRecordReplayAssertFn)(const char*, va_list);
+
+static void RecordReplayAssert(const char* aFormat, ...) {
+  if (!gRecordReplayAssertFn) {
+    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayAssert");
+    if (!fnptr) {
+      return;
+    }
+    gRecordReplayAssertFn = reinterpret_cast<void(*)(const char*, va_list)>(fnptr);
+  }
+
+  va_list ap;
+  va_start(ap, aFormat);
+  gRecordReplayAssertFn(aFormat, ap);
+  va_end(ap);
+}
+
 namespace base {
 namespace trace_event {
 
@@ -35,7 +54,7 @@ MemoryAllocatorDump::MemoryAllocatorDump(
       guid_(guid),
       level_of_detail_(level_of_detail),
       flags_(Flags::DEFAULT) {
-  recordreplay::Assert("MemoryAllocatorDump::MemoryAllocatorDump %s", absolute_name.c_str());
+  RecordReplayAssert("MemoryAllocatorDump::MemoryAllocatorDump %s", absolute_name.c_str());
 
   // The |absolute_name| cannot be empty.
   DCHECK(!absolute_name.empty());
