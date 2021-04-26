@@ -272,7 +272,8 @@
   },
   {
     "prefix": "jxl-enabled",
-    "bases": ["http/tests/inspector-protocol/emulation/emulation-set-disabled-image-types-jxl.js"],
+    "bases": ["http/tests/inspector-protocol/emulation/emulation-set-disabled-image-types-jxl.js",
+              "images/jxl"],
     "args": ["--enable-features=JXL"]
   },
   {
