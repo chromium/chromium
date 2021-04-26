@@ -60,13 +60,15 @@ class ProfileManager : public Profile::Delegate {
   // Physically remove deleted profile directories from disk.
   static void NukeDeletedProfilesFromDisk();
 
-  // Same as instance method but provides the default user_data_dir as well.
+  // Get the Profile last used (the Profile to which owns the most recently
+  // focused window) with this Chrome build. If no signed profile has been
+  // stored in Local State, hand back the Default profile.
   // If the Profile is going to be used to open a new window then consider using
   // GetLastUsedProfileAllowedByPolicy() instead.
   // Except in ChromeOS guest sessions, the returned profile is always a regular
   // profile (non-OffTheRecord).
   // WARNING: if the profile does not exist, this function creates it
-  // synchronously, causing blocking file I/O. Use GetLastUsedProfileIfExists()
+  // synchronously, causing blocking file I/O. Use GetLastUsedProfileIfLoaded()
   // to avoid creating the profile synchronously.
   static Profile* GetLastUsedProfile();
 
@@ -154,18 +156,9 @@ class ProfileManager : public Profile::Delegate {
   // relative to the user data directory currently in use.
   base::FilePath GetInitialProfileDir();
 
-  // Get the Profile last used (the Profile to which owns the most recently
-  // focused window) with this Chrome build. If no signed profile has been
-  // stored in Local State, hand back the Default profile.
-  // TODO(https://crbug.com/1195201): Remove `user_data_dir` parameter since it
-  // always must match `user_data_dir_` field.
-  Profile* GetLastUsedProfile(const base::FilePath& user_data_dir);
-
   // Get the path of the last used profile, or if that's undefined, the default
   // profile.
-  // TODO(https://crbug.com/1195201): Remove `user_data_dir` parameter since it
-  // always must match `user_data_dir_` field.
-  base::FilePath GetLastUsedProfileDir(const base::FilePath& user_data_dir);
+  base::FilePath GetLastUsedProfileDir();
 
   // Returns created and fully initialized profiles. Note, profiles order is NOT
   // guaranteed to be related with the creation order.
@@ -336,8 +329,7 @@ class ProfileManager : public Profile::Delegate {
   // already exist. The method will return NULL if the profile doesn't exist
   // and we can't create it.
   // The profile used can be overridden by using --login-profile on cros.
-  Profile* GetActiveUserOrOffTheRecordProfileFromPath(
-      const base::FilePath& user_data_dir);
+  Profile* GetActiveUserOrOffTheRecordProfile();
 
   // Adds a pre-existing Profile object to the set managed by this
   // ProfileManager.

@@ -1446,6 +1446,10 @@ base::FilePath GetStartupProfilePath(const base::FilePath& user_data_dir,
   }
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
+  // ProfileManager should have been initialized with the same `user_data_dir`.
+  // TODO(https://crbug.com/1195201): remove the `user_data_dir` parameter and
+  // obtain the value from `profile_manager` instead.
+  DCHECK_EQ(profile_manager->user_data_dir(), user_data_dir);
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (!ignore_profile_picker &&
       ShouldShowProfilePickerAtProcessLaunch(profile_manager, command_line)) {
@@ -1470,7 +1474,7 @@ base::FilePath GetStartupProfilePath(const base::FilePath& user_data_dir,
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-  return profile_manager->GetLastUsedProfileDir(user_data_dir);
+  return profile_manager->GetLastUsedProfileDir();
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)

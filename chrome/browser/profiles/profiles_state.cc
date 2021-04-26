@@ -291,7 +291,7 @@ bool SetActiveProfileToGuestIfLocked() {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 
   const base::FilePath& active_profile_path =
-      profile_manager->GetLastUsedProfileDir(profile_manager->user_data_dir());
+      profile_manager->GetLastUsedProfileDir();
   const base::FilePath& guest_path = ProfileManager::GetGuestProfilePath();
   if (active_profile_path == guest_path)
     return true;

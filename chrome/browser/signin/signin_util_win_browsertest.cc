@@ -258,8 +258,7 @@ IN_PROC_BROWSER_TEST_P(SigninUtilWinBrowserTest, Run) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ASSERT_EQ(1u, profile_manager->GetNumberOfProfiles());
 
-  Profile* profile =
-      profile_manager->GetLastUsedProfile(profile_manager->user_data_dir());
+  Profile* profile = profile_manager->GetLastUsedProfile();
   ASSERT_EQ(profile_manager->GetInitialProfileDir(),
             profile->GetPath().BaseName());
 
@@ -278,8 +277,7 @@ IN_PROC_BROWSER_TEST_P(SigninUtilWinBrowserTest, ReauthNoop) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ASSERT_EQ(1u, profile_manager->GetNumberOfProfiles());
 
-  Profile* profile =
-      profile_manager->GetLastUsedProfile(profile_manager->user_data_dir());
+  Profile* profile = profile_manager->GetLastUsedProfile();
 
   // Whether the profile was signed in with the credential provider or not,
   // reauth should be a noop.
@@ -290,8 +288,7 @@ IN_PROC_BROWSER_TEST_P(SigninUtilWinBrowserTest, NoReauthAfterSignout) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ASSERT_EQ(1u, profile_manager->GetNumberOfProfiles());
 
-  Profile* profile =
-      profile_manager->GetLastUsedProfile(profile_manager->user_data_dir());
+  Profile* profile = profile_manager->GetLastUsedProfile();
 
   if (GetParam().expect_is_started) {
     // Write a new refresh token.
@@ -319,8 +316,7 @@ IN_PROC_BROWSER_TEST_P(SigninUtilWinBrowserTest, FixReauth) {
 
   ASSERT_EQ(1u, profile_manager->GetNumberOfProfiles());
 
-  Profile* profile =
-      profile_manager->GetLastUsedProfile(profile_manager->user_data_dir());
+  Profile* profile = profile_manager->GetLastUsedProfile();
 
   if (GetParam().expect_is_started) {
     // Write a new refresh token. This time reauth should work.
@@ -454,8 +450,7 @@ class ExistingWinBrowserSigninUtilTest
 IN_PROC_BROWSER_TEST_P(ExistingWinBrowserSigninUtilTest,
                        PRE_ExistingWinBrowser) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  Profile* profile =
-      profile_manager->GetLastUsedProfile(profile_manager->user_data_dir());
+  Profile* profile = profile_manager->GetLastUsedProfile();
 
   ASSERT_EQ(profile_manager->GetInitialProfileDir(),
             profile->GetPath().BaseName());
@@ -477,8 +472,7 @@ IN_PROC_BROWSER_TEST_P(ExistingWinBrowserSigninUtilTest, ExistingWinBrowser) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ASSERT_EQ(1u, profile_manager->GetNumberOfProfiles());
 
-  Profile* profile =
-      profile_manager->GetLastUsedProfile(profile_manager->user_data_dir());
+  Profile* profile = profile_manager->GetLastUsedProfile();
   ASSERT_EQ(profile_manager->GetInitialProfileDir(),
             profile->GetPath().BaseName());
 
@@ -652,8 +646,7 @@ class ExistingWinBrowserProfilesSigninUtilTest
 IN_PROC_BROWSER_TEST_P(ExistingWinBrowserProfilesSigninUtilTest, PRE_PRE_Run) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 
-  Profile* profile =
-      profile_manager->GetLastUsedProfile(profile_manager->user_data_dir());
+  Profile* profile = profile_manager->GetLastUsedProfile();
 
   ASSERT_EQ(profile_manager->GetInitialProfileDir(),
             profile->GetPath().BaseName());
@@ -681,8 +674,7 @@ IN_PROC_BROWSER_TEST_P(ExistingWinBrowserProfilesSigninUtilTest, PRE_PRE_Run) {
 // the primary account in the profile.
 IN_PROC_BROWSER_TEST_P(ExistingWinBrowserProfilesSigninUtilTest, PRE_Run) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  Profile* profile =
-      profile_manager->GetLastUsedProfile(profile_manager->user_data_dir());
+  Profile* profile = profile_manager->GetLastUsedProfile();
 
   ASSERT_EQ(GetParam().current_profile, profile->GetPath().BaseName().value());
 
@@ -707,8 +699,7 @@ IN_PROC_BROWSER_TEST_P(ExistingWinBrowserProfilesSigninUtilTest, PRE_Run) {
 // profile in this case) may have a primary account as well.
 IN_PROC_BROWSER_TEST_P(ExistingWinBrowserProfilesSigninUtilTest, Run) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  Profile* profile =
-      profile_manager->GetLastUsedProfile(profile_manager->user_data_dir());
+  Profile* profile = profile_manager->GetLastUsedProfile();
 
   ASSERT_EQ(GetParam().current_profile, profile->GetPath().BaseName().value());
   AssertSigninStarted(GetParam().expect_is_started, profile);

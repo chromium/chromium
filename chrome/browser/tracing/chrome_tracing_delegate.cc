@@ -130,8 +130,7 @@ Profile* GetProfile() {
   if (!profile_manager)
     return nullptr;
 
-  return profile_manager->GetProfileByPath(
-      profile_manager->GetLastUsedProfileDir(profile_manager->user_data_dir()));
+  return profile_manager->GetLastUsedProfileIfLoaded();
 }
 
 bool ProfileAllowsScenario(const content::BackgroundTracingConfig& config,

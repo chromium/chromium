@@ -60,8 +60,7 @@ void ReportUVPlatformAuthenticatorAvailabilityMainThreadMac() {
   if (!profile_manager || !g_browser_process->local_state()) {
     return;
   }
-  Profile* profile = profile_manager->GetProfileByPath(
-      profile_manager->GetLastUsedProfileDir(profile_manager->user_data_dir()));
+  Profile* profile = profile_manager->GetLastUsedProfileIfLoaded();
   // Some tests have profiles but do not load the last profile before
   // PostBrowserStart().
   if (!profile) {

@@ -190,7 +190,7 @@ void WilcoDtcSupportdNotificationController::DisplayNotification(
     notification->SetSystemPriority();
   }
   NotificationDisplayService::GetForProfile(
-      profile_manager_->GetLastUsedProfile(profile_manager_->user_data_dir()))
+      profile_manager_->GetLastUsedProfile())
       ->Display(NotificationHandler::Type::TRANSIENT, *notification,
                 nullptr /* metadata */);
 }

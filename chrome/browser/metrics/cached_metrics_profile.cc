@@ -54,11 +54,8 @@ Profile* CachedMetricsProfile::GetMetricsProfile() {
       chromeos::ProfileHelper::Get()->GetProfileByUser(primary_user);
 #else
   // Find a suitable profile to use, and cache it so that we continue to report
-  // statistics on the same profile.  We would simply use
-  // ProfileManager::GetLastUsedProfile(), except that that has the side effect
-  // of creating a profile if it does not yet exist.
-  cached_profile_ = profile_manager->GetProfileByPath(
-      profile_manager->GetLastUsedProfileDir(profile_manager->user_data_dir()));
+  // statistics on the same profile.
+  cached_profile_ = profile_manager->GetLastUsedProfileIfLoaded();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   if (cached_profile_) {
     // Ensure that the returned profile is not an incognito profile.

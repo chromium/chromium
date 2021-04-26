@@ -986,11 +986,8 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
     auto* profile_manager = g_browser_process->profile_manager();
     if (profile_manager) {
       // |profile_manager| is null in browser tests during shutdown.
-      const base::FilePath last_used_path =
-          profile_manager->GetLastUsedProfileDir(
-              profile_manager->user_data_dir());
       Profile* last_used_profile =
-          profile_manager->GetProfileByPath(last_used_path);
+          profile_manager->GetLastUsedProfileIfLoaded();
       if (last_used_profile)
         [self windowChangedToProfile:last_used_profile];
     }

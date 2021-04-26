@@ -500,14 +500,41 @@ void ProfileManager::NukeDeletedProfilesFromDisk() {
 // static
 Profile* ProfileManager::GetLastUsedProfile() {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  return profile_manager->GetLastUsedProfile(profile_manager->user_data_dir_);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Use default login profile if user has not logged in yet.
+  if (!IsLoggedIn())
+    return profile_manager->GetActiveUserOrOffTheRecordProfile();
+
+  // CrOS multi-profiles implementation is different so GetLastUsedProfile()
+  // has custom implementation too.
+  base::FilePath profile_dir;
+  // In case of multi-profiles we ignore "last used profile" preference
+  // since it may refer to profile that has been in use in previous session.
+  // That profile dir may not be mounted in this session so instead return
+  // active profile from current session.
+  profile_dir = chromeos::ProfileHelper::Get()->GetActiveUserProfileDir();
+
+  Profile* profile = profile_manager->GetProfileByPath(
+      profile_manager->user_data_dir().Append(profile_dir));
+
+  // Accessing a user profile before it is loaded may lead to policy exploit.
+  // See http://crbug.com/689206.
+  LOG_IF(FATAL, !profile) << "Calling GetLastUsedProfile() before profile "
+                          << "initialization is completed.";
+
+  return profile->IsGuestSession()
+             ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+             : profile;
+#else
+  return profile_manager->GetProfile(profile_manager->GetLastUsedProfileDir());
+#endif
 }
 
 // static
 Profile* ProfileManager::GetLastUsedProfileIfLoaded() {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   return profile_manager->GetProfileByPath(
-      profile_manager->GetLastUsedProfileDir(profile_manager->user_data_dir()));
+      profile_manager->GetLastUsedProfileDir());
 }
 
 // static
@@ -584,8 +611,7 @@ Profile* ProfileManager::GetPrimaryUserProfile() {
   if (!profile_manager)  // Can be null in unit tests.
     return nullptr;
 
-  return profile_manager->GetActiveUserOrOffTheRecordProfileFromPath(
-      profile_manager->user_data_dir());
+  return profile_manager->GetActiveUserOrOffTheRecordProfile();
 }
 
 // static
@@ -606,9 +632,7 @@ Profile* ProfileManager::GetActiveUserProfile() {
       return chromeos::ProfileHelper::Get()->GetProfileByUserUnsafe(user);
   }
 #endif
-  Profile* profile =
-      profile_manager->GetActiveUserOrOffTheRecordProfileFromPath(
-          profile_manager->user_data_dir());
+  Profile* profile = profile_manager->GetActiveUserOrOffTheRecordProfile();
   // |profile| could be null if the user doesn't have a profile yet and the path
   // is on a read-only volume (preventing Chrome from making a new one).
   // However, most callers of this function immediately dereference the result
@@ -769,41 +793,8 @@ base::FilePath ProfileManager::GetInitialProfileDir() {
   return relative_profile_dir.AppendASCII(chrome::kInitialProfile);
 }
 
-Profile* ProfileManager::GetLastUsedProfile(
-    const base::FilePath& user_data_dir) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Use default login profile if user has not logged in yet.
-  if (!IsLoggedIn())
-    return GetActiveUserOrOffTheRecordProfileFromPath(user_data_dir);
-
-  // CrOS multi-profiles implementation is different so GetLastUsedProfile
-  // has custom implementation too.
-  base::FilePath profile_dir;
-  // In case of multi-profiles we ignore "last used profile" preference
-  // since it may refer to profile that has been in use in previous session.
-  // That profile dir may not be mounted in this session so instead return
-  // active profile from current session.
-  profile_dir = chromeos::ProfileHelper::Get()->GetActiveUserProfileDir();
-
-  base::FilePath profile_path(user_data_dir);
-  Profile* profile = GetProfileByPath(profile_path.Append(profile_dir));
-
-  // Accessing a user profile before it is loaded may lead to policy exploit.
-  // See http://crbug.com/689206.
-  LOG_IF(FATAL, !profile) << "Calling GetLastUsedProfile() before profile "
-                          << "initialization is completed.";
-
-  return profile->IsGuestSession()
-             ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
-             : profile;
-#else
-  return GetProfile(GetLastUsedProfileDir(user_data_dir));
-#endif
-}
-
-base::FilePath ProfileManager::GetLastUsedProfileDir(
-    const base::FilePath& user_data_dir) {
-  return user_data_dir.AppendASCII(GetLastUsedProfileBaseName());
+base::FilePath ProfileManager::GetLastUsedProfileDir() {
+  return user_data_dir_.AppendASCII(GetLastUsedProfileBaseName());
 }
 
 std::vector<Profile*> ProfileManager::GetLoadedProfiles() const {
@@ -1601,12 +1592,11 @@ ProfileManager::ProfileInfo::~ProfileInfo() {
   ProfileDestroyer::DestroyProfileWhenAppropriate(profile.release());
 }
 
-Profile* ProfileManager::GetActiveUserOrOffTheRecordProfileFromPath(
-    const base::FilePath& user_data_dir) {
+Profile* ProfileManager::GetActiveUserOrOffTheRecordProfile() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::FilePath default_profile_dir(user_data_dir);
   if (!IsLoggedIn()) {
-    default_profile_dir = profiles::GetDefaultProfileDir(user_data_dir);
+    base::FilePath default_profile_dir =
+        profiles::GetDefaultProfileDir(user_data_dir_);
     Profile* profile = GetProfile(default_profile_dir);
     // For cros, return the OTR profile so we never accidentally keep
     // user data in an unencrypted profile. But doing this makes
@@ -1618,12 +1608,13 @@ Profile* ProfileManager::GetActiveUserOrOffTheRecordProfileFromPath(
     return profile;
   }
 
-  default_profile_dir = default_profile_dir.Append(GetInitialProfileDir());
+  base::FilePath default_profile_dir =
+      user_data_dir_.Append(GetInitialProfileDir());
   ProfileInfo* profile_info = GetProfileInfoByPath(default_profile_dir);
   // Fallback to default off-the-record profile, if user profile has not started
   // loading or has not fully loaded yet.
   if (!profile_info || !profile_info->created)
-    default_profile_dir = profiles::GetDefaultProfileDir(user_data_dir);
+    default_profile_dir = profiles::GetDefaultProfileDir(user_data_dir_);
 
   Profile* profile = GetProfile(default_profile_dir);
   // Some unit tests didn't initialize the UserManager.
@@ -1632,8 +1623,8 @@ Profile* ProfileManager::GetActiveUserOrOffTheRecordProfileFromPath(
     return profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   return profile;
 #else
-  base::FilePath default_profile_dir(user_data_dir);
-  default_profile_dir = default_profile_dir.Append(GetInitialProfileDir());
+  base::FilePath default_profile_dir =
+      user_data_dir_.Append(GetInitialProfileDir());
   return GetProfile(default_profile_dir);
 #endif
 }
@@ -1729,8 +1720,7 @@ void ProfileManager::EnsureActiveProfileExistsBeforeDeletion(
     ProfileLoadedCallback callback,
     const base::FilePath& profile_dir) {
   // In case we delete non-active profile and current profile is valid, proceed.
-  const base::FilePath last_used_profile_path =
-      GetLastUsedProfileDir(user_data_dir_);
+  const base::FilePath last_used_profile_path = GetLastUsedProfileDir();
   const base::FilePath guest_profile_path = GetGuestProfilePath();
   Profile* last_used_profile = GetProfileByPath(last_used_profile_path);
   if (last_used_profile_path != profile_dir &&
