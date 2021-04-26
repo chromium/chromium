@@ -26,6 +26,7 @@
 #include "components/feed/core/v2/image_fetcher.h"
 #include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/prefs.h"
+#include "components/feed/core/v2/public/feed_stream_surface.h"
 #include "components/feed/core/v2/stream_model.h"
 #include "components/feed/core/v2/test/proto_printer.h"
 #include "components/feed/core/v2/test/stream_builder.h"
@@ -134,7 +135,7 @@ class TestImageFetcher : public ImageFetcher {
   ImageFetchId::Generator id_generator_;
 };
 
-class TestUnreadContentObserver : public FeedApi::UnreadContentObserver {
+class TestUnreadContentObserver : public UnreadContentObserver {
  public:
   TestUnreadContentObserver();
   ~TestUnreadContentObserver() override;

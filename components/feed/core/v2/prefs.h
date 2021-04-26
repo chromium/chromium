@@ -46,23 +46,10 @@ void SetPersistentMetricsData(const PersistentMetricsData& data,
 std::string GetClientInstanceId(PrefService& pref_service);
 void ClearClientInstanceId(PrefService& pref_service);
 
-void SetLastFetchHadNoticeCard(PrefService& pref_service, bool value);
-bool GetLastFetchHadNoticeCard(const PrefService& pref_service);
-
 void SetHasReachedClickAndViewActionsUploadConditions(PrefService& pref_service,
                                                       bool value);
 bool GetHasReachedClickAndViewActionsUploadConditions(
     const PrefService& pref_service);
-
-// Increment the stored notice card views count by 1.
-void IncrementNoticeCardViewsCount(PrefService& pref_service);
-
-int GetNoticeCardViewsCount(const PrefService& pref_service);
-
-// Increment the stored notice card clicks count by 1.
-void IncrementNoticeCardClicksCount(PrefService& pref_service);
-
-int GetNoticeCardClicksCount(const PrefService& pref_service);
 
 void SetExperiments(const Experiments& experiments, PrefService& pref_service);
 Experiments GetExperiments(PrefService& pref_service);

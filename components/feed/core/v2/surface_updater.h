@@ -13,13 +13,13 @@
 #include "base/observer_list.h"
 #include "components/feed/core/proto/v2/ui.pb.h"
 #include "components/feed/core/v2/enums.h"
-#include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/stream_model.h"
 
 namespace feedui {
 class StreamUpdate;
 }  // namespace feedui
 namespace feed {
+class FeedStreamSurface;
 class MetricsReporter;
 
 // Keeps the UI up to date by calling |FeedStreamSurface::StreamUpdate()|.

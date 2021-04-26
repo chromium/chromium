@@ -10,6 +10,7 @@
 #include "components/feed/core/proto/v2/wire/capability.pb.h"
 
 namespace feed {
+class StreamType;
 
 // The Feed configuration. Default values appear below. Always use
 // |GetFeedConfig()| to get the current configuration.
@@ -61,6 +62,9 @@ struct Config {
 
   // Configuration for Web Feeds.
 
+  // How long before Web Feed content is considered stale.
+  base::TimeDelta web_feed_stale_content_threshold =
+      base::TimeDelta::FromHours(1);
   // TimeDelta after startup to fetch recommended and subscribed Web Feeds if
   // they are stale. If zero, no fetching is done.
   base::TimeDelta fetch_web_feed_info_delay = base::TimeDelta::FromSeconds(40);
@@ -104,6 +108,8 @@ struct Config {
   Config();
   Config(const Config& other);
   ~Config();
+
+  base::TimeDelta GetStalenessThreshold(const StreamType& stream_type) const;
 };
 
 // Gets the current configuration.

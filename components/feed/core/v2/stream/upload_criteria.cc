@@ -5,6 +5,7 @@
 #include "components/feed/core/v2/stream/upload_criteria.h"
 
 #include "base/feature_list.h"
+#include "components/feed/core/v2/notice_card_tracker.h"
 #include "components/feed/core/v2/prefs.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/prefs/pref_service.h"

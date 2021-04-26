@@ -4,7 +4,7 @@
 
 #include "components/feed/core/v2/notice_card_tracker.h"
 
-#include "components/feed/core/v2/prefs.h"
+#include "components/feed/core/common/pref_names.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/prefs/pref_service.h"
 
@@ -22,6 +22,36 @@ int GetNoticeCardIndex() {
 }
 
 }  // namespace
+
+namespace prefs {
+
+void IncrementNoticeCardViewsCount(PrefService& pref_service) {
+  int count = pref_service.GetInteger(feed::prefs::kNoticeCardViewsCount);
+  pref_service.SetInteger(feed::prefs::kNoticeCardViewsCount, count + 1);
+}
+
+int GetNoticeCardViewsCount(const PrefService& pref_service) {
+  return pref_service.GetInteger(feed::prefs::kNoticeCardViewsCount);
+}
+
+void IncrementNoticeCardClicksCount(PrefService& pref_service) {
+  int count = pref_service.GetInteger(feed::prefs::kNoticeCardClicksCount);
+  pref_service.SetInteger(feed::prefs::kNoticeCardClicksCount, count + 1);
+}
+
+int GetNoticeCardClicksCount(const PrefService& pref_service) {
+  return pref_service.GetInteger(feed::prefs::kNoticeCardClicksCount);
+}
+
+void SetLastFetchHadNoticeCard(PrefService& pref_service, bool value) {
+  pref_service.SetBoolean(feed::prefs::kLastFetchHadNoticeCard, value);
+}
+
+bool GetLastFetchHadNoticeCard(const PrefService& pref_service) {
+  return pref_service.GetBoolean(feed::prefs::kLastFetchHadNoticeCard);
+}
+
+}  // namespace prefs
 
 NoticeCardTracker::NoticeCardTracker(PrefService* profile_prefs)
     : profile_prefs_(profile_prefs) {

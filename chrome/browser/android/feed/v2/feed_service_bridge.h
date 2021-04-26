@@ -8,8 +8,9 @@
 #include <string>
 
 #include "base/android/jni_android.h"
-#include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/types.h"
+#include "components/feed/core/v2/public/unread_content_observer.h"
+#include "url/gurl.h"
 
 namespace feed {
 
@@ -24,7 +25,7 @@ class FeedServiceBridge {
   static uint64_t GetReliabilityLoggingId();
 };
 
-class JavaUnreadContentObserver : public FeedApi::UnreadContentObserver {
+class JavaUnreadContentObserver : public UnreadContentObserver {
  public:
   JavaUnreadContentObserver(
       base::android::ScopedJavaGlobalRef<jobject> j_observer);

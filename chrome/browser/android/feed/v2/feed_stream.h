@@ -9,6 +9,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
 #include "components/feed/core/v2/public/feed_api.h"
+#include "components/feed/core/v2/public/feed_stream_surface.h"
 
 namespace feedui {
 class StreamUpdate;

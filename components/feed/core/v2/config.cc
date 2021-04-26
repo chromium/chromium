@@ -9,6 +9,7 @@
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "components/feed/core/proto/v2/wire/capability.pb.h"
+#include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/feed_feature_list.h"
 
 namespace feed {
@@ -136,6 +137,11 @@ void OverrideWithFinch(Config* config) {
           kWebFeed, "subscribed_feeds_staleness_threshold_days",
           config->subscribed_feeds_staleness_threshold.InDays()));
 
+  config->web_feed_stale_content_threshold =
+      base::TimeDelta::FromSecondsD(base::GetFieldTrialParamByFeatureAsDouble(
+          kWebFeed, "web_feed_stale_content_threshold_seconds",
+          config->web_feed_stale_content_threshold.InSecondsF()));
+
   // Erase any capabilities with "enable_CAPABILITY = false" set.
   base::EraseIf(config->experimental_capabilities, CapabilityDisabled);
 }
@@ -162,5 +168,11 @@ void OverrideConfigWithFinchForTesting() {
 Config::Config() = default;
 Config::Config(const Config& other) = default;
 Config::~Config() = default;
+
+base::TimeDelta Config::GetStalenessThreshold(
+    const StreamType& stream_type) const {
+  return stream_type.IsForYou() ? stale_content_threshold
+                                : web_feed_stale_content_threshold;
+}
 
 }  // namespace feed

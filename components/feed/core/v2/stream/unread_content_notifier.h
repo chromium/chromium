@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_FEED_CORE_V2_STREAM_UNREAD_CONTENT_NOTIFIER_H_
 #define COMPONENTS_FEED_CORE_V2_STREAM_UNREAD_CONTENT_NOTIFIER_H_
 
-#include "components/feed/core/v2/public/feed_api.h"
+#include "components/feed/core/v2/public/unread_content_observer.h"
 
 namespace feed {
 namespace feed_stream {
@@ -13,7 +13,6 @@ namespace feed_stream {
 // Wraps and notifies a `UnreadContentObserver`.
 class UnreadContentNotifier {
  public:
-  using UnreadContentObserver = FeedApi::UnreadContentObserver;
   explicit UnreadContentNotifier(base::WeakPtr<UnreadContentObserver> observer);
   ~UnreadContentNotifier();
   UnreadContentNotifier(UnreadContentNotifier&&);

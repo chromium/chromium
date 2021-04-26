@@ -455,9 +455,10 @@ TEST_P(FeedStreamTestForAllStreamTypes, LoadFromNetworkBecauseStoreIsStale) {
   store_->OverwriteStream(
       GetStreamType(),
       MakeTypicalInitialModelState(
-          /*first_cluster_id=*/0, kTestTimeEpoch -
-                                      GetFeedConfig().stale_content_threshold -
-                                      base::TimeDelta::FromMinutes(1)),
+          /*first_cluster_id=*/0,
+          kTestTimeEpoch -
+              GetFeedConfig().GetStalenessThreshold(GetStreamType()) -
+              base::TimeDelta::FromMinutes(1)),
       base::DoNothing());
 
   // Store is stale, so we should fallback to a network request.

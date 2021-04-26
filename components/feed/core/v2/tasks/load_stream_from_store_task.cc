@@ -74,7 +74,8 @@ void LoadStreamFromStoreTask::LoadStreamDone(
     }
     if (content_age_ < base::TimeDelta()) {
       stale_reason_ = LoadStreamStatus::kDataInStoreIsStaleTimestampInFuture;
-    } else if (ShouldWaitForNewContent(true, content_age_)) {
+    } else if (ShouldWaitForNewContent(result.stream_type, true,
+                                       content_age_)) {
       stale_reason_ = LoadStreamStatus::kDataInStoreIsStale;
     } else if (missed_last_refresh_) {
       stale_reason_ = LoadStreamStatus::kDataInStoreStaleMissedLastRefresh;

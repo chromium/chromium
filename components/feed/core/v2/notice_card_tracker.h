@@ -17,6 +17,19 @@ constexpr char kNoticeCardViewsCountThresholdParamName[] =
 constexpr char kNoticeCardClicksCountThresholdParamName[] =
     "notice-card-clicks-count-threshold";
 
+namespace prefs {
+
+// Increment the stored notice card views count by 1.
+void IncrementNoticeCardViewsCount(PrefService& pref_service);
+// Increment the stored notice card clicks count by 1.
+void IncrementNoticeCardClicksCount(PrefService& pref_service);
+int GetNoticeCardClicksCount(const PrefService& pref_service);
+int GetNoticeCardViewsCount(const PrefService& pref_service);
+void SetLastFetchHadNoticeCard(PrefService& pref_service, bool value);
+bool GetLastFetchHadNoticeCard(const PrefService& pref_service);
+
+}  // namespace prefs
+
 // Tracker for the notice card related actions that also provide signals based
 // on those.
 class NoticeCardTracker {

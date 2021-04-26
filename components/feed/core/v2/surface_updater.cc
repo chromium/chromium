@@ -12,6 +12,7 @@
 #include "components/feed/core/proto/v2/xsurface.pb.h"
 #include "components/feed/core/v2/feed_stream.h"
 #include "components/feed/core/v2/metrics_reporter.h"
+#include "components/feed/core/v2/public/feed_stream_surface.h"
 
 namespace feed {
 namespace {

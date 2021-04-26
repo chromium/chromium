@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "components/feed/core/proto/v2/store.pb.h"
-#include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/web_feed_subscriptions.h"
 #include "components/feed/core/v2/web_feed_subscriptions/fetch_recommended_web_feeds_task.h"
 #include "components/feed/core/v2/web_feed_subscriptions/fetch_subscribed_web_feeds_task.h"

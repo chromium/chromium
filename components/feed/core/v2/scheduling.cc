@@ -86,8 +86,11 @@ base::Time NextScheduledRequestTime(base::Time now, RequestSchedule* schedule) {
   return now + GetFeedConfig().default_background_refresh_interval;
 }
 
-bool ShouldWaitForNewContent(bool has_content, base::TimeDelta content_age) {
-  return !has_content || content_age > GetFeedConfig().stale_content_threshold;
+bool ShouldWaitForNewContent(const StreamType& stream_type,
+                             bool has_content,
+                             base::TimeDelta content_age) {
+  return !has_content ||
+         content_age > GetFeedConfig().GetStalenessThreshold(stream_type);
 }
 
 }  // namespace feed

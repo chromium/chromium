@@ -6,7 +6,6 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "components/feed/core/common/pref_names.h"
-#include "components/feed/core/v2/prefs.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
