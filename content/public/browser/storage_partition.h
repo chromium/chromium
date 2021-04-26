@@ -171,6 +171,10 @@ class CONTENT_EXPORT StoragePartition {
     REMOVE_DATA_MASK_PLUGIN_PRIVATE_DATA = 1 << 9,
     REMOVE_DATA_MASK_BACKGROUND_FETCH = 1 << 10,
     REMOVE_DATA_MASK_CONVERSIONS = 1 << 11,
+    // Interest groups are stored as part of the Interest Group API experiment
+    // Public explainer here:
+    // https://github.com/WICG/turtledove/blob/main/FLEDGE.md
+    REMOVE_DATA_MASK_INTEREST_GROUPS = 1 << 12,
     REMOVE_DATA_MASK_ALL = 0xFFFFFFFF,
 
     // Corresponds to storage::kStorageTypeTemporary.

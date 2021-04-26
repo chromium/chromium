@@ -352,8 +352,12 @@ void StorageHandler::ClearDataForOrigin(
   uint32_t remove_mask = 0;
   if (set.count(Storage::StorageTypeEnum::Appcache))
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_APPCACHE;
-  if (set.count(Storage::StorageTypeEnum::Cookies))
+  if (set.count(Storage::StorageTypeEnum::Cookies)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_COOKIES;
+    // Interest groups should be cleared with cookies for its origin trial as
+    // they have the same privacy characteristics
+    remove_mask |= StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS;
+  }
   if (set.count(Storage::StorageTypeEnum::File_systems))
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_FILE_SYSTEMS;
   if (set.count(Storage::StorageTypeEnum::Indexeddb))
