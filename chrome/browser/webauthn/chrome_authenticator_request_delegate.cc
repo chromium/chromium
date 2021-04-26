@@ -452,6 +452,9 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
     device::FidoRequestType request_type,
     base::span<const device::CableDiscoveryData> pairings_from_extension,
     device::FidoDiscoveryFactory* discovery_factory) {
+  phone_names_.clear();
+  phone_public_keys_.clear();
+
   const bool cable_extension_permitted = ShouldPermitCableExtension(origin);
 
   std::vector<device::CableDiscoveryData> pairings;
