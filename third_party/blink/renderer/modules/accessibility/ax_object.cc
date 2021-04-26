@@ -590,17 +590,23 @@ void AXObject::SetParent(AXObject* new_parent) {
 // TODO(accessibility) Consider forcing all ax objects to be created from
 // the top down, eliminating the need for ComputeParent().
 AXObject* AXObject::ComputeParent() const {
-  DCHECK(!IsDetached());
+#if defined(AX_FAIL_FAST_BUILD)
+  SANITIZER_CHECK(!IsDetached());
 
-  DCHECK(!IsVirtualObject())
+  SANITIZER_CHECK(!IsVirtualObject())
       << "A virtual object must have a parent, and cannot exist without one. "
          "The parent is set when the object is constructed.";
 
-  DCHECK(GetNode() || GetLayoutObject())
+  SANITIZER_CHECK(!IsMockObject())
+      << "A mock object must have a parent, and cannot exist without one. "
+         "The parent is set when the object is constructed.";
+
+  SANITIZER_CHECK(GetNode() || GetLayoutObject())
       << "Can't compute parent on AXObjects without a backing Node "
          "or LayoutObject. Objects without those must set the "
          "parent in Init(), |this| = "
       << RoleValue();
+#endif
 
   AXObject* ax_parent =
       AXObjectCache().IsAriaOwned(this)
