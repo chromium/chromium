@@ -10,8 +10,8 @@ source_set("voice") {
     "speech_input_locale_config.mm",
     "speech_input_locale_config_impl.h",
     "speech_input_locale_config_impl.mm",
-    "speech_input_locale_match_config.h",
-    "speech_input_locale_match_config.mm",
+    "speech_input_locale_match.h",
+    "speech_input_locale_match.mm",
     "voice_search_availability.h",
     "voice_search_availability.mm",
     "voice_search_navigations_tab_helper.h",
@@ -90,6 +90,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "speech_input_locale_config_impl_unittest.mm",
     "text_to_speech_listener_unittest.mm",
     "text_to_speech_parser_unittest.mm",
     "voice_search_availability_unittest.mm",

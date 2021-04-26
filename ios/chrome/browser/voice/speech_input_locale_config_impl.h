@@ -5,12 +5,16 @@
 #ifndef IOS_CHROME_BROWSER_VOICE_SPEECH_INPUT_LOCALE_CONFIG_IMPL_H_
 #define IOS_CHROME_BROWSER_VOICE_SPEECH_INPUT_LOCALE_CONFIG_IMPL_H_
 
+#import <Foundation/Foundation.h>
+
 #include <map>
+#include <string>
+#include <vector>
 
 #include "base/no_destructor.h"
 #include "ios/chrome/browser/voice/speech_input_locale_config.h"
-
-class SpeechInputLocaleConfigImplTest;
+#include "ios/chrome/browser/voice/speech_input_locale_match.h"
+#include "ios/public/provider/chrome/browser/voice/voice_search_language.h"
 
 namespace voice {
 
@@ -19,8 +23,13 @@ namespace voice {
 // SpeechInputLocaleMatches.plist.
 class SpeechInputLocaleConfigImpl : public SpeechInputLocaleConfig {
  public:
-  // Singleton getter for subclass.
-  static SpeechInputLocaleConfigImpl* GetInstance();
+  SpeechInputLocaleConfigImpl(NSArray<VoiceSearchLanguage*>* languages,
+                              NSArray<SpeechInputLocaleMatch*>* locale_matches);
+  ~SpeechInputLocaleConfigImpl() override;
+
+  // Deprecated constructor to avoid breaking the downstream tests. Will be
+  // removed once downstream is changed to use the other constructor.
+  SpeechInputLocaleConfigImpl();
 
   // Returns the available locale that matches |locale_code|.  Defaults to en-US
   // if a matching locale is not found.
@@ -35,12 +44,6 @@ class SpeechInputLocaleConfigImpl : public SpeechInputLocaleConfig {
   bool IsTextToSpeechEnabledForCode(
       const std::string& locale_code) const override;
 
- protected:
-  // The constructor is protected, as the object must be referenced via
-  // SpeechInputLocaleConfig's singleton getter.
-  SpeechInputLocaleConfigImpl();
-  ~SpeechInputLocaleConfigImpl() override;
-
  private:
   // Returns a canonical locale code created from combining the UI language
   // preference from NSLocale's |+preferredLanguages| and the country code from
@@ -48,17 +51,15 @@ class SpeechInputLocaleConfigImpl : public SpeechInputLocaleConfig {
   std::string GetDefaultLocaleCode() const;
 
   // Populates |available_locales_| using S3Kit's language manager.
-  void InitializeAvailableLocales();
+  void InitializeAvailableLocales(NSArray<VoiceSearchLanguage*>* languages);
 
   // Adds local matching data from speech_input_matches.plist into
   // |locale_indices_for_codes_|.
-  void InitializeLocaleMatches();
+  void InitializeLocaleMatches(
+      NSArray<SpeechInputLocaleMatch*>* locale_matches);
 
   // Populates |text_to_speech_languages_| with the available locales.
   void InitializeTextToSpeechLangauges();
-
-  friend class base::NoDestructor<SpeechInputLocaleConfigImpl>;
-  friend class ::SpeechInputLocaleConfigImplTest;
 
   // The list of available speech input locales.
   std::vector<SpeechInputLocale> available_locales_;
