@@ -1954,7 +1954,9 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
 
   base::AutoReset<bool> cq_recalc(&in_container_query_style_recalc_, true);
 
-  WritingMode writing_mode = container.ComputedStyleRef().GetWritingMode();
+  DCHECK(container.GetLayoutObject()) << "Containers must have a LayoutObject";
+  WritingMode writing_mode =
+      container.GetLayoutObject()->StyleRef().GetWritingMode();
   PhysicalSize physical_size = ToPhysicalSize(logical_size, writing_mode);
   PhysicalAxes physical_axes = ToPhysicalAxes(contained_axes, writing_mode);
 
