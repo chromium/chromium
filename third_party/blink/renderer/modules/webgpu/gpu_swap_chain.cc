@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webgpu/gpu_swap_chain.h"
 
+#include "components/viz/common/resources/resource_format_utils.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_canvas_context.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
@@ -99,12 +100,40 @@ scoped_refptr<StaticBitmapImage> GPUSwapChain::TransferToStaticBitmapImage() {
       std::move(release_callback));
 }
 
+scoped_refptr<CanvasResource> GPUSwapChain::ExportCanvasResource() {
+  viz::TransferableResource transferable_resource;
+  viz::ReleaseCallback release_callback;
+  if (!swap_buffers_->PrepareTransferableResource(
+          nullptr, &transferable_resource, &release_callback)) {
+    return nullptr;
+  }
+
+  CanvasResourceParams resource_params;
+  resource_params.SetSkColorType(viz::ResourceFormatToClosestSkColorType(
+      /*gpu_compositing=*/true, transferable_resource.format));
+
+  return ExternalCanvasResource::Create(
+      transferable_resource.mailbox_holder.mailbox, std::move(release_callback),
+      transferable_resource.mailbox_holder.sync_token,
+      IntSize(transferable_resource.size),
+      transferable_resource.mailbox_holder.texture_target, resource_params,
+      swap_buffers_->GetContextProviderWeakPtr(), /*resource_provider=*/nullptr,
+      kLow_SkFilterQuality,
+      /*is_origin_top_left=*/kBottomLeft_GrSurfaceOrigin,
+      transferable_resource.is_overlay_candidate);
+}
+
 // gpu_swap_chain.idl
 GPUTexture* GPUSwapChain::getCurrentTexture() {
   if (!swap_buffers_) {
     // TODO(cwallez@chromium.org) return an error texture.
     return nullptr;
   }
+
+  // As we are getting a new texture, we need to tell the canvas context that
+  // there will be a need to send a new frame to the offscreencanvas.
+  if (context_->IsOffscreenCanvas())
+    context_->DidDraw();
 
   // Calling getCurrentTexture returns a texture that is valid until the
   // animation frame it gets presented. If getCurrenTexture is called multiple

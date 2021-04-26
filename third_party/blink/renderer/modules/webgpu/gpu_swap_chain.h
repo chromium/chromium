@@ -14,6 +14,7 @@ class Layer;
 
 namespace blink {
 
+class CanvasResource;
 class GPUCanvasContext;
 class GPUDevice;
 class GPUTexture;
@@ -42,6 +43,10 @@ class GPUSwapChain : public DawnObjectImpl,
   // texture in the ImageBitmap is from the active ContextProvider on the
   // WebGPUSwapBufferProvider.
   scoped_refptr<StaticBitmapImage> TransferToStaticBitmapImage();
+
+  // Returns a CanvasResource of type ExternalCanvasResource that will
+  // encapsulate an external mailbox, synctoken and release callback.
+  scoped_refptr<CanvasResource> ExportCanvasResource();
 
   // gpu_swap_chain.idl
   GPUTexture* getCurrentTexture();

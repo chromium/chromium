@@ -1108,17 +1108,20 @@ bool ExternalCanvasResource::HasGpuMailbox() const {
 
 const gpu::SyncToken ExternalCanvasResource::GetSyncToken() {
   TRACE_EVENT0("blink", "ExternalCanvasResource::GetSyncToken");
+  // This method is expected to be used both in WebGL and WebGPU, that's why it
+  // uses InterfaceBase.
   if (!sync_token_.HasData()) {
-    auto* gl = ContextGL();
-    if (gl)
-      gl->GenSyncTokenCHROMIUM(sync_token_.GetData());
+    auto* interface = InterfaceBase();
+    if (interface)
+      interface->GenSyncTokenCHROMIUM(sync_token_.GetData());
   } else if (!sync_token_.verified_flush()) {
     // The offscreencanvas usage needs the sync_token to be verified in order to
     // be able to use it by the compositor.
     int8_t* token_data = sync_token_.GetData();
-    auto* gl = ContextGL();
-    gl->ShallowFlushCHROMIUM();
-    gl->VerifySyncTokensCHROMIUM(&token_data, 1);
+    auto* interface = InterfaceBase();
+    DCHECK(interface);
+    interface->ShallowFlushCHROMIUM();
+    interface->VerifySyncTokensCHROMIUM(&token_data, 1);
     sync_token_.SetVerifyFlush();
   }
   return sync_token_;

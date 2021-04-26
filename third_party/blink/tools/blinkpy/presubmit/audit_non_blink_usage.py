@@ -932,6 +932,7 @@ _CONFIG = [
             'viz::RasterContextProvider',
             'viz::ReleaseCallback',
             'viz::TransferableResource',
+            'viz::ResourceFormatToClosestSkColorType',
         ],
     },
     {

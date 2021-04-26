@@ -87,6 +87,18 @@ void GPUCanvasContext::SetOffscreenCanvasGetContextResult(
   result.SetGPUCanvasContext(this);
 }
 
+bool GPUCanvasContext::PushFrame() {
+  DCHECK(Host());
+  DCHECK(Host()->IsOffscreenCanvas());
+  auto canvas_resource = swapchain_->ExportCanvasResource();
+  if (!canvas_resource)
+    return false;
+  const int width = canvas_resource->Size().Width();
+  const int height = canvas_resource->Size().Height();
+  return Host()->PushFrame(std::move(canvas_resource),
+                           SkIRect::MakeWH(width, height));
+}
+
 ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
     ScriptState* script_state) {
   return MakeGarbageCollected<ImageBitmap>(
