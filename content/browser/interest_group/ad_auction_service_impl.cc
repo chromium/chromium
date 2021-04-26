@@ -90,19 +90,13 @@ void FetchReport(network::mojom::URLLoaderFactory* url_loader_factory,
           std::move(simple_url_loader)));
 }
 
-void OnWorkletCrashed(
-    std::unique_ptr<AdAuctionServiceImpl::RunAdAuctionCallback> callback) {
-  if (*callback)
-    std::move(*callback).Run(base::nullopt);
-}
-
 struct ValidatedResult {
   bool is_valid_auction_result = false;
   std::string ad_json;
 };
 
 ValidatedResult ValidateAuctionResult(
-    std::vector<auction_worklet::mojom::BiddingInterestGroupPtr> bidders_copy,
+    const std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>& bidders,
     const GURL& render_url,
     const url::Origin& owner,
     const std::string& name) {
@@ -110,7 +104,7 @@ ValidatedResult ValidateAuctionResult(
   if (!render_url.is_valid() || !render_url.SchemeIs(url::kHttpsScheme))
     return result;
 
-  for (const auto& bidder : bidders_copy) {
+  for (const auto& bidder : bidders) {
     // Auction winner must be one of the bidders and bidder must have ads.
     if (bidder->group->owner != owner || bidder->group->name != name ||
         !bidder->group->ads) {
@@ -299,12 +293,14 @@ void AdAuctionServiceImpl::StartAuction(
   std::unique_ptr<RunAdAuctionCallback> owned_callback =
       std::make_unique<RunAdAuctionCallback>(std::move(callback));
   RunAdAuctionCallback* unowned_callback = owned_callback.get();
-  base::ScopedClosureRunner on_crash(
-      base::BindOnce(&OnWorkletCrashed, std::move(owned_callback)));
+  base::ScopedClosureRunner on_crash(base::BindOnce(
+      &AdAuctionServiceImpl::OnMaybeWorkletCrashed,
+      weak_ptr_factory_.GetWeakPtr(), std::move(owned_callback)));
   std::vector<auction_worklet::mojom::BiddingInterestGroupPtr> bidders_copy;
   bidders_copy.reserve(bidders.size());
   for (auto& bidder : bidders)
     bidders_copy.emplace_back(bidder.Clone());
+  ++running_auctions_;
   auction_worklet_service_->RunAuction(
       std::move(url_loader_factory), std::move(config), std::move(bidders),
       std::move(browser_signals),
@@ -315,7 +311,7 @@ void AdAuctionServiceImpl::StartAuction(
 }
 
 void AdAuctionServiceImpl::WorkletComplete(
-    std::vector<auction_worklet::mojom::BiddingInterestGroupPtr> bidders_copy,
+    std::vector<auction_worklet::mojom::BiddingInterestGroupPtr> bidders,
     RunAdAuctionCallback* callback,
     std::unique_ptr<AuctionURLLoaderFactoryProxy> url_loader_factory_proxy,
     base::ScopedClosureRunner on_crash,
@@ -324,13 +320,12 @@ void AdAuctionServiceImpl::WorkletComplete(
     const std::string& name,
     auction_worklet::mojom::WinningBidderReportPtr bidder_report,
     auction_worklet::mojom::SellerReportPtr seller_report) {
-  std::vector<auction_worklet::mojom::BiddingInterestGroupPtr> bidders;
-  bidders.reserve(bidders_copy.size());
-  for (auto& bidder : bidders_copy)
-    bidders.emplace_back(bidder.Clone());
+  // Release process if needed.
+  AuctionComplete();
+
   // Check if returned winner's information is valid.
   ValidatedResult result =
-      ValidateAuctionResult(std::move(bidders_copy), render_url, owner, name);
+      ValidateAuctionResult(bidders, render_url, owner, name);
   if (!result.is_valid_auction_result) {
     std::move(*callback).Run(base::nullopt);
     return;
@@ -341,7 +336,7 @@ void AdAuctionServiceImpl::WorkletComplete(
                                                     result.ad_json);
   // TODO(qingxin): Decide if we should record a bid if the auction fails, or
   // the interest group doesn't make a bid.
-  for (auto& bidder : bidders) {
+  for (const auto& bidder : bidders) {
     GetInterestGroupManager()->RecordInterestGroupBid(bidder->group->owner,
                                                       bidder->group->name);
   }
@@ -383,6 +378,34 @@ network::mojom::URLLoaderFactory* AdAuctionServiceImpl::GetURLLoaderFactory() {
         ->Clone(std::move(factory_receiver));
   }
   return url_loader_factory_.get();
+}
+
+void AdAuctionServiceImpl::AuctionComplete() {
+  DCHECK_GE(running_auctions_, 1);
+  --running_auctions_;
+
+  // Shutdown the process if we don't need it.
+  if (running_auctions_ == 0)
+    auction_worklet_service_.reset();
+}
+
+// static
+void AdAuctionServiceImpl::OnMaybeWorkletCrashed(
+    base::WeakPtr<AdAuctionServiceImpl> self,
+    std::unique_ptr<AdAuctionServiceImpl::RunAdAuctionCallback> callback) {
+  // The callback is null if WorkletComplete already ran it, e.g. no crash has
+  // happened.
+  if (callback->is_null())
+    return;
+
+  // self may be null if we got destroyed due to navigating away or the renderer
+  // closing the pipe. At that point there is no need to call AuctionComplete,
+  // but the callback may still need to be run in the former case if the pipe is
+  // still alive for now.
+  if (self)
+    self->AuctionComplete();
+
+  std::move(*callback).Run(base::nullopt);
 }
 
 }  // namespace content

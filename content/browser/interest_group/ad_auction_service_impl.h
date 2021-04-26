@@ -100,6 +100,15 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   // closed. Returns the resulting factory.
   network::mojom::URLLoaderFactory* GetURLLoaderFactory();
 
+  // Decrements number of running auctions and shuts down the worklet process
+  // if needed.
+  void AuctionComplete();
+
+  static void OnMaybeWorkletCrashed(
+      base::WeakPtr<AdAuctionServiceImpl> self,
+      std::unique_ptr<AdAuctionServiceImpl::RunAdAuctionCallback> callback);
+
+  int running_auctions_ = 0;
   mojo::Remote<auction_worklet::mojom::AuctionWorkletService>
       auction_worklet_service_;
 
