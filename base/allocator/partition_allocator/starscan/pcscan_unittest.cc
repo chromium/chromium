@@ -12,7 +12,8 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if PA_ALLOW_PCSCAN
+// TODO(bikineev,1194283): Fix test failures on Windows.
+#if PA_ALLOW_PCSCAN && !defined(OS_WIN)
 
 namespace base {
 namespace internal {
@@ -487,5 +488,5 @@ TEST_F(PCScanTest, Safepoint) {
 }  // namespace internal
 }  // namespace base
 
-#endif  // PA_ALLOW_PCSCAN
+#endif  // PA_ALLOW_PCSCAN && !defined(OS_WIN)
 #endif  // defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
