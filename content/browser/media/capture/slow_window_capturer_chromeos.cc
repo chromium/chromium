@@ -249,14 +249,24 @@ void SlowWindowCapturerChromeOS::CaptureNextFrame() {
   auto in_flight_frame = std::make_unique<InFlightFrame>(
       weak_factory_.GetWeakPtr(), std::move(buffer));
 
+  // Compute the region of the VideoFrame that will contain the content. If
+  // there is nothing to copy from/to (e.g., the target is gone, or is sized too
+  // small), send a blank black frame immediately.
+  const gfx::Size source_size =
+      target_ ? target_->bounds().size() : gfx::Size();
+  const gfx::Rect content_rect =
+      source_size.IsEmpty() ? gfx::Rect()
+                            : media::ComputeLetterboxRegionForI420(
+                                  gfx::Rect(capture_size_), source_size);
+
   // Create a VideoFrame that wraps the mapped buffer.
   const base::TimeTicks begin_time = base::TimeTicks::Now();
   if (first_frame_reference_time_.is_null()) {
     first_frame_reference_time_ = begin_time;
   }
   in_flight_frame->set_video_frame(VideoFrame::WrapExternalData(
-      media::PIXEL_FORMAT_I420, capture_size_, gfx::Rect(capture_size_),
-      capture_size_, static_cast<uint8_t*>(backing_memory), allocation_size,
+      media::PIXEL_FORMAT_I420, capture_size_, content_rect, capture_size_,
+      static_cast<uint8_t*>(backing_memory), allocation_size,
       begin_time - first_frame_reference_time_));
   auto* const frame = in_flight_frame->video_frame();
   DCHECK(frame);
@@ -266,15 +276,6 @@ void SlowWindowCapturerChromeOS::CaptureNextFrame() {
   frame->metadata().reference_time = begin_time;
   frame->set_color_space(gfx::ColorSpace::CreateREC709());
 
-  // Compute the region of the VideoFrame that will contain the content. If
-  // there is nothing to copy from/to (e.g., the target is gone, or is sized too
-  // small), send a blank black frame immediately.
-  const gfx::Size source_size =
-      target_ ? target_->bounds().size() : gfx::Size();
-  const gfx::Rect content_rect = source_size.IsEmpty()
-                                     ? gfx::Rect()
-                                     : media::ComputeLetterboxRegionForI420(
-                                           frame->visible_rect(), source_size);
   in_flight_frame->set_content_rect(content_rect);
   if (content_rect.IsEmpty()) {
     media::LetterboxVideoFrame(frame, gfx::Rect());
@@ -312,14 +313,11 @@ void SlowWindowCapturerChromeOS::DidCopyFrame(
   DCHECK(frame);
   const auto& content_rect = in_flight_frame->content_rect();
   const int y_stride = frame->stride(VideoFrame::kYPlane);
-  uint8_t* const y = frame->visible_data(VideoFrame::kYPlane) +
-                     content_rect.y() * y_stride + content_rect.x();
+  uint8_t* const y = frame->visible_data(VideoFrame::kYPlane);
   const int u_stride = frame->stride(VideoFrame::kUPlane);
-  uint8_t* const u = frame->visible_data(VideoFrame::kUPlane) +
-                     (content_rect.y() / 2) * u_stride + (content_rect.x() / 2);
+  uint8_t* const u = frame->visible_data(VideoFrame::kUPlane);
   const int v_stride = frame->stride(VideoFrame::kVPlane);
-  uint8_t* const v = frame->visible_data(VideoFrame::kVPlane) +
-                     (content_rect.y() / 2) * v_stride + (content_rect.x() / 2);
+  uint8_t* const v = frame->visible_data(VideoFrame::kVPlane);
   if (!result->ReadI420Planes(y, y_stride, u, u_stride, v, v_stride)) {
     return;  // Copy request failed, punt.
   }
@@ -331,6 +329,7 @@ void SlowWindowCapturerChromeOS::DidCopyFrame(
   // However, the result should never contain more than what was requested.
   DCHECK_LE(result->size().width(), content_rect.width());
   DCHECK_LE(result->size().height(), content_rect.height());
+
   media::LetterboxVideoFrame(
       frame, gfx::Rect(content_rect.origin(),
                        AdjustSizeForI420Format(result->size())));
