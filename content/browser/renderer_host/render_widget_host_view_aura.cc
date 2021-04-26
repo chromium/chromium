@@ -1552,7 +1552,9 @@ bool RenderWidgetHostViewAura::SetAutocorrectRange(
   ui_ime_text_span.start_offset = 0;
   ui_ime_text_span.end_offset = range.length();
   ui_ime_text_span.underline_style = ui::ImeTextSpan::UnderlineStyle::kDot;
-  ui_ime_text_span.underline_color = gfx::kGoogleGrey700;
+  ui_ime_text_span.underline_color =
+      SkColorSetA(gfx::kGoogleGrey700, SK_AlphaOPAQUE * 0.7);
+  ui_ime_text_span.thickness = ui::ImeTextSpan::Thickness::kThick;
 
   input_handler->AddImeTextSpansToExistingText(range.start(), range.end(),
                                                {ui_ime_text_span});
