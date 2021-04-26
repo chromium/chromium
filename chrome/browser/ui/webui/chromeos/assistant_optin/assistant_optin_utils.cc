@@ -203,11 +203,6 @@ base::Value GetSettingsUiStrings(const assistant::SettingsUi& settings_ui,
       dictionary.SetKey(
           "valuePropIntro",
           base::Value(activity_control_ui.intro_text_paragraph(0)));
-      if (activity_control_ui.intro_text_paragraph_size() > 1) {
-        dictionary.SetKey(
-            "valuePropIntroTitle",
-            base::Value(activity_control_ui.intro_text_paragraph(1)));
-      }
     }
     if (activity_control_ui.footer_paragraph_size()) {
       dictionary.SetKey("valuePropFooter",
