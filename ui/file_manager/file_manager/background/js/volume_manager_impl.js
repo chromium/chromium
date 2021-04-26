@@ -430,6 +430,14 @@
         // /.shortcut-targets-by-id/<id>/foo is read-write.
         isReadOnly = entry.fullPath.split('/').length < 4;
         isRootEntry = entry.fullPath === '/.shortcut-targets-by-id';
+      } else if (
+          entry.fullPath === '/.Trash-1000' ||
+          entry.fullPath.indexOf('/.Trash-1000/') === 0) {
+        // Drive uses "$topdir/.Trash-$uid" as the trash dir as per XDG spec.
+        // User chronos is always uid 1000.
+        rootType = VolumeManagerCommon.RootType.TRASH;
+        isReadOnly = false;
+        isRootEntry = entry.fullPath === '/.Trash-1000';
       } else {
         // Accessing Drive files outside of /drive/root and /drive/other is not
         // allowed, but can happen. Therefore returning null.

@@ -679,17 +679,6 @@
       }
     }
 
-    // Add Trash to My Files.
-    if (loadTimeData.getBoolean('FILES_TRASH_ENABLED')) {
-      if (!this.trashItem_) {
-        this.trashItem_ = new NavigationModelFakeItem(
-            str('TRASH_ROOT_LABEL'), NavigationModelItemType.TRASH,
-            new TrashRootEntry(this.volumeManager_));
-      }
-      myFilesEntry.removeByRootType(VolumeManagerCommon.RootType.TRASH);
-      myFilesEntry.addEntry(this.trashItem_.entry);
-    }
-
     // Add Drive.
     let hasDrive = false;
     for (const driveItem of getVolumes(VolumeManagerCommon.VolumeType.DRIVE)) {
@@ -700,6 +689,16 @@
     if (!hasDrive && this.fakeDriveItem_) {
       this.navigationItems_.push(this.fakeDriveItem_);
       this.fakeDriveItem_.section = NavigationSection.CLOUD;
+    }
+
+    // Add Trash.
+    if (loadTimeData.getBoolean('FILES_TRASH_ENABLED')) {
+      if (!this.trashItem_) {
+        this.trashItem_ = new NavigationModelFakeItem(
+            str('TRASH_ROOT_LABEL'), NavigationModelItemType.TRASH,
+            new TrashRootEntry(this.volumeManager_));
+      }
+      this.navigationItems_.push(this.trashItem_);
     }
 
     // Add SMB.

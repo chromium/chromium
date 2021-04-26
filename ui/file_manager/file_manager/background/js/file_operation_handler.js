@@ -259,6 +259,10 @@
               return strf('MOVE_FILESYSTEM_ERROR', detail);
             case util.FileOperationType.ZIP:
               return strf('ZIP_FILESYSTEM_ERROR', detail);
+            case util.FileOperationType.DELETE:
+              return str('DELETE_ERROR');
+            case util.FileOperationType.RESTORE:
+              return str('RESTORE_FROM_TRASH_ERROR');
             default:
               return strf('TRANSFER_FILESYSTEM_ERROR', detail);
           }

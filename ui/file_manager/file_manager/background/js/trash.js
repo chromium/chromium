@@ -278,7 +278,10 @@
     const name =
         await fileOperationUtil.deduplicatePath(dir, parts[parts.length - 1]);
     await this.moveTo_(trashEntry.filesEntry, dir, name);
-    await this.permanentlyDeleteFileOrDirectory_(infoEntry);
+    // Ignore any error deleting *.trashinfo since DriveFS auto deletes this
+    // file when filesEntry is moved.
+    await this.permanentlyDeleteFileOrDirectory_(infoEntry).catch(
+        e => console.warn(`Error deleting ${infoEntry.toURL()}`, e));
   }
 
   /**

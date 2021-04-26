@@ -18,13 +18,8 @@ async function selectMyFiles(appId) {
   const downloadsRow = ['Downloads', '--', 'Folder'];
   const playFilesRow = ['Play files', '--', 'Folder'];
   const crostiniRow = ['Linux files', '--', 'Folder'];
-  const trashRow = ['Trash', '--', 'Folder'];
-  const expectedRows = [downloadsRow, playFilesRow, crostiniRow, trashRow];
-  if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
-    expectedRows.pop();
-  }
   await remoteCall.waitForFiles(
-      appId, expectedRows,
+      appId, [downloadsRow, playFilesRow, crostiniRow],
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
 }
 
@@ -41,14 +36,14 @@ testcase.showMyFiles = async () => {
     'Downloads: SubDirectoryItem',
     'Linux files: FakeItem',
     'Play files: SubDirectoryItem',
-    'Trash: SubDirectoryItem',
     'Google Drive: DriveVolumeItem',
     'My Drive: SubDirectoryItem',
     'Shared with me: SubDirectoryItem',
     'Offline: SubDirectoryItem',
+    'Trash: EntryListItem',
   ];
   if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
-    expectedElementLabels.splice(8, 1);  // Remove 'Trash: ...'.
+    expectedElementLabels.pop();  // Remove 'Trash: ...'.
   }
 
   // Open Files app on local Downloads.
@@ -329,14 +324,10 @@ testcase.myFilesUpdatesWhenAndroidVolumeMounts = async () => {
   const downloadsRow = ['Downloads', '--', 'Folder'];
   const playFilesRow = ['Play files', '--', 'Folder'];
   const crostiniRow = ['Linux files', '--', 'Folder'];
-  const trashRow = ['Trash', '--', 'Folder'];
-  const expectedRows = [downloadsRow, crostiniRow, trashRow];
-  if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
-    expectedRows.pop();
-  }
+  const expectedRows = [downloadsRow, crostiniRow];
   await remoteCall.waitAndClickElement(appId, myFiles);
   await remoteCall.waitForFiles(
-      appId, expectedRows,
+      appId, [downloadsRow, crostiniRow],
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
 
   // Mount Play files volume.
@@ -347,9 +338,8 @@ testcase.myFilesUpdatesWhenAndroidVolumeMounts = async () => {
 
   // Android volume should automatically appear on directory tree and file list.
   await remoteCall.waitForElement(appId, playFilesTreeItem);
-  expectedRows.splice(2, 0, playFilesRow);
   await remoteCall.waitForFiles(
-      appId, expectedRows,
+      appId, [downloadsRow, playFilesRow, crostiniRow],
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
 
   // Un-mount Play files volume.
@@ -359,9 +349,8 @@ testcase.myFilesUpdatesWhenAndroidVolumeMounts = async () => {
   await remoteCall.waitFor('getVolumesCount', null, (count) => count === 1, []);
 
   // Check: Play files should disappear from file list.
-  expectedRows.splice(2, 1);
   await remoteCall.waitForFiles(
-      appId, expectedRows,
+      appId, [downloadsRow, crostiniRow],
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
 
   // Check: Play files should disappear from directory tree.

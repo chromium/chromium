@@ -11,6 +11,7 @@
 // #import {MetadataRequest} from './metadata_request.m.js';
 // #import * as wrappedVolumeManagerCommon from '../../../common/js/volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
 // #import {VolumeManager} from '../../../externs/volume_manager.m.js';
+// #import {util} from '../../../common/js/util.m.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // clang-format on
 
@@ -94,7 +95,7 @@
           list.push(new MetadataRequest(request.entry, names));
         }
       };
-      if (volumeInfo &&
+      if (volumeInfo && !util.isTrashEntry(request.entry) &&
           (volumeInfo.volumeType === VolumeManagerCommon.VolumeType.DRIVE ||
            volumeInfo.volumeType === VolumeManagerCommon.VolumeType.PROVIDED)) {
         // Because properties can be out of sync just after sync completion

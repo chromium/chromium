@@ -2551,7 +2551,7 @@ DirectoryTree.createDirectoryItem = (modelItem, tree) => {
           /** @type {!NavigationModelAndroidAppItem} */ (modelItem), tree);
       break;
     case NavigationModelItemType.TRASH:
-      return new FakeItem(
+      return new EntryListItem(
           VolumeManagerCommon.RootType.TRASH,
           /** @type {!NavigationModelFakeItem} */ (modelItem), tree);
       break;

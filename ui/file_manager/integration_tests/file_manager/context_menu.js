@@ -578,11 +578,7 @@ async function checkMyFilesRootItemContextMenu(itemName, commandStates) {
     ['Downloads', '--', 'Folder'],
     ['Play files', '--', 'Folder'],
     ['Linux files', '--', 'Folder'],
-    ['Trash', '--', 'Folder'],
   ];
-  if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
-    expectedRows.pop();
-  }
   await remoteCall.waitForFiles(
       appId, expectedRows,
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
@@ -663,21 +659,6 @@ testcase.checkLinuxFilesContextMenu = () => {
     'zip-selection': false,
   };
   return checkMyFilesRootItemContextMenu('Linux files', commands);
-};
-
-/**
- * Check that mutating context menu items are not shown for Trash within
- * My files.
- */
-testcase.checkTrashContextMenu = () => {
-  const commands = {
-    copy: false,
-    cut: false,
-    delete: false,
-    rename: false,
-    'zip-selection': false,
-  };
-  return checkMyFilesRootItemContextMenu('Trash', commands);
 };
 
 /**

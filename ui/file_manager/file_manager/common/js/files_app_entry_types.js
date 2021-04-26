@@ -665,6 +665,15 @@
   }
 
   /**
+   * @return {!Array<!Entry|!FilesAppEntry>} List of entries that are shown as
+   *     children of this Volume in the UI, but are not actually entries of the
+   *     Volume.  E.g. 'Play files' is shown as a child of 'My files'.
+   */
+  getUIChildren() {
+    return [];
+  }
+
+  /**
    * String used to determine the icon.
    * @return {string}
    */

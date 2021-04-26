@@ -502,6 +502,7 @@ js_library("multi_metadata_provider") {
     ":external_metadata_provider",
     ":file_system_metadata_provider",
     ":metadata_provider",
+    "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/externs:volume_manager",
   ]
 }

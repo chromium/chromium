@@ -100,9 +100,8 @@ async function keyboardCopy(path) {
  * Tests deleting a file from the file list.
  *
  * @param {string} path The path to be tested, Downloads or Drive.
- * @param {boolean} deleteHasDialog whether delete shows confirmation dialog.
  */
-async function keyboardDelete(path, deleteHasDialog) {
+async function keyboardDelete(path) {
   const appId =
       await setupAndWaitUntilReady(path, [ENTRIES.hello], [ENTRIES.hello]);
 
@@ -112,8 +111,7 @@ async function keyboardDelete(path, deleteHasDialog) {
       'deleteFile failed');
 
   // Run the delete entry confirmation dialog.
-  if (deleteHasDialog ||
-      await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
+  if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
     await waitAndAcceptDialog(appId);
   }
 
@@ -127,9 +125,8 @@ async function keyboardDelete(path, deleteHasDialog) {
  *
  * @param {string} path The path to be tested, Downloads or Drive.
  * @param {string} treeItem The directory tree item selector.
- * @param {boolean} deleteHasDialog whether delete shows confirmation dialog.
  */
-async function keyboardDeleteFolder(path, treeItem, deleteHasDialog) {
+async function keyboardDeleteFolder(path, treeItem) {
   const appId =
       await setupAndWaitUntilReady(path, [ENTRIES.photos], [ENTRIES.photos]);
 
@@ -145,8 +142,7 @@ async function keyboardDeleteFolder(path, treeItem, deleteHasDialog) {
       'deleteFile failed');
 
   // Run the delete entry confirmation dialog.
-  if (deleteHasDialog ||
-      await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
+  if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
     await waitAndAcceptDialog(appId);
   }
 
@@ -295,21 +291,19 @@ testcase.keyboardCopyDrive = () => {
 };
 
 testcase.keyboardDeleteDownloads = () => {
-  return keyboardDelete(RootPath.DOWNLOADS, /*deleteHasDialog=*/ false);
+  return keyboardDelete(RootPath.DOWNLOADS);
 };
 
 testcase.keyboardDeleteDrive = () => {
-  return keyboardDelete(RootPath.DRIVE, /*deleteHasDialog=*/ true);
+  return keyboardDelete(RootPath.DRIVE);
 };
 
 testcase.keyboardDeleteFolderDownloads = () => {
-  return keyboardDeleteFolder(
-      RootPath.DOWNLOADS, TREEITEM_DOWNLOADS, /*deleteHasDialog=*/ false);
+  return keyboardDeleteFolder(RootPath.DOWNLOADS, TREEITEM_DOWNLOADS);
 };
 
 testcase.keyboardDeleteFolderDrive = () => {
-  return keyboardDeleteFolder(
-      RootPath.DRIVE, TREEITEM_DRIVE, /*deleteHasDialog=*/ true);
+  return keyboardDeleteFolder(RootPath.DRIVE, TREEITEM_DRIVE);
 };
 
 testcase.renameFileDownloads = () => {

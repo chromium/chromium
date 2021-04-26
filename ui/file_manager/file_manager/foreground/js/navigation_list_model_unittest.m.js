@@ -162,12 +162,13 @@ export function testModel() {
   assertEquals(1, myFilesEntryList.getUIChildren().length);
   assertEquals('linux-files-label', myFilesEntryList.getUIChildren()[0].name);
 
-  // Trash is displayed within My files when feature is enabled.
+  // Trash is displayed as a root when feature is enabled.
   window.loadTimeData.data_['FILES_TRASH_ENABLED'] = true;
   model.reorderNavigationItems_();
-  assertEquals(9, model.length);
-  assertEquals(2, myFilesEntryList.getUIChildren().length);
-  assertEquals('Trash', myFilesEntryList.getUIChildren()[1].name);
+  assertEquals(10, model.length);
+  assertEquals(
+      'fake-entry://trash', /** @type {!NavigationModelFakeItem} */
+      (model.item(7)).entry.toURL());
 }
 
 /**

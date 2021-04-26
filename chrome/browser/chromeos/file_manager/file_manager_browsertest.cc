@@ -482,7 +482,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("checkDownloadsContextMenu"),
         TestCase("checkPlayFilesContextMenu"),
         TestCase("checkLinuxFilesContextMenu"),
-        TestCase("checkTrashContextMenu").EnableTrash(),
         TestCase("checkDeleteDisabledInDocProvider")
             .EnableGenericDocumentsProvider(),
         TestCase("checkDeleteEnabledInDocProvider")
@@ -588,7 +587,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openQuickViewClickDeleteButton"),
         TestCase("openQuickViewClickDeleteButton").EnableTrash(),
         TestCase("openQuickViewDeleteButtonNotShown"),
-        TestCase("openQuickViewDeleteButtonNotShown").EnableTrash(),
         TestCase("openQuickViewUmaViaContextMenu"),
         TestCase("openQuickViewUmaForCheckSelectViaContextMenu"),
         TestCase("openQuickViewUmaViaSelectionMenu"),

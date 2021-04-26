@@ -23,7 +23,7 @@
 // #import {VolumeManager} from '../../externs/volume_manager.m.js';
 // #import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.m.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {util} from './util.m.js';
+// #import {util, str} from './util.m.js';
 // #import {FakeEntryImpl, CombinedReaders} from './files_app_entry_types.m.js';
 // #import {VolumeManagerCommon} from './volume_manager_types.m.js';
 // clang-format on
@@ -38,15 +38,22 @@
    *     make comparisons simpler.
    * @param {string} trashDir Trash directory. Must end with a slash to make
    *     comparisons simpler.
+   * @param {string} rootLabel Root label for items in trash.
+   * @param {Object<string>=} pathMap map of substitutions for first path
+   *     segment.  Used by Drive to map 'root' => 'My Drive', etc.
    * @param {boolean=} prefixPathWithRemoteMount Optional, if true, 'Path=' in
    *     *.trashinfo is prefixed with the volume.remoteMountPath. For crostini,
    *     this is the user's homedir (/home/<username>).
    */
-  constructor(volumeType, topDir, trashDir, prefixPathWithRemoteMount = false) {
+  constructor(
+      volumeType, topDir, trashDir, rootLabel, pathMap = {},
+      prefixPathWithRemoteMount = false) {
     this.id = `${volumeType}-${topDir}`;
     this.volumeType = volumeType;
     this.topDir = topDir;
     this.trashDir = trashDir;
+    this.rootLabel = rootLabel;
+    this.pathMap = pathMap;
     this.prefixPathWithRemoteMount = prefixPathWithRemoteMount;
     this.pathPrefix = '';
   }
@@ -64,11 +71,21 @@ TrashConfig.CONFIG = [
   // copy across volumes, so we have a dedicated MyFiles/Downloads/.Trash.
   new TrashConfig(
       VolumeManagerCommon.VolumeType.DOWNLOADS, '/Downloads/',
-      '/Downloads/.Trash/'),
-  new TrashConfig(VolumeManagerCommon.VolumeType.DOWNLOADS, '/', '/.Trash/'),
+      '/Downloads/.Trash/', 'MY_FILES_ROOT_LABEL'),
+  new TrashConfig(
+      VolumeManagerCommon.VolumeType.DOWNLOADS, '/', '/.Trash/',
+      'MY_FILES_ROOT_LABEL'),
   new TrashConfig(
       VolumeManagerCommon.VolumeType.CROSTINI, '/', '/.local/share/Trash/',
+      'LINUX_FILES_ROOT_LABEL', {},
       /*prefixPathWithRemoteMount=*/ true),
+  new TrashConfig(
+      VolumeManagerCommon.VolumeType.DRIVE, '/', '/.Trash-1000/',
+      'DRIVE_DIRECTORY_LABEL', {
+        'root': 'DRIVE_MY_DRIVE_LABEL',
+        'team_drives': 'DRIVE_SHARED_DRIVES_LABEL',
+        'Computers': 'DRIVE_COMPUTERS_LABEL',
+      }),
 ];
 
 /**
@@ -306,12 +323,10 @@ class TrashDirectoryReader {
   /**
    * @param {!FileSystem} fileSystem trash file system.
    * @param {!TrashConfig} config trash config.
-   * @param {string} rootLabel Label of trash root to prefix entries with.
    */
-  constructor(fileSystem, config, rootLabel) {
+  constructor(fileSystem, config) {
     this.fileSystem_ = fileSystem;
     this.config_ = config;
-    this.rootLabel_ = rootLabel;
 
     /** @private {!Object<!Entry>} all entries in .Trash/files keyed by name. */
     this.filesEntries_ = {};
@@ -378,7 +393,12 @@ class TrashDirectoryReader {
     // Show the root label and the whole Path=<path> from infoEntry as the name.
     // This allows users to differentiate deleted files such as /a/hello.txt and
     // /b/hello.txt.
-    const trashName = this.rootLabel_ + path.replace(/\//g, ' › ');
+    const parts = path.split('/');
+    const firstSegment = this.config_.pathMap[parts[1]];
+    if (firstSegment) {
+      parts[1] = str(firstSegment);
+    }
+    const trashName = str(this.config_.rootLabel) + parts.join(' › ');
     return new TrashEntry(trashName, deletionDate, filesEntry, infoEntry);
   }
 
@@ -479,10 +499,7 @@ class TrashDirectoryReader {
       const info =
           this.volumeManager_.getCurrentProfileVolumeInfo(c.volumeType);
       if (info && info.fileSystem) {
-        const locationInfo =
-            this.volumeManager_.getLocationInfo(info.fileSystem.root);
-        const rootLabel = util.getRootTypeLabel(assert(locationInfo));
-        readers.push(new TrashDirectoryReader(info.fileSystem, c, rootLabel));
+        readers.push(new TrashDirectoryReader(info.fileSystem, c));
       }
     });
     return new CombinedReaders(readers);
