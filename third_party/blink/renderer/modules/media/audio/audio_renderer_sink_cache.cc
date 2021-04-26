@@ -104,7 +104,8 @@ AudioRendererSinkCache::AudioRendererSinkCache(
     base::TimeDelta delete_timeout)
     : cleanup_task_runner_(std::move(cleanup_task_runner)),
       create_sink_cb_(std::move(create_sink_cb)),
-      delete_timeout_(delete_timeout) {
+      delete_timeout_(delete_timeout),
+      cache_lock_("AudioRendererSinkCache.cache_lock_") {
   DCHECK(!instance_);
   instance_ = this;
 }
