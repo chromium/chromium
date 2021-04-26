@@ -1,7 +1,7 @@
 {
   "schema": "pedal_concepts_runtime",
   "schema_version": 3,
-  "data_version": 15820819,
+  "data_version": 15831389,
   "tokenize_each_character": false,
   "dictionary": [
     "a",
@@ -1757,9 +1757,9 @@
       ],
       "omnibox_ui_strings": {
         "button_text": "Change Google password",
-        "description_text": "Change the password for your Google Account",
-        "spoken_suggestion_description_suffix": "$1, press Tab then Enter to change the password for your Google Account",
-        "spoken_button_focus_announcement": "Change Google password button, press Enter to change the password for your Google Account"
+        "description_text": "Change your Google Account password",
+        "spoken_suggestion_description_suffix": "$1, press Tab then Enter to change your Google Account password",
+        "spoken_button_focus_announcement": "Change Google password button, press Enter to change your Google Account password"
       },
       "url": "https://myaccount.google.com/signinoptions/password?utm_source=ga-chrome-actions&utm_medium=changePW"
     }

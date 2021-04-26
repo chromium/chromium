@@ -1,7 +1,7 @@
 {
   "schema": "pedals_translation_model",
   "schema_version": 3,
-  "time_generated": "2021-04-16T16:14:45.934Z",
+  "time_generated": "2021-04-21T01:37:11.864Z",
   "primary_language_code": "en",
   "pedal_definitions": [
     {
@@ -7548,11 +7548,11 @@
           "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Change Google password",
-            "description_text": "Change the password for your Google Account",
-            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to change the password for your Google Account",
-            "spoken_button_focus_announcement": "Change Google password button, press Enter to change the password for your Google Account"
+            "description_text": "Change your Google Account password",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to change your Google Account password",
+            "spoken_button_focus_announcement": "Change Google password button, press Enter to change your Google Account password"
           },
-          "date_modified_omnibox_ui_strings": "2021-03-24T01:29:35.525Z"
+          "date_modified_omnibox_ui_strings": "2021-04-21T01:34:50.682Z"
         }
       ],
       "tokenize_each_character": false
@@ -8608,11 +8608,11 @@
           "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Change Google password",
-            "description_text": "Change the password for your Google Account",
-            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to change the password for your Google Account",
-            "spoken_button_focus_announcement": "Change Google password button, press Enter to change the password for your Google Account"
+            "description_text": "Change your Google Account password",
+            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to change your Google Account password",
+            "spoken_button_focus_announcement": "Change Google password button, press Enter to change your Google Account password"
           },
-          "date_modified_omnibox_ui_strings": "2021-04-15T21:34:43.641Z"
+          "date_modified_omnibox_ui_strings": "2021-04-21T01:35:36.143Z"
         }
       ],
       "tokenize_each_character": false
