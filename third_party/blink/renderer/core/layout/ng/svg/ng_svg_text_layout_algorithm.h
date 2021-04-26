@@ -64,6 +64,7 @@ class NGSVGTextLayoutAlgorithm {
     bool anchored_chunk = false;
 
     bool text_length_resolved = false;
+    float inline_size = 0.0f;
     wtf_size_t item_index = WTF::kNotFound;
   };
   // This data member represents "result" defined in the specification, but it

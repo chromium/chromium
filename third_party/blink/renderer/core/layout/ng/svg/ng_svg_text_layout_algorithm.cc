@@ -135,16 +135,17 @@ void NGSVGTextLayoutAlgorithm::Layout(
                             .PrimaryFont()
                             ->GetFontMetrics()
                             .FixedAscent();
-    FloatRect scaled_rect(*info.x, *info.y - ascent, item->Size().width,
-                          item->Size().height);
+    const float width = horizontal_ ? info.inline_size : item->Size().width;
+    const float height = horizontal_ ? item->Size().height : info.inline_size;
+    FloatRect scaled_rect(*info.x, *info.y - ascent, width, height);
     const float scaling_factor = layout_object->ScalingFactor();
     DCHECK_NE(scaling_factor, 0.0f);
-    PhysicalRect unscaled_rect(
-        LayoutUnit(*info.x / scaling_factor),
-        LayoutUnit((*info.y - ascent) / scaling_factor),
-        LayoutUnit(item->Size().width / scaling_factor),
-        LayoutUnit(item->Size().height / scaling_factor));
-    item.item.ConvertToSVGText(unscaled_rect, scaled_rect);
+    PhysicalRect unscaled_rect(LayoutUnit(*info.x / scaling_factor),
+                               LayoutUnit((*info.y - ascent) / scaling_factor),
+                               LayoutUnit(width / scaling_factor),
+                               LayoutUnit(height / scaling_factor));
+    AffineTransform transform;
+    item.item.ConvertToSVGText(unscaled_rect, scaled_rect, transform);
   }
 }
 
@@ -213,6 +214,8 @@ void NGSVGTextLayoutAlgorithm::SetFlags(
                             .FixedAscent();
     // TODO(crbug.com/1179585): Supports vertical flow.
     css_positions_.push_back(FloatPoint(offset.left, offset.top + ascent));
+
+    info.inline_size = horizontal_ ? item.Size().width : item.Size().height;
     result_.push_back(info);
 
     StringView item_string(ifc_text_content, item.StartOffset(),
@@ -398,8 +401,7 @@ void NGSVGTextLayoutAlgorithm::ResolveTextLength(
 
     // 2.3.3. Let advance = the advance of the typographic character
     // corresponding to character k.
-    PhysicalSize item_size = items[result_[k].item_index]->Size();
-    float inline_size = horizontal_ ? item_size.width : item_size.height;
+    float inline_size = result_[k].inline_size;
     // 2.3.4. Set a = min(a, pos, pos + advance).
     min_position = std::min(min_position, min_char_pos);
     // 2.3.5. Set b = max(b, pos, pos + advance).
@@ -434,22 +436,23 @@ void NGSVGTextLayoutAlgorithm::ResolveTextLength(
   float shift = 0.0f;
   // 2.4.6. For each index k in the range [i,j]:
   for (wtf_size_t k = i; k < j_plus_1; ++k) {
+    NGSVGPerCharacterInfo& info = result_[k];
     // 2.4.6.1. Add shift to the x coordinate of the position in result[k], if
     // the "horizontal" flag is true, and to the y coordinate otherwise.
     if (horizontal_)
-      *result_[k].x += shift;
+      *info.x += shift;
     else
-      *result_[k].y += shift;
+      *info.y += shift;
     // 2.4.6.2. If the "middle" flag for result[k] is not true and k is not a
     // character in a resolved descendant node other than the first character
     // then shift = shift + small-delta.
-    if (!result_[k].middle &&
+    if (!info.middle &&
         (std::any_of(resolved_descendant_node_starts.begin(),
                      resolved_descendant_node_starts.end(),
                      [k](auto offset) { return offset == k; }) ||
-         !result_[k].text_length_resolved))
+         !info.text_length_resolved))
       shift += character_delta;
-    result_[k].text_length_resolved = true;
+    info.text_length_resolved = true;
   }
   // We should shift characters until the end of this text chunk.
   // Note: This is not defined by the algorithm. But it seems major SVG
@@ -540,8 +543,7 @@ void NGSVGTextLayoutAlgorithm::ApplyAnchoring(
       float pos = horizontal_ ? *result_[k].x : *result_[k].y;
       // 2.2.2. Let advance = the advance of the typographic character
       // corresponding to character k.
-      PhysicalSize item_size = items[result_[k].item_index]->Size();
-      float advance = horizontal_ ? item_size.width : item_size.height;
+      float advance = result_[k].inline_size;
       // 2.2.3. Set a = min(a, pos, pos + advance).
       a = std::min(a, pos);
       // 2.2.4. Set b = max(b, pos, pos + advance).

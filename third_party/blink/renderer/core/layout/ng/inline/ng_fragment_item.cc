@@ -325,13 +325,15 @@ bool NGFragmentItem::IsListMarker() const {
 }
 
 void NGFragmentItem::ConvertToSVGText(const PhysicalRect& unscaled_rect,
-                                      const FloatRect& scaled_rect) {
+                                      const FloatRect& scaled_rect,
+                                      const AffineTransform& transform) {
   DCHECK(RuntimeEnabledFeatures::SVGTextNGEnabled());
   DCHECK_EQ(Type(), kText);
   auto data = std::make_unique<NGSVGFragmentData>();
   data->shape_result = std::move(text_.shape_result);
   data->text_offset = std::move(text_.text_offset);
   data->rect = scaled_rect;
+  data->transform = transform;
   text_.~TextItem();
   new (&svg_text_) SVGTextItem();
   svg_text_.data = std::move(data);

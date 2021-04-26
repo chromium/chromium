@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_client.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
 namespace blink {
@@ -30,6 +31,8 @@ struct NGSVGFragmentData {
   scoped_refptr<const ShapeResultView> shape_result;
   NGTextOffset text_offset;
   FloatRect rect;
+  // Transform for lengthAdjust=spacingAndGlyphs and rotate="".
+  AffineTransform transform;
 };
 
 // This class represents a text run or a box in an inline formatting context.
@@ -119,7 +122,8 @@ class CORE_EXPORT NGFragmentItem final {
 
   // Make this kSVGText type. |this| type must be kText.
   void ConvertToSVGText(const PhysicalRect& unscaled_rect,
-                        const FloatRect& scaled_rect);
+                        const FloatRect& scaled_rect,
+                        const AffineTransform& transform);
 
   // A sequence number of fragments generated from a |LayoutObject|.
   // For line boxes, please see |kInitialLineFragmentId|.
