@@ -1801,6 +1801,10 @@ void WebFrameWidgetImpl::SetZoomLevel(double zoom_level) {
   if (zoom_level_for_testing_ != -INFINITY)
     zoom_level = zoom_level_for_testing_;
 
+  // Set the layout shift exclusion window for the zoom level change.
+  if (View()->ZoomLevel() != zoom_level)
+    NotifyZoomLevelChanged(LocalRootImpl()->GetFrame());
+
   View()->SetZoomLevel(zoom_level);
 
   // Part of the UpdateVisualProperties dance we send the zoom level to
@@ -4187,6 +4191,15 @@ WebFrameWidgetImpl::GetScrollParamsForFocusedEditableElement(
 
 bool WebFrameWidgetImpl::ShouldAutoDetermineCompositingToLCDTextSetting() {
   return true;
+}
+
+void WebFrameWidgetImpl::NotifyZoomLevelChanged(LocalFrame* root) {
+  if (root) {
+    Document* document = root->GetDocument();
+    DCHECK(document);
+    if (LocalFrameView* view = document->View())
+      view->GetLayoutShiftTracker().NotifyZoomLevelChanged();
+  }
 }
 
 }  // namespace blink

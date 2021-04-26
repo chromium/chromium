@@ -706,6 +706,10 @@ void LayoutShiftTracker::NotifyChangeEvent() {
   UpdateTimerAndInputTimestamp();
 }
 
+void LayoutShiftTracker::NotifyZoomLevelChanged() {
+  UpdateTimerAndInputTimestamp();
+}
+
 void LayoutShiftTracker::UpdateTimerAndInputTimestamp() {
   // This cancels any previously scheduled task from the same timer.
   timer_.StartOneShot(kTimerDelay, FROM_HERE);

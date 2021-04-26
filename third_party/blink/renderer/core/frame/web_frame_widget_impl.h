@@ -870,6 +870,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   // Returns the current state of synchronous resize mode for testing.
   bool SynchronousResizeModeForTestingEnabled();
 
+  void NotifyZoomLevelChanged(LocalFrame* root);
+
   // A copy of the web drop data object we received from the browser.
   Member<DataObject> current_drag_data_;
 

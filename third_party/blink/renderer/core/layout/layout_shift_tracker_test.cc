@@ -216,6 +216,37 @@ TEST_F(LayoutShiftTrackerSimTest, ViewportSizeChange) {
   EXPECT_FLOAT_EQ(0.0, layout_shift_tracker.Score());
 }
 
+TEST_F(LayoutShiftTrackerSimTest, ZoomLevelChange) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <style>
+      body { margin: 0; }
+      .square {
+        display: inline-block;
+        position: relative;
+        width: 300px;
+        height: 300px;
+        background:yellow;
+      }
+    </style>
+    <div class='square'></div>
+    <div class='square'></div>
+  )HTML");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  WebView().MainFrameViewWidget()->SetZoomLevelForTesting(1.0);
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  LayoutShiftTracker& layout_shift_tracker =
+      MainFrame().GetFrameView()->GetLayoutShiftTracker();
+  EXPECT_FLOAT_EQ(0.0, layout_shift_tracker.Score());
+}
+
 class LayoutShiftTrackerPointerdownTest : public LayoutShiftTrackerSimTest {
  protected:
   void RunTest(WebInputEvent::Type completion_type, bool expect_exclusion);
