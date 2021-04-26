@@ -31,7 +31,7 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -138,14 +138,13 @@ class ScreenTimeControllerTest : public MixinBasedInProcessBrowserTest {
   Profile* child_profile_ = nullptr;
 
  private:
-  chromeos::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_,
-      LoggedInUserMixin::LogInType::kChild,
-      embedded_test_server(),
-      this,
-      true /*should_launch_browser*/,
-      base::nullopt /*account_id*/,
-      false /*include_initial_user*/};
+  LoggedInUserMixin logged_in_user_mixin_{&mixin_host_,
+                                          LoggedInUserMixin::LogInType::kChild,
+                                          embedded_test_server(),
+                                          this,
+                                          true /*should_launch_browser*/,
+                                          base::nullopt /*account_id*/,
+                                          false /*include_initial_user*/};
 
   DISALLOW_COPY_AND_ASSIGN(ScreenTimeControllerTest);
 };
@@ -788,4 +787,4 @@ IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest, DISABLED_CallObservers) {
       ->RemoveObserver(&observer);
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -32,11 +32,4 @@ bool ContributesToWebTimeLimit(const AppId& app_id, AppState app_state);
 }  // namespace app_time
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromOS code migration is done.
-namespace chromeos {
-namespace app_time {
-using ::ash::app_time::GetChromeAppId;
-}  // namespace app_time
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_APP_TIME_LIMIT_UTILS_H_

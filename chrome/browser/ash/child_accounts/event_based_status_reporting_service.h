@@ -16,9 +16,9 @@
 
 namespace content {
 class BrowserContext;
-}
+}  // namespace content
 
-namespace chromeos {
+namespace ash {
 
 // Requests status report when events relevant to supervision features happen.
 // The events that are triggers to status report are:
@@ -91,6 +91,6 @@ class EventBasedStatusReportingService
   DISALLOW_COPY_AND_ASSIGN(EventBasedStatusReportingService);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_EVENT_BASED_STATUS_REPORTING_SERVICE_H_

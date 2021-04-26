@@ -10,7 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 
-namespace chromeos {
+namespace ash {
 
 ChildPolicyObserver::ChildPolicyObserver(Profile* profile) : profile_(profile) {
   policy::CloudPolicyService* cloud_policy_service =
@@ -80,4 +80,4 @@ ChildPolicyObserver::GetUserCloudPolicyManager() {
   return user_cloud_policy_manager;
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -8,7 +8,7 @@
 #include "chrome/browser/ash/child_accounts/screen_time_controller.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 // static
 ScreenTimeController* ScreenTimeControllerFactory::GetForBrowserContext(
@@ -37,4 +37,4 @@ KeyedService* ScreenTimeControllerFactory::BuildServiceInstanceFor(
   return new ScreenTimeController(context);
 }
 
-}  // namespace chromeos
+}  // namespace ash

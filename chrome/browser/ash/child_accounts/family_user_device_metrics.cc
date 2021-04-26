@@ -17,7 +17,7 @@
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -133,4 +133,4 @@ void FamilyUserDeviceMetrics::ReportDeviceOwnership() {
       owner_email == active_user->GetAccountId().GetUserEmail());
 }
 
-}  // namespace chromeos
+}  // namespace ash

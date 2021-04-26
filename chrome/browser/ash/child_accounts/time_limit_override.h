@@ -15,7 +15,7 @@ namespace base {
 class Value;
 }  // namespace base
 
-namespace chromeos {
+namespace ash {
 namespace usage_time_limit {
 
 class TimeLimitOverride {
@@ -79,14 +79,6 @@ class TimeLimitOverride {
   DISALLOW_COPY_AND_ASSIGN(TimeLimitOverride);
 };
 
-}  // namespace usage_time_limit
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when //c/b/ash/child_accounts moved
-// to ash.
-namespace ash {
-namespace usage_time_limit {
-using ::chromeos::usage_time_limit::TimeLimitOverride;
 }  // namespace usage_time_limit
 }  // namespace ash
 

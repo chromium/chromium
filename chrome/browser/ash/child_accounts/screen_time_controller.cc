@@ -29,7 +29,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/browser_context.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -243,7 +243,7 @@ void ScreenTimeController::OnAccessCodeValidation(
     ash::ParentCodeValidationResult result,
     base::Optional<AccountId> account_id) {
   AccountId current_user_id =
-      chromeos::ProfileHelper::Get()
+      ProfileHelper::Get()
           ->GetUserByProfile(Profile::FromBrowserContext(context_))
           ->GetAccountId();
   if (result != ash::ParentCodeValidationResult::kValid || !account_id ||
@@ -273,7 +273,7 @@ void ScreenTimeController::OnScreenLockByPolicy(
 
   // Show lock message.
   AccountId account_id =
-      chromeos::ProfileHelper::Get()
+      ProfileHelper::Get()
           ->GetUserByProfile(Profile::FromBrowserContext(context_))
           ->GetAccountId();
   ScreenLocker::default_screen_locker()->TemporarilyDisableAuthForUser(
@@ -292,7 +292,7 @@ void ScreenTimeController::OnScreenLockByPolicyEnd() {
     return;
 
   AccountId account_id =
-      chromeos::ProfileHelper::Get()
+      ProfileHelper::Get()
           ->GetUserByProfile(Profile::FromBrowserContext(context_))
           ->GetAccountId();
   ScreenLocker::default_screen_locker()->ReenableAuthForUser(account_id);
@@ -523,4 +523,4 @@ void ScreenTimeController::SystemClockUpdated() {
   CheckTimeLimit("SystemClockUpdated");
 }
 
-}  // namespace chromeos
+}  // namespace ash

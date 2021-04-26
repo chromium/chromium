@@ -15,7 +15,7 @@
 #include "chromeos/settings/timezone_settings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace utils = time_limit_test_utils;
 
@@ -3049,4 +3049,4 @@ TEST_F(UsageTimeLimitProcessorTest,
 }
 
 }  // namespace usage_time_limit
-}  // namespace chromeos
+}  // namespace ash

@@ -763,12 +763,12 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<AmbientModeMetricsProvider>());
 
-  if (base::FeatureList::IsEnabled(chromeos::kFamilyUserMetricsProvider)) {
+  if (base::FeatureList::IsEnabled(ash::kFamilyUserMetricsProvider)) {
     metrics_service_->RegisterMetricsProvider(
         std::make_unique<FamilyUserMetricsProvider>());
   }
 
-  if (base::FeatureList::IsEnabled(chromeos::kFamilyLinkUserMetricsProvider)) {
+  if (base::FeatureList::IsEnabled(ash::kFamilyLinkUserMetricsProvider)) {
     metrics_service_->RegisterMetricsProvider(
         std::make_unique<FamilyLinkUserMetricsProvider>());
   }

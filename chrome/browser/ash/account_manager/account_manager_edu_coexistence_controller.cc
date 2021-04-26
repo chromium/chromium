@@ -20,8 +20,6 @@
 
 namespace ash {
 
-namespace edu_coexistence = ::chromeos::edu_coexistence;
-
 void EduCoexistenceConsentInvalidationController::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   // |kEduCoexistenceToSVersion| is derived from Google3 CL that introduced

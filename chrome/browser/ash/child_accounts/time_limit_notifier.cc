@@ -21,7 +21,7 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -167,4 +167,4 @@ TimeLimitNotifier::TimeLimitNotifier(
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

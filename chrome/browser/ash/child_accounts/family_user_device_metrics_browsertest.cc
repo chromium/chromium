@@ -21,7 +21,7 @@
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_test.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 const AccountId kDefaultOwnerAccountId =
@@ -361,4 +361,4 @@ INSTANTIATE_TEST_SUITE_P(
                                      LoggedInUserMixin::LogInType::kRegular),
                      /*IsUserExisting=*/testing::Values(false)));
 
-}  // namespace chromeos
+}  // namespace ash

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/child_accounts/family_features.h"
 
-namespace chromeos {
+namespace ash {
 
 const base::Feature kFamilyUserMetricsProvider{
     "FamilyUserMetricsProvider", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -19,4 +19,4 @@ bool IsFamilyLinkOobeHandoffEnabled() {
   return base::FeatureList::IsEnabled(kFamilyLinkOobeHandoff);
 }
 
-}  // namespace chromeos
+}  // namespace ash

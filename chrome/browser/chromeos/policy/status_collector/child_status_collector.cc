@@ -157,7 +157,7 @@ ChildStatusCollector::ChildStatusCollector(
       chromeos::kReportDeviceBootMode, callback);
 
   // Watch for changes on the device state to calculate the child's active time.
-  chromeos::UsageTimeStateNotifier::GetInstance()->AddObserver(this);
+  ash::UsageTimeStateNotifier::GetInstance()->AddObserver(this);
 
   // Fetch the current values of the policies.
   UpdateReportingSettings();
@@ -177,7 +177,7 @@ ChildStatusCollector::ChildStatusCollector(
 }
 
 ChildStatusCollector::~ChildStatusCollector() {
-  chromeos::UsageTimeStateNotifier::GetInstance()->RemoveObserver(this);
+  ash::UsageTimeStateNotifier::GetInstance()->RemoveObserver(this);
 }
 
 TimeDelta ChildStatusCollector::GetActiveChildScreenTime() {
@@ -230,10 +230,10 @@ void ChildStatusCollector::OnAppActivityReportSubmitted() {
 }
 
 void ChildStatusCollector::OnUsageTimeStateChange(
-    chromeos::UsageTimeStateNotifier::UsageTimeState state) {
+    ash::UsageTimeStateNotifier::UsageTimeState state) {
   UpdateChildUsageTime();
   last_state_active_ =
-      state == chromeos::UsageTimeStateNotifier::UsageTimeState::ACTIVE;
+      state == ash::UsageTimeStateNotifier::UsageTimeState::ACTIVE;
 }
 
 void ChildStatusCollector::UpdateChildUsageTime() {

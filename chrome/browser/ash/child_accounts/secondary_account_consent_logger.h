@@ -19,7 +19,7 @@ class PrefService;
 
 namespace base {
 class DictionaryValue;
-}
+}  // namespace base
 
 namespace signin {
 struct AccessTokenInfo;

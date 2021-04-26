@@ -8,7 +8,7 @@
 #include "chrome/browser/ash/child_accounts/child_user_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 // static
 ChildUserService* ChildUserServiceFactory::GetForBrowserContext(
@@ -37,4 +37,4 @@ KeyedService* ChildUserServiceFactory::BuildServiceInstanceFor(
   return new ChildUserService(context);
 }
 
-}  // namespace chromeos
+}  // namespace ash

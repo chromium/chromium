@@ -20,7 +20,7 @@
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 // Recently launched apps this many days ago in the past will be recorded.
@@ -213,4 +213,4 @@ bool FamilyUserAppMetrics::IsAppWindowOpen(const std::string& app_id) {
   return !instance_registry_->GetWindows(app_id).empty();
 }
 
-}  // namespace chromeos
+}  // namespace ash

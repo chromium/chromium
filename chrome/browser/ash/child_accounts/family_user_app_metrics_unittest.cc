@@ -29,7 +29,7 @@
 #include "ui/aura/window.h"
 #include "ui/compositor/layer_type.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -362,4 +362,4 @@ INSTANTIATE_TEST_SUITE_P(,
                          FamilyUserAppMetricsTest,
                          /*IsFamilyLink=*/testing::Bool());
 
-}  // namespace chromeos
+}  // namespace ash

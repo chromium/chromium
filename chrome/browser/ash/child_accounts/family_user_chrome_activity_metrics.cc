@@ -15,7 +15,7 @@
 #include "components/prefs/pref_service.h"
 #include "ui/aura/window.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -114,4 +114,4 @@ void FamilyUserChromeActivityMetrics::UpdateUserEngagement(
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

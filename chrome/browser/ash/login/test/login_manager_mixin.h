@@ -163,6 +163,12 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
 
 // TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
 // source migration is finished.
-using chromeos::LoginManagerMixin;
+using ::chromeos::LoginManagerMixin;
+namespace ash {
+namespace test {
+using ::chromeos::test::kTestEmail;
+using ::chromeos::test::kTestGaiaId;
+}  // namespace test
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_LOGIN_MANAGER_MIXIN_H_

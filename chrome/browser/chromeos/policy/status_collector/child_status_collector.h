@@ -45,7 +45,7 @@ class ChildStatusCollectorState;
 // itself (e.g. OS version). Doesn't include anything related to other users on
 // the device.
 class ChildStatusCollector : public StatusCollector,
-                             public chromeos::UsageTimeStateNotifier::Observer {
+                             public ash::UsageTimeStateNotifier::Observer {
  public:
   // Constructor. Callers can inject their own *Fetcher callbacks, e.g. for unit
   // testing. A null callback can be passed for any *Fetcher parameter, to use
@@ -79,9 +79,9 @@ class ChildStatusCollector : public StatusCollector,
   static const char* GetTimeSinceLastReportHistogramNameForTest();
 
  protected:
-  // chromeos::UsageTimeStateNotifier::Observer:
+  // ash::UsageTimeStateNotifier::Observer:
   void OnUsageTimeStateChange(
-      chromeos::UsageTimeStateNotifier::UsageTimeState state) override;
+      ash::UsageTimeStateNotifier::UsageTimeState state) override;
 
   // Updates the child's active time.
   void UpdateChildUsageTime();

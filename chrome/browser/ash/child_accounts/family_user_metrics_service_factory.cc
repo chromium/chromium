@@ -11,7 +11,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 
-namespace chromeos {
+namespace ash {
 
 // static
 FamilyUserMetricsService* FamilyUserMetricsServiceFactory::GetForBrowserContext(
@@ -43,4 +43,4 @@ KeyedService* FamilyUserMetricsServiceFactory::BuildServiceInstanceFor(
   return new FamilyUserMetricsService(context);
 }
 
-}  // namespace chromeos
+}  // namespace ash

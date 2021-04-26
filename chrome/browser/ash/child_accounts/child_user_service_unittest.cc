@@ -22,7 +22,7 @@
 #include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 class ChildUserServiceTest : public testing::Test {
  protected:
@@ -142,4 +142,4 @@ TEST_F(PerAppTimeLimitsTest, WebAppsDontTriggerPauseOrResumeWebActivity) {
   EXPECT_TRUE(service()->WebTimeLimitReached());
 }
 
-}  // namespace chromeos
+}  // namespace ash

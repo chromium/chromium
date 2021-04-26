@@ -67,7 +67,7 @@ class SecondaryAccountConsentLoggerTest : public testing::Test {
 
   void SetUp() {
     SecondaryAccountConsentLogger::RegisterPrefs(local_state_.registry());
-    local_state_.SetUserPref(chromeos::prefs::kEduCoexistenceId,
+    local_state_.SetUserPref(ash::prefs::kEduCoexistenceId,
                              std::make_unique<base::Value>(kChromeSyncId));
   }
 

@@ -258,13 +258,4 @@ class AppActivity {
 }  // namespace app_time
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromOS code migration is done.
-namespace chromeos {
-namespace app_time {
-using ::ash::app_time::AppId;
-using ::ash::app_time::AppLimit;
-using ::ash::app_time::AppRestriction;
-}  // namespace app_time
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_APP_TYPES_H_

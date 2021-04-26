@@ -25,10 +25,6 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace ash {
-enum class ParentCodeValidationResult;
-}  // namespace ash
-
 namespace base {
 class Clock;
 class TickClock;
@@ -38,9 +34,10 @@ class SequencedTaskRunner;
 
 namespace content {
 class BrowserContext;
-}
+}  // namespace content
 
-namespace chromeos {
+namespace ash {
+enum class ParentCodeValidationResult;
 
 // The controller to track each user's screen time usage and inquiry time limit
 // processor (a component to calculate state based on policy settings and time
@@ -132,7 +129,7 @@ class ScreenTimeController
       usage_time_limit::PolicyType policy_type);
 
   // parent_access::ParentAccessService::Observer:
-  void OnAccessCodeValidation(ash::ParentCodeValidationResult result,
+  void OnAccessCodeValidation(ParentCodeValidationResult result,
                               base::Optional<AccountId> account_id) override;
 
   // session_manager::SessionManagerObserver:
@@ -178,6 +175,6 @@ class ScreenTimeController
   DISALLOW_COPY_AND_ASSIGN(ScreenTimeController);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_SCREEN_TIME_CONTROLLER_H_

@@ -169,10 +169,9 @@ WebTimeLimitEnforcerThrottleTest::GetWebTimeLimitEnforcer() {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();
-  chromeos::ChildUserService::TestApi child_user_service =
-      chromeos::ChildUserService::TestApi(
-          chromeos::ChildUserServiceFactory::GetForBrowserContext(
-              browser_context));
+  ash::ChildUserService::TestApi child_user_service =
+      ash::ChildUserService::TestApi(
+          ash::ChildUserServiceFactory::GetForBrowserContext(browser_context));
   return child_user_service.web_time_enforcer();
 }
 

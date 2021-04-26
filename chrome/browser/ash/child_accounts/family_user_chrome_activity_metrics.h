@@ -17,9 +17,9 @@ class Profile;
 
 namespace aura {
 class Window;
-}
+}  // namespace aura
 
-namespace chromeos {
+namespace ash {
 // This class records: FamilyUser.ChromeBrowserEngagement.Duration. It is the
 // daily sum of user's active Chrome browser time in milliseconds. Recorded at
 // the beginning of the first active Chrome OS session on a subsequent day.
@@ -68,6 +68,6 @@ class FamilyUserChromeActivityMetrics
   // might remove that window from the set.
   std::set<aura::Window*> active_browser_windows_;
 };
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_FAMILY_USER_CHROME_ACTIVITY_METRICS_H_

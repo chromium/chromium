@@ -13,7 +13,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 class TimeLimitNotifierTest : public testing::Test {
  public:
@@ -189,4 +189,4 @@ TEST_F(TimeLimitNotifierTest, ShowPolicyUpdateNotifications) {
       HasPolicyUpdateNotification(TimeLimitNotifier::LimitType::kBedTime));
 }
 
-}  // namespace chromeos
+}  // namespace ash

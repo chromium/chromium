@@ -324,4 +324,9 @@ class ScreenLocker
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when //c/b/ash/login moved to ash.
+namespace ash {
+using ::chromeos::ScreenLocker;
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_ASH_LOGIN_LOCK_SCREEN_LOCKER_H_

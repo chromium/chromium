@@ -17,13 +17,13 @@ class Profile;
 
 namespace base {
 class OneShotTimer;
-}
+}  // namespace base
 
 namespace policy {
 class UserCloudPolicyManagerChromeOS;
-}
+}  // namespace policy
 
-namespace chromeos {
+namespace ash {
 
 // Observes initial policy refresh for child user.
 // Unlike for regular user, child user policy is refreshed after profile
@@ -91,6 +91,11 @@ class ChildPolicyObserver : public policy::CloudPolicyService::Observer {
   DISALLOW_COPY_AND_ASSIGN(ChildPolicyObserver);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromOS code migration is done.
+namespace chromeos {
+using ::ash::ChildPolicyObserver;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_CHILD_POLICY_OBSERVER_H_

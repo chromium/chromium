@@ -7,7 +7,7 @@
 #include "base/base64.h"
 #include "base/strings/stringprintf.h"
 
-namespace chromeos {
+namespace ash {
 namespace test {
 
 std::string GetChildAccountOAuthIdToken() {
@@ -17,4 +17,4 @@ std::string GetChildAccountOAuthIdToken() {
 }
 
 }  // namespace test
-}  // namespace chromeos
+}  // namespace ash

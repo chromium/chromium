@@ -12,7 +12,7 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 
 // A class for recording session metrics. Calculates and reports the
 // following metrics:
@@ -64,6 +64,6 @@ class FamilyUserSessionMetrics : public FamilyUserMetricsService::Observer,
   // when the user becomes inactive.
   base::Time active_session_start_;
 };
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_FAMILY_USER_SESSION_METRICS_H_

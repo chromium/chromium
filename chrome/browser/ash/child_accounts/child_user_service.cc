@@ -14,7 +14,7 @@
 #include "extensions/common/constants.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 // static
 const char ChildUserService::kFamilyLinkHelperAppPackageName[] =
@@ -157,4 +157,4 @@ void ChildUserService::Shutdown() {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

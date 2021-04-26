@@ -14,7 +14,7 @@ class PrefChangeRegistrar;
 
 namespace content {
 class BrowserContext;
-}
+}  // namespace content
 
 namespace policy {
 class CloudPolicyClient;
@@ -22,7 +22,7 @@ class StatusUploader;
 class UserCloudPolicyManagerChromeOS;
 }  // namespace policy
 
-namespace chromeos {
+namespace ash {
 
 // Controls reporting for child user.
 // Child user should be registered with DMServer and periodically upload the
@@ -67,6 +67,6 @@ class ChildStatusReportingService : public KeyedService {
   policy::UserCloudPolicyManagerChromeOS* user_cloud_policy_manager_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_CHILD_STATUS_REPORTING_SERVICE_H_

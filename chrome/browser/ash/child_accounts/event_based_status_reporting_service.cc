@@ -14,7 +14,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/network_service_instance.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -133,4 +133,4 @@ void EventBasedStatusReportingService::Shutdown() {
       this);
 }
 
-}  // namespace chromeos
+}  // namespace ash

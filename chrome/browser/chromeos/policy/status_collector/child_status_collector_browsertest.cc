@@ -298,9 +298,9 @@ class ChildStatusCollectorTest : public testing::Test {
   void SimulateAppActivity(const ash::app_time::AppId& app_id,
                            TimeDelta duration,
                            bool should_run_tasks = true) {
-    chromeos::ChildUserService::TestApi child_user_service =
-        chromeos::ChildUserService::TestApi(
-            chromeos::ChildUserServiceFactory::GetForBrowserContext(
+    ash::ChildUserService::TestApi child_user_service =
+        ash::ChildUserService::TestApi(
+            ash::ChildUserServiceFactory::GetForBrowserContext(
                 testing_profile_.get()));
     EXPECT_TRUE(child_user_service.app_time_controller());
 

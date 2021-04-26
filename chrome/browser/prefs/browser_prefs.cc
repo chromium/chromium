@@ -1097,9 +1097,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   chromeos::ClientAppMetadataProviderService::RegisterProfilePrefs(registry);
   chromeos::CupsPrintersManager::RegisterProfilePrefs(registry);
   chromeos::device_sync::RegisterProfilePrefs(registry);
-  chromeos::FamilyUserChromeActivityMetrics::RegisterProfilePrefs(registry);
-  chromeos::FamilyUserMetricsService::RegisterProfilePrefs(registry);
-  chromeos::FamilyUserSessionMetrics::RegisterProfilePrefs(registry);
+  ash::FamilyUserChromeActivityMetrics::RegisterProfilePrefs(registry);
+  ash::FamilyUserMetricsService::RegisterProfilePrefs(registry);
+  ash::FamilyUserSessionMetrics::RegisterProfilePrefs(registry);
   chromeos::InlineLoginHandlerChromeOS::RegisterProfilePrefs(registry);
   chromeos::first_run::RegisterProfilePrefs(registry);
   chromeos::file_system_provider::RegisterProfilePrefs(registry);
@@ -1120,7 +1120,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   chromeos::quick_answers::prefs::RegisterProfilePrefs(registry);
   chromeos::quick_unlock::RegisterProfilePrefs(registry);
   chromeos::RegisterSamlProfilePrefs(registry);
-  chromeos::ScreenTimeController::RegisterProfilePrefs(registry);
+  ash::ScreenTimeController::RegisterProfilePrefs(registry);
   SecondaryAccountConsentLogger::RegisterPrefs(registry);
   ash::EduCoexistenceConsentInvalidationController::RegisterProfilePrefs(
       registry);

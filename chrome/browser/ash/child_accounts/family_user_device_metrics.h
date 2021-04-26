@@ -12,9 +12,9 @@
 
 namespace user_manager {
 class UserManager;
-}
+}  // namespace user_manager
 
-namespace chromeos {
+namespace ash {
 // A class for recording device metrics:
 // - FamilyUser.NewUserAdded: Report NewUserAdded enum when a new user is added
 // to the Chrome OS device. Recorded when user session starts.
@@ -67,6 +67,6 @@ class FamilyUserDeviceMetrics : public session_manager::SessionManagerObserver,
 
   base::WeakPtrFactory<FamilyUserDeviceMetrics> weak_factory_{this};
 };
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_FAMILY_USER_DEVICE_METRICS_H_

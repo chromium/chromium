@@ -22,9 +22,9 @@ class Time;
 
 namespace content {
 class BrowserContext;
-}
+}  // namespace content
 
-namespace chromeos {
+namespace ash {
 
 // Service to initialize and control metric recorders of family users on Chrome
 // OS.
@@ -67,6 +67,6 @@ class FamilyUserMetricsService : public KeyedService {
   std::vector<std::unique_ptr<Observer>> family_user_metrics_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_FAMILY_USER_METRICS_SERVICE_H_

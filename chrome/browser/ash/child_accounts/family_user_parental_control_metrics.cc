@@ -19,7 +19,8 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
-namespace chromeos {
+
+namespace ash {
 
 namespace {
 
@@ -129,4 +130,4 @@ void FamilyUserParentalControlMetrics::OnNewDay() {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

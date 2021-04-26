@@ -10,11 +10,11 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 namespace edu_coexistence {
 
 // The first google3 cl number that is sent through a policy which is mapped
-// to |chromeos::prefs::kEduCoexistenceToSVersion|. All version numbers sent
+// to |ash::prefs::kEduCoexistenceToSVersion|. All version numbers sent
 // will be greater than or equal to |kMinTOSVersionNumber|.
 extern const char kMinTOSVersionNumber[];
 
@@ -38,7 +38,7 @@ bool IsConsentVersionLessThan(const std::string& lhs_version,
 // If the account already exists in user's pref, then its accepted tos will be
 // updated. Otherwise, a new entry will be created.
 // The pref that is used to store the UserConsentInfo is defined in:
-// |chromeos::prefs::kEduCoexistenceToSAcceptedVersion|
+// |ash::prefs::kEduCoexistenceToSAcceptedVersion|
 // Unlike |SetUserConsentInfoListForProfile| this doesn't overwrite the entire
 // stored UserConsentInfo list; it instead updates it.
 void UpdateAcceptedToSVersionPref(Profile* profile,
@@ -50,13 +50,14 @@ void SetUserConsentInfoListForProfile(
     const std::vector<UserConsentInfo>& user_consent_info_list);
 
 // Returns the list of UserConsentInfo stored in
-// |chromeos::prefs::kEduCoexistenceToSAcceptedVersion|.
+// |ash::prefs::kEduCoexistenceToSAcceptedVersion|.
 std::vector<UserConsentInfo> GetUserConsentInfoListForProfile(Profile* profile);
 
 // |profile| is the Primary user profile which is the family link user.
 std::string GetAcceptedToSVersion(Profile* profile,
                                   const std::string& secondary_edu_gaia_id);
+
 }  // namespace edu_coexistence
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_EDU_COEXISTENCE_TOS_STORE_UTILS_H_

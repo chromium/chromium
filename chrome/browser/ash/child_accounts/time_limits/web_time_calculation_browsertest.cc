@@ -104,11 +104,11 @@ void WebTimeCalculationBrowserTest::SetUpOnMainThread() {
 
   // During tests, AppService doesn't notify AppActivityRegistry that chrome app
   // is installed. Mark chrome as installed here.
-  chromeos::ChildUserService* service =
-      chromeos::ChildUserServiceFactory::GetForBrowserContext(profile_);
-  chromeos::ChildUserService::TestApi test_api(service);
+  ash::ChildUserService* service =
+      ash::ChildUserServiceFactory::GetForBrowserContext(profile_);
+  ash::ChildUserService::TestApi test_api(service);
   test_api.app_time_controller()->app_registry()->OnAppInstalled(
-      chromeos::app_time::GetChromeAppId());
+      ash::app_time::GetChromeAppId());
 }
 
 void WebTimeCalculationBrowserTest::TearDown() {
@@ -143,9 +143,9 @@ content::WebContents* WebTimeCalculationBrowserTest::Navigate(
 
 ash::app_time::ChromeAppActivityState
 WebTimeCalculationBrowserTest::GetChromeAppActivityState() {
-  chromeos::ChildUserService* service =
+  ash::ChildUserService* service =
       chromeos::ChildUserServiceFactory::GetForBrowserContext(profile_);
-  chromeos::ChildUserService::TestApi test_api(service);
+  ash::ChildUserService::TestApi test_api(service);
   auto* web_time_activity_provider =
       test_api.app_time_controller()->web_time_activity_provider();
   return web_time_activity_provider->chrome_app_activty_state();

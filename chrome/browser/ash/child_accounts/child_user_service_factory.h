@@ -6,15 +6,14 @@
 #define CHROME_BROWSER_ASH_CHILD_ACCOUNTS_CHILD_USER_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
-// TODO(https://crbug.com/1164001): forward declare when moved ash
-#include "chrome/browser/ash/child_accounts/child_user_service.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace content {
 class BrowserContext;
-}
+}  // namespace content
 
-namespace chromeos {
+namespace ash {
+class ChildUserService;
 
 // Singleton that owns all ChildUserService objects and associates them with
 // BrowserContexts. Listens for the BrowserContext's destruction notification
@@ -39,12 +38,11 @@ class ChildUserServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when //c/b/ash/child_accounts moved
-// to ash.
-namespace ash {
-using ::chromeos::ChildUserServiceFactory;
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromOS code migration is done.
+namespace chromeos {
+using ::ash::ChildUserServiceFactory;
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_CHILD_USER_SERVICE_FACTORY_H_

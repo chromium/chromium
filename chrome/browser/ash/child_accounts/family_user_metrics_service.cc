@@ -17,7 +17,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -98,4 +98,4 @@ void FamilyUserMetricsService::CheckForNewDay() {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

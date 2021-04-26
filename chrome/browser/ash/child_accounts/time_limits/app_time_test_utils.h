@@ -32,11 +32,4 @@ scoped_refptr<extensions::Extension> CreateExtension(
 }  // namespace app_time
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromOS code migration is done.
-namespace chromeos {
-namespace app_time {
-using ::ash::app_time::CreateExtension;
-}  // namespace app_time
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_APP_TIME_TEST_UTILS_H_

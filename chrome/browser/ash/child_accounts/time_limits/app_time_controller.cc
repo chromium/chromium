@@ -574,7 +574,7 @@ bool AppTimeController::HasTimeCrossedResetBoundary() const {
 
 void AppTimeController::OpenFamilyLinkApp() {
   const std::string app_id = arc::ArcPackageNameToAppId(
-      chromeos::ChildUserService::kFamilyLinkHelperAppPackageName, profile_);
+      ChildUserService::kFamilyLinkHelperAppPackageName, profile_);
 
   if (app_service_wrapper_->IsAppInstalled(app_id)) {
     // Launch Family Link Help app since it is available.
@@ -587,7 +587,7 @@ void AppTimeController::OpenFamilyLinkApp() {
       apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile_));
   apps::AppServiceProxyFactory::GetForProfile(profile_)->LaunchAppWithUrl(
       arc::kPlayStoreAppId, ui::EF_NONE,
-      GURL(chromeos::ChildUserService::kFamilyLinkHelperAppPlayStoreURL),
+      GURL(ChildUserService::kFamilyLinkHelperAppPlayStoreURL),
       apps::mojom::LaunchSource::kFromChromeInternal);
 }
 

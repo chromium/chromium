@@ -9,7 +9,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 // A class for recording time limit metrics and web filter metrics for Family
 // Link users on Chrome OS. These metrics will be recorded at the beginning of
@@ -60,6 +60,6 @@ class FamilyUserParentalControlMetrics
   Profile* const profile_;
   bool first_report_on_current_device_ = false;
 };
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_FAMILY_USER_PARENTAL_CONTROL_METRICS_H_

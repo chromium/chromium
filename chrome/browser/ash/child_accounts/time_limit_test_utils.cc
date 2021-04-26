@@ -11,7 +11,7 @@
 #include "base/logging.h"
 #include "base/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace time_limit_test_utils {
 namespace {
 
@@ -190,4 +190,4 @@ std::string PolicyToString(const base::Value& policy) {
 }
 
 }  // namespace time_limit_test_utils
-}  // namespace chromeos
+}  // namespace ash

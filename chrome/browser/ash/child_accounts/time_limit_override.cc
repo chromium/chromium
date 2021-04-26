@@ -10,7 +10,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 
-namespace chromeos {
+namespace ash {
 namespace usage_time_limit {
 
 namespace {
@@ -144,4 +144,4 @@ base::Value TimeLimitOverride::ToDictionary() const {
 }
 
 }  // namespace usage_time_limit
-}  // namespace chromeos
+}  // namespace ash

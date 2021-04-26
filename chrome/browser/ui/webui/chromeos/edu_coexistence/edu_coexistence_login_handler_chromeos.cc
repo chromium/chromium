@@ -210,8 +210,8 @@ void EduCoexistenceLoginHandler::OnRefreshTokenUpdatedForAccount(
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
 
-  edu_coexistence::UpdateAcceptedToSVersionPref(
-      profile, edu_coexistence::UserConsentInfo(
+  ash::edu_coexistence::UpdateAcceptedToSVersionPref(
+      profile, ash::edu_coexistence::UserConsentInfo(
                    account_info.gaia, terms_of_service_version_number_));
 
   EduCoexistenceStateTracker::Get()->OnWebUiStateChanged(

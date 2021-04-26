@@ -14,7 +14,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -154,4 +154,4 @@ void FamilyUserSessionMetrics::UpdateUserEngagement(bool is_user_active) {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

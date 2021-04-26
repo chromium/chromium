@@ -22,7 +22,7 @@ namespace apps {
 class InstanceRegistry;
 }  // namespace apps
 
-namespace chromeos {
+namespace ash {
 
 class FamilyUserAppMetrics : public FamilyUserMetricsService::Observer,
                              public apps::AppRegistryCache::Observer {
@@ -80,6 +80,6 @@ class FamilyUserAppMetrics : public FamilyUserMetricsService::Observer,
   bool first_report_on_current_device_ = false;
   std::set<apps::mojom::AppType> ready_app_types_;
 };
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_FAMILY_USER_APP_METRICS_H_

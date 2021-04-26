@@ -10,9 +10,9 @@
 
 namespace content {
 class BrowserContext;
-}
+}  // namespace content
 
-namespace chromeos {
+namespace ash {
 class ScreenTimeController;
 
 // Singleton that owns all ScreenTimeController and associates them with
@@ -38,6 +38,11 @@ class ScreenTimeControllerFactory : public BrowserContextKeyedServiceFactory {
   DISALLOW_COPY_AND_ASSIGN(ScreenTimeControllerFactory);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromOS code migration is done.
+namespace chromeos {
+using ::ash::ScreenTimeControllerFactory;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_SCREEN_TIME_CONTROLLER_FACTORY_H_

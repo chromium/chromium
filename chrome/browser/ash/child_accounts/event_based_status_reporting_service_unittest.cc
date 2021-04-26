@@ -28,7 +28,7 @@
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -96,7 +96,7 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
 
     session_manager_.CreateSession(
         account_id(),
-        chromeos::ProfileHelper::GetUserIdHashByUserIdForTesting(
+        ProfileHelper::GetUserIdHashByUserIdForTesting(
             account_id().GetUserEmail()),
         true);
     session_manager_.SetSessionState(
@@ -155,9 +155,7 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
   }
 
   AccountId account_id() {
-    return chromeos::ProfileHelper::Get()
-        ->GetUserByProfile(profile())
-        ->GetAccountId();
+    return ProfileHelper::Get()->GetUserByProfile(profile())->GetAccountId();
   }
 
   base::HistogramTester histogram_tester_;
@@ -357,4 +355,4 @@ TEST_F(EventBasedStatusReportingServiceTest, ReportForMultipleEvents) {
       EventBasedStatusReportingService::kUMAStatusReportEvent, 7);
 }
 
-}  // namespace chromeos
+}  // namespace ash

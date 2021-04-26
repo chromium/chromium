@@ -23,7 +23,7 @@ namespace base {
 class Value;
 }  // namespace base
 
-namespace chromeos {
+namespace ash {
 namespace usage_time_limit {
 namespace internal {
 
@@ -211,16 +211,6 @@ void GetEnabledTimeLimitPolicies(
         enabled_policies,
     const base::Value& time_limit_prefs);
 
-}  // namespace usage_time_limit
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when //c/b/ash/child_accounts moved
-// to ash.
-namespace ash {
-namespace usage_time_limit {
-using ::chromeos::usage_time_limit::GetState;
-using ::chromeos::usage_time_limit::PolicyType;
-using ::chromeos::usage_time_limit::State;
 }  // namespace usage_time_limit
 }  // namespace ash
 

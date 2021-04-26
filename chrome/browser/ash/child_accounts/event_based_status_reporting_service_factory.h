@@ -11,9 +11,9 @@
 
 namespace content {
 class BrowserContext;
-}
+}  // namespace content
 
-namespace chromeos {
+namespace ash {
 class EventBasedStatusReportingService;
 
 // Singleton that owns all EventBasedStatusReportingService and associates
@@ -40,6 +40,6 @@ class EventBasedStatusReportingServiceFactory
   DISALLOW_COPY_AND_ASSIGN(EventBasedStatusReportingServiceFactory);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_EVENT_BASED_STATUS_REPORTING_SERVICE_FACTORY_H_

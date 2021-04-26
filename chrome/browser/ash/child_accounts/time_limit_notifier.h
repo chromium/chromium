@@ -13,13 +13,13 @@
 
 namespace base {
 class SequencedTaskRunner;
-}
+}  // namespace base
 
 namespace content {
 class BrowserContext;
-}
+}  // namespace content
 
-namespace chromeos {
+namespace ash {
 
 // Schedules warning notifications for screen time usage or bed time limits.
 class TimeLimitNotifier {
@@ -57,6 +57,6 @@ class TimeLimitNotifier {
   DISALLOW_COPY_AND_ASSIGN(TimeLimitNotifier);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMIT_NOTIFIER_H_

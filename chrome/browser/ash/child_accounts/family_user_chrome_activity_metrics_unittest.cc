@@ -26,7 +26,7 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 constexpr char kExtensionNameChrome[] = "Chrome";
@@ -276,4 +276,4 @@ TEST_F(FamilyUserChromeActivityMetricsTest,
                 prefs::kFamilyUserMetricsChromeBrowserEngagementDuration));
 }
 
-}  // namespace chromeos
+}  // namespace ash

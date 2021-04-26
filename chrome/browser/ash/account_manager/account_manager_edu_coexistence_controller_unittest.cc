@@ -33,8 +33,6 @@ namespace ash {
 
 namespace {
 
-namespace edu_coexistence = ::chromeos::edu_coexistence;
-
 constexpr char kValidToken[] = "valid-token";
 
 constexpr char kPrimaryAccount[] = "primaryaccount@gmail.com";

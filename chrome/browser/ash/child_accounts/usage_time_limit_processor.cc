@@ -14,7 +14,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/child_accounts/time_limit_override.h"
 
-namespace chromeos {
+namespace ash {
 namespace usage_time_limit {
 namespace internal {
 namespace {
@@ -1366,4 +1366,4 @@ void GetEnabledTimeLimitPolicies(
 }
 
 }  // namespace usage_time_limit
-}  // namespace chromeos
+}  // namespace ash

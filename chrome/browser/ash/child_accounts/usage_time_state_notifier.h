@@ -13,7 +13,7 @@
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
-namespace chromeos {
+namespace ash {
 
 // Notify observers when the state of use of the device changes, that is, when
 // the child is using the device or not. We define that the child is not using
@@ -73,6 +73,6 @@ class UsageTimeStateNotifier : public session_manager::SessionManagerObserver,
   DISALLOW_COPY_AND_ASSIGN(UsageTimeStateNotifier);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_USAGE_TIME_STATE_NOTIFIER_H_

@@ -10,9 +10,9 @@
 
 namespace content {
 class BrowserContext;
-}
+}  // namespace content
 
-namespace chromeos {
+namespace ash {
 class ChildStatusReportingService;
 
 // Singleton that owns all ChildStatusReportingService objects and associates
@@ -43,6 +43,11 @@ class ChildStatusReportingServiceFactory
       content::BrowserContext* context) const override;
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromOS code migration is done.
+namespace chromeos {
+using ::ash::ChildStatusReportingServiceFactory;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_CHILD_STATUS_REPORTING_SERVICE_FACTORY_H_

@@ -51,4 +51,10 @@ class ScreenLockerTester {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::ScreenLockerTester;
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_ASH_LOGIN_LOCK_SCREEN_LOCKER_TESTER_H_

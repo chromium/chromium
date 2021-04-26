@@ -8,7 +8,7 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/session_manager/core/session_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -94,4 +94,4 @@ void UsageTimeStateNotifier::SuspendDone(base::TimeDelta sleep_duration) {
   ChangeUsageTimeState(GetCurrentState());
 }
 
-}  // namespace chromeos
+}  // namespace ash

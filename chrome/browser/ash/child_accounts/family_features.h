@@ -7,7 +7,7 @@
 
 #include "base/feature_list.h"
 
-namespace chromeos {
+namespace ash {
 
 // Filters family user metrics into one of four types of family users.
 // TODO(crbug/1103077): If any of the buckets end up being too small, disable
@@ -22,6 +22,12 @@ extern const base::Feature kFamilyLinkOobeHandoff;
 
 bool IsFamilyLinkOobeHandoffEnabled();
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromOS code migration is done.
+namespace chromeos {
+using ::ash::IsFamilyLinkOobeHandoffEnabled;
+using ::ash::kFamilyLinkOobeHandoff;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_FAMILY_FEATURES_H_

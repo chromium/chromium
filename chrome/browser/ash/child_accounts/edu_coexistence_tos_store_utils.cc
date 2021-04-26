@@ -12,7 +12,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace edu_coexistence {
 
@@ -43,8 +43,8 @@ bool IsConsentVersionLessThan(const std::string& lhs_version,
 
 void UpdateAcceptedToSVersionPref(Profile* profile,
                                   const UserConsentInfo& user_consent_info) {
-  DictionaryPrefUpdate update(
-      profile->GetPrefs(), chromeos::prefs::kEduCoexistenceToSAcceptedVersion);
+  DictionaryPrefUpdate update(profile->GetPrefs(),
+                              prefs::kEduCoexistenceToSAcceptedVersion);
   base::DictionaryValue* dict = update.Get();
 
   dict->SetStringPath(user_consent_info.edu_account_gaia_id,
@@ -60,14 +60,14 @@ void SetUserConsentInfoListForProfile(
         info.edu_account_gaia_id, info.edu_coexistence_tos_version);
   }
 
-  profile->GetPrefs()->Set(chromeos::prefs::kEduCoexistenceToSAcceptedVersion,
+  profile->GetPrefs()->Set(prefs::kEduCoexistenceToSAcceptedVersion,
                            std::move(user_consent_info_list_value));
 }
 
 std::vector<UserConsentInfo> GetUserConsentInfoListForProfile(
     Profile* profile) {
-  const base::Value* user_consent_info_dict_value = profile->GetPrefs()->Get(
-      chromeos::prefs::kEduCoexistenceToSAcceptedVersion);
+  const base::Value* user_consent_info_dict_value =
+      profile->GetPrefs()->Get(prefs::kEduCoexistenceToSAcceptedVersion);
 
   DCHECK(user_consent_info_dict_value);
   DCHECK(user_consent_info_dict_value->is_dict());
@@ -85,8 +85,8 @@ std::vector<UserConsentInfo> GetUserConsentInfoListForProfile(
 
 std::string GetAcceptedToSVersion(Profile* profile,
                                   const std::string& secondary_edu_gaia_id) {
-  const base::Value* accepted_values = profile->GetPrefs()->Get(
-      chromeos::prefs::kEduCoexistenceToSAcceptedVersion);
+  const base::Value* accepted_values =
+      profile->GetPrefs()->Get(prefs::kEduCoexistenceToSAcceptedVersion);
 
   const std::string* entry =
       accepted_values->FindStringKey(secondary_edu_gaia_id);
@@ -94,4 +94,4 @@ std::string GetAcceptedToSVersion(Profile* profile,
 }
 
 }  // namespace edu_coexistence
-}  // namespace chromeos
+}  // namespace ash

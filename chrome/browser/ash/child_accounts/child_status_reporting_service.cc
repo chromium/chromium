@@ -22,7 +22,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -87,7 +87,7 @@ void ChildStatusReportingService::CreateStatusUploaderIfNeeded(
       std::make_unique<policy::ChildStatusCollector>(
           pref_change_registrar_->prefs(),
           Profile::FromBrowserContext(context_),
-          system::StatisticsProvider::GetInstance(),
+          chromeos::system::StatisticsProvider::GetInstance(),
           policy::ChildStatusCollector::AndroidStatusFetcher(),
           day_reset_time_),
       base::ThreadTaskRunnerHandle::Get(), kStatusUploadFrequency);
@@ -109,4 +109,4 @@ void ChildStatusReportingService::OnTimeLimitsPolicyChanged() {
   CreateStatusUploaderIfNeeded(user_cloud_policy_manager_->core()->client());
 }
 
-}  // namespace chromeos
+}  // namespace ash

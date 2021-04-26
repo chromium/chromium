@@ -74,10 +74,10 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         })");
 
 std::string GetOrCreateEduCoexistenceId(PrefService* pref_service) {
-  std::string id = pref_service->GetString(chromeos::prefs::kEduCoexistenceId);
+  std::string id = pref_service->GetString(ash::prefs::kEduCoexistenceId);
   if (id.empty()) {
     id = base::GenerateGUID();
-    pref_service->SetString(chromeos::prefs::kEduCoexistenceId, id);
+    pref_service->SetString(ash::prefs::kEduCoexistenceId, id);
   }
   return id;
 }
@@ -87,10 +87,10 @@ std::string GetOrCreateEduCoexistenceId(PrefService* pref_service) {
 // static
 void SecondaryAccountConsentLogger::RegisterPrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(chromeos::prefs::kEduCoexistenceId,
+  registry->RegisterStringPref(ash::prefs::kEduCoexistenceId,
                                std::string() /* default_value */);
   registry->RegisterStringPref(
-      chromeos::prefs::kEduCoexistenceSecondaryAccountsInvalidationVersion,
+      ash::prefs::kEduCoexistenceSecondaryAccountsInvalidationVersion,
       "iv2153049" /* default_value, the first invalidation version */);
 }
 

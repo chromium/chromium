@@ -89,8 +89,7 @@ class FamilyUserMetricsProviderTest
           FamilyUserMetricsProvider::FamilyUserLogSegment> {
  public:
   FamilyUserMetricsProviderTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::kFamilyUserMetricsProvider);
+    scoped_feature_list_.InitAndEnableFeature(ash::kFamilyUserMetricsProvider);
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -191,8 +190,7 @@ class FamilyUserMetricsProviderGuestModeTest
     : public MixinBasedInProcessBrowserTest {
  public:
   FamilyUserMetricsProviderGuestModeTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::kFamilyUserMetricsProvider);
+    scoped_feature_list_.InitAndEnableFeature(ash::kFamilyUserMetricsProvider);
   }
 
  private:
@@ -224,8 +222,7 @@ class FamilyUserMetricsProviderEphemeralUserTest
     : public MixinBasedInProcessBrowserTest {
  protected:
   FamilyUserMetricsProviderEphemeralUserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::kFamilyUserMetricsProvider);
+    scoped_feature_list_.InitAndEnableFeature(ash::kFamilyUserMetricsProvider);
   }
 
   // MixinBasedInProcessBrowserTest:

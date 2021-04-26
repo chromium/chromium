@@ -81,7 +81,7 @@ class FamilyLinkUserMetricsProviderTest
  public:
   FamilyLinkUserMetricsProviderTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        chromeos::kFamilyLinkUserMetricsProvider);
+        ash::kFamilyLinkUserMetricsProvider);
   }
 
  protected:
@@ -138,7 +138,7 @@ class FamilyLinkUserMetricsProviderGuestModeTest
  public:
   FamilyLinkUserMetricsProviderGuestModeTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        chromeos::kFamilyLinkUserMetricsProvider);
+        ash::kFamilyLinkUserMetricsProvider);
   }
 
  private:
