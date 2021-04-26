@@ -237,7 +237,9 @@ class ThreadGroupImpl::WorkerThreadDelegateImpl : public WorkerThread::Delegate,
 
   // OnMainExit() handles the thread-affine cleanup; WorkerThreadDelegateImpl
   // can thereafter safely be deleted from any thread.
-  ~WorkerThreadDelegateImpl() override = default;
+  ~WorkerThreadDelegateImpl() override {
+    recordreplay::UnregisterPointer(this);
+  }
 
   // WorkerThread::Delegate:
   WorkerThread::ThreadLabel GetThreadLabel() const override;
@@ -546,6 +548,7 @@ ThreadGroupImpl::WorkerThreadDelegateImpl::WorkerThreadDelegateImpl(
     : outer_(std::move(outer)) {
   // Bound in OnMainEntry().
   DETACH_FROM_THREAD(worker_thread_checker_);
+  recordreplay::RegisterPointer(this);
 }
 
 WorkerThread::ThreadLabel
@@ -586,7 +589,7 @@ void ThreadGroupImpl::WorkerThreadDelegateImpl::OnMainEntry(
 
 RegisteredTaskSource ThreadGroupImpl::WorkerThreadDelegateImpl::GetWork(
     WorkerThread* worker) {
-  recordreplay::Assert("WorkerThreadDelegateImpl::GetWork Start");
+  recordreplay::Assert("WorkerThreadDelegateImpl::GetWork Start %lu", recordreplay::PointerId(this));
 
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
   DCHECK(!worker_only().is_running_task);
@@ -616,15 +619,18 @@ RegisteredTaskSource ThreadGroupImpl::WorkerThreadDelegateImpl::GetWork(
   while (!task_source && !outer_->priority_queue_.IsEmpty()) {
     // Enforce the CanRunPolicy and that no more than |max_best_effort_tasks_|
     // BEST_EFFORT tasks run concurrently.
+    recordreplay::Assert("WorkerThreadDelegateImpl::GetWork #1.1");
     priority = outer_->priority_queue_.PeekSortKey().priority();
     if (!outer_->task_tracker_->CanRunPriority(priority) ||
         (priority == TaskPriority::BEST_EFFORT &&
          outer_->num_running_best_effort_tasks_ >=
              outer_->max_best_effort_tasks_)) {
+      recordreplay::Assert("WorkerThreadDelegateImpl::GetWork #1.2");
       break;
     }
 
     task_source = outer_->TakeRegisteredTaskSource(&executor);
+    recordreplay::Assert("WorkerThreadDelegateImpl::GetWork #1.3 %d", !!task_source);
   }
   if (!task_source) {
     OnWorkerBecomesIdleLockRequired(worker);
@@ -641,6 +647,7 @@ RegisteredTaskSource ThreadGroupImpl::WorkerThreadDelegateImpl::GetWork(
   if (outer_->after_start().wakeup_after_getwork &&
       outer_->after_start().wakeup_strategy !=
           WakeUpStrategy::kCentralizedWakeUps) {
+    recordreplay::Assert("WorkerThreadDelegateImpl::GetWork #3");
     outer_->EnsureEnoughWorkersLockRequired(&executor);
   }
 
