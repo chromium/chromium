@@ -52,6 +52,9 @@ extern const base::Feature kModernTabStrip;
 // Adds a setting to enable biometric authentication for incognito tabs.
 extern const base::Feature kIncognitoAuthentication;
 
+// Enables the usage of dark mode color while in Incognito mode.
+extern const base::Feature kIncognitoBrandConsistencyForIOS;
+
 // Feature flag that experiments with new location permissions user experiences.
 extern const base::Feature kLocationPermissionsPrompt;
 

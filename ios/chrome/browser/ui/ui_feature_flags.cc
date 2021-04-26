@@ -45,6 +45,9 @@ const base::Feature kModernTabStrip{"ModernTabStrip",
 const base::Feature kIncognitoAuthentication{
     "enable-incognito-authentication-ios", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kIncognitoBrandConsistencyForIOS{
+    "IncognitoBrandConsistencyForIOS", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kLocationPermissionsPrompt{
     "LocationPermissionsPrompt", base::FEATURE_DISABLED_BY_DEFAULT};
 

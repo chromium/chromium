@@ -198,6 +198,11 @@ extern const char kFullscreenSmoothScrollingDescription[];
 extern const char kIncognitoAuthenticationName[];
 extern const char kIncognitoAuthenticationDescription[];
 
+// Title and description for the flag to enable dark mode colors while in
+// Incognito mode.
+extern const char kIncognitoBrandConsistencyForIOSName[];
+extern const char kIncognitoBrandConsistencyForIOSDescription[];
+
 // Title and description for the flag to enable new illustrations and
 // UI on empty states.
 extern const char kIllustratedEmptyStatesName[];

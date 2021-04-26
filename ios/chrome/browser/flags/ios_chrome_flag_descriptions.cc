@@ -222,6 +222,12 @@ extern const char kIncognitoAuthenticationDescription[] =
     "When enabled, a setting appears to enable biometric authentication for "
     "accessing incognito.";
 
+const char kIncognitoBrandConsistencyForIOSName[] =
+    "Enable Incognito brand consistency in iOS.";
+const char kIncognitoBrandConsistencyForIOSDescription[] =
+    "When enabled, keeps Incognito UI consistent regardless of any selected "
+    "theme.";
+
 const char kIllustratedEmptyStatesName[] = "Illustrated empty states";
 const char kIllustratedEmptyStatesDescription[] =
     "Display new illustrations and layout on empty states.";

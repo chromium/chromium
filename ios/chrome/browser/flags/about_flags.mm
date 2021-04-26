@@ -730,6 +730,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"tabgrid-context-menu-ios", flag_descriptions::kTabGridContextMenuName,
      flag_descriptions::kTabGridContextMenuDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kTabGridContextMenu)},
+    {"incognito-brand-consistency-for-ios",
+     flag_descriptions::kIncognitoBrandConsistencyForIOSName,
+     flag_descriptions::kIncognitoBrandConsistencyForIOSDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIncognitoBrandConsistencyForIOS)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
