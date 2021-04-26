@@ -654,8 +654,17 @@ v8::ScriptType ScriptStreamer::ScriptTypeForStreamingTask(
   switch (script_resource->GetInitialRequestScriptType()) {
     case mojom::blink::ScriptType::kModule:
       return v8::ScriptType::kModule;
-    case mojom::blink::ScriptType::kClassic:
+    case mojom::blink::ScriptType::kClassic: {
+      // <link rel=preload as=script ref=module.mjs> is a common pattern instead
+      // of <link rel=modulepreload>. Try streaming parsing as module instead in
+      // these cases (https://crbug.com/1178198).
+      if (script_resource->IsUnusedPreload()) {
+        if (script_resource->Url().GetPath().EndsWithIgnoringCase(".mjs")) {
+          return v8::ScriptType::kModule;
+        }
+      }
       return v8::ScriptType::kClassic;
+    }
   }
   NOTREACHED();
 }
