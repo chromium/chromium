@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "components/keyed_service/core/simple_key_map.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -43,6 +44,9 @@ HeadlessBrowserContextImpl::HeadlessBrowserContextImpl(
           : path_;
   request_context_manager_ = std::make_unique<HeadlessRequestContextManager>(
       context_options_.get(), user_data_path);
+  profile_metrics::SetBrowserProfileType(
+      this, IsOffTheRecord() ? profile_metrics::BrowserProfileType::kIncognito
+                             : profile_metrics::BrowserProfileType::kRegular);
 }
 
 HeadlessBrowserContextImpl::~HeadlessBrowserContextImpl() {

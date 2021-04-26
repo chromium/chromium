@@ -4,6 +4,7 @@ include_rules = [
   "+components/keyed_service/core",
   "+components/printing/browser",
   "+components/printing/common",
+  "+components/profile_metrics",
   "+components/security_state",
   "+components/viz",
   "+printing",

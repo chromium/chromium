@@ -433,6 +433,7 @@ component("headless_non_renderer") {
     "//base:base_static",
     "//build:chromeos_buildflags",
     "//components/cookie_config",
+    "//components/profile_metrics",
     "//components/security_state/core",
     "//content/public/browser",
     "//content/public/common",
