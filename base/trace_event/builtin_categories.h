@@ -14,7 +14,7 @@
 // List of builtin category names. If you want to use a new category name in
 // your code and you get a static assert, this is the right place to register
 // the name. If the name is going to be used only for testing, please add it to
-// |kIgnoredCategoriesForTesting| instead.
+// |kCategoriesForTesting| instead.
 //
 // Since spaces aren't allowed, use '_' to separate words in category names
 // (e.g., "content_capture").
