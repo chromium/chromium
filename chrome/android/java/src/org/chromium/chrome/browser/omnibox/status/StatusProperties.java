@@ -43,6 +43,7 @@ public class StatusProperties {
         private Drawable mDrawable;
         private @StatusView.IconTransitionType int mIconTransitionType =
                 StatusView.IconTransitionType.CROSSFADE;
+        private Runnable mCallback;
 
         /** Constructor for a custom drawable. */
         public StatusIconResource(Drawable drawable) {
@@ -124,6 +125,21 @@ public class StatusProperties {
             if (mDrawable != otherResource.mDrawable) return false;
 
             return true;
+        }
+
+        /**
+         * Sets the callback to be run after this icon has been set.
+         * @param callback  The Runnable to be called. Only works for the ROTATE transition and
+         *                  called if the animation has run to completion.
+         */
+        void setAnimationFinishedCallback(Runnable callback) {
+            mCallback = callback;
+        }
+
+        /** @return the callback to be run after this icon has been set, if any. */
+        @Nullable
+        Runnable getAnimationFinishedCallback() {
+            return mCallback;
         }
     }
 

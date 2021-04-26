@@ -106,6 +106,20 @@ public class StatusMediator implements PermissionDialogController.Observer {
     // The denominator for the above formula, which will adjust the scale for the alpha.
     private final float mTextOffsetAdjustedScale;
 
+    /**
+     * @param model The {@link PropertyModel} for this mediator.
+     * @param resources Used to load resources.
+     * @param context The {@link Context} for this Status component.
+     * @param urlBarEditingTextStateProvider Provides url bar text state.
+     * @param isTablet Whether the current device is a tablet.
+     * @param locationBarDataProvider Provides data to the location bar.
+     * @param permissionDialogController Controls showing permission dialogs.
+     * @param searchEngineLogoUtils Provides utilities around the search engine logo.
+     * @param templateUrlServiceSupplier Supplies the {@link TemplateUrlService}.
+     * @param profileSupplier Supplies the current {@link Profile}.
+     * @param pageInfoIPHController Manages when an IPH bubble for PageInfo is shown.
+     * @param windowAndroid The current {@link WindowAndroid}.
+     */
     public StatusMediator(PropertyModel model, Resources resources, Context context,
             UrlBarEditingTextStateProvider urlBarEditingTextStateProvider, boolean isTablet,
             Runnable forceModelViewReconciliationRunnable,
@@ -647,26 +661,28 @@ public class StatusMediator implements PermissionDialogController.Observer {
         mLastPermission = permission;
 
         boolean isIncognito = mLocationBarDataProvider.isIncognito();
-        Drawable permissionIcon = ContentSettingsResources.getIconForOmnibox(
+        Drawable permissionDrawable = ContentSettingsResources.getIconForOmnibox(
                 mContext, mLastPermission, result, isIncognito);
-        PermissionIconResource statusIcon = new PermissionIconResource(permissionIcon, isIncognito);
-        statusIcon.setTransitionType(IconTransitionType.ROTATE);
+        PermissionIconResource permissionIconResource =
+                new PermissionIconResource(permissionDrawable, isIncognito);
+        permissionIconResource.setTransitionType(IconTransitionType.ROTATE);
+        // We only want to notify the IPH controller after the icon transition is finished.
+        // IPH is controlled by the FeatureEngagement system through finch with a field trial
+        // testing configuration.
+        permissionIconResource.setAnimationFinishedCallback(this::startIPH);
         // Set the timer to switch the icon back afterwards.
         mPermissionTaskHandler.removeCallbacksAndMessages(null);
-        mModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIcon);
+        mModel.set(StatusProperties.STATUS_ICON_RESOURCE, permissionIconResource);
         mPermissionTaskHandler.postDelayed(
                 ()
                         -> updateLocationBarIcon(IconTransitionType.ROTATE),
                 PERMISSION_ICON_DISPLAY_TIMEOUT_MS);
         mDiscoverabilityMetrics.recordDiscoverabilityAction(
                 DiscoverabilityAction.PERMISSION_ICON_SHOWN);
-        if (mPageInfoIPHController != null) {
-            // We only want to show the IPH after the icon transition is finished.
-            mPermissionTaskHandler.postDelayed(
-                    ()
-                            -> mPageInfoIPHController.onPermissionDialogShown(getIPHTimeout()),
-                    StatusView.ICON_ROTATION_DURATION_MS);
-        }
+    }
+
+    private void startIPH() {
+        mPageInfoIPHController.onPermissionDialogShown(getIPHTimeout());
     }
 
     /**
