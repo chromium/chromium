@@ -191,7 +191,6 @@ crbug.com/1081534 [ Win ] virtual/oopr-canvas2d/fast/canvas/canvas-getImageData.
 
 # We're rolling these tests out on Windows first, other platforms to follow. When removing [ Skip ]
 # for a platform please add the platform tag to the failing tests above.
-crbug.com/1081534 [ Android ] virtual/oopr-canvas2d/* [ Skip ]
 crbug.com/1081534 [ Fuchsia ] virtual/oopr-canvas2d/* [ Skip ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/* [ Skip ]
 # --- END OOP-R Canvas Tests
