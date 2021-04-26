@@ -68,11 +68,6 @@ const char kRequireInteraction[] = "RequireInteraction";
 const char kTimeUntilCloseMillis[] = "TimeUntilClose";
 const char kTimeUntilFirstClickMillis[] = "TimeUntilFirstClick";
 const char kTimeUntilLastClickMillis[] = "TimeUntilLastClick";
-// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
-// function.
-GURL Origin() {
-  return GURL("https://example.com");
-}
 
 }  // namespace
 
@@ -254,16 +249,9 @@ TEST_F(PlatformNotificationServiceTest, DisplayPersistentPropertiesMatch) {
 }
 
 TEST_F(PlatformNotificationServiceTest, RecordNotificationUkmEvent) {
-  // Set up UKM recording conditions.
-  ASSERT_TRUE(profile_.CreateHistoryService());
-  auto* history_service = HistoryServiceFactory::GetForProfile(
-      &profile_, ServiceAccessType::EXPLICIT_ACCESS);
-  history_service->AddPage(Origin(), base::Time::Now(),
-                           history::SOURCE_BROWSED);
-
   NotificationDatabaseData data;
   data.notification_id = "notification1";
-  data.origin = Origin();
+  data.origin = GURL("https://example.com");
   data.closed_reason = NotificationDatabaseData::ClosedReason::USER;
   data.replaced_existing_notification = true;
   data.notification_data.icon = GURL("https://icon.com");
@@ -283,6 +271,13 @@ TEST_F(PlatformNotificationServiceTest, RecordNotificationUkmEvent) {
   data.time_until_close_millis = base::TimeDelta::FromMilliseconds(10000);
   data.time_until_first_click_millis = base::TimeDelta::FromMilliseconds(2222);
   data.time_until_last_click_millis = base::TimeDelta::FromMilliseconds(3333);
+
+  // Set up UKM recording conditions.
+  ASSERT_TRUE(profile_.CreateHistoryService());
+  auto* history_service = HistoryServiceFactory::GetForProfile(
+      &profile_, ServiceAccessType::EXPLICIT_ACCESS);
+  history_service->AddPage(data.origin, base::Time::Now(),
+                           history::SOURCE_BROWSED);
 
   // Initially there are no UKM entries.
   std::vector<const ukm::mojom::UkmEntry*> entries =
