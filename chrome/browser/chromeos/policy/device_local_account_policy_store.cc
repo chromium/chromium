@@ -10,8 +10,6 @@
 #include "base/callback.h"
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
-#include "build/chromeos_buildflags.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/chromeos/policy/value_validation/onc_user_policy_value_validator.h"
 #include "components/ownership/owner_key_util.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -141,18 +139,6 @@ void DeviceLocalAccountPolicyStore::UpdatePolicy(
                 std::move(validator->payload()),
                 signature_validation_public_key);
   status_ = STATUS_OK;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (crosapi::BrowserManager::Get()) {
-    std::string policy_blob;
-    // Since the policy have passed all the validations, the serialization must
-    // succeed.
-    bool success = validator->policy()->SerializeToString(&policy_blob);
-    DCHECK(success);
-    crosapi::BrowserManager::Get()->SetDeviceAccountPolicy(policy_blob);
-  }
-#endif
-
   NotifyStoreLoaded();
 }
 
