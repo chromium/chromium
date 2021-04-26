@@ -54,6 +54,8 @@ blink_core_sources_inspector = [
   "inspector_io_agent.h",
   "inspector_issue.cc",
   "inspector_issue.h",
+  "inspector_issue_conversion.cc",
+  "inspector_issue_conversion.h",
   "inspector_issue_reporter.cc",
   "inspector_issue_reporter.h",
   "inspector_issue_storage.cc",

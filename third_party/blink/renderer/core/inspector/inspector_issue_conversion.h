@@ -1,0 +1,19 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_ISSUE_CONVERSION_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_ISSUE_CONVERSION_H_
+
+#include "third_party/blink/renderer/core/inspector/protocol/Audits.h"
+
+namespace blink {
+
+class InspectorIssue;
+
+std::unique_ptr<protocol::Audits::InspectorIssue>
+ConvertInspectorIssueToProtocolFormat(InspectorIssue*);
+
+}  // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_ISSUE_CONVERSION_H_
