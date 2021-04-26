@@ -5934,6 +5934,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Result of the sign in flow during first run on iOS.</summary>
 </histogram>
 
+<histogram name="FirstRun.Stage" enum="FirstRunStageResult"
+    expires_after="2022-04-30">
+  <owner>tinazwang@chromium.org</owner>
+  <owner>bling-get-started@google.com</owner>
+  <summary>
+    When Chrome is opened for the first time, the first run (onboarding) UI will
+    be shown. Metircs will be recorded in different first run stages such as
+    when first run experience is started, and when first run experience is
+    completed.
+  </summary>
+</histogram>
+
 <histogram name="FirstUserAction.BackgroundTime" units="minutes"
     expires_after="2021-08-22">
 <!-- Name completed by histogram_suffixes name="FirstUserActionType" and name="FirstUserActionTypeDevice" -->

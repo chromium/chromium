@@ -15,6 +15,9 @@
 // Called when first run screens should finish presenting.
 - (void)willFinishPresentingScreens;
 
+// Called when first run UI has been dismissed.
+- (void)didFinishPresentingScreens;
+
 @end
 
 // Coordinator to present first run screens.

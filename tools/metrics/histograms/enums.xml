@@ -34041,6 +34041,12 @@ Called by update_permissions_policy_enum.py.-->
   <int value="7" label="Skipped by policy"/>
 </enum>
 
+<enum name="FirstRunStageResult">
+  <summary>Stages of the first run experience.</summary>
+  <int value="0" label="Start First Run"/>
+  <int value="1" label="Complete First Run"/>
+</enum>
+
 <enum name="FirstUserActionType">
   <summary>
     Types of actions a user can perform upon startup or unbackgrounding.

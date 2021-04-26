@@ -3064,7 +3064,36 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 #pragma mark - FirstRunCoordinatorDelegate
 
 - (void)willFinishPresentingScreens {
+  // Reset |sceneState.presentingFirstRunUI| flag.
+  [self handleFirstRunUIWillFinish];
+
   [self.firstRunCoordinator stop];
+}
+
+- (void)didFinishPresentingScreens {
+  // Triggers all the events after the first run is dismissed. Note that the
+  // below logic should be removed after the new first run UI supports location
+  // permission page.
+  if (!location_permissions_field_trial::IsInRemoveFirstRunPromptGroup() &&
+      !location_permissions_field_trial::IsInFirstRunModalGroup()) {
+    [self logLocationPermissionsExperimentForGroupShown:
+              LocationPermissionsUI::kFirstRunPromptNotShown];
+    // As soon as First Run has finished, give OmniboxGeolocationController an
+    // opportunity to present the iOS system location alert.
+    [[OmniboxGeolocationController sharedInstance] triggerSystemPrompt];
+  } else if (location_permissions_field_trial::
+                 IsInRemoveFirstRunPromptGroup()) {
+    // If in RemoveFirstRunPrompt group, the system prompt will be delayed until
+    // the site requests location information.
+    [[OmniboxGeolocationController sharedInstance]
+        systemPromptSkippedForNewUser];
+  }
+
+  if (location_permissions_field_trial::IsInFirstRunModalGroup()) {
+    id<ApplicationCommands> handler = static_cast<id<ApplicationCommands>>(
+        self.mainInterface.browser->GetCommandDispatcher());
+    [handler showLocationPermissionsFromViewController:self.mainInterface.bvc];
+  }
 }
 
 @end

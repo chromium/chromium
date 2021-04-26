@@ -71,6 +71,20 @@ enum ExternalLaunch {
   LAUNCH_SIZE
 };
 
+// The different stages of the first run experience. This is mapped to the
+// FirstRunStageResult enum in enums.xml for metrics.
+// TODO(crbug.com/1189815): Add welcome stage and record metrics.
+// TODO(crbug.com/1189836): Add signin stage and record metrics.
+// TODO(crbug.com/1189840): Add sync stage and record metrics.
+enum FirstRunStage {
+  // The first run experience has started.
+  kStart,
+  // The first run experience has completed.
+  kComplete,
+  // Max value of the first run experience stages.
+  kMaxValue = kComplete,
+};
+
 }  // namespace first_run
 
 #endif  // IOS_CHROME_BROWSER_FIRST_RUN_FIRST_RUN_METRICS_H_
