@@ -29,6 +29,7 @@ std::vector<StorableImpression> GetImpressions(sql::Database* db,
       "reporting_origin, impression_time, expiry_time, impression_id "
       "FROM impressions "
       "WHERE impression_id >= ? "
+      "ORDER BY impression_id "
       "LIMIT ?";
 
   sql::Statement statement(
