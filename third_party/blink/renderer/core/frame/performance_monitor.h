@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_PERFORMANCE_MONITOR_H_
 
 #include "base/macros.h"
+#include "base/record_replay.h"
 #include "base/task/sequence_manager/task_time_observer.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -55,6 +56,10 @@ class CORE_EXPORT PerformanceMonitor final
 
   class CORE_EXPORT Client : public GarbageCollectedMixin {
    public:
+    // Pointer registration is needed for sorting keys in ClientThresholds maps.
+    Client() { recordreplay::RegisterPointer(this); }
+    ~Client() { recordreplay::UnregisterPointer(this); }
+
     virtual void ReportLongTask(base::TimeTicks start_time,
                                 base::TimeTicks end_time,
                                 ExecutionContext* task_context,
