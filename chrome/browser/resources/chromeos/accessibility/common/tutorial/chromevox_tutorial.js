@@ -668,6 +668,8 @@ Polymer({
       earconElement.setAttribute('tabindex', -1);
       earconElement.addEventListener(
           'focus', this.requestEarcon.bind(this, earconId));
+      earconElement.addEventListener(
+          'blur', this.cancelEarcon_.bind(this, earconId));
       earconLesson.contentDiv.appendChild(earconElement);
     }
   },
@@ -679,6 +681,15 @@ Polymer({
   requestEarcon(earconId) {
     this.dispatchEvent(
         new CustomEvent('requestearcon', {composed: true, detail: {earconId}}));
+  },
+
+  /**
+   * @param {string} earconId
+   * @private
+   */
+  cancelEarcon_(earconId) {
+    this.dispatchEvent(
+        new CustomEvent('cancelearcon', {composed: true, detail: {earconId}}));
   },
 
   /** @private */

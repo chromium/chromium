@@ -1155,6 +1155,10 @@ Panel = class {
       const earconId = evt.detail.earconId;
       backgroundPage['ChromeVox']['earcons']['playEarcon'](earconId);
     });
+    $('chromevox-tutorial').addEventListener('cancelearcon', (evt) => {
+      const earconId = evt.detail.earconId;
+      backgroundPage['ChromeVox']['earcons']['cancelEarcon'](earconId);
+    });
     $('chromevox-tutorial').addEventListener('readyfortesting', () => {
       Panel.tutorialReadyForTesting_ = true;
     });
