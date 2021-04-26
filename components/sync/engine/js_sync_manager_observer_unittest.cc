@@ -43,14 +43,13 @@ class JsSyncManagerObserverTest : public testing::Test {
   void PumpLoop() { base::RunLoop().RunUntilIdle(); }
 };
 
-TEST_F(JsSyncManagerObserverTest, OnInitializationComplete) {
+TEST_F(JsSyncManagerObserverTest, InitializationComplete) {
   base::DictionaryValue expected_details;
   EXPECT_CALL(mock_js_event_handler_,
               HandleJsEvent("onInitializationComplete",
                             HasDetailsAsDictionary(expected_details)));
 
-  js_sync_manager_observer_.OnInitializationComplete(
-      WeakHandle<JsBackend>(), WeakHandle<DataTypeDebugInfoListener>());
+  js_sync_manager_observer_.InitializationComplete();
   PumpLoop();
 }
 

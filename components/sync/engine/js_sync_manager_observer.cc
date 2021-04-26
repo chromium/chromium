@@ -8,7 +8,6 @@
 
 #include "base/location.h"
 #include "base/notreached.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
@@ -25,6 +24,16 @@ JsSyncManagerObserver::~JsSyncManagerObserver() {}
 void JsSyncManagerObserver::SetJsEventHandler(
     const WeakHandle<JsEventHandler>& event_handler) {
   event_handler_ = event_handler;
+}
+
+void JsSyncManagerObserver::InitializationComplete() {
+  if (!event_handler_.IsInitialized()) {
+    return;
+  }
+  // Ignore the |js_backend| argument; it's not really convertible to
+  // JSON anyway.
+
+  HandleJsEvent(FROM_HERE, "onInitializationComplete", JsEventDetails());
 }
 
 void JsSyncManagerObserver::OnSyncCycleCompleted(
@@ -60,18 +69,6 @@ void JsSyncManagerObserver::OnActionableError(
 void JsSyncManagerObserver::OnProtocolEvent(const ProtocolEvent& event) {}
 
 void JsSyncManagerObserver::OnMigrationRequested(ModelTypeSet types) {}
-
-void JsSyncManagerObserver::OnInitializationComplete(
-    const WeakHandle<JsBackend>& js_backend,
-    const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener) {
-  if (!event_handler_.IsInitialized()) {
-    return;
-  }
-  // Ignore the |js_backend| argument; it's not really convertible to
-  // JSON anyway.
-
-  HandleJsEvent(FROM_HERE, "onInitializationComplete", JsEventDetails());
-}
 
 void JsSyncManagerObserver::HandleJsEvent(const base::Location& from_here,
                                           const std::string& name,

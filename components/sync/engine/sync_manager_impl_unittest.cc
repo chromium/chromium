@@ -102,12 +102,6 @@ class SyncManagerObserverMock : public SyncManager::Observer {
               (const SyncCycleSnapshot&),
               (override));
   // NOLINT
-  MOCK_METHOD(void,
-              OnInitializationComplete,
-              (const WeakHandle<JsBackend>&,
-               const WeakHandle<DataTypeDebugInfoListener>&),
-              (override));
-  // NOLINT
   MOCK_METHOD(void, OnConnectionStatusChange, (ConnectionStatus), (override));
   // NOLINT
   MOCK_METHOD(void, OnActionableError, (const SyncProtocolError&), (override));
@@ -167,10 +161,6 @@ class SyncManagerTest : public testing::Test {
     extensions_activity_ = new ExtensionsActivity();
 
     sync_manager_.AddObserver(&manager_observer_);
-    EXPECT_CALL(manager_observer_, OnInitializationComplete)
-        .WillOnce(DoAll(SaveArg<0>(&js_backend_)));
-
-    EXPECT_FALSE(js_backend_.IsInitialized());
 
     auto encryption_observer =
         std::make_unique<StrictMock<SyncEncryptionHandlerObserverMock>>();
@@ -191,9 +181,7 @@ class SyncManagerTest : public testing::Test {
     args.poll_interval = base::TimeDelta::FromMinutes(60);
     sync_manager_.Init(&args);
 
-    EXPECT_TRUE(js_backend_.IsInitialized());
-
-    PumpLoop();
+    base::RunLoop().RunUntilIdle();
   }
 
   // Test implementation.
@@ -202,28 +190,7 @@ class SyncManagerTest : public testing::Test {
   void TearDown() override {
     sync_manager_.RemoveObserver(&manager_observer_);
     sync_manager_.ShutdownOnSyncThread();
-    PumpLoop();
-  }
-
-  ModelTypeSet GetEnabledTypes() {
-    ModelTypeSet enabled_types;
-    enabled_types.Put(NIGORI);
-    enabled_types.Put(DEVICE_INFO);
-    enabled_types.Put(BOOKMARKS);
-    enabled_types.Put(THEMES);
-    enabled_types.Put(SESSIONS);
-    enabled_types.Put(PASSWORDS);
-    enabled_types.Put(PREFERENCES);
-    enabled_types.Put(PRIORITY_PREFERENCES);
-
-    return enabled_types;
-  }
-
-  void PumpLoop() { base::RunLoop().RunUntilIdle(); }
-
-  void SetJsEventHandler(const WeakHandle<JsEventHandler>& event_handler) {
-    js_backend_.Call(FROM_HERE, &JsBackend::SetJsEventHandler, event_handler);
-    PumpLoop();
+    base::RunLoop().RunUntilIdle();
   }
 
   virtual EngineComponentsFactory* GetFactory() {
@@ -241,7 +208,6 @@ class SyncManagerTest : public testing::Test {
   FakeSyncEncryptionHandler encryption_handler_;
   SyncManagerImpl sync_manager_;
   CancelationSignal cancelation_signal_;
-  WeakHandle<JsBackend> js_backend_;
   StrictMock<SyncManagerObserverMock> manager_observer_;
   // Owned by |sync_manager_|.
   StrictMock<SyncEncryptionHandlerObserverMock>* encryption_observer_;

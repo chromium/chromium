@@ -115,34 +115,6 @@ void SyncEngineBackend::DoRefreshTypes(ModelTypeSet types) {
   sync_manager_->RefreshTypes(types);
 }
 
-void SyncEngineBackend::OnInitializationComplete(
-    const WeakHandle<JsBackend>& js_backend,
-    const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // Hang on to these for a while longer.  We're not ready to hand them back to
-  // the UI thread yet.
-  js_backend_ = js_backend;
-  debug_info_listener_ = debug_info_listener;
-
-  LoadAndConnectNigoriController();
-
-  ConfigureReason reason = sync_manager_->InitialSyncEndedTypes().Empty()
-                               ? CONFIGURE_REASON_NEW_CLIENT
-                               : CONFIGURE_REASON_NEWLY_ENABLED_DATA_TYPE;
-
-  ModelTypeSet new_control_types =
-      Difference(ControlTypes(), sync_manager_->InitialSyncEndedTypes());
-
-  SDVLOG(1) << "Control Types " << ModelTypeSetToString(new_control_types)
-            << " added; calling ConfigureSyncer";
-
-  sync_manager_->ConfigureSyncer(
-      reason, new_control_types, SyncManager::SyncFeatureState::INITIALIZING,
-      base::BindOnce(&SyncEngineBackend::DoInitialProcessControlTypes,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
 void SyncEngineBackend::OnConnectionStatusChange(ConnectionStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   host_.Call(FROM_HERE,
@@ -287,6 +259,23 @@ void SyncEngineBackend::DoInitialize(
   args.bag_of_chips = restored_local_transport_data.bag_of_chips;
   args.sync_status_observers.push_back(this);
   sync_manager_->Init(&args);
+
+  LoadAndConnectNigoriController();
+
+  ConfigureReason reason = sync_manager_->InitialSyncEndedTypes().Empty()
+                               ? CONFIGURE_REASON_NEW_CLIENT
+                               : CONFIGURE_REASON_NEWLY_ENABLED_DATA_TYPE;
+
+  ModelTypeSet new_control_types =
+      Difference(ControlTypes(), sync_manager_->InitialSyncEndedTypes());
+
+  SDVLOG(1) << "Control Types " << ModelTypeSetToString(new_control_types)
+            << " added; calling ConfigureSyncer";
+
+  sync_manager_->ConfigureSyncer(
+      reason, new_control_types, SyncManager::SyncFeatureState::INITIALIZING,
+      base::BindOnce(&SyncEngineBackend::DoInitialProcessControlTypes,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SyncEngineBackend::DoUpdateCredentials(
@@ -346,12 +335,10 @@ void SyncEngineBackend::DoInitialProcessControlTypes() {
 
   host_.Call(FROM_HERE,
              &SyncEngineImpl::HandleInitializationSuccessOnFrontendLoop,
-             sync_manager_->GetEnabledTypes(), js_backend_,
-             debug_info_listener_, sync_manager_->GetModelTypeConnectorProxy(),
+             sync_manager_->GetEnabledTypes(), sync_manager_->GetJsBackend(),
+             sync_manager_->GetDebugInfoListener(),
+             sync_manager_->GetModelTypeConnectorProxy(),
              sync_manager_->birthday(), sync_manager_->bag_of_chips());
-
-  js_backend_.Reset();
-  debug_info_listener_.Reset();
 }
 
 void SyncEngineBackend::DoSetDecryptionPassphrase(

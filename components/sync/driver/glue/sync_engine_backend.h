@@ -72,9 +72,6 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   // traffic controller here, forwarding incoming messages to appropriate
   // landing threads.
   void OnSyncCycleCompleted(const SyncCycleSnapshot& snapshot) override;
-  void OnInitializationComplete(const WeakHandle<JsBackend>& js_backend,
-                                const WeakHandle<DataTypeDebugInfoListener>&
-                                    debug_info_listener) override;
   void OnConnectionStatusChange(ConnectionStatus status) override;
   void OnActionableError(const SyncProtocolError& sync_error) override;
   void OnMigrationRequested(ModelTypeSet types) override;
@@ -217,15 +214,8 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   // Required for |nigori_controller_| LoadModels().
   CoreAccountId authenticated_account_id_;
 
-  // Initialized in OnInitializationComplete() iff USS implementation of Nigori
-  // is enabled.
+  // Initialized in Init().
   std::unique_ptr<ModelTypeController> nigori_controller_;
-
-  // Temporary holder of sync manager's initialization results. Set by
-  // OnInitializeComplete, and consumed when we pass it via OnEngineInitialized
-  // in the final state of HandleInitializationSuccessOnFrontendLoop.
-  WeakHandle<JsBackend> js_backend_;
-  WeakHandle<DataTypeDebugInfoListener> debug_info_listener_;
 
   // This signal allows us to send requests to shut down the
   // ServerConnectionManager without having to wait for it to finish

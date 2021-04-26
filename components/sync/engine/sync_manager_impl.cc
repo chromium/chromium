@@ -208,15 +208,8 @@ void SyncManagerImpl::Init(InitArgs* args) {
     scheduler_->OnCredentialsUpdated();
   }
 
-  NotifyInitializationSuccess();
-}
-
-void SyncManagerImpl::NotifyInitializationSuccess() {
-  for (auto& observer : observers_) {
-    observer.OnInitializationComplete(
-        MakeWeakHandle(weak_ptr_factory_.GetWeakPtr()),
-        MakeWeakHandle(debug_info_event_listener_.GetWeakPtr()));
-  }
+  debug_info_event_listener_.InitializationComplete();
+  js_sync_manager_observer_.InitializationComplete();
 }
 
 void SyncManagerImpl::OnPassphraseRequired(
@@ -484,6 +477,14 @@ SyncManagerImpl::GetModelTypeConnectorProxy() {
   return std::make_unique<ModelTypeConnectorProxy>(
       base::SequencedTaskRunnerHandle::Get(),
       model_type_registry_->AsWeakPtr());
+}
+
+WeakHandle<JsBackend> SyncManagerImpl::GetJsBackend() {
+  return MakeWeakHandle(weak_ptr_factory_.GetWeakPtr());
+}
+
+WeakHandle<DataTypeDebugInfoListener> SyncManagerImpl::GetDebugInfoListener() {
+  return MakeWeakHandle(debug_info_event_listener_.GetWeakPtr());
 }
 
 std::string SyncManagerImpl::cache_guid() {

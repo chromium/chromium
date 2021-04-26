@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "components/sync/base/weak_handle.h"
 #include "components/sync/engine/sync_manager.h"
@@ -30,12 +29,11 @@ class JsSyncManagerObserver : public SyncManager::Observer {
 
   void SetJsEventHandler(const WeakHandle<JsEventHandler>& event_handler);
 
+  void InitializationComplete();
+
   // SyncManager::Observer implementation.
   void OnSyncCycleCompleted(const SyncCycleSnapshot& snapshot) override;
   void OnConnectionStatusChange(ConnectionStatus status) override;
-  void OnInitializationComplete(const WeakHandle<JsBackend>& js_backend,
-                                const WeakHandle<DataTypeDebugInfoListener>&
-                                    debug_info_listener) override;
   void OnActionableError(const SyncProtocolError& sync_protocol_error) override;
   void OnProtocolEvent(const ProtocolEvent& event) override;
   void OnMigrationRequested(ModelTypeSet types) override;
