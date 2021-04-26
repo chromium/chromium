@@ -34,16 +34,6 @@ void RecordFirstRunSignInMetrics(
     first_run::SignInAttemptStatus sign_in_attempt_status,
     BOOL has_sso_accounts);
 
-// Creates the First Run sentinel file so that the user will not be shown First
-// Run on subsequent cold starts. The user is considered done with First Run
-// only after a successful sign-in or explicitly skipping signing in. First Run
-// metrics are recorded iff the sentinel file didn't previous exist and was
-// successfully created.
-void WriteFirstRunSentinelAndRecordMetrics(
-    ChromeBrowserState* browserState,
-    first_run::SignInAttemptStatus sign_in_attempt_status,
-    BOOL has_sso_account);
-
 // Methods for writing sentinel and recording metrics and posting notifications
 void FinishFirstRun(ChromeBrowserState* browserState,
                     web::WebState* web_state,

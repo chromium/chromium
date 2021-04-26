@@ -248,21 +248,6 @@ const BOOL kDefaultStatsCheckboxValue = YES;
   [self.coordinator stop];
   self.coordinator = nil;
 
-  switch (signinResult) {
-    case SigninCoordinatorResultSuccess: {
-      // User is considered done with First Run only after successful sign-in.
-      WriteFirstRunSentinelAndRecordMetrics(
-          _browser->GetBrowserState(),
-          first_run::SignInAttemptStatus::ATTEMPTED,
-          [self.firstRunConfig hasSSOAccount]);
-      break;
-    }
-    case SigninCoordinatorResultCanceledByUser:
-    case SigninCoordinatorResultInterrupted:
-      // No-op
-      break;
-  }
-
   [self completeFirstRunWithSigninCompletionInfo:signinCompletionInfo];
 }
 

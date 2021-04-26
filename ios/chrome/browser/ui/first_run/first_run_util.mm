@@ -53,6 +53,25 @@ void CreateSentinel() {
 
 bool kFirstRunSentinelCreated = false;
 
+// Creates the First Run sentinel file so that the user will not be shown First
+// Run on subsequent cold starts. The user is considered done with First Run
+// only after a successful sign-in or explicitly skipping signing in. First Run
+// metrics are recorded iff the sentinel file didn't previous exist and was
+// successfully created.
+void WriteFirstRunSentinelAndRecordMetrics(
+    ChromeBrowserState* browserState,
+    first_run::SignInAttemptStatus sign_in_attempt_status,
+    BOOL has_sso_account) {
+  DCHECK(!base::FeatureList::IsEnabled(kEnableFREUIModuleIOS));
+  kFirstRunSentinelCreated = true;
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&CreateSentinel));
+  RecordFirstRunSignInMetrics(
+      IdentityManagerFactory::GetForBrowserState(browserState),
+      sign_in_attempt_status, has_sso_account);
+}
+
 }  // namespace
 
 void RecordFirstRunSignInMetrics(
@@ -85,20 +104,6 @@ void RecordFirstRunSignInMetrics(
   }
   UMA_HISTOGRAM_ENUMERATION("FirstRun.SignIn", sign_in_status,
                             first_run::SIGNIN_SIZE);
-}
-
-void WriteFirstRunSentinelAndRecordMetrics(
-    ChromeBrowserState* browserState,
-    first_run::SignInAttemptStatus sign_in_attempt_status,
-    BOOL has_sso_account) {
-  DCHECK(!base::FeatureList::IsEnabled(kEnableFREUIModuleIOS));
-  kFirstRunSentinelCreated = true;
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&CreateSentinel));
-  RecordFirstRunSignInMetrics(
-      IdentityManagerFactory::GetForBrowserState(browserState),
-      sign_in_attempt_status, has_sso_account);
 }
 
 void FinishFirstRun(ChromeBrowserState* browserState,
