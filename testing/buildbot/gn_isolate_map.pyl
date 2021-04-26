@@ -1144,6 +1144,10 @@
     "label": "//chrome/test:lacros_chrome_unittests",
     "type": "console_test_launcher",
   },
+  "lacros_version_metadata": {
+    "label": "//build/lacros:lacros_version_metadata",
+    "type": "additional_compile_target",
+  },
   "latency_unittests": {
     "label": "//ui/latency:latency_unittests",
     "type": "console_test_launcher",
@@ -1618,6 +1622,10 @@
   "sql_unittests": {
     "label": "//sql:sql_unittests",
     "type": "console_test_launcher",
+  },
+  "strip_chrome_binary": {
+    "label": "//chrome:strip_chrome_binary",
+    "type": "additional_compile_target",
   },
   "storage_unittests": {
     "label": "//storage:storage_unittests",

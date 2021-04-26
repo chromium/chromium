@@ -6627,7 +6627,11 @@
   },
   "lacros-amd64-generic-chrome": {
     "additional_compile_targets": [
-      "chrome"
+      "chrome",
+      "lacros_version_metadata",
+      "linux_symbols",
+      "symupload",
+      "strip_chrome_binary"
     ],
     "gtest_tests": [
       {
