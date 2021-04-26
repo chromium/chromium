@@ -12,6 +12,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/allocator/partition_allocator/starscan/pcscan_scheduling.h"
+#include "base/allocator/partition_allocator/starscan/stack/stack.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -205,6 +206,9 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   if (process_type.empty()) {
     EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded();
   }
+  auto& pcscan = base::internal::PCScan::Instance();
+  // Notify PCScan about the main thread.
+  pcscan.NotifyThreadCreated(base::internal::GetStackTop());
   SetProcessNameForPCScan(process_type);
 }
 

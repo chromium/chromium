@@ -6,6 +6,9 @@
 
 #include <stddef.h>
 
+#include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/starscan/pcscan.h"
+#include "base/allocator/partition_allocator/starscan/stack/stack.h"
 #include "base/debug/activity_tracker.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
@@ -98,6 +101,10 @@ DWORD __stdcall ThreadFunc(void* params) {
                                 FALSE,
                                 DUPLICATE_SAME_ACCESS);
 
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  internal::PCScan::Instance().NotifyThreadCreated(internal::GetStackPointer());
+#endif
+
   win::ScopedHandle scoped_platform_handle;
 
   if (did_dup) {
@@ -115,6 +122,10 @@ DWORD __stdcall ThreadFunc(void* params) {
         scoped_platform_handle.Get(),
         PlatformThread::CurrentId());
   }
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  internal::PCScan::Instance().NotifyThreadDestroyed();
+#endif
 
   // Ensure thread priority is at least NORMAL before initiating thread
   // destruction. Thread destruction on Windows holds the LdrLock while

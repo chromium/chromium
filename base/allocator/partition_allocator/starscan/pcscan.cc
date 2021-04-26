@@ -557,8 +557,10 @@ class PCScanInternal final {
 
   SimdSupport simd_support() const { return simd_support_; }
 
-  void ClearRootsForTesting();  // IN-TEST
+  void NotifyThreadCreated(void* stack_top);
+  void NotifyThreadDestroyed();
 
+  void ClearRootsForTesting();  // IN-TEST
   void ReinitForTesting();  // IN-TEST
 
  private:
@@ -658,6 +660,14 @@ size_t PCScanInternal::CalculateTotalHeapSize() const {
                          acc) +
          std::accumulate(nonscannable_roots_.begin(), nonscannable_roots_.end(),
                          0u, acc);
+}
+
+void PCScanInternal::NotifyThreadCreated(void* stack_top) {
+  // TODO(bikineev,1202644): Add implementation.
+}
+
+void PCScanInternal::NotifyThreadDestroyed() {
+  // TODO(bikineev,1202644): Add implementation.
 }
 
 void PCScanInternal::ClearRootsForTesting() {
@@ -1613,6 +1623,13 @@ void PCScan::RegisterNonScannableRoot(Root* root) {
 
 void PCScan::SetProcessName(const char* process_name) {
   PCScanInternal::Instance().SetProcessName(process_name);
+}
+
+void PCScan::NotifyThreadCreated(void* stack_top) {
+  PCScanInternal::Instance().NotifyThreadCreated(stack_top);
+}
+void PCScan::NotifyThreadDestroyed() {
+  PCScanInternal::Instance().NotifyThreadDestroyed();
 }
 
 void PCScan::UninitForTesting() {

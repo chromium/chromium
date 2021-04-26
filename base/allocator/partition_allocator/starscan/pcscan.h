@@ -43,6 +43,7 @@ class PCScanTask;
 // unreachable and therefore can be safely reclaimed.
 //
 // The driver class encapsulates the entire PCScan infrastructure.
+// TODO(bikineev,1129751): Consider a fully static interface.
 class BASE_EXPORT PCScan final {
  public:
   using Root = PartitionRoot<ThreadSafe>;
@@ -89,6 +90,10 @@ class BASE_EXPORT PCScan final {
 
   // Sets process name (used for histograms). |name| must be a string literal.
   void SetProcessName(const char* name);
+
+  // Notify PCScan that a new thread was created/destroyed.
+  void NotifyThreadCreated(void* stack_top);
+  void NotifyThreadDestroyed();
 
   void UninitForTesting();
 
