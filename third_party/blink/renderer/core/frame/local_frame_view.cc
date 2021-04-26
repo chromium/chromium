@@ -867,8 +867,6 @@ void LocalFrameView::UpdateLayout() {
 
   PerformLayout();
 
-  DCHECK(layout_subtree_root_list_.IsEmpty());
-
   DocumentLifecycle::Scope lifecycle_scope(Lifecycle(),
                                            DocumentLifecycle::kLayoutClean);
 
