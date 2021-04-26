@@ -18,5 +18,12 @@ const char kAutofillAssistantUrl[] = "autofill-assistant-url";
 // during development, as prod instances require authentication.
 const char kAutofillAssistantAuth[] = "autofill-assistant-auth";
 
+// Forces the onboarding to be shown if set to 'true'. This will overwrite the
+// AA preference by setting onboarding accepted to 'false' before each startup.
+// Does nothing if unset or is set to false. This is only useful during testing
+// and development.
+const char kAutofillAssistantForceOnboarding[] =
+    "autofill-assistant-force-onboarding";
+
 }  // namespace switches
 }  // namespace autofill_assistant

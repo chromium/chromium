@@ -19,6 +19,7 @@
 #include "components/autofill_assistant/browser/public/mock_runtime_manager.h"
 #include "components/autofill_assistant/browser/script_parameters.h"
 #include "components/autofill_assistant/browser/service/mock_service_request_sender.h"
+#include "components/autofill_assistant/browser/switches.h"
 #include "components/autofill_assistant/browser/test_util.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
 #include "components/autofill_assistant/browser/trigger_scripts/mock_trigger_script_ui_delegate.h"
@@ -360,6 +361,41 @@ TEST_F(StarterTest, RegularStartupForFirstTimeUsersSucceeds) {
       "Android.AutofillAssistant.FeatureModuleInstallation",
       Metrics::FeatureModuleInstallation::DFM_FOREGROUND_INSTALLATION_SUCCEEDED,
       1u);
+  histogram_tester_.ExpectBucketCount("Android.AutofillAssistant.OnBoarding",
+                                      Metrics::OnBoarding::OB_ACCEPTED, 1u);
+  histogram_tester_.ExpectBucketCount("Android.AutofillAssistant.OnBoarding",
+                                      Metrics::OnBoarding::OB_SHOWN, 1u);
+}
+
+TEST_F(StarterTest, ForceOnboardingFlagForReturningUsersSucceeds) {
+  SetupPlatformDelegateForReturningUser();
+  fake_platform_delegate_.show_onboarding_result_shown_ = true;
+  fake_platform_delegate_.show_onboarding_result_ = OnboardingResult::ACCEPTED;
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kAutofillAssistantForceOnboarding, "true");
+  std::map<std::string, std::string> script_parameters = {
+      {"ENABLED", "true"},
+      {"START_IMMEDIATELY", "true"},
+      {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
+  EXPECT_CALL(
+      mock_callback_,
+      Run(/* start_regular_script = */ true, GURL("https://www.example.com"),
+          Pointee(Property(&TriggerContext::GetOnboardingShown, true)), _));
+
+  starter_->Start(std::make_unique<TriggerContext>(
+                      std::make_unique<ScriptParameters>(script_parameters),
+                      TriggerContext::Options()),
+                  mock_callback_.Get());
+
+  EXPECT_THAT(fake_platform_delegate_.num_install_feature_module_called_,
+              Eq(0));
+  EXPECT_THAT(fake_platform_delegate_.num_show_onboarding_called_, Eq(1));
+  EXPECT_FALSE(UkmLiteScriptStarted());
+  EXPECT_FALSE(UkmLiteScriptFinished());
+  EXPECT_FALSE(UkmLiteScriptOnboarding());
+  histogram_tester_.ExpectUniqueSample(
+      "Android.AutofillAssistant.FeatureModuleInstallation",
+      Metrics::FeatureModuleInstallation::DFM_ALREADY_INSTALLED, 1u);
   histogram_tester_.ExpectBucketCount("Android.AutofillAssistant.OnBoarding",
                                       Metrics::OnBoarding::OB_ACCEPTED, 1u);
   histogram_tester_.ExpectBucketCount("Android.AutofillAssistant.OnBoarding",

@@ -7,6 +7,7 @@
 #include "base/base64url.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
@@ -17,6 +18,7 @@
 #include "components/autofill_assistant/browser/service/service_request_sender_impl.h"
 #include "components/autofill_assistant/browser/service/service_request_sender_local_impl.h"
 #include "components/autofill_assistant/browser/service/simple_url_loader_factory.h"
+#include "components/autofill_assistant/browser/switches.h"
 #include "components/autofill_assistant/browser/trigger_scripts/dynamic_trigger_conditions.h"
 #include "components/autofill_assistant/browser/trigger_scripts/static_trigger_conditions.h"
 
@@ -149,6 +151,11 @@ void Starter::Start(std::unique_ptr<TriggerContext> trigger_context,
   CancelPendingStartup();
   pending_trigger_context_ = std::move(trigger_context);
   pending_callback_ = std::move(callback);
+
+  if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kAutofillAssistantForceOnboarding) == "true") {
+    platform_delegate_->SetOnboardingAccepted(false);
+  }
 
   StartupMode startup_mode = StartupUtil().ChooseStartupModeForIntent(
       *pending_trigger_context_,

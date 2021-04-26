@@ -11,6 +11,7 @@ namespace switches {
 extern const char kAutofillAssistantServerKey[];
 extern const char kAutofillAssistantUrl[];
 extern const char kAutofillAssistantAuth[];
+extern const char kAutofillAssistantForceOnboarding[];
 
 }  // namespace switches
 }  // namespace autofill_assistant
