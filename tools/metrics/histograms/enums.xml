@@ -40921,6 +40921,13 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2" label="Remind Me Later"/>
 </enum>
 
+<enum name="IOSDefaultBrowserTailoredPromoType">
+  <int value="0" label="Unkown"/>
+  <int value="1" label="Made for iOS"/>
+  <int value="2" label="Stay Safe"/>
+  <int value="3" label="All Tabs"/>
+</enum>
+
 <enum name="IOSDeviceThermalState">
   <int value="0" label="0-Unknown"/>
   <int value="1" label="1-Nominal"/>

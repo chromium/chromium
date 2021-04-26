@@ -22,7 +22,41 @@
 
 using base::RecordAction;
 using base::UserMetricsAction;
+using base::UmaHistogramEnumeration;
+
 using l10n_util::GetNSString;
+
+namespace {
+
+// Enum for the tailored promo UMA histograms. These values are persisted to
+// logs. Entries should not be renumbered and numeric values should never be
+// reused.
+enum class DefaultPromoTypeForUMA {
+  kOther = 0,
+  kMadeForIOS = 1,
+  kStaySafe = 2,
+  kAllTabs = 3,
+  kMaxValue = kAllTabs,
+};
+
+DefaultPromoTypeForUMA DefaultPromoTypeForUMA(DefaultPromoType type) {
+  switch (type) {
+    case DefaultPromoTypeMadeForIOS:
+      return DefaultPromoTypeForUMA::kMadeForIOS;
+      break;
+    case DefaultPromoTypeStaySafe:
+      return DefaultPromoTypeForUMA::kStaySafe;
+      break;
+    case DefaultPromoTypeAllTabs:
+      return DefaultPromoTypeForUMA::kAllTabs;
+      break;
+    default:
+      DCHECK(type == DefaultPromoTypeGeneral);
+      return DefaultPromoTypeForUMA::kOther;
+      break;
+  }
+}
+}  // namespace
 
 @interface TailoredPromoCoordinator () <
     ConfirmationAlertActionHandler,
@@ -60,6 +94,9 @@ using l10n_util::GetNSString;
   [super start];
   RecordAction(
       UserMetricsAction("IOS.DefaultBrowserPromo.TailoredFullscreen.Appear"));
+  UmaHistogramEnumeration("IOS.DefaultBrowserPromo.TailoredFullscreen.Appear",
+                          DefaultPromoTypeForUMA(_promoType));
+
   self.tailoredPromoViewController = [[TailoredPromoViewController alloc] init];
 
   SetUpTailoredConsumerWithType(self.tailoredPromoViewController,
@@ -92,6 +129,9 @@ using l10n_util::GetNSString;
     (UIPresentationController*)presentationController {
   RecordAction(
       UserMetricsAction("IOS.DefaultBrowserPromo.TailoredFullscreen.Dismiss"));
+  UmaHistogramEnumeration("IOS.DefaultBrowserPromo.TailoredFullscreen.Dismiss",
+                          DefaultPromoTypeForUMA(_promoType));
+
   // This ensures that a modal swipe dismiss will also be logged.
   LogUserInteractionWithTailoredFullscreenPromo();
 }
@@ -106,6 +146,9 @@ using l10n_util::GetNSString;
 - (void)confirmationAlertPrimaryAction {
   RecordAction(
       UserMetricsAction("IOS.DefaultBrowserPromo.TailoredFullscreen.Accepted"));
+  UmaHistogramEnumeration("IOS.DefaultBrowserPromo.TailoredFullscreen.Accepted",
+                          DefaultPromoTypeForUMA(_promoType));
+
   LogUserInteractionWithTailoredFullscreenPromo();
   [[UIApplication sharedApplication]
                 openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
@@ -118,6 +161,9 @@ using l10n_util::GetNSString;
 - (void)confirmationAlertSecondaryAction {
   RecordAction(
       UserMetricsAction("IOS.DefaultBrowserPromo.TailoredFullscreen.Dismiss"));
+  UmaHistogramEnumeration("IOS.DefaultBrowserPromo.TailoredFullscreen.Dismiss",
+                          DefaultPromoTypeForUMA(_promoType));
+
   LogUserInteractionWithTailoredFullscreenPromo();
   [self.handler hidePromo];
 }
