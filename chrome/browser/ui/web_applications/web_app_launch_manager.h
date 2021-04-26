@@ -47,6 +47,7 @@ class WebAppLaunchManager {
   // apps::LaunchManager:
   content::WebContents* OpenApplication(apps::AppLaunchParams&& params);
 
+  // |browser| may be nullptr if the navigation fails.
   void LaunchApplication(
       const std::string& app_id,
       const base::CommandLine& command_line,

@@ -363,6 +363,9 @@ void FinalizeWebAppLaunch(
     std::unique_ptr<LaunchModeRecorder> launch_mode_recorder,
     Browser* browser,
     apps::mojom::LaunchContainer container) {
+  if (!browser)
+    return;
+
   LaunchMode mode;
   switch (container) {
     case apps::mojom::LaunchContainer::kLaunchContainerWindow:

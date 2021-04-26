@@ -84,8 +84,10 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
   content::WebContents* const web_contents =
       nav_params.navigated_or_inserted_contents;
 
-  SetTabHelperAppId(web_contents, app_id);
-  web_app::SetAppPrefsForWebContents(web_contents);
+  if (web_contents) {
+    SetTabHelperAppId(web_contents, app_id);
+    web_app::SetAppPrefsForWebContents(web_contents);
+  }
 
   return web_contents;
 }
@@ -296,7 +298,7 @@ content::WebContents* WebAppLaunchManager::OpenApplication(
     }
   }
 
-  content::WebContents* web_contents;
+  content::WebContents* web_contents = nullptr;
   if (share_target) {
     NavigateParams nav_params =
         NavigateParamsForShareTarget(browser, *share_target, *params.intent);
@@ -324,6 +326,10 @@ content::WebContents* WebAppLaunchManager::OpenApplication(
     web_contents = NavigateWebApplicationWindow(
         browser, params.app_id, url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
   }
+
+  // This can happen if Navigate() fails.
+  if (!web_contents)
+    return nullptr;
 
   web_app::OsIntegrationManager& os_integration_manager =
       provider_->os_integration_manager();
@@ -413,7 +419,7 @@ void WebAppLaunchManager::LaunchWebApplication(
     base::OnceCallback<void(Browser* browser,
                             apps::mojom::LaunchContainer container)> callback) {
   apps::mojom::LaunchContainer container;
-  Browser* browser;
+  Browser* browser = nullptr;
   if (provider_->registrar().IsInstalled(params.app_id)) {
     if (provider_->registrar().GetAppEffectiveDisplayMode(params.app_id) ==
         blink::mojom::DisplayMode::kBrowser) {
@@ -424,8 +430,8 @@ void WebAppLaunchManager::LaunchWebApplication(
     container = params.container;
     const content::WebContents* web_contents =
         OpenApplication(std::move(params));
-    browser = chrome::FindBrowserWithWebContents(web_contents);
-    DCHECK(browser);
+    if (web_contents)
+      browser = chrome::FindBrowserWithWebContents(web_contents);
   } else {
     // Open an empty browser window as the app_id is invalid.
     container = apps::mojom::LaunchContainer::kLaunchContainerNone;

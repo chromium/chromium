@@ -54,7 +54,8 @@ class BrowserAppLauncher {
   // window if unsuccessful. The user's preferred launch container for the app
   // (standalone window or browser tab) is used. |callback| will be called with
   // the container type used to open the app, kLaunchContainerNone if an empty
-  // browser window was opened.
+  // browser window was opened. |callback|'s |browser| will be nullptr if the
+  // navigation failed.
   // |url_handler_launch_url| is the launch URL when a PWA should be launched
   // as the URL handler. It's null if it's not a URL handler launch.
   // |protocol_handler_launch_url| is the protocol URL when a PWA is launched

@@ -31,6 +31,7 @@ void OpenApplicationWithReenablePrompt(Profile* profile,
                                        apps::AppLaunchParams&& params);
 
 // Open the application in a way specified by |params|.
+// Result may be nullptr if Navigate() fails.
 content::WebContents* OpenApplication(Profile* profile,
                                       apps::AppLaunchParams&& params);
 
