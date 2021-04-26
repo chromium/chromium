@@ -466,10 +466,13 @@ std::unique_ptr<views::View> PageInfoMainView::CreateBubbleHeaderView() {
       header->SetLayoutManager(std::make_unique<views::FlexLayout>());
   title_ = header->AddChildView(std::make_unique<views::Label>(
       std::u16string(), views::style::CONTEXT_DIALOG_TITLE));
+  title_->SetMultiLine(true);
+  title_->SetAllowCharacterBreak(true);
   title_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded)
+                               views::MaximumFlexSizeRule::kUnbounded,
+                               /*adjust_height_for_width =*/true)
           .WithWeight(1));
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   auto close_button =
@@ -485,6 +488,8 @@ std::unique_ptr<views::View> PageInfoMainView::CreateBubbleHeaderView() {
   flex_layout->SetInteriorMargin(gfx::Insets(
       0, kIconColumnWidth, 0, kIconColumnWidth - GetImageButtonRightPadding()));
   close_button->SetVisible(true);
+  close_button->SetProperty(views::kCrossAxisAlignmentKey,
+                            views::LayoutAlignment::kStart);
   header->AddChildView(close_button.release());
 
   return header;
