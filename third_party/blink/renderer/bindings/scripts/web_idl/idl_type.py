@@ -104,6 +104,9 @@ class IdlTypeFactory(object):
     def frozen_array_type(self, *args, **kwargs):
         return self._create(FrozenArrayType, args, kwargs)
 
+    def observable_array_type(self, *args, **kwargs):
+        return self._create(ObservableArrayType, args, kwargs)
+
     def variadic_type(self, *args, **kwargs):
         return self._create(VariadicType, args, kwargs)
 
@@ -436,6 +439,11 @@ class IdlType(WithExtendedAttributes, WithDebugInfo):
     @property
     def is_frozen_array(self):
         """Returns True if this is a froen array type."""
+        return False
+
+    @property
+    def is_observable_array(self):
+        """Returns True if this is an observable array type."""
         return False
 
     @property
@@ -991,6 +999,36 @@ class FrozenArrayType(_ArrayLikeType):
 
     @property
     def is_frozen_array(self):
+        return True
+
+
+class ObservableArrayType(_ArrayLikeType):
+    """https://heycam.github.io/webidl/#idl-observable-array"""
+
+    def __init__(self,
+                 element_type,
+                 is_optional=False,
+                 extended_attributes=None,
+                 debug_info=None,
+                 pass_key=None):
+        _ArrayLikeType.__init__(self,
+                                element_type,
+                                is_optional=is_optional,
+                                extended_attributes=extended_attributes,
+                                debug_info=debug_info,
+                                pass_key=pass_key)
+
+    @property
+    def syntactic_form(self):
+        return self._format_syntactic_form('ObservableArray<{}>'.format(
+            self.element_type.syntactic_form))
+
+    @property
+    def type_name_without_extended_attributes(self):
+        return '{}ObservableArray'.format(self.element_type.type_name)
+
+    @property
+    def is_observable_array(self):
         return True
 
 
