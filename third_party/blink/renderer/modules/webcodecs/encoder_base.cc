@@ -257,11 +257,15 @@ void EncoderBase<Traits>::ProcessFlush(Request* request) {
 
   auto done_callback = [](EncoderBase<Traits>* self, Request* req,
                           media::Status status) {
-    if (!self)
-      return;
-    DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
     DCHECK(req);
     DCHECK(req->resolver);
+
+    if (!self) {
+      req->resolver.Release()->Reject();
+      return;
+    }
+
+    DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
     if (self->reset_count_ != req->reset_count) {
       req->resolver.Release()->Reject();
       return;

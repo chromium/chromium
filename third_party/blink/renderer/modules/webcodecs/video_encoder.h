@@ -87,7 +87,6 @@ class MODULES_EXPORT VideoEncoder final
   void ProcessEncode(Request* request) override;
   void ProcessConfigure(Request* request) override;
   void ProcessReconfigure(Request* request) override;
-  void ProcessFlush(Request* request) override;
 
   void UpdateEncoderLog(std::string encoder_name, bool is_hw_accelerated);
 

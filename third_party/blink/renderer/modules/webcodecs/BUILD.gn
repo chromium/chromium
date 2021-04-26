@@ -91,6 +91,7 @@ source_set("unit_tests") {
     "encoded_video_chunk_test.cc",
     "image_decoder_external_test.cc",
     "video_decoder_broker_test.cc",
+    "video_encoder_test.cc",
     "video_frame_test.cc",
   ]
 
