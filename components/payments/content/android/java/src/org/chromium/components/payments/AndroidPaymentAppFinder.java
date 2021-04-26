@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.payments;
+package org.chromium.components.payments;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -14,20 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
-import org.chromium.chrome.browser.payments.PaymentManifestVerifier.ManifestVerifyCallback;
-import org.chromium.components.payments.AndroidPaymentApp;
-import org.chromium.components.payments.ErrorStrings;
-import org.chromium.components.payments.MethodStrings;
-import org.chromium.components.payments.PackageManagerDelegate;
-import org.chromium.components.payments.PaymentAppFactoryDelegate;
-import org.chromium.components.payments.PaymentAppFactoryInterface;
-import org.chromium.components.payments.PaymentFeatureList;
-import org.chromium.components.payments.PaymentManifestDownloader;
-import org.chromium.components.payments.PaymentManifestParser;
-import org.chromium.components.payments.PaymentManifestWebDataService;
-import org.chromium.components.payments.PaymentOptionsUtils;
-import org.chromium.components.payments.SupportedDelegations;
-import org.chromium.components.payments.UrlUtil;
+import org.chromium.components.payments.PaymentManifestVerifier.ManifestVerifyCallback;
 import org.chromium.components.payments.intent.WebPaymentIntentHelper;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
 import org.chromium.payments.mojom.PaymentMethodData;
@@ -56,25 +43,25 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
     private static final int MAX_NUMBER_OF_MANIFESTS = 10;
 
     /** The name of the intent for the service to check whether an app is ready to pay. */
-    /* package */ static final String ACTION_IS_READY_TO_PAY =
+    public static final String ACTION_IS_READY_TO_PAY =
             "org.chromium.intent.action.IS_READY_TO_PAY";
 
     /**
      * Meta data name of an app's supported payment method names.
      */
-    /* package */ static final String META_DATA_NAME_OF_PAYMENT_METHOD_NAMES =
+    public static final String META_DATA_NAME_OF_PAYMENT_METHOD_NAMES =
             "org.chromium.payment_method_names";
 
     /**
      * Meta data name of an app's supported default payment method name.
      */
-    /* package */ static final String META_DATA_NAME_OF_DEFAULT_PAYMENT_METHOD_NAME =
+    public static final String META_DATA_NAME_OF_DEFAULT_PAYMENT_METHOD_NAME =
             "org.chromium.default_payment_method_name";
 
     /**
      * Meta data name of an app's supported delegations' list.
      */
-    /* package */ static final String META_DATA_NAME_OF_SUPPORTED_DELEGATIONS =
+    public static final String META_DATA_NAME_OF_SUPPORTED_DELEGATIONS =
             "org.chromium.payment_supported_delegations";
 
     private final Set<String> mNonUriPaymentMethods = new HashSet<>();
@@ -168,7 +155,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
      * @param factory The factory to be used in the delegate.onDoneCreatingPaymentApps(factory)
      *         call.
      */
-    /* package */ AndroidPaymentAppFinder(PaymentManifestWebDataService webDataService,
+    public AndroidPaymentAppFinder(PaymentManifestWebDataService webDataService,
             PaymentManifestDownloader downloader, PaymentManifestParser parser,
             PackageManagerDelegate packageManagerDelegate,
             PaymentAppFactoryDelegate factoryDelegate, PaymentAppFactoryInterface factory) {
@@ -253,7 +240,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
      * Finds and validates the installed android payment apps that support the payment method names
      * that the merchant is using.
      */
-    /* package */ void findAndroidPaymentApps() {
+    public void findAndroidPaymentApps() {
         if (mFactoryDelegate.getParams().hasClosed()) return;
         // For non-URL payment method names, only names published by W3C should be supported. Keep
         // this in sync with manifest_verifier.cc.
@@ -601,7 +588,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
     }
 
     @VisibleForTesting
-    /* package */ void bypassIsReadyToPayServiceInTest() {
+    public void bypassIsReadyToPayServiceInTest() {
         mBypassIsReadyToPayServiceInTest = true;
     }
 
@@ -728,7 +715,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
      * @param paymentMethod The payment method identifier of the app store.
      */
     @VisibleForTesting
-    /* package */ void addAppStoreForTest(String packageName, GURL paymentMethod) {
+    public void addAppStoreForTest(String packageName, GURL paymentMethod) {
         assert paymentMethod.isValid();
         mAppStores.put(packageName, paymentMethod);
     }

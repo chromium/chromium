@@ -16,6 +16,7 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.components.payments.AndroidPaymentAppFinder;
 import org.chromium.components.payments.PackageManagerDelegate;
 
 import java.util.ArrayList;

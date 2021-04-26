@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.payments.AbortReason;
 import org.chromium.components.payments.AndroidPaymentApp;
+import org.chromium.components.payments.AndroidPaymentAppFactory;
 import org.chromium.components.payments.BrowserPaymentRequest;
 import org.chromium.components.payments.ErrorStrings;
 import org.chromium.components.payments.JourneyLogger;

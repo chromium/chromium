@@ -18,9 +18,9 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.payments.AndroidPaymentAppFactory;
 import org.chromium.chrome.browser.payments.ServiceWorkerPaymentAppBridge;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
+import org.chromium.components.payments.AndroidPaymentAppFactory;
 
 import java.util.Map;
 

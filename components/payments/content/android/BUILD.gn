@@ -137,6 +137,8 @@ android_library("full_java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources = [
     "java/src/org/chromium/components/payments/AndroidPaymentApp.java",
+    "java/src/org/chromium/components/payments/AndroidPaymentAppFactory.java",
+    "java/src/org/chromium/components/payments/AndroidPaymentAppFinder.java",
     "java/src/org/chromium/components/payments/BasicCardUtils.java",
     "java/src/org/chromium/components/payments/BrowserPaymentRequest.java",
     "java/src/org/chromium/components/payments/CanMakePaymentQuery.java",
@@ -151,6 +153,7 @@ android_library("full_java") {
     "java/src/org/chromium/components/payments/PaymentHandlerNavigationThrottle.java",
     "java/src/org/chromium/components/payments/PaymentManifestDownloader.java",
     "java/src/org/chromium/components/payments/PaymentManifestParser.java",
+    "java/src/org/chromium/components/payments/PaymentManifestVerifier.java",
     "java/src/org/chromium/components/payments/PaymentManifestWebDataService.java",
     "java/src/org/chromium/components/payments/PaymentNotShownError.java",
     "java/src/org/chromium/components/payments/PaymentOptionsUtils.java",
