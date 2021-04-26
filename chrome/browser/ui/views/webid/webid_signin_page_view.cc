@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/webid/webid_signin_page_view.h"
 
 #include "chrome/browser/ui/webid/identity_dialog_controller.h"
+#include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -126,7 +127,12 @@ std::unique_ptr<views::WebView> SigninPageView::CreateContentWebView(
       initiator_web_contents_->GetBrowserContext());
 
   web_view->SetWebContents(idp_web_contents);
-  web_view->LoadInitialURL(provider);
+
+  // Navigate using the WebContents directly because the WebID custom header
+  // is needed.
+  std::string header = std::string(content::kSecWebIdCsrfHeader) + ":";
+  idp_web_contents->GetController().LoadURL(
+      provider, content::Referrer(), ui::PAGE_TRANSITION_AUTO_TOPLEVEL, header);
 
   // The webview must get an explicitly set height otherwise the layout
   // doesn't make it fill its container. This is likely because it has no

@@ -6,6 +6,7 @@
 
 #include "base/base64url.h"
 #include "base/json/json_writer.h"
+#include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -42,11 +43,6 @@ constexpr char kAccountKey[] = "sub";
 constexpr char kRequestKey[] = "request";
 
 constexpr char kJSONMimeType[] = "application/json";
-
-// `Sec-` prefix makes this a forbidden header and cannot be added by
-// JavaScript.
-// See https://fetch.spec.whatwg.org/#forbidden-header-name
-constexpr char kSecWebIdHeader[] = "Sec-WebID";
 
 // 1 MiB is an arbitrary upper bound that should account for any reasonable
 // response size that is a part of this protocol.
@@ -103,7 +99,7 @@ std::unique_ptr<network::ResourceRequest> CreateCredentialedResourceRequest(
   // TODO(kenrb): To avoid the value being depended on  set it to a random
   // value. We can later change it if something more useful e.g., a version is
   // needed. https://crbug.com/1196371
-  resource_request->headers.SetHeader(kSecWebIdHeader, "1.0");
+  resource_request->headers.SetHeader(kSecWebIdCsrfHeader, "");
   resource_request->credentials_mode =
       network::mojom::CredentialsMode::kInclude;
   resource_request->trusted_params = network::ResourceRequest::TrustedParams();

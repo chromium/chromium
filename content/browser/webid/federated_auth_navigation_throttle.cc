@@ -6,6 +6,7 @@
 
 #include "base/time/time.h"
 #include "content/browser/webid/flags.h"
+#include "content/browser/webid/idp_network_request_manager.h"
 #include "content/browser/webid/redirect_uri_data.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -14,6 +15,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "net/base/url_util.h"
+#include "net/http/http_request_headers.h"
 #include "ui/base/page_transition_types.h"
 
 namespace content {
@@ -43,6 +45,11 @@ FederatedAuthNavigationThrottle::WillStartRequest() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   GURL navigation_url = navigation_handle()->GetURL();
+
+  // Explicit WebID requests are exempt from throttling.
+  const auto headers = navigation_handle()->GetRequestHeaders();
+  if (headers.HasHeader(kSecWebIdCsrfHeader))
+    return NavigationThrottle::PROCEED;
 
   if (IsFederationRequest(navigation_url)) {
     net::GetValueForKeyInQuery(navigation_url, "redirect_uri", &redirect_uri_);

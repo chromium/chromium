@@ -50,7 +50,7 @@ constexpr char kTestWellKnownResponseBody[] =
     "{\"idp_endpoint\": \"/webid/sign-in\"}";
 constexpr char kTestIdpEndpointBody[] = "{\"signin_url\": \"/webid/\"}";
 constexpr char kTestContentType[] = "application/json";
-constexpr char kIdpForbiddenHeader[] = "Sec-WebID";
+constexpr char kIdpForbiddenHeader[] = "Sec-WebID-CSRF";
 // Value will be added here as token introspection is implemented.
 constexpr char kIdToken[] = "[not a real token]";
 constexpr char kIdpEndpointTokenResponse[] =
