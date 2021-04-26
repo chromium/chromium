@@ -61,3 +61,7 @@ UIImage* ChromiumBrandedImageProvider::GetStaySafePromoImage() {
 UIImage* ChromiumBrandedImageProvider::GetMadeForIOSPromoImage() {
   return [UIImage imageNamed:@"chromium_ios_made"];
 }
+
+UIImage* ChromiumBrandedImageProvider::GetNonModalPromoImage() {
+  return [UIImage imageNamed:@"chromium_non_default_promo"];
+}

@@ -22,6 +22,7 @@ class ChromiumBrandedImageProvider : public BrandedImageProvider {
   UIImage* GetDownloadGoogleDriveImage() override;
   UIImage* GetStaySafePromoImage() override;
   UIImage* GetMadeForIOSPromoImage() override;
+  UIImage* GetNonModalPromoImage() override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ChromiumBrandedImageProvider);

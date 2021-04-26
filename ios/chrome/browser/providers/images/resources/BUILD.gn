@@ -25,6 +25,14 @@ imageset("chromium_ios_made") {
   ]
 }
 
+imageset("chromium_non_default_promo") {
+  sources = [
+    "chromium_non_default_promo.imageset/Contents.json",
+    "chromium_non_default_promo.imageset/chromium_non_default_promo@2x.png",
+    "chromium_non_default_promo.imageset/chromium_non_default_promo@3x.png",
+  ]
+}
+
 imageset("download_drivium") {
   sources = [
     "download_drivium.imageset/Contents.json",

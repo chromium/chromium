@@ -60,6 +60,9 @@ class BrandedImageProvider {
   // Returns the image used for the "Made for iOS" default browser promo.
   virtual UIImage* GetMadeForIOSPromoImage();
 
+  // Returns the image used for the non-modal default browser promo.
+  virtual UIImage* GetNonModalPromoImage();
+
  private:
   DISALLOW_COPY_AND_ASSIGN(BrandedImageProvider);
 };

@@ -58,3 +58,7 @@ UIImage* BrandedImageProvider::GetStaySafePromoImage() {
 UIImage* BrandedImageProvider::GetMadeForIOSPromoImage() {
   return nil;
 }
+
+UIImage* BrandedImageProvider::GetNonModalPromoImage() {
+  return nil;
+}
