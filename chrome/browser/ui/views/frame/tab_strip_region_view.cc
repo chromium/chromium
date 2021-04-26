@@ -194,20 +194,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
         views::kFlexBehaviorKey,
         views::FlexSpecification(base::BindRepeating(
             &TabScrollContainerFlexRule, base::Unretained(tab_strip_))));
-  } else {
-    tab_strip_container_ = AddChildView(std::move(tab_strip));
 
-    // Allow the |tab_strip_container_| to grow into the free space available in
-    // the TabStripRegionView.
-    const views::FlexSpecification tab_strip_container_flex_spec =
-        views::FlexSpecification(views::LayoutOrientation::kHorizontal,
-                                 views::MinimumFlexSizeRule::kScaleToZero,
-                                 views::MaximumFlexSizeRule::kPreferred);
-    tab_strip_container_->SetProperty(views::kFlexBehaviorKey,
-                                      tab_strip_container_flex_spec);
-  }
-
-  if (base::FeatureList::IsEnabled(features::kScrollableTabStripButtons)) {
     leading_scroll_button_ = AddChildView(CreateScrollButton(
         base::BindRepeating(&TabStripRegionView::ScrollTowardsLeadingTab,
                             base::Unretained(this))));
@@ -219,6 +206,17 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
     constexpr int kScrollButtonsTrailingMargin = 8;
     trailing_scroll_button_->SetProperty(
         views::kMarginsKey, gfx::Insets(0, 0, 0, kScrollButtonsTrailingMargin));
+  } else {
+    tab_strip_container_ = AddChildView(std::move(tab_strip));
+
+    // Allow the |tab_strip_container_| to grow into the free space available in
+    // the TabStripRegionView.
+    const views::FlexSpecification tab_strip_container_flex_spec =
+        views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                                 views::MinimumFlexSizeRule::kScaleToZero,
+                                 views::MaximumFlexSizeRule::kPreferred);
+    tab_strip_container_->SetProperty(views::kFlexBehaviorKey,
+                                      tab_strip_container_flex_spec);
   }
 
   new_tab_button_ = AddChildView(std::make_unique<NewTabButton>(
@@ -312,7 +310,7 @@ void TabStripRegionView::FrameColorsChanged() {
   new_tab_button_->FrameColorsChanged();
   if (tab_search_button_)
     tab_search_button_->FrameColorsChanged();
-  if (base::FeatureList::IsEnabled(features::kScrollableTabStripButtons)) {
+  if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
     const SkColor background_color = tab_strip_->GetTabBackgroundColor(
         TabActive::kInactive, BrowserFrameActiveState::kUseCurrent);
     SkColor foreground_color = tab_strip_->GetTabForegroundColor(
@@ -364,7 +362,7 @@ void TabStripRegionView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 void TabStripRegionView::OnViewPreferredSizeChanged(View* view) {
   DCHECK_EQ(view, tab_strip_);
 
-  if (base::FeatureList::IsEnabled(features::kScrollableTabStripButtons))
+  if (base::FeatureList::IsEnabled(features::kScrollableTabStrip))
     UpdateScrollButtonVisibility();
 
   // The |tab_strip_|'s preferred size changing can change our own preferred
@@ -380,28 +378,24 @@ int TabStripRegionView::GetTabStripAvailableWidth() const {
   // sibling views. First ask for the available size of the container.
   views::SizeBound width_bound = GetAvailableSize(tab_strip_container_).width();
 
+  int tabstrip_available_width = width_bound.min_of(width());
+  // The scroll buttons should never prevent the tabstrip from being entirely
+  // visible (i.e. non-scrollable). In that sense, their layout space is always
+  // available for the tabstrip's use.
+  if (base::FeatureList::IsEnabled(features::kScrollableTabStrip) &&
+      leading_scroll_button_->GetVisible()) {
+    // The scroll button span has to be manually calculated since this occurs
+    // during layout and we cannot use the layout positions.
+    const int scroll_buttons_span =
+        leading_scroll_button_->width() + trailing_scroll_button_->width() +
+        trailing_scroll_button_->GetProperty(views::kMarginsKey)->right();
+    tabstrip_available_width += scroll_buttons_span;
+  }
+
   // Because we can't return a null value, and we can't return zero, for cases
   // where we have never been laid out we will return something arbitrary (the
   // width of the region view is as good a choice as any, as it's strictly
   // larger than the tabstrip should be able to display).
-  int tabstrip_available_width = width_bound.min_of(width());
-
-  // The scroll buttons should never prevent the tabstrip from being entirely
-  // visible (i.e. non-scrollable). In that sense, their layout space is always
-  // available for the tabstrip's use.
-  if (base::FeatureList::IsEnabled(features::kScrollableTabStripButtons) &&
-      leading_scroll_button_->GetVisible()) {
-    const int scroll_buttons_span =
-        new_tab_button_->x() - leading_scroll_button_->x();
-    // The NTB must immediately follow the scroll buttons for this approach
-    // to make sense. If these DCHECKS fail, we will need to revisit this
-    // assumption.
-    DCHECK_GT(scroll_buttons_span, 0);
-    DCHECK_EQ(GetIndexOf(trailing_scroll_button_) + 1,
-              GetIndexOf(new_tab_button_));
-    tabstrip_available_width += scroll_buttons_span;
-  }
-
   return tabstrip_available_width;
 }
 
@@ -448,11 +442,10 @@ void TabStripRegionView::UpdateNewTabButtonBorder() {
 }
 
 void TabStripRegionView::UpdateScrollButtonVisibility() {
-  DCHECK(base::FeatureList::IsEnabled(features::kScrollableTabStripButtons));
+  DCHECK(base::FeatureList::IsEnabled(features::kScrollableTabStrip));
   // Make the scroll buttons visible only if the tabstrip can be scrolled.
   bool is_scrollable =
       tab_strip_->GetMinimumSize().width() > GetTabStripAvailableWidth();
-
   leading_scroll_button_->SetVisible(is_scrollable);
   trailing_scroll_button_->SetVisible(is_scrollable);
 }
