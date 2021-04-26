@@ -75,8 +75,6 @@ class CONTENT_EXPORT AccessibilityTreeFormatterMac
 
   std::string ProcessTreeForOutput(
       const base::DictionaryValue& node) const override;
-
-  std::string FormatAttributeValue(const base::Value& value) const;
 };
 
 }  // namespace content
