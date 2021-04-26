@@ -56,5 +56,25 @@ void ChangeMemoryTaggingModeForCurrentThread(TagViolationReportingMode m) {
 #endif  // defined(HAS_MEMORY_TAGGING)
 }
 
+TagViolationReportingMode GetMemoryTaggingModeForCurrentThread() {
+#if defined(HAS_MEMORY_TAGGING)
+  base::CPU cpu;
+  if (!cpu.has_mte()) {
+    return TagViolationReportingMode::kUndefined;
+  }
+  int status = prctl(PR_GET_TAGGED_ADDR_CTRL, 0, 0, 0, 0);
+  if (status < 0) {
+    LOG(FATAL) << "GetMemoryTaggingModeForCurrentThread: prctl failure";
+  }
+  if ((status & PR_TAGGED_ADDR_ENABLE) && (status & PR_MTE_TCF_SYNC)) {
+    return TagViolationReportingMode::kSynchronous;
+  }
+  if ((status & PR_TAGGED_ADDR_ENABLE) && (status & PR_MTE_TCF_ASYNC)) {
+    return TagViolationReportingMode::kAsynchronous;
+  }
+#endif  // defined(HAS_MEMORY_TAGGING)
+  return TagViolationReportingMode::kUndefined;
+}
+
 }  // namespace memory
 }  // namespace base

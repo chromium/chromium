@@ -25,6 +25,9 @@ enum class TagViolationReportingMode {
 // Changes the memory tagging mode for the calling thread.
 BASE_EXPORT void ChangeMemoryTaggingModeForCurrentThread(
     TagViolationReportingMode);
+
+// Gets the memory tagging mode for the calling thread.
+BASE_EXPORT TagViolationReportingMode GetMemoryTaggingModeForCurrentThread();
 }  // namespace memory
 }  // namespace base
 

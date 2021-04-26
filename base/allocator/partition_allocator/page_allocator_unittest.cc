@@ -241,15 +241,22 @@ TEST(PageAllocatorTest, AllocAndFreePagesWithPageReadWriteTaggedSynchronous) {
   buffer1 = reinterpret_cast<int*>(__arm_mte_get_tag(buffer));
   // Prove that the tag is different (if they're the same, the test won't work).
   ASSERT_NE(buffer0, buffer1);
+  memory::TagViolationReportingMode parent_tagging_mode =
+      memory::GetMemoryTaggingModeForCurrentThread();
   EXPECT_EXIT(
       {
+        // Switch to synchronous mode.
+        memory::ChangeMemoryTaggingModeForCurrentThread(
+            memory::TagViolationReportingMode::kSynchronous);
+        EXPECT_EQ(memory::GetMemoryTaggingModeForCurrentThread(),
+                  memory::TagViolationReportingMode::kSynchronous);
         // Write to the buffer using its previous tag. A segmentation fault
-        // should be delivered (the test should already be running in
-        // synchronous MTE mode due to AndroidManifest.xml or `am compat` (on
-        // Android) or test_runner.cc on Linux.
+        // should be delivered.
         *buffer0 = 42;
       },
       testing::KilledBySignal(SIGSEGV), "");
+  EXPECT_EQ(memory::GetMemoryTaggingModeForCurrentThread(),
+            parent_tagging_mode);
   FreePages(buffer, PageAllocationGranularity());
 #else
   NOTREACHED();
@@ -277,11 +284,15 @@ TEST(PageAllocatorTest, AllocAndFreePagesWithPageReadWriteTaggedAsynchronous) {
   __arm_mte_set_tag(__arm_mte_increment_tag(buffer, 0x1));
   int* buffer1 = reinterpret_cast<int*>(__arm_mte_get_tag(buffer));
   EXPECT_NE(buffer0, buffer1);
+  memory::TagViolationReportingMode parent_tagging_mode =
+      memory::GetMemoryTaggingModeForCurrentThread();
   EXPECT_EXIT(
       {
         // Switch to asynchronous mode.
-        base::memory::ChangeMemoryTaggingModeForCurrentThread(
-            base::memory::TagViolationReportingMode::kAsynchronous);
+        memory::ChangeMemoryTaggingModeForCurrentThread(
+            memory::TagViolationReportingMode::kAsynchronous);
+        EXPECT_EQ(memory::GetMemoryTaggingModeForCurrentThread(),
+                  memory::TagViolationReportingMode::kAsynchronous);
         // Write to the buffer using its previous tag. A fault should be
         // generated at this point but we may not notice straight away...
         *buffer0 = 42;
@@ -291,6 +302,8 @@ TEST(PageAllocatorTest, AllocAndFreePagesWithPageReadWriteTaggedAsynchronous) {
       },
       testing::KilledBySignal(SIGSEGV), "");
   FreePages(buffer, PageAllocationGranularity());
+  EXPECT_EQ(memory::GetMemoryTaggingModeForCurrentThread(),
+            parent_tagging_mode);
 #else
   NOTREACHED();
 #endif
