@@ -90,7 +90,7 @@ class BASE_EXPORT PCScan final {
   // Sets process name (used for histograms). |name| must be a string literal.
   void SetProcessName(const char* name);
 
-  void ClearRootsForTesting();
+  void UninitForTesting();
 
   PCScanScheduler& scheduler() { return scheduler_; }
 

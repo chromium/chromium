@@ -67,6 +67,7 @@ void PartitionAllocGlobalInit(OomFunction on_out_of_memory) {
 }
 
 void PartitionAllocGlobalUninitForTesting() {
+  internal::PCScan::Instance().UninitForTesting();  // IN-TEST
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   if (features::IsPartitionAllocGigaCageEnabled()) {
 #if defined(PA_HAS_64_BITS_POINTERS)
@@ -76,7 +77,6 @@ void PartitionAllocGlobalUninitForTesting() {
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
   }
 #endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  internal::PCScan::Instance().ClearRootsForTesting();  // IN-TEST
   internal::g_oom_handling_function = nullptr;
 }
 

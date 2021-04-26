@@ -1615,8 +1615,9 @@ void PCScan::SetProcessName(const char* process_name) {
   PCScanInternal::Instance().SetProcessName(process_name);
 }
 
-void PCScan::ClearRootsForTesting() {
+void PCScan::UninitForTesting() {
   PCScanInternal::Instance().ClearRootsForTesting();  // IN-TEST
+  ReinitPCScanMetadataAllocatorForTesting();          // IN-TEST
 }
 
 void PCScan::ReinitForTesting() {

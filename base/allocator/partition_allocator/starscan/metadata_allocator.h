@@ -11,6 +11,7 @@ namespace base {
 namespace internal {
 
 ThreadSafePartitionRoot& PCScanMetadataAllocator();
+void ReinitPCScanMetadataAllocatorForTesting();
 
 // STL allocator which is needed to keep internal data structures required by
 // PCScan.
