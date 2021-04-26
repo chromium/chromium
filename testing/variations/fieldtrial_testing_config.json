@@ -1682,12 +1682,11 @@
                         "new_home_surface_from_home_button": "hide_tab_switcher_only",
                         "omnibox_focused_on_new_tab": "true",
                         "start_surface_variation": "single",
+                        "support_accessibility": "false",
                         "tab_switcher_on_return_time_ms": "3600000"
                     },
                     "enable_features": [
-                        "InstantStart",
                         "StartSurfaceAndroid",
-                        "TabGroupsContinuationAndroid",
                         "TabSwitcherOnReturn"
                     ]
                 },
@@ -1700,12 +1699,11 @@
                         "omnibox_focused_on_new_tab": "true",
                         "show_last_active_tab_only": "true",
                         "start_surface_variation": "single",
+                        "support_accessibility": "false",
                         "tab_switcher_on_return_time_ms": "3600000"
                     },
                     "enable_features": [
-                        "InstantStart",
                         "StartSurfaceAndroid",
-                        "TabGroupsContinuationAndroid",
                         "TabSwitcherOnReturn"
                     ]
                 },
@@ -1713,12 +1711,12 @@
                     "name": "EnabledSingleSurface",
                     "params": {
                         "start_surface_variation": "single",
+                        "support_accessibility": "false",
                         "tab_switcher_on_return_time_ms": "3600000"
                     },
                     "enable_features": [
                         "InstantStart",
                         "StartSurfaceAndroid",
-                        "TabGroupsContinuationAndroid",
                         "TabSwitcherOnReturn"
                     ]
                 },
@@ -1728,12 +1726,12 @@
                         "open_ntp_instead_of_start": "true",
                         "show_last_active_tab_only": "true",
                         "start_surface_variation": "single",
+                        "support_accessibility": "false",
                         "tab_switcher_on_return_time_ms": "3600000"
                     },
                     "enable_features": [
                         "InstantStart",
                         "StartSurfaceAndroid",
-                        "TabGroupsContinuationAndroid",
                         "TabSwitcherOnReturn"
                     ]
                 }
