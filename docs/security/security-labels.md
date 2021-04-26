@@ -137,6 +137,11 @@ Cases where it's *not* OK to set **Security_Impact-None**:
   attacker could overwrite memory for any feature checks performed within
   that lower-privileged process; the bug only qualifies as impact **None**
   if checks are performed in the higher-privileged process.
+* If a bug involves a patch to a renderer or use of a flag to turn on
+  [MojoJS](../../mojo/public/js/README.md)
+  this may mean it's a simulation of a compromised renderer and the
+  bug may still be a valid [sandbox escape
+  bug](severity-guidelines.md#TOC-High-severity).
 
 It's important to get this right, because this label influences how rapidly
 we merge and release the fix. Ask for help if you're not sure.
