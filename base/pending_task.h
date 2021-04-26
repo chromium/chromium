@@ -9,7 +9,6 @@
 
 #include "base/base_export.h"
 #include "base/callback.h"
-#include "base/containers/queue.h"
 #include "base/location.h"
 #include "base/optional.h"
 #include "base/time/time.h"
@@ -81,11 +80,6 @@ struct BASE_EXPORT PendingTask {
   // Needs high resolution timers.
   bool is_high_res = false;
 };
-
-using TaskQueue = base::queue<PendingTask>;
-
-// PendingTasks are sorted by their |delayed_run_time| property.
-using DelayedTaskQueue = std::priority_queue<base::PendingTask>;
 
 }  // namespace base
 
