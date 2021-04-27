@@ -110,6 +110,10 @@ class WebAppFileHandlingTestBase : public web_app::WebAppControllerBrowserTest {
     return https_server()->GetURL("app.com", "/ssl/page_with_refs.html");
   }
 
+  GURL GetHTMLFileHandlerActionURL() {
+    return https_server()->GetURL("app.com", "/ssl/page_with_frame.html");
+  }
+
   void InstallFileHandlingPWA() {
     GURL url = GetSecureAppURL();
 
@@ -118,17 +122,28 @@ class WebAppFileHandlingTestBase : public web_app::WebAppControllerBrowserTest {
     web_app_info->scope = url.GetWithoutFilename();
     web_app_info->title = u"A Hosted App";
 
+    // Basic plain text format.
     blink::Manifest::FileHandler entry1;
     entry1.action = GetTextFileHandlerActionURL();
     entry1.name = u"text";
     entry1.accept[u"text/*"].push_back(u".txt");
     web_app_info->file_handlers.push_back(std::move(entry1));
 
+    // A format that the browser is also a handler for, to confirm that the
+    // browser doesn't override PWAs using File Handling for types that the
+    // browser also handles.
     blink::Manifest::FileHandler entry2;
-    entry2.action = GetCSVFileHandlerActionURL();
-    entry2.name = u"csv";
-    entry2.accept[u"application/csv"].push_back(u".csv");
+    entry2.action = GetHTMLFileHandlerActionURL();
+    entry2.name = u"html";
+    entry2.accept[u"text/html"].push_back(u".html");
     web_app_info->file_handlers.push_back(std::move(entry2));
+
+    // application/* format.
+    blink::Manifest::FileHandler entry3;
+    entry3.action = GetCSVFileHandlerActionURL();
+    entry3.name = u"csv";
+    entry3.accept[u"application/csv"].push_back(u".csv");
+    web_app_info->file_handlers.push_back(std::move(entry3));
 
     app_id_ =
         WebAppControllerBrowserTest::InstallWebApp(std::move(web_app_info));
@@ -278,6 +293,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   LaunchWithFiles(app_id(), GetSecureAppURL(), {});
   LaunchWithFiles(app_id(), GetTextFileHandlerActionURL(),
                   {NewTestFilePath(FILE_PATH_LITERAL("txt"))});
+  LaunchWithFiles(app_id(), GetHTMLFileHandlerActionURL(),
+                  {NewTestFilePath(FILE_PATH_LITERAL("html"))});
   LaunchWithFiles(app_id(), GetCSVFileHandlerActionURL(),
                   {NewTestFilePath(FILE_PATH_LITERAL("csv"))});
 
@@ -286,6 +303,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                   apps::mojom::LaunchContainer::kLaunchContainerTab);
   LaunchWithFiles(app_id(), GetTextFileHandlerActionURL(),
                   {NewTestFilePath(FILE_PATH_LITERAL("txt"))},
+                  apps::mojom::LaunchContainer::kLaunchContainerTab);
+  LaunchWithFiles(app_id(), GetHTMLFileHandlerActionURL(),
+                  {NewTestFilePath(FILE_PATH_LITERAL("html"))},
                   apps::mojom::LaunchContainer::kLaunchContainerTab);
   LaunchWithFiles(app_id(), GetCSVFileHandlerActionURL(),
                   {NewTestFilePath(FILE_PATH_LITERAL("csv"))},
