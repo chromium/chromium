@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/views/autofill/update_address_profile_view.h"
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/autofill/save_address_profile_bubble_controller.h"
+#include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -18,8 +18,8 @@
 
 namespace autofill {
 
-class MockSaveAddressProfileBubbleController
-    : public SaveAddressProfileBubbleController {
+class MockSaveUpdateAddressProfileBubbleController
+    : public SaveUpdateAddressProfileBubbleController {
  public:
   MOCK_METHOD(std::u16string, GetWindowTitle, (), (const, override));
   MOCK_METHOD(const AutofillProfile&, GetProfileToSave, (), (const, override));
@@ -64,7 +64,7 @@ class UpdateAddressProfileViewTest : public ChromeViewsTestBase {
     return address_profile_to_save_;
   }
   UpdateAddressProfileView* view() { return view_; }
-  MockSaveAddressProfileBubbleController* mock_controller() {
+  MockSaveUpdateAddressProfileBubbleController* mock_controller() {
     return &mock_controller_;
   }
 
@@ -77,7 +77,8 @@ class UpdateAddressProfileViewTest : public ChromeViewsTestBase {
   std::unique_ptr<content::WebContents> test_web_contents_;
   std::unique_ptr<views::Widget> anchor_widget_;
   UpdateAddressProfileView* view_;
-  testing::NiceMock<MockSaveAddressProfileBubbleController> mock_controller_;
+  testing::NiceMock<MockSaveUpdateAddressProfileBubbleController>
+      mock_controller_;
 };
 
 void UpdateAddressProfileViewTest::CreateViewAndShow() {

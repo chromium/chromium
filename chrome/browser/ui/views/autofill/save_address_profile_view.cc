@@ -7,7 +7,7 @@
 #include "base/strings/string_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/autofill/save_address_profile_bubble_controller.h"
+#include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/theme_resources.h"
@@ -184,7 +184,7 @@ std::unique_ptr<views::EditableCombobox> CreateNicknameEditableCombobox() {
 SaveAddressProfileView::SaveAddressProfileView(
     views::View* anchor_view,
     content::WebContents* web_contents,
-    SaveAddressProfileBubbleController* controller)
+    SaveUpdateAddressProfileBubbleController* controller)
     : LocationBarBubbleDelegateView(anchor_view, web_contents),
       controller_(controller) {
   DCHECK(base::FeatureList::IsEnabled(
@@ -192,11 +192,11 @@ SaveAddressProfileView::SaveAddressProfileView(
   // TODO(crbug.com/1167060): Accept action should consider the selected
   // nickname when saving the address.
   SetAcceptCallback(base::BindOnce(
-      &SaveAddressProfileBubbleController::OnUserDecision,
+      &SaveUpdateAddressProfileBubbleController::OnUserDecision,
       base::Unretained(controller_),
       AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted));
   SetCancelCallback(base::BindOnce(
-      &SaveAddressProfileBubbleController::OnUserDecision,
+      &SaveUpdateAddressProfileBubbleController::OnUserDecision,
       base::Unretained(controller_),
       AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined));
 
@@ -218,7 +218,7 @@ SaveAddressProfileView::SaveAddressProfileView(
   std::unique_ptr<views::ImageButton> edit_button =
       views::CreateVectorImageButtonWithNativeTheme(
           base::BindRepeating(
-              &SaveAddressProfileBubbleController::OnEditButtonClicked,
+              &SaveUpdateAddressProfileBubbleController::OnEditButtonClicked,
               base::Unretained(controller_)),
           vector_icons::kEditIcon, gfx::kFaviconSize);
   // TODO(crbug.com/1167060): Use internationalized string.

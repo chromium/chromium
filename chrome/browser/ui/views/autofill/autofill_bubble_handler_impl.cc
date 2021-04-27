@@ -159,7 +159,7 @@ SaveUPIBubble* AutofillBubbleHandlerImpl::ShowSaveUPIBubble(
 
 AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveAddressProfileBubble(
     content::WebContents* web_contents,
-    SaveAddressProfileBubbleController* controller,
+    SaveUpdateAddressProfileBubbleController* controller,
     bool is_user_gesture) {
   views::View* anchor_view = toolbar_button_provider_->GetAnchorView(
       PageActionIconType::kSaveAutofillAddress);
@@ -179,7 +179,7 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveAddressProfileBubble(
 
 AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowUpdateAddressProfileBubble(
     content::WebContents* web_contents,
-    SaveAddressProfileBubbleController* controller,
+    SaveUpdateAddressProfileBubbleController* controller,
     bool is_user_gesture) {
   views::View* anchor_view = toolbar_button_provider_->GetAnchorView(
       PageActionIconType::kSaveAutofillAddress);

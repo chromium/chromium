@@ -17,16 +17,17 @@ class View;
 }
 
 namespace autofill {
-class SaveAddressProfileBubbleController;
+class SaveUpdateAddressProfileBubbleController;
 
 // Shown after a user submits a form with an address profile that's slightly
 // different from an address profile previously saved.
 class UpdateAddressProfileView : public AutofillBubbleBase,
                                  public LocationBarBubbleDelegateView {
  public:
-  UpdateAddressProfileView(views::View* anchor_view,
-                           content::WebContents* web_contents,
-                           SaveAddressProfileBubbleController* controller);
+  UpdateAddressProfileView(
+      views::View* anchor_view,
+      content::WebContents* web_contents,
+      SaveUpdateAddressProfileBubbleController* controller);
 
   UpdateAddressProfileView(const UpdateAddressProfileView&) = delete;
   UpdateAddressProfileView& operator=(const UpdateAddressProfileView&) = delete;
@@ -45,7 +46,7 @@ class UpdateAddressProfileView : public AutofillBubbleBase,
   void AddedToWidget() override;
 
  private:
-  SaveAddressProfileBubbleController* controller_;
+  SaveUpdateAddressProfileBubbleController* controller_;
 };
 
 }  // namespace autofill

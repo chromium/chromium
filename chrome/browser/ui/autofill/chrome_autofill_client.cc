@@ -33,7 +33,7 @@
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/create_card_unmask_prompt_view.h"
 #include "chrome/browser/ui/autofill/payments/credit_card_scanner_controller.h"
-#include "chrome/browser/ui/autofill/save_address_profile_bubble_controller_impl.h"
+#include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller_impl.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
@@ -538,9 +538,11 @@ void ChromeAutofillClient::ConfirmSaveAddressProfile(
   save_address_profile_flow_manager_.OfferSave(web_contents(), profile,
                                                std::move(callback));
 #else
-  SaveAddressProfileBubbleControllerImpl::CreateForWebContents(web_contents());
-  SaveAddressProfileBubbleControllerImpl* controller =
-      SaveAddressProfileBubbleControllerImpl::FromWebContents(web_contents());
+  SaveUpdateAddressProfileBubbleControllerImpl::CreateForWebContents(
+      web_contents());
+  SaveUpdateAddressProfileBubbleControllerImpl* controller =
+      SaveUpdateAddressProfileBubbleControllerImpl::FromWebContents(
+          web_contents());
   controller->OfferSave(profile, original_profile, std::move(callback));
 #endif
 }

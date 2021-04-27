@@ -47,7 +47,7 @@ SaveUPIBubble* TestAutofillBubbleHandler::ShowSaveUPIBubble(
 
 AutofillBubbleBase* TestAutofillBubbleHandler::ShowSaveAddressProfileBubble(
     content::WebContents* contents,
-    SaveAddressProfileBubbleController* controller,
+    SaveUpdateAddressProfileBubbleController* controller,
     bool is_user_gesture) {
   if (!save_address_profile_bubble_view_)
     save_address_profile_bubble_view_ = std::make_unique<TestAutofillBubble>();
@@ -56,7 +56,7 @@ AutofillBubbleBase* TestAutofillBubbleHandler::ShowSaveAddressProfileBubble(
 
 AutofillBubbleBase* TestAutofillBubbleHandler::ShowUpdateAddressProfileBubble(
     content::WebContents* contents,
-    SaveAddressProfileBubbleController* controller,
+    SaveUpdateAddressProfileBubbleController* controller,
     bool is_user_gesture) {
   if (!update_address_profile_bubble_view_) {
     update_address_profile_bubble_view_ =

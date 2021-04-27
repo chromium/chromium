@@ -17,7 +17,7 @@ class View;
 }  // namespace views
 
 namespace autofill {
-class SaveAddressProfileBubbleController;
+class SaveUpdateAddressProfileBubbleController;
 
 // This is the bubble views that is part of the flow for when the user submits a
 // form with an address profile that Autofill has not previously saved.
@@ -26,7 +26,7 @@ class SaveAddressProfileView : public AutofillBubbleBase,
  public:
   SaveAddressProfileView(views::View* anchor_view,
                          content::WebContents* web_contents,
-                         SaveAddressProfileBubbleController* controller);
+                         SaveUpdateAddressProfileBubbleController* controller);
 
   SaveAddressProfileView(const SaveAddressProfileView&) = delete;
   SaveAddressProfileView& operator=(const SaveAddressProfileView&) = delete;
@@ -45,7 +45,7 @@ class SaveAddressProfileView : public AutofillBubbleBase,
   void AddedToWidget() override;
 
  private:
-  SaveAddressProfileBubbleController* controller_;
+  SaveUpdateAddressProfileBubbleController* controller_;
 };
 
 }  // namespace autofill

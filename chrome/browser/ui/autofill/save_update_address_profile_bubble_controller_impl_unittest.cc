@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/autofill/save_address_profile_bubble_controller_impl.h"
+#include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller_impl.h"
 
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -13,10 +13,10 @@
 
 namespace autofill {
 
-class SaveAddressProfileBubbleControllerImplTest
+class SaveUpdateAddressProfileBubbleControllerImplTest
     : public BrowserWithTestWindowTest {
  public:
-  SaveAddressProfileBubbleControllerImplTest() = default;
+  SaveUpdateAddressProfileBubbleControllerImplTest() = default;
   void SetUp() override {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeature(
@@ -26,16 +26,17 @@ class SaveAddressProfileBubbleControllerImplTest
     AddTab(browser(), GURL("about:blank"));
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    SaveAddressProfileBubbleControllerImpl::CreateForWebContents(web_contents);
+    SaveUpdateAddressProfileBubbleControllerImpl::CreateForWebContents(
+        web_contents);
   }
 
-  SaveAddressProfileBubbleControllerImpl* controller() {
-    return SaveAddressProfileBubbleControllerImpl::FromWebContents(
+  SaveUpdateAddressProfileBubbleControllerImpl* controller() {
+    return SaveUpdateAddressProfileBubbleControllerImpl::FromWebContents(
         browser()->tab_strip_model()->GetActiveWebContents());
   }
 };
 
-TEST_F(SaveAddressProfileBubbleControllerImplTest,
+TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
        DialogAcceptedInvokesCallback) {
   AutofillProfile profile = test::GetFullProfile();
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
@@ -50,7 +51,7 @@ TEST_F(SaveAddressProfileBubbleControllerImplTest,
       AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted);
 }
 
-TEST_F(SaveAddressProfileBubbleControllerImplTest,
+TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
        DialogCancelledInvokesCallback) {
   AutofillProfile profile = test::GetFullProfile();
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_AUTOFILL_SAVE_ADDRESS_PROFILE_BUBBLE_CONTROLLER_H_
-#define CHROME_BROWSER_UI_AUTOFILL_SAVE_ADDRESS_PROFILE_BUBBLE_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_AUTOFILL_SAVE_UPDATE_ADDRESS_PROFILE_BUBBLE_CONTROLLER_H_
+#define CHROME_BROWSER_UI_AUTOFILL_SAVE_UPDATE_ADDRESS_PROFILE_BUBBLE_CONTROLLER_H_
 
 #include "components/autofill/core/browser/autofill_client.h"
 
@@ -11,9 +11,9 @@ namespace autofill {
 
 // Interface that exposes controller functionality to SaveAddressProfileView
 // bubble.
-class SaveAddressProfileBubbleController {
+class SaveUpdateAddressProfileBubbleController {
  public:
-  virtual ~SaveAddressProfileBubbleController() = default;
+  virtual ~SaveUpdateAddressProfileBubbleController() = default;
 
   virtual std::u16string GetWindowTitle() const = 0;
   virtual const AutofillProfile& GetProfileToSave() const = 0;
@@ -26,4 +26,4 @@ class SaveAddressProfileBubbleController {
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_AUTOFILL_SAVE_ADDRESS_PROFILE_BUBBLE_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_AUTOFILL_SAVE_UPDATE_ADDRESS_PROFILE_BUBBLE_CONTROLLER_H_

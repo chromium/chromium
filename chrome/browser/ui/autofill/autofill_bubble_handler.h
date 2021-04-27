@@ -15,7 +15,7 @@ namespace autofill {
 class AutofillBubbleBase;
 class LocalCardMigrationBubbleController;
 class OfferNotificationBubbleController;
-class SaveAddressProfileBubbleController;
+class SaveUpdateAddressProfileBubbleController;
 class EditAddressProfileDialogController;
 class SaveCardBubbleController;
 class SaveUPIBubble;
@@ -49,12 +49,12 @@ class AutofillBubbleHandler {
 
   virtual AutofillBubbleBase* ShowSaveAddressProfileBubble(
       content::WebContents* web_contents,
-      SaveAddressProfileBubbleController* controller,
+      SaveUpdateAddressProfileBubbleController* controller,
       bool is_user_gesture) = 0;
 
   virtual AutofillBubbleBase* ShowUpdateAddressProfileBubble(
       content::WebContents* web_contents,
-      SaveAddressProfileBubbleController* controller,
+      SaveUpdateAddressProfileBubbleController* controller,
       bool is_user_gesture) = 0;
 
   virtual AutofillBubbleBase* ShowEditAddressProfileDialog(

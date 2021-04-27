@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill/update_address_profile_view.h"
 
-#include "chrome/browser/ui/autofill/save_address_profile_bubble_controller.h"
+#include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -14,17 +14,17 @@ namespace autofill {
 UpdateAddressProfileView::UpdateAddressProfileView(
     views::View* anchor_view,
     content::WebContents* web_contents,
-    SaveAddressProfileBubbleController* controller)
+    SaveUpdateAddressProfileBubbleController* controller)
     : LocationBarBubbleDelegateView(anchor_view, web_contents),
       controller_(controller) {
   DCHECK(base::FeatureList::IsEnabled(
       features::kAutofillAddressProfileSavePrompt));
   SetAcceptCallback(base::BindOnce(
-      &SaveAddressProfileBubbleController::OnUserDecision,
+      &SaveUpdateAddressProfileBubbleController::OnUserDecision,
       base::Unretained(controller_),
       AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted));
   SetCancelCallback(base::BindOnce(
-      &SaveAddressProfileBubbleController::OnUserDecision,
+      &SaveUpdateAddressProfileBubbleController::OnUserDecision,
       base::Unretained(controller_),
       AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined));
 }
