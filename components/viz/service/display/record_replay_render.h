@@ -23,8 +23,12 @@ namespace viz {
 // driver and sent to clients inspecting the recording.
 
 // Called on the main thread when changes have been committed to the layer tree
-// and a paint has been triggered.
+// and the thread is about to block until the compositor thread is ready to commit.
 void RecordReplayOnCommitPaint();
+
+// Called on the compositor thread when the main thread's notification about
+// the commit.
+void RecordReplayOnReadyToCommit();
 
 // Called when a shared memory buffer for rasterization has been created.
 void RecordReplayNotifyRasterBuffer(const SharedBitmapId& shared_bitmap_id,
@@ -37,7 +41,7 @@ void RecordReplaySubmitCompositorFrame(const viz::LocalSurfaceId& local_surface_
 // Called to populate a bitmap with information for the given resource in the current frame.
 bool RecordReplayPopulateSkBitmapWithResource(SkBitmap* sk_bitmap, ResourceId resource_id);
 
-// Called when painting to the software output device has finished.
+// Called on the compositor thread when painting to the software output device has finished.
 void RecordReplayPaintFinished(const SkPixmap& pixmap);
 
 } // namespace viz

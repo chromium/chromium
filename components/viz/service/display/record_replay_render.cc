@@ -158,11 +158,37 @@ static char* PaintCallback(const char* mime_type, int jpeg_quality) {
   return strdup(encoded.c_str());
 }
 
+// Paints generally occur in the following way:
+//
+// 1. Main thread commits a paint in ProxyMain::BeginMainFrame, posts a task
+//    to run ProxyImpl::NotifyReadyToCommitOnImpl on the compositor thread,
+//    and blocks until the completion event associated with that task is signaled.
+//
+// 2. Compositor thread runs ProxyImpl::NotifyReadyToCommitOnImpl and at some
+//    point signals the completion event so the main thread can resume executing.
+//
+// 3. Compositor thread finishes painting the frame.
+//
+// The paint finished in #3 needs to be associated with the bookmark created in #1.
+// The state below is used to keep track of the bookmark for the current paint
+// in a consistent way between recording and replaying. This isn't necessarily
+// correct, though --- #2 and #3 run in separate tasks on the compositor thread,
+// so a frame could be marked ready to commit on the compositor thread before
+// the previous frame finished painting. For now this is good enough, though.
+
+// Bookmark which was last created on the main thread before blocking until the
+// compositor thread is ready to commit.
+static std::atomic<size_t> gCurrentPaintBookmark;
+
 // Bookmark for the last point where a paint was committed on the main thread.
-static std::atomic<size_t> gLastPaintBookmark;
+static size_t gLastCommitBookmark;
 
 void RecordReplayOnCommitPaint() {
-  gLastPaintBookmark = V8RecordReplayPaintStart();
+  gCurrentPaintBookmark = V8RecordReplayPaintStart();
+}
+
+void RecordReplayOnReadyToCommit() {
+  gLastCommitBookmark = gCurrentPaintBookmark;
 }
 
 void RecordReplayPaintFinished(const SkPixmap& pixmap) {
@@ -172,7 +198,7 @@ void RecordReplayPaintFinished(const SkPixmap& pixmap) {
     V8RecordReplaySetPaintCallback(PaintCallback);
   }
 
-  size_t bookmark = gLastPaintBookmark;
+  size_t bookmark = gLastCommitBookmark;
   recordreplay::Assert("RecordReplayPaintFinished %lu", bookmark);
 
   if (bookmark) {

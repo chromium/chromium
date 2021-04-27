@@ -13,6 +13,7 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/record_replay.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/base/devtools_instrumentation.h"
@@ -33,6 +34,7 @@
 #include "components/viz/common/frame_sinks/delay_based_time_source.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/viz/common/gpu/context_provider.h"
+#include "components/viz/service/display/record_replay_render.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
@@ -264,6 +266,10 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
     base::TimeTicks main_thread_start_time,
     const viz::BeginFrameArgs& commit_args,
     bool hold_commit_for_activation) {
+  if (recordreplay::IsRecordingOrReplaying()) {
+    viz::RecordReplayOnReadyToCommit();
+  }
+
   TRACE_EVENT0("cc", "ProxyImpl::NotifyReadyToCommitOnImpl");
   DCHECK(!commit_completion_event_);
   DCHECK(IsImplThread() && IsMainThreadBlocked());

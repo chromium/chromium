@@ -368,6 +368,10 @@ void ProxyMain::BeginMainFrame(
 
     DebugScopedSetMainThreadBlocked main_thread_blocked(task_runner_provider_);
 
+    if (recordreplay::IsRecordingOrReplaying()) {
+      viz::RecordReplayOnCommitPaint();
+    }
+
     bool hold_commit_for_activation = commit_waits_for_activation_;
     commit_waits_for_activation_ = false;
     CompletionEvent completion;
@@ -387,10 +391,6 @@ void ProxyMain::BeginMainFrame(
   // but *not* script-created IntersectionObserver. See
   // blink::LocalFrameView::RunPostLifecycleSteps.
   layer_tree_host_->DidBeginMainFrame();
-
-  if (recordreplay::IsRecordingOrReplaying()) {
-    viz::RecordReplayOnCommitPaint();
-  }
 
   layer_tree_host_->RecordEndOfFrameMetrics(
       begin_main_frame_start_time,
