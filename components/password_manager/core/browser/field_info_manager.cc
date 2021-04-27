@@ -47,8 +47,6 @@ void FieldInfoManagerImpl::OnGetPasswordStoreResults(
 
 void FieldInfoManagerImpl::OnGetAllFieldInfo(
     std::vector<FieldInfo> field_infos) {
-  base::UmaHistogramCounts100("PasswordManager.FieldInfoTableRows",
-                              field_infos.size());
   for (const auto& field : field_infos) {
     field_types_[std::make_pair(field.form_signature, field.field_signature)] =
         field.field_type;

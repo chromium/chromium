@@ -1111,6 +1111,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PasswordManager.FieldInfoTableRows" units="rows"
     expires_after="M92">
+  <obsolete>
+    Obsolete since M92.
+  </obsolete>
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
