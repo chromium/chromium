@@ -106,7 +106,6 @@ WPR_RECORD_REPLAY_TEST_FEATURE_ANNOTATION = 'WPRRecordReplayTest'
 _DEVICE_GOLD_DIR = 'skia_gold'
 # A map of Android product models to SDK ints.
 RENDER_TEST_MODEL_SDK_CONFIGS = {
-    'Nexus 5X': [23],
     # Android x86 emulator.
     'Android SDK built for x86': [23],
 }
