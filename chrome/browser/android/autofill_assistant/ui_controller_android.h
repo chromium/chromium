@@ -126,6 +126,8 @@ class UiControllerAndroid : public ControllerObserver {
   void OnClientSettingsChanged(const ClientSettings& settings) override;
   void OnGenericUserInterfaceChanged(
       const GenericUserInterfaceProto* generic_ui) override;
+  void OnPersistentGenericUserInterfaceChanged(
+      const GenericUserInterfaceProto* generic_ui) override;
   void OnShouldShowOverlayChanged(bool should_show) override;
 
   // Called by AssistantOverlayDelegate:
@@ -241,6 +243,7 @@ class UiControllerAndroid : public ControllerObserver {
   base::android::ScopedJavaLocalRef<jobject> GetCollectUserDataModel();
   base::android::ScopedJavaLocalRef<jobject> GetFormModel();
   base::android::ScopedJavaLocalRef<jobject> GetGenericUiModel();
+  base::android::ScopedJavaLocalRef<jobject> GetPersistentGenericUiModel();
 
   // The UiDelegate has the last say on whether we should show the overlay.
   // This saves the AutofillAssistantState-determined OverlayState and then
@@ -290,6 +293,8 @@ class UiControllerAndroid : public ControllerObserver {
   std::unique_ptr<GenericUiRootControllerAndroid>
       collect_user_data_appended_generic_ui_controller_;
   std::unique_ptr<GenericUiRootControllerAndroid> generic_ui_controller_;
+  std::unique_ptr<GenericUiRootControllerAndroid>
+      persistent_generic_ui_controller_;
 
   OverlayState desired_overlay_state_ = OverlayState::FULL;
   OverlayState overlay_state_ = OverlayState::FULL;

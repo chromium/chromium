@@ -453,11 +453,32 @@ void Controller::SetGenericUi(
   }
 }
 
+void Controller::SetPersistentGenericUi(
+    std::unique_ptr<GenericUserInterfaceProto> generic_ui,
+    base::OnceCallback<void(const ClientStatus&)>
+        view_inflation_finished_callback) {
+  persistent_generic_user_interface_ = std::move(generic_ui);
+  basic_interactions_.SetPersistentViewInflationFinishedCallback(
+      std::move(view_inflation_finished_callback));
+  for (ControllerObserver& observer : observers_) {
+    observer.OnPersistentGenericUserInterfaceChanged(
+        persistent_generic_user_interface_.get());
+  }
+}
+
 void Controller::ClearGenericUi() {
   generic_user_interface_.reset();
   basic_interactions_.ClearCallbacks();
   for (ControllerObserver& observer : observers_) {
     observer.OnGenericUserInterfaceChanged(nullptr);
+  }
+}
+
+void Controller::ClearPersistentGenericUi() {
+  persistent_generic_user_interface_.reset();
+  basic_interactions_.ClearPersistentUiCallbacks();
+  for (ControllerObserver& observer : observers_) {
+    observer.OnPersistentGenericUserInterfaceChanged(nullptr);
   }
 }
 
@@ -697,6 +718,11 @@ BasicInteractions* Controller::GetBasicInteractions() {
 
 const GenericUserInterfaceProto* Controller::GetGenericUiProto() const {
   return generic_user_interface_.get();
+}
+
+const GenericUserInterfaceProto* Controller::GetPersistentGenericUiProto()
+    const {
+  return persistent_generic_user_interface_.get();
 }
 
 void Controller::AddObserver(ControllerObserver* observer) {

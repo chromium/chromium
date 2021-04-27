@@ -75,6 +75,7 @@ import org.chromium.chrome.browser.autofill_assistant.proto.BooleanNotProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.CallbackProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipType;
+import org.chromium.chrome.browser.autofill_assistant.proto.ClearPersistentUiProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ClearViewContainerProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ClientDimensionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.CollectUserDataProto;
@@ -113,6 +114,8 @@ import org.chromium.chrome.browser.autofill_assistant.proto.ProcessedActionStatu
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SelectorProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SetModelValueProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.SetPersistentUiProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.SetTextProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SetUserActionsProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SetViewEnabledProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SetViewVisibilityProto;
@@ -3318,5 +3321,194 @@ public class AutofillAssistantGenericUiTest {
                                 .setValue(ValueProto.newBuilder().setCreditCardResponse(
                                         CreditCardResponseProto.newBuilder().setNetwork("amex")))
                                 .build()));
+    }
+
+    @Test
+    @MediumTest
+    public void testSetPersistentUi() {
+        ViewProto rootView =
+                (ViewProto) ViewProto.newBuilder()
+                        .setTextView(TextViewProto.newBuilder().setText("initial text"))
+                        .setIdentifier("clickableView")
+                        .build();
+
+        List<InteractionProto> interactions = new ArrayList<>();
+        interactions.add((InteractionProto) InteractionProto.newBuilder()
+                                 .addTriggerEvent(EventProto.newBuilder().setOnViewClicked(
+                                         OnViewClickedEventProto.newBuilder().setViewIdentifier(
+                                                 "clickableView")))
+                                 .addCallbacks(CallbackProto.newBuilder().setSetText(
+                                         SetTextProto.newBuilder()
+                                                 .setText(ValueReferenceProto.newBuilder().setValue(
+                                                         ValueProto.newBuilder().setStrings(
+                                                                 StringList.newBuilder().addValues(
+                                                                         "changed text"))))
+                                                 .setViewIdentifier("clickableView")))
+                                 .build());
+
+        ArrayList<ActionProto> list = new ArrayList<>();
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setSetPersistentUi(
+                                 SetPersistentUiProto.newBuilder().setGenericUserInterface(
+                                         GenericUserInterfaceProto.newBuilder()
+                                                 .setRootView(rootView)
+                                                 .setInteractions(InteractionsProto.newBuilder()
+                                                                          .addAllInteractions(
+                                                                                  interactions))))
+                         .build());
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder().setMessage("Prompt").addChoices(
+                                 PromptProto.Choice.newBuilder().setChip(
+                                         ChipProto.newBuilder()
+                                                 .setType(ChipType.DONE_ACTION)
+                                                 .setText("Clear"))))
+                         .build());
+
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setClearPersistentUi(ClearPersistentUiProto.newBuilder())
+                         .build());
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder().setMessage("End").addChoices(
+                                 PromptProto.Choice.newBuilder()))
+                         .build());
+
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
+                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                        .setPath("autofill_assistant_target_website.html")
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
+                                ChipProto.newBuilder().setText("Autostart")))
+                        .build(),
+                list);
+
+        AutofillAssistantTestService testService =
+                new AutofillAssistantTestService(Collections.singletonList(script));
+        startAutofillAssistant(mTestRule.getActivity(), testService);
+
+        waitUntilViewMatchesCondition(withText("initial text"), isDisplayed());
+
+        // Verify that a basic interaction works.
+        onView(withText("initial text")).perform(click());
+        waitUntilViewMatchesCondition(withText("changed text"), isDisplayed());
+
+        // Verify that the Ui is cleared by the second SetPersistentUi action.
+        onView(withText("Clear")).perform(click());
+        waitUntilViewMatchesCondition(withText("End"), isDisplayed());
+        onView(withText("changed text")).check(doesNotExist());
+    }
+
+    @Test
+    @MediumTest
+    public void testPersistentAndTransientGenericUi() {
+        ViewProto persistentRootView =
+                (ViewProto) ViewProto.newBuilder()
+                        .setTextView(TextViewProto.newBuilder().setText("persistent initial text"))
+                        .setIdentifier("persistentClickableView")
+                        .build();
+
+        List<InteractionProto> persistentInteractions = new ArrayList<>();
+        persistentInteractions.add(
+                (InteractionProto) InteractionProto.newBuilder()
+                        .addTriggerEvent(EventProto.newBuilder().setOnViewClicked(
+                                OnViewClickedEventProto.newBuilder().setViewIdentifier(
+                                        "persistentClickableView")))
+                        .addCallbacks(CallbackProto.newBuilder().setSetText(
+                                SetTextProto.newBuilder()
+                                        .setText(ValueReferenceProto.newBuilder().setValue(
+                                                ValueProto.newBuilder().setStrings(
+                                                        StringList.newBuilder().addValues(
+                                                                "persistent changed text"))))
+                                        .setViewIdentifier("persistentClickableView")))
+                        .build());
+
+        ArrayList<ActionProto> list = new ArrayList<>();
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setSetPersistentUi(
+                                 SetPersistentUiProto.newBuilder().setGenericUserInterface(
+                                         GenericUserInterfaceProto.newBuilder()
+                                                 .setRootView(persistentRootView)
+                                                 .setInteractions(
+                                                         InteractionsProto.newBuilder()
+                                                                 .addAllInteractions(
+                                                                         persistentInteractions))))
+                         .build());
+
+        ViewProto promptRootView =
+                (ViewProto) ViewProto.newBuilder()
+                        .setTextView(TextViewProto.newBuilder().setText("end action"))
+                        .setIdentifier("promptClickableView")
+                        .build();
+
+        // End the action when the text is clicked.
+        List<InteractionProto> promptInteractions = new ArrayList<>();
+        promptInteractions.add(
+                (InteractionProto) InteractionProto.newBuilder()
+                        .addTriggerEvent(EventProto.newBuilder().setOnViewClicked(
+                                OnViewClickedEventProto.newBuilder().setViewIdentifier(
+                                        "promptClickableView")))
+                        .addCallbacks(CallbackProto.newBuilder().setEndAction(
+                                EndActionProto.newBuilder().setStatus(
+                                        ProcessedActionStatusProto.ACTION_APPLIED)))
+                        .build());
+
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setShowGenericUi(ShowGenericUiProto.newBuilder().setGenericUserInterface(
+                                 GenericUserInterfaceProto.newBuilder()
+                                         .setRootView(promptRootView)
+                                         .setInteractions(
+                                                 InteractionsProto.newBuilder().addAllInteractions(
+                                                         promptInteractions))))
+                         .build());
+
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder().setMessage("Prompt").addChoices(
+                                 PromptProto.Choice.newBuilder().setChip(
+                                         ChipProto.newBuilder()
+                                                 .setType(ChipType.DONE_ACTION)
+                                                 .setText("Clear"))))
+                         .build());
+
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setClearPersistentUi(ClearPersistentUiProto.newBuilder())
+                         .build());
+
+        list.add((ActionProto) ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder().setMessage("End").addChoices(
+                                 PromptProto.Choice.newBuilder()))
+                         .build());
+
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
+                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                        .setPath("autofill_assistant_target_website.html")
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
+                                ChipProto.newBuilder().setText("Autostart")))
+                        .build(),
+                list);
+
+        AutofillAssistantTestService testService =
+                new AutofillAssistantTestService(Collections.singletonList(script));
+        startAutofillAssistant(mTestRule.getActivity(), testService);
+
+        // This is displayed by the persistent UI.
+        waitUntilViewMatchesCondition(withText("persistent initial text"), isDisplayed());
+
+        // This is displayed by the ShowGenericUi action.
+        waitUntilViewMatchesCondition(withText("end action"), isDisplayed());
+
+        // Clicking the text displayed by ShowGenericUi should trigger the specified end action
+        // interaction which should terminate the ShowGenericUi action, clearing the bottom part of
+        // the ui but not the persistent part.
+        onView(withText("end action")).perform(click());
+        waitUntilViewMatchesCondition(withText("Prompt"), isDisplayed());
+        onView(withText("persistent initial text")).check(matches(isDisplayed()));
+        onView(withText("end action")).check(doesNotExist());
+
+        // Verify that the persistent UI's interaction still works.
+        onView(withText("persistent initial text")).perform(click());
+        waitUntilViewMatchesCondition(withText("persistent changed text"), isDisplayed());
+
+        // Verify that the UI is cleared by the second SetPersistentUi action.
+        onView(withText("Clear")).perform(click());
+        waitUntilViewMatchesCondition(withText("End"), isDisplayed());
+        onView(withText("callback")).check(doesNotExist());
     }
 }

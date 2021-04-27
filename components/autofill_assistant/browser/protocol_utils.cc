@@ -11,6 +11,7 @@
 #include "components/autofill_assistant/browser/actions/action_delegate_util.h"
 #include "components/autofill_assistant/browser/actions/check_element_tag_action.h"
 #include "components/autofill_assistant/browser/actions/check_option_element_action.h"
+#include "components/autofill_assistant/browser/actions/clear_persistent_ui_action.h"
 #include "components/autofill_assistant/browser/actions/click_action.h"
 #include "components/autofill_assistant/browser/actions/collect_user_data_action.h"
 #include "components/autofill_assistant/browser/actions/configure_bottom_sheet_action.h"
@@ -30,6 +31,7 @@
 #include "components/autofill_assistant/browser/actions/select_option_action.h"
 #include "components/autofill_assistant/browser/actions/set_attribute_action.h"
 #include "components/autofill_assistant/browser/actions/set_form_field_value_action.h"
+#include "components/autofill_assistant/browser/actions/set_persistent_ui_action.h"
 #include "components/autofill_assistant/browser/actions/show_cast_action.h"
 #include "components/autofill_assistant/browser/actions/show_details_action.h"
 #include "components/autofill_assistant/browser/actions/show_form_action.h"
@@ -350,6 +352,10 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
       return std::make_unique<CheckElementTagAction>(delegate, action);
     case ActionProto::ActionInfoCase::kCheckOptionElement:
       return std::make_unique<CheckOptionElementAction>(delegate, action);
+    case ActionProto::ActionInfoCase::kSetPersistentUi:
+      return std::make_unique<SetPersistentUiAction>(delegate, action);
+    case ActionProto::ActionInfoCase::kClearPersistentUi:
+      return std::make_unique<ClearPersistentUiAction>(delegate, action);
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET: {
       VLOG(1) << "Encountered action with ACTION_INFO_NOT_SET";
       return std::make_unique<UnsupportedAction>(delegate, action);

@@ -231,6 +231,12 @@ std::ostream& operator<<(std::ostream& out,
     case ActionProto::ActionInfoCase::kCheckOptionElement:
       out << "CheckOptionElement";
       break;
+    case ActionProto::ActionInfoCase::kSetPersistentUi:
+      out << "SetPersistentUi";
+      break;
+    case ActionProto::ActionInfoCase::kClearPersistentUi:
+      out << "ClearPersistentUi";
+      break;
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET:
       out << "ACTION_INFO_NOT_SET";
       break;

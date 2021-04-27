@@ -96,7 +96,12 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
       base::OnceCallback<void(const ClientStatus&)> end_action_callback,
       base::OnceCallback<void(const ClientStatus&)>
           view_inflation_finished_callback) override;
+  void SetPersistentGenericUi(
+      std::unique_ptr<GenericUserInterfaceProto> generic_ui,
+      base::OnceCallback<void(const ClientStatus&)>
+          view_inflation_finished_callback) override;
   void ClearGenericUi() override;
+  void ClearPersistentGenericUi() override;
   void SetOverlayBehavior(
       ConfigureUiStateProto::OverlayBehavior overlay_behavior) override;
   void SetBrowseModeInvisible(bool invisible) override;
@@ -133,6 +138,10 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   }
 
   const std::vector<Details>& GetDetails() { return details_; }
+
+  const GenericUserInterfaceProto* GetPersistentGenericUi() {
+    return persistent_generic_ui_.get();
+  }
 
   InfoBox* GetInfoBox() { return info_box_.get(); }
 
@@ -183,6 +192,7 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   bool expand_sheet_for_prompt_ = true;
   std::vector<std::string> browse_domains_;
   UserModel* user_model_ = nullptr;
+  std::unique_ptr<GenericUserInterfaceProto> persistent_generic_ui_;
 
   bool require_ui_ = false;
 

@@ -186,8 +186,17 @@ class ScriptExecutorDelegate {
       base::OnceCallback<void(const ClientStatus&)>
           view_inflation_finished_callback) = 0;
 
+  // Sets the persistent generic UI to show to the user.
+  virtual void SetPersistentGenericUi(
+      std::unique_ptr<GenericUserInterfaceProto> generic_ui,
+      base::OnceCallback<void(const ClientStatus&)>
+          view_inflation_finished_callback) = 0;
+
   // Clears the generic UI.
   virtual void ClearGenericUi() = 0;
+
+  // Clears the persistent generic UI.
+  virtual void ClearPersistentGenericUi() = 0;
 
   // Sets whether browse mode should be invisible or not. Must be set before
   // calling |EnterState(BROWSE)| to take effect.

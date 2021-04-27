@@ -736,8 +736,20 @@ void ScriptExecutor::SetGenericUi(
                           std::move(view_inflation_finished_callback));
 }
 
+void ScriptExecutor::SetPersistentGenericUi(
+    std::unique_ptr<GenericUserInterfaceProto> generic_ui,
+    base::OnceCallback<void(const ClientStatus&)>
+        view_inflation_finished_callback) {
+  delegate_->SetPersistentGenericUi(
+      std::move(generic_ui), std::move(view_inflation_finished_callback));
+}
+
 void ScriptExecutor::ClearGenericUi() {
   delegate_->ClearGenericUi();
+}
+
+void ScriptExecutor::ClearPersistentGenericUi() {
+  delegate_->ClearPersistentGenericUi();
 }
 
 void ScriptExecutor::SetOverlayBehavior(
@@ -904,6 +916,7 @@ void ScriptExecutor::ReportScriptsUpdateToListener(
 void ScriptExecutor::RunCallback(bool success) {
   if (should_clean_contextual_ui_on_finish_ || !success) {
     SetDetails(nullptr, base::TimeDelta());
+    ClearPersistentGenericUi();
     should_clean_contextual_ui_on_finish_ = false;
   }
 

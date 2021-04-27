@@ -2134,5 +2134,23 @@ TEST_F(ScriptExecutorTest, RoundtripTimingStats) {
   EXPECT_EQ(1000, timing_stats.client_time_ms());
 }
 
+TEST_F(ScriptExecutorTest, ClearPersistentUiOnError) {
+  ActionsResponseProto actions_response;
+  actions_response.add_actions()->mutable_tell()->set_message("1");
+  EXPECT_CALL(mock_service_, OnGetActions(_, _, _, _, _, _))
+      .WillOnce(RunOnceCallback<5>(net::HTTP_OK, Serialize(actions_response)));
+  EXPECT_CALL(mock_service_, OnGetNextActions(_, _, _, _, _, _))
+      .WillOnce(RunOnceCallback<5>(net::HTTP_UNAUTHORIZED, ""));
+  EXPECT_CALL(executor_callback_,
+              Run(Field(&ScriptExecutor::Result::success, false)));
+
+  // empty, but not null
+  delegate_.SetPersistentGenericUi(
+      std::make_unique<GenericUserInterfaceProto>(), base::DoNothing());
+  ASSERT_NE(nullptr, delegate_.GetPersistentGenericUi());
+  executor_->Run(&user_data_, executor_callback_.Get());
+  ASSERT_EQ(nullptr, delegate_.GetPersistentGenericUi());
+}
+
 }  // namespace
 }  // namespace autofill_assistant

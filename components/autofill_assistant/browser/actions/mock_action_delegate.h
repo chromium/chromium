@@ -196,7 +196,14 @@ class MockActionDelegate : public ActionDelegate {
            base::OnceCallback<void(const ClientStatus&)> end_action_callback,
            base::OnceCallback<void(const ClientStatus&)>
                view_inflation_finished_callback));
+
+  MOCK_METHOD2(SetPersistentGenericUi,
+               void(std::unique_ptr<GenericUserInterfaceProto> generic_ui,
+                    base::OnceCallback<void(const ClientStatus&)>
+                        view_inflation_finished_callback));
+
   MOCK_METHOD0(ClearGenericUi, void());
+  MOCK_METHOD0(ClearPersistentGenericUi, void());
   MOCK_METHOD1(SetOverlayBehavior,
                void(ConfigureUiStateProto::OverlayBehavior));
   MOCK_METHOD1(MaybeShowSlowWebsiteWarning,

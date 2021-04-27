@@ -659,6 +659,8 @@ void UiControllerAndroid::RestoreUi() {
   OnUserActionsChanged(ui_delegate_->GetUserActions());
   OnCollectUserDataOptionsChanged(ui_delegate_->GetCollectUserDataOptions());
   OnUserDataChanged(ui_delegate_->GetUserData(), UserData::FieldChange::ALL);
+  OnPersistentGenericUserInterfaceChanged(
+      ui_delegate_->GetPersistentGenericUiProto());
   OnGenericUserInterfaceChanged(ui_delegate_->GetGenericUiProto());
 
   std::vector<RectF> area;
@@ -1765,6 +1767,29 @@ void UiControllerAndroid::OnGenericUserInterfaceChanged(
                                         : nullptr);
 }
 
+void UiControllerAndroid::OnPersistentGenericUserInterfaceChanged(
+    const GenericUserInterfaceProto* generic_ui) {
+  // Try to inflate user interface from proto.
+  if (generic_ui != nullptr) {
+    persistent_generic_ui_controller_ =
+        CreateGenericUiControllerForProto(*generic_ui);
+    ClientStatus status(persistent_generic_ui_controller_ ? ACTION_APPLIED
+                                                          : INVALID_ACTION);
+
+    ui_delegate_->GetBasicInteractions()->NotifyPersistentViewInflationFinished(
+        status);
+  } else {
+    persistent_generic_ui_controller_.reset();
+  }
+
+  // Set or clear generic UI.
+  Java_AssistantGenericUiModel_setView(
+      AttachCurrentThread(), GetPersistentGenericUiModel(),
+      persistent_generic_ui_controller_ != nullptr
+          ? persistent_generic_ui_controller_->GetRootView()
+          : nullptr);
+}
+
 void UiControllerAndroid::OnCounterChanged(int input_index,
                                            int counter_index,
                                            int value) {
@@ -1909,6 +1934,12 @@ base::android::ScopedJavaLocalRef<jobject>
 UiControllerAndroid::GetGenericUiModel() {
   return Java_AssistantModel_getGenericUiModel(AttachCurrentThread(),
                                                GetModel());
+}
+
+base::android::ScopedJavaLocalRef<jobject>
+UiControllerAndroid::GetPersistentGenericUiModel() {
+  return Java_AssistantModel_getPersistentGenericUiModel(AttachCurrentThread(),
+                                                         GetModel());
 }
 
 }  // namespace autofill_assistant

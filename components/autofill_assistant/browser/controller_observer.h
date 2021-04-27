@@ -127,6 +127,11 @@ class ControllerObserver : public base::CheckedObserver {
   virtual void OnGenericUserInterfaceChanged(
       const GenericUserInterfaceProto* generic_ui) = 0;
 
+  // Called when the persistent generic user interface to show has been changed
+  // or cleared.
+  virtual void OnPersistentGenericUserInterfaceChanged(
+      const GenericUserInterfaceProto* generic_ui) = 0;
+
   // Called when the desired overlay behavior has changed.
   virtual void OnShouldShowOverlayChanged(bool should_show) = 0;
 };

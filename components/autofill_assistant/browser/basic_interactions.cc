@@ -620,9 +620,22 @@ bool BasicInteractions::NotifyViewInflationFinished(
   return true;
 }
 
+bool BasicInteractions::NotifyPersistentViewInflationFinished(
+    const ClientStatus& status) {
+  if (!persistent_view_inflation_finished_callback_) {
+    return false;
+  }
+  std::move(persistent_view_inflation_finished_callback_).Run(status);
+  return true;
+}
+
 void BasicInteractions::ClearCallbacks() {
   end_action_callback_.Reset();
   view_inflation_finished_callback_.Reset();
+}
+
+void BasicInteractions::ClearPersistentUiCallbacks() {
+  persistent_view_inflation_finished_callback_.Reset();
 }
 
 void BasicInteractions::SetEndActionCallback(
@@ -635,6 +648,13 @@ void BasicInteractions::SetViewInflationFinishedCallback(
         view_inflation_finished_callback) {
   view_inflation_finished_callback_ =
       std::move(view_inflation_finished_callback);
+}
+
+void BasicInteractions::SetPersistentViewInflationFinishedCallback(
+    base::OnceCallback<void(const ClientStatus&)>
+        persistent_view_inflation_finished_callback) {
+  persistent_view_inflation_finished_callback_ =
+      std::move(persistent_view_inflation_finished_callback);
 }
 
 bool BasicInteractions::RunConditionalCallback(

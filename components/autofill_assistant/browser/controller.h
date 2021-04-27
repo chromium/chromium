@@ -152,7 +152,12 @@ class Controller : public ScriptExecutorDelegate,
       base::OnceCallback<void(const ClientStatus&)> end_action_callback,
       base::OnceCallback<void(const ClientStatus&)>
           view_inflation_finished_callback) override;
+  void SetPersistentGenericUi(
+      std::unique_ptr<GenericUserInterfaceProto> generic_ui,
+      base::OnceCallback<void(const ClientStatus&)>
+          view_inflation_finished_callback) override;
   void ClearGenericUi() override;
+  void ClearPersistentGenericUi() override;
   void SetBrowseModeInvisible(bool invisible) override;
   bool ShouldShowWarning() override;
   void SetShowFeedbackChip(bool show_feedback_chip) override;
@@ -257,6 +262,7 @@ class Controller : public ScriptExecutorDelegate,
   bool ShouldPromptActionExpandSheet() const override;
   BasicInteractions* GetBasicInteractions() override;
   const GenericUserInterfaceProto* GetGenericUiProto() const override;
+  const GenericUserInterfaceProto* GetPersistentGenericUiProto() const override;
   bool ShouldShowOverlay() const override;
   void ShutdownIfNecessary() override;
   void OnKeyboardVisibilityChanged(bool visible) override;
@@ -576,6 +582,8 @@ class Controller : public ScriptExecutorDelegate,
 
   // Only set during a ShowGenericUiAction.
   std::unique_ptr<GenericUserInterfaceProto> generic_user_interface_;
+
+  std::unique_ptr<GenericUserInterfaceProto> persistent_generic_user_interface_;
 
   base::WeakPtrFactory<Controller> weak_ptr_factory_{this};
 

@@ -755,6 +755,8 @@ message ActionProto {
     SelectOptionElementProto select_option_element = 74;
     CheckElementTagProto check_element_tag = 75;
     CheckOptionElementProto check_option_element = 76;
+    SetPersistentUiProto set_persistent_ui = 77;
+    ClearPersistentUiProto clear_persistent_ui = 78;
   }
 
   // Set to true to make the client remove any contextual information if the
@@ -1939,6 +1941,31 @@ message ShowGenericUiProto {
 
   reserved 10;
 }
+
+// Show backend-specified user interface elements to the user until dismissed.
+//
+// The UI will be shown until cleared by ClearPersistentUi or overwritten
+// by a subsequent SetPersistentUi.
+// The Ui is also cleared at the end of the script if it ended in error or if
+// the last action had |clean_contextual_ui| = true.
+//
+// Client errors:
+//   INVALID_ACTION if |generic_user_interface| was ill-defined or incomplete,
+//   or if the client failed to instantiate the UI for some reason. The Chrome
+//   log should contain additional information about the issue, if verbose
+//   logging is enabled (suggested level: 2 or 3).
+message SetPersistentUiProto {
+  // Required. The generic user interface to show.
+  //
+  // The following interaction callbacks aren't supported:
+  // - SetUserActions
+  // - ToggleUserAction
+  // - EndAction
+  optional GenericUserInterfaceProto generic_user_interface = 1;
+}
+
+// Clears the Ui set by SetPersistentUi.
+message ClearPersistentUiProto {}
 
 // Allow choosing one or more possibility. If ShowCast was called just
 // before, allow interaction with the touchable element area, otherwise don't

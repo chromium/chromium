@@ -78,6 +78,7 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
     private final ObservableSupplierImpl<Integer> mInsetSupplier = new ObservableSupplierImpl<>();
     private AssistantInfoBoxCoordinator mInfoBoxCoordinator;
     private AssistantCollectUserDataCoordinator mPaymentRequestCoordinator;
+    private final AssistantGenericUiCoordinator mPersistentGenericUiCoordinator;
     private final AssistantGenericUiCoordinator mGenericUiCoordinator;
 
     // The transition triggered whenever the layout of the BottomSheet content changes.
@@ -151,6 +152,8 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
         mPeekHeightCoordinator = new AssistantPeekHeightCoordinator(activity, this, controller,
                 mContent.getToolbarView(), mHeaderCoordinator.getView(),
                 mActionsCoordinator.getView(), AssistantPeekHeightCoordinator.PeekMode.HANDLE);
+        mPersistentGenericUiCoordinator =
+                new AssistantGenericUiCoordinator(activity, model.getPersistentGenericUiModel());
         mGenericUiCoordinator =
                 new AssistantGenericUiCoordinator(activity, model.getGenericUiModel());
 
@@ -174,6 +177,7 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
         mRootViewContainer.addView(mHeaderCoordinator.getView(), 0);
         scrollableContentContainer.addView(mInfoBoxCoordinator.getView());
         scrollableContentContainer.addView(mDetailsCoordinator.getView());
+        scrollableContentContainer.addView(mPersistentGenericUiCoordinator.getView());
         scrollableContentContainer.addView(mPaymentRequestCoordinator.getView());
         scrollableContentContainer.addView(mFormCoordinator.getView());
         scrollableContentContainer.addView(mGenericUiCoordinator.getView());
@@ -183,6 +187,7 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
         int childSpacing = activity.getResources().getDimensionPixelSize(
                 R.dimen.autofill_assistant_bottombar_vertical_spacing);
         setChildMarginTop(mDetailsCoordinator.getView(), childSpacing);
+        setChildMarginTop(mPersistentGenericUiCoordinator.getView(), childSpacing);
         setChildMarginTop(mPaymentRequestCoordinator.getView(), childSpacing);
         setChildMarginTop(mFormCoordinator.getView(), childSpacing);
         setChildMarginTop(mGenericUiCoordinator.getView(), childSpacing);
