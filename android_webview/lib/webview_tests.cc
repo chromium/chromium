@@ -13,10 +13,9 @@
 int main(int argc, char** argv) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   command_line->AppendSwitch(switches::kSingleProcess);
-  command_line->AppendSwitchASCII(switches::kDisableFeatures,
-                                  ",Vulkan,UseSkiaRenderer");
+  command_line->AppendSwitchASCII(switches::kDisableFeatures, ",Vulkan");
   command_line->AppendSwitchASCII(switches::kEnableFeatures,
-                                  ",VizForWebViewDefault");
+                                  ",UseSkiaRenderer");
 
   gl::GLSurfaceTestSupport::InitializeNoExtensionsOneOff();
   base::TestSuite test_suite(argc, argv);

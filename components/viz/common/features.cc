@@ -65,12 +65,6 @@ const base::Feature kDynamicColorGamut{"DynamicColorGamut",
 const base::Feature kFastSolidColorDraw{"FastSolidColorDraw",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
-// We use this feature for default value, because enabled VizForWebView forces
-// skia renderer on and we want to have different feature state between webview
-// and chrome. This one is set by webview, while the above can be set via finch.
-const base::Feature kVizForWebViewDefault{"VizForWebViewDefault",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Submit CompositorFrame from SynchronousLayerTreeFrameSink directly to viz in
 // WebView.
 const base::Feature kVizFrameSubmissionForWebView{
@@ -160,10 +154,6 @@ bool IsUsingSkiaRenderer() {
     return false;
 #endif
 
-  // Viz for webview requires SkiaRenderer.
-  if (IsUsingVizForWebView())
-    return true;
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(https://crbug.com/1145180): SkiaRenderer isn't supported on Chrome
   // OS boards that still use the legacy video decoder.
@@ -192,21 +182,8 @@ bool IsUsingFastPathForSolidColorQuad() {
   return base::FeatureList::IsEnabled(kFastSolidColorDraw);
 }
 
-bool IsUsingVizForWebView() {
-  // Vulkan on WebView requires viz.
-  if (features::IsUsingVulkan())
-    return true;
-
-  return base::FeatureList::IsEnabled(kVizForWebViewDefault);
-}
-
 bool IsUsingVizFrameSubmissionForWebView() {
-  if (base::FeatureList::IsEnabled(kVizFrameSubmissionForWebView)) {
-    DCHECK(IsUsingVizForWebView())
-        << "kVizFrameSubmissionForWebView requires kVizForWebView";
-    return true;
-  }
-  return false;
+  return base::FeatureList::IsEnabled(kVizFrameSubmissionForWebView);
 }
 
 bool IsUsingPreferredIntervalForVideo() {

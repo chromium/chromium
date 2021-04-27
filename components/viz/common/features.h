@@ -23,7 +23,6 @@ VIZ_COMMON_EXPORT extern const base::Feature kDisableDeJelly;
 VIZ_COMMON_EXPORT extern const base::Feature kDynamicColorGamut;
 #endif
 VIZ_COMMON_EXPORT extern const base::Feature kFastSolidColorDraw;
-VIZ_COMMON_EXPORT extern const base::Feature kVizForWebViewDefault;
 VIZ_COMMON_EXPORT extern const base::Feature kVizFrameSubmissionForWebView;
 VIZ_COMMON_EXPORT extern const base::Feature kUsePreferredIntervalForVideo;
 VIZ_COMMON_EXPORT extern const base::Feature kUseRealBuffersForPageFlipTest;
@@ -49,7 +48,6 @@ VIZ_COMMON_EXPORT bool IsOverlayPrioritizationEnabled();
 VIZ_COMMON_EXPORT bool IsSyncWindowDestructionEnabled();
 VIZ_COMMON_EXPORT bool IsUsingFastPathForSolidColorQuad();
 VIZ_COMMON_EXPORT bool IsUsingSkiaRenderer();
-VIZ_COMMON_EXPORT bool IsUsingVizForWebView();
 VIZ_COMMON_EXPORT bool IsUsingVizFrameSubmissionForWebView();
 VIZ_COMMON_EXPORT bool IsUsingPreferredIntervalForVideo();
 VIZ_COMMON_EXPORT bool IsVizHitTestingDebugEnabled();
