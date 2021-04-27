@@ -1266,7 +1266,7 @@ config("compiler_arm_thumb") {
 }
 
 config("compiler_arm") {
-  if (current_cpu == "arm" && is_chromeos_ash) {
+  if (current_cpu == "arm" && (is_chromeos_ash || is_chromeos_lacros)) {
     # arm is normally the default mode for clang, but on chromeos a wrapper
     # is used to pass -mthumb, and therefor change the default.
     cflags = [ "-marm" ]
