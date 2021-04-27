@@ -25,6 +25,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+    "cookie_store.cc": [
+        "+services/network/public/cpp/is_potentially_trustworthy.h",
+    ],
     "media_capabilities_fuzzer.cc": [
         "+testing/libfuzzer/proto/lpm_interface.h",
         "+third_party/protobuf/src/google/protobuf/repeated_field.h",
