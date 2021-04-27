@@ -42,7 +42,7 @@ class SaveAddressProfileMessageControllerTest
     return &message_dispatcher_bridge_;
   }
 
-  AutofillProfile profile_ = test::GetFullProfile();
+  AutofillProfile profile_;
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback>
       save_callback_;
   base::MockCallback<SaveAddressProfileMessageController::PrimaryActionCallback>
@@ -55,11 +55,12 @@ class SaveAddressProfileMessageControllerTest
 };
 
 void SaveAddressProfileMessageControllerTest::SetUp() {
+  feature_list_.InitAndEnableFeature(
+      features::kAutofillAddressProfileSavePrompt);
   ChromeRenderViewHostTestHarness::SetUp();
   messages::MessageDispatcherBridge::SetInstanceForTesting(
       &message_dispatcher_bridge_);
-  feature_list_.InitAndEnableFeature(
-      features::kAutofillAddressProfileSavePrompt);
+  profile_ = test::GetFullProfile();
 }
 
 void SaveAddressProfileMessageControllerTest::TearDown() {

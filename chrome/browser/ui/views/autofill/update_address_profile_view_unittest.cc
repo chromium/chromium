@@ -37,10 +37,20 @@ class MockSaveAddressProfileBubbleController
 
 class UpdateAddressProfileViewTest : public ChromeViewsTestBase {
  public:
-  UpdateAddressProfileViewTest();
+  UpdateAddressProfileViewTest() = default;
   ~UpdateAddressProfileViewTest() override = default;
 
   void CreateViewAndShow();
+
+  void SetUp() override {
+    feature_list_.InitAndEnableFeature(
+        features::kAutofillAddressProfileSavePrompt);
+    ChromeViewsTestBase::SetUp();
+
+    address_profile_to_save_ = test::GetFullProfile();
+    test_web_contents_ =
+        content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+  }
 
   void TearDown() override {
     view_->GetWidget()->CloseWithReason(
@@ -61,7 +71,7 @@ class UpdateAddressProfileViewTest : public ChromeViewsTestBase {
  private:
   base::test::ScopedFeatureList feature_list_;
   TestingProfile profile_;
-  AutofillProfile address_profile_to_save_ = test::GetFullProfile();
+  AutofillProfile address_profile_to_save_;
   // This enables uses of TestWebContents.
   content::RenderViewHostTestEnabler test_render_host_factories_;
   std::unique_ptr<content::WebContents> test_web_contents_;
@@ -69,14 +79,6 @@ class UpdateAddressProfileViewTest : public ChromeViewsTestBase {
   UpdateAddressProfileView* view_;
   testing::NiceMock<MockSaveAddressProfileBubbleController> mock_controller_;
 };
-
-UpdateAddressProfileViewTest::UpdateAddressProfileViewTest() {
-  feature_list_.InitAndEnableFeature(
-      features::kAutofillAddressProfileSavePrompt);
-
-  test_web_contents_ =
-      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
-}
 
 void UpdateAddressProfileViewTest::CreateViewAndShow() {
   ON_CALL(*mock_controller(), GetWindowTitle())

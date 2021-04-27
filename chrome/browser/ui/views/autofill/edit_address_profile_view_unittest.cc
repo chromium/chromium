@@ -42,10 +42,20 @@ class MockEditAddressProfileDialogController
 
 class EditAddressProfileViewTest : public ChromeViewsTestBase {
  public:
-  EditAddressProfileViewTest();
+  EditAddressProfileViewTest() = default;
   ~EditAddressProfileViewTest() override = default;
 
   void CreateViewAndShow();
+
+  void SetUp() override {
+    feature_list_.InitAndEnableFeature(
+        features::kAutofillAddressProfileSavePrompt);
+    ChromeViewsTestBase::SetUp();
+
+    address_profile_to_edit_ = test::GetFullProfile();
+    test_web_contents_ =
+        content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+  }
 
   void TearDown() override {
     widget_->Close();
@@ -64,7 +74,7 @@ class EditAddressProfileViewTest : public ChromeViewsTestBase {
  private:
   base::test::ScopedFeatureList feature_list_;
   TestingProfile profile_;
-  AutofillProfile address_profile_to_edit_ = test::GetFullProfile();
+  AutofillProfile address_profile_to_edit_;
   // This enables uses of TestWebContents.
   content::RenderViewHostTestEnabler test_render_host_factories_;
   std::unique_ptr<content::WebContents> test_web_contents_;
@@ -73,14 +83,6 @@ class EditAddressProfileViewTest : public ChromeViewsTestBase {
   EditAddressProfileView* dialog_;
   testing::NiceMock<MockEditAddressProfileDialogController> mock_controller_;
 };
-
-EditAddressProfileViewTest::EditAddressProfileViewTest() {
-  feature_list_.InitAndEnableFeature(
-      features::kAutofillAddressProfileSavePrompt);
-
-  test_web_contents_ =
-      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
-}
 
 void EditAddressProfileViewTest::CreateViewAndShow() {
   ON_CALL(*mock_controller(), GetWindowTitle())
