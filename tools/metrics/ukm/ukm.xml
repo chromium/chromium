@@ -1409,7 +1409,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Autofill.FormFillSuccessIOS">
-  <owner>kazinova@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
   <summary>
     Records whether the the form was successfully filled by Autofill on iOS. The
     metric is used to measure silent renderer fails when the filling request is
