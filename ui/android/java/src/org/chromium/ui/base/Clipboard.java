@@ -21,6 +21,8 @@ import android.text.TextUtils;
 import android.text.style.CharacterStyle;
 import android.text.style.ParagraphStyle;
 import android.text.style.UpdateAppearance;
+import android.view.textclassifier.TextClassifier;
+import android.view.textclassifier.TextLinks;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -53,6 +55,8 @@ import java.util.Locale;
  */
 @JNINamespace("ui")
 public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener {
+    private static final float CONFIDENCE_THRESHOLD_FOR_URL_DETECTION = 0.99f;
+
     @SuppressLint("StaticFieldLeak")
     private static Clipboard sInstance;
 
@@ -242,6 +246,49 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
         boolean isPlainType = description.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN);
         return (isPlainType && hasStyledText(description))
                 || description.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML);
+    }
+
+    @CalledByNative
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    boolean hasUrl() {
+        // ClipDescription#getConfidenceScore is only available on Android S+, so before Android S,
+        // we will access the clipboard content and valid by URLUtil#isValidUrl.
+        if (BuildInfo.isAtLeastS()) {
+            ClipDescription description = mClipboardManager.getPrimaryClipDescription();
+            float score = ApiHelperForS.getConfidenceScore(description, TextClassifier.TYPE_URL);
+            return score > CONFIDENCE_THRESHOLD_FOR_URL_DETECTION;
+        } else {
+            GURL url = new GURL(getCoercedText());
+            return url.isValid();
+        }
+    }
+
+    /**
+     * On Pre S, we return the whole clipboard content if the clipboard content is a URL.
+     * On S+, we return the first URL in the content. ex, If clipboard contains "text www.foo.com
+     * www.bar.com", then "www.foo.com" will be returned.
+     * @return The URL in the clipboard, or the first URL on the clipbobard.
+     */
+    @CalledByNative
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    String getUrl() {
+        if (!hasUrl()) return null;
+
+        if (!BuildInfo.isAtLeastS()) return getCoercedText();
+
+        try {
+            ClipData.Item item = mClipboardManager.getPrimaryClip().getItemAt(0);
+            TextLinks textLinks = ApiHelperForS.getTextLinks(item);
+            if (textLinks == null || textLinks.getLinks().isEmpty()) return null;
+
+            CharSequence fullText = item.getText();
+            TextLinks.TextLink firstLink = textLinks.getLinks().iterator().next();
+            CharSequence firstLinkText =
+                    fullText.subSequence(firstLink.getStart(), firstLink.getEnd());
+            return firstLinkText.toString();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     /**

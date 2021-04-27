@@ -13,13 +13,18 @@ import android.text.style.BackgroundColorSpan;
 
 import androidx.test.filters.SmallTest;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DummyUiActivityTestCase;
@@ -32,6 +37,9 @@ import java.util.concurrent.TimeoutException;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class ClipboardAndroidTest extends DummyUiActivityTestCase {
+    private static final String TEXT_URL = "http://www.foo.com";
+    private static final String MIX_TEXT_URL = "test http://www.foo.com http://www.bar.com";
+
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
@@ -96,7 +104,7 @@ public class ClipboardAndroidTest extends DummyUiActivityTestCase {
 
     @Test
     @SmallTest
-    public void testhasHTMLOrStyledTextForNormalText() {
+    public void hasHTMLOrStyledTextForNormalTextTest() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Clipboard.getInstance().setText("SampleTextToCopy");
             Assert.assertFalse(Clipboard.getInstance().hasHTMLOrStyledText());
@@ -105,7 +113,7 @@ public class ClipboardAndroidTest extends DummyUiActivityTestCase {
 
     @Test
     @SmallTest
-    public void testhasHTMLOrStyledTextForStyledText() {
+    public void hasHTMLOrStyledTextForStyledTextTest() {
         SpannableString spanString = new SpannableString("SpannableString");
         spanString.setSpan(new BackgroundColorSpan(0), 0, 4, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         ClipData clipData =
@@ -118,11 +126,36 @@ public class ClipboardAndroidTest extends DummyUiActivityTestCase {
 
     @Test
     @SmallTest
-    public void testhasHTMLOrStyledTextForHtmlText() {
+    public void hasHTMLOrStyledTextForHtmlTextTest() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Clipboard.getInstance().setHTMLText(
                     "<span style=\"color: red;\">HTMLTextToCopy</span>", "HTMLTextToCopy");
             Assert.assertTrue(Clipboard.getInstance().hasHTMLOrStyledText());
+        });
+    }
+
+    @Test
+    @SmallTest
+    public void hasUrlAndGetUrlTest() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> { Clipboard.getInstance().setText(TEXT_URL); });
+
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(Clipboard.getInstance().hasUrl(), Matchers.is(true));
+            Criteria.checkThat(Clipboard.getInstance().getUrl(), Matchers.is(TEXT_URL));
+        });
+    }
+
+    // Only first URL is returned on S+ if clipboard contains multiple URLs.
+    @Test
+    @SmallTest
+    @MinAndroidSdkLevel(BuildInfo.ANDROID_S_API_SDK_INT)
+    public void hasUrlAndGetUrlMixTextAndLinkTest() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { Clipboard.getInstance().setText(MIX_TEXT_URL); });
+
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(Clipboard.getInstance().hasUrl(), Matchers.is(true));
+            Criteria.checkThat(Clipboard.getInstance().getUrl(), Matchers.is(TEXT_URL));
         });
     }
 }

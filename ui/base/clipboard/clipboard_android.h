@@ -100,7 +100,6 @@ class ClipboardAndroid : public Clipboard {
                      std::vector<ui::FileInfo>* result) const override;
   void ReadBookmark(const DataTransferEndpoint* data_dst,
                     std::u16string* title,
-
                     std::string* url) const override;
   void ReadData(const ClipboardFormatType& format,
                 const DataTransferEndpoint* data_dst,

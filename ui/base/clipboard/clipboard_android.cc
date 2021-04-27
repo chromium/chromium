@@ -197,6 +197,8 @@ bool ClipboardMap::HasFormat(const ClipboardFormatType& format) {
     return Java_Clipboard_hasCoercedText(env, clipboard_manager_);
   } else if (format == ClipboardFormatType::GetHtmlType()) {
     return Java_Clipboard_hasHTMLOrStyledText(env, clipboard_manager_);
+  } else if (format == ClipboardFormatType::GetUrlType()) {
+    return Java_Clipboard_hasUrl(env, clipboard_manager_);
   } else if (format == ClipboardFormatType::GetType(kMimeTypeImageURI)) {
     return Java_Clipboard_hasImage(env, clipboard_manager_);
   }
@@ -219,6 +221,9 @@ std::vector<ClipboardFormatType> ClipboardMap::GetFormats() {
     if (Java_Clipboard_hasHTMLOrStyledText(env, clipboard_manager_)) {
       formats.push_back(ClipboardFormatType::GetHtmlType());
     }
+    if (Java_Clipboard_hasUrl(env, clipboard_manager_)) {
+      formats.push_back(ClipboardFormatType::GetUrlType());
+    }
     if (Java_Clipboard_hasImage(env, clipboard_manager_)) {
       formats.push_back(ClipboardFormatType::GetBitmapType());
     }
@@ -230,6 +235,7 @@ std::vector<ClipboardFormatType> ClipboardMap::GetFormats() {
     if (map_state_ != MapState::kUpToDate &&
         (it.first == ClipboardFormatType::GetPlainTextType() ||
          it.first == ClipboardFormatType::GetHtmlType() ||
+         it.first == ClipboardFormatType::GetUrlType() ||
          it.first == ClipboardFormatType::GetType(kMimeTypeImageURI))) {
       continue;
     }
@@ -353,6 +359,8 @@ void ClipboardMap::UpdateFromAndroidClipboard() {
       Java_Clipboard_getCoercedText(env, clipboard_manager_);
   ScopedJavaLocalRef<jstring> jhtml =
       Java_Clipboard_getHTMLText(env, clipboard_manager_);
+  ScopedJavaLocalRef<jstring> jurl =
+      Java_Clipboard_getUrl(env, clipboard_manager_);
   ScopedJavaLocalRef<jstring> jimageuri =
       Java_Clipboard_getImageUriString(env, clipboard_manager_);
 
@@ -360,6 +368,8 @@ void ClipboardMap::UpdateFromAndroidClipboard() {
                             jtext);
   JNI_Clipboard_AddMapEntry(env, &map_, ClipboardFormatType::GetHtmlType(),
                             jhtml);
+  JNI_Clipboard_AddMapEntry(env, &map_, ClipboardFormatType::GetUrlType(),
+                            jurl);
   JNI_Clipboard_AddMapEntry(
       env, &map_, ClipboardFormatType::GetType(kMimeTypeImageURI), jimageuri);
 
@@ -589,13 +599,14 @@ void ClipboardAndroid::ReadFilenames(ClipboardBuffer buffer,
   NOTIMPLEMENTED();
 }
 
-// |data_dst| is not used. It's only passed to be consistent with other
-// platforms.
+// 'data_dst' and 'title' are not used. It's only passed to be consistent with
+// other platforms.
 void ClipboardAndroid::ReadBookmark(const DataTransferEndpoint* data_dst,
                                     std::u16string* title,
                                     std::string* url) const {
   DCHECK(CalledOnValidThread());
-  NOTIMPLEMENTED();
+  RecordRead(ClipboardFormatMetric::kBookmark);
+  *url = g_map.Get().Get(ClipboardFormatType::GetUrlType());
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
