@@ -277,6 +277,9 @@ crbug.com/1198089 external/wpt/webcodecs/videoFrame-createImageBitmap.any.worker
 crbug.com/1198089 external/wpt/webcodecs/videoFrame-texImage.any.html [ Failure ]
 crbug.com/1198089 external/wpt/webcodecs/videoFrame-texImage.any.worker.html [ Failure ]
 
+# Test seems to be flaky on both Chrome and WebLayer.
+crbug.com/1177918 external/wpt/input-events/input-events-get-target-ranges.html [ Failure Pass ]
+
 # Add untriaged failures in this block
 crbug.com/1050754 external/wpt/FileAPI/file/send-file-form-punctuation.html [ Pass Timeout ]
 crbug.com/1050754 external/wpt/FileAPI/url/url-charset.window.html [ Crash Pass ]
@@ -1048,8 +1051,6 @@ crbug.com/1050754 external/wpt/infrastructure/testdriver/click_window.html [ Pas
 crbug.com/1050754 external/wpt/infrastructure/testdriver/delete_all_cookies.html [ Pass ]
 crbug.com/1050754 external/wpt/infrastructure/testdriver/file_upload.sub.html [ Failure ]
 crbug.com/1050754 external/wpt/infrastructure/testdriver/virtual_authenticator.html [ Crash ]
-crbug.com/1050754 external/wpt/input-events/input-events-cut-paste.html [ Failure Pass Timeout ]
-crbug.com/1050754 external/wpt/input-events/input-events-get-target-ranges.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/intersection-observer/iframe-no-root-with-wrapping-scroller.html [ Failure ]
 crbug.com/1050754 external/wpt/intersection-observer/iframe-no-root.html [ Failure ]
 crbug.com/1050754 external/wpt/intersection-observer/inline-client-rect.html [ Failure ]

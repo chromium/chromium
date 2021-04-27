@@ -323,6 +323,9 @@ crbug.com/1199769 external/wpt/background-fetch/mixed-content-and-allowed-scheme
 crbug.com/1199769 external/wpt/background-fetch/port-blocking.https.window.html [ Failure Pass ]
 crbug.com/1199769 external/wpt/background-fetch/update-ui.https.window.html [ Failure Pass ]
 
+# Test seems to be flaky on both Chrome and WebLayer.
+crbug.com/1177918 external/wpt/input-events/input-events-get-target-ranges.html [ Failure Pass ]
+
 # Add untriaged failures in this block
 crbug.com/1050754 external/wpt/FileAPI/file/send-file-formdata-controls.html [ Failure ]
 crbug.com/1050754 external/wpt/IndexedDB/bindings-inject-values-bypass-chain.html [ Failure Pass ]
@@ -1065,8 +1068,6 @@ crbug.com/1050754 external/wpt/infrastructure/testdriver/click_window.html [ Pas
 crbug.com/1050754 external/wpt/infrastructure/testdriver/delete_all_cookies.html [ Pass ]
 crbug.com/1050754 external/wpt/infrastructure/testdriver/file_upload.sub.html [ Failure ]
 crbug.com/1050754 external/wpt/infrastructure/testdriver/virtual_authenticator.html [ Crash ]
-crbug.com/1050754 external/wpt/input-events/input-events-cut-paste.html [ Pass ]
-crbug.com/1050754 external/wpt/input-events/input-events-get-target-ranges.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/intersection-observer/iframe-no-root-with-wrapping-scroller.html [ Failure ]
 crbug.com/1050754 external/wpt/intersection-observer/iframe-no-root.html [ Failure ]
 crbug.com/1050754 external/wpt/intersection-observer/inline-client-rect.html [ Failure ]
