@@ -17,11 +17,15 @@ class SigninUIError;
 
 // Handles the sync consent screen for creating a signed-in profile from the
 // profile picker.
+// TODO(crbug.com/1180654): Rename to SignInFlowSyncDelegate or something like
+// that.
 class ProfilePickerViewSyncDelegate : public DiceTurnSyncOnHelper::Delegate,
                                       public LoginUIService::Observer {
  public:
+  // TODO(crbug.com/1180654): Replace the first param by
+  // SignInFlow::BrowserOpenedCallback once SignInFlow has a separate unit.
   using OpenBrowserCallback =
-      base::OnceCallback<void(ProfilePickerView::BrowserOpenedCallback,
+      base::OnceCallback<void(base::OnceCallback<void(Browser*)>,
                               bool enterprise_sync_consent_needed)>;
 
   ProfilePickerViewSyncDelegate(Profile* profile,

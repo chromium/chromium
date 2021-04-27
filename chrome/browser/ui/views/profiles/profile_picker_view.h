@@ -39,13 +39,9 @@ class WebContents;
 // Dialog widget that contains the Desktop Profile picker webui.
 class ProfilePickerView : public views::WidgetDelegateView,
                           public content::WebContentsDelegate,
-                          public signin::IdentityManager::Observer,
-                          public ChromeWebModalDialogManagerDelegate,
                           public web_modal::WebContentsModalDialogHost {
  public:
   METADATA_HEADER(ProfilePickerView);
-
-  using BrowserOpenedCallback = base::OnceCallback<void(Browser*)>;
 
   ProfilePickerView(const ProfilePickerView&) = delete;
   ProfilePickerView& operator=(const ProfilePickerView&) = delete;
@@ -56,6 +52,27 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // without browser window. If the dialog is not currently shown, this does
   // nothing.
   void DisplayErrorMessage();
+
+  // Shows a screen with `url` in `contents` and potentially `show_toolbar`. If
+  // `url` is empty, it only shows `contents` with its currently loaded url. If
+  // both `navigation_finished_closure` and `url` is non-empty, the closure is
+  // called when the navigation commits (if it never commits such as when the
+  // navigation is replaced by another navigation, the closure is never called).
+  void ShowScreen(
+      content::WebContents* contents,
+      const GURL& url,
+      bool show_toolbar,
+      bool enable_navigating_back = true,
+      base::OnceClosure navigation_finished_closure = base::OnceClosure());
+  // Like ShowScreen() but uses the system WebContents.
+  void ShowScreenInSystemContents(
+      const GURL& url,
+      bool show_toolbar,
+      bool enable_navigating_back = true,
+      base::OnceClosure navigation_finished_closure = base::OnceClosure());
+
+  // Creates a simple back button and adds it to the toolbar.
+  void CreateToolbarBackButton();
 
  private:
   friend class ProfilePicker;
@@ -85,44 +102,135 @@ class ProfilePickerView : public views::WidgetDelegateView,
     base::OnceClosure closure_;
   };
 
-  // Struct holding the data related to the sign-in profile creation flow. These
-  // variables are grouped together to simplify reasoning about state.
-  // TODO(crbug.com/1180654): Turn it into a separate class with code for all
-  // the sign-in logic.
-  struct SignInFlow {
-    explicit SignInFlow(ProfilePickerView* observer,
-                        Profile* profile,
-                        SkColor profile_color);
-    ~SignInFlow();
+  // Class responsible for the sign-in profile creation flow (within
+  // ProfilePickerView).
+  // TODO(crbug.com/1180654): Move into a separate unit and rename to, e.g.,
+  // ProfilePickerSignInFlowController.
+  class SignInFlow : public content::WebContentsDelegate,
+                     public ChromeWebModalDialogManagerDelegate,
+                     public signin::IdentityManager::Observer {
+   public:
+    using BrowserOpenedCallback = base::OnceCallback<void(Browser*)>;
+
+    SignInFlow(ProfilePickerView* view,
+               Profile* profile,
+               SkColor profile_color,
+               base::TimeDelta extended_account_info_timeout);
+    ~SignInFlow() override;
+    SignInFlow(const SignInFlow&) = delete;
+    SignInFlow& operator=(const SignInFlow&) = delete;
+
+    // Must be called after constructor.
+    void Init();
+
+    // Cancels the flow explicitly. This does not log any metrics, the caller
+    // must take care of logging the outcome of the flow on its own.
+    void Cancel();
+
+    content::WebContents* contents() const { return contents_.get(); }
+
+    // Updates the profile color provided in the constructor.
+    void SetProfileColor(SkColor color);
+    // Returns the profile color, taking into account current policies.
+    SkColor GetProfileColor() const;
+
+    bool IsSigningIn() const;
+
+    // Returns theme provider based on `profile_`.
+    const ui::ThemeProvider* GetThemeProvider() const;
+
+    // Returns the domain of the email of the signed-in user or an empty string
+    // if the user is not signed-in.
+    std::string GetUserDomain() const;
+
+    Profile* profile() const { return profile_; }
+
+   private:
+    // content::WebContentsDelegate:
+    bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+                           const content::ContextMenuParams& params) override;
+    void AddNewContents(content::WebContents* source,
+                        std::unique_ptr<content::WebContents> new_contents,
+                        const GURL& target_url,
+                        WindowOpenDisposition disposition,
+                        const gfx::Rect& initial_rect,
+                        bool user_gesture,
+                        bool* was_blocked) override;
+    bool HandleKeyboardEvent(
+        content::WebContents* source,
+        const content::NativeWebKeyboardEvent& event) override;
+    void NavigationStateChanged(
+        content::WebContents* source,
+        content::InvalidateTypes changed_flags) override;
+
+    // ChromeWebModalDialogManagerDelegate:
+    web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
+        override;
+
+    // IdentityManager::Observer:
+    void OnRefreshTokenUpdatedForAccount(
+        const CoreAccountInfo& account_info) override;
+    void OnExtendedAccountInfoUpdated(const AccountInfo& account_info) override;
+
+    // Helper functions to deal with the lack of extended account info.
+    void OnExtendedAccountInfoTimeout(const CoreAccountInfo& account);
+    void OnProfileNameAvailable();
+
+    // Finishes the creation flow by marking `profile_being_created_` as fully
+    // created, opening a browser window for this profile and calling
+    // `callback`.
+    void FinishSignedInCreationFlow(BrowserOpenedCallback callback,
+                                    bool enterprise_sync_consent_needed);
+    void FinishSignedInCreationFlowImpl(BrowserOpenedCallback callback,
+                                        bool enterprise_sync_consent_needed);
+
+    // Finishes the flow by finalizing the profile and continuing the SAML
+    // sign-in in a browser window.
+    void FinishSignedInCreationFlowForSAML();
+    void OnSignInContentsFreedUp();
+
+    // Internal callback to finish the last steps of the signed-in creation
+    // flow.
+    void OnBrowserOpened(BrowserOpenedCallback finish_flow_callback,
+                         Profile* profile,
+                         Profile::CreateStatus profile_create_status);
+
+    // The parent view element, must outlive this object.
+    ProfilePickerView* view_;
 
     // The web contents backed by `profile`. This is used for displaying the
     // sign-in flow.
-    std::unique_ptr<content::WebContents> contents;
+    std::unique_ptr<content::WebContents> contents_;
 
-    Profile* profile = nullptr;
+    Profile* profile_ = nullptr;
 
     // Set for the profile at the very end to avoid coloring the simple toolbar
     // for GAIA sign-in (that uses the ThemeProvider of the current profile).
-    // TODO(crbug.com/1180654): Make this private and use the current
-    // GetSignInColor() as the getter.
-    SkColor profile_color;
+    SkColor profile_color_;
+
+    // For finishing the profile creation flow, the extended account info is
+    // needed (for properly naming the new profile). After a timeout, a fallback
+    // name is used, instead, to unblock the flow.
+    base::TimeDelta extended_account_info_timeout_;
 
     // Controls whether the flow still needs to finalize (which includes showing
     // `profile` browser window at the end of the sign-in flow).
-    bool is_finished = false;
+    bool is_finished_ = false;
 
     // Email of the signed-in account. It is set after the user finishes the
     // sign-in flow on GAIA and Chrome receives the account info.
-    std::string email;
+    std::string email_;
 
-    std::u16string name_for_signed_in_profile;
-    base::OnceClosure on_profile_name_available;
+    std::u16string name_for_signed_in_profile_;
+    base::OnceClosure on_profile_name_available_;
 
-    base::CancelableOnceClosure extended_account_info_timeout_closure;
+    base::CancelableOnceClosure extended_account_info_timeout_closure_;
 
     base::ScopedObservation<signin::IdentityManager,
                             signin::IdentityManager::Observer>
-        identity_manager_observation;
+        identity_manager_observation_{this};
+
+    base::WeakPtrFactory<SignInFlow> weak_ptr_factory_{this};
   };
 
   // Displays the profile picker.
@@ -177,27 +285,9 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // content::WebContentsDelegate:
   bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
                          const content::ContextMenuParams& params) override;
-  void AddNewContents(content::WebContents* source,
-                      std::unique_ptr<content::WebContents> new_contents,
-                      const GURL& target_url,
-                      WindowOpenDisposition disposition,
-                      const gfx::Rect& initial_rect,
-                      bool user_gesture,
-                      bool* was_blocked) override;
   bool HandleKeyboardEvent(
       content::WebContents* source,
       const content::NativeWebKeyboardEvent& event) override;
-  void NavigationStateChanged(content::WebContents* source,
-                              content::InvalidateTypes changed_flags) override;
-
-  // IdentityManager::Observer:
-  void OnRefreshTokenUpdatedForAccount(
-      const CoreAccountInfo& account_info) override;
-  void OnExtendedAccountInfoUpdated(const AccountInfo& account_info) override;
-
-  // ChromeWebModalDialogManagerDelegate
-  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
-      override;
 
   // web_modal::WebContentsModalDialogHost
   gfx::NativeView GetHostView() const override;
@@ -211,17 +301,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
 
   void UpdateToolbarColor();
 
-  // Shows a screen with `url` in `contents` and potentially `show_toolbar`. If
-  // `url` is empty, it only shows `contents` with its currently loaded url. If
-  // both `navigation_finished_closure` and `url` is non-empty, the closure is
-  // called when the navigation commits (if it never commits such as when the
-  // navigation is replaced by another navigation, the closure is never called).
-  void ShowScreen(
-      content::WebContents* contents,
-      const GURL& url,
-      bool show_toolbar,
-      bool enable_navigating_back = true,
-      base::OnceClosure navigation_finished_closure = base::OnceClosure());
   void ShowScreenFinished(
       content::WebContents* contents,
       bool show_toolbar,
@@ -234,27 +313,9 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // Checks whether the sign-in flow is in progress.
   bool GetSigningIn() const;
 
-  // Helper functions to deal with the lack of extended account info.
+  // Overrides the default timeout for waiting for extended account info for any
+  // future signed-in profile creation flow.
   void SetExtendedAccountInfoTimeoutForTesting(base::TimeDelta timeout);
-  void OnExtendedAccountInfoTimeout(const CoreAccountInfo& account);
-  void OnProfileNameAvailable();
-
-  // Finishes the creation flow by marking `profile_being_created_` as fully
-  // created, opening a browser window for this profile and calling `callback`.
-  void FinishSignedInCreationFlow(BrowserOpenedCallback callback,
-                                  bool enterprise_sync_consent_needed);
-  void FinishSignedInCreationFlowImpl(BrowserOpenedCallback callback,
-                                      bool enterprise_sync_consent_needed);
-
-  // Finishes the flow by finalizing the profile and continuing the SAML sign-in
-  // in a browser window.
-  void FinishSignedInCreationFlowForSAML();
-  void OnSignInContentsFreedUp();
-
-  // Internal callback to finish the last steps of the signed-in creation flow.
-  void OnBrowserOpened(BrowserOpenedCallback finish_flow_callback,
-                       Profile* profile,
-                       Profile::CreateStatus profile_create_status);
 
   // Register basic keyboard accelerators such as closing the window (Alt-F4
   // on Windows).
