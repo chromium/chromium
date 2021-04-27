@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/content_creation/notes/note_service.h"
+#include "components/content_creation/notes/core/note_service.h"
 
 #include <vector>
 
 #include "base/test/bind.h"
-#include "components/content_creation/notes/notes_types.h"
+#include "components/content_creation/notes/core/notes_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content_creation {

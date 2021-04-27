@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/content_creation/notes/note_service.h"
+#include "components/content_creation/notes/core/note_service.h"
 
 #include <memory>
 

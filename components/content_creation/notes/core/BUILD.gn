@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("notes") {
+static_library("core") {
   sources = [
     "note_service.cc",
     "note_service.h",
@@ -21,7 +21,7 @@ source_set("unit_tests") {
   sources = [ "note_service_unittest.cc" ]
 
   deps = [
-    ":notes",
+    ":core",
     "//base",
     "//base/test:test_support",
     "//testing/gmock",

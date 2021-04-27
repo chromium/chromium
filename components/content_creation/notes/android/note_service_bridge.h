@@ -1,0 +1,42 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_CONTENT_CREATION_NOTES_ANDROID_NOTE_SERVICE_BRIDGE_H_
+#define COMPONENTS_CONTENT_CREATION_NOTES_ANDROID_NOTE_SERVICE_BRIDGE_H_
+
+#include "base/android/jni_android.h"
+#include "base/supports_user_data.h"
+#include "components/content_creation/notes/core/note_service.h"
+
+using base::android::JavaParamRef;
+using base::android::JavaRef;
+using base::android::ScopedJavaGlobalRef;
+using base::android::ScopedJavaLocalRef;
+
+namespace content_creation {
+
+class NoteServiceBridge : public base::SupportsUserData::Data {
+ public:
+  static scopedJavaLocalFed<jobject> GetBridgeForNoteService(
+      NoteService* note_service);
+
+  explicit NoteServiceBridge(NoteService* note_service);
+  ~NoteServiceBridge() override;
+
+  void GetTemplates(JNIEnv* env,
+                    const JavaParamRef<jobject>& jcaller,
+                    const JavaParamRef<jobject>& jcallback);
+
+ private:
+  ScopedJavaGlobalRef<jobject> java_obj_;
+
+  // Not owned.
+  NoteService* note_service_;
+
+  DISALLOW_COPY_AND_ASSIGN(NoteServiceBridge);
+};
+
+}  // namespace content_creation
+
+#endif  // COMPONENTS_CONTENT_CREATION_NOTES_ANDROID_NOTE_SERVICE_BRIDGE_H_

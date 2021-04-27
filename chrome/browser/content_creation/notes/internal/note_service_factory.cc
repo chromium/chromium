@@ -5,7 +5,7 @@
 #include "chrome/browser/content_creation/notes/internal/note_service_factory.h"
 
 #include "base/memory/singleton.h"
-#include "components/content_creation/notes/note_service.h"
+#include "components/content_creation/notes/core/note_service.h"
 #include "components/keyed_service/core/simple_dependency_manager.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 
