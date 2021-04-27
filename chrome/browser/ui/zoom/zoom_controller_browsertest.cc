@@ -170,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest,
   chrome::RestoreTab(browser());
   content::WebContents* web_contents =
       new_web_contents_observer.GetWebContents();
-  content::WaitForLoadStop(web_contents);
+  EXPECT_FALSE(content::WaitForLoadStop(web_contents));
 
   EXPECT_EQ(2, tab_strip->count());
 

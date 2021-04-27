@@ -448,8 +448,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
   EXPECT_TRUE(content::ExecuteScript(
       incognito->tab_strip_model()->GetActiveWebContents(),
       "document.getElementById('google').click();"));
-  content::WaitForLoadStop(
-      incognito->tab_strip_model()->GetActiveWebContents());
+  EXPECT_FALSE(content::WaitForLoadStop(
+      incognito->tab_strip_model()->GetActiveWebContents()));
 
   auto entries = test_ukm_recorder->GetMergedEntriesByName(
       ukm::builders::PageLoad::kEntryName);

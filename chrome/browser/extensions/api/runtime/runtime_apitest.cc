@@ -351,7 +351,7 @@ IN_PROC_BROWSER_TEST_P(RuntimeApiTest,
   TabStripModel* tabs = browser()->tab_strip_model();
 
   EXPECT_EQ(2, tabs->count());
-  content::WaitForLoadStop(tabs->GetActiveWebContents());
+  EXPECT_FALSE(content::WaitForLoadStop(tabs->GetActiveWebContents()));
   // Verify the uninstall url
   EXPECT_EQ(kUninstallUrl, GetActiveUrl(browser()));
 

@@ -34,7 +34,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   // Wait for the web contents to stop loading.
-  content::WaitForLoadStop(web_contents);
+  EXPECT_FALSE(content::WaitForLoadStop(web_contents));
   EXPECT_EQ(url, web_contents->GetLastCommittedURL());
   ASSERT_FALSE(web_contents->IsCrashed());
 }

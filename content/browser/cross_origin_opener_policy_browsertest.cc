@@ -310,7 +310,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 
   auto* popup_webcontents =
       static_cast<WebContentsImpl*>(shell_observer.GetShell()->web_contents());
-  WaitForLoadStop(popup_webcontents);
+  EXPECT_FALSE(WaitForLoadStop(popup_webcontents));
 
   EXPECT_EQ(
       popup_webcontents->GetController().GetLastCommittedEntry()->GetPageType(),
