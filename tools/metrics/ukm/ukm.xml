@@ -12559,6 +12559,22 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="PermissionUsage">
+  <owner>engedy@chromium.org</owner>
+  <owner>ravjit@chromium.org</owner>
+  <owner>permissions-dev@chromium.org</owner>
+  <summary>
+    Metrics for usage of capabilities gated behind permission prompts. One event
+    is recorded per permission type for each page load that uses that permission
+    type.
+  </summary>
+  <metric name="PermissionType">
+    <summary>
+      An enum of type ContentSettingsType.
+    </summary>
+  </metric>
+</event>
+
 <event name="Plugins.FlashInstance">
   <owner>tommycli@chromium.org</owner>
   <summary>

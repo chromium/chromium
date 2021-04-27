@@ -44,6 +44,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition.h"
@@ -393,17 +394,9 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, InlinePermissionRevokeUkm) {
   AllowAllOrigins();
   ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
 
-  Profile* profile = Profile::FromBrowserContext(browser()
-                                                     ->tab_strip_model()
-                                                     ->GetActiveWebContents()
-                                                     ->GetBrowserContext());
-  history::HistoryService* history_service =
-      HistoryServiceFactory::GetForProfile(profile,
-                                           ServiceAccessType::EXPLICIT_ACCESS);
   base::RunLoop origin_queried_waiter;
-  history_service->set_origin_queried_closure_for_testing(
-      origin_queried_waiter.QuitClosure());
-
+  ukm_recorder.SetOnAddEntryCallback(ukm::builders::Permission::kEntryName,
+                                     origin_queried_waiter.QuitClosure());
   CreateSimpleNotification(browser(), true);
   ASSERT_EQ(1, GetNotificationCount());
 

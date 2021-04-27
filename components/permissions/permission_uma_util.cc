@@ -182,6 +182,20 @@ void RecordEngagementMetric(const std::vector<PermissionRequest*>& requests,
   base::UmaHistogramPercentageObsoleteDoNotUse(name, engagement_score);
 }
 
+void RecordPermissionUsageUkm(ContentSettingsType permission_type,
+                              base::Optional<ukm::SourceId> source_id) {
+  if (!source_id.has_value())
+    return;
+
+  size_t num_values = 0;
+
+  ukm::builders::PermissionUsage builder(source_id.value());
+  builder.SetPermissionType(static_cast<int64_t>(
+      ContentSettingTypeToHistogramValue(permission_type, &num_values)));
+
+  builder.Record(ukm::UkmRecorder::Get());
+}
+
 void RecordPermissionActionUkm(
     PermissionAction action,
     PermissionRequestGestureType gesture_type,
@@ -632,6 +646,16 @@ PermissionUmaUtil::ScopedRevocationReporter::~ScopedRevocationReporter() {
           content_type_, base::Time::Now() - last_modified_date_);
     }
   }
+}
+
+void PermissionUmaUtil::RecordPermissionUsage(
+    ContentSettingsType permission_type,
+    content::BrowserContext* browser_context,
+    const content::WebContents* web_contents,
+    const GURL& requesting_origin) {
+  PermissionsClient::Get()->GetUkmSourceId(
+      browser_context, web_contents, requesting_origin,
+      base::BindOnce(&RecordPermissionUsageUkm, permission_type));
 }
 
 void PermissionUmaUtil::RecordPermissionAction(

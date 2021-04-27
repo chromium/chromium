@@ -117,6 +117,7 @@ TEST_F(PersistentNotificationHandlerTest, OnClick_WithoutPermission) {
 
 TEST_F(PersistentNotificationHandlerTest,
        OnClick_CloseUnactionableNotifications) {
+  ASSERT_TRUE(profile_.CreateHistoryService());
   // Show a notification for a particular origin.
   {
     base::RunLoop run_loop;

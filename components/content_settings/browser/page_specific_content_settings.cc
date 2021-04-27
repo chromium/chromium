@@ -251,7 +251,6 @@ void PageSpecificContentSettings::WebContentsHandler::DidFinishNavigation(
         it->second, navigation_handle->GetRenderFrameHost());
     inflight_navigation_settings_.erase(it);
   }
-
   delegate_->UpdateLocationBar();
 }
 

@@ -29,6 +29,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/permissions/permission_uma_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -215,6 +216,10 @@ void PlatformNotificationServiceImpl::DisplayNotification(
   NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
       NotificationHandler::Type::WEB_NON_PERSISTENT, notification,
       std::move(metadata));
+
+  permissions::PermissionUmaUtil::RecordPermissionUsage(
+      ContentSettingsType::NOTIFICATIONS, profile_, nullptr,
+      notification.origin_url());
 }
 
 void PlatformNotificationServiceImpl::DisplayPersistentNotification(
@@ -246,6 +251,10 @@ void PlatformNotificationServiceImpl::DisplayPersistentNotification(
 
   NotificationMetricsLoggerFactory::GetForBrowserContext(profile_)
       ->LogPersistentNotificationShown();
+
+  permissions::PermissionUmaUtil::RecordPermissionUsage(
+      ContentSettingsType::NOTIFICATIONS, profile_, nullptr,
+      notification.origin_url());
 }
 
 void PlatformNotificationServiceImpl::CloseNotification(

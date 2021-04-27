@@ -267,6 +267,11 @@ class PermissionUmaUtil {
       PermissionAction action,
       const std::vector<ContentSettingsType>& content_settings_types);
 
+  static void RecordPermissionUsage(ContentSettingsType permission_type,
+                                    content::BrowserContext* browser_context,
+                                    const content::WebContents* web_contents,
+                                    const GURL& requesting_origin);
+
   static void RecordTimeElapsedBetweenGrantAndUse(ContentSettingsType type,
                                                   base::TimeDelta delta);
 

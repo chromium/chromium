@@ -123,6 +123,7 @@ class PlatformNotificationServiceTest : public testing::Test {
 };
 
 TEST_F(PlatformNotificationServiceTest, DisplayNonPersistentThenClose) {
+  ASSERT_TRUE(profile_.CreateHistoryService());
   PlatformNotificationData data;
   data.title = u"My Notification";
   data.body = u"Hello, world!";
@@ -141,6 +142,7 @@ TEST_F(PlatformNotificationServiceTest, DisplayNonPersistentThenClose) {
 }
 
 TEST_F(PlatformNotificationServiceTest, DisplayPersistentThenClose) {
+  ASSERT_TRUE(profile_.CreateHistoryService());
   PlatformNotificationData data;
   data.title = u"My notification's title";
   data.body = u"Hello, world!";
@@ -167,6 +169,7 @@ TEST_F(PlatformNotificationServiceTest, DisplayPersistentThenClose) {
 }
 
 TEST_F(PlatformNotificationServiceTest, DisplayNonPersistentPropertiesMatch) {
+  ASSERT_TRUE(profile_.CreateHistoryService());
   std::vector<int> vibration_pattern(
       kNotificationVibrationPattern,
       kNotificationVibrationPattern +
@@ -200,11 +203,11 @@ TEST_F(PlatformNotificationServiceTest, DisplayNonPersistentPropertiesMatch) {
 }
 
 TEST_F(PlatformNotificationServiceTest, DisplayPersistentPropertiesMatch) {
+  ASSERT_TRUE(profile_.CreateHistoryService());
   std::vector<int> vibration_pattern(
       kNotificationVibrationPattern,
       kNotificationVibrationPattern +
           base::size(kNotificationVibrationPattern));
-
   PlatformNotificationData data;
   data.title = u"My notification's title";
   data.body = u"Hello, world!";
