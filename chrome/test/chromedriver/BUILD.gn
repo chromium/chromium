@@ -4,6 +4,7 @@
 
 import("//build/config/python.gni")
 import("//build/config/ui.gni")
+import("//build/linux/strip_binary.gni")
 import("//build/util/lastchange.gni")
 import("//testing/test.gni")
 import("//third_party/ffmpeg/ffmpeg_options.gni")
@@ -305,7 +306,13 @@ source_set("lib") {
   }
 }
 
-executable("chromedriver") {
+if (is_linux) {
+  chromedriver_output = "chromedriver.unstripped"
+} else {
+  chromedriver_output = "chromedriver"
+}
+
+executable("$chromedriver_output") {
   testonly = true
   sources = [ "server/chromedriver_server.cc" ]
 
@@ -325,6 +332,16 @@ executable("chromedriver") {
       "-rpath",
       "@executable_path/.",
     ]
+  }
+}
+
+if (is_linux) {
+  strip_binary("chromedriver") {
+    testonly = true
+    binary_input = "$root_out_dir/$chromedriver_output"
+    symbol_output = "$root_out_dir/chromedriver.debug"
+    stripped_binary_output = "$root_out_dir/chromedriver"
+    deps = [ ":$chromedriver_output" ]
   }
 }
 
