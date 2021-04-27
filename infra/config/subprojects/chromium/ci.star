@@ -44,6 +44,11 @@ luci.bucket(
         ),
         acl.entry(
             roles = acl.BUILDBUCKET_TRIGGERER,
+            users = [
+                # Allow chrome-release/branch builders on luci.chrome.official.infra
+                # to schedule builds
+                "chrome-official-brancher@chops-service-accounts.iam.gserviceaccount.com",
+            ],
             groups = "project-chromium-ci-schedulers",
         ),
         acl.entry(
@@ -1630,6 +1635,7 @@ ci.chromiumos_builder(
     tree_closing = False,
     main_console_view = "main",
     triggered_by = [],
+    schedule = "triggered",
     properties = {
         # The format of these properties is defined at archive/properties.proto
         "$build/archive": {
