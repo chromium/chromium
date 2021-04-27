@@ -66,6 +66,20 @@ class SigninScreenMediatorTest : public PlatformTest {
                                                  name:@"Test Name"];
   }
 
+  void TearDown() override {
+    identity_service_->WaitForServiceCallbacksToComplete();
+  }
+
+  void SetIdentityService(
+      std::unique_ptr<ios::FakeChromeIdentityService> service) {
+    // Run all callbacks on the old service.
+    identity_service_->WaitForServiceCallbacksToComplete();
+
+    // Update the service in the browser provider.
+    identity_service_ = service.get();
+    browser_provider_->SetChromeIdentityServiceForTesting(std::move(service));
+  }
+
   base::test::TaskEnvironment task_enviroment_;
   SigninScreenMediator* mediator_;
   ios::TestChromeBrowserProvider* browser_provider_;
@@ -174,8 +188,7 @@ TEST_F(SigninScreenMediatorTest, TestProfileUpdate) {
   std::unique_ptr<ios::FakeChromeIdentityService> second_service_unique =
       std::make_unique<ios::FakeChromeIdentityService>();
   ios::FakeChromeIdentityService* second_service = second_service_unique.get();
-  browser_provider_->SetChromeIdentityServiceForTesting(
-      std::move(second_service_unique));
+  SetIdentityService(std::move(second_service_unique));
 
   second_service->AddIdentity(second_identity);
 
