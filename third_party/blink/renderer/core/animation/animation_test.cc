@@ -1308,7 +1308,7 @@ TEST_F(AnimationAnimationTestCompositing,
   // At this point, the animation exists on both the compositor and blink side,
   // but no start time has arrived on either side. The compositor is currently
   // synced, no update is pending.
-  EXPECT_FALSE(animation->CompositorPendingForTesting());
+  EXPECT_FALSE(animation->CompositorPending());
 
   // However, if we pause the animation then the compositor should still be
   // marked pending. This is required because otherwise the compositor will go
@@ -1316,7 +1316,7 @@ TEST_F(AnimationAnimationTestCompositing,
   // on the next compositor frame).
   animation->pause();
 
-  EXPECT_TRUE(animation->CompositorPendingForTesting());
+  EXPECT_TRUE(animation->CompositorPending());
 }
 
 TEST_F(AnimationAnimationTestCompositing, PreCommitWithUnresolvedStartTimes) {
@@ -1325,7 +1325,7 @@ TEST_F(AnimationAnimationTestCompositing, PreCommitWithUnresolvedStartTimes) {
   // At this point, the animation exists on both the compositor and blink side,
   // but no start time has arrived on either side. The compositor is currently
   // synced, no update is pending.
-  EXPECT_FALSE(animation->CompositorPendingForTesting());
+  EXPECT_FALSE(animation->CompositorPending());
 
   // At this point, a call to PreCommit should bail out and tell us to wait for
   // next commit because there are no resolved start times.
@@ -1432,7 +1432,7 @@ TEST_F(AnimationAnimationTestCompositing, SetKeyframesCausesCompositorPending) {
   // At this point, the animation exists on both the compositor and blink side,
   // but no start time has arrived on either side. The compositor is currently
   // synced, no update is pending.
-  EXPECT_FALSE(animation->CompositorPendingForTesting());
+  EXPECT_FALSE(animation->CompositorPending());
 
   // Now change the keyframes; this should mark the animation as compositor
   // pending as we need to sync the compositor side.
@@ -1453,7 +1453,7 @@ TEST_F(AnimationAnimationTestCompositing, SetKeyframesCausesCompositorPending) {
 
   To<KeyframeEffect>(animation->effect())->SetKeyframes(keyframes);
 
-  EXPECT_TRUE(animation->CompositorPendingForTesting());
+  EXPECT_TRUE(animation->CompositorPending());
 }
 
 // crbug.com/1057076

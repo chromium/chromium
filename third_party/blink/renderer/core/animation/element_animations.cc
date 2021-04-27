@@ -71,6 +71,15 @@ void ElementAnimations::UpdateAnimationFlags(ComputedStyle& style) {
     if (!effect.IsCurrent())
       continue;
     UpdateAnimationFlagsForEffect(effect, style);
+
+    // This animation animates background-color and some input of the animation
+    // is changed compared with the previous frame, so trigger a repaint.
+    if (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
+        animation.CalculateAnimationPlayState() != Animation::kIdle &&
+        effect.Affects(PropertyHandle(GetCSSPropertyBackgroundColor())) &&
+        animation.CompositorPending()) {
+      style.SetCompositablePaintAnimationChanged(true);
+    }
   }
 
   for (const auto& entry : worklet_animations_) {

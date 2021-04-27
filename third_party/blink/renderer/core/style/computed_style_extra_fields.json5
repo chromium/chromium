@@ -645,6 +645,13 @@
       default_value: "false",
     },
     {
+      name: "CompositablePaintAnimationChanged",
+      field_template: "primitive",
+      type_name: "bool",
+      field_group: "*",
+      default_value: "false",
+    },
+    {
       name: "IsRunningOpacityAnimationOnCompositor",
       field_template: "primitive",
       type_name: "bool",

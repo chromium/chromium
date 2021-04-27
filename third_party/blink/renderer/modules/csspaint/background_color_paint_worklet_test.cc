@@ -12,8 +12,10 @@
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
@@ -241,6 +243,146 @@ TEST_F(BackgroundColorPaintWorkletTest, MultipleAnimationsFallback) {
   base::Optional<double> progress;
   EXPECT_FALSE(BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams(
       element, &animated_colors, &offsets, &progress));
+}
+
+// Test that style->CompositablePaintAnimationChanged() should be true in the
+// case where we initially have one background-color animation, and then changed
+// to have two background-color animation on the element.
+TEST_F(BackgroundColorPaintWorkletTest,
+       TriggerRepaintCompositedToNonComposited) {
+  ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
+  SetBodyInnerHTML(R"HTML(
+    <div id ="target" style="width: 100px; height: 100px">
+    </div>
+  )HTML");
+
+  Timing timing;
+  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(30);
+
+  CSSPropertyID property_id = CSSPropertyID::kBackgroundColor;
+  Persistent<StringKeyframe> start_keyframe =
+      MakeGarbageCollected<StringKeyframe>();
+  start_keyframe->SetCSSPropertyValue(
+      property_id, "red", SecureContextMode::kInsecureContext, nullptr);
+  Persistent<StringKeyframe> end_keyframe =
+      MakeGarbageCollected<StringKeyframe>();
+  end_keyframe->SetCSSPropertyValue(
+      property_id, "green", SecureContextMode::kInsecureContext, nullptr);
+
+  StringKeyframeVector keyframes;
+  keyframes.push_back(start_keyframe);
+  keyframes.push_back(end_keyframe);
+  auto* model1 = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
+
+  Element* element = GetElementById("target");
+  ComputedStyle* style = GetDocument().GetStyleResolver().ResolveStyle(
+      element, StyleRecalcContext());
+  EXPECT_FALSE(style->HasCurrentBackgroundColorAnimation());
+
+  NonThrowableExceptionState exception_state;
+  DocumentTimeline* timeline =
+      MakeGarbageCollected<DocumentTimeline>(&GetDocument());
+  Animation* animation1 = Animation::Create(
+      MakeGarbageCollected<KeyframeEffect>(element, model1, timing), timeline,
+      exception_state);
+  animation1->play();
+  ASSERT_TRUE(element->GetElementAnimations());
+  EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
+  element->GetElementAnimations()->UpdateAnimationFlags(*style);
+  // Previously no background-color animation, now it has. This should trigger
+  // a repaint, see ComputedStyle::UpdatePropertySpecificDifferences().
+  EXPECT_TRUE(style->HasCurrentBackgroundColorAnimation());
+  style->ResetHasCurrentBackgroundColorAnimation();
+  style->ResetCompositablePaintAnimationChanged();
+
+  start_keyframe->SetCSSPropertyValue(
+      property_id, "blue", SecureContextMode::kInsecureContext, nullptr);
+  end_keyframe->SetCSSPropertyValue(
+      property_id, "yellow", SecureContextMode::kInsecureContext, nullptr);
+  keyframes.clear();
+  keyframes.push_back(start_keyframe);
+  keyframes.push_back(end_keyframe);
+  auto* model2 = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
+  Animation* animation2 = Animation::Create(
+      MakeGarbageCollected<KeyframeEffect>(element, model2, timing), timeline,
+      exception_state);
+  animation1->play();
+  animation2->play();
+
+  ASSERT_TRUE(element->GetElementAnimations());
+  EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 2u);
+  element->GetElementAnimations()->UpdateAnimationFlags(*style);
+  EXPECT_TRUE(style->HasCurrentBackgroundColorAnimation());
+  // CompositablePaintAnimationChanged() being true will trigger a repaint. See
+  // ComputedStyle::UpdatePropertySpecificDifferences().
+  EXPECT_TRUE(style->CompositablePaintAnimationChanged());
+}
+
+// Test that style->CompositablePaintAnimationChanged() should be true in the
+// case where we initially have one background-color animation, and then we
+// changed one of the animation's keyframes.
+TEST_F(BackgroundColorPaintWorkletTest, TriggerRepaintChangedKeyframe) {
+  ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
+  SetBodyInnerHTML(R"HTML(
+    <div id ="target" style="width: 100px; height: 100px">
+    </div>
+  )HTML");
+
+  Timing timing;
+  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(30);
+
+  CSSPropertyID property_id = CSSPropertyID::kBackgroundColor;
+  Persistent<StringKeyframe> start_keyframe =
+      MakeGarbageCollected<StringKeyframe>();
+  start_keyframe->SetCSSPropertyValue(
+      property_id, "red", SecureContextMode::kInsecureContext, nullptr);
+  Persistent<StringKeyframe> end_keyframe =
+      MakeGarbageCollected<StringKeyframe>();
+  end_keyframe->SetCSSPropertyValue(
+      property_id, "green", SecureContextMode::kInsecureContext, nullptr);
+
+  StringKeyframeVector keyframes;
+  keyframes.push_back(start_keyframe);
+  keyframes.push_back(end_keyframe);
+  auto* model = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
+
+  Element* element = GetElementById("target");
+  ComputedStyle* style = GetDocument().GetStyleResolver().ResolveStyle(
+      element, StyleRecalcContext());
+  EXPECT_FALSE(style->HasCurrentBackgroundColorAnimation());
+
+  NonThrowableExceptionState exception_state;
+  DocumentTimeline* timeline =
+      MakeGarbageCollected<DocumentTimeline>(&GetDocument());
+  Animation* animation = Animation::Create(
+      MakeGarbageCollected<KeyframeEffect>(element, model, timing), timeline,
+      exception_state);
+  animation->play();
+  ASSERT_TRUE(element->GetElementAnimations());
+  EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
+  element->GetElementAnimations()->UpdateAnimationFlags(*style);
+  // Previously no background-color animation, now it has. This should trigger
+  // a repaint, see ComputedStyle::UpdatePropertySpecificDifferences().
+  EXPECT_TRUE(style->HasCurrentBackgroundColorAnimation());
+  style->ResetHasCurrentBackgroundColorAnimation();
+  style->ResetCompositablePaintAnimationChanged();
+
+  start_keyframe->SetCSSPropertyValue(
+      property_id, "red", SecureContextMode::kInsecureContext, nullptr);
+  end_keyframe->SetCSSPropertyValue(
+      property_id, "yellow", SecureContextMode::kInsecureContext, nullptr);
+  keyframes.clear();
+  keyframes.push_back(start_keyframe);
+  keyframes.push_back(end_keyframe);
+  animation->play();
+
+  ASSERT_TRUE(element->GetElementAnimations());
+  EXPECT_EQ(element->GetElementAnimations()->Animations().size(), 1u);
+  element->GetElementAnimations()->UpdateAnimationFlags(*style);
+  EXPECT_TRUE(style->HasCurrentBackgroundColorAnimation());
+  // CompositablePaintAnimationChanged() being true will trigger a repaint. See
+  // ComputedStyle::UpdatePropertySpecificDifferences().
+  EXPECT_TRUE(style->CompositablePaintAnimationChanged());
 }
 
 // Test that calling BackgroundColorPaintWorkletProxyClient::Paint won't crash

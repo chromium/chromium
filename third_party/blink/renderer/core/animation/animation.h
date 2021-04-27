@@ -282,7 +282,7 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
 
   void Trace(Visitor*) const override;
 
-  bool CompositorPendingForTesting() const { return compositor_pending_; }
+  bool CompositorPending() const { return compositor_pending_; }
 
   // Methods for handling removal and persistence of animations.
   bool IsReplaceable();

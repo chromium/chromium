@@ -955,8 +955,10 @@ void ComputedStyle::UpdatePropertySpecificDifferences(
     diff.SetCompositingReasonsChanged();
   }
 
-  if (HasCurrentBackgroundColorAnimation() !=
-      other.HasCurrentBackgroundColorAnimation()) {
+  if (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
+      (HasCurrentBackgroundColorAnimation() !=
+           other.HasCurrentBackgroundColorAnimation() ||
+       CompositablePaintAnimationChanged())) {
     diff.SetCompositablePaintEffectChanged();
   }
 }
