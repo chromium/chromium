@@ -24,51 +24,176 @@ IPAddress PrivateIPv4Address() {
   return IPAddress(192, 168, 1, 1);
 }
 
-void ParseURLSafeIPAddressTo(base::StringPiece str, IPAddress& address) {
-  // ASSERT can only be used in functions returning void, hence the existence of
-  // this helper function.
-  ASSERT_TRUE(net::ParseURLHostnameToAddress(str, &address))
-      << "Invalid IP address literal: " << str;
+// Verifies that the address space of an invalid IP address is `unknown`.
+TEST(IPAddressSpaceTest, IPAddressToIPAddressSpaceInvalid) {
+  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress()), IPAddressSpace::kUnknown);
 }
 
-// Wrapper around net::ParseURLHostnameToAddress for easier use in tests.
-IPAddress ParseURLSafeIPAddress(base::StringPiece str) {
+// Verifies that the address space of a regular IP address is `public`.
+TEST(IPAddressSpaceTest, IPAddressToIPAddressSpaceV4Public) {
+  EXPECT_EQ(IPAddressToIPAddressSpace(PublicIPv4Address()),
+            IPAddressSpace::kPublic);
+}
+
+// Verifies that the address space of IP addresses belonging to any of the
+// three "Private Use" address blocks defined in RFC 1918 is `private`.
+TEST(IPAddressSpaceTest, IPAddressToIPAddressSpaceV4PrivateUse) {
+  EXPECT_EQ(IPAddressToIPAddressSpace(PrivateIPv4Address()),
+            IPAddressSpace::kPrivate);
+
+  // 10.0.0.0/8
+
+  // Lower bound (exclusive).
+  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(9, 255, 255, 255)),
+            IPAddressSpace::kPublic);
+
+  // Lower and upper bounds (inclusive).
+  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(10, 0, 0, 0)),
+            IPAddressSpace::kPrivate);
+  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(10, 255, 255, 255)),
+            IPAddressSpace::kPrivate);
+
+  // Upper bound (exclusive).
+  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(11, 0, 0, 0)),
+            IPAddressSpace::kPublic);
+
+  // 172.16.0.0/12
+
+  // Lower bound (exclusive).
+  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(172, 15, 255, 255)),
+            IPAddressSpace::kPublic);
+
+  // Lower and upper bounds (inclusive).
+  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(172, 16, 0, 0)),
+            IPAddressSpace::kPrivate);
+  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(172, 31, 255, 255)),
+            IPAddressSpace::kPrivate);
+
+  // Upper bound (exclusive).
+  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(172, 32, 0, 0)),
+            IPAddressSpace::kPublic);
+
+  // 192.168.0.0/16
+
+  // Lower bound (exclusive).
+  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(192, 167, 255, 255)),
+            IPAddressSpace::kPublic);
+
+  // Lower and upper bounds (inclusive).
+  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(192, 168, 0, 0)),
+            IPAddressSpace::kPrivate);
+  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(192, 168, 255, 255)),
+            IPAddressSpace::kPrivate);
+
+  // Upper bound (exclusive).
+  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(169, 169, 0, 0)),
+            IPAddressSpace::kPublic);
+}
+
+// Verifies that the address space of IP addresses belonging to the "Link-local"
+// 169.254.0.0/16 block are `private`.
+TEST(IPAddressSpaceTest, IPAddressToIPAddressSpaceV4LinkLocal) {
+  // Lower bound (exclusive).
+  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(169, 253, 255, 255)),
+            IPAddressSpace::kPublic);
+
+  // Lower and upper bounds (inclusive).
+  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(169, 254, 0, 0)),
+            IPAddressSpace::kPrivate);
+  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(169, 254, 255, 255)),
+            IPAddressSpace::kPrivate);
+
+  // Upper bound (exclusive).
+  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(169, 255, 0, 0)),
+            IPAddressSpace::kPublic);
+}
+
+// Verifies that the address space of IPv4 localhost and the rest of the
+// 127.0.0.0/8 block is `local`.
+TEST(IPAddressSpaceTest, IPAddressToIPAddressSpaceV4Localhost) {
+  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress::IPv4Localhost()),
+            IPAddressSpace::kLocal);
+
+  // Lower bound (exclusive).
+  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(126, 255, 255, 255)),
+            IPAddressSpace::kPublic);
+
+  // Lower and upper bounds (inclusive).
+  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(127, 0, 0, 0)),
+            IPAddressSpace::kLocal);
+  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(127, 255, 255, 255)),
+            IPAddressSpace::kLocal);
+
+  // Upper bound (exclusive).
+  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(128, 0, 0, 0)),
+            IPAddressSpace::kPublic);
+}
+
+IPAddress ParseIPAddress(base::StringPiece str) {
   IPAddress address;
-  ParseURLSafeIPAddressTo(str, address);
+  EXPECT_TRUE(address.AssignFromIPLiteral(str))
+      << "Failed to parse IP address: " << str;
   return address;
 }
 
-TEST(IPAddressSpaceTest, IPAddressToIPAddressSpaceV4) {
-  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress()), IPAddressSpace::kUnknown);
-
-  EXPECT_EQ(IPAddressToIPAddressSpace(PublicIPv4Address()),
+// Verifies that the address space of a regular IPv6 address is `public`.
+TEST(IPAddressSpaceTest, IPAddressToIPAddressSpaceV6Public) {
+  EXPECT_EQ(IPAddressToIPAddressSpace(ParseIPAddress("42::")),
             IPAddressSpace::kPublic);
-
-  EXPECT_EQ(IPAddressToIPAddressSpace(PrivateIPv4Address()),
-            IPAddressSpace::kPrivate);
-  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(10, 1, 1, 1)),
-            IPAddressSpace::kPrivate);
-
-  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress::IPv4Localhost()),
-            IPAddressSpace::kLocal);
 }
 
-IPAddressBytes IPv6BytesWithPrefix(uint8_t prefix) {
-  IPAddressBytes bytes;
-  bytes.Resize(IPAddress::kIPv6AddressSize);
-  bytes.data()[0] = prefix;
-  return bytes;
-}
-
-TEST(IPAddressSpaceTest, IPAddressToAddressSpaceV6) {
-  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(IPv6BytesWithPrefix(42))),
+// Verifies that the address space of IPv6 addresses in the "Unique-local"
+// (fc00::/7) address block is `private`.
+TEST(IPAddressSpaceTest, IPAddressToIPAddressSpaceV6UniqueLocal) {
+  // Lower bound (exclusive).
+  EXPECT_EQ(IPAddressToIPAddressSpace(
+                ParseIPAddress("fbff:ffff:ffff:ffff:ffff:ffff:ffff:ffff")),
             IPAddressSpace::kPublic);
 
-  EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress(IPv6BytesWithPrefix(0xfd))),
+  // Lower and upper bounds (inclusive).
+  EXPECT_EQ(IPAddressToIPAddressSpace(ParseIPAddress("fc00::")),
+            IPAddressSpace::kPrivate);
+  EXPECT_EQ(IPAddressToIPAddressSpace(
+                ParseIPAddress("fdff:ffff:ffff:ffff:ffff:ffff:ffff:ffff")),
             IPAddressSpace::kPrivate);
 
+  // Upper bound (exclusive).
+  EXPECT_EQ(IPAddressToIPAddressSpace(ParseIPAddress("fe00::")),
+            IPAddressSpace::kPublic);
+}
+
+// Verifies that the address space of IPv6 addresses in the "Link-local unicast"
+// (fe80::/10) address block is `private`.
+TEST(IPAddressSpaceTest, IPAddressToIPAddressSpaceV6LinkLocalUnicast) {
+  // Lower bound (exclusive).
+  EXPECT_EQ(IPAddressToIPAddressSpace(
+                ParseIPAddress("fe7f:ffff:ffff:ffff:ffff:ffff:ffff:ffff")),
+            IPAddressSpace::kPublic);
+
+  // Lower and upper bounds (inclusive).
+  EXPECT_EQ(IPAddressToIPAddressSpace(ParseIPAddress("fe80::")),
+            IPAddressSpace::kPrivate);
+  EXPECT_EQ(IPAddressToIPAddressSpace(
+                ParseIPAddress("febf:ffff:ffff:ffff:ffff:ffff:ffff:ffff")),
+            IPAddressSpace::kPrivate);
+
+  // Upper bound (exclusive).
+  EXPECT_EQ(IPAddressToIPAddressSpace(ParseIPAddress("fec0::")),
+            IPAddressSpace::kPublic);
+}
+
+// Verifies that the address space of IPv6 localhost (::1/128) is `local`.
+TEST(IPAddressSpaceTest, IPAddressToIPAddressSpaceV6Localhost) {
   EXPECT_EQ(IPAddressToIPAddressSpace(IPAddress::IPv6Localhost()),
             IPAddressSpace::kLocal);
+
+  // Lower bound (exclusive).
+  EXPECT_EQ(IPAddressToIPAddressSpace(ParseIPAddress("::0")),
+            IPAddressSpace::kPublic);
+
+  // Upper bound (exclusive).
+  EXPECT_EQ(IPAddressToIPAddressSpace(ParseIPAddress("::2")),
+            IPAddressSpace::kPublic);
 }
 
 // Verifies that IPv4-mapped IPv6 addresses belong to the address space of the
@@ -82,10 +207,9 @@ TEST(IPAddressSpaceTest, IPAddressToAddressSpaceIPv4MappedIPv6) {
                 net::ConvertIPv4ToIPv4MappedIPv6(PrivateIPv4Address())),
             IPAddressSpace::kPrivate);
 
-  // TODO(https://crbug.com/1201170): Expect kLocal here.
   EXPECT_EQ(IPAddressToIPAddressSpace(
                 net::ConvertIPv4ToIPv4MappedIPv6(IPAddress::IPv4Localhost())),
-            IPAddressSpace::kPrivate);
+            IPAddressSpace::kLocal);
 }
 
 // Verifies that the `ip-address-space-overrides` switch can be present and
@@ -222,37 +346,37 @@ TEST(IPAddressSpaceTest, IPAddressToAddressSpaceOverrideV6) {
   // First override block.
 
   // 1 bit lower than lower bound.
-  EXPECT_EQ(IPAddressToIPAddressSpace(ParseURLSafeIPAddress(
-                "[2000:ffff:ffff:ffff:ffff:ffff:ffff:ffff]")),
+  EXPECT_EQ(IPAddressToIPAddressSpace(
+                ParseIPAddress("2000:ffff:ffff:ffff:ffff:ffff:ffff:ffff")),
             IPAddressSpace::kPublic);
 
   // Lower and upper bound.
-  EXPECT_EQ(IPAddressToIPAddressSpace(ParseURLSafeIPAddress("[2001::]")),
+  EXPECT_EQ(IPAddressToIPAddressSpace(ParseIPAddress("2001::")),
             IPAddressSpace::kLocal);
-  EXPECT_EQ(IPAddressToIPAddressSpace(ParseURLSafeIPAddress(
-                "[2001:ffff:ffff:ffff:ffff:ffff:ffff:ffff]")),
+  EXPECT_EQ(IPAddressToIPAddressSpace(
+                ParseIPAddress("2001:ffff:ffff:ffff:ffff:ffff:ffff:ffff")),
             IPAddressSpace::kLocal);
 
   // 1 bit higher than upper bound.
-  EXPECT_EQ(IPAddressToIPAddressSpace(ParseURLSafeIPAddress("[2002::]")),
+  EXPECT_EQ(IPAddressToIPAddressSpace(ParseIPAddress("2002::")),
             IPAddressSpace::kPublic);
 
   // Second override block.
 
   // 1 bit lower than lower bound.
-  EXPECT_EQ(IPAddressToIPAddressSpace(ParseURLSafeIPAddress(
-                "[2019:ffff:ffff:ffff:ffff:ffff:ffff:ffff]")),
+  EXPECT_EQ(IPAddressToIPAddressSpace(
+                ParseIPAddress("2019:ffff:ffff:ffff:ffff:ffff:ffff:ffff")),
             IPAddressSpace::kPublic);
 
   // Lower and upper bound.
-  EXPECT_EQ(IPAddressToIPAddressSpace(ParseURLSafeIPAddress("[2020::]")),
+  EXPECT_EQ(IPAddressToIPAddressSpace(ParseIPAddress("2020::")),
             IPAddressSpace::kPrivate);
-  EXPECT_EQ(IPAddressToIPAddressSpace(ParseURLSafeIPAddress(
-                "[2020:00ff:ffff:ffff:ffff:ffff:ffff:ffff]")),
+  EXPECT_EQ(IPAddressToIPAddressSpace(
+                ParseIPAddress("2020:00ff:ffff:ffff:ffff:ffff:ffff:ffff")),
             IPAddressSpace::kPrivate);
 
   // 1 bit higher than upper bound.
-  EXPECT_EQ(IPAddressToIPAddressSpace(ParseURLSafeIPAddress("[2020:100::]")),
+  EXPECT_EQ(IPAddressToIPAddressSpace(ParseIPAddress("2020:100::")),
             IPAddressSpace::kPublic);
 
   // IPv4 addresses are unaffected.
@@ -275,10 +399,9 @@ TEST(IPAddressSpaceTest, IPAddressToAddressSpaceOverrideIPv4MappedIPv6) {
                 net::ConvertIPv4ToIPv4MappedIPv6(IPAddress(127, 1, 0, 0))),
             IPAddressSpace::kPublic);
 
-  // TODO(https://crbug.com/1201170): Expect kLocal here.
   EXPECT_EQ(IPAddressToIPAddressSpace(
                 net::ConvertIPv4ToIPv4MappedIPv6(IPAddress(127, 2, 0, 0))),
-            IPAddressSpace::kPrivate);
+            IPAddressSpace::kLocal);
 }
 
 TEST(IPAddressSpaceTest, IsLessPublicAddressSpaceThanLocal) {

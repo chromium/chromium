@@ -4,9 +4,11 @@
 
 #include "services/network/public/cpp/ip_address_space_util.h"
 
+#include <utility>
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/no_destructor.h"
 #include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -17,6 +19,7 @@ namespace network {
 namespace {
 
 using mojom::IPAddressSpace;
+using net::IPAddress;
 
 // Represents a single override of the form: subnet -> address space.
 //
@@ -25,18 +28,23 @@ using mojom::IPAddressSpace;
 // block, `OverrideBlock` works well too.
 class OverrideBlock {
  public:
+  OverrideBlock(IPAddress prefix, size_t prefix_length, IPAddressSpace space)
+      : prefix_(std::move(prefix)),
+        prefix_length_(prefix_length),
+        space_(space) {}
+
   // Parses an override block from `str`, of the form "<CIDR block>=<space>".
   static base::Optional<OverrideBlock> Parse(base::StringPiece str);
 
   // Returns this block's address space if `address` belongs to this instance's
   // subnet. Returns nullopt otherwise.
-  base::Optional<IPAddressSpace> Apply(const net::IPAddress& address) const;
+  base::Optional<IPAddressSpace> Apply(const IPAddress& address) const;
 
  private:
   // Use `Parse()` instead.
   OverrideBlock() = default;
 
-  net::IPAddress prefix_;
+  IPAddress prefix_;
   size_t prefix_length_ = 0;
   IPAddressSpace space_ = IPAddressSpace::kUnknown;
 };
@@ -86,7 +94,7 @@ base::Optional<OverrideBlock> OverrideBlock::Parse(base::StringPiece str) {
 }
 
 base::Optional<IPAddressSpace> OverrideBlock::Apply(
-    const net::IPAddress& address) const {
+    const IPAddress& address) const {
   if (net::IPAddressMatchesPrefix(address, prefix_, prefix_length_)) {
     return space_;
   }
@@ -94,8 +102,26 @@ base::Optional<IPAddressSpace> OverrideBlock::Apply(
   return base::nullopt;
 }
 
-// Parses a comma-separated list of override blocks. Ignores invalid blocks.
-std::vector<OverrideBlock> ParseOverrideBlockList(base::StringPiece list) {
+// Represents a sequential list of `OverrideBlock` instances.
+class OverrideBlockList {
+ public:
+  explicit OverrideBlockList(std::vector<OverrideBlock> blocks)
+      : blocks_(std::move(blocks)) {}
+
+  // Parses a comma-separated list of override blocks. Ignores invalid blocks.
+  static OverrideBlockList Parse(base::StringPiece str);
+
+  // Applies blocks in this list to `address`, in sequential order. Returns the
+  // address space of the first matching override block. Returns nullopt if no
+  // match is found.
+  base::Optional<IPAddressSpace> Apply(const IPAddress& address) const;
+
+ private:
+  std::vector<OverrideBlock> blocks_;
+};
+
+// static
+OverrideBlockList OverrideBlockList::Parse(base::StringPiece list) {
   // Since we skip invalid entries anyway, we can skip empty entries.
   std::vector<base::StringPiece> tokens = base::SplitStringPiece(
       list, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
@@ -108,34 +134,69 @@ std::vector<OverrideBlock> ParseOverrideBlockList(base::StringPiece list) {
     }
   }
 
-  return blocks;
+  return OverrideBlockList(std::move(blocks));
+}
+
+base::Optional<IPAddressSpace> OverrideBlockList::Apply(
+    const IPAddress& address) const {
+  base::Optional<IPAddressSpace> space;
+
+  for (const OverrideBlock& block : blocks_) {
+    space = block.Apply(address);
+    if (space.has_value()) {
+      break;
+    }
+  }
+
+  // If we never found a match, `space` is still `nullopt`.
+  return space;
 }
 
 // Applies override blocks specified on the command-line to `address`.
 // Returns nullopt if no override block matches `address`.
 base::Optional<IPAddressSpace> ApplyCommandLineOverrides(
-    const net::IPAddress& address) {
+    const IPAddress& address) {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
   if (!command_line.HasSwitch(switches::kIpAddressSpaceOverrides)) {
     return base::nullopt;
   }
 
-  std::vector<OverrideBlock> blocks = ParseOverrideBlockList(
-      command_line.GetSwitchValueASCII(switches::kIpAddressSpaceOverrides));
-  for (const OverrideBlock& block : blocks) {
-    base::Optional<IPAddressSpace> space = block.Apply(address);
-    if (space.has_value()) {
-      return space;
-    }
-  }
+  std::string switch_str =
+      command_line.GetSwitchValueASCII(switches::kIpAddressSpaceOverrides);
+  return OverrideBlockList::Parse(switch_str).Apply(address);
+}
 
-  return base::nullopt;
+// Returns a block list containing all default-non-public subnets.
+const OverrideBlockList& NonPublicBlockList() {
+  // Have to repeat `OverrideBlockList` because perfect forwarding does not deal
+  // well with initializer lists.
+  static const base::NoDestructor<OverrideBlockList> kBlocks(OverrideBlockList({
+      // IPv6 Loopback (RFC 4291): ::1/128
+      OverrideBlock(IPAddress::IPv6Localhost(), 128, IPAddressSpace::kLocal),
+      // IPv6 Unique-local (RFC 4193, RFC 8190): fc00::/7
+      OverrideBlock(
+          IPAddress(0xfc, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 7,
+          IPAddressSpace::kPrivate),
+      // IPv6 Link-local unicast (RFC 4291): fe80::/10
+      OverrideBlock(
+          IPAddress(0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 10,
+          IPAddressSpace::kPrivate),
+      // IPv4 Loopback (RFC 1122): 127.0.0.0/8
+      OverrideBlock(IPAddress(127, 0, 0, 0), 8, IPAddressSpace::kLocal),
+      // IPv4 Private use (RFC 1918): 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16
+      OverrideBlock(IPAddress(10, 0, 0, 0), 8, IPAddressSpace::kPrivate),
+      OverrideBlock(IPAddress(172, 16, 0, 0), 12, IPAddressSpace::kPrivate),
+      OverrideBlock(IPAddress(192, 168, 0, 0), 16, IPAddressSpace::kPrivate),
+      // IPv4 Link-local (RFC 3927): 169.254.0.0/16
+      OverrideBlock(IPAddress(169, 254, 0, 0), 16, IPAddressSpace::kPrivate),
+  }));
+  return *kBlocks;
 }
 
 }  // namespace
 
-IPAddressSpace IPAddressToIPAddressSpace(const net::IPAddress& address) {
+IPAddressSpace IPAddressToIPAddressSpace(const IPAddress& address) {
   if (!address.IsValid()) {
     return IPAddressSpace::kUnknown;
   }
@@ -145,15 +206,7 @@ IPAddressSpace IPAddressToIPAddressSpace(const net::IPAddress& address) {
     return *space;
   }
 
-  if (address.IsLoopback()) {
-    return IPAddressSpace::kLocal;
-  }
-
-  if (!address.IsPubliclyRoutable()) {
-    return IPAddressSpace::kPrivate;
-  }
-
-  return IPAddressSpace::kPublic;
+  return NonPublicBlockList().Apply(address).value_or(IPAddressSpace::kPublic);
 }
 
 namespace {

@@ -520,7 +520,7 @@ TEST_F(WebURLLoaderTest, ResponseAddressSpace) {
       {"file:///a/path", "", AddressSpace::kLocal},
       {"file:///a/path", "8.8.8.8", AddressSpace::kLocal},
       {"http://router.local", "10.1.0.1", AddressSpace::kPrivate},
-      {"http://router.local", "::ffff:192.0.2.128", AddressSpace::kPrivate},
+      {"http://router.local", "::ffff:192.168.2.128", AddressSpace::kPrivate},
       {"https://bleep.test", "8.8.8.8", AddressSpace::kPublic},
       {"http://a.test", "2001:db8:85a3::8a2e:370:7334", AddressSpace::kPublic},
       {"http://invalid", "", AddressSpace::kUnknown},
