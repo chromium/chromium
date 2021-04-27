@@ -193,7 +193,11 @@ source_set("platform_base_cancellation_flag") {
 
 source_set("platform_public_types") {
   public_configs = [ ":nearby_include_config" ]
-  sources = [ "src/cpp/platform/public/pipe.cc" ]
+  sources = [
+    "src/cpp/platform/public/monitored_runnable.cc",
+    "src/cpp/platform/public/pending_job_registry.cc",
+    "src/cpp/platform/public/pipe.cc",
+  ]
   public = [
     "src/cpp/platform/public/atomic_boolean.h",
     "src/cpp/platform/public/atomic_reference.h",
@@ -205,9 +209,11 @@ source_set("platform_public_types") {
     "src/cpp/platform/public/file.h",
     "src/cpp/platform/public/future.h",
     "src/cpp/platform/public/logging.h",
+    "src/cpp/platform/public/monitored_runnable.h",
     "src/cpp/platform/public/multi_thread_executor.h",
     "src/cpp/platform/public/mutex.h",
     "src/cpp/platform/public/mutex_lock.h",
+    "src/cpp/platform/public/pending_job_registry.h",
     "src/cpp/platform/public/pipe.h",
     "src/cpp/platform/public/scheduled_executor.h",
     "src/cpp/platform/public/settable_future.h",
@@ -465,7 +471,6 @@ source_set("core_internal_mediums_webrtc") {
   sources = [
     "src/cpp/core/internal/mediums/utils.cc",
     "src/cpp/core/internal/mediums/webrtc/connection_flow.cc",
-    "src/cpp/core/internal/mediums/webrtc/data_channel_observer_impl.cc",
     "src/cpp/core/internal/mediums/webrtc/peer_id.cc",
     "src/cpp/core/internal/mediums/webrtc/signaling_frames.cc",
     "src/cpp/core/internal/mediums/webrtc/webrtc_socket.cc",
@@ -474,7 +479,6 @@ source_set("core_internal_mediums_webrtc") {
     "src/cpp/core/internal/mediums/utils.h",
     "src/cpp/core/internal/mediums/webrtc/connection_flow.h",
     "src/cpp/core/internal/mediums/webrtc/data_channel_listener.h",
-    "src/cpp/core/internal/mediums/webrtc/data_channel_observer_impl.h",
     "src/cpp/core/internal/mediums/webrtc/local_ice_candidate_listener.h",
     "src/cpp/core/internal/mediums/webrtc/peer_id.h",
     "src/cpp/core/internal/mediums/webrtc/session_description_wrapper.h",
