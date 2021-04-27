@@ -702,6 +702,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   bool CanUseFragmentsForVisualOverflow() const;
   void RecalcFragmentsVisualOverflow();
+  void CopyVisualOverflowFromFragments();
 
   virtual void UpdateAfterLayout();
 
@@ -2213,8 +2214,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void UpdateHasSubpixelVisualEffectOutsets(const LayoutRectOutsets&);
   void SetVisualOverflow(const PhysicalRect& self,
                          const PhysicalRect& contents);
-  void CopyVisualOverflowFromFragmentsRecursively();
-  void CopyVisualOverflowFromFragments();
   void CopyVisualOverflowFromFragmentsWithoutInvalidations();
 
   void UpdateShapeOutsideInfoAfterStyleChange(const ComputedStyle&,

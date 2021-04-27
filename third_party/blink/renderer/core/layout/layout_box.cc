@@ -7384,69 +7384,14 @@ void LayoutBox::RecalcFragmentsVisualOverflow() {
     DCHECK(fragment.CanUseFragmentsForInkOverflow());
     fragment.GetMutableForPainting().RecalcInkOverflow();
   }
-  // If |this| is an anonymous fieldset wrapper, the rendered legend is a child
-  // of |this| in the box tree, but it is a child of the fieldset container in
-  // the fragment tree. Make sure it is recalculated.
-  if (UNLIKELY(IsAnonymous() && HasSelfPaintingLayer())) {
-    const auto* fieldset = DynamicTo<LayoutNGFieldset>(Parent());
-    if (UNLIKELY(fieldset)) {
-      if (LayoutBox* legend = LayoutFieldset::FindInFlowLegend(*fieldset))
-        legend->RecalcFragmentsVisualOverflow();
-    }
-  }
-  CopyVisualOverflowFromFragmentsRecursively();
-}
-
-void LayoutBox::CopyVisualOverflowFromFragmentsRecursively() {
-  NOT_DESTROYED();
-  DCHECK(CanUseFragmentsForVisualOverflow());
-  DCHECK_GT(PhysicalFragmentCount(), 0u);
-  DCHECK(!DisplayLockUtilities::LockedAncestorPreventingPrePaint(*this));
-
-  CopyVisualOverflowFromFragments();
-
-  if (ChildPrePaintBlockedByDisplayLock())
-    return;
-  for (LayoutObject* current = SlowFirstChild(); current;) {
-    if (UNLIKELY(current->HasLayer() &&
-                 To<LayoutBoxModelObject>(current)->HasSelfPaintingLayer())) {
-      current = current->NextInPreOrderAfterChildren(this);
-      continue;
-    }
-    if (UNLIKELY(current->IsLayoutMultiColumnSet() ||
-                 current->IsLayoutMultiColumnSpannerPlaceholder())) {
-      // These objects do not need visual overflows in NG, and never have
-      // children.
-      DCHECK(!current->SlowFirstChild());
-      current = current->NextInPreOrderAfterChildren(this);
-      continue;
-    }
-    if (UNLIKELY(current->IsLayoutFlowThread())) {
-      // These objects do not need visual overflows in NG.
-      current = current->NextInPreOrder(this);
-      continue;
-    }
-
-    if (LayoutBox* box = DynamicTo<LayoutBox>(current)) {
-      if (box->CanUseFragmentsForVisualOverflow()) {
-        box->CopyVisualOverflowFromFragments();
-        if (UNLIKELY(current->ChildPrePaintBlockedByDisplayLock()))
-          current = current->NextInPreOrderAfterChildren(this);
-        else
-          current = current->NextInPreOrder(this);
-        continue;
-      }
-    } else if (current->IsInline()) {
-      DCHECK(IsA<LayoutText>(current) || IsA<LayoutInline>(current));
-      DCHECK(!current->ChildPrePaintBlockedByDisplayLock());
-      current = current->NextInPreOrder(this);
-      continue;
-    }
-
-    // Legacy objects. Move to next by skipping children because
-    // |RecalcFragmentsVisualOverflow| already recalculated them.
-    current = current->NextInPreOrderAfterChildren(this);
-  }
+  // |NGPhysicalBoxFragment::RecalcInkOverflow| should have copied the computed
+  // values back to |this| and its descendant fragments.
+  //
+  // We can't check descendants of |this| here, because the descendant fragments
+  // may be different from descendant |LayoutObject|s, but the descendant
+  // fragments should match what |PrePaintTreeWalk| traverses. If there were
+  // mismatches, |PrePaintTreeWalk| should hit the DCHECKs.
+  CheckIsVisualOverflowComputed();
 }
 
 // Copy visual overflow from |PhysicalFragments()|.
@@ -7786,9 +7731,6 @@ void LayoutBox::CheckIsVisualOverflowComputed() const {
   if (NGInkOverflow::ReadUnsetAsNoneScope::IsActive())
     return;
   if (!CanUseFragmentsForVisualOverflow())
-    return;
-  // TODO(crbug.com/1144203): NG block fragmentation needs more work.
-  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled())
     return;
   for (const NGPhysicalBoxFragment& fragment : PhysicalFragments())
     DCHECK(fragment.IsInkOverflowComputed());

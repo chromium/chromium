@@ -598,11 +598,11 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::PostLayout() const {
 }
 
 bool NGPhysicalBoxFragment::CanUseFragmentsForInkOverflow() const {
-  if (IsLegacyLayoutRoot())
+  if (UNLIKELY(IsLegacyLayoutRoot()))
     return false;
   // TODO(crbug.com/1144203): Following conditions are not supported in NG
   // visual overflow yet.
-  if (IsColumnSpanAll() || IsMathML())
+  if (UNLIKELY(IsMathML()))
     return false;
   DCHECK(IsInlineBox() || OwnerLayoutBox());
   return true;
@@ -993,6 +993,29 @@ void NGPhysicalBoxFragment::RecalcInkOverflow() {
   if (!layout_object->ChildPrePaintBlockedByDisplayLock())
     contents_rect = RecalcContentsInkOverflow();
   RecalcInkOverflow(contents_rect);
+
+  // Copy the computed values to the |OwnerBox| if |this| is the last fragment.
+
+  // Column boxes may or may not have |BreakToken|s, and that
+  // |CopyVisualOverflowFromFragments| cannot compute stitched coordinate for
+  // them. See crbug.com/1197561.
+  if (UNLIKELY(IsColumnBox()))
+    return;
+
+  if (BreakToken()) {
+    DCHECK_NE(this, &OwnerLayoutBox()->PhysicalFragments().back());
+    return;
+  }
+  DCHECK_EQ(this, &OwnerLayoutBox()->PhysicalFragments().back());
+
+  // We need to copy to the owner box, but |OwnerLayoutBox| should be equal to
+  // |GetLayoutObject| except for column boxes, and since we early-return for
+  // column boxes, |GetMutableLayoutObject| should do the work.
+  DCHECK_EQ(MutableOwnerLayoutBox(), GetMutableLayoutObject());
+  LayoutBox* owner_box = To<LayoutBox>(GetMutableLayoutObject());
+  DCHECK(owner_box);
+  DCHECK(owner_box->PhysicalFragments().Contains(*this));
+  owner_box->CopyVisualOverflowFromFragments();
 }
 
 // Recalculate ink overflow of children. Returns the contents ink overflow
