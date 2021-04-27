@@ -53,13 +53,13 @@ git tag -l  # Often unnecessary as output from the fetch includes recent tags.
 git checkout $TAG  # e.g. 3.0.25-dev, whichever tag failed patching.
   * Apply patches:
 git checkout -b my_branch
-git am $CHROMIUM_SRC/third_party/r8/patches/*.patch
+git am $CHROMIUM_SRC/third_party/r8/3pp/patches/*.patch
   * Fix patch conflicts.
   * Save new patches. Change number if expecting more or fewer patches:
-git format-patch -3 -o $CHROMIUM_SRC/third_party/r8/3pp/patches
+git format-patch -2 -o $CHROMIUM_SRC/third_party/r8/3pp/patches
   * Submit these fixed patches and the bot will automatically retry.
 
-* Local development (see above for setting up the r8 repo):
+* Local development (see above for setting up the r8 repo and applying patches):
   * Build
 tools/gradle.py r8
   * Shrink (improves r8/d8 launch time):
