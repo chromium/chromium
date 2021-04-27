@@ -417,20 +417,28 @@ struct BASE_EXPORT PartitionRoot {
                          alignment);
   }
 
+// PartitionRefCount contains a cookie if slow checks are enabled or
+// DCHECK_IS_ON(), which makes it 8B in size. On 32-bit architectures it fills
+// the entire smallest slot, which is also 8B there.
+#if (BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS) || DCHECK_IS_ON()) && \
+    !defined(PA_HAS_64_BITS_POINTERS)
+#define PA_REF_COUNT_FILLS_ENTIRE_SMALLEST_SLOT 1
+#endif
+
   ALWAYS_INLINE size_t AdjustSize0IfNeeded(size_t size) const {
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
+#if BUILDFLAG(USE_BACKUP_REF_PTR) &&               \
+    (!BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) || \
+     defined(PA_REF_COUNT_FILLS_ENTIRE_SMALLEST_SLOT))
     // The minimum slot size is base::kAlignment. If |requested_size| is 0 and
-    // there are extra before the allocation (which must be at least
+    // there are extras only before the allocation (which must be at least
     // kAlignment), then these extras will fill the slot, leading to returning a
     // pointer to the next slot. This is a problem, because e.g. FreeNoHooks()
     // or ReallocFlags() call SlotSpan::FromSlotInnerPtr(ptr) prior to
     // subtracting extras, thus getting a wrong, possibly non-existent, slot
-    // span.
-    //
-    // Adjust the size to counteract it.
+    // span. Fake the size to be 1 in order to counteract it.
     //
     // Having any extras after the allocation nullifies the issue, so no need
-    // for this adjustment in the PUT_COUNT_IN_PREVIOUS_SLOT case. Same for
+    // for this adjustment in the PUT_REF_COUNT_IN_PREVIOUS_SLOT case. Same for
     // DCHECK_IS_ON(), but we prefer not to change codepaths between Release and
     // Debug.
     //
@@ -440,19 +448,28 @@ struct BASE_EXPORT PartitionRoot {
     // effectively disabled without GigaCage), but we prefer not to add more
     // checks, as this function may be called on hot paths.
     //
-    // When putting refcount in the previous slot, the previous slot may be
-    // freed. In this case, the slot need to have a partition free list entry,
-    // and a refcount. Each slot size must be larger than or equal to
-    // sizeof(void*) + sizeof(PartitionRefCount). sizeof(PartitionRefCount) is 4
-    // or 8 bytes (enable BACKUP_REF_PTR slow checks or DCHECK is on). If
-    // sizeof(PartitionRefCount) is 8 and |requested_size| is 0, the smallest
-    // bucket will be used. If kSmallestBucket is 8, refcounts will be broken
-    // when freeing slots. To avoid this, need to adjust the size 0.
+    // We use this technique in another situation. When putting refcount in the
+    // previous slot, the previous slot may be free. In this case, the slot
+    // needs to fit both, a free-list entry and a ref-count. If
+    // sizeof(PartitionRefCount) is 8, it fills the entire smallest slot on
+    // 32-bit systems (kSmallestBucket is 8). Adjusting the request size from 0
+    // to 1 guarantees that we'll never allocate the smallest slot.
     if (UNLIKELY(size == 0))
       return 1;
 #else
     PA_DCHECK(!extras_offset || (extras_size - extras_offset));
-#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+    constexpr size_t kRefCountSize = sizeof(internal::PartitionRefCount);
+#else
+    constexpr size_t kRefCountSize = 0;
+#endif
+    static_assert(
+        sizeof(internal::EncodedPartitionFreelistEntry) + kRefCountSize <=
+            kSmallestBucket,
+        "Ref-count and free-list entry must fit in the smallest slot");
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR) &&
+        // (!BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) ||
+        // defined(PA_REF_COUNT_FILLS_ENTIRE_SMALLEST_SLOT))
     return size;
   }
 
