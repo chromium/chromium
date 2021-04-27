@@ -4396,6 +4396,10 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
         Link to highlight
       </message>
 
+      <message name="IDS_SHARING_WEBNOTES_STYLIZED" desc="Label for stylized highlight creation button in the sharing hub.">
+        Stylize highlight
+      </message>
+
       <message name="IDS_SHARING_COPIED" desc="Text shown in the toast notification when Copy is selected in the sharing hub.">
         Copied
       </message>

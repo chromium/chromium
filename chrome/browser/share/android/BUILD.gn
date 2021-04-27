@@ -19,6 +19,7 @@ android_resources("java_resources") {
     "java/res/drawable/save_icon.xml",
     "java/res/drawable/share_icon.xml",
     "java/res/drawable/text_icon.xml",
+    "java/res/drawable/webnote.xml",
     "java/res/layout/qrcode_camera_error_layout.xml",
     "java/res/layout/qrcode_dialog.xml",
     "java/res/layout/qrcode_open_settings_layout.xml",

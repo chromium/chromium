@@ -500,6 +500,7 @@ public abstract class ChromeFeatureList {
     public static final String VR_BROWSING_FEEDBACK = "VrBrowsingFeedback";
     public static final String WEB_AUTH_PHONE_SUPPORT = "WebAuthenticationPhoneSupport";
     public static final String WEB_FEED = "WebFeed";
+    public static final String WEBNOTES_STYLIZE = "WebNotesStylize";
     public static final String XSURFACE_METRICS_REPORTING = "XsurfaceMetricsReporting";
 
     @NativeMethods

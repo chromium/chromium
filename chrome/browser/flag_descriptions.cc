@@ -3500,6 +3500,10 @@ const char kWebFeedName[] = "Web Feed";
 const char kWebFeedDescription[] =
     "Allows users to keep up with and consume web content.";
 
+const char kWebNotesStylizeName[] = "WebNotes Stylize";
+const char kWebNotesStylizeDescription[] =
+    "Allows users to create and share stylized webnotes.";
+
 const char kXsurfaceMetricsReportingName[] = "Xsurface Metrics Reporting";
 const char kXsurfaceMetricsReportingDescription[] =
     "Allows metrics reporting state to be passed to Xsurface";

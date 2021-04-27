@@ -3289,6 +3289,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"chrome-sharing-hub-v1-5", flag_descriptions::kChromeSharingHubV15Name,
      flag_descriptions::kChromeSharingHubV15Description, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kChromeSharingHubV15)},
+    {"webnotes-stylize", flag_descriptions::kWebNotesStylizeName,
+     flag_descriptions::kWebNotesStylizeDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kWebNotesStylize)},
 #endif  // OS_ANDROID
     {"in-product-help-demo-mode-choice",
      flag_descriptions::kInProductHelpDemoModeChoiceName,

@@ -234,6 +234,9 @@ class ChromeProvidedSharingOptionsProvider {
      * mOrderedFirstPartyOptions} in the order they should appear.
      */
     private void initializeFirstPartyOptionsInOrder() {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEBNOTES_STYLIZE)) {
+            mOrderedFirstPartyOptions.add(createWebNotesStylizeFirstPartyOption());
+        }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARE_SCREENSHOT)) {
             mOrderedFirstPartyOptions.add(createScreenshotFirstPartyOption());
         }
@@ -433,6 +436,14 @@ class ChromeProvidedSharingOptionsProvider {
                             new LinkToTextCoordinator(mActivity, mTabProvider.get(),
                                     mChromeOptionShareCallback, mUrl, mShareParams.getText());
                 })
+                .build();
+    }
+
+    private FirstPartyOption createWebNotesStylizeFirstPartyOption() {
+        return new FirstPartyOptionBuilder(ContentType.HIGHLIGHTED_TEXT)
+                .setIcon(R.drawable.webnote, R.string.sharing_webnotes_stylized)
+                .setFeatureNameForMetrics("SharingHubAndroid.WebnotesStylize")
+                .setOnClickCallback((view) -> {})
                 .build();
     }
 

@@ -44385,6 +44385,7 @@ from previous Chrome versions.
   <int value="-1962588488" label="SpeculativePreconnect:disabled"/>
   <int value="-1961931929" label="ContextualSuggestionsBottomSheet:enabled"/>
   <int value="-1961648833" label="show_summary"/>
+  <int value="-1961102654" label="WebNotesStylize:enabled"/>
   <int value="-1961071650" label="InterestFeedV2Autoplay:disabled"/>
   <int value="-1961062505" label="VrBrowsingInCustomTab:disabled"/>
   <int value="-1960567385" label="KeepPrefetchedContentSuggestions:enabled"/>
@@ -46295,6 +46296,7 @@ from previous Chrome versions.
   <int value="-329727402" label="disable-files-quick-view"/>
   <int value="-328361990" label="enable-experimental-extension-apis"/>
   <int value="-327272022" label="AutofillRejectCompanyBirthyearName:enabled"/>
+  <int value="-326535569" label="WebNotesStylize:disabled"/>
   <int value="-326083626" label="AppBanners:disabled"/>
   <int value="-325271559" label="NtpRepeatableQueries:enabled"/>
   <int value="-324786035"

@@ -2014,6 +2014,9 @@ extern const char kWalletRequiresFirstSyncSetupCompleteDescription[];
 extern const char kWebFeedName[];
 extern const char kWebFeedDescription[];
 
+extern const char kWebNotesStylizeName[];
+extern const char kWebNotesStylizeDescription[];
+
 extern const char kXsurfaceMetricsReportingName[];
 extern const char kXsurfaceMetricsReportingDescription[];
 

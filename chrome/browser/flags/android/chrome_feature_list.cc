@@ -264,6 +264,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kVoiceButtonInTopToolbar,
     &kVrBrowsingFeedback,
     &kPrefetchNotificationSchedulingIntegration,
+    &kWebNotesStylize,
     &features::kDnsOverHttps,
     &net::features::kSameSiteByDefaultCookies,
     &net::features::kCookiesWithoutSameSiteMustBeSecure,
@@ -746,6 +747,9 @@ const base::Feature kVoiceButtonInTopToolbar{"VoiceButtonInTopToolbar",
 
 const base::Feature kVrBrowsingFeedback{"VrBrowsingFeedback",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kWebNotesStylize{"WebNotesStylize",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
 static jboolean JNI_ChromeFeatureList_IsEnabled(
     JNIEnv* env,
