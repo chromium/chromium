@@ -539,7 +539,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
             public void onClick(PropertyModel model, int buttonType) {
                 if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
                     RecordUserAction.record("MobileOmniboxDeleteRequested");
-                    mAutocomplete.deleteSuggestion(position, suggestion.hashCode());
+                    mAutocomplete.deleteSuggestion(position);
                     manager.dismissDialog(model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
                 } else if (buttonType == ModalDialogProperties.ButtonType.NEGATIVE) {
                     manager.dismissDialog(model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
@@ -618,7 +618,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         // TODO(mariakhomenko): Ideally we want to update match destination URL with new aqs
         // for query in the omnibox and voice suggestions, but it's currently difficult to do.
         GURL updatedUrl = mAutocomplete.updateMatchDestinationUrlWithQueryFormulationTime(
-                verifiedIndex, suggestion.hashCode(), getElapsedTimeSinceInputChange());
+                verifiedIndex, getElapsedTimeSinceInputChange());
 
         return updatedUrl == null ? url : updatedUrl;
     }
@@ -764,6 +764,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
      */
     void loadTypedOmniboxText(long eventTime) {
         final String urlText = mUrlBarEditingTextProvider.getTextWithAutocomplete();
+        cancelAutocompleteRequests();
         if (mNativeInitialized) {
             findMatchAndLoadUrl(urlText, eventTime);
         } else {
@@ -1019,9 +1020,9 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         WebContents webContents =
                 mDataProvider.hasTab() ? mDataProvider.getTab().getWebContents() : null;
 
-        mAutocomplete.onSuggestionSelected(matchPosition, disposition, suggestion.hashCode(),
-                suggestion.getType(), currentPageUrl, pageClassification, elapsedTimeSinceModified,
-                autocompleteLength, webContents);
+        mAutocomplete.onSuggestionSelected(matchPosition, disposition, suggestion.getType(),
+                currentPageUrl, pageClassification, elapsedTimeSinceModified, autocompleteLength,
+                webContents);
     }
 
     @Override
@@ -1061,8 +1062,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         }
         if (suggestion == null) return;
         GURL updatedUrl = mAutocomplete.updateMatchDestinationUrlWithQueryFormulationTime(position,
-                suggestion.hashCode(), getElapsedTimeSinceInputChange(), queryTile.queryText,
-                queryTile.searchParams);
+                getElapsedTimeSinceInputChange(), queryTile.queryText, queryTile.searchParams);
         // RecordMetrics has to be called before loadUrl, or otherwise the native AutocompleteResult
         // object will be reset and the suggestion will fail validation.
         recordMetrics(position, WindowOpenDisposition.CURRENT_TAB, suggestion);

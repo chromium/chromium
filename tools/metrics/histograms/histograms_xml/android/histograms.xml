@@ -1704,9 +1704,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>jdonnelly@chromium.org</owner>
   <summary>
     Recorded every time AutocompleteController.java interacts with
-    autocomplete_controller_android.cc via an index reference to an item.
-    Indicates how often the match referenced by Java is different from the match
-    referenced by C++ at that position.
+    autocomplete_controller_android.cc. Indicates how often matches referenced
+    by Java are different from the matches referenced by C++ at any position.
+
+    Note: Chrome M91 and before only increased this histogram for specific Match
+    objects that the user interacted with. As of M92, this histogram is
+    increased for every case where at least one Match referenced by Java was
+    different from its corresponding C++ match at the same exact position.
   </summary>
 </histogram>
 

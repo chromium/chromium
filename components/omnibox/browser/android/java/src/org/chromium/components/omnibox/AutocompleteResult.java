@@ -90,6 +90,11 @@ public class AutocompleteResult {
         mSuggestions = Arrays.asList(suggestions);
     }
 
+    @CalledByNative
+    private void destroy() {
+        mNativeAutocompleteResult = 0;
+    }
+
     /**
      * @return List of Omnibox Suggestions.
      */
@@ -104,6 +109,28 @@ public class AutocompleteResult {
     @NonNull
     public SparseArray<GroupDetails> getGroupsDetails() {
         return mGroupsDetails;
+    }
+
+    /**
+     * Verifies coherency of this AutocompleteResult object with its C++ counterpart.
+     * Records histogram data reflecting the outcome.
+     * @return Whether Java and C++ AutocompleteResult objects are in sync.
+     */
+    public boolean verifyCoherency() {
+        // May happen with either test data, or AutocompleteResult built from the ZeroSuggestCache.
+        // This is a valid case, despite not meeting coherency criteria. Do not record.
+        if (mNativeAutocompleteResult == 0) return false;
+        long nativeMatches[] = new long[mSuggestions.size()];
+        for (int index = 0; index < mSuggestions.size(); index++) {
+            nativeMatches[index] = mSuggestions.get(index).getNativeObjectRef();
+        }
+        return AutocompleteResultJni.get().verifyCoherency(
+                mNativeAutocompleteResult, nativeMatches);
+    }
+
+    /** Returns a reference to Native AutocompleteResult object. */
+    public long getNativeObjectRef() {
+        return mNativeAutocompleteResult;
     }
 
     @Override
@@ -146,8 +173,12 @@ public class AutocompleteResult {
      */
     public void groupSuggestionsBySearchVsURL(int firstIndex, int lastIndex) {
         if (mNativeAutocompleteResult != 0) {
+            assert verifyCoherency() : "Pre-group verification failed";
             AutocompleteResultJni.get().groupSuggestionsBySearchVsURL(
                     mNativeAutocompleteResult, firstIndex, lastIndex);
+            // Verify that the Native AutocompleteResult update has been properly
+            // reflected on the Java part.
+            assert verifyCoherency() : "Post-group verification failed";
         }
     }
 
@@ -155,5 +186,6 @@ public class AutocompleteResult {
     interface Natives {
         void groupSuggestionsBySearchVsURL(
                 long nativeAutocompleteResult, int firstIndex, int lastIndex);
+        boolean verifyCoherency(long nativeAutocompleteResult, long[] matches);
     }
 }

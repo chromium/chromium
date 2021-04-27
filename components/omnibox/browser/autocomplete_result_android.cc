@@ -11,15 +11,28 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/metrics/histogram_macros.h"
 #include "components/omnibox/browser/jni_headers/AutocompleteResult_jni.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/query_tiles/android/tile_conversion_bridge.h"
 #include "url/android/gurl_android.h"
 
+using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaArrayOfStrings;
 using base::android::ToJavaBooleanArray;
 using base::android::ToJavaIntArray;
+
+namespace {
+// Used for histograms, append only.
+enum class MatchVerificationResult {
+  VALID_MATCH = 0,
+  WRONG_MATCH = 1,
+  BAD_RESULT_SIZE = 2,
+  // Keep as the last entry:
+  COUNT
+};
+}  // namespace
 
 ScopedJavaLocalRef<jobject> AutocompleteResult::GetOrCreateJavaObject(
     JNIEnv* env) const {
@@ -55,6 +68,15 @@ ScopedJavaLocalRef<jobject> AutocompleteResult::GetOrCreateJavaObject(
   return ScopedJavaLocalRef<jobject>(java_result_);
 }
 
+void AutocompleteResult::DestroyJavaObject() const {
+  if (!java_result_)
+    return;
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_AutocompleteResult_destroy(env, java_result_);
+  java_result_.Reset();
+}
+
 ScopedJavaLocalRef<jobjectArray> AutocompleteResult::BuildJavaMatches(
     JNIEnv* env) const {
   jclass clazz = AutocompleteMatch::GetClazz(env);
@@ -85,4 +107,53 @@ void AutocompleteResult::GroupSuggestionsBySearchVsURL(JNIEnv* env,
                                 range_start + last_index);
   Java_AutocompleteResult_updateMatches(env, java_result_,
                                         BuildJavaMatches(env));
+}
+
+bool AutocompleteResult::VerifyCoherency(
+    JNIEnv* env,
+    const JavaParamRef<jlongArray>& j_matches_array) {
+  DCHECK(j_matches_array);
+
+  std::vector<jlong> j_matches;
+  base::android::JavaLongArrayToLongVector(env, j_matches_array, &j_matches);
+
+  if (j_matches.size() != size()) {
+    UMA_HISTOGRAM_ENUMERATION("Android.Omnibox.InvalidMatch",
+                              MatchVerificationResult::BAD_RESULT_SIZE,
+                              MatchVerificationResult::COUNT);
+    NOTREACHED() << "AutocompletResult objects are of different size: "
+                 << j_matches.size() << " (Java) vs " << size() << " (Native)";
+    return false;
+  }
+
+  for (auto index = 0u; index < size(); index++) {
+    if (reinterpret_cast<intptr_t>(match_at(index)) != j_matches[index]) {
+      UMA_HISTOGRAM_ENUMERATION("Android.Omnibox.InvalidMatch",
+                                MatchVerificationResult::WRONG_MATCH,
+                                MatchVerificationResult::COUNT);
+      // Note: the NDEBUG is defined for release / debug-disabled builds.
+#ifndef NDEBUG
+      // Print the list of matches at every position on each side.
+      // Used for debugging purposes.
+      for (auto i = 0u; i < size(); i++) {
+        auto* this_match = match_at(i);
+        auto* other_match = reinterpret_cast<AutocompleteMatch*>(j_matches[i]);
+        DLOG(WARNING) << "Suggestion at index " << i << ": "
+                      << "(Native): " << this_match->fill_into_edit
+                      << "(Java): "
+                      << (other_match ? other_match->fill_into_edit
+                                      : u"<null>");
+      }
+#endif
+      NOTREACHED()
+          << "AutocompleteMatch mismatch with native-sourced suggestions at "
+          << index;
+      return false;
+    }
+  }
+
+  UMA_HISTOGRAM_ENUMERATION("Android.Omnibox.InvalidMatch",
+                            MatchVerificationResult::VALID_MATCH,
+                            MatchVerificationResult::COUNT);
+  return true;
 }

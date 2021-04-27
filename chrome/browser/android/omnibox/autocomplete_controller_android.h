@@ -68,7 +68,6 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
       const base::android::JavaParamRef<jobject>& obj,
       jint selected_index,
       const jint j_window_open_disposition,
-      jint hash_code,
       const base::android::JavaParamRef<jstring>& j_current_url,
       jint j_page_classification,
       jlong elapsed_time_since_first_modified,
@@ -76,14 +75,12 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
       const base::android::JavaParamRef<jobject>& j_web_contents);
   void DeleteSuggestion(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& obj,
-                        jint selected_index,
-                        jint hash_code);
+                        jint selected_index);
   base::android::ScopedJavaLocalRef<jobject>
   UpdateMatchDestinationURLWithQueryFormulationTime(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       jint selected_index,
-      jint hash_code,
       jlong elapsed_time_since_input_change,
       const base::android::JavaParamRef<jstring>& jnew_query_text,
       const base::android::JavaParamRef<jobjectArray>& jnew_query_params);
@@ -140,8 +137,6 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
   // based on the text the user typed in last.
   void NotifySuggestionsReceived(
       const AutocompleteResult& autocomplete_result);
-
-  bool IsValidMatch(JNIEnv* env, jint selected_index, jint hash_code);
 
   std::unique_ptr<AutocompleteController> autocomplete_controller_;
 

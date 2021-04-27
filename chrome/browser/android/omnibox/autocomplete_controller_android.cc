@@ -89,14 +89,6 @@ using metrics::OmniboxEventProto;
 
 namespace {
 
-// Used for histograms, append only.
-enum class MatchValidationResult {
-  VALID_MATCH = 0,
-  WRONG_MATCH = 1,
-  BAD_RESULT_SIZE = 2,
-  COUNT = 3
-};
-
 void RecordClipboardMetrics(AutocompleteMatchType::Type match_type) {
   if (match_type != AutocompleteMatchType::CLIPBOARD_URL &&
       match_type != AutocompleteMatchType::CLIPBOARD_TEXT &&
@@ -191,6 +183,8 @@ void AutocompleteControllerAndroid::Start(
   if (!autocomplete_controller_)
     return;
 
+  autocomplete_controller_->result().DestroyJavaObject();
+
   std::string desired_tld;
   GURL current_url;
   if (!j_current_url.is_null())
@@ -227,6 +221,9 @@ ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::Classify(
     bool focused_from_fakebox) {
   if (!autocomplete_controller_)
     return ScopedJavaLocalRef<jobject>();
+
+  // The old AutocompleteResult is about to be invalidated.
+  autocomplete_controller_->result().DestroyJavaObject();
 
   inside_synchronous_start_ = true;
   Start(env, obj, j_text, -1, nullptr, nullptr, true, false, false, false,
@@ -297,15 +294,11 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
     const JavaParamRef<jobject>& obj,
     jint selected_index,
     const jint j_window_open_disposition,
-    jint hash_code,
     const JavaParamRef<jstring>& j_current_url,
     jint j_page_classification,
     jlong elapsed_time_since_first_modified,
     jint completed_length,
     const JavaParamRef<jobject>& j_web_contents) {
-  if (!IsValidMatch(env, selected_index, hash_code))
-    return;
-
   std::u16string url = ConvertJavaStringToUTF16(env, j_current_url);
   const GURL current_url = GURL(url);
   const base::TimeTicks& now(base::TimeTicks::Now());
@@ -365,11 +358,7 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
 void AutocompleteControllerAndroid::DeleteSuggestion(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
-    jint selected_index,
-    jint hash_code) {
-  if (!IsValidMatch(env, selected_index, hash_code))
-    return;
-
+    jint selected_index) {
   const AutocompleteResult& result = autocomplete_controller_->result();
   const AutocompleteMatch& match = result.match_at(selected_index);
   if (match.SupportsDeletion())
@@ -381,12 +370,9 @@ ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::
         JNIEnv* env,
         const JavaParamRef<jobject>& obj,
         jint selected_index,
-        jint hash_code,
         jlong elapsed_time_since_input_change,
         const base::android::JavaParamRef<jstring>& jnew_query_text,
         const base::android::JavaParamRef<jobjectArray>& jnew_query_params) {
-  if (!IsValidMatch(env, selected_index, hash_code))
-    return ScopedJavaLocalRef<jstring>();
   AutocompleteMatch match(
       autocomplete_controller_->result().match_at(selected_index));
 
@@ -523,11 +509,9 @@ void AutocompleteControllerAndroid::NotifySuggestionsReceived(
   ScopedJavaLocalRef<jstring> inline_text =
       ConvertUTF16ToJavaString(env, inline_autocompletion);
 
-  jlong j_autocomplete_result_raw_ptr =
-      reinterpret_cast<intptr_t>(&autocomplete_result);
   Java_AutocompleteController_onSuggestionsReceived(
       env, java_bridge, autocomplete_result.GetOrCreateJavaObject(env),
-      inline_text, j_autocomplete_result_raw_ptr);
+      inline_text);
 }
 
 void AutocompleteControllerAndroid::SetVoiceMatches(
@@ -551,48 +535,6 @@ void AutocompleteControllerAndroid::SetVoiceMatches(
     voice_suggest_provider->AddVoiceSuggestion(voice_matches[index],
                                                confidence_scores[index]);
   }
-}
-
-bool AutocompleteControllerAndroid::IsValidMatch(JNIEnv* env,
-                                                 jint selected_index,
-                                                 jint hash_code) {
-  const AutocompleteResult& result = autocomplete_controller_->result();
-  if (base::checked_cast<size_t>(selected_index) >= result.size()) {
-    UMA_HISTOGRAM_ENUMERATION("Android.Omnibox.InvalidMatch",
-                              MatchValidationResult::BAD_RESULT_SIZE,
-                              MatchValidationResult::COUNT);
-    NOTREACHED() << "No match at position " << selected_index
-                 << ": Autocomplete result size mismatch.";
-
-    return false;
-  }
-
-  // TODO(mariakhomenko): After we get results from the histogram, if invalid
-  // match count is very low, we can consider skipping the expensive
-  // verification step and removing this code.
-  bool equal = Java_AutocompleteController_isEquivalentOmniboxSuggestion(
-      env, result.match_at(selected_index).GetOrCreateJavaObject(env),
-      hash_code);
-  UMA_HISTOGRAM_ENUMERATION("Android.Omnibox.InvalidMatch",
-                            equal ? MatchValidationResult::VALID_MATCH
-                                  : MatchValidationResult::WRONG_MATCH,
-                            MatchValidationResult::COUNT);
-
-  if (!equal) {
-#ifndef NDEBUG
-    int index = 0;
-    for (const auto& match : result) {
-      DLOG(WARNING) << "Native suggestion " << index << ": "
-                    << match.fill_into_edit << " (" << match.provider->GetName()
-                    << ", " << match.type << ")";
-      index++;
-    }
-#endif
-    NOTREACHED()
-        << "AutocompleteMatch mismatch with native-sourced suggestions.";
-  }
-
-  return equal;
 }
 
 static jlong JNI_AutocompleteController_Init(

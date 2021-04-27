@@ -77,7 +77,7 @@ public class OmniboxTestUtils {
          * do not attempt to log selection.
          */
         @Override
-        public void onSuggestionSelected(int selectedIndex, int disposition, int hashCode, int type,
+        public void onSuggestionSelected(int selectedIndex, int disposition, int type,
                 String currentPageUrl, int pageClassification, long elapsedTimeSinceModified,
                 int completedLength, WebContents webContents) {}
 
@@ -102,7 +102,7 @@ public class OmniboxTestUtils {
             Pair<String, AutocompleteResult> autocompleteSet =
                     mAutocompleteResults.get(autocompleteText);
             if (autocompleteSet == null) return false;
-            onSuggestionsReceived(autocompleteSet.second, autocompleteSet.first, 0);
+            onSuggestionsReceived(autocompleteSet.second, autocompleteSet.first);
             return true;
         }
     }

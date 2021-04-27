@@ -190,6 +190,11 @@ public class AutocompleteMatch {
         mNativeMatch = nativeMatch;
     }
 
+    /** Returns a reference to Native AutocompleteMatch object. */
+    long getNativeObjectRef() {
+        return mNativeMatch;
+    }
+
     /**
      * Update the suggestion with content retrieved from clilpboard.
      *
