@@ -627,11 +627,6 @@ const base::Feature kMediaDrmPreprovisioning{"MediaDrmPreprovisioning",
 const base::Feature kMediaDrmPreprovisioningAtStartup{
     "MediaDrmPreprovisioningAtStartup", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Prevents using SurfaceLayer for videos. This is meant to be used by embedders
-// that cannot support SurfaceLayer at the moment.
-const base::Feature kDisableSurfaceLayerForVideo{
-    "DisableSurfaceLayerForVideo", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enable picture in picture web api for android.
 const base::Feature kPictureInPictureAPI{"PictureInPictureAPI",
                                          base::FEATURE_DISABLED_BY_DEFAULT};

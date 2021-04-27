@@ -220,13 +220,6 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
     // Enable VizForWebView by default.
     features.EnableIfNotSet(::features::kVizForWebViewDefault);
 
-    // WebView doesn't support surface embedding without viz.The media code
-    // checks for both media::kDisableSurfaceLayerForVideo and VizForWebView to
-    // decide if it can embed, so we always enable kDisableSurfaceLayerForVideo
-    // here.
-    // https://crbug.com/853832
-    features.EnableIfNotSet(media::kDisableSurfaceLayerForVideo);
-
     // WebView does not support overlay fullscreen yet for video overlays.
     features.DisableIfNotSet(media::kOverlayFullscreenVideo);
 
