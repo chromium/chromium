@@ -420,10 +420,12 @@ const NGLayoutResult* NGBlockNode::Layout(
     UpdateShapeOutsideInfoIfNeeded(
         *layout_result, constraint_space.PercentageResolutionInlineSize());
 
-    // Even if we can reuse the result, we may still need to recalculate our
-    // overflow. TODO(crbug.com/919415): Explain why.
-    if (box_->NeedsLayoutOverflowRecalc())
-      box_->SetLayoutOverflowFromLayoutResults();
+    if (!RuntimeEnabledFeatures::LayoutNGLayoutOverflowRecalcEnabled()) {
+      // Even if we can reuse the result, we may still need to recalculate our
+      // overflow. TODO(crbug.com/919415): Explain why.
+      if (box_->NeedsLayoutOverflowRecalc())
+        box_->SetLayoutOverflowFromLayoutResults();
+    }
 
     // Return the cached result unless we're marked for layout. We may have
     // added or removed scrollbars during overflow recalculation, which may have

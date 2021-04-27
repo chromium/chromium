@@ -3580,60 +3580,67 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
   LayoutUnit block_offset_delta;
   NGMarginStrut end_margin_strut = cached_layout_result->EndMarginStrut();
 
-  const NGConstraintSpace& old_space =
-      cached_layout_result->GetConstraintSpaceForCaching();
+  bool are_bfc_offsets_equal;
+  bool is_margin_strut_equal;
+  bool is_exclusion_space_equal;
 
-  // Check the BFC offset. Even if they don't match, there're some cases we can
-  // still reuse the fragment.
-  bool are_bfc_offsets_equal =
-      new_space.BfcOffset() == old_space.BfcOffset() &&
-      new_space.ExpectedBfcBlockOffset() ==
-          old_space.ExpectedBfcBlockOffset() &&
-      new_space.ForcedBfcBlockOffset() == old_space.ForcedBfcBlockOffset();
+  {
+    const NGConstraintSpace& old_space =
+        cached_layout_result->GetConstraintSpaceForCaching();
 
-  // Even for the first fragment, when block fragmentation is enabled, block
-  // offset changes should cause re-layout, since we will fragment at other
-  // locations than before.
-  if (UNLIKELY(!are_bfc_offsets_equal && new_space.HasBlockFragmentation())) {
-    DCHECK(old_space.HasBlockFragmentation());
-    return nullptr;
-  }
+    // Check the BFC offset. Even if they don't match, there're some cases we
+    // can still reuse the fragment.
+    are_bfc_offsets_equal =
+        new_space.BfcOffset() == old_space.BfcOffset() &&
+        new_space.ExpectedBfcBlockOffset() ==
+            old_space.ExpectedBfcBlockOffset() &&
+        new_space.ForcedBfcBlockOffset() == old_space.ForcedBfcBlockOffset();
 
-  bool is_margin_strut_equal =
-      new_space.MarginStrut() == old_space.MarginStrut();
-  bool is_exclusion_space_equal =
-      new_space.ExclusionSpace() == old_space.ExclusionSpace();
-
-  bool is_new_formatting_context = physical_fragment.IsFormattingContextRoot();
-
-  // If a node *doesn't* establish a new formatting context it may be affected
-  // by floats, or clearance.
-  // If anything has changed prior to us (different exclusion space, etc), we
-  // need to perform a series of additional checks if we can still reuse this
-  // layout result.
-  if (!is_new_formatting_context &&
-      (!are_bfc_offsets_equal || !is_exclusion_space_equal ||
-       !is_margin_strut_equal ||
-       new_space.ClearanceOffset() != old_space.ClearanceOffset())) {
-    DCHECK(!CreatesNewFormattingContext());
-
-    // If we have a different BFC offset, or exclusion space we can't perform
-    // "simplified" layout.
-    // This may occur if our %-block-size has changed (allowing "simplified"
-    // layout), and we've been pushed down in the BFC coordinate space by a
-    // sibling.
-    // The "simplified" layout algorithm doesn't have the required logic to
-    // shift any added exclusions within the output exclusion space.
-    if (cache_status == NGLayoutCacheStatus::kNeedsSimplifiedLayout ||
-        cache_status == NGLayoutCacheStatus::kCanReuseLines)
+    // Even for the first fragment, when block fragmentation is enabled, block
+    // offset changes should cause re-layout, since we will fragment at other
+    // locations than before.
+    if (UNLIKELY(!are_bfc_offsets_equal && new_space.HasBlockFragmentation())) {
+      DCHECK(old_space.HasBlockFragmentation());
       return nullptr;
+    }
 
-    DCHECK_EQ(cache_status, NGLayoutCacheStatus::kHit);
+    is_margin_strut_equal = new_space.MarginStrut() == old_space.MarginStrut();
+    is_exclusion_space_equal =
+        new_space.ExclusionSpace() == old_space.ExclusionSpace();
+    bool is_clearance_offset_equal =
+        new_space.ClearanceOffset() == old_space.ClearanceOffset();
 
-    if (!MaySkipLayoutWithinBlockFormattingContext(
-            *cached_layout_result, new_space, &bfc_block_offset,
-            &block_offset_delta, &end_margin_strut))
-      return nullptr;
+    bool is_new_formatting_context =
+        physical_fragment.IsFormattingContextRoot();
+
+    // If a node *doesn't* establish a new formatting context it may be affected
+    // by floats, or clearance.
+    // If anything has changed prior to us (different exclusion space, etc), we
+    // need to perform a series of additional checks if we can still reuse this
+    // layout result.
+    if (!is_new_formatting_context &&
+        (!are_bfc_offsets_equal || !is_exclusion_space_equal ||
+         !is_margin_strut_equal || !is_clearance_offset_equal)) {
+      DCHECK(!CreatesNewFormattingContext());
+
+      // If we have a different BFC offset, or exclusion space we can't perform
+      // "simplified" layout.
+      // This may occur if our %-block-size has changed (allowing "simplified"
+      // layout), and we've been pushed down in the BFC coordinate space by a
+      // sibling.
+      // The "simplified" layout algorithm doesn't have the required logic to
+      // shift any added exclusions within the output exclusion space.
+      if (cache_status == NGLayoutCacheStatus::kNeedsSimplifiedLayout ||
+          cache_status == NGLayoutCacheStatus::kCanReuseLines)
+        return nullptr;
+
+      DCHECK_EQ(cache_status, NGLayoutCacheStatus::kHit);
+
+      if (!MaySkipLayoutWithinBlockFormattingContext(
+              *cached_layout_result, new_space, &bfc_block_offset,
+              &block_offset_delta, &end_margin_strut))
+        return nullptr;
+    }
   }
 
   // We've performed all of the cache checks at this point. If we need
@@ -3655,12 +3662,33 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
   if (NeedsLayout())
     ClearNeedsLayout();
 
+  // For example, for elements with a transform change we can re-use the cached
+  // result but we still need to recalculate the layout overflow.
+  if (RuntimeEnabledFeatures::LayoutNGLayoutOverflowRecalcEnabled() &&
+      use_layout_cache_slot && NeedsLayoutOverflowRecalc() &&
+      !ChildLayoutBlockedByDisplayLock()) {
+#if DCHECK_IS_ON()
+    const NGLayoutResult* cloned_cached_layout_result =
+        NGLayoutResult::CloneWithPostLayoutFragments(*cached_layout_result);
+#endif
+    RecalcLayoutOverflow();
+
+    // We need to update the cached layout result, as the call to
+    // RecalcLayoutOverflow() might have modified it.
+    cached_layout_result = GetCachedLayoutResult();
+#if DCHECK_IS_ON()
+    cloned_cached_layout_result->CheckSameForSimplifiedLayout(
+        *cached_layout_result);
+#endif
+  }
+
   // Optimization: NGTableConstraintSpaceData can be large, and it is shared
   // between all the rows in a table. Make constraint space table data for
   // reused row fragment be identical to the one used by other row fragments.
   if (IsTableRow() && IsLayoutNGMixin()) {
-    const_cast<NGConstraintSpace&>(old_space).ReplaceTableRowData(
-        *new_space.TableData(), new_space.TableRowIndex());
+    const_cast<NGConstraintSpace&>(
+        cached_layout_result->GetConstraintSpaceForCaching())
+        .ReplaceTableRowData(*new_space.TableData(), new_space.TableRowIndex());
   }
 
   // OOF-positioned nodes have to two-tier cache. The additional cache check
@@ -3672,8 +3700,10 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
   // percentage resolution size in order for the first-tier cache to work.
   // See |NGBlockNode::CachedLayoutResultForOutOfFlowPositioned|.
   bool needs_cached_result_update =
-      node.IsOutOfFlowPositioned() && new_space.PercentageResolutionSize() !=
-                                          old_space.PercentageResolutionSize();
+      node.IsOutOfFlowPositioned() &&
+      new_space.PercentageResolutionSize() !=
+          cached_layout_result->GetConstraintSpaceForCaching()
+              .PercentageResolutionSize();
 
   // We can safely reuse this result if our BFC and "input" exclusion spaces
   // were equal.

@@ -85,13 +85,18 @@ bool LayoutNGMixin<Base>::NodeAtPoint(HitTestResult& result,
 template <typename Base>
 RecalcLayoutOverflowResult LayoutNGMixin<Base>::RecalcLayoutOverflow() {
   RecalcLayoutOverflowResult child_result;
-  if (Base::ChildNeedsLayoutOverflowRecalc())
+  if (!RuntimeEnabledFeatures::LayoutNGLayoutOverflowRecalcEnabled() &&
+      Base::ChildNeedsLayoutOverflowRecalc())
     child_result = Base::RecalcChildLayoutOverflow();
 
   // Don't attempt to rebuild the fragment tree or recalculate
   // scrollable-overflow, layout will do this for us.
   if (Base::NeedsLayout())
     return RecalcLayoutOverflowResult();
+
+  if (RuntimeEnabledFeatures::LayoutNGLayoutOverflowRecalcEnabled() &&
+      Base::ChildNeedsLayoutOverflowRecalc())
+    child_result = RecalcChildLayoutOverflow();
 
   bool should_recalculate_layout_overflow =
       Base::SelfNeedsLayoutOverflowRecalc() ||
@@ -145,6 +150,39 @@ RecalcLayoutOverflowResult LayoutNGMixin<Base>::RecalcLayoutOverflow() {
                             !Base::ShouldClipOverflowAlongBothAxis();
 
   return {layout_overflow_changed, rebuild_fragment_tree};
+}
+
+template <typename Base>
+RecalcLayoutOverflowResult LayoutNGMixin<Base>::RecalcChildLayoutOverflow() {
+  DCHECK(RuntimeEnabledFeatures::LayoutNGLayoutOverflowRecalcEnabled());
+  DCHECK(Base::ChildNeedsLayoutOverflowRecalc());
+  Base::ClearChildNeedsLayoutOverflowRecalc();
+
+  RecalcLayoutOverflowResult result;
+  for (auto& layout_result : Base::layout_results_) {
+    const auto& fragment =
+        To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment());
+    if (fragment.HasItems()) {
+      for (NGInlineCursor cursor(fragment); cursor; cursor.MoveToNext()) {
+        if (const NGPhysicalBoxFragment* child =
+                cursor.Current().BoxFragment()) {
+          if (child->GetLayoutObject()->IsBox()) {
+            result.Unite(
+                child->MutableOwnerLayoutBox()->RecalcLayoutOverflow());
+          }
+        }
+      }
+    }
+
+    for (const auto& child : fragment.PostLayoutChildren()) {
+      if (const auto* box = DynamicTo<NGPhysicalBoxFragment>(child.get())) {
+        if (box->GetLayoutObject()->IsBox())
+          result.Unite(box->MutableOwnerLayoutBox()->RecalcLayoutOverflow());
+      }
+    }
+  }
+
+  return result;
 }
 
 template <typename Base>

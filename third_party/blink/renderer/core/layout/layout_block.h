@@ -384,7 +384,7 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   void RecalcSelfVisualOverflow();
 
  public:
-  RecalcLayoutOverflowResult RecalcChildLayoutOverflow();
+  virtual RecalcLayoutOverflowResult RecalcChildLayoutOverflow();
   RecalcLayoutOverflowResult RecalcLayoutOverflow() override;
   void RecalcChildVisualOverflow();
   void RecalcVisualOverflow() override;
