@@ -400,6 +400,7 @@
 #include "base/win/windows_version.h"
 #include "chrome/browser/chrome_browser_main_win.h"
 #include "chrome/install_static/install_util.h"
+#include "chrome/services/util_win/public/mojom/util_win.mojom.h"
 #include "sandbox/win/src/sandbox_policy.h"
 #elif defined(OS_MAC)
 #include "chrome/browser/chrome_browser_main_mac.h"
@@ -3955,6 +3956,16 @@ bool ChromeContentBrowserClient::IsRendererCodeIntegrityEnabled() {
   if (local_state &&
       local_state->HasPrefPath(prefs::kRendererCodeIntegrityEnabled) &&
       !local_state->GetBoolean(prefs::kRendererCodeIntegrityEnabled))
+    return false;
+  return true;
+}
+
+// Note: Only use sparingly to add Chrome specific sandbox functionality here.
+// Other code should reside in the content layer. Changes to this function
+// should be reviewed by the security team.
+bool ChromeContentBrowserClient::IsUtilityCetCompatible(
+    const std::string& utility_sub_type) {
+  if (utility_sub_type == chrome::mojom::UtilWin::Name_)
     return false;
   return true;
 }

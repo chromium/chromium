@@ -1222,6 +1222,14 @@ class CONTENT_EXPORT ContentBrowserClient {
                              sandbox::policy::SandboxType sandbox_type,
                              ChildSpawnFlags flags);
 
+  // This may be called on the PROCESS_LAUNCHER thread before the child process
+  // is launched. It gives the embedder a chance to indicate that a process will
+  // not be compatible with Hardware-enforced Stack Protection (CET).
+  // |utility_sub_type| should match that provided on the command line to the
+  // child process. Only use this for embedder-specific processes, and prefer to
+  // key off SandboxType in the relevant SandboxedProcessLauncherDelegate.
+  virtual bool IsUtilityCetCompatible(const std::string& utility_sub_type);
+
   // Returns the AppContainer SID for the specified sandboxed process type, or
   // empty string if this sandboxed process type does not support living inside
   // an AppContainer. Called on PROCESS_LAUNCHER thread.

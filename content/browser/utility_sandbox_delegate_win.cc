@@ -287,7 +287,8 @@ bool UtilitySandboxedProcessLauncherDelegate::CetCompatible() {
   // which is not CET-compliant.
   if (utility_sub_type == media::mojom::CdmService::Name_)
     return false;
-  return true;
+  return GetContentClient()->browser()->IsUtilityCetCompatible(
+      utility_sub_type);
 }
 
 }  // namespace content

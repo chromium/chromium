@@ -721,6 +721,11 @@ bool ContentBrowserClient::PreSpawnChild(
   return true;
 }
 
+bool ContentBrowserClient::IsUtilityCetCompatible(
+    const std::string& utility_sub_type) {
+  return true;
+}
+
 std::wstring ContentBrowserClient::GetAppContainerSidForSandboxType(
     sandbox::policy::SandboxType sandbox_type) {
   // Embedders should override this method and return different SIDs for each
