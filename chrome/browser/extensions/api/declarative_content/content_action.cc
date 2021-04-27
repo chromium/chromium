@@ -362,6 +362,7 @@ void RequestContentScript::Revert(const ApplyInfo& apply_info) const {}
 void RequestContentScript::InstructRenderProcessToInject(
     content::WebContents* contents,
     const Extension* extension) const {
+  DCHECK(contents->GetMainFrame()->IsRenderFrameLive());
   ContentScriptTracker::WillExecuteCode(base::PassKey<RequestContentScript>(),
                                         contents->GetMainFrame(), *extension);
 
