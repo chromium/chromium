@@ -360,6 +360,8 @@ void MediaInterfaceProxy::CreateMediaFoundationRenderer(
   DCHECK(thread_checker_.CalledOnValidThread());
   DVLOG(1) << __func__ << ": this=" << this;
 
+  // For protected playback, the service should have already been initialized
+  // with a CDM path in CreateCdm().
   auto* factory = GetMediaFoundationServiceInterfaceFactory(base::FilePath());
   if (factory) {
     factory->CreateMediaFoundationRenderer(
@@ -391,15 +393,30 @@ void MediaInterfaceProxy::CreateCdm(const std::string& key_system,
       return;
     }
   }
+  // Fallback to use library CDM below.
   ReportCdmTypeUMA(CrosCdmType::kChromeCdm);
 #elif defined(OS_WIN)
   if (ShouldUseMediaFoundationServiceForCdm(key_system, cdm_config)) {
-    // TODO(xhwang): Refactor CdmInfo to provide the CDM path here.
-    auto* factory = GetMediaFoundationServiceInterfaceFactory(base::FilePath());
-    if (factory)
-      factory->CreateCdm(key_system, cdm_config, std::move(callback));
-    return;
+    if (!cdm_config.allow_distinctive_identifier ||
+        !cdm_config.allow_persistent_state) {
+      DVLOG(2) << "MediaFoundationService requires both distinctive identifier "
+                  "and persistent state";
+      std::move(callback).Run(mojo::NullRemote(), nullptr, "Invalid CdmConfig");
+      return;
+    }
+
+    auto cdm_info = CdmRegistryImpl::GetInstance()->GetCdmInfo(
+        key_system, CdmInfo::Robustness::kHardwareSecure);
+    if (cdm_info) {
+      DVLOG(2) << "Get MediaFoundationService with CDM path " << cdm_info->path;
+      auto* factory = GetMediaFoundationServiceInterfaceFactory(cdm_info->path);
+      if (factory) {
+        factory->CreateCdm(key_system, cdm_config, std::move(callback));
+        return;
+      }
+    }
   }
+  // Fallback to use library CDM below.
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -493,9 +510,6 @@ bool MediaInterfaceProxy::ShouldUseMediaFoundationServiceForCdm(
   // TODO(xhwang): Refine this after we populate support info during EME
   // requestMediaKeySystemAccess() query, e.g. to check both `key_system` and
   // `cdm_config`.
-  // TODO(xhwang): Determine whether we need to also check
-  // cdm_config.allow_distinctive_identifier here.
-
   return cdm_config.use_hw_secure_codecs;
 }
 #endif  // defined(OS_WIN)
