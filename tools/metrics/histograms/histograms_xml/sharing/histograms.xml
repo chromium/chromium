@@ -191,7 +191,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Sharing.LongScreenshots.BitmapGenerationStatus"
     enum="SharingLongScreenshotsEvent" expires_after="M98">
-  <owner>ramyan@chromium.org</owner>
   <owner>skare@chromium.org</owner>
   <owner>src/components/send_tab_to_self/OWNERS</owner>
   <summary>
@@ -203,7 +202,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Sharing.LongScreenshots.Event"
     enum="SharingLongScreenshotsEvent" expires_after="M98">
-  <owner>ramyan@chromium.org</owner>
   <owner>skare@chromium.org</owner>
   <owner>src/components/send_tab_to_self/OWNERS</owner>
   <summary>
@@ -378,7 +376,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Sharing.Screenshot.Action" enum="SharingScreenshotAction"
     expires_after="M97">
-  <owner>ramyan@chromium.org</owner>
   <owner>jeffreycohen@chromium.org</owner>
   <owner>src/components/send_tab_to_self/OWNERS</owner>
   <summary>
@@ -389,7 +386,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Sharing.ScreenshotFallback.Action"
     enum="SharingScreenshotFallbackAction" expires_after="M97">
-  <owner>ramyan@chromium.org</owner>
   <owner>jeffreycohen@chromium.org</owner>
   <owner>src/components/send_tab_to_self/OWNERS</owner>
   <summary>

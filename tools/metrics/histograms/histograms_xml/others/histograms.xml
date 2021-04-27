@@ -3406,7 +3406,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ContextMenu.ViewsTextServices.Emoji" enum="Boolean"
     expires_after="2021-10-17">
-  <owner>ramyan@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
   <summary>
     Number of times the emoji item in the views text services context menu is

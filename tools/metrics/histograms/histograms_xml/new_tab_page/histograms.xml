@@ -81,7 +81,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <obsolete>
     Never recorded. Marked obsolete 01/2021.
   </obsolete>
-  <owner>ramyan@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
   <summary>
     The time it took until a request from the New Tab Page for the next Backdrop

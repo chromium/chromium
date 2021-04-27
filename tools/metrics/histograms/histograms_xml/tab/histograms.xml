@@ -438,8 +438,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Tab.Screenshot.Action" enum="TabScreenshotAction"
     expires_after="2021-08-24">
-  <owner>ramyan@chromium.org</owner>
-  <owner>cyflee@chromium.org</owner>
+  <owner>skare@chromium.org</owner>
   <summary>
     Records actions taken after one or more screenshots of a page were taken.
     This will not be recorded if Chromium is killed before leaving the page. If
@@ -451,8 +450,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Tab.Screenshot.ScreenshotsPerPage" units="screenshots"
     expires_after="2021-08-24">
-  <owner>ramyan@chromium.org</owner>
-  <owner>cyflee@chromium.org</owner>
+  <owner>skare@chromium.org</owner>
   <summary>
     Records the number of screenshots taken of a specific page. It is recorded
     when the user navigates away from this page or the tab is destroyed. This
