@@ -361,6 +361,23 @@ Polymer({
         'non-translate-target';
   },
 
+  /**
+   * @param {boolean} update2Enabled
+   * @private
+   */
+  getOfferTranslationLabel_(update2Enabled) {
+    return this.i18n(
+        update2Enabled ? 'offerGoogleTranslateLabel' : 'offerTranslationLabel');
+  },
+
+  /**
+   * @param {boolean} update2Enabled
+   * @private
+   */
+  getOfferTranslationSublabel_(update2Enabled) {
+    return update2Enabled ? '' : this.i18n('offerTranslationSublabel');
+  },
+
   /** @private */
   openManageGoogleAccountLanguage_() {
     window.open(loadTimeData.getString('googleAccountLanguagesURL'));

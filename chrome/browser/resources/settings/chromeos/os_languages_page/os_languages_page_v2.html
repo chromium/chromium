@@ -166,8 +166,10 @@
 
       <settings-toggle-button id="offerTranslation" class="hr"
           pref="{{prefs.translate.enabled}}"
-          label="$i18n{offerTranslationLabel}"
-          sub-label="$i18n{offerTranslationSublabel}"
+          label="[[getOfferTranslationLabel_(
+              languageSettingsV2Update2Enabled_)]]"
+          sub-label="[[getOfferTranslationSublabel_(
+              languageSettingsV2Update2Enabled_)]]"
           on-settings-boolean-control-change="onTranslateToggleChange_"
           deep-link-focus-id$="[[Setting.kOfferTranslation]]">
       </settings-toggle-button>
