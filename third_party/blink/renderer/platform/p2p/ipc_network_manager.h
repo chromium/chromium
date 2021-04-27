@@ -67,9 +67,6 @@ class IpcNetworkManager : public rtc::NetworkManagerBase,
 
   THREAD_CHECKER(thread_checker_);
 
-  // Cache the weak pointer to avoid racy calls to `weak_factory_.GetWeakPtr()`.
-  // TODO(crbug.com/1191907): Figure out whether this is still necessary.
-  base::WeakPtr<IpcNetworkManager> weak_this_;
   base::WeakPtrFactory<IpcNetworkManager> weak_factory_{this};
 };
 

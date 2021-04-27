@@ -53,7 +53,6 @@ IpcNetworkManager::IpcNetworkManager(
     : network_list_manager_(network_list_manager),
       mdns_responder_(std::move(mdns_responder)) {
   DETACH_FROM_THREAD(thread_checker_);
-  weak_this_ = weak_factory_.GetWeakPtr();
   network_list_manager->AddNetworkListObserver(this);
 }
 
@@ -74,8 +73,8 @@ void IpcNetworkManager::StartUpdating() {
   if (network_list_received_) {
     // Post a task to avoid reentrancy.
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        WTF::Bind(&IpcNetworkManager::SendNetworksChangedSignal, weak_this_));
+        FROM_HERE, WTF::Bind(&IpcNetworkManager::SendNetworksChangedSignal,
+                             weak_factory_.GetWeakPtr()));
   } else {
     VLOG(1) << "IpcNetworkManager::StartUpdating called; still waiting for "
                "network list from browser process.";
