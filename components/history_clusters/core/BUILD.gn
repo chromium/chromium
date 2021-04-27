@@ -43,6 +43,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base/test:test_support",
     "//components/history/core/browser",
+    "//components/history/core/test",
     "//components/history_clusters/core/proto",
     "//services/network:test_support",
     "//testing/gtest",
@@ -52,5 +53,8 @@ source_set("unit_tests") {
 source_set("test_support") {
   testonly = true
   sources = [ "memories_service_test_api.h" ]
-  deps = [ ":core" ]
+  deps = [
+    ":core",
+    "//components/history/core/browser",
+  ]
 }

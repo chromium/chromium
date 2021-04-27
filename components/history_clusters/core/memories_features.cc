@@ -13,6 +13,16 @@ GURL RemoteModelEndpointForDebugging() {
       kRemoteModelForDebugging, "MemoriesRemoteModelEndpoint"));
 }
 
+bool StoreVisitsInHistoryDb() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kMemories, "MemoriesStoreVisitsInHistoryDb", false);
+}
+
+int MaxVisitsToCluster() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      kMemories, "MemoriesMaxVisitsToCluster", 10);
+}
+
 // Enables the Chrome Memories history clustering feature.
 const base::Feature kMemories{"Memories", base::FEATURE_DISABLED_BY_DEFAULT};
 

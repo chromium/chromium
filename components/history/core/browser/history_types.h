@@ -662,6 +662,86 @@ enum class UrlsModifiedReason {
   kAndroidDb,
 };
 
+// Context signals about a page visit collected during the page lifetime.
+// This struct encapsulates data that's shared between UKM and the on-device
+// storage for |HistoryCluster| metadata, recorded to both when the page
+// lifetime ends. This is to ensure that History actually has the visit row
+// already written.
+struct ClusterVisitContextSignals {
+  // True if the user has cut or copied the omnibox URL to the clipboard for
+  // this page load.
+  bool omnibox_url_copied = false;
+
+  // True if the page was in a tab group when the navigation was committed.
+  bool is_existing_part_of_tab_group = false;
+
+  // True if the page was NOT part of a tab group when the navigation
+  // committed, and IS part of a tab group at the end of the page lifetime.
+  bool is_placed_in_tab_group = false;
+
+  // True if this page was a bookmark when the navigation was committed.
+  bool is_existing_bookmark = false;
+
+  // True if the page was NOT a bookmark when the navigation was committed and
+  // was MADE a bookmark during the page's lifetime. In other words:
+  // If |is_existing_bookmark| is true, that implies |is_new_bookmark| is false.
+  bool is_new_bookmark = false;
+
+  // True if the page has been explicitly added (by the user) to the list of
+  // custom links displayed in the NTP. Links added to the NTP by History
+  // TopSites don't count for this.  Always false on Android, because Android
+  // does not have NTP custom links.
+  bool is_ntp_custom_link = false;
+
+  // The duration since the last visit to this URL in seconds, if the user has
+  // visited the URL before. Recorded as -1 (second) if the user has not
+  // visited the URL before, or if the History service is unavailable or slow to
+  // respond. Any duration that exceeds 30 days will be recorded as 30 days, so
+  // in practice, if this duration indicates 30 days, it can be anything from 30
+  // to the maximum duration that local history is stored.
+  base::TimeDelta duration_since_last_visit = base::TimeDelta::FromSeconds(-1);
+
+  // ---------------------------------------------------------------------------
+  // The below metrics are all already recorded by UKM for non-memories reasons.
+  // We are duplicating them below to persist on-device and send to an offline
+  // model.
+
+  // An opaque integer representing page_load_metrics::PageEndReason.
+  // Do not use this directly, as it's a raw integer for serialization, and not
+  // a typesafe page_load_metrics::PageEndReason.
+  int page_end_reason = 0;
+};
+
+// A |VisitRow| along with its corresponding |URLRow| and
+// |ClusterVisitContextSignals|. This is used to cluster visits.
+struct ClusterVisit {
+  URLRow url_row;
+  VisitRow visit_row;
+  ClusterVisitContextSignals context_signals;
+};
+
+// The DB representation of |ClusterVisit|.
+struct ClusterVisitRow {
+  ClusterVisitRow() = default;
+  explicit ClusterVisitRow(const ClusterVisit& cluster_visit)
+      : ClusterVisitRow(0,
+                        cluster_visit.url_row.id(),
+                        cluster_visit.visit_row.visit_id,
+                        cluster_visit.context_signals) {}
+  ClusterVisitRow(const int64_t cluster_visit_id,
+                  const URLID url_id,
+                  const VisitID visit_id,
+                  const ClusterVisitContextSignals& context_signals)
+      : cluster_visit_id(cluster_visit_id),
+        url_id(url_id),
+        visit_id(visit_id),
+        context_signals(context_signals) {}
+  int64_t cluster_visit_id;
+  URLID url_id;
+  VisitID visit_id;
+  ClusterVisitContextSignals context_signals;
+};
+
 }  // namespace history
 
 #endif  // COMPONENTS_HISTORY_CORE_BROWSER_HISTORY_TYPES_H_

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/base64.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -19,7 +20,9 @@
 #include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
+#include "components/history/core/test/history_service_test_util.h"
 #include "components/history_clusters/core/memories_features.h"
+#include "components/history_clusters/core/memories_remote_model_helper.h"
 #include "components/history_clusters/core/memories_service_test_api.h"
 #include "components/history_clusters/core/proto/clusters.pb.h"
 #include "components/history_clusters/core/visit_data.h"
@@ -43,21 +46,26 @@ base::Time IntToTime(int milliseconds) {
 class MemoriesServiceTest : public testing::Test {
  public:
   MemoriesServiceTest()
-      : shared_url_loader_factory_(
+      : task_environment_(
+            base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME),
+        shared_url_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)),
-        memories_service_(
-            std::make_unique<MemoriesService>(nullptr,
-                                              shared_url_loader_factory_)),
-        memories_service_test_api_(
-            std::make_unique<MemoriesServiceTestApi>(memories_service_.get())),
-        task_environment_(base::test::TaskEnvironment::MainThreadType::UI),
-        run_loop_quit_(run_loop_.QuitClosure()) {}
+        run_loop_quit_(run_loop_.QuitClosure()) {
+    CHECK(history_dir_.CreateUniqueTempDir());
+    history_service_ =
+        history::CreateHistoryService(history_dir_.GetPath(), true);
+    memories_service_ = std::make_unique<MemoriesService>(
+        history_service_.get(), shared_url_loader_factory_);
+    memories_service_test_api_ =
+        std::make_unique<MemoriesServiceTestApi>(memories_service_.get());
+  }
 
   MemoriesServiceTest(const MemoriesServiceTest&) = delete;
   MemoriesServiceTest& operator=(const MemoriesServiceTest&) = delete;
 
-  void EnableMemoriesWithEndpoint(const std::string& endpoint_url) {
+  void EnableMemoriesWithEndpoint(
+      const std::string& endpoint_url = kFakeEndpoint) {
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
     scoped_feature_list_->InitWithFeaturesAndParameters(
         {
@@ -74,17 +82,39 @@ class MemoriesServiceTest : public testing::Test {
   }
 
   void AddVisit(int time, const GURL& url) {
-    auto& visit =
-        memories_service_->GetOrCreateIncompleteVisit(next_navigation_id_);
-    visit.visit_row.visit_time = IntToTime(time);
+    history::ClusterVisit visit;
     visit.url_row.set_url(url);
+    visit.visit_row.visit_time = IntToTime(time);
     AddVisit(visit);
   }
 
-  void AddVisit(const MemoriesVisit& visit) {
+  void AddVisit(history::URLID url_id,
+                const GURL& url,
+                const std::u16string title,
+                history::VisitID visit_id,
+                base::Time visit_time,
+                int page_end_reason) {
+    history::ClusterVisit visit;
+    visit.url_row.set_id(url_id);
+    visit.url_row.set_url(url);
+    visit.url_row.set_title(title);
+    visit.visit_row.visit_id = visit_id;
+    visit.visit_row.visit_time = visit_time;
+    visit.context_signals.page_end_reason = page_end_reason;
+    AddVisit(visit);
+  }
+
+  void AddVisit(const history::ClusterVisit& visit) {
+    history_service_->AddPageWithDetails(
+        visit.url_row.url(), visit.url_row.title(), visit.url_row.visit_count(),
+        visit.url_row.typed_count(), visit.visit_row.visit_time,
+        visit.url_row.hidden(), history::VisitSource::SOURCE_BROWSED);
+
     auto& visit_copy =
         memories_service_->GetOrCreateIncompleteVisit(next_navigation_id_);
-    visit_copy = visit;
+    visit_copy.visit_row = visit.visit_row;
+    visit_copy.url_row = visit.url_row;
+    visit_copy.context_signals = visit.context_signals;
     visit_copy.status.history_rows = true;
     visit_copy.status.navigation_ended = true;
     visit_copy.status.navigation_end_signals = true;
@@ -126,21 +156,29 @@ class MemoriesServiceTest : public testing::Test {
     EXPECT_EQ(GetPendingRequestBody(), expected_request_body);
   }
 
-  // Fakes a particular hardcoded response from the URL loader.
-  void InjectHardcodedTestDataToUrlLoaderResponse() {
+  // Fakes a particular partly hardcoded response from the URL loader.
+  void InjectHardcodedTestDataToUrlLoaderResponse(
+      std::vector<std::vector<int>> clustered_visit_ids) {
     proto::GetClustersResponse response;
-    auto* cluster = response.add_clusters();
-    cluster->mutable_keywords()->Add("topic 1");
-    cluster->mutable_keywords()->Add("topic 2");
-    cluster->mutable_visit_ids()->Add(2);
-    cluster->mutable_visit_ids()->Add(4);
-    cluster = response.add_clusters();
-    cluster->mutable_visit_ids()->Add(4);
-
+    for (auto visit_ids : clustered_visit_ids) {
+      auto* cluster = response.add_clusters();
+      for (auto visit_id : visit_ids)
+        cluster->add_visit_ids(visit_id);
+    }
+    if (!clustered_visit_ids.empty()) {
+      response.mutable_clusters(0)->mutable_keywords()->Add("keyword 1");
+      response.mutable_clusters(0)->mutable_keywords()->Add("keyword 2");
+    }
     test_url_loader_factory_.AddResponse(kFakeEndpoint,
                                          response.SerializeAsString());
     EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   }
+
+  base::test::TaskEnvironment task_environment_;
+
+  // Used to construct a |MemoriesService|.
+  base::ScopedTempDir history_dir_;
+  std::unique_ptr<history::HistoryService> history_service_;
 
   static constexpr char kFakeEndpoint[] = "https://endpoint.com/";
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
@@ -149,8 +187,6 @@ class MemoriesServiceTest : public testing::Test {
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   std::unique_ptr<MemoriesService> memories_service_;
   std::unique_ptr<MemoriesServiceTestApi> memories_service_test_api_;
-
-  base::test::TaskEnvironment task_environment_;
 
   // Used to verify the async callback is invoked.
   base::RunLoop run_loop_;
@@ -166,20 +202,8 @@ constexpr char MemoriesServiceTest::kFakeEndpoint[];
 TEST_F(MemoriesServiceTest, QueryMemoriesEmptyQuery) {
   EnableMemoriesWithEndpoint(kFakeEndpoint);
 
-  auto AddVisitWithDetails = [&](int time, const GURL& url,
-                                 const std::u16string title, int visit_id,
-                                 int page_end_reason) {
-    MemoriesVisit visit;
-    visit.visit_row.visit_time = IntToTime(time);
-    visit.url_row.set_url(url);
-    visit.url_row.set_title(title);
-    visit.visit_row.visit_id = visit_id;
-    visit.context_signals.page_end_reason = page_end_reason;
-    AddVisit(visit);
-  };
-
-  AddVisitWithDetails(2, GURL{"https://google.com"}, u"Google title", 2, 3);
-  AddVisitWithDetails(4, GURL{"https://github.com"}, u"Github title", 4, 5);
+  AddVisit(0, GURL{"https://google.com"}, u"Google title", 2, IntToTime(2), 3);
+  AddVisit(0, GURL{"https://github.com"}, u"Github title", 4, IntToTime(4), 5);
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   memories_service_->QueryMemories(
@@ -188,14 +212,12 @@ TEST_F(MemoriesServiceTest, QueryMemoriesEmptyQuery) {
       // further down in this method.
       base::BindLambdaForTesting(
           [&](mojom::QueryParamsPtr continuation_query_params,
-              std::vector<mojom::MemoryPtr> memories) {
+              Memories memories) {
             // Verify that the continuation query params is nullptr.
             ASSERT_FALSE(!!continuation_query_params);
-
             // Verify the parsed response.
             ASSERT_EQ(memories.size(), 2u);
             EXPECT_FALSE(memories[0]->id.is_empty());
-
             ASSERT_EQ(memories[0]->top_visits.size(), 2u);
             EXPECT_EQ(memories[0]->top_visits[0]->id, 2);
             EXPECT_EQ(memories[0]->top_visits[0]->url, "https://google.com/");
@@ -206,9 +228,8 @@ TEST_F(MemoriesServiceTest, QueryMemoriesEmptyQuery) {
             EXPECT_EQ(memories[0]->top_visits[1]->time, IntToTime(4));
             EXPECT_EQ(memories[0]->top_visits[1]->page_title, "Github title");
             ASSERT_EQ(memories[0]->keywords.size(), 2u);
-            EXPECT_EQ(memories[0]->keywords[0], u"topic 1");
-            EXPECT_EQ(memories[0]->keywords[1], u"topic 2");
-
+            EXPECT_EQ(memories[0]->keywords[0], u"keyword 1");
+            EXPECT_EQ(memories[0]->keywords[1], u"keyword 2");
             EXPECT_FALSE(memories[1]->id.is_empty());
             ASSERT_EQ(memories[1]->top_visits.size(), 1u);
             EXPECT_EQ(memories[1]->top_visits[0]->id, 4);
@@ -220,7 +241,7 @@ TEST_F(MemoriesServiceTest, QueryMemoriesEmptyQuery) {
           }));
 
   VerifyHardcodedTestDataInUrlLoaderRequest();
-  InjectHardcodedTestDataToUrlLoaderResponse();
+  InjectHardcodedTestDataToUrlLoaderResponse({{2, 4}, {4}});
 
   // Verify the callback is invoked.
   run_loop_.Run();
@@ -229,23 +250,11 @@ TEST_F(MemoriesServiceTest, QueryMemoriesEmptyQuery) {
 TEST_F(MemoriesServiceTest, QueryMemories) {
   EnableMemoriesWithEndpoint(kFakeEndpoint);
 
-  auto AddVisitWithDetails = [&](int time, const GURL& url,
-                                 const std::u16string title, int visit_id,
-                                 int page_end_reason) {
-    MemoriesVisit visit;
-    visit.visit_row.visit_time = IntToTime(time);
-    visit.url_row.set_url(url);
-    visit.url_row.set_title(title);
-    visit.visit_row.visit_id = visit_id;
-    visit.context_signals.page_end_reason = page_end_reason;
-    AddVisit(visit);
-  };
-
-  AddVisitWithDetails(2, GURL{"https://google.com"}, u"Google title", 2, 3);
-  AddVisitWithDetails(4, GURL{"https://github.com"}, u"Github title", 4, 5);
+  AddVisit(0, GURL{"https://google.com"}, u"Google title", 2, IntToTime(2), 3);
+  AddVisit(0, GURL{"https://github.com"}, u"Github title", 4, IntToTime(4), 5);
 
   auto query_params = mojom::QueryParams::New();
-  query_params->query = "Topic";
+  query_params->query = "Keyword";
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   memories_service_->QueryMemories(
@@ -257,11 +266,9 @@ TEST_F(MemoriesServiceTest, QueryMemories) {
               std::vector<mojom::MemoryPtr> memories) {
             // Verify that the continuation query params is nullptr.
             ASSERT_FALSE(!!continuation_query_params);
-
             // Verify the parsed response.
             ASSERT_EQ(memories.size(), 1u);
             EXPECT_FALSE(memories[0]->id.is_empty());
-
             ASSERT_EQ(memories[0]->top_visits.size(), 2u);
             EXPECT_EQ(memories[0]->top_visits[0]->id, 2);
             EXPECT_EQ(memories[0]->top_visits[0]->url, "https://google.com/");
@@ -271,29 +278,28 @@ TEST_F(MemoriesServiceTest, QueryMemories) {
             EXPECT_EQ(memories[0]->top_visits[1]->url, "https://github.com/");
             EXPECT_EQ(memories[0]->top_visits[1]->time, IntToTime(4));
             EXPECT_EQ(memories[0]->top_visits[1]->page_title, "Github title");
-
             ASSERT_EQ(memories[0]->keywords.size(), 2u);
-            EXPECT_EQ(memories[0]->keywords[0], u"topic 1");
-            EXPECT_EQ(memories[0]->keywords[1], u"topic 2");
+            EXPECT_EQ(memories[0]->keywords[0], u"keyword 1");
+            EXPECT_EQ(memories[0]->keywords[1], u"keyword 2");
             run_loop_quit_.Run();
           }));
 
   VerifyHardcodedTestDataInUrlLoaderRequest();
-  InjectHardcodedTestDataToUrlLoaderResponse();
+  InjectHardcodedTestDataToUrlLoaderResponse({{2, 4}, {4}});
 
   // Verify the callback is invoked.
   run_loop_.Run();
 }
 
 TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyVisits) {
-  EnableMemoriesWithEndpoint(kFakeEndpoint);
+  EnableMemoriesWithEndpoint();
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   memories_service_->QueryMemories(
       mojom::QueryParams::New(),
       base::BindLambdaForTesting(
-          [&](mojom::QueryParamsPtr continuation_query_params,
-              std::vector<mojom::MemoryPtr> memories) {
+          [&](history_clusters::mojom::QueryParamsPtr continuation_query_params,
+              history_clusters::Memories memories) {
             // Verify that the continuation query params is nullptr.
             ASSERT_FALSE(!!continuation_query_params);
             // Verify the parsed response.
@@ -311,15 +317,15 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyVisits) {
 TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyEndpoint) {
   EnableMemoriesWithEndpoint("");
 
-  AddVisit(0, GURL{"google.com"});
-  AddVisit(1, GURL{"github.com"});
+  AddVisit(1, GURL{"google.com"});
+  AddVisit(2, GURL{"github.com"});
 
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
   memories_service_->QueryMemories(
       mojom::QueryParams::New(),
       base::BindLambdaForTesting(
-          [&](mojom::QueryParamsPtr continuation_query_params,
-              std::vector<mojom::MemoryPtr> memories) {
+          [&](history_clusters::mojom::QueryParamsPtr continuation_query_params,
+              history_clusters::Memories memories) {
             // Verify that the continuation query params is nullptr.
             ASSERT_FALSE(!!continuation_query_params);
             // Verify the empty response.
@@ -335,10 +341,10 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyEndpoint) {
 }
 
 TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyResponse) {
-  EnableMemoriesWithEndpoint(kFakeEndpoint);
+  EnableMemoriesWithEndpoint();
 
-  AddVisit(0, GURL{"google.com"});
-  AddVisit(1, GURL{"github.com"});
+  AddVisit(1, GURL{"google.com"});
+  AddVisit(2, GURL{"github.com"});
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   memories_service_->QueryMemories(
@@ -366,10 +372,10 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyResponse) {
 }
 
 TEST_F(MemoriesServiceTest, QueryMemoriesWithInvalidJsonResponse) {
-  EnableMemoriesWithEndpoint(kFakeEndpoint);
+  EnableMemoriesWithEndpoint();
 
-  AddVisit(0, GURL{"google.com"});
-  AddVisit(1, GURL{"github.com"});
+  AddVisit(1, GURL{"google.com"});
+  AddVisit(2, GURL{"github.com"});
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   memories_service_->QueryMemories(
@@ -397,17 +403,17 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithInvalidJsonResponse) {
 }
 
 TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyJsonResponse) {
-  EnableMemoriesWithEndpoint(kFakeEndpoint);
+  EnableMemoriesWithEndpoint();
 
-  AddVisit(0, GURL{"google.com"});
-  AddVisit(1, GURL{"github.com"});
+  AddVisit(1, GURL{"google.com"});
+  AddVisit(2, GURL{"github.com"});
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   memories_service_->QueryMemories(
       mojom::QueryParams::New(),
       base::BindLambdaForTesting(
-          [&](mojom::QueryParamsPtr continuation_query_params,
-              std::vector<mojom::MemoryPtr> memories) {
+          [&](history_clusters::mojom::QueryParamsPtr continuation_query_params,
+              history_clusters::Memories memories) {
             // Verify that the continuation query params is nullptr.
             ASSERT_FALSE(!!continuation_query_params);
             // Verify the parsed response.
@@ -428,17 +434,17 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithEmptyJsonResponse) {
 }
 
 TEST_F(MemoriesServiceTest, QueryMemoriesWithPendingRequest) {
-  EnableMemoriesWithEndpoint(kFakeEndpoint);
+  EnableMemoriesWithEndpoint();
 
-  AddVisit(0, GURL{"google.com"});
-  AddVisit(1, GURL{"github.com"});
+  AddVisit(1, GURL{"google.com"});
+  AddVisit(2, GURL{"github.com"});
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   memories_service_->QueryMemories(
       mojom::QueryParams::New(),
       base::BindLambdaForTesting(
-          [&](mojom::QueryParamsPtr continuation_query_params,
-              std::vector<mojom::MemoryPtr> memories) {
+          [&](history_clusters::mojom::QueryParamsPtr continuation_query_params,
+              history_clusters::Memories memories) {
             // Verify not reached.
             EXPECT_TRUE(false);
           }));
@@ -447,8 +453,8 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithPendingRequest) {
   memories_service_->QueryMemories(
       mojom::QueryParams::New(),
       base::BindLambdaForTesting(
-          [&](mojom::QueryParamsPtr continuation_query_params,
-              std::vector<mojom::MemoryPtr> memories) {
+          [&](history_clusters::mojom::QueryParamsPtr continuation_query_params,
+              Memories memories) {
             // Verify that the continuation query params is nullptr.
             ASSERT_FALSE(!!continuation_query_params);
             // Verify the parsed response.
@@ -467,6 +473,65 @@ TEST_F(MemoriesServiceTest, QueryMemoriesWithPendingRequest) {
   test_url_loader_factory_.AddResponse(kFakeEndpoint,
                                        response.SerializeAsString());
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
+
+  // Verify the callback is invoked.
+  run_loop_.Run();
+}
+
+TEST_F(MemoriesServiceTest, QueryMemoriesWithHistoryDb) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {
+          {
+              kMemories,
+              {{"MemoriesStoreVisitsInHistoryDb", "true"}},
+          },
+          {
+              history_clusters::kRemoteModelForDebugging,
+              {{"MemoriesRemoteModelEndpoint", kFakeEndpoint}},
+          },
+      },
+      {});
+
+  // Must not be too old otherwise the history layer will ignore the visit.
+  const auto visit_time = base::Time::Now() - base::TimeDelta::FromDays(1);
+  AddVisit(1, GURL{"https://google.com"}, u"Google title", 1, visit_time, 3);
+  AddVisit(2, GURL{"https://github.com"}, u"Github title", 2, visit_time, 5);
+
+  EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
+
+  memories_service_->QueryMemories(
+      mojom::QueryParams::New(),
+      // This "expect" block is not run until after the fake response is sent
+      // further down in this method.
+      base::BindLambdaForTesting(
+          [&](mojom::QueryParamsPtr continuation_query_params,
+              Memories memories) {
+            // Verify the parsed response.
+            ASSERT_EQ(memories.size(), 2u);
+            EXPECT_FALSE(memories[0]->id.is_empty());
+            ASSERT_EQ(memories[0]->top_visits.size(), 2u);
+            EXPECT_EQ(memories[0]->top_visits[0]->id, 1);
+            EXPECT_EQ(memories[0]->top_visits[0]->url, "https://google.com/");
+            EXPECT_EQ(memories[0]->top_visits[0]->time, visit_time);
+            EXPECT_EQ(memories[0]->top_visits[0]->page_title, "Google title");
+            EXPECT_EQ(memories[0]->top_visits[1]->id, 2);
+            EXPECT_EQ(memories[0]->top_visits[1]->url, "https://github.com/");
+            EXPECT_EQ(memories[0]->top_visits[1]->time, visit_time);
+            EXPECT_EQ(memories[0]->top_visits[1]->page_title, "Github title");
+            ASSERT_EQ(memories[1]->top_visits.size(), 1u);
+            EXPECT_FALSE(memories[1]->id.is_empty());
+            EXPECT_EQ(memories[1]->top_visits[0]->id, 2);
+            EXPECT_EQ(memories[1]->top_visits[0]->url, "https://github.com/");
+            EXPECT_EQ(memories[1]->top_visits[0]->time, visit_time);
+            EXPECT_EQ(memories[1]->top_visits[0]->page_title, "Github title");
+            run_loop_quit_.Run();
+          }));
+
+  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
+
+  EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
+  InjectHardcodedTestDataToUrlLoaderResponse({{1, 2}, {2}});
 
   // Verify the callback is invoked.
   run_loop_.Run();

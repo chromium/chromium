@@ -9,7 +9,7 @@
 
 #include "base/task/cancelable_task_tracker.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/history_clusters/core/visit_data.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/page_load_metrics/common/page_end_reason.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -47,12 +47,12 @@ class HistoryClustersTabHelper
 
   // Updates the visit with |navigation_id| with |page_end_reason|.
   // This also records the page end metrics, if necessary.
-  // It returns a copy of the completed |MemoriesVisit|'s |VisitContextSignals|,
-  // if available.
+  // It returns a copy of the completed |ClusterVisit|'s
+  // |ClusterVisitContextSignals|, if available.
   //
   // This should only be called once per navigation, as this may flush the visit
   // to MemoriesService.
-  history_clusters::VisitContextSignals OnUkmNavigationComplete(
+  history::ClusterVisitContextSignals OnUkmNavigationComplete(
       int64_t navigation_id,
       const page_load_metrics::PageEndReason page_end_reason);
 
@@ -85,7 +85,7 @@ class HistoryClustersTabHelper
   //    assumed ended and its page end metrics will be recorded.
   // 2) On |OnOmniboxUrlCopied()|, the last navigation will be assumed to be the
   //    subject.
-  // 3) On |WebContentsDestroyed()|, the |MemoriesVisits| corresponding to these
+  // 3) On |WebContentsDestroyed()|, the |ClusterVisit| corresponding to these
   //    IDs will be assumed ended and their page end metrics will be recorded if
   //    they haven't already.
   std::vector<int64_t> navigation_ids_;

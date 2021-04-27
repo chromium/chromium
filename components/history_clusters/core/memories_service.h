@@ -10,18 +10,20 @@
 #include <string>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/memories.mojom.h"
+#include "components/history_clusters/core/memories_remote_model_helper.h"
 #include "components/history_clusters/core/visit_data.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace history_clusters {
-
-class MemoriesRemoteModelHelper;
 
 // This Service is the API for UIs to fetch Chrome Memories.
 class MemoriesService : public KeyedService {
@@ -49,13 +51,13 @@ class MemoriesService : public KeyedService {
   void NotifyDebugMessage(const std::string& message) const;
 
   // TODO(manukh) |MemoriesService| should be responsible for constructing the
-  //  MemoriesVisit rather than exposing these methods which are used by
+  //  |ClusterVisit|s rather than exposing these methods which are used by
   //  |HistoryClustersTabHelper| to construct the visits.
   // Gets an incomplete visit after DCHECKing it exists; this saves the call
   // sites the effort.
-  MemoriesVisit& GetIncompleteVisit(int64_t nav_id);
+  IncompleteVisit& GetIncompleteVisit(int64_t nav_id);
   // Gets or creates an incomplete visit.
-  MemoriesVisit& GetOrCreateIncompleteVisit(int64_t nav_id);
+  IncompleteVisit& GetOrCreateIncompleteVisit(int64_t nav_id);
   // Returns whether an incomplete visit exists.
   // TODO(manukh): Merge |HasIncompleteVisit()| and |GetIncompleteVisit()|.
   bool HasIncompleteVisit(int64_t nav_id);
@@ -70,33 +72,25 @@ class MemoriesService : public KeyedService {
   // Note: At the moment, this method asks |remote_model_helper_| to construct
   // Memories from |visits_|.
   using QueryMemoriesCallback =
-      base::OnceCallback<void(mojom::QueryParamsPtr,
-                              std::vector<mojom::MemoryPtr>)>;
+      base::OnceCallback<void(mojom::QueryParamsPtr, Memories)>;
   void QueryMemories(mojom::QueryParamsPtr query_params,
                      QueryMemoriesCallback callback);
 
  private:
   friend class MemoriesServiceTestApi;
 
-  // Called with |memories| when the results of requesting Memories from
-  // |remote_model_helper_| are available. Uses the bound |query_params|
-  // parameter to filter the Memories and invokes |callback| with matching
-  // Memories and continuation query params meant to be used in the follow-up
-  // request to load older Memories.
-  // Note: At the moment, the recency threshold of |query_params| is ignored and
-  // |callback| is invoked with nullptr continuation query params as the service
-  // does not support paging.
-  void OnQueryMemoriesResult(mojom::QueryParamsPtr query_params,
-                             QueryMemoriesCallback callback,
-                             std::vector<mojom::MemoryPtr> memories);
-
   // If the Memories flag is enabled, this contains all the visits in-memory
-  // during the Profile lifetime.
+  // during the Profile lifetime. If the "MemoriesStoreVisitsInHistoryDb" param
+  // is true, this will be empty as completed visits will instead be persisted
+  // to the history database.
   // TODO(tommycli): Hide this better behind a new debug flag.
-  std::vector<MemoriesVisit> visits_;
+  std::vector<history::ClusterVisit> visits_;
   // A visit is constructed stepwise. Visits are initially placed in
   // |incomplete_visits_| and moved to |visits_| once completed.
-  std::map<int64_t, MemoriesVisit> incomplete_visits_;
+  std::map<int64_t, IncompleteVisit> incomplete_visits_;
+
+  history::HistoryService* history_service_;
+  base::CancelableTaskTracker task_tracker_;
 
   // Helper service to handle communicating with the remote model. This will be
   // used for debugging only; the launch ready feature will use a local model
@@ -106,6 +100,10 @@ class MemoriesService : public KeyedService {
   // A list of observers for this service.
   base::ObserverList<Observer> observers_;
 
+  // Used to asyncly call into |remote_model_helper_| after async history
+  // request.
+  std::unique_ptr<base::WeakPtrFactory<MemoriesRemoteModelHelper>>
+      remote_model_helper_weak_factory_;
   // Weak pointers issued from this factory never get invalidated before the
   // service is destroyed.
   base::WeakPtrFactory<MemoriesService> weak_ptr_factory_{this};

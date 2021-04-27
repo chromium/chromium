@@ -124,7 +124,7 @@ sql::InitStatus HistoryDatabase::Init(const base::FilePath& history_name) {
     return LogInitFailure(InitStep::META_TABLE_INIT);
   if (!CreateURLTable(false) || !InitVisitTable() ||
       !InitKeywordSearchTermsTable() || !InitDownloadTable() ||
-      !InitSegmentTables() || !InitSyncTable())
+      !InitSegmentTables() || !InitSyncTable() || !InitClusterVisitTable())
     return LogInitFailure(InitStep::CREATE_TABLES);
   if (!InitVisitAnnotationsTables())
     return LogInitFailure(InitStep::CREATE_TABLES);
@@ -329,6 +329,9 @@ bool HistoryDatabase::RecreateAllTablesButURL() {
   if (!DropVisitAnnotationsTables())
     return false;
   if (!InitVisitAnnotationsTables())
+    return false;
+
+  if (!DropClusterVisitTable() || !InitClusterVisitTable())
     return false;
 
   return true;

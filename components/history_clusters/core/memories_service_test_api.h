@@ -7,8 +7,8 @@
 
 #include <vector>
 
+#include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/memories_service.h"
-#include "components/history_clusters/core/visit_data.h"
 
 namespace history_clusters {
 
@@ -17,7 +17,7 @@ class MemoriesServiceTestApi {
   explicit MemoriesServiceTestApi(MemoriesService* memories_service)
       : memories_service_(memories_service) {}
 
-  std::vector<MemoriesVisit> GetVisits() const {
+  std::vector<history::ClusterVisit> GetVisits() const {
     return memories_service_->visits_;
   }
 

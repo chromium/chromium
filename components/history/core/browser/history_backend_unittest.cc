@@ -27,6 +27,7 @@
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -3160,6 +3161,100 @@ TEST(FormatUrlForRedirectComparisonTest, TestUrlFormatting) {
   // Tests that the formatter only removes the first subdomain.
   GURL url3("http://www.www.baz.com/");
   EXPECT_EQ(u"www.baz.com/", FormatUrlForRedirectComparison(url3));
+}
+
+TEST_F(HistoryBackendTest, ClusterVisits) {
+  auto last_visit_time = base::Time::Now();
+  auto add_url_and_visit = [&](std::string url) {
+    // Each it should have a unique `visit_time` to avoid deduping visits to the
+    // same URL. The exact times don't matter, but we use increasing values to
+    // making the test cases easy to reason about.
+    last_visit_time += base::TimeDelta::FromMilliseconds(1);
+    return backend_->AddPageVisit(GURL(url), last_visit_time, 0,
+                                  ui::PageTransition::PAGE_TRANSITION_FIRST,
+                                  false, history::SOURCE_BROWSED, false, false);
+  };
+  auto delete_url = [&](URLID id) { backend_->db_->DeleteURLRow(id); };
+  auto delete_visit = [&](VisitID id) {
+    VisitRow row;
+    backend_->db_->GetRowForVisit(id, &row);
+    backend_->db_->DeleteVisit(row);
+  };
+
+  // Happy path; cluster visits with associated URL & visits.
+  EXPECT_EQ(add_url_and_visit("http://1.com/"),
+            (std::pair<URLID, VisitID>{1, 1}));
+  EXPECT_EQ(add_url_and_visit("http://2.com/"),
+            (std::pair<URLID, VisitID>{2, 2}));
+  EXPECT_EQ(add_url_and_visit("http://1.com/"),
+            (std::pair<URLID, VisitID>{1, 3}));
+  backend_->AddClusterVisit({0, 1, 1, {true}});
+  backend_->AddClusterVisit({0, 1, 3, {false}});
+  backend_->AddClusterVisit({0, 2, 2, {true}});
+  EXPECT_EQ(backend_->db_->GetClusterVisits(10).size(), 3u);
+
+  // Cluster visits should have URL & visit IDs
+  EXPECT_DCHECK_DEATH(backend_->AddClusterVisit({0, 0, 4, {true}}));
+  EXPECT_DCHECK_DEATH(backend_->AddClusterVisit({0, 3, 0, {true}}));
+  EXPECT_EQ(backend_->db_->GetClusterVisits(10).size(), 3u);
+
+  // Cluster visits without an associated URL or visit should not be added.
+  backend_->AddClusterVisit({0, 3, 1, {true}});
+  backend_->AddClusterVisit({0, 1, 4, {true}});
+  EXPECT_EQ(add_url_and_visit("http://3.com/"),
+            (std::pair<URLID, VisitID>{3, 4}));
+  EXPECT_EQ(backend_->db_->GetClusterVisits(10).size(), 3u);
+
+  // Cluster visits associated with a removed URL or visit should not be added.
+  EXPECT_EQ(add_url_and_visit("http://4.com/"),
+            (std::pair<URLID, VisitID>{4, 5}));
+  EXPECT_EQ(add_url_and_visit("http://5.com/"),
+            (std::pair<URLID, VisitID>{5, 6}));
+  delete_url(4);
+  delete_visit(6);
+  backend_->AddClusterVisit({0, 4, 1, {true}});
+  backend_->AddClusterVisit({0, 1, 6, {true}});
+  EXPECT_EQ(backend_->db_->GetClusterVisits(10).size(), 3u);
+
+  // Verify only the correct cluster visits are retrieved ordered recent visits
+  // first.
+  auto cluster_visits = backend_->GetClusterVisits(10);
+  ASSERT_EQ(cluster_visits.size(), 3u);
+  EXPECT_EQ(cluster_visits[0].url_row.id(), 1);
+  EXPECT_EQ(cluster_visits[0].url_row.url(), "http://1.com/");
+  EXPECT_EQ(cluster_visits[0].visit_row.visit_id, 3);
+  EXPECT_EQ(cluster_visits[0].visit_row.url_id, 1);
+  EXPECT_EQ(cluster_visits[0].context_signals.omnibox_url_copied, false);
+  EXPECT_EQ(cluster_visits[1].url_row.id(), 2);
+  EXPECT_EQ(cluster_visits[1].url_row.url(), "http://2.com/");
+  EXPECT_EQ(cluster_visits[1].visit_row.visit_id, 2);
+  EXPECT_EQ(cluster_visits[1].visit_row.url_id, 2);
+  EXPECT_EQ(cluster_visits[1].context_signals.omnibox_url_copied, true);
+  EXPECT_EQ(cluster_visits[2].url_row.id(), 1);
+  EXPECT_EQ(cluster_visits[2].url_row.url(), "http://1.com/");
+  EXPECT_EQ(cluster_visits[2].visit_row.visit_id, 1);
+  EXPECT_EQ(cluster_visits[2].visit_row.url_id, 1);
+  EXPECT_EQ(cluster_visits[2].context_signals.omnibox_url_copied, true);
+
+  // Cluster visits should be removed if their associated URL or visit is
+  // removed.
+  delete_url(2);
+  delete_visit(3);
+  // `db_->GetClusterVisits()` should only return cluster visits with associated
+  // visits, but doesn't check for associated URLs.
+  EXPECT_EQ(backend_->db_->GetClusterVisits(10).size(), 2u);
+  // `backend_->GetClusterVisits()` should check for both associated URL and
+  // visit.
+  cluster_visits = backend_->GetClusterVisits(10);
+  ASSERT_EQ(cluster_visits.size(), 1u);
+  EXPECT_EQ(cluster_visits[0].url_row.id(), 1);
+  EXPECT_EQ(cluster_visits[0].url_row.url(), "http://1.com/");
+  EXPECT_EQ(cluster_visits[0].visit_row.visit_id, 1);
+  EXPECT_EQ(cluster_visits[0].visit_row.url_id, 1);
+  EXPECT_EQ(cluster_visits[0].context_signals.omnibox_url_copied, true);
+  // `backend_->GetClusterVisits()` should delete visits without associated URLs
+  // and visits.
+  EXPECT_EQ(backend_->db_->GetClusterVisits(10).size(), 1u);
 }
 
 }  // namespace history

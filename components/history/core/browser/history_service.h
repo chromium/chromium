@@ -499,6 +499,19 @@ class HistoryService : public KeyedService {
   // Notification that a URL is no longer bookmarked.
   void URLsNoLongerBookmarked(const std::set<GURL>& urls);
 
+  // Clusters ------------------------------------------------------------------
+
+  // Add a |ClusterVisitRow|.
+  void AddClusterVisit(const ClusterVisitRow& row);
+
+  // Get all |ClusterVisitRow|s and map them to |ClusterVisit|s.
+  using GetClusterVisitsCallback =
+      base::OnceCallback<void(std::vector<ClusterVisit>)>;
+  base::CancelableTaskTracker::TaskId GetClusterVisits(
+      int max_results,
+      GetClusterVisitsCallback callback,
+      base::CancelableTaskTracker* tracker) const;
+
   // Observers -----------------------------------------------------------------
 
   // Adds/Removes an Observer.

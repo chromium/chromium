@@ -39,7 +39,7 @@ using UrlAndVisitCallback =
     base::OnceCallback<void(history::URLRow, history::VisitVector)>;
 
 // Gets the 2 most recent visits to a URL. Used to associate a memories visit
-// with its history rows and compute the |duration_since_last_visit_seconds|
+// with its history rows and compute the |duration_since_last_visit|
 // context signal.
 class GetMostRecentVisitsToUrl : public history::HistoryDBTask {
  public:
@@ -157,7 +157,7 @@ void HistoryClustersTabHelper::OnUpdatedHistoryForNavigation(
                 [](HistoryClustersTabHelper* history_clusters_tab_helper,
                    history_clusters::MemoriesService* memories_service,
                    int64_t navigation_id,
-                   history_clusters::MemoriesVisit& visit,
+                   history_clusters::IncompleteVisit& visit,
                    history::URLRow url_row, history::VisitVector visits) {
                   DCHECK(history_clusters_tab_helper);
                   DCHECK(memories_service);
@@ -167,9 +167,8 @@ void HistoryClustersTabHelper::OnUpdatedHistoryForNavigation(
                   visit.url_row = url_row;
                   visit.visit_row = visits[0];
                   if (visits.size() > 1) {
-                    visit.context_signals.duration_since_last_visit_seconds =
-                        TimeElapsedBetweenVisits(visits[1], visits[0])
-                            .InSeconds();
+                    visit.context_signals.duration_since_last_visit =
+                        TimeElapsedBetweenVisits(visits[1], visits[0]);
                   }
                   // If the navigation has already ended, record the page end
                   // metrics.
@@ -193,7 +192,7 @@ void HistoryClustersTabHelper::TagNavigationAsExpectingUkmNavigationComplete(
   StartNewNavigationIfNeeded(navigation_id);
 }
 
-history_clusters::VisitContextSignals
+history::ClusterVisitContextSignals
 HistoryClustersTabHelper::OnUkmNavigationComplete(
     int64_t navigation_id,
     const page_load_metrics::PageEndReason page_end_reason) {

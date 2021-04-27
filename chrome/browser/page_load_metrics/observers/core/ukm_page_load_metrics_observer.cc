@@ -26,7 +26,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
-#include "components/history_clusters/core/visit_data.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/metrics/net/network_metrics_provider.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
@@ -1042,23 +1042,23 @@ void UkmPageLoadMetricsObserver::RecordMemoriesMetrics(
       HistoryClustersTabHelper::FromWebContents(web_contents);
   if (!clusters_helper)
     return;
-  const history_clusters::VisitContextSignals memories_signals =
+  const history::ClusterVisitContextSignals context_signals =
       clusters_helper->OnUkmNavigationComplete(navigation_id_, page_end_reason);
   // Send ALL Memories signals to UKM at page end. This is to harmonize with
   // the fact that they may only be recorded into History at page end, when
   // we can be sure that the visit row already exists.
   //
-  // Please note: We don't record everything in |memories_signals_| into UKM,
+  // Please note: We don't record everything in |context_signals_| into UKM,
   // because some of these signals are already recorded elsewhere.
-  builder.SetOmniboxUrlCopied(memories_signals.omnibox_url_copied);
+  builder.SetOmniboxUrlCopied(context_signals.omnibox_url_copied);
   builder.SetIsExistingPartOfTabGroup(
-      memories_signals.is_existing_part_of_tab_group);
-  builder.SetIsPlacedInTabGroup(memories_signals.is_placed_in_tab_group);
-  builder.SetIsExistingBookmark(memories_signals.is_existing_bookmark);
-  builder.SetIsNewBookmark(memories_signals.is_new_bookmark);
-  builder.SetIsNTPCustomLink(memories_signals.is_ntp_custom_link);
+      context_signals.is_existing_part_of_tab_group);
+  builder.SetIsPlacedInTabGroup(context_signals.is_placed_in_tab_group);
+  builder.SetIsExistingBookmark(context_signals.is_existing_bookmark);
+  builder.SetIsNewBookmark(context_signals.is_new_bookmark);
+  builder.SetIsNTPCustomLink(context_signals.is_ntp_custom_link);
   builder.SetDurationSinceLastVisitSeconds(
-      memories_signals.duration_since_last_visit_seconds);
+      context_signals.duration_since_last_visit.InSeconds());
 }
 
 void UkmPageLoadMetricsObserver::RecordInputTimingMetrics() {

@@ -87,7 +87,7 @@ class HistoryClustersTabHelperTest : public ChromeRenderViewHostTestHarness {
     run_loop_quit_ = run_loop_.QuitClosure();
   }
 
-  std::vector<history_clusters::MemoriesVisit> GetVisits() const {
+  std::vector<history::ClusterVisit> GetVisits() const {
     return memories_service_test_api_->GetVisits();
   }
 
@@ -160,7 +160,7 @@ TEST_F(HistoryClustersTabHelperTest, NavigationWith0HistoryVisits) {
 // 1) |OnUpdatedHistoryForNavigation()| is invoked and 1 history visit are
 //    fetched.
 // 2) |WebContentsDestroyed()| is invoked.
-// Then: 1 visit should be committed w/o  |duration_since_last_visit_seconds|.
+// Then: 1 visit should be committed w/o |duration_since_last_visit|.
 TEST_F(HistoryClustersTabHelperTest, NavigationWith1HistoryVisits) {
   AddToHistory(GURL{"https://github.com"});
   helper_->OnUpdatedHistoryForNavigation(0, GURL{"https://github.com"});
@@ -171,8 +171,8 @@ TEST_F(HistoryClustersTabHelperTest, NavigationWith1HistoryVisits) {
   AddBookmark(GURL{"https://github.com"});
   ASSERT_EQ(GetVisits().size(), 1u);
   EXPECT_EQ(GetVisits()[0].url_row.url(), GURL{"https://github.com"});
-  EXPECT_EQ(GetVisits()[0].context_signals.duration_since_last_visit_seconds,
-            -1);
+  EXPECT_EQ(
+      GetVisits()[0].context_signals.duration_since_last_visit.InSeconds(), -1);
   EXPECT_FALSE(GetVisits()[0].context_signals.is_new_bookmark);
 }
 
@@ -192,8 +192,8 @@ TEST_F(HistoryClustersTabHelperTest, NavigationWith2HistoryVisits) {
   DeleteContents();
   ASSERT_EQ(GetVisits().size(), 1u);
   EXPECT_EQ(GetVisits()[0].url_row.url(), GURL{"https://github.com"});
-  EXPECT_EQ(GetVisits()[0].context_signals.duration_since_last_visit_seconds,
-            4);
+  EXPECT_EQ(
+      GetVisits()[0].context_signals.duration_since_last_visit.InSeconds(), 4);
 }
 
 // History (w/ 0 visits) -> history (w/ 0 visits) -> destroy

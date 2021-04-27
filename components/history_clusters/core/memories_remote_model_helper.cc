@@ -23,7 +23,7 @@ namespace {
 const size_t kMaxExpectedResponseSize = 1024 * 1024;
 
 proto::GetClustersRequest CreateRequestProto(
-    const std::vector<MemoriesVisit>& visits) {
+    const std::vector<history::ClusterVisit>& visits) {
   proto::GetClustersRequest request;
   for (auto& visit : visits) {
     proto::Visit* request_visit = request.add_visits();
@@ -44,8 +44,9 @@ proto::GetClustersRequest CreateRequestProto(
   return request;
 }
 
-mojom::VisitPtr CreateVisitMojom(const std::vector<MemoriesVisit>& visits,
-                                 int64_t visit_id) {
+mojom::VisitPtr CreateVisitMojom(
+    const std::vector<history::ClusterVisit>& visits,
+    int64_t visit_id) {
   auto visit = mojom::Visit::New();
   visit->id = visit_id;
   const auto memory_visit_it = base::ranges::find(
@@ -67,7 +68,7 @@ mojom::VisitPtr CreateVisitMojom(const std::vector<MemoriesVisit>& visits,
   return visit;
 }
 
-Memories ParseResponseProto(const std::vector<MemoriesVisit>& visits,
+Memories ParseResponseProto(const std::vector<history::ClusterVisit>& visits,
                             const proto::GetClustersResponse& response_proto) {
   Memories result;
   for (const proto::Cluster& cluster : response_proto.clusters()) {
@@ -105,8 +106,8 @@ MemoriesRemoteModelHelper::MemoriesRemoteModelHelper(
 MemoriesRemoteModelHelper::~MemoriesRemoteModelHelper() = default;
 
 void MemoriesRemoteModelHelper::GetMemories(
-    const std::vector<MemoriesVisit>& visits,
-    MemoriesCallback callback) {
+    MemoriesCallback callback,
+    const std::vector<history::ClusterVisit>& visits) {
   const GURL endpoint(RemoteModelEndpointForDebugging());
   if (!endpoint.is_valid() || visits.empty()) {
     std::move(callback).Run({});
@@ -136,7 +137,7 @@ void MemoriesRemoteModelHelper::GetMemories(
       url_loader_factory_.get(),
       base::BindOnce(
           [](base::RepeatingCallback<void(const std::string&)> debug_logger,
-             const std::vector<MemoriesVisit>& visits,
+             const std::vector<history::ClusterVisit>& visits,
              std::unique_ptr<std::string> response) {
             debug_logger.Run(base::StringPrintf(
                 "MemoriesRemoteModelHelper::GetMemories response = %s",

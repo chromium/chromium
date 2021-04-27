@@ -26,7 +26,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
@@ -1418,6 +1417,43 @@ void HistoryBackend::DeleteMatchingURLsForKeyword(KeywordID keyword_id,
     }
     DeleteURLs(items_to_delete);
   }
+}
+
+// Clusters --------------------------------------------------------------------
+
+void HistoryBackend::AddClusterVisit(const ClusterVisitRow& row) {
+  TRACE_EVENT0("browser", "HistoryBackend::AddClusterVisit");
+  DCHECK(row.url_id && row.visit_id);
+  URLRow url_row;
+  VisitRow visit_row;
+  if (!db_ || !db_->GetURLRow(row.url_id, &url_row) ||
+      !db_->GetRowForVisit(row.visit_id, &visit_row)) {
+    return;
+  }
+  db_->AddClusterVisit(row);
+  ScheduleCommit();
+}
+
+std::vector<ClusterVisit> HistoryBackend::GetClusterVisits(int max_results) {
+  TRACE_EVENT0("browser", "HistoryBackend::GetClusterVisits");
+  if (!db_)
+    return {};
+  bool deleted_any_visits = false;
+  std::vector<ClusterVisit> cluster_visits;
+  for (const auto& row : db_->GetClusterVisits(max_results)) {
+    URLRow url_row;
+    VisitRow visit_row;
+    if (db_->GetURLRow(row.url_id, &url_row) &&
+        db_->GetRowForVisit(row.visit_id, &visit_row)) {
+      cluster_visits.push_back({url_row, visit_row, row.context_signals});
+    } else {
+      db_->DeleteClusterVisit(row.cluster_visit_id);
+      deleted_any_visits = true;
+    }
+  }
+  if (deleted_any_visits)
+    ScheduleCommit();
+  return cluster_visits;
 }
 
 // Observers -------------------------------------------------------------------

@@ -236,7 +236,7 @@ class VisitDatabase {
   static bool FillVisitVector(sql::Statement& statement, VisitVector* visits);
 
   // Convenience to fill a VisitVector while respecting the set of options.
-  // |statement| should order the query decending by visit_time to ensure
+  // |statement| should order the query descending by visit_time to ensure
   // correct duplicate management behavior. Assumes that statement.step()
   // hasn't happened yet.
   static bool FillVisitVectorWithOptions(sql::Statement& statement,

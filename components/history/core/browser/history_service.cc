@@ -266,6 +266,26 @@ void HistoryService::URLsNoLongerBookmarked(const std::set<GURL>& urls) {
                               history_backend_, urls));
 }
 
+void HistoryService::AddClusterVisit(const ClusterVisitRow& row) {
+  DCHECK(backend_task_runner_) << "History service being called after cleanup";
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ScheduleTask(PRIORITY_NORMAL, base::BindOnce(&HistoryBackend::AddClusterVisit,
+                                               history_backend_, row));
+}
+
+base::CancelableTaskTracker::TaskId HistoryService::GetClusterVisits(
+    int max_results,
+    GetClusterVisitsCallback callback,
+    base::CancelableTaskTracker* tracker) const {
+  DCHECK(backend_task_runner_) << "History service being called after cleanup";
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return tracker->PostTaskAndReplyWithResult(
+      backend_task_runner_.get(), FROM_HERE,
+      base::BindOnce(&HistoryBackend::GetClusterVisits, history_backend_,
+                     max_results),
+      std::move(callback));
+}
+
 void HistoryService::AddObserver(HistoryServiceObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.AddObserver(observer);

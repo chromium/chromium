@@ -11,8 +11,8 @@
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/memories.mojom.h"
-#include "components/history_clusters/core/visit_data.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -24,7 +24,7 @@ using Memories = std::vector<mojom::MemoryPtr>;
 using MemoriesCallback = base::OnceCallback<void(Memories)>;
 
 // A helper class to communicate with the remote model. Forms requests from
-// |MemoriesVisit|s and parses the response into |mojom::MemoryPtr|s.
+// |ClusterVisit|s and parses the response into |mojom::MemoryPtr|s.
 class MemoriesRemoteModelHelper {
  public:
   MemoriesRemoteModelHelper(
@@ -34,8 +34,8 @@ class MemoriesRemoteModelHelper {
 
   // POSTs |visits| to |endpoint_| and invokes |callback| with the retrieved
   // |MemoryPtr|s.
-  void GetMemories(const std::vector<MemoriesVisit>& visits,
-                   MemoriesCallback callback);
+  void GetMemories(MemoriesCallback callback,
+                   const std::vector<history::ClusterVisit>& visits);
 
  private:
   // Stops pending requests. Invoking |GetMemories| multiple times will stop
