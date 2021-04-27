@@ -111,10 +111,11 @@ void SysmemBufferPool::OnBuffersAllocated(
   }
 
   if (acquire_buffers_cb_) {
+    auto buffers = VmoBuffer::CreateBuffersFromSysmemCollection(
+        &buffer_collection_info, writable_);
+
     std::move(acquire_buffers_cb_)
-        .Run(VmoBuffer::CreateBuffersFromSysmemCollection(
-                 std::move(buffer_collection_info), writable_),
-             buffer_collection_info.settings);
+        .Run(std::move(buffers), buffer_collection_info.settings);
   }
 }
 

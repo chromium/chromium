@@ -29,7 +29,7 @@ class VmoBuffer {
   // Creates a set of buffers from a sysmem collection. An empty vector is
   // returned in case of a failure.
   static std::vector<VmoBuffer> CreateBuffersFromSysmemCollection(
-      fuchsia::sysmem::BufferCollectionInfo_2 info,
+      fuchsia::sysmem::BufferCollectionInfo_2* info,
       bool writable);
 
   VmoBuffer();

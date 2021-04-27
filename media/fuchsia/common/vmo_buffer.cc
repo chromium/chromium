@@ -39,15 +39,15 @@ VmoBuffer::GetRecommendedConstraints(size_t min_buffer_count,
 
 // static
 std::vector<VmoBuffer> VmoBuffer::CreateBuffersFromSysmemCollection(
-    fuchsia::sysmem::BufferCollectionInfo_2 info,
+    fuchsia::sysmem::BufferCollectionInfo_2* info,
     bool writable) {
   std::vector<VmoBuffer> buffers;
-  buffers.resize(info.buffer_count);
+  buffers.resize(info->buffer_count);
 
   fuchsia::sysmem::BufferMemorySettings& settings =
-      info.settings.buffer_settings;
-  for (size_t i = 0; i < info.buffer_count; ++i) {
-    fuchsia::sysmem::VmoBuffer& buffer = info.buffers[i];
+      info->settings.buffer_settings;
+  for (size_t i = 0; i < info->buffer_count; ++i) {
+    fuchsia::sysmem::VmoBuffer& buffer = info->buffers[i];
     if (!buffers[i].Initialize(std::move(buffer.vmo), writable,
                                buffer.vmo_usable_start, settings.size_bytes,
                                settings.coherency_domain)) {
