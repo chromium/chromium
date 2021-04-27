@@ -1272,7 +1272,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Login.Lock.AuthMethod.Switched"
-    enum="AuthMethodSwitchType" expires_after="2021-09-19">
+    enum="AuthMethodSwitchType" expires_after="2022-04-27">
   <owner>rsorokin@chromium.org</owner>
   <owner>tellier@google.com</owner>
   <owner>cros-oac@google.com</owner>
@@ -1282,7 +1282,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Login.Lock.AuthMethod.Used.ClamShellMode"
-    enum="AuthMethod" expires_after="2021-09-19">
+    enum="AuthMethod" expires_after="2022-04-27">
   <owner>rsorokin@chromium.org</owner>
   <owner>tellier@google.com</owner>
   <owner>cros-oac@google.com</owner>
@@ -1294,7 +1294,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Login.Lock.AuthMethod.Used.TabletMode" enum="AuthMethod"
-    expires_after="2021-09-19">
+    expires_after="2022-04-27">
   <owner>rsorokin@chromium.org</owner>
   <owner>tellier@google.com</owner>
   <owner>cros-oac@google.com</owner>
@@ -1336,7 +1336,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Login.Login.AuthMethod.Switched"
-    enum="AuthMethodSwitchType" expires_after="2021-05-16">
+    enum="AuthMethodSwitchType" expires_after="2022-04-27">
   <owner>rsorokin@chromium.org</owner>
   <owner>tellier@google.com</owner>
   <owner>cros-oac@google.com</owner>
@@ -1346,7 +1346,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Login.Login.AuthMethod.Used.ClamShellMode"
-    enum="AuthMethod" expires_after="2021-05-16">
+    enum="AuthMethod" expires_after="2022-04-27">
   <owner>rsorokin@chromium.org</owner>
   <owner>tellier@google.com</owner>
   <owner>cros-oac@google.com</owner>
@@ -1358,7 +1358,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.Login.Login.AuthMethod.Used.TabletMode" enum="AuthMethod"
-    expires_after="2021-05-16">
+    expires_after="2022-04-27">
   <owner>rsorokin@chromium.org</owner>
   <owner>tellier@google.com</owner>
   <owner>cros-oac@google.com</owner>
