@@ -29,7 +29,6 @@ async function requestPayment(credentialId) {
                                             (b) => b.charCodeAt(0))],
             networkData: new TextEncoder().encode('hello world'),
             timeout: 6000,
-            fallbackUrl: 'https://fallback.example/url',
           }}],
         {total: {label: 'TEST', amount: {currency: 'USD', value: '0.01'}}});
     const response = await request.show();

@@ -115,7 +115,6 @@ function createPaymentRequest(
                                        (b) => b.charCodeAt(0))],
        networkData: new TextEncoder().encode('hello world'),
        timeout: 6000,
-       fallbackUrl: 'https://fallback.example/url',
      },
     }],
     createDetails(totalAmount, withModifier, modifierAmount));

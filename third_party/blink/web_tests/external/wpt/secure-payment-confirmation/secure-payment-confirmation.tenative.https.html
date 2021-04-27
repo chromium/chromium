@@ -20,7 +20,6 @@ test(() => {
        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
        networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
        timeout: 60000,
-       fallbackUrl: 'https://fallback.example/url'
     },
   }], details);
 }, 'Valid payment method data does not throw exceptions.');
@@ -33,7 +32,6 @@ test(() => {
        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
        networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
        timeout: 60000,
-       fallbackUrl: 'https://fallback.example/url'
     },
   }], details);
 }, 'The action field is optional.');
@@ -46,7 +44,6 @@ test(() => {
        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
        networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
        // Omitted timeout field.
-       fallbackUrl: 'https://fallback.example/url'
     },
   }], details);
 }, 'The timeout field is optional.');
@@ -60,7 +57,6 @@ test(() => {
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         timeout: 60000,
-        fallbackUrl: 'https://fallback.example/url'
       },
     }, {supportedMethods: 'basic-card'}], details);
   });
@@ -75,7 +71,6 @@ test(() => {
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         timeout: 60000,
-        fallbackUrl: 'https://fallback.example/url'
       },
     }], details);
   });
@@ -90,7 +85,6 @@ test(() => {
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         timeout: 60000,
-        fallbackUrl: 'https://fallback.example/url'
       },
     }], details, {requestShipping: true});
   });
@@ -105,7 +99,6 @@ test(() => {
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         timeout: 60000,
-        fallbackUrl: 'https://fallback.example/url'
       },
     }], details, {requestPayerName: true});
   });
@@ -120,7 +113,6 @@ test(() => {
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         timeout: 60000,
-        fallbackUrl: 'https://fallback.example/url'
       },
     }], details, {requestPayerEmail: true});
   });
@@ -135,7 +127,6 @@ test(() => {
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         timeout: 60000,
-        fallbackUrl: 'https://fallback.example/url'
       },
     }], details, {requestPayerPhone: true});
   });
@@ -151,7 +142,6 @@ test(() => {
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         timeout: 60000,
-        fallbackUrl: 'https://fallback.example/url'
       },
     }], details);
   });
@@ -166,7 +156,6 @@ test(() => {
         // Omitted credentialIds field.
         networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         timeout: 60000,
-        fallbackUrl: 'https://fallback.example/url'
       },
     }], details);
   });
@@ -181,26 +170,10 @@ test(() => {
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         // Omitted networkData field.
         timeout: 60000,
-        fallbackUrl: 'https://fallback.example/url'
       },
     }], details);
   });
 }, 'The networkData field is required.');
-
-test(() => {
-  assert_throws_js(TypeError, () => {
-    new PaymentRequest([{
-      supportedMethods: 'secure-payment-confirmation',
-      data: {
-        action: 'authenticate',
-        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
-        networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
-        timeout: 60000,
-        // Omitted fallbackUrl field.
-      },
-    }], details);
-  });
-}, 'The fallbackUrl field is required.');
 
 test(() => {
   assert_throws_js(RangeError, () => {
@@ -213,7 +186,6 @@ test(() => {
         credentialIds: [],
         networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         timeout: 60000,
-        fallbackUrl: 'https://fallback.example/url'
       },
     }], details);
   });
@@ -229,7 +201,6 @@ test(() => {
         // Null networkData field.
         networkData: null,
         timeout: 60000,
-        fallbackUrl: 'https://fallback.example/url'
       },
     }], details);
   });
@@ -245,7 +216,6 @@ test(() => {
         // Empty networkData field.
         networkData: [],
         timeout: 60000,
-        fallbackUrl: 'https://fallback.example/url'
       },
     }], details);
   });
@@ -261,7 +231,6 @@ test(() => {
         networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         // Timeout longer than 1 hour.
         timeout: 1000 * 60 * 60 + 1,
-        fallbackUrl: 'https://fallback.example/url'
       },
     }], details);
   });
@@ -278,7 +247,6 @@ test(() => {
             'x'.repeat(1024 * 1024), c => c.charCodeAt(0))],
         networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
         timeout: 60000,
-        fallbackUrl: 'https://fallback.example/url'
       },
     }], details);
   });
@@ -294,25 +262,8 @@ test(() => {
         // Large networkData value.
         networkData: Uint8Array.from('x'.repeat(1024 * 1024), c => c.charCodeAt(0)),
         timeout: 60000,
-        fallbackUrl: 'https://fallback.example/url'
       },
     }], details);
   });
 }, 'Large networkData value throws exception.');
-
-test(() => {
-  assert_throws_js(TypeError, () => {
-    new PaymentRequest([{
-      supportedMethods: 'secure-payment-confirmation',
-      data: {
-        action: 'authenticate',
-        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
-        networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
-        timeout: 60000,
-        // Large fallbackUrl value.
-        fallbackUrl: 'https://fallback.example/ur' + 'l'.repeat(1024 * 1024)
-      },
-    }], details);
-  });
-}, 'Large fallbackUrl value throws exception.');
 </script>

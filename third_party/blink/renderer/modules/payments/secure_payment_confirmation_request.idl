@@ -16,5 +16,4 @@ dictionary SecurePaymentConfirmationRequest {
     // against replay attacks.
     required BufferSource networkData;
     unsigned long timeout;
-    required USVString fallbackUrl;
 };
