@@ -54,9 +54,11 @@ import org.chromium.base.annotations.VerifiesOnN;
 import org.chromium.base.annotations.VerifiesOnP;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
+import org.chromium.build.BuildConfig;
 import org.chromium.build.NativeLibraries;
 import org.chromium.components.embedder_support.application.ClassLoaderContextWrapperFactory;
 import org.chromium.components.embedder_support.application.FirebaseConfig;
+import org.chromium.components.version_info.VersionConstants;
 import org.chromium.content_public.browser.LGEmailActionModeWorkaround;
 
 import java.io.File;
@@ -315,6 +317,12 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 CommandLine cl = CommandLine.getInstance();
                 cl.appendSwitch(AwSwitches.WEBVIEW_SANDBOXED_RENDERER);
             }
+            // Using concatenation rather than %s to allow values to be inlined by R8.
+            Log.i(TAG,
+                    "Loaded version=" + VersionConstants.PRODUCT_VERSION + " minSdkVersion="
+                            + BuildConfig.MIN_SDK_VERSION + " isBundle=" + ProductConfig.IS_BUNDLE
+                            + " multiprocess=%s packageId=%s",
+                    multiProcess, packageId);
 
             // Enable modern SameSite cookie behavior if the app targets at least S.
             if (BuildInfo.targetsAtLeastS()) {

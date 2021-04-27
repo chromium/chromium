@@ -37,6 +37,7 @@ android_library("nonembedded_java") {
     "//base:base_java",
     "//components/about_ui/android:aboutui_java",
     "//components/embedder_support/android:application_java",
+    "//components/version_info/android:version_constants_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
