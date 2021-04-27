@@ -34,13 +34,15 @@
     max-width: 544px;
   }
 
-  .toggle-row {
+  .toggle-row,
+  .discount-toggle-row {
     align-items: center;
     display: flex;
     height: 52px;
   }
 
-  .toggle-row + .toggle-row {
+  .toggle-row + .toggle-row,
+  .sub-toggle-row + .toggle-row {
     border-top: 1px solid var(--ntp-border-color);
   }
 
@@ -73,7 +75,7 @@
   </cr-policy-indicator>
 </div>
 <div id="toggles">
-  <template is="dom-repeat" items="[[modules_]]">
+  <template id="toggleRepeat" is="dom-repeat" items="[[modules_]]">
     <div class="toggle-row">
       <div class="toggle-name">[[item.name]]</div>
       <cr-policy-indicator indicator-type="devicePolicy"
@@ -83,5 +85,18 @@
           disabled="[[moduleToggleDisabled_(show_, showManagedByPolicy_)]]">
       </cr-toggle>
     </div>
+    <!-- Discount toggle is a workaround for crbug.com/1199465 and will be
+    removed after module customization is better defined. Please avoid
+    using similar pattern for other features. -->
+    <template is="dom-if"
+      if=
+      "[[showDiscountToggle_(item.id, item.checked, discountToggleEligible_)]]">
+      <div class="discount-toggle-row">
+        <div class="toggle-name">
+          $i18n{modulesCartDiscountConsentAccept}
+        </div>
+        <cr-toggle checked="{{discountToggle_.enabled}}"></cr-toggle>
+      </div>
+    </template>
   </template>
 </div>

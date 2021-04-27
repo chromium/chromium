@@ -307,6 +307,12 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(
       base::FeatureList::IsEnabled(ntp_features::kNtpChromeCartModule));
   source->AddBoolean("driveModuleEnabled", base::FeatureList::IsEnabled(
                                                ntp_features::kNtpDriveModule));
+  source->AddBoolean(
+      "ruleBasedDiscountEnabled",
+      base::GetFieldTrialParamValueByFeature(
+          ntp_features::kNtpChromeCartModule,
+          ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam) ==
+          "true");
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kNewTabPageResources, kNewTabPageResourcesSize),

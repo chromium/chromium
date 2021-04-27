@@ -910,3 +910,12 @@ TEST_F(CartServiceDiscountTest, TestReadConsentFromPrefs) {
   ASSERT_FALSE(service_->ShouldShowWelcomeSurface());
   ASSERT_FALSE(service_->ShouldShowDiscountConsent());
 }
+
+// Tests updating whether rule-based discount is enabled in profile prefs.
+TEST_F(CartServiceDiscountTest, TestSetCartDiscountEnabled) {
+  ASSERT_FALSE(profile_.GetPrefs()->GetBoolean(prefs::kCartDiscountEnabled));
+  service_->SetCartDiscountEnabled(true);
+  ASSERT_TRUE(profile_.GetPrefs()->GetBoolean(prefs::kCartDiscountEnabled));
+  service_->SetCartDiscountEnabled(false);
+  ASSERT_FALSE(profile_.GetPrefs()->GetBoolean(prefs::kCartDiscountEnabled));
+}

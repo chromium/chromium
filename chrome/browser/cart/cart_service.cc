@@ -202,6 +202,14 @@ bool CartService::IsCartDiscountEnabled() {
   return profile_->GetPrefs()->GetBoolean(prefs::kCartDiscountEnabled);
 }
 
+void CartService::SetCartDiscountEnabled(bool enabled) {
+  DCHECK(base::GetFieldTrialParamValueByFeature(
+             ntp_features::kNtpChromeCartModule,
+             ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam) ==
+         "true");
+  profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, enabled);
+}
+
 void CartService::LoadCartsWithFakeData(CartDB::LoadCallback callback) {
   cart_db_->LoadCartsWithPrefix(
       kFakeDataPrefix,

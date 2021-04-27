@@ -4,11 +4,12 @@
 
 import 'chrome://new-tab-page/lazy_load.js';
 
-import {$$, ModuleDescriptor, ModuleRegistry, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, ChromeCartProxy, ModuleDescriptor, ModuleRegistry, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://test/new_tab_page/metrics_test_support.js';
 import {assertNotStyle, assertStyle} from 'chrome://test/new_tab_page/test_support.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
+import {isVisible} from 'chrome://test/test_util.m.js';
 
 /**
  * @param {!HTMLElement} host
@@ -37,6 +38,12 @@ suite('NewTabPageCustomizeModulesTest', () => {
 
   /** @type {MetricsTracker} */
   let metrics;
+
+  /**
+   * @implements {ChromeCartProxy}
+   * @extends {TestBrowserProxy}
+   */
+  let cartTestProxy;
 
   /**
    * @param {boolean} allDisabled
@@ -68,6 +75,12 @@ suite('NewTabPageCustomizeModulesTest', () => {
     ModuleRegistry.setInstance(moduleRegistry);
     metrics = fakeMetricsPrivate();
     loadTimeData.overrideValues({modulesVisibleManagedByPolicy: false});
+    cartTestProxy = TestBrowserProxy.fromClass(ChromeCartProxy);
+    cartTestProxy.handler =
+        TestBrowserProxy.fromClass(chromeCart.mojom.CartHandlerRemote);
+    ChromeCartProxy.setInstance(cartTestProxy);
+    cartTestProxy.handler.setResultFor(
+        'getDiscountEnabled', Promise.resolve({enabled: false}));
   });
 
   [true, false].forEach(visible => {
@@ -182,5 +195,98 @@ suite('NewTabPageCustomizeModulesTest', () => {
     assertEquals(1, metrics.count(`${base}.Enabled`));
     assertEquals(1, metrics.count(`${base}.Enabled.Customize`));
     assertEquals(1, metrics.count(`${base}.Enabled`, 'baz'));
+  });
+
+  test('discount toggle shows correct config', async () => {
+    // Arrange.
+    loadTimeData.overrideValues({ruleBasedDiscountEnabled: true});
+    cartTestProxy.handler.setResultFor(
+        'getDiscountEnabled', Promise.resolve({enabled: true}));
+    const customizeModules = await createCustomizeModules(false, [
+      {id: 'chrome_cart', name: 'foo name', disabled: false},
+      {id: 'bar', name: 'bar name', disabled: false},
+    ]);
+    const toggleRows = queryAll(customizeModules, '.toggle-row');
+    const toggleNames = queryAll(customizeModules, '.toggle-name');
+    const subToggleRows = queryAll(customizeModules, '.discount-toggle-row');
+
+    // Assert.
+    assertEquals(3, toggleNames.length);
+    assertEquals(2, toggleRows.length);
+    assertEquals(1, subToggleRows.length);
+    assertEquals('foo name', toggleNames[0].innerText);
+    assertEquals(
+        loadTimeData.getString('modulesCartDiscountConsentAccept'),
+        toggleNames[1].innerText);
+    assertEquals('bar name', toggleNames[2].innerText);
+    assertTrue(subToggleRows[0].querySelector('cr-toggle').checked);
+  });
+
+  test(`discount toggle sets discount status`, async () => {
+    // Arrange.
+    loadTimeData.overrideValues({ruleBasedDiscountEnabled: true});
+    cartTestProxy.handler.setResultFor(
+        'getDiscountEnabled', Promise.resolve({enabled: true}));
+    const customizeModules = await createCustomizeModules(false, [
+      {id: 'chrome_cart', name: 'foo name', disabled: false},
+    ]);
+    const subToggleRows = queryAll(customizeModules, '.discount-toggle-row');
+
+    // Act.
+    subToggleRows[0].querySelector('cr-toggle').click();
+    customizeModules.apply();
+
+    // Assert.
+    assertEquals(1, cartTestProxy.handler.getCallCount('setDiscountEnabled'));
+    assertDeepEquals(
+        false, cartTestProxy.handler.getArgs('setDiscountEnabled')[0]);
+  });
+
+  test(`toggling off cart module hides discount toggle`, async () => {
+    // Arrange.
+    loadTimeData.overrideValues({ruleBasedDiscountEnabled: true});
+    cartTestProxy.handler.setResultFor(
+        'getDiscountEnabled', Promise.resolve({enabled: true}));
+    const customizeModules = await createCustomizeModules(false, [
+      {id: 'chrome_cart', name: 'foo name', disabled: false},
+      {id: 'bar', name: 'bar name', disabled: false},
+    ]);
+    const toggleRows = queryAll(customizeModules, '.toggle-row');
+    const toggleNames = queryAll(customizeModules, '.toggle-name');
+    const subToggleRows = queryAll(customizeModules, '.discount-toggle-row');
+
+    // Assert.
+    assertEquals(3, toggleNames.length);
+    assertEquals(2, toggleRows.length);
+    assertEquals(1, subToggleRows.length);
+    assertTrue(toggleRows[0].querySelector('cr-toggle').checked);
+    assertTrue(toggleRows[1].querySelector('cr-toggle').checked);
+    assertTrue(subToggleRows[0].querySelector('cr-toggle').checked);
+
+    // Act.
+    toggleRows[0].querySelector('cr-toggle').click();
+    customizeModules.$.toggleRepeat.render();
+
+    // Assert.
+    assertFalse(toggleRows[0].querySelector('cr-toggle').checked);
+    assertFalse(isVisible(subToggleRows[0]));
+
+    // Act.
+    toggleRows[0].querySelector('cr-toggle').click();
+    customizeModules.$.toggleRepeat.render();
+
+    // Assert.
+    assertTrue(toggleRows[0].querySelector('cr-toggle').checked);
+    assertTrue(isVisible(subToggleRows[0]));
+    assertTrue(subToggleRows[0].querySelector('cr-toggle').checked);
+
+    // Act.
+    $$(customizeModules, '#hideButton').click();
+    customizeModules.apply();
+    customizeModules.$.toggleRepeat.render();
+
+    // Assert.
+    assertFalse(toggleRows[0].querySelector('cr-toggle').checked);
+    assertFalse(isVisible(subToggleRows[0]));
   });
 });

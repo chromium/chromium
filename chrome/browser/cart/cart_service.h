@@ -76,6 +76,8 @@ class CartService : public history::HistoryServiceObserver,
   // Returns whether the rule-based discount feature in cart module is enabled,
   // and user has chosen to opt-in the feature.
   bool IsCartDiscountEnabled();
+  // Updates whether the rule-based discount feature is enabled.
+  void SetCartDiscountEnabled(bool enabled);
   // history::HistoryServiceObserver:
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;
