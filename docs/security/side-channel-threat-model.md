@@ -3,7 +3,7 @@
 Contributors: awhalley, creis, dcheng, jschuh, jyasskin, lukasza, mkwst, nasko,
 palmer, tsepez. Patches and corrections welcome!
 
-Last Updated: 29 May 2018
+Last Updated: 27 April 2021
 
 [TOC]
 
@@ -323,7 +323,7 @@ we don’t expect that we can get much long-term defensive value from doing so,
 for several reasons:
 
 * There are [many explicit and implicit clocks in the
-  platform](https://bugs.chromium.org/p/chromium/issues/detail?id=798795)
+  platform](https://gruss.cc/files/fantastictimers.pdf)
 * It is not always possible to coarsen or jitter them enough to slow or stop
   exploitation…
 * …while also maintaining web platform compatibility and utility
