@@ -750,10 +750,12 @@
 - (void)configureStartSurfaceIfNeeded {
   SceneState* scene =
       SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
-  BOOL shouldShowReturnToRecentTabTile =
-      scene.modifytVisibleNTPForStartSurface &&
-      ShouldShowReturnToMostRecentTabForStartSurface();
-  if (shouldShowReturnToRecentTabTile) {
+  if (!scene.modifytVisibleNTPForStartSurface)
+    return;
+
+  if (ShouldShowReturnToMostRecentTabForStartSurface()) {
+    base::RecordAction(
+        base::UserMetricsAction("IOS.StartSurface.ShowReturnToRecentTabTile"));
     web::WebState* most_recent_tab =
         StartSurfaceRecentTabBrowserAgent::FromBrowser(self.browser)
             ->most_recent_tab();
@@ -769,8 +771,15 @@
       StartSurfaceRecentTabBrowserAgent::FromBrowser(self.browser)
           ->AddObserver(_startSurfaceObserver.get());
     }
-    scene.modifytVisibleNTPForStartSurface = NO;
   }
+  if (ShouldShrinkLogoForStartSurface()) {
+    base::RecordAction(base::UserMetricsAction("IOS.StartSurface.ShrinkLogo"));
+  }
+  if (ShouldHideShortcutsForStartSurface()) {
+    base::RecordAction(
+        base::UserMetricsAction("IOS.StartSurface.HideShortcuts"));
+  }
+  scene.modifytVisibleNTPForStartSurface = NO;
 }
 
 // Creates, configures and returns a DiscoverFeed ViewController.
