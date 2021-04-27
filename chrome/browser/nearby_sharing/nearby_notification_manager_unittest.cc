@@ -315,7 +315,7 @@ class NearbyNotificationManagerAttachmentsTest
     : public NearbyNotificationManagerTest,
       public testing::WithParamInterface<AttachmentsTestParam> {};
 
-using ConnectionRequestTestParam = std::tuple<TransferMetadata::Status, bool>;
+using ConnectionRequestTestParam = bool;
 
 class NearbyNotificationManagerConnectionRequestTest
     : public NearbyNotificationManagerTest,
@@ -580,8 +580,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(NearbyNotificationManagerConnectionRequestTest,
        ShowConnectionRequest_ShowsNotification) {
-  TransferMetadata::Status status = std::get<0>(GetParam());
-  bool with_token = std::get<1>(GetParam());
+  bool with_token = GetParam();
 
   std::string device_name = "device";
   std::string token = "3141";
@@ -592,7 +591,8 @@ TEST_P(NearbyNotificationManagerConnectionRequestTest,
       CreateFileAttachment(FileAttachment::Type::kImage));
 
   TransferMetadataBuilder transfer_metadata_builder;
-  transfer_metadata_builder.set_status(status);
+  transfer_metadata_builder.set_status(
+      TransferMetadata::Status::kAwaitingLocalConfirmation);
   if (with_token)
     transfer_metadata_builder.set_token(token);
   TransferMetadata transfer_metadata = transfer_metadata_builder.build();
@@ -636,10 +636,8 @@ TEST_P(NearbyNotificationManagerConnectionRequestTest,
             notification.display_source());
 
   std::vector<std::u16string> expected_button_titles;
-  if (status == TransferMetadata::Status::kAwaitingLocalConfirmation) {
-    expected_button_titles.push_back(
-        l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_RECEIVE_ACTION));
-  }
+  expected_button_titles.push_back(
+      l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_RECEIVE_ACTION));
   expected_button_titles.push_back(
       l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_DECLINE_ACTION));
 
@@ -651,13 +649,9 @@ TEST_P(NearbyNotificationManagerConnectionRequestTest,
     EXPECT_EQ(expected_button_titles[i], buttons[i].title);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    NearbyNotificationManagerConnectionRequestTest,
-    NearbyNotificationManagerConnectionRequestTest,
-    testing::Combine(
-        testing::Values(TransferMetadata::Status::kAwaitingLocalConfirmation,
-                        TransferMetadata::Status::kAwaitingRemoteAcceptance),
-        testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(NearbyNotificationManagerConnectionRequestTest,
+                         NearbyNotificationManagerConnectionRequestTest,
+                         testing::Bool());
 
 TEST_F(NearbyNotificationManagerTest,
        ShowConnectionRequest_DeviceNameEncoding) {
@@ -954,7 +948,7 @@ TEST_F(NearbyNotificationManagerTest, ConnectionRequest_Reject_Local) {
   EXPECT_EQ(0u, GetDisplayedNotifications().size());
 }
 
-TEST_F(NearbyNotificationManagerTest, ConnectionRequest_Reject_Remote) {
+TEST_F(NearbyNotificationManagerTest, ProgressNotification_Reject_Remote) {
   ShareTarget share_target;
   share_target.is_incoming = true;
   TransferMetadata transfer_metadata =
@@ -970,7 +964,7 @@ TEST_F(NearbyNotificationManagerTest, ConnectionRequest_Reject_Remote) {
       GetDisplayedNotifications();
   ASSERT_EQ(1u, notifications.size());
   ASSERT_EQ(1u, notifications[0].buttons().size());
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_DECLINE_ACTION),
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_APP_CANCEL),
             notifications[0].buttons()[0].title);
 
   // Expect call to Reject on button click.
