@@ -200,7 +200,7 @@ void DiskDataAllocator::ProvideTemporaryFile(base::File file) {
 
 // static
 DiskDataAllocator& DiskDataAllocator::Instance() {
-  DEFINE_STATIC_LOCAL(DiskDataAllocator, instance, ());
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(DiskDataAllocator, instance, ());
   return instance;
 }
 
