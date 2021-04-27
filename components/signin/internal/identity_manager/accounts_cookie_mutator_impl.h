@@ -69,6 +69,8 @@ class AccountsCookieMutatorImpl : public AccountsCookieMutator {
       gaia::GaiaSource source,
       LogOutFromCookieCompletedCallback completion_callback) override;
 
+  void RemoveLoggedOutAccountByGaiaId(const std::string& gaia_id) override;
+
  private:
   class MultiloginHelperWrapper : public SetAccountsInCookieTask {
    public:

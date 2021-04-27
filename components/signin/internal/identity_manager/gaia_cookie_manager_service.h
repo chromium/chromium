@@ -271,6 +271,11 @@ class GaiaCookieManagerService
   void LogOutAllAccounts(gaia::GaiaSource source,
                          LogOutFromCookieCompletedCallback callback);
 
+  // Indicates that an account previously listed via ListAccounts should now
+  // be removed. Does not trigger a ListAccounts request and does not change the
+  // staleness of the account information.
+  void RemoveLoggedOutAccountByGaiaId(const std::string& gaia_id);
+
   // Call observers when setting accounts in cookie completes.
   void SignalSetAccountsComplete(signin::SetAccountsInCookieResult result);
 

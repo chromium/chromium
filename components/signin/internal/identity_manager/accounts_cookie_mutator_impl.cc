@@ -116,4 +116,13 @@ void AccountsCookieMutatorImpl::LogOutAllAccounts(
       source, std::move(completion_callback));
 }
 
+void AccountsCookieMutatorImpl::RemoveLoggedOutAccountByGaiaId(
+    const std::string& gaia_id) {
+  // Note that RemoveLoggedOutAccountByGaiaId() does NOT internally trigger a
+  // ListAccounts fetch. It could make sense to force a request here, e.g. via
+  // ForceOnCookieChangeProcessing(), but this isn't considered important enough
+  // to justify the risk for overloading the server.
+  gaia_cookie_manager_service_->RemoveLoggedOutAccountByGaiaId(gaia_id);
+}
+
 }  // namespace signin

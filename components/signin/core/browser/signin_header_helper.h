@@ -204,10 +204,6 @@ class SigninHeaderHelper {
       const GURL& url,
       const content_settings::CookieSettings* cookie_settings) = 0;
 
- protected:
-  SigninHeaderHelper();
-  virtual ~SigninHeaderHelper();
-
   // Dictionary of fields in a account consistency response header.
   using ResponseHeaderDictionary = std::multimap<std::string, std::string>;
 
@@ -215,6 +211,10 @@ class SigninHeaderHelper {
   // "key1=value1,key2=value2,...".
   static ResponseHeaderDictionary ParseAccountConsistencyResponseHeader(
       const std::string& header_value);
+
+ protected:
+  SigninHeaderHelper();
+  virtual ~SigninHeaderHelper();
 
   // Returns whether the url is eligible for the request header.
   virtual bool IsUrlEligibleForRequestHeader(const GURL& url) = 0;

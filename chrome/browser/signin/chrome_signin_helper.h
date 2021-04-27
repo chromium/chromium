@@ -114,6 +114,12 @@ void ProcessAccountConsistencyResponseHeaders(ResponseAdapter* response,
                                               const GURL& redirect_url,
                                               bool is_off_the_record);
 
+// Parses and returns an account ID (Gaia ID) from HTTP response header
+// Google-Accounts-RemoveLocalAccount. Returns an empty string if parsing
+// failed. Exposed for testing purposes.
+std::string ParseGaiaIdFromRemoveLocalAccountResponseHeaderForTesting(
+    const net::HttpResponseHeaders* response_headers);
+
 }  // namespace signin
 
 #endif  // CHROME_BROWSER_SIGNIN_CHROME_SIGNIN_HELPER_H_

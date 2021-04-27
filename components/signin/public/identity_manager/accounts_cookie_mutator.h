@@ -132,6 +132,10 @@ class AccountsCookieMutator {
       gaia::GaiaSource source,
       LogOutFromCookieCompletedCallback completion_callback) = 0;
 
+  // Indicates that an account previously listed via ListAccounts should now
+  // be removed.
+  virtual void RemoveLoggedOutAccountByGaiaId(const std::string& gaia_id) = 0;
+
  private:
   DISALLOW_COPY_AND_ASSIGN(AccountsCookieMutator);
 };

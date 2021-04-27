@@ -157,3 +157,25 @@ TEST_F(ChromeSigninHelperTest, MirrorSubFrame) {
       signin::kManageAccountsHeaderReceivedUserDataKey));
 }
 #endif  // BUILDFLAG(ENABLE_MIRROR) || BUILDFLAG(IS_CHROMEOS_ASH)
+
+TEST_F(ChromeSigninHelperTest,
+       ParseGaiaIdFromRemoveLocalAccountResponseHeader) {
+  EXPECT_EQ("123456",
+            signin::ParseGaiaIdFromRemoveLocalAccountResponseHeaderForTesting(
+                TestResponseAdapter("Google-Accounts-RemoveLocalAccount",
+                                    "obfuscatedid=\"123456\"",
+                                    /*is_main_frame=*/false)
+                    .GetHeaders()));
+  EXPECT_EQ("123456",
+            signin::ParseGaiaIdFromRemoveLocalAccountResponseHeaderForTesting(
+                TestResponseAdapter("Google-Accounts-RemoveLocalAccount",
+                                    "obfuscatedid=\"123456\",foo=\"bar\"",
+                                    /*is_main_frame=*/false)
+                    .GetHeaders()));
+  EXPECT_EQ(
+      "",
+      signin::ParseGaiaIdFromRemoveLocalAccountResponseHeaderForTesting(
+          TestResponseAdapter("Google-Accounts-RemoveLocalAccount", "malformed",
+                              /*is_main_frame=*/false)
+              .GetHeaders()));
+}

@@ -32,6 +32,7 @@
 #include "chrome/browser/signin/header_modification_delegate_impl.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/process_dice_header_delegate_impl.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
@@ -92,6 +93,11 @@ namespace {
 // Key for RequestDestructionObserverUserData.
 const void* const kRequestDestructionObserverUserDataKey =
     &kRequestDestructionObserverUserDataKey;
+
+const char kGoogleRemoveLocalAccountResponseHeader[] =
+    "Google-Accounts-RemoveLocalAccount";
+
+const char kRemoveLocalAccountObfuscatedIDAttrName[] = "obfuscatedid";
 
 // TODO(droger): Remove this delay when the Dice implementation is finished on
 // the server side.
@@ -506,6 +512,59 @@ void ProcessDiceResponseHeaderIfExists(ResponseAdapter* response,
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+std::string ParseGaiaIdFromRemoveLocalAccountResponseHeader(
+    const net::HttpResponseHeaders* response_headers) {
+  if (!response_headers)
+    return std::string();
+
+  std::string header_value;
+  if (!response_headers->GetNormalizedHeader(
+          kGoogleRemoveLocalAccountResponseHeader, &header_value)) {
+    return std::string();
+  }
+
+  const SigninHeaderHelper::ResponseHeaderDictionary header_dictionary =
+      SigninHeaderHelper::ParseAccountConsistencyResponseHeader(header_value);
+
+  std::string gaia_id;
+  const auto it =
+      header_dictionary.find(kRemoveLocalAccountObfuscatedIDAttrName);
+  if (it != header_dictionary.end()) {
+    // The Gaia ID is wrapped in quotes.
+    base::TrimString(it->second, "\"", &gaia_id);
+  }
+  return gaia_id;
+}
+
+void ProcessRemoveLocalAccountResponseHeaderIfExists(ResponseAdapter* response,
+                                                     bool is_off_the_record) {
+  CHECK(gaia::IsGaiaSignonRealm(response->GetOrigin()));
+
+  if (is_off_the_record)
+    return;
+
+  const std::string gaia_id =
+      ParseGaiaIdFromRemoveLocalAccountResponseHeader(response->GetHeaders());
+
+  if (gaia_id.empty())
+    return;
+
+  content::WebContents* web_contents = response->GetWebContentsGetter().Run();
+  // The tab could have just closed. Technically, it would be possible to
+  // refactor the code to pass around the profile by other means, but this
+  // should be rare enough to be worth supporting.
+  if (!web_contents)
+    return;
+
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  DCHECK(!profile->IsOffTheRecord());
+
+  IdentityManagerFactory::GetForProfile(profile)
+      ->GetAccountsCookieMutator()
+      ->RemoveLoggedOutAccountByGaiaId(gaia_id);
+}
+
 }  // namespace
 
 ChromeRequestAdapter::ChromeRequestAdapter(
@@ -604,6 +663,16 @@ void ProcessAccountConsistencyResponseHeaders(ResponseAdapter* response,
   // refresh token, on sign-out just follow the sign-out URL.
   ProcessDiceResponseHeaderIfExists(response, is_off_the_record);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+  if (base::FeatureList::IsEnabled(kProcessGaiaRemoveLocalAccountHeader)) {
+    ProcessRemoveLocalAccountResponseHeaderIfExists(response,
+                                                    is_off_the_record);
+  }
+}
+
+std::string ParseGaiaIdFromRemoveLocalAccountResponseHeaderForTesting(
+    const net::HttpResponseHeaders* response_headers) {
+  return ParseGaiaIdFromRemoveLocalAccountResponseHeader(response_headers);
 }
 
 }  // namespace signin

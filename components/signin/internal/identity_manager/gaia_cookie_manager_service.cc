@@ -663,6 +663,33 @@ void GaiaCookieManagerService::LogOutAllAccounts(
   }
 }
 
+void GaiaCookieManagerService::RemoveLoggedOutAccountByGaiaId(
+    const std::string& gaia_id) {
+  // TODO(crbug.com/1078762): Add UMA for the various codepaths in this
+  // function.
+  VLOG(1) << "GaiaCookieManagerService::RemoveLoggedOutAccountByGaiaId";
+
+  if (list_accounts_stale_) {
+    return;
+  }
+
+  const bool accounts_updated =
+      base::EraseIf(signed_out_accounts_,
+                    [&gaia_id](const gaia::ListedAccount& account) {
+                      return account.gaia_id == gaia_id;
+                    }) != 0;
+
+  if (!accounts_updated) {
+    return;
+  }
+
+  if (gaia_accounts_updated_in_cookie_callback_) {
+    gaia_accounts_updated_in_cookie_callback_.Run(
+        listed_accounts_, signed_out_accounts_,
+        GoogleServiceAuthError(GoogleServiceAuthError::NONE));
+  }
+}
+
 void GaiaCookieManagerService::CancelAll() {
   VLOG(1) << "GaiaCookieManagerService::CancelAll";
   gaia_auth_fetcher_.reset();
