@@ -1,0 +1,13 @@
+Test that clicking an attribution link in insecure contexts triggers an issue.
+Issue reported: {
+    code : AttributionReportingIssue
+    details : {
+        attributionReportingIssueDetails : {
+            frame : <object>
+            invalidParameter : http://devtools.test:8000
+            violatingNodeId : <number>
+            violationType : AttributionSourceUntrustworthyOrigin
+        }
+    }
+}
+

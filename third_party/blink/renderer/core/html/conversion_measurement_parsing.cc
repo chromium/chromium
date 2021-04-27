@@ -65,19 +65,37 @@ base::Optional<WebImpression> GetImpression(
   if (!main_frame.GetSecurityContext()
            ->GetSecurityOrigin()
            ->IsPotentiallyTrustworthy()) {
+    ReportAttributionIssue(
+        frame,
+        mojom::blink::AttributionReportingIssueType::
+            kAttributionSourceUntrustworthyOrigin,
+        main_frame.GetDevToolsFrameToken(), element, base::nullopt,
+        main_frame.GetSecurityContext()->GetSecurityOrigin()->ToString());
     return base::nullopt;
   }
 
   if (!frame->IsMainFrame() && !frame->GetSecurityContext()
                                     ->GetSecurityOrigin()
                                     ->IsPotentiallyTrustworthy()) {
+    ReportAttributionIssue(
+        frame,
+        mojom::blink::AttributionReportingIssueType::
+            kAttributionSourceUntrustworthyOrigin,
+        frame->GetDevToolsFrameToken(), element, base::nullopt,
+        frame->GetSecurityContext()->GetSecurityOrigin()->ToString());
     return base::nullopt;
   }
 
   scoped_refptr<const SecurityOrigin> conversion_destination =
       SecurityOrigin::CreateFromString(conversion_destination_string);
-  if (!conversion_destination->IsPotentiallyTrustworthy())
+  if (!conversion_destination->IsPotentiallyTrustworthy()) {
+    ReportAttributionIssue(frame,
+                           mojom::blink::AttributionReportingIssueType::
+                               kAttributionSourceUntrustworthyOrigin,
+                           base::nullopt, element, base::nullopt,
+                           conversion_destination_string);
     return base::nullopt;
+  }
 
   bool impression_data_is_valid = false;
   uint64_t impression_data =
@@ -101,8 +119,14 @@ base::Optional<WebImpression> GetImpression(
     reporting_origin =
         SecurityOrigin::CreateFromString(*reporting_origin_string);
 
-    if (!reporting_origin->IsPotentiallyTrustworthy())
+    if (!reporting_origin->IsPotentiallyTrustworthy()) {
+      ReportAttributionIssue(frame,
+                             mojom::blink::AttributionReportingIssueType::
+                                 kAttributionSourceUntrustworthyOrigin,
+                             base::nullopt, element, base::nullopt,
+                             *reporting_origin_string);
       return base::nullopt;
+    }
   }
 
   base::Optional<base::TimeDelta> expiry;

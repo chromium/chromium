@@ -1,0 +1,12 @@
+Test that clicking an attribution link with an insecure reporting origin triggers an issue.
+Issue reported: {
+    code : AttributionReportingIssue
+    details : {
+        attributionReportingIssueDetails : {
+            invalidParameter : http://insecure-reporting-endpoint.com
+            violatingNodeId : <number>
+            violationType : AttributionSourceUntrustworthyOrigin
+        }
+    }
+}
+

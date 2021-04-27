@@ -330,6 +330,10 @@ protocol::String BuildAttributionReportingIssueType(
         kInvalidAttributionData:
       return protocol::Audits::AttributionReportingIssueTypeEnum::
           InvalidAttributionData;
+    case blink::mojom::blink::AttributionReportingIssueType::
+        kAttributionSourceUntrustworthyOrigin:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          AttributionSourceUntrustworthyOrigin;
   }
 }
 

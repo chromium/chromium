@@ -1,0 +1,14 @@
+Test that clicking an attribution link in a secure iframe thats embedded in an insecure main frame triggers an issue.
+Issue reported: {
+    code : AttributionReportingIssue
+    details : {
+        attributionReportingIssueDetails : {
+            frame : <object>
+            invalidParameter : http://devtools.test:8000
+            violatingNodeId : <number>
+            violationType : AttributionSourceUntrustworthyOrigin
+        }
+    }
+}
+Success: violating frame and reporting frame do not match
+
