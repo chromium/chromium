@@ -5,12 +5,8 @@
 #include "third_party/blink/renderer/core/frame/csp/csp_source.h"
 
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
-#include "third_party/blink/public/platform/web_content_security_policy_struct.h"
-#include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
-#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/known_ports.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -149,8 +145,9 @@ bool CSPSourceMatches(const network::mojom::blink::CSPSource& source,
     return false;
   if (CSPSourceIsSchemeOnly(source))
     return true;
-  bool paths_match = (redirect_status == RedirectStatus::kFollowedRedirect) ||
-                     PathMatches(source, url.GetPath());
+  bool paths_match =
+      (redirect_status == ResourceRequest::RedirectStatus::kFollowedRedirect) ||
+      PathMatches(source, url.GetPath());
   PortMatchingResult ports_match = PortMatches(
       source, self_protocol, url.HasPort() ? url.Port() : url::PORT_UNSPECIFIED,
       url.Protocol());

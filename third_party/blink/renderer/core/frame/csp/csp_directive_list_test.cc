@@ -9,6 +9,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
@@ -35,15 +36,10 @@ class CSPDirectiveListTest : public testing::Test {
       const String& list,
       ContentSecurityPolicyType type,
       ContentSecurityPolicySource source = ContentSecurityPolicySource::kHTTP) {
-    Vector<UChar> characters;
-    list.AppendTo(characters);
-    const UChar* begin = characters.data();
-    const UChar* end = begin + characters.size();
-
-    scoped_refptr<SecurityOrigin> self_origin =
-        SecurityOrigin::Create(KURL("https://example.test/index.html"));
-    return CSPDirectiveListParse(csp.Get(), begin, end, *self_origin, type,
-                                 source);
+    Vector<network::mojom::blink::ContentSecurityPolicyPtr> parsed =
+        ParseContentSecurityPolicies(list, type, source,
+                                     KURL("https://example.test/index.html"));
+    return std::move(parsed[0]);
   }
 
  protected:
@@ -559,7 +555,7 @@ TEST_F(CSPDirectiveListTest, OperativeDirectiveGivenType) {
   }
 
   network::mojom::blink::ContentSecurityPolicyPtr empty =
-      CreateList("", ContentSecurityPolicyType::kEnforce);
+      CreateList("nonexistent-directive", ContentSecurityPolicyType::kEnforce);
 
   std::string directive_string;
   network::mojom::blink::ContentSecurityPolicyPtr directive_list;
@@ -626,18 +622,18 @@ TEST_F(CSPDirectiveListTest, ReportEndpointsProperlyParsed) {
       {"script-src 'self';", ContentSecurityPolicySource::kHTTP, {}, false},
       {"script-src 'self'; report-uri https://example.com",
        ContentSecurityPolicySource::kHTTP,
-       {"https://example.com"},
+       {"https://example.com/"},
        false},
       {"script-src 'self'; report-uri https://example.com "
        "https://example2.com",
        ContentSecurityPolicySource::kHTTP,
-       {"https://example.com", "https://example2.com"},
+       {"https://example.com/", "https://example2.com/"},
        false},
       {"script-src 'self'; report-uri https://example.com "
        "http://example2.com /relative/path",
        // Mixed Content report-uri endpoint is ignored.
        ContentSecurityPolicySource::kHTTP,
-       {"https://example.com", "/relative/path"},
+       {"https://example.com/", "https://example.test/relative/path"},
        false},
       {"script-src 'self'; report-uri https://example.com",
        ContentSecurityPolicySource::kMeta,

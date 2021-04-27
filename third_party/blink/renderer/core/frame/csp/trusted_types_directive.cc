@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/core/frame/csp/trusted_types_directive.h"
 
-#include "third_party/blink/renderer/platform/network/content_security_policy_parsers.h"
-#include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -29,44 +27,6 @@ bool IsPolicyName(const String& name) {
 }
 
 }  // namespace
-
-network::mojom::blink::CSPTrustedTypesPtr CSPTrustedTypesParse(
-    const String& value,
-    ContentSecurityPolicy* policy) {
-  auto result = network::mojom::blink::CSPTrustedTypes::New();
-
-  // Turn whitespace-y characters into ' ' and then split on ' ' into list_.
-  value.SimplifyWhiteSpace().Split(' ', false, result->list);
-
-  auto drop_fn = [policy, &result](const String& src) -> bool {
-    DCHECK_EQ(src, src.StripWhiteSpace());
-    // Handle keywords and special tokens first:
-    if (src == "'allow-duplicates'") {
-      result->allow_duplicates = true;
-      return true;
-    }
-    if (src == "*") {
-      result->allow_any = true;
-      return true;
-    }
-    if (src == "'none'") {
-      if (result->list.size() > 1) {
-        policy->ReportInvalidSourceExpression("trusted-types", src);
-      }
-      return true;
-    }
-    return !IsPolicyName(src);
-  };
-
-  // There appears to be no wtf::Vector equivalent to STLs erase(from, to)
-  // method, so we can't do the canonical .erase(remove_if(..), end) and have
-  // to emulate this:
-  result->list.Shrink(
-      std::remove_if(result->list.begin(), result->list.end(), drop_fn) -
-      result->list.begin());
-
-  return result;
-}
 
 bool CSPTrustedTypesAllows(
     const network::mojom::blink::CSPTrustedTypes& trusted_types,

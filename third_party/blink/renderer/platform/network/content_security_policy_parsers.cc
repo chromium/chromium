@@ -12,6 +12,8 @@
 
 namespace blink {
 
+namespace {
+
 bool IsCSPDirectiveNameCharacter(UChar c) {
   return IsASCIIAlphanumeric(c) || c == '-';
 }
@@ -20,43 +22,7 @@ bool IsCSPDirectiveValueCharacter(UChar c) {
   return IsASCIISpace(c) || (IsASCIIPrintable(c) && c != ',' && c != ';');
 }
 
-// Only checks for general Base64(url) encoded chars, not '=' chars since '=' is
-// positional and may only appear at the end of a Base64 encoded string.
-bool IsBase64EncodedCharacter(UChar c) {
-  return IsASCIIAlphanumeric(c) || c == '+' || c == '/' || c == '-' || c == '_';
-}
-
-bool IsNonceCharacter(UChar c) {
-  return IsBase64EncodedCharacter(c) || c == '=';
-}
-
-bool IsSourceCharacter(UChar c) {
-  return !IsASCIISpace(c);
-}
-
-bool IsPathComponentCharacter(UChar c) {
-  return c != '?' && c != '#';
-}
-
-bool IsHostCharacter(UChar c) {
-  return IsASCIIAlphanumeric(c) || c == '-';
-}
-
-bool IsSchemeContinuationCharacter(UChar c) {
-  return IsASCIIAlphanumeric(c) || c == '+' || c == '-' || c == '.';
-}
-
-bool IsNotASCIISpace(UChar c) {
-  return !IsASCIISpace(c);
-}
-
-bool IsNotColonOrSlash(UChar c) {
-  return c != ':' && c != '/';
-}
-
-bool IsMediaTypeCharacter(UChar c) {
-  return !IsASCIISpace(c) && c != '/';
-}
+}  // namespace
 
 bool MatchesTheSerializedCSPGrammar(const String& value) {
   return WTF::VisitCharacters(value, [](const auto* chars, unsigned len) {

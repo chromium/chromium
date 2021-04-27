@@ -4,45 +4,43 @@
 
 #include "third_party/blink/renderer/core/frame/csp/source_list_directive.h"
 
+#include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/csp/csp_source.h"
-#include "third_party/blink/renderer/core/testing/null_execution_context.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
+namespace {
+
+network::mojom::blink::CSPSourceListPtr ParseSourceList(
+    const String& directive_name,
+    const String& directive_value) {
+  Vector<network::mojom::blink::ContentSecurityPolicyPtr> parsed =
+      ParseContentSecurityPolicies(
+          directive_name + " " + directive_value,
+          network::mojom::blink::ContentSecurityPolicyType::kEnforce,
+          network::mojom::blink::ContentSecurityPolicySource::kHTTP,
+          KURL("https://example.test"));
+  return std::move(
+      parsed[0]
+          ->directives
+          .find(ContentSecurityPolicy::GetDirectiveType(directive_name))
+          ->value);
+}
+
+}  // namespace
+
 class SourceListDirectiveTest : public testing::Test {
- public:
-  SourceListDirectiveTest()
-      : csp(MakeGarbageCollected<ContentSecurityPolicy>()) {}
-  ~SourceListDirectiveTest() override { context->NotifyContextDestroyed(); }
-
  protected:
-  struct Source {
-    String scheme;
-    String host;
-    const int port;
-    String path;
-    bool host_wildcard;
-    bool port_wildcard;
-  };
-
   void SetUp() override {
-    KURL secure_url("https://example.test/image.png");
     self_source = network::mojom::blink::CSPSource::New("https", "example.test",
                                                         443, "", false, false);
-    context = MakeGarbageCollected<NullExecutionContext>();
-    context->GetSecurityContext().SetSecurityOrigin(
-        SecurityOrigin::Create(secure_url));
-    csp->BindToDelegate(context->GetContentSecurityPolicyDelegate());
   }
 
-  Persistent<ContentSecurityPolicy> csp;
-  Persistent<ExecutionContext> context;
   network::mojom::blink::CSPSourcePtr self_source;
 };
 
@@ -50,7 +48,7 @@ TEST_F(SourceListDirectiveTest, BasicMatchingNone) {
   KURL base;
   String sources = "'none'";
   network::mojom::blink::CSPSourceListPtr source_list =
-      CSPSourceListParse("script-src", sources, csp.Get());
+      ParseSourceList("script-src", sources);
   ASSERT_TRUE(source_list);
 
   EXPECT_FALSE(CSPSourceListAllows(*source_list, *self_source,
@@ -62,7 +60,7 @@ TEST_F(SourceListDirectiveTest, BasicMatchingNone) {
 TEST_F(SourceListDirectiveTest, BasicMatchingStrictDynamic) {
   String sources = "'strict-dynamic'";
   network::mojom::blink::CSPSourceListPtr source_list =
-      CSPSourceListParse("script-src", sources, csp.Get());
+      ParseSourceList("script-src", sources);
 
   EXPECT_TRUE(source_list->allow_dynamic);
 }
@@ -70,7 +68,7 @@ TEST_F(SourceListDirectiveTest, BasicMatchingStrictDynamic) {
 TEST_F(SourceListDirectiveTest, BasicMatchingUnsafeHashes) {
   String sources = "'unsafe-hashes'";
   network::mojom::blink::CSPSourceListPtr source_list =
-      CSPSourceListParse("script-src", sources, csp.Get());
+      ParseSourceList("script-src", sources);
 
   EXPECT_TRUE(source_list->allow_unsafe_hashes);
 }
@@ -79,7 +77,7 @@ TEST_F(SourceListDirectiveTest, BasicMatchingStar) {
   KURL base;
   String sources = "*";
   network::mojom::blink::CSPSourceListPtr source_list =
-      CSPSourceListParse("script-src", sources, csp.Get());
+      ParseSourceList("script-src", sources);
 
   EXPECT_TRUE(CSPSourceListAllows(*source_list, *self_source,
                                   KURL(base, "http://example.com/")));
@@ -111,7 +109,7 @@ TEST_F(SourceListDirectiveTest, StarallowsSelf) {
   KURL base;
   String sources = "*";
   network::mojom::blink::CSPSourceListPtr source_list =
-      CSPSourceListParse("script-src", sources, csp.Get());
+      ParseSourceList("script-src", sources);
 
   auto self_origin =
       network::mojom::blink::CSPSource::New("file", "", -1, "", false, false);
@@ -145,7 +143,7 @@ TEST_F(SourceListDirectiveTest, BasicMatchingSelf) {
   KURL base;
   String sources = "'self'";
   network::mojom::blink::CSPSourceListPtr source_list =
-      CSPSourceListParse("script-src", sources, csp.Get());
+      ParseSourceList("script-src", sources);
 
   EXPECT_FALSE(CSPSourceListAllows(*source_list, *self_source,
                                    KURL(base, "http://example.com/")));
@@ -159,7 +157,7 @@ TEST_F(SourceListDirectiveTest, BlobMatchingBlob) {
   KURL base;
   String sources = "blob:";
   network::mojom::blink::CSPSourceListPtr source_list =
-      CSPSourceListParse("script-src", sources, csp.Get());
+      ParseSourceList("script-src", sources);
 
   EXPECT_FALSE(CSPSourceListAllows(*source_list, *self_source,
                                    KURL(base, "https://example.test/")));
@@ -171,7 +169,7 @@ TEST_F(SourceListDirectiveTest, BasicMatching) {
   KURL base;
   String sources = "http://example1.com:8000/foo/ https://example2.com/";
   network::mojom::blink::CSPSourceListPtr source_list =
-      CSPSourceListParse("script-src", sources, csp.Get());
+      ParseSourceList("script-src", sources);
 
   EXPECT_TRUE(CSPSourceListAllows(*source_list, *self_source,
                                   KURL(base, "http://example1.com:8000/foo/")));
@@ -200,7 +198,7 @@ TEST_F(SourceListDirectiveTest, WildcardMatching) {
   String sources =
       "http://example1.com:*/foo/ https://*.example2.com/bar/ http://*.test/";
   network::mojom::blink::CSPSourceListPtr source_list =
-      CSPSourceListParse("script-src", sources, csp.Get());
+      ParseSourceList("script-src", sources);
 
   EXPECT_TRUE(CSPSourceListAllows(*source_list, *self_source,
                                   KURL(base, "http://example1.com/foo/")));
@@ -248,7 +246,7 @@ TEST_F(SourceListDirectiveTest, RedirectMatching) {
   KURL base;
   String sources = "http://example1.com/foo/ http://example2.com/bar/";
   network::mojom::blink::CSPSourceListPtr source_list =
-      CSPSourceListParse("script-src", sources, csp.Get());
+      ParseSourceList("script-src", sources);
 
   EXPECT_TRUE(CSPSourceListAllows(
       *source_list, *self_source, KURL(base, "http://example1.com/foo/"),
@@ -309,33 +307,35 @@ TEST_F(SourceListDirectiveTest, AllowAllInline) {
       {" 'sha512-321cba' 'unsafe-inline' 'nonce-yay' 'strict-dynamic'", false},
   };
 
+  using network::mojom::blink::CSPDirectiveName;
+
   // Script-src and style-src differently handle presence of 'strict-dynamic'.
-  network::mojom::blink::CSPSourceListPtr script_src = CSPSourceListParse(
-      "script-src", "'strict-dynamic' 'unsafe-inline'", csp.Get());
+  network::mojom::blink::CSPSourceListPtr script_src =
+      ParseSourceList("script-src", "'strict-dynamic' 'unsafe-inline'");
   EXPECT_FALSE(
       CSPSourceListAllowAllInline(CSPDirectiveName::ScriptSrc, *script_src));
 
-  network::mojom::blink::CSPSourceListPtr style_src = CSPSourceListParse(
-      "style-src", "'strict-dynamic' 'unsafe-inline'", csp.Get());
+  network::mojom::blink::CSPSourceListPtr style_src =
+      ParseSourceList("style-src", "'strict-dynamic' 'unsafe-inline'");
   EXPECT_TRUE(
       CSPSourceListAllowAllInline(CSPDirectiveName::StyleSrc, *style_src));
 
   for (const auto& test : cases) {
     network::mojom::blink::CSPSourceListPtr script_src =
-        CSPSourceListParse("script-src", test.sources, csp.Get());
+        ParseSourceList("script-src", test.sources);
     EXPECT_EQ(
         CSPSourceListAllowAllInline(CSPDirectiveName::ScriptSrc, *script_src),
         test.expected);
 
     network::mojom::blink::CSPSourceListPtr style_src =
-        CSPSourceListParse("style-src", test.sources, csp.Get());
+        ParseSourceList("style-src", test.sources);
     EXPECT_EQ(
         CSPSourceListAllowAllInline(CSPDirectiveName::StyleSrc, *style_src),
         test.expected);
 
     // If source list doesn't have a valid type, it must not allow all inline.
     network::mojom::blink::CSPSourceListPtr img_src =
-        CSPSourceListParse("img-src", test.sources, csp.Get());
+        ParseSourceList("img-src", test.sources);
     EXPECT_FALSE(
         CSPSourceListAllowAllInline(CSPDirectiveName::ImgSrc, *img_src));
   }
@@ -370,15 +370,15 @@ TEST_F(SourceListDirectiveTest, IsNone) {
   for (const auto& test : cases) {
     SCOPED_TRACE(test.sources);
     network::mojom::blink::CSPSourceListPtr script_src =
-        CSPSourceListParse("script-src", test.sources, csp.Get());
+        ParseSourceList("script-src", test.sources);
     EXPECT_EQ(CSPSourceListIsNone(*script_src), test.expected);
 
     network::mojom::blink::CSPSourceListPtr form_action =
-        CSPSourceListParse("form-action", test.sources, csp.Get());
+        ParseSourceList("form-action", test.sources);
     EXPECT_EQ(CSPSourceListIsNone(*form_action), test.expected);
 
     network::mojom::blink::CSPSourceListPtr frame_src =
-        CSPSourceListParse("frame-src", test.sources, csp.Get());
+        ParseSourceList("frame-src", test.sources);
     EXPECT_EQ(CSPSourceListIsNone(*frame_src), test.expected);
   }
 }
@@ -413,15 +413,15 @@ TEST_F(SourceListDirectiveTest, IsSelf) {
   for (const auto& test : cases) {
     SCOPED_TRACE(test.sources);
     network::mojom::blink::CSPSourceListPtr script_src =
-        CSPSourceListParse("script-src", test.sources, csp.Get());
+        ParseSourceList("script-src", test.sources);
     EXPECT_EQ(CSPSourceListIsSelf(*script_src), test.expected);
 
     network::mojom::blink::CSPSourceListPtr form_action =
-        CSPSourceListParse("form-action", test.sources, csp.Get());
+        ParseSourceList("form-action", test.sources);
     EXPECT_EQ(CSPSourceListIsSelf(*form_action), test.expected);
 
     network::mojom::blink::CSPSourceListPtr frame_src =
-        CSPSourceListParse("frame-src", test.sources, csp.Get());
+        ParseSourceList("frame-src", test.sources);
     EXPECT_EQ(CSPSourceListIsSelf(*frame_src), test.expected);
   }
 }
@@ -465,20 +465,20 @@ TEST_F(SourceListDirectiveTest, AllowsURLBasedMatching) {
   for (const auto& test : cases) {
     SCOPED_TRACE(test.sources);
     network::mojom::blink::CSPSourceListPtr script_src =
-        CSPSourceListParse("script-src", test.sources, csp.Get());
+        ParseSourceList("script-src", test.sources);
     EXPECT_EQ(CSPSourceListAllowsURLBasedMatching(*script_src), test.expected);
 
     network::mojom::blink::CSPSourceListPtr form_action =
-        CSPSourceListParse("form-action", test.sources, csp.Get());
+        ParseSourceList("form-action", test.sources);
     EXPECT_EQ(CSPSourceListAllowsURLBasedMatching(*form_action), test.expected);
 
     network::mojom::blink::CSPSourceListPtr frame_src =
-        CSPSourceListParse("frame-src", test.sources, csp.Get());
+        ParseSourceList("frame-src", test.sources);
     EXPECT_EQ(CSPSourceListAllowsURLBasedMatching(*frame_src), test.expected);
   }
 }
 
-TEST_F(SourceListDirectiveTest, ParseHost) {
+TEST_F(SourceListDirectiveTest, ParseSourceListHost) {
   struct TestCase {
     String sources;
     bool expected;
@@ -503,9 +503,9 @@ TEST_F(SourceListDirectiveTest, ParseHost) {
 
   for (const auto& test : cases) {
     network::mojom::blink::CSPSourceListPtr parsed =
-        CSPSourceListParse("default-src", test.sources, csp.Get());
+        ParseSourceList("default-src", test.sources);
     EXPECT_EQ(CSPSourceListIsNone(*parsed), !test.expected)
-        << "CSPSourceListParse failed to parse: " << test.sources;
+        << "ParseSourceList failed to parse: " << test.sources;
   }
 }
 
@@ -528,9 +528,9 @@ TEST_F(SourceListDirectiveTest, ParsePort) {
 
   for (const auto& test : cases) {
     network::mojom::blink::CSPSourceListPtr parsed =
-        CSPSourceListParse("default-src", test.sources, csp.Get());
+        ParseSourceList("default-src", test.sources);
     EXPECT_EQ(CSPSourceListIsNone(*parsed), !test.valid)
-        << "CSPSourceListParse failed to parse: " << test.sources;
+        << "ParseSourceList failed to parse: " << test.sources;
     if (test.valid) {
       ASSERT_EQ(1u, parsed->sources.size());
       EXPECT_EQ(test.expected_port, parsed->sources[0]->port);
@@ -545,7 +545,7 @@ TEST_F(SourceListDirectiveTest, AllowHostWildcard) {
   {
     String sources = "http://*:111";
     network::mojom::blink::CSPSourceListPtr source_list =
-        CSPSourceListParse("default-src", sources, csp.Get());
+        ParseSourceList("default-src", sources);
     EXPECT_TRUE(CSPSourceListAllows(*source_list, *self_source,
                                     KURL(base, "http://a.com:111")));
     EXPECT_FALSE(CSPSourceListAllows(*source_list, *self_source,
@@ -556,7 +556,7 @@ TEST_F(SourceListDirectiveTest, AllowHostWildcard) {
   {
     String sources = "http://*/welcome.html";
     network::mojom::blink::CSPSourceListPtr source_list =
-        CSPSourceListParse("default-src", sources, csp.Get());
+        ParseSourceList("default-src", sources);
     EXPECT_TRUE(CSPSourceListAllows(*source_list, *self_source,
                                     KURL(base, "http://a.com/welcome.html")));
     EXPECT_FALSE(CSPSourceListAllows(*source_list, *self_source,
@@ -567,7 +567,7 @@ TEST_F(SourceListDirectiveTest, AllowHostWildcard) {
   {
     String sources = "http://*";
     network::mojom::blink::CSPSourceListPtr source_list =
-        CSPSourceListParse("default-src", sources, csp.Get());
+        ParseSourceList("default-src", sources);
     EXPECT_TRUE(CSPSourceListAllows(*source_list, *self_source,
                                     KURL(base, "http://a.com")));
   }
@@ -579,7 +579,7 @@ TEST_F(SourceListDirectiveTest, AllowHostMixedCase) {
   {
     String sources = "http://ExAmPle.com";
     network::mojom::blink::CSPSourceListPtr source_list =
-        CSPSourceListParse("default-src", sources, csp.Get());
+        ParseSourceList("default-src", sources);
     EXPECT_TRUE(CSPSourceListAllows(*source_list, *self_source,
                                     KURL(base, "http://example.com")));
   }
@@ -587,7 +587,7 @@ TEST_F(SourceListDirectiveTest, AllowHostMixedCase) {
   {
     String sources = "http://*.ExAmPle.com";
     network::mojom::blink::CSPSourceListPtr source_list =
-        CSPSourceListParse("default-src", sources, csp.Get());
+        ParseSourceList("default-src", sources);
     EXPECT_TRUE(CSPSourceListAllows(*source_list, *self_source,
                                     KURL(base, "http://www.example.com")));
   }
@@ -609,7 +609,7 @@ TEST_F(SourceListDirectiveTest, AllowNonce) {
 
   for (const auto& test : cases) {
     network::mojom::blink::CSPSourceListPtr source_list =
-        CSPSourceListParse("script-src", test.directive_value, csp.Get());
+        ParseSourceList("script-src", test.directive_value);
     EXPECT_EQ(test.expected, CSPSourceListAllowNonce(*source_list, test.nonce));
     // Empty/null strings are always not present.
     EXPECT_FALSE(CSPSourceListAllowNonce(*source_list, ""));

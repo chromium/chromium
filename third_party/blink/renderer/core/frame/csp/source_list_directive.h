@@ -16,12 +16,6 @@ namespace blink {
 class KURL;
 
 CORE_EXPORT
-network::mojom::blink::CSPSourceListPtr CSPSourceListParse(
-    const String& name,
-    const String& value,
-    ContentSecurityPolicy* policy);
-
-CORE_EXPORT
 bool CSPSourceListAllows(
     const network::mojom::blink::CSPSourceList& source_list,
     const network::mojom::blink::CSPSource& self_source,
@@ -53,7 +47,7 @@ bool CSPSourceListIsHashOrNoncePresent(
 
 CORE_EXPORT
 bool CSPSourceListAllowAllInline(
-    CSPDirectiveName directive_type,
+    network::mojom::blink::CSPDirectiveName directive_type,
     const network::mojom::blink::CSPSourceList& source_list);
 
 CORE_EXPORT

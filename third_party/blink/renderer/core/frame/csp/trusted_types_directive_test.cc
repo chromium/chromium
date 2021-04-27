@@ -4,21 +4,29 @@
 
 #include "third_party/blink/renderer/core/frame/csp/trusted_types_directive.h"
 
+#include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
+#include "third_party/blink/renderer/platform/network/http_parsers.h"
 
 namespace blink {
 
-class TrustedTypesDirectiveTest : public testing::Test {
- public:
-  TrustedTypesDirectiveTest()
-      : csp_(MakeGarbageCollected<ContentSecurityPolicy>()) {}
+namespace {
 
- protected:
-  Persistent<ContentSecurityPolicy> csp_;
-};
+network::mojom::blink::CSPTrustedTypesPtr ParseTrustedTypes(
+    const String& value) {
+  Vector<network::mojom::blink::ContentSecurityPolicyPtr> parsed =
+      ParseContentSecurityPolicies(
+          "trusted-types " + value,
+          network::mojom::blink::ContentSecurityPolicyType::kEnforce,
+          network::mojom::blink::ContentSecurityPolicySource::kHTTP,
+          KURL("https://example.test"));
+  return std::move(parsed[0]->trusted_types);
+}
 
-TEST_F(TrustedTypesDirectiveTest, TestAllowLists) {
+}  // namespace
+
+TEST(TrustedTypesDirectiveTest, TestAllowLists) {
   struct {
     const char* directive;
     const char* should_be_allowed;
@@ -44,7 +52,7 @@ TEST_F(TrustedTypesDirectiveTest, TestAllowLists) {
 
   for (const auto& test_case : test_cases) {
     network::mojom::blink::CSPTrustedTypesPtr directive =
-        CSPTrustedTypesParse(test_case.directive, csp_.Get());
+        ParseTrustedTypes(test_case.directive);
 
     Vector<String> allowed;
     String(test_case.should_be_allowed).Split(' ', allowed);

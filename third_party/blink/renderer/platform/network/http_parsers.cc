@@ -839,10 +839,12 @@ ParseContentSecurityPolicies(
     network::mojom::blink::ContentSecurityPolicyType type,
     network::mojom::blink::ContentSecurityPolicySource source,
     const SecurityOrigin& self_origin) {
+  const SecurityOrigin* precursor_origin =
+      self_origin.GetOriginOrPrecursorOriginIfOpaque();
   KURL base_url;
-  base_url.SetProtocol(self_origin.Protocol());
-  base_url.SetHost(self_origin.Host());
-  base_url.SetPort(self_origin.Port());
+  base_url.SetProtocol(precursor_origin->Protocol());
+  base_url.SetHost(precursor_origin->Host());
+  base_url.SetPort(precursor_origin->Port());
   return ParseContentSecurityPolicies(raw_policies, type, source, base_url);
 }
 

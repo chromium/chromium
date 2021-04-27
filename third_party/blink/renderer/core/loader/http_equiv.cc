@@ -105,8 +105,7 @@ void HttpEquiv::ProcessHttpEquivContentSecurityPolicy(
         ParseContentSecurityPolicies(
             content, network::mojom::blink::ContentSecurityPolicyType::kEnforce,
             network::mojom::blink::ContentSecurityPolicySource::kMeta,
-            *(window->GetSecurityOrigin()
-                  ->GetOriginOrPrecursorOriginIfOpaque()));
+            *(window->GetSecurityOrigin()));
     window->GetContentSecurityPolicy()->AddPolicies(mojo::Clone(parsed));
     window->GetPolicyContainer()->AddContentSecurityPolicies(std::move(parsed));
   } else if (EqualIgnoringASCIICase(equiv,

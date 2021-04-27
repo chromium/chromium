@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/csp/csp_source.h"
 
+#include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"

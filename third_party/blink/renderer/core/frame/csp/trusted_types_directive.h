@@ -12,11 +12,6 @@
 namespace blink {
 
 CORE_EXPORT
-network::mojom::blink::CSPTrustedTypesPtr CSPTrustedTypesParse(
-    const String& value,
-    ContentSecurityPolicy* policy);
-
-CORE_EXPORT
 bool CSPTrustedTypesAllows(
     const network::mojom::blink::CSPTrustedTypes& trusted_types,
     const String& string_piece,

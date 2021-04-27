@@ -5,21 +5,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_CSP_CSP_DIRECTIVE_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_CSP_CSP_DIRECTIVE_LIST_H_
 
-#include "base/macros.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
-#include "third_party/blink/renderer/platform/network/content_security_policy_parsers.h"
-#include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
-#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 class KURL;
-class SecurityOrigin;
 
 enum class ResourceType : uint8_t;
 
@@ -27,16 +21,6 @@ struct CORE_EXPORT CSPOperativeDirective {
   CSPDirectiveName type;
   const network::mojom::blink::CSPSourceList* source_list;
 };
-
-CORE_EXPORT
-network::mojom::blink::ContentSecurityPolicyPtr CSPDirectiveListParse(
-    ContentSecurityPolicy*,
-    const UChar* begin,
-    const UChar* end,
-    const SecurityOrigin& self_origin,
-    network::mojom::ContentSecurityPolicyType,
-    network::mojom::ContentSecurityPolicySource,
-    bool should_parse_wasm_eval = false);
 
 CORE_EXPORT
 bool CSPDirectiveListIsReportOnly(

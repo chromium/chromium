@@ -199,24 +199,7 @@ void ExecutionContextCSPDelegate::PostViolationReport(
     return;
 
   for (const auto& report_endpoint : report_endpoints) {
-    // Use the frame's document to complete the endpoint URL, overriding its URL
-    // with the blocked document's URL.
-    // https://w3c.github.io/webappsec-csp/#report-violation
-    // Step 3.4.2.1. Let endpoint be the result of executing the URL parser with
-    // token as the input, and violation’s url as the base URL. [spec text]
-    KURL url = is_frame_ancestors_violation
-                   ? document->CompleteURLWithOverride(
-                         report_endpoint, KURL(violation_data.blockedURI()))
-                   // We use the FallbackBaseURL to ensure that we don't
-                   // respect base elements when determining the report
-                   // endpoint URL.
-                   // Note: According to Step 3.4.2.1 mentioned above, the base
-                   // URL is "violation’s url" which should be violation's
-                   // global object's URL. So using FallbackBaseURL() might be
-                   // inconsistent.
-                   : document->CompleteURLWithOverride(
-                         report_endpoint, document->FallbackBaseURL());
-    PingLoader::SendViolationReport(frame, url, report);
+    PingLoader::SendViolationReport(frame, KURL(report_endpoint), report);
   }
 }
 
