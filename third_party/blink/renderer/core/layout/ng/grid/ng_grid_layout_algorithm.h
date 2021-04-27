@@ -100,11 +100,12 @@ class CORE_EXPORT NGGridLayoutAlgorithm
     AxisEdge block_axis_alignment;
 
     ItemType item_type;
+    bool is_grid_containing_block : 1;
 
-    bool is_inline_axis_stretched;
-    bool is_block_axis_stretched;
+    bool is_inline_axis_stretched : 1;
+    bool is_block_axis_stretched : 1;
 
-    bool has_baseline_alignment;
+    bool has_baseline_alignment : 1;
     BaselineType row_baseline_type;
     BaselineType column_baseline_type;
 

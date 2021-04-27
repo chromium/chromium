@@ -528,15 +528,17 @@ void NGGridLayoutAlgorithm::GridItemData::ComputeSetIndices(
   // 1. The item is in flow (it is a grid item) or
   // 2. The item is out of flow, but the line was not defined as 'auto' and
   // the line is within the bounds of the grid, since an out of flow item
-  // cannot create grid lines.
-  wtf_size_t start_line, end_line;
+  // cannot create grid lines. The out of flow item's containing block has to be
+  // the grid container, otherwise grid placement computations are not needed.
+  wtf_size_t start_line = kNotFound;
+  wtf_size_t end_line = kNotFound;
   if (item_type == ItemType::kInGridFlow) {
     start_line = StartLine(track_collection.Direction());
     end_line = EndLine(track_collection.Direction());
 
     DCHECK_NE(start_line, kNotFound);
     DCHECK_NE(end_line, kNotFound);
-  } else {
+  } else if (is_grid_containing_block) {
     grid_placement.ResolveOutOfFlowItemGridLines(track_collection, node.Style(),
                                                  &start_line, &end_line);
   }
@@ -1258,7 +1260,7 @@ NGGridLayoutAlgorithm::GridItemData NGGridLayoutAlgorithm::MeasureGridItem(
   // Before we take track sizing into account for column width contributions,
   // have all child inline and min/max sizes measured for content-based width
   // resolution.
-  GridItemData grid_item(node);
+  GridItemData item(node);
   const ComputedStyle& item_style = node.Style();
 
   const ItemPosition normal_behaviour =
@@ -1267,23 +1269,26 @@ NGGridLayoutAlgorithm::GridItemData NGGridLayoutAlgorithm::MeasureGridItem(
   // Determine the alignment for the grid-item ahead of time (we may need to
   // know if it stretches ahead of time to correctly determine any block-axis
   // contribution).
-  grid_item.inline_axis_alignment = AxisEdgeFromItemPosition(
+  bool is_axis_stretched;
+  item.inline_axis_alignment = AxisEdgeFromItemPosition(
       container_style, item_style,
       item_style.ResolvedJustifySelf(normal_behaviour, &container_style)
           .GetPosition(),
-      /* is_inline_axis */ true, &grid_item.is_inline_axis_stretched);
-  grid_item.block_axis_alignment = AxisEdgeFromItemPosition(
+      /* is_inline_axis */ true, &is_axis_stretched);
+  item.is_inline_axis_stretched = is_axis_stretched;
+  item.block_axis_alignment = AxisEdgeFromItemPosition(
       container_style, item_style,
       item_style.ResolvedAlignSelf(normal_behaviour, &container_style)
           .GetPosition(),
-      /* is_inline_axis */ false, &grid_item.is_block_axis_stretched);
+      /* is_inline_axis */ false, &is_axis_stretched);
+  item.is_block_axis_stretched = is_axis_stretched;
 
   const auto item_writing_direction =
-      grid_item.node.Style().GetWritingDirection().GetWritingMode();
+      item.node.Style().GetWritingDirection().GetWritingMode();
   const auto container_writing_direction = ConstraintSpace().GetWritingMode();
-  grid_item.row_baseline_type = DetermineBaselineType(
+  item.row_baseline_type = DetermineBaselineType(
       kForRows, container_writing_direction, item_writing_direction);
-  grid_item.column_baseline_type = DetermineBaselineType(
+  item.column_baseline_type = DetermineBaselineType(
       kForColumns, container_writing_direction, item_writing_direction);
 
   // This bit reflects whether an item is eligible to be the grid container's
@@ -1292,13 +1297,17 @@ NGGridLayoutAlgorithm::GridItemData NGGridLayoutAlgorithm::MeasureGridItem(
   // should still be considered for the container's alignment baseline. As per
   // spec, only the inline axis is considered for the container's baseline, so
   // 'justify' values are not considered even in vertical writing modes.
-  grid_item.has_baseline_alignment =
-      (grid_item.block_axis_alignment == AxisEdge::kBaseline);
+  item.has_baseline_alignment =
+      (item.block_axis_alignment == AxisEdge::kBaseline);
 
-  grid_item.item_type = node.IsOutOfFlowPositioned() ? ItemType::kOutOfFlow
-                                                     : ItemType::kInGridFlow;
+  if (node.IsOutOfFlowPositioned()) {
+    item.item_type = ItemType::kOutOfFlow;
+    item.is_grid_containing_block = node.IsContainingBlockNGGrid();
+  } else {
+    item.item_type = ItemType::kInGridFlow;
+  }
 
-  return grid_item;
+  return item;
 }
 
 void NGGridLayoutAlgorithm::BuildBlockTrackCollections(
@@ -2949,15 +2958,26 @@ void NGGridLayoutAlgorithm::PlaceOutOfFlowItems(
     const HeapVector<GridItemData>& out_of_flow_items,
     const GridGeometry& grid_geometry,
     LayoutUnit block_size) {
+  const LogicalSize fragment_size(container_builder_.InlineSize(), block_size);
+  const LogicalSize default_containing_block_size =
+      ShrinkLogicalSize(fragment_size, BorderScrollbarPadding());
   for (const GridItemData& out_of_flow_item : out_of_flow_items) {
-    LogicalRect containing_block_rect = ComputeContainingGridAreaRect(
-        grid_geometry, out_of_flow_item, block_size);
+    base::Optional<LogicalRect> containing_block_rect;
+    if (out_of_flow_item.is_grid_containing_block) {
+      containing_block_rect = ComputeContainingGridAreaRect(
+          grid_geometry, out_of_flow_item, block_size);
+    }
     NGLogicalStaticPosition::InlineEdge inline_edge;
     NGLogicalStaticPosition::BlockEdge block_edge;
-    LogicalOffset child_offset = containing_block_rect.offset;
+    LogicalOffset child_offset = containing_block_rect
+                                     ? containing_block_rect->offset
+                                     : BorderScrollbarPadding().StartOffset();
+    const LogicalSize containing_block_size =
+        containing_block_rect ? containing_block_rect->size
+                              : default_containing_block_size;
     AlignmentOffsetForOutOfFlow(out_of_flow_item.inline_axis_alignment,
                                 out_of_flow_item.block_axis_alignment,
-                                containing_block_rect.size, &inline_edge,
+                                containing_block_size, &inline_edge,
                                 &block_edge, &child_offset);
 
     container_builder_.AddOutOfFlowChildCandidate(
@@ -2980,9 +3000,6 @@ void NGGridLayoutAlgorithm::PlaceOutOfFlowDescendants(
   DCHECK(out_of_flow_descendants);
 
   for (auto& out_of_flow_descendant : *out_of_flow_descendants) {
-    // TODO(ansollan): We don't need all parameters from |GridItemData| for out
-    // of flow items. Implement a reduced version in |MeasureGridItem| or only
-    // fill what is needed here.
     GridItemData out_of_flow_item =
         MeasureGridItem(out_of_flow_descendant.node);
 

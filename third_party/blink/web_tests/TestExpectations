@@ -4274,7 +4274,6 @@ virtual/layout-ng-grid/external/wpt/css/css-grid/layout-algorithm/grid-flex-trac
 virtual/layout-ng-grid/fast/css-grid-layout/maximize-tracks-definite-indefinite-height.html [ Pass ]
 
 ### Tests failing with LayoutNGGrid enabled:
-crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/absolute-positioning-grid-container-parent-001.html [ Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/grid-positioned-items-gaps-001.html [ Crash Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/grid-positioned-items-gaps-rtl-001.html [ Crash Failure ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/grid-positioned-items-within-grid-implicit-track-001.html [ Crash Failure ]
