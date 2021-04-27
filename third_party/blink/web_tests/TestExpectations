@@ -7314,3 +7314,6 @@ crbug.com/1201123 [ Fuchsia ] tables/mozilla/bugs/bug1188.html [ Pass Failure ]
 
 # Sheriff 2021-04-26
 crbug.com/1202722 [ Linux ] virtual/scroll-unification/fast/events/mouseenter-mouseleave-on-drag.html [ Pass Timeout ]
+
+# Sheriff 2021-04-27
+crbug.com/1203309 [ Linux ] http/tests/devtools/tracing/trace-event-self-time.js [ Pass Failure ]
