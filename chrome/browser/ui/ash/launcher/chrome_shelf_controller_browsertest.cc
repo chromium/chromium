@@ -58,7 +58,7 @@
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
-#include "chrome/browser/ui/ash/chrome_launcher_prefs.h"
+#include "chrome/browser/ui/ash/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/ash/launcher/browser_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/chrome_shelf_controller_test_util.h"
 #include "chrome/browser/ui/ash/launcher/chrome_shelf_controller_util.h"

@@ -46,7 +46,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/app_list/md_icon_normalizer.h"
 #include "chrome/browser/ui/apps/app_info_dialog.h"
-#include "chrome/browser/ui/ash/chrome_launcher_prefs.h"
+#include "chrome/browser/ui/ash/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_arc_tracker.h"
 #include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_shelf_controller.h"

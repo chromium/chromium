@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_CHROME_LAUNCHER_PREFS_H_
-#define CHROME_BROWSER_UI_ASH_CHROME_LAUNCHER_PREFS_H_
+#ifndef CHROME_BROWSER_UI_ASH_CHROME_SHELF_PREFS_H_
+#define CHROME_BROWSER_UI_ASH_CHROME_SHELF_PREFS_H_
 
 #include <vector>
 
@@ -29,7 +29,7 @@ extern const char kPinnedAppsPrefPinnedByPolicy[];
 // This is NOT a valid extension identifier so pre-M31 versions ignore it.
 extern const char kPinnedAppsPlaceholder[];
 
-void RegisterChromeLauncherUserPrefs(
+void RegisterChromeShelfProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry);
 
 // Init a local pref from a synced pref, if the local pref has no user setting.
@@ -67,4 +67,4 @@ void SetPinPosition(Profile* profile,
 // https://crbug.com/1085597
 void SkipPinnedAppsFromSyncForTest();
 
-#endif  // CHROME_BROWSER_UI_ASH_CHROME_LAUNCHER_PREFS_H_
+#endif  // CHROME_BROWSER_UI_ASH_CHROME_SHELF_PREFS_H_

@@ -12,7 +12,7 @@
 #include "base/json/json_reader.h"
 #include "base/macros.h"
 #include "base/values.h"
-#include "chrome/browser/ui/ash/chrome_launcher_prefs.h"
+#include "chrome/browser/ui/ash/chrome_shelf_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "components/arc/arc_prefs.h"
 #include "components/policy/core/browser/policy_error_map.h"

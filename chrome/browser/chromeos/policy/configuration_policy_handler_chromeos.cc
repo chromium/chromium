@@ -22,7 +22,7 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/accessibility/magnifier_type.h"
-#include "chrome/browser/ui/ash/chrome_launcher_prefs.h"
+#include "chrome/browser/ui/ash/chrome_shelf_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/network/onc/onc_signature.h"

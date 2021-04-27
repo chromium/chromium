@@ -10,7 +10,7 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/chrome_launcher_prefs.h"
+#include "chrome/browser/ui/ash/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/launcher/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/launcher/shelf_controller_helper.h"
