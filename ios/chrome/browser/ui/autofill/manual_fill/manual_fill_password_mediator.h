@@ -69,16 +69,15 @@ extern NSString* const SuggestPasswordAccessibilityIdentifier;
                         faviconLoader:(FaviconLoader*)faviconLoader
                              webState:(web::WebState*)webState
                           syncService:(SyncSetupService*)syncService
-                                  URL:(const GURL&)URL
                invokedOnPasswordField:(BOOL)invokedOnPasswordField
     NS_DESIGNATED_INITIALIZER;
 
 // Unavailable. Use |initWithPasswordStore:faviconLoader:|.
 - (instancetype)init NS_UNAVAILABLE;
 
-// Fetches passwords using the URL provided at initialisation as the filter.
-// If the URL is empty (invalid) it will fetch all the passwords.
-- (void)fetchPasswords;
+// Fetches passwords using |origin| as the filter. If origin is empty (invalid)
+// it will fetch all the passwords.
+- (void)fetchPasswordsForURL:(const GURL&)URL;
 
 @end
 

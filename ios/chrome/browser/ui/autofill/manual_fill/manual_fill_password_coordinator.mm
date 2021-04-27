@@ -72,9 +72,8 @@
                  faviconLoader:faviconLoader
                       webState:browser->GetWebStateList()->GetActiveWebState()
                    syncService:syncService
-                           URL:URL
         invokedOnPasswordField:invokedOnPasswordField];
-    [_passwordMediator fetchPasswords];
+    [_passwordMediator fetchPasswordsForURL:URL];
     _passwordMediator.actionSectionEnabled = YES;
     _passwordMediator.consumer = _passwordViewController;
     _passwordMediator.navigator = self;

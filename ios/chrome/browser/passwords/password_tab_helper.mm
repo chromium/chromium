@@ -51,11 +51,6 @@ password_manager::PasswordManager* PasswordTabHelper::GetPasswordManager() {
   return controller_.passwordManager;
 }
 
-password_manager::PasswordManagerClient*
-PasswordTabHelper::GetPasswordManagerClient() {
-  return controller_.passwordManagerClient;
-}
-
 id<PasswordGenerationProvider>
 PasswordTabHelper::GetPasswordGenerationProvider() {
   return controller_.generationProvider;

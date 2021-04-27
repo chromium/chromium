@@ -57,14 +57,13 @@
       self.browser->GetWebStateList()->GetActiveWebState();
   SyncSetupService* syncService = SyncSetupServiceFactory::GetForBrowserState(
       self.browser->GetBrowserState());
-  self.passwordMediator = [[ManualFillPasswordMediator alloc]
-       initWithPasswordStore:passwordStore
-               faviconLoader:faviconLoader
-                    webState:webState
-                 syncService:syncService
-                         URL:GURL::EmptyGURL()
-      invokedOnPasswordField:NO];
-  [self.passwordMediator fetchPasswords];
+  self.passwordMediator =
+      [[ManualFillPasswordMediator alloc] initWithPasswordStore:passwordStore
+                                                  faviconLoader:faviconLoader
+                                                       webState:webState
+                                                    syncService:syncService
+                                         invokedOnPasswordField:NO];
+  [self.passwordMediator fetchPasswordsForURL:GURL::EmptyGURL()];
   self.passwordMediator.actionSectionEnabled = NO;
   self.passwordMediator.consumer = self.passwordViewController;
   self.passwordMediator.contentInjector = self.injectionHandler;
