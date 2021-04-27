@@ -116,8 +116,12 @@ void EncoderBase<Traits>::encode(FrameType* frame,
   DCHECK(active_config_);
 
   // This will fail if |frame| is already closed.
-  auto* internal_frame = CloneFrame(frame, exception_state);
+  auto* internal_frame = frame->clone(exception_state);
+
   if (!internal_frame) {
+    // Remove exceptions relating to cloning closed frames.
+    exception_state.ClearException();
+
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Cannot encode closed frame.");
     return;

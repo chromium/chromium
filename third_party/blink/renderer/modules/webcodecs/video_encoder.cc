@@ -368,11 +368,6 @@ bool VideoEncoder::VerifyCodecSupport(ParsedConfig* config,
   return VerifyCodecSupportStatic(config, &exception_state);
 }
 
-VideoFrame* VideoEncoder::CloneFrame(VideoFrame* frame,
-                                     ExceptionState& exception_state) {
-  return frame->clone(exception_state);
-}
-
 void VideoEncoder::UpdateEncoderLog(std::string encoder_name,
                                     bool is_hw_accelerated) {
   // TODO(https://crbug.com/1139089) : Add encoder properties.

@@ -276,29 +276,6 @@ bool AudioEncoder::CanReconfigure(ParsedConfig& original_config,
          original_config.options.sample_rate == new_config.options.sample_rate;
 }
 
-// TODO(crbug.com/1201992): Add AudioFrame::clone() and remove this.
-AudioFrame* AudioEncoder::CloneFrame(AudioFrame* frame, ExceptionState&) {
-  auto* init = AudioFrameInit::Create();
-  init->setTimestamp(frame->timestamp());
-
-  auto* buffer = frame->buffer();
-  if (!buffer)
-    return nullptr;
-
-  // Validata that buffer's data is consistent
-  for (auto channel = 0u; channel < buffer->numberOfChannels(); channel++) {
-    auto array = buffer->getChannelData(channel);
-    float* data = array->Data();
-    if (!data)
-      return nullptr;
-    if (array->length() != buffer->length())
-      return nullptr;
-  }
-
-  init->setBuffer(buffer);
-  return MakeGarbageCollected<AudioFrame>(init);
-}
-
 bool AudioEncoder::VerifyCodecSupport(ParsedConfig* config,
                                       ExceptionState& exception_state) {
   return VerifyCodecSupportStatic(config, &exception_state);

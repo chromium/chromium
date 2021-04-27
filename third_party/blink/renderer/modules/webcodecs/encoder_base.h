@@ -104,9 +104,6 @@ class MODULES_EXPORT EncoderBase
                                           ExceptionState&) = 0;
   virtual bool VerifyCodecSupport(InternalConfigType*, ExceptionState&) = 0;
 
-  // TODO(crbug.com/1201992): Once AudioFrames can be cloned, remove this.
-  virtual FrameType* CloneFrame(FrameType*, ExceptionState&) = 0;
-
   std::unique_ptr<CodecLogger> logger_;
 
   std::unique_ptr<MediaEncoderType> media_encoder_;

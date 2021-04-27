@@ -83,7 +83,6 @@ class MODULES_EXPORT AudioEncoder final
   ParsedConfig* ParseConfig(const AudioEncoderConfig* opts,
                             ExceptionState&) override;
   bool VerifyCodecSupport(ParsedConfig*, ExceptionState&) override;
-  AudioFrame* CloneFrame(AudioFrame*, ExceptionState&) override;
 
   bool CanReconfigure(ParsedConfig& original_config,
                       ParsedConfig& new_config) override;

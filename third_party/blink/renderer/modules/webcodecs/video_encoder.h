@@ -94,7 +94,6 @@ class MODULES_EXPORT VideoEncoder final
   ParsedConfig* ParseConfig(const VideoEncoderConfig*,
                             ExceptionState&) override;
   bool VerifyCodecSupport(ParsedConfig*, ExceptionState&) override;
-  VideoFrame* CloneFrame(VideoFrame*, ExceptionState&) override;
 
   void ContinueConfigureWithGpuFactories(
       Request* request,
