@@ -14,6 +14,10 @@ struct Conversion {
   // Conversion data specified in conversion redirect. 0 is used as a
   // default if none is provided.
   uint64 conversion_data = 0;
+
+  // Event source trigger data specified in conversion redirect. 0 is used as a
+  // default if none is provided.
+  uint64 event_source_trigger_data = 0;
 };
 
 // Mojo struct to represent blink::Impression native struct.

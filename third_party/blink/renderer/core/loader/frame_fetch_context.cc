@@ -860,6 +860,7 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
   mojom::blink::ConversionPtr conversion = mojom::blink::Conversion::New();
   conversion->reporting_origin = SecurityOrigin::Create(url);
   conversion->conversion_data = 0UL;
+  conversion->event_source_trigger_data = 0UL;
 
   const char kConversionDataParam[] = "conversion-data";
   URLSearchParams* search_params = URLSearchParams::Create(url.Query());
@@ -870,6 +871,17 @@ bool FrameFetchContext::SendConversionRequestInsteadOfRedirecting(
 
     // Default invalid params to 0.
     conversion->conversion_data = is_valid_integer ? data : 0UL;
+  }
+  // Defaulting to 0 means that it is not possible to selectively convert only
+  // event sources or navigation sources.
+  const char kEventSourceTriggerDataParam[] = "event-source-trigger-data";
+  if (search_params->has(kEventSourceTriggerDataParam)) {
+    bool is_valid_integer = false;
+    uint64_t data = search_params->get(kEventSourceTriggerDataParam)
+                        .ToUInt64Strict(&is_valid_integer);
+
+    // Default invalid params to 0.
+    conversion->event_source_trigger_data = is_valid_integer ? data : 0UL;
   }
 
   mojo::AssociatedRemote<mojom::blink::ConversionHost> conversion_host;

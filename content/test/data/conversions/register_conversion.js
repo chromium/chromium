@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-function registerConversion(data) {
+function registerConversion(data, eventSourceTriggerData) {
   // Use a relative URL for conversion registration.
-  registerConversionForOrigin(data, "");
+  registerConversionForOrigin(data, "", eventSourceTriggerData);
 }
 
-function registerConversionForOrigin(data, origin) {
+function registerConversionForOrigin(data, origin, eventSourceTriggerData) {
   let img = document.createElement("img");
   img.src = origin +
       "/server-redirect?.well-known/register-conversion?conversion-data=" +
-      data;
+      data + (eventSourceTriggerData === undefined ? ""
+              : "&event-source-trigger-data=" + eventSourceTriggerData);
   img.onerror = function () { document.title = "converted"; };
   document.body.appendChild(img);
 }

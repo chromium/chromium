@@ -49,6 +49,7 @@ class TestConversionHost : public ConversionHost {
 
   void RegisterConversion(blink::mojom::ConversionPtr conversion) override {
     last_conversion_data_ = conversion->conversion_data;
+    last_event_source_trigger_data_ = conversion->event_source_trigger_data;
     num_conversions_++;
 
     // Don't quit the run loop if we have not seen the expected number of
@@ -68,10 +69,15 @@ class TestConversionHost : public ConversionHost {
     return last_conversion_data_;
   }
 
+  uint64_t last_event_source_trigger_data() const {
+    return last_event_source_trigger_data_;
+  }
+
   size_t num_conversions() { return num_conversions_; }
 
  private:
   uint64_t last_conversion_data_ = 0;
+  uint64_t last_event_source_trigger_data_ = 0;
   size_t num_conversions_ = 0;
   size_t expected_num_conversions_ = 0;
   base::RunLoop conversion_waiter_;
@@ -162,6 +168,20 @@ IN_PROC_BROWSER_TEST_F(ConversionRegistrationBrowserTest,
 
   EXPECT_TRUE(ExecJs(web_contents(), "registerConversion(123)"));
   EXPECT_EQ(123UL, host->WaitForNumConversions(1));
+  EXPECT_EQ(0UL, host->last_event_source_trigger_data());
+}
+
+IN_PROC_BROWSER_TEST_F(ConversionRegistrationBrowserTest,
+                       ConversionRegistered_EventSourceTriggerDataReceived) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      embedded_test_server()->GetURL("/page_with_conversion_redirect.html")));
+  std::unique_ptr<TestConversionHost> host =
+      TestConversionHost::ReplaceAndGetConversionHost(web_contents());
+
+  EXPECT_TRUE(ExecJs(web_contents(), "registerConversion(123, 456)"));
+  EXPECT_EQ(123UL, host->WaitForNumConversions(1));
+  EXPECT_EQ(456UL, host->last_event_source_trigger_data());
 }
 
 IN_PROC_BROWSER_TEST_F(ConversionRegistrationBrowserTest,
@@ -261,6 +281,7 @@ IN_PROC_BROWSER_TEST_F(ConversionRegistrationBrowserTest,
   EXPECT_TRUE(ExecJs(web_contents(),
                      JsReplace("createTrackingPixel($1);", registration_url)));
   EXPECT_EQ(200UL, host->WaitForNumConversions(1));
+  EXPECT_EQ(0UL, host->last_event_source_trigger_data());
 }
 
 IN_PROC_BROWSER_TEST_F(ConversionRegistrationBrowserTest,
@@ -286,8 +307,9 @@ IN_PROC_BROWSER_TEST_F(ConversionRegistrationBrowserTest,
   EXPECT_TRUE(ExecJs(web_contents(), "createTrackingPixel(\"server-redirect?" +
                                          kWellKnownUrl + "\");"));
 
-  // Conversion data should be defaulted to 0.
+  // Conversion data and event source trigger data should be defaulted to 0.
   EXPECT_EQ(0UL, host->WaitForNumConversions(1));
+  EXPECT_EQ(0UL, host->last_event_source_trigger_data());
 }
 
 IN_PROC_BROWSER_TEST_F(ConversionRegistrationBrowserTest,
@@ -304,6 +326,7 @@ IN_PROC_BROWSER_TEST_F(ConversionRegistrationBrowserTest,
   EXPECT_TRUE(ExecJs(ChildFrameAt(web_contents()->GetMainFrame(), 0),
                      JsReplace("createTrackingPixel($1);", redirect_url)));
   EXPECT_EQ(200u, host->WaitForNumConversions(1));
+  EXPECT_EQ(0u, host->last_event_source_trigger_data());
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
   EXPECT_EQ(1u, host->num_conversions());
@@ -358,6 +381,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(ExecJs(ChildFrameAt(web_contents()->GetMainFrame(), 0),
                      JsReplace("createTrackingPixel($1);", redirect_url)));
   EXPECT_EQ(200u, host->WaitForNumConversions(1));
+  EXPECT_EQ(0u, host->last_event_source_trigger_data());
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
   EXPECT_EQ(1u, host->num_conversions());
