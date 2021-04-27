@@ -6,6 +6,7 @@
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/public/cpp/ash_features.h"
+#include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_widget_builder.h"
@@ -31,6 +32,13 @@ void PerformAcceleratorAction(AcceleratorAction action,
                               const ui::Accelerator& accelerator) {
   Shell::Get()->accelerator_controller()->PerformActionIfEnabled(action,
                                                                  accelerator);
+}
+
+void SetResizable(views::Widget* widget) {
+  widget->GetNativeWindow()->SetProperty(
+      aura::client::kResizeBehaviorKey,
+      aura::client::kResizeBehaviorCanResize |
+          aura::client::kResizeBehaviorCanMaximize);
 }
 
 }  // namespace
@@ -75,14 +83,21 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
       member.second.call_count = 0;
   }
 
-  // Returns the stored activation index for |window|.
-  int GetActivationIndex(aura::Window* window) const {
+  // Returns window info for `window`.
+  full_restore::WindowInfo* GetWindowInfo(aura::Window* window) const {
     const int32_t restore_window_id =
         window->GetProperty(full_restore::kRestoreWindowIdKey);
     if (!base::Contains(fake_full_restore_file_, restore_window_id))
+      return nullptr;
+    return fake_full_restore_file_.at(restore_window_id).info.get();
+  }
+
+  // Returns the stored activation index for |window|.
+  int GetActivationIndex(aura::Window* window) const {
+    full_restore::WindowInfo* window_info = GetWindowInfo(window);
+    if (!window_info)
       return -1;
-    base::Optional<int32_t> activation_index =
-        fake_full_restore_file_.at(restore_window_id).info->activation_index;
+    base::Optional<int32_t> activation_index = window_info->activation_index;
     return activation_index.value_or(-1);
   }
 
@@ -99,23 +114,22 @@ class FullRestoreControllerTest : public AshTestBase, public aura::EnvObserver {
     TestWidgetBuilder widget_builder;
     widget_builder.SetWidgetType(views::Widget::InitParams::TYPE_WINDOW)
         .SetBounds(bounds)
-        .SetContext(root_window);
-    widget_builder.SetWindowProperty(full_restore::kActivationIndexKey,
-                                     new int32_t(activation_index));
-    widget_builder.SetWindowProperty(full_restore::kLaunchedFromFullRestoreKey,
-                                     true);
+        .SetShow(false)
+        .SetContext(root_window)
+        .SetWindowProperty(full_restore::kActivationIndexKey,
+                           new int32_t(activation_index))
+        .SetWindowProperty(full_restore::kLaunchedFromFullRestoreKey, true);
     // If this is not given, the window will get assigned an id in
     // `OnWindowInitialized()`.
     if (restore_window_id) {
       widget_builder.SetWindowProperty(full_restore::kRestoreWindowIdKey,
                                        *restore_window_id);
     }
+
     views::Widget* widget = widget_builder.BuildOwnedByNativeWidget();
-    widget->GetNativeWindow()->SetProperty(
-        aura::client::kResizeBehaviorKey,
-        aura::client::kResizeBehaviorCanResize |
-            aura::client::kResizeBehaviorCanMaximize);
+    SetResizable(widget);
     FullRestoreController::Get()->OnWidgetInitialized(widget);
+    widget->Show();
     return widget;
   }
 
@@ -745,6 +759,78 @@ TEST_F(FullRestoreControllerTest, DisplaySizeChange) {
   EXPECT_LE(restored_bounds.height(), 400);
   EXPECT_EQ(gfx::Point(0, 0), restored_bounds.origin());
   EXPECT_TRUE(WindowState::Get(restored_window)->IsNormalStateType());
+}
+
+// Tests full restore behavior for when a window saved in clamshell mode is
+// restored as expected in tablet mode.
+TEST_F(FullRestoreControllerTest, ClamshellToTablet) {
+  constexpr int kRestoreId = 1;
+
+  // Add a normal window to the fake file.
+  const gfx::Rect clamshell_bounds(400, 400);
+  AddEntryToFakeFile(kRestoreId, clamshell_bounds,
+                     chromeos::WindowStateType::kNormal);
+
+  // Restore the window after entering tablet mode, it should be maximized.
+  TabletModeControllerTestApi().EnterTabletMode();
+  auto* restored_window =
+      CreateTestFullRestoredWidgetFromRestoreId(kRestoreId)->GetNativeWindow();
+  EXPECT_TRUE(WindowState::Get(restored_window)->IsMaximized());
+  EXPECT_EQ(screen_util::GetMaximizedWindowBoundsInParent(restored_window),
+            restored_window->GetBoundsInScreen());
+
+  // Leave tablet mode. The window should have the saved bounds.
+  TabletModeControllerTestApi().LeaveTabletMode();
+  EXPECT_FALSE(WindowState::Get(restored_window)->IsMaximized());
+  EXPECT_EQ(clamshell_bounds, restored_window->GetBoundsInScreen());
+}
+
+// Tests full restore behavior for when a window saved in tablet mode is
+// restored as expected in clamshell mode.
+TEST_F(FullRestoreControllerTest, TabletToClamshell) {
+  TabletModeControllerTestApi().EnterTabletMode();
+
+  // The tablet mode window manager watches windows when they are added, then
+  // tracks them when the window is shown. They must be resizable when tracked,
+  // so we use a TestWidgetBuilder instead of `CreateTestWindow()`, which would
+  // show the window before we can make it resizable.
+  const gfx::Rect expected_bounds(300, 300);
+  TestWidgetBuilder builder;
+  views::Widget* widget =
+      builder.SetTestWidgetDelegate()
+          .SetBounds(expected_bounds)
+          .SetContext(Shell::GetPrimaryRootWindow())
+          .SetShow(false)
+          .SetWindowProperty(aura::client::kAppType,
+                             static_cast<int>(AppType::CHROME_APP))
+          .BuildOwnedByNativeWidget();
+  SetResizable(widget);
+  widget->Show();
+
+  aura::Window* window = widget->GetNativeWindow();
+  ASSERT_TRUE(WindowState::Get(window)->IsMaximized());
+  ASSERT_EQ(screen_util::GetMaximizedWindowBoundsInParent(window),
+            window->GetBoundsInScreen());
+
+  // Check that the values in the fake file can be restored in clamshell mode.
+  full_restore::WindowInfo* window_info = GetWindowInfo(window);
+  ASSERT_TRUE(window_info);
+  ASSERT_TRUE(window_info->current_bounds);
+  ASSERT_TRUE(window_info->window_state_type);
+  EXPECT_EQ(expected_bounds, *window_info->current_bounds);
+  EXPECT_EQ(chromeos::WindowStateType::kDefault,
+            *window_info->window_state_type);
+
+  const int restore_id = window->GetProperty(full_restore::kRestoreWindowIdKey);
+
+  // Leave tablet mode, and then mock creating the window from full restore
+  // file. Test that the state and bounds are as expected in clamshell mode.
+  widget->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+  TabletModeControllerTestApi().LeaveTabletMode();
+  auto* restored_window =
+      CreateTestFullRestoredWidgetFromRestoreId(restore_id)->GetNativeWindow();
+  EXPECT_TRUE(WindowState::Get(restored_window)->IsNormalStateType());
+  EXPECT_EQ(expected_bounds, window->GetBoundsInScreen());
 }
 
 }  // namespace ash
