@@ -57,5 +57,3 @@
 # tags: [ display-server-wayland display-server-x ]
 # results: [ Failure RetryOnFailure Skip ]
 # END TAG HEADER
-
-WebCodecs_EncodeDecodeRender_* [ Failure ]
