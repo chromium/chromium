@@ -735,8 +735,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
   ShowAndVerifyUi();
 }
 
+#if defined(OS_LINUX)
+// TODO(crbug.com/1173344): Flaky on Linux.
+#define MAYBE_InvokeUi_UninstallDialog_Cancel \
+  DISABLED_InvokeUi_UninstallDialog_Cancel
+#else
+#define MAYBE_InvokeUi_UninstallDialog_Cancel InvokeUi_UninstallDialog_Cancel
+#endif
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
-                       InvokeUi_UninstallDialog_Cancel) {
+                       MAYBE_InvokeUi_UninstallDialog_Cancel) {
   ShowAndVerifyUi();
 }
 
