@@ -659,6 +659,9 @@ Try tapping the mic to ask me anything.
         =1 {Edit file}
         other {Edit files}}
       </message>
+      <message name="IDS_SCANNING_APP_SHOW_IN_FOLDER_BUTTON_LABEL" desc="The label for the button that opens the files app in the location of the saved scan.">
+        Show in folder
+      </message>
 
       <!-- Diagnostics App -->
       <message name="IDS_DIAGNOSTICS_TITLE" desc="The title of the diagnostics app.">

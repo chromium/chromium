@@ -58,6 +58,14 @@
       inner-h-t-m-l="[[fileSavedTextContent_]]">
   </span>
 </div>
+<div class="container" on-click="showFileInLocation_" >
+  <span id="showInFolderButtonLabel" class="label" aria-hidden="true">
+    [[i18n('showInFolderButtonLabel')]]
+  </span>
+  <cr-icon-button id="showInFolderButton" class="button"
+      iron-icon="cr:open-in-new" aria-labelledby="showInFolderButtonLabel">
+  </cr-icon-button>
+</div>
 <div class="container" hidden="[[!showEditButton_]]"
     on-click="openMediaApp_" >
   <span id="editButtonLabel" class="label" aria-hidden="true">

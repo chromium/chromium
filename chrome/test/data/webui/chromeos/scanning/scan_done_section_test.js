@@ -133,6 +133,22 @@ export function scanDoneSectionTest() {
     assertTrue(doneEventFired);
   });
 
+  // Verify clicking the Show in folder button invokes showFileInLocation().
+  test('showInFolderButtonClick', () => {
+    const scannedFilePaths =
+        [{'path': '/test/path/scan1.jpg'}, {'path': '/test/path/scan2.jpg'}];
+    scanningBrowserProxy.setPathToFile(scannedFilePaths[1].path);
+    scanDoneSection.scannedFilePaths = scannedFilePaths;
+
+    return flushTasks().then(() => {
+      scanDoneSection.$$('#showInFolderButton').click();
+      return flushTasks().then(() => {
+        assertEquals(
+            1, scanningBrowserProxy.getCallCount('showFileInLocation'));
+      });
+    });
+  });
+
   // Verify clicking the edit button attempts to open the Media app with the
   // correct file paths.
   test('editButtonClick', () => {
