@@ -13,6 +13,7 @@
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/compositor/layer.h"
 
 namespace ash {
 

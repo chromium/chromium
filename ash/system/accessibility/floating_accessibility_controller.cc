@@ -17,6 +17,7 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 
 namespace ash {

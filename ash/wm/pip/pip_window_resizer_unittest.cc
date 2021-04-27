@@ -26,6 +26,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/hit_test.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/widget/widget.h"

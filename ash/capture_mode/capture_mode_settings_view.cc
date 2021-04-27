@@ -14,6 +14,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/layout/box_layout.h"

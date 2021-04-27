@@ -17,6 +17,7 @@
 #include "base/containers/adapters.h"
 #include "base/i18n/rtl.h"
 #include "ui/compositor/canvas_painter.h"
+#include "ui/compositor/compositor.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/shadow_util.h"

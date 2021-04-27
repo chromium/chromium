@@ -13,6 +13,7 @@
 #include "ash/shell.h"
 #include "base/strings/utf_string_conversions.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/label.h"
 

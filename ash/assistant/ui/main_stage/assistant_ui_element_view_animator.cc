@@ -9,6 +9,7 @@
 #include "ash/assistant/util/animation_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/animation/tween.h"
 
 namespace ash {

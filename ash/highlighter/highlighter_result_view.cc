@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/timer/timer.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/geometry/rect_conversions.h"

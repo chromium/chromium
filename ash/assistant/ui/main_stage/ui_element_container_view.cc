@@ -22,6 +22,7 @@
 #include "cc/base/math_util.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/layout/box_layout.h"

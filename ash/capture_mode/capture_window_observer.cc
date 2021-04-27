@@ -10,6 +10,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_finder.h"
 #include "ash/shell.h"
+#include "ui/compositor/layer.h"
 #include "ui/wm/public/activation_client.h"
 
 namespace ash {

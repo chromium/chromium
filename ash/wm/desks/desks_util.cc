@@ -16,6 +16,7 @@
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/window_util.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/layer.h"
 
 namespace ash {
 

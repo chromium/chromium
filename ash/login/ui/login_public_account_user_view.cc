@@ -11,6 +11,7 @@
 #include "ash/login/ui/login_display_style.h"
 #include "ash/login/ui/views_utils.h"
 #include "base/bind.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/views/layout/box_layout.h"
 

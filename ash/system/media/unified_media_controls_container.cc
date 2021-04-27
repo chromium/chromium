@@ -5,6 +5,7 @@
 #include "ash/system/media/unified_media_controls_container.h"
 
 #include "ash/system/tray/tray_constants.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/border.h"
 
 namespace ash {

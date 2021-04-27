@@ -19,6 +19,7 @@
 #include "base/logging.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
+#include "ui/compositor/layer.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {

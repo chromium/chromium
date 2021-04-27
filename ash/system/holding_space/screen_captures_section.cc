@@ -10,6 +10,7 @@
 #include "ash/system/holding_space/holding_space_item_screen_capture_view.h"
 #include "ash/system/holding_space/holding_space_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"

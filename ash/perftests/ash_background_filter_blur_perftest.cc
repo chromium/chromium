@@ -9,6 +9,7 @@
 #include "base/timer/lap_timer.h"
 #include "testing/perf/perf_test.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
 
 namespace ash {

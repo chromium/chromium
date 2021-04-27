@@ -39,6 +39,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "media/base/media_switches.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
 

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/clipboard/clipboard_nudge.h"
+
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -15,6 +16,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/events/keyboard_layout_util.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"

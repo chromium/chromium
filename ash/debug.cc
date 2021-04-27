@@ -20,6 +20,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/debug_utils.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/debug_utils.h"
 #include "ui/views/widget/widget.h"
 

@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/ash_features.h"
 #include "base/metrics/histogram_macros.h"
+#include "ui/compositor/layer.h"
 
 namespace {
 

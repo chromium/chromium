@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "cc/paint/paint_flags.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/animation/multi_animation.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"

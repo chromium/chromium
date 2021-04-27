@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_skia_operations.h"

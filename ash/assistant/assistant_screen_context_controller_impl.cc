@@ -26,6 +26,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/accessibility/ax_assistant_structure.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/skbitmap_operations.h"

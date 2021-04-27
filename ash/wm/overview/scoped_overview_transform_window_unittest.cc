@@ -11,6 +11,7 @@
 #include "ash/wm/window_state.h"
 #include "base/numerics/safe_conversions.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"

@@ -5,6 +5,7 @@
 #include "ash/shelf/test/widget_animation_waiter.h"
 
 #include "ash/test/ash_test_base.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_delegate.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/views/widget/widget.h"

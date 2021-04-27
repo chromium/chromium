@@ -6,6 +6,7 @@
 
 #include "components/media_message_center/media_notification_view_impl.h"
 #include "components/media_message_center/media_session_notification_item.h"
+#include "ui/compositor/layer.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"

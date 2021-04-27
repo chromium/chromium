@@ -24,6 +24,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/metadata/metadata_impl_macros.h"

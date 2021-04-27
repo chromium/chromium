@@ -15,6 +15,7 @@
 #include "base/bind.h"
 #include "base/time/time.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/views/layout/fill_layout.h"

@@ -7,6 +7,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_occlusion_tracker.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/transform.h"
 #include "ui/views/widget/widget.h"

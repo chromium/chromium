@@ -8,6 +8,7 @@
 #include "ash/shell_delegate.h"
 #include "base/bind.h"
 #include "ipc/ipc_channel.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace ash {
 namespace {

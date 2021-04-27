@@ -14,6 +14,7 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/wm_highlight_item_border.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/text_constants.h"

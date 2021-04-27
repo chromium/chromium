@@ -49,6 +49,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"

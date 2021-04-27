@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/optional.h"
 #include "base/scoped_observation.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 
 namespace ash {

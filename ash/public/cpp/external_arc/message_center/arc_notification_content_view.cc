@@ -9,7 +9,6 @@
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_view.h"
-// TODO(https://crbug.com/768439): Remove nogncheck when moved to ash.
 #include "base/auto_reset.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
@@ -18,6 +17,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/events/event_handler.h"

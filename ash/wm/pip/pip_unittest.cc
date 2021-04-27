@@ -23,6 +23,7 @@
 #include "ash/wm/wm_event.h"
 #include "base/command_line.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"

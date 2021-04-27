@@ -34,6 +34,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/wm/core/coordinate_conversion.h"
 

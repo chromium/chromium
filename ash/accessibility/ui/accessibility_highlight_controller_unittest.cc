@@ -23,6 +23,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/ime/dummy_text_input_client.h"
 #include "ui/compositor/compositor_switches.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/gfx/image/image.h"

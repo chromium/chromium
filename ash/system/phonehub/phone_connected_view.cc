@@ -17,6 +17,7 @@
 #include "chromeos/components/phonehub/notification_access_manager.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"

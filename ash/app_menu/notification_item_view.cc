@@ -5,6 +5,7 @@
 #include "ash/app_menu/notification_item_view.h"
 
 #include "ash/public/cpp/app_menu_constants.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/text_elider.h"

@@ -5,6 +5,7 @@
 #include "ash/shelf/shelf_container_view.h"
 
 #include "ash/public/cpp/shelf_config.h"
+#include "ui/compositor/layer.h"
 
 namespace ash {
 

@@ -16,6 +16,7 @@
 #include "base/i18n/rtl.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"

@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/aura/window_occlusion_tracker.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_observer.h"
 
 namespace ash {

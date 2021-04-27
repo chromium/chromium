@@ -20,6 +20,7 @@
 #include "ash/system/holding_space/holding_space_util.h"
 #include "base/callback_helpers.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
