@@ -321,6 +321,14 @@ void NearbyConnectionBrokerImpl::OnConnectionStatusChangeTimeout() {
 }
 
 void NearbyConnectionBrokerImpl::OnMojoDisconnection() {
+  PA_LOG(INFO) << __func__;
+
+  // If there is a mojo disconnect while requesting a connection, we should
+  // still try to disconnect from the endpoint in case the endpoint was almost
+  // about to be connected.
+  if (connection_status_ == ConnectionStatus::kRequestingConnection)
+    need_to_disconnect_endpoint_ = true;
+
   Disconnect(util::NearbyDisconnectionReason::kDisconnectionRequestedByClient);
 }
 
@@ -361,6 +369,11 @@ void NearbyConnectionBrokerImpl::OnConnectionInitiated(
     return;
   }
 
+  // Ignore in the event we are currently disconnecting. Either
+  // OnConnectionRejected or OnDisconnected will be called eventually.
+  if (connection_status_ == ConnectionStatus::kDisconnecting)
+    return;
+
   DCHECK_EQ(ConnectionStatus::kRequestingConnection, connection_status_);
   TransitionToStatus(ConnectionStatus::kAcceptingConnection);
   need_to_disconnect_endpoint_ = true;
@@ -396,6 +409,15 @@ void NearbyConnectionBrokerImpl::OnConnectionRejected(
   if (remote_endpoint_id_ != endpoint_id) {
     PA_LOG(WARNING) << "OnConnectionRejected(): unexpected endpoint ID "
                     << endpoint_id;
+    return;
+  }
+
+  if (connection_status_ == ConnectionStatus::kDisconnecting) {
+    // If this callback is invoked while we are disconnecting, we can consider
+    // the disconnect successful.
+    need_to_disconnect_endpoint_ = false;
+    Disconnect(
+        util::NearbyDisconnectionReason::kDisconnectionRequestedByClient);
     return;
   }
 
