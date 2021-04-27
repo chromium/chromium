@@ -535,8 +535,8 @@ size_t DrawImageRectOp::Serialize(const PaintOp* base_op,
   helper.Write(*flags_to_serialize);
 
   // This adjustment mirrors DiscardableImageMap::GatherDiscardableImage logic.
-  SkM44 matrix = SkM44(SkMatrix::RectToRect(op->src, op->dst)) *
-                 options.canvas->getLocalToDevice();
+  SkM44 matrix = options.canvas->getLocalToDevice() *
+                 SkM44(SkMatrix::RectToRect(op->src, op->dst));
   // Note that we don't request subsets here since the GpuImageCache has no
   // optimizations for using subsets.
   SkSize scale_adjustment = SkSize::Make(1.f, 1.f);

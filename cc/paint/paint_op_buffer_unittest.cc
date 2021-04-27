@@ -3540,15 +3540,21 @@ TEST(PaintOpBufferTest, SecurityConstrainedImageSerialization) {
 
 TEST(PaintOpBufferTest, DrawImageRectSerializeScaledImages) {
   auto buffer = sk_make_sp<PaintOpBuffer>();
-  buffer->push<ScaleOp>(0.5f, 2.0f);
 
   // scales: x dimension = x0.25, y dimension = x5
   // translations here are arbitrary
   SkRect src = SkRect::MakeXYWH(3, 4, 20, 6);
   SkRect dst = SkRect::MakeXYWH(20, 38, 5, 30);
+
+  // Adjust transform matrix so that order of operations for src->dst is
+  // confirmed to be applied before the canvas's transform.
+  buffer->push<TranslateOp>(.5f * dst.centerX(), 2.f * dst.centerY());
+  buffer->push<RotateOp>(90.f);
+  buffer->push<TranslateOp>(-.5f * dst.centerX(), -2.f * dst.centerY());
+  buffer->push<ScaleOp>(0.5f, 2.0f);
+
   buffer->push<DrawImageRectOp>(CreateDiscardablePaintImage(gfx::Size(32, 16)),
                                 src, dst, SkCanvas::kStrict_SrcRectConstraint);
-
   std::unique_ptr<char, base::AlignedFreeDeleter> memory(
       static_cast<char*>(base::AlignedAlloc(PaintOpBuffer::kInitialBufferSize,
                                             PaintOpBuffer::PaintOpAlign)));

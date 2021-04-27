@@ -141,9 +141,8 @@ class DiscardableImageGenerator {
         auto* image_rect_op = static_cast<DrawImageRectOp*>(op);
         // TODO(crbug.com/1155544): Make a RectToRect method that uses SkM44s
         // in MathUtil.
-        SkM44 matrix = SkM44(SkMatrix::RectToRect(image_rect_op->src,
-                                                  image_rect_op->dst)) *
-                       ctm;
+        SkM44 matrix = ctm * SkM44(SkMatrix::RectToRect(image_rect_op->src,
+                                                        image_rect_op->dst));
         AddImage(image_rect_op->image,
                  image_rect_op->flags.useDarkModeForImage(), image_rect_op->src,
                  op_rect, matrix, image_rect_op->flags.getFilterQuality());
