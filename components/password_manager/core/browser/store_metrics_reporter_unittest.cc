@@ -49,8 +49,6 @@ class StoreMetricsReporterTest : public SyncUsernameTestBase {
   StoreMetricsReporterTest() {
     prefs_.registry()->RegisterBooleanPref(prefs::kCredentialsEnableService,
                                            false);
-    prefs_.registry()->RegisterBooleanPref(prefs::kPasswordLeakDetectionEnabled,
-                                           false);
     prefs_.registry()->RegisterBooleanPref(
         password_manager::prefs::kWasAutoSignInFirstRunExperienceShown, false);
   }
@@ -74,12 +72,9 @@ class StoreMetricsReporterTestWithParams
 // Test that store-independent metrics are reported correctly.
 TEST_P(StoreMetricsReporterTestWithParams, StoreIndependentMetrics) {
   const bool password_manager_enabled = std::get<0>(GetParam());
-  const bool leak_detection_enabled = std::get<1>(GetParam());
 
   prefs_.SetBoolean(password_manager::prefs::kCredentialsEnableService,
                     password_manager_enabled);
-  prefs_.SetBoolean(password_manager::prefs::kPasswordLeakDetectionEnabled,
-                    leak_detection_enabled);
   base::HistogramTester histogram_tester;
   EXPECT_CALL(client_, GetProfilePasswordStore())
       .WillRepeatedly(Return(nullptr));
@@ -88,8 +83,6 @@ TEST_P(StoreMetricsReporterTestWithParams, StoreIndependentMetrics) {
 
   histogram_tester.ExpectUniqueSample("PasswordManager.Enabled",
                                       password_manager_enabled, 1);
-  histogram_tester.ExpectUniqueSample("PasswordManager.LeakDetection.Enabled",
-                                      leak_detection_enabled, 1);
 }
 
 // Test that sync username and syncing state are passed correctly to the

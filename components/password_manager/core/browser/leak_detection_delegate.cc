@@ -127,8 +127,6 @@ void LeakDetectionDelegate::OnShowLeakDetectionNotification(
                             IsPasswordSaved(leak_type));
   base::UmaHistogramBoolean("PasswordManager.LeakDetection.IsPasswordReused",
                             IsPasswordUsedOnOtherSites(leak_type));
-  base::UmaHistogramBoolean("PasswordManager.LeakDetection.IsSyncing",
-                            IsSyncingPasswordsNormally(leak_type));
   client_->NotifyUserCredentialsWereLeaked(leak_type, url, username);
 }
 

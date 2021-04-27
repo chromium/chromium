@@ -197,10 +197,6 @@ StoreMetricsReporter::StoreMetricsReporter(
   base::UmaHistogramBoolean(
       "PasswordManager.Enabled",
       prefs->GetBoolean(password_manager::prefs::kCredentialsEnableService));
-  base::UmaHistogramBoolean(
-      "PasswordManager.LeakDetection.Enabled",
-      prefs->GetBoolean(
-          password_manager::prefs::kPasswordLeakDetectionEnabled));
 
   // If both stores exist, kick off the MultiStoreMetricsReporter.
   PasswordStore* profile_store = client->GetProfilePasswordStore();

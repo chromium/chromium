@@ -150,9 +150,6 @@ void LeakDetectionRequest::OnLookupSingleLeakResponse(
 
     int net_error = simple_url_loader_->NetError();
     DLOG(ERROR) << "Net Error: " << net::ErrorToString(net_error);
-    // Network error codes are negative. See: src/net/base/net_error_list.h.
-    base::UmaHistogramSparse("PasswordManager.LeakDetection.NetErrorCode",
-                             -net_error);
 
     std::move(callback).Run(nullptr, error);
     return;
