@@ -114,7 +114,8 @@ ReadLaterButton::ReadLaterButton(Browser* browser)
           std::make_unique<HighlightColorAnimation>(this)) {
   // Note: BrowserView may not exist during tests.
   if (BrowserView::GetBrowserViewForBrowser(browser_))
-    DCHECK(!BrowserView::GetBrowserViewForBrowser(browser_)->side_panel());
+    DCHECK(!BrowserView::GetBrowserViewForBrowser(browser_)
+                ->right_aligned_side_panel());
 
   dot_indicator_ = views::DotIndicator::Install(image());
 

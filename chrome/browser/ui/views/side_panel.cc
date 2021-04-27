@@ -15,7 +15,6 @@ namespace {
 
 // TODO(pbos): Figure out what our preferred width should be.
 constexpr int kDefaultWidth = 320;
-constexpr int kBorderWidth = 1;
 
 }  // namespace
 
@@ -26,27 +25,13 @@ SidePanel::SidePanel() {
   SetPanelWidth(kDefaultWidth);
 }
 
-void SidePanel::SetPanelWidth(int width) {
-  // Only the width is used by BrowserViewLayout.
-  SetPreferredSize(gfx::Size(width + kBorderWidth, 1));
-}
-
 SidePanel::~SidePanel() {
   RemoveObserver(this);
 }
 
-void SidePanel::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  const ui::ThemeProvider* const theme_provider = GetThemeProvider();
-  SetBorder(views::CreateSolidSidedBorder(
-      0, kBorderWidth, 0, 0,
-      color_utils::GetResultingPaintColor(
-          theme_provider->GetColor(
-              ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR),
-          theme_provider->GetColor(ThemeProperties::COLOR_TOOLBAR))));
-  // TODO(pbos): Figure out transition from theme to background.
-  SetBackground(views::CreateSolidBackground(
-      theme_provider->GetColor(ThemeProperties::COLOR_TOOLBAR)));
+void SidePanel::SetPanelWidth(int width) {
+  // Only the width is used by BrowserViewLayout.
+  SetPreferredSize(gfx::Size(width, 1));
 }
 
 void SidePanel::ChildVisibilityChanged(View* child) {

@@ -26,16 +26,11 @@ class SidePanel : public views::View, public views::ViewObserver {
   void UpdateVisibility();
 
   // views::View:
-  void OnThemeChanged() override;
   void ChildVisibilityChanged(View* child) override;
 
   // views::ViewObserver:
   void OnChildViewAdded(View* observed_view, View* child) override;
   void OnChildViewRemoved(View* observed_view, View* child) override;
-
-  // TODO(pbos): Separate BDDV use from its content so we can host the content
-  // without a bubble delegate. SidePanel is not a bubble.
-  std::vector<std::unique_ptr<views::BubbleDialogDelegateView>> owned_children_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_H_

@@ -87,6 +87,7 @@
 #include "chrome/browser/ui/views/download/download_shelf_web_view.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
 #include "chrome/browser/ui/views/extensions/extension_keybinding_registry_views.h"
+#include "chrome/browser/ui/views/extensions/extensions_side_panel_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/eye_dropper/eye_dropper.h"
 #include "chrome/browser/ui/views/find_bar_host.h"
@@ -652,8 +653,20 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   contents_container_ = AddChildView(std::move(contents_container));
   set_contents_view(contents_container_);
 
-  if (base::FeatureList::IsEnabled(features::kSidePanel))
-    side_panel_ = AddChildView(std::make_unique<SidePanel>());
+  if (base::FeatureList::IsEnabled(features::kSidePanel)) {
+    right_aligned_side_panel_ = AddChildView(std::make_unique<SidePanel>());
+    right_aligned_side_panel_separator_ =
+        AddChildView(std::make_unique<ContentsSeparator>());
+  }
+
+  if (base::FeatureList::IsEnabled(features::kExtensionsSidePanel)) {
+    left_aligned_side_panel_ = AddChildView(std::make_unique<SidePanel>());
+    left_aligned_side_panel_separator_ =
+        AddChildView(std::make_unique<ContentsSeparator>());
+    extensions_side_panel_controller_ =
+        std::make_unique<ExtensionsSidePanelController>(
+            left_aligned_side_panel_, browser_->profile());
+  }
 
   // InfoBarContainer needs to be added as a child here for drop-shadow, but
   // needs to come after toolbar in focus order (see EnsureFocusOrder()).
@@ -2927,7 +2940,9 @@ void BrowserView::AddedToWidget() {
       std::make_unique<BrowserViewLayoutDelegateImpl>(this),
       GetWidget()->GetNativeView(), this, top_container_,
       tab_strip_region_view_, tabstrip_, toolbar_, infobar_container_,
-      contents_container_, side_panel_, immersive_mode_controller_.get(),
+      contents_container_, left_aligned_side_panel_,
+      left_aligned_side_panel_separator_, right_aligned_side_panel_,
+      right_aligned_side_panel_separator_, immersive_mode_controller_.get(),
       web_footer_experiment, contents_separator_));
 
   EnsureFocusOrder();

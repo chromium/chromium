@@ -26,6 +26,14 @@ const base::Feature kChromeTipsInMainMenu{"ChromeTipsInMainMenu",
 const base::Feature kEvDetailsInPageInfo{"EvDetailsInPageInfo",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables the hosting of an extension in the left aligned side panel of the
+// browser window. Currently used for a hosted extension experiment.
+const base::Feature kExtensionsSidePanel{"ExtensionsSidePanel",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::FeatureParam<std::string> kExtensionsSidePanelId{
+    &kExtensionsSidePanel, "ExtensionsSidePanelId", ""};
+
 // Enables the new profile picker.
 // https:://crbug.com/1063856
 const base::Feature kNewProfilePicker{"NewProfilePicker",

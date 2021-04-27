@@ -59,6 +59,7 @@ class BookmarkBarView;
 class Browser;
 class ContentsLayoutManager;
 class ExclusiveAccessBubbleViews;
+class ExtensionsSidePanelController;
 class FeaturePromoControllerViews;
 class FullscreenControlHost;
 class InfoBarContainerView;
@@ -174,7 +175,7 @@ class BrowserView : public BrowserWindow,
   // Container for the web contents.
   views::View* contents_container() { return contents_container_; }
 
-  SidePanel* side_panel() { return side_panel_; }
+  SidePanel* right_aligned_side_panel() { return right_aligned_side_panel_; }
 
   void set_contents_border_widget(views::Widget* contents_border_widget) {
     GetBrowserViewLayout()->set_contents_border_widget(contents_border_widget);
@@ -869,8 +870,17 @@ class BrowserView : public BrowserWindow,
   // Handled by ContentsLayoutManager.
   views::View* contents_container_ = nullptr;
 
-  // The side panel.
-  SidePanel* side_panel_ = nullptr;
+  // The side panel aligned to the right side of the browser window.
+  SidePanel* right_aligned_side_panel_ = nullptr;
+  views::View* right_aligned_side_panel_separator_ = nullptr;
+
+  // The side panel aligned to the left side of the browser window.
+  SidePanel* left_aligned_side_panel_ = nullptr;
+  views::View* left_aligned_side_panel_separator_ = nullptr;
+
+  // A controller that handles extensions hosted in the left aligned side panel.
+  std::unique_ptr<ExtensionsSidePanelController>
+      extensions_side_panel_controller_;
 
   // Provides access to the toolbar buttons this browser view uses. Buttons may
   // appear in a hosted app frame or in a tabbed UI toolbar.

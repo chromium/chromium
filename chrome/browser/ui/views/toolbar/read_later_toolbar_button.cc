@@ -63,7 +63,7 @@ ReadLaterToolbarButton::~ReadLaterToolbarButton() = default;
 void ReadLaterToolbarButton::ButtonPressed() {
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser_);
-  DCHECK(browser_view->side_panel());
+  DCHECK(browser_view->right_aligned_side_panel());
 
   if (!side_panel_webview_) {
     auto webview = std::make_unique<ReadLaterSidePanelWebView>(
@@ -71,10 +71,12 @@ void ReadLaterToolbarButton::ButtonPressed() {
         base::BindRepeating(&ReadLaterToolbarButton::ButtonPressed,
                             base::Unretained(this)));
     side_panel_webview_ =
-        browser_view->side_panel()->AddChildView(std::move(webview));
+        browser_view->right_aligned_side_panel()->AddChildView(
+            std::move(webview));
     SetHighlighted(true);
   } else {
-    browser_view->side_panel()->RemoveChildViewT(side_panel_webview_);
+    browser_view->right_aligned_side_panel()->RemoveChildViewT(
+        side_panel_webview_);
     side_panel_webview_ = nullptr;
     // TODO(pbos): Observe read_later_side_panel_bubble_ so we don't need to
     // SetHighlighted(false) here.

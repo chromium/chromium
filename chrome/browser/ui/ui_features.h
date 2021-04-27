@@ -30,6 +30,11 @@ extern const base::Feature kCommander;
 
 extern const base::Feature kEvDetailsInPageInfo;
 
+extern const base::Feature kExtensionsSidePanel;
+
+// The extension id of the extension hosted in the left aligned side panel.
+extern const base::FeatureParam<std::string> kExtensionsSidePanelId;
+
 extern const base::Feature kNewProfilePicker;
 
 extern const base::Feature kNewTabstripAnimation;

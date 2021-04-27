@@ -58,7 +58,10 @@ class BrowserViewLayout : public views::LayoutManager {
                     views::View* toolbar,
                     InfoBarContainerView* infobar_container,
                     views::View* contents_container,
-                    views::View* side_panel,
+                    views::View* left_aligned_side_panel,
+                    views::View* left_aligned_side_panel_separator,
+                    views::View* right_aligned_side_panel,
+                    views::View* right_aligned_side_panel_separator,
                     ImmersiveModeController* immersive_mode_controller,
                     views::View* web_footer_experiment,
                     views::View* contents_separator);
@@ -120,6 +123,11 @@ class BrowserViewLayout : public views::LayoutManager {
   // |contents_container_| and other views.
   void LayoutContentsContainerView(int top, int bottom);
 
+  // Layout the `side_panel`. This updates the passed in
+  // `contents_container_bounds` to accommodate the side panel.
+  void LayoutSidePanelView(views::View* side_panel,
+                           gfx::Rect& contents_container_bounds);
+
   // Updates |top_container_|'s bounds. The new bounds depend on the size of
   // the bookmark bar and the toolbar.
   void UpdateTopContainerBounds();
@@ -152,7 +160,10 @@ class BrowserViewLayout : public views::LayoutManager {
   views::View* const toolbar_;
   InfoBarContainerView* const infobar_container_;
   views::View* const contents_container_;
-  views::View* const side_panel_;
+  views::View* const left_aligned_side_panel_;
+  views::View* const left_aligned_side_panel_separator_;
+  views::View* const right_aligned_side_panel_;
+  views::View* const right_aligned_side_panel_separator_;
   ImmersiveModeController* const immersive_mode_controller_;
   views::View* const web_footer_experiment_;
   views::View* const contents_separator_;

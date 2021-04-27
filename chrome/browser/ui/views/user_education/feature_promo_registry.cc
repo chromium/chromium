@@ -58,7 +58,7 @@ views::View* GetMediaButton(BrowserView* browser_view) {
 
 // kIPHReadingListDiscoveryFeature:
 views::View* GetReadingListButton(BrowserView* browser_view) {
-  if (browser_view->side_panel())
+  if (browser_view->right_aligned_side_panel())
     return browser_view->toolbar()->read_later_button();
 
   if (browser_view->bookmark_bar()->read_later_button()->IsDrawn())

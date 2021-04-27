@@ -140,7 +140,10 @@ BrowserViewLayout::BrowserViewLayout(
     views::View* toolbar,
     InfoBarContainerView* infobar_container,
     views::View* contents_container,
-    views::View* side_panel,
+    views::View* left_aligned_side_panel,
+    views::View* left_aligned_side_panel_separator,
+    views::View* right_aligned_side_panel,
+    views::View* right_aligned_side_panel_separator,
     ImmersiveModeController* immersive_mode_controller,
     views::View* web_footer_experiment,
     views::View* contents_separator)
@@ -152,7 +155,10 @@ BrowserViewLayout::BrowserViewLayout(
       toolbar_(toolbar),
       infobar_container_(infobar_container),
       contents_container_(contents_container),
-      side_panel_(side_panel),
+      left_aligned_side_panel_(left_aligned_side_panel),
+      left_aligned_side_panel_separator_(left_aligned_side_panel_separator),
+      right_aligned_side_panel_(right_aligned_side_panel),
+      right_aligned_side_panel_separator_(right_aligned_side_panel_separator),
       immersive_mode_controller_(immersive_mode_controller),
       web_footer_experiment_(web_footer_experiment),
       contents_separator_(contents_separator),
@@ -510,32 +516,87 @@ void BrowserViewLayout::LayoutContentsContainerView(int top, int bottom) {
                                     -webui_tab_strip_->size().height());
   }
 
-  if (side_panel_ && side_panel_->GetVisible()) {
-    // Side panel occupies some of the container's space.
-    gfx::Rect side_panel_bounds = contents_container_bounds;
-    side_panel_bounds.set_width(side_panel_->GetPreferredSize().width());
-
-    // Shrink container bounds to fit the side panel.
-    contents_container_bounds.set_width(contents_container_bounds.width() -
-                                        side_panel_bounds.width());
-    // Place the side panel to the right of contents.
-    side_panel_bounds.set_x(contents_container_bounds.x() +
-                            contents_container_bounds.width());
-
-    gfx::Rect separator_bounds = contents_separator_->bounds();
-    const int separator_height = separator_bounds.height();
-    // Raise the side panel bounds with the height of the separator to have it
-    // connected to the toolbar area (and not be spoofable by web content).
-    side_panel_bounds.set_y(side_panel_bounds.y() - separator_height);
-    side_panel_bounds.set_height(side_panel_bounds.height() + separator_height);
-    side_panel_->SetBoundsRect(side_panel_bounds);
-
-    // Resize separator so that it separates the contents area only.
-    separator_bounds.set_width(contents_container_bounds.width() + 1);
-    contents_separator_->SetBoundsRect(separator_bounds);
-  }
+  LayoutSidePanelView(right_aligned_side_panel_, contents_container_bounds);
+  LayoutSidePanelView(left_aligned_side_panel_, contents_container_bounds);
 
   contents_container_->SetBoundsRect(contents_container_bounds);
+}
+
+void BrowserViewLayout::LayoutSidePanelView(
+    views::View* side_panel,
+    gfx::Rect& contents_container_bounds) {
+  if (!side_panel)
+    return;
+
+  DCHECK(side_panel == right_aligned_side_panel_ ||
+         side_panel == left_aligned_side_panel_);
+  const bool is_right_aligned = side_panel == right_aligned_side_panel_;
+  views::View* side_panel_separator = is_right_aligned
+                                          ? right_aligned_side_panel_separator_
+                                          : left_aligned_side_panel_separator_;
+  DCHECK(side_panel_separator);
+  SetViewVisibility(side_panel_separator, side_panel->GetVisible());
+  if (!side_panel->GetVisible())
+    return;
+
+  // Side panels should not exceed 1/3 the browser window's width.
+  const int side_panel_max_width = browser_view_->GetLocalBounds().width() / 3;
+
+  // Side panel occupies some of the container's space.
+  gfx::Rect side_panel_bounds = contents_container_bounds;
+  side_panel_bounds.set_width(
+      std::min(side_panel->GetPreferredSize().width(), side_panel_max_width));
+
+  constexpr int kSidePanelSeparatorWidth = 1;
+
+  // Shrink container bounds to fit the side panel.
+  contents_container_bounds.set_width(contents_container_bounds.width() -
+                                      side_panel_bounds.width() -
+                                      kSidePanelSeparatorWidth);
+
+  if (is_right_aligned) {
+    // Place the side panel to the right of contents, leaving space for the
+    // separator.
+    side_panel_bounds.set_x(contents_container_bounds.x() +
+                            contents_container_bounds.width() +
+                            kSidePanelSeparatorWidth);
+  } else {
+    // Adjust the `contents_container_bounds` to sit to the right of the left
+    // aligned side panel, leaving space for the separator.
+    contents_container_bounds.set_x(side_panel_bounds.width() +
+                                    kSidePanelSeparatorWidth);
+  }
+
+  gfx::Rect contents_separator_bounds = contents_separator_->bounds();
+  const int contents_separator_height = contents_separator_bounds.height();
+  // Raise the side panel bounds with the height of the contents separator to
+  // have it connected to the toolbar area (and not be spoofable by web
+  // content).
+  side_panel_bounds.set_y(side_panel_bounds.y() - contents_separator_height);
+  side_panel_bounds.set_height(side_panel_bounds.height() +
+                               contents_separator_height);
+  side_panel->SetBoundsRect(side_panel_bounds);
+
+  // Resize the contents separator so that it separates the contents area only.
+  contents_separator_bounds.set_width(contents_container_bounds.width() + 1);
+  contents_separator_bounds.set_x(is_right_aligned
+                                      ? contents_container_bounds.x()
+                                      : contents_container_bounds.x() - 1);
+  contents_separator_->SetBoundsRect(contents_separator_bounds);
+
+  // Adjust the side panel separator bounds based on the side panel bounds
+  // calculated above.
+  gfx::Rect side_panel_separator_bounds = side_panel_bounds;
+  side_panel_separator_bounds.set_width(kSidePanelSeparatorWidth);
+  // If right aligned place it immediately to the right of the contents
+  // container. If left aligned place it immediately to the right of the side
+  // panel.
+  side_panel_separator_bounds.set_x(
+      is_right_aligned
+          ? contents_container_bounds.x() + contents_container_bounds.width()
+          : side_panel_bounds.x() + side_panel_bounds.width());
+
+  side_panel_separator->SetBoundsRect(side_panel_separator_bounds);
 }
 
 void BrowserViewLayout::UpdateTopContainerBounds() {

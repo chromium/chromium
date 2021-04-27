@@ -269,7 +269,7 @@ void ToolbarView::Init() {
   }
 
   std::unique_ptr<ReadLaterToolbarButton> read_later_button;
-  if (browser_view_->side_panel() &&
+  if (browser_view_->right_aligned_side_panel() &&
       base::FeatureList::IsEnabled(reading_list::switches::kReadLater)) {
     read_later_button = std::make_unique<ReadLaterToolbarButton>(browser_);
   }
