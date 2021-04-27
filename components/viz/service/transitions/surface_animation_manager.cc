@@ -30,7 +30,13 @@ CompositorRenderPassId NextRenderPassId(const CompositorRenderPassId& id) {
 }
 
 constexpr base::TimeDelta kDefaultAnimationDuration =
-    base::TimeDelta::FromMilliseconds(300);
+    base::TimeDelta::FromMilliseconds(250);
+
+constexpr base::TimeDelta kSharedOpacityAnimationDuration =
+    base::TimeDelta::FromMilliseconds(60);
+
+constexpr base::TimeDelta kSharedOpacityAnimationDelay =
+    base::TimeDelta::FromMilliseconds(60);
 
 // Scale the overall duration to produce the opacity duration. Opacity
 // transitions which reveal an element (i.e., transition opacity from 0 -> 1)
@@ -781,10 +787,25 @@ void SurfaceAnimationManager::CreateSharedElementCurves() {
 
     auto float_curve = gfx::KeyframedFloatAnimationCurve::Create();
     float_curve->set_target(&state);
+
+    // The curve starts at opacity delay and runs for opacity animation, so it
+    // potentially has 4 points:
+    // time 0 == start opacity
+    // time 'delay' == start opacity
+    // time 'delay' + 'duration' == end opacity
+    // time end of animation == end opacity
     float_curve->AddKeyframe(
         gfx::FloatKeyframe::Create(base::TimeDelta(), start_opacity, nullptr));
+    if (!kSharedOpacityAnimationDelay.is_zero()) {
+      float_curve->AddKeyframe(gfx::FloatKeyframe::Create(
+          kSharedOpacityAnimationDelay, start_opacity, nullptr));
+    }
+    float_curve->AddKeyframe(gfx::FloatKeyframe::Create(
+        kSharedOpacityAnimationDuration + kSharedOpacityAnimationDelay,
+        end_opacity, nullptr));
     float_curve->AddKeyframe(gfx::FloatKeyframe::Create(
         kDefaultAnimationDuration, end_opacity, nullptr));
+
     state.driver().AddKeyframeModel(gfx::KeyframeModel::Create(
         std::move(float_curve), gfx::KeyframeEffect::GetNextKeyframeModelId(),
         AnimationState::kSrcOpacity));
@@ -797,8 +818,9 @@ void SurfaceAnimationManager::CreateSharedElementCurves() {
     // Set transform value to be the same at the start and end; we will
     // re-target the end transform when we update the curves for a given
     // compositor frame if needed.
-    auto ease_timing = gfx::CubicBezierTimingFunction::CreatePreset(
-        gfx::CubicBezierTimingFunction::EaseType::EASE);
+    // The specific timing function is fine tuned for the effect.
+    auto ease_timing =
+        gfx::CubicBezierTimingFunction::Create(0.4, 0.0, 0.2, 1.0);
 
     gfx::TransformOperations transform_ops;
     transform_ops.AppendMatrix(shared->draw_data.target_transform);

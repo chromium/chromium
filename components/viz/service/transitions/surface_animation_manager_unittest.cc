@@ -349,12 +349,12 @@ TEST_F(SurfaceAnimationManagerTest, CheckStartEndStates) {
     EXPECT_TRUE(manager().NeedsBeginFrame());
 
     manager().UpdateFrameTime(
-        AdvanceTime(base::TimeDelta::FromMilliseconds(250)));
+        AdvanceTime(base::TimeDelta::FromMilliseconds(200)));
     manager().NotifyFrameAdvanced();
     EXPECT_TRUE(manager().NeedsBeginFrame());
 
     manager().UpdateFrameTime(
-        AdvanceTime(base::TimeDelta::FromMilliseconds(250)));
+        AdvanceTime(base::TimeDelta::FromMilliseconds(200)));
     manager().NotifyFrameAdvanced();
     // We should be at the done state, but still need a frame.
     EXPECT_TRUE(manager().NeedsBeginFrame());
