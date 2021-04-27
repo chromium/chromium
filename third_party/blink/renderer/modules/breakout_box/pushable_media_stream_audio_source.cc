@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_audio_source.h"
 
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
-#include "third_party/blink/renderer/modules/webcodecs/audio_frame_serialization_data.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -22,7 +21,7 @@ void PushableMediaStreamAudioSource::LivenessBroker::
 }
 
 void PushableMediaStreamAudioSource::LivenessBroker::PushAudioData(
-    std::unique_ptr<AudioFrameSerializationData> data) {
+    scoped_refptr<media::AudioBuffer> data) {
   WTF::MutexLocker locker(mutex_);
   if (!source_)
     return;
@@ -44,7 +43,9 @@ PushableMediaStreamAudioSource::~PushableMediaStreamAudioSource() {
 }
 
 void PushableMediaStreamAudioSource::PushAudioData(
-    std::unique_ptr<AudioFrameSerializationData> data) {
+    scoped_refptr<media::AudioBuffer> data) {
+  DCHECK(data);
+
   if (audio_task_runner_->RunsTasksInCurrentSequence()) {
     DeliverData(std::move(data));
     return;
@@ -58,27 +59,45 @@ void PushableMediaStreamAudioSource::PushAudioData(
 }
 
 void PushableMediaStreamAudioSource::DeliverData(
-    std::unique_ptr<AudioFrameSerializationData> data) {
+    scoped_refptr<media::AudioBuffer> data) {
   DCHECK(audio_task_runner_->RunsTasksInCurrentSequence());
+  DCHECK(data);
 
-  const media::AudioBus& audio_bus = *data->data();
-  int sample_rate = data->sample_rate();
+  const int sample_rate = data->sample_rate();
+  const int frame_count = data->frame_count();
+  const int channel_count = data->channel_count();
 
   media::AudioParameters params = GetAudioParameters();
   if (!params.IsValid() ||
       params.format() != media::AudioParameters::AUDIO_PCM_LOW_LATENCY ||
-      last_channels_ != audio_bus.channels() ||
-      last_sample_rate_ != sample_rate || last_frames_ != audio_bus.frames()) {
-    SetFormat(
-        media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                               media::GuessChannelLayout(audio_bus.channels()),
-                               sample_rate, audio_bus.frames()));
-    last_channels_ = audio_bus.channels();
+      last_channels_ != channel_count || last_sample_rate_ != sample_rate ||
+      last_frames_ != frame_count) {
+    SetFormat(media::AudioParameters(
+        media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+        media::GuessChannelLayout(channel_count), sample_rate, frame_count));
+    last_channels_ = channel_count;
     last_sample_rate_ = sample_rate;
-    last_frames_ = audio_bus.frames();
+    last_frames_ = frame_count;
   }
 
-  DeliverDataToTracks(audio_bus, base::TimeTicks() + data->timestamp());
+  std::unique_ptr<media::AudioBus> audio_bus;
+
+  if (data->sample_format() == media::SampleFormat::kSampleFormatPlanarF32) {
+    // |data| already has the right format for media::AudioBus, and we can
+    // simply wrap the memory without copying it.
+    audio_bus = media::AudioBus::CreateWrapper(channel_count);
+    for (int ch = 0; ch < channel_count; ch++) {
+      audio_bus->SetChannelData(
+          ch, reinterpret_cast<float*>(data->channel_data()[ch]));
+    }
+    audio_bus->set_frames(frame_count);
+  } else {
+    // |data| must be converted into the proper media::AudioBus format.
+    audio_bus = media::AudioBus::Create(channel_count, frame_count);
+    data->ReadFrames(frame_count, 0, 0, audio_bus.get());
+  }
+
+  DeliverDataToTracks(*audio_bus, base::TimeTicks() + data->timestamp());
 }
 
 bool PushableMediaStreamAudioSource::EnsureSourceIsStarted() {

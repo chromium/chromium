@@ -198,6 +198,10 @@ void AudioEncoder::ProcessEncode(Request* request) {
   DCHECK_GT(requested_encodes_, 0);
 
   auto* frame = request->frame.Release();
+
+  // TODO(crbug.com/1201986): calling buffer() might incur a copy internally,
+  // and we copy the data right back into a media::AudioBus below. We should
+  // replace buffer() with data().
   auto* buffer = frame->buffer();
 
   auto done_callback = [](AudioEncoder* self, uint32_t reset_count,
@@ -272,6 +276,7 @@ bool AudioEncoder::CanReconfigure(ParsedConfig& original_config,
          original_config.options.sample_rate == new_config.options.sample_rate;
 }
 
+// TODO(crbug.com/1201992): Add AudioFrame::clone() and remove this.
 AudioFrame* AudioEncoder::CloneFrame(AudioFrame* frame, ExceptionState&) {
   auto* init = AudioFrameInit::Create();
   init->setTimestamp(frame->timestamp());

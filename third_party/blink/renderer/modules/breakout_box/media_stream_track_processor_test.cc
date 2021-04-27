@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_audio_sink.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_sink.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
-#include "third_party/blink/renderer/modules/webcodecs/audio_frame_serialization_data.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
@@ -196,9 +195,10 @@ TEST_F(MediaStreamTrackProcessorTest, AudioFramesAreExposed) {
   base::RunLoop sink_loop;
   EXPECT_CALL(mock_audio_sink, OnData(_, _))
       .WillOnce(base::test::RunOnceClosure(sink_loop.QuitClosure()));
-  pushable_source_ptr->PushAudioData(AudioFrameSerializationData::Wrap(
-      media::AudioBus::Create(/*channels=*/2, /*frames=*/100),
-      /*sample_rate=*/8000, base::TimeDelta::FromSeconds(1)));
+  pushable_source_ptr->PushAudioData(media::AudioBuffer::CreateEmptyBuffer(
+      media::ChannelLayout::CHANNEL_LAYOUT_STEREO, /*channel_count=*/2,
+      /*sample_rate=*/8000,
+      /*frame_count=*/100, base::TimeDelta::FromSeconds(1)));
 
   ScriptPromiseTester read_tester(script_state,
                                   reader->read(script_state, exception_state));

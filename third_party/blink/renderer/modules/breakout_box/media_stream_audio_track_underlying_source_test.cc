@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
+#include "media/base/audio_buffer.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
@@ -18,7 +19,6 @@
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_audio_source.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_audio_sink.h"
-#include "third_party/blink/renderer/modules/webcodecs/audio_frame_serialization_data.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
@@ -76,8 +76,9 @@ class MediaStreamAudioTrackUnderlyingSourceTest : public testing::Test {
   void PushFrame(
       MediaStreamTrack* track,
       const base::Optional<base::TimeDelta>& timestamp = base::nullopt) {
-    auto data = AudioFrameSerializationData::Wrap(
-        media::AudioBus::Create(/*channels=*/2, kNumFrames), kSampleRate,
+    auto data = media::AudioBuffer::CreateEmptyBuffer(
+        media::ChannelLayout::CHANNEL_LAYOUT_STEREO, /*channel_count=*/2,
+        kSampleRate, kNumFrames,
         timestamp.value_or(base::TimeDelta::FromSeconds(1)));
     PushableMediaStreamAudioSource* pushable_audio_source =
         static_cast<PushableMediaStreamAudioSource*>(

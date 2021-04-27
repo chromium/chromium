@@ -17,8 +17,6 @@
 
 namespace blink {
 
-class AudioFrameSerializationData;
-
 template <typename NativeFrameType>
 class FrameQueueTransferringOptimizer final
     : public ReadableStreamTransferringOptimizer {
@@ -49,13 +47,12 @@ class FrameQueueTransferringOptimizer final
 extern template class MODULES_EXTERN_TEMPLATE_EXPORT
     FrameQueueTransferringOptimizer<scoped_refptr<media::VideoFrame>>;
 extern template class MODULES_EXTERN_TEMPLATE_EXPORT
-    FrameQueueTransferringOptimizer<
-        std::unique_ptr<AudioFrameSerializationData>>;
+    FrameQueueTransferringOptimizer<scoped_refptr<media::AudioBuffer>>;
 
 using VideoFrameQueueTransferOptimizer =
     FrameQueueTransferringOptimizer<scoped_refptr<media::VideoFrame>>;
-using AudioFrameQueueTransferOptimizer = FrameQueueTransferringOptimizer<
-    std::unique_ptr<AudioFrameSerializationData>>;
+using AudioFrameQueueTransferOptimizer =
+    FrameQueueTransferringOptimizer<scoped_refptr<media::AudioBuffer>>;
 
 }  // namespace blink
 

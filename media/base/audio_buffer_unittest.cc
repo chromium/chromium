@@ -174,6 +174,44 @@ TEST(AudioBufferTest, CopyFrom) {
   EXPECT_FALSE(original_buffer->end_of_stream());
 }
 
+TEST(AudioBufferTest, CopyFromAudioBus) {
+  const int kChannelCount = 2;
+  const int kFrameCount = kSampleRate / 100;
+
+  // For convenience's sake, create an arbitrary |temp_buffer| and copy it to
+  // |audio_bus|, instead of generating data in |audio_bus| ourselves.
+  scoped_refptr<AudioBuffer> temp_buffer = MakeAudioBuffer<uint8_t>(
+      kSampleFormatU8, CHANNEL_LAYOUT_STEREO, kChannelCount, kSampleRate, 1, 1,
+      kFrameCount, base::TimeDelta());
+
+  auto audio_bus = media::AudioBus::Create(kChannelCount, kFrameCount);
+  temp_buffer->ReadFrames(kFrameCount, 0, 0, audio_bus.get());
+
+  const base::TimeDelta kTimestamp = base::TimeDelta::FromMilliseconds(123);
+
+  auto audio_buffer_from_bus =
+      media::AudioBuffer::CopyFrom(kSampleRate, kTimestamp, audio_bus.get());
+
+  EXPECT_EQ(audio_buffer_from_bus->channel_count(), audio_bus->channels());
+  EXPECT_EQ(audio_buffer_from_bus->channel_layout(),
+            GuessChannelLayout(kChannelCount));
+  EXPECT_EQ(audio_buffer_from_bus->frame_count(), audio_bus->frames());
+  EXPECT_EQ(audio_buffer_from_bus->timestamp(), kTimestamp);
+  EXPECT_EQ(audio_buffer_from_bus->sample_rate(), kSampleRate);
+  EXPECT_EQ(audio_buffer_from_bus->sample_format(),
+            SampleFormat::kSampleFormatPlanarF32);
+  EXPECT_FALSE(audio_buffer_from_bus->end_of_stream());
+
+  for (int ch = 0; ch < kChannelCount; ++ch) {
+    const float* bus_data = audio_bus->channel(ch);
+    const float* buffer_data = reinterpret_cast<const float*>(
+        audio_buffer_from_bus->channel_data()[ch]);
+
+    for (int i = 0; i < kFrameCount; ++i)
+      EXPECT_EQ(buffer_data[i], bus_data[i]);
+  }
+}
+
 TEST(AudioBufferTest, CopyBitstreamFrom) {
   const ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
   const int kChannelCount = ChannelLayoutToChannelCount(kChannelLayout);

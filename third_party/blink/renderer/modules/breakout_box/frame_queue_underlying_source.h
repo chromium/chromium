@@ -10,9 +10,11 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 
-namespace blink {
+namespace media {
+class AudioBuffer;
+}
 
-class AudioFrameSerializationData;
+namespace blink {
 
 template <typename NativeFrameType>
 class FrameQueueUnderlyingSource
@@ -130,19 +132,18 @@ ScriptWrappable* FrameQueueUnderlyingSource<scoped_refptr<media::VideoFrame>>::
     MakeBlinkFrame(scoped_refptr<media::VideoFrame>);
 
 template <>
-ScriptWrappable*
-    FrameQueueUnderlyingSource<std::unique_ptr<AudioFrameSerializationData>>::
-        MakeBlinkFrame(std::unique_ptr<AudioFrameSerializationData>);
+ScriptWrappable* FrameQueueUnderlyingSource<scoped_refptr<media::AudioBuffer>>::
+    MakeBlinkFrame(scoped_refptr<media::AudioBuffer>);
 
 extern template class MODULES_EXTERN_TEMPLATE_EXPORT
     FrameQueueUnderlyingSource<scoped_refptr<media::VideoFrame>>;
 extern template class MODULES_EXTERN_TEMPLATE_EXPORT
-    FrameQueueUnderlyingSource<std::unique_ptr<AudioFrameSerializationData>>;
+    FrameQueueUnderlyingSource<scoped_refptr<media::AudioBuffer>>;
 
 using VideoFrameQueueUnderlyingSource =
     FrameQueueUnderlyingSource<scoped_refptr<media::VideoFrame>>;
 using AudioFrameQueueUnderlyingSource =
-    FrameQueueUnderlyingSource<std::unique_ptr<AudioFrameSerializationData>>;
+    FrameQueueUnderlyingSource<scoped_refptr<media::AudioBuffer>>;
 
 }  // namespace blink
 

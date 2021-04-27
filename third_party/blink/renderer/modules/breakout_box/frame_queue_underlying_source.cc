@@ -5,13 +5,13 @@
 #include "third_party/blink/renderer/modules/breakout_box/frame_queue_underlying_source.h"
 
 #include "base/bind_post_task.h"
+#include "media/base/audio_buffer.h"
 #include "media/base/video_frame.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_frame.h"
-#include "third_party/blink/renderer/modules/webcodecs/audio_frame_serialization_data.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -296,14 +296,14 @@ FrameQueueUnderlyingSource<scoped_refptr<media::VideoFrame>>::MakeBlinkFrame(
 
 template <>
 ScriptWrappable*
-FrameQueueUnderlyingSource<std::unique_ptr<AudioFrameSerializationData>>::
-    MakeBlinkFrame(std::unique_ptr<AudioFrameSerializationData> media_frame) {
+FrameQueueUnderlyingSource<scoped_refptr<media::AudioBuffer>>::MakeBlinkFrame(
+    scoped_refptr<media::AudioBuffer> media_frame) {
   DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
   return MakeGarbageCollected<AudioFrame>(std::move(media_frame));
 }
 
 template class MODULES_TEMPLATE_EXPORT
-    FrameQueueUnderlyingSource<std::unique_ptr<AudioFrameSerializationData>>;
+    FrameQueueUnderlyingSource<scoped_refptr<media::AudioBuffer>>;
 template class MODULES_TEMPLATE_EXPORT
     FrameQueueUnderlyingSource<scoped_refptr<media::VideoFrame>>;
 

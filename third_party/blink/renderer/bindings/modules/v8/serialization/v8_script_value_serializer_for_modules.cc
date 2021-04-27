@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame_delegate.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_frame.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_frame_attachment.h"
-#include "third_party/blink/renderer/modules/webcodecs/audio_frame_serialization_data.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_attachment.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_transfer_list.h"
@@ -167,15 +166,15 @@ bool V8ScriptValueSerializerForModules::WriteDOMObject(
           "storage.");
       return false;
     }
-    std::unique_ptr<AudioFrameSerializationData> data =
-        wrappable->ToImpl<AudioFrame>()->GetSerializationData();
+    scoped_refptr<media::AudioBuffer> data =
+        wrappable->ToImpl<AudioFrame>()->data();
     if (!data) {
       exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
                                         "An AudioFrame could not be cloned "
                                         "because it was closed.");
       return false;
     }
-    return WriteAudioFrameSerializationData(std::move(data));
+    return WriteMediaAudioBuffer(std::move(data));
   }
   return false;
 }
@@ -417,13 +416,13 @@ bool V8ScriptValueSerializerForModules::WriteVideoFrameHandle(
   return true;
 }
 
-bool V8ScriptValueSerializerForModules::WriteAudioFrameSerializationData(
-    std::unique_ptr<AudioFrameSerializationData> audio_data) {
+bool V8ScriptValueSerializerForModules::WriteMediaAudioBuffer(
+    scoped_refptr<media::AudioBuffer> audio_data) {
   auto* attachment =
       GetSerializedScriptValue()->GetOrCreateAttachment<AudioFrameAttachment>();
-  auto& serialization_data = attachment->SerializationData();
-  serialization_data.push_back(std::move(audio_data));
-  const uint32_t index = static_cast<uint32_t>(serialization_data.size() - 1);
+  auto& audio_buffers = attachment->AudioBuffers();
+  audio_buffers.push_back(std::move(audio_data));
+  const uint32_t index = static_cast<uint32_t>(audio_buffers.size() - 1);
 
   WriteTag(kAudioFrameTag);
   WriteUint32(index);

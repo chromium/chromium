@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_frame.h"
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_audio_source.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_frame.h"
-#include "third_party/blink/renderer/modules/webcodecs/audio_frame_serialization_data.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -52,7 +51,7 @@ ScriptPromise MediaStreamAudioTrackUnderlyingSink::write(
     return ScriptPromise();
   }
 
-  pushable_source->PushAudioData(audio_frame->GetSerializationData());
+  pushable_source->PushAudioData(audio_frame->data());
   audio_frame->close();
 
   return ScriptPromise::CastUndefined(script_state);

@@ -47,14 +47,12 @@ class TransferredFrameQueueUnderlyingSource
 extern template class MODULES_EXTERN_TEMPLATE_EXPORT
     TransferredFrameQueueUnderlyingSource<scoped_refptr<media::VideoFrame>>;
 extern template class MODULES_EXTERN_TEMPLATE_EXPORT
-    TransferredFrameQueueUnderlyingSource<
-        std::unique_ptr<AudioFrameSerializationData>>;
+    TransferredFrameQueueUnderlyingSource<scoped_refptr<media::AudioBuffer>>;
 
 using TransferredVideoFrameQueueUnderlyingSource =
     TransferredFrameQueueUnderlyingSource<scoped_refptr<media::VideoFrame>>;
 using TransferredAudioFrameQueueUnderlyingSource =
-    TransferredFrameQueueUnderlyingSource<
-        std::unique_ptr<AudioFrameSerializationData>>;
+    TransferredFrameQueueUnderlyingSource<scoped_refptr<media::AudioBuffer>>;
 
 }  // namespace blink
 

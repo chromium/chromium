@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_frame_init.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
-#include "third_party/blink/renderer/modules/webcodecs/audio_frame_serialization_data.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -83,6 +82,9 @@ TEST_F(AudioFrameTest, ConstructFromMediaBuffer) {
           << "i=" << i << ", ch=" << ch;
     }
   }
+
+  // The media::AudioBuffer we receive should match the original |media_buffer|.
+  EXPECT_EQ(frame->data(), media_buffer);
 }
 
 TEST_F(AudioFrameTest, ConstructFromAudioFrameInit) {
@@ -94,65 +96,6 @@ TEST_F(AudioFrameTest, ConstructFromAudioFrameInit) {
 
   EXPECT_EQ(frame->timestamp(), kTimestampInMicroSeconds);
   EXPECT_EQ(frame->buffer(), audio_buffer);
-}
-
-TEST_F(AudioFrameTest, VerifySerializationData) {
-  auto* audio_buffer = CreateDefaultAudioBuffer();
-
-  // Create a frame from the audio buffer.
-  auto* audio_frame_init = CreateDefaultAudioFrameInit(audio_buffer);
-  auto* frame = MakeGarbageCollected<AudioFrame>(audio_frame_init);
-
-  // Serialize the data from the frame.
-  std::unique_ptr<AudioFrameSerializationData> data =
-      frame->GetSerializationData();
-
-  // Make sure attributes match.
-  EXPECT_EQ(data->timestamp(),
-            base::TimeDelta::FromMicroseconds(kTimestampInMicroSeconds));
-  EXPECT_EQ(data->sample_rate(), kSampleRate);
-  EXPECT_EQ(data->data()->channels(), kChannels);
-  EXPECT_EQ(data->data()->frames(), kFrames);
-
-  // Make sure the data matches.
-  for (int ch = 0; ch < kChannels; ++ch) {
-    float* buffer_data = audio_buffer->getChannelData(ch)->Data();
-    float* serialized_data = data->data()->channel(ch);
-    for (int i = 0; i < kFrames; ++i) {
-      ASSERT_FLOAT_EQ(buffer_data[i], serialized_data[i])
-          << "i=" << i << ", ch=" << ch;
-    }
-  }
-}
-
-TEST_F(AudioFrameTest, ConstructFromSerializationData) {
-  // Create a default frame.
-  auto* audio_buffer = CreateDefaultAudioBuffer();
-  auto* audio_frame_init = CreateDefaultAudioFrameInit(audio_buffer);
-  auto* original_frame = MakeGarbageCollected<AudioFrame>(audio_frame_init);
-
-  // Get a copy of the serialization data, and create a new frame from it.
-  std::unique_ptr<AudioFrameSerializationData> data =
-      original_frame->GetSerializationData();
-
-  auto* new_frame = MakeGarbageCollected<AudioFrame>(std::move(data));
-
-  // Make sure attributes match.
-  EXPECT_EQ(original_frame->timestamp(), new_frame->timestamp());
-  EXPECT_EQ(original_frame->buffer()->sampleRate(),
-            new_frame->buffer()->sampleRate());
-  EXPECT_EQ(original_frame->buffer()->numberOfChannels(),
-            new_frame->buffer()->numberOfChannels());
-  EXPECT_EQ(original_frame->buffer()->length(), new_frame->buffer()->length());
-
-  // Make sure the data matches.
-  for (int ch = 0; ch < kChannels; ++ch) {
-    float* orig_data = original_frame->buffer()->getChannelData(ch)->Data();
-    float* new_data = new_frame->buffer()->getChannelData(ch)->Data();
-    for (int i = 0; i < kFrames; ++i) {
-      ASSERT_FLOAT_EQ(orig_data[i], new_data[i]) << "i=" << i << ", ch=" << ch;
-    }
-  }
 }
 
 }  // namespace blink

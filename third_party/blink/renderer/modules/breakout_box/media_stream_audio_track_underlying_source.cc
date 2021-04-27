@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_audio_track_underlying_source.h"
 
+#include "media/base/audio_buffer.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
-#include "third_party/blink/renderer/modules/webcodecs/audio_frame_serialization_data.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 
 namespace blink {
@@ -58,15 +58,11 @@ void MediaStreamAudioTrackUnderlyingSource::OnData(
     base::TimeTicks estimated_capture_time) {
   DCHECK(audio_parameters_.IsValid());
 
-  auto data_copy =
-      media::AudioBus::Create(audio_bus.channels(), audio_bus.frames());
-  audio_bus.CopyTo(data_copy.get());
+  auto data_copy = media::AudioBuffer::CopyFrom(
+      audio_parameters_.sample_rate(),
+      estimated_capture_time - base::TimeTicks(), &audio_bus);
 
-  auto queue_data = AudioFrameSerializationData::Wrap(
-      std::move(data_copy), audio_parameters_.sample_rate(),
-      estimated_capture_time - base::TimeTicks());
-
-  QueueFrame(std::move(queue_data));
+  QueueFrame(std::move(data_copy));
 }
 
 void MediaStreamAudioTrackUnderlyingSource::StopFrameDelivery() {

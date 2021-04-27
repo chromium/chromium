@@ -19,8 +19,6 @@ blink_modules_sources("webcodecs") {
     "audio_frame.h",
     "audio_frame_attachment.cc",
     "audio_frame_attachment.h",
-    "audio_frame_serialization_data.cc",
-    "audio_frame_serialization_data.h",
     "codec_config_eval.h",
     "codec_logger.cc",
     "codec_logger.h",

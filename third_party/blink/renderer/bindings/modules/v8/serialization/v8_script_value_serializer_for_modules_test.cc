@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate_generator.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_frame.h"
-#include "third_party/blink/renderer/modules/webcodecs/audio_frame_serialization_data.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_transfer_list.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -1096,11 +1095,13 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripAudioFrame) {
       data[i] = (i + ch * kFrames) * kFramesMultiplier;
   }
 
-  auto audio_serialization_data = AudioFrameSerializationData::Wrap(
-      std::move(audio_bus), kSampleRate, kTimestamp);
+  // Copying the data from an AudioBus instead of creating a media::AudioBuffer
+  // directly is acceptable/desirable here, as it's a path often exercised when
+  // receiving microphone/WebCam data.
+  auto audio_buffer =
+      media::AudioBuffer::CopyFrom(kSampleRate, kTimestamp, audio_bus.get());
 
-  auto* audio_frame =
-      MakeGarbageCollected<AudioFrame>(std::move(audio_serialization_data));
+  auto* audio_frame = MakeGarbageCollected<AudioFrame>(std::move(audio_buffer));
 
   // Round trip the frame and make sure the size is the same.
   v8::Local<v8::Value> wrapper = ToV8(audio_frame, scope.GetScriptState());
@@ -1138,14 +1139,14 @@ TEST(V8ScriptValueSerializerForModulesTest, ClosedAudioFrameThrows) {
                                  ExceptionState::kExecutionContext, "Window",
                                  "postMessage");
 
-  auto audio_bus = media::AudioBus::Create(/*channels=*/2, /*frames=*/500);
-  auto audio_serialization_data = AudioFrameSerializationData::Wrap(
-      std::move(audio_bus), /*sample_rate=*/8000,
-      base::TimeDelta::FromMilliseconds(314));
+  auto audio_buffer = media::AudioBuffer::CreateEmptyBuffer(
+      media::ChannelLayout::CHANNEL_LAYOUT_STEREO,
+      /*channel_count=*/2,
+      /*sample_rate=*/8000,
+      /*frame_count=*/500, base::TimeDelta::FromMilliseconds(314));
 
   // Create and close the frame.
-  auto* audio_frame =
-      MakeGarbageCollected<AudioFrame>(std::move(audio_serialization_data));
+  auto* audio_frame = MakeGarbageCollected<AudioFrame>(std::move(audio_buffer));
   audio_frame->close();
 
   // Serializing the closed frame should throw an error.

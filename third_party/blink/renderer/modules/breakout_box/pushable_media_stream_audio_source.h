@@ -6,14 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_PUSHABLE_MEDIA_STREAM_AUDIO_SOURCE_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "media/base/audio_buffer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
 namespace blink {
-
-class AudioFrameSerializationData;
 
 // Simplifies the creation of audio tracks.
 class MODULES_EXPORT PushableMediaStreamAudioSource
@@ -27,7 +26,7 @@ class MODULES_EXPORT PushableMediaStreamAudioSource
 
   // This can be called from any thread, and will push the data on
   // |audio_task_runner_|
-  void PushAudioData(std::unique_ptr<AudioFrameSerializationData> data);
+  void PushAudioData(scoped_refptr<media::AudioBuffer> data);
 
   bool running() const {
     DCHECK(GetTaskRunner()->BelongsToCurrentThread());
@@ -42,7 +41,7 @@ class MODULES_EXPORT PushableMediaStreamAudioSource
     explicit LivenessBroker(PushableMediaStreamAudioSource* source);
 
     void OnSourceDestroyedOrStopped();
-    void PushAudioData(std::unique_ptr<AudioFrameSerializationData> data);
+    void PushAudioData(scoped_refptr<media::AudioBuffer> data);
 
    private:
     WTF::Mutex mutex_;
@@ -51,7 +50,7 @@ class MODULES_EXPORT PushableMediaStreamAudioSource
 
   // Actually push data to the audio tracks. Only called on
   // |audio_task_runner_|.
-  void DeliverData(std::unique_ptr<AudioFrameSerializationData> data);
+  void DeliverData(scoped_refptr<media::AudioBuffer> data);
 
   // MediaStreamAudioSource implementation.
   bool EnsureSourceIsStarted() final;

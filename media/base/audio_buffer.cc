@@ -187,6 +187,26 @@ scoped_refptr<AudioBuffer> AudioBuffer::CopyFrom(
 }
 
 // static
+scoped_refptr<AudioBuffer> AudioBuffer::CopyFrom(
+    int sample_rate,
+    const base::TimeDelta timestamp,
+    const AudioBus* audio_bus,
+    scoped_refptr<AudioBufferMemoryPool> pool) {
+  DCHECK(audio_bus->frames());
+
+  const int channel_count = audio_bus->channels();
+  DCHECK(channel_count);
+
+  std::vector<const uint8_t*> data(channel_count);
+  for (int ch = 0; ch < channel_count; ch++)
+    data[ch] = reinterpret_cast<const uint8_t*>(audio_bus->channel(ch));
+
+  return CopyFrom(kSampleFormatPlanarF32, GuessChannelLayout(channel_count),
+                  channel_count, sample_rate, audio_bus->frames(), data.data(),
+                  timestamp, std::move(pool));
+}
+
+// static
 scoped_refptr<AudioBuffer> AudioBuffer::CopyBitstreamFrom(
     SampleFormat sample_format,
     ChannelLayout channel_layout,

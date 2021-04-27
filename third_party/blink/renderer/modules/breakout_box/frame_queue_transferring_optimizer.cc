@@ -4,9 +4,9 @@
 
 #include "third_party/blink/renderer/modules/breakout_box/frame_queue_transferring_optimizer.h"
 
+#include "media/base/audio_buffer.h"
 #include "media/base/video_frame.h"
 #include "third_party/blink/renderer/modules/breakout_box/transferred_frame_queue_underlying_source.h"
-#include "third_party/blink/renderer/modules/webcodecs/audio_frame_serialization_data.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
@@ -48,8 +48,8 @@ FrameQueueTransferringOptimizer<NativeFrameType>::PerformInProcessOptimization(
   return source;
 }
 
-template class MODULES_TEMPLATE_EXPORT FrameQueueTransferringOptimizer<
-    std::unique_ptr<AudioFrameSerializationData>>;
+template class MODULES_TEMPLATE_EXPORT
+    FrameQueueTransferringOptimizer<scoped_refptr<media::AudioBuffer>>;
 template class MODULES_TEMPLATE_EXPORT
     FrameQueueTransferringOptimizer<scoped_refptr<media::VideoFrame>>;
 

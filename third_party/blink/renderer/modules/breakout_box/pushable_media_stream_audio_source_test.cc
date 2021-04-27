@@ -10,7 +10,6 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
 #include "third_party/blink/public/web/web_heap.h"
-#include "third_party/blink/renderer/modules/webcodecs/audio_frame_serialization_data.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
@@ -38,10 +37,14 @@ class FakeMediaStreamAudioSink : public WebMediaStreamAudioSink {
     expected_sample_rate_ = sample_rate;
   }
 
-  void SetDataTimeExpectation(base::TimeTicks time, base::OnceClosure on_data) {
+  void SetDataTimeExpectation(base::TimeTicks time,
+                              media::AudioBus* expected_data,
+                              base::OnceClosure on_data) {
     DCHECK(!on_data_);
 
     expected_time_ = time;
+    expected_data_ = expected_data;
+
     on_data_ = std::move(on_data);
   }
 
@@ -52,6 +55,30 @@ class FakeMediaStreamAudioSink : public WebMediaStreamAudioSink {
     EXPECT_EQ(time, expected_time_);
     EXPECT_EQ(data.channels(), expected_channels_);
     EXPECT_EQ(data.frames(), expected_frames_);
+
+    if (expected_data_) {
+      bool unexpected_data = false;
+
+      for (int ch = 0; ch < data.channels(); ++ch) {
+        const float* actual_channel_data = data.channel(ch);
+        const float* expected_channel_data = expected_data_->channel(ch);
+
+        for (int i = 0; i < data.frames(); ++i) {
+          // If we use ASSERT_EQ here, the test will hang, since |on_data_| will
+          // never be called.
+          EXPECT_EQ(actual_channel_data[i], expected_channel_data[i]);
+
+          // Force an early exit to prevent log spam from EXPECT_EQ.
+          if (actual_channel_data[i] != expected_channel_data[i]) {
+            unexpected_data = true;
+            break;
+          }
+        }
+
+        if (unexpected_data)
+          break;
+      }
+    }
 
     // Call this after all expectations are checked, to prevent test from
     // setting new expectations on the main thread.
@@ -85,6 +112,7 @@ class FakeMediaStreamAudioSink : public WebMediaStreamAudioSink {
   int expected_channels_ = 0;
   int expected_frames_ = 0;
   int expected_sample_rate_ = 0;
+  media::AudioBus* expected_data_ = nullptr;
   base::TimeTicks expected_time_;
 
   bool did_receive_format_change_ = false;
@@ -125,11 +153,22 @@ class PushableMediaStreamAudioSourceTest : public testing::Test {
     return pushable_audio_source_->ConnectToTrack(stream_component_);
   }
 
-  void SendAndVerifyAudioData(FakeMediaStreamAudioSink* fake_sink,
-                              int channels,
-                              int frames,
-                              int sample_rate,
-                              bool expect_format_change) {
+  void SendEmptyBufferAndVerifyParams(FakeMediaStreamAudioSink* fake_sink,
+                                      int channels,
+                                      int frames,
+                                      int sample_rate,
+                                      bool expect_format_change) {
+    SendDataAndVerifyParams(fake_sink, channels, frames, sample_rate,
+                            expect_format_change, nullptr, nullptr);
+  }
+
+  void SendDataAndVerifyParams(FakeMediaStreamAudioSink* fake_sink,
+                               int channels,
+                               int frames,
+                               int sample_rate,
+                               bool expect_format_change,
+                               scoped_refptr<media::AudioBuffer> buffer,
+                               media::AudioBus* expected_data) {
     fake_sink->ClearDidReceiveFormatChange();
 
     if (expect_format_change) {
@@ -137,13 +176,18 @@ class PushableMediaStreamAudioSourceTest : public testing::Test {
                                                     sample_rate);
     }
 
-    base::RunLoop run_loop;
-    base::TimeTicks timestamp = base::TimeTicks::Now();
-    fake_sink->SetDataTimeExpectation(timestamp, run_loop.QuitClosure());
+    if (!buffer) {
+      base::TimeTicks timestamp = base::TimeTicks::Now();
+      buffer = media::AudioBuffer::CreateEmptyBuffer(
+          media::GuessChannelLayout(channels), channels, sample_rate, frames,
+          timestamp - base::TimeTicks());
+    }
 
-    pushable_audio_source_->PushAudioData(AudioFrameSerializationData::Wrap(
-        media::AudioBus::Create(channels, frames), sample_rate,
-        timestamp - base::TimeTicks()));
+    base::RunLoop run_loop;
+    fake_sink->SetDataTimeExpectation(base::TimeTicks() + buffer->timestamp(),
+                                      expected_data, run_loop.QuitClosure());
+
+    pushable_audio_source_->PushAudioData(std::move(buffer));
     run_loop.Run();
 
     EXPECT_EQ(fake_sink->did_receive_format_change(), expect_format_change);
@@ -190,16 +234,80 @@ TEST_F(PushableMediaStreamAudioSourceTest, FramesPropagateToSink) {
   constexpr int kSampleRate = 8000;
 
   // The first audio data pushed should trigger a call to OnSetFormat().
-  SendAndVerifyAudioData(&fake_sink, kChannels, kFrames, kSampleRate,
-                         /*expect_format_change=*/true);
+  SendEmptyBufferAndVerifyParams(&fake_sink, kChannels, kFrames, kSampleRate,
+                                 /*expect_format_change=*/true);
 
   // Using the same audio parameters should not trigger OnSetFormat().
-  SendAndVerifyAudioData(&fake_sink, kChannels, kFrames, kSampleRate,
-                         /*expect_format_change=*/false);
+  SendEmptyBufferAndVerifyParams(&fake_sink, kChannels, kFrames, kSampleRate,
+                                 /*expect_format_change=*/false);
 
   // Format changes should trigger OnSetFormat().
-  SendAndVerifyAudioData(&fake_sink, kChannels * 2, kFrames * 4,
-                         /*sample_rate=*/44100, /*expect_format_change=*/true);
+  SendEmptyBufferAndVerifyParams(&fake_sink, kChannels * 2, kFrames * 4,
+                                 /*sample_rate=*/44100,
+                                 /*expect_format_change=*/true);
+
+  WebMediaStreamAudioSink::RemoveFromAudioTrack(
+      &fake_sink, WebMediaStreamTrack(stream_component_.Get()));
+}
+
+TEST_F(PushableMediaStreamAudioSourceTest, ConvertsFormatInternally) {
+  EXPECT_TRUE(ConnectSourceToTrack());
+  FakeMediaStreamAudioSink fake_sink(main_task_runner_, audio_task_runner_);
+
+  WebMediaStreamAudioSink::AddToAudioTrack(
+      &fake_sink, WebMediaStreamTrack(stream_component_.Get()));
+
+  constexpr media::ChannelLayout kChannelLayout =
+      media::ChannelLayout::CHANNEL_LAYOUT_STEREO;
+  constexpr int kChannels = 2;
+  constexpr int kSampleRate = 8000;
+  constexpr int kFrames = 256;
+  constexpr base::TimeDelta kDefaultTimeStamp =
+      base::TimeDelta::FromMilliseconds(123);
+
+  auto interleaved_buffer = media::AudioBuffer::CreateBuffer(
+      media::SampleFormat::kSampleFormatF32, kChannelLayout, kChannels,
+      kSampleRate, kFrames);
+  interleaved_buffer->set_timestamp(kDefaultTimeStamp);
+
+  // Create interleaved data, with negative values on the second channel.
+  float* interleaved_buffer_data =
+      reinterpret_cast<float*>(interleaved_buffer->channel_data()[0]);
+  for (int i = 0; i < kFrames; ++i) {
+    float value = static_cast<float>(i) / kFrames;
+
+    interleaved_buffer_data[0] = value;
+    interleaved_buffer_data[1] = -value;
+    interleaved_buffer_data += 2;
+  }
+
+  // Create reference planar data.
+  auto expected_data = media::AudioBus::Create(kChannels, kFrames);
+  float* bus_data_ch_0 = expected_data->channel(0);
+  float* bus_data_ch_1 = expected_data->channel(1);
+  for (int i = 0; i < kFrames; ++i) {
+    float value = static_cast<float>(i) / kFrames;
+    bus_data_ch_0[i] = value;
+    bus_data_ch_1[i] = -value;
+  }
+
+  // Sanity check.
+  DCHECK(!expected_data->AreFramesZero());
+
+  // Send the data to the pushable source, which should internally convert the
+  // interleaved data to planar data before delivering it to sinks.
+  SendDataAndVerifyParams(&fake_sink, kChannels, kFrames, kSampleRate,
+                          /*expect_format_change=*/true,
+                          std::move(interleaved_buffer), expected_data.get());
+
+  auto planar_buffer = media::AudioBuffer::CopyFrom(
+      kSampleRate, kDefaultTimeStamp, expected_data.get());
+
+  // The pushable source shouldn't have to convert data internally, and should
+  // just wrap it.
+  SendDataAndVerifyParams(&fake_sink, kChannels, kFrames, kSampleRate,
+                          /*expect_format_change=*/false,
+                          std::move(planar_buffer), expected_data.get());
 
   WebMediaStreamAudioSink::RemoveFromAudioTrack(
       &fake_sink, WebMediaStreamTrack(stream_component_.Get()));

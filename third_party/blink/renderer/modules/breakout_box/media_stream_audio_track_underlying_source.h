@@ -13,7 +13,6 @@
 
 namespace blink {
 
-class AudioFrameSerializationData;
 class MediaStreamComponent;
 
 class MODULES_EXPORT MediaStreamAudioTrackUnderlyingSource
@@ -49,8 +48,6 @@ class MODULES_EXPORT MediaStreamAudioTrackUnderlyingSource
   void StopFrameDelivery() override;
 
   void DisconnectFromTrack();
-
-  void OnDataOnMainThread(std::unique_ptr<AudioFrameSerializationData> data);
 
   // Only used to prevent the gargabe collector from reclaiming the media
   // stream track processor that created |this|.

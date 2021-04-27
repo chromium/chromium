@@ -24,7 +24,6 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame_delegate.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_frame.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_frame_attachment.h"
-#include "third_party/blink/renderer/modules/webcodecs/audio_frame_serialization_data.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_attachment.h"
 
@@ -438,11 +437,11 @@ AudioFrame* V8ScriptValueDeserializerForModules::ReadAudioFrame() {
   if (!attachment)
     return nullptr;
 
-  const auto& serialization_data = attachment->SerializationData();
+  const auto& audio_buffers = attachment->AudioBuffers();
   if (index >= attachment->size())
     return nullptr;
 
-  return MakeGarbageCollected<AudioFrame>(serialization_data[index].get());
+  return MakeGarbageCollected<AudioFrame>(audio_buffers[index]);
 }
 
 VideoFrame* V8ScriptValueDeserializerForModules::ReadVideoFrame() {
