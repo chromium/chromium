@@ -383,29 +383,28 @@ void CompositingInputsUpdater::UpdateAncestorDependentCompositingInputs(
     const AncestorInfo& info) {
   if (layer->IsRootLayer()) {
     layer->UpdateAncestorDependentCompositingInputs(
-        MakeGarbageCollected<PaintLayer::AncestorDependentCompositingInputs>());
+        nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
+        nullptr, nullptr, nullptr);
     return;
   }
 
-  PaintLayer::AncestorDependentCompositingInputs* properties =
-      MakeGarbageCollected<PaintLayer::AncestorDependentCompositingInputs>();
   LayoutBoxModelObject& layout_object = layer->GetLayoutObject();
 
   const PaintLayer* parent = layer->Parent();
-  properties->opacity_ancestor =
+  const PaintLayer* opacity_ancestor =
       parent->IsTransparent() ? parent : parent->OpacityAncestor();
-  properties->transform_ancestor =
+  const PaintLayer* transform_ancestor =
       parent->Transform() ? parent : parent->TransformAncestor();
-  properties->filter_ancestor =
+  const PaintLayer* filter_ancestor =
       parent->HasFilterInducingProperty() ? parent : parent->FilterAncestor();
-  properties->clip_path_ancestor = parent->GetLayoutObject().HasClipPath()
-                                       ? parent
-                                       : parent->ClipPathAncestor();
-  properties->mask_ancestor =
+  const PaintLayer* clip_path_ancestor = parent->GetLayoutObject().HasClipPath()
+                                             ? parent
+                                             : parent->ClipPathAncestor();
+  const PaintLayer* mask_ancestor =
       parent->GetLayoutObject().HasMask() ? parent : parent->MaskAncestor();
 
   EPosition position = layout_object.StyleRef().GetPosition();
-  properties->nearest_fixed_position_layer =
+  const PaintLayer* nearest_fixed_position_layer =
       position == EPosition::kFixed ? layer
                                     : parent->NearestFixedPositionLayer();
 
@@ -414,18 +413,24 @@ void CompositingInputsUpdater::UpdateAncestorDependentCompositingInputs(
     clip_chain_parent = info.clip_chain_parent_for_absolute;
   else if (position == EPosition::kFixed)
     clip_chain_parent = info.clip_chain_parent_for_fixed;
-  properties->clipping_container =
+  const LayoutBoxModelObject* clipping_container =
       ClippingContainerFromClipChainParent(clip_chain_parent);
-  properties->clip_parent = info.escape_clip_to;
+  const PaintLayer* clip_parent = info.escape_clip_to;
 
-  properties->ancestor_scrolling_layer = info.scrolling_ancestor;
-  if (info.needs_reparent_scroll && layout_object.IsStacked())
-    properties->scroll_parent = info.scrolling_ancestor;
+  const PaintLayer* ancestor_scrolling_layer = info.scrolling_ancestor;
+  const PaintLayer* scroll_parent =
+      (info.needs_reparent_scroll && layout_object.IsStacked())
+          ? info.scrolling_ancestor
+          : nullptr;
 
-  properties->nearest_contained_layout_layer =
+  const PaintLayer* nearest_contained_layout_layer =
       info.nearest_contained_layout_layer;
 
-  layer->UpdateAncestorDependentCompositingInputs(properties);
+  layer->UpdateAncestorDependentCompositingInputs(
+      opacity_ancestor, transform_ancestor, filter_ancestor, clip_path_ancestor,
+      mask_ancestor, ancestor_scrolling_layer, nearest_fixed_position_layer,
+      scroll_parent, clip_parent, nearest_contained_layout_layer,
+      clipping_container);
 }
 
 #if DCHECK_IS_ON()

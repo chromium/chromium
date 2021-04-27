@@ -860,7 +860,17 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     ancestor_scroll_container_layer_ = ancestor_scroll_container_layer;
   }
   void UpdateAncestorDependentCompositingInputs(
-      AncestorDependentCompositingInputs*);
+      const PaintLayer* opacity_ancestor,
+      const PaintLayer* transform_ancestor,
+      const PaintLayer* filter_ancestor,
+      const PaintLayer* clip_path_ancestor,
+      const PaintLayer* mask_ancestor,
+      const PaintLayer* ancestor_scrolling_layer,
+      const PaintLayer* nearest_fixed_position_layer,
+      const PaintLayer* scroll_parent,
+      const PaintLayer* clip_parent,
+      const PaintLayer* nearest_contained_layout_layer,
+      const LayoutBoxModelObject* clipping_container);
   void ClearChildNeedsCompositingInputsUpdate();
 
   const AncestorDependentCompositingInputs&
