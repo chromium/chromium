@@ -27,9 +27,9 @@ testOverriddenToString(new Function, true)
 testOverriddenToString(new Function, false)
 ƒ Function
 testOverriddenToString(/^regex$/, true)
-/^regex$/
+RegExp
 testOverriddenToString(/^regex$/, false)
-/^regex$/
+RegExp
 testOverriddenToString(new Date, true)
 Date
 testOverriddenToString(new Date, false)

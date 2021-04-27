@@ -73,7 +73,7 @@ console-format-classes.js:30 {str: "", nan: NaN, posInf: Infinity, negInf: -Infi
               object-value-number
             object-state-note info-note
               children
-console-format-classes.js:30 {null: null, undef: undefined, regexp: /^[regexp]$/g, bool: false} 
+console-format-classes.js:30 {null: null, undef: undefined, re: /^[regexp]$/g, constructedRe: /foo\/bar/, bool: false} 
   console-message
     source-code
       console-message-anchor
@@ -90,6 +90,8 @@ console-format-classes.js:30 {null: null, undef: undefined, regexp: /^[regexp]$/
               object-value-null
               name
               object-value-undefined
+              name
+              object-value-regexp
               name
               object-value-regexp
               name
