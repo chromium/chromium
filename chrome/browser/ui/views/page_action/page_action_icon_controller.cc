@@ -115,7 +115,7 @@ void PageActionIconController::Init(const PageActionIconParams& params,
         DCHECK(params.command_updater);
         pwa_install_icon_ = new PwaInstallView(
             params.command_updater, params.icon_label_bubble_delegate,
-            params.page_action_icon_delegate);
+            params.page_action_icon_delegate, params.browser);
         page_action_icons_.push_back(pwa_install_icon_);
         break;
       case PageActionIconType::kQRCodeGenerator:
