@@ -233,6 +233,18 @@ NGInlineCursor NGInlineCursor::CursorForDescendants() const {
   return NGInlineCursor();
 }
 
+NGInlineCursor NGInlineCursor::CursorForMovingAcrossFragmentainer() const {
+  DCHECK(IsNotNull());
+  if (IsBlockFragmented())
+    return *this;
+  NGInlineCursor cursor(*GetLayoutBlockFlow());
+  const auto& item = *CurrentItem();
+  while (cursor && !cursor.TryToMoveTo(item))
+    cursor.MoveToNextFragmentainer();
+  DCHECK(cursor) << *this;
+  return cursor;
+}
+
 void NGInlineCursor::ExpandRootToContainingBlock() {
   if (fragment_items_) {
     const unsigned index_diff = items_.data() - fragment_items_->Items().data();
@@ -874,13 +886,20 @@ inline wtf_size_t NGInlineCursor::SpanIndexFromItemIndex(unsigned index) const {
 }
 
 void NGInlineCursor::MoveTo(const NGFragmentItem& fragment_item) {
+  if (TryToMoveTo(fragment_item))
+    return;
+  NOTREACHED() << *this << " " << fragment_item;
+}
+
+bool NGInlineCursor::TryToMoveTo(const NGFragmentItem& fragment_item) {
   DCHECK(HasRoot());
   // Note: We use address instead of iterator because we can't compare
   // iterators in different span. See |base::CheckedContiguousIterator<T>|.
   const ptrdiff_t index = &fragment_item - &*items_.begin();
-  DCHECK_GE(index, 0);
-  DCHECK_LT(static_cast<size_t>(index), items_.size());
+  if (index < 0 || static_cast<size_t>(index) >= items_.size())
+    return false;
   MoveToItem(items_.begin() + index);
+  return true;
 }
 
 void NGInlineCursor::MoveTo(const NGInlineCursor& cursor) {

@@ -58,9 +58,7 @@ class AbstractInlineBox {
   // Returns containing block rooted cursor instead of line rooted cursor for
   // ease of handling, e.g. equiality check, move to next/previous line, etc.
   NGInlineCursor GetCursor() const {
-    NGInlineCursor cursor;
-    cursor.MoveTo(line_cursor_);
-    return cursor;
+    return line_cursor_.CursorForMovingAcrossFragmentainer();
   }
 
   const InlineBox& GetInlineBox() const {

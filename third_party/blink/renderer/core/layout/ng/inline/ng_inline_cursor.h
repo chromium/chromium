@@ -291,6 +291,10 @@ class CORE_EXPORT NGInlineCursor {
   // has no children, returns an empty cursor.
   NGInlineCursor CursorForDescendants() const;
 
+  // Returns a new |NGInlineCursor| whose root is containing block or multicol
+  // container for traversing fragmentainers in root.
+  NGInlineCursor CursorForMovingAcrossFragmentainer() const;
+
   // If |this| is created by |CursorForDescendants()| to traverse parts of an
   // inline formatting context, expand the traversable range to the containing
   // |LayoutBlockFlow|. Does nothing if |this| is for an inline formatting
@@ -570,6 +574,10 @@ class CORE_EXPORT NGInlineCursor {
   bool SetRoot(const LayoutBlockFlow& block_flow, wtf_size_t fragment_index);
 
   bool TrySetRootFragmentItems();
+
+  // Returns true and move to current position to |fragment_item|, otherwise
+  // returns false.
+  bool TryToMoveTo(const NGFragmentItem& fragment_item);
 
   void MoveToItem(const ItemsSpan::iterator& iter);
 

@@ -279,6 +279,34 @@ TEST_P(NGInlineCursorTest, CulledInlineWithoutRoot) {
               ElementsAre("abc", "", "xyz"));
 }
 
+TEST_P(NGInlineCursorTest, CursorForMovingAcrossFragmentainer) {
+  LoadAhem();
+  InsertStyleElement(
+      "div { font: 10px/15px Ahem; column-count: 2; width: 20ch; }");
+  SetBodyInnerHTML("<div id=m>abc<br>def<br><b id=t>ghi</b><br>jkl<br></div>");
+  // The HTML is rendered as:
+  //    abc ghi
+  //    def jkl
+  if (!GetLayoutObjectByElementId("m")->IsLayoutNGObject())
+    return;
+
+  // MoveTo(LayoutObject) makes |NGInlineCursor| to be able to move across
+  // fragmentainer.
+  NGInlineCursor cursor;
+  cursor.MoveTo(*GetElementById("t")->firstChild()->GetLayoutObject());
+  ASSERT_TRUE(cursor.IsBlockFragmented()) << cursor;
+
+  NGInlineCursor cursor2(cursor.ContainerFragment());
+  ASSERT_FALSE(cursor2.IsBlockFragmented()) << cursor2;
+  cursor2.MoveTo(*cursor.CurrentItem());
+  ASSERT_FALSE(cursor2.IsBlockFragmented());
+
+  NGInlineCursor cursor3 = cursor2.CursorForMovingAcrossFragmentainer();
+  EXPECT_TRUE(cursor3.IsBlockFragmented()) << cursor3;
+  EXPECT_EQ(&cursor2.ContainerFragment(), &cursor3.ContainerFragment());
+  EXPECT_EQ(cursor2.CurrentItem(), cursor3.CurrentItem());
+}
+
 TEST_P(NGInlineCursorTest, FirstChild) {
   // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
   InsertStyleElement("a, b { background: gray; }");

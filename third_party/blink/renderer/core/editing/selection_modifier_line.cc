@@ -99,7 +99,9 @@ class AbstractLineBox {
       return next_root ? AbstractLineBox(*next_root) : AbstractLineBox();
     }
     NGInlineCursor next_line = cursor_;
-    next_line.MoveToNextLine();
+    do {
+      next_line.MoveToNextIncludingFragmentainer();
+    } while (next_line && !next_line.Current().IsLineBox());
     return next_line ? AbstractLineBox(next_line) : AbstractLineBox();
   }
 

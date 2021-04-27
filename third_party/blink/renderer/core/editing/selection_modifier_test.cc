@@ -69,6 +69,25 @@ TEST_F(SelectionModifierTest, MoveByLineHorizontal) {
   EXPECT_EQ("<p>ab|c<br>d<br><br>ghi</p>", MoveBackwardByLine(modifier));
 }
 
+TEST_F(SelectionModifierTest, MoveByLineMultiColumnSingleText) {
+  LoadAhem();
+  InsertStyleElement(
+      "div { font: 10px/15px Ahem; column-count: 3; width: 20ch; }");
+  const SelectionInDOMTree selection =
+      SetSelectionTextToBody("<div>|abc def ghi jkl mno pqr</div>");
+  // This HTML is rendered as:
+  //    abc ghi mno
+  //    def jkl pqr
+  SelectionModifier modifier(GetFrame(), selection);
+
+  EXPECT_EQ("<div>abc |def ghi jkl mno pqr</div>", MoveForwardByLine(modifier));
+  EXPECT_EQ("<div>abc def |ghi jkl mno pqr</div>", MoveForwardByLine(modifier));
+  EXPECT_EQ("<div>abc def ghi |jkl mno pqr</div>", MoveForwardByLine(modifier));
+  EXPECT_EQ("<div>abc def ghi jkl |mno pqr</div>", MoveForwardByLine(modifier));
+  EXPECT_EQ("<div>abc def ghi jkl mno |pqr</div>", MoveForwardByLine(modifier));
+  EXPECT_EQ("<div>abc def ghi jkl mno pqr|</div>", MoveForwardByLine(modifier));
+}
+
 TEST_F(SelectionModifierTest, MoveByLineVertical) {
   LoadAhem();
   InsertStyleElement(
