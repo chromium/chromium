@@ -38665,6 +38665,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2" label="kDownload"/>
   <int value="3" label="kNearbyShare"/>
   <int value="4" label="kScreenRecording"/>
+  <int value="5" label="kArcDownload"/>
 </enum>
 
 <enum name="HoldingSpacePodAction">

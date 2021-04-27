@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/holding_space/holding_space_browsertest_base.h"
 
+#include <set>
 #include <unordered_map>
 #include <vector>
 
@@ -1008,22 +1009,27 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, RemoveItem) {
   observer.Observe(HoldingSpaceController::Get()->model());
 
   {
+    // Cache `item_id` of the download item to be removed.
+    const std::string item_id =
+        test_api().GetHoldingSpaceItemId(download_chips.front());
+    EXPECT_EQ(test_api().GetHoldingSpaceItemView(download_chips, item_id),
+              download_chips.front());
+
     base::RunLoop run_loop;
     EXPECT_CALL(mock, OnHoldingSpaceItemsRemoved)
         .WillOnce([&](const std::vector<const HoldingSpaceItem*>& items) {
           ASSERT_EQ(items.size(), 1u);
+          EXPECT_EQ(items[0]->id(), item_id);
           run_loop.Quit();
         });
-
-    const size_t download_chips_size = download_chips.size();
 
     // Press `ENTER` to remove the selected download item.
     PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
     run_loop.Run();
 
-    // Verify a download chip has been removed.
+    // Verify the download chip has been removed.
     download_chips = GetDownloadChips();
-    ASSERT_EQ(download_chips.size(), download_chips_size - 1);
+    EXPECT_FALSE(test_api().GetHoldingSpaceItemView(download_chips, item_id));
   }
 
   std::vector<views::View*> screen_capture_views = GetScreenCaptureViews();
@@ -1038,55 +1044,90 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, RemoveItem) {
   ASSERT_TRUE(SelectMenuItemWithCommandId(HoldingSpaceCommandId::kRemoveItem));
 
   {
+    // Cache `item_id` of the screen capture item to be removed.
+    const std::string item_id =
+        test_api().GetHoldingSpaceItemId(screen_capture_views.front());
+    EXPECT_EQ(test_api().GetHoldingSpaceItemView(screen_capture_views, item_id),
+              screen_capture_views.front());
+
     base::RunLoop run_loop;
     EXPECT_CALL(mock, OnHoldingSpaceItemsRemoved)
         .WillOnce([&](const std::vector<const HoldingSpaceItem*>& items) {
           ASSERT_EQ(items.size(), 1u);
+          EXPECT_EQ(items[0]->id(), item_id);
           run_loop.Quit();
         });
-
-    const size_t screen_capture_views_size = screen_capture_views.size();
 
     // Press `ENTER` to remove the selected screen capture item.
     PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
     run_loop.Run();
 
-    // Verify a screen capture view has been removed.
+    // Verify the screen capture view has been removed.
     screen_capture_views = GetScreenCaptureViews();
-    ASSERT_EQ(screen_capture_views.size(), screen_capture_views_size - 1);
+    EXPECT_FALSE(
+        test_api().GetHoldingSpaceItemView(screen_capture_views, item_id));
   }
 
-  // Select all download items.
-  for (views::View* download_chip : download_chips)
-    Click(download_chip, ui::EF_SHIFT_DOWN);
+  // Remove all items in the recent files bubble. Note that not all download
+  // items or screen capture items that exist may be visible at the same time
+  // due to max visibility count restrictions.
+  while (!download_chips.empty() || !screen_capture_views.empty()) {
+    // Select all visible download items.
+    for (views::View* download_chip : download_chips)
+      Click(download_chip, ui::EF_CONTROL_DOWN);
 
-  // Select all screen capture items.
-  for (views::View* screen_capture_view : screen_capture_views)
-    Click(screen_capture_view, ui::EF_SHIFT_DOWN);
+    // Select all visible screen capture items.
+    for (views::View* screen_capture_view : screen_capture_views)
+      Click(screen_capture_view, ui::EF_CONTROL_DOWN);
 
-  // Show the context menu. There should be a `kRemoveItem` command.
-  RightClick(download_chips.front());
-  ASSERT_TRUE(views::MenuController::GetActiveInstance());
-  ASSERT_TRUE(SelectMenuItemWithCommandId(HoldingSpaceCommandId::kRemoveItem));
+    // Show the context menu. There should be a `kRemoveItem` command.
+    RightClick(download_chips.size() ? download_chips.front()
+                                     : screen_capture_views.front());
+    ASSERT_TRUE(views::MenuController::GetActiveInstance());
+    ASSERT_TRUE(
+        SelectMenuItemWithCommandId(HoldingSpaceCommandId::kRemoveItem));
 
-  {
-    const size_t recent_files_size =
-        download_chips.size() + screen_capture_views.size();
+    {
+      // Cache `item_ids` of download and screen capture items to be removed.
+      std::set<std::string> item_ids;
+      for (const views::View* download_chip : download_chips) {
+        auto it =
+            item_ids.insert(test_api().GetHoldingSpaceItemId(download_chip));
+        EXPECT_EQ(test_api().GetHoldingSpaceItemView(download_chips, *it.first),
+                  download_chip);
+      }
+      for (const views::View* screen_capture_view : screen_capture_views) {
+        auto it = item_ids.insert(
+            test_api().GetHoldingSpaceItemId(screen_capture_view));
+        EXPECT_EQ(
+            test_api().GetHoldingSpaceItemView(screen_capture_views, *it.first),
+            screen_capture_view);
+      }
 
-    base::RunLoop run_loop;
-    EXPECT_CALL(mock, OnHoldingSpaceItemsRemoved)
-        .WillOnce([&](const std::vector<const HoldingSpaceItem*>& items) {
-          ASSERT_EQ(items.size(), recent_files_size);
-          run_loop.Quit();
-        });
+      base::RunLoop run_loop;
+      EXPECT_CALL(mock, OnHoldingSpaceItemsRemoved)
+          .WillOnce([&](const std::vector<const HoldingSpaceItem*>& items) {
+            ASSERT_EQ(items.size(), item_ids.size());
+            for (const HoldingSpaceItem* item : items)
+              ASSERT_TRUE(base::Contains(item_ids, item->id()));
+            run_loop.Quit();
+          });
 
-    // Press `ENTER` to remove the selected items.
-    PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
-    run_loop.Run();
+      // Press `ENTER` to remove the selected items.
+      PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+      run_loop.Run();
 
-    // Verify all download chips and screen capture views have been removed.
-    ASSERT_EQ(GetDownloadChips().size(), 0u);
-    ASSERT_EQ(GetScreenCaptureViews().size(), 0u);
+      // Verify all previously visible download chips and screen capture views
+      // have been removed.
+      download_chips = GetDownloadChips();
+      screen_capture_views = GetScreenCaptureViews();
+      for (const std::string& item_id : item_ids) {
+        EXPECT_FALSE(
+            test_api().GetHoldingSpaceItemView(download_chips, item_id));
+        EXPECT_FALSE(
+            test_api().GetHoldingSpaceItemView(screen_capture_views, item_id));
+      }
+    }
   }
 
   // The recent files bubble should be empty and therefore hidden.

@@ -85,6 +85,8 @@ std::string ItemActionToString(ItemAction action) {
 // values are persisted to histograms so should remain unchanged.
 std::string ItemTypeToString(HoldingSpaceItem::Type type) {
   switch (type) {
+    case HoldingSpaceItem::Type::kArcDownload:
+      return "ArcDownload";
     case HoldingSpaceItem::Type::kDownload:
       return "Download";
     case HoldingSpaceItem::Type::kPinnedFile:

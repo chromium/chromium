@@ -145,12 +145,13 @@ void HoldingSpaceItem::InvalidateImage() {
 
 bool HoldingSpaceItem::IsScreenCapture() const {
   switch (type_) {
-    case HoldingSpaceItem::Type::kScreenshot:
-    case HoldingSpaceItem::Type::kScreenRecording:
+    case Type::kScreenRecording:
+    case Type::kScreenshot:
       return true;
-    case HoldingSpaceItem::Type::kDownload:
-    case HoldingSpaceItem::Type::kNearbyShare:
-    case HoldingSpaceItem::Type::kPinnedFile:
+    case Type::kArcDownload:
+    case Type::kDownload:
+    case Type::kNearbyShare:
+    case Type::kPinnedFile:
       return false;
   }
 }

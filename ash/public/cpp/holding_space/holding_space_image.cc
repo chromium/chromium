@@ -114,6 +114,7 @@ HoldingSpaceImage::~HoldingSpaceImage() = default;
 gfx::Size HoldingSpaceImage::GetMaxSizeForType(HoldingSpaceItem::Type type) {
   gfx::Size size;
   switch (type) {
+    case HoldingSpaceItem::Type::kArcDownload:
     case HoldingSpaceItem::Type::kDownload:
     case HoldingSpaceItem::Type::kNearbyShare:
     case HoldingSpaceItem::Type::kPinnedFile:

@@ -129,7 +129,8 @@ class Header : public views::Button {
 DownloadsSection::DownloadsSection(HoldingSpaceItemViewDelegate* delegate)
     : HoldingSpaceItemViewsSection(delegate,
                                    /*supported_types=*/
-                                   {HoldingSpaceItem::Type::kDownload,
+                                   {HoldingSpaceItem::Type::kArcDownload,
+                                    HoldingSpaceItem::Type::kDownload,
                                     HoldingSpaceItem::Type::kNearbyShare},
                                    /*max_count=*/kMaxDownloads) {}
 
