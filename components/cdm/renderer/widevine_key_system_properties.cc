@@ -161,14 +161,13 @@ EmeConfigRule WidevineKeySystemProperties::GetRobustnessConfigRule(
     return EmeConfigRule::HW_SECURE_CODECS_REQUIRED;
   }
 #else
-  // On Linux/Mac/Win, require hardware secure codecs for HW_SECURE_CRYPTO and
-  // above.
+  // On other platforms, generally hardware security requires hardware secure
+  // codecs and an identifier.
   if (robustness >= Robustness::HW_SECURE_CRYPTO) {
-    return EmeConfigRule::HW_SECURE_CODECS_REQUIRED;
+    return EmeConfigRule::IDENTIFIER_AND_HW_SECURE_CODECS_REQUIRED;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  // TODO(crbug.com/848532): Handle HW_SECURE* levels for Windows.
   return EmeConfigRule::SUPPORTED;
 }
 

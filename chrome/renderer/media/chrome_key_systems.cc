@@ -300,7 +300,7 @@ static void AddWidevine(
   // Others.
   auto persistent_state_support = EmeFeatureSupport::REQUESTABLE;
   auto distinctive_identifier_support = EmeFeatureSupport::NOT_SUPPORTED;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
   distinctive_identifier_support = EmeFeatureSupport::REQUESTABLE;
 #endif
 
