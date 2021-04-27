@@ -844,6 +844,17 @@ message ActiveTimePeriod {
   // Email address of the active user. Present only if the user type is managed
   // and affiliated.
   optional string user_email = 3;
+
+  enum SessionType {
+    SESSION_UNKNOWN = 0;
+    SESSION_AFFILIATED_USER = 1;
+    SESSION_MANAGED_GUEST = 2;
+    SESSION_KIOSK = 3;
+    SESSION_ARC_KIOSK = 4;
+    SESSION_WEB_KIOSK = 5;
+  }
+
+  optional SessionType session_type = 4;
 }
 
 // Details about a network interface.

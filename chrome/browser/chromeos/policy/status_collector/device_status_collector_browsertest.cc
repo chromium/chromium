@@ -1397,6 +1397,8 @@ TEST_F(DeviceStatusCollectorTest, ActivityTimesKeptUntilSubmittedSuccessfully) {
 }
 
 TEST_F(DeviceStatusCollectorTest, ActivityNoUser) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kActivityReportingSessionType);
   ui::IdleState test_states[] = {ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE,
                                  ui::IDLE_STATE_ACTIVE};
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
@@ -1411,17 +1413,20 @@ TEST_F(DeviceStatusCollectorTest, ActivityNoUser) {
   GetStatus();
   EXPECT_EQ(1, device_status_.active_periods_size());
   EXPECT_TRUE(device_status_.active_periods(0).user_email().empty());
+  EXPECT_FALSE(device_status_.active_periods(0).has_session_type());
 }
 
 TEST_F(DeviceStatusCollectorTest, ActivityWithPublicSessionUser) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kActivityReportingSessionType);
   ui::IdleState test_states[] = {ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE,
                                  ui::IDLE_STATE_ACTIVE};
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       chromeos::kReportDeviceActivityTimes, true);
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       chromeos::kReportDeviceUsers, true);
-  const AccountId public_account_id(
-      AccountId::FromUserEmail("public@localhost"));
+  const AccountId public_account_id(AccountId::FromUserEmail(
+      "public@public-accounts.device-local.localhost"));
   user_manager_->CreatePublicAccountUser(public_account_id);
 
   EXPECT_FALSE(status_collector_->ShouldReportActivityTimes());
@@ -1431,9 +1436,37 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithPublicSessionUser) {
   GetStatus();
   EXPECT_EQ(1, device_status_.active_periods_size());
   EXPECT_TRUE(device_status_.active_periods(0).user_email().empty());
+  EXPECT_EQ(em::ActiveTimePeriod::SESSION_MANAGED_GUEST,
+            device_status_.active_periods(0).session_type());
+}
+
+TEST_F(DeviceStatusCollectorTest, ActivityWithKioskUser) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kActivityReportingSessionType);
+  ui::IdleState test_states[] = {ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE,
+                                 ui::IDLE_STATE_ACTIVE};
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      chromeos::kReportDeviceActivityTimes, true);
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      chromeos::kReportDeviceUsers, true);
+  const AccountId public_account_id(
+      AccountId::FromUserEmail("public@web-kiosk-apps.device-local.localhost"));
+  user_manager_->CreatePublicAccountUser(public_account_id);
+
+  EXPECT_FALSE(status_collector_->ShouldReportActivityTimes());
+  EXPECT_FALSE(status_collector_->ShouldReportUsers());
+
+  status_collector_->Simulate(test_states, 3);
+  GetStatus();
+  EXPECT_EQ(1, device_status_.active_periods_size());
+  EXPECT_TRUE(device_status_.active_periods(0).user_email().empty());
+  EXPECT_EQ(em::ActiveTimePeriod::SESSION_WEB_KIOSK,
+            device_status_.active_periods(0).session_type());
 }
 
 TEST_F(DeviceStatusCollectorTest, ActivityWithAffiliatedUser) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kActivityReportingSessionType);
   ui::IdleState test_states[] = {ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE,
                                  ui::IDLE_STATE_ACTIVE};
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
@@ -1452,6 +1485,8 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithAffiliatedUser) {
   EXPECT_EQ(1, device_status_.active_periods_size());
   EXPECT_EQ(account_id0.GetUserEmail(),
             device_status_.active_periods(0).user_email());
+  EXPECT_EQ(em::ActiveTimePeriod::SESSION_AFFILIATED_USER,
+            device_status_.active_periods(0).session_type());
   device_status_.clear_active_periods();  // Clear the result protobuf.
 
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
@@ -1464,9 +1499,12 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithAffiliatedUser) {
   GetStatus();
   EXPECT_EQ(1, device_status_.active_periods_size());
   EXPECT_TRUE(device_status_.active_periods(0).user_email().empty());
+  EXPECT_FALSE(device_status_.active_periods(0).has_session_type());
 }
 
 TEST_F(DeviceStatusCollectorTest, ActivityWithNotAffiliatedUser) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kActivityReportingSessionType);
   ui::IdleState test_states[] = {ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE,
                                  ui::IDLE_STATE_ACTIVE};
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
@@ -1484,6 +1522,7 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithNotAffiliatedUser) {
   GetStatus();
   EXPECT_EQ(1, device_status_.active_periods_size());
   EXPECT_TRUE(device_status_.active_periods(0).user_email().empty());
+  EXPECT_FALSE(device_status_.active_periods(0).has_session_type());
   device_status_.clear_active_periods();  // Clear the result protobuf.
 
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
@@ -1496,6 +1535,7 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithNotAffiliatedUser) {
   GetStatus();
   EXPECT_EQ(1, device_status_.active_periods_size());
   EXPECT_TRUE(device_status_.active_periods(0).user_email().empty());
+  EXPECT_FALSE(device_status_.active_periods(0).has_session_type());
 }
 
 TEST_F(DeviceStatusCollectorTest, DevSwitchBootMode) {
