@@ -397,8 +397,18 @@ void PictureInPictureControllerImpl::OnPictureInPictureStateChange() {
   DCHECK(picture_in_picture_element_);
   DCHECK(picture_in_picture_element_->GetWebMediaPlayer());
 
+  // The lifetime of the MediaPlayer mojo endpoint in the renderer is tied to
+  // WebMediaPlayer, which is recreated by |picture_in_picture_element_| on
+  // src= change. Since src= change is one of the reasons we get here, we need
+  // to give the browser a newly bound remote.
+  mojo::PendingAssociatedRemote<media::mojom::blink::MediaPlayer>
+      media_player_remote;
+  picture_in_picture_element_->BindMediaPlayerReceiver(
+      media_player_remote.InitWithNewEndpointAndPassReceiver());
+
   picture_in_picture_session_->Update(
       picture_in_picture_element_->GetWebMediaPlayer()->GetDelegateId(),
+      std::move(media_player_remote),
       picture_in_picture_element_->GetWebMediaPlayer()->GetSurfaceId(),
       picture_in_picture_element_->GetWebMediaPlayer()->NaturalSize(),
       ShouldShowPlayPauseButton(*picture_in_picture_element_));

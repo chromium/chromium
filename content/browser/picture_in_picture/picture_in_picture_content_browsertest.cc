@@ -331,6 +331,19 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureContentBrowserTest,
   WaitForPlaybackState(OverlayWindow::PlaybackState::kPaused);
 }
 
+IN_PROC_BROWSER_TEST_F(PictureInPictureContentBrowserTest,
+                       PlayerRespondsToUserActionsAfterSrcUpdate) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), GetTestUrl("media/picture_in_picture", "one-video.html")));
+
+  ASSERT_EQ(true, EvalJs(shell(), "play();"));
+  ASSERT_EQ(true, EvalJs(shell(), "enterPictureInPicture();"));
+  ASSERT_EQ(true, EvalJs(shell(), "updateVideoSrcAndPlay();"));
+
+  window_controller()->TogglePlayPause();
+  WaitForPlaybackState(OverlayWindow::PlaybackState::kPaused);
+}
+
 class MediaSessionPictureInPictureContentBrowserTest
     : public PictureInPictureContentBrowserTest {
  public:

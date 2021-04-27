@@ -41,6 +41,8 @@ class VideoWakeLockPictureInPictureSession
   void Stop(StopCallback callback) final { std::move(callback).Run(); }
 
   void Update(uint32_t player_id,
+              mojo::PendingAssociatedRemote<media::mojom::blink::MediaPlayer>
+                  player_remote,
               const base::Optional<viz::SurfaceId>&,
               const gfx::Size&,
               bool show_play_pause_button) final {}

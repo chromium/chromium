@@ -38,11 +38,15 @@ void PictureInPictureSession::Stop(StopCallback callback) {
 
 void PictureInPictureSession::Update(
     uint32_t player_id,
+    mojo::PendingAssociatedRemote<media::mojom::MediaPlayer> player_remote,
     const base::Optional<viz::SurfaceId>& surface_id,
     const gfx::Size& natural_size,
     bool show_play_pause_button) {
   player_id_ = MediaPlayerId(
       service_->render_frame_host()->GetGlobalFrameRoutingId(), player_id);
+
+  media_player_remote_.reset();
+  media_player_remote_.Bind(std::move(player_remote));
 
   GetController().EmbedSurface(surface_id.value(), natural_size);
   GetController().SetShowPlayPauseButton(show_play_pause_button);

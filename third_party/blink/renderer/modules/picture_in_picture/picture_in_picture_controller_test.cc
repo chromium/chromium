@@ -46,11 +46,13 @@ class MockPictureInPictureSession
   ~MockPictureInPictureSession() override = default;
 
   MOCK_METHOD1(Stop, void(StopCallback));
-  MOCK_METHOD4(Update,
-               void(uint32_t,
-                    const base::Optional<viz::SurfaceId>&,
-                    const gfx::Size&,
-                    bool));
+  MOCK_METHOD5(
+      Update,
+      void(uint32_t,
+           mojo::PendingAssociatedRemote<media::mojom::blink::MediaPlayer>,
+           const base::Optional<viz::SurfaceId>&,
+           const gfx::Size&,
+           bool));
 
  private:
   mojo::Receiver<mojom::blink::PictureInPictureSession> receiver_;

@@ -27,6 +27,7 @@ interface PictureInPictureSession {
   // Update the information used to create the session when it was created.
   // This call cannot happen after `Stop()`.
   Update(uint32 player_id,
+      pending_associated_remote<media.mojom.MediaPlayer> player_remote,
       viz.mojom.SurfaceId? surface_id,
       gfx.mojom.Size natural_size,
       bool show_play_pause_button);
