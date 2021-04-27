@@ -19,6 +19,7 @@
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_info_cache_observer.h"
 
 namespace base {
@@ -44,15 +45,10 @@ class ProfileAttributesStorage
   ProfileAttributesStorage& operator=(const ProfileAttributesStorage&) = delete;
   virtual ~ProfileAttributesStorage();
 
-  // Adds a new profile at |profile_path| to the attributes storage.
-  virtual void AddProfile(const base::FilePath& profile_path,
-                          const std::u16string& name,
-                          const std::string& gaia_id,
-                          const std::u16string& user_name,
-                          bool is_consented_primary_account,
-                          size_t icon_index,
-                          const std::string& supervised_user_id,
-                          const AccountId& account_id) = 0;
+  // Adds a new profile with `params` to the attributes storage.
+  // `params.profile_path` must be a valid path within the user data directory
+  // that hasn't been registered with this `ProfileAttributesStorage` before.
+  virtual void AddProfile(ProfileAttributesInitParams params) = 0;
 
   // Removes the profile matching given |account_id| from this storage.
   // Calculates profile path and calls RemoveProfile() on it.

@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
@@ -138,12 +139,14 @@ class AnnouncementNotificationServiceTest : public testing::Test {
     // Mock the sign in profile data.
     DCHECK_EQ(test_profile_->GetPath(),
               test_profile_manager_->profiles_dir().AppendASCII(kProfileId));
-    std::string gaia_id = sign_in ? "dummy_gaia_id" : std::string();
+    ProfileAttributesInitParams params;
+    params.profile_path =
+        test_profile_manager_->profiles_dir().AppendASCII(kProfileId);
+    params.profile_name = u"dummy_name";
+    params.gaia_id = sign_in ? "dummy_gaia_id" : std::string();
+    params.is_consented_primary_account = sign_in;
     test_profile_manager_->profile_attributes_storage()->AddProfile(
-        test_profile_manager_->profiles_dir().AppendASCII(kProfileId),
-        u"dummy_name", gaia_id, std::u16string(),
-        sign_in /*is_consented_primary_account*/, 0, std::string(),
-        EmptyAccountId());
+        std::move(params));
 
     // Register pref.
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();

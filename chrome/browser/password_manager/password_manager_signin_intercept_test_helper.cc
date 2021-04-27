@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
+#include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
@@ -96,10 +97,12 @@ void PasswordManagerSigninInterceptTestHelper::SetupProfilesForInterception(
       &profile_manager->GetProfileAttributesStorage();
   const base::FilePath profile_path =
       profile_manager->GenerateNextProfileDirectoryPath();
-  profile_storage->AddProfile(
-      profile_path, u"TestProfileName", kGaiaId, base::UTF8ToUTF16(kGaiaEmail),
-      /*is_consented_primary_account=*/false, /*icon_index=*/0,
-      /*supervised_user_id=*/std::string(), EmptyAccountId());
+  ProfileAttributesInitParams params;
+  params.profile_path = profile_path;
+  params.profile_name = u"TestProfileName";
+  params.gaia_id = kGaiaId;
+  params.user_name = base::UTF8ToUTF16(kGaiaEmail);
+  profile_storage->AddProfile(std::move(params));
 
   // Check that the signin qualifies for interception.
   base::Optional<SigninInterceptionHeuristicOutcome> outcome =

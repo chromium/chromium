@@ -31,6 +31,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -623,10 +624,11 @@ IN_PROC_BROWSER_TEST_F(AppControllerProfilePickerBrowserTest,
       &profile_manager->GetProfileAttributesStorage();
   const base::FilePath profile_path =
       profile_manager->GenerateNextProfileDirectoryPath();
-  profile_storage->AddProfile(
-      profile_path, u"name_1", "12345", std::u16string(),
-      /*is_consented_primary_account=*/false, /*icon_index=*/0,
-      /*supervised_user_id*/ std::string(), EmptyAccountId());
+  ProfileAttributesInitParams params;
+  params.profile_path = profile_path;
+  params.profile_name = u"name_1";
+  params.gaia_id = "12345";
+  profile_storage->AddProfile(std::move(params));
 
   EXPECT_EQ(1u, active_browser_list_->size());
   BOOL result = [ac applicationShouldHandleReopen:NSApp hasVisibleWindows:NO];

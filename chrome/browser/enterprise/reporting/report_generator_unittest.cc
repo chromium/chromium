@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
+#include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -170,12 +171,15 @@ class ReportGeneratorTest : public ::testing::Test,
       std::string profile_name =
           std::string(kProfile) + base::NumberToString(i);
       switch (status) {
-        case kIdle:
+        case kIdle: {
+          ProfileAttributesInitParams params;
+          params.profile_path =
+              profile_manager()->profiles_dir().AppendASCII(profile_name);
+          params.profile_name = base::ASCIIToUTF16(profile_name);
           profile_manager_.profile_attributes_storage()->AddProfile(
-              profile_manager()->profiles_dir().AppendASCII(profile_name),
-              base::ASCIIToUTF16(profile_name), std::string(), std::u16string(),
-              false, 0, std::string(), EmptyAccountId());
+              std::move(params));
           break;
+        }
         case kActive:
           profile_manager_.CreateTestingProfile(profile_name);
           break;

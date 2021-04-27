@@ -16,6 +16,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
@@ -396,11 +397,12 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAndLoad) {
       &profile_manager->GetProfileAttributesStorage();
   const base::FilePath profile_path =
       profile_manager->GenerateNextProfileDirectoryPath();
-  profile_storage->AddProfile(
-      profile_path, u"TestProfileName", account_info.gaia,
-      base::UTF8ToUTF16(account_info.email),
-      /*is_consented_primary_account=*/false, /*icon_index=*/0,
-      /*supervised_user_id*/ std::string(), EmptyAccountId());
+  ProfileAttributesInitParams params;
+  params.profile_path = profile_path;
+  params.profile_name = u"TestProfileName";
+  params.gaia_id = account_info.gaia;
+  params.user_name = base::UTF8ToUTF16(account_info.email);
+  profile_storage->AddProfile(std::move(params));
   ProfileAttributesEntry* entry =
       profile_storage->GetProfileAttributesWithPath(profile_path);
   ASSERT_TRUE(entry);

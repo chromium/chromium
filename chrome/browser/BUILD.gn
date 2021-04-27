@@ -1379,6 +1379,8 @@ static_library("browser") {
     "profiles/pref_service_builder_utils.h",
     "profiles/profile_attributes_entry.cc",
     "profiles/profile_attributes_entry.h",
+    "profiles/profile_attributes_init_params.cc",
+    "profiles/profile_attributes_init_params.h",
     "profiles/profile_attributes_storage.cc",
     "profiles/profile_attributes_storage.h",
     "profiles/profile_avatar_downloader.cc",

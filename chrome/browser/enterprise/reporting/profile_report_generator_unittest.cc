@@ -12,6 +12,7 @@
 #include "base/util/values/values_util.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
+#include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -152,9 +153,11 @@ class ProfileReportGeneratorTest : public ::testing::Test {
 TEST_F(ProfileReportGeneratorTest, ProfileNotActivated) {
   const base::FilePath profile_path =
       profile_manager()->profiles_dir().AppendASCII(kIdleProfile);
+  ProfileAttributesInitParams params;
+  params.profile_path = profile_path;
+  params.profile_name = base::ASCIIToUTF16(kIdleProfile);
   profile_manager()->profile_attributes_storage()->AddProfile(
-      profile_path, base::ASCIIToUTF16(kIdleProfile), std::string(),
-      std::u16string(), false, 0, std::string(), EmptyAccountId());
+      std::move(params));
   std::unique_ptr<em::ChromeUserProfileInfo> response =
       generator_.MaybeGenerate(profile_path, kIdleProfile, ReportType::kFull);
   ASSERT_FALSE(response.get());

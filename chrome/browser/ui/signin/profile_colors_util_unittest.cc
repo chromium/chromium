@@ -10,6 +10,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_info_cache.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -81,8 +82,13 @@ class ProfileColorsUtilTest : public testing::Test {
                                number_of_profiles));
     std::u16string name = base::ASCIIToUTF16(
         base::StringPrintf("testing_profile_name%" PRIuS, number_of_profiles));
-    storage()->AddProfile(profile_path, name, std::string(), name, true,
-                          number_of_profiles, std::string(), EmptyAccountId());
+    ProfileAttributesInitParams params;
+    params.profile_path = profile_path;
+    params.profile_name = name;
+    params.user_name = name;
+    params.is_consented_primary_account = true;
+    params.icon_index = number_of_profiles;
+    storage()->AddProfile(std::move(params));
 
     EXPECT_EQ(number_of_profiles + 1, storage()->GetNumberOfProfiles());
 

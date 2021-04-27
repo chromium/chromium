@@ -57,6 +57,7 @@
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/bookmark_model_loaded_observer.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
@@ -879,7 +880,7 @@ base::FilePath ProfileManager::CreateMultiProfileAsync(
     LOG(WARNING) << "Failed to generate a unique profile name for a new "
                     "profile. Creation parameters will be ignored, loading an "
                     "existing profile at path \""
-                 << new_path << "\"instead.";
+                 << new_path << "\" instead.";
   } else {
     // Add a storage entry early here to set up a new profile with user selected
     // name and avatar.
@@ -888,11 +889,11 @@ base::FilePath ProfileManager::CreateMultiProfileAsync(
     // attributes after prefs are loaded.
     // TODO(alexilin): consider using the user data to supply these parameters
     // to profile.
-    storage.AddProfile(new_path, name, /*gaia_id=*/std::string(),
-                       /*user_name=*/std::u16string(),
-                       /*is_consented_primary_account=*/false, icon_index,
-                       /*supervised_user_id=*/std::string(),
-                       /*account_id=*/EmptyAccountId());
+    ProfileAttributesInitParams init_params;
+    init_params.profile_path = new_path;
+    init_params.profile_name = name;
+    init_params.icon_index = icon_index;
+    storage.AddProfile(std::move(init_params));
   }
 
   profile_manager->CreateProfileAsync(new_path, callback);
@@ -1981,28 +1982,31 @@ void ProfileManager::AddProfileToStorage(Profile* profile) {
     }
   }
 
+  ProfileAttributesInitParams init_params;
+  init_params.profile_path = profile->GetPath();
+
   // Profile name and avatar are set by InitProfileUserPrefs and stored in the
   // profile. Use those values to setup the entry in profile attributes storage.
-  std::u16string profile_name =
+  init_params.profile_name =
       base::UTF8ToUTF16(profile->GetPrefs()->GetString(prefs::kProfileName));
 
-  size_t icon_index =
+  init_params.icon_index =
       profile->GetPrefs()->GetInteger(prefs::kProfileAvatarIndex);
 
-  std::string supervised_user_id =
+  init_params.supervised_user_id =
       profile->GetPrefs()->GetString(prefs::kSupervisedUserId);
 
-  AccountId account_id(EmptyAccountId());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
   if (user)
-    account_id = user->GetAccountId();
+    init_params.account_id = user->GetAccountId();
 #endif
 
-  storage.AddProfile(profile->GetPath(), profile_name, account_info.gaia,
-                     username, is_consented_primary_account, icon_index,
-                     supervised_user_id, account_id);
+  init_params.gaia_id = account_info.gaia;
+  init_params.user_name = username;
+  init_params.is_consented_primary_account = is_consented_primary_account;
+  storage.AddProfile(std::move(init_params));
 
   ProfileAttributesEntry* entry =
       storage.GetProfileAttributesWithPath(profile->GetPath());

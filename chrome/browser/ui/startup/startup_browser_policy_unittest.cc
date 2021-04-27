@@ -8,6 +8,7 @@
 #include "chrome/browser/policy/browser_signin_policy_handler.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profile_resetter/profile_resetter_test_base.h"
+#include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -47,9 +48,10 @@ class StartupBrowserPolicyUnitTest : public testing::Test {
         profile_manager->GetProfileAttributesStorage();
     size_t num_profiles = storage.GetNumberOfProfiles();
     base::FilePath path = temp_dir_.GetPath().AppendASCII(profile_name);
-    storage.AddProfile(path, base::ASCIIToUTF16(profile_name.c_str()),
-                       std::string(), std::u16string(), false, 0, std::string(),
-                       EmptyAccountId());
+    ProfileAttributesInitParams params;
+    params.profile_path = path;
+    params.profile_name = base::ASCIIToUTF16(profile_name.c_str());
+    storage.AddProfile(std::move(params));
     EXPECT_EQ(num_profiles + 1u, storage.GetNumberOfProfiles());
     return profile_manager->GetProfile(path);
   }

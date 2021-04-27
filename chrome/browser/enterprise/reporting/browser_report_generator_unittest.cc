@@ -16,6 +16,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_throttler_test.h"
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
+#include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -71,10 +72,12 @@ class BrowserReportGeneratorTest : public ::testing::Test,
   }
 
   void InitializeProfile() {
+    ProfileAttributesInitParams params;
+    params.profile_path =
+        profile_manager()->profiles_dir().AppendASCII(kProfileId);
+    params.profile_name = base::ASCIIToUTF16(kProfileName);
     profile_manager_.profile_attributes_storage()->AddProfile(
-        profile_manager()->profiles_dir().AppendASCII(kProfileId),
-        base::ASCIIToUTF16(kProfileName), std::string(), std::u16string(),
-        false, 0, std::string(), EmptyAccountId());
+        std::move(params));
   }
 
   void InitializeIrregularProfiles() {

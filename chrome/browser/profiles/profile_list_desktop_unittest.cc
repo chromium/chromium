@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/avatar_menu_observer.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_list.h"
 #include "chrome/browser/profiles/profiles_state.h"
@@ -76,9 +77,10 @@ class ProfileListDesktopTest : public testing::Test {
   void AddOmittedProfile(const std::string& name) {
     ProfileAttributesStorage* storage = manager()->profile_attributes_storage();
     base::FilePath profile_path = manager()->profiles_dir().AppendASCII(name);
-    storage->AddProfile(profile_path, ASCIIToUTF16(name), std::string(),
-                        std::u16string(), false, 0, std::string(),
-                        EmptyAccountId());
+    ProfileAttributesInitParams params;
+    params.profile_path = profile_path;
+    params.profile_name = ASCIIToUTF16(name);
+    storage->AddProfile(std::move(params));
     ProfileAttributesEntry* entry =
         storage->GetProfileAttributesWithPath(profile_path);
     ASSERT_NE(entry, nullptr);

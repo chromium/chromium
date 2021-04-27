@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_info_cache_observer.h"
 #include "chrome/browser/profiles/profile_info_interface.h"
@@ -51,20 +52,8 @@ class ProfileInfoCache : public ProfileInfoInterface,
   ProfileInfoCache& operator=(const ProfileInfoCache&) = delete;
   ~ProfileInfoCache() override;
 
-  // If the |supervised_user_id| is non-empty, the profile will be marked to be
-  // omitted from the avatar-menu list on desktop versions. This is used while a
-  // supervised user is in the process of being registered with the server. Use
-  // SetIsOmittedProfileAtIndex() to clear the flag when the profile is ready to
-  // be shown in the menu.
   // Deprecated. Use AddProfile instead.
-  void AddProfileToCache(const base::FilePath& profile_path,
-                         const std::u16string& name,
-                         const std::string& gaia_id,
-                         const std::u16string& user_name,
-                         bool is_consented_primary_account,
-                         size_t icon_index,
-                         const std::string& supervised_user_id,
-                         const AccountId& account_id);
+  void AddProfileToCache(ProfileAttributesInitParams params);
   // Deprecated. Use RemoveProfile instead.
   void DeleteProfileFromCache(const base::FilePath& profile_path);
 
@@ -109,14 +98,7 @@ class ProfileInfoCache : public ProfileInfoInterface,
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // ProfileAttributesStorage:
-  void AddProfile(const base::FilePath& profile_path,
-                  const std::u16string& name,
-                  const std::string& gaia_id,
-                  const std::u16string& user_name,
-                  bool is_consented_primary_account,
-                  size_t icon_index,
-                  const std::string& supervised_user_id,
-                  const AccountId& account_id) override;
+  void AddProfile(ProfileAttributesInitParams) override;
   void RemoveProfileByAccountId(const AccountId& account_id) override;
   void RemoveProfile(const base::FilePath& profile_path) override;
 

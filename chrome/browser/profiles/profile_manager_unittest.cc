@@ -29,6 +29,7 @@
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_info_cache.h"
 #include "chrome/browser/profiles/profile_keep_alive_types.h"
@@ -199,8 +200,10 @@ class ProfileManagerTest : public testing::Test {
         profile_manager->GetProfileAttributesStorage();
     size_t num_profiles = storage.GetNumberOfProfiles();
     base::FilePath path = temp_dir_.GetPath().AppendASCII(path_suffix);
-    storage.AddProfile(path, profile_name, std::string(), std::u16string(),
-                       false, 0, std::string(), EmptyAccountId());
+    ProfileAttributesInitParams params;
+    params.profile_path = path;
+    params.profile_name = profile_name;
+    storage.AddProfile(std::move(params));
     EXPECT_EQ(num_profiles + 1u, storage.GetNumberOfProfiles());
     return profile_manager->GetProfile(path);
   }
@@ -796,15 +799,27 @@ TEST_F(ProfileManagerTest, AutoloadProfilesWithBackgroundApps) {
 
   EXPECT_EQ(0u, storage.GetNumberOfProfiles());
 
-  storage.AddProfile(profile_manager->user_data_dir().AppendASCII("path_1"),
-                     u"name_1", "12345", std::u16string(), true, 0,
-                     std::string(), EmptyAccountId());
-  storage.AddProfile(profile_manager->user_data_dir().AppendASCII("path_2"),
-                     u"name_2", "23456", std::u16string(), true, 0,
-                     std::string(), EmptyAccountId());
-  storage.AddProfile(profile_manager->user_data_dir().AppendASCII("path_3"),
-                     u"name_3", "34567", std::u16string(), false, 0,
-                     std::string(), EmptyAccountId());
+  ProfileAttributesInitParams params_1;
+  params_1.profile_path =
+      profile_manager->user_data_dir().AppendASCII("path_1");
+  params_1.profile_name = u"name_1";
+  params_1.gaia_id = "12345";
+  params_1.is_consented_primary_account = true;
+  storage.AddProfile(std::move(params_1));
+  ProfileAttributesInitParams params_2;
+  params_2.profile_path =
+      profile_manager->user_data_dir().AppendASCII("path_2");
+  params_2.profile_name = u"name_2";
+  params_2.gaia_id = "23456";
+  params_2.is_consented_primary_account = true;
+  storage.AddProfile(std::move(params_2));
+  ProfileAttributesInitParams params_3;
+  params_3.profile_path =
+      profile_manager->user_data_dir().AppendASCII("path_3");
+  params_3.profile_name = u"name_3";
+  params_3.gaia_id = "34567";
+  params_3.is_consented_primary_account = true;
+  storage.AddProfile(std::move(params_3));
 
   ASSERT_EQ(3u, storage.GetNumberOfProfiles());
 
@@ -827,12 +842,20 @@ TEST_F(ProfileManagerTest, DoNotAutoloadProfilesIfBackgroundModeOff) {
 
   EXPECT_EQ(0u, storage.GetNumberOfProfiles());
 
-  storage.AddProfile(profile_manager->user_data_dir().AppendASCII("path_1"),
-                     u"name_1", "12345", std::u16string(), true, 0,
-                     std::string(), EmptyAccountId());
-  storage.AddProfile(profile_manager->user_data_dir().AppendASCII("path_2"),
-                     u"name_2", "23456", std::u16string(), true, 0,
-                     std::string(), EmptyAccountId());
+  ProfileAttributesInitParams params_1;
+  params_1.profile_path =
+      profile_manager->user_data_dir().AppendASCII("path_1");
+  params_1.profile_name = u"name_1";
+  params_1.gaia_id = "12345";
+  params_1.is_consented_primary_account = true;
+  storage.AddProfile(std::move(params_1));
+  ProfileAttributesInitParams params_2;
+  params_2.profile_path =
+      profile_manager->user_data_dir().AppendASCII("path_2");
+  params_2.profile_name = u"name_2";
+  params_2.gaia_id = "23456";
+  params_2.is_consented_primary_account = true;
+  storage.AddProfile(std::move(params_2));
 
   ASSERT_EQ(2u, storage.GetNumberOfProfiles());
 
@@ -1321,18 +1344,24 @@ TEST_F(ProfileManagerTest, CleanUpEphemeralProfiles) {
   const std::string profile_name1 = "Homer";
   base::FilePath path1 =
       profile_manager->user_data_dir().AppendASCII(profile_name1);
-  storage.AddProfile(path1, base::UTF8ToUTF16(profile_name1), std::string(),
-                     base::UTF8ToUTF16(profile_name1), true, 0, std::string(),
-                     EmptyAccountId());
+  ProfileAttributesInitParams params_1;
+  params_1.profile_path = path1;
+  params_1.profile_name = base::UTF8ToUTF16(profile_name1);
+  params_1.user_name = base::UTF8ToUTF16(profile_name1);
+  params_1.is_consented_primary_account = true;
+  storage.AddProfile(std::move(params_1));
   storage.GetAllProfilesAttributes()[0]->SetIsEphemeral(true);
   ASSERT_TRUE(base::CreateDirectory(path1));
 
   const std::string profile_name2 = "Marge";
   base::FilePath path2 =
       profile_manager->user_data_dir().AppendASCII(profile_name2);
-  storage.AddProfile(path2, base::UTF8ToUTF16(profile_name2), std::string(),
-                     base::UTF8ToUTF16(profile_name2), true, 0, std::string(),
-                     EmptyAccountId());
+  ProfileAttributesInitParams params_2;
+  params_2.profile_path = path2;
+  params_2.profile_name = base::UTF8ToUTF16(profile_name2);
+  params_2.user_name = base::UTF8ToUTF16(profile_name2);
+  params_2.is_consented_primary_account = true;
+  storage.AddProfile(std::move(params_2));
   ASSERT_EQ(2u, storage.GetNumberOfProfiles());
   ASSERT_TRUE(base::CreateDirectory(path2));
 
@@ -1397,9 +1426,12 @@ TEST_P(ProfileManagerGuestTest, CleanUpGuestEphemeralProfile) {
   const std::string profile_name = "Homer";
   base::FilePath path =
       profile_manager->user_data_dir().AppendASCII(profile_name);
-  storage.AddProfile(path, base::UTF8ToUTF16(profile_name), std::string(),
-                     base::UTF8ToUTF16(profile_name), true, 0, std::string(),
-                     EmptyAccountId());
+  ProfileAttributesInitParams params;
+  params.profile_path = path;
+  params.profile_name = base::UTF8ToUTF16(profile_name);
+  params.user_name = base::UTF8ToUTF16(profile_name);
+  params.is_consented_primary_account = true;
+  storage.AddProfile(std::move(params));
   ASSERT_TRUE(base::CreateDirectory(path));
 
   size_t profiles_count = IsEphemeral() ? 2u : 1u;
@@ -1456,9 +1488,12 @@ TEST_F(ProfileManagerTest, CleanUpEphemeralProfilesWithGuestLastUsedProfile) {
   const std::string profile_name1 = "Homer";
   base::FilePath path1 =
       profile_manager->user_data_dir().AppendASCII(profile_name1);
-  storage.AddProfile(path1, base::UTF8ToUTF16(profile_name1), std::string(),
-                     base::UTF8ToUTF16(profile_name1), true, 0, std::string(),
-                     EmptyAccountId());
+  ProfileAttributesInitParams params;
+  params.profile_path = path1;
+  params.profile_name = base::UTF8ToUTF16(profile_name1);
+  params.user_name = base::UTF8ToUTF16(profile_name1);
+  params.is_consented_primary_account = true;
+  storage.AddProfile(std::move(params));
   storage.GetAllProfilesAttributes()[0]->SetIsEphemeral(true);
   ASSERT_TRUE(base::CreateDirectory(path1));
   ASSERT_EQ(1u, storage.GetNumberOfProfiles());
@@ -1915,9 +1950,12 @@ TEST_F(ProfileManagerTest, ActiveProfileDeletedNeedsToLoadNextProfile) {
   // Track the profile, but don't load it.
   ProfileAttributesStorage& storage =
       profile_manager->GetProfileAttributesStorage();
-  storage.AddProfile(profile_path2, ASCIIToUTF16(profile_basename2), "23456",
-                     std::u16string(), true, 0, std::string(),
-                     EmptyAccountId());
+  ProfileAttributesInitParams params;
+  params.profile_path = profile_path2;
+  params.profile_name = ASCIIToUTF16(profile_basename2);
+  params.gaia_id = "23456";
+  params.is_consented_primary_account = true;
+  storage.AddProfile(std::move(params));
   content::RunAllTasksUntilIdle();
 
   EXPECT_EQ(1u, profile_manager->GetLoadedProfiles().size());
@@ -1967,12 +2005,22 @@ TEST_F(ProfileManagerTest, ActiveProfileDeletedNextProfileDeletedToo) {
   // profile name, and not randomly by the avatar name.
   ProfileAttributesStorage& storage =
       profile_manager->GetProfileAttributesStorage();
-  storage.AddProfile(profile_path2, ASCIIToUTF16(profile_basename2), "23456",
-                     ASCIIToUTF16(profile_basename2), true, 1, std::string(),
-                     EmptyAccountId());
-  storage.AddProfile(profile_path3, ASCIIToUTF16(profile_basename3), "34567",
-                     ASCIIToUTF16(profile_basename3), true, 2, std::string(),
-                     EmptyAccountId());
+  ProfileAttributesInitParams params2;
+  params2.profile_path = profile_path2;
+  params2.profile_name = ASCIIToUTF16(profile_basename2);
+  params2.gaia_id = "23456";
+  params2.user_name = ASCIIToUTF16(profile_basename2);
+  params2.is_consented_primary_account = true;
+  params2.icon_index = 1;
+  storage.AddProfile(std::move(params2));
+  ProfileAttributesInitParams params3;
+  params3.profile_path = profile_path3;
+  params3.profile_name = ASCIIToUTF16(profile_basename3);
+  params3.gaia_id = "34567";
+  params3.user_name = ASCIIToUTF16(profile_basename3);
+  params3.is_consented_primary_account = true;
+  params3.icon_index = 2;
+  storage.AddProfile(std::move(params3));
 
   content::RunAllTasksUntilIdle();
 
