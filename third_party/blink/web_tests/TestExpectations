@@ -577,6 +577,9 @@ crbug.com/1135287 external/wpt/css/css-sizing/image-min-max-content-intrinsic-si
 crbug.com/1135287 external/wpt/css/css-sizing/image-min-max-content-intrinsic-size-change-006.html [ Failure ]
 crbug.com/1135287 external/wpt/css/css-sizing/image-min-max-content-intrinsic-size-change-007.html [ Failure ]
 crbug.com/1135287 external/wpt/css/css-sizing/image-min-max-content-intrinsic-size-change-008.html [ Failure ]
+crbug.com/1114280 external/wpt/css/css-sizing/replaced-aspect-ratio-stretch-fit-001.html [ Failure ]
+crbug.com/1114280 external/wpt/css/css-sizing/replaced-aspect-ratio-stretch-fit-002.html [ Failure ]
+crbug.com/1114280 external/wpt/css/css-sizing/replaced-aspect-ratio-stretch-fit-003.html [ Failure ]
 
 crbug.com/1008951 external/wpt/css/css-text-decor/text-decoration-subelements-002.html [ Failure ]
 crbug.com/1008951 external/wpt/css/css-text-decor/text-decoration-subelements-003.html [ Failure ]

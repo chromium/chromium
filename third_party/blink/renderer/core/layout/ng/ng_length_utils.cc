@@ -864,6 +864,27 @@ LogicalSize ComputeReplacedSize(const NGBlockNode& node,
   const base::Optional<LogicalSize> natural_size = ComputeNormalizedNaturalSize(
       node, border_padding, box_sizing, aspect_ratio);
 
+  auto StretchFit = [&]() -> LayoutUnit {
+    // Only stretch to the available-size if it is definite.
+    LayoutUnit size =
+        (space.AvailableSize().inline_size == kIndefiniteSize)
+            ? border_padding.InlineSum()
+            : ResolveMainInlineLength<base::Optional<MinMaxSizes>>(
+                  space, style, border_padding, base::nullopt,
+                  Length::FillAvailable(), available_inline_size_adjustment);
+
+    // If stretch-fit applies we must have an aspect-ratio.
+    DCHECK(!aspect_ratio.IsEmpty());
+
+    // Apply the transferred min/max sizes.
+    const MinMaxSizes transferred_min_max_sizes =
+        ComputeTransferredMinMaxInlineSizes(aspect_ratio, block_min_max_sizes,
+                                            border_padding, box_sizing);
+    size = transferred_min_max_sizes.ClampSizeToMinAndMax(size);
+
+    return size;
+  };
+
   auto MinMaxSizesFunc = [&](MinMaxSizesType type) -> MinMaxSizesResult {
     LayoutUnit size;
     if (aspect_ratio.IsEmpty()) {
@@ -875,13 +896,8 @@ LogicalSize ComputeReplacedSize(const NGBlockNode& node,
     } else if (natural_size) {
       size = natural_size->inline_size;
     } else {
-      // We don't have a natural size - default to stretch if our available
-      // size is definite.
-      size = (space.AvailableSize().inline_size == kIndefiniteSize)
-                 ? border_padding.InlineSum()
-                 : ResolveMainInlineLength<base::Optional<MinMaxSizes>>(
-                       space, style, border_padding, base::nullopt,
-                       Length::FillAvailable());
+      // We don't have a natural size - default to stretching.
+      size = StretchFit();
     }
 
     // |depends_on_block_constraints| doesn't matter in this context.
@@ -923,15 +939,10 @@ LogicalSize ComputeReplacedSize(const NGBlockNode& node,
   if (replaced_inline && replaced_block)
     return LogicalSize(*replaced_inline, *replaced_block);
 
-  // We have *only* an aspect-ratio with no sizes (natural or otherwise), here
-  // we default to stretching to the available-size if available.
+  // We have *only* an aspect-ratio with no sizes (natural or otherwise), we
+  // default to stretching.
   if (!natural_size && !replaced_inline && !replaced_block) {
-    replaced_inline =
-        (space.AvailableSize().inline_size == kIndefiniteSize)
-            ? border_padding.InlineSum()
-            : ResolveMainInlineLength(space, style, border_padding,
-                                      MinMaxSizesFunc, Length::FillAvailable(),
-                                      available_inline_size_adjustment);
+    replaced_inline = StretchFit();
     replaced_inline =
         inline_min_max_sizes.ClampSizeToMinAndMax(*replaced_inline);
   }
