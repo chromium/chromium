@@ -344,12 +344,30 @@ Polymer({
     if (this.languageSettingsV2Update2Enabled_ && e.target.checked &&
         this.languages.spellCheckOnLanguages.length === 0) {
       // In LSV2 Update 2, we never want to enable spell check without the user
-      // having a spell check language. When this happens, we prompt the user to
-      // enable a spell check language now. If the user dismisses this dialog
-      // without adding a spell check language, we disable spell check again
+      // having a spell check language. When this happens, we try estimating
+      // their expected spell check language (their device language, assuming
+      // that the user has an input method which supports that language).
+      // If that doesn't work, we fall back on prompting the user to enable a
+      // spell check language. If the user dismisses this dialog without adding
+      // a spell check language, we disable spell check again
       // (see |onAddSpellcheckLanguagesDialogClose_|).
-      // TODO(b/185947656): Determine a spell check language automatically.
-      this.onAddSpellcheckLanguagesClick_();
+
+      // This assert is safe as prospectiveUILanguage is always defined in
+      // languages.js' |createModel_()|.
+      const deviceLanguageCode = assert(this.languages.prospectiveUILanguage);
+      // However, deviceLanguage itself may be undefined as it is possible that
+      // it was set outside of CrOS language settings (normally when debugging
+      // or in tests).
+      const deviceLanguage =
+          this.languageHelper.getLanguage(deviceLanguageCode);
+      if (deviceLanguage && deviceLanguage.supportsSpellcheck &&
+          this.languages.inputMethods.enabled.some(
+              inputMethod =>
+                  inputMethod.languageCodes.includes(deviceLanguageCode))) {
+        this.languageHelper.toggleSpellCheck(deviceLanguageCode, true);
+      } else {
+        this.onAddSpellcheckLanguagesClick_();
+      }
     }
   },
 

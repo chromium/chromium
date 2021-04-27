@@ -1104,6 +1104,10 @@ suite('input page', () => {
     //     enable spell check without a spell check language added (i.e. the
     //     "add spell check languages" dialog appears when turning it on).
 
+    // TODO(crbug.com/1201540): Add a test for the "automatically determining
+    //     spell check language" behaviour when the user has no spell check
+    //     languages.
+
     test('error handling', () => {
       // Enable Swahili so we have two languages for testing.
       languageHelper.setPrefValue('spellcheck.dictionaries', ['en-US', 'sw']);
