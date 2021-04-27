@@ -32,7 +32,6 @@ CreditCardFormEventLogger::~CreditCardFormEventLogger() = default;
 void CreditCardFormEventLogger::set_suggestions(
     std::vector<Suggestion> suggestions) {
   suggestions_.clear();
-  card_selected_has_offer_ = false;
   for (auto suggestion : suggestions) {
     suggestions_.emplace_back(suggestion);
 
@@ -48,6 +47,7 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
     AutofillSyncSigninState sync_state) {
   sync_state_ = sync_state;
 
+  card_selected_has_offer_ = false;
   if (has_eligible_offer_) {
     card_selected_has_offer_ = DoesCardHaveOffer(credit_card);
     base::UmaHistogramBoolean("Autofill.Offer.SelectedCardHasOffer",
@@ -160,7 +160,7 @@ void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
     Log(FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE, form);
   }
 
-  if (has_eligible_offer_) {
+  if (has_logged_suggestion_filled_ && has_eligible_offer_) {
     base::UmaHistogramBoolean("Autofill.Offer.SubmittedCardHasOffer",
                               card_selected_has_offer_);
   }
