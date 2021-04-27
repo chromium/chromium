@@ -405,8 +405,10 @@ bool ClientDiscardableSharedMemoryManager::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  recordreplay::Assert("ClientDiscardableSharedMemoryManager::OnMemoryDump Start");
   base::AutoLock lock(lock_);
   if (foregrounded_) {
+    recordreplay::Assert("ClientDiscardableSharedMemoryManager::OnMemoryDump #1");
     const size_t total_size = heap_->GetSize() / 1024;                // in KiB
     const size_t freelist_size = heap_->GetFreelistSize() / 1024;     // in KiB
 
@@ -417,7 +419,10 @@ bool ClientDiscardableSharedMemoryManager::OnMemoryDump(
     base::UmaHistogramCounts1M("Memory.Discardable.Size.Foreground",
                                total_size - freelist_size);
   }
-  return heap_->OnMemoryDump(args, pmd);
+  recordreplay::Assert("ClientDiscardableSharedMemoryManager::OnMemoryDump #2");
+  bool rv = heap_->OnMemoryDump(args, pmd);
+  recordreplay::Assert("ClientDiscardableSharedMemoryManager::OnMemoryDump Done %d", rv);
+  return rv;
 }
 
 size_t ClientDiscardableSharedMemoryManager::GetBytesAllocated() const {
