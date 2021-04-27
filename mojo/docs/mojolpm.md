@@ -219,8 +219,10 @@ arguments:
 # but will often get in the way when running actual fuzzing, so we will disable
 # this later.
 dcheck_always_on = true
+
 # Without this flag, our fuzzer target won't exist.
 enable_mojom_fuzzer = true
+
 # ASAN is super useful for fuzzing, but in this case we just want it to help us
 # debug the inevitable lifetime issues while we get everything set-up correctly!
 is_asan = true
