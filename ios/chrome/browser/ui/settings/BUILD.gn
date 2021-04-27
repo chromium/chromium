@@ -399,7 +399,6 @@ source_set("eg2_tests") {
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
-    "//build/config/ios:disable_implicit_retain_self_warning",
   ]
   testonly = true
   sources = [
