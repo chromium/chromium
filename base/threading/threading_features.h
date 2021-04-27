@@ -8,6 +8,10 @@
 #include "base/base_export.h"
 #include "build/build_config.h"
 
+#if defined(OS_APPLE)
+#include "base/metrics/field_trial_params.h"
+#endif
+
 namespace base {
 
 struct Feature;

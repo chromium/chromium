@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/containers/flat_set.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/values.h"

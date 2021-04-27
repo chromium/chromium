@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/cart/cart_handler.h"
+
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/cart_service.h"

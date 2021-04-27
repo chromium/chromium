@@ -4,6 +4,7 @@
 
 #include "chrome/browser/search/task_module/task_module_service.h"
 
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"

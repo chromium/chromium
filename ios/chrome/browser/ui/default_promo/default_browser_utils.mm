@@ -8,6 +8,7 @@
 #include "base/ios/ios_util.h"
 #include "base/mac/foundation_util.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_params.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

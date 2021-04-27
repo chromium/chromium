@@ -8,6 +8,7 @@
 
 #include "base/json/json_writer.h"
 #include "base/mac/bundle_locations.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"

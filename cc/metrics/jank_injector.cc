@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "base/trace_event/trace_event.h"

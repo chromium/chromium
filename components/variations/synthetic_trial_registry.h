@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/observer_list.h"
 #include "components/variations/synthetic_trials.h"
 

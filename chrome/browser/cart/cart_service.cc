@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/cart/cart_service.h"
+
 #include "base/json/json_reader.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/history/history_service_factory.h"

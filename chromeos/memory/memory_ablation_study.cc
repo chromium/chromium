@@ -9,6 +9,7 @@
 
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/timer/timer.h"
 #include "crypto/random.h"
 
