@@ -21,6 +21,8 @@ extern const base::Feature kAutofillAddressEnhancementVotes;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillAddressProfileSavePrompt;
 COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillAddressProfileSavePromptNicknameSupport;
+COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillAllowDuplicateFormSubmissions;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillAllowNonHttpActivation;

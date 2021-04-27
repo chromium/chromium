@@ -258,11 +258,14 @@ SaveAddressProfileView::SaveAddressProfileView(
   if (!email.empty())
     AddAddressSection(/*parent_view=*/address_components_view, kWebIcon, email);
 
-  // TODO(crbug.com/1167060): Make sure the icon is vertically centered with the
-  // editable combobox.
-  AddAddressSection(/*parent_view=*/address_components_view,
-                    vector_icons::kExtensionIcon,
-                    CreateNicknameEditableCombobox());
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAddressProfileSavePromptNicknameSupport)) {
+    // TODO(crbug.com/1167060): Make sure the icon is vertically centered with
+    // the editable combobox.
+    AddAddressSection(/*parent_view=*/address_components_view,
+                      vector_icons::kExtensionIcon,
+                      CreateNicknameEditableCombobox());
+  }
 }
 
 bool SaveAddressProfileView::ShouldShowCloseButton() const {

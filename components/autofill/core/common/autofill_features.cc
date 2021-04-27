@@ -29,6 +29,15 @@ const base::Feature kAutofillAddressEnhancementVotes{
 const base::Feature kAutofillAddressProfileSavePrompt{
     "AutofillAddressProfileSavePrompt", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// TODO(crbug.com/1135188): Remove this feature flag after the explicit save
+// prompts for address profiles is complete.
+// When enabled, address profile save problem will contain a dropdown for
+// assigning a nickname to the address profile. Relevant only if the
+// AutofillAddressProfileSavePrompt feature is enabled.
+const base::Feature kAutofillAddressProfileSavePromptNicknameSupport{
+    "AutofillAddressProfileSavePromptNicknameSupport",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // By default, AutofillAgent and, if |kAutofillProbableFormSubmissionInBrowser|
 // is enabled, also ContentAutofillDriver omit duplicate form submissions, even
 // though the form's data may have changed substantially. If enabled, the
