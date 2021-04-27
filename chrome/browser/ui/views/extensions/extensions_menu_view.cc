@@ -481,11 +481,6 @@ void ExtensionsMenuView::OnToolbarVisibleCountChanged() {
   // Ignore. The ExtensionsMenuView always shows all extensions.
 }
 
-void ExtensionsMenuView::OnToolbarHighlightModeChanged(bool is_highlighting) {
-  NOTREACHED()
-      << "Action highlighting is not supported with the extensions menu";
-}
-
 void ExtensionsMenuView::OnToolbarModelInitialized() {
   DCHECK(extensions_menu_items_.empty());
   Populate();

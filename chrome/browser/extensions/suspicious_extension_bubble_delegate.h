@@ -38,7 +38,6 @@ class SuspiciousExtensionBubbleDelegate
   void OnShown(const ExtensionIdList& extensions) override;
   void OnAction() override;
   void ClearProfileSetForTesting() override;
-  bool ShouldHighlightExtensions() const override;
   bool ShouldLimitToEnabledExtensions() const override;
   void LogExtensionCount(size_t count) override;
   void LogAction(ExtensionMessageBubbleController::BubbleAction) override;

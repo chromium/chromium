@@ -139,10 +139,6 @@ bool SuspiciousExtensionBubbleDelegate::ShouldShowExtensionList() const {
   return true;
 }
 
-bool SuspiciousExtensionBubbleDelegate::ShouldHighlightExtensions() const {
-  return false;
-}
-
 bool SuspiciousExtensionBubbleDelegate::ShouldLimitToEnabledExtensions() const {
   return false;
 }

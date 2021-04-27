@@ -90,10 +90,6 @@ class ExtensionMessageBubbleController : public BrowserListObserver,
     // Whether to show a list of extensions in the bubble.
     virtual bool ShouldShowExtensionList() const = 0;
 
-    // Returns true if the set of affected extensions should be highlighted in
-    // the toolbar.
-    virtual bool ShouldHighlightExtensions() const = 0;
-
     // Returns true if only enabled extensions should be considered.
     virtual bool ShouldLimitToEnabledExtensions() const = 0;
 
@@ -164,10 +160,6 @@ class ExtensionMessageBubbleController : public BrowserListObserver,
   // Whether to close the bubble when it loses focus.
   bool CloseOnDeactivate();
 
-  // Highlights the affected extensions if appropriate. Safe to call multiple
-  // times.
-  void HighlightExtensionsIfNecessary();
-
   // Called when the bubble is actually shown. Because some bubbles are delayed
   // (in order to weather the "focus storm"), they are not shown immediately.
   // Accepts a callback from platform-specifc ui code to close the bubble.
@@ -225,9 +217,6 @@ class ExtensionMessageBubbleController : public BrowserListObserver,
 
   // Whether this class has initialized.
   bool initialized_;
-
-  // Whether or not the bubble is highlighting extensions.
-  bool is_highlighting_;
 
   // Whether or not this bubble is the active bubble being shown.
   bool is_active_bubble_;

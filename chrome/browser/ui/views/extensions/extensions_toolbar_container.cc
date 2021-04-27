@@ -462,12 +462,6 @@ void ExtensionsToolbarContainer::OnToolbarActionUpdated(
 
 void ExtensionsToolbarContainer::OnToolbarVisibleCountChanged() {}
 
-void ExtensionsToolbarContainer::OnToolbarHighlightModeChanged(
-    bool is_highlighting) {
-  NOTREACHED()
-      << "Action highlighting is not supported with the extensions menu";
-}
-
 void ExtensionsToolbarContainer::OnToolbarModelInitialized() {
   CreateActions();
 }

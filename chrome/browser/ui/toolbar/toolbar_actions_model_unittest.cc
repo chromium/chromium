@@ -65,7 +65,6 @@ class ToolbarActionsModelTestObserver : public ToolbarActionsModel::Observer {
   size_t inserted_count() const { return inserted_count_; }
   size_t removed_count() const { return removed_count_; }
   size_t moved_count() const { return moved_count_; }
-  int highlight_mode_count() const { return highlight_mode_count_; }
   size_t initialized_count() const { return initialized_count_; }
 
   const std::vector<ToolbarActionsModel::ActionId>& last_pinned_action_ids()
@@ -97,11 +96,6 @@ class ToolbarActionsModelTestObserver : public ToolbarActionsModel::Observer {
 
   void OnToolbarVisibleCountChanged() override {}
 
-  void OnToolbarHighlightModeChanged(bool is_highlighting) override {
-    // Add one if highlighting, subtract one if not.
-    highlight_mode_count_ += is_highlighting ? 1 : -1;
-  }
-
   void OnToolbarModelInitialized() override { ++initialized_count_; }
 
   void OnToolbarPinnedActionsChanged() override {
@@ -113,8 +107,6 @@ class ToolbarActionsModelTestObserver : public ToolbarActionsModel::Observer {
   size_t inserted_count_;
   size_t removed_count_;
   size_t moved_count_;
-  // Int because it could become negative (if something goes wrong).
-  int highlight_mode_count_;
   size_t initialized_count_;
 
   std::vector<ToolbarActionsModel::ActionId> last_pinned_action_ids_;
@@ -128,7 +120,6 @@ ToolbarActionsModelTestObserver::ToolbarActionsModelTestObserver(
       inserted_count_(0),
       removed_count_(0),
       moved_count_(0),
-      highlight_mode_count_(0),
       initialized_count_(0) {
   model_->AddObserver(this);
 }
@@ -634,199 +625,6 @@ TEST_F(ToolbarActionsModelUnitTest, NewToolbarExtensionsAreVisible) {
   EXPECT_EQ(extension_a.get()->id(), GetActionIdAtIndex(1u));
   EXPECT_EQ(extension_d.get()->id(), GetActionIdAtIndex(2u));
   EXPECT_EQ(extension_c.get()->id(), GetActionIdAtIndex(3u));
-}
-
-TEST_F(ToolbarActionsModelUnitTest, ActionsToolbarHighlightMode) {
-  Init();
-
-  EXPECT_FALSE(toolbar_model()->HighlightActions(
-      std::vector<std::string>(), ToolbarActionsModel::HIGHLIGHT_WARNING));
-  EXPECT_EQ(0, observer()->highlight_mode_count());
-
-  // Add the three browser action extensions.
-  ASSERT_TRUE(AddBrowserActionExtensions());
-  EXPECT_EQ(3u, num_actions());
-
-  // Start with a visible count of 2 (non-zero, and not all).
-  toolbar_model()->SetVisibleIconCount(2u);
-
-  // Highlight one extension.
-  std::vector<std::string> action_ids;
-  action_ids.push_back(browser_action_b()->id());
-  toolbar_model()->HighlightActions(action_ids,
-                                    ToolbarActionsModel::HIGHLIGHT_WARNING);
-  EXPECT_EQ(1, observer()->highlight_mode_count());
-  EXPECT_TRUE(toolbar_model()->is_highlighting());
-  EXPECT_EQ(1u, num_actions());
-  EXPECT_EQ(browser_action_b()->id(), GetActionIdAtIndex(0u));
-  EXPECT_EQ(1u, toolbar_model()->visible_icon_count());
-
-  // Stop highlighting.
-  toolbar_model()->StopHighlighting();
-  EXPECT_EQ(0, observer()->highlight_mode_count());
-  EXPECT_FALSE(toolbar_model()->is_highlighting());
-
-  // Verify that the extensions are back to normal.
-  EXPECT_EQ(3u, num_actions());
-  EXPECT_EQ(browser_action_a()->id(), GetActionIdAtIndex(0u));
-  EXPECT_EQ(browser_action_b()->id(), GetActionIdAtIndex(1u));
-  EXPECT_EQ(browser_action_c()->id(), GetActionIdAtIndex(2u));
-  EXPECT_EQ(2u, toolbar_model()->visible_icon_count());
-
-  // Call stop highlighting a second time (shouldn't be notified).
-  toolbar_model()->StopHighlighting();
-  EXPECT_EQ(0, observer()->highlight_mode_count());
-  EXPECT_FALSE(toolbar_model()->is_highlighting());
-
-  // Highlight all extensions.
-  action_ids.clear();
-  action_ids.push_back(browser_action_a()->id());
-  action_ids.push_back(browser_action_b()->id());
-  action_ids.push_back(browser_action_c()->id());
-  toolbar_model()->HighlightActions(action_ids,
-                                    ToolbarActionsModel::HIGHLIGHT_WARNING);
-  EXPECT_EQ(1, observer()->highlight_mode_count());
-  EXPECT_EQ(3u, num_actions());
-  EXPECT_EQ(browser_action_a()->id(), GetActionIdAtIndex(0u));
-  EXPECT_EQ(browser_action_b()->id(), GetActionIdAtIndex(1u));
-  EXPECT_EQ(browser_action_c()->id(), GetActionIdAtIndex(2u));
-  EXPECT_EQ(3u, toolbar_model()->visible_icon_count());
-  // Even though the visible count is 3, we shouldn't adjust the stored
-  // preference.
-  EXPECT_EQ(2, profile()->GetPrefs()->GetInteger(
-                   extensions::pref_names::kToolbarSize));
-
-  // Highlight only extension B (shrink the highlight list).
-  action_ids.clear();
-  action_ids.push_back(browser_action_b()->id());
-  toolbar_model()->HighlightActions(action_ids,
-                                    ToolbarActionsModel::HIGHLIGHT_WARNING);
-  EXPECT_EQ(2, observer()->highlight_mode_count());
-  EXPECT_EQ(1u, num_actions());
-  EXPECT_EQ(browser_action_b()->id(), GetActionIdAtIndex(0u));
-
-  // Highlight extensions A and B (grow the highlight list).
-  action_ids.clear();
-  action_ids.push_back(browser_action_a()->id());
-  action_ids.push_back(browser_action_b()->id());
-  toolbar_model()->HighlightActions(action_ids,
-                                    ToolbarActionsModel::HIGHLIGHT_WARNING);
-  EXPECT_EQ(3, observer()->highlight_mode_count());
-  EXPECT_EQ(2u, num_actions());
-  EXPECT_EQ(browser_action_a()->id(), GetActionIdAtIndex(0u));
-  EXPECT_EQ(browser_action_b()->id(), GetActionIdAtIndex(1u));
-
-  // Highlight no extensions (empty the highlight list).
-  action_ids.clear();
-  toolbar_model()->HighlightActions(action_ids,
-                                    ToolbarActionsModel::HIGHLIGHT_WARNING);
-  EXPECT_EQ(2, observer()->highlight_mode_count());
-  EXPECT_FALSE(toolbar_model()->is_highlighting());
-  EXPECT_EQ(browser_action_a()->id(), GetActionIdAtIndex(0u));
-  EXPECT_EQ(browser_action_b()->id(), GetActionIdAtIndex(1u));
-  EXPECT_EQ(browser_action_c()->id(), GetActionIdAtIndex(2u));
-  // Our toolbar size should be back to normal.
-  EXPECT_EQ(2u, toolbar_model()->visible_icon_count());
-  EXPECT_EQ(2, profile()->GetPrefs()->GetInteger(
-                   extensions::pref_names::kToolbarSize));
-}
-
-TEST_F(ToolbarActionsModelUnitTest, ActionsToolbarHighlightModeRemove) {
-  Init();
-
-  // Add the three browser action extensions.
-  ASSERT_TRUE(AddBrowserActionExtensions());
-  EXPECT_EQ(3u, num_actions());
-
-  // Highlight two of the extensions.
-  std::vector<std::string> action_ids;
-  action_ids.push_back(browser_action_a()->id());
-  action_ids.push_back(browser_action_b()->id());
-  toolbar_model()->HighlightActions(action_ids,
-                                    ToolbarActionsModel::HIGHLIGHT_WARNING);
-  EXPECT_TRUE(toolbar_model()->is_highlighting());
-  EXPECT_EQ(1, observer()->highlight_mode_count());
-  EXPECT_EQ(2u, num_actions());
-
-  // Disable one of them - only one should remain highlighted.
-  service()->DisableExtension(browser_action_a()->id(),
-                              extensions::disable_reason::DISABLE_USER_ACTION);
-  EXPECT_TRUE(toolbar_model()->is_highlighting());
-  EXPECT_EQ(1u, num_actions());
-  EXPECT_EQ(browser_action_b()->id(), GetActionIdAtIndex(0u));
-
-  // Uninstall the remaining highlighted extension. This should result in
-  // highlight mode exiting.
-  service()->UninstallExtension(browser_action_b()->id(),
-                                extensions::UNINSTALL_REASON_FOR_TESTING,
-                                NULL);  // Ignore error.
-  EXPECT_FALSE(toolbar_model()->is_highlighting());
-  EXPECT_EQ(0, observer()->highlight_mode_count());
-  EXPECT_EQ(1u, num_actions());
-  EXPECT_EQ(browser_action_c()->id(), GetActionIdAtIndex(0u));
-
-  // Test that removing an unhighlighted extension still works.
-  // Reinstall extension B, and then highlight extension C.
-  ASSERT_TRUE(AddExtension(browser_action_b()));
-  EXPECT_EQ(browser_action_b()->id(), GetActionIdAtIndex(1u));
-  action_ids.clear();
-  action_ids.push_back(browser_action_c()->id());
-  toolbar_model()->HighlightActions(action_ids,
-                                    ToolbarActionsModel::HIGHLIGHT_WARNING);
-  EXPECT_EQ(1, observer()->highlight_mode_count());
-  EXPECT_TRUE(toolbar_model()->is_highlighting());
-  EXPECT_EQ(1u, num_actions());
-  EXPECT_EQ(browser_action_c()->id(), GetActionIdAtIndex(0u));
-
-  // Uninstalling B should not have visible impact.
-  service()->UninstallExtension(browser_action_b()->id(),
-                                extensions::UNINSTALL_REASON_FOR_TESTING,
-                                NULL);  // Ignore error.
-  EXPECT_TRUE(toolbar_model()->is_highlighting());
-  EXPECT_EQ(1, observer()->highlight_mode_count());
-  EXPECT_EQ(1u, num_actions());
-  EXPECT_EQ(browser_action_c()->id(), GetActionIdAtIndex(0u));
-
-  // When we stop, only action C should remain.
-  toolbar_model()->StopHighlighting();
-  EXPECT_FALSE(toolbar_model()->is_highlighting());
-  EXPECT_EQ(0, observer()->highlight_mode_count());
-  EXPECT_EQ(1u, num_actions());
-  EXPECT_EQ(browser_action_c()->id(), GetActionIdAtIndex(0u));
-}
-
-TEST_F(ToolbarActionsModelUnitTest, ActionsToolbarHighlightModeAdd) {
-  Init();
-
-  // Add the three browser action extensions.
-  ASSERT_TRUE(AddBrowserActionExtensions());
-  EXPECT_EQ(3u, num_actions());
-
-  // Remove one (down to two).
-  ASSERT_TRUE(RemoveExtension(browser_action_c()));
-
-  // Highlight one of the two actions.
-  std::vector<std::string> action_ids;
-  action_ids.push_back(browser_action_a()->id());
-  toolbar_model()->HighlightActions(action_ids,
-                                    ToolbarActionsModel::HIGHLIGHT_WARNING);
-  EXPECT_TRUE(toolbar_model()->is_highlighting());
-  EXPECT_EQ(1u, num_actions());
-  EXPECT_EQ(browser_action_a()->id(), GetActionIdAtIndex(0u));
-
-  // Adding a new extension should have no visible effect.
-  ASSERT_TRUE(AddExtension(browser_action_c()));
-  EXPECT_TRUE(toolbar_model()->is_highlighting());
-  EXPECT_EQ(1u, num_actions());
-  EXPECT_EQ(browser_action_a()->id(), GetActionIdAtIndex(0u));
-
-  // When we stop highlighting, we should see the new extension show up.
-  toolbar_model()->StopHighlighting();
-  EXPECT_FALSE(toolbar_model()->is_highlighting());
-  EXPECT_EQ(3u, num_actions());
-  EXPECT_EQ(browser_action_a()->id(), GetActionIdAtIndex(0u));
-  EXPECT_EQ(browser_action_b()->id(), GetActionIdAtIndex(1u));
-  EXPECT_EQ(browser_action_c()->id(), GetActionIdAtIndex(2u));
 }
 
 // Test that the action toolbar maintains the proper size, even after a pref

@@ -79,10 +79,6 @@ bool TestExtensionMessageBubbleDelegate::ShouldShowExtensionList() const {
   return true;
 }
 
-bool TestExtensionMessageBubbleDelegate::ShouldHighlightExtensions() const {
-  return true;
-}
-
 bool TestExtensionMessageBubbleDelegate::ShouldLimitToEnabledExtensions()
     const {
   return true;

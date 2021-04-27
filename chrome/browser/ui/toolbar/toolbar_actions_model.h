@@ -49,12 +49,6 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
  public:
   using ActionId = std::string;
 
-  // The different options for highlighting.
-  enum HighlightType {
-    HIGHLIGHT_NONE,
-    HIGHLIGHT_WARNING,
-  };
-
   ToolbarActionsModel(Profile* profile,
                       extensions::ExtensionPrefs* extension_prefs);
   ~ToolbarActionsModel() override;
@@ -88,15 +82,6 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
     // Signals when the container needs to be redrawn because of a size change,
     // and when the model has finished loading.
     virtual void OnToolbarVisibleCountChanged() = 0;
-
-    // Signals that the model has entered or exited highlighting mode, or that
-    // the actions being highlighted have (probably*) changed. Highlighting
-    // mode indicates that only a subset of the toolbar actions are actively
-    // displayed, and those actions should be highlighted for extra emphasis.
-    // * probably, because if we are in highlight mode and receive a call to
-    //   highlight a new set of actions, we do not compare the current set with
-    //   the new set (and just assume the new set is different).
-    virtual void OnToolbarHighlightModeChanged(bool is_highlighting) = 0;
 
     // Signals that the toolbar model has been initialized, so that if any
     // observers were postponing animation during the initialization stage, they
@@ -153,12 +138,7 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
       bool in_overflow_menu,
       const ActionId& action_id);
 
-  const std::vector<ActionId>& action_ids() const {
-    return is_highlighting() ? highlighted_action_ids_ : action_ids_;
-  }
-
-  bool is_highlighting() const { return highlight_type_ != HIGHLIGHT_NONE; }
-  HighlightType highlight_type() const { return highlight_type_; }
+  const std::vector<ActionId>& action_ids() const { return action_ids_; }
 
   bool has_active_bubble() const { return has_active_bubble_; }
   void set_has_active_bubble(bool has_active_bubble) {
@@ -168,18 +148,6 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
   void SetActionVisibility(const ActionId& action_id, bool visible);
 
   void OnActionToolbarPrefChange();
-
-  // Highlights the actions specified by |action_ids|. This will cause
-  // the LocationBarModel to only display those actions.
-  // Highlighting mode is only entered if there is at least one action to be
-  // shown.
-  // Returns true if highlighting mode is entered, false otherwise.
-  bool HighlightActions(const std::vector<ActionId>& action_ids,
-                        HighlightType type);
-
-  // Stop highlighting actions. All actions can be shown again, and the
-  // number of visible icons will be reset to what it was before highlighting.
-  void StopHighlighting();
 
   // Gets the ExtensionMessageBubbleController that should be shown for this
   // profile, if any.
@@ -258,13 +226,10 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
 
   // Adds |action_id| to the toolbar.  If the action has an existing preference
   // for toolbar position, that will be used to determine its location.
-  // Otherwise it will be placed at the end of the visible actions. If the
-  // toolbar is in highlighting mode, the action will not be visible until
-  // highlighting mode is exited.
+  // Otherwise it will be placed at the end of the visible actions.
   void AddAction(const ActionId& action_id);
 
-  // Removes |action_id| from the toolbar.  If the toolbar is in highlighting
-  // mode, the action is also removed from the highlighted list (if present).
+  // Removes |action_id| from the toolbar.
   void RemoveAction(const ActionId& action_id);
 
   // Looks up and returns the extension with the given |id| in the set of
@@ -306,15 +271,8 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
   // Ordered list of browser action IDs.
   std::vector<ActionId> action_ids_;
 
-  // List of browser action IDs which should be highlighted.
-  std::vector<ActionId> highlighted_action_ids_;
-
   // Set of pinned action IDs.
   std::vector<ActionId> pinned_action_ids_;
-
-  // The current type of highlight (with HIGHLIGHT_NONE indicating no current
-  // highlight).
-  HighlightType highlight_type_;
 
   // A list of action ids ordered to correspond with their last known
   // positions.

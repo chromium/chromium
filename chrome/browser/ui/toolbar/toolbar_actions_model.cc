@@ -54,7 +54,6 @@ ToolbarActionsModel::ToolbarActionsModel(
       extension_action_manager_(
           extensions::ExtensionActionManager::Get(profile_)),
       actions_initialized_(false),
-      highlight_type_(HIGHLIGHT_NONE),
       has_active_bubble_(false) {
   extensions::ExtensionSystem::Get(profile_)->ready().Post(
       FROM_HERE, base::BindOnce(&ToolbarActionsModel::OnReady,
@@ -132,11 +131,9 @@ void ToolbarActionsModel::MoveActionIcon(const ActionId& id, size_t index) {
 void ToolbarActionsModel::SetVisibleIconCount(size_t count) {
   visible_icon_count_ = (count >= action_ids_.size()) ? -1 : count;
 
-  // Only set the prefs if we're not in highlight mode and the profile is not
-  // incognito. Highlight mode is designed to be a transitory state, and should
-  // not persist across browser restarts (though it may be re-entered), and we
-  // don't store anything in incognito.
-  if (!is_highlighting() && !profile_->IsOffTheRecord()) {
+  // Only set the prefs if the profile is not incognito - we don't store
+  // anything in incognito.
+  if (!profile_->IsOffTheRecord()) {
     prefs_->SetInteger(extensions::pref_names::kToolbarSize,
                        visible_icon_count_);
   }
@@ -164,9 +161,7 @@ ToolbarActionsModel::CreateActions(Browser* browser,
   DCHECK(main_bar);
   std::vector<std::unique_ptr<ToolbarActionViewController>> action_list;
 
-  // action_ids() might not equate to |action_ids_| in the case where a
-  // subset is highlighted.
-  for (const ActionId& action_id : action_ids()) {
+  for (const ActionId& action_id : action_ids_) {
     action_list.push_back(
         CreateActionForId(browser, main_bar, in_overflow_mode, action_id));
   }
@@ -360,42 +355,36 @@ void ToolbarActionsModel::AddAction(const ActionId& action_id) {
 
   action_ids_.insert(action_ids_.begin() + new_index, action_id);
 
-  // If we're currently highlighting, then even though we add a browser action
-  // to the full list (|action_ids_|, there won't be another *visible*
-  // browser action, which was what the observers care about.
-  if (!is_highlighting()) {
-    for (Observer& observer : observers_)
-      observer.OnToolbarActionAdded(action_id, new_index);
+  for (Observer& observer : observers_)
+    observer.OnToolbarActionAdded(action_id, new_index);
 
-    int visible_count_delta = 0;
-    if (is_new_extension && !all_icons_visible()) {
-      // If this is a new extension (and not all extensions are visible), we
-      // expand the toolbar out so that the new one can be seen.
+  int visible_count_delta = 0;
+  if (is_new_extension && !all_icons_visible()) {
+    // If this is a new extension (and not all extensions are visible), we
+    // expand the toolbar out so that the new one can be seen.
+    visible_count_delta = 1;
+  } else if (profile_->IsOffTheRecord()) {
+    // If this is an incognito profile, we also have to check to make sure the
+    // overflow matches the main bar's status.
+    ToolbarActionsModel* main_model =
+        ToolbarActionsModel::Get(profile_->GetOriginalProfile());
+    // Find what the index will be in the main bar. Because Observer calls are
+    // nondeterministic, we can't just assume the main bar will have the
+    // extension and look it up.
+    size_t main_index = main_model->FindNewPositionFromLastKnownGood(action_id);
+    bool visible =
+        is_new_extension || main_index < main_model->visible_icon_count();
+    // We may need to adjust the visible count if the incognito bar isn't
+    // showing all icons and this one is visible, or if it is showing all
+    // icons and this is hidden.
+    if (visible && !all_icons_visible())
       visible_count_delta = 1;
-    } else if (profile_->IsOffTheRecord()) {
-      // If this is an incognito profile, we also have to check to make sure the
-      // overflow matches the main bar's status.
-      ToolbarActionsModel* main_model =
-          ToolbarActionsModel::Get(profile_->GetOriginalProfile());
-      // Find what the index will be in the main bar. Because Observer calls are
-      // nondeterministic, we can't just assume the main bar will have the
-      // extension and look it up.
-      size_t main_index =
-          main_model->FindNewPositionFromLastKnownGood(action_id);
-      bool visible =
-          is_new_extension || main_index < main_model->visible_icon_count();
-      // We may need to adjust the visible count if the incognito bar isn't
-      // showing all icons and this one is visible, or if it is showing all
-      // icons and this is hidden.
-      if (visible && !all_icons_visible())
-        visible_count_delta = 1;
-      else if (!visible && all_icons_visible())
-        visible_count_delta = -1;
-    }
-
-    if (visible_count_delta)
-      SetVisibleIconCount(visible_icon_count() + visible_count_delta);
+    else if (!visible && all_icons_visible())
+      visible_count_delta = -1;
   }
+
+  if (visible_count_delta)
+    SetVisibleIconCount(visible_icon_count() + visible_count_delta);
 
   UpdatePinnedActionIds();
 }
@@ -414,23 +403,8 @@ void ToolbarActionsModel::RemoveAction(const ActionId& action_id) {
 
   UpdatePinnedActionIds();
 
-  // If we're in highlight mode, we also have to remove the action from
-  // the highlighted list.
-  if (is_highlighting()) {
-    pos = std::find(highlighted_action_ids_.begin(),
-                    highlighted_action_ids_.end(), action_id);
-    if (pos != highlighted_action_ids_.end()) {
-      highlighted_action_ids_.erase(pos);
-      for (Observer& observer : observers_)
-        observer.OnToolbarActionRemoved(action_id);
-      // If the highlighted list is now empty, we stop highlighting.
-      if (highlighted_action_ids_.empty())
-        StopHighlighting();
-    }
-  } else {
-    for (Observer& observer : observers_)
-      observer.OnToolbarActionRemoved(action_id);
-  }
+  for (Observer& observer : observers_)
+    observer.OnToolbarActionRemoved(action_id);
 
   UpdatePrefs();
 }
@@ -694,12 +668,8 @@ void ToolbarActionsModel::OnActionToolbarPrefChange() {
         std::rotate(current_pos, current_pos + 1, desired_pos + 1);
       else
         std::rotate(desired_pos, current_pos, current_pos + 1);
-      // Notify the observers to keep them up to date, unless we're highlighting
-      // (in which case we're deliberately only showing a subset of actions).
-      if (!is_highlighting()) {
-        for (Observer& observer : observers_) {
-          observer.OnToolbarActionMoved(id, desired_pos - action_ids_.begin());
-        }
+      for (Observer& observer : observers_) {
+        observer.OnToolbarActionMoved(id, desired_pos - action_ids_.begin());
       }
     }
     ++desired_pos;
@@ -711,65 +681,6 @@ void ToolbarActionsModel::OnActionToolbarPrefChange() {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&ToolbarActionsModel::UpdatePrefs,
                                   weak_ptr_factory_.GetWeakPtr()));
-  }
-}
-
-bool ToolbarActionsModel::HighlightActions(
-    const std::vector<ActionId>& ids_to_highlight,
-    HighlightType highlight_type) {
-  highlighted_action_ids_.clear();
-
-  for (const ActionId& id_to_highlight : ids_to_highlight) {
-    for (const ActionId& action_id : action_ids_) {
-      if (action_id == id_to_highlight)
-        highlighted_action_ids_.push_back(action_id);
-    }
-  }
-
-  // If we have any actions in |highlighted_action_ids_|, then we entered
-  // highlighting mode.
-  if (!highlighted_action_ids_.empty()) {
-    // It's important that |highlight_type_| is changed immediately before the
-    // observers are notified since it changes the result of action_ids().
-    highlight_type_ = highlight_type;
-    for (Observer& observer : observers_)
-      observer.OnToolbarHighlightModeChanged(true);
-
-    // We set the visible icon count after the highlight mode change because
-    // the UI actions are created/destroyed during highlight, and doing that
-    // prior to changing the size allows us to still have smooth animations.
-    if (visible_icon_count() < ids_to_highlight.size())
-      SetVisibleIconCount(ids_to_highlight.size());
-
-    return true;
-  }
-
-  // Otherwise, we didn't enter highlighting mode (and, in fact, exited it if
-  // we were otherwise in it).
-  if (is_highlighting())
-    StopHighlighting();
-  return false;
-}
-
-void ToolbarActionsModel::StopHighlighting() {
-  if (is_highlighting()) {
-    // It's important that |highlight_type_| is changed immediately before the
-    // observers are notified since it changes the result of action_ids().
-    highlight_type_ = HIGHLIGHT_NONE;
-    for (Observer& observer : observers_)
-      observer.OnToolbarHighlightModeChanged(false);
-
-    // For the same reason, we don't clear |highlighted_action_ids_| until after
-    // the mode changed.
-    highlighted_action_ids_.clear();
-
-    // We set the visible icon count after the highlight mode change because
-    // the UI actions are created/destroyed during highlight, and doing that
-    // prior to changing the size allows us to still have smooth animations.
-    int saved_icon_count =
-        prefs_->GetInteger(extensions::pref_names::kToolbarSize);
-    if (saved_icon_count != visible_icon_count_)
-      SetVisibleIconCount(saved_icon_count);
   }
 }
 

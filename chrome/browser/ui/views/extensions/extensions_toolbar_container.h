@@ -231,7 +231,6 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   void OnToolbarActionUpdated(
       const ToolbarActionsModel::ActionId& action_id) override;
   void OnToolbarVisibleCountChanged() override;
-  void OnToolbarHighlightModeChanged(bool is_highlighting) override;
   void OnToolbarModelInitialized() override;
   void OnToolbarPinnedActionsChanged() override;
 

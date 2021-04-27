@@ -108,10 +108,6 @@ bool DevModeBubbleDelegate::ShouldShowExtensionList() const {
   return false;
 }
 
-bool DevModeBubbleDelegate::ShouldHighlightExtensions() const {
-  return true;
-}
-
 bool DevModeBubbleDelegate::ShouldLimitToEnabledExtensions() const {
   return true;
 }

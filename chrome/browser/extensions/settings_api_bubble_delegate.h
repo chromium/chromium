@@ -48,7 +48,6 @@ class SettingsApiBubbleDelegate
   void OnAction() override;
   void ClearProfileSetForTesting() override;
   bool ShouldShowExtensionList() const override;
-  bool ShouldHighlightExtensions() const override;
   bool ShouldLimitToEnabledExtensions() const override;
   void LogExtensionCount(size_t count) override;
   void LogAction(ExtensionMessageBubbleController::BubbleAction) override;

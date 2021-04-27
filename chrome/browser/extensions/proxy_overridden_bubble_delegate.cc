@@ -150,10 +150,6 @@ bool ProxyOverriddenBubbleDelegate::ShouldShowExtensionList() const {
   return false;
 }
 
-bool ProxyOverriddenBubbleDelegate::ShouldHighlightExtensions() const {
-  return true;
-}
-
 bool ProxyOverriddenBubbleDelegate::ShouldLimitToEnabledExtensions() const {
   return true;
 }

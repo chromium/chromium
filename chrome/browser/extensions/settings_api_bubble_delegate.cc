@@ -231,10 +231,6 @@ bool SettingsApiBubbleDelegate::ShouldShowExtensionList() const {
   return false;
 }
 
-bool SettingsApiBubbleDelegate::ShouldHighlightExtensions() const {
-  return type_ == BUBBLE_TYPE_STARTUP_PAGES;
-}
-
 bool SettingsApiBubbleDelegate::ShouldLimitToEnabledExtensions() const {
   return true;
 }

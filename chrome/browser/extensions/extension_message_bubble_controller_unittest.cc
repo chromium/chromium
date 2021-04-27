@@ -1140,10 +1140,9 @@ TEST_F(ExtensionMessageBubbleTest, TestBubbleOutlivesBrowser) {
   controller->SetIsActiveBubble();
   EXPECT_TRUE(controller->ShouldShow());
   EXPECT_EQ(1u, model->action_ids().size());
-  controller->HighlightExtensionsIfNecessary();
-  EXPECT_TRUE(model->is_highlighting());
+  EXPECT_TRUE(model->has_active_bubble());
   set_browser(nullptr);
-  EXPECT_FALSE(model->is_highlighting());
+  EXPECT_FALSE(model->has_active_bubble());
   controller.reset();
 }
 
@@ -1166,12 +1165,11 @@ TEST_F(ExtensionMessageBubbleTest,
   controller->SetIsActiveBubble();
   EXPECT_TRUE(controller->ShouldShow());
   EXPECT_EQ(1u, model->action_ids().size());
-  controller->HighlightExtensionsIfNecessary();
-  EXPECT_TRUE(model->is_highlighting());
+  EXPECT_TRUE(model->has_active_bubble());
   set_browser(nullptr);
   service_->UninstallExtension(kId1, extensions::UNINSTALL_REASON_FOR_TESTING,
                                nullptr);
-  EXPECT_FALSE(model->is_highlighting());
+  EXPECT_FALSE(model->has_active_bubble());
   controller.reset();
 }
 
@@ -1193,11 +1191,10 @@ TEST_F(ExtensionMessageBubbleTest,
   controller->SetIsActiveBubble();
   EXPECT_TRUE(controller->ShouldShow());
   EXPECT_EQ(1u, model->action_ids().size());
-  controller->HighlightExtensionsIfNecessary();
-  EXPECT_TRUE(model->is_highlighting());
+  EXPECT_TRUE(model->has_active_bubble());
   set_browser(nullptr);
   service_->DisableExtension(kId1, disable_reason::DISABLE_USER_ACTION);
-  EXPECT_FALSE(model->is_highlighting());
+  EXPECT_FALSE(model->has_active_bubble());
   controller.reset();
 }
 
