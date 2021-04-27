@@ -465,13 +465,15 @@ INSTANTIATE_TEST_SUITE_P(All, AppsGridViewRTLTest, testing::Bool());
 // Tests suite for app list items drag and drop tests. These tests are
 // paramerized to cover both RTL locale and pagination previews behaviour.
 // TODO(anasalazar) : Parametrize by cardified behaviour.
-class AppsGridViewDragAndDropTest : public AppsGridViewTest,
-                                    public testing::WithParamInterface<bool> {
+class AppsGridViewDragAndDropTest
+    : public AppsGridViewTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   AppsGridViewDragAndDropTest()
-      : AppsGridViewTest(/*is_rtl=*/GetParam(),
-                         /*is_pagination_preview_active_=*/false,
-                         /*create_as_tablet_mode=*/false) {}
+      : AppsGridViewTest(
+            /*is_rtl=*/std::get<0>(GetParam()),
+            /*is_pagination_preview_active_=*/std::get<1>(GetParam()),
+            /*create_as_tablet_mode=*/false) {}
   AppsGridViewDragAndDropTest(const AppsGridViewDragAndDropTest&) = delete;
   AppsGridViewDragAndDropTest& operator=(const AppsGridViewDragAndDropTest&) =
       delete;
@@ -492,6 +494,8 @@ class AppsGridViewDragAndDropTest : public AppsGridViewTest,
 
     apps_grid_view->InitiateDrag(view, pointer, root_from, root_from);
     current_drag_location_ = root_from;
+    // Call UpdateDrag to trigger |apps_grid_view| change to cardified_state.
+    UpdateDrag(pointer, from, apps_grid_view);
     return view;
   }
 
@@ -589,7 +593,61 @@ class AppsGridViewDragAndDropTest : public AppsGridViewTest,
   base::Optional<gfx::Point> current_drag_location_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, AppsGridViewDragAndDropTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         AppsGridViewDragAndDropTest,
+                         testing::Combine(testing::Bool(),
+                                          testing::Values(false)));
+
+// Tests suite for app list items drag and drop tests. These tests are
+// proved to work with a cardified state.
+class AppsGridViewCardifiedState : public AppsGridViewDragAndDropTest {
+ public:
+  AppsGridViewCardifiedState() = default;
+  AppsGridViewCardifiedState(const AppsGridViewCardifiedState&) = delete;
+  AppsGridViewCardifiedState& operator=(const AppsGridViewCardifiedState&) =
+      delete;
+  ~AppsGridViewCardifiedState() override = default;
+
+  // Update drag to either next or previous page's |to| point.
+  void UpdateDragToNeighborPage(bool next_page, const gfx::Point& to) {
+    const int selected_page = GetPaginationModel()->selected_page();
+    DCHECK(selected_page >= 0 &&
+           selected_page <= GetPaginationModel()->total_pages());
+
+    // Calculate the point required to flip the page if an item is dragged to
+    // it.
+    const gfx::Rect apps_grid_bounds = apps_grid_view_->GetLocalBounds();
+    gfx::Point point_in_page_flip_buffer =
+        gfx::Point(apps_grid_bounds.width() / 2,
+                   next_page ? apps_grid_bounds.bottom() + 1 : 0);
+
+    // Build the drag event which will be triggered after page flip.
+    gfx::Point root_to(to);
+    views::View::ConvertPointToWidget(apps_grid_view_, &root_to);
+    gfx::NativeWindow window = app_list_view_->GetWidget()->GetNativeWindow();
+    aura::Window::ConvertPointToTarget(window, window->GetRootWindow(),
+                                       &root_to);
+    root_to.set_x(apps_grid_view_->GetMirroredXInView(root_to.x()));
+    ui::MouseEvent drag_event(ui::ET_MOUSE_DRAGGED, to, root_to,
+                              ui::EventTimeForNow(), 0, 0);
+
+    // Update dragging and relayout apps grid view after drag ends.
+    DragAfterPageFlipTask task(GetPaginationModel(), apps_grid_view_,
+                               drag_event);
+    page_flip_waiter_->Reset();
+    UpdateDrag(AppsGridView::MOUSE, point_in_page_flip_buffer, apps_grid_view_,
+               /*steps=*/10);
+    while (test_api_->HasPendingPageFlip()) {
+      page_flip_waiter_->Wait();
+    }
+    EndDrag(apps_grid_view_, false /*cancel*/);
+    test_api_->LayoutToIdealBounds();
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AppsGridViewCardifiedState,
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 // Test suite for verifying tablet mode apps grid behaviour.
 class AppsGridViewTabletTest : public AppsGridViewRTLTest {
@@ -2428,36 +2486,27 @@ TEST_P(AppsGridViewDragAndDropTest, MoveAnItemToNewEmptyPage) {
             model_->GetModelContent());
 }
 
-TEST_P(AppsGridViewDragAndDropTest, MoveLastItemToCreateFolderInNextPage) {
+TEST_P(AppsGridViewCardifiedState, MoveLastItemToCreateFolderInNextPage) {
   const int kApps = 2;
   model_->PopulateApps(kApps);
-
-  // There's only one page and both items are in that page.
-  EXPECT_EQ(0, GetPaginationModel()->selected_page());
-  EXPECT_EQ(1, GetPaginationModel()->total_pages());
-  TestAppListItemViewIndice();
   const views::ViewModelT<AppListItemView>* view_model =
       apps_grid_view_->view_model();
-  EXPECT_EQ(2, view_model->view_size());
-  EXPECT_EQ(view_model->view_at(0),
-            test_api_->GetViewAtVisualIndex(0 /* page */, 0 /* slot */));
-  EXPECT_EQ("Item 0", view_model->view_at(0)->item()->id());
-  EXPECT_EQ(view_model->view_at(1),
-            test_api_->GetViewAtVisualIndex(0 /* page */, 1 /* slot */));
-  EXPECT_EQ("Item 1", view_model->view_at(1)->item()->id());
-  EXPECT_EQ(std::string("Item 0,Item 1"), model_->GetModelContent());
+  gfx::Point from = GetItemRectOnCurrentPageAt(0, 0).CenterPoint();
+  InitiateDrag(AppsGridView::MOUSE, from, apps_grid_view_);
+  gfx::Point to_in_next_page =
+      test_api_->GetItemTileRectAtVisualIndex(1, 0).CenterPoint();
 
   // Drag the first item to next page and drag the second item to overlap with
   // the first item.
-  gfx::Point from = GetItemRectOnCurrentPageAt(0, 0).CenterPoint();
-  gfx::Point to_in_next_page =
-      test_api_->GetItemTileRectAtVisualIndex(1, 0).CenterPoint();
-  SimulateDragToNeighborPage(true /* next_page */, from, to_in_next_page);
+  UpdateDragToNeighborPage(true /* next_page */, to_in_next_page);
   GetPaginationModel()->SelectPage(0, false);
-  SimulateDragToNeighborPage(true /* next_page */, from, to_in_next_page);
+  EXPECT_EQ(2, GetPaginationModel()->total_pages());
+  InitiateDrag(AppsGridView::MOUSE, from, apps_grid_view_);
+  UpdateDragToNeighborPage(true /* next_page */, to_in_next_page);
 
-  // A new folder is created on second page, but since the first page is empty,
-  // the page is removed and the new folder ends up on first page.
+  // A new folder is created on second page, but since the first page is
+  // empty, the page is removed and the new folder ends up on first page.
+  EXPECT_EQ(1, GetPaginationModel()->total_pages());
   EXPECT_EQ("1,0", page_flip_waiter_->selected_pages());
   EXPECT_EQ(0, GetPaginationModel()->selected_page());
   TestAppListItemViewIndice();
@@ -2466,7 +2515,6 @@ TEST_P(AppsGridViewDragAndDropTest, MoveLastItemToCreateFolderInNextPage) {
             test_api_->GetViewAtVisualIndex(0 /* page */, 0 /* slot */));
   const AppListItem* folder_item = view_model->view_at(0)->item();
   EXPECT_TRUE(folder_item->is_folder());
-
   // The "page break" item remains, but it will be removed later in
   // AppListSyncableService.
   EXPECT_EQ(std::string("PageBreakItem," + folder_item->id()),

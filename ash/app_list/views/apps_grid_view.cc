@@ -765,6 +765,9 @@ void AppsGridView::EndDrag(bool cancel) {
   const bool landed_in_drag_and_drop_host =
       forward_events_to_drag_and_drop_host_;
 
+  // The drag ended by reparenting in a folder.
+  bool reparented_into_folder = false;
+
   // This is the folder view to drop an item into. Cache the |drag_view_|'s item
   // and its bounds for later use in folder dropping animation.
   AppListItemView* folder_item_view = nullptr;
@@ -814,6 +817,7 @@ void AppsGridView::EndDrag(bool cancel) {
         // folder view has one too.
         if (drag_view_ && drag_view_->layer())
           folder_item_view->EnsureLayer();
+        reparented_into_folder = true;
       } else if (IsValidReorderTargetIndex(drop_target_)) {
         // Ensure reorder event has already been announced by the end of drag.
         MaybeCreateDragReorderAccessibilityEvent();
@@ -883,9 +887,11 @@ void AppsGridView::EndDrag(bool cancel) {
   BeginHideCurrentGhostImageView();
   StopPageFlipTimer();
   if (cardified_state_) {
-    // Temporarily set to cardified UI State so it animates back to its position
-    // smoothly with all other icons.
-    released_drag_view->EnterCardifyState();
+    if (!reparented_into_folder) {
+      // Temporarily set to cardified UI State so it animates back to its
+      // position smoothly with all other icons.
+      released_drag_view->EnterCardifyState();
+    }
     // Compensate drag_source_bounds for the translation of the items_container
     // during AnimateCardifiedState().
     gfx::Point start_position = items_container_->origin();
@@ -2370,6 +2376,8 @@ void AppsGridView::AnimateCardifiedState() {
     gfx::Rect current_bounds = entry_view->bounds();
     current_bounds.Offset(translate_offset);
 
+    entry_view->EnsureLayer();
+
     if (cardified_state_)
       entry_view->EnterCardifyState();
     else
@@ -2377,8 +2385,6 @@ void AppsGridView::AnimateCardifiedState() {
 
     gfx::Rect target_bounds(view_model_.ideal_bounds(i));
     entry_view->SetBoundsRect(target_bounds);
-
-    entry_view->EnsureLayer();
 
     // View bounds are currently |target_bounds|. Transform the view so it
     // appears in |current_bounds|.
