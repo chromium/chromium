@@ -34,7 +34,7 @@ TEST_F(BasicVulkanTest, EmptyVulkanSwaps) {
     return;
 
   auto command_pool = std::make_unique<VulkanCommandPool>(GetDeviceQueue());
-  EXPECT_TRUE(command_pool->Initialize(false));
+  EXPECT_TRUE(command_pool->Initialize());
 
   std::unique_ptr<VulkanSurface> surface = CreateViewSurface(window());
   ASSERT_TRUE(surface);

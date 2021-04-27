@@ -833,13 +833,8 @@ bool GpuInit::InitializeVulkan() {
       gpu_preferences_.use_vulkan == VulkanImplementationName::kForcedNative;
   bool use_swiftshader = gl_use_swiftshader_ || vulkan_use_swiftshader;
 
-  // If |enforce_vulkan_protected_memory| is true, then we expect
-  // |enable_vulkan_protected_memory| to be true.
-  DCHECK(!gpu_preferences_.enforce_vulkan_protected_memory ||
-         gpu_preferences_.enable_vulkan_protected_memory);
   vulkan_implementation_ = CreateVulkanImplementation(
-      vulkan_use_swiftshader, gpu_preferences_.enable_vulkan_protected_memory,
-      gpu_preferences_.enforce_vulkan_protected_memory);
+      vulkan_use_swiftshader, gpu_preferences_.enable_vulkan_protected_memory);
   if (!vulkan_implementation_ ||
       !vulkan_implementation_->InitializeVulkanInstance(
           !gpu_preferences_.disable_vulkan_surface)) {

@@ -202,29 +202,19 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
     context_state_->MakeCurrent(nullptr);
     context_state_->set_need_context_state_reset(true);
 
-#if BUILDFLAG(ENABLE_VULKAN)
-    auto is_protected = context_state_->GrContextIsVulkan() &&
-                                context_state_->vk_context_provider()
-                                    ->GetVulkanImplementation()
-                                    ->enforce_protected_memory()
-                            ? GrProtected::kYes
-                            : GrProtected::kNo;
-#else
-    auto is_protected = GrProtected::kNo;
-#endif
-
     if (pixels.data()) {
       if (format() == viz::ResourceFormat::ETC1) {
         backend_texture_ =
             context_state_->gr_context()->createCompressedBackendTexture(
                 size().width(), size().height(), SkImage::kETC1_CompressionType,
-                pixels.data(), pixels.size(), GrMipMapped::kNo, is_protected);
+                pixels.data(), pixels.size(), GrMipMapped::kNo,
+                GrProtected::kNo);
       } else {
         if (!stride)
           stride = info.minRowBytes();
         SkPixmap pixmap(info, pixels.data(), stride);
         backend_texture_ = context_state_->gr_context()->createBackendTexture(
-            pixmap, GrRenderable::kNo, is_protected);
+            pixmap, GrRenderable::kNo, GrProtected::kNo);
       }
 
       if (!backend_texture_.isValid())
@@ -239,11 +229,11 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
       // We don't do this on release builds because there is a slight overhead.
       backend_texture_ = context_state_->gr_context()->createBackendTexture(
           size().width(), size().height(), GetSkColorType(), SkColors::kBlue,
-          GrMipMapped::kNo, GrRenderable::kYes, is_protected);
+          GrMipMapped::kNo, GrRenderable::kYes, GrProtected::kNo);
 #else
       backend_texture_ = context_state_->gr_context()->createBackendTexture(
           size().width(), size().height(), GetSkColorType(), GrMipMapped::kNo,
-          GrRenderable::kYes, is_protected);
+          GrRenderable::kYes, GrProtected::kNo);
 #endif
 
       if (!backend_texture_.isValid()) {

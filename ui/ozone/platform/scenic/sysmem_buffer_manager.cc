@@ -44,7 +44,6 @@ scoped_refptr<SysmemBufferCollection> SysmemBufferManager::CreateCollection(
   if (!result->Initialize(allocator_.get(), scenic_surface_factory_,
                           /*token_channel=*/zx::channel(), size, format, usage,
                           vk_device, min_buffer_count,
-                          /*force_protected=*/false,
                           /*register_with_image_pipe=*/false)) {
     return nullptr;
   }
@@ -61,13 +60,11 @@ SysmemBufferManager::ImportSysmemBufferCollection(
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     size_t min_buffer_count,
-    bool force_protected,
     bool register_with_image_pipe) {
   auto result = base::MakeRefCounted<SysmemBufferCollection>(id);
   if (!result->Initialize(allocator_.get(), scenic_surface_factory_,
                           std::move(token), size, format, usage, vk_device,
-                          min_buffer_count, force_protected,
-                          register_with_image_pipe)) {
+                          min_buffer_count, register_with_image_pipe)) {
     return nullptr;
   }
   RegisterCollection(result.get());

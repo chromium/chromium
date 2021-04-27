@@ -21,10 +21,8 @@
 
 namespace gpu {
 
-VulkanDeviceQueue::VulkanDeviceQueue(VkInstance vk_instance,
-                                     bool enforce_protected_memory)
-    : vk_instance_(vk_instance),
-      enforce_protected_memory_(enforce_protected_memory) {}
+VulkanDeviceQueue::VulkanDeviceQueue(VkInstance vk_instance)
+    : vk_instance_(vk_instance) {}
 
 VulkanDeviceQueue::~VulkanDeviceQueue() {
   DCHECK_EQ(static_cast<VkPhysicalDevice>(VK_NULL_HANDLE), vk_physical_device_);
@@ -45,7 +43,6 @@ bool VulkanDeviceQueue::Initialize(
   DCHECK_EQ(static_cast<VkDevice>(VK_NULL_HANDLE), owned_vk_device_);
   DCHECK_EQ(static_cast<VkDevice>(VK_NULL_HANDLE), vk_device_);
   DCHECK_EQ(static_cast<VkQueue>(VK_NULL_HANDLE), vk_queue_);
-  DCHECK(!enforce_protected_memory_ || allow_protected_memory);
 
   if (VK_NULL_HANDLE == vk_instance_)
     return false;
@@ -349,7 +346,7 @@ void VulkanDeviceQueue::Destroy() {
 
 std::unique_ptr<VulkanCommandPool> VulkanDeviceQueue::CreateCommandPool() {
   std::unique_ptr<VulkanCommandPool> command_pool(new VulkanCommandPool(this));
-  if (!command_pool->Initialize(enforce_protected_memory_))
+  if (!command_pool->Initialize())
     return nullptr;
 
   return command_pool;

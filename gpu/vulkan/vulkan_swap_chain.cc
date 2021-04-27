@@ -59,14 +59,11 @@ bool VulkanSwapChain::Initialize(
     uint32_t min_image_count,
     VkImageUsageFlags image_usage_flags,
     VkSurfaceTransformFlagBitsKHR pre_transform,
-    bool use_protected_memory,
     std::unique_ptr<VulkanSwapChain> old_swap_chain) {
   base::AutoLock auto_lock(lock_);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(device_queue);
-  DCHECK(!use_protected_memory || device_queue->allow_protected_memory());
 
-  use_protected_memory_ = use_protected_memory;
   device_queue_ = device_queue;
   is_incremental_present_supported_ =
       gfx::HasExtension(device_queue_->enabled_extensions(),
@@ -74,7 +71,7 @@ bool VulkanSwapChain::Initialize(
   device_queue_->GetFenceHelper()->ProcessCleanupTasks();
   return InitializeSwapChain(surface, surface_format, image_size,
                              min_image_count, image_usage_flags, pre_transform,
-                             use_protected_memory, std::move(old_swap_chain)) &&
+                             std::move(old_swap_chain)) &&
          InitializeSwapImages(surface_format) && AcquireNextImage();
 }
 
@@ -179,7 +176,6 @@ bool VulkanSwapChain::InitializeSwapChain(
     uint32_t min_image_count,
     VkImageUsageFlags image_usage_flags,
     VkSurfaceTransformFlagBitsKHR pre_transform,
-    bool use_protected_memory,
     std::unique_ptr<VulkanSwapChain> old_swap_chain) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -188,7 +184,7 @@ bool VulkanSwapChain::InitializeSwapChain(
 
   VkSwapchainCreateInfoKHR swap_chain_create_info = {
       .sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
-      .flags = use_protected_memory ? VK_SWAPCHAIN_CREATE_PROTECTED_BIT_KHR : 0,
+      .flags = 0,
       .surface = surface,
       .minImageCount = min_image_count,
       .imageFormat = surface_format.format,

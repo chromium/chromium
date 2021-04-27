@@ -94,9 +94,6 @@ const char kWebViewDrawFunctorUsesVulkan[] = "webview-draw-functor-uses-vulkan";
 // Enables using protected memory for vulkan resources.
 const char kEnableVulkanProtectedMemory[] = "enable-vulkan-protected-memory";
 
-// Forces vulkan resources to use protected memory for vulkan compositing.
-const char kEnforceVulkanProtectedMemory[] = "enforce-vulkan-protected-memory";
-
 // Disables falling back to GL based hardware rendering if initializing Vulkan
 // fails. This is to allow tests to catch regressions in Vulkan.
 const char kDisableVulkanFallbackToGLForTesting[] =

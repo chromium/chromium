@@ -66,7 +66,6 @@ class COMPONENT_EXPORT(VULKAN) VulkanSwapChain {
                   uint32_t min_image_count,
                   VkImageUsageFlags image_usage_flags,
                   VkSurfaceTransformFlagBitsKHR pre_transform,
-                  bool use_protected_memory,
                   std::unique_ptr<VulkanSwapChain> old_swap_chain);
 
   // Destroy() should be called when all related GPU tasks have been finished.
@@ -87,10 +86,6 @@ class COMPONENT_EXPORT(VULKAN) VulkanSwapChain {
   const gfx::Size& size() const {
     // |size_| is never changed after initialization.
     return size_;
-  }
-  bool use_protected_memory() const {
-    // |use_protected_memory_| is never changed after initialization.
-    return use_protected_memory_;
   }
 
   uint32_t current_image_index() const {
@@ -120,7 +115,6 @@ class COMPONENT_EXPORT(VULKAN) VulkanSwapChain {
                            uint32_t min_image_count,
                            VkImageUsageFlags image_usage_flags,
                            VkSurfaceTransformFlagBitsKHR pre_transform,
-                           bool use_protected_memory,
                            std::unique_ptr<VulkanSwapChain> old_swap_chain)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void DestroySwapChain() EXCLUSIVE_LOCKS_REQUIRED(lock_);
@@ -155,7 +149,6 @@ class COMPONENT_EXPORT(VULKAN) VulkanSwapChain {
 
   const uint64_t acquire_next_image_timeout_ns_;
 
-  bool use_protected_memory_ = false;
   VulkanDeviceQueue* device_queue_ = nullptr;
   bool is_incremental_present_supported_ = false;
   VkSwapchainKHR swap_chain_ GUARDED_BY(lock_) = VK_NULL_HANDLE;

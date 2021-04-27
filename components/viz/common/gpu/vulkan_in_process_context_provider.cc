@@ -134,9 +134,7 @@ bool VulkanInProcessContextProvider::InitializeGrContext(
   backend_context.fDeviceFeatures2 =
       &device_queue_->enabled_device_features_2();
   backend_context.fGetProc = get_proc;
-  backend_context.fProtectedContext =
-      vulkan_implementation_->enforce_protected_memory() ? GrProtected::kYes
-                                                         : GrProtected::kNo;
+  backend_context.fProtectedContext = GrProtected::kNo;
 
   gr_context_ = GrDirectContext::MakeVulkan(backend_context, context_options);
 

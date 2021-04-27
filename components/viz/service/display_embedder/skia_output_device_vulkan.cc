@@ -190,10 +190,7 @@ SkSurface* SkiaOutputDeviceVulkan::BeginPaint(
     vk_image_info.fSampleCount = 1;
     vk_image_info.fLevelCount = 1;
     vk_image_info.fCurrentQueueFamily = VK_QUEUE_FAMILY_IGNORED;
-    vk_image_info.fProtected =
-        vulkan_surface_->swap_chain()->use_protected_memory()
-            ? GrProtected::kYes
-            : GrProtected::kNo;
+    vk_image_info.fProtected = GrProtected::kNo;
     const auto& vk_image_size = vulkan_surface_->image_size();
     GrBackendRenderTarget render_target(vk_image_size.width(),
                                         vk_image_size.height(),

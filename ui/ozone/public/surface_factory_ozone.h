@@ -82,12 +82,9 @@ class COMPONENT_EXPORT(OZONE_BASE) SurfaceFactoryOzone {
   // on the platform.
   // |allow_protected_memory| suggests that the vulkan implementation should
   // create protected-capable resources, such as VkQueue.
-  // |enforce_protected_memory| suggests that the vulkan implementation should
-  // always use protected memory and resources, such as CommandBuffers.
   virtual std::unique_ptr<gpu::VulkanImplementation> CreateVulkanImplementation(
       bool use_swiftshader,
-      bool allow_protected_memory,
-      bool enforce_protected_memory);
+      bool allow_protected_memory);
 
   // Creates a scanout NativePixmap that can be rendered using Vulkan.
   // TODO(spang): Remove this once VK_EXT_image_drm_format_modifier is

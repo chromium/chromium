@@ -86,10 +86,8 @@ VkAccessFlags GetAccessMask(const VkImageLayout layout) {
 
 VulkanCommandBuffer::VulkanCommandBuffer(VulkanDeviceQueue* device_queue,
                                          VulkanCommandPool* command_pool,
-                                         bool primary,
-                                         bool use_protected_memory)
+                                         bool primary)
     : primary_(primary),
-      use_protected_memory_(use_protected_memory),
       device_queue_(device_queue),
       command_pool_(command_pool) {
   command_pool_->IncrementCommandBufferCount();
@@ -149,14 +147,9 @@ bool VulkanCommandBuffer::Submit(uint32_t num_wait_semaphores,
   std::vector<VkPipelineStageFlags> wait_dst_stage_mask(
       num_wait_semaphores, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT);
 
-  VkProtectedSubmitInfo protected_submit_info = {};
-  protected_submit_info.sType = VK_STRUCTURE_TYPE_PROTECTED_SUBMIT_INFO;
-  protected_submit_info.pNext = nullptr;
-  protected_submit_info.protectedSubmit = VK_TRUE;
-
   VkSubmitInfo submit_info = {};
   submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-  submit_info.pNext = use_protected_memory_ ? &protected_submit_info : nullptr;
+  submit_info.pNext = nullptr;
   submit_info.waitSemaphoreCount = num_wait_semaphores;
   submit_info.pWaitSemaphores = wait_semaphores;
   submit_info.pWaitDstStageMask = wait_dst_stage_mask.data();

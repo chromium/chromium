@@ -167,8 +167,6 @@ struct GPU_EXPORT
       return false;
     out->enable_vulkan_protected_memory =
         prefs.enable_vulkan_protected_memory();
-    out->enforce_vulkan_protected_memory =
-        prefs.enforce_vulkan_protected_memory();
     out->disable_vulkan_surface = prefs.disable_vulkan_surface();
     out->disable_vulkan_fallback_to_gl_for_testing =
         prefs.disable_vulkan_fallback_to_gl_for_testing();
@@ -343,10 +341,6 @@ struct GPU_EXPORT
   }
   static bool enable_vulkan_protected_memory(const gpu::GpuPreferences& prefs) {
     return prefs.enable_vulkan_protected_memory;
-  }
-  static bool enforce_vulkan_protected_memory(
-      const gpu::GpuPreferences& prefs) {
-    return prefs.enforce_vulkan_protected_memory;
   }
   static bool disable_vulkan_surface(const gpu::GpuPreferences& prefs) {
     return prefs.disable_vulkan_surface;

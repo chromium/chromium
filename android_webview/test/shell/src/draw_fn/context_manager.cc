@@ -495,8 +495,7 @@ ContextManagerVulkan::ContextManagerVulkan() {
   base::ScopedAllowBlockingForTesting allow_blocking;
   vulkan_implementation_ = gpu::CreateVulkanImplementation(
       /*use_swiftshader=*/false,
-      /*allow_protected_memory*/ false,
-      /*enforce_protected_memory=*/false);
+      /*allow_protected_memory*/ false);
   CHECK(vulkan_implementation_);
   CHECK(
       vulkan_implementation_->InitializeVulkanInstance(/*using_surface=*/true));
@@ -554,10 +553,7 @@ base::android::ScopedJavaLocalRef<jintArray> ContextManagerVulkan::Draw(
       vk_image_info.fSampleCount = 1;
       vk_image_info.fLevelCount = 1;
       vk_image_info.fCurrentQueueFamily = VK_QUEUE_FAMILY_IGNORED;
-      vk_image_info.fProtected =
-          vulkan_surface_->swap_chain()->use_protected_memory()
-              ? GrProtected::kYes
-              : GrProtected::kNo;
+      vk_image_info.fProtected = GrProtected::kNo;
       const auto& vk_image_size = vulkan_surface_->image_size();
       GrBackendRenderTarget render_target(vk_image_size.width(),
                                           vk_image_size.height(),
@@ -676,9 +672,7 @@ void ContextManagerVulkan::DoCreateContext(JNIEnv* env, int width, int height) {
   backend_context.fDeviceFeatures2 =
       &device_queue_->enabled_device_features_2();
   backend_context.fGetProc = get_proc;
-  backend_context.fProtectedContext =
-      vulkan_implementation_->enforce_protected_memory() ? GrProtected::kYes
-                                                         : GrProtected::kNo;
+  backend_context.fProtectedContext = GrProtected::kNo;
 
   GrContextOptions options;
   gr_context_ = GrDirectContext::MakeVulkan(backend_context, options);

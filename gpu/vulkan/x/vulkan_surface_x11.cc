@@ -75,7 +75,6 @@ VulkanSurfaceX11::VulkanSurfaceX11(VkInstance vk_instance,
     : VulkanSurface(vk_instance,
                     static_cast<gfx::AcceleratedWidget>(window),
                     vk_surface,
-                    false /* use_protected_memory */,
                     base::Time::kNanosecondsPerSecond *
                         2 /* acquire_next_image_timeout_ns */),
       parent_window_(parent_window),

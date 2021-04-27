@@ -98,7 +98,6 @@ bool SysmemBufferCollection::Initialize(
     gfx::BufferUsage usage,
     VkDevice vk_device,
     size_t min_buffer_count,
-    bool force_protected,
     bool register_with_image_pipe) {
   DCHECK(IsNativePixmapConfigSupported(format, usage));
   DCHECK(!collection_);
@@ -127,7 +126,7 @@ bool SysmemBufferCollection::Initialize(
   format_ = format;
   usage_ = usage;
   vk_device_ = vk_device;
-  is_protected_ = force_protected;
+  is_protected_ = false;
 
   if (register_with_image_pipe) {
     overlay_view_task_runner_ = base::ThreadTaskRunnerHandle::Get();

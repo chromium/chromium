@@ -37,8 +37,7 @@ GLOzone* SurfaceFactoryOzone::GetGLOzone(
 #if BUILDFLAG(ENABLE_VULKAN)
 std::unique_ptr<gpu::VulkanImplementation>
 SurfaceFactoryOzone::CreateVulkanImplementation(bool use_swiftshader,
-                                                bool allow_protected_memory,
-                                                bool enforce_protected_memory) {
+                                                bool allow_protected_memory) {
   return nullptr;
 }
 

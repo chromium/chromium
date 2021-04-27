@@ -60,7 +60,6 @@ class SysmemBufferCollection
                   gfx::BufferUsage usage,
                   VkDevice vk_device,
                   size_t min_buffer_count,
-                  bool force_protected,
                   bool register_with_image_pipe);
 
   // Must not be called more than once.

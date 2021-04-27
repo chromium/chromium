@@ -31,8 +31,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanDeviceQueue {
     PRESENTATION_SUPPORT_QUEUE_FLAG = 0x02,
   };
 
-  VulkanDeviceQueue(VkInstance vk_instance,
-                    bool enforce_protected_memory = false);
+  explicit VulkanDeviceQueue(VkInstance vk_instance);
   ~VulkanDeviceQueue();
 
   using GetPresentationSupportCallback =
@@ -120,7 +119,6 @@ class COMPONENT_EXPORT(VULKAN) VulkanDeviceQueue {
   std::unique_ptr<VulkanFenceHelper> cleanup_helper_;
   VkPhysicalDeviceFeatures2 enabled_device_features_2_;
 
-  const bool enforce_protected_memory_;
   bool allow_protected_memory_ = false;
 
 #if defined(OS_ANDROID) || defined(OS_FUCHSIA)

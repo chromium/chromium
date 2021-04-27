@@ -844,10 +844,7 @@ SkiaOutputSurfaceImpl::CreateSkSurfaceCharacterization(
         cache_max_resource_bytes, image_info, backend_format,
         0 /* sampleCount */, surface_origin, surface_props, mipmap,
         capabilities_.uses_default_gl_framebuffer, false /* isTextureable */,
-        impl_on_gpu_->GetGpuPreferences().enforce_vulkan_protected_memory
-            ? GrProtected::kYes
-            : GrProtected::kNo,
-        false /* vkRTSupportsInputAttachment */,
+        GrProtected::kNo, false /* vkRTSupportsInputAttachment */,
         capabilities_.root_is_vulkan_secondary_command_buffer);
     VkFormat vk_format = VK_FORMAT_UNDEFINED;
     LOG_IF(DFATAL, !characterization.isValid())
@@ -864,9 +861,7 @@ SkiaOutputSurfaceImpl::CreateSkSurfaceCharacterization(
         << "\n  backend_format.asVkFormat() vk_format="
         << static_cast<int>(vk_format)
         << "\n  surface_origin=" << static_cast<int>(surface_origin)
-        << "\n  willGlFBO0=" << capabilities_.uses_default_gl_framebuffer
-        << "\n  isProtected="
-        << impl_on_gpu_->GetGpuPreferences().enforce_vulkan_protected_memory;
+        << "\n  willGlFBO0=" << capabilities_.uses_default_gl_framebuffer;
     return characterization;
   }
 
@@ -883,10 +878,7 @@ SkiaOutputSurfaceImpl::CreateSkSurfaceCharacterization(
   auto characterization = gr_context_thread_safe_->createCharacterization(
       cache_max_resource_bytes, image_info, backend_format, 0 /* sampleCount */,
       kTopLeft_GrSurfaceOrigin, surface_props, mipmap,
-      false /* willUseGLFBO0 */, true /* isTextureable */,
-      impl_on_gpu_->GetGpuPreferences().enforce_vulkan_protected_memory
-          ? GrProtected::kYes
-          : GrProtected::kNo);
+      false /* willUseGLFBO0 */, true /* isTextureable */, GrProtected::kNo);
   DCHECK(characterization.isValid());
   return characterization;
 }

@@ -169,7 +169,7 @@ bool VulkanRenderer::Initialize() {
            VK_SUCCESS);
 
   command_pool_ = std::make_unique<gpu::VulkanCommandPool>(device_queue_.get());
-  CHECK(command_pool_->Initialize(false /* use_protected_memory */));
+  CHECK(command_pool_->Initialize());
 
   RecreateFramebuffers();
 
@@ -410,8 +410,7 @@ VulkanRenderer::Framebuffer::Create(gpu::VulkanDeviceQueue* vulkan_device_queue,
   }
 
   auto command_buffer = std::make_unique<gpu::VulkanCommandBuffer>(
-      vulkan_device_queue, vulkan_command_pool, true /* primary */,
-      false /* use_protected_memory */);
+      vulkan_device_queue, vulkan_command_pool, true /* primary */);
   CHECK(command_buffer->Initialize());
 
   return std::make_unique<VulkanRenderer::Framebuffer>(

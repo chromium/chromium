@@ -217,10 +217,7 @@ VulkanSurfaceWin32::VulkanSurfaceWin32(
     VkSurfaceKHR vk_surface,
     scoped_refptr<WindowThread> thread,
     std::unique_ptr<gfx::WindowImpl> window)
-    : VulkanSurface(vk_instance,
-                    window->hwnd(),
-                    vk_surface,
-                    false /* use_protected_memory */),
+    : VulkanSurface(vk_instance, window->hwnd(), vk_surface),
       thread_(std::move(thread)),
       window_(std::move(window)) {}
 

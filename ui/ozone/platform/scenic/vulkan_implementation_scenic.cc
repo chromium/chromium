@@ -36,11 +36,8 @@ namespace ui {
 VulkanImplementationScenic::VulkanImplementationScenic(
     ScenicSurfaceFactory* scenic_surface_factory,
     SysmemBufferManager* sysmem_buffer_manager,
-    bool allow_protected_memory,
-    bool enforce_protected_memory)
-    : VulkanImplementation(false /* use_swiftshader */,
-                           allow_protected_memory,
-                           enforce_protected_memory),
+    bool allow_protected_memory)
+    : VulkanImplementation(false /* use_swiftshader */, allow_protected_memory),
       scenic_surface_factory_(scenic_surface_factory),
       sysmem_buffer_manager_(sysmem_buffer_manager) {}
 
@@ -110,9 +107,8 @@ VulkanImplementationScenic::CreateViewSurface(gfx::AcceleratedWidget window) {
     LOG(FATAL) << "vkCreateImagePipeSurfaceFUCHSIA failed: " << result;
   }
 
-  return std::make_unique<gpu::VulkanSurface>(
-      vulkan_instance_.vk_instance(), window, surface,
-      enforce_protected_memory() /* use_protected_memory */);
+  return std::make_unique<gpu::VulkanSurface>(vulkan_instance_.vk_instance(),
+                                              window, surface);
 }
 
 bool VulkanImplementationScenic::GetPhysicalDevicePresentationSupport(
@@ -307,14 +303,10 @@ VulkanImplementationScenic::RegisterSysmemBufferCollection(
     gfx::Size size,
     size_t min_buffer_count,
     bool register_with_image_pipe) {
-  // SCANOUT images must be protected in protected mode.
-  bool force_protected =
-      usage == gfx::BufferUsage::SCANOUT && enforce_protected_memory();
-
   fuchsia::images::ImagePipe2Ptr image_pipe = nullptr;
   auto buffer_collection = sysmem_buffer_manager_->ImportSysmemBufferCollection(
       device, id, std::move(token), size, format, usage, min_buffer_count,
-      force_protected, register_with_image_pipe);
+      register_with_image_pipe);
   if (!buffer_collection)
     return nullptr;
 

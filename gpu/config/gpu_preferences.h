@@ -218,9 +218,6 @@ struct GPU_EXPORT GpuPreferences {
   // Enable using vulkan protected memory.
   bool enable_vulkan_protected_memory = false;
 
-  // Enforce using vulkan protected memory.
-  bool enforce_vulkan_protected_memory = false;
-
   // Use vulkan VK_KHR_surface for presenting.
   bool disable_vulkan_surface = false;
 

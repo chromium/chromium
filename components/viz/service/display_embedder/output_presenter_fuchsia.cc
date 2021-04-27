@@ -310,8 +310,6 @@ OutputPresenterFuchsia::AllocateImages(gfx::ColorSpace color_space,
   // Create PresenterImageFuchsia for each buffer in the collection.
   uint32_t image_usage =
       gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_SCANOUT;
-  if (vulkan->enforce_protected_memory())
-    image_usage |= gpu::SHARED_IMAGE_USAGE_PROTECTED;
 
   std::vector<std::unique_ptr<OutputPresenter::Image>> images;
   images.reserve(num_images);

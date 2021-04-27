@@ -82,12 +82,10 @@ VulkanSurface::~VulkanSurface() {
 VulkanSurface::VulkanSurface(VkInstance vk_instance,
                              gfx::AcceleratedWidget accelerated_widget,
                              VkSurfaceKHR surface,
-                             bool enforce_protected_memory,
                              uint64_t acquire_next_image_timeout_ns)
     : vk_instance_(vk_instance),
       accelerated_widget_(accelerated_widget),
       surface_(surface),
-      enforce_protected_memory_(enforce_protected_memory),
       acquire_next_image_timeout_ns_(acquire_next_image_timeout_ns) {
   DCHECK_NE(static_cast<VkSurfaceKHR>(VK_NULL_HANDLE), surface_);
 }
@@ -291,8 +289,7 @@ bool VulkanSurface::CreateSwapChain(const gfx::Size& size,
   auto min_image_count = std::max(surface_caps.minImageCount, kMinImageCount);
   if (!swap_chain->Initialize(device_queue_, surface_, surface_format_,
                               image_size_, min_image_count, image_usage_flags_,
-                              vk_transform, enforce_protected_memory_,
-                              std::move(swap_chain_))) {
+                              vk_transform, std::move(swap_chain_))) {
     return false;
   }
 

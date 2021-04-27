@@ -246,22 +246,7 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
         VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
   }
 
-  auto* vulkan_implementation =
-      context_state->vk_context_provider()->GetVulkanImplementation();
   VkImageCreateFlags vk_flags = 0;
-
-  // In protected mode mark the image as protected, except when the image needs
-  // GLES2, but not Raster usage. ANGLE currently doesn't support protected
-  // images. Some clients request GLES2 and Raster usage (e.g. see
-  // GpuMemoryBufferVideoFramePool). In that case still allocate protected
-  // image, which ensures that image can still usable, but it may not work in
-  // some scenarios (e.g. when the video frame is used in WebGL).
-  // TODO(https://crbug.com/angleproject/4833)
-  if (vulkan_implementation->enforce_protected_memory() &&
-      (!(usage & SHARED_IMAGE_USAGE_GLES2) ||
-       (usage & SHARED_IMAGE_USAGE_RASTER))) {
-    vk_flags |= VK_IMAGE_CREATE_PROTECTED_BIT;
-  }
 
   std::unique_ptr<VulkanImage> image;
   if (is_external) {

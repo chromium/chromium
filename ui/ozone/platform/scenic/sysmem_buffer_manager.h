@@ -53,7 +53,6 @@ class SysmemBufferManager {
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
       size_t min_buffer_count,
-      bool force_protected,
       bool register_with_image_pipe);
 
   scoped_refptr<SysmemBufferCollection> GetCollectionById(
