@@ -37,9 +37,11 @@ void GetAddressComponents(
 // Returns the address stored in `profile` when UI BCP 47 language code is
 // `ui_language_code`. If the format of the country in `profile` isn't known,
 // the US address format is used instead. If `ui_language_code` is not valid,
-// the default format is returned.
+// the default format is returned. If `include_country` is true, the country
+// will be appended in a separate line at the end.
 std::u16string GetEnvelopeStyleAddress(const AutofillProfile& profile,
-                                       const std::string& ui_language_code);
+                                       const std::string& ui_language_code,
+                                       bool include_country);
 
 }  // namespace autofill
 

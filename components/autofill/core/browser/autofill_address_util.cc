@@ -114,7 +114,8 @@ void GetAddressComponents(
 }
 
 std::u16string GetEnvelopeStyleAddress(const AutofillProfile& profile,
-                                       const std::string& ui_language_code) {
+                                       const std::string& ui_language_code,
+                                       bool include_country) {
   const AutofillType kCountryCode(HTML_TYPE_COUNTRY_CODE, HTML_MODE_NONE);
   const std::u16string& country_code =
       profile.GetInfo(kCountryCode, ui_language_code);
@@ -134,6 +135,12 @@ std::u16string GetEnvelopeStyleAddress(const AutofillProfile& profile,
                   ui_language_code))
             : component.literal;
   }
+  if (include_country) {
+    address += "\n";
+    address += base::UTF16ToUTF8(
+        profile.GetInfo(ADDRESS_HOME_COUNTRY, ui_language_code));
+  }
+
   // Remove all white spaces and new lines from the beginning and the end of the
   // address.
   base::TrimString(address, base::kWhitespaceASCII, &address);
