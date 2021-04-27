@@ -12,7 +12,6 @@
 
 #include "base/base_export.h"
 #include "base/check_op.h"
-#include "base/stl_util.h"
 #include "base/trace_event/builtin_categories.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_category.h"
