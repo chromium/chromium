@@ -76,7 +76,7 @@ HostGpuMemoryBufferManager::HostGpuMemoryBufferManager(
   if (!WillGetGmbConfigFromGpu()) {
     native_configurations_ = gpu::GetNativeGpuMemoryBufferConfigurations(
         gpu_memory_buffer_support_.get());
-    native_configurations_initialized_.Signal();
+    native_configurations_initialized_.Set();
   }
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "HostGpuMemoryBufferManager", task_runner_);
@@ -192,11 +192,9 @@ bool HostGpuMemoryBufferManager::IsNativeGpuMemoryBufferConfiguration(
     gfx::BufferFormat format,
     gfx::BufferUsage usage) const {
   if (WillGetGmbConfigFromGpu()) {
-    DCHECK(task_runner_->BelongsToCurrentThread());
-    {
-      base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
-      native_configurations_initialized_.Wait();
-    }
+    DCHECK(native_configurations_initialized_.IsSet())
+        << "On X11 this must have waited for GPU initialization to complete "
+        << "before knowing that GpuMemoryBuffers can be used.";
   }
   return native_configurations_.find(gfx::BufferUsageAndFormat(
              usage, format)) != native_configurations_.end();
@@ -291,14 +289,12 @@ bool HostGpuMemoryBufferManager::OnMemoryDump(
 
 void HostGpuMemoryBufferManager::SetNativeConfigurations(
     gpu::GpuMemoryBufferConfigurationSet native_configurations) {
-  // Must not be done on the task runner thread to avoid deadlock.
-  DCHECK(!task_runner_->BelongsToCurrentThread());
-  if (native_configurations_initialized_.IsSignaled()) {
+  if (native_configurations_initialized_.IsSet()) {
     // The configurations are set on GPU initialization and should not change.
     DCHECK(native_configurations_ == native_configurations);
   } else {
     native_configurations_ = native_configurations;
-    native_configurations_initialized_.Signal();
+    native_configurations_initialized_.Set();
   }
 }
 

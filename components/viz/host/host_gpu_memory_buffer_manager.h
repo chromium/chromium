@@ -14,6 +14,7 @@
 #include "base/memory/unsafe_shared_memory_pool.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
+#include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/viz/host/viz_host_export.h"
@@ -70,7 +71,6 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
       gpu::SurfaceHandle surface_handle,
       base::OnceCallback<void(gfx::GpuMemoryBufferHandle)> callback);
 
-  // This method will block until the initial GPUInfo is received.
   bool IsNativeGpuMemoryBufferConfiguration(gfx::BufferFormat format,
                                             gfx::BufferUsage usage) const;
 
@@ -95,7 +95,6 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
  protected:
-  // Must be called from a thread other than |task_runner_|'s thread.
   void SetNativeConfigurations(
       gpu::GpuMemoryBufferConfigurationSet native_configurations);
 
@@ -153,7 +152,7 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
   scoped_refptr<base::UnsafeSharedMemoryPool> pool_;
 
   gpu::GpuMemoryBufferConfigurationSet native_configurations_;
-  mutable base::WaitableEvent native_configurations_initialized_;
+  base::AtomicFlag native_configurations_initialized_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::WeakPtr<HostGpuMemoryBufferManager> weak_ptr_;

@@ -261,7 +261,7 @@ class HostGpuMemoryBufferManagerTest : public ::testing::Test {
         std::move(gpu_memory_buffer_support),
         base::ThreadTaskRunnerHandle::Get());
     if (MustSignalGmbConfigReadyForTest())
-      gpu_memory_buffer_manager_->native_configurations_initialized_.Signal();
+      gpu_memory_buffer_manager_->native_configurations_initialized_.Set();
   }
 
   // Not all platforms support native configurations (currently only Windows,
