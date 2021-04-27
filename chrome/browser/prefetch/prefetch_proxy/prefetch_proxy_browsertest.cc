@@ -513,7 +513,8 @@ class PrefetchProxyBrowserTest
     cmd->AppendSwitch("force-enable-metrics-reporting");
     cmd->AppendSwitchASCII("isolated-prerender-tunnel-proxy",
                            GetProxyURL().spec());
-    cmd->AppendSwitchASCII(switches::kEnableBlinkFeatures, "SpeculationRules");
+    cmd->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                           "SpeculationRulesPrefetchProxy");
   }
 
   void SetDataSaverEnabled(bool enabled) {

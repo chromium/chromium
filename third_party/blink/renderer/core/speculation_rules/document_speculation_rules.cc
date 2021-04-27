@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -89,11 +90,24 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
     }
   };
 
+  auto* execution_context = GetSupplementable()->GetExecutionContext();
   for (SpeculationRuleSet* rule_set : rule_sets_) {
-    push_candidates(mojom::blink::SpeculationAction::kPrefetch,
-                    rule_set->prefetch_rules());
-    push_candidates(mojom::blink::SpeculationAction::kPrefetchWithSubresources,
-                    rule_set->prefetch_with_subresources_rules());
+    // If kSpeculationRulesPrefetchProxy is enabled, collect all prefetch
+    // speculation rules.
+    if (RuntimeEnabledFeatures::SpeculationRulesPrefetchProxyEnabled(
+            execution_context)) {
+      push_candidates(mojom::blink::SpeculationAction::kPrefetch,
+                      rule_set->prefetch_rules());
+      push_candidates(
+          mojom::blink::SpeculationAction::kPrefetchWithSubresources,
+          rule_set->prefetch_with_subresources_rules());
+    }
+
+    // If kPrerender2 is enabled, collect all prerender speculation rules.
+    if (RuntimeEnabledFeatures::Prerender2Enabled(execution_context)) {
+      push_candidates(mojom::blink::SpeculationAction::kPrerender,
+                      rule_set->prerender_rules());
+    }
   }
 
   host->UpdateSpeculationCandidates(std::move(candidates));

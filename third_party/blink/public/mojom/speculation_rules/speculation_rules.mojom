@@ -27,6 +27,7 @@ interface SpeculationHost {
 enum SpeculationAction {
   kPrefetch,
   kPrefetchWithSubresources,
+  kPrerender,
 };
 
 // A single candidate: a URL, an action, and any associated metadata that

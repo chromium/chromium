@@ -79,7 +79,8 @@ MATCHER(RequiresAnonymousClientIPWhenCrossOrigin,
 
 class SpeculationRuleSetTest : public ::testing::Test {
  private:
-  ScopedSpeculationRulesForTest enable_{true};
+  ScopedSpeculationRulesPrefetchProxyForTest enable_prefetch_{true};
+  ScopedPrerender2ForTest enable_prerender2_{true};
 };
 
 TEST_F(SpeculationRuleSetTest, Empty) {
@@ -104,6 +105,24 @@ TEST_F(SpeculationRuleSetTest, SimplePrefetchRule) {
       rule_set->prefetch_rules(),
       ElementsAre(MatchesListOfURLs("https://example.com/index2.html")));
   EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
+  EXPECT_THAT(rule_set->prerender_rules(), ElementsAre());
+}
+
+TEST_F(SpeculationRuleSetTest, SimplePrerenderRule) {
+  auto* rule_set = SpeculationRuleSet::ParseInline(
+      R"({
+        "prerender": [{
+          "source": "list",
+          "urls": ["https://example.com/index2.html"]
+        }]
+      })",
+      KURL("https://example.com/"));
+  ASSERT_TRUE(rule_set);
+  EXPECT_THAT(
+      rule_set->prerender_rules(),
+      ElementsAre(MatchesListOfURLs("https://example.com/index2.html")));
+  EXPECT_THAT(rule_set->prefetch_rules(), ElementsAre());
+  EXPECT_THAT(rule_set->prefetch_with_subresources_rules(), ElementsAre());
 }
 
 TEST_F(SpeculationRuleSetTest, SimplePrefetchWithSubresourcesRule) {
@@ -120,6 +139,7 @@ TEST_F(SpeculationRuleSetTest, SimplePrefetchWithSubresourcesRule) {
   EXPECT_THAT(
       rule_set->prefetch_with_subresources_rules(),
       ElementsAre(MatchesListOfURLs("https://example.com/index2.html")));
+  EXPECT_THAT(rule_set->prerender_rules(), ElementsAre());
 }
 
 TEST_F(SpeculationRuleSetTest, ResolvesURLs) {
@@ -229,7 +249,11 @@ TEST_F(SpeculationRuleSetTest, PropagatesToDocument) {
   script->setText(
       R"({"prefetch": [
            {"source": "list", "urls": ["https://example.com/foo"]}
-         ]})");
+         ],
+         "prerender": [
+           {"source": "list", "urls": ["https://example.com/bar"]}
+         ]
+         })");
   document.head()->appendChild(script);
 
   auto* supplement = DocumentSpeculationRules::FromIfExists(document);
@@ -238,6 +262,8 @@ TEST_F(SpeculationRuleSetTest, PropagatesToDocument) {
   SpeculationRuleSet* rule_set = supplement->rule_sets()[0];
   EXPECT_THAT(rule_set->prefetch_rules(),
               ElementsAre(MatchesListOfURLs("https://example.com/foo")));
+  EXPECT_THAT(rule_set->prerender_rules(),
+              ElementsAre(MatchesListOfURLs("https://example.com/bar")));
 }
 
 class StubSpeculationHost : public mojom::blink::SpeculationHost {
@@ -276,14 +302,15 @@ class StubSpeculationHost : public mojom::blink::SpeculationHost {
   base::OnceClosure done_closure_;
 };
 
-TEST_F(SpeculationRuleSetTest, PropagatesToBrowser) {
+// This function adds a speculationrules script to the given page, and simulates
+// the process of sending the parsed candidates to the browser.
+void PropagateRulesToStubSpeculationHost(DummyPageHolder& page_holder,
+                                         StubSpeculationHost& speculation_host,
+                                         const String& speculation_script) {
   // A <script> with a case-insensitive type match should be propagated to the
   // browser via Mojo.
   // TODO(jbroman): Should we need to enable script? Should that be bypassed?
-  DummyPageHolder page_holder;
   page_holder.GetFrame().GetSettings()->SetScriptEnabled(true);
-
-  StubSpeculationHost speculation_host;
   page_holder.GetFrame()
       .DomWindow()
       ->GetBrowserInterfaceBroker()
@@ -299,17 +326,35 @@ TEST_F(SpeculationRuleSetTest, PropagatesToBrowser) {
   HTMLScriptElement* script =
       MakeGarbageCollected<HTMLScriptElement>(document, CreateElementFlags());
   script->setAttribute(html_names::kTypeAttr, "SpEcUlAtIoNrUlEs");
-  script->setText(
+  script->setText(speculation_script);
+  document.head()->appendChild(script);
+
+  run_loop.Run();
+
+  page_holder.GetFrame()
+      .DomWindow()
+      ->GetBrowserInterfaceBroker()
+      .SetBinderForTesting(mojom::blink::SpeculationHost::Name_, {});
+}
+
+TEST_F(SpeculationRuleSetTest, PropagatesAllRulesToBrowser) {
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  const String speculation_script =
       R"({"prefetch_with_subresources": [
            {"source": "list",
             "urls": ["https://example.com/foo", "https://example.com/bar"],
             "requires": ["anonymous-client-ip-when-cross-origin"]}
-         ]})");
-  document.head()->appendChild(script);
-  run_loop.Run();
+         ],
+          "prerender": [
+           {"source": "list", "urls": ["https://example.com/prerender"]}
+         ]
+         })";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
 
   const auto& candidates = speculation_host.candidates();
-  ASSERT_EQ(candidates.size(), 2u);
+  ASSERT_EQ(candidates.size(), 3u);
   {
     const auto& candidate = candidates[0];
     EXPECT_EQ(candidate->action,
@@ -324,6 +369,67 @@ TEST_F(SpeculationRuleSetTest, PropagatesToBrowser) {
     EXPECT_EQ(candidate->url, "https://example.com/bar");
     EXPECT_TRUE(candidate->requires_anonymous_client_ip_when_cross_origin);
   }
+  {
+    const auto& candidate = candidates[2];
+    EXPECT_EQ(candidate->action, mojom::blink::SpeculationAction::kPrerender);
+    EXPECT_EQ(candidate->url, "https://example.com/prerender");
+  }
+}
+
+// Tests that prefetch rules are ignored unless SpeculationRulesPrefetchProxy
+// is enabled.
+TEST_F(SpeculationRuleSetTest, PrerenderIgnorePrefetchRules) {
+  // Overwrite the kSpeculationRulesPrefetchProxy flag.
+  ScopedSpeculationRulesPrefetchProxyForTest enable_prefetch{false};
+
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  const String speculation_script =
+      R"({"prefetch_with_subresources": [
+           {"source": "list",
+            "urls": ["https://example.com/foo", "https://example.com/bar"],
+            "requires": ["anonymous-client-ip-when-cross-origin"]}
+         ],
+          "prerender": [
+           {"source": "list", "urls": ["https://example.com/prerender"]}
+         ]
+         })";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+
+  const auto& candidates = speculation_host.candidates();
+  EXPECT_EQ(candidates.size(), 1u);
+  EXPECT_FALSE(base::ranges::any_of(candidates, [](const auto& candidate) {
+    return candidate->action ==
+           mojom::blink::SpeculationAction::kPrefetchWithSubresources;
+  }));
+}
+
+// Tests that prerender rules are ignored unless Prerender2 is enabled.
+TEST_F(SpeculationRuleSetTest, PrefetchIgnorePrerenderRules) {
+  // Overwrite the kPrerender2 flag.
+  ScopedPrerender2ForTest enable_prerender{false};
+
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  const String speculation_script =
+      R"({"prefetch_with_subresources": [
+           {"source": "list",
+            "urls": ["https://example.com/foo", "https://example.com/bar"],
+            "requires": ["anonymous-client-ip-when-cross-origin"]}
+         ],
+          "prerender": [
+           {"source": "list", "urls": ["https://example.com/prerender"]}
+         ]
+         })";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+
+  const auto& candidates = speculation_host.candidates();
+  EXPECT_EQ(candidates.size(), 2u);
+  EXPECT_FALSE(base::ranges::any_of(candidates, [](const auto& candidate) {
+    return candidate->action == mojom::blink::SpeculationAction::kPrerender;
+  }));
 }
 
 }  // namespace

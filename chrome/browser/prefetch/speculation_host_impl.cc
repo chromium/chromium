@@ -14,8 +14,11 @@
 void SpeculationHostImpl::Bind(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<blink::mojom::SpeculationHost> receiver) {
+  // Note: Currently SpeculationHostImpl doesn't trigger prerendering.
+  // TODO(crbug.com/1197133): Support prerendering after moving to content/.
   if (!base::FeatureList::IsEnabled(
-          blink::features::kSpeculationRulesPrefetchProxy)) {
+          blink::features::kSpeculationRulesPrefetchProxy) &&
+      !blink::features::IsPrerender2Enabled()) {
     mojo::ReportBadMessage(
         "Speculation rules must be enabled to bind to "
         "blink.mojom.SpeculationHost in the browser.");

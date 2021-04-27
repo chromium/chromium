@@ -34,12 +34,16 @@ class CORE_EXPORT SpeculationRuleSet final
       const {
     return prefetch_with_subresources_rules_;
   }
+  const HeapVector<Member<SpeculationRule>>& prerender_rules() const {
+    return prerender_rules_;
+  }
 
   void Trace(Visitor*) const;
 
  private:
   HeapVector<Member<SpeculationRule>> prefetch_rules_;
   HeapVector<Member<SpeculationRule>> prefetch_with_subresources_rules_;
+  HeapVector<Member<SpeculationRule>> prerender_rules_;
 };
 
 }  // namespace blink

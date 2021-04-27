@@ -1927,7 +1927,7 @@
     // was enabled.
     {
       name: "SpeculationRules",
-      implied_by: ["SpeculationRulesPrefetchProxy"],
+      implied_by: ["SpeculationRulesPrefetchProxy", "Prerender2"],
       origin_trial_feature_name: "SpeculationRules__DONOTUSE",
     },
     // Origin trial to enable Speculation Rules for access to the prefetch proxy.
