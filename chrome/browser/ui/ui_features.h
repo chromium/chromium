@@ -46,6 +46,8 @@ extern const base::Feature kReadLaterNewBadgePromo;
 extern const base::Feature kScrollableTabStrip;
 extern const char kMinimumTabWidthFeatureParameterName[];
 
+extern const base::Feature kScrollableTabStripButtons;
+
 extern const base::Feature kSidePanel;
 
 extern const base::Feature kSidePanelPrototype;
