@@ -59,6 +59,7 @@ unzip $src/chromedriver_mac64.zip
 unzip $src/chromedriver_mac64_m1.zip -d chromedriver_mac64_m1/
 unzip $src/chromedriver_win32.zip
 
+# TODO: Remove this line after verifying strip has no effect
 strip -p chromedriver_linux64/chromedriver
 
 zip -j $tgt/chromedriver_linux64.zip chromedriver_linux64/chromedriver
