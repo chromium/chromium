@@ -702,32 +702,34 @@ AXObject* AXObject::ComputeNonARIAParent(AXObjectCacheImpl& cache,
     }
   }
 
-  while (true) {
-    current_node = GetParentNodeForComputeParent(current_node);
-    if (!current_node)
-      break;
-    // When AXMenuList is being used, a menu list is only allowed to parent an
-    // AXMenuListPopup, which is added as a child on creation. No other
-    // children are allowed, and null is returned for anything else where the
-    // parent would be AXMenuList.
-    if (AXObjectCacheImpl::UseAXMenuList()) {
-      if (auto* select = DynamicTo<HTMLSelectElement>(current_node)) {
-        if (select->UsesMenuList())
-          return nullptr;
-      }
-    }
-    if (!CanComputeAsParent(current_node))
-      return nullptr;
+  current_node = GetParentNodeForComputeParent(current_node);
+  DCHECK(current_node);
 
-    AXObject* ax_parent = cache.GetOrCreate(current_node);
-    if (ax_parent) {
-      DCHECK(!ax_parent->IsDetached());
-      return ax_parent->CanHaveChildren() ? ax_parent : nullptr;
+  // When AXMenuList is being used, a menu list is only allowed to parent an
+  // AXMenuListPopup, which is added as a child on creation. No other
+  // children are allowed, and null is returned for anything else where the
+  // parent would be AXMenuList.
+  if (AXObjectCacheImpl::UseAXMenuList()) {
+    if (auto* select = DynamicTo<HTMLSelectElement>(current_node)) {
+      if (select->UsesMenuList())
+        return nullptr;
     }
   }
 
-  NOTREACHED() << "No parent found.";
+  if (!CanComputeAsParent(current_node))
+    return nullptr;
 
+  if (AXObject* ax_parent = cache.GetOrCreate(current_node)) {
+    DCHECK(!ax_parent->IsDetached());
+    // If the parent can't have children, then return null so that the caller
+    // knows that it is not a relevant natural parent, as it is a leaf.
+    return ax_parent->CanHaveChildren() ? ax_parent : nullptr;
+  }
+
+  // Could not create AXObject for this the parent node, therefore there is no
+  // relevant natural parent. For example, the AXObject that would have been
+  // created would have been a descendant of a leaf, or otherwise an illegal
+  // child of a specialized object.
   return nullptr;
 }
 
