@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "components/infobars/android/confirm_infobar.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/infobars/core/infobar_manager.h"
@@ -138,7 +139,7 @@ void ArCoreInstallHelper::ShowInfoBar(int render_process_id,
                      render_frame_id));
 
   infobar_manager->AddInfoBar(
-      infobar_manager->CreateConfirmInfoBar(std::move(delegate)));
+      std::make_unique<infobars::ConfirmInfoBar>(std::move(delegate)));
 }
 
 void ArCoreInstallHelper::OnInfoBarResponse(int render_process_id,

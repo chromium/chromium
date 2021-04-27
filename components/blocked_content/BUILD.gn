@@ -50,6 +50,7 @@ source_set("blocked_content") {
       "android/popup_blocked_message_delegate.h",
     ]
     deps += [
+      "//components/infobars/android",
       "//components/infobars/content",
       "//components/infobars/core",
       "//components/messages/android",

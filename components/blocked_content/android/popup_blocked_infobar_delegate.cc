@@ -11,6 +11,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/infobars/android/confirm_infobar.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/prefs/pref_service.h"
@@ -27,11 +28,10 @@ bool PopupBlockedInfoBarDelegate::Create(
     HostContentSettingsMap* settings_map,
     base::OnceClosure on_accept_callback) {
   const GURL& url = infobar_manager->web_contents()->GetURL();
-  std::unique_ptr<infobars::InfoBar> infobar(
-      infobar_manager->CreateConfirmInfoBar(
-          std::unique_ptr<ConfirmInfoBarDelegate>(
-              new PopupBlockedInfoBarDelegate(num_popups, url, settings_map,
-                                              std::move(on_accept_callback)))));
+  auto infobar = std::make_unique<infobars::ConfirmInfoBar>(
+      base::WrapUnique<PopupBlockedInfoBarDelegate>(
+          new PopupBlockedInfoBarDelegate(num_popups, url, settings_map,
+                                          std::move(on_accept_callback))));
 
   // See if there is an existing popup infobar already.
   // TODO(dfalcantara) When triggering more than one popup the infobar
