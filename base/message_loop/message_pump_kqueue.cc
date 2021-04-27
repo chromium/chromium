@@ -379,11 +379,14 @@ bool MessagePumpKqueue::DoInternalWork(Delegate* delegate,
     events_.resize(event_count_);
   }
 
-  bool poll = next_work_info == nullptr;
-  int flags = poll ? KEVENT_FLAG_IMMEDIATE : 0;
-  if (!poll && scheduled_wakeup_time_ != next_work_info->delayed_run_time) {
-    UpdateWakeupTimer(next_work_info->delayed_run_time);
+  bool immediate = next_work_info == nullptr;
+  int flags = immediate ? KEVENT_FLAG_IMMEDIATE : 0;
+
+  if (!immediate) {
+    if (scheduled_wakeup_time_ != next_work_info->delayed_run_time)
+      UpdateWakeupTimer(next_work_info->delayed_run_time);
     DCHECK_EQ(scheduled_wakeup_time_, next_work_info->delayed_run_time);
+    delegate->BeforeWait();
   }
 
   int rv = HANDLE_EINTR(kevent64(kqueue_.get(), nullptr, 0, events_.data(),
