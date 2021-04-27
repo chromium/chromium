@@ -109,10 +109,10 @@ TransferableResourceTracker::ImportResource(
 }
 
 void TransferableResourceTracker::ReturnFrame(const ResourceFrame& frame) {
-  UnrefResource(frame.root.resource.id);
+  UnrefResource(frame.root.resource.id, /*count=*/1);
   for (const auto& shared : frame.shared) {
     if (shared.has_value())
-      UnrefResource(shared->resource.id);
+      UnrefResource(shared->resource.id, /*count=*/1);
   }
 }
 
@@ -121,9 +121,11 @@ void TransferableResourceTracker::RefResource(ResourceId id) {
   ++managed_resources_[id].ref_count;
 }
 
-void TransferableResourceTracker::UnrefResource(ResourceId id) {
+void TransferableResourceTracker::UnrefResource(ResourceId id, int count) {
   DCHECK(base::Contains(managed_resources_, id));
-  if (--managed_resources_[id].ref_count == 0)
+  DCHECK_LE(count, managed_resources_[id].ref_count);
+  managed_resources_[id].ref_count -= count;
+  if (managed_resources_[id].ref_count == 0)
     managed_resources_.erase(id);
 }
 

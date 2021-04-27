@@ -66,7 +66,7 @@ TEST_F(TransferableResourceTrackerTest, IdInRange) {
   tracker.RefResource(frame2.root.resource.id);
   tracker.ReturnFrame(frame2);
   EXPECT_TRUE(HasBitmapResource(frame2.root.resource));
-  tracker.UnrefResource(frame2.root.resource.id);
+  tracker.UnrefResource(frame2.root.resource.id, 1);
   EXPECT_FALSE(HasBitmapResource(frame2.root.resource));
 }
 
@@ -89,6 +89,20 @@ TEST_F(TransferableResourceTrackerTest, ExhaustedIdLoops) {
     tracker.ReturnFrame(frame);
     EXPECT_FALSE(HasBitmapResource(frame.root.resource));
   }
+}
+
+TEST_F(TransferableResourceTrackerTest, UnrefWithCount) {
+  TransferableResourceTracker tracker(&shared_bitmap_manager_);
+  auto frame = tracker.ImportResources(CreateFrameWithResult());
+  for (int i = 0; i < 100; ++i)
+    tracker.RefResource(frame.root.resource.id);
+  ASSERT_FALSE(tracker.is_empty());
+  tracker.UnrefResource(frame.root.resource.id, 1);
+  EXPECT_FALSE(tracker.is_empty());
+  tracker.UnrefResource(frame.root.resource.id, 1);
+  EXPECT_FALSE(tracker.is_empty());
+  tracker.UnrefResource(frame.root.resource.id, 99);
+  EXPECT_TRUE(tracker.is_empty());
 }
 
 TEST_F(TransferableResourceTrackerTest,

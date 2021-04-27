@@ -587,7 +587,7 @@ void SurfaceAnimationManager::UnrefResources(
     return;
   for (const auto& resource : resources) {
     if (resource.id >= kVizReservedRangeStartId)
-      transferable_resource_tracker_.UnrefResource(resource.id);
+      transferable_resource_tracker_.UnrefResource(resource.id, resource.count);
   }
 }
 

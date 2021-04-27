@@ -72,7 +72,7 @@ class VIZ_SERVICE_EXPORT TransferableResourceTracker {
 
   // Ref count management for the resources returned by `ImportResources`.
   void RefResource(ResourceId id);
-  void UnrefResource(ResourceId id);
+  void UnrefResource(ResourceId id, int count);
 
   bool is_empty() const { return managed_resources_.empty(); }
 
