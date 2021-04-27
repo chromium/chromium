@@ -589,13 +589,29 @@ void HTMLCanvasElement::DoDeferredPaintInvalidation() {
   NotifyListenersCanvasChanged();
   did_notify_listeners_for_current_frame_ = true;
 
-  if (layout_box && !ShouldBeDirectComposited()) {
-    // If the canvas is not composited, propagate the paint invalidation to
-    // |layout_box| as the painted result will change.
-    layout_box->SetShouldDoFullPaintInvalidation();
-  }
+  // Propagate the |dirty_rect_| accumulated so far to the compositor
+  // before restarting with a blank dirty rect.
+  // Canvas content updates do not need to be propagated as
+  // paint invalidations if the canvas is composited separately, since
+  // the canvas contents are sent separately through a texture layer.
+  if (layout_box && (!context_ || !context_->IsComposited())) {
+    // If the content box is larger than |src_rect|, the canvas's image is
+    // being stretched, so we need to account for color bleeding caused by the
+    // interpolation filter.
+    FloatRect src_rect(0, 0, Size().Width(), Size().Height());
+    if (content_rect.Width() > src_rect.Width() ||
+        content_rect.Height() > src_rect.Height()) {
+      dirty_rect_.Inflate(0.5);
+    }
 
+    dirty_rect_.Intersect(src_rect);
+    PhysicalRect mapped_dirty_rect(
+        EnclosingIntRect(MapRect(dirty_rect_, src_rect, content_rect)));
+    layout_box->InvalidatePaintRectangle(mapped_dirty_rect);
+  }
   dirty_rect_ = FloatRect();
+
+  DCHECK(dirty_rect_.IsEmpty());
 }
 
 void HTMLCanvasElement::Reset() {
