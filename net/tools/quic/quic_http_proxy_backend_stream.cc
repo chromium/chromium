@@ -319,9 +319,7 @@ void QuicHttpProxyBackendStream::OnResponseCompleted() {
 
 void QuicHttpProxyBackendStream::SendResponseOnDelegateThread() {
   DCHECK(delegate_ != nullptr);
-  // Proxy currently does not support push resources
-  std::list<quic::QuicBackendResponse::ServerPushInfo> empty_resources;
-  delegate_->OnResponseBackendComplete(quic_response_.get(), empty_resources);
+  delegate_->OnResponseBackendComplete(quic_response_.get());
 }
 
 void QuicHttpProxyBackendStream::CancelRequest() {

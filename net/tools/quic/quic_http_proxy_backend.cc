@@ -92,8 +92,7 @@ void QuicHttpProxyBackend::FetchResponseFromBackend(
   if (proxy_backend_stream == nullptr ||
       proxy_backend_stream->SendRequestToBackend(&request_headers,
                                                  incoming_body) != true) {
-    std::list<quic::QuicBackendResponse::ServerPushInfo> empty_resources;
-    quic_server_stream->OnResponseBackendComplete(nullptr, empty_resources);
+    quic_server_stream->OnResponseBackendComplete(nullptr);
   }
 }
 
