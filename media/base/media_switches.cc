@@ -873,8 +873,8 @@ bool IsLiveCaptionFeatureEnabled() {
   if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {
     // Check if the CPU has the required instruction set to run the Speech
     // On-Device API (SODA) library.
-    static bool has_sse42 = base::CPU().has_sse42();
-    if (!has_sse42)
+    static bool has_sse41 = base::CPU().has_sse41();
+    if (!has_sse41)
       return false;
   }
 #endif
