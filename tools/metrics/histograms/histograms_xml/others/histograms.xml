@@ -12564,7 +12564,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ReadingList.BookmarkBarState.On{Frequency}AddToReadingList"
-    enum="BookmarkBarState" expires_after="M92">
+    enum="BookmarkBarState" expires_after="M96">
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -12712,7 +12712,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ReadingList.{ReadStatus}.Count.{Variation}" units="count"
-    expires_after="M92">
+    expires_after="M96">
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
