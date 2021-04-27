@@ -343,9 +343,9 @@ void FocusManager::SetFocusedViewWithReason(View* view,
   // Change this to DCHECK once it's resolved.
   CHECK(!view || ContainsView(view));
 
-#if !defined(OS_APPLE)
+#if !defined(OS_MAC)
   // TODO(warx): There are some AccessiblePaneViewTest failed on macosx.
-  // crbug.com/650859. Remove !defined(OS_APPLE) once that is fixed.
+  // crbug.com/650859. Remove !defined(OS_MAC) once that is fixed.
   //
   // If the widget isn't active store the focused view and then attempt to
   // activate the widget. If activation succeeds |view| will be focused.
@@ -532,7 +532,7 @@ bool FocusManager::ProcessAccelerator(const ui::Accelerator& accelerator) {
   if (delegate_ && delegate_->ProcessAccelerator(accelerator))
     return true;
 
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
   // On MacOS accelerators are processed when a bubble is opened without
   // manual redirection to bubble anchor widget. Including redirect on MacOS
   // breaks processing accelerators by the bubble itself.
@@ -597,7 +597,7 @@ bool FocusManager::IsFocusable(View* view) const {
   DCHECK(view);
 
 // |keyboard_accessible_| is only used on Mac.
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
   return keyboard_accessible_ ? view->IsAccessibilityFocusable()
                               : view->IsFocusable();
 #else

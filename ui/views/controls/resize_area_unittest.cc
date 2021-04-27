@@ -17,7 +17,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
 
-#if !defined(OS_APPLE)
+#if !defined(OS_MAC)
 #include "ui/aura/window.h"
 #endif
 
@@ -147,7 +147,7 @@ void ResizeAreaTest::TearDown() {
 }
 
 // TODO(tdanderson): Enable these tests on OSX. See crbug.com/710475.
-#if !defined(OS_APPLE)
+#if !defined(OS_MAC)
 // Verifies the correct calls have been made to
 // TestResizeAreaDelegate::OnResize() for a sequence of mouse events
 // corresponding to a successful resize operation.
@@ -201,6 +201,6 @@ TEST_F(ResizeAreaTest, NoDragOnGestureTap) {
 
   EXPECT_EQ(0, resize_amount());
 }
-#endif  // !defined(OS_APPLE)
+#endif  // !defined(OS_MAC)
 
 }  // namespace views

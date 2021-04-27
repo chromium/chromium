@@ -135,7 +135,7 @@ TEST_F(AccessiblePaneViewTest, SetPaneFocusAndRestore) {
   // predictable. On Mac, Deactivate() is not implemented. Note that
   // TestBarView calls set_allow_deactivate_on_esc(true), which is only
   // otherwise used in Ash.
-#if !defined(OS_APPLE) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if !defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
   // Esc should deactivate the widget.
   test_view_bar->AcceleratorPressed(test_view_bar->escape_key());
   EXPECT_TRUE(widget_main->IsActive());

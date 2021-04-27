@@ -72,7 +72,7 @@ class TransparentButton : public Button {
   ~TransparentButton() override = default;
 
   bool OnMousePressed(const ui::MouseEvent& mouse_event) override {
-#if !defined(OS_APPLE)
+#if !defined(OS_MAC)
     // On Mac, comboboxes do not take focus on mouse click, but on other
     // platforms they do.
     parent()->RequestFocus();
@@ -104,7 +104,7 @@ class TransparentButton : public Button {
   DISALLOW_COPY_AND_ASSIGN(TransparentButton);
 };
 
-#if !defined(OS_APPLE)
+#if !defined(OS_MAC)
 // Returns the next or previous valid index (depending on |increment|'s value).
 // Skips separator or disabled indices. Returns -1 if there is no valid adjacent
 // index.
@@ -240,7 +240,7 @@ Combobox::Combobox(ui::ComboboxModel* model, int text_context, int text_style)
           base::BindRepeating(&Combobox::ArrowButtonPressed,
                               base::Unretained(this)))) {
   SetModel(model);
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 #else
   SetFocusBehavior(FocusBehavior::ALWAYS);
@@ -430,7 +430,7 @@ bool Combobox::OnKeyPressed(const ui::KeyEvent& e) {
   bool show_menu = false;
   int new_index = kNoSelection;
   switch (e.key_code()) {
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
     case ui::VKEY_DOWN:
     case ui::VKEY_UP:
     case ui::VKEY_SPACE:
@@ -476,7 +476,7 @@ bool Combobox::OnKeyPressed(const ui::KeyEvent& e) {
     case ui::VKEY_SPACE:
       show_menu = true;
       break;
-#endif  // OS_APPLE
+#endif  // OS_MAC
     default:
       return false;
   }

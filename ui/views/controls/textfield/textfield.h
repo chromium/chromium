@@ -53,11 +53,11 @@ namespace base {
 class TimeDelta;
 }
 
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
 namespace ui {
 class ScopedPasswordInputEnabler;
 }
-#endif  // defined(OS_APPLE)
+#endif  // defined(OS_MAC)
 
 namespace views {
 
@@ -85,7 +85,7 @@ class VIEWS_EXPORT Textfield : public View,
     kLastCommandId = kSelectAll,
   };
 
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
   static constexpr gfx::SelectionBehavior kLineSelectionBehavior =
       gfx::SELECTION_EXTEND;
   static constexpr gfx::SelectionBehavior kWordSelectionBehavior =
@@ -756,10 +756,10 @@ class VIEWS_EXPORT Textfield : public View,
   // View containing the text cursor.
   View* cursor_view_ = nullptr;
 
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
   // Used to track active password input sessions.
   std::unique_ptr<ui::ScopedPasswordInputEnabler> password_input_enabler_;
-#endif  // defined(OS_APPLE)
+#endif  // defined(OS_MAC)
 
   // How this textfield was focused.
   ui::TextInputClient::FocusReason focus_reason_ =

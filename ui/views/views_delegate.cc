@@ -117,7 +117,7 @@ bool ViewsDelegate::WindowManagerProvidesTitleBar(bool maximized) {
   return false;
 }
 
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
 ui::ContextFactory* ViewsDelegate::GetContextFactory() {
   return nullptr;
 }

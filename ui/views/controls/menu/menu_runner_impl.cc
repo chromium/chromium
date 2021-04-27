@@ -73,7 +73,7 @@ bool IsAltPressed() {
 
 namespace internal {
 
-#if !defined(OS_APPLE)
+#if !defined(OS_MAC)
 MenuRunnerImplInterface* MenuRunnerImplInterface::Create(
     ui::MenuModel* menu_model,
     int32_t run_types,
@@ -270,7 +270,7 @@ bool MenuRunnerImpl::ShouldShowMnemonics(int32_t run_types) {
   show_mnemonics |= ui::win::IsAltPressed();
 #elif defined(USE_X11) || defined(USE_OZONE)
   show_mnemonics |= IsAltPressed();
-#elif defined(OS_APPLE)
+#elif defined(OS_MAC)
   show_mnemonics = false;
 #endif
   return show_mnemonics;

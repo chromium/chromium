@@ -14,7 +14,7 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -147,7 +147,7 @@ int TypographyProvider::GetLineHeight(int context, int style) const {
 
 // static
 gfx::Font::Weight TypographyProvider::MediumWeightForUI() {
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
   // System fonts are not user-configurable on Mac, so there's a simpler check.
   // However, 10.11 do not ship with a MEDIUM weight system font. In that
   // case, trying to use MEDIUM there will give a bold font, which will look

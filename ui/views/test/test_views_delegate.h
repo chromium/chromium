@@ -37,7 +37,7 @@ class TestViewsDelegate : public ViewsDelegate {
   void set_context(gfx::NativeWindow context) { context_ = context; }
 #endif
 
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
   // Allows tests to provide a ContextFactory via the ViewsDelegate interface.
   void set_context_factory(ui::ContextFactory* context_factory) {
     context_factory_ = context_factory;
@@ -57,12 +57,12 @@ class TestViewsDelegate : public ViewsDelegate {
 #endif
   void OnBeforeWidgetInit(Widget::InitParams* params,
                           internal::NativeWidgetDelegate* delegate) override;
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
   ui::ContextFactory* GetContextFactory() override;
 #endif
 
  private:
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
   ui::ContextFactory* context_factory_ = nullptr;
 #endif
   bool use_desktop_native_widgets_ = false;

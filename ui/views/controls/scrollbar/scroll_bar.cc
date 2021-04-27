@@ -391,7 +391,7 @@ ScrollBar::ScrollBar(bool is_horiz)
 ///////////////////////////////////////////////////////////////////////////////
 // ScrollBar, private:
 
-#if !defined(OS_APPLE)
+#if !defined(OS_MAC)
 // static
 base::RetainingOneShotTimer* ScrollBar::GetHideTimerForTesting(
     ScrollBar* scroll_bar) {

@@ -183,7 +183,7 @@ ui::WindowShowState GetWidgetShowState(const Widget* widget) {
 // Give the OS an opportunity to process messages for an activation change, when
 // there is actually no change expected (e.g. ShowInactive()).
 void RunPendingMessagesForActiveStatusChange() {
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
   // On Mac, a single spin is *usually* enough. It isn't when a widget is shown
   // and made active in two steps, so tests should follow up with a ShowSync()
   // or ActivateSync to ensure a consistent state.
@@ -210,7 +210,7 @@ void ShowSync(Widget* widget) {
 }
 
 void DeactivateSync(Widget* widget) {
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
   // Deactivation of a window isn't a concept on Mac: If an application is
   // active and it has any activatable windows, then one of them is always
   // active. But we can simulate deactivation (e.g. as if another application
@@ -813,7 +813,7 @@ TEST_F(WidgetTestInteractive, FullscreenMaximizedWindowBounds) {
 }
 #endif  // defined(OS_WIN)
 
-#if BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_APPLE)
+#if BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_MAC)
 // Tests whether the focused window is set correctly when a modal window is
 // created and destroyed. When it is destroyed it should focus the owner window.
 TEST_F(DesktopWidgetTestInteractive, WindowModalWindowDestroyedActivationTest) {
@@ -855,7 +855,7 @@ TEST_F(DesktopWidgetTestInteractive, WindowModalWindowDestroyedActivationTest) {
   EXPECT_EQ(gfx::kNullNativeView, focus_changes[1]);
   EXPECT_EQ(modal_native_view, focus_changes[2]);
 
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
   // Window modal dialogs on Mac are "sheets", which animate to close before
   // activating their parent widget.
   views::test::WidgetActivationWaiter waiter(&top_level_widget, true);
@@ -1040,7 +1040,7 @@ TEST_F(WidgetTestInteractive, ShowAfterShowInactive) {
   EXPECT_EQ(GetWidgetShowState(widget.get()), ui::SHOW_STATE_NORMAL);
 }
 
-#if BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_APPLE)
+#if BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_MAC)
 TEST_F(WidgetTestInteractive, InactiveWidgetDoesNotGrabActivation) {
   WidgetAutoclosePtr widget(CreateTopLevelPlatformWidget());
   ShowSync(widget.get());
@@ -1056,13 +1056,13 @@ TEST_F(WidgetTestInteractive, InactiveWidgetDoesNotGrabActivation) {
   EXPECT_EQ(GetWidgetShowState(widget2.get()), ui::SHOW_STATE_INACTIVE);
   EXPECT_EQ(GetWidgetShowState(widget.get()), ui::SHOW_STATE_NORMAL);
 }
-#endif  // BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_APPLE)
+#endif  // BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_MAC)
 
 // ExitFullscreenRestoreState doesn't use DesktopAura widgets. On Mac, there are
 // currently only Desktop widgets and fullscreen changes have to coordinate with
 // the OS. See BridgedNativeWidgetUITest for native Mac fullscreen tests.
 // Maximize on mac is also (intentionally) a no-op.
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
 #define MAYBE_ExitFullscreenRestoreState DISABLED_ExitFullscreenRestoreState
 #else
 #define MAYBE_ExitFullscreenRestoreState ExitFullscreenRestoreState
@@ -1208,7 +1208,7 @@ TEST_F(DesktopWidgetTestInteractive, MinimizeAndActivateFocus) {
 
 #endif  // defined(OS_WIN)
 
-#if BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_APPLE)
+#if BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_MAC)
 // Tests that minimizing a widget causes the gesture_handler
 // to be cleared when the widget is minimized.
 TEST_F(DesktopWidgetTestInteractive, EventHandlersClearedOnWidgetMinimize) {
@@ -1383,7 +1383,7 @@ TEST_F(WidgetCaptureTest, Capture) {
   TestCapture(false);
 }
 
-#if BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_APPLE)
+#if BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_MAC)
 // See description in TestCapture(). Creates DesktopNativeWidget.
 TEST_F(WidgetCaptureTest, CaptureDesktopNativeWidget) {
   TestCapture(true);
@@ -1651,7 +1651,7 @@ TEST_F(WidgetCaptureTest, GrabUngrab) {
 // Disabled on Mac. Desktop Mac doesn't have system modal windows since Carbon
 // was deprecated. It does have application modal windows, but only Ash requests
 // those.
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
 #define MAYBE_SystemModalWindowReleasesCapture \
   DISABLED_SystemModalWindowReleasesCapture
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1706,7 +1706,7 @@ TEST_F(WidgetCaptureTest, MAYBE_SystemModalWindowReleasesCapture) {
 // Regression test for http://crbug.com/382421 (Linux-Aura issue).
 // TODO(pkotwicz): Make test pass on CrOS and Windows.
 // TODO(tapted): Investigate for toolkit-views on Mac http;//crbug.com/441064.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_APPLE)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC)
 #define MAYBE_MouseExitOnCaptureGrab DISABLED_MouseExitOnCaptureGrab
 #else
 #define MAYBE_MouseExitOnCaptureGrab MouseExitOnCaptureGrab
@@ -1801,7 +1801,7 @@ TEST_F(WidgetCaptureTest, SetCaptureToNonToplevel) {
   child->AddObserver(&observer);
   child->Show();
 
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
   // On Mac, activation is asynchronous. A single trip to the runloop should be
   // sufficient. On Aura platforms, note that since the child widget isn't top-
   // level, the aura window manager gets asked whether the widget is active, not
@@ -1912,7 +1912,7 @@ class WidgetInputMethodInteractiveTest : public DesktopWidgetTestInteractive {
   DISALLOW_COPY_AND_ASSIGN(WidgetInputMethodInteractiveTest);
 };
 
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
 #define MAYBE_Activation DISABLED_Activation
 #else
 #define MAYBE_Activation Activation
@@ -1957,7 +1957,7 @@ TEST_F(WidgetInputMethodInteractiveTest, OneWindow) {
 // Widget::Deactivate() doesn't work for CrOS, because it uses NWA instead of
 // DNWA (which just activates the last active window) and involves the
 // AuraTestHelper which sets the input method as DummyInputMethod.
-#if BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_APPLE)
+#if BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_MAC)
   DeactivateSync(widget.get());
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE,
             widget->GetInputMethod()->GetTextInputType());
@@ -2005,7 +2005,7 @@ TEST_F(WidgetInputMethodInteractiveTest, TwoWindows) {
 // Widget::Deactivate() doesn't work for CrOS, because it uses NWA instead of
 // DNWA (which just activates the last active window) and involves the
 // AuraTestHelper which sets the input method as DummyInputMethod.
-#if BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_APPLE)
+#if BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_MAC)
   DeactivateSync(parent.get());
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE,
             parent->GetInputMethod()->GetTextInputType());

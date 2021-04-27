@@ -24,7 +24,7 @@
 #include "ui/views/widget/native_widget_private.h"
 #include "ui/views/widget/widget.h"
 
-#if !defined(OS_APPLE)
+#if !defined(OS_MAC)
 #include "ui/aura/window.h"
 #endif
 
@@ -32,7 +32,7 @@ namespace views {
 
 namespace internal {
 
-#if !defined(OS_APPLE)
+#if !defined(OS_MAC)
 // This class adds itself as the pre target handler for the |window|
 // passed in. It currently handles touch events and forwards them to the
 // controller. Reason for this approach is views does not get raw touch
@@ -79,7 +79,7 @@ class PreMenuEventDispatchHandler : public ui::EventHandler,
 
   DISALLOW_COPY_AND_ASSIGN(PreMenuEventDispatchHandler);
 };
-#endif  // OS_APPLE
+#endif  // OS_MAC
 
 void TransferGesture(ui::GestureRecognizer* gesture_recognizer,
                      gfx::NativeView source,
@@ -145,7 +145,7 @@ void MenuHost::InitMenuHost(Widget* parent,
 #endif
   Init(std::move(params));
 
-#if !defined(OS_APPLE)
+#if !defined(OS_MAC)
   pre_dispatch_handler_ =
       std::make_unique<internal::PreMenuEventDispatchHandler>(
           menu_controller, submenu_, GetNativeView());
@@ -215,7 +215,7 @@ void MenuHost::DestroyMenuHost() {
   HideMenuHost();
   destroying_ = true;
   static_cast<MenuHostRootView*>(GetRootView())->ClearSubmenu();
-#if !defined(OS_APPLE)
+#if !defined(OS_MAC)
   pre_dispatch_handler_.reset();
 #endif
   Close();

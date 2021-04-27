@@ -266,7 +266,7 @@ TEST_F(MenuRunnerTest, PrefixSelect) {
 
 // This test is Mac-specific: Mac is the only platform where VKEY_SPACE
 // activates menu items.
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
 TEST_F(MenuRunnerTest, SpaceActivatesItem) {
   if (!MenuConfig::instance().all_menus_use_prefix_selection)
     return;
@@ -291,7 +291,7 @@ TEST_F(MenuRunnerTest, SpaceActivatesItem) {
   EXPECT_EQ(1, delegate->on_menu_closed_called());
   EXPECT_NE(nullptr, delegate->on_menu_closed_menu());
 }
-#endif  // OS_APPLE
+#endif  // OS_MAC
 
 // Tests that attempting to nest a menu within a drag-and-drop menu does not
 // cause a crash. Instead the drag and drop action should be canceled, and the

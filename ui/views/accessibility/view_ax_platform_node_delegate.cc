@@ -262,11 +262,11 @@ void ViewAXPlatformNodeDelegate::NotifyAccessibilityEvent(
   ax_platform_node_->NotifyAccessibilityEvent(event_type);
 }
 
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
 void ViewAXPlatformNodeDelegate::AnnounceText(const std::u16string& text) {
   ax_platform_node_->AnnounceText(text);
 }
-#endif  // defined(OS_APPLE)
+#endif  // defined(OS_MAC)
 
 const ui::AXNodeData& ViewAXPlatformNodeDelegate::GetData() const {
   // Clear the data, then populate it.

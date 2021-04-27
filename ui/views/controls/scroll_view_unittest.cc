@@ -30,7 +30,7 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_test_api.h"
 
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
 #include "ui/base/test/scoped_preferred_scroller_style_mac.h"
 #endif
 
@@ -247,7 +247,7 @@ class ScrollViewTest : public ViewsTestBase {
   }
 
  protected:
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
   void SetOverlayScrollersEnabled(bool enabled) {
     // Ensure the old scroller override is destroyed before creating a new one.
     // Otherwise, the swizzlers are interleaved and restore incorrect methods.
@@ -295,7 +295,7 @@ class WidgetScrollViewTest : public test::WidgetTest,
   // Adds a ScrollView with the given |contents_view| and does layout.
   ScrollView* AddScrollViewWithContents(std::unique_ptr<View> contents,
                                         bool commit_layers = true) {
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
     scroller_style_ = std::make_unique<ui::test::ScopedPreferredScrollerStyle>(
         use_overlay_scrollers_);
 #endif
@@ -371,7 +371,7 @@ class WidgetScrollViewTest : public test::WidgetTest,
 
   base::RepeatingClosure quit_closure_;
 
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
   std::unique_ptr<ui::test::ScopedPreferredScrollerStyle> scroller_style_;
 #endif
 
@@ -1185,7 +1185,7 @@ TEST_F(ScrollViewTest, DontCreateLayerOnViewportIfLayerOnScrollViewCreated) {
   EXPECT_FALSE(test_api.contents_viewport()->layer());
 }
 
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
 // Tests the overlay scrollbars on Mac. Ensure that they show up properly and
 // do not overlap each other.
 TEST_F(ScrollViewTest, CocoaOverlayScrollBars) {
@@ -1351,7 +1351,7 @@ TEST_F(WidgetScrollViewTest, ScrollersOnRest) {
   EXPECT_EQ(gfx::ScrollOffset(x_offset, y_offset), test_api.CurrentOffset());
 }
 
-#endif  // OS_APPLE
+#endif  // OS_MAC
 
 // Test that increasing the size of the viewport "below" scrolled content causes
 // the content to scroll up so that it still fills the viewport.

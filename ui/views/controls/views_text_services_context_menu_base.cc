@@ -50,7 +50,7 @@ bool ViewsTextServicesContextMenuBase::GetAcceleratorForCommandId(
 #if defined(OS_WIN)
     *accelerator = ui::Accelerator(ui::VKEY_OEM_PERIOD, ui::EF_COMMAND_DOWN);
     return true;
-#elif defined(OS_APPLE)
+#elif defined(OS_MAC)
     *accelerator = ui::Accelerator(ui::VKEY_SPACE,
                                    ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN);
     return true;
@@ -85,7 +85,7 @@ bool ViewsTextServicesContextMenuBase::SupportsCommand(int command_id) const {
   return command_id == IDS_CONTENT_CONTEXT_EMOJI;
 }
 
-#if !defined(OS_APPLE) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !defined(OS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH)
 // static
 std::unique_ptr<ViewsTextServicesContextMenu>
 ViewsTextServicesContextMenu::Create(ui::SimpleMenuModel* menu,

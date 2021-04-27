@@ -896,13 +896,13 @@ TEST_F(ViewAXPlatformNodeDelegateMenuTest, MenuTest) {
   EXPECT_EQ(submenu_item->GetData().GetHasPopup(), ax::mojom::HasPopup::kMenu);
   EXPECT_EQ(submenu_item->GetPosInSet(), 2);
   EXPECT_EQ(submenu_item->GetSetSize(), 7);
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
   // A virtual child with role menu is exposed so that VoiceOver treats a
   // MenuItemView of type kSubMenu as a submenu rather than an item.
   EXPECT_EQ(submenu_item->GetChildCount(), 1);
 #else
   EXPECT_EQ(submenu_item->GetChildCount(), 0);
-#endif  // defined(OS_APPLE)
+#endif  // defined(OS_MAC)
   EXPECT_EQ(submenu_item->GetIndexInParent(), 1);
 
   // MenuItemView::Type::kActionableSubMenu
@@ -921,13 +921,13 @@ TEST_F(ViewAXPlatformNodeDelegateMenuTest, MenuTest) {
             ax::mojom::HasPopup::kMenu);
   EXPECT_EQ(actionable_submenu_item->GetPosInSet(), 3);
   EXPECT_EQ(actionable_submenu_item->GetSetSize(), 7);
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
   // A virtual child with role menu is exposed so that VoiceOver treats a
   // MenuItemView of type kActionableSubMenu as a submenu rather than an item.
   EXPECT_EQ(actionable_submenu_item->GetChildCount(), 1);
 #else
   EXPECT_EQ(actionable_submenu_item->GetChildCount(), 0);
-#endif  // defined(OS_APPLE)
+#endif  // defined(OS_MAC)
   EXPECT_EQ(actionable_submenu_item->GetIndexInParent(), 2);
 
   // MenuItemView::Type::kCheckbox

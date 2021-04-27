@@ -24,7 +24,7 @@
 #if BUILDFLAG(ENABLE_DESKTOP_AURA)
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #endif
-#elif defined(OS_APPLE)
+#elif defined(OS_MAC)
 #include "ui/views/widget/native_widget_mac.h"
 #endif
 
@@ -144,7 +144,7 @@ void ViewsTestBase::SimulateNativeDestroy(Widget* widget) {
   test_helper_->SimulateNativeDestroy(widget);
 }
 
-#if !defined(OS_APPLE)
+#if !defined(OS_MAC)
 int ViewsTestBase::GetSystemReservedHeightAtTopOfScreen() {
   return 0;
 }
@@ -157,7 +157,7 @@ gfx::NativeWindow ViewsTestBase::GetContext() {
 NativeWidget* ViewsTestBase::CreateNativeWidgetForTest(
     const Widget::InitParams& init_params,
     internal::NativeWidgetDelegate* delegate) {
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
   return new test::TestPlatformNativeWidget<NativeWidgetMac>(delegate, false,
                                                              nullptr);
 #elif defined(USE_AURA)

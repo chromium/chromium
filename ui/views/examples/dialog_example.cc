@@ -317,7 +317,7 @@ void DialogExample::ContentsChanged(Textfield* sender,
 
 void DialogExample::OnPerformAction() {
   bool enable = bubble_->GetChecked() || GetModalType() != ui::MODAL_TYPE_CHILD;
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
   enable = enable && GetModalType() != ui::MODAL_TYPE_SYSTEM;
 #endif
   show_->SetEnabled(enable);

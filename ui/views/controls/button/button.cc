@@ -239,7 +239,7 @@ int Button::GetTriggerableEventFlags() const {
 void Button::SetRequestFocusOnPress(bool value) {
 // On Mac, buttons should not request focus on a mouse press. Hence keep the
 // default value i.e. false.
-#if !defined(OS_APPLE)
+#if !defined(OS_MAC)
   if (request_focus_on_press_ == value)
     return;
   request_focus_on_press_ = value;

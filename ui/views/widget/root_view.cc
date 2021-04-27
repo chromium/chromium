@@ -113,7 +113,7 @@ class PreEventDispatchHandler : public ui::EventHandler {
     if (owner_->GetFocusManager())  // Can be NULL in unittests.
       v = owner_->GetFocusManager()->GetFocusedView();
 // macOS doesn't have keyboard-triggered context menus.
-#if !defined(OS_APPLE)
+#if !defined(OS_MAC)
     // Special case to handle keyboard-triggered context menus.
     if (v && v->GetEnabled() &&
         ((event->key_code() == ui::VKEY_APPS) ||
@@ -267,7 +267,7 @@ void RootView::DeviceScaleFactorChanged(float old_device_scale_factor,
 // Accessibility ---------------------------------------------------------------
 
 void RootView::AnnounceText(const std::u16string& text) {
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
   gfx::NativeViewAccessible native = GetViewAccessibility().GetNativeObject();
   auto* ax_node = ui::AXPlatformNode::FromNativeViewAccessible(native);
   if (ax_node)

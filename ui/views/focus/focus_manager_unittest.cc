@@ -765,7 +765,7 @@ TEST_F(FocusManagerTest, StoreFocusedView) {
   GetFocusManager()->ClearFocus();
 }
 
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
 // Test that the correct view is restored if full keyboard access is changed.
 TEST_F(FocusManagerTest, StoreFocusedViewFullKeyboardAccess) {
   View* view1 = new View;

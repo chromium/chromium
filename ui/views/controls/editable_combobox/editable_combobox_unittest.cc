@@ -198,7 +198,7 @@ void EditableComboboxTest::InitWidget() {
   container->AddChildView(dummy_focusable_view_);
   widget_->Show();
 
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
   // The event loop needs to be flushed here, otherwise in various tests:
   // 1. The actual showing of the native window backing the widget gets delayed
   //    until a spin of the event loop.
@@ -270,7 +270,7 @@ void EditableComboboxTest::SendKeyEvent(ui::KeyboardCode key_code,
                                         const bool alt,
                                         const bool shift,
                                         const bool ctrl_cmd) {
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
   bool command = ctrl_cmd;
   bool control = false;
 #else
@@ -407,7 +407,7 @@ TEST_F(EditableComboboxTest, EndOrHomeMovesToBeginningOrEndOfText) {
   EXPECT_EQ(u"xabcy", combobox_->GetText());
 }
 
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
 
 TEST_F(EditableComboboxTest, AltLeftOrRightMovesToNextWords) {
   InitEditableCombobox();

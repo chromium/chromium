@@ -132,7 +132,7 @@ class TableViewTestHelper {
 
 namespace {
 
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
 constexpr int kCtrlOrCmdMask = ui::EF_COMMAND_DOWN;
 #else
 constexpr int kCtrlOrCmdMask = ui::EF_CONTROL_DOWN;
@@ -1465,7 +1465,7 @@ TEST_P(TableViewTest, SelectionNoSelectOnRemove) {
 }
 
 // No touch on desktop Mac. Tracked in http://crbug.com/445520.
-#if !defined(OS_APPLE)
+#if !defined(OS_MAC)
 // Verifies selection works by way of a gesture.
 TEST_P(TableViewTest, SelectOnTap) {
   // Initially no selection.

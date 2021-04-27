@@ -13,7 +13,7 @@
 #include "ui/views/examples/examples_window_with_content.h"
 #include "ui/views_content_client/views_content_client.h"
 
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
 #include "sandbox/mac/seatbelt_exec.h"
 #endif
 
@@ -69,7 +69,7 @@ int main(int argc, const char** argv) {
   if (views::examples::CheckCommandLineUsage())
     return 0;
 
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   // ViewsContentClient expects a const char** argv and
   // CreateFromArgumentsResult expects a regular char** argv. Given this is a

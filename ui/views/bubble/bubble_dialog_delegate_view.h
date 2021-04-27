@@ -21,7 +21,7 @@
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
 #include "ui/base/cocoa/bubble_closer.h"
 #endif
 
@@ -351,7 +351,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
   // Pointer to this bubble's ClientView.
   ClientView* client_view_ = nullptr;
 
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
   // Special handler for close_on_deactivate() on Mac. Window (de)activation is
   // suppressed by the WindowServer when clicking rapidly, so the bubble must
   // monitor clicks as well for the desired behavior.

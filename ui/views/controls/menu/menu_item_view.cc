@@ -53,9 +53,9 @@
 #include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
 #include "ui/views/accessibility/view_accessibility.h"
-#endif  //  defined(OS_APPLE)
+#endif  //  defined(OS_MAC)
 
 namespace views {
 
@@ -406,7 +406,7 @@ SubmenuView* MenuItemView::CreateSubmenu() {
   if (!submenu_) {
     submenu_ = new SubmenuView(this);
 
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
     // All MenuItemViews of Type kSubMenu have a respective SubmenuView.
     // However, in the Views hierarchy, this SubmenuView is not a child of the
     // MenuItemView. This confuses VoiceOver, because it expects the submenu
@@ -416,7 +416,7 @@ SubmenuView* MenuItemView::CreateSubmenu() {
         std::make_unique<AXVirtualView>();
     virtual_child->GetCustomData().role = ax::mojom::Role::kMenu;
     GetViewAccessibility().AddVirtualChildView(std::move(virtual_child));
-#endif  //  defined(OS_APPLE)
+#endif  //  defined(OS_MAC)
 
     // Initialize the submenu indicator icon (arrow).
     submenu_arrow_image_view_ = AddChildView(std::make_unique<ImageView>());

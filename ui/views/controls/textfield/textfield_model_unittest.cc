@@ -236,7 +236,7 @@ TEST_F(TextfieldModelTest, EditString_ComplexScript) {
   model.SetText(u"ABC\xFF80\xFF9E", 0);
   model.MoveCursorTo(model.text().length());
   model.Backspace();
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
   // On Mac, the entire cluster should be deleted to match
   // NSTextField behavior.
   EXPECT_EQ(u"ABC", model.text());
@@ -251,7 +251,7 @@ TEST_F(TextfieldModelTest, EditString_ComplexScript) {
   model.SetText(u"\U0001F466\U0001F3FE", 0);
   model.MoveCursorTo(model.text().length());
   model.Backspace();
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
   // On Mac, the entire emoji should be deleted to match NSTextField
   // behavior.
   EXPECT_EQ(u"", model.text());

@@ -287,7 +287,7 @@ TEST_P(SliderTest, NukeAllowedValues) {
 }
 
 // No touch on desktop Mac. Tracked in http://crbug.com/445520.
-#if !defined(OS_APPLE) || defined(USE_AURA)
+#if !defined(OS_MAC) || defined(USE_AURA)
 
 // Test the slider location after a tap gesture.
 TEST_P(SliderTest, SliderValueForTapGesture) {
@@ -460,7 +460,7 @@ TEST_P(SliderTest, SliderRaisesA11yEvents) {
   EXPECT_EQ(1, ax_counter.GetCount(ax::mojom::Event::kValueChanged));
 }
 
-#endif  // !defined(OS_APPLE) || defined(USE_AURA)
+#endif  // !defined(OS_MAC) || defined(USE_AURA)
 
 INSTANTIATE_TEST_SUITE_P(All,
                          SliderTest,

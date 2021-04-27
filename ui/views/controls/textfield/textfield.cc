@@ -87,7 +87,7 @@
 #include "ui/wm/core/ime_util_chromeos.h"
 #endif
 
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
 #include "ui/base/cocoa/defaults_utils.h"
 #include "ui/base/cocoa/secure_password_input.h"
 #endif
@@ -211,7 +211,7 @@ base::TimeDelta Textfield::GetCaretBlinkInterval() {
                ? base::TimeDelta()
                : base::TimeDelta::FromMilliseconds(system_value);
   }
-#elif defined(OS_APPLE)
+#elif defined(OS_MAC)
   base::TimeDelta system_value;
   if (ui::TextInsertionCaretBlinkPeriod(&system_value))
     return system_value;
@@ -242,7 +242,7 @@ Textfield::Textfield()
   if (use_focus_ring_)
     focus_ring_ = FocusRing::Install(this);
 
-#if !defined(OS_APPLE)
+#if !defined(OS_MAC)
   // Do not map accelerators on Mac. E.g. They might not reflect custom
   // keybindings that a user has set. But also on Mac, these commands dispatch
   // via the "responder chain" when the OS searches through menu items in the
@@ -1079,11 +1079,11 @@ void Textfield::OnFocus() {
   if (focus_reason_ == ui::TextInputClient::FOCUS_REASON_NONE)
     focus_reason_ = ui::TextInputClient::FOCUS_REASON_OTHER;
 
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
   if (text_input_type_ == ui::TEXT_INPUT_TYPE_PASSWORD)
     password_input_enabler_ =
         std::make_unique<ui::ScopedPasswordInputEnabler>();
-#endif  // defined(OS_APPLE)
+#endif  // defined(OS_MAC)
 
   GetRenderText()->set_focused(true);
   if (GetInputMethod())
@@ -1118,9 +1118,9 @@ void Textfield::OnBlur() {
   SchedulePaint();
   View::OnBlur();
 
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
   password_input_enabler_.reset();
-#endif  // defined(OS_APPLE)
+#endif  // defined(OS_MAC)
 }
 
 gfx::Point Textfield::GetKeyboardContextMenuLocation() {
@@ -1732,7 +1732,7 @@ bool Textfield::IsTextEditCommandEnabled(ui::TextEditCommand command) const {
     case ui::TextEditCommand::SCROLL_PAGE_UP:
 // On Mac, the textfield should respond to Up/Down arrows keys and
 // PageUp/PageDown.
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
       return true;
 #else
       return GetRenderText()->multiline();
@@ -2163,7 +2163,7 @@ ui::TextEditCommand Textfield::GetCommandForKeyEvent(
     return ui::TextEditCommand::INVALID_COMMAND;
 
   const bool shift = event.IsShiftDown();
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
   const bool command = event.IsCommandDown();
 #endif
   const bool control = event.IsControlDown() || event.IsCommandDown();
@@ -2214,7 +2214,7 @@ ui::TextEditCommand Textfield::GetCommandForKeyEvent(
         return ui::TextEditCommand::
             MOVE_TO_BEGINNING_OF_LINE_AND_MODIFY_SELECTION;
       }
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
       return ui::TextEditCommand::SCROLL_TO_BEGINNING_OF_DOCUMENT;
 #else
       return ui::TextEditCommand::MOVE_TO_BEGINNING_OF_LINE;
@@ -2222,13 +2222,13 @@ ui::TextEditCommand Textfield::GetCommandForKeyEvent(
     case ui::VKEY_END:
       if (shift)
         return ui::TextEditCommand::MOVE_TO_END_OF_LINE_AND_MODIFY_SELECTION;
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
       return ui::TextEditCommand::SCROLL_TO_END_OF_DOCUMENT;
 #else
       return ui::TextEditCommand::MOVE_TO_END_OF_LINE;
 #endif
     case ui::VKEY_UP:
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
       if (control && shift) {
         return ui::TextEditCommand::
             MOVE_PARAGRAPH_BACKWARD_AND_MODIFY_SELECTION;
@@ -2244,7 +2244,7 @@ ui::TextEditCommand Textfield::GetCommandForKeyEvent(
                    : ui::TextEditCommand::INVALID_COMMAND;
 #endif
     case ui::VKEY_DOWN:
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
       if (control && shift) {
         return ui::TextEditCommand::MOVE_PARAGRAPH_FORWARD_AND_MODIFY_SELECTION;
       }

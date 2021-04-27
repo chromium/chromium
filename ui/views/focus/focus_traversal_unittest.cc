@@ -625,7 +625,7 @@ TEST_F(FocusTraversalTest, NormalTraversal) {
   AdvanceEntireFocusLoop(kTraversalIDs, true);
 }
 
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
 // Test focus traversal with full keyboard access off on Mac.
 TEST_F(FocusTraversalTest, NormalTraversalMac) {
   GetFocusManager()->SetKeyboardAccessible(false);
@@ -681,7 +681,7 @@ TEST_F(FocusTraversalTest, FullKeyboardToggle) {
   EXPECT_EQ(THUMBNAIL_CONTAINER_ID,
             GetFocusManager()->GetFocusedView()->GetID());
 }
-#endif  // OS_APPLE
+#endif  // OS_MAC
 
 TEST_F(FocusTraversalTest, TraversalWithNonEnabledViews) {
   const int kDisabledIDs[] = {

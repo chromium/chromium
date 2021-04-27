@@ -34,7 +34,7 @@ class VIEWS_EXPORT ViewsTextServicesContextMenuBase
   bool SupportsCommand(int command_id) const override;
 
  protected:
-#if defined(OS_APPLE) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
   Textfield* client() { return client_; }
   const Textfield* client() const { return client_; }
 #endif

@@ -22,7 +22,7 @@
 #include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/activation_delegate.h"
 
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
 #error This file must not be included on macOS; Chromium Mac doesn't use Aura.
 #endif
 
