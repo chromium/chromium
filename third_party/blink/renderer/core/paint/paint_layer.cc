@@ -1274,10 +1274,6 @@ void PaintLayer::UpdateAncestorDependentCompositingInputs(
   ancestor_dependent_compositing_inputs_->clip_parent = clip_parent;
   ancestor_dependent_compositing_inputs_->nearest_contained_layout_layer =
       nearest_contained_layout_layer;
-  ancestor_dependent_compositing_inputs_->clipped_absolute_bounding_box =
-      IntRect();
-  ancestor_dependent_compositing_inputs_->unclipped_absolute_bounding_box =
-      IntRect();
   ancestor_dependent_compositing_inputs_->clipping_container =
       clipping_container;
   needs_ancestor_dependent_compositing_inputs_update_ = false;

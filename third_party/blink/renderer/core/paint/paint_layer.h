@@ -808,18 +808,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     // better isolation.
     Member<const PaintLayer> nearest_contained_layout_layer = nullptr;
 
-    // These two boxes do not include any applicable scroll offset of the
-    // root PaintLayer. Note that 'absolute' here is potentially misleading as
-    // the actual coordinate system depends on if this layer is affected by the
-    // viewport's scroll offset or not. For content that is not affected by the
-    // viewport scroll offsets, this ends up being a rect in viewport coords.
-    // For content that is affected by the viewport's scroll offset this
-    // coordinate system is in absolute coords.
-    // Note: This stores LocalBoundingBoxForCompositingOverlapTest and not the
-    // expanded bounds (ExpandedBoundingBoxForCompositingOverlapTest).
-    IntRect clipped_absolute_bounding_box;
-    IntRect unclipped_absolute_bounding_box;
-
     Member<const LayoutBoxModelObject> clipping_container;
   };
 
