@@ -49,7 +49,6 @@ class TileServiceSchedulerImpl : public TileServiceScheduler, public LogSource {
   std::unique_ptr<net::BackoffEntry> GetBackoff();
   void AddBackoff();
   void ResetBackoff();
-  void MaximizeBackoff();
   int64_t GetDelaysFromBackoff();
   void GetInstantTaskWindow(int64_t* start_time_ms,
                             int64_t* end_time_ms,

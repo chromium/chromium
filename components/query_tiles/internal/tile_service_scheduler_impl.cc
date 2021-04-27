@@ -67,6 +67,7 @@ void TileServiceSchedulerImpl::OnFetchStarted() {
 }
 
 void TileServiceSchedulerImpl::OnFetchCompleted(TileInfoRequestStatus status) {
+  auto first_schedule_time = prefs_->GetTime(kFirstScheduleTimeKey);
   MarkFirstRunFinished();
   fetcher_status_ = status;
 
@@ -75,8 +76,7 @@ void TileServiceSchedulerImpl::OnFetchCompleted(TileInfoRequestStatus status) {
 
   // If this task was marked at first attempting flow, record the duration, and
   // mark the flow is finished now.
-  if (IsDuringFirstFlow()) {
-    auto first_schedule_time = prefs_->GetTime(kFirstScheduleTimeKey);
+  if (first_schedule_time != base::Time()) {
     auto hours_past = (clock_->Now() - first_schedule_time).InHours();
     if (hours_past >= 0) {
       stats::RecordFirstFetchFlowDuration(hours_past);
@@ -84,8 +84,7 @@ void TileServiceSchedulerImpl::OnFetchCompleted(TileInfoRequestStatus status) {
   }
 
   if (status == TileInfoRequestStatus::kShouldSuspend) {
-    MaximizeBackoff();
-    ScheduleTask(false);
+    ResetBackoff();
     is_suspend_ = true;
   } else if (status == TileInfoRequestStatus::kFailure) {
     AddBackoff();
@@ -125,8 +124,7 @@ void TileServiceSchedulerImpl::OnTileManagerInitialized(
     ScheduleTask(true);
     MarkFirstRunScheduled();
   } else if (status == TileGroupStatus::kFailureDbOperation) {
-    MaximizeBackoff();
-    ScheduleTask(false);
+    ResetBackoff();
     is_suspend_ = true;
   }
   stats::RecordTileGroupStatus(status);
@@ -190,15 +188,6 @@ void TileServiceSchedulerImpl::AddBackoff() {
 void TileServiceSchedulerImpl::ResetBackoff() {
   std::unique_ptr<net::BackoffEntry> current = GetBackoff();
   current->Reset();
-  UpdateBackoff(current.get());
-}
-
-void TileServiceSchedulerImpl::MaximizeBackoff() {
-  std::unique_ptr<net::BackoffEntry> current = GetBackoff();
-  current->Reset();
-  current->SetCustomReleaseTime(
-      tick_clock_->NowTicks() +
-      base::TimeDelta::FromMilliseconds(backoff_policy_->maximum_backoff_ms));
   UpdateBackoff(current.get());
 }
 
