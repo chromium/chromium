@@ -20,7 +20,7 @@ export function keydown(element, key) {
 
 /**
  * Asserts the computed style value for an element.
- * @param {!HTMLElement} element The element.
+ * @param {!Element} element The element.
  * @param {string} name The name of the style to assert.
  * @param {string} expected The expected style value.
  */
@@ -31,7 +31,7 @@ export function assertStyle(element, name, expected) {
 
 /**
  * Asserts the computed style for an element is not value.
- * @param {!HTMLElement} element The element.
+ * @param {!Element} element The element.
  * @param {string} name The name of the style to assert.
  * @param {string} not The value the style should not be.
  */

@@ -4,10 +4,10 @@
 
 import {$$, Module, ModuleRegistry, ModulesElement, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
 import {fakeMetricsPrivate, MetricsTracker} from '../metrics_test_support.js';
-import {createMock} from '../test_support.js';
+import {assertNotStyle, assertStyle, createMock} from '../test_support.js';
 
 /** @return {!TestBrowserProxy} */
 function installMockHandler() {
@@ -79,6 +79,12 @@ suite('NewTabPageModulesModulesTest', () => {
       const moduleWrappers =
           modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper');
       assertEquals(2, moduleWrappers.length);
+      if (visible) {
+        assertNotStyle(moduleWrappers[0], 'display', 'none');
+      } else {
+        assertStyle(moduleWrappers[0], 'display', 'none');
+      }
+      assertStyle(moduleWrappers[1], 'display', 'none');
       const histogram = 'NewTabPage.Modules.EnabledOnNTPLoad';
       assertEquals(1, metrics.count(`${histogram}.foo`, visible));
       assertEquals(1, metrics.count(`${histogram}.bar`, false));
@@ -100,11 +106,14 @@ suite('NewTabPageModulesModulesTest', () => {
         element: document.createElement('div'),
       },
     ]);
+    callbackRouterRemote.setDisabledModules(false, []);
+    await callbackRouterRemote.$.flushForTesting();
 
     // Assert.
     const moduleWrappers =
         modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper');
     assertEquals(1, moduleWrappers.length);
+    assertNotStyle(moduleWrappers[0], 'display', 'none');
     assertFalse($$(modulesElement, '#removeModuleToast').open);
 
     // Act.
@@ -120,6 +129,7 @@ suite('NewTabPageModulesModulesTest', () => {
     }));
 
     // Assert.
+    assertStyle(moduleWrappers[0], 'display', 'none');
     assertTrue($$(modulesElement, '#removeModuleToast').open);
     assertEquals(
         'Foo',
@@ -132,6 +142,7 @@ suite('NewTabPageModulesModulesTest', () => {
     $$(modulesElement, '#undoRemoveModuleButton').click();
 
     // Assert.
+    assertNotStyle(moduleWrappers[0], 'display', 'none');
     assertFalse($$(modulesElement, '#removeModuleToast').open);
     assertTrue(restoreCalled);
     assertEquals('foo', handler.getArgs('onRestoreModule')[0]);
@@ -149,11 +160,14 @@ suite('NewTabPageModulesModulesTest', () => {
       },
       element: document.createElement('div'),
     }]);
+    callbackRouterRemote.setDisabledModules(false, []);
+    await callbackRouterRemote.$.flushForTesting();
 
     // Assert.
     const moduleWrappers =
         modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper');
     assertEquals(1, moduleWrappers.length);
+    assertNotStyle(moduleWrappers[0], 'display', 'none');
     assertFalse($$(modulesElement, '#removeModuleToast').open);
 
     // Act.
@@ -169,6 +183,14 @@ suite('NewTabPageModulesModulesTest', () => {
     }));
 
     // Assert.
+    assertDeepEquals(['foo', true], handler.getArgs('setModuleDisabled')[0]);
+
+    // Act.
+    callbackRouterRemote.setDisabledModules(false, ['foo']);
+    await callbackRouterRemote.$.flushForTesting();
+
+    // Assert.
+    assertStyle(moduleWrappers[0], 'display', 'none');
     assertTrue($$(modulesElement, '#removeModuleToast').open);
     assertEquals(
         'Foo',
@@ -182,6 +204,14 @@ suite('NewTabPageModulesModulesTest', () => {
     $$(modulesElement, '#undoRemoveModuleButton').click();
 
     // Assert.
+    assertDeepEquals(['foo', false], handler.getArgs('setModuleDisabled')[1]);
+
+    // Act.
+    callbackRouterRemote.setDisabledModules(false, []);
+    await callbackRouterRemote.$.flushForTesting();
+
+    // Assert.
+    assertNotStyle(moduleWrappers[0], 'display', 'none');
     assertFalse($$(modulesElement, '#removeModuleToast').open);
     assertTrue(restoreCalled);
     assertEquals(1, metrics.count('NewTabPage.Modules.Enabled', 'foo'));
