@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/extensions/extension_context_menu_controller.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/notification_source.h"
@@ -86,6 +87,12 @@ gfx::Rect ToolbarActionView::GetAnchorBoundsInScreen() const {
   gfx::Rect bounds = GetBoundsInScreen();
   bounds.Inset(GetToolbarInkDropInsets(this));
   return bounds;
+}
+
+void ToolbarActionView::OnThemeChanged() {
+  MenuButton::OnThemeChanged();
+
+  ToolbarButton::UpdateFocusRingColor(this, focus_ring());
 }
 
 std::unique_ptr<LabelButtonBorder> ToolbarActionView::CreateDefaultBorder()
@@ -215,6 +222,8 @@ void ToolbarActionView::OnDragDone() {
 
 void ToolbarActionView::AddedToWidget() {
   MenuButton::AddedToWidget();
+
+  ToolbarButton::UpdateFocusRingColor(this, focus_ring());
 
   // This cannot happen until there's a focus controller, which lives on the
   // widget.

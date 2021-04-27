@@ -47,7 +47,7 @@ class ToolbarActionView : public views::MenuButton,
     virtual gfx::Size GetToolbarActionSize() = 0;
 
    protected:
-    ~Delegate() override {}
+    ~Delegate() override = default;
   };
 
   ToolbarActionView(ToolbarActionViewController* view_controller,
@@ -58,6 +58,7 @@ class ToolbarActionView : public views::MenuButton,
 
   // views::MenuButton:
   gfx::Rect GetAnchorBoundsInScreen() const override;
+  void OnThemeChanged() override;
   std::unique_ptr<views::LabelButtonBorder> CreateDefaultBorder()
       const override;
   bool IsTriggerableEvent(const ui::Event& event) override;

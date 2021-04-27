@@ -1113,6 +1113,7 @@ void Widget::SetNativeTheme(ui::NativeTheme* native_theme) {
   native_theme_observation_.Reset();
   if (native_theme)
     native_theme_observation_.Observe(native_theme);
+  PropagateNativeThemeChanged();
 }
 
 int Widget::GetX() const {
