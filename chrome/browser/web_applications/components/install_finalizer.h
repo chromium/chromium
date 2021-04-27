@@ -19,6 +19,10 @@ namespace content {
 class WebContents;
 }
 
+namespace webapps {
+enum class WebappUninstallSource;
+}
+
 namespace web_app {
 
 enum class ExternalInstallSource;
@@ -67,28 +71,33 @@ class InstallFinalizer {
                               content::WebContents* web_contents,
                               InstallFinalizedCallback callback) = 0;
 
-  // Removes |external_install_source| from |app_id|. If no more interested
+  // Removes |webapp_uninstall_source| from |app_id|. If no more interested
   // sources left, deletes the app from disk and registrar.
   virtual void UninstallExternalWebApp(
       const AppId& app_id,
-      ExternalInstallSource external_install_source,
+      webapps::WebappUninstallSource webapp_uninstall_source,
       UninstallWebAppCallback callback) = 0;
 
   // Removes the external app for |app_url| from disk and registrar. Fails if
   // there is no installed external app for |app_url|. Virtual for testing.
   virtual void UninstallExternalWebAppByUrl(
       const GURL& app_url,
-      ExternalInstallSource external_install_source,
+      webapps::WebappUninstallSource webapp_uninstall_source,
       UninstallWebAppCallback callback);
 
-  virtual bool CanUserUninstallExternalApp(const AppId& app_id) const = 0;
-  // If external app is synced, uninstalls it from sync and from all devices.
-  virtual void UninstallExternalAppByUser(const AppId& app_id,
-                                          UninstallWebAppCallback callback) = 0;
+  virtual bool CanUserUninstallWebApp(const AppId& app_id) const = 0;
+
+  // Removes |webapp_uninstall_source| from |app_id|. If no more interested
+  // sources left, deletes the app from disk and registrar.
+  virtual void UninstallWebApp(
+      const AppId& app_id,
+      webapps::WebappUninstallSource webapp_uninstall_source,
+      UninstallWebAppCallback callback) = 0;
+
   // Returns true if the app with |app_id| was previously uninstalled by the
   // user. For example, if a user uninstalls a default app ('default apps' are
   // considered external apps), then this will return true.
-  virtual bool WasExternalAppUninstalledByUser(const AppId& app_id) const = 0;
+  virtual bool WasPreinstalledWebAppUninstalled(const AppId& app_id) const = 0;
 
   // |virtual| for testing.
   virtual bool CanReparentTab(const AppId& app_id, bool shortcut_created) const;

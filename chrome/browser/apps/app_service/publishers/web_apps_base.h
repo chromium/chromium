@@ -38,6 +38,10 @@ class WebAppProvider;
 class WebAppRegistrar;
 }  // namespace web_app
 
+namespace webapps {
+enum class WebappUninstallSource;
+}  // namespace webapps
+
 namespace apps {
 
 struct AppLaunchParams;
@@ -95,6 +99,10 @@ class WebAppsBase : public apps::PublisherBase,
   const web_app::WebAppRegistrar* GetRegistrar() const;
 
   apps::mojom::AppType app_type() { return app_type_; }
+
+  static webapps::WebappUninstallSource
+  ConvertUninstallSourceToWebAppUninstallSource(
+      apps::mojom::UninstallSource uninstall_source);
 
  private:
   void Initialize(const mojo::Remote<apps::mojom::AppService>& app_service);

@@ -417,8 +417,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   GURL url = GetAppURL();
   UpdateCheckResultAwaiter awaiter(browser(), url);
   ui_test_utils::NavigateToURL(browser(), url);
-  GetProvider().install_finalizer().UninstallExternalAppByUser(
-      app_id, base::DoNothing());
+  GetProvider().install_finalizer().UninstallWebApp(
+      app_id, webapps::WebappUninstallSource::kAppMenu, base::DoNothing());
   EXPECT_EQ(std::move(awaiter).AwaitNextResult(),
             ManifestUpdateResult::kAppUninstalled);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
@@ -789,7 +789,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   OverrideManifest(kManifestTemplate, {"blue", kInstallableIconList});
   AppId app_id = InstallPolicyApp();
   EXPECT_FALSE(
-      GetProvider().install_finalizer().CanUserUninstallExternalApp(app_id));
+      GetProvider().install_finalizer().CanUserUninstallWebApp(app_id));
 
   OverrideManifest(kManifestTemplate, {"red", kInstallableIconList});
   EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
@@ -801,7 +801,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   // Policy installed apps should continue to be not uninstallable by the user
   // after updating.
   EXPECT_FALSE(
-      GetProvider().install_finalizer().CanUserUninstallExternalApp(app_id));
+      GetProvider().install_finalizer().CanUserUninstallWebApp(app_id));
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,

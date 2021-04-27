@@ -184,7 +184,8 @@ void ExternallyManagedAppInstallTask::UninstallPlaceholderApp(
 
   // Otherwise, uninstall the placeholder app.
   install_finalizer_->UninstallExternalWebAppByUrl(
-      install_options_.install_url, install_options_.install_source,
+      install_options_.install_url,
+      webapps::WebappUninstallSource::kPlaceholderReplacement,
       base::BindOnce(&ExternallyManagedAppInstallTask::OnPlaceholderUninstalled,
                      weak_ptr_factory_.GetWeakPtr(), web_contents,
                      std::move(result_callback)));

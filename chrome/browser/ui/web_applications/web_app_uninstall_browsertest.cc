@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/sessions/core/tab_restore_service.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -42,9 +43,10 @@ class WebAppUninstallBrowserTest : public WebAppControllerBrowserTest {
         WebAppProviderBase::GetProviderBase(profile());
     base::RunLoop run_loop;
 
-    DCHECK(provider->install_finalizer().CanUserUninstallExternalApp(app_id));
-    provider->install_finalizer().UninstallExternalAppByUser(
-        app_id, base::BindLambdaForTesting([&](bool uninstalled) {
+    DCHECK(provider->install_finalizer().CanUserUninstallWebApp(app_id));
+    provider->install_finalizer().UninstallWebApp(
+        app_id, webapps::WebappUninstallSource::kAppMenu,
+        base::BindLambdaForTesting([&](bool uninstalled) {
           EXPECT_TRUE(uninstalled);
           run_loop.Quit();
         }));
@@ -152,9 +154,9 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest, TwoUninstallCalls) {
   WebAppProviderBase* const provider =
       WebAppProviderBase::GetProviderBase(profile());
   EXPECT_TRUE(provider->registrar().IsInstalled(app_id));
-  DCHECK(provider->install_finalizer().CanUserUninstallExternalApp(app_id));
-  provider->install_finalizer().UninstallExternalAppByUser(app_id,
-                                                           base::DoNothing());
+  DCHECK(provider->install_finalizer().CanUserUninstallWebApp(app_id));
+  provider->install_finalizer().UninstallWebApp(
+      app_id, webapps::WebappUninstallSource::kAppMenu, base::DoNothing());
 
   // Validate that uninstalling flag is set
   auto* app = provider->registrar().AsWebAppRegistrar()->GetAppById(app_id);
@@ -163,8 +165,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest, TwoUninstallCalls) {
 
   // Trigger second uninstall call and wait for result.
   base::RunLoop run_loop;
-  provider->install_finalizer().UninstallExternalAppByUser(
-      app_id,
+  provider->install_finalizer().UninstallWebApp(
+      app_id, webapps::WebappUninstallSource::kAppMenu,
       base::BindLambdaForTesting([&](bool uninstalled) { run_loop.Quit(); }));
   run_loop.Run();
   EXPECT_FALSE(provider->registrar().IsInstalled(app_id));

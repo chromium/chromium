@@ -20,6 +20,7 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -44,7 +45,7 @@ WebAppMenuModel::~WebAppMenuModel() {}
 bool WebAppMenuModel::IsCommandIdEnabled(int command_id) const {
   switch (command_id) {
     case kUninstallAppCommandId:
-      return browser()->app_controller()->CanUninstall();
+      return browser()->app_controller()->CanUserUninstall();
     case kExtensionsMenuCommandId:
       return base::FeatureList::IsEnabled(
                  features::kDesktopPWAsElidedExtensionsMenu) &&
@@ -71,7 +72,8 @@ void WebAppMenuModel::ExecuteCommand(int command_id, int event_flags) {
   switch (command_id) {
     case kUninstallAppCommandId:
       LogMenuAction(MENU_ACTION_UNINSTALL_APP);
-      browser()->app_controller()->Uninstall();
+      browser()->app_controller()->Uninstall(
+          webapps::WebappUninstallSource::kAppMenu);
       break;
     case kExtensionsMenuCommandId:
       browser()->window()->GetExtensionsContainer()->ToggleExtensionsMenu();

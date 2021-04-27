@@ -42,6 +42,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
@@ -175,9 +176,10 @@ class TestExternallyManagedAppInstallFinalizer : public InstallFinalizer {
     NOTREACHED();
   }
 
-  void UninstallExternalWebApp(const AppId& app_id,
-                               ExternalInstallSource external_install_source,
-                               UninstallWebAppCallback callback) override {
+  void UninstallExternalWebApp(
+      const AppId& app_id,
+      webapps::WebappUninstallSource external_install_source,
+      UninstallWebAppCallback callback) override {
     registrar_->RemoveExternalApp(app_id);
 
     base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -186,7 +188,7 @@ class TestExternallyManagedAppInstallFinalizer : public InstallFinalizer {
 
   void UninstallExternalWebAppByUrl(
       const GURL& app_url,
-      ExternalInstallSource external_install_source,
+      webapps::WebappUninstallSource external_install_source,
       UninstallWebAppCallback callback) override {
     DCHECK(base::Contains(next_uninstall_external_web_app_results_, app_url));
     uninstall_external_web_app_urls_.push_back(app_url);
@@ -207,17 +209,18 @@ class TestExternallyManagedAppInstallFinalizer : public InstallFinalizer {
             }));
   }
 
-  bool CanUserUninstallExternalApp(const AppId& app_id) const override {
+  bool CanUserUninstallWebApp(const AppId& app_id) const override {
     NOTIMPLEMENTED();
     return false;
   }
 
-  void UninstallExternalAppByUser(const AppId& app_id,
-                                  UninstallWebAppCallback callback) override {
+  void UninstallWebApp(const AppId& app_id,
+                       webapps::WebappUninstallSource uninstall_source,
+                       UninstallWebAppCallback callback) override {
     NOTIMPLEMENTED();
   }
 
-  bool WasExternalAppUninstalledByUser(const AppId& app_id) const override {
+  bool WasPreinstalledWebAppUninstalled(const AppId& app_id) const override {
     NOTIMPLEMENTED();
     return false;
   }

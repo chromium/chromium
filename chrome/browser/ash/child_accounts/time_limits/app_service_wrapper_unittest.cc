@@ -186,7 +186,8 @@ class AppServiceWrapperTest : public ::testing::Test {
       WebAppProviderBase::GetProviderBase(&profile_)
           ->install_finalizer()
           .UninstallExternalWebApp(
-              app_id.app_id(), web_app::ExternalInstallSource::kExternalDefault,
+              app_id.app_id(),
+              webapps::WebappUninstallSource::kExternalPreinstalled,
               base::BindLambdaForTesting([&](bool uninstalled) {
                 EXPECT_TRUE(uninstalled);
                 run_loop.Quit();

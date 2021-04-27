@@ -567,4 +567,22 @@ void WebAppsBase::StartPublishingWebApps(
   subscribers_.Add(std::move(subscriber));
 }
 
+// static.
+webapps::WebappUninstallSource
+WebAppsBase::ConvertUninstallSourceToWebAppUninstallSource(
+    apps::mojom::UninstallSource uninstall_source) {
+  switch (uninstall_source) {
+    case apps::mojom::UninstallSource::kAppList:
+      return webapps::WebappUninstallSource::kAppList;
+    case apps::mojom::UninstallSource::kAppManagement:
+      return webapps::WebappUninstallSource::kAppManagement;
+    case apps::mojom::UninstallSource::kShelf:
+      return webapps::WebappUninstallSource::kShelf;
+    case apps::mojom::UninstallSource::kMigration:
+      return webapps::WebappUninstallSource::kMigration;
+    case apps::mojom::UninstallSource::kUnknown:
+      return webapps::WebappUninstallSource::kUnknown;
+  }
+}
+
 }  // namespace apps

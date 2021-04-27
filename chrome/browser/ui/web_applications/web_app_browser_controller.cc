@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "ui/gfx/favicon_size.h"
@@ -209,17 +210,17 @@ std::u16string WebAppBrowserController::GetFormattedUrlOrigin() const {
   return FormatUrlOrigin(GetAppStartUrl());
 }
 
-bool WebAppBrowserController::CanUninstall() const {
+bool WebAppBrowserController::CanUserUninstall() const {
   return WebAppUiManagerImpl::Get(browser()->profile())
       ->dialog_manager()
-      .CanUninstallWebApp(GetAppId());
+      .CanUserUninstallWebApp(GetAppId());
 }
 
-void WebAppBrowserController::Uninstall() {
+void WebAppBrowserController::Uninstall(
+    webapps::WebappUninstallSource webapp_uninstall_source) {
   WebAppUiManagerImpl::Get(browser()->profile())
       ->dialog_manager()
-      .UninstallWebApp(GetAppId(),
-                       WebAppDialogManager::UninstallSource::kAppMenu,
+      .UninstallWebApp(GetAppId(), webapps::WebappUninstallSource::kAppMenu,
                        browser()->window(), base::DoNothing());
 }
 

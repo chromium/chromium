@@ -69,7 +69,7 @@ void ExternallyManagedAppManagerImpl::UninstallApps(
     const UninstallCallback& callback) {
   for (auto& url : uninstall_urls) {
     finalizer()->UninstallExternalWebAppByUrl(
-        url, install_source,
+        url, ConvertExternalInstallSourceToUninstallSource(install_source),
         base::BindOnce(
             [](const UninstallCallback& callback, const GURL& app_url,
                bool uninstalled) { callback.Run(app_url, uninstalled); },
@@ -193,7 +193,7 @@ void ExternallyManagedAppManagerImpl::MaybeStartNext() {
     // The app is not installed, but it might have been previously uninstalled
     // by the user. If that's the case, don't install it again unless
     // |override_previous_user_uninstall| is true.
-    if (finalizer()->WasExternalAppUninstalledByUser(app_id.value()) &&
+    if (finalizer()->WasPreinstalledWebAppUninstalled(app_id.value()) &&
         !install_options.override_previous_user_uninstall) {
       std::move(front->callback)
           .Run(install_options.install_url,

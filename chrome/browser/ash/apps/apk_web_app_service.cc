@@ -25,6 +25,7 @@
 #include "components/arc/session/connection_holder.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "url/gurl.h"
 
 namespace {
@@ -181,7 +182,7 @@ void ApkWebAppService::UninstallWebApp(const web_app::AppId& web_app_id) {
 
   DCHECK(provider_);
   provider_->install_finalizer().UninstallExternalWebApp(
-      web_app_id, web_app::ExternalInstallSource::kArc, base::DoNothing());
+      web_app_id, webapps::WebappUninstallSource::kArc, base::DoNothing());
 }
 
 void ApkWebAppService::UpdateShelfPin(

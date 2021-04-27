@@ -81737,6 +81737,24 @@ others/histograms.xml -->
   <int value="2" label="Dialog canceled"/>
 </enum>
 
+<enum name="WebappUninstallSource">
+  <int value="0" label="Unknown surface, potentially in ChromeOS"/>
+  <int value="1" label="Menu item from the 3-dot menu of a WebApp window"/>
+  <int value="2" label="Context menu for a WebApp in chrome://apps"/>
+  <int value="3" label="Via OS Settings or Controls"/>
+  <int value="4" label="Uninstalled from Sync"/>
+  <int value="5" label="App management surface, currently ChromeOS-only"/>
+  <int value="6" label="Migration"/>
+  <int value="7" label="App List (Launcher in ChromeOS)"/>
+  <int value="8" label="Shelf (in ChromeOS)"/>
+  <int value="9" label="Internally managed pre-installed app management"/>
+  <int value="10" label="Externally managed pre-installed app management"/>
+  <int value="11" label="Enterprise policy app management"/>
+  <int value="12" label="System app management on ChromeOS"/>
+  <int value="13" label="Placeholder app management for preinstalled apps"/>
+  <int value="14" label="Externally managed Arc apps"/>
+</enum>
+
 <enum name="WebAppUrlLoaderResult">
   <int value="0" label="UrlLoaded"/>
   <int value="1" label="RedirectedUrlLoaded"/>

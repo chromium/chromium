@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/extension_system.h"
 
@@ -58,9 +59,10 @@ bool IsAppInstalled(apps::AppServiceProxyBase* proxy, const AppId& app_id) {
 
 #if defined(OS_WIN)
 
-// UninstallWebAppWithDialog handles WebApp uninstallation from the
-// Windows Settings.
-void UninstallWebAppWithDialog(const AppId& app_id, Profile* profile) {
+// UninstallWebAppWithDialogFromStartupSwitch handles WebApp uninstallation from
+// the Windows Settings.
+void UninstallWebAppWithDialogFromStartupSwitch(const AppId& app_id,
+                                                Profile* profile) {
   auto* provider = WebAppProvider::Get(profile);
   if (!provider->registrar().IsLocallyInstalled(app_id)) {
     // App does not exist and controller is destroyed.
@@ -71,7 +73,7 @@ void UninstallWebAppWithDialog(const AppId& app_id, Profile* profile) {
   // object which ensures the browser stays alive during the WebApp
   // uninstall.
   WebAppUiManagerImpl::Get(profile)->dialog_manager().UninstallWebApp(
-      app_id, WebAppDialogManager::UninstallSource::kOsSettings,
+      app_id, webapps::WebappUninstallSource::kOsSettings,
       gfx::kNullNativeWindow, base::DoNothing());
 }
 
@@ -388,7 +390,8 @@ void WebAppUiManagerImpl::OnBrowserRemoved(Browser* browser) {
 void WebAppUiManagerImpl::UninstallWebAppFromStartupSwitch(
     const AppId& app_id) {
   WebAppProvider::Get(profile_)->on_registry_ready().Post(
-      FROM_HERE, base::BindOnce(&UninstallWebAppWithDialog, app_id, profile_));
+      FROM_HERE, base::BindOnce(&UninstallWebAppWithDialogFromStartupSwitch,
+                                app_id, profile_));
 }
 #endif  //  defined(OS_WIN)
 

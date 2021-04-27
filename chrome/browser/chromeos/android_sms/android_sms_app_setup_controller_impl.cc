@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/url_util.h"
@@ -77,7 +78,7 @@ void AndroidSmsAppSetupControllerImpl::PwaDelegate::RemovePwa(
   }
 
   provider->install_finalizer().UninstallExternalWebApp(
-      app_id, web_app::ExternalInstallSource::kInternalDefault,
+      app_id, webapps::WebappUninstallSource::kInternalPreinstalled,
       std::move(callback));
 }
 

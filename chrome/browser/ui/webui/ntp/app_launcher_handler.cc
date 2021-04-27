@@ -212,8 +212,9 @@ void AppLauncherHandler::CreateWebAppInfo(const web_app::AppId& app_id,
 
   GetWebAppBasicInfo(app_id, registrar, value);
 
-  value->SetBoolean("mayDisable", web_app_provider_->install_finalizer()
-                                      .CanUserUninstallExternalApp(app_id));
+  value->SetBoolean(
+      "mayDisable",
+      web_app_provider_->install_finalizer().CanUserUninstallWebApp(app_id));
   bool is_locally_installed = registrar.IsLocallyInstalled(app_id);
   value->SetBoolean("mayChangeLaunchType", is_locally_installed);
 
@@ -915,7 +916,7 @@ void AppLauncherHandler::HandleUninstallApp(const base::ListValue* args) {
       !IsYoutubeExtension(extension_id)) {
     if (!extension_id_prompting_.empty())
       return;  // Only one prompt at a time.
-    if (!web_app_provider_->install_finalizer().CanUserUninstallExternalApp(
+    if (!web_app_provider_->install_finalizer().CanUserUninstallWebApp(
             extension_id)) {
       LOG(ERROR) << "Attempt to uninstall a webapp that is non-usermanagable "
                  << "was made. App id : " << extension_id;
@@ -934,17 +935,18 @@ void AppLauncherHandler::HandleUninstallApp(const base::ListValue* args) {
     bool dont_confirm = false;
     if (args->GetBoolean(1, &dont_confirm) && dont_confirm) {
       base::AutoReset<bool> auto_reset(&ignore_changes_, true);
-      web_app_provider_->install_finalizer().UninstallExternalAppByUser(
-          extension_id_prompting_, std::move(uninstall_success_callback));
+      web_app_provider_->install_finalizer().UninstallWebApp(
+          extension_id_prompting_, webapps::WebappUninstallSource::kAppsPage,
+          std::move(uninstall_success_callback));
     } else {
       Browser* browser =
           chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
       web_app::WebAppUiManagerImpl::Get(Profile::FromWebUI(web_ui()))
           ->dialog_manager()
-          .UninstallWebApp(
-              extension_id_prompting_,
-              web_app::WebAppDialogManager::UninstallSource::kAppsPage,
-              browser->window(), std::move(uninstall_success_callback));
+          .UninstallWebApp(extension_id_prompting_,
+                           webapps::WebappUninstallSource::kAppsPage,
+                           browser->window(),
+                           std::move(uninstall_success_callback));
     }
     return;
   }

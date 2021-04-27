@@ -184,7 +184,7 @@ std::u16string HostedAppBrowserController::GetFormattedUrlOrigin() const {
                    : std::u16string();
 }
 
-bool HostedAppBrowserController::CanUninstall() const {
+bool HostedAppBrowserController::CanUserUninstall() const {
   if (uninstall_dialog_)
     return false;
 
@@ -197,7 +197,8 @@ bool HostedAppBrowserController::CanUninstall() const {
       ->UserMayModifySettings(extension, nullptr);
 }
 
-void HostedAppBrowserController::Uninstall() {
+void HostedAppBrowserController::Uninstall(
+    webapps::WebappUninstallSource webapp_uninstall_source) {
   const Extension* extension = GetExtension();
   if (!extension)
     return;

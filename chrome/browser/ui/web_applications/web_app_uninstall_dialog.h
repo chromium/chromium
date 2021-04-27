@@ -13,6 +13,10 @@
 
 class Profile;
 
+namespace webapps {
+enum class WebappUninstallSource;
+}
+
 namespace web_app {
 
 // The interface of the uninstall dialog for web apps.
@@ -37,6 +41,7 @@ class WebAppUninstallDialog {
   // Starts the process of showing a confirmation UI.
   virtual void ConfirmUninstall(
       const AppId& app_id,
+      webapps::WebappUninstallSource uninstall_source,
       OnWebAppUninstallDialogClosed closed_callback) = 0;
 
   virtual void SetDialogShownCallbackForTesting(base::OnceClosure callback) = 0;

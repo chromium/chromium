@@ -4,6 +4,7 @@
 
 #include "components/webapps/browser/installable/installable_metrics.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
@@ -15,8 +16,8 @@ namespace webapps {
 // static
 void InstallableMetrics::TrackInstallEvent(WebappInstallSource source) {
   DCHECK(IsReportableInstallSource(source));
-  UMA_HISTOGRAM_ENUMERATION("Webapp.Install.InstallEvent", source,
-                            WebappInstallSource::COUNT);
+  base::UmaHistogramEnumeration("Webapp.Install.InstallEvent", source,
+                                WebappInstallSource::COUNT);
 }
 
 // static
@@ -112,6 +113,11 @@ ServiceWorkerOfflineCapability InstallableMetrics::ConvertFromOfflineCapability(
       return ServiceWorkerOfflineCapability::kServiceWorkerNoOfflineSupport;
   }
   NOTREACHED();
+}
+
+// static
+void InstallableMetrics::TrackUninstallEvent(WebappUninstallSource source) {
+  base::UmaHistogramEnumeration("Webapp.Install.UninstallEvent", source);
 }
 
 }  // namespace webapps

@@ -467,4 +467,28 @@ webapps::WebappInstallSource ConvertExternalInstallSourceToInstallSource(
   return install_source;
 }
 
+webapps::WebappUninstallSource ConvertExternalInstallSourceToUninstallSource(
+    ExternalInstallSource external_install_source) {
+  webapps::WebappUninstallSource uninstall_source;
+  switch (external_install_source) {
+    case ExternalInstallSource::kInternalDefault:
+      uninstall_source = webapps::WebappUninstallSource::kInternalPreinstalled;
+      break;
+    case ExternalInstallSource::kExternalDefault:
+      uninstall_source = webapps::WebappUninstallSource::kExternalPreinstalled;
+      break;
+    case ExternalInstallSource::kExternalPolicy:
+      uninstall_source = webapps::WebappUninstallSource::kExternalPolicy;
+      break;
+    case ExternalInstallSource::kSystemInstalled:
+      uninstall_source = webapps::WebappUninstallSource::kSystemPreinstalled;
+      break;
+    case ExternalInstallSource::kArc:
+      uninstall_source = webapps::WebappUninstallSource::kArc;
+      break;
+  }
+
+  return uninstall_source;
+}
+
 }  // namespace web_app

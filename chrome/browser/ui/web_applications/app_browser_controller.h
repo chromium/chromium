@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "components/url_formatter/url_formatter.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRegion.h"
@@ -131,9 +132,10 @@ class AppBrowserController : public TabStripModelObserver,
   // Safe downcast:
   virtual WebAppBrowserController* AsWebAppBrowserController();
 
-  virtual bool CanUninstall() const;
+  virtual bool CanUserUninstall() const;
 
-  virtual void Uninstall();
+  virtual void Uninstall(
+      webapps::WebappUninstallSource webapp_uninstall_source);
 
   // Returns whether the app is installed (uninstallation may complete within
   // the lifetime of HostedAppBrowserController).

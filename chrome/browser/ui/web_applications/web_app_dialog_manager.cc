@@ -22,62 +22,48 @@ WebAppDialogManager::WebAppDialogManager(Profile* profile)
 
 WebAppDialogManager::~WebAppDialogManager() = default;
 
-bool WebAppDialogManager::CanUninstallWebApp(const AppId& app_id) const {
+bool WebAppDialogManager::CanUserUninstallWebApp(const AppId& app_id) const {
   auto* provider = WebAppProvider::Get(profile_);
   if (!provider)
     return false;
 
-  return provider->install_finalizer().CanUserUninstallExternalApp(app_id);
+  return provider->install_finalizer().CanUserUninstallWebApp(app_id);
 }
 
-void WebAppDialogManager::UninstallWebApp(const AppId& app_id,
-                                          UninstallSource uninstall_source,
-                                          BrowserWindow* parent_window,
-                                          Callback callback) {
+void WebAppDialogManager::UninstallWebApp(
+    const AppId& app_id,
+    webapps::WebappUninstallSource uninstall_source,
+    BrowserWindow* parent_window,
+    Callback callback) {
   UninstallWebApp(app_id, uninstall_source,
                   parent_window ? parent_window->GetNativeWindow() : nullptr,
                   std::move(callback));
 }
 
-void WebAppDialogManager::UninstallWebApp(const AppId& app_id,
-                                          UninstallSource uninstall_source,
-                                          gfx::NativeWindow parent_window,
-                                          Callback callback) {
+void WebAppDialogManager::UninstallWebApp(
+    const AppId& app_id,
+    webapps::WebappUninstallSource uninstall_source,
+    gfx::NativeWindow parent_window,
+    Callback callback) {
   std::unique_ptr<WebAppUninstallDialog> uninstall_dialog =
       WebAppUninstallDialog::Create(profile_,
                                     parent_window ? parent_window : nullptr);
 
   uninstall_dialog->ConfirmUninstall(
-      app_id,
+      app_id, uninstall_source,
       base::BindOnce(&WebAppDialogManager::OnWebAppUninstallDialogClosed,
                      base::Unretained(this), uninstall_dialog.get(),
-                     uninstall_source, std::move(callback)));
+                     std::move(callback)));
 
   dialogs_.insert(std::move(uninstall_dialog));
 }
 
 void WebAppDialogManager::OnWebAppUninstallDialogClosed(
     WebAppUninstallDialog* dialog,
-    UninstallSource uninstall_source,
     Callback callback,
     bool uninstalled) {
   DCHECK(dialogs_.contains(dialog));
   dialogs_.erase(dialog);
-
-  switch (uninstall_source) {
-    case UninstallSource::kAppMenu:
-      base::UmaHistogramBoolean(
-          "WebApp.UninstallDialog.AppMenuUninstallSuccess", uninstalled);
-      break;
-    case UninstallSource::kAppsPage:
-      base::UmaHistogramBoolean(
-          "WebApp.UninstallDialog.AppsPageUninstallSuccess", uninstalled);
-      break;
-    case UninstallSource::kOsSettings:
-      base::UmaHistogramBoolean(
-          "WebApp.UninstallDialog.OsSettingsUninstallSuccess", uninstalled);
-      break;
-  }
 
   std::move(callback).Run(/*success=*/uninstalled);
 }

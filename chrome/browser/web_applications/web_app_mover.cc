@@ -272,8 +272,8 @@ void WebAppMover::OnInstallManifestFetched(
                      std::move(complete_callback_runner),
                      std::move(web_contents), success_accumulator));
   for (const AppId& id : apps_to_uninstall_) {
-    install_finalizer_->UninstallExternalAppByUser(
-        id,
+    install_finalizer_->UninstallWebApp(
+        id, webapps::WebappUninstallSource::kMigration,
         base::BindOnce(
             [](base::OnceClosure done,
                scoped_refptr<base::RefCountedData<bool>> success_accumulator,

@@ -327,9 +327,9 @@ bool IsBrowserOpen(const Browser* test_browser) {
 void UninstallWebApp(Profile* profile, const AppId& app_id) {
   auto* provider = WebAppProviderBase::GetProviderBase(profile);
   DCHECK(provider);
-  DCHECK(provider->install_finalizer().CanUserUninstallExternalApp(app_id));
-  provider->install_finalizer().UninstallExternalAppByUser(app_id,
-                                                           base::DoNothing());
+  DCHECK(provider->install_finalizer().CanUserUninstallWebApp(app_id));
+  provider->install_finalizer().UninstallWebApp(
+      app_id, webapps::WebappUninstallSource::kAppMenu, base::DoNothing());
 }
 
 void UninstallWebAppWithCallback(Profile* profile,
@@ -337,9 +337,9 @@ void UninstallWebAppWithCallback(Profile* profile,
                                  UninstallWebAppCallback callback) {
   auto* provider = WebAppProviderBase::GetProviderBase(profile);
   DCHECK(provider);
-  DCHECK(provider->install_finalizer().CanUserUninstallExternalApp(app_id));
-  provider->install_finalizer().UninstallExternalAppByUser(app_id,
-                                                           std::move(callback));
+  DCHECK(provider->install_finalizer().CanUserUninstallWebApp(app_id));
+  provider->install_finalizer().UninstallWebApp(
+      app_id, webapps::WebappUninstallSource::kAppMenu, std::move(callback));
 }
 
 SkColor ReadAppIconPixel(Profile* profile,

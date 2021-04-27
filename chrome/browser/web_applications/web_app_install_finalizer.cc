@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_icon_generator.h"
+#include "chrome/browser/web_applications/components/web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_app_shortcuts_menu.h"
@@ -86,21 +87,53 @@ Source::Type InferSourceFromMetricsInstallSource(
   }
 }
 
-Source::Type InferSourceFromExternalInstallSource(
-    ExternalInstallSource external_install_source) {
+Source::Type InferSourceFromWebAppUninstallSource(
+    webapps::WebappUninstallSource external_install_source) {
   switch (external_install_source) {
-    case ExternalInstallSource::kInternalDefault:
-    case ExternalInstallSource::kExternalDefault:
+    case webapps::WebappUninstallSource::kAppList:
+    case webapps::WebappUninstallSource::kAppMenu:
+    case webapps::WebappUninstallSource::kAppManagement:
+    case webapps::WebappUninstallSource::kAppsPage:
+    case webapps::WebappUninstallSource::kMigration:
+    case webapps::WebappUninstallSource::kOsSettings:
+    case webapps::WebappUninstallSource::kSync:
+    case webapps::WebappUninstallSource::kShelf:
+    case webapps::WebappUninstallSource::kUnknown:
+      return Source::kSync;
+
+    case webapps::WebappUninstallSource::kExternalPreinstalled:
+    case webapps::WebappUninstallSource::kInternalPreinstalled:
+    case webapps::WebappUninstallSource::kPlaceholderReplacement:
       return Source::kDefault;
 
-    case ExternalInstallSource::kExternalPolicy:
+    case webapps::WebappUninstallSource::kExternalPolicy:
       return Source::kPolicy;
 
-    case ExternalInstallSource::kSystemInstalled:
+    case webapps::WebappUninstallSource::kSystemPreinstalled:
       return Source::kSystem;
 
-    case ExternalInstallSource::kArc:
+    case webapps::WebappUninstallSource::kArc:
       return Source::kWebAppStore;
+  }
+}
+
+webapps::WebappUninstallSource ConvertSourceTypeToWebAppUninstallSource(
+    Source::Type source) {
+  switch (source) {
+    case Source::kDefault:
+      return webapps::WebappUninstallSource::kExternalPreinstalled;
+
+    case Source::kPolicy:
+      return webapps::WebappUninstallSource::kExternalPolicy;
+
+    case Source::kSync:
+      return webapps::WebappUninstallSource::kInternalPreinstalled;
+
+    case Source::kSystem:
+      return webapps::WebappUninstallSource::kSystemPreinstalled;
+
+    case Source::kWebAppStore:
+      return webapps::WebappUninstallSource::kArc;
   }
 }
 
@@ -221,36 +254,65 @@ void WebAppInstallFinalizer::FinalizeUninstallAfterSync(
       app_id,
       base::BindOnce(
           &WebAppInstallFinalizer::OnIconsDataDeletedAndWebAppUninstalled,
-          weak_ptr_factory_.GetWeakPtr(), app_id, std::move(callback)));
+          weak_ptr_factory_.GetWeakPtr(), app_id,
+          webapps::WebappUninstallSource::kSync, std::move(callback)));
 }
 
 void WebAppInstallFinalizer::UninstallExternalWebApp(
     const AppId& app_id,
-    ExternalInstallSource external_install_source,
+    webapps::WebappUninstallSource webapp_uninstall_source,
     UninstallWebAppCallback callback) {
   DCHECK(started_);
+
+  DCHECK(webapp_uninstall_source ==
+             webapps::WebappUninstallSource::kInternalPreinstalled ||
+         webapp_uninstall_source ==
+             webapps::WebappUninstallSource::kExternalPreinstalled ||
+         webapp_uninstall_source ==
+             webapps::WebappUninstallSource::kExternalPolicy ||
+         webapp_uninstall_source ==
+             webapps::WebappUninstallSource::kSystemPreinstalled ||
+         webapp_uninstall_source == webapps::WebappUninstallSource::kArc);
+
   Source::Type source =
-      InferSourceFromExternalInstallSource(external_install_source);
-  UninstallWebAppOrRemoveSource(app_id, source, std::move(callback));
+      InferSourceFromWebAppUninstallSource(webapp_uninstall_source);
+  DCHECK_NE(source, Source::Type::kSync);
+
+  UninstallExternalWebAppOrRemoveSource(app_id, source, std::move(callback));
 }
 
-bool WebAppInstallFinalizer::CanUserUninstallExternalApp(
-    const AppId& app_id) const {
+bool WebAppInstallFinalizer::CanUserUninstallWebApp(const AppId& app_id) const {
   DCHECK(started_);
+
   // TODO(loyso): Policy Apps: Implement ManagementPolicy taking
   // extensions::ManagementPolicy::UserMayModifySettings as inspiration.
   const WebApp* app = GetWebAppRegistrar().GetAppById(app_id);
-  return app ? app->CanUserUninstallExternalApp() : false;
+  return app ? app->CanUserUninstallWebApp() : false;
 }
 
-void WebAppInstallFinalizer::UninstallExternalAppByUser(
+void WebAppInstallFinalizer::UninstallWebApp(
     const AppId& app_id,
+    webapps::WebappUninstallSource webapp_uninstall_source,
     UninstallWebAppCallback callback) {
   DCHECK(started_);
 
+  // Check that the source was from a known 'user' or allowed ones such
+  // as kMigration.
+  DCHECK(
+      webapp_uninstall_source == webapps::WebappUninstallSource::kUnknown ||
+      webapp_uninstall_source == webapps::WebappUninstallSource::kAppMenu ||
+      webapp_uninstall_source == webapps::WebappUninstallSource::kAppsPage ||
+      webapp_uninstall_source == webapps::WebappUninstallSource::kOsSettings ||
+      webapp_uninstall_source == webapps::WebappUninstallSource::kSync ||
+      webapp_uninstall_source ==
+          webapps::WebappUninstallSource::kAppManagement ||
+      webapp_uninstall_source == webapps::WebappUninstallSource::kMigration ||
+      webapp_uninstall_source == webapps::WebappUninstallSource::kAppList ||
+      webapp_uninstall_source == webapps::WebappUninstallSource::kShelf);
+
   const WebApp* app = GetWebAppRegistrar().GetAppById(app_id);
   DCHECK(app);
-  DCHECK(app->CanUserUninstallExternalApp());
+  DCHECK(app->CanUserUninstallWebApp());
   const bool is_synced = app->IsSynced();
 
   if (app->IsPreinstalledApp()) {
@@ -258,21 +320,22 @@ void WebAppInstallFinalizer::UninstallExternalAppByUser(
                          kWasExternalAppUninstalledByUser, true);
   }
 
-  // UninstallExternalAppByUser can wipe out an app with multiple sources. This
+  // UninstallWebApp can wipe out an app with multiple sources. This
   // is the behavior from the old bookmark-app based system, which does not
   // support incremental AddSource/RemoveSource. Here we are preserving that
   // behavior for now.
   // TODO(loyso): Implement different uninstall flows in UI. For example, we
   // should separate UninstallWebAppFromSyncByUser from
-  // UninstallExternalAppByUser.
-  UninstallWebApp(app_id, std::move(callback));
+  // UninstallWebApp.
+  UninstallWebAppInternal(app_id, webapp_uninstall_source, std::move(callback));
 
   // Uninstall shadow bookmark app from this device and from the sync server.
   if (legacy_finalizer_ && is_synced)
-    legacy_finalizer_->UninstallExternalAppByUser(app_id, base::DoNothing());
+    legacy_finalizer_->UninstallWebApp(app_id, webapp_uninstall_source,
+                                       base::DoNothing());
 }
 
-bool WebAppInstallFinalizer::WasExternalAppUninstalledByUser(
+bool WebAppInstallFinalizer::WasPreinstalledWebAppUninstalled(
     const AppId& app_id) const {
   return GetBoolWebAppPref(profile_->GetPrefs(), app_id,
                            kWasExternalAppUninstalledByUser);
@@ -319,8 +382,10 @@ void WebAppInstallFinalizer::Shutdown() {
   started_ = false;
 }
 
-void WebAppInstallFinalizer::UninstallWebApp(const AppId& app_id,
-                                             UninstallWebAppCallback callback) {
+void WebAppInstallFinalizer::UninstallWebAppInternal(
+    const AppId& app_id,
+    webapps::WebappUninstallSource uninstall_source,
+    UninstallWebAppCallback callback) {
   // If the app is already uninstalling then avoid triggering another uninstall.
   ScopedRegistryUpdate update(registry_controller().AsWebAppSyncBridge());
   WebApp* app = update->UpdateApp(app_id);
@@ -330,18 +395,18 @@ void WebAppInstallFinalizer::UninstallWebApp(const AppId& app_id,
                                   /*uninstalled=*/false));
     return;
   }
-
   // Set uninstalling flag and continue with app uninstall.
   app->SetIsUninstalling(true);
   registrar().NotifyWebAppWillBeUninstalled(app_id);
   os_integration_manager().UninstallAllOsHooks(
       app_id, base::BindOnce(&WebAppInstallFinalizer::OnUninstallOsHooks,
                              weak_ptr_factory_.GetWeakPtr(), app_id,
-                             std::move(callback)));
+                             uninstall_source, std::move(callback)));
 }
 
 void WebAppInstallFinalizer::OnUninstallOsHooks(
     const AppId& app_id,
+    webapps::WebappUninstallSource uninstall_source,
     UninstallWebAppCallback callback,
     OsHooksResults os_hooks_info) {
   ScopedRegistryUpdate update(registry_controller().AsWebAppSyncBridge());
@@ -351,10 +416,11 @@ void WebAppInstallFinalizer::OnUninstallOsHooks(
       app_id,
       base::BindOnce(
           &WebAppInstallFinalizer::OnIconsDataDeletedAndWebAppUninstalled,
-          weak_ptr_factory_.GetWeakPtr(), app_id, std::move(callback)));
+          weak_ptr_factory_.GetWeakPtr(), app_id, uninstall_source,
+          std::move(callback)));
 }
 
-void WebAppInstallFinalizer::UninstallWebAppOrRemoveSource(
+void WebAppInstallFinalizer::UninstallExternalWebAppOrRemoveSource(
     const AppId& app_id,
     Source::Type source,
     UninstallWebAppCallback callback) {
@@ -367,7 +433,9 @@ void WebAppInstallFinalizer::UninstallWebAppOrRemoveSource(
   }
 
   if (app->HasOnlySource(source)) {
-    UninstallWebApp(app_id, std::move(callback));
+    webapps::WebappUninstallSource uninstall_source =
+        ConvertSourceTypeToWebAppUninstallSource(source);
+    UninstallWebAppInternal(app_id, uninstall_source, std::move(callback));
   } else {
     ScopedRegistryUpdate update(registry_controller().AsWebAppSyncBridge());
     WebApp* app_to_update = update->UpdateApp(app_id);
@@ -448,9 +516,13 @@ void WebAppInstallFinalizer::OnShortcutsMenuIconsDataWritten(
 
 void WebAppInstallFinalizer::OnIconsDataDeletedAndWebAppUninstalled(
     const AppId& app_id,
+    webapps::WebappUninstallSource uninstall_source,
     UninstallWebAppCallback callback,
     bool success) {
   registrar().NotifyWebAppUninstalled(app_id);
+
+  webapps::InstallableMetrics::TrackUninstallEvent(uninstall_source);
+
   std::move(callback).Run(success);
 }
 

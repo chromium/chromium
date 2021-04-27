@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
 #include "url/gurl.h"
 
@@ -116,9 +117,10 @@ IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest,
   // Uninstalling should close the |app_browser|, but keep the browser
   // object alive long enough to complete the uninstall.
   base::RunLoop run_loop;
-  DCHECK(provider->install_finalizer().CanUserUninstallExternalApp(foo_app_id));
-  provider->install_finalizer().UninstallExternalAppByUser(
-      foo_app_id, base::BindLambdaForTesting([&](bool success) {
+  DCHECK(provider->install_finalizer().CanUserUninstallWebApp(foo_app_id));
+  provider->install_finalizer().UninstallWebApp(
+      foo_app_id, webapps::WebappUninstallSource::kAppMenu,
+      base::BindLambdaForTesting([&](bool success) {
         EXPECT_TRUE(success);
         run_loop.Quit();
       }));

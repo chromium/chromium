@@ -164,8 +164,8 @@ class WebAppMigrationManagerBrowserTest : public InProcessBrowserTest {
 
     base::RunLoop run_loop;
     ui_manager().dialog_manager().UninstallWebApp(
-        app_id, WebAppDialogManager::UninstallSource::kAppMenu,
-        browser()->window(), base::BindLambdaForTesting([&](bool success) {
+        app_id, webapps::WebappUninstallSource::kAppMenu, browser()->window(),
+        base::BindLambdaForTesting([&](bool success) {
           EXPECT_TRUE(success);
           run_loop.Quit();
         }));

@@ -27,7 +27,7 @@ InstallFinalizer::FinalizeOptions::FinalizeOptions(const FinalizeOptions&) =
 
 void InstallFinalizer::UninstallExternalWebAppByUrl(
     const GURL& app_url,
-    ExternalInstallSource external_install_source,
+    webapps::WebappUninstallSource webapp_uninstall_source,
     UninstallWebAppCallback callback) {
   base::Optional<AppId> app_id = registrar().LookupExternalAppId(app_url);
   if (!app_id.has_value()) {
@@ -38,7 +38,7 @@ void InstallFinalizer::UninstallExternalWebAppByUrl(
     return;
   }
 
-  UninstallExternalWebApp(app_id.value(), external_install_source,
+  UninstallExternalWebApp(app_id.value(), webapp_uninstall_source,
                           std::move(callback));
 }
 

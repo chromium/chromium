@@ -43,6 +43,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_web_ui.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
@@ -757,9 +758,10 @@ void WebAppIntegrationBrowserTestBase::UninstallInternal(
       WebAppProviderBase::GetProviderBase(profile());
   base::RunLoop run_loop;
 
-  DCHECK(provider->install_finalizer().CanUserUninstallExternalApp(app_id));
-  provider->install_finalizer().UninstallExternalAppByUser(
-      app_id, base::BindLambdaForTesting([&](bool uninstalled) {
+  DCHECK(provider->install_finalizer().CanUserUninstallWebApp(app_id));
+  provider->install_finalizer().UninstallWebApp(
+      app_id, webapps::WebappUninstallSource::kAppMenu,
+      base::BindLambdaForTesting([&](bool uninstalled) {
         EXPECT_TRUE(uninstalled);
         run_loop.Quit();
       }));

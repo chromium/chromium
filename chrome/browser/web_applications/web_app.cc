@@ -90,7 +90,7 @@ bool WebApp::IsSystemApp() const {
   return sources_[Source::kSystem];
 }
 
-bool WebApp::CanUserUninstallExternalApp() const {
+bool WebApp::CanUserUninstallWebApp() const {
   Sources specified_sources;
   specified_sources[Source::kDefault] = true;
   specified_sources[Source::kSync] = true;

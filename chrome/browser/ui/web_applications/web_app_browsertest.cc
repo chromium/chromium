@@ -60,6 +60,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/sessions/core/tab_restore_service.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/background_color_change_waiter.h"
 #include "content/public/test/browser_test.h"
@@ -895,15 +896,13 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
   ExternallyInstalledWebAppPrefs prefs(browser()->profile()->GetPrefs());
   AppId app_id = prefs.LookupAppId(install_url).value();
 
-  EXPECT_FALSE(
-      provider->install_finalizer().CanUserUninstallExternalApp(app_id));
+  EXPECT_FALSE(provider->install_finalizer().CanUserUninstallWebApp(app_id));
 
   InstallWebAppFromPage(browser(), install_url);
 
   // Performing a user install on the page should not override the "policy"
   // install source.
-  EXPECT_FALSE(
-      provider->install_finalizer().CanUserUninstallExternalApp(app_id));
+  EXPECT_FALSE(provider->install_finalizer().CanUserUninstallWebApp(app_id));
   const WebApp& web_app =
       *provider->registrar().AsWebAppRegistrar()->GetAppById(app_id);
   EXPECT_TRUE(web_app.IsSynced());

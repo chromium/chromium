@@ -28,6 +28,10 @@ class NativeWindowTracker;
 class Profile;
 class WebAppUninstallDialogViews;
 
+namespace webapps {
+enum class WebappUninstallSource;
+}
+
 namespace views {
 class Checkbox;
 }
@@ -41,6 +45,7 @@ class WebAppUninstallDialogDelegateView : public views::DialogDelegateView {
       Profile* profile,
       WebAppUninstallDialogViews* dialog_view,
       web_app::AppId app_id,
+      webapps::WebappUninstallSource uninstall_source,
       std::map<SquareSizePx, SkBitmap> icon_bitmaps);
   WebAppUninstallDialogDelegateView(const WebAppUninstallDialogDelegateView&) =
       delete;
@@ -72,6 +77,8 @@ class WebAppUninstallDialogDelegateView : public views::DialogDelegateView {
   GURL app_start_url_;
 
   Profile* const profile_;
+
+  webapps::WebappUninstallSource uninstall_source_;
 };
 
 // The implementation of the uninstall dialog for web apps.
@@ -90,6 +97,7 @@ class WebAppUninstallDialogViews : public web_app::WebAppUninstallDialog,
 
   // web_app::WebAppUninstallDialog:
   void ConfirmUninstall(const web_app::AppId& app_id,
+                        webapps::WebappUninstallSource uninstall_source,
                         OnWebAppUninstallDialogClosed closed_callback) override;
   void SetDialogShownCallbackForTesting(base::OnceClosure callback) override;
 
@@ -109,7 +117,8 @@ class WebAppUninstallDialogViews : public web_app::WebAppUninstallDialog,
   void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override;
   void OnAppRegistrarDestroyed() override;
 
-  void OnIconsRead(std::map<SquareSizePx, SkBitmap> icon_bitmaps);
+  void OnIconsRead(webapps::WebappUninstallSource uninstall_source,
+                   std::map<SquareSizePx, SkBitmap> icon_bitmaps);
 
   // The dialog's parent window.
   const gfx::NativeWindow parent_;

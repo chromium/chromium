@@ -41,6 +41,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -361,7 +362,8 @@ class WebAppInstallManagerTest : public WebAppTest {
     bool result = false;
     base::RunLoop run_loop;
     finalizer().UninstallExternalWebAppByUrl(
-        app_url, external_install_source,
+        app_url,
+        ConvertExternalInstallSourceToUninstallSource(external_install_source),
         base::BindLambdaForTesting([&](bool uninstalled) {
           result = uninstalled;
           run_loop.Quit();
@@ -370,11 +372,12 @@ class WebAppInstallManagerTest : public WebAppTest {
     return result;
   }
 
-  bool UninstallExternalAppByUser(const AppId& app_id) {
+  bool UninstallWebApp(const AppId& app_id) {
     bool result = false;
     base::RunLoop run_loop;
-    finalizer().UninstallExternalAppByUser(
-        app_id, base::BindLambdaForTesting([&](bool uninstalled) {
+    finalizer().UninstallWebApp(
+        app_id, webapps::WebappUninstallSource::kAppMenu,
+        base::BindLambdaForTesting([&](bool uninstalled) {
           result = uninstalled;
           run_loop.Quit();
         }));
@@ -851,7 +854,7 @@ TEST_F(WebAppInstallManagerTest, PolicyAndUser_UninstallExternalWebApp) {
       external_app_url, app_id, ExternalInstallSource::kExternalPolicy);
   InitRegistrarWithApp(std::move(policy_and_user_app));
 
-  EXPECT_FALSE(finalizer().WasExternalAppUninstalledByUser(app_id));
+  EXPECT_FALSE(finalizer().WasPreinstalledWebAppUninstalled(app_id));
 
   bool observer_uninstall_called = false;
   WebAppInstallObserver observer(&registrar());
@@ -870,11 +873,11 @@ TEST_F(WebAppInstallManagerTest, PolicyAndUser_UninstallExternalWebApp) {
 
   EXPECT_TRUE(registrar().GetAppById(app_id));
   EXPECT_FALSE(observer_uninstall_called);
-  EXPECT_FALSE(finalizer().WasExternalAppUninstalledByUser(app_id));
-  EXPECT_TRUE(finalizer().CanUserUninstallExternalApp(app_id));
+  EXPECT_FALSE(finalizer().WasPreinstalledWebAppUninstalled(app_id));
+  EXPECT_TRUE(finalizer().CanUserUninstallWebApp(app_id));
 }
 
-TEST_F(WebAppInstallManagerTest, DefaultAndUser_UninstallExternalAppByUser) {
+TEST_F(WebAppInstallManagerTest, DefaultAndUser_UninstallWebApp) {
   std::unique_ptr<WebApp> default_and_user_app =
       CreateWebApp(GURL("https://example.com/path"), Source::kSync,
                    /*user_display_mode=*/DisplayMode::kStandalone);
@@ -887,8 +890,8 @@ TEST_F(WebAppInstallManagerTest, DefaultAndUser_UninstallExternalAppByUser) {
       external_app_url, app_id, ExternalInstallSource::kExternalDefault);
   InitRegistrarWithApp(std::move(default_and_user_app));
 
-  EXPECT_TRUE(finalizer().CanUserUninstallExternalApp(app_id));
-  EXPECT_FALSE(finalizer().WasExternalAppUninstalledByUser(app_id));
+  EXPECT_TRUE(finalizer().CanUserUninstallWebApp(app_id));
+  EXPECT_FALSE(finalizer().WasPreinstalledWebAppUninstalled(app_id));
 
   WebAppInstallObserver observer(&registrar());
 
@@ -902,12 +905,12 @@ TEST_F(WebAppInstallManagerTest, DefaultAndUser_UninstallExternalAppByUser) {
 
   file_utils().SetNextDeleteFileRecursivelyResult(true);
 
-  EXPECT_TRUE(UninstallExternalAppByUser(app_id));
+  EXPECT_TRUE(UninstallWebApp(app_id));
 
   EXPECT_FALSE(registrar().GetAppById(app_id));
   EXPECT_TRUE(observer_uninstalled_called);
-  EXPECT_FALSE(finalizer().CanUserUninstallExternalApp(app_id));
-  EXPECT_TRUE(finalizer().WasExternalAppUninstalledByUser(app_id));
+  EXPECT_FALSE(finalizer().CanUserUninstallWebApp(app_id));
+  EXPECT_TRUE(finalizer().WasPreinstalledWebAppUninstalled(app_id));
 }
 
 TEST_F(WebAppInstallManagerTest, InstallWebAppFromInfo) {

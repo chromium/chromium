@@ -18,6 +18,10 @@
 
 class Profile;
 
+namespace webapps {
+enum class WebappUninstallSource;
+}
+
 namespace web_app {
 
 class WebApp;
@@ -43,13 +47,17 @@ class WebAppInstallFinalizer final : public InstallFinalizer {
   void FinalizeUpdate(const WebApplicationInfo& web_app_info,
                       content::WebContents* web_contents,
                       InstallFinalizedCallback callback) override;
-  void UninstallExternalWebApp(const AppId& app_id,
-                               ExternalInstallSource external_install_source,
-                               UninstallWebAppCallback callback) override;
-  bool CanUserUninstallExternalApp(const AppId& app_id) const override;
-  void UninstallExternalAppByUser(const AppId& app_id,
-                                  UninstallWebAppCallback callback) override;
-  bool WasExternalAppUninstalledByUser(const AppId& app_id) const override;
+
+  void UninstallExternalWebApp(
+      const AppId& app_id,
+      webapps::WebappUninstallSource external_install_source,
+      UninstallWebAppCallback callback) override;
+
+  void UninstallWebApp(const AppId& app_id,
+                       webapps::WebappUninstallSource external_install_source,
+                       UninstallWebAppCallback callback) override;
+  bool CanUserUninstallWebApp(const AppId& app_id) const override;
+  bool WasPreinstalledWebAppUninstalled(const AppId& app_id) const override;
   void RemoveLegacyInstallFinalizerForTesting() override;
   void Start() override;
   void Shutdown() override;
@@ -57,10 +65,12 @@ class WebAppInstallFinalizer final : public InstallFinalizer {
  private:
   using CommitCallback = base::OnceCallback<void(bool success)>;
 
-  void UninstallWebApp(const AppId& app_id, UninstallWebAppCallback callback);
-  void UninstallWebAppOrRemoveSource(const AppId& app_id,
-                                     Source::Type source,
-                                     UninstallWebAppCallback callback);
+  void UninstallWebAppInternal(const AppId& app_id,
+                               webapps::WebappUninstallSource uninstall_source,
+                               UninstallWebAppCallback callback);
+  void UninstallExternalWebAppOrRemoveSource(const AppId& app_id,
+                                             Source::Type source,
+                                             UninstallWebAppCallback callback);
 
   void SetWebAppManifestFieldsAndWriteData(
       const WebApplicationInfo& web_app_info,
@@ -77,9 +87,11 @@ class WebAppInstallFinalizer final : public InstallFinalizer {
                                        std::unique_ptr<WebApp> web_app,
                                        bool success);
 
-  void OnIconsDataDeletedAndWebAppUninstalled(const AppId& app_id,
-                                              UninstallWebAppCallback callback,
-                                              bool success);
+  void OnIconsDataDeletedAndWebAppUninstalled(
+      const AppId& app_id,
+      webapps::WebappUninstallSource uninstall_source,
+      UninstallWebAppCallback callback,
+      bool success);
   void OnDatabaseCommitCompletedForInstall(InstallFinalizedCallback callback,
                                            AppId app_id,
                                            bool success);
@@ -105,6 +117,7 @@ class WebAppInstallFinalizer final : public InstallFinalizer {
       const WebApplicationInfo& web_app_info,
       bool success);
   void OnUninstallOsHooks(const AppId& app_id,
+                          webapps::WebappUninstallSource uninstall_source,
                           UninstallWebAppCallback callback,
                           OsHooksResults os_hooks_info);
 

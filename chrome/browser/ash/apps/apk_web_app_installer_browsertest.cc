@@ -31,6 +31,7 @@
 #include "components/arc/arc_util.h"
 #include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_app_instance.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -298,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerDelayedArcStartBrowserTest,
   {
     base::RunLoop run_loop;
     provider_->install_finalizer().UninstallExternalWebApp(
-        installed_web_app_id_, web_app::ExternalInstallSource::kArc,
+        installed_web_app_id_, webapps::WebappUninstallSource::kArc,
         base::BindLambdaForTesting([&](bool uninstalled) {
           EXPECT_TRUE(uninstalled);
           run_loop.Quit();

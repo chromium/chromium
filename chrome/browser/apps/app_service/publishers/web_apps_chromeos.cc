@@ -59,6 +59,7 @@
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "components/sessions/core/session_id.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/clear_site_data_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/constants.h"
@@ -177,13 +178,12 @@ void WebAppsChromeOs::Uninstall(const std::string& app_id,
   }
 
   DCHECK(provider());
-  DCHECK(provider()->install_finalizer().CanUserUninstallExternalApp(app_id));
-
-  auto origin = url::Origin::Create(web_app->start_url());
-  // TODO(crbug.com/1104696): Update web_app::InstallFinalizer to accommodate
-  // when install_source == apps::mojom::UninstallSource::kMigration.
-  provider()->install_finalizer().UninstallExternalAppByUser(app_id,
-                                                             base::DoNothing());
+  DCHECK(provider()->install_finalizer().CanUserUninstallWebApp(app_id));
+  webapps::WebappUninstallSource webapp_uninstall_source =
+      WebAppsBase::ConvertUninstallSourceToWebAppUninstallSource(
+          uninstall_source);
+  provider()->install_finalizer().UninstallWebApp(
+      app_id, webapp_uninstall_source, base::DoNothing());
   web_app = nullptr;
 
   if (!clear_site_data) {
@@ -196,6 +196,8 @@ void WebAppsChromeOs::Uninstall(const std::string& app_id,
   constexpr bool kClearStorage = true;
   constexpr bool kClearCache = true;
   constexpr bool kAvoidClosingConnections = false;
+
+  auto origin = url::Origin::Create(web_app->start_url());
   content::ClearSiteData(base::BindRepeating(
                              [](content::BrowserContext* browser_context) {
                                return browser_context;
@@ -261,7 +263,7 @@ void WebAppsChromeOs::GetMenuModel(const std::string& app_id,
     AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE, &menu_items);
   }
 
-  if (provider()->install_finalizer().CanUserUninstallExternalApp(app_id)) {
+  if (provider()->install_finalizer().CanUserUninstallWebApp(app_id)) {
     AddCommandItem(ash::UNINSTALL, IDS_APP_LIST_UNINSTALL_ITEM, &menu_items);
   }
 

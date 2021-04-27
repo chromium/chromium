@@ -381,11 +381,12 @@ WebAppBrowserController* AppBrowserController::AsWebAppBrowserController() {
   return nullptr;
 }
 
-bool AppBrowserController::CanUninstall() const {
+bool AppBrowserController::CanUserUninstall() const {
   return false;
 }
 
-void AppBrowserController::Uninstall() {
+void AppBrowserController::Uninstall(
+    webapps::WebappUninstallSource webapp_uninstall_source) {
   NOTREACHED();
   return;
 }

@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/test/test_web_app_ui_manager.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -305,7 +306,7 @@ TEST_F(BookmarkAppInstallFinalizerTest, UninstallExternalWebApp_Successful) {
 
   base::RunLoop run_loop;
   finalizer().UninstallExternalWebAppByUrl(
-      WebAppUrl(), web_app::ExternalInstallSource::kExternalPolicy,
+      WebAppUrl(), webapps::WebappUninstallSource::kExternalPolicy,
       base::BindLambdaForTesting([&](bool uninstalled) {
         EXPECT_TRUE(uninstalled);
         EXPECT_EQ(0u, enabled_extensions().size());
@@ -323,7 +324,7 @@ TEST_F(BookmarkAppInstallFinalizerTest, UninstallExternalWebApp_Multiple) {
   {
     base::RunLoop run_loop;
     finalizer().UninstallExternalWebAppByUrl(
-        WebAppUrl(), web_app::ExternalInstallSource::kExternalPolicy,
+        WebAppUrl(), webapps::WebappUninstallSource::kExternalPolicy,
         base::BindLambdaForTesting([&](bool uninstalled) {
           EXPECT_TRUE(uninstalled);
           run_loop.Quit();
@@ -338,7 +339,7 @@ TEST_F(BookmarkAppInstallFinalizerTest, UninstallExternalWebApp_Multiple) {
   {
     base::RunLoop run_loop;
     finalizer().UninstallExternalWebAppByUrl(
-        AlternateWebAppUrl(), web_app::ExternalInstallSource::kExternalPolicy,
+        AlternateWebAppUrl(), webapps::WebappUninstallSource::kExternalPolicy,
         base::BindLambdaForTesting([&](bool uninstalled) {
           EXPECT_TRUE(uninstalled);
           run_loop.Quit();
@@ -355,7 +356,7 @@ TEST_F(BookmarkAppInstallFinalizerTest,
 
   base::RunLoop run_loop;
   finalizer().UninstallExternalWebAppByUrl(
-      WebAppUrl(), web_app::ExternalInstallSource::kExternalPolicy,
+      WebAppUrl(), webapps::WebappUninstallSource::kExternalPolicy,
       base::BindLambdaForTesting([&](bool uninstalled) {
         EXPECT_FALSE(uninstalled);
         run_loop.Quit();
@@ -367,7 +368,7 @@ TEST_F(BookmarkAppInstallFinalizerTest,
        UninstallExternalWebApp_FailsNeverInstalled) {
   base::RunLoop run_loop;
   finalizer().UninstallExternalWebAppByUrl(
-      WebAppUrl(), web_app::ExternalInstallSource::kExternalPolicy,
+      WebAppUrl(), webapps::WebappUninstallSource::kExternalPolicy,
       base::BindLambdaForTesting([&](bool uninstalled) {
         EXPECT_FALSE(uninstalled);
         run_loop.Quit();
@@ -383,7 +384,7 @@ TEST_F(BookmarkAppInstallFinalizerTest,
   {
     base::RunLoop run_loop;
     finalizer().UninstallExternalWebAppByUrl(
-        WebAppUrl(), web_app::ExternalInstallSource::kExternalPolicy,
+        WebAppUrl(), webapps::WebappUninstallSource::kExternalPolicy,
         base::BindLambdaForTesting([&](bool uninstalled) {
           EXPECT_TRUE(uninstalled);
           run_loop.Quit();
@@ -395,7 +396,7 @@ TEST_F(BookmarkAppInstallFinalizerTest,
   {
     base::RunLoop run_loop;
     finalizer().UninstallExternalWebAppByUrl(
-        WebAppUrl(), web_app::ExternalInstallSource::kExternalPolicy,
+        WebAppUrl(), webapps::WebappUninstallSource::kExternalPolicy,
         base::BindLambdaForTesting([&](bool uninstalled) {
           EXPECT_FALSE(uninstalled);
           run_loop.Quit();

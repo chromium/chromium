@@ -17896,6 +17896,17 @@ regressions. -->
   </summary>
 </histogram>
 
+<histogram name="Webapp.Install.UninstallEvent" enum="WebappUninstallSource"
+    expires_after="2022-04-12">
+  <owner>dmurph@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <owner>sunggch@microsoft.com</owner>
+  <summary>
+    Records the mechanism and source from which a web app uninstallation was
+    triggered, regardless of whether the uninstallation was successful.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.InstallConfirmation.CloseReason"
     enum="WidgetClosedReason" expires_after="M95">
   <owner>dmurph@chromium.org</owner>
@@ -18104,6 +18115,9 @@ regressions. -->
 
 <histogram name="WebApp.UninstallDialog.AppMenuUninstallSuccess" enum="Boolean"
     expires_after="M95">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
   <owner>dmurph@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -18114,6 +18128,9 @@ regressions. -->
 
 <histogram name="WebApp.UninstallDialog.AppsPageUninstallSuccess"
     enum="Boolean" expires_after="M95">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
   <owner>dmurph@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>

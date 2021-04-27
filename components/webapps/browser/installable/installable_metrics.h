@@ -25,6 +25,8 @@ enum class InstallTrigger {
   CREATE_SHORTCUT,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 // Sources for triggering webapp installation.
 // NOTE: each enum entry which is reportable must be added to
 // InstallableMetrics::IsReportableInstallSource().
@@ -91,6 +93,59 @@ enum class WebappInstallSource {
   COUNT,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Sources for triggering webapp uninstallation.
+enum class WebappUninstallSource {
+  // Unknown surface, potentially in ChromeOS.
+  kUnknown = 0,
+
+  // Menu item from the 3-dot menu of a WebApp window.
+  kAppMenu = 1,
+
+  // Context menu for a WebApp in chrome://apps.
+  kAppsPage = 2,
+
+  // Via OS Settings or Controls.
+  kOsSettings = 3,
+
+  // Uninstalled from Sync.
+  kSync = 4,
+
+  // App management surface, currently ChromeOS-only.
+  kAppManagement = 5,
+
+  // Migration.
+  kMigration = 6,
+
+  // App List (Launcher in ChromeOS).
+  kAppList = 7,
+
+  // Shelf (in ChromeOS).
+  kShelf = 8,
+
+  // Internally managed pre-installed app management.
+  kInternalPreinstalled = 9,
+
+  // Externally managed pre-installed app management.
+  kExternalPreinstalled = 10,
+
+  // Enterprise policy app management.
+  kExternalPolicy = 11,
+
+  // System app management on ChromeOS.
+  kSystemPreinstalled = 12,
+
+  // Placeholder app management for preinstalled apps.
+  kPlaceholderReplacement = 13,
+
+  // Externally managed Arc apps.
+  kArc = 14,
+
+  // Add any new values above this one.
+  kMaxValue = kArc,
+};
+
 // This is the result of the promotability check that is recorded in the
 // Webapp.CheckServiceWorker.Status histogram.
 // Do not reorder or reuse any values in this enum. New values must be added to
@@ -108,7 +163,7 @@ enum class ServiceWorkerOfflineCapability {
 
 class InstallableMetrics {
  public:
-  // Records |source| in the Webapp.Install.InstallSource histogram.
+  // Records |source| in the Webapp.Install.InstallEvent histogram.
   // IsReportableInstallSource(|source|) must be true.
   static void TrackInstallEvent(WebappInstallSource source);
 
@@ -139,6 +194,9 @@ class InstallableMetrics {
   // Converts OfflineCapability to ServiceWorkerOfflineCapability.
   static ServiceWorkerOfflineCapability ConvertFromOfflineCapability(
       content::OfflineCapability capability);
+
+  // Records |source| in the Webapp.Install.UninstallEvent histogram.
+  static void TrackUninstallEvent(WebappUninstallSource source);
 
  private:
   DISALLOW_IMPLICIT_CONSTRUCTORS(InstallableMetrics);

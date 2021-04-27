@@ -16,6 +16,10 @@
 
 class Profile;
 
+namespace webapps {
+enum class WebappUninstallSource;
+}
+
 namespace extensions {
 
 class CrxInstaller;
@@ -44,12 +48,13 @@ class BookmarkAppInstallFinalizer : public web_app::InstallFinalizer {
                       InstallFinalizedCallback callback) override;
   void UninstallExternalWebApp(
       const web_app::AppId& app_id,
-      web_app::ExternalInstallSource external_install_source,
+      webapps::WebappUninstallSource webapp_uninstall_source,
       UninstallWebAppCallback callback) override;
-  bool CanUserUninstallExternalApp(const web_app::AppId& app_id) const override;
-  void UninstallExternalAppByUser(const web_app::AppId& app_id,
-                                  UninstallWebAppCallback callback) override;
-  bool WasExternalAppUninstalledByUser(
+  bool CanUserUninstallWebApp(const web_app::AppId& app_id) const override;
+  void UninstallWebApp(const web_app::AppId& app_id,
+                       webapps::WebappUninstallSource uninstall_source,
+                       UninstallWebAppCallback callback) override;
+  bool WasPreinstalledWebAppUninstalled(
       const web_app::AppId& app_id) const override;
 
   using CrxInstallerFactory =
