@@ -35,9 +35,6 @@ public class MerchantTrustDetailsTabMediator {
     private final MerchantTrustMetrics mMetrics;
     private static final long HIDE_PROGRESS_BAR_DELAY_MS = 50;
 
-    // TODO: Read from config.
-    private static final boolean sShouldUsePageTitle = true;
-
     /** Creates a new instance. */
     MerchantTrustDetailsTabMediator(BottomSheetController bottomSheetController,
             int topControlsHeightDp, MerchantTrustMetrics metrics) {
@@ -81,7 +78,7 @@ public class MerchantTrustDetailsTabMediator {
 
             @Override
             public void titleWasSet(String title) {
-                if (!sShouldUsePageTitle) return;
+                if (!MerchantViewerConfig.TRUST_SIGNALS_SHEET_USE_PAGE_TITLE.getValue()) return;
                 mSheetContent.setTitle(title);
             }
 

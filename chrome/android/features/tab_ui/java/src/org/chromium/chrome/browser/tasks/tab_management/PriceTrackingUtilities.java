@@ -158,6 +158,14 @@ public class PriceTrackingUtilities {
         return SHARED_PREFERENCES_MANAGER.readInt(PRICE_ALERTS_MESSAGE_CARD_SHOW_COUNT, 0);
     }
 
+    /**
+     * @return whether or not the user is in a state that allows them to use price tracking feature.
+     *         Note: These checks can also be used in other commerce features.
+     */
+    public static boolean canFetchCommerceData() {
+        return isSignedIn() && isOpenTabsSyncEnabled() && isAnonymizedUrlDataCollectionEnabled();
+    }
+
     private static boolean isSignedIn() {
         return IdentityServicesProvider.get()
                 .getIdentityManager(Profile.getLastUsedRegularProfile())

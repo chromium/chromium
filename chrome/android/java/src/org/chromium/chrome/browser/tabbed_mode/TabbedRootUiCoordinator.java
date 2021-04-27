@@ -47,6 +47,8 @@ import org.chromium.chrome.browser.gesturenav.TabbedSheetDelegate;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.language.LanguageAskPrompt;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics;
+import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorControllerV2;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorInProductHelpController;
@@ -62,6 +64,7 @@ import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
@@ -114,6 +117,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private ContinuousSearchContainerCoordinator mContinuousSearchContainerCoordinator;
     private Callback<Integer> mContinuousSearchObserver;
     private TabObscuringHandler.Observer mContinuousSearchTabObscuringHandlerObserver;
+    private MerchantTrustSignalsCoordinator mMerchantTrustSignalsCoordinator;
 
     private int mStatusIndicatorHeight;
     private int mContinuousSearchHeight;
@@ -216,6 +220,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mContinuousSearchObserver = null;
             mContinuousSearchTabObscuringHandlerObserver = null;
         }
+
+        if (mMerchantTrustSignalsCoordinator != null) {
+            mMerchantTrustSignalsCoordinator.destroy();
+            mMerchantTrustSignalsCoordinator = null;
+        }
+
         super.destroy();
     }
 
@@ -330,6 +340,21 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         PwaBottomSheetControllerFactory.attach(
                 mActivity.getWindowAndroid(), mPwaBottomSheetController);
         initContinuousSearchCoordinator();
+
+        initMerchantTrustSignals();
+    }
+
+    private void initMerchantTrustSignals() {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER)
+                || !PriceTrackingUtilities.canFetchCommerceData()) {
+            return;
+        }
+
+        mMerchantTrustSignalsCoordinator = new MerchantTrustSignalsCoordinator(mActivity,
+                mActivity.getWindowAndroid(), getBottomSheetController(),
+                mActivity.getWindow().getDecorView(), mActivity.getTabModelSelector(),
+                MessageDispatcherProvider.from(mActivity.getWindowAndroid()),
+                mActivity.getActivityTabProvider(), mProfileSupplier, new MerchantTrustMetrics());
     }
 
     // Protected class methods

@@ -4,9 +4,9 @@
 
 syntax = "proto2";
 
-package org.chromium.chrome.browser.merchant_viewer;
-
-option java_package = "org.chromium.chrome.browser.merchant_viewer";
+package org.chromium.chrome.browser.merchant_viewer.proto;
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.chrome.browser.merchant_viewer.proto";
 
 message MerchantTrustSignals {
   // Overall rating out of 5.

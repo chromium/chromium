@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.merchant_viewer;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -163,6 +165,33 @@ public class MerchantTrustDetailsTabMediatorTest {
         mWebContentsDelegateCaptor.getValue().openNewTab(mMockDestinationGurl, "", null, 0, true);
 
         verify(mMockNavigationController, times(2)).loadUrl(any(LoadUrlParams.class));
+    }
+
+    @Test
+    public void testWebContentsDelegateShouldCreateWebContents() {
+        MerchantTrustDetailsTabMediator instance = getMediatorUnderTest();
+        instance.init(mMockWebContents, mMockContentView, mMockSheetContent, mMockProfile);
+        verify(mMockSheetContent, times(1))
+                .attachWebContents(eq(mMockWebContents), eq(mMockContentView),
+                        mWebContentsDelegateCaptor.capture());
+        instance.requestShowContent(mMockDestinationGurl, DUMMY_SHEET_TITLE);
+
+        assertFalse(mWebContentsDelegateCaptor.getValue().shouldCreateWebContents(
+                mMockDestinationGurl));
+
+        verify(mMockNavigationController, times(2)).loadUrl(any(LoadUrlParams.class));
+    }
+
+    @Test
+    public void testGetTopControlsHeight() {
+        MerchantTrustDetailsTabMediator instance = getMediatorUnderTest();
+        instance.init(mMockWebContents, mMockContentView, mMockSheetContent, mMockProfile);
+        verify(mMockSheetContent, times(1))
+                .attachWebContents(eq(mMockWebContents), eq(mMockContentView),
+                        mWebContentsDelegateCaptor.capture());
+        instance.requestShowContent(mMockDestinationGurl, DUMMY_SHEET_TITLE);
+
+        assertEquals(100, mWebContentsDelegateCaptor.getValue().getTopControlsHeight());
     }
 
     @Test
