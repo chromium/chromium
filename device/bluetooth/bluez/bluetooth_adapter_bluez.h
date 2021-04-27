@@ -208,6 +208,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
                                uint16_t device_appearance,
                                const dbus::ObjectPath& device_path,
                                ScanRecordPtr scan_record);
+
+  // Set the adapter name to one chosen from the system information.
+  void SetStandardChromeOSAdapterName();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Announce to observers that |device| has changed its connected state.
@@ -374,11 +377,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
   // Set the tracked adapter to the one in |object_path|, this object will
   // subsequently operate on that adapter until it is removed.
   void SetAdapter(const dbus::ObjectPath& object_path);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Set the adapter name to one chosen from the system information.
-  void SetStandardChromeOSAdapterName();
-#endif
 
   // Remove the currently tracked adapter. IsPresent() will return false after
   // this is called.

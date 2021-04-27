@@ -8,6 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "chrome/browser/chromeos/nearby/bluetooth_adapter_manager.h"
 #include "chrome/browser/chromeos/nearby/nearby_connections_dependencies_provider.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/sharing/webrtc/sharing_mojo_service.h"
@@ -260,6 +261,7 @@ void NearbyProcessManagerImpl::ShutDownProcess(
                        std::move(connections_), std::move(decoder_)));
   }
 
+  nearby_connections_dependencies_provider_->PrepareForShutdown();
   sharing_.reset();
   connections_.reset();
   decoder_.reset();
