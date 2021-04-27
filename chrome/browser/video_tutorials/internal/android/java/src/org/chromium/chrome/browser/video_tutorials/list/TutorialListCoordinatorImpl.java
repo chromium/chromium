@@ -106,8 +106,8 @@ public class TutorialListCoordinatorImpl implements TutorialListCoordinator {
             int screenWidthDp = resources.getConfiguration().screenWidthDp;
             padding = (int) (((screenWidthDp - UiConfig.WIDE_DISPLAY_STYLE_MIN_WIDTH_DP) / 2.f)
                     * resources.getDisplayMetrics().density);
-            padding = (int) Math.max(
-                    resources.getDimensionPixelSize(R.dimen.promo_compact_padding), padding);
+            padding =
+                    (int) Math.max(resources.getDimensionPixelSize(R.dimen.card_padding), padding);
         }
         return padding;
     }
@@ -118,8 +118,7 @@ public class TutorialListCoordinatorImpl implements TutorialListCoordinator {
 
         public ItemDecorationImpl(Resources resources) {
             mVerticalInterCardPaddingPx = resources.getDimensionPixelOffset(R.dimen.card_padding);
-            mHorizontalStartPaddingPx =
-                    resources.getDimensionPixelOffset(R.dimen.promo_compact_padding);
+            mHorizontalStartPaddingPx = resources.getDimensionPixelOffset(R.dimen.card_padding);
         }
 
         @Override

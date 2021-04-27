@@ -71,7 +71,7 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
 
         boolean enableShare = sEnableShareForTesting == null
                 ? ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.VIDEO_TUTORIALS, VARIATION_ENABLE_SHARE_BUTTON, false)
+                        ChromeFeatureList.VIDEO_TUTORIALS, VARIATION_ENABLE_SHARE_BUTTON, true)
                 : sEnableShareForTesting;
         mModel.set(VideoPlayerProperties.SHOW_SHARE, enableShare);
     }

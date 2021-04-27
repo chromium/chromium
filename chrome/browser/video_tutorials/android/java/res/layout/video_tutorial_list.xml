@@ -10,7 +10,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingTop="6dp" >
+    android:paddingTop="4dp" >
 
     <LinearLayout
         android:id="@+id/toolbar"
@@ -21,7 +21,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="16dp"
             android:layout_gravity="center_vertical"
             android:text="@string/video_tutorials_learn_chrome"
             android:textAppearance="@style/TextAppearance.Headline.Primary" />
@@ -35,6 +35,7 @@
             android:id="@+id/close_button"
             android:layout_height="48dp"
             android:layout_width="48dp"
+            android:layout_marginEnd="4dp"
             android:background="?attr/selectableItemBackground"
             android:contentDescription="@string/close"
             android:scaleType="center"

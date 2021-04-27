@@ -53,6 +53,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="20dp"
                 android:text="@string/video_tutorials_try_now"
                 style="@style/FilledButton.Flat" />
 
@@ -61,9 +63,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="20dp"
                 android:text="@string/video_tutorials_watch_next_video"
-                android:textAppearance="@style/TextAppearance.TextMediumThick.Primary.Light"
-                style="@style/TextButton" />
+                android:textAppearance="@style/TextAppearance.TextMediumThick.Primary.Light" />
 
             <TextView
                 android:id="@+id/change_language"
@@ -71,8 +73,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:textAppearance="@style/TextAppearance.TextMediumThick.Primary.Light"
-                android:text="@string/change_chrome_lang"
-                style="@style/TextButton" />
+                android:text="@string/change_chrome_lang" />
         </LinearLayout>
 
     </LinearLayout>
