@@ -403,10 +403,19 @@ void EnrollmentScreenHandler::ShowEnrollmentStatus(
       // Some special cases for generating a nicer message that's more helpful.
       switch (status.client_status()) {
         case policy::DM_STATUS_SERVICE_MANAGEMENT_NOT_SUPPORTED:
-          ShowError(IDS_ENTERPRISE_ENROLLMENT_ACCOUNT_ERROR, true);
+          if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
+            ShowError(IDS_ENTERPRISE_ENROLLMENT_ACCOUNT_ERROR_MEETS, true);
+          } else {
+            ShowError(IDS_ENTERPRISE_ENROLLMENT_ACCOUNT_ERROR, true);
+          }
           break;
         case policy::DM_STATUS_SERVICE_MISSING_LICENSES:
-          ShowError(IDS_ENTERPRISE_ENROLLMENT_MISSING_LICENSES_ERROR, true);
+          if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
+            ShowError(IDS_ENTERPRISE_ENROLLMENT_MISSING_LICENSES_ERROR_MEETS,
+                      true);
+          } else {
+            ShowError(IDS_ENTERPRISE_ENROLLMENT_MISSING_LICENSES_ERROR, true);
+          }
           break;
         case policy::DM_STATUS_SERVICE_DEPROVISIONED:
           ShowError(IDS_ENTERPRISE_ENROLLMENT_DEPROVISIONED_ERROR, true);
@@ -426,9 +435,15 @@ void EnrollmentScreenHandler::ShowEnrollmentStatus(
               true);
           break;
         case policy::DM_STATUS_SERVICE_ENTERPRISE_TOS_HAS_NOT_BEEN_ACCEPTED:
-          ShowError(
-              IDS_ENTERPRISE_ENROLLMENT_ENTERPRISE_TOS_HAS_NOT_BEEN_ACCEPTED,
-              true);
+          if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
+            ShowError(
+                IDS_ENTERPRISE_ENROLLMENT_ENTERPRISE_TOS_HAS_NOT_BEEN_ACCEPTED_MEETS,
+                true);
+          } else {
+            ShowError(
+                IDS_ENTERPRISE_ENROLLMENT_ENTERPRISE_TOS_HAS_NOT_BEEN_ACCEPTED,
+                true);
+          }
           break;
         case policy::DM_STATUS_SERVICE_ILLEGAL_ACCOUNT_FOR_PACKAGED_EDU_LICENSE:
           ShowError(

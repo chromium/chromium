@@ -3223,8 +3223,14 @@
   <message name="IDS_ENTERPRISE_ENROLLMENT_ACCOUNT_ERROR" desc="Error message to show when there is a problem with the user account.">
     This user account is not eligible for the service.
   </message>
+  <message name="IDS_ENTERPRISE_ENROLLMENT_ACCOUNT_ERROR_MEETS" desc="Error message to show when there is a problem with the user account.">
+    Your organization limits device enrollment to authorized users only. This user is not authorized to enroll devices. Please make sure the user has the "Enroll Google Meet hardware" administrator privilege in the Users section of the Admin console.
+  </message>
   <message name="IDS_ENTERPRISE_ENROLLMENT_MISSING_LICENSES_ERROR" desc="Error message to show when the domain the device is trying to enroll into has expired or exhausted licenses.">
     You do not have enough upgrades to enroll this device. Please contact sales to purchase more. If you believe you're seeing this message in error, please contact support.
+  </message>
+  <message name="IDS_ENTERPRISE_ENROLLMENT_MISSING_LICENSES_ERROR_MEETS" desc="Error message to show when the domain the device is trying to enroll into has expired or exhausted licenses.">
+    You do not have enough available licenses to enroll this Google Meet hardware device. Please contact sales to purchase more. If you believe you're seeing this message in error, please contact support.
   </message>
   <message name="IDS_ENTERPRISE_ENROLLMENT_DEPROVISIONED_ERROR" desc="Error message to show when enrollment fails because the administrator has deprovisioned the device on the server side.">
     This device has been placed into a deprovisioned state by the administrator. To enable it for enrollment, please have your administrator place the device into a pending state.
@@ -3240,6 +3246,9 @@
   </message>
   <message name="IDS_ENTERPRISE_ENROLLMENT_ENTERPRISE_TOS_HAS_NOT_BEEN_ACCEPTED" desc="Error message to show when the user tries to enroll a device, but administrator has not accepted TOS.">
     Your administrator must first accept the terms of service in the Admin console Chrome device list.
+  </message>
+  <message name="IDS_ENTERPRISE_ENROLLMENT_ENTERPRISE_TOS_HAS_NOT_BEEN_ACCEPTED_MEETS" desc="Error message to show when the user tries to enroll a device, but administrator has not accepted TOS.">
+    An administrator with Billing Management privileges must first accept the Google Meet Hardware Terms of Service in the Google Meet Hardware section of the Admin console.
   </message>
   <message name="IDS_ENTERPRISE_ENROLLMENT_ILLEGAL_ACCOUNT_FOR_PACKAGED_EDU_LICENSE" desc="Error message to show when the user tries to enroll a CBEdu device into non-EDU account.">
     You must enroll this Chrome Education device into an education account. To sign up for a new account, please visit g.co/workspace/edusignup.
