@@ -1129,19 +1129,18 @@ ReadableStream* ReadableStream::CreateWithCountQueueingStrategy(
       v8::Object::New(isolate, v8::Null(isolate), &high_water_mark_string,
                       &high_water_mark_value, 1);
 
-  ExceptionState exception_state(script_state->GetIsolate(),
-                                 ExceptionState::kConstructionContext,
+  ExceptionState exception_state(isolate, ExceptionState::kConstructionContext,
                                  "ReadableStream");
+  v8::MicrotasksScope microtasks_scope(
+      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
 
   v8::Local<v8::Value> underlying_source_v8 =
       ToV8(underlying_source, script_state);
 
   auto* stream = MakeGarbageCollected<ReadableStream>();
-  stream->InitInternal(
-      script_state,
-      ScriptValue(script_state->GetIsolate(), underlying_source_v8),
-      ScriptValue(script_state->GetIsolate(), strategy_object), true,
-      exception_state);
+  stream->InitInternal(script_state, ScriptValue(isolate, underlying_source_v8),
+                       ScriptValue(isolate, strategy_object), true,
+                       exception_state);
 
   if (exception_state.HadException()) {
     exception_state.ClearException();
