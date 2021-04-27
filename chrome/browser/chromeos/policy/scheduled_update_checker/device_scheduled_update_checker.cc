@@ -548,7 +548,7 @@ base::Time DeviceScheduledUpdateChecker::GetCurrentTime() {
 base::TimeTicks DeviceScheduledUpdateChecker::GetTicksSinceBoot() {
   struct timespec ts = {};
   int ret = clock_gettime(CLOCK_BOOTTIME, &ts);
-  DCHECK_NE(ret, 0);
+  DCHECK_EQ(ret, 0);
   return base::TimeTicks() + base::TimeDelta::FromTimeSpec(ts);
 }
 
