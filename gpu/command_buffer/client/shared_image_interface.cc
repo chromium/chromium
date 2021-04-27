@@ -21,4 +21,16 @@ Mailbox SharedImageInterface::CreateSharedImageWithAHB(
   return Mailbox();
 }
 
+Mailbox SharedImageInterface::CreateSharedImage(
+    gfx::GpuMemoryBuffer* gpu_memory_buffer,
+    GpuMemoryBufferManager* gpu_memory_buffer_manager,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    uint32_t usage) {
+  return CreateSharedImage(gpu_memory_buffer, gpu_memory_buffer_manager,
+                           gfx::BufferPlane::DEFAULT, color_space,
+                           surface_origin, alpha_type, usage);
+}
+
 }  // namespace gpu

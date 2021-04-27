@@ -233,6 +233,7 @@ void SharedImageInterfaceInProcess::CreateSharedImageWithDataOnGpuThread(
 Mailbox SharedImageInterfaceInProcess::CreateSharedImage(
     gfx::GpuMemoryBuffer* gpu_memory_buffer,
     GpuMemoryBufferManager* gpu_memory_buffer_manager,
+    gfx::BufferPlane plane,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
@@ -244,6 +245,8 @@ Mailbox SharedImageInterfaceInProcess::CreateSharedImage(
   // TODO(piman): DCHECK GMB format support.
   DCHECK(IsImageSizeValidForGpuMemoryBufferFormat(
       gpu_memory_buffer->GetSize(), gpu_memory_buffer->GetFormat()));
+  DCHECK(IsPlaneValidForGpuMemoryBufferFormat(plane,
+                                              gpu_memory_buffer->GetFormat()));
 
   auto mailbox = Mailbox::GenerateForSharedImage();
   gfx::GpuMemoryBufferHandle handle = gpu_memory_buffer->CloneHandle();
@@ -260,7 +263,7 @@ Mailbox SharedImageInterfaceInProcess::CreateSharedImage(
         base::BindOnce(
             &SharedImageInterfaceInProcess::CreateGMBSharedImageOnGpuThread,
             base::Unretained(this), mailbox, std::move(handle),
-            gpu_memory_buffer->GetFormat(), gpu_memory_buffer->GetSize(),
+            gpu_memory_buffer->GetFormat(), plane, gpu_memory_buffer->GetSize(),
             color_space, surface_origin, alpha_type, usage, sync_token),
         {});
   }
@@ -276,6 +279,7 @@ void SharedImageInterfaceInProcess::CreateGMBSharedImageOnGpuThread(
     const Mailbox& mailbox,
     gfx::GpuMemoryBufferHandle handle,
     gfx::BufferFormat format,
+    gfx::BufferPlane plane,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
@@ -291,9 +295,9 @@ void SharedImageInterfaceInProcess::CreateGMBSharedImageOnGpuThread(
   // TODO(piman): add support for SurfaceHandle (for backbuffers for ozone/drm).
   SurfaceHandle surface_handle = kNullSurfaceHandle;
   if (!shared_image_factory_->CreateSharedImage(
-          mailbox, kDisplayCompositorClientId, std::move(handle), format,
-          gfx::BufferPlane::DEFAULT, surface_handle, size, color_space,
-          surface_origin, alpha_type, usage)) {
+          mailbox, kDisplayCompositorClientId, std::move(handle), format, plane,
+          surface_handle, size, color_space, surface_origin, alpha_type,
+          usage)) {
     // Signal errors by losing the command buffer.
     // Signal errors by losing the command buffer.
     command_buffer_helper_->SetError();

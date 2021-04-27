@@ -156,6 +156,7 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
 Mailbox SharedImageInterfaceProxy::CreateSharedImage(
     gfx::GpuMemoryBuffer* gpu_memory_buffer,
     GpuMemoryBufferManager* gpu_memory_buffer_manager,
+    gfx::BufferPlane plane,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
@@ -172,7 +173,7 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
   params.handle = gpu_memory_buffer->CloneHandle();
   params.size = gpu_memory_buffer->GetSize();
   params.format = gpu_memory_buffer->GetFormat();
-  params.plane = gfx::BufferPlane::DEFAULT;
+  params.plane = plane;
   params.color_space = color_space;
   params.usage = usage;
   params.surface_origin = surface_origin;
