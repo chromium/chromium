@@ -53951,11 +53951,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_instrumentation_test_versions_apk_Client Library Skew Tests For 90.0.4430.91"
+            "weblayer_instrumentation_test_versions_apk_Client Library Skew Tests For 90.0.4430.96"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_instrumentation_test_versions_apk_Client Library Skew Tests For 90.0.4430.91",
+        "name": "weblayer_instrumentation_test_versions_apk_Client Library Skew Tests For 90.0.4430.96",
         "resultdb": {
           "enable": true
         },
@@ -53965,7 +53965,7 @@
             {
               "cipd_package": "chromium/testing/weblayer-x86",
               "location": "weblayer_instrumentation_test_M90",
-              "revision": "version:90.0.4430.91"
+              "revision": "version:90.0.4430.96"
             },
             {
               "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
@@ -54188,11 +54188,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_instrumentation_test_versions_apk_Implementation Library Skew Tests For 90.0.4430.91"
+            "weblayer_instrumentation_test_versions_apk_Implementation Library Skew Tests For 90.0.4430.96"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_instrumentation_test_versions_apk_Implementation Library Skew Tests For 90.0.4430.91",
+        "name": "weblayer_instrumentation_test_versions_apk_Implementation Library Skew Tests For 90.0.4430.96",
         "resultdb": {
           "enable": true
         },
@@ -54202,7 +54202,7 @@
             {
               "cipd_package": "chromium/testing/weblayer-x86",
               "location": "weblayer_instrumentation_test_M90",
-              "revision": "version:90.0.4430.91"
+              "revision": "version:90.0.4430.96"
             },
             {
               "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
@@ -54492,11 +54492,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_instrumentation_test_versions_apk_Client Library Skew Tests For 90.0.4430.91"
+            "weblayer_instrumentation_test_versions_apk_Client Library Skew Tests For 90.0.4430.96"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_instrumentation_test_versions_apk_Client Library Skew Tests For 90.0.4430.91",
+        "name": "weblayer_instrumentation_test_versions_apk_Client Library Skew Tests For 90.0.4430.96",
         "resultdb": {
           "enable": true
         },
@@ -54506,7 +54506,7 @@
             {
               "cipd_package": "chromium/testing/weblayer-x86",
               "location": "weblayer_instrumentation_test_M90",
-              "revision": "version:90.0.4430.91"
+              "revision": "version:90.0.4430.96"
             },
             {
               "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
@@ -54729,11 +54729,11 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "weblayer_instrumentation_test_versions_apk_Implementation Library Skew Tests For 90.0.4430.91"
+            "weblayer_instrumentation_test_versions_apk_Implementation Library Skew Tests For 90.0.4430.96"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "weblayer_instrumentation_test_versions_apk_Implementation Library Skew Tests For 90.0.4430.91",
+        "name": "weblayer_instrumentation_test_versions_apk_Implementation Library Skew Tests For 90.0.4430.96",
         "resultdb": {
           "enable": true
         },
@@ -54743,7 +54743,7 @@
             {
               "cipd_package": "chromium/testing/weblayer-x86",
               "location": "weblayer_instrumentation_test_M90",
-              "revision": "version:90.0.4430.91"
+              "revision": "version:90.0.4430.96"
             },
             {
               "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
