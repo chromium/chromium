@@ -22,7 +22,6 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -42,7 +41,6 @@ import java.util.concurrent.Callable;
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 // TODO(https://crbug.com/1112356) Change this to Build.VERSION_CODES.N once N support is added.
 @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-@DisableIf.Build(sdk_is_greater_than = 28) // https://crbug.com/1201342
 public class WebXrArCameraAccessTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =

@@ -21,7 +21,6 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.vr.rules.ArPlaybackFile;
@@ -41,7 +40,6 @@ import java.util.concurrent.Callable;
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-features=LogJsConsoleMessages"})
 @MinAndroidSdkLevel(Build.VERSION_CODES.N) // WebXR for AR is only supported on N+
-@DisableIf.Build(sdk_is_greater_than = 28) // https://crbug.com/1201342
 public class WebXrArLightEstimationTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
