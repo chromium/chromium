@@ -395,6 +395,8 @@ void CameraHalDispatcherImpl::CameraPrivacySwitchStateChange(
       FROM_HERE,
       &CameraPrivacySwitchObserver::OnCameraPrivacySwitchStatusChanged,
       current_privacy_switch_state_);
+  CAMERA_LOG(EVENT) << "Camera privacy switch state changed: "
+                    << current_privacy_switch_state_;
 }
 
 base::UnguessableToken CameraHalDispatcherImpl::GetTokenForTrustedClient(
