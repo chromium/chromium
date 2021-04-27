@@ -25,10 +25,10 @@ namespace update_client {
 namespace {
 
 // This is an ECDSA prime256v1 named-curve key.
-constexpr int kKeyVersion = 10;
+constexpr int kKeyVersion = 11;
 constexpr char kKeyPubBytesBase64[] =
-    "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEzOqC8cKNUYIi0UkNu0smZKDW8w5/"
-    "0EmEw1KQ6Aj/5JWBMdUVm13EIVwFwPlkO/U6vXa+iu4wyUB89GFaldJ7Bg==";
+    "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEgH30WRJf4g6I2C1FKsBQF3qHANLw"
+    "thwYsNt2PWTDQBS0ufSRE83piOPoJQcePzTkMfbghjnZerDjLJhBsDkfFg==";
 
 // The content type for all protocol requests.
 constexpr char kContentType[] = "application/json";
