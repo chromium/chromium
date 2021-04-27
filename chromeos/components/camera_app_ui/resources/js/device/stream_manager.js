@@ -324,7 +324,19 @@ export class StreamManager {
       this.virtualMap_ = null;
     }
     const deviceOperator = await DeviceOperator.getInstance();
-    await deviceOperator.setMultipleStreamsEnabled(deviceId, enabled);
+    try {
+      // Mojo connection may be disconnected when closing CCA.
+      // It causes the disabling multiple streams request failed.
+      // Since camera HAL will disable all virtual devices when CCA is closed,
+      // we can bypass the error for this case.
+      // TODO(b/186179072): Remove the workaround when CCA does nothing after
+      // closing mojo connection.
+      await deviceOperator.setMultipleStreamsEnabled(deviceId, enabled);
+    } catch (e) {
+      if (enabled || e.message !== 'Message pipe closed.') {
+        throw e;
+      }
+    }
     await this.deviceUpdate();
     if (enabled) {
       try {
