@@ -76,10 +76,6 @@
         margin-inline-start: 20px;
       }
 
-      #subtitle {
-        color: var(--cr-secondary-text-color);
-      }
-
       #networkStateText {
         font-size: inherit;
       }
@@ -147,9 +143,8 @@
           <iron-icon id="divIcon" icon="[[item.polymerIcon]]"></iron-icon>
         </template>
         <div id="divText" class="layout horizontal flex">
-          <div id="itemNameContainer"
-              inner-h-t-m-l="[[itemNameContainerInnerHtml_]]"
-              aria-hidden="true">
+          <div id="itemTitle" aria-hidden="true">
+            [[itemTitle_]]
           </div>
           <div id="networkStateText"
               class$="[[getNetworkStateTextClass_(networkState.*,

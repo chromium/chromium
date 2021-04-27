@@ -111,10 +111,10 @@ Polymer({
     managedProperties_: Object,
 
     /**
-     * HTML containing the item's name and subtitle.
+     * Title containing the item's name and subtitle.
      * @private {string}
      */
-    itemNameContainerInnerHtml_: {
+    itemTitle_: {
       type: String,
       value: '',
     },
@@ -220,7 +220,7 @@ Polymer({
     // The order each property is set here matters. We don't use observers to
     // set each property or else the ordering is indeterminate.
     await this.setSubtitle_();
-    this.setItemNameContainerInnerHtml_();
+    this.setItemTitle_();
   },
 
   /** @private */
@@ -294,29 +294,14 @@ Polymer({
   },
 
   /** @private */
-  setItemNameContainerInnerHtml_() {
-    const itemName = this.escapeHtml_(this.getItemName_());
-    const subtitle = this.escapeHtml_(this.getSubtitle());
+  setItemTitle_() {
+    const itemName = this.getItemName_();
+    const subtitle = this.getSubtitle();
     if (!subtitle) {
-      this.itemNameContainerInnerHtml_ = itemName;
+      this.itemTitle_ = itemName;
       return;
     }
-    this.itemNameContainerInnerHtml_ = this.i18nAdvanced(
-        'networkListItemTitle',
-        {attrs: ['id'], substitutions: [itemName, subtitle]});
-  },
-
-  /**
-   * @param {string} string
-   * @return {string}
-   * @private
-   */
-  escapeHtml_(string) {
-    return string.replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
+    this.itemTitle_ = this.i18n('networkListItemTitle', itemName, subtitle);
   },
 
   /**

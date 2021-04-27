@@ -108,7 +108,7 @@ suite('NetworkListItemTest', function() {
   });
 
   test('Network provider name visibilty', async () => {
-    assertFalse(!!listItem.$$('#subtitle'));
+    const getTitle = () => listItem.$$('#itemTitle');
 
     const properties = OncMojo.getDefaultManagedProperties(
         mojom.NetworkType.kEthernet, 'eth0');
@@ -116,17 +116,20 @@ suite('NetworkListItemTest', function() {
     listItem.item = OncMojo.managedPropertiesToNetworkState(properties);
     await flushAsync();
 
-    let providerName = listItem.$$('#subtitle');
-    assertFalse(!!providerName);
+    let title = getTitle();
+    assertTrue(!!title);
+    assertEquals('Ethernet', title.textContent.trim());
 
     eSimManagerRemote.addEuiccForTest(/*numProfiles=*/ 1);
     const networkState = initCellularNetwork(/*iccid=*/ '1', /*eid=*/ '1');
     listItem.item = networkState;
     await flushAsync();
 
-    providerName = listItem.$$('#subtitle');
-    assertTrue(!!providerName);
-    assertEquals('provider1', providerName.textContent.trim());
+    title = getTitle();
+    assertTrue(!!title);
+    assertEquals(
+        listItem.i18n('networkListItemTitle', 'Cellular', 'provider1'),
+        title.textContent.trim());
   });
 
   test('Network title is escaped', async () => {
@@ -350,8 +353,6 @@ suite('NetworkListItemTest', function() {
   test(
       'Pending eSIM profile name, provider, install button visibilty',
       async () => {
-        assertFalse(!!listItem.$$('#subtitle'));
-
         const itemName = 'Item Name';
         const itemSubtitle = 'Item Subtitle';
         listItem.item = {
@@ -366,13 +367,11 @@ suite('NetworkListItemTest', function() {
         };
         await flushAsync();
 
-        let networkName = listItem.$$('#networkName');
-        assertTrue(!!networkName);
-        assertEquals(itemName, networkName.textContent.trim());
-
-        let subtitle = listItem.$$('#subtitle');
-        assertTrue(!!subtitle);
-        assertEquals(itemSubtitle, subtitle.textContent.trim());
+        let title = listItem.$$('#itemTitle');
+        assertTrue(!!title);
+        assertEquals(
+            listItem.i18n('networkListItemTitle', itemName, itemSubtitle),
+            title.textContent.trim());
 
         let installButton = listItem.$$('#installButton');
         assertTrue(!!installButton);
@@ -389,8 +388,6 @@ suite('NetworkListItemTest', function() {
 
   test(
       'Installing eSIM profile name, provider, spinner visibilty', async () => {
-        assertFalse(!!listItem.$$('#subtitle'));
-
         const itemName = 'Item Name';
         const itemSubtitle = 'Item Subtitle';
         listItem.item = {
@@ -405,13 +402,11 @@ suite('NetworkListItemTest', function() {
         };
         await flushAsync();
 
-        let networkName = listItem.$$('#networkName');
-        assertTrue(!!networkName);
-        assertEquals(itemName, networkName.textContent.trim());
-
-        let subtitle = listItem.$$('#subtitle');
-        assertTrue(!!subtitle);
-        assertEquals(itemSubtitle, subtitle.textContent.trim());
+        let title = listItem.$$('#itemTitle');
+        assertTrue(!!title);
+        assertEquals(
+            listItem.i18n('networkListItemTitle', itemName, itemSubtitle),
+            title.textContent.trim());
 
         let spinner = listItem.$$('#installingESimSpinner');
         assertTrue(!!spinner);
