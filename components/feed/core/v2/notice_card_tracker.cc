@@ -51,6 +51,18 @@ bool GetLastFetchHadNoticeCard(const PrefService& pref_service) {
   return pref_service.GetBoolean(feed::prefs::kLastFetchHadNoticeCard);
 }
 
+void SetHasReachedClickAndViewActionsUploadConditions(PrefService& pref_service,
+                                                      bool value) {
+  pref_service.SetBoolean(
+      feed::prefs::kHasReachedClickAndViewActionsUploadConditions, value);
+}
+
+bool GetHasReachedClickAndViewActionsUploadConditions(
+    const PrefService& pref_service) {
+  return pref_service.GetBoolean(
+      feed::prefs::kHasReachedClickAndViewActionsUploadConditions);
+}
+
 }  // namespace prefs
 
 NoticeCardTracker::NoticeCardTracker(PrefService* profile_prefs)

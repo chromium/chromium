@@ -46,11 +46,6 @@ void SetPersistentMetricsData(const PersistentMetricsData& data,
 std::string GetClientInstanceId(PrefService& pref_service);
 void ClearClientInstanceId(PrefService& pref_service);
 
-void SetHasReachedClickAndViewActionsUploadConditions(PrefService& pref_service,
-                                                      bool value);
-bool GetHasReachedClickAndViewActionsUploadConditions(
-    const PrefService& pref_service);
-
 void SetExperiments(const Experiments& experiments, PrefService& pref_service);
 Experiments GetExperiments(PrefService& pref_service);
 

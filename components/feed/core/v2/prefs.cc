@@ -102,18 +102,6 @@ void ClearClientInstanceId(PrefService& pref_service) {
   pref_service.ClearPref(feed::prefs::kClientInstanceId);
 }
 
-void SetHasReachedClickAndViewActionsUploadConditions(PrefService& pref_service,
-                                                      bool value) {
-  pref_service.SetBoolean(
-      feed::prefs::kHasReachedClickAndViewActionsUploadConditions, value);
-}
-
-bool GetHasReachedClickAndViewActionsUploadConditions(
-    const PrefService& pref_service) {
-  return pref_service.GetBoolean(
-      feed::prefs::kHasReachedClickAndViewActionsUploadConditions);
-}
-
 void SetExperiments(const Experiments& experiments, PrefService& pref_service) {
   base::Value value(base::Value::Type::DICTIONARY);
   for (const auto& exp : experiments) {
