@@ -23,7 +23,7 @@ using bookmarks::BookmarkNode;
 
 @synthesize tempURL = _tempURL;
 
-- (id)init {
+- (instancetype)init {
   if ((self = [super init])) {
     [self setTempURL:@""];
   }

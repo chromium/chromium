@@ -38,11 +38,10 @@
 
 @implementation WindowAppleScript
 
-- (id)init {
+- (instancetype)init {
   // Check which mode to open a new window.
   NSScriptCommand* command = [NSScriptCommand currentCommand];
-  NSString* mode = [[[command evaluatedArguments]
-      objectForKey:@"KeyDictionary"] objectForKey:@"mode"];
+  NSString* mode = [command evaluatedArguments][@"KeyDictionary"][@"mode"];
   AppController* appDelegate =
       base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
 
@@ -65,12 +64,11 @@
     return nil;
   }
   // Set the mode to nil, to ensure that it is not set once more.
-  [[[command evaluatedArguments] objectForKey:@"KeyDictionary"]
-      setValue:nil forKey:@"mode"];
+  [[command evaluatedArguments][@"KeyDictionary"] setValue:nil forKey:@"mode"];
   return [self initWithProfile:profile];
 }
 
-- (id)initWithProfile:(Profile*)aProfile {
+- (instancetype)initWithProfile:(Profile*)aProfile {
   if (!aProfile) {
     [self release];
     return nil;
@@ -95,7 +93,7 @@
   return self;
 }
 
-- (id)initWithBrowser:(Browser*)aBrowser {
+- (instancetype)initWithBrowser:(Browser*)aBrowser {
   if (!aBrowser) {
     [self release];
     return nil;
@@ -126,7 +124,7 @@
   if (!activeTabIndex) {
     return nil;
   }
-  return [NSNumber numberWithInt:activeTabIndex];
+  return @(activeTabIndex);
 }
 
 - (void)setActiveTabIndex:(NSNumber*)anActiveTabIndex {

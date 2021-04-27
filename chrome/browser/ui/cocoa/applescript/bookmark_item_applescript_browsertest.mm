@@ -25,7 +25,7 @@ namespace {
 // Set and get title.
 IN_PROC_BROWSER_TEST_F(BookmarkItemAppleScriptTest, GetAndSetTitle) {
   NSArray* bookmarkItems = [bookmarkBar_.get() bookmarkItems];
-  BookmarkItemAppleScript* item1 = [bookmarkItems objectAtIndex:0];
+  BookmarkItemAppleScript* item1 = bookmarkItems[0];
   [item1 setTitle:@"Foo"];
   EXPECT_NSEQ(@"Foo", [item1 title]);
 }
@@ -33,7 +33,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkItemAppleScriptTest, GetAndSetTitle) {
 // Set and get URL.
 IN_PROC_BROWSER_TEST_F(BookmarkItemAppleScriptTest, GetAndSetURL) {
   NSArray* bookmarkItems = [bookmarkBar_.get() bookmarkItems];
-  BookmarkItemAppleScript* item1 = [bookmarkItems objectAtIndex:0];
+  BookmarkItemAppleScript* item1 = bookmarkItems[0];
   [item1 setURL:@"http://foo-bar.org"];
   EXPECT_EQ(GURL("http://foo-bar.org"),
             GURL(base::SysNSStringToUTF8([item1 URL])));
@@ -52,7 +52,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkItemAppleScriptTest, GetAndSetJavascriptURL) {
   prefs->SetBoolean(prefs::kAllowJavascriptAppleEvents, false);
 
   NSArray* bookmarkItems = [bookmarkBar_.get() bookmarkItems];
-  BookmarkItemAppleScript* item1 = [bookmarkItems objectAtIndex:0];
+  BookmarkItemAppleScript* item1 = bookmarkItems[0];
 
   base::scoped_nsobject<FakeScriptCommand> fakeScriptCommand(
       [[FakeScriptCommand alloc] init]);

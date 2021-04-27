@@ -72,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, Tabs) {
       [[WindowAppleScript alloc] initWithBrowser:browser()]);
   NSArray* tabs = [aWindow.get() tabs];
   EXPECT_EQ(1U, [tabs count]);
-  TabAppleScript* tab1 = [tabs objectAtIndex:0];
+  TabAppleScript* tab1 = tabs[0];
   EXPECT_EQ([tab1 container], aWindow.get());
   EXPECT_NSEQ(AppleScript::kTabsProperty,
               [tab1 containerProperty]);
@@ -91,7 +91,7 @@ IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, InsertTab) {
   [aWindow.get() insertInTabs:aTab.get()];
 
   // Represents the tab after it is inserted.
-  TabAppleScript* tab = [[aWindow.get() tabs] objectAtIndex:1];
+  TabAppleScript* tab = [aWindow.get() tabs][1];
   EXPECT_EQ(GURL("http://google.com"),
             GURL(base::SysNSStringToUTF8([tab URL])));
   EXPECT_EQ([tab container], aWindow.get());
@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, InsertTabAtPosition) {
   [aWindow.get() insertInTabs:aTab.get() atIndex:0];
 
   // Represents the tab after it is inserted.
-  TabAppleScript* tab = [[aWindow.get() tabs] objectAtIndex:0];
+  TabAppleScript* tab = [aWindow.get() tabs][0];
   EXPECT_EQ(GURL("http://google.com"),
             GURL(base::SysNSStringToUTF8([tab URL])));
   EXPECT_EQ([tab container], aWindow.get());
@@ -150,11 +150,9 @@ IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, InsertAndDeleteTabs) {
 IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, NSWindowTest) {
   base::scoped_nsobject<WindowAppleScript> aWindow(
       [[WindowAppleScript alloc] initWithBrowser:browser()]);
-  [aWindow.get() setValue:[NSNumber numberWithBool:YES]
-                   forKey:@"isMiniaturized"];
+  [aWindow.get() setValue:@YES forKey:@"isMiniaturized"];
   EXPECT_TRUE([[aWindow.get() valueForKey:@"isMiniaturized"] boolValue]);
-  [aWindow.get() setValue:[NSNumber numberWithBool:NO]
-                   forKey:@"isMiniaturized"];
+  [aWindow.get() setValue:@NO forKey:@"isMiniaturized"];
   EXPECT_FALSE([[aWindow.get() valueForKey:@"isMiniaturized"] boolValue]);
 }
 
@@ -164,9 +162,9 @@ IN_PROC_BROWSER_TEST_F(WindowAppleScriptTest, ActiveTab) {
       [[WindowAppleScript alloc] initWithBrowser:browser()]);
   base::scoped_nsobject<TabAppleScript> aTab([[TabAppleScript alloc] init]);
   [aWindow.get() insertInTabs:aTab.get()];
-  [aWindow.get() setActiveTabIndex:[NSNumber numberWithInt:2]];
+  [aWindow.get() setActiveTabIndex:@2];
   EXPECT_EQ(2, [[aWindow.get() activeTabIndex] intValue]);
-  TabAppleScript* tab2 = [[aWindow.get() tabs] objectAtIndex:1];
+  TabAppleScript* tab2 = [aWindow.get() tabs][1];
   EXPECT_NSEQ([[aWindow.get() activeTab] uniqueID],
               [tab2 uniqueID]);
 }

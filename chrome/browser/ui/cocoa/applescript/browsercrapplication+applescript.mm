@@ -59,12 +59,11 @@ using bookmarks::BookmarkModel;
                property:AppleScript::kWindowsProperty];
   // Note: AppleScript is 1-based.
   index--;
-  [aWindow setOrderedIndex:[NSNumber numberWithInt:index]];
+  [aWindow setOrderedIndex:@(index)];
 }
 
 - (void)removeFromAppleScriptWindowsAtIndex:(int)index {
-  [[[self appleScriptWindows] objectAtIndex:index]
-      handlesCloseScriptCommand:nil];
+  [[self appleScriptWindows][index] handlesCloseScriptCommand:nil];
 }
 
 - (NSScriptObjectSpecifier*)objectSpecifier {
@@ -124,9 +123,7 @@ using bookmarks::BookmarkModel;
 - (NSArray*)bookmarkFolders {
   BookmarkFolderAppleScript* otherBookmarks = [self otherBookmarks];
   BookmarkFolderAppleScript* bookmarksBar = [self bookmarksBar];
-  NSArray* folderArray = [NSArray arrayWithObjects:otherBookmarks,
-                                                   bookmarksBar,
-                                                   nil];
+  NSArray* folderArray = @[ otherBookmarks, bookmarksBar ];
   return folderArray;
 }
 

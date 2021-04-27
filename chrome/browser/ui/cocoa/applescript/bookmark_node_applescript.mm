@@ -27,7 +27,7 @@ using bookmarks::BookmarkNode;
 
 @synthesize tempTitle = _tempTitle;
 
-- (id)init {
+- (instancetype)init {
   if ((self = [super init])) {
     BookmarkModel* model = [self bookmarkModel];
     if (!model) {
@@ -48,8 +48,7 @@ using bookmarks::BookmarkNode;
   [super dealloc];
 }
 
-
-- (id)initWithBookmarkNode:(const BookmarkNode*)aBookmarkNode {
+- (instancetype)initWithBookmarkNode:(const BookmarkNode*)aBookmarkNode {
   if (!aBookmarkNode) {
     [self release];
     return nil;
@@ -111,7 +110,7 @@ using bookmarks::BookmarkNode;
   const BookmarkNode* parent = _bookmarkNode->parent();
   int index = parent->GetIndexOf(_bookmarkNode);
   // NOTE: AppleScript is 1-Based.
-  return [NSNumber numberWithInt:index+1];
+  return @(index + 1);
 }
 
 - (BookmarkModel*)bookmarkModel {
