@@ -246,6 +246,8 @@ crbug.com/866850 [ Mac ] virtual/gpu/fast/canvas/OffscreenCanvas-filter.html [ S
 crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/OffscreenCanvas-filter-in-worker.html [ Slow ]
 crbug.com/866850 [ Mac ] virtual/gpu/fast/canvas/OffscreenCanvas-filter-in-worker.html [ Slow ]
 
+crbug.com/1010472 fast/canvas/color-space/canvas-drawImage-offscreenCanvas.html [ Slow ]
+
 ### Some timeout tests in xmlhttprequest/timeout/ are slow
 crbug.com/869800 http/tests/xmlhttprequest/timeout/xmlhttprequest-timeout-worker-aborted.html [ Slow ]
 crbug.com/869800 http/tests/xmlhttprequest/timeout/xmlhttprequest-timeout-worker-simple.html [ Slow ]
