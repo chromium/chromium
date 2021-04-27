@@ -245,8 +245,8 @@ public class TopToolbarCoordinator implements Toolbar {
         if (DeviceClassManager.enableFullscreen()) {
             mOverlayCoordinator = new TopToolbarOverlayCoordinator(mToolbarLayout.getContext(),
                     layoutManager, mControlContainer::getProgressBarDrawingInfo, tabSupplier,
-                    browserControlsStateProvider, mResourceManagerSupplier,
-                    topUiThemeColorProvider, LayoutType.BROWSING, false);
+                    browserControlsStateProvider, mResourceManagerSupplier, topUiThemeColorProvider,
+                    LayoutType.BROWSING | LayoutType.SIMPLE_ANIMATION, false);
             layoutManager.addSceneOverlay(mOverlayCoordinator);
             mToolbarLayout.setOverlayCoordinator(mOverlayCoordinator);
         }

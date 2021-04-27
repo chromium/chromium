@@ -14,7 +14,6 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutManager;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
@@ -46,8 +45,8 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
             ObservableSupplier<Tab> tabSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<ResourceManager> resourceManagerSupplier,
-            TopUiThemeColorProvider topUiThemeColorProvider,
-            @LayoutType int layoutToShowOn, boolean isVisibilityManuallyControlled) {
+            TopUiThemeColorProvider topUiThemeColorProvider, int layoutsToShowOn,
+            boolean isVisibilityManuallyControlled) {
         mModel = new PropertyModel.Builder(TopToolbarOverlayProperties.ALL_KEYS)
                          .with(TopToolbarOverlayProperties.RESOURCE_ID, R.id.control_container)
                          .with(TopToolbarOverlayProperties.URL_BAR_RESOURCE_ID,
@@ -65,7 +64,7 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
 
         mMediator = new TopToolbarOverlayMediator(mModel, context, layoutManager,
                 progressInfoCallback, tabSupplier, browserControlsStateProvider,
-                topUiThemeColorProvider, layoutToShowOn, isVisibilityManuallyControlled);
+                topUiThemeColorProvider, layoutsToShowOn, isVisibilityManuallyControlled);
     }
 
     /**

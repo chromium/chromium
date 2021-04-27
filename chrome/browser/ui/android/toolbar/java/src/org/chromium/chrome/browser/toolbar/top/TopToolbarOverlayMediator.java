@@ -75,8 +75,8 @@ public class TopToolbarOverlayMediator {
             Callback<ClipDrawableProgressBar.DrawingInfo> progressInfoCallback,
             ObservableSupplier<Tab> tabSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
-            TopUiThemeColorProvider topUiThemeColorProvider,
-            @LayoutType int layoutToShowOn, boolean manualVisibilityControl) {
+            TopUiThemeColorProvider topUiThemeColorProvider, int layoutsToShowOn,
+            boolean manualVisibilityControl) {
         mContext = context;
         mLayoutStateProvider = layoutStateProvider;
         mProgressInfoCallback = progressInfoCallback;
@@ -88,7 +88,7 @@ public class TopToolbarOverlayMediator {
         mSceneChangeObserver = new LayoutStateObserver() {
             @Override
             public void onStartedShowing(@LayoutType int layout, boolean showToolbar) {
-                mIsOnValidLayout = layout == layoutToShowOn;
+                mIsOnValidLayout = (layout & layoutsToShowOn) > 0;
                 updateVisibility();
             }
         };
