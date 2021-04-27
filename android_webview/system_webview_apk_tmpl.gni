@@ -179,15 +179,6 @@ template("system_webview_apk_or_module_tmpl") {
       }
     }
 
-    if (!_use_trichrome_library || android_64bit_target_cpu) {
-      # 32-bit TrichromeWebView doesn't have a native library, so only do this
-      # for other configs.
-      native_lib_version_rule = "//build/util:chrome_version_json"
-      _native_lib_file =
-          rebase_path("$root_gen_dir/CHROME_VERSION.json", root_out_dir)
-      native_lib_version_arg = "@FileArg($_native_lib_file:full-quoted)"
-    }
-
     aapt_locale_allowlist = locales
 
     resource_exclusion_regex = common_resource_exclusion_regex

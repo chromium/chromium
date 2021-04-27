@@ -131,10 +131,6 @@ void SetVersionNumber(const char* version_number) {
   g_library_version_number = strdup(version_number);
 }
 
-ScopedJavaLocalRef<jstring> JNI_LibraryLoader_GetVersionNumber(JNIEnv* env) {
-  return ConvertUTF8ToJavaString(env, g_library_version_number);
-}
-
 void InitAtExitManager() {
   g_at_exit_manager = new base::AtExitManager();
 }

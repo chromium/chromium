@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "base/android/jni_android.h"
-#include "base/android/library_loader/library_loader_hooks.h"
 #include "chrome/app/android/chrome_jni_onload.h"
 #include "chrome/test/base/chrome_test_launcher.h"
 #include "content/public/app/content_jni_onload.h"
@@ -21,10 +20,6 @@ JNI_EXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
   // also.
   if (!content::android::OnJNIOnLoadInit())
     return -1;
-
-  // Tests do not have a version so they expect the version number to be "" in
-  // java.
-  base::android::SetVersionNumber("");
 
   // This needs to be done before base::TestSuite::Initialize() is called,
   // as it also tries to set MessagePumpForUIFactory.

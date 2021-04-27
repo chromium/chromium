@@ -814,19 +814,7 @@ public class LibraryLoader {
             throw new ProcessInitException(LoaderErrors.FAILED_TO_REGISTER_JNI);
         }
 
-        // Check that the version of the library we have loaded matches the version we expect
-        if (!NativeLibraries.sVersionNumber.equals(LibraryLoaderJni.get().getVersionNumber())) {
-            Log.e(TAG,
-                    "Expected native library version number \"%s\", "
-                            + "actual native library version number \"%s\"",
-                    NativeLibraries.sVersionNumber, LibraryLoaderJni.get().getVersionNumber());
-            throw new ProcessInitException(LoaderErrors.NATIVE_LIBRARY_WRONG_VERSION);
-        } else {
-            // Log the version anyway as this is often helpful, but word it differently so it's
-            // clear that it isn't an error.
-            Log.i(TAG, "Loaded native library version number \"%s\"",
-                    NativeLibraries.sVersionNumber);
-        }
+        Log.i(TAG, "Successfully loaded native library");
         UmaRecorderHolder.onLibraryLoaded();
 
         // From now on, keep tracing in sync with native.
@@ -915,9 +903,5 @@ public class LibraryLoader {
 
         // Records the number of milliseconds it took to load the libraries in the renderer.
         void recordRendererLibraryLoadTime(long libraryLoadTime);
-
-        // Get the version of the native library. This is needed so that we can check we
-        // have the right version before initializing the (rest of the) JNI.
-        String getVersionNumber();
     }
 }

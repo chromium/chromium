@@ -123,11 +123,6 @@ template("trichrome_library_apk_tmpl") {
       "//third_party/icu:icu_assets",
     ]
 
-    _native_lib_file =
-        rebase_path("$root_gen_dir/CHROME_VERSION.json", root_out_dir)
-    native_lib_version_arg = "@FileArg($_native_lib_file:full-quoted)"
-    native_lib_version_rule = "//build/util:chrome_version_json"
-
     # Flag whether additional deps and libs should be included for each ABI.
     _include_primary_support = false
     _include_secondary_support = false

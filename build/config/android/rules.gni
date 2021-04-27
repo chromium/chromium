@@ -724,12 +724,6 @@ if (enable_java_templates) {
           "--native-libraries-list",
           rebase_path(invoker.native_libraries_list_file, root_build_dir),
         ]
-        if (defined(invoker.version_number)) {
-          args += [
-            "--version-number",
-            invoker.version_number,
-          ]
-        }
         if (defined(invoker.main_component_library)) {
           args += [
             "--main-component-library",
@@ -2643,13 +2637,6 @@ if (enable_java_templates) {
     if (_generate_native_libraries_java) {
       write_native_libraries_java("${_template_name}__native_libraries") {
         forward_variables_from(invoker, [ "main_component_library" ])
-        deps = []
-        if (defined(invoker.native_lib_version_rule)) {
-          deps += [ invoker.native_lib_version_rule ]
-        }
-        if (defined(invoker.native_lib_version_arg)) {
-          version_number = invoker.native_lib_version_arg
-        }
 
         # Do not add a dep on the generated_file target in order to avoid having
         # to build the native libraries before this target. The dependency is
@@ -2665,13 +2652,6 @@ if (enable_java_templates) {
         use_final_fields = true
       }
       _srcjar_deps += [ ":${_template_name}__native_libraries" ]
-    } else {
-      if (defined(invoker.native_lib_version_arg)) {
-        not_needed(invoker, [ "native_lib_version_arg" ])
-      }
-      if (defined(invoker.native_lib_version_rule)) {
-        not_needed(invoker, [ "native_lib_version_rule" ])
-      }
     }
 
     _loadable_modules = []
@@ -3490,8 +3470,6 @@ if (enable_java_templates) {
                                "main_component_library",
                                "min_sdk_version",
                                "native_lib_placeholders",
-                               "native_lib_version_arg",
-                               "native_lib_version_rule",
                                "never_incremental",
                                "no_xml_namespaces",
                                "png_to_webp",
@@ -3623,8 +3601,6 @@ if (enable_java_templates) {
                                "max_sdk_version",
                                "min_sdk_version",
                                "native_lib_placeholders",
-                               "native_lib_version_arg",
-                               "native_lib_version_rule",
                                "no_xml_namespaces",
                                "package_id",
                                "package_name",

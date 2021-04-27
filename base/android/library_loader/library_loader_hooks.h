@@ -77,12 +77,6 @@ typedef bool LibraryLoadedHook(JNIEnv* env,
 
 BASE_EXPORT void SetLibraryLoadedHook(LibraryLoadedHook* func);
 
-// Pass the version name to the loader. This used to check that the library
-// version matches the version expected by Java before completing JNI
-// registration.
-// Note: argument must remain valid at least until library loading is complete.
-BASE_EXPORT void SetVersionNumber(const char* version_number);
-
 // Call on exit to delete the AtExitManager which OnLibraryLoadedOnUIThread
 // created.
 BASE_EXPORT void LibraryLoaderExitHook();

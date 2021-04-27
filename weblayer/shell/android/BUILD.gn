@@ -263,11 +263,6 @@ android_apk("weblayer_support_apk") {
 
   product_config_java_packages = [ weblayer_product_config_java_package ]
 
-  native_lib_version_rule = "//build/util:chrome_version_json"
-  _native_lib_file =
-      rebase_path("$root_gen_dir/CHROME_VERSION.json", root_build_dir)
-  native_lib_version_arg = "@FileArg($_native_lib_file:full-quoted)"
-
   shared_libraries = [ "//weblayer:libweblayer_test" ]
 }
 

@@ -189,14 +189,6 @@ template("chrome_public_common_apk_or_module_tmpl") {
 
     short_resource_paths = true
 
-    if ((defined(shared_libraries) && shared_libraries != []) ||
-        (defined(secondary_abi_shared_libraries) &&
-         secondary_abi_shared_libraries != [])) {
-      _native_lib_file =
-          rebase_path("$root_gen_dir/CHROME_VERSION.json", root_out_dir)
-      native_lib_version_arg = "@FileArg($_native_lib_file:full-quoted)"
-      native_lib_version_rule = "//build/util:chrome_version_json"
-    }
     if (!defined(aapt_locale_allowlist)) {
       if (target_type == "android_apk") {
         # For APKs, do not include the resource strings files from our
