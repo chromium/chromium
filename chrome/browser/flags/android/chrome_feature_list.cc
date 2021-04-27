@@ -72,7 +72,7 @@ namespace {
 // Array of features exposed through the Java ChromeFeatureList API. Entries in
 // this array may either refer to features defined in the header of this file or
 // in other locations in the code base (e.g. chrome/, components/, etc).
-const base::Feature* kFeaturesExposedToJava[] = {
+const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillCreditCardAuthentication,
     &autofill::features::kAutofillDownstreamCvcPromptUseGooglePayLogo,
     &autofill::features::kAutofillEnablePasswordInfoBarAccountIndicationFooter,
