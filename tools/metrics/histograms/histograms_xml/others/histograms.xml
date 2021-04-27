@@ -11321,9 +11321,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     fires load events in the background; the metric is not recorded again if the
     background-loaed page is later displayed in the foreground.
 
+    Page loads that require network fetches will be slower than those where all
+    necessary resources are already present in WebKit's HTTP cache. Reload
+    navigations where all cached resources are up-to-date are particularly fast,
+    since they don't require any rendering updates either.
+
     It is possible for a user to interact with a page before all load events
     have been fired, so the recorded value should not be interpreted as the time
     before the page becomes interactive.
+
+    Most things that affect user-perceived page load time on iOS are within
+    WebKit, not within Chromium/Chrome code. To assess whether a change in this
+    metric is caused by a WebKit change, split by OS version. WebKit changes
+    always come with an OS version change. Obviously, aside from WebKit and
+    Chromium changes, this metric can move due to exogenous factors such as
+    changes in what type of web page people are looking at or changes in the
+    implementation of popular websites.
 
     Any navigation that is not considered browser-initiated is considered to be
     renderer-initiated (see PLT.iOS.RendererInitiatedPageLoadTime).
@@ -11354,9 +11367,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     fires load events in the background; the metric is not recorded again if the
     background-loaed page is later displayed in the foreground.
 
+    Page loads that require network fetches will be slower than those where all
+    necessary resources are already present in WebKit's HTTP cache. Reload
+    navigations where all cached resources are up-to-date are particularly fast,
+    since they don't require any rendering updates either.
+
     It is possible for a user to interact with a page before all load events
     have been fired, so the recorded value should not be interpreted as the time
     before the page becomes interactive.
+
+    Most things that affect user-perceived page load time on iOS are within
+    WebKit, not within Chromium/Chrome code. To assess whether a change in this
+    metric is caused by a WebKit change, split by OS version. WebKit changes
+    always come with an OS version change. Obviously, aside from WebKit and
+    Chromium changes, this metric can move due to exogenous factors such as
+    changes in what type of web page people are looking at or changes in the
+    implementation of popular websites.
 
     Any navigation that is not considered browser-initiated is considered to be
     renderer-initiated (see PLT.iOS.RendererInitiatedPageLoadTime2).
@@ -11383,19 +11409,34 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     This is recorded for successful main-frame navigations (that is, navigations
     that don't result in the browser displaying an error page). However, this is
-    not recorded when WebKit handles a navigation using its page cache (that is,
-    when the DOM representation of the destination is still loaded in memory
-    from a recent visit). The recorded value measures the time from the browser
-    process being notified that the navigation has started, to all frames having
-    fired their load events. The time that the browser process is notified that
-    the navigation has started is usually just after a network request is sent,
-    but can be later for back/forward navigations on sites that use pushState to
-    generate history entries; in the latter case, the navigation may be almost
-    finished by the time the browser finds out about it.
+    not recorded when WebKit handles a back/forward navigation using its page
+    cache (that is, when the DOM representation of the destination is still
+    loaded in memory from a recent visit), since we don't get the full set of
+    WebKit navigation callbacks for such navigations. The recorded value
+    measures the time from the browser process being notified that the
+    navigation has started, to all frames having fired their load events. The
+    time that the browser process is notified that the navigation has started is
+    usually just after a network request is sent, but can be later for
+    back/forward navigations on sites that use pushState to generate history
+    entries; in the latter case, the navigation may be almost finished by the
+    time the browser finds out about it. As such, depending on the cause of the
+    navigation, different things are measured. Some types will be very fast
+    (e.g., pushState/replaceState) and others (such as tapping on links) will be
+    slower. Furthermore, navigations that require network fetches will be slower
+    than those where all necessary resources are already present in WebKit's
+    HTTP cache.
 
     It is possible for a user to interact with a page before all load events
     have been fired, so the recorded value should not be interpreted as the time
     before the page becomes interactive.
+
+    Most things that affect user-perceived page load time on iOS are within
+    WebKit, not within Chromium/Chrome code. To assess whether a change in this
+    metric is caused by a WebKit change, split by OS version. WebKit changes
+    always come with an OS version change. Obviously, aside from WebKit and
+    Chromium changes, this metric can move due to exogenous factors such as
+    changes in what type of web page people are looking at or changes in the
+    implementation of popular websites.
   </summary>
 </histogram>
 
@@ -11408,26 +11449,41 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     Renderer-initiated navigations are all main-frame navigations that are not
     considered to be browser-initiated (see
-    PLT.iOS.BrowserInitiatedPageLoadTime2). Specificially, tapping on links
+    PLT.iOS.BrowserInitiatedPageLoadTime). Specificially, tapping on links
     within web content, navigations triggered by JavaScript, navigations for
     restoring tabs on launch, and back/forward navigations are all considered to
     be renderer-initiated.
 
     This is recorded for successful main-frame navigations (that is, navigations
     that don't result in the browser displaying an error page). However, this is
-    not recorded when WebKit handles a navigation using its page cache (that is,
-    when the DOM representation of the destination is still loaded in memory
-    from a recent visit). The recorded value measures the time from the browser
-    process being notified that the navigation has started, to all frames having
-    fired their load events. The time that the browser process is notified that
-    the navigation has started is usually just after a network request is sent,
-    but can be later for back/forward navigations on sites that use pushState to
-    generate history entries; in the latter case, the navigation may be almost
-    finished by the time the browser finds out about it.
+    not recorded when WebKit handles a back/forward navigation using its page
+    cache (that is, when the DOM representation of the destination is still
+    loaded in memory from a recent visit), since we don't get the full set of
+    WebKit navigation callbacks for such navigations. The recorded value
+    measures the time from the browser process being notified that the
+    navigation has started, to all frames having fired their load events. The
+    time that the browser process is notified that the navigation has started is
+    usually just after a network request is sent, but can be later for
+    back/forward navigations on sites that use pushState to generate history
+    entries; in the latter case, the navigation may be almost finished by the
+    time the browser finds out about it. As such, depending on the cause of the
+    navigation, different things are measured. Some types will be very fast
+    (e.g., pushState/replaceState) and others (such as tapping on links) will be
+    slower. Furthermore, navigations that require network fetches will be slower
+    than those where all necessary resources are already present in WebKit's
+    HTTP cache.
 
     It is possible for a user to interact with a page before all load events
     have been fired, so the recorded value should not be interpreted as the time
     before the page becomes interactive.
+
+    Most things that affect user-perceived page load time on iOS are within
+    WebKit, not within Chromium/Chrome code. To assess whether a change in this
+    metric is caused by a WebKit change, split by OS version. WebKit changes
+    always come with an OS version change. Obviously, aside from WebKit and
+    Chromium changes, this metric can move due to exogenous factors such as
+    changes in what type of web page people are looking at or changes in the
+    implementation of popular websites.
   </summary>
 </histogram>
 
