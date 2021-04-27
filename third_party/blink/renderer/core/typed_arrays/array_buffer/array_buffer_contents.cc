@@ -32,7 +32,6 @@
 #include "base/bits.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 

@@ -31,7 +31,6 @@
 #include <libxslt/extra.h>
 #include <libxslt/xsltutils.h>
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 

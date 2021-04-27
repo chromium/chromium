@@ -29,7 +29,6 @@
 
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 #if defined(OS_MAC)
 #include "third_party/blink/renderer/platform/audio/mac/vector_math_mac.h"

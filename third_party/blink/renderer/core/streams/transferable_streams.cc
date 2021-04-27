@@ -38,7 +38,6 @@
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "v8/include/v8.h"
 
 // See the design doc at

@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 

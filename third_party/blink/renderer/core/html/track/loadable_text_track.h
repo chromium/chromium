@@ -28,7 +28,6 @@
 
 #include "third_party/blink/renderer/core/html/track/text_track.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 

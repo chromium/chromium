@@ -48,7 +48,6 @@
 #include "third_party/blink/renderer/platform/graphics/path.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/skia/include/core/SkAnnotation.h"
 #include "third_party/skia/include/core/SkColorFilter.h"

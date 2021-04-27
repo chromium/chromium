@@ -25,8 +25,8 @@
 
 #import "third_party/blink/renderer/platform/mac/block_exceptions.h"
 
+#include "base/logging.h"
 #include "base/notreached.h"
-#import "third_party/blink/renderer/platform/wtf/assertions.h"
 
 void ReportBlockedObjCException(NSException* exception) {
 #if DCHECK_IS_ON()

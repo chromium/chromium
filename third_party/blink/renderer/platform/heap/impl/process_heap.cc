@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/impl/gc_info.h"
 #include "third_party/blink/renderer/platform/heap/impl/persistent_node.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 

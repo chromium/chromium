@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 

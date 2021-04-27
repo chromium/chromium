@@ -31,7 +31,6 @@
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 

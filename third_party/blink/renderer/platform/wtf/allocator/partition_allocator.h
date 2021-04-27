@@ -12,7 +12,6 @@
 #include <string.h>
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 

@@ -33,7 +33,6 @@
 
 #if !defined(OS_MAC)
 #include <unicode/uset.h>
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {

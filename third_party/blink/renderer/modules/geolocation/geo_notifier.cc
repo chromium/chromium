@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/geolocation/geolocation.h"
 #include "third_party/blink/renderer/modules/geolocation/geolocation_position_error.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 

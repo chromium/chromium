@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 namespace {

@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/streams/promise_handler.h"
 
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 

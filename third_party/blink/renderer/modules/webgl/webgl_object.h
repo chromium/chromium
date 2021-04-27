@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/khronos/GLES2/gl2.h"
 
 namespace gpu {

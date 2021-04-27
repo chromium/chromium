@@ -7,7 +7,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {

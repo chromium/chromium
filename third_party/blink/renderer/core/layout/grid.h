@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/style/grid_area.h"
 #include "third_party/blink/renderer/core/style/grid_positions_resolver.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/doubly_linked_list.h"
 #include "third_party/blink/renderer/platform/wtf/linked_hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"

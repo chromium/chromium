@@ -54,7 +54,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_memory_allocator_dump.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_process_memory_dump.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/leak_annotations.h"
 
 namespace blink {

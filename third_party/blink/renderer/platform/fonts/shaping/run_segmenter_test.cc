@@ -7,7 +7,6 @@
 #include <string>
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/orientation_iterator.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"

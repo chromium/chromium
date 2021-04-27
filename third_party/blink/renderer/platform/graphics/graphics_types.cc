@@ -27,7 +27,6 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 
 #include "base/stl_util.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {

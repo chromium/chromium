@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/core/xlink_names.h"
 #include "third_party/blink/renderer/core/xml_names.h"
 #include "third_party/blink/renderer/core/xmlns_names.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/static_constructors.h"

@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_parser_client.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 

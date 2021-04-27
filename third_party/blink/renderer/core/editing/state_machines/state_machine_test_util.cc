@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/editing/state_machines/backward_grapheme_boundary_state_machine.h"
 #include "third_party/blink/renderer/core/editing/state_machines/forward_grapheme_boundary_state_machine.h"
 #include "third_party/blink/renderer/core/editing/state_machines/text_segmentation_machine_state.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {

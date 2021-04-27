@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/geolocation/geolocation_watchers.h"
 
 #include "third_party/blink/renderer/modules/geolocation/geo_notifier.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 

@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/platform/audio/cpu/x86/vector_math_avx.h"
 #include "third_party/blink/renderer/platform/audio/cpu/x86/vector_math_sse.h"
 #include "third_party/blink/renderer/platform/audio/vector_math_scalar.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 namespace vector_math {

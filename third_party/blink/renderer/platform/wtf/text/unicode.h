@@ -25,7 +25,6 @@
 
 #include <unicode/uchar.h>
 #include <unicode/ustring.h>
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 // Define platform neutral 8 bit character type (L is for Latin-1).
 typedef unsigned char LChar;

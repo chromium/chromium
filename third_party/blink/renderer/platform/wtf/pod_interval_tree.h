@@ -28,7 +28,6 @@
 
 #include "base/macros.h"
 #include "base/optional.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/pod_arena.h"
 #include "third_party/blink/renderer/platform/wtf/pod_interval.h"
 #include "third_party/blink/renderer/platform/wtf/pod_red_black_tree.h"

@@ -57,7 +57,6 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_web_audio_source.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {

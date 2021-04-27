@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/fonts/font_cache_memory_dump_provider.h"
 
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 

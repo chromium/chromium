@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_STORAGE_LOG_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_STORAGE_LOG_H_
 
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 #if DCHECK_IS_ON()
 // We can see logs with |--v=N| or |--vmodule=StorageLog=N| where N is a

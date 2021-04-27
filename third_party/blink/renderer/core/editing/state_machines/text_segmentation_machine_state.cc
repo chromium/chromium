@@ -6,7 +6,6 @@
 
 #include <ostream>  // NOLINT
 #include "base/check_op.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 

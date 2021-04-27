@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/platform/fonts/symbols_iterator.h"
 #include "third_party/blink/renderer/platform/fonts/utf16_text_iterator.h"
 #include "third_party/blink/renderer/platform/text/character.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 

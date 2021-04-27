@@ -32,7 +32,6 @@
 
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "third_party/blink/renderer/core/editing/markers/text_match_marker.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {

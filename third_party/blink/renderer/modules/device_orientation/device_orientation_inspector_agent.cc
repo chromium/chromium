@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_controller.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_data.h"
 #include "third_party/blink/renderer/modules/sensor/sensor_inspector_agent.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 

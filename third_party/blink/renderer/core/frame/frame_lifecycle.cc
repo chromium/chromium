@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/frame/frame_lifecycle.h"
 
 #include "base/check_op.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 

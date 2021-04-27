@@ -6,7 +6,6 @@
 
 #include "base/stl_util.h"
 #include "third_party/blink/renderer/platform/text/character.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 

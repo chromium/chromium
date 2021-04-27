@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/text/bidi_text_run.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/linked_hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 

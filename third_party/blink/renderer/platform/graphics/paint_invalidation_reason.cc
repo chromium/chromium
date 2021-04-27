@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
 
 #include "base/notreached.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 

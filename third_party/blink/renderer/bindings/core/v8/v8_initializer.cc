@@ -81,7 +81,6 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/sanitizers.h"
 #include "third_party/blink/renderer/platform/wtf/stack_util.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"

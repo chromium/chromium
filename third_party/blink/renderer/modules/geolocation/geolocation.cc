@@ -42,7 +42,6 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/modules/geolocation/geolocation_coordinates.h"
 #include "third_party/blink/renderer/modules/geolocation/geolocation_error.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 namespace {

@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/fullscreen/scoped_allow_fullscreen.h"
 
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {

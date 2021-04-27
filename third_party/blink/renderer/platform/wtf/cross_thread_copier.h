@@ -39,7 +39,6 @@
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/deprecated_interface_types_forward.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"  // FunctionThreadAffinity
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"

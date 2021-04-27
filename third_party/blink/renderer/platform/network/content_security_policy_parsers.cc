@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/network/content_security_policy_parsers.h"
 
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"

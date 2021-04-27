@@ -6,7 +6,6 @@
 
 #include "base/bit_cast.h"
 #include "base/rand_util.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 #include <cmath>
 

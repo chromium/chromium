@@ -28,7 +28,6 @@
 
 #include "base/check_op.h"
 #include "third_party/blink/renderer/modules/webdatabase/sql_transaction_state.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 

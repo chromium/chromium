@@ -50,7 +50,6 @@
 #include "third_party/blink/renderer/platform/mhtml/mhtml_archive.h"
 #include "third_party/blink/renderer/platform/mhtml/serialized_resource.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_concatenate.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"

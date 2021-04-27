@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/platform/web_test_support.h"
 
 #include "third_party/blink/public/web/blink.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 

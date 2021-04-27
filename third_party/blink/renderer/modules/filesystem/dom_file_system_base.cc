@@ -44,7 +44,6 @@
 #include "third_party/blink/renderer/modules/filesystem/file_system_callbacks.h"
 #include "third_party/blink/renderer/modules/filesystem/file_system_dispatcher.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 

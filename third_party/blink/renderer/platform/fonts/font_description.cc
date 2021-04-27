@@ -32,7 +32,6 @@
 
 #include "third_party/blink/public/platform/web_font_description.h"
 #include "third_party/blink/renderer/platform/language.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"

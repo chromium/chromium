@@ -66,7 +66,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/transforms/transform_operations.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "ui/base/ui_base_features.h"
 
 namespace blink {

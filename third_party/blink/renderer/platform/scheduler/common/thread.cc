@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/platform/scheduler/worker/compositor_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/compositor_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_thread.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"

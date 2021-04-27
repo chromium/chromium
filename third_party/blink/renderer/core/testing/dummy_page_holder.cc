@@ -49,7 +49,6 @@
 #include "third_party/blink/renderer/platform/loader/testing/web_url_loader_factory_with_mock.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 

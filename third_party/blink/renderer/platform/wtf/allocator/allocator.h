@@ -11,7 +11,6 @@
 #include "base/check_op.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 
 namespace WTF {

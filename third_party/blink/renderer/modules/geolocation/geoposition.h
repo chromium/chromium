@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/modules/geolocation/geolocation_coordinates.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 

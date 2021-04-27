@@ -32,7 +32,6 @@
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 

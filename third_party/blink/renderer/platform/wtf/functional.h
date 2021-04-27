@@ -32,7 +32,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 

@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/frame/deprecated_schedule_style_recalc_during_layout.h"
 
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 

@@ -33,7 +33,6 @@
 #include "third_party/blink/renderer/core/layout/api/hit_test_action.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 

@@ -23,7 +23,6 @@
 
 #include "base/macros.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 

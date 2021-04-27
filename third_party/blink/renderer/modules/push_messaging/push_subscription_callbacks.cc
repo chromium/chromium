@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/push_messaging/push_subscription.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_registration.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 

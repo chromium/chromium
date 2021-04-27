@@ -15,7 +15,6 @@
 #include <cmath>
 
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 namespace vector_math {
