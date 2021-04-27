@@ -5,19 +5,26 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_TO_V8_TRAITS_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_TO_V8_TRAITS_H_
 
-#include "third_party/blink/renderer/bindings/core/v8/idl_dictionary_base.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
-#include "third_party/blink/renderer/platform/bindings/callback_function_base.h"
-#include "third_party/blink/renderer/platform/bindings/callback_interface_base.h"
-#include "third_party/blink/renderer/platform/bindings/dictionary_base.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
-#include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
-#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "v8/include/v8.h"
 
 namespace blink {
+
+class CallbackFunctionBase;
+class CallbackInterfaceBase;
+class IDLDictionaryBase;
+class ScriptWrappable;
+
+namespace bindings {
+
+class DictionaryBase;
+class EnumerationBase;
+class UnionBase;
+
+}  // namespace bindings
 
 // ToV8Traits provides C++ -> V8 conversion.
 // Currently, you can use ToV8() which is defined in to_v8.h for this
@@ -158,7 +165,7 @@ struct ToV8Traits<IDLFloatingPointNumberTypeBase<T, mode>> {
 template <typename T>
 struct ToV8Traits<
     T,
-    typename std::enable_if_t<std::is_base_of<IDLStringTypeBase, T>::value>> {
+    std::enable_if_t<std::is_base_of<IDLStringTypeBase, T>::value>> {
   static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
   ToV8(ScriptState* script_state, const String& value) {
     // if |value| is a null string, V8String() returns an empty string.
@@ -237,7 +244,7 @@ inline v8::MaybeLocal<v8::Value> ToV8HelperScriptWrappable(
 template <typename T>
 struct ToV8Traits<
     T,
-    typename std::enable_if_t<std::is_base_of<ScriptWrappable, T>::value>> {
+    std::enable_if_t<std::is_base_of<ScriptWrappable, T>::value>> {
   static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
   ToV8(ScriptState* script_state, T* script_wrappable) {
     return bindings::ToV8HelperScriptWrappable(script_state, script_wrappable);
@@ -259,9 +266,9 @@ struct ToV8Traits<
 
 // Dictionary
 template <typename T>
-struct ToV8Traits<T,
-                  typename std::enable_if_t<
-                      std::is_base_of<bindings::DictionaryBase, T>::value>> {
+struct ToV8Traits<
+    T,
+    std::enable_if_t<std::is_base_of<bindings::DictionaryBase, T>::value>> {
   static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
   ToV8(ScriptState* script_state, const T* dictionary) {
     DCHECK(dictionary);
@@ -276,7 +283,7 @@ struct ToV8Traits<T,
 template <typename T>
 struct ToV8Traits<
     T,
-    typename std::enable_if_t<std::is_base_of<IDLDictionaryBase, T>::value>> {
+    std::enable_if_t<std::is_base_of<IDLDictionaryBase, T>::value>> {
   static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
   ToV8(ScriptState* script_state, const T* dictionary) {
     // TODO(crbug.com/1185018): Change this if-branch to DCHECK(dictionary).
@@ -289,9 +296,9 @@ struct ToV8Traits<
 
 // Callback function
 template <typename T>
-struct ToV8Traits<T,
-                  typename std::enable_if_t<
-                      std::is_base_of<CallbackFunctionBase, T>::value>> {
+struct ToV8Traits<
+    T,
+    std::enable_if_t<std::is_base_of<CallbackFunctionBase, T>::value>> {
   static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
   ToV8(ScriptState* script_state, T* callback) {
     // creation_context (|script_state->GetContext()|) is intentionally ignored.
@@ -305,9 +312,9 @@ struct ToV8Traits<T,
 
 // Callback interface
 template <typename T>
-struct ToV8Traits<T,
-                  typename std::enable_if_t<
-                      std::is_base_of<CallbackInterfaceBase, T>::value>> {
+struct ToV8Traits<
+    T,
+    std::enable_if_t<std::is_base_of<CallbackInterfaceBase, T>::value>> {
   static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
   ToV8(ScriptState* script_state, T* callback) {
     // creation_context (|script_state->GetContext()|) is intentionally ignored.
@@ -321,9 +328,9 @@ struct ToV8Traits<T,
 
 // Enumeration
 template <typename T>
-struct ToV8Traits<T,
-                  typename std::enable_if_t<
-                      std::is_base_of<bindings::EnumerationBase, T>::value>> {
+struct ToV8Traits<
+    T,
+    std::enable_if_t<std::is_base_of<bindings::EnumerationBase, T>::value>> {
   static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
   ToV8(ScriptState* script_state, const T& enumeration) {
     return V8String(script_state->GetIsolate(), enumeration.AsCStr());
@@ -583,9 +590,41 @@ struct ToV8Traits<
 template <typename T>
 struct ToV8Traits<
     IDLSequence<T>,
+    std::enable_if_t<std::is_base_of<bindings::UnionBase, T>::value>> {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const HeapVector<Member<T>>& value) {
+    return bindings::ToV8HelperSequenceWithMemberUpcast<bindings::UnionBase>(
+        script_state, &value);
+  }
+
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const HeapVector<Member<const T>>& value) {
+    return bindings::ToV8HelperSequenceWithMemberUpcast<bindings::UnionBase>(
+        script_state, &value);
+  }
+
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const HeapVector<Member<T>>* value) {
+    DCHECK(value);
+    return bindings::ToV8HelperSequenceWithMemberUpcast<bindings::UnionBase>(
+        script_state, value);
+  }
+
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const HeapVector<Member<const T>>* value) {
+    DCHECK(value);
+    return bindings::ToV8HelperSequenceWithMemberUpcast<bindings::UnionBase>(
+        script_state, value);
+  }
+};
+
+template <typename T>
+struct ToV8Traits<
+    IDLSequence<T>,
     std::enable_if_t<!std::is_base_of<bindings::DictionaryBase, T>::value &&
                      !std::is_base_of<IDLDictionaryBase, T>::value &&
-                     !std::is_base_of<ScriptWrappable, T>::value>> {
+                     !std::is_base_of<ScriptWrappable, T>::value &&
+                     !std::is_base_of<bindings::UnionBase, T>::value>> {
   template <typename VectorType>
   static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
   ToV8(ScriptState* script_state, const VectorType& value) {
@@ -727,7 +766,7 @@ struct ToV8Traits<IDLNullable<IDLFloatingPointNumberTypeBase<T, mode>>> {
 template <typename T>
 struct ToV8Traits<
     IDLNullable<T>,
-    typename std::enable_if_t<std::is_base_of<IDLStringTypeBase, T>::value>> {
+    std::enable_if_t<std::is_base_of<IDLStringTypeBase, T>::value>> {
   static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
   ToV8(ScriptState* script_state, const String& value) {
     if (!value)
@@ -755,7 +794,7 @@ struct ToV8Traits<IDLNullable<IDLObject>> {
 template <typename T>
 struct ToV8Traits<
     IDLNullable<T>,
-    typename std::enable_if_t<std::is_base_of<ScriptWrappable, T>::value>> {
+    std::enable_if_t<std::is_base_of<ScriptWrappable, T>::value>> {
   static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
   ToV8(ScriptState* script_state, T* script_wrappable) {
     if (!script_wrappable)
@@ -775,9 +814,9 @@ struct ToV8Traits<
 
 // Nullable Dictionary
 template <typename T>
-struct ToV8Traits<IDLNullable<T>,
-                  typename std::enable_if_t<
-                      std::is_base_of<bindings::DictionaryBase, T>::value>> {
+struct ToV8Traits<
+    IDLNullable<T>,
+    std::enable_if_t<std::is_base_of<bindings::DictionaryBase, T>::value>> {
   static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
   ToV8(ScriptState* script_state, const T* dictionary) {
     if (!dictionary)
@@ -790,7 +829,7 @@ struct ToV8Traits<IDLNullable<T>,
 template <typename T>
 struct ToV8Traits<
     IDLNullable<T>,
-    typename std::enable_if_t<std::is_base_of<IDLDictionaryBase, T>::value>> {
+    std::enable_if_t<std::is_base_of<IDLDictionaryBase, T>::value>> {
   static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
   ToV8(ScriptState* script_state, const T* dictionary) {
     if (!dictionary)
@@ -801,9 +840,9 @@ struct ToV8Traits<
 
 // Nullable Callback function
 template <typename T>
-struct ToV8Traits<IDLNullable<T>,
-                  typename std::enable_if_t<
-                      std::is_base_of<CallbackFunctionBase, T>::value>> {
+struct ToV8Traits<
+    IDLNullable<T>,
+    std::enable_if_t<std::is_base_of<CallbackFunctionBase, T>::value>> {
   static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
   ToV8(ScriptState* script_state, T* callback) {
     if (!callback)
@@ -814,9 +853,9 @@ struct ToV8Traits<IDLNullable<T>,
 
 // Nullable Callback interface
 template <typename T>
-struct ToV8Traits<IDLNullable<T>,
-                  typename std::enable_if_t<
-                      std::is_base_of<CallbackInterfaceBase, T>::value>> {
+struct ToV8Traits<
+    IDLNullable<T>,
+    std::enable_if_t<std::is_base_of<CallbackInterfaceBase, T>::value>> {
   static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
   ToV8(ScriptState* script_state, T* callback) {
     if (!callback)
@@ -827,9 +866,9 @@ struct ToV8Traits<IDLNullable<T>,
 
 // Nullable Enumeration
 template <typename T>
-struct ToV8Traits<IDLNullable<T>,
-                  typename std::enable_if_t<
-                      std::is_base_of<bindings::EnumerationBase, T>::value>> {
+struct ToV8Traits<
+    IDLNullable<T>,
+    std::enable_if_t<std::is_base_of<bindings::EnumerationBase, T>::value>> {
   static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
   ToV8(ScriptState* script_state, const base::Optional<T>& enumeration) {
     if (!enumeration)
@@ -962,6 +1001,29 @@ inline v8::MaybeLocal<v8::Value> ToV8HelperUnion(ScriptState* script_state,
 }
 
 }  // namespace bindings
+
+template <typename T>
+struct ToV8Traits<
+    T,
+    std::enable_if_t<std::is_base_of<bindings::UnionBase, T>::value>> {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const T* value) {
+    DCHECK(value);
+    return value->ToV8Value(script_state);
+  }
+};
+
+template <typename T>
+struct ToV8Traits<
+    IDLNullable<T>,
+    std::enable_if_t<std::is_base_of<bindings::UnionBase, T>::value>> {
+  static v8::MaybeLocal<v8::Value> WARN_UNUSED_RESULT
+  ToV8(ScriptState* script_state, const T* value) {
+    if (!value)
+      return v8::Null(script_state->GetIsolate());
+    return ToV8Traits<T>::ToV8(script_state, value);
+  }
+};
 
 // IDLUnionINT
 template <typename T>
