@@ -1331,7 +1331,7 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
   Shell* new_shell = new_shell_observer.GetShell();
   NavigationController* controller =
       &new_shell->web_contents()->GetController();
-  EXPECT_FALSE(WaitForLoadStop(new_shell->web_contents()));
+  WaitForLoadStop(new_shell->web_contents());
 
   // The window.open() should have resulted in an error page. The blocked
   // URL should be in both the actual and the virtual URL.

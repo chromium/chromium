@@ -1339,9 +1339,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, ReloadBlankPage) {
       GURL("javascript:x=1"),
       nullptr,
       gfx::Size());
-  // This WaitForLoadStop is probably not needed since javascript: URLs commit
-  // synchronously.
-  EXPECT_FALSE(WaitForLoadStop(window->web_contents()));
+  WaitForLoadStop(window->web_contents());
   Attach();
   SendCommand("Page.reload", nullptr, false);
   // Should not crash at this point.

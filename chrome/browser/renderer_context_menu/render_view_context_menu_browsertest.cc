@@ -1534,7 +1534,7 @@ IN_PROC_BROWSER_TEST_F(SearchByImageBrowserTest, ImageSearchWithValidImage) {
 
   // The browser should open a new tab for an image search.
   content::WebContents* new_tab = add_tab.Wait();
-  EXPECT_FALSE(content::WaitForLoadStop(new_tab));
+  content::WaitForLoadStop(new_tab);
   EXPECT_EQ(GetImageSearchURL(), new_tab->GetURL());
 }
 

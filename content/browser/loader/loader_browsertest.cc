@@ -303,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(LoaderBrowserTest, MAYBE_SyncXMLHttpRequest_Cancelled) {
                           base::Unretained(this))));
 
   ASSERT_TRUE(embedded_test_server()->Start());
-  EXPECT_FALSE(WaitForLoadStop(shell()->web_contents()));
+  WaitForLoadStop(shell()->web_contents());
 
   EXPECT_TRUE(NavigateToURL(
       shell(),

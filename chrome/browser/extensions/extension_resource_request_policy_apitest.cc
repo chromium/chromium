@@ -725,7 +725,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionResourceRequestPolicyTest,
       old_window,
       content::JsReplace("var newWindow = open($1);", non_web_accessible_url)));
   content::WebContents* new_window = new_window_observer.GetWebContents();
-  EXPECT_FALSE(content::WaitForLoadStop(new_window));
+  content::WaitForLoadStop(new_window);
   // As this resource is non-web accessible, we expect an error page.
   // NOTE: It would be nice to check for the actual ERR_BLOCKED_BY_CLIENT error,
   // but the observer we are using to grab the new page doesn't keep track of

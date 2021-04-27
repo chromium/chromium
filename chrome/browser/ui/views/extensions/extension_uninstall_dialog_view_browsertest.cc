@@ -217,8 +217,8 @@ IN_PROC_BROWSER_TEST_P(ParameterizedExtensionUninstallDialogViewBrowserTest,
   // This navigation can fail, since the uninstall url isn't hooked up to the
   // test server. That's fine, since we only care about the intended target,
   // which is valid.
-  EXPECT_FALSE(content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents()));
+  content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents());
   // Verifying that the extension's uninstall url is the active tab.
   EXPECT_EQ(kUninstallUrl, GetActiveUrl(browser()));
 
@@ -268,16 +268,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewBrowserTest,
   // This navigation can fail, since the webstore report abuse url isn't hooked
   // up to the test server. That's fine, since we only care about the intended
   // target, which is valid.
-  EXPECT_FALSE(content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents()));
+  content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents());
   // The CWS Report Abuse survey should be the active tab.
   EXPECT_EQ(
       extension_urls::GetWebstoreReportAbuseUrl(extension->id(), kReferrerId),
       GetActiveUrl(browser()));
   // Similar to the scenario above, this navigation can fail. The uninstall url
   // isn't hooked up to our test server.
-  EXPECT_FALSE(content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetWebContentsAt(1)));
+  content::WaitForLoadStop(browser()->tab_strip_model()->GetWebContentsAt(1));
   // Verifying that the extension's uninstall url was opened. It should not be
   // the active tab.
   EXPECT_EQ(kUninstallUrl, browser()

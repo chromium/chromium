@@ -296,7 +296,7 @@ class ProcessManagerBrowserTest : public ExtensionBrowserTest {
     EXPECT_TRUE(ExecuteScript(
         opener, "window.open('" + url.spec() + "', '', 'noopener')"));
     content::WebContents* popup = popup_observer.GetWebContents();
-    EXPECT_FALSE(WaitForLoadStop(popup));
+    WaitForLoadStop(popup);
     return popup;
   }
 

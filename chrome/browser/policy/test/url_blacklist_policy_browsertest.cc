@@ -273,8 +273,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, URLBlacklistClientRedirect) {
   FlushBlacklistPolicy();
 
   ui_test_utils::NavigateToURL(browser(), first_url);
-  EXPECT_FALSE(content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents()));
+  content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_NE(u"Redirected!",
             browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
 }
@@ -303,8 +303,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, URLBlacklistServerRedirect) {
   FlushBlacklistPolicy();
 
   ui_test_utils::NavigateToURL(browser(), first_url);
-  EXPECT_FALSE(content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents()));
+  content::WaitForLoadStop(
+      browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_NE(u"Redirected!",
             browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
 }

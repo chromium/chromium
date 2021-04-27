@@ -2173,7 +2173,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, BlockedSrcDocRendererInitiated) {
     // browsers like Firefox aren't allowing this.
     EXPECT_TRUE(ExecJs(main_frame(), JsReplace("location.href = $1", url)));
     start_observer.Wait();
-    EXPECT_FALSE(WaitForLoadStop(web_contents()));
+    WaitForLoadStop(web_contents());
     EXPECT_TRUE(handle_observer.has_committed());
     EXPECT_TRUE(handle_observer.is_error());
     EXPECT_EQ(net::ERR_INVALID_URL, handle_observer.net_error_code());
