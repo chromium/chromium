@@ -103,16 +103,18 @@ struct MetricsDrawSizes {
   const int kTopPadding = 35;
   const int kPadding = 15;
   const int kFontHeight = 32;
-  const int kWidth = 500;
+  const int kWidth = 525;
   const int kSidePadding = 20;
+  const int kBadgeWidth = 25;
 } constexpr metrics_sizes;
 #else
 struct MetricsDrawSizes {
   const int kTopPadding = 35;
   const int kPadding = 15;
   const int kFontHeight = 22;
-  const int kWidth = 400;
+  const int kWidth = 425;
   const int kSidePadding = 20;
+  const int kBadgeWidth = 25;
 } constexpr metrics_sizes;
 #endif
 
@@ -1111,20 +1113,56 @@ int HeadsUpDisplayLayerImpl::DrawSingleMetric(
     double value) const {
   std::string value_str = "-";
   SkColor metrics_color = DebugColors::HUDTitleColor();
+  SkColor badge_color = SK_ColorGREEN;
   if (has_value) {
     value_str = ToStringTwoDecimalPrecision(value) + info.UnitToString();
-    if (value < info.green_threshold)
+    if (value < info.green_threshold) {
       metrics_color = SK_ColorGREEN;
-    else if (value < info.yellow_threshold)
+    } else if (value < info.yellow_threshold) {
       metrics_color = SK_ColorYELLOW;
-    else
+      badge_color = SK_ColorYELLOW;
+    } else {
       metrics_color = SK_ColorRED;
+      badge_color = SK_ColorRED;
+    }
   }
 
+  // Draw the badge for this metric.
+  PaintFlags badge_flags;
+  badge_flags.setColor(badge_color);
+  badge_flags.setStyle(PaintFlags::kFill_Style);
+  badge_flags.setAntiAlias(true);
+  if (badge_color == SK_ColorGREEN) {
+    constexpr int kRadius = 6;
+    int x = left + metrics_sizes.kSidePadding + kRadius;
+    int y = top - kRadius - 2;
+    SkPath circle = SkPath::Circle(x, y, kRadius);
+    canvas->drawPath(circle, badge_flags);
+  } else if (badge_color == SK_ColorYELLOW) {
+    constexpr int kSquareSize = 12;
+    int x = left + metrics_sizes.kSidePadding;
+    int y = top - kSquareSize - 2;
+    SkPath square =
+        SkPath::Rect(SkRect::MakeXYWH(x, y, kSquareSize, kSquareSize));
+    canvas->drawPath(square, badge_flags);
+  } else {
+    constexpr int kTriangleSize = 16;
+    int top_x = left + metrics_sizes.kSidePadding + kTriangleSize / 2;
+    int top_y = top - kTriangleSize;
+    int bottom_y = top_y + kTriangleSize;
+    SkPath triangle =
+        SkPath::Polygon({SkPoint::Make(top_x, top_y),
+                         SkPoint::Make(top_x - kTriangleSize / 2, bottom_y),
+                         SkPoint::Make(top_x + kTriangleSize / 2, bottom_y)},
+                        true);
+    canvas->drawPath(triangle, badge_flags);
+  }
+
+  // Draw the label and values of the metric.
   PaintFlags flags;
   flags.setColor(DebugColors::HUDTitleColor());
   DrawText(canvas, flags, name, TextAlign::kLeft, metrics_sizes.kFontHeight,
-           left + metrics_sizes.kSidePadding, top);
+           left + metrics_sizes.kSidePadding + metrics_sizes.kBadgeWidth, top);
   flags.setColor(metrics_color);
   DrawText(canvas, flags, value_str, TextAlign::kRight,
            metrics_sizes.kFontHeight, right - metrics_sizes.kSidePadding, top);
@@ -1181,7 +1219,7 @@ int HeadsUpDisplayLayerImpl::DrawSinglePercentageMetric(PaintCanvas* canvas,
   PaintFlags flags;
   flags.setColor(DebugColors::HUDTitleColor());
   DrawText(canvas, flags, name, TextAlign::kLeft, metrics_sizes.kFontHeight,
-           left + metrics_sizes.kSidePadding, top);
+           left + metrics_sizes.kSidePadding + metrics_sizes.kBadgeWidth, top);
   flags.setColor(metrics_color);
   DrawText(canvas, flags, value_str, TextAlign::kRight,
            metrics_sizes.kFontHeight, right - metrics_sizes.kSidePadding, top);
