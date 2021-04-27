@@ -451,13 +451,13 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
     NOT_DESTROYED();
     return PhysicalMarginToLogical(other_style).End();
   }
-  LayoutUnit MarginLineLeft() const {
+  LayoutUnit MarginLineLeft(const ComputedStyle* other_style = nullptr) const {
     NOT_DESTROYED();
-    return PhysicalMarginToLogical(nullptr).LineLeft();
+    return PhysicalMarginToLogical(other_style).LineLeft();
   }
-  LayoutUnit MarginLineRight() const {
+  LayoutUnit MarginLineRight(const ComputedStyle* other_style = nullptr) const {
     NOT_DESTROYED();
-    return PhysicalMarginToLogical(nullptr).LineRight();
+    return PhysicalMarginToLogical(other_style).LineRight();
   }
   LayoutUnit MarginOver() const {
     NOT_DESTROYED();

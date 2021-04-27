@@ -2237,7 +2237,7 @@ LayoutUnit LayoutGrid::LogicalOffsetForOutOfFlowChild(
       is_flowaware_row_axis ? child.LogicalLeft() : child.LogicalTop();
   LayoutUnit grid_border = is_row_axis ? BorderLogicalLeft() : BorderBefore();
   LayoutUnit child_margin =
-      is_flowaware_row_axis ? child.MarginLineLeft() : child.MarginBefore();
+      is_row_axis ? child.MarginLineLeft(Style()) : child.MarginBefore(Style());
   LayoutUnit offset = child_position - grid_border - child_margin;
   if (!is_row_axis || StyleRef().IsLeftToRightDirection())
     return offset;
