@@ -5219,8 +5219,7 @@
     'webrtc_chromium_baremetal_gtests': {
       'browser_tests': {
         'args': [
-          '--gtest_filter=WebRtcInternalsPerfBrowserTest.*:'
-           'WebRtcStatsPerfBrowserTest.*:'
+          '--gtest_filter=WebRtcStatsPerfBrowserTest.*:'
            'WebRtcVideoDisplayPerfBrowserTests*:'
            'WebRtcVideoQualityBrowserTests*:'
            'WebRtcVideoHighBitrateBrowserTest*:'

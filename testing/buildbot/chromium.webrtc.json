@@ -98,7 +98,7 @@
       {
         "annotate": "graphing",
         "args": [
-          "--gtest_filter=WebRtcInternalsPerfBrowserTest.*:WebRtcStatsPerfBrowserTest.*:WebRtcVideoDisplayPerfBrowserTests*:WebRtcVideoQualityBrowserTests*:WebRtcVideoHighBitrateBrowserTest*:WebRtcWebcamBrowserTests*",
+          "--gtest_filter=WebRtcStatsPerfBrowserTest.*:WebRtcVideoDisplayPerfBrowserTests*:WebRtcVideoQualityBrowserTests*:WebRtcVideoHighBitrateBrowserTest*:WebRtcWebcamBrowserTests*",
           "--run-manual",
           "--ui-test-action-max-timeout=300000",
           "--test-launcher-timeout=350000",
@@ -329,7 +329,7 @@
       {
         "annotate": "graphing",
         "args": [
-          "--gtest_filter=WebRtcInternalsPerfBrowserTest.*:WebRtcStatsPerfBrowserTest.*:WebRtcVideoDisplayPerfBrowserTests*:WebRtcVideoQualityBrowserTests*:WebRtcVideoHighBitrateBrowserTest*:WebRtcWebcamBrowserTests*",
+          "--gtest_filter=WebRtcStatsPerfBrowserTest.*:WebRtcVideoDisplayPerfBrowserTests*:WebRtcVideoQualityBrowserTests*:WebRtcVideoHighBitrateBrowserTest*:WebRtcWebcamBrowserTests*",
           "--run-manual",
           "--ui-test-action-max-timeout=300000",
           "--test-launcher-timeout=350000",
@@ -520,7 +520,7 @@
       {
         "annotate": "graphing",
         "args": [
-          "--gtest_filter=WebRtcInternalsPerfBrowserTest.*:WebRtcStatsPerfBrowserTest.*:WebRtcVideoDisplayPerfBrowserTests*:WebRtcVideoQualityBrowserTests*:WebRtcVideoHighBitrateBrowserTest*:WebRtcWebcamBrowserTests*",
+          "--gtest_filter=WebRtcStatsPerfBrowserTest.*:WebRtcVideoDisplayPerfBrowserTests*:WebRtcVideoQualityBrowserTests*:WebRtcVideoHighBitrateBrowserTest*:WebRtcWebcamBrowserTests*",
           "--run-manual",
           "--ui-test-action-max-timeout=300000",
           "--test-launcher-timeout=350000",
@@ -705,7 +705,7 @@
       {
         "annotate": "graphing",
         "args": [
-          "--gtest_filter=WebRtcInternalsPerfBrowserTest.*:WebRtcStatsPerfBrowserTest.*:WebRtcVideoDisplayPerfBrowserTests*:WebRtcVideoQualityBrowserTests*:WebRtcVideoHighBitrateBrowserTest*:WebRtcWebcamBrowserTests*",
+          "--gtest_filter=WebRtcStatsPerfBrowserTest.*:WebRtcVideoDisplayPerfBrowserTests*:WebRtcVideoQualityBrowserTests*:WebRtcVideoHighBitrateBrowserTest*:WebRtcWebcamBrowserTests*",
           "--run-manual",
           "--ui-test-action-max-timeout=300000",
           "--test-launcher-timeout=350000",
@@ -890,7 +890,7 @@
       {
         "annotate": "graphing",
         "args": [
-          "--gtest_filter=WebRtcInternalsPerfBrowserTest.*:WebRtcStatsPerfBrowserTest.*:WebRtcVideoDisplayPerfBrowserTests*:WebRtcVideoQualityBrowserTests*:WebRtcVideoHighBitrateBrowserTest*:WebRtcWebcamBrowserTests*",
+          "--gtest_filter=WebRtcStatsPerfBrowserTest.*:WebRtcVideoDisplayPerfBrowserTests*:WebRtcVideoQualityBrowserTests*:WebRtcVideoHighBitrateBrowserTest*:WebRtcWebcamBrowserTests*",
           "--run-manual",
           "--ui-test-action-max-timeout=300000",
           "--test-launcher-timeout=350000",
