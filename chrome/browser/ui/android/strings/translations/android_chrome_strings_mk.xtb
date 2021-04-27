@@ -180,7 +180,6 @@
 <translation id="2169830938017475061">Сега</translation>
 <translation id="2172688499998841696">Описите за слики се исклучени.</translation>
 <translation id="2175927920773552910">QR-код</translation>
-<translation id="2181298861158186289">Сокриј содржини на привремената меморија</translation>
 <translation id="218608176142494674">Се споделува</translation>
 <translation id="2195339740518523951">Добијте ја најсилната безбедност на Chrome</translation>
 <translation id="2200113223741723867">Управувајте со споделувањето податоци за користењето</translation>
@@ -235,6 +234,7 @@
 <translation id="2517472476991765520">Скенирај</translation>
 <translation id="2518590038762162553">Во Lite-режим, Chrome побрзо ги вчитува страниците и користи до 60 проценти помалку интернет. За да ги оптимизира страниците што ги посетувате, Chrome го испраќа вашиот сообраќај на интернет во Google. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">Испраќа URL-адреси од страници што ги посетувате до Google</translation>
+<translation id="2527779675047087889">Сокриј содржини од привремената меморија</translation>
 <translation id="2532336938189706096">Преглед на веб</translation>
 <translation id="2534155362429831547">Избришани се <ph name="NUMBER_OF_ITEMS" /> ставки</translation>
 <translation id="2536728043171574184">Се прикажува офлајн копија на страницата</translation>
@@ -314,6 +314,7 @@
 <translation id="3062802207422175757">Статии за она што ве интересира на Chrome</translation>
 <translation id="3070005020161560471">Автоматски преведувај</translation>
 <translation id="3089395242580810162">Отвори во инкогнито картичка</translation>
+<translation id="3091010850649238832">Прикажи содржини од привремената меморија</translation>
 <translation id="3098745985164956033">Некои слики се испраќаат во Google за да им се подобрат описите</translation>
 <translation id="3114507951000454849">Прочитајте ги денешните вести <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Соопштенија</translation>
@@ -847,7 +848,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="6539092367496845964">Нешто тргна наопаку. Обидете се повторно подоцна.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Проверено пред 1 час}one{Проверено пред # час}other{Проверено пред # часа}}</translation>
 <translation id="6545017243486555795">Избриши ги сите податоци</translation>
-<translation id="6549142516027084053">Прикажи содржини на привремената меморија</translation>
 <translation id="6560414384669816528">Пребарување со Sogou</translation>
 <translation id="656065428026159829">Прикажи повеќе</translation>
 <translation id="6565959834589222080">Се користи Wi-Fi кога е достапна</translation>

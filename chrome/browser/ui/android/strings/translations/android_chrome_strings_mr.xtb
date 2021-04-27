@@ -180,7 +180,6 @@
 <translation id="2169830938017475061">Now</translation>
 <translation id="2172688499998841696">इमेजची वर्णने बंद आहेत</translation>
 <translation id="2175927920773552910">QR कोड</translation>
-<translation id="2181298861158186289">क्लिपबोर्डवरील आशय लपवा</translation>
 <translation id="218608176142494674">शेअर करत आहे</translation>
 <translation id="2195339740518523951">Chrome ची सर्वोत्तम सुरक्षितता मिळवा</translation>
 <translation id="2200113223741723867">वापर डेटा शेअरिंग व्यवस्थापित करा</translation>
@@ -235,6 +234,7 @@
 <translation id="2517472476991765520">स्कॅन करा</translation>
 <translation id="2518590038762162553">लाइट मोडमध्ये, Chrome पेज आणखी जलद लोड करते आणि ६० टक्के कमी डेटा वापरते. तुम्ही भेट दिलेली पेज ऑप्टिमाइझ करण्यासाठी, Chrome तुमचे वेब ट्रॅफिक Google ला पाठवते. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">तुम्ही भेट दिलेल्या पेजच्या URL Google ला पाठवते</translation>
+<translation id="2527779675047087889">क्लिपबोर्डवरील आशय लपवा</translation>
 <translation id="2532336938189706096">वेब दृश्य</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> आयटम हटवले</translation>
 <translation id="2536728043171574184">या पेजची ऑफलाइन प्रत पाहत आहे</translation>
@@ -314,6 +314,7 @@
 <translation id="3062802207422175757">Chrome वरील तुमच्या स्वारस्यांविषयी लेख</translation>
 <translation id="3070005020161560471">आपोआप भाषांतर करा</translation>
 <translation id="3089395242580810162">गुप्त टॅबमध्ये उघडा</translation>
+<translation id="3091010850649238832">क्लिपबोर्डवरील आशय दाखवा</translation>
 <translation id="3098745985164956033">तुमच्यासाठी वर्णनांमध्ये सुधारणा करण्याकरिता काही इमेज Google कडे पाठवल्या जातात</translation>
 <translation id="3114507951000454849">आजच्या बातम्या वाचा <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">घोषणा</translation>
@@ -847,7 +848,6 @@
 <translation id="6539092367496845964">काहीतरी चूक झाली. पुन्हा प्रयत्न करा.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{एका तासापूर्वी तपासले}other{# तासांपूर्वी तपासले}}</translation>
 <translation id="6545017243486555795">सर्व डेटा साफ करा</translation>
-<translation id="6549142516027084053">क्लिपबोर्डवरील आशय दाखवा</translation>
 <translation id="6560414384669816528">Sogou सह शोध करा</translation>
 <translation id="656065428026159829">आणखी पाहा</translation>
 <translation id="6565959834589222080">उपलब्ध असेल तेव्हा वाय-फाय वापरला जातो</translation>

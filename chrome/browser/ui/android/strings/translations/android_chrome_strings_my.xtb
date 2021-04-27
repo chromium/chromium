@@ -180,7 +180,6 @@
 <translation id="2169830938017475061">ယခု</translation>
 <translation id="2172688499998841696">ပုံအကြောင်းအရာများကို ပိတ်ထားသည်</translation>
 <translation id="2175927920773552910">QR ကုဒ်</translation>
-<translation id="2181298861158186289">ကလစ်ဘုတ်အကြောင်းအရာများကို ဖုံးကွယ်ရန်</translation>
 <translation id="218608176142494674">မျှဝေခြင်း</translation>
 <translation id="2195339740518523951">Chrome ၏ အခိုင်မာဆုံးလုံခြုံရေးကို ရယူခြင်း</translation>
 <translation id="2200113223741723867">သုံးစွဲမှုဒေတာ မျှဝေခြင်းကို စီမံရန်</translation>
@@ -235,6 +234,7 @@
 <translation id="2517472476991765520">ရှာဖွေရန်</translation>
 <translation id="2518590038762162553">'အပေါ့စားမုဒ်' တွင် Chrome သည် စာမျက်နှာများကို ပိုမိုမြန်ဆန်စွာဖွင့်ပြီး ဒေတာကို ၆၀ ရာခိုင်နှုန်းအထိ လျှော့သုံးပါသည်။ သင်ဝင်ကြည့်သည့် စာမျက်နှာများကို အကောင်းဆုံးချိန်ညှိရန် Chrome သည် သင့်ဝဘ် ဒေတာအသွားအလာများကို Google သို့ ပို့ပါသည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">သင်ကြည့်ရှုသည့် စာမျက်နှာများ၏ URL များကို Google သို့ ပို့သည်</translation>
+<translation id="2527779675047087889">ကလစ်ဘုတ်အကြောင်းအရာများကို ဖျောက်ရန်</translation>
 <translation id="2532336938189706096">ဝဘ် မြင်ကွင်း</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> ခုဖျက်ပြီးပြီ</translation>
 <translation id="2536728043171574184">ဤစာမျက်နှာ၏ အော့ဖ်လိုင်း မိတ္တူကို ကြည့်ရှုနေ</translation>
@@ -314,6 +314,7 @@
 <translation id="3062802207422175757">Chrome ရှိ သင်စိတ်ဝင်စားသော ဆောင်းပါးများ</translation>
 <translation id="3070005020161560471">အလိုအလျောက် ဘာသာပြန်ပါ</translation>
 <translation id="3089395242580810162">ရုပ်ဖျက်တဘ်တွင် ဖွင့်ရန်</translation>
+<translation id="3091010850649238832">ကလစ်ဘုတ်အကြောင်းအရာများကို ပြရန်</translation>
 <translation id="3098745985164956033">သင့်အတွက် ရှင်းလင်းချက်များ ပိုကောင်းမွန်စေရန် ပုံအချို့ကို Google သို့ ပို့သည်</translation>
 <translation id="3114507951000454849">ယနေ့သတင်းများကို ဖတ်ရန် <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">ကြေညာချက်များ</translation>
@@ -846,7 +847,6 @@
 <translation id="6539092367496845964">တစ်ခုခု မှားသွားသည်။ နောက်မှ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{လွန်ခဲ့သော ၁ နာရီက စစ်ဆေးခဲ့သည်}other{လွန်ခဲ့သော # နာရီက စစ်ဆေးခဲ့သည်}}</translation>
 <translation id="6545017243486555795">ဒေတာများအားလုံးကိုရှင်းလင်းရန်</translation>
-<translation id="6549142516027084053">ကလစ်ဘုတ်အကြောင်းအရာများကို ပြရန်</translation>
 <translation id="6560414384669816528">Sogou ဖြင့် ရှာဖွေပါ</translation>
 <translation id="656065428026159829">နောက်ထပ်ကြည့်ရန်</translation>
 <translation id="6565959834589222080">Wi-Fi ကို ရနိုင်သည့်အခါ အသုံးပြုသည်</translation>

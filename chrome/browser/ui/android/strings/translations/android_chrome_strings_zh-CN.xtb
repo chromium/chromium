@@ -180,7 +180,6 @@
 <translation id="2169830938017475061">现在</translation>
 <translation id="2172688499998841696">“图片说明”功能已关闭</translation>
 <translation id="2175927920773552910">二维码</translation>
-<translation id="2181298861158186289">隐藏剪贴板内容</translation>
 <translation id="218608176142494674">共享</translation>
 <translation id="2195339740518523951">获享 Chrome 的最强安全保护</translation>
 <translation id="2200113223741723867">对使用情况数据的共享进行管理</translation>
@@ -235,6 +234,7 @@
 <translation id="2517472476991765520">扫描</translation>
 <translation id="2518590038762162553">在精简模式下，Chrome 可更快速地加载网页，并可节省多达 60% 的流量。为了优化您访问的网页，Chrome 会将您的网络流量数据发送给 Google。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">将您所访问的网页的网址发送给 Google</translation>
+<translation id="2527779675047087889">隐藏剪贴板内容</translation>
 <translation id="2532336938189706096">网页视图</translation>
 <translation id="2534155362429831547">删除了 <ph name="NUMBER_OF_ITEMS" /> 项</translation>
 <translation id="2536728043171574184">正在查看此网页的离线副本</translation>
@@ -314,6 +314,7 @@
 <translation id="3062802207422175757">Chrome 可提供您感兴趣的报道</translation>
 <translation id="3070005020161560471">自动翻译</translation>
 <translation id="3089395242580810162">在无痕式标签页中打开</translation>
+<translation id="3091010850649238832">显示剪贴板内容</translation>
 <translation id="3098745985164956033">系统会将部分图片发送给 Google 以便为您改进说明</translation>
 <translation id="3114507951000454849">阅读今日新闻 <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">通告</translation>
@@ -847,7 +848,6 @@
 <translation id="6539092367496845964">出了点问题。请稍后重试。</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1 小时前检查过}other{# 小时前检查过}}</translation>
 <translation id="6545017243486555795">清除所有数据</translation>
-<translation id="6549142516027084053">显示剪贴板内容</translation>
 <translation id="6560414384669816528">改用搜狗搜索</translation>
 <translation id="656065428026159829">查看更多</translation>
 <translation id="6565959834589222080">当 Wi-Fi 可用时使用 Wi-Fi</translation>

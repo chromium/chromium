@@ -427,6 +427,7 @@
 <translation id="2521385132275182522">కుడివైపు దిగువ భాగంలో స్టేపుల్</translation>
 <translation id="2523886232349826891">ఈ పరికరంలో మాత్రమే సేవ్ చేయబడి ఉంటుంది</translation>
 <translation id="2524461107774643265">మరింత సమాచారాన్ని జోడించండి</translation>
+<translation id="2526590354069164005">డెస్క్‌టాప్</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{మరియు మరో 1}other{మరియు మరో #}}</translation>
 <translation id="2536110899380797252">చిరునామాను జోడించు</translation>
 <translation id="2539524384386349900">గుర్తించు</translation>
@@ -1577,6 +1578,7 @@
 <translation id="7004583254764674281">కార్డ్‌లను వేగంగా నిర్ధారించడానికి Windows Helloను ఉపయోగించండి</translation>
 <translation id="7006930604109697472">ఏదేమైనా పంపు</translation>
 <translation id="7012363358306927923">చైనా యూనియన్ పే</translation>
+<translation id="7012404007611495949">సెట్టింగ్‌ల పరిమాణం మార్చు</translation>
 <translation id="7014741021609395734">జూమ్ స్థాయి</translation>
 <translation id="7016992613359344582">ఈ ఛార్జ్‌లు ఒకే సారి చెల్లించేవి లేదా పునరావృతంగా చెల్లించాల్సినవి కావచ్చు మరియు స్పష్టంగా పేర్కొనబడకపోవచ్చు.</translation>
 <translation id="7029809446516969842">పాస్‌వర్డ్‌లు</translation>
@@ -1914,6 +1916,7 @@
 <translation id="825929999321470778">సేవ్ చేసిన అన్ని పాస్‌వర్డ్‌లను చూపండి</translation>
 <translation id="8261506727792406068">తొలగించు</translation>
 <translation id="8262952874573525464">దిగువ భాగంలో కుట్టిన అంచులు</translation>
+<translation id="826298712171642726">పరిమాణాన్ని మార్చడాన్ని ఎనేబుల్ చేయమంటారా?</translation>
 <translation id="8265992338205884890">కనిపించే డేటా</translation>
 <translation id="8267698848189296333"><ph name="USERNAME" />గా సైన్ ఇన్ చేస్తోంది</translation>
 <translation id="8269242089528251720">విడి డాక్యుమెంట్‌లు/సమగ్ర కాపీలు</translation>
@@ -2056,7 +2059,6 @@
 <translation id="8798099450830957504">డిఫాల్ట్</translation>
 <translation id="8805819170075074995">జాబితా నమోదు "<ph name="LANGUAGE_ID" />": నమోదు విస్మరించబడింది, ఎందుకంటే ఇది SpellcheckLanguage విధానంలో కూడా ఉంది.</translation>
 <translation id="8807160976559152894">ప్రతి పేజీ తర్వాత కత్తిరించండి</translation>
-<translation id="881292005876822445">గరిష్ఠీకరణను ఎనేబుల్ చేయాలా?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, మీ Chrome సెట్టింగ్‌ల నుండి Chromeని అప్‌డేట్ చేయడానికి 'Tab' నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="883848425547221593">ఇతర బుక్‌మార్క్‌లు:</translation>

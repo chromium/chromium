@@ -425,6 +425,7 @@
 <translation id="2521385132275182522">नीचे दाईं ओर स्टेपल</translation>
 <translation id="2523886232349826891">सिर्फ़ इस डिवाइस पर सेव किया गया</translation>
 <translation id="2524461107774643265">ज़्यादा जानकारी जोड़ें</translation>
+<translation id="2526590354069164005">डेस्कटॉप</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{और 1 और व्यक्ति}one{और # और लोग}other{और # और लोग}}</translation>
 <translation id="2536110899380797252">पता जोड़ें</translation>
 <translation id="2539524384386349900">पता लगाएं</translation>
@@ -1574,6 +1575,7 @@
 <translation id="7004583254764674281">कार्ड की जल्दी पुष्टि करने के लिए, Windows Hello का इस्तेमाल करें</translation>
 <translation id="7006930604109697472">फिर भी भेजें</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7012404007611495949">साइज़ बदलने वाली सेटिंग</translation>
 <translation id="7014741021609395734">ज़ूम लेवल</translation>
 <translation id="7016992613359344582">ये शुल्क एक बार लगने वाले या बार-बार लगने वाले हो सकते हैं और हो सकता है कि इनके बारे में स्पष्ट जानकारी न दी जाए.</translation>
 <translation id="7029809446516969842">पासवर्ड</translation>
@@ -1911,6 +1913,7 @@
 <translation id="825929999321470778">सेव किए गए सभी पासवर्ड दिखाएं</translation>
 <translation id="8261506727792406068">मिटाएं</translation>
 <translation id="8262952874573525464">नीचे की ओर एज़ स्टिच</translation>
+<translation id="826298712171642726">साइज़ बदलने की सुविधा चालू करें?</translation>
 <translation id="8265992338205884890">दिख रहा डेटा</translation>
 <translation id="8267698848189296333"><ph name="USERNAME" /> के रूप में प्रवेश करना</translation>
 <translation id="8269242089528251720">अलग-अलग दस्तावेज़/क्रम से लगाई गई कॉपी</translation>
@@ -2054,7 +2057,6 @@
 <translation id="8798099450830957504">सामान्य</translation>
 <translation id="8805819170075074995">सूची एंट्री "<ph name="LANGUAGE_ID" />": एंट्री को अनदेखा किया गया क्योंकि इसे SpellcheckLanguage नीति में भी शामिल किया गया है.</translation>
 <translation id="8807160976559152894">हर एक पेज के बाद ट्रिम करें</translation>
-<translation id="881292005876822445">क्या आप इस ऐप्लिकेशन का साइज़ बढ़ाना चाहते हैं?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग से Chrome अपडेट करने के लिए, Tab के बाद Enter दबाएं</translation>
 <translation id="8820817407110198400">बुकमार्क</translation>
 <translation id="883848425547221593">अन्य बुकमार्क</translation>

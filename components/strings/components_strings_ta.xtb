@@ -425,6 +425,7 @@
 <translation id="2521385132275182522">ஸ்டேப்பில் பாட்டம் ரைட்</translation>
 <translation id="2523886232349826891">இந்தச் சாதனத்தில் மட்டும் சேமிக்கப்படும்</translation>
 <translation id="2524461107774643265">மேலும் தகவலைச் சேர்க்கவும்</translation>
+<translation id="2526590354069164005">டெஸ்க்டாப்</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{மேலும் ஒன்று}other{மேலும் #}}</translation>
 <translation id="2536110899380797252">முகவரியைச் சேர்</translation>
 <translation id="2539524384386349900">கண்டறி</translation>
@@ -1570,6 +1571,7 @@
 <translation id="7004583254764674281">கார்டுகளை மேலும் விரைவாக உறுதிப்படுத்த Windows Helloவைப் பயன்படுத்துங்கள்</translation>
 <translation id="7006930604109697472">பரவாயில்லை அனுப்பு</translation>
 <translation id="7012363358306927923">சீனா UnionPay</translation>
+<translation id="7012404007611495949">அளவை மாற்றுவதற்கான அமைப்புகள்</translation>
 <translation id="7014741021609395734">ஜூம் நிலை</translation>
 <translation id="7016992613359344582">இந்தக் கட்டணங்கள் ஒருமுறை அல்லது தொடர்ந்து வசூலிக்கப்படலாம், அவை வெளிப்படையாகத் தெரிவிக்கப்படாமல் இருக்கலாம்.</translation>
 <translation id="7029809446516969842">கடவுச்சொற்கள்</translation>
@@ -1907,6 +1909,7 @@
 <translation id="825929999321470778">சேமித்த எல்லாக் கடவுச்சொற்களையும் காட்டு</translation>
 <translation id="8261506727792406068">நீக்கு</translation>
 <translation id="8262952874573525464">எட்ஜ் ஸ்டிட்ச் பாட்டம்</translation>
+<translation id="826298712171642726">அளவை மாற்றுவதற்கான அமைப்பை இயக்கவா?</translation>
 <translation id="8265992338205884890">தெரிவுநிலைத் தரவு</translation>
 <translation id="8267698848189296333"><ph name="USERNAME" /> ஆக உள்நுழைகிறீர்கள்</translation>
 <translation id="8269242089528251720">தனித்தனி ஆவணங்கள்/தொகுக்கப்பட்ட நகல்கள்</translation>
@@ -2049,7 +2052,6 @@
 <translation id="8798099450830957504">இயல்புநிலை</translation>
 <translation id="8805819170075074995">பட்டியல் உள்ளீடு "<ph name="LANGUAGE_ID" />": உள்ளீடானது SpellcheckLanguage கொள்கையிலும் சேர்க்கப்பட்டிருப்பதால் புறக்கணிக்கப்பட்டது.</translation>
 <translation id="8807160976559152894">டிரிம் ஆஃப்டர் ஈச் பேஜ்</translation>
-<translation id="881292005876822445">பெரிதாக்குதலை இயக்கவா?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome அமைப்புகளில் Chromeமைப் புதுப்பிக்க Tab விசையை அழுத்திய பிறகு Enter விசையை அழுத்துங்கள்</translation>
 <translation id="8820817407110198400">புக்மார்க்குகள்</translation>
 <translation id="883848425547221593">மற்ற புக்மார்க்குகள்</translation>

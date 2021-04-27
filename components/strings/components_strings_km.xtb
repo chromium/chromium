@@ -428,6 +428,7 @@
 <translation id="2521385132275182522">កិប​ខាងក្រោម​ផ្នែកខាង​ស្ដាំ</translation>
 <translation id="2523886232349826891">បានរក្សាទុក​នៅលើតែឧបករណ៍នេះ​ប៉ុណ្ណោះ</translation>
 <translation id="2524461107774643265">បញ្ចូល​ព័ត៌មាន​បន្ថែម</translation>
+<translation id="2526590354069164005">ដេស៍ថប</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{និង 1 ​ទៀត}other{និង # ទៀត}}</translation>
 <translation id="2536110899380797252">បញ្ចូល​អាសយដ្ឋាន</translation>
 <translation id="2539524384386349900">ស្វែងរក</translation>
@@ -1581,6 +1582,7 @@
 <translation id="7004583254764674281">ប្រើ Windows Hello ដើម្បី​បញ្ជាក់​បណ្ណ​ឱ្យ​បាន​រហ័ស​ជាងមុន</translation>
 <translation id="7006930604109697472">មិនអីទេ ផ្ញើចុះ</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7012404007611495949">ការកំណត់ការប្ដូរ​ទំហំ</translation>
 <translation id="7014741021609395734">កម្រិត​ពង្រីកបង្រួម</translation>
 <translation id="7016992613359344582">ការគិតប្រាក់ទាំងនេះអាចធ្វើឡើងម្ដង ឬច្រើន​ដង ហើយអាចនឹងមិនមាន​ការបញ្ជាក់ច្បាស់លាស់នោះទេ។</translation>
 <translation id="7029809446516969842">ពាក្យសម្ងាត់</translation>
@@ -1919,6 +1921,7 @@
 <translation id="825929999321470778">បង្ហាញ​ពាក្យ​សម្ងាត់​ដែល​បាន​រក្សាទុក​ទាំងអស់</translation>
 <translation id="8261506727792406068">លុប</translation>
 <translation id="8262952874573525464">ដេរគែម​ខាងក្រោម</translation>
+<translation id="826298712171642726">បើកការប្ដូរទំហំឬ?</translation>
 <translation id="8265992338205884890">ទិន្នន័យ​ដែលអាច​មើលឃើញ</translation>
 <translation id="8267698848189296333">កំពុងចូលជា <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">ឯកសារ​ដាច់ដោយឡែក/ច្បាប់ចម្លង​តាមលំដាប់លំដោយ</translation>
@@ -2061,7 +2064,6 @@
 <translation id="8798099450830957504">លំនាំដើម</translation>
 <translation id="8805819170075074995">ធាតុបញ្ជី "<ph name="LANGUAGE_ID" />"៖ ធាតុមិនត្រូវបាន​អើពើទេ ដោយសារធាតុនេះ​ក៏ត្រូវបានរួមបញ្ចូល​នៅក្នុងគោលការណ៍ SpellcheckLanguage ផងដែរ។</translation>
 <translation id="8807160976559152894">តម្រឹម​បន្ទាប់ពី​ទំព័រ​នីមួយៗ</translation>
-<translation id="881292005876822445">បើកការពង្រីកឬ?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច "Tab" រួចចុច "Enter" ដើម្បីដំឡើងកំណែ Chrome ពីការកំណត់ Chrome របស់អ្នក</translation>
 <translation id="8820817407110198400">ចំណាំ</translation>
 <translation id="883848425547221593">ចំណាំផ្សេងទៀត</translation>

@@ -425,6 +425,7 @@
 <translation id="2521385132275182522">Συρραφή κάτω δεξιά</translation>
 <translation id="2523886232349826891">Αποθηκεύτηκε μόνο σε αυτήν τη συσκευή</translation>
 <translation id="2524461107774643265">Προσθήκη περισσότερων πληροφοριών</translation>
+<translation id="2526590354069164005">Επιφάνεια εργασίας</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{και 1 ακόμα}other{και # ακόμα}}</translation>
 <translation id="2536110899380797252">Προσθήκη διεύθυνσης</translation>
 <translation id="2539524384386349900">Αναγνώριση</translation>
@@ -1581,6 +1582,7 @@
 <translation id="7004583254764674281">Χρησιμοποιήστε το Windows Hello για πιο γρήγορη επιβεβαίωση καρτών</translation>
 <translation id="7006930604109697472">Αποστολή ούτως ή άλλως</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7012404007611495949">Ρυθμίσεις αλλαγής μεγέθους</translation>
 <translation id="7014741021609395734">Επίπεδο εστίασης</translation>
 <translation id="7016992613359344582">Αυτές οι χρεώσεις μπορεί να είναι εφάπαξ ή επαναλαμβανόμενες και ίσως να μην είναι εμφανείς.</translation>
 <translation id="7029809446516969842">Κωδ. πρόσβασης</translation>
@@ -1918,6 +1920,7 @@
 <translation id="825929999321470778">Εμφάνιση όλων των αποθηκευμένων κωδικών πρόσβασης</translation>
 <translation id="8261506727792406068">Διαγραφή</translation>
 <translation id="8262952874573525464">Ραφή στο κάτω άκρο</translation>
+<translation id="826298712171642726">Ενεργοποίηση αλλαγής μεγέθους;</translation>
 <translation id="8265992338205884890">Ορατά δεδομένα</translation>
 <translation id="8267698848189296333">Σύνδεση ως <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">Ξεχωριστά έγγραφα/Αντίγραφα με συρραφή</translation>
@@ -2063,7 +2066,6 @@
 <translation id="8798099450830957504">Προεπιλογή</translation>
 <translation id="8805819170075074995">Καταχώριση λίστας "<ph name="LANGUAGE_ID" />": Η καταχώριση παραβλέπεται επειδή περιλαμβάνεται επίσης στην πολιτική SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Περικοπή μετά από κάθε σελίδα</translation>
-<translation id="881292005876822445">Ενεργοποίηση της μεγιστοποίησης;</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και έπειτα Enter για να ενημερώσετε το Chrome από τις ρυθμίσεις του Chrome.</translation>
 <translation id="8820817407110198400">Σελιδοδείκτες</translation>
 <translation id="883848425547221593">Άλλοι σελιδοδείκτες</translation>

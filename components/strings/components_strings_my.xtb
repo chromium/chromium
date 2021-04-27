@@ -427,6 +427,7 @@
 <translation id="2521385132275182522">ညာဘက်အောက်ခြေတွင် ချုပ်စက်ဖြင့် ချုပ်ရန်</translation>
 <translation id="2523886232349826891">ဤစက်တွင်သာ သိမ်းထားသည်</translation>
 <translation id="2524461107774643265">နောက်ထပ် အချက်အလက်များကို ထည့်ခြင်း</translation>
+<translation id="2526590354069164005">ဒက်စက်တော့</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{နှင့် နောက်ထပ် ၁ ခု}other{နှင့် နောက်ထပ် # ခု}}</translation>
 <translation id="2536110899380797252">လိပ်စာထည့်ရန်</translation>
 <translation id="2539524384386349900">ရှာကြည့်ရန်</translation>
@@ -1576,6 +1577,7 @@
 <translation id="7004583254764674281">ကတ်များကို ပိုမိုမြန်ဆန်စွာ အတည်ပြုနိုင်ရန် Windows Hello ကို အသုံးပြုပါ</translation>
 <translation id="7006930604109697472">မည်သို့ပင်ဖြစ်စေ ပို့ရန်</translation>
 <translation id="7012363358306927923">တရုတ် UnionPay</translation>
+<translation id="7012404007611495949">အရွယ်အစားပြန်ပြုပြင်ရန် ဆက်တင်များ</translation>
 <translation id="7014741021609395734">ဇူးမ်အဆင့်</translation>
 <translation id="7016992613359344582">ဤငွေကောက်ခံမှုများသည် တစ်ချိန်တစ်ခါတည်း ဖြစ်နိုင်သလို ထပ်တလဲလဲကောက်ခံမှုလည်း ဖြစ်နိုင်ပြီး သိသာမှုမရှိနိုင်ပါ။</translation>
 <translation id="7029809446516969842">စကားဝှက်များ</translation>
@@ -1914,6 +1916,7 @@
 <translation id="825929999321470778">သိမ်းထားသော စကားဝှက်များအားလုံးကို ပြခြင်း</translation>
 <translation id="8261506727792406068">ဖျက်ရန်</translation>
 <translation id="8262952874573525464">အောက်ခြေအစွန်းတွင် အပ်ချည်ဖြင့်ချုပ်ရန်</translation>
+<translation id="826298712171642726">အရွယ်အစားပြန်ပြင်ခြင်း ဖွင့်မလား။</translation>
 <translation id="8265992338205884890">မြင်နိုင်သော ဒေတာ</translation>
 <translation id="8267698848189296333"><ph name="USERNAME" />အဖြစ် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="8269242089528251720">သီးခြား စာရွက်စာတမ်းများ/စုစည်းစီစဉ်ထားသော မိတ္တူများ</translation>
@@ -2056,7 +2059,6 @@
 <translation id="8798099450830957504">ပုံသေ</translation>
 <translation id="8805819170075074995">စာရင်းထည့်သွင်းမှု "<ph name="LANGUAGE_ID" />"- SpellcheckLanguage မူဝါဒတွင်လည်း ပါဝင်နေသောကြောင့် ထည့်သွင်းမှုကို လျစ်လျူရှုထားသည်။</translation>
 <translation id="8807160976559152894">တစ်မျက်နှာအပြီး ဖြတ်ထုတ်ရန်</translation>
-<translation id="881292005876822445">ချဲ့ပြခြင်း ဖွင့်လိုသလား။</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ သင့် Chrome ဆက်တင်များမှတစ်ဆင့် Chrome ကို အပ်ဒိတ်လုပ်ရန် Tab နှိပ်ပြီးနောက် Enter နှိပ်ပါ</translation>
 <translation id="8820817407110198400">စာညှပ်များ</translation>
 <translation id="883848425547221593">အခြား စာညှပ်များ</translation>

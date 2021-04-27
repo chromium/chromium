@@ -180,7 +180,6 @@ Tap any word to search. To refine your search, touch and hold to select more or 
 <translation id="2169830938017475061">Now</translation>
 <translation id="2172688499998841696">Image descriptions are off</translation>
 <translation id="2175927920773552910">QR code</translation>
-<translation id="2181298861158186289">Conceal Clipboard contents</translation>
 <translation id="218608176142494674">Sharing</translation>
 <translation id="2195339740518523951">Get Chrome’s strongest security</translation>
 <translation id="2200113223741723867">Manage usage data sharing</translation>
@@ -235,6 +234,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2517472476991765520">Scan</translation>
 <translation id="2518590038762162553">In Lite mode, Chrome loads pages faster and uses up to 60 per cent less data. To optimise the pages that you visit, Chrome sends your web traffic to Google. <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">Sends URLs of pages that you visit to Google</translation>
+<translation id="2527779675047087889">Hide clipboard contents</translation>
 <translation id="2532336938189706096">Web View</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> items deleted</translation>
 <translation id="2536728043171574184">Viewing an offline copy of this page</translation>
@@ -314,6 +314,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3062802207422175757">Articles on your interests on Chrome</translation>
 <translation id="3070005020161560471">Automatically translate</translation>
 <translation id="3089395242580810162">Open in incognito tab</translation>
+<translation id="3091010850649238832">Show clipboard contents</translation>
 <translation id="3098745985164956033">Some images are sent to Google to improve descriptions for you</translation>
 <translation id="3114507951000454849">Read today's news <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Announcements</translation>
@@ -847,7 +848,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6539092367496845964">Something went wrong. Try again later.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Checked 1 hour ago}other{Checked # hours ago}}</translation>
 <translation id="6545017243486555795">Clear All Data</translation>
-<translation id="6549142516027084053">Reveal Clipboard contents</translation>
 <translation id="6560414384669816528">Search with Sogou</translation>
 <translation id="656065428026159829">See more</translation>
 <translation id="6565959834589222080">Wi-Fi is used when available</translation>

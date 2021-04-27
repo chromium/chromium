@@ -180,7 +180,6 @@
 <translation id="2169830938017475061">இப்போது</translation>
 <translation id="2172688499998841696">'பட விளக்கங்கள்' முடக்கப்பட்டது</translation>
 <translation id="2175927920773552910">QR குறியீடு</translation>
-<translation id="2181298861158186289">கிளிப்போர்டில் உள்ளவற்றை மறைக்கும்</translation>
 <translation id="218608176142494674">பகிர்தல்</translation>
 <translation id="2195339740518523951">Chromeமின் வலிமையான பாதுகாப்பைப் பெறுங்கள்</translation>
 <translation id="2200113223741723867">உபயோகத் தரவுப் பகிர்தலை நிர்வகித்தல்</translation>
@@ -235,6 +234,7 @@
 <translation id="2517472476991765520">ஸ்கேன் செய்</translation>
 <translation id="2518590038762162553">லைட் பயன்முறையில் பக்கங்களை Chrome வேகமாக ஏற்றுவதோடு டேட்டாவை 60 சதவீதம் வரை குறைவாகவும் பயன்படுத்தும். நீங்கள் பார்க்கும் பக்கங்களை மேம்படுத்த Chrome உங்கள் இணைய டிராஃபிக்கை Googleளுக்கு அனுப்பும். <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">நீங்கள் பார்வையிடும் பக்கங்களின் URLகளை Googleளுக்கு அனுப்பும்</translation>
+<translation id="2527779675047087889">கிளிப்போர்டில் உள்ளவற்றை மறைக்கும்</translation>
 <translation id="2532336938189706096">இணைய பார்வை</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> வரலாற்று உள்ளடக்கங்கள் நீக்கப்பட்டன</translation>
 <translation id="2536728043171574184">இந்தப் பக்கத்தின் ஆஃப்லைன் நகலைப் பார்க்கிறீர்கள்</translation>
@@ -314,6 +314,7 @@
 <translation id="3062802207422175757">உங்களுக்குப் பிடித்த கட்டுரைகளை Chromeமில் படிக்கலாம்</translation>
 <translation id="3070005020161560471">தானாக மொழிபெயர்க்க வேண்டியவை</translation>
 <translation id="3089395242580810162">மறைநிலை தாவலில் திற</translation>
+<translation id="3091010850649238832">கிளிப்போர்டில் உள்ளவற்றைக் காட்டும்</translation>
 <translation id="3098745985164956033">உங்களுக்கான விளக்கங்களை மேம்படுத்த, படங்கள் Googleளுக்கு அனுப்பப்படும்</translation>
 <translation id="3114507951000454849">இன்றைய செய்திகளைப் படியுங்கள் <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">அறிவிப்புகள்</translation>
@@ -847,7 +848,6 @@
 <translation id="6539092367496845964">ஏதோ தவறாகிவிட்டது. பிறகு முயலவும்.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{சரிபார்த்தது: 1 மணிநேரத்திற்கு முன்பு}other{சரிபார்த்தது: # மணிநேரத்திற்கு முன்பு}}</translation>
 <translation id="6545017243486555795">எல்லா தரவையும் அழி</translation>
-<translation id="6549142516027084053">கிளிப்போர்டில் உள்ளவற்றைக் காட்டும்</translation>
 <translation id="6560414384669816528">Sogou மூலம் தேடுக</translation>
 <translation id="656065428026159829">மேலும் காட்டு</translation>
 <translation id="6565959834589222080">வைஃபை இணைப்பு கிடைக்கும்போது பயன்படுத்தப்படும்</translation>

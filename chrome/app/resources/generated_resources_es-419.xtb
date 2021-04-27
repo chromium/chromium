@@ -1149,7 +1149,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2232751457155581899">Permitir que los sitios soliciten permiso para registrar la posición de la cámara</translation>
 <translation id="2232876851878324699">El archivo contenía un certificado que no fue importado:</translation>
 <translation id="2233502537820838181">&amp;Más información</translation>
-<translation id="2234876718134438132">Sincronización y servicios</translation>
+<translation id="2234876718134438132">Sincronización y servicios de Google</translation>
 <translation id="2235344399760031203">Se bloquearon las cookies de terceros</translation>
 <translation id="2238379619048995541">Datos de estado de frecuencia</translation>
 <translation id="2241053333139545397">Leer y modificar tus datos en una serie de sitios web</translation>
@@ -5205,7 +5205,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="6825184156888454064">Ordenar por nombre</translation>
 <translation id="6826872289184051766">Verificar mediante USB</translation>
 <translation id="6827604573767207488">Al parecer, ya configuraste el Asistente personalizado en otro dispositivo. Activa la siguiente configuración para sacarle aún más provecho a tu Asistente.</translation>
-<translation id="6828153365543658583">Restringir el inicio de sesión a los siguientes usuarios:</translation>
+<translation id="6828153365543658583">Limitar el acceso a los siguientes usuarios</translation>
 <translation id="6828182567531805778">Ingresa la frase de contraseña para sincronizar tus datos</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">No se pudieron configurar actualizaciones automáticas para todos los usuarios (error de ejecución preliminar: <ph name="ERROR_NUMBER" />)</translation>

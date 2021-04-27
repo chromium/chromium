@@ -180,7 +180,6 @@
 <translation id="2169830938017475061">Сега</translation>
 <translation id="2172688499998841696">Функцията за описания на изображенията е изключена</translation>
 <translation id="2175927920773552910">Код за бърза реакция</translation>
-<translation id="2181298861158186289">Скриване на съдържанието в буферната памет</translation>
 <translation id="218608176142494674">Споделяне</translation>
 <translation id="2195339740518523951">Получете най-високото ниво на сигурност на Chrome</translation>
 <translation id="2200113223741723867">Управление на споделянето на данни за употребата</translation>
@@ -235,6 +234,7 @@
 <translation id="2517472476991765520">Сканиране</translation>
 <translation id="2518590038762162553">В олекотения режим на Chrome страниците се зареждат по-бързо и се използват до 60 процента по-малко данни. С цел оптимизиране на посещаваните от вас страници Chrome изпраща до Google уеб трафика ви. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">Изпраща до Google URL адресите на страниците, които посещавате</translation>
+<translation id="2527779675047087889">Скриване на съдържанието в буферната памет</translation>
 <translation id="2532336938189706096">Изглед в мрежата</translation>
 <translation id="2534155362429831547">Изтрихте <ph name="NUMBER_OF_ITEMS" /> елемента</translation>
 <translation id="2536728043171574184">Преглеждате офлайн копие на страницата</translation>
@@ -314,6 +314,7 @@
 <translation id="3062802207422175757">Статии, свързани с интересите ви, в Chrome</translation>
 <translation id="3070005020161560471">Да се превежда автоматично от</translation>
 <translation id="3089395242580810162">Отваряне в раздел „инкогнито“</translation>
+<translation id="3091010850649238832">Показване на съдържанието в буферната памет</translation>
 <translation id="3098745985164956033">Някои изображения се изпращат до Google с цел подобряване на описанията за вас</translation>
 <translation id="3114507951000454849">Прочетете днешните новини <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Съобщения</translation>
@@ -847,7 +848,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="6539092367496845964">Нещо се обърка. Опитайте пак по-късно.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Проверено преди 1 час}other{Проверено преди # часа}}</translation>
 <translation id="6545017243486555795">Изчистване на всички данни</translation>
-<translation id="6549142516027084053">Показване на съдържанието в буферната памет</translation>
 <translation id="6560414384669816528">Търсене със Sogou</translation>
 <translation id="656065428026159829">Вижте още</translation>
 <translation id="6565959834589222080">Wi-Fi се използва, когато е налице</translation>

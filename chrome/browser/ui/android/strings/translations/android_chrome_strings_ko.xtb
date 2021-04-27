@@ -180,7 +180,6 @@
 <translation id="2169830938017475061">방금</translation>
 <translation id="2172688499998841696">이미지 설명 사용 중지됨</translation>
 <translation id="2175927920773552910">QR 코드</translation>
-<translation id="2181298861158186289">클립보드 내용 숨기기</translation>
 <translation id="218608176142494674">공유</translation>
 <translation id="2195339740518523951">Chrome의 가장 강력한 보안 기능 사용하기</translation>
 <translation id="2200113223741723867">사용 데이터 공유 관리</translation>
@@ -235,6 +234,7 @@
 <translation id="2517472476991765520">검색</translation>
 <translation id="2518590038762162553">Chrome의 라이트 모드를 사용하면 페이지가 더 빠르게 로드되고 데이터가 최대 60퍼센트 절약됩니다. Chrome에서는 사용자가 방문하는 페이지를 최적화하기 위해 웹 트래픽을 Google에 전송합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">방문한 페이지의 URL을 Google에 전송</translation>
+<translation id="2527779675047087889">클립보드 내용 숨기기</translation>
 <translation id="2532336938189706096">웹 보기</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" />개 항목 삭제함</translation>
 <translation id="2536728043171574184">이 페이지의 오프라인 사본 보는 중</translation>
@@ -314,6 +314,7 @@
 <translation id="3062802207422175757">Chrome에서 관심분야 기사를 읽어보세요.</translation>
 <translation id="3070005020161560471">자동으로 번역</translation>
 <translation id="3089395242580810162">시크릿 탭에서 열기</translation>
+<translation id="3091010850649238832">클립보드 내용 표시</translation>
 <translation id="3098745985164956033">설명을 개선하기 위해 일부 이미지가 Google에 전송됨</translation>
 <translation id="3114507951000454849">오늘의 뉴스 읽기 <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">공지사항</translation>
@@ -847,7 +848,6 @@
 <translation id="6539092367496845964">문제가 발생했습니다. 나중에 다시 시도해 보세요.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1시간 전에 확인됨}other{#시간 전에 확인됨}}</translation>
 <translation id="6545017243486555795">모든 데이터 삭제</translation>
-<translation id="6549142516027084053">클립보드 내용 표시</translation>
 <translation id="6560414384669816528">Sogou로 검색</translation>
 <translation id="656065428026159829">더보기</translation>
 <translation id="6565959834589222080">가능한 경우 Wi-Fi가 사용됨</translation>

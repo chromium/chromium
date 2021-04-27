@@ -425,6 +425,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2521385132275182522">Stift nede til høyre</translation>
 <translation id="2523886232349826891">Kun lagret på denne enheten</translation>
 <translation id="2524461107774643265">Legg til mer informasjon</translation>
+<translation id="2526590354069164005">Skrivebordet</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{og 1 til}other{og # til}}</translation>
 <translation id="2536110899380797252">Legg til adresse</translation>
 <translation id="2539524384386349900">Oppdag</translation>
@@ -1577,6 +1578,7 @@ brukere av denne nettleseren.</translation>
 <translation id="7004583254764674281">Bruk Windows Hello til å bekrefte kort raskere</translation>
 <translation id="7006930604109697472">Send likevel</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7012404007611495949">Innstillinger for størrelsesendring</translation>
 <translation id="7014741021609395734">Zoomnivå</translation>
 <translation id="7016992613359344582">Disse belastningene kan skje én gang eller være gjentakende, og det er ikke sikkert de er åpenbare.</translation>
 <translation id="7029809446516969842">Passord</translation>
@@ -1913,6 +1915,7 @@ brukere av denne nettleseren.</translation>
 <translation id="825929999321470778">Vis alle lagrede passord</translation>
 <translation id="8261506727792406068">Slett</translation>
 <translation id="8262952874573525464">Kantstifting bunn</translation>
+<translation id="826298712171642726">Vil du slå på størrelsesendring?</translation>
 <translation id="8265992338205884890">Synlige data</translation>
 <translation id="8267698848189296333">Logger på som <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">Separate dokumenter / kollaterte eksemplarer</translation>
@@ -2055,7 +2058,6 @@ Mer informasjon:
 <translation id="8798099450830957504">Standard</translation>
 <translation id="8805819170075074995">Listeoppføringen «<ph name="LANGUAGE_ID" />»: Oppføringen er ignorert fordi den også er inkludert i regelen SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Beskjær etter hver side</translation>
-<translation id="881292005876822445">Vil du slå på maksimering?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å oppdatere Chrome fra Chrome-innstillingene</translation>
 <translation id="8820817407110198400">Bokmerker</translation>
 <translation id="883848425547221593">Andre bokmerker</translation>

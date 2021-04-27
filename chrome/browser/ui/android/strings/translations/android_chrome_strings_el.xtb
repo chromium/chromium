@@ -180,7 +180,6 @@
 <translation id="2169830938017475061">Τώρα</translation>
 <translation id="2172688499998841696">Οι περιγραφές εικόνων είναι απενεργοποιημένες</translation>
 <translation id="2175927920773552910">Κωδικός QR</translation>
-<translation id="2181298861158186289">Απόκρυψη περιεχομένων πρόχειρου</translation>
 <translation id="218608176142494674">Κοινοποίηση</translation>
 <translation id="2195339740518523951">Λάβετε την ισχυρότερη ασφάλεια του Chrome</translation>
 <translation id="2200113223741723867">Διαχείριση κοινοποίησης δεδομένων χρήσης</translation>
@@ -235,6 +234,7 @@
 <translation id="2517472476991765520">Σάρωση</translation>
 <translation id="2518590038762162553">Στη λειτουργία Lite, το Chrome φορτώνει τις σελίδες πιο γρήγορα και χρησιμοποιεί έως και 60% λιγότερα δεδομένα. Για να βελτιστοποιήσει τις σελίδες που επισκέπτεστε, το Chrome στέλνει την επισκεψιμότητα ιστού σας στο Google. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">Αποστέλλει στην Google URL των σελίδων που επισκέπτεστε</translation>
+<translation id="2527779675047087889">Απόκρυψη περιεχομένων πρόχειρου</translation>
 <translation id="2532336938189706096">Προβολή ιστού</translation>
 <translation id="2534155362429831547">Διαγράφηκαν <ph name="NUMBER_OF_ITEMS" /> στοιχεία</translation>
 <translation id="2536728043171574184">Προβολή ενός αντιγράφου αυτής της σελίδας εκτός σύνδεσης</translation>
@@ -314,6 +314,7 @@
 <translation id="3062802207422175757">Άρθρα για τα ενδιαφέροντά σας στο Chrome</translation>
 <translation id="3070005020161560471">Να γίνεται μετάφραση αυτόματα</translation>
 <translation id="3089395242580810162">Άνοιγμα σε καρτ. ανών. περιήγ.</translation>
+<translation id="3091010850649238832">Εμφάνιση περιεχομένων πρόχειρου</translation>
 <translation id="3098745985164956033">Ορισμένες εικόνες αποστέλλονται στην Google για τη βελτίωση των περιγραφών για εσάς.</translation>
 <translation id="3114507951000454849">Διαβάστε τις σημερινές ειδήσεις <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Ανακοινώσεις</translation>
@@ -847,7 +848,6 @@
 <translation id="6539092367496845964">Παρουσιάστηκε κάποιο πρόβλημα. Δοκιμάστε ξανά αργότερα.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Ελέγχθηκε πριν από μία ώρα}other{Ελέγχθηκε πριν από # ώρες}}</translation>
 <translation id="6545017243486555795">Διαγραφή όλων των δεδομένων</translation>
-<translation id="6549142516027084053">Αποκάλυψη περιεχομένων πρόχειρου</translation>
 <translation id="6560414384669816528">Αναζήτηση με το Sogou</translation>
 <translation id="656065428026159829">Δείτε περισσότερα</translation>
 <translation id="6565959834589222080">Το Wi-Fi χρησιμοποιείται όταν είναι διαθέσιμο</translation>

@@ -180,7 +180,6 @@
 <translation id="2169830938017475061">अभी</translation>
 <translation id="2172688499998841696">इमेज की जानकारी जोड़ने की सुविधा बंद कर दी गई है</translation>
 <translation id="2175927920773552910">क्यूआर कोड</translation>
-<translation id="2181298861158186289">क्लिपबोर्ड का कॉन्टेंट छिपाएं</translation>
 <translation id="218608176142494674">शेयर किया जा रहा है</translation>
 <translation id="2195339740518523951">Chrome की सबसे मज़बूत सुरक्षा पाएं</translation>
 <translation id="2200113223741723867">इस्तेमाल के बारे में डेटा शेयर करने की सेटिंग प्रबंधित करें</translation>
@@ -235,6 +234,7 @@
 <translation id="2517472476991765520">स्कैन करें</translation>
 <translation id="2518590038762162553">Chrome, लाइट मोड में पेजों को ज़्यादा तेज़ी से लोड करता है और 60 प्रतिशत तक कम डेटा इस्तेमाल करता है. जिन पेजों पर आप जाते हैं उनको ऑप्टिमाइज़ करने के लिए Chrome आपके वेब ट्रैफ़िक की जानकारी Google को भेजता है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">आप जिन पेजों पर जाते हैं उनके यूआरएल Google को भेजती है</translation>
+<translation id="2527779675047087889">क्लिपबोर्ड का कॉन्टेंट छिपाएं</translation>
 <translation id="2532336938189706096">वेब व्यू</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> आइटम मिटाए गए</translation>
 <translation id="2536728043171574184">इस पृष्‍ठ की ऑफ़लाइन कॉपी देख रहे हैं</translation>
@@ -314,6 +314,7 @@
 <translation id="3062802207422175757">Chrome पर आपकी पसंद के लेख</translation>
 <translation id="3070005020161560471">अपने-आप अनुवाद करें</translation>
 <translation id="3089395242580810162">गुप्त टैब में खोलें</translation>
+<translation id="3091010850649238832">क्लिपबोर्ड का कॉन्टेंट दिखाएं</translation>
 <translation id="3098745985164956033">कुछ इमेज Google को भेजी जाती हैं, ताकि आपको मिलने वाली जानकारी को बेहतर बनाया जा सके</translation>
 <translation id="3114507951000454849">आज की खबरें <ph name="NEWS_ICON" /> पढ़ें</translation>
 <translation id="3123734510202723619">एलान</translation>
@@ -847,7 +848,6 @@
 <translation id="6539092367496845964">कोई गड़बड़ी हुई. बाद में कोशिश करें.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{जांच 1 घंटा पहले की गई}one{जांच # घंटा पहले की गई}other{जांच # घंटे पहले की गई}}</translation>
 <translation id="6545017243486555795">सभी डेटा साफ़ करें</translation>
-<translation id="6549142516027084053">क्लिपबोर्ड का कॉन्टेंट दिखाएं</translation>
 <translation id="6560414384669816528">Sogou से खोजें</translation>
 <translation id="656065428026159829">ज़्यादा देखें</translation>
 <translation id="6565959834589222080">उपलब्ध होने पर वाई-फ़ाई का इस्तेमाल किया जाता है</translation>

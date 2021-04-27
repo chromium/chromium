@@ -424,6 +424,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2521385132275182522">Kapje me tel poshtë djathtas</translation>
 <translation id="2523886232349826891">Ruajtur vetëm në këtë pajisje</translation>
 <translation id="2524461107774643265">Shto më shumë informacion</translation>
+<translation id="2526590354069164005">Desktopi</translation>
 <translation id="2535659140340599600">{COUNT,plural, =1{dhe 1 tjetër}other{dhe # të tjera}}</translation>
 <translation id="2536110899380797252">Shto adresë</translation>
 <translation id="2539524384386349900">Zbulo</translation>
@@ -1571,6 +1572,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7004583254764674281">Përdor Windows Hello për t'i konfirmuar kartat më shpejt</translation>
 <translation id="7006930604109697472">Dërgoje gjithsesi</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
+<translation id="7012404007611495949">Cilësimet e ndryshimit të përmasave</translation>
 <translation id="7014741021609395734">Niveli i zmadhimit</translation>
 <translation id="7016992613359344582">Këto tarifa mund të jenë vetëm për një rast ose dhe të përsëritura, gjë që mund të mos jetë menjëherë e qartë.</translation>
 <translation id="7029809446516969842">Fjalëkalimet</translation>
@@ -1908,6 +1910,7 @@ Detaje shtesë:
 <translation id="825929999321470778">Shfaq të gjitha fjalëkalimet e ruajtura</translation>
 <translation id="8261506727792406068">Fshi</translation>
 <translation id="8262952874573525464">Qepje anësore poshtë</translation>
+<translation id="826298712171642726">Të aktivizohet ndryshimi i përmasave?</translation>
 <translation id="8265992338205884890">Të dhënat e dukshme</translation>
 <translation id="8267698848189296333">Po identifikohet si <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">Dokumente të ndara/kopje të renditura</translation>
@@ -2050,7 +2053,6 @@ Detaje shtesë:
 <translation id="8798099450830957504">I parazgjedhur</translation>
 <translation id="8805819170075074995">Hyrja e listës "<ph name="LANGUAGE_ID" />": Hyrja është shpërfillur sepse është e përfshirë edhe në politikën e SpellcheckLanguage.</translation>
 <translation id="8807160976559152894">Prerje pas çdo faqeje</translation>
-<translation id="881292005876822445">Të aktivizohet maksimizimi?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp "Tab", më pas "Enter" për të përditësuar Chrome nga cilësimet e tua të Chrome</translation>
 <translation id="8820817407110198400">Faqeshënuesit</translation>
 <translation id="883848425547221593">Faqeshënues të tjerë</translation>

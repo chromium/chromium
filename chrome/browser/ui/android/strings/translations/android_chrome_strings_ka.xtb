@@ -180,7 +180,6 @@
 <translation id="2169830938017475061">ახლა</translation>
 <translation id="2172688499998841696">სურათების აღწერილობები გამორთულია</translation>
 <translation id="2175927920773552910">QR კოდი</translation>
-<translation id="2181298861158186289">გაცვლის ბუფერის შიგთავსის დამალვა</translation>
 <translation id="218608176142494674">გაზიარება</translation>
 <translation id="2195339740518523951">ისარგებლეთ Chrome-ის უსაფრთხოების ყველაზე ძლიერი ფუნქციებით</translation>
 <translation id="2200113223741723867">გამოყენების მონაცემების გაზიარების მართვა</translation>
@@ -235,6 +234,7 @@
 <translation id="2517472476991765520">სკანირება</translation>
 <translation id="2518590038762162553">Lite რეჟიმში Chrome უფრო სწრაფად ტვირთავს გვერდებს და 60%-ით ნაკლებ ტრაფიკს მოიხმარს. თქვენ მიერ მონახულებული გვერდების ოპტიმიზაციის მიზნით, Chrome თქვენს ვებ-ტრაფიკს Google-ს უგზავნის. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">Google-ს უგზავნის თქვენ მიერ მონახულებული გვერდების URL-ებს</translation>
+<translation id="2527779675047087889">გაცვლის ბუფერის შიგთავსის დამალვა</translation>
 <translation id="2532336938189706096">ვებ-ხედი</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> ერთეული წაიშალა</translation>
 <translation id="2536728043171574184">თქვენ ამ გვერდის ხაზგარეშე ასლს ნახულობთ</translation>
@@ -314,6 +314,7 @@
 <translation id="3062802207422175757">თქვენს ინტერესებთან დაკავშირებული სტატიები Chrome-ში</translation>
 <translation id="3070005020161560471">ავტომატურად ითარგმნოს</translation>
 <translation id="3089395242580810162">ინკოგნიტო ჩანართში გახსნა</translation>
+<translation id="3091010850649238832">გაცვლის ბუფერის შიგთავსის ჩვენება</translation>
 <translation id="3098745985164956033">ზოგიერთი სურათი გაეგზავნება Google-ს, უკეთესი აღწერილობები რომ შემოგთავაზოთ</translation>
 <translation id="3114507951000454849">გაეცანით დღის სიახლეებს <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">განცხადებები</translation>
@@ -847,7 +848,6 @@
 <translation id="6539092367496845964">წარმოიქმნა შეფერხება. ცადეთ მოგვიანებით.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{შემოწმდა 1 საათის წინ}other{შემოწმდა # საათის წინ}}</translation>
 <translation id="6545017243486555795">ყველა მონაცემის გასუფთავება</translation>
-<translation id="6549142516027084053">გაცვლის ბუფერის შიგთავსის გამოჩენა</translation>
 <translation id="6560414384669816528">ძიების Sogou-ს მეშვეობით განხორციელება</translation>
 <translation id="656065428026159829">მეტის ნახვა</translation>
 <translation id="6565959834589222080">ხელმისაწვდომობის მიხედვით გამოიყენება Wi-Fi</translation>

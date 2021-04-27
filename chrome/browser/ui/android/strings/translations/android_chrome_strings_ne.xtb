@@ -180,7 +180,6 @@
 <translation id="2169830938017475061">अहिले</translation>
 <translation id="2172688499998841696">'फोटोको वर्णन' सुविधा अफ छ</translation>
 <translation id="2175927920773552910">QR कोड</translation>
-<translation id="2181298861158186289">क्लिपबोर्डमा रहेका सामग्री लुकाइयोस्</translation>
 <translation id="218608176142494674">आदान प्रदान गर्दै</translation>
 <translation id="2195339740518523951">Chrome को सबैभन्दा बलियो सुरक्षा विकल्प चयन गर्नुहोस्</translation>
 <translation id="2200113223741723867">प्रयोगसम्बन्धी डेटा सेयर गर्ने सेटिङ व्यवस्थापन गर्नुहोस्</translation>
@@ -235,6 +234,7 @@
 <translation id="2517472476991765520">स्क्यान गर्नुहोस्</translation>
 <translation id="2518590038762162553">लाइट मोडमा हुँदा Chrome ले पृष्ठहरू अझ छिटो लोड गर्नाका साथै ६० प्रतिशतसम्म कम डेटा प्रयोग गर्छ। तपाईंले भ्रमण गर्ने पृष्ठहरू अप्टिमाइज गर्न, Chrome ले तपाईंको वेबसम्बन्धी ट्राफिक Google मा पठाउँछ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">तपाईं जाने पृष्ठका URL हरू Google मा पठाउँछ</translation>
+<translation id="2527779675047087889">क्लिपबोर्डमा भएका सामग्री लुकाइयोस्</translation>
 <translation id="2532336938189706096">वेब दृश्य</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> वस्तुहरू मेटाइए</translation>
 <translation id="2536728043171574184">यो पृष्ठको एक अफलाइन प्रतिलिपि हेर्दै</translation>
@@ -312,6 +312,7 @@
 <translation id="3062802207422175757">Chrome मा तपाईंको रुचिका विषयसँग सम्बन्धित लेखहरू पढ्नुहोस्</translation>
 <translation id="3070005020161560471">स्वतः अनुवाद गरियोस्</translation>
 <translation id="3089395242580810162">इन्कोग्निटो ट्याबमा खोल्नुहोस्</translation>
+<translation id="3091010850649238832">क्लिपबोर्डमा भएका सामग्री देखाइयोस्</translation>
 <translation id="3098745985164956033">तपाईंलाई उपलब्ध गराइने वर्णनको गुणस्तर सुधार गर्न केही फोटोहरू Google मा पठाइन्छन्</translation>
 <translation id="3114507951000454849">आजको समाचार पढ्नुहोस् <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">घोषणाहरू</translation>
@@ -840,7 +841,6 @@
 <translation id="6539092367496845964">केही चिज गडबड भयो। पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{१ घन्टाअघि जाँच गरिएको}other{# घन्टाअघि जाँच गरिएको}}</translation>
 <translation id="6545017243486555795">सबै डेटा मेटाउनुहोस्</translation>
-<translation id="6549142516027084053">क्लिपबोर्डमा रहेका सामग्री देखाइयोस्</translation>
 <translation id="6560414384669816528">Sogou मार्फत खोजी गर्नुहोस्</translation>
 <translation id="656065428026159829">थप हेर्नुहोस्</translation>
 <translation id="6565959834589222080">Wi-Fi उपलब्ध हुँदा मोबाइल डेटा प्रयोग गरिँदैन</translation>
