@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "device/bluetooth/advertisement.h"
 #include "device/bluetooth/bluetooth_socket.h"
@@ -39,12 +40,36 @@ const char kCannotConnectToDeviceError[] = "Cannot connect to device.";
 
 }  // namespace
 
+Adapter::ConnectToServiceRequestDetails::ConnectToServiceRequestDetails(
+    const std::string& address,
+    const device::BluetoothUUID& service_uuid,
+    const base::Time& time_requested,
+    ConnectToServiceInsecurelyCallback callback)
+    : address(address),
+      service_uuid(service_uuid),
+      time_requested(time_requested),
+      callback(std::move(callback)) {}
+
+Adapter::ConnectToServiceRequestDetails::~ConnectToServiceRequestDetails() =
+    default;
+
 Adapter::Adapter(scoped_refptr<device::BluetoothAdapter> adapter)
     : adapter_(std::move(adapter)) {
   adapter_->AddObserver(this);
 }
 
 Adapter::~Adapter() {
+  for (auto& entry : connect_to_service_request_map_) {
+    base::UmaHistogramMediumTimes(
+        "Bluetooth.Mojo.PendingConnectAtShutdown."
+        "DurationWaiting",
+        base::Time::Now() - entry.second->time_requested);
+  }
+  base::UmaHistogramCounts100(
+      "Bluetooth.Mojo.PendingConnectAtShutdown."
+      "NumberOfServiceDiscoveriesInProgress",
+      connect_to_service_requests_pending_discovery_.size());
+
   adapter_->RemoveObserver(this);
   adapter_ = nullptr;
 }
@@ -199,26 +224,29 @@ void Adapter::ConnectToServiceInsecurely(
   }
 
   auto* device = adapter_->GetDevice(address);
+  int request_id = next_request_id_++;
+  connect_to_service_request_map_.emplace(
+      request_id,
+      std::make_unique<ConnectToServiceRequestDetails>(
+          address, service_uuid, base::Time::Now(), std::move(callback)));
+
   if (device) {
-    OnDeviceFetchedForInsecureServiceConnection(service_uuid,
-                                                std::move(callback), device);
+    OnDeviceFetchedForInsecureServiceConnection(request_id, device);
     return;
   }
 
   // This device has neither been discovered, nor has it been paired/connected
   // to previously. Use the ConnectDevice() API, if available, to connect to it.
 #if defined(OS_CHROMEOS) || defined(OS_LINUX)
-  auto split_callback = base::SplitOnceCallback(std::move(callback));
   adapter_->ConnectDevice(
       address, /*address_type=*/base::nullopt,
       base::BindOnce(&Adapter::OnDeviceFetchedForInsecureServiceConnection,
-                     weak_ptr_factory_.GetWeakPtr(), service_uuid,
-                     std::move(split_callback.first)),
-      base::BindOnce(
-          &Adapter::OnConnectToServiceError, weak_ptr_factory_.GetWeakPtr(),
-          std::move(split_callback.second), kCannotConnectToDeviceError));
+                     weak_ptr_factory_.GetWeakPtr(), request_id),
+      base::BindOnce(&Adapter::OnConnectToServiceError,
+                     weak_ptr_factory_.GetWeakPtr(), request_id,
+                     kCannotConnectToDeviceError));
 #else
-  OnConnectToServiceError(std::move(callback), "Device does not exist.");
+  OnConnectToServiceError(request_id, "Device does not exist.");
 #endif
 }
 
@@ -321,11 +349,12 @@ void Adapter::AllowConnectionsForUuid(
 }
 
 void Adapter::OnDeviceFetchedForInsecureServiceConnection(
-    const device::BluetoothUUID& service_uuid,
-    ConnectToServiceInsecurelyCallback callback,
+    int request_id,
     device::BluetoothDevice* device) {
+  DCHECK(connect_to_service_request_map_.contains(request_id));
+
   if (!device) {
-    std::move(callback).Run(/*result=*/nullptr);
+    ExecuteConnectToServiceCallback(request_id, /*result=*/nullptr);
     return;
   }
 
@@ -337,32 +366,28 @@ void Adapter::OnDeviceFetchedForInsecureServiceConnection(
     // services). That means attempting ConnectToServiceInsecurely() right now
     // would fail with an "InProgress" error. Wait for GattServicesDiscovered()
     // to be called to signal that ConnectToServiceInsecurely() can be called.
-    pending_connect_to_service_args_.emplace_back(
-        device->GetAddress(), service_uuid, std::move(callback));
+    connect_to_service_requests_pending_discovery_.push_back(request_id);
     return;
   }
 
-  auto split_callback = base::SplitOnceCallback(std::move(callback));
   device->ConnectToServiceInsecurely(
-      service_uuid,
+      connect_to_service_request_map_[request_id]->service_uuid,
       base::BindOnce(&Adapter::OnConnectToService,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(split_callback.first)),
+                     weak_ptr_factory_.GetWeakPtr(), request_id),
       base::BindOnce(&Adapter::OnConnectToServiceError,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(split_callback.second)));
+                     weak_ptr_factory_.GetWeakPtr(), request_id));
 }
 
 void Adapter::ProcessPendingInsecureServiceConnectionRequest(
     const std::string& address,
     device::BluetoothDevice* device) {
-  auto it = pending_connect_to_service_args_.begin();
-  while (it != pending_connect_to_service_args_.end()) {
-    if (address == std::get<0>(*it)) {
-      OnDeviceFetchedForInsecureServiceConnection(
-          /*service_uuid=*/std::get<1>(*it),
-          /*callback=*/std::move(std::get<2>(*it)), device);
-      it = pending_connect_to_service_args_.erase(it);
+  auto it = connect_to_service_requests_pending_discovery_.begin();
+  while (it != connect_to_service_requests_pending_discovery_.end()) {
+    auto request_it = connect_to_service_request_map_.find(*it);
+    DCHECK(request_it != connect_to_service_request_map_.end());
+    if (address == request_it->second->address) {
+      OnDeviceFetchedForInsecureServiceConnection(*it, device);
+      it = connect_to_service_requests_pending_discovery_.erase(it);
     } else {
       ++it;
     }
@@ -433,7 +458,7 @@ void Adapter::OnDiscoverySessionError(StartDiscoverySessionCallback callback) {
 }
 
 void Adapter::OnConnectToService(
-    ConnectToServiceInsecurelyCallback callback,
+    int request_id,
     scoped_refptr<device::BluetoothSocket> socket) {
   mojo::ScopedDataPipeProducerHandle receive_pipe_producer_handle;
   mojo::ScopedDataPipeConsumerHandle receive_pipe_consumer_handle;
@@ -441,9 +466,9 @@ void Adapter::OnConnectToService(
       mojo::CreateDataPipe(/*options=*/nullptr, receive_pipe_producer_handle,
                            receive_pipe_consumer_handle);
   if (result != MOJO_RESULT_OK) {
-    socket->Disconnect(base::BindOnce(
-        &Adapter::OnConnectToServiceError, weak_ptr_factory_.GetWeakPtr(),
-        std::move(callback), kMojoReceivingPipeError));
+    socket->Disconnect(base::BindOnce(&Adapter::OnConnectToServiceError,
+                                      weak_ptr_factory_.GetWeakPtr(),
+                                      request_id, kMojoReceivingPipeError));
     return;
   }
 
@@ -452,9 +477,9 @@ void Adapter::OnConnectToService(
   result = mojo::CreateDataPipe(/*options=*/nullptr, send_pipe_producer_handle,
                                 send_pipe_consumer_handle);
   if (result != MOJO_RESULT_OK) {
-    socket->Disconnect(base::BindOnce(
-        &Adapter::OnConnectToServiceError, weak_ptr_factory_.GetWeakPtr(),
-        std::move(callback), kMojoSendingPipeError));
+    socket->Disconnect(base::BindOnce(&Adapter::OnConnectToServiceError,
+                                      weak_ptr_factory_.GetWeakPtr(),
+                                      request_id, kMojoSendingPipeError));
     return;
   }
 
@@ -471,7 +496,8 @@ void Adapter::OnConnectToService(
   connect_to_service_result->receive_stream =
       std::move(receive_pipe_consumer_handle);
   connect_to_service_result->send_stream = std::move(send_pipe_producer_handle);
-  std::move(callback).Run(std::move(connect_to_service_result));
+  ExecuteConnectToServiceCallback(request_id,
+                                  std::move(connect_to_service_result));
 
 #if defined(OS_CHROMEOS) || defined(OS_LINUX)
   RecordConnectToServiceInsecurelyResult(
@@ -479,11 +505,10 @@ void Adapter::OnConnectToService(
 #endif
 }
 
-void Adapter::OnConnectToServiceError(
-    ConnectToServiceInsecurelyCallback callback,
-    const std::string& message) {
+void Adapter::OnConnectToServiceError(int request_id,
+                                      const std::string& message) {
   DLOG(ERROR) << "Failed to connect to service: '" << message << "'";
-  std::move(callback).Run(/*result=*/nullptr);
+  ExecuteConnectToServiceCallback(request_id, /*result=*/nullptr);
 
 #if defined(OS_CHROMEOS) || defined(OS_LINUX)
   base::Optional<ConnectToServiceInsecurelyResult> result =
@@ -521,6 +546,16 @@ void Adapter::OnCreateRfcommServiceInsecurelyError(
     const std::string& message) {
   LOG(ERROR) << "Failed to create service: '" << message << "'";
   std::move(callback).Run(/*server_socket=*/mojo::NullRemote());
+}
+
+void Adapter::ExecuteConnectToServiceCallback(
+    int request_id,
+    mojom::ConnectToServiceResultPtr result) {
+  auto it = connect_to_service_request_map_.find(request_id);
+  DCHECK(it != connect_to_service_request_map_.end());
+
+  std::move(it->second->callback).Run(std::move(result));
+  connect_to_service_request_map_.erase(it);
 }
 
 }  // namespace bluetooth

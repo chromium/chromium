@@ -9,6 +9,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
@@ -457,4 +458,48 @@ TEST_F(AdapterTest, TestCreateRfcommServiceInsecurely_Success) {
   run_loop.Run();
 }
 
+#if defined(OS_CHROMEOS)
+TEST_F(AdapterTest, TestMetricsOnShutdown_NoPendingConnects) {
+  base::HistogramTester histogram_tester;
+  adapter_.reset();
+
+  EXPECT_EQ(0u,
+            histogram_tester
+                .GetAllSamples(
+                    "Bluetooth.Mojo.PendingConnectAtShutdown.DurationWaiting")
+                .size());
+  histogram_tester.ExpectUniqueSample(
+      "Bluetooth.Mojo.PendingConnectAtShutdown."
+      "NumberOfServiceDiscoveriesInProgress",
+      /*sample=*/0, /*expected_bucket_count=*/1);
+}
+
+TEST_F(AdapterTest, TestMetricsOnShutdown_PendingConnects) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*mock_bluetooth_adapter_,
+              ConnectDevice(kUnknownDeviceAddress, _, _, _))
+      .WillOnce(RunOnceCallback<2>(mock_unknown_bluetooth_device_.get()));
+
+  EXPECT_CALL(*mock_unknown_bluetooth_device_,
+              IsGattServicesDiscoveryComplete())
+      .WillRepeatedly(Return(false));
+
+  adapter_->AllowConnectionsForUuid(device::BluetoothUUID(kServiceId));
+  adapter_->ConnectToServiceInsecurely(kUnknownDeviceAddress,
+                                       device::BluetoothUUID(kServiceId),
+                                       base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+
+  adapter_.reset();
+
+  histogram_tester.ExpectUniqueSample(
+      "Bluetooth.Mojo.PendingConnectAtShutdown."
+      "NumberOfServiceDiscoveriesInProgress",
+      /*sample=*/1, /*expected_bucket_count=*/1);
+  EXPECT_EQ(1u, histogram_tester
+                    .GetAllSamples("Bluetooth.Mojo.PendingConnectAtShutdown."
+                                   "NumberOfServiceDiscoveriesInProgress")
+                    .size());
+}
+#endif
 }  // namespace bluetooth
