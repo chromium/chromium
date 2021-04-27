@@ -73,7 +73,7 @@
             chrome.fileManagerPrivate.MountCompletedEventType.UNMOUNT &&
         event.volumeMetadata.volumeType ===
             chrome.fileManagerPrivate.VolumeType.DRIVE) {
-      this.dialog_.hide();
+      this.open && this.dialog_.hide();
     }
   }
 }
