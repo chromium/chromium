@@ -144,18 +144,8 @@ void NGSVGTextLayoutAlgorithm::Layout(
                                LayoutUnit((*info.y - ascent) / scaling_factor),
                                LayoutUnit(width / scaling_factor),
                                LayoutUnit(height / scaling_factor));
-    AffineTransform transform;
-    if (info.length_adjust_scale != 1.0f) {
-      // We'd like to scale only inline-size without moving inline position.
-      if (horizontal_) {
-        transform.SetMatrix(info.length_adjust_scale, 0, 0, 1,
-                            *info.x - info.length_adjust_scale * *info.x, 0);
-      } else {
-        transform.SetMatrix(1, 0, 0, info.length_adjust_scale, 0,
-                            *info.y - info.length_adjust_scale * *info.y);
-      }
-    }
-    item.item.ConvertToSVGText(unscaled_rect, scaled_rect, transform);
+    item.item.ConvertToSVGText(unscaled_rect, scaled_rect,
+                               info.length_adjust_scale);
   }
 }
 

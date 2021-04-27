@@ -264,10 +264,20 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
     context.Scale(1 / scaling_factor, 1 / scaling_factor);
   }
   if (const auto* svg_data = text_item.SVGFragmentData()) {
-    if (!svg_data->transform.IsIdentity()) {
+    float scale = svg_data->length_adjust_scale;
+    if (scale != 1.0f) {
       if (!state_saver)
         state_saver.emplace(context);
-      context.ConcatCTM(svg_data->transform);
+      AffineTransform transform;
+      // We'd like to scale only inline-size without moving inline position.
+      if (is_horizontal) {
+        float x = svg_data->rect.X();
+        transform.SetMatrix(scale, 0, 0, 1, x - scale * x, 0);
+      } else {
+        float y = svg_data->rect.Y();
+        transform.SetMatrix(1, 0, 0, scale, 0, y - scale * y);
+      }
+      context.ConcatCTM(transform);
     }
   }
   NGTextPainter text_painter(context, font, fragment_paint_info, visual_rect,

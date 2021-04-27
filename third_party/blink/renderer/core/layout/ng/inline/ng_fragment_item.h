@@ -31,8 +31,7 @@ struct NGSVGFragmentData {
   scoped_refptr<const ShapeResultView> shape_result;
   NGTextOffset text_offset;
   FloatRect rect;
-  // Transform for lengthAdjust=spacingAndGlyphs and rotate="".
-  AffineTransform transform;
+  float length_adjust_scale;
 };
 
 // This class represents a text run or a box in an inline formatting context.
@@ -123,7 +122,7 @@ class CORE_EXPORT NGFragmentItem final {
   // Make this kSVGText type. |this| type must be kText.
   void ConvertToSVGText(const PhysicalRect& unscaled_rect,
                         const FloatRect& scaled_rect,
-                        const AffineTransform& transform);
+                        float length_adjust_scale);
 
   // A sequence number of fragments generated from a |LayoutObject|.
   // For line boxes, please see |kInitialLineFragmentId|.
