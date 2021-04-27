@@ -12534,6 +12534,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </suffix>
   <suffix name="PerformanceHints"
       label="Provides aggregated performance information about the page"/>
+  <suffix name="PriceTracking"
+      label="Returns price related data for shopping websites"/>
   <suffix name="ResourceLoading"
       label="Applies a set of resource loading hints to load the page">
     <obsolete>

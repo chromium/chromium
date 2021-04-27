@@ -151,6 +151,8 @@ enum OptimizationType {
   // Provides key information about the merchant represented by the current
   // host.
   MERCHANT_TRUST_SIGNALS = 17;
+  // Provides pricing data so the user can track prices and price updates.
+  PRICE_TRACKING = 18;
 }
 
 // Presents semantics for how page load URLs should be matched.

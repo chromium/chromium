@@ -59,6 +59,7 @@ android_library("java") {
   deps = [
     ":critical_persisted_tab_data_proto_java",
     ":java_resources",
+    ":optimization_guide_protos_java",
     "//base:base_java",
     "//chrome/browser/android/crypto:java",
     "//chrome/browser/contextmenu:java",
@@ -122,6 +123,11 @@ proto_java_library("critical_persisted_tab_data_proto_java") {
     "$proto_path/critical_persisted_tab_data.proto",
     "$proto_path/shopping_persisted_tab_data.proto",
   ]
+}
+
+proto_java_library("optimization_guide_protos_java") {
+  proto_path = "java/src/org/chromium/chrome/browser/tab/state/proto"
+  sources = [ "$proto_path/price_tracking.proto" ]
 }
 
 android_library("junit") {
