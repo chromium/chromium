@@ -911,7 +911,7 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 // private APIs, so the rest of the Chromium logic can be tested. When iOS TBA
 // is released with the necessary logic, the private implementation can be
 // removed. See https://bugs.webkit.org/show_bug.cgi?id=220958 for details.
-- (void)setSessionStateData:(NSData*)data {
+- (BOOL)setSessionStateData:(NSData*)data {
 #if BUILDFLAG(CHROMIUM_BRANDING)
   [self ensureWebViewCreated];
   self.navigationHandler.blockUniversalLinksOnNextDecidePolicy = true;
@@ -922,16 +922,17 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
         unarchivedObjectOfClass:[(id)[self.webView interactionState] class]
                        fromData:data
                           error:&error];
+    if (error)
+      return NO;
     [self.webView setInteractionState:interactionState];
-    [self.webView
-        goToBackForwardListItem:[[self.webView backForwardList] currentItem]];
-    return;
-  }
+    return YES;
 #else  // BUILDFLAG(WEBKIT_SESSION_RESTORE)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundeclared-selector"
   Class SessionStateClass = NSClassFromString(@"_WKSessionState");
   id sessionState = [[SessionStateClass alloc] initWithData:data];
+  if (!sessionState)
+    return NO;
   SEL selector = @selector(_restoreSessionState:andNavigate:);
   NSMethodSignature* method_signature =
       [self.webView methodSignatureForSelector:selector];
@@ -943,6 +944,7 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   BOOL navigate = YES;
   [invocation setArgument:&navigate atIndex:3];
   [invocation invoke];
+  return YES;
 #pragma clang diagnostic pop
 #endif  // BUILDFLAG(WEBKIT_SESSION_RESTORE)
 #endif  // BUILDFLAG(CHROMIUM_BRANDING)

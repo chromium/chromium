@@ -199,7 +199,7 @@ class WebStateImpl;
 // private APIs, so the rest of the Chromium logic can be tested. When iOS TBA
 // is released with the necessary logic, the private implementation can be
 // removed.
-- (void)setSessionStateData:(NSData*)data;
+- (BOOL)setSessionStateData:(NSData*)data;
 - (NSData*)sessionStateData;
 
 @end

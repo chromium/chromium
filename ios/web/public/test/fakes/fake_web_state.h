@@ -83,7 +83,7 @@ class FakeWebState : public WebState {
 
   void CloseWebState() override;
 
-  void SetSessionStateData(NSData* data) override;
+  bool SetSessionStateData(NSData* data) override;
   NSData* SessionStateData() override;
 
   void AddPolicyDecider(WebStatePolicyDecider* decider) override;

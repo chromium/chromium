@@ -382,7 +382,8 @@ class WebState : public base::SupportsUserData {
   virtual void CloseWebState() = 0;
 
   // Injects an opaque NSData block into a WKWebView to restore or serialize.
-  virtual void SetSessionStateData(NSData* data) = 0;
+  // Returns true if this operation succeeds, and false otherwise.
+  virtual bool SetSessionStateData(NSData* data) = 0;
   virtual NSData* SessionStateData() = 0;
 
  protected:

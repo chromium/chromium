@@ -92,13 +92,14 @@ bool WebSessionStateTabHelper::RestoreSessionFromCache() {
   if (!data.length)
     return false;
 
-  web_state_->SetSessionStateData(data);
+  if (!web_state_->SetSessionStateData(data))
+    return false;
 
-  // Sometimes this fails, see crbug.com/1019672 for a repro case.
+  // If this fails (e.g., see crbug.com/1019672 for a previous failure), this
+  // implies a bug in WebKit session restoration.
   web::NavigationManager* navigationManager =
       web_state_->GetNavigationManager();
-  if (navigationManager->GetItemCount() == 0)
-    return false;
+  DCHECK(navigationManager->GetItemCount());
 
   for (int i = 0; i < navigationManager->GetItemCount(); i++) {
     // The wk_state underlaying the NTP is about://newtab, which has no title.

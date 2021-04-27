@@ -923,7 +923,7 @@ void WebStateImpl::RestoreSessionStorage(CRWSessionStorage* session_storage) {
   session_storage_builder.ExtractSessionState(this, session_storage);
 }
 
-void WebStateImpl::SetSessionStateData(NSData* data) {
+bool WebStateImpl::SetSessionStateData(NSData* data) {
   return [web_controller_ setSessionStateData:data];
 }
 
