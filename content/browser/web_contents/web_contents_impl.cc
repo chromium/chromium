@@ -925,6 +925,12 @@ WebContentsImpl::~WebContentsImpl() {
   // destroying WebContents, which they should not do.
   CHECK(!prevent_destruction_);
 
+  // We usually record `max_loaded_frame_count_` in `DidFinishNavigation()`
+  // for pages the user navigated away from other than the last one. We record
+  // it for the last page here.
+  if (first_navigation_completed_)
+    RecordMaxFrameCountUMA(max_loaded_frame_count_);
+
   FullscreenContentsSet(GetBrowserContext())->erase(this);
 
   rwh_input_event_router_.reset();
@@ -6348,23 +6354,6 @@ void WebContentsImpl::RenderFrameDeleted(
     RenderFrameHostImpl* render_frame_host) {
   TRACE_EVENT1("content", "WebContentsImpl::RenderFrameDeleted",
                "render_frame_host", render_frame_host);
-  // TODO(https://crbug.com/1198076): Record the following UMA in content::Page
-  // once it is introduced.
-  LifecycleStateImpl lifecycle_state = render_frame_host->lifecycle_state();
-  if (IsBeingDestroyed() && !render_frame_host->GetParent() &&
-      first_navigation_completed_ &&
-      lifecycle_state != LifecycleStateImpl::kPrerendering &&
-      lifecycle_state != LifecycleStateImpl::kInBackForwardCache) {
-    // Main frame has been deleted because WebContents is being destroyed.
-    // Note that we aren't recording this here when the main frame is in the
-    // back-forward cache because that means we've actually already navigated
-    // away from it (and we got to this point because the WebContents is
-    // deleted), which means |max_loaded_frame_count_| is already overwritten.
-    // The |max_loaded_frame_count_| value will instead be recorded from within
-    // |WebContentsImpl::DidFinishNavigation()|.
-    RecordMaxFrameCountUMA(max_loaded_frame_count_);
-  }
-
   {
     SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.RenderFrameDeleted");
     observers_.NotifyObservers(&WebContentsObserver::RenderFrameDeleted,
