@@ -40,7 +40,7 @@ bool IsValidBitDepth(uint8_t bit_depth, VideoCodecProfile profile) {
     case HEVCPROFILE_MAIN_STILL_PICTURE:
       return bit_depth == 8u;
     default:
-      NOTREACHED();
+      DVLOG(1) << "Invalid profile specified for H265";
       return false;
   }
 }
