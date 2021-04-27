@@ -7,13 +7,8 @@
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "crypto/secure_hash.h"
-#include "crypto/sha2.h"
-#include "net/base/hash_value.h"
 #include "net/base/host_port_pair.h"
 #include "net/cert/ct_serialization.h"
 #include "net/cert/sct_status_flags.h"
@@ -27,8 +22,6 @@
 #include "services/network/public/proto/sct_audit_report.pb.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/boringssl/src/include/openssl/pool.h"
-#include "third_party/boringssl/src/include/openssl/sha.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -61,9 +54,9 @@ class SCTAuditingCacheTest : public testing::Test {
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 
     url_loader_factory_ = std::make_unique<TestURLLoaderFactory>();
-    mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
-    url_loader_factory_->Clone(factory_remote.InitWithNewPipeAndPassReceiver());
-    cache->set_url_loader_factory(std::move(factory_remote));
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_client;
+    url_loader_factory_->Clone(factory_client.InitWithNewPipeAndPassReceiver());
+    cache->set_url_loader_factory(std::move(factory_client));
   }
 
   // Getter for TestURLLoaderFactory to allow tests to specify responses.
@@ -71,11 +64,8 @@ class SCTAuditingCacheTest : public testing::Test {
     return url_loader_factory_.get();
   }
 
-  // Use MOCK_TIME so tests (particularly those involving retry and backoff) can
-  // use TaskEnvironment::FastForwardUntilNoTasksRemain() and FastForwardBy().
   base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
+      base::test::TaskEnvironment::MainThreadType::IO};
   std::unique_ptr<TestURLLoaderFactory> url_loader_factory_;
 
   scoped_refptr<net::X509Certificate> chain_;
@@ -111,20 +101,6 @@ void MakeTestSCTAndStatus(
   sct_list->push_back(net::SignedCertificateTimestampAndStatus(sct, status));
 }
 
-// Computes the cache key from a list of SCTs. This matches how SCTAuditingCache
-// computes cache keys internally.
-net::SHA256HashValue ComputeCacheKey(
-    net::SignedCertificateTimestampAndStatusList sct_list) {
-  net::SHA256HashValue cache_key;
-  SHA256_CTX ctx;
-  SHA256_Init(&ctx);
-  std::string encoded_sct;
-  net::ct::EncodeSignedCertificateTimestamp(sct_list.at(0).sct, &encoded_sct);
-  SHA256_Update(&ctx, encoded_sct.data(), encoded_sct.size());
-  SHA256_Final(reinterpret_cast<uint8_t*>(&cache_key), &ctx);
-  return cache_key;
-}
-
 }  // namespace
 
 // Test that if auditing is disabled, no reports are cached.
@@ -140,8 +116,7 @@ TEST_F(SCTAuditingCacheTest, NoReportsCachedWhenAuditingDisabled) {
                        net::ct::SCT_STATUS_OK, &sct_list);
   cache.MaybeEnqueueReport(host_port_pair, chain_.get(), sct_list);
 
-  EXPECT_EQ(0u, cache.GetCacheForTesting()->size());
-  EXPECT_EQ(0u, cache.GetPendingReportersForTesting()->size());
+  ASSERT_EQ(0u, cache.GetCacheForTesting()->size());
 }
 
 // Test that inserting and retrieving a report works.
@@ -156,12 +131,10 @@ TEST_F(SCTAuditingCacheTest, InsertAndRetrieveReport) {
                        net::ct::SCT_STATUS_OK, &sct_list);
   cache.MaybeEnqueueReport(host_port_pair, chain_.get(), sct_list);
 
-  EXPECT_EQ(1u, cache.GetCacheForTesting()->size());
-  EXPECT_EQ(1u, cache.GetPendingReportersForTesting()->size());
+  ASSERT_EQ(1u, cache.GetCacheForTesting()->size());
 }
 
-// Tests that old entries are evicted when the dedupe cache and pending
-// reporters set are full.
+// Tests that old entries are evicted when the cache is full.
 TEST_F(SCTAuditingCacheTest, EvictLRUAfterCacheFull) {
   SCTAuditingCache cache(2);
   InitSCTAuditing(&cache);
@@ -170,7 +143,6 @@ TEST_F(SCTAuditingCacheTest, EvictLRUAfterCacheFull) {
   const net::HostPortPair host_port_pair2("example2.com", 443);
   const net::HostPortPair host_port_pair3("example3.com", 443);
 
-  net::SHA256HashValue first_key;
   {
     net::SignedCertificateTimestampAndStatusList sct_list;
     MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
@@ -178,10 +150,6 @@ TEST_F(SCTAuditingCacheTest, EvictLRUAfterCacheFull) {
                          net::ct::SCT_STATUS_OK, &sct_list);
     cache.MaybeEnqueueReport(host_port_pair1, chain_.get(), sct_list);
     ASSERT_EQ(1u, cache.GetCacheForTesting()->size());
-    ASSERT_EQ(1u, cache.GetPendingReportersForTesting()->size());
-
-    // Save the initial cache key for later inspection.
-    first_key = ComputeCacheKey(sct_list);
   }
 
   {
@@ -191,10 +159,10 @@ TEST_F(SCTAuditingCacheTest, EvictLRUAfterCacheFull) {
                          net::ct::SCT_STATUS_OK, &sct_list);
     cache.MaybeEnqueueReport(host_port_pair2, chain_.get(), sct_list);
     ASSERT_EQ(2u, cache.GetCacheForTesting()->size());
-    ASSERT_EQ(2u, cache.GetPendingReportersForTesting()->size());
   }
 
-  // Cache is now full. Add another entry to trigger eviction.
+  // Cache is now full, so the first entry (for "example1.com") should no longer
+  // be in the cache after inserting a third entry.
   {
     net::SignedCertificateTimestampAndStatusList sct_list;
     MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
@@ -202,12 +170,11 @@ TEST_F(SCTAuditingCacheTest, EvictLRUAfterCacheFull) {
                          net::ct::SCT_STATUS_OK, &sct_list);
     cache.MaybeEnqueueReport(host_port_pair3, chain_.get(), sct_list);
     ASSERT_EQ(2u, cache.GetCacheForTesting()->size());
-    ASSERT_EQ(2u, cache.GetPendingReportersForTesting()->size());
-    // The key for the first entry should not be in the cache anymore.
-    EXPECT_EQ(cache.GetCacheForTesting()->Get(first_key),
-              cache.GetCacheForTesting()->end());
-    EXPECT_EQ(cache.GetPendingReportersForTesting()->Get(first_key),
-              cache.GetPendingReportersForTesting()->end());
+    for (const auto& entry : *cache.GetCacheForTesting()) {
+      ASSERT_NE(
+          "example1.com",
+          entry.second->certificate_report(0).context().origin().hostname());
+    }
   }
 }
 
@@ -231,8 +198,7 @@ TEST_F(SCTAuditingCacheTest, ReportWithSameSCTsDeduplicated) {
   // Enqueuing the same SCTs won't cause a new report to be added to the queue
   // (even if the connection origin is different).
   cache.MaybeEnqueueReport(host_port_pair2, chain_.get(), sct_list);
-  EXPECT_EQ(1u, cache.GetCacheForTesting()->size());
-  EXPECT_EQ(1u, cache.GetPendingReportersForTesting()->size());
+  ASSERT_EQ(1u, cache.GetCacheForTesting()->size());
 }
 
 // When a report gets deduplicated, the existing entry should have its last-seen
@@ -274,10 +240,11 @@ TEST_F(SCTAuditingCacheTest, DeduplicationUpdatesLastSeenTime) {
   cache.MaybeEnqueueReport(host_port_pair3, chain_.get(), sct_list3);
 
   EXPECT_EQ(2u, cache.GetCacheForTesting()->size());
-
-  net::SHA256HashValue evicted_key = ComputeCacheKey(sct_list2);
-  EXPECT_EQ(cache.GetCacheForTesting()->Get(evicted_key),
-            cache.GetCacheForTesting()->end());
+  for (const auto& entry : *cache.GetCacheForTesting()) {
+    ASSERT_NE(
+        "example2.com",
+        entry.second->certificate_report(0).context().origin().hostname());
+  }
 }
 
 TEST_F(SCTAuditingCacheTest, ReportsCachedButNotSentWhenSamplingIsZero) {
@@ -298,7 +265,6 @@ TEST_F(SCTAuditingCacheTest, ReportsCachedButNotSentWhenSamplingIsZero) {
 
   // Check that there are no pending reports.
   EXPECT_EQ(0, url_loader_factory()->NumPending());
-  EXPECT_EQ(0u, cache.GetPendingReportersForTesting()->size());
 }
 
 // Tests that when a new report is sampled, it will be sent to the server.
@@ -319,7 +285,6 @@ TEST_F(SCTAuditingCacheTest, ReportsSentWithServerOK) {
 
   // Check that there is one pending report.
   EXPECT_EQ(1, url_loader_factory()->NumPending());
-  EXPECT_EQ(1u, cache.GetPendingReportersForTesting()->size());
 
   // Simulate the server returning 200 OK to the report request.
   url_loader_factory()->AddResponse("https://example.test",
@@ -329,11 +294,15 @@ TEST_F(SCTAuditingCacheTest, ReportsSentWithServerOK) {
 
   EXPECT_EQ(0, url_loader_factory()->NumPending());
 
-  // Check that the pending reporter was deleted on successful completion.
-  EXPECT_TRUE(cache.GetPendingReportersForTesting()->empty());
+  // Check that the report has been cleared in the cache as it has been
+  // successfully sent.
+  for (const auto& entry : *cache.GetCacheForTesting()) {
+    EXPECT_FALSE(entry.second);
+  }
 }
 
 // Tests when the report server returns an HTTP error code.
+// TODO(cthomp): Check that the cache treats the send as a failure.
 TEST_F(SCTAuditingCacheTest, ReportSentWithServerError) {
   SCTAuditingCache cache(2);
   InitSCTAuditing(&cache);
@@ -356,12 +325,14 @@ TEST_F(SCTAuditingCacheTest, ReportSentWithServerError) {
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(0, url_loader_factory()->NumPending());
-  // Without retry enabled, the pending reporter should get cleared on error.
-  EXPECT_EQ(0u, cache.GetPendingReportersForTesting()->size());
+
+  // Check that the report is still stored in the cache as it has not succeeded.
+  for (const auto& entry : *cache.GetCacheForTesting()) {
+    EXPECT_TRUE(entry.second);
+  }
 }
 
 // Tests that cache size high water mark metrics are correctly logged.
-// TODO(crbug.com/1199016): Update this to include Pending Reporters HWM too.
 TEST_F(SCTAuditingCacheTest, HighWaterMarkMetrics) {
   base::HistogramTester histograms;
   // Create a cache so we can trigger destruction when it goes out of scope,
@@ -391,8 +362,6 @@ TEST_F(SCTAuditingCacheTest, HighWaterMarkMetrics) {
 
   // The bucket for a HWM of 2 should have a single sample as there were two
   // items in the cache when it was destroyed.
-  // TODO(crbug.com/1199016): Test more cases of this histogram to try t
-  // diagnose the metrics bug.
   histograms.ExpectUniqueSample("Security.SCTAuditing.OptIn.CacheHWM", 2, 1);
 }
 
@@ -412,11 +381,9 @@ TEST_F(SCTAuditingCacheTest, ReportSizeMetrics) {
                        net::ct::SCT_STATUS_OK, &sct_list);
   cache.MaybeEnqueueReport(host_port_pair, chain_.get(), sct_list);
 
-  // Get the size of the pending report and test that it is correctly logged.
-  size_t report_size = cache.GetPendingReportersForTesting()
-                           ->begin()
-                           ->second->report()
-                           ->ByteSizeLong();
+  // Get the size of the enqueued report and test that it is correctly logged.
+  size_t report_size =
+      cache.GetCacheForTesting()->begin()->second->ByteSizeLong();
   ASSERT_GT(report_size, 0u);
   histograms.ExpectUniqueSample("Security.SCTAuditing.OptIn.ReportSize",
                                 report_size, 1);
@@ -467,7 +434,6 @@ TEST_F(SCTAuditingCacheTest, ReportNotGeneratedIfNoValidSCTs) {
   cache.MaybeEnqueueReport(host_port_pair, chain_.get(), sct_list);
 
   EXPECT_EQ(0u, cache.GetCacheForTesting()->size());
-  EXPECT_EQ(0u, cache.GetPendingReportersForTesting()->size());
 }
 
 // Connections that have a mix of valid and invalid SCTs should only include the
@@ -491,12 +457,10 @@ TEST_F(SCTAuditingCacheTest, ReportsOnlyIncludesValidSCTs) {
       net::ct::SCT_STATUS_LOG_UNKNOWN, &sct_list);
   cache.MaybeEnqueueReport(host_port_pair, chain_.get(), sct_list);
 
-  ASSERT_EQ(1u, cache.GetPendingReportersForTesting()->size());
-
-  // No invalid SCTs should be in any of the pending reports.
-  for (const auto& reporter : *cache.GetPendingReportersForTesting()) {
+  // No invalid SCTs should be in any reports in the cache.
+  for (const auto& entry : *cache.GetCacheForTesting()) {
     for (auto& sct_and_status :
-         reporter.second->report()->certificate_report(0).included_sct()) {
+         entry.second->certificate_report(0).included_sct()) {
       // Decode the SCT and check that only the valid SCT was included.
       base::StringPiece encoded_sct(sct_and_status.serialized_sct());
       scoped_refptr<net::ct::SignedCertificateTimestamp> decoded_sct;
@@ -505,99 +469,6 @@ TEST_F(SCTAuditingCacheTest, ReportsOnlyIncludesValidSCTs) {
       EXPECT_EQ("valid_signature", decoded_sct->signature.signature_data);
     }
   }
-}
-
-// Tests a single retry. The server initially returns an error, but then returns
-// OK the second try.
-TEST_F(SCTAuditingCacheTest, ReportSucceedsOnSecondTry) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kSCTAuditingRetryAndPersistReports);
-
-  SCTAuditingCache cache(2);
-  InitSCTAuditing(&cache);
-
-  // Enqueue a report which will trigger a send.
-  const net::HostPortPair host_port_pair("example.com", 443);
-  net::SignedCertificateTimestampAndStatusList sct_list;
-  MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
-                       "extensions", "signature", base::Time::Now(),
-                       net::ct::SCT_STATUS_OK, &sct_list);
-  cache.MaybeEnqueueReport(host_port_pair, chain_.get(), sct_list);
-
-  // Fast forward until the initial request will be sent.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(30));
-  task_environment_.RunUntilIdle();
-
-  // Check that there is one pending report.
-  EXPECT_EQ(1, url_loader_factory()->NumPending());
-
-  // Simulate the server returning 429 TOO MANY REQUEST to the report request.
-  url_loader_factory()->SimulateResponseForPendingRequest(
-      "https://example.test",
-      /*content=*/"",
-      /*status=*/net::HTTP_TOO_MANY_REQUESTS);
-
-  EXPECT_EQ(0, url_loader_factory()->NumPending());
-  // With retry enabled, the pending reporter should remain on failure.
-  EXPECT_EQ(1u, cache.GetPendingReportersForTesting()->size());
-
-  // Simulate the server returning 200 OK to the report request. The request is
-  // not yet pending, so set the "default" response. Then when
-  // FastForwardUntilNoTasksRemain() is called, the retry will trigger and
-  // succeed. This is more robust than manually advancing the mock time due to
-  // the jitter specified by the backoff policy and the timeout set on the
-  // SimpleURLLoader.
-  url_loader_factory()->AddResponse("https://example.test",
-                                    /*content=*/"",
-                                    /*status=*/net::HTTP_OK);
-  task_environment_.FastForwardUntilNoTasksRemain();
-
-  EXPECT_EQ(0, url_loader_factory()->NumPending());
-
-  // Check that the pending reporter was deleted on successful completion.
-  EXPECT_TRUE(cache.GetPendingReportersForTesting()->empty());
-}
-
-// Tests that after max_tries, the reporter stops and is deleted.
-TEST_F(SCTAuditingCacheTest, ExhaustAllRetriesShouldDeleteReporter) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kSCTAuditingRetryAndPersistReports);
-
-  SCTAuditingCache cache(2);
-  InitSCTAuditing(&cache);
-
-  // Add a TestURLLoaderFactory interceptor to count how many requests it gets.
-  int num_requests_seen = 0;
-  url_loader_factory()->SetInterceptor(base::BindLambdaForTesting(
-      [&](const network::ResourceRequest& request) { ++num_requests_seen; }));
-
-  // Enqueue a report which will trigger a send.
-  const net::HostPortPair host_port_pair("example.com", 443);
-  net::SignedCertificateTimestampAndStatusList sct_list;
-  MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
-                       "extensions", "signature", base::Time::Now(),
-                       net::ct::SCT_STATUS_OK, &sct_list);
-  cache.MaybeEnqueueReport(host_port_pair, chain_.get(), sct_list);
-
-  // Check that there is one pending reporter.
-  EXPECT_EQ(1u, cache.GetPendingReportersForTesting()->size());
-
-  // Simulate the server returning 429 TOO MANY REQUEST to every request
-  url_loader_factory()->AddResponse("https://example.test",
-                                    /*content=*/"",
-                                    /*status=*/net::HTTP_TOO_MANY_REQUESTS);
-
-  // Fast-forward through all retries.
-  task_environment_.FastForwardUntilNoTasksRemain();
-
-  // The reporter should be deleted when it runs out of retries.
-  EXPECT_TRUE(cache.GetPendingReportersForTesting()->empty());
-
-  // The Reporter should send 16 requests: 1 initial attempt, and 15 retries
-  // (the default max_retries for SCTAuditingReporter).
-  EXPECT_EQ(16, num_requests_seen);
 }
 
 }  // namespace network

@@ -8,7 +8,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/rand_util.h"
 #include "components/version_info/version_info.h"
 #include "crypto/secure_hash.h"
@@ -43,10 +42,6 @@ namespace {
 
 constexpr int kSendSCTReportTimeoutSeconds = 30;
 
-// Overrides the initial retry delay in SCTAuditingReporter::kBackoffPolicy if
-// not nullopt.
-base::Optional<base::TimeDelta> g_retry_delay_for_testing = base::nullopt;
-
 // Records the high-water mark of the cache size (in number of reports).
 void RecordSCTAuditingCacheHighWaterMarkMetrics(size_t hwm) {
   base::UmaHistogramCounts1000("Security.SCTAuditing.OptIn.CacheHWM", hwm);
@@ -80,180 +75,54 @@ void RecordSCTAuditingReportSucceededMetrics(bool success) {
                             success);
 }
 
-}  // namespace
+// Owns the SimpleURLLoader and runs the callback and then deletes itself when
+// the response arrives.
+class SimpleURLLoaderOwner {
+ public:
+  using LoaderDoneCallback =
+      base::OnceCallback<void(int /* net_error */,
+                              int /* http_response_code */)>;
 
-// static
-const net::BackoffEntry::Policy SCTAuditingReporter::kDefaultBackoffPolicy = {
-    // Don't ignore initial errors; begin exponential back-off rules immediately
-    // if the first attempt fails.
-    .num_errors_to_ignore = 0,
-    // Start with a 30s delay, including for the first attempt (due to setting
-    // `always_use_initial_delay = true` below).
-    .initial_delay_ms = 30 * 1000,
-    // Double the backoff delay each retry.
-    .multiply_factor = 2.0,
-    // Spread requests randomly between 80-100% of the calculated backoff time.
-    .jitter_factor = 0.2,
-    // Max retry delay is 1 day.
-    .maximum_backoff_ms = 24 * 60 * 60 * 1000,
-    // Never discard the entry.
-    .entry_lifetime_ms = -1,
-    // Initial attempt will be delayed (and jittered). This reduces the risk of
-    // a "thundering herd" of reports on startup if a user has many reports
-    // persisted (once pending reports are persisted and recreated at startup
-    // with a new BackoffEntry).
-    .always_use_initial_delay = true,
+  SimpleURLLoaderOwner(mojom::URLLoaderFactory* url_loader_factory,
+                       std::unique_ptr<SimpleURLLoader> loader,
+                       LoaderDoneCallback done_callback)
+      : loader_(std::move(loader)), done_callback_(std::move(done_callback)) {
+    // We only care about whether the report was successfully received, so we
+    // download the headers only.
+    // If the loader is destroyed, the callback will be canceled, so using
+    // base::Unretained here is safe.
+    loader_->DownloadHeadersOnly(
+        url_loader_factory,
+        base::BindOnce(&SimpleURLLoaderOwner::OnURLLoaderComplete,
+                       base::Unretained(this)));
+  }
+
+  SimpleURLLoaderOwner(const SimpleURLLoaderOwner&) = delete;
+  SimpleURLLoaderOwner& operator=(const SimpleURLLoaderOwner&) = delete;
+
+ private:
+  ~SimpleURLLoaderOwner() = default;
+
+  void OnURLLoaderComplete(scoped_refptr<net::HttpResponseHeaders> headers) {
+    if (done_callback_) {
+      int response_code = 0;
+      if (loader_->ResponseInfo() && loader_->ResponseInfo()->headers)
+        response_code = loader_->ResponseInfo()->headers->response_code();
+      std::move(done_callback_).Run(loader_->NetError(), response_code);
+    }
+    delete this;
+  }
+
+  std::unique_ptr<SimpleURLLoader> loader_;
+  LoaderDoneCallback done_callback_;
 };
 
-// How many times an SCTAuditingReporter should retry sending an audit report.
-// Given kDefaultBackoffPolicy above and 15 total retries, this means there will
-// be five attempts in the first 30 minutes and then occasional retries for
-// roughly the next five days.
-// See more discussion in the SCT Auditing Retry and Persistence design doc:
-// https://docs.google.com/document/d/1YTUzoG6BDF1QIxosaQDp2H5IzYY7_fwH8qNJXSVX8OQ/edit
-constexpr size_t kMaxRetries = 15;
-
-SCTAuditingReporter::SCTAuditingReporter(
-    net::SHA256HashValue reporter_key,
-    std::unique_ptr<sct_auditing::SCTClientReport> report,
-    mojom::URLLoaderFactory& url_loader_factory,
-    const GURL& report_uri,
-    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-    ReporterDoneCallback done_callback)
-    : reporter_key_(reporter_key),
-      report_(std::move(report)),
-      traffic_annotation_(traffic_annotation),
-      report_uri_(report_uri),
-      done_callback_(std::move(done_callback)),
-      num_retries_(0),
-      max_retries_(kMaxRetries) {
-  // Clone the URLLoaderFactory to avoid any dependencies on its lifetime. The
-  // Reporter instance can maintain its own copy.
-  // Relatively few Reporters are expected to exist at a time (due to sampling
-  // and deduplication), so some cost of copying is reasonable. If more
-  // optimization is needed, this could potentially use a mojo::SharedRemote
-  // or a WrappedPendingSharedURLLoaderFactory instead.
-  url_loader_factory.Clone(
-      url_loader_factory_remote_.BindNewPipeAndPassReceiver());
-
-  // Override the retry delay if set by tests.
-  backoff_policy_ = kDefaultBackoffPolicy;
-  if (g_retry_delay_for_testing) {
-    backoff_policy_.initial_delay_ms =
-        g_retry_delay_for_testing->InMilliseconds();
-  }
-  backoff_entry_ = std::make_unique<net::BackoffEntry>(&backoff_policy_);
-
-  // Informing the backoff entry of a success will force it to use the initial
-  // delay (and jitter) for the first attempt. Otherwise, ShouldRejectRequest()
-  // will return `true` despite the policy specifying
-  // `always_use_initial_delay = true`.
-  backoff_entry_->InformOfRequest(true);
-
-  // Start sending the report.
-  ScheduleReport();
-}
-
-SCTAuditingReporter::~SCTAuditingReporter() = default;
-
-void SCTAuditingReporter::ScheduleReport() {
-  if (base::FeatureList::IsEnabled(
-          features::kSCTAuditingRetryAndPersistReports) &&
-      backoff_entry_->ShouldRejectRequest()) {
-    // TODO(crbug.com/1199827): Investigate if explicit task traits should be
-    // used for these tasks (e.g., BEST_EFFORT and SKIP_ON_SHUTDOWN).
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&SCTAuditingReporter::SendReport,
-                       weak_factory_.GetWeakPtr()),
-        backoff_entry_->GetTimeUntilRelease());
-  } else {
-    SendReport();
-  }
-}
-
-void SCTAuditingReporter::SendReport() {
-  DCHECK(url_loader_factory_remote_);
-
-  // Create a SimpleURLLoader for the request.
-  auto report_request = std::make_unique<ResourceRequest>();
-  report_request->url = report_uri_;
-  report_request->method = "POST";
-  report_request->load_flags = net::LOAD_DISABLE_CACHE;
-  report_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-
-  url_loader_ = SimpleURLLoader::Create(
-      std::move(report_request),
-      static_cast<net::NetworkTrafficAnnotationTag>(traffic_annotation_));
-  url_loader_->SetTimeoutDuration(
-      base::TimeDelta::FromSeconds(kSendSCTReportTimeoutSeconds));
-  // Retry is handled by SCTAuditingReporter.
-  url_loader_->SetRetryOptions(0, SimpleURLLoader::RETRY_NEVER);
-
-  // Serialize the report and attach it to the loader.
-  // TODO(crbug.com/1199566): Should we store the serialized report instead, so
-  // we don't serialize on every retry?
-  std::string report_data;
-  bool ok = report_->SerializeToString(&report_data);
-  DCHECK(ok);
-  url_loader_->AttachStringForUpload(report_data, "application/octet-stream");
-
-  // The server acknowledges receiving the report via a successful HTTP status
-  // with no response body, so this uses DownloadHeadersOnly for simplicity.
-  // If the loader is destroyed, the callback will be canceled, so using
-  // base::Unretained here is safe.
-  url_loader_->DownloadHeadersOnly(
-      url_loader_factory_remote_.get(),
-      base::BindOnce(&SCTAuditingReporter::OnSendReportComplete,
-                     base::Unretained(this)));
-}
-
-void SCTAuditingReporter::OnSendReportComplete(
-    scoped_refptr<net::HttpResponseHeaders> headers) {
-  int response_code = 0;
-  if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers) {
-    response_code = url_loader_->ResponseInfo()->headers->response_code();
-  }
-  bool success =
-      url_loader_->NetError() == net::OK && response_code == net::HTTP_OK;
-
-  // TODO(crbug.com/1199016): Also track final success/failure or the number of
-  // retries required.
-  RecordSCTAuditingReportSucceededMetrics(success);
-
-  if (success) {
-    // Report succeeded. This will delete |this|, so do not add code after this
-    // point.
-    std::move(done_callback_).Run(reporter_key_);
-  } else if (base::FeatureList::IsEnabled(
-                 features::kSCTAuditingRetryAndPersistReports)) {
-    if (num_retries_ >= max_retries_) {
-      // Retry limit reached. Notify the Cache that this Reporter is done.
-      // This will delete |this|, so do not add code after this point.
-      std::move(done_callback_).Run(reporter_key_);
-    } else {
-      // Schedule a retry.
-      ++num_retries_;
-      backoff_entry_->InformOfRequest(false);
-      ScheduleReport();
-    }
-  } else {
-    // Report failed but retry is not enabled, so just notify the Cache that
-    // this Reporter is done. This will delete |this|, so do not add code
-    // after this point.
-    std::move(done_callback_).Run(reporter_key_);
-  }
-}
+}  // namespace
 
 SCTAuditingCache::SCTAuditingCache(size_t cache_size)
-    : dedupe_cache_(cache_size),
-      dedupe_cache_size_hwm_(0),
-      pending_reporters_(cache_size),
-      pending_reporters_hwm_(0) {}
-
+    : cache_(cache_size), cache_size_hwm_(0) {}
 SCTAuditingCache::~SCTAuditingCache() {
-  RecordSCTAuditingCacheHighWaterMarkMetrics(dedupe_cache_size_hwm_);
-  // TODO(crbug.com/1199016): Record pending_reports_hwm_ also.
+  RecordSCTAuditingCacheHighWaterMarkMetrics(cache_size_hwm_);
 }
 
 void SCTAuditingCache::MaybeEnqueueReport(
@@ -302,8 +171,8 @@ void SCTAuditingCache::MaybeEnqueueReport(
 
   // Check if the SCTs are already in the cache. This will update the last seen
   // time if they are present in the cache.
-  auto it = dedupe_cache_.Get(cache_key);
-  if (it != dedupe_cache_.end()) {
+  auto it = cache_.Get(cache_key);
+  if (it != cache_.end()) {
     RecordSCTAuditingReportDeduplicatedMetrics(true);
     return;
   }
@@ -311,8 +180,11 @@ void SCTAuditingCache::MaybeEnqueueReport(
 
   report->set_user_agent(version_info::GetProductNameAndVersionForUserAgent());
 
-  // Add `cache_key` to the dedupe cache. The cache value is not used.
-  dedupe_cache_.Put(cache_key, true);
+  // Set the `cache_key` with an null report. If we don't choose to sample these
+  // SCTs, then we don't need to store a report as we won't reference it again
+  // (and can save on memory usage). If we do choose to sample these SCTs, we
+  // then construct the report and move it into the cache entry for `cache_key`.
+  cache_.Put(cache_key, nullptr);
 
   if (base::RandDouble() > sampling_rate_) {
     RecordSCTAuditingReportSampledMetrics(false);
@@ -342,54 +214,85 @@ void SCTAuditingCache::MaybeEnqueueReport(
   // due to sampling (as those reports will just be empty).
   RecordSCTAuditingReportSizeMetrics(report->ByteSizeLong());
 
-  // Track high-water-mark for the size of the cache.
-  if (dedupe_cache_.size() > dedupe_cache_size_hwm_)
-    dedupe_cache_size_hwm_ = dedupe_cache_.size();
+  cache_.Put(cache_key, std::move(report));
 
-  // Ensure that the URLLoaderFactory is still bound.
+  // Track high-water-mark for the size of the cache.
+  if (cache_.size() > cache_size_hwm_)
+    cache_size_hwm_ = cache_.size();
+
+  SendReport(cache_key);
+}
+
+sct_auditing::SCTClientReport* SCTAuditingCache::GetPendingReport(
+    const net::SHA256HashValue& cache_key) {
+  auto it = cache_.Get(cache_key);
+  if (it == cache_.end())
+    return nullptr;
+  return it->second.get();
+}
+
+void SCTAuditingCache::SendReport(const net::SHA256HashValue& cache_key) {
+  // Ensure that the URLLoaderFactory is still connected.
   if (!url_loader_factory_ || !url_loader_factory_.is_connected()) {
     // TODO(cthomp): Should this signal to embedder that something has failed?
     return;
   }
 
-  // Create a Reporter, which will own the report and handle sending and
-  // retrying. When complete, the Reporter will call the callback which will
-  // handle deleting the Reporter. The callback takes a WeakPtr in case the
-  // SCTAuditingCache or Network Service were destroyed before the callback
-  // triggers.
-  pending_reporters_.Put(
-      cache_key, std::make_unique<SCTAuditingReporter>(
-                     cache_key, std::move(report), *url_loader_factory_,
-                     report_uri_, traffic_annotation_,
-                     base::BindOnce(&SCTAuditingCache::OnReporterFinished,
-                                    weak_factory_.GetWeakPtr())));
-  if (pending_reporters_.size() > pending_reporters_hwm_)
-    pending_reporters_hwm_ = pending_reporters_.size();
+  // (1) Get the report from the cache, if it exists.
+  auto* report = GetPendingReport(cache_key);
+  if (!report) {
+    // TODO(crbug.com/1082860): This generally means that the report has been
+    // evicted from the cache. We should handle this more gracefully once we
+    // implement retrying reports as that will increase the likelihood.
+    return;
+  }
+
+  // (2) Create a SimpleURLLoader for the request.
+  auto report_request = std::make_unique<ResourceRequest>();
+  report_request->url = report_uri_;
+  report_request->method = "POST";
+  report_request->load_flags = net::LOAD_DISABLE_CACHE;
+  report_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+
+  auto url_loader = SimpleURLLoader::Create(
+      std::move(report_request),
+      static_cast<net::NetworkTrafficAnnotationTag>(traffic_annotation_));
+  url_loader->SetTimeoutDuration(
+      base::TimeDelta::FromSeconds(kSendSCTReportTimeoutSeconds));
+
+  // (3) Serialize the report and attach it to the loader.
+  std::string report_data;
+  bool ok = report->SerializeToString(&report_data);
+  DCHECK(ok);
+  url_loader->AttachStringForUpload(report_data, "application/octet-stream");
+
+  // (4) Pass the loader to an owner for its lifetime. This initiates the
+  // request and will handle calling `callback` when the request completes
+  // (on success or error) or times out.
+  // The callback takes a WeakPtr as the SCTAuditingCache or Network Service
+  // could be destroyed before the callback triggers.
+  auto done_callback = base::BindOnce(&SCTAuditingCache::OnReportComplete,
+                                      weak_factory_.GetWeakPtr(), cache_key);
+  new SimpleURLLoaderOwner(url_loader_factory_.get(), std::move(url_loader),
+                           std::move(done_callback));
 }
 
-void SCTAuditingCache::OnReporterFinished(net::SHA256HashValue reporter_key) {
-  auto it = pending_reporters_.Get(reporter_key);
-  if (it != pending_reporters_.end()) {
-    pending_reporters_.Erase(it);
+void SCTAuditingCache::OnReportComplete(const net::SHA256HashValue& cache_key,
+                                        int net_error,
+                                        int http_response_code) {
+  // TODO(crbug.com/1082860): Mark report as complete on success, handle retries
+  // on failures. For now we empty the cache entry to save space once it has
+  // been successfully sent.
+  bool success = net_error == net::OK && http_response_code == net::HTTP_OK;
+  if (success) {
+    if (GetPendingReport(cache_key))
+      cache_.Put(cache_key, nullptr);
   }
-  // TODO(crbug.com/1144205): Delete any persisted state for the reporter.
+  RecordSCTAuditingReportSucceededMetrics(success);
 }
 
 void SCTAuditingCache::ClearCache() {
-  // Empty the deduplication cache.
-  dedupe_cache_.Clear();
-  // Delete any outstanding Reporters. This will delete any extant URLLoader
-  // instances owned by the Reporters, which will cancel any outstanding
-  // requests/connections. Pending (delayed) retry tasks will fast-fail when
-  // they trigger as they use a WeakPtr to the Reporter instance that posted the
-  // task.
-  pending_reporters_.Clear();
-  // TODO(crbug.com/1144205): Clear any persisted state.
-}
-
-void SCTAuditingCache::SetRetryDelayForTesting(
-    base::Optional<base::TimeDelta> delay) {
-  g_retry_delay_for_testing = delay;
+  cache_.Clear();
 }
 
 }  // namespace network

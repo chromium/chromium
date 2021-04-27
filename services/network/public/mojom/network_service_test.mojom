@@ -5,7 +5,6 @@
 module network.mojom;
 
 import "mojo/public/mojom/base/memory_pressure_level.mojom";
-import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/network_change_manager.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/network_types.mojom";
@@ -126,14 +125,4 @@ interface NetworkServiceTest {
   // that each entry is a registered domain mapped to its owner.
   [Sync]
   GetFirstPartySetEntriesCount() => (int64 entries);
-
-  // Set how long of an initial delay should be used for exponential backoff in
-  // SCT auditing retries. Setting the delay to nullopt will reset to the
-  // default.
-  [Sync]
-  SetSCTAuditingRetryDelay(mojo_base.mojom.TimeDelta? delay) => ();
-
-  // Gets the current count of pending reports in the SCT auditing cache.
-  [Sync]
-  GetSCTAuditingPendingReportsCount() => (uint64 reports);
 };
