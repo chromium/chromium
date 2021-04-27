@@ -1869,7 +1869,7 @@ void NetworkHandler::NavigationRequestWillBeSent(
     return;
 
   net::HttpRequestHeaders headers;
-  headers.AddHeadersFromString(nav_request.begin_params()->headers);
+  headers.AddHeadersFromString(nav_request.begin_params().headers);
   std::unique_ptr<DictionaryValue> headers_dict(DictionaryValue::create());
   for (net::HttpRequestHeaders::Iterator it(headers); it.GetNext();)
     headers_dict->setString(it.name(), it.value());
@@ -1919,7 +1919,7 @@ void NetworkHandler::NavigationRequestWillBeSent(
 
   std::unique_ptr<Network::Initiator> initiator;
   const base::Optional<base::Value>& initiator_optional =
-      nav_request.begin_params()->devtools_initiator;
+      nav_request.begin_params().devtools_initiator;
   if (initiator_optional.has_value()) {
     initiator = protocol::ValueTypeConverter<Network::Initiator>::FromValue(
         *toProtocolValue(&initiator_optional.value(), 1000));
@@ -1935,10 +1935,10 @@ void NetworkHandler::NavigationRequestWillBeSent(
   std::string frame_token =
       nav_request.frame_tree_node()->devtools_frame_token().ToString();
 
-  const mojom::BeginNavigationParams* begin_params = nav_request.begin_params();
-  if (begin_params->trust_token_params) {
+  const mojom::BeginNavigationParams& begin_params = nav_request.begin_params();
+  if (begin_params.trust_token_params) {
     request->SetTrustTokenParams(
-        BuildTrustTokenParams(*begin_params->trust_token_params));
+        BuildTrustTokenParams(*begin_params.trust_token_params));
   }
 
   frontend_->RequestWillBeSent(

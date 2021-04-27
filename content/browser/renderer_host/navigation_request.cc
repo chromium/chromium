@@ -5804,11 +5804,11 @@ bool NavigationRequest::WasStartedFromContextMenu() {
 }
 
 const GURL& NavigationRequest::GetSearchableFormURL() {
-  return begin_params()->searchable_form_url;
+  return begin_params().searchable_form_url;
 }
 
 const std::string& NavigationRequest::GetSearchableFormEncoding() {
-  return begin_params()->searchable_form_encoding;
+  return begin_params().searchable_form_encoding;
 }
 
 ReloadType NavigationRequest::GetReloadType() {
@@ -5833,11 +5833,11 @@ bool NavigationRequest::IsDownload() {
 }
 
 bool NavigationRequest::IsFormSubmission() {
-  return begin_params()->is_form_submission;
+  return begin_params().is_form_submission;
 }
 
 bool NavigationRequest::WasInitiatedByLinkClick() {
-  return begin_params()->was_initiated_by_link_click;
+  return begin_params().was_initiated_by_link_click;
 }
 
 const std::string& NavigationRequest::GetHrefTranslate() {
@@ -5845,7 +5845,7 @@ const std::string& NavigationRequest::GetHrefTranslate() {
 }
 
 const base::Optional<blink::Impression>& NavigationRequest::GetImpression() {
-  return begin_params()->impression;
+  return begin_params().impression;
 }
 
 const base::Optional<blink::LocalFrameToken>&

@@ -881,8 +881,8 @@ void Navigator::OnBeginNavigation(
       false /* is_browser_initiated_before_unload */);
 
   LogRendererInitiatedBeforeUnloadTime(
-      navigation_request->begin_params()->before_unload_start,
-      navigation_request->begin_params()->before_unload_end);
+      navigation_request->begin_params().before_unload_start,
+      navigation_request->begin_params().before_unload_end);
 
   // This frame has already run beforeunload before it sent this IPC.  See if
   // any of its cross-process subframes also need to run beforeunload.  If so,

@@ -363,8 +363,8 @@ class CONTENT_EXPORT NavigationRequest
     return *common_params_;
   }
 
-  const mojom::BeginNavigationParams* begin_params() const {
-    return begin_params_.get();
+  const mojom::BeginNavigationParams& begin_params() const {
+    return *begin_params_;
   }
 
   const mojom::CommitNavigationParams& commit_params() const {
@@ -1597,7 +1597,7 @@ class CONTENT_EXPORT NavigationRequest
   const GlobalFrameRoutingId previous_render_frame_host_id_;
 
   // Frame token of the frame host that initiated the navigation, derived from
-  // |begin_params()->initiator_frame_token|. This is best effort: it is only
+  // |begin_params().initiator_frame_token|. This is best effort: it is only
   // defined for some renderer-initiated navigations (e.g., not drag and drop).
   // The frame with the corresponding frame token may have been deleted before
   // the navigation begins. This parameter is defined if and only if
