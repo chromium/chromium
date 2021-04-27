@@ -8,8 +8,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/renderer/bindings/core/v8/string_or_array_buffer_or_array_buffer_view.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_font_face_descriptors.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mouse_event_init.h"
+#include "third_party/blink/renderer/core/css/font_face_set_document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
@@ -93,6 +97,23 @@ class TextFragmentAnchorTest : public SimTest {
     event.SetPositionInScreen(gfx::PointF(x, y));
     event.SetFrameScale(1);
     GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(event);
+  }
+
+  void LoadAhem() {
+    scoped_refptr<SharedBuffer> shared_buffer =
+        test::ReadFromFile(test::CoreTestDataPath("Ahem.ttf"));
+    StringOrArrayBufferOrArrayBufferView buffer =
+        StringOrArrayBufferOrArrayBufferView::FromArrayBuffer(
+            DOMArrayBuffer::Create(shared_buffer));
+    FontFace* ahem =
+        FontFace::Create(GetDocument().GetFrame()->DomWindow(), "Ahem", buffer,
+                         FontFaceDescriptors::Create());
+
+    ScriptState* script_state =
+        ToScriptStateForMainWorld(GetDocument().GetFrame());
+    DummyExceptionStateForTesting exception_state;
+    FontFaceSetDocument::From(GetDocument())
+        ->addForBinding(script_state, ahem, exception_state);
   }
 };
 
@@ -2358,6 +2379,76 @@ TEST_F(TextFragmentAnchorTest, OpenedFromHighlightDoesNotSelectAdditionalText) {
 
   // The text underneath the cursor should be selected.
   EXPECT_FALSE(selection.SelectedText().IsEmpty());
+}
+
+// Test that on Android, a user can display a context menu by tapping on
+// a text fragment, when the TextFragmentTapOpensContextMenu
+// RuntimeEnabledFeature is enabled.
+TEST_F(TextFragmentAnchorTest, ShouldOpenContextMenuOnTap) {
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndEnableFeature(
+      shared_highlighting::kSharedHighlightingV2);
+  LoadAhem();
+  SimRequest request(
+      "https://example.com/"
+      "test.html#:~:text=this%20is%20a%20test%20page",
+      "text/html");
+  LoadURL(
+      "https://example.com/"
+      "test.html#:~:text=this%20is%20a%20test%20page");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>p { font: 10px/1 Ahem; }</style>
+    <p id="first">This is a test page</p>
+    <p id="two">Second test page two</p>
+  )HTML");
+  RunAsyncMatchingTasks();
+  ContextMenuAllowedScope context_menu_allowed_scope;
+
+  Compositor().BeginFrame();
+
+  EXPECT_FALSE(GetDocument()
+                   .GetPage()
+                   ->GetContextMenuController()
+                   .ContextMenuNodeForFrame(GetDocument().GetFrame()));
+
+  Range* range = Range::Create(GetDocument());
+  range->setStart(GetDocument().getElementById("first"), 0,
+                  IGNORE_EXCEPTION_FOR_TESTING);
+  range->setEnd(GetDocument().getElementById("first"), 1,
+                IGNORE_EXCEPTION_FOR_TESTING);
+  ASSERT_EQ("This is a test page", range->GetText());
+
+  IntPoint tap_point = range->BoundingBox().Center();
+  SimulateTap(tap_point.X(), tap_point.Y());
+
+  if (RuntimeEnabledFeatures::TextFragmentTapOpensContextMenuEnabled()) {
+    EXPECT_TRUE(GetDocument()
+                    .GetPage()
+                    ->GetContextMenuController()
+                    .ContextMenuNodeForFrame(GetDocument().GetFrame()));
+  } else {
+    EXPECT_FALSE(GetDocument()
+                     .GetPage()
+                     ->GetContextMenuController()
+                     .ContextMenuNodeForFrame(GetDocument().GetFrame()));
+  }
+
+  GetDocument().GetPage()->GetContextMenuController().ClearContextMenu();
+
+  range->setStart(GetDocument().getElementById("two"), 0,
+                  IGNORE_EXCEPTION_FOR_TESTING);
+  range->setEndAfter(GetDocument().getElementById("two"),
+                     IGNORE_EXCEPTION_FOR_TESTING);
+  ASSERT_EQ("Second test page two", range->GetText());
+
+  tap_point = range->BoundingBox().Center();
+  SimulateTap(tap_point.X(), tap_point.Y());
+
+  EXPECT_FALSE(GetDocument()
+                   .GetPage()
+                   ->GetContextMenuController()
+                   .ContextMenuNodeForFrame(GetDocument().GetFrame()));
 }
 
 }  // namespace

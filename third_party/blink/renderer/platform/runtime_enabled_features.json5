@@ -2015,6 +2015,10 @@
       status: "stable",
     },
     {
+      name: "TextFragmentTapOpensContextMenu",
+      status: {"Android": "stable"},
+    },
+    {
       name: "ThirdPartyOriginTrials",
       status: "stable",
     },

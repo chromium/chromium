@@ -52,6 +52,10 @@ void TextFragmentHandler::RemoveFragments() {
 
 // static
 bool TextFragmentHandler::IsOverTextFragment(HitTestResult result) {
+  if (!result.InnerNode()) {
+    return false;
+  }
+
   DocumentMarkerController& marker_controller =
       result.InnerNodeFrame()->GetDocument()->Markers();
   PositionWithAffinity pos_with_affinity = result.GetPosition();

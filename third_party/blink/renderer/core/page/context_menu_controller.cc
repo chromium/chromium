@@ -403,7 +403,8 @@ bool ContextMenuController::ShouldShowContextMenuFromTouch(
          !data.link_url.is_empty() ||
          data.media_type == mojom::blink::ContextMenuDataMediaType::kImage ||
          data.media_type == mojom::blink::ContextMenuDataMediaType::kVideo ||
-         data.is_editable || !data.selected_text.empty();
+         data.is_editable || data.opened_from_highlight ||
+         !data.selected_text.empty();
 }
 
 bool ContextMenuController::ShowContextMenu(LocalFrame* frame,

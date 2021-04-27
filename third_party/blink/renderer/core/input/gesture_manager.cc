@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/input/gesture_manager.h"
 
-#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/public_buildflags.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -22,6 +21,7 @@
 #include "third_party/blink/renderer/core/input/input_device_capabilities.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/page/scrolling/text_fragment_handler.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
 
@@ -334,6 +334,13 @@ WebInputEventResult GestureManager::HandleGestureTap(
     ShowUnhandledTapUIIfNeeded(dom_tree_changed, style_changed, tapped_node,
                                tapped_element, tapped_position_in_viewport);
   }
+  if (RuntimeEnabledFeatures::TextFragmentTapOpensContextMenuEnabled() &&
+      TextFragmentHandler::IsOverTextFragment(current_hit_test)) {
+    if (event_result == WebInputEventResult::kNotHandled) {
+      return SendContextMenuEventForGesture(targeted_event);
+    }
+  }
+
   return event_result;
 }
 
