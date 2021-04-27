@@ -290,7 +290,7 @@ public class WebApkUma {
 
     /** Records number of unique origins for WebAPKs in WebappRegistry */
     public static void recordWebApksCount(int count) {
-        RecordHistogram.recordCount100Histogram("WebApk.WebappRegistry.Origins", count);
+        RecordHistogram.recordCount100Histogram("WebApk.WebappRegistry.NumberOfOrigins", count);
     }
 
     /**
