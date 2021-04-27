@@ -227,7 +227,7 @@ stage_install_common() {
     done
   fi
 
-  # SwiftShader
+  # SwiftShader ES
   if [ -f "${OUTPUTDIR}/swiftshader/libEGL.so" ]; then
     install -m 755 -d "${STAGEDIR}/${INSTALLDIR}/swiftshader/"
     for file in libEGL.so libGLESv2.so; do
@@ -237,6 +237,19 @@ stage_install_common() {
       "${OUTPUTDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
       install -m ${SHLIB_PERMS} "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/swiftshader/${file}"
     done
+  fi
+
+  # SwiftShader VK
+  if [ -f "${OUTPUTDIR}/libvk_swiftshader.so" ]; then
+    install -m 755 -d "${STAGEDIR}/${INSTALLDIR}/"
+    file="libvk_swiftshader.so"
+    buildfile="${OUTPUTDIR}/${file}"
+    strippedfile="${buildfile}.stripped"
+    debugfile="${buildfile}.debug"
+    "${OUTPUTDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
+    install -m ${SHLIB_PERMS} "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/${file}"
+    # Install the ICD json file to point ANGLE to libvk_swiftshader.so
+    install -m 644 "${OUTPUTDIR}/vk_swiftshader_icd.json" "${STAGEDIR}/${INSTALLDIR}/"
   fi
 
   # libc++
