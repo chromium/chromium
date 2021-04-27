@@ -145,6 +145,14 @@ TEST(PowerModeArbiterTest, Observer) {
   arbiter.RemoveObserver(&observer);
 }
 
+namespace {
+class FakeObserver : public PowerModeArbiter::Observer {
+ public:
+  ~FakeObserver() override = default;
+  void OnPowerModeChanged(PowerMode old_mode, PowerMode new_mode) override {}
+};
+}  // namespace
+
 TEST(PowerModeArbiterTest, ResetVoteAfterTimeout) {
   base::test::TaskEnvironment env(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
@@ -155,6 +163,9 @@ TEST(PowerModeArbiterTest, ResetVoteAfterTimeout) {
   env.AdvanceClock(target_time - env.NowTicks());
 
   PowerModeArbiter arbiter;
+  // Add a fake observer to enable reset tasks.
+  FakeObserver observer;
+  arbiter.AddObserver(&observer);
 
   base::TimeDelta delta1s = base::TimeDelta::FromSeconds(1);
   base::TimeDelta delta2s = base::TimeDelta::FromSeconds(2);
@@ -236,6 +247,57 @@ TEST(PowerModeArbiterTest, ResetVoteAfterTimeout) {
   voter1->ResetVoteAfterTimeout(delta1s);
   voter1.reset();
   env.FastForwardBy(delta1s);  // Execute the reset task.
+
+  arbiter.RemoveObserver(&observer);
+}
+
+TEST(PowerModeArbiterTest, ObserverEnablesResetTasks) {
+  base::test::TaskEnvironment env(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+
+  // Align the mock clock with the phase of the reset tasks.
+  base::TimeTicks target_time = env.NowTicks().SnappedToNextTick(
+      base::TimeTicks(), PowerModeArbiter::kResetVoteTimeResolution);
+  env.AdvanceClock(target_time - env.NowTicks());
+
+  PowerModeArbiter arbiter;
+  FakeObserver observer;
+  base::TimeDelta delta1s = base::TimeDelta::FromSeconds(1);
+
+  arbiter.OnThreadPoolAvailable();
+
+  std::unique_ptr<PowerModeVoter> voter1 = arbiter.NewVoter("voter1");
+
+  for (int i = 0; i < 2; i++) {
+    // Without observer, reset tasks are not executed and resets not serviced.
+    voter1->VoteFor(PowerMode::kAnimation);
+    EXPECT_EQ(arbiter.GetActiveModeForTesting(), PowerMode::kAnimation);
+    voter1->ResetVoteAfterTimeout(delta1s);
+    {
+      base::AutoLock lock(arbiter.lock_);
+      EXPECT_EQ(arbiter.next_pending_vote_update_time_, base::TimeTicks());
+    }
+    env.FastForwardBy(delta1s);
+    EXPECT_EQ(arbiter.GetActiveModeForTesting(), PowerMode::kAnimation);
+
+    // Adding the observer services the reset.
+    arbiter.AddObserver(&observer);
+    EXPECT_EQ(arbiter.GetActiveModeForTesting(), PowerMode::kIdle);
+
+    // While observer is registered, resets are serviced.
+    voter1->VoteFor(PowerMode::kAnimation);
+    EXPECT_EQ(arbiter.GetActiveModeForTesting(), PowerMode::kAnimation);
+    voter1->ResetVoteAfterTimeout(delta1s);
+    {
+      base::AutoLock lock(arbiter.lock_);
+      EXPECT_NE(arbiter.next_pending_vote_update_time_, base::TimeTicks());
+    }
+    env.FastForwardBy(delta1s);
+    EXPECT_EQ(arbiter.GetActiveModeForTesting(), PowerMode::kIdle);
+
+    // After removing the observer, resets are no longer serviced.
+    arbiter.RemoveObserver(&observer);
+  }
 }
 
 }  // namespace power_scheduler

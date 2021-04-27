@@ -22,6 +22,16 @@
 
 namespace power_scheduler {
 
+using ObserverList = base::ObserverListThreadSafe<PowerModeArbiter::Observer>;
+
+namespace {
+class TraceObserver : public PowerModeArbiter::Observer {
+ public:
+  ~TraceObserver() override = default;
+  void OnPowerModeChanged(PowerMode old_mode, PowerMode new_mode) override {}
+};
+}  // namespace
+
 // Created and owned by the arbiter on thread pool initialization because there
 // has to be exactly one per process, and //base can't depend on the
 // power_scheduler component.
@@ -60,8 +70,10 @@ PowerModeArbiter* PowerModeArbiter::GetInstance() {
 }
 
 PowerModeArbiter::PowerModeArbiter()
-    : observers_(new base::ObserverListThreadSafe<Observer>()),
-      active_mode_("PowerModeArbiter", this) {
+    : trace_observer_(std::make_unique<TraceObserver>()),
+      active_mode_("PowerModeArbiter", this),
+      observers_(
+          base::MakeRefCounted<base::ObserverListThreadSafe<Observer>>()) {
   base::trace_event::TraceLog::GetInstance()->AddEnabledStateObserver(this);
 }
 
@@ -70,26 +82,39 @@ PowerModeArbiter::~PowerModeArbiter() {
 }
 
 void PowerModeArbiter::OnThreadPoolAvailable() {
-  // May be called multiple times in single-process mode.
-  if (task_runner_)
-    return;
+  int sequence_number = 0;
+  scoped_refptr<base::TaskRunner> task_runner;
+  {
+    base::AutoLock lock(lock_);
 
-  // Currently only used for the delayed votes.
-  task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::TaskPriority::USER_VISIBLE,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+    // May be called multiple times in single-process mode.
+    if (task_runner_)
+      return;
+
+    // Set task_runner_ under lock to avoid a race with AddObserver().
+    task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::TaskPriority::USER_VISIBLE,
+         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+    task_runner = task_runner_;
+
+    // Acquire the current sequence number in case it was previously incremented
+    // by RemoveObserver(). It will be incremented by UpdatePendingResets()
+    // below.
+    sequence_number = update_task_sequence_number_;
+  }
+
+  // Check if there are any actionable resets and post another task to handle
+  // future ones if necessary. If sequence_number is changed concurrently by
+  // RemoveObserver() or ResetVoteAfterTimeout(), this has call has no effect,
+  // but a future call to UpdatePendingResets() will take its place.
+  UpdatePendingResets(sequence_number);
 
   // Create the charging voter on the task runner sequence, so that charging
   // state notifications are received there.
-  task_runner_->PostTask(FROM_HERE, base::BindOnce([] {
-                           PowerModeArbiter::GetInstance()->charging_voter_ =
-                               std::make_unique<ChargingPowerModeVoter>();
-                         }));
-
-  // Check if there are any actionable resets and post another task to handle
-  // future ones if necessary. |update_task_sequence_number_| is initialized to
-  // 0 and incremented in UpdatePendingResets for the first time.
-  UpdatePendingResets(/*sequence_number=*/0);
+  task_runner->PostTask(FROM_HERE, base::BindOnce([] {
+                          PowerModeArbiter::GetInstance()->charging_voter_ =
+                              std::make_unique<ChargingPowerModeVoter>();
+                        }));
 }
 
 std::unique_ptr<PowerModeVoter> PowerModeArbiter::NewVoter(const char* name) {
@@ -102,13 +127,41 @@ std::unique_ptr<PowerModeVoter> PowerModeArbiter::NewVoter(const char* name) {
 }
 
 void PowerModeArbiter::AddObserver(Observer* observer) {
-  base::AutoLock lock(lock_);
-  observer->OnPowerModeChanged(PowerMode::kIdle, active_mode_.mode());
-  observers_->AddObserver(observer);
+  DCHECK(observer);
+  bool should_update_pending_resets = false;
+  int sequence_number = 0;
+
+  {
+    base::AutoLock lock(lock_);
+    observer->OnPowerModeChanged(PowerMode::kIdle, active_mode_.mode());
+    should_update_pending_resets = task_runner_ && !has_observers_;
+    // Acquire the current sequence number in case it was previously incremented
+    // by RemoveObserver(). If necessary, it will be incremented by
+    // UpdatePendingResets() below.
+    sequence_number = update_task_sequence_number_;
+    observers_->AddObserver(observer);
+    has_observers_ = true;
+  }
+
+  // Reset tasks are disabled until the first observer is registered. If
+  // sequence_number is changed concurrently by RemoveObserver() or
+  // ResetVoteAfterTimeout(), this has call has no effect, but a future call to
+  // UpdatePendingResets() will take its place.
+  if (should_update_pending_resets)
+    UpdatePendingResets(sequence_number);
 }
 
 void PowerModeArbiter::RemoveObserver(Observer* observer) {
-  observers_->RemoveObserver(observer);
+  base::AutoLock lock(lock_);
+  ObserverList::RemoveObserverResult result =
+      observers_->RemoveObserver(observer);
+  has_observers_ =
+      result == ObserverList::RemoveObserverResult::kRemainsNonEmpty;
+
+  // Increment update_task_sequence_number_ so that any scheduled update tasks
+  // are skipped and only restarted if another observer registers.
+  if (!has_observers_)
+    ++update_task_sequence_number_;
 }
 
 void PowerModeArbiter::OnVoterDestroyed(PowerModeVoter* voter) {
@@ -139,6 +192,7 @@ void PowerModeArbiter::ResetVoteAfterTimeout(PowerModeVoter* voter,
                                              base::TimeDelta timeout) {
   bool should_post_update_task = false;
   int sequence_number = 0;
+  scoped_refptr<base::TaskRunner> task_runner;
   {
     base::AutoLock lock(lock_);
     base::TimeTicks scheduled_time = base::TimeTicks::Now() + timeout;
@@ -149,17 +203,19 @@ void PowerModeArbiter::ResetVoteAfterTimeout(PowerModeVoter* voter,
     // Only post a new task if there isn't one scheduled to run earlier yet.
     // This reduces the number of posted callbacks in situations where the
     // pending vote is cleared soon after UpdateVoteAfterTimeout() by SetVote().
-    if (task_runner_ && (next_pending_vote_update_time_.is_null() ||
-                         scheduled_time < next_pending_vote_update_time_)) {
+    if (task_runner_ && has_observers_ &&
+        (next_pending_vote_update_time_.is_null() ||
+         scheduled_time < next_pending_vote_update_time_)) {
       next_pending_vote_update_time_ = scheduled_time;
       should_post_update_task = true;
       ++update_task_sequence_number_;
       sequence_number = update_task_sequence_number_;
+      task_runner = task_runner_;
     }
   }
 
   if (should_post_update_task) {
-    task_runner_->PostDelayedTask(
+    task_runner->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&PowerModeArbiter::UpdatePendingResets,
                        base::Unretained(this), sequence_number),
@@ -175,6 +231,7 @@ void PowerModeArbiter::UpdatePendingResets(int sequence_number) {
   base::TimeTicks now = base::TimeTicks::Now();
   base::TimeTicks next_task_time;
   int next_sequence_number = 0;
+  scoped_refptr<base::TaskRunner> task_runner;
   {
     base::AutoLock lock(lock_);
 
@@ -202,12 +259,13 @@ void PowerModeArbiter::UpdatePendingResets(int sequence_number) {
 
     next_pending_vote_update_time_ = next_task_time;
     if (!next_task_time.is_null()) {
+      task_runner = task_runner_;
       ++update_task_sequence_number_;
       next_sequence_number = update_task_sequence_number_;
     }
   }
   if (!next_task_time.is_null()) {
-    task_runner_->PostDelayedTask(
+    task_runner->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&PowerModeArbiter::UpdatePendingResets,
                        base::Unretained(this), next_sequence_number),
@@ -256,12 +314,24 @@ PowerMode PowerModeArbiter::GetActiveModeForTesting() {
 }
 
 void PowerModeArbiter::OnTraceLogEnabled() {
-  base::AutoLock lock(lock_);
-  for (const auto& voter_and_vote : votes_)
-    voter_and_vote.second.OnTraceLogEnabled();
-  active_mode_.OnTraceLogEnabled();
+  {
+    base::AutoLock lock(lock_);
+    for (const auto& voter_and_vote : votes_)
+      voter_and_vote.second.OnTraceLogEnabled();
+    active_mode_.OnTraceLogEnabled();
+  }
+
+  const auto* power_tracing_enabled =
+      TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("power");
+  if (*power_tracing_enabled) {
+    // Add a no-op observer which ensures that reset tasks are executing while
+    // tracing is enabled.
+    AddObserver(trace_observer_.get());
+  }
 }
 
-void PowerModeArbiter::OnTraceLogDisabled() {}
+void PowerModeArbiter::OnTraceLogDisabled() {
+  RemoveObserver(trace_observer_.get());
+}
 
 }  // namespace power_scheduler

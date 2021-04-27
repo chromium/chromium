@@ -97,6 +97,15 @@ class BASE_EXPORT ObserverListThreadSafeBase
 template <class ObserverType>
 class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
  public:
+  enum class AddObserverResult {
+    kBecameNonEmpty,
+    kWasAlreadyNonEmpty,
+  };
+  enum class RemoveObserverResult {
+    kWasOrBecameEmpty,
+    kRemainsNonEmpty,
+  };
+
   ObserverListThreadSafe() = default;
   explicit ObserverListThreadSafe(ObserverListPolicy policy)
       : policy_(policy) {}
@@ -104,7 +113,7 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
   ObserverListThreadSafe& operator=(const ObserverListThreadSafe&) = delete;
 
   // Adds |observer| to the list. |observer| must not already be in the list.
-  void AddObserver(ObserverType* observer) {
+  AddObserverResult AddObserver(ObserverType* observer) {
     DCHECK(SequencedTaskRunnerHandle::IsSet())
         << "An observer can only be registered when SequencedTaskRunnerHandle "
            "is set. If this is in a unit test, you're likely merely missing a "
@@ -114,6 +123,8 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
            "base::SingleThreadTaskRunner.";
 
     AutoLock auto_lock(lock_);
+
+    bool was_empty = observers_.empty();
 
     // Add |observer| to the list of observers.
     DCHECK(!Contains(observers_, observer));
@@ -146,6 +157,9 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
                                       notification_data->method)));
       }
     }
+
+    return was_empty ? AddObserverResult::kBecameNonEmpty
+                     : AddObserverResult::kWasAlreadyNonEmpty;
   }
 
   // Remove an observer from the list if it is in the list.
@@ -153,9 +167,11 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
   // If a notification was sent to the observer but hasn't started to run yet,
   // it will be aborted. If a notification has started to run, removing the
   // observer won't stop it.
-  void RemoveObserver(ObserverType* observer) {
+  RemoveObserverResult RemoveObserver(ObserverType* observer) {
     AutoLock auto_lock(lock_);
     observers_.erase(observer);
+    return observers_.empty() ? RemoveObserverResult::kWasOrBecameEmpty
+                              : RemoveObserverResult::kRemainsNonEmpty;
   }
 
   // Verifies that the list is currently empty (i.e. there are no observers).

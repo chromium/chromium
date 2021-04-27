@@ -139,23 +139,29 @@ class AddRemoveThread : public Foo {
 }  // namespace
 
 TEST(ObserverListThreadSafeTest, BasicTest) {
+  using List = ObserverListThreadSafe<Foo>;
   test::TaskEnvironment task_environment;
 
-  scoped_refptr<ObserverListThreadSafe<Foo>> observer_list(
-      new ObserverListThreadSafe<Foo>);
+  scoped_refptr<List> observer_list(new List);
   Adder a(1);
   Adder b(-1);
   Adder c(1);
   Adder d(-1);
 
-  observer_list->AddObserver(&a);
-  observer_list->AddObserver(&b);
+  List::AddObserverResult result;
+
+  result = observer_list->AddObserver(&a);
+  EXPECT_EQ(result, List::AddObserverResult::kBecameNonEmpty);
+  result = observer_list->AddObserver(&b);
+  EXPECT_EQ(result, List::AddObserverResult::kWasAlreadyNonEmpty);
 
   observer_list->Notify(FROM_HERE, &Foo::Observe, 10);
   RunLoop().RunUntilIdle();
 
-  observer_list->AddObserver(&c);
-  observer_list->AddObserver(&d);
+  result = observer_list->AddObserver(&c);
+  EXPECT_EQ(result, List::AddObserverResult::kWasAlreadyNonEmpty);
+  result = observer_list->AddObserver(&d);
+  EXPECT_EQ(result, List::AddObserverResult::kWasAlreadyNonEmpty);
 
   observer_list->Notify(FROM_HERE, &Foo::Observe, 10);
   observer_list->RemoveObserver(&c);
@@ -168,18 +174,22 @@ TEST(ObserverListThreadSafeTest, BasicTest) {
 }
 
 TEST(ObserverListThreadSafeTest, RemoveObserver) {
+  using List = ObserverListThreadSafe<Foo>;
   test::TaskEnvironment task_environment;
 
-  scoped_refptr<ObserverListThreadSafe<Foo>> observer_list(
-      new ObserverListThreadSafe<Foo>);
+  scoped_refptr<List> observer_list(new List);
   Adder a(1), b(1);
 
   // A workaround for the compiler bug. See http://crbug.com/121960.
   EXPECT_NE(&a, &b);
 
+  List::RemoveObserverResult result;
+
   // Should do nothing.
-  observer_list->RemoveObserver(&a);
-  observer_list->RemoveObserver(&b);
+  result = observer_list->RemoveObserver(&a);
+  EXPECT_EQ(result, List::RemoveObserverResult::kWasOrBecameEmpty);
+  result = observer_list->RemoveObserver(&b);
+  EXPECT_EQ(result, List::RemoveObserverResult::kWasOrBecameEmpty);
 
   observer_list->Notify(FROM_HERE, &Foo::Observe, 10);
   RunLoop().RunUntilIdle();
@@ -190,13 +200,17 @@ TEST(ObserverListThreadSafeTest, RemoveObserver) {
   observer_list->AddObserver(&a);
 
   // Should also do nothing.
-  observer_list->RemoveObserver(&b);
+  result = observer_list->RemoveObserver(&b);
+  EXPECT_EQ(result, List::RemoveObserverResult::kRemainsNonEmpty);
 
   observer_list->Notify(FROM_HERE, &Foo::Observe, 10);
   RunLoop().RunUntilIdle();
 
   EXPECT_EQ(10, a.total);
   EXPECT_EQ(0, b.total);
+
+  result = observer_list->RemoveObserver(&a);
+  EXPECT_EQ(result, List::RemoveObserverResult::kWasOrBecameEmpty);
 }
 
 class FooRemover : public Foo {
@@ -334,12 +348,14 @@ TEST(ObserverListThreadSafeTest, NotificationOnValidSequence) {
   SequenceVerificationObserver observer_1(task_runner_1);
   SequenceVerificationObserver observer_2(task_runner_2);
 
-  task_runner_1->PostTask(FROM_HERE,
-                          BindOnce(&ObserverListThreadSafe<Foo>::AddObserver,
-                                   observer_list, Unretained(&observer_1)));
-  task_runner_2->PostTask(FROM_HERE,
-                          BindOnce(&ObserverListThreadSafe<Foo>::AddObserver,
-                                   observer_list, Unretained(&observer_2)));
+  task_runner_1->PostTask(
+      FROM_HERE,
+      BindOnce(base::IgnoreResult(&ObserverListThreadSafe<Foo>::AddObserver),
+               observer_list, Unretained(&observer_1)));
+  task_runner_2->PostTask(
+      FROM_HERE,
+      BindOnce(base::IgnoreResult(&ObserverListThreadSafe<Foo>::AddObserver),
+               observer_list, Unretained(&observer_2)));
 
   ThreadPoolInstance::Get()->FlushForTesting();
 
@@ -418,7 +434,8 @@ TEST(ObserverListThreadSafeTest, RemoveWhileNotificationIsRunning) {
 
   ThreadPool::CreateSequencedTaskRunner({MayBlock()})
       ->PostTask(FROM_HERE,
-                 base::BindOnce(&ObserverListThreadSafe<Foo>::AddObserver,
+                 base::BindOnce(base::IgnoreResult(
+                                    &ObserverListThreadSafe<Foo>::AddObserver),
                                 observer_list, Unretained(&observer)));
   ThreadPoolInstance::Get()->FlushForTesting();
 

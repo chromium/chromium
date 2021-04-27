@@ -71,6 +71,7 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) PowerModeArbiter
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PowerModeArbiterTest, ResetVoteAfterTimeout);
+  FRIEND_TEST_ALL_PREFIXES(PowerModeArbiterTest, ObserverEnablesResetTasks);
 
   class ChargingPowerModeVoter;
 
@@ -87,22 +88,27 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) PowerModeArbiter
   void UpdatePendingResets(int sequence_number);
   void OnVotesUpdated();
 
+  void ServicePendingResetsLocked() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
   PowerMode ComputeActiveModeLocked() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // trace_event::TraceLog::EnabledStateObserver implementation:
   void OnTraceLogEnabled() override;
   void OnTraceLogDisabled() override;
 
-  scoped_refptr<base::TaskRunner> task_runner_;
-  scoped_refptr<base::ObserverListThreadSafe<Observer>> observers_;
+  std::unique_ptr<Observer> trace_observer_;
 
-  base::Lock lock_;
+  base::Lock lock_;  // Protects subsequent members.
+  scoped_refptr<base::TaskRunner> task_runner_ GUARDED_BY(lock_);
   std::map<PowerModeVoter*, TracedPowerMode> votes_ GUARDED_BY(lock_);
   std::map<PowerModeVoter*, base::TimeTicks /*effective_time*/> pending_resets_
       GUARDED_BY(lock_);
   base::TimeTicks next_pending_vote_update_time_ GUARDED_BY(lock_);
   TracedPowerMode active_mode_ GUARDED_BY(lock_);
   int update_task_sequence_number_ GUARDED_BY(lock_) = 0;
+  scoped_refptr<base::ObserverListThreadSafe<Observer>> observers_
+      GUARDED_BY(lock_);
+  bool has_observers_ GUARDED_BY(lock_) = false;
 
   // Owned by the arbiter but otherwise behaves like a regular voter.
   std::unique_ptr<ChargingPowerModeVoter> charging_voter_;
