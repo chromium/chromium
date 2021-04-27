@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_READING_LIST_URL_DOWNLOADER_H_
 #define IOS_CHROME_BROWSER_READING_LIST_URL_DOWNLOADER_H_
 
+#include <string>
+
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/files/file_path.h"

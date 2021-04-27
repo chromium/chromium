@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <string>
 
 #import <Foundation/Foundation.h>
 

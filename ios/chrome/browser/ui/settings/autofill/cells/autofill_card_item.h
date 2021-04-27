@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_AUTOFILL_CELLS_AUTOFILL_CARD_ITEM_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_AUTOFILL_CELLS_AUTOFILL_CARD_ITEM_H_
 
+#include <string>
+
 #import "ios/chrome/browser/ui/table_view/cells/table_view_multi_detail_text_item.h"
 
 // Item for autofill credit card.

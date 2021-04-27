@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_WEB_IMAGE_FETCH_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_WEB_IMAGE_FETCH_TAB_HELPER_H_
 
+#include <string>
 #include <unordered_map>
 
 #include "base/macros.h"

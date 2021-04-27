@@ -5,9 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_TRANSLATE_FAKE_TRANSLATE_INFOBAR_DELEGATE_H_
 #define IOS_CHROME_BROWSER_TRANSLATE_FAKE_TRANSLATE_INFOBAR_DELEGATE_H_
 
-#include "components/translate/core/browser/translate_infobar_delegate.h"
+#include <string>
 
 #include "components/translate/core/browser/mock_translate_driver.h"
+#include "components/translate/core/browser/translate_infobar_delegate.h"
 
 namespace sync_preferences {
 class TestingPrefServiceSyncable;

@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_MEDIATOR_UTIL_H_
 #define IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_MEDIATOR_UTIL_H_
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/optional.h"
 #include "components/ntp_snippets/category_info.h"

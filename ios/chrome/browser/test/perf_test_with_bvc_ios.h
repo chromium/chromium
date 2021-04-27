@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #include <memory>
+#include <string>
 
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser_web_state_list_delegate.h"

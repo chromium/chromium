@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_READING_LIST_READING_LIST_DOWNLOAD_SERVICE_H_
 #define IOS_CHROME_BROWSER_READING_LIST_READING_LIST_DOWNLOAD_SERVICE_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/reading_list/core/reading_list_model_observer.h"

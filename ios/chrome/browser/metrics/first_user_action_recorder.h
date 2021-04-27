@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_METRICS_FIRST_USER_ACTION_RECORDER_H_
 #define IOS_CHROME_BROWSER_METRICS_FIRST_USER_ACTION_RECORDER_H_
 
+#include <string>
 #include <vector>
 
 #include "base/cancelable_callback.h"

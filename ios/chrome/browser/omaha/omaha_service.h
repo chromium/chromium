@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_OMAHA_OMAHA_SERVICE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"

@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #include <memory>
+#include <string>
 #include <vector>
 
 namespace password_manager {

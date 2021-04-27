@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#include <string>
 #include <vector>
 
 #include "ios/chrome/browser/signin/gaia_auth_fetcher_ios_bridge.h"

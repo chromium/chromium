@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_SAFE_BROWSING_SAFE_BROWSING_QUERY_MANAGER_H_
 
 #include <map>
+#include <string>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/unique_ptr_adapters.h"

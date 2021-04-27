@@ -7,8 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
-#include "components/breadcrumbs/core/breadcrumb_manager_observer.h"
+#include <string>
 
+#include "components/breadcrumbs/core/breadcrumb_manager_observer.h"
 
 namespace breadcrumbs {
 class BreadcrumbManager;

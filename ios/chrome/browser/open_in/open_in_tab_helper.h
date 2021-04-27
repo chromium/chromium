@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_OPEN_IN_OPEN_IN_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_OPEN_IN_OPEN_IN_TAB_HELPER_H_
 
+#include <string>
+
 #include "base/macros.h"
 #import "ios/chrome/browser/open_in/open_in_tab_helper_delegate.h"
 #include "ios/web/public/web_state_observer.h"

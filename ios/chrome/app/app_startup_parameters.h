@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #include <map>
+#include <string>
 
 enum class ApplicationModeForTabOpening { NORMAL, INCOGNITO, CURRENT };
 

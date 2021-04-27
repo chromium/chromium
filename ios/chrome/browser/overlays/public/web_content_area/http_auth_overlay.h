@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_WEB_CONTENT_AREA_HTTP_AUTH_OVERLAY_H_
 #define IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_WEB_CONTENT_AREA_HTTP_AUTH_OVERLAY_H_
 
+#include <string>
+
 #include "ios/chrome/browser/overlays/public/overlay_request_config.h"
 #include "ios/chrome/browser/overlays/public/overlay_response_info.h"
 #include "url/gurl.h"

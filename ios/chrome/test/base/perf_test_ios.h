@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#include <string>
+
 #import "base/ios/block_types.h"
 #include "base/time/time.h"
 #import "ios/chrome/test/block_cleanup_test.h"

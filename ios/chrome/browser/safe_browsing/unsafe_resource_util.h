@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SAFE_BROWSING_UNSAFE_RESOURCE_UTIL_H_
 #define IOS_CHROME_BROWSER_SAFE_BROWSING_UNSAFE_RESOURCE_UTIL_H_
 
+#include <string>
+
 #include "components/security_interstitials/core/base_safe_browsing_error_ui.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 

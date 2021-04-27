@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_CRASH_REPORT_BREADCRUMBS_BREADCRUMB_MANAGER_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_CRASH_REPORT_BREADCRUMBS_BREADCRUMB_MANAGER_TAB_HELPER_H_
 
+#include <string>
+
 #include "base/scoped_observer.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "ios/web/public/web_state_observer.h"

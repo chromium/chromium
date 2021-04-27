@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #include <memory>
+#include <string>
 
 #include "base/memory/memory_pressure_listener.h"
 #include "base/metrics/user_metrics.h"

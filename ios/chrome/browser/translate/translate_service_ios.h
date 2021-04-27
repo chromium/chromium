@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_TRANSLATE_TRANSLATE_SERVICE_IOS_H_
 #define IOS_CHROME_BROWSER_TRANSLATE_TRANSLATE_SERVICE_IOS_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "components/web_resource/resource_request_allowed_notifier.h"
 
