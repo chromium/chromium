@@ -23,6 +23,7 @@
 #include "chromeos/network/network_device_handler.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_metadata_store.h"
+#include "chromeos/network/network_name_util.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_type_pattern.h"
@@ -303,48 +304,6 @@ mojom::DeviceStatePropertiesPtr GetVpnState() {
   return result;
 }
 
-base::Optional<std::string> GetESimProfileName(
-    CellularESimProfileHandler* cellular_esim_profile_handler,
-    const NetworkState* network_state) {
-  DCHECK(network_state);
-
-  // CellularESimProfileHandler is not available if the relevant flag is
-  // disabled.
-  if (!cellular_esim_profile_handler)
-    return base::nullopt;
-
-  // Only Cellular networks correspond to eSIM profiles.
-  if (network_state->type() != shill::kTypeCellular)
-    return base::nullopt;
-
-  // eSIM profiles have an associated EID and ICCID.
-  if (network_state->eid().empty() || network_state->iccid().empty())
-    return base::nullopt;
-
-  std::vector<CellularESimProfile> profiles =
-      cellular_esim_profile_handler->GetESimProfiles();
-  for (const auto& profile : profiles) {
-    if (profile.eid() != network_state->eid() ||
-        profile.iccid() != network_state->iccid()) {
-      continue;
-    }
-
-    // We've found a profile corresponding to the network. If possible, use the
-    // profile's nickname, falling back to the name or the service provider.
-
-    if (!profile.nickname().empty())
-      return base::UTF16ToUTF8(profile.nickname());
-
-    if (!profile.name().empty())
-      return base::UTF16ToUTF8(profile.name());
-
-    if (!profile.service_provider().empty())
-      return base::UTF16ToUTF8(profile.service_provider());
-  }
-
-  return base::nullopt;
-}
-
 mojom::NetworkStatePropertiesPtr NetworkStateToMojo(
     NetworkStateHandler* network_state_handler,
     CellularESimProfileHandler* cellular_esim_profile_handler,
@@ -368,7 +327,8 @@ mojom::NetworkStatePropertiesPtr NetworkStateToMojo(
   if (!network->GetError().empty())
     result->error_state = network->GetError();
   result->guid = network->guid();
-  result->name = network->name();
+  result->name =
+      network_name_util::GetNetworkName(cellular_esim_profile_handler, network);
   result->portal_state = GetMojoPortalState(network->portal_state());
   result->priority = network->priority();
   result->prohibited_by_policy = network->blocked_by_policy();
@@ -382,11 +342,6 @@ mojom::NetworkStatePropertiesPtr NetworkStateToMojo(
 
   switch (type) {
     case mojom::NetworkType::kCellular: {
-      base::Optional<std::string> profile_name =
-          GetESimProfileName(cellular_esim_profile_handler, network);
-      if (profile_name)
-        result->name = *profile_name;
-
       auto cellular = mojom::CellularStateProperties::New();
       cellular->iccid = network->iccid();
       cellular->eid = network->eid();
@@ -1354,7 +1309,8 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
   result->name = GetManagedString(properties, ::onc::network_config::kName);
   if (result->name->policy_source == mojom::PolicySource::kNone) {
     base::Optional<std::string> profile_name =
-        GetESimProfileName(cellular_esim_profile_handler, network_state);
+        network_name_util::GetESimProfileName(cellular_esim_profile_handler,
+                                              network_state);
     if (profile_name)
       result->name->active_value = *profile_name;
   }
