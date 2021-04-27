@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/bfcache_opt_in_parser.h"
+#include "services/network/public/cpp/bfcache_opt_in_parser.h"
 
 #include "base/strings/string_piece.h"
 #include "net/http/structured_headers.h"

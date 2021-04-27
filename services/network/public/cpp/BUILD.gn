@@ -25,6 +25,8 @@ component("cpp") {
   output_name = "network_cpp"
 
   sources = [
+    "bfcache_opt_in_parser.cc",
+    "bfcache_opt_in_parser.h",
     "client_hints.cc",
     "client_hints.h",
     "constants.cc",
@@ -358,6 +360,7 @@ source_set("tests") {
   testonly = true
 
   sources = [
+    "bfcache_opt_in_parser_unittest.cc",
     "client_hints_unittest.cc",
     "content_security_policy/content_security_policy_unittest.cc",
     "content_security_policy/csp_context_unittest.cc",
