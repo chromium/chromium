@@ -90,6 +90,7 @@ source_set("unit_tests") {
     "audio_decoder_broker_test.cc",
     "audio_frame_test.cc",
     "decoder_selector_test.cc",
+    "decoder_template_test.cc",
     "encoded_video_chunk_test.cc",
     "image_decoder_external_test.cc",
     "video_decoder_broker_test.cc",

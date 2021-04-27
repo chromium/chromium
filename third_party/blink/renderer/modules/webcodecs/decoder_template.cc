@@ -490,10 +490,18 @@ void DecoderTemplate<Traits>::OnFlushDone(media::Status status) {
     return;
   }
 
+  // If reset() has been called during the Flush(), we can skip reinitialization
+  // since the client is required to do so manually.
+  const bool is_flush = pending_request_->type == Request::Type::kFlush;
+  if (is_flush && pending_request_->reset_generation != reset_generation_) {
+    pending_request_.Release()->resolver.Release()->Resolve();
+    ProcessRequests();
+    return;
+  }
+
   SetHardwarePreference(pending_request_->hw_pref);
 
   // Processing continues in OnInitializeDone().
-  const bool is_flush = pending_request_->type == Request::Type::kFlush;
   Traits::InitializeDecoder(
       *decoder_, is_flush ? *active_config_ : *pending_request_->media_config,
       WTF::Bind(&DecoderTemplate::OnInitializeDone, WrapWeakPersistent(this)),
