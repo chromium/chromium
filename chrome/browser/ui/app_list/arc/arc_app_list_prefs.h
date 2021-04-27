@@ -232,7 +232,7 @@ class ArcAppListPrefs : public KeyedService,
     virtual void OnArcAppListPrefsDestroyed() {}
 
     // Notifies that App instance connection is ready.
-    virtual void OnConnectionReady() {}
+    virtual void OnAppConnectionReady() {}
 
    protected:
     ~Observer() override;

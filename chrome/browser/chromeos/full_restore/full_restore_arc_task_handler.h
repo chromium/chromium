@@ -47,7 +47,7 @@ class FullRestoreArcTaskHandler : public KeyedService,
                      const std::string& intent,
                      int32_t session_id) override;
   void OnTaskDestroyed(int task_id) override;
-  void OnConnectionReady() override;
+  void OnAppConnectionReady() override;
 
  private:
   base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>

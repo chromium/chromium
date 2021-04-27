@@ -46,7 +46,7 @@ void FullRestoreArcTaskHandler::OnTaskDestroyed(int32_t task_id) {
   ::full_restore::OnTaskDestroyed(task_id);
 }
 
-void FullRestoreArcTaskHandler::OnConnectionReady() {
+void FullRestoreArcTaskHandler::OnAppConnectionReady() {
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
   if (window_handler_)
     window_handler_->OnAppInstanceConnected();

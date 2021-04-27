@@ -1177,7 +1177,7 @@ void ArcAppListPrefs::OnConnectionReady() {
   if (!app_list_refreshed_callback_.is_null())
     std::move(app_list_refreshed_callback_).Run();
   for (auto& observer : observer_list_)
-    observer.OnConnectionReady();
+    observer.OnAppConnectionReady();
 }
 
 void ArcAppListPrefs::OnConnectionClosed() {
