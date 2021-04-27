@@ -56,6 +56,7 @@ BackToTabLabelButton::BackToTabLabelButton(PressedCallback callback)
                                                    kBackToTabBorderRadius));
 
   SetEnabledTextColors(kPipWindowTextColor);
+  SetTextColor(views::Button::STATE_DISABLED, kPipWindowTextColor);
 
   // Accessibility.
   const std::u16string back_to_tab_button_label(l10n_util::GetStringUTF16(
