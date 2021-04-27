@@ -41,6 +41,7 @@ class TracedValue;
 namespace gfx {
 class ColorSpace;
 class GpuFence;
+struct PresentationFeedback;
 }
 
 namespace viz {

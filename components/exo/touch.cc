@@ -12,6 +12,7 @@
 #include "components/exo/touch_stylus_delegate.h"
 #include "components/exo/wm_helper.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/wm/core/capture_controller.h"
 #include "ui/wm/core/window_util.h"
