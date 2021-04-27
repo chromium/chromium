@@ -352,6 +352,7 @@ def builder(
         reclient_service = args.DEFAULT,
         reclient_jobs = args.DEFAULT,
         reclient_rewrapper_env = args.DEFAULT,
+        experiments = None,
         **kwargs):
     """Define a builder.
 
@@ -484,6 +485,8 @@ def builder(
         compilations to run when using re-client as the compiler.
       * reclient_rewrapper_env - a map that sets the rewrapper flags via the
         environment variables. All such vars must start with the "RBE_" prefix.
+      * experiments - a dict of experiment name to the percentage chance (0-100)
+        that it will apply to builds generated from this builder.
       * kwargs - Additional keyword arguments to forward on to `luci.builder`.
     """
 
@@ -567,6 +570,12 @@ def builder(
             ssd = False
     if ssd != None:
         dimensions["ssd"] = str(int(ssd))
+
+    # TODO(crbug.com/1143122): remove this.
+    experiments = experiments or {}
+    if os and os.category == os_category.MAC:
+        experiments["chromium.chromium_tests.use_rbe_cas"] = 20
+    kwargs["experiments"] = experiments
 
     configure_kitchen = defaults.get_value("configure_kitchen", configure_kitchen)
     if configure_kitchen:
