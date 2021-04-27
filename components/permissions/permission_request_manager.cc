@@ -131,6 +131,12 @@ void PermissionRequestManager::AddRequest(
     return;
   }
 
+  if (source_frame->IsInactiveAndDisallowActivation()) {
+    request->Cancelled();
+    request->RequestFinished();
+    return;
+  }
+
   if (is_notification_prompt_cooldown_active_ &&
       request->GetContentSettingsType() == ContentSettingsType::NOTIFICATIONS) {
     // Short-circuit by canceling rather than denying to avoid creating a large
@@ -156,9 +162,10 @@ void PermissionRequestManager::AddRequest(
   // any other renderer-side nav initiations?). Double-check this for
   // correct behavior on interstitials -- we probably want to basically queue
   // any request for which GetVisibleURL != GetLastCommittedURL.
-  const GURL& main_frame_url_ = web_contents()->GetLastCommittedURL();
+  CHECK_EQ(source_frame->GetMainFrame(), web_contents()->GetMainFrame());
+  const GURL& main_frame_url = web_contents()->GetLastCommittedURL();
   bool is_main_frame =
-      url::Origin::Create(main_frame_url_)
+      url::Origin::Create(main_frame_url)
           .IsSameOriginWith(url::Origin::Create(request->GetOrigin()));
 
   base::Optional<url::Origin> auto_approval_origin =
@@ -245,7 +252,7 @@ void PermissionRequestManager::UpdateAnchor() {
 
 void PermissionRequestManager::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame() ||
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->IsSameDocument()) {
     return;
   }
@@ -264,7 +271,7 @@ void PermissionRequestManager::DidStartNavigation(
 
 void PermissionRequestManager::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame() ||
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
       !navigation_handle->HasCommitted() ||
       navigation_handle->IsSameDocument()) {
     return;

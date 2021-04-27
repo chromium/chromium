@@ -44,6 +44,7 @@
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -220,6 +221,32 @@ class PermissionRequestManagerWithBackForwardCacheBrowserTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
+};
+
+class PermissionRequestManagerWithPrerenderingTest
+    : public PermissionRequestManagerBrowserTest {
+ public:
+  PermissionRequestManagerWithPrerenderingTest()
+      : prerender_test_helper_(base::BindRepeating(
+            &PermissionRequestManagerWithPrerenderingTest::GetWebContents,
+            base::Unretained(this))) {}
+
+  void SetUpOnMainThread() override {
+    PermissionRequestManagerBrowserTest::SetUpOnMainThread();
+    prerender_test_helper_.SetUpOnMainThread(embedded_test_server());
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  content::test::PrerenderTestHelper& prerender_test_helper() {
+    return prerender_test_helper_;
+  }
+
+ private:
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  content::test::PrerenderTestHelper prerender_test_helper_;
 };
 
 // Requests before the load event should be bundled into one bubble.
@@ -1008,6 +1035,98 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("success", result);
 
   EXPECT_EQ(1, third_tab_bubble_factory.get()->TotalRequestCount());
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithPrerenderingTest,
+                       RequestForPermission) {
+  GURL initial_url =
+      embedded_test_server()->GetURL("a.test", "/prerender/add_prerender.html");
+  GURL prerender_url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  ASSERT_NE(ui_test_utils::NavigateToURL(browser(), initial_url), nullptr);
+  ASSERT_EQ(GetActiveMainFrame()->GetLastCommittedURL(), initial_url);
+
+  prerender_test_helper().AddPrerender(prerender_url);
+  int host_id = prerender_test_helper().GetHostForUrl(prerender_url);
+  content::RenderFrameHost* prerender_frame =
+      prerender_test_helper().GetPrerenderedMainFrameHost(host_id);
+  EXPECT_NE(prerender_frame, nullptr);
+
+  content::RenderFrameDeletedObserver deleted_observer(prerender_frame);
+  permissions::MockPermissionRequest request;
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+  GetPermissionRequestManager()->AddRequest(prerender_frame, &request);
+
+  deleted_observer.WaitUntilDeleted();
+
+  // Permission request should be denied and prerender that sent the request
+  // should be discarded.
+  EXPECT_TRUE(request.cancelled());
+  EXPECT_TRUE(deleted_observer.deleted());
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithPrerenderingTest,
+                       DuplicateRequestForPermission) {
+  GURL initial_url =
+      embedded_test_server()->GetURL("a.test", "/prerender/add_prerender.html");
+  GURL prerender_url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  ASSERT_NE(ui_test_utils::NavigateToURL(browser(), initial_url), nullptr);
+  ASSERT_EQ(GetActiveMainFrame()->GetLastCommittedURL(), initial_url);
+
+  prerender_test_helper().AddPrerender(prerender_url);
+  int host_id = prerender_test_helper().GetHostForUrl(prerender_url);
+  content::RenderFrameHost* prerender_frame =
+      prerender_test_helper().GetPrerenderedMainFrameHost(host_id);
+  EXPECT_NE(prerender_frame, nullptr);
+
+  content::RenderFrameDeletedObserver deleted_observer(prerender_frame);
+  permissions::MockPermissionRequest request_1(u"text");
+  permissions::MockPermissionRequest request_2(u"text");
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+  GetPermissionRequestManager()->AddRequest(GetActiveMainFrame(), &request_1);
+  GetPermissionRequestManager()->AddRequest(prerender_frame, &request_2);
+
+  base::RunLoop().RunUntilIdle();
+
+  // Permission request from main frame should be granted, similar request from
+  // prerender should be denied.
+  EXPECT_TRUE(request_1.granted());
+  EXPECT_TRUE(request_2.cancelled());
+  EXPECT_TRUE(deleted_observer.deleted());
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithPrerenderingTest,
+                       PrerenderLoadsWhileRequestsPending) {
+  GURL initial_url =
+      embedded_test_server()->GetURL("a.test", "/prerender/add_prerender.html");
+  GURL prerender_url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  GURL next_url = embedded_test_server()->GetURL("b.test", "/title1.html");
+  ASSERT_NE(ui_test_utils::NavigateToURL(browser(), initial_url), nullptr);
+  ASSERT_EQ(GetActiveMainFrame()->GetLastCommittedURL(), initial_url);
+
+  permissions::MockPermissionRequest request_1(u"one");
+  permissions::MockPermissionRequest request_2(u"two");
+  GetPermissionRequestManager()->AddRequest(GetActiveMainFrame(), &request_1);
+  GetPermissionRequestManager()->AddRequest(GetActiveMainFrame(), &request_2);
+
+  prerender_test_helper().AddPrerender(prerender_url);
+  int host_id = prerender_test_helper().GetHostForUrl(prerender_url);
+  content::RenderFrameHost* prerender_frame =
+      prerender_test_helper().GetPrerenderedMainFrameHost(host_id);
+  EXPECT_NE(prerender_frame, nullptr);
+
+  // Prerender's navigation should not cancel pending primary main frame
+  // permission requests.
+  EXPECT_FALSE(request_1.cancelled());
+  EXPECT_FALSE(request_2.cancelled());
+
+  // Navigate primary main frame.
+  ASSERT_NE(ui_test_utils::NavigateToURL(browser(), next_url), nullptr);
+
+  // Primary main frame navigation should cancel pending permission requests.
+  EXPECT_TRUE(request_1.cancelled());
+  EXPECT_TRUE(request_2.cancelled());
 }
 
 }  // anonymous namespace
