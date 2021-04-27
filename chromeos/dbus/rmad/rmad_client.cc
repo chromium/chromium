@@ -22,7 +22,7 @@ class RmadClientImpl : public RmadClient {
  public:
   void Init(dbus::Bus* bus);
   void GetCurrentState(
-      DBusMethodCallback<rmad::GetCurrentStateReply> callback) override;
+      DBusMethodCallback<rmad::GetStateReply> callback) override;
 
   RmadClientImpl() = default;
   RmadClientImpl(const RmadClientImpl&) = delete;
@@ -30,9 +30,8 @@ class RmadClientImpl : public RmadClient {
   ~RmadClientImpl() override = default;
 
  private:
-  void OnGetCurrentStateMethod(
-      DBusMethodCallback<rmad::GetCurrentStateReply> callback,
-      dbus::Response* response);
+  void OnGetCurrentStateMethod(DBusMethodCallback<rmad::GetStateReply> callback,
+                               dbus::Response* response);
 
   dbus::ObjectProxy* rmad_proxy_ = nullptr;
 
@@ -47,18 +46,10 @@ void RmadClientImpl::Init(dbus::Bus* bus) {
 }
 
 void RmadClientImpl::GetCurrentState(
-    DBusMethodCallback<rmad::GetCurrentStateReply> callback) {
+    DBusMethodCallback<rmad::GetStateReply> callback) {
   dbus::MethodCall method_call(rmad::kRmadInterfaceName,
                                rmad::kGetCurrentStateMethod);
   dbus::MessageWriter writer(&method_call);
-  // Create the empty request proto.
-  rmad::GetCurrentStateRequest protobuf_request;
-  if (!writer.AppendProtoAsArrayOfBytes(protobuf_request)) {
-    LOG(ERROR) << "Error constructing message for "
-               << rmad::kGetCurrentStateMethod;
-    std::move(callback).Run(base::nullopt);
-    return;
-  }
   rmad_proxy_->CallMethod(
       &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
       base::BindOnce(&RmadClientImpl::OnGetCurrentStateMethod,
@@ -66,7 +57,7 @@ void RmadClientImpl::GetCurrentState(
 }
 
 void RmadClientImpl::OnGetCurrentStateMethod(
-    DBusMethodCallback<rmad::GetCurrentStateReply> callback,
+    DBusMethodCallback<rmad::GetStateReply> callback,
     dbus::Response* response) {
   if (!response) {
     LOG(ERROR) << "Error calling " << rmad::kGetCurrentStateMethod;
@@ -75,13 +66,8 @@ void RmadClientImpl::OnGetCurrentStateMethod(
   }
 
   dbus::MessageReader reader(response);
-  rmad::GetCurrentStateReply response_proto;
-  if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
-    LOG(ERROR) << "Unable to decode " << rmad::kGetCurrentStateMethod
-               << " response";
-    std::move(callback).Run(base::nullopt);
-    return;
-  }
+  rmad::GetStateReply response_proto;
+  // TODO(gavindodd): pop the proto.
 
   std::move(callback).Run(response_proto);
 }

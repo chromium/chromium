@@ -10,7 +10,7 @@ FakeRmadClient::FakeRmadClient() = default;
 FakeRmadClient::~FakeRmadClient() = default;
 
 void FakeRmadClient::GetCurrentState(
-    DBusMethodCallback<rmad::GetCurrentStateReply> callback) {
+    DBusMethodCallback<rmad::GetStateReply> callback) {
   // TODO(gavindodd): Implement fake state.
   std::move(callback).Run(base::nullopt);
 }

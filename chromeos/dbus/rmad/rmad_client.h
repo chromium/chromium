@@ -7,11 +7,19 @@
 
 #include "base/component_export.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
-#include "chromeos/dbus/rmad/rmad.pb.h"
 
 namespace dbus {
 class Bus;
 }
+
+// Temporary to allow code to compile while prototype rmad.proto is replaced.
+namespace rmad {
+class GetStateReply {
+ public:
+  int state() { return 0; }
+};
+
+}  // namespace rmad
 
 namespace chromeos {
 
@@ -37,7 +45,7 @@ class COMPONENT_EXPORT(RMAD) RmadClient {
   // Asynchronously gets the current RMA state.
   // The state contains an error code and the current state of the RMA process.
   virtual void GetCurrentState(
-      DBusMethodCallback<rmad::GetCurrentStateReply> callback) = 0;
+      DBusMethodCallback<rmad::GetStateReply> callback) = 0;
 
  protected:
   // Initialize/Shutdown should be used instead.
