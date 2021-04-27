@@ -15,16 +15,13 @@ import "third_party/blink/public/mojom/presentation/presentation.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
-// This must stay in sync with ash.mojom.SinkIconType.
+// This must stay in sync with media_router::SinkIconType and ash::SinkIconType.
 enum SinkIconType {
-  CAST,
-  CAST_AUDIO_GROUP,
-  CAST_AUDIO,
-  MEETING,
-  HANGOUT,
-  EDUCATION,
-  WIRED_DISPLAY,
-  GENERIC
+  CAST = 0,
+  CAST_AUDIO_GROUP = 1,
+  CAST_AUDIO = 2,
+  WIRED_DISPLAY = 6,
+  GENERIC = 7
 };
 
 // Represents an output sink to which media can be routed.

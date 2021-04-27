@@ -18,8 +18,8 @@ class Collator;
 namespace media_router {
 
 // IconTypes are listed in the order in which sinks should be sorted.
-// The order must stay in sync with
-// chrome/browser/resources/media_router/media_router_data.js.
+// The values must match media_router::mojom::SinkIconType and
+// ash::SinkIconType.
 //
 // NOTE: This enum is used for recording the MediaRouter.Sink.SelectedType
 // metrics, so if we want to reorder it, we must create a separate enum that
@@ -29,9 +29,6 @@ enum class SinkIconType {
   CAST = 0,
   CAST_AUDIO_GROUP = 1,
   CAST_AUDIO = 2,
-  MEETING = 3,
-  HANGOUT = 4,
-  EDUCATION = 5,
   WIRED_DISPLAY = 6,
   GENERIC = 7,
   TOTAL_COUNT = 8  // Add new types above this line.
@@ -79,10 +76,6 @@ class MediaSink {
     provider_id_ = provider_id;
   }
   MediaRouteProviderId provider_id() const { return provider_id_; }
-
-  // Returns true if the sink is from the Cloud MRP; however, as this is based
-  // solely on the icon type, is not guaranteed to be correct 100% of the time.
-  bool IsMaybeCloudSink() const;
 
   bool operator==(const MediaSink& other) const;
   bool operator!=(const MediaSink& other) const;

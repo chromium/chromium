@@ -26,17 +26,6 @@ MediaSink::~MediaSink() = default;
 MediaSink& MediaSink::operator=(const MediaSink& other) = default;
 MediaSink& MediaSink::operator=(MediaSink&& other) noexcept = default;
 
-bool MediaSink::IsMaybeCloudSink() const {
-  switch (icon_type_) {
-    case SinkIconType::MEETING:
-    case SinkIconType::HANGOUT:
-    case SinkIconType::EDUCATION:
-      return true;
-    default:
-      return false;
-  }
-}
-
 bool MediaSink::operator==(const MediaSink& other) const {
   return sink_id_ == other.sink_id_ && name_ == other.name_ &&
          description_ == other.description_ && domain_ == other.domain_ &&

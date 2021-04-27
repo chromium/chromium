@@ -142,7 +142,6 @@ class MediaRouterUI
                            UpdateSinksWhenDialogMovesToAnotherDisplay);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterViewsUITest, NotifyObserver);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterViewsUITest, SinkFriendlyName);
-  FRIEND_TEST_ALL_PREFIXES(MediaRouterViewsUITest, RemovePseudoSink);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterViewsUITest, ConnectingState);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterViewsUITest, DisconnectingState);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterViewsUITest, AddAndRemoveIssue);

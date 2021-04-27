@@ -326,16 +326,6 @@ void CastDialogView::PopulateScrollView(const std::vector<UIMediaSink>& sinks) {
                                 base::Unretained(this), i),
             sinks.at(i)));
     sink_buttons_.push_back(sink_button);
-
-    // This could potentially add a lot of warnings to the receiver list, but in
-    // practice a user is unlikely to have more than one or two meetings in the
-    // list at any given time, and repeating the warning is probably better than
-    // having the user ignore possibly the warning if it's only shown for a
-    // meeting they're not trying to cast to.
-    auto warning_view =
-        sink_button->MakeCastToMeetingDeprecationWarningView(profile_);
-    if (warning_view)
-      sink_list_view->AddChildView(std::move(warning_view));
   }
   scroll_view_->SetContents(std::move(sink_list_view));
 

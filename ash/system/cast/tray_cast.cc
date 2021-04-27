@@ -38,19 +38,9 @@ const gfx::VectorIcon& SinkIconTypeToIcon(SinkIconType icon_type) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case SinkIconType::kCast:
       return kSystemMenuCastDeviceIcon;
-    case SinkIconType::kEducation:
-      return kSystemMenuCastEducationIcon;
-    case SinkIconType::kHangout:
-      return kSystemMenuCastHangoutIcon;
-    case SinkIconType::kMeeting:
-      return kSystemMenuCastMeetingIcon;
 #else
     case SinkIconType::kCast:
-    case SinkIconType::kEducation:
       return kSystemMenuCastGenericIcon;
-    case SinkIconType::kHangout:
-    case SinkIconType::kMeeting:
-      return kSystemMenuCastMessageIcon;
 #endif
     case SinkIconType::kGeneric:
       return kSystemMenuCastGenericIcon;

@@ -413,12 +413,6 @@ function sinkIconTypeToMojo(type) {
       return mediaRouter.mojom.SinkIconType.CAST_AUDIO_GROUP;
     case 'cast_audio':
       return mediaRouter.mojom.SinkIconType.CAST_AUDIO;
-    case 'meeting':
-      return mediaRouter.mojom.SinkIconType.MEETING;
-    case 'hangout':
-      return mediaRouter.mojom.SinkIconType.HANGOUT;
-    case 'education':
-      return mediaRouter.mojom.SinkIconType.EDUCATION;
     case 'generic':
       return mediaRouter.mojom.SinkIconType.GENERIC;
     default:

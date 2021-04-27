@@ -8,19 +8,6 @@
 
 namespace media_router {
 
-TEST(MediaSinkTest, IsMaybeCloudSink) {
-  MediaSink meeting("sinkId", "Sink", SinkIconType::MEETING,
-                    MediaRouteProviderId::EXTENSION);
-  MediaSink eduReceiver("sinkId2", "Sink", SinkIconType::EDUCATION,
-                        MediaRouteProviderId::EXTENSION);
-  MediaSink chromeCast("sinkId3", "Sink", SinkIconType::CAST,
-                       MediaRouteProviderId::EXTENSION);
-
-  EXPECT_TRUE(meeting.IsMaybeCloudSink());
-  EXPECT_TRUE(eduReceiver.IsMaybeCloudSink());
-  EXPECT_FALSE(chromeCast.IsMaybeCloudSink());
-}
-
 TEST(MediaSinkTest, TestEquals) {
   MediaSink sink1("sinkId", "Sink", SinkIconType::CAST,
                   MediaRouteProviderId::EXTENSION);

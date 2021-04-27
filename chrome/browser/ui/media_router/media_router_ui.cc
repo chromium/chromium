@@ -469,25 +469,6 @@ std::vector<MediaSinkWithCastModes> MediaRouterUI::GetEnabledSinks() const {
                   return sink.sink.id() == display_sink_id;
                 });
 
-  // Remove the pseudo-sink, since it's only used in the WebUI dialog.
-  // TODO(takumif): Remove this once we've removed pseudo-sink from Cloud MRP.
-  base::EraseIf(enabled_sinks, [](const MediaSinkWithCastModes& sink) {
-    return base::StartsWith(sink.sink.id(),
-                            "pseudo:", base::CompareCase::SENSITIVE);
-  });
-
-  // Filter out cloud sinks if the window is off-the-record. Casting to cloud
-  // sinks from off-the-record is not currently supported by the Cloud MRP. This
-  // is not the best place to do this, but the Media Router browser service and
-  // extension process are shared between normal and off-the-record, so
-  // off-the-record behaviors around sink availability have to be handled at the
-  // UI layer.
-  if (initiator_->GetBrowserContext()->IsOffTheRecord()) {
-    base::EraseIf(enabled_sinks, [](const MediaSinkWithCastModes& sink) {
-      return sink.sink.IsMaybeCloudSink();
-    });
-  }
-
   return enabled_sinks;
 }
 
@@ -1002,10 +983,6 @@ UIMediaSink MediaRouterUI::ConvertToUISink(const MediaSinkWithCastModes& sink,
                             sink.sink.id() == current_route_request()->sink_id
                         ? UIMediaSinkState::CONNECTING
                         : UIMediaSinkState::AVAILABLE;
-  }
-  if (ui_sink.icon_type == SinkIconType::HANGOUT &&
-      ui_sink.state == UIMediaSinkState::AVAILABLE && sink.sink.domain()) {
-    ui_sink.status_text = base::UTF8ToUTF16(*sink.sink.domain());
   }
   if (issue && IssueMatches(*issue, ui_sink))
     ui_sink.issue = issue;

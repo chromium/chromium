@@ -12,8 +12,6 @@
 #include "chrome/browser/ui/views/hover_button.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 
-class Profile;
-
 namespace ui {
 class MouseEvent;
 }
@@ -41,13 +39,6 @@ class CastDialogSinkButton : public HoverButton {
   void OnBlur() override;
 
   const UIMediaSink& sink() const { return sink_; }
-
-  // If this button will cast to a meeting, creates a view showing a warning
-  // about the feature being deprecated.  Otherwise returns nullptr.  The
-  // |profile| parameter is used to open the meeting tab the the user clicks on
-  // the link in the warning.
-  std::unique_ptr<views::View> MakeCastToMeetingDeprecationWarningView(
-      Profile* profile);
 
   static const gfx::VectorIcon* GetVectorIcon(SinkIconType icon_type);
   static const gfx::VectorIcon* GetVectorIcon(UIMediaSink sink);

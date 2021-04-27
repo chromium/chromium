@@ -49,7 +49,6 @@ namespace media_router {
 
 namespace {
 
-constexpr char kPseudoSinkId[] = "pseudo:sink";
 constexpr char kRouteId[] = "route1";
 constexpr char kSinkDescription[] = "description";
 constexpr char kSinkId[] = "sink1";
@@ -362,24 +361,6 @@ TEST_F(MediaRouterViewsUITest, StopCasting) {
   ui_->StopCasting(kRouteId);
 }
 
-TEST_F(MediaRouterViewsUITest, RemovePseudoSink) {
-  MockControllerObserver observer(ui_.get());
-
-  MediaSink sink(kSinkId, kSinkName, SinkIconType::CAST_AUDIO);
-  MediaSinkWithCastModes sink_with_cast_modes(sink);
-  sink_with_cast_modes.cast_modes = {MediaCastMode::TAB_MIRROR};
-  MediaSink pseudo_sink(kPseudoSinkId, kSinkName, SinkIconType::MEETING);
-  MediaSinkWithCastModes pseudo_sink_with_cast_modes(pseudo_sink);
-  pseudo_sink_with_cast_modes.cast_modes = {MediaCastMode::TAB_MIRROR};
-
-  EXPECT_CALL(observer, OnModelUpdated(_))
-      .WillOnce(WithArg<0>(Invoke([&sink](const CastDialogModel& model) {
-        EXPECT_EQ(1u, model.media_sinks().size());
-        EXPECT_EQ(sink.id(), model.media_sinks()[0].id);
-      })));
-  NotifyUiOnResultsUpdated({sink_with_cast_modes, pseudo_sink_with_cast_modes});
-}
-
 TEST_F(MediaRouterViewsUITest, ConnectingState) {
   MockControllerObserver observer(ui_.get());
 
@@ -470,39 +451,6 @@ TEST_F(MediaRouterViewsUITest, AddAndRemoveIssue) {
         EXPECT_FALSE(model.media_sinks()[1].issue.has_value());
       })));
   mock_router_->GetIssueManager()->ClearIssue(issue_id);
-}
-
-TEST_F(MediaRouterViewsUITest, ShowDomainForHangouts) {
-  const std::string domain1 = "domain1.com";
-  const std::string domain2 = "domain2.com";
-  MediaSinkWithCastModes available_hangout(
-      MediaSink("sink1", "Hangout 1", SinkIconType::HANGOUT));
-  MediaSinkWithCastModes connected_hangout(
-      MediaSink("sink2", "Hangout 2", SinkIconType::HANGOUT));
-  available_hangout.sink.set_domain(domain1);
-  connected_hangout.sink.set_domain(domain2);
-  available_hangout.cast_modes = {MediaCastMode::TAB_MIRROR};
-  connected_hangout.cast_modes = {MediaCastMode::TAB_MIRROR};
-
-  MockControllerObserver observer(ui_.get());
-  const std::string route_description = "route 1";
-  MediaRoute route(kRouteId, MediaSource(kSourceId), "sink2", route_description,
-                   true, true);
-  NotifyUiOnRoutesUpdated({route}, {});
-
-  // The domain should be used as the status text only if the sink is available.
-  // If the sink has a route, the route description is used.
-  EXPECT_CALL(observer, OnModelUpdated(_))
-      .WillOnce(WithArg<0>([&](const CastDialogModel& model) {
-        EXPECT_EQ(2u, model.media_sinks().size());
-        EXPECT_EQ(model.media_sinks()[0].id, available_hangout.sink.id());
-        EXPECT_EQ(base::UTF8ToUTF16(domain1),
-                  model.media_sinks()[0].status_text);
-        EXPECT_EQ(model.media_sinks()[1].id, connected_hangout.sink.id());
-        EXPECT_EQ(base::UTF8ToUTF16(route_description),
-                  model.media_sinks()[1].status_text);
-      }));
-  NotifyUiOnResultsUpdated({available_hangout, connected_hangout});
 }
 
 TEST_F(MediaRouterViewsUITest, RouteCreationTimeoutForTab) {
@@ -600,22 +548,20 @@ TEST_F(MediaRouterViewsUITest, SortedSinks) {
 
 TEST_F(MediaRouterViewsUITest, SortSinksByIconType) {
   NotifyUiOnResultsUpdated(
-      {{MediaSink("id1", "sink", SinkIconType::HANGOUT), {}},
-       {MediaSink("id2", "B sink", SinkIconType::CAST_AUDIO_GROUP), {}},
-       {MediaSink("id3", "sink", SinkIconType::GENERIC), {}},
-       {MediaSink("id4", "A sink", SinkIconType::CAST_AUDIO_GROUP), {}},
-       {MediaSink("id5", "sink", SinkIconType::CAST_AUDIO), {}},
-       {MediaSink("id6", "sink", SinkIconType::CAST), {}}});
+      {{MediaSink("id1", "B sink", SinkIconType::CAST_AUDIO_GROUP), {}},
+       {MediaSink("id2", "sink", SinkIconType::GENERIC), {}},
+       {MediaSink("id3", "A sink", SinkIconType::CAST_AUDIO_GROUP), {}},
+       {MediaSink("id4", "sink", SinkIconType::CAST_AUDIO), {}},
+       {MediaSink("id5", "sink", SinkIconType::CAST), {}}});
 
   // The sorted order is CAST, CAST_AUDIO_GROUP "A", CAST_AUDIO_GROUP "B",
   // CAST_AUDIO, HANGOUT, GENERIC.
   const auto& sorted_sinks = ui_->GetEnabledSinks();
-  EXPECT_EQ("id6", sorted_sinks[0].sink.id());
-  EXPECT_EQ("id4", sorted_sinks[1].sink.id());
-  EXPECT_EQ("id2", sorted_sinks[2].sink.id());
-  EXPECT_EQ("id5", sorted_sinks[3].sink.id());
-  EXPECT_EQ("id1", sorted_sinks[4].sink.id());
-  EXPECT_EQ("id3", sorted_sinks[5].sink.id());
+  EXPECT_EQ("id5", sorted_sinks[0].sink.id());
+  EXPECT_EQ("id3", sorted_sinks[1].sink.id());
+  EXPECT_EQ("id1", sorted_sinks[2].sink.id());
+  EXPECT_EQ("id4", sorted_sinks[3].sink.id());
+  EXPECT_EQ("id2", sorted_sinks[4].sink.id());
 }
 
 TEST_F(MediaRouterViewsUITest, FilterNonDisplayRoutes) {
@@ -749,30 +695,6 @@ class MediaRouterViewsUIIncognitoTest : public MediaRouterViewsUITest {
         ->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   }
 };
-
-TEST_F(MediaRouterViewsUIIncognitoTest, HidesCloudSinksForIncognito) {
-  const std::string domain1 = "domain1.com";
-  MediaSinkWithCastModes hangout(
-      MediaSink("sink1", "Hangout", SinkIconType::HANGOUT));
-  MediaSinkWithCastModes meeting(
-      MediaSink("sink2", "Meeting", SinkIconType::MEETING));
-  MediaSinkWithCastModes eduReceiver(
-      MediaSink("sink3", "Cast for EDU", SinkIconType::EDUCATION));
-  MediaSinkWithCastModes chromeCast(
-      MediaSink("sink4", "Living Room TV", SinkIconType::CAST));
-  chromeCast.cast_modes = {MediaCastMode::TAB_MIRROR};
-  for (MediaSinkWithCastModes* sink :
-       std::initializer_list<MediaSinkWithCastModes*>{&hangout, &meeting,
-                                                      &eduReceiver}) {
-    sink->sink.set_domain(domain1);
-    sink->cast_modes = {MediaCastMode::TAB_MIRROR};
-  }
-
-  NotifyUiOnResultsUpdated({hangout, meeting, eduReceiver, chromeCast});
-
-  EXPECT_EQ(std::vector<MediaSinkWithCastModes>{chromeCast},
-            ui_->GetEnabledSinks());
-}
 
 TEST_F(MediaRouterViewsUIIncognitoTest, RouteRequestFromIncognito) {
   StartTabCasting(true);
