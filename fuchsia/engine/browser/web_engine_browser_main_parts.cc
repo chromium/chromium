@@ -124,7 +124,7 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
   if (command_line->HasSwitch(switches::kDataQuotaBytes)) {
     // Setting quota on "/data" is benign in incognito contexts, but indicates
     // that the client probably mis-configured this instance.
-    DCHECK(command_line->HasSwitch(switches::kIncognito))
+    DCHECK(!command_line->HasSwitch(switches::kIncognito))
         << "data_quota_bytes set for incognito instance.";
 
     uint64_t quota_bytes = 0;
