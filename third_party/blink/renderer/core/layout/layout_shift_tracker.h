@@ -263,6 +263,10 @@ class CORE_EXPORT LayoutShiftTracker final
 
   // Nodes that have contributed to the impact region for the current frame.
   std::array<Attribution, LayoutShift::kMaxAttributions> attributions_;
+
+  // Set to true when we see a PointerCancel or PointerCausedUaAction event,
+  // reset to false when we see a PointerUp or PointerDown event.
+  bool saw_pointercancel_ = false;
 };
 
 }  // namespace blink
