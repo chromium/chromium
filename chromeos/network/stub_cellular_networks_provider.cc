@@ -20,12 +20,12 @@ void GetIccids(const NetworkStateHandler::ManagedStateList& network_list,
   for (const std::unique_ptr<ManagedState>& managed_state : network_list) {
     const NetworkState* network = managed_state->AsNetworkState();
 
-    // Only cellular networks have ICCIDs.
-    if (!NetworkTypePattern::Cellular().MatchesType(network->type()))
-      continue;
-
     // Skip networks that have not received any property updates yet.
     if (!network->update_received())
+      continue;
+
+    // Only cellular networks have ICCIDs.
+    if (!NetworkTypePattern::Cellular().MatchesType(network->type()))
       continue;
 
     std::string iccid = network->iccid();
