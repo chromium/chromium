@@ -194,5 +194,14 @@
       "proprietary_codecs": true,
       "use_goma": true
     }
+  },
+  "linux-xenial-rel": {
+    "gn_args": {
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "use_goma": true
+    }
   }
 }

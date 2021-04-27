@@ -5111,6 +5111,16 @@ ci.linux_builder(
 )
 
 ci.linux_builder(
+    name = "linux-xenial-rel",
+    console_view_entry = consoles.console_view_entry(
+        category = "release",
+        short_name = "xen",
+    ),
+    main_console_view = "main",
+    os = os.LINUX_XENIAL,
+)
+
+ci.linux_builder(
     name = "metadata-exporter",
     console_view_entry = consoles.console_view_entry(
         console_view = "metadata.exporter",

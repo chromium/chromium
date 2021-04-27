@@ -1294,6 +1294,12 @@ try_.chromium_linux_builder(
 )
 
 try_.chromium_linux_builder(
+    name = "linux-xenial-rel",
+    goma_jobs = goma.jobs.J150,
+    os = os.LINUX_XENIAL,
+)
+
+try_.chromium_linux_builder(
     name = "linux-viz-rel",
 )
 
