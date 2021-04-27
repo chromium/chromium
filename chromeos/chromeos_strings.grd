@@ -320,6 +320,12 @@ Try tapping the mic to ask me anything.
       <message name="IDS_HELP_APP_WHATS_NEW_SUGGESTION_CHIP" desc="Text for the suggestion chip to view updated patch notes are available. [CHAR_LIMIT=24]">
         What's new with Chrome OS
       </message>
+      <message name="IDS_HELP_APP_DISCOVER_TAB_NOTIFICATION_TITLE" desc="Title for a notification that points to the Help app's Discover tab, which features a magazine to teach users how they can create games with Chrome OS.">
+        Design and build your own games
+      </message>
+      <message name="IDS_HELP_APP_DISCOVER_TAB_NOTIFICATION_MESSAGE" desc="Message on a notification that points to the Help app's Discover tab, which features a magazine to teach users how they can create games with Chrome OS.">
+        Learn from a game creator, get game design apps, and more
+      </message>
 
       <!-- Media App -->
       <message name="IDS_MEDIA_APP_APP_NAME" desc="Name of the Media App in the app shelf. This app is the default installed app to open and edit images, video, pdf and audio files." meaning="App name.">

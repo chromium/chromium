@@ -18,6 +18,7 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/release_notes/release_notes_notification.h"
 #include "chrome/browser/ash/release_notes/release_notes_storage.h"
+#include "chrome/browser/ash/web_applications/help_app/help_app_discover_tab_notification.h"
 #include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/ui/ash/system_tray_client.h"
@@ -258,6 +259,36 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(0,
             user_action_tester.GetActionCount("ReleaseNotes.ShowReleaseNotes"));
+#endif
+}
+
+// Test that clicking the discover tab notification opens Help App.
+IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
+                       HelpAppV2LaunchDiscoverTabFromNotification) {
+  WaitForTestSystemAppInstall();
+  auto display_service =
+      std::make_unique<NotificationDisplayServiceTester>(/*profile=*/nullptr);
+  auto discover_tab_notification =
+      std::make_unique<chromeos::HelpAppDiscoverTabNotification>(profile());
+
+  discover_tab_notification->Show();
+  // Assert that the notification really is there.
+  auto notifications = display_service->GetDisplayedNotificationsForType(
+      NotificationHandler::Type::TRANSIENT);
+  ASSERT_EQ(1u, notifications.size());
+  ASSERT_EQ(chromeos::kShowHelpAppDiscoverTabNotificationId,
+            notifications[0].id());
+  // Then click.
+  display_service->SimulateClick(
+      NotificationHandler::Type::TRANSIENT,
+      chromeos::kShowHelpAppDiscoverTabNotificationId, base::nullopt,
+      base::nullopt);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_NO_FATAL_FAILURE(WaitForAppToOpen(GURL("chrome://help-app/discover")));
+#else
+  // We just have the original browser. No new app opens.
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 #endif
 }
 
