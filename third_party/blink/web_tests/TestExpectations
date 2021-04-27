@@ -5225,13 +5225,13 @@ crbug.com/705490 external/wpt/fetch/api/basic/error-after-response.html [ Timeou
 
 crbug.com/716320 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/broadcastchannel-success-and-failure.https.html [ Failure Timeout ]
 
-# Test timing out when SharedArrayBuffer is disable by default.
-# See https://crbug.com/1094557
+# Test timing out when SharedArrayBuffer is disabled by default.
+# See https://crbug.com/1194557
 crbug.com/1194557 http/tests/devtools/sources/debugger-breakpoints/set-breakpoint-while-blocking-main-thread.js [ Timeout ]
 crbug.com/1194557 virtual/shared_array_buffer_on_desktop/http/tests/devtools/sources/debugger-breakpoints/set-breakpoint-while-blocking-main-thread.js [ Pass ]
 
 # Failing test, but expectation file name is too long. See https://crbug.com/612667
-# See https://crbug.com/1094557
+# See https://crbug.com/1194557
 crbug.com/1194557 external/wpt/html/browsers/origin/origin-keyed-agent-clusters/iframe-navigation/parent-no-1-subdomain-yes-2-subdomain2-no.sub.https.html [ Timeout ]
 crbug.com/1194557 virtual/shared_array_buffer_on_desktop/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/iframe-navigation/parent-no-1-subdomain-yes-2-subdomain2-no.sub.https.html [ Failure Pass ]
 
