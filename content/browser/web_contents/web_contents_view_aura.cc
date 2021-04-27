@@ -892,7 +892,7 @@ void WebContentsViewAura::CreateAuraWindow(aura::Window* context) {
   // The use cases for WindowObserver do not apply to Browser Plugins:
   // 1) guests do not support NPAPI plugins.
   // 2) guests' window bounds are supposed to come from its embedder.
-  if (!BrowserPluginGuest::IsGuest(web_contents_))
+  if (!web_contents_->IsGuest())
     window_observer_ = std::make_unique<WindowObserver>(this);
 }
 

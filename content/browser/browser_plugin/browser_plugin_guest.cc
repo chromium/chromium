@@ -135,11 +135,6 @@ void BrowserPluginGuest::CreateInWebContents(
   web_contents->SetBrowserPluginGuest(std::move(guest));
 }
 
-// static
-bool BrowserPluginGuest::IsGuest(WebContentsImpl* web_contents) {
-  return web_contents && web_contents->GetBrowserPluginGuest();
-}
-
 WebContentsImpl* BrowserPluginGuest::GetWebContents() const {
   return static_cast<WebContentsImpl*>(web_contents());
 }

@@ -68,9 +68,6 @@ class CONTENT_EXPORT BrowserPluginGuest : public GuestHost,
   static void CreateInWebContents(WebContentsImpl* web_contents,
                                   BrowserPluginGuestDelegate* delegate);
 
-  // Returns whether the given WebContents is a BrowserPlugin guest.
-  static bool IsGuest(WebContentsImpl* web_contents);
-
   // BrowserPluginGuest::Init is called after the associated guest WebContents
   // initializes. If this guest cannot navigate without being attached to a
   // container, then this call is a no-op. For guest types that can be

@@ -37,6 +37,10 @@ bool RenderViewHostDelegate::ShouldIgnoreUnresponsiveRenderer() {
   return false;
 }
 
+bool RenderViewHostDelegate::IsGuest() {
+  return false;
+}
+
 bool RenderViewHostDelegate::IsPortal() {
   return false;
 }

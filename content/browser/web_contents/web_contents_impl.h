@@ -844,6 +844,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool IsJavaScriptDialogShowing() const override;
   bool ShouldIgnoreUnresponsiveRenderer() override;
   void DidFirstVisuallyNonEmptyPaint(RenderViewHostImpl* source) override;
+  bool IsGuest() override;
   void OnThemeColorChanged(RenderViewHostImpl* source) override;
   void OnBackgroundColorChanged(RenderViewHostImpl* source) override;
   void RecomputeWebPreferencesSlow() override;

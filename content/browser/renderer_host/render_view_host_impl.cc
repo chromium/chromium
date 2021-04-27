@@ -476,11 +476,12 @@ bool RenderViewHostImpl::CreateRenderView(
   params->hidden = frame_tree_->delegate()->IsHidden();
   params->never_composited = delegate_->IsNeverComposited();
   params->window_was_created_with_opener = window_was_created_with_opener;
-  // GuestViews in the same StoragePartition need to find each other's frames.
-  params->renderer_wide_named_frame_lookup = site_info_.is_guest();
 
   bool is_portal = delegate_->IsPortal();
-  bool is_guest_view = site_info_.is_guest();
+  bool is_guest_view = delegate_->IsGuest();
+
+  // GuestViews in the same StoragePartition need to find each other's frames.
+  params->renderer_wide_named_frame_lookup = is_guest_view;
 
   // A view cannot be inside both a <portal> and inside a <webview>.
   DCHECK(!is_portal || !is_guest_view);

@@ -2160,7 +2160,7 @@ void WebContentsImpl::DispatchBeforeUnload(bool auto_cancel) {
 }
 
 bool WebContentsImpl::IsInnerWebContentsForGuest() {
-  return !!browser_plugin_guest_;
+  return IsGuest();
 }
 
 void WebContentsImpl::AttachInnerWebContents(
@@ -3594,7 +3594,7 @@ RenderFrameHostDelegate* WebContentsImpl::CreateNewWindow(
   // if the opener is being suppressed (in a non-guest), we do not provide
   // a SiteInstance which causes a new one to get created in its own
   // BrowsingInstance.
-  bool is_guest = BrowserPluginGuest::IsGuest(this);
+  bool is_guest = IsGuest();
   scoped_refptr<SiteInstance> site_instance =
       params.opener_suppressed && !is_guest ? nullptr : source_site_instance;
 
@@ -3905,7 +3905,7 @@ base::Optional<CreatedWindow> WebContentsImpl::GetCreatedWindow(
   RemoveWebContentsDestructionObserver(new_contents);
 
   // Don't initialize the guest WebContents immediately.
-  if (BrowserPluginGuest::IsGuest(new_contents))
+  if (new_contents->IsGuest())
     return result;
 
   if (!new_contents->GetMainFrame()->GetProcess()->IsInitializedAndNotDead() ||
@@ -6055,6 +6055,10 @@ void WebContentsImpl::DidFirstVisuallyNonEmptyPaint(
     observers_.NotifyObservers(&WebContentsObserver::OnBackgroundColorChanged);
     last_sent_background_color_ = source->background_color();
   }
+}
+
+bool WebContentsImpl::IsGuest() {
+  return !!browser_plugin_guest_;
 }
 
 bool WebContentsImpl::IsPortal() {
