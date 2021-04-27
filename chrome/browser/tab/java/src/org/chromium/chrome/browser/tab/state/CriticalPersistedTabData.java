@@ -387,15 +387,24 @@ public class CriticalPersistedTabData extends PersistedTabData {
         }
         return () -> {
             try (TraceEvent e = TraceEvent.scoped("CriticalPersistedTabData.Serialize")) {
-                if (byteBuffer == null) {
-                    builder.setWebContentsStateBytes(ByteString.EMPTY);
-                } else {
-                    byteBuffer.rewind();
-                    builder.setWebContentsStateBytes(ByteString.copyFrom(byteBuffer));
-                }
-                return builder.build().toByteArray();
+                // TODO(crbug.com/1203298) migrate to ByteString.copyFrom(ByteBuffer ...)
+                // in a thread safe way to avoid intermediate ByteBuffer -> byte[]. Be careful as
+                // this has caused crashes in the past crbug.com/1195550.
+                return builder
+                        .setWebContentsStateBytes(byteBuffer == null
+                                        ? ByteString.EMPTY
+                                        : ByteString.copyFrom(getContentStateByteArray(byteBuffer)))
+                        .build()
+                        .toByteArray();
             }
         };
+    }
+
+    protected static byte[] getContentStateByteArray(ByteBuffer buffer) {
+        byte[] contentsStateBytes = new byte[buffer.limit()];
+        buffer.rewind();
+        buffer.get(contentsStateBytes);
+        return contentsStateBytes;
     }
 
     @Override
