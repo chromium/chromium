@@ -237,7 +237,7 @@ void SharedWorkerHost::Start(
   // Send the CreateSharedWorker message.
   factory_.Bind(std::move(factory));
   factory_->CreateSharedWorker(
-      std::move(info), token_, instance_.constructor_origin(),
+      std::move(info), token_, instance_.storage_key().origin(),
       GetContentClient()->browser()->GetUserAgent(),
       GetContentClient()->browser()->GetUserAgentMetadata(),
       devtools_handle_->pause_on_start(), devtools_handle_->dev_tools_token(),
@@ -311,13 +311,13 @@ SharedWorkerHost::CreateNetworkFactoryForSubresources(
 
 network::mojom::URLLoaderFactoryParamsPtr
 SharedWorkerHost::CreateNetworkFactoryParamsForSubresources() {
-  url::Origin origin = url::Origin::Create(instance_.url());
+  url::Origin origin = instance().storage_key().origin();
 
   // TODO(https://crbug.com/1060832): Implement COEP reporter for shared
   // workers.
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       URLLoaderFactoryParamsHelper::CreateForWorker(
-          GetProcessHost(), instance_.constructor_origin(),
+          GetProcessHost(), origin,
           net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
                                      origin, origin,
                                      net::SiteForCookies::FromOrigin(origin)),
@@ -474,11 +474,11 @@ base::WeakPtr<SharedWorkerHost> SharedWorkerHost::AsWeakPtr() {
 }
 
 net::NetworkIsolationKey SharedWorkerHost::GetNetworkIsolationKey() const {
-  const url::Origin origin = url::Origin::Create(instance().url());
   // TODO(https://crbug.com/1147281): This is the NetworkIsolationKey of a
   // top-level browsing context, which shouldn't be use for SharedWorkers used
   // in iframes.
-  return net::NetworkIsolationKey::ToDoUseTopFrameOriginAsWell(origin);
+  return net::NetworkIsolationKey::ToDoUseTopFrameOriginAsWell(
+      instance().storage_key().origin());
 }
 
 void SharedWorkerHost::ReportNoBinderForInterface(const std::string& error) {

@@ -74,7 +74,7 @@ class SharedWorkerHostTest : public testing::Test {
     SharedWorkerInstance instance(
         kWorkerUrl, blink::mojom::ScriptType::kClassic,
         network::mojom::CredentialsMode::kSameOrigin, "name",
-        url::Origin::Create(kWorkerUrl),
+        storage::StorageKey(url::Origin::Create(kWorkerUrl)),
         network::mojom::IPAddressSpace::kPublic,
         blink::mojom::SharedWorkerCreationContextType::kSecure);
     auto host = std::make_unique<SharedWorkerHost>(

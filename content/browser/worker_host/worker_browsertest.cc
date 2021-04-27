@@ -209,8 +209,8 @@ class WorkerTest : public ContentBrowserTest,
     DCHECK(partition);
     auto* service = static_cast<SharedWorkerServiceImpl*>(
         partition->GetSharedWorkerService());
-    return service->FindMatchingSharedWorkerHost(url, "",
-                                                 url::Origin::Create(url));
+    return service->FindMatchingSharedWorkerHost(
+        url, "", storage::StorageKey(url::Origin::Create(url)));
   }
 
   net::test_server::EmbeddedTestServer* ssl_server() { return &ssl_server_; }

@@ -741,7 +741,7 @@ class CookieTreeSharedWorkerNode : public CookieTreeNode {
     if (container) {
       container->shared_worker_helper_->DeleteSharedWorker(
           shared_worker_info_->worker, shared_worker_info_->name,
-          shared_worker_info_->constructor_origin);
+          shared_worker_info_->storage_key);
       container->shared_worker_info_list_.erase(shared_worker_info_);
     }
   }

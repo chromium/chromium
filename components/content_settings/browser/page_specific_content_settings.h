@@ -35,6 +35,10 @@ namespace content {
 class NavigationHandle;
 }
 
+namespace storage {
+class StorageKey;
+}  // namespace storage
+
 namespace url {
 class Origin;
 }  // namespace url
@@ -248,7 +252,7 @@ class PageSpecificContentSettings
                                    int render_frame_id,
                                    const GURL& worker_url,
                                    const std::string& name,
-                                   const url::Origin& constructor_origin,
+                                   const storage::StorageKey& storage_key,
                                    bool blocked_by_policy);
 
   static content::WebContentsObserver* GetWebContentsObserverForTest(
@@ -351,7 +355,7 @@ class PageSpecificContentSettings
   void OnCacheStorageAccessed(const GURL& url, bool blocked_by_policy);
   void OnSharedWorkerAccessed(const GURL& worker_url,
                               const std::string& name,
-                              const url::Origin& constructor_origin,
+                              const storage::StorageKey& storage_key,
                               bool blocked_by_policy);
   void OnWebDatabaseAccessed(const GURL& url, bool blocked_by_policy);
 #if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)

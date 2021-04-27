@@ -46,6 +46,7 @@ source_set("unit_tests") {
     "//base",
     "//components/content_settings/core/browser",
     "//components/security_state/core",
+    "//components/services/storage/public/cpp",
     "//components/sync_preferences:test_support",
     "//content/test:test_support",
     "//net",

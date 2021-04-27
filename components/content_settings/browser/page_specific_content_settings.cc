@@ -425,13 +425,13 @@ void PageSpecificContentSettings::SharedWorkerAccessed(
     int render_frame_id,
     const GURL& worker_url,
     const std::string& name,
-    const url::Origin& constructor_origin,
+    const storage::StorageKey& storage_key,
     bool blocked_by_policy) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   PageSpecificContentSettings* settings =
       GetForFrame(render_process_id, render_frame_id);
   if (settings)
-    settings->OnSharedWorkerAccessed(worker_url, name, constructor_origin,
+    settings->OnSharedWorkerAccessed(worker_url, name, storage_key,
                                      blocked_by_policy);
 }
 
@@ -649,16 +649,16 @@ void PageSpecificContentSettings::OnServiceWorkerAccessed(
 void PageSpecificContentSettings::OnSharedWorkerAccessed(
     const GURL& worker_url,
     const std::string& name,
-    const url::Origin& constructor_origin,
+    const storage::StorageKey& storage_key,
     bool blocked_by_policy) {
   DCHECK(worker_url.is_valid());
   if (blocked_by_policy) {
     blocked_local_shared_objects_.shared_workers()->AddSharedWorker(
-        worker_url, name, constructor_origin);
+        worker_url, name, storage_key);
     OnContentBlocked(ContentSettingsType::COOKIES);
   } else {
     allowed_local_shared_objects_.shared_workers()->AddSharedWorker(
-        worker_url, name, constructor_origin);
+        worker_url, name, storage_key);
     OnContentAllowed(ContentSettingsType::COOKIES);
   }
 }

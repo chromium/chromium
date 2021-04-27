@@ -40,7 +40,7 @@ class SharedWorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
       override;
   RenderProcessHost* GetProcessHost() override;
 
-  url::Origin GetConstructorOrigin();
+  storage::StorageKey GetStorageKey() const;
 
   bool Matches(SharedWorkerHost* worker_host);
   void WorkerReadyForInspection(

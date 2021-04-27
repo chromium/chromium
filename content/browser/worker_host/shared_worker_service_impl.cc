@@ -17,6 +17,7 @@
 #include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/task/post_task.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/appcache/appcache_navigation_handle.h"
 #include "content/browser/devtools/shared_worker_devtools_agent_host.h"
 #include "content/browser/loader/file_url_loader_factory.h"
@@ -90,11 +91,11 @@ void SharedWorkerServiceImpl::EnumerateSharedWorkers(Observer* observer) {
 bool SharedWorkerServiceImpl::TerminateWorker(
     const GURL& url,
     const std::string& name,
-    const url::Origin& constructor_origin) {
+    const storage::StorageKey& storage_key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   SharedWorkerHost* worker_host =
-      FindMatchingSharedWorkerHost(url, name, constructor_origin);
+      FindMatchingSharedWorkerHost(url, name, storage_key);
   if (worker_host) {
     DestroyHost(worker_host);
     return true;
@@ -133,12 +134,12 @@ void SharedWorkerServiceImpl::ConnectToWorker(
 
   // Enforce same-origin policy.
   // data: URLs are not considered a different origin.
-  url::Origin constructor_origin = render_frame_host->GetLastCommittedOrigin();
+  storage::StorageKey storage_key(render_frame_host->GetLastCommittedOrigin());
   bool is_cross_origin = !info->url.SchemeIs(url::kDataScheme) &&
-                         url::Origin::Create(info->url) != constructor_origin;
+                         url::Origin::Create(info->url) != storage_key.origin();
   if (is_cross_origin &&
       !GetContentClient()->browser()->DoesSchemeAllowCrossOriginSharedWorker(
-          constructor_origin.scheme())) {
+          storage_key.origin().scheme())) {
     ScriptLoadFailed(std::move(client), /*error_message=*/"");
     return;
   }
@@ -148,7 +149,7 @@ void SharedWorkerServiceImpl::ConnectToWorker(
           info->url,
           render_frame_host->ComputeSiteForCookies().RepresentativeUrl(),
           main_frame->GetLastCommittedOrigin(), info->options->name,
-          constructor_origin,
+          storage_key,
           WebContentsImpl::FromRenderFrameHostID(client_render_frame_host_id)
               ->GetBrowserContext(),
           client_render_frame_host_id.child_id,
@@ -157,8 +158,8 @@ void SharedWorkerServiceImpl::ConnectToWorker(
     return;
   }
 
-  SharedWorkerHost* host = FindMatchingSharedWorkerHost(
-      info->url, info->options->name, constructor_origin);
+  SharedWorkerHost* host =
+      FindMatchingSharedWorkerHost(info->url, info->options->name, storage_key);
   if (host) {
     // Non-secure contexts cannot connect to secure workers, and secure contexts
     // cannot connect to non-secure workers:
@@ -194,10 +195,10 @@ void SharedWorkerServiceImpl::ConnectToWorker(
     return;
   }
   auto partition_domain = site_instance->GetPartitionDomain(storage_partition_);
-  SharedWorkerInstance instance(
-      info->url, info->options->type, info->options->credentials,
-      info->options->name, constructor_origin, info->creation_address_space,
-      creation_context_type);
+  SharedWorkerInstance instance(info->url, info->options->type,
+                                info->options->credentials, info->options->name,
+                                storage_key, info->creation_address_space,
+                                creation_context_type);
   host = CreateWorker(
       *render_frame_host, instance, std::move(info->content_security_policies),
       std::move(info->outside_fetch_client_settings_object), partition_domain,
@@ -364,7 +365,7 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
   WorkerScriptFetchInitiator::Start(
       worker_process_host->GetID(), host->token(), host->instance().url(),
       &creator, net::SiteForCookies::FromOrigin(worker_origin),
-      host->instance().constructor_origin(),
+      host->instance().storage_key().origin(),
       net::IsolationInfo::Create(
           net::IsolationInfo::RequestType::kOther, worker_origin, worker_origin,
           net::SiteForCookies::FromOrigin(worker_origin)),
@@ -446,9 +447,9 @@ void SharedWorkerServiceImpl::StartWorker(
 SharedWorkerHost* SharedWorkerServiceImpl::FindMatchingSharedWorkerHost(
     const GURL& url,
     const std::string& name,
-    const url::Origin& constructor_origin) {
+    const storage::StorageKey& storage_key) {
   for (auto& host : worker_hosts_) {
-    if (host->instance().Matches(url, name, constructor_origin))
+    if (host->instance().Matches(url, name, storage_key))
       return host.get();
   }
   return nullptr;

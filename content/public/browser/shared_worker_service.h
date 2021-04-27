@@ -18,9 +18,9 @@ namespace base {
 class UnguessableToken;
 }
 
-namespace url {
-class Origin;
-}
+namespace storage {
+class StorageKey;
+}  // namespace storage
 
 namespace content {
 
@@ -76,12 +76,11 @@ class CONTENT_EXPORT SharedWorkerService {
   //       OnClientAdded() for each worker's clients.
   virtual void EnumerateSharedWorkers(Observer* observer) = 0;
 
-  // Terminates the given shared worker identified by its name, the URL of
-  // its main script resource, and the constructor origin. Returns true on
-  // success.
+  // Terminates the given shared worker identified by its name, the URL of its
+  // main script resource, and the storage key.  Returns true on success.
   virtual bool TerminateWorker(const GURL& url,
                                const std::string& name,
-                               const url::Origin& constructor_origin) = 0;
+                               const storage::StorageKey& storage_key) = 0;
 
   // Drops all shared workers and references to processes for shared workers
   // synchronously.

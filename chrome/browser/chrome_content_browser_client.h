@@ -70,6 +70,10 @@ namespace sandbox {
 class SeatbeltExecClient;
 }  // namespace sandbox
 
+namespace storage {
+class StorageKey;
+}  // namespace storage
+
 namespace ui {
 class NativeTheme;
 }
@@ -245,7 +249,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
                          const GURL& site_for_cookies,
                          const base::Optional<url::Origin>& top_frame_origin,
                          const std::string& name,
-                         const url::Origin& constructor_origin,
+                         const storage::StorageKey& storage_key,
                          content::BrowserContext* context,
                          int render_process_id,
                          int render_frame_id) override;

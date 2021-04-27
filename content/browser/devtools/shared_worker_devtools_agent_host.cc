@@ -66,8 +66,8 @@ GURL SharedWorkerDevToolsAgentHost::GetURL() {
   return instance_.url();
 }
 
-url::Origin SharedWorkerDevToolsAgentHost::GetConstructorOrigin() {
-  return instance_.constructor_origin();
+storage::StorageKey SharedWorkerDevToolsAgentHost::GetStorageKey() const {
+  return instance_.storage_key();
 }
 
 bool SharedWorkerDevToolsAgentHost::Activate() {
@@ -109,7 +109,7 @@ void SharedWorkerDevToolsAgentHost::DetachSession(DevToolsSession* session) {
 bool SharedWorkerDevToolsAgentHost::Matches(SharedWorkerHost* worker_host) {
   return instance_.Matches(worker_host->instance().url(),
                            worker_host->instance().name(),
-                           worker_host->instance().constructor_origin());
+                           worker_host->instance().storage_key());
 }
 
 void SharedWorkerDevToolsAgentHost::WorkerReadyForInspection(
@@ -148,7 +148,7 @@ void SharedWorkerDevToolsAgentHost::WorkerDestroyed() {
 DevToolsAgentHostImpl::NetworkLoaderFactoryParamsAndInfo
 SharedWorkerDevToolsAgentHost::CreateNetworkFactoryParamsForDevTools() {
   DCHECK(worker_host_);
-  return {GetConstructorOrigin(), net::SiteForCookies::FromUrl(GetURL()),
+  return {GetStorageKey().origin(), net::SiteForCookies::FromUrl(GetURL()),
           worker_host_->CreateNetworkFactoryParamsForSubresources()};
 }
 

@@ -358,7 +358,7 @@ bool ContentBrowserClient::AllowSharedWorker(
     const GURL& site_for_cookies,
     const base::Optional<url::Origin>& top_frame_origin,
     const std::string& name,
-    const url::Origin& constructor_origin,
+    const storage::StorageKey& storage_key,
     BrowserContext* context,
     int render_process_id,
     int render_frame_id) {

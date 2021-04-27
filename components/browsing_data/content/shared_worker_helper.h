@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -33,7 +34,7 @@ class SharedWorkerHelper
   struct SharedWorkerInfo {
     SharedWorkerInfo(const GURL& worker,
                      const std::string& name,
-                     const url::Origin& constructor_origin);
+                     const storage::StorageKey& storage_key);
     SharedWorkerInfo(const SharedWorkerInfo& other);
     ~SharedWorkerInfo();
 
@@ -41,7 +42,7 @@ class SharedWorkerHelper
 
     GURL worker;
     std::string name;
-    url::Origin constructor_origin;
+    storage::StorageKey storage_key;
   };
 
   using FetchCallback =
@@ -57,7 +58,7 @@ class SharedWorkerHelper
   // Requests the given Shared Worker to be deleted.
   virtual void DeleteSharedWorker(const GURL& worker,
                                   const std::string& name,
-                                  const url::Origin& constructor_origin);
+                                  const storage::StorageKey& storage_key);
 
  protected:
   virtual ~SharedWorkerHelper();
@@ -82,7 +83,7 @@ class CannedSharedWorkerHelper : public SharedWorkerHelper {
   // this helper.
   void AddSharedWorker(const GURL& worker,
                        const std::string& name,
-                       const url::Origin& constructor_origin);
+                       const storage::StorageKey& storage_key);
 
   // Clears the list of canned Shared Workers.
   void Reset();
@@ -101,7 +102,7 @@ class CannedSharedWorkerHelper : public SharedWorkerHelper {
   void StartFetching(FetchCallback callback) override;
   void DeleteSharedWorker(const GURL& worker,
                           const std::string& name,
-                          const url::Origin& constructor_origin) override;
+                          const storage::StorageKey& storage_key) override;
 
  private:
   ~CannedSharedWorkerHelper() override;

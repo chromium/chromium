@@ -14,6 +14,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/security_state/core/security_state.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -343,7 +344,8 @@ TEST_F(PageSpecificContentSettingsTest, LocalSharedObjectsContainer) {
                                           blocked_by_policy);
   content_settings->OnSharedWorkerAccessed(
       GURL("http://youtube.com/worker.js"), "worker",
-      url::Origin::Create(GURL("https://youtube.com")), blocked_by_policy);
+      storage::StorageKey(url::Origin::Create(GURL("https://youtube.com"))),
+      blocked_by_policy);
 
   const auto& objects = content_settings->allowed_local_shared_objects();
   EXPECT_EQ(6u, objects.GetObjectCount());

@@ -196,7 +196,7 @@ size_t LocalSharedObjectsContainer::GetDomainCount() const {
     hosts.insert(origin.host());
 
   for (const auto& info : shared_workers()->GetSharedWorkerInfo())
-    hosts.insert(info.constructor_origin.host());
+    hosts.insert(info.storage_key.origin().host());
 
   for (const auto& origin : cache_storages()->GetOrigins())
     hosts.insert(origin.host());

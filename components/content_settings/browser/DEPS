@@ -2,6 +2,7 @@ include_rules = [
   "+components/browsing_data/content",
   "+components/page_load_metrics/browser",
   "+components/security_state/core",
+  "+components/services/storage/public/cpp",
   "+components/sync_preferences",
   "+components/url_formatter",
   "+content/public/browser",

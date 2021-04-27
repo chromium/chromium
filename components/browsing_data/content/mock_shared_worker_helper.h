@@ -14,6 +14,10 @@ namespace content {
 class BrowserContext;
 }
 
+namespace storage {
+class StorageKey;
+}  // namespace storage
+
 namespace browsing_data {
 
 class MockSharedWorkerHelper : public SharedWorkerHelper {
@@ -37,7 +41,7 @@ class MockSharedWorkerHelper : public SharedWorkerHelper {
   void StartFetching(FetchCallback callback) override;
   void DeleteSharedWorker(const GURL& worker,
                           const std::string& name,
-                          const url::Origin& constructor_origin) override;
+                          const storage::StorageKey& storage_key) override;
 
  private:
   ~MockSharedWorkerHelper() override;

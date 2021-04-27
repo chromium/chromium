@@ -14,6 +14,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/worker_host/shared_worker_host.h"
 #include "content/public/browser/global_routing_id.h"
@@ -54,7 +55,7 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
   void EnumerateSharedWorkers(Observer* observer) override;
   bool TerminateWorker(const GURL& url,
                        const std::string& name,
-                       const url::Origin& constructor_origin) override;
+                       const storage::StorageKey& storage_key) override;
   void Shutdown() override;
 
   // Uses |url_loader_factory| to load workers' scripts instead of
@@ -124,7 +125,7 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
   SharedWorkerHost* FindMatchingSharedWorkerHost(
       const GURL& url,
       const std::string& name,
-      const url::Origin& constructor_origin);
+      const storage::StorageKey& storage_key);
 
   void ScriptLoadFailed(
       mojo::PendingRemote<blink::mojom::SharedWorkerClient> client,
