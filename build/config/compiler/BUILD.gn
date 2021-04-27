@@ -1614,7 +1614,10 @@ config("default_warnings") {
 
         if (llvm_force_head_revision) {
           # TODO(https://crbug.com/1203071): Clean up and enable.
-          cflags += [ "-Wno-unused-but-set-variable" ]
+          cflags += [
+            "-Wno-unused-but-set-parameter",
+            "-Wno-unused-but-set-variable",
+          ]
         }
 
         cflags_c += [
