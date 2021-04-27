@@ -324,6 +324,15 @@
   <message name="IDS_OS_SETTINGS_LANGUAGES_OFFER_TO_TRANSLATE_THIS_LANGUAGE" desc="The label of the checkbox that enables the prompt to translate a page in the given language to users.">
     Offer to translate pages in this language
   </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_GOOGLE_ACCOUNT_LANGUAGE_TITLE" desc="Title for the section that informs users about the languages associated with their Google Account and what they affect.">
+   Google Account language
+  </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_GOOGLE_ACCOUNT_LANGUAGE_DESCRIPTION" desc="Description for the section that informs users about the languages associated with their Google Account and what they affect.">
+   Google sites like Gmail, Drive, and YouTube use your Google Account language unless you’ve changed the individual product language
+  </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_MANAGE_GOOGLE_ACCOUNT_LANGUAGE_LABEL" desc="Label for the button which links to the Google Account language page, allowing users to modify their Google Account languages.">
+   Manage Google Account language
+  </message>
   <message name="IDS_OS_SETTINGS_LANGUAGES_OFFER_TRANSLATION_LABEL" desc="Title for setting that allows the system to offer to translate websites that appear in other languages.">
    Translation suggestion
   </message>

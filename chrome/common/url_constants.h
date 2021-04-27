@@ -155,6 +155,9 @@ extern const char kExtensionInvalidRequestURL[];
 // Url to a blogpost about Flash deprecation.
 extern const char kFlashDeprecationLearnMoreURL[];
 
+// URL of the Google account language selection page.
+extern const char kGoogleAccountLanguagesURL[];
+
 // URL of the 'Activity controls' section of the privacy settings page.
 extern const char kGoogleAccountActivityControlsURL[];
 

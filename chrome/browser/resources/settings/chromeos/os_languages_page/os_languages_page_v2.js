@@ -97,6 +97,14 @@ Polymer({
         chromeos.settings.mojom.Setting.kOfferTranslation,
       ]),
     },
+
+    /** @private */
+    languageSettingsV2Update2Enabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('enableLanguageSettingsV2Update2');
+      },
+    },
   },
 
   /** @private {?settings.LanguagesMetricsProxy} */
@@ -352,4 +360,9 @@ Polymer({
         'translate-target' :
         'non-translate-target';
   },
+
+  /** @private */
+  openManageGoogleAccountLanguage_() {
+    window.open(loadTimeData.getString('googleAccountLanguagesURL'));
+  }
 });

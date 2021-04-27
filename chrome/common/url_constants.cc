@@ -157,6 +157,9 @@ const char kFlashDeprecationLearnMoreURL[] =
 const char kGoogleAccountActivityControlsURL[] =
     "https://myaccount.google.com/activitycontrols/search";
 
+const char kGoogleAccountLanguagesURL[] =
+    "https://myaccount.google.com/language";
+
 const char kGoogleAccountURL[] = "https://myaccount.google.com";
 
 const char kGoogleAccountChooserURL[] =
