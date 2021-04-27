@@ -651,6 +651,18 @@
       "use_goma": true
     }
   },
+  "linux-rel-orchestrator": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 0,
+      "use_dummy_lastchange": true,
+      "use_goma": true
+    }
+  },
   "linux-rel-reclient": {
     "gn_args": {
       "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
