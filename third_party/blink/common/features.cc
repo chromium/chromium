@@ -91,8 +91,10 @@ const base::Feature kDisplayLocking{"DisplayLocking",
 const base::Feature kJSONModules{"JSONModules",
                                  base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Force synchronous HTML parsing for recording/replaying. It would be nice to
+// enable this only when recording/replaying...
 const base::Feature kForceSynchronousHTMLParsing{
-    "ForceSynchronousHTMLParsing", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ForceSynchronousHTMLParsing", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables top-level await in modules.
 const base::Feature kTopLevelAwait{"TopLevelAwait",
