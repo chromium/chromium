@@ -15,23 +15,13 @@ namespace core {
 
 #if defined(OS_POSIX) && !defined(OS_NACL) && !defined(OS_MAC)
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
-COMPONENT_EXPORT(MOJO_CORE_EMBEDDER_FEATURES)
 extern const base::Feature kMojoLinuxChannelSharedMem;
-
-COMPONENT_EXPORT(MOJO_CORE_EMBEDDER_FEATURES)
 extern const base::FeatureParam<int> kMojoLinuxChannelSharedMemPages;
-
-COMPONENT_EXPORT(MOJO_CORE_EMBEDDER_FEATURES)
 extern const base::FeatureParam<bool> kMojoLinuxChannelSharedMemEfdZeroOnWake;
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 
-COMPONENT_EXPORT(MOJO_CORE_EMBEDDER_FEATURES)
 extern const base::Feature kMojoPosixUseWritev;
-
 #endif  // defined(OS_POSIX) && !defined(OS_NACL) && !defined(OS_MAC)
-
-COMPONENT_EXPORT(MOJO_CORE_EMBEDDER_FEATURES)
-extern const base::Feature kMojoInlineMessagePayloads;
 
 }  // namespace core
 }  // namespace mojo
