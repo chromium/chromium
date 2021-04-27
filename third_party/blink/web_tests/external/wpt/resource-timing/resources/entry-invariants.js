@@ -139,6 +139,32 @@ const invariants = {
       "responseEnd",
     ]);
   },
+
+  assert_same_origin_redirected_from_cross_origin_resource: entry => {
+    assert_zeroed_(entry, [
+      "workerStart",
+      "redirectStart",
+      "redirectEnd",
+      "domainLookupStart",
+      "domainLookupEnd",
+      "connectStart",
+      "connectEnd",
+      "secureConnectionStart",
+      "requestStart",
+      "responseStart",
+      "transferSize",
+      "encodedBodySize",
+      "decodedBodySize",
+    ]);
+
+    assert_ordered_(entry, [
+      "fetchStart",
+      "responseEnd",
+    ]);
+
+    assert_equals(entry.fetchStart, entry.startTime,
+      "fetchStart must equal startTime");
+  }
 };
 
 // Given a resource-loader, a path (a relative path or absolute URL), and a
