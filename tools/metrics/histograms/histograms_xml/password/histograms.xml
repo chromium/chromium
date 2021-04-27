@@ -888,7 +888,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     enum="PasswordCertificateError" expires_after="M95">
   <owner>battre@chromium.org</owner>
   <owner>jdoerrie@chromium.org</owner>
-  <owner>chrome-password-manager-team@google.com</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
   <summary>
     When the password manager sees new forms on the page, it records in this
     histogram whether there were any SSL certificate errors. The presence of SSL
@@ -2168,7 +2168,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     enum="PasswordManagerSyncingAccountState" expires_after="M95">
   <owner>jdoerrie@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
-  <owner>chrome-password-manager-team@google.com</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
   <summary>
     Information about the user's current sync status crossed with whether their
     synced password is saved.

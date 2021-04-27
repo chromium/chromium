@@ -35,7 +35,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.Address.IsEnabled.PageLoad" enum="BooleanEnabled"
     expires_after="2021-10-10">
   <owner>jsaul@google.com</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Tracks whether Profile (Address) Autofill is enabled on page load for a page
     containing forms.
@@ -45,7 +45,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.Address.IsEnabled.Startup" enum="BooleanEnabled"
     expires_after="2021-10-10">
   <owner>jsaul@google.com</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Tracks whether Profile (Address) Autofill is enabled when Chrome launches.
   </summary>
@@ -54,7 +54,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.AddressesDeletedForDisuse" units="addresses"
     expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The number of unverified autofill addresses deleted because they have not
     been used for a long time, and are not used as billing addresses of valid
@@ -65,7 +65,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.AddressesSuppressedForDisuse" units="addresses"
     expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The number of address suggestions not shown in the Autofill popup because
     they have not been used recently enough. Note that suppression only applies
@@ -109,7 +109,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.AddressSuggestionsCount" units="units"
     expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The number of address suggestions shown in the Autofill popup.
   </summary>
@@ -119,7 +119,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     name="Autofill.Autocomplete.NotOff.EditedAutofilledFieldAtSubmission"
     enum="AutofilledFieldUserEditingStatus" expires_after="2021-09-05">
   <owner>schwering@google.com</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Records at submission time for each autofilled field with autocomplete !=
     off whether the user edited the autofilled field value or not.
@@ -129,7 +129,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram base="true" name="Autofill.Autocomplete.NotOff.FillingAcceptance"
     enum="BooleanAutofillFillingAcceptance" expires_after="2021-09-05">
   <owner>schwering@google.com</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Records for each submitted form whether the user accepted the suggestion to
     fill values and the triggering field has autocomplete != off. This is
@@ -142,7 +142,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.Autocomplete.Off.EditedAutofilledFieldAtSubmission"
     enum="AutofilledFieldUserEditingStatus" expires_after="2021-09-05">
   <owner>schwering@google.com</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Records at submission time for each autofilled field with autocomplete = off
     whether the user edited the autofilled field value or not.
@@ -152,7 +152,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram base="true" name="Autofill.Autocomplete.Off.FillingAcceptance"
     enum="BooleanAutofillFillingAcceptance" expires_after="2021-09-05">
   <owner>schwering@google.com</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Records for each submitted form whether the user accepted the suggestion to
     fill values and the triggering field has autocomplete = off. This is counted
@@ -441,7 +441,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.CreditCard.IsEnabled.PageLoad" enum="BooleanEnabled"
     expires_after="2021-10-10">
   <owner>jsaul@google.com</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Tracks whether Credit Card Autofill is enabled on page load for a page
     containing forms.
@@ -451,7 +451,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.CreditCard.IsEnabled.Startup" enum="BooleanEnabled"
     expires_after="2021-10-10">
   <owner>jsaul@google.com</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Tracks whether Credit Card Autofill is enabled when Chrome launches.
   </summary>
@@ -460,7 +460,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.CreditCardFillingInfoBar"
     enum="AutofillCreditCardInfoBar" expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The relative frequency with which users accept, deny, or ignore the Autofill
     credit card assisted filling infobar prompt.
@@ -471,7 +471,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     enum="AutofillCreditCardInfoBar" expires_after="M95">
   <owner>battre@chromium.org</owner>
   <owner>jsaul@google.com</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The relative frequency with which users accept, deny, or ignore the Autofill
     credit card info bar prompt.
@@ -482,7 +482,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="M95">
   <owner>battre@chromium.org</owner>
   <owner>jsaul@google.com</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The number of credit card deleted during a major version upgrade because
     they have not been used recently enough and are expired.
@@ -493,7 +493,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="M95">
   <owner>battre@chromium.org</owner>
   <owner>jsaul@google.com</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The number of credit card suggestions not shown in the Autofill popup
     because they have not been used recently enough and are expired. Note that
@@ -515,7 +515,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.DaysSinceLastUse.CreditCard" units="days"
     expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Logs the number of days that have passed since the credit card was last
     used.
@@ -525,7 +525,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.DaysSinceLastUse.Profile" units="days"
     expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Logged at the time of autofill address use, this histogram captures the
     number of days that have passed since the address was last used. I.e., the
@@ -536,7 +536,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.DaysSinceLastUse.StoredCreditCard" units="days"
     expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
 <!-- Name completed by histogram_suffixes name="AutofillCreditCardType" -->
 
   <summary>
@@ -549,7 +549,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.DaysSinceLastUse.StoredProfile" units="days"
     expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     This histogram captures the number of days that have passed since each
     stored address profile belonging to a given Chrome Profile was last used.
@@ -561,7 +561,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.DeveloperEngagement"
     enum="AutofillDeveloperEngagement" expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Measures the adoption of the HTML autocomplete type hint specification (see
     http://is.gd/whatwg_autocomplete for more details). For each fillable form
@@ -615,7 +615,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.FieldCount" units="form fields" expires_after="M95">
   <owner>kolos@chromium.org</owner>
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>Number of fields in a form that Autofill encounters.</summary>
 </histogram>
 
@@ -624,7 +624,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
      name="AutofillFieldPredictionSource" -->
 
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Predicted and actual form field type. This is a computed sparse histogram
     where the value is ((predicted &lt;&lt; 16)| actual). Predicted and actual
@@ -638,7 +638,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
      name="AutofillFieldPredictionSource" -->
 
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Aggregate Autofill field-type prediction outcomes. See
     https://en.wikipedia.org/wiki/Confusion_matrix for an explanation of the
@@ -652,7 +652,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
      name="AutofillFieldPredictionSource" -->
 
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Autofill field-type prediction outcomes, broken down by field type. See
     https://en.wikipedia.org/wiki/Confusion_matrix for an explanation of the
@@ -663,7 +663,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.FillDuration.FromInteraction.WithAutofill"
     units="units" expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Time elapsed between the user's first interaction with a form and the form's
     submission, for an autofilled form.
@@ -673,7 +673,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.FillDuration.FromInteraction.WithoutAutofill"
     units="units" expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Time elapsed between the user's first interaction with a form and the form's
     submission, for a non-autofilled form.
@@ -683,7 +683,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.FillDuration.FromLoad.WithAutofill" units="units"
     expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Time elapsed between form load and form submission, for an autofilled form.
   </summary>
@@ -692,7 +692,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.FillDuration.FromLoad.WithoutAutofill" units="units"
     expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Time elapsed between form load and form submission, for a non-autofilled
     form.
@@ -816,7 +816,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.FormFillSuccessIOS"
     enum="BooleanAutofillFormFillSuccessIOS" expires_after="2021-04-30">
   <owner>kazinova@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Records whether the the form was successfully filled by Autofill on iOS.
   </summary>
@@ -835,7 +835,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.FormSubmittedState" enum="AutofillFormSubmittedState"
     expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>The autofill state related to a submitted form.</summary>
 </histogram>
 
@@ -936,7 +936,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.HiddenOrPresentationalSelectFieldsFilled"
     enum="BooleanHiddenPresentationalAutofilled" expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Logs when a hidden or presentational field is autofilled. The hidden or
     presentational fields are only autofilled for 'select' fields to support
@@ -947,7 +947,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.InvalidProfileData.UsedForMetrics" enum="Boolean"
     expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Tracks whether or not autofill suppressed sending votes or calculating
     quality metrics because the profile data was marked as invalid. Logged
@@ -959,7 +959,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.InvalidProfileData.UsedForSuggestion" enum="Boolean"
     expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Tracks whether or not autofill suppressed offering an autofill suggestion
     because the profile data was marked as invalid. Logged during autofill
@@ -972,7 +972,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2021-08-09">
   <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     This includes Autofill.Address.IsEnabled.PageLoad and
     Autofill.CreditCard.IsEnabled.PageLoad, and tracks whether either profile
@@ -986,7 +986,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2021-08-09">
   <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     This includes Autofill.Address.IsEnabled.Startup and
     Autofill.CreditCard.IsEnabled.Startup, and tracks whether either profile
@@ -1193,7 +1193,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     name="Autofill.NumberOfAutofilledFieldsAtSubmission.{AcceptanceStatus}"
     units="fields" expires_after="M92">
   <owner>koerber@google.com</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The {AcceptanceStatus} autofilled fields in a form after receiving a form
     submission event.
@@ -1208,7 +1208,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.NumberOfEditedAutofilledFieldsAtSubmission"
     units="fields" expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The number of autofilled fields that were subsequently edited prior to the
     form being submitted.
@@ -1218,7 +1218,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.NumberOfProfilesConsideredForDedupe" units="profiles"
     expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The number of Autofill profiles that have been considered for deduplication.
   </summary>
@@ -1227,7 +1227,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.NumberOfProfilesRemovedDuringDedupe" units="profiles"
     expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The number of Autofill profiles that have been removed during deduplication.
   </summary>
@@ -1236,7 +1236,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.NumElementsMatchesNumFields" enum="Boolean"
     expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Records whether the number of fillable form elements matches the number of
     fields in the form's description. Instances where this is recorded as False,
@@ -1382,7 +1382,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.ProfileActionOnFormSubmitted"
     enum="AutofillProfileAction" expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The profile action that took place when a form was submitted.
   </summary>
@@ -1460,7 +1460,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.QueriedCreditCardFormIsSecure" enum="BooleanSecure"
     expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     For credit card forms that are queried for Autofill, a ratio of how many are
     within secure contexts (which includes mixed passive content).
@@ -1469,7 +1469,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Autofill.Query.BackoffDelay" units="ms" expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The delay of a network request for a query due to exponential backoff.
   </summary>
@@ -1478,7 +1478,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.Query.FailingPayloadSize" units="bytes"
     expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The number of bytes that were sent in a query that subsequently failed. This
     is to help determine the appropriate threshold at which autofill queries
@@ -1490,7 +1490,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.Query.HttpResponseOrErrorCode"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The http response code or net error code returned on a query.
   </summary>
@@ -1499,20 +1499,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.Query.Method" enum="AutofillQueryMethod"
     expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>The HTTP method used to query the autofill server.</summary>
 </histogram>
 
 <histogram name="Autofill.Query.RequestDuration" units="ms" expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>The duration of a network request for a query.</summary>
 </histogram>
 
 <histogram name="Autofill.Query.WasInCache" enum="BooleanCacheHit"
     expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Was the autofill query response retrieved from the HTTP cache.
   </summary>
@@ -1521,7 +1521,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.RationalizationQuality.PhoneNumber"
     enum="AutofillRationalizationQualityMetric" expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The quality of fields rationalization, putting rationalization result into
     good/ok/bad categories.
@@ -1599,14 +1599,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.ScanCreditCard.Completed" enum="BooleanCompleted"
     expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>Whether a credit card scan was completed or cancelled.</summary>
 </histogram>
 
 <histogram name="Autofill.ScanCreditCard.Duration" units="ms"
     expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>How long a credit card took to scan.</summary>
 </histogram>
 
@@ -1614,7 +1614,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     enum="AutofillScanCreditCardPrompt" expires_after="M95">
   <owner>battre@chromium.org</owner>
   <owner>jsaul@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>Usage of the &quot;Scan card&quot; control item.</summary>
 </histogram>
 
@@ -1622,7 +1622,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2021-08-09">
   <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Logged when the user clicks on the server credit card link in the settings
     page.
@@ -1632,14 +1632,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.ServerQueryResponse" enum="AutofillQueryResult"
     expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>The usefulness of Autofill server information.</summary>
 </histogram>
 
 <histogram name="Autofill.ServerResponseHasDataForForm"
     enum="BooleanHadPredictions" expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Tracks whether Autofill server had at least some prediction data for a given
     form at query response time.
@@ -1649,7 +1649,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.StoredCreditCardCount" units="cards"
     expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
 <!-- Name completed by histogram_suffixes name="AutofillCreditCardType" -->
 
   <summary>
@@ -1661,7 +1661,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.StoredCreditCardDisusedCount" units="cards"
     expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
 <!-- Name completed by histogram_suffixes name="AutofillCreditCardType" -->
 
   <summary>
@@ -1673,7 +1673,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Autofill.StoredProfileCount" units="units" expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The number of Autofill addresses a user has stored, measured at launch time.
   </summary>
@@ -1682,7 +1682,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.StoredProfileCountAtAutofillableFormSubmission"
     units="units" expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The number of Autofill addresses a user has stored, measured when an
     autofillable form is submitted.
@@ -1692,7 +1692,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.StoredProfileDisusedCount" units="units"
     expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The number of stored Autofill address profiles which have not been used in a
     sufficiently long time for autofill to consider them disused. Measured once
@@ -1837,7 +1837,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.SuggestionAcceptedIndex" units="position"
     expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The index of the accepted Autofill suggestion in the popup. Due to
     crbug.com/966411, the iOS data is incorrect.
@@ -1847,7 +1847,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.SuggestionAcceptedIndex.Autocomplete"
     units="position" expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The index of the accepted Autocomplete suggestion in the popup. Due to
     crbug.com/966411, the iOS data is incorrect.
@@ -1867,7 +1867,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="M95">
   <owner>kenjitoyama@chromium.org</owner>
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Number of milliseconds passed between the start and end of
     FormStructure::DetermineHeuristicTypes().
@@ -1877,7 +1877,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.Timing.ParseForm" units="ms" expires_after="M95">
   <owner>kenjitoyama@chromium.org</owner>
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Number of milliseconds passed between the start and end of parsing a single
     form.
@@ -1969,7 +1969,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Removed 03/2021 as it is no longer needed for analysis.
   </obsolete>
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Records incidents where an implicit (formless) form has elements filtered
     out of it. This happens to unowned fields (directly embedded in the page
@@ -1983,7 +1983,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <!-- expires-never: https://crbug.com/915888 -->
 
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The delay of a network request for an upload due to exponential backoff.
   </summary>
@@ -1992,7 +1992,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.Upload.FailingPayloadSize" units="bytes"
     expires_after="M77">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The number of bytes that were sent in an upload that subsequently failed.
     This is to help determine if there are certain upload sizes which are prone
@@ -2005,7 +2005,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <!-- expires-never: https://crbug.com/915888 -->
 
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The http response code or net error code returned on an upload.
   </summary>
@@ -2014,7 +2014,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.Upload.MetadataConfigIsValid" enum="BooleanValid"
     expires_after="M77">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Tracks whether or not the configuration fo metadata upload encoding is valid
     or invalid. Note that if the configuration is invalid, the client will fall
@@ -2026,7 +2026,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.Upload.MetadataEncodingType"
     enum="AutofillMetadataEncodingType" expires_after="M77">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The metadata encoding scheme used by the client to encode rich uploads.
   </summary>
@@ -2037,7 +2037,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <!-- expires-never: https://crbug.com/915888 -->
 
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>The duration of a network request for an upload.</summary>
 </histogram>
 
@@ -2056,7 +2056,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <!-- Name completed by histogram_suffixes name="AutofillUploadEvents" -->
 
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Whether or not an upload was sent after having been triggered by a form
     submission or proxy-form-submission.
@@ -2089,7 +2089,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.UserHappiness" enum="AutofillUserHappiness"
     expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Measures the frequency of various events in the Autofill user interaction
     flow. By comparing frequencies, we can compute several interesting
@@ -2100,7 +2100,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Autofill.WalletAddressConversionType"
     enum="AutofillWalletAddressConversionType" expires_after="M95">
   <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Tracks how the different wallet addresses are converted to local autofill
     profiles.
