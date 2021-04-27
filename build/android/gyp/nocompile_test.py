@@ -112,7 +112,10 @@ def main():
 
   out_gn_args_path = os.path.join(options.out_dir, 'args.gn')
   extra_gn_args = [
-      'enable_android_nocompile_tests = true', 'treat_warnings_as_errors = true'
+      'enable_android_nocompile_tests = true',
+      'treat_warnings_as_errors = true',
+      # GOMA does not work with non-standard output directories.
+      'use_goma = false',
   ]
   _copy_and_append_gn_args(options.gn_args_path, out_gn_args_path,
                            extra_gn_args)
