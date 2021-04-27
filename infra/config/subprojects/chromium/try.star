@@ -390,7 +390,7 @@ try_.chromium_android_builder(
 # Experimental builder to check dual coverage on android platform.
 try_.chromium_android_builder(
     name = "android-marshmallow-arm64-rel-dual-coverage",
-    builderless = not settings.is_main,
+    builderless = True,
     cores = branches.value(for_main = 32, for_branches = 16),
     goma_jobs = goma.jobs.J300,
     main_list_view = "try",
