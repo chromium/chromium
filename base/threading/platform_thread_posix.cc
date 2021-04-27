@@ -16,8 +16,6 @@
 #include <memory>
 
 #include "base/allocator/buildflags.h"
-#include "base/allocator/partition_allocator/starscan/pcscan.h"
-#include "base/allocator/partition_allocator/starscan/stack/stack.h"
 #include "base/debug/activity_tracker.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
@@ -39,6 +37,11 @@
 #include <zircon/process.h>
 #else
 #include <sys/resource.h>
+#endif
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#include "base/allocator/partition_allocator/starscan/pcscan.h"
+#include "base/allocator/partition_allocator/starscan/stack/stack.h"
 #endif
 
 namespace base {
