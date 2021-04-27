@@ -11,7 +11,6 @@
 #include "base/test/gtest_util.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "pdf/document_attachment_info.h"
 #include "pdf/document_layout.h"
@@ -587,10 +586,6 @@ class PDFiumEngineTabbingTest : public PDFiumTestBase {
   void ScrollFocusedAnnotationIntoView(PDFiumEngine* engine) {
     engine->ScrollFocusedAnnotationIntoView();
   }
-
- protected:
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 TEST_F(PDFiumEngineTabbingTest, LinkUnderCursorTest) {

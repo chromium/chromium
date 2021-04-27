@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
-#include "base/test/task_environment.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "pdf/ppapi_migration/bitmap.h"
@@ -102,9 +101,6 @@ class SkiaGraphicsTest : public testing::Test {
   FakeSkiaGraphicsClient client_;
 
   std::unique_ptr<Graphics> graphics_;
-
- private:
-  base::test::TaskEnvironment task_environment_;
 };
 
 class SkiaGraphicsScrollTest : public SkiaGraphicsTest {

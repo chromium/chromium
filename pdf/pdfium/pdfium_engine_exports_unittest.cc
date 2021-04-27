@@ -5,9 +5,6 @@
 #include "base/files/file_util.h"
 #include "base/optional.h"
 #include "base/path_service.h"
-#include "base/test/test_simple_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
-#include "gin/v8_initializer.h"
 #include "pdf/pdf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
@@ -18,16 +15,6 @@ namespace chrome_pdf {
 
 namespace {
 
-void LoadV8SnapshotData() {
-#if defined(V8_USE_EXTERNAL_STARTUP_DATA)
-  static bool loaded = false;
-  if (!loaded) {
-    loaded = true;
-    gin::V8Initializer::LoadV8Snapshot();
-  }
-#endif
-}
-
 class PDFiumEngineExportsTest : public testing::Test {
  public:
   PDFiumEngineExportsTest() = default;
@@ -37,11 +24,6 @@ class PDFiumEngineExportsTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    LoadV8SnapshotData();
-
-    handle_ = std::make_unique<base::ThreadTaskRunnerHandle>(
-        base::MakeRefCounted<base::TestSimpleTaskRunner>());
-
     CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &pdf_data_dir_));
     pdf_data_dir_ = pdf_data_dir_.Append(FILE_PATH_LITERAL("pdf"))
                         .Append(FILE_PATH_LITERAL("test"))
@@ -51,7 +33,6 @@ class PDFiumEngineExportsTest : public testing::Test {
   const base::FilePath& pdf_data_dir() const { return pdf_data_dir_; }
 
  private:
-  std::unique_ptr<base::ThreadTaskRunnerHandle> handle_;
   base::FilePath pdf_data_dir_;
 };
 
