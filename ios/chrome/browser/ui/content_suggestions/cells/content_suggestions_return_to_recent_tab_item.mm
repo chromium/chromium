@@ -43,27 +43,10 @@ const CGFloat kIconWidth = 32.0f;
   if (self.icon) {
     [cell setIconImage:self.icon];
   }
-  cell.accessibilityCustomActions = [self customActions];
 }
 
 - (CGFloat)cellHeightForWidth:(CGFloat)width {
   return [ContentSuggestionsReturnToRecentTabCell defaultSize].height;
-}
-
-// Custom action for a cell configured with this item.
-- (NSArray<UIAccessibilityCustomAction*>*)customActions {
-  UIAccessibilityCustomAction* openMostRecentTab =
-      [[UIAccessibilityCustomAction alloc]
-          initWithName:@"Open Most Recent Tab"
-                target:self
-              selector:@selector(openMostRecentTab)];
-
-  return @[ openMostRecentTab ];
-}
-
-- (BOOL)openMostRecentTab {
-  // TODO:(crbug.com/1173160) implement.
-  return YES;
 }
 
 @end
