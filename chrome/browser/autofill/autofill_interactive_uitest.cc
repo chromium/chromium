@@ -533,6 +533,27 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
 
   void FillElementWithValue(const std::string& element_name,
                             const std::string& value) {
+    // Sends "|element_name|:|value|" to |msg_queue| if the |element_name|'s
+    // value has changed to |value|.
+    std::string script =
+        base::StringPrintf(R"(
+    (function() {
+      const element_name = '%s';
+      const value = '%s';
+      const field = document.getElementById(element_name);
+      const listener = function() {
+        if (field.value === value) {
+          field.removeEventListener('input', listener);
+          domAutomationController.send(element_name +':'+ field.value);
+        }
+      }
+      field.addEventListener('input', listener, false);
+      return 'done';
+    })();)",
+                           element_name.c_str(), value.c_str());
+    ASSERT_TRUE(ExecJs(GetWebContents(), script));
+
+    content::DOMMessageQueue msg_queue;
     for (char16_t character : value) {
       ui::DomKey dom_key = ui::DomKey::FromCharacter(character);
       const ui::PrintableCodeEntry* code_entry = std::find_if(
@@ -548,7 +569,9 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
                                 ui::DomCodeToUsLayoutKeyboardCode(dom_code),
                                 false, shift, false, false);
     }
-    AssertFieldValue(element_name, value);
+    std::string reply;
+    ASSERT_TRUE(msg_queue.WaitForMessage(&reply));
+    ASSERT_EQ("\"" + element_name + ":" + value + "\"", reply);
   }
 
   void DeleteElementValue(const std::string& element_name) {
@@ -817,16 +840,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ClearTwoSection) {
   ExpectFilledTestForm();
 }
 
-// Test that autofill doesn't refill a text field initially modified by the
-// user.
-// TODO(https://crbug.com/1185439): This test is flaky on Mac, Linux, and
-// ChromeOS.
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
-#define MAYBE_ModifyTextFieldAndFill DISABLED_ModifyTextFieldAndFill
-#else
-#define MAYBE_ModifyTextFieldAndFill ModifyTextFieldAndFill
-#endif
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, MAYBE_ModifyTextFieldAndFill) {
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ModifyTextFieldAndFill) {
   CreateTestProfile();
 
   // Load the test page.
