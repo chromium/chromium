@@ -20,6 +20,7 @@
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_ui.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_ui_component.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/localization.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using autofill::AutofillCountry;
@@ -123,18 +124,27 @@ std::u16string GetEnvelopeStyleAddress(const AutofillProfile& profile,
       base::UTF16ToUTF8(country_code), ui_language_code, &not_used);
 
   DCHECK(!components.empty());
-  std::u16string address;
+  std::string address;
   for (const AddressUiComponent& component : components) {
     // Each component is either a literal, or a field (i.e. has empty literal).
     address +=
         component.literal.empty()
-            ? profile.GetInfo(
+            ? base::UTF16ToUTF8(profile.GetInfo(
                   autofill::AddressFieldToServerFieldType(component.field),
-                  ui_language_code)
-            : base::UTF8ToUTF16(component.literal);
+                  ui_language_code))
+            : component.literal;
   }
-  base::TrimString(address, u" \t\n", &address);
-  return address;
+  // Remove all white spaces and new lines from the beginning and the end of the
+  // address.
+  base::TrimString(address, base::kWhitespaceASCII, &address);
+
+  // Collpase new lines to remove empty lines.
+  re2::RE2::GlobalReplace(&address, re2::RE2("\\n+"), "\n");
+
+  // // Collpase white spaces.
+  re2::RE2::GlobalReplace(&address, re2::RE2("[ ]+"), " ");
+
+  return base::UTF8ToUTF16(address);
 }
 
 }  // namespace autofill

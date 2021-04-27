@@ -68,4 +68,32 @@ TEST_F(GetEnvelopeStyleAddressTest, EmptyFullname) {
   EXPECT_NE(address.front(), '\n');
 }
 
+// Tests that when the company is empty, the envelope style address doesn't
+// contain empty lines.
+TEST_F(GetEnvelopeStyleAddressTest, EmptyCompanyShouldHaveNoEmptyLines) {
+  AutofillProfile profile(base::GenerateGUID(), /*origin=*/"");
+  test::SetProfileInfo(&profile, "FirstName", "MiddleName", "LastName",
+                       "johndoe@hades.com", /*company=*/"", "666 Erebus St.",
+                       "Apt 8", "Elysium", "CA", "91111", "US", "16502111111");
+
+  std::u16string address = GetEnvelopeStyleAddress(profile, GetLocale());
+  // There should be no consecutive new lines.
+  EXPECT_EQ(address.find(u"\n\n"), std::string::npos);
+}
+
+// Tests that when the state is empty, the envelope style address doesn't
+// contains consecutive white spaces.
+TEST_F(GetEnvelopeStyleAddressTest,
+       EmptyStateShouldHaveNoConsecutiveWhitespaces) {
+  AutofillProfile profile(base::GenerateGUID(), /*origin=*/"");
+  test::SetProfileInfo(&profile, "FirstName", "MiddleName", "LastName",
+                       "johndoe@hades.com", "Underworld", "666 Erebus St.",
+                       "Apt 8", "Elysium", /*state=*/"", "91111", "US",
+                       "16502111111");
+
+  std::u16string address = GetEnvelopeStyleAddress(profile, GetLocale());
+  // There should be no consecutive white spaces.
+  EXPECT_EQ(address.find(u"  "), std::string::npos);
+}
+
 }  // namespace autofill
