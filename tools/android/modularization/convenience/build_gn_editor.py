@@ -196,7 +196,7 @@ class BuildTarget:
     return self._target_type
 
   def get_variable(self, variable_name: str) -> Optional[TargetVariable]:
-    pattern = re.compile(fr'\s*{variable_name} = ', re.MULTILINE)
+    pattern = re.compile(fr'^\s*{variable_name} = ', re.MULTILINE)
     match = pattern.search(self._content)
     if not match:
       return None
