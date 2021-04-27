@@ -47,7 +47,6 @@ class LoginDisplayMojo : public LoginDisplay,
   void ShowEnterpriseEnrollmentScreen() override;
   void ShowKioskAutolaunchScreen() override;
   void ShowWrongHWIDScreen() override;
-  void CancelUserAdding() override;
   void SetWebUIHandler(LoginDisplayWebUIHandler* webui_handler) override;
   bool AllowNewUserChanged() const override;
   bool IsUserSigninCompleted() const override;

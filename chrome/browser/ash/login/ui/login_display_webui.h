@@ -38,7 +38,6 @@ class LoginDisplayWebUI : public LoginDisplay,
              const SigninSpecifics& specifics) override;
   bool IsSigninInProgress() const override;
   void OnSigninScreenReady() override;
-  void CancelUserAdding() override;
   void ShowEnterpriseEnrollmentScreen() override;
   void ShowKioskAutolaunchScreen() override;
   void ShowWrongHWIDScreen() override;

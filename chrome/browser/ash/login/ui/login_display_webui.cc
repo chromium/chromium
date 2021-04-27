@@ -95,14 +95,6 @@ void LoginDisplayWebUI::ShowAllowlistCheckFailedError() {
     webui_handler_->ShowAllowlistCheckFailedError();
 }
 
-// LoginDisplayWebUI, SigninScreenHandlerDelegate implementation: --------------
-void LoginDisplayWebUI::CancelUserAdding() {
-  if (!UserAddingScreen::Get()->IsRunning()) {
-    LOG(ERROR) << "User adding screen not running.";
-    return;
-  }
-  UserAddingScreen::Get()->Cancel();
-}
 void LoginDisplayWebUI::Login(const UserContext& user_context,
                               const SigninSpecifics& specifics) {
   DCHECK(delegate_);

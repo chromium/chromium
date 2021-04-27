@@ -176,10 +176,6 @@ void LoginDisplayMojo::ShowWrongHWIDScreen() {
   NOTIMPLEMENTED();
 }
 
-void LoginDisplayMojo::CancelUserAdding() {
-  NOTIMPLEMENTED();
-}
-
 void LoginDisplayMojo::SetWebUIHandler(
     LoginDisplayWebUIHandler* webui_handler) {
   webui_handler_ = webui_handler;

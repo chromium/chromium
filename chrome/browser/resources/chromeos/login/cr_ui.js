@@ -276,15 +276,6 @@ cr.define('cr.ui', function() {
     }
 
     /**
-     * Authenticate for telemetry - used for screenlocker.
-     * @param {string} username Login username.
-     * @param {string} password Login password.
-     */
-    static authenticateForTesting(username, password) {
-      chrome.send('authenticateUser', [username, password, false]);
-    }
-
-    /**
      * Gaia login screen for telemetry.
      */
     static addUserForTesting() {

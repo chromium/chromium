@@ -87,8 +87,6 @@ class SigninScreenHandlerDelegate {
   virtual void ShowWrongHWIDScreen() = 0;
 
   // --------------- Rest of the methods.
-  // Cancels user adding.
-  virtual void CancelUserAdding() = 0;
 
   // Let the delegate know about the handler it is supposed to be using.
   virtual void SetWebUIHandler(LoginDisplayWebUIHandler* webui_handler) = 0;
