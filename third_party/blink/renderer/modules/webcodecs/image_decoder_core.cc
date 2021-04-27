@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/time/time.h"
+#include "media/base/timestamp_constants.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
@@ -225,15 +226,10 @@ std::unique_ptr<ImageDecoderCore::ImageDecodeResult> ImageDecoderCore::Decode(
     incomplete_frames_.erase(frame_index);
   }
 
-  // TODO(crbug.com/1073995): Add timestamp support to ImageDecoder if we
-  // end up encountering a lot of variable duration images.
-  const auto duration = decoder_->FrameDurationAtIndex(frame_index);
-  const auto timestamp = duration * frame_index;
-
   // This is zero copy; the VideoFrame points into the SkBitmap.
   const gfx::Size coded_size(sk_image->width(), sk_image->height());
   auto frame = media::CreateFromSkImage(sk_image, gfx::Rect(coded_size),
-                                        coded_size, timestamp);
+                                        coded_size, media::kNoTimestamp);
   if (!frame) {
     NOTREACHED() << "Failed to create VideoFrame from SkImage.";
     result->status = Status::kDecodeError;
@@ -242,7 +238,13 @@ std::unique_ptr<ImageDecoderCore::ImageDecodeResult> ImageDecoderCore::Decode(
 
   frame->metadata().transformation = ImageOrientationToVideoTransformation(
       decoder_->Orientation().Orientation());
-  frame->metadata().frame_duration = duration;
+
+  // Only animated images have frame durations.
+  if (decoder_->FrameCount() > 1 ||
+      decoder_->RepetitionCount() != kAnimationNone) {
+    frame->metadata().frame_duration =
+        decoder_->FrameDurationAtIndex(frame_index);
+  }
 
   result->status = Status::kOk;
   result->sk_image = std::move(sk_image);
@@ -319,7 +321,7 @@ void ImageDecoderCore::MaybeDecodeToYuv() {
       return;
 
     yuv_frame_ = media::VideoFrame::CreateFrameWithLayout(
-        *layout, gfx::Rect(coded_size), coded_size, base::TimeDelta(),
+        *layout, gfx::Rect(coded_size), coded_size, media::kNoTimestamp,
         /*zero_initialize_memory=*/false);
     if (!yuv_frame_)
       return;
@@ -360,7 +362,6 @@ void ImageDecoderCore::MaybeDecodeToYuv() {
     }
   }
 
-  yuv_frame_->metadata().frame_duration = base::TimeDelta();
   if (gfx_cs.IsValid()) {
     yuv_frame_->set_color_space(YUVColorSpaceToGfxColorSpace(
         skyuv_cs, gfx_cs.GetPrimaryID(), gfx_cs.GetTransferID()));
