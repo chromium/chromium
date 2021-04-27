@@ -43,8 +43,9 @@ class WebrtcFrameSchedulerSimple : public WebrtcFrameScheduler {
   void Pause(bool pause) override;
   bool OnFrameCaptured(const webrtc::DesktopFrame* frame,
                        WebrtcVideoEncoder::FrameParams* params_out) override;
-  void OnFrameEncoded(const WebrtcVideoEncoder::EncodedFrame* encoded_frame,
-                      HostFrameStats* frame_stats) override;
+  void OnFrameEncoded(
+      const WebrtcVideoEncoder::EncodedFrame* encoded_frame) override;
+  void GetSchedulerStats(HostFrameStats& frame_stats_out) const override;
 
   // Allows unit-tests to provide a mock clock.
   void SetTickClockForTest(const base::TickClock* tick_clock);
@@ -78,7 +79,11 @@ class WebrtcFrameSchedulerSimple : public WebrtcFrameScheduler {
   // Set to true when a frame is being captured or encoded.
   bool frame_pending_ = false;
 
-  base::TimeDelta rtt_estimate_;
+  base::TimeDelta rtt_estimate_{base::TimeDelta::Max()};
+
+  // An estimate, set by OnFrameEncoded(), of the delay before WebRTC will send
+  // the encoded frame.
+  base::TimeDelta send_pending_delay_{base::TimeDelta::Max()};
 
   // Set to true when encoding unchanged frames for top-off.
   bool top_off_is_active_ = false;

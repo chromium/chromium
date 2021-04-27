@@ -52,7 +52,8 @@ class WebrtcFrameSchedulerTest : public ::testing::Test {
       WebrtcVideoEncoder::EncodedFrame encoded;
       encoded.key_frame = out_params.key_frame;
       encoded.data = 'X';
-      scheduler_->OnFrameEncoded(&encoded, &frame_stats_);
+      scheduler_->OnFrameEncoded(&encoded);
+      scheduler_->GetSchedulerStats(frame_stats_);
     }
   }
 

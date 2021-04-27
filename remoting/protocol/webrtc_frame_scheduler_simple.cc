@@ -211,19 +211,16 @@ bool WebrtcFrameSchedulerSimple::OnFrameCaptured(
 }
 
 void WebrtcFrameSchedulerSimple::OnFrameEncoded(
-    const WebrtcVideoEncoder::EncodedFrame* encoded_frame,
-    HostFrameStats* frame_stats) {
+    const WebrtcVideoEncoder::EncodedFrame* encoded_frame) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(frame_pending_);
   frame_pending_ = false;
 
   base::TimeTicks now = tick_clock_->NowTicks();
 
-  if (frame_stats) {
-    // Calculate |send_pending_delay| before refilling |pacing_bucket_|.
-    frame_stats->send_pending_delay =
-        std::max(base::TimeDelta(), pacing_bucket_.GetEmptyTime() - now);
-  }
+  // Calculate |send_pending_delay_| before refilling |pacing_bucket_|.
+  send_pending_delay_ =
+      std::max(base::TimeDelta(), pacing_bucket_.GetEmptyTime() - now);
 
   // TODO(zijiehe): |encoded_frame|->data.empty() is unreasonable, we should try
   // to get rid of it in WebrtcVideoEncoder layer.
@@ -240,13 +237,15 @@ void WebrtcFrameSchedulerSimple::OnFrameEncoded(
 
   ScheduleNextFrame();
 
-  if (frame_stats) {
-    frame_stats->rtt_estimate = rtt_estimate_;
-    frame_stats->bandwidth_estimate_kbps =
-        bandwidth_estimator_->GetBitrateKbps();
-  }
-
   bandwidth_estimator_->OnSendingFrame(*encoded_frame);
+}
+
+void WebrtcFrameSchedulerSimple::GetSchedulerStats(
+    HostFrameStats& frame_stats_out) const {
+  frame_stats_out.send_pending_delay = send_pending_delay_;
+  frame_stats_out.rtt_estimate = rtt_estimate_;
+  frame_stats_out.bandwidth_estimate_kbps =
+      bandwidth_estimator_->GetBitrateKbps();
 }
 
 void WebrtcFrameSchedulerSimple::SetTickClockForTest(

@@ -294,8 +294,7 @@ void WebrtcVideoStream::OnFrameEncoded(
     current_frame_stats_->frame_quality = (63 - frame->quantizer) * 100 / 63;
   }
 
-  HostFrameStats stats;
-  scheduler_->OnFrameEncoded(frame.get(), &stats);
+  scheduler_->OnFrameEncoded(frame.get());
 
   if (encode_result != WebrtcVideoEncoder::EncodeResult::SUCCEEDED) {
     LOG(ERROR) << "Video encoder returns error "
@@ -328,6 +327,11 @@ void WebrtcVideoStream::OnFrameEncoded(
 
   // Send FrameStats message.
   if (video_stats_dispatcher_.is_connected()) {
+    HostFrameStats stats;
+
+    // Get bandwidth, RTT and send_pending_delay into |stats|.
+    scheduler_->GetSchedulerStats(stats);
+
     stats.frame_size = frame ? frame->data.size() : 0;
 
     if (!current_frame_stats_->input_event_timestamps.is_null()) {

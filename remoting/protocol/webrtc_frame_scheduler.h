@@ -41,8 +41,15 @@ class WebrtcFrameScheduler : public VideoChannelStateObserver {
   // |encoded_frame| may be nullptr. If |frame_stats| is not null then sets
   // send_pending_delay, rtt_estimate and bandwidth_estimate_kbps fields.
   virtual void OnFrameEncoded(
-      const WebrtcVideoEncoder::EncodedFrame* encoded_frame,
-      HostFrameStats* frame_stats) = 0;
+      const WebrtcVideoEncoder::EncodedFrame* encoded_frame) = 0;
+
+  // Writes the following bandwidth-related statistics to |frame_stats_out|:
+  // * bandwidth_estimate_kbps
+  // * rtt_estimate
+  // * send_pending_delay - an estimate of the delay (due to WebRTC's pacing
+  //   buffer) before the recently-encoded frame will be sent.
+  // This should be called just after OnFrameEncoded().
+  virtual void GetSchedulerStats(HostFrameStats& frame_stats_out) const = 0;
 };
 
 }  // namespace protocol
