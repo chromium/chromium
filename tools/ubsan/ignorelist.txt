@@ -1,9 +1,5 @@
-# This black list is the subset of blacklist.txt that's needed in
-# is_ubsan_security builds. is_ubsan_security builds also use
-# vptr_blacklist.txt. This file does not duplicate the contents of that file.
-
 #############################################################################
-# UBSan security blacklist.
+# UBSan ignorelist.
 
 #############################################################################
 # YASM does some funny things that UBsan doesn't like.
@@ -11,33 +7,20 @@
 src:*/third_party/yasm/*
 
 #############################################################################
-# V8 gives too many false positives. Ignore them for now.
-src:*/v8/*
-
-#############################################################################
 # Ignore system libraries.
 src:*/usr/*
 
 #############################################################################
-# V8 UBsan supressions, commented out for now since we are ignorning v8
-# completely.
-# fun:*v8*internal*FastD2I*
-# fun:*v8*internal*ComputeIntegerHash*
-# fun:*v8*internal*ComputeLongHash*
-# fun:*v8*internal*ComputePointerHash*
-# src:*/v8/src/base/bits.cc
-# src:*/v8/src/base/functional.cc
-# Undefined behaviour (integer overflow) is expected but ignored in this
-# function.
-# fun:*JsonParser*ParseJsonNumber*
+# V8 UBsan supressions
 
-# Runtime numeric functions.
-# src:*/v8/src/runtime/runtime-numbers.cc
+# Bug v8:8735: PropertyCallbackInfo<void> vs PropertyCallbackInfo<T>.
+fun:*v8*internal*PropertyCallbackArguments*CallAccessorSetter*
+fun:*v8*internal*PropertyCallbackArguments*BasicCallNamedGetterCallback*
+fun:*v8*internal*InvokeAccessorGetterCallback*
 
-# Shifts of negative numbers
-# fun:*v8*internal*HPositionInfo*TagPosition*
-# fun:*v8*internal*Range*Shl*
-# fun:*v8*internal*RelocInfoWriter*WriteTaggedData*
+# Bug v8:8735: WeakCallbackInfo<void> vs. WeakCallbackInfo<T>.
+fun:*v8*internal*GlobalHandles*PendingPhantomCallback*Invoke*
+fun:*v8*internal*GlobalHandles*Node*PostGarbageCollectionProcessing*
 
 #############################################################################
 # Undefined arithmetic that can be safely ignored.
@@ -51,7 +34,7 @@ fun:*google*protobuf*hash*
 fun:*(hash|Hash)*
 
 #############################################################################
-# Bounds blacklist.
+# Bounds ignorelist.
 # Array at the end of struct pattern:
 # Maybe UBSan itself can be improved here?
 # e.g.
@@ -72,7 +55,3 @@ fun:*re2*RegexpD*
 #############################################################################
 # Harmless float division by zero.
 fun:*RendererFrameManager*CullUnlockedFrames*
-
-#############################################################################
-# -fsanitize=vptr suppressions should go in vptr_blacklist.txt, not here.
-#############################################################################
