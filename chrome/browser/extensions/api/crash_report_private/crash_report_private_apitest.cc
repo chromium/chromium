@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_features.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/test/scoped_feature_list.h"
@@ -105,15 +106,18 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, Basic) {
   ASSERT_TRUE(report);
   EXPECT_THAT(
       report->query,
-      MatchesRegex("app_locale=en-US&browser=Chrome&browser_process_uptime_ms="
-                   "\\d+&browser_"
-                   "version=1.2.3.4&channel=Stable&"
-                   "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2F&"
-                   "os=ChromeOS"
-                   "&prod=Chrome_ChromeOS&renderer_process_uptime_ms=\\d+&"
-                   "source_system=crash_report_api&src="
-                   "http%3A%2F%2Fwww.test."
-                   "com%2F&type=JavascriptError&url=%2F&ver=1.2.3.4"));
+      MatchesRegex(base::StrCat(
+          {"app_locale=en-US&browser=Chrome&browser_process_uptime_ms="
+           "\\d+&browser_"
+           "version=1.2.3.4&channel=Stable&"
+           "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2F&"
+           "num-experiments=1&os=ChromeOS"
+           "&prod=Chrome_ChromeOS&renderer_process_uptime_ms=\\d+&"
+           "source_system=crash_report_api&src="
+           "http%3A%2F%2Fwww.test."
+           "com%2F&type=JavascriptError&url=%2F&variations=",
+           MockChromeJsErrorReportProcessor::kDefaultExperimentListString,
+           "&ver=1.2.3.4"})));
   EXPECT_EQ(report->content, "");
 }
 
@@ -138,16 +142,19 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, ExtraParamsAndStackTrace) {
   // "Chrome%20(Chrome%20OS)" and then the second escapes the '%' into '%25'.
   EXPECT_THAT(
       report->query,
-      MatchesRegex("app_locale=en-US&browser=Chrome&browser_process_uptime_ms="
-                   "\\d+&browser_"
-                   "version=1.2.3.4&channel=Stable&column=456&"
-                   "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2Ffoo"
-                   "&line=123&os=ChromeOS"
-                   "&prod=Chrome%2520\\(Chrome%2520OS\\)&renderer_process_"
-                   "uptime_ms=\\d+&"
-                   "source_system=crash_report_api&"
-                   "src=http%3A%2F%2Fwww.test.com%2Ffoo&"
-                   "type=JavascriptError&url=%2Ffoo&ver=1.0.0.0"));
+      MatchesRegex(base::StrCat(
+          {"app_locale=en-US&browser=Chrome&browser_process_uptime_ms="
+           "\\d+&browser_"
+           "version=1.2.3.4&channel=Stable&column=456&"
+           "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2Ffoo"
+           "&line=123&num-experiments=1&os=ChromeOS"
+           "&prod=Chrome%2520\\(Chrome%2520OS\\)&renderer_process_"
+           "uptime_ms=\\d+&"
+           "source_system=crash_report_api&"
+           "src=http%3A%2F%2Fwww.test.com%2Ffoo&"
+           "type=JavascriptError&url=%2Ffoo&variations=",
+           MockChromeJsErrorReportProcessor::kDefaultExperimentListString,
+           "&ver=1.0.0.0"})));
   EXPECT_EQ(report->content, "   at <anonymous>:1:1");
 }
 
@@ -170,15 +177,18 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, StackTraceWithErrorMessage) {
   ASSERT_TRUE(report);
   EXPECT_THAT(
       report->query,
-      MatchesRegex("app_locale=en-US&browser=Chrome&browser_process_uptime_ms="
-                   "\\d+&browser_version=1.2."
-                   "3.4&channel=Stable&column=456&"
-                   "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2Ffoo&"
-                   "line=123&os=ChromeOS"
-                   "&prod=TestApp&renderer_process_uptime_ms=\\d+&"
-                   "source_system=crash_report_api&src=http%3A%"
-                   "2F%2Fwww.test.com%2Ffoo&type="
-                   "JavascriptError&url=%2Ffoo&ver=1.0.0.0"));
+      MatchesRegex(base::StrCat(
+          {"app_locale=en-US&browser=Chrome&browser_process_uptime_ms="
+           "\\d+&browser_version=1.2."
+           "3.4&channel=Stable&column=456&"
+           "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2Ffoo&"
+           "line=123&num-experiments=1&os=ChromeOS"
+           "&prod=TestApp&renderer_process_uptime_ms=\\d+&"
+           "source_system=crash_report_api&src=http%3A%"
+           "2F%2Fwww.test.com%2Ffoo&type="
+           "JavascriptError&url=%2Ffoo&variations=",
+           MockChromeJsErrorReportProcessor::kDefaultExperimentListString,
+           "&ver=1.0.0.0"})));
   EXPECT_EQ(report->content, "");
 }
 
@@ -202,16 +212,19 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, RedactMessage) {
   ASSERT_TRUE(report);
   EXPECT_THAT(
       report->query,
-      MatchesRegex(
-          "app_locale=en-US&browser=Chrome&browser_process_uptime_ms=\\d+&"
-          "browser_version=1.2."
-          "3.4&channel=Stable&column=456&"
-          "error_message=%5BMAC%20OUI%3D06%3A00%3A00%20IFACE%3D1%5D&"
-          "full_url=http%3A%2F%2Fwww.test.com%2Ffoo&line=123&os=ChromeOS&"
-          "prod=TestApp&renderer_process_uptime_ms=\\d+&"
-          "source_system=crash_report_api&src=http%3A%2F%2Fwww."
-          "test.com%2Ffoo&type="
-          "JavascriptError&url=%2Ffoo&ver=1.0.0.0"));
+      MatchesRegex(base::StrCat(
+          {"app_locale=en-US&browser=Chrome&browser_process_uptime_ms=\\d+&"
+           "browser_version=1.2."
+           "3.4&channel=Stable&column=456&"
+           "error_message=%5BMAC%20OUI%3D06%3A00%3A00%20IFACE%3D1%5D&"
+           "full_url=http%3A%2F%2Fwww.test.com%2Ffoo&line=123&num-experiments="
+           "1&"
+           "os=ChromeOS&prod=TestApp&renderer_process_uptime_ms=\\d+&"
+           "source_system=crash_report_api&src=http%3A%2F%2Fwww."
+           "test.com%2Ffoo&type="
+           "JavascriptError&url=%2Ffoo&variations=",
+           MockChromeJsErrorReportProcessor::kDefaultExperimentListString,
+           "&ver=1.0.0.0"})));
   EXPECT_EQ(report->content, "");
 }
 
@@ -274,16 +287,18 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, CalledFromWebContentsInTab) {
   auto report = crash_endpoint_->WaitForReport();
   EXPECT_THAT(
       report.query,
-      MatchesRegex("app_locale=en-US&browser=Chrome&browser_process_uptime_ms="
-                   "\\d+&browser_"
-                   "version=1.2.3.4&channel=Stable&"
-                   "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2F&"
-                   "os=ChromeOS"
-                   "&prod=Chrome_ChromeOS&renderer_process_uptime_ms=\\d+&"
-                   "source_system=crash_report_api&src="
-                   "http%3A%2F%2Fwww.test."
-                   "com%2F&type=JavascriptError&url=%2F&ver=1.2.3.4&window_"
-                   "type=REGULAR_TABBED"));
+      MatchesRegex(base::StrCat(
+          {"app_locale=en-US&browser=Chrome&browser_process_uptime_ms="
+           "\\d+&browser_"
+           "version=1.2.3.4&channel=Stable&"
+           "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2F&"
+           "num-experiments=1&os=ChromeOS"
+           "&prod=Chrome_ChromeOS&renderer_process_uptime_ms=\\d+&"
+           "source_system=crash_report_api&src="
+           "http%3A%2F%2Fwww.test."
+           "com%2F&type=JavascriptError&url=%2F&variations=",
+           MockChromeJsErrorReportProcessor::kDefaultExperimentListString,
+           "&ver=1.2.3.4&window_type=REGULAR_TABBED"})));
   EXPECT_EQ(report.content, "");
 }
 
@@ -327,16 +342,18 @@ IN_PROC_BROWSER_TEST_P(CrashReportPrivateCalledFromSwaTest,
 
   EXPECT_THAT(
       report.query,
-      MatchesRegex("app_locale=en-US&browser=Chrome&browser_process_uptime_ms="
-                   "\\d+&browser_"
-                   "version=1.2.3.4&channel=Stable&"
-                   "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2F&"
-                   "os=ChromeOS"
-                   "&prod=Chrome_ChromeOS&renderer_process_uptime_ms=\\d+&"
-                   "source_system=crash_report_api&src="
-                   "http%3A%2F%2Fwww.test."
-                   "com%2F&type=JavascriptError&url=%2F&ver=1.2.3.4&window_"
-                   "type=WEB_APP"));
+      MatchesRegex(base::StrCat(
+          {"app_locale=en-US&browser=Chrome&browser_process_uptime_ms="
+           "\\d+&browser_"
+           "version=1.2.3.4&channel=Stable&"
+           "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2F&"
+           "num-experiments=1&os=ChromeOS"
+           "&prod=Chrome_ChromeOS&renderer_process_uptime_ms=\\d+&"
+           "source_system=crash_report_api&src="
+           "http%3A%2F%2Fwww.test."
+           "com%2F&type=JavascriptError&url=%2F&variations=",
+           MockChromeJsErrorReportProcessor::kDefaultExperimentListString,
+           "&ver=1.2.3.4&window_type=WEB_APP"})));
   EXPECT_EQ(report.content, "");
 }
 
@@ -362,16 +379,18 @@ IN_PROC_BROWSER_TEST_P(CrashReportPrivateCalledFromSwaTest,
 
   EXPECT_THAT(
       report.query,
-      MatchesRegex("app_locale=en-US&browser=Chrome&browser_process_uptime_ms="
-                   "\\d+&browser_"
-                   "version=1.2.3.4&channel=Stable&"
-                   "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2F&"
-                   "os=ChromeOS"
-                   "&prod=Chrome_ChromeOS&renderer_process_uptime_ms=\\d+&"
-                   "source_system=crash_report_api&src="
-                   "http%3A%2F%2Fwww.test."
-                   "com%2F&type=JavascriptError&url=%2F&ver=1.2.3.4&window_"
-                   "type=SYSTEM_WEB_APP"));
+      MatchesRegex(base::StrCat(
+          {"app_locale=en-US&browser=Chrome&browser_process_uptime_ms="
+           "\\d+&browser_"
+           "version=1.2.3.4&channel=Stable&"
+           "error_message=hi&full_url=http%3A%2F%2Fwww.test.com%2F&"
+           "num-experiments=1&os=ChromeOS"
+           "&prod=Chrome_ChromeOS&renderer_process_uptime_ms=\\d+&"
+           "source_system=crash_report_api&src="
+           "http%3A%2F%2Fwww.test."
+           "com%2F&type=JavascriptError&url=%2F&variations=",
+           MockChromeJsErrorReportProcessor::kDefaultExperimentListString,
+           "&ver=1.2.3.4&window_type=SYSTEM_WEB_APP"})));
   EXPECT_EQ(report.content, "");
 }
 

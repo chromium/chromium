@@ -31,11 +31,12 @@ constexpr size_t kVariationsKeySize = 4096;
 
 // Crash key reporting the number of experiments. 8 is the size of the crash key
 // in bytes, which is used to hold an int as a string.
-crash_reporter::CrashKeyString<8> g_num_variations_crash_key("num-experiments");
+crash_reporter::CrashKeyString<8> g_num_variations_crash_key(
+    kNumExperimentsKey);
 
 // Crash key reporting the variations state.
 crash_reporter::CrashKeyString<kVariationsKeySize> g_variations_crash_key(
-    "variations");
+    kExperimentListKey);
 
 std::string ActiveGroupToString(const ActiveGroupId& active_group) {
   return base::StringPrintf("%x-%x,", active_group.name, active_group.group);
@@ -54,6 +55,10 @@ class VariationsCrashKeys final : public base::FieldTrialList::Observer {
   // changed. Note: This matches the SyntheticTrialObserver interface, but this
   // object isn't a direct observer, so doesn't implement it.
   void OnSyntheticTrialsChanged(const std::vector<SyntheticTrialGroup>& groups);
+
+  // Gets the list of experiments and number of experiments in the format we
+  // want to place it in the crash keys.
+  ExperimentListInfo GetExperimentListInfo();
 
  private:
   // Adds an entry for the specified field trial to internal state, without
@@ -137,27 +142,33 @@ void VariationsCrashKeys::AppendFieldTrial(const std::string& trial_name,
   ++num_variations_;
 }
 
+ExperimentListInfo VariationsCrashKeys::GetExperimentListInfo() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ExperimentListInfo result;
+  result.num_experiments = num_variations_ + num_synthetic_trials_;
+  result.experiment_list.reserve(variations_string_.size() +
+                                 synthetic_trials_string_.size());
+  result.experiment_list.append(variations_string_);
+  result.experiment_list.append(synthetic_trials_string_);
+  return result;
+}
+
 void VariationsCrashKeys::UpdateCrashKeys() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  g_num_variations_crash_key.Set(
-      base::NumberToString(num_variations_ + num_synthetic_trials_));
+  ExperimentListInfo info = GetExperimentListInfo();
+  g_num_variations_crash_key.Set(base::NumberToString(info.num_experiments));
 
-  std::string combined_string;
-  combined_string.reserve(variations_string_.size() +
-                          synthetic_trials_string_.size());
-  combined_string.append(variations_string_);
-  combined_string.append(synthetic_trials_string_);
-
-  if (combined_string.size() > kVariationsKeySize) {
+  if (info.experiment_list.size() > kVariationsKeySize) {
     // If size exceeded, truncate to the last full entry.
-    int comma_index = combined_string.substr(0, kVariationsKeySize).rfind(',');
-    combined_string.resize(comma_index + 1);
+    int comma_index =
+        info.experiment_list.substr(0, kVariationsKeySize).rfind(',');
+    info.experiment_list.resize(comma_index + 1);
     // NOTREACHED() will let us know of the problem and adjust the limit.
     NOTREACHED();
   }
 
-  g_variations_crash_key.Set(combined_string);
+  g_variations_crash_key.Set(info.experiment_list);
 }
 
 void VariationsCrashKeys::OnSyntheticTrialsChanged(
@@ -183,6 +194,9 @@ VariationsCrashKeys* g_variations_crash_keys = nullptr;
 
 }  // namespace
 
+const char kNumExperimentsKey[] = "num-experiments";
+const char kExperimentListKey[] = "variations";
+
 void InitCrashKeys() {
   DCHECK(!g_variations_crash_keys);
   g_variations_crash_keys = new VariationsCrashKeys();
@@ -199,6 +213,11 @@ void ClearCrashKeysInstanceForTesting() {
   DCHECK(g_variations_crash_keys);
   delete g_variations_crash_keys;
   g_variations_crash_keys = nullptr;
+}
+
+ExperimentListInfo GetExperimentListInfo() {
+  DCHECK(g_variations_crash_keys);
+  return g_variations_crash_keys->GetExperimentListInfo();
 }
 
 }  // namespace variations

@@ -308,3 +308,19 @@ IN_PROC_BROWSER_TEST_F(WebUIJSErrorReportingTest, NoErrorsAfterNavigation) {
   EXPECT_THAT(endpoint.all_reports(), SizeIs(1));
   EXPECT_EQ(mock_processor.processor().send_count(), 1);
 }
+
+// Test that using the real variation::GetExperimentListString() system works.
+// We don't know the list of experiments we are in, so we don't know precisely
+// what to expect, but we shouldn't fail to send.
+IN_PROC_BROWSER_TEST_F(WebUIJSErrorReportingTest, ExperimentListSmokeTest) {
+  MockCrashEndpoint endpoint(embedded_test_server());
+  ScopedMockChromeJsErrorReportProcessor mock_processor(endpoint);
+  mock_processor.processor().set_use_real_experiment_list();
+
+  NavigateParams navigate(browser(), error_url_, ui::PAGE_TRANSITION_TYPED);
+  ui_test_utils::NavigateToURL(&navigate);
+
+  MockCrashEndpoint::Report report = endpoint.WaitForReport();
+  EXPECT_THAT(report.query, HasSubstr("num-experiments=")) << report;
+  EXPECT_THAT(report.query, HasSubstr("variations=")) << report;
+}

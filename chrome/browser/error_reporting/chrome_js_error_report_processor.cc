@@ -24,6 +24,7 @@
 #include "components/crash/core/app/crashpad.h"
 #include "components/feedback/redaction_tool.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
+#include "components/variations/variations_crash_keys.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -129,6 +130,19 @@ ChromeJsErrorReportProcessor::GetPlatformInfo() {
   return info;
 }
 
+variations::ExperimentListInfo
+ChromeJsErrorReportProcessor::GetExperimentListInfo() const {
+  return variations::GetExperimentListInfo();
+}
+
+void ChromeJsErrorReportProcessor::AddExperimentIds(ParameterMap& params) {
+  variations::ExperimentListInfo experiment_info = GetExperimentListInfo();
+
+  params[variations::kNumExperimentsKey] =
+      base::NumberToString(experiment_info.num_experiments);
+  params[variations::kExperimentListKey] = experiment_info.experiment_list;
+}
+
 // Finishes sending process once the MayBlock processing is done. On UI thread.
 void ChromeJsErrorReportProcessor::OnConsentCheckCompleted(
     base::ScopedClosureRunner callback_runner,
@@ -198,6 +212,7 @@ void ChromeJsErrorReportProcessor::OnConsentCheckCompleted(
     params["app_locale"] = std::move(*error_report->app_locale);
   if (error_report->page_url)
     params["page_url"] = std::move(*error_report->page_url);
+  AddExperimentIds(params);
 
   SendReport(std::move(params), std::move(error_report->stack_trace),
              error_report->send_to_production_servers,

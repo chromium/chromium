@@ -13,6 +13,16 @@
 #include "base/strings/strcat.h"
 #include "components/crash/content/browser/error_reporting/javascript_error_report.h"
 #include "components/crash/content/browser/error_reporting/mock_crash_endpoint.h"
+#include "components/variations/variations_crash_keys.h"
+
+const char MockChromeJsErrorReportProcessor::
+    kDefaultExperimentListStringPreEscaping[] =
+        "6598898b-ac59b6dc,";  // variations::GetExperimentListInfo() always
+                               // leaves a trailing comma.
+
+const char MockChromeJsErrorReportProcessor::kDefaultExperimentListString[] =
+    "6598898b-ac59b6dc%2C";  // The URL escaping turns the comma into %2C in the
+                             // query string.
 
 MockChromeJsErrorReportProcessor::MockChromeJsErrorReportProcessor() = default;
 
@@ -47,6 +57,17 @@ void MockChromeJsErrorReportProcessor::SetCrashEndpoint(
 void MockChromeJsErrorReportProcessor::SetCrashEndpointStaging(
     std::string crash_endpoint) {
   crash_endpoint_staging_ = crash_endpoint;
+}
+
+variations::ExperimentListInfo
+MockChromeJsErrorReportProcessor::GetExperimentListInfo() const {
+  if (use_real_experiment_list_) {
+    return ChromeJsErrorReportProcessor::GetExperimentListInfo();
+  }
+  variations::ExperimentListInfo result;
+  result.num_experiments = 1;
+  result.experiment_list = kDefaultExperimentListStringPreEscaping;
+  return result;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)

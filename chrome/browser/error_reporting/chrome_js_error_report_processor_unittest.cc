@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/simple_test_clock.h"
 #include "build/build_config.h"
@@ -129,6 +130,12 @@ TEST_F(ChromeJsErrorReportProcessorTest, Basic) {
   EXPECT_THAT(actual_report->query, HasSubstr("url=%2FHome"));
   EXPECT_THAT(actual_report->query, HasSubstr("browser=Chrome"));
   EXPECT_THAT(actual_report->query, Not(HasSubstr("source_system=")));
+  EXPECT_THAT(actual_report->query, HasSubstr("num-experiments=1"));
+  EXPECT_THAT(
+      actual_report->query,
+      HasSubstr(base::StrCat(
+          {"variations=",
+           MockChromeJsErrorReportProcessor::kDefaultExperimentListString})));
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   // This is from MockChromeJsErrorReportProcessor::GetOsVersion()
@@ -189,6 +196,12 @@ void ChromeJsErrorReportProcessorTest::TestAllFields() {
   EXPECT_THAT(actual_report->query, HasSubstr("line=83"));
   EXPECT_THAT(actual_report->query, HasSubstr("column=14"));
   EXPECT_THAT(actual_report->query, HasSubstr("source_system=webui_observer"));
+  EXPECT_THAT(actual_report->query, HasSubstr("num-experiments=1"));
+  EXPECT_THAT(
+      actual_report->query,
+      HasSubstr(base::StrCat(
+          {"variations=",
+           MockChromeJsErrorReportProcessor::kDefaultExperimentListString})));
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   // This is from MockChromeJsErrorReportProcessor::GetOsVersion()

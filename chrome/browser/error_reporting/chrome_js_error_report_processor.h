@@ -30,6 +30,9 @@ class SharedURLLoaderFactory;
 }  // namespace network
 class GURL;
 struct JavaScriptErrorReport;
+namespace variations {
+struct ExperimentListInfo;
+}
 
 // Chrome's implementation of the JavaScript error reporter.
 class ChromeJsErrorReportProcessor : public JsErrorReportProcessor {
@@ -39,6 +42,7 @@ class ChromeJsErrorReportProcessor : public JsErrorReportProcessor {
   // the processor if appropriate.
   static void Create();
 
+  // JsErrorReportProcessor:
   void SendErrorReport(JavaScriptErrorReport error_report,
                        base::OnceClosure completion_callback,
                        content::BrowserContext* browser_context) override;
@@ -64,6 +68,10 @@ class ChromeJsErrorReportProcessor : public JsErrorReportProcessor {
   // Non-tests should call ChromeJsErrorReportProcessor::Create() instead.
   ChromeJsErrorReportProcessor();
   ~ChromeJsErrorReportProcessor() override;
+
+  // Wrapper around variations::GetExperimentListInfo(). Separate virtual
+  // wrapper to allow dependency injection.
+  virtual variations::ExperimentListInfo GetExperimentListInfo() const;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Returns the first element(s) of the crash_reporter argv. By default, this
@@ -132,6 +140,9 @@ class ChromeJsErrorReportProcessor : public JsErrorReportProcessor {
       base::ScopedClosureRunner callback_runner,
       base::Time report_time,
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory);
+
+  // Add parameters indicating the current field trial experiments.
+  void AddExperimentIds(ParameterMap& params);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Write the parameters (and the stack_trace, if present) into a string

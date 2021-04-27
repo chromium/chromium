@@ -30,6 +30,7 @@ static_library("error_reporting") {
     "//components/feedback",
     "//components/startup_metric_utils/browser",
     "//components/upload_list",
+    "//components/variations",
     "//content/public/browser",
     "//net",
     "//services/network:network_service",
@@ -57,6 +58,7 @@ source_set("test_support") {
     "//chrome/common:constants",
     "//components/crash/content/browser/error_reporting",
     "//components/crash/content/browser/error_reporting:mock_crash_endpoint",
+    "//components/variations",
   ]
   if (is_chromeos_ash || is_chromeos_lacros) {
     data_deps = [ ":mock_chromeos_crash_reporter" ]

@@ -18,6 +18,9 @@
 #include "chrome/browser/error_reporting/chrome_js_error_report_processor.h"
 
 class MockCrashEndpoint;
+namespace variations {
+struct ExperimentListInfo;
+}
 
 class MockChromeJsErrorReportProcessor : public ChromeJsErrorReportProcessor {
  public:
@@ -34,6 +37,16 @@ class MockChromeJsErrorReportProcessor : public ChromeJsErrorReportProcessor {
   void SetCrashEndpoint(std::string crash_endpoint);
   // Controls what is returned from GetCrashEndpointStaging() override.
   void SetCrashEndpointStaging(std::string crash_endpoint);
+
+  // The "list of experiments" string that will appear in the query string
+  // (under the "variations" key). Can be overridden by calling
+  // set_use_real_experiment_list().
+  static const char kDefaultExperimentListString[];
+
+  // If called, the query string will contain the real list of experiments,
+  // instead of a hardcoded list (in the "variations" and "num-experiments"
+  // keys.)
+  void set_use_real_experiment_list() { use_real_experiment_list_ = true; }
 
   // Allow tests to manipulate the result of JsErrorReportProcessor::Get().
   // Calling this will cause JsErrorReportProcessor::Get() to return this
@@ -55,6 +68,8 @@ class MockChromeJsErrorReportProcessor : public ChromeJsErrorReportProcessor {
 #endif
 
  protected:
+  variations::ExperimentListInfo GetExperimentListInfo() const override;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   std::vector<std::string> GetCrashReporterArgvStart() override;
 #else
@@ -68,10 +83,16 @@ class MockChromeJsErrorReportProcessor : public ChromeJsErrorReportProcessor {
 
  private:
   ~MockChromeJsErrorReportProcessor() override;
+
+  // The experiments listed in kDefaultExperimentListString before they are
+  // URL-escaped.
+  static const char kDefaultExperimentListStringPreEscaping[];
+
   // Number of times SendErrorReport has been called.
   int send_count_ = 0;
   std::string crash_endpoint_;
   std::string crash_endpoint_staging_;
+  bool use_real_experiment_list_ = false;
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   bool update_report_database_ = false;
 #endif
