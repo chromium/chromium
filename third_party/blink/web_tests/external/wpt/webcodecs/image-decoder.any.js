@@ -3,8 +3,12 @@
 
 function testFourColorsDecode(filename, mimeType, options = {}) {
   var decoder = null;
-  return fetch(filename).then(response => {
-    return testFourColorsDecodeBuffer(response.body, mimeType, options);
+  return ImageDecoder.isTypeSupported(mimeType).then(support => {
+    assert_implements_optional(
+        support, 'Optional codec ' + mimeType + ' not supported.');
+    return fetch(filename).then(response => {
+      return testFourColorsDecodeBuffer(response.body, mimeType, options);
+    });
   });
 }
 
@@ -12,10 +16,14 @@ function testFourColorsDecode(filename, mimeType, options = {}) {
 // implementations may support YUV decode with partial ReadableStream data.
 function testFourColorsYuvDecode(filename, mimeType, options = {}) {
   var decoder = null;
-  return fetch(filename).then(
-      response => {return response.arrayBuffer().then(buffer => {
-        return testFourColorsDecodeBuffer(buffer, mimeType, options);
-      })});
+  return ImageDecoder.isTypeSupported(mimeType).then(support => {
+    assert_implements_optional(
+        support, 'Optional codec ' + mimeType + ' not supported.');
+    return fetch(filename).then(
+        response => {return response.arrayBuffer().then(buffer => {
+          return testFourColorsDecodeBuffer(buffer, mimeType, options);
+        })});
+  });
 }
 
 function testFourColorsDecodeBuffer(buffer, mimeType, options = {}) {
@@ -172,106 +180,125 @@ promise_test(t => {
 }, 'Test invalid mime type rejects decodeMetadata() requests');
 
 promise_test(t => {
-  return fetch('four-colors.png')
-      .then(response => {
-        return response.arrayBuffer();
-      })
-      .then(buffer => {
-        let decoder = new ImageDecoder({data: buffer, type: 'image/png'});
-        return promise_rejects_dom(
-            t, 'IndexSizeError', decoder.decode({frameIndex: 1}));
-      });
+  return ImageDecoder.isTypeSupported('image/png').then(support => {
+    assert_implements_optional(
+        support, 'Optional codec image/png not supported.');
+    return fetch('four-colors.png')
+        .then(response => {
+          return response.arrayBuffer();
+        })
+        .then(buffer => {
+          let decoder = new ImageDecoder({data: buffer, type: 'image/png'});
+          return promise_rejects_dom(
+              t, 'IndexSizeError', decoder.decode({frameIndex: 1}));
+        });
+  });
 }, 'Test out of range index returns IndexSizeError');
 
 promise_test(t => {
   var decoder;
   var p1;
-  return fetch('four-colors.png')
-      .then(response => {
-        return response.arrayBuffer();
-      })
-      .then(buffer => {
-        decoder =
-            new ImageDecoder({data: buffer.slice(0, 100), type: 'image/png'});
-        return decoder.tracks.ready;
-      })
-      .then(_ => {
-        // Queue two decodes to ensure index verification and decoding are
-        // properly ordered.
-        p1 = decoder.decode({frameIndex: 0});
-        return promise_rejects_dom(
-            t, 'IndexSizeError', decoder.decode({frameIndex: 1}));
-      })
-      .then(_ => {
-        return promise_rejects_dom(t, 'IndexSizeError', p1);
-      })
+  return ImageDecoder.isTypeSupported('image/png').then(support => {
+    assert_implements_optional(
+        support, 'Optional codec image/png not supported.');
+    return fetch('four-colors.png')
+        .then(response => {
+          return response.arrayBuffer();
+        })
+        .then(buffer => {
+          decoder =
+              new ImageDecoder({data: buffer.slice(0, 100), type: 'image/png'});
+          return decoder.tracks.ready;
+        })
+        .then(_ => {
+          // Queue two decodes to ensure index verification and decoding are
+          // properly ordered.
+          p1 = decoder.decode({frameIndex: 0});
+          return promise_rejects_dom(
+              t, 'IndexSizeError', decoder.decode({frameIndex: 1}));
+        })
+        .then(_ => {
+          return promise_rejects_dom(t, 'IndexSizeError', p1);
+        })
+  });
 }, 'Test partial decoding without a frame results in an error');
 
 promise_test(t => {
   var decoder = null;
 
-  return fetch('four-colors.png')
-      .then(response => {
-        decoder = new ImageDecoder({data: response.body, type: 'image/png'});
-        return decoder.tracks.ready;
-      })
-      .then(_ => {
-        decoder.tracks.selectedTrack.selected = false;
-        assert_equals(decoder.tracks.selectedIndex, -1);
-        assert_equals(decoder.tracks.selectedTrack, null);
-        return decoder.tracks.ready;
-      })
-      .then(_ => {
-        return promise_rejects_dom(t, 'InvalidStateError', decoder.decode());
-      })
-      .then(_ => {
-        decoder.tracks[0].selected = true;
-        assert_equals(decoder.tracks.selectedIndex, 0);
-        assert_not_equals(decoder.tracks.selected, null);
-        return decoder.decode();
-      })
-      .then(result => {
-        assert_equals(result.image.displayWidth, 320);
-        assert_equals(result.image.displayHeight, 240);
-      });
+  return ImageDecoder.isTypeSupported('image/png').then(support => {
+    assert_implements_optional(
+        support, 'Optional codec image/png not supported.');
+    return fetch('four-colors.png')
+        .then(response => {
+          decoder = new ImageDecoder({data: response.body, type: 'image/png'});
+          return decoder.tracks.ready;
+        })
+        .then(_ => {
+          decoder.tracks.selectedTrack.selected = false;
+          assert_equals(decoder.tracks.selectedIndex, -1);
+          assert_equals(decoder.tracks.selectedTrack, null);
+          return decoder.tracks.ready;
+        })
+        .then(_ => {
+          return promise_rejects_dom(t, 'InvalidStateError', decoder.decode());
+        })
+        .then(_ => {
+          decoder.tracks[0].selected = true;
+          assert_equals(decoder.tracks.selectedIndex, 0);
+          assert_not_equals(decoder.tracks.selected, null);
+          return decoder.decode();
+        })
+        .then(result => {
+          assert_equals(result.image.displayWidth, 320);
+          assert_equals(result.image.displayHeight, 240);
+        });
+  });
 }, 'Test decode, decodeMetadata after no track selected.');
 
 promise_test(t => {
   var decoder = null;
 
-  return fetch('four-colors-flip.avif')
-      .then(response => {
-        decoder = new ImageDecoder(
-            {data: response.body, type: 'image/avif', preferAnimation: false});
-        return decoder.tracks.ready;
-      })
-      .then(_ => {
-        assert_equals(decoder.tracks.length, 2);
-        assert_false(decoder.tracks[decoder.tracks.selectedIndex].animated)
-        assert_false(decoder.tracks.selectedTrack.animated);
-        assert_equals(decoder.tracks.selectedTrack.frameCount, 1);
-        assert_equals(decoder.tracks.selectedTrack.repetitionCount, 0);
-        return decoder.decode();
-      })
-      .then(result => {
-        assert_equals(result.image.displayWidth, 320);
-        assert_equals(result.image.displayHeight, 240);
+  return ImageDecoder.isTypeSupported('image/avif').then(support => {
+    assert_implements_optional(
+        support, 'Optional codec image/avif not supported.');
+    return fetch('four-colors-flip.avif')
+        .then(response => {
+          decoder = new ImageDecoder({
+            data: response.body,
+            type: 'image/avif',
+            preferAnimation: false
+          });
+          return decoder.tracks.ready;
+        })
+        .then(_ => {
+          assert_equals(decoder.tracks.length, 2);
+          assert_false(decoder.tracks[decoder.tracks.selectedIndex].animated)
+          assert_false(decoder.tracks.selectedTrack.animated);
+          assert_equals(decoder.tracks.selectedTrack.frameCount, 1);
+          assert_equals(decoder.tracks.selectedTrack.repetitionCount, 0);
+          return decoder.decode();
+        })
+        .then(result => {
+          assert_equals(result.image.displayWidth, 320);
+          assert_equals(result.image.displayHeight, 240);
 
-        // Swap to the the other track.
-        let newIndex = (decoder.tracks.selectedIndex + 1) % 2;
-        decoder.tracks[newIndex].selected = true;
-        return decoder.decode()
-      })
-      .then(result => {
-        assert_equals(result.image.displayWidth, 320);
-        assert_equals(result.image.displayHeight, 240);
+          // Swap to the the other track.
+          let newIndex = (decoder.tracks.selectedIndex + 1) % 2;
+          decoder.tracks[newIndex].selected = true;
+          return decoder.decode()
+        })
+        .then(result => {
+          assert_equals(result.image.displayWidth, 320);
+          assert_equals(result.image.displayHeight, 240);
 
-        assert_equals(decoder.tracks.length, 2);
-        assert_true(decoder.tracks[decoder.tracks.selectedIndex].animated)
-        assert_true(decoder.tracks.selectedTrack.animated);
-        assert_equals(decoder.tracks.selectedTrack.frameCount, 7);
-        assert_equals(decoder.tracks.selectedTrack.repetitionCount, Infinity);
-      });
+          assert_equals(decoder.tracks.length, 2);
+          assert_true(decoder.tracks[decoder.tracks.selectedIndex].animated)
+          assert_true(decoder.tracks.selectedTrack.animated);
+          assert_equals(decoder.tracks.selectedTrack.frameCount, 7);
+          assert_equals(decoder.tracks.selectedTrack.repetitionCount, Infinity);
+        });
+  });
 }, 'Test track selection in multi track image.');
 
 class InfiniteGifSource {
@@ -307,6 +334,10 @@ class InfiniteGifSource {
 }
 
 promise_test(async t => {
+  let support = await ImageDecoder.isTypeSupported('image/gif');
+  assert_implements_optional(
+      support, 'Optional codec image/gif not supported.');
+
   let source = new InfiniteGifSource();
   await source.load(5);
 
@@ -369,6 +400,10 @@ promise_test(async t => {
 }, 'Test ReadableStream of gif');
 
 promise_test(async t => {
+  let support = await ImageDecoder.isTypeSupported('image/gif');
+  assert_implements_optional(
+      support, 'Optional codec image/gif not supported.');
+
   let source = new InfiniteGifSource();
   await source.load(5);
 
@@ -385,6 +420,10 @@ promise_test(async t => {
 }, 'Test that decode requests are serialized.');
 
 promise_test(async t => {
+  let support = await ImageDecoder.isTypeSupported('image/gif');
+  assert_implements_optional(
+      support, 'Optional codec image/gif not supported.');
+
   let source = new InfiniteGifSource();
   await source.load(5);
 
