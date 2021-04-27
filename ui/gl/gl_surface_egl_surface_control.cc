@@ -66,7 +66,8 @@ GLSurfaceEGLSurfaceControl::GLSurfaceEGLSurfaceControl(
       root_surface_(
           new gfx::SurfaceControl::Surface(window, root_surface_name_.c_str())),
       transaction_ack_timeout_manager_(task_runner),
-      gpu_task_runner_(std::move(task_runner)) {}
+      gpu_task_runner_(std::move(task_runner)),
+      using_on_commit_callback_(gfx::SurfaceControl::SupportsOnCommit()) {}
 
 GLSurfaceEGLSurfaceControl::~GLSurfaceEGLSurfaceControl() {
   Destroy();
@@ -269,6 +270,14 @@ void GLSurfaceEGLSurfaceControl::CommitPendingTransaction(
       std::move(primary_plane_fences_));
   primary_plane_fences_.reset();
   pending_transaction_->SetOnCompleteCb(std::move(callback), gpu_task_runner_);
+
+  if (using_on_commit_callback_) {
+    gfx::SurfaceControl::Transaction::OnCommitCb callback = base::BindOnce(
+        &GLSurfaceEGLSurfaceControl::OnTransactionCommittedOnGpuThread,
+        weak_factory_.GetWeakPtr());
+    pending_transaction_->SetOnCommitCb(std::move(callback), gpu_task_runner_);
+  }
+
   pending_surfaces_count_ = 0u;
   frame_rate_update_pending_ = false;
 
@@ -452,10 +461,7 @@ void GLSurfaceEGLSurfaceControl::OnTransactionAckOnGpuThread(
                "GLSurfaceEGLSurfaceControl::OnTransactionAckOnGpuThread");
 
   DCHECK(gpu_task_runner_->BelongsToCurrentThread());
-  DCHECK(transaction_ack_pending_);
-
   transaction_ack_timeout_manager_.OnTransactionAck();
-  transaction_ack_pending_ = false;
 
   const bool has_context = context_->MakeCurrent(this);
   for (auto& surface_stat : transaction_stats.surface_stats) {
@@ -500,6 +506,23 @@ void GLSurfaceEGLSurfaceControl::OnTransactionAckOnGpuThread(
   pending_presentation_callback_queue_.push(std::move(pending_cb));
 
   CheckPendingPresentationCallbacks();
+
+  // If we don't use OnCommit, we advance transaction queue after we received
+  // OnComplete.
+  if (!using_on_commit_callback_)
+    AdvanceTransactionQueue();
+}
+
+void GLSurfaceEGLSurfaceControl::OnTransactionCommittedOnGpuThread() {
+  TRACE_EVENT0("gpu",
+               "GLSurfaceEGLSurfaceControl::OnTransactionCommittedOnGpuThread");
+  DCHECK(using_on_commit_callback_);
+  AdvanceTransactionQueue();
+}
+
+void GLSurfaceEGLSurfaceControl::AdvanceTransactionQueue() {
+  DCHECK(transaction_ack_pending_);
+  transaction_ack_pending_ = false;
 
   if (!pending_transaction_queue_.empty()) {
     transaction_ack_pending_ = true;

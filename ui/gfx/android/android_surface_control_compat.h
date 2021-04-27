@@ -47,6 +47,9 @@ class GFX_EXPORT SurfaceControl {
   // Returns true if tagging a surface with a frame rate value is supported.
   static bool SupportsSetFrameRate();
 
+  // Returns true if OnCommit callback is supported.
+  static bool SupportsOnCommit();
+
   // Applies transaction. Used to emulate webview functor interface, where we
   // pass raw ASurfaceTransaction object. For use inside Chromium use
   // Transaction class below instead.
@@ -138,6 +141,10 @@ class GFX_EXPORT SurfaceControl {
     void SetOnCompleteCb(
         OnCompleteCb cb,
         scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+    using OnCommitCb = base::OnceClosure;
+    void SetOnCommitCb(OnCommitCb cb,
+                       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
     void Apply();
     ASurfaceTransaction* transaction() { return transaction_; }

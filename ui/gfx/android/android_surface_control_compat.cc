@@ -24,6 +24,8 @@ extern "C" {
 typedef struct ASurfaceTransactionStats ASurfaceTransactionStats;
 typedef void (*ASurfaceTransaction_OnComplete)(void* context,
                                                ASurfaceTransactionStats* stats);
+typedef void (*ASurfaceTransaction_OnCommit)(void* context,
+                                             ASurfaceTransactionStats* stats);
 
 // ASurface
 using pASurfaceControl_createFromWindow =
@@ -51,6 +53,9 @@ using pASurfaceTransaction_delete = void (*)(ASurfaceTransaction*);
 using pASurfaceTransaction_apply = int64_t (*)(ASurfaceTransaction*);
 using pASurfaceTransaction_setOnComplete =
     void (*)(ASurfaceTransaction*, void* ctx, ASurfaceTransaction_OnComplete);
+using pASurfaceTransaction_setOnCommit = void (*)(ASurfaceTransaction*,
+                                                  void* ctx,
+                                                  ASurfaceTransaction_OnCommit);
 using pASurfaceTransaction_setVisibility = void (*)(ASurfaceTransaction*,
                                                     ASurfaceControl*,
                                                     int8_t visibility);
@@ -147,6 +152,7 @@ struct SurfaceControlMethods {
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_delete);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_apply);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setOnComplete);
+    LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceTransaction_setOnCommit);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_reparent);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setVisibility);
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_setZOrder);
@@ -179,6 +185,7 @@ struct SurfaceControlMethods {
   pASurfaceTransaction_delete ASurfaceTransaction_deleteFn;
   pASurfaceTransaction_apply ASurfaceTransaction_applyFn;
   pASurfaceTransaction_setOnComplete ASurfaceTransaction_setOnCompleteFn;
+  pASurfaceTransaction_setOnCommit ASurfaceTransaction_setOnCommitFn;
   pASurfaceTransaction_reparent ASurfaceTransaction_reparentFn;
   pASurfaceTransaction_setVisibility ASurfaceTransaction_setVisibilityFn;
   pASurfaceTransaction_setZOrder ASurfaceTransaction_setZOrderFn;
@@ -285,6 +292,7 @@ struct TransactionAckCtx {
   int id = 0;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner;
   SurfaceControl::Transaction::OnCompleteCb callback;
+  SurfaceControl::Transaction::OnCommitCb latch_callback;
 };
 
 uint64_t GetTraceIdForTransaction(int transaction_id) {
@@ -294,7 +302,7 @@ uint64_t GetTraceIdForTransaction(int transaction_id) {
 }
 
 // Note that the framework API states that this callback can be dispatched on
-// any thread (in practice it should be the binder thread).
+// any thread (in practice it should be a binder thread).
 void OnTransactionCompletedOnAnyThread(void* context,
                                        ASurfaceTransactionStats* stats) {
   auto* ack_ctx = static_cast<TransactionAckCtx*>(context);
@@ -311,6 +319,24 @@ void OnTransactionCompletedOnAnyThread(void* context,
                                   std::move(transaction_stats)));
   } else {
     std::move(ack_ctx->callback).Run(std::move(transaction_stats));
+  }
+
+  delete ack_ctx;
+}
+
+// Note that the framework API states that this callback can be dispatched on
+// any thread (in practice it should be a binder thread).
+void OnTransactiOnCommittedOnAnyThread(void* context,
+                                       ASurfaceTransactionStats* stats) {
+  auto* ack_ctx = static_cast<TransactionAckCtx*>(context);
+  TRACE_EVENT_INSTANT0("gpu,benchmark", "SurfaceControlTransaction committed",
+                       TRACE_EVENT_SCOPE_THREAD);
+
+  if (ack_ctx->task_runner) {
+    ack_ctx->task_runner->PostTask(
+        FROM_HERE, base::BindOnce(std::move(ack_ctx->latch_callback)));
+  } else {
+    std::move(ack_ctx->latch_callback).Run();
   }
 
   delete ack_ctx;
@@ -352,6 +378,12 @@ bool SurfaceControl::SupportsSetFrameRate() {
   // TODO(khushalsagar): Assert that this function is always available on R.
   return IsSupported() &&
          SurfaceControlMethods::Get().ASurfaceTransaction_setFrameRateFn !=
+             nullptr;
+}
+
+bool SurfaceControl::SupportsOnCommit() {
+  return IsSupported() &&
+         SurfaceControlMethods::Get().ASurfaceTransaction_setOnCommitFn !=
              nullptr;
 }
 
@@ -526,6 +558,18 @@ void SurfaceControl::Transaction::SetOnCompleteCb(
 
   SurfaceControlMethods::Get().ASurfaceTransaction_setOnCompleteFn(
       transaction_, ack_ctx, &OnTransactionCompletedOnAnyThread);
+}
+
+void SurfaceControl::Transaction::SetOnCommitCb(
+    OnCommitCb cb,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  TransactionAckCtx* ack_ctx = new TransactionAckCtx;
+  ack_ctx->latch_callback = std::move(cb);
+  ack_ctx->task_runner = std::move(task_runner);
+  ack_ctx->id = id_;
+
+  SurfaceControlMethods::Get().ASurfaceTransaction_setOnCommitFn(
+      transaction_, ack_ctx, &OnTransactiOnCommittedOnAnyThread);
 }
 
 void SurfaceControl::Transaction::Apply() {

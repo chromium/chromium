@@ -188,6 +188,11 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public GLSurfaceEGL {
       base::Optional<PrimaryPlaneFences> primary_plane_fences,
       gfx::SurfaceControl::TransactionStats transaction_stats);
 
+  // Called on the |gpu_task_runner_| when a transaction is committed by the
+  // framework.
+  void OnTransactionCommittedOnGpuThread();
+
+  void AdvanceTransactionQueue();
   void CheckPendingPresentationCallbacks();
 
   gfx::Rect ApplyDisplayInverse(const gfx::Rect& input) const;
@@ -255,6 +260,9 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public GLSurfaceEGL {
   bool preserve_children_ = false;
 
   scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
+
+  const bool using_on_commit_callback_;
+
   base::WeakPtrFactory<GLSurfaceEGLSurfaceControl> weak_factory_{this};
 };
 
