@@ -8,16 +8,14 @@
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
-#include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_direct_map_extent.h"
+#include "base/allocator/partition_allocator/partition_root.h"
 #include "base/bits.h"
-#include "base/check.h"
+#include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
-#include "base/notreached.h"
-#include "build/build_config.h"
 
 namespace base {
 namespace internal {

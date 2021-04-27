@@ -12,10 +12,8 @@
 #include "base/allocator/partition_allocator/page_allocator_internal.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/bits.h"
-#include "base/check_op.h"
 #include "base/lazy_instance.h"
 #include "base/no_destructor.h"
-#include "base/numerics/checked_math.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
 

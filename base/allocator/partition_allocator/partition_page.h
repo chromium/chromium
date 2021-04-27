@@ -15,9 +15,10 @@
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_bucket.h"
 #include "base/allocator/partition_allocator/partition_freelist_entry.h"
-#include "base/allocator/partition_allocator/random.h"
 #include "base/allocator/partition_allocator/starscan/object_bitmap.h"
-#include "base/check_op.h"
+#include "base/base_export.h"
+#include "base/compiler_specific.h"
+#include "base/dcheck_is_on.h"
 #include "base/thread_annotations.h"
 
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)

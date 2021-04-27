@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/allocator/partition_allocator/oom_callback.h"
-#include "base/allocator/partition_allocator/partition_alloc_check.h"
 
-#include "base/check.h"
+#include "base/allocator/partition_allocator/partition_alloc_check.h"
 
 namespace base {
 

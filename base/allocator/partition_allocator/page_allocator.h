@@ -12,7 +12,6 @@
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
-#include "build/build_config.h"
 
 namespace base {
 

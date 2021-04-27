@@ -10,9 +10,6 @@
 
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/check_op.h"
-#include "base/cpu.h"
-#include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
 

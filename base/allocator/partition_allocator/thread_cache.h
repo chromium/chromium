@@ -10,18 +10,15 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
-#include "base/allocator/partition_allocator/partition_cookie.h"
 #include "base/allocator/partition_allocator/partition_freelist_entry.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/allocator/partition_allocator/partition_stats.h"
 #include "base/allocator/partition_allocator/partition_tls.h"
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
+#include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
-#include "base/sequenced_task_runner.h"
-#include "base/synchronization/lock.h"
-#include "build/build_config.h"
 
 namespace base {
 

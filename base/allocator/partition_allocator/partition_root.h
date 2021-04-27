@@ -50,6 +50,7 @@
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/partition_alloc_buildflags.h"
 #include "build/build_config.h"
 

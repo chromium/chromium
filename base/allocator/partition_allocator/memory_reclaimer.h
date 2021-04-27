@@ -9,11 +9,8 @@
 #include <set>
 
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
-#include "base/bind.h"
-#include "base/callback.h"
-#include "base/location.h"
 #include "base/no_destructor.h"
-#include "base/single_thread_task_runner.h"
+#include "base/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/timer/timer.h"
 

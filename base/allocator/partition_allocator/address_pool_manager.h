@@ -12,7 +12,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
-#include "base/atomicops.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"

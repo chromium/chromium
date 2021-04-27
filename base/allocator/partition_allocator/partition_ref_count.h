@@ -10,10 +10,9 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
-#include "base/allocator/partition_allocator/partition_cookie.h"
 #include "base/base_export.h"
-#include "base/check_op.h"
-#include "base/notreached.h"
+#include "base/compiler_specific.h"
+#include "base/dcheck_is_on.h"
 #include "base/partition_alloc_buildflags.h"
 #include "build/build_config.h"
 

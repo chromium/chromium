@@ -7,6 +7,8 @@
 
 #include <dawn/webgpu.h>
 
+#include "base/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
