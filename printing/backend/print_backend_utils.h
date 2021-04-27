@@ -5,14 +5,14 @@
 #ifndef PRINTING_BACKEND_PRINT_BACKEND_UTILS_H_
 #define PRINTING_BACKEND_PRINT_BACKEND_UTILS_H_
 
+#include "base/component_export.h"
 #include "base/strings/string_piece.h"
 #include "printing/backend/print_backend.h"
-#include "printing/printing_export.h"
 
 namespace printing {
 
-PRINTING_EXPORT PrinterSemanticCapsAndDefaults::Paper ParsePaper(
-    base::StringPiece value);
+COMPONENT_EXPORT(PRINTING)
+PrinterSemanticCapsAndDefaults::Paper ParsePaper(base::StringPiece value);
 
 }  // namespace printing
 

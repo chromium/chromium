@@ -9,7 +9,7 @@
 
 #include <vector>
 
-#include "printing/printing_export.h"
+#include "base/component_export.h"
 
 namespace printing {
 
@@ -18,7 +18,7 @@ struct PageRange;
 using PageRanges = std::vector<PageRange>;
 
 // Print range is inclusive. To select one page, set from == to.
-struct PRINTING_EXPORT PageRange {
+struct COMPONENT_EXPORT(PRINTING) PageRange {
   uint32_t from;
   uint32_t to;
 

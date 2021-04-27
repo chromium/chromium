@@ -7,8 +7,8 @@
 
 #include <memory>
 
+#include "base/component_export.h"
 #include "printing/page_range.h"
-#include "printing/printing_export.h"
 
 namespace base {
 class DictionaryValue;
@@ -19,11 +19,12 @@ namespace printing {
 
 class PrintSettings;
 
-PRINTING_EXPORT PageRanges
-GetPageRangesFromJobSettings(const base::Value& job_settings);
+COMPONENT_EXPORT(PRINTING)
+PageRanges GetPageRangesFromJobSettings(const base::Value& job_settings);
 
 // Returns nullptr on failure.
-PRINTING_EXPORT std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
+COMPONENT_EXPORT(PRINTING)
+std::unique_ptr<PrintSettings> PrintSettingsFromJobSettings(
     const base::Value& job_settings);
 
 // Use for debug only, because output is not completely consistent with format

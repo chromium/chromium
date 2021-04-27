@@ -31,7 +31,7 @@ namespace printing {
 struct MetafileSkiaData;
 
 // This class uses Skia graphics library to generate a PDF or MSKP document.
-class PRINTING_EXPORT MetafileSkia : public Metafile {
+class COMPONENT_EXPORT(PRINTING) MetafileSkia : public Metafile {
  public:
   // Default constructor, for mojom::SkiaDocumentType::kPDF type only.
   // TODO(weili): we should split up this use case into a different class, see

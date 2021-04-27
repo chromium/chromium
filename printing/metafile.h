@@ -9,11 +9,11 @@
 
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/containers/span.h"
 #include "build/build_config.h"
 #include "printing/mojom/print.mojom-forward.h"
 #include "printing/native_drawing_context.h"
-#include "printing/printing_export.h"
 
 #if defined(OS_WIN)
 #include <windows.h>
@@ -35,7 +35,7 @@ class Size;
 namespace printing {
 
 // This class plays metafiles from data stream (usually PDF or EMF).
-class PRINTING_EXPORT MetafilePlayer {
+class COMPONENT_EXPORT(PRINTING) MetafilePlayer {
  public:
   MetafilePlayer();
   MetafilePlayer(const MetafilePlayer&) = delete;
@@ -81,7 +81,7 @@ class PRINTING_EXPORT MetafilePlayer {
 
 // This class creates a graphics context that renders into a data stream
 // (usually PDF or EMF).
-class PRINTING_EXPORT Metafile : public MetafilePlayer {
+class COMPONENT_EXPORT(PRINTING) Metafile : public MetafilePlayer {
  public:
   Metafile();
   Metafile(const Metafile&) = delete;

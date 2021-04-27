@@ -9,9 +9,9 @@
 
 #include <memory>
 
+#include "base/component_export.h"
 #include "printing/backend/cups_printer.h"
 #include "printing/backend/print_backend.h"
-#include "printing/printing_export.h"
 
 namespace printing {
 
@@ -24,12 +24,12 @@ PrinterSemanticCapsAndDefaults::Paper DefaultPaper(
 
 // Populates the `printer_info` object with attributes retrieved using IPP from
 // `printer`.
-PRINTING_EXPORT void CapsAndDefaultsFromPrinter(
-    const CupsOptionProvider& printer,
-    PrinterSemanticCapsAndDefaults* printer_info);
+COMPONENT_EXPORT(PRINTING)
+void CapsAndDefaultsFromPrinter(const CupsOptionProvider& printer,
+                                PrinterSemanticCapsAndDefaults* printer_info);
 
 // Wraps `ipp` in unique_ptr with appropriate deleter
-PRINTING_EXPORT ScopedIppPtr WrapIpp(ipp_t* ipp);
+COMPONENT_EXPORT(PRINTING) ScopedIppPtr WrapIpp(ipp_t* ipp);
 
 }  // namespace printing
 

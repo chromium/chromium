@@ -21,7 +21,8 @@ class MetafilePlayer;
 
 // Android subclass of PrintingContext. This class communicates with the
 // Java side through JNI.
-class PRINTING_EXPORT PrintingContextAndroid : public PrintingContext {
+class COMPONENT_EXPORT(PRINTING) PrintingContextAndroid
+    : public PrintingContext {
  public:
   explicit PrintingContextAndroid(Delegate* delegate);
   PrintingContextAndroid(const PrintingContextAndroid&) = delete;

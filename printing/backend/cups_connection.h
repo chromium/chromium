@@ -11,18 +11,18 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "printing/backend/cups_deleters.h"
 #include "printing/backend/cups_jobs.h"
 #include "printing/backend/cups_printer.h"
 #include "printing/printer_status.h"
-#include "printing/printing_export.h"
 #include "url/gurl.h"
 
 namespace printing {
 
 // Represents the status of a printer queue.
-struct PRINTING_EXPORT QueueStatus {
+struct COMPONENT_EXPORT(PRINTING) QueueStatus {
   QueueStatus();
   QueueStatus(const QueueStatus& other);
   ~QueueStatus();
@@ -32,7 +32,7 @@ struct PRINTING_EXPORT QueueStatus {
 };
 
 // Represents a connection to a CUPS server.
-class PRINTING_EXPORT CupsConnection {
+class COMPONENT_EXPORT(PRINTING) CupsConnection {
  public:
   virtual ~CupsConnection() = default;
 

@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/component_export.h"
 #include "base/optional.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -15,7 +16,6 @@
 #include "printing/page_range.h"
 #include "printing/page_setup.h"
 #include "printing/print_job_constants.h"
-#include "printing/printing_export.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -29,33 +29,35 @@ namespace printing {
 
 // Convert from `color_mode` into a `color_model`.  An invalid `color_mode`
 // will give a result of `mojom::ColorModel::kUnknownColorModel`.
-PRINTING_EXPORT mojom::ColorModel ColorModeToColorModel(int color_mode);
+COMPONENT_EXPORT(PRINTING)
+mojom::ColorModel ColorModeToColorModel(int color_mode);
 
 // Returns true if `color_model` is color and false if it is B&W.  Callers
 // are not supposed to pass in `mojom::ColorModel::kUnknownColorModel`, but
 // if they do then the result will be base::nullopt.
-PRINTING_EXPORT base::Optional<bool> IsColorModelSelected(
-    mojom::ColorModel color_model);
+COMPONENT_EXPORT(PRINTING)
+base::Optional<bool> IsColorModelSelected(mojom::ColorModel color_model);
 
 #if defined(USE_CUPS)
 // Get the color model setting name and value for the `color_model`.
-PRINTING_EXPORT void GetColorModelForModel(mojom::ColorModel color_model,
-                                           std::string* color_setting_name,
-                                           std::string* color_value);
+COMPONENT_EXPORT(PRINTING)
+void GetColorModelForModel(mojom::ColorModel color_model,
+                           std::string* color_setting_name,
+                           std::string* color_value);
 
 #if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
 // Convert from `color_model` to a print-color-mode value from PWG 5100.13.
-PRINTING_EXPORT std::string GetIppColorModelForModel(
-    mojom::ColorModel color_model);
+COMPONENT_EXPORT(PRINTING)
+std::string GetIppColorModelForModel(mojom::ColorModel color_model);
 #endif
 #endif  // defined(USE_CUPS)
 
 // Inform the printing system that it may embed this user-agent string
 // in its output's metadata.
-PRINTING_EXPORT void SetAgent(const std::string& user_agent);
-PRINTING_EXPORT const std::string& GetAgent();
+COMPONENT_EXPORT(PRINTING) void SetAgent(const std::string& user_agent);
+COMPONENT_EXPORT(PRINTING) const std::string& GetAgent();
 
-class PRINTING_EXPORT PrintSettings {
+class COMPONENT_EXPORT(PRINTING) PrintSettings {
  public:
 #if defined(OS_WIN)
   enum PrinterType {

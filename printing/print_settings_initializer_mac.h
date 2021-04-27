@@ -14,7 +14,7 @@ namespace printing {
 class PrintSettings;
 
 // Initializes a PrintSettings object from the provided device context.
-class PRINTING_EXPORT PrintSettingsInitializerMac {
+class COMPONENT_EXPORT(PRINTING) PrintSettingsInitializerMac {
  public:
   PrintSettingsInitializerMac() = delete;
   PrintSettingsInitializerMac(const PrintSettingsInitializerMac&) = delete;

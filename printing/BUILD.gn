@@ -32,12 +32,6 @@ declare_args() {
   use_cups_ipp = use_cups && !(is_linux || is_chromeos_lacros)
 }
 
-# Several targets want to include this header file. We separate it out
-# here so multiple targets can depend on it.
-source_set("printing_export") {
-  sources = [ "printing_export.h" ]
-}
-
 if (use_cups_ipp && is_chromeos_ash) {
   ipp_handler_map_path = "$target_gen_dir/backend/ipp_handler_map.cc"
 
@@ -55,8 +49,7 @@ if (is_linux || is_chromeos) {
       "sandbox/print_backend_sandbox_hook_linux.h",
     ]
     deps = [
-      ":printing_export",
-      "//base:base",
+      "//base",
       "//sandbox/linux:sandbox_services",
       "//sandbox/policy",
       "//services/network:network_sandbox_hook",
@@ -111,11 +104,10 @@ component("printing") {
 
   configs += [ "//build/config/compiler:noshadowing" ]
   cflags = []
-  defines = [ "PRINTING_IMPLEMENTATION" ]
+  defines = [ "IS_PRINTING_IMPL" ]
 
   public_deps = [ "//printing/buildflags" ]
   deps = [
-    ":printing_export",
     "//base",
     "//base:i18n",
     "//base/third_party/dynamic_annotations",

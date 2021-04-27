@@ -28,7 +28,7 @@ class Size;
 namespace printing {
 
 // Simple wrapper class that manage an EMF data stream and its virtual HDC.
-class PRINTING_EXPORT Emf : public Metafile {
+class COMPONENT_EXPORT(PRINTING) Emf : public Metafile {
  public:
   class Record;
   class Enumerator;
@@ -110,7 +110,7 @@ struct Emf::EnumerationContext {
 
 // One EMF record. It keeps pointers to the EMF buffer held by Emf::emf_.
 // The entries become invalid once Emf::CloseEmf() is called.
-class PRINTING_EXPORT Emf::Record {
+class COMPONENT_EXPORT(PRINTING) Emf::Record {
  public:
   // Plays the record.
   bool Play(EnumerationContext* context) const;
@@ -134,7 +134,7 @@ class PRINTING_EXPORT Emf::Record {
 // Retrieves individual records out of a Emf buffer. The main use is to skip
 // over records that are unsupported on a specific printer or to play back
 // only a part of an EMF buffer.
-class PRINTING_EXPORT Emf::Enumerator {
+class COMPONENT_EXPORT(PRINTING) Emf::Enumerator {
  public:
   // Iterator type used for iterating the records.
   typedef std::vector<Record>::const_iterator const_iterator;
@@ -169,7 +169,6 @@ class PRINTING_EXPORT Emf::Enumerator {
   std::vector<Record> items_;
 
   EnumerationContext context_;
-
 };
 
 }  // namespace printing

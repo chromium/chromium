@@ -11,12 +11,12 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "printing/mojom/print.mojom.h"
-#include "printing/printing_export.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace base {
@@ -28,7 +28,7 @@ namespace printing {
 
 using PrinterBasicInfoOptions = std::map<std::string, std::string>;
 
-struct PRINTING_EXPORT PrinterBasicInfo {
+struct COMPONENT_EXPORT(PRINTING) PrinterBasicInfo {
   PrinterBasicInfo();
   PrinterBasicInfo(const std::string& printer_name,
                    const std::string& display_name,
@@ -58,7 +58,7 @@ using PrinterList = std::vector<PrinterBasicInfo>;
 
 #if defined(OS_CHROMEOS)
 
-struct PRINTING_EXPORT AdvancedCapabilityValue {
+struct COMPONENT_EXPORT(PRINTING) AdvancedCapabilityValue {
   AdvancedCapabilityValue();
   AdvancedCapabilityValue(const std::string& name,
                           const std::string& display_name);
@@ -74,7 +74,7 @@ struct PRINTING_EXPORT AdvancedCapabilityValue {
   std::string display_name;
 };
 
-struct PRINTING_EXPORT AdvancedCapability {
+struct COMPONENT_EXPORT(PRINTING) AdvancedCapability {
   enum class Type : uint8_t { kBoolean, kFloat, kInteger, kString };
 
   AdvancedCapability();
@@ -109,7 +109,7 @@ using AdvancedCapabilities = std::vector<AdvancedCapability>;
 
 #endif  // defined(OS_CHROMEOS)
 
-struct PRINTING_EXPORT PrinterSemanticCapsAndDefaults {
+struct COMPONENT_EXPORT(PRINTING) PrinterSemanticCapsAndDefaults {
   PrinterSemanticCapsAndDefaults();
   PrinterSemanticCapsAndDefaults(const PrinterSemanticCapsAndDefaults& other);
   ~PrinterSemanticCapsAndDefaults();
@@ -130,7 +130,7 @@ struct PRINTING_EXPORT PrinterSemanticCapsAndDefaults {
   mojom::ColorModel color_model = mojom::ColorModel::kUnknownColorModel;
   mojom::ColorModel bw_model = mojom::ColorModel::kUnknownColorModel;
 
-  struct PRINTING_EXPORT Paper {
+  struct COMPONENT_EXPORT(PRINTING) Paper {
     std::string display_name;
     std::string vendor_id;
     gfx::Size size_um;
@@ -151,7 +151,7 @@ struct PRINTING_EXPORT PrinterSemanticCapsAndDefaults {
 #endif  // defined(OS_CHROMEOS)
 };
 
-struct PRINTING_EXPORT PrinterCapsAndDefaults {
+struct COMPONENT_EXPORT(PRINTING) PrinterCapsAndDefaults {
   PrinterCapsAndDefaults();
   PrinterCapsAndDefaults(const PrinterCapsAndDefaults& other);
   ~PrinterCapsAndDefaults();
@@ -169,7 +169,7 @@ struct PRINTING_EXPORT PrinterCapsAndDefaults {
 // print system specific. For example, CUPS is available on both Linux and Mac,
 // but not available on ChromeOS, etc. This design allows us to add more
 // functionality on some platforms, while reusing core (CUPS) functions.
-class PRINTING_EXPORT PrintBackend
+class COMPONENT_EXPORT(PRINTING) PrintBackend
     : public base::RefCountedThreadSafe<PrintBackend> {
  public:
   // Enumerates the list of installed local and network printers.

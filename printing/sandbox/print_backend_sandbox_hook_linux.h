@@ -5,15 +5,15 @@
 #ifndef PRINTING_SANDBOX_PRINT_BACKEND_SANDBOX_HOOK_LINUX_H_
 #define PRINTING_SANDBOX_PRINT_BACKEND_SANDBOX_HOOK_LINUX_H_
 
-#include "printing/printing_export.h"
+#include "base/component_export.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
 
 namespace printing {
 
 // Setup allowed commands and filesystem permissions for print backend service
 // sandboxed process.
-PRINTING_EXPORT bool PrintBackendPreSandboxHook(
-    sandbox::policy::SandboxLinux::Options options);
+COMPONENT_EXPORT(PRINTING)
+bool PrintBackendPreSandboxHook(sandbox::policy::SandboxLinux::Options options);
 
 }  // namespace printing
 

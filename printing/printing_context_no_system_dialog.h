@@ -7,11 +7,13 @@
 
 #include <string>
 
+#include "base/component_export.h"
 #include "printing/printing_context.h"
 
 namespace printing {
 
-class PRINTING_EXPORT PrintingContextNoSystemDialog : public PrintingContext {
+class COMPONENT_EXPORT(PRINTING) PrintingContextNoSystemDialog
+    : public PrintingContext {
  public:
   explicit PrintingContextNoSystemDialog(Delegate* delegate);
   PrintingContextNoSystemDialog(const PrintingContextNoSystemDialog&) = delete;

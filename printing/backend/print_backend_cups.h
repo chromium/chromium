@@ -10,9 +10,9 @@
 #include <memory>
 #include <string>
 
+#include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "printing/backend/print_backend.h"
-#include "printing/printing_export.h"
 #include "url/gurl.h"
 
 namespace printing {
@@ -25,11 +25,11 @@ class PrintBackendCUPS : public PrintBackend {
                    const std::string& locale);
 
   // These static functions are exposed here for use in the tests.
-  PRINTING_EXPORT static bool PrinterBasicInfoFromCUPS(
-      const cups_dest_t& printer,
-      PrinterBasicInfo* printer_info);
-  PRINTING_EXPORT static std::string PrinterDriverInfoFromCUPS(
-      const cups_dest_t& printer);
+  COMPONENT_EXPORT(PRINTING)
+  static bool PrinterBasicInfoFromCUPS(const cups_dest_t& printer,
+                                       PrinterBasicInfo* printer_info);
+  COMPONENT_EXPORT(PRINTING)
+  static std::string PrinterDriverInfoFromCUPS(const cups_dest_t& printer);
 
  private:
   struct DestinationDeleter {

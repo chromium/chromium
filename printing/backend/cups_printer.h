@@ -11,8 +11,8 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "printing/backend/cups_deleters.h"
-#include "printing/printing_export.h"
 #include "url/gurl.h"
 
 namespace printing {
@@ -20,7 +20,7 @@ namespace printing {
 struct PrinterBasicInfo;
 
 // Provides information regarding cups options.
-class PRINTING_EXPORT CupsOptionProvider {
+class COMPONENT_EXPORT(PRINTING) CupsOptionProvider {
  public:
   virtual ~CupsOptionProvider() = default;
 
@@ -48,7 +48,7 @@ class PRINTING_EXPORT CupsOptionProvider {
 // Retrieves information from CUPS printer objects as requested.  This class
 // is only valid as long as the CupsConnection which created it exists as they
 // share an http connection which the CupsConnection closes on destruction.
-class PRINTING_EXPORT CupsPrinter : public CupsOptionProvider {
+class COMPONENT_EXPORT(PRINTING) CupsPrinter : public CupsOptionProvider {
  public:
   // Represents the margins that CUPS reports for some given media.
   // Its members are valued in PWG units (100ths of mm).

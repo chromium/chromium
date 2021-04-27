@@ -23,7 +23,7 @@ namespace printing {
 // user selected printing context. This includes the OS-dependent UI to ask the
 // user about the print settings. Concrete implementations directly talk to the
 // printer and manage the document and page breaks.
-class PRINTING_EXPORT PrintingContext {
+class COMPONENT_EXPORT(PRINTING) PrintingContext {
  public:
   // Printing context delegate.
   class Delegate {

@@ -5,7 +5,7 @@
 #ifndef PRINTING_PRINTER_QUERY_RESULT_H_
 #define PRINTING_PRINTER_QUERY_RESULT_H_
 
-#include "printing/printing_export.h"
+#include "base/component_export.h"
 
 namespace printing {
 
@@ -13,7 +13,7 @@ namespace printing {
 // This enum is used to record UMA histogram values and should not be
 // reordered. Please keep in sync with PrinterStatusQueryResult in
 // src/tools/metrics/histograms/enums.xml.
-enum class PRINTING_EXPORT PrinterQueryResult {
+enum class COMPONENT_EXPORT(PRINTING) PrinterQueryResult {
   kUnknownFailure = 0,      // catchall error
   kSuccess = 1,             // successful
   kUnreachable = 2,         // failed to reach the host

@@ -5,13 +5,13 @@
 #ifndef PRINTING_PAGE_SETUP_H_
 #define PRINTING_PAGE_SETUP_H_
 
-#include "printing/printing_export.h"
+#include "base/component_export.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace printing {
 
 // Margins for a page setup.
-class PRINTING_EXPORT PageMargins {
+class COMPONENT_EXPORT(PRINTING) PageMargins {
  public:
   PageMargins();
 
@@ -33,7 +33,7 @@ class PRINTING_EXPORT PageMargins {
 
 // Settings that define the size and printable areas of a page. Unit is
 // unspecified.
-class PRINTING_EXPORT PageSetup {
+class COMPONENT_EXPORT(PRINTING) PageSetup {
  public:
   PageSetup();
   PageSetup(const PageSetup& other);

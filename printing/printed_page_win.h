@@ -20,7 +20,7 @@ namespace printing {
 // Note: May be accessed from many threads at the same time. This is an non
 // issue since this object is immutable. The reason is that a page may be
 // printed and be displayed at the same time.
-class PRINTING_EXPORT PrintedPage
+class COMPONENT_EXPORT(PRINTING) PrintedPage
     : public base::RefCountedThreadSafe<PrintedPage> {
  public:
   PrintedPage(uint32_t page_number,

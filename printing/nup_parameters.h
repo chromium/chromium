@@ -5,11 +5,11 @@
 #ifndef PRINTING_NUP_PARAMETERS_H_
 #define PRINTING_NUP_PARAMETERS_H_
 
-#include "printing/printing_export.h"
+#include "base/component_export.h"
 
 namespace printing {
 
-class PRINTING_EXPORT NupParameters {
+class COMPONENT_EXPORT(PRINTING) NupParameters {
  public:
   NupParameters();
 

@@ -16,7 +16,7 @@
 
 namespace printing {
 
-class PRINTING_EXPORT PrintingContextSystemDialogWin
+class COMPONENT_EXPORT(PRINTING) PrintingContextSystemDialogWin
     : public PrintingContextWin {
  public:
   explicit PrintingContextSystemDialogWin(Delegate* delegate);

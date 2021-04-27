@@ -19,16 +19,16 @@
 #include <memory>
 #include <string>
 
+#include "base/component_export.h"
 #include "base/memory/free_deleter.h"
 #include "base/win/scoped_handle.h"
-#include "printing/printing_export.h"
 
 // These are helper functions for dealing with Windows Printing.
 namespace printing {
 
-struct PRINTING_EXPORT PrinterBasicInfo;
+struct COMPONENT_EXPORT(PRINTING) PrinterBasicInfo;
 
-class PRINTING_EXPORT PrinterHandleTraits {
+class COMPONENT_EXPORT(PRINTING) PrinterHandleTraits {
  public:
   PrinterHandleTraits() = delete;
   PrinterHandleTraits(const PrinterHandleTraits&) = delete;
@@ -43,14 +43,14 @@ class PRINTING_EXPORT PrinterHandleTraits {
   static HANDLE NullHandle() { return nullptr; }
 };
 
-class PRINTING_EXPORT ScopedPrinterHandle
+class COMPONENT_EXPORT(PRINTING) ScopedPrinterHandle
     : public base::win::GenericScopedHandle<PrinterHandleTraits,
                                             base::win::DummyVerifierTraits> {
  public:
   bool OpenPrinterWithName(const wchar_t* printer);
 };
 
-class PRINTING_EXPORT PrinterChangeHandleTraits {
+class COMPONENT_EXPORT(PRINTING) PrinterChangeHandleTraits {
  public:
   PrinterChangeHandleTraits() = delete;
   PrinterChangeHandleTraits(const PrinterChangeHandleTraits&) = delete;
@@ -75,7 +75,7 @@ using ScopedPrinterChangeHandle =
 // this would mean having to add that to every binary that links with
 // printing.lib (which is a LOT of binaries). So choosing the GetProcAddress
 // route instead).
-class PRINTING_EXPORT XPSModule {
+class COMPONENT_EXPORT(PRINTING) XPSModule {
  public:
   // All the other methods can ONLY be called after a successful call to Init.
   // Init can be called many times and by multiple threads.
@@ -115,7 +115,7 @@ class PRINTING_EXPORT XPSModule {
 };
 
 // See comments in cc file explaining why we need this.
-class PRINTING_EXPORT ScopedXPSInitializer {
+class COMPONENT_EXPORT(PRINTING) ScopedXPSInitializer {
  public:
   ScopedXPSInitializer();
   ScopedXPSInitializer(const ScopedXPSInitializer&) = delete;
@@ -131,7 +131,7 @@ class PRINTING_EXPORT ScopedXPSInitializer {
 // Wrapper class to wrap the XPS Print APIs (these are different from the PTxxx
 // which deal with the XML Print Schema). This is needed because these
 // APIs are only available on Windows 7 and higher.
-class PRINTING_EXPORT XPSPrintModule {
+class COMPONENT_EXPORT(PRINTING) XPSPrintModule {
  public:
   // All the other methods can ONLY be called after a successful call to Init.
   // Init can be called many times and by multiple threads.
@@ -153,34 +153,38 @@ class PRINTING_EXPORT XPSPrintModule {
 };
 
 // Sets the function that gets friendly names for network printers.
-PRINTING_EXPORT void SetGetDisplayNameFunction(
+COMPONENT_EXPORT(PRINTING)
+void SetGetDisplayNameFunction(
     std::string (*get_display_name_func)(const std::string& printer_name));
 
-PRINTING_EXPORT bool InitBasicPrinterInfo(HANDLE printer,
-                                          PrinterBasicInfo* printer_info);
+COMPONENT_EXPORT(PRINTING)
+bool InitBasicPrinterInfo(HANDLE printer, PrinterBasicInfo* printer_info);
 
-PRINTING_EXPORT std::string GetDriverInfo(HANDLE printer);
+COMPONENT_EXPORT(PRINTING) std::string GetDriverInfo(HANDLE printer);
 
-PRINTING_EXPORT std::unique_ptr<DEVMODE, base::FreeDeleter> XpsTicketToDevMode(
+COMPONENT_EXPORT(PRINTING)
+std::unique_ptr<DEVMODE, base::FreeDeleter> XpsTicketToDevMode(
     const std::wstring& printer_name,
     const std::string& print_ticket);
 
-PRINTING_EXPORT bool IsDevModeWithColor(const DEVMODE* devmode);
+COMPONENT_EXPORT(PRINTING) bool IsDevModeWithColor(const DEVMODE* devmode);
 
 // Creates default DEVMODE and sets color option. Some devices need special
 // workaround for color.
-PRINTING_EXPORT std::unique_ptr<DEVMODE, base::FreeDeleter>
-CreateDevModeWithColor(HANDLE printer,
-                       const std::wstring& printer_name,
-                       bool color);
+COMPONENT_EXPORT(PRINTING)
+std::unique_ptr<DEVMODE, base::FreeDeleter> CreateDevModeWithColor(
+    HANDLE printer,
+    const std::wstring& printer_name,
+    bool color);
 
 // Creates new DEVMODE. If `in` is not NULL copy settings from there.
-PRINTING_EXPORT std::unique_ptr<DEVMODE, base::FreeDeleter> CreateDevMode(
-    HANDLE printer,
-    DEVMODE* in);
+COMPONENT_EXPORT(PRINTING)
+std::unique_ptr<DEVMODE, base::FreeDeleter> CreateDevMode(HANDLE printer,
+                                                          DEVMODE* in);
 
 // Prompts for new DEVMODE. If `in` is not NULL copy settings from there.
-PRINTING_EXPORT std::unique_ptr<DEVMODE, base::FreeDeleter> PromptDevMode(
+COMPONENT_EXPORT(PRINTING)
+std::unique_ptr<DEVMODE, base::FreeDeleter> PromptDevMode(
     HANDLE printer,
     const std::wstring& printer_name,
     DEVMODE* in,

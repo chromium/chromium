@@ -17,7 +17,8 @@
 
 namespace printing {
 
-class PRINTING_EXPORT PrintingContextChromeos : public PrintingContext {
+class COMPONENT_EXPORT(PRINTING) PrintingContextChromeos
+    : public PrintingContext {
  public:
   static std::unique_ptr<PrintingContextChromeos> CreateForTesting(
       Delegate* delegate,
@@ -65,7 +66,8 @@ class PRINTING_EXPORT PrintingContextChromeos : public PrintingContext {
 
 // This has the side effect of recording UMA for advanced attributes usage,
 // so only call once per job.
-PRINTING_EXPORT std::vector<ScopedCupsOption> SettingsToCupsOptions(
+COMPONENT_EXPORT(PRINTING)
+std::vector<ScopedCupsOption> SettingsToCupsOptions(
     const PrintSettings& settings);
 
 }  // namespace printing

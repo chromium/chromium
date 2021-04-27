@@ -9,8 +9,8 @@
 
 #include <string>
 
+#include "base/component_export.h"
 #include "base/strings/string_piece.h"
-#include "printing/printing_export.h"
 
 namespace gfx {
 class Size;
@@ -19,32 +19,34 @@ class Size;
 namespace printing {
 
 // Simplify title to resolve issue with some drivers.
-PRINTING_EXPORT std::u16string SimplifyDocumentTitle(
-    const std::u16string& title);
+COMPONENT_EXPORT(PRINTING)
+std::u16string SimplifyDocumentTitle(const std::u16string& title);
 
-PRINTING_EXPORT std::u16string SimplifyDocumentTitleWithLength(
-    const std::u16string& title,
-    size_t length);
+COMPONENT_EXPORT(PRINTING)
+std::u16string SimplifyDocumentTitleWithLength(const std::u16string& title,
+                                               size_t length);
 
-PRINTING_EXPORT std::u16string FormatDocumentTitleWithOwner(
-    const std::u16string& owner,
-    const std::u16string& title);
+COMPONENT_EXPORT(PRINTING)
+std::u16string FormatDocumentTitleWithOwner(const std::u16string& owner,
+                                            const std::u16string& title);
 
-PRINTING_EXPORT std::u16string FormatDocumentTitleWithOwnerAndLength(
+COMPONENT_EXPORT(PRINTING)
+std::u16string FormatDocumentTitleWithOwnerAndLength(
     const std::u16string& owner,
     const std::u16string& title,
     size_t length);
 
 // Returns the paper size (microns) most common in the locale to the nearest
 // millimeter. Defaults to ISO A4 for an empty or invalid locale.
-PRINTING_EXPORT gfx::Size GetDefaultPaperSizeFromLocaleMicrons(
-    base::StringPiece locale);
+COMPONENT_EXPORT(PRINTING)
+gfx::Size GetDefaultPaperSizeFromLocaleMicrons(base::StringPiece locale);
 
 // Returns true if both dimensions of the sizes have a delta less than or equal
 // to the epsilon value.
-PRINTING_EXPORT bool SizesEqualWithinEpsilon(const gfx::Size& lhs,
-                                             const gfx::Size& rhs,
-                                             int epsilon);
+COMPONENT_EXPORT(PRINTING)
+bool SizesEqualWithinEpsilon(const gfx::Size& lhs,
+                             const gfx::Size& rhs,
+                             int epsilon);
 
 }  // namespace printing
 

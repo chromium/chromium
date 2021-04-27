@@ -15,7 +15,7 @@
 namespace printing {
 
 // This class creates a graphics context that renders into a PDF data stream.
-class PRINTING_EXPORT PdfMetafileCg : public Metafile {
+class COMPONENT_EXPORT(PRINTING) PdfMetafileCg : public Metafile {
  public:
   PdfMetafileCg();
   PdfMetafileCg(const PdfMetafileCg&) = delete;

@@ -5,8 +5,8 @@
 #ifndef PRINTING_BACKEND_PRINTING_RESTRICTIONS_H_
 #define PRINTING_BACKEND_PRINTING_RESTRICTIONS_H_
 
+#include "base/component_export.h"
 #include "build/chromeos_buildflags.h"
-#include "printing/printing_export.h"
 
 namespace printing {
 
@@ -40,12 +40,12 @@ enum class PinModeRestriction {
 // Dictionary key for printing policies.
 // Must coincide with the name of field in `print_preview.Policies` in
 // chrome/browser/resources/print_preview/data/destination.js
-PRINTING_EXPORT extern const char kAllowedColorModes[];
-PRINTING_EXPORT extern const char kAllowedDuplexModes[];
-PRINTING_EXPORT extern const char kAllowedPinModes[];
-PRINTING_EXPORT extern const char kDefaultColorMode[];
-PRINTING_EXPORT extern const char kDefaultDuplexMode[];
-PRINTING_EXPORT extern const char kDefaultPinMode[];
+COMPONENT_EXPORT(PRINTING) extern const char kAllowedColorModes[];
+COMPONENT_EXPORT(PRINTING) extern const char kAllowedDuplexModes[];
+COMPONENT_EXPORT(PRINTING) extern const char kAllowedPinModes[];
+COMPONENT_EXPORT(PRINTING) extern const char kDefaultColorMode[];
+COMPONENT_EXPORT(PRINTING) extern const char kDefaultDuplexMode[];
+COMPONENT_EXPORT(PRINTING) extern const char kDefaultPinMode[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Allowed background graphics modes.
@@ -57,11 +57,11 @@ enum class BackgroundGraphicsModeRestriction {
 };
 
 // Dictionary keys to be used with `kPrintingPaperSizeDefault` policy.
-PRINTING_EXPORT extern const char kPaperSizeName[];
-PRINTING_EXPORT extern const char kPaperSizeNameCustomOption[];
-PRINTING_EXPORT extern const char kPaperSizeCustomSize[];
-PRINTING_EXPORT extern const char kPaperSizeWidth[];
-PRINTING_EXPORT extern const char kPaperSizeHeight[];
+COMPONENT_EXPORT(PRINTING) extern const char kPaperSizeName[];
+COMPONENT_EXPORT(PRINTING) extern const char kPaperSizeNameCustomOption[];
+COMPONENT_EXPORT(PRINTING) extern const char kPaperSizeCustomSize[];
+COMPONENT_EXPORT(PRINTING) extern const char kPaperSizeWidth[];
+COMPONENT_EXPORT(PRINTING) extern const char kPaperSizeHeight[];
 
 }  // namespace printing
 
