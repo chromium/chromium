@@ -47,14 +47,6 @@ Polymer({
     return OOBE_UI_STATE.KIOSK;
   },
 
-  /** @override */
-  onWindowResize() {
-    if (Oobe.getInstance().currentScreen !== this)
-      return;
-
-    Oobe.getInstance().updateScreenSize(this);
-  },
-
   onConfigNetwork_(e) {
     chrome.send('configureNetwork');
   },

@@ -141,32 +141,6 @@ cr.define('cr.ui', function() {
     }
 
     /**
-     * Sets text content for a div with |labelId|.
-     * @param {string} labelId Id of the label div.
-     * @param {string} labelText Text for the label.
-     */
-    static setLabelText(labelId, labelText) {
-      DisplayManager.setLabelText(labelId, labelText);
-    }
-
-    /**
-     * Sets the text content of the enterprise info message.
-     * If the text is empty, the entire notification will be hidden.
-     * @param {string} messageText The message text.
-     */
-    static setEnterpriseInfo(messageText, assetId) {
-      DisplayManager.setEnterpriseInfo(messageText, assetId);
-    }
-
-    /**
-     * Sets the text content of the Bluetooth device info message.
-     * @param {string} bluetoothName The Bluetooth device name text.
-     */
-    static setBluetoothDeviceInfo(bluetoothName) {
-      DisplayManager.setBluetoothDeviceInfo(bluetoothName);
-    }
-
-    /**
      * Sets the current size of the client area (display size).
      * @param {number} width client area width
      * @param {number} height client area height

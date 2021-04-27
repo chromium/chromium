@@ -101,9 +101,6 @@ Polymer({
 
     if (this.defaultControl)
       this.defaultControl.focus();
-
-    if (Oobe.getInstance().currentScreen === this)
-      Oobe.getInstance().updateScreenSize(this);
   },
 
   computePasswordsMatch_(password, password2) {

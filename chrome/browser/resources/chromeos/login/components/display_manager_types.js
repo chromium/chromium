@@ -28,9 +28,7 @@ var DISPLAY_TYPE = {
   UNKNOWN: 'unknown',
   OOBE: 'oobe',
   LOGIN: 'login',
-  LOCK: 'lock',
   APP_LAUNCH_SPLASH: 'app-launch-splash',
-  DESKTOP_USER_MANAGER: 'login-add-user',
   GAIA_SIGNIN: 'gaia-signin'
 };
 

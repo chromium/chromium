@@ -637,14 +637,6 @@ Polymer({
     chrome.send('samlStateChanged', [this.isSaml_]);
 
     this.classList.toggle('saml', this.isSaml_);
-
-    // Skip these updates in the initial observer run, which is happening during
-    // the property initialization.
-    if (oldValue !== undefined) {
-      if (Oobe.getInstance().currentScreen.id == 'gaia-signin') {
-        Oobe.getInstance().updateScreenSize(this);
-      }
-    }
   },
 
   /**

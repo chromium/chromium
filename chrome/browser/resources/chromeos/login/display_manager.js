@@ -53,8 +53,6 @@
 /** @const */ var USER_ACTION_ROLLBACK_TOGGLED = 'rollback-toggled';
 
 cr.define('cr.ui.login', function() {
-  var Bubble = cr.ui.Bubble;
-
   /**
    * Maximum time in milliseconds to wait for step transition to finish.
    * The value is used as the duration for ensureTransitionEndEvent below.
@@ -120,103 +118,92 @@ cr.define('cr.ui.login', function() {
   }
 
   /**
-   * Constructor a display manager that manages initialization of screens,
+   * A display manager that manages initialization of screens,
    * transitions, error messages display.
-   *
-   * @constructor
    */
-  function DisplayManager() {}
+  class DisplayManager {
+    constructor() {
+      /**
+       * Registered screens.
+       */
+      this.screens_ = [];
 
-  DisplayManager.prototype = {
-    /**
-     * Registered screens.
-     */
-    screens_: [],
+      /**
+       * Attributes of the registered screens.
+       * @type {Array<DisplayManagerScreenAttributes>}
+       */
+      this.screensAttributes_ = [];
 
-    /**
-     * Attributes of the registered screens.
-     * @type {Array<DisplayManagerScreenAttributes>}
-     */
-    screensAttributes_: [],
+      /**
+       * Current OOBE step, index in the screens array.
+       * @type {number}
+       */
+      this.currentStep_ = 0;
 
-    /**
-     * Current OOBE step, index in the screens array.
-     * @type {number}
-     */
-    currentStep_: 0,
+      /**
+       * Whether version label can be toggled by ACCELERATOR_VERSION.
+       * @type {boolean}
+       */
+      this.allowToggleVersion_ = false;
 
-    /**
-     * Whether version label can be toggled by ACCELERATOR_VERSION.
-     * @type {boolean}
-     */
-    allowToggleVersion_: false,
+      /**
+       * Whether keyboard navigation flow is enforced.
+       * @type {boolean}
+       */
+      this.forceKeyboardFlow_ = false;
 
-    /**
-     * Whether keyboard navigation flow is enforced.
-     * @type {boolean}
-     */
-    forceKeyboardFlow_: false,
+      /**
+       * Whether the virtual keyboard is displayed.
+       * @type {boolean}
+       */
+      this.virtualKeyboardShown_ = false;
 
-    /**
-     * Whether the virtual keyboard is displayed.
-     * @type {boolean}
-     */
-    virtualKeyboardShown_: false,
+      /**
+       * Type of UI.
+       * @type {string}
+       */
+      this.displayType_ = DISPLAY_TYPE.UNKNOWN;
+
+      /**
+       * Number of users in the login screen UI. This is used by the views login
+       * screen, and is always 0 for WebUI login screen.
+       * TODO(crbug.com/808271): WebUI and views implementation should return
+       * the same user list.
+       * @type {number}
+       */
+      this.userCount_ = 0;
+
+      /**
+       * Stored OOBE configuration for newly registered screens.
+       * @type {!OobeTypes.OobeConfiguration}
+       */
+      this.oobe_configuration_ = undefined;
+
+      /**
+       * Detects multi-tap gesture that invokes demo mode setup in OOBE.
+       * @type {?MultiTapDetector}
+       * @private
+       */
+      this.demoModeStartListener_ = null;
+    }
 
     get virtualKeyboardShown() {
       return this.virtualKeyboardShown_;
-    },
+    }
 
     set virtualKeyboardShown(shown) {
       this.virtualKeyboardShown_ = shown;
       document.documentElement.setAttribute('virtual-keyboard', shown);
-    },
-
-    /**
-     * Type of UI.
-     * @type {string}
-     */
-    displayType_: DISPLAY_TYPE.UNKNOWN,
-
-    /**
-     * Number of users in the login screen UI. This is used by the views login
-     * screen, and is always 0 for WebUI login screen.
-     * TODO(crbug.com/808271): WebUI and views implementation should return the
-     * same user list.
-     * @type {number}
-     */
-    userCount_: 0,
-
-    /**
-     * Stored OOBE configuration for newly registered screens.
-     * @type {!OobeTypes.OobeConfiguration}
-     */
-    oobe_configuration_: undefined,
-
-    /**
-     * Detects multi-tap gesture that invokes demo mode setup in OOBE.
-     * @type {?MultiTapDetector}
-     * @private
-     */
-    demoModeStartListener_: null,
+    }
 
     get displayType() {
       return this.displayType_;
-    },
+    }
 
     set displayType(displayType) {
       this.displayType_ = displayType;
       document.documentElement.setAttribute('screen', displayType);
-    },
-
-    /**
-     * Returns dimensions of screen excluding header bar.
-     * @type {Object}
-     */
-    get clientAreaSize() {
-      var container = $('outer-container');
-      return {width: container.offsetWidth, height: container.offsetHeight};
-    },
+    }
 
     /**
      * Gets current screen element.
@@ -224,7 +211,7 @@ cr.define('cr.ui.login', function() {
      */
     get currentScreen() {
       return $(this.screens_[this.currentStep_]);
-    },
+    }
 
     /**
      * Returns true if we are showing views based login screen.
@@ -232,7 +219,7 @@ cr.define('cr.ui.login', function() {
      */
     get showingViewsLogin() {
       return this.displayType_ == DISPLAY_TYPE.GAIA_SIGNIN;
-    },
+    }
 
     /**
      * Returns true if the login screen has user pods.
@@ -240,52 +227,52 @@ cr.define('cr.ui.login', function() {
      */
     get hasUserPods() {
       return this.showingViewsLogin && this.userCount_ > 0;
-    },
+    }
 
     /**
      * Sets the current size of the client area (display size).
      * @param {number} width client area width
      * @param {number} height client area height
      */
-    setClientAreaSize: function(width, height) {
+    setClientAreaSize(width, height) {
       if (!cr.isChromeOS) {
         var clientArea = $('outer-container');
         var bottom = parseInt(window.getComputedStyle(clientArea).bottom);
         clientArea.style.minHeight = cr.ui.toCssPx(height - bottom);
       }
-    },
+    }
 
     /**
      * Sets the current height of the shelf area.
      * @param {number} height current shelf height
      */
-    setShelfHeight: function(height) {
+    setShelfHeight(height) {
       document.documentElement.style.setProperty(
           '--shelf-area-height-base', height + 'px');
-    },
+    }
 
-    setOrientation: function(isHorizontal) {
+    setOrientation(isHorizontal) {
       if (isHorizontal) {
         document.documentElement.setAttribute('orientation', 'horizontal');
       } else {
         document.documentElement.setAttribute('orientation', 'vertical');
       }
-    },
+    }
 
-    setDialogSize: function(width, height) {
+    setDialogSize(width, height) {
       document.documentElement.style.setProperty(
           '--oobe-oobe-dialog-height-base', height + 'px');
       document.documentElement.style.setProperty(
           '--oobe-oobe-dialog-width-base', width + 'px');
-    },
+    }
 
     /**
      * Sets the hint for calculating OOBE dialog inner padding.
      * @param {OobeTypes.DialogPaddingMode} mode.
      */
-    setDialogPaddingMode: function(mode) {
+    setDialogPaddingMode(mode) {
       document.documentElement.setAttribute('dialog-padding', mode);
-    },
+    }
 
     /**
      * Toggles background of main body between transparency and solid.
@@ -296,7 +283,7 @@ cr.define('cr.ui.login', function() {
         document.body.classList.add('solid');
       else
         document.body.classList.remove('solid');
-    },
+    }
 
     /**
      * Forces keyboard based OOBE navigation.
@@ -307,7 +294,7 @@ cr.define('cr.ui.login', function() {
       if (value) {
         keyboard.initializeKeyboardFlow(false);
       }
-    },
+    }
 
     /**
      * Returns true if keyboard flow is enabled.
@@ -315,44 +302,44 @@ cr.define('cr.ui.login', function() {
      */
     get forceKeyboardFlow() {
       return this.forceKeyboardFlow_;
-    },
+    }
 
     /**
      * Returns current OOBE configuration.
      * @return {!OobeTypes.OobeConfiguration}
      */
-    getOobeConfiguration: function() {
+    getOobeConfiguration() {
       return this.oobe_configuration_;
-    },
+    }
 
     /**
      * Shows/hides version labels.
      * @param {boolean} show Whether labels should be visible by default. If
      *     false, visibility can be toggled by ACCELERATOR_VERSION.
      */
-    showVersion: function(show) {
+    showVersion(show) {
       $('version-labels').hidden = !show;
       this.allowToggleVersion_ = !show;
-    },
+    }
 
     /**
      * Sets the number of users on the views login screen.
      * @param {number} userCount The number of users.
      */
-    setLoginUserCount: function(userCount) {
+    setLoginUserCount(userCount) {
       this.userCount_ = userCount;
-    },
+    }
 
     /**
      * Handle accelerators.
      * @param {string} name Accelerator name.
      */
-    handleAccelerator: function(name) {
+    handleAccelerator(name) {
       if (this.currentScreen && this.currentScreen.ignoreAccelerators) {
         return;
       }
-      var currentStepId = this.screens_[this.currentStep_];
-      var attributes = this.screensAttributes_[this.currentStep_] || {};
+      let currentStepId = this.screens_[this.currentStep_];
+      let attributes = this.screensAttributes_[this.currentStep_] || {};
       if (name == ACCELERATOR_CANCEL) {
         if (this.currentScreen && this.currentScreen.cancel) {
           this.currentScreen.cancel();
@@ -375,17 +362,17 @@ cr.define('cr.ui.login', function() {
         if (currentStepId == SCREEN_APP_LAUNCH_SPLASH)
           chrome.send('networkConfigRequest');
       }
-    },
+    }
 
     /**
      * Switches to the next OOBE step.
      * @param {number} nextStepIndex Index of the next step.
      */
-    toggleStep_: function(nextStepIndex, screenData) {
-      var currentStepId = this.screens_[this.currentStep_];
-      var nextStepId = this.screens_[nextStepIndex];
-      var oldStep = $(currentStepId);
-      var newStep = $(nextStepId);
+    toggleStep_(nextStepIndex, screenData) {
+      let currentStepId = this.screens_[this.currentStep_];
+      let nextStepId = this.screens_[nextStepIndex];
+      let oldStep = $(currentStepId);
+      let newStep = $(nextStepId);
 
       invokePolymerMethod(oldStep, 'onBeforeHide');
 
@@ -423,13 +410,10 @@ cr.define('cr.ui.login', function() {
       oldStep.classList.add('faded');
       newStep.classList.remove('faded');
 
-      // Adjust inner container height based on new step's height.
-      this.updateScreenSize(newStep);
-
       // Default control to be focused (if specified).
-      var defaultControl = newStep.defaultControl;
+      let defaultControl = newStep.defaultControl;
 
-      var innerContainer = $('inner-container');
+      let innerContainer = $('inner-container');
       if (this.currentStep_ != nextStepIndex &&
           !oldStep.classList.contains('hidden')) {
         oldStep.classList.add('hidden');
@@ -444,7 +428,7 @@ cr.define('cr.ui.login', function() {
             innerContainer.removeEventListener('transitionend', f);
             chrome.send('loginVisible', ['oobe']);
             // Refresh defaultControl. It could have changed.
-            var defaultControl = newStep.defaultControl;
+            let defaultControl = newStep.defaultControl;
             if (defaultControl)
               defaultControl.focus();
           });
@@ -465,13 +449,13 @@ cr.define('cr.ui.login', function() {
       $('oobe').dispatchEvent(
           new CustomEvent('screenchanged', {detail: this.currentScreen.id}));
       chrome.send('updateCurrentScreen', [this.currentScreen.id]);
-    },
+    }
 
     /**
      * Show screen of given screen id.
      * @param {Object} screen Screen params dict, e.g. {id: screenId, data: {}}.
      */
-    showScreen: function(screen) {
+    showScreen(screen) {
       // Do not allow any other screen to clobber the device disabled screen.
       if (this.currentScreen.id == SCREEN_DEVICE_DISABLED)
         return;
@@ -488,34 +472,34 @@ cr.define('cr.ui.login', function() {
         return;
       }
 
-      var screenId = screen.id;
+      let screenId = screen.id;
 
-      var data = screen.data;
-      var index = this.getScreenIndex_(screenId);
+      let data = screen.data;
+      let index = this.getScreenIndex_(screenId);
       if (index >= 0)
         this.toggleStep_(index, data);
-    },
+    }
 
     /**
      * Gets index of given screen id in screens_.
      * @param {string} screenId Id of the screen to look up.
      * @private
      */
-    getScreenIndex_: function(screenId) {
+    getScreenIndex_(screenId) {
       for (let i = 0; i < this.screens_.length; ++i) {
         if (this.screens_[i] == screenId)
           return i;
       }
       return -1;
-    },
+    }
 
     /**
      * Register an oobe screen.
      * @param {Element} el Decorated screen element.
      * @param {DisplayManagerScreenAttributes} attributes
      */
-    registerScreen: function(el, attributes) {
-      var screenId = el.id;
+    registerScreen(el, attributes) {
+      let screenId = el.id;
       assert(screenId);
       assert(!this.screens_.includes(screenId), 'Duplicate screen ID.');
 
@@ -524,100 +508,58 @@ cr.define('cr.ui.login', function() {
 
       if (el.updateOobeConfiguration && this.oobe_configuration_)
         el.updateOobeConfiguration(this.oobe_configuration_);
-    },
-
-    /**
-     * Updates inner container size based on the size of the current screen and
-     * other screens in the same group.
-     * Should be executed on screen change / screen size change.
-     * @param {!HTMLElement} screen Screen that is being shown.
-     */
-    updateScreenSize: function(screen) {
-      if (!cr.isChromeOS) {
-        // Have to reset any previously predefined screen size first
-        // so that screen contents would define it instead.
-        $('inner-container').style.height = '';
-        $('inner-container').style.width = '';
-        screen.style.width = '';
-        screen.style.height = '';
-      }
-
-      $('outer-container')
-          .classList.toggle(
-              'fullscreen', screen.classList.contains('fullscreen'));
-
-      var width = screen.getPreferredSize().width;
-      var height = screen.getPreferredSize().height;
-
-      if (!cr.isChromeOS) {
-        if (screen.classList.contains('fullscreen')) {
-          $('inner-container').style.height = '100%';
-          $('inner-container').style.width = '100%';
-        } else {
-          $('inner-container').style.height = height + 'px';
-          $('inner-container').style.width = width + 'px';
-        }
-        // This requires |screen| to have 'box-sizing: border-box'.
-        screen.style.width = width + 'px';
-        screen.style.height = height + 'px';
-        screen.style.margin = 'auto';
-      }
-    },
+    }
 
     /**
      * Updates localized content of the screens like headers, buttons and links.
      * Should be executed on language change.
      */
-    updateLocalizedContent_: function() {
+    updateLocalizedContent_() {
       for (let i = 0; i < this.screens_.length; ++i) {
         let screenId = this.screens_[i];
-        var screen = $(screenId);
+        let screen = $(screenId);
         if (screen.updateLocalizedContent)
           screen.updateLocalizedContent();
       }
-      var dynamicElements = document.getElementsByClassName('i18n-dynamic');
+      let dynamicElements = document.getElementsByClassName('i18n-dynamic');
       for (var child of dynamicElements) {
         if (typeof (child.i18nUpdateLocale) === 'function') {
           child.i18nUpdateLocale();
         }
       }
-      var isInTabletMode = loadTimeData.getBoolean('isInTabletMode');
+      let isInTabletMode = loadTimeData.getBoolean('isInTabletMode');
       this.setTabletModeState_(isInTabletMode);
-
-      var currentScreenId = this.screens_[this.currentStep_];
-      var currentScreen = $(currentScreenId);
-      this.updateScreenSize(currentScreen);
-    },
+    }
 
     /**
      * Updates Oobe configuration for screens.
      * @param {!OobeTypes.OobeConfiguration} configuration OOBE configuration.
      */
-    updateOobeConfiguration_: function(configuration) {
+    updateOobeConfiguration_(configuration) {
       this.oobe_configuration_ = configuration;
       for (let i = 0; i < this.screens_.length; ++i) {
         let screenId = this.screens_[i];
-        var screen = $(screenId);
+        let screen = $(screenId);
         if (screen.updateOobeConfiguration)
           screen.updateOobeConfiguration(configuration);
       }
-    },
+    }
 
     /**
      * Updates "device in tablet mode" state when tablet mode is changed.
      * @param {Boolean} isInTabletMode True when in tablet mode.
      */
-    setTabletModeState_: function(isInTabletMode) {
+    setTabletModeState_(isInTabletMode) {
       for (let i = 0; i < this.screens_.length; ++i) {
         let screenId = this.screens_[i];
-        var screen = $(screenId);
+        let screen = $(screenId);
         if (screen.setTabletModeState)
           screen.setTabletModeState(isInTabletMode);
       }
-    },
+    }
 
     /** Initializes demo mode start listener. */
-    initializeDemoModeMultiTapListener: function() {
+    initializeDemoModeMultiTapListener() {
       if (this.displayType_ == DISPLAY_TYPE.OOBE) {
         this.demoModeStartListener_ =
             new MultiTapDetector($('outer-container'), 10, () => {
@@ -627,47 +569,37 @@ cr.define('cr.ui.login', function() {
               }
             });
       }
-    },
+    }
 
     /**
      * Prepares screens to use in login display.
      */
-    prepareForLoginDisplay_: function() {
+    prepareForLoginDisplay_() {
       if (this.showingViewsLogin) {
         $('top-header-bar').hidden = true;
       }
-    },
+    }
 
     /**
      * Called when window size changed. Notifies current screen about
      * change.
      * @private
      */
-    onWindowResize_: function() {
+    onWindowResize_() {
       for (var i = 0, screenId; screenId = this.screens_[i]; ++i) {
         var screen = $(screenId);
         if (screen.onWindowResize)
           screen.onWindowResize();
       }
-    },
+    }
 
     /**
      * Returns true if Oobe UI is shown.
+     * @return {boolean}
      */
-    isOobeUI: function() {
+    isOobeUI() {
       return document.body.classList.contains('oobe-display');
-    },
-
-    /**
-     * Sets or unsets given |className| for top-level container. Useful
-     * for customizing #inner-container with CSS rules. All classes set
-     * with with this method will be removed after screen change.
-     * @param {string} className Class to toggle.
-     * @param {boolean} enabled Whether class should be enabled or disabled.
-     */
-    toggleClass: function(className, enabled) {
-      $('oobe').classList.toggle(className, enabled);
-    },
+    }
 
     /**
      * Notifies the C++ handler in views login that the OOBE signin state has
@@ -675,125 +607,87 @@ cr.define('cr.ui.login', function() {
      * update button visibility state.
      * @param {number} state The state (see OOBE_UI_STATE) of the OOBE UI.
      */
-    setOobeUIState: function(state) {
+    setOobeUIState(state) {
       chrome.send('updateOobeUIState', [state]);
-    },
-
-  };
-
-  /**
-   * Initializes display manager.
-   */
-  DisplayManager.initialize = function() {
-    var givenDisplayType = DISPLAY_TYPE.UNKNOWN;
-    if (document.documentElement.hasAttribute('screen')) {
-      // Display type set in HTML property.
-      givenDisplayType = document.documentElement.getAttribute('screen');
-    } else {
-      // Extracting display type from URL.
-      givenDisplayType = window.location.pathname.substr(1);
     }
-    var instance = Oobe.getInstance();
-    Object.getOwnPropertyNames(DISPLAY_TYPE).forEach(function(type) {
-      if (DISPLAY_TYPE[type] == givenDisplayType) {
-        instance.displayType = givenDisplayType;
+
+    /**
+     * Initializes display manager.
+     */
+    static initialize() {
+      let givenDisplayType = DISPLAY_TYPE.UNKNOWN;
+      if (document.documentElement.hasAttribute('screen')) {
+        // Display type set in HTML property.
+        givenDisplayType = document.documentElement.getAttribute('screen');
+      } else {
+        // Extracting display type from URL.
+        givenDisplayType = window.location.pathname.substr(1);
       }
-    });
-    if (instance.displayType == DISPLAY_TYPE.UNKNOWN) {
-      console.error(
-          'Unknown display type "' + givenDisplayType + '". Setting default.');
-      instance.displayType = DISPLAY_TYPE.LOGIN;
+      let instance = Oobe.getInstance();
+      Object.getOwnPropertyNames(DISPLAY_TYPE).forEach(function(type) {
+        if (DISPLAY_TYPE[type] == givenDisplayType) {
+          instance.displayType = givenDisplayType;
+        }
+      });
+      if (instance.displayType == DISPLAY_TYPE.UNKNOWN) {
+        console.error(
+            'Unknown display type "' + givenDisplayType +
+            '". Setting default.');
+        instance.displayType = DISPLAY_TYPE.LOGIN;
+      }
+
+      instance.initializeDemoModeMultiTapListener();
+
+      // TODO(crbug.com/1202135): Whole windowResize code is only used to switch
+      // horizontal/vertical animations on welcome screen. Remove it during
+      // OOBE redesign cleanup.
+      window.addEventListener(
+          'resize', instance.onWindowResize_.bind(instance));
     }
 
-    instance.initializeDemoModeMultiTapListener();
-
-    window.addEventListener('resize', instance.onWindowResize_.bind(instance));
-  };
-
-  /**
-   * Returns offset (top, left) of the element.
-   * @param {!Element} element HTML element.
-   * @return {!Object} The offset (top, left).
-   */
-  DisplayManager.getOffset = function(element) {
-    var x = 0;
-    var y = 0;
-    while (element && !isNaN(element.offsetLeft) && !isNaN(element.offsetTop)) {
-      x += element.offsetLeft - element.scrollLeft;
-      y += element.offsetTop - element.scrollTop;
-      element = element.offsetParent;
+    /**
+     * Shows signin UI.
+     * @param {string} opt_email An optional email for signin UI.
+     */
+    static showSigninUI(opt_email) {
+      var currentScreenId = Oobe.getInstance().currentScreen.id;
+      if (currentScreenId == SCREEN_GAIA_SIGNIN)
+        Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.GAIA_SIGNIN);
+      chrome.send('showAddUser', [opt_email]);
     }
-    return {top: y, left: x};
-  };
 
-  /**
-   * Returns position (top, left, right, bottom) of the element.
-   * @param {!Element} element HTML element.
-   * @return {!Object} Element position (top, left, right, bottom).
-   */
-  DisplayManager.getPosition = function(element) {
-    var offset = DisplayManager.getOffset(element);
-    return {
-      top: offset.top,
-      right: window.innerWidth - element.offsetWidth - offset.left,
-      bottom: window.innerHeight - element.offsetHeight - offset.top,
-      left: offset.left
-    };
-  };
+    /**
+     * Resets sign-in input fields.
+     * @param {boolean} forceOnline Whether online sign-in should be forced.
+     *     If |forceOnline| is false previously used sign-in type will be used.
+     */
+    static resetSigninUI(forceOnline) {
+      let currentScreenId = Oobe.getInstance().currentScreen.id;
 
-  /**
-   * Shows signin UI.
-   * @param {string} opt_email An optional email for signin UI.
-   */
-  DisplayManager.showSigninUI = function(opt_email) {
-    var currentScreenId = Oobe.getInstance().currentScreen.id;
-    if (currentScreenId == SCREEN_GAIA_SIGNIN)
-      Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.GAIA_SIGNIN);
-    chrome.send('showAddUser', [opt_email]);
-  };
-
-  /**
-   * Resets sign-in input fields.
-   * @param {boolean} forceOnline Whether online sign-in should be forced.
-   *     If |forceOnline| is false previously used sign-in type will be used.
-   */
-  DisplayManager.resetSigninUI = function(forceOnline) {
-    var currentScreenId = Oobe.getInstance().currentScreen.id;
-
-    if ($(SCREEN_GAIA_SIGNIN)) {
-      $(SCREEN_GAIA_SIGNIN)
-          .reset(currentScreenId == SCREEN_GAIA_SIGNIN, forceOnline);
+      if ($(SCREEN_GAIA_SIGNIN)) {
+        $(SCREEN_GAIA_SIGNIN)
+            .reset(currentScreenId == SCREEN_GAIA_SIGNIN, forceOnline);
+      }
     }
-  };
 
-  /**
-   * Sets text content for a div with |labelId|.
-   * @param {string} labelId Id of the label div.
-   * @param {string} labelText Text for the label.
-   */
-  DisplayManager.setLabelText = function(labelId, labelText) {
-    $(labelId).textContent = labelText;
-  };
+    /**
+     * Sets text content for a div with |labelId|.
+     * @param {string} labelId Id of the label div.
+     * @param {string} labelText Text for the label.
+     */
+    static setLabelText(labelId, labelText) {
+      $(labelId).textContent = labelText;
+    }
 
-  /**
-   * Sets the text content of the enterprise info message and asset ID.
-   * @param {string} messageText The message text.
-   * @param {string} assetId The device asset ID.
-   */
-  DisplayManager.setEnterpriseInfo = function(messageText, assetId) {
-    $('asset-id').textContent =
-        ((assetId == '') ? '' :
-                           loadTimeData.getStringF('assetIdLabel', assetId));
-  };
-
-  /**
-   * Sets the text content of the Bluetooth device info message.
-   * @param {string} bluetoothName The Bluetooth device name text.
-   */
-  DisplayManager.setBluetoothDeviceInfo = function(bluetoothName) {
-    $('bluetooth-name').hidden = false;
-    $('bluetooth-name').textContent = bluetoothName;
-  };
+    /**
+     * Sets the text content of the Bluetooth device info message.
+     * @param {string} bluetoothName The Bluetooth device name text.
+     */
+    static setBluetoothDeviceInfo(bluetoothName) {
+      $('bluetooth-name').hidden = false;
+      $('bluetooth-name').textContent = bluetoothName;
+    }
+  }
 
   // Export
   return {
