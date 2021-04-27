@@ -1910,12 +1910,13 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillEvents) {
   EXPECT_TRUE(select_blur_triggered);
 }
 
-// Test fails on Linux ASAN, see http://crbug.com/532737
-#if defined(ADDRESS_SANITIZER)
+// Test fails on Linux ASAN and flakes on Windows, see http://crbug.com/532737
+// and http://crbug.com/1203410.
+#if defined(ADDRESS_SANITIZER) || defined(OS_WIN)
 #define MAYBE_AutofillAfterTranslate DISABLED_AutofillAfterTranslate
 #else
 #define MAYBE_AutofillAfterTranslate AutofillAfterTranslate
-#endif  // ADDRESS_SANITIZER
+#endif  // defined(ADDRESS_SANITIZER) || defined(OS_WIN)
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, MAYBE_AutofillAfterTranslate) {
   ASSERT_TRUE(TranslateService::IsTranslateBubbleEnabled());
 
