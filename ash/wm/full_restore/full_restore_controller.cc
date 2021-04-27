@@ -183,7 +183,6 @@ void FullRestoreController::OnWidgetInitialized(views::Widget* widget) {
       // in normal or maximized state.
       // TODO(crbug.com/1164472): Investigate splitview for ARC apps, which
       // are not managed by TabletModeWindowManager.
-      LOG(ERROR) << static_cast<int>(state_type.value());
       if (Shell::Get()->tablet_mode_controller()->InTabletMode())
         Shell::Get()->tablet_mode_controller()->AddWindow(window);
 
@@ -305,7 +304,14 @@ void FullRestoreController::SaveWindowImpl(
   window_info.current_bounds = window_state->HasRestoreBounds()
                                    ? window_state->GetRestoreBoundsInScreen()
                                    : window->GetBoundsInScreen();
-  window_info.window_state_type = window_state->GetStateType();
+  // Full restore does not support restoring fullscreen windows. If a window is
+  // fullscreen save the pre-fullscreen window state instead.
+  window_info.window_state_type =
+      window_state->IsInImmersiveFullscreen()
+          ? chromeos::ToWindowStateType(
+                window->GetProperty(aura::client::kPreFullscreenShowStateKey))
+          : window_state->GetStateType();
+
   window_info.display_id =
       display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
   full_restore::SaveWindowInfo(window_info);

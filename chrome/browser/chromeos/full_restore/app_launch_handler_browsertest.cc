@@ -725,6 +725,39 @@ IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest,
   CloseAppWindow(app_window2);
 }
 
+// Tests that fullscreened windows will not be restored as fullscreen, which is
+// not supported for full restore. Regression test for
+// https://crbug.com/1203010.
+IN_PROC_BROWSER_TEST_F(AppLaunchHandlerBrowserTest, ImmersiveFullscreenApp) {
+  ::full_restore::SetActiveProfilePath(profile()->GetPath());
+
+  // Create the restore data.
+  const extensions::Extension* extension =
+      LoadAndLaunchPlatformApp("launch", "Launched");
+  ASSERT_TRUE(extension);
+  SaveChromeAppLaunchInfo(extension->id());
+
+  extensions::AppWindow* app_window = CreateAppWindow(profile(), extension);
+  ASSERT_TRUE(app_window);
+
+  // Toggle immersive fullscreen by simulating what happens when F4 is pressed.
+  // FullRestoreController will save to file when the state changes.
+  const ash::WMEvent event(ash::WM_EVENT_TOGGLE_FULLSCREEN);
+  ash::WindowState::Get(app_window->GetNativeWindow())->OnWMEvent(&event);
+
+  WaitForAppLaunchInfoSaved();
+
+  // Read from the restore data.
+  auto app_launch_handler = std::make_unique<AppLaunchHandler>(profile());
+  app_launch_handler->SetShouldRestore();
+  content::RunAllTasksUntilIdle();
+
+  // Tests that the created window is not fullscreen.
+  app_window = CreateAppWindow(browser()->profile(), extension);
+  ASSERT_TRUE(app_window);
+  EXPECT_FALSE(app_window->GetBaseWindow()->IsFullscreenOrPending());
+}
+
 class AppLaunchHandlerArcAppBrowserTest : public AppLaunchHandlerBrowserTest {
  protected:
   // AppLaunchHandlerBrowserTest:
