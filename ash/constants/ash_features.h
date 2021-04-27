@@ -94,8 +94,6 @@ extern const base::Feature kCellularUseAttachApn;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCellularUseExternalEuicc;
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kChildSpecificSignin;
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCroshSWA;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCrostiniDiskResizing;
@@ -345,7 +343,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAmbientModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAmbientModePhotoPreviewEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAssistantEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCellularActivationUiEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsChildSpecificSigninEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsClipboardHistoryContextMenuNudgeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsClipboardHistoryEnabled();

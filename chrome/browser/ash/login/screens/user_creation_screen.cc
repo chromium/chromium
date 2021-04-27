@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/login/screens/user_creation_screen.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
@@ -67,8 +66,7 @@ void UserCreationScreen::OnViewDestroyed(UserCreationView* view) {
 }
 
 bool UserCreationScreen::MaybeSkip(WizardContext* context) {
-  if (!features::IsChildSpecificSigninEnabled() ||
-      g_browser_process->platform_part()
+  if (g_browser_process->platform_part()
           ->browser_policy_connector_chromeos()
           ->IsEnterpriseManaged() ||
       context->skip_to_login_for_tests) {

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/login/screens/family_link_notice_screen.h"
 
-#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -48,7 +47,7 @@ void FamilyLinkNoticeScreen::OnViewDestroyed(FamilyLinkNoticeView* view) {
 }
 
 bool FamilyLinkNoticeScreen::MaybeSkip(WizardContext* context) {
-  if (features::IsChildSpecificSigninEnabled() && context->sign_in_as_child &&
+  if (context->sign_in_as_child &&
       !ProfileManager::GetActiveUserProfile()->IsChild()) {
     return false;
   }

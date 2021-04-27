@@ -531,8 +531,7 @@ void LoginDisplayHostCommon::ShowGaiaDialogCommon(
 
   SetGaiaInputMethods(prefilled_account);
 
-  if (chromeos::features::IsChildSpecificSigninEnabled() &&
-      !prefilled_account.is_valid()) {
+  if (!prefilled_account.is_valid()) {
     StartWizard(UserCreationView::kScreenId);
   } else {
     GaiaScreen* gaia_screen = GetWizardController()->GetScreen<GaiaScreen>();
