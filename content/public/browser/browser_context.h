@@ -73,6 +73,8 @@ class DownloadManager;
 class ClientHintsControllerDelegate;
 class ContentIndexProvider;
 class DownloadManagerDelegate;
+class FederatedIdentityRequestPermissionContextDelegate;
+class FederatedIdentitySharingPermissionContextDelegate;
 class FileSystemAccessPermissionContext;
 class PermissionController;
 class PermissionControllerDelegate;
@@ -400,6 +402,15 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // directly, so privacy is not compromised.
   virtual std::unique_ptr<media::VideoDecodePerfHistory>
   CreateVideoDecodePerfHistory();
+
+  // Gets the permission context for issuing WebID requests if one exists, or
+  // nullptr otherwise.
+  virtual FederatedIdentityRequestPermissionContextDelegate*
+  GetFederatedIdentityRequestPermissionContext();
+  // Gets the permission context for WebID identity token sharing if one
+  // exists, or nullptr otherwise.
+  virtual FederatedIdentitySharingPermissionContextDelegate*
+  GetFederatedIdentitySharingPermissionContext();
 
  private:
   // Please don't add more fields to BrowserContext.

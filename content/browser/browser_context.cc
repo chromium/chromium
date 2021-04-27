@@ -447,4 +447,14 @@ BrowserContext::CreateVideoDecodePerfHistory() {
       std::move(stats_db), BrowserFeatureProvider::GetFactoryCB());
 }
 
+FederatedIdentityRequestPermissionContextDelegate*
+BrowserContext::GetFederatedIdentityRequestPermissionContext() {
+  return nullptr;
+}
+
+FederatedIdentitySharingPermissionContextDelegate*
+BrowserContext::GetFederatedIdentitySharingPermissionContext() {
+  return nullptr;
+}
+
 }  // namespace content

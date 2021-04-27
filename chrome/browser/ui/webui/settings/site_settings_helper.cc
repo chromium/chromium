@@ -151,6 +151,8 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::PERMISSION_AUTOREVOCATION_DATA, nullptr},
     {ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, nullptr},
     {ContentSettingsType::DISPLAY_CAPTURE, nullptr},
+    {ContentSettingsType::FEDERATED_IDENTITY_SHARING, nullptr},
+    {ContentSettingsType::FEDERATED_IDENTITY_REQUEST, nullptr},
 };
 
 static_assert(base::size(kContentSettingsTypeGroupNames) ==

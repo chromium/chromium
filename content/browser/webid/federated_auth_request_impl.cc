@@ -9,6 +9,9 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/id_token_request_callback_data.h"
 #include "content/browser/webid/webid_utils.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/federated_identity_request_permission_context_delegate.h"
+#include "content/public/browser/federated_identity_sharing_permission_context_delegate.h"
 #include "content/public/common/content_client.h"
 #include "url/url_constants.h"
 
@@ -73,6 +76,15 @@ void FederatedAuthRequestImpl::RequestIdToken(const GURL& provider,
   }
 
   request_dialog_controller_ = CreateDialogController();
+
+  if (GetRequestPermissionContext() &&
+      GetRequestPermissionContext()->HasRequestPermission(
+          origin(), url::Origin::Create(provider_))) {
+    network_manager_->FetchIdpWellKnown(
+        base::BindOnce(&FederatedAuthRequestImpl::OnWellKnownFetched,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
 
   // Use the web contents of the page that initiated the WebID request (i.e.
   // the Relying Party) for showing the initial permission dialog.
@@ -178,6 +190,11 @@ void FederatedAuthRequestImpl::OnSigninApproved(
     return;
   }
 
+  if (GetRequestPermissionContext()) {
+    GetRequestPermissionContext()->GrantRequestPermission(
+        origin(), url::Origin::Create(provider_));
+  }
+
   network_manager_->FetchIdpWellKnown(
       base::BindOnce(&FederatedAuthRequestImpl::OnWellKnownFetched,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -273,6 +290,13 @@ void FederatedAuthRequestImpl::OnIdpPageClosed() {
   WebContents* rp_web_contents =
       WebContents::FromRenderFrameHost(render_frame_host());
 
+  if (GetSharingPermissionContext() &&
+      GetSharingPermissionContext()->HasSharingPermission(
+          url::Origin::Create(provider_), origin())) {
+    CompleteRequest(RequestIdTokenStatus::kSuccess, id_token_);
+    return;
+  }
+
   request_dialog_controller_->ShowTokenExchangePermissionDialog(
       rp_web_contents, provider_,
       base::BindOnce(&FederatedAuthRequestImpl::OnTokenProvisionApproved,
@@ -284,6 +308,11 @@ void FederatedAuthRequestImpl::OnTokenProvisionApproved(
   if (approval != IdentityRequestDialogController::UserApproval::kApproved) {
     CompleteRequest(RequestIdTokenStatus::kApprovalDeclined, "");
     return;
+  }
+
+  if (GetSharingPermissionContext()) {
+    GetSharingPermissionContext()->GrantSharingPermission(
+        url::Origin::Create(provider_), origin());
   }
 
   CompleteRequest(RequestIdTokenStatus::kSuccess, id_token_);
@@ -404,6 +433,28 @@ void FederatedAuthRequestImpl::SetNetworkManagerForTests(
 void FederatedAuthRequestImpl::SetDialogControllerForTests(
     std::unique_ptr<IdentityRequestDialogController> controller) {
   mock_dialog_controller_ = std::move(controller);
+}
+
+FederatedIdentityRequestPermissionContextDelegate*
+FederatedAuthRequestImpl::GetRequestPermissionContext() {
+  if (!request_permission_delegate_) {
+    request_permission_delegate_ =
+        render_frame_host()
+            ->GetBrowserContext()
+            ->GetFederatedIdentityRequestPermissionContext();
+  }
+  return request_permission_delegate_;
+}
+
+FederatedIdentitySharingPermissionContextDelegate*
+FederatedAuthRequestImpl::GetSharingPermissionContext() {
+  if (!sharing_permission_delegate_) {
+    sharing_permission_delegate_ =
+        render_frame_host()
+            ->GetBrowserContext()
+            ->GetFederatedIdentitySharingPermissionContext();
+  }
+  return sharing_permission_delegate_;
 }
 
 }  // namespace content

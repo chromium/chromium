@@ -20,6 +20,8 @@
 
 namespace content {
 
+class FederatedIdentityRequestPermissionContextDelegate;
+class FederatedIdentitySharingPermissionContextDelegate;
 class RenderFrameHost;
 
 // FederatedAuthRequestImpl handles mojo connections from the renderer to
@@ -81,6 +83,11 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       const GURL& provider);
   std::unique_ptr<IdentityRequestDialogController> CreateDialogController();
 
+  FederatedIdentityRequestPermissionContextDelegate*
+  GetRequestPermissionContext();
+  FederatedIdentitySharingPermissionContextDelegate*
+  GetSharingPermissionContext();
+
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;
   std::unique_ptr<IdentityRequestDialogController> request_dialog_controller_;
 
@@ -105,6 +112,11 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // |IdTokenRequestCallbackData|. It is then passed along to
   // chrome/browser/ui machinery to be used to load IDP sign-in content.
   std::unique_ptr<WebContents> idp_web_contents_;
+
+  FederatedIdentityRequestPermissionContextDelegate*
+      request_permission_delegate_ = nullptr;
+  FederatedIdentitySharingPermissionContextDelegate*
+      sharing_permission_delegate_ = nullptr;
 
   std::string id_token_;
   RequestIdTokenCallback callback_;
