@@ -1673,8 +1673,10 @@ if (is_linux || is_chromeos) {
         ":crashpad_symbols",
         ":swiftshader_egl_symbols",
         ":swiftshader_gles_symbols",
-        ":swiftshader_vk_symbols",
       ]
+      if (is_linux) {
+        deps += [ ":swiftshader_vk_symbols" ]
+      }
     }
     extract_symbols("chrome_symbols") {
       binary = "$root_out_dir/chrome"
