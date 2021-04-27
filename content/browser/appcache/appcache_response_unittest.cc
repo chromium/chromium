@@ -28,6 +28,7 @@
 #include "base/timer/timer.h"
 #include "content/browser/appcache/appcache_response_info.h"
 #include "content/browser/appcache/mock_appcache_service.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/io_buffer.h"

@@ -18,7 +18,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/back_forward_cache_can_store_document_result.h"
-#include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_internal_observer.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/back_forward_cache.h"
@@ -104,7 +103,7 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // BackForwardCache.
   static bool IsMediaSessionImplOnServiceCreatedAllowed();
 
-  explicit BackForwardCacheImpl();
+  BackForwardCacheImpl();
   ~BackForwardCacheImpl() override;
 
   // Returns whether a RenderFrameHost can be stored into the BackForwardCache
