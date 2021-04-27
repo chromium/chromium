@@ -74,13 +74,13 @@ class ModelTypeWorker : public UpdateHandler,
     kAllNudgedLocalChangesInFlight,
   };
 
-  // |nudge_handler| and |cancelation_signal| must outlive this object.
-  // |cryptographer| must either outlive this object or be null. Passing a
-  // a null cryptographer means this type won't use encryption.
+  // |cryptographer|, |nudge_handler| and |cancelation_signal| must be non-null
+  // and outlive this object.
   ModelTypeWorker(ModelType type,
                   const sync_pb::ModelTypeState& initial_state,
                   bool trigger_initial_sync,
                   Cryptographer* cryptographer,
+                  bool encryption_enabled,
                   PassphraseType passphrase_type,
                   NudgeHandler* nudge_handler,
                   std::unique_ptr<ModelTypeProcessor> model_type_processor,
@@ -88,30 +88,28 @@ class ModelTypeWorker : public UpdateHandler,
   ~ModelTypeWorker() override;
 
   // Public for testing.
-  // |cryptographer| can be null.
   // |response_data| must be not null.
   static DecryptionStatus PopulateUpdateResponseData(
-      const Cryptographer* cryptographer,
+      const Cryptographer& cryptographer,
       ModelType model_type,
       const sync_pb::SyncEntity& update_entity,
       UpdateResponseData* response_data);
 
   ModelType GetModelType() const;
 
-  // Will start using |cryptographer| to encrypt/decrypt data. Must be called at
-  // most once, if the type transitioned from non-encrypted to encrypted.
-  // |cryptographer| must outlive this object.
-  void EnableEncryption(Cryptographer* cryptographer);
+  // Makes this an encrypted type, which means:
+  // a) Commits will be encrypted using the cryptographer passed on
+  // construction. Note that updates are always decrypted if possible,
+  // regardless of this method.
+  // b) The worker can only commit or push updates once the cryptographer has
+  // selected a default key to encrypt data (Cryptographer::CanEncrypt()). That
+  // used key will be listed in ModelTypeState.
+  // This is a no-op if encryption was already enabled on construction or by
+  // a previous call to this method.
+  void EnableEncryption();
 
-  // Always called in production, may not be called in tests. Causes a worker
-  // without cryptographer to log whether |fallback_cryptographer_for_uma| would
-  // have been able to decrypt incoming encrypted updates.
-  // |fallback_cryptographer_for_uma| must outlive this object.
-  void SetFallbackCryptographerForUma(
-      Cryptographer* fallback_cryptographer_for_uma);
-
-  // Must only be called if there is a cryptographer. Called on every change to
-  // its state.
+  // Must be called on every change to the state of the cryptographer passed on
+  // construction.
   void OnCryptographerChange();
 
   void UpdatePassphraseType(PassphraseType type);
@@ -154,6 +152,8 @@ class ModelTypeWorker : public UpdateHandler,
     min_gu_responses_to_ignore_key_ = min_gu_responses_to_ignore_key;
   }
 
+  bool IsEncryptionEnabledForTest() const { return encryption_enabled_; }
+
  private:
   struct UnknownEncryptionKeyInfo {
     // Not increased if the cryptographer knows it's in a pending state
@@ -174,10 +174,12 @@ class ModelTypeWorker : public UpdateHandler,
   // settings in a good state.
   bool CanCommitItems() const;
 
-  // Updates the encryption key name stored in |model_type_state_| if it differs
-  // from the default encryption key name in |cryptographer_|. Returns whether
-  // an update occurred.
-  bool UpdateEncryptionKeyName();
+  // If |encryption_enabled_| is false, sets the encryption key name in
+  // |model_type_state_| to the empty string. This should usually be a no-op.
+  // If |encryption_enabled_| is true *and* the cryptographer has selected a
+  // (non-empty) default key, sets the value to that default key.
+  // Returns whether the |model_type_state_| key name changed.
+  bool UpdateTypeEncryptionKeyName();
 
   // Iterates through all elements in |entries_pending_decryption_| and tries to
   // decrypt anything that has encrypted data.
@@ -225,33 +227,28 @@ class ModelTypeWorker : public UpdateHandler,
   // the definition of an unknown key, and returns their info.
   std::vector<UnknownEncryptionKeyInfo> RemoveKeysNoLongerUnknown();
 
-  void RecordBlockedByUndecryptableUpdate();
+  const ModelType type_;
 
-  ModelType type_;
+  // Pointer to the ModelTypeProcessor associated with this worker. Never null.
+  const std::unique_ptr<ModelTypeProcessor> model_type_processor_;
+
+  Cryptographer* const cryptographer_;
+
+  // Interface used to access and send nudges to the sync scheduler. Not owned.
+  NudgeHandler* const nudge_handler_;
+
+  // Cancellation signal is used to cancel blocking operation on engine
+  // shutdown.
+  CancelationSignal* const cancelation_signal_;
 
   // State that applies to the entire model type.
   sync_pb::ModelTypeState model_type_state_;
 
-  // Pointer to the ModelTypeProcessor associated with this worker. Never null.
-  std::unique_ptr<ModelTypeProcessor> model_type_processor_;
-
-  // Initialized on construction or later via InitCryptographer(). Null as long
-  // as encryption is not enabled for this type.
-  Cryptographer* cryptographer_ = nullptr;
-
-  // Used to investigate an issue where the worker receives encrypted updates
-  // despite not having a |cryptographer_| (|type_| is not an encrypted type).
-  // In those cases, this will eventually hold the underlying cryptographer used
-  // by other types. The worker then records whether that cryptographer is able
-  // to decrypt the updates. See crbug.com/1178418.
-  Cryptographer* fallback_cryptographer_for_uma_ = nullptr;
+  bool encryption_enabled_;
 
   // A private copy of the most recent passphrase type. Initialized at
   // construction time and updated with UpdatePassphraseType().
   PassphraseType passphrase_type_;
-
-  // Interface used to access and send nudges to the sync scheduler. Not owned.
-  NudgeHandler* const nudge_handler_;
 
   // A map of sync entities, keyed by server_id. Holds updates encrypted with
   // pending keys. Entries are stored in a map for de-duplication (applying only
@@ -280,10 +277,6 @@ class ModelTypeWorker : public UpdateHandler,
   // |UnknownEncryptionKeyInfo::gu_responses_while_should_have_been_known| must
   // be above this value before updates encrypted with the key are ignored.
   int min_gu_responses_to_ignore_key_;
-
-  // Cancellation signal is used to cancel blocking operation on engine
-  // shutdown.
-  CancelationSignal* const cancelation_signal_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

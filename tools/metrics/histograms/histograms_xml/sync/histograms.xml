@@ -560,7 +560,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Sync.ModelTypeBlockedDueToUndecryptableUpdate.SomeKeysAvailable"
-    enum="SyncModelTypes" expires_after="2021-08-18">
+    enum="SyncModelTypes" expires_after="M92">
   <owner>mastiz@chromium.org</owner>
   <owner>mmoskvitin@google.com</owner>
   <owner>victorvianna@google.com</owner>
@@ -570,6 +570,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     could have been decrypted with keys known to the client. This happens if the
     data type didn't try to decrypt the updates because it didn't expect to
     receive encrypted ones.
+
+    Not recorded starting with M92 because Sync started acutally decrypting the
+    data in this case.
   </summary>
 </histogram>
 

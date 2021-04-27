@@ -28,7 +28,9 @@ class ModelTypeWorker;
 // closely with the ModelTypeWorker.
 class CommitContributionImpl : public CommitContribution {
  public:
-  // Note: only one of |on_commit_response_callback| and
+  // If a non-null |cryptographer| is passed, it must outlive this object and
+  // will be used to encrypt the constructed commit. Otherwise, the commit won't
+  // be encrypted. Only one of |on_commit_response_callback| and
   // |on_full_commit_failure_callback| will be called.
   // TODO(rushans): there is still possible rare case when both of these
   // callbacks are never called, i.e. if get updates from the server fails.

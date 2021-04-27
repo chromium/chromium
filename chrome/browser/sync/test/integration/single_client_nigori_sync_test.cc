@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/sync_ui_util.h"
+#include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/cookie_helper.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
 #include "chrome/browser/sync/test/integration/passwords_helper.h"
@@ -29,6 +30,7 @@
 #include "components/sync/base/sync_base_switches.h"
 #include "components/sync/base/time.h"
 #include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/engine/loopback_server/loopback_server_entity.h"
 #include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/engine/sync_engine_switches.h"
 #include "components/sync/nigori/cryptographer_impl.h"
@@ -362,6 +364,45 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTest,
       kKeystoreKeyParams.derivation_params, GetFakeServer());
   ASSERT_TRUE(SetupSync());
   EXPECT_TRUE(WaitForPasswordForms({password_form}));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientNigoriSyncTest,
+    UnexpectedEncryptedIncrementalUpdateShouldBeDecryptedAndReCommitted) {
+  // Init NIGORI with a single encryption key.
+  const std::vector<std::vector<uint8_t>>& keystore_keys =
+      GetFakeServer()->GetKeystoreKeys();
+  ASSERT_THAT(keystore_keys, SizeIs(1));
+  const KeyParamsForTesting kKeystoreKeyParams =
+      Pbkdf2KeyParamsForTesting(keystore_keys.back());
+  SetNigoriInFakeServer(BuildKeystoreNigoriSpecifics(
+                            /*keybag_keys_params=*/{kKeystoreKeyParams},
+                            /*keystore_decryptor_params=*/kKeystoreKeyParams,
+                            /*keystore_key_params=*/kKeystoreKeyParams),
+                        GetFakeServer());
+
+  ASSERT_TRUE(SetupSync());
+
+  // Despite BOOKMARKS not being an encrypted type, send an update encrypted
+  // with the single key known to this client. This happens after SetupSync(),
+  // so it's an incremental update.
+  ASSERT_FALSE(
+      GetSyncService(0)->GetUserSettings()->GetEncryptedDataTypes().Has(
+          syncer::ModelType::BOOKMARKS));
+  const std::string kTitle = "Bookmark title";
+  const GURL kUrl = GURL("https://g.com");
+  std::unique_ptr<syncer::LoopbackServerEntity> bookmark =
+      bookmarks_helper::CreateBookmarkServerEntity(kTitle, kUrl);
+  bookmark->SetSpecifics(syncer::GetEncryptedBookmarkEntitySpecifics(
+      bookmark->GetSpecifics().bookmark(), kKeystoreKeyParams));
+  GetFakeServer()->InjectEntity(std::move(bookmark));
+
+  // The client should decrypt the update and re-commit an unencrypted version.
+  EXPECT_TRUE(bookmarks_helper::BookmarksTitleChecker(0, kTitle, 1).Wait());
+  EXPECT_TRUE(bookmarks_helper::ServerBookmarksEqualityChecker(
+                  GetSyncService(0), GetFakeServer(), {{kTitle, kUrl}},
+                  /*cryptographer=*/nullptr)
+                  .Wait());
 }
 
 // Tests that client can decrypt passwords, encrypted with default key, while
