@@ -132,6 +132,11 @@ class CC_EXPORT DroppedFrameCounter {
   FrameSorter frame_sorter_;
   TotalFrameCounter* total_counter_ = nullptr;
 
+  struct {
+    double max_window = 0;
+    double p95_window = 0;
+  } last_reported_metrics_;
+
   struct ScrollStartInfo {
     // The timestamp of when the scroll started.
     base::TimeTicks timestamp;

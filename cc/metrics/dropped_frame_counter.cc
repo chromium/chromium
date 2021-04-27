@@ -201,15 +201,23 @@ void DroppedFrameCounter::ReportFrames() {
       total_counter_->ComputeTotalVisibleFrames(base::TimeTicks::Now());
   TRACE_EVENT2("cc,benchmark", "SmoothnessDroppedFrame", "total", total_frames,
                "smoothness", total_smoothness_dropped_);
-  UMA_HISTOGRAM_PERCENTAGE(
-      "Graphics.Smoothness.MaxPercentDroppedFrames_1sWindow",
-      sliding_window_max_percent_dropped_);
+  if (sliding_window_max_percent_dropped_ !=
+      last_reported_metrics_.max_window) {
+    UMA_HISTOGRAM_PERCENTAGE(
+        "Graphics.Smoothness.MaxPercentDroppedFrames_1sWindow",
+        sliding_window_max_percent_dropped_);
+    last_reported_metrics_.max_window = sliding_window_max_percent_dropped_;
+  }
 
   uint32_t sliding_window_95pct_percent_dropped =
       SlidingWindow95PercentilePercentDropped();
-  UMA_HISTOGRAM_PERCENTAGE(
-      "Graphics.Smoothness.95pctPercentDroppedFrames_1sWindow",
-      sliding_window_95pct_percent_dropped);
+  if (sliding_window_95pct_percent_dropped !=
+      last_reported_metrics_.p95_window) {
+    UMA_HISTOGRAM_PERCENTAGE(
+        "Graphics.Smoothness.95pctPercentDroppedFrames_1sWindow",
+        sliding_window_95pct_percent_dropped);
+    last_reported_metrics_.p95_window = sliding_window_95pct_percent_dropped;
+  }
 
   DCHECK_LE(
       sliding_window_95pct_percent_dropped,
@@ -279,6 +287,7 @@ void DroppedFrameCounter::Reset() {
   ring_buffer_.Clear();
   frame_sorter_.Reset();
   time_max_delta_ = {};
+  last_reported_metrics_ = {};
 }
 
 base::TimeDelta DroppedFrameCounter::ComputeCurrentWindowSize() const {
