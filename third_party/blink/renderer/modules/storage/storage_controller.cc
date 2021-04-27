@@ -138,17 +138,6 @@ void StorageController::RemoveLocalStorageInspectorStorageAgent(
   local_storage_namespace_->RemoveInspectorStorageAgent(agent);
 }
 
-void StorageController::DidDispatchLocalStorageEvent(
-    const SecurityOrigin* origin,
-    const String& key,
-    const String& old_value,
-    const String& new_value) {
-  if (local_storage_namespace_) {
-    local_storage_namespace_->DidDispatchStorageEvent(origin, key, old_value,
-                                                      new_value);
-  }
-}
-
 void StorageController::EnsureLocalStorageNamespaceCreated() {
   if (local_storage_namespace_)
     return;
