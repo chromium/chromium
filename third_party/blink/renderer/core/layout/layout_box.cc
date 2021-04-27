@@ -898,20 +898,6 @@ void LayoutBox::LayoutSubtreeRoot() {
     UpdateLayout();
   }
 
-  // If this box has an associated layout-result, rebuild the spine of the
-  // fragment-tree to ensure consistency.
-  if (PhysicalFragmentCount()) {
-    LayoutBlock* cb = ContainingBlock();
-    while (NGBlockNode::CanUseNewLayout(*cb) && !cb->NeedsLayout()) {
-      // Create and set a new identical results.
-      for (auto& layout_result : cb->layout_results_) {
-        layout_result =
-            NGLayoutResult::CloneWithPostLayoutFragments(*layout_result);
-      }
-      cb = cb->ContainingBlock();
-    }
-  }
-
   GetDocument().GetFrame()->GetInputMethodController().DidLayoutSubtree(*this);
 }
 

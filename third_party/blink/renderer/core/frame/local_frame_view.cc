@@ -99,6 +99,7 @@
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/style_retain_scope.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
@@ -788,9 +789,20 @@ void LocalFrameView::PerformLayout() {
         analyzer_->Increment(LayoutAnalyzer::kPerformLayoutRootLayoutObjects,
                              layout_subtree_root_list_.size());
       }
+      HeapHashSet<Member<LayoutBlock>> fragment_tree_spines;
       for (auto& root : layout_subtree_root_list_.Ordered()) {
         if (!LayoutFromRootObject(*root))
           continue;
+
+        // TODO(jfernandez): Perhaps we should store the whole spine instead of
+        // the immediate ancestor, so that we could avoid rebuilding the common
+        // ancestors fragments.
+        if (To<LayoutBox>(*root).PhysicalFragmentCount()) {
+          LayoutBlock* cb = root->ContainingBlock();
+          if (NGBlockNode::CanUseNewLayout(*cb) && !cb->NeedsLayout()) {
+            fragment_tree_spines.insert(cb);
+          }
+        }
 
         // We need to ensure that we mark up all layoutObjects up to the
         // LayoutView for paint invalidation. This simplifies our code as we
@@ -799,6 +811,10 @@ void LocalFrameView::PerformLayout() {
           container->SetShouldCheckForPaintInvalidation();
       }
       layout_subtree_root_list_.Clear();
+      // Ensure fragment-tree consistency after a subtree layout.
+      for (auto cb : fragment_tree_spines)
+        cb->RebuildFragmentTreeSpine();
+      fragment_tree_spines.clear();
     } else {
       if (HasOrthogonalWritingModeRoots())
         LayoutOrthogonalWritingModeRoots();
