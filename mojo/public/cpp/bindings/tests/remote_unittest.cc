@@ -1019,14 +1019,25 @@ TEST_P(RemoteTest, SharedRemotePassAssociatedEndpointsEarly) {
       mojo::SharedAssociatedRemote<mojom::SequenceChecker>(
           std::move(pending_associated_checker), other_thread_task_runner);
 
+  PendingAssociatedRemote<mojom::SequenceChecker>
+      later_pending_associated_checker;
+  auto later_associated_receiver =
+      later_pending_associated_checker.InitWithNewEndpointAndPassReceiver();
+  SharedAssociatedRemote<mojom::SequenceChecker> later_associated_checker =
+      mojo::SharedAssociatedRemote<mojom::SequenceChecker>(
+          std::move(later_pending_associated_checker),
+          other_thread_task_runner);
+  checker->Bind(std::move(later_associated_receiver));
+
   checker->Check(0);
   associated_checker->Check(1);
-  checker->Check(2);
+  later_associated_checker->Check(2);
+  checker->Check(3);
 
   // Make sure the above Checks reach the impl before we pass the test.
   int32_t next_expected_value = 0;
   EXPECT_TRUE(checker->GetNextExpectedValue(&next_expected_value));
-  EXPECT_EQ(3, next_expected_value);
+  EXPECT_EQ(4, next_expected_value);
 }
 
 TEST_P(RemoteTest, SharedRemoteEarlySyncCall) {

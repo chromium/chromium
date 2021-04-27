@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "base/bind.h"
+#include "base/bind_post_task.h"
 #include "base/check.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -430,8 +431,16 @@ InterfaceEndpointClient::InterfaceEndpointClient(
     dispatcher_.SetValidator(std::move(payload_validator));
 
   if (handle_.pending_association()) {
-    handle_.SetAssociationEventHandler(base::BindOnce(
-        &InterfaceEndpointClient::OnAssociationEvent, base::Unretained(this)));
+    if (task_runner_->RunsTasksInCurrentSequence()) {
+      handle_.SetAssociationEventHandler(
+          base::BindOnce(&InterfaceEndpointClient::OnAssociationEvent,
+                         base::Unretained(this)));
+    } else {
+      handle_.SetAssociationEventHandler(base::BindPostTask(
+          task_runner_,
+          base::BindOnce(&InterfaceEndpointClient::OnAssociationEvent,
+                         weak_ptr_factory_.GetWeakPtr())));
+    }
   } else if (!task_runner_->RunsTasksInCurrentSequence()) {
     task_runner_->PostTask(
         FROM_HERE,
