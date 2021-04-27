@@ -170,20 +170,18 @@ struct PaintPropertyTreeBuilderFragmentContext {
 };
 
 struct PaintPropertyTreeBuilderContext final {
-  DISALLOW_NEW();
+  STACK_ALLOCATED();
 
  public:
   PaintPropertyTreeBuilderContext();
   PaintPropertyTreeBuilderContext(const PaintPropertyTreeBuilderContext&) =
       default;
 
-  void Trace(Visitor* visitor) const;
-
   HeapVector<PaintPropertyTreeBuilderFragmentContext, 1> fragments;
 
   // TODO(mstensho): Stop using these in LayoutNGFragmentTraversal.
-  Member<const LayoutObject> container_for_absolute_position;
-  Member<const LayoutObject> container_for_fixed_position;
+  const LayoutObject* container_for_absolute_position = nullptr;
+  const LayoutObject* container_for_fixed_position = nullptr;
 
   // The physical bounding box of all appearances of the repeating table section
   // in the flow thread or the paged LayoutView.
@@ -195,7 +193,7 @@ struct PaintPropertyTreeBuilderContext final {
   bool is_actually_needed = true;
 #endif
 
-  Member<PaintLayer> painting_layer;
+  PaintLayer* painting_layer = nullptr;
 
   // In a fragmented context, repeating table headers and footers and their
   // descendants in paint order repeatedly paint in all fragments after the

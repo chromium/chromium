@@ -121,13 +121,6 @@ void PaintPropertyTreeBuilderFragmentContext::ContainingBlockContext::Trace(
   visitor->Trace(paint_offset_root);
 }
 
-void PaintPropertyTreeBuilderContext::Trace(Visitor* visitor) const {
-  visitor->Trace(fragments);
-  visitor->Trace(container_for_absolute_position);
-  visitor->Trace(container_for_fixed_position);
-  visitor->Trace(painting_layer);
-}
-
 PaintPropertyChangeType VisualViewportPaintPropertyTreeBuilder::Update(
     VisualViewport& visual_viewport,
     PaintPropertyTreeBuilderContext& full_context) {
