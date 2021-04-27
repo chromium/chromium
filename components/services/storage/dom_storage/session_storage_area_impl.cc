@@ -22,23 +22,25 @@ SessionStorageAreaImpl::SessionStorageAreaImpl(
     : namespace_entry_(namespace_entry),
       origin_(std::move(origin)),
       shared_data_map_(std::move(data_map)),
-      register_new_map_callback_(std::move(register_new_map_callback)) {}
+      register_new_map_callback_(std::move(register_new_map_callback)) {
+  receivers_.set_disconnect_handler(base::BindRepeating(
+      &SessionStorageAreaImpl::OnConnectionError, base::Unretained(this)));
+}
 
 SessionStorageAreaImpl::~SessionStorageAreaImpl() {
-  if (receiver_.is_bound())
+  if (IsBound())
     shared_data_map_->RemoveBindingReference();
 }
 
 void SessionStorageAreaImpl::Bind(
     mojo::PendingReceiver<blink::mojom::StorageArea> receiver) {
-  if (IsBound()) {
-    receiver_.reset();
-  } else {
+  if (!IsBound())
     shared_data_map_->AddBindingReference();
-  }
-  receiver_.Bind(std::move(receiver));
-  receiver_.set_disconnect_handler(base::BindOnce(
-      &SessionStorageAreaImpl::OnConnectionError, base::Unretained(this)));
+  receivers_.Add(this, std::move(receiver));
+}
+
+bool SessionStorageAreaImpl::IsBound() const {
+  return !receivers_.empty();
 }
 
 std::unique_ptr<SessionStorageAreaImpl> SessionStorageAreaImpl::Clone(
@@ -133,17 +135,14 @@ void SessionStorageAreaImpl::GetAll(
 }
 
 void SessionStorageAreaImpl::FlushForTesting() {
-  receiver_.FlushForTesting();
+  receivers_.FlushForTesting();
 }
 
 // Note: this can be called after invalidation of the |namespace_entry_|.
 void SessionStorageAreaImpl::OnConnectionError() {
+  if (IsBound())
+    return;
   shared_data_map_->RemoveBindingReference();
-  // Make sure we totally unbind the receiver - this doesn't seem to happen
-  // automatically on connection error. The bound status is used in the
-  // destructor to know if |RemoveBindingReference| was already called.
-  if (receiver_.is_bound())
-    receiver_.reset();
 }
 
 void SessionStorageAreaImpl::OnGetAllResult(

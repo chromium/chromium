@@ -176,16 +176,23 @@ TEST_F(SessionStorageAreaImplTest, DoubleBind) {
   mojo::Remote<blink::mojom::StorageArea> ss_leveldb1;
   base::RunLoop loop;
   ss_leveldb_impl->Bind(ss_leveldb1.BindNewPipeAndPassReceiver());
-  ss_leveldb1.set_disconnect_handler(loop.QuitClosure());
+
+  // Get data from the first binding.
+  std::vector<blink::mojom::KeyValuePtr> data1;
+  EXPECT_TRUE(test::GetAllSync(ss_leveldb1.get(), &data1));
+  ASSERT_EQ(1ul, data1.size());
+
   // Check that we can bind twice and get data from the second binding.
   mojo::Remote<blink::mojom::StorageArea> ss_leveldb2;
   ss_leveldb_impl->Bind(ss_leveldb2.BindNewPipeAndPassReceiver());
-  std::vector<blink::mojom::KeyValuePtr> data;
-  EXPECT_TRUE(test::GetAllSync(ss_leveldb2.get(), &data));
-  ASSERT_EQ(1ul, data.size());
+  std::vector<blink::mojom::KeyValuePtr> data2;
+  EXPECT_TRUE(test::GetAllSync(ss_leveldb2.get(), &data2));
+  ASSERT_EQ(1ul, data2.size());
 
-  // Make sure the first binding was closed.
-  loop.Run();
+  // Check that we can still get data from the first binding.
+  std::vector<blink::mojom::KeyValuePtr> data3;
+  EXPECT_TRUE(test::GetAllSync(ss_leveldb1.get(), &data3));
+  ASSERT_EQ(1ul, data3.size());
 
   EXPECT_CALL(listener_, OnDataMapDestruction(StdStringToUint8Vector("0")))
       .Times(1);

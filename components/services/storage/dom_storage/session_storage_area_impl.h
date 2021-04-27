@@ -13,7 +13,7 @@
 #include "base/optional.h"
 #include "components/services/storage/dom_storage/session_storage_metadata.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
 #include "url/origin.h"
@@ -64,7 +64,7 @@ class SessionStorageAreaImpl : public blink::mojom::StorageArea {
 
   void Bind(mojo::PendingReceiver<blink::mojom::StorageArea> receiver);
 
-  bool IsBound() const { return receiver_.is_bound(); }
+  bool IsBound() const;
 
   SessionStorageDataMap* data_map() { return shared_data_map_.get(); }
 
@@ -116,7 +116,7 @@ class SessionStorageAreaImpl : public blink::mojom::StorageArea {
   RegisterNewAreaMap register_new_map_callback_;
 
   mojo::RemoteSet<blink::mojom::StorageAreaObserver> observers_;
-  mojo::Receiver<blink::mojom::StorageArea> receiver_{this};
+  mojo::ReceiverSet<blink::mojom::StorageArea> receivers_;
 
   base::WeakPtrFactory<SessionStorageAreaImpl> weak_ptr_factory_{this};
 
