@@ -105,7 +105,8 @@ def CommonChecks(input_api, output_api):
               J('pylib', 'utils', 'test_filter_test.py'),
               J('.', 'convert_dex_profile_tests.py'),
           ],
-          env=pylib_test_env))
+          env=pylib_test_env,
+          run_on_python2=False))
 
   return input_api.RunTests(tests)
 

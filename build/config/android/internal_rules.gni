@@ -2590,8 +2590,6 @@ if (enable_java_templates) {
       _expectations_target =
           "${invoker.top_target_name}_validate_android_manifest"
       action_with_pydeps(_expectations_target) {
-        # TODO(crbug.com/1187279): Get this to work under Python3.
-        run_under_python2 = true
         _actual_file = "${invoker.android_manifest}.normalized"
         _failure_file =
             "$expectations_failure_dir/" +
@@ -2644,8 +2642,6 @@ if (enable_java_templates) {
     }
 
     action_with_pydeps(target_name) {
-      # TODO(crbug.com/1187279): Get this to work under Python3.
-      run_under_python2 = true
       script = _script
       depfile = "$target_gen_dir/${target_name}.d"
       inputs = _inputs

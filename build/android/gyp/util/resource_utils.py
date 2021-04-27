@@ -1035,7 +1035,7 @@ def GenerateAndroidResourceStringsXml(names_to_utf8_text, namespaces=None):
     for name, utf8_text in sorted(names_to_utf8_text.items()):
       result += '<string name="%s">"%s"</string>\n' % (name, utf8_text)
   result += '</resources>\n'
-  return result
+  return result.encode('utf8')
 
 
 def FilterAndroidResourceStringsXml(xml_file_path, string_predicate):
@@ -1055,7 +1055,7 @@ def FilterAndroidResourceStringsXml(xml_file_path, string_predicate):
   strings_map, namespaces = ParseAndroidResourceStringsFromXml(xml_data)
 
   string_deletion = False
-  for name in strings_map.keys():
+  for name in list(strings_map.keys()):
     if not string_predicate(name):
       del strings_map[name]
       string_deletion = True

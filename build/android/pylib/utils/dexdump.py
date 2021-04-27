@@ -50,8 +50,12 @@ def Dump(apk_path):
       BAD_XML_CHARS = re.compile(
           u'[\x00-\x08\x0b-\x0c\x0e-\x1f\x7f-\x84\x86-\x9f' +
           u'\ud800-\udfff\ufdd0-\ufddf\ufffe-\uffff]')
-      decoded_xml = output_xml.decode('utf-8', 'replace')
-      clean_xml = BAD_XML_CHARS.sub(u'\ufffd', decoded_xml)
+      if sys.version_info[0] < 3:
+        decoded_xml = output_xml.decode('utf-8', 'replace')
+        clean_xml = BAD_XML_CHARS.sub(u'\ufffd', decoded_xml)
+      else:
+        # Line duplicated to avoid pylint redefined-variable-type error.
+        clean_xml = BAD_XML_CHARS.sub(u'\ufffd', output_xml)
       parsed_dex_files.append(
           _ParseRootNode(ElementTree.fromstring(clean_xml.encode('utf-8'))))
     return parsed_dex_files

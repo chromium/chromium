@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env python3
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -49,18 +49,18 @@ org.chromium.chrome.browser.announcement.AnnouncementNotificationManager$Rcvr"/>
 _TEST_MANIFEST_NORMALIZED = """\
 <?xml version="1.0" ?>
 <manifest
-    package="test.pkg"
-    tools:ignore="MissingVersion"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="test.pkg"
+    tools:ignore="MissingVersion">
   <uses-feature android:name="android.hardware.vr.headtracking" \
 android:required="false" android:version="1"/>
   <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="30"/>
   <application android:name="testname">
     <activity  # DIFF-ANCHOR: {activity_diff_anchor}
+        android:name="to be hashed"
         {extra_activity_attr}android:icon="@drawable/ic_devices_48dp"
         android:label="label with spaces"
-        android:name="to be hashed"
         android:theme="@style/Theme.Chromium.Activity.TranslucentNoAnimations">
       <intent-filter>  # DIFF-ANCHOR: {intent_filter_diff_anchor}
         {extra_intent_filter_elem}\
@@ -69,11 +69,11 @@ android:required="false" android:version="1"/>
         <data android:mimeType="text/plain"/>
       </intent-filter>  # DIFF-ANCHOR: {intent_filter_diff_anchor}
     </activity>  # DIFF-ANCHOR: {activity_diff_anchor}
-    <receiver  # DIFF-ANCHOR: 355000d2
-        android:exported="false"
+    <receiver  # DIFF-ANCHOR: ddab3320
         android:name=\
-"org.chromium.chrome.browser.announcement.AnnouncementNotificationManager$Rcvr">
-    </receiver>  # DIFF-ANCHOR: 355000d2
+"org.chromium.chrome.browser.announcement.AnnouncementNotificationManager$Rcvr"
+        android:exported="false">
+    </receiver>  # DIFF-ANCHOR: ddab3320
   </application>
 </manifest>
 """

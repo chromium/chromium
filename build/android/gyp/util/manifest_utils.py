@@ -8,6 +8,7 @@ import hashlib
 import os
 import re
 import shlex
+import sys
 import xml.dom.minidom as minidom
 
 from util import build_utils
@@ -123,7 +124,12 @@ def AssertPackage(manifest_node, package):
 
 
 def _SortAndStripElementTree(root):
-  def sort_key(node):
+  # Sort alphabetically with two exceptions:
+  # 1) Put <application> node last (since it's giant).
+  # 2) Put android:name before other attributes.
+  def element_sort_key(node):
+    if node.tag == 'application':
+      return 'z'
     ret = ElementTree.tostring(node)
     # ElementTree.tostring inserts namespace attributes for any that are needed
     # for the node or any of its descendants. Remove them so as to prevent a
@@ -131,30 +137,24 @@ def _SortAndStripElementTree(root):
     # order.
     return re.sub(r' xmlns:.*?".*?"', '', ret.decode('utf8'))
 
+  name_attr = '{%s}name' % ANDROID_NAMESPACE
+
+  def attribute_sort_key(tup):
+    return ('', '') if tup[0] == name_attr else tup
+
   def helper(node):
     for child in node:
       if child.text and child.text.isspace():
         child.text = None
       helper(child)
-    node[:] = sorted(node, key=sort_key)
 
-  def rename_attrs(node, from_name, to_name):
-    value = node.attrib.get(from_name)
-    if value is not None:
-      node.attrib[to_name] = value
-      del node.attrib[from_name]
-    for child in node:
-      rename_attrs(child, from_name, to_name)
+    # Sort attributes (requires Python 3.8+).
+    node.attrib = dict(sorted(node.attrib.items(), key=attribute_sort_key))
 
-  # Sort alphabetically with two exceptions:
-  # 1) Put <application> node last (since it's giant).
-  # 2) Pretend android:name appears before other attributes.
-  app_node = root.find('application')
-  app_node.tag = 'zz'
-  rename_attrs(root, '{%s}name' % ANDROID_NAMESPACE, '__name__')
+    # Sort nodes
+    node[:] = sorted(node, key=element_sort_key)
+
   helper(root)
-  rename_attrs(root, '__name__', '{%s}name' % ANDROID_NAMESPACE)
-  app_node.tag = 'application'
 
 
 def _SplitElement(line):
@@ -269,7 +269,7 @@ def NormalizeManifest(manifest_contents):
     # Trichrome's static library version number is updated daily. To avoid
     # frequent manifest check failures, we remove the exact version number
     # during normalization.
-    for node in app_node.getchildren():
+    for node in app_node:
       if (node.tag in ['uses-static-library', 'static-library']
           and '{%s}version' % ANDROID_NAMESPACE in node.keys()
           and '{%s}name' % ANDROID_NAMESPACE in node.keys()):
@@ -281,14 +281,14 @@ def NormalizeManifest(manifest_contents):
     for key in node.keys():
       node.set(key, node.get(key).replace(package, '$PACKAGE'))
 
-    for child in node.getchildren():
+    for child in node:
       blur_package_name(child)
 
   # We only blur the package names of non-root nodes because they generate a lot
   # of diffs when doing manifest checks for upstream targets. We still want to
   # have 1 piece of package name not blurred just in case the package name is
   # mistakenly changed.
-  for child in root.getchildren():
+  for child in root:
     blur_package_name(child)
 
   _SortAndStripElementTree(root)

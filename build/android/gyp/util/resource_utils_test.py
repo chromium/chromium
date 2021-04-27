@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env python3
 # coding: utf-8
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -171,7 +171,7 @@ class ResourceUtilsTest(unittest.TestCase):
         'yi': 'ji'
     }
     for chromium_locale, android_locale in \
-        _TEST_CHROMIUM_TO_ANDROID_LOCALE_MAP.iteritems():
+        _TEST_CHROMIUM_TO_ANDROID_LOCALE_MAP.items():
       result = resource_utils.ToAndroidLocaleName(chromium_locale)
       self.assertEqual(result, android_locale)
 
@@ -209,7 +209,7 @@ class ResourceUtilsTest(unittest.TestCase):
         'no': 'nb',  # http://crbug.com/920960
     }
     for android_locale, chromium_locale in \
-        _TEST_ANDROID_TO_CHROMIUM_LOCALE_MAP.iteritems():
+        _TEST_ANDROID_TO_CHROMIUM_LOCALE_MAP.items():
       result = resource_utils.ToChromiumLocaleName(android_locale)
       self.assertEqual(result, chromium_locale)
 
@@ -240,18 +240,18 @@ class ResourceUtilsTest(unittest.TestCase):
   def test_GenerateAndroidResourceStringsXml(self):
     # Fist, an empty strings map, with no namespaces
     result = resource_utils.GenerateAndroidResourceStringsXml({})
-    self.assertEqual(result, _TEST_XML_OUTPUT_EMPTY)
+    self.assertEqual(result.decode('utf8'), _TEST_XML_OUTPUT_EMPTY)
 
     result = resource_utils.GenerateAndroidResourceStringsXml(
         _TEST_RESOURCES_MAP_1, _TEST_NAMESPACES_1)
-    self.assertEqual(result, _TEST_XML_INPUT_1)
+    self.assertEqual(result.decode('utf8'), _TEST_XML_INPUT_1)
 
   @staticmethod
   def _CreateTestResourceFile(output_dir, locale, string_map, namespaces):
     values_dir = os.path.join(output_dir, 'values-' + locale)
     build_utils.MakeDirectory(values_dir)
     file_path = os.path.join(values_dir, 'strings.xml')
-    with open(file_path, 'w') as f:
+    with open(file_path, 'wb') as f:
       file_data = resource_utils.GenerateAndroidResourceStringsXml(
           string_map, namespaces)
       f.write(file_data)

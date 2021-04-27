@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# encoding: utf-8
+#!/usr/bin/env python3
+#
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -317,7 +317,7 @@ def _RenameLocaleResourceDirs(resource_dirs, path_info):
     * Modern ISO 639-1 codes will be renamed to their obsolete variant
       for Indonesian, Hebrew and Yiddish (e.g. 'values-in/ -> values-id/).
 
-    * Norwegian macrolanguage strings will be renamed to Bokmål (main
+    * Norwegian macrolanguage strings will be renamed to Bokmal (main
       Norway language). See http://crbug.com/920960. In practice this
       means that 'values-no/ -> values-nb/' unless 'values-nb/' already
       exists.

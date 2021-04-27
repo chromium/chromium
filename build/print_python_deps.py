@@ -182,6 +182,12 @@ def main():
     vpython_to_use = {2: 'vpython', 3: 'vpython3'}[target_version]
     os.execvp(vpython_to_use, [vpython_to_use] + sys.argv + ['--did-relaunch'])
 
+  if current_version == 3:
+    # Work-around for protobuf library not being loadable via importlib
+    # This is needed due to compile_resources.py.
+    import importlib._bootstrap_external
+    importlib._bootstrap_external._NamespacePath.sort = lambda self, **_: 0
+
   paths_set = set()
   try:
     for module in modules:

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -63,7 +63,8 @@ STACK CFI 3b92118 .cfa: r7 16 + .ra: .cfa -20 + ^
 STACK CFI INIT 3b93214 fffff .cfa: sp 0 + .ra: lr
 STACK CFI 3b93218 .cfa: r7 16 + .ra: .cfa -4 + ^
 """.splitlines()
-      extract_unwind_tables._ParseCfiData(test_data_lines, output_file.name)
+      extract_unwind_tables._ParseCfiData(
+          [l.encode('utf8') for l in test_data_lines], output_file.name)
 
       expected_cfi_data = {
         0xe1a1e4 : [0x2, 0x11, 0x4, 0x50],
@@ -109,8 +110,8 @@ STACK CFI 3b93218 .cfa: r7 16 + .ra: .cfa -4 + ^
 
         func_start = index + 1
         func_end = func_start + unw_data[index] * 2
-        self.assertEquals(
-            len(expected_cfi_data[func_addr]), func_end - func_start)
+        self.assertEqual(len(expected_cfi_data[func_addr]),
+                         func_end - func_start)
         func_cfi = unw_data[func_start : func_end]
         self.assertEqual(expected_cfi_data[func_addr], func_cfi)
 

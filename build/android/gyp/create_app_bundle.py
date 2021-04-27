@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -7,12 +7,10 @@
 """Create an Android application bundle from one or more bundle modules."""
 
 import argparse
-import itertools
 import json
 import os
 import shutil
 import sys
-import tempfile
 import zipfile
 
 sys.path.append(
@@ -376,7 +374,7 @@ def _WriteBundlePathmap(module_pathmap_paths, module_names,
       if not os.path.exists(module_pathmap_path):
         continue
       module_pathmap = _LoadPathmap(module_pathmap_path)
-      for short_path, long_path in module_pathmap.iteritems():
+      for short_path, long_path in module_pathmap.items():
         rebased_long_path = '{}/{}'.format(module_name, long_path)
         rebased_short_path = '{}/{}'.format(module_name, short_path)
         line = '{} -> {}\n'.format(rebased_long_path, rebased_short_path)
