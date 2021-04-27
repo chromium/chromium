@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -22,7 +21,6 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/history/core/browser/url_utils.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"

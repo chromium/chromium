@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "base/i18n/case_conversion.h"
-#include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -29,11 +27,9 @@ URLDatabase::URLEnumeratorBase::URLEnumeratorBase()
     : initialized_(false) {
 }
 
-URLDatabase::URLEnumeratorBase::~URLEnumeratorBase() {
-}
+URLDatabase::URLEnumeratorBase::~URLEnumeratorBase() = default;
 
-URLDatabase::URLEnumerator::URLEnumerator() {
-}
+URLDatabase::URLEnumerator::URLEnumerator() = default;
 
 bool URLDatabase::URLEnumerator::GetNextURL(URLRow* r) {
   if (statement_.Step()) {
@@ -47,8 +43,7 @@ URLDatabase::URLDatabase()
     : has_keyword_search_terms_(false) {
 }
 
-URLDatabase::~URLDatabase() {
-}
+URLDatabase::~URLDatabase() = default;
 
 // Convenience to fill a URLRow. Must be in sync with the fields in
 // kURLRowFields.
@@ -363,13 +358,13 @@ bool URLDatabase::IsTypedHost(const std::string& host, std::string* scheme) {
     url::kFtpScheme
   };
   URLRows dummy;
-  for (size_t i = 0; i < base::size(schemes); ++i) {
-    std::string scheme_and_host(schemes[i]);
+  for (const char* known_scheme : schemes) {
+    std::string scheme_and_host(known_scheme);
     scheme_and_host += url::kStandardSchemeSeparator + host;
     if (AutocompleteForPrefix(scheme_and_host + '/', 1, true, &dummy) ||
         AutocompleteForPrefix(scheme_and_host + ':', 1, true, &dummy)) {
       if (scheme != nullptr)
-        *scheme = schemes[i];
+        *scheme = known_scheme;
       return true;
     }
   }

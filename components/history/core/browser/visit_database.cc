@@ -73,9 +73,9 @@ bool TransitionIsVisible(int32_t transition) {
 
 }  // namespace
 
-VisitDatabase::VisitDatabase() {}
+VisitDatabase::VisitDatabase() = default;
 
-VisitDatabase::~VisitDatabase() {}
+VisitDatabase::~VisitDatabase() = default;
 
 bool VisitDatabase::InitVisitTable() {
   if (!GetDB().DoesTableExist("visits")) {
@@ -345,12 +345,12 @@ bool VisitDatabase::GetVisitsForTimes(const std::vector<base::Time>& times,
                                       VisitVector* visits) {
   visits->clear();
 
-  for (auto it = times.begin(); it != times.end(); ++it) {
+  for (const auto& time : times) {
     sql::Statement statement(GetDB().GetCachedStatement(
         SQL_FROM_HERE, "SELECT" HISTORY_VISIT_ROW_FIELDS "FROM visits "
                        "WHERE visit_time == ?"));
 
-    statement.BindInt64(0, it->ToInternalValue());
+    statement.BindInt64(0, time.ToInternalValue());
 
     if (!FillVisitVector(statement, visits))
       return false;

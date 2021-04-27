@@ -31,7 +31,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/favicon/core/favicon_backend.h"
@@ -54,7 +53,6 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "sql/error_delegate_util.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -1103,9 +1101,9 @@ void HistoryBackend::SetPageTitle(const GURL& url,
   }
 
   URLRows changed_urls;
-  for (size_t i = 0; i < redirects->size(); i++) {
+  for (const auto& redirect : *redirects) {
     URLRow row;
-    URLID row_id = db_->GetRowForURL(redirects->at(i), &row);
+    URLID row_id = db_->GetRowForURL(redirect, &row);
     if (row_id && row.title() != title) {
       row.set_title(title);
       db_->UpdateURLRow(row_id, row);
@@ -1205,10 +1203,10 @@ bool HistoryBackend::AddVisits(const GURL& url,
                                const std::vector<VisitInfo>& visits,
                                VisitSource visit_source) {
   if (db_) {
-    for (auto visit = visits.begin(); visit != visits.end(); ++visit) {
-      if (!AddPageVisit(url, visit->first, 0, visit->second,
-                        !ui::PageTransitionIsMainFrame(visit->second),
-                        visit_source, IsTypedIncrement(visit->second),
+    for (const auto& visit : visits) {
+      if (!AddPageVisit(url, visit.first, 0, visit.second,
+                        !ui::PageTransitionIsMainFrame(visit.second),
+                        visit_source, IsTypedIncrement(visit.second),
                         /*floc_allowed=*/false)
                .first) {
         return false;
@@ -1517,9 +1515,8 @@ void HistoryBackend::RemoveDownloads(const std::set<uint32_t>& ids) {
   size_t downloads_count_before = db_->CountDownloads();
   // HistoryBackend uses a long-running Transaction that is committed
   // periodically, so this loop doesn't actually hit the disk too hard.
-  for (auto it = ids.begin(); it != ids.end(); ++it) {
-    db_->RemoveDownload(*it);
-  }
+  for (uint32_t id : ids)
+    db_->RemoveDownload(id);
   ScheduleCommit();
   size_t downloads_count_after = db_->CountDownloads();
 
@@ -1559,9 +1556,7 @@ void HistoryBackend::QueryHistoryBasic(const QueryOptions& options,
   // Now add them and the URL rows to the results.
   std::vector<URLResult> matching_results;
   URLResult url_result;
-  for (size_t i = 0; i < visits.size(); i++) {
-    const VisitRow visit = visits[i];
-
+  for (const auto& visit : visits) {
     // Add a result row for this visit, get the URL info from the DB.
     if (!db_->GetURLRow(visit.url_id, &url_result)) {
       DVLOG(0) << "Failed to get id " << visit.url_id << " from history.urls.";
@@ -1605,17 +1600,15 @@ void HistoryBackend::QueryHistoryText(const std::u16string& text_query,
 
   std::vector<URLResult> matching_visits;
   VisitVector visits;  // Declare outside loop to prevent re-construction.
-  for (size_t i = 0; i < text_matches.size(); i++) {
-    const URLRow& text_match = text_matches[i];
+  for (const auto& text_match : text_matches) {
     // Get all visits for given URL match.
     db_->GetVisibleVisitsForURL(text_match.id(), options, &visits);
-    for (size_t j = 0; j < visits.size(); j++) {
+    for (const auto& visit : visits) {
       URLResult url_result(text_match);
-      url_result.set_visit_time(visits[j].visit_time);
+      url_result.set_visit_time(visit.visit_time);
 
       VisitContentAnnotations content_annotations;
-      db_->GetContentAnnotationsForVisit(visits[j].visit_id,
-                                         &content_annotations);
+      db_->GetContentAnnotationsForVisit(visit.visit_id, &content_annotations);
       url_result.set_content_annotations(content_annotations);
 
       matching_visits.push_back(url_result);
@@ -1934,47 +1927,46 @@ void HistoryBackend::SetImportedFavicons(
   std::set<GURL> favicons_changed;
 
   favicon::FaviconDatabase* favicon_db = favicon_backend_->db();
-  for (size_t i = 0; i < favicon_usage.size(); i++) {
+  for (const auto& favicon_usage_data : favicon_usage) {
     favicon_base::FaviconID favicon_id = favicon_db->GetFaviconIDForFaviconURL(
-        favicon_usage[i].favicon_url, favicon_base::IconType::kFavicon);
+        favicon_usage_data.favicon_url, favicon_base::IconType::kFavicon);
     if (!favicon_id) {
       // This favicon doesn't exist yet, so we create it using the given data.
       // TODO(pkotwicz): Pass in real pixel size.
       favicon_id = favicon_db->AddFavicon(
-          favicon_usage[i].favicon_url, favicon_base::IconType::kFavicon,
-          new base::RefCountedBytes(favicon_usage[i].png_data),
+          favicon_usage_data.favicon_url, favicon_base::IconType::kFavicon,
+          new base::RefCountedBytes(favicon_usage_data.png_data),
           FaviconBitmapType::ON_VISIT, now, gfx::Size());
     }
 
     // Save the mapping from all the URLs to the favicon.
-    for (auto url = favicon_usage[i].urls.begin();
-         url != favicon_usage[i].urls.end(); ++url) {
+    for (const auto& url : favicon_usage_data.urls) {
       URLRow url_row;
-      if (!db_->GetRowForURL(*url, &url_row)) {
+      if (!db_->GetRowForURL(url, &url_row)) {
         // If the URL is present as a bookmark, add the url in history to
         // save the favicon mapping. This will match with what history db does
         // for regular bookmarked URLs with favicons - when history db is
         // cleaned, we keep an entry in the db with 0 visits as long as that
         // url is bookmarked. The same is applicable to the saved credential's
         // URLs.
-        if (backend_client_ && backend_client_->IsPinnedURL(*url)) {
-          URLRow url_info(*url);
+        if (backend_client_ && backend_client_->IsPinnedURL(url)) {
+          URLRow url_info(url);
           url_info.set_visit_count(0);
           url_info.set_typed_count(0);
           url_info.set_last_visit(base::Time());
           url_info.set_hidden(false);
           db_->AddURL(url_info);
-          favicon_db->AddIconMapping(*url, favicon_id);
-          favicons_changed.insert(*url);
+          favicon_db->AddIconMapping(url, favicon_id);
+          favicons_changed.insert(url);
         }
       } else {
         if (!favicon_db->GetIconMappingsForPageURL(
-                *url, {favicon_base::IconType::kFavicon},
+                url, {favicon_base::IconType::kFavicon},
                 /*mapping_data=*/nullptr)) {
           // URL is present in history, update the favicon *only* if it is not
           // set already.
-          favicon_db->AddIconMapping(*url, favicon_id);
-          favicons_changed.insert(*url);
+          favicon_db->AddIconMapping(url, favicon_id);
+          favicons_changed.insert(url);
         }
       }
     }
@@ -2174,18 +2166,18 @@ void HistoryBackend::ExpireHistoryForTimes(const std::set<base::Time>& times,
 
   // 1st pass: find URLs that are visited at one of |times|.
   std::set<GURL> urls;
-  for (size_t i = 0; i < results.size(); ++i) {
-    if (times.count(results[i].visit_time()) > 0)
-      urls.insert(results[i].url());
+  for (const auto& result : results) {
+    if (times.count(result.visit_time()) > 0)
+      urls.insert(result.url());
   }
   if (urls.empty())
     return;
 
   // 2nd pass: collect all visit times of those URLs.
   std::vector<base::Time> times_to_expire;
-  for (size_t i = 0; i < results.size(); ++i) {
-    if (urls.count(results[i].url()))
-      times_to_expire.push_back(results[i].visit_time());
+  for (const auto& result : results) {
+    if (urls.count(result.url()))
+      times_to_expire.push_back(result.visit_time());
   }
 
   // Put the times in reverse chronological order and remove
@@ -2212,11 +2204,11 @@ void HistoryBackend::ExpireHistory(
   if (db_) {
     bool update_first_recorded_time = false;
 
-    for (auto it = expire_list.begin(); it != expire_list.end(); ++it) {
-      expirer_.ExpireHistoryBetween(it->urls, it->begin_time, it->end_time,
-                                    true);
+    for (const auto& expire : expire_list) {
+      expirer_.ExpireHistoryBetween(expire.urls, expire.begin_time,
+                                    expire.end_time, true);
 
-      if (it->begin_time < first_recorded_time_)
+      if (expire.begin_time < first_recorded_time_)
         update_first_recorded_time = true;
     }
     Commit();
@@ -2240,16 +2232,16 @@ void HistoryBackend::URLsNoLongerBookmarked(const std::set<GURL>& urls) {
   if (!db_)
     return;
 
-  for (auto i = urls.begin(); i != urls.end(); ++i) {
+  for (const auto& url : urls) {
     VisitVector visits;
     URLRow url_row;
-    if (db_->GetRowForURL(*i, &url_row))
+    if (db_->GetRowForURL(url, &url_row))
       db_->GetVisitsForURL(url_row.id(), &visits);
     // We need to call DeleteURL() even if the DB didn't contain this URL, so
     // that we can delete all associated icons in the case of deleting an
     // unvisited bookmarked URL.
     if (visits.empty())
-      expirer_.DeleteURL(*i, base::Time::Max());
+      expirer_.DeleteURL(url, base::Time::Max());
   }
 }
 
@@ -2452,9 +2444,8 @@ bool HistoryBackend::ClearAllMainHistory(const URLRows& kept_urls) {
     return false;
 
   // Insert the URLs into the temporary table.
-  for (auto i = kept_urls.begin(); i != kept_urls.end(); ++i) {
-    db_->AddTemporaryURL(*i);
-  }
+  for (const auto& url : kept_urls)
+    db_->AddTemporaryURL(url);
 
   // Replace the original URL table with the temporary one.
   if (!db_->CommitTemporaryURLTable())

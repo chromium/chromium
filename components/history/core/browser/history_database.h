@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_HISTORY_CORE_BROWSER_HISTORY_DATABASE_H_
 #define COMPONENTS_HISTORY_CORE_BROWSER_HISTORY_DATABASE_H_
 
-#include <stddef.h>
-
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"

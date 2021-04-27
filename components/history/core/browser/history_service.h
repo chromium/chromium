@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_HISTORY_CORE_BROWSER_HISTORY_SERVICE_H_
 #define COMPONENTS_HISTORY_CORE_BROWSER_HISTORY_SERVICE_H_
 
-#include <stddef.h>
 #include <stdint.h>
 
 #include <memory>

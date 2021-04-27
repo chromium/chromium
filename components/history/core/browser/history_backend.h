@@ -120,7 +120,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // a history service object.
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Called when the database cannot be read correctly for some reason.
     // |diagnostics| contains information about the underlying database

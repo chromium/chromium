@@ -4,7 +4,7 @@
 
 #include "components/history/core/browser/cluster_visit_database.h"
 
-#include "sql/database.h"
+#include "base/logging.h"
 #include "sql/statement.h"
 #include "sql/statement_id.h"
 
