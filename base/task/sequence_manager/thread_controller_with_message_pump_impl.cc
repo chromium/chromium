@@ -58,6 +58,13 @@ ThreadControllerWithMessagePumpImpl::~ThreadControllerWithMessagePumpImpl() {
   // will do all the clean-up.
   // ScopedSetSequenceLocalStorageMapForCurrentThread destructor will
   // de-register the current thread as a sequence.
+
+#if defined(OS_WIN)
+  if (main_thread_only().in_high_res_mode) {
+    main_thread_only().in_high_res_mode = false;
+    Time::ActivateHighResolutionTimer(false);
+  }
+#endif
 }
 
 // static
