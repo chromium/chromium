@@ -206,7 +206,6 @@ source_set("eg2_tests") {
     "//components/strings:components_strings_grit",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
-    "//ios/chrome/browser/ui/infobars:test_support",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/browser/ui/toolbar/public:constants",
     "//ios/chrome/browser/ui/util:util",
