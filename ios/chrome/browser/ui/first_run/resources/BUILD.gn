@@ -35,3 +35,11 @@ imageset("first_run_location_permissions") {
     "first_run_location_permissions.imageset/first_run_location_permissions_light@3x.png",
   ]
 }
+
+imageset("sync_screen_banner") {
+  sources = [
+    "sync_screen_banner.imageset/Contents.json",
+    "sync_screen_banner.imageset/sync_screen_banner_light@2x.png",
+    "sync_screen_banner.imageset/sync_screen_banner_light@3x.png",
+  ]
+}

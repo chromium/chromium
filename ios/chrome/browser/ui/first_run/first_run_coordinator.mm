@@ -49,6 +49,7 @@
   void (^completion)(void) = ^{
     base::UmaHistogramEnumeration("FirstRun.Stage", first_run::kStart);
   };
+  [self.navigationController setNavigationBarHidden:YES animated:NO];
   [self.baseViewController presentViewController:self.navigationController
                                         animated:NO
                                       completion:completion];

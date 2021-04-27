@@ -26,6 +26,12 @@ source_set("sync_ui") {
     "sync_screen_view_controller.h",
     "sync_screen_view_controller.mm",
   ]
-  deps = [ "//ios/chrome/browser/ui/first_run:first_run_ui" ]
+  deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/first_run:first_run_ui",
+    "//ios/chrome/browser/ui/first_run/resources:sync_screen_banner",
+    "//ios/chrome/common/ui/colors",
+    "//ui/base",
+  ]
   frameworks = [ "UIKit.framework" ]
 }

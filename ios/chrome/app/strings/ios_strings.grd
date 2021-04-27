@@ -852,6 +852,21 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
       <message name="IDS_IOS_PHONE_CALL_BUTTON" desc="Text in the confirmation dialog button that will initiate a phone call for the presented number. [Length: 10em] [iOS only]">
         Call
       </message>
+      <message name="IDS_IOS_FIRST_RUN_SYNC_SCREEN_TITLE" desc="Title on the sync screen presented to the user on First Run [iOS only]">
+        Sync Between Your Devices
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_SYNC_SCREEN_SUBTITLE" desc="Subtitle on the sync screen presented to the user on First Run [iOS only]">
+        Sync your passwords, history, and more on all your devices
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_SYNC_SCREEN_CONTENT" desc="Content string on the sync screen presented to the user on First Run [iOS only]">
+        Google may use your history to personalize Search, ads, and other Google services
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_SYNC_SCREEN_PRIMARY_ACTION" desc="The primary action string on the sync screen presented to the user on First Run [iOS only]">
+        Turn on Sync
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_SYNC_SCREEN_SECONDARY_ACTION" desc="The secondary action string on the sync screen presented to the user on First Run [iOS only]">
+        Don't Turn On Sync
+      </message>
       <message name="IDS_IOS_FIRSTRUN_BROWSER_MANAGED" desc="Label explaining that the app is managed by an organization. This is shown on the Welcome screen presented to the user on First Run. Only shown if some enterprise policies are set. [iOS only]">
         Your browser is managed by your organization. Some features may be disabled.
       </message>
