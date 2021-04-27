@@ -37,8 +37,6 @@ class ClonedInstallClientIdResetBrowserTest : public InProcessBrowserTest {
 // On windows, the registry is used for client info backups.
 #if defined(OS_WIN)
     ASSERT_NO_FATAL_FAILURE(
-        registry_override_.OverrideRegistry(HKEY_LOCAL_MACHINE));
-    ASSERT_NO_FATAL_FAILURE(
         registry_override_.OverrideRegistry(HKEY_CURRENT_USER));
 #endif  // defined(OS_WIN)
 
