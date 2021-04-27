@@ -15,6 +15,7 @@
 #include "net/cert/x509_certificate.h"
 #include "net/dns/context_host_resolver.h"
 #include "net/dns/fuzzed_host_resolver_util.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_server_properties.h"
 #include "net/http/transport_security_state.h"
 #include "net/quic/mock_crypto_client_stream_factory.h"
@@ -147,7 +148,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   request.Request(
       env->host_port_pair, version, PRIVACY_MODE_DISABLED, DEFAULT_PRIORITY,
-      SocketTag(), NetworkIsolationKey(), false /* disable_secure_dns */,
+      SocketTag(), NetworkIsolationKey(), SecureDnsPolicy::kAllow,
       true /* use_dns_aliases */, kCertVerifyFlags, GURL(kUrl), env->net_log,
       &net_error_details,
       /*failed_on_default_network_callback=*/CompletionOnceCallback(),

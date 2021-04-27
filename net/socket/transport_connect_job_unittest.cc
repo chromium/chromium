@@ -19,6 +19,7 @@
 #include "net/base/test_completion_callback.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/secure_dns_mode.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/log/test_net_log.h"
 #include "net/socket/connect_job_test_util.h"
 #include "net/socket/connection_attempts.h"
@@ -60,7 +61,7 @@ class TransportConnectJobTest : public WithTaskEnvironment,
   static scoped_refptr<TransportSocketParams> DefaultParams() {
     return base::MakeRefCounted<TransportSocketParams>(
         HostPortPair(kHostName, 80), NetworkIsolationKey(),
-        false /* disable_secure_dns */, OnHostResolutionCallback());
+        SecureDnsPolicy::kAllow, OnHostResolutionCallback());
   }
 
  protected:
@@ -262,20 +263,21 @@ TEST_F(TransportConnectJobTest, ConnectionSuccess) {
   }
 }
 
-TEST_F(TransportConnectJobTest, DisableSecureDns) {
-  for (bool disable_secure_dns : {false, true}) {
+TEST_F(TransportConnectJobTest, SecureDnsPolicy) {
+  for (auto secure_dns_policy :
+       {SecureDnsPolicy::kAllow, SecureDnsPolicy::kDisable}) {
     TestConnectJobDelegate test_delegate;
     TransportConnectJob transport_connect_job(
         DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_,
         base::MakeRefCounted<TransportSocketParams>(
             HostPortPair(kHostName, 80), NetworkIsolationKey(),
-            disable_secure_dns, OnHostResolutionCallback()),
+            secure_dns_policy, OnHostResolutionCallback()),
         &test_delegate, nullptr /* net_log */);
     test_delegate.StartJobExpectingResult(&transport_connect_job, OK,
                                           false /* expect_sync_result */);
-    EXPECT_EQ(disable_secure_dns,
+    EXPECT_EQ(secure_dns_policy == SecureDnsPolicy::kDisable,
               host_resolver_.last_secure_dns_mode_override().has_value());
-    if (disable_secure_dns) {
+    if (secure_dns_policy == SecureDnsPolicy::kDisable) {
       EXPECT_EQ(net::SecureDnsMode::kOff,
                 host_resolver_.last_secure_dns_mode_override().value());
     }

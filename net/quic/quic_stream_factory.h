@@ -28,6 +28,7 @@
 #include "net/base/network_change_notifier.h"
 #include "net/base/proxy_server.h"
 #include "net/cert/cert_database.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_server_properties.h"
 #include "net/http/http_stream_factory.h"
 #include "net/log/net_log_with_source.h"
@@ -127,7 +128,7 @@ class NET_EXPORT_PRIVATE QuicStreamRequest {
               RequestPriority priority,
               const SocketTag& socket_tag,
               const NetworkIsolationKey& network_isolation_key,
-              bool disable_secure_dns,
+              SecureDnsPolicy secure_dns_policy,
               bool use_dns_aliases,
               int cert_verify_flags,
               const GURL& url,

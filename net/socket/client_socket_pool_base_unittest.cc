@@ -37,6 +37,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
 #include "net/dns/public/resolve_error_info.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
 #include "net/log/net_log.h"
@@ -84,10 +85,9 @@ ClientSocketPool::GroupId TestGroupId(
         ClientSocketPool::SocketType::kHttp,
     PrivacyMode privacy_mode = PrivacyMode::PRIVACY_MODE_DISABLED,
     NetworkIsolationKey network_isolation_key = NetworkIsolationKey()) {
-  bool disable_secure_dns = false;
   return ClientSocketPool::GroupId(HostPortPair(host, port), socket_type,
                                    privacy_mode, network_isolation_key,
-                                   disable_secure_dns);
+                                   SecureDnsPolicy::kAllow);
 }
 
 // Make sure |handle| sets load times correctly when it has been assigned a
@@ -871,7 +871,8 @@ TEST_F(ClientSocketPoolBaseTest, GroupSeparation) {
       NetworkIsolationKey(kSiteB, kSiteB),
   };
 
-  const bool kDisableSecureDnsValues[] = {false, true};
+  const SecureDnsPolicy kSecureDnsPolicys[] = {SecureDnsPolicy::kAllow,
+                                               SecureDnsPolicy::kDisable};
 
   int total_idle_sockets = 0;
 
@@ -885,14 +886,14 @@ TEST_F(ClientSocketPoolBaseTest, GroupSeparation) {
         SCOPED_TRACE(privacy_mode);
         for (const auto& network_isolation_key : kNetworkIsolationKeys) {
           SCOPED_TRACE(network_isolation_key.ToString());
-          for (const auto& disable_secure_dns : kDisableSecureDnsValues) {
-            SCOPED_TRACE(disable_secure_dns);
+          for (const auto& secure_dns_policy : kSecureDnsPolicys) {
+            SCOPED_TRACE(static_cast<int>(secure_dns_policy));
 
             connect_job_factory_->set_job_type(TestConnectJob::kMockPendingJob);
 
             ClientSocketPool::GroupId group_id(
                 host_port_pair, socket_type, privacy_mode,
-                network_isolation_key, disable_secure_dns);
+                network_isolation_key, secure_dns_policy);
 
             EXPECT_FALSE(pool_->HasGroupForTesting(group_id));
 

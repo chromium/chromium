@@ -20,6 +20,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/privacy_mode.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_auth_controller.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_request_headers.h"
@@ -302,7 +303,7 @@ int ProxyResolvingClientSocket::DoInitConnection() {
       proxy_annotation_tag, &ssl_config, &ssl_config, true /* force_tunnel */,
       net::PRIVACY_MODE_DISABLED, net::OnHostResolutionCallback(),
       net::MAXIMUM_PRIORITY, net::SocketTag(), network_isolation_key_,
-      false /* disable_secure_dns */, common_connect_job_params_, this);
+      net::SecureDnsPolicy::kAllow, common_connect_job_params_, this);
   return connect_job_->Connect();
 }
 

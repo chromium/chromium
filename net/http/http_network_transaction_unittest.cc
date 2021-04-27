@@ -61,6 +61,7 @@
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_auth_challenge_tokenizer.h"
 #include "net/http/http_auth_handler_digest.h"
 #include "net/http/http_auth_handler_mock.h"
@@ -6639,7 +6640,7 @@ TEST_F(HttpNetworkTransactionTest, HttpsProxySpdyGetWithSessionRace) {
   SpdySessionKey key(HostPortPair("proxy", 70), ProxyServer::Direct(),
                      PRIVACY_MODE_DISABLED,
                      SpdySessionKey::IsProxySession::kTrue, SocketTag(),
-                     NetworkIsolationKey(), false /* disable_secure_dns */);
+                     NetworkIsolationKey(), SecureDnsPolicy::kAllow);
   base::WeakPtr<SpdySession> spdy_session =
       CreateSpdySession(session.get(), key, log.bound());
 
@@ -13001,7 +13002,7 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
                                     ClientSocketPool::SocketType::kHttp,
                                     PrivacyMode::PRIVACY_MODE_DISABLED,
                                     NetworkIsolationKey(),
-                                    false /* disable_secure_dns */),
+                                    SecureDnsPolicy::kAllow),
           false,
       },
       {
@@ -13011,7 +13012,7 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
                                     ClientSocketPool::SocketType::kHttp,
                                     PrivacyMode::PRIVACY_MODE_DISABLED,
                                     NetworkIsolationKey(),
-                                    false /* disable_secure_dns */),
+                                    SecureDnsPolicy::kAllow),
           false,
       },
 
@@ -13023,7 +13024,7 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
                                     ClientSocketPool::SocketType::kSsl,
                                     PrivacyMode::PRIVACY_MODE_DISABLED,
                                     NetworkIsolationKey(),
-                                    false /* disable_secure_dns */),
+                                    SecureDnsPolicy::kAllow),
           true,
       },
       {
@@ -13033,7 +13034,7 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
                                     ClientSocketPool::SocketType::kSsl,
                                     PrivacyMode::PRIVACY_MODE_DISABLED,
                                     NetworkIsolationKey(),
-                                    false /* disable_secure_dns */),
+                                    SecureDnsPolicy::kAllow),
           true,
       },
       {
@@ -13043,7 +13044,7 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
                                     ClientSocketPool::SocketType::kSsl,
                                     PrivacyMode::PRIVACY_MODE_DISABLED,
                                     NetworkIsolationKey(),
-                                    false /* disable_secure_dns */),
+                                    SecureDnsPolicy::kAllow),
           true,
       },
   };
@@ -13080,7 +13081,7 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForHTTPProxyConnections) {
                                     ClientSocketPool::SocketType::kHttp,
                                     PrivacyMode::PRIVACY_MODE_DISABLED,
                                     NetworkIsolationKey(),
-                                    false /* disable_secure_dns */),
+                                    SecureDnsPolicy::kAllow),
           false,
       },
 
@@ -13092,7 +13093,7 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForHTTPProxyConnections) {
                                     ClientSocketPool::SocketType::kSsl,
                                     PrivacyMode::PRIVACY_MODE_DISABLED,
                                     NetworkIsolationKey(),
-                                    false /* disable_secure_dns */),
+                                    SecureDnsPolicy::kAllow),
           true,
       },
 
@@ -13103,7 +13104,7 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForHTTPProxyConnections) {
                                     ClientSocketPool::SocketType::kSsl,
                                     PrivacyMode::PRIVACY_MODE_DISABLED,
                                     NetworkIsolationKey(),
-                                    false /* disable_secure_dns */),
+                                    SecureDnsPolicy::kAllow),
           true,
       },
   };
@@ -13142,7 +13143,7 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
                                     ClientSocketPool::SocketType::kHttp,
                                     PrivacyMode::PRIVACY_MODE_DISABLED,
                                     NetworkIsolationKey(),
-                                    false /* disable_secure_dns */),
+                                    SecureDnsPolicy::kAllow),
           false,
       },
       {
@@ -13152,7 +13153,7 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
                                     ClientSocketPool::SocketType::kHttp,
                                     PrivacyMode::PRIVACY_MODE_DISABLED,
                                     NetworkIsolationKey(),
-                                    false /* disable_secure_dns */),
+                                    SecureDnsPolicy::kAllow),
           false,
       },
 
@@ -13164,7 +13165,7 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
                                     ClientSocketPool::SocketType::kSsl,
                                     PrivacyMode::PRIVACY_MODE_DISABLED,
                                     NetworkIsolationKey(),
-                                    false /* disable_secure_dns */),
+                                    SecureDnsPolicy::kAllow),
           true,
       },
       {
@@ -13174,7 +13175,7 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
                                     ClientSocketPool::SocketType::kSsl,
                                     PrivacyMode::PRIVACY_MODE_DISABLED,
                                     NetworkIsolationKey(),
-                                    false /* disable_secure_dns */),
+                                    SecureDnsPolicy::kAllow),
           true,
       },
 
@@ -13185,7 +13186,7 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
                                     ClientSocketPool::SocketType::kSsl,
                                     PrivacyMode::PRIVACY_MODE_DISABLED,
                                     NetworkIsolationKey(),
-                                    false /* disable_secure_dns */),
+                                    SecureDnsPolicy::kAllow),
           true,
       },
   };
@@ -15306,7 +15307,7 @@ TEST_F(HttpNetworkTransactionTest,
   SpdySessionKey key(host_port_pair, ProxyServer::Direct(),
                      PRIVACY_MODE_DISABLED,
                      SpdySessionKey::IsProxySession::kFalse, SocketTag(),
-                     NetworkIsolationKey(), false /* disable_secure_dns */);
+                     NetworkIsolationKey(), SecureDnsPolicy::kAllow);
   base::WeakPtr<SpdySession> spdy_session =
       CreateSpdySession(session.get(), key, NetLogWithSource());
 
@@ -16369,7 +16370,7 @@ TEST_F(HttpNetworkTransactionTest, MultiRoundAuth) {
   const ClientSocketPool::GroupId kSocketGroup(
       HostPortPair("www.example.com", 80), ClientSocketPool::SocketType::kHttp,
       PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
-      false /* disable_secure_dns */);
+      SecureDnsPolicy::kAllow);
 
   // First round of authentication.
   auth_handler->SetGenerateExpectation(false, OK);
@@ -16981,7 +16982,7 @@ TEST_F(HttpNetworkTransactionTest, PreconnectWithExistingSpdySession) {
   SpdySessionKey key(host_port_pair, ProxyServer::Direct(),
                      PRIVACY_MODE_DISABLED,
                      SpdySessionKey::IsProxySession::kFalse, SocketTag(),
-                     NetworkIsolationKey(), false /* disable_secure_dns */);
+                     NetworkIsolationKey(), SecureDnsPolicy::kAllow);
   base::WeakPtr<SpdySession> spdy_session =
       CreateSpdySession(session.get(), key, NetLogWithSource());
 
@@ -18740,7 +18741,7 @@ TEST_F(HttpNetworkTransactionTest, CloseIdleSpdySessionToOpenNewOne) {
   SpdySessionKey spdy_session_key_a(
       host_port_pair_a, ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
       SpdySessionKey::IsProxySession::kFalse, SocketTag(),
-      NetworkIsolationKey(), false /* disable_secure_dns */);
+      NetworkIsolationKey(), SecureDnsPolicy::kAllow);
   EXPECT_FALSE(
       HasSpdySession(session->spdy_session_pool(), spdy_session_key_a));
 
@@ -18776,7 +18777,7 @@ TEST_F(HttpNetworkTransactionTest, CloseIdleSpdySessionToOpenNewOne) {
   SpdySessionKey spdy_session_key_b(
       host_port_pair_b, ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
       SpdySessionKey::IsProxySession::kFalse, SocketTag(),
-      NetworkIsolationKey(), false /* disable_secure_dns */);
+      NetworkIsolationKey(), SecureDnsPolicy::kAllow);
   EXPECT_FALSE(
       HasSpdySession(session->spdy_session_pool(), spdy_session_key_b));
   HttpRequestInfo request2;
@@ -18809,7 +18810,7 @@ TEST_F(HttpNetworkTransactionTest, CloseIdleSpdySessionToOpenNewOne) {
   SpdySessionKey spdy_session_key_a1(
       host_port_pair_a1, ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
       SpdySessionKey::IsProxySession::kFalse, SocketTag(),
-      NetworkIsolationKey(), false /* disable_secure_dns */);
+      NetworkIsolationKey(), SecureDnsPolicy::kAllow);
   EXPECT_FALSE(
       HasSpdySession(session->spdy_session_pool(), spdy_session_key_a1));
   HttpRequestInfo request3;

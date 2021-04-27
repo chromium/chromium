@@ -4,6 +4,7 @@
 
 #include "net/quic/quic_chromium_client_session_peer.h"
 
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 
@@ -16,9 +17,8 @@ void QuicChromiumClientSessionPeer::SetHostname(
   quic::QuicServerId server_id(hostname,
                                session->session_key_.server_id().port(),
                                session->session_key_.privacy_mode());
-  session->session_key_ =
-      QuicSessionKey(server_id, SocketTag(), NetworkIsolationKey(),
-                     false /* disable_secure_dns */);
+  session->session_key_ = QuicSessionKey(
+      server_id, SocketTag(), NetworkIsolationKey(), SecureDnsPolicy::kAllow);
 }
 
 // static

@@ -41,6 +41,7 @@
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/cookies/static_cookie_policy.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_request_headers.h"
 #include "net/ssl/client_cert_store.h"
 #include "net/ssl/ssl_connection_status_flags.h"
@@ -624,11 +625,9 @@ URLLoader::URLLoader(
   if (ShouldForceIgnoreTopFramePartyForCookies())
     url_request_->set_force_ignore_top_frame_party_for_cookies(true);
 
-  if (factory_params_->disable_secure_dns) {
-    url_request_->SetDisableSecureDns(true);
-  } else if (request.trusted_params) {
-    url_request_->SetDisableSecureDns(
-        request.trusted_params->disable_secure_dns);
+  if (factory_params_->disable_secure_dns ||
+      (request.trusted_params && request.trusted_params->disable_secure_dns)) {
+    url_request_->SetSecureDnsPolicy(net::SecureDnsPolicy::kDisable);
   }
 
   // |cors_excempt_headers| must be merged here to avoid breaking CORS checks.

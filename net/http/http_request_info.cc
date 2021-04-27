@@ -4,6 +4,8 @@
 
 #include "net/http/http_request_info.h"
 
+#include "net/dns/public/secure_dns_policy.h"
+
 namespace net {
 
 HttpRequestInfo::HttpRequestInfo()
@@ -11,7 +13,7 @@ HttpRequestInfo::HttpRequestInfo()
       upload_data_stream(nullptr),
       load_flags(0),
       privacy_mode(PRIVACY_MODE_DISABLED),
-      disable_secure_dns(false),
+      secure_dns_policy(SecureDnsPolicy::kAllow),
       reporting_upload_depth(0),
       idempotency(net::DEFAULT_IDEMPOTENCY) {}
 

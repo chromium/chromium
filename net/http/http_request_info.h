@@ -12,6 +12,7 @@
 #include "net/base/net_export.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/privacy_mode.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_request_headers.h"
 #include "net/socket/socket_tag.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -53,8 +54,8 @@ struct NET_EXPORT HttpRequestInfo {
   // tracked by the server (e.g. without channel id).
   PrivacyMode privacy_mode;
 
-  // Whether secure DNS should be disabled for the request.
-  bool disable_secure_dns;
+  // Secure DNS Tag for the request.
+  SecureDnsPolicy secure_dns_policy;
 
   // Tag applied to all sockets used to service request.
   SocketTag socket_tag;

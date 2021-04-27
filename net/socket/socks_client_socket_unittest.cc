@@ -17,6 +17,7 @@
 #include "net/dns/host_resolver.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/secure_dns_mode.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/test_net_log.h"
 #include "net/log/test_net_log_util.h"
@@ -96,7 +97,7 @@ std::unique_ptr<SOCKSClientSocket> SOCKSClientSocketTest::BuildMockSocket(
   tcp_sock_ = socket.get();
   return std::make_unique<SOCKSClientSocket>(
       std::move(socket), HostPortPair(hostname, port), NetworkIsolationKey(),
-      DEFAULT_PRIORITY, host_resolver, false /* disable_secure_dns */,
+      DEFAULT_PRIORITY, host_resolver, SecureDnsPolicy::kAllow,
       TRAFFIC_ANNOTATION_FOR_TESTS);
 }
 
@@ -437,11 +438,10 @@ TEST_F(SOCKSClientSocketTest, Tag) {
   // |connection| takes ownership of |tagging_sock|, but keep a
   // non-owning pointer to it.
   MockHostResolver host_resolver;
-  SOCKSClientSocket socket(std::unique_ptr<StreamSocket>(tagging_sock),
-                           HostPortPair("localhost", 80), NetworkIsolationKey(),
-                           DEFAULT_PRIORITY, &host_resolver,
-                           false /* disable_secure_dns */,
-                           TRAFFIC_ANNOTATION_FOR_TESTS);
+  SOCKSClientSocket socket(
+      std::unique_ptr<StreamSocket>(tagging_sock),
+      HostPortPair("localhost", 80), NetworkIsolationKey(), DEFAULT_PRIORITY,
+      &host_resolver, SecureDnsPolicy::kAllow, TRAFFIC_ANNOTATION_FOR_TESTS);
 
   EXPECT_EQ(tagging_sock->tag(), SocketTag());
 #if defined(OS_ANDROID)
@@ -451,20 +451,21 @@ TEST_F(SOCKSClientSocketTest, Tag) {
 #endif  // OS_ANDROID
 }
 
-TEST_F(SOCKSClientSocketTest, SetDisableSecureDns) {
-  for (bool disable_secure_dns : {false, true}) {
+TEST_F(SOCKSClientSocketTest, SetSecureDnsPolicy) {
+  for (auto secure_dns_policy :
+       {SecureDnsPolicy::kAllow, SecureDnsPolicy::kDisable}) {
     StaticSocketDataProvider data;
     RecordingTestNetLog log;
     MockHostResolver host_resolver;
     SOCKSClientSocket socket(
         std::make_unique<MockTCPClientSocket>(address_list_, &log, &data),
         HostPortPair("localhost", 80), NetworkIsolationKey(), DEFAULT_PRIORITY,
-        &host_resolver, disable_secure_dns, TRAFFIC_ANNOTATION_FOR_TESTS);
+        &host_resolver, secure_dns_policy, TRAFFIC_ANNOTATION_FOR_TESTS);
 
     EXPECT_EQ(ERR_IO_PENDING, socket.Connect(callback_.callback()));
-    EXPECT_EQ(disable_secure_dns,
+    EXPECT_EQ(secure_dns_policy == SecureDnsPolicy::kDisable,
               host_resolver.last_secure_dns_mode_override().has_value());
-    if (disable_secure_dns) {
+    if (secure_dns_policy == SecureDnsPolicy::kDisable) {
       EXPECT_EQ(net::SecureDnsMode::kOff,
                 host_resolver.last_secure_dns_mode_override().value());
     }

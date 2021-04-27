@@ -21,6 +21,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/trace_constants.h"
 #include "net/dns/public/secure_dns_mode.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source_type.h"
@@ -51,11 +52,11 @@ bool AddressListOnlyContainsIPv6(const AddressList& list) {
 TransportSocketParams::TransportSocketParams(
     const HostPortPair& host_port_pair,
     const NetworkIsolationKey& network_isolation_key,
-    bool disable_secure_dns,
+    SecureDnsPolicy secure_dns_policy,
     const OnHostResolutionCallback& host_resolution_callback)
     : destination_(host_port_pair),
       network_isolation_key_(network_isolation_key),
-      disable_secure_dns_(disable_secure_dns),
+      secure_dns_policy_(secure_dns_policy),
       host_resolution_callback_(host_resolution_callback) {}
 
 TransportSocketParams::~TransportSocketParams() = default;
@@ -270,7 +271,7 @@ int TransportConnectJob::DoResolveHost() {
 
   HostResolver::ResolveHostParameters parameters;
   parameters.initial_priority = priority();
-  if (params_->disable_secure_dns())
+  if (params_->secure_dns_policy() == SecureDnsPolicy::kDisable)
     parameters.secure_dns_mode_override = SecureDnsMode::kOff;
   request_ = host_resolver()->CreateRequest(params_->destination(),
                                             params_->network_isolation_key(),

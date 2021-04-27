@@ -8,6 +8,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/privacy_mode.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/socket/socket_tag.h"
 #include "net/third_party/quiche/src/quic/core/quic_server_id.h"
 
@@ -22,17 +23,17 @@ class QUIC_EXPORT_PRIVATE QuicSessionKey {
                  PrivacyMode privacy_mode,
                  const SocketTag& socket_tag,
                  const NetworkIsolationKey& network_isolation_key,
-                 bool disable_secure_dns);
+                 SecureDnsPolicy secure_dns_policy);
   QuicSessionKey(const std::string& host,
                  uint16_t port,
                  PrivacyMode privacy_mode,
                  const SocketTag& socket_tag,
                  const NetworkIsolationKey& network_isolation_key,
-                 bool disable_secure_dns);
+                 SecureDnsPolicy secure_dns_policy);
   QuicSessionKey(const quic::QuicServerId& server_id,
                  const SocketTag& socket_tag,
                  const NetworkIsolationKey& network_isolation_key,
-                 bool disable_secure_dns);
+                 SecureDnsPolicy secure_dns_policy);
   QuicSessionKey(const QuicSessionKey& other);
   ~QuicSessionKey() = default;
 
@@ -65,7 +66,7 @@ class QUIC_EXPORT_PRIVATE QuicSessionKey {
     return network_isolation_key_;
   }
 
-  bool disable_secure_dns() const { return disable_secure_dns_; }
+  SecureDnsPolicy secure_dns_policy() const { return secure_dns_policy_; }
 
   size_t EstimateMemoryUsage() const;
 
@@ -74,7 +75,7 @@ class QUIC_EXPORT_PRIVATE QuicSessionKey {
   SocketTag socket_tag_;
   // Used to separate requests made in different contexts.
   NetworkIsolationKey network_isolation_key_;
-  bool disable_secure_dns_;
+  SecureDnsPolicy secure_dns_policy_;
 };
 
 }  // namespace net

@@ -16,6 +16,7 @@
 #include "net/base/test_completion_callback.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/log/test_net_log.h"
 #include "net/socket/fuzzed_socket.h"
 #include "net/socket/socks_client_socket.h"
@@ -58,7 +59,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   net::SOCKSClientSocket socket(
       std::move(fuzzed_socket), net::HostPortPair("foo", 80),
       net::NetworkIsolationKey(), net::DEFAULT_PRIORITY, &mock_host_resolver,
-      false /* disable_secure_dns */, TRAFFIC_ANNOTATION_FOR_TESTS);
+      net::SecureDnsPolicy::kAllow, TRAFFIC_ANNOTATION_FOR_TESTS);
   int result = socket.Connect(callback.callback());
   callback.GetResult(result);
   return 0;

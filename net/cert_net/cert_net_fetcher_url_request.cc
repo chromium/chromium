@@ -76,6 +76,7 @@
 #include "net/base/load_flags.h"
 #include "net/cert/cert_net_fetcher.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/url_request_context.h"
@@ -513,7 +514,7 @@ void Job::StartURLRequest(URLRequestContext* context) {
 
   // Disable secure DNS for hostname lookups triggered by certificate network
   // fetches to prevent deadlock.
-  url_request_->SetDisableSecureDns(true);
+  url_request_->SetSecureDnsPolicy(SecureDnsPolicy::kDisable);
 
   // Create IsolationInfo based on the origin of the requested URL.
   // TODO(https://crbug.com/1016890): Cert validation needs to either be

@@ -11,6 +11,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/request_priority.h"
 #include "net/cert/x509_certificate.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log_source.h"
 #include "net/log/test_net_log.h"
 #include "net/socket/fuzzed_socket_factory.h"
@@ -124,7 +125,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
                                   direct_connect, net::PRIVACY_MODE_DISABLED,
                                   net::SpdySessionKey::IsProxySession::kFalse,
                                   net::SocketTag(), net::NetworkIsolationKey(),
-                                  false /* disable_secure_dns */);
+                                  net::SecureDnsPolicy::kAllow);
   base::WeakPtr<net::SpdySession> spdy_session(net::CreateSpdySession(
       http_session.get(), session_key, bound_test_net_log.bound()));
 

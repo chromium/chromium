@@ -263,6 +263,7 @@ class NET_EXPORT HostResolver {
     bool avoid_multicast_resolution = false;
 
     // Set to override the resolver's default secure dns mode for this request.
+    // TODO(crbug.com/1200908): Replace with a SecureDnsPolicy.
     base::Optional<SecureDnsMode> secure_dns_mode_override = base::nullopt;
   };
 

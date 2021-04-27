@@ -28,6 +28,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/base/test_proxy_delegate.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_basic_stream.h"
 #include "net/http/http_network_session_peer.h"
 #include "net/http/http_server_properties.h"
@@ -2304,7 +2305,7 @@ TEST_F(HttpStreamFactoryJobControllerTest, SpdySessionInterruptsPreconnect) {
               HostPortPair::FromURL(request_info.url), ProxyServer::Direct(),
               request_info.privacy_mode, SpdySessionKey::IsProxySession::kFalse,
               request_info.socket_tag, request_info.network_isolation_key,
-              request_info.disable_secure_dns),
+              request_info.secure_dns_policy),
           false /* enable_ip_based_pooling */, false /* is_websocket */,
           NetLogWithSource());
   EXPECT_TRUE(spdy_session);
@@ -2450,15 +2451,15 @@ TEST_F(JobControllerLimitMultipleH2Requests,
   ClientSocketPool::GroupId group_id0(
       HostPortPair::FromURL(request_info.url),
       ClientSocketPool::SocketType::kSsl, request_info.privacy_mode,
-      NetworkIsolationKey(), false /* disable_secure_dns */);
+      NetworkIsolationKey(), SecureDnsPolicy::kAllow);
   ClientSocketPool::GroupId group_id1(
       HostPortPair::FromURL(request_info.url),
       ClientSocketPool::SocketType::kSsl, request_info.privacy_mode,
-      kNetworkIsolationKey1, false /* disable_secure_dns */);
+      kNetworkIsolationKey1, SecureDnsPolicy::kAllow);
   ClientSocketPool::GroupId group_id2(
       HostPortPair::FromURL(request_info.url),
       ClientSocketPool::SocketType::kSsl, request_info.privacy_mode,
-      kNetworkIsolationKey2, false /* disable_secure_dns */);
+      kNetworkIsolationKey2, SecureDnsPolicy::kAllow);
   EXPECT_EQ(static_cast<uint32_t>(kNumRequests),
             socket_pool->NumConnectJobsInGroupForTesting(group_id0));
   EXPECT_EQ(1u, socket_pool->NumConnectJobsInGroupForTesting(group_id1));

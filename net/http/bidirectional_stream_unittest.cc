@@ -23,6 +23,7 @@
 #include "net/base/load_timing_info.h"
 #include "net/base/load_timing_info_test_util.h"
 #include "net/base/net_errors.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/http/bidirectional_stream_request_info.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_response_headers.h"
@@ -434,7 +435,7 @@ class BidirectionalStreamTest : public TestWithTaskEnvironment {
     SpdySessionKey key(host_port_pair_, ProxyServer::Direct(),
                        PRIVACY_MODE_DISABLED,
                        SpdySessionKey::IsProxySession::kFalse, socket_tag,
-                       NetworkIsolationKey(), false /* disable_secure_dns */);
+                       NetworkIsolationKey(), SecureDnsPolicy::kAllow);
     session_ = CreateSpdySession(http_session_.get(), key, net_log_.bound());
   }
 
@@ -629,7 +630,7 @@ TEST_F(BidirectionalStreamTest, ClientAuthRequestIgnored) {
   SpdySessionKey key(host_port_pair_, ProxyServer::Direct(),
                      PRIVACY_MODE_DISABLED,
                      SpdySessionKey::IsProxySession::kFalse, SocketTag(),
-                     NetworkIsolationKey(), false /* disable_secure_dns */);
+                     NetworkIsolationKey(), SecureDnsPolicy::kAllow);
   std::unique_ptr<BidirectionalStreamRequestInfo> request_info(
       new BidirectionalStreamRequestInfo);
   request_info->method = "GET";

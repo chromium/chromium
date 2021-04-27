@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "net/base/features.h"
 #include "net/base/load_flags.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_stream_factory.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/socket/client_socket_handle.h"
@@ -69,7 +70,7 @@ ClientSocketPool::GroupId CreateGroupId(
     const ProxyInfo& proxy_info,
     PrivacyMode privacy_mode,
     const NetworkIsolationKey& network_isolation_key,
-    bool disable_secure_dns) {
+    SecureDnsPolicy secure_dns_policy) {
   // Build the string used to uniquely identify connections of this type.
   // Determine the host and port to connect to.
   DCHECK(!endpoint.IsEmpty());
@@ -80,7 +81,7 @@ ClientSocketPool::GroupId CreateGroupId(
     socket_type = ClientSocketPool::SocketType::kSsl;
 
   return ClientSocketPool::GroupId(endpoint, socket_type, privacy_mode,
-                                   network_isolation_key, disable_secure_dns);
+                                   network_isolation_key, secure_dns_policy);
 }
 
 // TODO(https://crbug.com/921369) In order to resolve longstanding issues
@@ -111,7 +112,7 @@ int InitSocketPoolHelper(
     bool is_for_websockets,
     PrivacyMode privacy_mode,
     const NetworkIsolationKey& network_isolation_key,
-    bool disable_secure_dns,
+    SecureDnsPolicy secure_dns_policy,
     const SocketTag& socket_tag,
     const NetLogWithSource& net_log,
     int num_preconnect_streams,
@@ -130,7 +131,7 @@ int InitSocketPoolHelper(
 
   ClientSocketPool::GroupId connection_group =
       CreateGroupId(group_type, origin_host_port, proxy_info, privacy_mode,
-                    network_isolation_key, disable_secure_dns);
+                    network_isolation_key, secure_dns_policy);
   scoped_refptr<ClientSocketPool::SocketParams> socket_params =
       CreateSocketParams(connection_group, proxy_info.proxy_server(),
                          ssl_config_for_origin, ssl_config_for_proxy);
@@ -246,7 +247,7 @@ int InitSocketHandleForHttpRequest(
     const SSLConfig& ssl_config_for_proxy,
     PrivacyMode privacy_mode,
     const NetworkIsolationKey& network_isolation_key,
-    bool disable_secure_dns,
+    SecureDnsPolicy secure_dns_policy,
     const SocketTag& socket_tag,
     const NetLogWithSource& net_log,
     ClientSocketHandle* socket_handle,
@@ -257,7 +258,7 @@ int InitSocketHandleForHttpRequest(
       group_type, endpoint, request_load_flags, request_priority, session,
       proxy_info, ssl_config_for_origin, ssl_config_for_proxy,
       false /* is_for_websockets */, privacy_mode, network_isolation_key,
-      disable_secure_dns, socket_tag, net_log, 0, socket_handle,
+      secure_dns_policy, socket_tag, net_log, 0, socket_handle,
       HttpNetworkSession::NORMAL_SOCKET_POOL, std::move(callback),
       proxy_auth_callback);
 }
@@ -286,7 +287,7 @@ int InitSocketHandleForWebSocketRequest(
       group_type, endpoint, request_load_flags, request_priority, session,
       proxy_info, ssl_config_for_origin, ssl_config_for_proxy,
       true /* is_for_websockets */, privacy_mode, network_isolation_key,
-      false /*disable_secure_dns */, SocketTag(), net_log, 0, socket_handle,
+      SecureDnsPolicy::kAllow, SocketTag(), net_log, 0, socket_handle,
       HttpNetworkSession::WEBSOCKET_SOCKET_POOL, std::move(callback),
       proxy_auth_callback);
 }
@@ -302,7 +303,7 @@ int PreconnectSocketsForHttpRequest(
     const SSLConfig& ssl_config_for_proxy,
     PrivacyMode privacy_mode,
     const NetworkIsolationKey& network_isolation_key,
-    bool disable_secure_dns,
+    SecureDnsPolicy secure_dns_policy,
     const NetLogWithSource& net_log,
     int num_preconnect_streams) {
   // QUIC proxies are currently not supported through this method.
@@ -312,7 +313,7 @@ int PreconnectSocketsForHttpRequest(
       group_type, endpoint, request_load_flags, request_priority, session,
       proxy_info, ssl_config_for_origin, ssl_config_for_proxy,
       false /* force_tunnel */, privacy_mode, network_isolation_key,
-      disable_secure_dns, SocketTag(), net_log, num_preconnect_streams, nullptr,
+      secure_dns_policy, SocketTag(), net_log, num_preconnect_streams, nullptr,
       HttpNetworkSession::NORMAL_SOCKET_POOL, CompletionOnceCallback(),
       ClientSocketPool::ProxyAuthCallback());
 }

@@ -1035,7 +1035,7 @@ HttpStreamFactory::JobController::GetAlternativeServiceInfoInternal(
     ignore_result(ApplyHostMappingRules(original_url, &mapped_origin));
     QuicSessionKey session_key(
         mapped_origin, request_info.privacy_mode, request_info.socket_tag,
-        request_info.network_isolation_key, request_info.disable_secure_dns);
+        request_info.network_isolation_key, request_info.secure_dns_policy);
 
     HostPortPair destination(alternative_service_info.host_port_pair());
     if (session_key.host() != destination.host() &&

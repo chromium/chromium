@@ -81,6 +81,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/secure_dns_mode.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/dns/resolve_context.h"
 #include "net/http/http_auth.h"
 #include "net/http/http_cache.h"
@@ -4347,13 +4348,13 @@ TEST_F(NetworkContextTest, PreconnectNetworkIsolationKey) {
   net::ClientSocketPool::GroupId group_id1(
       test_server.host_port_pair(), net::ClientSocketPool::SocketType::kHttp,
       net::PrivacyMode::PRIVACY_MODE_ENABLED, kKey1,
-      false /* disable_secure_dns */);
+      net::SecureDnsPolicy::kAllow);
   EXPECT_EQ(
       1, GetSocketCountForGroup(network_context.get(), group_id1.ToString()));
   net::ClientSocketPool::GroupId group_id2(
       test_server.host_port_pair(), net::ClientSocketPool::SocketType::kHttp,
       net::PrivacyMode::PRIVACY_MODE_ENABLED, kKey2,
-      false /* disable_secure_dns */);
+      net::SecureDnsPolicy::kAllow);
   EXPECT_EQ(
       2, GetSocketCountForGroup(network_context.get(), group_id2.ToString()));
 }

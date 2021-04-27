@@ -36,6 +36,7 @@
 #include "net/dns/dns_alias_utility.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/secure_dns_mode.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_event_type.h"
@@ -703,7 +704,7 @@ int QuicStreamFactory::Job::DoResolveHost() {
     parameters.cache_usage =
         HostResolver::ResolveHostParameters::CacheUsage::STALE_ALLOWED;
   }
-  if (key_.session_key().disable_secure_dns())
+  if (key_.session_key().secure_dns_policy() == SecureDnsPolicy::kDisable)
     parameters.secure_dns_mode_override = SecureDnsMode::kOff;
   resolve_host_request_ = host_resolver_->CreateRequest(
       key_.destination(), key_.session_key().network_isolation_key(), net_log_,
@@ -990,7 +991,7 @@ int QuicStreamRequest::Request(
     RequestPriority priority,
     const SocketTag& socket_tag,
     const NetworkIsolationKey& network_isolation_key,
-    bool disable_secure_dns,
+    SecureDnsPolicy secure_dns_policy,
     bool use_dns_aliases,
     int cert_verify_flags,
     const GURL& url,
@@ -1009,7 +1010,7 @@ int QuicStreamRequest::Request(
       std::move(failed_on_default_network_callback);
   session_key_ =
       QuicSessionKey(HostPortPair::FromURL(url), privacy_mode, socket_tag,
-                     network_isolation_key, disable_secure_dns);
+                     network_isolation_key, secure_dns_policy);
 
   int rv =
       factory_->Create(session_key_, destination, quic_version, priority,

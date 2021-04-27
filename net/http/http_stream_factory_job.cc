@@ -28,6 +28,7 @@
 #include "net/base/proxy_delegate.h"
 #include "net/base/trace_constants.h"
 #include "net/cert/cert_verifier.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/http/bidirectional_stream_impl.h"
 #include "net/http/http_basic_stream.h"
 #include "net/http/http_network_session.h"
@@ -166,7 +167,7 @@ HttpStreamFactory::Job::Job(Delegate* delegate,
                                           request_info_.privacy_mode,
                                           request_info_.socket_tag,
                                           request_info_.network_isolation_key,
-                                          request_info_.disable_secure_dns)),
+                                          request_info_.secure_dns_policy)),
       stream_type_(HttpStreamRequest::BIDIRECTIONAL_STREAM),
       init_connection_already_resumed_(false) {
   // QUIC can only be spoken to servers, never to proxies.
@@ -371,18 +372,18 @@ SpdySessionKey HttpStreamFactory::Job::GetSpdySessionKey(
     PrivacyMode privacy_mode,
     const SocketTag& socket_tag,
     const NetworkIsolationKey& network_isolation_key,
-    bool disable_secure_dns) {
+    SecureDnsPolicy secure_dns_policy) {
   // In the case that we're using an HTTPS proxy for an HTTP url, look for a
   // HTTP/2 proxy session *to* the proxy, instead of to the  origin server.
   if (!spdy_session_direct) {
     return SpdySessionKey(proxy_server.host_port_pair(), ProxyServer::Direct(),
                           PRIVACY_MODE_DISABLED,
                           SpdySessionKey::IsProxySession::kTrue, socket_tag,
-                          network_isolation_key, disable_secure_dns);
+                          network_isolation_key, secure_dns_policy);
   }
   return SpdySessionKey(HostPortPair::FromURL(origin_url), proxy_server,
                         privacy_mode, SpdySessionKey::IsProxySession::kFalse,
-                        socket_tag, network_isolation_key, disable_secure_dns);
+                        socket_tag, network_isolation_key, secure_dns_policy);
 }
 
 bool HttpStreamFactory::Job::CanUseExistingSpdySession() const {
@@ -816,7 +817,7 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
         GetSocketGroup(), destination_, request_info_.load_flags, priority_,
         session_, proxy_info_, server_ssl_config_, proxy_ssl_config_,
         request_info_.privacy_mode, request_info_.network_isolation_key,
-        request_info_.disable_secure_dns, net_log_, num_streams_);
+        request_info_.secure_dns_policy, net_log_, num_streams_);
   }
 
   ClientSocketPool::ProxyAuthCallback proxy_auth_callback =
@@ -824,7 +825,7 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
                           base::Unretained(this));
   if (is_websocket_) {
     DCHECK(request_info_.socket_tag == SocketTag());
-    DCHECK(!request_info_.disable_secure_dns);
+    DCHECK_EQ(SecureDnsPolicy::kAllow, request_info_.secure_dns_policy);
     SSLConfig websocket_server_ssl_config = server_ssl_config_;
     websocket_server_ssl_config.alpn_protos.clear();
     return InitSocketHandleForWebSocketRequest(
@@ -838,7 +839,7 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
       GetSocketGroup(), destination_, request_info_.load_flags, priority_,
       session_, proxy_info_, server_ssl_config_, proxy_ssl_config_,
       request_info_.privacy_mode, request_info_.network_isolation_key,
-      request_info_.disable_secure_dns, request_info_.socket_tag, net_log_,
+      request_info_.secure_dns_policy, request_info_.socket_tag, net_log_,
       connection_.get(), io_callback_, proxy_auth_callback);
 }
 
@@ -872,7 +873,7 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic() {
   int rv = quic_request_.Request(
       destination, quic_version_, request_info_.privacy_mode, priority_,
       request_info_.socket_tag, request_info_.network_isolation_key,
-      request_info_.disable_secure_dns, proxy_info_.is_direct(),
+      request_info_.secure_dns_policy, proxy_info_.is_direct(),
       ssl_config->GetCertVerifyFlags(), url, net_log_, &net_error_details_,
       base::BindOnce(&Job::OnFailedOnDefaultNetwork, ptr_factory_.GetWeakPtr()),
       io_callback_);

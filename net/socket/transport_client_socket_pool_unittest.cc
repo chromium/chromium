@@ -32,6 +32,7 @@
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/secure_dns_mode.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_proxy_connect_job.h"
 #include "net/http/transport_security_state.h"
@@ -110,7 +111,7 @@ class TransportClientSocketPoolTest : public ::testing::Test,
                   ClientSocketPool::SocketType::kHttp,
                   PrivacyMode::PRIVACY_MODE_DISABLED,
                   NetworkIsolationKey(),
-                  false /* disable_secure_dns */),
+                  SecureDnsPolicy::kAllow),
         params_(ClientSocketPool::SocketParams::CreateForHttpForTesting()),
         client_socket_factory_(&net_log_) {
     std::unique_ptr<MockCertVerifier> cert_verifier =
@@ -159,7 +160,7 @@ class TransportClientSocketPoolTest : public ::testing::Test,
     ClientSocketPool::GroupId group_id(
         HostPortPair(host_name, 80), ClientSocketPool::SocketType::kHttp,
         PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
-        false /* disable_secure_dns */);
+        SecureDnsPolicy::kAllow);
     return test_base_.StartRequestUsingPool(
         pool_.get(), group_id, priority,
         ClientSocketPool::RespectLimits::ENABLED,
@@ -258,24 +259,25 @@ TEST_F(TransportClientSocketPoolTest, SetResolvePriorityOnInit) {
   }
 }
 
-TEST_F(TransportClientSocketPoolTest, SetDisableSecureDns) {
-  for (bool disable_secure_dns : {false, true}) {
+TEST_F(TransportClientSocketPoolTest, SetSecureDnsPolicy) {
+  for (auto secure_dns_policy :
+       {SecureDnsPolicy::kAllow, SecureDnsPolicy::kDisable}) {
     TestCompletionCallback callback;
     ClientSocketHandle handle;
     ClientSocketPool::GroupId group_id(
         HostPortPair("www.google.com", 80), ClientSocketPool::SocketType::kHttp,
         PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
-        disable_secure_dns);
+        secure_dns_policy);
     EXPECT_EQ(
         ERR_IO_PENDING,
         handle.Init(group_id, params_, base::nullopt /* proxy_annotation_tag */,
                     LOW, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
                     callback.callback(), ClientSocketPool::ProxyAuthCallback(),
                     pool_.get(), NetLogWithSource()));
-    EXPECT_EQ(disable_secure_dns,
+    EXPECT_EQ(secure_dns_policy == SecureDnsPolicy::kDisable,
               session_deps_.host_resolver->last_secure_dns_mode_override()
                   .has_value());
-    if (disable_secure_dns) {
+    if (secure_dns_policy == SecureDnsPolicy::kDisable) {
       EXPECT_EQ(
           net::SecureDnsMode::kOff,
           session_deps_.host_resolver->last_secure_dns_mode_override().value());
@@ -1055,7 +1057,7 @@ TEST_F(TransportClientSocketPoolTest, SSLCertError) {
       handle.Init(ClientSocketPool::GroupId(
                       kHostPortPair, ClientSocketPool::SocketType::kSsl,
                       PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
-                      false /* disable_secure_dns */),
+                      SecureDnsPolicy::kAllow),
                   socket_params, base::nullopt /* proxy_annotation_tag */,
                   MEDIUM, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
                   callback.callback(), ClientSocketPool::ProxyAuthCallback(),
@@ -1333,7 +1335,7 @@ TEST_F(TransportClientSocketPoolTest, SOCKS) {
         ClientSocketPool::GroupId(
             kDestination, ClientSocketPool::SocketType::kHttp,
             PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
-            false /* disable_secure_dns */),
+            SecureDnsPolicy::kAllow),
         socket_params, TRAFFIC_ANNOTATION_FOR_TESTS, LOW, SocketTag(),
         ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
         ClientSocketPool::ProxyAuthCallback(), &proxy_pool, NetLogWithSource());
@@ -1400,7 +1402,7 @@ TEST_F(TransportClientSocketPoolTest, SpdyOneConnectJobTwoRequestsError) {
   ClientSocketPool::GroupId group_id(
       kEndpoint, ClientSocketPool::SocketType::kSsl,
       PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
-      false /* disable_secure_dns */);
+      SecureDnsPolicy::kAllow);
 
   // Start the first connection attempt.
   TestCompletionCallback callback1;
@@ -1504,7 +1506,7 @@ TEST_F(TransportClientSocketPoolTest, SpdyAuthOneConnectJobTwoRequests) {
   ClientSocketPool::GroupId group_id(
       kEndpoint, ClientSocketPool::SocketType::kSsl,
       PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
-      false /* disable_secure_dns */);
+      SecureDnsPolicy::kAllow);
 
   // Start the first connection attempt.
   TestCompletionCallback callback1;
@@ -1602,7 +1604,7 @@ TEST_F(TransportClientSocketPoolTest, HttpTunnelSetupRedirect) {
           ClientSocketPool::GroupId(
               kEndpoint, ClientSocketPool::SocketType::kSsl,
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
-              false /* disable_secure_dns */),
+              SecureDnsPolicy::kAllow),
           socket_params, TRAFFIC_ANNOTATION_FOR_TESTS, LOW, SocketTag(),
           ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
           ClientSocketPool::ProxyAuthCallback(), &proxy_pool,
@@ -1634,7 +1636,7 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKey) {
   TransportClientSocketPool::GroupId group_id(
       HostPortPair(kHost, 80), ClientSocketPool::SocketType::kHttp,
       PrivacyMode::PRIVACY_MODE_DISABLED, kNetworkIsolationKey,
-      false /* disable_secure_dns */);
+      SecureDnsPolicy::kAllow);
   ClientSocketHandle handle;
   TestCompletionCallback callback;
   EXPECT_THAT(
@@ -1672,7 +1674,7 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeySsl) {
   TransportClientSocketPool::GroupId group_id(
       HostPortPair(kHost, 443), ClientSocketPool::SocketType::kSsl,
       PrivacyMode::PRIVACY_MODE_DISABLED, kNetworkIsolationKey,
-      false /* disable_secure_dns */);
+      SecureDnsPolicy::kAllow);
   ClientSocketHandle handle;
   TestCompletionCallback callback;
   EXPECT_THAT(
@@ -1717,7 +1719,7 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeyHttpProxy) {
   TransportClientSocketPool::GroupId group_id(
       HostPortPair(kHost, 80), ClientSocketPool::SocketType::kHttp,
       PrivacyMode::PRIVACY_MODE_DISABLED, kNetworkIsolationKey,
-      false /* disable_secure_dns */);
+      SecureDnsPolicy::kAllow);
   ClientSocketHandle handle;
   TestCompletionCallback callback;
   EXPECT_THAT(
@@ -1764,7 +1766,7 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeyHttpsProxy) {
   TransportClientSocketPool::GroupId group_id(
       HostPortPair(kHost, 80), ClientSocketPool::SocketType::kHttp,
       PrivacyMode::PRIVACY_MODE_DISABLED, kNetworkIsolationKey,
-      false /* disable_secure_dns */);
+      SecureDnsPolicy::kAllow);
   ClientSocketHandle handle;
   TestCompletionCallback callback;
   EXPECT_THAT(
@@ -1817,7 +1819,7 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeySocks4Proxy) {
   TransportClientSocketPool::GroupId group_id(
       HostPortPair(kHost, 80), ClientSocketPool::SocketType::kHttp,
       PrivacyMode::PRIVACY_MODE_DISABLED, kNetworkIsolationKey,
-      false /* disable_secure_dns */);
+      SecureDnsPolicy::kAllow);
   ClientSocketHandle handle;
   TestCompletionCallback callback;
   EXPECT_THAT(
@@ -1873,7 +1875,7 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeySocks5Proxy) {
   TransportClientSocketPool::GroupId group_id(
       HostPortPair(kHost, 80), ClientSocketPool::SocketType::kHttp,
       PrivacyMode::PRIVACY_MODE_DISABLED, kNetworkIsolationKey,
-      false /* disable_secure_dns */);
+      SecureDnsPolicy::kAllow);
   ClientSocketHandle handle;
   TestCompletionCallback callback;
   EXPECT_THAT(
@@ -1919,7 +1921,7 @@ TEST_F(TransportClientSocketPoolTest, Tag) {
   const ClientSocketPool::GroupId kGroupId(
       test_server.host_port_pair(), ClientSocketPool::SocketType::kHttp,
       PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
-      false /* disable_secure_dns */);
+      SecureDnsPolicy::kAllow);
   scoped_refptr<ClientSocketPool::SocketParams> params =
       ClientSocketPool::SocketParams::CreateForHttpForTesting();
   TestCompletionCallback callback;
@@ -2046,7 +2048,7 @@ TEST_F(TransportClientSocketPoolTest, TagSOCKSProxy) {
   const ClientSocketPool::GroupId kGroupId(
       kDestination, ClientSocketPool::SocketType::kHttp,
       PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
-      false /* disable_secure_dns */);
+      SecureDnsPolicy::kAllow);
   scoped_refptr<ClientSocketPool::SocketParams> socks_params =
       base::MakeRefCounted<ClientSocketPool::SocketParams>(
           nullptr /* ssl_config_for_origin */,
@@ -2140,7 +2142,7 @@ TEST_F(TransportClientSocketPoolTest, TagSSLDirect) {
   const ClientSocketPool::GroupId kGroupId(
       test_server.host_port_pair(), ClientSocketPool::SocketType::kSsl,
       PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
-      false /* disable_secure_dns */);
+      SecureDnsPolicy::kAllow);
 
   scoped_refptr<ClientSocketPool::SocketParams> socket_params =
       base::MakeRefCounted<ClientSocketPool::SocketParams>(
@@ -2211,7 +2213,7 @@ TEST_F(TransportClientSocketPoolTest, TagSSLDirectTwoSockets) {
   const ClientSocketPool::GroupId kGroupId(
       test_server.host_port_pair(), ClientSocketPool::SocketType::kSsl,
       PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
-      false /* disable_secure_dns */);
+      SecureDnsPolicy::kAllow);
   scoped_refptr<ClientSocketPool::SocketParams> socket_params =
       base::MakeRefCounted<ClientSocketPool::SocketParams>(
           std::make_unique<SSLConfig>() /* ssl_config_for_origin */,
@@ -2275,7 +2277,7 @@ TEST_F(TransportClientSocketPoolTest, TagSSLDirectTwoSocketsFullPool) {
   const ClientSocketPool::GroupId kGroupId(
       test_server.host_port_pair(), ClientSocketPool::SocketType::kSsl,
       PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
-      false /* disable_secure_dns */);
+      SecureDnsPolicy::kAllow);
   scoped_refptr<ClientSocketPool::SocketParams> socket_params =
       base::MakeRefCounted<ClientSocketPool::SocketParams>(
           std::make_unique<SSLConfig>() /* ssl_config_for_origin */,
@@ -2355,7 +2357,7 @@ TEST_F(TransportClientSocketPoolTest, TagHttpProxyNoTunnel) {
   const ClientSocketPool::GroupId kGroupId(
       kDestination, ClientSocketPool::SocketType::kHttp,
       PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
-      false /* disable_secure_dns */);
+      SecureDnsPolicy::kAllow);
   scoped_refptr<ClientSocketPool::SocketParams> socket_params =
       base::MakeRefCounted<ClientSocketPool::SocketParams>(
           nullptr /* ssl_config_for_origin */,
@@ -2428,7 +2430,7 @@ TEST_F(TransportClientSocketPoolTest, TagHttpProxyTunnel) {
   const ClientSocketPool::GroupId kGroupId(
       kDestination, ClientSocketPool::SocketType::kSsl,
       PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
-      false /* disable_secure_dns */);
+      SecureDnsPolicy::kAllow);
 
   scoped_refptr<ClientSocketPool::SocketParams> socket_params =
       base::MakeRefCounted<ClientSocketPool::SocketParams>(
@@ -2548,7 +2550,7 @@ TEST_F(TransportClientSocketPoolMockNowSourceTest, IdleUnusedSocketTimeout) {
           ClientSocketPool::GroupId(
               kHostPortPair1, ClientSocketPool::SocketType::kHttp,
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
-              false /* disable_secure_dns */),
+              SecureDnsPolicy::kAllow),
           ClientSocketPool::SocketParams::CreateForHttpForTesting(),
           base::nullopt /* proxy_annotation_tag */, MEDIUM, SocketTag(),
           ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
@@ -2597,7 +2599,7 @@ TEST_F(TransportClientSocketPoolMockNowSourceTest, IdleUnusedSocketTimeout) {
           ClientSocketPool::GroupId(
               kHostPortPair2, ClientSocketPool::SocketType::kHttp,
               PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
-              false /* disable_secure_dns */),
+              SecureDnsPolicy::kAllow),
           socket_params, base::nullopt /* proxy_annotation_tag */, MEDIUM,
           SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
           callback.callback(), ClientSocketPool::ProxyAuthCallback(),

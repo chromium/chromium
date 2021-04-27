@@ -331,7 +331,7 @@ OnHostResolutionCallbackResult SpdySessionPool::OnHostResolutionComplete(
                                old_key.privacy_mode(),
                                old_key.is_proxy_session(), key.socket_tag(),
                                old_key.network_isolation_key(),
-                               old_key.disable_secure_dns());
+                               old_key.secure_dns_policy());
 
         // If there is already a session with |new_key|, skip this one.
         // It will be found in |aliases_| in a future iteration.
@@ -375,7 +375,7 @@ OnHostResolutionCallbackResult SpdySessionPool::OnHostResolutionComplete(
           SpdySessionKey new_pool_alias_key = SpdySessionKey(
               it->host_port_pair(), it->proxy_server(), it->privacy_mode(),
               it->is_proxy_session(), key.socket_tag(),
-              it->network_isolation_key(), it->disable_secure_dns());
+              it->network_isolation_key(), it->secure_dns_policy());
           MapKeyToAvailableSession(new_pool_alias_key, available_session,
                                    std::move(pooled_alias_old_dns_aliases));
           auto old_it = it;

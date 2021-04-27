@@ -28,6 +28,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/log/test_net_log.h"
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/connect_job.h"
@@ -73,7 +74,7 @@ class WebSocketTransportClientSocketPoolTest : public TestWithTaskEnvironment {
                   ClientSocketPool::SocketType::kHttp,
                   PrivacyMode::PRIVACY_MODE_DISABLED,
                   NetworkIsolationKey(),
-                  false /* disable_secure_dns */),
+                  SecureDnsPolicy::kAllow),
         params_(ClientSocketPool::SocketParams::CreateForHttpForTesting()),
         host_resolver_(new MockHostResolver),
         client_socket_factory_(&net_log_),
@@ -196,7 +197,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, InitHostResolutionFailure) {
       handle.Init(ClientSocketPool::GroupId(
                       host_port_pair, ClientSocketPool::SocketType::kHttp,
                       PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
-                      false /* disable_secure_dns */),
+                      SecureDnsPolicy::kAllow),
                   ClientSocketPool::SocketParams::CreateForHttpForTesting(),
                   base::nullopt /* proxy_annotation_tag */, kDefaultPriority,
                   SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
@@ -1152,7 +1153,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, NetworkIsolationKey) {
   ClientSocketPool::GroupId group_id(
       HostPortPair("www.google.com", 80), ClientSocketPool::SocketType::kHttp,
       PrivacyMode::PRIVACY_MODE_DISABLED, kNetworkIsolationKey,
-      false /* disable_secure_dns */);
+      SecureDnsPolicy::kAllow);
   EXPECT_THAT(
       handle.Init(group_id, params_, base::nullopt /* proxy_annotation_tag */,
                   kDefaultPriority, SocketTag(),
@@ -1182,7 +1183,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
   scoped_refptr<TransportSocketParams> params =
       base::MakeRefCounted<TransportSocketParams>(
           HostPortPair(kHostName, 80), NetworkIsolationKey(),
-          false /* disable_secure_dns */, OnHostResolutionCallback());
+          SecureDnsPolicy::kAllow, OnHostResolutionCallback());
 
   WebSocketTransportConnectJob transport_connect_job(
       DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_, params,
@@ -1214,7 +1215,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
   scoped_refptr<TransportSocketParams> params =
       base::MakeRefCounted<TransportSocketParams>(
           HostPortPair(kHostName, 80), NetworkIsolationKey(),
-          false /* disable_secure_dns */, OnHostResolutionCallback());
+          SecureDnsPolicy::kAllow, OnHostResolutionCallback());
 
   WebSocketTransportConnectJob transport_connect_job(
       DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_, params,

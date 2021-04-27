@@ -20,6 +20,7 @@
 #include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "net/base/request_priority.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_request_info.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/test_net_log.h"
@@ -95,7 +96,7 @@ class SpdyStreamTest : public ::testing::Test, public WithTaskEnvironment {
     SpdySessionKey key(HostPortPair::FromURL(url_), ProxyServer::Direct(),
                        PRIVACY_MODE_DISABLED,
                        SpdySessionKey::IsProxySession::kFalse, SocketTag(),
-                       NetworkIsolationKey(), false /* disable_secure_dns */);
+                       NetworkIsolationKey(), SecureDnsPolicy::kAllow);
     return CreateSpdySession(session_.get(), key, NetLogWithSource());
   }
 
@@ -362,10 +363,10 @@ TEST_F(SpdyStreamTest, PushedStream) {
 
   data.RunUntilPaused();
 
-  const SpdySessionKey key(
-      HostPortPair::FromURL(url_), ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
-      SpdySessionKey::IsProxySession::kFalse, SocketTag(),
-      NetworkIsolationKey(), false /* disable_secure_dns */);
+  const SpdySessionKey key(HostPortPair::FromURL(url_), ProxyServer::Direct(),
+                           PRIVACY_MODE_DISABLED,
+                           SpdySessionKey::IsProxySession::kFalse, SocketTag(),
+                           NetworkIsolationKey(), SecureDnsPolicy::kAllow);
   const GURL pushed_url(kPushUrl);
   HttpRequestInfo push_request;
   push_request.url = pushed_url;

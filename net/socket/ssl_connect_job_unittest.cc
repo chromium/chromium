@@ -25,6 +25,7 @@
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/secure_dns_mode.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_auth_handler_factory.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_proxy_connect_job.h"
@@ -94,12 +95,12 @@ class SSLConnectJobTest : public WithTaskEnvironment, public testing::Test {
         direct_transport_socket_params_(
             new TransportSocketParams(HostPortPair("host", 443),
                                       NetworkIsolationKey(),
-                                      false /* disable_secure_dns */,
+                                      SecureDnsPolicy::kAllow,
                                       OnHostResolutionCallback())),
         proxy_transport_socket_params_(
             new TransportSocketParams(HostPortPair("proxy", 443),
                                       NetworkIsolationKey(),
-                                      false /* disable_secure_dns */,
+                                      SecureDnsPolicy::kAllow,
                                       OnHostResolutionCallback())),
         socks_socket_params_(
             new SOCKSSocketParams(proxy_transport_socket_params_,
@@ -425,13 +426,14 @@ TEST_F(SSLConnectJobTest, RequestPriority) {
   }
 }
 
-TEST_F(SSLConnectJobTest, DisableSecureDns) {
-  for (bool disable_secure_dns : {false, true}) {
+TEST_F(SSLConnectJobTest, SecureDnsPolicy) {
+  for (auto secure_dns_policy :
+       {SecureDnsPolicy::kAllow, SecureDnsPolicy::kDisable}) {
     TestConnectJobDelegate test_delegate;
     direct_transport_socket_params_ =
         base::MakeRefCounted<TransportSocketParams>(
-            HostPortPair("host", 443), NetworkIsolationKey(),
-            disable_secure_dns, OnHostResolutionCallback());
+            HostPortPair("host", 443), NetworkIsolationKey(), secure_dns_policy,
+            OnHostResolutionCallback());
     auto common_connect_job_params = session_->CreateCommonConnectJobParams();
     std::unique_ptr<ConnectJob> ssl_connect_job =
         std::make_unique<SSLConnectJob>(DEFAULT_PRIORITY, SocketTag(),
@@ -440,9 +442,9 @@ TEST_F(SSLConnectJobTest, DisableSecureDns) {
                                         &test_delegate, nullptr /* net_log */);
 
     EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
-    EXPECT_EQ(disable_secure_dns,
+    EXPECT_EQ(secure_dns_policy == SecureDnsPolicy::kDisable,
               host_resolver_.last_secure_dns_mode_override().has_value());
-    if (disable_secure_dns) {
+    if (secure_dns_policy == SecureDnsPolicy::kDisable) {
       EXPECT_EQ(net::SecureDnsMode::kOff,
                 host_resolver_.last_secure_dns_mode_override().value());
     }

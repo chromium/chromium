@@ -25,6 +25,7 @@
 #include "net/base/test_proxy_delegate.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/secure_dns_mode.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_network_session.h"
 #include "net/nqe/network_quality_estimator_test_util.h"
 #include "net/socket/client_socket_handle.h"
@@ -106,33 +107,34 @@ class HttpProxyConnectJobTest : public ::testing::TestWithParam<HttpProxyType>,
   }
 
   scoped_refptr<TransportSocketParams> CreateHttpProxyParams(
-      bool disable_secure_dns) const {
+      SecureDnsPolicy secure_dns_policy) const {
     if (GetParam() != HTTP)
       return nullptr;
     return base::MakeRefCounted<TransportSocketParams>(
         HostPortPair(kHttpProxyHost, 80), NetworkIsolationKey(),
-        disable_secure_dns, OnHostResolutionCallback());
+        secure_dns_policy, OnHostResolutionCallback());
   }
 
   scoped_refptr<SSLSocketParams> CreateHttpsProxyParams(
-      bool disable_secure_dns) const {
+      SecureDnsPolicy secure_dns_policy) const {
     if (GetParam() == HTTP)
       return nullptr;
     return base::MakeRefCounted<SSLSocketParams>(
         base::MakeRefCounted<TransportSocketParams>(
             HostPortPair(kHttpsProxyHost, 443), NetworkIsolationKey(),
-            disable_secure_dns, OnHostResolutionCallback()),
+            secure_dns_policy, OnHostResolutionCallback()),
         nullptr, nullptr, HostPortPair(kHttpsProxyHost, 443), SSLConfig(),
         PRIVACY_MODE_DISABLED, NetworkIsolationKey());
   }
 
   // Returns a correctly constructed HttpProxyParams for the HTTP or HTTPS
   // proxy.
-  scoped_refptr<HttpProxySocketParams> CreateParams(bool tunnel,
-                                                    bool disable_secure_dns) {
+  scoped_refptr<HttpProxySocketParams> CreateParams(
+      bool tunnel,
+      SecureDnsPolicy secure_dns_policy) {
     return base::MakeRefCounted<HttpProxySocketParams>(
-        CreateHttpProxyParams(disable_secure_dns),
-        CreateHttpsProxyParams(disable_secure_dns), false /* is_quic */,
+        CreateHttpProxyParams(secure_dns_policy),
+        CreateHttpsProxyParams(secure_dns_policy), false /* is_quic */,
         HostPortPair(kEndpointHost, tunnel ? 443 : 80),
         /*is_trusted_proxy=*/false, tunnel, TRAFFIC_ANNOTATION_FOR_TESTS,
         NetworkIsolationKey());
@@ -141,17 +143,16 @@ class HttpProxyConnectJobTest : public ::testing::TestWithParam<HttpProxyType>,
   std::unique_ptr<HttpProxyConnectJob> CreateConnectJobForHttpRequest(
       ConnectJob::Delegate* delegate,
       RequestPriority priority = DEFAULT_PRIORITY,
-      bool disable_secure_dns = false) {
-    return CreateConnectJob(
-        CreateParams(false /* tunnel */, disable_secure_dns), delegate,
-        priority);
+      SecureDnsPolicy secure_dns_policy = SecureDnsPolicy::kAllow) {
+    return CreateConnectJob(CreateParams(false /* tunnel */, secure_dns_policy),
+                            delegate, priority);
   }
 
   std::unique_ptr<HttpProxyConnectJob> CreateConnectJobForTunnel(
       ConnectJob::Delegate* delegate,
       RequestPriority priority = DEFAULT_PRIORITY,
-      bool disable_secure_dns = false) {
-    return CreateConnectJob(CreateParams(true /* tunnel */, disable_secure_dns),
+      SecureDnsPolicy secure_dns_policy = SecureDnsPolicy::kAllow) {
+    return CreateConnectJob(CreateParams(true /* tunnel */, secure_dns_policy),
                             delegate, priority);
   }
 
@@ -230,7 +231,7 @@ class HttpProxyConnectJobTest : public ::testing::TestWithParam<HttpProxyType>,
     // since tunnels need an extra round trip.
     base::TimeDelta alternate_connection_timeout =
         HttpProxyConnectJob::AlternateNestedConnectionTimeout(
-            *CreateParams(true /* tunnel */, false /* disable_secure_dns */),
+            *CreateParams(true /* tunnel */, SecureDnsPolicy::kAllow),
             network_quality_estimator_.get());
 
     // If there's an alternate connection timeout, and it's less than the
@@ -878,17 +879,18 @@ TEST_P(HttpProxyConnectJobTest, RequestPriority) {
   }
 }
 
-TEST_P(HttpProxyConnectJobTest, DisableSecureDns) {
-  for (bool disable_secure_dns : {false, true}) {
+TEST_P(HttpProxyConnectJobTest, SecureDnsPolicy) {
+  for (auto secure_dns_policy :
+       {SecureDnsPolicy::kAllow, SecureDnsPolicy::kDisable}) {
     TestConnectJobDelegate test_delegate;
     std::unique_ptr<ConnectJob> connect_job = CreateConnectJobForHttpRequest(
-        &test_delegate, DEFAULT_PRIORITY, disable_secure_dns);
+        &test_delegate, DEFAULT_PRIORITY, secure_dns_policy);
 
     EXPECT_THAT(connect_job->Connect(), test::IsError(ERR_IO_PENDING));
-    EXPECT_EQ(disable_secure_dns,
+    EXPECT_EQ(secure_dns_policy == SecureDnsPolicy::kDisable,
               session_deps_.host_resolver->last_secure_dns_mode_override()
                   .has_value());
-    if (disable_secure_dns) {
+    if (secure_dns_policy == SecureDnsPolicy::kDisable) {
       EXPECT_EQ(
           net::SecureDnsMode::kOff,
           session_deps_.host_resolver->last_secure_dns_mode_override().value());
@@ -921,7 +923,7 @@ TEST_P(HttpProxyConnectJobTest, SpdySessionKeyDisableSecureDns) {
   auto ssl_params = base::MakeRefCounted<SSLSocketParams>(
       base::MakeRefCounted<TransportSocketParams>(
           HostPortPair(kHttpsProxyHost, 443), NetworkIsolationKey(),
-          true /* disable_secure_dns */, OnHostResolutionCallback()),
+          SecureDnsPolicy::kDisable, OnHostResolutionCallback()),
       nullptr, nullptr, HostPortPair(kHttpsProxyHost, 443), SSLConfig(),
       PRIVACY_MODE_DISABLED, NetworkIsolationKey());
   auto http_proxy_params = base::MakeRefCounted<HttpProxySocketParams>(
@@ -939,7 +941,7 @@ TEST_P(HttpProxyConnectJobTest, SpdySessionKeyDisableSecureDns) {
           SpdySessionKey(HostPortPair(kHttpsProxyHost, 443),
                          ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
                          SpdySessionKey::IsProxySession::kTrue, SocketTag(),
-                         NetworkIsolationKey(), true /* disable_secure_dns */),
+                         NetworkIsolationKey(), SecureDnsPolicy::kDisable),
           /* enable_ip_based_pooling = */ false,
           /* is_websocket = */ false, NetLogWithSource()));
   EXPECT_FALSE(
@@ -947,7 +949,7 @@ TEST_P(HttpProxyConnectJobTest, SpdySessionKeyDisableSecureDns) {
           SpdySessionKey(HostPortPair(kHttpsProxyHost, 443),
                          ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
                          SpdySessionKey::IsProxySession::kTrue, SocketTag(),
-                         NetworkIsolationKey(), false /* disable_secure_dns */),
+                         NetworkIsolationKey(), SecureDnsPolicy::kAllow),
           /* enable_ip_based_pooling = */ false,
           /* is_websocket = */ false, NetLogWithSource()));
 }
@@ -1633,7 +1635,7 @@ TEST_P(HttpProxyConnectJobTest, ConnectionTimeoutNoNQE) {
   // since tunnels need an extra round trip.
   base::TimeDelta alternate_connection_timeout =
       HttpProxyConnectJob::AlternateNestedConnectionTimeout(
-          *CreateParams(true /* tunnel */, false /* disable_secure_dns */),
+          *CreateParams(true /* tunnel */, SecureDnsPolicy::kAllow),
           nullptr /* network_quality_estimator */);
 
 #if defined(OS_ANDROID) || defined(OS_IOS)

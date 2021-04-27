@@ -16,8 +16,10 @@
 #include "net/base/address_list.h"
 #include "net/base/net_errors.h"
 #include "net/base/trace_constants.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source.h"
+#include "net/socket/socket_tag.h"
 #include "net/socket/transport_connect_job.h"
 #include "net/socket/websocket_endpoint_lock_manager.h"
 #include "net/socket/websocket_transport_connect_sub_job.h"
@@ -115,7 +117,7 @@ int WebSocketTransportConnectJob::DoResolveHost() {
 
   HostResolver::ResolveHostParameters parameters;
   parameters.initial_priority = priority();
-  DCHECK(!params_->disable_secure_dns());
+  DCHECK_EQ(SecureDnsPolicy::kAllow, params_->secure_dns_policy());
   request_ = host_resolver()->CreateRequest(params_->destination(),
                                             params_->network_isolation_key(),
                                             net_log(), parameters);

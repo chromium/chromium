@@ -1821,7 +1821,7 @@ bool SpdySession::ChangeSocketTag(const SocketTag& new_tag) {
       spdy_session_key_.host_port_pair(), spdy_session_key_.proxy_server(),
       spdy_session_key_.privacy_mode(), spdy_session_key_.is_proxy_session(),
       new_tag, spdy_session_key_.network_isolation_key(),
-      spdy_session_key_.disable_secure_dns());
+      spdy_session_key_.secure_dns_policy());
   spdy_session_key_ = new_key;
 
   return true;

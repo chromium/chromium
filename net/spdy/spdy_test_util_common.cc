@@ -24,6 +24,7 @@
 #include "net/cert/mock_cert_verifier.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/dns/host_resolver.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_network_transaction.h"
 #include "net/http/http_proxy_connect_job.h"
@@ -509,10 +510,9 @@ base::WeakPtr<SpdySession> CreateSpdySessionHelper(
           std::make_unique<SSLConfig>() /* ssl_config_for_origin */,
           nullptr /* ssl_config_for_proxy */);
   int rv = connection->Init(
-      ClientSocketPool::GroupId(key.host_port_pair(),
-                                ClientSocketPool::SocketType::kSsl,
-                                key.privacy_mode(), NetworkIsolationKey(),
-                                false /* disable_secure_dns */),
+      ClientSocketPool::GroupId(
+          key.host_port_pair(), ClientSocketPool::SocketType::kSsl,
+          key.privacy_mode(), NetworkIsolationKey(), SecureDnsPolicy::kAllow),
       socket_params, base::nullopt /* proxy_annotation_tag */, MEDIUM,
       key.socket_tag(), ClientSocketPool::RespectLimits::ENABLED,
       callback.callback(), ClientSocketPool::ProxyAuthCallback(),

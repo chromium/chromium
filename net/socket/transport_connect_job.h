@@ -19,6 +19,7 @@
 #include "net/base/network_isolation_key.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/resolve_error_info.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/socket/connect_job.h"
 #include "net/socket/connection_attempts.h"
 #include "net/socket/socket_tag.h"
@@ -38,14 +39,14 @@ class NET_EXPORT_PRIVATE TransportSocketParams
   TransportSocketParams(
       const HostPortPair& host_port_pair,
       const NetworkIsolationKey& network_isolation_key,
-      bool disable_secure_dns,
+      SecureDnsPolicy secure_dns_policy,
       const OnHostResolutionCallback& host_resolution_callback);
 
   const HostPortPair& destination() const { return destination_; }
   const NetworkIsolationKey& network_isolation_key() const {
     return network_isolation_key_;
   }
-  bool disable_secure_dns() const { return disable_secure_dns_; }
+  SecureDnsPolicy secure_dns_policy() const { return secure_dns_policy_; }
   const OnHostResolutionCallback& host_resolution_callback() const {
     return host_resolution_callback_;
   }
@@ -56,7 +57,7 @@ class NET_EXPORT_PRIVATE TransportSocketParams
 
   const HostPortPair destination_;
   const NetworkIsolationKey network_isolation_key_;
-  const bool disable_secure_dns_;
+  const SecureDnsPolicy secure_dns_policy_;
   const OnHostResolutionCallback host_resolution_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(TransportSocketParams);

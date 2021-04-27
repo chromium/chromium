@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "net/base/features.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_proxy_connect_job.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
@@ -72,7 +73,7 @@ ClientSocketPool::GroupId::GroupId(const HostPortPair& destination,
                                    SocketType socket_type,
                                    PrivacyMode privacy_mode,
                                    NetworkIsolationKey network_isolation_key,
-                                   bool disable_secure_dns)
+                                   SecureDnsPolicy secure_dns_policy)
     : destination_(destination),
       socket_type_(socket_type),
       privacy_mode_(privacy_mode),
@@ -81,7 +82,7 @@ ClientSocketPool::GroupId::GroupId(const HostPortPair& destination,
               features::kPartitionConnectionsByNetworkIsolationKey)
               ? network_isolation_key
               : NetworkIsolationKey()),
-      disable_secure_dns_(disable_secure_dns) {}
+      secure_dns_policy_(secure_dns_policy) {}
 
 ClientSocketPool::GroupId::GroupId(const GroupId& group_id) = default;
 
@@ -113,8 +114,13 @@ std::string ClientSocketPool::GroupId::ToString() const {
     result += ">";
   }
 
-  if (disable_secure_dns_)
-    result = "dsd/" + result;
+  switch (secure_dns_policy_) {
+    case SecureDnsPolicy::kAllow:
+      break;
+    case SecureDnsPolicy::kDisable:
+      result = "dsd/" + result;
+      break;
+  }
 
   return result;
 }
@@ -171,7 +177,7 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
         SpdySessionKey(
             group_id.destination(), proxy_server, group_id.privacy_mode(),
             SpdySessionKey::IsProxySession::kFalse, socket_tag,
-            group_id.network_isolation_key(), group_id.disable_secure_dns()),
+            group_id.network_isolation_key(), group_id.secure_dns_policy()),
         is_for_websockets);
   } else if (proxy_server.is_https()) {
     resolution_callback = base::BindRepeating(
@@ -180,7 +186,7 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
                        group_id.privacy_mode(),
                        SpdySessionKey::IsProxySession::kTrue, socket_tag,
                        group_id.network_isolation_key(),
-                       group_id.disable_secure_dns()),
+                       group_id.secure_dns_policy()),
         is_for_websockets);
   }
 
@@ -190,7 +196,7 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
       socket_params->ssl_config_for_proxy(), is_for_websockets,
       group_id.privacy_mode(), resolution_callback, request_priority,
       socket_tag, group_id.network_isolation_key(),
-      group_id.disable_secure_dns(), common_connect_job_params, delegate);
+      group_id.secure_dns_policy(), common_connect_job_params, delegate);
 }
 
 }  // namespace net

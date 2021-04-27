@@ -17,6 +17,7 @@
 #include "net/base/proxy_server.h"
 #include "net/base/request_priority.h"
 #include "net/dns/public/resolve_error_info.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/http/bidirectional_stream_impl.h"
 #include "net/http/http_auth.h"
 #include "net/http/http_auth_controller.h"
@@ -326,7 +327,7 @@ class HttpStreamFactory::Job
       PrivacyMode privacy_mode,
       const SocketTag& socket_tag,
       const NetworkIsolationKey& network_isolation_key,
-      bool disable_secure_dns);
+      SecureDnsPolicy secure_dns_policy);
 
   // Returns true if the current request can use an existing spdy session.
   bool CanUseExistingSpdySession() const;

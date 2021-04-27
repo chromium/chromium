@@ -9,6 +9,7 @@
 #include "base/trace_event/trace_event.h"
 #include "net/base/net_errors.h"
 #include "net/base/trace_constants.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_auth_controller.h"
 #include "net/http/http_proxy_connect_job.h"
 #include "net/log/net_log.h"
@@ -108,7 +109,7 @@ std::unique_ptr<ConnectJob> ConnectJob::CreateConnectJob(
     RequestPriority request_priority,
     SocketTag socket_tag,
     const NetworkIsolationKey& network_isolation_key,
-    bool disable_secure_dns,
+    SecureDnsPolicy secure_dns_policy,
     const CommonConnectJobParams* common_connect_job_params,
     ConnectJob::Delegate* delegate) {
   scoped_refptr<HttpProxySocketParams> http_proxy_params;
@@ -120,8 +121,8 @@ std::unique_ptr<ConnectJob> ConnectJob::CreateConnectJob(
     // information to destination sites, and not caching them has a performance
     // cost.
     auto proxy_tcp_params = base::MakeRefCounted<TransportSocketParams>(
-        proxy_server.host_port_pair(), NetworkIsolationKey(),
-        disable_secure_dns, resolution_callback);
+        proxy_server.host_port_pair(), NetworkIsolationKey(), secure_dns_policy,
+        resolution_callback);
 
     if (proxy_server.is_http_like()) {
       scoped_refptr<SSLSocketParams> ssl_params;
@@ -155,7 +156,7 @@ std::unique_ptr<ConnectJob> ConnectJob::CreateConnectJob(
     scoped_refptr<TransportSocketParams> ssl_tcp_params;
     if (proxy_server.is_direct()) {
       ssl_tcp_params = base::MakeRefCounted<TransportSocketParams>(
-          endpoint, network_isolation_key, disable_secure_dns,
+          endpoint, network_isolation_key, secure_dns_policy,
           resolution_callback);
     }
     auto ssl_params = base::MakeRefCounted<SSLSocketParams>(
@@ -181,7 +182,7 @@ std::unique_ptr<ConnectJob> ConnectJob::CreateConnectJob(
 
   DCHECK(proxy_server.is_direct());
   auto tcp_params = base::MakeRefCounted<TransportSocketParams>(
-      endpoint, network_isolation_key, disable_secure_dns, resolution_callback);
+      endpoint, network_isolation_key, secure_dns_policy, resolution_callback);
   return TransportConnectJob::CreateTransportConnectJob(
       std::move(tcp_params), request_priority, socket_tag,
       common_connect_job_params, delegate, nullptr /* net_log */);
