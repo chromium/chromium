@@ -68,6 +68,7 @@ AffiliationFetchThrottler::AffiliationFetchThrottler(
   // Start observing before querying the current connectivity state, so that if
   // the state changes concurrently in-between, it will not go unnoticed.
   network_connection_tracker_->AddNetworkConnectionObserver(this);
+  has_network_connectivity_ = !network_connection_tracker_->IsOffline();
 }
 
 AffiliationFetchThrottler::~AffiliationFetchThrottler() {
@@ -79,8 +80,6 @@ void AffiliationFetchThrottler::SignalNetworkRequestNeeded() {
     return;
 
   state_ = FETCH_NEEDED;
-  has_network_connectivity_ = !network_connection_tracker_->IsOffline();
-
   if (has_network_connectivity_)
     EnsureCallbackIsScheduled();
 }
