@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
@@ -980,7 +981,8 @@ class SystemWebAppManagerTimerTest : public SystemWebAppManagerTest {
   SystemWebAppManagerTimerTest()
       : SystemWebAppManagerTest(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-  void SetupTimer(base::TimeDelta period, bool open_immediately) {
+  void SetupTimer(base::Optional<base::TimeDelta> period,
+                  bool open_immediately) {
     InitEmptyRegistrar();
 
     base::flat_map<SystemAppType, SystemAppInfo> system_apps;
@@ -990,11 +992,7 @@ class SystemWebAppManagerTimerTest : public SystemWebAppManagerTest {
                       base::BindRepeating(&GetWebApplicationInfo, AppUrl1())));
 
     system_apps.at(SystemAppType::SETTINGS).timer_info =
-        SystemAppBackgroundTaskInfo();
-    system_apps.at(SystemAppType::SETTINGS).timer_info->period = period;
-    system_apps.at(SystemAppType::SETTINGS).timer_info->open_immediately =
-        open_immediately;
-    system_apps.at(SystemAppType::SETTINGS).timer_info->url = AppUrl1();
+        SystemAppBackgroundTaskInfo(period, AppUrl1(), open_immediately);
 
     system_web_app_manager().SetSystemAppsForTesting(std::move(system_apps));
   }
@@ -1050,7 +1048,8 @@ TEST_F(SystemWebAppManagerTimerTest, TestTimer) {
   EXPECT_EQ(2u, timers[0]->opened_count_for_testing());
 }
 
-TEST_F(SystemWebAppManagerTimerTest, TestTimerStartsImmediately) {
+TEST_F(SystemWebAppManagerTimerTest,
+       TestTimerStartsImmediatelyThenRunsPeriodic) {
   ui::ScopedSetIdleState idle(ui::IDLE_STATE_IDLE);
   SetupTimer(base::TimeDelta::FromSeconds(300), true);
   TestWebAppUrlLoader* loader = nullptr;
@@ -1091,6 +1090,53 @@ TEST_F(SystemWebAppManagerTimerTest, TestTimerStartsImmediately) {
 
   EXPECT_EQ(2u, timers[0]->timer_activated_count_for_testing());
   EXPECT_EQ(2u, timers[0]->opened_count_for_testing());
+}
+
+TEST_F(SystemWebAppManagerTimerTest, TestTimerStartsImmediately) {
+  ui::ScopedSetIdleState idle(ui::IDLE_STATE_IDLE);
+  SetupTimer(base::nullopt, true);
+  TestWebAppUrlLoader* loader = nullptr;
+  SystemWebAppWaiter waiter(&system_web_app_manager());
+
+  // We need to wait until the web contents and url loader are created to
+  // intercept the url loader with a TestWebAppUrlLoader. Do that by having a
+  // hook into on_apps_synchronized.
+  system_web_app_manager().on_apps_synchronized().Post(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        auto& timers = system_web_app_manager().GetBackgroundTasksForTesting();
+
+        auto url_loader = std::make_unique<TestWebAppUrlLoader>();
+        loader = url_loader.get();
+        timers[0]->SetUrlLoaderForTesting(std::move(url_loader));
+        loader->AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded});
+        loader->SetNextLoadUrlResult(AppUrl1(),
+                                     WebAppUrlLoader::Result::kUrlLoaded);
+      }));
+  system_web_app_manager().Start();
+  waiter.Wait();
+
+  auto& timers = system_web_app_manager().GetBackgroundTasksForTesting();
+  EXPECT_EQ(SystemAppBackgroundTask::INITIAL_WAIT,
+            timers[0]->get_state_for_testing());
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(121));
+  EXPECT_EQ(1u, timers.size());
+  EXPECT_EQ(true, timers[0]->open_immediately_for_testing());
+  EXPECT_EQ(base::nullopt, timers[0]->period_for_testing());
+  EXPECT_EQ(1u, timers[0]->timer_activated_count_for_testing());
+  EXPECT_EQ(1u, timers[0]->opened_count_for_testing());
+
+  timers[0]->web_contents_for_testing()->Close();
+
+  EXPECT_EQ(nullptr, timers[0]->web_contents_for_testing());
+  EXPECT_EQ(SystemAppBackgroundTask::WAIT_PERIOD,
+            timers[0]->get_state_for_testing());
+  loader->AddPrepareForLoadResults({WebAppUrlLoader::Result::kUrlLoaded});
+  loader->SetNextLoadUrlResult(AppUrl1(), WebAppUrlLoader::Result::kUrlLoaded);
+
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(300));
+
+  EXPECT_EQ(1u, timers[0]->timer_activated_count_for_testing());
+  EXPECT_EQ(1u, timers[0]->opened_count_for_testing());
 }
 
 TEST_F(SystemWebAppManagerTimerTest, TestTimerWaitsForIdle) {

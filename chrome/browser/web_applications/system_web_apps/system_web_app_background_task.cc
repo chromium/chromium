@@ -15,6 +15,18 @@
 
 namespace web_app {
 
+SystemAppBackgroundTaskInfo::~SystemAppBackgroundTaskInfo() = default;
+SystemAppBackgroundTaskInfo::SystemAppBackgroundTaskInfo() = default;
+
+SystemAppBackgroundTaskInfo::SystemAppBackgroundTaskInfo(
+    const SystemAppBackgroundTaskInfo& other) = default;
+
+SystemAppBackgroundTaskInfo::SystemAppBackgroundTaskInfo(
+    const base::Optional<base::TimeDelta>& period,
+    const GURL& url,
+    bool open_immediately)
+    : period(period), url(url), open_immediately(open_immediately) {}
+
 SystemAppBackgroundTask::SystemAppBackgroundTask(
     Profile* profile,
     const SystemAppBackgroundTaskInfo& info)
@@ -26,7 +38,8 @@ SystemAppBackgroundTask::SystemAppBackgroundTask(
       period_(info.period),
       opened_count_(0),
       timer_activated_count_(0),
-      open_immediately_(info.open_immediately) {}
+      open_immediately_(info.open_immediately),
+      delegate_(this) {}
 
 SystemAppBackgroundTask::~SystemAppBackgroundTask() = default;
 
@@ -40,8 +53,8 @@ void SystemAppBackgroundTask::StartTask() {
         base::BindOnce(&SystemAppBackgroundTask::MaybeOpenPage,
                        weak_ptr_factory_.GetWeakPtr()));
     state_ = INITIAL_WAIT;
-  } else {
-    timer_->Start(FROM_HERE, period_,
+  } else if (period_) {
+    timer_->Start(FROM_HERE, period_.value(),
                   base::BindOnce(&SystemAppBackgroundTask::MaybeOpenPage,
                                  weak_ptr_factory_.GetWeakPtr()));
     state_ = WAIT_PERIOD;
@@ -69,8 +82,8 @@ void SystemAppBackgroundTask::MaybeOpenPage() {
     // We've gone through some weird clock adjustment (daylight savings?) that's
     // sent us back in time. We don't know what's going on, so zero the polling
     // time and stop polling.
-    if (polling_duration < base::TimeDelta::FromSeconds(0)) {
-      timer_->Start(FROM_HERE, period_,
+    if (polling_duration < base::TimeDelta::FromSeconds(0) && period_) {
+      timer_->Start(FROM_HERE, period_.value(),
                     base::BindOnce(&SystemAppBackgroundTask::MaybeOpenPage,
                                    weak_ptr_factory_.GetWeakPtr()));
       state_ = WAIT_PERIOD;
@@ -86,18 +99,31 @@ void SystemAppBackgroundTask::MaybeOpenPage() {
     return;
   }
 
-  timer_->Start(FROM_HERE, period_,
-                base::BindOnce(&SystemAppBackgroundTask::MaybeOpenPage,
-                               weak_ptr_factory_.GetWeakPtr()));
+  if (period_) {
+    timer_->Start(FROM_HERE, period_.value(),
+                  base::BindOnce(&SystemAppBackgroundTask::MaybeOpenPage,
+                                 weak_ptr_factory_.GetWeakPtr()));
+  }
   polling_since_time_ = base::Time();
   state_ = WAIT_PERIOD;
   NavigateBackgroundPage();
+}
+
+void SystemAppBackgroundTask::CloseDelegate::CloseContents(
+    content::WebContents* contents) {
+  task_->CloseWebContents(contents);
+}
+
+void SystemAppBackgroundTask::CloseWebContents(content::WebContents* contents) {
+  DCHECK(contents == web_contents_.get());
+  web_contents_.reset();
 }
 
 void SystemAppBackgroundTask::NavigateBackgroundPage() {
   if (!web_contents_) {
     web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile_));
+    web_contents_->SetDelegate(&delegate_);
   }
 
   timer_activated_count_++;
@@ -112,10 +138,12 @@ void SystemAppBackgroundTask::NavigateBackgroundPage() {
 }
 
 void SystemAppBackgroundTask::OnLoaderReady(WebAppUrlLoader::Result result) {
-  web_app_url_loader_->LoadUrl(
-      url_, web_contents_.get(), WebAppUrlLoader::UrlComparison::kExact,
-      base::BindOnce(&SystemAppBackgroundTask::OnPageReady,
-                     weak_ptr_factory_.GetWeakPtr()));
+  if (web_contents_) {
+    web_app_url_loader_->LoadUrl(
+        url_, web_contents_.get(), WebAppUrlLoader::UrlComparison::kExact,
+        base::BindOnce(&SystemAppBackgroundTask::OnPageReady,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void SystemAppBackgroundTask::OnPageReady(WebAppUrlLoader::Result result) {
