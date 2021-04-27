@@ -419,6 +419,8 @@ IN_PROC_BROWSER_TEST_F(SamlTest, IdpRequiresHttpAuth) {
     ASSERT_TRUE(message_queue.WaitForMessage(&message));
   } while (message != "\"SamlLoaded\"");
 
+  test::OobeJS().ExpectPathDisplayed(false, kBackButton);
+
   // Fill-in the SAML IdP form and submit.
   SigninFrameJS().TypeIntoPath("fake_user", {"Email"});
   SigninFrameJS().TypeIntoPath("not_the_password", {"Dummy"});
