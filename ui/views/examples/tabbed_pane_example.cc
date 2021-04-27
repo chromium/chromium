@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/format_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/button/label_button.h"

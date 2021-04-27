@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_app_interface.h"
 
+#include "base/format_macros.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "components/bookmarks/browser/bookmark_model.h"
