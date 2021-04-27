@@ -59,7 +59,7 @@ std::vector<float> DISPLAY_MANAGER_EXPORT GetDisplayZoomFactorForDsf(float dsf);
 // the element it is closest to in the list. It also ensures that it never
 // replaces the default zoom value of 1.0 from the list and that the size of the
 // list never changes.
-// TODO(malaykeshav): Remove this after a few milestones.
+// TODO(crbug.com/1203004): Remove this after a few milestones.
 void DISPLAY_MANAGER_EXPORT InsertDsfIntoList(std::vector<float>* zoom_values,
                                               float dsf);
 
