@@ -2840,9 +2840,8 @@ bool RenderViewContextMenu::IsQRCodeGeneratorEnabled() const {
   if (!entry)
     return false;
 
-  bool incognito = browser_context_->IsOffTheRecord();
   return qrcode_generator::QRCodeGeneratorBubbleController::
-      IsGeneratorAvailable(entry->GetURL(), incognito);
+      IsGeneratorAvailable(entry->GetURL());
 }
 
 void RenderViewContextMenu::AppendQRCodeGeneratorItem(bool for_image,

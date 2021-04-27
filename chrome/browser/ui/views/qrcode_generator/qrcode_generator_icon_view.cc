@@ -58,8 +58,7 @@ void QRCodeGeneratorIconView::UpdateImpl() {
 
   bool feature_available =
       QRCodeGeneratorBubbleController::IsGeneratorAvailable(
-          web_contents->GetLastCommittedURL(),
-          web_contents->GetBrowserContext()->IsOffTheRecord());
+          web_contents->GetLastCommittedURL());
 
   bool visible = GetBubble() != nullptr ||
                  (feature_available && omnibox_view->model()->has_focus() &&

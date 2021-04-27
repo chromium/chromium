@@ -20,11 +20,7 @@ QRCodeGeneratorBubbleController::~QRCodeGeneratorBubbleController() {
 }
 
 // static
-bool QRCodeGeneratorBubbleController::IsGeneratorAvailable(const GURL& url,
-                                                           bool in_incognito) {
-  if (in_incognito)
-    return false;
-
+bool QRCodeGeneratorBubbleController::IsGeneratorAvailable(const GURL& url) {
   if (!base::FeatureList::IsEnabled(kSharingQRCodeGenerator))
     return false;
 

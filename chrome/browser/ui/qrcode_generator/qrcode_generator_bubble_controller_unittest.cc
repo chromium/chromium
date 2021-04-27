@@ -30,33 +30,24 @@ TEST_F(QRCodeGeneratorBubbleControllerTest, AllowedURLs) {
 
   // Allow valid http/https URLs.
   ASSERT_TRUE(QRCodeGeneratorBubbleController::IsGeneratorAvailable(
-      GURL("http://www.example.com"), false));
+      GURL("http://www.example.com")));
   ASSERT_TRUE(QRCodeGeneratorBubbleController::IsGeneratorAvailable(
-      GURL("https://www.example.com"), false));
+      GURL("https://www.example.com")));
   ASSERT_TRUE(QRCodeGeneratorBubbleController::IsGeneratorAvailable(
-      GURL("https://www.example.com/path?q=abc"), false));
-
-  // Disallow those URLs in incognito.
-  ASSERT_FALSE(QRCodeGeneratorBubbleController::IsGeneratorAvailable(
-      GURL("http://www.example.com"), true));
-  ASSERT_FALSE(QRCodeGeneratorBubbleController::IsGeneratorAvailable(
-      GURL("https://www.example.com"), true));
-  ASSERT_FALSE(QRCodeGeneratorBubbleController::IsGeneratorAvailable(
-      GURL("https://www.example.com/path?q=abc"), true));
+      GURL("https://www.example.com/path?q=abc")));
 
   // Disallow browser-ui URLs.
   ASSERT_FALSE(QRCodeGeneratorBubbleController::IsGeneratorAvailable(
-      GURL("about:blank"), false));
+      GURL("about:blank")));
   ASSERT_FALSE(QRCodeGeneratorBubbleController::IsGeneratorAvailable(
-      GURL("chrome://newtab"), false));
+      GURL("chrome://newtab")));
   ASSERT_FALSE(QRCodeGeneratorBubbleController::IsGeneratorAvailable(
-      GURL("chrome://settings"), false));
+      GURL("chrome://settings")));
 
   // Disallow invalid URLs.
+  ASSERT_FALSE(QRCodeGeneratorBubbleController::IsGeneratorAvailable(GURL("")));
   ASSERT_FALSE(
-      QRCodeGeneratorBubbleController::IsGeneratorAvailable(GURL(""), false));
-  ASSERT_FALSE(QRCodeGeneratorBubbleController::IsGeneratorAvailable(
-      GURL("NotAURL"), false));
+      QRCodeGeneratorBubbleController::IsGeneratorAvailable(GURL("NotAURL")));
 }
 
 TEST_F(QRCodeGeneratorBubbleControllerTest, UnavailableWithFeatureOff) {
@@ -64,11 +55,11 @@ TEST_F(QRCodeGeneratorBubbleControllerTest, UnavailableWithFeatureOff) {
 
   // Normally-available URLs should not be allowed when the feature is off.
   ASSERT_FALSE(QRCodeGeneratorBubbleController::IsGeneratorAvailable(
-      GURL("http://www.example.com"), false));
+      GURL("http://www.example.com")));
   ASSERT_FALSE(QRCodeGeneratorBubbleController::IsGeneratorAvailable(
-      GURL("https://www.example.com"), false));
+      GURL("https://www.example.com")));
   ASSERT_FALSE(QRCodeGeneratorBubbleController::IsGeneratorAvailable(
-      GURL("https://www.example.com/path?q=abc"), false));
+      GURL("https://www.example.com/path?q=abc")));
 }
 
 }  // namespace qrcode_generator

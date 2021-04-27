@@ -25,9 +25,8 @@ class QRCodeGeneratorBubbleController
  public:
   ~QRCodeGeneratorBubbleController() override;
 
-  // Returns whether the generator is available for a given page and
-  // state (incognito etc.).
-  static bool IsGeneratorAvailable(const GURL& url, bool in_incognito);
+  // Returns whether the generator is available for a given page.
+  static bool IsGeneratorAvailable(const GURL& url);
 
   static QRCodeGeneratorBubbleController* Get(
       content::WebContents* web_contents);
