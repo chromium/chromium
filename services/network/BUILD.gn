@@ -10,6 +10,8 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 
 component("network_service") {
   sources = [
+    "bfcache_opt_in_parser.cc",
+    "bfcache_opt_in_parser.h",
     "chunked_data_pipe_upload_data_stream.cc",
     "chunked_data_pipe_upload_data_stream.h",
     "conditional_cache_deletion_helper.cc",
@@ -300,6 +302,7 @@ source_set("tests") {
   testonly = true
 
   sources = [
+    "bfcache_opt_in_parser_unittest.cc",
     "chunked_data_pipe_upload_data_stream_unittest.cc",
     "cookie_manager_unittest.cc",
     "cookie_settings_unittest.cc",
