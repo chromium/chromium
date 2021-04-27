@@ -7020,11 +7020,6 @@ crbug.com/1172437 svg/hixie/perf/004.xml [ Timeout Pass ]
 # flaky test
 crbug.com/1173956 http/tests/xsl/xslt-transform-with-javascript-disabled.html [ Failure Pass ]
 
-# Temporarily disabled due to failures on https://ci.chromium.org/p/chromium/builders/ci/Linux%20Tests%20%28dbg%29%281%29
-crbug.com/1177568 http/tests/devtools/console/console-api-on-call-frame.js [ Pass Failure ]
-crbug.com/1177568 http/tests/devtools/runtime/evaluate-timeout.js [ Pass Failure ]
-crbug.com/1177568 http/tests/devtools/console/console-error-on-call-frame.js [ Pass Failure ]
-
 # MediaQueryList tests failing due to incorrect event dispatching. These tests
 # will pass because they have -expected.txt, but keep entries here because they
 # still need to get fixed.
