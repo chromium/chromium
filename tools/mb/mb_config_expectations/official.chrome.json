@@ -47,7 +47,7 @@
       "use_system_libsync": false,
       "use_thin_lto": true,
       "use_v8_context_snapshot": false,
-      "use_vaapi": true
+      "use_vaapi": false
     }
   }
 }

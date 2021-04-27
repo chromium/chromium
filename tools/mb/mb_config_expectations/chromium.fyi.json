@@ -632,7 +632,7 @@
       "use_pulseaudio": false,
       "use_system_libsync": false,
       "use_v8_context_snapshot": false,
-      "use_vaapi": true
+      "use_vaapi": false
     }
   },
   "linux-annotator-rel": {
