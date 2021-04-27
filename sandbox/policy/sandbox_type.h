@@ -12,6 +12,10 @@
 #include "build/chromeos_buildflags.h"
 #include "sandbox/policy/export.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/assistant/buildflags.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace sandbox {
 namespace policy {
 
@@ -77,6 +81,11 @@ enum class SandboxType {
   kIme,
   // Text-to-speech.
   kTts,
+
+#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+  kLibassistant,
+#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)

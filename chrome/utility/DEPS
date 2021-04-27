@@ -27,6 +27,7 @@ include_rules = [
   "+chromeos/services/assistant",
   "+chromeos/services/ime/ime_service.h",
   "+chromeos/services/ime/public/mojom",
+  "+chromeos/services/libassistant/libassistant_service.h",
   "+chromeos/services/nearby",
   "+chromeos/services/tts",
   "+components/crash/core/common/crash_keys.h",

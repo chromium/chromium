@@ -46,6 +46,9 @@ const char kMediaFoundationCdmSandbox[] = "mf_cdm";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kImeSandbox[] = "ime";
 const char kTtsSandbox[] = "tts";
+#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+const char kLibassistantSandbox[] = "libassistant";
+#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Flags owned by the service manager sandbox.

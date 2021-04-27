@@ -9,6 +9,10 @@
 #include "build/chromeos_buildflags.h"
 #include "sandbox/policy/export.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/assistant/buildflags.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace sandbox {
 namespace policy {
 namespace switches {
@@ -43,6 +47,9 @@ SANDBOX_POLICY_EXPORT extern const char kMediaFoundationCdmSandbox[];
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 SANDBOX_POLICY_EXPORT extern const char kImeSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kTtsSandbox[];
+#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+SANDBOX_POLICY_EXPORT extern const char kLibassistantSandbox[];
+#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Flags owned by the service manager sandbox.

@@ -7,6 +7,19 @@ import("//chromeos/assistant/assistant.gni")
 
 assert(enable_cros_libassistant)
 
+component("constants") {
+  output_name = "libassistant_constants"
+  defines = [ "IS_LIBASSISTANT_CONSTANTS_IMPL" ]
+  deps = [
+    "//base",
+    "//build:branding_buildflags",
+  ]
+  sources = [
+    "constants.cc",
+    "constants.h",
+  ]
+}
+
 component("libassistant") {
   sources = [
     "libassistant_service.cc",
@@ -27,6 +40,20 @@ component("libassistant") {
   # exists (as build target of //chromeos/services/assistant), so we have to
   # use `lib_libassistant_service.so`.
   output_name = "lib_libassistant_service"
+}
+
+source_set("sandbox_hook") {
+  sources = [
+    "libassistant_sandbox_hook.cc",
+    "libassistant_sandbox_hook.h",
+  ]
+
+  deps = [
+    ":constants",
+    "//base",
+    "//sandbox/linux:sandbox_services",
+    "//sandbox/policy",
+  ]
 }
 
 source_set("internal") {
@@ -82,7 +109,9 @@ source_set("internal") {
 
   deps = [
     ":audio",
+    ":constants",
     "//build/util:webkit_version",
+    "//chromeos/assistant:buildflags",
     "//chromeos/assistant/internal",
     "//chromeos/assistant/internal:buildflags",
     "//chromeos/assistant/internal:libassistant",

@@ -11,7 +11,12 @@
 
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #include "chromeos/services/libassistant/libassistant_service.h"
-#endif
+
+#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+#include "chromeos/services/assistant/public/cpp/assistant_client.h"  // nogncheck
+#include "chromeos/services/libassistant/public/mojom/service.mojom-forward.h"  // nogncheck
+#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 
 namespace chromeos {
 namespace assistant {
@@ -19,7 +24,9 @@ namespace assistant {
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 
 LibassistantServiceHostImpl::LibassistantServiceHostImpl() {
+#if !BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
   DETACH_FROM_SEQUENCE(sequence_checker_);
+#endif
 }
 
 LibassistantServiceHostImpl::~LibassistantServiceHostImpl() = default;
@@ -27,16 +34,22 @@ LibassistantServiceHostImpl::~LibassistantServiceHostImpl() = default;
 void LibassistantServiceHostImpl::Launch(
     mojo::PendingReceiver<chromeos::libassistant::mojom::LibassistantService>
         receiver) {
+#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+  AssistantClient::Get()->RequestLibassistantService(std::move(receiver));
+#else
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!libassistant_service_);
   libassistant_service_ =
       std::make_unique<chromeos::libassistant::LibassistantService>(
           std::move(receiver));
+#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
 }
 
 void LibassistantServiceHostImpl::Stop() {
+#if !BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   libassistant_service_ = nullptr;
+#endif
 }
 
 #else

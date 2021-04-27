@@ -37,16 +37,16 @@ bool FileProviderImpl::WriteFile(const std::string& path,
 
   // Create a temp file.
   base::FilePath temp_file;
-  if (!base::CreateTemporaryFileInDir(full_path.DirName(), &temp_file)) {
+  auto fd = base::CreateAndOpenFdForTemporaryFileInDir(full_path.DirName(),
+                                                       &temp_file);
+  if (!fd.is_valid())
     return false;
-  }
 
   // Write to the tmp file.
-  const int size = data.size();
-  int written_size = base::WriteFile(temp_file, data.data(), size);
-  if (written_size != size) {
+  const bool success =
+      base::WriteFileDescriptor(fd.get(), data.data(), data.size());
+  if (!success)
     return false;
-  }
 
   // Replace the current file with the temp file.
   if (!base::ReplaceFile(temp_file, full_path, nullptr)) {

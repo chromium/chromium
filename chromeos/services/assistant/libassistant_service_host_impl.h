@@ -37,7 +37,8 @@ class LibassistantServiceHostImpl : public LibassistantServiceHost {
   void Stop() override;
 
  private:
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
+#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT) && \
+    !BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
   SEQUENCE_CHECKER(sequence_checker_);
   std::unique_ptr<chromeos::libassistant::LibassistantService>
       libassistant_service_ GUARDED_BY_CONTEXT(sequence_checker_);

@@ -11,6 +11,7 @@ buildflag_header("buildflags") {
 
   flags = [
     "ENABLE_CROS_LIBASSISTANT=$enable_cros_libassistant",
+    "ENABLE_LIBASSISTANT_SANDBOX=$enable_cros_libassistant && $enable_libassistant_sandbox",
     "ENABLE_CROS_AMBIENT_MODE_BACKEND=$enable_cros_ambient_mode_backend",
   ]
 }

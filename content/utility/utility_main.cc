@@ -37,8 +37,13 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/assistant/buildflags.h"
 #include "chromeos/services/ime/ime_sandbox_hook.h"
 #include "chromeos/services/tts/tts_sandbox_hook.h"
+
+#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+#include "chromeos/services/libassistant/libassistant_sandbox_hook.h"  // nogncheck
+#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
 #endif
 
 #if defined(OS_MAC)
@@ -109,6 +114,9 @@ int UtilityMain(const MainFunctionParams& parameters) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       sandbox_type == sandbox::policy::SandboxType::kIme ||
       sandbox_type == sandbox::policy::SandboxType::kTts ||
+#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+      sandbox_type == sandbox::policy::SandboxType::kLibassistant ||
+#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       sandbox_type == sandbox::policy::SandboxType::kPrintBackend ||
       sandbox_type == sandbox::policy::SandboxType::kAudio ||
@@ -128,6 +136,12 @@ int UtilityMain(const MainFunctionParams& parameters) {
       pre_sandbox_hook = base::BindOnce(&chromeos::ime::ImePreSandboxHook);
     else if (sandbox_type == sandbox::policy::SandboxType::kTts)
       pre_sandbox_hook = base::BindOnce(&chromeos::tts::TtsPreSandboxHook);
+#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+    else if (sandbox_type == sandbox::policy::SandboxType::kLibassistant) {
+      pre_sandbox_hook =
+          base::BindOnce(&chromeos::libassistant::LibassistantPreSandboxHook);
+    }
+#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     sandbox::policy::Sandbox::Initialize(

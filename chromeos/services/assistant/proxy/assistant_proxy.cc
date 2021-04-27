@@ -55,6 +55,8 @@ void AssistantProxy::LaunchLibassistantServiceOnBackgroundThread(
 }
 
 void AssistantProxy::StopLibassistantService() {
+  libassistant_service_.reset();
+
   // |libassistant_service_| is launched on the background thread, so we have to
   // stop it there as well.
   background_task_runner()->PostTask(

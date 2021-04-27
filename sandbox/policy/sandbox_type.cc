@@ -55,6 +55,9 @@ bool IsUnsandboxedSandboxType(SandboxType sandbox_type) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case SandboxType::kIme:
     case SandboxType::kTts:
+#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+    case SandboxType::kLibassistant:
+#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
 #endif
 #if !defined(OS_MAC)
     case SandboxType::kSharingService:
@@ -121,6 +124,9 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case SandboxType::kIme:
     case SandboxType::kTts:
+#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+    case SandboxType::kLibassistant:
+#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if !defined(OS_MAC)
     case SandboxType::kSharingService:
@@ -250,6 +256,10 @@ std::string StringFromUtilitySandboxType(SandboxType sandbox_type) {
       return switches::kImeSandbox;
     case SandboxType::kTts:
       return switches::kTtsSandbox;
+#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+    case SandboxType::kLibassistant:
+      return switches::kLibassistantSandbox;
+#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       // The following are not utility processes so should not occur.
     case SandboxType::kRenderer:
@@ -311,6 +321,10 @@ SandboxType UtilitySandboxTypeFromString(const std::string& sandbox_string) {
     return SandboxType::kIme;
   if (sandbox_string == switches::kTtsSandbox)
     return SandboxType::kTts;
+#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+  if (sandbox_string == switches::kLibassistantSandbox)
+    return SandboxType::kLibassistant;
+#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return SandboxType::kUtility;
 }

@@ -12,10 +12,12 @@
 #include "base/system/sys_info.h"
 #include "base/values.h"
 #include "build/util/webkit_version.h"
+#include "chromeos/assistant/buildflags.h"
 #include "chromeos/assistant/internal/internal_constants.h"
 #include "chromeos/assistant/internal/util_headers.h"
 #include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/services/libassistant/constants.h"
 
 using chromeos::assistant::shared::ClientInteraction;
 using chromeos::assistant::shared::ClientOpResult;
@@ -47,15 +49,6 @@ void CreateUserAgent(std::string* user_agent) {
   std::string arc_version = chromeos::version_loader::GetARCVersion();
   if (!arc_version.empty())
     base::StringAppendF(user_agent, " ARC/%s", arc_version.c_str());
-}
-
-// Get the root path for assistant files.
-base::FilePath GetRootPath() {
-  base::FilePath home_dir;
-  CHECK(base::PathService::Get(base::DIR_HOME, &home_dir));
-  // Ensures DIR_HOME is overridden after primary user sign-in.
-  CHECK_NE(base::GetHomeDir(), home_dir);
-  return home_dir;
 }
 
 ProviderVerificationResult::VerificationStatus GetProviderVerificationStatus(
@@ -175,7 +168,10 @@ bool ShouldLogToFile() {
 }  // namespace
 
 base::FilePath GetBaseAssistantDir() {
-  return GetRootPath().Append(FILE_PATH_LITERAL("google-assistant-library"));
+  if (base::SysInfo::IsRunningOnChromeOS())
+    return base::FilePath(FILE_PATH_LITERAL(kAssistantBaseDirPath));
+
+  return base::FilePath(FILE_PATH_LITERAL(kAssistantTempBaseDirPath));
 }
 
 std::string CreateLibAssistantConfig(
@@ -221,9 +217,12 @@ std::string CreateLibAssistantConfig(
     if (ShouldPutLogsInHomeDirectory()) {
       base::FilePath log_path =
           GetBaseAssistantDir().Append(FILE_PATH_LITERAL("log"));
+#if !BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
       CHECK(base::CreateDirectory(log_path));
+#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
       log_dir = log_path.value();
     }
+
     logging.SetKey("directory", Value(log_dir));
     // Maximum disk space consumed by all log files. There are 5 rotating log
     // files on disk.

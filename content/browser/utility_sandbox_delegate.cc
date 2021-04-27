@@ -15,6 +15,10 @@
 #include "content/common/zygote/zygote_handle_impl_linux.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/assistant/buildflags.h"
+#endif
+
 namespace content {
 
 UtilitySandboxedProcessLauncherDelegate::
@@ -50,6 +54,9 @@ UtilitySandboxedProcessLauncherDelegate::
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       sandbox_type_ == sandbox::policy::SandboxType::kIme ||
       sandbox_type_ == sandbox::policy::SandboxType::kTts ||
+#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+      sandbox_type_ == sandbox::policy::SandboxType::kLibassistant ||
+#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       sandbox_type_ == sandbox::policy::SandboxType::kAudio ||
 #if !defined(OS_MAC)
@@ -87,6 +94,9 @@ ZygoteHandle UtilitySandboxedProcessLauncherDelegate::GetZygote() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       sandbox_type_ == sandbox::policy::SandboxType::kIme ||
       sandbox_type_ == sandbox::policy::SandboxType::kTts ||
+#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+      sandbox_type_ == sandbox::policy::SandboxType::kLibassistant ||
+#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       sandbox_type_ == sandbox::policy::SandboxType::kAudio ||
       sandbox_type_ == sandbox::policy::SandboxType::kPrintBackend ||

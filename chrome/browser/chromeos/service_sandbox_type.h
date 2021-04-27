@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_SERVICE_SANDBOX_TYPE_H_
 #define CHROME_BROWSER_CHROMEOS_SERVICE_SANDBOX_TYPE_H_
 
+#include "chromeos/assistant/buildflags.h"
 #include "content/public/browser/service_process_host.h"
 #include "sandbox/policy/sandbox_type.h"
 
@@ -41,5 +42,21 @@ inline sandbox::policy::SandboxType
 content::GetServiceSandboxType<chromeos::tts::mojom::TtsService>() {
   return sandbox::policy::SandboxType::kTts;
 }
+
+#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+namespace chromeos {
+namespace libassistant {
+namespace mojom {
+class LibassistantService;
+}  // namespace mojom
+}  // namespace libassistant
+}  // namespace chromeos
+
+template <>
+inline sandbox::policy::SandboxType content::GetServiceSandboxType<
+    chromeos::libassistant::mojom::LibassistantService>() {
+  return sandbox::policy::SandboxType::kLibassistant;
+}
+#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
 
 #endif  // CHROME_BROWSER_CHROMEOS_SERVICE_SANDBOX_TYPE_H_

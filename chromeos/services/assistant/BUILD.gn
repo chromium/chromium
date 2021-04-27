@@ -95,6 +95,10 @@ source_set("libassistant_service_host") {
 
   if (enable_cros_libassistant) {
     deps += [ "//chromeos/services/libassistant" ]
+
+    if (enable_libassistant_sandbox) {
+      deps += [ "//chromeos/services/assistant/public/cpp" ]
+    }
   }
 }
 

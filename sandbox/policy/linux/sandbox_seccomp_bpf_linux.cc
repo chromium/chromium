@@ -58,6 +58,11 @@
 #include "sandbox/policy/features.h"
 #include "sandbox/policy/linux/bpf_ime_policy_linux.h"
 #include "sandbox/policy/linux/bpf_tts_policy_linux.h"
+
+#include "chromeos/assistant/buildflags.h"
+#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+#include "sandbox/policy/linux/bpf_libassistant_policy_linux.h"
+#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using sandbox::bpf_dsl::Allow;
@@ -191,6 +196,10 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
       return std::make_unique<ImeProcessPolicy>();
     case SandboxType::kTts:
       return std::make_unique<TtsProcessPolicy>();
+#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+    case SandboxType::kLibassistant:
+      return std::make_unique<LibassistantProcessPolicy>();
+#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     case SandboxType::kZygoteIntermediateSandbox:
     case SandboxType::kNoSandbox:
@@ -235,6 +244,9 @@ void SandboxSeccompBPF::RunSandboxSanityChecks(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case SandboxType::kIme:
     case SandboxType::kTts:
+#if BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
+    case SandboxType::kLibassistant:
+#endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     case SandboxType::kAudio:
     case SandboxType::kSharingService:

@@ -16,6 +16,7 @@ import("//build/config/ui.gni")
 import("//chrome/browser/buildflags.gni")
 import("//chrome/browser/downgrade/buildflags.gni")
 import("//chrome/common/features.gni")
+import("//chromeos/assistant/assistant.gni")
 import("//components/captive_portal/core/features.gni")
 import("//components/feed/features.gni")
 import("//components/nacl/features.gni")
@@ -2430,6 +2431,10 @@ static_library("browser") {
         "//chromeos/components/telemetry_extension_ui",
         "//chromeos/components/telemetry_extension_ui/mojom",
       ]
+    }
+
+    if (enable_libassistant_sandbox) {
+      deps += [ "//chromeos/services/libassistant/public/mojom" ]
     }
   }
   if (is_linux || is_chromeos) {

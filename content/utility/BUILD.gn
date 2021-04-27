@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//chromeos/assistant/assistant.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//media/media_options.gni")
 
@@ -77,6 +78,7 @@ source_set("utility") {
 
   if (is_chromeos_ash) {
     deps += [
+      "//chromeos/assistant:buildflags",
       "//chromeos/services/ime:sandbox_hook",
       "//chromeos/services/tts:sandbox_hook",
     ]
@@ -87,6 +89,10 @@ source_set("utility") {
       "//services/shape_detection:lib",
       "//services/shape_detection/public/mojom",
     ]
+  }
+
+  if (enable_libassistant_sandbox) {
+    deps += [ "//chromeos/services/libassistant:sandbox_hook" ]
   }
 
   # PAC execution is done in process on Android.

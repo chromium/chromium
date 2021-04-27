@@ -40,5 +40,8 @@ component("cpp") {
     "//ui/accessibility/mojom",
   ]
 
-  deps = [ "//components/prefs" ]
+  deps = [
+    "//chromeos/assistant:buildflags",
+    "//components/prefs",
+  ]
 }
