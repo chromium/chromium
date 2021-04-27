@@ -37,6 +37,9 @@ class DownloadDialogBridge {
  public:
   using DialogCallback = base::OnceCallback<void(DownloadDialogResult)>;
 
+  static long GetDownloadLaterMinFileSize();
+  static bool ShouldShowDateTimePicker();
+
   DownloadDialogBridge();
   DownloadDialogBridge(const DownloadDialogBridge&) = delete;
   DownloadDialogBridge& operator=(const DownloadDialogBridge&) = delete;

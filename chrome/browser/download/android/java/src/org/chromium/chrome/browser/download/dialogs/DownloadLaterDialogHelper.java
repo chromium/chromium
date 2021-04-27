@@ -10,6 +10,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.download.DownloadDialogBridge;
 import org.chromium.chrome.browser.download.DownloadLaterMetrics;
 import org.chromium.chrome.browser.download.DownloadLaterMetrics.DownloadLaterUiEvent;
 import org.chromium.components.offline_items_collection.OfflineItemSchedule;
@@ -80,10 +81,17 @@ public class DownloadLaterDialogHelper implements DownloadLaterDialogController 
 
         mCallback = callback;
         mSource = source;
+        boolean shouldShowDateTimePicker = DownloadDialogBridge.shouldShowDateTimePicker();
+        if (!shouldShowDateTimePicker
+                && initialChoice == DownloadLaterDialogChoice.DOWNLOAD_LATER) {
+            initialChoice = DownloadLaterDialogChoice.DOWNLOAD_NOW;
+        }
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(DownloadLaterDialogProperties.ALL_KEYS)
                         .with(DownloadLaterDialogProperties.CONTROLLER, mDownloadLaterDialog)
-                        .with(DownloadLaterDialogProperties.INITIAL_CHOICE, initialChoice);
+                        .with(DownloadLaterDialogProperties.INITIAL_CHOICE, initialChoice)
+                        .with(DownloadLaterDialogProperties.SHOW_DATE_TIME_PICKER_OPTION,
+                                shouldShowDateTimePicker);
 
         // Set the previously selected time to the date time picker UI.
         if (currentSchedule.startTimeMs > 0) {

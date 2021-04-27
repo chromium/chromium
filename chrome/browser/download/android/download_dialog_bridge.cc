@@ -13,8 +13,12 @@
 #include "chrome/browser/download/android/jni_headers/DownloadDialogBridge_jni.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
+#include "components/download/public/common/download_features.h"
 #include "components/prefs/pref_service.h"
 #include "ui/android/window_android.h"
+
+// Default minimum file size in kilobyte to trigger download later feature.
+const int64_t kDownloadLaterDefaultMinFileSizeKb = 300 * 1024;
 
 // -----------------------------------------------------------------------------
 // DownloadDialogResult
@@ -84,7 +88,7 @@ void DownloadDialogBridge::ShowDialog(
       static_cast<int>(dialog_type),
       base::android::ConvertUTF8ToJavaString(env,
                                              suggested_path.AsUTF8Unsafe()),
-      supports_later_dialog, show_date_time_picker);
+      supports_later_dialog);
 }
 
 void DownloadDialogBridge::OnComplete(
@@ -154,9 +158,36 @@ void JNI_DownloadDialogBridge_SetDownloadAndSaveFileDefaultDirectory(
   pref_service->SetFilePath(prefs::kSaveFileDefaultDirectory, path);
 }
 
+// static
 jboolean JNI_DownloadDialogBridge_IsDataReductionProxyEnabled(JNIEnv* env) {
   auto* data_reduction_settings =
       DataReductionProxyChromeSettingsFactory::GetForBrowserContext(
           ProfileManager::GetActiveUserProfile());
   return data_reduction_settings->IsDataReductionProxyEnabled();
+}
+
+// static
+jlong JNI_DownloadDialogBridge_GetDownloadLaterMinFileSize(JNIEnv* env) {
+  return DownloadDialogBridge::GetDownloadLaterMinFileSize();
+}
+
+// static
+jboolean JNI_DownloadDialogBridge_ShouldShowDateTimePicker(JNIEnv* env) {
+  return DownloadDialogBridge::ShouldShowDateTimePicker();
+}
+
+// static
+long DownloadDialogBridge::GetDownloadLaterMinFileSize() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      download::features::kDownloadLater,
+      download::features::kDownloadLaterMinFileSizeKb,
+      kDownloadLaterDefaultMinFileSizeKb);
+}
+
+// static
+bool DownloadDialogBridge::ShouldShowDateTimePicker() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      download::features::kDownloadLater,
+      download::features::kDownloadLaterShowDateTimePicker,
+      /*default_value=*/true);
 }

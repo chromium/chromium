@@ -130,11 +130,9 @@ using download::DownloadPathReservationTracker;
 using download::PathValidationResult;
 using safe_browsing::DownloadFileType;
 using safe_browsing::DownloadProtectionService;
+using ConnectionType = net::NetworkChangeNotifier::ConnectionType;
 
 namespace {
-
-// Default minimum file size in kilobyte to trigger download later feature.
-const int64_t kDownloadLaterDefaultMinFileSizeKb = 300 * 1024;
 
 // Used with GetPlatformDownloadPath() to indicate which platform path to
 // return.
@@ -413,11 +411,12 @@ void ChromeDownloadManagerDelegate::ShowDownloadDialog(
     DownloadDialogBridge::DialogCallback callback) {
   DCHECK(download_dialog_bridge_);
   auto connection_type = net::NetworkChangeNotifier::GetConnectionType();
-  bool show_date_time_picker = base::GetFieldTrialParamByFeatureAsBool(
-      download::features::kDownloadLater,
-      download::features::kDownloadLaterShowDateTimePicker,
-      /*default_value=*/true);
+  bool show_date_time_picker = DownloadDialogBridge::ShouldShowDateTimePicker();
 
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          download::switches::kDownloadLaterDebugOnWifi)) {
+    connection_type = net::NetworkChangeNotifier::ConnectionType::CONNECTION_2G;
+  }
   download_dialog_bridge_->ShowDialog(
       native_window, total_bytes, connection_type, dialog_type, suggested_path,
       supports_later_dialog, show_date_time_picker, std::move(callback));
@@ -1203,7 +1202,6 @@ void ChromeDownloadManagerDelegate::OnDownloadCanceled(
     bool has_no_external_storage) {
   DownloadManagerService::OnDownloadCanceled(download, has_no_external_storage);
 }
-#endif  // defined(OS_ANDROID)
 
 bool ChromeDownloadManagerDelegate::ShouldShowDownloadLaterDialog(
     const download::DownloadItem* download) const {
@@ -1223,16 +1221,15 @@ bool ChromeDownloadManagerDelegate::ShouldShowDownloadLaterDialog(
     met_network_condition = true;
   }
 
-  int64_t min_file_size_kb = base::GetFieldTrialParamByFeatureAsInt(
-      download::features::kDownloadLater,
-      download::features::kDownloadLaterMinFileSizeKb,
-      kDownloadLaterDefaultMinFileSizeKb);
+  int64_t min_file_size_kb =
+      static_cast<int64_t>(DownloadDialogBridge::GetDownloadLaterMinFileSize());
 
   // Show download later dialog on large download file.
   bool met_file_size_condition =
       download && download->GetTotalBytes() >= min_file_size_kb * 1024;
   return (met_network_condition || met_file_size_condition);
 }
+#endif  // defined(OS_ANDROID)
 
 void ChromeDownloadManagerDelegate::DetermineLocalPath(
     DownloadItem* download,

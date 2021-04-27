@@ -18,20 +18,25 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.download.dialogs.DownloadLaterDialogChoice;
 import org.chromium.chrome.browser.download.dialogs.DownloadLaterDialogCoordinator;
+import org.chromium.chrome.browser.download.dialogs.DownloadLaterDialogProperties;
 import org.chromium.chrome.browser.download.dialogs.DownloadLocationDialogCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -40,6 +45,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.net.ConnectionType;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * Unit test for {@link DownloadDialogBridge}.
@@ -84,6 +90,9 @@ public class DownloadDialogBridgeUnitTest {
 
     @Mock
     private PrefService mPrefService;
+
+    @Captor
+    private ArgumentCaptor<PropertyModel> mModelCaptor;
 
     @Before
     public void setUp() {
@@ -294,5 +303,46 @@ public class DownloadDialogBridgeUnitTest {
         verify(mLocationDialog, times(0))
                 .showDialog(any(), any(), anyLong(), anyInt(), anyString());
         verify(mNativeMock).onCanceled(anyLong(), any());
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.DOWNLOAD_LATER})
+    @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.DOWNLOAD_LATER + "<FakeStudyName",
+            "force-fieldtrials=FakeStudyName/Enabled",
+            "force-fieldtrial-params=FakeStudyName.Enabled:show_date_time_picker/false"})
+    public void
+    testDownloadHideDownloadLaterDateTimePicker() {
+        showDialog();
+        verify(mDownloadLaterDialog).showDialog(any(), any(), any(), mModelCaptor.capture());
+        PropertyModel model = mModelCaptor.getValue();
+        Assert.assertFalse(model.get(DownloadLaterDialogProperties.SHOW_DATE_TIME_PICKER_OPTION));
+    }
+
+    @Test
+    @Features.EnableFeatures({ChromeFeatureList.DOWNLOAD_LATER})
+    public void testDownloadLaterSubtitle() {
+        mBridge.showDialog(mActivity, mModalDialogManager, mPrefService, TOTAL_BYTES,
+                ConnectionType.CONNECTION_2G, LOCATION_DIALOG_TYPE, SUGGESTED_PATH, true);
+        verify(mDownloadLaterDialog).showDialog(any(), any(), any(), mModelCaptor.capture());
+        PropertyModel model = mModelCaptor.getValue();
+        Assert.assertEquals("Your 2G connection might slow down your download",
+                model.get(DownloadLaterDialogProperties.SUBTITLE_TEXT));
+
+        mBridge.showDialog(mActivity, mModalDialogManager, mPrefService, TOTAL_BYTES,
+                ConnectionType.CONNECTION_BLUETOOTH, LOCATION_DIALOG_TYPE, SUGGESTED_PATH, true);
+        verify(mDownloadLaterDialog, times(2))
+                .showDialog(any(), any(), any(), mModelCaptor.capture());
+        model = mModelCaptor.getValue();
+        Assert.assertEquals("Your Bluetooth connection might slow down your download",
+                model.get(DownloadLaterDialogProperties.SUBTITLE_TEXT));
+
+        when(mNativeMock.getDownloadLaterMinFileSize()).thenReturn(50 * 1024L);
+        mBridge.showDialog(mActivity, mModalDialogManager, mPrefService, 1024 * 100,
+                ConnectionType.CONNECTION_3G, LOCATION_DIALOG_TYPE, SUGGESTED_PATH, true);
+        verify(mDownloadLaterDialog, times(3))
+                .showDialog(any(), any(), any(), mModelCaptor.capture());
+        model = mModelCaptor.getValue();
+        Assert.assertEquals("This file is large (100.00 KB)",
+                model.get(DownloadLaterDialogProperties.SUBTITLE_TEXT));
     }
 }
