@@ -11,6 +11,8 @@ if (!use_system_libwayland) {
       "include",
       "include/src",
       "include/protocol",
+      "src/cursor",
+      "src/egl",
       "src/src",
     ]
 
