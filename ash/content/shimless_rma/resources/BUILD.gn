@@ -11,7 +11,10 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 preprocessed_dir = "preprocessed"
 preprocessed_gen_manifest = "preprocessed_gen_manifest.json"
 
-polymer_element_files = [ "shimless_rma.js" ]
+polymer_element_files = [
+  "shimless_rma.js",
+  "shimless_rma_shared_css.js",
+]
 
 generate_grd("build_grd") {
   input_files = [
