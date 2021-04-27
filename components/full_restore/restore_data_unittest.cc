@@ -455,7 +455,7 @@ TEST_F(RestoreDataTest, GetAppWindowInfo) {
 
   auto app_window_info = data_it->second->GetAppWindowInfo();
   EXPECT_TRUE(app_window_info);
-  EXPECT_EQ(-1, app_window_info->state);
+  EXPECT_EQ(0, app_window_info->state);
   EXPECT_EQ(kDisplayId2, app_window_info->display_id);
   EXPECT_FALSE(app_window_info->bounds);
 
