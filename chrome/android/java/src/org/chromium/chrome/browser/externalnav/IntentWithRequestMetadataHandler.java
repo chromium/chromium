@@ -4,23 +4,16 @@
 
 package org.chromium.chrome.browser.externalnav;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 
 import androidx.annotation.Nullable;
 
 import org.chromium.base.IntentUtils;
-import org.chromium.base.Log;
-import org.chromium.base.SecureRandomInitializer;
-import org.chromium.base.task.AsyncTask;
-import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.url.Origin;
 
-import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.Arrays;
-import java.util.concurrent.ExecutionException;
 
 /**
  * This class generates a token for the most recently launched external intent that has
@@ -42,8 +35,7 @@ public class IntentWithRequestMetadataHandler {
 
     private static final Object INSTANCE_LOCK = new Object();
     private static IntentWithRequestMetadataHandler sIntentWithRequestMetadataHandler;
-    private SecureRandom mSecureRandom;
-    private AsyncTask<SecureRandom> mSecureRandomInitializer;
+    private SecureRandom mSecureRandom = new SecureRandom();
     private RequestMetadata mRequestMetadata;
     private byte[] mIntentToken;
     private String mUri;
@@ -89,25 +81,6 @@ public class IntentWithRequestMetadataHandler {
         return sIntentWithRequestMetadataHandler;
     }
 
-    private IntentWithRequestMetadataHandler() {
-        mSecureRandomInitializer = new BackgroundOnlyAsyncTask<SecureRandom>() {
-            // SecureRandomInitializer addresses the bug in SecureRandom that "TrulyRandom"
-            // warns about, so this lint warning can safely be suppressed.
-            @SuppressLint("TrulyRandom")
-            @Override
-            protected SecureRandom doInBackground() {
-                SecureRandom secureRandom = null;
-                try {
-                    secureRandom = new SecureRandom();
-                    SecureRandomInitializer.initialize(secureRandom);
-                } catch (IOException ioe) {
-                    Log.e(TAG, "Cannot initialize SecureRandom", ioe);
-                }
-                return secureRandom;
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-
     /**
      * Generate a new token for the intent and put the token and request metadata in the
      * intent extra. This will invalidate the token on the previously launched intent with request
@@ -117,15 +90,6 @@ public class IntentWithRequestMetadataHandler {
      * @param metadata Request metadata to be put into the intent extra.
      */
     public void onNewIntentWithRequestMetadata(Intent intent, RequestMetadata metadata) {
-        if (mSecureRandomInitializer != null) {
-            try {
-                mSecureRandom = mSecureRandomInitializer.get();
-            } catch (InterruptedException | ExecutionException e) {
-                Log.e(TAG, "Error fetching SecureRandom", e);
-            }
-            mSecureRandomInitializer = null;
-        }
-        if (mSecureRandom == null) return;
         mIntentToken = new byte[32];
         mSecureRandom.nextBytes(mIntentToken);
         intent.putExtra(EXTRA_REQUEST_METADATA_TOKEN, mIntentToken);

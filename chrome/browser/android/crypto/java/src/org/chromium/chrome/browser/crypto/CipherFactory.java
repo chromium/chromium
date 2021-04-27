@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.crypto;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import androidx.annotation.AnyThread;
@@ -13,7 +12,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ByteArrayGenerator;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
-import org.chromium.base.SecureRandomInitializer;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -193,9 +191,6 @@ public class CipherFactory {
      */
     private Callable<CipherData> createGeneratorCallable() {
         return new Callable<CipherData>() {
-            // SecureRandomInitializer addresses the bug in SecureRandom that "TrulyRandom"
-            // warns about, so this lint warning can safely be suppressed.
-            @SuppressLint("TrulyRandom")
             @Override
             public CipherData call() {
                 // Poll random data to generate initialization parameters for the Cipher.
@@ -212,14 +207,10 @@ public class CipherFactory {
 
                 try {
                     SecureRandom random = new SecureRandom();
-                    SecureRandomInitializer.initialize(random);
 
                     KeyGenerator generator = KeyGenerator.getInstance("AES");
                     generator.init(128, random);
                     return new CipherData(generator.generateKey(), iv);
-                } catch (IOException e) {
-                    Log.e(TAG, "Couldn't get generator data.");
-                    return null;
                 } catch (GeneralSecurityException e) {
                     Log.e(TAG, "Couldn't get generator instances.");
                     return null;

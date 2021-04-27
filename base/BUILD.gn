@@ -3849,7 +3849,6 @@ if (is_android) {
       "android/java/src/org/chromium/base/PowerMonitor.java",
       "android/java/src/org/chromium/base/Promise.java",
       "android/java/src/org/chromium/base/RadioUtils.java",
-      "android/java/src/org/chromium/base/SecureRandomInitializer.java",
       "android/java/src/org/chromium/base/StreamUtil.java",
       "android/java/src/org/chromium/base/StrictModeContext.java",
       "android/java/src/org/chromium/base/SysUtils.java",
