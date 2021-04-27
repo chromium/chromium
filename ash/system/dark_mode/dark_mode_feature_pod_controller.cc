@@ -35,8 +35,12 @@ FeaturePodButton* DarkModeFeaturePodController::CreateButton() {
       IDS_ASH_STATUS_TRAY_DARK_THEME_SETTINGS_TOOLTIP));
   button_->ShowDetailedViewArrow();
   // TODO(minch): Add the logic for login screen.
+  // Disable dark mode feature pod in OOBE since only light mode should be
+  // allowed there.
   button_->SetVisible(
-      Shell::Get()->session_controller()->IsActiveUserSessionStarted());
+      Shell::Get()->session_controller()->IsActiveUserSessionStarted() &&
+      Shell::Get()->session_controller()->GetSessionState() !=
+          session_manager::SessionState::OOBE);
 
   UpdateButton(AshColorProvider::Get()->IsDarkModeEnabled());
   return button_;
