@@ -4651,7 +4651,6 @@
                         "OmniboxShortBookmarkSuggestionsByTotalInputLength",
                         "OmniboxTrendingZeroPrefixSuggestionsOnNTP",
                         "OmniboxUIExperimentMaxAutocompleteMatches",
-                        "QueryInOmnibox",
                         "SearchSuggestChips"
                     ]
                 }
