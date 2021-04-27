@@ -63,8 +63,8 @@ TEST_F(BrowserDataMigratorTest, IsMigrationRequiredOnUI) {
   FakeChromeUserManager fake_user_manager;
 
   {
-    // If lacros is disabled, IsMigrationRequiredOnUI should return false even
-    // for regular users.
+    // If lacros is disabled, `IsMigrationRequiredOnUI()` should return false
+    // even for regular users.
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndDisableFeature(chromeos::features::kLacrosSupport);
 
@@ -110,19 +110,19 @@ TEST_F(BrowserDataMigratorTest, IsMigrationRequiredOnUI) {
 TEST_F(BrowserDataMigratorTest, IsMigrationRequiredOnWorker) {
   BrowserDataMigrator browser_data_migrator(from_dir_.GetPath());
 
-  // If |BrowserDataMigrator::to_dir_| does not exist, run migration.
+  // If `BrowserDataMigrator::to_dir_` does not exist, run migration.
   EXPECT_TRUE(browser_data_migrator.IsMigrationRequiredOnWorker());
 
-  // Create |BrowserDataMigrator::to_dir_|.
+  // Create `BrowserDataMigrator::to_dir_`.
   ASSERT_TRUE(
       base::CreateDirectory(from_dir_.GetPath().Append(kLacrosProfileDir)));
 
-  // If |BrowserDataMigrator::to_dir_| already exists, do not run migration.
+  // If `BrowserDataMigrator::to_dir_` already exists, do not run migration.
   EXPECT_FALSE(browser_data_migrator.IsMigrationRequiredOnWorker());
 
   ASSERT_TRUE(base::DeletePathRecursively(from_dir_.GetPath()));
 
-  // If |BrowserDataMigrator::from_dir_| does not exist, do not run migration.
+  // If `BrowserDataMigrator::from_dir_` does not exist, do not run migration.
   EXPECT_FALSE(browser_data_migrator.IsMigrationRequiredOnWorker());
 }
 
@@ -148,8 +148,8 @@ TEST_F(BrowserDataMigratorTest, GetTargetInfo) {
 
 TEST_F(BrowserDataMigratorTest, RecordStatus) {
   {
-    // If FinalStatus::kSkipped, only record the status and do not record copied
-    // data size or total time.
+    // If `FinalStatus::kSkipped`, only record the status and do not record
+    // copied data size or total time.
     base::HistogramTester histogram_tester;
 
     BrowserDataMigrator::RecordStatus(
@@ -164,8 +164,8 @@ TEST_F(BrowserDataMigratorTest, RecordStatus) {
   }
 
   {
-    // If FInalStatus::kSuccess, the three UMA kFinalStatus,
-    // kCopiedDataSize, kTotalTime should be recorded.
+    // If `FInalStatus::kSuccess`, the three UMA `kFinalStatus`,
+    // `kCopiedDataSize`, `kTotalTime` should be recorded.
     base::HistogramTester histogram_tester;
     BrowserDataMigrator browser_data_migrator(from_dir_.GetPath());
 
@@ -217,7 +217,7 @@ TEST_F(BrowserDataMigratorTest, Migrate) {
                                      .Append(kDirName)
                                      .Append(kDownloads)
                                      .Append(kFileName)));
-  }  // browser_data_migrator is destructed and RecordStatus is called.
+  }  // `browser_data_migrator` is destructed and `RecordStatus()` is called.
 
   histogram_tester.ExpectTotalCount(kFinalStatus, 1);
   histogram_tester.ExpectTotalCount(kCopiedDataSize, 1);

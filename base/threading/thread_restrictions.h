@@ -116,6 +116,7 @@ class VizCompositorThreadRunnerWebView;
 }
 namespace ash {
 class MojoUtils;
+class BrowserDataMigrator;
 }
 namespace audio {
 class OutputDevice;
@@ -399,6 +400,7 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class StackSamplingProfiler;
   friend class android_webview::ScopedAllowInitGLBindings;
   friend class ash::MojoUtils;  // http://crbug.com/1055467
+  friend class ash::BrowserDataMigrator;
   friend class blink::DiskDataAllocator;
   friend class content::BrowserProcessSubThread;
   friend class content::NetworkServiceInstancePrivate;

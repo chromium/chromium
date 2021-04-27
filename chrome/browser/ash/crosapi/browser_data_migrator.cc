@@ -17,8 +17,11 @@
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/account_id/account_id.h"
 #include "components/user_manager/user_manager.h"
 
 namespace ash {
@@ -37,11 +40,13 @@ BrowserDataMigrator::TargetInfo::TargetInfo(const TargetInfo&) = default;
 BrowserDataMigrator::TargetInfo::~TargetInfo() = default;
 
 // static
-void BrowserDataMigrator::MaybeMigrate(const UserContext& user_context,
+void BrowserDataMigrator::MaybeMigrate(const AccountId& account_id,
+                                       const std::string& user_id_hash,
+                                       bool async,
                                        base::OnceClosure callback) {
   // Get the current user.
   const user_manager::User* user =
-      user_manager::UserManager::Get()->FindUser(user_context.GetAccountId());
+      user_manager::UserManager::Get()->FindUser(account_id);
   if (!user || !IsMigrationRequiredOnUI(user)) {
     // If lacros isn't enabled, skip migration and move on to the next step.
     RecordStatus(FinalStatus::kSkipped);
@@ -57,18 +62,31 @@ void BrowserDataMigrator::MaybeMigrate(const UserContext& user_context,
     return;
   }
 
-  base::FilePath profile_data_dir = user_data_dir.Append(
-      base::StringPrintf("u-%s", user_context.GetUserIDHash().c_str()));
+  // Use `GetUserProfileDir()` to manually get base name for profile dir since
+  // `MaybeMigrate()` is called before profile creation.
+  base::FilePath profile_data_dir =
+      user_data_dir.Append(ProfileHelper::GetUserProfileDir(user_id_hash));
 
   std::unique_ptr<BrowserDataMigrator> browser_data_migrator =
       std::make_unique<BrowserDataMigrator>(profile_data_dir);
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&BrowserDataMigrator::MigrateInternal,
-                     std::move(browser_data_migrator)),
-      base::BindOnce(&BrowserDataMigrator::MigrateInternalFinishedUIThread,
-                     std::move(callback)));
+  if (async) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE,
+        {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+         base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+        base::BindOnce(&BrowserDataMigrator::MigrateInternal,
+                       std::move(browser_data_migrator)),
+        base::BindOnce(&BrowserDataMigrator::MigrateInternalFinishedUIThread,
+                       std::move(callback)));
+  } else {
+    // Temporarily allowing blocking since we have to ensure that the migration
+    // happens before profile is created.
+    base::ScopedAllowBlocking allow_blocking;
+    // Migrate synchronously on UI thread.
+    bool did_migrate = browser_data_migrator->MigrateInternal();
+    MigrateInternalFinishedUIThread(std::move(callback), did_migrate);
+  }
 }
 
 // static
@@ -193,7 +211,7 @@ BrowserDataMigrator::TargetInfo BrowserDataMigrator::GetTargetInfo() const {
   for (base::FilePath entry = enumerator.Next(); !entry.empty();
        entry = enumerator.Next()) {
     if (base::Contains(kNoCopyPaths, entry.BaseName().value())) {
-      // Skip if the base name is present in kNoCopyPaths.
+      // Skip if the base name is present in `kNoCopyPaths`.
       continue;
     }
 
@@ -203,7 +221,7 @@ BrowserDataMigrator::TargetInfo BrowserDataMigrator::GetTargetInfo() const {
       target_info.total_byte_count += info.GetSize();
     } else {
       // Treat symlink the same as directory since even if it points to a file,
-      // both ComputeDirectorySize and CopyDirectory can be used.
+      // both `ComputeDirectorySize()` and `CopyDirectory()` can be used.
       target_info.dir_paths.emplace_back(entry);
       target_info.total_byte_count += base::ComputeDirectorySize(entry);
     }
@@ -228,7 +246,7 @@ bool BrowserDataMigrator::CopyToTmpDir(const TargetInfo& target_info) const {
   base::File::Error error;
   if (!base::CreateDirectoryAndGetError(tmp_dir_, &error)) {
     PLOG(ERROR) << "CreateDirectoryFailed " << error;
-    // Maps to histogram enum PlatformFileError.
+    // Maps to histogram enum `PlatformFileError`.
     UMA_HISTOGRAM_ENUMERATION(kCreateDirectoryFail, -error,
                               -base::File::FILE_ERROR_MAX);
     return false;

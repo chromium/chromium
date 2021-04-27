@@ -24,6 +24,7 @@
 #include "ash/system/pcie_peripheral/pcie_peripheral_notification_controller.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
@@ -48,6 +49,7 @@
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/arc/enterprise/arc_data_snapshotd_delegate.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
+#include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/display/quirks_manager_delegate_impl.h"
@@ -846,6 +848,16 @@ void ChromeBrowserMainPartsChromeos::PreProfileInit() {
     // In case of multi-profiles --login-profile will contain user_id_hash.
     std::string user_id_hash =
         parsed_command_line().GetSwitchValueASCII(switches::kLoginProfile);
+
+    // Before creating a session, migrate user data if required. The migration
+    // will happen at this timing only if lacros chrome was enabled via
+    // chrome://flags. In other cases, migration will happen upon login
+    // asynchronously. This migration has to complete before profile is created
+    // and chrome starts accessing those user data files, thus we pass
+    // async=false.
+    ash::BrowserDataMigrator::MaybeMigrate(
+        account_id, user_id_hash, false /* async */, base::DoNothing());
+
     session_manager::SessionManager::Get()->CreateSessionForRestart(
         account_id, user_id_hash);
 

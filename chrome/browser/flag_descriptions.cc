@@ -4613,7 +4613,9 @@ const char kLacrosStabilityMoreStableDescription[] =
 
 const char kLacrosSupportName[] = "Lacros support";
 const char kLacrosSupportDescription[] =
-    "Support for the experimental lacros-chrome browser.";
+    "Support for the experimental lacros-chrome browser. Please note that the "
+    "first restart can take some time to setup lacros-chrome. Please DO NOT "
+    "attempt to turn off the device during the restart.";
 
 const char kLimitAltTabToActiveDeskName[] =
     "Limit Alt-Tab windows to active desk";
