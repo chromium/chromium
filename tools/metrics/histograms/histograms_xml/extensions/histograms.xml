@@ -1587,39 +1587,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Extensions.ForceInstalledFetchTries" units="retries"
-    expires_after="2021-10-04">
-  <owner>burunduk@chromium.org</owner>
-  <owner>swapnilgupta@google.com</owner>
-  <owner>managed-devices@google.com</owner>
-  <summary>
-    Number of fetch retries made when CRX fetch failed for enterprise policy
-    forced extensions. Recorded for each forced extension that failed to install
-    after 5 minutes with
-    Extensions.{OffStore,Webstore}_ForceInstalledFailureReason3 equal to
-    CRX_FETCH_FAILED.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.ForceInstalledHttpErrorCode2"
-    enum="HttpResponseCode" expires_after="2021-08-22">
-<!-- Name completed by histogram_suffixes name="ExtensionSource" -->
-
-  <owner>burunduk@chromium.org</owner>
-  <owner>swapnilgupta@google.com</owner>
-  <owner>managed-devices@google.com</owner>
-  <summary>
-    HTTP error code for the last retry attempt when CRX fetch failed for
-    enterprise policy forced extensions. Recorded for each forced extension that
-    failed to install after 5 minutes with
-    Extensions.{OffStore,WebStore}_ForceInstalledFailureReason3 equal to
-    CRX_FETCH_FAILED and a HTTP response code was received. HTTP response code
-    is received only if there was no network error. Replaced
-    Extensions.ForceInstalledHttpErrorCode because error codes are now reported
-    only when network error code is HTTP_RESPONSE_CODE_FAILURE.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.ForceInstalledLoadTime" units="ms"
     expires_after="2021-10-04">
   <owner>burunduk@chromium.org</owner>
@@ -1628,68 +1595,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The amount of time elapsed during installation of enterprise policy forced
     extensions.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.ForceInstalledManifestFetchFailedFetchTries"
-    units="retries" expires_after="2021-10-04">
-  <owner>burunduk@chromium.org</owner>
-  <owner>swapnilgupta@google.com</owner>
-  <owner>managed-devices@google.com</owner>
-  <summary>
-    Number of fetch retries made when Manifest fetch failed for enterprise
-    policy forced extensions. Recorded for each forced extension that failed to
-    install after 5 minutes with
-    Extensions.{OffStore,WebStore}_ForceInstalledFailureReason3 equal to
-    MANIFEST_FETCH_FAILED.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.ForceInstalledManifestFetchFailedHttpErrorCode2"
-    enum="HttpResponseCode" expires_after="2021-10-04">
-<!-- Name completed by histogram_suffixes name="ExtensionSource" -->
-
-  <owner>burunduk@chromium.org</owner>
-  <owner>swapnilgupta@google.com</owner>
-  <owner>managed-devices@google.com</owner>
-  <summary>
-    HTTP error code for the last retry attempt when Manifest fetch failed for
-    enterprise policy forced extensions. Recorded for each forced extension that
-    failed to install after 5 minutes with
-    Extensions.{OffStore,WebStore}_ForceInstalledFailureReason3 equal to
-    MANIFEST_FETCH_FAILED and a HTTP response code was received. HTTP response
-    code is received only if there was no network error. Replaced
-    Extensions.ForceInstalledManifestFetchFailedHttpErrorCode because error
-    codes are now reported only when network error code is
-    HTTP_RESPONSE_CODE_FAILURE.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.ForceInstalledManifestFetchFailedNetworkErrorCode"
-    enum="NetErrorCodes" expires_after="2021-10-04">
-  <owner>burunduk@chromium.org</owner>
-  <owner>swapnilgupta@google.com</owner>
-  <owner>managed-devices@google.com</owner>
-  <summary>
-    Network error code for the last retry attempt when Manifest fetch failed for
-    enterprise policy forced extensions. Recorded for each forced extension that
-    failed to install after 5 minutes with
-    Extensions.{OffStore,WebStore}_ForceInstalledFailureReason3 equal to
-    MANIFEST_FETCH_FAILED.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.ForceInstalledNetworkErrorCode"
-    enum="NetErrorCodes" expires_after="2021-10-04">
-  <owner>burunduk@chromium.org</owner>
-  <owner>swapnilgupta@google.com</owner>
-  <owner>managed-devices@google.com</owner>
-  <summary>
-    Network error code for the last retry attempt when CRX fetch failed for
-    enterprise policy forced extensions. Recorded for each forced extension that
-    failed to install after 5 minutes with
-    Extensions.{OffStore,WebStore}_ForceInstalledFailureReason3 equal to
-    CRX_FETCH_FAILED.
   </summary>
 </histogram>
 
@@ -1798,6 +1703,44 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     in &quot;Extensions.ForceInstalledLoadTime&quot; and records in
     &quot;Extensions.ForceInstalledTimedOutAndNotInstalledCount&quot;.
   </summary>
+</histogram>
+
+<histogram name="Extensions.ForceInstalled{ErrorType}FetchTries"
+    units="retries" expires_after="2021-10-04">
+  <owner>burunduk@chromium.org</owner>
+  <owner>swapnilgupta@google.com</owner>
+  <owner>managed-devices@google.com</owner>
+  <summary>
+    Number of fetch retries made when enterprise policy forced extensions failed
+    to install with {ErrorType}. Recorded for each forced extension that failed
+    to install after 5 minutes with
+    Extensions.`OffStore,Webstore`_ForceInstalledFailureReason3 equal to
+    {ErrorType}.
+  </summary>
+  <token key="ErrorType">
+    <variant name="" summary="CRX_FETCH_FAILED failure reason."/>
+    <variant name="ManifestFetchFailed"
+        summary="MANIFEST_FETCH_FAILED failure reason."/>
+  </token>
+</histogram>
+
+<histogram name="Extensions.ForceInstalled{ErrorType}NetworkErrorCode"
+    enum="NetErrorCodes" expires_after="2021-10-04">
+  <owner>burunduk@chromium.org</owner>
+  <owner>swapnilgupta@google.com</owner>
+  <owner>managed-devices@google.com</owner>
+  <summary>
+    Network error code for the last retry attempt when CRX fetch failed for
+    enterprise policy forced extensions failed to install due to {ErrorType}.
+    Recorded for each forced extension that failed to install after 5 minutes
+    with Extensions.`OffStore,WebStore`_ForceInstalledFailureReason3 equal to
+    {ErrorType}.
+  </summary>
+  <token key="ErrorType">
+    <variant name="" summary="CRX_FETCH_FAILED failure reason."/>
+    <variant name="ManifestFetchFailed"
+        summary="MANIFEST_FETCH_FAILED failure reason."/>
+  </token>
 </histogram>
 
 <histogram name="Extensions.ForceToolbarPinnedCount" units="extensions"
@@ -3862,6 +3805,37 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
         summary="Detailed failure reason for OffStore extensions"/>
     <variant name="WebStore_"
         summary="Detailed failure reason for WebStore extensions"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Extensions.{ExtensionSource}ForceInstalled{ErrorType}HttpErrorCode2"
+    enum="HttpResponseCode" expires_after="2021-08-22">
+  <owner>burunduk@chromium.org</owner>
+  <owner>swapnilgupta@google.com</owner>
+  <owner>managed-devices@google.com</owner>
+  <summary>
+    HTTP error code for the last retry attempt when for enterprise policy forced
+    extensions failed with {ErrorType}. Recorded for each forced extension that
+    failed to install after 5 minutes with
+    Extensions.`OffStore,WebStore`_ForceInstalledFailureReason3 equal to
+    {ErrorType} and a HTTP response code was received. HTTP response code is
+    received only if there was no network error. Replaced
+    Extensions.ForceInstalledHttpErrorCode because error codes are now reported
+    only when network error code is HTTP_RESPONSE_CODE_FAILURE.
+  </summary>
+  <token key="ExtensionSource">
+    <variant name=""
+        summary="Aggregated detailed failure reason for any type of extension"/>
+    <variant name="OffStore_"
+        summary="Detailed failure reason for OffStore extensions"/>
+    <variant name="WebStore_"
+        summary="Detailed failure reason for WebStore extensions"/>
+  </token>
+  <token key="ErrorType">
+    <variant name="" summary="CRX_FETCH_FAILED failure reason."/>
+    <variant name="ManifestFetchFailed"
+        summary="MANIFEST_FETCH_FAILED failure reason."/>
   </token>
 </histogram>
 
