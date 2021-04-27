@@ -819,9 +819,10 @@ class InkDropLabelButtonTest : public ViewsTestBase {
 
 TEST_F(InkDropLabelButtonTest, HoverStateAfterMouseEnterAndExitEvents) {
   ui::test::EventGenerator event_generator(GetRootWindow(widget_.get()));
-  const gfx::Point out_of_bounds_point(button_->bounds().bottom_right() +
-                                       gfx::Vector2d(1, 1));
-  const gfx::Point in_bounds_point(button_->bounds().CenterPoint());
+  event_generator.set_assume_window_at_origin(false);
+  const gfx::Point out_of_bounds_point(
+      button_->GetBoundsInScreen().bottom_right() + gfx::Vector2d(1, 1));
+  const gfx::Point in_bounds_point(button_->GetBoundsInScreen().CenterPoint());
 
   event_generator.MoveMouseTo(out_of_bounds_point);
   EXPECT_FALSE(test_ink_drop_->is_hovered());

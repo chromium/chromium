@@ -888,9 +888,11 @@ TEST_F(NativeWidgetMacTest, Tooltips) {
 
   ui::test::EventGenerator event_generator(GetContext(),
                                            widget->GetNativeWindow());
+  event_generator.set_assume_window_at_origin(false);
 
   // Initially, there should be no tooltip.
-  event_generator.MoveMouseTo(gfx::Point(50, 50));
+  const gfx::Rect widget_bounds = widget->GetClientAreaBoundsInScreen();
+  event_generator.MoveMouseTo(widget_bounds.CenterPoint());
   EXPECT_TRUE(TooltipTextForWidget(widget).empty());
 
   // Create a new button for the "front", and set the tooltip, but don't add it
@@ -916,11 +918,11 @@ TEST_F(NativeWidgetMacTest, Tooltips) {
   EXPECT_EQ(long_tooltip, TooltipTextForWidget(widget));
 
   // Move the mouse to a different view - tooltip should change.
-  event_generator.MoveMouseTo(gfx::Point(15, 15));
+  event_generator.MoveMouseTo(back->GetBoundsInScreen().origin());
   EXPECT_EQ(tooltip_back, TooltipTextForWidget(widget));
 
   // Move the mouse off of any view, tooltip should clear.
-  event_generator.MoveMouseTo(gfx::Point(5, 5));
+  event_generator.MoveMouseTo(widget_bounds.origin());
   EXPECT_TRUE(TooltipTextForWidget(widget).empty());
 
   widget->CloseNow();
@@ -940,13 +942,14 @@ TEST_F(NativeWidgetMacTest, TwoWidgetTooltips) {
   widget_above->SetBounds(gfx::Rect(100, 0, 100, 200));
 
   const std::u16string tooltip_above = u"Front";
-  CustomTooltipView* view_above = new CustomTooltipView(tooltip_above, nullptr);
+  CustomTooltipView* view_above = widget_above->GetContentsView()->AddChildView(
+      std::make_unique<CustomTooltipView>(tooltip_above, nullptr));
   view_above->SetBoundsRect(widget_above->GetContentsView()->bounds());
-  widget_above->GetContentsView()->AddChildView(view_above);
 
-  CustomTooltipView* view_below = new CustomTooltipView(u"Back", view_above);
+  CustomTooltipView* view_below =
+      widget_below->non_client_view()->frame_view()->AddChildView(
+          std::make_unique<CustomTooltipView>(u"Back", view_above));
   view_below->SetBoundsRect(widget_below->GetContentsView()->bounds());
-  widget_below->non_client_view()->frame_view()->AddChildView(view_below);
 
   widget_below->Show();
   widget_above->Show();
@@ -955,7 +958,9 @@ TEST_F(NativeWidgetMacTest, TwoWidgetTooltips) {
   // for second. Despite that event was handled in the first one.
   ui::test::EventGenerator event_generator(GetContext(),
                                            widget_below->GetNativeWindow());
-  event_generator.MoveMouseTo(gfx::Point(120, 60));
+  event_generator.set_assume_window_at_origin(false);
+  event_generator.MoveMouseTo(
+      widget_above->GetWindowBoundsInScreen().CenterPoint());
   EXPECT_EQ(tooltip_above, TooltipTextForWidget(widget_below));
 
   widget_above->CloseNow();
@@ -2339,4 +2344,3 @@ TEST_F(NativeWidgetMacTest, InitCallback) {
   return YES;
 }
 @end
-
