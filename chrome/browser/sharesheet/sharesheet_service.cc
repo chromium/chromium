@@ -360,7 +360,7 @@ void SharesheetService::RecordUserActionMetrics(
       case apps::mojom::AppType::kExtension:
       case apps::mojom::AppType::kMacOs:
       case apps::mojom::AppType::kPluginVm:
-      case apps::mojom::AppType::kLacros:
+      case apps::mojom::AppType::kStandaloneBrowser:
       case apps::mojom::AppType::kRemote:
       case apps::mojom::AppType::kBorealis:
       case apps::mojom::AppType::kUnknown:

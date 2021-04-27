@@ -50,7 +50,7 @@ bool AreWebAppsEnabled(const Profile* profile) {
 bool AreWebAppsUserInstallable(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // With Lacros, web apps are not installed using the Ash browser.
-  if (base::FeatureList::IsEnabled(features::kLacrosWebApps))
+  if (base::FeatureList::IsEnabled(features::kWebAppsCrosapi))
     return false;
 #endif
   return AreWebAppsEnabled(profile) && !profile->IsGuestSession() &&

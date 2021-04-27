@@ -32,7 +32,7 @@ std::string AppTypeToString(apps::mojom::AppType app_type) {
       return "Mac OS";
     case apps::mojom::AppType::kPluginVm:
       return "Plugin VM";
-    case apps::mojom::AppType::kLacros:
+    case apps::mojom::AppType::kStandaloneBrowser:
       return "LaCrOS";
     case apps::mojom::AppType::kRemote:
       return "Remote";

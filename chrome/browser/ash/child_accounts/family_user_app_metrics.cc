@@ -50,7 +50,7 @@ constexpr char kWebAppsCountHistogramName[] = "FamilyUser.WebAppsCount2";
 constexpr char kMacOsAppsCountHistogramName[] = "FamilyUser.MacOsAppsCount2";
 constexpr char kPluginVmAppsCountHistogramName[] =
     "FamilyUser.PluginVmAppsCount2";
-constexpr char kLacrosAppsCountHistogramName[] = "FamilyUser.LacrosAppsCount2";
+constexpr char kStandaloneBrowserAppsCountHistogramName[] = "FamilyUser.LacrosAppsCount2";
 constexpr char kRemoteAppsCountHistogramName[] = "FamilyUser.RemoteAppsCount2";
 constexpr char kBorealisAppsCountHistogramName[] =
     "FamilyUser.BorealisAppsCount2";
@@ -75,8 +75,8 @@ const char* GetAppsCountHistogramName(apps::mojom::AppType app_type) {
       return kMacOsAppsCountHistogramName;
     case apps::mojom::AppType::kPluginVm:
       return kPluginVmAppsCountHistogramName;
-    case apps::mojom::AppType::kLacros:
-      return kLacrosAppsCountHistogramName;
+    case apps::mojom::AppType::kStandaloneBrowser:
+      return kStandaloneBrowserAppsCountHistogramName;
     case apps::mojom::AppType::kRemote:
       return kRemoteAppsCountHistogramName;
     case apps::mojom::AppType::kBorealis:

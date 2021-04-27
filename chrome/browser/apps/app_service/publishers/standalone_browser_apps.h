@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_LACROS_APPS_H_
-#define CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_LACROS_APPS_H_
+#ifndef CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_STANDALONE_BROWSER_APPS_H_
+#define CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_STANDALONE_BROWSER_APPS_H_
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_service/icon_key_util.h"
@@ -21,18 +21,19 @@ namespace apps {
 // which launches the lacros-chrome binary.
 //
 // See components/services/app_service/README.md.
-class LacrosApps : public apps::PublisherBase {
+class StandaloneBrowserApps : public apps::PublisherBase {
  public:
-  LacrosApps(const mojo::Remote<apps::mojom::AppService>& app_service,
-             Profile* profile);
-  ~LacrosApps() override;
+  StandaloneBrowserApps(
+      const mojo::Remote<apps::mojom::AppService>& app_service,
+      Profile* profile);
+  ~StandaloneBrowserApps() override;
 
-  LacrosApps(const LacrosApps&) = delete;
-  LacrosApps& operator=(const LacrosApps&) = delete;
+  StandaloneBrowserApps(const StandaloneBrowserApps&) = delete;
+  StandaloneBrowserApps& operator=(const StandaloneBrowserApps&) = delete;
 
  private:
   // Returns the single lacros app.
-  apps::mojom::AppPtr GetLacrosApp(bool is_ready);
+  apps::mojom::AppPtr GetStandaloneBrowserApp(bool is_ready);
 
   // Returns an IconKey with appropriate effects for the binary ready state.
   enum class State { kLoading, kError, kReady };
@@ -62,9 +63,9 @@ class LacrosApps : public apps::PublisherBase {
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
   Profile* const profile_;
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
-  base::WeakPtrFactory<LacrosApps> weak_factory_{this};
+  base::WeakPtrFactory<StandaloneBrowserApps> weak_factory_{this};
 };
 
 }  // namespace apps
 
-#endif  // CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_LACROS_APPS_H_
+#endif  // CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_STANDALONE_BROWSER_APPS_H_

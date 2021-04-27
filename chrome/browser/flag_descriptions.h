@@ -2681,9 +2681,6 @@ extern const char kLacrosStabilityMoreStableDescription[];
 extern const char kLacrosSupportName[];
 extern const char kLacrosSupportDescription[];
 
-extern const char kLacrosWebAppsName[];
-extern const char kLacrosWebAppsDescription[];
-
 extern const char kLimitAltTabToActiveDeskName[];
 extern const char kLimitAltTabToActiveDeskDescription[];
 
@@ -2847,6 +2844,9 @@ extern const char kVmStatusPageDescription[];
 
 extern const char kWakeOnWifiAllowedName[];
 extern const char kWakeOnWifiAllowedDescription[];
+
+extern const char kWebAppsCrosapiName[];
+extern const char kWebAppsCrosapiDescription[];
 
 extern const char kWebuiDarkModeName[];
 extern const char kWebuiDarkModeDescription[];

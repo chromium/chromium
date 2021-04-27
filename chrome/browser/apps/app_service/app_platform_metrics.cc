@@ -30,7 +30,7 @@ enum class AppTypeName {
   kWeb = 5,
   kMacOs = 6,
   kPluginVm = 7,
-  kLacros = 8,
+  kStandaloneBrowser = 8,
   kRemote = 9,
   kBorealis = 10,
   kSystemWeb = 11,
@@ -144,8 +144,8 @@ AppTypeName GetAppTypeName(Profile* profile,
       return AppTypeName::kMacOs;
     case apps::mojom::AppType::kPluginVm:
       return AppTypeName::kPluginVm;
-    case apps::mojom::AppType::kLacros:
-      return AppTypeName::kLacros;
+    case apps::mojom::AppType::kStandaloneBrowser:
+      return AppTypeName::kStandaloneBrowser;
     case apps::mojom::AppType::kRemote:
       return AppTypeName::kRemote;
     case apps::mojom::AppType::kBorealis:

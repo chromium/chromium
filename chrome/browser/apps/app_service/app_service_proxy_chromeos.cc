@@ -8,7 +8,7 @@
 #include "base/callback_helpers.h"
 #include "chrome/browser/apps/app_service/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
-#include "chrome/browser/apps/app_service/publishers/lacros_apps.h"
+#include "chrome/browser/apps/app_service/publishers/standalone_browser_apps.h"
 #include "chrome/browser/apps/app_service/uninstall_dialog.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_interface.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -88,10 +88,11 @@ void AppServiceProxyChromeOs::Initialize() {
   }
   // Lacros does not support multi-signin, so only create for the primary
   // profile. This also avoids creating an instance for the lock screen app
-  // profile and ensures there is only one instance of LacrosApps.
+  // profile and ensures there is only one instance of StandaloneBrowserApps.
   if (crosapi::browser_util::IsLacrosEnabled() &&
       chromeos::ProfileHelper::IsPrimaryProfile(profile_)) {
-    lacros_apps_ = std::make_unique<LacrosApps>(app_service_, profile_);
+    standalone_browser_apps_ =
+        std::make_unique<StandaloneBrowserApps>(app_service_, profile_);
   }
   web_apps_ = std::make_unique<WebAppsChromeOs>(app_service_, profile_,
                                                 &instance_registry_);
@@ -197,8 +198,8 @@ void AppServiceProxyChromeOs::FlushMojoCallsForTesting() {
   extension_apps_->FlushMojoCallsForTesting();
   if (plugin_vm_apps_)
     plugin_vm_apps_->FlushMojoCallsForTesting();
-  if (lacros_apps_) {
-    lacros_apps_->FlushMojoCallsForTesting();
+  if (standalone_browser_apps_) {
+    standalone_browser_apps_->FlushMojoCallsForTesting();
   }
   if (web_apps_) {
     web_apps_->FlushMojoCallsForTesting();

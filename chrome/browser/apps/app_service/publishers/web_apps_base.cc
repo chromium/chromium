@@ -80,7 +80,7 @@ WebAppsBase::WebAppsBase(
 // the publisher for Lacros web apps.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (crosapi::browser_util::IsLacrosEnabled() &&
-      base::FeatureList::IsEnabled(features::kLacrosWebApps)) {
+      base::FeatureList::IsEnabled(features::kWebAppsCrosapi)) {
     app_type_ = apps::mojom::AppType::kSystemWeb;
   }
 #endif

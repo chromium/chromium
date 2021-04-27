@@ -45,8 +45,8 @@ class SingleClientWebAppsOsSyncTest : public OsSyncTest {
  public:
   SingleClientWebAppsOsSyncTest() : OsSyncTest(SINGLE_CLIENT) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Disable LacrosWebApps, so that Web Apps get synced in the Ash browser.
-    scoped_feature_list_.InitAndDisableFeature(features::kLacrosWebApps);
+    // Disable WebAppsCrosapi, so that Web Apps get synced in the Ash browser.
+    scoped_feature_list_.InitAndDisableFeature(features::kWebAppsCrosapi);
 #endif
   }
   ~SingleClientWebAppsOsSyncTest() override = default;
@@ -75,8 +75,8 @@ class SingleClientWebAppsSyncTest : public SyncTest {
  public:
   SingleClientWebAppsSyncTest() : SyncTest(SINGLE_CLIENT) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Disable LacrosWebApps, so that Web Apps get synced in the Ash browser.
-    scoped_feature_list_.InitAndDisableFeature(features::kLacrosWebApps);
+    // Disable WebAppsCrosapi, so that Web Apps get synced in the Ash browser.
+    scoped_feature_list_.InitAndDisableFeature(features::kWebAppsCrosapi);
 #endif
   }
   ~SingleClientWebAppsSyncTest() override = default;

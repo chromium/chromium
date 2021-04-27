@@ -525,7 +525,7 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
   params->initial_browser_action = initial_browser_action;
 
   params->web_apps_enabled =
-      base::FeatureList::IsEnabled(features::kLacrosWebApps);
+      base::FeatureList::IsEnabled(features::kWebAppsCrosapi);
 
   return params;
 }

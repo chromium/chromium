@@ -3377,11 +3377,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "lacros-web-apps",
-    "owners": [ "mxcai", "raymes", "chromeos-apps-foundation-team@google.com" ],
-    "expiry_milestone": 98
-  },
-  {
     "name": "launcher-search-normalization",
     "owners": ["adafang", "wrong", "tby"],
     "expiry_milestone": 92
@@ -5287,6 +5282,11 @@
     "name": "wallpaper-webui",
     "owners": [ "cowmoo@google.com", "croissant-eng@google.com" ],
     "expiry_milestone": 92
+  },
+  {
+    "name": "web-apps-crosapi",
+    "owners": [ "mxcai", "raymes", "chromeos-apps-foundation-team@google.com" ],
+    "expiry_milestone": 98
   },
   {
     "name": "web-bundles",

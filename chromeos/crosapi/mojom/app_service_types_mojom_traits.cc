@@ -146,7 +146,7 @@ EnumTraits<crosapi::mojom::AppType, apps::mojom::AppType>::ToMojom(
     case apps::mojom::AppType::kExtension:
     case apps::mojom::AppType::kMacOs:
     case apps::mojom::AppType::kPluginVm:
-    case apps::mojom::AppType::kLacros:
+    case apps::mojom::AppType::kStandaloneBrowser:
     case apps::mojom::AppType::kRemote:
     case apps::mojom::AppType::kBorealis:
       NOTREACHED();

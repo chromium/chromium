@@ -50,7 +50,7 @@ class AppBannerManagerDesktopBrowserTest
   AppBannerManagerDesktopBrowserTest() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // With Lacros, web apps are not installed using the Ash browser.
-    scoped_feature_list_.InitAndDisableFeature(features::kLacrosWebApps);
+    scoped_feature_list_.InitAndDisableFeature(features::kWebAppsCrosapi);
 #endif
   }
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_LACROS_WEB_APPS_H_
-#define CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_LACROS_WEB_APPS_H_
+#ifndef CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_WEB_APPS_CROSAPI_H_
+#define CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_WEB_APPS_CROSAPI_H_
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_service/icon_key_util.h"
@@ -19,25 +19,24 @@ class Profile;
 
 namespace apps {
 
-// An app publisher for Lacros web apps. This is a proxy publisher that lives in
-// ash-chrome, and the apps will be published from the lacros-chrome via
-// crosapi. This proxy publisher will also handle reconnection of the
-// lacros-chrome.
+// An app publisher for crosapi web apps. This is a proxy publisher that lives
+// in ash-chrome, and the apps will be published over crosapi. This proxy
+// publisher will also handle reconnection when the crosapi connection drops.
 //
 // See components/services/app_service/README.md.
-class LacrosWebApps : public KeyedService,
-                      public apps::PublisherBase,
-                      public crosapi::mojom::AppPublisher {
+class WebAppsCrosapi : public KeyedService,
+                       public apps::PublisherBase,
+                       public crosapi::mojom::AppPublisher {
  public:
-  explicit LacrosWebApps(Profile* profile);
-  ~LacrosWebApps() override;
+  explicit WebAppsCrosapi(Profile* profile);
+  ~WebAppsCrosapi() override;
 
-  LacrosWebApps(const LacrosWebApps&) = delete;
-  LacrosWebApps& operator=(const LacrosWebApps&) = delete;
+  WebAppsCrosapi(const WebAppsCrosapi&) = delete;
+  WebAppsCrosapi& operator=(const WebAppsCrosapi&) = delete;
 
   // Register the web apps host from lacros-chrome to allow lacros-chrome
   // publishing web apps to app service in ash-chrome.
-  void RegisterLacrosWebAppsHost(
+  void RegisterWebAppsCrosapiHost(
       mojo::PendingReceiver<crosapi::mojom::AppPublisher> receiver);
 
  private:
@@ -58,13 +57,13 @@ class LacrosWebApps : public KeyedService,
   // crosapi::mojom::AppPublisher overrides.
   void OnApps(std::vector<apps::mojom::AppPtr> deltas) override;
 
-  void OnLacrosDisconnected();
+  void OnCrosapiDisconnected();
 
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
   mojo::Receiver<crosapi::mojom::AppPublisher> receiver_{this};
-  base::WeakPtrFactory<LacrosWebApps> weak_factory_{this};
+  base::WeakPtrFactory<WebAppsCrosapi> weak_factory_{this};
 };
 
 }  // namespace apps
 
-#endif  // CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_LACROS_WEB_APPS_H_
+#endif  // CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_WEB_APPS_CROSAPI_H_

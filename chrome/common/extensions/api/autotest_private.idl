@@ -38,7 +38,7 @@ namespace autotestPrivate {
     Web,
     MacOS,
     PluginVm,
-    Lacros,
+    StandaloneBrowser,
     Remote,
     Borealis
   };

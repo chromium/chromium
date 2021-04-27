@@ -15,12 +15,11 @@
 #include "chrome/browser/apps/app_service/publishers/extension_apps_chromeos.h"
 #include "chrome/browser/apps/app_service/publishers/plugin_vm_apps.h"
 #include "chrome/browser/apps/app_service/publishers/web_apps_chromeos.h"
-#include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 
 namespace apps {
 
-class LacrosApps;
+class StandaloneBrowserApps;
 class UninstallDialog;
 
 struct PauseData {
@@ -152,7 +151,7 @@ class AppServiceProxyChromeOs : public AppServiceProxyBase {
   std::unique_ptr<CrostiniApps> crostini_apps_;
   std::unique_ptr<ExtensionAppsChromeOs> extension_apps_;
   std::unique_ptr<PluginVmApps> plugin_vm_apps_;
-  std::unique_ptr<LacrosApps> lacros_apps_;
+  std::unique_ptr<StandaloneBrowserApps> standalone_browser_apps_;
   std::unique_ptr<WebAppsChromeOs> web_apps_;
   std::unique_ptr<BorealisApps> borealis_apps_;
 

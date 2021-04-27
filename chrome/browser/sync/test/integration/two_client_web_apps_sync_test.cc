@@ -32,8 +32,8 @@ class TwoClientWebAppsSyncTest : public SyncTest {
  public:
   TwoClientWebAppsSyncTest() : SyncTest(TWO_CLIENT) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Disable LacrosWebApps, so that Web Apps get synced in the Ash browser.
-    scoped_feature_list_.InitAndDisableFeature(features::kLacrosWebApps);
+    // Disable WebAppsCrosapi, so that Web Apps get synced in the Ash browser.
+    scoped_feature_list_.InitAndDisableFeature(features::kWebAppsCrosapi);
 #endif
   }
 

@@ -123,7 +123,7 @@ void AppServiceContextMenu::ExecuteCommand(int command_id, int event_flags) {
     case ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW: {
       const bool is_incognito =
           command_id == ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW;
-      if (app_type_ == apps::mojom::AppType::kLacros)
+      if (app_type_ == apps::mojom::AppType::kStandaloneBrowser)
         crosapi::BrowserManager::Get()->NewWindow(is_incognito);
       else
         controller()->CreateNewWindow(is_incognito);

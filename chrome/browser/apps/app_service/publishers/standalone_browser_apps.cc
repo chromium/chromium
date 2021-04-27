@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/app_service/publishers/lacros_apps.h"
+#include "chrome/browser/apps/app_service/publishers/standalone_browser_apps.h"
 
 #include <utility>
 
@@ -20,18 +20,21 @@
 
 namespace apps {
 
-LacrosApps::LacrosApps(const mojo::Remote<apps::mojom::AppService>& app_service,
-                       Profile* profile)
+StandaloneBrowserApps::StandaloneBrowserApps(
+    const mojo::Remote<apps::mojom::AppService>& app_service,
+    Profile* profile)
     : profile_(profile) {
   DCHECK(crosapi::browser_util::IsLacrosEnabled());
-  PublisherBase::Initialize(app_service, apps::mojom::AppType::kLacros);
+  PublisherBase::Initialize(app_service,
+                            apps::mojom::AppType::kStandaloneBrowser);
 }
 
-LacrosApps::~LacrosApps() = default;
+StandaloneBrowserApps::~StandaloneBrowserApps() = default;
 
-apps::mojom::AppPtr LacrosApps::GetLacrosApp(bool is_ready) {
+apps::mojom::AppPtr StandaloneBrowserApps::GetStandaloneBrowserApp(
+    bool is_ready) {
   apps::mojom::AppPtr app = apps::PublisherBase::MakeApp(
-      apps::mojom::AppType::kLacros, extension_misc::kLacrosAppId,
+      apps::mojom::AppType::kStandaloneBrowser, extension_misc::kLacrosAppId,
       apps::mojom::Readiness::kReady,
       "Lacros",  // TODO(jamescook): Localized name.
       apps::mojom::InstallSource::kSystem);
@@ -46,7 +49,7 @@ apps::mojom::AppPtr LacrosApps::GetLacrosApp(bool is_ready) {
   return app;
 }
 
-apps::mojom::IconKeyPtr LacrosApps::NewIconKey(State state) {
+apps::mojom::IconKeyPtr StandaloneBrowserApps::NewIconKey(State state) {
   // Show different icons based on download state.
   apps::IconEffects icon_effects;
   switch (state) {
@@ -71,7 +74,7 @@ apps::mojom::IconKeyPtr LacrosApps::NewIconKey(State state) {
   return icon_key;
 }
 
-void LacrosApps::Connect(
+void StandaloneBrowserApps::Connect(
     mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
     apps::mojom::ConnectOptionsPtr opts) {
   auto* browser_manager = crosapi::BrowserManager::Get();
@@ -80,24 +83,24 @@ void LacrosApps::Connect(
   if (browser_manager && !browser_manager->IsReady()) {
     is_ready = false;
     browser_manager->SetLoadCompleteCallback(base::BindOnce(
-        &LacrosApps::OnLoadComplete, weak_factory_.GetWeakPtr()));
+        &StandaloneBrowserApps::OnLoadComplete, weak_factory_.GetWeakPtr()));
   }
   std::vector<apps::mojom::AppPtr> apps;
-  apps.push_back(GetLacrosApp(is_ready));
+  apps.push_back(GetStandaloneBrowserApp(is_ready));
 
   mojo::Remote<apps::mojom::Subscriber> subscriber(
       std::move(subscriber_remote));
-  subscriber->OnApps(std::move(apps), apps::mojom::AppType::kLacros,
+  subscriber->OnApps(std::move(apps), apps::mojom::AppType::kStandaloneBrowser,
                      true /* should_notify_initialized */);
   subscribers_.Add(std::move(subscriber));
 }
 
-void LacrosApps::LoadIcon(const std::string& app_id,
-                          apps::mojom::IconKeyPtr icon_key,
-                          apps::mojom::IconType icon_type,
-                          int32_t size_hint_in_dip,
-                          bool allow_placeholder_icon,
-                          LoadIconCallback callback) {
+void StandaloneBrowserApps::LoadIcon(const std::string& app_id,
+                                     apps::mojom::IconKeyPtr icon_key,
+                                     apps::mojom::IconType icon_type,
+                                     int32_t size_hint_in_dip,
+                                     bool allow_placeholder_icon,
+                                     LoadIconCallback callback) {
   if (icon_key &&
       icon_key->resource_id != apps::mojom::IconKey::kInvalidResourceId) {
     LoadIconFromResource(icon_type, size_hint_in_dip, icon_key->resource_id,
@@ -110,24 +113,24 @@ void LacrosApps::LoadIcon(const std::string& app_id,
   std::move(callback).Run(apps::mojom::IconValue::New());
 }
 
-void LacrosApps::Launch(const std::string& app_id,
-                        int32_t event_flags,
-                        apps::mojom::LaunchSource launch_source,
-                        apps::mojom::WindowInfoPtr window_info) {
+void StandaloneBrowserApps::Launch(const std::string& app_id,
+                                   int32_t event_flags,
+                                   apps::mojom::LaunchSource launch_source,
+                                   apps::mojom::WindowInfoPtr window_info) {
   DCHECK_EQ(extension_misc::kLacrosAppId, app_id);
   crosapi::BrowserManager::Get()->NewWindow(/*incognito=*/false);
 }
 
-void LacrosApps::GetMenuModel(const std::string& app_id,
-                              apps::mojom::MenuType menu_type,
-                              int64_t display_id,
-                              GetMenuModelCallback callback) {
+void StandaloneBrowserApps::GetMenuModel(const std::string& app_id,
+                                         apps::mojom::MenuType menu_type,
+                                         int64_t display_id,
+                                         GetMenuModelCallback callback) {
   std::move(callback).Run(CreateBrowserMenuItems(menu_type, profile_));
 }
 
-void LacrosApps::OnLoadComplete(bool success) {
+void StandaloneBrowserApps::OnLoadComplete(bool success) {
   apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_type = apps::mojom::AppType::kLacros;
+  app->app_type = apps::mojom::AppType::kStandaloneBrowser;
   app->app_id = extension_misc::kLacrosAppId;
   app->icon_key = NewIconKey(success ? State::kReady : State::kError);
   Publish(std::move(app), subscribers_);

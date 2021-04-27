@@ -176,7 +176,7 @@ class FamilyUserAppMetricsTest
     deltas.push_back(MakeApp(
         /*app_id=*/"l", /*app_name=*/"lacros",
         /*last_launch_time=*/base::Time::Now() - kOneDay,
-        apps::mojom::AppType::kLacros));
+        apps::mojom::AppType::kStandaloneBrowser));
     deltas.push_back(MakeApp(
         /*app_id=*/"r", /*app_name=*/"remote",
         /*last_launch_time=*/base::Time::Now() - kOneDay,
@@ -311,7 +311,7 @@ TEST_P(FamilyUserAppMetricsTest, FastForwardOneDay) {
   const apps::mojom::AppType stale_app_types[4] = {
       apps::mojom::AppType::kMacOs,
       apps::mojom::AppType::kPluginVm,
-      apps::mojom::AppType::kLacros,
+      apps::mojom::AppType::kStandaloneBrowser,
       apps::mojom::AppType::kRemote,
   };
   for (apps::mojom::AppType app_type : fresh_app_types) {
