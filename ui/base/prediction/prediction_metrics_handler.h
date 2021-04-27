@@ -6,6 +6,7 @@
 #define UI_BASE_PREDICTION_PREDICTION_METRICS_HANDLER_H_
 
 #include <deque>
+#include <string>
 #include <unordered_map>
 
 #include "base/component_export.h"
@@ -25,7 +26,7 @@ class PredictionMetricsHandlerTest;
 // few metrics.
 class COMPONENT_EXPORT(UI_BASE_PREDICTION) PredictionMetricsHandler {
  public:
-  explicit PredictionMetricsHandler(const char* histogram_name);
+  explicit PredictionMetricsHandler(std::string histogram_name);
   ~PredictionMetricsHandler();
 
   // Struct used to store predicted and real event information.
@@ -108,7 +109,7 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) PredictionMetricsHandler {
   // names (.OverPrediction, .UnderPrediction, .WrongDirection,
   // .PredictionJitter, .VisualJitter) appended to it when counting the metric
   // in a histogram.
-  const char* const histogram_name_;
+  const std::string histogram_name_;
 };
 
 }  // namespace ui

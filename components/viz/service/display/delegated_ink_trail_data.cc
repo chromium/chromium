@@ -26,7 +26,7 @@ DelegatedInkTrailData::DelegatedInkTrailData() {
   for (int i = 0; i < kNumberOfPredictionConfigs; ++i) {
     prediction_handlers_[i].metrics_handler =
         std::make_unique<ui::PredictionMetricsHandler>(
-            (full_name + base::NumberToString(i)).c_str());
+            base::StrCat({full_name, base::NumberToString(i)}));
     prediction_handlers_[i].predictor =
         std::make_unique<ui::KalmanPredictor>(predictor_options);
   }
@@ -106,12 +106,7 @@ void DelegatedInkTrailData::PredictPoints(
           // produce a prediction if the predicted point would go in to the
           // opposite direction of most recently stored points. If this happens,
           // don't continue trying to generate more predicted points.
-          handler.metrics_handler->EvaluatePrediction();
-          base::UmaHistogramTimes(
-              base::StrCat(
-                  {histogram_base_name, base::NumberToString(experiment)}),
-              latency_improvement_with_prediction);
-          continue;
+          break;
         }
       }
     }

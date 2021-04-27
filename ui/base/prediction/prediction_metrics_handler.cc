@@ -11,7 +11,7 @@
 
 namespace ui {
 
-PredictionMetricsHandler::PredictionMetricsHandler(const char* histogram_name)
+PredictionMetricsHandler::PredictionMetricsHandler(std::string histogram_name)
     : histogram_name_(std::move(histogram_name)) {}
 PredictionMetricsHandler::~PredictionMetricsHandler() = default;
 
