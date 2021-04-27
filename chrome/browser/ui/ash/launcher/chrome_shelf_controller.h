@@ -282,10 +282,9 @@ class ChromeShelfController
                          const gfx::ImageSkia& image) override;
 
  private:
-  // TODO(https://crbug.com/1201256): Rename to ChromeShelfControllerTest.
-  friend class ChromeLauncherControllerTest;
-  friend class LauncherPlatformAppBrowserTest;
+  friend class ChromeShelfControllerTest;
   friend class ShelfAppBrowserTest;
+  friend class ShelfPlatformAppBrowserTest;
   friend class TestChromeShelfController;
 
   FRIEND_TEST_ALL_PREFIXES(ash::SpokenFeedbackTest, ShelfIconFocusForward);

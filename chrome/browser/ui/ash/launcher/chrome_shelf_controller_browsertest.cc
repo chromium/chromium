@@ -217,15 +217,13 @@ void ExtendHotseat(Browser* browser) {
 
 }  // namespace
 
-class LauncherPlatformAppBrowserTest
-    : public extensions::PlatformAppBrowserTest {
+class ShelfPlatformAppBrowserTest : public extensions::PlatformAppBrowserTest {
  protected:
-  LauncherPlatformAppBrowserTest() = default;
-  LauncherPlatformAppBrowserTest(const LauncherPlatformAppBrowserTest&) =
+  ShelfPlatformAppBrowserTest() = default;
+  ShelfPlatformAppBrowserTest(const ShelfPlatformAppBrowserTest&) = delete;
+  ShelfPlatformAppBrowserTest& operator=(const ShelfPlatformAppBrowserTest&) =
       delete;
-  LauncherPlatformAppBrowserTest& operator=(
-      const LauncherPlatformAppBrowserTest&) = delete;
-  ~LauncherPlatformAppBrowserTest() override = default;
+  ~ShelfPlatformAppBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     controller_ = ChromeShelfController::instance();
@@ -464,7 +462,7 @@ class ShelfWebAppBrowserTest : public ShelfAppBrowserTest {
 };
 
 // Test that we can launch a platform app and get a running item.
-IN_PROC_BROWSER_TEST_F(LauncherPlatformAppBrowserTest, LaunchUnpinned) {
+IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, LaunchUnpinned) {
   int item_count = shelf_model()->item_count();
   const Extension* extension = LoadAndLaunchPlatformApp("launch", "Launched");
   AppWindow* window = CreateAppWindow(browser()->profile(), extension);
@@ -479,7 +477,7 @@ IN_PROC_BROWSER_TEST_F(LauncherPlatformAppBrowserTest, LaunchUnpinned) {
 }
 
 // Test that we can launch a platform app that already has a shortcut.
-IN_PROC_BROWSER_TEST_F(LauncherPlatformAppBrowserTest, LaunchPinned) {
+IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, LaunchPinned) {
   int item_count = shelf_model()->item_count();
 
   // First get app_id.
@@ -511,7 +509,7 @@ IN_PROC_BROWSER_TEST_F(LauncherPlatformAppBrowserTest, LaunchPinned) {
   EXPECT_EQ(ash::STATUS_CLOSED, item.status);
 }
 
-IN_PROC_BROWSER_TEST_F(LauncherPlatformAppBrowserTest, PinRunning) {
+IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, PinRunning) {
   // Run.
   int item_count = shelf_model()->item_count();
   const Extension* extension = LoadAndLaunchPlatformApp("launch", "Launched");
@@ -551,7 +549,7 @@ IN_PROC_BROWSER_TEST_F(LauncherPlatformAppBrowserTest, PinRunning) {
   ASSERT_EQ(item_count, shelf_model()->item_count());
 }
 
-IN_PROC_BROWSER_TEST_F(LauncherPlatformAppBrowserTest, UnpinRunning) {
+IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, UnpinRunning) {
   int item_count = shelf_model()->item_count();
 
   // First get app_id.
@@ -641,7 +639,7 @@ IN_PROC_BROWSER_TEST_F(UnpinnedBrowserShortcutTest, UnpinnedBrowserShortcut) {
 }
 
 // Test that we can launch a platform app with more than one window.
-IN_PROC_BROWSER_TEST_F(LauncherPlatformAppBrowserTest, MultipleWindows) {
+IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, MultipleWindows) {
   int item_count = shelf_model()->item_count();
 
   // Run the application; a shelf item should be added with one app menu item.
@@ -673,7 +671,7 @@ IN_PROC_BROWSER_TEST_F(LauncherPlatformAppBrowserTest, MultipleWindows) {
   ASSERT_EQ(item_count, shelf_model()->item_count());
 }
 
-IN_PROC_BROWSER_TEST_F(LauncherPlatformAppBrowserTest, MultipleApps) {
+IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, MultipleApps) {
   int item_count = shelf_model()->item_count();
 
   // First run app.
@@ -715,7 +713,7 @@ IN_PROC_BROWSER_TEST_F(LauncherPlatformAppBrowserTest, MultipleApps) {
 
 // Confirm that app windows can be reactivated by clicking their icons and that
 // the correct activation order is maintained.
-IN_PROC_BROWSER_TEST_F(LauncherPlatformAppBrowserTest, WindowActivation) {
+IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, WindowActivation) {
   int item_count = shelf_model()->item_count();
 
   // First run app.
@@ -793,7 +791,7 @@ IN_PROC_BROWSER_TEST_F(LauncherPlatformAppBrowserTest, WindowActivation) {
   EXPECT_EQ(item_count, shelf_model()->item_count());
 }
 
-IN_PROC_BROWSER_TEST_F(LauncherPlatformAppBrowserTest, MultipleBrowsers) {
+IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, MultipleBrowsers) {
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   Browser* const browser1 = chrome::FindLastActive();
   ASSERT_TRUE(browser1);
@@ -825,7 +823,7 @@ IN_PROC_BROWSER_TEST_F(LauncherPlatformAppBrowserTest, MultipleBrowsers) {
 }
 
 // Confirm the minimizing click behavior for apps.
-IN_PROC_BROWSER_TEST_F(LauncherPlatformAppBrowserTest,
+IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest,
                        PackagedAppClickBehaviorInMinimizeMode) {
   // Launch one platform app and create a window for it.
   const Extension* extension1 = LoadAndLaunchPlatformApp("launch", "Launched");
@@ -885,7 +883,7 @@ IN_PROC_BROWSER_TEST_F(LauncherPlatformAppBrowserTest,
   EXPECT_TRUE(window1a->GetBaseWindow()->IsActive());
 }
 
-IN_PROC_BROWSER_TEST_F(LauncherPlatformAppBrowserTest, BrowserActivation) {
+IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, BrowserActivation) {
   int item_count = shelf_model()->item_count();
 
   // First run app.
@@ -903,7 +901,7 @@ IN_PROC_BROWSER_TEST_F(LauncherPlatformAppBrowserTest, BrowserActivation) {
 }
 
 // Test that opening an app sets the correct icon
-IN_PROC_BROWSER_TEST_F(LauncherPlatformAppBrowserTest, SetIcon) {
+IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, SetIcon) {
   TestAppWindowIconObserver test_observer(browser()->profile());
 
   int base_shelf_item_count = shelf_model()->item_count();
@@ -1022,7 +1020,7 @@ IN_PROC_BROWSER_TEST_F(LauncherPlatformAppBrowserTest, SetIcon) {
 }
 
 // Test that app window has shelf ID and app ID properties set.
-IN_PROC_BROWSER_TEST_F(LauncherPlatformAppBrowserTest, AppIDWindowProperties) {
+IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, AppIDWindowProperties) {
   const Extension* extension = LoadAndLaunchPlatformApp("launch", "Launched");
   AppWindow* window = CreateAppWindow(browser()->profile(), extension);
   ASSERT_TRUE(window);
@@ -1369,10 +1367,10 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, LaunchApp) {
 }
 
 // The Browsertest verifying FilesManager's features.
-class FilesManagerExtensionTest : public LauncherPlatformAppBrowserTest {
+class FilesManagerExtensionTest : public ShelfPlatformAppBrowserTest {
  public:
   void SetUpOnMainThread() override {
-    LauncherPlatformAppBrowserTest::SetUpOnMainThread();
+    ShelfPlatformAppBrowserTest::SetUpOnMainThread();
     CHECK(profile());
 
     file_manager::test::AddDefaultComponentExtensionsOnMainThread(profile());
@@ -1760,7 +1758,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, AltNumberTabsTabbing) {
 
 // Check that the keyboard activation of a launcher item tabs properly through
 // the items at hand.
-IN_PROC_BROWSER_TEST_F(LauncherPlatformAppBrowserTest, AltNumberAppsTabbing) {
+IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, AltNumberAppsTabbing) {
   // First run app.
   const Extension* extension1 = LoadAndLaunchPlatformApp("launch", "Launched");
   ui::BaseWindow* window1 =
@@ -1796,7 +1794,7 @@ IN_PROC_BROWSER_TEST_F(LauncherPlatformAppBrowserTest, AltNumberAppsTabbing) {
 
 // Check that the keyboard activation of a launcher item tabs even if the app is
 // not currently activated.
-IN_PROC_BROWSER_TEST_F(LauncherPlatformAppBrowserTest,
+IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest,
                        AltNumberAppsTabbingFromOtherApp) {
   // Create one app with two windows.
   const Extension* app1_extension1 =
@@ -1835,7 +1833,7 @@ IN_PROC_BROWSER_TEST_F(LauncherPlatformAppBrowserTest,
 }
 
 // Test that we get correct shelf presence with hidden app windows.
-IN_PROC_BROWSER_TEST_F(LauncherPlatformAppBrowserTest, HiddenAppWindows) {
+IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, HiddenAppWindows) {
   int item_count = shelf_model()->item_count();
   const Extension* extension = LoadAndLaunchPlatformApp("launch", "Launched");
   AppWindow::CreateParams params;
@@ -1874,7 +1872,7 @@ IN_PROC_BROWSER_TEST_F(LauncherPlatformAppBrowserTest, HiddenAppWindows) {
 }
 
 // Test attention states of windows.
-IN_PROC_BROWSER_TEST_F(LauncherPlatformAppBrowserTest, WindowAttentionStatus) {
+IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, WindowAttentionStatus) {
   const Extension* extension = LoadAndLaunchPlatformApp("launch", "Launched");
   AppWindow::CreateParams params;
   params.focused = false;
@@ -1902,7 +1900,7 @@ IN_PROC_BROWSER_TEST_F(LauncherPlatformAppBrowserTest, WindowAttentionStatus) {
   EXPECT_EQ(ash::STATUS_RUNNING, item.status);
 }
 
-IN_PROC_BROWSER_TEST_F(LauncherPlatformAppBrowserTest,
+IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest,
                        ShowInShelfWindowsWithWindowKeySet) {
   // Add a window with shelf True, close it
   int item_count = shelf_model()->item_count();
