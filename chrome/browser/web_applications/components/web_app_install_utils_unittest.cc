@@ -29,48 +29,13 @@ namespace {
 const char kAppShortName[] = "Test short name";
 const char kAppTitle[] = "Test title";
 const char kAlternativeAppTitle[] = "Different test title";
-
-// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
-// function.
-GURL AppIcon1() {
-  return GURL("fav1.png");
-}
-GURL AppIcon2() {
-  return GURL("fav2.png");
-}
-GURL AppIcon3() {
-  return GURL("fav3.png");
-}
-GURL AppUrl() {
-  return GURL("http://www.chromium.org/index.html");
-}
-GURL AlternativeAppUrl() {
-  return GURL("http://www.notchromium.org");
-}
-
-GURL AppManifestUrl() {
-  return GURL("http://www.chromium.org/manifest.json");
-}
-
 const char kShortcutItemName[] = "shortcut item ";
-
-GURL ShortcutItemUrl() {
-  return GURL("http://www.chromium.org/shortcuts/action");
-}
-GURL IconUrl1() {
-  return GURL("http://www.chromium.org/shortcuts/icon1.png");
-}
-GURL IconUrl2() {
-  return GURL("http://www.chromium.org/shortcuts/icon2.png");
-}
-GURL IconUrl3() {
-  return GURL("http://www.chromium.org/shortcuts/icon3.png");
-}
 
 constexpr SquareSizePx kIconSize = 64;
 
 // This value is greater than kMaxIcons in web_app_install_utils.cc.
 constexpr unsigned int kNumTestIcons = 30;
+
 }  // namespace
 
 class WebAppInstallUtilsWithShortcutsMenu : public testing::Test {
@@ -87,14 +52,16 @@ class WebAppInstallUtilsWithShortcutsMenu : public testing::Test {
 TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   WebApplicationInfo web_app_info;
   web_app_info.title = base::UTF8ToUTF16(kAlternativeAppTitle);
-  web_app_info.start_url = AlternativeAppUrl();
+  web_app_info.start_url = GURL("http://www.notchromium.org");
   WebApplicationIconInfo info;
-  info.url = AppIcon1();
+  const GURL kAppIcon1("fav1.png");
+  info.url = kAppIcon1;
   web_app_info.icon_infos.push_back(info);
 
   blink::Manifest manifest;
-  manifest.start_url = AppUrl();
-  manifest.scope = AppUrl().GetWithoutFilename();
+  const GURL kAppUrl("http://www.chromium.org/index.html");
+  manifest.start_url = kAppUrl;
+  manifest.scope = kAppUrl.GetWithoutFilename();
   manifest.short_name = base::ASCIIToUTF16(kAppShortName);
 
   {
@@ -120,18 +87,19 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
     manifest.url_handlers.push_back(url_handler);
   }
 
-  UpdateWebAppInfoFromManifest(manifest, AppManifestUrl(), &web_app_info);
+  const GURL kAppManifestUrl("http://www.chromium.org/manifest.json");
+  UpdateWebAppInfoFromManifest(manifest, kAppManifestUrl, &web_app_info);
   EXPECT_EQ(base::UTF8ToUTF16(kAppShortName), web_app_info.title);
-  EXPECT_EQ(AppUrl(), web_app_info.start_url);
-  EXPECT_EQ(AppUrl().GetWithoutFilename(), web_app_info.scope);
+  EXPECT_EQ(kAppUrl, web_app_info.start_url);
+  EXPECT_EQ(kAppUrl.GetWithoutFilename(), web_app_info.scope);
   EXPECT_EQ(DisplayMode::kBrowser, web_app_info.display_mode);
   EXPECT_TRUE(web_app_info.display_override.empty());
-  EXPECT_EQ(AppManifestUrl(), web_app_info.manifest_url);
+  EXPECT_EQ(kAppManifestUrl, web_app_info.manifest_url);
 
   // The icon info from |web_app_info| should be left as is, since the manifest
   // doesn't have any icon information.
   EXPECT_EQ(1u, web_app_info.icon_infos.size());
-  EXPECT_EQ(AppIcon1(), web_app_info.icon_infos[0].url);
+  EXPECT_EQ(kAppIcon1, web_app_info.icon_infos[0].url);
 
   // Test that |manifest.name| takes priority over |manifest.short_name|, and
   // that icons provided by the manifest replace icons in |web_app_info|.
@@ -139,10 +107,12 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   manifest.display = DisplayMode::kMinimalUi;
 
   blink::Manifest::ImageResource icon;
-  icon.src = AppIcon2();
+  const GURL kAppIcon2("fav2.png");
+  icon.src = kAppIcon2;
   icon.purpose = {Purpose::ANY, Purpose::MONOCHROME};
   manifest.icons.push_back(icon);
-  icon.src = AppIcon3();
+  const GURL kAppIcon3("fav3.png");
+  icon.src = kAppIcon3;
   manifest.icons.push_back(icon);
   // Add an icon without purpose ANY (expect to be ignored).
   icon.purpose = {Purpose::MONOCHROME};
@@ -150,7 +120,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   manifest.display_override.push_back(DisplayMode::kMinimalUi);
   manifest.display_override.push_back(DisplayMode::kStandalone);
 
-  UpdateWebAppInfoFromManifest(manifest, AppManifestUrl(), &web_app_info);
+  UpdateWebAppInfoFromManifest(manifest, kAppManifestUrl, &web_app_info);
   EXPECT_EQ(base::UTF8ToUTF16(kAppTitle), web_app_info.title);
   EXPECT_EQ(DisplayMode::kMinimalUi, web_app_info.display_mode);
   ASSERT_EQ(2u, web_app_info.display_override.size());
@@ -158,8 +128,8 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   EXPECT_EQ(DisplayMode::kStandalone, web_app_info.display_override[1]);
 
   EXPECT_EQ(2u, web_app_info.icon_infos.size());
-  EXPECT_EQ(AppIcon2(), web_app_info.icon_infos[0].url);
-  EXPECT_EQ(AppIcon3(), web_app_info.icon_infos[1].url);
+  EXPECT_EQ(kAppIcon2, web_app_info.icon_infos[0].url);
+  EXPECT_EQ(kAppIcon3, web_app_info.icon_infos[1].url);
 
   // Check file handlers were updated
   EXPECT_EQ(1u, web_app_info.file_handlers.size());
@@ -189,7 +159,8 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_EmptyName) {
   manifest.name = std::u16string();
   manifest.short_name = base::ASCIIToUTF16(kAppShortName);
 
-  UpdateWebAppInfoFromManifest(manifest, AppManifestUrl(), &web_app_info);
+  UpdateWebAppInfoFromManifest(
+      manifest, GURL("http://www.chromium.org/manifest.json"), &web_app_info);
   EXPECT_EQ(base::UTF8ToUTF16(kAppShortName), web_app_info.title);
 }
 
@@ -197,7 +168,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_EmptyName) {
 TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_MaskableIcon) {
   blink::Manifest manifest;
   blink::Manifest::ImageResource icon;
-  icon.src = AppIcon1();
+  icon.src = GURL("fav1.png");
   // Produces 2 separate icon_infos.
   icon.purpose = {Purpose::ANY, Purpose::MASKABLE};
   manifest.icons.push_back(icon);
@@ -209,7 +180,8 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_MaskableIcon) {
   manifest.icons.push_back(icon);
   WebApplicationInfo web_app_info;
 
-  UpdateWebAppInfoFromManifest(manifest, AppManifestUrl(), &web_app_info);
+  UpdateWebAppInfoFromManifest(
+      manifest, GURL("http://www.chromium.org/manifest.json"), &web_app_info);
   EXPECT_EQ(3U, web_app_info.icon_infos.size());
   std::map<IconPurpose, int> purpose_to_count;
   for (const auto& icon_info : web_app_info.icon_infos) {
@@ -224,7 +196,7 @@ TEST(WebAppInstallUtils,
      UpdateWebAppInfoFromManifest_MaskableIconOnly_UsesManifestIcons) {
   blink::Manifest manifest;
   blink::Manifest::ImageResource icon;
-  icon.src = AppIcon1();
+  icon.src = GURL("fav1.png");
   icon.purpose = {Purpose::MASKABLE};
   manifest.icons.push_back(icon);
   // WebApplicationInfo has existing icons (simulating found in page metadata).
@@ -233,7 +205,8 @@ TEST(WebAppInstallUtils,
   web_app_info.icon_infos.push_back(icon_info);
   web_app_info.icon_infos.push_back(icon_info);
 
-  UpdateWebAppInfoFromManifest(manifest, AppManifestUrl(), &web_app_info);
+  UpdateWebAppInfoFromManifest(
+      manifest, GURL("http://www.chromium.org/manifest.json"), &web_app_info);
   // Metadata icons are replaced by manifest icon.
   EXPECT_EQ(1U, web_app_info.icon_infos.size());
 }
@@ -260,7 +233,8 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_ShareTarget) {
     manifest.share_target = std::move(share_target);
   }
 
-  UpdateWebAppInfoFromManifest(manifest, AppManifestUrl(), &web_app_info);
+  const GURL kAppManifestUrl("http://www.chromium.org/manifest.json");
+  UpdateWebAppInfoFromManifest(manifest, kAppManifestUrl, &web_app_info);
 
   {
     EXPECT_TRUE(web_app_info.share_target.has_value());
@@ -291,7 +265,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_ShareTarget) {
     manifest.share_target = std::move(share_target);
   }
 
-  UpdateWebAppInfoFromManifest(manifest, AppManifestUrl(), &web_app_info);
+  UpdateWebAppInfoFromManifest(manifest, kAppManifestUrl, &web_app_info);
 
   {
     EXPECT_TRUE(web_app_info.share_target.has_value());
@@ -307,7 +281,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_ShareTarget) {
   }
 
   manifest.share_target = base::nullopt;
-  UpdateWebAppInfoFromManifest(manifest, AppManifestUrl(), &web_app_info);
+  UpdateWebAppInfoFromManifest(manifest, kAppManifestUrl, &web_app_info);
   EXPECT_FALSE(web_app_info.share_target.has_value());
 }
 
@@ -316,20 +290,22 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
        UpdateWebAppInfoFromManifestWithShortcuts) {
   WebApplicationInfo web_app_info;
   web_app_info.title = base::UTF8ToUTF16(kAlternativeAppTitle);
-  web_app_info.start_url = AlternativeAppUrl();
+  web_app_info.start_url = GURL("http://www.notchromium.org");
   WebApplicationIconInfo info;
-  info.url = AppIcon1();
+  const GURL kAppIcon1("fav1.png");
+  info.url = kAppIcon1;
   web_app_info.icon_infos.push_back(info);
 
+  const GURL kShortcutItemUrl("http://www.chromium.org/shortcuts/action");
   for (int i = 0; i < 3; ++i) {
     WebApplicationShortcutsMenuItemInfo shortcuts_menu_item_info;
     WebApplicationShortcutsMenuItemInfo::Icon icon;
     std::string shortcut_name = kShortcutItemName;
     shortcut_name += base::NumberToString(i + 1);
     shortcuts_menu_item_info.name = base::UTF8ToUTF16(shortcut_name);
-    shortcuts_menu_item_info.url = ShortcutItemUrl();
+    shortcuts_menu_item_info.url = kShortcutItemUrl;
 
-    icon.url = IconUrl1();
+    icon.url = GURL("http://www.chromium.org/shortcuts/icon1.png");
     icon.square_size_px = kIconSize;
     shortcuts_menu_item_info.SetShortcutIconInfosForPurpose(
         (i == 1) ? IconPurpose::MASKABLE : IconPurpose::ANY, {std::move(icon)});
@@ -338,8 +314,9 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
   }
 
   blink::Manifest manifest;
-  manifest.start_url = AppUrl();
-  manifest.scope = AppUrl().GetWithoutFilename();
+  const GURL kAppUrl("http://www.chromium.org/index.html");
+  manifest.start_url = kAppUrl;
+  manifest.scope = kAppUrl.GetWithoutFilename();
   manifest.short_name = base::ASCIIToUTF16(kAppShortName);
 
   {
@@ -365,16 +342,17 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
     manifest.url_handlers.push_back(url_handler);
   }
 
-  UpdateWebAppInfoFromManifest(manifest, AppManifestUrl(), &web_app_info);
+  const GURL kAppManifestUrl("http://www.chromium.org/manifest.json");
+  UpdateWebAppInfoFromManifest(manifest, kAppManifestUrl, &web_app_info);
   EXPECT_EQ(base::UTF8ToUTF16(kAppShortName), web_app_info.title);
-  EXPECT_EQ(AppUrl(), web_app_info.start_url);
-  EXPECT_EQ(AppUrl().GetWithoutFilename(), web_app_info.scope);
+  EXPECT_EQ(kAppUrl, web_app_info.start_url);
+  EXPECT_EQ(kAppUrl.GetWithoutFilename(), web_app_info.scope);
   EXPECT_EQ(DisplayMode::kBrowser, web_app_info.display_mode);
 
   // The icon info from |web_app_info| should be left as is, since the manifest
   // doesn't have any icon information.
   EXPECT_EQ(1u, web_app_info.icon_infos.size());
-  EXPECT_EQ(AppIcon1(), web_app_info.icon_infos[0].url);
+  EXPECT_EQ(kAppIcon1, web_app_info.icon_infos[0].url);
 
   // The shortcuts_menu_item_infos from |web_app_info| should be left as is,
   // since the manifest doesn't have any shortcut information.
@@ -395,10 +373,12 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
   manifest.display = DisplayMode::kMinimalUi;
 
   blink::Manifest::ImageResource icon;
-  icon.src = AppIcon2();
+  const GURL kAppIcon2("fav2.png");
+  icon.src = kAppIcon2;
   icon.purpose = {Purpose::ANY, Purpose::MONOCHROME};
   manifest.icons.push_back(icon);
-  icon.src = AppIcon3();
+  const GURL kAppIcon3("fav3.png");
+  icon.src = kAppIcon3;
   manifest.icons.push_back(icon);
   // Add an icon without purpose ANY (expect to be ignored).
   icon.purpose = {Purpose::MONOCHROME};
@@ -409,9 +389,10 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
   std::string shortcut_name = kShortcutItemName;
   shortcut_name += base::NumberToString(4);
   shortcut_item.name = base::UTF8ToUTF16(shortcut_name);
-  shortcut_item.url = ShortcutItemUrl();
+  shortcut_item.url = kShortcutItemUrl;
 
-  icon.src = IconUrl2();
+  const GURL kIconUrl2("http://www.chromium.org/shortcuts/icon2.png");
+  icon.src = kIconUrl2;
   icon.sizes.emplace_back(10, 10);
   icon.purpose = {Purpose::ANY};
   shortcut_item.icons.push_back(icon);
@@ -422,19 +403,20 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
   shortcut_name += base::NumberToString(5);
   shortcut_item.name = base::UTF8ToUTF16(shortcut_name);
 
-  icon.src = IconUrl3();
+  const GURL kIconUrl3("http://www.chromium.org/shortcuts/icon3.png");
+  icon.src = kIconUrl3;
   shortcut_item.icons.clear();
   shortcut_item.icons.push_back(icon);
 
   manifest.shortcuts.push_back(shortcut_item);
 
-  UpdateWebAppInfoFromManifest(manifest, AppManifestUrl(), &web_app_info);
+  UpdateWebAppInfoFromManifest(manifest, kAppManifestUrl, &web_app_info);
   EXPECT_EQ(base::UTF8ToUTF16(kAppTitle), web_app_info.title);
   EXPECT_EQ(DisplayMode::kMinimalUi, web_app_info.display_mode);
 
   EXPECT_EQ(2u, web_app_info.icon_infos.size());
-  EXPECT_EQ(AppIcon2(), web_app_info.icon_infos[0].url);
-  EXPECT_EQ(AppIcon3(), web_app_info.icon_infos[1].url);
+  EXPECT_EQ(kAppIcon2, web_app_info.icon_infos[0].url);
+  EXPECT_EQ(kAppIcon3, web_app_info.icon_infos[1].url);
 
   EXPECT_EQ(2u, web_app_info.shortcuts_menu_item_infos.size());
   EXPECT_EQ(1u, web_app_info.shortcuts_menu_item_infos[0]
@@ -443,7 +425,7 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
   WebApplicationShortcutsMenuItemInfo::Icon web_app_shortcut_icon =
       web_app_info.shortcuts_menu_item_infos[0].GetShortcutIconInfosForPurpose(
           IconPurpose::ANY)[0];
-  EXPECT_EQ(IconUrl2(), web_app_shortcut_icon.url);
+  EXPECT_EQ(kIconUrl2, web_app_shortcut_icon.url);
 
   EXPECT_EQ(1u, web_app_info.shortcuts_menu_item_infos[1]
                     .GetShortcutIconInfosForPurpose(IconPurpose::ANY)
@@ -451,7 +433,7 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
   web_app_shortcut_icon =
       web_app_info.shortcuts_menu_item_infos[1].GetShortcutIconInfosForPurpose(
           IconPurpose::ANY)[0];
-  EXPECT_EQ(IconUrl3(), web_app_shortcut_icon.url);
+  EXPECT_EQ(kIconUrl3, web_app_shortcut_icon.url);
 
   // Check file handlers were updated
   EXPECT_EQ(1u, web_app_info.file_handlers.size());
@@ -480,14 +462,15 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestTooManyIcons) {
   blink::Manifest manifest;
   for (int i = 0; i < 50; ++i) {
     blink::Manifest::ImageResource icon;
-    icon.src = AppIcon1();
+    icon.src = GURL("fav1.png");
     icon.purpose.push_back(Purpose::ANY);
     icon.sizes.emplace_back(i, i);
     manifest.icons.push_back(std::move(icon));
   }
   WebApplicationInfo web_app_info;
 
-  UpdateWebAppInfoFromManifest(manifest, AppManifestUrl(), &web_app_info);
+  UpdateWebAppInfoFromManifest(
+      manifest, GURL("http://www.chromium.org/manifest.json"), &web_app_info);
   EXPECT_EQ(20U, web_app_info.icon_infos.size());
 }
 
@@ -500,10 +483,10 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
     std::string shortcut_name = kShortcutItemName;
     shortcut_name += base::NumberToString(i);
     shortcut_item.name = base::UTF8ToUTF16(shortcut_name);
-    shortcut_item.url = ShortcutItemUrl();
+    shortcut_item.url = GURL("http://www.chromium.org/shortcuts/action");
 
     blink::Manifest::ImageResource icon;
-    icon.src = IconUrl1();
+    icon.src = GURL("http://www.chromium.org/shortcuts/icon1.png");
     icon.sizes.emplace_back(i, i);
     icon.purpose.emplace_back(IconPurpose::ANY);
     shortcut_item.icons.push_back(std::move(icon));
@@ -511,7 +494,8 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
     manifest.shortcuts.push_back(shortcut_item);
   }
   WebApplicationInfo web_app_info;
-  UpdateWebAppInfoFromManifest(manifest, AppManifestUrl(), &web_app_info);
+  UpdateWebAppInfoFromManifest(
+      manifest, GURL("http://www.chromium.org/manifest.json"), &web_app_info);
 
   std::vector<WebApplicationShortcutsMenuItemInfo::Icon> all_icons;
   for (const auto& shortcut : web_app_info.shortcuts_menu_item_infos) {
@@ -529,7 +513,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestIconsTooLarge) {
   blink::Manifest manifest;
   for (int i = 1; i <= 20; ++i) {
     blink::Manifest::ImageResource icon;
-    icon.src = AppIcon1();
+    icon.src = GURL("fav1.png");
     icon.purpose.push_back(Purpose::ANY);
     const int size = i * 100;
     icon.sizes.emplace_back(size, size);
@@ -537,7 +521,8 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestIconsTooLarge) {
   }
 
   WebApplicationInfo web_app_info;
-  UpdateWebAppInfoFromManifest(manifest, AppManifestUrl(), &web_app_info);
+  UpdateWebAppInfoFromManifest(
+      manifest, GURL("http://www.chromium.org/manifest.json"), &web_app_info);
 
   EXPECT_EQ(10U, web_app_info.icon_infos.size());
   for (const WebApplicationIconInfo& icon : web_app_info.icon_infos) {
@@ -554,10 +539,10 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
     std::string shortcut_name = kShortcutItemName;
     shortcut_name += base::NumberToString(i);
     shortcut_item.name = base::UTF8ToUTF16(shortcut_name);
-    shortcut_item.url = ShortcutItemUrl();
+    shortcut_item.url = GURL("http://www.chromium.org/shortcuts/action");
 
     blink::Manifest::ImageResource icon;
-    icon.src = IconUrl1();
+    icon.src = GURL("http://www.chromium.org/shortcuts/icon1.png");
     icon.purpose.push_back(Purpose::ANY);
     const int size = i * 100;
     icon.sizes.emplace_back(size, size);
@@ -566,7 +551,8 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
     manifest.shortcuts.push_back(shortcut_item);
   }
   WebApplicationInfo web_app_info;
-  UpdateWebAppInfoFromManifest(manifest, AppManifestUrl(), &web_app_info);
+  UpdateWebAppInfoFromManifest(
+      manifest, GURL("http://www.chromium.org/manifest.json"), &web_app_info);
 
   std::vector<WebApplicationShortcutsMenuItemInfo::Icon> all_icons;
   for (const auto& shortcut : web_app_info.shortcuts_menu_item_infos) {
@@ -584,14 +570,15 @@ TEST(WebAppInstallUtils, PopulateShortcutItemIcons) {
   WebApplicationInfo web_app_info;
   WebApplicationShortcutsMenuItemInfo::Icon icon;
 
+  const GURL kIconUrl1("http://www.chromium.org/shortcuts/icon1.png");
   {
     WebApplicationShortcutsMenuItemInfo shortcut_item;
     std::vector<WebApplicationShortcutsMenuItemInfo::Icon> shortcut_icon_infos;
     std::string shortcut_name = kShortcutItemName;
     shortcut_name += base::NumberToString(1);
     shortcut_item.name = base::UTF8ToUTF16(shortcut_name);
-    shortcut_item.url = ShortcutItemUrl();
-    icon.url = IconUrl1();
+    shortcut_item.url = GURL("http://www.chromium.org/shortcuts/action");
+    icon.url = kIconUrl1;
     icon.square_size_px = kIconSize;
     shortcut_icon_infos.push_back(icon);
     shortcut_item.SetShortcutIconInfosForPurpose(
@@ -599,16 +586,17 @@ TEST(WebAppInstallUtils, PopulateShortcutItemIcons) {
     web_app_info.shortcuts_menu_item_infos.push_back(std::move(shortcut_item));
   }
 
+  const GURL kIconUrl2("http://www.chromium.org/shortcuts/icon2.png");
   {
     WebApplicationShortcutsMenuItemInfo shortcut_item;
     std::vector<WebApplicationShortcutsMenuItemInfo::Icon> shortcut_icon_infos;
     std::string shortcut_name = kShortcutItemName;
     shortcut_name += base::NumberToString(2);
     shortcut_item.name = base::UTF8ToUTF16(shortcut_name);
-    icon.url = IconUrl1();
+    icon.url = kIconUrl1;
     icon.square_size_px = kIconSize;
     shortcut_icon_infos.push_back(icon);
-    icon.url = IconUrl2();
+    icon.url = kIconUrl2;
     icon.square_size_px = 2 * kIconSize;
     shortcut_icon_infos.push_back(icon);
     shortcut_item.SetShortcutIconInfosForPurpose(
@@ -621,9 +609,10 @@ TEST(WebAppInstallUtils, PopulateShortcutItemIcons) {
     std::vector<SkBitmap> bmp1 = {CreateSquareIcon(32, SK_ColorWHITE)};
     std::vector<SkBitmap> bmp2 = {CreateSquareIcon(32, SK_ColorBLUE)};
     std::vector<SkBitmap> bmp3 = {CreateSquareIcon(32, SK_ColorRED)};
-    icons_map.emplace(IconUrl1(), bmp1);
-    icons_map.emplace(IconUrl2(), bmp2);
-    icons_map.emplace(AppIcon3(), bmp3);
+    icons_map.emplace(kIconUrl1, bmp1);
+    icons_map.emplace(kIconUrl2, bmp2);
+    icons_map.emplace(GURL("http://www.chromium.org/shortcuts/icon3.png"),
+                      bmp3);
     PopulateShortcutItemIcons(&web_app_info, &icons_map);
   }
 
@@ -642,9 +631,9 @@ TEST(WebAppInstallUtils, PopulateShortcutItemIconsNoShortcutIcons) {
   std::vector<SkBitmap> bmp1 = {CreateSquareIcon(32, SK_ColorWHITE)};
   std::vector<SkBitmap> bmp2 = {CreateSquareIcon(32, SK_ColorBLUE)};
   std::vector<SkBitmap> bmp3 = {CreateSquareIcon(32, SK_ColorRED)};
-  icons_map.emplace(IconUrl1(), bmp1);
-  icons_map.emplace(IconUrl2(), bmp2);
-  icons_map.emplace(IconUrl3(), bmp3);
+  icons_map.emplace(GURL("http://www.chromium.org/shortcuts/icon1.png"), bmp1);
+  icons_map.emplace(GURL("http://www.chromium.org/shortcuts/icon2.png"), bmp2);
+  icons_map.emplace(GURL("http://www.chromium.org/shortcuts/icon3.png"), bmp3);
 
   PopulateShortcutItemIcons(&web_app_info, &icons_map);
 
@@ -660,7 +649,7 @@ TEST(WebAppInstallUtils, FilterAndResizeIconsGenerateMissingNoWebAppIconData) {
 
   IconsMap icons_map;
   std::vector<SkBitmap> bmp1 = {CreateSquareIcon(32, SK_ColorWHITE)};
-  icons_map.emplace(IconUrl1(), bmp1);
+  icons_map.emplace(GURL("http://www.chromium.org/shortcuts/icon1.png"), bmp1);
   FilterAndResizeIconsGenerateMissing(&web_app_info, &icons_map);
 
   EXPECT_EQ(SizesToGenerate().size(), web_app_info.icon_bitmaps.any.size());
@@ -672,23 +661,25 @@ TEST(WebAppInstallUtils, FilterAndResizeIconsGenerateMissingNoWebAppIconData) {
 TEST(WebAppInstallUtils, FilterAndResizeIconsGenerateMissing_MaskableIcons) {
   // Construct |icons_map| to pass to FilterAndResizeIconsGenerateMissing().
   IconsMap icons_map;
+  const GURL kIconUrl1("http://www.chromium.org/shortcuts/icon1.png");
   std::vector<SkBitmap> bmp1 = {CreateSquareIcon(32, SK_ColorWHITE)};
-  icons_map.emplace(IconUrl1(), bmp1);
+  icons_map.emplace(kIconUrl1, bmp1);
+  const GURL kIconUrl2("http://www.chromium.org/shortcuts/icon2.png");
   std::vector<SkBitmap> bmp2 = {CreateSquareIcon(64, SK_ColorBLUE)};
-  icons_map.emplace(IconUrl2(), bmp2);
+  icons_map.emplace(kIconUrl2, bmp2);
 
   // Construct |web_app_info| to pass icon infos.
   WebApplicationInfo web_app_info;
   web_app_info.title = u"App Name";
   WebApplicationIconInfo info;
   // Icon at URL 1 has both ANY and MASKABLE purpose.
-  info.url = IconUrl1();
+  info.url = kIconUrl1;
   info.purpose = Purpose::ANY;
   web_app_info.icon_infos.push_back(info);
   info.purpose = Purpose::MASKABLE;
   web_app_info.icon_infos.push_back(info);
   // Icon at URL 2 has MASKABLE purpose only.
-  info.url = IconUrl2();
+  info.url = kIconUrl2;
   info.purpose = Purpose::MASKABLE;
   web_app_info.icon_infos.push_back(info);
 
@@ -708,14 +699,15 @@ TEST(WebAppInstallUtils,
      FilterAndResizeIconsGenerateMissing_MaskableIconsOnly) {
   // Construct |icons_map| to pass to FilterAndResizeIconsGenerateMissing().
   IconsMap icons_map;
+  const GURL kIconUrl1("http://www.chromium.org/shortcuts/icon1.png");
   std::vector<SkBitmap> bmp1 = {CreateSquareIcon(32, SK_ColorWHITE)};
-  icons_map.emplace(IconUrl1(), bmp1);
+  icons_map.emplace(kIconUrl1, bmp1);
 
   // Construct |web_app_info| to pass icon infos.
   WebApplicationInfo web_app_info;
   web_app_info.title = u"App Name";
   WebApplicationIconInfo info;
-  info.url = IconUrl1();
+  info.url = kIconUrl1;
   info.purpose = Purpose::MASKABLE;
   web_app_info.icon_infos.push_back(info);
 
@@ -746,7 +738,7 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
 
   IconsMap icons_map;
   std::vector<SkBitmap> bmp1 = {CreateSquareIcon(32, SK_ColorWHITE)};
-  icons_map.emplace(IconUrl1(), bmp1);
+  icons_map.emplace(GURL("http://www.chromium.org/shortcuts/icon1.png"), bmp1);
   FilterAndResizeIconsGenerateMissing(&web_app_info, &icons_map);
 
   // Expect to fall back to using icon from icons_map.
@@ -763,27 +755,30 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
        FilterAndResizeIconsGenerateMissingWithShortcutIcons) {
   // Construct |icons_map| to pass to FilterAndResizeIconsGenerateMissing().
   IconsMap icons_map;
+  const GURL kIconUrl1("http://www.chromium.org/shortcuts/icon1.png");
   std::vector<SkBitmap> bmp1 = {CreateSquareIcon(32, SK_ColorWHITE)};
+  icons_map.emplace(kIconUrl1, bmp1);
+  const GURL kIconUrl2("http://www.chromium.org/shortcuts/icon2.png");
   std::vector<SkBitmap> bmp2 = {CreateSquareIcon(kIconSize, SK_ColorBLUE)};
-  icons_map.emplace(IconUrl1(), bmp1);
-  icons_map.emplace(IconUrl2(), bmp2);
+  icons_map.emplace(kIconUrl2, bmp2);
 
   // Construct |info| to add to |web_app_info.icon_infos|.
   WebApplicationInfo web_app_info;
   web_app_info.title = u"App Name";
 
   WebApplicationIconInfo info;
-  info.url = IconUrl1();
+  info.url = kIconUrl1;
   web_app_info.icon_infos.push_back(info);
 
   // Construct |shortcuts_menu_item_info| to add to
   // |web_app_info.shortcuts_menu_item_infos|.
   WebApplicationShortcutsMenuItemInfo shortcuts_menu_item_info;
   shortcuts_menu_item_info.name = base::UTF8ToUTF16(kShortcutItemName);
-  shortcuts_menu_item_info.url = ShortcutItemUrl();
+  shortcuts_menu_item_info.url =
+      GURL("http://www.chromium.org/shortcuts/action");
   // Construct |icon| to add to |shortcuts_menu_item_info.shortcut_icon_infos|.
   WebApplicationShortcutsMenuItemInfo::Icon icon;
-  icon.url = IconUrl2();
+  icon.url = kIconUrl2;
   icon.square_size_px = kIconSize;
   shortcuts_menu_item_info.SetShortcutIconInfosForPurpose(IconPurpose::ANY,
                                                           {std::move(icon)});

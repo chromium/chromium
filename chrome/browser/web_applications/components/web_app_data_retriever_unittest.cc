@@ -39,18 +39,6 @@ namespace {
 
 const char kFooTitle[] = "Foo Title";
 
-// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
-// function.
-GURL FooUrl() {
-  return GURL("https://foo.example");
-}
-GURL FooUrl2() {
-  return GURL("https://foo.example/bar");
-}
-GURL BarUrl() {
-  return GURL("https://bar.example");
-}
-
 }  // namespace
 
 class FakeWebPageMetadataAgent
@@ -193,7 +181,8 @@ TEST_F(WebAppDataRetrieverTest, GetWebApplicationInfo_NoEntry) {
 TEST_F(WebAppDataRetrieverTest, GetWebApplicationInfo_AppUrlAbsent) {
   SetFakeWebPageMetadataAgent();
 
-  web_contents_tester()->NavigateAndCommit(FooUrl());
+  const GURL kFooUrl("https://foo.example");
+  web_contents_tester()->NavigateAndCommit(kFooUrl);
 
   WebApplicationInfo original_web_app_info;
   original_web_app_info.start_url = GURL();
@@ -210,16 +199,16 @@ TEST_F(WebAppDataRetrieverTest, GetWebApplicationInfo_AppUrlAbsent) {
 
   // If the WebApplicationInfo has no URL, we fallback to the last committed
   // URL.
-  EXPECT_EQ(FooUrl(), web_app_info()->start_url);
+  EXPECT_EQ(kFooUrl, web_app_info()->start_url);
 }
 
 TEST_F(WebAppDataRetrieverTest, GetWebApplicationInfo_AppUrlPresent) {
   SetFakeWebPageMetadataAgent();
 
-  web_contents_tester()->NavigateAndCommit(FooUrl());
+  web_contents_tester()->NavigateAndCommit(GURL("https://foo.example"));
 
   WebApplicationInfo original_web_app_info;
-  original_web_app_info.start_url = BarUrl();
+  original_web_app_info.start_url = GURL("https://bar.example");
 
   SetRendererWebApplicationInfo(original_web_app_info);
 
@@ -237,7 +226,7 @@ TEST_F(WebAppDataRetrieverTest, GetWebApplicationInfo_AppUrlPresent) {
 TEST_F(WebAppDataRetrieverTest, GetWebApplicationInfo_TitleAbsentFromRenderer) {
   SetFakeWebPageMetadataAgent();
 
-  web_contents_tester()->NavigateAndCommit(FooUrl());
+  web_contents_tester()->NavigateAndCommit(GURL("https://foo.example"));
 
   const auto web_contents_title = base::UTF8ToUTF16(kFooTitle);
   web_contents_tester()->SetTitle(web_contents_title);
@@ -264,7 +253,7 @@ TEST_F(WebAppDataRetrieverTest,
        GetWebApplicationInfo_TitleAbsentFromWebContents) {
   SetFakeWebPageMetadataAgent();
 
-  web_contents_tester()->NavigateAndCommit(FooUrl());
+  web_contents_tester()->NavigateAndCommit(GURL("https://foo.example"));
 
   web_contents_tester()->SetTitle(u"");
 
@@ -290,7 +279,7 @@ TEST_F(WebAppDataRetrieverTest,
 TEST_F(WebAppDataRetrieverTest, GetWebApplicationInfo_ConnectionError) {
   // Do not set fake WebPageMetadataAgent to simulate connection error.
 
-  web_contents_tester()->NavigateAndCommit(FooUrl());
+  web_contents_tester()->NavigateAndCommit(GURL("https://foo.example"));
 
   base::RunLoop run_loop;
   WebAppDataRetriever retriever;
@@ -306,7 +295,7 @@ TEST_F(WebAppDataRetrieverTest, GetWebApplicationInfo_ConnectionError) {
 TEST_F(WebAppDataRetrieverTest, GetWebApplicationInfo_WebContentsDestroyed) {
   SetFakeWebPageMetadataAgent();
 
-  web_contents_tester()->NavigateAndCommit(FooUrl());
+  web_contents_tester()->NavigateAndCommit(GURL("https://foo.example"));
 
   base::RunLoop run_loop;
   WebAppDataRetriever retriever;
@@ -324,7 +313,7 @@ TEST_F(WebAppDataRetrieverTest,
        CheckInstallabilityAndRetrieveManifest_WebContentsDestroyed) {
   SetFakeWebPageMetadataAgent();
 
-  web_contents_tester()->NavigateAndCommit(FooUrl());
+  web_contents_tester()->NavigateAndCommit(GURL("https://foo.example"));
 
   {
     auto manifest = std::make_unique<blink::Manifest>();
@@ -353,7 +342,7 @@ TEST_F(WebAppDataRetrieverTest,
 TEST_F(WebAppDataRetrieverTest, GetIcons_WebContentsDestroyed) {
   SetFakeWebPageMetadataAgent();
 
-  web_contents_tester()->NavigateAndCommit(FooUrl());
+  web_contents_tester()->NavigateAndCommit(GURL("https://foo.example"));
 
   const std::vector<GURL> icon_urls;
   bool skip_page_favicons = true;
@@ -376,7 +365,8 @@ TEST_F(WebAppDataRetrieverTest, GetWebApplicationInfo_FrameNavigated) {
   const auto web_contents_title = base::UTF8ToUTF16(kFooTitle);
   web_contents_tester()->SetTitle(web_contents_title);
 
-  web_contents_tester()->NavigateAndCommit(FooUrl());
+  const GURL kFooUrl("https://foo.example/bar");
+  web_contents_tester()->NavigateAndCommit(kFooUrl.GetOrigin());
 
   base::RunLoop run_loop;
   WebAppDataRetriever retriever;
@@ -384,10 +374,10 @@ TEST_F(WebAppDataRetrieverTest, GetWebApplicationInfo_FrameNavigated) {
       web_contents(),
       base::BindOnce(&WebAppDataRetrieverTest::GetWebApplicationInfoCallback,
                      base::Unretained(this), run_loop.QuitClosure()));
-  web_contents_tester()->NavigateAndCommit(FooUrl2());
+  web_contents_tester()->NavigateAndCommit(kFooUrl);
   run_loop.Run();
 
-  EXPECT_EQ(FooUrl(), web_app_info()->start_url);
+  EXPECT_EQ(kFooUrl.GetOrigin(), web_app_info()->start_url);
   EXPECT_EQ(web_contents_title, web_app_info()->title);
 }
 
