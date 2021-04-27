@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/json/json_writer.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -21,6 +22,15 @@ namespace history_clusters {
 namespace {
 
 const size_t kMaxExpectedResponseSize = 1024 * 1024;
+
+// Best effort attempt to clean a serialized protobuff for debug prints.
+std::string CleanSerializedProto(const std::string& serialized) {
+  auto copy = serialized;
+  base::ranges::replace_if(
+      copy, [](char c) { return !std::isalnum(c); }, ' ');
+  copy = base::CollapseWhitespaceASCII(copy, true);
+  return copy;
+}
 
 proto::GetClustersRequest CreateRequestProto(
     const std::vector<history::ClusterVisit>& visits) {
@@ -118,8 +128,14 @@ void MemoriesRemoteModelHelper::GetMemories(
   // It's weird but the endpoint only accepts JSON, so wrap our serialized proto
   // like this: {"data":"<base64-encoded-proto-serialization>"}
   proto::GetClustersRequest request_proto = CreateRequestProto(visits);
+  const std::string serialized_request_proto =
+      request_proto.SerializeAsString();
   std::string request_proto_base64;
-  base::Base64Encode(request_proto.SerializeAsString(), &request_proto_base64);
+  base::Base64Encode(serialized_request_proto, &request_proto_base64);
+
+  debug_logger_.Run(base::StringPrintf(
+      "MemoriesRemoteModelHelper::GetMemories request = %s",
+      CleanSerializedProto(serialized_request_proto).c_str()));
 
   base::DictionaryValue container_value;
   container_value.SetStringPath("data", request_proto_base64);
@@ -128,9 +144,6 @@ void MemoriesRemoteModelHelper::GetMemories(
   base::JSONWriter::Write(container_value, &request_body);
 
   auto request = CreateRequest(endpoint);
-  debug_logger_.Run(
-      base::StringPrintf("MemoriesRemoteModelHelper::GetMemories request = %s",
-                         request_body.c_str()));
   url_loader_ = CreateLoader(CreateRequest(endpoint), request_body);
 
   url_loader_->DownloadToString(
@@ -141,7 +154,8 @@ void MemoriesRemoteModelHelper::GetMemories(
              std::unique_ptr<std::string> response) {
             debug_logger.Run(base::StringPrintf(
                 "MemoriesRemoteModelHelper::GetMemories response = %s",
-                response ? response->c_str() : "nullptr"));
+                response ? CleanSerializedProto(*response).c_str()
+                         : "nullptr"));
             if (!response) {
               return history_clusters::Memories();
             }
