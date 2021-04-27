@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.signin.ui;
 
 import static org.mockito.Mockito.when;
 
+import android.os.Build.VERSION_CODES;
+
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -20,6 +22,7 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -35,6 +38,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisableIf.Build(sdk_is_less_than = VERSION_CODES.LOLLIPOP_MR1)
 public class SigninCheckerTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -67,7 +71,7 @@ public class SigninCheckerTest {
         final CoreAccountInfo expectedPrimaryAccount =
                 mAccountManagerTestRule.addAccount(newAccountEmail);
 
-        mAccountManagerTestRule.removeAccount(oldAccount.getEmail());
+        mAccountManagerTestRule.removeAccountAndWaitForSeeding(oldAccount.getEmail());
 
         CriteriaHelper.pollUiThread(() -> {
             return expectedPrimaryAccount.equals(
@@ -85,7 +89,7 @@ public class SigninCheckerTest {
         when(mAccountRenameCheckerDelegateMock.getNewNameOfRenamedAccount(oldAccount.getEmail()))
                 .thenReturn(newAccountEmail);
 
-        mAccountManagerTestRule.removeAccount(oldAccount.getEmail());
+        mAccountManagerTestRule.removeAccountAndWaitForSeeding(oldAccount.getEmail());
 
         CriteriaHelper.pollUiThread(() -> {
             return !IdentityServicesProvider.get()
@@ -102,7 +106,7 @@ public class SigninCheckerTest {
         final CoreAccountInfo oldAccount =
                 mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
 
-        mAccountManagerTestRule.removeAccount(oldAccount.getEmail());
+        mAccountManagerTestRule.removeAccountAndWaitForSeeding(oldAccount.getEmail());
 
         CriteriaHelper.pollUiThread(() -> {
             return !IdentityServicesProvider.get()
