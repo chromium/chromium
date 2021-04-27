@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -119,8 +117,11 @@ END_DIFF
 
     sys.stderr.write(fail_msg)
 
+  if fail_msg and options.fail_on_expectations:
+    # Don't write failure file when failing on expectations or else the target
+    # will not be re-run on subsequent ninja invocations.
+    sys.exit(1)
+
   if options.failure_file:
     with open(options.failure_file, 'w') as f:
       f.write(fail_msg)
-  if fail_msg and options.fail_on_expectations:
-    sys.exit(1)
