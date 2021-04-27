@@ -280,6 +280,11 @@ class TabDragController : public views::WidgetObserver {
   // A tab was closed in the active tabstrip. Clean up if we were dragging it.
   void OnActiveStripWebContentsRemoved(content::WebContents* contents);
 
+  // The WebContents in a tab was replaced in the active tabstrip. Update our
+  // canonical reference if we were dragging that tab.
+  void OnActiveStripWebContentsReplaced(content::WebContents* previous,
+                                        content::WebContents* next);
+
   // Initialize the offset used to calculate the position to create windows
   // in |GetWindowCreatePoint|. This should only be invoked from |Init|.
   void InitWindowCreatePoint();
