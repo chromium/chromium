@@ -42,6 +42,9 @@ bool IsOrganicFirstRun(const std::string& brand);
 // True if |brand| is an internet cafe brand code.
 bool IsInternetCafeBrandCode(const std::string& brand);
 
+// True if |brand| is an enterprise brand code.
+bool IsEnterprise(const std::string& brand);
+
 // This class is meant to be used only from test code, and sets the brand
 // code returned by the function GetBrand() above while the object exists.
 class BrandForTesting {

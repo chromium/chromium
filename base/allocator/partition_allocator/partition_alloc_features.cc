@@ -21,6 +21,11 @@ const Feature kPartitionAllocPCScan{"PartitionAllocPCScan",
 const Feature kPartitionAllocPCScanBrowserOnly{
     "PartitionAllocPCScanBrowserOnly", FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, this instance belongs to the Control group of the BackupRefPtr
+// binary experiment.
+const Feature kPartitionAllocBackupRefPtrControl{
+    "PartitionAllocBackupRefPtrControl", FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, the thread cache will be periodically purged.
 const Feature kPartitionAllocThreadCachePeriodicPurge{
     "PartitionAllocThreadCachePeriodicPurge", FEATURE_DISABLED_BY_DEFAULT};

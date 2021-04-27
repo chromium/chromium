@@ -29,6 +29,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/chrome_browser_main.h"
+#include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/metrics/authenticator_utility.h"
 #include "chrome/browser/metrics/bluetooth_available_utility.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -38,6 +39,8 @@
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_tracker.h"
 #include "chrome/browser/shell_integration.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
+#include "components/policy/core/common/management/management_service.h"
+#include "components/policy/core/common/management/platform_management_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
@@ -493,6 +496,25 @@ bool IsApplockerRunning() {
 
 #endif  // defined(OS_WIN)
 
+#if !defined(OS_ANDROID)
+// Returns whether the instance has an enterprise brand code.
+bool HasEnterpriseBrandCode() {
+  std::string brand;
+  google_brand::GetBrand(&brand);
+  return google_brand::IsEnterprise(brand);
+}
+
+// Returns whether the instance is domain joined. This doesn't include CBCM
+// (EnterpriseManagementAuthority::DOMAIN_LOCAL).
+bool IsDomainJoined() {
+  auto enterprise_management_authorities =
+      policy::PlatformManagementService::GetInstance()
+          .GetManagementAuthorities();
+  return enterprise_management_authorities.contains(
+      policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
+}
+#endif  // !defined(OS_ANDROID)
+
 }  // namespace
 
 ChromeBrowserMainExtraPartsMetrics::ChromeBrowserMainExtraPartsMetrics()
@@ -609,6 +631,67 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
           : "Disabled"
 #endif
   );
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+#if defined(OS_ANDROID)
+  // No need to filter out on Android, because it doesn't support
+  // ChromeVariations policy.
+  constexpr bool is_enterprise = false;
+#else
+  // Check for enterprises the same way that Google Update can check, to match
+  // with the experiment population (see the comment below).
+  // NOTE, this isn't perfect and won't catch all enterprises.
+  const bool is_enterprise = HasEnterpriseBrandCode() || IsDomainJoined();
+#endif
+
+  // TODO(bartekn): Remove once the enterprise inclusion is verified. This is
+  // just meant to ensure that the enterprise portion of the
+  // BackupRefPtrNoEnterprise setting below does what's expected.
+  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      "EnterpriseSynthetic",
+      is_enterprise ? "IsEnterprise" : "IsNotEnterprise");
+
+  // This synthetic field trial for the BackupRefPtr binary A/B experiment is
+  // set up such that:
+  // 1) Enterprises are excluded from experiment, to make sure we honor
+  //    ChromeVariations policy.
+  // 2) The experiment binary (USE_BACKUP_REF_PTR) is delivered via Google
+  //    Update to fraction X of the non-enterprise population.
+  //    Note, USE_BACKUP_REF_PTR_FAKE is only used to fake that the feature is
+  //    enabled for the purpose of this Finch setting, while in fact there are
+  //    no behavior changes.
+  // 3) The control group is established in fraction X of non-enterprise
+  //    popluation via Finch (PartitionAllocBackupRefPtrControl). Since this
+  //    Finch is applicable only to 1-X of the non-enterprise population, we
+  //    need to set it to Y=X/(1-X). E.g. if X=.333, Y=.5; if X=.01, Y=.0101.
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(USE_BACKUP_REF_PTR) || BUILDFLAG(USE_BACKUP_REF_PTR_FAKE)
+  constexpr bool kIsBrpOn = true;  // experiment binary only
+#else
+  constexpr bool kIsBrpOn = false;  // non-experiment binary
+#endif
+  const bool is_brp_control = base::FeatureList::IsEnabled(
+      base::features::kPartitionAllocBackupRefPtrControl);
+  const char* group_name;
+  if (is_enterprise) {
+    if (kIsBrpOn) {  // is_enterprise && kIsBrpOn
+      group_name = "Excluded_Enterprise_BrpOn";
+    } else {  // is_enterprise && !kIsBrpOn
+      group_name = "Excluded_Enterprise_BrpOff";
+    }
+  } else {
+    if (kIsBrpOn) {  // !is_enterprise && kIsBrpOn
+      group_name = "Enabled";
+    } else {  // !is_enterprise && !kIsBrpOn
+      if (is_brp_control) {
+        group_name = "Control";
+      } else {
+        group_name = "Excluded_NonEnterprise";
+      }
+    }
+  }
+  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      "BackupRefPtrNoEnterprise", group_name);
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
