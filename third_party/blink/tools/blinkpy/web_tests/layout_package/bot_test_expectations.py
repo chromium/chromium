@@ -404,7 +404,7 @@ class BotTestExpectations(object):
             # If there are only two entries, then that means it failed on the first
             # try and ran as expected on the second because otherwise we'd have
             # a third entry from the next try.
-            if only_consider_very_flaky and len(result_types) == 2:
+            if only_consider_very_flaky and len(result_types) <= 2:
                 continue
 
             has_unexpected_results = False

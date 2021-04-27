@@ -350,8 +350,10 @@ class BotTestExpectationsTest(unittest.TestCase):
                 'foo/veryflaky.html': {'FAIL', 'PASS'},
                 'foo/notflakyexpected.html': {'FAIL', 'PASS'},
                 'foo/flakywithoutretries.html': {'FAIL', 'PASS'},
+                'foo/notverflakynoexpected.html': {'FAIL', 'TIMEOUT'},
+                'foo/maybeflaky.html': {'FAIL', 'PASS'},
             },
-            only_consider_very_flaky=True, ignore_bot_expected_results=True,
+            only_consider_very_flaky=False, ignore_bot_expected_results=True,
             consider_only_flaky_runs=False)
 
     def test_unexpected_results_no_unexpected(self):
