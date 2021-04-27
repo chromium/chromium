@@ -4,7 +4,6 @@
 
 #include "chromeos/components/personalization_app/mojom/personalization_app.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 
 #ifndef CHROMEOS_COMPONENTS_PERSONALIZATION_APP_PERSONALIZATION_APP_UI_DELEGATE_H_
 #define CHROMEOS_COMPONENTS_PERSONALIZATION_APP_PERSONALIZATION_APP_UI_DELEGATE_H_

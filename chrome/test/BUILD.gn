@@ -1834,6 +1834,7 @@ if (!is_android) {
           "//chromeos/components/eche_app_ui:browser_tests_js",
           "//chromeos/components/help_app_ui:browser_tests_js",
           "//chromeos/components/media_app_ui:browser_tests_js",
+          "//chromeos/components/personalization_app:browser_tests_js",
           "//chromeos/components/system_apps:browser_tests",
         ]
 

@@ -2,12 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview Test suite for chrome://personalization. Tests individual
+ * components in isolation.
+ */
+
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
-var PersonalizationAppBrowserTest = class extends PolymerTest {
+var PersonalizationAppComponentBrowserTest = class extends PolymerTest {
   get browsePreload() {
     return 'chrome://personalization/test_loader.html?' +
         'module=chromeos/personalization_app/' +
@@ -19,4 +24,4 @@ var PersonalizationAppBrowserTest = class extends PolymerTest {
   }
 };
 
-TEST_F('PersonalizationAppBrowserTest', 'All', () => mocha.run());
+TEST_F('PersonalizationAppComponentBrowserTest', 'All', () => mocha.run());
