@@ -227,6 +227,7 @@ consoles.console_view(
             "win10",
             "win32",
             "paeverywhere",
+            "backuprefptr",
         ],
         "code_coverage": consoles.ordering(
             short_names = ["and", "ann", "lnx", "lcr", "jcr", "mac"],
@@ -2937,6 +2938,26 @@ ci.fyi_builder(
     main_console_view = main_console_if_on_branch(),
 )
 
+ci.fyi_builder(
+    name = "android-backuprefptr-arm-fyi-rel",
+    builderless = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "backuprefptr|android",
+        short_name = "32rel",
+    ),
+    notifies = ["chrome-memory-safety"],
+)
+
+ci.fyi_builder(
+    name = "android-backuprefptr-arm64-fyi-rel",
+    builderless = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "backuprefptr|android",
+        short_name = "64rel",
+    ),
+    notifies = ["chrome-memory-safety"],
+)
+
 # TODO(crbug.com/1189748): Remove this builder once flaky DCHECKs have been
 # resolved and DCHECKs are enabled on the CQ bot.
 ci.fyi_builder(
@@ -3119,6 +3140,17 @@ ci.fyi_builder(
         category = "linux",
     ),
     triggered_by = ["linux-lacros-builder-fyi-rel"],
+)
+
+ci.fyi_builder(
+    name = "linux-backuprefptr-x64-fyi-rel",
+    builderless = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "backuprefptr|linux",
+        short_name = "64rel",
+    ),
+    notifies = ["chrome-memory-safety"],
+    os = os.LINUX_DEFAULT,
 )
 
 ci.fyi_builder(
@@ -3378,6 +3410,28 @@ ci.updater_builder(
         short_name = "10",
     ),
     triggered_by = ["win-updater-builder-rel"],
+)
+
+ci.fyi_builder(
+    name = "win-backuprefptr-x86-fyi-rel",
+    builderless = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "backuprefptr|win",
+        short_name = "32rel",
+    ),
+    notifies = ["chrome-memory-safety"],
+    os = os.WINDOWS_ANY,
+)
+
+ci.fyi_builder(
+    name = "win-backuprefptr-x64-fyi-rel",
+    builderless = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "backuprefptr|win",
+        short_name = "64rel",
+    ),
+    notifies = ["chrome-memory-safety"],
+    os = os.WINDOWS_ANY,
 )
 
 ci.fyi_builder(

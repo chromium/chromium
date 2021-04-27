@@ -2823,6 +2823,23 @@
           'scripts': 'check_network_annotations_script',
         },
       },
+      'android-backuprefptr-arm-fyi-rel': {
+        'test_suites': {
+          'gtest_tests': 'chromium_android_gtests',
+        },
+        'mixins': [
+          'walleye',
+        ],
+      },
+      'android-backuprefptr-arm64-fyi-rel': {
+        'test_suites': {
+          'gtest_tests': 'chromium_android_gtests',
+        },
+        'mixins': [
+          'enable_resultdb',
+          'walleye',
+        ],
+      },
       'android-code-coverage': {
         'mixins': [
           'enable_resultdb',
@@ -3080,6 +3097,15 @@
       'linux-ash-chromium-builder-fyi-rel': {
         'additional_compile_targets': [
           'chrome',
+        ],
+      },
+      'linux-backuprefptr-x64-fyi-rel': {
+        'test_suites': {
+          'gtest_tests': 'chromium_linux_gtests',
+        },
+        'mixins': [
+          'linux-xenial',
+          'x86-64',
         ],
       },
       'linux-blink-animation-use-time-delta': {
@@ -3401,6 +3427,24 @@
         'test_suites': {
           'scripts': 'test_traffic_annotation_auditor_script',
         },
+      },
+      'win-backuprefptr-x64-fyi-rel': {
+        'test_suites': {
+          'gtest_tests': 'chromium_win_gtests',
+        },
+        'mixins': [
+          'win10',
+          'x86-64',
+        ],
+      },
+      'win-backuprefptr-x86-fyi-rel': {
+        'test_suites': {
+          'gtest_tests': 'chromium_win_gtests',
+        },
+        'mixins': [
+          'win10',
+          'x86-64',
+        ],
       },
       'win-pixel-tester-rel': {
         'mixins': [

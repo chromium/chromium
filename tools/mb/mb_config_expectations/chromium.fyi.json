@@ -324,6 +324,38 @@
       "use_rbe": true
     }
   },
+  "android-backuprefptr-arm-fyi-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "enable_backup_ref_ptr_slow_checks": true,
+      "enable_runtime_backup_ref_ptr_control": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "put_ref_count_in_previous_slot": true,
+      "symbol_level": 1,
+      "target_cpu": "arm",
+      "target_os": "android",
+      "use_allocator": "partition",
+      "use_backup_ref_ptr": true,
+      "use_goma": true
+    }
+  },
+  "android-backuprefptr-arm64-fyi-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "enable_backup_ref_ptr_slow_checks": true,
+      "enable_runtime_backup_ref_ptr_control": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "put_ref_count_in_previous_slot": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_allocator": "partition",
+      "use_backup_ref_ptr": true,
+      "use_goma": true
+    }
+  },
   "android-code-coverage": {
     "gn_args": {
       "disable_android_lint": true,
@@ -620,6 +652,21 @@
       "use_goma": true
     }
   },
+  "linux-backuprefptr-x64-fyi-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "enable_backup_ref_ptr_slow_checks": true,
+      "enable_runtime_backup_ref_ptr_control": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "put_ref_count_in_previous_slot": true,
+      "symbol_level": 1,
+      "target_cpu": "x64",
+      "use_allocator": "partition",
+      "use_backup_ref_ptr": true,
+      "use_goma": true
+    }
+  },
   "linux-blink-animation-use-time-delta": {
     "gn_args": {
       "blink_animation_use_time_delta": true,
@@ -831,6 +878,36 @@
     "gn_args": {
       "is_component_build": false,
       "is_debug": false,
+      "use_goma": true
+    }
+  },
+  "win-backuprefptr-x64-fyi-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "enable_backup_ref_ptr_slow_checks": true,
+      "enable_runtime_backup_ref_ptr_control": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "put_ref_count_in_previous_slot": true,
+      "symbol_level": 1,
+      "target_cpu": "x64",
+      "use_allocator": "partition",
+      "use_backup_ref_ptr": true,
+      "use_goma": true
+    }
+  },
+  "win-backuprefptr-x86-fyi-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "enable_backup_ref_ptr_slow_checks": true,
+      "enable_runtime_backup_ref_ptr_control": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "put_ref_count_in_previous_slot": true,
+      "symbol_level": 1,
+      "target_cpu": "x86",
+      "use_allocator": "partition",
+      "use_backup_ref_ptr": true,
       "use_goma": true
     }
   },

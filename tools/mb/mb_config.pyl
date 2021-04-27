@@ -321,6 +321,8 @@
       'Win x64 Builder (reclient)': 'gpu_tests_release_bot_minimal_symbols_reclient',
       'android-code-coverage': 'gpu_tests_android_release_bot_minimal_symbols_arm64_fastbuild_java_coverage',
       'android-code-coverage-native': 'gpu_tests_android_release_bot_no_symbols_arm64_fastbuild_native_coverage',
+      'android-backuprefptr-arm-fyi-rel': 'release_trybot_backuprefptr_arm',
+      'android-backuprefptr-arm64-fyi-rel': 'release_trybot_backuprefptr_arm64',
       'chromeos-amd64-generic-rel-dchecks': 'chromeos_amd64-generic_use_fake_dbus_clients_dchecks',
       'fuchsia-code-coverage': 'fuchsia_clang_code_coverage',
       'fuchsia-fyi-arm64-dbg': 'debug_bot_fuchsia_arm64',
@@ -350,6 +352,7 @@
       'linux-code-coverage': 'clang_code_coverage',
       'linux-example-builder': 'release_bot',
       'linux-fieldtrial-rel': 'release_bot_minimal_symbols',
+      'linux-backuprefptr-x64-fyi-rel': 'release_trybot_backuprefptr_x64',
       'linux-perfetto-rel': 'perfetto_release_bot',
       'linux-upload-perfetto': 'release_bot',
       'linux-wpt-fyi-rel': 'release_bot_minimal_symbols',
@@ -362,6 +365,8 @@
       'mac-upload-perfetto': 'release_bot',
       'win-annotator-rel': 'release_bot',
       'win-celab-builder-rel': 'release_bot_minimal_symbols',
+      'win-backuprefptr-x86-fyi-rel': 'release_trybot_backuprefptr_x86',
+      'win-backuprefptr-x64-fyi-rel': 'release_trybot_backuprefptr_x64',
       'win-pixel-builder-rel': 'release_bot',
       'win-upload-perfetto': 'release_bot',
       'win10-code-coverage': 'clang_code_coverage',
@@ -2682,6 +2687,22 @@
       'release_trybot', 'disable_nacl',
     ],
 
+    'release_trybot_backuprefptr_x86': [
+      'release_trybot', 'backuprefptr', 'x86',
+    ],
+
+    'release_trybot_backuprefptr_x64': [
+      'release_trybot', 'backuprefptr', 'x64',
+    ],
+
+    'release_trybot_backuprefptr_arm': [
+      'release_trybot', 'backuprefptr', 'android_without_codecs', 'arm',
+    ],
+
+    'release_trybot_backuprefptr_arm64': [
+      'release_trybot', 'backuprefptr', 'android_without_codecs', 'arm64',
+    ],
+
     'release_trybot_paeverywhere_x64': [
       'release_trybot', 'paeverywhere', 'x64',
     ],
@@ -3341,6 +3362,10 @@
 
     'paeverywhere': {
       'gn_args': 'use_allocator="partition"',
+    },
+
+    'backuprefptr': {
+      'gn_args': 'use_allocator="partition" use_backup_ref_ptr=true enable_runtime_backup_ref_ptr_control=true put_ref_count_in_previous_slot=true enable_backup_ref_ptr_slow_checks=true',
     },
 
     # Used to pass the list of files to instrument for coverage to the compile
