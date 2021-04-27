@@ -8,6 +8,8 @@
 
 #include "ash/public/cpp/ash_typography.h"
 #include "base/files/file_util.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
@@ -34,6 +36,13 @@
 namespace {
 
 constexpr int kBetweenChildSpacing = 12;
+
+// Concatenates all the strings in |file_names| with a comma delineator.
+const std::u16string ConcatenateFileNames(
+    const std::vector<std::string>& file_names) {
+  auto all_file_names = base::JoinString(file_names, ", ");
+  return base::ASCIIToUTF16(all_file_names);
+}
 
 }  // namespace
 
@@ -88,44 +97,71 @@ void SharesheetContentPreviews::InitaliseImageView() {
 }
 
 void SharesheetContentPreviews::ShowTextPreview() {
-  // TODO(crbug.com/2650014): Handle case for sharing multiple files. Add an
-  // enumeration string to reflect how many files are being sent.
-
-  // TODO(crbug.com/2650014): Handle drive_share_url and share_title fields.
-
-  std::vector<std::string> share_fields;
+  std::vector<std::u16string> text_fields;
   if (intent_->share_text.has_value() &&
       !(intent_->share_text.value().empty())) {
-    share_fields = ExtractShareText();
+    text_fields = ExtractShareText();
   }
 
-  // Files are added last to share_fields so they appear on the 2nd line of text
-  // preview if a text/url is also shared.
-  if (intent_->file_urls.has_value() && !intent_->file_urls.value().empty() &&
-      share_fields.size() < 2) {
+  std::u16string filenames_tooltip_text = u"";
+  if (intent_->file_urls.has_value() && !intent_->file_urls.value().empty()) {
+    std::vector<std::string> file_names;
     for (const auto& file_url : intent_->file_urls.value()) {
-      share_fields.push_back(file_url.ExtractFileName());
+      file_names.push_back(file_url.ExtractFileName());
     }
+    std::u16string file_text;
+    if (file_names.size() == 1) {
+      file_text = base::ASCIIToUTF16(file_names[0]);
+    } else {
+      // If there is more than 1 file, show an enumeration of the number of
+      // files.
+      auto size = intent_->file_urls.value().size();
+      DCHECK_NE(size, 0);
+      file_text =
+          l10n_util::GetPluralStringFUTF16(IDS_SHARESHEET_FILES_LABEL, size);
+      filenames_tooltip_text = ConcatenateFileNames(file_names);
+    }
+    text_fields.push_back(file_text);
   }
 
-  if (share_fields.size() == 1) {
-    AddTextLine(share_fields[0]);
-  } else if (share_fields.size() > 1) {
-    AddTextLine(share_fields[0]);
-    AddTextLine(share_fields[1]);
+  // TODO(crbug.com/2650014): Handle drive_share_url and share_title fields.
+  // When this is added, we can remove the if condition, because it should
+  // be impossible that there are no text_fields.
+
+  // File names show on the last line, so |filenames_tooltip_text| is only
+  // passed in on the last line of text. If there are no files, it will be empty
+  // and the tooltip will instead be set to what the text says.
+  if (text_fields.size() == 1) {
+    AddTextLine(text_fields[0], filenames_tooltip_text);
+  } else if (text_fields.size() > 1) {
+    AddTextLine(text_fields[0]);
+    AddTextLine(text_fields[1], filenames_tooltip_text);
   }
 }
 
-void SharesheetContentPreviews::AddTextLine(std::string text) {
-  auto* new_line = text_view_->AddChildView(std::make_unique<views::Label>(
-      (base::ASCIIToUTF16(text)), CONTEXT_SHARESHEET_BUBBLE_BODY_SECONDARY));
-  new_line->SetLineHeight(kTitleTextLineHeight);
+void SharesheetContentPreviews::AddTextLine(
+    const std::u16string& text,
+    const std::u16string& tooltip_text) {
+  auto* new_line = text_view_->AddChildView(
+      std::make_unique<views::Label>(text, CONTEXT_SHARESHEET_BUBBLE_BODY));
+  new_line->SetLineHeight(kPrimaryTextLineHeight);
   new_line->SetEnabledColor(kPrimaryTextColor);
   new_line->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  new_line->SetHandlesTooltips(true);
+  if (tooltip_text.empty()) {
+    new_line->SetTooltipText(new_line->GetText());
+    return;
+  }
+  new_line->SetTooltipText(tooltip_text);
+  // We only get to here if this line is showing the number of files.
+  // By default the accessible name is set to the label text. We set it here
+  // so that it is also gives the list of file names.
+  new_line->SetAccessibleName(
+      base::StrCat({new_line->GetText(), u" ", tooltip_text}));
 }
 
-std::vector<std::string> SharesheetContentPreviews::ExtractShareText() {
-  std::vector<std::string> result;
+std::vector<std::u16string> SharesheetContentPreviews::ExtractShareText() {
+  std::vector<std::u16string> result;
   std::string extracted_text = intent_->share_text.value();
   GURL extracted_url;
   size_t last_space = extracted_text.find_last_of(' ');
@@ -144,10 +180,10 @@ std::vector<std::string> SharesheetContentPreviews::ExtractShareText() {
   }
 
   if (!extracted_text.empty())
-    result.push_back(extracted_text);
+    result.push_back(base::ASCIIToUTF16(extracted_text));
 
   if (extracted_url.is_valid())
-    result.push_back(extracted_url.spec());
+    result.push_back(base::ASCIIToUTF16(extracted_url.spec()));
 
   return result;
 }

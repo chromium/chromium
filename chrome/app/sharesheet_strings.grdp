@@ -20,4 +20,9 @@
   <message name="IDS_SHARESHEET_ZERO_STATE_SECONDARY_LABEL" desc="The label informing users where to download apps.">
     Visit the Play Store to find more apps
   </message>
+  <message name="IDS_SHARESHEET_FILES_LABEL" desc="The label for the enumeration of the number of files a user is trying to share.">
+    {COUNT, plural,
+      =1 {{COUNT} file}
+      other {{COUNT} files}}
+  </message>
 </grit-part>

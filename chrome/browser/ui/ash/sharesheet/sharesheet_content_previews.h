@@ -42,14 +42,15 @@ class SharesheetContentPreviews : public views::View {
   void ShowTextPreview();
 
   // Creates a new Label view and adds styling.
-  void AddTextLine(std::string text);
+  void AddTextLine(const std::u16string& text,
+                   const std::u16string& tooltip_text = u"");
 
   // Parses the share_text attribute for each individual url and text
   // from the intent struct and returns the result in a vector.
   //
   // TODO(crbug.com/2650014): Move the existing ExtractSharedFields function
   // from share_target_utils.h to a common place and reuse the function here.
-  std::vector<std::string> ExtractShareText();
+  std::vector<std::u16string> ExtractShareText();
 
   void LoadImage();
   void OnImageLoaded(const SkBitmap* bitmap, base::File::Error error);
