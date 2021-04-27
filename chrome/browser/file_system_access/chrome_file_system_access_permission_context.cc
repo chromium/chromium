@@ -446,7 +446,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
       return;
     }
 
-    if (HasPersistedPermission()) {
+    if (HasPersistedPermission() || AncestorHasPersistedPermission()) {
       // TODO(https://crbug.com/1197304): Add histogram loggging to see how old
       // the persisted permission was when we use it to auto-grant.
       SetStatus(PermissionStatus::GRANTED,
@@ -548,6 +548,16 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
   }
 
   bool HasPersistedPermission() const { return HasPersistedPermission(type_); }
+  bool AncestorHasPersistedPermission() const {
+    for (base::FilePath parent = path_.DirName(); parent != parent.DirName();
+         parent = parent.DirName()) {
+      if (context_->HasPersistedPermission(origin_, parent,
+                                           HandleType::kDirectory, type_)) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   const url::Origin& origin() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
