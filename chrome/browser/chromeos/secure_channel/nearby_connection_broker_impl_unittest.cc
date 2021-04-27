@@ -426,9 +426,13 @@ TEST_F(NearbyConnectionBrokerImplTest, FailDiscovery_Timeout) {
   SimulateTimeout(/*expected_to_disconnect=*/false);
 }
 
+TEST_F(NearbyConnectionBrokerImplTest, MojoDisconnectionBeforeDiscovery) {
+  DisconnectMojoBindings(/*expected_to_disconnect=*/false);
+}
+
 TEST_F(NearbyConnectionBrokerImplTest, MojoDisconnectionAfterDiscovery) {
   DiscoverEndpoint();
-  DisconnectMojoBindings(/*expected_to_disconnect=*/false);
+  DisconnectMojoBindings(/*expected_to_disconnect=*/true);
 
   // Run callback to prevent DCHECK() crash that ensures all Mojo callbacks are
   // invoked.
