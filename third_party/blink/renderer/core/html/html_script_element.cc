@@ -91,6 +91,10 @@ void HTMLScriptElement::ParseAttribute(
     loader_->HandleSourceAttribute(params.new_value);
     LogUpdateAttributeIfIsolatedWorldAndInDocument("script", params);
   } else if (params.name == html_names::kAsyncAttr) {
+    // https://html.spec.whatwg.org/C/#non-blocking
+    // "In addition, whenever a script element whose |non-blocking|
+    // flag is set has an async content attribute added, the element's
+    // |non-blocking| flag must be unset."
     loader_->HandleAsyncAttribute();
   } else if (params.name == html_names::kImportanceAttr &&
              RuntimeEnabledFeatures::PriorityHintsEnabled(
@@ -169,6 +173,7 @@ void HTMLScriptElement::setTextContent(
 }
 
 void HTMLScriptElement::setAsync(bool async) {
+  // https://html.spec.whatwg.org/multipage/scripting.html#dom-script-async
   SetBooleanAttribute(html_names::kAsyncAttr, async);
   loader_->HandleAsyncAttribute();
 }

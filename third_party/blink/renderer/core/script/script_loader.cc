@@ -149,6 +149,7 @@ void ScriptLoader::HandleAsyncAttribute() {
   // is set has an async content attribute added, the element's "non-blocking"
   // flag must be unset.</spec>
   non_blocking_ = false;
+  dynamic_async_ = true;
 }
 
 void ScriptLoader::DetachPendingScript() {
@@ -500,8 +501,8 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
   DCHECK(!prepared_pending_script_);
 
   RenderBlockingBehavior render_blocking_behavior =
-      non_blocking_ ? RenderBlockingBehavior::kNonBlocking
-                    : RenderBlockingBehavior::kBlocking;
+      non_blocking_ || dynamic_async_ ? RenderBlockingBehavior::kNonBlocking
+                                      : RenderBlockingBehavior::kBlocking;
 
   // <spec step="22">Let options be a script fetch options whose cryptographic
   // nonce is cryptographic nonce, integrity metadata is integrity metadata,

@@ -175,6 +175,10 @@ class CORE_EXPORT ScriptLoader final : public GarbageCollected<ScriptLoader>,
   // script elements must have this flag set. ...</spec>
   bool non_blocking_ = true;
 
+  // Non-specified flag. Indicating that the script is a dynamically injected
+  // one with an async attribute, and therefore not render blocking.
+  bool dynamic_async_ = false;
+
   // <spec href="https://html.spec.whatwg.org/C/#ready-to-be-parser-executed">
   // ... Initially, script elements must have this flag unset ...</spec>
   bool ready_to_be_parser_executed_ = false;

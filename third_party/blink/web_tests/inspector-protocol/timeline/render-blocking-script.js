@@ -1,5 +1,5 @@
 (async function(testRunner) {
-  const numberOfURLs = 2;
+  const numberOfURLs = 3;
 
   // Test traces
   var {page, session, dp} = await testRunner.startHTML(`
@@ -24,6 +24,12 @@
       non_async_script.src = "../resources/empty.js?dynamicNonAsync";
       non_async_script.async = false;
       document.head.appendChild(non_async_script);
+
+      // Add a dynamic explicitly async script
+      const async_script = document.createElement("script");
+      async_script.src = "../resources/empty.js?dynamicAsync";
+      async_script.async = true;
+      document.head.appendChild(async_script);
     })();
   `);
 
