@@ -195,18 +195,36 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
 
   GURL url = net::GURLWithNSURL(http_response.URL);
   // User is showing intent to navigate to a Google-owned domain. Set GAIA and
-  // CHROME_CONNECTED cookies if the user is signed in or if they are not signed
-  // in and navigating to a GAIA sign-on (this is filtered in
+  // CHROME_CONNECTED cookies if the user is signed in (this is filtered in
   // ChromeConnectedHelper).
   if (signin::IsUrlEligibleForMirrorCookie(url)) {
     account_consistency_service_->SetChromeConnectedCookieWithUrls(
         {url, GURL(kGoogleUrl)});
   }
 
+  // Reset boolean that tracks displaying the sign-in consistency promo. This
+  // ensures that the promo is cancelled once navigation has started and the
+  // WKWebView is cancelling previous navigations.
+  show_consistency_promo_ = false;
+
   if (!gaia::IsGaiaSignonRealm(url.GetOrigin())) {
     std::move(callback).Run(PolicyDecision::Allow());
     return;
   }
+
+  // If the user has been prompted to enter their credentials on a Gaia sign-on
+  // page show the account consistency promo.
+  NSString* x_autologin_header = [[http_response allHeaderFields]
+      objectForKey:[NSString stringWithUTF8String:signin::kAutoLoginHeader]];
+  if (signin::IsMobileIdentityConsistencyEnabled() && x_autologin_header) {
+    show_consistency_promo_ = true;
+    // Allows the URL response to load before showing the consistency promo.
+    // The promo should always be displayed in the foreground of Gaia
+    // sign-on.
+    std::move(callback).Run(PolicyDecision::Allow());
+    return;
+  }
+
   NSString* manage_accounts_header = [[http_response allHeaderFields]
       objectForKey:
           [NSString stringWithUTF8String:signin::kChromeManageAccountsHeader]];
@@ -219,10 +237,6 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
       base::SysNSStringToUTF8(manage_accounts_header));
 
   account_reconcilor_->OnReceivedManageAccountsResponse(params.service_type);
-  // Reset boolean that tracks displaying the sign-in consistency promo. This
-  // ensures that the promo is cancelled once navigation has started and the
-  // WKWebView is cancelling previous navigations.
-  show_consistency_promo_ = false;
 
   switch (params.service_type) {
     case signin::GAIA_SERVICE_TYPE_INCOGNITO: {
@@ -254,16 +268,7 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
           }
         }
       }
-      if (params.show_consistency_promo) {
-        show_consistency_promo_ = true;
-        // Allows the URL response to load before showing the consistency promo.
-        // The promo should always be displayed in the foreground of Gaia
-        // sign-on.
-        std::move(callback).Run(PolicyDecision::Allow());
-        return;
-      } else {
-        [delegate_ onAddAccount];
-      }
+      [delegate_ onAddAccount];
       break;
     case signin::GAIA_SERVICE_TYPE_SIGNOUT:
     case signin::GAIA_SERVICE_TYPE_DEFAULT:
@@ -308,13 +313,6 @@ void AccountConsistencyService::AccountConsistencyHandler::PageLoaded(
   if (show_consistency_promo_ && gaia::IsGaiaSignonRealm(url.GetOrigin())) {
     [delegate_ onShowConsistencyPromo:url];
     show_consistency_promo_ = false;
-
-    // Chrome uses the CHROME_CONNECTED cookie to determine whether the
-    // eligibility promo should be shown. Once it is shown we should remove the
-    // cookie, since it should otherwise not be used unless the user is signed
-    // in.
-    account_consistency_service_->RemoveAllChromeConnectedCookies(
-        base::OnceClosure());
   }
 }
 

@@ -40,7 +40,7 @@ const char kProfileModeAttrName[] = "mode";
 const char kServiceTypeAttrName[] = "action";
 const char kSupervisedAttrName[] = "supervised";
 const char kSourceAttrName[] = "source";
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if defined(OS_ANDROID)
 const char kEligibleForConsistency[] = "eligible_for_consistency";
 const char kShowConsistencyPromo[] = "show_consistency_promo";
 #endif
@@ -109,7 +109,7 @@ ManageAccountsParams ChromeConnectedHeaderHelper::BuildManageAccountsParams(
       params.continue_url = value;
     } else if (key_name == kIsSameTabAttrName) {
       params.is_same_tab = value == "true";
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if defined(OS_ANDROID)
     } else if (key_name == kShowConsistencyPromo) {
       params.show_consistency_promo = value == "true";
 #endif
@@ -209,7 +209,7 @@ std::string ChromeConnectedHeaderHelper::BuildRequestHeader(
 #endif
 
   if (!force_account_consistency && gaia_id.empty()) {
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if defined(OS_ANDROID)
     if (base::FeatureList::IsEnabled(kMobileIdentityConsistency) &&
         gaia::IsGaiaSignonRealm(url.GetOrigin())) {
       parts.push_back(

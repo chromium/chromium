@@ -40,6 +40,13 @@ extern const char kChromeManageAccountsHeader[];
 extern const char kDiceRequestHeader[];
 extern const char kDiceResponseHeader[];
 
+// The X-Auto-Login header detects when a user is prompted to enter their
+// credentials on the Gaia sign-in page. It is sent with an empty email if the
+// user is on the Gaia sign-in email page or a pre-filled email if the user has
+// selected an account on the AccountChooser. X-Auto-Login is not sent following
+// a reauth request.
+extern const char kAutoLoginHeader[];
+
 // The ServiceType specified by Gaia in the response header accompanying the 204
 // response. This indicates the action Chrome is supposed to lead the user to
 // perform.

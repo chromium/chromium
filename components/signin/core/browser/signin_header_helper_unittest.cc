@@ -192,10 +192,10 @@ TEST_F(SigninHeaderHelperTest, TestMirrorRequestNoAccountIdChromeOS) {
                            "mode=0:enable_account_consistency=true:"
                            "consistency_enabled_by_default=false");
 }
-#else  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
-#if defined(OS_ANDROID) || defined(OS_IOS)
-// Tests that eligible_for_consistency request is returned on mobile (Android,
-// iOS) when reaching to Gaia origin and there's no primary account. Only
+#else  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_ANDROID)
+// Tests that eligible_for_consistency request is returned on Android
+// when reaching to Gaia origin and there's no primary account. Only
 // applicable when the Mobile Identity Consistency is enabled.
 TEST_F(SigninHeaderHelperTest, TestEligibleForConsistencyRequestGaiaOrigin) {
   base::test::ScopedFeatureList feature_list;
@@ -209,9 +209,9 @@ TEST_F(SigninHeaderHelperTest, TestEligibleForConsistencyRequestGaiaOrigin) {
                            "eligible_for_consistency=true");
 }
 
-// Tests that eligible_for_consistency request is NOT returned on mobile
-// (Android, iOS) when reaching to NON-Gaia origin and there's no primary
-// account. Only applicable when the Mobile Identity Consistency is enabled.
+// Tests that eligible_for_consistency request is NOT returned on Android
+// when reaching to NON-Gaia origin and there's no primary account
+// Only applicable when the Mobile Identity Consistency is enabled.
 TEST_F(SigninHeaderHelperTest,
        TestNoEligibleForConsistencyRequestNonGaiaOrigin) {
   base::test::ScopedFeatureList feature_list;
@@ -237,7 +237,7 @@ TEST_F(SigninHeaderHelperTest, TestForceAccountConsistencyMobile) {
       "source=TestSource,mode=0,enable_account_consistency=true,"
       "consistency_enabled_by_default=false");
 }
-#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+#endif  // defined(OS_ANDROID)
 
 // Tests that no Mirror request is returned when the user is not signed in (no
 // account id), for non Chrome OS platforms.
@@ -745,7 +745,7 @@ TEST_F(SigninHeaderHelperTest, TestBuildManageAccountsParams) {
   EXPECT_EQ(true, params.is_saml);
   EXPECT_EQ(true, params.is_same_tab);
   EXPECT_EQ(GURL(kContinueURL), params.continue_url);
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if defined(OS_ANDROID)
   EXPECT_EQ(true, params.show_consistency_promo);
 #endif
 }

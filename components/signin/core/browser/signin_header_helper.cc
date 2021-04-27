@@ -24,6 +24,7 @@ namespace signin {
 
 const char kChromeConnectedHeader[] = "X-Chrome-Connected";
 const char kChromeManageAccountsHeader[] = "X-Chrome-Manage-Accounts";
+const char kAutoLoginHeader[] = "X-Auto-Login";
 const char kDiceRequestHeader[] = "X-Chrome-ID-Consistency-Request";
 const char kDiceResponseHeader[] = "X-Chrome-ID-Consistency-Response";
 

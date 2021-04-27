@@ -449,25 +449,22 @@ TEST_F(AccountConsistencyServiceTest, ChromeManageAccountsDefault) {
 }
 
 // Tests that the ManageAccountsDelegate is notified when a navigation on Gaia
-// signon realm returns with a X-Chrome-Manage-Accounts header with show
-// consistency promo and ADDSESSION action.
-TEST_F(AccountConsistencyServiceTest,
-       ChromeManageAccountsShowConsistencyPromo) {
+// signon realm returns with a X-Auto-Login header.
+TEST_F(AccountConsistencyServiceTest, ChromeShowConsistencyPromo) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
+
   id delegate =
       [OCMockObject mockForProtocol:@protocol(ManageAccountsDelegate)];
   [[[delegate expect] ignoringNonObjectArgs] onShowConsistencyPromo:GURL()];
 
-  NSDictionary* headers = [NSDictionary
-      dictionaryWithObject:@"action=ADDSESSION,show_consistency_promo=true"
-                    forKey:@"X-Chrome-Manage-Accounts"];
+  NSDictionary* headers = [NSDictionary dictionaryWithObject:@"args=unused"
+                                                      forKey:@"X-Auto-Login"];
   NSHTTPURLResponse* response = [[NSHTTPURLResponse alloc]
        initWithURL:[NSURL URLWithString:@"https://accounts.google.com/"]
         statusCode:200
        HTTPVersion:@"HTTP/1.1"
       headerFields:headers];
-  EXPECT_CALL(*account_reconcilor_, OnReceivedManageAccountsResponse(
-                                        signin::GAIA_SERVICE_TYPE_ADDSESSION))
-      .Times(1);
 
   SimulateNavigateToURL(response, delegate);
 
@@ -476,22 +473,20 @@ TEST_F(AccountConsistencyServiceTest,
 
 // Tests that the consistency promo is not displayed when a page fails to load.
 TEST_F(AccountConsistencyServiceTest,
-       ChromeManageAccountsNotShowConsistencyPromoOnPageLoadFailure) {
+       ChromeNotShowConsistencyPromoOnPageLoadFailure) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
   id delegate =
       [OCMockObject mockForProtocol:@protocol(ManageAccountsDelegate)];
   [[[delegate reject] ignoringNonObjectArgs] onShowConsistencyPromo:GURL()];
 
-  NSDictionary* headers = [NSDictionary
-      dictionaryWithObject:@"action=ADDSESSION,show_consistency_promo=true"
-                    forKey:@"X-Chrome-Manage-Accounts"];
+  NSDictionary* headers = [NSDictionary dictionaryWithObject:@"args=unused"
+                                                      forKey:@"X-Auto-Login"];
   NSHTTPURLResponse* response = [[NSHTTPURLResponse alloc]
        initWithURL:[NSURL URLWithString:@"https://accounts.google.com/"]
         statusCode:200
        HTTPVersion:@"HTTP/1.1"
       headerFields:headers];
-  EXPECT_CALL(*account_reconcilor_, OnReceivedManageAccountsResponse(
-                                        signin::GAIA_SERVICE_TYPE_ADDSESSION))
-      .Times(1);
 
   SimulateNavigateToURLWithPageLoadFailure(response, delegate);
 
@@ -501,19 +496,20 @@ TEST_F(AccountConsistencyServiceTest,
 // Tests that the consistency promo is not displayed when a page fails to load
 // and user chooses another action.
 TEST_F(AccountConsistencyServiceTest,
-       ChromeManageAccountsNotShowConsistencyPromoOnPageLoadFailureRedirect) {
+       ChromeNotShowConsistencyPromoOnPageLoadFailureRedirect) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
+
   id delegate =
       [OCMockObject mockForProtocol:@protocol(ManageAccountsDelegate)];
   [[delegate expect] onAddAccount];
   [[[delegate reject] ignoringNonObjectArgs] onShowConsistencyPromo:GURL()];
 
   EXPECT_CALL(*account_reconcilor_, OnReceivedManageAccountsResponse(
-                                        signin::GAIA_SERVICE_TYPE_ADDSESSION))
-      .Times(2);
+                                        signin::GAIA_SERVICE_TYPE_ADDSESSION));
 
-  NSDictionary* headers = [NSDictionary
-      dictionaryWithObject:@"action=ADDSESSION,show_consistency_promo=true"
-                    forKey:@"X-Chrome-Manage-Accounts"];
+  NSDictionary* headers = [NSDictionary dictionaryWithObject:@"args=unused"
+                                                      forKey:@"X-Auto-Login"];
   NSHTTPURLResponse* responseSignin = [[NSHTTPURLResponse alloc]
        initWithURL:[NSURL URLWithString:@"https://accounts.google.com/"]
         statusCode:200
@@ -532,28 +528,6 @@ TEST_F(AccountConsistencyServiceTest,
       headerFields:headersAddAccount];
 
   SimulateNavigateToURLWithInterruption(responseAddAccount, delegate);
-
-  EXPECT_OCMOCK_VERIFY(delegate);
-}
-
-// Tests that the consistency promo is not displayed when a non GAIA URL is
-// committed.
-TEST_F(AccountConsistencyServiceTest,
-       ChromeManageAccountsNotShowConsistencyPromoOnNonGaiaURL) {
-  id delegate =
-      [OCMockObject mockForProtocol:@protocol(ManageAccountsDelegate)];
-  [[[delegate reject] ignoringNonObjectArgs] onShowConsistencyPromo:GURL()];
-
-  NSDictionary* headers = [NSDictionary
-      dictionaryWithObject:@"action=ADDSESSION,show_consistency_promo=true"
-                    forKey:@"X-Chrome-Manage-Accounts"];
-  NSHTTPURLResponse* response = [[NSHTTPURLResponse alloc]
-       initWithURL:[NSURL URLWithString:@"https://youtube.com//"]
-        statusCode:200
-       HTTPVersion:@"HTTP/1.1"
-      headerFields:headers];
-
-  SimulateNavigateToURL(response, delegate);
 
   EXPECT_OCMOCK_VERIFY(delegate);
 }
@@ -742,7 +716,7 @@ TEST_F(AccountConsistencyServiceTest, SetChromeConnectedCookiesAfterDelete) {
 // is signed out and navigating to google.com for |kMobileIdentityConsistency|
 // experiment.
 TEST_F(AccountConsistencyServiceTest,
-       SetMiceChromeConnectedCookiesSignedOutGoogleVisitor) {
+       SetChromeConnectedCookiesSignedOutGoogleVisitor) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
   id delegate =
@@ -765,21 +739,18 @@ TEST_F(AccountConsistencyServiceTest,
   EXPECT_OCMOCK_VERIFY(delegate);
 }
 
-// Ensures that CHROME_CONNECTED cookies are only set on GAIA urls when the user
-// is signed out and taps sign-in button for |kMobileIdentityConsistency|
-// experiment. These cookies are immediately removed after the sign-in promo is
-// shown.
+// Ensures that CHROME_CONNECTED cookies are not set when the user is signed out
+// after the sign-in promo is shown.
 TEST_F(AccountConsistencyServiceTest,
-       SetMiceChromeConnectedCookiesSignedOutGaiaVisitor) {
+       SetChromeConnectedCookiesSignedOutGaiaVisitor) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(signin::kMobileIdentityConsistency);
   id delegate =
       [OCMockObject mockForProtocol:@protocol(ManageAccountsDelegate)];
   [[[delegate expect] ignoringNonObjectArgs] onShowConsistencyPromo:GURL()];
 
-  NSDictionary* headers = [NSDictionary
-      dictionaryWithObject:@"action=ADDSESSION,show_consistency_promo=true"
-                    forKey:@"X-Chrome-Manage-Accounts"];
+  NSDictionary* headers = [NSDictionary dictionaryWithObject:@"args=unused"
+                                                      forKey:@"X-Auto-Login"];
   NSHTTPURLResponse* response = [[NSHTTPURLResponse alloc]
        initWithURL:[NSURL URLWithString:@"https://accounts.google.com/"]
         statusCode:200
@@ -789,8 +760,6 @@ TEST_F(AccountConsistencyServiceTest,
   SetWebStateHandler(delegate);
   EXPECT_TRUE(web_state_.ShouldAllowResponse(response,
                                              /* for_main_frame = */ true));
-
-  CheckDomainHasChromeConnectedCookie("accounts.google.com");
 
   web_state_.SetCurrentURL(net::GURLWithNSURL(response.URL));
   web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
