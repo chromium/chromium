@@ -27,7 +27,7 @@
 #include "third_party/blink/public/mojom/usb/web_usb_service.mojom-forward.h"
 #include "third_party/blink/public/mojom/wake_lock/wake_lock.mojom-forward.h"
 #include "third_party/blink/public/mojom/websockets/websocket_connector.mojom-forward.h"
-#include "third_party/blink/public/mojom/webtransport/quic_transport_connector.mojom-forward.h"
+#include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom-forward.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host.mojom.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host_factory.mojom.h"
 #include "third_party/blink/public/mojom/worker/subresource_loader_updater.mojom.h"
@@ -92,8 +92,8 @@ class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
       mojo::PendingReceiver<blink::mojom::WebUsbService> receiver);
   void CreateWebSocketConnector(
       mojo::PendingReceiver<blink::mojom::WebSocketConnector> receiver);
-  void CreateQuicTransportConnector(
-      mojo::PendingReceiver<blink::mojom::QuicTransportConnector> receiver);
+  void CreateWebTransportConnector(
+      mojo::PendingReceiver<blink::mojom::WebTransportConnector> receiver);
   void CreateWakeLockService(
       mojo::PendingReceiver<blink::mojom::WakeLockService> receiver);
   void BindCacheStorage(

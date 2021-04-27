@@ -11,7 +11,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/mojom/webtransport/quic_transport_connector.mojom-blink.h"
+#include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer.h"
@@ -136,7 +136,7 @@ class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
 
  private:
   ScriptPromise SendDatagram(base::span<const uint8_t> data) {
-    if (!web_transport_->quic_transport_.is_bound()) {
+    if (!web_transport_->transport_remote_.is_bound()) {
       // Silently drop the datagram if we are not connected.
       // TODO(ricea): Change the behaviour if the standard changes. See
       // https://github.com/WICG/web-transport/issues/93.
@@ -147,7 +147,7 @@ class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
         web_transport_->script_state_);
     pending_datagrams_.push_back(resolver);
 
-    web_transport_->quic_transport_->SendDatagram(
+    web_transport_->transport_remote_->SendDatagram(
         data, WTF::Bind(&DatagramUnderlyingSink::OnDatagramProcessed,
                         WrapWeakPersistent(this)));
     if (pending_datagrams_.size() < static_cast<wtf_size_t>(high_water_mark_)) {
@@ -286,7 +286,7 @@ class WebTransport::ReceiveStreamVendor final
       : script_state_(script_state), web_transport_(web_transport) {}
 
   void RequestStream(EnqueueCallback enqueue) override {
-    web_transport_->quic_transport_->AcceptUnidirectionalStream(
+    web_transport_->transport_remote_->AcceptUnidirectionalStream(
         WTF::Bind(&ReceiveStreamVendor::OnAcceptUnidirectionalStreamResponse,
                   WrapWeakPersistent(this), std::move(enqueue)));
   }
@@ -325,7 +325,7 @@ class WebTransport::BidirectionalStreamVendor final
       : script_state_(script_state), web_transport_(web_transport) {}
 
   void RequestStream(EnqueueCallback enqueue) override {
-    web_transport_->quic_transport_->AcceptBidirectionalStream(WTF::Bind(
+    web_transport_->transport_remote_->AcceptBidirectionalStream(WTF::Bind(
         &BidirectionalStreamVendor::OnAcceptBidirectionalStreamResponse,
         WrapWeakPersistent(this), std::move(enqueue)));
   }
@@ -382,7 +382,7 @@ WebTransport::WebTransport(ScriptState* script_state,
     : ExecutionContextLifecycleObserver(context),
       script_state_(script_state),
       url_(NullURL(), url),
-      quic_transport_(context),
+      transport_remote_(context),
       handshake_client_receiver_(this, context),
       client_receiver_(this, context),
       inspector_transport_id_(CreateUniqueIdentifier()) {}
@@ -393,7 +393,7 @@ ScriptPromise WebTransport::createUnidirectionalStream(
   DVLOG(1) << "WebTransport::createUnidirectionalStream() this=" << this;
 
   GetExecutionContext()->CountUse(WebFeature::kQuicTransportStreamApis);
-  if (!quic_transport_.is_bound()) {
+  if (!transport_remote_.is_bound()) {
     // TODO(ricea): Should we wait if we're still connecting?
     exception_state.ThrowDOMException(DOMExceptionCode::kNetworkError,
                                       "No connection.");
@@ -410,7 +410,7 @@ ScriptPromise WebTransport::createUnidirectionalStream(
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   create_stream_resolvers_.insert(resolver);
-  quic_transport_->CreateStream(
+  transport_remote_->CreateStream(
       std::move(data_pipe_consumer), mojo::ScopedDataPipeProducerHandle(),
       WTF::Bind(&WebTransport::OnCreateSendStreamResponse,
                 WrapWeakPersistent(this), WrapWeakPersistent(resolver),
@@ -430,7 +430,7 @@ ScriptPromise WebTransport::createBidirectionalStream(
   DVLOG(1) << "WebTransport::createBidirectionalStream() this=" << this;
 
   GetExecutionContext()->CountUse(WebFeature::kQuicTransportStreamApis);
-  if (!quic_transport_.is_bound()) {
+  if (!transport_remote_.is_bound()) {
     // TODO(ricea): We should wait if we are still connecting.
     exception_state.ThrowDOMException(DOMExceptionCode::kNetworkError,
                                       "No connection.");
@@ -460,7 +460,7 @@ ScriptPromise WebTransport::createBidirectionalStream(
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   create_stream_resolvers_.insert(resolver);
-  quic_transport_->CreateStream(
+  transport_remote_->CreateStream(
       std::move(outgoing_consumer), std::move(incoming_producer),
       WTF::Bind(&WebTransport::OnCreateBidirectionalStreamResponse,
                 WrapWeakPersistent(this), WrapWeakPersistent(resolver),
@@ -519,13 +519,13 @@ void WebTransport::close(const WebTransportCloseInfo* close_info) {
 }
 
 void WebTransport::setDatagramWritableQueueExpirationDuration(double duration) {
-  quic_transport_->SetOutgoingDatagramExpirationDuration(
+  transport_remote_->SetOutgoingDatagramExpirationDuration(
       base::TimeDelta::FromMillisecondsD(duration));
 }
 
 void WebTransport::OnConnectionEstablished(
-    mojo::PendingRemote<network::mojom::blink::QuicTransport> quic_transport,
-    mojo::PendingReceiver<network::mojom::blink::QuicTransportClient>
+    mojo::PendingRemote<network::mojom::blink::WebTransport> web_transport,
+    mojo::PendingReceiver<network::mojom::blink::WebTransportClient>
         client_receiver) {
   DVLOG(1) << "WebTransport::OnConnectionEstablished() this=" << this;
   handshake_client_receiver_.reset();
@@ -540,8 +540,8 @@ void WebTransport::OnConnectionEstablished(
   client_receiver_.set_disconnect_handler(
       WTF::Bind(&WebTransport::OnConnectionError, WrapWeakPersistent(this)));
 
-  DCHECK(!quic_transport_.is_bound());
-  quic_transport_.Bind(std::move(quic_transport), task_runner);
+  DCHECK(!transport_remote_.is_bound());
+  transport_remote_.Bind(std::move(web_transport), task_runner);
 
   received_streams_underlying_source_->NotifyOpened();
   received_bidirectional_streams_underlying_source_->NotifyOpened();
@@ -552,7 +552,7 @@ void WebTransport::OnConnectionEstablished(
 WebTransport::~WebTransport() = default;
 
 void WebTransport::OnHandshakeFailed(
-    network::mojom::blink::QuicTransportErrorPtr error) {
+    network::mojom::blink::WebTransportErrorPtr error) {
   // |error| should be null from security/privacy reasons.
   DCHECK(!error);
   DVLOG(1) << "WebTransport::OnHandshakeFailed() this=" << this;
@@ -616,11 +616,11 @@ bool WebTransport::HasPendingActivity() const {
 }
 
 void WebTransport::SendFin(uint32_t stream_id) {
-  quic_transport_->SendFin(stream_id);
+  transport_remote_->SendFin(stream_id);
 }
 
 void WebTransport::AbortStream(uint32_t stream_id) {
-  quic_transport_->AbortStream(stream_id, /*code=*/0);
+  transport_remote_->AbortStream(stream_id, /*code=*/0);
 }
 
 void WebTransport::ForgetStream(uint32_t stream_id) {
@@ -633,7 +633,7 @@ void WebTransport::Trace(Visitor* visitor) const {
   visitor->Trace(outgoing_datagrams_);
   visitor->Trace(script_state_);
   visitor->Trace(create_stream_resolvers_);
-  visitor->Trace(quic_transport_);
+  visitor->Trace(transport_remote_);
   visitor->Trace(handshake_client_receiver_);
   visitor->Trace(client_receiver_);
   visitor->Trace(ready_resolver_);
@@ -695,12 +695,12 @@ void WebTransport::Init(const String& url,
     return;
   }
 
-  Vector<network::mojom::blink::QuicTransportCertificateFingerprintPtr>
+  Vector<network::mojom::blink::WebTransportCertificateFingerprintPtr>
       fingerprints;
   if (options.hasServerCertificateFingerprints()) {
     for (const auto& fingerprint : options.serverCertificateFingerprints()) {
       fingerprints.push_back(
-          network::mojom::blink::QuicTransportCertificateFingerprint::New(
+          network::mojom::blink::WebTransportCertificateFingerprint::New(
               fingerprint->algorithm(), fingerprint->value()));
     }
   }
@@ -711,7 +711,7 @@ void WebTransport::Init(const String& url,
   // TODO(ricea): Check the SubresourceFilter and fail asynchronously if
   // disallowed. Must be done before shipping.
 
-  mojo::Remote<mojom::blink::QuicTransportConnector> connector;
+  mojo::Remote<mojom::blink::WebTransportConnector> connector;
   execution_context->GetBrowserInterfaceBroker().GetInterface(
       connector.BindNewPipeAndPassReceiver(
           execution_context->GetTaskRunner(TaskType::kNetworking)));
@@ -786,7 +786,7 @@ void WebTransport::Dispose() {
   DVLOG(1) << "WebTransport::Dispose() this=" << this;
   probe::WebTransportClosed(GetExecutionContext(), inspector_transport_id_);
   stream_map_.clear();
-  quic_transport_.reset();
+  transport_remote_.reset();
   handshake_client_receiver_.reset();
   client_receiver_.reset();
 }

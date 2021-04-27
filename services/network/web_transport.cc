@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/quic_transport.h"
+#include "services/network/web_transport.h"
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
@@ -17,14 +17,14 @@
 #include "net/third_party/quiche/src/quic/platform/api/quic_mem_slice_span.h"
 #include "net/third_party/quiche/src/quic/quic_transport/quic_transport_stream.h"
 #include "services/network/network_context.h"
-#include "services/network/public/mojom/quic_transport.mojom.h"
+#include "services/network/public/mojom/web_transport.mojom.h"
 
 namespace network {
 
 namespace {
 
 net::WebTransportParameters CreateParameters(
-    const std::vector<mojom::QuicTransportCertificateFingerprintPtr>&
+    const std::vector<mojom::WebTransportCertificateFingerprintPtr>&
         fingerprints) {
   net::WebTransportParameters params;
   params.enable_quic_transport = true;
@@ -40,7 +40,7 @@ net::WebTransportParameters CreateParameters(
 
 }  // namespace
 
-class QuicTransport::Stream final {
+class WebTransport::Stream final {
  public:
   class StreamVisitor final : public quic::WebTransportStreamVisitor {
    public:
@@ -80,7 +80,7 @@ class QuicTransport::Stream final {
   };
 
   // Bidirectional
-  Stream(QuicTransport* transport,
+  Stream(WebTransport* transport,
          quic::WebTransportStream* stream,
          mojo::ScopedDataPipeConsumerHandle readable,
          mojo::ScopedDataPipeProducerHandle writable)
@@ -100,7 +100,7 @@ class QuicTransport::Stream final {
   }
 
   // Unidirectional: outgoing
-  Stream(QuicTransport* transport,
+  Stream(WebTransport* transport,
          quic::WebTransportStream* outgoing,
          mojo::ScopedDataPipeConsumerHandle readable)
       : transport_(transport),
@@ -115,7 +115,7 @@ class QuicTransport::Stream final {
   }
 
   // Unidirectional: incoming
-  Stream(QuicTransport* transport,
+  Stream(WebTransport* transport,
          quic::WebTransportStream* incoming,
          mojo::ScopedDataPipeProducerHandle writable)
       : transport_(transport),
@@ -296,7 +296,7 @@ class QuicTransport::Stream final {
         base::BindOnce(&Stream::Dispose, weak_factory_.GetWeakPtr()));
   }
 
-  QuicTransport* const transport_;  // outlives |this|.
+  WebTransport* const transport_;  // outlives |this|.
   const uint32_t id_;
   // |outgoing_| and |incoming_| point to the same stream when this is a
   // bidirectional stream. They are owned by |transport_| (via
@@ -317,14 +317,14 @@ class QuicTransport::Stream final {
   base::WeakPtrFactory<Stream> weak_factory_{this};
 };  // namespace network
 
-QuicTransport::QuicTransport(
+WebTransport::WebTransport(
     const GURL& url,
     const url::Origin& origin,
     const net::NetworkIsolationKey& key,
-    const std::vector<mojom::QuicTransportCertificateFingerprintPtr>&
+    const std::vector<mojom::WebTransportCertificateFingerprintPtr>&
         fingerprints,
     NetworkContext* context,
-    mojo::PendingRemote<mojom::QuicTransportHandshakeClient> handshake_client)
+    mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client)
     : transport_(net::CreateWebTransportClient(url,
                                                origin,
                                                this,
@@ -335,15 +335,15 @@ QuicTransport::QuicTransport(
       receiver_(this),
       handshake_client_(std::move(handshake_client)) {
   handshake_client_.set_disconnect_handler(
-      base::BindOnce(&QuicTransport::Dispose, base::Unretained(this)));
+      base::BindOnce(&WebTransport::Dispose, base::Unretained(this)));
 
   transport_->Connect();
 }
 
-QuicTransport::~QuicTransport() = default;
+WebTransport::~WebTransport() = default;
 
-void QuicTransport::SendDatagram(base::span<const uint8_t> data,
-                                 base::OnceCallback<void(bool)> callback) {
+void WebTransport::SendDatagram(base::span<const uint8_t> data,
+                                base::OnceCallback<void(bool)> callback) {
   DCHECK(!torn_down_);
 
   datagram_callbacks_.emplace(std::move(callback));
@@ -355,7 +355,7 @@ void QuicTransport::SendDatagram(base::span<const uint8_t> data,
   transport_->session()->SendOrQueueDatagram(std::move(slice));
 }
 
-void QuicTransport::CreateStream(
+void WebTransport::CreateStream(
     mojo::ScopedDataPipeConsumerHandle readable,
     mojo::ScopedDataPipeProducerHandle writable,
     base::OnceCallback<void(bool, uint32_t)> callback) {
@@ -406,21 +406,21 @@ void QuicTransport::CreateStream(
   std::move(callback).Run(true, stream->GetStreamId());
 }
 
-void QuicTransport::AcceptBidirectionalStream(
+void WebTransport::AcceptBidirectionalStream(
     BidirectionalStreamAcceptanceCallback acceptance) {
   bidirectional_stream_acceptances_.push(std::move(acceptance));
 
   OnIncomingBidirectionalStreamAvailable();
 }
 
-void QuicTransport::AcceptUnidirectionalStream(
+void WebTransport::AcceptUnidirectionalStream(
     UnidirectionalStreamAcceptanceCallback acceptance) {
   unidirectional_stream_acceptances_.push(std::move(acceptance));
 
   OnIncomingUnidirectionalStreamAvailable();
 }
 
-void QuicTransport::SendFin(uint32_t stream) {
+void WebTransport::SendFin(uint32_t stream) {
   auto it = streams_.find(stream);
   if (it == streams_.end()) {
     return;
@@ -428,7 +428,7 @@ void QuicTransport::SendFin(uint32_t stream) {
   it->second->NotifyFinFromClient();
 }
 
-void QuicTransport::AbortStream(uint32_t stream, uint64_t code) {
+void WebTransport::AbortStream(uint32_t stream, uint64_t code) {
   auto it = streams_.find(stream);
   if (it == streams_.end()) {
     return;
@@ -440,7 +440,7 @@ void QuicTransport::AbortStream(uint32_t stream, uint64_t code) {
   it->second->Abort(code_to_pass);
 }
 
-void QuicTransport::SetOutgoingDatagramExpirationDuration(
+void WebTransport::SetOutgoingDatagramExpirationDuration(
     base::TimeDelta duration) {
   if (torn_down_) {
     return;
@@ -450,7 +450,7 @@ void QuicTransport::SetOutgoingDatagramExpirationDuration(
       quic::QuicTime::Delta::FromMicroseconds(duration.InMicroseconds()));
 }
 
-void QuicTransport::OnConnected() {
+void WebTransport::OnConnected() {
   if (torn_down_) {
     return;
   }
@@ -463,10 +463,10 @@ void QuicTransport::OnConnected() {
 
   handshake_client_.reset();
   client_.set_disconnect_handler(
-      base::BindOnce(&QuicTransport::Dispose, base::Unretained(this)));
+      base::BindOnce(&WebTransport::Dispose, base::Unretained(this)));
 }
 
-void QuicTransport::OnConnectionFailed() {
+void WebTransport::OnConnectionFailed() {
   if (torn_down_) {
     return;
   }
@@ -480,7 +480,7 @@ void QuicTransport::OnConnectionFailed() {
   TearDown();
 }
 
-void QuicTransport::OnClosed() {
+void WebTransport::OnClosed() {
   if (torn_down_) {
     return;
   }
@@ -490,7 +490,7 @@ void QuicTransport::OnClosed() {
   TearDown();
 }
 
-void QuicTransport::OnError() {
+void WebTransport::OnError() {
   if (torn_down_) {
     return;
   }
@@ -500,7 +500,7 @@ void QuicTransport::OnError() {
   TearDown();
 }
 
-void QuicTransport::OnIncomingBidirectionalStreamAvailable() {
+void WebTransport::OnIncomingBidirectionalStreamAvailable() {
   DCHECK(!handshake_client_);
   DCHECK(client_);
 
@@ -542,7 +542,7 @@ void QuicTransport::OnIncomingBidirectionalStreamAvailable() {
   }
 }
 
-void QuicTransport::OnIncomingUnidirectionalStreamAvailable() {
+void WebTransport::OnIncomingUnidirectionalStreamAvailable() {
   DCHECK(!handshake_client_);
   DCHECK(client_);
 
@@ -576,7 +576,7 @@ void QuicTransport::OnIncomingUnidirectionalStreamAvailable() {
   }
 }
 
-void QuicTransport::OnDatagramReceived(base::StringPiece datagram) {
+void WebTransport::OnDatagramReceived(base::StringPiece datagram) {
   if (torn_down_) {
     return;
   }
@@ -585,15 +585,15 @@ void QuicTransport::OnDatagramReceived(base::StringPiece datagram) {
       reinterpret_cast<const uint8_t*>(datagram.data()), datagram.size()));
 }
 
-void QuicTransport::OnCanCreateNewOutgoingBidirectionalStream() {
+void WebTransport::OnCanCreateNewOutgoingBidirectionalStream() {
   // TODO(yhirano): Implement this.
 }
 
-void QuicTransport::OnCanCreateNewOutgoingUnidirectionalStream() {
+void WebTransport::OnCanCreateNewOutgoingUnidirectionalStream() {
   // TODO(yhirano): Implement this.
 }
 
-void QuicTransport::OnDatagramProcessed(
+void WebTransport::OnDatagramProcessed(
     base::Optional<quic::MessageStatus> status) {
   DCHECK(!datagram_callbacks_.empty());
 
@@ -602,7 +602,7 @@ void QuicTransport::OnDatagramProcessed(
   datagram_callbacks_.pop();
 }
 
-void QuicTransport::TearDown() {
+void WebTransport::TearDown() {
   torn_down_ = true;
   receiver_.reset();
   handshake_client_.reset();
@@ -610,10 +610,10 @@ void QuicTransport::TearDown() {
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindOnce(&QuicTransport::Dispose, weak_factory_.GetWeakPtr()));
+      base::BindOnce(&WebTransport::Dispose, weak_factory_.GetWeakPtr()));
 }
 
-void QuicTransport::Dispose() {
+void WebTransport::Dispose() {
   receiver_.reset();
 
   context_->Remove(this);

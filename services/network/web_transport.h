@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_QUIC_TRANSPORT_H_
-#define SERVICES_NETWORK_QUIC_TRANSPORT_H_
+#ifndef SERVICES_NETWORK_WEB_TRANSPORT_H_
+#define SERVICES_NETWORK_WEB_TRANSPORT_H_
 
 #include <memory>
 
@@ -13,7 +13,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/quic/quic_transport_client.h"
-#include "services/network/public/mojom/quic_transport.mojom.h"
+#include "services/network/public/mojom/web_transport.mojom.h"
 
 class GURL;
 
@@ -29,11 +29,11 @@ namespace network {
 
 class NetworkContext;
 
-// The implementation for QuicTransport
-// (https://wicg.github.io/web-transport/#quic-transport) in the NetworkService.
-// Implements mojom::QuicTransport with the net/ implementation.
-class COMPONENT_EXPORT(NETWORK_SERVICE) QuicTransport final
-    : public mojom::QuicTransport,
+// The implementation for WebTransport
+// (https://w3c.github.io/webtransport/#web-transport) in the NetworkService.
+// Implements mojom::WebTransport with the net/ implementation.
+class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
+    : public mojom::WebTransport,
       public net::WebTransportClientVisitor {
  public:
   class Stream;
@@ -43,18 +43,17 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) QuicTransport final
                               mojo::ScopedDataPipeProducerHandle)>;
   using UnidirectionalStreamAcceptanceCallback =
       base::OnceCallback<void(uint32_t, mojo::ScopedDataPipeConsumerHandle)>;
-  QuicTransport(
+  WebTransport(
       const GURL& url,
       const url::Origin& origin,
       const net::NetworkIsolationKey& key,
-      const std::vector<mojom::QuicTransportCertificateFingerprintPtr>&
+      const std::vector<mojom::WebTransportCertificateFingerprintPtr>&
           fingerprints,
       NetworkContext* context,
-      mojo::PendingRemote<mojom::QuicTransportHandshakeClient>
-          handshake_client);
-  ~QuicTransport() override;
+      mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client);
+  ~WebTransport() override;
 
-  // mojom::QuicTransport implementation:
+  // mojom::WebTransport implementation:
   void SendDatagram(base::span<const uint8_t> data,
                     base::OnceCallback<void(bool)> callback) override;
   void CreateStream(mojo::ScopedDataPipeConsumerHandle readable,
@@ -98,17 +97,17 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) QuicTransport final
   base::queue<UnidirectionalStreamAcceptanceCallback>
       unidirectional_stream_acceptances_;
 
-  mojo::Receiver<mojom::QuicTransport> receiver_;
-  mojo::Remote<mojom::QuicTransportHandshakeClient> handshake_client_;
-  mojo::Remote<mojom::QuicTransportClient> client_;
+  mojo::Receiver<mojom::WebTransport> receiver_;
+  mojo::Remote<mojom::WebTransportHandshakeClient> handshake_client_;
+  mojo::Remote<mojom::WebTransportClient> client_;
   base::queue<base::OnceCallback<void(bool)>> datagram_callbacks_;
 
   bool torn_down_ = false;
 
   // This must be the last member.
-  base::WeakPtrFactory<QuicTransport> weak_factory_{this};
+  base::WeakPtrFactory<WebTransport> weak_factory_{this};
 };
 
 }  // namespace network
 
-#endif  // SERVICES_NETWORK_QUIC_TRANSPORT_H_
+#endif  // SERVICES_NETWORK_WEB_TRANSPORT_H_

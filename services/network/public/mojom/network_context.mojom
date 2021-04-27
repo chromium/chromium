@@ -38,7 +38,6 @@ import "services/network/public/mojom/proxy_config.mojom";
 import "services/network/public/mojom/proxy_config_with_annotation.mojom";
 import "services/network/public/mojom/proxy_lookup_client.mojom";
 import "services/network/public/mojom/proxy_resolving_socket.mojom";
-import "services/network/public/mojom/quic_transport.mojom";
 import "services/network/public/mojom/restricted_cookie_manager.mojom";
 import "services/network/public/mojom/site_for_cookies.mojom";
 import "services/network/public/mojom/ssl_config.mojom";
@@ -50,6 +49,7 @@ import "services/network/public/mojom/url_loader_factory.mojom";
 import "services/network/public/mojom/url_request.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "services/network/public/mojom/websocket.mojom";
+import "services/network/public/mojom/web_transport.mojom";
 import "services/proxy_resolver/public/mojom/proxy_resolver.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
@@ -1111,19 +1111,19 @@ interface NetworkContext {
       pending_remote<WebSocketAuthenticationHandler>? auth_handler,
       pending_remote<TrustedHeaderClient>? header_client);
 
-  // Creates a QuicTransport connection to |url|. |origin| is used for the
+  // Creates a WebTransport connection to |url|. |origin| is used for the
   // client indication - see
   // https://tools.ietf.org/html/draft-vvv-webtransport-quic-01#section-3.2 .
   // When |fingerprints| is not empty, it is used to verify the certificate.
   // https://wicg.github.io/web-transport/#dom-quictransportconfiguration-server_certificate_fingerprints
   //
   // It is recommended to detect mojo connection errors on |handshake_client|.
-  CreateQuicTransport(
+  CreateWebTransport(
         url.mojom.Url url,
         url.mojom.Origin origin,
         NetworkIsolationKey network_isolation_key,
-        array<QuicTransportCertificateFingerprint> fingerprints,
-        pending_remote<QuicTransportHandshakeClient> handshake_client);
+        array<WebTransportCertificateFingerprint> fingerprints,
+        pending_remote<WebTransportHandshakeClient> handshake_client);
 
   // Create a NetLogExporter, which helps export NetLog to an existing file.
   // Note that the log is generally global, including all NetworkContexts

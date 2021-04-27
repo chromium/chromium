@@ -199,7 +199,7 @@ mojom("mojom_platform") {
     "webid/federated_auth_response.mojom",
     "webpreferences/web_preferences.mojom",
     "websockets/websocket_connector.mojom",
-    "webtransport/quic_transport_connector.mojom",
+    "webtransport/web_transport_connector.mojom",
     "widget/device_emulation_params.mojom",
     "widget/screen_info.mojom",
     "widget/screen_infos.mojom",

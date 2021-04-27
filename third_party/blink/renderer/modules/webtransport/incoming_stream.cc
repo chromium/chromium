@@ -318,7 +318,7 @@ void IncomingStream::AbortAndReset() {
   state_ = State::kAborted;
 
   if (on_abort_) {
-    // Cause QuicTransport to drop its reference to us.
+    // Cause WebTransport to drop its reference to us.
     std::move(on_abort_).Run();
   }
 

@@ -2,39 +2,39 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_WEBTRANSPORT_QUIC_TRANSPORT_CONNECTOR_IMPL_H_
-#define CONTENT_BROWSER_WEBTRANSPORT_QUIC_TRANSPORT_CONNECTOR_IMPL_H_
+#ifndef CONTENT_BROWSER_WEBTRANSPORT_WEB_TRANSPORT_CONNECTOR_IMPL_H_
+#define CONTENT_BROWSER_WEBTRANSPORT_WEB_TRANSPORT_CONNECTOR_IMPL_H_
 
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/network_isolation_key.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "services/network/public/mojom/quic_transport.mojom.h"
-#include "third_party/blink/public/mojom/webtransport/quic_transport_connector.mojom.h"
+#include "services/network/public/mojom/web_transport.mojom.h"
+#include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom.h"
 #include "url/origin.h"
 
 namespace content {
 
 class RenderFrameHostImpl;
 
-class QuicTransportConnectorImpl final
-    : public blink::mojom::QuicTransportConnector {
+class WebTransportConnectorImpl final
+    : public blink::mojom::WebTransportConnector {
  public:
   // |frame| is needed for devtools - sometimes (e.g., the connector is for
   // workers) there is not appropriate frame to associate, and in that case
   // nullptr is provided.
-  QuicTransportConnectorImpl(
+  WebTransportConnectorImpl(
       int process_id,
       base::WeakPtr<RenderFrameHostImpl> frame,
       const url::Origin& origin,
       const net::NetworkIsolationKey& network_isolation_key);
-  ~QuicTransportConnectorImpl() override;
+  ~WebTransportConnectorImpl() override;
 
   void Connect(
       const GURL& url,
-      std::vector<network::mojom::QuicTransportCertificateFingerprintPtr>
+      std::vector<network::mojom::WebTransportCertificateFingerprintPtr>
           fingerprints,
-      mojo::PendingRemote<network::mojom::QuicTransportHandshakeClient>
+      mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
           handshake_client) override;
 
  private:
@@ -46,4 +46,4 @@ class QuicTransportConnectorImpl final
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_WEBTRANSPORT_QUIC_TRANSPORT_CONNECTOR_IMPL_H_
+#endif  // CONTENT_BROWSER_WEBTRANSPORT_WEB_TRANSPORT_CONNECTOR_IMPL_H_

@@ -146,7 +146,7 @@
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_response.mojom-forward.h"
 #include "third_party/blink/public/mojom/websockets/websocket_connector.mojom.h"
-#include "third_party/blink/public/mojom/webtransport/quic_transport_connector.mojom.h"
+#include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host_factory.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_action_handler_base.h"
@@ -1529,8 +1529,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void CreateDedicatedWorkerHostFactory(
       mojo::PendingReceiver<blink::mojom::DedicatedWorkerHostFactory> receiver);
 
-  void CreateQuicTransportConnector(
-      mojo::PendingReceiver<blink::mojom::QuicTransportConnector> receiver);
+  void CreateWebTransportConnector(
+      mojo::PendingReceiver<blink::mojom::WebTransportConnector> receiver);
 
   void CreateNotificationService(
       mojo::PendingReceiver<blink::mojom::NotificationService> receiver);

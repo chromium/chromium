@@ -8,35 +8,36 @@ import "mojo/public/mojom/base/read_only_buffer.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
 
-// Represents a QuicTransport error.
+// Represents a WebTransport error.
 // See also: net/quic/quic_transport_client.h
-struct QuicTransportError {
+struct WebTransportError {
   // A net error (see net/base/net_errors.h).
   int32 net_error = 0;
 
   // A QUIC error (see
   // net/third_party/quiche/src/quic/core/quic_error_codes.h).
+  // TODO(ricea): Rename this.
   int32 quic_error = 0;
 
   // Human-readable error summary.
   string details;
 
-  // QuicTransport requires that the connection errors have to be
-  // undistinguishable until the peer is confirmed to be a QuicTransport
-  // endpoint.  See https://wicg.github.io/web-transport/#protocol-security
+  // WebTransport requires that the connection errors have to be
+  // undistinguishable until the peer is confirmed to be a WebTransport
+  // endpoint.  See https://w3c.github.io/web-transport/#protocol-security
   bool safe_to_report_details = false;
 };
 
 // The fingerprint of a certificate accompanied with the hash algorithm.
-// https://wicg.github.io/web-transport/#quic-transport-configuration
+// https://w3c.github.io/web-transport/#web-transport-configuration
 // https://www.w3.org/TR/webrtc/#dom-rtcdtlsfingerprint
-struct QuicTransportCertificateFingerprint {
+struct WebTransportCertificateFingerprint {
   string algorithm;
   string fingerprint;
 };
 
-// A mojo interface for https://wicg.github.io/web-transport/#quic-transport.
-interface QuicTransport {
+// A mojo interface for https://w3c.github.io/web-transport/#web-transport.
+interface WebTransport {
   // A datagram message is sent from the client. The response message represents
   // whether the peer has sent or discarded the datagram.
   SendDatagram(mojo_base.mojom.ReadOnlyBuffer data) => (bool result);
@@ -72,8 +73,8 @@ interface QuicTransport {
   SetOutgoingDatagramExpirationDuration(mojo_base.mojom.TimeDelta duration);
 };
 
-// A mojo interface for the client of QuicTransport.
-interface QuicTransportClient {
+// A mojo interface for the client of WebTransport.
+interface WebTransportClient {
   // A datagram message is sent from the server.
   OnDatagramReceived(mojo_base.mojom.ReadOnlyBuffer data);
 
@@ -84,21 +85,21 @@ interface QuicTransportClient {
   OnIncomingStreamClosed(uint32 stream_id, bool fin_received);
 };
 
-// Used to create a QuicTransport connection. This is split from QuicTransport
+// Used to create a WebTransport session. This is split from WebTransport
 // so that the handshake part can be intercepted, by Chrome extensions for
 // example.
 // Some parameters may contain information that cannot be handed to the
 // initiator renderer due to security and privacy reasons. There should be
-// an QuicTransportHandshakeClient implementation in the browser process
-// which ensures that a QuicTransportHandshakeClient implemented in renderers
+// an WebTransportHandshakeClient implementation in the browser process
+// which ensures that a WebTransportHandshakeClient implemented in renderers
 // doesn't see such information.
-interface QuicTransportHandshakeClient {
+interface WebTransportHandshakeClient {
   // Called when the handshake succeeds.
-  OnConnectionEstablished(pending_remote<QuicTransport> transport,
-                          pending_receiver<QuicTransportClient> client);
+  OnConnectionEstablished(pending_remote<WebTransport> transport,
+                          pending_receiver<WebTransportClient> client);
 
   // Called when the handshake fails.
   // |error| contains the error details. The actual error information issued
   // by the network service should not be handed to the initiator renderer.
-  OnHandshakeFailed(QuicTransportError? error);
+  OnHandshakeFailed(WebTransportError? error);
 };

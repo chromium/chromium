@@ -19,7 +19,7 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/url_loader_factory_params_helper.h"
 #include "content/browser/websockets/websocket_connector_impl.h"
-#include "content/browser/webtransport/quic_transport_connector_impl.h"
+#include "content/browser/webtransport/web_transport_connector_impl.h"
 #include "content/browser/worker_host/dedicated_worker_host_factory_impl.h"
 #include "content/browser/worker_host/dedicated_worker_service_impl.h"
 #include "content/browser/worker_host/worker_script_fetch_initiator.h"
@@ -501,11 +501,11 @@ void DedicatedWorkerHost::CreateWebSocketConnector(
       std::move(receiver));
 }
 
-void DedicatedWorkerHost::CreateQuicTransportConnector(
-    mojo::PendingReceiver<blink::mojom::QuicTransportConnector> receiver) {
+void DedicatedWorkerHost::CreateWebTransportConnector(
+    mojo::PendingReceiver<blink::mojom::WebTransportConnector> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   mojo::MakeSelfOwnedReceiver(
-      std::make_unique<QuicTransportConnectorImpl>(
+      std::make_unique<WebTransportConnectorImpl>(
           worker_process_host_->GetID(), /*frame=*/nullptr, worker_origin_,
           isolation_info_.network_isolation_key()),
       std::move(receiver));

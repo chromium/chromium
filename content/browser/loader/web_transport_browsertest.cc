@@ -35,20 +35,20 @@
 
 // This file is placed tentively in content/browser/loader.
 // TODO(yhirano): Convert tests in this file to web platform tests when they
-// have a QuicTransport server.
+// have a WebTransport server.
 
 namespace content {
 namespace {
 
 using base::ASCIIToUTF16;
 
-class QuicTransportSimpleServerWithThread final {
+class WebTransportSimpleServerWithThread final {
  public:
-  explicit QuicTransportSimpleServerWithThread(
+  explicit WebTransportSimpleServerWithThread(
       const std::vector<url::Origin>& origins)
       : origins_(origins) {}
 
-  ~QuicTransportSimpleServerWithThread() {
+  ~WebTransportSimpleServerWithThread() {
     io_thread_->task_runner()->PostTask(
         FROM_HERE,
         base::BindOnce([](std::unique_ptr<net::QuicSimpleServer> server) {},
@@ -61,7 +61,7 @@ class QuicTransportSimpleServerWithThread final {
   void Start() {
     CHECK(!io_thread_);
 
-    io_thread_ = std::make_unique<base::Thread>("QuicTransport server");
+    io_thread_ = std::make_unique<base::Thread>("WebTransport server");
     base::Thread::Options thread_options;
     thread_options.message_pump_type = base::MessagePumpType::IO;
     CHECK(io_thread_->StartWithOptions(thread_options));
@@ -99,10 +99,9 @@ class QuicTransportSimpleServerWithThread final {
   std::unique_ptr<base::Thread> io_thread_;
 };
 
-// TODO(vasilvv): Rename this to WebTransportBrowserTest.
-class QuicTransportBrowserTest : public ContentBrowserTest {
+class WebTransportBrowserTest : public ContentBrowserTest {
  public:
-  QuicTransportBrowserTest() : server_({}) {
+  WebTransportBrowserTest() : server_({}) {
     quic::QuicEnableVersion(quic::DefaultVersionForQuicTransport());
     server_.Start();
   }
@@ -142,10 +141,10 @@ class QuicTransportBrowserTest : public ContentBrowserTest {
 
  protected:
   QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
-  QuicTransportSimpleServerWithThread server_;
+  WebTransportSimpleServerWithThread server_;
 };
 
-IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, Echo) {
+IN_PROC_BROWSER_TEST_F(WebTransportBrowserTest, Echo) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
@@ -184,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, Echo) {
   ASSERT_TRUE(WaitForTitle(u"PASS", {u"FAIL"}));
 }
 
-IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, EchoViaWebTransport) {
+IN_PROC_BROWSER_TEST_F(WebTransportBrowserTest, EchoViaWebTransport) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
@@ -223,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, EchoViaWebTransport) {
   ASSERT_TRUE(WaitForTitle(u"PASS", {u"FAIL"}));
 }
 
-IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, NonexistentResource) {
+IN_PROC_BROWSER_TEST_F(WebTransportBrowserTest, NonexistentResource) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
@@ -253,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, NonexistentResource) {
   ASSERT_TRUE(WaitForTitle(u"PASS", {u"FAIL"}));
 }
 
-IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, CreateSendStream) {
+IN_PROC_BROWSER_TEST_F(WebTransportBrowserTest, CreateSendStream) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
@@ -284,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, CreateSendStream) {
 // ReceiveStream is flaky: crbug.com/1140193
 // TODO(vasilvv): change from QuicTransport to WebTransport when re-enabling.
 #define MAYBE_ReceiveStream DISABLED_ReceiveStream
-IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, MAYBE_ReceiveStream) {
+IN_PROC_BROWSER_TEST_F(WebTransportBrowserTest, MAYBE_ReceiveStream) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
@@ -334,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, MAYBE_ReceiveStream) {
   ASSERT_TRUE(WaitForTitle(u"PASS", {u"FAIL"}));
 }
 
-IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, BidirectionalStream) {
+IN_PROC_BROWSER_TEST_F(WebTransportBrowserTest, BidirectionalStream) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
@@ -381,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, BidirectionalStream) {
   ASSERT_TRUE(WaitForTitle(u"PASS", {u"FAIL"}));
 }
 
-IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, CertificateFingerprint) {
+IN_PROC_BROWSER_TEST_F(WebTransportBrowserTest, CertificateFingerprint) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
@@ -429,7 +428,7 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, CertificateFingerprint) {
   ASSERT_TRUE(WaitForTitle(u"PASS", {u"FAIL"}));
 }
 
-IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, ReceiveBidirectionalStream) {
+IN_PROC_BROWSER_TEST_F(WebTransportBrowserTest, ReceiveBidirectionalStream) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
@@ -477,7 +476,7 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, ReceiveBidirectionalStream) {
 }
 
 // TODO(vasilvv): re-add /receive-bidirectional and re-enable the test.
-IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebTransportBrowserTest,
                        DISABLED_ReceiveBidirectionalStreamOld) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(

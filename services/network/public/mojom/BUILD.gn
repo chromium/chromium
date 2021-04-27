@@ -96,13 +96,12 @@ mojom("mojom_ip_address") {
     {
       types = [
         {
-          mojom = "network.mojom.QuicTransportError"
+          mojom = "network.mojom.WebTransportError"
           cpp = "::net::QuicTransportError"
         },
       ]
-      traits_headers = [
-        "//services/network/public/cpp/quic_transport_error_mojom_traits.h",
-      ]
+      traits_headers =
+          [ "//services/network/public/cpp/web_transport_error_mojom_traits.h" ]
       traits_public_deps = [
         "//net",
         "//services/network/public/cpp:ip_address_mojom_support",
@@ -183,7 +182,6 @@ mojom("url_loader_base") {
     "parsed_headers.mojom",
     "proxy_config.mojom",
     "proxy_config_with_annotation.mojom",
-    "quic_transport.mojom",
     "referrer_policy.mojom",
     "source_location.mojom",
     "timing_allow_origin.mojom",
@@ -195,6 +193,7 @@ mojom("url_loader_base") {
     "web_bundle_handle.mojom",
     "web_client_hints_types.mojom",
     "web_sandbox_flags.mojom",
+    "web_transport.mojom",
     "x_frame_options.mojom",
   ]
 

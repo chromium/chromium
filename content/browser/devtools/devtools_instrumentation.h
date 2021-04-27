@@ -206,7 +206,7 @@ std::unique_ptr<protocol::Audits::InspectorIssue> GetHeavyAdIssue(
     blink::mojom::HeavyAdResolutionStatus resolution,
     blink::mojom::HeavyAdReason reason);
 
-void OnQuicTransportHandshakeFailed(
+void OnWebTransportHandshakeFailed(
     RenderFrameHostImpl* frame_host,
     const GURL& url,
     const base::Optional<net::QuicTransportError>& error);

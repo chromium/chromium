@@ -286,8 +286,6 @@ component("cpp_base") {
     "proxy_config_mojom_traits.h",
     "proxy_config_with_annotation_mojom_traits.cc",
     "proxy_config_with_annotation_mojom_traits.h",
-    "quic_transport_error_mojom_traits.cc",
-    "quic_transport_error_mojom_traits.h",
     "resource_request.cc",
     "resource_request.h",
     "resource_request_body.cc",
@@ -297,6 +295,8 @@ component("cpp_base") {
     "url_loader_completion_status.h",
     "url_request_mojom_traits.cc",
     "url_request_mojom_traits.h",
+    "web_transport_error_mojom_traits.cc",
+    "web_transport_error_mojom_traits.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

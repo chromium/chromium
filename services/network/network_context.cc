@@ -97,7 +97,6 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "services/network/quic_transport.h"
 #include "services/network/resolve_host_request.h"
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
 #include "services/network/restricted_cookie_manager.h"
@@ -116,6 +115,7 @@
 #include "services/network/trust_tokens/trust_token_store.h"
 #include "services/network/url_loader.h"
 #include "services/network/url_request_context_builder_mojo.h"
+#include "services/network/web_transport.h"
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
 #include "components/certificate_transparency/chrome_ct_policy_enforcer.h"
@@ -706,10 +706,10 @@ void NetworkContext::DestroyURLLoaderFactory(
   url_loader_factories_.erase(it);
 }
 
-void NetworkContext::Remove(QuicTransport* transport) {
-  auto it = quic_transports_.find(transport);
-  if (it != quic_transports_.end()) {
-    quic_transports_.erase(it);
+void NetworkContext::Remove(WebTransport* transport) {
+  auto it = web_transports_.find(transport);
+  if (it != web_transports_.end()) {
+    web_transports_.erase(it);
   }
 }
 
@@ -1346,16 +1346,16 @@ void NetworkContext::CreateWebSocket(
 #endif  // !defined(OS_IOS)
 }
 
-void NetworkContext::CreateQuicTransport(
+void NetworkContext::CreateWebTransport(
     const GURL& url,
     const url::Origin& origin,
     const net::NetworkIsolationKey& key,
-    std::vector<mojom::QuicTransportCertificateFingerprintPtr> fingerprints,
-    mojo::PendingRemote<mojom::QuicTransportHandshakeClient>
+    std::vector<mojom::WebTransportCertificateFingerprintPtr> fingerprints,
+    mojo::PendingRemote<mojom::WebTransportHandshakeClient>
         pending_handshake_client) {
-  quic_transports_.insert(
-      std::make_unique<QuicTransport>(url, origin, key, fingerprints, this,
-                                      std::move(pending_handshake_client)));
+  web_transports_.insert(
+      std::make_unique<WebTransport>(url, origin, key, fingerprints, this,
+                                     std::move(pending_handshake_client)));
 }
 
 void NetworkContext::CreateNetLogExporter(
@@ -1833,9 +1833,9 @@ const net::HttpAuthPreferences* NetworkContext::GetHttpAuthPreferences() const {
   return &http_auth_merged_preferences_;
 }
 
-size_t NetworkContext::NumOpenQuicTransports() const {
-  return std::count_if(quic_transports_.begin(), quic_transports_.end(),
-                       [](const std::unique_ptr<QuicTransport>& transport) {
+size_t NetworkContext::NumOpenWebTransports() const {
+  return std::count_if(web_transports_.begin(), web_transports_.end(),
+                       [](const std::unique_ptr<WebTransport>& transport) {
                          return !transport->torn_down();
                        });
 }

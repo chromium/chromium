@@ -43,10 +43,10 @@ class MODULES_EXPORT OutgoingStream final
     virtual ~Client() = default;
 
     // Request that a Fin message for this stream be sent to the server, and
-    // that the QuicTransport object drop its reference to the stream.
+    // that the WebTransport object drop its reference to the stream.
     virtual void SendFin() = 0;
 
-    // Indicates that this stream is aborted. QuicTransport should drop its
+    // Indicates that this stream is aborted. WebTransport should drop its
     // reference to the stream, and in a bidirectional stream the incoming side
     // should be reset.
     virtual void OnOutgoingStreamAbort() = 0;
@@ -78,13 +78,13 @@ class MODULES_EXPORT OutgoingStream final
 
   void AbortWriting(StreamAbortInfo*);
 
-  // Called from QuicTransport via a WebTransportStream. Expects a JavaScript
+  // Called from WebTransport via a WebTransportStream. Expects a JavaScript
   // scope to be entered.
   void Reset();
 
   State GetState() const { return state_; }
 
-  // Called from QuicTransport rather than using
+  // Called from WebTransport rather than using
   // ExecutionContextLifecycleObserver to ensure correct destruction order.
   // Does not execute JavaScript.
   void ContextDestroyed();

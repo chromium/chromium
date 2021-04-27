@@ -119,8 +119,6 @@ component("network_service") {
     "proxy_resolving_socket_mojo.h",
     "proxy_service_mojo.cc",
     "proxy_service_mojo.h",
-    "quic_transport.cc",
-    "quic_transport.h",
     "resolve_host_request.cc",
     "resolve_host_request.h",
     "resource_scheduler/resource_scheduler.cc",
@@ -188,6 +186,8 @@ component("network_service") {
     "web_bundle_memory_quota_consumer.h",
     "web_bundle_url_loader_factory.cc",
     "web_bundle_url_loader_factory.h",
+    "web_transport.cc",
+    "web_transport.h",
   ]
 
   if (enable_mdns) {
@@ -339,7 +339,6 @@ source_set("tests") {
     "proxy_config_service_mojo_unittest.cc",
     "proxy_resolving_client_socket_unittest.cc",
     "proxy_resolving_socket_mojo_unittest.cc",
-    "quic_transport_unittest.cc",
     "resource_scheduler/resource_scheduler_params_manager_unittest.cc",
     "resource_scheduler/resource_scheduler_unittest.cc",
     "restricted_cookie_manager_unittest.cc",
@@ -361,6 +360,7 @@ source_set("tests") {
     "web_bundle_chunked_buffer_unittest.cc",
     "web_bundle_manager_unittest.cc",
     "web_bundle_url_loader_factory_unittest.cc",
+    "web_transport_unittest.cc",
   ]
 
   if (enable_mdns) {

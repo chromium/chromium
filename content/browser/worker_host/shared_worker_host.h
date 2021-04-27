@@ -34,7 +34,7 @@
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
 #include "third_party/blink/public/mojom/payments/payment_app.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
-#include "third_party/blink/public/mojom/webtransport/quic_transport_connector.mojom.h"
+#include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom.h"
 #include "third_party/blink/public/mojom/worker/shared_worker.mojom.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_client.mojom.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_factory.mojom.h"
@@ -111,8 +111,8 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
 
   void CreateAppCacheBackend(
       mojo::PendingReceiver<blink::mojom::AppCacheBackend> receiver);
-  void CreateQuicTransportConnector(
-      mojo::PendingReceiver<blink::mojom::QuicTransportConnector> receiver);
+  void CreateWebTransportConnector(
+      mojo::PendingReceiver<blink::mojom::WebTransportConnector> receiver);
   void BindCacheStorage(
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver);
 

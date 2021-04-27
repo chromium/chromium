@@ -15,10 +15,10 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/network/public/mojom/quic_transport.mojom-blink.h"
+#include "services/network/public/mojom/web_transport.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/mojom/webtransport/quic_transport_connector.mojom-blink.h"
+#include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -49,13 +49,13 @@ constexpr uint32_t kDefaultStreamId = 0;
 
 // BidirectionalStream depends on blink::WebTransport. Rather than virtualise
 // blink::WebTransport for these tests, we use a stub implementation of
-// network::mojom::blink::QuicTransport to get the behaviour we want. This class
+// network::mojom::blink::WebTransport to get the behaviour we want. This class
 // only supports the creation of one BidirectionalStream at a time for
 // simplicity.
-class StubQuicTransport : public network::mojom::blink::QuicTransport {
+class StubWebTransport : public network::mojom::blink::WebTransport {
  public:
-  explicit StubQuicTransport(
-      mojo::PendingReceiver<network::mojom::blink::QuicTransport>
+  explicit StubWebTransport(
+      mojo::PendingReceiver<network::mojom::blink::WebTransport>
           pending_receiver)
       : receiver_(this, std::move(pending_receiver)) {}
 
@@ -105,7 +105,7 @@ class StubQuicTransport : public network::mojom::blink::QuicTransport {
     test::RunPendingTasks();
   }
 
-  // Implementation of QuicTransport.
+  // Implementation of WebTransport.
   void SendDatagram(base::span<const uint8_t> data,
                     base::OnceCallback<void(bool)>) override {
     NOTREACHED();
@@ -163,7 +163,7 @@ class StubQuicTransport : public network::mojom::blink::QuicTransport {
       accept_callback_;
   base::OnceCallback<void(uint32_t, mojo::ScopedDataPipeConsumerHandle)>
       ignored_unidirectional_stream_callback_;
-  mojo::Receiver<network::mojom::blink::QuicTransport> receiver_;
+  mojo::Receiver<network::mojom::blink::WebTransport> receiver_;
   mojo::ScopedDataPipeConsumerHandle output_consumer_;
   mojo::ScopedDataPipeProducerHandle input_producer_;
   bool was_send_fin_called_ = false;
@@ -171,8 +171,8 @@ class StubQuicTransport : public network::mojom::blink::QuicTransport {
 };
 
 // This class sets up a connected blink::WebTransport object using a
-// StubQuicTransport and provides access to both.
-class ScopedWebTransport : public mojom::blink::QuicTransportConnector {
+// StubWebTransport and provides access to both.
+class ScopedWebTransport : public mojom::blink::WebTransportConnector {
   STACK_ALLOCATED();
 
  public:
@@ -182,7 +182,7 @@ class ScopedWebTransport : public mojom::blink::QuicTransportConnector {
       : browser_interface_broker_(
             &scope.GetExecutionContext()->GetBrowserInterfaceBroker()) {
     browser_interface_broker_->SetBinderForTesting(
-        mojom::blink::QuicTransportConnector::Name_,
+        mojom::blink::WebTransportConnector::Name_,
         base::BindRepeating(&ScopedWebTransport::BindConnector,
                             weak_ptr_factory_.GetWeakPtr()));
     web_transport_ = WebTransport::Create(
@@ -194,11 +194,11 @@ class ScopedWebTransport : public mojom::blink::QuicTransportConnector {
 
   ~ScopedWebTransport() override {
     browser_interface_broker_->SetBinderForTesting(
-        mojom::blink::QuicTransportConnector::Name_, {});
+        mojom::blink::WebTransportConnector::Name_, {});
   }
 
   WebTransport* GetWebTransport() const { return web_transport_; }
-  StubQuicTransport* Stub() const { return stub_.get(); }
+  StubWebTransport* Stub() const { return stub_.get(); }
 
   void ResetStub() { stub_.reset(); }
 
@@ -232,26 +232,26 @@ class ScopedWebTransport : public mojom::blink::QuicTransportConnector {
     return bidirectional_stream;
   }
 
-  // Implementation of mojom::blink::QuicTransportConnector.
+  // Implementation of mojom::blink::WebTransportConnector.
   void Connect(
       const KURL&,
-      Vector<network::mojom::blink::QuicTransportCertificateFingerprintPtr>
+      Vector<network::mojom::blink::WebTransportCertificateFingerprintPtr>
           fingerprints,
-      mojo::PendingRemote<network::mojom::blink::QuicTransportHandshakeClient>
+      mojo::PendingRemote<network::mojom::blink::WebTransportHandshakeClient>
           pending_handshake_client) override {
-    mojo::Remote<network::mojom::blink::QuicTransportHandshakeClient>
+    mojo::Remote<network::mojom::blink::WebTransportHandshakeClient>
         handshake_client(std::move(pending_handshake_client));
 
-    mojo::PendingRemote<network::mojom::blink::QuicTransport>
-        quic_transport_to_pass;
-    mojo::PendingRemote<network::mojom::blink::QuicTransportClient>
+    mojo::PendingRemote<network::mojom::blink::WebTransport>
+        web_transport_to_pass;
+    mojo::PendingRemote<network::mojom::blink::WebTransportClient>
         client_remote;
 
-    stub_ = std::make_unique<StubQuicTransport>(
-        quic_transport_to_pass.InitWithNewPipeAndPassReceiver());
+    stub_ = std::make_unique<StubWebTransport>(
+        web_transport_to_pass.InitWithNewPipeAndPassReceiver());
 
     handshake_client->OnConnectionEstablished(
-        std::move(quic_transport_to_pass),
+        std::move(web_transport_to_pass),
         client_remote.InitWithNewPipeAndPassReceiver());
     client_remote_.Bind(std::move(client_remote));
   }
@@ -259,7 +259,7 @@ class ScopedWebTransport : public mojom::blink::QuicTransportConnector {
  private:
   void BindConnector(mojo::ScopedMessagePipeHandle handle) {
     connector_receiver_.Bind(
-        mojo::PendingReceiver<mojom::blink::QuicTransportConnector>(
+        mojo::PendingReceiver<mojom::blink::WebTransportConnector>(
             std::move(handle)));
   }
 
@@ -268,10 +268,9 @@ class ScopedWebTransport : public mojom::blink::QuicTransportConnector {
   // the V8TestingScope object that owns the BrowserInterfaceBrokerProxy.
   const BrowserInterfaceBrokerProxy* browser_interface_broker_;
   WebTransport* web_transport_;
-  std::unique_ptr<StubQuicTransport> stub_;
-  mojo::Remote<network::mojom::blink::QuicTransportClient> client_remote_;
-  mojo::Receiver<mojom::blink::QuicTransportConnector> connector_receiver_{
-      this};
+  std::unique_ptr<StubWebTransport> stub_;
+  mojo::Remote<network::mojom::blink::WebTransportClient> client_remote_;
+  mojo::Receiver<mojom::blink::WebTransportConnector> connector_receiver_{this};
 
   base::WeakPtrFactory<ScopedWebTransport> weak_ptr_factory_{this};
 };

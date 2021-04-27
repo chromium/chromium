@@ -145,7 +145,7 @@
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_response.mojom.h"
 #include "third_party/blink/public/mojom/websockets/websocket_connector.mojom.h"
-#include "third_party/blink/public/mojom/webtransport/quic_transport_connector.mojom.h"
+#include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host_factory.mojom.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_connector.mojom.h"
 #include "third_party/blink/public/public_buildflags.h"
@@ -721,8 +721,8 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
   map->Add<blink::mojom::PushMessaging>(base::BindRepeating(
       &RenderFrameHostImpl::GetPushMessaging, base::Unretained(host)));
 
-  map->Add<blink::mojom::QuicTransportConnector>(
-      base::BindRepeating(&RenderFrameHostImpl::CreateQuicTransportConnector,
+  map->Add<blink::mojom::WebTransportConnector>(
+      base::BindRepeating(&RenderFrameHostImpl::CreateWebTransportConnector,
                           base::Unretained(host)));
 
   map->Add<blink::mojom::Authenticator>(
@@ -996,8 +996,8 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
       &DedicatedWorkerHost::CreateWebUsbService, base::Unretained(host)));
   map->Add<blink::mojom::WebSocketConnector>(base::BindRepeating(
       &DedicatedWorkerHost::CreateWebSocketConnector, base::Unretained(host)));
-  map->Add<blink::mojom::QuicTransportConnector>(
-      base::BindRepeating(&DedicatedWorkerHost::CreateQuicTransportConnector,
+  map->Add<blink::mojom::WebTransportConnector>(
+      base::BindRepeating(&DedicatedWorkerHost::CreateWebTransportConnector,
                           base::Unretained(host)));
   map->Add<blink::mojom::WakeLockService>(base::BindRepeating(
       &DedicatedWorkerHost::CreateWakeLockService, base::Unretained(host)));
@@ -1094,8 +1094,8 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE}));
 
-  map->Add<blink::mojom::QuicTransportConnector>(base::BindRepeating(
-      &SharedWorkerHost::CreateQuicTransportConnector, base::Unretained(host)));
+  map->Add<blink::mojom::WebTransportConnector>(base::BindRepeating(
+      &SharedWorkerHost::CreateWebTransportConnector, base::Unretained(host)));
   map->Add<blink::mojom::CacheStorage>(base::BindRepeating(
       &SharedWorkerHost::BindCacheStorage, base::Unretained(host)));
 #if BUILDFLAG(ENABLE_REPORTING)
@@ -1179,9 +1179,8 @@ void PopulateServiceWorkerBinders(ServiceWorkerHost* host,
       base::BindRepeating(&BindUkmRecorderInterface));
 
   // worker host binders
-  map->Add<blink::mojom::QuicTransportConnector>(
-      base::BindRepeating(&ServiceWorkerHost::CreateQuicTransportConnector,
-                          base::Unretained(host)));
+  map->Add<blink::mojom::WebTransportConnector>(base::BindRepeating(
+      &ServiceWorkerHost::CreateWebTransportConnector, base::Unretained(host)));
   map->Add<blink::mojom::CacheStorage>(base::BindRepeating(
       &ServiceWorkerHost::BindCacheStorage, base::Unretained(host)));
 #if BUILDFLAG(ENABLE_REPORTING)

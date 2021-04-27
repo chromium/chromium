@@ -12,7 +12,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
-#include "services/network/public/mojom/quic_transport.mojom-blink.h"
+#include "services/network/public/mojom/web_transport.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -43,8 +43,8 @@ class MODULES_EXPORT WebTransport final
     : public ScriptWrappable,
       public ActiveScriptWrappable<WebTransport>,
       public ExecutionContextLifecycleObserver,
-      public network::mojom::blink::QuicTransportHandshakeClient,
-      public network::mojom::blink::QuicTransportClient {
+      public network::mojom::blink::WebTransportHandshakeClient,
+      public network::mojom::blink::WebTransportClient {
   DEFINE_WRAPPERTYPEINFO();
   USING_PRE_FINALIZER(WebTransport, Dispose);
 
@@ -74,10 +74,10 @@ class MODULES_EXPORT WebTransport final
 
   // WebTransportHandshakeClient implementation
   void OnConnectionEstablished(
-      mojo::PendingRemote<network::mojom::blink::QuicTransport>,
-      mojo::PendingReceiver<network::mojom::blink::QuicTransportClient>)
+      mojo::PendingRemote<network::mojom::blink::WebTransport>,
+      mojo::PendingReceiver<network::mojom::blink::WebTransportClient>)
       override;
-  void OnHandshakeFailed(network::mojom::blink::QuicTransportErrorPtr) override;
+  void OnHandshakeFailed(network::mojom::blink::WebTransportErrorPtr) override;
 
   // WebTransportClient implementation
   void OnDatagramReceived(base::span<const uint8_t> data) override;
@@ -150,11 +150,11 @@ class MODULES_EXPORT WebTransport final
               WTF::UnsignedWithZeroKeyHashTraits<uint32_t>>
       stream_map_;
 
-  HeapMojoRemote<network::mojom::blink::QuicTransport> quic_transport_;
-  HeapMojoReceiver<network::mojom::blink::QuicTransportHandshakeClient,
+  HeapMojoRemote<network::mojom::blink::WebTransport> transport_remote_;
+  HeapMojoReceiver<network::mojom::blink::WebTransportHandshakeClient,
                    WebTransport>
       handshake_client_receiver_;
-  HeapMojoReceiver<network::mojom::blink::QuicTransportClient, WebTransport>
+  HeapMojoReceiver<network::mojom::blink::WebTransportClient, WebTransport>
       client_receiver_;
   Member<ScriptPromiseResolver> ready_resolver_;
   ScriptPromise ready_;

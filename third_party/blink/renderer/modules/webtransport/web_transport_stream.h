@@ -10,16 +10,16 @@
 namespace blink {
 
 // Base class for SendStream, ReceiveStream and BidirectionalStream, used by
-// QuicTransport to hold references to them. It is not part of the standard.
+// WebTransport to hold references to them. It is not part of the standard.
 class WebTransportStream : public GarbageCollectedMixin {
  public:
   virtual ~WebTransportStream() = default;
 
   // Process an IncomingStreamClosed message from the network service. This is
-  // called by QuicTransport objects. May execute user JavaScript.
+  // called by WebTransport objects. May execute user JavaScript.
   virtual void OnIncomingStreamClosed(bool fin_received) = 0;
 
-  // Called from QuicTransport whenever the mojo connection is torn down. Should
+  // Called from WebTransport whenever the mojo connection is torn down. Should
   // close and free data pipes. May execute user JavaScript.
   virtual void Reset() = 0;
 

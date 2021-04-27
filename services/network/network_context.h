@@ -100,12 +100,12 @@ class NetworkServiceProxyDelegate;
 class P2PSocketManager;
 class PendingTrustTokenStore;
 class ProxyLookupRequest;
-class QuicTransport;
 class ResourceScheduler;
 class ResourceSchedulerClient;
 class SessionCleanupCookieStore;
 class SQLiteTrustTokenPersister;
 class WebSocketFactory;
+class WebTransport;
 
 namespace cors {
 class CorsURLLoaderFactory;
@@ -324,12 +324,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
           url_loader_network_observer,
       mojo::PendingRemote<mojom::WebSocketAuthenticationHandler> auth_handler,
       mojo::PendingRemote<mojom::TrustedHeaderClient> header_client) override;
-  void CreateQuicTransport(
+  void CreateWebTransport(
       const GURL& url,
       const url::Origin& origin,
       const net::NetworkIsolationKey& network_isolation_key,
-      std::vector<mojom::QuicTransportCertificateFingerprintPtr> fingerprints,
-      mojo::PendingRemote<mojom::QuicTransportHandshakeClient> handshake_client)
+      std::vector<mojom::WebTransportCertificateFingerprintPtr> fingerprints,
+      mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client)
       override;
   void CreateNetLogExporter(
       mojo::PendingReceiver<mojom::NetLogExporter> receiver) override;
@@ -442,7 +442,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void DestroyURLLoaderFactory(cors::CorsURLLoaderFactory* url_loader_factory);
 
   // Removes |transport| and destroys it.
-  void Remove(QuicTransport* transport);
+  void Remove(WebTransport* transport);
 
   // The following methods are used to track the number of requests per process
   // and ensure it doesn't go over a reasonable limit.
@@ -501,7 +501,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 
   const net::HttpAuthPreferences* GetHttpAuthPreferences() const;
 
-  size_t NumOpenQuicTransports() const;
+  size_t NumOpenWebTransports() const;
 
   size_t num_url_loader_factories_for_testing() const {
     return url_loader_factories_.size();
@@ -648,8 +648,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   std::set<std::unique_ptr<ProxyLookupRequest>, base::UniquePtrComparator>
       proxy_lookup_requests_;
 
-  std::set<std::unique_ptr<QuicTransport>, base::UniquePtrComparator>
-      quic_transports_;
+  std::set<std::unique_ptr<WebTransport>, base::UniquePtrComparator>
+      web_transports_;
 
   // A count of outstanding requests per initiating process.
   std::map<uint32_t, uint32_t> loader_count_per_process_;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/quic_transport.h"
+#include "services/network/web_transport.h"
 
 #include <set>
 #include <vector>
@@ -99,9 +99,9 @@ std::string Read(mojo::ScopedDataPipeConsumerHandle readable) {
   }
 }
 
-class TestHandshakeClient final : public mojom::QuicTransportHandshakeClient {
+class TestHandshakeClient final : public mojom::WebTransportHandshakeClient {
  public:
-  TestHandshakeClient(mojo::PendingReceiver<mojom::QuicTransportHandshakeClient>
+  TestHandshakeClient(mojo::PendingReceiver<mojom::WebTransportHandshakeClient>
                           pending_receiver,
                       base::OnceClosure callback)
       : receiver_(this, std::move(pending_receiver)),
@@ -112,8 +112,8 @@ class TestHandshakeClient final : public mojom::QuicTransportHandshakeClient {
   ~TestHandshakeClient() override = default;
 
   void OnConnectionEstablished(
-      mojo::PendingRemote<mojom::QuicTransport> transport,
-      mojo::PendingReceiver<mojom::QuicTransportClient> client_receiver)
+      mojo::PendingRemote<mojom::WebTransport> transport,
+      mojo::PendingReceiver<mojom::WebTransportClient> client_receiver)
       override {
     transport_ = std::move(transport);
     client_receiver_ = std::move(client_receiver);
@@ -134,10 +134,10 @@ class TestHandshakeClient final : public mojom::QuicTransportHandshakeClient {
     std::move(callback_).Run();
   }
 
-  mojo::PendingRemote<mojom::QuicTransport> PassTransport() {
+  mojo::PendingRemote<mojom::WebTransport> PassTransport() {
     return std::move(transport_);
   }
-  mojo::PendingReceiver<mojom::QuicTransportClient> PassClientReceiver() {
+  mojo::PendingReceiver<mojom::WebTransportClient> PassClientReceiver() {
     return std::move(client_receiver_);
   }
   bool has_seen_connection_establishment() const {
@@ -151,26 +151,26 @@ class TestHandshakeClient final : public mojom::QuicTransportHandshakeClient {
   }
 
  private:
-  mojo::Receiver<mojom::QuicTransportHandshakeClient> receiver_;
+  mojo::Receiver<mojom::WebTransportHandshakeClient> receiver_;
 
-  mojo::PendingRemote<mojom::QuicTransport> transport_;
-  mojo::PendingReceiver<mojom::QuicTransportClient> client_receiver_;
+  mojo::PendingRemote<mojom::WebTransport> transport_;
+  mojo::PendingReceiver<mojom::WebTransportClient> client_receiver_;
   base::OnceClosure callback_;
   bool has_seen_connection_establishment_ = false;
   bool has_seen_handshake_failure_ = false;
   bool has_seen_mojo_connection_error_ = false;
 };
 
-class TestClient final : public mojom::QuicTransportClient {
+class TestClient final : public mojom::WebTransportClient {
  public:
   explicit TestClient(
-      mojo::PendingReceiver<mojom::QuicTransportClient> pending_receiver)
+      mojo::PendingReceiver<mojom::WebTransportClient> pending_receiver)
       : receiver_(this, std::move(pending_receiver)) {
     receiver_.set_disconnect_handler(base::BindOnce(
         &TestClient::OnMojoConnectionError, base::Unretained(this)));
   }
 
-  // mojom::QuicTransportClient implementation.
+  // mojom::WebTransportClient implementation.
   void OnDatagramReceived(base::span<const uint8_t> data) override {
     received_datagrams_.push_back(
         std::vector<uint8_t>(data.begin(), data.end()));
@@ -221,7 +221,7 @@ class TestClient final : public mojom::QuicTransportClient {
     }
   }
 
-  mojo::Receiver<mojom::QuicTransportClient> receiver_;
+  mojo::Receiver<mojom::WebTransportClient> receiver_;
 
   base::OnceClosure quit_closure_for_mojo_connection_error_;
   base::OnceClosure quit_closure_for_incoming_stream_closure_;
@@ -237,12 +237,12 @@ quic::ParsedQuicVersion GetTestVersion() {
   return version;
 }
 
-class QuicTransportTest : public testing::TestWithParam<base::StringPiece> {
+class WebTransportTest : public testing::TestWithParam<base::StringPiece> {
  public:
-  QuicTransportTest()
-      : QuicTransportTest(
+  WebTransportTest()
+      : WebTransportTest(
             quic::test::crypto_test_utils::ProofSourceForTesting()) {}
-  explicit QuicTransportTest(std::unique_ptr<quic::ProofSource> proof_source)
+  explicit WebTransportTest(std::unique_ptr<quic::ProofSource> proof_source)
       : version_(GetTestVersion()),
         origin_(url::Origin::Create(GURL("https://example.org/"))),
         task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
@@ -278,35 +278,35 @@ class QuicTransportTest : public testing::TestWithParam<base::StringPiece> {
     quic_context->params()->origins_to_force_quic_on.insert(
         net::HostPortPair("test.example.com", 0));
   }
-  ~QuicTransportTest() override = default;
+  ~WebTransportTest() override = default;
 
-  void CreateQuicTransport(
+  void CreateWebTransport(
       const GURL& url,
       const url::Origin& origin,
       const net::NetworkIsolationKey& key,
-      std::vector<mojom::QuicTransportCertificateFingerprintPtr> fingerprints,
-      mojo::PendingRemote<mojom::QuicTransportHandshakeClient>
+      std::vector<mojom::WebTransportCertificateFingerprintPtr> fingerprints,
+      mojo::PendingRemote<mojom::WebTransportHandshakeClient>
           handshake_client) {
-    network_context_.CreateQuicTransport(
+    network_context_.CreateWebTransport(
         url, origin, key, std::move(fingerprints), std::move(handshake_client));
   }
-  void CreateQuicTransport(
+  void CreateWebTransport(
       const GURL& url,
       const url::Origin& origin,
-      mojo::PendingRemote<mojom::QuicTransportHandshakeClient>
+      mojo::PendingRemote<mojom::WebTransportHandshakeClient>
           handshake_client) {
-    CreateQuicTransport(url, origin, net::NetworkIsolationKey(), {},
-                        std::move(handshake_client));
+    CreateWebTransport(url, origin, net::NetworkIsolationKey(), {},
+                       std::move(handshake_client));
   }
 
-  void CreateQuicTransport(
+  void CreateWebTransport(
       const GURL& url,
       const url::Origin& origin,
-      std::vector<mojom::QuicTransportCertificateFingerprintPtr> fingerprints,
-      mojo::PendingRemote<mojom::QuicTransportHandshakeClient>
+      std::vector<mojom::WebTransportCertificateFingerprintPtr> fingerprints,
+      mojo::PendingRemote<mojom::WebTransportHandshakeClient>
           handshake_client) {
-    CreateQuicTransport(url, origin, net::NetworkIsolationKey(),
-                        std::move(fingerprints), std::move(handshake_client));
+    CreateWebTransport(url, origin, net::NetworkIsolationKey(),
+                       std::move(fingerprints), std::move(handshake_client));
   }
 
   GURL GetURL(base::StringPiece suffix) {
@@ -357,43 +357,43 @@ struct PrintStringPiece {
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(QuicTransportTests,
-                         QuicTransportTest,
+INSTANTIATE_TEST_SUITE_P(WebTransportTests,
+                         WebTransportTest,
                          testing::Values("quic-transport", "https"),
                          PrintStringPiece());
 
-TEST_P(QuicTransportTest, ConnectSuccessfully) {
+TEST_P(WebTransportTest, ConnectSuccessfully) {
   base::RunLoop run_loop_for_handshake;
-  mojo::PendingRemote<mojom::QuicTransportHandshakeClient> handshake_client;
+  mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client;
   TestHandshakeClient test_handshake_client(
       handshake_client.InitWithNewPipeAndPassReceiver(),
       run_loop_for_handshake.QuitClosure());
 
-  CreateQuicTransport(GetURL("/echo"), origin(), std::move(handshake_client));
+  CreateWebTransport(GetURL("/echo"), origin(), std::move(handshake_client));
 
   run_loop_for_handshake.Run();
 
   EXPECT_TRUE(test_handshake_client.has_seen_connection_establishment());
   EXPECT_FALSE(test_handshake_client.has_seen_handshake_failure());
   EXPECT_FALSE(test_handshake_client.has_seen_mojo_connection_error());
-  EXPECT_EQ(1u, network_context().NumOpenQuicTransports());
+  EXPECT_EQ(1u, network_context().NumOpenWebTransports());
 }
 
-TEST_P(QuicTransportTest, ConnectWithWrongOrigin) {
+TEST_P(WebTransportTest, ConnectWithWrongOrigin) {
   // HTTP/3 test server currently does not do the origin check.
   // TODO(vasilvv): fix this.
   if (GetParam() == "https") {
     return;
   }
   base::RunLoop run_loop_for_handshake;
-  mojo::PendingRemote<mojom::QuicTransportHandshakeClient> handshake_client;
+  mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client;
   TestHandshakeClient test_handshake_client(
       handshake_client.InitWithNewPipeAndPassReceiver(),
       run_loop_for_handshake.QuitClosure());
 
-  CreateQuicTransport(GetURL("/echo"),
-                      url::Origin::Create(GURL("https://evil.com")),
-                      std::move(handshake_client));
+  CreateWebTransport(GetURL("/echo"),
+                     url::Origin::Create(GURL("https://evil.com")),
+                     std::move(handshake_client));
 
   run_loop_for_handshake.Run();
 
@@ -405,21 +405,21 @@ TEST_P(QuicTransportTest, ConnectWithWrongOrigin) {
   TestClient client(test_handshake_client.PassClientReceiver());
   client.WaitUntilMojoConnectionError();
 
-  EXPECT_EQ(0u, network_context().NumOpenQuicTransports());
+  EXPECT_EQ(0u, network_context().NumOpenWebTransports());
 }
 
-TEST_P(QuicTransportTest, ConnectHandles404) {
+TEST_P(WebTransportTest, ConnectHandles404) {
   if (GetParam() == "quic-transport") {
     return;
   }
   base::RunLoop run_loop_for_handshake;
-  mojo::PendingRemote<mojom::QuicTransportHandshakeClient> handshake_client;
+  mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client;
   TestHandshakeClient test_handshake_client(
       handshake_client.InitWithNewPipeAndPassReceiver(),
       run_loop_for_handshake.QuitClosure());
 
-  CreateQuicTransport(GetURL("/does_not_exist"), origin(),
-                      std::move(handshake_client));
+  CreateWebTransport(GetURL("/does_not_exist"), origin(),
+                     std::move(handshake_client));
 
   run_loop_for_handshake.Run();
 
@@ -427,22 +427,22 @@ TEST_P(QuicTransportTest, ConnectHandles404) {
   EXPECT_TRUE(test_handshake_client.has_seen_handshake_failure());
   EXPECT_FALSE(test_handshake_client.has_seen_mojo_connection_error());
 
-  EXPECT_EQ(0u, network_context().NumOpenQuicTransports());
+  EXPECT_EQ(0u, network_context().NumOpenWebTransports());
 }
 
-TEST_P(QuicTransportTest, SendDatagram) {
+TEST_P(WebTransportTest, SendDatagram) {
   base::RunLoop run_loop_for_handshake;
-  mojo::PendingRemote<mojom::QuicTransportHandshakeClient> handshake_client;
+  mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client;
   TestHandshakeClient test_handshake_client(
       handshake_client.InitWithNewPipeAndPassReceiver(),
       run_loop_for_handshake.QuitClosure());
 
-  CreateQuicTransport(GetURL("/echo"),
-                      url::Origin::Create(GURL("https://example.org/")),
-                      std::move(handshake_client));
+  CreateWebTransport(GetURL("/echo"),
+                     url::Origin::Create(GURL("https://example.org/")),
+                     std::move(handshake_client));
 
   run_loop_for_handshake.Run();
-  mojo::Remote<mojom::QuicTransport> transport_remote(
+  mojo::Remote<mojom::WebTransport> transport_remote(
       test_handshake_client.PassTransport());
   TestClient client(test_handshake_client.PassClientReceiver());
 
@@ -475,16 +475,16 @@ TEST_P(QuicTransportTest, SendDatagram) {
   EXPECT_TRUE(base::Contains(sent_data, client.received_datagrams()[0]));
 }
 
-TEST_P(QuicTransportTest, SendToolargeDatagram) {
+TEST_P(WebTransportTest, SendToolargeDatagram) {
   base::RunLoop run_loop_for_handshake;
-  mojo::PendingRemote<mojom::QuicTransportHandshakeClient> handshake_client;
+  mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client;
   TestHandshakeClient test_handshake_client(
       handshake_client.InitWithNewPipeAndPassReceiver(),
       run_loop_for_handshake.QuitClosure());
 
-  CreateQuicTransport(GetURL("/echo"),
-                      url::Origin::Create(GURL("https://example.org/")),
-                      std::move(handshake_client));
+  CreateWebTransport(GetURL("/echo"),
+                     url::Origin::Create(GURL("https://example.org/")),
+                     std::move(handshake_client));
 
   run_loop_for_handshake.Run();
 
@@ -493,7 +493,7 @@ TEST_P(QuicTransportTest, SendToolargeDatagram) {
   // The actual upper limit for one datagram is platform specific, but
   // 786kb should be large enough for any platform.
   std::vector<uint8_t> data(786 * 1024, 99);
-  mojo::Remote<mojom::QuicTransport> transport_remote(
+  mojo::Remote<mojom::WebTransport> transport_remote(
       test_handshake_client.PassTransport());
 
   transport_remote->SendDatagram(base::make_span(data),
@@ -505,23 +505,23 @@ TEST_P(QuicTransportTest, SendToolargeDatagram) {
   EXPECT_FALSE(result);
 }
 
-TEST_P(QuicTransportTest, EchoOnUnidirectionalStreams) {
+TEST_P(WebTransportTest, EchoOnUnidirectionalStreams) {
   base::RunLoop run_loop_for_handshake;
-  mojo::PendingRemote<mojom::QuicTransportHandshakeClient> handshake_client;
+  mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client;
   TestHandshakeClient test_handshake_client(
       handshake_client.InitWithNewPipeAndPassReceiver(),
       run_loop_for_handshake.QuitClosure());
 
-  CreateQuicTransport(GetURL("/echo"),
-                      url::Origin::Create(GURL("https://example.org/")),
-                      std::move(handshake_client));
+  CreateWebTransport(GetURL("/echo"),
+                     url::Origin::Create(GURL("https://example.org/")),
+                     std::move(handshake_client));
 
   run_loop_for_handshake.Run();
 
   ASSERT_TRUE(test_handshake_client.has_seen_connection_establishment());
 
   TestClient client(test_handshake_client.PassClientReceiver());
-  mojo::Remote<mojom::QuicTransport> transport_remote(
+  mojo::Remote<mojom::WebTransport> transport_remote(
       test_handshake_client.PassTransport());
 
   mojo::ScopedDataPipeConsumerHandle readable_for_outgoing;
@@ -581,23 +581,23 @@ TEST_P(QuicTransportTest, EchoOnUnidirectionalStreams) {
 }
 
 // crbug.com/1129847: disabled because it is flaky.
-TEST_P(QuicTransportTest, DISABLED_EchoOnBidirectionalStream) {
+TEST_P(WebTransportTest, DISABLED_EchoOnBidirectionalStream) {
   base::RunLoop run_loop_for_handshake;
-  mojo::PendingRemote<mojom::QuicTransportHandshakeClient> handshake_client;
+  mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client;
   TestHandshakeClient test_handshake_client(
       handshake_client.InitWithNewPipeAndPassReceiver(),
       run_loop_for_handshake.QuitClosure());
 
-  CreateQuicTransport(GetURL("/echo"),
-                      url::Origin::Create(GURL("https://example.org/")),
-                      std::move(handshake_client));
+  CreateWebTransport(GetURL("/echo"),
+                     url::Origin::Create(GURL("https://example.org/")),
+                     std::move(handshake_client));
 
   run_loop_for_handshake.Run();
 
   ASSERT_TRUE(test_handshake_client.has_seen_connection_establishment());
 
   TestClient client(test_handshake_client.PassClientReceiver());
-  mojo::Remote<mojom::QuicTransport> transport_remote(
+  mojo::Remote<mojom::WebTransport> transport_remote(
       test_handshake_client.PassTransport());
 
   mojo::ScopedDataPipeConsumerHandle readable_for_outgoing;
@@ -642,10 +642,10 @@ TEST_P(QuicTransportTest, DISABLED_EchoOnBidirectionalStream) {
   EXPECT_TRUE(client.stream_is_closed_as_incoming_stream(stream_id));
 }
 
-class QuicTransportWithCustomCertificateTest : public QuicTransportTest {
+class WebTransportWithCustomCertificateTest : public WebTransportTest {
  public:
-  QuicTransportWithCustomCertificateTest()
-      : QuicTransportTest(CreateProofSource()) {
+  WebTransportWithCustomCertificateTest()
+      : WebTransportTest(CreateProofSource()) {
     auto helper = std::make_unique<TestConnectionHelper>();
     // Set clock to a time in which quic-short-lived.pem is valid
     // (2020-06-05T20:35:00.000Z).
@@ -656,7 +656,7 @@ class QuicTransportWithCustomCertificateTest : public QuicTransportTest {
         ->quic_context()
         ->SetHelperForTesting(std::move(helper));
   }
-  ~QuicTransportWithCustomCertificateTest() override = default;
+  ~WebTransportWithCustomCertificateTest() override = default;
 
   static std::unique_ptr<quic::ProofSource> CreateProofSource() {
     auto proof_source = std::make_unique<net::ProofSourceChromium>();
@@ -669,60 +669,60 @@ class QuicTransportWithCustomCertificateTest : public QuicTransportTest {
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(QuicTransportWithCustomCertificateTests,
-                         QuicTransportWithCustomCertificateTest,
+INSTANTIATE_TEST_SUITE_P(WebTransportWithCustomCertificateTests,
+                         WebTransportWithCustomCertificateTest,
                          testing::Values("quic-transport", "https"),
                          PrintStringPiece());
 
-TEST_P(QuicTransportWithCustomCertificateTest, WithValidFingerprint) {
+TEST_P(WebTransportWithCustomCertificateTest, WithValidFingerprint) {
   base::RunLoop run_loop_for_handshake;
-  mojo::PendingRemote<mojom::QuicTransportHandshakeClient> handshake_client;
+  mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client;
   TestHandshakeClient test_handshake_client(
       handshake_client.InitWithNewPipeAndPassReceiver(),
       run_loop_for_handshake.QuitClosure());
 
-  auto fingerprint = mojom::QuicTransportCertificateFingerprint::New(
+  auto fingerprint = mojom::WebTransportCertificateFingerprint::New(
       "sha-256",
       "ED:3D:D7:C3:67:10:94:68:D1:DC:D1:26:5C:B2:74:D7:1C:"
       "A2:63:3E:94:94:C0:84:39:D6:64:FA:08:B9:77:37");
-  std::vector<mojom::QuicTransportCertificateFingerprintPtr> fingerprints;
+  std::vector<mojom::WebTransportCertificateFingerprintPtr> fingerprints;
   fingerprints.push_back(std::move(fingerprint));
 
-  CreateQuicTransport(GetURL("/echo"), origin(), std::move(fingerprints),
-                      std::move(handshake_client));
+  CreateWebTransport(GetURL("/echo"), origin(), std::move(fingerprints),
+                     std::move(handshake_client));
 
   run_loop_for_handshake.Run();
 
   EXPECT_TRUE(test_handshake_client.has_seen_connection_establishment());
   EXPECT_FALSE(test_handshake_client.has_seen_handshake_failure());
   EXPECT_FALSE(test_handshake_client.has_seen_mojo_connection_error());
-  EXPECT_EQ(1u, network_context().NumOpenQuicTransports());
+  EXPECT_EQ(1u, network_context().NumOpenWebTransports());
 }
 
-TEST_P(QuicTransportWithCustomCertificateTest, WithInvalidFingerprint) {
+TEST_P(WebTransportWithCustomCertificateTest, WithInvalidFingerprint) {
   base::RunLoop run_loop_for_handshake;
-  mojo::PendingRemote<mojom::QuicTransportHandshakeClient> handshake_client;
+  mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client;
   TestHandshakeClient test_handshake_client(
       handshake_client.InitWithNewPipeAndPassReceiver(),
       run_loop_for_handshake.QuitClosure());
 
-  auto fingerprint = network::mojom::QuicTransportCertificateFingerprint::New(
+  auto fingerprint = network::mojom::WebTransportCertificateFingerprint::New(
       "sha-256",
       "00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:"
       "00:00:00:00:00:00:00:00:00:00:00:00:00:00:00");
 
-  std::vector<mojom::QuicTransportCertificateFingerprintPtr> fingerprints;
+  std::vector<mojom::WebTransportCertificateFingerprintPtr> fingerprints;
   fingerprints.push_back(std::move(fingerprint));
 
-  CreateQuicTransport(GetURL("/echo"), origin(), std::move(fingerprints),
-                      std::move(handshake_client));
+  CreateWebTransport(GetURL("/echo"), origin(), std::move(fingerprints),
+                     std::move(handshake_client));
 
   run_loop_for_handshake.Run();
 
   EXPECT_FALSE(test_handshake_client.has_seen_connection_establishment());
   EXPECT_TRUE(test_handshake_client.has_seen_handshake_failure());
   EXPECT_FALSE(test_handshake_client.has_seen_mojo_connection_error());
-  EXPECT_EQ(0u, network_context().NumOpenQuicTransports());
+  EXPECT_EQ(0u, network_context().NumOpenWebTransports());
 }
 
 }  // namespace

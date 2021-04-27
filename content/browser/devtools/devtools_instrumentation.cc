@@ -957,7 +957,7 @@ void BuildAndReportBrowserInitiatedIssue(
   ReportBrowserInitiatedIssue(frame, issue.get());
 }
 
-void OnQuicTransportHandshakeFailed(
+void OnWebTransportHandshakeFailed(
     RenderFrameHostImpl* frame,
     const GURL& url,
     const base::Optional<net::QuicTransportError>& error) {

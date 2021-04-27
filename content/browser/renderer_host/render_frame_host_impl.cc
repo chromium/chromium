@@ -142,7 +142,7 @@
 #include "content/browser/webid/federated_auth_response_impl.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/websockets/websocket_connector_impl.h"
-#include "content/browser/webtransport/quic_transport_connector_impl.h"
+#include "content/browser/webtransport/web_transport_connector_impl.h"
 #include "content/browser/webui/url_data_manager_backend.h"
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/browser/worker_host/dedicated_worker_host_factory_impl.h"
@@ -8310,10 +8310,10 @@ void RenderFrameHostImpl::CreateWebSocketConnector(
                               std::move(receiver));
 }
 
-void RenderFrameHostImpl::CreateQuicTransportConnector(
-    mojo::PendingReceiver<blink::mojom::QuicTransportConnector> receiver) {
+void RenderFrameHostImpl::CreateWebTransportConnector(
+    mojo::PendingReceiver<blink::mojom::WebTransportConnector> receiver) {
   mojo::MakeSelfOwnedReceiver(
-      std::make_unique<QuicTransportConnectorImpl>(
+      std::make_unique<WebTransportConnectorImpl>(
           GetProcess()->GetID(), weak_ptr_factory_.GetWeakPtr(),
           last_committed_origin_, isolation_info_.network_isolation_key()),
       std::move(receiver));

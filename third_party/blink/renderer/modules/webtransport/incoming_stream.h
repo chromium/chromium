@@ -61,15 +61,15 @@ class MODULES_EXPORT IncomingStream final
 
   void AbortReading(StreamAbortInfo*);
 
-  // Called from QuicTransport via a WebTransportStream class. May execute
+  // Called from WebTransport via a WebTransportStream class. May execute
   // JavaScript.
   void OnIncomingStreamClosed(bool fin_received);
 
-  // Called via QuicTransport via a WebTransportStream class. Expects a
+  // Called via WebTransport via a WebTransportStream class. Expects a
   // JavaScript scope to have been entered.
   void Reset();
 
-  // Called from QuicTransport rather than using
+  // Called from WebTransport rather than using
   // ExecutionContextLifecycleObserver to ensure correct destruction order.
   // Does not execute JavaScript.
   void ContextDestroyed();

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/webtransport/quic_transport_connector_impl.h"
+#include "content/browser/webtransport/web_transport_connector_impl.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
@@ -13,21 +13,21 @@ namespace content {
 
 namespace {
 
-using network::mojom::QuicTransportHandshakeClient;
+using network::mojom::WebTransportHandshakeClient;
 
-class InterceptingHandshakeClient final : public QuicTransportHandshakeClient {
+class InterceptingHandshakeClient final : public WebTransportHandshakeClient {
  public:
   InterceptingHandshakeClient(
       base::WeakPtr<RenderFrameHostImpl> frame,
       const GURL& url,
-      mojo::PendingRemote<QuicTransportHandshakeClient> remote)
+      mojo::PendingRemote<WebTransportHandshakeClient> remote)
       : frame_(std::move(frame)), url_(url), remote_(std::move(remote)) {}
   ~InterceptingHandshakeClient() override = default;
 
-  // QuicTransportHandshakeClient implementation:
+  // WebTransportHandshakeClient implementation:
   void OnConnectionEstablished(
-      mojo::PendingRemote<network::mojom::QuicTransport> transport,
-      mojo::PendingReceiver<network::mojom::QuicTransportClient> client)
+      mojo::PendingRemote<network::mojom::WebTransport> transport,
+      mojo::PendingReceiver<network::mojom::WebTransportClient> client)
       override {
     remote_->OnConnectionEstablished(std::move(transport), std::move(client));
   }
@@ -38,20 +38,20 @@ class InterceptingHandshakeClient final : public QuicTransportHandshakeClient {
     remote_->OnHandshakeFailed(base::nullopt);
 
     if (RenderFrameHostImpl* frame = frame_.get()) {
-      devtools_instrumentation::OnQuicTransportHandshakeFailed(frame, url_,
-                                                               error);
+      devtools_instrumentation::OnWebTransportHandshakeFailed(frame, url_,
+                                                              error);
     }
   }
 
  private:
   const base::WeakPtr<RenderFrameHostImpl> frame_;
   const GURL url_;
-  mojo::Remote<QuicTransportHandshakeClient> remote_;
+  mojo::Remote<WebTransportHandshakeClient> remote_;
 };
 
 }  // namespace
 
-QuicTransportConnectorImpl::QuicTransportConnectorImpl(
+WebTransportConnectorImpl::WebTransportConnectorImpl(
     int process_id,
     base::WeakPtr<RenderFrameHostImpl> frame,
     const url::Origin& origin,
@@ -61,29 +61,29 @@ QuicTransportConnectorImpl::QuicTransportConnectorImpl(
       origin_(origin),
       network_isolation_key_(network_isolation_key) {}
 
-QuicTransportConnectorImpl::~QuicTransportConnectorImpl() = default;
+WebTransportConnectorImpl::~WebTransportConnectorImpl() = default;
 
-void QuicTransportConnectorImpl::Connect(
+void WebTransportConnectorImpl::Connect(
     const GURL& url,
-    std::vector<network::mojom::QuicTransportCertificateFingerprintPtr>
+    std::vector<network::mojom::WebTransportCertificateFingerprintPtr>
         fingerprints,
-    mojo::PendingRemote<network::mojom::QuicTransportHandshakeClient>
+    mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
         handshake_client) {
   RenderProcessHost* process = RenderProcessHost::FromID(process_id_);
   if (!process) {
     return;
   }
 
-  mojo::PendingRemote<QuicTransportHandshakeClient> handshake_client_to_pass;
+  mojo::PendingRemote<WebTransportHandshakeClient> handshake_client_to_pass;
   // TODO(yhirano): Stop using MakeSelfOwnedReceiver here, because the
-  // QuicTransport implementation in the network service won't notice that
-  // the QuicTransportHandshakeClient is going away.
+  // WebTransport implementation in the network service won't notice that
+  // the WebTransportHandshakeClient is going away.
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<InterceptingHandshakeClient>(
           frame_, url, std::move(handshake_client)),
       handshake_client_to_pass.InitWithNewPipeAndPassReceiver());
 
-  process->GetStoragePartition()->GetNetworkContext()->CreateQuicTransport(
+  process->GetStoragePartition()->GetNetworkContext()->CreateWebTransport(
       url, origin_, network_isolation_key_, std::move(fingerprints),
       std::move(handshake_client_to_pass));
 }

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/public/cpp/quic_transport_error_mojom_traits.h"
+#include "services/network/public/cpp/web_transport_error_mojom_traits.h"
 
 namespace mojo {
 
-bool StructTraits<network::mojom::QuicTransportErrorDataView,
-                  net::QuicTransportError>::
-    Read(network::mojom::QuicTransportErrorDataView in,
-         net::QuicTransportError* out) {
+bool StructTraits<
+    network::mojom::WebTransportErrorDataView,
+    net::QuicTransportError>::Read(network::mojom::WebTransportErrorDataView in,
+                                   net::QuicTransportError* out) {
   if (in.net_error() > 0) {
     return false;
   }

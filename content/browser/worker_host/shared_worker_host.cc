@@ -20,7 +20,7 @@
 #include "content/browser/service_worker/service_worker_object_host.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/url_loader_factory_params_helper.h"
-#include "content/browser/webtransport/quic_transport_connector_impl.h"
+#include "content/browser/webtransport/web_transport_connector_impl.h"
 #include "content/browser/worker_host/shared_worker_content_settings_proxy_impl.h"
 #include "content/browser/worker_host/shared_worker_service_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -373,11 +373,11 @@ void SharedWorkerHost::CreateAppCacheBackend(
                                   std::move(receiver));
 }
 
-void SharedWorkerHost::CreateQuicTransportConnector(
-    mojo::PendingReceiver<blink::mojom::QuicTransportConnector> receiver) {
+void SharedWorkerHost::CreateWebTransportConnector(
+    mojo::PendingReceiver<blink::mojom::WebTransportConnector> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const url::Origin origin = url::Origin::Create(instance().url());
-  mojo::MakeSelfOwnedReceiver(std::make_unique<QuicTransportConnectorImpl>(
+  mojo::MakeSelfOwnedReceiver(std::make_unique<WebTransportConnectorImpl>(
                                   GetProcessHost()->GetID(), /*frame=*/nullptr,
                                   origin, GetNetworkIsolationKey()),
                               std::move(receiver));

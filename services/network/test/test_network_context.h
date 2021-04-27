@@ -178,12 +178,12 @@ class TestNetworkContext : public mojom::NetworkContext {
           url_loader_network_observer,
       mojo::PendingRemote<mojom::WebSocketAuthenticationHandler> auth_handler,
       mojo::PendingRemote<mojom::TrustedHeaderClient> header_client) override {}
-  void CreateQuicTransport(
+  void CreateWebTransport(
       const GURL& url,
       const url::Origin& origin,
       const net::NetworkIsolationKey& network_isolation_key,
-      std::vector<mojom::QuicTransportCertificateFingerprintPtr> fingerprints,
-      mojo::PendingRemote<mojom::QuicTransportHandshakeClient> handshake_client)
+      std::vector<mojom::WebTransportCertificateFingerprintPtr> fingerprints,
+      mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client)
       override {}
   void LookUpProxyForURL(
       const GURL& url,

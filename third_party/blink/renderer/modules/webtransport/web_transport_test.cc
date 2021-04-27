@@ -12,11 +12,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/mock_callback.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "services/network/public/mojom/quic_transport.mojom-blink.h"
+#include "services/network/public/mojom/web_transport.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/mojom/webtransport/quic_transport_connector.mojom-blink.h"
+#include "third_party/blink/public/mojom/webtransport/web_transport_connector.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
@@ -62,32 +62,31 @@ using ::testing::StrictMock;
 using ::testing::Truly;
 using ::testing::Unused;
 
-class QuicTransportConnector final
-    : public mojom::blink::QuicTransportConnector {
+class WebTransportConnector final : public mojom::blink::WebTransportConnector {
  public:
   struct ConnectArgs {
     ConnectArgs(
         const KURL& url,
-        Vector<network::mojom::blink::QuicTransportCertificateFingerprintPtr>
+        Vector<network::mojom::blink::WebTransportCertificateFingerprintPtr>
             fingerprints,
-        mojo::PendingRemote<network::mojom::blink::QuicTransportHandshakeClient>
+        mojo::PendingRemote<network::mojom::blink::WebTransportHandshakeClient>
             handshake_client)
         : url(url),
           fingerprints(std::move(fingerprints)),
           handshake_client(std::move(handshake_client)) {}
 
     KURL url;
-    Vector<network::mojom::blink::QuicTransportCertificateFingerprintPtr>
+    Vector<network::mojom::blink::WebTransportCertificateFingerprintPtr>
         fingerprints;
-    mojo::PendingRemote<network::mojom::blink::QuicTransportHandshakeClient>
+    mojo::PendingRemote<network::mojom::blink::WebTransportHandshakeClient>
         handshake_client;
   };
 
   void Connect(
       const KURL& url,
-      Vector<network::mojom::blink::QuicTransportCertificateFingerprintPtr>
+      Vector<network::mojom::blink::WebTransportCertificateFingerprintPtr>
           fingerprints,
-      mojo::PendingRemote<network::mojom::blink::QuicTransportHandshakeClient>
+      mojo::PendingRemote<network::mojom::blink::WebTransportHandshakeClient>
           handshake_client) override {
     connect_args_.push_back(
         ConnectArgs(url, std::move(fingerprints), std::move(handshake_client)));
@@ -96,19 +95,20 @@ class QuicTransportConnector final
   Vector<ConnectArgs> TakeConnectArgs() { return std::move(connect_args_); }
 
   void Bind(
-      mojo::PendingReceiver<mojom::blink::QuicTransportConnector> receiver) {
+      mojo::PendingReceiver<mojom::blink::WebTransportConnector> receiver) {
     receiver_set_.Add(this, std::move(receiver));
   }
 
  private:
-  mojo::ReceiverSet<mojom::blink::QuicTransportConnector> receiver_set_;
+  mojo::ReceiverSet<mojom::blink::WebTransportConnector> receiver_set_;
   Vector<ConnectArgs> connect_args_;
 };
 
-class MockQuicTransport : public network::mojom::blink::QuicTransport {
+class MockWebTransport : public network::mojom::blink::WebTransport {
  public:
-  MockQuicTransport(mojo::PendingReceiver<network::mojom::blink::QuicTransport>
-                        pending_receiver)
+  explicit MockWebTransport(
+      mojo::PendingReceiver<network::mojom::blink::WebTransport>
+          pending_receiver)
       : receiver_(this, std::move(pending_receiver)) {}
 
   MOCK_METHOD2(SendDatagram,
@@ -136,7 +136,7 @@ class MockQuicTransport : public network::mojom::blink::QuicTransport {
   void AbortStream(uint32_t stream_id, uint64_t code) override {}
 
  private:
-  mojo::Receiver<network::mojom::blink::QuicTransport> receiver_;
+  mojo::Receiver<network::mojom::blink::WebTransport> receiver_;
 };
 
 class WebTransportTest : public ::testing::Test {
@@ -152,7 +152,7 @@ class WebTransportTest : public ::testing::Test {
     interface_broker_ =
         &scope.GetExecutionContext()->GetBrowserInterfaceBroker();
     interface_broker_->SetBinderForTesting(
-        mojom::blink::QuicTransportConnector::Name_,
+        mojom::blink::WebTransportConnector::Name_,
         base::BindRepeating(&WebTransportTest::BindConnector,
                             weak_ptr_factory_.GetWeakPtr()));
   }
@@ -172,7 +172,7 @@ class WebTransportTest : public ::testing::Test {
 
   // Connects a WebTransport object. Runs the event loop.
   void ConnectSuccessfully(WebTransport* web_transport) {
-    DCHECK(!mock_quic_transport_) << "Only one connection supported, sorry";
+    DCHECK(!mock_web_transport_) << "Only one connection supported, sorry";
 
     test::RunPendingTasks();
 
@@ -182,32 +182,32 @@ class WebTransportTest : public ::testing::Test {
       return;
     }
 
-    mojo::Remote<network::mojom::blink::QuicTransportHandshakeClient>
+    mojo::Remote<network::mojom::blink::WebTransportHandshakeClient>
         handshake_client(std::move(args[0].handshake_client));
 
-    mojo::PendingRemote<network::mojom::blink::QuicTransport>
-        quic_transport_to_pass;
-    mojo::PendingRemote<network::mojom::blink::QuicTransportClient>
+    mojo::PendingRemote<network::mojom::blink::WebTransport>
+        web_transport_to_pass;
+    mojo::PendingRemote<network::mojom::blink::WebTransportClient>
         client_remote;
 
-    mock_quic_transport_ = std::make_unique<StrictMock<MockQuicTransport>>(
-        quic_transport_to_pass.InitWithNewPipeAndPassReceiver());
+    mock_web_transport_ = std::make_unique<StrictMock<MockWebTransport>>(
+        web_transport_to_pass.InitWithNewPipeAndPassReceiver());
 
     // These are called on every connection, so expect them in every test.
-    EXPECT_CALL(*mock_quic_transport_, AcceptUnidirectionalStream(_))
+    EXPECT_CALL(*mock_web_transport_, AcceptUnidirectionalStream(_))
         .WillRepeatedly([this](AcceptUnidirectionalStreamCallback callback) {
           pending_unidirectional_accept_callbacks_.push_back(
               std::move(callback));
         });
 
-    EXPECT_CALL(*mock_quic_transport_, AcceptBidirectionalStream(_))
+    EXPECT_CALL(*mock_web_transport_, AcceptBidirectionalStream(_))
         .WillRepeatedly([this](AcceptBidirectionalStreamCallback callback) {
           pending_bidirectional_accept_callbacks_.push_back(
               std::move(callback));
         });
 
     handshake_client->OnConnectionEstablished(
-        std::move(quic_transport_to_pass),
+        std::move(web_transport_to_pass),
         client_remote.InitWithNewPipeAndPassReceiver());
     client_remote_.Bind(std::move(client_remote));
 
@@ -227,7 +227,7 @@ class WebTransportTest : public ::testing::Test {
 
   SendStream* CreateSendStreamSuccessfully(const V8TestingScope& scope,
                                            WebTransport* web_transport) {
-    EXPECT_CALL(*mock_quic_transport_, CreateStream(_, _, _))
+    EXPECT_CALL(*mock_web_transport_, CreateStream(_, _, _))
         .WillOnce([this](mojo::ScopedDataPipeConsumerHandle handle, Unused,
                          base::OnceCallback<void(bool, uint32_t)> callback) {
           send_stream_consumer_handle_ = std::move(handle);
@@ -278,7 +278,7 @@ class WebTransportTest : public ::testing::Test {
   }
 
   void BindConnector(mojo::ScopedMessagePipeHandle handle) {
-    connector_.Bind(mojo::PendingReceiver<mojom::blink::QuicTransportConnector>(
+    connector_.Bind(mojo::PendingReceiver<mojom::blink::WebTransportConnector>(
         std::move(handle)));
   }
 
@@ -286,7 +286,7 @@ class WebTransportTest : public ::testing::Test {
     if (!interface_broker_)
       return;
     interface_broker_->SetBinderForTesting(
-        mojom::blink::QuicTransportConnector::Name_, {});
+        mojom::blink::WebTransportConnector::Name_, {});
   }
 
   const BrowserInterfaceBrokerProxy* interface_broker_ = nullptr;
@@ -294,9 +294,9 @@ class WebTransportTest : public ::testing::Test {
       pending_unidirectional_accept_callbacks_;
   WTF::Deque<AcceptBidirectionalStreamCallback>
       pending_bidirectional_accept_callbacks_;
-  QuicTransportConnector connector_;
-  std::unique_ptr<MockQuicTransport> mock_quic_transport_;
-  mojo::Remote<network::mojom::blink::QuicTransportClient> client_remote_;
+  WebTransportConnector connector_;
+  std::unique_ptr<MockWebTransport> mock_web_transport_;
+  mojo::Remote<network::mojom::blink::WebTransportClient> client_remote_;
   uint32_t next_stream_id_ = 0;
   mojo::ScopedDataPipeConsumerHandle send_stream_consumer_handle_;
 
@@ -455,7 +455,7 @@ TEST_F(WebTransportTest, FailedConnect) {
   auto args = connector_.TakeConnectArgs();
   ASSERT_EQ(1u, args.size());
 
-  mojo::Remote<network::mojom::blink::QuicTransportHandshakeClient>
+  mojo::Remote<network::mojom::blink::WebTransportHandshakeClient>
       handshake_client(std::move(args[0].handshake_client));
 
   handshake_client->OnHandshakeFailed(nullptr);
@@ -601,9 +601,9 @@ TEST_F(WebTransportTest, SendDatagram) {
   auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
 
-  EXPECT_CALL(*mock_quic_transport_, SendDatagram(ElementsAre('A'), _))
+  EXPECT_CALL(*mock_web_transport_, SendDatagram(ElementsAre('A'), _))
       .WillOnce(Invoke([](base::span<const uint8_t>,
-                          MockQuicTransport::SendDatagramCallback callback) {
+                          MockWebTransport::SendDatagramCallback callback) {
         std::move(callback).Run(true);
       }));
 
@@ -628,11 +628,11 @@ TEST_F(WebTransportTest, BackpressureForOutgoingDatagrams) {
   auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com", options);
 
-  EXPECT_CALL(*mock_quic_transport_, SendDatagram(_, _))
+  EXPECT_CALL(*mock_web_transport_, SendDatagram(_, _))
       .Times(4)
       .WillRepeatedly(
           Invoke([](base::span<const uint8_t>,
-                    MockQuicTransport::SendDatagramCallback callback) {
+                    MockWebTransport::SendDatagramCallback callback) {
             std::move(callback).Run(true);
           }));
 
@@ -860,7 +860,7 @@ TEST_F(WebTransportTest, CreateSendStream) {
   auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
 
-  EXPECT_CALL(*mock_quic_transport_,
+  EXPECT_CALL(*mock_web_transport_,
               CreateStream(Truly(ValidConsumerHandle),
                            Not(Truly(ValidProducerHandle)), _))
       .WillOnce([](Unused, Unused,
@@ -901,7 +901,7 @@ TEST_F(WebTransportTest, CreateSendStreamFailure) {
   auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
 
-  EXPECT_CALL(*mock_quic_transport_, CreateStream(_, _, _))
+  EXPECT_CALL(*mock_web_transport_, CreateStream(_, _, _))
       .WillOnce([](Unused, Unused,
                    base::OnceCallback<void(bool, uint32_t)> callback) {
         std::move(callback).Run(false, 0);
@@ -1151,7 +1151,7 @@ TEST_F(WebTransportTest, CreateSendStreamAbortedByClose) {
       CreateAndConnectSuccessfully(scope, "https://example.com");
 
   base::OnceCallback<void(bool, uint32_t)> create_stream_callback;
-  EXPECT_CALL(*mock_quic_transport_, CreateStream(_, _, _))
+  EXPECT_CALL(*mock_web_transport_, CreateStream(_, _, _))
       .WillOnce([&](Unused, Unused,
                     base::OnceCallback<void(bool, uint32_t)> callback) {
         create_stream_callback = std::move(callback);
@@ -1286,9 +1286,8 @@ TEST_F(WebTransportTest, CreateBidirectionalStream) {
   auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
 
-  EXPECT_CALL(
-      *mock_quic_transport_,
-      CreateStream(Truly(ValidConsumerHandle), Truly(ValidProducerHandle), _))
+  EXPECT_CALL(*mock_web_transport_, CreateStream(Truly(ValidConsumerHandle),
+                                                 Truly(ValidProducerHandle), _))
       .WillOnce([](Unused, Unused,
                    base::OnceCallback<void(bool, uint32_t)> callback) {
         std::move(callback).Run(true, 0);
@@ -1346,7 +1345,7 @@ TEST_F(WebTransportTest, SetDatagramWritableQueueExpirationDuration) {
   constexpr double kDuration = 40;
   constexpr base::TimeDelta kDurationDelta =
       base::TimeDelta::FromMillisecondsD(kDuration);
-  EXPECT_CALL(*mock_quic_transport_,
+  EXPECT_CALL(*mock_web_transport_,
               SetOutgoingDatagramExpirationDuration(kDurationDelta));
 
   web_transport->setDatagramWritableQueueExpirationDuration(kDuration);
