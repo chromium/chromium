@@ -114,6 +114,7 @@ void StartBorealisVm::RunInternal(BorealisContext* context) {
   request.set_enable_gpu(true);
   request.set_software_tpm(false);
   request.set_enable_audio_capture(false);
+  request.set_enable_vulkan(true);
   request.set_name(context->vm_name());
 
   vm_tools::concierge::DiskImage* disk_image = request.add_disks();
