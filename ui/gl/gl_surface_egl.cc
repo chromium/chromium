@@ -907,7 +907,8 @@ void GetEGLInitDisplays(bool supports_angle_d3d,
   }
 
   if (supports_angle_swiftshader) {
-    if (requested_renderer == kANGLEImplementationSwiftShaderName) {
+    if (requested_renderer == kANGLEImplementationSwiftShaderName ||
+        requested_renderer == kANGLEImplementationSwiftShaderForWebGLName) {
       AddInitDisplay(init_displays, ANGLE_SWIFTSHADER);
     }
   }

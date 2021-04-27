@@ -590,8 +590,13 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   // In SwiftShader case, the implementation is actually EGLGLES2.
   if (!gl_use_swiftshader_ && command_line->HasSwitch(switches::kUseGL)) {
     std::string use_gl = command_line->GetSwitchValueASCII(switches::kUseGL);
+    std::string use_angle =
+        command_line->GetSwitchValueASCII(switches::kUseANGLE);
     if (use_gl == gl::kGLImplementationSwiftShaderName ||
-        use_gl == gl::kGLImplementationSwiftShaderForWebGLName) {
+        use_gl == gl::kGLImplementationSwiftShaderForWebGLName ||
+        (use_gl == gl::kGLImplementationANGLEName &&
+         (use_angle == gl::kANGLEImplementationSwiftShaderName ||
+          use_angle == gl::kANGLEImplementationSwiftShaderForWebGLName))) {
       gl_use_swiftshader_ = true;
     }
   }

@@ -498,6 +498,8 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
             command_line->GetSwitchValueASCII(switches::kUseANGLE);
         if (use_angle == gl::kANGLEImplementationSwiftShaderName)
           use_swift_shader = true;
+        else if (use_angle == gl::kANGLEImplementationSwiftShaderForWebGLName)
+          return ComputeGpuFeatureInfoForSwiftShader();
       }
     } else if (use_gl == gl::kGLImplementationSwiftShaderForWebGLName)
       return ComputeGpuFeatureInfoForSwiftShader();

@@ -34,6 +34,7 @@ GL_EXPORT extern const char kANGLEImplementationOpenGLESEGLName[];
 GL_EXPORT extern const char kANGLEImplementationNullName[];
 GL_EXPORT extern const char kANGLEImplementationVulkanName[];
 GL_EXPORT extern const char kANGLEImplementationSwiftShaderName[];
+GL_EXPORT extern const char kANGLEImplementationSwiftShaderForWebGLName[];
 GL_EXPORT extern const char kANGLEImplementationMetalName[];
 GL_EXPORT extern const char kANGLEImplementationNoneName[];
 

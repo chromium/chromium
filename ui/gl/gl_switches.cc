@@ -34,6 +34,7 @@ const char kANGLEImplementationOpenGLESEGLName[] = "gles-egl";
 const char kANGLEImplementationNullName[] = "null";
 const char kANGLEImplementationVulkanName[] = "vulkan";
 const char kANGLEImplementationSwiftShaderName[] = "swiftshader";
+const char kANGLEImplementationSwiftShaderForWebGLName[] = "swiftshader-webgl";
 const char kANGLEImplementationMetalName[] = "metal";
 const char kANGLEImplementationNoneName[] = "";
 
