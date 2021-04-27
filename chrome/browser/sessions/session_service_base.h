@@ -255,9 +255,6 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   // Will rebuild session commands if rebuild_on_next_save_ is true.
   virtual void RebuildCommandsIfRequired() = 0;
 
-  // Deletes session data if no windows are open for the current profile.
-  virtual void MaybeDeleteSessionOnlyData() = 0;
-
   // Unit test accessors.
   sessions::CommandStorageManager* GetCommandStorageManagerForTest();
 

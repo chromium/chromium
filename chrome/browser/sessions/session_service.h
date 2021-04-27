@@ -189,7 +189,7 @@ class SessionService : public SessionServiceBase {
   void RebuildCommandsIfRequired() override;
 
   // Deletes session data if no windows are open for the current profile.
-  void MaybeDeleteSessionOnlyData() override;
+  void MaybeDeleteSessionOnlyData();
 
   // Invoked with true when all browsers start closing.
   void OnClosingAllBrowsersChanged(bool closing);

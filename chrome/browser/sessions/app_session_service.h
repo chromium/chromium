@@ -42,7 +42,6 @@ class AppSessionService : public SessionServiceBase {
       sessions::SessionWindow::WindowType window_type) const override;
   void ScheduleResetCommands() override;
   void RebuildCommandsIfRequired() override;
-  void MaybeDeleteSessionOnlyData() override;
 
  private:
   base::WeakPtrFactory<AppSessionService> weak_factory_{this};
