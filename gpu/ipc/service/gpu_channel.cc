@@ -136,6 +136,8 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
   void CrashForTesting() override;
   void TerminateForTesting() override;
   void Flush(FlushCallback callback) override;
+  void ScheduleImageDecode(mojom::ScheduleImageDecodeParamsPtr params,
+                           uint64_t decode_release_count) override;
 
   IPC::Channel* ipc_channel_ = nullptr;
   base::ProcessId peer_pid_ = base::kNullProcessId;
@@ -296,13 +298,6 @@ bool GpuChannelMessageFilter::OnMessageReceived(const IPC::Message& message) {
   if (message.type() == GpuChannelMsg_FlushDeferredMessages::ID)
     return HandleFlushMessage(message);
 
-  if (message.routing_id() ==
-      static_cast<int32_t>(GpuChannelReservedRoutes::kImageDecodeAccelerator)) {
-    if (!image_decode_accelerator_stub_->OnMessageReceived(message))
-      return MessageErrorHandler(message, "Invalid image decode request");
-    return true;
-  }
-
   bool handle_out_of_order =
       message.routing_id() == MSG_ROUTING_CONTROL ||
       message.type() == GpuCommandBufferMsg_WaitForTokenInRange::ID ||
@@ -398,6 +393,13 @@ void GpuChannelMessageFilter::TerminateForTesting() {
 
 void GpuChannelMessageFilter::Flush(FlushCallback callback) {
   std::move(callback).Run();
+}
+
+void GpuChannelMessageFilter::ScheduleImageDecode(
+    mojom::ScheduleImageDecodeParamsPtr params,
+    uint64_t decode_release_count) {
+  image_decode_accelerator_stub_->ScheduleImageDecode(std::move(params),
+                                                      decode_release_count);
 }
 
 GpuChannel::GpuChannel(
@@ -620,6 +622,10 @@ void GpuChannel::HandleMessage(const IPC::Message& msg) {
 void GpuChannel::HandleMessageForTesting(const IPC::Message& msg) {
   // Message filter gets message first on IO thread.
   filter_->OnMessageReceived(msg);
+}
+
+mojom::GpuChannel& GpuChannel::GetGpuChannelForTesting() {
+  return *filter_;
 }
 
 ImageDecodeAcceleratorStub* GpuChannel::GetImageDecodeAcceleratorStub() const {

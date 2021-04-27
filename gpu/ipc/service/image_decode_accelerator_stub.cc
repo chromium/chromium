@@ -114,24 +114,6 @@ ImageDecodeAcceleratorStub::ImageDecodeAcceleratorStub(
   channel_->scheduler()->DisableSequence(sequence_);
 }
 
-bool ImageDecodeAcceleratorStub::OnMessageReceived(const IPC::Message& msg) {
-  DCHECK(io_task_runner_->BelongsToCurrentThread());
-  if (!base::FeatureList::IsEnabled(
-          features::kVaapiJpegImageDecodeAcceleration) &&
-      !base::FeatureList::IsEnabled(
-          features::kVaapiWebPImageDecodeAcceleration)) {
-    return false;
-  }
-
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(ImageDecodeAcceleratorStub, msg)
-    IPC_MESSAGE_HANDLER(GpuChannelMsg_ScheduleImageDecode,
-                        OnScheduleImageDecode)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled;
-}
-
 void ImageDecodeAcceleratorStub::Shutdown() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   base::AutoLock lock(lock_);
@@ -149,15 +131,25 @@ ImageDecodeAcceleratorStub::~ImageDecodeAcceleratorStub() {
   DCHECK(!channel_);
 }
 
-void ImageDecodeAcceleratorStub::OnScheduleImageDecode(
-    const GpuChannelMsg_ScheduleImageDecode_Params& decode_params,
+void ImageDecodeAcceleratorStub::ScheduleImageDecode(
+    mojom::ScheduleImageDecodeParamsPtr params,
     uint64_t release_count) {
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
+  if (!base::FeatureList::IsEnabled(
+          features::kVaapiJpegImageDecodeAcceleration) &&
+      !base::FeatureList::IsEnabled(
+          features::kVaapiWebPImageDecodeAcceleration)) {
+    return;
+  }
+
   DCHECK(io_task_runner_->BelongsToCurrentThread());
   base::AutoLock lock(lock_);
   if (!channel_) {
     // The channel is no longer available, so don't do anything.
     return;
   }
+
+  mojom::ScheduleImageDecodeParams& decode_params = *params;
 
   // Start the actual decode.
   worker_->Decode(
@@ -175,13 +167,13 @@ void ImageDecodeAcceleratorStub::OnScheduleImageDecode(
   channel_->scheduler()->ScheduleTask(Scheduler::Task(
       sequence_,
       base::BindOnce(&ImageDecodeAcceleratorStub::ProcessCompletedDecode,
-                     base::WrapRefCounted(this), std::move(decode_params),
+                     base::WrapRefCounted(this), std::move(params),
                      release_count),
       {discardable_handle_sync_token} /* sync_token_fences */));
 }
 
 void ImageDecodeAcceleratorStub::ProcessCompletedDecode(
-    GpuChannelMsg_ScheduleImageDecode_Params params,
+    mojom::ScheduleImageDecodeParamsPtr params_ptr,
     uint64_t decode_release_count) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   base::AutoLock lock(lock_);
@@ -189,6 +181,8 @@ void ImageDecodeAcceleratorStub::ProcessCompletedDecode(
     // The channel is no longer available, so don't do anything.
     return;
   }
+
+  mojom::ScheduleImageDecodeParams& params = *params_ptr;
 
   DCHECK(!pending_completed_decodes_.empty());
   std::unique_ptr<ImageDecodeAcceleratorWorker::DecodeResult> completed_decode =

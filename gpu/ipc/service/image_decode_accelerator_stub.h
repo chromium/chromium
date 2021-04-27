@@ -16,6 +16,7 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "gpu/command_buffer/service/sequence_id.h"
+#include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/common/gpu_messages.h"
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
 #include "gpu/ipc/service/image_decode_accelerator_worker.h"
@@ -24,10 +25,6 @@
 namespace base {
 class SingleThreadTaskRunner;
 }  // namespace base
-
-namespace IPC {
-class Message;
-}  // namespace IPC
 
 namespace gpu {
 class GpuChannel;
@@ -58,8 +55,9 @@ class GPU_IPC_SERVICE_EXPORT ImageDecodeAcceleratorStub
                              GpuChannel* channel,
                              int32_t route_id);
 
-  // Processes a message from the renderer. Should be called on the IO thread.
-  bool OnMessageReceived(const IPC::Message& msg);
+  // Processes a decode request. Must be called on the IO thread.
+  void ScheduleImageDecode(mojom::ScheduleImageDecodeParamsPtr params,
+                           uint64_t release_count);
 
   // Called on the main thread to indicate that |channel_| should no longer be
   // used.
@@ -71,14 +69,10 @@ class GPU_IPC_SERVICE_EXPORT ImageDecodeAcceleratorStub
   friend class base::RefCountedThreadSafe<ImageDecodeAcceleratorStub>;
   ~ImageDecodeAcceleratorStub();
 
-  void OnScheduleImageDecode(
-      const GpuChannelMsg_ScheduleImageDecode_Params& params,
-      uint64_t release_count);
-
   // Creates the service-side cache entry for a completed decode and releases
   // the decode sync token. If the decode was unsuccessful, no cache entry is
   // created but the decode sync token is still released.
-  void ProcessCompletedDecode(GpuChannelMsg_ScheduleImageDecode_Params params,
+  void ProcessCompletedDecode(mojom::ScheduleImageDecodeParamsPtr params_ptr,
                               uint64_t decode_release_count);
 
   // Releases the decode sync token corresponding to |decode_release_count| and

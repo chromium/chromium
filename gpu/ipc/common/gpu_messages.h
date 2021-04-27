@@ -134,18 +134,6 @@ IPC_STRUCT_BEGIN(GpuChannelMsg_CreateSwapChain_Params)
 IPC_STRUCT_END()
 #endif  // OS_WIN
 
-IPC_STRUCT_BEGIN(GpuChannelMsg_ScheduleImageDecode_Params)
-  IPC_STRUCT_MEMBER(std::vector<uint8_t>, encoded_data)
-  IPC_STRUCT_MEMBER(gfx::Size, output_size)
-  IPC_STRUCT_MEMBER(int32_t, raster_decoder_route_id)
-  IPC_STRUCT_MEMBER(uint32_t, transfer_cache_entry_id)
-  IPC_STRUCT_MEMBER(int32_t, discardable_handle_shm_id)
-  IPC_STRUCT_MEMBER(uint32_t, discardable_handle_shm_offset)
-  IPC_STRUCT_MEMBER(uint64_t, discardable_handle_release_count)
-  IPC_STRUCT_MEMBER(gfx::ColorSpace, target_color_space)
-  IPC_STRUCT_MEMBER(bool, needs_mips)
-IPC_STRUCT_END()
-
 IPC_STRUCT_BEGIN(GpuDeferredMessage)
   IPC_STRUCT_MEMBER(IPC::Message, message)
   IPC_STRUCT_MEMBER(std::vector<gpu::SyncToken>, sync_token_fences)
@@ -222,14 +210,6 @@ IPC_MESSAGE_ROUTED1(GpuChannelMsg_ReleaseSysmemBufferCollection,
 #endif  // OS_FUCHSIA
 IPC_MESSAGE_ROUTED1(GpuChannelMsg_RegisterSharedImageUploadBuffer,
                     base::ReadOnlySharedMemoryRegion /* shm */)
-
-// Schedules a hardware-accelerated image decode in the GPU process. Renderers
-// should use gpu::ImageDecodeAcceleratorProxy to schedule decode requests which
-// are processed by gpu::ImageDecodeAcceleratorStub on the service side.
-IPC_MESSAGE_ROUTED2(
-    GpuChannelMsg_ScheduleImageDecode,
-    GpuChannelMsg_ScheduleImageDecode_Params /* decode_params */,
-    uint64_t /* decode_release_count */)
 
 // Simple NOP message which can be used as fence to ensure all previous sent
 // messages have been received.

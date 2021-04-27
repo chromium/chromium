@@ -16,6 +16,7 @@
 #include "gpu/config/gpu_info.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "gpu/ipc/common/command_buffer_id.h"
+#include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/common/gpu_messages.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
@@ -195,17 +196,17 @@ SyncToken ImageDecodeAcceleratorProxy::ScheduleImageDecode(
   DCHECK_EQ(host_->channel_id(),
             ChannelIdFromCommandBufferId(raster_decoder_command_buffer_id));
 
-  GpuChannelMsg_ScheduleImageDecode_Params params;
-  params.encoded_data.assign(encoded_data.begin(), encoded_data.end());
-  params.output_size = output_size;
-  params.raster_decoder_route_id =
+  auto params = mojom::ScheduleImageDecodeParams::New();
+  params->encoded_data.assign(encoded_data.begin(), encoded_data.end());
+  params->output_size = output_size;
+  params->raster_decoder_route_id =
       RouteIdFromCommandBufferId(raster_decoder_command_buffer_id);
-  params.transfer_cache_entry_id = transfer_cache_entry_id;
-  params.discardable_handle_shm_id = discardable_handle_shm_id;
-  params.discardable_handle_shm_offset = discardable_handle_shm_offset;
-  params.discardable_handle_release_count = discardable_handle_release_count;
-  params.target_color_space = target_color_space;
-  params.needs_mips = needs_mips;
+  params->transfer_cache_entry_id = transfer_cache_entry_id;
+  params->discardable_handle_shm_id = discardable_handle_shm_id;
+  params->discardable_handle_shm_offset = discardable_handle_shm_offset;
+  params->discardable_handle_release_count = discardable_handle_release_count;
+  params->target_color_space = target_color_space;
+  params->needs_mips = needs_mips;
 
   base::AutoLock lock(lock_);
   const uint64_t release_count = ++next_release_count_;
@@ -215,8 +216,7 @@ SyncToken ImageDecodeAcceleratorProxy::ScheduleImageDecode(
   // |discardable_handle_release_count| is visible to the service before
   // processing the image decode request.
   host_->EnsureFlush(UINT32_MAX);
-  host_->Send(new GpuChannelMsg_ScheduleImageDecode(
-      route_id_, std::move(params), release_count));
+  host_->GetGpuChannel().ScheduleImageDecode(std::move(params), release_count);
   return SyncToken(
       CommandBufferNamespace::GPU_IO,
       CommandBufferIdFromChannelAndRoute(host_->channel_id(), route_id_),

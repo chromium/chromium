@@ -227,6 +227,11 @@ source_set("vulkan_types") {
 mojom("gpu_channel_mojom") {
   sources = [ "gpu_channel.mojom" ]
 
+  public_deps = [
+    "//ui/gfx/geometry/mojom",
+    "//ui/gfx/mojom",
+  ]
+
   # Unlike some definitions in ":interfaces_mojom", these bindings are never
   # used in Blink. We disable variants to simplify the dependency graph.
   disable_variants = true

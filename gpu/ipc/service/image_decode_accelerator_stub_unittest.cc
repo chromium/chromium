@@ -55,7 +55,7 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/ipc/common/command_buffer_id.h"
-#include "gpu/ipc/common/gpu_messages.h"
+#include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/service/command_buffer_stub.h"
 #include "gpu/ipc/service/gpu_channel.h"
@@ -411,23 +411,16 @@ class ImageDecodeAcceleratorStubTest
       return SyncToken();
 
     // Send the IPC decode request.
-    GpuChannelMsg_ScheduleImageDecode_Params decode_params;
-    decode_params.encoded_data = std::vector<uint8_t>();
-    decode_params.output_size = output_size;
-    decode_params.raster_decoder_route_id = kCommandBufferRouteId;
-    decode_params.transfer_cache_entry_id = transfer_cache_entry_id;
-    decode_params.discardable_handle_shm_id = handle.shm_id();
-    decode_params.discardable_handle_shm_offset = handle.byte_offset();
-    decode_params.discardable_handle_release_count = handle_release_count;
-    decode_params.target_color_space = gfx::ColorSpace();
-    decode_params.needs_mips = needs_mips;
-
-    HandleMessage(
-        channel,
-        new GpuChannelMsg_ScheduleImageDecode(
-            static_cast<int32_t>(
-                GpuChannelReservedRoutes::kImageDecodeAccelerator),
-            std::move(decode_params), decode_sync_token.release_count()));
+    auto decode_params = mojom::ScheduleImageDecodeParams::New();
+    decode_params->output_size = output_size;
+    decode_params->raster_decoder_route_id = kCommandBufferRouteId;
+    decode_params->transfer_cache_entry_id = transfer_cache_entry_id;
+    decode_params->discardable_handle_shm_id = handle.shm_id();
+    decode_params->discardable_handle_shm_offset = handle.byte_offset();
+    decode_params->discardable_handle_release_count = handle_release_count;
+    decode_params->needs_mips = needs_mips;
+    channel->GetGpuChannelForTesting().ScheduleImageDecode(
+        std::move(decode_params), decode_sync_token.release_count());
     return decode_sync_token;
   }
 

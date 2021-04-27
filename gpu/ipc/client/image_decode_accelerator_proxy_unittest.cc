@@ -13,84 +13,54 @@
 #include "gpu/ipc/client/image_decode_accelerator_proxy.h"
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/gpu_messages.h"
+#include "gpu/ipc/common/mock_gpu_channel.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_space.h"
 
 using ::testing::DeleteArg;
 using ::testing::DoAll;
+using ::testing::Eq;
 using ::testing::Return;
-using ::testing::StrictMock;
 
 namespace gpu {
-
 namespace {
+
 constexpr int kChannelId = 5;
 constexpr int32_t kRasterCmdBufferRouteId = 3;
 constexpr gfx::Size kOutputSize(2, 2);
 
-MATCHER_P(IpcMessageEqualTo, expected, "") {
-  // Get params from actual IPC message.
-  GpuChannelMsg_ScheduleImageDecode::Param actual_param_tuple;
-  if (!GpuChannelMsg_ScheduleImageDecode::Read(arg, &actual_param_tuple))
-    return false;
-
-  GpuChannelMsg_ScheduleImageDecode_Params params =
-      std::get<0>(actual_param_tuple);
-  const uint64_t release_count = std::get<1>(actual_param_tuple);
-
-  // Get params from expected IPC Message.
-  GpuChannelMsg_ScheduleImageDecode::Param expected_param_tuple;
-  if (!GpuChannelMsg_ScheduleImageDecode::Read(expected, &expected_param_tuple))
-    return false;
-
-  GpuChannelMsg_ScheduleImageDecode_Params expected_params =
-      std::get<0>(expected_param_tuple);
-  const uint64_t expected_release_count = std::get<1>(expected_param_tuple);
-
-  // Compare all relevant fields.
-  return arg->routing_id() == expected->routing_id() &&
-         release_count == expected_release_count &&
-         params.encoded_data == expected_params.encoded_data &&
-         params.output_size == expected_params.output_size &&
-         params.raster_decoder_route_id ==
-             expected_params.raster_decoder_route_id &&
-         params.transfer_cache_entry_id ==
-             expected_params.transfer_cache_entry_id &&
-         params.discardable_handle_shm_id ==
-             expected_params.discardable_handle_shm_id &&
-         params.discardable_handle_shm_offset ==
-             expected_params.discardable_handle_shm_offset &&
-         params.discardable_handle_release_count ==
-             expected_params.discardable_handle_release_count &&
-         params.target_color_space == expected_params.target_color_space &&
-         params.needs_mips == expected_params.needs_mips;
+MATCHER_P(ImageDecodeParamsEqualTo, expected_params, "") {
+  return arg->Equals(expected_params);
 }
 
-}  // namespace
-
-class MockGpuChannelHost : public GpuChannelHost {
+class TestGpuChannelHost : public GpuChannelHost {
  public:
-  MockGpuChannelHost() : MockGpuChannelHost(GPUInfo()) {}
+  explicit TestGpuChannelHost(mojom::GpuChannel& gpu_channel)
+      : TestGpuChannelHost(gpu_channel, GPUInfo()) {}
 
-  MockGpuChannelHost(const GPUInfo& info)
+  TestGpuChannelHost(mojom::GpuChannel& gpu_channel, const GPUInfo& info)
       : GpuChannelHost(kChannelId,
                        info,
                        GpuFeatureInfo(),
-                       mojo::ScopedMessagePipeHandle(mojo::MessagePipeHandle(
-                           mojo::kInvalidHandleValue))) {}
+                       mojo::ScopedMessagePipeHandle(
+                           mojo::MessagePipeHandle(mojo::kInvalidHandleValue))),
+        gpu_channel_(gpu_channel) {}
 
-  MOCK_METHOD1(Send, bool(IPC::Message*));
+  mojom::GpuChannel& GetGpuChannel() override { return gpu_channel_; }
 
  protected:
-  ~MockGpuChannelHost() override {}
+  ~TestGpuChannelHost() override = default;
+
+ private:
+  mojom::GpuChannel& gpu_channel_;
 };
 
 class ImageDecodeAcceleratorProxyTest : public ::testing::Test {
  public:
   ImageDecodeAcceleratorProxyTest()
       : gpu_channel_host_(
-            base::MakeRefCounted<StrictMock<MockGpuChannelHost>>()),
+            base::MakeRefCounted<TestGpuChannelHost>(mock_gpu_channel_)),
         proxy_(gpu_channel_host_.get(),
                static_cast<int32_t>(
                    GpuChannelReservedRoutes::kImageDecodeAccelerator)) {}
@@ -99,7 +69,8 @@ class ImageDecodeAcceleratorProxyTest : public ::testing::Test {
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  scoped_refptr<StrictMock<MockGpuChannelHost>> gpu_channel_host_;
+  MockGpuChannel mock_gpu_channel_;
+  scoped_refptr<TestGpuChannelHost> gpu_channel_host_;
   ImageDecodeAcceleratorProxy proxy_;
 };
 
@@ -110,7 +81,7 @@ TEST_F(ImageDecodeAcceleratorProxyTest, ScheduleImageDecodeSendsMessage) {
 
   const gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
 
-  GpuChannelMsg_ScheduleImageDecode_Params expected_params;
+  mojom::ScheduleImageDecodeParams expected_params;
   expected_params.encoded_data.assign(encoded_data.begin(), encoded_data.end());
   expected_params.output_size = kOutputSize;
   expected_params.raster_decoder_route_id = kRasterCmdBufferRouteId;
@@ -121,16 +92,11 @@ TEST_F(ImageDecodeAcceleratorProxyTest, ScheduleImageDecodeSendsMessage) {
   expected_params.target_color_space = color_space;
   expected_params.needs_mips = false;
 
-  GpuChannelMsg_ScheduleImageDecode expected_message(
-      static_cast<int32_t>(GpuChannelReservedRoutes::kImageDecodeAccelerator),
-      std::move(expected_params), /*release_count=*/1u);
-
-  {
-    EXPECT_CALL(*gpu_channel_host_, Send(IpcMessageEqualTo(&expected_message)))
-        .Times(1)
-        .WillOnce(DoAll(DeleteArg<0>(),
-                        Return(false)));  // Delete object passed to Send.
-  }
+  const uint64_t kExpectedReleaseCount = 1u;
+  EXPECT_CALL(mock_gpu_channel_,
+              ScheduleImageDecode(ImageDecodeParamsEqualTo(expected_params),
+                                  Eq(kExpectedReleaseCount)))
+      .Times(1);
 
   SyncToken token = proxy_.ScheduleImageDecode(
       encoded_data, kOutputSize,
@@ -160,6 +126,7 @@ class ImageDecodeAcceleratorProxySubsamplingTest
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
+  MockGpuChannel mock_gpu_channel_;
 };
 
 TEST_P(ImageDecodeAcceleratorProxySubsamplingTest, JPEGSubsamplingIsSupported) {
@@ -200,8 +167,8 @@ TEST_P(ImageDecodeAcceleratorProxySubsamplingTest, JPEGSubsamplingIsSupported) {
   GPUInfo gpu_info;
   gpu_info.image_decode_accelerator_supported_profiles.push_back(profile);
 
-  auto gpu_channel_host(
-      base::MakeRefCounted<StrictMock<MockGpuChannelHost>>(gpu_info));
+  auto gpu_channel_host =
+      base::MakeRefCounted<TestGpuChannelHost>(mock_gpu_channel_, gpu_info);
   ImageDecodeAcceleratorProxy proxy(
       gpu_channel_host.get(),
       static_cast<int32_t>(GpuChannelReservedRoutes::kImageDecodeAccelerator));
@@ -244,8 +211,8 @@ TEST_P(ImageDecodeAcceleratorProxySubsamplingTest,
   GPUInfo gpu_info;
   gpu_info.image_decode_accelerator_supported_profiles.push_back(profile);
 
-  auto gpu_channel_host(
-      base::MakeRefCounted<StrictMock<MockGpuChannelHost>>(gpu_info));
+  auto gpu_channel_host =
+      base::MakeRefCounted<TestGpuChannelHost>(mock_gpu_channel_, gpu_info);
   ImageDecodeAcceleratorProxy proxy(
       gpu_channel_host.get(),
       static_cast<int32_t>(GpuChannelReservedRoutes::kImageDecodeAccelerator));
@@ -263,4 +230,5 @@ INSTANTIATE_TEST_SUITE_P(ImageDecodeAcceleratorProxySubsample,
                                          cc::YUVSubsampling::k444,
                                          cc::YUVSubsampling::kUnknown));
 
+}  // namespace
 }  // namespace gpu
