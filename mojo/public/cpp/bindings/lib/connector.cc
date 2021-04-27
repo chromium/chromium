@@ -158,7 +158,7 @@ Connector::Connector(ScopedMessagePipeHandle message_pipe,
       nesting_observer_(RunLoopNestingObserver::GetForThread()) {
   recordreplay::RegisterPointer(this);
   if (config == MULTI_THREADED_SEND)
-    lock_.emplace();
+    lock_.emplace("Connector.lock_");
 
 #if defined(ENABLE_IPC_FUZZER)
   if (!MessageDumper::GetMessageDumpDirectory().empty())
