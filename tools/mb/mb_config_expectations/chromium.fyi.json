@@ -361,52 +361,6 @@
       "use_static_angle": true
     }
   },
-  "android-paeverywhere-arm-fyi-dbg": {
-    "gn_args": {
-      "is_component_build": true,
-      "is_debug": true,
-      "symbol_level": 1,
-      "target_cpu": "arm",
-      "target_os": "android",
-      "use_allocator": "partition",
-      "use_goma": true
-    }
-  },
-  "android-paeverywhere-arm-fyi-rel": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 1,
-      "target_cpu": "arm",
-      "target_os": "android",
-      "use_allocator": "partition",
-      "use_goma": true
-    }
-  },
-  "android-paeverywhere-arm64-fyi-dbg": {
-    "gn_args": {
-      "is_component_build": true,
-      "is_debug": true,
-      "symbol_level": 1,
-      "target_cpu": "arm64",
-      "target_os": "android",
-      "use_allocator": "partition",
-      "use_goma": true
-    }
-  },
-  "android-paeverywhere-arm64-fyi-rel": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 1,
-      "target_cpu": "arm64",
-      "target_os": "android",
-      "use_allocator": "partition",
-      "use_goma": true
-    }
-  },
   "chromeos-amd64-generic-rel-dchecks": {
     "args_file": "//build/args/chromeos/amd64-generic.gni",
     "gn_args": {
@@ -789,27 +743,6 @@
       "use_ozone": true
     }
   },
-  "linux-paeverywhere-x64-fyi-dbg": {
-    "gn_args": {
-      "is_component_build": true,
-      "is_debug": true,
-      "symbol_level": 1,
-      "target_cpu": "x64",
-      "use_allocator": "partition",
-      "use_goma": true
-    }
-  },
-  "linux-paeverywhere-x64-fyi-rel": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 1,
-      "target_cpu": "x64",
-      "use_allocator": "partition",
-      "use_goma": true
-    }
-  },
   "linux-perfetto-rel": {
     "gn_args": {
       "is_component_build": false,
@@ -906,48 +839,6 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
-      "use_goma": true
-    }
-  },
-  "win-paeverywhere-x64-fyi-dbg": {
-    "gn_args": {
-      "is_component_build": true,
-      "is_debug": true,
-      "symbol_level": 1,
-      "target_cpu": "x64",
-      "use_allocator": "partition",
-      "use_goma": true
-    }
-  },
-  "win-paeverywhere-x64-fyi-rel": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 1,
-      "target_cpu": "x64",
-      "use_allocator": "partition",
-      "use_goma": true
-    }
-  },
-  "win-paeverywhere-x86-fyi-dbg": {
-    "gn_args": {
-      "is_component_build": true,
-      "is_debug": true,
-      "symbol_level": 1,
-      "target_cpu": "x86",
-      "use_allocator": "partition",
-      "use_goma": true
-    }
-  },
-  "win-paeverywhere-x86-fyi-rel": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 1,
-      "target_cpu": "x86",
-      "use_allocator": "partition",
       "use_goma": true
     }
   },

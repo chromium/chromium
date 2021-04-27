@@ -267,17 +267,6 @@
       },
     },
 
-    'android_specific_chromium_gtests_for_paeverywhere': {
-      'android_browsertests': {
-        'swarming': {
-          'shards': 1,
-        },
-      },
-      'android_webview_unittests': {},
-      'gl_unittests': {},
-      'ui_android_unittests': {},
-    },
-
     'android_trichrome_smoke_tests': {
       'trichrome_chrome_bundle_fake_modules_smoke_test': {},
       'trichrome_chrome_bundle_smoke_test': {},
@@ -6719,29 +6708,10 @@
       'network_service_fyi_gtests',
     ],
 
-    'paeverywhere_android_gtests': [
-      'android_specific_chromium_gtests_for_paeverywhere',
-      'android_smoke_tests',
-      'paeverywhere_common_tests'
-    ],
-
-    'paeverywhere_linux_gtests': [
-      'chromium_gtests_for_linux_and_mac_only',
-      'chromium_gtests_for_linux_only',
-      'chromium_gtests_for_win_and_linux_only',
-      'paeverywhere_common_tests',
-    ],
-
     'paeverywhere_mac_gtests': [
       'chromium_gtests_for_linux_and_mac_only',
       'mac_specific_chromium_gtests',
       'paeverywhere_common_tests',
-    ],
-
-    'paeverywhere_win_gtests': [
-      'chromium_gtests_for_win_and_linux_only',
-      'paeverywhere_common_tests',
-      'win_specific_chromium_gtests',
     ],
 
     'sandboxed_chromium_memory_linux_gtests': [

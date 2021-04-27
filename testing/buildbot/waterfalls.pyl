@@ -2849,42 +2849,6 @@
         'use_swarming': True,
         'os_type': 'android',
       },
-      'android-paeverywhere-arm-fyi-dbg': {
-        'test_suites': {
-          'gtest_tests': 'paeverywhere_android_gtests',
-        },
-        'mixins': [
-          'enable_resultdb',
-          'walleye',
-        ],
-      },
-      'android-paeverywhere-arm-fyi-rel': {
-        'test_suites': {
-          'gtest_tests': 'paeverywhere_android_gtests',
-        },
-        'mixins': [
-          'enable_resultdb',
-          'walleye',
-        ],
-      },
-      'android-paeverywhere-arm64-fyi-dbg': {
-        'test_suites': {
-          'gtest_tests': 'paeverywhere_android_gtests',
-        },
-        'mixins': [
-          'enable_resultdb',
-          'walleye',
-        ],
-      },
-      'android-paeverywhere-arm64-fyi-rel': {
-        'test_suites': {
-          'gtest_tests': 'paeverywhere_android_gtests',
-        },
-        'mixins': [
-          'enable_resultdb',
-          'walleye',
-        ],
-      },
       'chromeos-amd64-generic-rel-dchecks': {
         'additional_compile_targets': [
           'chromiumos_preflight',
@@ -3261,24 +3225,6 @@
           'gtest_tests': 'linux_lacros_gtests',
         },
       },
-      'linux-paeverywhere-x64-fyi-dbg': {
-        'test_suites': {
-          'gtest_tests': 'paeverywhere_linux_gtests',
-        },
-        'mixins': [
-          'linux-xenial',
-          'x86-64',
-        ],
-      },
-      'linux-paeverywhere-x64-fyi-rel': {
-        'test_suites': {
-          'gtest_tests': 'paeverywhere_linux_gtests',
-        },
-        'mixins': [
-          'linux-xenial',
-          'x86-64',
-        ],
-      },
       'linux-perfetto-rel': {
         'additional_compile_targets': [ 'chrome' ],
         'mixins': [
@@ -3455,42 +3401,6 @@
         'test_suites': {
           'scripts': 'test_traffic_annotation_auditor_script',
         },
-      },
-      'win-paeverywhere-x64-fyi-dbg': {
-        'test_suites': {
-          'gtest_tests': 'paeverywhere_win_gtests',
-        },
-        'mixins': [
-          'win10',
-          'x86-64',
-        ],
-      },
-      'win-paeverywhere-x64-fyi-rel': {
-        'test_suites': {
-          'gtest_tests': 'paeverywhere_win_gtests',
-        },
-        'mixins': [
-          'win10',
-          'x86-64',
-        ],
-      },
-      'win-paeverywhere-x86-fyi-dbg': {
-        'test_suites': {
-          'gtest_tests': 'paeverywhere_win_gtests',
-        },
-        'mixins': [
-          'win10',
-          'x86-64',
-        ],
-      },
-      'win-paeverywhere-x86-fyi-rel': {
-        'test_suites': {
-          'gtest_tests': 'paeverywhere_win_gtests',
-        },
-        'mixins': [
-          'win10',
-          'x86-64',
-        ],
       },
       'win-pixel-tester-rel': {
         'mixins': [

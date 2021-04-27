@@ -2937,46 +2937,6 @@ ci.fyi_builder(
     main_console_view = main_console_if_on_branch(),
 )
 
-ci.fyi_builder(
-    name = "android-paeverywhere-arm-fyi-dbg",
-    builderless = True,
-    console_view_entry = consoles.console_view_entry(
-        category = "paeverywhere|android",
-        short_name = "32dbg",
-    ),
-    notifies = ["chrome-memory-safety"],
-)
-
-ci.fyi_builder(
-    name = "android-paeverywhere-arm-fyi-rel",
-    builderless = True,
-    console_view_entry = consoles.console_view_entry(
-        category = "paeverywhere|android",
-        short_name = "32rel",
-    ),
-    notifies = ["chrome-memory-safety"],
-)
-
-ci.fyi_builder(
-    name = "android-paeverywhere-arm64-fyi-dbg",
-    builderless = True,
-    console_view_entry = consoles.console_view_entry(
-        category = "paeverywhere|android",
-        short_name = "64dbg",
-    ),
-    notifies = ["chrome-memory-safety"],
-)
-
-ci.fyi_builder(
-    name = "android-paeverywhere-arm64-fyi-rel",
-    builderless = True,
-    console_view_entry = consoles.console_view_entry(
-        category = "paeverywhere|android",
-        short_name = "64rel",
-    ),
-    notifies = ["chrome-memory-safety"],
-)
-
 # TODO(crbug.com/1189748): Remove this builder once flaky DCHECKs have been
 # resolved and DCHECKs are enabled on the CQ bot.
 ci.fyi_builder(
@@ -3159,28 +3119,6 @@ ci.fyi_builder(
         category = "linux",
     ),
     triggered_by = ["linux-lacros-builder-fyi-rel"],
-)
-
-ci.fyi_builder(
-    name = "linux-paeverywhere-x64-fyi-dbg",
-    builderless = True,
-    console_view_entry = consoles.console_view_entry(
-        category = "paeverywhere|linux",
-        short_name = "64dbg",
-    ),
-    notifies = ["chrome-memory-safety"],
-    os = os.LINUX_DEFAULT,
-)
-
-ci.fyi_builder(
-    name = "linux-paeverywhere-x64-fyi-rel",
-    builderless = True,
-    console_view_entry = consoles.console_view_entry(
-        category = "paeverywhere|linux",
-        short_name = "64rel",
-    ),
-    notifies = ["chrome-memory-safety"],
-    os = os.LINUX_DEFAULT,
 )
 
 ci.fyi_builder(
@@ -3440,50 +3378,6 @@ ci.updater_builder(
         short_name = "10",
     ),
     triggered_by = ["win-updater-builder-rel"],
-)
-
-ci.fyi_builder(
-    name = "win-paeverywhere-x86-fyi-dbg",
-    builderless = True,
-    console_view_entry = consoles.console_view_entry(
-        category = "paeverywhere|win",
-        short_name = "32dbg",
-    ),
-    notifies = ["chrome-memory-safety"],
-    os = os.WINDOWS_ANY,
-)
-
-ci.fyi_builder(
-    name = "win-paeverywhere-x86-fyi-rel",
-    builderless = True,
-    console_view_entry = consoles.console_view_entry(
-        category = "paeverywhere|win",
-        short_name = "32rel",
-    ),
-    notifies = ["chrome-memory-safety"],
-    os = os.WINDOWS_ANY,
-)
-
-ci.fyi_builder(
-    name = "win-paeverywhere-x64-fyi-dbg",
-    builderless = True,
-    console_view_entry = consoles.console_view_entry(
-        category = "paeverywhere|win",
-        short_name = "64dbg",
-    ),
-    notifies = ["chrome-memory-safety"],
-    os = os.WINDOWS_ANY,
-)
-
-ci.fyi_builder(
-    name = "win-paeverywhere-x64-fyi-rel",
-    builderless = True,
-    console_view_entry = consoles.console_view_entry(
-        category = "paeverywhere|win",
-        short_name = "64rel",
-    ),
-    notifies = ["chrome-memory-safety"],
-    os = os.WINDOWS_ANY,
 )
 
 ci.fyi_builder(
