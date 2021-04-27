@@ -1304,6 +1304,7 @@ _GENERIC_PYDEPS_FILES = [
     'build/android/gyp/java_cpp_enum.pydeps',
     'build/android/gyp/java_cpp_features.pydeps',
     'build/android/gyp/java_cpp_strings.pydeps',
+    'build/android/gyp/java_google_api_keys.pydeps',
     'build/android/gyp/jetify_jar.pydeps',
     'build/android/gyp/jinja_template.pydeps',
     'build/android/gyp/lint.pydeps',

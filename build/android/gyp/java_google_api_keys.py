@@ -48,7 +48,7 @@ ${CONSTANT_ENTRIES}
   constant_template = string.Template(
       '  public static final String ${NAME} = "${VALUE}";')
   constant_entries_list = []
-  for constant_name, constant_value in constant_definitions.iteritems():
+  for constant_name, constant_value in constant_definitions.items():
     values = {
         'NAME': constant_name,
         'VALUE': constant_value,
