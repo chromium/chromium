@@ -19,6 +19,9 @@ class MediaStreamComponent;
 class MODULES_EXPORT MediaStreamAudioTrackUnderlyingSource
     : public AudioFrameQueueUnderlyingSource,
       public WebMediaStreamAudioSink {
+  USING_PRE_FINALIZER(MediaStreamAudioTrackUnderlyingSource,
+                      DisconnectFromTrack);
+
  public:
   explicit MediaStreamAudioTrackUnderlyingSource(
       ScriptState*,
@@ -37,6 +40,7 @@ class MODULES_EXPORT MediaStreamAudioTrackUnderlyingSource
 
   MediaStreamComponent* Track() const { return track_.Get(); }
 
+  void ContextDestroyed() override;
   void Trace(Visitor*) const override;
  private:
   // FrameQueueUnderlyingSource implementation.

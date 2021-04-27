@@ -240,4 +240,19 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest, QueueSizeCannotBeZero) {
   track->stopTrack(v8_scope.GetExecutionContext());
 }
 
+TEST_F(MediaStreamVideoTrackUnderlyingSourceTest, PlatformSourceAliveAfterGC) {
+  Persistent<MediaStreamComponent> component;
+  {
+    V8TestingScope v8_scope;
+    auto* track = CreateTrack(v8_scope.GetExecutionContext());
+    component = track->Component();
+    auto* source = CreateSource(v8_scope.GetScriptState(), track, 0u);
+    ReadableStream::CreateWithCountQueueingStrategy(v8_scope.GetScriptState(),
+                                                    source, 0);
+    // |source| is a sink of |track|.
+    EXPECT_TRUE(source->Track());
+  }
+  blink::WebHeap::CollectAllGarbageForTesting();
+}
+
 }  // namespace blink
