@@ -1,6 +1,7 @@
 include_rules = [
   "+components/account_id",
   "+components/device_event_log/device_event_log.h",
+  "+components/live_caption",
   "+components/prefs",
   "+grit/ui_chromeos_resources.h",
 ]

@@ -45,6 +45,7 @@
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
+#include "components/live_caption/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
 namespace ash {
@@ -98,8 +99,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
         chromeos::prefs::kSuggestedContentEnabled, true,
         user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
     registry->RegisterBooleanPref(
-        prefs::kLiveCaptionEnabled, false,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+        ::prefs::kLiveCaptionEnabled, false,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   }
 }
 

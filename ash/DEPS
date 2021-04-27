@@ -8,6 +8,7 @@ include_rules = [
   "+components/live_caption",
   "+components/discardable_memory/public",
   "+components/discardable_memory/service/discardable_shared_memory_manager.h",
+  "+components/live_caption",
   "+components/media_message_center",
   "+components/pref_registry",
   "+components/prefs",

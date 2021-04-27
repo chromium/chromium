@@ -1863,6 +1863,7 @@ component("ash") {
     "//components/discardable_memory/service",
     "//components/full_restore",
     "//components/live_caption",
+    "//components/live_caption:constants",
     "//components/media_message_center",
     "//components/onc",
     "//components/password_manager/core/browser:hash_password_manager",
