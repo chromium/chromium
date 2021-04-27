@@ -53,7 +53,7 @@ enum class FullscreenToolbarStyle {
     : NSObject <FullscreenToolbarContextDelegate>
 
 // Designated initializer.
-- (id)initWithBrowserView:(BrowserView*)browserView;
+- (instancetype)initWithBrowserView:(BrowserView*)browserView;
 
 // Informs the controller that the browser has entered or exited fullscreen
 // mode. |-enterFullscreenMode| should be called when the window is about to

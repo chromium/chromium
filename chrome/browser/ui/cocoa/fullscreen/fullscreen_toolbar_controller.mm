@@ -39,7 +39,7 @@
   BrowserView* _browserView;  // weak
 }
 
-- (id)initWithBrowserView:(BrowserView*)browserView {
+- (instancetype)initWithBrowserView:(BrowserView*)browserView {
   if ((self = [super init])) {
     _browserView = browserView;
     _animationController =
