@@ -14,11 +14,6 @@ namespace blink {
 // static
 AudioFrame* AudioFrame::Create(AudioFrameInit* init,
                                ExceptionState& exception_state) {
-  if (!init->hasBuffer()) {
-    exception_state.ThrowTypeError("No buffer provided");
-    return nullptr;
-  }
-
   return MakeGarbageCollected<AudioFrame>(init);
 }
 
@@ -40,6 +35,16 @@ AudioFrame::AudioFrame(AudioFrameInit* init)
 AudioFrame::AudioFrame(scoped_refptr<media::AudioBuffer> buffer)
     : data_(std::move(buffer)),
       timestamp_(data_->timestamp().InMicroseconds()) {}
+
+AudioFrame* AudioFrame::clone(ExceptionState& exception_state) {
+  if (!data_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Cannot clone closed AudioFrame.");
+    return nullptr;
+  }
+
+  return MakeGarbageCollected<AudioFrame>(data_);
+}
 
 void AudioFrame::close() {
   data_.reset();

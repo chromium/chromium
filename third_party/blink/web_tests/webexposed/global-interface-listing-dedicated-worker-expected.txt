@@ -41,6 +41,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute @@toStringTag
 [Worker]     getter buffer
 [Worker]     getter timestamp
+[Worker]     method clone
 [Worker]     method close
 [Worker]     method constructor
 [Worker] interface BackgroundFetchManager

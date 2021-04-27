@@ -9,6 +9,9 @@
 ] interface AudioFrame {
   [RaisesException] constructor(AudioFrameInit init);
 
+  // Creates a AudioFrame, which needs to be independently closed.
+  [RaisesException] VideoFrame clone();
+
   void close();
 
   readonly attribute unsigned long long timestamp;  // microseconds

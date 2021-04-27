@@ -54,8 +54,7 @@
       BufferSource destination,
       optional VideoFrameReadIntoOptions options = {});
 
-  // Creates of the copy of this VideoFrame, which needs to be independently
-  // destroyed.
+  // Creates a copy of this VideoFrame, which needs to be independently closed.
   [RaisesException] VideoFrame clone();
 
   void close();
