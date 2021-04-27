@@ -24,6 +24,7 @@ SyncEventWatcher::SyncEventWatcher(base::WaitableEvent* event,
       destroyed_(new base::RefCountedData<bool>(false)) {}
 
 SyncEventWatcher::~SyncEventWatcher() {
+  recordreplay::Assert("SyncEventWatcher::~SyncEventWatcher");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   destroyed_->data = true;
 }
@@ -34,6 +35,7 @@ void SyncEventWatcher::AllowWokenUpBySyncWatchOnSameThread() {
 }
 
 static void SignalSyncWatcher(void* info) {
+  recordreplay::Assert("SignalSyncWatcher");
   base::RefCountedData<bool>* destroyed = (base::RefCountedData<bool>*) info;
   destroyed->data = true;
 }
