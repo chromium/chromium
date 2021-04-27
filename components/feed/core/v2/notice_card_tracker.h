@@ -27,6 +27,10 @@ int GetNoticeCardClicksCount(const PrefService& pref_service);
 int GetNoticeCardViewsCount(const PrefService& pref_service);
 void SetLastFetchHadNoticeCard(PrefService& pref_service, bool value);
 bool GetLastFetchHadNoticeCard(const PrefService& pref_service);
+void SetHasReachedClickAndViewActionsUploadConditions(PrefService& pref_service,
+                                                      bool value);
+bool GetHasReachedClickAndViewActionsUploadConditions(
+    const PrefService& pref_service);
 
 }  // namespace prefs
 
