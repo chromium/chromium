@@ -194,9 +194,13 @@ TEST_F(PerformanceTest, AllowsTimingRedirect) {
   EXPECT_FALSE(AllowsTimingRedirect(redirect_chain, final_response,
                                     *security_origin.get(),
                                     GetExecutionContext()));
-  // TODO(npm): when tainted origin flag is set and header is origin,
-  // we should fail.
-
+  // When cross-origin redirect opts in and the final response has as well, but
+  // the tainted origin flag is set.
+  final_response.SetHttpHeaderField(http_names::kTimingAllowOrigin,
+                                    origin_domain);
+  EXPECT_FALSE(AllowsTimingRedirect(redirect_chain, final_response,
+                                    *security_origin.get(),
+                                    GetExecutionContext()));
   // Change the opt ins to be '*' and then the check should pass.
   redirect_chain.back().SetHttpHeaderField(http_names::kTimingAllowOrigin, "*");
   final_response.SetHttpHeaderField(http_names::kTimingAllowOrigin, "*");

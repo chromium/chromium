@@ -5597,8 +5597,6 @@ crbug.com/811605 media/video-poster-after-loadedmetadata.html [ Failure Pass ]
 crbug.com/806645 [ Win7 ] http/tests/devtools/elements/elements-panel-rewrite-href.js [ Failure Pass ]
 crbug.com/806645 [ Mac ] http/tests/devtools/elements/elements-panel-rewrite-href.js [ Failure Pass ]
 
-crbug.com/1193389 external/wpt/resource-timing/tao-origin-SO-XO-SO-redirect-chain.https.html [ Failure ]
-
 # MHT works only when loaded from local FS (file://..).
 crbug.com/778467 [ Fuchsia ] mhtml/mhtml_in_iframe.html [ Failure ]
 

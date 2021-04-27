@@ -447,26 +447,17 @@ bool Performance::PassesTimingAllowCheck(
   }
   if (!is_same_origin && !is_next_resource_same_origin)
     *tainted_origin_flag = true;
+  // We already checked if 'star' is present, so fail if tainted origin flag is
+  // set.
+  if (*tainted_origin_flag)
+    return false;
 
   const String& serialized_origin = initiator_security_origin.ToString();
-  bool contains_serialized_origin = false;
   for (const String& timing_allowed_origin : timing_allowed_origins) {
-    if (serialized_origin == timing_allowed_origin) {
-      contains_serialized_origin = true;
-      break;
-    }
+    if (serialized_origin == timing_allowed_origin)
+      return true;
   }
-  // If the tainted origin flag is set and the header contains the origin, this
-  // means that this method currently passes the check but once we implement the
-  // tainted origin flag properly then it will fail the check. Record this in a
-  // UseCounter to track how many webpages contain resources where the new check
-  // would fail.
-  if (*tainted_origin_flag && contains_serialized_origin) {
-    UseCounter::Count(context,
-                      WebFeature::kResourceTimingTaintedOriginFlagFail);
-  }
-
-  return contains_serialized_origin;
+  return false;
 }
 
 bool Performance::AllowsTimingRedirect(

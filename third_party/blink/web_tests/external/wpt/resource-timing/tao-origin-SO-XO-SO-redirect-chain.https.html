@@ -15,7 +15,7 @@
 const {HTTPS_REMOTE_ORIGIN} = get_host_info();
 const SAME_ORIGIN = location.origin;
 let destUrl = `${HTTPS_REMOTE_ORIGIN}/resource-timing/resources/multi_redirect.py?`;
-destUrl += `page_origin=http://${SAME_ORIGIN}`;
+destUrl += `page_origin=${SAME_ORIGIN}`;
 destUrl += `&cross_origin=${HTTPS_REMOTE_ORIGIN}`;
 destUrl += `&final_resource=/resource-timing/resources/blue-with-tao.png`;
 destUrl += '&tao_steps=3';
