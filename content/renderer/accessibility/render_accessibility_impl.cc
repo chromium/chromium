@@ -476,9 +476,12 @@ void RenderAccessibilityImpl::HandleAXEvent(const ui::AXEvent& event) {
     return;
 
 #if defined(OS_ANDROID)
-  // Force the newly focused node to be re-serialized so we include its
-  // inline text boxes.
-  if (event.event_type == ax::mojom::Event::kFocus)
+  // Inline text boxes are needed to support moving by character/word/line.
+  // On Android, we don't load inline text boxes by default, only on-demand, or
+  // when part of the focused object. So, when focus moves to an editable text
+  // field, ensure we re-serialize the whole thing including its inline text
+  // boxes.
+  if (event.event_type == ax::mojom::Event::kFocus && obj.IsEditable())
     serializer_->InvalidateSubtree(obj);
 #endif
 
