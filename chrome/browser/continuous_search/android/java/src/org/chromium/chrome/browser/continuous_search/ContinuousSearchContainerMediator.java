@@ -27,6 +27,7 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
     private final Supplier<Boolean> mCanAnimateNativeBrowserControls;
     private Runnable mRequestLayout;
     private final Supplier<Integer> mDefaultTopContainerHeightSupplier;
+    private final Callback<Boolean> mHideToolbarShadow;
 
     private boolean mInitialized;
     private boolean mIsVisible;
@@ -35,11 +36,13 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
 
     ContinuousSearchContainerMediator(BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<Boolean> canAnimateNativeBrowserControls,
-            Supplier<Integer> defaultTopContainerHeightSupplier, Runnable initializeLayout) {
+            Supplier<Integer> defaultTopContainerHeightSupplier, Runnable initializeLayout,
+            Callback<Boolean> hideToolbarShadow) {
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mCanAnimateNativeBrowserControls = canAnimateNativeBrowserControls;
         mDefaultTopContainerHeightSupplier = defaultTopContainerHeightSupplier;
         mInitializeLayout = initializeLayout;
+        mHideToolbarShadow = hideToolbarShadow;
     }
 
     void onLayoutInitialized(PropertyModel model, Runnable requestLayout) {
@@ -95,6 +98,7 @@ class ContinuousSearchContainerMediator implements BrowserControlsStateProvider.
     private void updateVisibility(boolean isVisible) {
         mIsVisible = isVisible;
         mBrowserControlsStateProvider.addObserver(this);
+        mHideToolbarShadow.onResult(isVisible);
 
         for (Callback<Integer> observer : mObservers) {
             observer.onResult(isVisible ? mJavaLayoutHeight : 0);

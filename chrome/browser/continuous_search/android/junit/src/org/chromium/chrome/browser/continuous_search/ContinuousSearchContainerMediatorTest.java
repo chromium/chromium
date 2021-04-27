@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
@@ -112,8 +113,10 @@ public class ContinuousSearchContainerMediatorTest {
         Supplier<Boolean> canAnimateNativeSupplier = () -> mCanAnimateNative;
         Supplier<Integer> defaultContainerHeightSupplier = () -> DEFAULT_CONTAINER_HEIGHT;
         Runnable initializeLayout = () -> {};
+        Callback<Boolean> hideToolbarShadow = (hide) -> {};
         mMediator = new ContinuousSearchContainerMediator(browserControlsStateProvider,
-                canAnimateNativeSupplier, defaultContainerHeightSupplier, initializeLayout);
+                canAnimateNativeSupplier, defaultContainerHeightSupplier, initializeLayout,
+                hideToolbarShadow);
         Runnable requestLayout = () -> mMediator.setJavaHeight(JAVA_HEIGHT);
         mModel = new PropertyModel(ContinuousSearchContainerProperties.ALL_KEYS);
         mMediator.onLayoutInitialized(mModel, requestLayout);

@@ -1721,7 +1721,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         mTextureCaptureMode = textureMode;
         if (mTextureCaptureMode) {
             if (!hideShadowForIncognitoNtp() && !hideShadowForInterstitial()
-                    && !hideShadowForRegularNtpTextureCapture()) {
+                    && !hideShadowForRegularNtpTextureCapture() && !mForceHideShadow) {
                 mToolbarShadow.setVisibility(VISIBLE);
             }
             mPreTextureCaptureAlpha = getAlpha();

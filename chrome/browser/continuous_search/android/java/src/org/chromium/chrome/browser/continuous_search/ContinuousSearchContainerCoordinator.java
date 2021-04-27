@@ -15,7 +15,6 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
-import org.chromium.components.browser_ui.widget.ViewResourceFrameLayout;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.resources.ResourceManager;
@@ -36,7 +35,7 @@ public class ContinuousSearchContainerCoordinator implements View.OnLayoutChange
     private boolean mResourceRegistered;
     private boolean mLayoutInitialized;
     private final ViewStub mViewStub;
-    private ViewResourceFrameLayout mRootView;
+    private ContinuousSearchViewResourceFrameLayout mRootView;
 
     public ContinuousSearchContainerCoordinator(ViewStub containerViewStub,
             LayoutManager layoutManager, ResourceManager resourceManager,
@@ -44,7 +43,8 @@ public class ContinuousSearchContainerCoordinator implements View.OnLayoutChange
             BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<Boolean> canAnimateNativeBrowserControls,
             Supplier<Integer> defaultTopContainerHeightSupplier,
-            ThemeColorProvider themeColorProvider, Resources resources) {
+            ThemeColorProvider themeColorProvider, Resources resources,
+            Callback<Boolean> hideToolbarShadow) {
         mViewStub = containerViewStub;
         mLayoutManager = layoutManager;
         mResourceManager = resourceManager;
@@ -52,7 +52,7 @@ public class ContinuousSearchContainerCoordinator implements View.OnLayoutChange
         mLayoutManager.addSceneOverlay(mSceneLayer);
         mContainerMediator = new ContinuousSearchContainerMediator(browserControlsStateProvider,
                 canAnimateNativeBrowserControls, defaultTopContainerHeightSupplier,
-                this::initializeLayout);
+                this::initializeLayout, hideToolbarShadow);
         mListCoordinator = new ContinuousSearchListCoordinator(tabSupplier, isVisible -> {
             if (isVisible) {
                 mContainerMediator.show();
@@ -65,10 +65,10 @@ public class ContinuousSearchContainerCoordinator implements View.OnLayoutChange
     private void initializeLayout() {
         if (mLayoutInitialized) return;
 
-        mRootView = (ViewResourceFrameLayout) mViewStub.inflate();
+        mRootView = (ContinuousSearchViewResourceFrameLayout) mViewStub.inflate();
         mResourceId = mRootView.getId();
         mSceneLayer.setResourceId(mResourceId);
-        mListCoordinator.initializeLayout(mRootView);
+        mListCoordinator.initializeLayout(mRootView.findViewById(R.id.container_view));
         mResourceAdapter = mRootView.getResourceAdapter();
         registerResource();
         PropertyModel model = new PropertyModel(ContinuousSearchContainerProperties.ALL_KEYS);
@@ -84,7 +84,8 @@ public class ContinuousSearchContainerCoordinator implements View.OnLayoutChange
     @Override
     public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft,
             int oldTop, int oldRight, int oldBottom) {
-        mContainerMediator.setJavaHeight(v.getHeight());
+        assert mRootView != null;
+        mContainerMediator.setJavaHeight(v.getHeight() - mRootView.getShadowHeight());
     }
 
     public static Class getSceneOverlayClass() {

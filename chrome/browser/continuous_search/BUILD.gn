@@ -18,6 +18,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchListViewBinder.java",
     "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchSceneLayer.java",
     "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchTabHelper.java",
+    "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchViewResourceFrameLayout.java",
   ]
 
   deps = [

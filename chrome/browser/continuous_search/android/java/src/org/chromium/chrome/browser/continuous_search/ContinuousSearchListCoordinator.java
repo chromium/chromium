@@ -78,7 +78,7 @@ public class ContinuousSearchListCoordinator {
 
         ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        container.addView(rootView, lp);
+        container.addView(rootView, /*index=*/0, lp);
 
         RecyclerView recyclerView = rootView.findViewById(R.id.recycler_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(

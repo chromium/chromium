@@ -1511,6 +1511,14 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     }
 
     /**
+     * Force to hide toolbar shadow.
+     * @param forceHideShadow Whether toolbar shadow should be hidden.
+     */
+    public void setForceHideShadow(boolean forceHideShadow) {
+        mToolbar.setForceHideShadow(forceHideShadow);
+    }
+
+    /**
      * We use getTopControlOffset to position the top controls. However, the toolbar's height may
      * be less than the total top controls height. If that's the case, this method will return the
      * extra offset needed to align the toolbar at the bottom of the top controls.

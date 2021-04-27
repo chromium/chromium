@@ -521,7 +521,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mLayoutManager, mActivity.getCompositorViewHolder().getResourceManager(),
                 mTabSupplier, browserControlsSizer, mCanAnimateBrowserControls,
                 defaultTopContainerHeightSupplier, getTopUiThemeColorProvider(),
-                mActivity.getResources());
+                mActivity.getResources(), mToolbarManager::setForceHideShadow);
         mContinuousSearchObserver = newHeight -> {
             mContinuousSearchHeight = newHeight;
             updateTopControlsHeight();

@@ -624,6 +624,16 @@ public class TopToolbarCoordinator implements Toolbar {
     }
 
     /**
+     * Force to hide toolbar shadow.
+     * @param forceHideShadow Whether toolbar shadow should be hidden.
+     *
+     * TODO(crbug.com/1202994): change to token-based access
+     */
+    public void setForceHideShadow(boolean forceHideShadow) {
+        mToolbarLayout.setForceHideShadow(forceHideShadow);
+    }
+
+    /**
      * Finish any toolbar animations.
      */
     public void finishAnimations() {
