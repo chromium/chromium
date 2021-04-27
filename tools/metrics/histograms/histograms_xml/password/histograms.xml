@@ -1616,8 +1616,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.MediationOptional"
-    enum="CredentialManagerGetResult" expires_after="M92">
-  <owner>jdoerrie@chromium.org</owner>
+    enum="CredentialManagerGetResult" expires_after="M94">
+  <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
     Tracks result of navigator.credentials.get() with
@@ -1626,8 +1626,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.MediationRequired"
-    enum="CredentialManagerGetResult" expires_after="M92">
-  <owner>jdoerrie@chromium.org</owner>
+    enum="CredentialManagerGetResult" expires_after="M94">
+  <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
     Tracks result of navigator.credentials.get() with
@@ -1637,8 +1637,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.MediationSilent"
-    enum="CredentialManagerGetResult" expires_after="M92">
-  <owner>jdoerrie@chromium.org</owner>
+    enum="CredentialManagerGetResult" expires_after="M94">
+  <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
     Tracks result of navigator.credentials.get() with
