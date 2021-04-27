@@ -27,9 +27,39 @@ namespace internal {
 namespace {
 
 template <bool thread_safe>
-ALWAYS_INLINE SlotSpanMetadata<thread_safe>*
+SlotSpanMetadata<thread_safe>*
 PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
     EXCLUSIVE_LOCKS_REQUIRED(root->lock_) {
+  bool return_null = flags & PartitionAllocReturnNull;
+  if (UNLIKELY(raw_size > MaxDirectMapped())) {
+    if (return_null)
+      return nullptr;
+
+    // The lock is here to protect PA from:
+    // 1. Concurrent calls
+    // 2. Reentrant calls
+    //
+    // This is fine here however, as:
+    // 1. Concurrency: |PartitionRoot::OutOfMemory()| never returns, so the lock
+    //    will not be re-acquired, which would lead to acting on inconsistent
+    //    data that could have been modified in-between releasing and acquiring
+    //    it.
+    // 2. Reentrancy: This is why we release the lock. On some platforms,
+    //    terminating the process may free() memory, or even possibly try to
+    //    allocate some. Calling free() is fine, but will deadlock since
+    //    |PartitionRoot::lock_| is not recursive.
+    //
+    // Supporting reentrant calls properly is hard, and not a requirement for
+    // PA. However up to that point, we've only *read* data, not *written* to
+    // any state. Reentrant calls are then fine, especially as we don't continue
+    // on this path. The only downside is possibly endless recursion if the OOM
+    // handler allocates and fails to use UncheckedMalloc() or equivalent, but
+    // that's violating the contract of base::TerminateBecauseOutOfMemory().
+    ScopedUnlockGuard<thread_safe> unlock{root->lock_};
+    PartitionExcessiveAllocationSize(raw_size);
+    IMMEDIATE_CRASH();  // Not required, kept as documentation.
+  }
+
   size_t slot_size = PartitionRoot<thread_safe>::GetDirectMapSlotSize(raw_size);
   size_t reserved_size = root->GetDirectMapReservedSize(raw_size);
   size_t map_size =
@@ -49,8 +79,20 @@ PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
         AllocPages(nullptr, reserved_size, kSuperPageAlignment,
                    PageInaccessible, PageTag::kPartitionAlloc));
   }
-  if (UNLIKELY(!ptr))
-    return nullptr;
+  if (UNLIKELY(!ptr)) {
+    if (return_null)
+      return nullptr;
+
+    // Crash handling is split on purpose in this function:
+    // - Crashing here likely means that Chrome is out of address space (on 32
+    //   bit platforms), or out of GigaCage space (on 64 bit ones).
+    // - Crashing below would likely mean out of commit charge.
+    //
+    // See comment above regarding unlocking,
+    ScopedUnlockGuard<thread_safe> unlock{root->lock_};
+    root->OutOfMemory(raw_size);
+    IMMEDIATE_CRASH();  // Not required, kept as documentation.
+  }
 
   root->total_size_of_direct_mapped_pages.fetch_add(reserved_size,
                                                     std::memory_order_relaxed);
@@ -76,7 +118,14 @@ PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
     } else {
       FreePages(ptr, reserved_size);
     }
-    return nullptr;
+
+    if (return_null)
+      return nullptr;
+
+    // See comment above.
+    ScopedUnlockGuard<thread_safe> unlock{root->lock_};
+    root->OutOfMemory(raw_size);
+    IMMEDIATE_CRASH();  // Not required, kept as documentation.
   }
 
   auto* metadata = reinterpret_cast<PartitionDirectMapMetadata<thread_safe>*>(
@@ -592,7 +641,6 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
   // SetNewActiveSlotSpan() has a side-effect even when returning
   // false where it sweeps the active list and may move things into the empty or
   // decommitted lists which affects the subsequent conditional.
-  bool return_null = flags & PartitionAllocReturnNull;
   if (UNLIKELY(is_direct_mapped())) {
     PA_DCHECK(raw_size > kMaxBucketed);
     PA_DCHECK(this == &root->sentinel_bucket);
@@ -603,34 +651,6 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
     if (flags & PartitionAllocFastPathOrReturnNull)
       return nullptr;
 
-    if (raw_size > MaxDirectMapped()) {
-      if (return_null)
-        return nullptr;
-      // The lock is here to protect PA from:
-      // 1. Concurrent calls
-      // 2. Reentrant calls
-      //
-      // This is fine here however, as:
-      // 1. Concurrency: |PartitionRoot::OutOfMemory()| never returns, so the
-      //    lock will not be re-acquired, which would lead to acting on
-      //    inconsistent data that could have been modified in-between releasing
-      //    and acquiring it.
-      // 2. Reentrancy: This is why we release the lock. On some platforms,
-      //    terminating the process may free() memory, or even possibly try to
-      //    allocate some. Calling free() is fine, but will deadlock since
-      //    |PartitionRoot::lock_| is not recursive.
-      //
-      // Supporting reentrant calls properly is hard, and not a requirement for
-      // PA. However up to that point, we've only *read* data, not *written* to
-      // any state. Reentrant calls are then fine, especially as we don't
-      // continue on this path. The only downside is possibly endless recursion
-      // if the OOM handler allocates and fails to use UncheckedMalloc() or
-      // equivalent, but that's violating the contract of
-      // base::TerminateBecauseOutOfMemory().
-      ScopedUnlockGuard<thread_safe> unlock{root->lock_};
-      PartitionExcessiveAllocationSize(raw_size);
-      IMMEDIATE_CRASH();  // Not required, kept as documentation.
-    }
     new_slot_span = PartitionDirectMap(root, flags, raw_size);
     if (new_slot_span)
       new_bucket = new_slot_span->bucket;
@@ -708,9 +728,9 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
   if (UNLIKELY(!new_slot_span)) {
     PA_DCHECK(active_slot_spans_head ==
               SlotSpanMetadata<thread_safe>::get_sentinel_slot_span());
-    if (return_null)
+    if (flags & PartitionAllocReturnNull)
       return nullptr;
-    // See comment above.
+    // See comment in PartitionDirectMap() for unlocking.
     ScopedUnlockGuard<thread_safe> unlock{root->lock_};
     root->OutOfMemory(raw_size);
     IMMEDIATE_CRASH();  // Not required, kept as documentation.
