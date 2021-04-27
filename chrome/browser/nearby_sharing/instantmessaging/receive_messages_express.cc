@@ -75,12 +75,12 @@ base::Optional<NearbyShareHttpStatus> HttpStatusFromUrlLoader(
   return NearbyShareHttpStatus(loader->NetError(), loader->ResponseInfo());
 }
 
-void LogReceiveResult(
-    bool success,
-    const base::Optional<NearbyShareHttpStatus>& http_status) {
+void LogReceiveResult(bool success,
+                      const base::Optional<NearbyShareHttpStatus>& http_status,
+                      const std::string& request_id) {
   std::stringstream ss;
   ss << "Instant messaging receive express "
-     << (success ? "succeeded." : "failed.");
+     << (success ? "succeeded" : "failed") << " for request " << request_id;
   base::UmaHistogramBoolean(
       "Nearby.Connections.InstantMessaging.ReceiveExpress.Result", success);
   if (http_status) {
@@ -111,12 +111,11 @@ void ReceiveMessagesExpress::StartReceiveSession(
     StartReceivingMessagesCallback callback,
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  NS_LOG(INFO) << __func__ << ": self_id=" << self_id
-               << ", location hint=" << location_hint->location
-               << ", location format=" << location_hint->format;
-
   chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesExpressRequest
       request = BuildReceiveRequest(self_id, std::move(location_hint));
+
+  NS_LOG(INFO) << __func__ << ": self_id=" << self_id
+               << ", request id=" << request.header().request_id();
 
   auto receive_messages_express = base::WrapUnique(
       new ReceiveMessagesExpress(std::move(incoming_messages_listener),
@@ -150,7 +149,9 @@ ReceiveMessagesExpress::ReceiveMessagesExpress(
 
 ReceiveMessagesExpress::~ReceiveMessagesExpress() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NS_LOG(VERBOSE) << __func__ << ": Receive messages session going down";
+  NS_LOG(VERBOSE) << __func__
+                  << ": Receive messages session going down, request id="
+                  << request_id_;
 
   fast_path_ready_timeout_timer_.Stop();
 
@@ -169,6 +170,8 @@ void ReceiveMessagesExpress::StartReceivingMessages(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!url_loader_);
   NS_LOG(VERBOSE) << "ReceiveMessagesExpress::StartReceivingMessages() called.";
+
+  request_id_ = request.header().request_id();
 
   // Used to complete the initial mojo call once fast path is received.
   start_receiving_messages_callback_ =
@@ -276,7 +279,7 @@ void ReceiveMessagesExpress::OnComplete(bool success) {
                   << ", net::Error " << url_loader_->NetError();
 
   if (start_receiving_messages_callback_) {
-    LogReceiveResult(success, http_status);
+    LogReceiveResult(success, http_status, request_id_);
     // If we have not called start_receiving_messages_callback_ yet, we
     // consider that a failure and need to complete the mojo call with a
     // failure.
@@ -299,7 +302,8 @@ void ReceiveMessagesExpress::OnFastPathReady() {
   NS_LOG(VERBOSE) << __func__;
   fast_path_ready_timeout_timer_.Stop();
   if (start_receiving_messages_callback_) {
-    LogReceiveResult(/*success=*/true, /*http_status=*/base::nullopt);
+    LogReceiveResult(/*success=*/true, /*http_status=*/base::nullopt,
+                     request_id_);
     std::move(start_receiving_messages_callback_)
         .Run(true, std::move(self_pending_remote_));
   }

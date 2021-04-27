@@ -24,14 +24,13 @@ void WebRtcSignalingMessenger::SendMessage(
     sharing::mojom::LocationHintPtr location_hint,
     const std::string& message,
     SendMessageCallback callback) {
-  NS_LOG(VERBOSE) << __func__ << ": self_id=" << self_id
-                  << ", peer_id=" << peer_id
-                  << ", location hint=" << location_hint->location
-                  << ", location format=" << location_hint->format
-                  << ", message size=" << message.size();
-
   chrome_browser_nearby_sharing_instantmessaging::SendMessageExpressRequest
       request = BuildSendRequest(self_id, peer_id, std::move(location_hint));
+
+  NS_LOG(VERBOSE) << __func__ << ": self_id=" << self_id
+                  << ", peer_id=" << peer_id
+                  << ", request_id=" << request.header().request_id()
+                  << ", message size=" << message.size();
 
   chrome_browser_nearby_sharing_instantmessaging::InboxMessage* inbox_message =
       request.mutable_message();

@@ -58,6 +58,7 @@ TEST_F(WebRtcRequestBuilderTest, BuildSendRequest) {
   sharing::mojom::LocationHintPtr location_hint = CountryCodeLocationHint("ZZ");
   chrome_browser_nearby_sharing_instantmessaging::SendMessageExpressRequest
       request = BuildSendRequest(kSelfId, kPeerId, location_hint.Clone());
+  EXPECT_NE("", request.header().request_id());
   EXPECT_EQ(kSelfId, request.header().requester_id().id());
   EXPECT_EQ(kPeerId, request.dest_id().id());
   VerifyLocationHint(location_hint.Clone(), request.dest_id());
@@ -68,6 +69,16 @@ TEST_F(WebRtcRequestBuilderTest, BuildReceiveRequest) {
   sharing::mojom::LocationHintPtr location_hint = CallingCodeLocationHint("+1");
   chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesExpressRequest
       request = BuildReceiveRequest(kSelfId, location_hint.Clone());
+  EXPECT_NE("", request.header().request_id());
   EXPECT_EQ(kSelfId, request.header().requester_id().id());
   VerifyLocationHint(location_hint.Clone(), request.header().requester_id());
+}
+
+TEST_F(WebRtcRequestBuilderTest, RequestIdsAreUnique) {
+  sharing::mojom::LocationHintPtr location_hint = CountryCodeLocationHint("ZZ");
+  chrome_browser_nearby_sharing_instantmessaging::SendMessageExpressRequest
+      request_a = BuildSendRequest(kSelfId, kPeerId, location_hint.Clone());
+  chrome_browser_nearby_sharing_instantmessaging::SendMessageExpressRequest
+      request_b = BuildSendRequest(kSelfId, kPeerId, location_hint.Clone());
+  EXPECT_NE(request_a.header().request_id(), request_b.header().request_id());
 }
