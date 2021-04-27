@@ -118,6 +118,8 @@ for (const options of [{}, {negotiated: true, id: 0}]) {
     return createDataChannelPair(t, options)
     .then(([channel1, channel2]) => {
       channel1.send(emptyString);
+      // Send a non-empty string in case the implementation ignores empty messages
+      channel1.send(helloString);
       return awaitMessage(channel2)
     }).then(message => {
       assert_equals(typeof message, 'string',
@@ -189,6 +191,8 @@ for (const options of [{}, {negotiated: true, id: 0}]) {
     .then(([channel1, channel2]) => {
       channel2.binaryType = 'arraybuffer';
       channel1.send(emptyBuffer.buffer);
+      // Send a non-empty buffer in case the implementation ignores empty messages
+      channel1.send(helloBuffer.buffer);
       return awaitMessage(channel2)
     }).then(messageBuffer => {
       assert_true(messageBuffer instanceof ArrayBuffer,
