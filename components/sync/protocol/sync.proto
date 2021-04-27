@@ -154,6 +154,7 @@ message EntitySpecifics {
     ManagedUserSharedSettingSpecifics managed_user_shared_setting = 202026
         [deprecated = true];
     AppListSpecifics app_list = 229170;
+    EmptySpecifics managed_user_allowlist = 306060 [deprecated = true];
     AutofillWalletSpecifics autofill_wallet = 306270;
     WalletMetadataSpecifics wallet_metadata = 330441;
     ArcPackageSpecifics arc_package = 340906;
@@ -176,9 +177,9 @@ message EntitySpecifics {
   reserved "article";
   reserved 545005;
   reserved "mountain_share";
-  reserved 306060;
-  reserved "managed_user_whitelist";
 }
+
+message EmptySpecifics {}
 
 message SyncEntity {
   // This item's identifier.  In a commit of a new item, this will be a
