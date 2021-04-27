@@ -793,8 +793,16 @@ bool DisplayLockContext::MarkForCompositingUpdatesIfNeeded() {
       auto* compositing_parent =
           layout_box->Layer()->EnclosingLayerWithCompositedLayerMapping(
               kIncludeSelf);
-      compositing_parent->GetCompositedLayerMapping()
-          ->SetNeedsGraphicsLayerUpdate(kGraphicsLayerUpdateSubtree);
+      if (compositing_parent) {
+        compositing_parent->GetCompositedLayerMapping()
+            ->SetNeedsGraphicsLayerUpdate(kGraphicsLayerUpdateSubtree);
+      } else {
+        // If we don't have a compositing layer mapping ancestor in this frame,
+        // then mark this layer as needing a graphics layer rebuild, since what
+        // we want is to clear any dangling trees in this subtree or composite
+        // the frame again if something in the subtree still needs compositing.
+        layout_box->Layer()->SetNeedsGraphicsLayerRebuild();
+      }
     }
     forced_graphics_layer_update_blocked_ = false;
 

@@ -3311,6 +3311,34 @@ TEST_F(DisplayLockContextRenderingTest,
   EXPECT_TRUE(context->HadAnyViewportIntersectionNotifications());
 }
 
+TEST_F(DisplayLockContextRenderingTest, LocalFrameGraphicsUpdateForced) {
+  SetHtmlInnerHTML(R"HTML(
+    <iframe id="frame"></iframe>
+  )HTML");
+  SetChildFrameHTML(R"HTML(
+    <style>
+      .cv { content-visibility: hidden; }
+      div {
+        width: 100px;
+        height: 100px;
+      }
+    </style>
+    <div id=target class=cv></target>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* target = ChildDocument().getElementById("target");
+  ASSERT_TRUE(target);
+  ASSERT_TRUE(target->GetDisplayLockContext());
+
+  target->GetDisplayLockContext()->NotifyForcedGraphicsLayerUpdateBlocked();
+  target->classList().Remove("cv");
+
+  // This should not crash.
+  UpdateAllLifecyclePhasesForTest();
+}
+
 class DisplayLockContextLegacyRenderingTest
     : public RenderingTest,
       private ScopedCSSContentVisibilityHiddenMatchableForTest,
