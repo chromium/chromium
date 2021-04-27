@@ -99,8 +99,13 @@ promise_test(async t => {
 
   // Decoder config should be given with the first chunk
   assert_not_equals(decoderConfig, null);
+  assert_not_equals(decoderConfig.visibleRegion, null);
   assert_equals(decoderConfig.codedHeight, encoderConfig.height);
   assert_equals(decoderConfig.codedWidth, encoderConfig.width);
+  assert_equals(decoderConfig.visibleRegion.top, 0);
+  assert_equals(decoderConfig.visibleRegion.left, 0);
+  assert_equals(decoderConfig.visibleRegion.height, encoderConfig.height);
+  assert_equals(decoderConfig.visibleRegion.width, encoderConfig.width);
   assert_equals(decoderConfig.codec, encoderConfig.codec);
   assert_equals(decoderConfig.displayHeight, encoderConfig.displayHeight);
   assert_equals(decoderConfig.displayWidth, encoderConfig.displayWidth);
