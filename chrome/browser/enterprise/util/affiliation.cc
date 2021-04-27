@@ -8,20 +8,15 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/policy/core/common/cloud/affiliation.h"
 
 namespace chrome {
 namespace enterprise_util {
 
 bool IsProfileAffiliated(Profile* profile) {
-  auto profile_affiliation_ids =
-      profile->GetProfilePolicyConnector()->user_affiliation_ids();
-  for (const std::string& browser_affiliation_id :
-       g_browser_process->browser_policy_connector()
-           ->device_affiliation_ids()) {
-    if (profile_affiliation_ids.count(browser_affiliation_id))
-      return true;
-  }
-  return false;
+  return policy::IsAffiliated(
+      profile->GetProfilePolicyConnector()->user_affiliation_ids(),
+      g_browser_process->browser_policy_connector()->device_affiliation_ids());
 }
 
 }  // namespace enterprise_util

@@ -27,6 +27,8 @@ source_set("internal") {
     "async_policy_provider.h",
     "chrome_schema.cc",
     "chrome_schema.h",
+    "cloud/affiliation.cc",
+    "cloud/affiliation.h",
     "cloud/chrome_browser_cloud_management_metrics.h",
     "cloud/cloud_external_data_manager.cc",
     "cloud/cloud_external_data_manager.h",
@@ -420,6 +422,7 @@ source_set("common_constants") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "cloud/affiliation_unittest.cc",
     "cloud/cloud_policy_client_unittest.cc",
     "cloud/cloud_policy_core_unittest.cc",
     "cloud/cloud_policy_manager_unittest.cc",
