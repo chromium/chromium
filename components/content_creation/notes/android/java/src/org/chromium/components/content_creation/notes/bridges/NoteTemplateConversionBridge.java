@@ -1,0 +1,45 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.components.content_creation.notes.bridges;
+
+import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
+import org.chromium.components.content_creation.notes.models.NoteTemplate;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Bridge class in charge of creating Java NoteTemplate instances based on their
+ * native struct counterpart.
+ */
+@JNINamespace("content_creation")
+public class NoteTemplateConversionBridge {
+    /**
+     * Creates an empty Java List instance to be used in native.
+     * @return a reference to an empty Java List.
+     */
+    @CalledByNative
+    private static List<NoteTemplate> createTemplateList() {
+        return new ArrayList<>();
+    }
+
+    /**
+     * Creates a {@link NoteTemplate} instance based on the given parameters,
+     * and then attempts to add it to the given list.
+     * @return the {@link NoteTemplate} instance.
+     */
+    @CalledByNative
+    private static NoteTemplate createTemplateAndMaybeAddToList(
+            @Nullable List<NoteTemplate> list, String localizedName) {
+        NoteTemplate template = new NoteTemplate(localizedName);
+
+        if (list != null) {
+            list.add(template);
+        }
+
+        return template;
+    }
+}

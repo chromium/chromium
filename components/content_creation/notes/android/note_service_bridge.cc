@@ -8,6 +8,8 @@
 #include "base/android/jni_array.h"
 #include "base/bind.h"
 #include "components/content_creation/notes/android/jni_headers/NoteServiceBridge_jni.h"
+#include "components/content_creation/notes/android/jni_headers/NoteTemplateConversionBridge_jni.h"
+#include "components/content_creation/notes/android/note_template_conversion_bridge.h"
 #include "components/content_creation/notes/core/notes_types.h"
 
 using base::android::AttachCurrentThread;
@@ -18,7 +20,10 @@ const char kNoteServiceBridgeKey[] = "note_service_bridge";
 
 void RunGetTemplatesCallback(const JavaRef<jobject>& j_callback,
                              std::vector<NoteTemplate> templates) {
-  // TODO(crbug.com/1194168): Invoke callback with templates as Java objects.
+  JNIEnv* env = AttachCurrentThread();
+  RunObjectCallbackAndroid(
+      j_callback,
+      NoteTemplateConversionBridge::CreateJavaNoteTemplates(env, templates));
 }
 
 }  // namespace

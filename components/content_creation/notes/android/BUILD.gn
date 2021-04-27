@@ -9,6 +9,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/components/content_creation/notes/NoteService.java",
     "java/src/org/chromium/components/content_creation/notes/bridges/NoteServiceBridge.java",
+    "java/src/org/chromium/components/content_creation/notes/bridges/NoteTemplateConversionBridge.java",
     "java/src/org/chromium/components/content_creation/notes/models/NoteTemplate.java",
   ]
 
@@ -19,13 +20,18 @@ android_library("java") {
 }
 
 generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/components/content_creation/notes/bridges/NoteServiceBridge.java" ]
+  sources = [
+    "java/src/org/chromium/components/content_creation/notes/bridges/NoteServiceBridge.java",
+    "java/src/org/chromium/components/content_creation/notes/bridges/NoteTemplateConversionBridge.java",
+  ]
 }
 
 source_set("android") {
   sources = [
     "note_service_bridge.cc",
     "note_service_bridge.h",
+    "note_template_conversion_bridge.cc",
+    "note_template_conversion_bridge.h",
   ]
 
   deps = [
