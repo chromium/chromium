@@ -160,10 +160,7 @@ guestMessagePipe.registerHandler(Message.DELETE_FILE, async (message) => {
     return {deleteResult: DeleteResult.FILE_MOVED};
   }
 
-  // Get the name from the file reference. Handles file renames.
-  const currentFilename = (await handle.getFile()).name;
-
-  await directory.removeEntry(currentFilename);
+  await directory.removeEntry(handle.name);
 
   // Remove the file that was deleted.
   currentFiles.splice(entryIndex, 1);
@@ -217,7 +214,6 @@ guestMessagePipe.registerHandler(Message.RENAME_FILE, async (message) => {
   // Remove the entry for `originalFile` in current files, replace it with a
   // FileDescriptor for the renamed file.
 
-  const renamedFile = await renamedFileHandle.getFile();
   // Ensure the file is still in `currentFiles` after all the above `awaits`. If
   // missing it means either new files have loaded (or tried to), see
   // b/164985809.
@@ -231,7 +227,7 @@ guestMessagePipe.registerHandler(Message.RENAME_FILE, async (message) => {
 
   currentFiles.splice(originalFileIndex, 1, {
     token: renameMsg.token,
-    file: renamedFile,
+    file: null,
     handle: renamedFileHandle,
     inCurrentDirectory: true
   });

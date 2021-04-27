@@ -876,7 +876,10 @@ MediaAppUIBrowserTest.RenameOriginalIPC = async () => {
   assertEquals(directory.files.length, 2);
   assertEquals(directory.files[getEntryIndex()].name, 'new_file_name.png');
   assertEquals(currentFiles[getEntryIndex()].handle.name, 'new_file_name.png');
-  assertEquals(currentFiles[getEntryIndex()].file.name, 'new_file_name.png');
+
+  // The file doesn't need to be opened yet. Wait for a navigation.
+  assertEquals(currentFiles[getEntryIndex()].file, null);
+
   // The new file has the right name in the untrusted context.
   testResponse = await sendTestMessage({getLastFileName: true});
   assertEquals(testResponse.testQueryResult, 'new_file_name.png');
