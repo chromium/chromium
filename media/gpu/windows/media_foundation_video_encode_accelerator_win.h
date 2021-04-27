@@ -137,6 +137,10 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   uint32_t frame_rate_;
   uint32_t target_bitrate_;
 
+  // Group of picture length for encoded output stream, indicates the
+  // distance between two key frames.
+  base::Optional<uint32_t> gop_length_;
+
   Microsoft::WRL::ComPtr<IMFActivate> activate_;
   Microsoft::WRL::ComPtr<IMFTransform> encoder_;
   Microsoft::WRL::ComPtr<ICodecAPI> codec_api_;
