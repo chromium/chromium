@@ -187,7 +187,6 @@ WebPreferences::WebPreferences()
       embedded_media_experience_enabled(false),
       css_hex_alpha_color_enabled(true),
       scroll_top_left_interop_enabled(true),
-      disable_features_depending_on_viz(false),
       disable_accelerated_small_canvases(false),
 #endif  // defined(OS_ANDROID)
 #if defined(OS_ANDROID)

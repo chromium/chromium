@@ -1976,10 +1976,6 @@
       status: "experimental"
     },
     {
-      name: "SurfaceEmbeddingFeatures",
-      status: "stable",
-    },
-    {
       name: "SVGTextNG",
     },
     {

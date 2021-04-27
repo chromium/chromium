@@ -5,8 +5,7 @@
 // https://html.spec.whatwg.org/C/#the-offscreen-2d-rendering-context
 
 [
-    Exposed=(Window,Worker),
-    RuntimeEnabled=SurfaceEmbeddingFeatures
+    Exposed=(Window,Worker)
 ] interface OffscreenCanvasRenderingContext2D {
     // back-reference to the canvas
     [ImplementedAs=offscreenCanvasForBinding] readonly attribute OffscreenCanvas canvas;

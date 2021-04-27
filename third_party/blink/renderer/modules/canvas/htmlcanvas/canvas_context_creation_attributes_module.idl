@@ -36,11 +36,7 @@ enum CanvasPowerPreference {
 
 [PermissiveDictionaryConversion]
 dictionary CanvasContextCreationAttributesModule {
-    // This is an experimental feature, but it is not hidden behind a flag in
-    // the bindings because origin trial bindings don't work in extensions.
-    // The trial's runtime flag is instead checked inside
-    // HTMLCanvasElement.getContext().
-    [RuntimeEnabled=SurfaceEmbeddingFeatures] boolean desynchronized = false;
+    boolean desynchronized = false;
 
     // Canvas 2D attributes
     boolean alpha = true;  // Also used for WebGL.

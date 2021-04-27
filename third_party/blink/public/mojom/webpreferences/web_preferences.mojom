@@ -347,12 +347,6 @@ struct WebPreferences {
   [EnableIf=is_android]
   bool scroll_top_left_interop_enabled;
 
-  // Disable features such as offscreen canvas that depend on the viz
-  // architecture of surface embedding. Android WebView does not support this
-  // architecture yet.
-  [EnableIf=is_android]
-  bool disable_features_depending_on_viz;
-
   [EnableIf=is_android]
   // Don't accelerate small canvases to avoid crashes TODO(crbug.com/1004304)
   bool disable_accelerated_small_canvases;

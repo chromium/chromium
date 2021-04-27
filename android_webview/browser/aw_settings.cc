@@ -42,8 +42,6 @@ void PopulateFixedWebPreferences(WebPreferences* web_prefs) {
   web_prefs->should_clear_document_background = false;
   web_prefs->viewport_meta_enabled = true;
   web_prefs->picture_in_picture_enabled = false;
-  web_prefs->disable_features_depending_on_viz =
-      !::features::IsUsingVizForWebView();
   web_prefs->disable_accelerated_small_canvases = true;
   // WebView has historically not adjusted font scale for text autosizing.
   web_prefs->device_scale_adjustment = 1.0;

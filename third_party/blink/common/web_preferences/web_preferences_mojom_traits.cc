@@ -198,8 +198,6 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
       data.embedded_media_experience_enabled();
   out->css_hex_alpha_color_enabled = data.css_hex_alpha_color_enabled();
   out->scroll_top_left_interop_enabled = data.scroll_top_left_interop_enabled();
-  out->disable_features_depending_on_viz =
-      data.disable_features_depending_on_viz();
   out->disable_accelerated_small_canvases =
       data.disable_accelerated_small_canvases();
 #endif

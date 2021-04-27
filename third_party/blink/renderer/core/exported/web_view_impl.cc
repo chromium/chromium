@@ -1605,8 +1605,6 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
       prefs.css_hex_alpha_color_enabled);
   RuntimeEnabledFeatures::SetScrollTopLeftInteropEnabled(
       prefs.scroll_top_left_interop_enabled);
-  RuntimeEnabledFeatures::SetSurfaceEmbeddingFeaturesEnabled(
-      !prefs.disable_features_depending_on_viz);
   RuntimeEnabledFeatures::SetAcceleratedSmallCanvasesEnabled(
       !prefs.disable_accelerated_small_canvases);
 #endif  // defined(OS_ANDROID)

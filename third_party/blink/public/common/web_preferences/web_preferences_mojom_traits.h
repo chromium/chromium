@@ -653,11 +653,6 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.scroll_top_left_interop_enabled;
   }
 
-  static bool disable_features_depending_on_viz(
-      const blink::web_pref::WebPreferences& r) {
-    return r.disable_features_depending_on_viz;
-  }
-
   static bool disable_accelerated_small_canvases(
       const blink::web_pref::WebPreferences& r) {
     return r.disable_accelerated_small_canvases;
