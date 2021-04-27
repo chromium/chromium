@@ -4526,10 +4526,10 @@
     },
 
     'paeverywhere_common_tests': {
-      # Copy from chromium_gtests minus capture_unittests, crashpad_tests,
-      # content_browsertests, events_unittests and perfetto_unittests, because
-      # they fail.
+      # Run popular tests other than capture_unittests, crashpad_tests,
+      # content_browsertests, and perfetto_unittests because they fail.
       'absl_hardening_tests': {},
+      'angle_end2end_tests': {},
       'angle_unittests': {
         'args': [
           'angle_unittests',
@@ -4544,8 +4544,14 @@
       'blink_common_unittests': {},
       'blink_heap_unittests': {},
       'blink_platform_unittests': {},
+      'blink_unittests': {},
       'boringssl_crypto_tests': {},
       'boringssl_ssl_tests': {},
+      'browser_tests': {
+        'swarming': {
+          'shards': 10,
+        },
+      },
       'cast_unittests': {},
       'components_browsertests': {},
       'components_unittests': {
@@ -4561,9 +4567,18 @@
       'crypto_unittests': {},
       'gcm_unit_tests': {},
       'gin_unittests': {},
+      'gl_tests': {},
+      'gl_unittests': {},
       'google_apis_unittests': {},
       'gpu_unittests': {},
       'gwp_asan_unittests': {},
+      'headless_browsertests': {},
+      'headless_unittests': {},
+      'interactive_ui_tests': {
+        'swarming': {
+          'shards': 3,
+        },
+      },
       'ipc_tests': {},
       'jingle_unittests': {},
       'latency_unittests': {},
@@ -4578,6 +4593,7 @@
           'shards': 3,
         },
       },
+      'remoting_unittests': {},
       'services_unittests': {},
       'shell_dialogs_unittests': {},
       'skia_unittests': {},
@@ -4585,6 +4601,7 @@
       'storage_unittests': {},
       'ui_base_unittests': {},
       'ui_touch_selection_unittests': {},
+      'unit_tests': {},
       'url_unittests': {},
       'webkit_unit_tests': {
         'test': 'blink_unittests',
