@@ -291,6 +291,7 @@ class WebviewLoginTest : public OobeBaseTest {
     command_line->AppendSwitch(switches::kOobeSkipPostLogin);
     OobeBaseTest::SetUpCommandLine(command_line);
   }
+  base::HistogramTester histogram_tester;
 
  protected:
   void ExpectIdentifierPage() {
@@ -402,7 +403,6 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest, NativeTest) {
 
 // Basic signin with username and password.
 IN_PROC_BROWSER_TEST_F(WebviewLoginTest, Basic) {
-  base::HistogramTester histogram_tester;
   WaitForGaiaPageLoadAndPropertyUpdate();
 
   ExpectIdentifierPage();
@@ -433,6 +433,7 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest, Basic) {
   EXPECT_FALSE(LoginDisplayHost::default_host());
 
   histogram_tester.ExpectUniqueSample("ChromeOS.SAML.APILogin", 0, 1);
+  histogram_tester.ExpectTotalCount("OOBE.GaiaLoginTime", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(WebviewLoginTest, BackButton) {
@@ -644,6 +645,7 @@ IN_PROC_BROWSER_TEST_F(ReauthEndpointWebviewLoginOwnerTest, SupervisedUser) {
             reauth_user_.account_id.GetUserEmail());
   EXPECT_EQ(fake_gaia_.fake_gaia()->is_supervised(), "1");
   EXPECT_EQ(fake_gaia_.fake_gaia()->is_device_owner(), "1");
+  histogram_tester.ExpectTotalCount("OOBE.GaiaLoginTime", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(WebviewLoginTest, StoragePartitionHandling) {
