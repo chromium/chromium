@@ -3199,6 +3199,7 @@ enum WebFeature {
   kWebAppManifestProtocolHandlers = 3884,
   kRTCPeerConnectionOfferAllowExtmapMixedFalse = 3885,
   kNewCanvas2DAPI = 3886,
+  kServiceWorkerSubresourceFilter = 3887,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

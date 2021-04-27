@@ -1273,6 +1273,9 @@ extern const char kSidePanelDescription[];
 extern const char kSidePanelPrototypeName[];
 extern const char kSidePanelPrototypeDescription[];
 
+extern const char kServiceWorkerSubresourceFilterName[];
+extern const char kServiceWorkerSubresourceFilterDescription[];
+
 extern const char kSharedClipboardUIName[];
 extern const char kSharedClipboardUIDescription[];
 

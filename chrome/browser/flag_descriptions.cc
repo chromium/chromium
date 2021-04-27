@@ -2200,6 +2200,12 @@ const char kSidePanelPrototypeName[] = "Side panel prototype";
 const char kSidePanelPrototypeDescription[] =
     "Display a prototype of the side panel.";
 
+const char kServiceWorkerSubresourceFilterName[] =
+    "ServiceWorker subresource filter";
+const char kServiceWorkerSubresourceFilterDescription[] =
+    "Enables an experimental API to specify subresource URLs that bypass "
+    "service workers";
+
 const char kSharedClipboardUIName[] =
     "Enable shared clipboard feature signals to be handled";
 const char kSharedClipboardUIDescription[] =

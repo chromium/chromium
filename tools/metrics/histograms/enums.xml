@@ -32322,6 +32322,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3884" label="WebAppManifestProtocolHandlers"/>
   <int value="3885" label="RTCPeerConnectionOfferAllowExtmapMixedFalse"/>
   <int value="3886" label="NewCanvas2DAPI"/>
+  <int value="3887" label="ServiceWorkerSubresourceFilter"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
@@ -47193,6 +47194,7 @@ from previous Chrome versions.
   <int value="482429100"
       label="OmniboxClobberIsZeroSuggestEntrypoint:disabled"/>
   <int value="483155358" label="GlobalMediaControlsForChromeOS:disabled"/>
+  <int value="484581911" label="ServiceWorkerSubresourceFilter:disabled"/>
   <int value="484596410" label="EnterpriseRealtimeExtensionRequest:disabled"/>
   <int value="485957747" label="finch-seed-ignore-pending-download"/>
   <int value="487810392" label="EnablePalmOnToolTypePalm:enabled"/>
@@ -47390,6 +47392,7 @@ from previous Chrome versions.
   <int value="651562604" label="RawClipboard:enabled"/>
   <int value="651844675" label="EasyUnlockPromotions:enabled"/>
   <int value="652561231" label="CustomContextMenu:enabled"/>
+  <int value="653308913" label="ServiceWorkerSubresourceFilter:enabled"/>
   <int value="653795860" label="HelpAppReleaseNotes:disabled"/>
   <int value="654199907" label="AllowSyncXHRInPageDismissal:disabled"/>
   <int value="654879464" label="WalletRequiresFirstSyncSetupComplete:enabled"/>

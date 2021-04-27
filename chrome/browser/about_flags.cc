@@ -6526,6 +6526,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableTranslateSubFramesDescription, kOsAll,
      FEATURE_VALUE_TYPE(translate::kTranslateSubFrames)},
 
+    {"service-worker-subresource-filter",
+     flag_descriptions::kServiceWorkerSubresourceFilterName,
+     flag_descriptions::kServiceWorkerSubresourceFilterDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kServiceWorkerSubresourceFilter)},
+
     {"conversion-measurement-api",
      flag_descriptions::kConversionMeasurementApiName,
      flag_descriptions::kConversionMeasurementApiDescription, kOsAll,
