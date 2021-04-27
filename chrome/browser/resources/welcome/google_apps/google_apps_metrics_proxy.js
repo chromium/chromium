@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 import {ModuleMetricsProxyImpl, NuxGoogleAppsInteractions} from '../shared/module_metrics_proxy.js';
 
 export class GoogleAppsMetricsProxyImpl extends ModuleMetricsProxyImpl {
@@ -11,6 +10,17 @@ export class GoogleAppsMetricsProxyImpl extends ModuleMetricsProxyImpl {
         'FirstRun.NewUserExperience.GoogleAppsInteraction',
         NuxGoogleAppsInteractions);
   }
+
+  /** @return {!GoogleAppsMetricsProxyImpl} */
+  static getInstance() {
+    return instance || (instance = new GoogleAppsMetricsProxyImpl());
+  }
+
+  /** @param {!GoogleAppsMetricsProxyImpl} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(GoogleAppsMetricsProxyImpl);
+/** @type {?GoogleAppsMetricsProxyImpl} */
+let instance = null;

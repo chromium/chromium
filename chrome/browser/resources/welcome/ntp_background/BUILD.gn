@@ -22,10 +22,7 @@ js_library("ntp_background_proxy") {
 }
 
 js_library("ntp_background_metrics_proxy") {
-  deps = [
-    "../shared:module_metrics_proxy",
-    "//ui/webui/resources/js:cr.m",
-  ]
+  deps = [ "../shared:module_metrics_proxy" ]
 }
 
 html_to_js("web_components") {

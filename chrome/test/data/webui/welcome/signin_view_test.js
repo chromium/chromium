@@ -19,11 +19,11 @@ suite('SigninViewTest', function() {
 
   setup(function() {
     testWelcomeBrowserProxy = new TestWelcomeBrowserProxy();
-    WelcomeBrowserProxyImpl.instance_ = testWelcomeBrowserProxy;
+    WelcomeBrowserProxyImpl.setInstance(testWelcomeBrowserProxy);
 
     // Not used in test, but setting to test proxy anyway, in order to prevent
     // calls to backend.
-    SigninViewProxyImpl.instance_ = new TestSigninViewProxy();
+    SigninViewProxyImpl.setInstance(new TestSigninViewProxy());
 
     document.body.innerHTML = '';
     testElement = document.createElement('signin-view');

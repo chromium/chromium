@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {NtpBackgroundMetricsProxyImpl} from './ntp_background_metrics_proxy.js';
 
 /**
@@ -92,6 +92,17 @@ export class NtpBackgroundProxyImpl {
   setBackground(id) {
     chrome.send('setBackground', [id]);
   }
+
+  /** @return {!NtpBackgroundProxy} */
+  static getInstance() {
+    return instance || (instance = new NtpBackgroundProxyImpl());
+  }
+
+  /** @param {!NtpBackgroundProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(NtpBackgroundProxyImpl);
+/** @type {?NtpBackgroundProxy} */
+let instance = null;

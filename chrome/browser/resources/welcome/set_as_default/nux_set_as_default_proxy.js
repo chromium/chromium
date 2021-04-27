@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {DefaultBrowserInfo} from '../shared/nux_types.js';
 
 const NUX_SET_AS_DEFAULT_INTERACTION_METRIC_NAME =
@@ -91,6 +91,17 @@ export class NuxSetAsDefaultProxyImpl {
         NUX_SET_AS_DEFAULT_INTERACTION_METRIC_NAME, interaction,
         NUX_SET_AS_DEFAULT_INTERACTIONS_COUNT);
   }
+
+  /** @return {!NuxSetAsDefaultProxy} */
+  static getInstance() {
+    return instance || (instance = new NuxSetAsDefaultProxyImpl());
+  }
+
+  /** @param {!NuxSetAsDefaultProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(NuxSetAsDefaultProxyImpl);
+/** @type {?NuxSetAsDefaultProxy} */
+let instance = null;

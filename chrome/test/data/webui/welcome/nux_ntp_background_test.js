@@ -44,9 +44,9 @@ suite('NuxNtpBackgroundTest', function() {
     });
 
     testMetricsProxy = new TestMetricsProxy();
-    NtpBackgroundMetricsProxyImpl.instance_ = testMetricsProxy;
+    NtpBackgroundMetricsProxyImpl.setInstance(testMetricsProxy);
     testNtpBackgroundProxy = new TestNtpBackgroundProxy();
-    NtpBackgroundProxyImpl.instance_ = testNtpBackgroundProxy;
+    NtpBackgroundProxyImpl.setInstance(testNtpBackgroundProxy);
     testNtpBackgroundProxy.setBackgroundsList(backgrounds);
 
     document.body.innerHTML = '';

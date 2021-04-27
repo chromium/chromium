@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
 /**
  * @typedef {{
@@ -52,9 +52,21 @@ export class BookmarkProxyImpl {
   isBookmarkBarShown() {
     return sendWithPromise('isBookmarkBarShown');
   }
+
+  /** @return {!BookmarkProxy} */
+  static getInstance() {
+    return bookmarkProxyInstance ||
+        (bookmarkProxyInstance = new BookmarkProxyImpl());
+  }
+
+  /** @param {!BookmarkProxy} obj */
+  static setInstance(obj) {
+    bookmarkProxyInstance = obj;
+  }
 }
 
-addSingletonGetter(BookmarkProxyImpl);
+/** @type {?BookmarkProxy} */
+let bookmarkProxyInstance = null;
 
 // Wrapper for bookmark proxy to keep some additional states.
 export class BookmarkBarManager {
@@ -81,6 +93,17 @@ export class BookmarkBarManager {
     this.isBarShown_ = show;
     this.proxy_.toggleBookmarkBar(show);
   }
+
+  /** @return {!BookmarkBarManager} */
+  static getInstance() {
+    return managerInstance || (managerInstance = new BookmarkBarManager());
+  }
+
+  /** @param {!BookmarkBarManager} obj */
+  static setInstance(obj) {
+    managerInstance = obj;
+  }
 }
 
-addSingletonGetter(BookmarkBarManager);
+/** @type {?BookmarkBarManager} */
+let managerInstance = null;

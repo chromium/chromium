@@ -63,10 +63,10 @@ suite('AppChooserTest', function() {
     testAppMetricsProxy = new TestMetricsProxy();
     testBookmarkBrowserProxy = new TestBookmarkProxy();
 
-    GoogleAppProxyImpl.instance_ = testAppBrowserProxy;
-    GoogleAppsMetricsProxyImpl.instance_ = testAppMetricsProxy;
-    BookmarkProxyImpl.instance_ = testBookmarkBrowserProxy;
-    BookmarkBarManager.instance_ = new BookmarkBarManager();
+    GoogleAppProxyImpl.setInstance(testAppBrowserProxy);
+    GoogleAppsMetricsProxyImpl.setInstance(testAppMetricsProxy);
+    BookmarkProxyImpl.setInstance(testBookmarkBrowserProxy);
+    BookmarkBarManager.setInstance(new BookmarkBarManager());
 
     testAppBrowserProxy.setAppList(apps);
 

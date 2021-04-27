@@ -23,7 +23,7 @@ suite('SetAsDefaultTest', function() {
 
   setup(function() {
     testSetAsDefaultProxy = new TestNuxSetAsDefaultProxy();
-    NuxSetAsDefaultProxyImpl.instance_ = testSetAsDefaultProxy;
+    NuxSetAsDefaultProxyImpl.setInstance(testSetAsDefaultProxy);
 
     document.body.innerHTML = '';
     testElement = document.createElement('nux-set-as-default');

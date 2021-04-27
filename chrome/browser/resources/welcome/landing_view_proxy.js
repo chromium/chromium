@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-
 const NUX_LANDING_PAGE_INTERACTION_METRIC_NAME =
     'FirstRun.NewUserExperience.LandingPageInteraction';
 
@@ -65,6 +63,17 @@ export class LandingViewProxyImpl {
         NUX_LANDING_PAGE_INTERACTION_METRIC_NAME, interaction,
         NUX_LANDING_PAGE_INTERACTIONS_COUNT);
   }
+
+  /** @return {!LandingViewProxy} */
+  static getInstance() {
+    return instance || (instance = new LandingViewProxyImpl());
+  }
+
+  /** @param {!LandingViewProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(LandingViewProxyImpl);
+/** @type {?LandingViewProxy} */
+let instance = null;

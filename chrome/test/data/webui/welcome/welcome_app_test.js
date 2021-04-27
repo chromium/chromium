@@ -8,7 +8,6 @@ import {LandingViewProxyImpl} from 'chrome://welcome/landing_view_proxy.js';
 import {navigateTo, Routes} from 'chrome://welcome/navigation_behavior.js';
 import {NuxSetAsDefaultProxyImpl} from 'chrome://welcome/set_as_default/nux_set_as_default_proxy.js';
 import {BookmarkProxyImpl} from 'chrome://welcome/shared/bookmark_proxy.js';
-import {ModuleMetricsProxyImpl} from 'chrome://welcome/shared/module_metrics_proxy.js';
 import {WelcomeBrowserProxyImpl} from 'chrome://welcome/welcome_browser_proxy.js';
 
 import {waitBeforeNextRender} from '../test_util.m.js';
@@ -60,16 +59,15 @@ suite('WelcomeWelcomeAppTest', function() {
 
   setup(function() {
     testWelcomeBrowserProxy = new TestWelcomeBrowserProxy();
-    WelcomeBrowserProxyImpl.instance_ = testWelcomeBrowserProxy;
+    WelcomeBrowserProxyImpl.setInstance(testWelcomeBrowserProxy);
 
     testSetAsDefaultProxy = new TestNuxSetAsDefaultProxy();
-    NuxSetAsDefaultProxyImpl.instance_ = testSetAsDefaultProxy;
+    NuxSetAsDefaultProxyImpl.setInstance(testSetAsDefaultProxy);
 
     // Not used in test, but setting to test proxy anyway, in order to prevent
     // calls to backend.
-    BookmarkProxyImpl.instance_ = new TestBookmarkProxy();
-    LandingViewProxyImpl.instance_ = new TestLandingViewProxy();
-    ModuleMetricsProxyImpl.instance_ = new TestMetricsProxy();
+    BookmarkProxyImpl.setInstance(new TestBookmarkProxy());
+    LandingViewProxyImpl.setInstance(new TestLandingViewProxy());
 
     return resetTestElement();
   });

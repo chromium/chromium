@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-
 /**
  * @fileoverview A helper object used by the welcome page to interact with
  * the browser.
@@ -48,6 +46,17 @@ export class WelcomeBrowserProxyImpl {
   goToURL(url) {
     window.location.assign(url);
   }
+
+  /** @return {!WelcomeBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new WelcomeBrowserProxyImpl());
+  }
+
+  /** @param {!WelcomeBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(WelcomeBrowserProxyImpl);
+/** @type {?WelcomeBrowserProxy} */
+let instance = null;

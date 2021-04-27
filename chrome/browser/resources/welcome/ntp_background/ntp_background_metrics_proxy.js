@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
 import {ModuleMetricsProxyImpl, NuxNtpBackgroundInteractions} from '../shared/module_metrics_proxy.js';
 
 export class NtpBackgroundMetricsProxyImpl extends ModuleMetricsProxyImpl {
@@ -15,6 +14,17 @@ export class NtpBackgroundMetricsProxyImpl extends ModuleMetricsProxyImpl {
   getInteractions() {
     return this.interactions_;
   }
+
+  /** @return {!NtpBackgroundMetricsProxyImpl} */
+  static getInstance() {
+    return instance || (instance = new NtpBackgroundMetricsProxyImpl());
+  }
+
+  /** @param {!NtpBackgroundMetricsProxyImpl} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(NtpBackgroundMetricsProxyImpl);
+/** @type {?NtpBackgroundMetricsProxyImpl} */
+let instance = null;

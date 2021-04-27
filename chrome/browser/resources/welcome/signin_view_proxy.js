@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-
 const NUX_SIGNIN_VIEW_INTERACTION_METRIC_NAME =
     'FirstRun.NewUserExperience.SignInInterstitialInteraction';
 
@@ -70,6 +68,17 @@ export class SigninViewProxyImpl {
         NUX_SIGNIN_VIEW_INTERACTION_METRIC_NAME, interaction,
         NUX_SIGNIN_VIEW_INTERACTIONS_COUNT);
   }
+
+  /** @return {!SigninViewProxy} */
+  static getInstance() {
+    return instance || (instance = new SigninViewProxyImpl());
+  }
+
+  /** @param {!SigninViewProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(SigninViewProxyImpl);
+/** @type {?SigninViewProxy} */
+let instance = null;
