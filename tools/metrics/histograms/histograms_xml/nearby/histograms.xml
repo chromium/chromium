@@ -111,6 +111,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
+    name="Nearby.Connections.InstantMessaging.ReceiveExpress.NumParsingAttempts"
+    units="attempts" expires_after="2021-08-19">
+  <owner>julietlevesque@chromium.org</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the number of parsing attempts it takes the stream parser to check
+    byte by byte if the data it received forms a valid StreamBody proto. Emitted
+    every time we get a receive-express HTTP response from the Instant Messaging
+    API.
+  </summary>
+</histogram>
+
+<histogram
     name="Nearby.Connections.InstantMessaging.{Direction}Express.OAuthTokenFetchResult"
     enum="BooleanSuccess" expires_after="2021-08-19">
   <owner>nohle@chromium.org</owner>

@@ -36,6 +36,7 @@ class StreamParser {
   base::RepeatingCallback<void(const std::string& message)> listener_;
   base::OnceClosure fastpath_ready_callback_;
   std::string data_;
+  int parsing_counter_for_metrics_ = 0;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_INSTANTMESSAGING_STREAM_PARSER_H_
