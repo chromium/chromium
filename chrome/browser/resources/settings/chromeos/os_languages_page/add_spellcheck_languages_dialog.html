@@ -1,3 +1,6 @@
+<!-- TODO(crbug.com/1201535): Refactor this and os_add_languages_dialog to share
+     code. -->
+
 <style include="settings-shared iron-flex shared-style">
   #dialogBody {
     display: flex;
@@ -28,6 +31,11 @@
 <cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach>
   <div slot="title">$i18n{addSpellCheckLanguagesTitle}</div>
   <div id="dialogBody" slot="body" scrollable>
+    <cr-search-field label="$i18n{searchSpellCheckLanguagesLabel}" id="search"
+        on-search-changed="onSearchChanged_" on-keydown="onKeydown_"
+        class="is-width-of-dialog"
+        clear-label="$i18n{clearSearch}" autofocus>
+    </cr-search-field>
     <template is="dom-if" if="[[showSuggestedList_]]">
       <div id="suggestedLanguages">
         <div class="label is-width-of-dialog">
@@ -52,27 +60,33 @@
       <div class="label is-width-of-dialog" hidden="[[!showSuggestedList_]]">
         $i18n{allSpellcheckLanguages}
       </div>
-      <iron-list items="[[languages.spellCheckOffLanguages]]">
-        <template>
-          <div class="list-item no-outline">
-            <cr-checkbox class="flex"
-                checked="[[willAdd_(item.language.code,
-                    languageCodesToAdd_.size)]]" disabled="[[item.isManaged]]"
-                on-change="onCheckboxChange_" tab-index="[[tabIndex]]">
-              [[getDisplayText_(item.language)]]
-            </cr-checkbox>
-            <template is="dom-if" if="[[item.isManaged]]">
-              <iron-icon id="policy[[index]]" class="policy" icon="cr20:domain"
-                  describedby="tooltip[[index]]">
-              </iron-icon>
-              <paper-tooltip for="policy[[index]]" id="tooltip[[index]]"
-                  role="tooltip" tabindex="-1" position="left">
-                $i18n{spellCheckLanguageNotAllowed}
-              </paper-tooltip>
-            </template>
-          </div>
-        </template>
-      </iron-list>
+      <template is="dom-if" if="[[languagesExist_]]">
+        <iron-list items="[[allLanguages_]]">
+          <template>
+            <div class="list-item no-outline">
+              <cr-checkbox class="flex"
+                  checked="[[willAdd_(item.language.code,
+                      languageCodesToAdd_.size)]]" disabled="[[item.isManaged]]"
+                  on-change="onCheckboxChange_" tab-index="[[tabIndex]]">
+                [[getDisplayText_(item.language)]]
+              </cr-checkbox>
+              <template is="dom-if" if="[[item.isManaged]]">
+                <iron-icon id="policy[[index]]" class="policy"
+                    icon="cr20:domain" describedby="tooltip[[index]]">
+                </iron-icon>
+                <paper-tooltip for="policy[[index]]" id="tooltip[[index]]"
+                    role="tooltip" tabindex="-1" position="left">
+                  $i18n{spellCheckLanguageNotAllowed}
+                </paper-tooltip>
+              </template>
+            </div>
+          </template>
+        </iron-list>
+      </template>
+    </div>
+    <div id="no-search-results" class="centered-message"
+        hidden="[[languagesExist_]]">
+      $i18n{noSearchResults}
     </div>
   </div>
   <div slot="button-container">

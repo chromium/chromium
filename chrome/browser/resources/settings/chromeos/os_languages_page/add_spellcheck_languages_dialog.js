@@ -7,6 +7,7 @@
  * adding spell check languages.
  */
 import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_search_field/cr_search_field.js';
 import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '//resources/polymer/v3_0/iron-list/iron-list.js';
@@ -14,6 +15,7 @@ import './shared_style.m.js';
 import '../../settings_shared_css.js';
 
 import {CrScrollableBehavior} from '//resources/cr_elements/cr_scrollable_behavior.m.js';
+import {FindShortcutBehavior} from '//resources/cr_elements/find_shortcut_behavior.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PrefsBehavior} from '../../prefs/prefs_behavior.js';
@@ -27,6 +29,7 @@ Polymer({
   behaviors: [
     CrScrollableBehavior,
     PrefsBehavior,
+    FindShortcutBehavior,
   ],
 
   properties: {
@@ -50,7 +53,22 @@ Polymer({
       },
     },
 
-    /** @private {!Array<!chrome.languageSettingsPrivate.InputMethod>} */
+    /** @private {!Array<!SpellCheckLanguageState>} */
+    allLanguages_: {
+      type: Array,
+      value: [],
+      computed: `getAllLanguages_(languages.spellCheckOffLanguages.*,
+          lowercaseQuery_)`,
+    },
+
+    /** @private */
+    languagesExist_: {
+      type: Boolean,
+      value: false,
+      computed: 'computeLanguagesExist_(allLanguages_.length)',
+    },
+
+    /** @private {!Array<!SpellCheckLanguageState>} */
     suggestedLanguages_: {
       type: Array,
       value: [],
@@ -62,7 +80,8 @@ Polymer({
     showSuggestedList_: {
       type: Boolean,
       value: false,
-      computed: 'shouldShowSuggestedList_(suggestedLanguages_)'
+      computed: `shouldShowSuggestedList_(suggestedLanguages_, lowercaseQuery_,
+          languagesExist_)`,
     },
 
     /** @private */
@@ -71,6 +90,37 @@ Polymer({
       value: true,
       computed: 'shouldDisableActionButton_(languageCodesToAdd_.size)',
     },
+
+    /** @private */
+    lowercaseQuery_: {
+      type: String,
+      value: '',
+    },
+  },
+
+  // Override FindShortcutBehavior methods.
+  handleFindShortcut(modalContextOpen) {
+    // Assumes this is the only open modal.
+    const searchInput = this.$.search.getSearchInput();
+    searchInput.scrollIntoViewIfNeeded();
+    if (!this.searchInputHasFocus()) {
+      searchInput.focus();
+    }
+    return true;
+  },
+
+  // Override FindShortcutBehavior methods.
+  searchInputHasFocus() {
+    return this.$.search.getSearchInput() ===
+        this.$.search.shadowRoot.activeElement;
+  },
+
+  /**
+   * @param {!CustomEvent<string>} e
+   * @private
+   */
+  onSearchChanged_(e) {
+    this.lowercaseQuery_ = e.detail.toLocaleLowerCase();
   },
 
   /**
@@ -106,7 +156,8 @@ Polymer({
    * @private
    */
   shouldShowSuggestedList_() {
-    return this.suggestedLanguages_.length > 0;
+    return this.suggestedLanguages_.length > 0 && !this.lowercaseQuery_ &&
+        this.languagesExist_;
   },
 
   /**
@@ -124,6 +175,22 @@ Polymer({
         spellCheckLanguage =>
             languageCodes.has(spellCheckLanguage.language.code) &&
             !spellCheckLanguage.isManaged);
+  },
+
+  /**
+   * Get the list of languages used for the "all languages" section, filtering
+   * based on the current search query.
+   * @return {!Array<!SpellCheckLanguageState>}
+   * @private
+   */
+  getAllLanguages_() {
+    return this.languages.spellCheckOffLanguages.filter(langState => {
+      const language = langState.language;
+      return language.displayName.toLowerCase().includes(
+                 this.lowercaseQuery_) ||
+          language.nativeDisplayName.toLowerCase().includes(
+              this.lowercaseQuery_);
+    });
   },
 
   /**
@@ -170,8 +237,19 @@ Polymer({
    * @private
    */
   onKeydown_(e) {
-    if (e.key === 'Escape') {
+    // Close dialog if 'esc' is pressed and the search box is already empty.
+    if (e.key === 'Escape' && !this.$.search.getValue().trim()) {
       this.$.dialog.close();
+    } else if (e.key !== 'PageDown' && e.key !== 'PageUp') {
+      this.$.search.scrollIntoViewIfNeeded();
     }
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeLanguagesExist_() {
+    return !!this.allLanguages_.length;
   },
 });
