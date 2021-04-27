@@ -6,6 +6,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -20,9 +21,12 @@
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/file_handler_manager.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
+#include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/embedder_support/switches.h"
 #include "content/public/test/browser_test.h"
@@ -164,7 +168,7 @@ class WebAppFileHandlingTestBase : public web_app::WebAppControllerBrowserTest {
 
 namespace {
 
-base::FilePath NewTestFilePath(const base::FilePath::CharType* extension) {
+base::FilePath NewTestFilePath(const base::StringPiece extension) {
   // CreateTemporaryFile blocks, temporarily allow blocking.
   base::ScopedAllowBlockingForTesting allow_blocking;
 
@@ -172,7 +176,7 @@ base::FilePath NewTestFilePath(const base::FilePath::CharType* extension) {
   // extension for the temp file.
   base::FilePath test_file_path;
   base::CreateTemporaryFile(&test_file_path);
-  base::FilePath new_file_path = test_file_path.AddExtension(extension);
+  base::FilePath new_file_path = test_file_path.AddExtensionASCII(extension);
   EXPECT_TRUE(base::ReplaceFile(test_file_path, new_file_path, nullptr));
   return new_file_path;
 }
@@ -248,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        PWAsCanReceiveFileLaunchParams) {
   InstallFileHandlingPWA();
   SetFileHandlingPermission(CONTENT_SETTING_ALLOW);
-  base::FilePath test_file_path = NewTestFilePath(FILE_PATH_LITERAL("txt"));
+  base::FilePath test_file_path = NewTestFilePath("txt");
   content::WebContents* web_contents = LaunchWithFiles(
       app_id(), GetTextFileHandlerActionURL(), {test_file_path});
 
@@ -262,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        LaunchConsumerIsNotTriggeredWithPermissionDenied) {
   InstallFileHandlingPWA();
   SetFileHandlingPermission(CONTENT_SETTING_BLOCK);
-  base::FilePath test_file_path = NewTestFilePath(FILE_PATH_LITERAL("txt"));
+  base::FilePath test_file_path = NewTestFilePath("txt");
   content::WebContents* web_contents = LaunchWithFiles(
       app_id(), GetTextFileHandlerActionURL(), {test_file_path});
 
@@ -273,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        PWAsCanReceiveFileLaunchParamsInTab) {
   InstallFileHandlingPWA();
   SetFileHandlingPermission(CONTENT_SETTING_ALLOW);
-  base::FilePath test_file_path = NewTestFilePath(FILE_PATH_LITERAL("txt"));
+  base::FilePath test_file_path = NewTestFilePath("txt");
   content::WebContents* web_contents =
       LaunchWithFiles(app_id(), GetTextFileHandlerActionURL(), {test_file_path},
                       apps::mojom::LaunchContainer::kLaunchContainerTab);
@@ -292,24 +296,77 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   // Test that file handler dispatches correct URL based on file extension.
   LaunchWithFiles(app_id(), GetSecureAppURL(), {});
   LaunchWithFiles(app_id(), GetTextFileHandlerActionURL(),
-                  {NewTestFilePath(FILE_PATH_LITERAL("txt"))});
+                  {NewTestFilePath("txt")});
   LaunchWithFiles(app_id(), GetHTMLFileHandlerActionURL(),
-                  {NewTestFilePath(FILE_PATH_LITERAL("html"))});
+                  {NewTestFilePath("html")});
   LaunchWithFiles(app_id(), GetCSVFileHandlerActionURL(),
-                  {NewTestFilePath(FILE_PATH_LITERAL("csv"))});
+                  {NewTestFilePath("csv")});
 
   // Test as above in a tab.
   LaunchWithFiles(app_id(), GetSecureAppURL(), {},
                   apps::mojom::LaunchContainer::kLaunchContainerTab);
   LaunchWithFiles(app_id(), GetTextFileHandlerActionURL(),
-                  {NewTestFilePath(FILE_PATH_LITERAL("txt"))},
+                  {NewTestFilePath("txt")},
                   apps::mojom::LaunchContainer::kLaunchContainerTab);
   LaunchWithFiles(app_id(), GetHTMLFileHandlerActionURL(),
-                  {NewTestFilePath(FILE_PATH_LITERAL("html"))},
+                  {NewTestFilePath("html")},
                   apps::mojom::LaunchContainer::kLaunchContainerTab);
   LaunchWithFiles(app_id(), GetCSVFileHandlerActionURL(),
-                  {NewTestFilePath(FILE_PATH_LITERAL("csv"))},
+                  {NewTestFilePath("csv")},
                   apps::mojom::LaunchContainer::kLaunchContainerTab);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
+                       UnlimitedFileHandlersForChrome) {
+  // We install more than |kMaxFileHandlers| file handlers.
+  const unsigned kNumHandlers = 2 * web_app::kMaxFileHandlers + 1;
+
+  auto action_url = [](unsigned index) {
+    return GURL(base::StringPrintf("chrome://interstitials/#a%u", index));
+  };
+
+  auto mime_type = [](unsigned index) {
+    return base::StringPrintf("application/x-%u", index);
+  };
+
+  auto extension = [](unsigned index) {
+    return base::StringPrintf(".e%u", index);
+  };
+
+  web_app::AppId app_id;
+  {
+    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    web_app_info->start_url = GURL("chrome://interstitials/");
+    web_app_info->scope = web_app_info->start_url;
+    web_app_info->title = u"Many File Handlers";
+
+    for (unsigned i = 0; i < kNumHandlers; ++i) {
+      const std::u16string name =
+          base::UTF8ToUTF16(base::StringPrintf("n%u", i));
+      std::map<std::u16string, std::vector<std::u16string>> accept;
+      accept[base::UTF8ToUTF16(mime_type(i))] = {
+          base::UTF8ToUTF16(extension(i))};
+      web_app_info->file_handlers.push_back(
+          {action_url(i), name, std::move(accept)});
+    }
+
+    app_id =
+        WebAppControllerBrowserTest::InstallWebApp(std::move(web_app_info));
+  }
+
+  EXPECT_EQ(registrar()
+                .AsWebAppRegistrar()
+                ->GetAppById(app_id)
+                ->file_handlers()
+                .size(),
+            kNumHandlers);
+
+  SetFileHandlingPermission(CONTENT_SETTING_ALLOW);
+
+  // Test that file handler dispatches correct URL based on file extension.
+  for (unsigned i = 0; i < kNumHandlers; ++i) {
+    LaunchWithFiles(app_id, action_url(i), {NewTestFilePath(extension(i))});
+  }
 }
 
 class WebAppFileHandlingOriginTrialBrowserTest
@@ -595,7 +652,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingOriginTrialTest,
   GURL start_url;
   const web_app::AppId app_id = InstallFileHandlingWebApp(&start_url);
   GrantFileHandlingPermission();
-  base::FilePath test_file_path = NewTestFilePath(FILE_PATH_LITERAL("txt"));
+  base::FilePath test_file_path = NewTestFilePath("txt");
   content::WebContents* web_content = LaunchApplication(
       profile(), app_id, start_url,
       apps::mojom::LaunchContainer::kLaunchContainerWindow,
@@ -615,7 +672,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingOriginTrialTest,
                        IsFileHandlerOnChromeOS) {
   const web_app::AppId app_id = InstallFileHandlingWebApp();
   GrantFileHandlingPermission();
-  base::FilePath test_file_path = NewTestFilePath(FILE_PATH_LITERAL("txt"));
+  base::FilePath test_file_path = NewTestFilePath("txt");
   std::vector<file_manager::file_tasks::FullTaskDescriptor> tasks =
       file_manager::test::GetTasksForFile(profile(), test_file_path);
 

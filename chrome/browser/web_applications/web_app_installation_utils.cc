@@ -13,6 +13,7 @@
 #include "base/notreached.h"
 #include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/common/chrome_features.h"
@@ -26,6 +27,8 @@
 namespace web_app {
 
 namespace {
+
+const char kChromeScheme[] = "chrome";
 
 std::vector<SquareSizePx> GetSquareSizePxs(
     const std::map<SquareSizePx, SkBitmap>& icon_bitmaps) {
@@ -65,14 +68,23 @@ void SetWebAppFileHandlers(
     for (const auto& it : manifest_file_handler.accept) {
       apps::FileHandler::AcceptEntry web_app_accept_entry;
       web_app_accept_entry.mime_type = base::UTF16ToUTF8(it.first);
-      for (const auto& manifest_file_extension : it.second)
+      for (const auto& manifest_file_extension : it.second) {
         web_app_accept_entry.file_extensions.insert(
             base::UTF16ToUTF8(manifest_file_extension));
+      }
       web_app_file_handler.accept.push_back(std::move(web_app_accept_entry));
     }
 
     web_app_file_handlers.push_back(std::move(web_app_file_handler));
+
+    if (web_app_file_handlers.size() == kMaxFileHandlers &&
+        !web_app.scope().SchemeIs(kChromeScheme)) {
+      break;
+    }
   }
+
+  DCHECK(web_app_file_handlers.size() <= kMaxFileHandlers ||
+         web_app.scope().SchemeIs(kChromeScheme));
 
   web_app.SetFileHandlers(std::move(web_app_file_handlers));
 }

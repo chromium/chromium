@@ -261,6 +261,9 @@ constexpr int kIphAppAgnosticMuteTimeSpanDays = 14;
 // Default threshold for site engagement score if it's not set by field trial
 // param.
 constexpr int kIphFieldTrialParamDefaultSiteEngagementThreshold = 10;
+// Maximum number of file handlers that a single web application may install.
+// chrome:// web applications are exempt from this limit.
+constexpr size_t kMaxFileHandlers = 10;
 
 }  // namespace web_app
 
