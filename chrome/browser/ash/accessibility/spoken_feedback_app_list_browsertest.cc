@@ -537,7 +537,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest, AppListFoldering) {
   sm_.Call([]() { SendKeyPressWithShiftAndControl(ui::VKEY_RIGHT); });
   sm_.ExpectSpeech("Folder Unnamed");
   sm_.ExpectSpeech("Button");
-  sm_.ExpectSpeech("Alert");
+  sm_.ExpectNextSpeechIsNot("Alert");
   sm_.ExpectSpeech("Item 0 combined with Item 1 to create new folder.");
 
   // Open the folder and move focus to the first item of the folder.
@@ -549,7 +549,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest, AppListFoldering) {
   sm_.Call([]() { SendKeyPressWithShiftAndControl(ui::VKEY_LEFT); });
   sm_.ExpectSpeech("Item 1");
   sm_.ExpectSpeech("Button");
-  sm_.ExpectSpeech("Alert");
+  sm_.ExpectNextSpeechIsNot("Alert");
   sm_.ExpectSpeech("Moved to Page 1, row 1, column 1.");
 
   sm_.Replay();
@@ -591,37 +591,37 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest, AppListReordering) {
 
   // Move the first item to the right.
   sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_RIGHT); });
-  sm_.ExpectSpeech("Alert");
+  sm_.ExpectNextSpeechIsNot("Alert");
   sm_.ExpectSpeech("Moved to Page 1, row 1, column 2.");
 
   // Move the focused item down.
   sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_DOWN); });
-  sm_.ExpectSpeech("Alert");
+  sm_.ExpectNextSpeechIsNot("Alert");
   sm_.ExpectSpeech("Moved to Page 1, row 2, column 2.");
 
   // Move the focused item down.
   sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_DOWN); });
-  sm_.ExpectSpeech("Alert");
+  sm_.ExpectNextSpeechIsNot("Alert");
   sm_.ExpectSpeech("Moved to Page 1, row 3, column 2.");
 
   // Move the focused item down.
   sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_DOWN); });
-  sm_.ExpectSpeech("Alert");
+  sm_.ExpectNextSpeechIsNot("Alert");
   sm_.ExpectSpeech("Moved to Page 1, row 4, column 2.");
 
   // Move the focused item down to page 2.
   sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_DOWN); });
-  sm_.ExpectSpeech("Alert");
+  sm_.ExpectNextSpeechIsNot("Alert");
   sm_.ExpectSpeech("Moved to Page 2, row 1, column 2.");
 
   // Move the focused item to the left.
   sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_LEFT); });
-  sm_.ExpectSpeech("Alert");
+  sm_.ExpectNextSpeechIsNot("Alert");
   sm_.ExpectSpeech("Moved to Page 2, row 1, column 1.");
 
   // Move the focused item back up to page 1..
   sm_.Call([this]() { SendKeyPressWithControl(ui::VKEY_UP); });
-  sm_.ExpectSpeech("Alert");
+  sm_.ExpectNextSpeechIsNot("Alert");
   sm_.ExpectSpeech("Moved to Page 1, row 4, column 1.");
 
   sm_.Replay();

@@ -183,7 +183,7 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
                        .withSpeechAndBraille(range, null, evt.type);
 
     // A workaround for alert nodes that contain no actual content.
-    if (output.toString() !== (Msgs.getMsg('role_alert'))) {
+    if (output.toString()) {
       output.go();
     }
   }

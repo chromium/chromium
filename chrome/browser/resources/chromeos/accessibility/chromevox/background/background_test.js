@@ -2046,7 +2046,7 @@ TEST_F('ChromeVoxBackgroundTest', 'SelectValidityOutput', function() {
         .expectSpeech('Name:')
         .expectSpeech('Edit text')
         .expectSpeech('Required')
-        .expectSpeech('Alert')
+        .expectNextSpeechUtteranceIsNot('Alert')
         .expectSpeech('Please enter name')
         .replay();
   });
@@ -2934,7 +2934,7 @@ TEST_F('ChromeVoxBackgroundTest', 'AlertAnnouncement', function() {
         mockFeedback
             .call(DesktopAutomationHandler.instance.onAlert.bind(
                 DesktopAutomationHandler.instance, alertEvt))
-            .expectSpeech('Alert')
+            .expectNextSpeechUtteranceIsNot('Alert')
             .expectSpeech('hello world')
             .replay();
       });

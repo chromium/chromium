@@ -2919,10 +2919,7 @@ Output.RULES = {
     }
   },
   alert: {
-    default: {
-      speak: `$earcon(ALERT_NONMODAL) @role_alert
-          $nameOrTextContent $description`
-    }
+    default: {speak: `$earcon(ALERT_NONMODAL) $nameOrTextContent $description`}
   }
 };
 
