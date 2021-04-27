@@ -172,6 +172,15 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
                                     size_t max_handles,
                                     size_t payload_size,
                                     MessageType message_type);
+
+    // Extends the portion of the total message capacity which contains
+    // meaningful payload data. Storage capacity which falls outside of this
+    // range is not transmitted when the message is sent.
+    //
+    // If the message's current capacity is not large enough to accommodate the
+    // new payload size, it will be reallocated accordingly.
+    static void ExtendPayload(MessagePtr& message, size_t new_payload_size);
+
     static MessagePtr CreateRawForFuzzing(base::span<const unsigned char> data);
 
     // Constructs a Message from serialized message data, optionally coming from
@@ -182,19 +191,13 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
         base::ProcessHandle from_process = base::kNullProcessHandle);
 
     virtual const void* data() const = 0;
+    virtual void* mutable_data() const = 0;
+
     size_t data_num_bytes() const { return size_; }
 
     // The current capacity of the message buffer, not counting internal header
     // data.
     virtual size_t capacity() const = 0;
-
-    // Extends the portion of the total message capacity which contains
-    // meaningful payload data. Storage capacity which falls outside of this
-    // range is not transmitted when the message is sent.
-    //
-    // If the message's current capacity is not large enough to accommodate the
-    // new payload size, it will be reallocated accordingly.
-    virtual void ExtendPayload(size_t new_payload_size) = 0;
 
     const void* extra_header() const;
     void* mutable_extra_header();
@@ -224,7 +227,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
    protected:
     Message() = default;
 
-    virtual void* mutable_data() const = 0;
+    virtual bool ExtendPayload(size_t new_payload_size) = 0;
 
     // The size of the message. This is the portion of |data_| that should
     // be transmitted if the message is written to a channel. Includes all

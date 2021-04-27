@@ -511,8 +511,9 @@ MojoResult UserMessageImpl::AppendData(uint32_t additional_payload_size,
       size_t user_payload_offset =
           static_cast<uint8_t*>(user_payload_) -
           static_cast<const uint8_t*>(channel_message_->payload());
-      channel_message_->ExtendPayload(user_payload_offset + user_payload_size_ +
-                                      additional_payload_size);
+      Channel::Message::ExtendPayload(
+          channel_message_,
+          user_payload_offset + user_payload_size_ + additional_payload_size);
       header_ = static_cast<uint8_t*>(channel_message_->mutable_payload()) +
                 header_offset;
       user_payload_ =
