@@ -35,6 +35,7 @@ std::string CleanSerializedProto(const std::string& serialized) {
 proto::GetClustersRequest CreateRequestProto(
     const std::vector<history::ClusterVisit>& visits) {
   proto::GetClustersRequest request;
+  request.set_experiment_name(ExperimentNameForRemoteModelEndpoint());
   for (auto& visit : visits) {
     proto::Visit* request_visit = request.add_visits();
     request_visit->set_visit_id(visit.visit_row.visit_id);

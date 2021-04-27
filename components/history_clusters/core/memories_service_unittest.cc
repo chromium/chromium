@@ -65,7 +65,8 @@ class MemoriesServiceTest : public testing::Test {
   MemoriesServiceTest& operator=(const MemoriesServiceTest&) = delete;
 
   void EnableMemoriesWithEndpoint(
-      const std::string& endpoint_url = kFakeEndpoint) {
+      const std::string& endpoint_url = kFakeEndpoint,
+      const std::string& endpoint_experiment = "") {
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
     scoped_feature_list_->InitWithFeaturesAndParameters(
         {
@@ -75,7 +76,11 @@ class MemoriesServiceTest : public testing::Test {
             },
             {
                 kRemoteModelForDebugging,
-                {{"MemoriesRemoteModelEndpoint", endpoint_url}},
+                {
+                    {"MemoriesRemoteModelEndpoint", endpoint_url},
+                    {"MemoriesRemoteModelEndpointExperimentName",
+                     endpoint_experiment},
+                },
             },
         },
         {});
@@ -132,9 +137,11 @@ class MemoriesServiceTest : public testing::Test {
 
   // Verifies that that a particular hardcoded request is in a pending request
   // within the URL loader.
-  void VerifyHardcodedTestDataInUrlLoaderRequest() {
+  void VerifyHardcodedTestDataInUrlLoaderRequest(
+      const std::string& expected_experiment_name = "") {
     EXPECT_TRUE(test_url_loader_factory_.IsPending(kFakeEndpoint));
     proto::GetClustersRequest request;
+    request.set_experiment_name(expected_experiment_name);
     auto* visit = request.add_visits();
     visit->set_visit_id(2);
     visit->set_navigation_time_ms(2);
@@ -200,7 +207,8 @@ class MemoriesServiceTest : public testing::Test {
 constexpr char MemoriesServiceTest::kFakeEndpoint[];
 
 TEST_F(MemoriesServiceTest, QueryMemoriesEmptyQuery) {
-  EnableMemoriesWithEndpoint(kFakeEndpoint);
+  std::string experiment_name = "someexperiment";
+  EnableMemoriesWithEndpoint(kFakeEndpoint, experiment_name);
 
   AddVisit(0, GURL{"https://google.com"}, u"Google title", 2, IntToTime(2), 3);
   AddVisit(0, GURL{"https://github.com"}, u"Github title", 4, IntToTime(4), 5);
@@ -240,7 +248,7 @@ TEST_F(MemoriesServiceTest, QueryMemoriesEmptyQuery) {
             run_loop_quit_.Run();
           }));
 
-  VerifyHardcodedTestDataInUrlLoaderRequest();
+  VerifyHardcodedTestDataInUrlLoaderRequest(experiment_name);
   InjectHardcodedTestDataToUrlLoaderResponse({{2, 4}, {4}});
 
   // Verify the callback is invoked.

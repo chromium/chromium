@@ -12,6 +12,9 @@ package history_clusters.proto;
 message GetClustersRequest {
   // Represents a set of visits.
   repeated Visit visits = 1;
+  // The experiment name that controls the clustering behavior served for
+  // this request.
+  string experiment_name = 2;
 }
 
 message GetClustersResponse {

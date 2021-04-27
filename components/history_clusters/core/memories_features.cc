@@ -13,6 +13,11 @@ GURL RemoteModelEndpointForDebugging() {
       kRemoteModelForDebugging, "MemoriesRemoteModelEndpoint"));
 }
 
+std::string ExperimentNameForRemoteModelEndpoint() {
+  return base::GetFieldTrialParamValueByFeature(
+      kRemoteModelForDebugging, "MemoriesRemoteModelEndpointExperimentName");
+}
+
 bool StoreVisitsInHistoryDb() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kMemories, "MemoriesStoreVisitsInHistoryDb", false);

@@ -14,6 +14,12 @@ namespace history_clusters {
 // Returns an empty GURL() when the remote model debug endpoint is disabled.
 GURL RemoteModelEndpointForDebugging();
 
+// Returns the experiment name to pass through to the remote model debug
+// endpoint to control how the visits get clustered. Returns an empty string if
+// this client should just use be returned the default clustering or if the
+// remote model debug endpoint is disabled.
+std::string ExperimentNameForRemoteModelEndpoint();
+
 // If enabled, completed visits are persisted to the history DB and read back
 // when clustering. If disabled, completed visits are kept in-memory and used
 // these in-memory visits are used when clustering.
