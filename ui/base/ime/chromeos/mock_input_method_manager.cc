@@ -161,6 +161,11 @@ bool MockInputMethodManager::IsAltGrUsedByCurrentInputMethod() const {
   return false;
 }
 
+bool MockInputMethodManager::ArePositionalShortcutsUsedByCurrentInputMethod()
+    const {
+  return false;
+}
+
 ImeKeyboard* MockInputMethodManager::GetImeKeyboard() {
   return nullptr;
 }

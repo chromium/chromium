@@ -147,6 +147,7 @@ const char kAccelWindowSnap[] = "Ash.Accelerators.WindowSnap";
 namespace {
 
 using base::UserMetricsAction;
+using chromeos::input_method::InputMethodManager;
 using message_center::Notification;
 using message_center::SystemNotificationWarningLevel;
 
@@ -1687,6 +1688,13 @@ AcceleratorControllerImpl::AcceleratorControllerImpl()
       accelerator_history_(std::make_unique<AcceleratorHistoryImpl>()),
       side_volume_button_location_file_path_(
           base::FilePath(kSideVolumeButtonLocationFilePath)) {
+  if (::features::IsImprovedKeyboardShortcutsEnabled()) {
+    // Observe input method changes to determine when to use positional
+    // shortcuts. Calling AddObserver will cause InputMethodChanged to be
+    // called once even when the method does not change.
+    InputMethodManager::Get()->AddObserver(this);
+  }
+
   Init();
 
   ParseSideVolumeButtonLocationInfo();
@@ -1701,6 +1709,25 @@ AcceleratorControllerImpl::AcceleratorControllerImpl()
 
 AcceleratorControllerImpl::~AcceleratorControllerImpl() {
   aura::Env::GetInstance()->RemovePreTargetHandler(accelerator_history_.get());
+
+  if (::features::IsImprovedKeyboardShortcutsEnabled()) {
+    InputMethodManager::Get()->RemoveObserver(this);
+  }
+}
+
+void AcceleratorControllerImpl::InputMethodChanged(InputMethodManager* manager,
+                                                   Profile* profile,
+                                                   bool show_message) {
+  DCHECK(::features::IsImprovedKeyboardShortcutsEnabled());
+  DCHECK(manager);
+
+  // InputMethodChanged will be called as soon as the observer is registered
+  // from Init(), so these settings get propagated before any keys are
+  // seen.
+  const bool use_positional_lookup =
+      manager->ArePositionalShortcutsUsedByCurrentInputMethod();
+  accelerators_.set_use_positional_lookup(use_positional_lookup);
+  accelerator_manager_->SetUsePositionalLookup(use_positional_lookup);
 }
 
 void AcceleratorControllerImpl::Register(
@@ -1807,10 +1834,6 @@ bool AcceleratorControllerImpl::CanHandleAccelerators() const {
 // AcceleratorControllerImpl, private:
 
 void AcceleratorControllerImpl::Init() {
-  // Use positional lookup by default if the feature is enabled.
-  accelerators_.set_use_positional_lookup(
-      ::features::IsImprovedKeyboardShortcutsEnabled());
-
   for (size_t i = 0; i < kActionsAllowedAtLoginOrLockScreenLength; ++i) {
     actions_allowed_at_login_screen_.insert(
         kActionsAllowedAtLoginOrLockScreen[i]);

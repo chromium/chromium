@@ -7,18 +7,9 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 
-#if defined(OS_CHROMEOS)
-#include "ui/base/ui_base_features.h"
-#endif
-
 namespace ui {
 
-AcceleratorManager::AcceleratorManager() {
-#if defined(OS_CHROMEOS)
-  accelerators_.set_use_positional_lookup(
-      ::features::IsImprovedKeyboardShortcutsEnabled());
-#endif
-}
+AcceleratorManager::AcceleratorManager() = default;
 
 AcceleratorManager::~AcceleratorManager() = default;
 

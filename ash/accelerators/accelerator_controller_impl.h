@@ -23,6 +23,7 @@
 #include "base/macros.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/accelerator_map.h"
+#include "ui/base/ime/chromeos/input_method_manager.h"
 
 namespace ui {
 class AcceleratorManager;
@@ -75,8 +76,10 @@ ASH_EXPORT extern const char kAccelWindowSnap[];
 // AcceleratorControllerImpl provides functions for registering or unregistering
 // global keyboard accelerators, which are handled earlier than any windows. It
 // also implements several handlers as an accelerator target.
-class ASH_EXPORT AcceleratorControllerImpl : public ui::AcceleratorTarget,
-                                             public AcceleratorController {
+class ASH_EXPORT AcceleratorControllerImpl
+    : public ui::AcceleratorTarget,
+      public AcceleratorController,
+      public chromeos::input_method::InputMethodManager::Observer {
  public:
   // Some Chrome OS devices have volume up and volume down buttons on their
   // side. We want the button that's closer to the top/right to increase the
@@ -159,6 +162,11 @@ class ASH_EXPORT AcceleratorControllerImpl : public ui::AcceleratorTarget,
     // Don't process the accelerator and prevent propagation to other targets.
     RESTRICTION_PREVENT_PROCESSING_AND_PROPAGATION
   };
+
+  // chromeos::input_method::InputMethodManager::Observer overrides:
+  void InputMethodChanged(chromeos::input_method::InputMethodManager* manager,
+                          Profile* profile,
+                          bool show_message) override;
 
   // Registers global keyboard accelerators for the specified target. If
   // multiple targets are registered for any given accelerator, a target

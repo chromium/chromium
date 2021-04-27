@@ -16,6 +16,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/chromeos/input_method/mock_candidate_window_controller.h"
 #include "chrome/browser/chromeos/input_method/mock_input_method_engine.h"
@@ -36,6 +37,7 @@
 #include "ui/base/ime/chromeos/mock_component_extension_ime_manager_delegate.h"
 #include "ui/base/ime/chromeos/mock_ime_engine_handler.h"
 #include "ui/base/ime/init/input_method_initializer.h"
+#include "ui/base/ui_base_features.h"
 
 namespace chromeos {
 
@@ -160,9 +162,9 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
     mock_delegate->set_ime_list(ime_list);
     mock_delegate->set_login_layout_set(login_layout_set);
 
-    manager_ = std::make_unique<InputMethodManagerImpl>(
-        std::make_unique<FakeInputMethodDelegate>(), std::move(mock_delegate),
-        false);
+    manager_ =
+        new InputMethodManagerImpl(std::make_unique<FakeInputMethodDelegate>(),
+                                   std::move(mock_delegate), false);
     manager_->GetInputMethodUtil()->UpdateHardwareLayoutCache();
     candidate_window_controller_ = new MockCandidateWindowController;
     manager_->SetCandidateWindowControllerForTesting(
@@ -175,6 +177,10 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
 
     menu_manager_ = ui::ime::InputMethodMenuManager::GetInstance();
 
+    // Let the global pointer own manager_. Components in ash need to be
+    // able to call InputMethodManager::Get() during initialization. Cleanup
+    // the pointer by calling ShutDown() in TearDown().
+    InputMethodManager::Initialize(manager_);
     BrowserWithTestWindowTest::SetUp();
 
     // Needs ash::Shell keyboard to be created first.
@@ -204,7 +210,10 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
 
     candidate_window_controller_ = nullptr;
     keyboard_ = nullptr;
-    manager_.reset();
+
+    // Cleanup the global manager and clear the member pointer.
+    InputMethodManager::Shutdown();
+    manager_ = nullptr;
   }
 
  private:
@@ -362,7 +371,7 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
  protected:
   std::unique_ptr<ChromeKeyboardControllerClientTestHelper>
       chrome_keyboard_controller_client_test_helper_;
-  std::unique_ptr<InputMethodManagerImpl> manager_;
+  InputMethodManagerImpl* manager_ = nullptr;
   MockCandidateWindowController* candidate_window_controller_ = nullptr;
   std::unique_ptr<MockInputMethodEngine> mock_engine_handler_;
   FakeImeKeyboard* keyboard_ = nullptr;
@@ -1454,7 +1463,7 @@ TEST_F(InputMethodManagerImplTest, SetLoginDefaultWithAllowedKeyboardLayouts) {
 // ImeControllerClient sends the correct data to ash.
 TEST_F(InputMethodManagerImplTest, IntegrationWithAsh) {
   TestImeController ime_controller;
-  ImeControllerClient ime_controller_client(manager_.get());
+  ImeControllerClient ime_controller_client(manager_);
   ime_controller_client.Init();
 
   // Setup 3 IMEs.
@@ -1580,6 +1589,53 @@ TEST_F(InputMethodManagerImplTest, TestAddRemoveArcInputMethods) {
   manager_->GetActiveIMEState()->RemoveInputMethodExtension(kExtensionId1);
   manager_->GetActiveIMEState()->GetInputMethodExtensions(&result);
   EXPECT_TRUE(result.empty());
+}
+
+// TODO(crbug.com/1179893): Remove once the feature is enabled permanently.
+class InputMethodManagerImplPositionalTest : public InputMethodManagerImplTest {
+ public:
+  InputMethodManagerImplPositionalTest() = default;
+  ~InputMethodManagerImplPositionalTest() override = default;
+
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kImprovedKeyboardShortcuts);
+
+    InputMethodManagerImplTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(InputMethodManagerImplPositionalTest, ValidatePositionalShortcutLayout) {
+  // Initialize with one positional (US) and one non-positional (US-dvorak)
+  // layout.
+  std::vector<std::string> ids;
+  ids.push_back(ImeIdFromEngineId("xkb:us::eng"));
+  ids.push_back(ImeIdFromEngineId("xkb:us:dvorak:eng"));
+  EXPECT_TRUE(manager_->GetActiveIMEState()->ReplaceEnabledInputMethods(ids));
+  EXPECT_EQ(2U, manager_->GetActiveIMEState()->GetNumActiveInputMethods());
+
+  // Verify the US layout is positional.
+  EXPECT_EQ(ImeIdFromEngineId(ids[0]),
+            manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
+  EXPECT_EQ("us", keyboard_->last_layout_);
+  EXPECT_TRUE(manager_->ArePositionalShortcutsUsedByCurrentInputMethod());
+
+  // Switch to dvorak and verify it is non-positional.
+  manager_->GetActiveIMEState()->SwitchToNextInputMethod();
+  EXPECT_EQ(ImeIdFromEngineId(ids[1]),
+            manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
+  EXPECT_EQ("us(dvorak)", keyboard_->last_layout_);
+  EXPECT_FALSE(manager_->ArePositionalShortcutsUsedByCurrentInputMethod());
+
+  // Switch back to US and verify it is positional again.
+  manager_->GetActiveIMEState()->SwitchToNextInputMethod();
+  EXPECT_EQ(ImeIdFromEngineId(ids[0]),
+            manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
+  EXPECT_EQ("us", keyboard_->last_layout_);
+  EXPECT_TRUE(manager_->ArePositionalShortcutsUsedByCurrentInputMethod());
 }
 
 }  // namespace input_method

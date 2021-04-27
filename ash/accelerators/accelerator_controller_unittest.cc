@@ -76,6 +76,7 @@
 #include "ui/base/accelerators/test_accelerator_target.h"
 #include "ui/base/ime/chromeos/fake_ime_keyboard.h"
 #include "ui/base/ime/chromeos/ime_keyboard.h"
+#include "ui/base/ime/chromeos/mock_input_method_manager.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
@@ -92,6 +93,8 @@
 namespace ash {
 
 using ::chromeos::WindowStateType;
+using ::chromeos::input_method::InputMethodManager;
+using ::chromeos::input_method::MockInputMethodManager;
 using media_session::mojom::MediaSessionAction;
 
 namespace {
@@ -2136,8 +2139,27 @@ class AcceleratorControllerImprovedTest : public AcceleratorControllerTest {
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
         ::features::kImprovedKeyboardShortcuts);
+
+    // Pass ownership of InputMethodManager to Initialize where it is stored
+    // in a global. During TearDown() it needs to be cleaned up by calling
+    // InputMethodManager::Shutdown().
+    input_method_manager_ = new MockInputMethodManager();
+    InputMethodManager::Initialize(input_method_manager_);
     AcceleratorControllerTest::SetUp();
   }
+
+  void TearDown() override {
+    // The base TearDown() has to run before calling
+    // InputMethodManager::Shutdown()
+    AcceleratorControllerTest::TearDown();
+
+    // Shutdown deletes the global pointer to InputMethodManager.
+    InputMethodManager::Shutdown();
+    input_method_manager_ = nullptr;
+  }
+
+ protected:
+  MockInputMethodManager* input_method_manager_ = nullptr;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

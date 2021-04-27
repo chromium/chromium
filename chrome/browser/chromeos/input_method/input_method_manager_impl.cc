@@ -53,12 +53,20 @@
 #include "ui/base/ime/chromeos/ime_keyboard.h"
 #include "ui/base/ime/chromeos/ime_keyboard_impl.h"
 #include "ui/base/ime/chromeos/input_method_delegate.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
 
 namespace chromeos {
 namespace input_method {
 
 namespace {
+
+const char* const kNonPositionalLayouts[] = {
+    "de(neo)",    "gb(dvorak)", "tr(f)",       "us(colemak)",
+    "us(dvorak)", "us(dvp)",    "us(workman)", "us(workman-intl)",
+};
+
+const size_t kNonPositionalLayoutsLength = base::size(kNonPositionalLayouts);
 
 enum InputMethodCategory {
   INPUT_METHOD_CATEGORY_UNKNOWN = 0,
@@ -961,6 +969,14 @@ InputMethodManagerImpl::InputMethodManagerImpl(
       util_(delegate_.get()),
       enable_extension_loading_(enable_extension_loading),
       features_enabled_state_(InputMethodManager::FEATURE_ALL) {
+  if (::features::IsImprovedKeyboardShortcutsEnabled()) {
+    // Create a set of layouts that do not use positional shortcuts.
+    non_positional_layouts_.reserve(kNonPositionalLayoutsLength);
+    for (size_t i = 0; i < kNonPositionalLayoutsLength; i++) {
+      non_positional_layouts_.emplace(kNonPositionalLayouts[i]);
+    }
+  }
+
   if (IsRunningAsSystemCompositor()) {
     keyboard_ = std::make_unique<ImeKeyboardImpl>(
         ui::OzonePlatform::GetInstance()->GetInputController());
@@ -1200,6 +1216,15 @@ bool InputMethodManagerImpl::IsISOLevel5ShiftUsedByCurrentInputMethod() const {
 
 bool InputMethodManagerImpl::IsAltGrUsedByCurrentInputMethod() const {
   return keyboard_->IsAltGrAvailable();
+}
+
+bool InputMethodManagerImpl::ArePositionalShortcutsUsedByCurrentInputMethod()
+    const {
+  if (!state_ || !::features::IsImprovedKeyboardShortcutsEnabled())
+    return false;
+
+  return !non_positional_layouts_.contains(
+      state_.get()->GetCurrentInputMethod().keyboard_layout());
 }
 
 ImeKeyboard* InputMethodManagerImpl::GetImeKeyboard() {

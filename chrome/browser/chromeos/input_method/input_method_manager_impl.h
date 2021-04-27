@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
@@ -213,6 +214,7 @@ class InputMethodManagerImpl : public InputMethodManager,
       override;
   bool IsISOLevel5ShiftUsedByCurrentInputMethod() const override;
   bool IsAltGrUsedByCurrentInputMethod() const override;
+  bool ArePositionalShortcutsUsedByCurrentInputMethod() const override;
   void NotifyImeMenuItemsChanged(
       const std::string& engine_id,
       const std::vector<InputMethodManager::MenuItem>& items) override;
@@ -327,6 +329,9 @@ class InputMethodManagerImpl : public InputMethodManager,
   // An object for switching XKB layouts and keyboard status like caps lock and
   // auto-repeat interval.
   std::unique_ptr<ImeKeyboard> keyboard_;
+
+  // The set of layouts that do not use positional shortcuts.
+  base::flat_set<std::string> non_positional_layouts_;
 
   // Whether load IME extensions.
   bool enable_extension_loading_;

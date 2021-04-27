@@ -214,6 +214,7 @@ TEST_F(AcceleratorManagerTest, PositionalShortcuts_AllEqual) {
 
   // Use a local instance so that the feature is enabled during construction.
   AcceleratorManager manager;
+  manager.SetUsePositionalLookup(true);
 
   // Test what would be ctrl + ']' (VKEY_OEM_6) on a US keyboard. This
   // should match.
@@ -235,6 +236,7 @@ TEST_F(AcceleratorManagerTest, PositionalShortcuts_MatchingDomCode) {
 
   // Use a local instance so that the feature is enabled during construction.
   AcceleratorManager manager;
+  manager.SetUsePositionalLookup(true);
 
   // Test what would be ctrl + ']' on a US keyboard with matching DomCode
   // and different VKEY (eg. '+'). This is the use case of a positional key
@@ -257,6 +259,7 @@ TEST_F(AcceleratorManagerTest, PositionalShortcuts_NotMatchingDomCode) {
 
   // Use a local instance so that the feature is enabled during construction.
   AcceleratorManager manager;
+  manager.SetUsePositionalLookup(true);
 
   // Test what would be ctrl + ']' on a US keyboard using positional mapping
   // for a German layout. The accelerator is registered using the US VKEY and
@@ -280,6 +283,7 @@ TEST_F(AcceleratorManagerTest, PositionalShortcuts_NonPositionalMatch) {
 
   // Use a local instance so that the feature is enabled during construction.
   AcceleratorManager manager;
+  manager.SetUsePositionalLookup(true);
 
   // Test ctrl + 'Z' for the German layout. Since 'Z' is not a positional
   // key it should match based on the VKEY, regardless of the DomCode. In this
@@ -303,6 +307,7 @@ TEST_F(AcceleratorManagerTest, PositionalShortcuts_NonPositionalNonMatch) {
 
   // Use a local instance so that the feature is enabled during construction.
   AcceleratorManager manager;
+  manager.SetUsePositionalLookup(true);
 
   // Test ctrl + 'Z' for the German layout. The 'Y' key (in the US_Z position),
   // should not match. Alphanumeric keys are not positional, and pressing the
