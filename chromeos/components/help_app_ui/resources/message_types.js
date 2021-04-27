@@ -16,5 +16,7 @@ const Message = {
   SHOW_PARENTAL_CONTROLS: 'show-parental-controls',
   ADD_OR_UPDATE_SEARCH_INDEX: 'add-or-update-search-index',
   CLEAR_SEARCH_INDEX: 'clear-search-index',
-  FIND_IN_SEARCH_INDEX: 'find-in-search-index'
+  FIND_IN_SEARCH_INDEX: 'find-in-search-index',
+  CLOSE_BACKGROUND_PAGE: 'close-background-page',
+  UPDATE_LAUNCHER_SEARCH_INDEX: 'update-launcher-search-index',
 };

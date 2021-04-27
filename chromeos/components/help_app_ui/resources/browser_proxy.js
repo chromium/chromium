@@ -18,13 +18,13 @@ const indexRemote =
 /**
  * Talks to the search handler. Use for updating the content for launcher
  * search.
- * TODO(b/182763045): Add API to make calls to this from the untrusted context.
  *
  * @type {!chromeos.helpApp.mojom.SearchHandlerRemote}
  */
 const searchHandlerRemote = chromeos.helpApp.mojom.SearchHandler.getRemote();
 
 const GUEST_ORIGIN = 'chrome-untrusted://help-app';
+const MAX_STRING_LEN = 9999;
 const guestFrame =
     /** @type {!HTMLIFrameElement} */ (document.createElement('iframe'));
 guestFrame.src = `${GUEST_ORIGIN}${location.pathname}`;
@@ -35,13 +35,18 @@ document.body.appendChild(guestFrame);
 const isLssEnabled =
     help_app.handler.isLssEnabled().then(result => result.enabled);
 
+// Cached result of whether Launcher Search is enabled.
+/** @type {Promise<boolean>} */
+const isLauncherSearchEnabled =
+    help_app.handler.isLauncherSearchEnabled().then(result => result.enabled);
+
 /**
  * @param {string} s
  * @return {!mojoBase.mojom.String16Spec}
  */
 function toString16(s) {
   return /** @type {!mojoBase.mojom.String16Spec} */ (
-      {data: Array.from(s, (/** @type {string} */ c) => c.charCodeAt())});
+      {data: Array.from(truncate(s), c => c.charCodeAt())});
 }
 const TITLE_ID = 'title';
 const BODY_ID = 'body';
@@ -221,6 +226,44 @@ guestMessagePipe.registerHandler(
       return {results};
     });
 
+guestMessagePipe.registerHandler(Message.CLOSE_BACKGROUND_PAGE, async () => {
+  // TODO(b/186180962): Add background page and test that it closes when done.
+  if (!(await isLauncherSearchEnabled)
+      || window.location.pathname !== '/background') {
+    return;
+  }
+  window.close();
+  return;
+});
+
+guestMessagePipe.registerHandler(
+    Message.UPDATE_LAUNCHER_SEARCH_INDEX, async (message) => {
+      if (!(await isLauncherSearchEnabled)) return;
+
+      const dataFromApp =
+          /** @type {!Array<!helpApp.LauncherSearchableItem>} */ (message);
+      /** @type {!Array<!chromeos.helpApp.mojom.SearchConcept>} */
+      const dataToSend = dataFromApp.map(searchableItem => ({
+        id: truncate(searchableItem.id),
+        title: toString16(searchableItem.title),
+        mainCategory: toString16(searchableItem.mainCategoryName),
+        tags: searchableItem.tags.map(tag => toString16(tag))
+          .filter(tag => tag.data.length > 0),
+        urlPathWithParameters: truncate(searchableItem.urlPathWithParameters),
+        locale: truncate(searchableItem.locale),
+      }));
+      // Filter out invalid items. No field can be empty except locale.
+      const dataFiltered = dataToSend.filter(item => {
+        const valid = item.id && item.title && item.mainCategory
+            && item.tags.length > 0 && item.urlPathWithParameters;
+        // TODO(b/182763045): Consider recording a metric for invalid items.
+        return valid;
+      });
+      // Trying to update with an empty list causes an error.
+      if (dataFiltered.length === 0) return;
+      return await searchHandlerRemote.update(dataFiltered);
+    });
+
 /**
  * Compare two positions by their start index. Use for sorting.
  *
@@ -229,4 +272,17 @@ guestMessagePipe.registerHandler(
  */
 function compareByStart(a, b) {
   return a.start - b.start;
+}
+
+/**
+ * Limits the maximum length of the input string. Converts non-strings into
+ * empty string.
+ *
+ * @param {*} s Probably a string, but might not be.
+ * @return {string}
+ */
+function truncate(s) {
+  if (typeof s !== 'string') return '';
+  if (s.length <= MAX_STRING_LEN) return s;
+  return s.substring(0, MAX_STRING_LEN);
 }

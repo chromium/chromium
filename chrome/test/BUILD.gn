@@ -2974,6 +2974,7 @@ if (!is_android) {
       ]
 
       deps += [
+        "//chromeos/components/help_app_ui/search:mojo_bindings",
         "//chromeos/components/media_app_ui:buildflags",
         "//chromeos/ui/frame:test_support",
         "//components/crash/content/browser/error_reporting:mock_crash_endpoint",

@@ -71,18 +71,6 @@ TEST_F('HelpAppUIBrowserTest', 'HasTitleAndLang', () => {
   testDone();
 });
 
-// Tests that we can make calls to the search handler to search.
-// TODO(b/182857903): Test that update works as well.
-TEST_F('HelpAppUIBrowserTest', 'CanSearchViaSearchHandler', async () => {
-  const toString16 = s => ({data: Array.from(s, c => c.charCodeAt())});
-  const result = await searchHandlerRemote.search(
-      toString16('verycomplicatedsearchquery'), 100);
-
-  // There should be no results for this query.
-  assertEquals(result.results.length, 0);
-  testDone();
-});
-
 // Test cases injected into the guest context.
 // See implementations in help_app_guest_ui_browsertest.js.
 

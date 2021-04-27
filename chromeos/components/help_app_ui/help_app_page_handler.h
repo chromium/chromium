@@ -29,11 +29,14 @@ class HelpAppPageHandler : public help_app_ui::mojom::PageHandler {
   void OpenFeedbackDialog(OpenFeedbackDialogCallback callback) override;
   void ShowParentalControls() override;
   void IsLssEnabled(IsLssEnabledCallback callback) override;
+  void IsLauncherSearchEnabled(
+      IsLauncherSearchEnabledCallback callback) override;
 
  private:
   mojo::Receiver<help_app_ui::mojom::PageHandler> receiver_;
   chromeos::HelpAppUI* help_app_ui_;  // Owns |this|.
   bool is_lss_enabled_;
+  bool is_launcher_search_enabled_;
 };
 
 #endif  // CHROMEOS_COMPONENTS_HELP_APP_UI_HELP_APP_PAGE_HANDLER_H_

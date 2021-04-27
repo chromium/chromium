@@ -20,6 +20,11 @@ HelpAppPageHandler::HelpAppPageHandler(
           base::FeatureList::IsEnabled(
               chromeos::features::kHelpAppSearchServiceIntegration) &&
           base::FeatureList::IsEnabled(
+              chromeos::features::kEnableLocalSearchService)),
+      is_launcher_search_enabled_(
+          base::FeatureList::IsEnabled(
+              chromeos::features::kHelpAppLauncherSearch) &&
+          base::FeatureList::IsEnabled(
               chromeos::features::kEnableLocalSearchService)) {}
 
 HelpAppPageHandler::~HelpAppPageHandler() = default;
@@ -36,4 +41,9 @@ void HelpAppPageHandler::ShowParentalControls() {
 
 void HelpAppPageHandler::IsLssEnabled(IsLssEnabledCallback callback) {
   std::move(callback).Run(is_lss_enabled_);
+}
+
+void HelpAppPageHandler::IsLauncherSearchEnabled(
+    IsLauncherSearchEnabledCallback callback) {
+  std::move(callback).Run(is_launcher_search_enabled_);
 }
