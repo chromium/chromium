@@ -97,6 +97,11 @@ class CastActivityTestBase : public testing::Test,
       const url::Origin& origin,
       int tab_id) override;
 
+  // Adds a client to |activity| and returns a mock instance.
+  MockCastSessionClient* AddMockClient(CastActivity* activity,
+                                       const std::string& client_id,
+                                       int tab_id);
+
   // TODO(crbug.com/954797): Factor out members also present in
   // CastActivityManagerTest.
   content::BrowserTaskEnvironment task_environment_;

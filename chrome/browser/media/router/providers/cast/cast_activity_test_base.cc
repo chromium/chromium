@@ -111,4 +111,14 @@ std::unique_ptr<CastSessionClient> CastActivityTestBase::MakeClientForTest(
   return std::make_unique<MockCastSessionClient>(client_id, origin, tab_id);
 }
 
+MockCastSessionClient* CastActivityTestBase::AddMockClient(
+    CastActivity* activity,
+    const std::string& client_id,
+    int tab_id) {
+  CastMediaSource source("dummySourceId", std::vector<CastAppInfo>());
+  source.set_client_id(client_id);
+  activity->AddClient(source, url::Origin(), tab_id);
+  return MockCastSessionClient::instances().back();
+}
+
 }  // namespace media_router

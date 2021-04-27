@@ -205,9 +205,11 @@ void CastActivityManager::DoLaunchSession(DoLaunchSessionParams params) {
   if (MediaSource(cast_source.source_id()).IsCastPresentationUrl()) {
     presentation_connection =
         activity_ptr->AddClient(cast_source, params.origin, tab_id);
-    activity_ptr->SendMessageToClient(
-        client_id,
-        CreateReceiverActionCastMessage(client_id, sink, hash_token_));
+    if (!client_id.empty()) {
+      activity_ptr->SendMessageToClient(
+          client_id,
+          CreateReceiverActionCastMessage(client_id, sink, hash_token_));
+    }
   }
 
   if (tab_id != -1) {

@@ -265,16 +265,6 @@ void MirroringActivity::Send(mirroring::mojom::CastMessagePtr message) {
                      weak_ptr_factory_.GetWeakPtr(), route().media_route_id()));
 }
 
-void MirroringActivity::SendMessageToClient(
-    const std::string& client_id,
-    blink::mojom::PresentationConnectionMessagePtr message) {
-  // A client exists if this is a site-initiated mirroring session. Given client
-  // ID is a Cast SDK concept, the client may not have an ID if it joined by
-  // directly using the Presentation API, and we wouldn't be able to distinguish
-  // them. We also do not expect the mirroring receiver to send any messages, so
-  // we drop them.
-}
-
 void MirroringActivity::OnAppMessage(
     const cast::channel::CastMessage& message) {
   if (!route_.is_local())

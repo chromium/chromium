@@ -64,9 +64,6 @@ class MirroringActivity : public CastActivity,
   void Send(mirroring::mojom::CastMessagePtr message) override;
 
   // CastActivity implementation
-  void SendMessageToClient(
-      const std::string& client_id,
-      blink::mojom::PresentationConnectionMessagePtr message) override;
   void OnAppMessage(const cast::channel::CastMessage& message) override;
   void OnInternalMessage(const cast_channel::InternalMessage& message) override;
 

@@ -64,10 +64,8 @@ class AppActivityTest : public CastActivityTestBase {
   MediaRoute& route() const { return activity_->route_; }
 
   MockCastSessionClient* AddMockClient(const std::string& client_id) {
-    CastMediaSource source("dummySourceId", std::vector<CastAppInfo>());
-    source.set_client_id(client_id);
-    activity_->AddClient(source, url::Origin(), tab_id_counter_++);
-    return MockCastSessionClient::instances().back();
+    return CastActivityTestBase::AddMockClient(activity_.get(), client_id,
+                                               tab_id_counter_++);
   }
 
   int tab_id_counter_ = 239;  // Arbitrary number.
