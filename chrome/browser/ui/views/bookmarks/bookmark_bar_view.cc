@@ -208,6 +208,11 @@ class BookmarkButtonBase : public views::LabelButton {
     return GetToolbarInkDropBaseColor(this);
   }
 
+  void OnThemeChanged() override {
+    LabelButton::OnThemeChanged();
+    ToolbarButton::UpdateFocusRingColor(this, focus_ring());
+  }
+
   std::unique_ptr<LabelButtonBorder> CreateDefaultBorder() const override {
     return CreateBookmarkButtonBorder();
   }
@@ -320,6 +325,11 @@ class BookmarkMenuButtonBase : public MenuButton {
 
   SkColor GetInkDropBaseColor() const override {
     return GetToolbarInkDropBaseColor(this);
+  }
+
+  void OnThemeChanged() override {
+    MenuButton::OnThemeChanged();
+    ToolbarButton::UpdateFocusRingColor(this, focus_ring());
   }
 
   std::unique_ptr<LabelButtonBorder> CreateDefaultBorder() const override {
@@ -449,17 +459,15 @@ struct BookmarkBarView::DropLocation {
 // Tracks drops on the BookmarkBarView.
 
 struct BookmarkBarView::DropInfo {
-  DropInfo() : valid(false), is_menu_showing(false), x(0), y(0) {}
-
   // Whether the data is valid.
-  bool valid;
+  bool valid = false;
 
   // If true, the menu is being shown.
-  bool is_menu_showing;
+  bool is_menu_showing = false;
 
   // Coordinates of the drag (in terms of the BookmarkBarView).
-  int x;
-  int y;
+  int x = 0;
+  int y = 0;
 
   // DropData for the drop.
   bookmarks::BookmarkNodeData data;
