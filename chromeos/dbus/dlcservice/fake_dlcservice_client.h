@@ -29,7 +29,7 @@ class COMPONENT_EXPORT(DLCSERVICE_CLIENT) FakeDlcserviceClient
                  UninstallCallback callback) override;
   // Purging removes the DLC entirely from disk.
   void Purge(const std::string& dlc_id, PurgeCallback callback) override;
-  void GetDlcState(const std::string& dlc_if,
+  void GetDlcState(const std::string& dlc_id,
                    GetDlcStateCallback callback) override;
   void GetExistingDlcs(GetExistingDlcsCallback callback) override;
   void DlcStateChangedForTest(dbus::Signal* signal) override;
