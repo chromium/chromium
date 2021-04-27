@@ -94,7 +94,8 @@ void LoadStreamFromStoreTask::LoadStreamDone(
 
   store_->ReadContent(
       stream_type_, std::move(referenced_content_ids),
-      {result.stream_data.shared_state_id()},
+      {result.stream_data.shared_state_ids().begin(),
+       result.stream_data.shared_state_ids().end()},
       base::BindOnce(&LoadStreamFromStoreTask::LoadContentDone, GetWeakPtr()));
 
   update_request_->stream_data = std::move(result.stream_data);

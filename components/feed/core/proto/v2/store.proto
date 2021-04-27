@@ -50,8 +50,8 @@ message StreamData {
   bytes next_page_token = 2;
   // The unix timestamp in milliseconds that the most recent content was added.
   int64 last_added_time_millis = 4;
-  // The content ID of the shared state for this stream.
-  feedwire.ContentId shared_state_id = 6;
+  // The content IDs of the shared state for this stream.
+  repeated feedwire.ContentId shared_state_ids = 6;
   // Was this feed signed in.
   bool signed_in = 7;
   // Is activity logging enabled?

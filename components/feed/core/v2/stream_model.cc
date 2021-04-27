@@ -31,6 +31,24 @@ bool HasClearAll(const std::vector<feedstore::StreamStructure>& structures) {
   }
   return false;
 }
+
+void MergeSharedStateIds(const feedstore::StreamData& model_data,
+                         feedstore::StreamData& update_request_data) {
+  for (const auto& content_id : model_data.shared_state_ids()) {
+    bool found = false;
+    for (const auto& update_request_content_id :
+         update_request_data.shared_state_ids()) {
+      if (Equal(update_request_content_id, content_id)) {
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      *update_request_data.add_shared_state_ids() = content_id;
+    }
+  }
+}
+
 }  // namespace
 
 UiUpdate::UiUpdate() = default;
@@ -112,6 +130,8 @@ void StreamModel::Update(
       //    Save the new stream data with the next sequence number.
       if (has_clear_all) {
         next_structure_sequence_number_ = 0;
+      } else {
+        MergeSharedStateIds(stream_data_, update_request->stream_data);
       }
       // Note: We might be overwriting some shared-states unnecessarily.
       StoreUpdate store_update;

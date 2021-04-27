@@ -297,12 +297,9 @@ RefreshResponseData TranslateWireResponse(
   }
 
   if (!result->shared_states.empty()) {
-    if (result->shared_states.size() > 1) {
-      DLOG(ERROR)
-          << "Receieved more than one shared state. Only the first is used.";
+    for (const auto& shared_state : result->shared_states) {
+      *result->stream_data.add_shared_state_ids() = shared_state.content_id();
     }
-    *result->stream_data.mutable_shared_state_id() =
-        result->shared_states.front().content_id();
   }
   feedstore::SetLastAddedTime(current_time, result->stream_data);
 

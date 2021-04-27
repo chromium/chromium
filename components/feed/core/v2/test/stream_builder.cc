@@ -184,7 +184,7 @@ StreamModelUpdateRequestGenerator::MakeFirstPage(int first_cluster_id) const {
 
   initial_update->shared_states.push_back(MakeSharedState(i));
   *initial_update->stream_data.mutable_content_id() = MakeRootId();
-  *initial_update->stream_data.mutable_shared_state_id() = MakeSharedStateId(i);
+  *initial_update->stream_data.add_shared_state_ids() = MakeSharedStateId(i);
   initial_update->stream_data.set_next_page_token("page-2");
   initial_update->stream_data.set_signed_in(signed_in);
   initial_update->stream_data.set_logging_enabled(logging_enabled);
@@ -196,10 +196,11 @@ StreamModelUpdateRequestGenerator::MakeFirstPage(int first_cluster_id) const {
 }
 
 std::unique_ptr<StreamModelUpdateRequest>
-StreamModelUpdateRequestGenerator::MakeNextPage(int page_number) const {
+StreamModelUpdateRequestGenerator::MakeNextPage(
+    int page_number,
+    StreamModelUpdateRequest::Source source) const {
   auto initial_update = std::make_unique<StreamModelUpdateRequest>();
-  initial_update->source =
-      StreamModelUpdateRequest::Source::kInitialLoadFromStore;
+  initial_update->source = source;
   // Each page has two pieces of content, get their indices.
   const int i = 2 * page_number - 2;
   const int j = i + 1;
@@ -210,9 +211,10 @@ StreamModelUpdateRequestGenerator::MakeNextPage(int page_number) const {
       MakeContentNode(i, MakeClusterId(i)), MakeCluster(j, MakeRootId()),
       MakeContentNode(j, MakeClusterId(j))};
 
-  initial_update->shared_states.push_back(MakeSharedState(0));
+  initial_update->shared_states.push_back(MakeSharedState(page_number));
   *initial_update->stream_data.mutable_content_id() = MakeRootId();
-  *initial_update->stream_data.mutable_shared_state_id() = MakeSharedStateId(0);
+  *initial_update->stream_data.add_shared_state_ids() =
+      MakeSharedStateId(page_number);
   initial_update->stream_data.set_next_page_token(
       "page-" + base::NumberToString(page_number + 1));
   initial_update->stream_data.set_signed_in(signed_in);
@@ -243,13 +245,14 @@ std::unique_ptr<StreamModelUpdateRequest> MakeTypicalNextPageState(
     base::Time last_added_time,
     bool signed_in,
     bool logging_enabled,
-    bool privacy_notice_fulfilled) {
+    bool privacy_notice_fulfilled,
+    StreamModelUpdateRequest::Source source) {
   StreamModelUpdateRequestGenerator generator;
   generator.last_added_time = last_added_time;
   generator.signed_in = signed_in;
   generator.logging_enabled = logging_enabled;
   generator.privacy_notice_fulfilled = privacy_notice_fulfilled;
-  return generator.MakeNextPage(page_number);
+  return generator.MakeNextPage(page_number, source);
 }
 
 feedstore::WebFeedInfo MakeWebFeedInfo(const std::string& name) {

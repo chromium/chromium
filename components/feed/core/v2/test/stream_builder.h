@@ -60,7 +60,9 @@ struct StreamModelUpdateRequestGenerator {
       int first_cluster_id = 0) const;
 
   std::unique_ptr<StreamModelUpdateRequest> MakeNextPage(
-      int page_number = 2) const;
+      int page_number = 2,
+      StreamModelUpdateRequest::Source source =
+          StreamModelUpdateRequest::Source::kInitialLoadFromStore) const;
 };
 
 // Returns data operations to create a typical stream:
@@ -86,7 +88,9 @@ std::unique_ptr<StreamModelUpdateRequest> MakeTypicalNextPageState(
     base::Time last_added_time = kTestTimeEpoch,
     bool signed_in = true,
     bool logging_enabled = true,
-    bool privacy_notice_fulfilled = true);
+    bool privacy_notice_fulfilled = true,
+    StreamModelUpdateRequest::Source source =
+        StreamModelUpdateRequest::Source::kNetworkLoadMore);
 
 feedstore::WebFeedInfo MakeWebFeedInfo(const std::string& name);
 
