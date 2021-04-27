@@ -9,7 +9,6 @@
 #include "net/base/io_buffer.h"
 #include "services/device/public/cpp/bluetooth/bluetooth_utils.h"
 #include "services/device/public/cpp/serial/serial_switches.h"
-#include "services/device/serial/buffer.h"
 
 namespace device {
 

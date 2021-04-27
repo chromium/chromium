@@ -183,7 +183,7 @@ bool SerialIoHandlerWin::PostOpen() {
 
 void SerialIoHandlerWin::ReadImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(pending_read_buffer());
+  DCHECK(IsReadPending());
 
   if (!file().IsValid()) {
     QueueReadCompleted(0, mojom::SerialReceiveError::DISCONNECTED);
@@ -194,8 +194,8 @@ void SerialIoHandlerWin::ReadImpl() {
   if (!IsReadPending())
     return;
 
-  if (!ReadFile(file().GetPlatformFile(), pending_read_buffer(),
-                pending_read_buffer_len(), nullptr,
+  if (!ReadFile(file().GetPlatformFile(), pending_read_buffer().data(),
+                pending_read_buffer().size(), nullptr,
                 &read_context_->overlapped) &&
       GetLastError() != ERROR_IO_PENDING) {
     OnIOCompleted(read_context_.get(), 0, GetLastError());
@@ -204,15 +204,15 @@ void SerialIoHandlerWin::ReadImpl() {
 
 void SerialIoHandlerWin::WriteImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(pending_write_buffer());
+  DCHECK(IsWritePending());
 
   if (!file().IsValid()) {
     QueueWriteCompleted(0, mojom::SerialSendError::DISCONNECTED);
     return;
   }
 
-  if (!WriteFile(file().GetPlatformFile(), pending_write_buffer(),
-                 pending_write_buffer_len(), nullptr,
+  if (!WriteFile(file().GetPlatformFile(), pending_write_buffer().data(),
+                 pending_write_buffer().size(), nullptr,
                  &write_context_->overlapped) &&
       GetLastError() != ERROR_IO_PENDING) {
     OnIOCompleted(write_context_.get(), 0, GetLastError());
@@ -307,7 +307,7 @@ void SerialIoHandlerWin::OnIOCompleted(
       ReadCompleted(0, mojom::SerialReceiveError::SYSTEM_ERROR);
     }
   } else if (context == write_context_.get()) {
-    DCHECK(pending_write_buffer());
+    DCHECK(IsWritePending());
     if (write_canceled()) {
       WriteCompleted(0, write_cancel_reason());
     } else if (error == ERROR_SUCCESS || error == ERROR_OPERATION_ABORTED) {

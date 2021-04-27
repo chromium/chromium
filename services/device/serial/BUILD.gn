@@ -26,8 +26,6 @@ if (is_win || ((is_linux || is_chromeos) && use_udev) || is_mac) {
       "bluetooth_serial_device_enumerator.h",
       "bluetooth_serial_port_impl.cc",
       "bluetooth_serial_port_impl.h",
-      "buffer.cc",
-      "buffer.h",
       "serial_device_enumerator.cc",
       "serial_device_enumerator.h",
       "serial_io_handler.cc",

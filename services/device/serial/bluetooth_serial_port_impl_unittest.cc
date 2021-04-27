@@ -23,7 +23,6 @@
 #include "services/device/public/cpp/serial/serial_switches.h"
 #include "services/device/public/cpp/test/fake_serial_port_client.h"
 #include "services/device/public/mojom/serial.mojom.h"
-#include "services/device/serial/buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
