@@ -451,6 +451,7 @@
 <translation id="5602622065581044566">Tastatură bulgară fonetică</translation>
 <translation id="5605830556594064952">S.U.A. Dvorak</translation>
 <translation id="5625294776298156701">Tastatură tamilă Tamil99</translation>
+<translation id="5633226425545095130">În cazul în care muți elementul, acesta va putea fi accesat de toată lumea care vede dosarul comun <ph name="DESTINATION_NAME" />.</translation>
 <translation id="5649768706273821470">Ascultă</translation>
 <translation id="5678784840044122290">Aplicația Linux va fi disponibilă pe terminal și este posibil ca Lansatorul să afișeze și o pictogramă.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Nu se poate deconecta de la o arhivă sau un disc virtual<ph name="END_BOLD" />
@@ -725,6 +726,7 @@
 <translation id="8395901698320285466">Dimensiuni</translation>
 <translation id="8437209419043462667">S.U.A.</translation>
 <translation id="8456681095658380701">Nume nevalid</translation>
+<translation id="8459404855768962328">În cazul în care copiezi elementul, acesta va putea fi accesat de toată lumea care vede dosarul comun <ph name="DESTINATION_NAME" />.</translation>
 <translation id="8461467696380332069">Dă clic dreapta pe un fișier și selectează „Fixați pe raft” pentru acces rapid la fișierele din raft.</translation>
 <translation id="8463494891489624050">Vietnameză VIQR</translation>
 <translation id="8466234950814670489">Arhivă .tar</translation>

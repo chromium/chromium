@@ -451,6 +451,7 @@
 <translation id="5602622065581044566">Búlgar amb teclat fonètic</translation>
 <translation id="5605830556594064952">Dvorak nord-americà</translation>
 <translation id="5625294776298156701">Tàmil amb teclat Tamil99</translation>
+<translation id="5633226425545095130">En moure aquest element, es compartirà amb tothom que pugui veure la carpeta compartida "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="5649768706273821470">Escolta</translation>
 <translation id="5678784840044122290">L'aplicació per a Linux estarà disponible al terminal i és possible que també inclogui una icona al menú d'aplicacions.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />No es pot desconnectar d'un arxiu o d'un disc virtual<ph name="END_BOLD" />
@@ -725,6 +726,7 @@
 <translation id="8395901698320285466">Dimensions</translation>
 <translation id="8437209419043462667">Nord-americà</translation>
 <translation id="8456681095658380701">El nom no és vàlid</translation>
+<translation id="8459404855768962328">En copiar aquest element, es compartirà amb tothom que pugui veure la carpeta compartida "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="8461467696380332069">Fes clic amb el botó dret sobre un fitxer i selecciona Fixa al prestatge per accedir ràpidament als fitxers d'un prestatge.</translation>
 <translation id="8463494891489624050">Vietnamita (VIQR)</translation>
 <translation id="8466234950814670489">Arxiu tar</translation>

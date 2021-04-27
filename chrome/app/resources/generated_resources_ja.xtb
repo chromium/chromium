@@ -1328,7 +1328,6 @@
 <translation id="2435457462613246316">パスワードを表示</translation>
 <translation id="2435579801172349831">シークレット ウィンドウですべて開く（<ph name="URL_COUNT" /> 件の URL）</translation>
 <translation id="2436186046335138073">すべての <ph name="PROTOCOL" /> リンクを <ph name="HANDLER_HOSTNAME" /> で開きますか？</translation>
-<translation id="2440366609912234507">{COUNT,plural, =1{アプリ}other{# 件のアプリ}}</translation>
 <translation id="2440604414813129000">ソースを表示(&amp;O)</translation>
 <translation id="244231003699905658">無効なアドレスです。アドレスを確認してから、もう一度お試しください。</translation>
 <translation id="2442916515643169563">テキストの影</translation>
@@ -2392,7 +2391,6 @@
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> をスキャンしています。</translation>
 <translation id="3616741288025931835">閲覧履歴を消去(&amp;C)...</translation>
 <translation id="3617891479562106823">背景を利用できません。しばらくしてからもう一度お試しください。</translation>
-<translation id="3618800144880386250">{COUNT,plural, =1{動画}other{# 件の動画}}</translation>
 <translation id="3619115746895587757">カプチーノ</translation>
 <translation id="362333465072914957">CA による証明書の発行を待機しています</translation>
 <translation id="3624567683873126087">デバイスのロックを解除して Google アカウントにログインする</translation>
@@ -3249,7 +3247,6 @@
 <translation id="4568025708905928793">セキュリティ キーがリクエストされています</translation>
 <translation id="4568213207643490790">このデバイスでは Google アカウントをご利用いただけません。</translation>
 <translation id="4569747168316751899">アイドル状態のとき</translation>
-<translation id="4569830245132310845">{COUNT,plural, =1{住所}other{# 件の住所}}</translation>
 <translation id="4572659312570518089">「<ph name="DEVICE_NAME" />」への接続中に、認証がキャンセルされました。</translation>
 <translation id="4572779512957829735">セキュリティ キーの PIN を入力してください</translation>
 <translation id="4573515936045019911">Linux のアップグレードには、ネットワーク接続が必要です。インターネットに接続してから、もう一度お試しください。</translation>
@@ -3436,7 +3433,6 @@
 <translation id="4794810983896241342">更新は<ph name="BEGIN_LINK" />管理者<ph name="END_LINK" />によって管理されています</translation>
 <translation id="479536056609751218">ウェブページ、HTML のみ</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />Bluetooth ログ<ph name="END_LINK" />を添付する（Google 内部）</translation>
-<translation id="4798543057539040565">{COUNT,plural, =1{アイテム}other{# 件のアイテム}}</translation>
 <translation id="4801448226354548035">アカウントを非表示にする</translation>
 <translation id="4801512016965057443">モバイル データ ローミングを許可する</translation>
 <translation id="4804818685124855865">切断</translation>
@@ -3889,7 +3885,6 @@
 <translation id="5310281978693206542">リンクをデバイスに送信</translation>
 <translation id="5311304534597152726">次のユーザーとしてログイン:</translation>
 <translation id="5311565231560644461">サイトにバーチャル リアリティ デバイスとデータの使用を許可しない</translation>
-<translation id="5312876166662946389">{COUNT,plural, =1{画像}other{# 件の画像}}</translation>
 <translation id="5315179276708231080">Lacros は試験運用版のブラウザです。問題が発生した場合は、[ヘルプ] &gt; [問題の報告...] からご報告ください。標準のブラウザはランチャーに「Chrome」と入力すると表示されます。</translation>
 <translation id="5315738755890845852">余分な中かっこがあります: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">保存</translation>
@@ -5204,7 +5199,6 @@
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> を root で実行することはできません。</translation>
 <translation id="6812841287760418429">変更を保持</translation>
 <translation id="6813907279658683733">画面全体</translation>
-<translation id="681584224457905309">{COUNT,plural, =1{ファイル}other{# 件のファイル}}</translation>
 <translation id="6817174620439930047">サイトがシステム エクスクルーシブ メッセージを使用して MIDI デバイスにアクセスする際に確認する（推奨）</translation>
 <translation id="6818198425579322765">翻訳するページの言語</translation>
 <translation id="6818802132960437751">組み込みのウィルス対策</translation>
@@ -5226,7 +5220,6 @@
 <translation id="683373380308365518">スマートで安全なブラウザをぜひご利用ください</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> を更新するにはインターネットに接続してください。</translation>
 <translation id="6838034009068684089">サイトから画面上にウィンドウを開いて配置することを求められたときに確認する（推奨）</translation>
-<translation id="6838860780238890144">{COUNT,plural, =1{電話番号}other{# 件の電話番号}}</translation>
 <translation id="6839225236531462745">証明書削除エラー</translation>
 <translation id="6839916869147598086">ログインが変わりました</translation>
 <translation id="6840155290835956714">送信する前に確認する</translation>
@@ -5335,7 +5328,6 @@
 <translation id="6955446738988643816">ポップアップを検証</translation>
 <translation id="6955535239952325894">この設定は管理対象のブラウザでは無効です</translation>
 <translation id="6957044667612803194">このセキュリティ キーでは PIN がサポートされていません</translation>
-<translation id="6957914043905853560">{COUNT,plural, =1{リンク}other{# 件のリンク}}</translation>
 <translation id="6960507406838246615">Linux の更新が必要です</translation>
 <translation id="6960565108681981554">無効です。ご利用の携帯通信会社にお問い合わせください。</translation>
 <translation id="696103774840402661">この <ph name="DEVICE_TYPE" /> にあるすべてのユーザーのファイルとローカルデータをすべて完全に削除しました。</translation>

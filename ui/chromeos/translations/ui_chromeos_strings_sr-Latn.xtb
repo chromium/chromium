@@ -451,6 +451,7 @@
 <translation id="5602622065581044566">bugarski sa fonetskom tastaturom</translation>
 <translation id="5605830556594064952">američka Dvorak</translation>
 <translation id="5625294776298156701">tamilski sa tastaturom Tamil99</translation>
+<translation id="5633226425545095130">Premeštanjem ove stavke delite je sa svima koji mogu da vide deljeni folder <ph name="DESTINATION_NAME" />.</translation>
 <translation id="5649768706273821470">Slušaj</translation>
 <translation id="5678784840044122290">Linux aplikacija će biti dostupna na terminalu, a možda će prikazivati i ikonu u Pokretaču.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Nije uspeo prekid veze sa arhivskim ili virtuelnim diskom<ph name="END_BOLD" />
@@ -725,6 +726,7 @@
 <translation id="8395901698320285466">Dimenzije</translation>
 <translation id="8437209419043462667">američka</translation>
 <translation id="8456681095658380701">Nevažeće ime</translation>
+<translation id="8459404855768962328">Kopiranjem ove stavke delite je sa svima koji mogu da vide deljeni folder <ph name="DESTINATION_NAME" />.</translation>
 <translation id="8461467696380332069">Kliknite desnim tasterom na fajl i izaberite „Zakači na policu“ radi brzog pristupa fajlovima na polici.</translation>
 <translation id="8463494891489624050">vijetnamski VIQR</translation>
 <translation id="8466234950814670489">Tar arhiva</translation>

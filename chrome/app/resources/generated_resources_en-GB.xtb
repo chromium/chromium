@@ -1328,7 +1328,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2435457462613246316">Show password</translation>
 <translation id="2435579801172349831">Open all (<ph name="URL_COUNT" />) in incognito window</translation>
 <translation id="2436186046335138073">Allow <ph name="HANDLER_HOSTNAME" /> to open all <ph name="PROTOCOL" /> links?</translation>
-<translation id="2440366609912234507">{COUNT,plural, =1{app}other{# apps}}</translation>
 <translation id="2440604414813129000">View s&amp;ource</translation>
 <translation id="244231003699905658">Invalid address. Please check the address and try again.</translation>
 <translation id="2442916515643169563">Text shadow</translation>
@@ -2393,7 +2392,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> is being scanned.</translation>
 <translation id="3616741288025931835">&amp;Clear Browsing Data...</translation>
 <translation id="3617891479562106823">Backgrounds are unavailable. Try again later.</translation>
-<translation id="3618800144880386250">{COUNT,plural, =1{video}other{# videos}}</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="362333465072914957">Waiting for the CA to issue a certificate</translation>
 <translation id="3624567683873126087">Unlock device and sign in to Google Account</translation>
@@ -3250,7 +3248,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4568025708905928793">A security key is being requested</translation>
 <translation id="4568213207643490790">Sorry, Google accounts are not allowed on this device.</translation>
 <translation id="4569747168316751899">When idle</translation>
-<translation id="4569830245132310845">{COUNT,plural, =1{address}other{# addresses}}</translation>
 <translation id="4572659312570518089">Authentication cancelled while connecting to "<ph name="DEVICE_NAME" />".</translation>
 <translation id="4572779512957829735">Enter the PIN for your security key</translation>
 <translation id="4573515936045019911">A network connection is required to upgrade Linux. Please connect to the Internet and try again.</translation>
@@ -3437,7 +3434,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4794810983896241342">Updates are managed by <ph name="BEGIN_LINK" />your administrator<ph name="END_LINK" /></translation>
 <translation id="479536056609751218">Web Page, HTML Only</translation>
 <translation id="4798236378408895261">Attach <ph name="BEGIN_LINK" />Bluetooth Logs<ph name="END_LINK" /> (Google internal)</translation>
-<translation id="4798543057539040565">{COUNT,plural, =1{item}other{# items}}</translation>
 <translation id="4801448226354548035">Hide accounts</translation>
 <translation id="4801512016965057443">Allow mobile data roaming</translation>
 <translation id="4804818685124855865">Disconnect</translation>
@@ -3890,7 +3886,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5310281978693206542">Send link to your devices</translation>
 <translation id="5311304534597152726">Signing in as</translation>
 <translation id="5311565231560644461">Do not allow sites to use your virtual reality devices and data</translation>
-<translation id="5312876166662946389">{COUNT,plural, =1{image}other{# images}}</translation>
 <translation id="5315179276708231080">Lacros is an experimental browser. Please report issues with: Help &gt; 'Report an issue…' The standard browser can be found by typing 'Chrome' into Launcher.</translation>
 <translation id="5315738755890845852">Extra curly bracket: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Save</translation>
@@ -5206,7 +5201,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> cannot be run as root.</translation>
 <translation id="6812841287760418429">Keep changes</translation>
 <translation id="6813907279658683733">Entire screen</translation>
-<translation id="681584224457905309">{COUNT,plural, =1{file}other{# files}}</translation>
 <translation id="6817174620439930047">Ask when a site wants to use system exclusive messages to access MIDI devices (recommended)</translation>
 <translation id="6818198425579322765">Page language to translate</translation>
 <translation id="6818802132960437751">Built-in virus protection</translation>
@@ -5228,7 +5222,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="683373380308365518">Switch to a smart and secure browser</translation>
 <translation id="6835762382653651563">Please connect to the Internet to update your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Ask when a site wants to open and place windows on your screens (recommended)</translation>
-<translation id="6838860780238890144">{COUNT,plural, =1{phone number}other{# phone numbers}}</translation>
 <translation id="6839225236531462745">Certificate Deletion Error</translation>
 <translation id="6839916869147598086">Sign-in has changed</translation>
 <translation id="6840155290835956714">Ask before sending</translation>
@@ -5337,7 +5330,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6955446738988643816">Inspect Pop-up</translation>
 <translation id="6955535239952325894">This setting is disabled on managed browsers</translation>
 <translation id="6957044667612803194">This security key doesn’t support PINs</translation>
-<translation id="6957914043905853560">{COUNT,plural, =1{link}other{# links}}</translation>
 <translation id="6960507406838246615">Linux update required</translation>
 <translation id="6960565108681981554">Not activated. Contact your operator.</translation>
 <translation id="696103774840402661">All files and local data for all users on this <ph name="DEVICE_TYPE" /> has been permanently deleted.</translation>

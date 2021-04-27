@@ -1327,7 +1327,6 @@
 <translation id="2435457462613246316">顯示密碼</translation>
 <translation id="2435579801172349831">在無痕式視窗中開啟所有書籤 (<ph name="URL_COUNT" /> 個)</translation>
 <translation id="2436186046335138073">要允許 <ph name="HANDLER_HOSTNAME" /> 開啟所有 <ph name="PROTOCOL" /> 連結嗎？</translation>
-<translation id="2440366609912234507">{COUNT,plural, =1{應用程式}other{# 個應用程式}}</translation>
 <translation id="2440604414813129000">檢視原始碼(&amp;O)</translation>
 <translation id="244231003699905658">地址無效。請檢查地址，然後再試一次。</translation>
 <translation id="2442916515643169563">文字陰影</translation>
@@ -2391,7 +2390,6 @@
 <translation id="3615579745882581859">正在掃瞄「<ph name="FILE_NAME" />」。</translation>
 <translation id="3616741288025931835">清除瀏覽數據(&amp;C)…</translation>
 <translation id="3617891479562106823">無法自訂背景，請稍候再試。</translation>
-<translation id="3618800144880386250">{COUNT,plural, =1{影片}other{# 部影片}}</translation>
 <translation id="3619115746895587757">泡沫咖啡</translation>
 <translation id="362333465072914957">正在等待 CA 發出憑證</translation>
 <translation id="3624567683873126087">解鎖裝置和登入 Google 帳戶</translation>
@@ -3248,7 +3246,6 @@
 <translation id="4568025708905928793">請提供安全密鑰</translation>
 <translation id="4568213207643490790">抱歉，系統不允許在此裝置上使用 Google 帳戶。</translation>
 <translation id="4569747168316751899">閒置時</translation>
-<translation id="4569830245132310845">{COUNT,plural, =1{地址}other{# 個地址}}</translation>
 <translation id="4572659312570518089">驗證在連線至「<ph name="DEVICE_NAME" />」時被取消。</translation>
 <translation id="4572779512957829735">輸入安全密鑰的 PIN</translation>
 <translation id="4573515936045019911">必須連接互聯網才能升級 Linux。請連線至互聯網，然後再試一次。</translation>
@@ -3435,7 +3432,6 @@
 <translation id="4794810983896241342">更新由<ph name="BEGIN_LINK" />您的管理員<ph name="END_LINK" />管理</translation>
 <translation id="479536056609751218">只限網頁的 HTML 部分</translation>
 <translation id="4798236378408895261">附加<ph name="BEGIN_LINK" />藍牙記錄<ph name="END_LINK" /> (Google 內部)</translation>
-<translation id="4798543057539040565">{COUNT,plural, =1{項目}other{# 個項目}}</translation>
 <translation id="4801448226354548035">隱藏帳戶</translation>
 <translation id="4801512016965057443">允許流動數據漫遊</translation>
 <translation id="4804818685124855865">中斷連線</translation>
@@ -3888,7 +3884,6 @@
 <translation id="5310281978693206542">將連結傳送至裝置</translation>
 <translation id="5311304534597152726">正在使用以下身分登入：</translation>
 <translation id="5311565231560644461">不允許網站使用您的虛擬實境裝置和資料</translation>
-<translation id="5312876166662946389">{COUNT,plural, =1{圖片}other{# 張圖片}}</translation>
 <translation id="5315179276708231080">Lacros 是實驗版瀏覽器。請按一下 [說明] &gt; [報告問題…] 以報告問題在啟動器中輸入「Chrome」即可找到標準瀏覽器。</translation>
 <translation id="5315738755890845852">多餘的大括弧：<ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">儲存</translation>
@@ -5203,7 +5198,6 @@
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> 無法以根使用者的身分執行。</translation>
 <translation id="6812841287760418429">保留變更</translation>
 <translation id="6813907279658683733">整個螢幕畫面</translation>
-<translation id="681584224457905309">{COUNT,plural, =1{檔案}other{# 個檔案}}</translation>
 <translation id="6817174620439930047">在網站要使用系統專有訊息存取 MIDI 裝置時詢問您 (建議)</translation>
 <translation id="6818198425579322765">要翻譯的網頁語言</translation>
 <translation id="6818802132960437751">內置防毒功能</translation>
@@ -5225,7 +5219,6 @@
 <translation id="683373380308365518">改用智能且安全的瀏覽器</translation>
 <translation id="6835762382653651563">請連接互聯網以更新 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="6838034009068684089">在網站要求在您的螢幕上開啟並放置視窗時詢問您 (建議)</translation>
-<translation id="6838860780238890144">{COUNT,plural, =1{電話號碼}other{# 個電話號碼}}</translation>
 <translation id="6839225236531462745">憑證刪除錯誤</translation>
 <translation id="6839916869147598086">登入方式已變更</translation>
 <translation id="6840155290835956714">傳送前先詢問</translation>
@@ -5334,7 +5327,6 @@
 <translation id="6955446738988643816">檢查彈出式視窗</translation>
 <translation id="6955535239952325894">受管理的瀏覽器已停用此設定</translation>
 <translation id="6957044667612803194">此安全密鑰不支援 PIN</translation>
-<translation id="6957914043905853560">{COUNT,plural, =1{連結}other{# 個連結}}</translation>
 <translation id="6960507406838246615">Linux 需要更新</translation>
 <translation id="6960565108681981554">未啟用。請聯絡您的流動網絡供應商。</translation>
 <translation id="696103774840402661">已永久刪除此 <ph name="DEVICE_TYPE" /> 上所有使用者的所有檔案和本機資料。</translation>

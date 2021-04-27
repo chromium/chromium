@@ -451,6 +451,7 @@
 <translation id="5602622065581044566">bolgár, fonetikus billentyűzettel</translation>
 <translation id="5605830556594064952">USA Dvorak</translation>
 <translation id="5625294776298156701">tamil, Tamil99-billentyűzettel</translation>
+<translation id="5633226425545095130">Az áthelyezése esetén az elemet mindenkivel megosztja, aki látja a következő megosztott mappát: <ph name="DESTINATION_NAME" />.</translation>
 <translation id="5649768706273821470">Meghallgatás</translation>
 <translation id="5678784840044122290">A Linux-alkalmazás rendelkezésre áll majd a terminálból, valamint az ikonja is megjelenhet az Indítóban.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Nem sikerült az archívum vagy virtuális lemez leválasztása<ph name="END_BOLD" />
@@ -725,6 +726,7 @@
 <translation id="8395901698320285466">Méret</translation>
 <translation id="8437209419043462667">USA</translation>
 <translation id="8456681095658380701">Érvénytelen név</translation>
+<translation id="8459404855768962328">A másolása esetén az elemet mindenkivel megosztja, aki látja a következő megosztott mappát: <ph name="DESTINATION_NAME" />.</translation>
 <translation id="8461467696380332069">Ha gyorsan hozzá szeretne férni a fájljaihoz a polcon, kattintson valamelyik fájlra a jobb egérgombbal, és válassza a „Rögzítés a polcra” lehetőséget.</translation>
 <translation id="8463494891489624050">vietnámi, VIQR</translation>
 <translation id="8466234950814670489">Tar-archívum</translation>

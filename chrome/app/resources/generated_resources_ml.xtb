@@ -1325,7 +1325,6 @@
 <translation id="2435457462613246316">പാസ്‌വേഡ് കാണിക്കുക</translation>
 <translation id="2435579801172349831">എല്ലാം (<ph name="URL_COUNT" />) അദൃശ്യ വിൻഡോയിൽ തുറക്കുക</translation>
 <translation id="2436186046335138073">എല്ലാ <ph name="PROTOCOL" /> ലിങ്കുകളും തുറക്കാൻ <ph name="HANDLER_HOSTNAME" /> എന്നതിനെ അനുവദിക്കണോ?</translation>
-<translation id="2440366609912234507">{COUNT,plural, =1{ആപ്പ്}other{# ആപ്പുകൾ}}</translation>
 <translation id="2440604414813129000">ഉറവിടം കാണുക</translation>
 <translation id="244231003699905658">വിലാസം തെറ്റാണ്. വിലാസം പരിശോധിച്ച ശേഷം വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="2442916515643169563">ടെക്‌സ്‌റ്റ് ഷാഡോ</translation>
@@ -2389,7 +2388,6 @@
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> സ്‌കാൻ ചെയ്യുകയാണ്.</translation>
 <translation id="3616741288025931835">&amp;ബ്രൌസിംഗ് ഡാറ്റ ഇല്ലാതാക്കുക...</translation>
 <translation id="3617891479562106823">പശ്ചാത്തലങ്ങൾ ലഭ്യമല്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
-<translation id="3618800144880386250">{COUNT,plural, =1{വീഡിയോ}other{# വീഡിയോകൾ}}</translation>
 <translation id="3619115746895587757">കാപ്പുചീനോ</translation>
 <translation id="362333465072914957">സര്‍ട്ടിഫിക്കറ്റ് ഇഷ്യൂ ചെയ്യാൻ CA-ക്കായി കാത്തിരിക്കുന്നു</translation>
 <translation id="3624567683873126087">ഉപകരണം അൺലോക്ക് ചെയ്‌ത് Google അക്കൗണ്ടിലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
@@ -3245,7 +3243,6 @@
 <translation id="4568025708905928793">ഒരു സുരക്ഷാ കീ അഭ്യർത്ഥിക്കുന്നു</translation>
 <translation id="4568213207643490790">ക്ഷമിക്കണം, ഈ ഉപകരണത്തിൽ Google അക്കൗണ്ടുകൾ അനുവദനീയമല്ല.</translation>
 <translation id="4569747168316751899">നിഷ്ക്രിയമായിരിക്കുമ്പോൾ</translation>
-<translation id="4569830245132310845">{COUNT,plural, =1{വിലാസം}other{# വിലാസങ്ങൾ}}</translation>
 <translation id="4572659312570518089">"<ph name="DEVICE_NAME" />" എന്നതിലേക്ക് കണക്റ്റ് ചെയ്യുമ്പോൾ പരിശോധിച്ചുറപ്പിക്കൽ റദ്ദാക്കി.</translation>
 <translation id="4572779512957829735">നിങ്ങളുടെ സുരക്ഷാ കോഡിനുള്ള പിൻ നൽകുക</translation>
 <translation id="4573515936045019911">Linux അപ്ഗ്രേഡ് ചെയ്യാൻ നെറ്റ്‌വർക്ക് കണക്ഷൻ ആവശ്യമാണ്. ഇന്റർനെറ്റിലേക്ക് കണക്റ്റ് ചെയ്ത് വീണ്ടും ശ്രമിക്കുക.</translation>
@@ -3432,7 +3429,6 @@
 <translation id="4794810983896241342">അപ്‌ഡേറ്റുകൾ മാനേജ് ചെയ്യുന്നത് <ph name="BEGIN_LINK" />നിങ്ങളുടെ അഡ്‌മിനാണ്<ph name="END_LINK" /></translation>
 <translation id="479536056609751218">വെബ്‌പേജുകൾ, HTML മാത്രം</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />Bluetooth ലോഗുകൾ<ph name="END_LINK" /> (Google-ൽ ഉള്ളത് മാത്രം) അറ്റാച്ച് ചെയ്യുക</translation>
-<translation id="4798543057539040565">{COUNT,plural, =1{ഇനം}other{# ഇനങ്ങൾ}}</translation>
 <translation id="4801448226354548035">അക്കൗണ്ടുകൾ മറയ്‌ക്കുക</translation>
 <translation id="4801512016965057443">മൊബൈല്‍ ഡാറ്റ റോമിംഗ് അനുവദിക്കുക</translation>
 <translation id="4804818685124855865">വിച്ഛേദിക്കുക</translation>
@@ -3885,7 +3881,6 @@
 <translation id="5310281978693206542">നിങ്ങളുടെ ഉപകരണങ്ങളിലേക്ക് ലിങ്ക് അയയ്ക്കുക</translation>
 <translation id="5311304534597152726">ഈ പേരിൽ സൈൻ ഇൻ ചെയ്യുന്നു</translation>
 <translation id="5311565231560644461">നിങ്ങളുടെ വെർച്വൽ റിയാലിറ്റി ഉപകരണങ്ങളും ഡാറ്റയും ഉപയോഗിക്കാൻ സൈറ്റുകളെ അനുവദിക്കരുത്</translation>
-<translation id="5312876166662946389">{COUNT,plural, =1{ചിത്രം}other{# ചിത്രങ്ങൾ}}</translation>
 <translation id="5315179276708231080">Lacros ഒരു പരീക്ഷണാത്മക ബ്രൗസറാണ്. സഹായം &gt; "പ്രശ്‌നം റിപ്പോർട്ട് ചെയ്യുക..." ഉപയോഗിച്ച് പ്രശ്‌നങ്ങൾ റിപ്പോർട്ട് ചെയ്യുക ലോഞ്ചറിൽ "Chrome" എന്ന് ടൈപ്പ് ചെയ്‌ത് സ്റ്റാൻഡേർഡ് ബ്രൗസർ കണ്ടെത്താനാകും.</translation>
 <translation id="5315738755890845852">അധിക ചുരുൾ ബ്രാക്കറ്റ്: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">സംരക്ഷിക്കുക</translation>
@@ -5202,7 +5197,6 @@
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> റൂട്ട് ആയി പ്രവര്‍ത്തിപ്പിക്കാന്‍ കഴിയില്ല.</translation>
 <translation id="6812841287760418429">മാറ്റങ്ങൾ നിലനിർത്തുക</translation>
 <translation id="6813907279658683733">മുഴുവൻ സ്‌ക്രീൻ</translation>
-<translation id="681584224457905309">{COUNT,plural, =1{ഫയൽ}other{# ഫയലുകൾ}}</translation>
 <translation id="6817174620439930047">MIDI ഉപകരണങ്ങൾ (ശുപാർശ ചെയ്‌തത്) ആക്‌സസ് ചെയ്യാൻ ഒരു സൈറ്റിന് സിസ്റ്റം എക്‌സ്‌ക്ലൂസീവ് സന്ദേശങ്ങൾ ഉപയോഗിക്കേണ്ട സാഹചര്യത്തിൽ അത് ആവശ്യപ്പെടുക</translation>
 <translation id="6818198425579322765">വിവർത്തനം ചെയ്യേണ്ട പേജ് ഭാഷ</translation>
 <translation id="6818802132960437751">ബിൽറ്റ്-ഇൻ വെെറസ് പരിരക്ഷ</translation>
@@ -5224,7 +5218,6 @@
 <translation id="683373380308365518">സ്‌മാർട്ടും സുരക്ഷിതവുമായൊരു ബ്രൗസറിലേക്ക് മാറുക</translation>
 <translation id="6835762382653651563">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> അപ്‌ഡേറ്റ് ചെയ്യാൻ ഇന്റർനെറ്റിൽ കണക്റ്റ് ചെയ്യുക.</translation>
 <translation id="6838034009068684089">ഒരു സൈറ്റിന് നിങ്ങളുടെ സ്ക്രീനുകളിൽ വിൻഡോകൾ തുറന്ന് വയ്ക്കണമെന്നുള്ളപ്പോൾ ചോദിക്കുക (ശുപാർശ ചെയ്യുന്നു)</translation>
-<translation id="6838860780238890144">{COUNT,plural, =1{ഫോൺ നമ്പർ}other{# ഫോൺ നമ്പറുകൾ}}</translation>
 <translation id="6839225236531462745">സര്‍ട്ടിഫിക്കറ്റ് ഇല്ലാതാക്കല്‍ പിശക്</translation>
 <translation id="6839916869147598086">സൈൻ ഇൻ മാറ്റി</translation>
 <translation id="6840155290835956714">അയയ്‌ക്കുന്നതിന് മുമ്പ് ചോദിക്കുക</translation>
@@ -5333,7 +5326,6 @@
 <translation id="6955446738988643816">പോപ്പ്‌അപ്പ് പരിശോധിക്കുക</translation>
 <translation id="6955535239952325894">മാനേജ് ചെയ്യപ്പെടുന്ന ബ്രൗസറുകളിൽ ഈ ക്രമീകരണം പ്രവർത്തനരഹിതമാക്കിയിരിക്കുന്നു</translation>
 <translation id="6957044667612803194">പിൻ നമ്പറുകളെ ഈ സുരക്ഷാ കീ പിന്തുണയ്ക്കുന്നില്ല</translation>
-<translation id="6957914043905853560">{COUNT,plural, =1{ലിങ്ക്}other{# ലിങ്കുകൾ}}</translation>
 <translation id="6960507406838246615">Linux അപ്ഡേറ്റ് ചെയ്യേണ്ടതുണ്ട്</translation>
 <translation id="6960565108681981554">സജീവമാക്കിയിട്ടില്ല. നിങ്ങളുടെ സേവനദാതാവിനെ ബന്ധപ്പെടുക.</translation>
 <translation id="696103774840402661">ഈ <ph name="DEVICE_TYPE" /> എന്നതിലെ എല്ലാ ഉപയോക്താക്കളുടെയും എല്ലാ ഫയലുകളും ലോക്കൽ ഡാറ്റയും ശാശ്വതമായി ഇല്ലാതാക്കി.</translation>

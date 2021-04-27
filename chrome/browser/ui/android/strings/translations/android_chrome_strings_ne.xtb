@@ -5,7 +5,6 @@
 <translation id="103269572468856066">यी साइट तथा एपहरूको डेटा पनि हटाउने हो?</translation>
 <translation id="1036348656032585052">निस्कृय पार्नुहोस्</translation>
 <translation id="1036727731225946849"><ph name="WEBAPK_NAME" /> थप्दै...</translation>
-<translation id="1041308826830691739">वेबसाइटहरूबाट</translation>
 <translation id="1045899828449635435">यी साइटहरूको डेटा पनि मेटाउने हो?</translation>
 <translation id="1047303875618851375">Chrome ले तपाईंको जानकारी पुष्टि गर्न सकेन</translation>
 <translation id="1049743911850919806">इन्कोग्निटो</translation>
@@ -217,6 +216,7 @@
 <translation id="2414886740292270097">अँध्यारो</translation>
 <translation id="2426805022920575512">कुनै अर्को खाता छनौट गर्नुहोस्‌</translation>
 <translation id="2433507940547922241">रूपरंग</translation>
+<translation id="2435457462613246316">पासवर्ड देखाउनुहोस्</translation>
 <translation id="2450083983707403292">तपाईं <ph name="FILE_NAME" /> लाई फेरि डाउनलोड गर्न चाहनुहुन्छ?</translation>
 <translation id="2450907520913474542">यो पृष्ठ नछोडिकन वेबसाइटहरूमा रहेका शीर्षकहरूबारे जान्नुहोस्। खोज्नका लागि छुनुहोस् नामक सुविधाले कुनै शब्द र त्यसको सन्दर्भलाई Google खोजमा पठाउँछ र उक्त शब्दको परिभाषा, त्यससँग सम्बन्धित तस्बिर, खोज परिणाम र अन्य विवरणहरू देखाउँछ।
 
@@ -234,6 +234,7 @@
 <translation id="2517472476991765520">स्क्यान गर्नुहोस्</translation>
 <translation id="2518590038762162553">लाइट मोडमा हुँदा Chrome ले पृष्ठहरू अझ छिटो लोड गर्नाका साथै ६० प्रतिशतसम्म कम डेटा प्रयोग गर्छ। तपाईंले भ्रमण गर्ने पृष्ठहरू अप्टिमाइज गर्न, Chrome ले तपाईंको वेबसम्बन्धी ट्राफिक Google मा पठाउँछ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="2523184218357549926">तपाईं जाने पृष्ठका URL हरू Google मा पठाउँछ</translation>
+<translation id="2527779675047087889">क्लिपबोर्डमा भएका सामग्री लुकाइयोस्</translation>
 <translation id="2532336938189706096">वेब दृश्य</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> वस्तुहरू मेटाइए</translation>
 <translation id="2536728043171574184">यो पृष्ठको एक अफलाइन प्रतिलिपि हेर्दै</translation>
@@ -312,6 +313,7 @@
 <translation id="3062802207422175757">Chrome मा तपाईंको रुचिका विषयसँग सम्बन्धित लेखहरू पढ्नुहोस्</translation>
 <translation id="3070005020161560471">स्वतः अनुवाद गरियोस्</translation>
 <translation id="3089395242580810162">इन्कोग्निटो ट्याबमा खोल्नुहोस्</translation>
+<translation id="3091010850649238832">क्लिपबोर्डमा भएका सामग्री देखाइयोस्</translation>
 <translation id="3098745985164956033">तपाईंलाई उपलब्ध गराइने वर्णनको गुणस्तर सुधार गर्न केही फोटोहरू Google मा पठाइन्छन्</translation>
 <translation id="3114507951000454849">आजको समाचार पढ्नुहोस् <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">घोषणाहरू</translation>
@@ -433,7 +435,6 @@
 <translation id="3928666092801078803">मेरो डेटालाई संयोजन गर्नुहोस्</translation>
 <translation id="393697183122708255">कुनैपनि सक्षम गरिएको आवाज खोजी उपलब्ध छैन</translation>
 <translation id="3943557322767080599">मैले आफ्नो Google खातामा साइन इन गर्दा Chrome मा साइन इन गर्ने सुझाव दिइयोस्</translation>
-<translation id="395206256282351086">खोज र साइटसम्बन्धी सुझावहरू असक्षम पारियो</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{यन्त्र तयार भएपछि Chrome ले तपाईंको पृष्ठ लोड गर्ने छ}other{यन्त्र तयार भएपछि Chrome ले तपाईंका पृष्ठहरू लोड गर्ने छ}}</translation>
 <translation id="3963007978381181125">पासफ्रेजमार्फत इन्क्रिप्सन गर्ने कार्यअन्तर्गत Google Pay का भुक्तानी विधि र ठेगानाहरू समावेश हुँदैनन्। तपाईंको पासफ्रेज थाहा हुने व्यक्तिले मात्र तपाईंको इन्क्रिप्ट गरिएको डेटा पढ्न सक्छ। उक्त पासफ्रेज Google मा पठाइँदैन वा त्यहाँ भण्डारण गरिँदैन। तपाईंले आफ्नो पासफ्रेज बिर्सनुभयो वा तपाईं यो सेटिङ परिवर्तन गर्न चाहनुहुन्छ भने तपाईंले सिंक रिसेट गर्नु पर्ने हुन्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome ले तपाईंका पासवर्डहरू जाँच्न सकेन</translation>
@@ -536,7 +537,6 @@
 <translation id="4684427112815847243">सबै सिंक गर्नुहोस्</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> थप}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> थप}}</translation>
 <translation id="4696983787092045100">आफ्ना यन्त्रहरूमा टेक्स्ट म्यासेज पठाउनुहोस्</translation>
-<translation id="4698034686595694889"><ph name="APP_NAME" /> मा अफलाइन हेर्नुहोस्</translation>
 <translation id="4699172675775169585">क्यास गरिएका छविहरू र फाइलहरू</translation>
 <translation id="4714588616299687897">आफ्नो डेटाको ६०% सम्म जोगाउनुहोस्</translation>
 <translation id="4719927025381752090">अनुवादको गर्न प्रस्ताव गर्नुहोस्</translation>
@@ -785,7 +785,6 @@
 
 उदाहरणका लागि, केही वेबसाइटहरूले तपाईंले भ्रमण गर्नुभएका अन्य वेबसाइटहरूमा आधारित नरहेका विज्ञापन देखाएर यो अनुरोधको प्रतिक्रिया दिन सक्छन्। धेरै वेबसाइटहरूले अझै पनि तपाईँको ब्राउजिङ डेटा संकलन र प्रयोग गर्नेछन् - उदाहरणका लागि, सुरक्षा सुधार गर्न, सामग्री, विज्ञापनहरू र सुझावहरू प्रदान गर्न, र रिपोर्टिङ तथ्याङ्कहरू उत्पन गर्न।</translation>
 <translation id="624789221780392884">अपडेट तैयार छ</translation>
-<translation id="6255999984061454636">सामग्रीसम्बन्धी सुझावहरू</translation>
 <translation id="6277522088822131679">पृष्ठ प्रिन्टिङ गर्नमा एक समस्या थियो। कृपया पुन: प्रयास गर्नुहोस्।</translation>
 <translation id="6278428485366576908">विषयवस्तु</translation>
 <translation id="6292420053234093573">Chrome प्रयोग गरेर तपाईं <ph name="BEGIN_LINK1" />Google का सेवाका सर्तहरू<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />Google Chrome र Chrome OS का सेवाका अतिरिक्त सर्तहरू<ph name="END_LINK2" />मा सहमति जनाउनुहुन्छ।</translation>
@@ -857,6 +856,7 @@
 <translation id="661266467055912436">तपाईं र वेब प्रयोग गर्ने सम्पूर्ण प्रयोगकर्ताहरूलाई झन् सुरक्षित पार्छ।</translation>
 <translation id="6618554661997243500">तपाईं आफ्ना लागि सिफारिस गरिएका शीर्ष साइट तथा समाचारहरू हेर्न चाहनुहुन्न भने होम बटनमा ट्याप गर्नुहोस्</translation>
 <translation id="6627583120233659107">फोल्डर सम्पादन गर्नुहोस्</translation>
+<translation id="6635718764393004944">तपाईंको डिफल्ट सर्च इन्जिन <ph name="DSE" /> हो। लागू हुन्छ भने आफ्नो खोजको इतिहास मेटाउन सो सर्च इन्जिनमा दिइएका निर्देशहरू हेर्नुहोस्।</translation>
 <translation id="663674369910034433">गोपनीयता, सुरक्षा र डेटाको सङ्कलनसँग सम्बन्धित थप सेटिङका लागि <ph name="BEGIN_LINK1" />सिंक<ph name="END_LINK1" /> तथा <ph name="BEGIN_LINK2" />Google का सेवाहरू<ph name="END_LINK2" /> नामक खण्ड हेर्नुहोस्</translation>
 <translation id="6643016212128521049">खालि गर्नुहोस्</translation>
 <translation id="6643649862576733715">बचत गरिएको डेटाको मात्राद्वारा क्रमबद्ध गर्नुहोस्</translation>
@@ -1068,7 +1068,6 @@
 <translation id="8037750541064988519"><ph name="DAYS" /> दिन बाँकी छ</translation>
 <translation id="8037801708772278989">भर्खरै जाँच गरिएको</translation>
 <translation id="804335162455518893">SD कार्ड फेला परेन</translation>
-<translation id="805047784848435650">तपाईंको ब्राउजिङसम्बन्धी इतिहासमा आधारित</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> एम.बि.उपलब्ध छ</translation>
 <translation id="8058746566562539958">Chrome को नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="8063895661287329888">पुस्तक चिन्ह थप्न सकिएन।</translation>
@@ -1110,7 +1109,6 @@
 <translation id="8284326494547611709">क्याप्सन</translation>
 <translation id="829672787777123339">तपाईंको यन्त्रसँग कनेक्ट गरिँदै छ…</translation>
 <translation id="8310344678080805313">मानक ट्याबहरू</translation>
-<translation id="8316092324682955408"><ph name="DOMAIN_NAME" /> र थप साइटहरू</translation>
 <translation id="8327155640814342956">सर्वोत्तम ब्राउजिङ अनुभव प्राप्त गर्न Chrome खोलेर अपडेट गर्नुहोस्</translation>
 <translation id="834313815369870491">निम्न साइटहरूको पाठ कहिल्यै अनुवाद नगरियोस्</translation>
 <translation id="8349013245300336738">प्रयोग गरिएको डेटाको मात्राद्वारा क्रमबद्ध गर्नुहोस्</translation>

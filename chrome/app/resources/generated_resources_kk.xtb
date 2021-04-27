@@ -1325,7 +1325,6 @@
 <translation id="2435457462613246316">Құпия сөзді көрсету</translation>
 <translation id="2435579801172349831">Барлығын (<ph name="URL_COUNT" />) инкогнито терезесінде ашу</translation>
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> хостына <ph name="PROTOCOL" /> сілтемелерін ашуға рұқсат бересіз бе?</translation>
-<translation id="2440366609912234507">{COUNT,plural, =1{қолданба}other{# қолданба}}</translation>
 <translation id="2440604414813129000">Д&amp;ереккөзді көру</translation>
 <translation id="244231003699905658">Мекенжай дұрыс емес. Оны тексеріп, қайталап көріңіз.</translation>
 <translation id="2442916515643169563">Мәтін көлеңкесі</translation>
@@ -2388,7 +2387,6 @@
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> сканерленуде.</translation>
 <translation id="3616741288025931835">&amp;Шолу деректерін жою…</translation>
 <translation id="3617891479562106823">Фондар жоқ. Кейінірек қайталап көріңіз.</translation>
-<translation id="3618800144880386250">{COUNT,plural, =1{бейне}other{# бейне}}</translation>
 <translation id="3619115746895587757">Капучино</translation>
 <translation id="362333465072914957">Сертификат шығуы үшін CA күтілуде</translation>
 <translation id="3624567683873126087">Құрылғының құлпын ашу және Google есептік жазбасына кіру</translation>
@@ -3245,7 +3243,6 @@
 <translation id="4568025708905928793">Қауіпсіздік кілті қажет</translation>
 <translation id="4568213207643490790">Өкінішке қарай, бұл құрылғыда Google есептік жазбаларына рұқсат берілмейді.</translation>
 <translation id="4569747168316751899">Күту режимінде болғанда</translation>
-<translation id="4569830245132310845">{COUNT,plural, =1{мекенжай}other{# мекенжай}}</translation>
 <translation id="4572659312570518089">"<ph name="DEVICE_NAME" />" құрылғысына қосылу кезінде аутентификациядан бас тартылды.</translation>
 <translation id="4572779512957829735">Қауіпсіздік кілтінің PIN кодын енгізіңіз.</translation>
 <translation id="4573515936045019911">Linux жүйесінің жаңа нұсқасын орнату үшін интернетпен байланыс қажет. Интернетке қосылып, әрекетті қайталап көріңіз.</translation>
@@ -3432,7 +3429,6 @@
 <translation id="4794810983896241342">Жаңартуларды <ph name="BEGIN_LINK" />әкімшіңіз<ph name="END_LINK" /> басқарады.</translation>
 <translation id="479536056609751218">Веб-бет, HTML ғана</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />Bluetooth журналдарын<ph name="END_LINK" /> (Google-де ішкі пайдалану үшін) тіркеңіз</translation>
-<translation id="4798543057539040565">{COUNT,plural, =1{элемент}other{# элемент}}</translation>
 <translation id="4801448226354548035">Есептік жазбаларды жасыру</translation>
 <translation id="4801512016965057443">Ұялы деректер роумингіне рұқсат ету</translation>
 <translation id="4804818685124855865">Ажырату</translation>
@@ -3885,7 +3881,6 @@
 <translation id="5310281978693206542">Құрылғыларға сілтеме жіберу</translation>
 <translation id="5311304534597152726">Жүйеге кіру</translation>
 <translation id="5311565231560644461">Сайттарға виртуалды шындық құрылғыларын және деректерді пайдалануға рұқсат бермеу</translation>
-<translation id="5312876166662946389">{COUNT,plural, =1{сурет}other{# сурет}}</translation>
 <translation id="5315179276708231080">Lacros – эксперименттік браузер. Ондағы кез келген ақауды "Анықтама &gt; Ақау туралы хабарлау" тармағы арқылы көрсетіңіз. Стандартты браузерді Launcher қолданбасына "Chrome" деп теру арқылы таба аласыз.</translation>
 <translation id="5315738755890845852">Ирек жақша артық қойылған: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Сақтау</translation>
@@ -5200,7 +5195,6 @@
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> өнімін түбірлік ретінде іске мүмкін емес.</translation>
 <translation id="6812841287760418429">Өзгерістерді сақтау</translation>
 <translation id="6813907279658683733">Бүкіл экран</translation>
-<translation id="681584224457905309">{COUNT,plural, =1{файл}other{# файл}}</translation>
 <translation id="6817174620439930047">Сайт MIDI құрылғыларына кіру үшін жүйенің айрықша хабарларын пайдаланғысы келетіні сұралсын (ұсынылады)</translation>
 <translation id="6818198425579322765">Беттің аударма тілі</translation>
 <translation id="6818802132960437751">Ендірілген вирустан қорғау жүйесі</translation>
@@ -5222,7 +5216,6 @@
 <translation id="683373380308365518">Зерделі және қауіпсіз браузерге ауысыңыз</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> жаңарту үшін, интернетке қосылыңыз.</translation>
 <translation id="6838034009068684089">Сайт терезелерді ашып, экрандарға орналастырғысы келгенде сұрау (ұсынылады)</translation>
-<translation id="6838860780238890144">{COUNT,plural, =1{телефон нөмірі}other{# телефон нөмірі}}</translation>
 <translation id="6839225236531462745">Сертификат жою қатесі</translation>
 <translation id="6839916869147598086">Есептік жазбаға кіру жолы өзгерді</translation>
 <translation id="6840155290835956714">Жіберу алдында рұқсат сұрау</translation>
@@ -5331,7 +5324,6 @@
 <translation id="6955446738988643816">Қалқымалы терезені тексеру</translation>
 <translation id="6955535239952325894">Бұл параметр басқарылатын браузерлерде өшірілген.</translation>
 <translation id="6957044667612803194">Қауіпсіздік кілті PIN кодтарын қолдамайды.</translation>
-<translation id="6957914043905853560">{COUNT,plural, =1{сілтеме}other{# сілтеме}}</translation>
 <translation id="6960507406838246615">Linux жүйесін жаңарту қажет.</translation>
 <translation id="6960565108681981554">Іске қосылмаған. Операторға хабарласыңыз.</translation>
 <translation id="696103774840402661"><ph name="DEVICE_TYPE" /> құрылғысындағы барлық пайдаланушының файлдары мен жергілікті деректері біржола жойылды.</translation>

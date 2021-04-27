@@ -451,6 +451,7 @@
 <translation id="5602622065581044566">Bulgarian na may Phonetic keyboard</translation>
 <translation id="5605830556594064952">US Dvorak</translation>
 <translation id="5625294776298156701">Tamil na may Tamil99 keyboard</translation>
+<translation id="5633226425545095130">Kapag inilipat ang item na ito, ibabahagi ito sa lahat ng nakakakita sa nakabahaging folder na '<ph name="DESTINATION_NAME" />.'</translation>
 <translation id="5649768706273821470">Pakinggan</translation>
 <translation id="5678784840044122290">Magiging available ang Linux application sa iyong Terminal at maaari din itong magpakita ng icon sa Launcher mo.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Hindi makadiskonekta sa isang archive o virtual disk<ph name="END_BOLD" />
@@ -725,6 +726,7 @@
 <translation id="8395901698320285466">Mga Sakop</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8456681095658380701">Di-wastong pangalan</translation>
+<translation id="8459404855768962328">Kapag kinopya ang item na ito, ibabahagi ito sa lahat ng nakakakita sa nakabahaging folder na '<ph name="DESTINATION_NAME" />.'</translation>
 <translation id="8461467696380332069">Mag-right click sa isang file, at piliin ang "I-pin sa shelf" para sa mabilis na pag-access sa iyong mga file sa shelf.</translation>
 <translation id="8463494891489624050">Vietnamese VIQR</translation>
 <translation id="8466234950814670489">Archive na Tar</translation>

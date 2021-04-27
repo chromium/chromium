@@ -452,6 +452,7 @@
 <translation id="5602622065581044566">בולגרית עם מקלדת פונטית</translation>
 <translation id="5605830556594064952">‏ארה"ב - Dvorak</translation>
 <translation id="5625294776298156701">‏טמילית עם מקלדת Tamil99</translation>
+<translation id="5633226425545095130">לאחר העברת הפריט הזה, הוא ישותף עם כל מי שיכול לראות את התיקייה המשותפת '<ph name="DESTINATION_NAME" />'.</translation>
 <translation id="5649768706273821470">האזנה</translation>
 <translation id="5678784840044122290">‏אפליקציית Linux תהיה זמינה דרך המסוף שלך, ובחלק מהמקרים הסמל שלה יופיע במרכז האפליקציות.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />לא ניתן להתנתק מהארכיון או מהדיסק הווירטואלי<ph name="END_BOLD" />
@@ -639,7 +640,7 @@
 <translation id="7628656427739290098">‏‎<ph name="PERCENT" />%‎ הושלמו.</translation>
 <translation id="7649070708921625228">עזרה</translation>
 <translation id="7654209398114106148">מתבצעת העברה של <ph name="NUMBER_OF_ITEMS" /> פריטים…</translation>
-<translation id="7655441028674523381">‏גישה פשוטה לתמונות Google</translation>
+<translation id="7655441028674523381">‏גישה פשוטה ל-Google Photos</translation>
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7663224033570512922">הינדית</translation>
 <translation id="7693909743393669729">פירמוט של התקן אחסון ימחק את כל הנתונים המאוחסנים בו ויסיר את כל המחיצות הקיימות, כולל מחיצות שאינן גלויות. לא ניתן לבטל פעולה זו.</translation>
@@ -726,6 +727,7 @@
 <translation id="8395901698320285466">מידות</translation>
 <translation id="8437209419043462667">ארה"ב</translation>
 <translation id="8456681095658380701">שם לא חוקי</translation>
+<translation id="8459404855768962328">לאחר העתקת הפריט הזה, הוא ישותף עם כל מי שיכול לראות את התיקייה המשותפת '<ph name="DESTINATION_NAME" />'.</translation>
 <translation id="8461467696380332069">כדי לגשת במהירות לקבצים שבמדף, יש ללחוץ לחיצה ימנית על הקובץ ולבחור באפשרות "הצמדה למדף".</translation>
 <translation id="8463494891489624050">‏מקלדת וייטנאמית VIQR</translation>
 <translation id="8466234950814670489">‏ארכיון TAR</translation>

@@ -1328,10 +1328,10 @@
 <translation id="2435457462613246316">Εμφάνιση κωδικού πρόσβασης</translation>
 <translation id="2435579801172349831">Άνοιγμα όλων (<ph name="URL_COUNT" />) σε παράθυρο ανώνυμης περιήγησης</translation>
 <translation id="2436186046335138073">Να επιτρέπεται στο <ph name="HANDLER_HOSTNAME" /> το άνοιγμα όλων των συνδέσμων <ph name="PROTOCOL" />;</translation>
-<translation id="2440366609912234507">{COUNT,plural, =1{εφαρμογή}other{# εφαρμογές}}</translation>
 <translation id="2440604414813129000">Προβολή κώ&amp;δικα</translation>
 <translation id="244231003699905658">Μη έγκυρη διεύθυνση. Βεβαιωθείτε ότι η διεύθυνση είναι σωστή και δοκιμάστε ξανά.</translation>
 <translation id="2442916515643169563">Σκίαση κειμένου</translation>
+<translation id="24437238714184182"><ph name="SPAN_1_START" /><ph name="NETWORK_NAME" /><ph name="SPAN_1_END" /> - <ph name="SPAN_2_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_2_END" /></translation>
 <translation id="2445081178310039857">Απαιτείται ο κατάλογος ρίζας επέκτασης.</translation>
 <translation id="2445484935443597917">Δημιουργία νέου προφίλ</translation>
 <translation id="2448312741937722512">Τύπος</translation>
@@ -2392,7 +2392,6 @@
 <translation id="3615579745882581859">Πραγματοποιείται σάρωση του αρχείου <ph name="FILE_NAME" />.</translation>
 <translation id="3616741288025931835">&amp;Διαγραφή δεδομένων περιήγησης...</translation>
 <translation id="3617891479562106823">Τα φόντα δεν είναι διαθέσιμα. Δοκιμάστε ξανά αργότερα.</translation>
-<translation id="3618800144880386250">{COUNT,plural, =1{βίντεο}other{# βίντεο}}</translation>
 <translation id="3619115746895587757">Καπουτσίνο</translation>
 <translation id="362333465072914957">Αναμονή για έκδοση πιστοποιητικού από CA</translation>
 <translation id="3624567683873126087">Ξεκλείδωμα συσκευής και σύνδεση σε Λογαριασμό Google</translation>
@@ -3249,7 +3248,6 @@
 <translation id="4568025708905928793">Ζητείται κλειδί ασφαλείας</translation>
 <translation id="4568213207643490790">Δυστυχώς, οι Λογαριασμοί Google δεν επιτρέπονται σε αυτήν τη συσκευή.</translation>
 <translation id="4569747168316751899">Σε κατάσταση αδράνειας</translation>
-<translation id="4569830245132310845">{COUNT,plural, =1{διεύθυνση}other{# διευθύνσεις}}</translation>
 <translation id="4572659312570518089">Ο έλεγχος ταυτότητας ακυρώθηκε κατά τη σύνδεση στη συσκευή "<ph name="DEVICE_NAME" />".</translation>
 <translation id="4572779512957829735">Εισαγάγετε το PIN για το κλειδί ασφαλείας σας</translation>
 <translation id="4573515936045019911">Για την αναβάθμιση των Linux απαιτείται σύνδεση δικτύου. Συνδεθείτε στο διαδίκτυο και δοκιμάστε ξανά.</translation>
@@ -3436,7 +3434,6 @@
 <translation id="4794810983896241342">Η διαχείριση των ενημερώσεων πραγματοποιείται από τον <ph name="BEGIN_LINK" />διαχειριστή σας<ph name="END_LINK" />.</translation>
 <translation id="479536056609751218">Ιστοσελίδα, μόνο HTML</translation>
 <translation id="4798236378408895261">Επισυνάψτε <ph name="BEGIN_LINK" />αρχεία καταγραφής Bluetooth<ph name="END_LINK" /> (για εσωτερική χρήση από την Google)</translation>
-<translation id="4798543057539040565">{COUNT,plural, =1{στοιχείο}other{# στοιχεία}}</translation>
 <translation id="4801448226354548035">Απόκρυψη λογαριασμών</translation>
 <translation id="4801512016965057443">Να επιτρέπεται η περιαγωγή δεδομένων κινητών συσκευών</translation>
 <translation id="4804818685124855865">Αποσύνδεση</translation>
@@ -3889,7 +3886,6 @@
 <translation id="5310281978693206542">Αποστολή συνδέσμου στις συσκευές σας</translation>
 <translation id="5311304534597152726">Σύνδεση ως</translation>
 <translation id="5311565231560644461">Να μην επιτρέπεται σε ιστοτόπους να χρησιμοποιούν τις συσκευές και τα δεδομένα εικονικής πραγματικότητας</translation>
-<translation id="5312876166662946389">{COUNT,plural, =1{εικόνα}other{# εικόνες}}</translation>
 <translation id="5315179276708231080">Το Lacros είναι ένα πειραματικό πρόγραμμα περιήγησης. Αναφέρετε τυχόν προβλήματα στην ενότητα: Βοήθεια &gt; Αναφορά σφάλματος… Μπορείτε να βρείτε το βασικό πρόγραμμα περιήγησης πληκτρολογώντας "Chrome" στην Εφαρμογή εκκίνησης.</translation>
 <translation id="5315738755890845852">Επιπλέον άγκιστρο: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Αποθήκευση</translation>
@@ -4649,6 +4645,7 @@
 <translation id="6184099524311454384">Αναζήτηση στις καρτέλες</translation>
 <translation id="6185132558746749656">Τοποθεσία συσκευής</translation>
 <translation id="6186394437969115158">Οι ιστότοποι προβάλλουν συνήθως διαφημίσεις, ώστε να μπορούν να παρέχουν περιεχόμενο ή υπηρεσίες δωρεάν. Ωστόσο, ορισμένοι ιστότοποι είναι γνωστοί για την προβολή παρεμβατικών ή παραπλανητικών διαφημίσεων.</translation>
+<translation id="6195005504600220730">Διαβάστε πληροφορίες σχετικά με το πρόγραμμα περιήγησης, το λειτουργικό σύστημα και τη συσκευή σας</translation>
 <translation id="6195693561221576702">Δεν είναι δυνατή η ρύθμιση αυτής της συσκευής σε λειτουργία επίδειξης εκτός σύνδεσης.</translation>
 <translation id="6195724942939841102">Να μην γίνει επαναφορά</translation>
 <translation id="6196640612572343990">Αποκλεισμός cookie τρίτων</translation>
@@ -5205,7 +5202,6 @@
 <translation id="6812349420832218321">Δεν είναι δυνατή η εκτέλεση του <ph name="PRODUCT_NAME" /> ως ρίζα</translation>
 <translation id="6812841287760418429">Διατήρηση αλλαγών</translation>
 <translation id="6813907279658683733">Πλήρης οθόνη</translation>
-<translation id="681584224457905309">{COUNT,plural, =1{αρχείο}other{# αρχεία}}</translation>
 <translation id="6817174620439930047">Να γίνεται ερώτηση όταν ένας ιστότοπος θέλει να χρησιμοποιήσει αποκλειστικά μηνύματα συστήματος για την πρόσβαση σε συσκευές MIDI (συνιστάται)</translation>
 <translation id="6818198425579322765">Γλώσσα σελίδας προς μετάφραση</translation>
 <translation id="6818802132960437751">Ενσωματωμένη προστασία από ιούς</translation>
@@ -5227,7 +5223,6 @@
 <translation id="683373380308365518">Κάντε εναλλαγή σε ένα έξυπνο και ασφαλές πρόγραμμα περιήγησης</translation>
 <translation id="6835762382653651563">Συνδεθείτε στο Διαδίκτυο για να ενημερώσετε τη συσκευή σας <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Να γίνεται ερώτηση όταν ένας ιστότοπος θέλει να ανοίξει και να τοποθετήσει παράθυρα στις οθόνες σας (συνιστάται)</translation>
-<translation id="6838860780238890144">{COUNT,plural, =1{αριθμός τηλεφώνου}other{# αριθμοί τηλεφώνου}}</translation>
 <translation id="6839225236531462745">Σφάλμα διαγραφής πιστοποιητικού</translation>
 <translation id="6839916869147598086">Η σύνδεση έχει αλλάξει</translation>
 <translation id="6840155290835956714">Ερώτηση πριν από την αποστολή</translation>
@@ -5336,7 +5331,6 @@
 <translation id="6955446738988643816">Έλεγχος αναδυόμενου παραθύρου</translation>
 <translation id="6955535239952325894">Αυτή η ρύθμιση είναι απενεργοποιημένη στα διαχειριζόμενα προγράμματα περιήγησης.</translation>
 <translation id="6957044667612803194">Αυτό το κλειδί ασφαλείας δεν υποστηρίζει PIN</translation>
-<translation id="6957914043905853560">{COUNT,plural, =1{σύνδεσμος}other{# σύνδεσμοι}}</translation>
 <translation id="6960507406838246615">Απαιτείται ενημέρωση Linux</translation>
 <translation id="6960565108681981554">Δεν έχει ενεργοποιηθεί. Επικοινωνήστε με την εταιρεία κινητής τηλεφωνίας που χρησιμοποιείτε.</translation>
 <translation id="696103774840402661">Όλα τα αρχεία και τοπικά δεδομένα για όλους τους χρήστες σε αυτήν τη συσκευή <ph name="DEVICE_TYPE" /> διαγράφηκαν οριστικά.</translation>

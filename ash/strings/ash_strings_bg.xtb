@@ -302,6 +302,7 @@
 <translation id="3486220673238053218">дефиниция</translation>
 <translation id="3510164367642747937">Открояване на курсора на мишката</translation>
 <translation id="3513798432020909783">Профилът се управлява от <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3552189655002856821">Функцията за Wi-Fi е изключена</translation>
 <translation id="3563775809269155755">Активиране на точката за достъп</translation>
 <translation id="3571734092741541777">Настройване</translation>
 <translation id="3573179567135747900">Връщане към „<ph name="FROM_LOCALE" />“ (изисква рестартиране)</translation>
@@ -349,6 +350,7 @@
 <translation id="3899995891769452915">Гласово въвеждане</translation>
 <translation id="3900355044994618856">Сесията ви ще приключи след <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Установява се връзка със: <ph name="NAME" /></translation>
+<translation id="3923494859158167397">Няма настроени мобилни мрежи</translation>
 <translation id="3943857333388298514">Поставяне</translation>
 <translation id="394485226368336402">Настройки за звука</translation>
 <translation id="3945319193631853098">Докоснете, за да завършите настройването</translation>
@@ -379,6 +381,7 @@
 <translation id="4195877955194704651">Бутон за менюто за автоматични кликвания</translation>
 <translation id="4197790712631116042">Изключено</translation>
 <translation id="4201033867194214117">„<ph name="FEATURE_NAME" />“ не е налице.</translation>
+<translation id="4209973997261364186">Функцията за Wi-Fi е включена</translation>
 <translation id="4212472694152630271">Превключване към ПИН</translation>
 <translation id="4215497585250573029">Настройки за VPN</translation>
 <translation id="4217571870635786043">Диктуване</translation>
@@ -555,6 +558,7 @@
 <translation id="5689633613396158040">Функцията „Нощно осветление“ облекчава гледането на екрана и улеснява четенето при слаба светлина. Докоснете, за да изберете кога да се включва функцията или да я изключите напълно.</translation>
 <translation id="5691772641933328258">Отпечатъкът не бе разпознат</translation>
 <translation id="5710450975648804523">Режимът „Не безпокойте“ е включен</translation>
+<translation id="571295407079589142">Мобилните данни са изключени</translation>
 <translation id="573413375004481890">Това устройство не може да поддържа всичките ви екрани, затова връзката на един от тях бе прекратена</translation>
 <translation id="574392208103952083">Среден</translation>
 <translation id="5744083938413354016">Преместване чрез докосване</translation>

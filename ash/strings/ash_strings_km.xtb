@@ -302,6 +302,7 @@
 <translation id="3486220673238053218">និយមន័យ</translation>
 <translation id="3510164367642747937">រំលេច​ទស្សន៍ទ្រនិច​កណ្ដុរ</translation>
 <translation id="3513798432020909783">គណនី​ស្ថិត​ក្រោមការគ្រប់គ្រង​របស់ <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3552189655002856821">បានបិទ Wi-Fi</translation>
 <translation id="3563775809269155755">បើក​ហតស្ប៉ត</translation>
 <translation id="3571734092741541777">តំឡើង</translation>
 <translation id="3573179567135747900">ប្តូរទៅ "<ph name="FROM_LOCALE" />" (តម្រូវឲ្យចាប់ផ្តើមឡើងវិញ)</translation>
@@ -349,6 +350,7 @@
 <translation id="3899995891769452915">ការ​បញ្ចូល​សំឡេង</translation>
 <translation id="3900355044994618856">សម័យ​របស់អ្នក​នឹង​បញ្ចប់​ក្នុង​រយៈពេល <ph name="SESSION_TIME_REMAINING" /> ទៀត</translation>
 <translation id="3901991538546252627">កំពុងភ្ជាប់ទៅ <ph name="NAME" /></translation>
+<translation id="3923494859158167397">មិនមានបណ្ដាញ​ទូរសព្ទ​ចល័តដែលត្រូវបានរៀបចំទេ</translation>
 <translation id="3943857333388298514">បិទភ្ជាប់</translation>
 <translation id="394485226368336402">ការ​កំណត់​សំឡេង</translation>
 <translation id="3945319193631853098">ចុចដើម្បី​បញ្ចប់ការរៀបចំ</translation>
@@ -379,6 +381,7 @@
 <translation id="4195877955194704651">ប៊ូតុងចុច​ស្វ័យប្រវត្តិ</translation>
 <translation id="4197790712631116042">បិទ</translation>
 <translation id="4201033867194214117">មិនអាច​ប្រើ <ph name="FEATURE_NAME" /> បានទេ។</translation>
+<translation id="4209973997261364186">Wi-Fi ត្រូវបានបើក</translation>
 <translation id="4212472694152630271">ប្ដូរទៅកូដ PIN</translation>
 <translation id="4215497585250573029">ការ​កំណត់ VPN</translation>
 <translation id="4217571870635786043">ការសរសេរ​តាមអាន​</translation>
@@ -555,6 +558,7 @@
 <translation id="5689633613396158040">ពន្លឺពេលយប់​ធ្វើឱ្យមាន​ភាពងាយស្រួល​ជាងមុន​ក្នុងការ​មើលអេក្រង់​របស់អ្នក ឬ​អាននៅពេល​មានពន្លឺតិច។ ចុចដើម្បីផ្លាស់ប្ដូរ​ពេលបើក "ពន្លឺពេលយប់" ឬបិទវាទាំងស្រុង។</translation>
 <translation id="5691772641933328258">មិន​ស្គាល់​ស្នាម​ម្រាមដៃ​ទេ</translation>
 <translation id="5710450975648804523">មុខងារ​កុំ​រំខាន​បាន​បើក</translation>
+<translation id="571295407079589142">ទិន្នន័យទូរសព្ទចល័ត​ត្រូវបានបិទ</translation>
 <translation id="573413375004481890">ឧបករណ៍នេះមិន​អាចប្រើផ្ទាំងអេក្រង់​របស់អ្នកទាំងអស់​បានទេ ដូច្នេះសូមផ្ដាច់ផ្ទាំង​អេក្រង់មួយចេញ</translation>
 <translation id="574392208103952083">មធ្យម</translation>
 <translation id="5744083938413354016">ចុចអូស</translation>

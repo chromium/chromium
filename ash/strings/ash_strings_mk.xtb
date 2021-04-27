@@ -302,6 +302,7 @@
 <translation id="3486220673238053218">дефиниција</translation>
 <translation id="3510164367642747937">Нагласи го покажувачот на глувчето</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> управува со сметката</translation>
+<translation id="3552189655002856821">Wi-Fi е исклучено</translation>
 <translation id="3563775809269155755">Овозможи точка на пристап</translation>
 <translation id="3571734092741541777">Постави</translation>
 <translation id="3573179567135747900">Врати назад на „<ph name="FROM_LOCALE" />“ (потребно е рестартирање)</translation>
@@ -350,6 +351,7 @@
 <translation id="3899995891769452915">Гласовно внесување</translation>
 <translation id="3900355044994618856">Вашата сесија ќе заврши по <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Се поврзува со <ph name="NAME" /></translation>
+<translation id="3923494859158167397">Не се поставени мобилни мрежи</translation>
 <translation id="3943857333388298514">Залепи</translation>
 <translation id="394485226368336402">Поставки за аудио</translation>
 <translation id="3945319193631853098">Допрете за да го завршите поставувањето</translation>
@@ -380,6 +382,7 @@
 <translation id="4195877955194704651">Копче за автоматско кликнување</translation>
 <translation id="4197790712631116042">Исклучено</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> не е достапна.</translation>
+<translation id="4209973997261364186">Wi-Fi мрежата е вклучена</translation>
 <translation id="4212472694152630271">Префрли на PIN</translation>
 <translation id="4215497585250573029">Поставки за VPN</translation>
 <translation id="4217571870635786043">Диктат</translation>
@@ -556,6 +559,7 @@
 <translation id="5689633613396158040">„Ноќно светло“ го олеснува гледањето во екранот или читањето при слаба светлина. Допрете за да го промените времето на вклучување на „Ноќно светло“ или исклучете го целосно.</translation>
 <translation id="5691772641933328258">Отпечатокот не е препознаен</translation>
 <translation id="5710450975648804523">Вклучено е „Не вознемирувај“</translation>
+<translation id="571295407079589142">Мобилниот интернет е исклучен</translation>
 <translation id="573413375004481890">Уредов не може да ги поддржува сите ваши екрани, па затоа исклучивме еден</translation>
 <translation id="574392208103952083">Медиум</translation>
 <translation id="5744083938413354016">Влечење со допир</translation>

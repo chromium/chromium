@@ -450,6 +450,7 @@
 <translation id="5602622065581044566">ბულგარული ფონეტიკური კლავიატურით</translation>
 <translation id="5605830556594064952">US Dvorak</translation>
 <translation id="5625294776298156701">ტამილური Tamil99 კლავიატურით</translation>
+<translation id="5633226425545095130">ამ ერთეულის გადატანის შემთხვევაში ის გაზიარდება ყველასთან, ვისაც შეუძლია საზიარო საქაღალდის „<ph name="DESTINATION_NAME" />“ ნახვა.</translation>
 <translation id="5649768706273821470">მოსმენა</translation>
 <translation id="5678784840044122290">Linux აპლიკაცია ხელმისაწვდომი იქნება თქვენს ტერმინალში, ხოლო გამშვებში შეიძლება ხატულაც გამოჩნდეს.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />არქივთან ან ვირტუალურ დისკთან კავშირის გაწყვეტა ვერ ხერხდება<ph name="END_BOLD" />
@@ -724,6 +725,7 @@
 <translation id="8395901698320285466">ზომები</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8456681095658380701">არასწორი სახელი</translation>
+<translation id="8459404855768962328">ამ ერთეულის კოპირების შემთხვევაში ის გაზიარდება ყველასთან, ვისაც შეუძლია საზიარო საქაღალდის „<ph name="DESTINATION_NAME" />“ ნახვა.</translation>
 <translation id="8461467696380332069">თაროდან თქვენს ფაილებზე სწრაფი წვდომა რომ იქონიოთ, მარჯვენა ღილაკით დააწკაპუნეთ ფაილზე და აირჩიეთ „თაროზე ჩამაგრება“.</translation>
 <translation id="8463494891489624050">ვიეტნამური VIQR</translation>
 <translation id="8466234950814670489">Tar არქივი</translation>

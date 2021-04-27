@@ -302,6 +302,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3486220673238053218">definiție</translation>
 <translation id="3510164367642747937">Evidențiază cursorul mouse-ului</translation>
 <translation id="3513798432020909783">Cont gestionat de <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3552189655002856821">Conexiunea Wi-Fi este dezactivată</translation>
 <translation id="3563775809269155755">Activează hotspotul</translation>
 <translation id="3571734092741541777">Configurează</translation>
 <translation id="3573179567135747900">Modifică înapoi la „<ph name="FROM_LOCALE" />” (este necesară repornirea)</translation>
@@ -349,6 +350,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3899995891769452915">Intrare vocală</translation>
 <translation id="3900355044994618856">Sesiunea se va încheia în <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Se conectează la <ph name="NAME" /></translation>
+<translation id="3923494859158167397">Nu a fost configurată nicio rețea mobilă</translation>
 <translation id="3943857333388298514">Inserează</translation>
 <translation id="394485226368336402">Setări audio</translation>
 <translation id="3945319193631853098">Atinge pentru a finaliza configurarea</translation>
@@ -379,6 +381,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4195877955194704651">Butonul Clicuri automate</translation>
 <translation id="4197790712631116042">Dezactivat</translation>
 <translation id="4201033867194214117">Opțiunea <ph name="FEATURE_NAME" /> nu este disponibilă.</translation>
+<translation id="4209973997261364186">Conexiunea Wi-Fi este activată</translation>
 <translation id="4212472694152630271">Comută la PIN</translation>
 <translation id="4215497585250573029">Setări VPN</translation>
 <translation id="4217571870635786043">Dictare</translation>
@@ -555,6 +558,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="5689633613396158040">Lumină de noapte îți oferă mai multă comoditate când privești ecranul sau citești într-o lumină slabă. Atinge pentru a schimba ora la care se activează Lumina de noapte sau dezactiveaz-o complet.</translation>
 <translation id="5691772641933328258">Amprenta nu a fost recunoscută</translation>
 <translation id="5710450975648804523">Funcția Nu deranja este activată</translation>
+<translation id="571295407079589142">Datele mobile sunt dezactivate</translation>
 <translation id="573413375004481890">Acest dispozitiv nu acceptă toate afișajele, prin urmare unul a fost deconectat</translation>
 <translation id="574392208103952083">Mediu</translation>
 <translation id="5744083938413354016">Tragere prin atingere</translation>

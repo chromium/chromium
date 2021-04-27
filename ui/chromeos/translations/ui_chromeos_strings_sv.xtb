@@ -451,6 +451,7 @@
 <translation id="5602622065581044566">bulgariskt fonetiskt tangentbord</translation>
 <translation id="5605830556594064952">USA (dvorak)</translation>
 <translation id="5625294776298156701">tamilskt tangentbord (Tamil99)</translation>
+<translation id="5633226425545095130">Om du flyttar det här objektet delas det med alla som har åtkomst till den delade mappen <ph name="DESTINATION_NAME" />.</translation>
 <translation id="5649768706273821470">Lyssna</translation>
 <translation id="5678784840044122290">Linux-programmet blir tillgängligt via terminalen och det kan också finnas en ikon för det i startprogrammet.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Det gick inte att koppla från ett arkiv eller en virtuell hårddisk<ph name="END_BOLD" />
@@ -725,6 +726,7 @@
 <translation id="8395901698320285466">Dimensioner</translation>
 <translation id="8437209419043462667">USA</translation>
 <translation id="8456681095658380701">Ogiltigt namn</translation>
+<translation id="8459404855768962328">Om du kopierar det här objektet delas det med alla som har åtkomst till den delade mappen <ph name="DESTINATION_NAME" />.</translation>
 <translation id="8461467696380332069">Högerklicka på en fil som du vill ha snabbt tillgänglig i hyllan och välj Fäst på hyllan.</translation>
 <translation id="8463494891489624050">vietnamesiska (VIQR)</translation>
 <translation id="8466234950814670489">Tar-arkiv</translation>

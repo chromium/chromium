@@ -451,6 +451,7 @@
 <translation id="5602622065581044566">bulgaria, foneettinen näppäimistö</translation>
 <translation id="5605830556594064952">USA, Dvorak</translation>
 <translation id="5625294776298156701">tamil, tamil99-näppäimistö</translation>
+<translation id="5633226425545095130">Kun tämä siirretään, se jaetaan kaikille, jotka voivat nähdä jaetun kansion "<ph name="DESTINATION_NAME" />"</translation>
 <translation id="5649768706273821470">Kuuntele</translation>
 <translation id="5678784840044122290">Linux-sovellus on saatavilla terminaalissa. Käynnistysohjelmassa saattaa myös näkyä kuvake.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Arkiston tai virtuaalilevyn yhteyden katkaisu epäonnistui<ph name="END_BOLD" />
@@ -725,6 +726,7 @@
 <translation id="8395901698320285466">Mittasuhteet</translation>
 <translation id="8437209419043462667">USA</translation>
 <translation id="8456681095658380701">Nimi ei kelpaa</translation>
+<translation id="8459404855768962328">Kun tämä kopioidaan, se jaetaan kaikille, jotka voivat nähdä jaetun kansion "<ph name="DESTINATION_NAME" />"</translation>
 <translation id="8461467696380332069">Klikkaa tiedostoa kakkospainikkeella ja valitse Kiinnitä hyllyyn, niin löydät tiedostot nopeasti hyllystä.</translation>
 <translation id="8463494891489624050">vietnam (VIQR)</translation>
 <translation id="8466234950814670489">Tar-arkisto</translation>

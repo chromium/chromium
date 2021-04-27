@@ -1327,10 +1327,10 @@
 <translation id="2435457462613246316">პაროლის ჩვენება</translation>
 <translation id="2435579801172349831"><ph name="URL_COUNT" />-ვეს გახსნა ინკოგნიტო ფანჯარაში</translation>
 <translation id="2436186046335138073">დავრთოთ ნება <ph name="HANDLER_HOSTNAME" />-ს, გახსნას ყველა <ph name="PROTOCOL" /> ბმული?</translation>
-<translation id="2440366609912234507">{COUNT,plural, =1{აპი}other{# აპი}}</translation>
 <translation id="2440604414813129000">წყ&amp;აროს ნახვა</translation>
 <translation id="244231003699905658">მისამართი არასწორია. გთხოვთ, გადაამოწმოთ მისამართი და ხელახლა ცადოთ.</translation>
 <translation id="2442916515643169563">ტექსტის ჩრდილი</translation>
+<translation id="24437238714184182"><ph name="SPAN_1_START" /><ph name="NETWORK_NAME" /><ph name="SPAN_1_END" /> — <ph name="SPAN_2_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_2_END" /></translation>
 <translation id="2445081178310039857">საჭიროა გაფართოების ძირეული დირექტორია.</translation>
 <translation id="2445484935443597917">ახალი პროფილის შექმნა</translation>
 <translation id="2448312741937722512">ტიპი</translation>
@@ -2391,7 +2391,6 @@
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> სკანირდება.</translation>
 <translation id="3616741288025931835">დათვალიერების მონაცემების &amp;გასუფთავება…</translation>
 <translation id="3617891479562106823">ფონები მიუწვდომელია. ცადეთ მოგვიანებით.</translation>
-<translation id="3618800144880386250">{COUNT,plural, =1{ვიდეო}other{# ვიდეო}}</translation>
 <translation id="3619115746895587757">კაპუჩინო</translation>
 <translation id="362333465072914957">სერტიფიკატების ცენტრის მიერ სერტიფიკატის გაცემის მოლოდინში</translation>
 <translation id="3624567683873126087">მოწყობილობის განბლოკვა და Google ანგარიშში შესვლა</translation>
@@ -3248,7 +3247,6 @@
 <translation id="4568025708905928793">მოთხოვნილია უსაფრთხოების გასაღები</translation>
 <translation id="4568213207643490790">სამწუხაროდ, ამ მოწყობილობაზე Google ანგარიშების გამოყენება დაუშვებელია.</translation>
 <translation id="4569747168316751899">უმოქმედობისას</translation>
-<translation id="4569830245132310845">{COUNT,plural, =1{მისამართი}other{# მისამართი}}</translation>
 <translation id="4572659312570518089">ავთენტიფიკაცია გაუქმდა „<ph name="DEVICE_NAME" />“-თან დაკავშირების დროს.</translation>
 <translation id="4572779512957829735">შეიყვანეთ PIN-კოდი თქვენი უსაფრთხოების გასაღებისთვის</translation>
 <translation id="4573515936045019911">Linux-ის ახალ ვერსიაზე გადასვლისთვის საჭიროა კავშირი ქსელთან. დაუკავშირდით ინტერნეტს და ცადეთ ხელახლა.</translation>
@@ -3435,7 +3433,6 @@
 <translation id="4794810983896241342">განახლებებს მართავს <ph name="BEGIN_LINK" />თქვენი ადმინისტრატორი<ph name="END_LINK" /></translation>
 <translation id="479536056609751218">ვებგვერდი, მხოლოდ HTML</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />Bluetooth ჟურნალების<ph name="END_LINK" /> დართვა (Google-ის შიდა გამოყენებისთვის)</translation>
-<translation id="4798543057539040565">{COUNT,plural, =1{ერთეული}other{# ერთეული}}</translation>
 <translation id="4801448226354548035">ანგარიშების დამალვა</translation>
 <translation id="4801512016965057443">მობილური მონაცემების როუმინგის ჩართვა</translation>
 <translation id="4804818685124855865">გათიშვა</translation>
@@ -3888,7 +3885,6 @@
 <translation id="5310281978693206542">ბმულის გაგზავნა თქვენს მოწყობილობებზე</translation>
 <translation id="5311304534597152726">შედიხართ, როგორც</translation>
 <translation id="5311565231560644461">საიტებისთვის თქვენი ვირტუალური რეალობის მოწყობილობების/მონაცემების გამოყენების აკრძალვა</translation>
-<translation id="5312876166662946389">{COUNT,plural, =1{სურათი}other{# სურათი}}</translation>
 <translation id="5315179276708231080">Lacros ექსპერიმენტული ბრაუზერია. პრობლემის შესატყობინებლად გადადით აქ: დახმარება &gt; „შეტყობინება პრობლემის შესახებ...“. სტანდარტული ბრაუზერის საპოვნელად გამშვებში აკრიფეთ „Chrome“.</translation>
 <translation id="5315738755890845852">დამატებითი ფიგურული ფრჩხილი: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">შენახვა</translation>
@@ -4647,6 +4643,7 @@
 <translation id="6184099524311454384">მოიძიეთ ჩანართებში</translation>
 <translation id="6185132558746749656">მოწყობილობის მდებარეობა</translation>
 <translation id="6186394437969115158">როგორც წესი, საიტების მიერ რეკლამის ჩვენება ხდება იმიტომ, რომ ისინი კონტენტსა თუ სერვისებს უფასოდ გთავაზობენ. მიუხედავად ამისა, ზოგიერთ საიტზე არსებული რეკლამა მომაბეზრებელი ან შეცდომაში შემყვანია.</translation>
+<translation id="6195005504600220730">გაეცანით ინფორმაციას თქვენი ბრაუზერის, ოპერაციული სისტემისა და მოწყობილობის შესახებ</translation>
 <translation id="6195693561221576702">ამ მოწყობილობის ხაზგარეშე დემო-რეჟიმში დაყენება ვერ მოხერხდება.</translation>
 <translation id="6195724942939841102">არ მსურს აღდგენა</translation>
 <translation id="6196640612572343990">მესამე მხარის ქუქი-ჩანაწერების დაბლოკვა</translation>
@@ -5203,7 +5200,6 @@
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> არ შეიძლება გაიშვას, როგორც ძირეული.</translation>
 <translation id="6812841287760418429">ცვლილებების შენახვა</translation>
 <translation id="6813907279658683733">მთელი ეკრანი</translation>
-<translation id="681584224457905309">{COUNT,plural, =1{ფაილი}other{# ფაილი}}</translation>
 <translation id="6817174620439930047">შეკითხვა, როცა საიტს MIDI მოწყობილობებზე წვდომისთვის სისტემის ექსკლუზიური შეტყობინების გამოყენება სურს (რეკომენდებულია)</translation>
 <translation id="6818198425579322765">სათარგმნი გვერდის ენა</translation>
 <translation id="6818802132960437751">ვირუსებისგან ჩაშენებული დაცვა</translation>
@@ -5225,7 +5221,6 @@
 <translation id="683373380308365518">გადადით გონიერ და უსაფრთხო ბრაუზერზე</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" />-ის განსაახლებლად, გთხოვთ, დაუკავშირდეთ ინტერნეტს.</translation>
 <translation id="6838034009068684089">შეკითხვა საიტის მიერ თქვენს ეკრანებზე ფანჯრების გახსნისა და განლაგების მოთხოვნისას (რეკომენდებული)</translation>
-<translation id="6838860780238890144">{COUNT,plural, =1{ტელეფონის ნომერი}other{# ტელეფონის ნომერი}}</translation>
 <translation id="6839225236531462745">სერტიფიკატის წაშლის შეცდომა</translation>
 <translation id="6839916869147598086">სისტემაში შესვლა შეიცვალა</translation>
 <translation id="6840155290835956714">ნებართვის მოთხოვნა გაგზავნამდე</translation>
@@ -5334,7 +5329,6 @@
 <translation id="6955446738988643816">კონტექსტური ფანჯრის შემოწმება</translation>
 <translation id="6955535239952325894">ეს პარამეტრი გათიშულია მართულ ბრაუზერებში</translation>
 <translation id="6957044667612803194">უსაფრთხოების ამ გასაღების მიერ მხარდაუჭერელია PIN-კოდები</translation>
-<translation id="6957914043905853560">{COUNT,plural, =1{ბმული}other{# ბმული}}</translation>
 <translation id="6960507406838246615">საჭიროა Linux-ის განახლება</translation>
 <translation id="6960565108681981554">არ არის გააქტიურებული. დაუკავშირდით თქვენს ოპერატორს.</translation>
 <translation id="696103774840402661">ამ <ph name="DEVICE_TYPE" />-ზე შენახული ყველა მომხმარებლის ყველა ფაილი და ადგილობრივი მონაცემი სამუდამოდ წაიშალა.</translation>

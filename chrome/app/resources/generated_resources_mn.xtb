@@ -1323,10 +1323,10 @@
 <translation id="2435457462613246316">Нууц үг харуулах</translation>
 <translation id="2435579801172349831">Бүгдийг (<ph name="URL_COUNT" />) нууцлалтай цонхонд нээнэ үү</translation>
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" />-д бүх <ph name="PROTOCOL" /> холбоосыг нээх зөвшөөрлийг олгох уу?</translation>
-<translation id="2440366609912234507">{COUNT,plural, =1{апп}other{# апп}}</translation>
 <translation id="2440604414813129000">Эх үүсвэрийг харуул</translation>
 <translation id="244231003699905658">Хаяг буруу байна. Хаягийг шалгаад дахин оролдоно уу.</translation>
 <translation id="2442916515643169563">Текстийн сүүдэр</translation>
+<translation id="24437238714184182"><ph name="SPAN_1_START" /><ph name="NETWORK_NAME" /><ph name="SPAN_1_END" /> - <ph name="SPAN_2_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_2_END" /></translation>
 <translation id="2445081178310039857">Өргөтгөлийн стандарт директор шаардлагатай байна.</translation>
 <translation id="2445484935443597917">Шинэ профайл үүсгэх</translation>
 <translation id="2448312741937722512">Төрөл</translation>
@@ -2387,7 +2387,6 @@
 <translation id="3615579745882581859"><ph name="FILE_NAME" />-г скан хийж байна.</translation>
 <translation id="3616741288025931835">&amp; Хайлтын өгөгдлийг цэвэрлэ...</translation>
 <translation id="3617891479562106823">Арын дэвсгэр боломжгүй байна. Дараа дахин оролдоно уу.</translation>
-<translation id="3618800144880386250">{COUNT,plural, =1{видео}other{# видео}}</translation>
 <translation id="3619115746895587757">Капучино</translation>
 <translation id="362333465072914957">Цахим гэрчилгээний газраас гэрчилгээ олгохыг хүлээж байна</translation>
 <translation id="3624567683873126087">Төхөөрөмжийн түгжээг тайлж Google Туслахдаа нэвтрэх</translation>
@@ -3243,7 +3242,6 @@
 <translation id="4568025708905928793">Аюулгүй байдлын түлхүүрийн хүсэлт гаргаж байна</translation>
 <translation id="4568213207643490790">Уучлаарай, энэ төхөөрөмжид Google бүртгэлийг зөвшөөрөөгүй байна.</translation>
 <translation id="4569747168316751899">Идэвхгүй байх үед</translation>
-<translation id="4569830245132310845">{COUNT,plural, =1{хаяг}other{# хаяг}}</translation>
 <translation id="4572659312570518089">"<ph name="DEVICE_NAME" />" руу холбогдож байх явцад таниулах ажиллагаа цуцлагдлаа.</translation>
 <translation id="4572779512957829735">Аюулгүй байдлын түлхүүрээ ашиглахын тулд ПИН-ээ оруулна уу</translation>
 <translation id="4573515936045019911">Linux-г дэвшүүлэхэд сүлжээний холболт шаардлагатай. Интернэтэд холбогдоод дахин оролдоно уу.</translation>
@@ -3430,7 +3428,6 @@
 <translation id="4794810983896241342"><ph name="BEGIN_LINK" />Таны администратор<ph name="END_LINK" /> шинэчлэлтүүдийг удирддаг</translation>
 <translation id="479536056609751218">Цахим хуудас, зөвхөн HTML</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />Bluetooth Логыг<ph name="END_LINK" /> хавсаргана уу (Google дотоод)</translation>
-<translation id="4798543057539040565">{COUNT,plural, =1{зүйл}other{# зүйл}}</translation>
 <translation id="4801448226354548035">Данснуудыг нуух</translation>
 <translation id="4801512016965057443">Үүрэн холбооны дата роуминг зөвшөөрөх</translation>
 <translation id="4804818685124855865">Таслах</translation>
@@ -3883,7 +3880,6 @@
 <translation id="5310281978693206542">Төхөөрөмжүүддээ холбоос илгээх</translation>
 <translation id="5311304534597152726">Дараахаар нэвтэрч байна</translation>
 <translation id="5311565231560644461">Сайтуудад таны виртуал бодит байдлын төхөөрөмжүүд болон өгөгдлийг ашиглахыг үл зөвшөөрөх</translation>
-<translation id="5312876166662946389">{COUNT,plural, =1{зураг}other{# зураг}}</translation>
 <translation id="5315179276708231080">Lacros нь туршилтын хөтөч юм. Асуудлыг дараахаар мэдээлнэ үү: Тусламж &gt; "Асуудлыг мэдээлэх..." Эхлүүлэгчид "Chrome" гэж бичсэнээр стандарт хөтчийг олох боломжтой.</translation>
 <translation id="5315738755890845852">Илүү хээтэй хаалт: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Хадгалах</translation>
@@ -4642,6 +4638,7 @@
 <translation id="6184099524311454384">Табыг хайх</translation>
 <translation id="6185132558746749656">Төхөөрөмжийн байршил</translation>
 <translation id="6186394437969115158">Сайтууд ихэвчлэн үнэгүй контент эсвэл үйлчилгээ өгөхийн тулд зар харуулдаг. Гэсэн хэдий ч зарим сайт төвөгтэй эсвэл хуурамч зар харуулдаг.</translation>
+<translation id="6195005504600220730">Таны хөтөч, үйлдлийн систем болон төхөөрөмжийн талаарх мэдээллийг унших</translation>
 <translation id="6195693561221576702">Энэ төхөөрөмжийг офлайн демо горимд тохируулах боломжгүй.</translation>
 <translation id="6195724942939841102">Сэргээхгүй</translation>
 <translation id="6196640612572343990">Гуравдагч талын күүкиг блоклох</translation>
@@ -5198,7 +5195,6 @@
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> нь үндэс хэлбэрээр ажиллаж чадахгүй.</translation>
 <translation id="6812841287760418429">Өөрчлөлтийг хадгал</translation>
 <translation id="6813907279658683733">Бүтэн дэлгэц</translation>
-<translation id="681584224457905309">{COUNT,plural, =1{файл}other{# файл}}</translation>
 <translation id="6817174620439930047">Сайт MIDI төхөөрөмжид хандахын тулд системийн тусгай мессежийг ашиглахыг хүссэн тохиолдолд асуух (санал болгосон)</translation>
 <translation id="6818198425579322765">Хуудсыг орчуулах хэл</translation>
 <translation id="6818802132960437751">Суурилуулсан вирусний хамгаалалт</translation>
@@ -5220,7 +5216,6 @@
 <translation id="683373380308365518">Ухаалаг, аюулгүй хөтөч рүү сэлгэх</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" />-ээ шинэчлэхийн тулд интернэтэд холбогдоно уу.</translation>
 <translation id="6838034009068684089">Сайтыг таны дэлгэц дээр цонх нээх болон байрлуулахыг хүсэх үед асуух (санал болгосон)</translation>
-<translation id="6838860780238890144">{COUNT,plural, =1{утасны дугаар}other{# утасны дугаар}}</translation>
 <translation id="6839225236531462745">Гэрчилгээг арчих алдаа</translation>
 <translation id="6839916869147598086">Нэвтрэх өөрчлөгдлөө</translation>
 <translation id="6840155290835956714">Илгээхээсээ өмнө асуух</translation>
@@ -5329,7 +5324,6 @@
 <translation id="6955446738988643816">Зар сурталчилгааны цонхыг шалга</translation>
 <translation id="6955535239952325894">Удирдсан хөтчүүд дээр энэ тохиргоог идэвхгүй болгосон</translation>
 <translation id="6957044667612803194">Энэ аюулгүй байдлын түлхүүр ПИН-г дэмждэггүй</translation>
-<translation id="6957914043905853560">{COUNT,plural, =1{холбоос}other{# холбоос}}</translation>
 <translation id="6960507406838246615">Linux-н шинэчлэлт шаардлагатай</translation>
 <translation id="6960565108681981554">Идэвхжүүлээгүй байна. Оператор компанитайгаа холбогдоно уу.</translation>
 <translation id="696103774840402661">Энэ <ph name="DEVICE_TYPE" /> дээрх бүх хэрэглэгчийн бүх файл болон дотоод өгөгдлийг бүрмөсөн устгасан.</translation>

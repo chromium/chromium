@@ -1329,10 +1329,10 @@
 <translation id="2435457462613246316">Прикажи ја лозинката</translation>
 <translation id="2435579801172349831">Отвори ги сите (<ph name="URL_COUNT" />) во прозорец „Инкогнито“</translation>
 <translation id="2436186046335138073">Ќе дозволите <ph name="HANDLER_HOSTNAME" /> да ги отвори сите врски на <ph name="PROTOCOL" />?</translation>
-<translation id="2440366609912234507">{COUNT,plural, =1{апликација}one{# апликација}other{# апликации}}</translation>
 <translation id="2440604414813129000">Прикажи и&amp;звор</translation>
 <translation id="244231003699905658">Неважечка адреса. Проверете ја адресата и обидете се повторно.</translation>
 <translation id="2442916515643169563">Сенка на текстот</translation>
+<translation id="24437238714184182"><ph name="SPAN_1_START" /><ph name="NETWORK_NAME" /><ph name="SPAN_1_END" /> - <ph name="SPAN_2_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_2_END" /></translation>
 <translation id="2445081178310039857">Потребен е основен директориум на наставки.</translation>
 <translation id="2445484935443597917">Создај нов профил</translation>
 <translation id="2448312741937722512">Тип</translation>
@@ -2393,7 +2393,6 @@
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> се скенира.</translation>
 <translation id="3616741288025931835">&amp;Исчисти податоци од прелистување...</translation>
 <translation id="3617891479562106823">Заднините се недостапни. Обидете се повторно подоцна.</translation>
-<translation id="3618800144880386250">{COUNT,plural, =1{видео}one{# видео}other{# видеа}}</translation>
 <translation id="3619115746895587757">Капучино</translation>
 <translation id="362333465072914957">Се чека CA да издаде сертификат</translation>
 <translation id="3624567683873126087">Отклучи го уредот и најави се на сметката на Google</translation>
@@ -3250,7 +3249,6 @@
 <translation id="4568025708905928793">Потребен е безбедносен клуч</translation>
 <translation id="4568213207643490790">За жал, сметките на Google не се дозволени на уредов.</translation>
 <translation id="4569747168316751899">Кога не е активен</translation>
-<translation id="4569830245132310845">{COUNT,plural, =1{адреса}one{# адреса}other{# адреси}}</translation>
 <translation id="4572659312570518089">Автентикацијата се откажа при поврзување со „<ph name="DEVICE_NAME" />“.</translation>
 <translation id="4572779512957829735">Внесете го PIN-кодот за вашиот безбедносен клуч</translation>
 <translation id="4573515936045019911">Потребна е мрежна врска за надградба на Linux. Поврзете се на интернет и обидете се повторно.</translation>
@@ -3437,7 +3435,6 @@
 <translation id="4794810983896241342"><ph name="BEGIN_LINK" />Вашиот администратор<ph name="END_LINK" /> управува со ажурирањата</translation>
 <translation id="479536056609751218">Веб-страница, само HTML</translation>
 <translation id="4798236378408895261">Прикачи <ph name="BEGIN_LINK" />евиденција за Bluetooth<ph name="END_LINK" /> (интерно во Google)</translation>
-<translation id="4798543057539040565">{COUNT,plural, =1{ставка}one{# ставка}other{# ставки}}</translation>
 <translation id="4801448226354548035">Сокриј сметки</translation>
 <translation id="4801512016965057443">Дозволи роаминг на мобилни податоци</translation>
 <translation id="4804818685124855865">Прекини врска</translation>
@@ -3890,7 +3887,6 @@
 <translation id="5310281978693206542">Испратете линк до вашите уреди</translation>
 <translation id="5311304534597152726">Се најавувате како</translation>
 <translation id="5311565231560644461">Не дозволувај сајтовите да ги користат уредите и податоците за виртуелна реалност</translation>
-<translation id="5312876166662946389">{COUNT,plural, =1{слика}one{# слика}other{# слики}}</translation>
 <translation id="5315179276708231080">Lacros е експериментален прелистувач. Ако наидете на проблем, пријавете го во „Помош &gt; Пријавете проблем…“ За да го најдете стандардниот прелистувач, напишете „Chrome“ во „Стартерот“.</translation>
 <translation id="5315738755890845852">Вишок голема заграда: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Зачувај</translation>
@@ -4649,6 +4645,7 @@
 <translation id="6184099524311454384">Пребарајте ги картичките</translation>
 <translation id="6185132558746749656">Локација на уредот</translation>
 <translation id="6186394437969115158">Сајтовите обично прикажуваат реклами за да понудат бесплатни содржини или услуги. Но, за некои сајтови е познато дека прикажуваат нападни или лажни реклами.</translation>
+<translation id="6195005504600220730">Читање информации за вашиот прелистувач, оперативниот систем и уредот</translation>
 <translation id="6195693561221576702">Уредов не може да се постави во офлајн демо-режим.</translation>
 <translation id="6195724942939841102">Не враќај</translation>
 <translation id="6196640612572343990">Блокирај колачиња од трети лица</translation>
@@ -5205,7 +5202,6 @@
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> не може да се изврши како основа.</translation>
 <translation id="6812841287760418429">Чувај промени</translation>
 <translation id="6813907279658683733">Цел екран</translation>
-<translation id="681584224457905309">{COUNT,plural, =1{датотека}one{# датотека}other{# датотеки}}</translation>
 <translation id="6817174620439930047">Прашај кога сајтот сака да користи пораки наменети само за системот за да пристапи до уреди со MIDI (препорачано)</translation>
 <translation id="6818198425579322765">Јазик на страницата што треба да се преведе</translation>
 <translation id="6818802132960437751">Вградена заштита од вируси</translation>
@@ -5227,7 +5223,6 @@
 <translation id="683373380308365518">Префрлете се на паметен и безбеден прелистувач</translation>
 <translation id="6835762382653651563">Поврзете се на интернет за да го ажурирате <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Прашувај кога некој сајт сака да отвора и поставува прозорци на екраните (препорачано)</translation>
-<translation id="6838860780238890144">{COUNT,plural, =1{телефонски број}one{# телефонски број}other{# телефонски броја}}</translation>
 <translation id="6839225236531462745">Грешка при бришење сертификат</translation>
 <translation id="6839916869147598086">Најавувањето се промени</translation>
 <translation id="6840155290835956714">Прашај пред да испратиш</translation>
@@ -5336,7 +5331,6 @@
 <translation id="6955446738988643816">Провери појавен прозорец</translation>
 <translation id="6955535239952325894">Поставкава е оневозможена на управувани прелистувачи</translation>
 <translation id="6957044667612803194">Овој безбедносен клуч не поддржува PIN-кодови</translation>
-<translation id="6957914043905853560">{COUNT,plural, =1{линк}one{# линк}other{# линка}}</translation>
 <translation id="6960507406838246615">Потребно е ажурирање на Linux</translation>
 <translation id="6960565108681981554">Не е активирана. Контактирајте со вашиот оператор.</translation>
 <translation id="696103774840402661">Сите датотеки и локални податоци за сите корисници на овој <ph name="DEVICE_TYPE" /> трајно се избришани.</translation>
