@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/line/line_orientation_utils.h"
 #include "third_party/blink/renderer/core/layout/line/root_inline_box.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_ink_overflow.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
 #include "third_party/blink/renderer/core/paint/inline_flow_box_painter.h"
 #include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
@@ -210,6 +211,11 @@ void InlineFlowBox::AddToLine(InlineBox* child) {
         child->ClearKnownToHaveNoOverflow();
     } else if (child->GetLineLayoutItem().IsAtomicInlineLevel()) {
       LineLayoutBox box = LineLayoutBox(child->GetLineLayoutItem());
+#if DCHECK_IS_ON()
+      // We're reading the previous overflow state. Read as no overflow if it
+      // was not computed yet.
+      NGInkOverflow::ReadUnsetAsNoneScope read_unset_as_none;
+#endif
       if (box.HasLayoutOverflow() || box.HasVisualOverflow() ||
           box.HasSelfPaintingLayer())
         child->ClearKnownToHaveNoOverflow();
