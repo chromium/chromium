@@ -308,11 +308,11 @@ bool DecoderTemplate<Traits>::ProcessConfigureRequest(Request* request) {
     return false;
   }
 
-  // Processing continues in OnConfigureFlushDone().
+  // Processing continues in OnFlushDone().
   pending_request_ = request;
-  decoder_->Decode(media::DecoderBuffer::CreateEOSBuffer(),
-                   WTF::Bind(&DecoderTemplate::OnConfigureFlushDone,
-                             WrapWeakPersistent(this)));
+  decoder_->Decode(
+      media::DecoderBuffer::CreateEOSBuffer(),
+      WTF::Bind(&DecoderTemplate::OnFlushDone, WrapWeakPersistent(this)));
   return true;
 }
 
@@ -464,6 +464,10 @@ void DecoderTemplate<Traits>::ResetAlgorithm() {
   // the count immediately to report the correct value in decodeQueueSize().
   num_pending_decodes_ = 0;
 
+  // Since configure is always required after reset we can drop any cached
+  // configuration.
+  active_config_.reset();
+
   Request* request = MakeGarbageCollected<Request>();
   request->type = Request::Type::kReset;
   request->reset_generation = reset_generation_;
@@ -472,26 +476,26 @@ void DecoderTemplate<Traits>::ResetAlgorithm() {
 }
 
 template <typename Traits>
-void DecoderTemplate<Traits>::OnConfigureFlushDone(media::Status status) {
+void DecoderTemplate<Traits>::OnFlushDone(media::Status status) {
   DVLOG(3) << __func__;
   if (IsClosed())
     return;
 
   DCHECK(pending_request_);
-  DCHECK_EQ(pending_request_->type, Request::Type::kConfigure);
+  DCHECK(pending_request_->type == Request::Type::kConfigure ||
+         pending_request_->type == Request::Type::kFlush);
 
   if (!status.is_ok()) {
-    Shutdown(logger_->MakeException(
-        "Internal error: failed to flush out frames from previous config.",
-        status));
+    Shutdown(logger_->MakeException("Error during flush.", status));
     return;
   }
 
   SetHardwarePreference(pending_request_->hw_pref);
 
   // Processing continues in OnInitializeDone().
+  const bool is_flush = pending_request_->type == Request::Type::kFlush;
   Traits::InitializeDecoder(
-      *decoder_, *pending_request_->media_config,
+      *decoder_, is_flush ? *active_config_ : *pending_request_->media_config,
       WTF::Bind(&DecoderTemplate::OnInitializeDone, WrapWeakPersistent(this)),
       WTF::BindRepeating(&DecoderTemplate::OnOutput, WrapWeakPersistent(this),
                          reset_generation_));
@@ -504,26 +508,39 @@ void DecoderTemplate<Traits>::OnInitializeDone(media::Status status) {
     return;
 
   DCHECK(pending_request_);
-  DCHECK_EQ(pending_request_->type, Request::Type::kConfigure);
+  DCHECK(pending_request_->type == Request::Type::kConfigure ||
+         pending_request_->type == Request::Type::kFlush);
 
+  const bool is_flush = pending_request_->type == Request::Type::kFlush;
   if (!status.is_ok()) {
-    std::string error_message = "Decoder initialization error.";
-    if (status.code() == media::StatusCode::kDecoderUnsupportedConfig) {
+    std::string error_message;
+    if (is_flush) {
+      error_message = "Error during initialize after flush.";
+    } else if (status.code() == media::StatusCode::kDecoderUnsupportedConfig) {
       error_message =
           "Unsupported configuration. Check isConfigSupported() prior to "
           "calling configure().";
+    } else {
+      error_message = "Decoder initialization error.";
     }
     Shutdown(logger_->MakeException(error_message, status));
     return;
   }
 
-  Traits::UpdateDecoderLog(*decoder_, *pending_request_->media_config,
-                           logger_->log());
+  if (is_flush) {
+    pending_request_.Release()->resolver.Release()->Resolve();
+  } else {
+    Traits::UpdateDecoderLog(*decoder_, *pending_request_->media_config,
+                             logger_->log());
 
-  pending_request_.Release();
+    active_config_ = std::move(pending_request_->media_config);
+    pending_request_.Release();
+  }
 
   if (!initializing_sync_)
     ProcessRequests();
+  else
+    DCHECK(!is_flush);
 }
 
 template <typename Traits>
@@ -540,24 +557,6 @@ void DecoderTemplate<Traits>::OnDecodeDone(uint32_t id, media::Status status) {
   DCHECK(pending_decodes_.Contains(id));
   auto it = pending_decodes_.find(id);
   pending_decodes_.erase(it);
-  ProcessRequests();
-}
-
-template <typename Traits>
-void DecoderTemplate<Traits>::OnFlushDone(media::Status status) {
-  DVLOG(3) << __func__;
-  if (IsClosed())
-    return;
-
-  DCHECK(pending_request_);
-  DCHECK_EQ(pending_request_->type, Request::Type::kFlush);
-
-  if (!status.is_ok()) {
-    Shutdown(logger_->MakeException("Flushing error.", status));
-    return;
-  }
-
-  pending_request_.Release()->resolver.Release()->Resolve();
   ProcessRequests();
 }
 
