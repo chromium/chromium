@@ -19,7 +19,9 @@ if (use_cups && is_chromeos_ash) {
   import("//printing/backend/tools/code_generator.gni")
 }
 
-if ((enable_basic_printing && is_win) || enable_print_preview) {
+assert(enable_basic_printing)
+
+if (is_win || enable_print_preview) {
   # Windows basic printing or print preview requires pdf enabled.
   assert(enable_pdf,
          "Windows basic printing or print preview needs pdf: " +

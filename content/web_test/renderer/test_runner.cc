@@ -42,6 +42,7 @@
 #include "gin/wrappable.h"
 #include "mojo/public/mojom/base/text_direction.mojom-forward.h"
 #include "net/base/filename_util.h"
+#include "printing/buildflags/buildflags.h"
 #include "services/network/public/mojom/cors.mojom.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -242,7 +243,9 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
   void AddWebPageOverlay();
   void AllowPointerLock();
   void SetHighlightAds();
+#if BUILDFLAG(ENABLE_PRINTING)
   void CapturePrintingPixelsThen(v8::Local<v8::Function> callback);
+#endif
   void CheckForLeakedWindows();
   void ClearAllDatabases();
   void ClearTrustTokenState(v8::Local<v8::Function> callback);
@@ -511,8 +514,10 @@ gin::ObjectTemplateBuilder TestRunnerBindings::GetObjectTemplateBuilder(
       // Permits the adding of only one opaque overlay. May only be called from
       // inside the main frame.
       .SetMethod("addWebPageOverlay", &TestRunnerBindings::AddWebPageOverlay)
+#if BUILDFLAG(ENABLE_PRINTING)
       .SetMethod("capturePrintingPixelsThen",
                  &TestRunnerBindings::CapturePrintingPixelsThen)
+#endif
       // If the test will be closing its windows explicitly, and wants to look
       // for leaks due to those windows closing incorrectly, it can specify this
       // to avoid having them closed at the end of the test before the leak
@@ -1883,6 +1888,7 @@ void TestRunnerBindings::GetManifestThen(v8::Local<v8::Function> v8_callback) {
       base::BindOnce(GetManifestReply, WrapV8Callback(std::move(v8_callback))));
 }
 
+#if BUILDFLAG(ENABLE_PRINTING)
 void TestRunnerBindings::CapturePrintingPixelsThen(
     v8::Local<v8::Function> v8_callback) {
   if (invalid_)
@@ -1902,6 +1908,7 @@ void TestRunnerBindings::CapturePrintingPixelsThen(
           ConvertBitmapToV8(context_scope, bitmap),
       });
 }
+#endif  // BUILDFLAG(ENABLE_PRINTING)
 
 void TestRunnerBindings::CheckForLeakedWindows() {
   if (invalid_)
@@ -2452,6 +2459,7 @@ SkBitmap TestRunner::DumpPixelsInRenderer(blink::WebLocalFrame* main_frame) {
     return bitmap;
   }
 
+#if BUILDFLAG(ENABLE_PRINTING)
   blink::WebLocalFrame* target_frame = main_frame;
   std::string frame_name = web_test_runtime_flags_.printing_frame();
   if (!frame_name.empty()) {
@@ -2461,6 +2469,10 @@ SkBitmap TestRunner::DumpPixelsInRenderer(blink::WebLocalFrame* main_frame) {
       target_frame = frame_to_print->ToWebLocalFrame();
   }
   return PrintFrameToBitmap(target_frame);
+#else
+  NOTREACHED();
+  return SkBitmap();
+#endif
 }
 
 void TestRunner::ReplicateWebTestRuntimeFlagsChanges(

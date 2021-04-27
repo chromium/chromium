@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//printing/buildflags/buildflags.gni")
 
-assert(!is_chromeos_ash)
+assert(enable_print_preview)
 
 static_library("service") {
   sources = [

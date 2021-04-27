@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "build/build_config.h"
+#include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -111,11 +112,13 @@ TEST(SandboxTypeTest, Utility) {
             SandboxTypeFromCommandLine(command_line12));
 #endif
 
+#if BUILDFLAG(ENABLE_PRINTING)
   base::CommandLine command_line13(command_line);
   SetCommandLineFlagsForSandboxType(&command_line13,
                                     SandboxType::kPrintBackend);
   EXPECT_EQ(SandboxType::kPrintBackend,
             SandboxTypeFromCommandLine(command_line13));
+#endif
 
   base::CommandLine command_line14(command_line);
   command_line14.AppendSwitchASCII(switches::kServiceSandboxType,

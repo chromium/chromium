@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
+#include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/features.h"
 #include "sandbox/policy/switches.h"
 
@@ -47,7 +48,9 @@ bool IsUnsandboxedSandboxType(SandboxType sandbox_type) {
     case SandboxType::kGpu:
     case SandboxType::kPpapi:
     case SandboxType::kCdm:
+#if BUILDFLAG(ENABLE_PRINTING)
     case SandboxType::kPrintBackend:
+#endif
     case SandboxType::kPrintCompositor:
 #if defined(OS_MAC)
     case SandboxType::kNaClLoader:
@@ -110,7 +113,9 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
     case SandboxType::kUtility:
     case SandboxType::kNetwork:
     case SandboxType::kCdm:
+#if BUILDFLAG(ENABLE_PRINTING)
     case SandboxType::kPrintBackend:
+#endif
     case SandboxType::kPrintCompositor:
     case SandboxType::kAudio:
     case SandboxType::kVideoCapture:
@@ -223,8 +228,10 @@ std::string StringFromUtilitySandboxType(SandboxType sandbox_type) {
       return switches::kPpapiSandbox;
     case SandboxType::kCdm:
       return switches::kCdmSandbox;
+#if BUILDFLAG(ENABLE_PRINTING)
     case SandboxType::kPrintBackend:
       return switches::kPrintBackendSandbox;
+#endif
     case SandboxType::kPrintCompositor:
       return switches::kPrintCompositorSandbox;
     case SandboxType::kUtility:
@@ -294,8 +301,10 @@ SandboxType UtilitySandboxTypeFromString(const std::string& sandbox_string) {
     return SandboxType::kPpapi;
   if (sandbox_string == switches::kCdmSandbox)
     return SandboxType::kCdm;
+#if BUILDFLAG(ENABLE_PRINTING)
   if (sandbox_string == switches::kPrintBackendSandbox)
     return SandboxType::kPrintBackend;
+#endif
   if (sandbox_string == switches::kPrintCompositorSandbox)
     return SandboxType::kPrintCompositor;
 #if defined(OS_WIN)

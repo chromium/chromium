@@ -6,6 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//chromeos/assistant/assistant.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//media/media_options.gni")
+import("//printing/buildflags/buildflags.gni")
 
 source_set("utility") {
   # Only the public target should depend on this. All other targets (even
@@ -49,6 +50,7 @@ source_set("utility") {
     "//media:media_buildflags",
     "//mojo/public/cpp/bindings",
     "//net",
+    "//printing/buildflags",
     "//sandbox",
     "//services/audio",
     "//services/data_decoder:lib",
@@ -103,9 +105,11 @@ source_set("utility") {
   if (is_linux || is_chromeos) {
     deps += [
       "//content/utility/speech:speech_recognition_sandbox_hook",
-      "//printing:printing_sandbox_hook",
       "//services/network:network_sandbox_hook",
     ]
+    if (enable_basic_printing) {
+      deps += [ "//printing:printing_sandbox_hook" ]
+    }
   }
 
   if (enable_vr && !is_android) {

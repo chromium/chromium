@@ -25,6 +25,7 @@ import("//chrome/browser/share/android/java_sources.gni")
 import("//chrome/chrome_paks.gni")
 import("//chrome/common/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
+import("//printing/buildflags/buildflags.gni")
 import("//testing/test.gni")
 import("//third_party/icu/config.gni")
 import("//third_party/protobuf/proto_library.gni")
@@ -516,7 +517,6 @@ android_library("chrome_java") {
     "//mojo/public/java/system:system_impl_java",
     "//mojo/public/mojom/base:base_java",
     "//net/android:net_java",
-    "//printing:printing_java",
     "//services/data_decoder/public/cpp/android:safe_json_java",
     "//services/device/public/java:device_feature_list_java",
     "//services/device/public/mojom:mojom_java",
@@ -654,6 +654,10 @@ android_library("chrome_java") {
   # TODO(crbug/1186003): Instead of adding source files, add it as a separate
   # dependency when circular deps is resolved.
   sources += price_tracking_java_sources
+
+  if (enable_basic_printing) {
+    deps += [ "//printing:printing_java" ]
+  }
 }
 
 # Template for strict mode detection enabling/disabling so that proguard strips out
@@ -1359,7 +1363,6 @@ android_library("chrome_test_java") {
     "//mojo/public/mojom/base:base_java",
     "//net/android:net_java",
     "//net/android:net_java_test_support",
-    "//printing:printing_java",
     "//services:services_javatests",
     "//services/device/public/java:geolocation_java",
     "//services/device/public/java:geolocation_java_test_support",
@@ -1411,6 +1414,10 @@ android_library("chrome_test_java") {
   ]
 
   deps += feed_test_deps
+
+  if (enable_basic_printing) {
+    deps += [ "//printing:printing_java" ]
+  }
 
   srcjar_deps = [ "//chrome/browser:tos_dialog_behavior_generated_enum" ]
 

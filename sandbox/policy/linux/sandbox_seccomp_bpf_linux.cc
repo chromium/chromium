@@ -19,6 +19,7 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "printing/buildflags/buildflags.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
 #include "sandbox/linux/bpf_dsl/trap_registry.h"
 #include "sandbox/policy/sandbox_type.h"
@@ -181,8 +182,10 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
       return std::make_unique<CdmProcessPolicy>();
     case SandboxType::kPrintCompositor:
       return std::make_unique<PrintCompositorProcessPolicy>();
+#if BUILDFLAG(ENABLE_PRINTING)
     case SandboxType::kPrintBackend:
       return std::make_unique<PrintBackendProcessPolicy>();
+#endif
     case SandboxType::kNetwork:
       return std::make_unique<NetworkProcessPolicy>();
     case SandboxType::kAudio:
@@ -252,7 +255,9 @@ void SandboxSeccompBPF::RunSandboxSanityChecks(
     case SandboxType::kSharingService:
     case SandboxType::kSpeechRecognition:
     case SandboxType::kNetwork:
+#if BUILDFLAG(ENABLE_PRINTING)
     case SandboxType::kPrintBackend:
+#endif
     case SandboxType::kUtility:
     case SandboxType::kNoSandbox:
     case SandboxType::kVideoCapture:

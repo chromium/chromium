@@ -16,6 +16,7 @@ import("//media/media_options.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//net/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
+import("//printing/buildflags/buildflags.gni")
 import("//testing/test.gni")
 import("//third_party/blink/public/public_features.gni")
 import("//third_party/closure_compiler/closure_args.gni")
@@ -1518,7 +1519,10 @@ test("content_browsertests") {
       "../browser/utility_process_sandbox_browsertest.cc",
       "../browser/zygote_host/zygote_browsertest.cc",
     ]
-    deps += [ "//ui/gfx:test_support" ]
+    deps += [
+      "//printing/buildflags",
+      "//ui/gfx:test_support",
+    ]
 
     if (use_atk) {
       sources += [
@@ -2336,7 +2340,6 @@ test("content_unittests") {
     "//net:test_support",
     "//ppapi/buildflags",
     "//ppapi/c",
-    "//printing",
     "//services/audio/public/cpp:test_support",
     "//services/audio/public/mojom",
     "//services/data_decoder/public/cpp:test_support",
@@ -2409,6 +2412,10 @@ test("content_unittests") {
 
   if (is_linux || is_chromeos) {
     deps += [ "//components/crash/content/browser/error_reporting" ]
+  }
+
+  if (enable_basic_printing) {
+    deps += [ "//printing" ]
   }
 
   if (enable_plugins) {

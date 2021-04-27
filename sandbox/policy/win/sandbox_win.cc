@@ -38,6 +38,7 @@
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
+#include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/features.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
@@ -1212,8 +1213,10 @@ std::string SandboxWin::GetSandboxTypeInEnglish(SandboxType sandbox_type) {
       return "CDM";
     case SandboxType::kPrintCompositor:
       return "Print Compositor";
+#if BUILDFLAG(ENABLE_PRINTING)
     case SandboxType::kPrintBackend:
       return "Print Backend";
+#endif
     case SandboxType::kAudio:
       return "Audio";
     case SandboxType::kSpeechRecognition:

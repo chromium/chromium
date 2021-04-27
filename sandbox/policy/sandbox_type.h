@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/export.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -67,9 +68,11 @@ enum class SandboxType {
   kNaClLoader,
 #endif  // defined(OS_MAC)
 
+#if BUILDFLAG(ENABLE_PRINTING)
   // The print backend service process which interfaces with operating system
   // print drivers.
   kPrintBackend,
+#endif
 
   // The print compositor service process.
   kPrintCompositor,

@@ -23,6 +23,7 @@
 #include "content/public/common/sandbox_init.h"
 #include "content/public/utility/content_utility_client.h"
 #include "content/utility/utility_thread_impl.h"
+#include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/sandbox.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
@@ -30,7 +31,9 @@
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include "content/utility/speech/speech_recognition_sandbox_hook_linux.h"
+#if BUILDFLAG(ENABLE_PRINTING)
 #include "printing/sandbox/print_backend_sandbox_hook_linux.h"
+#endif
 #include "sandbox/policy/linux/sandbox_linux.h"
 #include "services/audio/audio_sandbox_hook_linux.h"
 #include "services/network/network_sandbox_hook_linux.h"
@@ -118,14 +121,18 @@ int UtilityMain(const MainFunctionParams& parameters) {
       sandbox_type == sandbox::policy::SandboxType::kLibassistant ||
 #endif  // BUILDFLAG(ENABLE_LIBASSISTANT_SANDBOX)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_PRINTING)
       sandbox_type == sandbox::policy::SandboxType::kPrintBackend ||
+#endif
       sandbox_type == sandbox::policy::SandboxType::kAudio ||
       sandbox_type == sandbox::policy::SandboxType::kSpeechRecognition) {
     sandbox::policy::SandboxLinux::PreSandboxHook pre_sandbox_hook;
     if (sandbox_type == sandbox::policy::SandboxType::kNetwork)
       pre_sandbox_hook = base::BindOnce(&network::NetworkPreSandboxHook);
+#if BUILDFLAG(ENABLE_PRINTING)
     else if (sandbox_type == sandbox::policy::SandboxType::kPrintBackend)
       pre_sandbox_hook = base::BindOnce(&printing::PrintBackendPreSandboxHook);
+#endif  // BUILDFLAG(ENABLE_PRINTING)
     else if (sandbox_type == sandbox::policy::SandboxType::kAudio)
       pre_sandbox_hook = base::BindOnce(&audio::AudioPreSandboxHook);
     else if (sandbox_type == sandbox::policy::SandboxType::kSpeechRecognition)

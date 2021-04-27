@@ -97,6 +97,7 @@ if (is_component_build) {
       "//base",
       "//build:chromeos_buildflags",
       "//media:media_buildflags",
+      "//printing/buildflags",
       "//sandbox:sandbox_buildflags",
       "//sandbox/linux:sandbox",
       "//sandbox/policy",

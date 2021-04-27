@@ -4,6 +4,7 @@
 
 import("//build/config/android/rules.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
+import("//printing/buildflags/buildflags.gni")
 
 java_cpp_enum("browser_enums") {
   sources = [
@@ -233,9 +234,6 @@ source_set("browser") {
     "//components/policy/core/browser",
     "//components/pref_registry",
     "//components/prefs",
-    "//components/printing/browser",
-    "//components/printing/common",
-    "//components/printing/common:mojo_interfaces",
     "//components/safe_browsing/android:remote_database_manager",
     "//components/safe_browsing/content",
     "//components/safe_browsing/content/browser",
@@ -264,7 +262,6 @@ source_set("browser") {
     "//components/webdata/common",
     "//content/public/browser",
     "//media/mojo:buildflags",
-    "//printing",
     "//services/cert_verifier/public/mojom",
     "//services/network/public/mojom",
     "//services/proxy_resolver:lib",
@@ -277,6 +274,15 @@ source_set("browser") {
     "//ui/touch_selection",
     "//url:gurl_android",
   ]
+
+  if (enable_basic_printing) {
+    deps += [
+      "//components/printing/browser",
+      "//components/printing/common",
+      "//components/printing/common:mojo_interfaces",
+      "//printing",
+    ]
+  }
 
   if (enable_spellcheck) {
     deps += [ "//components/spellcheck/browser" ]

@@ -7,6 +7,7 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/export.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -29,7 +30,9 @@ SANDBOX_POLICY_EXPORT extern const char kNetworkSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kPpapiSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kUtilitySandbox[];
 SANDBOX_POLICY_EXPORT extern const char kCdmSandbox[];
+#if BUILDFLAG(ENABLE_PRINTING)
 SANDBOX_POLICY_EXPORT extern const char kPrintBackendSandbox[];
+#endif
 SANDBOX_POLICY_EXPORT extern const char kPrintCompositorSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kAudioSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kSharingServiceSandbox[];

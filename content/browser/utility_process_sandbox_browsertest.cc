@@ -20,6 +20,7 @@
 #include "content/public/test/test_service.mojom.h"
 #include "content/test/sandbox_status.test-mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
 #include "sandbox/policy/switches.h"
 
@@ -134,7 +135,9 @@ class UtilityProcessSandboxBrowserTest
       case SandboxType::kTts:
 #endif
       case SandboxType::kNetwork:
+#if BUILDFLAG(ENABLE_PRINTING)
       case SandboxType::kPrintBackend:
+#endif
       case SandboxType::kSpeechRecognition: {
         constexpr int kExpectedPartialSandboxFlags =
             SandboxLinux::kSeccompBPF | SandboxLinux::kYama |

@@ -7,6 +7,7 @@ import("//build/config/chromecast_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//chromeos/assistant/assistant.gni")
+import("//printing/buildflags/buildflags.gni")
 import("//testing/test.gni")
 
 component("policy") {
@@ -27,6 +28,7 @@ component("policy") {
     ":sanitizer_buildflags",
     "//base",
     "//build:chromeos_buildflags",
+    "//printing/buildflags",
     "//sandbox:common",
   ]
   public_deps = []
@@ -169,6 +171,7 @@ source_set("tests") {
     ":policy",
     "//base",
     "//base/test:test_support",
+    "//printing/buildflags",
     "//testing/gtest",
   ]
 

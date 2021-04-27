@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "printing/buildflags/buildflags.h"
 
 #if defined(OS_WIN)
 #include "base/command_line.h"
@@ -28,7 +29,9 @@ const char kNetworkSandbox[] = "network";
 const char kPpapiSandbox[] = "ppapi";
 const char kUtilitySandbox[] = "utility";
 const char kCdmSandbox[] = "cdm";
+#if BUILDFLAG(ENABLE_PRINTING)
 const char kPrintBackendSandbox[] = "print_backend";
+#endif
 const char kPrintCompositorSandbox[] = "print_compositor";
 const char kAudioSandbox[] = "audio";
 const char kSharingServiceSandbox[] = "sharing_service";

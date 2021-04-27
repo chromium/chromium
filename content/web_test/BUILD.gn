@@ -6,6 +6,7 @@ import("//build/config/chromecast_build.gni")
 import("//build/config/ui.gni")  # For the use_x11 and toolkit_views variables.
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//ppapi/buildflags/buildflags.gni")  # For the enable_plugins variable.
+import("//printing/buildflags/buildflags.gni")
 
 if (is_android) {
   import("//build/config/android/config.gni")
@@ -246,8 +247,6 @@ static_library("web_test_renderer") {
     "renderer/gc_controller.h",
     "renderer/layout_dump.cc",
     "renderer/layout_dump.h",
-    "renderer/pixel_dump.cc",
-    "renderer/pixel_dump.h",
     "renderer/spell_check_client.cc",
     "renderer/spell_check_client.h",
     "renderer/test_plugin.cc",
@@ -294,7 +293,10 @@ static_library("web_test_renderer") {
     "//gpu",
     "//gpu/command_buffer/client:gles2_interface",
     "//media/capture",
-    "//printing",
+    "//printing/buildflags",
+
+    # TODO(crbug.com/1200443) Remove //printing/mojom requirement coming from
+    # //third_party/blink/public:blink_headers.
     "//printing/mojom",
     "//services/device/public/mojom",
     "//services/service_manager/public/cpp",
@@ -316,4 +318,12 @@ static_library("web_test_renderer") {
     "//url",
     "//v8",
   ]
+
+  if (enable_basic_printing) {
+    sources += [
+      "renderer/pixel_dump.cc",
+      "renderer/pixel_dump.h",
+    ]
+    deps += [ "//printing" ]
+  }
 }

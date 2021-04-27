@@ -122,7 +122,6 @@ const SandboxConfig* GetConfigForSandboxType(SandboxType type) {
     case SandboxType::kAudio:
     case SandboxType::kCdm:
     case SandboxType::kPpapi:
-    case SandboxType::kPrintBackend:
     case SandboxType::kPrintCompositor:
     case SandboxType::kSharingService:
     case SandboxType::kSpeechRecognition:
