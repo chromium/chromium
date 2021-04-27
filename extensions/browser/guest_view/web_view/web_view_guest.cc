@@ -1286,6 +1286,10 @@ void WebViewGuest::SetName(const std::string& name) {
     return;
   name_ = name;
 
+  // Return early if this method is called before RenderFrameCreated().
+  // In that case, we still have a chance to update the name at GuestReady().
+  if (!web_contents()->GetMainFrame()->IsRenderFrameLive())
+    return;
   ExtensionWebContentsObserver::GetForWebContents(web_contents())
       ->GetLocalFrame(web_contents()->GetMainFrame())
       ->SetFrameName(name_);
