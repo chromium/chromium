@@ -151,6 +151,7 @@
         <structure type="chrome_scaled_image" name="IDR_NOTIFICATION_EASYUNLOCK_ENABLED" file="cros/notification_easyunlock_enabled.png" />
       </if>
       <if expr="not is_android">
+        <structure type="chrome_scaled_image" name="IDR_NTP_FAVICON" file="common/favicon_ntp.png" />
         <structure type="chrome_scaled_image" name="IDR_PASSWORD_CHECK" file="common/password_check.png" />
         <structure type="chrome_scaled_image" name="IDR_PASSWORD_CHECK_DARK" file="common/password_check_dark.png" />
       </if>
