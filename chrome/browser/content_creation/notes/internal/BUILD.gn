@@ -12,4 +12,12 @@ source_set("internal") {
     "//components/content_creation/notes/core",
     "//components/keyed_service/core",
   ]
+
+  if (is_android) {
+    sources += [ "android/note_service_bridge_factory.cc" ]
+
+    deps += [
+      "//chrome/browser/content_creation/notes/internal/android:jni_headers",
+    ]
+  }
 }

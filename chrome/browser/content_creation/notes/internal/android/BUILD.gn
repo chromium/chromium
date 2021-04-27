@@ -1,0 +1,33 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  visibility = [
+    ":*",
+    "//chrome/android:chrome_all_java",
+  ]
+
+  sources = [ "android/java/src/org/chromium/chrome/browser/content_creation/notes/NoteServiceFactory.java" ]
+
+  deps = [
+    "//base:base_java",
+    "//chrome/browser/profiles/android:java",
+    "//components/content_creation/notes/android:java",
+  ]
+
+  resources_package = "org.chromium.chrome.browser.content_creation.notes"
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+generate_jni("jni_headers") {
+  visibility = [
+    ":*",
+    "//chrome/browser",
+  ]
+
+  sources = [ "android/java/src/org/chromium/chrome/browser/content_creation/notes/NoteServiceFactory.java" ]
+}
