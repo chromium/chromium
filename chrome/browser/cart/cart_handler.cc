@@ -69,7 +69,7 @@ void CartHandler::GetCartDataCallback(GetMerchantCartsCallback callback,
     cart->cart_url = GURL(std::move(proto_pair.second.merchant_cart_url()));
     std::vector<std::string> image_urls;
     // Not show product images when showing welcome surface.
-    if (!cart_service_->ShouldShowWelcomSurface()) {
+    if (!cart_service_->ShouldShowWelcomeSurface()) {
       for (std::string image_url : proto_pair.second.product_image_urls()) {
         cart->product_image_urls.emplace_back(std::move(image_url));
       }
@@ -86,7 +86,7 @@ void CartHandler::GetCartDataCallback(GetMerchantCartsCallback callback,
 
 void CartHandler::GetWarmWelcomeVisible(
     GetWarmWelcomeVisibleCallback callback) {
-  std::move(callback).Run(cart_service_->ShouldShowWelcomSurface());
+  std::move(callback).Run(cart_service_->ShouldShowWelcomeSurface());
 }
 
 // TODO(crbug.com/1174281): Below metrics collection can be moved to JS to avoid
@@ -97,4 +97,13 @@ void CartHandler::OnCartItemClicked(uint32_t index) {
 
 void CartHandler::OnModuleCreated(uint32_t count) {
   base::UmaHistogramCounts100("NewTabPage.Carts.CartCount", count);
+}
+
+void CartHandler::GetDiscountConsentCardVisible(
+    GetDiscountConsentCardVisibleCallback callback) {
+  std::move(callback).Run(cart_service_->ShouldShowDiscountConsent());
+}
+
+void CartHandler::OnDiscountConsentAcknowledged(bool accept) {
+  cart_service_->AcknowledgeDiscountConsent(accept);
 }

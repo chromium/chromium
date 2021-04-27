@@ -29,7 +29,11 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     metrics = fakeMetricsPrivate();
     // Not show welcome surface by default.
     testProxy.handler.setResultFor(
-        'getWarmWelcomeVisible', Promise.resolve({visible: false}));
+        'getWarmWelcomeVisible', Promise.resolve({welcomeVisible: false}));
+    // Not show consent card by default.
+    testProxy.handler.setResultFor(
+        'getDiscountConsentCardVisible',
+        Promise.resolve({consentVisible: false}));
   });
 
   test('creates no module if no cart item', async () => {
@@ -144,7 +148,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     testProxy.handler.setResultFor(
         'getMerchantCarts', Promise.resolve({carts}));
     testProxy.handler.setResultFor(
-        'getWarmWelcomeVisible', Promise.resolve({visible: true}));
+        'getWarmWelcomeVisible', Promise.resolve({welcomeVisible: true}));
 
     // Arrange.
     await chromeCartDescriptor.initialize();
@@ -604,6 +608,9 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     ];
     testProxy.handler.setResultFor(
         'getMerchantCarts', Promise.resolve({carts}));
+    testProxy.handler.setResultFor(
+        'getDiscountConsentCardVisible',
+        Promise.resolve({consentVisible: true}));
     loadTimeData.overrideValues({
       modulesCartDiscountConsentRejectConfirmation: 'Reject confirmation!',
       modulesCartDiscountConsentAcceptConfirmation: 'Accept confirmation!',
@@ -613,7 +620,6 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     await chromeCartDescriptor.initialize();
     const moduleElement = chromeCartDescriptor.element;
     document.body.append(moduleElement);
-    moduleElement.showDiscountConsent = true;
     moduleElement.$.consentCardElement.render();
 
     // Assert.
@@ -686,12 +692,14 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     const carts = Array.from({length: 10}, () => dummyMerchant);
     testProxy.handler.setResultFor(
         'getMerchantCarts', Promise.resolve({carts}));
+    testProxy.handler.setResultFor(
+        'getDiscountConsentCardVisible',
+        Promise.resolve({consentVisible: true}));
 
     // Arrange.
     await chromeCartDescriptor.initialize();
     const moduleElement = chromeCartDescriptor.element;
     document.body.append(moduleElement);
-    moduleElement.showDiscountConsent = true;
     moduleElement.$.cartItemRepeat.render();
     const cartCarousel =
         moduleElement.shadowRoot.querySelector('#cartCarousel');

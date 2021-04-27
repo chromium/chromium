@@ -357,6 +357,7 @@ class ChromeCartModuleElement extends mixinBehaviors
     this.confirmDiscountConsentString_ =
         loadTimeData.getString('modulesCartDiscountConsentRejectConfirmation');
     $$(this, '#confirmDiscountConsentToast').show();
+    ChromeCartProxy.getInstance().handler.onDiscountConsentAcknowledged(false);
   }
 
   /** @private */
@@ -365,6 +366,7 @@ class ChromeCartModuleElement extends mixinBehaviors
     this.confirmDiscountConsentString_ =
         loadTimeData.getString('modulesCartDiscountConsentAcceptConfirmation');
     $$(this, '#confirmDiscountConsentToast').show();
+    ChromeCartProxy.getInstance().handler.onDiscountConsentAcknowledged(true);
   }
 
   /** @private */
@@ -377,21 +379,24 @@ customElements.define(ChromeCartModuleElement.is, ChromeCartModuleElement);
 
 /** @return {!Promise<?HTMLElement>} */
 async function createCartElement() {
-  const {visible} =
+  const {welcomeVisible} =
       await ChromeCartProxy.getInstance().handler.getWarmWelcomeVisible();
   const {carts} =
       await ChromeCartProxy.getInstance().handler.getMerchantCarts();
+  const {consentVisible} = await ChromeCartProxy.getInstance()
+                               .handler.getDiscountConsentCardVisible();
   ChromeCartProxy.getInstance().handler.onModuleCreated(carts.length);
   if (carts.length === 0) {
     return null;
   }
   const element = new ChromeCartModuleElement();
-  if (visible) {
+  if (welcomeVisible) {
     element.headerChipText = loadTimeData.getString('modulesCartHeaderNew');
     element.headerDescriptionText =
         loadTimeData.getString('modulesCartWarmWelcome');
   }
   element.cartItems = carts;
+  element.showDiscountConsent = consentVisible;
   return element;
 }
 

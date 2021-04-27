@@ -3209,6 +3209,12 @@ const char kCartModuleHidden[] = "cart_module_hidden";
 // cart module.
 const char kCartModuleWelcomeSurfaceShownTimes[] =
     "cart_module_welcome_surface_shown_times";
+// Boolean pref indicating whether user has reacted to the consent for
+// rule-based discount in cart module.
+const char kCartDiscountAcknowledged[] = "cart_discount_acknowledged";
+// Boolean pref indicating whether user has enabled rule-based discount in cart
+// module.
+const char kCartDiscountEnabled[] = "cart_discount_enabled";
 #endif
 
 #if defined(OS_ANDROID)

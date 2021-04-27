@@ -66,7 +66,16 @@ class CartService : public history::HistoryServiceObserver,
   void IncreaseWelcomeSurfaceCounter();
   // Returns whether to show the welcome surface in module. It is related to how
   // many times the welcome surface has shown.
-  bool ShouldShowWelcomSurface();
+  bool ShouldShowWelcomeSurface();
+  // Gets called when user has acknowledged the discount consent in cart module.
+  // shouldEnable indicates whether user has chosen to opt-in or opt-out the
+  // feature.
+  void AcknowledgeDiscountConsent(bool should_enable);
+  // Returns whether to show the consent card in module for rule-based discount.
+  bool ShouldShowDiscountConsent();
+  // Returns whether the rule-based discount feature in cart module is enabled,
+  // and user has chosen to opt-in the feature.
+  bool IsCartDiscountEnabled();
   // history::HistoryServiceObserver:
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;
