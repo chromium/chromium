@@ -206,9 +206,11 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   if (process_type.empty()) {
     EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded();
   }
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   auto& pcscan = base::internal::PCScan::Instance();
   // Notify PCScan about the main thread.
   pcscan.NotifyThreadCreated(base::internal::GetStackTop());
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   SetProcessNameForPCScan(process_type);
 }
 
