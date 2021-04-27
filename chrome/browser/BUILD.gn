@@ -3069,6 +3069,8 @@ static_library("browser") {
       "password_manager/android/credential_leak_controller_android.h",
       "password_manager/android/generated_password_saved_infobar_delegate_android.cc",
       "password_manager/android/generated_password_saved_infobar_delegate_android.h",
+      "password_manager/android/generated_password_saved_message_delegate.cc",
+      "password_manager/android/generated_password_saved_message_delegate.h",
       "password_manager/android/password_accessory_controller.h",
       "password_manager/android/password_accessory_controller_impl.cc",
       "password_manager/android/password_accessory_controller_impl.h",

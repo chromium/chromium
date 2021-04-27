@@ -43,6 +43,7 @@
 #include "url/origin.h"
 
 #if defined(OS_ANDROID)
+#include "chrome/browser/password_manager/android/generated_password_saved_message_delegate.h"
 #include "chrome/browser/password_manager/android/save_password_message_delegate.h"
 #include "components/password_manager/core/browser/credential_cache.h"
 
@@ -362,6 +363,8 @@ class ChromePasswordManagerClient
   bool was_leak_dialog_shown_ = false;
 
   SavePasswordMessageDelegate save_password_message_delegate_;
+  GeneratedPasswordSavedMessageDelegate
+      generated_password_saved_message_delegate_;
 #endif  // defined(OS_ANDROID)
 
   std::unique_ptr<ChromeBiometricAuthenticator> biometric_authenticator_;
