@@ -74,7 +74,7 @@ class MOJO_SYSTEM_IMPL_EXPORT ChannelLinux : public ChannelPosix {
   // This flag keeps track of whether or not we've established a shared memory
   // channel with the remote. If false we always fall back to the PosixChannel
   // (socket).
-  bool shared_mem_writer_ = false;
+  std::atomic_bool shared_mem_writer_{false};
 
   std::unique_ptr<DataAvailableNotifier> write_notifier_;
   std::unique_ptr<SharedBuffer> write_buffer_;
@@ -84,7 +84,7 @@ class MOJO_SYSTEM_IMPL_EXPORT ChannelLinux : public ChannelPosix {
 
   uint32_t num_pages_ = 0;
 
-  bool reject_writes_ = false;
+  std::atomic_bool reject_writes_{false};
 
   // This is a temporary buffer we use to remove messages from the shared buffer
   // for validation and dispatching.
