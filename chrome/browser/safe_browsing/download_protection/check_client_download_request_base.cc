@@ -41,8 +41,6 @@ namespace {
 
 const char kDownloadExtensionUmaName[] = "SBClientDownload.DownloadExtensions";
 
-constexpr char kAuthHeaderBearer[] = "Bearer ";
-
 void RecordFileExtensionType(const std::string& metric_name,
                              const base::FilePath& file) {
   base::UmaHistogramSparse(

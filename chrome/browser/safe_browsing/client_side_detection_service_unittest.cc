@@ -25,6 +25,7 @@
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
 #include "components/safe_browsing/content/browser/client_side_model_loader.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/proto/client_model.pb.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "components/variations/variations_associated_data.h"
@@ -297,7 +298,7 @@ TEST_F(ClientSideDetectionServiceTest,
         std::string out;
         EXPECT_TRUE(request.headers.GetHeader(
             net::HttpRequestHeaders::kAuthorization, &out));
-        EXPECT_EQ(out, "Bearer " + access_token);
+        EXPECT_EQ(out, kAuthHeaderBearer + access_token);
       }));
   SetClientReportPhishingResponse(response.SerializeAsString(), net::OK);
   EXPECT_TRUE(SendClientReportPhishingRequest(url, score, access_token));

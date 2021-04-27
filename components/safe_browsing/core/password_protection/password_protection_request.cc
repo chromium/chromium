@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/common/thread_utils.h"
 #include "components/safe_browsing/core/db/allowlist_checker_client.h"
 #include "components/safe_browsing/core/db/database_manager.h"
@@ -28,8 +29,6 @@ namespace safe_browsing {
 
 using ReusedPasswordAccountType =
     LoginReputationClientRequest::PasswordReuseEvent::ReusedPasswordAccountType;
-
-constexpr char kAuthHeaderBearer[] = "Bearer ";
 
 namespace {
 

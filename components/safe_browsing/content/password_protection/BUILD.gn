@@ -79,6 +79,7 @@ source_set("password_protection_unittest") {
       "//components/safe_browsing/core:csd_proto",
       "//components/safe_browsing/core:features",
       "//components/safe_browsing/core:verdict_cache_manager",
+      "//components/safe_browsing/core/common:common",
       "//components/safe_browsing/core/common:safe_browsing_prefs",
       "//components/safe_browsing/core/db:test_database_manager",
       "//components/safe_browsing/core/password_protection",

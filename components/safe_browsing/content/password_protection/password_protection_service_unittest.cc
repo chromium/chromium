@@ -29,6 +29,7 @@
 #include "components/safe_browsing/content/password_protection/password_protection_navigation_throttle.h"
 #include "components/safe_browsing/content/password_protection/password_protection_request_content.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/db/test_database_manager.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/safe_browsing/core/password_protection/metrics_util.h"
@@ -1035,7 +1036,7 @@ TEST_P(PasswordProtectionServiceBaseTest,
         std::string out;
         EXPECT_TRUE(request.headers.GetHeader(
             net::HttpRequestHeaders::kAuthorization, &out));
-        EXPECT_EQ(out, "Bearer " + access_token);
+        EXPECT_EQ(out, kAuthHeaderBearer + access_token);
       }));
   // Set up mock call to token fetcher.
   SafeBrowsingTokenFetcher::Callback cb;

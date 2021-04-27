@@ -15,6 +15,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/common/thread_utils.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "components/safe_browsing/core/verdict_cache_manager.h"
@@ -37,8 +38,6 @@ const size_t kMinBackOffResetDurationInSeconds = 5 * 60;   //  5 minutes.
 const size_t kMaxBackOffResetDurationInSeconds = 30 * 60;  // 30 minutes.
 
 const size_t kURLLookupTimeoutDurationInSeconds = 3;
-
-constexpr char kAuthHeaderBearer[] = "Bearer ";
 
 // Represents the value stored in the |version| field of |RTLookupRequest|.
 const int kRTLookupRequestVersion = 2;

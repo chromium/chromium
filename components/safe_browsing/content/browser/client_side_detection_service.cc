@@ -26,6 +26,7 @@
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/content/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/safe_browsing/core/proto/client_model.pb.h"
@@ -60,8 +61,6 @@ const int ClientSideDetectionService::kPositiveCacheIntervalMinutes = 30;
 
 const char ClientSideDetectionService::kClientReportPhishingUrl[] =
     "https://sb-ssl.google.com/safebrowsing/clientreport/phishing";
-
-constexpr char kAuthHeaderBearer[] = "Bearer ";
 
 struct ClientSideDetectionService::ClientPhishingReportInfo {
   std::unique_ptr<network::SimpleURLLoader> loader;
