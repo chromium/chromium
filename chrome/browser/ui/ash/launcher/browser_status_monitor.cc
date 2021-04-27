@@ -10,8 +10,8 @@
 #include "base/containers/contains.h"
 #include "base/macros.h"
 #include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_shelf_controller.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_util.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/launcher/shelf_spinner_controller.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -91,13 +91,13 @@ class BrowserStatusMonitor::LocalWebContentsObserver
 };
 
 BrowserStatusMonitor::BrowserStatusMonitor(
-    ChromeLauncherController* launcher_controller)
-    : launcher_controller_(launcher_controller),
+    ChromeShelfController* shelf_controller)
+    : shelf_controller_(shelf_controller),
       browser_tab_strip_tracker_(this, nullptr) {
-  DCHECK(launcher_controller_);
+  DCHECK(shelf_controller_);
 
   app_service_instance_helper_ =
-      launcher_controller->app_service_app_window_controller()
+      shelf_controller->app_service_app_window_controller()
           ->app_service_instance_helper();
   DCHECK(app_service_instance_helper_);
 }
@@ -138,13 +138,13 @@ void BrowserStatusMonitor::UpdateAppItemState(content::WebContents* contents,
   Browser* browser = chrome::FindBrowserWithWebContents(contents);
   if (remove || (browser && multi_user_util::IsProfileFromActiveUser(
                                 browser->profile()))) {
-    launcher_controller_->UpdateAppState(contents, remove);
+    shelf_controller_->UpdateAppState(contents, remove);
   }
 }
 
 void BrowserStatusMonitor::UpdateBrowserItemState() {
   DCHECK(initialized_);
-  launcher_controller_->UpdateBrowserItemState();
+  shelf_controller_->UpdateBrowserItemState();
 }
 
 void BrowserStatusMonitor::OnBrowserAdded(Browser* browser) {
@@ -227,10 +227,10 @@ void BrowserStatusMonitor::AddV1AppToShelf(Browser* browser) {
       web_app::GetAppIdFromApplicationName(browser->app_name());
   DCHECK(!app_id.empty());
   if (!IsV1AppInShelfWithAppId(app_id)) {
-    if (auto* chrome_controller = ChromeLauncherController::instance()) {
+    if (auto* chrome_controller = ChromeShelfController::instance()) {
       chrome_controller->GetShelfSpinnerController()->CloseSpinner(app_id);
     }
-    launcher_controller_->SetV1AppStatus(app_id, ash::STATUS_RUNNING);
+    shelf_controller_->SetV1AppStatus(app_id, ash::STATUS_RUNNING);
   }
   browser_to_app_id_map_[browser] = app_id;
 }
@@ -244,7 +244,7 @@ void BrowserStatusMonitor::RemoveV1AppFromShelf(Browser* browser) {
     std::string app_id = iter->second;
     browser_to_app_id_map_.erase(iter);
     if (!IsV1AppInShelfWithAppId(app_id))
-      launcher_controller_->SetV1AppStatus(app_id, ash::STATUS_CLOSED);
+      shelf_controller_->SetV1AppStatus(app_id, ash::STATUS_CLOSED);
   }
 }
 
@@ -301,7 +301,7 @@ void BrowserStatusMonitor::OnTabReplaced(TabStripModel* tab_strip_model,
 
   if (browser && IsV1AppInShelf(browser) &&
       multi_user_util::IsProfileFromActiveUser(browser->profile())) {
-    launcher_controller_->SetV1AppStatus(
+    shelf_controller_->SetV1AppStatus(
         web_app::GetAppIdFromApplicationName(browser->app_name()),
         ash::STATUS_RUNNING);
   }
@@ -358,8 +358,7 @@ void BrowserStatusMonitor::RemoveWebContentsObserver(
 void BrowserStatusMonitor::SetShelfIDForBrowserWindowContents(
     Browser* browser,
     content::WebContents* web_contents) {
-  launcher_controller_->SetShelfIDForBrowserWindowContents(browser,
-                                                           web_contents);
+  shelf_controller_->SetShelfIDForBrowserWindowContents(browser, web_contents);
 
   if (app_service_instance_helper_) {
     app_service_instance_helper_->OnSetShelfIDForBrowserWindowContents(

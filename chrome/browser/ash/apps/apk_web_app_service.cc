@@ -12,7 +12,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/apps/apk_web_app_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"
@@ -218,23 +218,23 @@ void ApkWebAppService::UpdateShelfPin(
     arc_app_list_prefs_->SetPackagePrefs(package_info->package_name, kLastAppId,
                                          base::Value(new_app_id));
     if (!last_app_id.empty()) {
-      auto* launcher_controller = ChromeLauncherController::instance();
-      if (!launcher_controller)
+      auto* shelf_controller = ChromeShelfController::instance();
+      if (!shelf_controller)
         return;
-      int index = launcher_controller->PinnedItemIndexByAppID(last_app_id);
+      int index = shelf_controller->PinnedItemIndexByAppID(last_app_id);
       // The previously installed app has been uninstalled or hidden, in this
       // instance get the saved pin index and pin at that place.
-      if (index == ChromeLauncherController::kInvalidIndex) {
+      if (index == ChromeShelfController::kInvalidIndex) {
         const base::Value* saved_index = arc_app_list_prefs_->GetPackagePrefs(
             package_info->package_name, kPinIndex);
         if (!(saved_index && saved_index->is_int()))
           return;
-        launcher_controller->PinAppAtIndex(new_app_id, saved_index->GetInt());
+        shelf_controller->PinAppAtIndex(new_app_id, saved_index->GetInt());
         arc_app_list_prefs_->SetPackagePrefs(
             package_info->package_name, kPinIndex,
-            base::Value(ChromeLauncherController::kInvalidIndex));
+            base::Value(ChromeShelfController::kInvalidIndex));
       } else {
-        launcher_controller->ReplacePinnedItem(last_app_id, new_app_id);
+        shelf_controller->ReplacePinnedItem(last_app_id, new_app_id);
       }
     }
   }

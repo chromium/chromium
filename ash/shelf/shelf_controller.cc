@@ -123,7 +123,7 @@ void ShelfController::Shutdown() {
 
 // static
 void ShelfController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  // These prefs are public for ChromeLauncherController's OnIsSyncingChanged.
+  // These prefs are public for ChromeShelfController's OnIsSyncingChanged.
   // See the pref names definitions for explanations of the synced, local, and
   // per-display behaviors.
   registry->RegisterStringPref(

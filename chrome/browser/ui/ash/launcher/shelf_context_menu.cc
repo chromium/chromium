@@ -21,8 +21,8 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/app_list/internal_app/internal_app_metadata.h"
 #include "chrome/browser/ui/ash/launcher/app_service/app_service_shelf_context_menu.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_util.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/launcher/extension_shelf_context_menu.h"
 #include "chrome/browser/ui/ash/launcher/extension_uninstaller.h"
 #include "chrome/grit/generated_resources.h"
@@ -59,7 +59,7 @@ void UninstallApp(Profile* profile, const std::string& app_id) {
 
 // static
 std::unique_ptr<ShelfContextMenu> ShelfContextMenu::Create(
-    ChromeLauncherController* controller,
+    ChromeShelfController* controller,
     const ash::ShelfItem* item,
     int64_t display_id) {
   DCHECK(controller);
@@ -82,7 +82,7 @@ std::unique_ptr<ShelfContextMenu> ShelfContextMenu::Create(
                                                      display_id);
 }
 
-ShelfContextMenu::ShelfContextMenu(ChromeLauncherController* controller,
+ShelfContextMenu::ShelfContextMenu(ChromeShelfController* controller,
                                    const ash::ShelfItem* item,
                                    int64_t display_id)
     : controller_(controller),

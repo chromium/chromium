@@ -9,7 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_launcher.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/image/image_skia.h"
@@ -35,10 +35,9 @@ void ArcPlaystoreShortcutShelfItemController::ItemSelected(
     // Play Store launch request has never been scheduled.
     std::unique_ptr<ArcAppLauncher> playstore_launcher =
         std::make_unique<ArcAppLauncher>(
-            ChromeLauncherController::instance()->profile(),
-            arc::kPlayStoreAppId, nullptr /* launch_intent */,
-            true /* deferred_launch_allowed */, display_id,
-            apps::mojom::LaunchSource::kFromShelf);
+            ChromeShelfController::instance()->profile(), arc::kPlayStoreAppId,
+            nullptr /* launch_intent */, true /* deferred_launch_allowed */,
+            display_id, apps::mojom::LaunchSource::kFromShelf);
     // ArcAppLauncher may launch Play Store in case it exists already. In this
     // case this instance of ArcPlaystoreShortcutShelfItemController may be
     // deleted. If Play Store does not exist at this moment, then let

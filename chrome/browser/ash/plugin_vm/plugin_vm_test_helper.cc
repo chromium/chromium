@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
@@ -43,7 +43,7 @@ class FakeShelfItemDelegate : public ash::ShelfItemDelegate {
                       int32_t event_flags,
                       int64_t display_id) override {}
   void Close() override {
-    ChromeLauncherController::instance()->CloseLauncherItem(
+    ChromeShelfController::instance()->CloseLauncherItem(
         ash::ShelfID(kPluginVmShelfAppId));
   }
 };
@@ -186,8 +186,7 @@ void PluginVmTestHelper::OpenShelfItem() {
   ash::ShelfID shelf_id(kPluginVmShelfAppId);
   std::unique_ptr<ash::ShelfItemDelegate> delegate =
       std::make_unique<FakeShelfItemDelegate>(shelf_id);
-  ChromeLauncherController* laucher_controller =
-      ChromeLauncherController::instance();
+  ChromeShelfController* laucher_controller = ChromeShelfController::instance();
   // Similar logic to AppServiceAppWindowShelfController, for handling pins
   // and spinners.
   if (laucher_controller->GetItem(shelf_id)) {
@@ -201,8 +200,7 @@ void PluginVmTestHelper::OpenShelfItem() {
 }
 
 void PluginVmTestHelper::CloseShelfItem() {
-  ChromeLauncherController::instance()->Close(
-      ash::ShelfID(kPluginVmShelfAppId));
+  ChromeShelfController::instance()->Close(ash::ShelfID(kPluginVmShelfAppId));
 }
 
 }  // namespace plugin_vm

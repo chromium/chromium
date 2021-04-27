@@ -49,7 +49,7 @@
 #include "chrome/browser/component_updater/cros_component_manager.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/startup/startup_switches.h"
 #include "components/prefs/pref_service.h"
@@ -454,7 +454,7 @@ void BrowserManager::Start(mojom::InitialBrowserAction initial_browser_action) {
   DCHECK_EQ(state_, State::STOPPED);
   DCHECK(!lacros_path_.empty());
   // Ensure we're not trying to open a window before the shelf is initialized.
-  DCHECK(ChromeLauncherController::instance());
+  DCHECK(ChromeShelfController::instance());
 
   SetState(State::CREATING_LOG_FILE);
 

@@ -25,8 +25,8 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_test_util.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -149,7 +149,7 @@ class AppServiceAppWindowBrowserTest
   void SetUp() override { extensions::PlatformAppBrowserTest::SetUp(); }
 
   void SetUpOnMainThread() override {
-    controller_ = ChromeLauncherController::instance();
+    controller_ = ChromeShelfController::instance();
     ASSERT_TRUE(controller_);
     extensions::PlatformAppBrowserTest::SetUpOnMainThread();
 
@@ -176,7 +176,7 @@ class AppServiceAppWindowBrowserTest
     return instance_state;
   }
 
-  ChromeLauncherController* controller_ = nullptr;
+  ChromeShelfController* controller_ = nullptr;
   apps::AppServiceProxyChromeOs* app_service_proxy_ = nullptr;
 };
 

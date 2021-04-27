@@ -21,7 +21,7 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
@@ -193,15 +193,15 @@ class ApkWebAppInstallerDelayedArcStartBrowserTest
   void TearDownOnMainThread() override { TearDownWebApps(); }
 };
 
-class ApkWebAppInstallerWithLauncherControllerBrowserTest
+class ApkWebAppInstallerWithShelfControllerBrowserTest
     : public ApkWebAppInstallerBrowserTest {
  public:
   // ApkWebAppInstallerBrowserTest
   void SetUpOnMainThread() override {
     EnableArc();
     SetUpWebApps();
-    launcher_controller_ = ChromeLauncherController::instance();
-    ASSERT_TRUE(launcher_controller_);
+    shelf_controller_ = ChromeShelfController::instance();
+    ASSERT_TRUE(shelf_controller_);
   }
 
   // ApkWebAppInstallerBrowserTest
@@ -211,7 +211,7 @@ class ApkWebAppInstallerWithLauncherControllerBrowserTest
   }
 
  protected:
-  ChromeLauncherController* launcher_controller_;
+  ChromeShelfController* shelf_controller_;
 };
 
 // Test the full installation and uninstallation flow.
@@ -381,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerWithLauncherControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerWithShelfControllerBrowserTest,
                        CheckPinStateAfterUpdate) {
   ApkWebAppService* service = apk_web_app_service();
   service->SetArcAppListPrefsForTesting(arc_app_list_prefs_);
@@ -399,13 +399,13 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerWithLauncherControllerBrowserTest,
 
   EXPECT_TRUE(installed_web_app_id_.empty());
   EXPECT_TRUE(uninstalled_web_app_id_.empty());
-  EXPECT_FALSE(launcher_controller_->IsAppPinned(arc_app_id));
+  EXPECT_FALSE(shelf_controller_->IsAppPinned(arc_app_id));
 
   // Pin the app to the shelf.
-  launcher_controller_->PinAppWithID(arc_app_id);
-  EXPECT_TRUE(launcher_controller_->IsAppPinned(arc_app_id));
+  shelf_controller_->PinAppWithID(arc_app_id);
+  EXPECT_TRUE(shelf_controller_->IsAppPinned(arc_app_id));
 
-  int pin_index = launcher_controller_->PinnedItemIndexByAppID(arc_app_id);
+  int pin_index = shelf_controller_->PinnedItemIndexByAppID(arc_app_id);
 
   arc_app_list_prefs_->SetPackagePrefs(kPackageName, kLastAppId,
                                        base::Value(arc_app_id));
@@ -417,17 +417,17 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerWithLauncherControllerBrowserTest,
     base::RunLoop run_loop;
     service->SetWebAppInstalledCallbackForTesting(base::BindLambdaForTesting(
         [&](const std::string& package_name, const web_app::AppId& web_app_id) {
-          // Web apps update the launcher asynchronously, so flush the App
+          // Web apps update the shelf asynchronously, so flush the App
           // Service's mojo calls to ensure that happens.
           auto* proxy =
               apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
           proxy->FlushMojoCallsForTesting();
           keep_web_app_id = web_app_id;
           EXPECT_FALSE(installed_web_app_id_.empty());
-          EXPECT_FALSE(launcher_controller_->IsAppPinned(arc_app_id));
-          EXPECT_TRUE(launcher_controller_->IsAppPinned(keep_web_app_id));
+          EXPECT_FALSE(shelf_controller_->IsAppPinned(arc_app_id));
+          EXPECT_TRUE(shelf_controller_->IsAppPinned(keep_web_app_id));
           int new_index =
-              launcher_controller_->PinnedItemIndexByAppID(keep_web_app_id);
+              shelf_controller_->PinnedItemIndexByAppID(keep_web_app_id);
           EXPECT_EQ(pin_index, new_index);
           run_loop.Quit();
         }));
@@ -440,14 +440,13 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerWithLauncherControllerBrowserTest,
   app_instance_->SendPackageAdded(GetArcAppPackage(kPackageName1, kAppTitle));
   const std::string arc_app_id1 =
       ArcAppListPrefs::GetAppId(kPackageName1, kAppActivity1);
-  launcher_controller_->PinAppAtIndex(arc_app_id1, pin_index);
-  EXPECT_EQ(pin_index,
-            launcher_controller_->PinnedItemIndexByAppID(arc_app_id1));
+  shelf_controller_->PinAppAtIndex(arc_app_id1, pin_index);
+  EXPECT_EQ(pin_index, shelf_controller_->PinnedItemIndexByAppID(arc_app_id1));
 
   // The app that was previously pinned will be shifted one to the right.
   pin_index += 1;
   EXPECT_EQ(pin_index,
-            launcher_controller_->PinnedItemIndexByAppID(keep_web_app_id));
+            shelf_controller_->PinnedItemIndexByAppID(keep_web_app_id));
 
   // Update to ARC app and check the pinned app has updated.
   {
@@ -455,12 +454,11 @@ IN_PROC_BROWSER_TEST_F(ApkWebAppInstallerWithLauncherControllerBrowserTest,
     service->SetWebAppUninstalledCallbackForTesting(base::BindLambdaForTesting(
         [&](const std::string& package_name, const web_app::AppId& web_app_id) {
           EXPECT_FALSE(uninstalled_web_app_id_.empty());
-          EXPECT_FALSE(launcher_controller_->IsAppPinned(web_app_id));
-          EXPECT_TRUE(launcher_controller_->IsAppPinned(arc_app_id));
-          int new_index =
-              launcher_controller_->PinnedItemIndexByAppID(arc_app_id);
+          EXPECT_FALSE(shelf_controller_->IsAppPinned(web_app_id));
+          EXPECT_TRUE(shelf_controller_->IsAppPinned(arc_app_id));
+          int new_index = shelf_controller_->PinnedItemIndexByAppID(arc_app_id);
           EXPECT_EQ(pin_index, new_index);
-          EXPECT_FALSE(launcher_controller_->IsAppPinned(keep_web_app_id));
+          EXPECT_FALSE(shelf_controller_->IsAppPinned(keep_web_app_id));
           run_loop.Quit();
         }));
     app_instance_->SendPackageAdded(GetArcAppPackage(kPackageName, kAppTitle));

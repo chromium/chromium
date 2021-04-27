@@ -39,7 +39,7 @@
 #include "chrome/browser/ui/app_list/search/search_result_ranker/ranking_item_util.h"
 #include "chrome/browser/ui/ash/launcher/arc_app_shelf_id.h"
 #include "chrome/browser/ui/ash/launcher/arc_shelf_spinner_item_controller.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/launcher/shelf_spinner_controller.h"
 #include "chrome/common/pref_names.h"
 #include "components/arc/arc_prefs.h"
@@ -372,8 +372,8 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
     }
 
     arc::ArcBootPhaseMonitorBridge::RecordFirstAppLaunchDelayUMA(context);
-    ChromeLauncherController* chrome_controller =
-        ChromeLauncherController::instance();
+    ChromeShelfController* chrome_controller =
+        ChromeShelfController::instance();
     // chrome_controller may be null in tests.
     if (chrome_controller) {
       chrome_controller->GetShelfSpinnerController()->AddSpinnerToShelf(

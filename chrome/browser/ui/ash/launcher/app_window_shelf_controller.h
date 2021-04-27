@@ -12,7 +12,7 @@
 #include "ui/wm/public/activation_change_observer.h"
 
 class AppWindowShelfItemController;
-class ChromeLauncherController;
+class ChromeShelfController;
 class Profile;
 
 namespace aura {
@@ -28,7 +28,7 @@ class AppWindowShelfController : public wm::ActivationChangeObserver,
  public:
   ~AppWindowShelfController() override;
 
-  // Called by ChromeLauncherController when the active user changed and the
+  // Called by ChromeShelfController when the active user changed and the
   // items need to be updated.
   virtual void ActiveUserChanged(const std::string& user_email) {}
 
@@ -41,21 +41,21 @@ class AppWindowShelfController : public wm::ActivationChangeObserver,
                          aura::Window* gained_active,
                          aura::Window* lost_active) override;
 
-  ChromeLauncherController* owner() { return owner_; }
+  ChromeShelfController* owner() { return owner_; }
 
  protected:
-  explicit AppWindowShelfController(ChromeLauncherController* owner);
+  explicit AppWindowShelfController(ChromeShelfController* owner);
 
   virtual AppWindowShelfItemController* ControllerForWindow(
       aura::Window* window) = 0;
 
   // Called to update local caches when the item |delegate| is replaced. Note,
-  // |delegate| might not belong to current launcher controller.
+  // |delegate| might not belong to current shelf controller.
   virtual void OnItemDelegateDiscarded(ash::ShelfItemDelegate* delegate) = 0;
 
  private:
   // Unowned pointers.
-  ChromeLauncherController* owner_;
+  ChromeShelfController* owner_;
   wm::ActivationClient* activation_client_ = nullptr;
 
   // ash::ShelfModelObserver:

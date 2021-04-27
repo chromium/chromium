@@ -21,7 +21,7 @@
 #include "chrome/browser/ui/app_list/app_service/app_service_app_item.h"
 #include "chrome/browser/ui/app_list/app_service/app_service_context_menu.h"
 #include "chrome/browser/ui/app_list/internal_app/internal_app_metadata.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/common/chrome_features.h"
@@ -167,7 +167,7 @@ void AppServiceAppResult::Launch(int event_flags,
 
   // For Chrome apps or Web apps, if it is non-platform app, it could be
   // selecting an existing delegate for the app, so call
-  // ChromeLauncherController's ActivateApp interface. Platform apps or ARC
+  // ChromeShelfController's ActivateApp interface. Platform apps or ARC
   // apps, Crostini apps treat activations as a launch. The app can decide
   // whether to show a new window or focus an existing window as it sees fit.
   //
@@ -184,7 +184,7 @@ void AppServiceAppResult::Launch(int event_flags,
         }
       });
   if (is_active_app) {
-    ChromeLauncherController::instance()->ActivateApp(
+    ChromeShelfController::instance()->ActivateApp(
         app_id(), ash::LAUNCH_FROM_APP_LIST_SEARCH, event_flags,
         controller()->GetAppListDisplayId());
   } else {

@@ -13,8 +13,8 @@
 #include "ash/wm/desks/desks_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/ash_util.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_util.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/launcher/shelf_context_menu.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -107,7 +107,7 @@ void BrowserShortcutShelfItemController::ItemSelected(
     return;
   }
 
-  Profile* profile = ChromeLauncherController::instance()->profile();
+  Profile* profile = ChromeShelfController::instance()->profile();
   Browser* last_browser = chrome::FindTabbedBrowser(profile, true);
 
   if (last_browser && !filter_predicate.is_null() &&
@@ -125,7 +125,7 @@ void BrowserShortcutShelfItemController::ItemSelected(
   if (items.size() == 1) {
     // Single browser, activate or minimize if active.
     action =
-        ChromeLauncherController::instance()->ActivateWindowOrMinimizeIfActive(
+        ChromeShelfController::instance()->ActivateWindowOrMinimizeIfActive(
             last_browser->window(), true /* minimize allowed */);
   } else if (source == ash::LAUNCH_FROM_SHELF) {
     // Multiple targets, activating from shelf, a menu will be shown.
@@ -135,7 +135,7 @@ void BrowserShortcutShelfItemController::ItemSelected(
     // Multiple targets, not activating from shelf, no menu will be shown.
     // Activate the recently active browser, never minimize.
     action =
-        ChromeLauncherController::instance()->ActivateWindowOrMinimizeIfActive(
+        ChromeShelfController::instance()->ActivateWindowOrMinimizeIfActive(
             last_browser->window(), false /* minimize not allowed */);
   }
   std::move(callback).Run(action, std::move(items));
@@ -148,7 +148,7 @@ BrowserShortcutShelfItemController::GetAppMenuItems(
   std::vector<std::pair<Browser*, size_t>> app_menu_items;
   AppMenuItems items;
   bool found_tabbed_browser = false;
-  ChromeLauncherController* controller = ChromeLauncherController::instance();
+  ChromeShelfController* controller = ChromeShelfController::instance();
   for (auto* browser : GetListOfActiveBrowsers(shelf_model_)) {
     if (!filter_predicate.is_null() &&
         !filter_predicate.Run(browser->window()->GetNativeWindow())) {
@@ -189,7 +189,7 @@ BrowserShortcutShelfItemController::GetAppMenuItems(
 void BrowserShortcutShelfItemController::GetContextMenu(
     int64_t display_id,
     GetContextMenuCallback callback) {
-  ChromeLauncherController* controller = ChromeLauncherController::instance();
+  ChromeShelfController* controller = ChromeShelfController::instance();
   const ash::ShelfItem* item = controller->GetItem(shelf_id());
   context_menu_ = ShelfContextMenu::Create(controller, item, display_id);
   context_menu_->GetMenuModel(std::move(callback));
@@ -278,7 +278,7 @@ BrowserShortcutShelfItemController::ActivateOrAdvanceToNextBrowser() {
         browser = (++i == items.end()) ? items[0] : *i;
     } else {
       browser = chrome::FindTabbedBrowser(
-          ChromeLauncherController::instance()->profile(), true);
+          ChromeShelfController::instance()->profile(), true);
       if (!browser || !IsBrowserRepresentedInBrowserList(browser, shelf_model_))
         browser = items[0];
     }

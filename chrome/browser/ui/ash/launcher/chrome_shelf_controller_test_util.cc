@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_test_util.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller_test_util.h"
 
 #include <memory>
 
@@ -12,7 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 
@@ -45,7 +45,7 @@ ash::ShelfAction SelectShelfItem(const ash::ShelfID& id,
 
   base::RunLoop run_loop;
   ash::ShelfAction action = ash::SHELF_ACTION_NONE;
-  ash::ShelfModel* model = ChromeLauncherController::instance()->shelf_model();
+  ash::ShelfModel* model = ChromeShelfController::instance()->shelf_model();
   ash::ShelfItemDelegate* delegate = model->GetShelfItemDelegate(id);
   delegate->ItemSelected(
       std::move(event), display_id, source,

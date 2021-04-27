@@ -20,7 +20,7 @@ namespace content {
 class WebContents;
 }
 
-// Assists the LauncherController with ExtensionService interaction.
+// Assists ChromeShelfController with ExtensionService interaction.
 class ShelfControllerHelper : public ExtensionEnableFlowDelegate {
  public:
   explicit ShelfControllerHelper(Profile* profile);

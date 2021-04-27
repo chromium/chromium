@@ -64,7 +64,7 @@
 #include "chrome/browser/ui/app_list/test/fake_app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/browser/ui/ash/launcher/arc_app_shelf_id.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/launcher/shelf_controller_helper.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/common/chrome_features.h"
@@ -456,14 +456,14 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
     web_app::TestWebAppProvider::Get(profile_.get())->Start();
     CreateBuilder();
 
-    CreateLauncherController();
+    CreateShelfController();
 
     // Validating decoded content does not fit well for unit tests.
     ArcAppIcon::DisableSafeDecodingForTesting();
   }
 
   void TearDown() override {
-    launcher_controller_.reset();
+    shelf_controller_.reset();
     arc_test_.TearDown();
     ResetBuilder();
     extensions::ExtensionServiceTestBase::TearDown();
@@ -471,14 +471,14 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
 
   ArcState GetArcState() const { return GetParam(); }
 
-  ChromeLauncherController* CreateLauncherController() {
-    launcher_controller_ = std::make_unique<ChromeLauncherController>(
-        profile_.get(), model_.get());
-    launcher_controller_->SetProfileForTest(profile_.get());
-    launcher_controller_->SetShelfControllerHelperForTest(
+  ChromeShelfController* CreateShelfController() {
+    shelf_controller_ =
+        std::make_unique<ChromeShelfController>(profile_.get(), model_.get());
+    shelf_controller_->SetProfileForTest(profile_.get());
+    shelf_controller_->SetShelfControllerHelperForTest(
         std::make_unique<ShelfControllerHelper>(profile_.get()));
-    launcher_controller_->Init();
-    return launcher_controller_.get();
+    shelf_controller_->Init();
+    return shelf_controller_.get();
   }
 
   void DisableFlushForAppService() { should_flush_for_app_service_ = false; }
@@ -827,7 +827,7 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
   std::unique_ptr<FakeAppListModelUpdater> model_updater_;
   std::unique_ptr<test::TestAppListControllerDelegate> controller_;
   std::unique_ptr<AppServiceAppModelBuilder> builder_;
-  std::unique_ptr<ChromeLauncherController> launcher_controller_;
+  std::unique_ptr<ChromeShelfController> shelf_controller_;
   std::unique_ptr<ash::ShelfModel> model_;
   bool should_flush_for_app_service_ = true;
 };

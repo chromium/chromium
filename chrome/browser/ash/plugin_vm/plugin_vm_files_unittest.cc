@@ -19,7 +19,7 @@
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/ui/ash/launcher/app_window_base.h"
 #include "chrome/browser/ui/ash/launcher/app_window_shelf_item_controller.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/launcher/shelf_controller_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -145,11 +145,11 @@ TEST_F(PluginVmFilesTest, LaunchPluginVmApp) {
                 return std::make_unique<MockPluginVmManager>();
               })));
   ash::ShelfModel shelf_model;
-  ChromeLauncherController chrome_launcher_controller(&profile_, &shelf_model);
-  chrome_launcher_controller.SetProfileForTest(&profile_);
-  chrome_launcher_controller.SetShelfControllerHelperForTest(
+  ChromeShelfController chrome_shelf_controller(&profile_, &shelf_model);
+  chrome_shelf_controller.SetProfileForTest(&profile_);
+  chrome_shelf_controller.SetShelfControllerHelperForTest(
       std::make_unique<ShelfControllerHelper>(&profile_));
-  chrome_launcher_controller.Init();
+  chrome_shelf_controller.Init();
 
   AppLaunchedCallback app_launched_callback;
   PluginVmManager::LaunchPluginVmCallback launch_plugin_vm_callback;

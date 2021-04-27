@@ -15,7 +15,7 @@
 #include "base/check_op.h"
 #include "base/macros.h"
 #include "chrome/browser/ui/ash/launcher/app_service/app_service_instance_registry_helper.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -23,12 +23,12 @@
 class Browser;
 
 // BrowserStatusMonitor monitors creation/deletion of Browser and its
-// TabStripModel to keep the launcher representation up to date as the
+// TabStripModel to keep the shelf representation up to date as the
 // active tab changes.
 class BrowserStatusMonitor : public BrowserListObserver,
                              public TabStripModelObserver {
  public:
-  explicit BrowserStatusMonitor(ChromeLauncherController* launcher_controller);
+  explicit BrowserStatusMonitor(ChromeShelfController* shelf_controller);
   ~BrowserStatusMonitor() override;
 
   // Do the initialization work. Note: This function should not be called in the
@@ -37,12 +37,12 @@ class BrowserStatusMonitor : public BrowserListObserver,
   void Initialize();
 
   // A function which gets called when the current user has changed.
-  // Note that this function is called by the ChromeLauncherController to be
+  // Note that this function is called by the ChromeShelfController to be
   // able to do the activation in a proper order - rather then setting an
   // observer.
   virtual void ActiveUserChanged(const std::string& user_email) {}
 
-  // A shortcut to call the ChromeLauncherController's UpdateAppState().
+  // A shortcut to call the ChromeShelfController's UpdateAppState().
   void UpdateAppItemState(content::WebContents* contents, bool remove);
 
   // A shortcut to call the BrowserShortcutShelfItemController's
@@ -100,7 +100,7 @@ class BrowserStatusMonitor : public BrowserListObserver,
   void SetShelfIDForBrowserWindowContents(Browser* browser,
                                           content::WebContents* web_contents);
 
-  ChromeLauncherController* launcher_controller_;
+  ChromeShelfController* shelf_controller_;
 
   std::map<Browser*, std::string> browser_to_app_id_map_;
   std::map<content::WebContents*, std::unique_ptr<LocalWebContentsObserver>>

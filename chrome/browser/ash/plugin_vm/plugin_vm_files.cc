@@ -25,7 +25,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/launcher/app_window_base.h"
 #include "chrome/browser/ui/ash/launcher/app_window_shelf_item_controller.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
 #include "chromeos/dbus/cicerone/cicerone_service.pb.h"
 #include "chromeos/dbus/cicerone_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -65,7 +65,7 @@ base::FilePath GetDefaultSharedDir(Profile* profile) {
 
 void FocusAllPluginVmWindows() {
   ash::ShelfModel* shelf_model =
-      ChromeLauncherController::instance()->shelf_model();
+      ChromeShelfController::instance()->shelf_model();
   DCHECK(shelf_model);
   AppWindowShelfItemController* item_controller =
       shelf_model->GetAppWindowShelfItemController(

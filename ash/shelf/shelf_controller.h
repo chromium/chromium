@@ -23,7 +23,7 @@ class PrefRegistrySimple;
 namespace ash {
 
 // ShelfController owns the ShelfModel and manages shelf preferences.
-// ChromeLauncherController and related classes largely manage the ShelfModel.
+// ChromeShelfController and related classes largely manage the ShelfModel.
 class ASH_EXPORT ShelfController : public SessionObserver,
                                    public TabletModeObserver,
                                    public WindowTreeHostManager::Observer,

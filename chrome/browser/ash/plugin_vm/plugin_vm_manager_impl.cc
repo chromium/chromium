@@ -17,7 +17,7 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/launcher/shelf_spinner_controller.h"
 #include "chrome/browser/ui/ash/launcher/shelf_spinner_item_controller.h"
 #include "chrome/browser/ui/simple_message_box.h"
@@ -186,7 +186,7 @@ void PluginVmManagerImpl::LaunchPluginVm(LaunchPluginVmCallback callback) {
   // wait before starting the VM.
   if (vm_state_ == vm_tools::plugin_dispatcher::VmState::VM_STATE_UNKNOWN ||
       VmIsStopping(vm_state_)) {
-    ChromeLauncherController::instance()
+    ChromeShelfController::instance()
         ->GetShelfSpinnerController()
         ->AddSpinnerToShelf(
             kPluginVmShelfAppId,
@@ -365,8 +365,7 @@ void PluginVmManagerImpl::OnVmStateChanged(
     // The previous seneschal handle is no longer valid.
     seneschal_server_handle_ = 0;
 
-    ChromeLauncherController::instance()->Close(
-        ash::ShelfID(kPluginVmShelfAppId));
+    ChromeShelfController::instance()->Close(ash::ShelfID(kPluginVmShelfAppId));
   }
 
   auto* engagement_metrics_service =
@@ -648,9 +647,8 @@ void PluginVmManagerImpl::LaunchFailed(PluginVmLaunchResult result) {
 
   RecordPluginVmLaunchResultHistogram(result);
 
-  ChromeLauncherController::instance()
-      ->GetShelfSpinnerController()
-      ->CloseSpinner(kPluginVmShelfAppId);
+  ChromeShelfController::instance()->GetShelfSpinnerController()->CloseSpinner(
+      kPluginVmShelfAppId);
 
   pending_start_vm_ = false;
   pending_vm_tools_installed_ = false;

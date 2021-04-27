@@ -15,7 +15,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
 #include "chrome/browser/ui/ash/session_util.h"
@@ -230,11 +230,11 @@ void MultiProfileSupport::OnTransitionUserShelfToNewAccount() {
         ProfileManager::GetActiveUserProfile()->GetPath());
   }
 
-  ChromeLauncherController* chrome_launcher_controller =
-      ChromeLauncherController::instance();
-  // Some unit tests have no ChromeLauncherController.
-  if (!chrome_launcher_controller)
+  ChromeShelfController* chrome_shelf_controller =
+      ChromeShelfController::instance();
+  // Some unit tests have no ChromeShelfController.
+  if (!chrome_shelf_controller)
     return;
-  chrome_launcher_controller->ActiveUserChanged(
+  chrome_shelf_controller->ActiveUserChanged(
       multi_user_window_manager_->CurrentAccountId());
 }

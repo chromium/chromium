@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_util.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller_util.h"
 
 #include "ash/public/cpp/shelf_model.h"
 #include "base/containers/contains.h"

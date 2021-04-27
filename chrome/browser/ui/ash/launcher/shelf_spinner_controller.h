@@ -20,7 +20,7 @@
 
 class ShelfItemDelegate;
 class ShelfSpinnerItemController;
-class ChromeLauncherController;
+class ChromeShelfController;
 class Profile;
 
 namespace gfx {
@@ -36,7 +36,7 @@ class ShelfSpinnerController : public ash::ShelfModelObserver {
   // animating the spinner after it has been dismissed.
   class ShelfSpinnerData;
 
-  explicit ShelfSpinnerController(ChromeLauncherController* owner);
+  explicit ShelfSpinnerController(ChromeShelfController* owner);
   ~ShelfSpinnerController() override;
 
   bool HasApp(const std::string& app_id) const;
@@ -65,7 +65,7 @@ class ShelfSpinnerController : public ash::ShelfModelObserver {
 
   // Hide all the spinners associated with the old user, and restore to the
   // shelf any spinners associated with the new active user. Called by
-  // ChromeLauncherController when the active user is changed.
+  // ChromeShelfController when the active user is changed.
   void ActiveUserChanged(const AccountId& account_id);
 
   // ash::ShelfModelObserver:
@@ -98,7 +98,7 @@ class ShelfSpinnerController : public ash::ShelfModelObserver {
   void HideSpinner(const std::string& app_id);
 
   // Unowned pointers.
-  ChromeLauncherController* owner_;
+  ChromeShelfController* owner_;
 
   AccountId current_account_id_;
 

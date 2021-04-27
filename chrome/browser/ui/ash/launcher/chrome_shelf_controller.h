@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_LAUNCHER_CHROME_LAUNCHER_CONTROLLER_H_
-#define CHROME_BROWSER_UI_ASH_LAUNCHER_CHROME_LAUNCHER_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_ASH_LAUNCHER_CHROME_SHELF_CONTROLLER_H_
+#define CHROME_BROWSER_UI_ASH_LAUNCHER_CHROME_SHELF_CONTROLLER_H_
 
 #include <map>
 #include <memory>
@@ -29,7 +29,7 @@ class AppServiceAppWindowShelfController;
 class AppWindowShelfController;
 class BrowserShortcutShelfItemController;
 class BrowserStatusMonitor;
-class ChromeLauncherControllerUserSwitchObserver;
+class ChromeShelfControllerUserSwitchObserver;
 class GURL;
 class Profile;
 class ShelfControllerHelper;
@@ -53,10 +53,9 @@ namespace ui {
 class BaseWindow;
 }
 
-// ChromeLauncherController helps manage Ash's shelf for Chrome prefs and apps.
+// ChromeShelfController helps manage Ash's shelf for Chrome prefs and apps.
 // It helps synchronize shelf state with profile preferences and app content.
-// NOTE: Launcher is an old name for the shelf, this class should be renamed.
-class ChromeLauncherController
+class ChromeShelfController
     : public ShelfAppUpdater::Delegate,
       public AppIconLoaderDelegate,
       private ash::ShelfModelObserver,
@@ -66,11 +65,11 @@ class ChromeLauncherController
   // The value used for indicating that an index position doesn't exist.
   static const int kInvalidIndex = -1;
 
-  // Returns the single ChromeLauncherController instance.
-  static ChromeLauncherController* instance() { return instance_; }
+  // Returns the single ChromeShelfController instance.
+  static ChromeShelfController* instance() { return instance_; }
 
-  ChromeLauncherController(Profile* profile, ash::ShelfModel* model);
-  ~ChromeLauncherController() override;
+  ChromeShelfController(Profile* profile, ash::ShelfModel* model);
+  ~ChromeShelfController() override;
 
   Profile* profile() const { return profile_; }
   ash::ShelfModel* shelf_model() const { return model_; }
@@ -79,7 +78,7 @@ class ChromeLauncherController
     return app_service_app_window_controller_;
   }
 
-  // Initializes this ChromeLauncherController.
+  // Initializes this ChromeShelfController.
   void Init();
 
   // Creates a new app item on the shelf for |item_delegate|.
@@ -283,10 +282,11 @@ class ChromeLauncherController
                          const gfx::ImageSkia& image) override;
 
  private:
+  // TODO(https://crbug.com/1201256): Rename to ChromeShelfControllerTest.
   friend class ChromeLauncherControllerTest;
   friend class LauncherPlatformAppBrowserTest;
   friend class ShelfAppBrowserTest;
-  friend class TestChromeLauncherController;
+  friend class TestChromeShelfController;
 
   FRIEND_TEST_ALL_PREFIXES(ash::SpokenFeedbackTest, ShelfIconFocusForward);
   FRIEND_TEST_ALL_PREFIXES(ash::SpokenFeedbackTest,
@@ -322,10 +322,10 @@ class ChromeLauncherController
   void SyncPinPosition(const ash::ShelfID& id);
 
   // Re-syncs shelf model.
-  void UpdateAppLaunchersFromSync();
+  void UpdatePinnedAppsFromSync();
 
   // Schedules re-sync of shelf model.
-  void ScheduleUpdateAppLaunchersFromSync();
+  void ScheduleUpdatePinnedAppsFromSync();
 
   // Update the policy-pinned flag for each shelf item.
   void UpdatePolicyPinnedAppsFromPrefs();
@@ -386,7 +386,7 @@ class ChromeLauncherController
   // Resolves the app icon image loader for the app.
   AppIconLoader* GetAppIconLoaderForApp(const std::string& app_id);
 
-  static ChromeLauncherController* instance_;
+  static ChromeShelfController* instance_;
 
   // The currently loaded profile used for prefs and loading extensions. This is
   // NOT necessarily the profile new windows are created with. Note that in
@@ -401,7 +401,7 @@ class ChromeLauncherController
   // The ShelfModel instance owned by ash::Shell's ShelfController.
   ash::ShelfModel* model_;
 
-  // The AppService app window launcher controller.
+  // The AppService app window shelf controller.
   AppServiceAppWindowShelfController* app_service_app_window_controller_ =
       nullptr;
 
@@ -409,7 +409,7 @@ class ChromeLauncherController
   bool should_sync_pin_changes_ = true;
 
   // Used to get app info for tabs.
-  std::unique_ptr<ShelfControllerHelper> launcher_controller_helper_;
+  std::unique_ptr<ShelfControllerHelper> shelf_controller_helper_;
 
   // TODO(crbug.com/836128): Remove this once SystemWebApps are enabled by
   // default.
@@ -438,7 +438,7 @@ class ChromeLauncherController
   std::unique_ptr<BrowserStatusMonitor> browser_status_monitor_;
 
   // A special observer class to detect user switches.
-  std::unique_ptr<ChromeLauncherControllerUserSwitchObserver>
+  std::unique_ptr<ChromeShelfControllerUserSwitchObserver>
       user_switch_observer_;
 
   std::unique_ptr<ShelfSpinnerController> shelf_spinner_controller_;
@@ -449,9 +449,9 @@ class ChromeLauncherController
   using RunningAppListIdMap = std::map<std::string, RunningAppListIds>;
   RunningAppListIdMap last_used_running_application_order_;
 
-  base::WeakPtrFactory<ChromeLauncherController> weak_ptr_factory_{this};
+  base::WeakPtrFactory<ChromeShelfController> weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(ChromeLauncherController);
+  DISALLOW_COPY_AND_ASSIGN(ChromeShelfController);
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_LAUNCHER_CHROME_LAUNCHER_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_ASH_LAUNCHER_CHROME_SHELF_CONTROLLER_H_

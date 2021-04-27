@@ -50,7 +50,7 @@ class ExoParts;
 #endif
 
 namespace internal {
-class ChromeLauncherControllerInitializer;
+class ChromeShelfControllerInitializer;
 }
 
 // Browser initialization for Ash UI. Only use this for Ash specific
@@ -101,8 +101,8 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<chromeos::NetworkPortalNotificationController>
       network_portal_notification_controller_;
 
-  std::unique_ptr<internal::ChromeLauncherControllerInitializer>
-      chrome_launcher_controller_initializer_;
+  std::unique_ptr<internal::ChromeShelfControllerInitializer>
+      chrome_shelf_controller_initializer_;
 
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
   std::unique_ptr<ExoParts> exo_parts_;

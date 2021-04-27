@@ -31,8 +31,8 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/launcher/arc_app_shelf_id.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_test_util.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller_test_util.h"
 #include "chrome/browser/ui/ash/launcher/shelf_spinner_controller.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
@@ -140,7 +140,7 @@ class AppAnimatedWaiter {
     const base::TimeDelta threshold =
         base::TimeDelta::FromMilliseconds(kAppAnimatedThresholdMs);
     ShelfSpinnerController* controller =
-        ChromeLauncherController::instance()->GetShelfSpinnerController();
+        ChromeShelfController::instance()->GetShelfSpinnerController();
     while (controller->GetActiveTime(app_id_) < threshold) {
       base::RunLoop().RunUntilIdle();
     }
@@ -316,7 +316,7 @@ class ArcAppShelfBrowserTest : public extensions::ExtensionBrowserTest {
   }
 
   ash::ShelfItemDelegate* GetShelfItemDelegate(const std::string& id) {
-    auto* model = ChromeLauncherController::instance()->shelf_model();
+    auto* model = ChromeShelfController::instance()->shelf_model();
     return model->GetShelfItemDelegate(ash::ShelfID(id));
   }
 
@@ -373,8 +373,7 @@ IN_PROC_BROWSER_TEST_F(ArcAppDeferredShelfBrowserTest,
   StopInstance();
   StartInstance();
 
-  ChromeLauncherController* const controller =
-      ChromeLauncherController::instance();
+  ChromeShelfController* const controller = ChromeShelfController::instance();
   const std::string app_id = GetTestApp1Id(kTestAppPackage);
   controller->PinAppWithID(app_id);
 
@@ -435,7 +434,7 @@ IN_PROC_BROWSER_TEST_P(ArcAppDeferredShelfWithParamsBrowserTest,
   InstallTestApps(kTestAppPackage, false);
   SendPackageAdded(kTestAppPackage, false);
 
-  ChromeLauncherController* controller = ChromeLauncherController::instance();
+  ChromeShelfController* controller = ChromeShelfController::instance();
   const std::string app_id = GetTestApp1Id(kTestAppPackage);
   const ash::ShelfID shelf_id(app_id);
   if (is_pinned()) {
@@ -520,7 +519,7 @@ IN_PROC_BROWSER_TEST_F(ArcAppShelfBrowserTest, PinOnPackageUpdateAndRemove) {
 
   const ash::ShelfID shelf_id1(GetTestApp1Id(kTestAppPackage));
   const ash::ShelfID shelf_id2(GetTestApp2Id(kTestAppPackage));
-  ChromeLauncherController* controller = ChromeLauncherController::instance();
+  ChromeShelfController* controller = ChromeShelfController::instance();
   controller->PinAppWithID(shelf_id1.app_id);
   controller->PinAppWithID(shelf_id2.app_id);
   EXPECT_TRUE(controller->GetItem(shelf_id1));
@@ -625,7 +624,7 @@ IN_PROC_BROWSER_TEST_F(ArcAppShelfBrowserTest, ShelfGroup) {
 
   ASSERT_EQ(delegate3, GetShelfItemDelegate(shelf_id3));
 
-  ChromeLauncherController* controller = ChromeLauncherController::instance();
+  ChromeShelfController* controller = ChromeShelfController::instance();
   const ash::ShelfItem* item1 = controller->GetItem(ash::ShelfID(shelf_id1));
   ASSERT_TRUE(item1);
 

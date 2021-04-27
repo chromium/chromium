@@ -28,12 +28,12 @@ class InstanceUpdate;
 class AppServiceAppWindowCrostiniTracker;
 class AppServiceAppWindowArcTracker;
 class AppWindowBase;
-class ChromeLauncherController;
+class ChromeShelfController;
 class Profile;
 
 // AppServiceAppWindowShelfController observes the AppService
 // InstanceRegistry and the aura window manager. It manages app shelf items,
-// handles adding and removing launcher items from ChromeLauncherController and
+// handles adding and removing launcher items from ChromeShelfController and
 // puts running apps on the Chrome OS shelf.
 class AppServiceAppWindowShelfController
     : public AppWindowShelfController,
@@ -44,7 +44,7 @@ class AppServiceAppWindowShelfController
  public:
   using ProfileList = std::vector<Profile*>;
 
-  explicit AppServiceAppWindowShelfController(ChromeLauncherController* owner);
+  explicit AppServiceAppWindowShelfController(ChromeShelfController* owner);
   ~AppServiceAppWindowShelfController() override;
 
   // AppWindowShelfController:

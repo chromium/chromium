@@ -123,7 +123,7 @@ class AppServiceInstanceRegistryHelper {
   apps::AppServiceProxyChromeOs* proxy_ = nullptr;
 
   // Used to get app info for tabs.
-  std::unique_ptr<ShelfControllerHelper> launcher_controller_helper_;
+  std::unique_ptr<ShelfControllerHelper> shelf_controller_helper_;
 
   // Maps the browser window to tab windows in the browser. When the browser
   // window is inactive or invisible, tab windows in the browser should be

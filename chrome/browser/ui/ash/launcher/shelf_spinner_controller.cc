@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/crostini/crostini_shelf_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/launcher/shelf_spinner_item_controller.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/gfx/canvas.h"
@@ -158,7 +158,7 @@ class SpinningEffectSource : public gfx::CanvasImageSource {
 
 }  // namespace
 
-ShelfSpinnerController::ShelfSpinnerController(ChromeLauncherController* owner)
+ShelfSpinnerController::ShelfSpinnerController(ChromeShelfController* owner)
     : owner_(owner) {
   owner->shelf_model()->AddObserver(this);
   if (user_manager::UserManager::IsInitialized()) {

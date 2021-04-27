@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
 
 #include <stddef.h>
 
@@ -72,7 +72,7 @@
 #include "chrome/browser/ui/ash/launcher/app_window_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/arc_app_window.h"
 #include "chrome/browser/ui/ash/launcher/browser_status_monitor.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_util.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/launcher/shelf_controller_helper.h"
 #include "chrome/browser/ui/ash/launcher/shelf_spinner_controller.h"
 #include "chrome/browser/ui/ash/launcher/shelf_spinner_item_controller.h"
@@ -335,6 +335,7 @@ void UpdateAppRegistryCache(Profile* profile,
 
 }  // namespace
 
+// TODO(https://crbug.com/1201256): Rename to ChromeShelfControllerTest.
 class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
  protected:
   ChromeLauncherControllerTest()
@@ -551,9 +552,9 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
   }
 
   // Create an uninitialized chrome launcher controller instance.
-  ChromeLauncherController* CreateLauncherController() {
+  ChromeShelfController* CreateShelfController() {
     launcher_controller_ =
-        std::make_unique<ChromeLauncherController>(profile(), model_.get());
+        std::make_unique<ChromeShelfController>(profile(), model_.get());
     launcher_controller_->SetProfileForTest(profile());
     launcher_controller_->SetShelfControllerHelperForTest(
         std::make_unique<ShelfControllerHelper>(profile()));
@@ -561,12 +562,14 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
   }
 
   // Create and initialize the controller, owned by the test shell delegate.
+  // TODO(https://crbug.com/1201256): Rename to InitShelfController().
   void InitLauncherController() {
-    CreateLauncherController()->Init();
+    CreateShelfController()->Init();
     app_service_test_.FlushMojoCalls();
   }
 
   // Create and initialize the controller; create a tab and show the browser.
+  // TODO(https://crbug.com/1201256): Rename to InitShelfControllerWithBrowser.
   void InitLauncherControllerWithBrowser() {
     InitLauncherController();
     chrome::NewTab(browser());
@@ -574,17 +577,18 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
   }
 
   // Destroy the launcher controller instance and clear the local pointer.
+  // TODO(https://crbug.com/1201256): Rename to ResetShelfController.
   void ResetLauncherController() { launcher_controller_.reset(); }
 
   // Destroy and recreate the controller; clear and reinitialize the ShelfModel.
   // Returns a pointer to the uninitialized controller, owned by shell delegate.
-  // TODO(msw): This does not accurately represent ChromeLauncherController
+  // TODO(msw): This does not accurately represent ChromeShelfController
   // lifetime or usage in production, and does not accurately simulate restarts.
-  ChromeLauncherController* RecreateLauncherController() {
+  ChromeShelfController* RecreateShelfController() {
     // Destroy any existing controller first; only one may exist at a time.
     ResetLauncherController();
     model_ = std::make_unique<ash::ShelfModel>();
-    return CreateLauncherController();
+    return CreateShelfController();
   }
 
   void StartAppSyncService(const syncer::SyncDataList& init_sync_list) {
@@ -768,7 +772,7 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
   }
 
   // Gets the IDs of the currently pinned app items.
-  void GetPinnedAppIds(ChromeLauncherController* controller,
+  void GetPinnedAppIds(ChromeShelfController* controller,
                        std::vector<std::string>* app_ids) {
     app_ids->clear();
     for (const auto& item : model_->items()) {
@@ -1064,7 +1068,8 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
 
   ArcAppTest arc_test_;
   bool auto_start_arc_test_ = false;
-  std::unique_ptr<ChromeLauncherController> launcher_controller_;
+  // TODO(https://crbug.com/1201256): Rename to shelf_controller_.
+  std::unique_ptr<ChromeShelfController> launcher_controller_;
   std::unique_ptr<ash::ShelfModel> model_;
 
   // |item_delegate_manager_| owns |test_controller_|.
@@ -1508,7 +1513,7 @@ TEST_F(ChromeLauncherControllerWithArcTest, ArcAppPinCrossPlatformWorkflow) {
 
   // Move to ARC enabled platform, restart syncing with stored data.
   StartAppSyncService(copy_sync_list);
-  RecreateLauncherController()->Init();
+  RecreateShelfController()->Init();
 
   // Pins must be automatically updated.
   SendListOfArcApps();
@@ -1544,7 +1549,7 @@ TEST_F(ChromeLauncherControllerWithArcTest, ArcAppPinCrossPlatformWorkflow) {
   // Move back to ARC disabled platform.
   EnablePlayStore(false);
   StartAppSyncService(copy_sync_list);
-  RecreateLauncherController()->Init();
+  RecreateShelfController()->Init();
 
   EXPECT_TRUE(launcher_controller_->IsAppPinned(extension1_->id()));
   EXPECT_FALSE(launcher_controller_->IsAppPinned(arc_app_id1));
@@ -3215,7 +3220,7 @@ TEST_F(ChromeLauncherControllerTest, PendingInsertionOrder) {
 }
 
 // Ensure |controller| creates the expected menu items for the given shelf item.
-void CheckAppMenu(ChromeLauncherController* controller,
+void CheckAppMenu(ChromeShelfController* controller,
                   const ash::ShelfItem& item,
                   size_t expected_item_count,
                   std::u16string expected_item_titles[]) {
@@ -3949,14 +3954,14 @@ TEST_F(ChromeLauncherControllerTest, PersistLauncherItemPositions) {
   EXPECT_EQ(ash::TYPE_PINNED_APP, model_->items()[1].type);
   EXPECT_EQ(ash::TYPE_BROWSER_SHORTCUT, model_->items()[2].type);
 
-  RecreateLauncherController();
+  RecreateShelfController();
   helper = new TestShelfControllerHelper(profile());
   helper->SetAppID(tab_strip_model->GetWebContentsAt(0), "1");
   helper->SetAppID(tab_strip_model->GetWebContentsAt(1), "2");
   SetShelfControllerHelper(helper);
   launcher_controller_->Init();
 
-  // Check ShelfItems are restored after resetting ChromeLauncherController.
+  // Check ShelfItems are restored after resetting ChromeShelfController.
   EXPECT_EQ(ash::TYPE_PINNED_APP, model_->items()[0].type);
   EXPECT_EQ(ash::TYPE_PINNED_APP, model_->items()[1].type);
   EXPECT_EQ(ash::TYPE_BROWSER_SHORTCUT, model_->items()[2].type);
@@ -3974,7 +3979,7 @@ TEST_F(ChromeLauncherControllerTest, PersistPinned) {
   helper->SetAppID(tab_strip_model->GetWebContentsAt(0), "1");
   SetShelfControllerHelper(helper);
 
-  // app_icon_loader is owned by ChromeLauncherController.
+  // app_icon_loader is owned by ChromeShelfController.
   TestAppIconLoaderImpl* app_icon_loader = new TestAppIconLoaderImpl;
   app_icon_loader->AddSupportedApp("1");
   SetAppIconLoader(std::unique_ptr<AppIconLoader>(app_icon_loader));
@@ -3988,11 +3993,11 @@ TEST_F(ChromeLauncherControllerTest, PersistPinned) {
   EXPECT_FALSE(launcher_controller_->IsAppPinned("0"));
   EXPECT_EQ(initial_size + 1, model_->items().size());
 
-  RecreateLauncherController();
+  RecreateShelfController();
   helper = new TestShelfControllerHelper(profile());
   helper->SetAppID(tab_strip_model->GetWebContentsAt(0), "1");
   SetShelfControllerHelper(helper);
-  // app_icon_loader is owned by ChromeLauncherController.
+  // app_icon_loader is owned by ChromeShelfController.
   app_icon_loader = new TestAppIconLoaderImpl;
   app_icon_loader->AddSupportedApp("1");
   SetAppIconLoader(std::unique_ptr<AppIconLoader>(app_icon_loader));
@@ -4012,7 +4017,7 @@ TEST_F(ChromeLauncherControllerTest, PersistPinned) {
 }
 
 // Verifies that ShelfID property is updated for browsers that are present when
-// ChromeLauncherController is created.
+// ChromeShelfController is created.
 TEST_F(ChromeLauncherControllerTest, ExistingBrowserWindowShelfIDSet) {
   InitLauncherControllerWithBrowser();
   launcher_controller_->PinAppWithID("1");
@@ -4024,7 +4029,7 @@ TEST_F(ChromeLauncherControllerTest, ExistingBrowserWindowShelfIDSet) {
   helper->SetAppID(tab_strip_model->GetWebContentsAt(0), "0");
   SetShelfControllerHelper(helper);
 
-  RecreateLauncherController();
+  RecreateShelfController();
   helper = new TestShelfControllerHelper(profile());
   helper->SetAppID(tab_strip_model->GetWebContentsAt(0), "1");
   SetShelfControllerHelper(helper);
@@ -4044,7 +4049,7 @@ TEST_F(ChromeLauncherControllerTest, MultipleAppIconLoaders) {
   const ash::ShelfID shelf_id2(extension2_->id());
   const ash::ShelfID shelf_id3(web_app::kGmailAppId);
   // app_icon_loader1 and app_icon_loader2 are owned by
-  // ChromeLauncherController.
+  // ChromeShelfController.
   TestAppIconLoaderImpl* app_icon_loader1 = new TestAppIconLoaderImpl();
   TestAppIconLoaderImpl* app_icon_loader2 = new TestAppIconLoaderImpl();
   app_icon_loader1->AddSupportedApp(shelf_id1.app_id);
@@ -4505,7 +4510,7 @@ TEST_F(ChromeLauncherControllerTest, SyncOffLocalUpdate) {
       app_list_syncable_service_->GetAllSyncDataForTesting();
 
   app_list_syncable_service_->StopSyncing(syncer::APP_LIST);
-  RecreateLauncherController()->Init();
+  RecreateShelfController()->Init();
 
   // Pinned state should not change.
   EXPECT_EQ("Chrome, App1, App2", GetPinnedAppStatus());

@@ -34,7 +34,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_crostini_tracker.h"
 #include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_shelf_controller.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/launcher/shelf_spinner_controller.h"
 #include "chrome/browser/ui/ash/launcher/shelf_spinner_item_controller.h"
 #include "chrome/browser/ui/browser.h"
@@ -108,7 +108,7 @@ void OnLaunchFailed(const std::string& app_id,
                     crostini::CrostiniResult result) {
   // Remove the spinner and icon. Controller doesn't exist in tests.
   // TODO(timloh): Consider also displaying a notification for failure.
-  if (auto* chrome_controller = ChromeLauncherController::instance()) {
+  if (auto* chrome_controller = ChromeShelfController::instance()) {
     chrome_controller->GetShelfSpinnerController()->CloseSpinner(app_id);
   }
   OnApplicationLaunched(app_id, std::move(callback), result, false,
@@ -151,12 +151,12 @@ void LaunchApplication(
     int64_t display_id,
     const std::vector<LaunchArg>& args,
     crostini::CrostiniSuccessCallback callback) {
-  ChromeLauncherController* chrome_launcher_controller =
-      ChromeLauncherController::instance();
-  DCHECK(chrome_launcher_controller);
+  ChromeShelfController* chrome_shelf_controller =
+      ChromeShelfController::instance();
+  DCHECK(chrome_shelf_controller);
 
   AppServiceAppWindowShelfController* app_service_controller =
-      chrome_launcher_controller->app_service_app_window_controller();
+      chrome_shelf_controller->app_service_app_window_controller();
   DCHECK(app_service_controller);
 
   AppServiceAppWindowCrostiniTracker* crostini_tracker =
@@ -272,8 +272,7 @@ bool ShouldAllowContainerUpgrade(Profile* profile) {
 void AddSpinner(crostini::CrostiniManager::RestartId restart_id,
                 const std::string& app_id,
                 Profile* profile) {
-  ChromeLauncherController* chrome_controller =
-      ChromeLauncherController::instance();
+  ChromeShelfController* chrome_controller = ChromeShelfController::instance();
   if (chrome_controller &&
       crostini::CrostiniManager::GetForProfile(profile)->IsRestartPending(
           restart_id)) {

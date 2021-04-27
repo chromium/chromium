@@ -2076,7 +2076,7 @@ void ShelfView::ShelfItemRemoved(int model_index, const ShelfItem& old_item) {
 
 void ShelfView::ShelfItemChanged(int model_index, const ShelfItem& old_item) {
   // Bail if the view and shelf sizes do not match. ShelfItemChanged may be
-  // called here before ShelfItemAdded, due to ChromeLauncherController's
+  // called here before ShelfItemAdded, due to ChromeShelfController's
   // item initialization, which calls SetItem during ShelfItemAdded.
   if (static_cast<int>(model_->items().size()) != view_model_->view_size())
     return;

@@ -18,7 +18,7 @@ class ContextMenuMatcher;
 // Context menu shown for an extension item in the shelf.
 class ExtensionShelfContextMenu : public ShelfContextMenu {
  public:
-  ExtensionShelfContextMenu(ChromeLauncherController* controller,
+  ExtensionShelfContextMenu(ChromeShelfController* controller,
                             const ash::ShelfItem* item,
                             int64_t display_id);
   ~ExtensionShelfContextMenu() override;

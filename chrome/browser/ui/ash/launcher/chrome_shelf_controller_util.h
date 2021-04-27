@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_LAUNCHER_CHROME_LAUNCHER_CONTROLLER_UTIL_H_
-#define CHROME_BROWSER_UI_ASH_LAUNCHER_CHROME_LAUNCHER_CONTROLLER_UTIL_H_
+#ifndef CHROME_BROWSER_UI_ASH_LAUNCHER_CHROME_SHELF_CONTROLLER_UTIL_H_
+#define CHROME_BROWSER_UI_ASH_LAUNCHER_CHROME_SHELF_CONTROLLER_UTIL_H_
 
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 
@@ -32,4 +32,4 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
 bool IsBrowserRepresentedInBrowserList(Browser* browser,
                                        const ash::ShelfModel* model);
 
-#endif  // CHROME_BROWSER_UI_ASH_LAUNCHER_CHROME_LAUNCHER_CONTROLLER_UTIL_H_
+#endif  // CHROME_BROWSER_UI_ASH_LAUNCHER_CHROME_SHELF_CONTROLLER_UTIL_H_

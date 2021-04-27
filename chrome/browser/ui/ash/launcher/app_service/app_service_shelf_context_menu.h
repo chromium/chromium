@@ -15,7 +15,7 @@
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/constants.h"
 
-class ChromeLauncherController;
+class ChromeShelfController;
 
 namespace extensions {
 class ContextMenuMatcher;
@@ -23,7 +23,7 @@ class ContextMenuMatcher;
 
 class AppServiceShelfContextMenu : public ShelfContextMenu {
  public:
-  AppServiceShelfContextMenu(ChromeLauncherController* controller,
+  AppServiceShelfContextMenu(ChromeShelfController* controller,
                              const ash::ShelfItem* item,
                              int64_t display_id);
   ~AppServiceShelfContextMenu() override;

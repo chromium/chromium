@@ -35,7 +35,7 @@ class AppManagementShelfDelegate : public ash::ShelfModelObserver {
   void ShelfItemChanged(int index, const ash::ShelfItem& old_item) override;
 
   AppManagementPageHandler* page_handler_;
-  ShelfControllerHelper* launcher_controller_helper_;
+  ShelfControllerHelper* shelf_controller_helper_;
 
   DISALLOW_COPY_AND_ASSIGN(AppManagementShelfDelegate);
 };

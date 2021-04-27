@@ -36,7 +36,7 @@
 #include "chrome/browser/ui/ash/ime_controller_client.h"
 #include "chrome/browser/ui/ash/in_session_auth_dialog_client.h"
 #include "chrome/browser/ui/ash/launcher/app_service/exo_app_type_resolver.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/login_screen_client.h"
 #include "chrome/browser/ui/ash/media_client_impl.h"
 #include "chrome/browser/ui/ash/media_notification_provider_impl.h"
@@ -71,39 +71,39 @@
 
 namespace internal {
 
-// Creates a ChromeLauncherController on the first active session notification.
-// Used to avoid constructing a ChromeLauncherController with no active profile.
-class ChromeLauncherControllerInitializer
+// Creates a ChromeShelfController on the first active session notification.
+// Used to avoid constructing a ChromeShelfController with no active profile.
+class ChromeShelfControllerInitializer
     : public session_manager::SessionManagerObserver {
  public:
-  ChromeLauncherControllerInitializer() {
+  ChromeShelfControllerInitializer() {
     session_manager::SessionManager::Get()->AddObserver(this);
   }
 
-  ~ChromeLauncherControllerInitializer() override {
-    if (!chrome_launcher_controller_)
+  ~ChromeShelfControllerInitializer() override {
+    if (!chrome_shelf_controller_)
       session_manager::SessionManager::Get()->RemoveObserver(this);
   }
 
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override {
-    DCHECK(!chrome_launcher_controller_);
-    DCHECK(!ChromeLauncherController::instance());
+    DCHECK(!chrome_shelf_controller_);
+    DCHECK(!ChromeShelfController::instance());
 
     if (session_manager::SessionManager::Get()->session_state() ==
         session_manager::SessionState::ACTIVE) {
-      chrome_launcher_controller_ = std::make_unique<ChromeLauncherController>(
+      chrome_shelf_controller_ = std::make_unique<ChromeShelfController>(
           nullptr, ash::ShelfModel::Get());
-      chrome_launcher_controller_->Init();
+      chrome_shelf_controller_->Init();
 
       session_manager::SessionManager::Get()->RemoveObserver(this);
     }
   }
 
  private:
-  std::unique_ptr<ChromeLauncherController> chrome_launcher_controller_;
+  std::unique_ptr<ChromeShelfController> chrome_shelf_controller_;
 
-  DISALLOW_COPY_AND_ASSIGN(ChromeLauncherControllerInitializer);
+  DISALLOW_COPY_AND_ASSIGN(ChromeShelfControllerInitializer);
 };
 
 }  // namespace internal
@@ -185,8 +185,8 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   tablet_mode_page_behavior_ = std::make_unique<TabletModePageBehavior>();
   vpn_list_forwarder_ = std::make_unique<VpnListForwarder>();
 
-  chrome_launcher_controller_initializer_ =
-      std::make_unique<internal::ChromeLauncherControllerInitializer>();
+  chrome_shelf_controller_initializer_ =
+      std::make_unique<internal::ChromeShelfControllerInitializer>();
 
   ui::SelectFileDialog::SetFactory(new SelectFileDialogExtensionFactory);
 
@@ -255,7 +255,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
 
   night_light_client_.reset();
   mobile_data_notifications_.reset();
-  chrome_launcher_controller_initializer_.reset();
+  chrome_shelf_controller_initializer_.reset();
 
   wallpaper_controller_client_.reset();
   vpn_list_forwarder_.reset();
@@ -307,8 +307,8 @@ class ChromeBrowserMainExtraPartsAsh::UserProfileLoadedObserver
       SyncErrorNotifierFactory::GetForProfile(profile);
     }
 
-    if (ChromeLauncherController::instance()) {
-      ChromeLauncherController::instance()->OnUserProfileReadyToSwitch(profile);
+    if (ChromeShelfController::instance()) {
+      ChromeShelfController::instance()->OnUserProfileReadyToSwitch(profile);
     }
   }
 

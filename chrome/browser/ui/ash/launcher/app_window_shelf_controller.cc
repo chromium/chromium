@@ -7,11 +7,10 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/shell.h"
 #include "chrome/browser/ui/ash/launcher/app_window_shelf_item_controller.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
 #include "ui/wm/public/activation_client.h"
 
-AppWindowShelfController::AppWindowShelfController(
-    ChromeLauncherController* owner)
+AppWindowShelfController::AppWindowShelfController(ChromeShelfController* owner)
     : owner_(owner) {
   // TODO: this doesn't work in mash: https://crbug.com/826386 .
   if (ash::Shell::HasInstance() && ash::Shell::Get()->GetPrimaryRootWindow()) {
@@ -53,7 +52,7 @@ void AppWindowShelfController::ShelfItemDelegateChanged(
     ash::ShelfItemDelegate* delegate) {
   if (!old_delegate)
     return;
-  // Notify the LauncherController that its delegate might be destroyed and
+  // Notify the shelf controller that its delegate might be destroyed and
   // cache needs to be updated. See crbug.com/770005
   OnItemDelegateDiscarded(old_delegate);
 }

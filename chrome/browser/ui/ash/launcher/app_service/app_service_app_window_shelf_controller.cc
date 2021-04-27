@@ -30,7 +30,7 @@
 #include "chrome/browser/ui/ash/launcher/app_window_base.h"
 #include "chrome/browser/ui/ash/launcher/app_window_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/arc_app_window.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/launcher/crostini_app_window.h"
 #include "chrome/browser/ui/ash/launcher/lacros_app_window.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
@@ -68,7 +68,7 @@ std::string GetAppId(const std::string& id) {
 }  // namespace
 
 AppServiceAppWindowShelfController::AppServiceAppWindowShelfController(
-    ChromeLauncherController* owner)
+    ChromeShelfController* owner)
     : AppWindowShelfController(owner),
       proxy_(apps::AppServiceProxyFactory::GetForProfile(owner->profile())),
       app_service_instance_helper_(

@@ -33,8 +33,8 @@
 #include "chrome/browser/ui/app_list/search/search_controller_factory.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_data.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/ranking_item_util.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_util.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -413,7 +413,7 @@ void AppListClientImpl::ShowAppList() {
 }
 
 Profile* AppListClientImpl::GetCurrentAppListProfile() const {
-  return ChromeLauncherController::instance()->profile();
+  return ChromeShelfController::instance()->profile();
 }
 
 ash::AppListController* AppListClientImpl::GetAppListController() const {
@@ -435,25 +435,25 @@ int64_t AppListClientImpl::GetAppListDisplayId() {
 }
 
 bool AppListClientImpl::IsAppPinned(const std::string& app_id) {
-  return ChromeLauncherController::instance()->IsAppPinned(app_id);
+  return ChromeShelfController::instance()->IsAppPinned(app_id);
 }
 
 bool AppListClientImpl::IsAppOpen(const std::string& app_id) const {
-  return ChromeLauncherController::instance()->IsOpen(ash::ShelfID(app_id));
+  return ChromeShelfController::instance()->IsOpen(ash::ShelfID(app_id));
 }
 
 void AppListClientImpl::PinApp(const std::string& app_id) {
-  ChromeLauncherController::instance()->PinAppWithID(app_id);
+  ChromeShelfController::instance()->PinAppWithID(app_id);
 }
 
 void AppListClientImpl::UnpinApp(const std::string& app_id) {
-  ChromeLauncherController::instance()->UnpinAppWithID(app_id);
+  ChromeShelfController::instance()->UnpinAppWithID(app_id);
 }
 
 AppListControllerDelegate::Pinnable AppListClientImpl::GetPinnable(
     const std::string& app_id) {
   return GetPinnableForAppID(app_id,
-                             ChromeLauncherController::instance()->profile());
+                             ChromeShelfController::instance()->profile());
 }
 
 void AppListClientImpl::CreateNewWindow(bool incognito) {

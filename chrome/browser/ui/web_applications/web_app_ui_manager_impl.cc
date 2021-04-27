@@ -36,7 +36,7 @@
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ui/app_list/extension_app_utils.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
 #endif
 
 #if defined(OS_WIN)
@@ -291,8 +291,8 @@ bool WebAppUiManagerImpl::CanAddAppToQuickLaunchBar() const {
 void WebAppUiManagerImpl::AddAppToQuickLaunchBar(const AppId& app_id) {
   DCHECK(CanAddAppToQuickLaunchBar());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // ChromeLauncherController does not exist in unit tests.
-  if (auto* controller = ChromeLauncherController::instance()) {
+  // ChromeShelfController does not exist in unit tests.
+  if (auto* controller = ChromeShelfController::instance()) {
     controller->PinAppWithID(app_id);
     controller->UpdateV1AppState(app_id);
   }

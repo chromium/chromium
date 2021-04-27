@@ -9,7 +9,7 @@
 #include "base/containers/contains.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -19,9 +19,9 @@
 #include "ui/aura/window.h"
 
 MultiProfileBrowserStatusMonitor::MultiProfileBrowserStatusMonitor(
-    ChromeLauncherController* launcher_controller)
-    : BrowserStatusMonitor(launcher_controller),
-      launcher_controller_(launcher_controller) {}
+    ChromeShelfController* shelf_controller)
+    : BrowserStatusMonitor(shelf_controller),
+      shelf_controller_(shelf_controller) {}
 
 MultiProfileBrowserStatusMonitor::~MultiProfileBrowserStatusMonitor() {}
 
@@ -45,7 +45,7 @@ void MultiProfileBrowserStatusMonitor::ActiveUserChanged(
     if (browser->is_type_normal() &&
         !multi_user_util::IsProfileFromActiveUser(browser->profile())) {
       for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
-        launcher_controller_->UpdateAppState(
+        shelf_controller_->UpdateAppState(
             browser->tab_strip_model()->GetWebContentsAt(i), true /*remove*/);
       }
     }
@@ -56,7 +56,7 @@ void MultiProfileBrowserStatusMonitor::ActiveUserChanged(
     if (browser->is_type_normal() &&
         multi_user_util::IsProfileFromActiveUser(browser->profile())) {
       for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
-        launcher_controller_->UpdateAppState(
+        shelf_controller_->UpdateAppState(
             browser->tab_strip_model()->GetWebContentsAt(i), false /*remove*/);
       }
     }
@@ -95,7 +95,7 @@ void MultiProfileBrowserStatusMonitor::ConnectV1AppToLauncher(
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   if (web_contents)
-    launcher_controller_->UpdateAppState(web_contents, false /*remove*/);
+    shelf_controller_->UpdateAppState(web_contents, false /*remove*/);
 }
 
 void MultiProfileBrowserStatusMonitor::DisconnectV1AppFromLauncher(
@@ -105,7 +105,7 @@ void MultiProfileBrowserStatusMonitor::DisconnectV1AppFromLauncher(
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   if (web_contents)
-    launcher_controller_->UpdateAppState(web_contents, true /*remove*/);
+    shelf_controller_->UpdateAppState(web_contents, true /*remove*/);
 
   BrowserStatusMonitor::RemoveV1AppFromShelf(browser);
 }

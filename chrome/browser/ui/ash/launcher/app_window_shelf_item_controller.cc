@@ -12,7 +12,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/ash/launcher/app_window_base.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/launcher/shelf_context_menu.h"
 #include "chrome/browser/ui/ash/launcher/shelf_controller_helper.h"
 #include "ui/aura/client/aura_constants.h"
@@ -26,8 +26,8 @@ namespace {
 // SHELF_ACTION_WINDOW_ACTIVATED, or SHELF_ACTION_WINDOW_MINIMIZED.
 ash::ShelfAction ShowAndActivateOrMinimize(ui::BaseWindow* app_window,
                                            bool allow_minimize) {
-  // Either show or minimize windows when shown from the launcher.
-  return ChromeLauncherController::instance()->ActivateWindowOrMinimizeIfActive(
+  // Either show or minimize windows when shown from the shelf.
+  return ChromeShelfController::instance()->ActivateWindowOrMinimizeIfActive(
       app_window, allow_minimize);
 }
 
@@ -191,7 +191,7 @@ AppWindowShelfItemController::GetAppMenuItems(
     const ItemFilterPredicate& filter_predicate) {
   AppMenuItems items;
   std::u16string app_title = ShelfControllerHelper::GetAppTitle(
-      ChromeLauncherController::instance()->profile(), app_id());
+      ChromeShelfController::instance()->profile(), app_id());
   int command_id = -1;
   for (const auto* it : windows()) {
     ++command_id;
@@ -222,7 +222,7 @@ AppWindowShelfItemController::GetAppMenuItems(
 void AppWindowShelfItemController::GetContextMenu(
     int64_t display_id,
     GetContextMenuCallback callback) {
-  ChromeLauncherController* controller = ChromeLauncherController::instance();
+  ChromeShelfController* controller = ChromeShelfController::instance();
   const ash::ShelfItem* item = controller->GetItem(shelf_id());
   context_menu_ = ShelfContextMenu::Create(controller, item, display_id);
   context_menu_->GetMenuModel(std::move(callback));
@@ -255,7 +255,7 @@ void AppWindowShelfItemController::OnWindowPropertyChanged(aura::Window* window,
     } else {
       status = ash::STATUS_RUNNING;
     }
-    ChromeLauncherController::instance()->SetItemStatus(shelf_id(), status);
+    ChromeShelfController::instance()->SetItemStatus(shelf_id(), status);
   } else if (key == aura::client::kAppIconKey) {
     UpdateShelfItemIcon();
   } else if (key == ash::kHideInShelfKey) {
@@ -274,7 +274,7 @@ AppWindowBase* AppWindowShelfItemController::GetLastActiveWindow() {
 void AppWindowShelfItemController::UpdateShelfItemIcon() {
   // Set the shelf item icon from the kAppIconKey property of the current
   // (or most recently) active window. If there is no valid icon, ask
-  // ChromeLauncherController to update the icon.
+  // ChromeShelfController to update the icon.
   const gfx::ImageSkia* app_icon = nullptr;
   AppWindowBase* last_active_window = GetLastActiveWindow();
   if (last_active_window && last_active_window->GetNativeWindow()) {
@@ -284,11 +284,11 @@ void AppWindowShelfItemController::UpdateShelfItemIcon() {
   // TODO(khmel): Remove using image_set_by_controller
   if (app_icon && !app_icon->isNull()) {
     set_image_set_by_controller(true);
-    ChromeLauncherController::instance()->SetLauncherItemImage(shelf_id(),
-                                                               *app_icon);
+    ChromeShelfController::instance()->SetLauncherItemImage(shelf_id(),
+                                                            *app_icon);
   } else if (image_set_by_controller()) {
     set_image_set_by_controller(false);
-    ChromeLauncherController::instance()->UpdateLauncherItemImage(
+    ChromeShelfController::instance()->UpdateLauncherItemImage(
         shelf_id().app_id);
   }
 }

@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/launcher/app_window_base.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/favicon/content/content_favicon_driver.h"
@@ -47,7 +47,7 @@ void AppServiceAppWindowShelfItemController::ItemSelected(
       aura::Window* native_window = window->GetNativeWindow();
       if (native_window->GetProperty(chromeos::kWindowStateTypeKey) ==
           chromeos::WindowStateType::kPip) {
-        Profile* profile = ChromeLauncherController::instance()->profile();
+        Profile* profile = ChromeShelfController::instance()->profile();
         arc::ArcPipBridge* pip_bridge =
             arc::ArcPipBridge::GetForBrowserContext(profile);
         // ClosePip() actually expands PIP.
@@ -155,7 +155,7 @@ void AppServiceAppWindowShelfItemController::OnWindowTitleChanged(
     if (app_window->show_in_shelf()) {
       const std::u16string title = window->GetTitle();
       if (!title.empty())
-        ChromeLauncherController::instance()->SetItemTitle(shelf_id(), title);
+        ChromeShelfController::instance()->SetItemTitle(shelf_id(), title);
     }
     return;
   }
@@ -174,7 +174,7 @@ bool AppServiceAppWindowShelfItemController::HasAnyTasks() const {
 }
 
 bool AppServiceAppWindowShelfItemController::IsChromeApp() {
-  Profile* const profile = ChromeLauncherController::instance()->profile();
+  Profile* const profile = ChromeShelfController::instance()->profile();
   return apps::AppServiceProxyFactory::GetForProfile(profile)
              ->AppRegistryCache()
              .GetAppType(shelf_id().app_id) == apps::mojom::AppType::kExtension;

@@ -37,7 +37,7 @@
 #include "chrome/browser/ui/app_list/internal_app/internal_app_metadata.h"
 #include "chrome/browser/ui/ash/launcher/arc_app_shelf_id.h"
 #include "chrome/browser/ui/ash/launcher/browser_shortcut_shelf_item_controller.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/launcher/extension_shelf_context_menu.h"
 #include "chrome/browser/ui/ash/launcher/shelf_controller_helper.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
@@ -121,12 +121,12 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
 
     session_manager_ = std::make_unique<session_manager::SessionManager>();
     model_ = std::make_unique<ash::ShelfModel>();
-    launcher_controller_ =
-        std::make_unique<ChromeLauncherController>(profile(), model_.get());
-    launcher_controller_->SetProfileForTest(profile());
-    launcher_controller_->SetShelfControllerHelperForTest(
+    shelf_controller_ =
+        std::make_unique<ChromeShelfController>(profile(), model_.get());
+    shelf_controller_->SetProfileForTest(profile());
+    shelf_controller_->SetShelfControllerHelperForTest(
         std::make_unique<ShelfControllerHelper>(profile()));
-    launcher_controller_->Init();
+    shelf_controller_->Init();
 
     // Disable safe icon decoding to ensure ArcAppShortcutRequests returns in
     // the test environment.
@@ -184,7 +184,7 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
   }
 
   void TearDown() override {
-    launcher_controller_.reset();
+    shelf_controller_.reset();
 
     arc_test_.TearDown();
 
@@ -204,7 +204,7 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
 
   CrostiniTestHelper* crostini_helper() { return crostini_helper_.get(); }
 
-  ChromeLauncherController* controller() { return launcher_controller_.get(); }
+  ChromeShelfController* controller() { return shelf_controller_.get(); }
 
   ash::ShelfModel* model() { return model_.get(); }
 
@@ -232,7 +232,7 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
   apps::AppServiceTest app_service_test_;
   std::unique_ptr<session_manager::SessionManager> session_manager_;
   std::unique_ptr<ash::ShelfModel> model_;
-  std::unique_ptr<ChromeLauncherController> launcher_controller_;
+  std::unique_ptr<ChromeShelfController> shelf_controller_;
   extensions::ExtensionService* extension_service_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ShelfContextMenuTest);

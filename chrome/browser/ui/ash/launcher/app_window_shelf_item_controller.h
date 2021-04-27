@@ -23,7 +23,7 @@ class ShelfContextMenu;
 // windows, each item controller keeps track of all windows associated with the
 // app and their activation order. Instances are owned by ash::ShelfModel.
 //
-// Tests are in chrome_launcher_controller_browsertest.cc
+// Tests are in chrome_shelf_controller_browsertest.cc
 class AppWindowShelfItemController : public ash::ShelfItemDelegate,
                                      public aura::WindowObserver {
  public:
@@ -74,6 +74,7 @@ class AppWindowShelfItemController : public ash::ShelfItemDelegate,
   AppWindowBase* GetLastActiveWindow();
 
  private:
+  // TODO(https://crbug.com/1201256): Rename to ChromeShelfControllerTest.
   friend class ChromeLauncherControllerTest;
 
   WindowList::iterator GetFromNativeWindow(aura::Window* window,

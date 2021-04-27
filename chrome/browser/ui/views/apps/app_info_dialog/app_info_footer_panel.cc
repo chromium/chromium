@@ -28,8 +28,8 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // gn check complains on Linux Ozone.
 #include "ash/public/cpp/shelf_model.h"  // nogncheck
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_util.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller_util.h"
 #endif
 
 AppInfoFooterPanel::AppInfoFooterPanel(Profile* profile,
@@ -98,7 +98,7 @@ void AppInfoFooterPanel::CreateButtons() {
 void AppInfoFooterPanel::UpdatePinButtons(bool focus_visible_button) {
   if (pin_to_shelf_button_ && unpin_from_shelf_button_) {
     const bool was_pinned =
-        ChromeLauncherController::instance()->shelf_model()->IsAppPinned(
+        ChromeShelfController::instance()->shelf_model()->IsAppPinned(
             app_->id());
     pin_to_shelf_button_->SetVisible(!was_pinned);
     unpin_from_shelf_button_->SetVisible(was_pinned);
@@ -144,7 +144,7 @@ bool AppInfoFooterPanel::CanCreateShortcuts(const extensions::Extension* app) {
 void AppInfoFooterPanel::SetPinnedToShelf(bool value) {
   DCHECK(CanSetPinnedToShelf(profile_, app_));
   ash::ShelfModel* shelf_model =
-      ChromeLauncherController::instance()->shelf_model();
+      ChromeShelfController::instance()->shelf_model();
   DCHECK(shelf_model);
   ash::ShelfModel::ScopedUserTriggeredMutation user_triggered(shelf_model);
   if (value)

@@ -19,7 +19,7 @@
 #include "chrome/browser/chromeos/remote_apps/remote_apps_manager_factory.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/app_service/app_service_context_menu.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
 #include "chrome/common/chrome_features.h"
 
 // static
@@ -97,7 +97,7 @@ void AppServiceAppItem::OnAppUpdate(const apps::AppUpdate& app_update,
 void AppServiceAppItem::Activate(int event_flags) {
   // For Crostini apps, non-platform Chrome apps, Web apps, it could be
   // selecting an existing delegate for the app, so call
-  // ChromeLauncherController's ActivateApp interface. Platform apps or ARC
+  // ChromeShelfController's ActivateApp interface. Platform apps or ARC
   // apps, Crostini apps treat activations as a launch. The app can decide
   // whether to show a new window or focus an existing window as it sees fit.
   //
@@ -115,7 +115,7 @@ void AppServiceAppItem::Activate(int event_flags) {
         }
       });
   if (is_active_app) {
-    ChromeLauncherController::instance()->ActivateApp(
+    ChromeShelfController::instance()->ActivateApp(
         id(), ash::LAUNCH_FROM_APP_LIST, event_flags,
         GetController()->GetAppListDisplayId());
     return;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
 
 #include <stddef.h>
 #include <memory>
@@ -60,8 +60,8 @@
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/ash/chrome_launcher_prefs.h"
 #include "chrome/browser/ui/ash/launcher/browser_shortcut_shelf_item_controller.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_test_util.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_util.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller_test_util.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/launcher/shelf_context_menu.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -228,7 +228,7 @@ class LauncherPlatformAppBrowserTest
   ~LauncherPlatformAppBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
-    controller_ = ChromeLauncherController::instance();
+    controller_ = ChromeShelfController::instance();
     ASSERT_TRUE(controller_);
     extensions::PlatformAppBrowserTest::SetUpOnMainThread();
     app_service_test_.SetUp(browser()->profile());
@@ -252,7 +252,7 @@ class LauncherPlatformAppBrowserTest
 
   apps::AppServiceTest& app_service_test() { return app_service_test_; }
 
-  ChromeLauncherController* controller_ = nullptr;
+  ChromeShelfController* controller_ = nullptr;
 
  private:
   apps::AppServiceTest app_service_test_;
@@ -268,7 +268,7 @@ class ShelfAppBrowserTest : public extensions::ExtensionBrowserTest {
   ash::ShelfModel* shelf_model() { return controller_->shelf_model(); }
 
   void SetUpOnMainThread() override {
-    controller_ = ChromeLauncherController::instance();
+    controller_ = ChromeShelfController::instance();
     ASSERT_TRUE(controller_);
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
   }
@@ -391,7 +391,7 @@ class ShelfAppBrowserTest : public extensions::ExtensionBrowserTest {
     return action;
   }
 
-  ChromeLauncherController* controller_ = nullptr;
+  ChromeShelfController* controller_ = nullptr;
 };
 
 class ShelfAppBrowserTestNoDefaultBrowser : public ShelfAppBrowserTest {
@@ -620,12 +620,12 @@ class UnpinnedBrowserShortcutTest : public extensions::ExtensionBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    controller_ = ChromeLauncherController::instance();
+    controller_ = ChromeShelfController::instance();
     ASSERT_TRUE(controller_);
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
   }
 
-  ChromeLauncherController* controller_ = nullptr;
+  ChromeShelfController* controller_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(UnpinnedBrowserShortcutTest, UnpinnedBrowserShortcut) {
@@ -1004,7 +1004,7 @@ IN_PROC_BROWSER_TEST_F(LauncherPlatformAppBrowserTest, SetIcon) {
   EXPECT_TRUE(app_custom_icon_item_delegate->image_set_by_controller());
 
   // Ensure icon height is correct (see test.js in app_icon/ test directory)
-  // Note, images are no longer available in ChromeLauncherController. They are
+  // Note, images are no longer available in ChromeShelfController. They are
   // are passed directly to the ShelfController.
   EXPECT_EQ(extension_misc::EXTENSION_ICON_LARGE,
             app_item_custom_image.height());
@@ -2449,10 +2449,10 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest,
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(false);
 
   ash::ShelfID shelf_id(app_id);
-  EXPECT_FALSE(ChromeLauncherController::instance()->IsPinned(shelf_id));
+  EXPECT_FALSE(ChromeShelfController::instance()->IsPinned(shelf_id));
   EXPECT_EQ(
       shelf_id,
-      ChromeLauncherController::instance()->shelf_model()->active_shelf_id());
+      ChromeShelfController::instance()->shelf_model()->active_shelf_id());
 }
 
 // Windowed shortcut apps should have shelf activity indicator showing after
@@ -2472,10 +2472,10 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest,
   chrome::SetAutoAcceptWebAppDialogForTesting(false, false);
 
   ash::ShelfID shelf_id(app_id);
-  EXPECT_FALSE(ChromeLauncherController::instance()->IsPinned(shelf_id));
+  EXPECT_FALSE(ChromeShelfController::instance()->IsPinned(shelf_id));
   EXPECT_EQ(
       shelf_id,
-      ChromeLauncherController::instance()->shelf_model()->active_shelf_id());
+      ChromeShelfController::instance()->shelf_model()->active_shelf_id());
 }
 
 IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppPolicy) {

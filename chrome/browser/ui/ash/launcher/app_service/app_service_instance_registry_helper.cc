@@ -16,7 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_shelf_controller.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -34,7 +34,7 @@ AppServiceInstanceRegistryHelper::AppServiceInstanceRegistryHelper(
     : controller_(controller),
       proxy_(apps::AppServiceProxyFactory::GetForProfile(
           controller->owner()->profile())),
-      launcher_controller_helper_(std::make_unique<ShelfControllerHelper>(
+      shelf_controller_helper_(std::make_unique<ShelfControllerHelper>(
           controller->owner()->profile())) {
   DCHECK(controller_);
 }
@@ -64,7 +64,7 @@ void AppServiceInstanceRegistryHelper::OnActiveTabChanged(
     // inconsistent DCHECK error.
     std::string app_id = GetAppId(window);
     if (app_id.empty())
-      app_id = launcher_controller_helper_->GetAppID(old_contents);
+      app_id = shelf_controller_helper_->GetAppID(old_contents);
 
     // If app_id is empty, we should not set it as inactive because this is
     // Chrome's tab.
@@ -232,7 +232,7 @@ void AppServiceInstanceRegistryHelper::OnSetShelfIDForBrowserWindowContents(
     OnTabInserted(contents);
 
   // When system startup, session restore creates windows before
-  // ChromeLauncherController is created, so windows restored can’t get the
+  // ChromeShelfController is created, so windows restored can’t get the
   // visible and activated status from OnWindowVisibilityChanged and
   // OnWindowActivated. Also web apps are ready at the very late phase which
   // delays the shelf id setting for windows. So check the top window's visible
@@ -465,7 +465,7 @@ std::string AppServiceInstanceRegistryHelper::GetAppId(
 
 std::string AppServiceInstanceRegistryHelper::GetAppId(
     content::WebContents* contents) const {
-  std::string app_id = launcher_controller_helper_->GetAppID(contents);
+  std::string app_id = shelf_controller_helper_->GetAppID(contents);
   if (!app_id.empty())
     return app_id;
   return extension_misc::kChromeAppId;
@@ -473,7 +473,7 @@ std::string AppServiceInstanceRegistryHelper::GetAppId(
 
 aura::Window* AppServiceInstanceRegistryHelper::GetWindow(
     content::WebContents* contents) {
-  std::string app_id = launcher_controller_helper_->GetAppID(contents);
+  std::string app_id = shelf_controller_helper_->GetAppID(contents);
   aura::Window* window = contents->GetNativeView();
 
   // If |app_id| is empty, it is a browser tab. Returns the toplevel window in

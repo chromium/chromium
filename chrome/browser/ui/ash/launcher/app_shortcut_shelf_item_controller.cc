@@ -17,8 +17,8 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/ash/launcher/arc_playstore_shortcut_shelf_item_controller.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_util.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/launcher/shelf_context_menu.h"
 #include "chrome/browser/ui/ash/launcher/shelf_controller_helper.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
@@ -66,7 +66,7 @@ ash::ShelfAction ActivateContentOrMinimize(content::WebContents* content,
   int old_index = tab_strip->active_index();
   if (index != old_index)
     tab_strip->ActivateTabAt(index);
-  return ChromeLauncherController::instance()->ActivateWindowOrMinimizeIfActive(
+  return ChromeShelfController::instance()->ActivateWindowOrMinimizeIfActive(
       browser->window(), index == old_index && allow_minimize);
 }
 
@@ -172,15 +172,14 @@ class AppMatcher {
     // extension:
     // - The refocus pattern is matched (needed for apps like drive).
     // - The extension's origin + extent gets matched.
-    // - The launcher controller knows that the tab got created for this app.
+    // - The shelf controller knows that the tab got created for this app.
     const GURL tab_url = web_contents->GetURL();
-    return (
-        (!refocus_pattern_.match_all_urls() &&
-         refocus_pattern_.MatchesURL(tab_url)) ||
-        (extension_->OverlapsWithOrigin(tab_url) &&
-         extension_->web_extent().MatchesURL(tab_url)) ||
-        ChromeLauncherController::instance()->IsWebContentHandledByApplication(
-            web_contents, app_id_));
+    return ((!refocus_pattern_.match_all_urls() &&
+             refocus_pattern_.MatchesURL(tab_url)) ||
+            (extension_->OverlapsWithOrigin(tab_url) &&
+             extension_->web_extent().MatchesURL(tab_url)) ||
+            ChromeShelfController::instance()->IsWebContentHandledByApplication(
+                web_contents, app_id_));
   }
 
   // Returns true if this web app matches the given |web_contents|. If
@@ -214,19 +213,17 @@ class AppMatcher {
     // web app:
     // - The refocus pattern is matched (needed for apps like drive).
     // - The web app's scope gets matched.
-    // - The launcher controller knows that the tab got created for this web
-    // app.
+    // - The shelf controller knows that the tab got created for this web app.
     const GURL tab_url = web_contents->GetURL();
     base::Optional<GURL> app_scope = registrar_->GetAppScope(app_id_);
     DCHECK(app_scope.has_value());
 
-    return (
-        (!refocus_pattern_.match_all_urls() &&
-         refocus_pattern_.MatchesURL(tab_url)) ||
-        (base::StartsWith(tab_url.spec(), app_scope->spec(),
-                          base::CompareCase::SENSITIVE)) ||
-        ChromeLauncherController::instance()->IsWebContentHandledByApplication(
-            web_contents, app_id_));
+    return ((!refocus_pattern_.match_all_urls() &&
+             refocus_pattern_.MatchesURL(tab_url)) ||
+            (base::StartsWith(tab_url.spec(), app_scope->spec(),
+                              base::CompareCase::SENSITIVE)) ||
+            ChromeShelfController::instance()->IsWebContentHandledByApplication(
+                web_contents, app_id_));
   }
 
   const std::string app_id_;
@@ -260,7 +257,7 @@ AppShortcutShelfItemController::AppShortcutShelfItemController(
   // To detect V1 applications we use their domain and match them against the
   // used URL. This will also work with applications like Google Drive.
   const Extension* extension = GetExtensionForAppID(
-      shelf_id.app_id, ChromeLauncherController::instance()->profile());
+      shelf_id.app_id, ChromeShelfController::instance()->profile());
   // Some unit tests have no real extension.
   if (extension) {
     set_refocus_url(GURL(
@@ -304,7 +301,7 @@ void AppShortcutShelfItemController::ItemSelected(
     // LaunchApp may replace and destroy this item controller instance. Run the
     // callback first and copy the id to avoid crashes.
     std::move(callback).Run(ash::SHELF_ACTION_NEW_WINDOW_CREATED, {});
-    ChromeLauncherController::instance()->LaunchApp(
+    ChromeShelfController::instance()->LaunchApp(
         ash::ShelfID(shelf_id()), source, ui::EF_NONE, display_id);
     return;
   }
@@ -314,7 +311,7 @@ void AppShortcutShelfItemController::ItemSelected(
                               source != ash::LAUNCH_FROM_APP_LIST_SEARCH;
     std::move(callback).Run(
         app_menu_cached_by_browsers_
-            ? ChromeLauncherController::instance()
+            ? ChromeShelfController::instance()
                   ->ActivateWindowOrMinimizeIfActive(
                       // We don't need to check nullptr here because
                       // we just called GetAppMenuItems() above to update it.
@@ -338,7 +335,7 @@ ash::ShelfItemDelegate::AppMenuItems
 AppShortcutShelfItemController::GetAppMenuItems(
     int event_flags,
     const ItemFilterPredicate& filter_predicate) {
-  ChromeLauncherController* controller = ChromeLauncherController::instance();
+  ChromeShelfController* controller = ChromeShelfController::instance();
   AppMenuItems items;
   auto add_menu_item = [&controller,
                         &items](content::WebContents* web_contents) {
@@ -366,7 +363,7 @@ AppShortcutShelfItemController::GetAppMenuItems(
 void AppShortcutShelfItemController::GetContextMenu(
     int64_t display_id,
     GetContextMenuCallback callback) {
-  ChromeLauncherController* controller = ChromeLauncherController::instance();
+  ChromeShelfController* controller = ChromeShelfController::instance();
   const ash::ShelfItem* item = controller->GetItem(shelf_id());
   context_menu_ = ShelfContextMenu::Create(controller, item, display_id);
   context_menu_->GetMenuModel(std::move(callback));
@@ -464,7 +461,7 @@ AppShortcutShelfItemController::GetAppWebContents(
     refocus_pattern.Parse(refocus_url_.spec());
   }
 
-  Profile* const profile = ChromeLauncherController::instance()->profile();
+  Profile* const profile = ChromeShelfController::instance()->profile();
   AppMatcher matcher(profile, app_id(), refocus_pattern);
 
   std::vector<content::WebContents*> items;
@@ -561,7 +558,7 @@ AppShortcutShelfItemController::AdvanceToNextApp(
 
 bool AppShortcutShelfItemController::IsV2App() {
   const Extension* extension = GetExtensionForAppID(
-      app_id(), ChromeLauncherController::instance()->profile());
+      app_id(), ChromeShelfController::instance()->profile());
   return extension && extension->is_platform_app();
 }
 
@@ -579,7 +576,7 @@ bool AppShortcutShelfItemController::AllowNextLaunchAttempt() {
 bool AppShortcutShelfItemController::IsWindowedWebApp() {
   if (web_app::WebAppProviderBase* provider =
           web_app::WebAppProviderBase::GetProviderBase(
-              ChromeLauncherController::instance()->profile())) {
+              ChromeShelfController::instance()->profile())) {
     web_app::AppRegistrar& registrar = provider->registrar();
     if (registrar.IsLocallyInstalled(app_id())) {
       return registrar.GetAppUserDisplayMode(app_id()) !=

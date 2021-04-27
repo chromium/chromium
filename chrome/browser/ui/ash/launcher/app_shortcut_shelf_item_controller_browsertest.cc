@@ -8,7 +8,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "base/callback_helpers.h"
 #include "chrome/browser/chromeos/crostini/crostini_terminal.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -21,7 +21,7 @@
 #include "ui/events/event_constants.h"
 
 // Unit tests for the left click menu and interaction with the menu items. There
-// are integration tests in ./chrome_launcher_controller_browsertest.cc which
+// are integration tests in ./chrome_shelf_controller_browsertest.cc which
 // covers different cases in AppShortcutShelfItemController::ItemSelected().
 //
 // We do tests on the terminal system web app because it uses tabbed window,
@@ -29,7 +29,7 @@
 class AppShortcutShelfItemControllerBrowserTest : public InProcessBrowserTest {
  protected:
   void SetUpOnMainThread() override {
-    controller_ = ChromeLauncherController::instance();
+    controller_ = ChromeShelfController::instance();
     ASSERT_TRUE(controller_);
   }
 
@@ -58,7 +58,7 @@ class AppShortcutShelfItemControllerBrowserTest : public InProcessBrowserTest {
                                                    base::NullCallback());
   }
 
-  ChromeLauncherController* controller_;
+  ChromeShelfController* controller_;
 
   web_app::AppId app_id_;
   ash::ShelfID app_shelf_id_;

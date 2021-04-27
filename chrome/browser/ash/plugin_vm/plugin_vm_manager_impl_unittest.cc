@@ -19,7 +19,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/launcher/shelf_controller_helper.h"
 #include "chrome/browser/ui/ash/launcher/shelf_spinner_controller.h"
 #include "chrome/test/base/testing_profile.h"
@@ -53,19 +53,19 @@ class PluginVmManagerImplTest : public testing::Test {
     display_service_ = std::make_unique<NotificationDisplayServiceTester>(
         testing_profile_.get());
     shelf_model_ = std::make_unique<ash::ShelfModel>();
-    chrome_launcher_controller_ = std::make_unique<ChromeLauncherController>(
+    chrome_shelf_controller_ = std::make_unique<ChromeShelfController>(
         testing_profile_.get(), shelf_model_.get());
-    chrome_launcher_controller_->SetProfileForTest(testing_profile_.get());
-    chrome_launcher_controller_->SetShelfControllerHelperForTest(
+    chrome_shelf_controller_->SetProfileForTest(testing_profile_.get());
+    chrome_shelf_controller_->SetShelfControllerHelperForTest(
         std::make_unique<ShelfControllerHelper>(testing_profile_.get()));
-    chrome_launcher_controller_->Init();
+    chrome_shelf_controller_->Init();
     histogram_tester_ = std::make_unique<base::HistogramTester>();
     chromeos::DlcserviceClient::InitializeFake();
   }
 
   ~PluginVmManagerImplTest() override {
     histogram_tester_.reset();
-    chrome_launcher_controller_.reset();
+    chrome_shelf_controller_.reset();
     shelf_model_.reset();
     display_service_.reset();
     test_helper_.reset();
@@ -89,7 +89,7 @@ class PluginVmManagerImplTest : public testing::Test {
   }
 
   ShelfSpinnerController* SpinnerController() {
-    return chrome_launcher_controller_->GetShelfSpinnerController();
+    return chrome_shelf_controller_->GetShelfSpinnerController();
   }
 
   void SetListVmsResponse(vm_tools::plugin_dispatcher::VmState state) {
@@ -125,7 +125,7 @@ class PluginVmManagerImplTest : public testing::Test {
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
   PluginVmManagerImpl* plugin_vm_manager_;
   std::unique_ptr<ash::ShelfModel> shelf_model_;
-  std::unique_ptr<ChromeLauncherController> chrome_launcher_controller_;
+  std::unique_ptr<ChromeShelfController> chrome_shelf_controller_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 
  private:
@@ -236,7 +236,7 @@ TEST_F(PluginVmManagerImplTest, OnStateChangedRunningStoppedSuspended) {
   // Signals for RUNNING, then STOPPED.
   test_helper_->OpenShelfItem();
   EXPECT_TRUE(
-      chrome_launcher_controller_->IsOpen(ash::ShelfID(kPluginVmShelfAppId)));
+      chrome_shelf_controller_->IsOpen(ash::ShelfID(kPluginVmShelfAppId)));
 
   NotifyVmStateChanged(vm_tools::plugin_dispatcher::VmState::VM_STATE_RUNNING);
   task_environment_.RunUntilIdle();
@@ -250,7 +250,7 @@ TEST_F(PluginVmManagerImplTest, OnStateChangedRunningStoppedSuspended) {
   task_environment_.RunUntilIdle();
   EXPECT_EQ(plugin_vm_manager_->seneschal_server_handle(), 0ul);
   EXPECT_FALSE(
-      chrome_launcher_controller_->IsOpen(ash::ShelfID(kPluginVmShelfAppId)));
+      chrome_shelf_controller_->IsOpen(ash::ShelfID(kPluginVmShelfAppId)));
 
   // Signals for RUNNING, then SUSPENDED.
   NotifyVmStateChanged(vm_tools::plugin_dispatcher::VmState::VM_STATE_RUNNING);

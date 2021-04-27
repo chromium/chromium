@@ -28,7 +28,7 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/user_manager/user.h"
@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, OnRemoteAppLaunched) {
   LoadExtensionAndRunTest("OnRemoteAppLaunched");
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 
-  ChromeLauncherController::instance()->LaunchApp(
+  ChromeShelfController::instance()->LaunchApp(
       ash::ShelfID(kId1), ash::ShelfLaunchSource::LAUNCH_FROM_APP_LIST,
       /*event_flags=*/0, /*display_id=*/0);
   ASSERT_TRUE(catcher.GetNextResult());

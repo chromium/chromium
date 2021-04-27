@@ -14,7 +14,7 @@
 class MultiProfileBrowserStatusMonitor : public BrowserStatusMonitor {
  public:
   explicit MultiProfileBrowserStatusMonitor(
-      ChromeLauncherController* launcher_controller);
+      ChromeShelfController* shelf_controller);
   ~MultiProfileBrowserStatusMonitor() override;
 
   // BrowserStatusMonitor overrides.
@@ -33,7 +33,7 @@ class MultiProfileBrowserStatusMonitor : public BrowserStatusMonitor {
   void DisconnectV1AppFromLauncher(Browser* browser);
 
   // The launcher controller which is associated with this object.
-  ChromeLauncherController* launcher_controller_;
+  ChromeShelfController* shelf_controller_;
 
   DISALLOW_COPY_AND_ASSIGN(MultiProfileBrowserStatusMonitor);
 };

@@ -24,7 +24,7 @@
 #include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/launcher/app_service/app_service_app_window_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/app_window_base.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/launcher/shelf_spinner_controller.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/browser.h"
@@ -137,7 +137,7 @@ void AppServiceAppWindowCrostiniTracker::OnWindowVisibilityChanged(
   // Work is ongoing to make this occur as infrequently as possible.
   // See https://crbug.com/854911.
   if (crostini::IsUnmatchedCrostiniShelfAppId(shelf_app_id)) {
-    ChromeLauncherController::instance()
+    ChromeShelfController::instance()
         ->GetShelfSpinnerController()
         ->CloseCrostiniSpinners();
   }

@@ -410,6 +410,7 @@ class ArcAppListPrefs : public KeyedService,
   bool IsDefaultPackage(const std::string& package_name) const;
 
  private:
+  // TODO(https://crbug.com/1201256): Rename to ChromeShelfControllerTest.
   friend class ChromeLauncherControllerTest;
   friend class ArcAppModelBuilderTest;
   friend class app_list::ArcAppShortcutsSearchProviderTest;

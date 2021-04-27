@@ -8,7 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
+#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -32,7 +32,7 @@ ash::ShelfItemDelegate::AppMenuItems GetAppMenuItems(
 // Test the browser application menu for some browser window and tab states.
 IN_PROC_BROWSER_TEST_F(BrowserShortcutShelfItemControllerTest, AppMenu) {
   BrowserShortcutShelfItemController* controller =
-      ChromeLauncherController::instance()
+      ChromeShelfController::instance()
           ->GetBrowserShortcutShelfItemControllerForTesting();
   ASSERT_TRUE(controller);
 

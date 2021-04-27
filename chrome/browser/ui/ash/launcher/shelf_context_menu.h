@@ -11,7 +11,7 @@
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/gfx/vector_icon_types.h"
 
-class ChromeLauncherController;
+class ChromeShelfController;
 
 // A base class for browser, extension, and ARC shelf item context menus.
 class ShelfContextMenu : public ui::SimpleMenuModel::Delegate {
@@ -20,7 +20,7 @@ class ShelfContextMenu : public ui::SimpleMenuModel::Delegate {
 
   // Static function to create a context menu instance.
   static std::unique_ptr<ShelfContextMenu> Create(
-      ChromeLauncherController* controller,
+      ChromeShelfController* controller,
       const ash::ShelfItem* item,
       int64_t display_id);
 
@@ -40,11 +40,11 @@ class ShelfContextMenu : public ui::SimpleMenuModel::Delegate {
   const gfx::VectorIcon& GetCommandIdVectorIcon(int type, int string_id) const;
 
  protected:
-  ShelfContextMenu(ChromeLauncherController* controller,
+  ShelfContextMenu(ChromeShelfController* controller,
                    const ash::ShelfItem* item,
                    int64_t display_id);
 
-  ChromeLauncherController* controller() const { return controller_; }
+  ChromeShelfController* controller() const { return controller_; }
   const ash::ShelfItem& item() const { return item_; }
 
   // Add menu item for pin/unpin.
@@ -61,7 +61,7 @@ class ShelfContextMenu : public ui::SimpleMenuModel::Delegate {
   int64_t display_id() const { return display_id_; }
 
  private:
-  ChromeLauncherController* controller_;
+  ChromeShelfController* controller_;
 
   const ash::ShelfItem item_;
 
