@@ -2278,7 +2278,7 @@ std::u16string BrowserView::GetAccessibleWindowTitleForChannelAndProfile(
   } else if (profile->IsIncognitoProfile()) {
     title = l10n_util::GetStringFUTF16(
         IDS_ACCESSIBLE_INCOGNITO_WINDOW_TITLE_FORMAT, title);
-  } else if (profile->IsRegularProfile() &&
+  } else if (!profile->IsOffTheRecord() &&
              profile_manager->GetNumberOfProfiles() > 1) {
     std::u16string profile_name =
         profiles::GetAvatarNameForProfile(profile->GetPath());

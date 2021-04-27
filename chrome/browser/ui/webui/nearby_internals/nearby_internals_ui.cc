@@ -29,7 +29,7 @@ NearbyInternalsUI::NearbyInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
   Profile* profile = Profile::FromWebUI(web_ui);
   // Nearby Sharing is not available to incognito or guest profiles.
-  DCHECK(profile->IsRegularProfile());
+  DCHECK(!profile->IsOffTheRecord());
   DCHECK(base::FeatureList::IsEnabled(features::kNearbySharing));
 
   content::WebUIDataSource* html_source =

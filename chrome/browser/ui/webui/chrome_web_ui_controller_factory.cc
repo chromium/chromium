@@ -792,7 +792,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       return &NewWebUI<ash::ShortcutCustomizationAppUI>;
   }
   if (url.host_piece() == chromeos::multidevice::kChromeUIProximityAuthHost &&
-      profile->IsRegularProfile()) {
+      !profile->IsOffTheRecord()) {
     return &NewWebUI<chromeos::multidevice::ProximityAuthUI>;
   }
   if (url.host_piece() == chrome::kChromeUIInternetConfigDialogHost)
@@ -802,7 +802,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
           profile) &&
       url.host_piece() == chrome::kChromeUINearbyShareHost &&
-      profile->IsRegularProfile()) {
+      !profile->IsOffTheRecord()) {
     return &NewWebUI<nearby_share::NearbyShareDialogUI>;
   }
   if (url.host_piece() == chrome::kChromeUISetTimeHost)

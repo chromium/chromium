@@ -1216,7 +1216,7 @@ void RenderViewContextMenu::AppendLinkItems() {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     // g_browser_process->profile_manager() is null during unit tests.
     if (g_browser_process->profile_manager() &&
-        GetProfile()->IsRegularProfile()) {
+        !GetProfile()->IsOffTheRecord()) {
       ProfileManager* profile_manager = g_browser_process->profile_manager();
       // Find all regular profiles other than the current one which have at
       // least one open window.

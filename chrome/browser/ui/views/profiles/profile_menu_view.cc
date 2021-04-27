@@ -200,7 +200,7 @@ void ProfileMenuView::BuildMenu() {
   Profile* profile = browser()->profile();
   if (IsGuest(profile)) {
     BuildGuestIdentity();
-  } else if (profile->IsRegularProfile()) {
+  } else if (!profile->IsOffTheRecord()) {
     BuildIdentity();
     BuildSyncInfo();
     BuildAutofillButtons();

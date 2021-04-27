@@ -128,7 +128,7 @@ scoped_refptr<RefcountedKeyedService>
 #endif // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 #if defined(OS_ANDROID)
-  if (profile->IsRegularProfile()) {
+  if (!profile->IsOffTheRecord()) {
     auto channels_provider =
         std::make_unique<NotificationChannelsProviderAndroid>();
 

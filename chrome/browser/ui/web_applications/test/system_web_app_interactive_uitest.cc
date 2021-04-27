@@ -688,7 +688,7 @@ using SystemWebAppLaunchProfileBrowserTest = SystemWebAppManagerBrowserTest;
 IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchProfileBrowserTest,
                        LaunchFromNormalSessionIncognitoProfile) {
   Profile* startup_profile = browser()->profile();
-  ASSERT_TRUE(startup_profile->IsRegularProfile());
+  ASSERT_TRUE(!startup_profile->IsOffTheRecord());
 
   WaitForTestSystemAppInstall();
   Profile* incognito_profile =

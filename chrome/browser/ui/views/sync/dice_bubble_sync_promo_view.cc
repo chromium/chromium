@@ -33,7 +33,7 @@ DiceBubbleSyncPromoView::DiceBubbleSyncPromoView(
   DCHECK(!profile->IsGuestSession() && !profile->IsEphemeralGuestProfile());
   AccountInfo account;
   // Signin promos can be shown in incognito, they use an empty account list.
-  if (profile->IsRegularProfile())
+  if (!profile->IsOffTheRecord())
     account = signin_ui_util::GetSingleAccountForDicePromos(profile);
 
   // Always show the accounts promo message for now.
