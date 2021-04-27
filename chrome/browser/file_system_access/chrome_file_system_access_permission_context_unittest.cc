@@ -989,6 +989,94 @@ TEST_F(
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       GetReadPermissionGrant_InheritFromAncestor) {
+  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents_.get())
+      ->set_auto_response_for_test(PermissionAction::GRANTED);
+
+  auto dir_grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kDirectory, UserAction::kOpen);
+  EXPECT_EQ(PermissionStatus::ASK, dir_grant->GetStatus());
+  base::RunLoop loop;
+  dir_grant->RequestPermission(
+      frame_id(), UserActivationState::kNotRequired,
+      base::BindLambdaForTesting([&](PermissionRequestOutcome outcome) {
+        EXPECT_EQ(PermissionRequestOutcome::kUserGranted, outcome);
+        loop.Quit();
+      }));
+  loop.Run();
+  EXPECT_EQ(PermissionStatus::GRANTED, dir_grant->GetStatus());
+  EXPECT_TRUE(permission_context_->HasPersistedPermissionForTesting(
+      kTestOrigin, kTestPath, HandleType::kDirectory, GrantType::kRead));
+
+  // A file in |dir_path|'s directory should be auto-granted permissions.
+  auto file_path = kTestPath.AppendASCII("baz");
+  auto file_grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, file_path, HandleType::kFile, UserAction::kLoadFromStorage);
+  EXPECT_EQ(PermissionStatus::GRANTED, file_grant->GetStatus());
+  EXPECT_TRUE(permission_context_->HasPersistedPermissionForTesting(
+      kTestOrigin, file_path, HandleType::kFile, GrantType::kRead));
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       GetWritePermissionGrant_InheritFromAncestor) {
+  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents_.get())
+      ->set_auto_response_for_test(PermissionAction::GRANTED);
+
+  auto dir_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kDirectory, UserAction::kOpen);
+  EXPECT_EQ(PermissionStatus::ASK, dir_grant->GetStatus());
+  base::RunLoop loop;
+  dir_grant->RequestPermission(
+      frame_id(), UserActivationState::kNotRequired,
+      base::BindLambdaForTesting([&](PermissionRequestOutcome outcome) {
+        EXPECT_EQ(PermissionRequestOutcome::kUserGranted, outcome);
+        loop.Quit();
+      }));
+  loop.Run();
+  EXPECT_EQ(PermissionStatus::GRANTED, dir_grant->GetStatus());
+  EXPECT_TRUE(permission_context_->HasPersistedPermissionForTesting(
+      kTestOrigin, kTestPath, HandleType::kDirectory, GrantType::kWrite));
+
+  // A file in |dir_path|'s directory should be auto-granted permissions.
+  auto file_path = kTestPath.AppendASCII("baz");
+  auto file_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, file_path, HandleType::kFile, UserAction::kLoadFromStorage);
+  EXPECT_EQ(PermissionStatus::GRANTED, file_grant->GetStatus());
+  EXPECT_TRUE(permission_context_->HasPersistedPermissionForTesting(
+      kTestOrigin, file_path, HandleType::kFile, GrantType::kWrite));
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       DoNotInheritFromAncestorOfOppositeType) {
+  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents_.get())
+      ->set_auto_response_for_test(PermissionAction::GRANTED);
+
+  auto dir_grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kDirectory, UserAction::kOpen);
+  EXPECT_EQ(PermissionStatus::ASK, dir_grant->GetStatus());
+  base::RunLoop loop;
+  dir_grant->RequestPermission(
+      frame_id(), UserActivationState::kNotRequired,
+      base::BindLambdaForTesting([&](PermissionRequestOutcome outcome) {
+        EXPECT_EQ(PermissionRequestOutcome::kUserGranted, outcome);
+        loop.Quit();
+      }));
+  loop.Run();
+  EXPECT_EQ(PermissionStatus::GRANTED, dir_grant->GetStatus());
+  EXPECT_TRUE(permission_context_->HasPersistedPermissionForTesting(
+      kTestOrigin, kTestPath, HandleType::kDirectory, GrantType::kRead));
+
+  // |dir_path| has read permission while we're asking for write permission, so
+  // do not auto-grant the permission.
+  auto file_path = kTestPath.AppendASCII("baz");
+  auto file_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, file_path, HandleType::kFile, UserAction::kLoadFromStorage);
+  EXPECT_EQ(PermissionStatus::ASK, file_grant->GetStatus());
+  EXPECT_FALSE(permission_context_->HasPersistedPermissionForTesting(
+      kTestOrigin, file_path, HandleType::kFile, GrantType::kWrite));
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
        PersistedPermission_GrantExpired) {
   auto grant = permission_context()->GetWritePermissionGrant(
       kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);

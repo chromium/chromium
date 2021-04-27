@@ -779,8 +779,6 @@ ChromeFileSystemAccessPermissionContext::GetReadPermissionGrant(
   // operator[] might insert a new OriginState in |origins_|, but that
   // is exactly what we want.
   auto& origin_state = origins_[origin];
-  // TODO(https://crbug.com/984772): If a parent directory is already
-  // readable this newly returned grant should also be readable.
   auto*& existing_grant = origin_state.read_grants[path];
   scoped_refptr<PermissionGrantImpl> new_grant;
 
@@ -810,6 +808,15 @@ ChromeFileSystemAccessPermissionContext::GetReadPermissionGrant(
           PersistedPermissionOptions::kDoNotUpdatePersistedPermission);
       break;
     case CONTENT_SETTING_ASK:
+      // If a parent directory is already readable this new grant should also be
+      // readable.
+      if (new_grant &&
+          AncestorHasActivePermission(origin, path, GrantType::kRead)) {
+        existing_grant->SetStatus(
+            PermissionStatus::GRANTED,
+            PersistedPermissionOptions::kUpdatePersistedPermission);
+        break;
+      }
       switch (user_action) {
         case UserAction::kOpen:
         case UserAction::kSave:
@@ -822,7 +829,6 @@ ChromeFileSystemAccessPermissionContext::GetReadPermissionGrant(
           existing_grant->SetStatus(
               PermissionStatus::GRANTED,
               PersistedPermissionOptions::kUpdatePersistedPermission);
-          ScheduleUsageIconUpdate();
           break;
         case UserAction::kLoadFromStorage:
           break;
@@ -845,6 +851,9 @@ ChromeFileSystemAccessPermissionContext::GetReadPermissionGrant(
       break;
   }
 
+  if (existing_grant->GetStatus() == PermissionStatus::GRANTED)
+    ScheduleUsageIconUpdate();
+
   return existing_grant;
 }
 
@@ -858,8 +867,6 @@ ChromeFileSystemAccessPermissionContext::GetWritePermissionGrant(
   // operator[] might insert a new OriginState in |origins_|, but that
   // is exactly what we want.
   auto& origin_state = origins_[origin];
-  // TODO(https://crbug.com/984772): If a parent directory is already
-  // writable this newly returned grant should also be writable.
   auto*& existing_grant = origin_state.write_grants[path];
   scoped_refptr<PermissionGrantImpl> new_grant;
 
@@ -889,13 +896,21 @@ ChromeFileSystemAccessPermissionContext::GetWritePermissionGrant(
           PersistedPermissionOptions::kDoNotUpdatePersistedPermission);
       break;
     case CONTENT_SETTING_ASK:
+      // If a parent directory is already writable this new grant should also be
+      // writable.
+      if (new_grant &&
+          AncestorHasActivePermission(origin, path, GrantType::kWrite)) {
+        existing_grant->SetStatus(
+            PermissionStatus::GRANTED,
+            PersistedPermissionOptions::kUpdatePersistedPermission);
+        break;
+      }
       switch (user_action) {
         case UserAction::kSave:
           // Only automatically grant write access for save dialogs.
           existing_grant->SetStatus(
               PermissionStatus::GRANTED,
               PersistedPermissionOptions::kUpdatePersistedPermission);
-          ScheduleUsageIconUpdate();
           break;
         case UserAction::kOpen:
         case UserAction::kDragAndDrop:
@@ -919,6 +934,9 @@ ChromeFileSystemAccessPermissionContext::GetWritePermissionGrant(
       NOTREACHED();
       break;
   }
+
+  if (existing_grant->GetStatus() == PermissionStatus::GRANTED)
+    ScheduleUsageIconUpdate();
 
   return existing_grant;
 }
@@ -1334,6 +1352,31 @@ void ChromeFileSystemAccessPermissionContext::MaybeCleanupActivePermissions(
   RevokeGrants(origin,
                PersistedPermissionOptions::kDoNotUpdatePersistedPermission);
 #endif
+}
+
+bool ChromeFileSystemAccessPermissionContext::AncestorHasActivePermission(
+    const url::Origin& origin,
+    const base::FilePath& path,
+    GrantType grant_type) {
+  auto it = origins_.find(origin);
+  if (it == origins_.end())
+    return false;
+  const auto& relevant_grants = grant_type == GrantType::kWrite
+                                    ? it->second.write_grants
+                                    : it->second.read_grants;
+  if (relevant_grants.empty())
+    return false;
+
+  // Permissions are inherited from the closest ancestor.
+  for (base::FilePath parent = path.DirName(); parent != parent.DirName();
+       parent = parent.DirName()) {
+    auto i = relevant_grants.find(parent);
+    if (i != relevant_grants.end() && i->second &&
+        i->second->GetStatus() == PermissionStatus::GRANTED) {
+      return true;
+    }
+  }
+  return false;
 }
 
 bool ChromeFileSystemAccessPermissionContext::OriginIsInstalledPWA(

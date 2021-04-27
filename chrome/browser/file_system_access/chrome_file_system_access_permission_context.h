@@ -213,6 +213,9 @@ class ChromeFileSystemAccessPermissionContext
                                           const base::Value& grant,
                                           bool is_installed_pwa);
 
+  bool AncestorHasActivePermission(const url::Origin& origin,
+                                   const base::FilePath& path,
+                                   GrantType grant_type);
   base::Optional<base::Value> GetPersistedPermission(
       const url::Origin& origin,
       const base::FilePath& path);
