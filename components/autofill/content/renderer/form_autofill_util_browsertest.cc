@@ -211,8 +211,6 @@ TEST_F(FormAutofillUtilsTest, FindChildTextSkipElementTest) {
 }
 
 TEST_F(FormAutofillUtilsTest, InferLabelForElementTest) {
-  std::vector<char16_t> stop_words;
-  stop_words.push_back(u'-');
   static const AutofillFieldUtilCase test_cases[] = {
       {"DIV table test 1", kDivTableExample1, kDivTableExample1Expected},
       {"DIV table test 2", kDivTableExample2, kDivTableExample2Expected},
@@ -235,8 +233,7 @@ TEST_F(FormAutofillUtilsTest, InferLabelForElementTest) {
     FormFieldData::LabelSource label_source =
         FormFieldData::LabelSource::kUnknown;
     std::u16string label;
-    InferLabelForElementForTesting(form_target, stop_words, &label,
-                                   &label_source);
+    InferLabelForElementForTesting(form_target, &label, &label_source);
     EXPECT_EQ(base::UTF8ToUTF16(test_case.expected_label), label);
   }
 }
@@ -265,8 +262,6 @@ TEST_F(FormAutofillUtilsTest, InferLabelSourceTest) {
       {"<dl><dt>label</dt><dd><input id='target'></dd></dl>",
        FormFieldData::LabelSource::kDdTag},
   };
-  std::vector<char16_t> stop_words;
-  stop_words.push_back(u'-');
 
   for (auto test_case : test_cases) {
     SCOPED_TRACE(testing::Message() << test_case.label_source);
@@ -283,7 +278,7 @@ TEST_F(FormAutofillUtilsTest, InferLabelSourceTest) {
         FormFieldData::LabelSource::kUnknown;
     std::u16string label;
     EXPECT_TRUE(autofill::form_util::InferLabelForElementForTesting(
-        form_target, stop_words, &label, &label_source));
+        form_target, &label, &label_source));
     EXPECT_EQ(base::UTF8ToUTF16(kLabelSourceExpectedLabel), label);
     EXPECT_EQ(test_case.label_source, label_source);
   }

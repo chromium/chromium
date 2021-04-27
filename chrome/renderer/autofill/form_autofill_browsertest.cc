@@ -5566,6 +5566,7 @@ TEST_F(FormAutofillTest, WebFormElementNotFoundInForm) {
 
   frame->ExecuteScript(
       WebString("document.getElementById('firstname').remove();"));
+  form = {};
   EXPECT_FALSE(WebFormElementToFormData(web_form, control_element, nullptr,
                                         EXTRACT_NONE, &form, &field));
 }

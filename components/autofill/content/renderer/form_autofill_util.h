@@ -259,10 +259,10 @@ void ClearPreviewedElements(
 // This kind of webpage is considered as empty:
 // <html>
 //    <head>
-//    <head/>
+//    </head>
 //    <body>
-//    <body/>
-// <html/>
+//    </body>
+// </html>
 // Meta, script and title tags don't influence the emptiness of a webpage.
 bool IsWebpageEmpty(const blink::WebLocalFrame* frame);
 
@@ -301,7 +301,6 @@ std::u16string FindChildTextWithIgnoreListForTesting(
     const blink::WebNode& node,
     const std::set<blink::WebNode>& divs_to_skip);
 bool InferLabelForElementForTesting(const blink::WebFormControlElement& element,
-                                    const std::vector<char16_t>& stop_words,
                                     std::u16string* label,
                                     FormFieldData::LabelSource* label_source);
 
