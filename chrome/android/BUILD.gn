@@ -1187,6 +1187,7 @@ android_library("chrome_test_java") {
     "//chrome/browser/paint_preview/android:java",
     "//chrome/browser/paint_preview/android:javatests",
     "//chrome/browser/password_check:public_java",
+    "//chrome/browser/password_entry_edit/android/internal:javatests",
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/password_manager/android_test_helpers:test_support_java",
     "//chrome/browser/performance_hints/android:java",
