@@ -62,7 +62,7 @@ sk_sp<SkSurface> ExternalVkImageSkiaRepresentation::BeginWriteAccess(
     SkColorType sk_color_type = viz::ResourceFormatToClosestSkColorType(
         true /* gpu_compositing */, format());
     surface = SkSurface::MakeFromBackendTexture(
-        gr_context, promise_texture->backendTexture(), kTopLeft_GrSurfaceOrigin,
+        gr_context, promise_texture->backendTexture(), surface_origin(),
         final_msaa_count, sk_color_type,
         backing_impl()->color_space().ToSkColorSpace(), &surface_props);
     if (!surface) {
