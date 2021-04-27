@@ -14,6 +14,7 @@
 #include "chrome/browser/extensions/api/debugger/debugger_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
+#include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
@@ -21,6 +22,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -325,6 +327,19 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
       detach_function.get(), base::StringPrintf("[{\"tabId\": %d}]", tab_id),
       browser(), api_test_utils::NONE));
   EXPECT_EQ(1u, service1->infobar_count());
+}
+
+// Tests that policy blocked hosts supersede the `debugger`
+// permission. Regression test for crbug.com/1139156.
+IN_PROC_BROWSER_TEST_F(DebuggerApiTest, TestDefaultPolicyBlockedHosts) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url("https://example.com");
+  EXPECT_TRUE(RunAttachFunction(url, std::string()));
+  policy::MockConfigurationPolicyProvider policy_provider;
+  ExtensionManagementPolicyUpdater pref(&policy_provider);
+  pref.AddPolicyBlockedHost("*", url.spec());
+  EXPECT_FALSE(
+      RunAttachFunction(url, manifest_errors::kCannotAccessExtensionUrl));
 }
 
 class DebuggerExtensionApiTest : public ExtensionApiTest {
