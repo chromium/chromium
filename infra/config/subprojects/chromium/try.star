@@ -505,6 +505,10 @@ try_.chromium_android_builder(
 )
 
 try_.chromium_android_builder(
+    name = "android-weblayer-pie-x86-wpt-smoketest",
+)
+
+try_.chromium_android_builder(
     name = "android-webview-pie-x86-wpt-fyi-rel",
 )
 
