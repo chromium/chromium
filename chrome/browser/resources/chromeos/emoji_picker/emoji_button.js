@@ -45,11 +45,11 @@ export class EmojiButton extends PolymerElement {
   }
 
   getButton() {
-    return this.$.button;
+    return this.$['emoji-button'];
   }
 
   focusButton(options) {
-    this.$.button.focus(options);
+    this.$['emoji-button'].focus(options);
   }
 
   onClick(ev) {

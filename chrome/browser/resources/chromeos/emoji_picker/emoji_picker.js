@@ -210,7 +210,7 @@ export class EmojiPicker extends PolymerElement {
   }
 
   onSearchChanged(newValue) {
-    this.$.listContainer.style.display = newValue ? 'none' : '';
+    this.$['list-container'].style.display = newValue ? 'none' : '';
   }
 
   onBarTransitionStart() {
@@ -270,20 +270,20 @@ export class EmojiPicker extends PolymerElement {
   }
 
   onRightChevronClick() {
-    this.shadowRoot.getElementById('tabs').scrollLeft = GROUP_ICON_SIZE * 6;
+    this.$.tabs.scrollLeft = GROUP_ICON_SIZE * 6;
     this.scrollToGroup(GROUP_TABS[GROUP_PER_ROW - 3].groupId);
     this.groupTabsMoving = true;
-    this.shadowRoot.getElementById('bar').style.left = EMOJI_GROUP_SIZE_PX;
+    this.$.bar.style.left = EMOJI_GROUP_SIZE_PX;
   }
 
   onLeftChevronClick() {
-    this.shadowRoot.getElementById('tabs').scrollLeft = 0;
+    this.$.tabs.scrollLeft = 0;
     this.scrollToGroup(GROUP_TABS[0].groupId);
     this.groupTabsMoving = true;
     if (this.history.emoji.length > 0) {
-      this.shadowRoot.getElementById('bar').style.left = '0';
+      this.$.bar.style.left = '0';
     } else {
-      this.shadowRoot.getElementById('bar').style.left = '36px';
+      this.$.bar.style.left = '36px';
     }
   }
 
@@ -323,18 +323,17 @@ export class EmojiPicker extends PolymerElement {
    * @private
    */
   updateChevrons() {
-    if (this.shadowRoot.getElementById('tabs').scrollLeft > GROUP_ICON_SIZE) {
-      this.shadowRoot.getElementById('leftChevron').style.display = 'flex';
+    if (this.$.tabs.scrollLeft > GROUP_ICON_SIZE) {
+      this.$['left-chevron'].style.display = 'flex';
     } else {
-      this.shadowRoot.getElementById('leftChevron').style.display = 'none';
+      this.$['left-chevron'].style.display = 'none';
     }
     // 1 less because we need to allow room for the chevrons
-    if (this.shadowRoot.getElementById('tabs').scrollLeft +
-            GROUP_ICON_SIZE * GROUP_PER_ROW <
+    if (this.$.tabs.scrollLeft + GROUP_ICON_SIZE * GROUP_PER_ROW <
         GROUP_ICON_SIZE * (GROUP_TABS.length + 1)) {
-      this.shadowRoot.getElementById('rightChevron').style.display = 'flex';
+      this.$['right-chevron'].style.display = 'flex';
     } else {
-      this.shadowRoot.getElementById('rightChevron').style.display = 'none';
+      this.$['right-chevron'].style.display = 'none';
     }
   }
 
@@ -372,7 +371,7 @@ export class EmojiPicker extends PolymerElement {
     if (!this.highlightBarMoving && !this.groupTabsMoving) {
       // Update the scroll position of the emoji groups so that active group is
       // visible.
-      let tabscrollLeft = this.shadowRoot.getElementById('tabs').scrollLeft;
+      let tabscrollLeft = this.$.tabs.scrollLeft;
       if (tabscrollLeft > GROUP_ICON_SIZE * (index - 0.5)) {
         tabscrollLeft = 0;
       }
@@ -383,8 +382,8 @@ export class EmojiPicker extends PolymerElement {
         tabscrollLeft = GROUP_ICON_SIZE * (5);
       }
 
-      this.shadowRoot.getElementById('tabs').scrollLeft = tabscrollLeft;
-      this.shadowRoot.getElementById('bar').style.left =
+      this.$.tabs.scrollLeft = tabscrollLeft;
+      this.$.bar.style.left =
           ((index * GROUP_ICON_SIZE - tabscrollLeft)) + 'px';
     }
   }
@@ -443,11 +442,11 @@ export class EmojiPicker extends PolymerElement {
     variants.style.marginLeft = `-${Math.max(shift, 0)}px`;
     // Now, examine vertical scrolling and scroll if needed. Not quire sure why
     // we need listcontainer.offsetTop, but it makes things work.
-    const groups = this.shadowRoot.getElementById('groups');
+    const groups = this.$.groups;
     const scrollTop = groups.scrollTop;
     const variantTop = variants.offsetTop;
     const variantBottom = variantTop + variants.offsetHeight;
-    const listTop = this.shadowRoot.getElementById('listContainer').offsetTop;
+    const listTop = this.$['list-container'].offsetTop;
     if (variantBottom > scrollTop + groups.offsetHeight + listTop) {
       groups.scrollTo({
         top: variantBottom - groups.offsetHeight - listTop,

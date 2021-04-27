@@ -6,7 +6,7 @@
     width: var(--emoji-size);
   }
 
-  button {
+  #emoji-button {
     background: var(--emoji-background);
     border: none;
     border-radius: 0;
@@ -21,13 +21,15 @@
     user-select: none;
     width: 100%;
   }
-  button:focus,
-  button:active {
+
+  #emoji-button:focus,
+  #emoji-button:active {
     --emoji-background: rgba(var(--cr-hairline-rgb), 0.1);
     outline-color: var(--cr-toggle-color);
     outline-width: 2px;
   }
-  button:disabled {
+
+  #emoji-button:disabled {
     /* chrome makes disabled buttons semitransparent.
      * we set a solid colour here to prevent that
      * (exactly which colour is not important).
@@ -36,18 +38,19 @@
     cursor: default;
   }
 
-  button:hover {
+  #emoji-button:hover {
     background-color: var(--cr-hover-background-color);
     border-radius: 50%;
   }
 
   .has-variants {
     /* 4px grey triangle in bottom-right.
-      * 315 degrees means starting at bottom-right towards top-left.
-      */
+     * 315 degrees means starting at bottom-right towards top-left.
+     * Need !important to override styling in #emoji-button.
+     */
     background: linear-gradient(
         315deg, var(--google-grey-refresh-500) 4px,
-        var(--emoji-background) 4px, var(--emoji-background));
+        var(--emoji-background) 4px, var(--emoji-background)) !important;
   }
 
   #tooltip {
@@ -59,6 +62,10 @@
     --paper-tooltip-duration-in: 0;
     --paper-tooltip-duration-out: 0;
 
+    /* CSS mixin goes against style guide, but this is the only way to style
+     * the paper tooltip without changing the source code (which is in
+     * third_party)
+     */
     --paper-tooltip: {
       box-shadow: var(--cr-elevation-3);
       font-family: 'Roboto', sans-serif;
@@ -71,7 +78,7 @@
 
 
 <button
-    id="button"
+    id="emoji-button"
     class$="[[_className(variants)]]"
     on-click="onClick"
     on-contextmenu="onContextMenu"

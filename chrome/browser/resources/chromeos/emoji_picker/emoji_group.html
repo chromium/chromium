@@ -27,12 +27,12 @@
     justify-items: center;
   }
 
-  #show_clear {
+  #show-clear {
     margin: 0;
     --cr-icon-button-size: 16px;
   }
 
-  #clearRecents {
+  #clear-recents {
     background-color: var(--cr-menu-background-color);
     border: 2px solid transparent;
     border-radius: 4px;
@@ -50,12 +50,12 @@
     width: fit-content;
   }
 
-  #clearRecents:hover {
+  #clear-recents:hover {
     background-color: rgba(var(--google-blue-refresh-500-rgb), .04);
   }
 
-  #clearRecents:focus,
-  #clearRecents:active {
+  #clear-recents:focus,
+  #clear-recents:active {
     border: 2px solid var(--cr-toggle-color);
   }
 
@@ -64,13 +64,13 @@
 <div id="heading" role="heading" aria-level="2" tabindex="0">
 <div id="heading-left">[[data.group]]</div>
 <template is="dom-if" if="[[clearable]]">
-  <cr-icon-button id="show_clear" iron-icon="emoji_picker:more_horizontal"
+  <cr-icon-button id="show-clear" iron-icon="emoji_picker:more_horizontal"
     on-click="onClearClick">
   </cr-icon-button>
 </template>
 </div>
   <template is = "dom-if" if="[[showClearRecents]]">
-  <button id="clearRecents" on-click="onClearRecentsClick">
+  <button id="clear-recents" on-click="onClearRecentsClick">
     Clear recently used emojis
   </button>
   </template>

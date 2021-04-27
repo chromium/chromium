@@ -39,8 +39,8 @@
     }
   }
 
-  #searchContainer,
-  #listContainer {
+  #search-container,
+  #list-container {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
@@ -94,13 +94,13 @@
     z-index: 2;
   }
 
-  #rightChevron {
+  #right-chevron {
     left: calc((var(--emoji-picker-width) -
       2 * var(--emoji-picker-side-padding)) / 9 * 8
       + var(--emoji-picker-side-padding));
   }
 
-  #leftChevron {
+  #left-chevron {
     display: none;
     left: var(--emoji-picker-side-padding);
   }
@@ -144,16 +144,16 @@
 
 <div id="message" class="sr-only" aria-live="polite"></div>
 <div class="side-padding">
-  <emoji-search id$="searchContainer" emoji-data="[[emojiData]]"
+  <emoji-search id$="search-container" emoji-data="[[emojiData]]"
     search="{{search}}">
   </emoji-search>
 </div>
 
-<div id="listContainer">
+<div id="list-container">
   <div class="sr-only" role="heading" aria-level="1">Emoji Group Buttons</div>
   <div class="side-padding">
     <div id="tabs" on-scroll="onGroupsScroll">
-      <cr-icon-button id="leftChevron" class="chevron"
+      <cr-icon-button id="left-chevron" class="chevron"
         on-click="onLeftChevronClick"
         iron-icon="emoji_picker:keyboard_arrow_left">
       </cr-icon-button>
@@ -180,7 +180,7 @@
       <emoji-group-button id="RightChevronScrollTarget"
         icon="[[emojiGroupTabs[0].icon]]" tabindex="-1">
       </emoji-group-button>
-      <cr-icon-button id="rightChevron" class="chevron"
+      <cr-icon-button id="right-chevron" class="chevron"
         on-click="onRightChevronClick"
         iron-icon="emoji_picker:keyboard_arrow_right">
       </cr-icon-button>

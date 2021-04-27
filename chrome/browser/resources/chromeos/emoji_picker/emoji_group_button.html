@@ -7,20 +7,20 @@
     width: var(--emoji-group-button-size);
   }
 
-  #button {
+  #group-button {
     --cr-icon-button-size: var(--emoji-group-button-size);
     font-size: var(--emoji-group-button-size);
     margin: 0;
     padding: 0;
   }
 
-  #button.emoji-group-active {
+  #group-button.emoji-group-active {
     --cr-icon-button-fill-color: var(--cr-checked-color);
   }
 </style>
 
 <cr-icon-button
-    id="button"
+    id="group-button"
     iron-icon="[[icon]]"
     class$="[[_className(active)]]"
     on-click="handleClick"
