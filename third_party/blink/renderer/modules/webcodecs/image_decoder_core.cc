@@ -140,7 +140,7 @@ std::unique_ptr<ImageDecoderCore::ImageDecodeResult> ImageDecoderCore::Decode(
   }
 
   if (!decoder_->IsSizeAvailable()) {
-    result->status = Status::kNoImage;
+    result->status = GetNoImageStatus();
     return result;
   }
 
@@ -176,21 +176,23 @@ std::unique_ptr<ImageDecoderCore::ImageDecodeResult> ImageDecoderCore::Decode(
   }
 
   if (!image) {
-    result->status = Status::kNoImage;
+    result->status = GetNoImageStatus();
     return result;
   }
 
   // Nothing to do if nothing has been decoded yet.
   if (image->GetStatus() == ImageFrame::kFrameEmpty ||
       image->GetStatus() == ImageFrame::kFrameInitialized) {
-    result->status = Status::kNoImage;
+    result->status = GetNoImageStatus();
     return result;
   }
 
   have_completed_rgb_decode_ = true;
 
-  // Only satisfy fully complete decode requests.
-  const bool is_complete = image->GetStatus() == ImageFrame::kFrameComplete;
+  // Only satisfy fully complete decode requests. Treat partial decodes as
+  // complete if we've received all the data we ever will.
+  const bool is_complete =
+      image->GetStatus() == ImageFrame::kFrameComplete || data_complete_;
   if (!is_complete && complete_frames_only) {
     result->status = Status::kNoImage;
     return result;
@@ -198,8 +200,12 @@ std::unique_ptr<ImageDecoderCore::ImageDecodeResult> ImageDecoderCore::Decode(
 
   // Prefer FinalizePixelsAndGetImage() since that will mark the underlying
   // bitmap as immutable, which allows copies to be avoided.
-  auto sk_image = is_complete ? image->FinalizePixelsAndGetImage()
-                              : SkImage::MakeFromBitmap(image->Bitmap());
+  //
+  // We can't call FinalizePixelsAndGetImage() unless the status truly is
+  // kFrameComplete, so use the status instead of |is_complete| here.
+  auto sk_image = image->GetStatus() == ImageFrame::kFrameComplete
+                      ? image->FinalizePixelsAndGetImage()
+                      : SkImage::MakeFromBitmap(image->Bitmap());
   if (!sk_image) {
     NOTREACHED() << "Failed to retrieve SkImage for decoded image.";
     result->status = Status::kDecodeError;
@@ -384,6 +390,12 @@ void ImageDecoderCore::MaybeDecodeToYuv() {
 
   yuv_frame_->set_color_space(YUVColorSpaceToGfxColorSpace(
       skyuv_cs, gfx::ColorSpace::PrimaryID::BT2020, transfer_id));
+}
+
+ImageDecoderCore::Status ImageDecoderCore::GetNoImageStatus() {
+  // Once we reach |data_complete_|, kNoImage is no longer a valid status code
+  // to return since it would prevent promises from ever resolving.
+  return data_complete_ ? Status::kDecodeError : Status::kNoImage;
 }
 
 }  // namespace blink

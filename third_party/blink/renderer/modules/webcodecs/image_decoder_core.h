@@ -95,6 +95,7 @@ class MODULES_EXPORT ImageDecoderCore {
 
  private:
   void MaybeDecodeToYuv();
+  Status GetNoImageStatus();
 
   const String mime_type_;
   const ImageDecoder::AlphaOption alpha_option_;
