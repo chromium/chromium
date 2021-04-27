@@ -74,12 +74,6 @@ WebAppInstallManager::DataRetrieverFactory GetFactoryForRetriever(
       base::Passed(std::move(callback)));
 }
 
-// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
-// function.
-GURL WebAppUrl() {
-  return GURL("https://foo.example");
-}
-
 // TODO(ortuno): Move this to ExternallyInstalledWebAppPrefs or replace with a
 // method in ExternallyInstalledWebAppPrefs once there is one.
 bool IsPlaceholderApp(Profile* profile, const GURL& url) {
@@ -384,11 +378,12 @@ class ExternallyManagedAppInstallTaskWithRunOnOsLoginTest
 };
 
 TEST_F(ExternallyManagedAppInstallTaskTest, InstallSucceeds) {
+  const GURL kWebAppUrl("https://foo.example");
   auto task = GetInstallationTaskWithTestMocks(
-      {WebAppUrl(), DisplayMode::kUndefined,
+      {kWebAppUrl, DisplayMode::kUndefined,
        ExternalInstallSource::kInternalDefault});
   url_loader().SetPrepareForLoadResultLoaded();
-  url_loader().SetNextLoadUrlResult(WebAppUrl(),
+  url_loader().SetNextLoadUrlResult(kWebAppUrl,
                                     WebAppUrlLoader::Result::kUrlLoaded);
 
   base::RunLoop run_loop;
@@ -400,12 +395,12 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallSucceeds) {
               ExternallyManagedAppManager::InstallResult result) {
             base::Optional<AppId> id =
                 ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
-                    .LookupAppId(WebAppUrl());
+                    .LookupAppId(kWebAppUrl);
 
             EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
             EXPECT_TRUE(app_id.has_value());
 
-            EXPECT_FALSE(IsPlaceholderApp(profile(), WebAppUrl()));
+            EXPECT_FALSE(IsPlaceholderApp(profile(), kWebAppUrl));
 
             EXPECT_EQ(app_id.value(), id.value());
 
@@ -428,12 +423,13 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallSucceeds) {
 }
 
 TEST_F(ExternallyManagedAppInstallTaskTest, InstallFails) {
+  const GURL kWebAppUrl("https://foo.example");
   auto task = GetInstallationTaskWithTestMocks(
-      {WebAppUrl(), DisplayMode::kStandalone,
+      {kWebAppUrl, DisplayMode::kStandalone,
        ExternalInstallSource::kInternalDefault});
   data_retriever()->SetRendererWebApplicationInfo(nullptr);
   url_loader().SetPrepareForLoadResultLoaded();
-  url_loader().SetNextLoadUrlResult(WebAppUrl(),
+  url_loader().SetNextLoadUrlResult(kWebAppUrl,
                                     WebAppUrlLoader::Result::kUrlLoaded);
 
   base::RunLoop run_loop;
@@ -444,7 +440,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallFails) {
                         ExternallyManagedAppManager::InstallResult result) {
                       base::Optional<AppId> id =
                           ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
-                              .LookupAppId(WebAppUrl());
+                              .LookupAppId(kWebAppUrl);
 
                       EXPECT_EQ(InstallResultCode::kGetWebApplicationInfoFailed,
                                 result.code);
@@ -459,13 +455,14 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallFails) {
 }
 
 TEST_F(ExternallyManagedAppInstallTaskTest, InstallNoDesktopShortcut) {
+  const GURL kWebAppUrl("https://foo.example");
   ExternalInstallOptions install_options(
-      WebAppUrl(), DisplayMode::kStandalone,
+      kWebAppUrl, DisplayMode::kStandalone,
       ExternalInstallSource::kInternalDefault);
   install_options.add_to_desktop = false;
   auto task = GetInstallationTaskWithTestMocks(std::move(install_options));
   url_loader().SetPrepareForLoadResultLoaded();
-  url_loader().SetNextLoadUrlResult(WebAppUrl(),
+  url_loader().SetNextLoadUrlResult(kWebAppUrl,
                                     WebAppUrlLoader::Result::kUrlLoaded);
 
   base::RunLoop run_loop;
@@ -493,13 +490,14 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallNoDesktopShortcut) {
 }
 
 TEST_F(ExternallyManagedAppInstallTaskTest, InstallNoQuickLaunchBarShortcut) {
+  const GURL kWebAppUrl("https://foo.example");
   ExternalInstallOptions install_options(
-      WebAppUrl(), DisplayMode::kStandalone,
+      kWebAppUrl, DisplayMode::kStandalone,
       ExternalInstallSource::kInternalDefault);
   install_options.add_to_quick_launch_bar = false;
   auto task = GetInstallationTaskWithTestMocks(std::move(install_options));
   url_loader().SetPrepareForLoadResultLoaded();
-  url_loader().SetNextLoadUrlResult(WebAppUrl(),
+  url_loader().SetNextLoadUrlResult(kWebAppUrl,
                                     WebAppUrlLoader::Result::kUrlLoaded);
 
   base::RunLoop run_loop;
@@ -527,14 +525,15 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallNoQuickLaunchBarShortcut) {
 
 TEST_F(ExternallyManagedAppInstallTaskTest,
        InstallNoDesktopShortcutAndNoQuickLaunchBarShortcut) {
+  const GURL kWebAppUrl("https://foo.example");
   ExternalInstallOptions install_options(
-      WebAppUrl(), DisplayMode::kStandalone,
+      kWebAppUrl, DisplayMode::kStandalone,
       ExternalInstallSource::kInternalDefault);
   install_options.add_to_desktop = false;
   install_options.add_to_quick_launch_bar = false;
   auto task = GetInstallationTaskWithTestMocks(std::move(install_options));
   url_loader().SetPrepareForLoadResultLoaded();
-  url_loader().SetNextLoadUrlResult(WebAppUrl(),
+  url_loader().SetNextLoadUrlResult(kWebAppUrl,
                                     WebAppUrlLoader::Result::kUrlLoaded);
 
   base::RunLoop run_loop;
@@ -561,12 +560,13 @@ TEST_F(ExternallyManagedAppInstallTaskTest,
 }
 
 TEST_F(ExternallyManagedAppInstallTaskTest, InstallForcedContainerWindow) {
+  const GURL kWebAppUrl("https://foo.example");
   auto install_options =
-      ExternalInstallOptions(WebAppUrl(), DisplayMode::kStandalone,
+      ExternalInstallOptions(kWebAppUrl, DisplayMode::kStandalone,
                              ExternalInstallSource::kInternalDefault);
   auto task = GetInstallationTaskWithTestMocks(std::move(install_options));
   url_loader().SetPrepareForLoadResultLoaded();
-  url_loader().SetNextLoadUrlResult(WebAppUrl(),
+  url_loader().SetNextLoadUrlResult(kWebAppUrl,
                                     WebAppUrlLoader::Result::kUrlLoaded);
 
   base::RunLoop run_loop;
@@ -585,12 +585,13 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallForcedContainerWindow) {
 }
 
 TEST_F(ExternallyManagedAppInstallTaskTest, InstallForcedContainerTab) {
+  const GURL kWebAppUrl("https://foo.example");
   auto install_options =
-      ExternalInstallOptions(WebAppUrl(), DisplayMode::kBrowser,
+      ExternalInstallOptions(kWebAppUrl, DisplayMode::kBrowser,
                              ExternalInstallSource::kInternalDefault);
   auto task = GetInstallationTaskWithTestMocks(std::move(install_options));
   url_loader().SetPrepareForLoadResultLoaded();
-  url_loader().SetNextLoadUrlResult(WebAppUrl(),
+  url_loader().SetNextLoadUrlResult(kWebAppUrl,
                                     WebAppUrlLoader::Result::kUrlLoaded);
 
   base::RunLoop run_loop;
@@ -609,12 +610,13 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallForcedContainerTab) {
 }
 
 TEST_F(ExternallyManagedAppInstallTaskTest, InstallPreinstalledApp) {
+  const GURL kWebAppUrl("https://foo.example");
   auto install_options =
-      ExternalInstallOptions(WebAppUrl(), DisplayMode::kUndefined,
+      ExternalInstallOptions(kWebAppUrl, DisplayMode::kUndefined,
                              ExternalInstallSource::kInternalDefault);
   auto task = GetInstallationTaskWithTestMocks(std::move(install_options));
   url_loader().SetPrepareForLoadResultLoaded();
-  url_loader().SetNextLoadUrlResult(WebAppUrl(),
+  url_loader().SetNextLoadUrlResult(kWebAppUrl,
                                     WebAppUrlLoader::Result::kUrlLoaded);
 
   base::RunLoop run_loop;
@@ -635,12 +637,13 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallPreinstalledApp) {
 }
 
 TEST_F(ExternallyManagedAppInstallTaskTest, InstallAppFromPolicy) {
+  const GURL kWebAppUrl("https://foo.example");
   auto install_options =
-      ExternalInstallOptions(WebAppUrl(), DisplayMode::kUndefined,
+      ExternalInstallOptions(kWebAppUrl, DisplayMode::kUndefined,
                              ExternalInstallSource::kExternalPolicy);
   auto task = GetInstallationTaskWithTestMocks(std::move(install_options));
   url_loader().SetPrepareForLoadResultLoaded();
-  url_loader().SetNextLoadUrlResult(WebAppUrl(),
+  url_loader().SetNextLoadUrlResult(kWebAppUrl,
                                     WebAppUrlLoader::Result::kUrlLoaded);
 
   base::RunLoop run_loop;
@@ -661,13 +664,14 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallAppFromPolicy) {
 }
 
 TEST_F(ExternallyManagedAppInstallTaskTest, InstallPlaceholder) {
-  ExternalInstallOptions options(WebAppUrl(), DisplayMode::kStandalone,
+  const GURL kWebAppUrl("https://foo.example");
+  ExternalInstallOptions options(kWebAppUrl, DisplayMode::kStandalone,
                                  ExternalInstallSource::kExternalPolicy);
   options.install_placeholder = true;
   auto task = GetInstallationTaskWithTestMocks(std::move(options));
   url_loader().SetPrepareForLoadResultLoaded();
   url_loader().SetNextLoadUrlResult(
-      WebAppUrl(), WebAppUrlLoader::Result::kRedirectedUrlLoaded);
+      kWebAppUrl, WebAppUrlLoader::Result::kRedirectedUrlLoaded);
 
   base::RunLoop run_loop;
   task->Install(
@@ -678,7 +682,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallPlaceholder) {
             EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
             EXPECT_TRUE(app_id.has_value());
 
-            EXPECT_TRUE(IsPlaceholderApp(profile(), WebAppUrl()));
+            EXPECT_TRUE(IsPlaceholderApp(profile(), kWebAppUrl));
 
             EXPECT_EQ(1u,
                       os_integration_manager()->num_create_shortcuts_calls());
@@ -688,9 +692,8 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallPlaceholder) {
             const WebApplicationInfo& web_app_info =
                 finalizer()->web_app_info_list().at(0);
 
-            EXPECT_EQ(base::UTF8ToUTF16(WebAppUrl().spec()),
-                      web_app_info.title);
-            EXPECT_EQ(WebAppUrl(), web_app_info.start_url);
+            EXPECT_EQ(base::UTF8ToUTF16(kWebAppUrl.spec()), web_app_info.title);
+            EXPECT_EQ(kWebAppUrl, web_app_info.start_url);
             EXPECT_TRUE(web_app_info.open_as_window);
             EXPECT_TRUE(web_app_info.icon_infos.empty());
             EXPECT_TRUE(web_app_info.icon_bitmaps.any.empty());
@@ -704,14 +707,15 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallPlaceholder) {
 // support os shortcuts.
 TEST_F(ExternallyManagedAppInstallTaskTest,
        InstallPlaceholderNoCreateOsShorcuts) {
-  ExternalInstallOptions options(WebAppUrl(), DisplayMode::kStandalone,
+  const GURL kWebAppUrl("https://foo.example");
+  ExternalInstallOptions options(kWebAppUrl, DisplayMode::kStandalone,
                                  ExternalInstallSource::kExternalPolicy);
   options.install_placeholder = true;
   auto task = GetInstallationTaskWithTestMocks(std::move(options));
   os_integration_manager()->set_can_create_shortcuts(false);
   url_loader().SetPrepareForLoadResultLoaded();
   url_loader().SetNextLoadUrlResult(
-      WebAppUrl(), WebAppUrlLoader::Result::kRedirectedUrlLoaded);
+      kWebAppUrl, WebAppUrlLoader::Result::kRedirectedUrlLoaded);
 
   base::RunLoop run_loop;
   task->Install(
@@ -722,7 +726,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest,
             EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
             EXPECT_TRUE(app_id.has_value());
 
-            EXPECT_TRUE(IsPlaceholderApp(profile(), WebAppUrl()));
+            EXPECT_TRUE(IsPlaceholderApp(profile(), kWebAppUrl));
 
             EXPECT_EQ(0u,
                       os_integration_manager()->num_create_shortcuts_calls());
@@ -732,9 +736,8 @@ TEST_F(ExternallyManagedAppInstallTaskTest,
             const WebApplicationInfo& web_app_info =
                 finalizer()->web_app_info_list().at(0);
 
-            EXPECT_EQ(base::UTF8ToUTF16(WebAppUrl().spec()),
-                      web_app_info.title);
-            EXPECT_EQ(WebAppUrl(), web_app_info.start_url);
+            EXPECT_EQ(base::UTF8ToUTF16(kWebAppUrl.spec()), web_app_info.title);
+            EXPECT_EQ(kWebAppUrl, web_app_info.start_url);
             EXPECT_TRUE(web_app_info.open_as_window);
             EXPECT_TRUE(web_app_info.icon_infos.empty());
             EXPECT_TRUE(web_app_info.icon_bitmaps.any.empty());
@@ -745,7 +748,8 @@ TEST_F(ExternallyManagedAppInstallTaskTest,
 }
 
 TEST_F(ExternallyManagedAppInstallTaskTest, InstallPlaceholderTwice) {
-  ExternalInstallOptions options(WebAppUrl(), DisplayMode::kStandalone,
+  const GURL kWebAppUrl("https://foo.example");
+  ExternalInstallOptions options(kWebAppUrl, DisplayMode::kStandalone,
                                  ExternalInstallSource::kExternalPolicy);
   options.install_placeholder = true;
   AppId placeholder_app_id;
@@ -755,7 +759,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallPlaceholderTwice) {
     auto task = GetInstallationTaskWithTestMocks(options);
     url_loader().SetPrepareForLoadResultLoaded();
     url_loader().SetNextLoadUrlResult(
-        WebAppUrl(), WebAppUrlLoader::Result::kRedirectedUrlLoaded);
+        kWebAppUrl, WebAppUrlLoader::Result::kRedirectedUrlLoaded);
 
     base::RunLoop run_loop;
     task->Install(
@@ -776,7 +780,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallPlaceholderTwice) {
   auto task = GetInstallationTaskWithTestMocks(options);
   url_loader().SetPrepareForLoadResultLoaded();
   url_loader().SetNextLoadUrlResult(
-      WebAppUrl(), WebAppUrlLoader::Result::kRedirectedUrlLoaded);
+      kWebAppUrl, WebAppUrlLoader::Result::kRedirectedUrlLoaded);
 
   base::RunLoop run_loop;
   task->Install(
@@ -796,7 +800,8 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallPlaceholderTwice) {
 }
 
 TEST_F(ExternallyManagedAppInstallTaskTest, ReinstallPlaceholderSucceeds) {
-  ExternalInstallOptions options(WebAppUrl(), DisplayMode::kStandalone,
+  const GURL kWebAppUrl("https://foo.example");
+  ExternalInstallOptions options(kWebAppUrl, DisplayMode::kStandalone,
                                  ExternalInstallSource::kExternalPolicy);
   options.install_placeholder = true;
   AppId placeholder_app_id;
@@ -806,7 +811,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, ReinstallPlaceholderSucceeds) {
     auto task = GetInstallationTaskWithTestMocks(options);
     url_loader().SetPrepareForLoadResultLoaded();
     url_loader().SetNextLoadUrlResult(
-        WebAppUrl(), WebAppUrlLoader::Result::kRedirectedUrlLoaded);
+        kWebAppUrl, WebAppUrlLoader::Result::kRedirectedUrlLoaded);
 
     base::RunLoop run_loop;
     task->Install(
@@ -826,9 +831,9 @@ TEST_F(ExternallyManagedAppInstallTaskTest, ReinstallPlaceholderSucceeds) {
   // Replace the placeholder with a real app.
   options.reinstall_placeholder = true;
   auto task = GetInstallationTaskWithTestMocks(options);
-  finalizer()->SetNextUninstallExternalWebAppResult(WebAppUrl(), true);
+  finalizer()->SetNextUninstallExternalWebAppResult(kWebAppUrl, true);
   url_loader().SetPrepareForLoadResultLoaded();
-  url_loader().SetNextLoadUrlResult(WebAppUrl(),
+  url_loader().SetNextLoadUrlResult(kWebAppUrl,
                                     WebAppUrlLoader::Result::kUrlLoaded);
 
   base::RunLoop run_loop;
@@ -839,11 +844,11 @@ TEST_F(ExternallyManagedAppInstallTaskTest, ReinstallPlaceholderSucceeds) {
               ExternallyManagedAppManager::InstallResult result) {
             EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
             EXPECT_TRUE(app_id.has_value());
-            EXPECT_FALSE(IsPlaceholderApp(profile(), WebAppUrl()));
+            EXPECT_FALSE(IsPlaceholderApp(profile(), kWebAppUrl));
 
             EXPECT_EQ(1u,
                       finalizer()->uninstall_external_web_app_urls().size());
-            EXPECT_EQ(WebAppUrl(),
+            EXPECT_EQ(kWebAppUrl,
                       finalizer()->uninstall_external_web_app_urls().at(0));
 
             run_loop.Quit();
@@ -852,7 +857,8 @@ TEST_F(ExternallyManagedAppInstallTaskTest, ReinstallPlaceholderSucceeds) {
 }
 
 TEST_F(ExternallyManagedAppInstallTaskTest, ReinstallPlaceholderFails) {
-  ExternalInstallOptions options(WebAppUrl(), DisplayMode::kStandalone,
+  const GURL kWebAppUrl("https://foo.example");
+  ExternalInstallOptions options(kWebAppUrl, DisplayMode::kStandalone,
                                  ExternalInstallSource::kExternalPolicy);
   options.install_placeholder = true;
   AppId placeholder_app_id;
@@ -862,7 +868,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, ReinstallPlaceholderFails) {
     auto task = GetInstallationTaskWithTestMocks(options);
     url_loader().SetPrepareForLoadResultLoaded();
     url_loader().SetNextLoadUrlResult(
-        WebAppUrl(), WebAppUrlLoader::Result::kRedirectedUrlLoaded);
+        kWebAppUrl, WebAppUrlLoader::Result::kRedirectedUrlLoaded);
 
     base::RunLoop run_loop;
     task->Install(
@@ -884,9 +890,9 @@ TEST_F(ExternallyManagedAppInstallTaskTest, ReinstallPlaceholderFails) {
   options.reinstall_placeholder = true;
   auto task = GetInstallationTaskWithTestMocks(options);
 
-  finalizer()->SetNextUninstallExternalWebAppResult(WebAppUrl(), false);
+  finalizer()->SetNextUninstallExternalWebAppResult(kWebAppUrl, false);
   url_loader().SetPrepareForLoadResultLoaded();
-  url_loader().SetNextLoadUrlResult(WebAppUrl(),
+  url_loader().SetNextLoadUrlResult(kWebAppUrl,
                                     WebAppUrlLoader::Result::kUrlLoaded);
 
   base::RunLoop run_loop;
@@ -898,11 +904,11 @@ TEST_F(ExternallyManagedAppInstallTaskTest, ReinstallPlaceholderFails) {
             EXPECT_EQ(InstallResultCode::kFailedPlaceholderUninstall,
                       result.code);
             EXPECT_FALSE(app_id.has_value());
-            EXPECT_TRUE(IsPlaceholderApp(profile(), WebAppUrl()));
+            EXPECT_TRUE(IsPlaceholderApp(profile(), kWebAppUrl));
 
             EXPECT_EQ(1u,
                       finalizer()->uninstall_external_web_app_urls().size());
-            EXPECT_EQ(WebAppUrl(),
+            EXPECT_EQ(kWebAppUrl,
                       finalizer()->uninstall_external_web_app_urls().at(0));
 
             // There should have been no new calls to install a placeholder.
@@ -914,7 +920,8 @@ TEST_F(ExternallyManagedAppInstallTaskTest, ReinstallPlaceholderFails) {
 }
 
 TEST_F(ExternallyManagedAppInstallTaskTest, UninstallAndReplace) {
-  ExternalInstallOptions options = {WebAppUrl(), DisplayMode::kUndefined,
+  const GURL kWebAppUrl("https://foo.example");
+  ExternalInstallOptions options = {kWebAppUrl, DisplayMode::kUndefined,
                                     ExternalInstallSource::kInternalDefault};
   AppId app_id;
   {
@@ -924,7 +931,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, UninstallAndReplace) {
     base::RunLoop run_loop;
     auto task = GetInstallationTaskWithTestMocks(options);
     url_loader().SetPrepareForLoadResultLoaded();
-    url_loader().SetNextLoadUrlResult(WebAppUrl(),
+    url_loader().SetNextLoadUrlResult(kWebAppUrl,
                                       WebAppUrlLoader::Result::kUrlLoaded);
 
     task->Install(
@@ -937,7 +944,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, UninstallAndReplace) {
               EXPECT_EQ(InstallResultCode::kSuccessNewInstall, result.code);
               EXPECT_EQ(app_id,
                         *ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
-                             .LookupAppId(WebAppUrl()));
+                             .LookupAppId(kWebAppUrl));
 
               EXPECT_TRUE(ui_manager()->DidUninstallAndReplace("app1", app_id));
               EXPECT_TRUE(ui_manager()->DidUninstallAndReplace("app2", app_id));
@@ -953,7 +960,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, UninstallAndReplace) {
     base::RunLoop run_loop;
     auto task = GetInstallationTaskWithTestMocks(options);
     url_loader().SetPrepareForLoadResultLoaded();
-    url_loader().SetNextLoadUrlResult(WebAppUrl(),
+    url_loader().SetNextLoadUrlResult(kWebAppUrl,
                                       WebAppUrlLoader::Result::kUrlLoaded);
 
     task->Install(
@@ -1029,13 +1036,14 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallFailedWebContentsDestroyed) {
 }
 
 TEST_F(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoSucceeds) {
-  ExternalInstallOptions options(WebAppUrl(), DisplayMode::kStandalone,
+  const GURL kWebAppUrl("https://foo.example");
+  ExternalInstallOptions options(kWebAppUrl, DisplayMode::kStandalone,
                                  ExternalInstallSource::kSystemInstalled);
   options.only_use_app_info_factory = true;
-  options.app_info_factory = base::BindLambdaForTesting([]() {
+  options.app_info_factory = base::BindLambdaForTesting([&kWebAppUrl]() {
     auto info = std::make_unique<WebApplicationInfo>();
-    info->start_url = WebAppUrl();
-    info->scope = WebAppUrl().GetWithoutFilename();
+    info->start_url = kWebAppUrl;
+    info->scope = kWebAppUrl.GetWithoutFilename();
     info->title = u"Foo Web App";
     return info;
   });
@@ -1045,7 +1053,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoSucceeds) {
       ui_manager(), finalizer(), install_manager(), std::move(options));
 
   finalizer()->SetNextFinalizeInstallResult(
-      WebAppUrl(), InstallResultCode::kSuccessNewInstall);
+      kWebAppUrl, InstallResultCode::kSuccessNewInstall);
 
   base::RunLoop run_loop;
   task.Install(
@@ -1055,11 +1063,11 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoSucceeds) {
                                          result) {
         base::Optional<AppId> id =
             ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
-                .LookupAppId(WebAppUrl());
+                .LookupAppId(kWebAppUrl);
         EXPECT_EQ(InstallResultCode::kSuccessOfflineOnlyInstall, result.code);
         EXPECT_TRUE(app_id.has_value());
 
-        EXPECT_FALSE(IsPlaceholderApp(profile(), WebAppUrl()));
+        EXPECT_FALSE(IsPlaceholderApp(profile(), kWebAppUrl));
 
         EXPECT_EQ(app_id.value(), id.value());
 
@@ -1080,13 +1088,14 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoSucceeds) {
 }
 
 TEST_F(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoFails) {
-  ExternalInstallOptions options(WebAppUrl(), DisplayMode::kStandalone,
+  const GURL kWebAppUrl("https://foo.example");
+  ExternalInstallOptions options(kWebAppUrl, DisplayMode::kStandalone,
                                  ExternalInstallSource::kSystemInstalled);
   options.only_use_app_info_factory = true;
-  options.app_info_factory = base::BindLambdaForTesting([]() {
+  options.app_info_factory = base::BindLambdaForTesting([&kWebAppUrl]() {
     auto info = std::make_unique<WebApplicationInfo>();
-    info->start_url = WebAppUrl();
-    info->scope = WebAppUrl().GetWithoutFilename();
+    info->start_url = kWebAppUrl;
+    info->scope = kWebAppUrl.GetWithoutFilename();
     info->title = u"Foo Web App";
     return info;
   });
@@ -1096,7 +1105,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoFails) {
       ui_manager(), finalizer(), install_manager(), std::move(options));
 
   finalizer()->SetNextFinalizeInstallResult(
-      WebAppUrl(), InstallResultCode::kWriteDataFailed);
+      kWebAppUrl, InstallResultCode::kWriteDataFailed);
 
   base::RunLoop run_loop;
 
@@ -1106,7 +1115,7 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoFails) {
                        ExternallyManagedAppManager::InstallResult result) {
                      base::Optional<AppId> id =
                          ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
-                             .LookupAppId(WebAppUrl());
+                             .LookupAppId(kWebAppUrl);
 
                      EXPECT_EQ(InstallResultCode::kWriteDataFailed,
                                result.code);
@@ -1122,14 +1131,15 @@ TEST_F(ExternallyManagedAppInstallTaskTest, InstallWithWebAppInfoFails) {
 
 TEST_F(ExternallyManagedAppInstallTaskWithRunOnOsLoginTest,
        InstallRunOnOsLogin) {
+  const GURL kWebAppUrl("https://foo.example");
   ExternalInstallOptions install_options(
-      WebAppUrl(), DisplayMode::kStandalone,
+      kWebAppUrl, DisplayMode::kStandalone,
       ExternalInstallSource::kInternalDefault);
   install_options.run_on_os_login = true;
 
   auto task = GetInstallationTaskWithTestMocks(std::move(install_options));
   url_loader().SetPrepareForLoadResultLoaded();
-  url_loader().SetNextLoadUrlResult(WebAppUrl(),
+  url_loader().SetNextLoadUrlResult(kWebAppUrl,
                                     WebAppUrlLoader::Result::kUrlLoaded);
 
   base::RunLoop run_loop;
@@ -1161,13 +1171,14 @@ TEST_F(ExternallyManagedAppInstallTaskWithRunOnOsLoginTest,
 
 TEST_F(ExternallyManagedAppInstallTaskWithRunOnOsLoginTest,
        InstallNoRunOnOsLogin) {
+  const GURL kWebAppUrl("https://foo.example");
   ExternalInstallOptions install_options(
-      WebAppUrl(), DisplayMode::kStandalone,
+      kWebAppUrl, DisplayMode::kStandalone,
       ExternalInstallSource::kInternalDefault);
   install_options.run_on_os_login = false;
   auto task = GetInstallationTaskWithTestMocks(std::move(install_options));
   url_loader().SetPrepareForLoadResultLoaded();
-  url_loader().SetNextLoadUrlResult(WebAppUrl(),
+  url_loader().SetNextLoadUrlResult(kWebAppUrl,
                                     WebAppUrlLoader::Result::kUrlLoaded);
 
   base::RunLoop run_loop;

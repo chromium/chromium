@@ -66,28 +66,20 @@ const char kWebAppSettingWithDefaultConfiguration[] = R"({
 
 const char kDefaultFallbackAppName[] = "fallback app name";
 
-// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
-// function.
-GURL WindowedUrl() {
-  return GURL("https://windowed.example/");
-}
-GURL TabbedUrl() {
-  return GURL("https://tabbed.example/");
-}
-GURL NoContainerUrl() {
-  return GURL("https://no-container.example/");
-}
+constexpr char kWindowedUrl[] = "https://windowed.example/";
+constexpr char kTabbedUrl[] = "https://tabbed.example/";
+constexpr char kNoContainerUrl[] = "https://no-container.example/";
 
 base::Value GetWindowedItem() {
   base::Value item(base::Value::Type::DICTIONARY);
-  item.SetKey(kUrlKey, base::Value(WindowedUrl().spec()));
+  item.SetKey(kUrlKey, base::Value(kWindowedUrl));
   item.SetKey(kDefaultLaunchContainerKey,
               base::Value(kDefaultLaunchContainerWindowValue));
   return item;
 }
 
 ExternalInstallOptions GetWindowedInstallOptions() {
-  ExternalInstallOptions options(WindowedUrl(), DisplayMode::kStandalone,
+  ExternalInstallOptions options(GURL(kWindowedUrl), DisplayMode::kStandalone,
                                  ExternalInstallSource::kExternalPolicy);
   options.add_to_applications_menu = true;
   options.add_to_desktop = false;
@@ -100,14 +92,14 @@ ExternalInstallOptions GetWindowedInstallOptions() {
 
 base::Value GetTabbedItem() {
   base::Value item(base::Value::Type::DICTIONARY);
-  item.SetKey(kUrlKey, base::Value(TabbedUrl().spec()));
+  item.SetKey(kUrlKey, base::Value(kTabbedUrl));
   item.SetKey(kDefaultLaunchContainerKey,
               base::Value(kDefaultLaunchContainerTabValue));
   return item;
 }
 
 ExternalInstallOptions GetTabbedInstallOptions() {
-  ExternalInstallOptions options(TabbedUrl(), DisplayMode::kBrowser,
+  ExternalInstallOptions options(GURL(kTabbedUrl), DisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalPolicy);
   options.add_to_applications_menu = true;
   options.add_to_desktop = false;
@@ -120,12 +112,12 @@ ExternalInstallOptions GetTabbedInstallOptions() {
 
 base::Value GetNoContainerItem() {
   base::Value item(base::Value::Type::DICTIONARY);
-  item.SetKey(kUrlKey, base::Value(NoContainerUrl().spec()));
+  item.SetKey(kUrlKey, base::Value(kNoContainerUrl));
   return item;
 }
 
 ExternalInstallOptions GetNoContainerInstallOptions() {
-  ExternalInstallOptions options(NoContainerUrl(), DisplayMode::kBrowser,
+  ExternalInstallOptions options(GURL(kNoContainerUrl), DisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalPolicy);
   options.add_to_applications_menu = true;
   options.add_to_desktop = false;
@@ -138,12 +130,12 @@ ExternalInstallOptions GetNoContainerInstallOptions() {
 
 base::Value GetCreateDesktopShortcutDefaultItem() {
   base::Value item(base::Value::Type::DICTIONARY);
-  item.SetKey(kUrlKey, base::Value(NoContainerUrl().spec()));
+  item.SetKey(kUrlKey, base::Value(kNoContainerUrl));
   return item;
 }
 
 ExternalInstallOptions GetCreateDesktopShortcutDefaultInstallOptions() {
-  ExternalInstallOptions options(NoContainerUrl(), DisplayMode::kBrowser,
+  ExternalInstallOptions options(GURL(kNoContainerUrl), DisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalPolicy);
   options.add_to_applications_menu = true;
   options.add_to_desktop = false;
@@ -156,13 +148,13 @@ ExternalInstallOptions GetCreateDesktopShortcutDefaultInstallOptions() {
 
 base::Value GetCreateDesktopShortcutFalseItem() {
   base::Value item(base::Value::Type::DICTIONARY);
-  item.SetKey(kUrlKey, base::Value(NoContainerUrl().spec()));
+  item.SetKey(kUrlKey, base::Value(kNoContainerUrl));
   item.SetKey(kCreateDesktopShortcutKey, base::Value(false));
   return item;
 }
 
 ExternalInstallOptions GetCreateDesktopShortcutFalseInstallOptions() {
-  ExternalInstallOptions options(NoContainerUrl(), DisplayMode::kBrowser,
+  ExternalInstallOptions options(GURL(kNoContainerUrl), DisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalPolicy);
   options.add_to_applications_menu = true;
   options.add_to_desktop = false;
@@ -175,13 +167,13 @@ ExternalInstallOptions GetCreateDesktopShortcutFalseInstallOptions() {
 
 base::Value GetCreateDesktopShortcutTrueItem() {
   base::Value item(base::Value::Type::DICTIONARY);
-  item.SetKey(kUrlKey, base::Value(NoContainerUrl().spec()));
+  item.SetKey(kUrlKey, base::Value(kNoContainerUrl));
   item.SetKey(kCreateDesktopShortcutKey, base::Value(true));
   return item;
 }
 
 ExternalInstallOptions GetCreateDesktopShortcutTrueInstallOptions() {
-  ExternalInstallOptions options(NoContainerUrl(), DisplayMode::kBrowser,
+  ExternalInstallOptions options(GURL(kNoContainerUrl), DisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalPolicy);
   options.add_to_applications_menu = true;
   options.add_to_desktop = true;
@@ -206,7 +198,7 @@ class MockWebAppPolicyManagerObserver : public WebAppPolicyManagerObserver {
 
 base::Value GetFallbackAppNameItem() {
   base::Value item(base::Value::Type::DICTIONARY);
-  item.SetKey(kUrlKey, base::Value(WindowedUrl().spec()));
+  item.SetKey(kUrlKey, base::Value(kWindowedUrl));
   item.SetKey(kDefaultLaunchContainerKey,
               base::Value(kDefaultLaunchContainerWindowValue));
   item.SetKey(kFallbackAppNameKey, base::Value(kDefaultFallbackAppName));
@@ -214,7 +206,7 @@ base::Value GetFallbackAppNameItem() {
 }
 
 ExternalInstallOptions GetFallbackAppNameInstallOptions() {
-  ExternalInstallOptions options(WindowedUrl(), DisplayMode::kStandalone,
+  ExternalInstallOptions options(GURL(kWindowedUrl), DisplayMode::kStandalone,
                                  ExternalInstallSource::kExternalPolicy);
   options.add_to_applications_menu = true;
   options.add_to_desktop = false;
@@ -382,11 +374,11 @@ TEST_F(WebAppPolicyManagerTest,
   SetWebAppSettingsDictPref(kWebAppSettingInvalidDefaultConfiguration);
   policy_manager()->Start();
   AwaitPolicyManagerRefreshPolicySettings();
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(WindowedUrl()),
+  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kWindowedUrl)),
             RunOnOsLoginPolicy::kRunWindowed);
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(TabbedUrl()),
+  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kTabbedUrl)),
             RunOnOsLoginPolicy::kAllowed);
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(NoContainerUrl()),
+  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kNoContainerUrl)),
             RunOnOsLoginPolicy::kAllowed);
   EXPECT_EQ(
       policy_manager()->GetUrlRunOnOsLoginPolicy(GURL("http://foo.example")),
@@ -413,11 +405,11 @@ TEST_F(WebAppPolicyManagerTest, WebAppSettingsNoDefaultConfiguration) {
   policy_manager()->Start();
   AwaitPolicyManagerRefreshPolicySettings();
 
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(WindowedUrl()),
+  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kWindowedUrl)),
             RunOnOsLoginPolicy::kRunWindowed);
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(TabbedUrl()),
+  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kTabbedUrl)),
             RunOnOsLoginPolicy::kBlocked);
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(NoContainerUrl()),
+  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kNoContainerUrl)),
             RunOnOsLoginPolicy::kAllowed);
   EXPECT_EQ(
       policy_manager()->GetUrlRunOnOsLoginPolicy(GURL("http://foo.example")),
@@ -429,11 +421,11 @@ TEST_F(WebAppPolicyManagerTest, WebAppSettingsWithDefaultConfiguration) {
   policy_manager()->Start();
   AwaitPolicyManagerRefreshPolicySettings();
 
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(WindowedUrl()),
+  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kWindowedUrl)),
             RunOnOsLoginPolicy::kRunWindowed);
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(TabbedUrl()),
+  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kTabbedUrl)),
             RunOnOsLoginPolicy::kAllowed);
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(NoContainerUrl()),
+  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kNoContainerUrl)),
             RunOnOsLoginPolicy::kBlocked);
   EXPECT_EQ(
       policy_manager()->GetUrlRunOnOsLoginPolicy(GURL("http://foo.example")),
@@ -566,11 +558,11 @@ TEST_F(WebAppPolicyManagerTest, DynamicRefresh) {
 TEST_F(WebAppPolicyManagerTest, UninstallAppInstalledInPreviousSession) {
   // Simulate two policy apps and a regular app that were installed in the
   // previous session.
-  SimulatePreviouslyInstalledApp(WindowedUrl(),
+  SimulatePreviouslyInstalledApp(GURL(kWindowedUrl),
                                  ExternalInstallSource::kExternalPolicy);
-  SimulatePreviouslyInstalledApp(TabbedUrl(),
+  SimulatePreviouslyInstalledApp(GURL(kTabbedUrl),
                                  ExternalInstallSource::kExternalPolicy);
-  SimulatePreviouslyInstalledApp(NoContainerUrl(),
+  SimulatePreviouslyInstalledApp(GURL(kNoContainerUrl),
                                  ExternalInstallSource::kInternalDefault);
 
   // Push a policy with only one of the apps.
@@ -589,7 +581,7 @@ TEST_F(WebAppPolicyManagerTest, UninstallAppInstalledInPreviousSession) {
             expected_install_options_list);
 
   // We should try to uninstall the app that is no longer in the policy.
-  EXPECT_EQ(std::vector<GURL>({TabbedUrl()}),
+  EXPECT_EQ(std::vector<GURL>({GURL(kTabbedUrl)}),
             externally_managed_app_manager()->uninstall_requests());
 }
 
@@ -629,7 +621,7 @@ TEST_F(WebAppPolicyManagerTest, UninstallAppInstalledInCurrentSession) {
 
   EXPECT_EQ(install_requests, expected_install_options_list);
 
-  EXPECT_EQ(std::vector<GURL>({TabbedUrl()}),
+  EXPECT_EQ(std::vector<GURL>({GURL(kTabbedUrl)}),
             externally_managed_app_manager()->uninstall_requests());
 }
 
@@ -649,7 +641,7 @@ TEST_F(WebAppPolicyManagerTest, ReinstallPlaceholderApp) {
       externally_managed_app_manager()->install_requests();
   EXPECT_EQ(expected_options_list, install_options_list);
 
-  policy_manager()->ReinstallPlaceholderAppIfNecessary(WindowedUrl());
+  policy_manager()->ReinstallPlaceholderAppIfNecessary(GURL(kWindowedUrl));
   base::RunLoop().RunUntilIdle();
 
   auto reinstall_options = GetWindowedInstallOptions();
@@ -678,7 +670,7 @@ TEST_F(WebAppPolicyManagerTest, ReinstallPlaceholderAppWithFallbackAppName) {
       externally_managed_app_manager()->install_requests();
   EXPECT_EQ(expected_options_list, install_options_list);
 
-  policy_manager()->ReinstallPlaceholderAppIfNecessary(WindowedUrl());
+  policy_manager()->ReinstallPlaceholderAppIfNecessary(GURL(kWindowedUrl));
   base::RunLoop().RunUntilIdle();
 
   auto reinstall_options = GetFallbackAppNameInstallOptions();
@@ -706,7 +698,7 @@ TEST_F(WebAppPolicyManagerTest, TryToInexistentPlaceholderApp) {
   EXPECT_EQ(expected_options_list, install_options_list);
 
   // Try to reinstall for app not installed by policy.
-  policy_manager()->ReinstallPlaceholderAppIfNecessary(TabbedUrl());
+  policy_manager()->ReinstallPlaceholderAppIfNecessary(GURL(kTabbedUrl));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(expected_options_list, install_options_list);
@@ -737,7 +729,7 @@ TEST_F(WebAppPolicyManagerTest, SayRefreshTwoTimesQuickly) {
   const auto& install_options_list =
       externally_managed_app_manager()->install_requests();
   EXPECT_EQ(expected_options_list, install_options_list);
-  EXPECT_EQ(std::vector<GURL>({WindowedUrl()}),
+  EXPECT_EQ(std::vector<GURL>({GURL(kWindowedUrl)}),
             externally_managed_app_manager()->uninstall_requests());
 
   // There should be exactly 1 app remaining.
@@ -747,7 +739,7 @@ TEST_F(WebAppPolicyManagerTest, SayRefreshTwoTimesQuickly) {
           .GetExternallyInstalledApps(ExternalInstallSource::kExternalPolicy);
   EXPECT_EQ(1u, apps.size());
   for (auto& it : apps)
-    EXPECT_EQ(it.second, TabbedUrl());
+    EXPECT_EQ(it.second, GURL(kTabbedUrl));
 }
 
 TEST_F(WebAppPolicyManagerTest, InstallResultHistogram) {
@@ -833,20 +825,20 @@ TEST_F(WebAppPolicyManagerTest, WebAppSettingsDynamicRefresh) {
   SetWebAppSettingsDictPref(kWebAppSettingInitialConfiguration);
   policy_manager()->Start();
   AwaitPolicyManagerRefreshPolicySettings();
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(WindowedUrl()),
+  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kWindowedUrl)),
             RunOnOsLoginPolicy::kBlocked);
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(TabbedUrl()),
+  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kTabbedUrl)),
             RunOnOsLoginPolicy::kAllowed);
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(NoContainerUrl()),
+  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kNoContainerUrl)),
             RunOnOsLoginPolicy::kAllowed);
   EXPECT_EQ(1, mock_observer.GetOnPolicyChangedCalledCount());
 
   SetWebAppSettingsDictPref(kWebAppSettingWithDefaultConfiguration);
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(WindowedUrl()),
+  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kWindowedUrl)),
             RunOnOsLoginPolicy::kRunWindowed);
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(TabbedUrl()),
+  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kTabbedUrl)),
             RunOnOsLoginPolicy::kAllowed);
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(NoContainerUrl()),
+  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kNoContainerUrl)),
             RunOnOsLoginPolicy::kBlocked);
   EXPECT_EQ(
       policy_manager()->GetUrlRunOnOsLoginPolicy(GURL("http://foo.example")),
@@ -875,11 +867,11 @@ TEST_F(WebAppPolicyManagerTest,
 
   EXPECT_EQ(install_requests, expected_install_options_list);
 
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(WindowedUrl()),
+  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kWindowedUrl)),
             RunOnOsLoginPolicy::kAllowed);
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(TabbedUrl()),
+  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kTabbedUrl)),
             RunOnOsLoginPolicy::kAllowed);
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(NoContainerUrl()),
+  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kNoContainerUrl)),
             RunOnOsLoginPolicy::kAllowed);
 
   // Now apply WebSettings policy
@@ -887,11 +879,11 @@ TEST_F(WebAppPolicyManagerTest,
   policy_manager()->AddObserver(&mock_observer);
   SetWebAppSettingsDictPref(kWebAppSettingWithDefaultConfiguration);
   EXPECT_EQ(1, mock_observer.GetOnPolicyChangedCalledCount());
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(WindowedUrl()),
+  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kWindowedUrl)),
             RunOnOsLoginPolicy::kRunWindowed);
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(TabbedUrl()),
+  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kTabbedUrl)),
             RunOnOsLoginPolicy::kAllowed);
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(NoContainerUrl()),
+  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kNoContainerUrl)),
             RunOnOsLoginPolicy::kBlocked);
   EXPECT_EQ(
       policy_manager()->GetUrlRunOnOsLoginPolicy(GURL("http://foo.example")),
@@ -907,11 +899,11 @@ TEST_F(WebAppPolicyManagerTest, WebAppSettingsForceInstallNewApps) {
   policy_manager()->Start();
   AwaitPolicyManagerAppsSynchronized();
   EXPECT_EQ(1, mock_observer.GetOnPolicyChangedCalledCount());
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(WindowedUrl()),
+  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kWindowedUrl)),
             RunOnOsLoginPolicy::kRunWindowed);
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(TabbedUrl()),
+  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kTabbedUrl)),
             RunOnOsLoginPolicy::kAllowed);
-  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(NoContainerUrl()),
+  EXPECT_EQ(policy_manager()->GetUrlRunOnOsLoginPolicy(GURL(kNoContainerUrl)),
             RunOnOsLoginPolicy::kBlocked);
   EXPECT_EQ(
       policy_manager()->GetUrlRunOnOsLoginPolicy(GURL("http://foo.example")),

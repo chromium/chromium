@@ -55,16 +55,6 @@ GURL QuxWebAppUrl() {
   return GURL("https://qux.example");
 }
 
-GURL FooLaunchUrl() {
-  return GURL("https://foo.example/launch");
-}
-GURL BarLaunchUrl() {
-  return GURL("https://bar.example/launch");
-}
-GURL QuxLaunchUrl() {
-  return GURL("https://qux.example/launch");
-}
-
 ExternalInstallOptions GetFooInstallOptions(
     base::Optional<bool> override_previous_user_uninstall =
         base::Optional<bool>()) {
@@ -209,10 +199,9 @@ class TestExternallyManagedAppManagerImpl
                                                 did_install_placeholder};
   }
 
-  void SetNextInstallationLaunchURL(const GURL& app_url,
-                                    const GURL& launch_url) {
+  void SetNextInstallationLaunchURL(const GURL& app_url) {
     DCHECK(!base::Contains(next_installation_launch_urls_, app_url));
-    next_installation_launch_urls_[app_url] = launch_url;
+    next_installation_launch_urls_[app_url] = app_url.Resolve("launch");
   }
 
   bool MaybePreemptRegistration() {
@@ -583,7 +572,7 @@ TEST_F(ExternallyManagedAppManagerImplTest, Install_Succeeds) {
   externally_managed_app_manager_impl()->SetNextInstallationTaskResult(
       FooWebAppUrl(), InstallResultCode::kSuccessNewInstall);
   externally_managed_app_manager_impl()->SetNextInstallationLaunchURL(
-      FooWebAppUrl(), FooLaunchUrl());
+      FooWebAppUrl());
 
   base::Optional<GURL> url;
   base::Optional<InstallResultCode> code;
@@ -607,7 +596,7 @@ TEST_F(ExternallyManagedAppManagerImplTest, Install_SerialCallsDifferentApps) {
   externally_managed_app_manager_impl()->SetNextInstallationTaskResult(
       FooWebAppUrl(), InstallResultCode::kSuccessNewInstall);
   externally_managed_app_manager_impl()->SetNextInstallationLaunchURL(
-      FooWebAppUrl(), FooLaunchUrl());
+      FooWebAppUrl());
   {
     base::Optional<GURL> url;
     base::Optional<InstallResultCode> code;
@@ -622,13 +611,13 @@ TEST_F(ExternallyManagedAppManagerImplTest, Install_SerialCallsDifferentApps) {
   }
 
   externally_managed_app_manager_impl()->WaitForRegistrationAndCancel();
-  // FooLaunchUrl() registration will be attempted again after
+  // Foo launch URL registration will be attempted again after
   // BarWebAppUrl() installs.
 
   externally_managed_app_manager_impl()->SetNextInstallationTaskResult(
       BarWebAppUrl(), InstallResultCode::kSuccessNewInstall);
   externally_managed_app_manager_impl()->SetNextInstallationLaunchURL(
-      BarWebAppUrl(), BarLaunchUrl());
+      BarWebAppUrl());
   {
     base::Optional<GURL> url;
     base::Optional<InstallResultCode> code;
@@ -1196,15 +1185,15 @@ TEST_F(ExternallyManagedAppManagerImplTest,
   externally_managed_app_manager_impl()->SetNextInstallationTaskResult(
       FooWebAppUrl(), InstallResultCode::kSuccessNewInstall);
   externally_managed_app_manager_impl()->SetNextInstallationLaunchURL(
-      FooWebAppUrl(), FooLaunchUrl());
+      FooWebAppUrl());
   externally_managed_app_manager_impl()->SetNextInstallationTaskResult(
       BarWebAppUrl(), InstallResultCode::kSuccessNewInstall);
   externally_managed_app_manager_impl()->SetNextInstallationLaunchURL(
-      BarWebAppUrl(), BarLaunchUrl());
+      BarWebAppUrl());
   externally_managed_app_manager_impl()->SetNextInstallationTaskResult(
       QuxWebAppUrl(), InstallResultCode::kSuccessNewInstall);
   externally_managed_app_manager_impl()->SetNextInstallationLaunchURL(
-      QuxWebAppUrl(), QuxLaunchUrl());
+      QuxWebAppUrl());
 
   std::vector<ExternalInstallOptions> apps_to_install;
   apps_to_install.push_back(GetFooInstallOptions());
@@ -1653,7 +1642,7 @@ TEST_F(ExternallyManagedAppManagerImplTest,
     externally_managed_app_manager_impl()->SetNextInstallationTaskResult(
         install_url, InstallResultCode::kSuccessNewInstall);
     externally_managed_app_manager_impl()->SetNextInstallationLaunchURL(
-        install_url, install_url.Resolve("launch_page"));
+        install_url);
     ExternalInstallOptions install_option(
         install_url, DisplayMode::kStandalone,
         ExternalInstallSource::kSystemInstalled);
