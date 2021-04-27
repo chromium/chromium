@@ -17,6 +17,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/gpu_service_registry.h"
+#include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace arc {
@@ -42,7 +43,7 @@ class ArcOemCryptoBridgeFactory
 };
 
 mojo::PendingRemote<mojom::ProtectedBufferManager>
-GetGpuBufferManagerOnIOThread() {
+GetGpuBufferManagerOnProcessThread() {
   // Get the Mojo interface from the GPU for dealing with secure buffers and
   // pass that to the daemon as well in our ConnectToDaemon call.
   mojo::PendingRemote<mojom::ProtectedBufferManager> gpu_buffer_manager;
@@ -90,15 +91,20 @@ void ArcOemCryptoBridge::Connect(
     return;
   }
 
-  // We need to get the GPU interface on the IO thread, then after that is
-  // done it will run the Mojo call on our thread. This call may have come back
-  // on our mojo thread or the proxy's mojo thread, either one is safe to invoke
-  // the OemCrypto call because the proxy will repost it to the proper thread.
-  base::PostTaskAndReplyWithResult(
-      content::GetIOThreadTaskRunner({}).get(), FROM_HERE,
-      base::BindOnce(&GetGpuBufferManagerOnIOThread),
-      base::BindOnce(&ArcOemCryptoBridge::ConnectToDaemon,
-                     weak_factory_.GetWeakPtr(), std::move(receiver)));
+  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+    ConnectToDaemon(std::move(receiver), GetGpuBufferManagerOnProcessThread());
+  } else {
+    // We need to get the GPU interface on the IO thread, then after that is
+    // done it will run the Mojo call on our thread. This call may have come
+    // back on our mojo thread or the proxy's mojo thread, either one is safe
+    // to invoke the OemCrypto call because the proxy will repost it to the
+    // proper thread.
+    base::PostTaskAndReplyWithResult(
+        content::GetIOThreadTaskRunner({}).get(), FROM_HERE,
+        base::BindOnce(&GetGpuBufferManagerOnProcessThread),
+        base::BindOnce(&ArcOemCryptoBridge::ConnectToDaemon,
+                       weak_factory_.GetWeakPtr(), std::move(receiver)));
+  }
 }
 
 void ArcOemCryptoBridge::ConnectToDaemon(
