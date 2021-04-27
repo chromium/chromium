@@ -152,7 +152,7 @@ class ASH_PUBLIC_EXPORT SharedAppListConfig {
   const int search_tile_icon_dimension_ = 48;
 
   // The badge icon dimension of tile views in search result page view.
-  const int search_tile_badge_icon_dimension_ = 22;
+  const int search_tile_badge_icon_dimension_ = 20;
 
   // The badge icon offset of tile views in search result page view.
   const int search_tile_badge_icon_offset_ = 5;

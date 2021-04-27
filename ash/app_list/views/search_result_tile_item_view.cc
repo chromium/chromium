@@ -59,11 +59,12 @@ constexpr int kSearchRatingStarHorizontalSpacing = 1;
 constexpr int kSearchRatingStarVerticalSpacing = 2;
 // Text line height in the search result tile.
 constexpr int kTileTextLineHeight = 16;
+constexpr int kBadgeIconShadowWidth = 1;
 
 // Delta applied to the font size of SearchResultTile title.
 constexpr int kSearchResultTileTitleTextSizeDelta = 1;
 
-constexpr int kIconSelectedSize = 56;
+constexpr int kIconSelectedSize = 58;
 constexpr int kIconSelectedCornerRadius = 4;
 
 // Offset for centering star rating when there is no price.
@@ -296,7 +297,7 @@ void SearchResultTileItemView::PaintButtonContents(gfx::Canvas* canvas) {
   flags.setColor(AppListColorProvider::Get()->GetFocusRingColor());
 
   gfx::RectF selection_ring = GetSelectionRingBounds();
-  selection_ring.Inset(0, kSelectionRingWidth);
+  selection_ring.Inset(0, kSelectionRingWidth / 2.0);
   canvas->DrawRoundRect(selection_ring, kIconSelectedCornerRadius, flags);
 }
 
@@ -439,9 +440,11 @@ void SearchResultTileItemView::SetBadgeIcon(const ui::ImageModel& badge_icon,
 
   gfx::ShadowValues shadow_values;
   shadow_values.push_back(
-      gfx::ShadowValue(gfx::Vector2d(0, 1), 0, SkColorSetARGB(0x33, 0, 0, 0)));
+      gfx::ShadowValue(gfx::Vector2d(0, kBadgeIconShadowWidth), 0,
+                       SkColorSetARGB(0x33, 0, 0, 0)));
   shadow_values.push_back(
-      gfx::ShadowValue(gfx::Vector2d(0, 1), 2, SkColorSetARGB(0x33, 0, 0, 0)));
+      gfx::ShadowValue(gfx::Vector2d(0, kBadgeIconShadowWidth), 2,
+                       SkColorSetARGB(0x33, 0, 0, 0)));
   badge_->SetImage(gfx::ImageSkiaOperations::CreateImageWithDropShadow(
       resized_badge_icon, shadow_values));
   badge_->SetVisible(true);
@@ -539,7 +542,8 @@ void SearchResultTileItemView::Layout() {
   icon_->SetBoundsRect(icon_rect);
 
   const int badge_icon_dimension =
-      SharedAppListConfig::instance().search_tile_badge_icon_dimension();
+      SharedAppListConfig::instance().search_tile_badge_icon_dimension() +
+      2 * kBadgeIconShadowWidth;
   const int badge_icon_offset =
       SharedAppListConfig::instance().search_tile_badge_icon_offset();
   const gfx::Rect badge_rect(

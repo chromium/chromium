@@ -36,14 +36,12 @@ constexpr char kPlayAppPrefix[] = "play://";
 constexpr SkColor kBadgeColor = gfx::kGoogleGrey700;
 // Size of the vector icon inside the badge.
 constexpr int kBadgeIconSize = 12;
-// Padding around the circular background of the badge.
-constexpr int kBadgePadding = 1;
 
 // The background image source for badge.
 class BadgeBackgroundImageSource : public gfx::CanvasImageSource {
  public:
-  explicit BadgeBackgroundImageSource(int size, float padding)
-      : CanvasImageSource(gfx::Size(size, size)), padding_(padding) {}
+  explicit BadgeBackgroundImageSource(int size)
+      : CanvasImageSource(gfx::Size(size, size)) {}
   ~BadgeBackgroundImageSource() override = default;
 
  private:
@@ -54,21 +52,18 @@ class BadgeBackgroundImageSource : public gfx::CanvasImageSource {
     flags.setAntiAlias(true);
     flags.setStyle(cc::PaintFlags::kFill_Style);
     const float origin = static_cast<float>(size().width()) / 2;
-    canvas->DrawCircle(gfx::PointF(origin, origin), origin - padding_, flags);
+    canvas->DrawCircle(gfx::PointF(origin, origin), origin, flags);
   }
-
-  const float padding_;
 
   DISALLOW_COPY_AND_ASSIGN(BadgeBackgroundImageSource);
 };
 
 gfx::ImageSkia CreateBadgeIcon(const gfx::VectorIcon& vector_icon,
                                int badge_size,
-                               int padding,
                                int icon_size,
                                SkColor icon_color) {
   gfx::ImageSkia background(
-      std::make_unique<BadgeBackgroundImageSource>(badge_size, padding),
+      std::make_unique<BadgeBackgroundImageSource>(badge_size),
       gfx::Size(badge_size, badge_size));
 
   gfx::ImageSkia foreground(
@@ -120,7 +115,7 @@ ArcPlayStoreSearchResult::ArcPlayStoreSearchResult(
   SetBadgeIcon(ui::ImageModel::FromImageSkia(CreateBadgeIcon(
       is_instant_app() ? ash::kBadgeInstantIcon : ash::kBadgePlayIcon,
       ash::SharedAppListConfig::instance().search_tile_badge_icon_dimension(),
-      kBadgePadding, kBadgeIconSize, kBadgeColor)));
+      kBadgeIconSize, kBadgeColor)));
   SetFormattedPrice(base::UTF8ToUTF16(formatted_price().value()));
   SetRating(review_score());
   SetResultType(is_instant_app() ? ash::AppListSearchResultType::kInstantApp
