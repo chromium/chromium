@@ -4441,6 +4441,9 @@ hooks = [
   },
 ]
 
+# Add any corresponding DEPS files from this list to chromium.exclusions in
+# //testing/buildbot/trybot_analyze_config.json
+# ctx: https://crbug.com/1201994
 recursedeps = [
   # ANGLE manages DEPS that it also owns the build files for, such as dEQP.
   'src/third_party/angle',
