@@ -329,7 +329,7 @@ Task JobTaskSource::TakeTask(TaskSource::Transaction* transaction) {
   // if |transaction| is nullptr.
   DCHECK_GT(TS_UNCHECKED_READ(state_).Load().worker_count(), 0U);
   DCHECK(primary_task_);
-  return Task(from_here_, primary_task_, TimeDelta());
+  return Task(from_here_, primary_task_, TimeTicks(), TimeDelta());
 }
 
 bool JobTaskSource::DidProcessTask(TaskSource::Transaction* /*transaction*/) {
@@ -368,7 +368,7 @@ Task JobTaskSource::Clear(TaskSource::Transaction* transaction) {
   // Nothing is cleared since other workers might still racily run tasks. For
   // simplicity, the destructor will take care of it once all references are
   // released.
-  return Task(from_here_, DoNothing(), TimeDelta());
+  return Task(from_here_, DoNothing(), TimeTicks(), TimeDelta());
 }
 
 }  // namespace internal

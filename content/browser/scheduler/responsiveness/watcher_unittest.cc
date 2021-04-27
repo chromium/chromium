@@ -156,8 +156,9 @@ class ResponsivenessWatcherTest : public testing::Test {
 // Test that tasks are forwarded to calculator.
 TEST_F(ResponsivenessWatcherTest, TaskForwarding) {
   for (int i = 0; i < 3; ++i) {
-    base::PendingTask task(FROM_HERE, base::OnceClosure());
-    task.queue_time = base::TimeTicks::Now();
+    base::PendingTask task(FROM_HERE, base::OnceClosure(),
+                           /*queue_time=*/base::TimeTicks::Now(),
+                           /*delayed_run_time=*/base::TimeTicks());
     watcher_->WillRunTaskOnUIThread(&task,
                                     /* was_blocked_or_low_priority= */ false);
     watcher_->DidRunTaskOnUIThread(&task);
@@ -166,8 +167,9 @@ TEST_F(ResponsivenessWatcherTest, TaskForwarding) {
   EXPECT_EQ(0, watcher_->NumTasksOnIOThread());
 
   for (int i = 0; i < 4; ++i) {
-    base::PendingTask task(FROM_HERE, base::OnceClosure());
-    task.queue_time = base::TimeTicks::Now();
+    base::PendingTask task(FROM_HERE, base::OnceClosure(),
+                           /*queue_time=*/base::TimeTicks::Now(),
+                           /*delayed_run_time=*/base::TimeTicks());
     watcher_->WillRunTaskOnIOThread(&task,
                                     /* was_blocked_or_low_priority= */ false);
     watcher_->DidRunTaskOnIOThread(&task);
@@ -178,13 +180,16 @@ TEST_F(ResponsivenessWatcherTest, TaskForwarding) {
 
 // Test that nested tasks are not forwarded to the calculator.
 TEST_F(ResponsivenessWatcherTest, TaskNesting) {
-  base::PendingTask task1(FROM_HERE, base::OnceClosure());
-  task1.queue_time = base::TimeTicks::Now();
-  base::PendingTask task2(FROM_HERE, base::OnceClosure());
-  task2.queue_time = base::TimeTicks::Now();
+  base::PendingTask task1(FROM_HERE, base::OnceClosure(),
+                          /*queue_time=*/base::TimeTicks::Now(),
+                          /*delayed_run_time=*/base::TimeTicks());
+  base::PendingTask task2(FROM_HERE, base::OnceClosure(),
+                          /*queue_time=*/base::TimeTicks::Now(),
+                          /*delayed_run_time=*/base::TimeTicks());
   task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
-  base::PendingTask task3(FROM_HERE, base::OnceClosure());
-  task3.queue_time = base::TimeTicks::Now();
+  base::PendingTask task3(FROM_HERE, base::OnceClosure(),
+                          /*queue_time=*/base::TimeTicks::Now(),
+                          /*delayed_run_time=*/base::TimeTicks());
 
   const base::TimeTicks task_1_execution_start_time = base::TimeTicks::Now();
   watcher_->WillRunTaskOnUIThread(&task1,
@@ -240,8 +245,9 @@ TEST_F(ResponsivenessWatcherTest, NativeEvents) {
 
 // Test that the queue duration of a blocked or low priority task is zero.
 TEST_F(ResponsivenessWatcherTest, BlockedOrLowPriorityTask) {
-  base::PendingTask task(FROM_HERE, base::OnceClosure());
-  task.queue_time = base::TimeTicks::Now();
+  base::PendingTask task(FROM_HERE, base::OnceClosure(),
+                         /*queue_time=*/base::TimeTicks::Now(),
+                         /*delayed_run_time=*/base::TimeTicks());
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 
   const base::TimeTicks execution_start_time = base::TimeTicks::Now();
@@ -265,8 +271,9 @@ TEST_F(ResponsivenessWatcherTest, BlockedOrLowPriorityTask) {
 
 // Test that the queue duration of a delayed task is zero.
 TEST_F(ResponsivenessWatcherTest, DelayedTask) {
-  base::PendingTask task(FROM_HERE, base::OnceClosure());
-  task.delayed_run_time = base::TimeTicks::Now();
+  base::PendingTask task(FROM_HERE, base::OnceClosure(),
+                         /*queue_time=*/base::TimeTicks(),
+                         /*delayed_run_time=*/base::TimeTicks::Now());
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 
   const base::TimeTicks execution_start_time = base::TimeTicks::Now();

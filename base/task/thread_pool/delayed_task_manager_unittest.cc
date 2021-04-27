@@ -41,11 +41,7 @@ Task ConstructMockedTask(testing::StrictMock<MockCallback>& mock_task,
                          TimeTicks now,
                          TimeDelta delay) {
   Task task(FROM_HERE, BindOnce(&MockCallback::Run, Unretained(&mock_task)),
-            delay);
-  // The constructor of Task computes |delayed_run_time| by adding |delay| to
-  // the real time. Recompute it by adding |delay| to the given |now| (usually
-  // mock time).
-  task.delayed_run_time = now + delay;
+            now, delay);
   return task;
 }
 
@@ -166,7 +162,8 @@ TEST_F(ThreadPoolDelayedTaskManagerTest, DelayedTaskRunsAfterCancelled) {
   // Add a cancelable task to the DelayedTaskManager with a longer delay.
   CancelableOnceClosure cancelable_closure(DoNothing::Once());
   bool post_cancelable_task_now_invoked = false;
-  Task cancelable_task(FROM_HERE, cancelable_closure.callback(), kLongerDelay);
+  Task cancelable_task(FROM_HERE, cancelable_closure.callback(),
+                       TimeTicks::Now(), kLongerDelay);
   auto post_cancelable_task_now = BindLambdaForTesting(
       [&](Task task) { post_cancelable_task_now_invoked = true; });
   delayed_task_manager_.AddDelayedTask(std::move(cancelable_task),

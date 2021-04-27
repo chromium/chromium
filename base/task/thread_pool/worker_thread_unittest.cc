@@ -191,7 +191,7 @@ class ThreadPoolWorkerTest : public testing::TestWithParam<int> {
         Task task(FROM_HERE,
                   BindOnce(&ThreadPoolWorkerTest::RunTaskCallback,
                            Unretained(outer_)),
-                  TimeDelta());
+                  TimeTicks::Now(), TimeDelta());
         EXPECT_TRUE(outer_->task_tracker_.WillPostTask(
             &task, sequence->shutdown_behavior()));
         sequence_transaction.PushTask(std::move(task));
@@ -473,7 +473,7 @@ class ControllableCleanupDelegate : public WorkerThreadDefaultDelegate {
                   },
                   Unretained(&controls_->work_processed_),
                   Unretained(&controls_->work_running_)),
-              TimeDelta());
+              TimeTicks::Now(), TimeDelta());
     EXPECT_TRUE(
         task_tracker_->WillPostTask(&task, sequence->shutdown_behavior()));
     sequence->BeginTransaction().PushTask(std::move(task));

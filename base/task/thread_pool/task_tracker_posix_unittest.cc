@@ -56,7 +56,7 @@ TEST_F(ThreadPoolTaskTrackerPosixTest, RunTask) {
   Task task(
       FROM_HERE,
       BindOnce([](bool* did_run) { *did_run = true; }, Unretained(&did_run)),
-      TimeDelta());
+      TimeTicks::Now(), TimeDelta());
   constexpr TaskTraits default_traits;
 
   EXPECT_TRUE(tracker_.WillPostTask(&task, default_traits.shutdown_behavior()));
@@ -77,7 +77,7 @@ TEST_F(ThreadPoolTaskTrackerPosixTest, FileDescriptorWatcher) {
   Task task(FROM_HERE,
             BindOnce(IgnoreResult(&FileDescriptorWatcher::WatchReadable),
                      fds[0], DoNothing()),
-            TimeDelta());
+            TimeTicks::Now(), TimeDelta());
   constexpr TaskTraits default_traits;
 
   EXPECT_TRUE(tracker_.WillPostTask(&task, default_traits.shutdown_behavior()));

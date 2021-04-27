@@ -267,7 +267,7 @@ bool ThreadPoolImpl::PostDelayedTask(const Location& from_here,
   AssertNoExtensionInTraits(traits);
   // Post |task| as part of a one-off single-task Sequence.
   return PostTaskWithSequence(
-      Task(from_here, std::move(task), delay),
+      Task(from_here, std::move(task), TimeTicks::Now(), delay),
       MakeRefCounted<Sequence>(traits, nullptr,
                                TaskSourceExecutionMode::kParallel));
 }

@@ -38,18 +38,18 @@ void Sequence::Transaction::PushTask(Task task) {
   // Use CHECK instead of DCHECK to crash earlier. See http://crbug.com/711167
   // for details.
   CHECK(task.task);
-  DCHECK(task.queue_time.is_null());
+  DCHECK(!task.queue_time.is_null());
 
   bool should_be_queued = WillPushTask();
-  task.queue_time = TimeTicks::Now();
-
   task.task = sequence()->traits_.shutdown_behavior() ==
                       TaskShutdownBehavior::BLOCK_SHUTDOWN
                   ? MakeCriticalClosure(task.posted_from, std::move(task.task))
                   : std::move(task.task);
 
-  if (sequence()->queue_.empty())
-    sequence()->ready_time_.store(task.queue_time, std::memory_order_relaxed);
+  if (sequence()->queue_.empty()) {
+    sequence()->ready_time_.store(task.GetDesiredExecutionTime(),
+                                  std::memory_order_relaxed);
+  }
   sequence()->queue_.push(std::move(task));
 
   // AddRef() matched by manual Release() when the sequence has no more tasks
@@ -125,7 +125,7 @@ Task Sequence::Clear(TaskSource::Transaction* transaction) {
                       queue.pop();
                   },
                   std::move(queue_)),
-              TimeDelta());
+              TimeTicks(), TimeDelta());
 }
 
 void Sequence::ReleaseTaskRunner() {

@@ -25,18 +25,6 @@
 namespace base {
 namespace sequence_manager {
 
-namespace {
-
-base::TimeTicks GetTaskDesiredExecutionTime(const Task& task) {
-  if (!task.delayed_run_time.is_null())
-    return task.delayed_run_time;
-  // The desired run time for a non-delayed task is the queue time.
-  DCHECK(!task.queue_time.is_null());
-  return task.queue_time;
-}
-
-}  // namespace
-
 // static
 const char* TaskQueue::PriorityToString(TaskQueue::QueuePriority priority) {
   switch (priority) {
@@ -440,7 +428,6 @@ void TaskQueueImpl::ScheduleDelayedWorkTask(Task pending_task) {
     // If |delayed_run_time| is in the past then push it onto the work queue
     // immediately. To ensure the right task ordering we need to temporarily
     // push it onto the |delayed_incoming_queue|.
-    delayed_run_time = time_domain_now;
     pending_task.delayed_run_time = time_domain_now;
     main_thread_only().delayed_incoming_queue.push(std::move(pending_task));
     LazyNow lazy_now(time_domain_now);
@@ -588,8 +575,8 @@ void TaskQueueImpl::MoveReadyDelayedTasksToWorkQueue(LazyNow* lazy_now) {
     if (sequence_manager_->settings().log_task_delay_expiry)
       VLOG(0) << name_ << " Delay expired for " << task->posted_from.ToString();
 #endif  // DCHECK_IS_ON()
-
-    ActivateDelayedFenceIfNeeded(GetTaskDesiredExecutionTime(*task));
+    DCHECK(!task->delayed_run_time.is_null());
+    ActivateDelayedFenceIfNeeded(task->delayed_run_time);
     DCHECK(!task->enqueue_order_set());
     task->set_enqueue_order(sequence_manager_->GetNextSequenceNumber());
 

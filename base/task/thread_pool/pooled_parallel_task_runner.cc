@@ -36,7 +36,8 @@ bool PooledParallelTaskRunner::PostDelayedTask(const Location& from_here,
   }
 
   return pooled_task_runner_delegate_->PostTaskWithSequence(
-      Task(from_here, std::move(closure), delay), std::move(sequence));
+      Task(from_here, std::move(closure), TimeTicks::Now(), delay),
+      std::move(sequence));
 }
 
 void PooledParallelTaskRunner::UnregisterSequence(Sequence* sequence) {

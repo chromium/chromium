@@ -349,7 +349,7 @@ class WorkerThreadCOMDelegate : public WorkerThreadDelegate {
                                    DispatchMessage(&msg);
                                  },
                                  std::move(msg)),
-                             TimeDelta());
+                             TimeTicks::Now(), TimeDelta());
       if (task_tracker()->WillPostTask(
               &pump_message_task, TaskShutdownBehavior::SKIP_ON_SHUTDOWN)) {
         auto transaction = message_pump_sequence_->BeginTransaction();
@@ -410,7 +410,7 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
     if (!g_manager_is_alive)
       return false;
 
-    Task task(from_here, std::move(closure), delay);
+    Task task(from_here, std::move(closure), TimeTicks::Now(), delay);
 
     if (!outer_->task_tracker_->WillPostTask(&task,
                                              sequence_->shutdown_behavior())) {

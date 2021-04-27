@@ -25,7 +25,10 @@ struct BASE_EXPORT Task : public PendingTask {
 
   // |posted_from| is the site the task was posted from. |task| is the closure
   // to run. |delay| is a delay that must expire before the Task runs.
-  Task(const Location& posted_from, OnceClosure task, TimeDelta delay);
+  Task(const Location& posted_from,
+       OnceClosure task,
+       TimeTicks queue_time,
+       TimeDelta delay);
 
   // Task is move-only to avoid mistakes that cause reference counts to be
   // accidentally bumped.
