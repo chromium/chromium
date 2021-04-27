@@ -474,6 +474,14 @@ class AuthenticatorRequestDialogModel {
   // The current step of the request UX flow that is currently shown.
   Step current_step_ = Step::kNotStarted;
 
+  // started_ records whether |StartFlow| has been called.
+  bool started_ = false;
+
+  // pending_step_ holds requested steps until the UI is shown. The UI is only
+  // shown once the TransportAvailabilityInfo is available, but authenticators
+  // may request, e.g., PIN entry prior to that.
+  base::Optional<Step> pending_step_;
+
   // Determines which step to continue with once the Blueooth adapter is
   // powered. Only set while the |current_step_| is either kBlePowerOnManual,
   // kBlePowerOnAutomatic.

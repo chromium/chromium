@@ -85,6 +85,12 @@ AuthenticatorRequestDialogModel::~AuthenticatorRequestDialogModel() {
 }
 
 void AuthenticatorRequestDialogModel::SetCurrentStep(Step step) {
+  if (!started_) {
+    // Dialog isn't showing yet. Remember to show this step when it appears.
+    pending_step_ = step;
+    return;
+  }
+
   current_step_ = step;
   for (auto& observer : observers_)
     observer.OnStepTransition();
@@ -97,18 +103,20 @@ void AuthenticatorRequestDialogModel::HideDialog() {
 void AuthenticatorRequestDialogModel::StartFlow(
     TransportAvailabilityInfo transport_availability,
     bool use_location_bar_bubble) {
-  use_location_bar_bubble_ = use_location_bar_bubble;
+  DCHECK(!started_);
   DCHECK_EQ(current_step(), Step::kNotStarted);
 
+  started_ = true;
   transport_availability_ = std::move(transport_availability);
+  use_location_bar_bubble_ = use_location_bar_bubble;
 
   if (use_location_bar_bubble_) {
     // This is a conditional request so show a lightweight, non-modal dialog
     // instead.
     StartLocationBarBubbleRequest();
-    return;
+  } else {
+    StartGuidedFlowForMostLikelyTransportOrShowTransportSelection();
   }
-  StartGuidedFlowForMostLikelyTransportOrShowTransportSelection();
 }
 
 void AuthenticatorRequestDialogModel::StartOver() {
@@ -148,7 +156,10 @@ void AuthenticatorRequestDialogModel::
 
   auto most_likely_transport = SelectMostLikelyTransport(
       transport_availability_, cable_extension_provided_, have_paired_phones_);
-  if (most_likely_transport) {
+  if (pending_step_) {
+    SetCurrentStep(*pending_step_);
+    pending_step_.reset();
+  } else if (most_likely_transport) {
     StartGuidedFlowForTransport(*most_likely_transport);
   } else if (!transport_availability_.available_transports.empty()) {
     SetCurrentStep(Step::kTransportSelection);
