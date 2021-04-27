@@ -36,6 +36,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/worker_timing_container.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -82,6 +83,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "v8/include/v8-metrics.h"
 
 namespace blink {
 
@@ -103,6 +105,25 @@ base::TimeDelta GetUnixAtZeroMonotonic(const base::Clock* clock,
   base::TimeDelta unix_time_now = clock->Now() - base::Time::UnixEpoch();
   base::TimeDelta time_since_origin = tick_clock->NowTicks().since_origin();
   return unix_time_now - time_since_origin;
+}
+
+void RecordLongTaskUkm(ExecutionContext* execution_context,
+                       base::TimeDelta start_time,
+                       base::TimeDelta duration) {
+  v8::metrics::LongTaskStats stats =
+      v8::metrics::LongTaskStats::Get(execution_context->GetIsolate());
+  ukm::builders::PerformanceAPI_LongTask(execution_context->UkmSourceID())
+      .SetStartTime(start_time.InMilliseconds())
+      .SetDuration(duration.InMicroseconds())
+      .SetDuration_V8_GC(stats.gc_full_atomic_wall_clock_duration_us +
+                         stats.gc_full_incremental_wall_clock_duration_us +
+                         stats.gc_young_wall_clock_duration_us)
+      .SetDuration_V8_GC_Full_Atomic(
+          stats.gc_full_atomic_wall_clock_duration_us)
+      .SetDuration_V8_GC_Full_Incremental(
+          stats.gc_full_incremental_wall_clock_duration_us)
+      .SetDuration_V8_GC_Young(stats.gc_young_wall_clock_duration_us)
+      .Record(execution_context->UkmRecorder());
 }
 
 }  // namespace
@@ -724,11 +745,15 @@ void Performance::AddLongTaskTiming(base::TimeTicks start_time,
       static_cast<int>(MonotonicTimeToDOMHighResTimeStamp(end_time) -
                        dom_high_res_start_time),
       name, container_type, container_src, container_id, container_name);
+  ExecutionContext* execution_context = GetExecutionContext();
   if (longtask_buffer_.size() < kDefaultLongTaskBufferSize) {
     longtask_buffer_.push_back(entry);
   } else {
-    UseCounter::Count(GetExecutionContext(), WebFeature::kLongTaskBufferFull);
+    UseCounter::Count(execution_context, WebFeature::kLongTaskBufferFull);
   }
+  RecordLongTaskUkm(execution_context,
+                    base::TimeDelta::FromMillisecondsD(dom_high_res_start_time),
+                    end_time - start_time);
   NotifyObserversOfEntry(*entry);
 }
 

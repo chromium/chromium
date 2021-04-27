@@ -1661,9 +1661,11 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
   auto frame_tracking_result =
       GetLocalFramesMap().insert(FrameToken::Hasher()(GetFrameToken()), this);
   CHECK(frame_tracking_result.stored_value) << "Inserting a duplicate item.";
+  v8::Isolate* isolate = V8PerIsolateData::MainThreadIsolate();
   if (IsLocalRoot()) {
     probe_sink_ = MakeGarbageCollected<CoreProbeSink>();
-    performance_monitor_ = MakeGarbageCollected<PerformanceMonitor>(this);
+    performance_monitor_ =
+        MakeGarbageCollected<PerformanceMonitor>(this, isolate);
     inspector_issue_reporter_ = MakeGarbageCollected<InspectorIssueReporter>(
         &page.GetInspectorIssueStorage());
     probe_sink_->AddInspectorIssueReporter(inspector_issue_reporter_);
@@ -1683,7 +1685,7 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
     performance_monitor_ = LocalFrameRoot().performance_monitor_;
   }
   idleness_detector_ = MakeGarbageCollected<IdlenessDetector>(this, clock);
-  inspector_task_runner_->InitIsolate(V8PerIsolateData::MainThreadIsolate());
+  inspector_task_runner_->InitIsolate(isolate);
 
   DCHECK(ad_tracker_ ? RuntimeEnabledFeatures::AdTaggingEnabled()
                      : !RuntimeEnabledFeatures::AdTaggingEnabled());

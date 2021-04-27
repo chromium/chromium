@@ -12323,6 +12323,95 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="PerformanceAPI.LongTask">
+  <owner>hpayer@chromium.org</owner>
+  <owner>mlippautz@chromium.org</owner>
+  <owner>ulan@chromium.org</owner>
+  <summary>
+    This event is associated with the LongTask Web Platform API. The metrics are
+    recorded when a long task is detected and reported to the page. For more
+    details see the design doc linked in https://crbug.com/1173527.
+  </summary>
+  <metric name="Duration">
+    <summary>
+      The duration of the long task in microseconds. Mirrors the value reported
+      in PerformanceEntry.duration.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.V8.GC">
+    <summary>
+      The total time in microseconds that V8 spent collecting garbage within the
+      long task.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.V8.GC.Full.Atomic">
+    <summary>
+      The total time in microseconds that V8 spent in the atomic pause of the
+      full garbage collector within the long task.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.V8.GC.Full.Incremental">
+    <summary>
+      The total time in microseconds that V8 spent in the incremental pause of
+      the full garbage collector within the long task.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Duration.V8.GC.Young">
+    <summary>
+      The total time in microseconds that V8 spent in the young garbage
+      collector within the long task.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="StartTime">
+    <summary>
+      The duration in millseconds between the document navigation start and the
+      long task start. Mirrors the value reported in PerformanceEntry.startTime.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="PerformanceAPI.Memory">
   <owner>hpayer@chromium.org</owner>
   <owner>mlippautz@chromium.org</owner>

@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "v8/include/v8-metrics.h"
 
 namespace blink {
 
@@ -68,8 +69,9 @@ PerformanceMonitor* PerformanceMonitor::InstrumentingMonitorExcludingLongTasks(
   return monitor && monitor->enabled_ ? monitor : nullptr;
 }
 
-PerformanceMonitor::PerformanceMonitor(LocalFrame* local_root)
-    : local_root_(local_root) {
+PerformanceMonitor::PerformanceMonitor(LocalFrame* local_root,
+                                       v8::Isolate* isolate)
+    : local_root_(local_root), isolate_(isolate) {
   std::fill(std::begin(thresholds_), std::end(thresholds_), base::TimeDelta());
   Thread::Current()->AddTaskTimeObserver(this);
   local_root_->GetProbeSink()->AddPerformanceMonitor(this);
@@ -275,6 +277,7 @@ void PerformanceMonitor::WillProcessTask(base::TimeTicks start_time) {
   task_execution_context_ = nullptr;
   task_has_multiple_contexts_ = false;
   task_should_be_reported_ = false;
+  v8::metrics::LongTaskStats::Reset(isolate_);
 
   if (!enabled_)
     return;

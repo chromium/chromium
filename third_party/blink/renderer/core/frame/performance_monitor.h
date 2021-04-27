@@ -102,7 +102,7 @@ class CORE_EXPORT PerformanceMonitor final
   void UnsubscribeAll(Client*);
   void Shutdown();
 
-  explicit PerformanceMonitor(LocalFrame*);
+  PerformanceMonitor(LocalFrame*, v8::Isolate*);
   ~PerformanceMonitor() override;
 
   virtual void Trace(Visitor*) const;
@@ -153,6 +153,8 @@ class CORE_EXPORT PerformanceMonitor final
 
   Member<LocalFrame> local_root_;
   Member<ExecutionContext> task_execution_context_;
+  // This is needed for calling v8::metrics::LongTaskStats::Reset.
+  v8::Isolate* const isolate_;
   bool task_has_multiple_contexts_ = false;
   bool task_should_be_reported_ = false;
   using ClientThresholds = HeapHashMap<WeakMember<Client>, base::TimeDelta>;

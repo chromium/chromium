@@ -29,10 +29,13 @@ class TestPerformance : public Performance {
                     ExecutionContext::From(script_state)
                         ->CrossOriginIsolatedCapability(),
                     ExecutionContext::From(script_state)
-                        ->GetTaskRunner(TaskType::kPerformanceTimeline)) {}
+                        ->GetTaskRunner(TaskType::kPerformanceTimeline)),
+        execution_context_(ExecutionContext::From(script_state)) {}
   ~TestPerformance() override = default;
 
-  ExecutionContext* GetExecutionContext() const override { return nullptr; }
+  ExecutionContext* GetExecutionContext() const override {
+    return execution_context_.Get();
+  }
 
   int NumActiveObservers() { return active_observers_.size(); }
 
@@ -42,7 +45,13 @@ class TestPerformance : public Performance {
     return HasObserverFor(entry_type);
   }
 
-  void Trace(Visitor* visitor) const override { Performance::Trace(visitor); }
+  void Trace(Visitor* visitor) const override {
+    Performance::Trace(visitor);
+    visitor->Trace(execution_context_);
+  }
+
+ private:
+  Member<ExecutionContext> execution_context_;
 };
 
 class PerformanceTest : public PageTestBase {
