@@ -990,8 +990,14 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
         recordreplay::Assert("FragmentPaintPropertyTreeBuilder::UpdateTransform #1 %d",
                              state.rendering_context_id);
         if (style.Preserves3D() && !state.rendering_context_id) {
-          state.rendering_context_id =
-              PtrHash<const LayoutObject>::GetHash(&object_);
+          // When recording/replaying we need a consistent context ID, so use
+          // the pointer ID of the object instead of its hash.
+          if (recordreplay::IsRecordingOrReplaying()) {
+            state.rendering_context_id = recordreplay::PointerId(&object_);
+          } else {
+            state.rendering_context_id =
+                PtrHash<const LayoutObject>::GetHash(&object_);
+          }
           recordreplay::Assert("FragmentPaintPropertyTreeBuilder::UpdateTransform #2 %d",
                               state.rendering_context_id);
         }

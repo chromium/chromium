@@ -339,12 +339,15 @@ LayoutObject::LayoutObject(Node* node)
       parent_(nullptr),
       previous_(nullptr),
       next_(nullptr) {
+  // Pointer registration is needed for hashing in FragmentPaintPropertyTreeBuilder::UpdateTransform.
+  recordreplay::RegisterPointer(this);
   InstanceCounters::IncrementCounter(InstanceCounters::kLayoutObjectCounter);
   if (node_)
     GetFrameView()->IncrementLayoutObjectCount();
 }
 
 LayoutObject::~LayoutObject() {
+  recordreplay::UnregisterPointer(this);
 #if DCHECK_IS_ON()
   DCHECK(!has_ax_object_);
   DCHECK(BeingDestroyed());
