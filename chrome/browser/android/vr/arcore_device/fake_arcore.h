@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_ANDROID_VR_ARCORE_DEVICE_FAKE_ARCORE_H_
 
 #include <memory>
+#include <unordered_map>
+
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"

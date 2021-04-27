@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"

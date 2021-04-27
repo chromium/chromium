@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_SAFE_BROWSING_NAVIGATION_OBSERVER_MANAGER_H_
 #define CHROME_BROWSER_SAFE_BROWSING_SAFE_BROWSING_NAVIGATION_OBSERVER_MANAGER_H_
 
+#include <unordered_map>
+
 #include "base/containers/circular_deque.h"
 #include "base/feature_list.h"
 #include "base/supports_user_data.h"

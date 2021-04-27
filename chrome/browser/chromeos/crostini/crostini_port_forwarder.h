@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_CROSTINI_CROSTINI_PORT_FORWARDER_H_
 
 #include <string>
+#include <unordered_map>
 
 #include "base/files/scoped_file.h"
 #include "base/memory/weak_ptr.h"

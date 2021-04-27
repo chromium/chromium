@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_INPUT_PREDICTION_FILTER_FACTORY_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_INPUT_PREDICTION_FILTER_FACTORY_H_
 
+#include <unordered_map>
+
 #include "base/feature_list.h"
 #include "third_party/blink/public/platform/input/predictor_factory.h"
 #include "third_party/blink/renderer/platform/platform_export.h"

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_COMPLEX_TASKS_TASK_TAB_HELPER_H_
 
 #include <map>
+#include <unordered_map>
 
 #include "base/containers/contains.h"
 #include "base/macros.h"

@@ -10,6 +10,7 @@
 #include <propkey.h>
 
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "chrome/credential_provider/gaiacp/gaia_credential_provider.h"
