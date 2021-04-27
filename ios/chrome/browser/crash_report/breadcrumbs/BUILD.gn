@@ -36,8 +36,6 @@ source_set("breadcrumbs") {
     "breadcrumb_manager_browser_agent.mm",
     "breadcrumb_manager_keyed_service_factory.cc",
     "breadcrumb_manager_keyed_service_factory.h",
-    "breadcrumb_manager_observer_bridge.h",
-    "breadcrumb_manager_observer_bridge.mm",
     "breadcrumb_manager_tab_helper.h",
     "breadcrumb_manager_tab_helper.mm",
     "breadcrumb_persistent_storage_util.cc",
@@ -100,7 +98,6 @@ source_set("unit_tests") {
     "application_breadcrumbs_logger_unittest.mm",
     "application_breadcrumbs_not_user_action_unittest.mm",
     "breadcrumb_manager_browser_agent_unittest.mm",
-    "breadcrumb_manager_observer_bridge_unittest.mm",
     "breadcrumb_manager_tab_helper_unittest.mm",
     "breadcrumb_persistent_storage_manager_unittest.mm",
   ]

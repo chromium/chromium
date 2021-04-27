@@ -1,0 +1,33 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ios") {
+  sources = [
+    "breadcrumb_manager_observer_bridge.h",
+    "breadcrumb_manager_observer_bridge.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/breadcrumbs/core",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "breadcrumb_manager_observer_bridge_unittest.mm" ]
+
+  deps = [
+    ":ios",
+    "//base/test:test_support",
+    "//components/breadcrumbs/core",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}

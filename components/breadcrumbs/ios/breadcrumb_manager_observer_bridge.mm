@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_observer_bridge.h"
+#import "components/breadcrumbs/ios/breadcrumb_manager_observer_bridge.h"
 
 #include "base/check.h"
 #include "base/strings/sys_string_conversions.h"
@@ -13,8 +13,10 @@
 #error "This file requires ARC support."
 #endif
 
+namespace breadcrumbs {
+
 BreadcrumbManagerObserverBridge::BreadcrumbManagerObserverBridge(
-    breadcrumbs::BreadcrumbManager* breadcrumb_manager,
+    BreadcrumbManager* breadcrumb_manager,
     id<BreadcrumbManagerObserving> observer)
     : breadcrumb_manager_(breadcrumb_manager), observer_(observer) {
   DCHECK(observer_);
@@ -22,7 +24,7 @@ BreadcrumbManagerObserverBridge::BreadcrumbManagerObserverBridge(
 }
 
 BreadcrumbManagerObserverBridge::BreadcrumbManagerObserverBridge(
-    breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_manager_service,
+    BreadcrumbManagerKeyedService* breadcrumb_manager_service,
     id<BreadcrumbManagerObserving> observer)
     : breadcrumb_manager_service_(breadcrumb_manager_service),
       observer_(observer) {
@@ -39,9 +41,8 @@ BreadcrumbManagerObserverBridge::~BreadcrumbManagerObserverBridge() {
   }
 }
 
-void BreadcrumbManagerObserverBridge::EventAdded(
-    breadcrumbs::BreadcrumbManager* manager,
-    const std::string& event) {
+void BreadcrumbManagerObserverBridge::EventAdded(BreadcrumbManager* manager,
+                                                 const std::string& event) {
   if ([observer_ respondsToSelector:@selector(breadcrumbManager:
                                                     didAddEvent:)]) {
     [observer_ breadcrumbManager:manager
@@ -50,9 +51,11 @@ void BreadcrumbManagerObserverBridge::EventAdded(
 }
 
 void BreadcrumbManagerObserverBridge::OldEventsRemoved(
-    breadcrumbs::BreadcrumbManager* manager) {
+    BreadcrumbManager* manager) {
   if ([observer_
           respondsToSelector:@selector(breadcrumbManagerDidRemoveOldEvents:)]) {
     [observer_ breadcrumbManagerDidRemoveOldEvents:manager];
   }
 }
+
+}  // namespace breadcrumbs

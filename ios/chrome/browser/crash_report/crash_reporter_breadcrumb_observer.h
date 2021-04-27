@@ -5,13 +5,17 @@
 #ifndef IOS_CHROME_BROWSER_CRASH_REPORT_CRASH_REPORTER_BREADCRUMB_OBSERVER_H_
 #define IOS_CHROME_BROWSER_CRASH_REPORT_CRASH_REPORTER_BREADCRUMB_OBSERVER_H_
 
-#include <map>
-#include <memory>
 #include <string>
+#include <vector>
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_observer_bridge.h"
+#import "components/breadcrumbs/ios/breadcrumb_manager_observer_bridge.h"
+
+namespace breadcrumbs {
+class BreadcrumbManager;
+class BreadcrumbManagerKeyedService;
+}
 
 // Combines breadcrumbs from multiple BreadcrumbManagers and sends the merged
 // breadcrumb events to breakpad for attachment to crash reports.

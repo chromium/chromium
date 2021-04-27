@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_observer_bridge.h"
+#import "components/breadcrumbs/ios/breadcrumb_manager_observer_bridge.h"
+
+#include <memory>
 
 #import "base/strings/sys_string_conversions.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -17,6 +18,8 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace breadcrumbs {
 
 // Test fixture to test BreadcrumbManagerObserverBridge class.
 class BreadcrumbManagerObserverBridgeTest : public PlatformTest {
@@ -30,7 +33,7 @@ class BreadcrumbManagerObserverBridgeTest : public PlatformTest {
   web::WebTaskEnvironment task_env_{
       web::WebTaskEnvironment::Options::DEFAULT,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  breadcrumbs::BreadcrumbManager breadcrumb_manager_;
+  BreadcrumbManager breadcrumb_manager_;
   id mock_observer_;
   std::unique_ptr<BreadcrumbManagerObserverBridge> observer_bridge_;
 };
@@ -70,3 +73,5 @@ TEST_F(BreadcrumbManagerObserverBridgeTest, OldEventsRemoved) {
 
   [mock_observer_ verify];
 }
+
+}  // namespace breadcrumbs

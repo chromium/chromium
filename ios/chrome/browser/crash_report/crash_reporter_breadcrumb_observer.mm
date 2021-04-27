@@ -4,11 +4,13 @@
 
 #include "ios/chrome/browser/crash_report/crash_reporter_breadcrumb_observer.h"
 
+#include <map>
+#include <memory>
+
 #include "base/strings/sys_string_conversions.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
 #include "components/breadcrumbs/core/crash_reporter_breadcrumb_constants.h"
-#import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_observer_bridge.h"
 #include "ios/chrome/browser/crash_report/crash_keys_helper.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -19,13 +21,13 @@
   // Map associating the observed BreadcrumbManager with the corresponding
   // observer bridge instances.
   std::map<breadcrumbs::BreadcrumbManager*,
-           std::unique_ptr<BreadcrumbManagerObserverBridge>>
+           std::unique_ptr<breadcrumbs::BreadcrumbManagerObserverBridge>>
       _breadcrumbManagerObservers;
 
   // Map associating the observed BreadcrumbManagerKeyedServices with the
   // corresponding observer bridge instances.
   std::map<breadcrumbs::BreadcrumbManagerKeyedService*,
-           std::unique_ptr<BreadcrumbManagerObserverBridge>>
+           std::unique_ptr<breadcrumbs::BreadcrumbManagerObserverBridge>>
       _breadcrumbManagerServiceObservers;
 
   // A string which stores the received breadcrumbs. Since breakpad limits
@@ -59,8 +61,8 @@
   DCHECK(!_breadcrumbManagerObservers[breadcrumbManager]);
 
   _breadcrumbManagerObservers[breadcrumbManager] =
-      std::make_unique<BreadcrumbManagerObserverBridge>(breadcrumbManager,
-                                                        self);
+      std::make_unique<breadcrumbs::BreadcrumbManagerObserverBridge>(
+          breadcrumbManager, self);
 }
 
 - (void)stopObservingBreadcrumbManager:
@@ -73,7 +75,7 @@
   DCHECK(!_breadcrumbManagerServiceObservers[breadcrumbManagerService]);
 
   _breadcrumbManagerServiceObservers[breadcrumbManagerService] =
-      std::make_unique<BreadcrumbManagerObserverBridge>(
+      std::make_unique<breadcrumbs::BreadcrumbManagerObserverBridge>(
           breadcrumbManagerService, self);
 }
 
