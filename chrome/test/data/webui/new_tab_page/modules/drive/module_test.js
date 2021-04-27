@@ -30,7 +30,6 @@ suite('NewTabPageModulesDriveModuleTest', () => {
           id: '123',
           mimeType: 'application/vnd.google-apps.spreadsheet',
           itemUrl: {url: 'https://foo.com'},
-          untrustedPhotoUrl: {url: 'https://photo.com'},
         },
         {
           justificationText: 'Edited today',
@@ -64,16 +63,14 @@ suite('NewTabPageModulesDriveModuleTest', () => {
         'Edited today',
         items[1].querySelector('.file-description').textContent);
     assertEquals(
-        'https://drive-thirdparty.googleusercontent.com/16/type/application/vnd.google-apps.spreadsheet',
+        'https://drive-thirdparty.googleusercontent.com/32/type/application/vnd.google-apps.spreadsheet',
         items[0].querySelector('.file-icon').autoSrc);
     assertEquals(
-        'https://drive-thirdparty.googleusercontent.com/16/type/application/vnd.google-apps.document',
+        'https://drive-thirdparty.googleusercontent.com/32/type/application/vnd.google-apps.document',
         items[1].querySelector('.file-icon').autoSrc);
     assertEquals(
-        'https://drive-thirdparty.googleusercontent.com/16/type/application/vnd.google-apps.presentation',
+        'https://drive-thirdparty.googleusercontent.com/32/type/application/vnd.google-apps.presentation',
         items[2].querySelector('.file-icon').autoSrc);
-    assertEquals(
-        'https://photo.com', items[0].querySelector('.user-image').autoSrc);
     const urls = module.shadowRoot.querySelectorAll('.file');
     assertEquals('https://foo.com/', urls[0].href);
     assertEquals('https://bar.com/', urls[1].href);

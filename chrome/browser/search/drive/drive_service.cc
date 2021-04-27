@@ -207,17 +207,12 @@ void DriveService::OnJsonParsed(
           !item_url || !GURL(*item_url).is_valid()) {
         continue;
       }
-      auto* photo_url =
-          item.FindStringPath("justification.primaryPerson.photoUrl");
       auto mojo_drive_doc = drive::mojom::File::New();
       mojo_drive_doc->title = *title;
       mojo_drive_doc->mime_type = *mime_type;
       mojo_drive_doc->justification_text = justification_text;
       mojo_drive_doc->id = *id;
       mojo_drive_doc->item_url = GURL(*item_url);
-      if (photo_url && GURL(*photo_url).is_valid()) {
-        mojo_drive_doc->untrusted_photo_url = GURL(*photo_url);
-      }
       document_list.push_back(std::move(mojo_drive_doc));
     }
     std::move(callback).Run(std::move(document_list));

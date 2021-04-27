@@ -35,12 +35,6 @@ class DriveModuleElement extends mixinBehaviors
     };
   }
 
-  constructor() {
-    super();
-    /** @private {IntersectionObserver} */
-    this.intersectionObserver_ = null;
-  }
-
   /** @private */
   onDisableButtonClick_() {
     this.dispatchEvent(new CustomEvent('disable-module', {
@@ -60,7 +54,7 @@ class DriveModuleElement extends mixinBehaviors
    * @private
    */
   getImageSrc_(file) {
-    return 'https://drive-thirdparty.googleusercontent.com/16/type/' +
+    return 'https://drive-thirdparty.googleusercontent.com/32/type/' +
         file.mimeType;
   }
 

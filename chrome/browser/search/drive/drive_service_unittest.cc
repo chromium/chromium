@@ -105,9 +105,6 @@ TEST_F(DriveServiceTest, PassesDataOnSuccess) {
                       "text": "bar foo bar"
                     }
                   ]
-                },
-                "primaryPerson": {
-                  "photoUrl": "https://google.com/userphoto"
                 }
               }
             },
@@ -133,8 +130,6 @@ TEST_F(DriveServiceTest, PassesDataOnSuccess) {
             actual_documents.at(1)->mime_type);
   EXPECT_EQ("Foo bar foo bar", actual_documents.at(1)->justification_text);
   EXPECT_EQ("https://google.com/bar", actual_documents.at(1)->item_url.spec());
-  EXPECT_EQ("https://google.com/userphoto",
-            actual_documents.at(1)->untrusted_photo_url.value());
 }
 
 TEST_F(DriveServiceTest, PassesDataToMultipleRequestsToDriveService) {
