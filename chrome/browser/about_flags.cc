@@ -5354,6 +5354,13 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"app-management-intent-settings",
+     flag_descriptions::kAppManagementIntentSettingsName,
+     flag_descriptions::kAppManagementIntentSettingsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kAppManagementIntentSettings)},
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     {"app-service-adaptive-icon",
      flag_descriptions::kAppServiceAdaptiveIconName,
      flag_descriptions::kAppServiceAdaptiveIconDescription, kOsCrOS,
