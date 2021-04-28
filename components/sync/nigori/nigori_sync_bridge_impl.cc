@@ -684,9 +684,9 @@ bool NigoriSyncBridgeImpl::SetKeystoreKeys(
     }
 
     if (!state_.pending_keys.has_value()) {
-      broadcasting_observer_->OnPassphraseAccepted();
       broadcasting_observer_->OnCryptographerStateChanged(
           state_.cryptographer.get(), state_.pending_keys.has_value());
+      broadcasting_observer_->OnPassphraseAccepted();
     }
   }
 
@@ -825,16 +825,6 @@ base::Optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
     return error;
   }
 
-  // TODO(crbug.com/1057655): issuing OnPassphraseAccepted() should be allowed
-  // for all passphrase types, but going out from |pending_keys| state might
-  // be disallowed for some circumstances (such as CUSTOM_PASSPHRASE ->
-  // CUSTOM_PASSPHRASE updates). Keep temporarily as is to avoid behavioral
-  // changes.
-  if (!state_.pending_keys.has_value() && had_pending_keys_before_update &&
-      state_.passphrase_type == NigoriSpecifics::KEYSTORE_PASSPHRASE) {
-    broadcasting_observer_->OnPassphraseAccepted();
-  }
-
   if (passphrase_type_changed) {
     broadcasting_observer_->OnPassphraseTypeChanged(
         *ProtoPassphraseInt32ToEnum(state_.passphrase_type),
@@ -848,6 +838,16 @@ base::Optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
 
   broadcasting_observer_->OnCryptographerStateChanged(
       state_.cryptographer.get(), state_.pending_keys.has_value());
+
+  // TODO(crbug.com/1057655): issuing OnPassphraseAccepted() should be allowed
+  // for all passphrase types, but going out from |pending_keys| state might
+  // be disallowed for some circumstances (such as CUSTOM_PASSPHRASE ->
+  // CUSTOM_PASSPHRASE updates). Keep temporarily as is to avoid behavioral
+  // changes.
+  if (!state_.pending_keys.has_value() && had_pending_keys_before_update &&
+      state_.passphrase_type == NigoriSpecifics::KEYSTORE_PASSPHRASE) {
+    broadcasting_observer_->OnPassphraseAccepted();
+  }
 
   MaybeNotifyOfPendingKeys();
 

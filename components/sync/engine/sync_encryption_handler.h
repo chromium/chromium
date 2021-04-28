@@ -55,7 +55,9 @@ class SyncEncryptionHandler {
         const sync_pb::EncryptedData& pending_keys) = 0;
 
     // Called when the passphrase provided by the user has been accepted and is
-    // now used to encrypt sync data.
+    // now used to encrypt sync data. This gets invoked last, relative to other
+    // relevant notifications corresponding to the same event, e.g.
+    // OnCryptographerStateChanged().
     virtual void OnPassphraseAccepted() = 0;
 
     // Called when decryption keys are required in order to decrypt pending
