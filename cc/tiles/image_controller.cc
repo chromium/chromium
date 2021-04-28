@@ -21,7 +21,8 @@ ImageController::ImageController(
     base::SequencedTaskRunner* origin_task_runner,
     scoped_refptr<base::SequencedTaskRunner> worker_task_runner)
     : worker_task_runner_(std::move(worker_task_runner)),
-      origin_task_runner_(origin_task_runner) {
+      origin_task_runner_(origin_task_runner),
+      lock_("ImageController.lock_") {
   weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
 }
 
