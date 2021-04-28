@@ -571,7 +571,7 @@ public class FeedSurfaceMediator
             mSignInPromo = null;
         }
 
-        mCurrentStream = null;
+        unbindStream();
         mTabToStreamMap.clear();
 
         mPrefChangeRegistrar.removeObserver(Pref.ARTICLES_LIST_VISIBLE);
