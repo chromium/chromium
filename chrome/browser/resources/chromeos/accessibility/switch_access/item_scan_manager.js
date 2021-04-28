@@ -7,6 +7,7 @@ import {AutoScanManager} from './auto_scan_manager.js';
 import {FocusRingManager} from './focus_ring_manager.js';
 import {FocusData, FocusHistory} from './history.js';
 import {MenuManager} from './menu_manager.js';
+import {Navigator} from './navigator.js';
 import {ItemNavigatorInterface} from './navigator_interface.js';
 import {BackButtonNode} from './nodes/back_button_node.js';
 import {BasicNode, BasicRootNode} from './nodes/basic_node.js';
@@ -227,6 +228,15 @@ export class ItemScanManager extends ItemNavigatorInterface {
     }
 
     this.restoreFromHistory_();
+  }
+
+  /** @override */
+  restart() {
+    const point = Navigator.byPoint.currentPoint;
+    SwitchAccess.mode = SAConstants.Mode.ITEM_SCAN;
+    this.desktop_.hitTestWithReply(point.x, point.y, (node) => {
+      this.moveTo_(node);
+    });
   }
 
   /** @override */
