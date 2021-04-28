@@ -18,6 +18,7 @@
 #include "base/debug/stack_trace.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/record_replay.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/third_party/dynamic_annotations/dynamic_annotations.h"
@@ -338,6 +339,13 @@ void MemoryDumpManager::ContinueAsyncProcessDump(
   // skip the hop and move on. Hence the manual naked -> unique ptr juggling.
   auto pmd_async_state = WrapUnique(owned_pmd_async_state);
   owned_pmd_async_state = nullptr;
+
+  // Don't generate process dumps when recording/replaying, to avoid mismatched
+  // behavior issues when accessing memory dump state.
+  if (recordreplay::IsRecordingOrReplaying()) {
+    FinishAsyncProcessDump(std::move(pmd_async_state));
+    return;
+  }
 
   while (!pmd_async_state->pending_dump_providers.empty()) {
     // Read MemoryDumpProviderInfo thread safety considerations in
