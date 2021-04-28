@@ -71,8 +71,14 @@ DemoModeApp GetAppFromAppId(const std::string& app_id) {
     return DemoModeApp::kCalendar;
   if (app_id == extension_misc::kGoogleDocsDemoAppId)
     return DemoModeApp::kGoogleDocsChromeApp;
+  if (app_id == extension_misc::kGoogleDocsPwaAppId)
+    return DemoModeApp::kGoogleDocsPwa;
+  if (app_id == extension_misc::kGoogleMeetPwaAppId)
+    return DemoModeApp::kGoogleMeetPwa;
   if (app_id == extension_misc::kGoogleSheetsDemoAppId)
     return DemoModeApp::kGoogleSheetsChromeApp;
+  if (app_id == extension_misc::kGoogleSheetsPwaAppId)
+    return DemoModeApp::kGoogleSheetsPwa;
   if (app_id == extension_misc::kGoogleSlidesDemoAppId)
     return DemoModeApp::kGoogleSlidesChromeApp;
   if (app_id == kHelpAppId)
@@ -81,10 +87,18 @@ DemoModeApp GetAppFromAppId(const std::string& app_id) {
     return DemoModeApp::kGoogleKeepChromeApp;
   if (app_id == extensions::kWebStoreAppId)
     return DemoModeApp::kWebStore;
-  if (app_id == extension_misc::kYoutubeAppId ||
-      app_id == extension_misc::kYoutubePwaAppId) {
+  if (app_id == extension_misc::kYoutubeAppId)
     return DemoModeApp::kYouTube;
-  }
+  if (app_id == extension_misc::kYoutubePwaAppId)
+    return DemoModeApp::kYoutubePwa;
+  if (app_id == extension_misc::kSpotifyAppId)
+    return DemoModeApp::kSpotify;
+  if (app_id == extension_misc::kBeFunkyAppId)
+    return DemoModeApp::kBeFunky;
+  if (app_id == extension_misc::kClipchampAppId)
+    return DemoModeApp::kClipchamp;
+  if (app_id == extension_misc::kGeForceNowAppId)
+    return DemoModeApp::kGeForceNow;
 
   return DemoModeApp::kOtherChromeApp;
 }

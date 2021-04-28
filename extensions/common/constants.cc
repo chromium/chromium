@@ -127,12 +127,19 @@ const char kCalculatorAppId[] = "joodangkbfjnajiiifokapkpmhfnpleo";
 const char kCalendarDemoAppId[] = "fpgfohogebplgnamlafljlcidjedbdeb";
 const char kGMailAppId[] = "pjkljhegncpnkpknbcohdijeoejaedia";
 const char kGoogleDocsDemoAppId[] = "chdaoodbokekbiiphekbfjdmiodccljl";
+const char kGoogleDocsPwaAppId[] = "cepkndkdlbllfhpfhledabdcdbidehkd";
 const char kGoogleDriveAppId[] = "apdfllckaahabafndbhieahigkjlhalf";
+const char kGoogleMeetPwaAppId[] = "dkainijpcknoofiakgccliajhbmlbhji";
 const char kGoogleSheetsDemoAppId[] = "nifkmgcdokhkjghdlgflonppnefddien";
+const char kGoogleSheetsPwaAppId[] = "hcgjdbbnhkmopplfiibmdgghhdhbiidh";
 const char kGoogleSlidesDemoAppId[] = "hdmobeajeoanbanmdlabnbnlopepchip";
 const char kGoogleKeepAppId[] = "hmjkmjkepdijhoojdojkdfohbdgmmhki";
 const char kYoutubeAppId[] = "blpcfgokakmgnkcojhhkbfbldkacnbeo";
 const char kYoutubePwaAppId[] = "agimnkijcaahngcdmfeangaknmldooml";
+const char kSpotifyAppId[] = "pjibgclleladliembfgfagdaldikeohf";
+const char kBeFunkyAppId[] = "fjoomcalbeohjbnlcneddljemclcekeg";
+const char kClipchampAppId[] = "pfepfhbcedkbjdkanpimmmdjfgoddhkg";
+const char kGeForceNowAppId[] = "egmafekfmcnknbdlbfbhafbllplmjlhn";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // TODO(michaelpg): Deprecate old app IDs before adding new ones to avoid bloat.

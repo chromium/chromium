@@ -69,9 +69,17 @@ class ASH_EXPORT DemoSessionMetricsRecorder
     kGoogleDocsChromeApp = 28,
     kGoogleSheetsChromeApp = 29,
     kGoogleSlidesChromeApp = 30,
+    kYoutubePwa = 31,
+    kGoogleDocsPwa = 32,
+    kGoogleMeetPwa = 33,
+    kGoogleSheetsPwa = 34,
+    kSpotify = 35,
+    kBeFunky = 36,
+    kClipchamp = 37,
+    kGeForceNow = 38,
     // Add future entries above this comment, in sync with enums.xml.
     // Update kMaxValue to the last value.
-    kMaxValue = kGoogleSlidesChromeApp,
+    kMaxValue = kGeForceNow,
   };
 
   // The recorder will create a normal timer by default. Tests should provide a

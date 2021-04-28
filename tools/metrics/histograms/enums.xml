@@ -17797,6 +17797,14 @@ Called by update_debug_scenarios.py.-->
   <int value="28" label="Google Docs (Chrome app)"/>
   <int value="29" label="Google Sheets (Chrome app)"/>
   <int value="30" label="Google Slides (Chrome app)"/>
+  <int value="31" label="YouTube (PWA)"/>
+  <int value="32" label="Google Docs (PWA)"/>
+  <int value="33" label="Google Meet (PWA)"/>
+  <int value="34" label="Google Sheets (PWA)"/>
+  <int value="35" label="Spotify (PWA)"/>
+  <int value="36" label="BeFunky (PWA)"/>
+  <int value="37" label="Clipchamp (PWA)"/>
+  <int value="38" label="GeForce NOW (PWA)"/>
 </enum>
 
 <enum name="DemoModeAppLaunchSource">
