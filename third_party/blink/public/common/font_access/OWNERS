@@ -1,5 +1,5 @@
 oyiptong@chromium.org
-jsbell@Chromium.org
+jsbell@chromium.org
 
 
 per-file *.mojom=set noparent
