@@ -33,11 +33,11 @@ std::unique_ptr<SkCanvas> MakeAnalysisCanvas(
   const int kMaxExtent = std::numeric_limits<int>::max() >> 1;
 
   return options.strike_server
-             ? std::make_unique<SkTextBlobCacheDiffCanvas>(
+             ? options.strike_server->makeAnalysisCanvas(
                    kMaxExtent, kMaxExtent,
                    skia::LegacyDisplayGlobals::ComputeSurfaceProps(
                        options.can_use_lcd_text),
-                   options.strike_server, options.color_space,
+                   options.color_space,
                    options.context_supports_distance_field_text)
              : std::make_unique<SkNoDrawCanvas>(kMaxExtent, kMaxExtent);
 }
