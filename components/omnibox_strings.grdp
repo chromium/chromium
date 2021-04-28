@@ -139,16 +139,16 @@
     Manage payment methods button, press Enter to manage your payments and credit card info in Chrome settings
   </message>
 
-  <message name="IDS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_HINT" desc="The button text contents to suggest pedal action, launch incognito.">
+  <message name="IDS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_HINT" desc="The button text contents to suggest pedal action, launch Incognito.">
     Open Incognito window
   </message>
-  <message name="IDS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_SUGGESTION_CONTENTS" desc="The suggestion content text to suggest pedal action, launch incognito.">
+  <message name="IDS_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_SUGGESTION_CONTENTS" desc="The suggestion content text to suggest pedal action, launch Incognito.">
     Open a new Incognito window to browse privately
   </message>
-  <message name="IDS_ACC_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_SUFFIX" desc="Suffix for spoken suggestion description with launch incognito pedal action to explain keystroke used to launch incognito.">
+  <message name="IDS_ACC_OMNIBOX_PEDAL_LAUNCH_INCOGNITO_SUFFIX" desc="Suffix for spoken suggestion description with launch Incognito pedal action to explain keystroke used to launch Incognito.">
     <ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Tab then Enter to open a new Incognito window to browse privately
   </message>
-  <message name="IDS_ACC_OMNIBOX_PEDAL_LAUNCH_INCOGNITO" desc="Announcement when launch incognito pedal button is focused.">
+  <message name="IDS_ACC_OMNIBOX_PEDAL_LAUNCH_INCOGNITO" desc="Announcement when launch Incognito pedal button is focused.">
     Open Incognito Window button, press Enter to open a new Incognito window to browse privately
   </message>
 

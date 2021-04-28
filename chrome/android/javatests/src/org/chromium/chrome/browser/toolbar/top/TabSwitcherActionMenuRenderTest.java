@@ -45,7 +45,7 @@ public class TabSwitcherActionMenuRenderTest extends DummyUiActivityTestCase {
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().build();
+            ChromeRenderTestRule.Builder.withPublicCorpus().setRevision(1).build();
 
     private View mView;
 

@@ -185,7 +185,7 @@ all other OS specific variables will be false.
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_SEARCH_A11Y_LABEL" desc="Accessibility label for the search action in the quick actions widget" meaning="Accessibility label for the search action in the quick actions widget [CHAR_LIMIT=40][iOS only]">
         Search or type URL
       </message>
-      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_INCOGNITO_A11Y_LABEL" desc="Accessibility label for the incognito search in the quick actions widget" meaning="Accessibility label for the incognito search action in the quick actions widget [CHAR_LIMIT=40][iOS only]">
+      <message name="IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_INCOGNITO_A11Y_LABEL" desc="Accessibility label for the Incognito search in the quick actions widget" meaning="Accessibility label for the Incognito search action in the quick actions widget [CHAR_LIMIT=40][iOS only]">
         Incognito Search
       </message>
       <message name="IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_QR_SCAN_A11Y_LABEL" desc="Accessibility label for the QR scan action in the quick actions widget" meaning="Accessibility label for the QR search action in the quick actions widget [CHAR_LIMIT=40][iOS only]">

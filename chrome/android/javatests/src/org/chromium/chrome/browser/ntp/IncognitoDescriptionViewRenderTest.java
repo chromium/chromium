@@ -40,7 +40,7 @@ public class IncognitoDescriptionViewRenderTest extends DummyUiActivityTestCase 
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().build();
+            ChromeRenderTestRule.Builder.withPublicCorpus().setRevision(1).build();
 
     public IncognitoDescriptionViewRenderTest(boolean nightModeEnabled) {
         NightModeTestUtils.setUpNightModeForDummyUiActivity(nightModeEnabled);

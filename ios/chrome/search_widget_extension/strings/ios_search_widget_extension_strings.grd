@@ -164,7 +164,7 @@ all other OS specific variables will be false.
       <message name="IDS_IOS_NEW_SEARCH" desc="Label in the widget extension for the action to launch the app and open a new search. [Length: 30em]">
         New Search
       </message>
-      <message name="IDS_IOS_INCOGNITO_SEARCH" desc="Label in the widget extension for the action to launch the app and open a new incognito search. [Length: 30em]">
+      <message name="IDS_IOS_INCOGNITO_SEARCH" desc="Label in the widget extension for the action to launch the app and open a new Incognito search. [Length: 30em]">
         Incognito Search
       </message>
       <message name="IDS_IOS_VOICE_SEARCH" desc="Label in the widget extension for the action to launch the app and open a new voice search. [Length: 30em]">

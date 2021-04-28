@@ -552,8 +552,8 @@
     Payment Manifest Parser
   </message>
   <if expr="is_android">
-    <message name="IDS_EXTERNAL_PAYMENT_APP_LEAVE_INCOGNITO_WARNING" desc="Alert dialog text warning the user that incognito mode does not continue into external payment apps." formatter_data="android_java">
-      Leaving incognito mode to pay via an external application. Continue?
+    <message name="IDS_EXTERNAL_PAYMENT_APP_LEAVE_INCOGNITO_WARNING" desc="Alert dialog text warning the user that Incognito mode does not continue into external payment apps." formatter_data="android_java">
+      Leaving Incognito mode to pay via an external application. Continue?
     </message>
   </if>
 
@@ -658,7 +658,7 @@
     Check out faster next time
   </message>
   <message name="IDS_PAYMENT_CREDENTIAL_ENROLLMENT_OFF_THE_RECORD_DESCRIPTION" desc="Extra description at the bottom of a dialog that asks for the user's permission to set up device-based sign-in (i.e., using their computer's biometric sensor or screen unlock/PIN) to verify card payments. This is shown only in Incognito mode and explains that the sign-in data will be stored to the device.">
-    Sign-in data will be stored on this device after you exit incognito mode.
+    Sign-in data will be stored on this device after you exit Incognito mode.
   </message>
   <message name="IDS_PAYMENT_CREDENTIAL_ENROLLMENT_CANCEL_BUTTON_LABEL" desc="Cancel button label on a dialog that asks for the user's permission to set up device-based sign-in (i.e., using their computer's biometric sensor or screen unlock/PIN) to verify card payments.">
     No thanks

@@ -462,7 +462,7 @@
     Zoom in on the page
   </message>
   <message name="IDS_KSV_DESCRIPTION_IDC_NEW_INCOGNITO_WINDOW" desc="Description of the command in keyboard shortcut viewer.">
-    Open a new window in incognito mode
+    Open a new window in Incognito mode
   </message>
   <message name="IDS_KSV_DESCRIPTION_IDC_RESTORE_TAB" desc="Description of the command in keyboard shortcut viewer.">
     Reopen the last tab or window you closed

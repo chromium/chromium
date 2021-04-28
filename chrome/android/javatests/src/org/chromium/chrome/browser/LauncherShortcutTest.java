@@ -201,7 +201,7 @@ public class LauncherShortcutTest {
         List<ShortcutInfo> shortcuts = shortcutManager.getDynamicShortcuts();
         Assert.assertEquals("Incorrect number of dynamic shortcuts.", 1, shortcuts.size());
         Assert.assertEquals(
-                "Incorrect label", "New incognito tab", shortcuts.get(0).getLongLabel());
+                "Incorrect label", "New Incognito tab", shortcuts.get(0).getLongLabel());
 
         LauncherShortcutActivity.setDynamicShortcutStringForTesting("Foo");
         callbackHelper = new CallbackHelper();
