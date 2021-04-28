@@ -74,8 +74,7 @@ void* ThreadFunc(void* params) {
 
 #if !defined(OS_NACL)
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-    internal::PCScan::Instance().NotifyThreadCreated(
-        internal::GetStackPointer());
+    internal::PCScan::NotifyThreadCreated(internal::GetStackPointer());
 #endif
 
 #if defined(OS_APPLE)
@@ -101,7 +100,7 @@ void* ThreadFunc(void* params) {
       PlatformThread::CurrentId());
 
 #if !defined(OS_NACL) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  internal::PCScan::Instance().NotifyThreadDestroyed();
+  internal::PCScan::NotifyThreadDestroyed();
 #endif
 
   base::TerminateOnThread();

@@ -67,7 +67,7 @@ void PartitionAllocGlobalInit(OomFunction on_out_of_memory) {
 }
 
 void PartitionAllocGlobalUninitForTesting() {
-  internal::PCScan::Instance().UninitForTesting();  // IN-TEST
+  internal::PCScan::UninitForTesting();  // IN-TEST
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   if (features::IsPartitionAllocGigaCageEnabled()) {
 #if defined(PA_HAS_64_BITS_POINTERS)

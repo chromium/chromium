@@ -105,7 +105,7 @@ DWORD __stdcall ThreadFunc(void* params) {
                                 DUPLICATE_SAME_ACCESS);
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  internal::PCScan::Instance().NotifyThreadCreated(internal::GetStackPointer());
+  internal::PCScan::NotifyThreadCreated(internal::GetStackPointer());
 #endif
 
   win::ScopedHandle scoped_platform_handle;
@@ -127,7 +127,7 @@ DWORD __stdcall ThreadFunc(void* params) {
   }
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  internal::PCScan::Instance().NotifyThreadDestroyed();
+  internal::PCScan::NotifyThreadDestroyed();
 #endif
 
   // Ensure thread priority is at least NORMAL before initiating thread

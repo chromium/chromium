@@ -1586,11 +1586,12 @@ void PCScan::PerformScan(InvocationMode invocation_mode) {
 void PCScan::PerformScanIfNeeded(InvocationMode invocation_mode) {
   if (!PCScanInternal::Instance().scannable_roots().size())
     return;
+  PCScan& instance = Instance();
   if (invocation_mode == InvocationMode::kForcedBlocking ||
-      scheduler_.scheduling_backend()
+      instance.scheduler_.scheduling_backend()
           .GetQuarantineData()
           .MinimumScanningThresholdReached())
-    PerformScan(invocation_mode);
+    instance.PerformScan(invocation_mode);
 }
 
 void PCScan::PerformDelayedScan(TimeDelta delay) {

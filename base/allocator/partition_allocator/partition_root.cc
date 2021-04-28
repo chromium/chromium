@@ -847,7 +847,7 @@ void PartitionRoot<thread_safe>::PurgeMemory(int flags) {
     // takes snapshot of all allocated pages, decommitting pages here (even
     // under the lock) is racy.
     // TODO(bikineev): Consider rescheduling the purging after PCScan.
-    if (PCScan::Instance().IsInProgress())
+    if (PCScan::IsInProgress())
       return;
     if (flags & PartitionPurgeDecommitEmptySlotSpans)
       DecommitEmptySlotSpans();

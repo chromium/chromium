@@ -47,7 +47,7 @@ void SetProcessNameForPCScan(const std::string& process_type) {
   }();
 
   if (name) {
-    base::internal::PCScan::Instance().SetProcessName(name);
+    base::internal::PCScan::SetProcessName(name);
   }
 }
 
@@ -207,9 +207,8 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
     EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded();
   }
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  auto& pcscan = base::internal::PCScan::Instance();
   // Notify PCScan about the main thread.
-  pcscan.NotifyThreadCreated(base::internal::GetStackTop());
+  base::internal::PCScan::NotifyThreadCreated(base::internal::GetStackTop());
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   SetProcessNameForPCScan(process_type);
 }
@@ -278,11 +277,11 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
     // Assign PCScan a task-based scheduling backend.
     static base::NoDestructor<base::internal::MUAwareTaskBasedBackend>
         mu_aware_task_based_backend{
-            base::internal::PCScan::Instance().scheduler(),
+            base::internal::PCScan::scheduler(),
             base::BindRepeating([](base::TimeDelta delay) {
-              base::internal::PCScan::Instance().PerformDelayedScan(delay);
+              base::internal::PCScan::PerformDelayedScan(delay);
             })};
-    base::internal::PCScan::Instance().scheduler().SetNewSchedulingBackend(
+    base::internal::PCScan::scheduler().SetNewSchedulingBackend(
         *mu_aware_task_based_backend.get());
   }
 }

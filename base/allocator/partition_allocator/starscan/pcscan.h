@@ -43,7 +43,6 @@ class PCScanTask;
 // unreachable and therefore can be safely reclaimed.
 //
 // The driver class encapsulates the entire PCScan infrastructure.
-// TODO(bikineev,1129751): Consider a fully static interface.
 class BASE_EXPORT PCScan final {
  public:
   using Root = PartitionRoot<ThreadSafe>;
@@ -56,48 +55,39 @@ class BASE_EXPORT PCScan final {
     kScheduleOnlyForTesting,
   };
 
-  static PCScan& Instance() {
-    // The instance is declared as a static member, not static local. The reason
-    // is that we want to use the require_constant_initialization attribute to
-    // avoid double-checked-locking which would otherwise have been introduced
-    // by the compiler for thread-safe dynamic initialization (see constinit
-    // from C++20).
-    return instance_;
-  }
-
   PCScan(const PCScan&) = delete;
   PCScan& operator=(const PCScan&) = delete;
 
   // Registers a root for scanning.
-  void RegisterScannableRoot(Root* root);
+  static void RegisterScannableRoot(Root* root);
   // Registers a root that doesn't need to be scanned but still contains
   // quarantined objects.
-  void RegisterNonScannableRoot(Root* root);
+  static void RegisterNonScannableRoot(Root* root);
 
-  ALWAYS_INLINE void MoveToQuarantine(void* ptr, size_t slot_size);
+  ALWAYS_INLINE static void MoveToQuarantine(void* ptr, size_t slot_size);
 
   // Performs scanning only if a certain quarantine threshold was reached.
-  void PerformScanIfNeeded(InvocationMode invocation_mode);
+  static void PerformScanIfNeeded(InvocationMode invocation_mode);
 
-  void PerformDelayedScan(TimeDelta delay);
+  static void PerformDelayedScan(TimeDelta delay);
 
   // Join scan from safepoint in mutator thread. As soon as PCScan is scheduled,
   // mutators can join PCScan helping out with clearing and scanning.
-  void JoinScanIfNeeded();
+  static void JoinScanIfNeeded();
 
   // Checks if there is a PCScan task currently in progress.
-  ALWAYS_INLINE bool IsInProgress() const;
+  ALWAYS_INLINE static bool IsInProgress();
 
   // Sets process name (used for histograms). |name| must be a string literal.
-  void SetProcessName(const char* name);
+  static void SetProcessName(const char* name);
 
   // Notify PCScan that a new thread was created/destroyed.
-  void NotifyThreadCreated(void* stack_top);
-  void NotifyThreadDestroyed();
+  static void NotifyThreadCreated(void* stack_top);
+  static void NotifyThreadDestroyed();
 
-  void UninitForTesting();
+  static void UninitForTesting();
 
-  PCScanScheduler& scheduler() { return scheduler_; }
+  inline static PCScanScheduler& scheduler();
 
  private:
   class PCScanThread;
@@ -115,6 +105,8 @@ class BASE_EXPORT PCScan final {
     kSweepingAndFinishing
   };
 
+  ALWAYS_INLINE static PCScan& Instance();
+
   ALWAYS_INLINE bool IsJoinable() const;
 
   inline constexpr PCScan();
@@ -123,13 +115,13 @@ class BASE_EXPORT PCScan final {
   void PerformScan(InvocationMode invocation_mode);
 
   // Joins scan unconditionally.
-  void JoinScan();
+  static void JoinScan();
 
   // Finish scan as scanner thread.
-  void FinishScanForTesting();
+  static void FinishScanForTesting();
 
   // Reinitialize internal structures (e.g. card table).
-  void ReinitForTesting();
+  static void ReinitForTesting();
 
   size_t epoch() const { return scheduler_.epoch(); }
 
@@ -143,8 +135,18 @@ class BASE_EXPORT PCScan final {
 // To please Chromium's clang plugin.
 constexpr PCScan::PCScan() = default;
 
-ALWAYS_INLINE bool PCScan::IsInProgress() const {
-  return state_.load(std::memory_order_relaxed) != State::kNotRunning;
+ALWAYS_INLINE PCScan& PCScan::Instance() {
+  // The instance is declared as a static member, not static local. The reason
+  // is that we want to use the require_constant_initialization attribute to
+  // avoid double-checked-locking which would otherwise have been introduced
+  // by the compiler for thread-safe dynamic initialization (see constinit
+  // from C++20).
+  return instance_;
+}
+
+ALWAYS_INLINE bool PCScan::IsInProgress() {
+  const PCScan& instance = Instance();
+  return instance.state_.load(std::memory_order_relaxed) != State::kNotRunning;
 }
 
 ALWAYS_INLINE bool PCScan::IsJoinable() const {
@@ -154,26 +156,33 @@ ALWAYS_INLINE bool PCScan::IsJoinable() const {
 }
 
 ALWAYS_INLINE void PCScan::JoinScanIfNeeded() {
-  if (UNLIKELY(IsJoinable()))
-    JoinScan();
+  PCScan& instance = Instance();
+  if (UNLIKELY(instance.IsJoinable()))
+    instance.JoinScan();
 }
 
 ALWAYS_INLINE void PCScan::MoveToQuarantine(void* ptr, size_t slot_size) {
-  auto* quarantine =
-      QuarantineBitmapFromPointer(QuarantineBitmapType::kMutator, epoch(), ptr);
+  PCScan& instance = Instance();
+  auto* quarantine = QuarantineBitmapFromPointer(QuarantineBitmapType::kMutator,
+                                                 instance.epoch(), ptr);
   const bool is_double_freed =
       quarantine->SetBit(reinterpret_cast<uintptr_t>(ptr));
   if (UNLIKELY(is_double_freed))
     DoubleFreeAttempt();
 
-  const bool is_limit_reached = scheduler_.AccountFreed(slot_size);
+  const bool is_limit_reached = instance.scheduler_.AccountFreed(slot_size);
   if (UNLIKELY(is_limit_reached)) {
     // Perform a quick check if another scan is already in progress.
-    if (IsInProgress())
+    if (instance.IsInProgress())
       return;
     // Avoid blocking the current thread for regular scans.
-    PerformScan(InvocationMode::kNonBlocking);
+    instance.PerformScan(InvocationMode::kNonBlocking);
   }
+}
+
+inline PCScanScheduler& PCScan::scheduler() {
+  PCScan& instance = Instance();
+  return instance.scheduler_;
 }
 
 }  // namespace internal

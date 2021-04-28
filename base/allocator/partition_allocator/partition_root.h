@@ -955,7 +955,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* ptr) {
   // by default.
   if (UNLIKELY(root->IsQuarantineEnabled()) &&
       LIKELY(!slot_span->bucket->is_direct_mapped())) {
-    PCScan::Instance().MoveToQuarantine(ptr, slot_span->bucket->slot_size);
+    PCScan::MoveToQuarantine(ptr, slot_span->bucket->slot_size);
     return;
   }
 
@@ -1284,7 +1284,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
 
   // PCScan safepoint. Call before trying to allocate from cache.
   if (IsQuarantineEnabled())
-    PCScan::Instance().JoinScanIfNeeded();
+    PCScan::JoinScanIfNeeded();
 
   // !thread_safe => !with_thread_cache, but adding the condition allows the
   // compiler to statically remove this branch for the thread-unsafe variant.

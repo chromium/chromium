@@ -47,8 +47,7 @@ void NonScannableAllocator::EnablePCScan() {
                                     PartitionOptions::Quarantine::kAllowed,
                                     PartitionOptions::Cookies::kAllowed,
                                     PartitionOptions::RefCount::kDisallowed));
-  auto& pcscan = internal::PCScan::Instance();
-  pcscan.RegisterNonScannableRoot(allocator_->root());
+  PCScan::RegisterNonScannableRoot(allocator_->root());
   pcscan_enabled_.store(true, std::memory_order_release);
 }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

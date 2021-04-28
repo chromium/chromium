@@ -135,7 +135,7 @@ void PartitionAllocMemoryReclaimer::Reclaim(int flags) {
     const auto invocation_mode = flags & PartitionPurgeAggressiveReclaim
                                      ? PCScan::InvocationMode::kForcedBlocking
                                      : PCScan::InvocationMode::kBlocking;
-    PCScan::Instance().PerformScanIfNeeded(invocation_mode);
+    PCScan::PerformScanIfNeeded(invocation_mode);
   }
 
 #if defined(PA_THREAD_CACHE_SUPPORTED)

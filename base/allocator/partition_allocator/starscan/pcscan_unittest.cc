@@ -24,13 +24,13 @@ class PCScanTest : public testing::Test {
     PartitionAllocGlobalInit([](size_t) { LOG(FATAL) << "Out of memory"; });
     // Previous test runs within the same process decommit GigaCage, therefore
     // we need to make sure that the card table is recommitted for each run.
-    PCScan::Instance().ReinitForTesting();
+    PCScan::ReinitForTesting();
     allocator_.init({PartitionOptions::AlignedAlloc::kDisallowed,
                      PartitionOptions::ThreadCache::kDisabled,
                      PartitionOptions::Quarantine::kAllowed,
                      PartitionOptions::Cookies::kAllowed,
                      PartitionOptions::RefCount::kDisallowed});
-    PCScan::Instance().RegisterScannableRoot(allocator_.root());
+    PCScan::RegisterScannableRoot(allocator_.root());
   }
   ~PCScanTest() override {
     allocator_.root()->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans |
@@ -53,7 +53,7 @@ class PCScanTest : public testing::Test {
     instance.JoinScan();
   }
 
-  void FinishPCScanAsScanner() { PCScan::Instance().FinishScanForTesting(); }
+  void FinishPCScanAsScanner() { PCScan::FinishScanForTesting(); }
 
   bool IsInQuarantine(void* ptr) const {
     return QuarantineBitmapFromPointer(QuarantineBitmapType::kMutator,
@@ -341,8 +341,8 @@ TEST_F(PCScanTest, DanglingInterPartitionReference) {
        PartitionOptions::Cookies::kAllowed,
        PartitionOptions::RefCount::kDisallowed});
 
-  PCScan::Instance().RegisterScannableRoot(&source_root);
-  PCScan::Instance().RegisterScannableRoot(&value_root);
+  PCScan::RegisterScannableRoot(&source_root);
+  PCScan::RegisterScannableRoot(&value_root);
 
   auto* source = SourceList::Create(source_root);
   auto* value = ValueList::Create(value_root);
@@ -368,8 +368,8 @@ TEST_F(PCScanTest, DanglingReferenceToNonScannablePartition) {
        PartitionOptions::Cookies::kAllowed,
        PartitionOptions::RefCount::kDisallowed});
 
-  PCScan::Instance().RegisterScannableRoot(&source_root);
-  PCScan::Instance().RegisterNonScannableRoot(&value_root);
+  PCScan::RegisterScannableRoot(&source_root);
+  PCScan::RegisterNonScannableRoot(&value_root);
 
   auto* source = SourceList::Create(source_root);
   auto* value = ValueList::Create(value_root);
@@ -395,8 +395,8 @@ TEST_F(PCScanTest, DanglingReferenceFromNonScannablePartition) {
        PartitionOptions::Cookies::kAllowed,
        PartitionOptions::RefCount::kDisallowed});
 
-  PCScan::Instance().RegisterNonScannableRoot(&source_root);
-  PCScan::Instance().RegisterScannableRoot(&value_root);
+  PCScan::RegisterNonScannableRoot(&source_root);
+  PCScan::RegisterScannableRoot(&value_root);
 
   auto* source = SourceList::Create(source_root);
   auto* value = ValueList::Create(value_root);
