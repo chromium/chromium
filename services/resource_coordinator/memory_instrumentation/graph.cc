@@ -5,6 +5,7 @@
 #include "services/resource_coordinator/memory_instrumentation/graph.h"
 
 #include "base/callback.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_tokenizer.h"
 
 namespace memory_instrumentation {
@@ -80,7 +81,7 @@ Node* Process::CreateNode(MemoryAllocatorDumpGuid guid,
                           bool weak) {
   DCHECK(!path.empty());
 
-  std::string path_string = path.as_string();
+  std::string path_string(path);
   base::StringTokenizer tokenizer(path_string, "/");
 
   // Perform a tree traversal, creating the nodes if they do not
@@ -114,7 +115,7 @@ Node* Process::CreateNode(MemoryAllocatorDumpGuid guid,
 Node* Process::FindNode(base::StringPiece path) {
   DCHECK(!path.empty());
 
-  std::string path_string = path.as_string();
+  std::string path_string(path);
   base::StringTokenizer tokenizer(path_string, "/");
   Node* current = root_;
   while (tokenizer.GetNext()) {
@@ -134,7 +135,7 @@ Node* Node::GetChild(base::StringPiece name) {
   DCHECK(!name.empty());
   DCHECK_EQ(std::string::npos, name.find('/'));
 
-  auto child = children_.find(name.as_string());
+  auto child = children_.find(std::string(name));
   return child == children_.end() ? nullptr : child->second;
 }
 
@@ -142,7 +143,7 @@ void Node::InsertChild(base::StringPiece name, Node* node) {
   DCHECK(!name.empty());
   DCHECK_EQ(std::string::npos, name.find('/'));
 
-  children_.emplace(name.as_string(), node);
+  children_.emplace(std::string(name), node);
 }
 
 Node* Node::CreateChild(base::StringPiece name) {

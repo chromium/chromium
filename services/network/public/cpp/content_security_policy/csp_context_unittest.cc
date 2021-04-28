@@ -4,6 +4,7 @@
 
 #include <set>
 
+#include "base/strings/string_piece.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -27,7 +28,7 @@ class CSPContextTest : public CSPContext {
   }
 
   bool SchemeShouldBypassCSP(const base::StringPiece& scheme) override {
-    return scheme_to_bypass_.count(scheme.as_string());
+    return scheme_to_bypass_.count(std::string(scheme));
   }
 
   void ClearViolations() { violations_.clear(); }

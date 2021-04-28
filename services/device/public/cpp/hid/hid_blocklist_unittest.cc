@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/guid.h"
+#include "base/strings/string_piece.h"
 #include "components/variations/variations_params_manager.h"
 #include "services/device/hid/test_report_descriptors.h"
 #include "services/device/public/cpp/hid/hid_report_descriptor.h"
@@ -36,7 +37,7 @@ class HidBlocklistTest : public testing::Test {
     params_manager_.ClearAllVariationParams();
 
     std::map<std::string, std::string> params;
-    params["blocklist_additions"] = list.as_string();
+    params["blocklist_additions"] = std::string(list);
     params_manager_.SetVariationParams("WebHIDBlocklist", params);
 
     blocklist_.ResetToDefaultValuesForTest();

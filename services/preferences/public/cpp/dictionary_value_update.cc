@@ -8,6 +8,7 @@
 #include <iterator>
 #include <utility>
 
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
 
@@ -126,7 +127,7 @@ DictionaryValueUpdate::SetDictionaryWithoutPathExpansion(
       value_->SetWithoutPathExpansion(path, std::move(in_value)));
 
   std::vector<std::string> full_path = path_;
-  full_path.push_back(path.as_string());
+  full_path.push_back(std::string(path));
   return std::make_unique<DictionaryValueUpdate>(
       report_update_, dictionary_value, std::move(full_path));
 }
@@ -229,7 +230,7 @@ bool DictionaryValueUpdate::GetDictionaryWithoutPathExpansion(
     return false;
 
   std::vector<std::string> full_path = path_;
-  full_path.push_back(key.as_string());
+  full_path.push_back(std::string(key));
   *out_value = std::make_unique<DictionaryValueUpdate>(
       report_update_, dictionary_value, std::move(full_path));
   return true;
@@ -325,7 +326,7 @@ std::vector<std::string> DictionaryValueUpdate::ConcatPath(
   std::vector<std::string> full_path = base_path;
   full_path.reserve(full_path.size() + path.size());
   std::transform(path.begin(), path.end(), std::back_inserter(full_path),
-                 [](base::StringPiece s) { return s.as_string(); });
+                 [](base::StringPiece s) { return std::string(s); });
   return full_path;
 }
 

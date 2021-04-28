@@ -11,6 +11,8 @@
 #include <setupapi.h>
 #include <stdint.h>
 
+#include "base/strings/string_piece.h"
+
 #define INITGUID
 #include <devpkey.h>
 

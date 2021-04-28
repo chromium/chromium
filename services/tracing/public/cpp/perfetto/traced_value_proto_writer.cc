@@ -8,6 +8,7 @@
 
 #include "base/hash/hash.h"
 #include "base/json/string_escape.h"
+#include "base/strings/string_piece.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "third_party/perfetto/include/perfetto/protozero/message_handle.h"
@@ -125,7 +126,7 @@ class ProtoWriter final : public TracedValue::Writer {
   }
 
   void SetValueWithCopiedName(base::StringPiece name, Writer* value) override {
-    SetValue(name.as_string().c_str(), value);
+    SetValue(std::string(name).c_str(), value);
   }
 
   void BeginArray() override {

@@ -5,6 +5,7 @@
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 
 #include "base/containers/contains.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
@@ -1486,8 +1487,8 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
                 policies[0]->directives[mojom::CSPDirectiveName::ScriptSrc]));
 
     EXPECT_EQ(policies[0]->raw_directives[mojom::CSPDirectiveName::ScriptSrc],
-              base::TrimString(test.directive_value, " ", base::TRIM_ALL)
-                  .as_string());
+              std::string(
+                  base::TrimString(test.directive_value, " ", base::TRIM_ALL)));
 
     if (!test.expected_error.empty())
       EXPECT_EQ(test.expected_error, policies[0]->parsing_errors[0]);

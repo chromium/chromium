@@ -5,6 +5,7 @@
 #include "services/proxy_resolver/public/cpp/proxy_resolver_mojom_traits.h"
 
 #include "base/notreached.h"
+#include "base/strings/string_piece.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/proxy_server.h"
 #include "net/proxy_resolution/proxy_info.h"
@@ -103,7 +104,7 @@ bool StructTraits<
   }
 
   *out = net::ProxyServer(scheme,
-                          net::HostPortPair(host.as_string(), data.port()));
+                          net::HostPortPair(std::string(host), data.port()));
   return true;
 }
 

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/strings/string_piece.h"
 #include "components/prefs/pref_service.h"
 #include "services/preferences/public/cpp/dictionary_value_update.h"
 
@@ -14,7 +15,7 @@ namespace prefs {
 
 ScopedDictionaryPrefUpdate::ScopedDictionaryPrefUpdate(PrefService* service,
                                                        base::StringPiece path)
-    : service_(service), path_(path.as_string()) {}
+    : service_(service), path_(path) {}
 
 ScopedDictionaryPrefUpdate::~ScopedDictionaryPrefUpdate() {
   if (!updated_paths_.empty())

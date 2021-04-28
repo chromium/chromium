@@ -6,6 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/default_tick_clock.h"
@@ -91,7 +92,7 @@ bool ParseAccessControlAllowList(const base::Optional<std::string>& string,
       return false;
     }
     set->insert(insert_in_lower_case ? base::ToLowerASCII(value)
-                                     : value.as_string());
+                                     : std::string(value));
   }
   return true;
 }

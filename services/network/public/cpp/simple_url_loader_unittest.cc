@@ -27,6 +27,7 @@
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -420,7 +421,7 @@ class SimpleLoaderTestHelper : public SimpleURLLoaderStreamConsumer {
       done_ = true;
     }
 
-    download_as_stream_response_body_.append(string_piece.as_string());
+    download_as_stream_response_body_.append(std::string(string_piece));
 
     if (download_to_stream_destroy_on_data_received_) {
       run_loop_.Quit();
