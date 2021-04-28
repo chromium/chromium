@@ -1386,6 +1386,7 @@ if (!is_android) {
       "../browser/signin/e2e_tests/live_sign_in_test.cc",
       "../browser/signin/e2e_tests/live_test.cc",
       "../browser/signin/e2e_tests/live_test.h",
+      "../browser/signin/remove_local_account_browsertest.cc",
       "../browser/site_isolation/chrome_site_per_process_browsertest.cc",
       "../browser/site_isolation/chrome_site_per_process_test.cc",
       "../browser/site_isolation/chrome_site_per_process_test.h",

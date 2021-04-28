@@ -63,6 +63,7 @@ const char kTestCookieAttributes[] =
     "; Path=/; HttpOnly; SameSite=None; Secure";
 
 const char kDefaultGaiaId[] = "12345";
+const char kDefaultEmail[] = "email12345@foo.com";
 
 const base::FilePath::CharType kEmbeddedSetupChromeos[] =
     FILE_PATH_LITERAL("google_apis/test/embedded_setup_chromeos.html");
@@ -71,9 +72,11 @@ const base::FilePath::CharType kEmbeddedSetupChromeos[] =
 const char kAuthHeaderBearer[] = "Bearer ";
 const char kAuthHeaderOAuth[] = "OAuth ";
 
-const char kListAccountsResponseFormat[] =
-    "[\"gaia.l.a.r\",[[\"gaia.l.a\",1,\"\",\"%s\",\"\",1,1,0,0,1,\"12345\"]]]";
+const char kIndividualListedAccountResponseFormat[] =
+    "[\"gaia.l.a\",1,\"\",\"%s\",\"\",1,1,0,0,1,\"%s\",11,12,13,%d]";
+const char kListAccountsResponseFormat[] = "[\"gaia.l.a.r\",[%s]]";
 
+const char kDummyRemoveLocalAccountPath[] = "DummyRemoveLocalAccount";
 const char kDummySAMLContinuePath[] = "DummySAMLContinue";
 
 typedef std::map<std::string, std::string> CookieMap;
@@ -185,6 +188,9 @@ void FakeGaia::MergeSessionParams::Update(const MergeSessionParams& update) {
   maybe_update_field(&MergeSessionParams::session_sid_cookie);
   maybe_update_field(&MergeSessionParams::session_lsid_cookie);
   maybe_update_field(&MergeSessionParams::email);
+
+  if (!update.signed_out_gaia_ids.empty())
+    signed_out_gaia_ids = update.signed_out_gaia_ids;
 }
 
 FakeGaia::SyncTrustedVaultKeys::SyncTrustedVaultKeys() = default;
@@ -245,6 +251,14 @@ std::string FakeGaia::GetGaiaIdOfEmail(const std::string& email) const {
   const auto it = email_to_gaia_id_map_.find(email);
   return it == email_to_gaia_id_map_.end() ? std::string(kDefaultGaiaId) :
       it->second;
+}
+
+std::string FakeGaia::GetEmailOfGaiaId(const std::string& gaia_id) const {
+  for (const auto& email_and_gaia_id : email_to_gaia_id_map_) {
+    if (email_and_gaia_id.second == gaia_id)
+      return email_and_gaia_id.first;
+  }
+  return kDefaultEmail;
 }
 
 void FakeGaia::AddGoogleAccountsSigninHeader(BasicHttpResponse* http_response,
@@ -360,6 +374,11 @@ void FakeGaia::Initialize() {
   // Handles ReAuth API token fetch call.
   REGISTER_RESPONSE_HANDLER(gaia_urls->reauth_api_url(),
                             HandleGetReAuthProofToken);
+
+  // Handles API for browser tests to manually remove local accounts.
+  REGISTER_RESPONSE_HANDLER(
+      gaia_urls->gaia_url().Resolve(kDummyRemoveLocalAccountPath),
+      HandleDummyRemoveLocalAccount);
 }
 
 FakeGaia::RequestHandlerMap::iterator FakeGaia::FindHandlerByPathPrefix(
@@ -440,6 +459,12 @@ std::string FakeGaia::GetDeviceIdByRefreshToken(
 void FakeGaia::SetErrorResponse(const GURL& gaia_url,
                                 net::HttpStatusCode http_status_code) {
   error_responses_[gaia_url.path()] = http_status_code;
+}
+
+GURL FakeGaia::GetDummyRemoveLocalAccountURL(const std::string& gaia_id) const {
+  GURL url =
+      GaiaUrls::GetInstance()->gaia_url().Resolve(kDummyRemoveLocalAccountPath);
+  return net::AppendQueryParameter(url, "gaia_id", gaia_id);
 }
 
 void FakeGaia::SetRefreshTokenToDeviceIdMap(
@@ -859,8 +884,26 @@ void FakeGaia::HandleIssueToken(const HttpRequest& request,
 
 void FakeGaia::HandleListAccounts(const HttpRequest& request,
                                   BasicHttpResponse* http_response) {
-  http_response->set_content(base::StringPrintf(
-      kListAccountsResponseFormat, merge_session_params_.email.c_str()));
+  const int kAccountIsSignedIn = 0;
+  const int kAccountIsSignedOut = 1;
+
+  std::vector<std::string> listed_accounts;
+  listed_accounts.push_back(base::StringPrintf(
+      kIndividualListedAccountResponseFormat,
+      merge_session_params_.email.c_str(), kDefaultGaiaId, kAccountIsSignedIn));
+
+  for (const std::string& gaia_id : merge_session_params_.signed_out_gaia_ids) {
+    DCHECK_NE(kDefaultGaiaId, gaia_id);
+
+    const std::string email = GetEmailOfGaiaId(gaia_id);
+    listed_accounts.push_back(base::StringPrintf(
+        kIndividualListedAccountResponseFormat, email.c_str(), gaia_id.c_str(),
+        kAccountIsSignedOut));
+  }
+
+  http_response->set_content(
+      base::StringPrintf(kListAccountsResponseFormat,
+                         base::JoinString(listed_accounts, ",").c_str()));
   http_response->set_code(net::HTTP_OK);
 }
 
@@ -1001,6 +1044,26 @@ void FakeGaia::HandleMultilogin(const HttpRequest& request,
       FormatCookieForMultilogin("LSID",
                                 merge_session_params_.session_lsid_cookie) +
       "]}");
+  http_response->set_code(net::HTTP_OK);
+}
+
+void FakeGaia::HandleDummyRemoveLocalAccount(
+    const net::test_server::HttpRequest& request,
+    net::test_server::BasicHttpResponse* http_response) {
+  DCHECK(http_response);
+
+  std::string gaia_id;
+  GetQueryParameter(request.GetURL().query(), "gaia_id", &gaia_id);
+
+  if (!base::Erase(merge_session_params_.signed_out_gaia_ids, gaia_id)) {
+    http_response->set_code(net::HTTP_BAD_REQUEST);
+    return;
+  }
+
+  http_response->AddCustomHeader(
+      "Google-Accounts-RemoveLocalAccount",
+      base::StringPrintf("obfuscatedid=\"%s\"", gaia_id.c_str()));
+  http_response->set_content("");
   http_response->set_code(net::HTTP_OK);
 }
 
