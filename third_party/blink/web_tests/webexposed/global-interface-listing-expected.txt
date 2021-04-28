@@ -8139,7 +8139,7 @@ interface ScreenOrientation : EventTarget
     method lock
     method unlock
     setter onchange
-interface Screens
+interface Screens : EventTarget
     attribute @@toStringTag
     getter currentScreen
     getter onchange

@@ -53,6 +53,7 @@ class LocalFrame;
 class MediaControls;
 class Page;
 class PictureInPictureController;
+struct ScreenInfos;
 class Settings;
 class ShadowRoot;
 class WebLocalFrameClient;
@@ -125,7 +126,9 @@ class CORE_EXPORT CoreInitializer {
 
   virtual void DidChangeManifest(LocalFrame&) = 0;
   virtual void NotifyOrientationChanged(LocalFrame&) = 0;
-  virtual void NotifyScreensChanged(LocalFrame&) = 0;
+  // Called with an updated set of ScreenInfos for a local root frame
+  // during a visual property update.
+  virtual void NotifyScreensChanged(LocalFrame& frame, const ScreenInfos&) = 0;
 
  protected:
   // CoreInitializer is only instantiated by subclass ModulesInitializer.

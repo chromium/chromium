@@ -8,14 +8,14 @@
   Exposed=Window,
   SecureContext,
   RuntimeEnabled=WindowPlacement
-] interface Screens {
+] interface Screens : EventTarget {
   // The set of available screens with additional per-screen info.
   readonly attribute FrozenArray<ScreenAdvanced> screens;
 
   // Current screen reference; corresponds with window.screen.
   readonly attribute ScreenAdvanced currentScreen;
 
-  // Change event fired when `screens` or `currentScreen` changes.
+  // Change event fired when the set of screens changes,
   // NOTE: Does not fire on changes to attributes of individual Screens.
   [HighEntropy, Measure] attribute EventHandler onchange;
 };

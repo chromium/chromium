@@ -1495,7 +1495,8 @@ void WebFrameWidgetImpl::ApplyVisualPropertiesSizing(
 
   if (screen_infos_changed) {
     LocalFrame* frame = LocalRootImpl()->GetFrame();
-    CoreInitializer::GetInstance().NotifyScreensChanged(*frame);
+    CoreInitializer::GetInstance().NotifyScreensChanged(
+        *frame, visual_properties.screen_infos);
     // TODO(crbug.com/1182855): Propagate info and events to remote frames.
   }
 

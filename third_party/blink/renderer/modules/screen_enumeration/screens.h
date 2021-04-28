@@ -15,6 +15,7 @@ namespace blink {
 
 class LocalDOMWindow;
 class ScreenAdvanced;
+struct ScreenInfos;
 
 // Interface exposing multi-screen information.
 // https://github.com/webscreens/window-placement
@@ -40,7 +41,7 @@ class MODULES_EXPORT Screens final : public EventTargetWithInlineData,
   void Trace(Visitor*) const override;
 
   // Called when the underlying multi-screen information changes.
-  void ScreenInfosChanged();
+  void ScreenInfosChanged(LocalDOMWindow* window, const ScreenInfos& infos);
 
  private:
   HeapVector<Member<ScreenAdvanced>> screens_;

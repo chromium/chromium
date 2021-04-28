@@ -19,10 +19,7 @@ Screens::Screens(LocalDOMWindow* window)
     : ExecutionContextLifecycleObserver(window) {
   LocalFrame* frame = window->GetFrame();
   const auto& screen_infos = frame->GetChromeClient().GetScreenInfos(*frame);
-  for (const auto& screen_info : screen_infos.screen_infos) {
-    screens_.push_back(
-        MakeGarbageCollected<ScreenAdvanced>(window, screen_info.display_id));
-  }
+  ScreenInfosChanged(window, screen_infos);
 }
 
 const HeapVector<Member<ScreenAdvanced>>& Screens::screens() const {
@@ -32,6 +29,8 @@ const HeapVector<Member<ScreenAdvanced>>& Screens::screens() const {
 ScreenAdvanced* Screens::currentScreen() const {
   if (!DomWindow())
     return nullptr;
+
+  DCHECK(!screens_.IsEmpty());
 
   LocalFrame* frame = DomWindow()->GetFrame();
   const auto& current_info = frame->GetChromeClient().GetScreenInfo(*frame);
@@ -62,11 +61,40 @@ void Screens::Trace(Visitor* visitor) const {
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
-void Screens::ScreenInfosChanged() {
-  // TODO(crbug.com/879300): Add or remove `screens_` members as needed. Fire
-  // Screen.change instead of Screens.change for per-screen attribute changes.
-  // This should not fire an event if exposed information has not changed.
-  DispatchEvent(*Event::Create(event_type_names::kChange));
+void Screens::ScreenInfosChanged(LocalDOMWindow* window,
+                                 const ScreenInfos& infos) {
+  bool added_or_removed = false;
+
+  // O(displays) should be small, so O(n^2) check in both directions
+  // instead of keeping some more efficient cache of display ids.
+
+  // Check if any screens have been removed and remove them from screens_.
+  for (WTF::wtf_size_t i = 0; i < screens_.size();
+       /*conditionally incremented*/) {
+    if (base::Contains(infos.screen_infos, screens_[i]->DisplayId(),
+                       &ScreenInfo::display_id)) {
+      ++i;
+    } else {
+      screens_.EraseAt(i);
+      added_or_removed = true;
+      // Recheck this index.
+    }
+  }
+
+  // Check if any screens have been added, and append them to the end of
+  // screens_.
+  for (const auto& info : infos.screen_infos) {
+    if (!base::Contains(screens_, info.display_id,
+                        &ScreenAdvanced::DisplayId)) {
+      screens_.push_back(
+          MakeGarbageCollected<ScreenAdvanced>(window, info.display_id));
+      added_or_removed = true;
+    }
+  }
+
+  if (added_or_removed) {
+    DispatchEvent(*Event::Create(event_type_names::kChange));
+  }
 }
 
 }  // namespace blink
