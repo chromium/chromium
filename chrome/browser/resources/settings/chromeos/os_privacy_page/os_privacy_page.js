@@ -154,7 +154,14 @@ Polymer({
     dataAccessShiftTabPressed_: {
       type: Boolean,
       value: false,
-    }
+    },
+
+    /** @private */
+    shouldShowSubsections_: {
+      type: Boolean,
+      computed: 'computeShouldShowSubsections_(' +
+          'isAccountManagementFlowsV2Enabled_, isGuestMode_)',
+    },
   },
 
   /** @private {?settings.PeripheralDataAccessBrowserProxy} */
@@ -398,4 +405,13 @@ Polymer({
       });
     }
   },
+
+  /**
+   * @return {boolean} whether 'accounts' and 'lock screen' subsections should
+   * be shown.
+   * @private
+   */
+  computeShouldShowSubsections_() {
+    return this.isAccountManagementFlowsV2Enabled_ && !this.isGuestMode_;
+  }
 });
