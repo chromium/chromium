@@ -236,8 +236,8 @@ void AddLanguagesPageStringsV2(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_LANGUAGES_CHANGE_DEVICE_LANGUAGE_BUTTON_DESCRIPTION},
       {"languagesPreferenceTitle",
        IDS_OS_SETTINGS_LANGUAGES_LANGUAGES_PREFERENCE_TITLE},
-      {"languagesPreferenceDescription",
-       IDS_OS_SETTINGS_LANGUAGES_LANGUAGES_PREFERENCE_DESCRIPTION},
+      {"websiteLanguagesTitle",
+       IDS_OS_SETTINGS_LANGUAGES_WEBSITE_LANGUAGES_TITLE},
       {"translateTargetLabel",
        IDS_OS_SETTINGS_LANGUAGES_TRANSLATE_TARGET_LABEL},
       {"offerToTranslateThisLanguage",
@@ -269,6 +269,11 @@ void AddLanguagesPageStringsV2(content::WebUIDataSource* html_source) {
       "languagesPreferenceDescription",
       l10n_util::GetStringFUTF16(
           IDS_OS_SETTINGS_LANGUAGES_LANGUAGES_PREFERENCE_DESCRIPTION,
+          base::ASCIIToUTF16(chrome::kLanguageSettingsLearnMoreUrl)));
+  html_source->AddString(
+      "websiteLanguagesDescription",
+      l10n_util::GetStringFUTF16(
+          IDS_OS_SETTINGS_LANGUAGES_WEBSITE_LANGUAGES_DESCRIPTION,
           base::ASCIIToUTF16(chrome::kLanguageSettingsLearnMoreUrl)));
   html_source->AddString(
       "changeDeviceLanguageDialogDescription",

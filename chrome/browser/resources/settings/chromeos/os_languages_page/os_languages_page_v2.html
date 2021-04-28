@@ -113,10 +113,12 @@
       </div>
 
       <div class="hr bottom-margin">
-        <h2 aria-hidden="true">$i18n{languagesPreferenceTitle}</h2>
+        <h2 aria-hidden="true">
+          [[getLanguagePreferenceTitle_(languageSettingsV2Update2Enabled_)]]
+        </h2>
         <settings-localized-link class="cr-row first bottom-margin"
-            localized-string="[[i18nAdvanced(
-              'languagesPreferenceDescription')]]">
+            localized-string="[[getLanguagePreferenceDescription_(
+                languageSettingsV2Update2Enabled_)]]">
         </settings-localized-link>
         <div class="list-frame vertical-list" id="languagesList">
           <template is="dom-repeat" items="[[languages.enabled]]">

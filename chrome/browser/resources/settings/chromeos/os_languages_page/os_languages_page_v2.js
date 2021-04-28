@@ -363,6 +363,7 @@ Polymer({
 
   /**
    * @param {boolean} update2Enabled
+   * @return {string}
    * @private
    */
   getOfferTranslationLabel_(update2Enabled) {
@@ -372,10 +373,32 @@ Polymer({
 
   /**
    * @param {boolean} update2Enabled
+   * @return {string}
    * @private
    */
   getOfferTranslationSublabel_(update2Enabled) {
     return update2Enabled ? '' : this.i18n('offerTranslationSublabel');
+  },
+
+  /**
+   * @param {boolean} update2Enabled
+   * @return {string}
+   * @private
+   */
+  getLanguagePreferenceTitle_(update2Enabled) {
+    return this.i18n(
+        update2Enabled ? 'websiteLanguagesTitle' : 'languagesPreferenceTitle');
+  },
+
+  /**
+   * @param {boolean} update2Enabled
+   * @return {string}
+   * @private
+   */
+  getLanguagePreferenceDescription_(update2Enabled) {
+    return this.i18nAdvanced(
+        update2Enabled ? 'websiteLanguagesDescription' :
+                         'languagesPreferenceDescription');
   },
 
   /** @private */
