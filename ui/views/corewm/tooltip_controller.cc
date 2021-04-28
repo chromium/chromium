@@ -175,7 +175,9 @@ void TooltipController::SetTooltipsEnabled(bool enable) {
 }
 
 void TooltipController::OnKeyEvent(ui::KeyEvent* event) {
-  // Always hide a tooltip on a key event. Since this controller is a pre-target
+  if (event->type() != ui::ET_KEY_PRESSED)
+    return;
+  // Always hide a tooltip on a key press. Since this controller is a pre-target
   // handler (i.e. the events are received here before the target act on them),
   // hiding the tooltip will not cancel any action supposed to show it triggered
   // by a key press.
@@ -192,9 +194,6 @@ void TooltipController::OnMouseEvent(ui::MouseEvent* event) {
   switch (event->type()) {
     case ui::ET_MOUSE_CAPTURE_CHANGED:
     case ui::ET_MOUSE_EXITED:
-    // TODO(bebeaudr): Keyboard-triggered tooltips that show up right where the
-    // cursor currently is are hidden as soon as they show up because of this
-    // event. Handle this case differently to fix the issue.
     case ui::ET_MOUSE_MOVED:
     case ui::ET_MOUSE_DRAGGED: {
       last_mouse_loc_ = event->location();

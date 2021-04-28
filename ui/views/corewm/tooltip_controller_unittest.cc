@@ -539,6 +539,23 @@ TEST_F(TooltipControllerTest, TooltipHidesOnKeyPressAndStaysHiddenUntilChange) {
   EXPECT_EQ(window, helper_->GetTooltipParentWindow());
 }
 
+TEST_F(TooltipControllerTest, TooltipStaysVisibleOnKeyRelease) {
+  view_->set_tooltip_text(u"my tooltip");
+  EXPECT_EQ(std::u16string(), helper_->GetTooltipText());
+  EXPECT_EQ(nullptr, helper_->GetTooltipParentWindow());
+
+  generator_->MoveMouseRelativeTo(GetWindow(), view_->bounds().CenterPoint());
+  EXPECT_TRUE(helper_->IsTooltipVisible());
+
+  // This shouldn't hide the tooltip.
+  generator_->ReleaseKey(ui::VKEY_1, 0);
+  EXPECT_TRUE(helper_->IsTooltipVisible());
+
+  // This should hide the tooltip.
+  generator_->PressKey(ui::VKEY_1, 0);
+  EXPECT_FALSE(helper_->IsTooltipVisible());
+}
+
 TEST_F(TooltipControllerTest, TooltipHidesOnTimeoutAndStaysHiddenUntilChange) {
   view_->set_tooltip_text(u"Tooltip Text for view 1");
   EXPECT_EQ(std::u16string(), helper_->GetTooltipText());
