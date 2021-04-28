@@ -1034,8 +1034,6 @@
       'linux_chromium_asan_rel_ng': 'asan_lsan_release_trybot',
       # TODO(crbug.com/1200574): Remove after migration.
       'linux_chromium_asan_rel_ng_bionic': 'asan_lsan_release_trybot',
-      # TODO(crbug.com/1200904): Remove after migration
-      'linux_chromium_tsan_rel_ng_bionic': 'asan_lsan_release_trybot',
       'linux_chromium_cfi_rel_ng': 'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_goma',
       'linux_chromium_chromeos_asan_rel_ng': 'asan_lsan_chromeos_release_trybot',
       'linux_chromium_chromeos_msan_rel_ng': 'chromeos_msan_release_bot',
@@ -1052,6 +1050,8 @@
       'linux_chromium_msan_rel_ng': 'msan_release_bot',
 
       'linux_chromium_tsan_rel_ng': 'tsan_disable_nacl_release_trybot',
+      # TODO(crbug.com/1200904): Remove after migration
+      'linux_chromium_tsan_rel_ng_bionic': 'tsan_disable_nacl_release_trybot',
 
       # This is intentionally a release_bot and not a release_trybot to match
       # the CI configuration, where no debug builder exists.
