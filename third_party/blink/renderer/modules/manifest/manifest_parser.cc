@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/feature_list.h"
-#include "build/chromeos_buildflags.h"
 #include "net/base/mime_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/blink/public/common/features.h"
@@ -1288,18 +1287,10 @@ String ManifestParser::ParseGCMSenderID(const JSONObject* object) {
 
 mojom::blink::CaptureLinks ManifestParser::ParseCaptureLinks(
     const JSONObject* object) {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  bool origin_trial_enabled =
-      RuntimeEnabledFeatures::WebAppLinkCapturingEnabled(feature_context_);
-#else
-  bool origin_trial_enabled = false;
-  ALLOW_UNUSED_LOCAL(feature_context_);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-
   // Parse if either the command line flag is passed (for about:flags) or the
   // runtime enabled feature is turned on (for origin trial).
   if (!base::FeatureList::IsEnabled(features::kWebAppEnableLinkCapturing) &&
-      !origin_trial_enabled) {
+      !RuntimeEnabledFeatures::WebAppLinkCapturingEnabled(feature_context_)) {
     return mojom::blink::CaptureLinks::kUndefined;
   }
 
