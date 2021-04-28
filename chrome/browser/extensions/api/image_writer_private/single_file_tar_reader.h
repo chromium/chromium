@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_IMAGE_WRITER_PRIVATE_SINGLE_FILE_TAR_READER_H_
 #define CHROME_BROWSER_EXTENSIONS_API_IMAGE_WRITER_PRIVATE_SINGLE_FILE_TAR_READER_H_
 
-#include "base/gtest_prod_util.h"
+#include <stdint.h>
 
 #include <string>
 #include <vector>
+
+#include "base/gtest_prod_util.h"
 
 namespace extensions {
 namespace image_writer {
@@ -20,17 +22,23 @@ class SingleFileTarReaderTest;
 // multiple files is rejected as error.
 class SingleFileTarReader {
  public:
+  enum class Result { kSuccess, kFailure, kShouldWait };
+
   // An interface that delegates file I/O of SingleFileTarReader.
   class Delegate {
    public:
+    using Result = SingleFileTarReader::Result;
+
     virtual ~Delegate() = default;
 
-    // Reads input data and returns the number of bytes that is actually read.
-    // The input data will be written to |data|. |size| is the size of the
-    // |data| buffer. Usually the return value is same as |size|, but it can be
-    // smaller than |size| at the end of the file.
-    // Returns a negative number and sets |error_id| if it fails.
-    virtual int ReadTarFile(char* data, int size, std::string* error_id) = 0;
+    // Reads input data and returns kSuccess if it succeeds.
+    // The input data will be written to |data|. |*size| is initially the size
+    // of the |data| buffer. |*size| will be set to the amount actually read.
+    // Returns kShouldWait if the data is still not available.
+    // Returns kFailure and sets |error_id| if it fails.
+    virtual Result ReadTarFile(char* data,
+                               uint32_t* size,
+                               std::string* error_id) = 0;
 
     // Writes the passed data. |size| is the size of the |data| buffer.
     // Returns false and sets |error_id| if it fails.
@@ -46,8 +54,12 @@ class SingleFileTarReader {
 
   // Extracts a chunk of the tar file. To fully extract the file, the caller has
   // to repeatedly call this function until IsComplete() returns true.
-  // Returns false if it fails. error_id() identifies the reason of the error.
-  bool ExtractChunk();
+  // Returns kShouldWait if the input data is still not available. The caller
+  // has to call ExtractChunk() again when the data is ready. The detail depends
+  // on the implementation of the delegate.
+  // Returns kFailure if it fails. error_id() identifies the reason of the
+  // error.
+  Result ExtractChunk();
 
   bool IsComplete() const;
 

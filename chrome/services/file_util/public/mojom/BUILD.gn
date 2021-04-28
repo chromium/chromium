@@ -4,15 +4,17 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
+import("//chrome/services/file_util/public/features.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [ "file_util_service.mojom" ]
+  enabled_features = []
 
   if (safe_browsing_mode == 1) {
     sources += [ "safe_archive_analyzer.mojom" ]
-    enabled_features = [ "full_safe_browsing" ]
+    enabled_features += [ "full_safe_browsing" ]
   }
 
   public_deps = [ "//mojo/public/mojom/base" ]
@@ -20,6 +22,11 @@ mojom("mojom") {
   if (is_chromeos_ash) {
     sources += [ "zip_file_creator.mojom" ]
     public_deps += [ "//components/services/filesystem/public/mojom" ]
+  }
+
+  if (enable_xz_extractor) {
+    sources += [ "xz_file_extractor.mojom" ]
+    enabled_features += [ "xz_extractor" ]
   }
 
   cpp_typemaps = [

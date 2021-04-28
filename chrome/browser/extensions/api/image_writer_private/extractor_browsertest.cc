@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,12 @@
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
-#include "base/test/task_environment.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
 #include "chrome/browser/extensions/api/image_writer_private/extraction_properties.h"
-#include "chrome/browser/extensions/api/image_writer_private/tar_extractor.h"
 #include "chrome/browser/extensions/api/image_writer_private/test_utils.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#include "chrome/browser/extensions/api/image_writer_private/xz_extractor.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/test/browser_test.h"
 
 namespace extensions {
 namespace image_writer {
@@ -25,12 +25,12 @@ using ::testing::NiceMock;
 using ::testing::SaveArg;
 using ::testing::StrictMock;
 
-class ExtractorTest : public testing::Test {
+class ExtractorBrowserTest : public InProcessBrowserTest {
  protected:
-  ExtractorTest() = default;
-  ~ExtractorTest() override = default;
+  ExtractorBrowserTest() = default;
+  ~ExtractorBrowserTest() override = default;
 
-  void SetUp() override {
+  void SetUpOnMainThread() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
     properties_.temp_dir_path = temp_dir_.GetPath();
@@ -52,21 +52,21 @@ class ExtractorTest : public testing::Test {
 
   ExtractionProperties properties_;
   base::ScopedTempDir temp_dir_;
-
-  base::test::TaskEnvironment task_environment_;
 };
 
-TEST_F(ExtractorTest, ExtractTar) {
+IN_PROC_BROWSER_TEST_F(ExtractorBrowserTest, ExtractTarXz) {
+  base::ThreadRestrictions::SetIOAllowed(true);
+
   base::FilePath test_data_dir;
   ASSERT_TRUE(GetTestDataDirectory(&test_data_dir));
-  properties_.image_path = test_data_dir.AppendASCII("test.tar");
+  properties_.image_path = test_data_dir.AppendASCII("test.tar.xz");
 
   base::FilePath out_path;
   base::RunLoop run_loop;
   EXPECT_CALL(open_callback_, Run(_)).WillOnce(SaveArg<0>(&out_path));
   EXPECT_CALL(complete_callback_, Run())
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-  TarExtractor::Extract(std::move(properties_));
+  XzExtractor::Extract(std::move(properties_));
   run_loop.Run();
 
   std::string contents;
@@ -74,38 +74,19 @@ TEST_F(ExtractorTest, ExtractTar) {
   EXPECT_EQ("foo\n", contents);
 }
 
-TEST_F(ExtractorTest, ExtractTarLargerThanChunk) {
+IN_PROC_BROWSER_TEST_F(ExtractorBrowserTest, ExtractNonExistentTarXz) {
+  base::ThreadRestrictions::SetIOAllowed(true);
+
   base::FilePath test_data_dir;
   ASSERT_TRUE(GetTestDataDirectory(&test_data_dir));
-  properties_.image_path = test_data_dir.AppendASCII("test_large.tar");
-
-  base::FilePath out_path;
-  base::RunLoop run_loop;
-  EXPECT_CALL(open_callback_, Run(_)).WillOnce(SaveArg<0>(&out_path));
-  EXPECT_CALL(complete_callback_, Run())
-      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-  TarExtractor::Extract(std::move(properties_));
-  run_loop.Run();
-
-  std::string contents;
-  ASSERT_TRUE(base::ReadFileToString(out_path, &contents));
-  // Larger than the buffer of SingleFileTarReader.
-  EXPECT_EQ(10u * 1024u, contents.size());
-}
-
-TEST_F(ExtractorTest, ExtractNonExistentTar) {
-  base::FilePath test_data_dir;
-  ASSERT_TRUE(GetTestDataDirectory(&test_data_dir));
-  properties_.image_path = test_data_dir.AppendASCII("non_existent.tar");
+  properties_.image_path = test_data_dir.AppendASCII("non_existent.tar.xz");
 
   base::RunLoop run_loop;
   EXPECT_CALL(failure_callback_, Run(error::kUnzipGenericError))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-  TarExtractor::Extract(std::move(properties_));
+  XzExtractor::Extract(std::move(properties_));
   run_loop.Run();
 }
-
-// TODO(tetsui): Add a test of passing a non-tar file to TarExtractor.
 
 }  // namespace image_writer
 }  // namespace extensions

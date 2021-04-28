@@ -2,8 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
+import("//chrome/services/file_util/public/features.gni")
 import("//components/safe_browsing/buildflags.gni")
 
 source_set("file_util") {
@@ -13,12 +15,11 @@ source_set("file_util") {
   ]
 
   deps = [
+    ":buildflags",
     "//base",
     "//build:chromeos_buildflags",
-    "//chrome/common/safe_browsing",
-    "//chrome/common/safe_browsing:archive_analyzer_results",
-    "//chrome/common/safe_browsing:rar_analyzer",
     "//components/safe_browsing:buildflags",
+    "//extensions/buildflags:buildflags",
     "//mojo/public/cpp/bindings",
   ]
 
@@ -46,5 +47,41 @@ source_set("file_util") {
       "safe_archive_analyzer.cc",
       "safe_archive_analyzer.h",
     ]
+    deps += [
+      "//chrome/common/safe_browsing",
+      "//chrome/common/safe_browsing:archive_analyzer_results",
+      "//chrome/common/safe_browsing:rar_analyzer",
+    ]
   }
+
+  if (enable_xz_extractor) {
+    sources += [
+      "xz_file_extractor.cc",
+      "xz_file_extractor.h",
+    ]
+    deps += [
+      "//third_party/lzma_sdk:lzma_sdk",
+      "//third_party/lzma_sdk:lzma_sdk_xz",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  if (enable_xz_extractor) {
+    sources = [ "xz_file_extractor_unittest.cc" ]
+
+    deps = [
+      ":file_util",
+      "//base/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+}
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "ENABLE_XZ_EXTRACTOR=$enable_xz_extractor" ]
 }

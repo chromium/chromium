@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_IMAGE_WRITER_PRIVATE_EXTRACTION_PROPERTIES_H_
 #define CHROME_BROWSER_EXTENSIONS_API_IMAGE_WRITER_PRIVATE_EXTRACTION_PROPERTIES_H_
 
+#include <stdint.h>
+
+#include <string>
+
 #include "base/callback.h"
 #include "base/files/file_path.h"
 
@@ -16,13 +20,18 @@ struct ExtractionProperties {
   ExtractionProperties(ExtractionProperties&&);
   ~ExtractionProperties();
 
+  using OpenCallback = base::OnceCallback<void(const base::FilePath&)>;
+  using CompleteCallback = base::OnceClosure;
+  using FailureCallback = base::OnceCallback<void(const std::string&)>;
+  using ProgressCallback = base::RepeatingCallback<void(int64_t, int64_t)>;
+
   base::FilePath image_path;
   base::FilePath temp_dir_path;
 
-  base::OnceCallback<void(const base::FilePath&)> open_callback;
-  base::OnceClosure complete_callback;
-  base::OnceCallback<void(const std::string&)> failure_callback;
-  base::RepeatingCallback<void(int64_t, int64_t)> progress_callback;
+  OpenCallback open_callback;
+  CompleteCallback complete_callback;
+  FailureCallback failure_callback;
+  ProgressCallback progress_callback;
 };
 
 }  // namespace image_writer

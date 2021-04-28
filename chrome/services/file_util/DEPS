@@ -2,5 +2,7 @@ include_rules = [
   "+components/services/filesystem",
   "+chrome/utility/safe_browsing",
   "+components/safe_browsing",
+  "+extensions/buildflags",
+  "+third_party/lzma_sdk",
   "+third_party/zlib/google",
 ]

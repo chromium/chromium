@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/api/image_writer_private/tar_extractor.h"
 
+#include <utility>
+
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
 
@@ -33,12 +35,16 @@ TarExtractor::TarExtractor(ExtractionProperties properties)
 
 TarExtractor::~TarExtractor() = default;
 
-int TarExtractor::ReadTarFile(char* data, int size, std::string* error_id) {
-  const int bytes_read = infile_.ReadAtCurrentPos(data, size);
+SingleFileTarReader::Result TarExtractor::ReadTarFile(char* data,
+                                                      uint32_t* size,
+                                                      std::string* error_id) {
+  const int bytes_read = infile_.ReadAtCurrentPos(data, *size);
   if (bytes_read < 0) {
     *error_id = error::kUnzipGenericError;
+    return SingleFileTarReader::Result::kFailure;
   }
-  return bytes_read;
+  *size = bytes_read;
+  return SingleFileTarReader::Result::kSuccess;
 }
 
 bool TarExtractor::WriteContents(const char* data,
@@ -76,7 +82,7 @@ void TarExtractor::ExtractImpl() {
 }
 
 void TarExtractor::ExtractChunk() {
-  if (!tar_reader_.ExtractChunk()) {
+  if (tar_reader_.ExtractChunk() != SingleFileTarReader::Result::kSuccess) {
     std::move(properties_.failure_callback).Run(tar_reader_.error_id());
     delete this;
     return;

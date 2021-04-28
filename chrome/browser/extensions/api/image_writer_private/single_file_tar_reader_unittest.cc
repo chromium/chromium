@@ -4,6 +4,9 @@
 
 #include "chrome/browser/extensions/api/image_writer_private/single_file_tar_reader.h"
 
+#include <memory>
+#include <vector>
+
 #include "base/files/file_util.h"
 #include "chrome/browser/extensions/api/image_writer_private/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,8 +30,16 @@ class SingleFileTarReaderTest : public testing::Test,
   }
 
   // SingleFileTarReader::Delegate:
-  int ReadTarFile(char* data, int size, std::string* error_id) override {
-    return infile_->ReadAtCurrentPos(data, size);
+  SingleFileTarReader::Result ReadTarFile(char* data,
+                                          uint32_t* size,
+                                          std::string* error_id) override {
+    int bytes_read = infile_->ReadAtCurrentPos(data, *size);
+    if (bytes_read < 0) {
+      return SingleFileTarReader::Result::kFailure;
+    }
+
+    *size = bytes_read;
+    return SingleFileTarReader::Result::kSuccess;
   }
 
   bool WriteContents(const char* data,
@@ -54,7 +65,7 @@ TEST_F(SingleFileTarReaderTest, ExtractTarFile) {
   ASSERT_TRUE(OpenTarFile(test_data_dir.AppendASCII("test.tar")));
 
   while (!reader().IsComplete()) {
-    EXPECT_TRUE(reader().ExtractChunk());
+    EXPECT_EQ(SingleFileTarReader::Result::kSuccess, reader().ExtractChunk());
   }
 
   EXPECT_EQ(4u, reader().total_bytes());

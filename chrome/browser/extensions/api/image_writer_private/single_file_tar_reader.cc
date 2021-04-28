@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/image_writer_private/single_file_tar_reader.h"
 
+#include <algorithm>
 #include <string>
 
 #include "base/check.h"
@@ -21,11 +22,12 @@ SingleFileTarReader::SingleFileTarReader(Delegate* delegate)
 
 SingleFileTarReader::~SingleFileTarReader() = default;
 
-bool SingleFileTarReader::ExtractChunk() {
-  int bytes_read =
-      delegate_->ReadTarFile(buffer_.data(), buffer_.size(), &error_id_);
-  if (bytes_read < 0) {
-    return false;
+SingleFileTarReader::Result SingleFileTarReader::ExtractChunk() {
+  uint32_t bytes_read = buffer_.size();
+  Result result =
+      delegate_->ReadTarFile(buffer_.data(), &bytes_read, &error_id_);
+  if (result != Result::kSuccess) {
+    return result;
   }
 
   int offset = 0;
@@ -34,7 +36,7 @@ bool SingleFileTarReader::ExtractChunk() {
   if (total_bytes_ == 0) {
     if (bytes_read < 512) {
       error_id_ = error::kUnzipInvalidArchive;
-      return false;
+      return Result::kFailure;
     }
 
     // TODO(tetsui): check the file header checksum
@@ -53,13 +55,13 @@ bool SingleFileTarReader::ExtractChunk() {
       std::min<uint64_t>(total_bytes_ - curr_bytes_, bytes_read - offset);
   if (!delegate_->WriteContents(buffer_.data() + offset, bytes_written,
                                 &error_id_)) {
-    return false;
+    return Result::kFailure;
   }
   curr_bytes_ += bytes_written;
 
   // TODO(tetsui): check it's the end of the file
 
-  return true;
+  return Result::kSuccess;
 }
 
 bool SingleFileTarReader::IsComplete() const {
