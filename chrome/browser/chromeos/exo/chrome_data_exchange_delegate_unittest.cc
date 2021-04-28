@@ -436,7 +436,7 @@ TEST_F(ChromeDataExchangeDelegateTest, HasUrlsInPickle) {
   EXPECT_EQ(true, data_exchange_delegate.HasUrlsInPickle(valid));
 }
 
-TEST_F(ChromeDataExchangeDelegateTest, ClipboardFilenamesPickle) {
+TEST_F(ChromeDataExchangeDelegateTest, ParseFileSystemSources) {
   ChromeDataExchangeDelegate data_exchange_delegate;
   base::FilePath shared_path = myfiles_dir_.Append("shared");
   auto* guest_os_share_path =
@@ -459,33 +459,19 @@ TEST_F(ChromeDataExchangeDelegateTest, ClipboardFilenamesPickle) {
       "Downloads-test%2540example.com-hash/shared/file2",
       base::UTF16ToUTF8(m[u"fs/sources"]));
 
-  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-  {
-    auto files_app = std::make_unique<ui::DataTransferEndpoint>(
-        file_manager::util::GetFilesAppOrigin());
-    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste,
-                                     std::move(files_app));
-    writer.WritePickledData(pickle,
-                            ui::ClipboardFormatType::GetWebCustomDataType());
-  }
-
+  ui::DataTransferEndpoint files_app(url::Origin::Create(
+      GURL("chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj")));
   std::vector<ui::FileInfo> file_info =
-      data_exchange_delegate.ParseClipboardFilenamesPickle(
-          ui::EndpointType::kDefault, *clipboard);
+      data_exchange_delegate.ParseFileSystemSources(&files_app, pickle);
   EXPECT_EQ(2, file_info.size());
   EXPECT_EQ(shared_path.Append("file1"), file_info[0].path);
   EXPECT_EQ(shared_path.Append("file2"), file_info[1].path);
   EXPECT_EQ(base::FilePath(), file_info[0].display_name);
   EXPECT_EQ(base::FilePath(), file_info[1].display_name);
 
-  // Should return empty if data_src is not FilesApp.
-  {
-    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
-    writer.WritePickledData(pickle,
-                            ui::ClipboardFormatType::GetWebCustomDataType());
-  }
-  file_info = data_exchange_delegate.ParseClipboardFilenamesPickle(
-      ui::EndpointType::kDefault, *clipboard);
+  // Should return empty if source is not FilesApp.
+  ui::DataTransferEndpoint crostini(ui::EndpointType::kCrostini);
+  file_info = data_exchange_delegate.ParseFileSystemSources(&crostini, pickle);
   EXPECT_TRUE(file_info.empty());
 }
 

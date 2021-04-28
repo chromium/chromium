@@ -240,20 +240,28 @@ void DataOffer::SetDropData(DataExchangeDelegate* data_exchange_delegate,
       data_exchange_delegate->GetDataTransferEndpointType(target);
   const std::string uri_list_mime_type =
       data_exchange_delegate->GetMimeTypeForUriList(endpoint_type);
-  if (data.HasFile()) {
-    std::vector<ui::FileInfo> files;
-    if (data.GetFilenames(&files)) {
-      data_callbacks_.emplace(
-          uri_list_mime_type,
-          base::BindOnce(&DataExchangeDelegate::SendFileInfo,
-                         base::Unretained(data_exchange_delegate),
-                         endpoint_type, std::move(files)));
-      delegate_->OnOffer(uri_list_mime_type);
-      return;
-    }
+  // We accept the filenames pickle from FilesApp, or
+  // OSExchangeData::GetFilenames().
+  std::vector<ui::FileInfo> filenames;
+  base::Pickle pickle;
+  if (data.GetPickledData(ui::ClipboardFormatType::GetWebCustomDataType(),
+                          &pickle)) {
+    filenames = data_exchange_delegate->ParseFileSystemSources(data.GetSource(),
+                                                               pickle);
+  }
+  if (filenames.empty() && data.HasFile()) {
+    data.GetFilenames(&filenames);
+  }
+  if (!filenames.empty()) {
+    data_callbacks_.emplace(
+        uri_list_mime_type,
+        base::BindOnce(&DataExchangeDelegate::SendFileInfo,
+                       base::Unretained(data_exchange_delegate), endpoint_type,
+                       std::move(filenames)));
+    delegate_->OnOffer(uri_list_mime_type);
+    return;
   }
 
-  base::Pickle pickle;
   if (data.GetPickledData(GetClipboardFormatType(), &pickle) &&
       data_exchange_delegate->HasUrlsInPickle(pickle)) {
     data_callbacks_.emplace(
@@ -365,9 +373,15 @@ void DataOffer::SetClipboardData(DataExchangeDelegate* data_exchange_delegate,
   }
 
   // We accept the filenames pickle from FilesApp, or text/uri-list from apps.
-  std::vector<ui::FileInfo> filenames =
-      data_exchange_delegate->ParseClipboardFilenamesPickle(endpoint_type,
-                                                            data);
+  std::vector<ui::FileInfo> filenames;
+  std::string buf;
+  data.ReadData(ui::ClipboardFormatType::GetWebCustomDataType(), &data_dst,
+                &buf);
+  if (!buf.empty()) {
+    base::Pickle pickle(buf.data(), static_cast<int>(buf.size()));
+    filenames = data_exchange_delegate->ParseFileSystemSources(
+        data.GetSource(ui::ClipboardBuffer::kCopyPaste), pickle);
+  }
   if (filenames.empty() &&
       data.IsFormatAvailable(ui::ClipboardFormatType::GetFilenamesType(),
                              ui::ClipboardBuffer::kCopyPaste, &data_dst)) {

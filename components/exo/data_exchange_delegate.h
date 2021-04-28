@@ -21,7 +21,7 @@ class RefCountedMemory;
 }  // namespace base
 
 namespace ui {
-class Clipboard;
+class DataTransferEndpoint;
 struct FileInfo;
 enum class EndpointType;
 }  // namespace ui
@@ -75,11 +75,11 @@ class DataExchangeDelegate {
       ui::EndpointType source,
       const std::vector<uint8_t>& data) const = 0;
 
-  // Reads clipboard custom data pickle for fs/sources with newline-separated
-  // filesystem URLs to send to |target| endpoint.
-  virtual std::vector<ui::FileInfo> ParseClipboardFilenamesPickle(
-      const ui::EndpointType target,
-      const ui::Clipboard& data) const = 0;
+  // Reads pickle for FilesApp fs/sources with newline-separated filesystem
+  // URLs. Validates that |source| is FilesApp.
+  virtual std::vector<ui::FileInfo> ParseFileSystemSources(
+      const ui::DataTransferEndpoint* source,
+      const base::Pickle& pickle) const = 0;
 };
 
 }  // namespace exo

@@ -396,24 +396,20 @@ base::Pickle ChromeDataExchangeDelegate::CreateClipboardFilenamesPickle(
   return pickle;
 }
 
-std::vector<ui::FileInfo>
-ChromeDataExchangeDelegate::ParseClipboardFilenamesPickle(
-    ui::EndpointType target,
-    const ui::Clipboard& data) const {
+std::vector<ui::FileInfo> ChromeDataExchangeDelegate::ParseFileSystemSources(
+    const ui::DataTransferEndpoint* source,
+    const base::Pickle& pickle) const {
   std::vector<ui::FileInfo> file_info;
   // We only promote 'fs/sources' custom data pickle to be filenames which can
   // be shared and read by clients if it came from the trusted FilesApp.
-  const ui::DataTransferEndpoint* data_src =
-      data.GetSource(ui::ClipboardBuffer::kCopyPaste);
-  if (!data_src || !data_src->IsSameOriginWith(ui::DataTransferEndpoint(
-                       file_manager::util::GetFilesAppOrigin()))) {
+  if (!source || !source->IsSameOriginWith(ui::DataTransferEndpoint(
+                     file_manager::util::GetFilesAppOrigin()))) {
     return file_info;
   }
 
-  const ui::DataTransferEndpoint data_dst(target);
   std::u16string file_system_url_list;
-  data.ReadCustomData(ui::ClipboardBuffer::kCopyPaste, kFilesAppMimeSources,
-                      &data_dst, &file_system_url_list);
+  ui::ReadCustomDataForType(pickle.data(), pickle.size(), kFilesAppMimeSources,
+                            &file_system_url_list);
   if (file_system_url_list.empty())
     return file_info;
 
