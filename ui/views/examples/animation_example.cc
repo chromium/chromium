@@ -6,142 +6,40 @@
 
 #include <algorithm>
 #include <memory>
-#include <numeric>
 
-#include "base/check.h"
-#include "base/containers/circular_deque.h"
-#include "base/numerics/ranges.h"
-#include "base/scoped_observation.h"
-#include "base/time/time.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/gfx/animation/animation.h"
-#include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/views/background.h"
+#include "ui/views/layout/animating_layout_manager.h"
+#include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/view.h"
-#include "ui/views/view_observer.h"
 
 namespace views {
 namespace examples {
-namespace {
-
-class Animation : public gfx::Animation {
- public:
-  Animation(gfx::AnimationDelegate* delegate,
-            gfx::Point current_position,
-            gfx::Point target_position);
-  Animation(const Animation&) = delete;
-  Animation& operator=(const Animation&) = delete;
-  ~Animation() override = default;
-
-  // gfx::Animation:
-  double GetCurrentValue() const override;
-
-  gfx::Vector2dF GetOffsetFromCurrentAnimationStart() const;
-  void NewAnimationStarted();
-
- protected:
-  bool ShouldSendCanceledFromStop() override;
-  void Step(base::TimeTicks time_now) override;
-
- private:
-  gfx::Vector2dF delta_;
-  double t_ = 0;
-  base::TimeDelta total_time_ = base::TimeDelta::FromSeconds(1);
-  bool decelerating_ = false;
-};
-
-Animation::Animation(gfx::AnimationDelegate* delegate,
-                     gfx::Point current_position,
-                     gfx::Point target_position)
-    : gfx::Animation(base::TimeDelta::FromHz(60)),
-      delta_(target_position - current_position) {
-  set_delegate(delegate);
-  Start();
-}
-
-double Animation::GetCurrentValue() const {
-  return decelerating_ ? (t_ * (1 - t_)) : t_;
-}
-
-gfx::Vector2dF Animation::GetOffsetFromCurrentAnimationStart() const {
-  return ScaleVector2d(delta_, GetCurrentValue());
-}
-
-void Animation::NewAnimationStarted() {
-  Stop();
-  delta_ -= GetOffsetFromCurrentAnimationStart();
-  t_ = 0;
-  total_time_ -= base::TimeTicks::Now() - start_time();
-  decelerating_ = true;
-  Start();
-}
-
-bool Animation::ShouldSendCanceledFromStop() {
-  return t_ != 1;
-}
-
-void Animation::Step(base::TimeTicks time_now) {
-  const base::TimeDelta elapsed_time =
-      std::min(time_now - start_time(), total_time_);
-  t_ = gfx::Tween::CalculateValue(gfx::Tween::EASE_OUT,
-                                  elapsed_time / total_time_);
-  delegate()->AnimationProgressed(this);
-  if (t_ == 1)
-    Stop();
-}
-
-}  // namespace
 
 AnimationExample::AnimationExample() : ExampleBase("Animation") {}
 
 AnimationExample::~AnimationExample() = default;
 
-class AnimatingSquare : public View,
-                        public gfx::AnimationDelegate,
-                        public ViewObserver {
+class AnimatingSquare : public View {
  public:
-  AnimatingSquare(size_t index, View* parent);
+  explicit AnimatingSquare(size_t index);
   AnimatingSquare(const AnimatingSquare&) = delete;
   AnimatingSquare& operator=(const AnimatingSquare&) = delete;
   ~AnimatingSquare() override = default;
-
-  // gfx::AnimationDelegate:
-  void AnimationProgressed(const gfx::Animation* animation) override;
-  void AnimationEnded(const gfx::Animation* animation) override;
-
-  // ViewObserver:
-  void OnViewBoundsChanged(View* observed_view) override;
-
- private:
-  gfx::Point ComputeTargetPosition(const View* parent) const;
-
-  static constexpr int kPadding = 25;
-  static constexpr gfx::Size kSize = gfx::Size(100, 100);
-
-  size_t index_;
-  base::ScopedObservation<View, ViewObserver> view_observation_{this};
-  gfx::Point start_position_, target_position_;
-  base::circular_deque<std::unique_ptr<Animation>> animations_;
 };
 
-// static
-constexpr gfx::Size AnimatingSquare::kSize;
-
-AnimatingSquare::AnimatingSquare(size_t index, View* parent)
-    : index_(index), target_position_(ComputeTargetPosition(parent)) {
+AnimatingSquare::AnimatingSquare(size_t index) {
   SetBackground(
-      CreateSolidBackground(SkColorSetRGB((5 - index_) * 51, 0, index_ * 51)));
-  view_observation_.Observe(parent);
-  SetBoundsRect({target_position_, kSize});
+      CreateSolidBackground(SkColorSetRGB((5 - index) * 51, 0, index * 51)));
 
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
+
   auto opacity_sequence = std::make_unique<ui::LayerAnimationSequence>();
   opacity_sequence->set_is_repeating(true);
   opacity_sequence->AddElement(ui::LayerAnimationElement::CreateOpacityElement(
@@ -151,45 +49,67 @@ AnimatingSquare::AnimatingSquare(size_t index, View* parent)
   layer()->GetAnimator()->StartAnimation(opacity_sequence.release());
 }
 
-void AnimatingSquare::OnViewBoundsChanged(View* observed_view) {
-  const gfx::Point target_position = ComputeTargetPosition(observed_view);
-  if (target_position_ == target_position)
-    return;
-  start_position_ = origin();
-  target_position_ = target_position;
-  for (const auto& animation : animations_)
-    animation->NewAnimationStarted();
-  animations_.push_back(
-      std::make_unique<Animation>(this, start_position_, target_position_));
-}
+class SquaresLayoutManager : public LayoutManagerBase {
+ public:
+  SquaresLayoutManager() = default;
+  ~SquaresLayoutManager() override = default;
 
-void AnimatingSquare::AnimationProgressed(const gfx::Animation* animation) {
-  gfx::PointF position(start_position_);
-  position = std::accumulate(
-      animations_.cbegin(), animations_.cend(), position,
-      [](gfx::PointF p, const std::unique_ptr<Animation>& animation) {
-        return p + animation->GetOffsetFromCurrentAnimationStart();
-      });
-  SetPosition(gfx::ToRoundedPoint(position));
-}
+ protected:
+  // LayoutManagerBase:
+  ProposedLayout CalculateProposedLayout(
+      const SizeBounds& size_bounds) const override;
 
-void AnimatingSquare::AnimationEnded(const gfx::Animation* animation) {
-  DCHECK_EQ(animation, animations_.front().get());
-  animations_.pop_front();
-}
+ private:
+  static constexpr int kPadding = 25;
+  static constexpr gfx::Size kSize = gfx::Size(100, 100);
+};
 
-gfx::Point AnimatingSquare::ComputeTargetPosition(const View* parent) const {
-  const int views_per_row = base::ClampToRange(
-      (parent->width() - kPadding) / (kPadding + kSize.width()), 1, 5);
-  const size_t row = index_ / views_per_row;
-  const size_t column = index_ % views_per_row;
-  return {kPadding + column * (kPadding + kSize.width()),
-          kPadding + row * (kPadding + kSize.height())};
+// static
+constexpr gfx::Size SquaresLayoutManager::kSize;
+
+ProposedLayout SquaresLayoutManager::CalculateProposedLayout(
+    const SizeBounds& size_bounds) const {
+  ProposedLayout layout;
+
+  const auto& children = host_view()->children();
+  const int item_width = kSize.width() + kPadding;
+  const int item_height = kSize.height() + kPadding;
+  const int max_width = kPadding + (children.size() * item_width);
+  const int bounds_width =
+      std::max(kPadding + item_width, size_bounds.width().min_of(max_width));
+  const int views_per_row = (bounds_width - kPadding) / item_width;
+
+  for (size_t i = 0; i < children.size(); ++i) {
+    const size_t row = i / views_per_row;
+    const size_t column = i % views_per_row;
+    const gfx::Point origin(kPadding + column * item_width,
+                            kPadding + row * item_height);
+    layout.child_layouts.push_back(
+        {children[i], true, gfx::Rect(origin, kSize), SizeBounds(kSize)});
+  }
+
+  const size_t num_rows = (children.size() + views_per_row - 1) / views_per_row;
+  const int max_height = kPadding + (num_rows * item_height);
+  const int bounds_height =
+      std::max(kPadding + item_height, size_bounds.height().min_of(max_height));
+  layout.host_size = {bounds_width, bounds_height};
+  return layout;
 }
 
 void AnimationExample::CreateExampleView(View* container) {
+  container->SetBackground(CreateSolidBackground(SK_ColorWHITE));
+  container->SetPaintToLayer();
+  container->layer()->SetMasksToBounds(true);
+  container->layer()->SetFillsBoundsOpaquely(true);
+
+  container->SetLayoutManager(std::make_unique<AnimatingLayoutManager>())
+      ->SetBoundsAnimationMode(
+          AnimatingLayoutManager::BoundsAnimationMode::kAnimateBothAxes)
+      .SetAnimationDuration(base::TimeDelta::FromSeconds(1))
+      .SetTweenType(gfx::Tween::EASE_IN_OUT)
+      .SetTargetLayoutManager(std::make_unique<SquaresLayoutManager>());
   for (size_t i = 0; i < 5; ++i)
-    container->AddChildView(std::make_unique<AnimatingSquare>(i, container));
+    container->AddChildView(std::make_unique<AnimatingSquare>(i));
 }
 
 }  // namespace examples
