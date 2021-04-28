@@ -51,32 +51,9 @@ void SaveAddressProfilePromptController::DisplayPrompt() {
 }
 
 std::u16string SaveAddressProfilePromptController::GetAddress() {
-  const std::string locale = g_browser_process->GetApplicationLocale();
-  const AutofillType kCountryCode(HTML_TYPE_COUNTRY_CODE, HTML_MODE_NONE);
-  const std::u16string& country_code = profile_.GetInfo(kCountryCode, locale);
-
-  std::vector<std::vector<::i18n::addressinput::AddressUiComponent>> components;
-  autofill::GetAddressComponents(base::UTF16ToUTF8(country_code), locale,
-                                 /*include_literals=*/false, &components,
-                                 nullptr);
-
-  std::vector<std::u16string> address_lines;
-  for (const std::vector<::i18n::addressinput::AddressUiComponent>& line :
-       components) {
-    std::vector<std::u16string> line_components;
-    for (const ::i18n::addressinput::AddressUiComponent& component : line) {
-      std::u16string component_str = profile_.GetInfo(
-          autofill::AddressFieldToServerFieldType(component.field), locale);
-      if (!component_str.empty())
-        line_components.push_back(component_str);
-    }
-    if (!line_components.empty())
-      address_lines.push_back(base::JoinString(line_components, u" "));
-  }
-  std::u16string country = profile_.GetInfo(ADDRESS_HOME_COUNTRY, locale);
-  if (!country.empty())
-    address_lines.push_back(country);
-  return base::JoinString(address_lines, u"\n");
+  return GetEnvelopeStyleAddress(profile_,
+                                 g_browser_process->GetApplicationLocale(),
+                                 /*include_country=*/true);
 }
 
 std::u16string SaveAddressProfilePromptController::GetEmail() {

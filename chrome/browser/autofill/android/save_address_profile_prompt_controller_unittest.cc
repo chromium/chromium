@@ -148,7 +148,7 @@ TEST_F(SaveAddressProfilePromptControllerTest,
 
 TEST_F(SaveAddressProfilePromptControllerTest, ShouldReturnProfileData) {
   EXPECT_EQ(
-      u"John H. Doe\nUnderworld\n666 Erebus St.\nApt 8\nElysium CA "
+      u"John H. Doe\nUnderworld\n666 Erebus St.\nApt 8\nElysium, CA "
       u"91111\nUnited States",
       controller_->GetAddress());
   EXPECT_EQ(u"johndoe@hades.com", controller_->GetEmail());
