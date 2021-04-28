@@ -820,6 +820,7 @@ class BuildConfigGenerator extends DefaultTask {
         for (ChromiumDepGraph.LicenseSpec license : dependency.licenses) {
             // Replace license names with ones that are whitelisted, see third_party/PRESUBMIT.py
             switch (license.name) {
+                case "The Apache License, Version 2.0":
                 case "The Apache Software License, Version 2.0":
                     licenseStrings.add("Apache Version 2.0")
                     break
