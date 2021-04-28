@@ -492,6 +492,7 @@ if (is_win || is_mac) {
       ":lib",
       ":updater_test_sources",
       "//base",
+      "//base/test:test_support",
       "//url",
     ]
   }

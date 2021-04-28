@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <map>
 #include <string>
+#include <utility>
 
 #include "base/at_exit.h"
+#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -12,6 +15,7 @@
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -25,15 +29,109 @@ namespace updater {
 namespace test {
 namespace {
 
-constexpr char kAppId[] = "app_id";
 constexpr int kSuccess = 0;
 constexpr int kUnknownSwitch = 101;
-constexpr int kMissingAppIdSwitch = 102;
-constexpr int kMissingUrlSwitch = 103;
-constexpr int kMissingExitCodeSwitch = 104;
-constexpr int kBadExitCodeSwitch = 105;
-constexpr int kMissingPathSwitch = 106;
-constexpr int kMissingVersionParameter = 107;
+constexpr int kBadCommand = 102;
+
+template <typename... Args>
+base::RepeatingCallback<bool(Args...)> WithSwitch(
+    const std::string& flag,
+    base::RepeatingCallback<bool(const std::string&, Args...)> callback) {
+  return base::BindLambdaForTesting([=](Args... args) {
+    const base::CommandLine* command_line =
+        base::CommandLine::ForCurrentProcess();
+    if (command_line->HasSwitch(flag)) {
+      return callback.Run(command_line->GetSwitchValueASCII(flag),
+                          std::move(args)...);
+    }
+    LOG(ERROR) << "Missing switch: " << flag;
+    return false;
+  });
+}
+
+// Overload for int switches.
+template <typename... Args>
+base::RepeatingCallback<bool(Args...)> WithSwitch(
+    const std::string& flag,
+    base::RepeatingCallback<bool(int, Args...)> callback) {
+  return WithSwitch(
+      flag,
+      base::BindLambdaForTesting([=](const std::string& flag, Args... args) {
+        int flag_int = -1;
+        if (base::StringToInt(flag, &flag_int)) {
+          return callback.Run(flag_int, std::move(args)...);
+        }
+        return false;
+      }));
+}
+
+// Overload for GURL switches.
+template <typename... Args>
+base::RepeatingCallback<bool(Args...)> WithSwitch(
+    const std::string& flag,
+    base::RepeatingCallback<bool(const GURL&, Args...)> callback) {
+  return WithSwitch(
+      flag,
+      base::BindLambdaForTesting([=](const std::string& flag, Args... args) {
+        return callback.Run(GURL(flag), std::move(args)...);
+      }));
+}
+
+// Overload for FilePath switches.
+template <typename... Args>
+base::RepeatingCallback<bool(Args...)> WithSwitch(
+    const std::string& flag,
+    base::RepeatingCallback<bool(const base::FilePath&, Args...)> callback) {
+  return WithSwitch(
+      flag,
+      base::BindLambdaForTesting([=](const std::string& flag, Args... args) {
+        return callback.Run(base::FilePath::FromUTF8Unsafe(flag),
+                            std::move(args)...);
+      }));
+}
+
+template <typename Arg, typename... RemainingArgs>
+base::RepeatingCallback<bool(RemainingArgs...)> WithArg(
+    Arg arg,
+    base::RepeatingCallback<bool(Arg, RemainingArgs...)> callback) {
+  return base::BindRepeating(callback, arg);
+}
+
+// Adapts the input callback to take a shutdown callback as the final parameter.
+template <typename... Args>
+base::RepeatingCallback<bool(Args..., base::OnceCallback<void(int)>)>
+WithShutdown(base::RepeatingCallback<int(Args...)> callback) {
+  return base::BindLambdaForTesting(
+      [=](Args... args, base::OnceCallback<void(int)> shutdown) {
+        std::move(shutdown).Run(callback.Run(args...));
+        return true;
+      });
+}
+
+// Short-named wrapper around BindOnce.
+template <typename... Args, typename... ProvidedArgs>
+base::RepeatingCallback<bool(Args..., base::OnceCallback<void(int)>)> Wrap(
+    int (*func)(Args...),
+    ProvidedArgs... provided_args) {
+  return WithShutdown(base::BindRepeating(func, provided_args...));
+}
+
+// Overload of Wrap for functions that return void. (Returns kSuccess.)
+template <typename... Args>
+base::RepeatingCallback<bool(Args..., base::OnceCallback<void(int)>)> Wrap(
+    void (*func)(Args...)) {
+  return WithShutdown(base::BindLambdaForTesting([=](Args... args) {
+    func(args...);
+    return kSuccess;
+  }));
+}
+
+// Helper to shorten lines below.
+template <typename... Args>
+base::RepeatingCallback<bool(Args...)> WithSystemScope(
+    base::RepeatingCallback<bool(UpdaterScope, Args...)> callback) {
+  return WithArg(UpdaterScope::kSystem, callback);
+}
 
 class AppTestHelper : public App {
  private:
@@ -43,145 +141,58 @@ class AppTestHelper : public App {
 };
 
 void AppTestHelper::FirstTaskRun() {
-  base::ScopedAllowBlockingForTesting allow_blocking;
+  std::map<std::string,
+           base::RepeatingCallback<bool(base::OnceCallback<void(int)>)>>
+      commands = {
+        // To add additional commands, first Wrap a pointer to the target
+        // function (which should be declared in integration_tests_impl.h), and
+        // then use the With* helper functions to provide its arguments.
+        {"clean", WithSystemScope(Wrap(&Clean))},
+        {"copy_log", WithSwitch("path", Wrap(&CopyLog))},
+        {"enter_test_mode", WithSwitch("url", Wrap(&EnterTestMode))},
+        {"expect_active_updater", WithSystemScope(Wrap(&ExpectActiveUpdater))},
+        {"expect_app_unregistered_existence_checker_path",
+         WithSwitch("app_id",
+                    Wrap(&ExpectAppUnregisteredExistenceCheckerPath))},
+        {"expect_candidate_uninstalled",
+         WithSystemScope(Wrap(&ExpectCandidateUninstalled))},
+        {"expect_clean", WithSystemScope(Wrap(&ExpectClean))},
+        {"expect_installed", WithSystemScope(Wrap(&ExpectInstalled))},
+        {"expect_version_active",
+         WithSwitch("version", Wrap(&ExpectVersionActive))},
+        {"expect_version_not_active",
+         WithSwitch("version", Wrap(&ExpectVersionNotActive))},
+        {"install", WithSystemScope(Wrap(&Install))},
+        {"print_log", WithSystemScope(Wrap(&PrintLog))},
+        {"run_wake", WithSwitch("exit_code", WithSystemScope(Wrap(&RunWake)))},
+#if defined(OS_MAC)
+        {"register_app", WithSwitch("app_id", Wrap(&RegisterApp))},
+        {"register_test_app", WithSystemScope(Wrap(&RegisterTestApp))},
+#endif  // defined(OS_MAC)
+        {"set_fake_existence_checker_path",
+         WithSwitch("app_id", Wrap(&SetFakeExistenceCheckerPath))},
+        {"setup_fake_updater_higher_version",
+         WithSystemScope(Wrap(&SetupFakeUpdaterHigherVersion))},
+        {"setup_fake_updater_lower_version",
+         WithSystemScope(Wrap(&SetupFakeUpdaterLowerVersion))},
+        {"uninstall", WithSystemScope(Wrap(&Uninstall))},
+      };
+
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
-  scoped_refptr<base::SequencedTaskRunner> task_runner =
-      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
-
-  if (command_line->HasSwitch("clean")) {
-    task_runner->PostTaskAndReply(
-        FROM_HERE, base::BindOnce(&Clean, UpdaterScope::kSystem),
-        base::BindOnce(&AppTestHelper::Shutdown, this, kSuccess));
-  } else if (command_line->HasSwitch("expect_clean")) {
-    ExpectClean(UpdaterScope::kSystem);
-    Shutdown(kSuccess);
-  } else if (command_line->HasSwitch("install")) {
-    task_runner->PostTaskAndReply(
-        FROM_HERE, base::BindOnce(&Install, UpdaterScope::kSystem),
-        base::BindOnce(&AppTestHelper::Shutdown, this, kSuccess));
-  } else if (command_line->HasSwitch("expect_installed")) {
-    task_runner->PostTaskAndReply(
-        FROM_HERE, base::BindOnce(&ExpectInstalled, UpdaterScope::kSystem),
-        base::BindOnce(&AppTestHelper::Shutdown, this, kSuccess));
-  } else if (command_line->HasSwitch("uninstall")) {
-    task_runner->PostTaskAndReply(
-        FROM_HERE, base::BindOnce(&Uninstall, UpdaterScope::kSystem),
-        base::BindOnce(&AppTestHelper::Shutdown, this, kSuccess));
-  } else if (command_line->HasSwitch("expect_candidate_uninstalled")) {
-    task_runner->PostTaskAndReply(
-        FROM_HERE,
-        base::BindOnce(&ExpectCandidateUninstalled, UpdaterScope::kSystem),
-        base::BindOnce(&AppTestHelper::Shutdown, this, kSuccess));
-  } else if (command_line->HasSwitch("enter_test_mode")) {
-    if (command_line->HasSwitch("url")) {
-      GURL url(command_line->GetSwitchValueASCII("url"));
-      EnterTestMode(url);
-      Shutdown(kSuccess);
-    } else {
-      Shutdown(kMissingUrlSwitch);
-    }
-  } else if (command_line->HasSwitch("expect_active_updater")) {
-    task_runner->PostTaskAndReply(
-        FROM_HERE, base::BindOnce(&ExpectActiveUpdater, UpdaterScope::kSystem),
-        base::BindOnce(&AppTestHelper::Shutdown, this, kSuccess));
-  } else if (command_line->HasSwitch("expect_version_active")) {
-    if (command_line->HasSwitch("version")) {
-      task_runner->PostTaskAndReply(
-          FROM_HERE,
-          base::BindOnce(&ExpectVersionActive,
-                         command_line->GetSwitchValueASCII("version")),
-          base::BindOnce(&AppTestHelper::Shutdown, this, kSuccess));
-    } else {
-      Shutdown(kMissingVersionParameter);
-    }
-  } else if (command_line->HasSwitch("expect_version_not_active")) {
-    if (command_line->HasSwitch("version")) {
-      task_runner->PostTaskAndReply(
-          FROM_HERE,
-          base::BindOnce(&ExpectVersionNotActive,
-                         command_line->GetSwitchValueASCII("version")),
-          base::BindOnce(&AppTestHelper::Shutdown, this, kSuccess));
-    } else {
-      Shutdown(kMissingVersionParameter);
-    }
-  } else if (command_line->HasSwitch("run_wake")) {
-    if (command_line->HasSwitch("exit_code")) {
-      int exit_code = -1;
-      if (base::StringToInt(command_line->GetSwitchValueASCII("exit_code"),
-                            &exit_code)) {
-        task_runner->PostTaskAndReply(
-            FROM_HERE,
-            base::BindOnce(&RunWake, UpdaterScope::kSystem, exit_code),
-            base::BindOnce(&AppTestHelper::Shutdown, this, kSuccess));
-      } else {
-        Shutdown(kBadExitCodeSwitch);
+  for (const auto& entry : commands) {
+    if (command_line->HasSwitch(entry.first)) {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      if (!entry.second.Run(base::BindOnce(&AppTestHelper::Shutdown, this))) {
+        Shutdown(kBadCommand);
       }
-    } else {
-      Shutdown(kMissingExitCodeSwitch);
-    }
-  } else if (command_line->HasSwitch("setup_fake_updater_higher_version")) {
-    SetupFakeUpdaterHigherVersion(UpdaterScope::kSystem);
-    Shutdown(kSuccess);
-  } else if (command_line->HasSwitch("setup_fake_updater_lower_version")) {
-    SetupFakeUpdaterLowerVersion(UpdaterScope::kSystem);
-    Shutdown(kSuccess);
-  } else if (command_line->HasSwitch("set_fake_existence_checker_path")) {
-    if (command_line->HasSwitch(kAppId)) {
-      SetFakeExistenceCheckerPath(command_line->GetSwitchValueASCII(kAppId));
-      Shutdown(kSuccess);
-    } else {
-      Shutdown(kMissingAppIdSwitch);
-    }
-  } else if (command_line->HasSwitch(
-                 "expect_app_unregistered_existence_checker_path")) {
-    if (command_line->HasSwitch(kAppId)) {
-      ExpectAppUnregisteredExistenceCheckerPath(
-          command_line->GetSwitchValueASCII(kAppId));
-      Shutdown(kSuccess);
-    } else {
-      Shutdown(kMissingAppIdSwitch);
-    }
-  } else if (command_line->HasSwitch("print_log")) {
-    task_runner->PostTaskAndReply(
-        FROM_HERE, base::BindOnce(&PrintLog, UpdaterScope::kSystem),
-        base::BindOnce(&AppTestHelper::Shutdown, this, kSuccess));
-  } else if (command_line->HasSwitch("copy_log")) {
-    if (command_line->HasSwitch("path")) {
-      const std::string path_string = command_line->GetSwitchValueASCII("path");
-      base::FilePath path;
-#if defined(OS_WIN)
-      base::FilePath::StringType str;
-      path = base::UTF8ToWide(path_string.c_str(), path_string.size(), &str)
-                 ? base::FilePath(str)
-                 : base::FilePath();
-#else
-      path = base::FilePath(path_string);
-#endif  // OS_WIN
-      CopyLog(path);
-      Shutdown(kSuccess);
-    } else {
-      Shutdown(kMissingPathSwitch);
+      return;
     }
   }
-#if defined(OS_MAC)
-  else if (command_line->HasSwitch("register_app")) {
-    if (command_line->HasSwitch(kAppId)) {
-      RegisterApp(command_line->GetSwitchValueASCII(kAppId));
-      Shutdown(kSuccess);
-    } else {
-      Shutdown(kMissingAppIdSwitch);
-    }
-  } else if (command_line->HasSwitch("register_test_app")) {
-    RegisterTestApp(UpdaterScope::kSystem);
-    Shutdown(kSuccess);
-  }
-#endif
-  else {
-    VLOG(0) << "No supported switch provided. Command: "
-            << command_line->GetCommandLineString();
-    Shutdown(kUnknownSwitch);
-  }
+
+  LOG(ERROR) << "No supported switch provided. Command: "
+             << command_line->GetCommandLineString();
+  Shutdown(kUnknownSwitch);
 }
 
 void AppTestHelper::InitializeThreadPool() {
