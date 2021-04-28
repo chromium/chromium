@@ -4,7 +4,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/infobars/mock_infobar_service.h"
+#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -30,7 +30,7 @@ class PermissionPromptAndroidTest : public ChromeRenderViewHostTestHarness {
 
     NavigateAndCommit(GURL("http://example.com"));
 
-    MockInfoBarService::CreateForWebContents(web_contents());
+    InfoBarService::CreateForWebContents(web_contents());
 
     permissions::PermissionRequestManager::CreateForWebContents(web_contents());
     permission_request_manager_ =
