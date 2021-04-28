@@ -28,6 +28,9 @@ namespace crosapi {
 // system keystores. This class is affine to the UI thread.
 class KeystoreServiceAsh : public mojom::KeystoreService {
  public:
+  using KeystoreType = mojom::KeystoreType;
+  using SigningScheme = mojom::KeystoreSigningScheme;
+
   KeystoreServiceAsh();
   KeystoreServiceAsh(const KeystoreServiceAsh&) = delete;
   KeystoreServiceAsh& operator=(const KeystoreServiceAsh&) = delete;
@@ -36,8 +39,6 @@ class KeystoreServiceAsh : public mojom::KeystoreService {
   void BindReceiver(mojo::PendingReceiver<mojom::KeystoreService> receiver);
 
   // mojom::KeystoreService:
-  using KeystoreType = mojom::KeystoreType;
-  using SigningScheme = mojom::KeystoreSigningScheme;
   void ChallengeAttestationOnlyKeystore(
       const std::string& challenge,
       mojom::KeystoreType type,
@@ -67,31 +68,30 @@ class KeystoreServiceAsh : public mojom::KeystoreService {
                      ExtensionSignCallback callback) override;
 
  private:
-  static void OnGetTokens(
-      GetKeyStoresCallback callback,
-      std::unique_ptr<std::vector<chromeos::platform_keys::TokenId>>
-          platform_keys_token_ids,
-      chromeos::platform_keys::Status status);
-  static void OnGetCertificates(GetCertificatesCallback callback,
-                                std::unique_ptr<net::CertificateList> certs,
-                                chromeos::platform_keys::Status status);
-  static void OnImportCertificate(AddCertificateCallback callback,
-                                  chromeos::platform_keys::Status status);
-  static void OnRemoveCertificate(RemoveCertificateCallback callback,
-                                  chromeos::platform_keys::Status status);
-  static void OnExtensionGenerateKey(ExtensionGenerateKeyCallback callback,
-                                     const std::string& public_key,
-                                     chromeos::platform_keys::Status status);
-  static void OnDidExtensionSign(ExtensionSignCallback callback,
-                                 const std::string& signature,
-                                 chromeos::platform_keys::Status status);
-
   // |challenge| is used as a opaque identifier to match against the unique_ptr
   // in outstanding_challenges_. It should not be dereferenced.
   void DidChallengeAttestationOnlyKeystore(
       ChallengeAttestationOnlyKeystoreCallback callback,
       void* challenge,
       const ash::attestation::TpmChallengeKeyResult& result);
+  static void DidGetKeyStores(
+      GetKeyStoresCallback callback,
+      std::unique_ptr<std::vector<chromeos::platform_keys::TokenId>>
+          platform_keys_token_ids,
+      chromeos::platform_keys::Status status);
+  static void DidGetCertificates(GetCertificatesCallback callback,
+                                 std::unique_ptr<net::CertificateList> certs,
+                                 chromeos::platform_keys::Status status);
+  static void DidImportCertificate(AddCertificateCallback callback,
+                                   chromeos::platform_keys::Status status);
+  static void DidRemoveCertificate(RemoveCertificateCallback callback,
+                                   chromeos::platform_keys::Status status);
+  static void DidExtensionGenerateKey(ExtensionGenerateKeyCallback callback,
+                                      const std::string& public_key,
+                                      chromeos::platform_keys::Status status);
+  static void DidExtensionSign(ExtensionSignCallback callback,
+                               const std::string& signature,
+                               chromeos::platform_keys::Status status);
 
   // Container to keep outstanding challenges alive.
   std::vector<std::unique_ptr<ash::attestation::TpmChallengeKey>>
