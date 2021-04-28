@@ -48,8 +48,18 @@ enum class SandboxType {
   // Renderer or worker process. Most common case.
   kRenderer,
 
-  // Utility processes. Used by most isolated services.
+  // Utility processes. Used by most isolated services.  Consider using
+  // kService for Chromium-code that makes limited use of OS APIs.
   kUtility,
+
+#if defined(OS_MAC)
+  // On Mac these are identical.
+  kService = kUtility,
+#else
+  // Services with limited use of OS APIs. Tighter than kUtility and
+  // suitable for most isolated mojo service endpoints.
+  kService,
+#endif
 
   // GPU process.
   kGpu,
@@ -94,11 +104,6 @@ enum class SandboxType {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   // Indicates that a process is a zygote and will get a real sandbox later.
   kZygoteIntermediateSandbox,
-#endif
-
-#if !defined(OS_MAC)
-  // Hosts WebRTC for Sharing Service, uses kUtility on OS_MAC.
-  kSharingService,
 #endif
 
   // The speech recognition service process.

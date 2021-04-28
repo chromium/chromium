@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "sandbox/policy/linux/bpf_sharing_service_policy_linux.h"
+#include "sandbox/policy/linux/bpf_service_policy_linux.h"
 
 #include <errno.h>
 
@@ -20,7 +20,7 @@ using sandbox::bpf_dsl::ResultExpr;
 namespace sandbox {
 namespace policy {
 
-ResultExpr SharingServiceProcessPolicy::EvaluateSyscall(int sysno) const {
+ResultExpr ServiceProcessPolicy::EvaluateSyscall(int sysno) const {
   switch (sysno) {
     case __NR_ioctl:
       return RestrictIoctl();

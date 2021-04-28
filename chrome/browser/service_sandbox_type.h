@@ -162,7 +162,7 @@ class Sharing;
 template <>
 inline sandbox::policy::SandboxType
 content::GetServiceSandboxType<sharing::mojom::Sharing>() {
-  return sandbox::policy::SandboxType::kSharingService;
+  return sandbox::policy::SandboxType::kService;
 }
 #endif  // !defined(OS_MAC)
 
