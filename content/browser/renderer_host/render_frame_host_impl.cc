@@ -4317,6 +4317,9 @@ void RenderFrameHostImpl::PrepareForInnerWebContentsAttach(
 // happen even if `this` RenderFrameHostImpl has not pushed any NetworkService
 // factories to the renderer process (DevTools is agnostic to this).
 void RenderFrameHostImpl::UpdateSubresourceLoaderFactories() {
+  // Disregard this if frame is being destroyed.
+  if (!frame_)
+    return;
   NavigationRequest* latest_nav_request_still_committing =
       FindLatestNavigationRequestThatIsStillCommitting();
   mojo::PendingRemote<network::mojom::URLLoaderFactory> default_factory_remote;
