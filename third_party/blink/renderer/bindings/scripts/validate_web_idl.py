@@ -21,9 +21,15 @@ def parse_options():
     parser.add_option("--idl_syntax_known_issues",
                       type="string",
                       help="filepath of the idl errors already known")
+    parser.add_option("--output",
+                      type="string",
+                      help="filepath of the file for the purpose of timestamp")
     options, args = parser.parse_args()
 
-    required_option_names = ["web_idl_database", "idl_syntax_known_issues"]
+    required_option_names = [
+        "web_idl_database",
+        "idl_syntax_known_issues",
+    ]
     for required_option_name in required_option_names:
         if getattr(options, required_option_name) is None:
             parser.error("--{} is a required option.".format(opt_name))
@@ -95,6 +101,22 @@ def main():
     # Report errors
     if error_counts[0] - skipped_error_counts[0] > 0:
         sys.exit("Error: Some IDL files violate the Web IDL rules")
+
+    # Create a file for the purpose of timestamp of a successful completion.
+    if options.output:
+        with open(options.output, mode="w") as file_obj:
+            file_obj.write("""\
+# This file was created just for the purpose of timestamp of a successful
+# completion, mainly in order to corporate with a build system.
+
+
+""")
+            file_obj.write("Command line arguments:\n")
+            file_obj.write("  --web_idl_database = {}\n".format(
+                options.web_idl_database))
+            file_obj.write("  --idl_syntax_known_issues = {}\n".format(
+                options.idl_syntax_known_issues))
+            file_obj.write("Results:\n  No new error\n")
 
 
 if __name__ == '__main__':

@@ -244,6 +244,45 @@ generate_bindings("generate_bindings_all") {
       generated_union_sources_for_testing_in_core
 }
 
+action_with_pydeps("validate_web_idl") {
+  script = "${bindings_scripts_dir}/validate_web_idl.py"
+
+  web_idl_database_outputs = get_target_outputs(":web_idl_database")
+  web_idl_database = web_idl_database_outputs[0]
+  idl_syntax_known_issues = "idl_syntax_known_issues.txt"
+  validate_web_idl_result =
+      "${bindings_output_dir}/validate_web_idl_results.txt"
+
+  inputs = [
+    web_idl_database,
+    idl_syntax_known_issues,
+  ]
+  outputs = [ validate_web_idl_result ]
+
+  args = [
+    "--web_idl_database",
+    rebase_path(web_idl_database, root_build_dir),
+    "--idl_syntax_known_issues",
+    rebase_path(idl_syntax_known_issues, root_build_dir),
+    "--output",
+    rebase_path(validate_web_idl_result, root_build_dir),
+  ]
+
+  deps = [
+    # A lot of C++ compile tasks are waiting for the completion of the
+    # bindings generator because most Blink C++ source files directly or
+    # indirectly depend on the generated bindings files.  Since we'd like
+    # `generate_bindings_all` to use the most CPU power and memory so that
+    # it unblocks Blink C++ compile tasks as soon as possible, we do not like
+    # `validate_web_idl` running in parallel to `generate_bindings_all`.
+    #
+    # This trick (unnecessary dependency to `generate_bindings_all`) makes
+    # `validate_web_idl` wait for the completion of `generate_bindings_all`.
+    ":generate_bindings_all",
+    ":web_idl_database",
+  ]
+}
+
 # Exposes the libraries that affect the resulting blob image of the V8 context
 # snapshot.
 group("v8_context_snapshot_influential_libs") {
