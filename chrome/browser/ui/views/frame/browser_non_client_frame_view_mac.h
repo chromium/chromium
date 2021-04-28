@@ -63,12 +63,27 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView {
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewMacTest,
                            GetCenteredTitleBounds);
+  FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewMacTest,
+                           GetWebAppFrameToolbarAvailableBounds);
+  FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewMacTest,
+                           GetCaptionButtonPlaceholderBounds);
 
   static gfx::Rect GetCenteredTitleBounds(int frame_width,
                                           int frame_height,
                                           int left_inset_x,
                                           int right_inset_x,
                                           int title_width);
+
+  static gfx::Rect GetWebAppFrameToolbarAvailableBounds(
+      bool is_rtl,
+      const gfx::Size& frame,
+      int y,
+      int caption_button_container_width);
+  static gfx::Rect GetCaptionButtonPlaceholderBounds(bool is_rtl,
+                                                     const gfx::Size& frame,
+                                                     int y,
+                                                     int width,
+                                                     int extra_padding);
 
   void PaintThemedFrame(gfx::Canvas* canvas);
 

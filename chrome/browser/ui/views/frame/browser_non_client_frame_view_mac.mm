@@ -36,10 +36,10 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/theme_provider.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/scoped_canvas.h"
 
 namespace {
 
+constexpr int kFrameExtraPaddingForWindowControlsOverlay = 10;
 constexpr int kFramePaddingLeft = 75;
 // Keep in sync with web_app_frame_toolbar_browsertest.cc
 constexpr double kTitlePaddingWidthFraction = 0.1;
@@ -467,38 +467,73 @@ void BrowserNonClientFrameViewMac::LayoutTitleBarForWebApp() {
       window_title_->CalculatePreferredSize().width()));
 }
 
+gfx::Rect BrowserNonClientFrameViewMac::GetWebAppFrameToolbarAvailableBounds(
+    bool is_rtl,
+    const gfx::Size& frame,
+    int y,
+    int caption_button_container_width) {
+  if (is_rtl) {
+    return gfx::Rect(0, 0, frame.width() - caption_button_container_width,
+                     frame.height());
+  } else {
+    return gfx::Rect(caption_button_container_width, 0,
+                     frame.width() - caption_button_container_width,
+                     frame.height());
+  }
+}
+
+gfx::Rect BrowserNonClientFrameViewMac::GetCaptionButtonPlaceholderBounds(
+    bool is_rtl,
+    const gfx::Size& frame,
+    int y,
+    int width,
+    int extra_padding) {
+  if (is_rtl)
+    return gfx::Rect(frame.width() - width, y, width, frame.height());
+  else {
+    // Add extra width to caption_button_placeholder_container_overlay_ so the
+    // maximize button does not look like it is touching the border of the
+    // overlay and there is padding between the two.
+    return gfx::Rect(0, y, width + extra_padding, frame.height());
+  }
+}
+
 void BrowserNonClientFrameViewMac::LayoutWindowControlsOverlay() {
-  // Add extra width to caption_button_placeholder_container_overlay_ so the
-  // maximize button does not look like it is touching the border of the overlay
-  // and there is padding between the two.
-  int caption_button_placeholder_container_overlay_width =
-      kFramePaddingLeft + 10;
+  const bool is_rtl = CaptionButtonsOnLeadingEdge() && base::i18n::IsRTL();
+  const gfx::Size frame(width(), GetTopInset(false));
+  gfx::Rect caption_button_container_bounds = GetCaptionButtonPlaceholderBounds(
+      is_rtl, frame, 0, kFramePaddingLeft,
+      kFrameExtraPaddingForWindowControlsOverlay);
+  gfx::Rect web_app_frame_toolbar_available_bounds =
+      GetWebAppFrameToolbarAvailableBounds(
+          is_rtl, frame, 0, caption_button_container_bounds.width());
 
   // Layout CaptionButtonDummyContainerMac which would have the traffic lights.
-  auto caption_button_placeholder_container_overlay_bounds =
-      gfx::Rect(0, 0, caption_button_placeholder_container_overlay_width,
-                GetTopInset(false));
   caption_button_placeholder_container_->LayoutForWindowControlsOverlay(
-      caption_button_placeholder_container_overlay_bounds);
+      caption_button_container_bounds);
 
   // Layout WebAppFrameToolbarView.
-  const int web_app_toolbar_width =
-      web_app_frame_toolbar()->GetPreferredSize().width();
-  const int web_app_toolbar_x = width() - web_app_toolbar_width;
-  auto available_space = gfx::Rect(web_app_toolbar_x, 0, web_app_toolbar_width,
-                                   GetTopInset(false));
-
-  web_app_frame_toolbar()->LayoutForWindowControlsOverlay(available_space);
+  web_app_frame_toolbar()->LayoutForWindowControlsOverlay(
+      web_app_frame_toolbar_available_bounds);
 
   content::WebContents* web_contents = browser_view()->GetActiveWebContents();
   // WebContents can be null when an app window is first launched.
   if (web_contents) {
-    int overlay_width =
-        width() - (caption_button_placeholder_container_overlay_width +
-                   web_app_toolbar_width);
-    auto bounding_rect =
-        gfx::Rect(caption_button_placeholder_container_overlay_width, 0,
-                  overlay_width, GetTopInset(false));
+    const int overlay_width =
+        width() - (caption_button_placeholder_container_->size().width() +
+                   web_app_frame_toolbar()->size().width());
+    gfx::Rect bounding_rect;
+
+    if (CaptionButtonsOnLeadingEdge() && base::i18n::IsRTL()) {
+      bounding_rect =
+          gfx::Rect(caption_button_placeholder_container_->size().width() +
+                        web_app_frame_toolbar()->size().width(),
+                    0, overlay_width, GetTopInset(false));
+    } else {
+      bounding_rect = GetMirroredRect(
+          gfx::Rect(caption_button_placeholder_container_->size().width(), 0,
+                    overlay_width, GetTopInset(false)));
+    }
     web_contents->UpdateWindowControlsOverlay(bounding_rect);
   }
 }
