@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/strings/string_piece.h"
 #include "components/url_pattern_index/flat/url_pattern_index_generated.h"
 #include "components/url_pattern_index/url_pattern.h"
 #include "components/url_pattern_index/url_pattern_index.h"
@@ -37,7 +38,7 @@ proto::UrlRule MakeProtoRule(proto::RuleSemantics semantics,
   rule.set_anchor_left(url_pattern.anchor_left());
   rule.set_anchor_right(url_pattern.anchor_right());
   rule.set_match_case(url_pattern.match_case());
-  rule.set_url_pattern(url_pattern.url_pattern().as_string());
+  rule.set_url_pattern(std::string(url_pattern.url_pattern()));
 
   testing::AddDomains(domains, &rule);
 

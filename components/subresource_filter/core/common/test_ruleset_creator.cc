@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/subresource_filter/core/common/indexed_ruleset.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
@@ -155,7 +156,7 @@ void TestRulesetCreator::CreateRulesetToDisallowURLsWithManySuffixes(
   std::vector<proto::UrlRule> rules;
   for (int i = 0; i < num_of_suffixes; ++i) {
     std::string current_suffix =
-        suffix.as_string() + '_' + base::NumberToString(i);
+        std::string(suffix) + '_' + base::NumberToString(i);
     rules.push_back(CreateSuffixRule(current_suffix));
   }
   CreateRulesetWithRules(rules, test_ruleset_pair);

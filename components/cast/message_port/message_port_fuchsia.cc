@@ -7,6 +7,7 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/strings/string_piece.h"
 #include "fuchsia/base/mem_buffer_util.h"
 #include "fuchsia/fidl/chromium/cast/cpp/fidl.h"
 
@@ -242,8 +243,7 @@ fuchsia::web::WebMessage MessagePortFuchsia::CreateWebMessage(
     base::StringPiece message,
     std::vector<std::unique_ptr<MessagePort>> ports) {
   fuchsia::web::WebMessage message_fidl;
-  message_fidl.set_data(cr_fuchsia::MemBufferFromString(message.as_string(),
-                                                        message.as_string()));
+  message_fidl.set_data(cr_fuchsia::MemBufferFromString(message, message));
   if (!ports.empty()) {
     PortType expected_port_type = FromMessagePort(ports[0].get())->port_type_;
     std::vector<fuchsia::web::IncomingTransferable> incoming_transferables;

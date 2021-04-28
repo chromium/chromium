@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/strings/string_piece.h"
 #include "components/browsing_data/content/appcache_helper.h"
 #include "components/browsing_data/content/cache_storage_helper.h"
 #include "components/browsing_data/content/canonical_cookie_hash.h"
@@ -217,7 +218,7 @@ size_t LocalSharedObjectsContainer::GetDomainCount() const {
     if (!domain.empty())
       domains.insert(std::move(domain));
     else
-      domains.insert(host.as_string());
+      domains.insert(std::string(host));
   }
   return domains.size();
 }

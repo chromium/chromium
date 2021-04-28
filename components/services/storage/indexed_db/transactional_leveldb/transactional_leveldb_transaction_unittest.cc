@@ -637,13 +637,13 @@ TEST_P(LevelDBTransactionRangeTest, RemoveRangeIteratorRetainsKey) {
 
   ASSERT_TRUE(it->IsValid());
   EXPECT_EQ(Compare(key_in_range2_, it->Key()), 0)
-      << key_in_range2_ << " != " << it->Key().as_string();
+      << key_in_range2_ << " != " << it->Key();
 
   status = it->Next();
   EXPECT_TRUE(status.ok());
   ASSERT_TRUE(it->IsValid());
   EXPECT_EQ(Compare(key_after_range_, it->Key()), 0)
-      << key_after_range_ << " != " << it->Key().as_string();
+      << key_after_range_ << " != " << it->Key();
 
   status = transaction_->Commit(/*sync_on_commit=*/false);
   EXPECT_TRUE(status.ok());

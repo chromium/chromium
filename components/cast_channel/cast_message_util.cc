@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -548,8 +549,7 @@ CastMessage CreateSetVolumeRequest(const base::Value& body,
                                    const std::string& source_id) {
   DCHECK(body.FindKeyOfType("type", Value::Type::STRING) &&
          body.FindKeyOfType("type", Value::Type::STRING)->GetString() ==
-             (EnumToString<V2MessageType, V2MessageType::kSetVolume>())
-                 .as_string());
+             (EnumToString<V2MessageType, V2MessageType::kSetVolume>()));
   Value dict = body.Clone();
   dict.RemoveKey("sessionId");
   dict.SetKey("requestId", Value(request_id));

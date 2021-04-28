@@ -150,7 +150,7 @@ bool ParseEventConfig(const base::StringPiece& definition,
       }
       has_name = true;
 
-      event_config->name = value.as_string();
+      event_config->name = std::string(value);
     } else if (base::LowerCaseEqualsASCII(key, kEventConfigDataComparatorKey)) {
       if (has_comparator) {
         *event_config = EventConfig();
@@ -202,7 +202,7 @@ bool ParseEventConfig(const base::StringPiece& definition,
 bool IsKnownFeature(const base::StringPiece& feature_name,
                     const FeatureVector& features) {
   for (const auto* feature : features) {
-    if (feature->name == feature_name.as_string())
+    if (feature->name == feature_name)
       return true;
   }
   return false;
@@ -254,7 +254,7 @@ bool ParseSessionRateImpact(const base::StringPiece& definition,
               FAILURE_SESSION_RATE_IMPACT_UNKNOWN_FEATURE);
       continue;
     }
-    affected_features.push_back(feature_name.as_string());
+    affected_features.push_back(std::string(feature_name));
   }
 
   if (affected_features.empty())

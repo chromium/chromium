@@ -246,14 +246,14 @@ bool FacetURI::IsValidAndroidFacetURI() const {
 
 std::string FacetURI::scheme() const {
   return is_valid()
-             ? ComponentString(canonical_spec_, parsed_.scheme).as_string()
+             ? std::string(ComponentString(canonical_spec_, parsed_.scheme))
              : "";
 }
 
 std::string FacetURI::android_package_name() const {
   if (!IsValidAndroidFacetURI())
     return "";
-  return ComponentString(canonical_spec_, parsed_.host).as_string();
+  return std::string(ComponentString(canonical_spec_, parsed_.host));
 }
 
 FacetURI::FacetURI(const std::string& canonical_spec, bool is_valid)

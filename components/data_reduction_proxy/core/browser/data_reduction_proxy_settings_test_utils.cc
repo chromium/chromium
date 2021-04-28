@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings_test_utils.h"
+#include "base/strings/string_piece.h"
 
 #include <stdint.h>
 
@@ -129,7 +130,7 @@ void DataReductionProxySettingsTestBase::CheckDataReductionProxySyntheticTrial(
 bool DataReductionProxySettingsTestBase::OnSyntheticFieldTrialRegistration(
     base::StringPiece trial_name,
     base::StringPiece group_name) {
-  synthetic_field_trials_[trial_name.as_string()] = group_name.as_string();
+  synthetic_field_trials_[std::string(trial_name)] = std::string(group_name);
   return true;
 }
 

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_test_utils.h"
+#include "base/strings/string_piece.h"
 
 #include <map>
 #include <memory>
@@ -114,7 +115,7 @@ TestDataStore::~TestDataStore() {}
 
 DataStore::Status TestDataStore::Get(base::StringPiece key,
                                      std::string* value) {
-  auto value_iter = map_.find(key.as_string());
+  auto value_iter = map_.find(std::string(key));
   if (value_iter == map_.end())
     return NOT_FOUND;
 
@@ -131,7 +132,7 @@ DataStore::Status TestDataStore::Put(
 }
 
 DataStore::Status TestDataStore::Delete(base::StringPiece key) {
-  map_.erase(key.as_string());
+  map_.erase(std::string(key));
 
   return OK;
 }

@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
 #include "build/build_config.h"
@@ -98,11 +99,11 @@ std::string GetValueFromMessage(const gcm::IncomingMessage& message,
 // If the provided sender does not match either pattern, return it unchanged.
 std::string UnpackPrivateTopic(base::StringPiece private_topic) {
   if (base::StartsWith(private_topic, "/topics/private/")) {
-    return private_topic.substr(strlen("/topics")).as_string();
+    return std::string(private_topic.substr(strlen("/topics")));
   } else if (base::StartsWith(private_topic, "/topics/")) {
-    return private_topic.substr(strlen("/topics/")).as_string();
+    return std::string(private_topic.substr(strlen("/topics/")));
   } else {
-    return private_topic.as_string();
+    return std::string(private_topic);
   }
 }
 

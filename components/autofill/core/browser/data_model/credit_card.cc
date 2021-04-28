@@ -331,7 +331,7 @@ bool CreditCard::IsNicknameValid(const std::u16string& nickname) {
 
 void CreditCard::SetNetworkForMaskedCard(base::StringPiece network) {
   DCHECK_EQ(MASKED_SERVER_CARD, record_type());
-  network_ = network.as_string();
+  network_ = std::string(network);
 }
 
 void CreditCard::SetServerStatus(ServerStatus status) {

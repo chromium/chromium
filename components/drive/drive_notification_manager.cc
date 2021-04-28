@@ -13,6 +13,7 @@
 #include "base/rand_util.h"
 #include "base/strings/char_traits.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "components/drive/drive_notification_observer.h"
 #include "components/invalidation/public/invalidation_service.h"
@@ -317,7 +318,7 @@ std::string DriveNotificationManager::ExtractTeamDriveId(
   if (!base::StartsWith(topic_name, prefix)) {
     return {};
   }
-  return topic_name.substr(prefix.size()).as_string();
+  return std::string(topic_name.substr(prefix.size()));
 }
 
 }  // namespace drive

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "components/prefs/pref_service.h"
 
@@ -41,7 +42,7 @@ bool HasBaseAndRegion(const std::string& lang, std::string* const base) {
   const std::vector<base::StringPiece> tokens = base::SplitStringPiece(
       lang, "-", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-  *base = tokens.size() > 0 ? tokens[0].as_string() : "";
+  *base = tokens.size() > 0 ? std::string(tokens[0]) : "";
   return tokens.size() > 1 && !tokens[1].empty();
 }
 

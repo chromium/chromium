@@ -6,6 +6,7 @@
 
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/media_router/common/media_source.h"
 #include "components/media_router/common/mojom/logger.mojom-shared.h"
@@ -128,11 +129,11 @@ LoggerImpl::Entry::Entry(Severity severity,
     : severity(severity),
       category(category),
       time(time),
-      component(component.as_string()),
-      message(message.as_string()),
-      sink_id(sink_id.as_string()),
+      component(component),
+      message(message),
+      sink_id(sink_id),
       media_source(std::move(media_source)),
-      session_id(session_id.as_string()) {}
+      session_id(session_id) {}
 
 LoggerImpl::Entry::Entry(Entry&& other)
     : severity(other.severity),

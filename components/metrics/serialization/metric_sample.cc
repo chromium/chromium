@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 
@@ -129,7 +130,7 @@ std::unique_ptr<MetricSample> MetricSample::ParseHistogram(
     return nullptr;
   }
 
-  return HistogramSample(parts[0].as_string(), sample, min, max, bucket_count);
+  return HistogramSample(std::string(parts[0]), sample, min, max, bucket_count);
 }
 
 // static
@@ -151,7 +152,7 @@ std::unique_ptr<MetricSample> MetricSample::ParseSparseHistogram(
   if (parts[0].empty() || !base::StringToInt(parts[1], &sample))
     return nullptr;
 
-  return SparseHistogramSample(parts[0].as_string(), sample);
+  return SparseHistogramSample(std::string(parts[0]), sample);
 }
 
 // static
@@ -176,7 +177,7 @@ std::unique_ptr<MetricSample> MetricSample::ParseLinearHistogram(
     return nullptr;
   }
 
-  return LinearHistogramSample(parts[0].as_string(), sample, max);
+  return LinearHistogramSample(std::string(parts[0]), sample, max);
 }
 
 // static

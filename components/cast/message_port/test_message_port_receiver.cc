@@ -5,6 +5,7 @@
 #include "components/cast/message_port/test_message_port_receiver.h"
 
 #include "base/run_loop.h"
+#include "base/strings/string_piece.h"
 
 namespace cast_api_bindings {
 
@@ -33,7 +34,7 @@ void TestMessagePortReceiver::RunUntilDisconnected() {
 bool TestMessagePortReceiver::OnMessage(
     base::StringPiece message,
     std::vector<std::unique_ptr<MessagePort>> ports) {
-  buffer_.push_back(std::make_pair(message.as_string(), std::move(ports)));
+  buffer_.push_back(std::make_pair(std::string(message), std::move(ports)));
   if (message_count_target_ == buffer_.size()) {
     DCHECK(on_receive_satisfied_);
     std::move(on_receive_satisfied_).Run();

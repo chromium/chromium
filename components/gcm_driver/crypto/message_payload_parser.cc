@@ -5,6 +5,7 @@
 #include "components/gcm_driver/crypto/message_payload_parser.h"
 
 #include "base/big_endian.h"
+#include "base/strings/string_piece.h"
 #include "components/gcm_driver/crypto/gcm_decryption_result.h"
 
 namespace gcm {
@@ -33,7 +34,7 @@ MessagePayloadParser::MessagePayloadParser(base::StringPiece message) {
     return;
   }
 
-  salt_ = message.substr(0, kSaltSize).as_string();
+  salt_ = std::string(message.substr(0, kSaltSize));
   message.remove_prefix(kSaltSize);
 
   base::ReadBigEndian(message.data(), &record_size_);
@@ -60,10 +61,10 @@ MessagePayloadParser::MessagePayloadParser(base::StringPiece message) {
     return;
   }
 
-  public_key_ = message.substr(0, kUncompressedPointSize).as_string();
+  public_key_ = std::string(message.substr(0, kUncompressedPointSize));
   message.remove_prefix(kUncompressedPointSize);
 
-  ciphertext_ = message.as_string();
+  ciphertext_ = std::string(message);
   DCHECK_GE(ciphertext_.size(), kMinimumRecordSize);
 
   is_valid_ = true;

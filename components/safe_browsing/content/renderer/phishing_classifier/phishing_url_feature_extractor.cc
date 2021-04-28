@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/timer/elapsed_timer.h"
@@ -109,7 +110,7 @@ void PhishingUrlFeatureExtractor::SplitStringIntoLongAlphanumTokens(
     // Copy over only the splits that are 3 or more chars long.
     // TODO(bryner): Determine a meaningful min size.
     if (token.length() >= kMinPathComponentLength)
-      tokens->push_back(token.as_string());
+      tokens->push_back(std::string(token));
   }
 }
 

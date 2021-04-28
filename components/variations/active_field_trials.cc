@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/lazy_instance.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/variations/hashing.h"
@@ -29,8 +30,8 @@ void GetFieldTrialActiveGroupIdsForActiveGroups(
   DCHECK(name_group_ids->empty());
   for (auto it = active_groups.begin(); it != active_groups.end(); ++it) {
     name_group_ids->push_back(
-        MakeActiveGroupId(it->trial_name + suffix.as_string(),
-                          it->group_name + suffix.as_string()));
+        MakeActiveGroupId(it->trial_name + std::string(suffix),
+                          it->group_name + std::string(suffix)));
   }
 }
 

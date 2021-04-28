@@ -59,7 +59,7 @@ DomStorageDatabase::KeyValuePair MakeKeyValuePair(base::StringPiece key,
 }
 
 std::string MakePrefixedKey(base::StringPiece prefix, base::StringPiece key) {
-  return prefix.as_string() + key.as_string();
+  return std::string(prefix) + std::string(key);
 }
 
 class StorageServiceDomStorageDatabaseTest : public testing::Test {

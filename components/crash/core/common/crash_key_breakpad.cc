@@ -62,7 +62,7 @@ void CrashKeyStringImpl::Set(base::StringPiece value) {
 
   // If there is only one slot for the value, then handle it directly.
   if (index_array_count_ == 1) {
-    std::string value_string = value.as_string();
+    std::string value_string(value);
     if (is_set()) {
       storage->SetValueAtIndex(index_array_[0], value_string.c_str());
     } else {

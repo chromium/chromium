@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "components/cbor/reader.h"
 #include "components/web_package/web_bundle_utils.h"
@@ -138,7 +139,7 @@ base::Optional<ParsedHeaders> ConvertCBORValueToHeaders(
       DCHECK(!result.pseudos.contains(name));
       // Step 4.2.2. Set pseudos[name] to value.
       result.pseudos.insert(
-          std::make_pair(name.as_string(), value.as_string()));
+          std::make_pair(std::string(name), std::string(value)));
       // Step 4.3.3. Continue.
       continue;
     }
@@ -156,7 +157,8 @@ base::Optional<ParsedHeaders> ConvertCBORValueToHeaders(
     DCHECK(!result.headers.contains(name));
 
     // Step 4.5. Append (name, value) to headers.
-    result.headers.insert(std::make_pair(name.as_string(), value.as_string()));
+    result.headers.insert(
+        std::make_pair(std::string(name), std::string(value)));
   }
 
   // Step 5. Return (headers, pseudos).
@@ -758,7 +760,7 @@ class WebBundleParser::MetadataParser
       }
       requests.insert(std::make_pair(
           parsed_url,
-          mojom::BundleIndexValue::New(variants_value.as_string(),
+          mojom::BundleIndexValue::New(std::string(variants_value),
                                        std::move(response_locations))));
     }
 
@@ -1051,7 +1053,7 @@ class WebBundleParser::MetadataParser
       }
       subset_hashes.insert(std::make_pair(
           parsed_url,
-          mojom::SubsetHashesValue::New(variants_value.as_string(),
+          mojom::SubsetHashesValue::New(std::string(variants_value),
                                         std::move(resource_integrities))));
     }
 

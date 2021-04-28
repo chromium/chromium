@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "components/safe_browsing/core/db/prefix_iterator.h"
 #include "components/safe_browsing/core/db/v4_rice.h"
@@ -747,7 +748,7 @@ HashPrefix V4Store::GetMatchingHashPrefix(base::StringPiece full_hash) {
     const PrefixSize& prefix_size = pair.first;
     base::StringPiece hash_prefix = full_hash.substr(0, prefix_size);
     if (HashPrefixMatches(hash_prefix, pair.second, prefix_size))
-      return hash_prefix.as_string();
+      return std::string(hash_prefix);
   }
   return HashPrefix();
 }

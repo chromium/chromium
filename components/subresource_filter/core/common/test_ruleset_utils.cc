@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/strings/string_piece.h"
+
 namespace subresource_filter {
 namespace testing {
 
@@ -33,7 +35,7 @@ proto::UrlRule CreateSuffixRule(base::StringPiece suffix) {
   rule.set_url_pattern_type(proto::URL_PATTERN_TYPE_SUBSTRING);
   rule.set_anchor_left(proto::ANCHOR_TYPE_NONE);
   rule.set_anchor_right(proto::ANCHOR_TYPE_BOUNDARY);
-  rule.set_url_pattern(suffix.as_string());
+  rule.set_url_pattern(std::string(suffix));
   return rule;
 }
 
@@ -45,7 +47,7 @@ proto::UrlRule CreateAllowlistSuffixRule(base::StringPiece suffix) {
   rule.set_url_pattern_type(proto::URL_PATTERN_TYPE_SUBSTRING);
   rule.set_anchor_left(proto::ANCHOR_TYPE_NONE);
   rule.set_anchor_right(proto::ANCHOR_TYPE_BOUNDARY);
-  rule.set_url_pattern(suffix.as_string());
+  rule.set_url_pattern(std::string(suffix));
   return rule;
 }
 
@@ -65,7 +67,7 @@ proto::UrlRule CreateAllowlistRuleForDocument(
   rule.set_url_pattern_type(proto::URL_PATTERN_TYPE_SUBSTRING);
   rule.set_anchor_left(proto::ANCHOR_TYPE_NONE);
   rule.set_anchor_right(proto::ANCHOR_TYPE_NONE);
-  rule.set_url_pattern(pattern.as_string());
+  rule.set_url_pattern(std::string(pattern));
   return rule;
 }
 

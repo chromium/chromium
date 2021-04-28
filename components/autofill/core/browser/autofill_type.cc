@@ -477,12 +477,12 @@ std::string AutofillType::ToString() const {
   if (server_type_ != UNKNOWN_TYPE)
     return ServerFieldTypeToString(server_type_);
 
-  return FieldTypeToStringPiece(html_type_).as_string();
+  return std::string(FieldTypeToStringPiece(html_type_));
 }
 
 // static
 std::string AutofillType::ServerFieldTypeToString(ServerFieldType type) {
-  return FieldTypeToStringPiece(type).as_string();
+  return std::string(FieldTypeToStringPiece(type));
 }
 
 }  // namespace autofill

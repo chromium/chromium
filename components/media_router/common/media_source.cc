@@ -10,6 +10,7 @@
 #include <ostream>
 #include <string>
 
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/media_router/common/media_source.h"
@@ -113,16 +114,16 @@ MediaSource MediaSource::ForDesktop(
     bool with_audio) {
   DCHECK(!registered_desktop_stream_id.empty());
   std::string id =
-      kDesktopMediaUrnPrefix.as_string() + registered_desktop_stream_id;
+      std::string(kDesktopMediaUrnPrefix) + registered_desktop_stream_id;
   if (with_audio) {
-    id += kDesktopMediaUrnAudioParam.as_string();
+    id += std::string(kDesktopMediaUrnAudioParam);
   }
   return MediaSource(id);
 }
 
 // static
 MediaSource MediaSource::ForUnchosenDesktop() {
-  return MediaSource(kUnchosenDesktopMediaUrn.as_string());
+  return MediaSource(std::string(kUnchosenDesktopMediaUrn));
 }
 
 // static

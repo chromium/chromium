@@ -4,6 +4,7 @@
 
 #include "components/ui_devtools/viz/surface_element.h"
 
+#include "base/strings/string_piece.h"
 #include "components/ui_devtools/Protocol.h"
 #include "components/ui_devtools/ui_element_delegate.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
@@ -53,10 +54,9 @@ void SurfaceElement::GetVisible(bool* visible) const {
 void SurfaceElement::SetVisible(bool visible) {}
 
 std::vector<std::string> SurfaceElement::GetAttributes() const {
-  return {
-      "SurfaceId", surface_id_.ToString(), "FrameSink Debug Label",
-      frame_sink_manager_->GetFrameSinkDebugLabel(surface_id_.frame_sink_id())
-          .as_string()};
+  return {"SurfaceId", surface_id_.ToString(), "FrameSink Debug Label",
+          std::string(frame_sink_manager_->GetFrameSinkDebugLabel(
+              surface_id_.frame_sink_id()))};
 }
 
 std::pair<gfx::NativeWindow, gfx::Rect>

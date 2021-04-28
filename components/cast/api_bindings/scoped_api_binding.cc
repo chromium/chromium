@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/strings/string_piece.h"
 #include "components/cast/api_bindings/manager.h"
 
 namespace cast_api_bindings {
@@ -58,7 +59,7 @@ bool ScopedApiBinding::SendMessage(base::StringPiece data_utf8) {
     return false;
   }
 
-  if (!message_port_->PostMessage(data_utf8.as_string())) {
+  if (!message_port_->PostMessage(data_utf8)) {
     return false;
   }
 

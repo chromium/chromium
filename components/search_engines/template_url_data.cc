@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/guid.h"
 #include "base/i18n/case_conversion.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -89,8 +90,8 @@ TemplateURLData::TemplateURLData(const std::u16string& name,
       sync_guid(GenerateGUID(prepopulate_id)) {
   SetShortName(name);
   SetKeyword(keyword);
-  SetURL(search_url.as_string());
-  input_encodings.push_back(encoding.as_string());
+  SetURL(std::string(search_url));
+  input_encodings.push_back(std::string(encoding));
   for (size_t i = 0; i < alternate_urls_list.GetSize(); ++i) {
     std::string alternate_url;
     alternate_urls_list.GetString(i, &alternate_url);

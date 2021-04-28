@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/url_pattern_index/url_rule_test_support.h"
+#include "base/strings/string_piece.h"
 
 #include "base/check.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -23,7 +24,7 @@ proto::UrlRule MakeUrlRule(const UrlPattern& url_pattern) {
   rule.set_anchor_left(url_pattern.anchor_left());
   rule.set_anchor_right(url_pattern.anchor_right());
   rule.set_match_case(url_pattern.match_case());
-  rule.set_url_pattern(url_pattern.url_pattern().as_string());
+  rule.set_url_pattern(std::string(url_pattern.url_pattern()));
 
   return rule;
 }

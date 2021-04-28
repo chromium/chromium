@@ -412,7 +412,7 @@ ContentSettingsPattern ContentSettingsPattern::FromURL(
     }
     if (local_url->port_piece().empty()) {
       if (local_url->SchemeIs(url::kHttpsScheme))
-        builder.WithPort(GetDefaultPort(url::kHttpsScheme).as_string());
+        builder.WithPort(std::string(GetDefaultPort(url::kHttpsScheme)));
       else
         builder.WithPortWildcard();
     } else {
@@ -435,7 +435,7 @@ ContentSettingsPattern ContentSettingsPattern::FromURLNoWildcard(
   } else {
     builder.WithScheme(local_url->scheme())->WithHost(local_url->host());
     if (local_url->port_piece().empty()) {
-      builder.WithPort(GetDefaultPort(local_url->scheme_piece()).as_string());
+      builder.WithPort(std::string(GetDefaultPort(local_url->scheme_piece())));
     } else {
       builder.WithPort(local_url->port());
     }

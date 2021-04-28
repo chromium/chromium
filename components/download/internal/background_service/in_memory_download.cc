@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/strings/string_piece.h"
 #include "components/download/internal/background_service/blob_task_proxy.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -110,8 +111,8 @@ size_t InMemoryDownloadImpl::EstimateMemoryUsage() const {
 
 void InMemoryDownloadImpl::OnDataReceived(base::StringPiece string_piece,
                                           base::OnceClosure resume) {
-  size_t size = string_piece.as_string().size();
-  data_.append(string_piece.as_string().data(), size);
+  size_t size = string_piece.size();
+  data_.append(std::string(string_piece).data(), size);
   bytes_downloaded_ += size;
 
   if (paused_) {

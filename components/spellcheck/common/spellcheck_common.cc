@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/metrics/field_trial.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "third_party/icu/source/common/unicode/uloc.h"
 #include "third_party/icu/source/common/unicode/urename.h"
@@ -104,7 +105,7 @@ std::string GetSpellCheckLanguageRegion(base::StringPiece input_language) {
       return lang_region.language_region;
   }
 
-  return input_language.as_string();
+  return std::string(input_language);
 }
 
 base::FilePath GetVersionedFileName(base::StringPiece input_language,
@@ -168,7 +169,7 @@ std::string GetCorrespondingSpellCheckLanguage(base::StringPiece language) {
   for (const auto& lang_region : kSupportedSpellCheckerLanguages) {
     // First look for exact match in the language region of the list.
     if (lang_region.language == language)
-      return language.as_string();
+      return std::string(language);
 
     // Next, look for exact match in the language_region part of the list.
     if (lang_region.language_region == language) {

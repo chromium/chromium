@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
@@ -200,7 +201,7 @@ bool SessionStorageMetadata::ParseNamespaces(
 
     auto origin = url::Origin::Create(origin_gurl);
     if (namespace_id != last_namespace_id) {
-      last_namespace_id = namespace_id.as_string();
+      last_namespace_id = std::string(namespace_id);
       DCHECK(namespace_origin_map_.find(last_namespace_id) ==
              namespace_origin_map_.end());
       last_namespace = &(namespace_origin_map_[last_namespace_id]);

@@ -13,6 +13,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/strings/safe_sprintf.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
@@ -243,8 +244,8 @@ DataReductionProxyRequestOptions::GetSessionKeyFromRequestHeaders(
     // comparing.
     if (base::TrimWhitespaceASCII(kv_pair.first, base::TRIM_ALL) ==
         kSecureSessionHeaderOption) {
-      return base::TrimWhitespaceASCII(kv_pair.second, base::TRIM_ALL)
-          .as_string();
+      return std::string(
+          base::TrimWhitespaceASCII(kv_pair.second, base::TRIM_ALL));
     }
   }
   return base::nullopt;
@@ -265,16 +266,14 @@ DataReductionProxyRequestOptions::GetPageIdFromRequestHeaders(
         kPageIdOption) {
       uint64_t page_id;
       if (base::StringToUint64(
-              base::TrimWhitespaceASCII(kv_pair.second, base::TRIM_ALL)
-                  .as_string(),
+              base::TrimWhitespaceASCII(kv_pair.second, base::TRIM_ALL),
               &page_id)) {
         return page_id;
       }
 
       // Also attempt parsing the page_id as a hex string.
       if (base::HexStringToUInt64(
-              base::TrimWhitespaceASCII(kv_pair.second, base::TRIM_ALL)
-                  .as_string(),
+              base::TrimWhitespaceASCII(kv_pair.second, base::TRIM_ALL),
               &page_id)) {
         return page_id;
       }

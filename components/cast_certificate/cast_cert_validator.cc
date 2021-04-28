@@ -14,6 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -165,7 +166,7 @@ class CertVerificationContextImpl : public CertVerificationContext {
   // Save a copy of the passed in public key (DER) and common name (text).
   CertVerificationContextImpl(const net::der::Input& spki,
                               const base::StringPiece& common_name)
-      : spki_(spki.AsString()), common_name_(common_name.as_string()) {}
+      : spki_(spki.AsString()), common_name_(common_name) {}
 
   bool VerifySignatureOverData(
       const base::StringPiece& signature,

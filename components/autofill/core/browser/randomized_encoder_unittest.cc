@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/randomized_encoder.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/unified_consent/pref_names.h"
@@ -33,7 +34,7 @@ std::string ReferenceEncodeImpl(base::StringPiece coins,
                                 size_t bit_offset,
                                 size_t bit_stride) {
   // Encode all of the bits.
-  std::string all_bits = noise.as_string();
+  std::string all_bits(noise);
   size_t value_length = std::min(value.length(), noise.length());
   for (size_t i = 0; i < value_length; ++i) {
     all_bits[i] = (value[i] & coins[i]) | (all_bits[i] & ~coins[i]);

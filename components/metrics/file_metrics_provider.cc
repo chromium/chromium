@@ -238,8 +238,8 @@ void FileMetricsProvider::RegisterSource(const Params& params) {
 void FileMetricsProvider::RegisterSourcePrefs(
     PrefRegistrySimple* prefs,
     const base::StringPiece prefs_key) {
-  prefs->RegisterInt64Pref(metrics::prefs::kMetricsLastSeenPrefix +
-                           prefs_key.as_string(), 0);
+  prefs->RegisterInt64Pref(
+      metrics::prefs::kMetricsLastSeenPrefix + std::string(prefs_key), 0);
 }
 
 //  static

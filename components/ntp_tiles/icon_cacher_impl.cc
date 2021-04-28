@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_piece.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon/core/favicon_util.h"
 #include "components/favicon/core/large_icon_service.h"
@@ -189,9 +190,8 @@ IconCacherImpl::MaybeProvideDefaultIcon(
                          weak_ptr_factory_.GetWeakPtr(), site,
                          std::move(preliminary_icon_available))));
   image_fetcher_->GetImageDecoder()->DecodeImage(
-      ui::ResourceBundle::GetSharedInstance()
-          .GetRawDataResource(site.default_icon_resource)
-          .as_string(),
+      std::string(ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
+          site.default_icon_resource)),
       gfx::Size(kDesiredFrameSize, kDesiredFrameSize),
       preliminary_callback->callback());
   return preliminary_callback;

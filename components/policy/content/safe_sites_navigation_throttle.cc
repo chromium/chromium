@@ -40,7 +40,7 @@ SafeSitesNavigationThrottle::SafeSitesNavigationThrottle(
           base::BindRepeating(&SafeSitesNavigationThrottle::OnDeferredResult,
                               base::Unretained(this))),
       safe_sites_error_page_content_(
-          safe_sites_error_page_content.as_string()) {}
+          std::string(safe_sites_error_page_content)) {}
 
 SafeSitesNavigationThrottle::~SafeSitesNavigationThrottle() = default;
 

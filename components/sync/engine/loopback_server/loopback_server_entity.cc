@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -150,7 +151,7 @@ std::string LoopbackServerEntity::GetInnerIdFromId(const std::string& id) {
     return std::string();
   }
 
-  return tokens[1].as_string();
+  return std::string(tokens[1]);
 }
 
 LoopbackServerEntity::LoopbackServerEntity(const string& id,

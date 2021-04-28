@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -70,7 +71,7 @@ std::string GetShownOrigin(const url::Origin& origin) {
     }
   }
 
-  return result.find('.') != base::StringPiece::npos ? result.as_string()
+  return result.find('.') != base::StringPiece::npos ? std::string(result)
                                                      : original;
 }
 

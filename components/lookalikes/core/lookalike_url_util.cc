@@ -212,13 +212,12 @@ bool ASubdomainIsAllowlisted(
     const base::span<const base::StringPiece>& domain_labels,
     const LookalikeTargetAllowlistChecker& in_target_allowlist) {
   DCHECK(domain_labels.size() >= 2);
-  std::string potential_hostname =
-      domain_labels[domain_labels.size() - 1].as_string();
+  std::string potential_hostname(domain_labels[domain_labels.size() - 1]);
   // Attach each token from the end to the embedded target to check if that
   // subdomain has been allowlisted.
   for (int i = domain_labels.size() - 2; i >= 0; i--) {
     potential_hostname =
-        domain_labels[i].as_string() + "." + potential_hostname;
+        std::string(domain_labels[i]) + "." + potential_hostname;
     if (in_target_allowlist.Run(potential_hostname)) {
       return true;
     }
@@ -323,14 +322,13 @@ bool UsesCommonWord(const DomainInfo& domain) {
 bool IsEmbeddingItself(const base::span<const base::StringPiece>& domain_labels,
                        const std::string& embedding_domain) {
   DCHECK(domain_labels.size() >= 2);
-  std::string potential_hostname =
-      domain_labels[domain_labels.size() - 1].as_string();
+  std::string potential_hostname(domain_labels[domain_labels.size() - 1]);
   // Attach each token from the end to the embedded target to check if that
   // subdomain is the embedding domain. (e.g. using the earlier example, check
   // each ["com", "example.com", "foo.example.com"] against "example.com".
   for (int i = domain_labels.size() - 2; i >= 0; i--) {
     potential_hostname =
-        domain_labels[i].as_string() + "." + potential_hostname;
+        std::string(domain_labels[i]) + "." + potential_hostname;
     if (embedding_domain == potential_hostname) {
       return true;
     }

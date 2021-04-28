@@ -15,6 +15,7 @@
 #include "base/macros.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
+#include "base/strings/string_piece.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/graph/page_node_impl.h"
@@ -117,7 +118,7 @@ void NodeDataDescriberRegistryImpl::RegisterDescriber(
   }
 #endif
   bool inserted =
-      describers_.insert(std::make_pair(describer, name.as_string())).second;
+      describers_.insert(std::make_pair(describer, std::string(name))).second;
   DCHECK(inserted);
 }
 

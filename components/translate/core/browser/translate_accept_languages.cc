@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "components/language/core/common/language_util.h"
@@ -65,8 +66,8 @@ void TranslateAcceptLanguages::InitAcceptLanguages(PrefService* prefs) {
     // for which the CLD reports zh-CN and zh-TW.
     size_t index = lang.find('-');
     if (index != base::StringPiece::npos && lang != "zh-CN" && lang != "zh-TW")
-      accept_languages_.insert(lang.substr(0, index).as_string());
-    accept_languages_.insert(lang.as_string());
+      accept_languages_.insert(std::string(lang.substr(0, index)));
+    accept_languages_.insert(std::string(lang));
   }
 }
 

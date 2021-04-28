@@ -111,7 +111,7 @@ void PatternParser::Parse(base::StringPiece pattern_spec,
     if (scheme_piece == kSchemeWildcard) {
       builder->WithSchemeWildcard();
     } else {
-      builder->WithScheme(scheme_piece.as_string());
+      builder->WithScheme(std::string(scheme_piece));
     }
   } else {
     builder->WithSchemeWildcard();
@@ -142,14 +142,14 @@ void PatternParser::Parse(base::StringPiece pattern_spec,
 
       host_piece.remove_prefix(kDomainWildcardLength);
       builder->WithDomainWildcard();
-      builder->WithHost(host_piece.as_string());
+      builder->WithHost(std::string(host_piece));
     } else {
       // If the host contains a wildcard symbol then it is invalid.
       if (host_piece.find(kHostWildcard) != std::string::npos) {
         builder->Invalid();
         return;
       }
-      builder->WithHost(host_piece.as_string());
+      builder->WithHost(std::string(host_piece));
     }
   }
 
@@ -171,7 +171,7 @@ void PatternParser::Parse(base::StringPiece pattern_spec,
         }
       }
       // TODO(markusheintz): Check port range.
-      builder->WithPort(port_piece.as_string());
+      builder->WithPort(std::string(port_piece));
     }
   } else {
     if (!ContentSettingsPattern::IsNonWildcardDomainNonPortScheme(
@@ -184,7 +184,7 @@ void PatternParser::Parse(base::StringPiece pattern_spec,
     if (path_piece.substr(1) == kPathWildcard)
       builder->WithPathWildcard();
     else
-      builder->WithPath(path_piece.as_string());
+      builder->WithPath(std::string(path_piece));
   }
 }
 

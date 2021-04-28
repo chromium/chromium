@@ -10,6 +10,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/memory/singleton.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/grit/autofill_address_rewriter_resources_map.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -68,7 +69,7 @@ void CompileRulesFromData(const std::string& data_string,
     data.remove_prefix(token_end + 1);
 
     token_end = data.find('\n');
-    std::string rewrite_string = data.substr(0, token_end).as_string();
+    std::string rewrite_string(data.substr(0, token_end));
     compiled_rules->emplace_back(std::move(pattern), std::move(rewrite_string));
     data.remove_prefix(token_end + 1);
   }

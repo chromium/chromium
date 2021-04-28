@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/stl_util.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "components/embedder_support/origin_trials/features.h"
 #include "components/embedder_support/switches.h"
@@ -66,12 +67,12 @@ std::vector<base::StringPiece> OriginTrialPolicyImpl::GetPublicKeys() const {
 }
 
 bool OriginTrialPolicyImpl::IsFeatureDisabled(base::StringPiece feature) const {
-  return disabled_features_.count(feature.as_string()) > 0;
+  return disabled_features_.count(std::string(feature)) > 0;
 }
 
 bool OriginTrialPolicyImpl::IsTokenDisabled(
     base::StringPiece token_signature) const {
-  return disabled_tokens_.count(token_signature.as_string()) > 0;
+  return disabled_tokens_.count(std::string(token_signature)) > 0;
 }
 
 // Exclude users in Field trial control group from the corresponding origin
