@@ -234,8 +234,11 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
       int scaled_width,
       int scaled_height) override;
 
-  // If this exact size has been hard-applied, gets the frame associated with
-  // that adaptation, otherwise null.
+  // If this exact size has been hard-applied by wrapping or using a pre-scaled
+  // media::VideoFrame, the associated media::VideoFrame is returned (the
+  // wrapping or original). If this size has not been hard-applied, or it was
+  // hard-applied by scaling a previously adapted webrtc::VideoFrameBuffer, then
+  // null is returned.
   scoped_refptr<media::VideoFrame> GetAdaptedVideoBufferForTesting(
       const ScaledBufferSize& size);
 
@@ -252,14 +255,15 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
           frame_buffer(std::move(frame_buffer)) {}
 
     ScaledBufferSize size;
+    // If |frame_buffer| was produced without a media::VideoFrame this is null.
     scoped_refptr<media::VideoFrame> video_frame;
     rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer;
   };
 
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> GetOrCreateFrameBufferForSize(
       const ScaledBufferSize& size);
-  scoped_refptr<media::VideoFrame> GetOrWrapFrameForSize(
-      const ScaledBufferSize& size) const;
+  AdaptedFrame AdaptBestFrame(const ScaledBufferSize& size) const
+      EXCLUSIVE_LOCKS_REQUIRED(adapted_frames_lock_);
 
   base::Lock adapted_frames_lock_;
   const scoped_refptr<media::VideoFrame> frame_;
