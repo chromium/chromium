@@ -209,6 +209,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chromeos/chromeos_print_management_resources.pak",
         "$root_gen_dir/chromeos/chromeos_resources.pak",
         "$root_gen_dir/chromeos/connectivity_diagnostics_resources.pak",
+        "$root_gen_dir/chromeos/projector/projector_resources.pak",
         "$root_gen_dir/ui/file_manager/file_manager_gen_resources.pak",
         "$root_gen_dir/ui/file_manager/file_manager_resources.pak",
       ]
@@ -225,6 +226,7 @@ template("chrome_extra_paks") {
         "//chrome/browser/resources/chromeos/login:resources",
         "//chrome/browser/resources/chromeos/multidevice_internals:resources",
         "//chrome/browser/resources/chromeos/network_ui:resources",
+        "//chrome/browser/resources/chromeos/projector:resources",
         "//chrome/browser/resources/nearby_internals:resources",
         "//chrome/browser/resources/nearby_share:resources",
         "//chrome/browser/resources/settings/chromeos:resources",

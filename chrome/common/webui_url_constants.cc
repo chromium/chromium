@@ -40,7 +40,7 @@ const char kChromeUIComponentsHost[] = "components";
 const char kChromeUIConflictsHost[] = "conflicts";
 const char kChromeUIConstrainedHTMLTestURL[] = "chrome://constrained-test/";
 const char kChromeUIContentSettingsURL[] = "chrome://settings/content";
-// TODO (crbug.com/1107816): Remove deprecated cookie URL redirection.
+// TODO(crbug/1107816): Remove deprecated cookie URL redirection.
 const char kChromeUICookieSettingsDeprecatedURL[] =
     "chrome://settings/content/cookies";
 const char kChromeUICookieSettingsURL[] = "chrome://settings/cookies";
@@ -283,6 +283,7 @@ const char kChromeUIPasswordChangeHost[] = "password-change";
 const char kChromeUIPasswordChangeUrl[] = "chrome://password-change";
 const char kChromeUIPrintManagementUrl[] = "chrome://print-management";
 const char kChromeUIPowerHost[] = "power";
+const char kChromeUIProjectorHost[] = "projector";
 const char kChromeUIScanningAppURL[] = "chrome://scanning";
 const char kChromeUIScreenlockIconHost[] = "screenlock-icon";
 const char kChromeUIScreenlockIconURL[] = "chrome://screenlock-icon/";

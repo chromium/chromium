@@ -254,7 +254,11 @@
     "includes": [2050],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/network_ui/network_ui_resources.grd": {
-    "META": {"sizes": {"includes": [10]}},
+    "META": {"sizes": {"includes": [5]}},
+    "includes": [2060],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/projector/resources.grd": {
+    "META": {"sizes": {"includes": [5]}},
     "includes": [2065],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/download_internals/resources.grd": {
