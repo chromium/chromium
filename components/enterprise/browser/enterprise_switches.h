@@ -13,7 +13,7 @@
 
 namespace switches {
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kEnableChromeBrowserCloudManagement[];
 #endif
 
