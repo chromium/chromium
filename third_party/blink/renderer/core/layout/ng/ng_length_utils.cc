@@ -795,6 +795,14 @@ LogicalSize ComputeReplacedSize(const NGBlockNode& node,
                                 ReplacedSizeMode mode) {
   DCHECK(node.IsReplaced());
 
+  // TODO(crbug.com/1203464): <frame> elements can be dynamically inserted
+  // into the DOM even though they really only make sense within a <frameset>.
+  // Today, outside a <frameset> they are always 0x0 (even ignoring
+  // border/padding). When outside a <frameset> they likely should create a
+  // LayoutInline instead.
+  if (node.IsFrame())
+    return LogicalSize();
+
   const ComputedStyle& style = node.Style();
   const NGBoxStrut border_padding =
       ComputeBorders(space, node) + ComputePadding(space, style);
