@@ -12,7 +12,7 @@
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/location.h"
-#include "chrome/android/chrome_jni_headers/BiometricAuthenticatorBridge_jni.h"
+#include "chrome/browser/password_manager/android/jni_headers/BiometricAuthenticatorBridge_jni.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/password_manager/core/browser/biometric_authenticator.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"

@@ -13,11 +13,13 @@ android_library("java") {
     "//components/password_manager/core/browser:password_manager_java_enums",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]
   sources = [
+    "java/src/org/chromium/chrome/browser/password_manager/BiometricAuthenticatorBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/ConfirmationDialogHelper.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerHelper.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordScriptsFetcherBridge.java",
@@ -35,6 +37,7 @@ android_library("java") {
 generate_jni("jni_headers") {
   visibility = [ "//chrome/browser" ]
   sources = [
+    "java/src/org/chromium/chrome/browser/password_manager/BiometricAuthenticatorBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordScriptsFetcherBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreCredential.java",

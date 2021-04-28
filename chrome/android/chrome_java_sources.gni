@@ -1041,7 +1041,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/password_manager/AccountChooserDialog.java",
   "java/src/org/chromium/chrome/browser/password_manager/AutoSigninFirstRunDialog.java",
   "java/src/org/chromium/chrome/browser/password_manager/AutoSigninSnackbarController.java",
-  "java/src/org/chromium/chrome/browser/password_manager/BiometricAuthenticatorBridge.java",
   "java/src/org/chromium/chrome/browser/password_manager/Credential.java",
   "java/src/org/chromium/chrome/browser/password_manager/CredentialLeakDialogBridge.java",
   "java/src/org/chromium/chrome/browser/password_manager/GooglePasswordManagerUIProvider.java",
