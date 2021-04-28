@@ -185,11 +185,9 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
 
   ~SyncEngineBackend() override;
 
-  // For the olg tango based invalidations method returns true if the
-  // invalidation has version lower than last seen version for this datatype.
-  bool ShouldIgnoreRedundantInvalidation(
+  void RecordRedundantInvalidationsMetric(
       const invalidation::Invalidation& invalidation,
-      ModelType Type);
+      ModelType Type) const;
 
   void LoadAndConnectNigoriController();
 

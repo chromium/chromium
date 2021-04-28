@@ -6,7 +6,6 @@
 
 #include "base/i18n/time_formatting.h"
 #include "build/build_config.h"
-#include "components/invalidation/impl/invalidation_switches.h"
 #include "components/invalidation/public/invalidator_state.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -113,11 +112,8 @@ bool FCMInvalidationService::IsReadyToStart() {
   // IsReadyToStart checks if account is available (active account logged in
   // and token is available). As currently observed, FCMInvalidationService
   // isn't always notified on Android when token is available.
-  if (base::FeatureList::IsEnabled(
-          switches::kFCMInvalidationsStartOnceActiveAccountAvailable)) {
-    valid_account_info_available =
-        !identity_provider_->GetActiveAccountId().empty();
-  }
+  valid_account_info_available =
+      !identity_provider_->GetActiveAccountId().empty();
 #endif
 
   if (!valid_account_info_available) {

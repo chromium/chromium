@@ -156,26 +156,16 @@ void SyncEngineBackend::DoOnInvalidatorStateChange(
                                        invalidation::INVALIDATIONS_ENABLED);
 }
 
-bool SyncEngineBackend::ShouldIgnoreRedundantInvalidation(
+void SyncEngineBackend::RecordRedundantInvalidationsMetric(
     const invalidation::Invalidation& invalidation,
-    ModelType type) {
-  bool fcm_invalidation = base::FeatureList::IsEnabled(
-      invalidation::switches::kFCMInvalidationsForSyncDontCheckVersion);
-  bool redundant_invalidation = false;
+    ModelType type) const {
   auto last_invalidation = last_invalidation_versions_.find(type);
   if (!invalidation.is_unknown_version() &&
       last_invalidation != last_invalidation_versions_.end() &&
       invalidation.version() <= last_invalidation->second) {
-    DVLOG(1) << "Ignoring redundant invalidation for "
-             << ModelTypeToString(type) << " with version "
-             << invalidation.version() << ", last seen version was "
-             << last_invalidation->second;
-    redundant_invalidation = true;
     UMA_HISTOGRAM_ENUMERATION("Sync.RedundantInvalidationPerModelType2",
                               ModelTypeHistogramValue(type));
   }
-
-  return !fcm_invalidation && redundant_invalidation;
 }
 
 void SyncEngineBackend::DoOnIncomingInvalidation(
@@ -192,9 +182,7 @@ void SyncEngineBackend::DoOnIncomingInvalidation(
       invalidation::SingleTopicInvalidationSet invalidation_set =
           invalidation_map.ForTopic(topic);
       for (invalidation::Invalidation invalidation : invalidation_set) {
-        if (ShouldIgnoreRedundantInvalidation(invalidation, type)) {
-          continue;
-        }
+        RecordRedundantInvalidationsMetric(invalidation, type);
 
         std::unique_ptr<InvalidationInterface> inv_adapter(
             new InvalidationAdapter(invalidation));

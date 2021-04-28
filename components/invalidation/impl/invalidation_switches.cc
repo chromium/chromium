@@ -18,15 +18,6 @@ const int kDefaultInstanceIDTokenTTLSeconds = 14 * 24 * 60 * 60;
 
 }  // namespace
 
-// This feature affects only Android.
-const base::Feature kFCMInvalidationsStartOnceActiveAccountAvailable = {
-    "FCMInvalidationsStartOnceActiveAccountAvailable",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kFCMInvalidationsForSyncDontCheckVersion = {
-    "FCMInvalidationsForSyncDontCheckVersion",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kSyncInstanceIDTokenTTL {
   "SyncInstanceIDTokenTTL",
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
