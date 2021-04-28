@@ -236,7 +236,8 @@ AssistiveSuggester::AssistiveSuggester(InputMethodEngine* engine,
                                        Profile* profile)
     : profile_(profile),
       personal_info_suggester_(engine, profile),
-      emoji_suggester_(engine, profile) {
+      emoji_suggester_(engine, profile),
+      multi_word_suggester_(engine) {
   RecordAssistiveUserPrefForPersonalInfo(
       profile_->GetPrefs()->GetBoolean(prefs::kAssistPersonalInfoEnabled));
   RecordAssistiveUserPrefForEmoji(
