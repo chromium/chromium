@@ -127,5 +127,7 @@ public final class ProductionSupportedFlagList {
                     "Enables the Form Controls visual improvements and dark mode."),
             Flag.baseFeature(
                     NetworkServiceFeatures.TRUST_TOKENS, "Enables the prototype Trust Tokens API."),
+            Flag.baseFeature(
+                    BlinkFeatures.LAYOUT_NG_TABLE, "Enables Blink's next generation table layout."),
     };
 }
