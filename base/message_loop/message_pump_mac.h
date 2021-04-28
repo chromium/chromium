@@ -192,6 +192,9 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
   static void RunNestingDeferredWorkSource(void* info);
   void RunNestingDeferredWork();
 
+  // Called before the run loop goes to sleep to notify delegate.
+  void BeforeWait();
+
   // Schedules possible nesting-deferred work to be processed before the run
   // loop goes to sleep, exits, or begins processing sources at the top of its
   // loop.  If this function detects that a nested loop had run since the

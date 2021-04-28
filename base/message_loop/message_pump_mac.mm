@@ -454,6 +454,15 @@ void MessagePumpCFRunLoopBase::RunNestingDeferredWork() {
   }
 }
 
+void MessagePumpCFRunLoopBase::BeforeWait() {
+  if (!delegate_) {
+    // This point can be reached with a nullptr |delegate_| if Run is not on the
+    // stack but foreign code is spinning the CFRunLoop.
+    return;
+  }
+  delegate_->BeforeWait();
+}
+
 // Called before the run loop goes to sleep or exits, or processes sources.
 void MessagePumpCFRunLoopBase::MaybeScheduleNestingDeferredWork() {
   // deepest_nesting_level_ is set as run loops are entered.  If the deepest
@@ -483,6 +492,9 @@ void MessagePumpCFRunLoopBase::PreWaitObserver(CFRunLoopObserverRef observer,
     // nesting-deferred work may have accumulated.  Schedule it for processing
     // if appropriate.
     self->MaybeScheduleNestingDeferredWork();
+
+    // Notify the delegate that the loop is about to sleep.
+    self->BeforeWait();
   });
 }
 
