@@ -125,9 +125,12 @@ Googlers: See also [go/abp-performance/apk-size].
    binary size by 50kb.
  * As of 2019, Chrome for Android (arm32) grows by about 100kb per week.
  * To get a feeling for how large existing features are, refer to the
-   [milestone size breakdowns] and group by "Component".
+   [milestone size breakdowns] and group by "Component" (Googlers only).
+   * For non-googlers, run `//tools/binary_size/supersize archive` on a release
+     build to create a `.size` file, and upload it to [the viewer]
 
-[milestone size breakdowns]: https://storage.googleapis.com/chrome-supersize/index.html
+[milestone size breakdowns]: https://goto.google.com/chrome-supersize
+[the viewer]: https://chrome-supersize.firebaseapp.com/viewer.html
 
 ### Optimizing Translations (Strings)
 
@@ -236,8 +239,6 @@ Practical advice:
    * In C++, static objects are created at compile time, but in Java they
      are created by executing code within `<clinit>()`. There is often little
      advantage to initializing class fields statically vs. upon first use.
- * Use `String.format()` instead of concatenation.
-   * Concatenation causes a lot of StringBuilder code to be generated.
  * Try to use default values for fields rather than explicit initialization.
    * E.g. Name booleans such that they start as "false".
    * E.g. Use integer sentinels that have initial state as 0.
@@ -248,11 +249,17 @@ Practical advice:
      `onFinished(bool)`.
    * E.g. rather than have `onTextChanged()`, `onDateChanged()`, ..., have a
      single `onChanged()` that assumes everything changed.
- * Ensure unused code is optimized away by ProGuard / R8.
+ * Ensure unused code is optimized away by R8.
+   * See [here][proguard-build-doc] for more info on how Chrome uses ProGuard.
    * Add `@CheckDiscard` to methods or classes that you expect R8 to inline.
    * Add `@RemovableInRelease` to force a method to be a no-op when DCHECKs
      are disabled.
-   * See [here][proguard-build-doc] for more info on how Chrome uses ProGuard.
+   * Use [//third_party/r8/playground][r8-playground] to figure out how various
+     coding patterns are optimized by R8.
+   * Build with `enable_proguard_obfuscation = false` and use
+     `//third_party/android_sdk/public/build-tools/*/dexdump` to see how code was
+     optimized directly in apk / bundle targets.
+     
 
 [proguard-build-doc]: /build/android/docs/java_optimization.md
 [size-trybot]: /tools/binary_size/README.md#Binary-Size-Trybot-android_binary_size
@@ -261,6 +268,7 @@ Practical advice:
 [template_bloat_one]: https://bugs.chromium.org/p/chromium/issues/detail?id=716393
 [template_bloat_two]: https://chromium-review.googlesource.com/c/chromium/src/+/2639396
 [supersize-console]: /tools/binary_size/README.md#Usage_console
+[r8-playground]: /third_party/r8/playground
 
 ### Optimizing Third-Party Android Dependencies
 
