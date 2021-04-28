@@ -5,7 +5,7 @@
 import './sandboxed_load_time_data.js';
 
 import {assertCast, MessagePipe} from './message_pipe.m.js';
-import {DeleteFileResponse, DeleteResult, FileContext, LoadFilesMessage, Message, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileResponse, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.m.js';
+import {FileContext, LoadFilesMessage, Message, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileResponse, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.m.js';
 import {loadPiex} from './piex_module_loader.js';
 
 /** A pipe through which we can send messages to the parent frame. */
@@ -69,10 +69,10 @@ class ReceivedFile {
    * @return {!Promise<number>}
    */
   async deleteOriginalFileImpl() {
-    const deleteResponse =
-        /** @type {!DeleteFileResponse} */ (await parentMessagePipe.sendMessage(
-            Message.DELETE_FILE, {token: this.token}));
-    return deleteResponse.deleteResult;
+    await parentMessagePipe.sendMessage(
+        Message.DELETE_FILE, {token: this.token});
+    // TODO(b/156571159): Remove when app_main.js no longer needs this.
+    return 0; /* "SUCCESS" */
   }
 
   /**
@@ -333,7 +333,6 @@ window['showSaveFilePicker'] = null;
 window['showDirectoryPicker'] = null;
 
 export const TEST_ONLY = {
-  DeleteResult,
   RenameResult,
   DELEGATE,
   assertCast,

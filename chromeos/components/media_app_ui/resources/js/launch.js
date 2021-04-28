@@ -4,7 +4,7 @@
 
 import * as error_reporter from './error_reporter.js';
 import {assertCast, MessagePipe} from './message_pipe.m.js';
-import {DeleteFileMessage, DeleteResult, FileContext, LoadFilesMessage, Message, NavigateMessage, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileMessage, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.m.js';
+import {DeleteFileMessage, FileContext, LoadFilesMessage, Message, NavigateMessage, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileMessage, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.m.js';
 import {mediaAppPageHandler} from './mojo_api_bootstrap.js';
 
 /**
@@ -157,7 +157,11 @@ guestMessagePipe.registerHandler(Message.DELETE_FILE, async (message) => {
       assertFileAndDirectoryMutable(deleteMsg.token, 'Delete');
 
   if (!(await isHandleInCurrentDirectory(handle))) {
-    return {deleteResult: DeleteResult.FILE_MOVED};
+    // removeEntry() silently "succeeds" in this case, but that gives poor UX.
+    console.warn(`"${handle.name}" not found in the last opened folder.`);
+    const error = new Error('Ignoring delete request: file not found');
+    error.name = 'NotFoundError';
+    throw error;
   }
 
   await directory.removeEntry(handle.name);
@@ -169,8 +173,6 @@ guestMessagePipe.registerHandler(Message.DELETE_FILE, async (message) => {
   // `currentFiles[entryIndex]`, where `entryIndex` was previously the index of
   // the deleted file.
   await advance(0);
-
-  return {deleteResult: DeleteResult.SUCCESS};
 });
 
 /** Handler to rename the currently focused file. */

@@ -26,28 +26,12 @@
 };
 
 /**
- * Enum for results of deleting a file.
- * @enum {number}
- */
-/* #export */ const DeleteResult = {
-  SUCCESS: 0,
-  FILE_MOVED: 1,
-};
-
-/**
  * Message sent by the unprivileged context to request the privileged context to
  * delete the currently writable file.
  * If the supplied file `token` is invalid the request is rejected.
  * @typedef {{token: number}}
  */
 /* #export */ let DeleteFileMessage;
-
-/**
- * Response message sent by the privileged context indicating if a requested
- * delete was successful.
- * @typedef {{deleteResult: DeleteResult!}}
- */
-/* #export */ let DeleteFileResponse;
 
 /**
  * Representation of a file passed in on the LoadFilesMessage.

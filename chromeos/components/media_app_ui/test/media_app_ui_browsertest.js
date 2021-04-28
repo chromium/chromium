@@ -672,7 +672,9 @@ MediaAppUIBrowserTest.DeleteOriginalIPC = async () => {
   testResponse = await sendTestMessage(messageDeleteMoved);
 
   assertEquals(
-      'deleteOriginalFile resolved file moved', testResponse.testQueryResult);
+      'deleteOriginalFile failed Error: NotFoundError: delete-file: ' +
+          'Ignoring delete request: file not found',
+      testResponse.testQueryResult);
   // New file not removed from `DirectoryHandle` internal state.
   assertEquals(1, directory.files.length);
 
@@ -765,7 +767,9 @@ MediaAppUIBrowserTest.DeleteMissingFile = async () => {
   const testResponse = await sendTestMessage(messageDelete);
 
   assertEquals(
-      'deleteOriginalFile resolved file moved', testResponse.testQueryResult);
+      'deleteOriginalFile failed Error: NotFoundError: delete-file: ' +
+          'Ignoring delete request: file not found',
+      testResponse.testQueryResult);
 };
 
 // Tests that the app gracefully handles a rename request on a file that's

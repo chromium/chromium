@@ -6,7 +6,6 @@
 // it, and already loaded.
 import {TEST_ONLY} from './receiver.js';
 const {
-  DeleteResult,
   RenameResult,
   DELEGATE,
   assertCast,
@@ -82,13 +81,8 @@ async function runTestQuery(data) {
   } else if (data.deleteLastFile) {
     // Simulate a user deleting the currently open file.
     try {
-      const deleteResult = await assertCast(currentFile().deleteOriginalFile)
-                               .call(currentFile());
-      if (deleteResult === DeleteResult.FILE_MOVED) {
-        result = 'deleteOriginalFile resolved file moved';
-      } else {
-        result = 'deleteOriginalFile resolved success';
-      }
+      await assertCast(currentFile().deleteOriginalFile).call(currentFile());
+      result = 'deleteOriginalFile resolved success';
     } catch (/** @type{!Error} */ error) {
       result = `deleteOriginalFile failed Error: ${error}`;
     }
