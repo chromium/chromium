@@ -25,6 +25,7 @@
 #include "components/download/public/common/download_task_runner.h"
 #include "content/browser/devtools/protocol/devtools_download_manager_delegate.h"
 #include "content/browser/devtools/protocol/devtools_protocol_test_support.h"
+#include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/download/download_manager_impl.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
@@ -1996,6 +1997,58 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, SetAndGetCookies) {
     }
   }
   EXPECT_EQ(2u, found);
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       AutoAttachToOOPIFAfterNavigationStarted) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  IsolateOriginsForTesting(embedded_test_server(), shell()->web_contents(),
+                           {"b.com"});
+  GURL a_url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), a_url));
+  RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetMainFrame());
+
+  // Create iframe and start navigation.
+  GURL b_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  TestNavigationManager navigation_manager(shell()->web_contents(), b_url);
+  EXPECT_TRUE(ExecJs(
+      main_frame, JsReplace("const iframe = document.createElement('iframe');\n"
+                            "iframe.src = $1;\n"
+                            "document.body.appendChild(iframe);\n",
+                            b_url)));
+  // Pause subframe navigation.
+  EXPECT_TRUE(navigation_manager.WaitForRequestStart());
+
+  // Attach to DevTools after subframe starts navigating (but before it
+  // finishes).
+  Attach();
+
+  DevToolsAgentHostImpl* main_frame_agent =
+      RenderFrameDevToolsAgentHost::GetFor(main_frame);
+  EXPECT_NE(main_frame_agent, nullptr);
+
+  // Start auto-attach.
+  std::unique_ptr<base::DictionaryValue> command_params;
+  command_params = std::make_unique<base::DictionaryValue>();
+  command_params->SetBoolean("autoAttach", true);
+  command_params->SetBoolean("waitForDebuggerOnStart", false);
+  command_params->SetBoolean("flatten", true);
+  SendCommand("Target.setAutoAttach", std::move(command_params));
+
+  // Child frame should be created at this point, but isn't an OOPIF yet, so
+  // shouldn't have its own DevToolsAgentHost yet.
+  FrameTreeNode* child = main_frame->child_at(0);
+  EXPECT_NE(child, nullptr);
+  EXPECT_EQ(RenderFrameDevToolsAgentHost::GetFor(child), main_frame_agent);
+
+  // Resume navigation.
+  navigation_manager.WaitForNavigationFinished();
+
+  // Target for OOPIF should get attached.
+  auto notification = WaitForNotification("Target.attachedToTarget", true);
+  EXPECT_NE(RenderFrameDevToolsAgentHost::GetFor(child), main_frame_agent);
+  EXPECT_FALSE(notification->FindBoolPath("waitingForDebugger").value());
 }
 
 class DevToolsProtocolDeviceEmulationTest : public DevToolsProtocolTest {

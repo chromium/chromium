@@ -48,6 +48,7 @@ class TargetAutoAttacher : public ServiceWorkerDevToolsManager::Observer {
   DevToolsAgentHost* AutoAttachToFrame(NavigationRequest* navigation_request);
   void ChildWorkerCreated(DevToolsAgentHostImpl* agent_host,
                           bool waiting_for_debugger);
+  void DidFinishNavigation(NavigationRequest* navigation_handle);
 
  private:
   using Hosts = base::flat_set<scoped_refptr<DevToolsAgentHost>>;
@@ -61,6 +62,11 @@ class TargetAutoAttacher : public ServiceWorkerDevToolsManager::Observer {
   void WorkerCreated(ServiceWorkerDevToolsAgentHost* host,
                      bool* should_pause_on_start) override;
   void WorkerDestroyed(ServiceWorkerDevToolsAgentHost* host) override;
+
+  void AttachToAgentHost(DevToolsAgentHost* host,
+                         bool wait_for_debugger_on_start);
+  DevToolsAgentHost* AutoAttachToFrame(NavigationRequest* navigation_request,
+                                       bool wait_for_debugger_on_start);
 
   void UpdateFrames();
   bool is_browser_mode() const { return !renderer_channel_; }

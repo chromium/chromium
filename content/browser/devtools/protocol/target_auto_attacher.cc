@@ -106,8 +106,8 @@ base::flat_set<GURL> GetFrameUrls(RenderFrameHostImpl* render_frame_host) {
   if (render_frame_host) {
     for (FrameTreeNode* node : render_frame_host->frame_tree()->Nodes()) {
       frame_urls.insert(node->current_url());
-      // We use both old and new frame urls to support [3], where we attach while
-      // navigation is still ongoing.
+      // We use both old and new frame urls to support [3], where we attach
+      // while navigation is still ongoing.
       if (node->navigation_request()) {
         frame_urls.insert(node->navigation_request()->common_params().url);
       }
@@ -209,14 +209,25 @@ bool TargetAutoAttacher::ShouldThrottleFramesNavigation() const {
 }
 
 void TargetAutoAttacher::AttachToAgentHost(DevToolsAgentHost* host) {
+  AttachToAgentHost(host, wait_for_debugger_on_start_);
+}
+
+void TargetAutoAttacher::AttachToAgentHost(DevToolsAgentHost* host,
+                                           bool wait_for_debugger_on_start) {
   scoped_refptr<DevToolsAgentHost> agent_host(host);
   DCHECK(auto_attached_hosts_.find(agent_host) == auto_attached_hosts_.end());
-  delegate_->AutoAttach(agent_host.get(), wait_for_debugger_on_start_);
+  delegate_->AutoAttach(agent_host.get(), wait_for_debugger_on_start);
   auto_attached_hosts_.insert(agent_host);
 }
 
 DevToolsAgentHost* TargetAutoAttacher::AutoAttachToFrame(
     NavigationRequest* navigation_request) {
+  return AutoAttachToFrame(navigation_request, wait_for_debugger_on_start_);
+}
+
+DevToolsAgentHost* TargetAutoAttacher::AutoAttachToFrame(
+    NavigationRequest* navigation_request,
+    bool wait_for_debugger_on_start) {
   if (!ShouldThrottleFramesNavigation())
     return nullptr;
 
@@ -246,8 +257,8 @@ DevToolsAgentHost* TargetAutoAttacher::AutoAttachToFrame(
               navigation_request);
     }
     if (auto_attached_hosts_.find(agent_host) == auto_attached_hosts_.end()) {
-      AttachToAgentHost(agent_host.get());
-      return wait_for_debugger_on_start_ ? agent_host.get() : nullptr;
+      AttachToAgentHost(agent_host.get(), wait_for_debugger_on_start);
+      return wait_for_debugger_on_start ? agent_host.get() : nullptr;
     }
     return nullptr;
   }
@@ -380,6 +391,34 @@ void TargetAutoAttacher::ChildWorkerCreated(DevToolsAgentHostImpl* agent_host,
                                             bool waiting_for_debugger) {
   delegate_->AutoAttach(agent_host, waiting_for_debugger);
   auto_attached_hosts_.insert(scoped_refptr<DevToolsAgentHost>(agent_host));
+}
+
+void TargetAutoAttacher::DidFinishNavigation(
+    NavigationRequest* navigation_request) {
+  if (!render_frame_host_)
+    return;
+
+  if (navigation_request->frame_tree_node() ==
+      render_frame_host_->frame_tree_node()) {
+    UpdateServiceWorkers();
+    return;
+  }
+
+  // We only care about subframes that have |render_frame_host_| as their local
+  // root.
+  if (!navigation_request->HasCommitted())
+    return;
+  RenderFrameHostImpl* parent = navigation_request->GetParentFrame();
+  while (parent && !parent->is_local_root())
+    parent = parent->GetParent();
+  if (parent != render_frame_host_)
+    return;
+
+  // Some subframes may not be attached through TargetHandler::ResponseThrottle
+  // because DevTools wasn't attached when the navigation started, so no
+  // throttle was installed. We auto-attach them here instead (note that
+  // we cannot honor |wait_for_debugger_on_start_| in this case).
+  AutoAttachToFrame(navigation_request, false);
 }
 
 }  // namespace protocol

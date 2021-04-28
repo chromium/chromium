@@ -57,7 +57,7 @@ class TargetHandler : public DevToolsDomainHandler,
                    RenderFrameHostImpl* frame_host) override;
   Response Disable() override;
 
-  void DidFinishNavigation();
+  void DidFinishNavigation(NavigationHandle* navigation_handle);
   std::unique_ptr<NavigationThrottle> CreateThrottleForNavigation(
       NavigationHandle* navigation_handle);
   void UpdatePortals();

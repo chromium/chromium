@@ -425,25 +425,25 @@ void RenderFrameDevToolsAgentHost::ReadyToCommitNavigation(
 void RenderFrameDevToolsAgentHost::DidFinishNavigation(
     NavigationHandle* navigation_handle) {
   NavigationRequest* request = NavigationRequest::From(navigation_handle);
-  if (request->frame_tree_node() != frame_tree_node_)
-    return;
-  navigation_requests_.erase(request);
-  if (request->HasCommitted())
-    NotifyNavigated();
+  if (request->frame_tree_node() == frame_tree_node_) {
+    navigation_requests_.erase(request);
+    if (request->HasCommitted())
+      NotifyNavigated();
 
-  if (IsAttached()) {
-    UpdateRawHeadersAccess(frame_tree_node_->current_frame_host());
-  }
-  // UpdateFrameHost may destruct |this|.
-  scoped_refptr<RenderFrameDevToolsAgentHost> protect(this);
-  UpdateFrameHost(frame_tree_node_->current_frame_host());
+    if (IsAttached()) {
+      UpdateRawHeadersAccess(frame_tree_node_->current_frame_host());
+    }
+    // UpdateFrameHost may destruct |this|.
+    scoped_refptr<RenderFrameDevToolsAgentHost> protect(this);
+    UpdateFrameHost(frame_tree_node_->current_frame_host());
 
-  if (navigation_requests_.empty()) {
-    for (DevToolsSession* session : sessions())
-      session->ResumeSendingMessagesToAgent();
+    if (navigation_requests_.empty()) {
+      for (DevToolsSession* session : sessions())
+        session->ResumeSendingMessagesToAgent();
+    }
   }
   for (auto* target : protocol::TargetHandler::ForAgentHost(this))
-    target->DidFinishNavigation();
+    target->DidFinishNavigation(navigation_handle);
 }
 
 void RenderFrameDevToolsAgentHost::UpdateFrameHost(
