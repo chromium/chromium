@@ -27,7 +27,6 @@ class Browser;
 class PrefService;
 class Profile;
 class ExtensionsContainer;
-class ToolbarActionViewController;
 
 namespace extensions {
 class ExtensionActionManager;
@@ -127,16 +126,6 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
   }
 
   bool actions_initialized() const { return actions_initialized_; }
-
-  std::vector<std::unique_ptr<ToolbarActionViewController>> CreateActions(
-      Browser* browser,
-      ExtensionsContainer* main_bar,
-      bool in_overflow_menu);
-  std::unique_ptr<ToolbarActionViewController> CreateActionForId(
-      Browser* browser,
-      ExtensionsContainer* main_bar,
-      bool in_overflow_menu,
-      const ActionId& action_id);
 
   const std::vector<ActionId>& action_ids() const { return action_ids_; }
 

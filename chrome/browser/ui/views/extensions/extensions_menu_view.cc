@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/bubble_menu_item_factory.h"
@@ -286,9 +287,14 @@ void ExtensionsMenuView::SortMenuItemsByName() {
 
 void ExtensionsMenuView::CreateAndInsertNewItem(
     const ToolbarActionsModel::ActionId& id) {
-  std::unique_ptr<ToolbarActionViewController> controller =
-      toolbar_model_->CreateActionForId(browser_, extensions_container_, false,
-                                        id);
+  // For the extensions menu UI, we pretend the the overflow menu isn't
+  // "overflow", because the UI shouldn't react differently.
+  // TODO(https://crbug.com/1197766): Remove the is_in_overflow_menu bool
+  // entirely.
+  constexpr bool kIsInOverflowMenu = false;
+  std::unique_ptr<ExtensionActionViewController> controller =
+      ExtensionActionViewController::Create(id, browser_, extensions_container_,
+                                            kIsInOverflowMenu);
 
   // The bare `new` is safe here, because InsertMenuItem is guaranteed to
   // be added to the view hierarchy, which takes ownership.

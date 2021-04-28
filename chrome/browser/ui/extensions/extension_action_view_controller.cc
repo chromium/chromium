@@ -29,6 +29,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "extensions/browser/extension_action.h"
+#include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/extension.h"
@@ -42,13 +43,39 @@ using extensions::ActionInfo;
 using extensions::CommandService;
 using extensions::ExtensionActionRunner;
 
+// static
+std::unique_ptr<ExtensionActionViewController>
+ExtensionActionViewController::Create(
+    const extensions::ExtensionId& extension_id,
+    Browser* browser,
+    ExtensionsContainer* extensions_container,
+    bool in_overflow_mode) {
+  DCHECK(browser);
+  DCHECK(extensions_container);
+
+  auto* registry = extensions::ExtensionRegistry::Get(browser->profile());
+  scoped_refptr<const extensions::Extension> extension =
+      registry->enabled_extensions().GetByID(extension_id);
+  DCHECK(extension);
+  extensions::ExtensionAction* extension_action =
+      extensions::ExtensionActionManager::Get(browser->profile())
+          ->GetExtensionAction(*extension);
+  DCHECK(extension_action);
+
+  // WrapUnique() because the constructor is private.
+  return base::WrapUnique(new ExtensionActionViewController(
+      std::move(extension), browser, extension_action, registry,
+      extensions_container, in_overflow_mode));
+}
+
 ExtensionActionViewController::ExtensionActionViewController(
-    const extensions::Extension* extension,
+    scoped_refptr<const extensions::Extension> extension,
     Browser* browser,
     extensions::ExtensionAction* extension_action,
+    extensions::ExtensionRegistry* extension_registry,
     ExtensionsContainer* extensions_container,
     bool in_overflow_mode)
-    : extension_(extension),
+    : extension_(std::move(extension)),
       browser_(browser),
       in_overflow_mode_(in_overflow_mode),
       extension_action_(extension_action),
@@ -56,13 +83,11 @@ ExtensionActionViewController::ExtensionActionViewController(
       popup_host_(nullptr),
       view_delegate_(nullptr),
       platform_delegate_(ExtensionActionPlatformDelegate::Create(this)),
-      icon_factory_(browser->profile(), extension, extension_action, this),
-      extension_registry_(
-          extensions::ExtensionRegistry::Get(browser_->profile())) {
-  DCHECK(extensions_container);
-  DCHECK(extension_action);
-  DCHECK(extension);
-}
+      icon_factory_(browser->profile(),
+                    extension_.get(),
+                    extension_action,
+                    this),
+      extension_registry_(extension_registry) {}
 
 ExtensionActionViewController::~ExtensionActionViewController() {
   DCHECK(!IsShowingPopup());

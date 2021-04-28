@@ -153,40 +153,6 @@ void ToolbarActionsModel::OnExtensionActionUpdated(
   }
 }
 
-std::vector<std::unique_ptr<ToolbarActionViewController>>
-ToolbarActionsModel::CreateActions(Browser* browser,
-                                   ExtensionsContainer* main_bar,
-                                   bool in_overflow_mode) {
-  DCHECK(browser);
-  DCHECK(main_bar);
-  std::vector<std::unique_ptr<ToolbarActionViewController>> action_list;
-
-  for (const ActionId& action_id : action_ids_) {
-    action_list.push_back(
-        CreateActionForId(browser, main_bar, in_overflow_mode, action_id));
-  }
-
-  return action_list;
-}
-
-std::unique_ptr<ToolbarActionViewController>
-ToolbarActionsModel::CreateActionForId(Browser* browser,
-                                       ExtensionsContainer* main_bar,
-                                       bool in_overflow_mode,
-                                       const ActionId& action_id) {
-  // We should never have uninitialized actions in action_ids().
-  DCHECK(!action_id.empty());
-  // Get the extension.
-  const extensions::Extension* extension = GetExtensionById(action_id);
-  DCHECK(extension);
-
-  // Create and add an ExtensionActionViewController for the extension.
-  return std::make_unique<ExtensionActionViewController>(
-      extension, browser,
-      extension_action_manager_->GetExtensionAction(*extension), main_bar,
-      in_overflow_mode);
-}
-
 void ToolbarActionsModel::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension) {
@@ -521,7 +487,7 @@ void ToolbarActionsModel::Populate() {
   // proper order insertion), holes can be present if there isn't an action
   // for each id. This is handled below when we add the actions to
   // |action_ids_| to ensure that there are never any holes in
-  // |action_ids_| itself (or, relatedly, CreateActions()).
+  // |action_ids_| itself.
   for (const ActionId& action : all_actions) {
     std::vector<ActionId>::const_iterator pos = std::find(
         last_known_positions_.begin(), last_known_positions_.end(), action);
