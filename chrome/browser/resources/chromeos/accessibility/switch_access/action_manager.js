@@ -262,7 +262,7 @@ export class ActionManager {
         Navigator.byPoint.start();
         return true;
       case SwitchAccessMenuAction.ITEM_SCAN:
-        Navigator.byPoint.stop();
+        Navigator.byItem.restart();
         return true;
       default:
         return false;

@@ -36,7 +36,6 @@ export class PointScanManager extends PointNavigatorInterface {
 
   stop() {
     chrome.accessibilityPrivate.setPointScanState(PointScanState.STOP);
-    SwitchAccess.mode = SAConstants.Mode.ITEM_SCAN;
   }
 
   // ============= Private Methods =============
