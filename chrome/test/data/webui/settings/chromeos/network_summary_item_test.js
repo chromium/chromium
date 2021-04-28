@@ -157,6 +157,37 @@ suite('NetworkSummaryItem', function() {
     assertFalse(doesElementExist('.subpage-arrow'));
   });
 
+  test('Click event in SIMinfo should not trigger show details', function() {
+    const mojom = chromeos.networkConfig.mojom;
+
+    let showDetailFired = false;
+    netSummaryItem.addEventListener(
+        'show-detail', () => showDetailFired = true);
+
+    netSummaryItem.setProperties({
+      isUpdatedCellularUiEnabled_: false,
+      deviceState: {
+        deviceState: mojom.DeviceStateType.kEnabled,
+        type: mojom.NetworkType.kCellular,
+        simAbsent: false,
+        simLockStatus: {lockType: 'sim-pin'},
+      },
+      activeNetworkState: {
+        connectionState: mojom.ConnectionStateType.kNotConnected,
+        guid: 'test_guid',
+        type: mojom.NetworkType.kCellular,
+        typeState: {cellular: {networkTechnology: ''}}
+      },
+    });
+    Polymer.dom.flush();
+    assertTrue(doesElementExist('network-siminfo'));
+
+    const networkSimInfo = netSummaryItem.$$('network-siminfo');
+    networkSimInfo.click();
+    Polymer.dom.flush();
+    assertFalse(showDetailFired);
+  });
+
   test('Inhibited device on cellular network, flag on', function() {
     const mojom = chromeos.networkConfig.mojom;
 
