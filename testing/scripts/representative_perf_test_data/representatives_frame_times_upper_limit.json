@@ -111,7 +111,9 @@
     "css_value_type_shadow": {
       "ci_095": 10.26,
       "avg": 52.122,
-      "cpu_wall_time_ratio": 0.553
+      "cpu_wall_time_ratio": 0.553,
+      "experimental": true,
+      "_comment": "crbug.com/1139155"
     },
     "animometer_webgl_attrib_arrays": {
       "ci_095": 0.422,
@@ -132,7 +134,9 @@
     "ie_chalkboard": {
       "ci_095": 34.584,
       "avg": 101.084,
-      "cpu_wall_time_ratio": 0.095
+      "cpu_wall_time_ratio": 0.095,
+      "experimental": true,
+      "_comment": "crbug.com/1133599"
     },
     "new_tilings": {
       "ci_095": 0.334,
