@@ -252,17 +252,17 @@
 
   #green-triangle {
     -webkit-mask: url(../images/background_svgs/triangle.svg);
-    animation: green-triangle 2s infinite linear;
+    animation: green-triangle 3s infinite cubic-bezier(.63,.03,.41,.98);
     background-color: var(--welcome-green);
     left: 1813px;
-    top: 151px;
-    transform: translate(-50%, -50%) rotate(0deg);
-    transform-origin: 250px 250px;
+    top: 0;
+    transform: translate(-50%, -50%) rotate(-10deg);
+    transform-origin: 200px 300px;
   }
 
   @keyframes green-triangle {
     to {
-      transform: translate(-50%, -50%) rotate(360deg);
+      transform: translate(-50%, -50%) rotate(350deg);
     }
   }
 
@@ -288,7 +288,7 @@
   #green-connectagon {
     --connectagon-shape-color: var(--welcome-green);
     --connectagon-connector-color: var(--welcome-green-tinted);
-    animation: green-connectagon 8s alternate infinite linear;
+    animation: green-connectagon 6s alternate infinite linear;
     left: 851px;
     top: 766px;
     transform: translate(-50%, -50%) rotate(139deg);
