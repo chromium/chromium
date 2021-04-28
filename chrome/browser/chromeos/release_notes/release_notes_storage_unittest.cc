@@ -101,15 +101,15 @@ TEST_F(ReleaseNotesStorageTest, ShouldShowReleaseNotes) {
   EXPECT_EQ(true, release_notes_storage->ShouldNotify());
 }
 
-// We have previously seen another notification on M89, there have been no
+// We have previously seen another notification on M91, there have been no
 // new release notes since then so notification should not be shown.
-TEST_F(ReleaseNotesStorageTest, ShouldNotShowReleaseNotesIf89Seen) {
+TEST_F(ReleaseNotesStorageTest, ShouldNotShowReleaseNotesIf91Seen) {
   std::unique_ptr<Profile> profile =
       SetupStandardEnvironmentAndProfile("test@gmail.com", false);
   std::unique_ptr<ReleaseNotesStorage> release_notes_storage =
       std::make_unique<ReleaseNotesStorage>(profile.get());
   profile.get()->GetPrefs()->SetInteger(prefs::kReleaseNotesLastShownMilestone,
-                                        89);
+                                        91);
 
   EXPECT_EQ(false, release_notes_storage->ShouldNotify());
 }
