@@ -3,8 +3,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import sys
 import os
+import shutil
+import sys
 
 from tsc_ignore_errors import run_tsc_ignore_errors
 
@@ -22,6 +23,9 @@ finally:
 
 
 def compile_src(out_dir):
+    # First, clean the output directory so deleted files are pruned from old builds.
+    shutil.rmtree(out_dir)
+
     run_tsc_ignore_errors([
         '--project',
         os.path.join(webgpu_cts_dir, 'src', 'tsconfig.json'),
@@ -41,6 +45,9 @@ def compile_src(out_dir):
 
 
 def compile_src_for_node(out_dir):
+    # First, clean the output directory so deleted files are pruned from old builds.
+    shutil.rmtree(out_dir)
+
     run_tsc_ignore_errors([
         '--project',
         os.path.join(webgpu_cts_dir, 'src', 'node.tsconfig.json'),
