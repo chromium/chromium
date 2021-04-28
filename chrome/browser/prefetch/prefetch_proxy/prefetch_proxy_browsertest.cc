@@ -81,6 +81,7 @@
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/network_service_util.h"
 #include "content/public/common/page_type.h"
@@ -447,6 +448,15 @@ class PrefetchProxyBrowserTest
                             base::Unretained(this)));
     EXPECT_TRUE(origin_server_->Start());
 
+    referring_page_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
+    referring_page_server_->SetSSLConfig(
+        net::EmbeddedTestServer::CERT_TEST_NAMES);
+    referring_page_server_->ServeFilesFromSourceDirectory("chrome/test/data");
+    referring_page_server_->SetSSLConfig(
+        net::EmbeddedTestServer::CERT_TEST_NAMES);
+    EXPECT_TRUE(referring_page_server_->Start());
+
     proxy_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
     proxy_server_->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
@@ -539,7 +549,9 @@ class PrefetchProxyBrowserTest
 
   void InsertSpeculation(bool subresources,
                          const std::vector<GURL>& prefetch_urls) {
-    ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+    // Make sure we are on a valid referring page.
+    ui_test_utils::NavigateToURL(browser(),
+                                 GetReferringPageServerURL("/search/q=blah"));
 
     std::string speculation_script = R"(
       var script = document.createElement('script');
@@ -781,6 +793,10 @@ class PrefetchProxyBrowserTest
     return origin_server_->GetURL("a.test", path);
   }
 
+  GURL GetReferringPageServerURL(const std::string& path) const {
+    return referring_page_server_->GetURL("www.google.com", path);
+  }
+
   GURL GetCanaryServerURL() const { return canary_server_->GetURL("/"); }
 
  private:
@@ -959,6 +975,7 @@ class PrefetchProxyBrowserTest
   std::unique_ptr<net::EmbeddedTestServer> origin_server_;
   std::unique_ptr<net::EmbeddedTestServer> http_server_;
   std::unique_ptr<net::EmbeddedTestServer> canary_server_;
+  std::unique_ptr<net::EmbeddedTestServer> referring_page_server_;
 
   std::vector<net::test_server::HttpRequest> origin_server_requests_;
   std::vector<net::test_server::HttpRequest> proxy_server_requests_;
@@ -4126,7 +4143,7 @@ class SpeculationPrefetchProxyTest : public PrefetchProxyBrowserTest {
           }},
          {blink::features::kLightweightNoStatePrefetch, {}},
          {blink::features::kSpeculationRulesPrefetchProxy, {}}},
-        {});
+        {{features::kLazyImageLoading, {}}});
   }
 
  private:
@@ -4138,8 +4155,6 @@ IN_PROC_BROWSER_TEST_F(SpeculationPrefetchProxyTest,
   base::HistogramTester histogram_tester;
 
   SetDataSaverEnabled(true);
-  GURL starting_page = GetOriginServerURL("/simple.html");
-  ui_test_utils::NavigateToURL(browser(), starting_page);
   WaitForUpdatedCustomProxyConfig();
 
   ui_test_utils::WaitForHistoryToLoad(HistoryServiceFactory::GetForProfile(
@@ -4161,7 +4176,6 @@ IN_PROC_BROWSER_TEST_F(SpeculationPrefetchProxyTest,
 
   tab_helper_observer.SetOnNSPFinishedClosure(nsp_run_loop.QuitClosure());
 
-  GURL doc_url("https://www.google.com/search?q=test");
   InsertSpeculation(true, {eligible_link});
 
   // This run loop will quit when all the prefetch responses have been
@@ -4264,7 +4278,7 @@ IN_PROC_BROWSER_TEST_F(SpeculationPrefetchProxyTest,
       origin_server_requests();
 
   // Only one request for the image is expected, and it should have cookies.
-  ASSERT_EQ(origin_requests_after_prerender.size() + 1,
+  EXPECT_EQ(origin_requests_after_prerender.size() + 1,
             origin_requests_after_click.size());
   net::test_server::HttpRequest request =
       origin_requests_after_click[origin_requests_after_click.size() - 1];
@@ -4311,7 +4325,6 @@ IN_PROC_BROWSER_TEST_F(SpeculationPrefetchProxyTest,
 IN_PROC_BROWSER_TEST_F(SpeculationPrefetchProxyTest,
                        DISABLE_ON_WIN_MAC_CHROMEOS(ConnectProxyEndtoEnd)) {
   SetDataSaverEnabled(true);
-  ui_test_utils::NavigateToURL(browser(), GetOriginServerURL("/simple.html"));
   WaitForUpdatedCustomProxyConfig();
 
   PrefetchProxyTabHelper* tab_helper =

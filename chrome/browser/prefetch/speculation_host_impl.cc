@@ -32,7 +32,8 @@ void SpeculationHostImpl::Bind(
 SpeculationHostImpl::SpeculationHostImpl(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<blink::mojom::SpeculationHost> receiver)
-    : FrameServiceBase(frame_host, std::move(receiver)) {}
+    : FrameServiceBase(frame_host, std::move(receiver)),
+      document_url_(frame_host->GetLastCommittedURL()) {}
 
 SpeculationHostImpl::~SpeculationHostImpl() = default;
 
@@ -85,5 +86,5 @@ void SpeculationHostImpl::UpdateSpeculationCandidates(
 
   // TODO(ryansturm): Handle CSP prefetch-src. https://crbug.com/1192857
   prefetch_proxy_tab_helper->PrefetchSpeculationCandidates(
-      private_prefetches_with_subresources, private_prefetches);
+      private_prefetches_with_subresources, private_prefetches, document_url_);
 }

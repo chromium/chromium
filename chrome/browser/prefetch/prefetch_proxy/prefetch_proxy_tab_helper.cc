@@ -1153,10 +1153,19 @@ void PrefetchProxyTabHelper::StartSpareRenderer() {
 
 void PrefetchProxyTabHelper::PrefetchSpeculationCandidates(
     const std::vector<GURL>& private_prefetches_with_subresources,
-    const std::vector<GURL>& private_prefetches) {
+    const std::vector<GURL>& private_prefetches,
+    const GURL& source_document_url) {
   // Use navigation predictor by default.
   if (!PrefetchProxyUseSpeculationRules())
     return;
+
+  // For IP-private prefetches, using the Google proxy needs to be restricted to
+  // first party sites until we understand the benefit and determine interest
+  // from other sites.
+  if (!IsGoogleDomainUrl(source_document_url, google_util::DISALLOW_SUBDOMAIN,
+                         google_util::ALLOW_NON_STANDARD_PORTS)) {
+    return;
+  }
 
   std::vector<GURL> prefetches = private_prefetches;
   std::set<GURL> allowed_to_prefetch_subresources;

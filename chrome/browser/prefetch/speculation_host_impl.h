@@ -10,6 +10,7 @@
 #include "content/public/browser/frame_service_base.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
+#include "url/gurl.h"
 
 namespace content {
 class RenderFrameHost;
@@ -39,6 +40,9 @@ class SpeculationHostImpl
   // processes one update per document. At present, updates after the first are
   // ignored.
   bool received_update_ = false;
+
+  // The URL of the document that this object was created for.
+  const GURL document_url_;
 };
 
 #endif  // CHROME_BROWSER_PREFETCH_SPECULATION_HOST_IMPL_H_

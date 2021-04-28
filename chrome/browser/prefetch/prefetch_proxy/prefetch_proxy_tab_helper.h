@@ -180,7 +180,8 @@ class PrefetchProxyTabHelper
   // |private_prefetches_with_subresources| (up to a limit).
   void PrefetchSpeculationCandidates(
       const std::vector<GURL>& private_prefetches_with_subresources,
-      const std::vector<GURL>& private_prefetches);
+      const std::vector<GURL>& private_prefetches,
+      const GURL& source_document_url);
 
   // content::WebContentsObserver implementation.
   void DidStartNavigation(
