@@ -295,8 +295,9 @@ class AndroidPort(base.Port):
     SUPPORTED_VERSIONS = ('android')
 
     FALLBACK_PATHS = {
-        'kitkat':
-        ['android'] + linux.LinuxPort.latest_platform_fallback_path()
+        # Don't use the current android platform specific baselines since
+        # they are no longer maintained.
+        'pie': linux.LinuxPort.latest_platform_fallback_path()
     }
 
     BUILD_REQUIREMENTS_URL = 'https://www.chromium.org/developers/how-tos/android-build-instructions'
@@ -305,7 +306,7 @@ class AndroidPort(base.Port):
         super(AndroidPort, self).__init__(
             host, port_name, options=options, **kwargs)
         self._operating_system = 'android'
-        self._version = 'kitkat'
+        self._version = 'pie'
         fs = host.filesystem
         self._local_port = factory.PortFactory(host).get(**kwargs)
         if apk or product:
