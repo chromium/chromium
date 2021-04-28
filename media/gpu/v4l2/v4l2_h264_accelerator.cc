@@ -296,14 +296,6 @@ H264Decoder::H264Accelerator::Status V4L2H264Accelerator::SubmitSlice(
   SHDR_TO_V4L2DPARM(pic_order_cnt_bit_size);
 #undef SHDR_TO_V4L2DPARM
 
-#define SET_V4L2_DPARM_FLAG_IF(cond, flag) \
-  priv_->v4l2_decode_param.flags |= ((slice_hdr->cond) ? (flag) : 0)
-  SET_V4L2_DPARM_FLAG_IF(idr_pic_flag, V4L2_H264_DECODE_PARAM_FLAG_IDR_PIC);
-  SET_V4L2_DPARM_FLAG_IF(field_pic_flag, V4L2_H264_DECODE_PARAM_FLAG_FIELD_PIC);
-  SET_V4L2_DPARM_FLAG_IF(bottom_field_flag,
-                         V4L2_H264_DECODE_PARAM_FLAG_BOTTOM_FIELD);
-#undef SET_V4L2_DPARM_FLAG_IF
-
   scoped_refptr<V4L2DecodeSurface> dec_surface =
       H264PictureToV4L2DecodeSurface(pic.get());
 
@@ -327,9 +319,24 @@ H264Decoder::H264Accelerator::Status V4L2H264Accelerator::SubmitDecode(
   scoped_refptr<V4L2DecodeSurface> dec_surface =
       H264PictureToV4L2DecodeSurface(pic.get());
 
-  if (pic->idr) {
-    priv_->v4l2_decode_param.flags |= 1;
+
+  switch (pic->field) {
+    case H264Picture::FIELD_NONE:
+      priv_->v4l2_decode_param.flags = 0;
+      break;
+    case H264Picture::FIELD_TOP:
+      priv_->v4l2_decode_param.flags = V4L2_H264_DECODE_PARAM_FLAG_FIELD_PIC;
+      break;
+    case H264Picture::FIELD_BOTTOM:
+      priv_->v4l2_decode_param.flags =
+          (V4L2_H264_DECODE_PARAM_FLAG_FIELD_PIC |
+           V4L2_H264_DECODE_PARAM_FLAG_BOTTOM_FIELD);
+      break;
   }
+
+  if (pic->idr)
+    priv_->v4l2_decode_param.flags |= V4L2_H264_DECODE_PARAM_FLAG_IDR_PIC;
+
   priv_->v4l2_decode_param.top_field_order_cnt = pic->top_field_order_cnt;
   priv_->v4l2_decode_param.bottom_field_order_cnt = pic->bottom_field_order_cnt;
 
