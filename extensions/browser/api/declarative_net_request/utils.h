@@ -61,7 +61,8 @@ void OverrideGetChecksumForTest(int checksum);
 bool PersistIndexedRuleset(const base::FilePath& path,
                            base::span<const uint8_t> data);
 
-// Helper to clear each renderer's in-memory cache the next time it navigates.
+// Helper to clear any back-forward caches and each renderer's in-memory cache
+// the next time it navigates.
 void ClearRendererCacheOnNavigation();
 
 // Helper to log the |kReadDynamicRulesJSONStatusHistogram| histogram.

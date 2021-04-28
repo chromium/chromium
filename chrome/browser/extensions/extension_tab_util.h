@@ -253,6 +253,10 @@ class ExtensionTabUtil {
   // some non-const member functions of |contents|, but actually leaves it
   // unmodified.
   static api::tabs::TabStatus GetLoadingStatus(content::WebContents* contents);
+
+  // Clears the back-forward cache for all active tabs across all browser
+  // contexts.
+  static void ClearBackForwardCache();
 };
 
 }  // namespace extensions

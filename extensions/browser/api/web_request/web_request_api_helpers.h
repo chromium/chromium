@@ -494,7 +494,8 @@ bool MergeOnAuthRequiredResponses(const EventResponseDeltas& deltas,
                                   net::AuthCredentials* auth_credentials,
                                   IgnoredActions* ignored_actions);
 
-// Triggers clearing each renderer's in-memory cache the next time it navigates.
+// Triggers clearing any back-forward caches and each renderer's in-memory cache
+// the next time it navigates.
 void ClearCacheOnNavigation();
 
 // Converts the |name|, |value| pair of a http header to a HttpHeaders

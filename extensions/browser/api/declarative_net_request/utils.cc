@@ -25,6 +25,7 @@
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "extensions/browser/api/web_request/web_request_resource_type.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/api/declarative_net_request/dnr_manifest_data.h"
 #include "extensions/common/permissions/api_permission.h"
@@ -155,6 +156,7 @@ bool PersistIndexedRuleset(const base::FilePath& path,
 
 void ClearRendererCacheOnNavigation() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  extensions::ExtensionsBrowserClient::Get()->ClearBackForwardCache();
   web_cache::WebCacheManager::GetInstance()->ClearCacheOnNavigation();
 }
 

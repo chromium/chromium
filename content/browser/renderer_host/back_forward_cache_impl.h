@@ -157,9 +157,6 @@ class CONTENT_EXPORT BackForwardCacheImpl
       int navigation_entry_id,
       blink::mojom::PageRestoreParamsPtr page_restore_params);
 
-  // Evict all entries from the BackForwardCache.
-  void Flush();
-
   // Evict all cached pages in the same BrowsingInstance as
   // |site_instance|.
   void EvictFramesInRelatedSiteInstances(SiteInstance* site_instance);
@@ -215,6 +212,8 @@ class CONTENT_EXPORT BackForwardCacheImpl
 
   const std::list<std::unique_ptr<Entry>>& GetEntries();
 
+  // BackForwardCache overrides:
+  void Flush() override;
   void DisableForTesting(DisableForTestingReason reason) override;
 
   // RenderProcessHostInternalObserver methods

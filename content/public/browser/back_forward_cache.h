@@ -126,6 +126,9 @@ class CONTENT_EXPORT BackForwardCache {
     TEST_USES_UNLOAD_EVENT,
   };
 
+  // Evict all entries from the BackForwardCache.
+  virtual void Flush() = 0;
+
   // Disables the BackForwardCache so that no documents will be stored/served.
   // This allows tests to "force" not using the BackForwardCache, this can be
   // useful when:

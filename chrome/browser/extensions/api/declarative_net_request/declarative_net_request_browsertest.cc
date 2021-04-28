@@ -6066,6 +6066,131 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, FledgeAuctionScripts) {
   EXPECT_EQ(nullptr, content::EvalJs(web_contents(), run_auction_command));
 }
 
+class DeclarativeNetRequestBackForwardCacheBrowserTest
+    : public DeclarativeNetRequestBrowserTest {
+ public:
+  DeclarativeNetRequestBackForwardCacheBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kBackForwardCache,
+          {{"TimeToLiveInBackForwardCacheInSeconds", "3600"}}}},
+        {features::kBackForwardCacheMemoryControls});
+  }
+
+  // Setups the back forward cache with one entry (a.com) and returns a
+  // RenderFrameDeletedObserver that watches for it being destroyed.
+  std::unique_ptr<content::RenderFrameDeletedObserver>
+  NavigateForBackForwardCache() {
+    GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+    GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+    // 1) Navigate to A.
+    content::RenderFrameHost* rfh_a =
+        ui_test_utils::NavigateToURL(browser(), url_a);
+    auto delete_observer_rfh_a =
+        std::make_unique<content::RenderFrameDeletedObserver>(rfh_a);
+
+    // 2) Navigate to B.
+    content::RenderFrameHost* rfh_b =
+        ui_test_utils::NavigateToURL(browser(), url_b);
+
+    // Ensure that |rfh_a| is in the cache.
+    EXPECT_FALSE(delete_observer_rfh_a->deleted());
+    EXPECT_NE(rfh_a, rfh_b);
+    EXPECT_EQ(rfh_a->GetLifecycleState(),
+              content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+    return delete_observer_rfh_a;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Ensure that Back Forward is cleared on adding dynamic rules.
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBackForwardCacheBrowserTest,
+                       BackForwardCacheClearedOnAddingDynamicRules) {
+  set_config_flags(ConfigFlag::kConfig_HasBackgroundScript);
+
+  // Now block requests to script.js.
+  TestRule rule = CreateGenericRule();
+  rule.condition->url_filter = std::string("script.js");
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules({rule}));
+
+  auto bfcache_rfh_delete_observer = NavigateForBackForwardCache();
+  const ExtensionId extension_id = last_loaded_extension_id();
+
+  // Add dynamic rule.
+  rule.condition->url_filter = std::string("dynamic.com");
+  ASSERT_NO_FATAL_FAILURE(AddDynamicRules(extension_id, {rule}));
+
+  // Expect that |rfh_a| is destroyed as the cache would get cleared due to
+  // addition of new rule.
+  bfcache_rfh_delete_observer->WaitUntilDeleted();
+}
+
+// Ensure that Back Forward is cleared on updating session rules.
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBackForwardCacheBrowserTest,
+                       BackForwardCacheClearedOnUpdatingSessionRules) {
+  set_config_flags(ConfigFlag::kConfig_HasBackgroundScript);
+
+  // Now block requests to script.js.
+  TestRule rule = CreateGenericRule();
+  rule.condition->url_filter = std::string("script.js");
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules({rule}));
+
+  auto bfcache_rfh_delete_observer = NavigateForBackForwardCache();
+  const ExtensionId extension_id = last_loaded_extension_id();
+
+  // Add session-scoped rule to block requests to "session.example".
+  rule.condition->url_filter = std::string("session.example");
+  ASSERT_NO_FATAL_FAILURE(UpdateSessionRules(extension_id, {}, {rule}));
+
+  // Expect that |rfh_a| is destroyed as the cache would get cleared due to
+  // addition of new rule.
+  bfcache_rfh_delete_observer->WaitUntilDeleted();
+}
+
+// Ensure that Back Forward is cleared on updating enabled rulesets.
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBackForwardCacheBrowserTest,
+                       BackForwardCacheClearedOnUpdatingEnabledRulesets) {
+  set_config_flags(ConfigFlag::kConfig_HasBackgroundScript);
+
+  std::vector<TestRulesetInfo> rulesets;
+  rulesets.emplace_back("ruleset_1", *ToListValue({CreateGenericRule(1)}));
+  rulesets.emplace_back("ruleset_2", *ToListValue({CreateGenericRule(2)}),
+                        false /* enabled */);
+
+  ASSERT_NO_FATAL_FAILURE(
+      LoadExtensionWithRulesets(rulesets, "test_extension", {} /* hosts */));
+
+  auto bfcache_rfh_delete_observer = NavigateForBackForwardCache();
+  const ExtensionId extension_id = last_loaded_extension_id();
+
+  // Enable |ruleset_2|.
+  ASSERT_NO_FATAL_FAILURE(
+      UpdateEnabledRulesets(last_loaded_extension_id(), {}, {"ruleset_2"}));
+
+  // Expect that |rfh_a| is destroyed as the cache would get cleared due to
+  // addition of new ruleset.
+  bfcache_rfh_delete_observer->WaitUntilDeleted();
+}
+
+// Ensure that Back Forward is cleared on new extension.
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBackForwardCacheBrowserTest,
+                       BackForwardCacheClearedOnAddExtension) {
+  set_config_flags(ConfigFlag::kConfig_HasBackgroundScript);
+
+  auto bfcache_rfh_delete_observer = NavigateForBackForwardCache();
+
+  // Now block requests to script.js.
+  TestRule rule = CreateGenericRule();
+  rule.condition->url_filter = std::string("script.js");
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules({rule}));
+
+  // Expect that |rfh_a| is destroyed as the cache would get cleared due to
+  // addition of new rule.
+  bfcache_rfh_delete_observer->WaitUntilDeleted();
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          DeclarativeNetRequestBrowserTest,
                          ::testing::Values(ExtensionLoadType::PACKED,
@@ -6103,6 +6228,11 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          DeclarativeNetRequestAllowAllRequestsBrowserTest,
+                         ::testing::Values(ExtensionLoadType::PACKED,
+                                           ExtensionLoadType::UNPACKED));
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DeclarativeNetRequestBackForwardCacheBrowserTest,
                          ::testing::Values(ExtensionLoadType::PACKED,
                                            ExtensionLoadType::UNPACKED));
 

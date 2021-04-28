@@ -287,6 +287,10 @@ class ExtensionsBrowserClient {
                               int embedder_process_id,
                               int view_instance_id) {}
 
+  // Clears the back-forward cache for all active tabs across all browser
+  // contexts.
+  virtual void ClearBackForwardCache() {}
+
   // Attaches the task manager extension tag to |web_contents|, if needed based
   // on |view_type|, so that its corresponding task shows up in the task
   // manager.

@@ -34,6 +34,7 @@
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/url_constants.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -180,6 +181,9 @@ TabHelper::TabHelper(content::WebContents* web_contents)
   ExtensionWebContentsObserver::GetForWebContents(web_contents)->dispatcher()->
       set_delegate(this);
 
+  registry_observation_.Observe(
+      ExtensionRegistry::Get(web_contents->GetBrowserContext()));
+
   BookmarkManagerPrivateDragEventRouter::CreateForWebContents(web_contents);
 }
 
@@ -193,13 +197,6 @@ void TabHelper::SetExtensionApp(const Extension* extension) {
     DCHECK(!extension->from_bookmark());
   }
   extension_app_ = extension;
-
-  if (extension_app_) {
-    registry_observation_.Observe(
-        ExtensionRegistry::Get(web_contents()->GetBrowserContext()));
-  } else {
-    registry_observation_.Reset();
-  }
 
   UpdateExtensionAppIcon(extension_app_);
 
@@ -386,10 +383,21 @@ WebContents* TabHelper::GetAssociatedWebContents() const {
   return web_contents();
 }
 
+void TabHelper::OnExtensionLoaded(content::BrowserContext* browser_context,
+                                  const Extension* extension) {
+  // Clear the back forward cache for the associated tab to accommodate for any
+  // side effects of loading/unloading the extension.
+  web_contents()->GetController().GetBackForwardCache().Flush();
+}
+
 void TabHelper::OnExtensionUnloaded(content::BrowserContext* browser_context,
                                     const Extension* extension,
                                     UnloadedExtensionReason reason) {
-  DCHECK(extension_app_);
+  // Clear the back forward cache for the associated tab to accommodate for any
+  // side effects of loading/unloading the extension.
+  web_contents()->GetController().GetBackForwardCache().Flush();
+  if (!extension_app_)
+    return;
   if (extension == extension_app_)
     SetExtensionApp(nullptr);
 }

@@ -116,6 +116,8 @@ class TabHelper : public content::WebContentsObserver,
   content::WebContents* GetAssociatedWebContents() const override;
 
   // ExtensionRegistryObserver:
+  void OnExtensionLoaded(content::BrowserContext* browser_context,
+                         const Extension* extension) override;
   void OnExtensionUnloaded(content::BrowserContext* browser_context,
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;

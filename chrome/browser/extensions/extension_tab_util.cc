@@ -42,6 +42,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/url_formatter/url_fixer.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -971,6 +972,12 @@ api::tabs::TabStatus ExtensionTabUtil::GetLoadingStatus(WebContents* contents) {
 
   // Otherwise its considered loaded.
   return api::tabs::TAB_STATUS_COMPLETE;
+}
+
+void ExtensionTabUtil::ClearBackForwardCache() {
+  ForEachTab(base::BindRepeating([](WebContents* web_contents) {
+    web_contents->GetController().GetBackForwardCache().Flush();
+  }));
 }
 
 }  // namespace extensions

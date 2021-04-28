@@ -79,6 +79,7 @@ namespace dnr_api = extensions::api::declarative_net_request;
 using ParsedResponseCookies = std::vector<std::unique_ptr<net::ParsedCookie>>;
 
 void ClearCacheOnNavigationOnUI() {
+  extensions::ExtensionsBrowserClient::Get()->ClearBackForwardCache();
   web_cache::WebCacheManager::GetInstance()->ClearCacheOnNavigation();
 }
 

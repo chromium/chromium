@@ -18,7 +18,8 @@ class ExtensionBackForwardCacheBrowserTest : public ExtensionBrowserTest {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kBackForwardCache,
           {{"content_injection_supported",
-            allow_content_scripts ? "true" : "false"}}}},
+            allow_content_scripts ? "true" : "false"},
+           {"TimeToLiveInBackForwardCacheInSeconds", "3600"}}}},
         {features::kBackForwardCacheMemoryControls});
   }
 
@@ -134,6 +135,71 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest, CSSAllowed) {
   EXPECT_NE(rfh_a, rfh_b);
   EXPECT_EQ(rfh_a->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
+                       UnloadExtensionFlushCache) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // Load the extension so we can unload it later.
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
+                        .AppendASCII("content_css"));
+  ASSERT_TRUE(extension);
+
+  // 1) Navigate to A.
+  content::RenderFrameHost* rfh_a =
+      ui_test_utils::NavigateToURL(browser(), url_a);
+  content::RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+
+  // 2) Navigate to B.
+  content::RenderFrameHost* rfh_b =
+      ui_test_utils::NavigateToURL(browser(), url_b);
+  content::RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
+
+  // Ensure that |rfh_a| is in the cache.
+  EXPECT_FALSE(delete_observer_rfh_a.deleted());
+  EXPECT_NE(rfh_a, rfh_b);
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // Now unload the extension after something is in the cache.
+  UnloadExtension(extension->id());
+
+  // Expect that |rfh_a| is destroyed as it should be cleared from the cache.
+  delete_observer_rfh_a.WaitUntilDeleted();
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
+                       LoadExtensionFlushCache) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  content::RenderFrameHost* rfh_a =
+      ui_test_utils::NavigateToURL(browser(), url_a);
+  content::RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+
+  // 2) Navigate to B.
+  content::RenderFrameHost* rfh_b =
+      ui_test_utils::NavigateToURL(browser(), url_b);
+  content::RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
+
+  // Ensure that |rfh_a| is in the cache.
+  EXPECT_FALSE(delete_observer_rfh_a.deleted());
+  EXPECT_NE(rfh_a, rfh_b);
+  EXPECT_EQ(rfh_a->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+
+  // Now load the extension after something is in the cache.
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
+                                .AppendASCII("content_css")));
+
+  // Expect that |rfh_a| is destroyed as it should be cleared from the cache.
+  delete_observer_rfh_a.WaitUntilDeleted();
 }
 
 }  // namespace extensions
