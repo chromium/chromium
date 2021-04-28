@@ -65,7 +65,8 @@ IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest, GetCertificatesEmpty) {
 }
 
 // Tests that generate key works.
-IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest, GenerateKeyPKCS) {
+IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest,
+                       ExtensionGenerateKeyPKCS) {
   crosapi::mojom::KeystoreBinaryResultPtr result;
   crosapi::mojom::KeystoreServiceAsyncWaiter async_waiter(
       keystore_service_remote().get());
@@ -75,8 +76,9 @@ IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest, GenerateKeyPKCS) {
       crosapi::mojom::KeystorePKCS115Params::New();
   params->modulus_length = 1024;
   algo->set_pkcs115(std::move(params));
-  async_waiter.GenerateKey(crosapi::mojom::KeystoreType::kUser, std::move(algo),
-                           /*extension_id=*/"123", &result);
+  async_waiter.ExtensionGenerateKey(crosapi::mojom::KeystoreType::kUser,
+                                    std::move(algo),
+                                    /*extension_id=*/"123", &result);
   // Errors out because Ash-Chrome is not running on ChromeOS.
   ASSERT_TRUE(result->is_error_message());
   EXPECT_EQ(result->get_error_message(), kFailedToSetAttribute);
@@ -89,7 +91,7 @@ IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest, GenerateKeyPKCS) {
 // generate/modify keys in non-test NSS database on builders. But there's no
 // simple way to prevent this at the moment.
 IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest,
-                       DISABLED_GenerateKeyECDSA) {
+                       DISABLED_ExtensionGenerateKeyECDSA) {
   crosapi::mojom::KeystoreBinaryResultPtr result;
   crosapi::mojom::KeystoreServiceAsyncWaiter async_waiter(
       keystore_service_remote().get());
@@ -99,8 +101,9 @@ IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest,
       crosapi::mojom::KeystoreECDSAParams::New();
   params->named_curve = "P-256";
   algo->set_ecdsa(std::move(params));
-  async_waiter.GenerateKey(crosapi::mojom::KeystoreType::kUser, std::move(algo),
-                           /*extension_id=*/"123", &result);
+  async_waiter.ExtensionGenerateKey(crosapi::mojom::KeystoreType::kUser,
+                                    std::move(algo),
+                                    /*extension_id=*/"123", &result);
   // Errors out because Ash-Chrome is not running on ChromeOS.
   ASSERT_TRUE(result->is_error_message());
   EXPECT_EQ(result->get_error_message(), kFailedToSetAttribute);

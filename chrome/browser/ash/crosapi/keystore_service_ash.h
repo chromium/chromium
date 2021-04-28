@@ -46,10 +46,6 @@ class KeystoreServiceAsh : public mojom::KeystoreService {
   void GetKeyStores(GetKeyStoresCallback callback) override;
   void GetCertificates(mojom::KeystoreType keystore,
                        GetCertificatesCallback callback) override;
-  void GenerateKey(mojom::KeystoreType keystore,
-                   mojom::KeystoreSigningAlgorithmPtr algorithm,
-                   const base::Optional<std::string>& extension_id,
-                   GenerateKeyCallback callback) override;
   void AddCertificate(mojom::KeystoreType keystore,
                       const std::vector<uint8_t>& certificate,
                       AddCertificateCallback callback) override;
@@ -59,12 +55,16 @@ class KeystoreServiceAsh : public mojom::KeystoreService {
   void GetPublicKey(const std::vector<uint8_t>& certificate,
                     mojom::KeystoreSigningAlgorithmName algorithm_name,
                     GetPublicKeyCallback callback) override;
-  void Sign(KeystoreType keystore,
-            const std::vector<uint8_t>& public_key,
-            SigningScheme scheme,
-            const std::vector<uint8_t>& data,
-            const std::string& extension_id,
-            SignCallback callback) override;
+  void ExtensionGenerateKey(mojom::KeystoreType keystore,
+                            mojom::KeystoreSigningAlgorithmPtr algorithm,
+                            const base::Optional<std::string>& extension_id,
+                            ExtensionGenerateKeyCallback callback) override;
+  void ExtensionSign(KeystoreType keystore,
+                     const std::vector<uint8_t>& public_key,
+                     SigningScheme scheme,
+                     const std::vector<uint8_t>& data,
+                     const std::string& extension_id,
+                     ExtensionSignCallback callback) override;
 
  private:
   static void OnGetTokens(
@@ -75,16 +75,16 @@ class KeystoreServiceAsh : public mojom::KeystoreService {
   static void OnGetCertificates(GetCertificatesCallback callback,
                                 std::unique_ptr<net::CertificateList> certs,
                                 chromeos::platform_keys::Status status);
-  static void OnGenerateKey(GenerateKeyCallback callback,
-                            const std::string& public_key,
-                            chromeos::platform_keys::Status status);
   static void OnImportCertificate(AddCertificateCallback callback,
                                   chromeos::platform_keys::Status status);
   static void OnRemoveCertificate(RemoveCertificateCallback callback,
                                   chromeos::platform_keys::Status status);
-  static void OnDidSign(SignCallback callback,
-                        const std::string& signature,
-                        chromeos::platform_keys::Status status);
+  static void OnExtensionGenerateKey(ExtensionGenerateKeyCallback callback,
+                                     const std::string& public_key,
+                                     chromeos::platform_keys::Status status);
+  static void OnDidExtensionSign(ExtensionSignCallback callback,
+                                 const std::string& signature,
+                                 chromeos::platform_keys::Status status);
 
   // |challenge| is used as a opaque identifier to match against the unique_ptr
   // in outstanding_challenges_. It should not be dereferenced.

@@ -172,7 +172,7 @@ ExtensionFunction::ResponseAction PlatformKeysInternalSignFunction::Run() {
 
   if (chromeos::LacrosService::Get()->GetInterfaceVersion(
           KeystoreService::Uuid_) <
-      static_cast<int>(KeystoreService::kSignMinVersion)) {
+      static_cast<int>(KeystoreService::kExtensionSignMinVersion)) {
     return RespondNow(Error(kUnsupportedByAsh));
   }
 
@@ -198,8 +198,8 @@ ExtensionFunction::ResponseAction PlatformKeysInternalSignFunction::Run() {
   auto cb = base::BindOnce(&PlatformKeysInternalSignFunction::OnSign, this);
   chromeos::LacrosService::Get()
       ->GetRemote<crosapi::mojom::KeystoreService>()
-      ->Sign(keystore_type.value(), params->public_key, scheme.value(),
-             params->data, extension_id(), std::move(cb));
+      ->ExtensionSign(keystore_type.value(), params->public_key, scheme.value(),
+                      params->data, extension_id(), std::move(cb));
   return RespondLater();
 }
 

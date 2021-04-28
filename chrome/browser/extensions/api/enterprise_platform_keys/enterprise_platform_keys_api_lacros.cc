@@ -144,8 +144,8 @@ EnterprisePlatformKeysInternalGenerateKeyFunction::Run() {
       api_epki::GenerateKey::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  std::string error = ValidateCrosapi(KeystoreService::kGenerateKeyMinVersion,
-                                      browser_context());
+  std::string error = ValidateCrosapi(
+      KeystoreService::kExtensionGenerateKeyMinVersion, browser_context());
   if (!error.empty()) {
     return RespondNow(Error(error));
   }
@@ -160,7 +160,8 @@ EnterprisePlatformKeysInternalGenerateKeyFunction::Run() {
       &EnterprisePlatformKeysInternalGenerateKeyFunction::OnGenerateKey, this);
   chromeos::LacrosService::Get()
       ->GetRemote<crosapi::mojom::KeystoreService>()
-      ->GenerateKey(keystore, std::move(signing), extension_id(), std::move(c));
+      ->ExtensionGenerateKey(keystore, std::move(signing), extension_id(),
+                             std::move(c));
   return RespondLater();
 }
 

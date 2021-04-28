@@ -166,11 +166,11 @@ void KeystoreServiceAsh::GetCertificates(mojom::KeystoreType keystore,
                                        std::move(callback)));
 }
 
-void KeystoreServiceAsh::GenerateKey(
+void KeystoreServiceAsh::ExtensionGenerateKey(
     mojom::KeystoreType keystore,
     mojom::KeystoreSigningAlgorithmPtr algorithm,
     const base::Optional<std::string>& extension_id,
-    GenerateKeyCallback callback) {
+    ExtensionGenerateKeyCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!extension_id) {
     std::move(callback).Run(mojom::KeystoreBinaryResult::NewErrorMessage(
@@ -189,7 +189,7 @@ void KeystoreServiceAsh::GenerateKey(
 
   switch (algorithm->which()) {
     case mojom::KeystoreSigningAlgorithm::Tag::PKCS115: {
-      auto c = base::BindOnce(&KeystoreServiceAsh::OnGenerateKey,
+      auto c = base::BindOnce(&KeystoreServiceAsh::OnExtensionGenerateKey,
                               std::move(callback));
       ext_platform_keys_service->GenerateRSAKey(
           token_id.value(), algorithm->get_pkcs115()->modulus_length,
@@ -197,7 +197,7 @@ void KeystoreServiceAsh::GenerateKey(
       break;
     }
     case mojom::KeystoreSigningAlgorithm::Tag::ECDSA: {
-      auto c = base::BindOnce(&KeystoreServiceAsh::OnGenerateKey,
+      auto c = base::BindOnce(&KeystoreServiceAsh::OnExtensionGenerateKey,
                               std::move(callback));
       ext_platform_keys_service->GenerateECKey(
           token_id.value(), algorithm->get_ecdsa()->named_curve, *extension_id,
@@ -300,12 +300,12 @@ void KeystoreServiceAsh::GetPublicKey(
   std::move(callback).Run(std::move(result_ptr));
 }
 
-void KeystoreServiceAsh::Sign(KeystoreType keystore,
-                              const std::vector<uint8_t>& public_key,
-                              SigningScheme scheme,
-                              const std::vector<uint8_t>& data,
-                              const std::string& extension_id,
-                              SignCallback callback) {
+void KeystoreServiceAsh::ExtensionSign(KeystoreType keystore,
+                                       const std::vector<uint8_t>& public_key,
+                                       SigningScheme scheme,
+                                       const std::vector<uint8_t>& data,
+                                       const std::string& extension_id,
+                                       ExtensionSignCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   base::Optional<TokenId> token_id = KeystoreToToken(keystore);
   if (!token_id) {
@@ -326,7 +326,8 @@ void KeystoreServiceAsh::Sign(KeystoreType keystore,
       service->SignRSAPKCS1Raw(
           token_id, std::string(data.begin(), data.end()),
           std::string(public_key.begin(), public_key.end()), extension_id,
-          base::BindOnce(&KeystoreServiceAsh::OnDidSign, std::move(callback)));
+          base::BindOnce(&KeystoreServiceAsh::OnDidExtensionSign,
+                         std::move(callback)));
       return;
     case SigningScheme::kRsassaPkcs1V15Sha1:
       key_type = chromeos::platform_keys::KeyType::kRsassaPkcs1V15;
@@ -362,11 +363,11 @@ void KeystoreServiceAsh::Sign(KeystoreType keystore,
       break;
   }
 
-  service->SignDigest(
-      token_id, std::string(data.begin(), data.end()),
-      std::string(public_key.begin(), public_key.end()), key_type,
-      hash_algorithm, extension_id,
-      base::BindOnce(&KeystoreServiceAsh::OnDidSign, std::move(callback)));
+  service->SignDigest(token_id, std::string(data.begin(), data.end()),
+                      std::string(public_key.begin(), public_key.end()),
+                      key_type, hash_algorithm, extension_id,
+                      base::BindOnce(&KeystoreServiceAsh::OnDidExtensionSign,
+                                     std::move(callback)));
 }
 
 // static
@@ -428,9 +429,10 @@ void KeystoreServiceAsh::OnGetCertificates(
 }
 
 // static
-void KeystoreServiceAsh::OnGenerateKey(GenerateKeyCallback callback,
-                                       const std::string& public_key,
-                                       chromeos::platform_keys::Status status) {
+void KeystoreServiceAsh::OnExtensionGenerateKey(
+    ExtensionGenerateKeyCallback callback,
+    const std::string& public_key,
+    chromeos::platform_keys::Status status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   crosapi::mojom::KeystoreBinaryResultPtr result_ptr =
       mojom::KeystoreBinaryResult::New();
@@ -465,9 +467,10 @@ void KeystoreServiceAsh::OnRemoveCertificate(
 }
 
 // static
-void KeystoreServiceAsh::OnDidSign(SignCallback callback,
-                                   const std::string& signature,
-                                   chromeos::platform_keys::Status status) {
+void KeystoreServiceAsh::OnDidExtensionSign(
+    ExtensionSignCallback callback,
+    const std::string& signature,
+    chromeos::platform_keys::Status status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (status == chromeos::platform_keys::Status::kSuccess) {
