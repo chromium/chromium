@@ -26,12 +26,14 @@
 #include "content/browser/accessibility/browser_accessibility_win.h"
 #include "content/public/browser/ax_inspect_factory.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
+#include "ui/accessibility/platform/inspect/ax_inspect_utils.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_win.h"
 #include "ui/base/win/atl_module.h"
 #include "ui/gfx/win/hwnd_util.h"
 
 namespace content {
 
+using ui::AXFormatValue;
 using ui::IAccessible2RoleToString;
 using ui::IAccessible2StateToStringVector;
 using ui::IAccessibleStateToStringVector;
@@ -835,30 +837,6 @@ std::string AccessibilityTreeFormatterWin::ProcessTreeForOutput(
       continue;
 
     switch (value->type()) {
-      case base::Value::Type::STRING: {
-        std::string string_value;
-        value->GetAsString(&string_value);
-        WriteAttribute(
-            false,
-            base::StringPrintf("%s='%s'", attribute_name, string_value.c_str()),
-            &line);
-        break;
-      }
-      case base::Value::Type::INTEGER: {
-        WriteAttribute(false,
-                       base::StringPrintf("%s=%d", attribute_name,
-                                          value->GetIfInt().value_or(0)),
-                       &line);
-        break;
-      }
-      case base::Value::Type::DOUBLE: {
-        double double_value = 0.0;
-        value->GetAsDouble(&double_value);
-        WriteAttribute(
-            false, base::StringPrintf("%s=%.2f", attribute_name, double_value),
-            &line);
-        break;
-      }
       case base::Value::Type::LIST: {
         // Currently all list values are string and are written without
         // attribute names.
@@ -892,7 +870,10 @@ std::string AccessibilityTreeFormatterWin::ProcessTreeForOutput(
         break;
       }
       default:
-        NOTREACHED();
+        WriteAttribute(false,
+                       base::StringPrintf("%s=%s", attribute_name,
+                                          AXFormatValue(*value).c_str()),
+                       &line);
         break;
     }
   }

@@ -39,6 +39,11 @@ std::string AXFormatValue(const base::Value& value) {
     return base::NumberToString(value.GetInt());
   }
 
+  // Double.
+  if (value.is_double()) {
+    return base::NumberToString(value.GetDouble());
+  }
+
   // List: exposed as [value1, ..., valueN];
   if (value.is_list()) {
     std::string output;

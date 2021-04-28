@@ -1,4 +1,4 @@
 ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++IA2_ROLE_SECTION
-++++ROLE_SYSTEM_PROGRESSBAR value='22' READONLY valuetext:22 currentValue=22.00 minimumValue=0.00 maximumValue=100.00
-++++ROLE_SYSTEM_PROGRESSBAR MIXED READONLY minimumValue=0.00 maximumValue=1.00
+++++ROLE_SYSTEM_PROGRESSBAR value='22' READONLY valuetext:22 currentValue=22 minimumValue=0 maximumValue=100
+++++ROLE_SYSTEM_PROGRESSBAR MIXED READONLY minimumValue=0 maximumValue=1

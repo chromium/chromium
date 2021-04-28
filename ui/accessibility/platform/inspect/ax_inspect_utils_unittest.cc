@@ -26,6 +26,11 @@ TEST(AXInspectUtilsTest, FormatInteger) {
   EXPECT_EQ(AXFormatValue(value), std::string("3"));
 }
 
+TEST(AXInspectUtilsTest, FormatDouble) {
+  base::Value value(3.3);
+  EXPECT_EQ(AXFormatValue(value), std::string("3.3"));
+}
+
 TEST(AXInspectUtilsTest, FormatList) {
   base::Value list(base::Value::Type::LIST);
   list.Append("item1");
