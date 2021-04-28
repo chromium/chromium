@@ -16,6 +16,18 @@
 // require a non-utility sandbox can be added here.  See
 // ServiceProcessHost::Launch() for how these templates are consumed.
 
+// auction_worklet::mojom::AdAuctionService
+namespace auction_worklet {
+namespace mojom {
+class AdAuctionService;
+}
+}  // namespace auction_worklet
+template <>
+inline sandbox::policy::SandboxType
+content::GetServiceSandboxType<auction_worklet::mojom::AdAuctionService>() {
+  return sandbox::policy::SandboxType::kService;
+}
+
 // audio::mojom::AudioService
 namespace audio {
 namespace mojom {

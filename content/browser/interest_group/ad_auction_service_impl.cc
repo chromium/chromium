@@ -14,6 +14,7 @@
 #include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/service_sandbox_type.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
@@ -206,7 +207,7 @@ void AdAuctionServiceImpl::LaunchWorkletServiceIfNeeded() {
   content::ServiceProcessHost::Launch(
       auction_worklet_service_.BindNewPipeAndPassReceiver(),
       ServiceProcessHost::Options()
-          .WithDisplayName("Auction Worklet Sevice")
+          .WithDisplayName("Auction Worklet Service")
           .Pass());
 }
 
