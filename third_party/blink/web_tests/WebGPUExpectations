@@ -122,13 +122,11 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,texture,in_
 # These tests aren't working on CQ, unclear whether the test or harness (or Chrome) is broken.
 # Mac: mostly works
 # Linux: actual is white/blank - is actually crashing silently
-crbug.com/1083478 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_clear.html [ Skip ]
-crbug.com/1083478 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_bgra8unorm.html [ Skip ]
+crbug.com/1083478 [ Linux ] wpt_internal/webgpu/webgpu/web_platform/reftests/canvas_clear.html [ Skip ]
+crbug.com/1083478 [ Linux ] wpt_internal/webgpu/webgpu/web_platform/reftests/canvas_complex_bgra8unorm.html [ Skip ]
 # Win: takeScreenshot crashes
-crbug.com/1083478 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_clear.html [ Skip ]
-crbug.com/1083478 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_bgra8unorm.html [ Skip ]
-# Mac: Shifted by about half a pixel
-crbug.com/1083478 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_bgra8unorm.html [ Failure ]
+crbug.com/1083478 [ Win ] wpt_internal/webgpu/webgpu/web_platform/reftests/canvas_clear.html [ Skip ]
+crbug.com/1083478 [ Win ] wpt_internal/webgpu/webgpu/web_platform/reftests/canvas_complex_bgra8unorm.html [ Skip ]
 
 # Spec was changed so BGLs should eagerly apply per-pipeline limits. Tests need fixing, then Dawn
 # needs to pass them. https://github.com/gpuweb/cts/issues/230
