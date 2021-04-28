@@ -35,7 +35,7 @@ export class DownloadListElement extends CustomElement {
     this.apiProxy_ = DownloadShelfApiProxyImpl.getInstance();
 
     /** @private {!Element} */
-    this.listElement_ = assert(this.$('#downloadList'));
+    this.listElement_ = assert(this.$('#download-list'));
 
     /** @private {!Array<number>} */
     this.listenerIds_ = [];
@@ -92,7 +92,6 @@ export class DownloadListElement extends CustomElement {
         if (i < elementCount) /** Remove elements out of viewport. */ {
           for (let j = i; j < elementCount; ++j) {
             const downloadElement = this.elements_[j];
-            downloadElement.removeEventListener('click', this.onItemClick_);
             this.listElement_.removeChild(downloadElement);
           }
           this.elements_.splice(i, elementCount - i);
@@ -106,7 +105,6 @@ export class DownloadListElement extends CustomElement {
       } else /** Insert new elements inside viewport */ {
         downloadElement = document.createElement('download-item');
         downloadElement.item = this.items_[i];
-        downloadElement.addEventListener('click', this.onItemClick_);
         this.listElement_.appendChild(downloadElement);
         this.elements_.push(downloadElement);
       }
@@ -117,20 +115,10 @@ export class DownloadListElement extends CustomElement {
     if (itemCount < elementCount) {
       for (let i = itemCount; i < elementCount; ++i) {
         const downloadElement = this.elements_[i];
-        downloadElement.removeEventListener('click', this.onItemClick_);
         this.listElement_.removeChild(downloadElement);
       }
       this.elements_.splice(itemCount, elementCount - itemCount);
     }
-  }
-
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onItemClick_(e) {
-    this.apiProxy_.showContextMenu(
-        e.currentTarget.item.id, e.clientX, e.clientY);
   }
 }
 

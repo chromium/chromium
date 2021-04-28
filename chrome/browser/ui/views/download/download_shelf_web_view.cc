@@ -44,6 +44,13 @@ gfx::Size DownloadShelfWebView::CalculatePreferredSize() const {
                                       gfx::Size(), gfx::Size(0, 58));
 }
 
+bool DownloadShelfWebView::HandleContextMenu(
+    content::RenderFrameHost* render_frame_host,
+    const content::ContextMenuParams& params) {
+  // Suppress native context menu, since the web content shows one.
+  return true;
+}
+
 void DownloadShelfWebView::OnThemeChanged() {
   views::WebView::OnThemeChanged();
   SetBorder(views::CreateSolidSidedBorder(

@@ -85,7 +85,7 @@ suite('DownloadListTest', function() {
   });
 
   test('onResize', async () => {
-    const listElement = downloadListElement.$('#downloadList');
+    const listElement = downloadListElement.$('#download-list');
     listElement.style.width = '847px';
     await waitAfterNextRender(listElement);
     for (let i = 0; i < 10; ++i) {

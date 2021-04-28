@@ -24,6 +24,10 @@ export class DownloadItemElement extends CustomElement {
 
     /** @private {!DownloadShelfApiProxy} */
     this.apiProxy_ = DownloadShelfApiProxyImpl.getInstance();
+
+    this.$('#dropdown-button')
+        .addEventListener('click', e => this.onDropdownButtonClick_(e));
+    this.addEventListener('contextmenu', e => this.onContextMenu_(e));
   }
 
   /** @param {!DownloadItem} value */
@@ -53,7 +57,7 @@ export class DownloadItemElement extends CustomElement {
     this.$('#filename').innerText =
         filePath.substring(filePath.lastIndexOf('/') + 1);
 
-    const statusTextElement = this.$('#statusText');
+    const statusTextElement = this.$('#status-text');
     const statusText = (!item.shouldPromoteOrigin || !item.originalUrl.url) ?
         item.statusText :
         new URL(item.originalUrl.url).origin;
@@ -81,7 +85,7 @@ export class DownloadItemElement extends CustomElement {
     }
 
     this.apiProxy_.getFileIcon(item.id).then(icon => {
-      this.$('#fileIcon').src = icon;
+      this.$('#file-icon').src = icon;
     });
   }
 
@@ -89,6 +93,19 @@ export class DownloadItemElement extends CustomElement {
   set progress(value) {
     this.$('.progress')
         .style.setProperty('--download-progress', value.toString());
+  }
+
+  /** @param {!Event} e */
+  onContextMenu_(e) {
+    this.apiProxy_.showContextMenu(this.item.id, e.clientX, e.clientY);
+  }
+
+  /** @param {!Event} e */
+  onDropdownButtonClick_(e) {
+    // TODO(crbug.com/1182529): Switch to down caret icon when context menu is
+    // open.
+    const rect = e.target.getBoundingClientRect();
+    this.apiProxy_.showContextMenu(this.item.id, rect.left, rect.top);
   }
 }
 
