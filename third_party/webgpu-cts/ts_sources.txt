@@ -71,8 +71,8 @@ src/webgpu/util/conversion.ts
 src/webgpu/util/texture/texel_data.ts
 src/webgpu/gpu_test.ts
 src/webgpu/examples.spec.ts
+src/webgpu/api/operation/fences.spec.ts
 src/webgpu/api/operation/labels.spec.ts
-src/webgpu/api/operation/onSubmittedWorkDone.spec.ts
 src/webgpu/api/operation/uncapturederror.spec.ts
 src/webgpu/api/operation/buffers/mapping_test.ts
 src/webgpu/api/operation/buffers/map.spec.ts
@@ -134,6 +134,7 @@ src/webgpu/api/validation/createTexture.spec.ts
 src/webgpu/api/validation/createView.spec.ts
 src/webgpu/api/validation/create_pipeline.spec.ts
 src/webgpu/api/validation/error_scope.spec.ts
+src/webgpu/api/validation/fences.spec.ts
 src/webgpu/api/validation/layout_shader_compat.spec.ts
 src/webgpu/api/validation/render_pass_descriptor.spec.ts
 src/webgpu/api/validation/vertex_access.spec.ts
@@ -160,7 +161,6 @@ src/webgpu/api/validation/encoding/cmds/render/dynamic_state.spec.ts
 src/webgpu/api/validation/encoding/cmds/render/other.spec.ts
 src/webgpu/api/validation/encoding/cmds/render/state_tracking.spec.ts
 src/webgpu/api/validation/encoding/programmable/pipeline_bind_group_compat.spec.ts
-src/webgpu/api/validation/encoding/queries/common.ts
 src/webgpu/api/validation/encoding/queries/begin_end.spec.ts
 src/webgpu/api/validation/encoding/queries/general.spec.ts
 src/webgpu/api/validation/encoding/queries/pipeline_statistics.spec.ts
