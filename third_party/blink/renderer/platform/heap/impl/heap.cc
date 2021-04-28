@@ -125,7 +125,8 @@ Address ThreadHeap::CheckAndMarkPointer(MarkingVisitor* visitor,
 
   if (BasePage* page = LookupPageForAddress(address)) {
 #if DCHECK_IS_ON()
-    DCHECK(page->Contains(address));
+    DCHECK(page->Contains(address))
+        << "address " << address << " not part of page " << page;
 #endif
     DCHECK(page_bloom_filter_->MayContain(address));
     DCHECK(&visitor->Heap() == &page->Arena()->GetThreadState()->Heap());
