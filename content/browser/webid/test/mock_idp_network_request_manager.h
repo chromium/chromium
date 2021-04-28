@@ -29,6 +29,7 @@ class MockIdpNetworkRequestManager : public IdpNetworkRequestManager {
                     const std::string&,
                     const std::string&,
                     TokenRequestCallback));
+  MOCK_METHOD2(SendLogout, void(const GURL& logout_url, LogoutCallback));
 };
 
 }  // namespace content

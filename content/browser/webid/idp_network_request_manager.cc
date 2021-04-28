@@ -95,10 +95,6 @@ std::unique_ptr<network::ResourceRequest> CreateCredentialedResourceRequest(
   resource_request->site_for_cookies = site_for_cookies;
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                       kJSONMimeType);
-  // This header is present exclusively for CSRF resistance.
-  // TODO(kenrb): To avoid the value being depended on  set it to a random
-  // value. We can later change it if something more useful e.g., a version is
-  // needed. https://crbug.com/1196371
   resource_request->headers.SetHeader(kSecWebIdCsrfHeader, "");
   resource_request->credentials_mode =
       network::mojom::CredentialsMode::kInclude;
@@ -316,6 +312,33 @@ void IdpNetworkRequestManager::SendTokenRequest(const GURL& token_url,
   url_loader_->DownloadToString(
       loader_factory.get(),
       base::BindOnce(&IdpNetworkRequestManager::OnTokenRequestResponse,
+                     weak_ptr_factory_.GetWeakPtr()),
+      maxResponseSizeInKiB * 1024);
+}
+
+void IdpNetworkRequestManager::SendLogout(const GURL& logout_url,
+                                          LogoutCallback callback) {
+  // TODO(kenrb): Add browser test verifying that the response to this can
+  // clear cookies. https://crbug.com/1155312.
+  DCHECK(!url_loader_);
+  DCHECK(!logout_callback_);
+
+  logout_callback_ = std::move(callback);
+
+  auto resource_request = CreateCredentialedResourceRequest(
+      logout_url, render_frame_host_->GetLastCommittedOrigin());
+  resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept, "*/*");
+
+  auto traffic_annotation = CreateTrafficAnnotation();
+
+  url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
+                                                 traffic_annotation);
+
+  auto loader_factory = GetUrlLoaderFactory(render_frame_host_);
+
+  url_loader_->DownloadToString(
+      loader_factory.get(),
+      base::BindOnce(&IdpNetworkRequestManager::OnLogoutCompleted,
                      weak_ptr_factory_.GetWeakPtr()),
       maxResponseSizeInKiB * 1024);
 }
@@ -557,6 +580,22 @@ void IdpNetworkRequestManager::OnTokenRequestParsed(
   }
   std::move(token_request_callback_)
       .Run(TokenResponse::kSuccess, id_token->GetString());
+}
+
+void IdpNetworkRequestManager::OnLogoutCompleted(
+    std::unique_ptr<std::string> response_body) {
+  int response_code = -1;
+  if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers)
+    response_code = url_loader_->ResponseInfo()->headers->response_code();
+
+  url_loader_.reset();
+
+  if (!response_body) {
+    std::move(logout_callback_).Run(LogoutResponse::kError);
+    return;
+  }
+
+  std::move(logout_callback_).Run(LogoutResponse::kSuccess);
 }
 
 }  // namespace content

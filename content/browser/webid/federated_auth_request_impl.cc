@@ -15,6 +15,7 @@
 #include "content/public/common/content_client.h"
 #include "url/url_constants.h"
 
+using blink::mojom::LogoutStatus;
 using blink::mojom::RequestIdTokenStatus;
 using blink::mojom::RequestMode;
 using UserApproval = content::IdentityRequestDialogController::UserApproval;
@@ -59,12 +60,12 @@ void FederatedAuthRequestImpl::RequestIdToken(const GURL& provider,
                                               const std::string& id_request,
                                               RequestMode mode,
                                               RequestIdTokenCallback callback) {
-  if (callback_) {
+  if (logout_callback_ || auth_request_callback_) {
     std::move(callback).Run(RequestIdTokenStatus::kErrorTooManyRequests, "");
     return;
   }
 
-  callback_ = std::move(callback);
+  auth_request_callback_ = std::move(callback);
   provider_ = provider;
   id_request_ = id_request;
   mode_ = mode;
@@ -104,6 +105,39 @@ void FederatedAuthRequestImpl::RequestIdToken(const GURL& provider,
                          weak_ptr_factory_.GetWeakPtr()));
       break;
   }
+}
+
+// TODO(kenrb): Depending on how this code evolves, it might make sense to
+// spin session management code into its own service. The prohibition on
+// making authentication requests and logout requests at the same time, while
+// not problematic for any plausible use case, need not be strictly necessary
+// if there is a good way to not have to resource contention between requests.
+// https://crbug.com/1200581
+void FederatedAuthRequestImpl::Logout(
+    const std::vector<std::string>& logout_endpoints,
+    LogoutCallback callback) {
+  if (logout_callback_ || auth_request_callback_) {
+    std::move(callback).Run(LogoutStatus::kErrorTooManyRequests);
+    return;
+  }
+
+  if (logout_endpoints.empty()) {
+    std::move(callback).Run(LogoutStatus::kError);
+    return;
+  }
+
+  logout_callback_ = std::move(callback);
+  logout_endpoints_ = std::move(logout_endpoints);
+
+  network_manager_ = CreateNetworkManager(origin().GetURL());
+  if (!network_manager_) {
+    CompleteLogoutRequest(LogoutStatus::kError);
+    return;
+  }
+
+  // TODO(kenrb): These should be parallelized rather than being dispatched
+  // serially. https://crbug.com/1200581.
+  DispatchOneLogout();
 }
 
 void FederatedAuthRequestImpl::OnWellKnownFetched(
@@ -383,6 +417,44 @@ void FederatedAuthRequestImpl::OnTokenResponseReceived(
   }
 }
 
+void FederatedAuthRequestImpl::DispatchOneLogout() {
+  GURL endpoint = GURL(logout_endpoints_.back());
+  logout_endpoints_.pop_back();
+
+  // TODO(kenrb): Validate that |endpoint| is a legal target under whatever
+  // policy we decide is appropriate.
+
+  if (endpoint.is_valid()) {
+    network_manager_->SendLogout(
+        endpoint, base::BindOnce(&FederatedAuthRequestImpl::OnLogoutCompleted,
+                                 weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    logout_status_ = blink::mojom::LogoutStatus::kError;
+    if (logout_endpoints_.empty()) {
+      CompleteLogoutRequest(logout_status_);
+      return;
+    }
+
+    DispatchOneLogout();
+  }
+}
+
+void FederatedAuthRequestImpl::OnLogoutCompleted(
+    IdpNetworkRequestManager::LogoutResponse status) {
+  // Return an error overall for the call if any one request returns an error.
+  if (logout_status_ == blink::mojom::LogoutStatus::kSuccess &&
+      status != IdpNetworkRequestManager::LogoutResponse::kSuccess) {
+    logout_status_ = blink::mojom::LogoutStatus::kError;
+  }
+
+  if (logout_endpoints_.empty()) {
+    CompleteLogoutRequest(logout_status_);
+    return;
+  }
+
+  DispatchOneLogout();
+}
+
 std::unique_ptr<WebContents> FederatedAuthRequestImpl::CreateIdpWebContents() {
   auto idp_web_contents = content::WebContents::Create(
       WebContents::CreateParams(render_frame_host()->GetBrowserContext()));
@@ -405,8 +477,15 @@ void FederatedAuthRequestImpl::CompleteRequest(
   // Given that |request_dialog_controller_| has reference to this web content
   // instance we destroy that first.
   idp_web_contents_.reset();
-  if (callback_)
-    std::move(callback_).Run(status, id_token);
+  if (auth_request_callback_)
+    std::move(auth_request_callback_).Run(status, id_token);
+}
+
+void FederatedAuthRequestImpl::CompleteLogoutRequest(
+    blink::mojom::LogoutStatus status) {
+  network_manager_.reset();
+  if (logout_callback_)
+    std::move(logout_callback_).Run(status);
 }
 
 std::unique_ptr<IdpNetworkRequestManager>

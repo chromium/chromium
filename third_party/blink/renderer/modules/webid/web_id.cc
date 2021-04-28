@@ -18,6 +18,7 @@ namespace blink {
 
 namespace {
 
+using mojom::blink::LogoutStatus;
 using mojom::blink::ProvideIdTokenStatus;
 using mojom::blink::RequestIdTokenStatus;
 using mojom::blink::RequestMode;
@@ -99,6 +100,19 @@ void OnRequestIdToken(ScriptPromiseResolver* resolver,
   }
 }
 
+void OnLogout(ScriptPromiseResolver* resolver, LogoutStatus status) {
+  // TODO(kenrb); There should be more thought put into how this API works.
+  // Returning success or failure doesn't have a lot of meaning. If some
+  // logout attempts fail and others succeed, and even different attempts
+  // fail for different reasons, how does that get conveyed to the caller?
+  if (status != LogoutStatus::kSuccess) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNetworkError, "Error logging out endpoints."));
+    return;
+  }
+  resolver->Resolve();
+}
+
 void OnProvideIdToken(ScriptPromiseResolver* resolver,
                       ProvideIdTokenStatus status) {
   // TODO(kenrb): Provide better messages for different error codes.
@@ -168,9 +182,18 @@ ScriptPromise WebId::provide(ScriptState* script_state, String id_token) {
 
 ScriptPromise WebId::logout(ScriptState* script_state,
                             const Vector<String>& logout_endpoints) {
+  if (logout_endpoints.IsEmpty()) {
+    return ScriptPromise();
+  }
+
+  BindRemote(auth_request_);
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
-  resolver->Resolve();
+
+  auth_request_->Logout(logout_endpoints,
+                        WTF::Bind(&OnLogout, WrapPersistent(resolver)));
+
   return promise;
 }
 

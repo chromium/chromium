@@ -24,6 +24,12 @@ enum RequestIdTokenStatus {
   kError,
 };
 
+enum LogoutStatus {
+  kSuccess,
+  kErrorTooManyRequests,
+  kError,
+};
+
 
 enum RequestMode {
   kMediated,
@@ -37,4 +43,7 @@ interface FederatedAuthRequest {
   // Requests an IdToken to be generated, given an IDP URL and an OAuth request.
   // Returns the raw content of the IdToken.
   RequestIdToken(url.mojom.Url provider, string id_request, RequestMode mode) => (RequestIdTokenStatus status, string? id_token);
+
+  // Contact the list of Relying Party logout endpoints to attempt to initiate user logout.
+  Logout(array<string> rp_logout_endpoints) => (LogoutStatus status);
 };

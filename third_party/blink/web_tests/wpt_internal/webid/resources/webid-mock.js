@@ -1,4 +1,4 @@
-import { RequestMode, RequestIdTokenStatus, FederatedAuthRequest, FederatedAuthRequestReceiver } from '/gen/third_party/blink/public/mojom/webid/federated_auth_request.mojom.m.js';
+import { RequestMode, RequestIdTokenStatus, LogoutStatus, FederatedAuthRequest, FederatedAuthRequestReceiver } from '/gen/third_party/blink/public/mojom/webid/federated_auth_request.mojom.m.js';
 
 function toMojoIdTokenStatus(status) {
   switch(status) {
@@ -28,6 +28,7 @@ export class MockFederatedAuthRequest {
     this.interceptor_.start();
     this.idToken_ = null;
     this.status_ = RequestIdTokenStatus.kError;
+    this.logoutStatus_ = LogoutStatus.kError;
   }
 
   // Causes the subsequent `navigator.id.get()` to resolve with the token.
@@ -53,9 +54,16 @@ export class MockFederatedAuthRequest {
     });
   }
 
+  async logout(logout_endpoints) {
+    return Promise.resolve({
+      status: this.logoutStatus_
+    });
+  }
+
   async reset() {
     this.idToken_ = null;
     this.status_ = RequestIdTokenStatus.kError;
+    this.logoutStatus_ = LogoutStatus.kError;
     this.receiver_.$.close();
     this.interceptor_.stop();
 

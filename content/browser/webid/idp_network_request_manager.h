@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "content/common/content_export.h"
@@ -79,6 +80,11 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     kInvalidResponseError,
   };
 
+  enum class LogoutResponse {
+    kSuccess,
+    kError,
+  };
+
   struct Endpoints {
     std::string idp;
     std::string token;
@@ -96,6 +102,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
       base::OnceCallback<void(AccountsResponse, const AccountList&)>;
   using TokenRequestCallback =
       base::OnceCallback<void(TokenResponse, const std::string&)>;
+  using LogoutCallback = base::OnceCallback<void(LogoutResponse)>;
 
   static std::unique_ptr<IdpNetworkRequestManager> Create(
       const GURL& provider,
@@ -126,6 +133,9 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
                                 const std::string& request,
                                 TokenRequestCallback callback);
 
+  // Send logout request to a single target.
+  virtual void SendLogout(const GURL& logout_url, LogoutCallback);
+
   // Parses accounts from given Value. Returns true if parse is successful and
   // adds parsed accounts to the |account_list|.
   // TODO(majidvp): Make this function private and update tests to test the
@@ -144,6 +154,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   void OnAccountsRequestParsed(data_decoder::DataDecoder::ValueOrError result);
   void OnTokenRequestResponse(std::unique_ptr<std::string> response_body);
   void OnTokenRequestParsed(data_decoder::DataDecoder::ValueOrError result);
+  void OnLogoutCompleted(std::unique_ptr<std::string> response_body);
 
   // URL of the Identity Provider.
   GURL provider_;
@@ -154,6 +165,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   SigninRequestCallback signin_request_callback_;
   AccountsRequestCallback accounts_request_callback_;
   TokenRequestCallback token_request_callback_;
+  LogoutCallback logout_callback_;
 
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
 

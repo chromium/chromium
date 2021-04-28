@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
@@ -52,6 +53,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
                       const std::string& id_request,
                       blink::mojom::RequestMode mode,
                       RequestIdTokenCallback) override;
+  void Logout(const std::vector<std::string>& logout_endpoints,
+              LogoutCallback) override;
 
   void SetNetworkManagerForTests(
       std::unique_ptr<IdpNetworkRequestManager> manager);
@@ -75,9 +78,12 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void OnAccountSelected(const std::string& account_id);
   void OnTokenResponseReceived(IdpNetworkRequestManager::TokenResponse status,
                                const std::string& id_token);
+  void DispatchOneLogout();
+  void OnLogoutCompleted(IdpNetworkRequestManager::LogoutResponse status);
   std::unique_ptr<WebContents> CreateIdpWebContents();
   void CompleteRequest(blink::mojom::RequestIdTokenStatus,
                        const std::string& id_token);
+  void CompleteLogoutRequest(blink::mojom::LogoutStatus);
 
   std::unique_ptr<IdpNetworkRequestManager> CreateNetworkManager(
       const GURL& provider);
@@ -119,7 +125,12 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       sharing_permission_delegate_ = nullptr;
 
   std::string id_token_;
-  RequestIdTokenCallback callback_;
+  RequestIdTokenCallback auth_request_callback_;
+
+  std::vector<std::string> logout_endpoints_;
+  blink::mojom::LogoutStatus logout_status_ =
+      blink::mojom::LogoutStatus::kSuccess;
+  LogoutCallback logout_callback_;
 
   base::WeakPtrFactory<FederatedAuthRequestImpl> weak_ptr_factory_{this};
 };
