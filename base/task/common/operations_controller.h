@@ -143,6 +143,9 @@ class BASE_EXPORT OperationsController {
 
   std::atomic<uint32_t> state_and_count_{0};
   WaitableEvent shutdown_complete_;
+
+  // For ordering accesses to state_and_count_ when recording/replaying.
+  int ordered_lock_id_ = 0;
 };
 
 }  // namespace internal

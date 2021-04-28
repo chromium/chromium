@@ -4,11 +4,14 @@
 
 #include "base/task/common/operations_controller.h"
 #include "base/check_op.h"
+#include "base/record_replay.h"
 
 namespace base {
 namespace internal {
 
-OperationsController::OperationsController() = default;
+OperationsController::OperationsController() {
+  ordered_lock_id_ = recordreplay::CreateOrderedLock("OperationsController");
+}
 
 OperationsController::~OperationsController() {
 #if DCHECK_IS_ON()
@@ -27,8 +30,10 @@ bool OperationsController::StartAcceptingOperations() {
   // Release semantics are required to ensure that all memory accesses made on
   // this thread happen-before any others done on a thread which is later
   // allowed to perform an operation.
+  recordreplay::OrderedLock(ordered_lock_id_);
   auto prev_value = state_and_count_.fetch_or(kAcceptingOperationsBitMask,
                                               std::memory_order_release);
+  recordreplay::OrderedUnlock(ordered_lock_id_);
 
   DCHECK_EQ(ExtractState(prev_value), State::kRejectingOperations);
   // The count is the number of rejected operations, unwind them now.
@@ -42,7 +47,9 @@ OperationsController::OperationToken OperationsController::TryBeginOperation() {
   // perform an operation sees all the memory side-effects that happened-before
   // StartAcceptingOperations(). They're also required so that no operations on
   // this thread (e.g. the operation itself) can be reordered before this one.
+  recordreplay::OrderedLock(ordered_lock_id_);
   auto prev_value = state_and_count_.fetch_add(1, std::memory_order_acquire);
+  recordreplay::OrderedUnlock(ordered_lock_id_);
 
   switch (ExtractState(prev_value)) {
     case State::kRejectingOperations:
@@ -59,8 +66,10 @@ void OperationsController::ShutdownAndWaitForZeroOperations() {
   // Acquire semantics are required to guarantee that all memory side-effects
   // made by other threads that were allowed to perform operations are
   // synchronized with this thread before it returns from this method.
+  recordreplay::OrderedLock(ordered_lock_id_);
   auto prev_value = state_and_count_.fetch_or(kShuttingDownBitMask,
                                               std::memory_order_acquire);
+  recordreplay::OrderedUnlock(ordered_lock_id_);
 
   switch (ExtractState(prev_value)) {
     case State::kRejectingOperations:
@@ -91,7 +100,9 @@ OperationsController::State OperationsController::ExtractState(uint32_t value) {
 void OperationsController::DecrementBy(uint32_t n) {
   // Release semantics are required to ensure that no operation on the current
   // thread (e.g. the operation itself) can be reordered after this one.
+  recordreplay::OrderedLock(ordered_lock_id_);
   auto prev_value = state_and_count_.fetch_sub(n, std::memory_order_release);
+  recordreplay::OrderedUnlock(ordered_lock_id_);
   DCHECK_LE(n, ExtractCount(prev_value)) << "Decrement underflow";
 
   if (ExtractState(prev_value) == State::kShuttingDown &&
