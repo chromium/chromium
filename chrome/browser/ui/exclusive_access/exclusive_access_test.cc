@@ -36,7 +36,8 @@ using content::WebContents;
 
 FullscreenNotificationObserver::FullscreenNotificationObserver(
     Browser* browser) {
-  observer_.Add(browser->exclusive_access_manager()->fullscreen_controller());
+  observation_.Observe(
+      browser->exclusive_access_manager()->fullscreen_controller());
 }
 
 FullscreenNotificationObserver::~FullscreenNotificationObserver() = default;

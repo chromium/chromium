@@ -114,7 +114,8 @@ void SigninReauthViewController::SetWebContents(
 }
 
 void SigninReauthViewController::OnModalSigninClosed() {
-  dialog_delegate_observer_.Remove(dialog_delegate_);
+  DCHECK(dialog_delegate_observation_.IsObservingSource(dialog_delegate_));
+  dialog_delegate_observation_.Reset();
   dialog_delegate_ = nullptr;
 
   DCHECK(ui_state_ == UIState::kConfirmationDialog ||
@@ -215,7 +216,8 @@ void SigninReauthViewController::CompleteReauth(signin::ReauthResult result) {
   }
 
   if (dialog_delegate_) {
-    dialog_delegate_observer_.Remove(dialog_delegate_);
+    DCHECK(dialog_delegate_observation_.IsObservingSource(dialog_delegate_));
+    dialog_delegate_observation_.Reset();
     dialog_delegate_->CloseModalSignin();
     dialog_delegate_ = nullptr;
   }
@@ -307,7 +309,7 @@ void SigninReauthViewController::ShowReauthConfirmationDialog() {
   dialog_delegate_ =
       SigninViewControllerDelegate::CreateReauthConfirmationDelegate(
           browser_, account_id_, access_point_);
-  dialog_delegate_observer_.Add(dialog_delegate_);
+  dialog_delegate_observation_.Observe(dialog_delegate_);
 
   SigninReauthUI* web_dialog_ui = dialog_delegate_->GetWebContents()
                                       ->GetWebUI()
@@ -340,7 +342,8 @@ void SigninReauthViewController::ShowGaiaReauthPageInNewTab() {
   ui_state_ = UIState::kGaiaReauthTab;
   // Remove the observer to not trigger OnModalSigninClosed() that will abort
   // the reauth flow.
-  dialog_delegate_observer_.Remove(dialog_delegate_);
+  DCHECK(dialog_delegate_observation_.IsObservingSource(dialog_delegate_));
+  dialog_delegate_observation_.Reset();
   dialog_delegate_->CloseModalSignin();
   dialog_delegate_ = nullptr;
 

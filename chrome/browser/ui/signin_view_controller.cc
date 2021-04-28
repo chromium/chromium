@@ -219,7 +219,7 @@ SigninViewController::ShowReauthPrompt(
   // is closed.
   delegate_ = new SigninReauthViewController(
       browser_, account_id, access_point, std::move(wrapped_reauth_callback));
-  delegate_observer_.Add(delegate_);
+  delegate_observation_.Observe(delegate_);
   chrome::RecordDialogCreation(chrome::DialogIdentifier::SIGNIN_REAUTH);
   return abort_handle;
 }
@@ -231,7 +231,7 @@ void SigninViewController::ShowModalSyncConfirmationDialog() {
   // is closed.
   delegate_ =
       SigninViewControllerDelegate::CreateSyncConfirmationDelegate(browser_);
-  delegate_observer_.Add(delegate_);
+  delegate_observation_.Observe(delegate_);
   chrome::RecordDialogCreation(
       chrome::DialogIdentifier::SIGN_IN_SYNC_CONFIRMATION);
 }
@@ -241,7 +241,7 @@ void SigninViewController::ShowModalSigninErrorDialog() {
   // The delegate will delete itself on request of the UI code when the widget
   // is closed.
   delegate_ = SigninViewControllerDelegate::CreateSigninErrorDelegate(browser_);
-  delegate_observer_.Add(delegate_);
+  delegate_observation_.Observe(delegate_);
   chrome::RecordDialogCreation(chrome::DialogIdentifier::SIGN_IN_ERROR);
 }
 
@@ -262,7 +262,8 @@ void SigninViewController::SetModalSigninHeight(int height) {
 }
 
 void SigninViewController::OnModalSigninClosed() {
-  delegate_observer_.Remove(delegate_);
+  DCHECK(delegate_observation_.IsObservingSource(delegate_));
+  delegate_observation_.Reset();
   delegate_ = nullptr;
 }
 
@@ -412,7 +413,7 @@ void SigninViewController::ShowModalSigninEmailConfirmationDialog(
   delegate_ = SigninEmailConfirmationDialog::AskForConfirmation(
       active_contents, browser_->profile(), last_email, email,
       std::move(callback));
-  delegate_observer_.Add(delegate_);
+  delegate_observation_.Observe(delegate_);
   chrome::RecordDialogCreation(
       chrome::DialogIdentifier::SIGN_IN_EMAIL_CONFIRMATION);
 }

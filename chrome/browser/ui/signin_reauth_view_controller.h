@@ -9,7 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/signin_view_controller_delegate.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -188,9 +188,9 @@ class SigninReauthViewController
 
   // Delegate displaying the dialog.
   SigninViewControllerDelegate* dialog_delegate_ = nullptr;
-  ScopedObserver<SigninViewControllerDelegate,
-                 SigninViewControllerDelegate::Observer>
-      dialog_delegate_observer_{this};
+  base::ScopedObservation<SigninViewControllerDelegate,
+                          SigninViewControllerDelegate::Observer>
+      dialog_delegate_observation_{this};
 
   // WebContents of the Gaia reauth page.
   std::unique_ptr<content::WebContents> reauth_web_contents_;

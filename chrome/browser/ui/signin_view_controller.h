@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/profile_chooser_constants.h"
 #include "chrome/browser/ui/signin_view_controller_delegate.h"
@@ -169,9 +169,9 @@ class SigninViewController : public SigninViewControllerDelegate::Observer {
   // |delegate_| owns itself and calls OnModalSigninClosed() before being
   // destroyed.
   SigninViewControllerDelegate* delegate_ = nullptr;
-  ScopedObserver<SigninViewControllerDelegate,
-                 SigninViewControllerDelegate::Observer>
-      delegate_observer_{this};
+  base::ScopedObservation<SigninViewControllerDelegate,
+                          SigninViewControllerDelegate::Observer>
+      delegate_observation_{this};
 
   base::WeakPtrFactory<SigninViewController> weak_ptr_factory_{this};
 

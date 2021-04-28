@@ -130,8 +130,8 @@ void HungPluginTabHelper::PluginHungStatusChanged(
 
   if (!infobar_service)
     return;
-  if (!infobar_observer_.IsObserving(infobar_service))
-    infobar_observer_.Add(infobar_service);
+  if (!infobar_observations_.IsObservingSource(infobar_service))
+    infobar_observations_.AddObservation(infobar_service);
 
   std::u16string plugin_name =
       content::PluginService::GetInstance()->GetPluginDisplayNameByPath(
@@ -163,7 +163,7 @@ void HungPluginTabHelper::OnInfoBarRemoved(infobars::InfoBar* infobar,
 
 void HungPluginTabHelper::OnManagerShuttingDown(
     infobars::InfoBarManager* manager) {
-  infobar_observer_.Remove(manager);
+  infobar_observations_.RemoveObservation(manager);
 }
 
 void HungPluginTabHelper::KillPlugin(int child_id) {

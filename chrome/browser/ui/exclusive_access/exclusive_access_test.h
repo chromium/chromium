@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_hide_callback.h"
@@ -46,7 +46,8 @@ class FullscreenNotificationObserver : public FullscreenObserver {
 
  protected:
   bool observed_change_ = false;
-  ScopedObserver<FullscreenController, FullscreenObserver> observer_{this};
+  base::ScopedObservation<FullscreenController, FullscreenObserver>
+      observation_{this};
   base::RunLoop run_loop_;
 
   DISALLOW_COPY_AND_ASSIGN(FullscreenNotificationObserver);

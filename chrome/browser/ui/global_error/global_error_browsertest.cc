@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -85,7 +86,7 @@ class GlobalErrorWaiter : public GlobalErrorObserver {
  public:
   explicit GlobalErrorWaiter(Profile* profile)
       : service_(GlobalErrorServiceFactory::GetForProfile(profile)) {
-    scoped_observer_.Add(service_);
+    scoped_observation_.Observe(service_);
   }
 
   ~GlobalErrorWaiter() override = default;
@@ -101,8 +102,8 @@ class GlobalErrorWaiter : public GlobalErrorObserver {
  private:
   base::RunLoop run_loop_;
   GlobalErrorService* service_;
-  ScopedObserver<GlobalErrorService, GlobalErrorObserver> scoped_observer_{
-      this};
+  base::ScopedObservation<GlobalErrorService, GlobalErrorObserver>
+      scoped_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GlobalErrorWaiter);
 };

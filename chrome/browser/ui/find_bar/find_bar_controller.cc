@@ -111,7 +111,8 @@ void FindBarController::ChangeWebContents(WebContents* contents) {
         find_in_page::FindTabHelper::FromWebContents(web_contents_);
     if (find_tab_helper) {
       find_tab_helper->set_selected_range(find_bar_->GetSelectedRange());
-      find_tab_observer_.Remove(find_tab_helper);
+      DCHECK(find_tab_observation_.IsObservingSource(find_tab_helper));
+      find_tab_observation_.Reset();
     }
   }
 
@@ -121,7 +122,7 @@ void FindBarController::ChangeWebContents(WebContents* contents) {
           ? find_in_page::FindTabHelper::FromWebContents(web_contents_)
           : nullptr;
   if (find_tab_helper)
-    find_tab_observer_.Add(find_tab_helper);
+    find_tab_observation_.Observe(find_tab_helper);
 
   // Hide any visible find window from the previous tab if a NULL tab contents
   // is passed in or if the find UI is not active in the new tab.

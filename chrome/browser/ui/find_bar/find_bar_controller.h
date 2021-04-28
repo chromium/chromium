@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/find_bar/find_bar_platform_helper.h"
 #include "components/find_in_page/find_result_observer.h"
 #include "components/find_in_page/find_tab_helper.h"
@@ -109,8 +109,9 @@ class FindBarController : public content::NotificationObserver,
   // replacing user-entered text with selection.
   bool has_user_modified_text_ = false;
 
-  ScopedObserver<find_in_page::FindTabHelper, find_in_page::FindResultObserver>
-      find_tab_observer_{this};
+  base::ScopedObservation<find_in_page::FindTabHelper,
+                          find_in_page::FindResultObserver>
+      find_tab_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FindBarController);
 };

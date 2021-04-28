@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/infobars/core/infobar_manager.h"
@@ -71,8 +71,9 @@ class HungPluginTabHelper
   // All currently hung plugins.
   std::map<int, std::unique_ptr<PluginState>> hung_plugins_;
 
-  ScopedObserver<infobars::InfoBarManager, infobars::InfoBarManager::Observer>
-      infobar_observer_{this};
+  base::ScopedMultiSourceObservation<infobars::InfoBarManager,
+                                     infobars::InfoBarManager::Observer>
+      infobar_observations_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
