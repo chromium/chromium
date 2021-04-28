@@ -50,7 +50,7 @@ send_audio() {
     echo "Performing text-to-speech"
     http --download "https://www.google.com/speech-api/v1/synthesize?lang=en&text=$text" --output $MP3_FILE --body
     echo "Converting to $OUTPUT_FILE"
-    avconv -y -i $MP3_FILE -acodec pcm_s16le -f s16le -ar 16000 $OUTPUT_FILE \
+    ffmpeg -y -i $MP3_FILE -acodec pcm_s16le -f s16le -ar 16000 $OUTPUT_FILE \
          -loglevel error -hide_banner
 
     rm $MP3_FILE
