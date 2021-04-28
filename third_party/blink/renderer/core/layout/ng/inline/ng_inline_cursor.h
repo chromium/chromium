@@ -469,6 +469,14 @@ class CORE_EXPORT NGInlineCursor {
   // Move the cursor position to previous fragment in pre-order DFS.
   void MoveToPrevious();
 
+  // Move to the previous fragmentainer.
+  // Valid when |CanMoveAcrossFragmentainer|.
+  void MoveToPreviousFragmentainer();
+
+  // Same as |MoveToPrevious|, except this moves to the previous fragmentainer
+  // if |Current| is at the end of a fragmentainer.
+  void MoveToPreviousIncludingFragmentainer();
+
   // Move the current position to previous line. It is error to call other than
   // line box.
   void MoveToPreviousLine();
@@ -621,7 +629,8 @@ class CORE_EXPORT NGInlineCursor {
   void MoveToNextCulledInlineDescendantIfNeeded();
 
   void ResetFragmentIndex();
-  void AdvanceFragmentIndex();
+  void DecrementFragmentIndex();
+  void IncrementFragmentIndex();
 
   NGInlineCursorPosition current_;
 

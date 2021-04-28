@@ -70,6 +70,8 @@ TEST_F(SelectionModifierTest, MoveByLineHorizontal) {
 }
 
 TEST_F(SelectionModifierTest, MoveByLineMultiColumnSingleText) {
+  RuntimeEnabledFeaturesTestHelpers::ScopedLayoutNGBlockFragmentation
+      block_fragmentation(RuntimeEnabledFeatures::LayoutNGEnabled());
   LoadAhem();
   InsertStyleElement(
       "div { font: 10px/15px Ahem; column-count: 3; width: 20ch; }");
@@ -86,6 +88,17 @@ TEST_F(SelectionModifierTest, MoveByLineMultiColumnSingleText) {
   EXPECT_EQ("<div>abc def ghi jkl |mno pqr</div>", MoveForwardByLine(modifier));
   EXPECT_EQ("<div>abc def ghi jkl mno |pqr</div>", MoveForwardByLine(modifier));
   EXPECT_EQ("<div>abc def ghi jkl mno pqr|</div>", MoveForwardByLine(modifier));
+
+  EXPECT_EQ("<div>abc def ghi jkl |mno pqr</div>",
+            MoveBackwardByLine(modifier));
+  EXPECT_EQ("<div>abc def ghi |jkl mno pqr</div>",
+            MoveBackwardByLine(modifier));
+  EXPECT_EQ("<div>abc def |ghi jkl mno pqr</div>",
+            MoveBackwardByLine(modifier));
+  EXPECT_EQ("<div>abc |def ghi jkl mno pqr</div>",
+            MoveBackwardByLine(modifier));
+  EXPECT_EQ("<div>|abc def ghi jkl mno pqr</div>",
+            MoveBackwardByLine(modifier));
 }
 
 TEST_F(SelectionModifierTest, MoveByLineVertical) {

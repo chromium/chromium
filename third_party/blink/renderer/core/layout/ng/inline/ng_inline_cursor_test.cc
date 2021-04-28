@@ -280,6 +280,8 @@ TEST_P(NGInlineCursorTest, CulledInlineWithoutRoot) {
 }
 
 TEST_P(NGInlineCursorTest, CursorForMovingAcrossFragmentainer) {
+  RuntimeEnabledFeaturesTestHelpers::ScopedLayoutNGBlockFragmentation
+      block_fragmentation(true);
   LoadAhem();
   InsertStyleElement(
       "div { font: 10px/15px Ahem; column-count: 2; width: 20ch; }");
@@ -287,8 +289,6 @@ TEST_P(NGInlineCursorTest, CursorForMovingAcrossFragmentainer) {
   // The HTML is rendered as:
   //    abc ghi
   //    def jkl
-  if (!GetLayoutObjectByElementId("m")->IsLayoutNGObject())
-    return;
 
   // MoveTo(LayoutObject) makes |NGInlineCursor| to be able to move across
   // fragmentainer.
@@ -470,6 +470,29 @@ TEST_P(NGInlineCursorTest, Next) {
   Vector<String> list = ToDebugStringList(cursor);
   EXPECT_THAT(list, ElementsAre("#linebox", "text1", "#span1", "text2",
                                 "#span2", "text3", "text4", "text5"));
+}
+
+TEST_P(NGInlineCursorTest, NextIncludingFragmentainer) {
+  RuntimeEnabledFeaturesTestHelpers::ScopedLayoutNGBlockFragmentation
+      block_fragmentation(true);
+  // TDOO(yosin): Remove style for <b> once NGFragmentItem don't do culled
+  // inline.
+  LoadAhem();
+  InsertStyleElement(
+      "b { background: gray; }"
+      "div { font: 10px/15px Ahem; column-count: 2; width: 20ch; }");
+  SetBodyInnerHTML("<div id=m>abc<br>def<br><b>ghi</b><br>jkl</div>");
+  NGInlineCursor cursor;
+  cursor.MoveTo(*GetElementById("m")->firstChild()->GetLayoutObject());
+  ASSERT_TRUE(cursor.IsBlockFragmented()) << cursor;
+  Vector<String> list;
+  while (cursor) {
+    list.push_back(ToDebugString(cursor));
+    cursor.MoveToNextIncludingFragmentainer();
+  }
+  EXPECT_THAT(list,
+              ElementsAre("abc", "", "#linebox", "def", "", "#linebox",
+                          "LayoutInline B", "ghi", "", "#linebox", "jkl"));
 }
 
 TEST_P(NGInlineCursorTest, NextWithEllipsis) {
@@ -938,6 +961,29 @@ TEST_P(NGInlineCursorTest, Previous) {
   }
   EXPECT_THAT(list, ElementsAre("xyz", "#linebox", "", "DEF", "LayoutInline B",
                                 "abc", "#linebox"));
+}
+
+TEST_P(NGInlineCursorTest, PreviousIncludingFragmentainer) {
+  RuntimeEnabledFeaturesTestHelpers::ScopedLayoutNGBlockFragmentation
+      block_fragmentation(true);
+  // TDOO(yosin): Remove style for <b> once NGFragmentItem don't do culled
+  // inline.
+  LoadAhem();
+  InsertStyleElement(
+      "b { background: gray; }"
+      "div { font: 10px/15px Ahem; column-count: 2; width: 20ch; }");
+  SetBodyInnerHTML("<div id=m>abc<br>def<br><b>ghi</b><br>jkl</div>");
+  NGInlineCursor cursor;
+  cursor.MoveTo(*GetElementById("m")->lastChild()->GetLayoutObject());
+  ASSERT_TRUE(cursor.IsBlockFragmented()) << cursor;
+  Vector<String> list;
+  while (cursor) {
+    list.push_back(ToDebugString(cursor));
+    cursor.MoveToPreviousIncludingFragmentainer();
+  }
+  EXPECT_THAT(list, ElementsAre("jkl", "#linebox", "", "ghi", "LayoutInline B",
+                                "#linebox", "", "def", "#linebox", "", "abc",
+                                "#linebox"));
 }
 
 TEST_P(NGInlineCursorTest, PreviousInlineLeaf) {
