@@ -4,7 +4,6 @@
 
 #include "gpu/command_buffer/service/shared_image_backing_d3d.h"
 
-#include "base/memory/ptr_util.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_sizes.h"
@@ -18,352 +17,25 @@ namespace gpu {
 
 namespace {
 
-bool SupportsVideoFormat(DXGI_FORMAT dxgi_format) {
-  switch (dxgi_format) {
-    case DXGI_FORMAT_NV12:
-    case DXGI_FORMAT_P010:
-    case DXGI_FORMAT_B8G8R8A8_UNORM:
-    case DXGI_FORMAT_R10G10B10A2_UNORM:
-    case DXGI_FORMAT_R16G16B16A16_FLOAT:
-      return true;
-    default:
-      return false;
-  }
-}
-
-size_t NumPlanes(DXGI_FORMAT dxgi_format) {
-  switch (dxgi_format) {
-    case DXGI_FORMAT_NV12:
-    case DXGI_FORMAT_P010:
-      return 2;
-    case DXGI_FORMAT_B8G8R8A8_UNORM:
-    case DXGI_FORMAT_R10G10B10A2_UNORM:
-    case DXGI_FORMAT_R16G16B16A16_FLOAT:
-      return 1;
-    default:
-      NOTREACHED();
-      return 0;
-  }
-}
-
-viz::ResourceFormat PlaneFormat(DXGI_FORMAT dxgi_format, size_t plane) {
-  DCHECK_LT(plane, NumPlanes(dxgi_format));
-  switch (dxgi_format) {
-    // TODO(crbug.com/1011555): P010 formats are not fully supported by Skia.
-    // Treat them the same as NV12 for the time being.
-    case DXGI_FORMAT_NV12:
-    case DXGI_FORMAT_P010:
-      // Y plane is accessed as R8 and UV plane is accessed as RG88 in D3D.
-      return plane == 0 ? viz::RED_8 : viz::RG_88;
-    case DXGI_FORMAT_B8G8R8A8_UNORM:
-      return viz::BGRA_8888;
-    case DXGI_FORMAT_R10G10B10A2_UNORM:
-      return viz::RGBA_1010102;
-    case DXGI_FORMAT_R16G16B16A16_FLOAT:
-      return viz::RGBA_F16;
-    default:
-      NOTREACHED();
-      return viz::BGRA_8888;
-  }
-}
-
-gfx::Size PlaneSize(DXGI_FORMAT dxgi_format,
-                    const gfx::Size& size,
-                    size_t plane) {
-  DCHECK_LT(plane, NumPlanes(dxgi_format));
-  switch (dxgi_format) {
-    case DXGI_FORMAT_NV12:
-    case DXGI_FORMAT_P010:
-      // Y plane is full size and UV plane is accessed as half size in D3D.
-      return plane == 0 ? size : gfx::Size(size.width() / 2, size.height() / 2);
-    case DXGI_FORMAT_B8G8R8A8_UNORM:
-    case DXGI_FORMAT_R10G10B10A2_UNORM:
-    case DXGI_FORMAT_R16G16B16A16_FLOAT:
-      return size;
-    default:
-      NOTREACHED();
-      return gfx::Size();
-  }
-}
-
-class ScopedRestoreTexture {
+class ScopedRestoreTexture2D {
  public:
-  ScopedRestoreTexture(gl::GLApi* api, GLenum target)
-      : api_(api), target_(target) {
-    DCHECK(target == GL_TEXTURE_2D || target == GL_TEXTURE_EXTERNAL_OES);
+  explicit ScopedRestoreTexture2D(gl::GLApi* api) : api_(api) {
     GLint binding = 0;
-    api->glGetIntegervFn(target == GL_TEXTURE_2D
-                             ? GL_TEXTURE_BINDING_2D
-                             : GL_TEXTURE_BINDING_EXTERNAL_OES,
-                         &binding);
+    api->glGetIntegervFn(GL_TEXTURE_BINDING_2D, &binding);
     prev_binding_ = binding;
   }
 
-  ~ScopedRestoreTexture() { api_->glBindTextureFn(target_, prev_binding_); }
+  ~ScopedRestoreTexture2D() {
+    api_->glBindTextureFn(GL_TEXTURE_2D, prev_binding_);
+  }
 
  private:
   gl::GLApi* const api_;
-  const GLenum target_;
   GLuint prev_binding_ = 0;
-  DISALLOW_COPY_AND_ASSIGN(ScopedRestoreTexture);
+  DISALLOW_COPY_AND_ASSIGN(ScopedRestoreTexture2D);
 };
 
-scoped_refptr<gles2::TexturePassthrough> CreateGLTexture(
-    viz::ResourceFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-    Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain = nullptr,
-    GLenum texture_target = GL_TEXTURE_2D,
-    unsigned array_slice = 0u,
-    unsigned plane_index = 0u) {
-  gl::GLApi* const api = gl::g_current_gl_context;
-  ScopedRestoreTexture scoped_restore(api, texture_target);
-
-  GLuint service_id = 0;
-  api->glGenTexturesFn(1, &service_id);
-  api->glBindTextureFn(texture_target, service_id);
-
-  // The GL internal format can differ from the underlying swap chain or texture
-  // format e.g. RGBA or RGB instead of BGRA or RED/RG for NV12 texture planes.
-  // See EGL_ANGLE_d3d_texture_client_buffer spec for format restrictions.
-  const auto internal_format = viz::GLInternalFormat(format);
-  const auto data_type = viz::GLDataType(format);
-  auto image = base::MakeRefCounted<gl::GLImageD3D>(
-      size, internal_format, data_type, color_space, d3d11_texture, array_slice,
-      plane_index, swap_chain);
-  DCHECK_EQ(image->GetDataFormat(), viz::GLDataFormat(format));
-  if (!image->Initialize()) {
-    DLOG(ERROR) << "GLImageD3D::Initialize failed";
-    api->glDeleteTexturesFn(1, &service_id);
-    return nullptr;
-  }
-  if (!image->BindTexImage(texture_target)) {
-    DLOG(ERROR) << "GLImageD3D::BindTexImage failed";
-    api->glDeleteTexturesFn(1, &service_id);
-    return nullptr;
-  }
-
-  auto texture = base::MakeRefCounted<gles2::TexturePassthrough>(
-      service_id, texture_target);
-  texture->SetLevelImage(texture_target, 0, image.get());
-  GLint texture_memory_size = 0;
-  api->glGetTexParameterivFn(texture_target, GL_MEMORY_SIZE_ANGLE,
-                             &texture_memory_size);
-  texture->SetEstimatedSize(texture_memory_size);
-
-  return texture;
-}
-
 }  // anonymous namespace
-
-SharedImageBackingD3D::SharedState::SharedState(
-    base::win::ScopedHandle shared_handle,
-    Microsoft::WRL::ComPtr<IDXGIKeyedMutex> dxgi_keyed_mutex)
-    : shared_handle_(std::move(shared_handle)),
-      dxgi_keyed_mutex_(std::move(dxgi_keyed_mutex)) {}
-
-SharedImageBackingD3D::SharedState::~SharedState() {
-  DCHECK(!acquired_for_d3d12_);
-  DCHECK_EQ(acquired_for_d3d11_count_, 0);
-  shared_handle_.Close();
-}
-
-bool SharedImageBackingD3D::SharedState::BeginAccessD3D12(
-    uint64_t* acquire_key) {
-  if (!dxgi_keyed_mutex_) {
-    DLOG(ERROR) << "D3D12 access not supported without keyed mutex";
-    return false;
-  }
-  if (acquired_for_d3d12_ || acquired_for_d3d11_count_ > 0) {
-    DLOG(ERROR) << "Recursive BeginAccess not supported";
-    return false;
-  }
-  *acquire_key = acquire_key_;
-  acquire_key_++;
-  acquired_for_d3d12_ = true;
-  return true;
-}
-
-void SharedImageBackingD3D::SharedState::EndAccessD3D12() {
-  acquired_for_d3d12_ = false;
-}
-
-bool SharedImageBackingD3D::SharedState::BeginAccessD3D11() {
-  // Nop for shared images that are created without keyed mutex (D3D11 only).
-  if (!dxgi_keyed_mutex_)
-    return true;
-
-  if (acquired_for_d3d12_) {
-    DLOG(ERROR) << "Recursive BeginAccess not supported";
-    return false;
-  }
-  if (acquired_for_d3d11_count_ > 0) {
-    acquired_for_d3d11_count_++;
-    return true;
-  }
-  const HRESULT hr = dxgi_keyed_mutex_->AcquireSync(acquire_key_, INFINITE);
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Unable to acquire the keyed mutex " << std::hex << hr;
-    return false;
-  }
-  acquire_key_++;
-  acquired_for_d3d11_count_++;
-  return true;
-}
-
-void SharedImageBackingD3D::SharedState::EndAccessD3D11() {
-  // Nop for shared images that are created without keyed mutex (D3D11 only).
-  if (!dxgi_keyed_mutex_)
-    return;
-
-  DCHECK_GT(acquired_for_d3d11_count_, 0);
-  acquired_for_d3d11_count_--;
-  if (acquired_for_d3d11_count_ == 0) {
-    const HRESULT hr = dxgi_keyed_mutex_->ReleaseSync(acquire_key_);
-    if (FAILED(hr))
-      DLOG(ERROR) << "Unable to release the keyed mutex " << std::hex << hr;
-  }
-}
-
-HANDLE SharedImageBackingD3D::SharedState::GetSharedHandle() const {
-  return shared_handle_.Get();
-}
-
-// static
-std::unique_ptr<SharedImageBackingD3D>
-SharedImageBackingD3D::CreateFromSwapChainBuffer(
-    const Mailbox& mailbox,
-    viz::ResourceFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-    Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
-    size_t buffer_index) {
-  auto gl_texture =
-      CreateGLTexture(format, size, color_space, d3d11_texture, swap_chain);
-  if (!gl_texture) {
-    DLOG(ERROR) << "Failed to create GL texture";
-    return nullptr;
-  }
-  return base::WrapUnique(new SharedImageBackingD3D(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(d3d11_texture), std::move(gl_texture), std::move(swap_chain),
-      buffer_index));
-}
-
-// static
-std::unique_ptr<SharedImageBackingD3D>
-SharedImageBackingD3D::CreateFromSharedHandle(
-    const Mailbox& mailbox,
-    viz::ResourceFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-    base::win::ScopedHandle shared_handle) {
-  DCHECK(shared_handle.IsValid());
-  // Keyed mutexes are required for Dawn interop but are not used for XR
-  // composition where fences are used instead.
-  Microsoft::WRL::ComPtr<IDXGIKeyedMutex> dxgi_keyed_mutex;
-  d3d11_texture.As(&dxgi_keyed_mutex);
-  DCHECK(!(usage & SHARED_IMAGE_USAGE_WEBGPU) || dxgi_keyed_mutex);
-
-  auto shared_state = base::MakeRefCounted<SharedState>(
-      std::move(shared_handle), std::move(dxgi_keyed_mutex));
-
-  // Creating the GL texture doesn't require exclusive access to the underlying
-  // D3D11 texture.
-  auto gl_texture = CreateGLTexture(format, size, color_space, d3d11_texture);
-  if (!gl_texture) {
-    DLOG(ERROR) << "Failed to create GL texture";
-    return nullptr;
-  }
-
-  return base::WrapUnique(new SharedImageBackingD3D(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(d3d11_texture), std::move(gl_texture), /*swap_chain=*/nullptr,
-      /*buffer_index=*/0, std::move(shared_state)));
-}
-
-std::unique_ptr<SharedImageBackingD3D>
-SharedImageBackingD3D::CreateFromGLTexture(
-    const Mailbox& mailbox,
-    viz::ResourceFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-    scoped_refptr<gles2::TexturePassthrough> gl_texture) {
-  return base::WrapUnique(new SharedImageBackingD3D(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(d3d11_texture), std::move(gl_texture)));
-}
-
-// static
-std::vector<std::unique_ptr<SharedImageBackingD3D>>
-SharedImageBackingD3D::CreateFromVideoTexture(
-    base::span<const Mailbox> mailboxes,
-    DXGI_FORMAT dxgi_format,
-    const gfx::Size& size,
-    uint32_t usage,
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-    unsigned array_slice,
-    base::win::ScopedHandle shared_handle) {
-  DCHECK(SupportsVideoFormat(dxgi_format));
-  DCHECK_EQ(mailboxes.size(), NumPlanes(dxgi_format));
-
-  // Shared handle and keyed mutex are required for Dawn interop.
-  Microsoft::WRL::ComPtr<IDXGIKeyedMutex> dxgi_keyed_mutex;
-  d3d11_texture.As(&dxgi_keyed_mutex);
-  DCHECK(!(usage & gpu::SHARED_IMAGE_USAGE_WEBGPU) ||
-         (shared_handle.IsValid() && dxgi_keyed_mutex));
-
-  // Share the same keyed mutex state for all the plane backings.
-  auto shared_state = base::MakeRefCounted<SharedState>(
-      std::move(shared_handle), std::move(dxgi_keyed_mutex));
-
-  std::vector<std::unique_ptr<SharedImageBackingD3D>> shared_images(
-      NumPlanes(dxgi_format));
-  for (size_t plane_index = 0; plane_index < shared_images.size();
-       plane_index++) {
-    const auto& mailbox = mailboxes[plane_index];
-
-    const auto plane_format = PlaneFormat(dxgi_format, plane_index);
-    const auto plane_size = PlaneSize(dxgi_format, size, plane_index);
-
-    // Shared image does not need to store the colorspace since it is already
-    // stored on the VideoFrame which is provided upon presenting the overlay.
-    // To prevent the developer from mistakenly using it, provide the invalid
-    // value from default-construction.
-    constexpr gfx::ColorSpace kInvalidColorSpace;
-
-    auto gl_texture = CreateGLTexture(
-        plane_format, plane_size, kInvalidColorSpace, d3d11_texture,
-        /*swap_chain=*/nullptr, GL_TEXTURE_EXTERNAL_OES, array_slice,
-        plane_index);
-    if (!gl_texture) {
-      DLOG(ERROR) << "Failed to create GL texture";
-      return {};
-    }
-
-    shared_images[plane_index] = base::WrapUnique(new SharedImageBackingD3D(
-        mailbox, plane_format, plane_size, kInvalidColorSpace,
-        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, d3d11_texture,
-        std::move(gl_texture), /*swap_chain=*/nullptr, /*buffer_index=*/0,
-        shared_state));
-    shared_images[plane_index]->SetCleared();
-  }
-
-  return shared_images;
-}
 
 SharedImageBackingD3D::SharedImageBackingD3D(
     const Mailbox& mailbox,
@@ -373,11 +45,13 @@ SharedImageBackingD3D::SharedImageBackingD3D(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-    scoped_refptr<gles2::TexturePassthrough> gl_texture,
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
+    scoped_refptr<gles2::TexturePassthrough> texture,
+    scoped_refptr<gl::GLImage> image,
     size_t buffer_index,
-    scoped_refptr<SharedState> shared_state)
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
+    base::win::ScopedHandle shared_handle,
+    Microsoft::WRL::ComPtr<IDXGIKeyedMutex> dxgi_keyed_mutex)
     : ClearTrackingSharedImageBacking(mailbox,
                                       format,
                                       size,
@@ -385,23 +59,28 @@ SharedImageBackingD3D::SharedImageBackingD3D(
                                       surface_origin,
                                       alpha_type,
                                       usage,
-                                      gl_texture->estimated_size(),
+                                      texture->estimated_size(),
                                       false /* is_thread_safe */),
-      d3d11_texture_(std::move(d3d11_texture)),
-      gl_texture_(std::move(gl_texture)),
       swap_chain_(std::move(swap_chain)),
+      texture_(std::move(texture)),
+      image_(std::move(image)),
       buffer_index_(buffer_index),
-      shared_state_(std::move(shared_state)) {
-  DCHECK(gl_texture_);
+      d3d11_texture_(std::move(d3d11_texture)),
+      shared_handle_(std::move(shared_handle)),
+      dxgi_keyed_mutex_(std::move(dxgi_keyed_mutex)) {
+  DCHECK(texture_);
 }
 
 SharedImageBackingD3D::~SharedImageBackingD3D() {
   if (!have_context())
-    gl_texture_->MarkContextLost();
-  gl_texture_ = nullptr;
-  shared_state_ = nullptr;
-  swap_chain_.Reset();
+    texture_->MarkContextLost();
+  texture_ = nullptr;
+  swap_chain_ = nullptr;
   d3d11_texture_.Reset();
+  dxgi_keyed_mutex_.Reset();
+  keyed_mutex_acquire_key_ = 0;
+  keyed_mutex_acquired_ = false;
+  shared_handle_.Close();
 
 #if BUILDFLAG(USE_DAWN)
   external_image_ = nullptr;
@@ -415,7 +94,7 @@ void SharedImageBackingD3D::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
 
 bool SharedImageBackingD3D::ProduceLegacyMailbox(
     MailboxManager* mailbox_manager) {
-  mailbox_manager->ProduceTexture(mailbox(), gl_texture_.get());
+  mailbox_manager->ProduceTexture(mailbox(), texture_.get());
   return true;
 }
 
@@ -435,7 +114,7 @@ SharedImageBackingD3D::ProduceDawn(SharedImageManager* manager,
 
   // Persistently open the shared handle by caching it on this backing.
   if (!external_image_) {
-    DCHECK(base::win::HandleTraits::IsHandleValid(GetSharedHandle()));
+    DCHECK(shared_handle_.IsValid());
 
     const viz::ResourceFormat viz_resource_format = format();
     const WGPUTextureFormat wgpu_format =
@@ -457,7 +136,7 @@ SharedImageBackingD3D::ProduceDawn(SharedImageManager* manager,
     dawn_native::d3d12::ExternalImageDescriptorDXGISharedHandle
         externalImageDesc;
     externalImageDesc.cTextureDescriptor = &texture_descriptor;
-    externalImageDesc.sharedHandle = GetSharedHandle();
+    externalImageDesc.sharedHandle = shared_handle_.Get();
 
     external_image_ = dawn_native::d3d12::ExternalImageDXGI::Create(
         device, &externalImageDesc);
@@ -484,38 +163,65 @@ void SharedImageBackingD3D::OnMemoryDump(
   // various GPU dumps.
   auto client_guid = GetSharedImageGUIDForTracing(mailbox());
   base::trace_event::MemoryAllocatorDumpGuid service_guid =
-      gl::GetGLTextureServiceGUIDForTracing(gl_texture_->service_id());
+      gl::GetGLTextureServiceGUIDForTracing(texture_->service_id());
   pmd->CreateSharedGlobalAllocatorDump(service_guid);
 
   int importance = 2;  // This client always owns the ref.
   pmd->AddOwnershipEdge(client_guid, service_guid, importance);
 
   // Swap chain textures only have one level backed by an image.
-  GetGLImage()->OnMemoryDump(pmd, client_tracing_id, dump_name);
+  image_->OnMemoryDump(pmd, client_tracing_id, dump_name);
 }
 
 bool SharedImageBackingD3D::BeginAccessD3D12(uint64_t* acquire_key) {
-  return shared_state_->BeginAccessD3D12(acquire_key);
+  if (keyed_mutex_acquired_) {
+    DLOG(ERROR) << "Recursive BeginAccess not supported";
+    return false;
+  }
+  *acquire_key = keyed_mutex_acquire_key_;
+  keyed_mutex_acquire_key_++;
+  keyed_mutex_acquired_ = true;
+  return true;
 }
 
 void SharedImageBackingD3D::EndAccessD3D12() {
-  shared_state_->EndAccessD3D12();
+  keyed_mutex_acquired_ = false;
 }
 
 bool SharedImageBackingD3D::BeginAccessD3D11() {
-  return shared_state_->BeginAccessD3D11();
+  if (dxgi_keyed_mutex_) {
+    if (keyed_mutex_acquired_) {
+      DLOG(ERROR) << "Recursive BeginAccess not supported";
+      return false;
+    }
+    const HRESULT hr =
+        dxgi_keyed_mutex_->AcquireSync(keyed_mutex_acquire_key_, INFINITE);
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "Unable to acquire the keyed mutex " << std::hex << hr;
+      return false;
+    }
+    keyed_mutex_acquire_key_++;
+    keyed_mutex_acquired_ = true;
+  }
+  return true;
 }
-
 void SharedImageBackingD3D::EndAccessD3D11() {
-  shared_state_->EndAccessD3D11();
+  if (dxgi_keyed_mutex_) {
+    const HRESULT hr = dxgi_keyed_mutex_->ReleaseSync(keyed_mutex_acquire_key_);
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "Unable to release the keyed mutex " << std::hex << hr;
+      return;
+    }
+    keyed_mutex_acquired_ = false;
+  }
 }
 
 HANDLE SharedImageBackingD3D::GetSharedHandle() const {
-  return shared_state_->GetSharedHandle();
+  return shared_handle_.Get();
 }
 
 gl::GLImage* SharedImageBackingD3D::GetGLImage() const {
-  return gl_texture_->GetLevelImage(gl_texture_->target(), 0u);
+  return image_.get();
 }
 
 bool SharedImageBackingD3D::PresentSwapChain() {
@@ -538,12 +244,10 @@ bool SharedImageBackingD3D::PresentSwapChain() {
   }
 
   gl::GLApi* const api = gl::g_current_gl_context;
+  ScopedRestoreTexture2D scoped_restore(api);
 
-  DCHECK_EQ(gl_texture_->target(), static_cast<unsigned>(GL_TEXTURE_2D));
-  ScopedRestoreTexture scoped_restore(api, GL_TEXTURE_2D);
-
-  api->glBindTextureFn(GL_TEXTURE_2D, gl_texture_->service_id());
-  if (!GetGLImage()->BindTexImage(GL_TEXTURE_2D)) {
+  api->glBindTextureFn(GL_TEXTURE_2D, texture_->service_id());
+  if (!image_->BindTexImage(GL_TEXTURE_2D)) {
     DLOG(ERROR) << "GLImage::BindTexImage failed";
     return false;
   }
@@ -559,7 +263,7 @@ SharedImageBackingD3D::ProduceGLTexturePassthrough(SharedImageManager* manager,
                                                    MemoryTypeTracker* tracker) {
   TRACE_EVENT0("gpu", "SharedImageBackingD3D::ProduceGLTexturePassthrough");
   return std::make_unique<SharedImageRepresentationGLTexturePassthroughD3D>(
-      manager, this, tracker, gl_texture_);
+      manager, this, tracker, texture_);
 }
 
 std::unique_ptr<SharedImageRepresentationSkia>
