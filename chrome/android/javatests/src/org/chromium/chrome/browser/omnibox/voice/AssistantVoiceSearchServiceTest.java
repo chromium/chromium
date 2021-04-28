@@ -69,6 +69,7 @@ public class AssistantVoiceSearchServiceTest {
 
         doReturn(false).when(mExternalAuthUtils).isGoogleSigned(anyString());
         doReturn(false).when(mExternalAuthUtils).isChromeGoogleSigned();
+        doReturn(true).when(mExternalAuthUtils).canUseGooglePlayServices();
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtils);
 
         mActivityTestRule.startMainActivityOnBlankPage();

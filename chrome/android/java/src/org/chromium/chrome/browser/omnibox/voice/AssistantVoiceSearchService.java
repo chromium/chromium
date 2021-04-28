@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.components.signin.AccountManagerDelegateException;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
@@ -415,14 +414,10 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
     /** Wrapped multi-account check to handle the exception. */
     @VisibleForTesting
     boolean doesViolateMultiAccountCheck() {
-        if (!mAccountManagerFacade.isCachePopulated()) return true;
-
-        try {
-            return mAccountManagerFacade.getGoogleAccounts().size() > 1;
-        } catch (AccountManagerDelegateException e) {
-            // In case of an exception -- we can't be sure so default to true.
-            return true;
-        }
+        // In case of the accounts cannot be fetched -- we can't be sure so default to true.
+        return !mExternalAuthUtils.canUseGooglePlayServices()
+                || !mAccountManagerFacade.isCachePopulated()
+                || mAccountManagerFacade.tryGetGoogleAccounts().size() > 1;
     }
 
     // TemplateUrlService.TemplateUrlServiceObserver implementation

@@ -6,11 +6,11 @@ package org.chromium.chrome.browser.omnibox.voice;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ASSISTANT_VOICE_SEARCH_ENABLED;
 
-import android.accounts.Account;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -44,14 +44,14 @@ import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService.EligibilityFailureReason;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.components.signin.AccountManagerFacade;
-import org.chromium.components.signin.GmsAvailabilityException;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -64,12 +64,18 @@ import java.util.List;
 @CommandLineFlags.Add(BaseSwitches.DISABLE_LOW_END_DEVICE_MODE)
 public class AssistantVoiceSearchServiceUnitTest {
     private static final int AGSA_VERSION_NUMBER = 11007;
-    private static final List<Account> FAKE_ACCOUNTS_1 = Arrays.asList(Mockito.mock(Account.class));
-    private static final List<Account> FAKE_ACCOUNTS_2 =
-            Arrays.asList(Mockito.mock(Account.class), Mockito.mock(Account.class));
+    private static final String TEST_ACCOUNT_EMAIL1 = "test1@gmail.com";
+    private static final String TEST_ACCOUNT_EMAIL2 = "test2@gmail.com";
 
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
+
+    private final FakeAccountManagerFacade mFakeAccountManagerFacade =
+            spy(new FakeAccountManagerFacade(null));
+
+    @Rule
+    public final AccountManagerTestRule mAccountManagerTestRule =
+            new AccountManagerTestRule(mFakeAccountManagerFacade);
 
     @Mock
     GSAState mGsaState;
@@ -81,8 +87,6 @@ public class AssistantVoiceSearchServiceUnitTest {
     ExternalAuthUtils mExternalAuthUtils;
     @Mock
     IdentityManager mIdentityManager;
-    @Mock
-    AccountManagerFacade mAccountManagerFacade;
 
     AssistantVoiceSearchService mAssistantVoiceSearchService;
     SharedPreferencesManager mSharedPreferencesManager;
@@ -97,7 +101,7 @@ public class AssistantVoiceSearchServiceUnitTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         ShadowRecordHistogram.reset();
         SysUtils.resetForTesting();
         MockitoAnnotations.initMocks(this);
@@ -109,19 +113,20 @@ public class AssistantVoiceSearchServiceUnitTest {
         doReturn(mPackageManager).when(mContext).getPackageManager();
         doReturn(true).when(mExternalAuthUtils).isChromeGoogleSigned();
         doReturn(true).when(mExternalAuthUtils).isGoogleSigned(GSAState.PACKAGE_NAME);
+        doReturn(true).when(mExternalAuthUtils).canUseGooglePlayServices();
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         doReturn(true).when(mGsaState).isGsaInstalled();
         doReturn(false).when(mGsaState).isAgsaVersionBelowMinimum(any(), any());
         doReturn(AGSA_VERSION_NUMBER).when(mGsaState).parseAgsaMajorMinorVersionAsInteger(any());
         doReturn(true).when(mGsaState).canAgsaHandleIntent(any());
         doReturn(true).when(mIdentityManager).hasPrimaryAccount();
-        doReturn(FAKE_ACCOUNTS_1).when(mAccountManagerFacade).getGoogleAccounts();
-        doReturn(true).when(mAccountManagerFacade).isCachePopulated();
+
+        mAccountManagerTestRule.addAccount(TEST_ACCOUNT_EMAIL1);
         mSharedPreferencesManager.writeBoolean(ASSISTANT_VOICE_SEARCH_ENABLED, true);
 
         mAssistantVoiceSearchService = new AssistantVoiceSearchService(mContext, mExternalAuthUtils,
                 mTemplateUrlService, mGsaState, null, mSharedPreferencesManager, mIdentityManager,
-                mAccountManagerFacade);
+                AccountManagerFacadeProvider.getInstance());
     }
 
     @After
@@ -245,8 +250,8 @@ public class AssistantVoiceSearchServiceUnitTest {
 
     @Test
     @Feature("OmniboxAssistantVoiceSearch")
-    public void testAssistantEligibility_MutlipleAccounts() throws Exception {
-        doReturn(FAKE_ACCOUNTS_2).when(mAccountManagerFacade).getGoogleAccounts();
+    public void testAssistantEligibility_MutlipleAccounts() {
+        mAccountManagerTestRule.addAccount(TEST_ACCOUNT_EMAIL2);
 
         List<Integer> reasons = new ArrayList<>();
         boolean eligible = mAssistantVoiceSearchService.isDeviceEligibleForAssistant(
@@ -259,9 +264,9 @@ public class AssistantVoiceSearchServiceUnitTest {
 
     @Test
     @Feature("OmniboxAssistantVoiceSearch")
-    public void testAssistantEligibility_MutlipleAccounts_CheckDisabled() throws Exception {
+    public void testAssistantEligibility_MutlipleAccounts_CheckDisabled() {
         mAssistantVoiceSearchService.setMultiAccountCheckEnabledForTesting(false);
-        doReturn(FAKE_ACCOUNTS_2).when(mAccountManagerFacade).getGoogleAccounts();
+        mAccountManagerTestRule.addAccount(TEST_ACCOUNT_EMAIL2);
 
         List<Integer> reasons = new ArrayList<>();
         boolean eligible = mAssistantVoiceSearchService.isDeviceEligibleForAssistant(
@@ -272,15 +277,15 @@ public class AssistantVoiceSearchServiceUnitTest {
 
     @Test
     @Feature("OmniboxAssistantVoiceSearch")
-    public void testAssistantEligibility_MutlipleAccounts_JustAdded() throws Exception {
+    public void testAssistantEligibility_MutlipleAccounts_JustAdded() {
         mAssistantVoiceSearchService.setColorfulMicEnabledForTesting(true);
         mAssistantVoiceSearchService.onAccountsChanged();
 
         // Colorful mic should be returned when only 1 account is present.
         Assert.assertNull(mAssistantVoiceSearchService.getMicButtonColorStateList(0, mContext));
 
-        doReturn(FAKE_ACCOUNTS_2).when(mAccountManagerFacade).getGoogleAccounts();
-        mAssistantVoiceSearchService.onAccountsChanged();
+        // Adding new account would trigger onAccountsChanged() automatically
+        mAccountManagerTestRule.addAccount(TEST_ACCOUNT_EMAIL2);
 
         // Colorful mic should be returned when only 1 account is present.
         Assert.assertNotNull(mAssistantVoiceSearchService.getMicButtonColorStateList(0, mContext));
@@ -288,7 +293,7 @@ public class AssistantVoiceSearchServiceUnitTest {
 
     @Test
     @Feature("OmniboxAssistantVoiceSearch")
-    public void testAssistantEligibility_AGSA_not_installed() throws Exception {
+    public void testAssistantEligibility_AGSA_not_installed() {
         doReturn(false).when(mGsaState).isGsaInstalled();
 
         List<Integer> reasons = new ArrayList<>();
@@ -349,15 +354,15 @@ public class AssistantVoiceSearchServiceUnitTest {
 
     @Test
     @Feature("OmniboxAssistantVoiceSearch")
-    public void testDoesViolateMultiAccountCheck_throws() throws Exception {
-        doThrow(GmsAvailabilityException.class).when(mAccountManagerFacade).getGoogleAccounts();
+    public void testDoesViolateMultiAccountCheck_cannotUseGooglePlayService() {
+        when(mExternalAuthUtils.canUseGooglePlayServices()).thenReturn(false);
         Assert.assertTrue(mAssistantVoiceSearchService.doesViolateMultiAccountCheck());
     }
 
     @Test
     @Feature("OmniboxAssistantVoiceSearch")
-    public void testDoesViolateMultiAccountCheck_cacheNotPopuolated() throws Exception {
-        doReturn(false).when(mAccountManagerFacade).isCachePopulated();
+    public void testDoesViolateMultiAccountCheck_cacheNotPopulated() {
+        doReturn(false).when(mFakeAccountManagerFacade).isCachePopulated();
         Assert.assertTrue(mAssistantVoiceSearchService.doesViolateMultiAccountCheck());
     }
 }
