@@ -227,15 +227,29 @@ bool WifiSyncFeatureManagerImpl::IsWifiSyncSupported() {
     return false;
   }
 
-  if (host_status_provider_->GetHostWithStatus()
-          .host_device()
-          ->GetSoftwareFeatureState(
-              multidevice::SoftwareFeature::kWifiSyncHost) ==
+  base::Optional<multidevice::RemoteDeviceRef> host_device =
+      host_status_provider_->GetHostWithStatus().host_device();
+  if (!host_device) {
+    PA_LOG(ERROR) << "WifiSyncFeatureManagerImpl::" << __func__
+                  << ": Host device unexpectedly null.";
+    return false;
+  }
+
+  if (host_device->GetSoftwareFeatureState(
+          multidevice::SoftwareFeature::kWifiSyncHost) ==
       multidevice::SoftwareFeatureState::kNotSupported) {
     return false;
   }
 
-  if (device_sync_client_->GetLocalDeviceMetadata()->GetSoftwareFeatureState(
+  base::Optional<multidevice::RemoteDeviceRef> local_device =
+      device_sync_client_->GetLocalDeviceMetadata();
+  if (!local_device) {
+    PA_LOG(ERROR) << "WifiSyncFeatureManagerImpl::" << __func__
+                  << ": Local device unexpectedly null.";
+    return false;
+  }
+
+  if (local_device->GetSoftwareFeatureState(
           multidevice::SoftwareFeature::kWifiSyncClient) ==
       multidevice::SoftwareFeatureState::kNotSupported) {
     return false;

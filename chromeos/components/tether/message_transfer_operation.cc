@@ -115,6 +115,15 @@ void MessageTransferOperation::Initialize() {
   if (initialized_) {
     return;
   }
+
+  base::Optional<multidevice::RemoteDeviceRef> local_device =
+      device_sync_client_->GetLocalDeviceMetadata();
+  if (!local_device) {
+    PA_LOG(ERROR) << "MessageTransferOperation::" << __func__
+                  << ": Local device unexpectedly null.";
+    return;
+  }
+
   initialized_ = true;
 
   // Store the message type for this connection as a private field. This is
@@ -132,8 +141,7 @@ void MessageTransferOperation::Initialize() {
         std::make_unique<ConnectionAttemptDelegate>(
             this, remote_device,
             secure_channel_client_->ListenForConnectionFromDevice(
-                remote_device, *device_sync_client_->GetLocalDeviceMetadata(),
-                kTetherFeature,
+                remote_device, *local_device, kTetherFeature,
                 secure_channel::ConnectionMedium::kBluetoothLowEnergy,
                 connection_priority_));
   }
