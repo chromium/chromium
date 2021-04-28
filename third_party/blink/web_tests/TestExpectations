@@ -6245,7 +6245,7 @@ crbug.com/1046784 http/tests/devtools/oopif/oopif-storage.js [ Pass Failure ]
 crbug.com/1046784 http/tests/inspector-protocol/service-worker/target-reloaded-after-crash.js [ Pass Failure Timeout ]
 
 # Disabled to unblock https://crrev.com/c/2846892
-crbug.com/1195927 http/tests/devtools/sources/debugger/live-edit.js [ Pass Failure ]
+crbug.com/1195927 http/tests/devtools/sources/debugger/live-edit.js [ Pass Failure Timeout ]
 
 # Sheriff 2020-01-28
 crbug.com/1046201 [ Mac ] fast/forms/calendar-picker/calendar-picker-appearance-zoom125.html [ Pass Failure ]
