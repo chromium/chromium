@@ -16,6 +16,7 @@ import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.os.Build;
 import android.view.View;
 
 import androidx.test.filters.SmallTest;
@@ -37,7 +38,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.MessageClearReason;
@@ -60,11 +61,16 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Tests for {@link MerchantTrustSignalsCoordinator}.
+ *
+ * NOTE: This test is temporarily skipped for SDK version < 23 (M) since the test attempts to mock
+ * {@link WindowAndroid} which has a dependency on android.View.Display.Mode which is not supported
+ * on versions prior to Android M.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 @EnableFeatures({ChromeFeatureList.COMMERCE_MERCHANT_VIEWER + "<Study"})
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
+@DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.M)
 public class MerchantTrustSignalsCoordinatorTest {
     @Rule
     public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
@@ -148,7 +154,6 @@ public class MerchantTrustSignalsCoordinatorTest {
 
     @UiThreadTest
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1203461")
     @Test
     @CommandLineFlags.
     Add({"force-fieldtrial-params=Study.Group:trust_signals_message_window_duration_ms/-1"})
@@ -183,7 +188,6 @@ public class MerchantTrustSignalsCoordinatorTest {
 
     @UiThreadTest
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1203461")
     @Test
     @CommandLineFlags.
     Add({"force-fieldtrial-params=Study.Group:trust_signals_message_window_duration_ms/60000"})
@@ -213,7 +217,6 @@ public class MerchantTrustSignalsCoordinatorTest {
 
     @UiThreadTest
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1203461")
     @Test
     @CommandLineFlags.
     Add({"force-fieldtrial-params=Study.Group:trust_signals_message_window_duration_ms/-1"})
@@ -243,7 +246,6 @@ public class MerchantTrustSignalsCoordinatorTest {
 
     @UiThreadTest
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1203461")
     @Test
     @CommandLineFlags.
     Add({"force-fieldtrial-params=Study.Group:trust_signals_message_window_duration_ms/-1"})
@@ -259,7 +261,6 @@ public class MerchantTrustSignalsCoordinatorTest {
         setMockTrustSignalsData(null);
         setMockTrustSignalsEventData("fake_host", null);
 
-        // doReturn(mDummyMerchantTrustSignalsEvent)
         coordinator.maybeDisplayMessage(
                 new MerchantTrustMessageContext(mMockGurl, mMockWebContents));
 
@@ -274,7 +275,6 @@ public class MerchantTrustSignalsCoordinatorTest {
 
     @UiThreadTest
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1203461")
     @Test
     public void testMaybeDisplayMessageWithScheduledMessage() {
         // Verify previous scheduled message is canceled.
@@ -292,7 +292,6 @@ public class MerchantTrustSignalsCoordinatorTest {
 
     @UiThreadTest
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1203461")
     @Test
     public void testMaybeDisplayMessageWithScheduledMessageForDifferentHost() {
         MerchantTrustSignalsCoordinator coordinator = getCoordinatorUnderTest();
@@ -316,7 +315,6 @@ public class MerchantTrustSignalsCoordinatorTest {
     }
 
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1203461")
     @Test
     public void testOnMessageDismissed() {
         MerchantTrustSignalsCoordinator coordinator = getCoordinatorUnderTest();
