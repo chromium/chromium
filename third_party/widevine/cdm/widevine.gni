@@ -44,6 +44,13 @@ enable_widevine_cdm_component =
     enable_library_widevine_cdm &&
     (is_win || is_mac || is_linux || is_chromeos_lacros)
 
+# Enable (Windows) Media Foundation Widevine CDM. Desabled by default for test.
+declare_args() {
+  enable_media_foundation_widevine_cdm = false
+}
+assert(!enable_media_foundation_widevine_cdm || enable_widevine)
+assert(!enable_media_foundation_widevine_cdm || is_win)
+
 declare_args() {
   # Widevine CDM is bundled as part of Google Chrome builds.
   bundle_widevine_cdm = enable_library_widevine_cdm && is_chrome_branded

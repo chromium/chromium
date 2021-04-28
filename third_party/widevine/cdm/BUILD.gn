@@ -18,6 +18,7 @@ buildflag_header("buildflags") {
     "ENABLE_WIDEVINE=$enable_widevine",
     "BUNDLE_WIDEVINE_CDM=$bundle_widevine_cdm",
     "ENABLE_WIDEVINE_CDM_COMPONENT=$enable_widevine_cdm_component",
+    "ENABLE_MEDIA_FOUNDATION_WIDEVINE_CDM=$enable_media_foundation_widevine_cdm",
   ]
 }
 
@@ -88,6 +89,7 @@ source_set("headers") {
   public = [ "widevine_cdm_common.h" ]
 
   public_deps = [
+    ":buildflags",
     ":version_h",  # Forward permission to use version header.
     "//base",
     "//media:media_buildflags",
