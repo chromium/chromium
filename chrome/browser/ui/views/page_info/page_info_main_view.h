@@ -15,8 +15,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/view.h"
 
-class Profile;
-
 // The main view of the page info, contains security information, permissions
 // and  site-related settings. This is used in the experimental
 // PageInfoNewBubbleView (under a flag PageInfoV2Desktop).
@@ -28,9 +26,7 @@ class PageInfoMainView : public views::View,
   // The width of the column size for permissions and chosen object icons.
   static constexpr int kIconColumnWidth = 16;
 
-  PageInfoMainView(PageInfo* presenter,
-                   PageInfoUiDelegate* ui_delegate,
-                   Profile* profile);
+  PageInfoMainView(PageInfo* presenter, PageInfoUiDelegate* ui_delegate);
   ~PageInfoMainView() override;
 
   enum PageInfoBubbleViewID {
@@ -119,7 +115,7 @@ class PageInfoMainView : public views::View,
   PageInfoHoverButton* certificate_button_ = nullptr;
 
   // The button that opens up "Site Settings".
-  views::View* site_settings_link = nullptr;
+  views::View* site_settings_link_ = nullptr;
 
   // The view that contains the "Permissions" table of the bubble.
   views::View* permissions_view_ = nullptr;

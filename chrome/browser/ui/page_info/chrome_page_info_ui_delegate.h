@@ -18,6 +18,7 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
   // PageInfoUiDelegate implementation
 #if !defined(OS_ANDROID)
   bool IsBlockAutoPlayEnabled() override;
+  bool ShouldShowSiteSettings() override;
 #endif
   permissions::PermissionResult GetPermissionStatus(
       ContentSettingsType type) override;

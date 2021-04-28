@@ -6,7 +6,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/reputation/safety_tip_ui_helper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
@@ -15,6 +14,7 @@
 #include "chrome/browser/ui/views/page_info/chosen_object_view.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/url_constants.h"
+#include "components/page_info/page_info_ui_delegate.h"
 #include "components/strings/grit/components_chromium_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -55,8 +55,7 @@ int GetImageButtonRightPadding() {
 }  // namespace
 
 PageInfoMainView::PageInfoMainView(PageInfo* presenter,
-                                   PageInfoUiDelegate* ui_delegate,
-                                   Profile* profile)
+                                   PageInfoUiDelegate* ui_delegate)
     : presenter_(presenter), ui_delegate_(ui_delegate) {
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
 
@@ -87,16 +86,14 @@ PageInfoMainView::PageInfoMainView(PageInfo* presenter,
   layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
   site_settings_view_ = layout->AddView(CreateContainerView());
 
-  if (!profile->IsGuestSession()) {
-    layout->StartRowWithPadding(views::GridLayout::kFixedSize, kColumnId,
-                                views::GridLayout::kFixedSize, 0);
-
+  if (ui_delegate_->ShouldShowSiteSettings()) {
+    layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
     const std::u16string& tooltip =
         l10n_util::GetStringUTF16(IDS_PAGE_INFO_SITE_SETTINGS_TOOLTIP);
-    site_settings_link = layout->AddView(std::make_unique<PageInfoHoverButton>(
+    site_settings_link_ = layout->AddView(std::make_unique<PageInfoHoverButton>(
         base::BindRepeating(
             [](PageInfoMainView* view) {
-              view->HandleMoreInfoRequest(view->site_settings_link);
+              view->HandleMoreInfoRequest(view->site_settings_link_);
             },
             this),
         PageInfoUI::GetSiteSettingsIcon(), IDS_PAGE_INFO_SITE_SETTINGS_LINK,

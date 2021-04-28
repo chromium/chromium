@@ -64,8 +64,8 @@ PageInfoNewBubbleView::PageInfoNewBubbleView(
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   page_container_ = AddChildView(std::make_unique<PageSwitcherView>());
-  page_container_->SwitchToPage(std::make_unique<PageInfoMainView>(
-      presenter_.get(), ui_delegate_.get(), profile));
+  page_container_->SwitchToPage(
+      std::make_unique<PageInfoMainView>(presenter_.get(), ui_delegate_.get()));
   SizeToContents();
 }
 

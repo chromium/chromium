@@ -30,6 +30,10 @@ permissions::PermissionResult ChromePageInfoUiDelegate::GetPermissionStatus(
 bool ChromePageInfoUiDelegate::IsBlockAutoPlayEnabled() {
   return profile_->GetPrefs()->GetBoolean(prefs::kBlockAutoplayEnabled);
 }
+
+bool ChromePageInfoUiDelegate::ShouldShowSiteSettings() {
+  return !profile_->IsGuestSession();
+}
 #endif
 
 bool ChromePageInfoUiDelegate::ShouldShowAllow(ContentSettingsType type) {
