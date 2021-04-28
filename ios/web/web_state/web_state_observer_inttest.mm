@@ -1025,6 +1025,53 @@ TEST_F(WebStateObserverTest, FailedNavigation) {
   EXPECT_EQ(item->GetTitle(), base::UTF8ToUTF16(kFailedTitle));
 }
 
+// Tests that navigation to an invalid URL is disallowed.
+TEST_F(WebStateObserverTest, InvalidURL) {
+  // Navigations to invalid URLs are allowed on iOS 12 (see crbug.com/965067).
+  if (!base::ios::IsRunningOnIOS13OrLater()) {
+    return;
+  }
+
+  const GURL url = test_server_->GetURL("/echoall");
+
+  // Perform new page navigation.
+  NavigationContext* context = nullptr;
+  int32_t nav_id = 0;
+  EXPECT_CALL(observer_, DidStartLoading(web_state()));
+  WebStatePolicyDecider::RequestInfo expected_request_info(
+      ui::PageTransition::PAGE_TRANSITION_TYPED,
+      /*target_main_frame=*/true, /*target_frame_is_cross_origin=*/false,
+      /*has_user_gesture=*/false);
+  EXPECT_CALL(*decider_,
+              ShouldAllowRequest(_, RequestInfoMatch(expected_request_info)))
+      .WillOnce(Return(WebStatePolicyDecider::PolicyDecision::Allow()));
+  EXPECT_CALL(observer_, DidStartNavigation(web_state(), _))
+      .WillOnce(VerifyPageStartedContext(
+          web_state(), url, ui::PageTransition::PAGE_TRANSITION_TYPED, &context,
+          &nav_id));
+  EXPECT_CALL(*decider_, ShouldAllowResponse(_, /*for_main_frame=*/true, _))
+      .WillOnce(
+          RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
+  EXPECT_CALL(observer_, DidFinishNavigation(web_state(), _))
+      .WillOnce(VerifyNewPageFinishedContext(
+          web_state(), url, kExpectedMimeType, /*content_is_html=*/true,
+          &context, &nav_id));
+  EXPECT_CALL(observer_, TitleWasSet(web_state()))
+      .WillOnce(VerifyTitle(url.GetContent()));
+  EXPECT_CALL(observer_, TitleWasSet(web_state()))
+      .WillOnce(VerifyTitle("EmbeddedTestServer - EchoAll"));
+  EXPECT_CALL(observer_, DidStopLoading(web_state()));
+  EXPECT_CALL(observer_,
+              PageLoaded(web_state(), PageLoadCompletionStatus::SUCCESS));
+  ASSERT_TRUE(LoadUrl(url));
+
+  // Navigate to an invalid URL using JavaScript.
+  // There should be no calls to WebStatePolicyDecider, since the navigation
+  // should get cancelled before that is reached.
+  EXPECT_CALL(*decider_, ShouldAllowRequest(_, _)).Times(0);
+  ExecuteJavaScript(@"window.location.pathname = '/%00%50'");
+}
+
 // Tests navigation to a URL with /..; suffix. On iOS 12 and earlier this
 // navigation fails becasue WebKit rewrites valid URL to invalid during the
 // navigation. On iOS 13+ this navigation sucessfully completes.

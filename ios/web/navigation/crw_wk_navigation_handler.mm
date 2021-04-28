@@ -357,6 +357,13 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
       self.webStateImpl->GetNavigationManager()->LoadURLWithParams(loadParams);
       return;
     }
+    // On iOS 12, we allow the navigation since cancelling it here causes
+    // crbug.com/965067. The underlying issue is a WebKit bug that converts
+    // valid URLs into invalid ones. This issue is fixed in iOS 13.
+    if (@available(iOS 13, *)) {
+      decisionHandler(WKNavigationActionPolicyCancel);
+      return;
+    }
   }
 
   // First check if the navigation action should be blocked by the controller
