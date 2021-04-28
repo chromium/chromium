@@ -30,7 +30,6 @@
 #import "ios/chrome/browser/download/ar_quick_look_tab_helper.h"
 #include "ios/chrome/browser/favicon/favicon_service_factory.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
-#import "ios/chrome/browser/geolocation/omnibox_geolocation_tab_helper.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
 #include "ios/chrome/browser/history/history_tab_helper.h"
 #include "ios/chrome/browser/history/top_sites_factory.h"
@@ -206,8 +205,6 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
     PrintTabHelper::CreateForWebState(web_state);
     InfobarBadgeTabHelper::CreateForWebState(web_state);
   }
-
-  OmniboxGeolocationTabHelper::CreateForWebState(web_state);
 
   if (base::FeatureList::IsEnabled(kSharedHighlightingIOS)) {
     LinkToTextTabHelper::CreateForWebState(web_state);

@@ -870,6 +870,10 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
             .restoreHelper showRestorePrompt];
     self.sceneState.appState.startupInformation.restoreHelper = nil;
   }
+
+  // Make sure the geolocation controller is created to observe permission
+  // events.
+  [OmniboxGeolocationController sharedInstance];
 }
 
 // Determines which UI should be shown on startup, and shows it.

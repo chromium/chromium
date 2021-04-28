@@ -5,12 +5,8 @@
 source_set("geolocation") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "omnibox_geolocation_config.h",
-    "omnibox_geolocation_config.mm",
     "omnibox_geolocation_controller.h",
     "omnibox_geolocation_controller.mm",
-    "omnibox_geolocation_tab_helper.h",
-    "omnibox_geolocation_tab_helper.mm",
   ]
   deps = [
     "//base",

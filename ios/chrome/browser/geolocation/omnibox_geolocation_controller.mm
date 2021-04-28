@@ -10,7 +10,6 @@
 #include "components/google/core/common/google_util.h"
 #import "ios/chrome/app/tests_hook.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/geolocation/omnibox_geolocation_config.h"
 #include "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
@@ -46,29 +45,19 @@ const char* const kGeolocationAuthorizationActionNewUser =
 
 }  // anonymous namespace
 
-@interface OmniboxGeolocationController () <CLLocationManagerDelegate> {
-  CLLocationManager* _locationManager;
-
-  // Records whether we have deliberately presented the system prompt, so that
-  // we can record the user's action in
-  // locationManagerDidChangeAuthorization:.
-  BOOL _systemPrompt;
-
-  // Records whether we are prompting for a new user, so that we can record the
-  // user's action to the right histogram (either
-  // kGeolocationAuthorizationActionExistingUser or
-  // kGeolocationAuthorizationActionNewUser).
-  BOOL _newUser;
-}
+@interface OmniboxGeolocationController () <CLLocationManagerDelegate>
 
 @property(nonatomic, strong) CLLocationManager* locationManager;
 
-// Returns YES if and only if |url| specifies a page for which we will prompt
-// the user to authorize the use of geolocation for Omnibox queries.
-- (BOOL)URLIsAuthorizationPromptingURL:(const GURL&)url;
+// Records whether we are prompting for a new user, so that we can record the
+// user's action to the right histogram (either
+// kGeolocationAuthorizationActionExistingUser or
+// kGeolocationAuthorizationActionNewUser).
+@property(nonatomic, assign) BOOL newUser;
 
-// Records |authorizationAction|.
-- (void)recordAuthorizationAction:(AuthorizationAction)authorizationAction;
+// Whether the permission was undefined or not. Used to choose whether to log
+// the permission or not.
+@property(nonatomic, assign) BOOL permissionWasUndefined;
 
 @end
 
@@ -85,6 +74,8 @@ const char* const kGeolocationAuthorizationActionNewUser =
   if (self) {
     _locationManager = [[CLLocationManager alloc] init];
     [_locationManager setDelegate:self];
+    _permissionWasUndefined = CLLocationManager.authorizationStatus ==
+                              kCLAuthorizationStatusNotDetermined;
   }
   return self;
 }
@@ -92,42 +83,23 @@ const char* const kGeolocationAuthorizationActionNewUser =
 - (void)triggerSystemPrompt {
   if (self.locationServicesEnabled && CLLocationManager.authorizationStatus ==
                                           kCLAuthorizationStatusNotDetermined) {
-    _systemPrompt = YES;
+    self.newUser = YES;
 
     // Turn on location updates, so that iOS will prompt the user.
-    [self requestPermission];
-    _newUser = YES;
+    [self.locationManager requestWhenInUseAuthorization];
   }
 }
 
-- (void)finishPageLoadForWebState:(web::WebState*)webState
-                      loadSuccess:(BOOL)loadSuccess {
-  // Don't ask for permission on page loads.
-}
-
 - (void)systemPromptSkippedForNewUser {
-  _newUser = YES;
+  self.newUser = YES;
 }
 
 #pragma mark - Private
 
-- (BOOL)URLIsAuthorizationPromptingURL:(const GURL&)url {
-  // Per PRD: "Show a modal dialog upon reaching google.com or a search results
-  // page..." However, we only want to do this for domains where we will send
-  // location.
-  return (google_util::IsGoogleHomePageUrl(url) ||
-          google_util::IsGoogleSearchUrl(url)) &&
-         [[OmniboxGeolocationConfig sharedInstance] URLHasEligibleDomain:url];
-}
-
-// Requests the authorization to use location.
-- (void)requestPermission {
-  [self.locationManager requestWhenInUseAuthorization];
-}
-
 - (void)recordAuthorizationAction:(AuthorizationAction)authorizationAction {
-  if (_newUser) {
-    _newUser = NO;
+  self.permissionWasUndefined = NO;
+  if (self.newUser) {
+    self.newUser = NO;
 
     UMA_HISTOGRAM_ENUMERATION(kGeolocationAuthorizationActionNewUser,
                               authorizationAction, kAuthorizationActionCount);
@@ -148,7 +120,7 @@ const char* const kGeolocationAuthorizationActionNewUser =
 
 - (void)locationManagerDidChangeAuthorization:
     (CLLocationManager*)locationManager {
-  if (_systemPrompt) {
+  if (self.permissionWasUndefined) {
     switch (CLLocationManager.authorizationStatus) {
       case kCLAuthorizationStatusNotDetermined:
         // We may get a spurious notification about a transition to
@@ -159,15 +131,11 @@ const char* const kGeolocationAuthorizationActionNewUser =
 
       case kCLAuthorizationStatusRestricted:
       case kCLAuthorizationStatusDenied:
-        _systemPrompt = NO;
-
         [self recordAuthorizationAction:kAuthorizationActionPermanentlyDenied];
         break;
 
       case kCLAuthorizationStatusAuthorizedAlways:
       case kCLAuthorizationStatusAuthorizedWhenInUse:
-        _systemPrompt = NO;
-
         [self recordAuthorizationAction:kAuthorizationActionAuthorized];
         break;
     }

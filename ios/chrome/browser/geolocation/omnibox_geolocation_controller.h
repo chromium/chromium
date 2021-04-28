@@ -27,12 +27,6 @@ class WebState;
 // authorization is not yet determined.
 - (void)triggerSystemPrompt;
 
-// Notifies the receiver that the browser finished loading the page for
-// |webState|. |loadSuccess| whether the web state loaded successfully.
-// |webState| can't be null.
-- (void)finishPageLoadForWebState:(web::WebState*)webState
-                      loadSuccess:(BOOL)loadSuccess;
-
 // Marks the user as new without triggering the iOS system prompt to authorize
 // the use of location
 - (void)systemPromptSkippedForNewUser;
