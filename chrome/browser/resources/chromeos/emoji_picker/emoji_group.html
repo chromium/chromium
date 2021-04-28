@@ -1,6 +1,7 @@
 <style>
   :host {
     margin-top: 10px;
+    --emoji-group-clear-recents-icon-size: 16px;
   }
 
   #heading {
@@ -29,7 +30,10 @@
 
   #show-clear {
     margin: 0;
-    --cr-icon-button-size: 16px;
+    margin-inline-end: calc(
+      (var(--emoji-group-button-size) -
+       var(--emoji-group-clear-recents-icon-size))* .5);
+    --cr-icon-button-size: var(--emoji-group-clear-recents-icon-size);
   }
 
   #clear-recents {
