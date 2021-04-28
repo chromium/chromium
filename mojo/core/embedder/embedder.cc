@@ -51,6 +51,9 @@ void InitFeatures() {
                                        use_zero_on_wake);
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 #endif  // defined(OS_POSIX) && !defined(OS_NACL) && !defined(OS_MAC)
+
+  Channel::set_use_trivial_messages(
+      base::FeatureList::IsEnabled(kMojoInlineMessagePayloads));
 }
 
 void Init(const Configuration& configuration) {
