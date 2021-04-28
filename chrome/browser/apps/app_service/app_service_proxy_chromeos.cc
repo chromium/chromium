@@ -97,6 +97,15 @@ void AppServiceProxyChromeOs::Initialize() {
   web_apps_ = std::make_unique<WebAppsChromeOs>(app_service_, profile_,
                                                 &instance_registry_);
 
+  if (!profile_->AsTestingProfile()) {
+    app_platform_metrics_service_ =
+        std::make_unique<AppPlatformMetricsService>(profile_);
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&AppServiceProxyChromeOs::InitAppPlatformMetrics,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
   // Asynchronously add app icon source, so we don't do too much work in the
   // constructor.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -230,6 +239,8 @@ void AppServiceProxyChromeOs::UninstallForTesting(
 }
 
 void AppServiceProxyChromeOs::Shutdown() {
+  app_platform_metrics_service_.reset();
+
   uninstall_dialogs_.clear();
 
   if (app_service_.is_connected()) {
@@ -439,6 +450,12 @@ void AppServiceProxyChromeOs::RecordAppPlatformMetrics(
     apps::mojom::LaunchSource launch_source,
     apps::mojom::LaunchContainer container) {
   RecordAppLaunchMetrics(profile, update, launch_source, container);
+}
+
+void AppServiceProxyChromeOs::InitAppPlatformMetrics() {
+  if (app_platform_metrics_service_) {
+    app_platform_metrics_service_->Start();
+  }
 }
 
 ScopedOmitBuiltInAppsForTesting::ScopedOmitBuiltInAppsForTesting()

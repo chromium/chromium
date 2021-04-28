@@ -4256,6 +4256,8 @@ static_library("browser") {
       "apps/app_service/app_notifications.h",
       "apps/app_service/app_platform_metrics.cc",
       "apps/app_service/app_platform_metrics.h",
+      "apps/app_service/app_platform_metrics_service.cc",
+      "apps/app_service/app_platform_metrics_service.h",
       "apps/app_service/app_service_proxy_chromeos.cc",
       "apps/app_service/app_service_proxy_chromeos.h",
       "apps/app_service/app_shortcut_item.cc",

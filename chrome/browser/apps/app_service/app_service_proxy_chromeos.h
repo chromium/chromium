@@ -8,6 +8,7 @@
 #include <map>
 #include <set>
 
+#include "chrome/browser/apps/app_service/app_platform_metrics_service.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_base.h"
 #include "chrome/browser/apps/app_service/publishers/borealis_apps.h"
 #include "chrome/browser/apps/app_service/publishers/built_in_chromeos_apps.h"
@@ -147,6 +148,8 @@ class AppServiceProxyChromeOs : public AppServiceProxyBase {
       apps::mojom::LaunchSource launch_source,
       apps::mojom::LaunchContainer container) override;
 
+  void InitAppPlatformMetrics();
+
   std::unique_ptr<BuiltInChromeOsApps> built_in_chrome_os_apps_;
   std::unique_ptr<CrostiniApps> crostini_apps_;
   std::unique_ptr<ExtensionAppsChromeOs> extension_apps_;
@@ -167,6 +170,8 @@ class AppServiceProxyChromeOs : public AppServiceProxyBase {
   PausedApps pending_pause_requests_;
 
   UninstallDialogs uninstall_dialogs_;
+
+  std::unique_ptr<AppPlatformMetricsService> app_platform_metrics_service_;
 
   base::WeakPtrFactory<AppServiceProxyChromeOs> weak_ptr_factory_{this};
 };
