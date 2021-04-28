@@ -1098,33 +1098,34 @@ bool TSFTextStore::GetCompositionStatus(
   return true;
 }
 
-bool TSFTextStore::TerminateComposition() {
-  TRACE_EVENT0("ime", "TSFTextStore::TerminateComposition");
-  bool terminate_composition_called = false;
-  if (context_ && has_composition_range_) {
-    Microsoft::WRL::ComPtr<ITfContextOwnerCompositionServices> service;
-
-    if (SUCCEEDED(context_->QueryInterface(IID_PPV_ARGS(&service)))) {
-      service->TerminateComposition(nullptr);
-      terminate_composition_called = true;
-    }
-  }
-
+void TSFTextStore::ResetCompositionState() {
   previous_composition_string_.clear();
   previous_composition_start_ = 0;
   previous_composition_selection_range_ = gfx::Range::InvalidRange();
   previous_text_spans_.clear();
 
   string_pending_insertion_.clear();
-  has_composition_range_ = false;
   composition_range_.set_start(0);
   composition_range_.set_end(0);
 
   selection_ = gfx::Range(composition_from_client_.end(),
                           composition_from_client_.end());
   composition_start_ = selection_.end();
+}
 
-  return terminate_composition_called;
+bool TSFTextStore::TerminateComposition() {
+  TRACE_EVENT0("ime", "TSFTextStore::TerminateComposition");
+  if (context_ && has_composition_range_) {
+    Microsoft::WRL::ComPtr<ITfContextOwnerCompositionServices> service;
+
+    if (SUCCEEDED(context_->QueryInterface(IID_PPV_ARGS(&service)))) {
+      service->TerminateComposition(nullptr);
+      has_composition_range_ = false;
+      return true;
+    }
+  }
+
+  return false;
 }
 
 void TSFTextStore::CalculateTextandSelectionDiffAndNotifyIfNeeded() {
@@ -1304,6 +1305,8 @@ bool TSFTextStore::CancelComposition() {
 
   TRACE_EVENT0("ime", "TSFTextStore::CancelComposition");
 
+  ResetCompositionState();
+
   return TerminateComposition();
 }
 
@@ -1317,6 +1320,8 @@ bool TSFTextStore::ConfirmComposition() {
 
   if (!text_input_client_)
     return false;
+
+  ResetCompositionState();
 
   return TerminateComposition();
 }

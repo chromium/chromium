@@ -255,6 +255,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFTextStore
   friend class TSFTextStoreTest;
   friend class TSFTextStoreTestCallback;
 
+  // Reset states tracking the composition in the text store.
+  void ResetCompositionState();
+
   // Terminate an active composition for this text store.
   bool TerminateComposition();
 
