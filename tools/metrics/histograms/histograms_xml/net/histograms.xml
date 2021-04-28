@@ -1649,6 +1649,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.ErrorCodesForTLS13ExperimentMainFrame2"
     enum="NetErrorCodes" expires_after="M78">
+  <obsolete>
+    Removed April 2021
+  </obsolete>
   <owner>svaldez@chromium.org</owner>
   <summary>
     Positive net error codes that requests for pages end with, including net::OK
@@ -5049,6 +5052,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.SSL_Connection_Error_TLS13Experiment" enum="NetErrorCodes"
     expires_after="M78">
+  <obsolete>
+    Removed April 2021
+  </obsolete>
   <owner>svaldez@chromium.org</owner>
   <summary>
     Counts of specific error codes returned when opening an SSL connection for
@@ -5065,6 +5071,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.SSL_Connection_Latency_TLS13Experiment" units="ms"
     expires_after="M85">
+  <obsolete>
+    Removed April 2021
+  </obsolete>
   <owner>svaldez@chromium.org</owner>
   <summary>
     Time from when the Connect() starts until it completes for a set of domains

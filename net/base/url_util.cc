@@ -455,11 +455,6 @@ bool IsGoogleHost(base::StringPiece host) {
   return false;
 }
 
-bool IsTLS13ExperimentHost(base::StringPiece host) {
-  return host == "inbox.google.com" || host == "mail.google.com" ||
-         host == "gmail.com";
-}
-
 bool IsLocalHostname(base::StringPiece host) {
   std::string normalized_host = base::ToLowerASCII(host);
   // Remove any trailing '.'.

@@ -21,16 +21,10 @@ void RecordLoadHistograms(const url::Origin& origin,
 
   if (destination == network::mojom::RequestDestination::kDocument) {
     base::UmaHistogramSparse("Net.ErrorCodesForMainFrame4", -net_error);
-    if (GURL::SchemeIsCryptographic(origin.scheme())) {
-      if (origin.host() == "www.google.com") {
-        base::UmaHistogramSparse("Net.ErrorCodesForHTTPSGoogleMainFrame3",
-                                 -net_error);
-      }
-
-      if (net::IsTLS13ExperimentHost(origin.host())) {
-        base::UmaHistogramSparse("Net.ErrorCodesForTLS13ExperimentMainFrame2",
-                                 -net_error);
-      }
+    if (GURL::SchemeIsCryptographic(origin.scheme()) &&
+        origin.host() == "www.google.com") {
+      base::UmaHistogramSparse("Net.ErrorCodesForHTTPSGoogleMainFrame3",
+                               -net_error);
     }
   } else {
     if (destination == network::mojom::RequestDestination::kImage) {
