@@ -85,6 +85,7 @@
   E(kColorHelpIconInactive, NativeTheme::kColorId_TooltipIcon) \
   E(kColorIcon, NativeTheme::kColorId_DefaultIconColor) \
   E(kColorIconDisabled, NativeTheme::kColorId_DisabledIconColor) \
+  E(kColorIconSecondary, NativeTheme::kColorId_SecondaryIconColor) \
   E(kColorLabelForeground, NativeTheme::kColorId_LabelEnabledColor) \
   E(kColorLabelForegroundDisabled, NativeTheme::kColorId_LabelDisabledColor) \
   E(kColorLabelForegroundSecondary, NativeTheme::kColorId_LabelSecondaryColor) \

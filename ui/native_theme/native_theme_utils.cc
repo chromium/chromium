@@ -90,6 +90,7 @@ NativeThemeColorIdToColorId(NativeTheme::ColorId native_theme_color_id) {
         {NTCID::kColorId_DialogForeground, kColorDialogForeground},
         {NTCID::kColorId_DisabledButtonBorderColor, kColorButtonBorderDisabled},
         {NTCID::kColorId_DisabledIconColor, kColorIconDisabled},
+        {NTCID::kColorId_SecondaryIconColor, kColorIconSecondary},
         {NTCID::kColorId_DisabledMenuItemForegroundColor,
           kColorMenuItemForegroundDisabled},
         {NTCID::kColorId_DropdownBackgroundColor, kColorDropdownBackground},

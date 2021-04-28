@@ -269,6 +269,8 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
           NativeTheme::kColorId_DefaultIconColor, color_scheme);
       return SkColorSetA(icon, gfx::kDisabledControlAlpha);
     }
+    case NativeTheme::kColorId_SecondaryIconColor:
+      return gfx::kGoogleGrey600;
 
     // Label
     case NativeTheme::kColorId_LabelDisabledColor: {

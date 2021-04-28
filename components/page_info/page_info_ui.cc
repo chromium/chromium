@@ -816,10 +816,8 @@ const ui::ImageModel PageInfoUI::GetVrSettingsIcon() {
 
 // static
 const ui::ImageModel PageInfoUI::GetLaunchIcon() {
-  // TODO(olesiamarukhno): The icon color should be lighter shade, based on
-  // secondary text style. Add new color id: kColorId_SecondaryIconColor.
   return ui::ImageModel::FromVectorIcon(
-      vector_icons::kLaunchIcon, ui::NativeTheme::kColorId_DefaultIconColor,
+      vector_icons::kLaunchIcon, ui::NativeTheme::kColorId_SecondaryIconColor,
       kVectorIconSize);
 }
 
