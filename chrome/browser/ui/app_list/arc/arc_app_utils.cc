@@ -16,7 +16,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -721,17 +721,18 @@ void AddAppLaunchObserver(content::BrowserContext* context,
     ~ProfileDestroyedObserver() override = default;
 
     void Observe(Profile* profile) {
-      if (!observed_profiles_.IsObserving(profile))
-        observed_profiles_.Add(profile);
+      if (!observed_profiles_.IsObservingSource(profile))
+        observed_profiles_.AddObservation(profile);
     }
 
     void OnProfileWillBeDestroyed(Profile* profile) override {
-      observed_profiles_.Remove(profile);
+      observed_profiles_.RemoveObservation(profile);
       GetAppLaunchObserverMap()->erase(profile);
     }
 
    private:
-    ScopedObserver<Profile, ProfileObserver> observed_profiles_{this};
+    base::ScopedMultiSourceObservation<Profile, ProfileObserver>
+        observed_profiles_{this};
 
     DISALLOW_COPY_AND_ASSIGN(ProfileDestroyedObserver);
   };
