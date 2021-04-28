@@ -58,7 +58,6 @@ class TestOptionsProvider : public ImageProvider,
   ImageProvider::ScopedResult GetRasterContent(
       const DrawImage& draw_image) override;
 
-  testing::StrictMock<MockCanvas> canvas_;
   std::vector<DrawImage> decoded_images_;
 
   sk_sp<DiscardableManager> discardable_manager_;

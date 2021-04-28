@@ -94,9 +94,6 @@ class PLATFORM_EXPORT IdentifiabilityPaintOpDigest {
   // Real paint cache with Put() disabled.
   cc::ClientPaintCache paint_cache_;
 
-  // Fake canvas needed for null checks.
-  SkNoDrawCanvas nodraw_canvas_;
-
   // Used for PaintOp::Serialize() -- several options are not needed, since we
   // just need to compute a digest.
   cc::PaintOp::SerializeOptions serialize_options_;

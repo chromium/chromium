@@ -1279,7 +1279,7 @@ class SimpleSerializer {
     for (const auto* op : PaintOpBuffer::Iterator(&buffer)) {
       size_t bytes_written = op->Serialize(
           current_, remaining_, options_provider_.serialize_options(), nullptr,
-          SkM44());
+          SkM44(), SkM44());
       if (!bytes_written)
         return;
 
@@ -1882,7 +1882,7 @@ TEST_P(PaintOpSerializationTest, SerializationFailures) {
       options_provider.ClearPaintCache();
       size_t written_bytes = iter->Serialize(
           output_.get(), i, options_provider.serialize_options(), nullptr,
-          SkM44());
+          SkM44(), SkM44());
       if (i >= expected_bytes) {
         EXPECT_EQ(expected_bytes, written_bytes) << "i: " << i;
       } else {
@@ -2002,9 +2002,9 @@ TEST_P(PaintOpSerializationTest, UsesOverridenFlags) {
       static_cast<char*>(
           base::AlignedAlloc(deserialized_size, PaintOpBuffer::PaintOpAlign)));
   for (const auto* op : PaintOpBuffer::Iterator(&buffer_)) {
-    size_t bytes_written =
-        op->Serialize(output_.get(), output_size_,
-                      options_provider.serialize_options(), nullptr, SkM44());
+    size_t bytes_written = op->Serialize(output_.get(), output_size_,
+                                         options_provider.serialize_options(),
+                                         nullptr, SkM44(), SkM44());
     size_t bytes_read = 0u;
     PaintOp* written = PaintOp::Deserialize(
         output_.get(), bytes_written, deserialized.get(), deserialized_size,
@@ -2018,7 +2018,7 @@ TEST_P(PaintOpSerializationTest, UsesOverridenFlags) {
     override_flags.setAlpha(override_flags.getAlpha() * 0.5);
     bytes_written = op->Serialize(output_.get(), output_size_,
                                   options_provider.serialize_options(),
-                                  &override_flags, SkM44());
+                                  &override_flags, SkM44(), SkM44());
     written = PaintOp::Deserialize(
         output_.get(), bytes_written, deserialized.get(), deserialized_size,
         &bytes_read, options_provider.deserialize_options());
@@ -2407,7 +2407,7 @@ TEST(PaintOpBufferTest, PaintOpDeserialize) {
   TestOptionsProvider options_provider;
   size_t bytes_written =
       op->Serialize(input_.get(), kSize, options_provider.serialize_options(),
-                    nullptr, SkM44());
+                    nullptr, SkM44(), SkM44());
   ASSERT_GT(bytes_written, 0u);
 
   // can deserialize from exactly the right size
@@ -2478,9 +2478,9 @@ TEST(PaintOpBufferTest, ValidateSkClip) {
   int op_idx = 0;
   for (PaintOpBuffer::Iterator iter(&buffer); iter; ++iter) {
     const PaintOp* op = *iter;
-    size_t bytes_written =
-        op->Serialize(serialized.get(), buffer_size,
-                      options_provider.serialize_options(), nullptr, SkM44());
+    size_t bytes_written = op->Serialize(serialized.get(), buffer_size,
+                                         options_provider.serialize_options(),
+                                         nullptr, SkM44(), SkM44());
     ASSERT_GT(bytes_written, 0u);
     size_t bytes_read = 0;
     PaintOp* written = PaintOp::Deserialize(
@@ -2559,9 +2559,9 @@ TEST(PaintOpBufferTest, ValidateSkBlendMode) {
   int op_idx = 0;
   for (PaintOpBuffer::Iterator iter(&buffer); iter; ++iter) {
     const PaintOp* op = *iter;
-    size_t bytes_written =
-        op->Serialize(serialized.get(), buffer_size,
-                      options_provider.serialize_options(), nullptr, SkM44());
+    size_t bytes_written = op->Serialize(serialized.get(), buffer_size,
+                                         options_provider.serialize_options(),
+                                         nullptr, SkM44(), SkM44());
     ASSERT_GT(bytes_written, 0u);
     size_t bytes_read = 0;
     PaintOp* written = PaintOp::Deserialize(
@@ -2620,9 +2620,9 @@ TEST(PaintOpBufferTest, ValidateRects) {
   int op_idx = 0;
   for (PaintOpBuffer::Iterator iter(&buffer); iter; ++iter) {
     const PaintOp* op = *iter;
-    size_t bytes_written =
-        op->Serialize(serialized.get(), buffer_size,
-                      options_provider.serialize_options(), nullptr, SkM44());
+    size_t bytes_written = op->Serialize(serialized.get(), buffer_size,
+                                         options_provider.serialize_options(),
+                                         nullptr, SkM44(), SkM44());
     ASSERT_GT(bytes_written, 0u);
     size_t bytes_read = 0;
     PaintOp* written = PaintOp::Deserialize(
@@ -3326,7 +3326,7 @@ TEST_P(PaintFilterSerializationTest, Basic) {
 
     PaintOpWriter writer(memory.data(), memory.size(),
                          options_provider.serialize_options(), GetParam());
-    writer.Write(filter.get());
+    writer.Write(filter.get(), SkM44());
     ASSERT_GT(writer.size(), 0u) << PaintFilter::TypeToString(filter->type());
 
     sk_sp<PaintFilter> deserialized_filter;
@@ -3528,7 +3528,7 @@ TEST(PaintOpBufferTest, SecurityConstrainedImageSerialization) {
   PaintOpWriter writer(memory.get(), PaintOpBuffer::kInitialBufferSize,
                        options_provider.serialize_options(),
                        enable_security_constraints);
-  writer.Write(filter.get());
+  writer.Write(filter.get(), SkM44());
 
   sk_sp<PaintFilter> out_filter;
   PaintOpReader reader(memory.get(), writer.size(),

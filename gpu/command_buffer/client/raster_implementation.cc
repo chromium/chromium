@@ -248,12 +248,13 @@ class RasterImplementation::PaintOpSerializer {
   size_t Serialize(const cc::PaintOp* op,
                    const cc::PaintOp::SerializeOptions& options,
                    const cc::PaintFlags* flags_to_serialize,
+                   const SkM44& current_ctm,
                    const SkM44& original_ctm) {
     if (!valid())
       return 0;
 
     size_t size = op->Serialize(buffer_ + written_bytes_, free_bytes_, options,
-                                flags_to_serialize, original_ctm);
+                                flags_to_serialize, current_ctm, original_ctm);
     size_t block_size = *max_op_size_hint_;
 
     if (!size) {
@@ -272,7 +273,7 @@ class RasterImplementation::PaintOpSerializer {
         }
 
         size = op->Serialize(buffer_ + written_bytes_, free_bytes_, options,
-                             flags_to_serialize, original_ctm);
+                             flags_to_serialize, current_ctm, original_ctm);
         if (size) {
           *max_op_size_hint_ = std::max(size, *max_op_size_hint_);
           break;
@@ -1227,17 +1228,15 @@ void RasterImplementation::RasterCHROMIUM(const cc::DisplayItemList* list,
                                   &transfer_cache_serialize_helper,
                                   &font_manager_, max_op_size_hint);
 
-  cc::PaintOp::SerializeOptions options(
-      &stashing_image_provider, &transfer_cache_serialize_helper,
-      GetOrCreatePaintCache(), /*canvas=*/nullptr,
-      font_manager_.strike_server(), raster_properties_->color_space,
-      raster_properties_->can_use_lcd_text,
-      capabilities().context_supports_distance_field_text,
-      capabilities().max_texture_size);
   cc::PaintOpBufferSerializer serializer(
       base::BindRepeating(&PaintOpSerializer::Serialize,
                           base::Unretained(&op_serializer)),
-      options);
+      cc::PaintOp::SerializeOptions(
+          &stashing_image_provider, &transfer_cache_serialize_helper,
+          GetOrCreatePaintCache(), font_manager_.strike_server(),
+          raster_properties_->color_space, raster_properties_->can_use_lcd_text,
+          capabilities().context_supports_distance_field_text,
+          capabilities().max_texture_size));
   serializer.Serialize(&list->paint_op_buffer_, &temp_raster_offsets_,
                        preamble);
   // TODO(piman): raise error if !serializer.valid()?

@@ -39,11 +39,9 @@ IdentifiabilityPaintOpDigest::IdentifiabilityPaintOpDigest(IntSize size,
     : max_digest_ops_(max_digest_ops),
       size_(size),
       paint_cache_(cc::ClientPaintCache::kNoCachingBudget),
-      nodraw_canvas_(size_.Width(), size_.Height()),
       serialize_options_(&image_provider_,
                          /*transfer_cache=*/nullptr,
                          &paint_cache_,
-                         &nodraw_canvas_,
                          /*strike_server=*/nullptr,
                          /*color_space=*/nullptr,
                          /*can_use_lcd_text=*/false,
@@ -114,7 +112,7 @@ void IdentifiabilityPaintOpDigest::MaybeUpdateDigest(
     size_t serialized_size;
     while ((serialized_size = op->Serialize(
                 SerializationBuffer().data(), SerializationBuffer().size(),
-                serialize_options_, nullptr, SkM44())) == 0) {
+                serialize_options_, nullptr, SkM44(), SkM44())) == 0) {
       constexpr size_t kMaxBufferSize =
           gpu::raster::RasterInterface::kDefaultMaxOpSizeHint << 2;
       if (SerializationBuffer().size() >= kMaxBufferSize) {

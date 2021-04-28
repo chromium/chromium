@@ -21,6 +21,7 @@ class CC_PAINT_EXPORT PaintOpBufferSerializer {
       base::RepeatingCallback<size_t(const PaintOp*,
                                      const PaintOp::SerializeOptions&,
                                      const PaintFlags*,
+                                     const SkM44&,
                                      const SkM44&)>;
 
   PaintOpBufferSerializer(SerializeCallback serialize_cb,
@@ -75,30 +76,33 @@ class CC_PAINT_EXPORT PaintOpBufferSerializer {
   bool valid() const { return valid_; }
 
  private:
-  void SerializePreamble(const Preamble& preamble,
+  void SerializePreamble(SkCanvas* canvas,
+                         const Preamble& preamble,
                          const PlaybackParams& params);
-  void SerializeBuffer(const PaintOpBuffer* buffer,
+  void SerializeBuffer(SkCanvas* canvas,
+                       const PaintOpBuffer* buffer,
                        const std::vector<size_t>* offsets);
-  bool SerializeOpWithFlags(const PaintOpWithFlags* flags_op,
+  bool SerializeOpWithFlags(SkCanvas* canvas,
+                            const PaintOpWithFlags* flags_op,
                             const PlaybackParams& params,
                             uint8_t alpha);
-  bool SerializeOp(const PaintOp* op,
+  bool SerializeOp(SkCanvas* canvas,
+                   const PaintOp* op,
                    const PaintFlags* flags_to_serialize,
                    const PlaybackParams& params);
-  void Save(const PlaybackParams& params);
-  void RestoreToCount(int count,
+  void Save(SkCanvas* canvas, const PlaybackParams& params);
+  void RestoreToCount(SkCanvas* canvas,
+                      int count,
                       const PlaybackParams& params);
-  void ClearForOpaqueRaster(const Preamble& preamble,
+  void ClearForOpaqueRaster(SkCanvas* canvas,
+                            const Preamble& preamble,
                             const PlaybackParams& params);
-  void PlaybackOnAnalysisCanvas(const PaintOp* op,
+  void PlaybackOnAnalysisCanvas(SkCanvas* canvas,
+                                const PaintOp* op,
                                 const PaintFlags* flags_to_serialize,
                                 const PlaybackParams& params);
 
   SerializeCallback serialize_cb_;
-
-  // This maintains the ownership of options_.canvas
-  std::unique_ptr<SkNoDrawCanvas> text_blob_canvas_;
-
   PaintOp::SerializeOptions options_;
 
   bool valid_ = true;
@@ -118,6 +122,7 @@ class CC_PAINT_EXPORT SimpleBufferSerializer : public PaintOpBufferSerializer {
   size_t SerializeToMemory(const PaintOp* op,
                            const PaintOp::SerializeOptions& options,
                            const PaintFlags* flags_to_serialize,
+                           const SkM44& current_ctm,
                            const SkM44& original_ctm);
 
   void* memory_;

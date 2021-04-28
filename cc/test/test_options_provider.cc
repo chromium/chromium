@@ -41,7 +41,6 @@ TestOptionsProvider::TestOptionsProvider()
       serialize_options_(this,
                          this,
                          &client_paint_cache_,
-                         &canvas_,
                          &strike_server_,
                          color_space_,
                          can_use_lcd_text_,

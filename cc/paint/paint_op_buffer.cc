@@ -192,6 +192,7 @@ using SerializeFunction = size_t (*)(const PaintOp* op,
                                      size_t size,
                                      const PaintOp::SerializeOptions& options,
                                      const PaintFlags* flags_to_serialize,
+                                     const SkM44& current_ctm,
                                      const SkM44& original_ctm);
 
 #define M(T) &T::Serialize,
@@ -349,7 +350,6 @@ PaintOp::SerializeOptions::SerializeOptions(
     ImageProvider* image_provider,
     TransferCacheSerializeHelper* transfer_cache,
     ClientPaintCache* paint_cache,
-    SkCanvas* canvas,
     SkStrikeServer* strike_server,
     sk_sp<SkColorSpace> color_space,
     bool can_use_lcd_text,
@@ -358,7 +358,6 @@ PaintOp::SerializeOptions::SerializeOptions(
     : image_provider(image_provider),
       transfer_cache(transfer_cache),
       paint_cache(paint_cache),
-      canvas(canvas),
       strike_server(strike_server),
       color_space(std::move(color_space)),
       can_use_lcd_text(can_use_lcd_text),
@@ -366,6 +365,7 @@ PaintOp::SerializeOptions::SerializeOptions(
           context_supports_distance_field_text),
       max_texture_size(max_texture_size) {}
 
+PaintOp::SerializeOptions::SerializeOptions() = default;
 PaintOp::SerializeOptions::SerializeOptions(const SerializeOptions&) = default;
 PaintOp::SerializeOptions& PaintOp::SerializeOptions::operator=(
     const SerializeOptions&) = default;
@@ -392,6 +392,7 @@ size_t AnnotateOp::Serialize(const PaintOp* base_op,
                              size_t size,
                              const SerializeOptions& options,
                              const PaintFlags* flags_to_serialize,
+                             const SkM44& current_ctm,
                              const SkM44& original_ctm) {
   auto* op = static_cast<const AnnotateOp*>(base_op);
   PaintOpWriter helper(memory, size, options);
@@ -406,6 +407,7 @@ size_t ClipPathOp::Serialize(const PaintOp* base_op,
                              size_t size,
                              const SerializeOptions& options,
                              const PaintFlags* flags_to_serialize,
+                             const SkM44& current_ctm,
                              const SkM44& original_ctm) {
   auto* op = static_cast<const ClipPathOp*>(base_op);
   PaintOpWriter helper(memory, size, options);
@@ -420,6 +422,7 @@ size_t ClipRectOp::Serialize(const PaintOp* base_op,
                              size_t size,
                              const SerializeOptions& options,
                              const PaintFlags* flags_to_serialize,
+                             const SkM44& current_ctm,
                              const SkM44& original_ctm) {
   auto* op = static_cast<const ClipRectOp*>(base_op);
   PaintOpWriter helper(memory, size, options);
@@ -434,6 +437,7 @@ size_t ClipRRectOp::Serialize(const PaintOp* base_op,
                               size_t size,
                               const SerializeOptions& options,
                               const PaintFlags* flags_to_serialize,
+                              const SkM44& current_ctm,
                               const SkM44& original_ctm) {
   auto* op = static_cast<const ClipRRectOp*>(base_op);
   PaintOpWriter helper(memory, size, options);
@@ -448,6 +452,7 @@ size_t ConcatOp::Serialize(const PaintOp* base_op,
                            size_t size,
                            const SerializeOptions& options,
                            const PaintFlags* flags_to_serialize,
+                           const SkM44& current_ctm,
                            const SkM44& original_ctm) {
   auto* op = static_cast<const ConcatOp*>(base_op);
   PaintOpWriter helper(memory, size, options);
@@ -460,6 +465,7 @@ size_t CustomDataOp::Serialize(const PaintOp* base_op,
                                size_t size,
                                const SerializeOptions& options,
                                const PaintFlags* flags_to_serialize,
+                               const SkM44& current_ctm,
                                const SkM44& original_ctm) {
   auto* op = static_cast<const CustomDataOp*>(base_op);
   PaintOpWriter helper(memory, size, options);
@@ -472,6 +478,7 @@ size_t DrawColorOp::Serialize(const PaintOp* base_op,
                               size_t size,
                               const SerializeOptions& options,
                               const PaintFlags* flags_to_serialize,
+                              const SkM44& current_ctm,
                               const SkM44& original_ctm) {
   auto* op = static_cast<const DrawColorOp*>(base_op);
   PaintOpWriter helper(memory, size, options);
@@ -485,12 +492,13 @@ size_t DrawDRRectOp::Serialize(const PaintOp* base_op,
                                size_t size,
                                const SerializeOptions& options,
                                const PaintFlags* flags_to_serialize,
+                               const SkM44& current_ctm,
                                const SkM44& original_ctm) {
   auto* op = static_cast<const DrawDRRectOp*>(base_op);
   PaintOpWriter helper(memory, size, options);
   if (!flags_to_serialize)
     flags_to_serialize = &op->flags;
-  helper.Write(*flags_to_serialize);
+  helper.Write(*flags_to_serialize, current_ctm);
   helper.Write(op->outer);
   helper.Write(op->inner);
   return helper.size();
@@ -501,17 +509,18 @@ size_t DrawImageOp::Serialize(const PaintOp* base_op,
                               size_t size,
                               const SerializeOptions& options,
                               const PaintFlags* flags_to_serialize,
+                              const SkM44& current_ctm,
                               const SkM44& original_ctm) {
   auto* op = static_cast<const DrawImageOp*>(base_op);
   PaintOpWriter helper(memory, size, options);
   if (!flags_to_serialize)
     flags_to_serialize = &op->flags;
-  helper.Write(*flags_to_serialize);
+  helper.Write(*flags_to_serialize, current_ctm);
 
   SkSize scale_adjustment = SkSize::Make(1.f, 1.f);
-  helper.Write(CreateDrawImage(op->image, flags_to_serialize, op->sampling,
-                               options.canvas->getLocalToDevice()),
-               &scale_adjustment);
+  helper.Write(
+      CreateDrawImage(op->image, flags_to_serialize, op->sampling, current_ctm),
+      &scale_adjustment);
   helper.AlignMemory(alignof(SkScalar));
   helper.Write(scale_adjustment.width());
   helper.Write(scale_adjustment.height());
@@ -527,16 +536,16 @@ size_t DrawImageRectOp::Serialize(const PaintOp* base_op,
                                   size_t size,
                                   const SerializeOptions& options,
                                   const PaintFlags* flags_to_serialize,
+                                  const SkM44& current_ctm,
                                   const SkM44& original_ctm) {
   auto* op = static_cast<const DrawImageRectOp*>(base_op);
   PaintOpWriter helper(memory, size, options);
   if (!flags_to_serialize)
     flags_to_serialize = &op->flags;
-  helper.Write(*flags_to_serialize);
+  helper.Write(*flags_to_serialize, current_ctm);
 
   // This adjustment mirrors DiscardableImageMap::GatherDiscardableImage logic.
-  SkM44 matrix = options.canvas->getLocalToDevice() *
-                 SkM44(SkMatrix::RectToRect(op->src, op->dst));
+  SkM44 matrix = current_ctm * SkM44(SkMatrix::RectToRect(op->src, op->dst));
   // Note that we don't request subsets here since the GpuImageCache has no
   // optimizations for using subsets.
   SkSize scale_adjustment = SkSize::Make(1.f, 1.f);
@@ -559,12 +568,13 @@ size_t DrawIRectOp::Serialize(const PaintOp* base_op,
                               size_t size,
                               const SerializeOptions& options,
                               const PaintFlags* flags_to_serialize,
+                              const SkM44& current_ctm,
                               const SkM44& original_ctm) {
   auto* op = static_cast<const DrawIRectOp*>(base_op);
   PaintOpWriter helper(memory, size, options);
   if (!flags_to_serialize)
     flags_to_serialize = &op->flags;
-  helper.Write(*flags_to_serialize);
+  helper.Write(*flags_to_serialize, current_ctm);
   helper.Write(op->rect);
   return helper.size();
 }
@@ -574,12 +584,13 @@ size_t DrawLineOp::Serialize(const PaintOp* base_op,
                              size_t size,
                              const SerializeOptions& options,
                              const PaintFlags* flags_to_serialize,
+                             const SkM44& current_ctm,
                              const SkM44& original_ctm) {
   auto* op = static_cast<const DrawLineOp*>(base_op);
   PaintOpWriter helper(memory, size, options);
   if (!flags_to_serialize)
     flags_to_serialize = &op->flags;
-  helper.Write(*flags_to_serialize);
+  helper.Write(*flags_to_serialize, current_ctm);
   helper.AlignMemory(alignof(SkScalar));
   helper.Write(op->x0);
   helper.Write(op->y0);
@@ -593,12 +604,13 @@ size_t DrawOvalOp::Serialize(const PaintOp* base_op,
                              size_t size,
                              const SerializeOptions& options,
                              const PaintFlags* flags_to_serialize,
+                             const SkM44& current_ctm,
                              const SkM44& original_ctm) {
   auto* op = static_cast<const DrawOvalOp*>(base_op);
   PaintOpWriter helper(memory, size, options);
   if (!flags_to_serialize)
     flags_to_serialize = &op->flags;
-  helper.Write(*flags_to_serialize);
+  helper.Write(*flags_to_serialize, current_ctm);
   helper.Write(op->oval);
   return helper.size();
 }
@@ -608,12 +620,13 @@ size_t DrawPathOp::Serialize(const PaintOp* base_op,
                              size_t size,
                              const SerializeOptions& options,
                              const PaintFlags* flags_to_serialize,
+                             const SkM44& current_ctm,
                              const SkM44& original_ctm) {
   auto* op = static_cast<const DrawPathOp*>(base_op);
   PaintOpWriter helper(memory, size, options);
   if (!flags_to_serialize)
     flags_to_serialize = &op->flags;
-  helper.Write(*flags_to_serialize);
+  helper.Write(*flags_to_serialize, current_ctm);
   helper.Write(op->path);
   helper.Write(op->sk_path_fill_type);
   return helper.size();
@@ -624,6 +637,7 @@ size_t DrawRecordOp::Serialize(const PaintOp* op,
                                size_t size,
                                const SerializeOptions& options,
                                const PaintFlags* flags_to_serialize,
+                               const SkM44& current_ctm,
                                const SkM44& original_ctm) {
   // TODO(enne): these must be flattened.  Serializing this will not do
   // anything.
@@ -636,12 +650,13 @@ size_t DrawRectOp::Serialize(const PaintOp* base_op,
                              size_t size,
                              const SerializeOptions& options,
                              const PaintFlags* flags_to_serialize,
+                             const SkM44& current_ctm,
                              const SkM44& original_ctm) {
   auto* op = static_cast<const DrawRectOp*>(base_op);
   PaintOpWriter helper(memory, size, options);
   if (!flags_to_serialize)
     flags_to_serialize = &op->flags;
-  helper.Write(*flags_to_serialize);
+  helper.Write(*flags_to_serialize, current_ctm);
   helper.Write(op->rect);
   return helper.size();
 }
@@ -651,12 +666,13 @@ size_t DrawRRectOp::Serialize(const PaintOp* base_op,
                               size_t size,
                               const SerializeOptions& options,
                               const PaintFlags* flags_to_serialize,
+                              const SkM44& current_ctm,
                               const SkM44& original_ctm) {
   auto* op = static_cast<const DrawRRectOp*>(base_op);
   PaintOpWriter helper(memory, size, options);
   if (!flags_to_serialize)
     flags_to_serialize = &op->flags;
-  helper.Write(*flags_to_serialize);
+  helper.Write(*flags_to_serialize, current_ctm);
   helper.Write(op->rrect);
   return helper.size();
 }
@@ -666,6 +682,7 @@ size_t DrawSkottieOp::Serialize(const PaintOp* base_op,
                                 size_t size,
                                 const SerializeOptions& options,
                                 const PaintFlags* flags_to_serialize,
+                                const SkM44& current_ctm,
                                 const SkM44& original_ctm) {
 #if defined(OS_ANDROID)
   // Skottie is not used in android, so to keep apk size small it is excluded
@@ -687,12 +704,13 @@ size_t DrawTextBlobOp::Serialize(const PaintOp* base_op,
                                  size_t size,
                                  const SerializeOptions& options,
                                  const PaintFlags* flags_to_serialize,
+                                 const SkM44& current_ctm,
                                  const SkM44& original_ctm) {
   auto* op = static_cast<const DrawTextBlobOp*>(base_op);
   PaintOpWriter helper(memory, size, options);
   if (!flags_to_serialize)
     flags_to_serialize = &op->flags;
-  helper.Write(*flags_to_serialize);
+  helper.Write(*flags_to_serialize, current_ctm);
   helper.AlignMemory(alignof(SkScalar));
   helper.Write(op->x);
   helper.Write(op->y);
@@ -705,6 +723,7 @@ size_t NoopOp::Serialize(const PaintOp* base_op,
                          size_t size,
                          const SerializeOptions& options,
                          const PaintFlags* flags_to_serialize,
+                         const SkM44& current_ctm,
                          const SkM44& original_ctm) {
   PaintOpWriter helper(memory, size, options);
   return helper.size();
@@ -715,6 +734,7 @@ size_t RestoreOp::Serialize(const PaintOp* base_op,
                             size_t size,
                             const SerializeOptions& options,
                             const PaintFlags* flags_to_serialize,
+                            const SkM44& current_ctm,
                             const SkM44& original_ctm) {
   PaintOpWriter helper(memory, size, options);
   return helper.size();
@@ -725,6 +745,7 @@ size_t RotateOp::Serialize(const PaintOp* base_op,
                            size_t size,
                            const SerializeOptions& options,
                            const PaintFlags* flags_to_serialize,
+                           const SkM44& current_ctm,
                            const SkM44& original_ctm) {
   auto* op = static_cast<const RotateOp*>(base_op);
   PaintOpWriter helper(memory, size, options);
@@ -737,6 +758,7 @@ size_t SaveOp::Serialize(const PaintOp* base_op,
                          size_t size,
                          const SerializeOptions& options,
                          const PaintFlags* flags_to_serialize,
+                         const SkM44& current_ctm,
                          const SkM44& original_ctm) {
   PaintOpWriter helper(memory, size, options);
   return helper.size();
@@ -747,12 +769,13 @@ size_t SaveLayerOp::Serialize(const PaintOp* base_op,
                               size_t size,
                               const SerializeOptions& options,
                               const PaintFlags* flags_to_serialize,
+                              const SkM44& current_ctm,
                               const SkM44& original_ctm) {
   auto* op = static_cast<const SaveLayerOp*>(base_op);
   PaintOpWriter helper(memory, size, options);
   if (!flags_to_serialize)
     flags_to_serialize = &op->flags;
-  helper.Write(*flags_to_serialize);
+  helper.Write(*flags_to_serialize, current_ctm);
   helper.Write(op->bounds);
   return helper.size();
 }
@@ -762,6 +785,7 @@ size_t SaveLayerAlphaOp::Serialize(const PaintOp* base_op,
                                    size_t size,
                                    const SerializeOptions& options,
                                    const PaintFlags* flags_to_serialize,
+                                   const SkM44& current_ctm,
                                    const SkM44& original_ctm) {
   auto* op = static_cast<const SaveLayerAlphaOp*>(base_op);
   PaintOpWriter helper(memory, size, options);
@@ -775,6 +799,7 @@ size_t ScaleOp::Serialize(const PaintOp* base_op,
                           size_t size,
                           const SerializeOptions& options,
                           const PaintFlags* flags_to_serialize,
+                          const SkM44& current_ctm,
                           const SkM44& original_ctm) {
   auto* op = static_cast<const ScaleOp*>(base_op);
   PaintOpWriter helper(memory, size, options);
@@ -788,9 +813,11 @@ size_t SetMatrixOp::Serialize(const PaintOp* base_op,
                               size_t size,
                               const SerializeOptions& options,
                               const PaintFlags* flags_to_serialize,
+                              const SkM44& current_ctm,
                               const SkM44& original_ctm) {
   auto* op = static_cast<const SetMatrixOp*>(base_op);
   PaintOpWriter helper(memory, size, options);
+  // Use original_ctm here because SetMatrixOp replaces current_ctm
   helper.Write(original_ctm * op->matrix);
   return helper.size();
 }
@@ -800,6 +827,7 @@ size_t SetNodeIdOp::Serialize(const PaintOp* base_op,
                               size_t size,
                               const SerializeOptions& options,
                               const PaintFlags* flags_to_serialize,
+                              const SkM44& current_ctm,
                               const SkM44& original_ctm) {
   auto* op = static_cast<const SetNodeIdOp*>(base_op);
   PaintOpWriter helper(memory, size, options);
@@ -812,6 +840,7 @@ size_t TranslateOp::Serialize(const PaintOp* base_op,
                               size_t size,
                               const SerializeOptions& options,
                               const PaintFlags* flags_to_serialize,
+                              const SkM44& current_ctm,
                               const SkM44& original_ctm) {
   auto* op = static_cast<const TranslateOp*>(base_op);
   PaintOpWriter helper(memory, size, options);
@@ -2259,9 +2288,8 @@ size_t PaintOp::Serialize(void* memory,
                           size_t size,
                           const SerializeOptions& options,
                           const PaintFlags* flags_to_serialize,
+                          const SkM44& current_ctm,
                           const SkM44& original_ctm) const {
-  DCHECK(options.canvas);
-
   // Need at least enough room for a skip/type header.
   if (size < 4)
     return 0u;
@@ -2269,8 +2297,9 @@ size_t PaintOp::Serialize(void* memory,
   DCHECK_EQ(0u,
             reinterpret_cast<uintptr_t>(memory) % PaintOpBuffer::PaintOpAlign);
 
-  size_t written = g_serialize_functions[type](
-      this, memory, size, options, flags_to_serialize, original_ctm);
+  size_t written = g_serialize_functions[type](this, memory, size, options,
+                                               flags_to_serialize, current_ctm,
+                                               original_ctm);
   DCHECK_LE(written, size);
   if (written < 4)
     return 0u;
