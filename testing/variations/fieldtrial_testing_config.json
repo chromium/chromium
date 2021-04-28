@@ -1865,6 +1865,28 @@
             ]
         }
     ],
+    "CnameAliasDetectionInSubresourceFilter": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledRendererEnabledBrowser_20210312",
+                    "enable_features": [
+                        "SendCnameAliasesToSubresourceFilterFromBrowser",
+                        "SendCnameAliasesToSubresourceFilterFromRenderer"
+                    ]
+                }
+            ]
+        }
+    ],
     "CodeCacheDeduplicationStudy": [
         {
             "platforms": [
