@@ -34,46 +34,46 @@ class AutofillProviderAndroid : public AutofillProvider {
 
   // AutofillProvider:
   void OnQueryFormFieldAutofill(
-      AutofillHandlerProxy* handler,
+      AndroidAutofillManager* manager,
       int32_t id,
       const FormData& form,
       const FormFieldData& field,
       const gfx::RectF& bounding_box,
       bool /*unused_autoselect_first_suggestion*/) override;
-  void OnTextFieldDidChange(AutofillHandlerProxy* handler,
+  void OnTextFieldDidChange(AndroidAutofillManager* manager,
                             const FormData& form,
                             const FormFieldData& field,
                             const gfx::RectF& bounding_box,
                             const base::TimeTicks timestamp) override;
-  void OnTextFieldDidScroll(AutofillHandlerProxy* handler,
+  void OnTextFieldDidScroll(AndroidAutofillManager* manager,
                             const FormData& form,
                             const FormFieldData& field,
                             const gfx::RectF& bounding_box) override;
-  void OnSelectControlDidChange(AutofillHandlerProxy* handler,
+  void OnSelectControlDidChange(AndroidAutofillManager* manager,
                                 const FormData& form,
                                 const FormFieldData& field,
                                 const gfx::RectF& bounding_box) override;
-  void OnFormSubmitted(AutofillHandlerProxy* handler,
+  void OnFormSubmitted(AndroidAutofillManager* manager,
                        const FormData& form,
                        bool known_success,
                        mojom::SubmissionSource source) override;
-  void OnFocusNoLongerOnForm(AutofillHandlerProxy* handler,
+  void OnFocusNoLongerOnForm(AndroidAutofillManager* manager,
                              bool had_interacted_form) override;
-  void OnFocusOnFormField(AutofillHandlerProxy* handler,
+  void OnFocusOnFormField(AndroidAutofillManager* manager,
                           const FormData& form,
                           const FormFieldData& field,
                           const gfx::RectF& bounding_box) override;
-  void OnDidFillAutofillFormData(AutofillHandlerProxy* handler,
+  void OnDidFillAutofillFormData(AndroidAutofillManager* manager,
                                  const FormData& form,
                                  base::TimeTicks timestamp) override;
-  void OnFormsSeen(AutofillHandlerProxy* handler,
+  void OnFormsSeen(AndroidAutofillManager* manager,
                    const std::vector<FormData>& forms) override;
-  void OnHidePopup(AutofillHandlerProxy* handler) override;
-  void OnServerPredictionsAvailable(AutofillHandlerProxy* handler) override;
-  void OnServerQueryRequestError(AutofillHandlerProxy* handler,
+  void OnHidePopup(AndroidAutofillManager* manager) override;
+  void OnServerPredictionsAvailable(AndroidAutofillManager* manager) override;
+  void OnServerQueryRequestError(AndroidAutofillManager* manager,
                                  FormSignature form_signature) override;
 
-  void Reset(AutofillHandlerProxy* handler) override;
+  void Reset(AndroidAutofillManager* manager) override;
 
   // Methods called by Java.
   void OnAutofillAvailable(JNIEnv* env, jobject jcaller, jobject form_data);
@@ -92,20 +92,20 @@ class AutofillProviderAndroid : public AutofillProvider {
   void OnFocusChanged(bool focus_on_form,
                       size_t index,
                       const gfx::RectF& bounding_box);
-  void FireFormFieldDidChanged(AutofillHandlerProxy* handler,
+  void FireFormFieldDidChanged(AndroidAutofillManager* manager,
                                const FormData& form,
                                const FormFieldData& field,
                                const gfx::RectF& bounding_box);
 
-  bool IsCurrentlyLinkedHandler(AutofillHandlerProxy* handler);
+  bool IsCurrentlyLinkedManager(AndroidAutofillManager* manager);
 
   bool IsCurrentlyLinkedForm(const FormData& form);
 
   gfx::RectF ToClientAreaBound(const gfx::RectF& bounding_box);
 
-  // Starts a new session, but only if |form| or |handler| doesn't match the
+  // Starts a new session, but only if |form| or |manager| doesn't match the
   // current session.
-  void MaybeStartNewSession(AutofillHandlerProxy* handler,
+  void MaybeStartNewSession(AndroidAutofillManager* manager,
                             const FormData& form,
                             const FormFieldData& field,
                             const gfx::RectF& bounding_box);
@@ -115,7 +115,7 @@ class AutofillProviderAndroid : public AutofillProvider {
   int32_t id_;
   std::unique_ptr<FormDataAndroid> form_;
   FieldGlobalId field_id_;
-  base::WeakPtr<AutofillHandlerProxy> handler_;
+  base::WeakPtr<AndroidAutofillManager> manager_;
   JavaObjectWeakGlobalRef java_ref_;
   content::WebContents* web_contents_;
   bool check_submission_;

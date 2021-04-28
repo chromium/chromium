@@ -4,7 +4,7 @@
 
 #include "components/autofill/core/browser/autofill_provider.h"
 
-#include "components/autofill/core/browser/autofill_handler_proxy.h"
+#include "components/autofill/core/browser/android_autofill_manager.h"
 
 namespace autofill {
 namespace {
@@ -24,18 +24,18 @@ AutofillProvider::AutofillProvider() {}
 
 AutofillProvider::~AutofillProvider() {}
 
-void AutofillProvider::SendFormDataToRenderer(AutofillHandlerProxy* handler,
+void AutofillProvider::SendFormDataToRenderer(AndroidAutofillManager* manager,
                                               int requestId,
                                               const FormData& formData) {
-  handler->SendFormDataToRenderer(
+  manager->SendFormDataToRenderer(
       requestId, AutofillDriver::FORM_DATA_ACTION_FILL, formData);
 }
 
 void AutofillProvider::RendererShouldAcceptDataListSuggestion(
-    AutofillHandlerProxy* handler,
+    AndroidAutofillManager* manager,
     const FieldGlobalId& field_id,
     const std::u16string& value) {
-  handler->driver()->RendererShouldAcceptDataListSuggestion(field_id, value);
+  manager->driver()->RendererShouldAcceptDataListSuggestion(field_id, value);
 }
 
 }  // namespace autofill

@@ -43,20 +43,20 @@ class MockAutofillProvider : public TestAutofillProvider {
   ~MockAutofillProvider() override {}
 
   MOCK_METHOD4(OnFormSubmitted,
-               void(AutofillHandlerProxy* handler,
+               void(AndroidAutofillManager* manager,
                     const FormData& form,
                     bool,
                     SubmissionSource));
 
   MOCK_METHOD6(OnQueryFormFieldAutofill,
-               void(AutofillHandlerProxy* handler,
+               void(AndroidAutofillManager* manager,
                     int32_t id,
                     const FormData& form,
                     const FormFieldData& field,
                     const gfx::RectF& bounding_box,
                     bool autoselect_first_suggestion));
 
-  void OnQueryFormFieldAutofillImpl(AutofillHandlerProxy* handler,
+  void OnQueryFormFieldAutofillImpl(AndroidAutofillManager* manager,
                                     int32_t id,
                                     const FormData& form,
                                     const FormFieldData& field,
@@ -65,7 +65,7 @@ class MockAutofillProvider : public TestAutofillProvider {
     queried_form_ = form;
   }
 
-  void OnFormSubmittedImpl(AutofillHandlerProxy*,
+  void OnFormSubmittedImpl(AndroidAutofillManager*,
                            const FormData& form,
                            bool success,
                            SubmissionSource source) {

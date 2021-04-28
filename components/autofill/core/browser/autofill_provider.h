@@ -16,7 +16,7 @@ class RectF;
 
 namespace autofill {
 
-class AutofillHandlerProxy;
+class AndroidAutofillManager;
 
 // This class defines the interface for the autofill implementation other than
 // default BrowserAutofillManager.
@@ -28,65 +28,66 @@ class AutofillProvider {
   static bool is_download_manager_disabled_for_testing();
   static void set_is_download_manager_disabled_for_testing();
 
-  virtual void OnQueryFormFieldAutofill(AutofillHandlerProxy* handler,
+  virtual void OnQueryFormFieldAutofill(AndroidAutofillManager* manager,
                                         int32_t id,
                                         const FormData& form,
                                         const FormFieldData& field,
                                         const gfx::RectF& bounding_box,
                                         bool autoselect_first_suggestion) = 0;
 
-  virtual void OnTextFieldDidChange(AutofillHandlerProxy* handler,
+  virtual void OnTextFieldDidChange(AndroidAutofillManager* manager,
                                     const FormData& form,
                                     const FormFieldData& field,
                                     const gfx::RectF& bounding_box,
                                     const base::TimeTicks timestamp) = 0;
 
-  virtual void OnTextFieldDidScroll(AutofillHandlerProxy* handler,
+  virtual void OnTextFieldDidScroll(AndroidAutofillManager* manager,
                                     const FormData& form,
                                     const FormFieldData& field,
                                     const gfx::RectF& bounding_box) = 0;
 
-  virtual void OnSelectControlDidChange(AutofillHandlerProxy* handler,
+  virtual void OnSelectControlDidChange(AndroidAutofillManager* manager,
                                         const FormData& form,
                                         const FormFieldData& field,
                                         const gfx::RectF& bounding_box) = 0;
 
-  virtual void OnFormSubmitted(AutofillHandlerProxy* handler,
+  virtual void OnFormSubmitted(AndroidAutofillManager* manager,
                                const FormData& form,
                                bool known_success,
                                mojom::SubmissionSource source) = 0;
 
-  virtual void OnFocusNoLongerOnForm(AutofillHandlerProxy* handler,
+  virtual void OnFocusNoLongerOnForm(AndroidAutofillManager* manager,
                                      bool had_interacted_form) = 0;
 
-  virtual void OnFocusOnFormField(AutofillHandlerProxy* handler,
+  virtual void OnFocusOnFormField(AndroidAutofillManager* manager,
                                   const FormData& form,
                                   const FormFieldData& field,
                                   const gfx::RectF& bounding_box) = 0;
 
-  virtual void OnDidFillAutofillFormData(AutofillHandlerProxy* handler,
+  virtual void OnDidFillAutofillFormData(AndroidAutofillManager* manager,
                                          const FormData& form,
                                          base::TimeTicks timestamp) = 0;
 
-  virtual void OnFormsSeen(AutofillHandlerProxy* handler,
+  virtual void OnFormsSeen(AndroidAutofillManager* manager,
                            const std::vector<FormData>& forms) = 0;
 
-  virtual void OnHidePopup(AutofillHandlerProxy* handler) = 0;
+  virtual void OnHidePopup(AndroidAutofillManager* manager) = 0;
 
-  virtual void OnServerPredictionsAvailable(AutofillHandlerProxy* handler) = 0;
+  virtual void OnServerPredictionsAvailable(
+      AndroidAutofillManager* manager) = 0;
 
-  virtual void OnServerQueryRequestError(AutofillHandlerProxy* handler,
+  virtual void OnServerQueryRequestError(AndroidAutofillManager* manager,
                                          FormSignature form_signature) = 0;
 
-  virtual void Reset(AutofillHandlerProxy* handler) = 0;
+  virtual void Reset(AndroidAutofillManager* manager) = 0;
 
-  void SendFormDataToRenderer(AutofillHandlerProxy* handler,
+  void SendFormDataToRenderer(AndroidAutofillManager* manager,
                               int requestId,
                               const FormData& formData);
 
   // Notifies the renderer should accept the datalist suggestion given by
   // |value| and fill the input field indified by |field_id|.
-  void RendererShouldAcceptDataListSuggestion(AutofillHandlerProxy* handler,
+  void RendererShouldAcceptDataListSuggestion(AndroidAutofillManager* manager,
                                               const FieldGlobalId& field_id,
                                               const std::u16string& value);
 };

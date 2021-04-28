@@ -22,7 +22,7 @@ class StubAutofillProvider : public autofill::TestAutofillProvider {
 
   // AutofillProvider:
   void OnQueryFormFieldAutofill(
-      autofill::AutofillHandlerProxy* handler,
+      autofill::AndroidAutofillManager* manager,
       int32_t id,
       const autofill::FormData& form,
       const autofill::FormFieldData& field,

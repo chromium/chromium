@@ -12,8 +12,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
+#include "components/autofill/core/browser/android_autofill_manager.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_handler_proxy.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
@@ -432,7 +432,7 @@ void ContentAutofillDriver::SetAutofillProvider(
     AutofillProvider* provider,
     AutofillClient* client,
     AutofillHandler::AutofillDownloadManagerState enable_download_manager) {
-  autofill_handler_ = std::make_unique<AutofillHandlerProxy>(
+  autofill_handler_ = std::make_unique<AndroidAutofillManager>(
       this, client, provider, enable_download_manager);
   GetAutofillAgent()->SetUserGestureRequired(false);
   GetAutofillAgent()->SetSecureContextRequired(true);

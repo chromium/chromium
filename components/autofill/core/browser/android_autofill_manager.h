@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_HANDLER_PROXY_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_HANDLER_PROXY_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_ANDROID_AUTOFILL_MANAGER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_ANDROID_AUTOFILL_MANAGER_H_
 
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autofill_handler.h"
@@ -14,14 +14,14 @@ namespace autofill {
 class AutofillProvider;
 
 // This class forwards AutofillHandler calls to AutofillProvider.
-class AutofillHandlerProxy : public AutofillHandler {
+class AndroidAutofillManager : public AutofillHandler {
  public:
-  AutofillHandlerProxy(
+  AndroidAutofillManager(
       AutofillDriver* driver,
       AutofillClient* client,
       AutofillProvider* provider,
       AutofillHandler::AutofillDownloadManagerState enable_download_manager);
-  ~AutofillHandlerProxy() override;
+  ~AndroidAutofillManager() override;
 
   void OnFocusNoLongerOnForm(bool had_interacted_form) override;
 
@@ -35,7 +35,7 @@ class AutofillHandlerProxy : public AutofillHandler {
 
   void Reset() override;
 
-  base::WeakPtr<AutofillHandlerProxy> GetWeakPtr() {
+  base::WeakPtr<AndroidAutofillManager> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
@@ -90,11 +90,11 @@ class AutofillHandlerProxy : public AutofillHandler {
  private:
   bool has_server_prediction_ = false;
   AutofillProvider* provider_;
-  base::WeakPtrFactory<AutofillHandlerProxy> weak_ptr_factory_{this};
+  base::WeakPtrFactory<AndroidAutofillManager> weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(AutofillHandlerProxy);
+  DISALLOW_COPY_AND_ASSIGN(AndroidAutofillManager);
 };
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_HANDLER_PROXY_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_ANDROID_AUTOFILL_MANAGER_H_

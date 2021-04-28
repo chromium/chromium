@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/autofill_handler_proxy.h"
+#include "components/autofill/core/browser/android_autofill_manager.h"
 
 #include "components/autofill/core/browser/autofill_provider.h"
 
@@ -10,7 +10,7 @@ namespace autofill {
 
 using base::TimeTicks;
 
-AutofillHandlerProxy::AutofillHandlerProxy(
+AndroidAutofillManager::AndroidAutofillManager(
     AutofillDriver* driver,
     AutofillClient* client,
     AutofillProvider* provider,
@@ -21,15 +21,16 @@ AutofillHandlerProxy::AutofillHandlerProxy(
                       version_info::Channel::UNKNOWN),
       provider_(provider) {}
 
-AutofillHandlerProxy::~AutofillHandlerProxy() {}
+AndroidAutofillManager::~AndroidAutofillManager() {}
 
-void AutofillHandlerProxy::OnFormSubmittedImpl(const FormData& form,
-                                               bool known_success,
-                                               mojom::SubmissionSource source) {
+void AndroidAutofillManager::OnFormSubmittedImpl(
+    const FormData& form,
+    bool known_success,
+    mojom::SubmissionSource source) {
   provider_->OnFormSubmitted(this, form, known_success, source);
 }
 
-void AutofillHandlerProxy::OnTextFieldDidChangeImpl(
+void AndroidAutofillManager::OnTextFieldDidChangeImpl(
     const FormData& form,
     const FormFieldData& field,
     const gfx::RectF& bounding_box,
@@ -37,14 +38,14 @@ void AutofillHandlerProxy::OnTextFieldDidChangeImpl(
   provider_->OnTextFieldDidChange(this, form, field, bounding_box, timestamp);
 }
 
-void AutofillHandlerProxy::OnTextFieldDidScrollImpl(
+void AndroidAutofillManager::OnTextFieldDidScrollImpl(
     const FormData& form,
     const FormFieldData& field,
     const gfx::RectF& bounding_box) {
   provider_->OnTextFieldDidScroll(this, form, field, bounding_box);
 }
 
-void AutofillHandlerProxy::OnQueryFormFieldAutofillImpl(
+void AndroidAutofillManager::OnQueryFormFieldAutofillImpl(
     int query_id,
     const FormData& form,
     const FormFieldData& field,
@@ -54,21 +55,21 @@ void AutofillHandlerProxy::OnQueryFormFieldAutofillImpl(
                                       autoselect_first_suggestion);
 }
 
-void AutofillHandlerProxy::OnFocusOnFormFieldImpl(
+void AndroidAutofillManager::OnFocusOnFormFieldImpl(
     const FormData& form,
     const FormFieldData& field,
     const gfx::RectF& bounding_box) {
   provider_->OnFocusOnFormField(this, form, field, bounding_box);
 }
 
-void AutofillHandlerProxy::OnSelectControlDidChangeImpl(
+void AndroidAutofillManager::OnSelectControlDidChangeImpl(
     const FormData& form,
     const FormFieldData& field,
     const gfx::RectF& bounding_box) {
   provider_->OnSelectControlDidChange(this, form, field, bounding_box);
 }
 
-bool AutofillHandlerProxy::ShouldParseForms(
+bool AndroidAutofillManager::ShouldParseForms(
     const std::vector<FormData>& forms) {
   provider_->OnFormsSeen(this, forms);
   // Need to parse the |forms| to FormStructure, so heuristic_type can be
@@ -76,37 +77,38 @@ bool AutofillHandlerProxy::ShouldParseForms(
   return true;
 }
 
-void AutofillHandlerProxy::OnFocusNoLongerOnForm(bool had_interacted_form) {
+void AndroidAutofillManager::OnFocusNoLongerOnForm(bool had_interacted_form) {
   provider_->OnFocusNoLongerOnForm(this, had_interacted_form);
 }
 
-void AutofillHandlerProxy::OnDidFillAutofillFormData(
+void AndroidAutofillManager::OnDidFillAutofillFormData(
     const FormData& form,
     const base::TimeTicks timestamp) {
   provider_->OnDidFillAutofillFormData(this, form, timestamp);
 }
 
-void AutofillHandlerProxy::OnHidePopup() {
+void AndroidAutofillManager::OnHidePopup() {
   provider_->OnHidePopup(this);
 }
 
-void AutofillHandlerProxy::SelectFieldOptionsDidChange(const FormData& form) {}
+void AndroidAutofillManager::SelectFieldOptionsDidChange(const FormData& form) {
+}
 
-void AutofillHandlerProxy::PropagateAutofillPredictions(
+void AndroidAutofillManager::PropagateAutofillPredictions(
     content::RenderFrameHost* rfh,
     const std::vector<FormStructure*>& forms) {
   has_server_prediction_ = true;
   provider_->OnServerPredictionsAvailable(this);
 }
 
-void AutofillHandlerProxy::OnServerRequestError(
+void AndroidAutofillManager::OnServerRequestError(
     FormSignature form_signature,
     AutofillDownloadManager::RequestType request_type,
     int http_error) {
   provider_->OnServerQueryRequestError(this, form_signature);
 }
 
-void AutofillHandlerProxy::Reset() {
+void AndroidAutofillManager::Reset() {
   AutofillHandler::Reset();
   has_server_prediction_ = false;
   provider_->Reset(this);
