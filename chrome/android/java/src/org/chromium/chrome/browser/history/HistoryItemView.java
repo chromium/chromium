@@ -179,7 +179,7 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> implements 
     private void requestIcon() {
         if (mHistoryManager == null || mHistoryManager.getLargeIconBridge() == null) return;
 
-        mHistoryManager.getLargeIconBridge().getLargeIconForStringUrl(
+        mHistoryManager.getLargeIconBridge().getLargeIconForUrl(
                 getItem().getUrl(), mMinIconSize, this);
     }
 

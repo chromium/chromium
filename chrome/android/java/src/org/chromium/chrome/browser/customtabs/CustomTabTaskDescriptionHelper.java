@@ -272,7 +272,7 @@ public class CustomTabTaskDescriptionHelper implements NativeInitObserver, Destr
 
         final String currentUrl = currentTab.getUrlString();
         mFaviconHelper.getLocalFaviconImageForURL(
-                Profile.fromWebContents(currentTab.getWebContents()), currentTab.getUrlString(), 0,
+                Profile.fromWebContents(currentTab.getWebContents()), currentTab.getUrl(), 0,
                 (image, iconUrl) -> {
                     if (mTabProvider.getTab() == null
                             || !TextUtils.equals(

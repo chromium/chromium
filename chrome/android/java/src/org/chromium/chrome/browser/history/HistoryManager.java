@@ -61,6 +61,7 @@ import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -244,7 +245,7 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
         } else if (item.getItemId() == R.id.selection_mode_copy_link) {
             recordUserActionWithOptionalSearch("CopyLink");
             Clipboard.getInstance().setText(
-                    mSelectionDelegate.getSelectedItemsAsList().get(0).getUrl());
+                    mSelectionDelegate.getSelectedItemsAsList().get(0).getUrl().getSpec());
             mSelectionDelegate.clearSelection();
             Snackbar snackbar = Snackbar.make(mActivity.getString(R.string.copied), this,
                     Snackbar.TYPE_NOTIFICATION, Snackbar.UMA_HISTORY_LINK_COPIED);
@@ -350,7 +351,7 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
      * @param createNewTab Whether a new tab should be created. If false, the item will clobber the
      *                     the current tab.
      */
-    public void openUrl(String url, Boolean isIncognito, boolean createNewTab) {
+    public void openUrl(GURL url, Boolean isIncognito, boolean createNewTab) {
         if (isDisplayedInSeparateActivity()) {
             IntentHandler.startActivityForTrustedIntent(
                     getOpenUrlIntent(url, isIncognito, createNewTab));
@@ -380,9 +381,9 @@ public class HistoryManager implements OnMenuItemClickListener, SignInStateObser
     }
 
     @VisibleForTesting
-    Intent getOpenUrlIntent(String url, Boolean isIncognito, boolean createNewTab) {
+    Intent getOpenUrlIntent(GURL url, Boolean isIncognito, boolean createNewTab) {
         // Construct basic intent.
-        Intent viewIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        Intent viewIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url.getSpec()));
         viewIntent.putExtra(Browser.EXTRA_APPLICATION_ID,
                 mActivity.getApplicationContext().getPackageName());
         viewIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

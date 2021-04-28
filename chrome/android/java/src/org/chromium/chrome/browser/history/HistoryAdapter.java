@@ -34,6 +34,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -372,7 +373,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
      */
     private SpannableString getPrivacyDisclaimerText(Resources resources) {
         NoUnderlineClickableSpan link = new NoUnderlineClickableSpan(resources, (view) -> {
-            mHistoryManager.openUrl(UrlConstants.MY_ACTIVITY_URL_IN_HISTORY, null, true);
+            mHistoryManager.openUrl(new GURL(UrlConstants.MY_ACTIVITY_URL_IN_HISTORY), null, true);
         });
         return SpanApplier.applySpans(
                 resources.getString(R.string.android_history_other_forms_of_history),

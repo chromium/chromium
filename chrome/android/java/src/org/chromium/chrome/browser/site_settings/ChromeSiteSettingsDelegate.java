@@ -37,6 +37,7 @@ import org.chromium.components.embedder_support.browser_context.BrowserContextHa
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.common.ContentSwitches;
+import org.chromium.url.GURL;
 
 import java.util.Set;
 
@@ -121,12 +122,12 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
             // but it is not safe.
             if (!mFaviconHelper.getLocalFaviconImageForURL(
                         Profile.getLastUsedRegularProfile(), mFaviconUrl, mFaviconSizePx, this)) {
-                onFaviconAvailable(/*image=*/null, mFaviconUrl);
+                onFaviconAvailable(/*image=*/null, null);
             }
         }
 
         @Override
-        public void onFaviconAvailable(Bitmap image, String iconUrl) {
+        public void onFaviconAvailable(Bitmap image, GURL unusedIconUrl) {
             mFaviconHelper.destroy();
 
             if (image == null) {

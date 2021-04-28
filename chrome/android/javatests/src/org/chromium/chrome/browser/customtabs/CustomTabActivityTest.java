@@ -1787,7 +1787,7 @@ public class CustomTabActivityTest {
         List<HistoryItem> history =
                 getHistory(mCustomTabActivityTestRule.getActivity().getActivityTab());
         assertEquals(1, history.size());
-        assertEquals(mTestPage, history.get(0).getUrl());
+        assertEquals(mTestPage, history.get(0).getUrl().getSpec());
     }
 
     /** Tests that calling warmup() is optional without prerendering. */
@@ -2335,8 +2335,8 @@ public class CustomTabActivityTest {
 
         List<HistoryItem> history = getHistory(tab);
         assertEquals(2, history.size());
-        assertEquals(mTestPage2, history.get(0).getUrl());
-        assertEquals(mTestPage, history.get(1).getUrl());
+        assertEquals(mTestPage2, history.get(0).getUrl().getSpec());
+        assertEquals(mTestPage, history.get(1).getUrl().getSpec());
     }
 
     private int getVisibleEntryTransitionTypeForTab(Tab tab) {
@@ -2898,7 +2898,7 @@ public class CustomTabActivityTest {
 
         List<HistoryItem> history = getHistory(tab);
         assertEquals(1, history.size());
-        assertEquals(navigationUrl, history.get(0).getUrl());
+        assertEquals(navigationUrl, history.get(0).getUrl().getSpec());
     }
 
     private void mayLaunchUrlWithoutWarmup(boolean useHiddenTab) {

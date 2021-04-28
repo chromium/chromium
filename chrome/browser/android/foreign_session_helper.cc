@@ -29,6 +29,7 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_source.h"
 #include "content/public/browser/web_contents.h"
+#include "url/android/gurl_android.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaGlobalRef;
@@ -99,7 +100,7 @@ void JNI_ForeignSessionHelper_CopyTabToJava(
   GURL tab_url = current_navigation.virtual_url();
 
   Java_ForeignSessionHelper_pushTab(
-      env, j_window, ConvertUTF8ToJavaString(env, tab_url.spec()),
+      env, j_window, url::GURLAndroid::FromNativeGURL(env, tab_url),
       ConvertUTF16ToJavaString(env, current_navigation.title()),
       tab.timestamp.ToJavaTime(), tab.tab_id.id());
 }

@@ -39,6 +39,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.mojom.WindowOpenDisposition;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -300,9 +301,10 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
         @Override
         public void configureChildView(int childPosition, ViewHolder viewHolder) {
             ForeignSessionTab sessionTab = getChild(childPosition);
-            String text = TextUtils.isEmpty(sessionTab.title) ? sessionTab.url : sessionTab.title;
+            String url = sessionTab.url.getSpec();
+            String text = TextUtils.isEmpty(sessionTab.title) ? url : sessionTab.title;
             viewHolder.textView.setText(text);
-            String domain = UrlUtilities.getDomainAndRegistry(sessionTab.url, false);
+            String domain = UrlUtilities.getDomainAndRegistry(url, false);
             if (!TextUtils.isEmpty(domain)) {
                 viewHolder.domainView.setText(domain);
                 viewHolder.domainView.setVisibility(View.VISIBLE);
@@ -567,7 +569,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                 viewHolder.domainView.setText(domain);
                 viewHolder.domainView.setVisibility(View.VISIBLE);
             }
-            loadFavicon(viewHolder, tab.url.getSpec(), FaviconLocality.LOCAL);
+            loadFavicon(viewHolder, tab.url, FaviconLocality.LOCAL);
         }
 
         @Override
@@ -677,17 +679,17 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
     }
 
     private static class FaviconCache {
-        private final LruCache<String, Drawable> mMemoryCache;
+        private final LruCache<GURL, Drawable> mMemoryCache;
 
         public FaviconCache(int size) {
             mMemoryCache = new LruCache<>(size);
         }
 
-        Drawable getFaviconImage(String url) {
+        Drawable getFaviconImage(GURL url) {
             return mMemoryCache.get(url);
         }
 
-        public void putFaviconImage(String url, Drawable image) {
+        public void putFaviconImage(GURL url, Drawable image) {
             mMemoryCache.put(url, image);
         }
     }
@@ -730,7 +732,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
     }
 
     private void loadFavicon(
-            final ViewHolder viewHolder, final String url, @FaviconLocality int locality) {
+            final ViewHolder viewHolder, final GURL url, @FaviconLocality int locality) {
         Drawable image;
         if (url == null) {
             // URL is null for print jobs, for example.
@@ -741,7 +743,7 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
             if (image == null) {
                 FaviconImageCallback imageCallback = new FaviconImageCallback() {
                     @Override
-                    public void onFaviconAvailable(Bitmap bitmap, String iconUrl) {
+                    public void onFaviconAvailable(Bitmap bitmap, GURL iconUrl) {
                         if (this != viewHolder.imageCallback) return;
                         Drawable faviconDrawable = FaviconUtils.getIconDrawableWithFilter(bitmap,
                                 url, mIconGenerator, mDefaultFaviconHelper,

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.history;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,7 +71,7 @@ public class BrowsingHistoryBridge implements HistoryProvider {
     }
 
     @CalledByNative
-    public static void createHistoryItemAndAddToList(List<HistoryItem> items, String url,
+    public static void createHistoryItemAndAddToList(List<HistoryItem> items, GURL url,
             String domain, String title, long mostRecentJavaTimestamp, long[] nativeTimestamps,
             boolean blockedVisit) {
         items.add(new HistoryItem(
@@ -116,7 +117,7 @@ public class BrowsingHistoryBridge implements HistoryProvider {
         void queryHistoryContinuation(long nativeBrowsingHistoryBridge,
                 BrowsingHistoryBridge caller, List<HistoryItem> historyItems);
         void markItemForRemoval(long nativeBrowsingHistoryBridge, BrowsingHistoryBridge caller,
-                String url, long[] nativeTimestamps);
+                GURL url, long[] nativeTimestamps);
         void removeItems(long nativeBrowsingHistoryBridge, BrowsingHistoryBridge caller);
     }
 }

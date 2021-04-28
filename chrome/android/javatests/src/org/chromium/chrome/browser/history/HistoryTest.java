@@ -22,6 +22,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
 
@@ -36,7 +37,7 @@ public class HistoryTest {
         private Bitmap mFavicon;
 
         @Override
-        public void onFaviconAvailable(Bitmap image, String iconUrl) {
+        public void onFaviconAvailable(Bitmap image, GURL iconUrl) {
             mFavicon = image;
             notifyCalled();
         }
@@ -61,11 +62,11 @@ public class HistoryTest {
 
         FaviconHelper helper = TestThreadUtils.runOnUiThreadBlocking(FaviconHelper::new);
         // If the returned favicons are non-null Bitmap#sameAs() should be used.
-        assertNull(getFavicon(helper, UrlConstants.HISTORY_URL));
-        assertNull(getFavicon(helper, UrlConstants.NATIVE_HISTORY_URL));
+        assertNull(getFavicon(helper, new GURL(UrlConstants.HISTORY_URL)));
+        assertNull(getFavicon(helper, new GURL(UrlConstants.NATIVE_HISTORY_URL)));
     }
 
-    public Bitmap getFavicon(FaviconHelper helper, String pageUrl) throws TimeoutException {
+    public Bitmap getFavicon(FaviconHelper helper, GURL pageUrl) throws TimeoutException {
         FaviconWaiter waiter = new FaviconWaiter();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             helper.getLocalFaviconImageForURL(

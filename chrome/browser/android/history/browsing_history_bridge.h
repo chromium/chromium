@@ -39,7 +39,7 @@ class BrowsingHistoryBridge : public ProfileBasedBrowsingHistoryDriver {
   // ::removeItems() is called.
   void MarkItemForRemoval(JNIEnv* env,
                           const JavaParamRef<jobject>& obj,
-                          jstring j_url,
+                          const JavaParamRef<jobject>& j_url,
                           const JavaParamRef<jlongArray>& j_native_timestamps);
 
   // Removes all items that have been marked for removal through

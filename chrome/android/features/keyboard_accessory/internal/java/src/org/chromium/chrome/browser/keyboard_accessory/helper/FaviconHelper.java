@@ -75,8 +75,8 @@ public class FaviconHelper {
         if (!gurlOrigin.isValid()) return;
         mIconBridge.getLargeIconForUrl(gurlOrigin, mDesiredSize,
                 (icon, fallbackColor, isFallbackColorDefault, iconType) -> {
-                    Drawable drawable = FaviconUtils.getIconDrawableWithoutFilter(
-                            icon, origin, fallbackColor, mIconGenerator, mResources, mDesiredSize);
+                    Drawable drawable = FaviconUtils.getIconDrawableWithoutFilter(icon, gurlOrigin,
+                            fallbackColor, mIconGenerator, mResources, mDesiredSize);
                     setIconCallback.onResult(drawable);
                 });
     }

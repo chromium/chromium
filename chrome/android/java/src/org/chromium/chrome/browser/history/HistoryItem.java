@@ -9,12 +9,13 @@ import android.text.TextUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.DateDividedAdapter.TimedItem;
+import org.chromium.url.GURL;
 
 import java.util.Arrays;
 
 /** Contains information about a single browsing history item. */
 public class HistoryItem extends TimedItem {
-    private final String mUrl;
+    private final GURL mUrl;
     private final String mDomain;
     private final String mTitle;
     private final boolean mWasBlockedVisit;
@@ -32,20 +33,20 @@ public class HistoryItem extends TimedItem {
      * @param nativeTimestamps Microsecond resolution navigation times.
      * @param blockedVisit Whether the visit to this item was blocked when it was attempted.
      */
-    public HistoryItem(String url, String domain, String title, long mostRecentJavaTimestamp,
+    public HistoryItem(GURL url, String domain, String title, long mostRecentJavaTimestamp,
             long[] nativeTimestamps, boolean blockedVisit) {
         mUrl = url;
         mDomain = domain;
         mTitle = blockedVisit ? ContextUtils.getApplicationContext().getString(
-                R.string.android_history_blocked_site)
-                : TextUtils.isEmpty(title) ? url : title;
+                         R.string.android_history_blocked_site)
+                              : TextUtils.isEmpty(title) ? url.getSpec() : title;
         mMostRecentJavaTimestamp = mostRecentJavaTimestamp;
         mNativeTimestampList = Arrays.copyOf(nativeTimestamps, nativeTimestamps.length);
         mWasBlockedVisit = blockedVisit;
     }
 
     /** @return The url for this item. */
-    public String getUrl() {
+    public GURL getUrl() {
         return mUrl;
     }
 

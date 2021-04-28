@@ -15,6 +15,7 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.url.GURL;
 
 /**
  * Utilities to deal with favicons.
@@ -78,6 +79,14 @@ public class FaviconUtils {
      * @param iconSize Width and height of the returned icon in px.
      * @return A {@link Drawable} to be displayed as the favicon.
      */
+    public static Drawable getIconDrawableWithoutFilter(@Nullable Bitmap icon, GURL url,
+            int fallbackColor, RoundedIconGenerator iconGenerator, Resources resources,
+            int iconSize) {
+        return getIconDrawableWithoutFilter(
+                icon, url.getSpec(), fallbackColor, iconGenerator, resources, iconSize);
+    }
+
+    @Deprecated // Use GURL variant instead.
     public static Drawable getIconDrawableWithoutFilter(@Nullable Bitmap icon, String url,
             int fallbackColor, RoundedIconGenerator iconGenerator, Resources resources,
             int iconSize) {
@@ -104,7 +113,7 @@ public class FaviconUtils {
      * @param iconSize Width and height of the returned icon.
      * @return A {@link Drawable} to be displayed as the favicon.
      */
-    public static Drawable getIconDrawableWithFilter(@Nullable Bitmap icon, @Nullable String url,
+    public static Drawable getIconDrawableWithFilter(@Nullable Bitmap icon, @Nullable GURL url,
             RoundedIconGenerator iconGenerator,
             FaviconHelper.DefaultFaviconHelper defaultFaviconHelper, Resources resources,
             int iconSize) {
@@ -112,7 +121,8 @@ public class FaviconUtils {
             return defaultFaviconHelper.getDefaultFaviconDrawable(resources, url, true);
         }
         if (icon == null) {
-            icon = iconGenerator.generateIconForUrl(url);
+            // TODO(crbug/783819): Migrate RoundedIconGenerator to GURL.
+            icon = iconGenerator.generateIconForUrl(url.getSpec());
             return new BitmapDrawable(
                     resources, Bitmap.createScaledBitmap(icon, iconSize, iconSize, true));
         }

@@ -523,7 +523,7 @@ public class PortalsTest {
         // user.
         List<HistoryItem> history = getBrowsingHistory(tab);
         Assert.assertEquals(1, history.size());
-        Assert.assertEquals(mainUrl, history.get(0).getUrl());
+        Assert.assertEquals(mainUrl, history.get(0).getUrl().getSpec());
         Assert.assertEquals(mainTitle, history.get(0).getTitle());
 
         executeScriptAndAwaitSwap(tab, "activatePortal();");
@@ -532,9 +532,9 @@ public class PortalsTest {
         // as a navigation in the tab, so this should be considered a page visit.
         history = getBrowsingHistory(tab);
         Assert.assertEquals(2, history.size());
-        Assert.assertEquals(portalUrl, history.get(0).getUrl());
+        Assert.assertEquals(portalUrl, history.get(0).getUrl().getSpec());
         Assert.assertEquals(portalTitle, history.get(0).getTitle());
-        Assert.assertEquals(mainUrl, history.get(1).getUrl());
+        Assert.assertEquals(mainUrl, history.get(1).getUrl().getSpec());
         Assert.assertEquals(mainTitle, history.get(1).getTitle());
     }
 

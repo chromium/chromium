@@ -18,6 +18,7 @@
 #include "components/autofill_assistant/browser/generic_ui_java_generated_enums.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/android/gurl_android.h"
 
 namespace autofill_assistant {
 namespace ui_controller_android_utils {
@@ -200,11 +201,11 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaDrawable(
       int diameter_size_in_pixel =
           ui_controller_android_utils::GetPixelSizeOrDefault(
               env, jcontext, proto.favicon().diameter_size(), 0);
-      std::string url = proto.favicon().has_website_url()
-                            ? proto.favicon().website_url()
-                            : user_model->GetCurrentURL().spec();
+      GURL url = proto.favicon().has_website_url()
+                     ? GURL(proto.favicon().website_url())
+                     : user_model->GetCurrentURL();
       return Java_AssistantDrawable_createFromFavicon(
-          env, base::android::ConvertUTF8ToJavaString(env, url),
+          env, url::GURLAndroid::FromNativeGURL(env, url),
           diameter_size_in_pixel, proto.favicon().force_monogram());
     }
     case DrawableProto::DRAWABLE_NOT_SET:

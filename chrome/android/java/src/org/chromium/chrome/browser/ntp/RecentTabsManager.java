@@ -34,6 +34,7 @@ import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -257,7 +258,7 @@ public class RecentTabsManager implements ProfileSyncService.SyncStateChangedLis
      * @return favicon or null if favicon unavailable.
      */
     public boolean getForeignFaviconForUrl(
-            String url, int size, FaviconImageCallback faviconCallback) {
+            GURL url, int size, FaviconImageCallback faviconCallback) {
         return mFaviconHelper.getForeignFaviconImageForURL(mProfile, url, size, faviconCallback);
     }
 
@@ -270,8 +271,7 @@ public class RecentTabsManager implements ProfileSyncService.SyncStateChangedLis
      *
      * @return may return false if we could not fetch the favicon.
      */
-    public boolean getLocalFaviconForUrl(String url, int size,
-            FaviconImageCallback faviconCallback) {
+    public boolean getLocalFaviconForUrl(GURL url, int size, FaviconImageCallback faviconCallback) {
         return mFaviconHelper.getLocalFaviconImageForURL(mProfile, url, size, faviconCallback);
     }
 

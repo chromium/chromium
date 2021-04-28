@@ -72,8 +72,8 @@ public class BookmarkItemRow extends BookmarkRow implements LargeIconCallback {
     @Override
     public void onLargeIconAvailable(Bitmap icon, int fallbackColor, boolean isFallbackColorDefault,
             @IconType int iconType) {
-        Drawable iconDrawable = FaviconUtils.getIconDrawableWithoutFilter(icon, mUrl.getSpec(),
-                fallbackColor, mIconGenerator, getResources(), mDisplayedIconSize);
+        Drawable iconDrawable = FaviconUtils.getIconDrawableWithoutFilter(
+                icon, mUrl, fallbackColor, mIconGenerator, getResources(), mDisplayedIconSize);
         setStartIconDrawable(iconDrawable);
     }
 }

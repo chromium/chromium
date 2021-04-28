@@ -80,7 +80,7 @@ public abstract class AssistantDrawable {
 
     @CalledByNative
     public static AssistantDrawable createFromFavicon(
-            String url, int diameterSizeInPixel, boolean forceMonogram) {
+            GURL url, int diameterSizeInPixel, boolean forceMonogram) {
         return new AssistantFaviconDrawable(url, diameterSizeInPixel, forceMonogram);
     }
 
@@ -231,11 +231,11 @@ public abstract class AssistantDrawable {
     }
 
     private static class AssistantFaviconDrawable extends AssistantDrawable {
-        private final String mUrl;
+        private final GURL mUrl;
         private final int mDiameterSizeInPixel;
         private final Boolean mForceMonogram;
 
-        AssistantFaviconDrawable(String url, int diameterSizeInPixel, boolean forceMonogram) {
+        AssistantFaviconDrawable(GURL url, int diameterSizeInPixel, boolean forceMonogram) {
             mUrl = url;
             mDiameterSizeInPixel = diameterSizeInPixel;
             mForceMonogram = forceMonogram;
@@ -245,7 +245,7 @@ public abstract class AssistantDrawable {
         public void getDrawable(Context context, Callback<Drawable> callback) {
             final LargeIconBridge iconBridge =
                     new LargeIconBridge(AutofillAssistantUiController.getProfile());
-            iconBridge.getLargeIconForUrl(new GURL(mUrl), mDiameterSizeInPixel,
+            iconBridge.getLargeIconForUrl(mUrl, mDiameterSizeInPixel,
                     (Bitmap icon, int fallbackColor, boolean isFallbackColorDefault,
                             int iconType) -> {
                         float fontSize = mDiameterSizeInPixel * 7f / 10f;

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.history;
 import android.text.TextUtils;
 
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +53,7 @@ public class StubbedHistoryProvider implements HistoryProvider {
             // Start a new search; simulate basic search.
             mLastQuery = mLastQuery.toLowerCase(Locale.getDefault());
             for (HistoryItem item : mItems) {
-                if (item.getUrl().toLowerCase(Locale.getDefault()).contains(mLastQuery)
+                if (item.getUrl().getSpec().toLowerCase(Locale.getDefault()).contains(mLastQuery)
                         || item.getTitle().toLowerCase(Locale.getDefault()).contains(mLastQuery)) {
                     mSearchItems.add(item);
                 }
@@ -110,23 +111,23 @@ public class StubbedHistoryProvider implements HistoryProvider {
     public static HistoryItem createHistoryItem(int which, long timestamp) {
         long[] nativeTimestamps = {timestamp * 1000};
         if (which == 0) {
-            return new HistoryItem("http://google.com/", "www.google.com", "Google", timestamp,
-                    nativeTimestamps, false);
+            return new HistoryItem(JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL),
+                    "www.google.com", "Google", timestamp, nativeTimestamps, false);
         } else if (which == 1) {
-            return new HistoryItem(
-                    "http://foo.com/", "www.foo.com", "Foo", timestamp, nativeTimestamps, false);
+            return new HistoryItem(JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL),
+                    "www.example.com", "Foo", timestamp, nativeTimestamps, false);
         } else if (which == 2) {
-            return new HistoryItem(
-                    "http://bar.com/", "www.bar.com", "Bar", timestamp, nativeTimestamps, false);
+            return new HistoryItem(JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1), "www.one.com",
+                    "Bar", timestamp, nativeTimestamps, false);
         } else if (which == 3) {
-            return new HistoryItem(
-                    "http://news.com/", "www.news.com", "News", timestamp, nativeTimestamps, false);
+            return new HistoryItem(JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2), "www.two.com",
+                    "News", timestamp, nativeTimestamps, false);
         } else if (which == 4) {
-            return new HistoryItem("http://eng.com/", "www.eng.com", "Engineering", timestamp,
-                    nativeTimestamps, false);
+            return new HistoryItem(JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_3), "www.three.com",
+                    "Engineering", timestamp, nativeTimestamps, false);
         } else if (which == 5) {
-            return new HistoryItem("http://blocked.com/", "www.blocked.com", "Cannot Visit",
-                    timestamp, nativeTimestamps, true);
+            return new HistoryItem(JUnitTestGURLs.getGURL(JUnitTestGURLs.INITIAL_URL),
+                    "initial.com", "Cannot Visit", timestamp, nativeTimestamps, true);
         } else {
             return null;
         }

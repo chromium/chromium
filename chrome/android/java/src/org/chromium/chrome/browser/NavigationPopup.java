@@ -206,11 +206,11 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
         mInitialized = true;
         mFaviconHelper = new FaviconHelper();
 
-        Set<String> requestedUrls = new HashSet<String>();
+        Set<GURL> requestedUrls = new HashSet<>();
         for (int i = 0; i < mHistory.getEntryCount(); i++) {
             NavigationEntry entry = mHistory.getEntryAtIndex(i);
             if (entry.getFavicon() != null) continue;
-            final String pageUrl = entry.getUrl().getSpec();
+            final GURL pageUrl = entry.getUrl();
             if (!requestedUrls.contains(pageUrl)) {
                 FaviconImageCallback imageCallback =
                         (bitmap, iconUrl) -> NavigationPopup.this.onFaviconAvailable(pageUrl,
@@ -227,7 +227,7 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
      * @param pageUrl the page for which the favicon was retrieved.
      * @param favicon the favicon data.
      */
-    private void onFaviconAvailable(String pageUrl, Bitmap favicon) {
+    private void onFaviconAvailable(GURL pageUrl, Bitmap favicon) {
         if (favicon == null) {
             if (mDefaultFaviconHelper == null) mDefaultFaviconHelper = new DefaultFaviconHelper();
             favicon = mDefaultFaviconHelper.getDefaultFaviconBitmap(
@@ -235,7 +235,7 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
         }
         for (int i = 0; i < mHistory.getEntryCount(); i++) {
             NavigationEntry entry = mHistory.getEntryAtIndex(i);
-            if (TextUtils.equals(pageUrl, entry.getUrl().getSpec())) entry.updateFavicon(favicon);
+            if (pageUrl.equals(entry.getUrl())) entry.updateFavicon(favicon);
         }
         mAdapter.notifyDataSetChanged();
     }
