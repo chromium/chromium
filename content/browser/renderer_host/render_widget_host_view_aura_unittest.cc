@@ -2712,6 +2712,34 @@ TEST_F(RenderWidgetHostViewAuraTest, AutoResizeWithScale) {
   }
 }
 
+// Verifies that when synchronizing the visual properties after disabling the
+// auto resize mode, both the view size and the auto resize state get updated at
+// the same time (https://crbug.com/1200601).
+TEST_F(RenderWidgetHostViewAuraTest,
+       VerifyVisualPropertiesWhenDisablingAutoResize) {
+  InitViewForFrame(nullptr);
+  aura::client::ParentWindowWithContext(
+      view_->GetNativeView(), parent_view_->GetNativeView()->GetRootWindow(),
+      gfx::Rect());
+
+  // Enable the auto resize.
+  widget_host_->ClearVisualProperties();
+  view_->EnableAutoResize(gfx::Size(50, 50), gfx::Size(100, 100));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(1u, widget_host_->visual_properties().size());
+
+  widget_host_->ClearVisualProperties();
+
+  // Disable the auto resize and verify the received visual properties.
+  const gfx::Size size_after_disabling(200, 200);
+  view_->DisableAutoResize(size_after_disabling);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1u, widget_host_->visual_properties().size());
+  const auto& received_property = widget_host_->visual_properties()[0];
+  EXPECT_EQ(false, received_property.auto_resize_enabled);
+  EXPECT_EQ(size_after_disabling, received_property.new_size);
+}
+
 // This test verifies that in AutoResize mode a new
 // blink::mojom::Widget::UpdateVisualProperties message is sent when size
 // changes.

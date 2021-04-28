@@ -550,9 +550,15 @@ void RenderWidgetHostViewBase::EnableAutoResize(const gfx::Size& min_size,
 }
 
 void RenderWidgetHostViewBase::DisableAutoResize(const gfx::Size& new_size) {
+  // Note that for some subclasses, such as RenderWidgetHostViewAura, setting
+  // the view size may trigger the synchronization on the visual properties. As
+  // a result, it may crete the intermediate status that the view size has
+  // changed while the auto resize status is obsolete, and then brings
+  // unnecessary updates in view layout. Hence we should disable the auto
+  // resize before setting the view size.
+  host()->SetAutoResize(false, gfx::Size(), gfx::Size());
   if (!new_size.IsEmpty())
     SetSize(new_size);
-  host()->SetAutoResize(false, gfx::Size(), gfx::Size());
   host()->SynchronizeVisualProperties();
 }
 
