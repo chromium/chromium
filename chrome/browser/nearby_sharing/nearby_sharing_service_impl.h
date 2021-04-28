@@ -494,7 +494,14 @@ class NearbySharingServiceImpl
   // The time attachments are sent after a share target is selected. This is
   // used to time the process from selecting a share target to writing the
   // introduction frame (last frame before receiver gets notified).
-  base::Time send_attachments_timestamp_;
+  base::TimeTicks send_attachments_timestamp_;
+  // Whether an incoming share has been accepted and we are waiting to log the
+  // time from acceptance to the start of payload transfer.
+  bool is_waiting_to_record_accept_to_transfer_start_metric_ = false;
+  // Time at which an incoming transfer was accepted. This is used to calculate
+  // the time between an incoming share being accepted and the first payload
+  // byte being processed.
+  base::TimeTicks incoming_share_accepted_timestamp_;
 
   int recent_nearby_process_unexpected_shutdown_count_ = 0;
   base::OneShotTimer clear_recent_nearby_process_shutdown_count_timer_;

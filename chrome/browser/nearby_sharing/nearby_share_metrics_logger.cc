@@ -408,6 +408,12 @@ void RecordNearbyShareTimeFromInitiateSendToRemoteDeviceNotificationMetric(
       "Nearby.Share.TimeFromInitiateSendToRemoteDeviceNotification", time);
 }
 
+void RecordNearbyShareTimeFromLocalAcceptToTransferStartMetric(
+    base::TimeDelta time) {
+  base::UmaHistogramTimes("Nearby.Share.TimeFromLocalAcceptToTransferStart",
+                          time);
+}
+
 void RecordNearbySharePayloadFileAttachmentTypeMetric(
     sharing::mojom::FileMetadata::Type type,
     bool is_incoming,

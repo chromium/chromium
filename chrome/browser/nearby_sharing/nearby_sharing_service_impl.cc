@@ -700,7 +700,7 @@ NearbySharingService::StatusCodes NearbySharingServiceImpl::SendAttachments(
   info->set_transfer_update_callback(std::make_unique<TransferUpdateDecorator>(
       base::BindRepeating(&NearbySharingServiceImpl::OnOutgoingTransferUpdate,
                           weak_ptr_factory_.GetWeakPtr())));
-  send_attachments_timestamp_ = base::Time::Now();
+  send_attachments_timestamp_ = base::TimeTicks::Now();
   OnTransferStarted(/*is_incoming=*/false);
   is_connecting_ = true;
   InvalidateSendSurfaceState();
@@ -739,7 +739,10 @@ void NearbySharingServiceImpl::Accept(
     return;
   }
 
+  is_waiting_to_record_accept_to_transfer_start_metric_ =
+      share_target.is_incoming;
   if (share_target.is_incoming) {
+    incoming_share_accepted_timestamp_ = base::TimeTicks::Now();
     ReceivePayloads(share_target, std::move(status_codes_callback));
     return;
   }
@@ -2412,7 +2415,7 @@ void NearbySharingServiceImpl::SendIntroduction(
   // We've successfully written the introduction, so we now have to wait for the
   // remote side to accept.
   RecordNearbyShareTimeFromInitiateSendToRemoteDeviceNotificationMetric(
-      base::Time::Now() - send_attachments_timestamp_);
+      base::TimeTicks::Now() - send_attachments_timestamp_);
   NS_LOG(VERBOSE) << __func__ << ": Successfully wrote the introduction frame";
 
   mutual_acceptance_timeout_alarm_.Reset(base::BindOnce(
@@ -3453,8 +3456,18 @@ base::Optional<ShareTarget> NearbySharingServiceImpl::CreateShareTarget(
 void NearbySharingServiceImpl::OnPayloadTransferUpdate(
     ShareTarget share_target,
     TransferMetadata metadata) {
+  bool is_in_progress =
+      metadata.status() == TransferMetadata::Status::kInProgress;
+
+  if (is_in_progress && share_target.is_incoming &&
+      is_waiting_to_record_accept_to_transfer_start_metric_) {
+    RecordNearbyShareTimeFromLocalAcceptToTransferStartMetric(
+        base::TimeTicks::Now() - incoming_share_accepted_timestamp_);
+    is_waiting_to_record_accept_to_transfer_start_metric_ = false;
+  }
+
   // kInProgress status is logged extensively elsewhere so avoid the spam.
-  if (metadata.status() != TransferMetadata::Status::kInProgress) {
+  if (!is_in_progress) {
     NS_LOG(VERBOSE) << __func__ << ": Nearby Share service: "
                     << "Payload transfer update for share target with ID "
                     << share_target.id << ": "
