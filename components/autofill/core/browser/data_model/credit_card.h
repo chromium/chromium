@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/autofill_data_model.h"
 #include "components/sync/protocol/sync.pb.h"
+#include "url/gurl.h"
 
 namespace autofill {
 
@@ -59,10 +60,23 @@ class CreditCard : public AutofillDataModel {
     OK,
   };
 
-  // The Issuer for the card.
+  // The Issuer for the card. This must stay in sync with the proto enum in
+  // autofill_specifics.proto.
   enum Issuer {
     ISSUER_UNKNOWN = 0,
     GOOGLE = 1,
+  };
+
+  // Whether the card has been enrolled in the virtual card feature. This must
+  // stay in sync with the proto enum in autofill_specifics.proto.
+  enum VirtualCardEnrollmentState {
+    // State unspecified. This is the default value of this enum. Should not be
+    // ever used with cards.
+    UNSPECIFIED = 0,
+    // Card is not enrolled and does not have related virtual card.
+    UNENROLLED = 1,
+    // Card is enrolled and has related virtual cards.
+    ENROLLED = 2,
   };
 
   CreditCard(const std::string& guid, const std::string& origin);
@@ -309,6 +323,19 @@ class CreditCard : public AutofillDataModel {
   // Should be used ONLY by tests.
   std::u16string NicknameAndLastFourDigitsForTesting() const;
 
+  VirtualCardEnrollmentState virtual_card_enrollment_state() const {
+    return virtual_card_enrollment_state_;
+  }
+  void set_virtual_card_enrollment_state(
+      VirtualCardEnrollmentState virtual_card_enrollment_state) {
+    virtual_card_enrollment_state_ = virtual_card_enrollment_state;
+  }
+
+  const GURL& card_art_url() const { return card_art_url_; }
+  void set_card_art_url(const GURL& card_art_url) {
+    card_art_url_ = card_art_url;
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(CreditCardTest, SetExpirationDateFromString);
   FRIEND_TEST_ALL_PREFIXES(CreditCardTest, SetExpirationYearFromString);
@@ -389,6 +416,13 @@ class CreditCard : public AutofillDataModel {
   // identify this card. |server_id_| is the legacy version of this.
   // TODO(crbug.com/1121806): remove server_id_ after full deprecation
   int64_t instrument_id_;
+
+  // The virtual card enrollment state of this card. If it is ENROLLED, then
+  // this card has virtual cards linked to it.
+  VirtualCardEnrollmentState virtual_card_enrollment_state_ = UNSPECIFIED;
+
+  // The url to fetch the rich card art image.
+  GURL card_art_url_;
 };
 
 // So we can compare CreditCards with EXPECT_EQ().

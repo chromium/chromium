@@ -8,7 +8,6 @@
 #include <memory>
 #include <set>
 #include <string>
-#include <tuple>
 #include <utility>
 
 #include "base/command_line.h"
@@ -28,6 +27,7 @@
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/credit_card_art_image.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
@@ -2462,6 +2462,8 @@ TEST_F(AutofillTableTest, SetGetServerCards) {
   inputs[0].SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2020");
   inputs[0].SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
   inputs[0].set_instrument_id(321);
+  inputs[0].set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::UNENROLLED);
 
   inputs.push_back(CreditCard(CreditCard::MASKED_SERVER_CARD, "b456"));
   inputs[1].SetRawInfo(CREDIT_CARD_NAME_FULL, u"Rick Roman");
@@ -2474,6 +2476,9 @@ TEST_F(AutofillTableTest, SetGetServerCards) {
   inputs[1].SetNickname(nickname);
   inputs[1].set_card_issuer(CreditCard::Issuer::GOOGLE);
   inputs[1].set_instrument_id(123);
+  inputs[1].set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::ENROLLED);
+  inputs[1].set_card_art_url(GURL("https://www.example.com"));
 
   test::SetServerCreditCards(table_.get(), inputs);
 
@@ -2507,6 +2512,14 @@ TEST_F(AutofillTableTest, SetGetServerCards) {
 
   EXPECT_EQ(321, outputs[0]->instrument_id());
   EXPECT_EQ(123, outputs[1]->instrument_id());
+
+  EXPECT_EQ(CreditCard::VirtualCardEnrollmentState::UNENROLLED,
+            outputs[0]->virtual_card_enrollment_state());
+  EXPECT_EQ(CreditCard::VirtualCardEnrollmentState::ENROLLED,
+            outputs[1]->virtual_card_enrollment_state());
+
+  EXPECT_EQ(GURL(), outputs[0]->card_art_url());
+  EXPECT_EQ(GURL("https://www.example.com"), outputs[1]->card_art_url());
 }
 
 TEST_F(AutofillTableTest, SetGetRemoveServerCardMetadata) {
@@ -2717,6 +2730,9 @@ TEST_F(AutofillTableTest, SetServerCardsData) {
   inputs[0].SetServerStatus(CreditCard::EXPIRED);
   inputs[0].SetNickname(u"Grocery card");
   inputs[0].set_instrument_id(1);
+  inputs[0].set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::ENROLLED);
+  inputs[0].set_card_art_url(GURL("https://www.example.com"));
   table_->SetServerCardsData(inputs);
 
   // Make sure the card was added correctly.
@@ -2732,6 +2748,11 @@ TEST_F(AutofillTableTest, SetServerCardsData) {
 
   EXPECT_EQ(inputs[0], *outputs[0]);
   EXPECT_EQ(CreditCard::EXPIRED, outputs[0]->GetServerStatus());
+
+  EXPECT_EQ(CreditCard::VirtualCardEnrollmentState::ENROLLED,
+            outputs[0]->virtual_card_enrollment_state());
+
+  EXPECT_EQ(GURL("https://www.example.com"), outputs[0]->card_art_url());
 
   // Make sure no metadata was added.
   std::map<std::string, AutofillMetadata> metadata_map;
@@ -3749,6 +3770,36 @@ TEST_F(AutofillTableTest, SetAndGetCreditCardOfferData) {
                 testing::UnorderedElementsAreArray(
                     output_offer_data[output_index]->eligible_instrument_id));
   }
+}
+
+TEST_F(AutofillTableTest, SetAndGetAndClearCreditCardArtImage) {
+  CreditCardArtImage image1("image1", 1, {UINT8_MAX});
+  table_->AddCreditCardArtImage(image1);
+  CreditCardArtImage image2("image2", 2, {UINT8_MAX});
+  table_->AddCreditCardArtImage(image2);
+
+  std::vector<std::unique_ptr<CreditCardArtImage>> output;
+  EXPECT_TRUE(table_->GetCreditCardArtImages(&output));
+  EXPECT_EQ(2U, output.size());
+  EXPECT_EQ("image1", output[0]->id);
+  EXPECT_EQ(1, output[0]->instrument_id);
+  EXPECT_EQ(UINT8_MAX, output[0]->card_art_image[0]);
+  EXPECT_EQ("image2", output[1]->id);
+  EXPECT_EQ(2, output[1]->instrument_id);
+  EXPECT_EQ(UINT8_MAX, output[1]->card_art_image[0]);
+
+  EXPECT_TRUE(table_->ClearCreditCardArtImage("image1"));
+  output.clear();
+  EXPECT_TRUE(table_->GetCreditCardArtImages(&output));
+  EXPECT_EQ(1U, output.size());
+  EXPECT_EQ("image2", output[0]->id);
+  EXPECT_EQ(2, output[0]->instrument_id);
+  EXPECT_EQ(UINT8_MAX, output[0]->card_art_image[0]);
+
+  EXPECT_TRUE(table_->ClearAllServerData());
+  output.clear();
+  EXPECT_TRUE(table_->GetCreditCardArtImages(&output));
+  EXPECT_EQ(0U, output.size());
 }
 
 }  // namespace autofill

@@ -124,6 +124,8 @@ static_library("browser") {
     "data_model/contact_info.h",
     "data_model/credit_card.cc",
     "data_model/credit_card.h",
+    "data_model/credit_card_art_image.cc",
+    "data_model/credit_card_art_image.h",
     "data_model/credit_card_cloud_token_data.cc",
     "data_model/credit_card_cloud_token_data.h",
     "data_model/data_model_utils.cc",

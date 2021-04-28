@@ -35,6 +35,7 @@ class AutofillProfile;
 class AutofillTableEncryptor;
 class AutofillTableTest;
 class CreditCard;
+struct CreditCardArtImage;
 struct CreditCardCloudTokenData;
 struct FormFieldData;
 struct PaymentsCustomerData;
@@ -268,6 +269,13 @@ struct PaymentsCustomerData;
 //   instrument_id      Credit card id assigned by the server to identify this
 //                      card. This is opaque to the client, and |id| is the
 //                      legacy version of this.
+//   virtual_card_enrollment_state
+//                      An enum indicating the virtual card enrollment state of
+//                      this card. UNSPECIFIED is the default value. UNENROLLED
+//                      means this card has not been enrolled to have virtual
+//                      cards. ENROLLED means the card has been enrolled and
+//                      has related virtual credit cards.
+//   card_art_url       URL to generate the card art image for this card.
 //
 // unmasked_credit_cards
 //                      When a masked credit credit card is unmasked and the
@@ -418,6 +426,13 @@ struct PaymentsCustomerData;
 //                      offer_id in the offer_data table.
 //   merchant_domain    List of full origins for merchant websites on which
 //                      this offer would apply.
+// credit_card_art_images
+//                      Contains the card art image for the server credit card.
+//
+//   id                 The server id of the credit card.
+//   instrument_id      The non-legacy server instrument id of the card.
+//   card_art_image     The customized card art image. Stored in the form of
+//                      BLOB.
 
 class AutofillTable : public WebDatabaseTable,
                       public syncer::SyncMetadataStore {
@@ -578,6 +593,12 @@ class AutofillTable : public WebDatabaseTable,
       std::vector<std::unique_ptr<CreditCardCloudTokenData>>*
           credit_card_cloud_token_data);
 
+  // Setters and getters related to the credit card art images.
+  bool AddCreditCardArtImage(const CreditCardArtImage& credit_card_art_image);
+  bool GetCreditCardArtImages(
+      std::vector<std::unique_ptr<CreditCardArtImage>>* credit_card_art_images);
+  bool ClearCreditCardArtImage(const std::string& id);
+
   // Setters and getters related to the Google Payments customer data.
   // Passing null to the setter will clear the data.
   void SetPaymentsCustomerData(const PaymentsCustomerData* customer_data);
@@ -697,6 +718,7 @@ class AutofillTable : public WebDatabaseTable,
   bool MigrateToVersion92AddNewPrefixedNameColumn();
   bool MigrateToVersion93AddAutofillProfileLabelColumn();
   bool MigrateToVersion94AddPromoCodeColumnsToOfferData();
+  bool MigrateToVersion95AddVirtualCardMetadata();
 
   // Max data length saved in the table, AKA the maximum length allowed for
   // form data.
@@ -809,6 +831,7 @@ class AutofillTable : public WebDatabaseTable,
   bool InitOfferDataTable();
   bool InitOfferEligibleInstrumentTable();
   bool InitOfferMerchantDomainTable();
+  bool InitCreditCardArtImagesTable();
 
   std::unique_ptr<AutofillTableEncryptor> autofill_table_encryptor_;
 
