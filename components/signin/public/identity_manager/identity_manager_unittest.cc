@@ -2387,9 +2387,9 @@ TEST_F(IdentityManagerTest, FindExtendedAccountInfoForAccountWithRefreshToken) {
 #if defined(OS_ANDROID)
 TEST_F(IdentityManagerTest, ForceRefreshOfExtendedAccountInfo) {
   // The flow of this test results in an interaction with
-  // ChildAccountInfoFetcherAndroid, which requires initialization in order to
-  // avoid a crash.
-  ChildAccountInfoFetcherAndroid::InitializeForTests();
+  // ChildAccountInfoFetcherAndroid, which requires initialization of
+  // AccountManagerFacade in java code to avoid a crash.
+  SetUpMockAccountManagerFacade();
 
   identity_manager()->GetAccountFetcherService()->OnNetworkInitialized();
   AccountInfo account_info =

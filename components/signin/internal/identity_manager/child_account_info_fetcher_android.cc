@@ -31,11 +31,6 @@ ChildAccountInfoFetcherAndroid::Create(AccountFetcherService* service,
       new ChildAccountInfoFetcherAndroid(service, account_info));
 }
 
-void ChildAccountInfoFetcherAndroid::InitializeForTests() {
-  signin::Java_ChildAccountInfoFetcher_initializeForTests(
-      base::android::AttachCurrentThread());
-}
-
 ChildAccountInfoFetcherAndroid::ChildAccountInfoFetcherAndroid(
     AccountFetcherService* service,
     const CoreAccountInfo& account_info) {

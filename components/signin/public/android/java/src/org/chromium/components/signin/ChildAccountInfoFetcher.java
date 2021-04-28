@@ -10,8 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -89,13 +87,6 @@ final class ChildAccountInfoFetcher {
     @CalledByNative
     private void destroy() {
         ContextUtils.getApplicationContext().unregisterReceiver(mAccountFlagsChangedReceiver);
-    }
-
-    @VisibleForTesting
-    @CalledByNative
-    private static void initializeForTests() {
-        AccountManagerDelegate delegate = new SystemAccountManagerDelegate();
-        AccountManagerFacadeProvider.setInstanceForTests(new AccountManagerFacadeImpl(delegate));
     }
 
     @NativeMethods

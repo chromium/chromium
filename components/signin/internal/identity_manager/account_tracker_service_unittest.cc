@@ -36,7 +36,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if defined(OS_ANDROID)
-#include "components/signin/internal/identity_manager/child_account_info_fetcher_android.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #endif
 
 namespace {
@@ -177,7 +177,9 @@ class AccountTrackerServiceTest : public testing::Test {
       : signin_client_(&pref_service_),
         fake_oauth2_token_service_(&pref_service_) {
 #if defined(OS_ANDROID)
-    ChildAccountInfoFetcherAndroid::InitializeForTests();
+    // Mock AccountManagerFacade in java code for tests that require its
+    // initialization.
+    signin::SetUpMockAccountManagerFacade();
 #endif
 
     AccountTrackerService::RegisterPrefs(pref_service_.registry());
