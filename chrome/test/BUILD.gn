@@ -5866,6 +5866,7 @@ test("unit_tests") {
       "../browser/enterprise/connectors/file_system/box_api_call_flow_unittest.cc",
       "../browser/enterprise/connectors/file_system/box_api_call_test_helper.cc",
       "../browser/enterprise/connectors/file_system/box_api_call_test_helper.h",
+      "../browser/enterprise/connectors/file_system/box_upload_file_chunks_handler_unittest.cc",
       "../browser/enterprise/connectors/file_system/box_uploader_test_helper.cc",
       "../browser/enterprise/connectors/file_system/box_uploader_test_helper.h",
       "../browser/enterprise/connectors/file_system/box_uploader_unittest.cc",

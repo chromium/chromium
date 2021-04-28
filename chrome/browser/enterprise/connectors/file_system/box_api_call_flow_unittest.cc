@@ -752,8 +752,6 @@ class BoxPartFileUploadApiCallFlowTest
   void OnResponse(bool success, int response_code, base::Value) {
     processed_success_ = success;
     response_code_ = response_code;
-    if (quit_closure_)
-      std::move(quit_closure_).Run();
   }
 
   const std::string file_content_;
@@ -762,7 +760,6 @@ class BoxPartFileUploadApiCallFlowTest
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder decoder_;
-  base::OnceClosure quit_closure_;
   base::WeakPtrFactory<BoxPartFileUploadApiCallFlowTest> factory_{this};
 };
 
@@ -880,7 +877,6 @@ class BoxAbortUploadSessionApiCallFlowTest
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  base::OnceClosure quit_closure_;
   base::WeakPtrFactory<BoxAbortUploadSessionApiCallFlowTest> factory_{this};
 };
 

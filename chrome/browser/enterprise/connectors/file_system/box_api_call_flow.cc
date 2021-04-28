@@ -148,8 +148,7 @@ BoxApiCallFlow::GetNetworkTrafficAnnotationTag() {
           "No settings control."
         policy_exception_justification: "Not implemented yet."
       })");
-  // TODO(https://crbug.com/1157959): Add the policy that will turn on/off the
-  // connector here?
+  // TODO(https://crbug.com/1157959): Add the policy to turn on/off connector.
 }
 
 // static
@@ -400,8 +399,8 @@ void BoxWholeFileUploadApiCallFlow::OnFileRead(
     base::Optional<std::string> file_read) {
   if (!file_read) {
     DLOG(ERROR) << "[BoxApiCallFlow] WholeFileUpload read file failed";
-    std::move(callback_).Run(
-        false, 0);  // TODO(https://crbug.com/1165972): error handling
+    // TODO(https://crbug.com/1165972): error handling
+    std::move(callback_).Run(false, 0);
     return;
   }
   DCHECK_LE(file_read->size(), kWholeFileUploadMaxSize);

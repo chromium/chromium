@@ -3570,6 +3570,8 @@ static_library("browser") {
       "enterprise/connectors/file_system/box_api_call_endpoints.h",
       "enterprise/connectors/file_system/box_api_call_flow.cc",
       "enterprise/connectors/file_system/box_api_call_flow.h",
+      "enterprise/connectors/file_system/box_upload_file_chunks_handler.cc",
+      "enterprise/connectors/file_system/box_upload_file_chunks_handler.h",
       "enterprise/connectors/file_system/box_uploader.cc",
       "enterprise/connectors/file_system/box_uploader.h",
       "enterprise/connectors/file_system/rename_handler.cc",

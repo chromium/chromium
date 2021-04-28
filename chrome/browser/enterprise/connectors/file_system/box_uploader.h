@@ -44,6 +44,8 @@ class BoxUploader {
   void NotifyAuthenFailureForTesting();
   void NotifyResultForTesting(bool success);
 
+  class FileChunksHandler;  // To be moved into BoxChunkedFileUploader.
+
  protected:
   // Constructor with download::DownloadItem* to access download_item fields but
   // does not store the pointer internally and the ownership of download_item
