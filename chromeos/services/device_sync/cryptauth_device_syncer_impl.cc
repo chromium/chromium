@@ -537,6 +537,11 @@ void CryptAuthDeviceSyncerImpl::ProcessEncryptedDeviceMetadata() {
       CryptAuthKeyBundle::Name::kDeviceSyncBetterTogetherGroupKey);
   DCHECK(group_key);
   if (group_key->private_key().empty()) {
+    PA_LOG(INFO)
+        << "CryptAuthDeviceSyncerImpl::" << __func__
+        << ": Missing group private key needed to decrypt device metadata. "
+        << "Finishing DeviceSync attempt and waiting for GCM message from "
+        << "CryptAuth when the group private key becomes available.";
     CryptAuthDeviceSyncResult::ResultCode result_code =
         did_non_fatal_error_occur_
             ? CryptAuthDeviceSyncResult::ResultCode::kFinishedWithNonFatalErrors
