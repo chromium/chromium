@@ -1,0 +1,481 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/views/profiles/profile_picker_sign_in_flow_controller.h"
+
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_window.h"
+#include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/signin/dice_tab_helper.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
+#include "chrome/browser/ui/views/profiles/profile_customization_bubble_sync_controller.h"
+#include "chrome/browser/ui/views/profiles/profile_customization_bubble_view.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_view_sync_delegate.h"
+#include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
+#include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "content/public/browser/context_menu_params.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
+#include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_urls.h"
+#include "ui/base/theme_provider.h"
+#include "ui/views/controls/webview/web_contents_set_background_color.h"
+
+namespace {
+
+// Shows the customization bubble if possible. The bubble won't be shown if the
+// color is enforced by policy or downloaded through Sync. An IPH is shown after
+// the bubble, or right away if the bubble cannot be shown.
+void ShowCustomizationBubble(SkColor new_profile_color, Browser* browser) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  views::View* anchor_view =
+      browser_view->toolbar_button_provider()->GetAvatarToolbarButton();
+  DCHECK(anchor_view);
+
+  // Don't show the customization bubble if a valid policy theme is set.
+  if (ThemeServiceFactory::GetForProfile(browser->profile())
+          ->UsingPolicyTheme()) {
+    browser_view->MaybeShowProfileSwitchIPH();
+    return;
+  }
+
+  if (ProfileCustomizationBubbleSyncController::CanThemeSyncStart(
+          browser->profile())) {
+    // For sync users, their profile color has not been applied yet. Call a
+    // helper class that applies the color and shows the bubble only if there is
+    // no conflict with a synced theme / color.
+    ProfileCustomizationBubbleSyncController::
+        ApplyColorAndShowBubbleWhenNoValueSynced(
+            browser->profile(), anchor_view,
+            /*suggested_profile_color=*/new_profile_color);
+  } else {
+    // For non syncing users, simply show the bubble.
+    ProfileCustomizationBubbleView::CreateBubble(browser->profile(),
+                                                 anchor_view);
+  }
+}
+
+GURL GetSigninURL(bool dark_mode) {
+  GURL signin_url = GaiaUrls::GetInstance()->signin_chrome_sync_dice();
+  if (dark_mode)
+    signin_url = net::AppendQueryParameter(signin_url, "color_scheme", "dark");
+  return signin_url;
+}
+
+GURL GetSyncConfirmationLoadingURL() {
+  return GURL(chrome::kChromeUISyncConfirmationURL)
+      .Resolve(chrome::kChromeUISyncConfirmationLoadingPath);
+}
+
+bool IsExternalURL(const GURL& url) {
+  // Empty URL is used initially, about:blank is used to stop navigation after
+  // sign-in succeeds.
+  if (url.is_empty() || url == GURL(url::kAboutBlankURL))
+    return false;
+  if (gaia::IsGaiaSignonRealm(url.GetOrigin()))
+    return false;
+  return true;
+}
+
+void ContinueSAMLSignin(std::unique_ptr<content::WebContents> saml_wc,
+                        Browser* browser) {
+  DCHECK(browser);
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  // Attach DiceTabHelper to `saml_wc` so that sync consent dialog appears after
+  // a successful sign-in.
+  DiceTabHelper::CreateForWebContents(saml_wc.get());
+  DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(saml_wc.get());
+  // Use |redirect_url| and not |continue_url|, so that the DiceTabHelper can
+  // redirect to chrome:// URLs such as the NTP.
+  tab_helper->InitializeSigninFlow(
+      GetSigninURL(browser_view->GetNativeTheme()->ShouldUseDarkColors()),
+      signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
+      signin_metrics::Reason::kSigninPrimaryAccount,
+      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
+      GURL(chrome::kChromeUINewTabURL));
+
+  browser->tab_strip_model()->ReplaceWebContentsAt(0, std::move(saml_wc));
+
+  ProfileMetrics::LogProfileAddSignInFlowOutcome(
+      ProfileMetrics::ProfileAddSignInFlowOutcome::kSAML);
+}
+
+}  // namespace
+
+ProfilePickerSignInFlowController::ProfilePickerSignInFlowController(
+    ProfilePickerView* view,
+    Profile* profile,
+    SkColor profile_color,
+    base::TimeDelta extended_account_info_timeout)
+    : view_(view),
+      contents_(content::WebContents::Create(
+          content::WebContents::CreateParams(profile))),
+      profile_(profile),
+      profile_color_(profile_color),
+      extended_account_info_timeout_(extended_account_info_timeout) {}
+
+ProfilePickerSignInFlowController::~ProfilePickerSignInFlowController() {
+  if (contents())
+    contents()->SetDelegate(nullptr);
+
+  // Abort unfinished signed-in profile creation.
+  if (!is_finished_) {
+    // TODO(crbug.com/1196290): Schedule the profile for deletion here, it's not
+    // needed any more. This triggers a crash if the browser is shutting down
+    // completely. Figure a way how to delete the profile only if that does not
+    // compete with a shutdown.
+
+    // Log profile creation flow abortion.
+    if (IsSigningIn()) {
+      ProfileMetrics::LogProfileAddSignInFlowOutcome(
+          ProfileMetrics::ProfileAddSignInFlowOutcome::kAbortedBeforeSignIn);
+    } else {
+      ProfileMetrics::LogProfileAddSignInFlowOutcome(
+          ProfileMetrics::ProfileAddSignInFlowOutcome::kAbortedAfterSignIn);
+    }
+  }
+}
+
+void ProfilePickerSignInFlowController::Init() {
+  contents()->SetDelegate(this);
+
+  // Create a manager that supports modal dialogs, such as for webauthn.
+  web_modal::WebContentsModalDialogManager::CreateForWebContents(contents());
+  web_modal::WebContentsModalDialogManager::FromWebContents(contents())
+      ->SetDelegate(this);
+
+  // Listen for sign-in getting completed.
+  identity_manager_observation_.Observe(
+      IdentityManagerFactory::GetForProfile(profile()));
+
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile()->GetPath());
+  if (!entry) {
+    NOTREACHED();
+    return;
+  }
+
+  // Mark this profile ephemeral so that it is deleted upon next startup if the
+  // browser crashes before finishing the flow.
+  entry->SetIsEphemeral(true);
+  // Mark this profile as omitted so that it is not displayed in the list of
+  // profiles.
+  entry->SetIsOmitted(true);
+
+  // Record that the sign in process starts (its end is recorded automatically
+  // by the instance of DiceTurnSyncOnHelper constructed later on).
+  signin_metrics::RecordSigninUserActionForAccessPoint(
+      signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
+      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
+  signin_metrics::LogSigninAccessPointStarted(
+      signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
+      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
+
+  // Apply the default theme to get consistent colors for toolbars (this matters
+  // for linux where the 'system' theme is used for new profiles).
+  auto* theme_service = ThemeServiceFactory::GetForProfile(profile());
+  theme_service->UseDefaultTheme();
+
+  // Make sure the web contents used for sign-in has proper background to match
+  // the toolbar (for dark mode).
+  SkColor background_color =
+      GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR);
+  views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
+      contents(), background_color);
+  // On Mac, the WebContents is initially transparent. Set the color for the
+  // main view as well.
+  view_->SetBackground(views::CreateSolidBackground(background_color));
+
+  // The back button cannot be created from the constructor as ProfilePickerView
+  // needs to access the ThemeProvider of `this` in the process.
+  view_->CreateToolbarBackButton();
+
+  view_->ShowScreen(
+      contents(), GetSigninURL(view_->GetNativeTheme()->ShouldUseDarkColors()),
+      /*show_toolbar=*/true);
+}
+
+void ProfilePickerSignInFlowController::Cancel() {
+  // Finished here, avoid aborting the flow in the destructor later on.
+  is_finished_ = true;
+}
+
+void ProfilePickerSignInFlowController::SetProfileColor(SkColor color) {
+  profile_color_ = color;
+}
+
+SkColor ProfilePickerSignInFlowController::GetProfileColor() const {
+  // The new profile theme may be overridden by an existing policy theme. This
+  // check ensures the correct theme is applied to the sync confirmation window.
+  auto* theme_service = ThemeServiceFactory::GetForProfile(profile_);
+  if (theme_service->UsingPolicyTheme())
+    return theme_service->GetPolicyThemeColor();
+  return profile_color_;
+}
+
+bool ProfilePickerSignInFlowController::IsSigningIn() const {
+  // We are in the sign-in flow if the email is not yet determined.
+  return email_.empty();
+}
+
+const ui::ThemeProvider* ProfilePickerSignInFlowController::GetThemeProvider()
+    const {
+  return &ThemeService::GetThemeProviderForProfile(profile());
+}
+
+std::string ProfilePickerSignInFlowController::GetUserDomain() const {
+  return gaia::ExtractDomainName(email_);
+}
+
+bool ProfilePickerSignInFlowController::HandleContextMenu(
+    content::RenderFrameHost* render_frame_host,
+    const content::ContextMenuParams& params) {
+  // Ignores context menu.
+  return true;
+}
+
+void ProfilePickerSignInFlowController::AddNewContents(
+    content::WebContents* source,
+    std::unique_ptr<content::WebContents> new_contents,
+    const GURL& target_url,
+    WindowOpenDisposition disposition,
+    const gfx::Rect& initial_rect,
+    bool user_gesture,
+    bool* was_blocked) {
+  NavigateParams params(profile_, target_url, ui::PAGE_TRANSITION_LINK);
+  // Open all links as new popups.
+  params.disposition = WindowOpenDisposition::NEW_POPUP;
+  params.contents_to_insert = std::move(new_contents);
+  params.window_bounds = initial_rect;
+  Navigate(&params);
+}
+
+bool ProfilePickerSignInFlowController::HandleKeyboardEvent(
+    content::WebContents* source,
+    const content::NativeWebKeyboardEvent& event) {
+  return view_->HandleKeyboardEvent(source, event);
+}
+
+void ProfilePickerSignInFlowController::NavigationStateChanged(
+    content::WebContents* source,
+    content::InvalidateTypes changed_flags) {
+  if (IsSigningIn() && source == contents_.get() &&
+      IsExternalURL(contents_->GetVisibleURL())) {
+    FinishSignedInCreationFlowForSAML();
+  }
+}
+
+web_modal::WebContentsModalDialogHost*
+ProfilePickerSignInFlowController::GetWebContentsModalDialogHost() {
+  return view_;
+}
+
+void ProfilePickerSignInFlowController::OnRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info) {
+  DCHECK(!account_info.IsEmpty());
+  email_ = account_info.email;
+
+  base::OnceClosure sync_consent_completed_closure = base::BindOnce(
+      &ProfilePickerSignInFlowController::FinishSignedInCreationFlow,
+      weak_ptr_factory_.GetWeakPtr(),
+      base::BindOnce(&ShowCustomizationBubble, profile_color_),
+      /*enterprise_sync_consent_needed=*/false);
+
+  // Stop with the sign-in navigation and show a spinner instead. The spinner
+  // will be shown until DiceTurnSyncOnHelper (below) figures out whether it's a
+  // managed account and whether sync is disabled by policies (which in some
+  // cases involves fetching policies and can take a couple of seconds).
+  view_->ShowScreen(contents(), GetSyncConfirmationLoadingURL(),
+                    /*show_toolbar=*/false, /*enable_navigating_back=*/false);
+
+  // Set up a timeout for extended account info (which cancels any existing
+  // timeout closure).
+  extended_account_info_timeout_closure_.Reset(base::BindOnce(
+      &ProfilePickerSignInFlowController::OnExtendedAccountInfoTimeout,
+      weak_ptr_factory_.GetWeakPtr(), account_info));
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, extended_account_info_timeout_closure_.callback(),
+      extended_account_info_timeout_);
+
+  // DiceTurnSyncOnHelper deletes itself once done.
+  new DiceTurnSyncOnHelper(
+      profile(), signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
+      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
+      signin_metrics::Reason::kSigninPrimaryAccount, account_info.account_id,
+      DiceTurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
+      std::make_unique<ProfilePickerViewSyncDelegate>(
+          profile(),
+          base::BindOnce(
+              &ProfilePickerSignInFlowController::FinishSignedInCreationFlow,
+              weak_ptr_factory_.GetWeakPtr())),
+      std::move(sync_consent_completed_closure));
+}
+
+void ProfilePickerSignInFlowController::OnExtendedAccountInfoUpdated(
+    const AccountInfo& account_info) {
+  if (!account_info.IsValid())
+    return;
+  name_for_signed_in_profile_ =
+      profiles::GetDefaultNameForNewSignedInProfile(account_info);
+  OnProfileNameAvailable();
+  // Extended info arrived on time, no need for the timeout callback any more.
+  extended_account_info_timeout_closure_.Cancel();
+}
+
+void ProfilePickerSignInFlowController::OnExtendedAccountInfoTimeout(
+    const CoreAccountInfo& account) {
+  name_for_signed_in_profile_ =
+      profiles::GetDefaultNameForNewSignedInProfileWithIncompleteInfo(account);
+  OnProfileNameAvailable();
+}
+
+void ProfilePickerSignInFlowController::OnProfileNameAvailable() {
+  // Stop listening to further changes.
+  DCHECK(identity_manager_observation_.IsObservingSource(
+      IdentityManagerFactory::GetForProfile(profile())));
+  identity_manager_observation_.Reset();
+
+  if (on_profile_name_available_)
+    std::move(on_profile_name_available_).Run();
+}
+
+void ProfilePickerSignInFlowController::FinishSignedInCreationFlow(
+    BrowserOpenedCallback callback,
+    bool enterprise_sync_consent_needed) {
+  // Do nothing if the sign-in flow is aborted or if this has already been
+  // called. Note that this can get called first time from a special case
+  // handling (such as the Settings link) and than second time when the
+  // DiceTurnSyncOnHelper finishes.
+  if (is_finished_)
+    return;
+  is_finished_ = true;
+
+  if (name_for_signed_in_profile_.empty()) {
+    on_profile_name_available_ = base::BindOnce(
+        &ProfilePickerSignInFlowController::FinishSignedInCreationFlowImpl,
+        weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+        enterprise_sync_consent_needed);
+    return;
+  }
+
+  FinishSignedInCreationFlowImpl(std::move(callback),
+                                 enterprise_sync_consent_needed);
+}
+
+void ProfilePickerSignInFlowController::FinishSignedInCreationFlowImpl(
+    BrowserOpenedCallback callback,
+    bool enterprise_sync_consent_needed) {
+  DCHECK(!name_for_signed_in_profile_.empty());
+
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile()->GetPath());
+  if (!entry) {
+    NOTREACHED();
+    return;
+  }
+
+  entry->SetIsOmitted(false);
+  if (!profile()->GetPrefs()->GetBoolean(prefs::kForceEphemeralProfiles)) {
+    // Unmark this profile ephemeral so that it isn't deleted upon next startup.
+    // Profiles should never be made non-ephemeral if ephemeral mode is forced
+    // by policy.
+    entry->SetIsEphemeral(false);
+  }
+  entry->SetLocalProfileName(name_for_signed_in_profile_,
+                             /*is_default_name=*/false);
+  ProfileMetrics::LogProfileAddNewUser(
+      ProfileMetrics::ADD_NEW_PROFILE_PICKER_SIGNED_IN);
+
+  // If sync is not enabled (and will not likely be enabled with an enterprise
+  // consent), apply a new color to the profile (otherwise, a more complicated
+  // logic gets triggered in ShowCustomizationBubble()).
+  if (!enterprise_sync_consent_needed &&
+      !ProfileCustomizationBubbleSyncController::CanThemeSyncStart(profile())) {
+    auto* theme_service = ThemeServiceFactory::GetForProfile(profile());
+    theme_service->BuildAutogeneratedThemeFromColor(profile_color_);
+  }
+
+  // Skip the FRE for this profile as it's replaced by profile creation flow.
+  profile()->GetPrefs()->SetBoolean(prefs::kHasSeenWelcomePage, true);
+
+  // TODO(crbug.com/1126913): Change the callback of
+  // profiles::OpenBrowserWindowForProfile() to be a OnceCallback as it is only
+  // called once.
+  profiles::OpenBrowserWindowForProfile(
+      base::AdaptCallbackForRepeating(
+          base::BindOnce(&ProfilePickerSignInFlowController::OnBrowserOpened,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback))),
+      /*always_create=*/false,   // Don't create a window if one already exists.
+      /*is_new_profile=*/false,  // Don't create a first run window.
+      /*unblock_extensions=*/false,  // There is no need to unblock all
+                                     // extensions because we only open browser
+                                     // window if the Profile is not locked.
+                                     // Hence there is no extension blocked.
+      profile(), Profile::CREATE_STATUS_INITIALIZED);
+}
+
+void ProfilePickerSignInFlowController::FinishSignedInCreationFlowForSAML() {
+  // First, free up `contents()` to be moved to a new browser window.
+  view_->ShowScreenInSystemContents(
+      GURL(url::kAboutBlankURL),
+      /*show_toolbar=*/false, /*enable_navigating_back=*/false,
+      /*navigation_finished_closure=*/
+      base::BindOnce(
+          &ProfilePickerSignInFlowController::OnSignInContentsFreedUp,
+          // Unretained is enough as the callback is called by a
+          // member of `view_` that outlives `this`.
+          base::Unretained(this)));
+}
+
+void ProfilePickerSignInFlowController::OnSignInContentsFreedUp() {
+  DCHECK(!is_finished_);
+  is_finished_ = true;
+
+  DCHECK(name_for_signed_in_profile_.empty());
+  name_for_signed_in_profile_ =
+      profiles::GetDefaultNameForNewEnterpriseProfile();
+  contents_->SetDelegate(nullptr);
+  FinishSignedInCreationFlowImpl(
+      base::BindOnce(&ContinueSAMLSignin, std::move(contents_)),
+      /*enterprise_sync_consent_needed=*/true);
+}
+
+void ProfilePickerSignInFlowController::OnBrowserOpened(
+    BrowserOpenedCallback finish_flow_callback,
+    Profile* profile,
+    Profile::CreateStatus profile_create_status) {
+  DCHECK_EQ(profile, profile_);
+
+  // Hide the flow window. This posts a task on the message loop to destroy the
+  // window incl. this view.
+  view_->Clear();
+
+  if (!finish_flow_callback)
+    return;
+
+  Browser* browser = chrome::FindLastActiveWithProfile(profile);
+  DCHECK(browser);
+  std::move(finish_flow_callback).Run(browser);
+}

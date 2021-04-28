@@ -7,6 +7,7 @@
 
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_metrics.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_sign_in_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 #include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
@@ -22,11 +23,9 @@ class SigninUIError;
 class ProfilePickerViewSyncDelegate : public DiceTurnSyncOnHelper::Delegate,
                                       public LoginUIService::Observer {
  public:
-  // TODO(crbug.com/1180654): Replace the first param by
-  // SignInFlow::BrowserOpenedCallback once SignInFlow has a separate unit.
-  using OpenBrowserCallback =
-      base::OnceCallback<void(base::OnceCallback<void(Browser*)>,
-                              bool enterprise_sync_consent_needed)>;
+  using OpenBrowserCallback = base::OnceCallback<void(
+      ProfilePickerSignInFlowController::BrowserOpenedCallback,
+      bool enterprise_sync_consent_needed)>;
 
   ProfilePickerViewSyncDelegate(Profile* profile,
                                 OpenBrowserCallback open_browser_callback);

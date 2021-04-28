@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_VIEW_H_
 
 #include "base/cancelable_callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
@@ -22,8 +23,7 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_delegate.h"
 
-struct AccountInfo;
-class Browser;
+class ProfilePickerSignInFlowController;
 
 namespace base {
 class FilePath;
@@ -35,6 +35,10 @@ class NavigationHandle;
 class RenderFrameHost;
 class WebContents;
 }  // namespace content
+
+namespace ui {
+class ThemeProvider;
+}  // namespace ui
 
 // Dialog widget that contains the Desktop Profile picker webui.
 class ProfilePickerView : public views::WidgetDelegateView,
@@ -74,6 +78,16 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // Creates a simple back button and adds it to the toolbar.
   void CreateToolbarBackButton();
 
+  // Hides the profile picker.
+  void Clear();
+
+  // content::WebContentsDelegate:
+  bool HandleKeyboardEvent(
+      content::WebContents* source,
+      const content::NativeWebKeyboardEvent& event) override;
+  bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+                         const content::ContextMenuParams& params) override;
+
  private:
   friend class ProfilePicker;
 
@@ -102,141 +116,8 @@ class ProfilePickerView : public views::WidgetDelegateView,
     base::OnceClosure closure_;
   };
 
-  // Class responsible for the sign-in profile creation flow (within
-  // ProfilePickerView).
-  // TODO(crbug.com/1180654): Move into a separate unit and rename to, e.g.,
-  // ProfilePickerSignInFlowController.
-  class SignInFlow : public content::WebContentsDelegate,
-                     public ChromeWebModalDialogManagerDelegate,
-                     public signin::IdentityManager::Observer {
-   public:
-    using BrowserOpenedCallback = base::OnceCallback<void(Browser*)>;
-
-    SignInFlow(ProfilePickerView* view,
-               Profile* profile,
-               SkColor profile_color,
-               base::TimeDelta extended_account_info_timeout);
-    ~SignInFlow() override;
-    SignInFlow(const SignInFlow&) = delete;
-    SignInFlow& operator=(const SignInFlow&) = delete;
-
-    // Must be called after constructor.
-    void Init();
-
-    // Cancels the flow explicitly. This does not log any metrics, the caller
-    // must take care of logging the outcome of the flow on its own.
-    void Cancel();
-
-    content::WebContents* contents() const { return contents_.get(); }
-
-    // Updates the profile color provided in the constructor.
-    void SetProfileColor(SkColor color);
-    // Returns the profile color, taking into account current policies.
-    SkColor GetProfileColor() const;
-
-    bool IsSigningIn() const;
-
-    // Returns theme provider based on `profile_`.
-    const ui::ThemeProvider* GetThemeProvider() const;
-
-    // Returns the domain of the email of the signed-in user or an empty string
-    // if the user is not signed-in.
-    std::string GetUserDomain() const;
-
-    Profile* profile() const { return profile_; }
-
-   private:
-    // content::WebContentsDelegate:
-    bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
-                           const content::ContextMenuParams& params) override;
-    void AddNewContents(content::WebContents* source,
-                        std::unique_ptr<content::WebContents> new_contents,
-                        const GURL& target_url,
-                        WindowOpenDisposition disposition,
-                        const gfx::Rect& initial_rect,
-                        bool user_gesture,
-                        bool* was_blocked) override;
-    bool HandleKeyboardEvent(
-        content::WebContents* source,
-        const content::NativeWebKeyboardEvent& event) override;
-    void NavigationStateChanged(
-        content::WebContents* source,
-        content::InvalidateTypes changed_flags) override;
-
-    // ChromeWebModalDialogManagerDelegate:
-    web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
-        override;
-
-    // IdentityManager::Observer:
-    void OnRefreshTokenUpdatedForAccount(
-        const CoreAccountInfo& account_info) override;
-    void OnExtendedAccountInfoUpdated(const AccountInfo& account_info) override;
-
-    // Helper functions to deal with the lack of extended account info.
-    void OnExtendedAccountInfoTimeout(const CoreAccountInfo& account);
-    void OnProfileNameAvailable();
-
-    // Finishes the creation flow by marking `profile_being_created_` as fully
-    // created, opening a browser window for this profile and calling
-    // `callback`.
-    void FinishSignedInCreationFlow(BrowserOpenedCallback callback,
-                                    bool enterprise_sync_consent_needed);
-    void FinishSignedInCreationFlowImpl(BrowserOpenedCallback callback,
-                                        bool enterprise_sync_consent_needed);
-
-    // Finishes the flow by finalizing the profile and continuing the SAML
-    // sign-in in a browser window.
-    void FinishSignedInCreationFlowForSAML();
-    void OnSignInContentsFreedUp();
-
-    // Internal callback to finish the last steps of the signed-in creation
-    // flow.
-    void OnBrowserOpened(BrowserOpenedCallback finish_flow_callback,
-                         Profile* profile,
-                         Profile::CreateStatus profile_create_status);
-
-    // The parent view element, must outlive this object.
-    ProfilePickerView* view_;
-
-    // The web contents backed by `profile`. This is used for displaying the
-    // sign-in flow.
-    std::unique_ptr<content::WebContents> contents_;
-
-    Profile* profile_ = nullptr;
-
-    // Set for the profile at the very end to avoid coloring the simple toolbar
-    // for GAIA sign-in (that uses the ThemeProvider of the current profile).
-    SkColor profile_color_;
-
-    // For finishing the profile creation flow, the extended account info is
-    // needed (for properly naming the new profile). After a timeout, a fallback
-    // name is used, instead, to unblock the flow.
-    base::TimeDelta extended_account_info_timeout_;
-
-    // Controls whether the flow still needs to finalize (which includes showing
-    // `profile` browser window at the end of the sign-in flow).
-    bool is_finished_ = false;
-
-    // Email of the signed-in account. It is set after the user finishes the
-    // sign-in flow on GAIA and Chrome receives the account info.
-    std::string email_;
-
-    std::u16string name_for_signed_in_profile_;
-    base::OnceClosure on_profile_name_available_;
-
-    base::CancelableOnceClosure extended_account_info_timeout_closure_;
-
-    base::ScopedObservation<signin::IdentityManager,
-                            signin::IdentityManager::Observer>
-        identity_manager_observation_{this};
-
-    base::WeakPtrFactory<SignInFlow> weak_ptr_factory_{this};
-  };
-
   // Displays the profile picker.
   void Display(ProfilePicker::EntryPoint entry_point);
-  // Hides the profile picker.
-  void Clear();
 
   // On system profile creation success, it initializes the view.
   void OnSystemProfileCreated(Profile* system_profile,
@@ -281,13 +162,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
   gfx::Size GetMinimumSize() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   void OnThemeChanged() override;
-
-  // content::WebContentsDelegate:
-  bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
-                         const content::ContextMenuParams& params) override;
-  bool HandleKeyboardEvent(
-      content::WebContents* source,
-      const content::NativeWebKeyboardEvent& event) override;
 
   // web_modal::WebContentsModalDialogHost
   gfx::NativeView GetHostView() const override;
@@ -368,7 +242,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // WebContents outlive this observer.
   std::unique_ptr<NavigationFinishedObserver> show_screen_finished_observer_;
 
-  std::unique_ptr<SignInFlow> sign_in_;
+  std::unique_ptr<ProfilePickerSignInFlowController> sign_in_;
 
   // Delay used for a timeout, may be overridden by tests.
   base::TimeDelta extended_account_info_timeout_;
