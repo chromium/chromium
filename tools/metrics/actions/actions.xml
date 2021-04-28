@@ -12348,7 +12348,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManageGoogleAccount_Clicked">
-  <owner>jdoerrie@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <description>
     Recorded when the user clicked the &quot;Manage your Google Account&quot;
@@ -19141,13 +19141,13 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Options_ShowPasswordCheck">
-  <owner>jdoerrie@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <description>Settings: passwords check</description>
 </action>
 
 <action name="Options_ShowPasswordManager">
-  <owner>jdoerrie@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <description>Settings: saved passwords</description>
 </action>

@@ -12196,7 +12196,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PasswordManager.WellKnownChangePasswordResult">
-  <owner>jdoerrie@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
     Metrics related to the usage and support of .well-known/change-password. The
@@ -15425,7 +15425,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="TouchToFill.Shown">
-  <owner>jdoerrie@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>
     Recorded when the Touch To Fill sheet is shown to the user.
