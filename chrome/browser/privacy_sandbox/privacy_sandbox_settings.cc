@@ -168,14 +168,7 @@ PrivacySandboxSettings::PrivacySandboxSettings(
 PrivacySandboxSettings::~PrivacySandboxSettings() = default;
 
 /*static*/ bool PrivacySandboxSettings::PrivacySandboxSettingsFunctional() {
-  // The order in which the features are checked matters here. Preventing
-  // checking for the PrivacySandboxSettings if all the APIs are disabled
-  // avoids polluting rollout data, as it stops clients reporting as active
-  // while the feature is enabled but not accessible.
-  return (base::FeatureList::IsEnabled(
-              blink::features::kInterestCohortAPIOriginTrial) ||
-          base::FeatureList::IsEnabled(features::kConversionMeasurement)) &&
-         base::FeatureList::IsEnabled(features::kPrivacySandboxSettings);
+  return base::FeatureList::IsEnabled(features::kPrivacySandboxSettings);
 }
 
 bool PrivacySandboxSettings::IsFlocAllowed(
