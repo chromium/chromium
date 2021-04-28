@@ -125,6 +125,8 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
     # By default, WPT will treat unexpected passes as errors, so we disable
     # that to be consistent with Chromium CI.
     rest_args.extend(['--no-fail-on-unexpected-pass'])
+    if self.options.default_exclude:
+      rest_args.extend(['--default-exclude'])
 
     # vpython has packages needed by wpt, so force it to skip the setup
     rest_args.extend(['--venv=' + SRC_DIR, '--skip-venv-setup'])
@@ -265,6 +267,10 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
     parser.add_argument('--include-file',
                         action=WPTPassThroughArgs,
                         help='A file listing test(s) to run')
+    parser.add_argument('--default-exclude', action='store_true', default=False,
+                        help="Only run the tests explicitly given in arguments."
+                             "No tests will run if the list is empty, and the "
+                             "program will exit with status code 0.")
     parser.add_argument('--list-tests', action=WPTPassThroughArgs, nargs=0,
                         help="Don't run any tests, just print out a list of"
                         ' tests that would be run.')

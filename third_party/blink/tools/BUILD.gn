@@ -59,6 +59,7 @@ group("wpt_tests_android_isolate") {
     "//third_party/blink/web_tests/android/ChromeWPTOverrideExpectations",
     "//third_party/blink/web_tests/android/WebviewWPTExpectations",
     "//third_party/blink/web_tests/android/AndroidWPTNeverFixTests",
+    "//third_party/blink/web_tests/android/WPTSmokeTestCases",
   ]
 }
 

@@ -5596,6 +5596,7 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/generic_android28.textpb",
+          "--default-exclude",
           "--include-file=../../third_party/blink/web_tests/android/WPTSmokeTestCases"
         ],
         "isolate_name": "weblayer_shell_wpt",

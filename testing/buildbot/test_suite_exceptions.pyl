@@ -3157,6 +3157,7 @@
       },
       'android-weblayer-pie-x86-wpt-smoketest': {
         'args': [
+	  '--default-exclude',
           '--include-file=../../third_party/blink/web_tests/android/WPTSmokeTestCases'
         ],
         'swarming': {
