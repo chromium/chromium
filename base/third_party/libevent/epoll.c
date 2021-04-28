@@ -53,6 +53,26 @@
 #include "evsignal.h"
 #include "log.h"
 
+#include <dlfcn.h>
+
+static void (*gRecordReplayAssertFn)(const char*, va_list);
+
+static void RecordReplayAssertFromC(const char* aFormat, ...) {
+  if (!gRecordReplayAssertFn) {
+    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayAssert");
+    if (!fnptr) {
+      return;
+    }
+    gRecordReplayAssertFn = fnptr;
+    //gRecordReplayAssertFn = reinterpret_cast<void(*)(const char*, va_list)>(fnptr);
+  }
+
+  va_list ap;
+  va_start(ap, aFormat);
+  gRecordReplayAssertFn(aFormat, ap);
+  va_end(ap);
+}
+
 /* due to limitations in the epoll interface, we need to keep track of
  * all file descriptors outself.
  */
@@ -194,6 +214,8 @@ epoll_dispatch(struct event_base *base, void *arg, struct timeval *tv)
 		 * see comment on MAX_EPOLL_TIMEOUT_MSEC. */
 		timeout = MAX_EPOLL_TIMEOUT_MSEC;
 	}
+
+	RecordReplayAssertFromC("epoll_dispatch %d %d %d", epollop->epfd, epollop->nevents, timeout);
 
 	res = epoll_wait(epollop->epfd, events, epollop->nevents, timeout);
 
