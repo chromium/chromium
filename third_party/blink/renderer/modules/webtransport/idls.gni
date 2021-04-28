@@ -4,6 +4,7 @@
 
 modules_idl_files = [
   "bidirectional_stream.idl",
+  "datagram_duplex_stream.idl",
   "receive_stream.idl",
   "send_stream.idl",
   "web_transport.idl",

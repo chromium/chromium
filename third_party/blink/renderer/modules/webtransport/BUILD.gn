@@ -8,6 +8,7 @@ blink_modules_sources("webtransport") {
   sources = [
     "bidirectional_stream.cc",
     "bidirectional_stream.h",
+    "datagram_duplex_stream.h",
     "incoming_stream.cc",
     "incoming_stream.h",
     "outgoing_stream.cc",

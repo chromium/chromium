@@ -1031,6 +1031,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/websockets/websocket_stream.idl",
           "//third_party/blink/renderer/modules/websockets/websocket_stream_options.idl",
           "//third_party/blink/renderer/modules/webtransport/bidirectional_stream.idl",
+          "//third_party/blink/renderer/modules/webtransport/datagram_duplex_stream.idl",
           "//third_party/blink/renderer/modules/webtransport/receive_stream.idl",
           "//third_party/blink/renderer/modules/webtransport/send_stream.idl",
           "//third_party/blink/renderer/modules/webtransport/stream_abort_info.idl",

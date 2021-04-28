@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
+#include "third_party/blink/renderer/modules/webtransport/datagram_duplex_stream.h"
 #include "third_party/blink/renderer/modules/webtransport/receive_stream.h"
 #include "third_party/blink/renderer/modules/webtransport/send_stream.h"
 #include "third_party/blink/renderer/modules/webtransport/test_utils.h"
@@ -607,7 +608,7 @@ TEST_F(WebTransportTest, SendDatagram) {
         std::move(callback).Run(true);
       }));
 
-  auto* writable = web_transport->datagramWritable();
+  auto* writable = web_transport->datagrams()->writable();
   auto* script_state = scope.GetScriptState();
   auto* writer = writable->getWriter(script_state, ASSERT_NO_EXCEPTION);
   auto* chunk = DOMUint8Array::Create(1);
@@ -636,7 +637,7 @@ TEST_F(WebTransportTest, BackpressureForOutgoingDatagrams) {
             std::move(callback).Run(true);
           }));
 
-  auto* writable = web_transport->datagramWritable();
+  auto* writable = web_transport->datagrams()->writable();
   auto* script_state = scope.GetScriptState();
   auto* writer = writable->getWriter(script_state, ASSERT_NO_EXCEPTION);
 
@@ -692,7 +693,7 @@ TEST_F(WebTransportTest, SendDatagramBeforeConnect) {
   V8TestingScope scope;
   auto* web_transport = Create(scope, "https://example.com", EmptyOptions());
 
-  auto* writable = web_transport->datagramWritable();
+  auto* writable = web_transport->datagrams()->writable();
   auto* script_state = scope.GetScriptState();
   auto* writer = writable->getWriter(script_state, ASSERT_NO_EXCEPTION);
   auto* chunk = DOMUint8Array::Create(1);
@@ -719,7 +720,7 @@ TEST_F(WebTransportTest, SendDatagramAfterClose) {
   web_transport->close(nullptr);
   test::RunPendingTasks();
 
-  auto* writable = web_transport->datagramWritable();
+  auto* writable = web_transport->datagrams()->writable();
   auto* script_state = scope.GetScriptState();
   auto* writer = writable->getWriter(script_state, ASSERT_NO_EXCEPTION);
 
@@ -770,7 +771,7 @@ TEST_F(WebTransportTest, ReceiveDatagramBeforeRead) {
 
   test::RunPendingTasks();
 
-  auto* readable = web_transport->datagramReadable();
+  auto* readable = web_transport->datagrams()->readable();
   auto* script_state = scope.GetScriptState();
   auto* reader =
       readable->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
@@ -786,7 +787,7 @@ TEST_F(WebTransportTest, ReceiveDatagramDuringRead) {
   V8TestingScope scope;
   auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
-  auto* readable = web_transport->datagramReadable();
+  auto* readable = web_transport->datagrams()->readable();
   auto* script_state = scope.GetScriptState();
   auto* reader =
       readable->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
@@ -820,7 +821,7 @@ TEST_F(WebTransportTest, DatagramsAreDropped) {
   // Make sure that the calls have run.
   test::RunPendingTasks();
 
-  auto* readable = web_transport->datagramReadable();
+  auto* readable = web_transport->datagrams()->readable();
   auto* script_state = scope.GetScriptState();
   auto* reader =
       readable->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);

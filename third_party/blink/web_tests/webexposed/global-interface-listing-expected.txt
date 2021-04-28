@@ -1638,6 +1638,11 @@ interface DataTransferItemList
     method clear
     method constructor
     method remove
+interface DatagramDuplexStream
+    attribute @@toStringTag
+    getter readable
+    getter writable
+    method constructor
 interface DecompressionStream
     attribute @@toStringTag
     getter readable

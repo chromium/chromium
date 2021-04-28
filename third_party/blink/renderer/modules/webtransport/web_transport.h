@@ -27,6 +27,7 @@
 
 namespace blink {
 
+class DatagramDuplexStream;
 class ExceptionState;
 class ReadableStream;
 class ReadableStreamDefaultControllerWithScriptScope;
@@ -65,6 +66,7 @@ class MODULES_EXPORT WebTransport final
   ScriptPromise createBidirectionalStream(ScriptState*, ExceptionState&);
   ReadableStream* incomingBidirectionalStreams();
 
+  DatagramDuplexStream* datagrams();
   WritableStream* datagramWritable();
   ReadableStream* datagramReadable();
   void close(const WebTransportCloseInfo*);
@@ -129,6 +131,9 @@ class MODULES_EXPORT WebTransport final
                                            uint32_t stream_id);
 
   bool cleanly_closed_ = false;
+
+  Member<DatagramDuplexStream> datagrams_;
+
   Member<ReadableStream> received_datagrams_;
   Member<ReadableStreamDefaultControllerWithScriptScope>
       received_datagrams_controller_;

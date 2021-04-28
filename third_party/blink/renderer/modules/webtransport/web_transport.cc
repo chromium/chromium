@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/webtransport/bidirectional_stream.h"
+#include "third_party/blink/renderer/modules/webtransport/datagram_duplex_stream.h"
 #include "third_party/blink/renderer/modules/webtransport/receive_stream.h"
 #include "third_party/blink/renderer/modules/webtransport/send_stream.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport_stream.h"
@@ -474,6 +475,11 @@ ReadableStream* WebTransport::incomingBidirectionalStreams() {
   return received_bidirectional_streams_;
 }
 
+DatagramDuplexStream* WebTransport::datagrams() {
+  GetExecutionContext()->CountUse(WebFeature::kQuicTransportDatagramApis);
+  return datagrams_;
+}
+
 WritableStream* WebTransport::datagramWritable() {
   GetExecutionContext()->CountUse(WebFeature::kQuicTransportDatagramApis);
   return outgoing_datagrams_;
@@ -628,6 +634,7 @@ void WebTransport::ForgetStream(uint32_t stream_id) {
 }
 
 void WebTransport::Trace(Visitor* visitor) const {
+  visitor->Trace(datagrams_);
   visitor->Trace(received_datagrams_);
   visitor->Trace(received_datagrams_controller_);
   visitor->Trace(outgoing_datagrams_);
@@ -725,6 +732,8 @@ void WebTransport::Init(const String& url,
       WTF::Bind(&WebTransport::OnConnectionError, WrapWeakPersistent(this)));
 
   probe::WebTransportCreated(execution_context, inspector_transport_id_, url_);
+
+  datagrams_ = MakeGarbageCollected<DatagramDuplexStream>(this);
 
   // The choice of 1 for the ReadableStream means that it will queue one
   // datagram even when read() is not being called. Unfortunately, that datagram

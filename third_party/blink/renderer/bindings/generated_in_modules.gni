@@ -1478,6 +1478,8 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_data_transfer_item.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_database.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_database.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_datagram_duplex_stream.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_datagram_duplex_stream.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_decompression_stream.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_decompression_stream.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_dedicated_worker_global_scope.cc",
