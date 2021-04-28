@@ -135,6 +135,25 @@ const tests = [
     chrome.test.succeed();
   },
 
+  // Regression test for https://crbug.com/1202725.
+  function testGetMostVisiblePageZeroSize() {
+    // This happens when the PDF is in a hidden iframe.
+    const mockWindow = new MockElement(0, 0, null);
+    const viewport = getZoomableViewport(mockWindow, new MockSizer(), 0, 1);
+
+    const documentDimensions = new MockDocumentDimensions(100, 100);
+    documentDimensions.addPage(50, 100);
+    documentDimensions.addPage(100, 100);
+    documentDimensions.addPage(100, 200);
+    viewport.setDocumentDimensions(documentDimensions);
+
+    // Zoom is computed as 0.
+    chrome.test.assertEq(0, viewport.getZoom());
+    // This call should not crash.
+    chrome.test.assertEq(0, viewport.getMostVisiblePage());
+    chrome.test.succeed();
+  },
+
   function testGetMostVisiblePage() {
     const mockWindow = new MockElement(100, 100, null);
     const viewport = getZoomableViewport(mockWindow, new MockSizer(), 0, 1);
