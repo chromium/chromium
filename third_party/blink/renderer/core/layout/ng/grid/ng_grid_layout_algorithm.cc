@@ -472,24 +472,6 @@ void NGGridLayoutAlgorithm::GridItemData::SetAlignmentFallback(
       if (!IsBaselineAlignedForDirection(track_direction))
         return false;
 
-      // If the grid item and grid container have parallel writing directions,
-      // then the baseline is calculated as an offset in the opposite direction
-      // of the container. Otherwise, it's an orthogonal grid item and it's
-      // calculated as an offset in the parallel direction of the container.
-      if ((track_direction == kForRows) ==
-          IsParallelWritingMode(container_style.GetWritingMode(),
-                                node.Style().GetWritingMode())) {
-        return true;
-      }
-
-      // "If a box spans multiple shared alignment contexts, then it
-      // participates in first/last baseline alignment within its start-most/
-      // end-most shared alignment context along that axis", so we only need to
-      // look at the start index for baseline/first-baseline support.
-      // https://www.w3.org/TR/css-align-3/#baseline-sharing-group
-      const auto& track_size =
-          track_collection.SetAt(SetIndices(track_direction).begin).TrackSize();
-
       // "If baseline alignment is specified on a grid item whose size in that
       // axis depends on the size of an intrinsically-sized track (whose size is
       // therefore dependent on both the item’s size and baseline alignment,
@@ -499,15 +481,34 @@ void NGGridLayoutAlgorithm::GridItemData::SetAlignmentFallback(
       // as “intrinsically-sized” when the grid container has an indefinite size
       // in the relevant axis."
       // https://drafts.csswg.org/css-grid-2/#row-align
-      //
       // TODO(kschmi) - this is not complete, as flex items should also count if
-      // the container has a definite size. However, this will require some
-      // additional refactoring, as we hit later asserts when we try to
-      // calculate the baseline for these items. It will fix
-      // grid-self-baseline-not-applied-if-sizing-cyclic-dependency related
-      // tests.
-      return (track_size.HasFixedMinTrackBreadth() &&
-              track_size.HasFixedMaxTrackBreadth());
+      // the container has a definite size. These will require a second pass for
+      // the remaining scenarios in grid-self-baseline-not-applied-if-sizing-
+      // cyclic-dependency tests.
+      if (!IsSpanningFlexibleTrack(track_direction) &&
+          !IsSpanningIntrinsicTrack(track_direction)) {
+        return true;
+      }
+
+      const bool is_parallel_to_baseline_axis =
+          (track_direction == kForRows) ==
+          IsParallelWritingMode(container_style.GetWritingMode(),
+                                node.Style().GetWritingMode());
+
+      // TODO(kschmi) - should this also include 'fit-content'? And should
+      // 'auto' sizing only apply here if the track size is indefinite?
+      if (is_parallel_to_baseline_axis) {
+        return !node.Style().LogicalHeight().IsPercentOrCalc() &&
+               !node.Style().LogicalMinHeight().IsPercentOrCalc() &&
+               !node.Style().LogicalMaxHeight().IsPercentOrCalc();
+      } else {
+        // TODO(kschmi) - the 'IsAuto' condition is not consistent between these
+        // conditions,  but matches legacy and passes the tests.
+        return !node.Style().LogicalWidth().IsPercentOrCalc() &&
+               !node.Style().LogicalMinWidth().IsPercentOrCalc() &&
+               !node.Style().LogicalMaxWidth().IsPercentOrCalc() &&
+               !node.Style().LogicalWidth().IsAuto();
+      }
     };
 
     // Revert to start edges if an item requests baseline alignment but does not
