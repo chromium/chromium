@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -514,6 +515,15 @@ CommandSource::CommandResults TabCommandSource::GetCommands(
   if (auto item = ItemForTitle(u"Scroll to bottom", finder, &ranges)) {
     item->command = base::BindOnce(&ScrollToBottom, base::Unretained(browser));
     results.push_back(std::move(item));
+  }
+
+  if (send_tab_to_self::ShouldOfferFeature(
+          tab_strip_model->GetActiveWebContents())) {
+    if (auto item = ItemForTitle(u"Send tab to self...", finder, &ranges)) {
+      item->command = base::BindOnce(&chrome::SendTabToSelfFromPageAction,
+                                     base::Unretained(browser));
+      results.push_back(std::move(item));
+    }
   }
 
   return results;

@@ -68,6 +68,7 @@ CommandSource::CommandResults SimpleCommandSource::GetCommands(
       {IDC_SELECT_PREVIOUS_TAB, u"Previous tab"},
       {IDC_MOVE_TAB_NEXT, u"Move tab forward"},
       {IDC_MOVE_TAB_PREVIOUS, u"Move tab backward"},
+      {IDC_QRCODE_GENERATOR, u"Create QR code"},
   };
   CommandSource::CommandResults results;
   FuzzyFinder finder(input);
