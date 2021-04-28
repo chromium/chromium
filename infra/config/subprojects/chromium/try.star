@@ -1229,8 +1229,6 @@ try_.chromium_linux_builder(
     main_list_view = "try",
     tryjob = try_.job(),
     use_clang_coverage = True,
-    # TODO(crbug/1199425): Remove this once bionic bot is the default option.
-    os = os.LINUX_XENIAL_OR_BIONIC,
 )
 
 # Experimental builder to check dual coverage on linux platform.
