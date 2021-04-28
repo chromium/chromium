@@ -1125,7 +1125,6 @@ class LocalDeviceInstrumentationTestRun(
         # Additionally, add the ignore if we're running on a trybot and this is
         # not our final retry attempt in order to prevent unrelated CLs from
         # getting spammed if a test is flaky.
-        optional_keys = {}
         should_rewrite = False
         with open(json_path) as infile:
           # All the key/value pairs in the JSON file are strings, so convert
@@ -1142,9 +1141,7 @@ class LocalDeviceInstrumentationTestRun(
           if 'full_test_name' in json_dict:
             should_rewrite = True
             del json_dict['full_test_name']
-        if should_rewrite:
-          with open(json_path, 'w') as outfile:
-            json.dump(json_dict, outfile)
+
         running_on_unsupported = (
             device.build_version_sdk not in RENDER_TEST_MODEL_SDK_CONFIGS.get(
                 device.product_model, []) and not fail_on_unsupported)
@@ -1162,7 +1159,11 @@ class LocalDeviceInstrumentationTestRun(
         # should_ignore_in_gold != should_hide_failure.
         should_hide_failure = running_on_unsupported
         if should_ignore_in_gold:
-          optional_keys['ignore'] = '1'
+          should_rewrite = True
+          json_dict['ignore'] = '1'
+        if should_rewrite:
+          with open(json_path, 'w') as outfile:
+            json.dump(json_dict, outfile)
 
         gold_session = self._skia_gold_session_manager.GetSkiaGoldSession(
             keys_input=json_path)
@@ -1172,8 +1173,7 @@ class LocalDeviceInstrumentationTestRun(
               name=render_name,
               png_file=image_path,
               output_manager=self._env.output_manager,
-              use_luci=use_luci,
-              optional_keys=optional_keys)
+              use_luci=use_luci)
         except Exception as e:  # pylint: disable=broad-except
           _FailTestIfNecessary(results, full_test_name)
           _AppendToLog(results, full_test_name,
