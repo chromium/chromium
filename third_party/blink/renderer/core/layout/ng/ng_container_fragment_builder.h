@@ -33,6 +33,14 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   STACK_ALLOCATED();
 
  public:
+  ~NGContainerFragmentBuilder() {
+    // Clear collections so the backing gets promptly freed, and reused.
+    oof_positioned_candidates_.clear();
+    oof_positioned_fragmentainer_descendants_.clear();
+    oof_positioned_descendants_.clear();
+    multicols_with_pending_oofs_.clear();
+  }
+
   struct ChildWithOffset {
     DISALLOW_NEW();
     ChildWithOffset(LogicalOffset offset, const NGPhysicalFragment* fragment)

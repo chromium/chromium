@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/run_segmenter.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 
@@ -579,6 +580,7 @@ class NGInlineNodeDataEditor final {
     const unsigned end_offset = old_length - matched_length;
     DCHECK_LE(start_offset, end_offset);
     HeapVector<NGInlineItem> items;
+    ClearCollectionScope<HeapVector<NGInlineItem>> clear_scope(&items);
 
     // +3 for before and after replaced text.
     items.ReserveInitialCapacity(data_->items.size() + 3);
@@ -921,6 +923,7 @@ void NGInlineNode::ComputeOffsetMapping(LayoutBlockFlow* layout_block_flow,
   // already there in NGInlineNodeData. For efficiency, we should make
   // |builder| not construct items and text content.
   HeapVector<NGInlineItem> items;
+  ClearCollectionScope<HeapVector<NGInlineItem>> clear_scope(&items);
   items.ReserveCapacity(EstimateInlineItemsCount(*layout_block_flow));
   NGInlineItemsBuilderForOffsetMapping builder(layout_block_flow, &items);
   builder.GetOffsetMappingBuilder().ReserveCapacity(
@@ -994,6 +997,7 @@ void NGInlineNode::CollectInlines(NGInlineNodeData* data,
     // NGSVGTextLayoutAttributesBuilder, and are discarded because they might
     // be different from final ones.
     HeapVector<NGInlineItem> items;
+    ClearCollectionScope<HeapVector<NGInlineItem>> clear_scope(&items);
     items.ReserveCapacity(EstimateInlineItemsCount(*block));
     NGInlineItemsBuilderForOffsetMapping items_builder(block, &items);
     items_builder.GetOffsetMappingBuilder().ReserveCapacity(

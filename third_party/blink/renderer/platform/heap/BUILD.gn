@@ -54,6 +54,7 @@ blink_platform_sources("heap") {
 
   sources = [
     "blink_gc_memory_dump_provider.h",
+    "collection_support/clear_collection_scope.h",
     "collection_support/heap_deque.h",
     "collection_support/heap_hash_counted_set.h",
     "collection_support/heap_hash_map.h",
