@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_content_previews.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "ash/public/cpp/ash_typography.h"
@@ -97,11 +98,7 @@ void SharesheetContentPreviews::InitaliseImageView() {
 }
 
 void SharesheetContentPreviews::ShowTextPreview() {
-  std::vector<std::u16string> text_fields;
-  if (intent_->share_text.has_value() &&
-      !(intent_->share_text.value().empty())) {
-    text_fields = ExtractShareText();
-  }
+  std::vector<std::u16string> text_fields = ExtractShareText();
 
   std::u16string filenames_tooltip_text = u"";
   if (intent_->file_urls.has_value() && !intent_->file_urls.value().empty()) {
@@ -124,19 +121,16 @@ void SharesheetContentPreviews::ShowTextPreview() {
     text_fields.push_back(file_text);
   }
 
-  // TODO(crbug.com/2650014): Handle drive_share_url and share_title fields.
-  // When this is added, we can remove the if condition, because it should
-  // be impossible that there are no text_fields.
-
-  // File names show on the last line, so |filenames_tooltip_text| is only
-  // passed in on the last line of text. If there are no files, it will be empty
-  // and the tooltip will instead be set to what the text says.
-  if (text_fields.size() == 1) {
-    AddTextLine(text_fields[0], filenames_tooltip_text);
-  } else if (text_fields.size() > 1) {
-    AddTextLine(text_fields[0]);
-    AddTextLine(text_fields[1], filenames_tooltip_text);
+  int index = 0;
+  int max_lines = std::min(text_fields.size(), kTextPreviewMaximumLines);
+  for (; index < max_lines - 1; ++index) {
+    AddTextLine(text_fields[index]);
   }
+  // File names must always be on the last line, so |filenames_tooltip_text| is
+  // only passed in on the last line of text. If there are no files, it will be
+  // empty and the tooltip will instead be set to what the text says.
+  DCHECK_LT(index, text_fields.size());
+  AddTextLine(text_fields[index], filenames_tooltip_text);
 }
 
 void SharesheetContentPreviews::AddTextLine(
@@ -149,7 +143,6 @@ void SharesheetContentPreviews::AddTextLine(
   new_line->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   new_line->SetHandlesTooltips(true);
   if (tooltip_text.empty()) {
-    new_line->SetTooltipText(new_line->GetText());
     return;
   }
   new_line->SetTooltipText(tooltip_text);
@@ -161,31 +154,47 @@ void SharesheetContentPreviews::AddTextLine(
 }
 
 std::vector<std::u16string> SharesheetContentPreviews::ExtractShareText() {
-  std::vector<std::u16string> result;
-  std::string extracted_text = intent_->share_text.value();
-  GURL extracted_url;
-  size_t last_space = extracted_text.find_last_of(' ');
+  std::vector<std::u16string> text_fields;
 
-  if (!intent_->share_text.has_value())
-    return result;
-
-  if (last_space == std::string::npos) {
-    extracted_url = GURL(extracted_text);
-    if (extracted_url.is_valid())
-      extracted_text.clear();
-  } else {
-    extracted_url = GURL(extracted_text.substr(last_space + 1));
-    if (extracted_url.is_valid())
-      extracted_text.erase(last_space);
+  if (intent_->share_title.has_value() &&
+      !(intent_->share_title.value().empty())) {
+    std::string title_text = intent_->share_title.value();
+    text_fields.push_back(base::ASCIIToUTF16(title_text));
   }
 
-  if (!extracted_text.empty())
-    result.push_back(base::ASCIIToUTF16(extracted_text));
+  if (intent_->drive_share_url.has_value()) {
+    GURL drive_share_url = intent_->drive_share_url.value();
+    if (drive_share_url.is_valid()) {
+      text_fields.push_back(base::ASCIIToUTF16(drive_share_url.spec()));
+    }
+  }
 
-  if (extracted_url.is_valid())
-    result.push_back(base::ASCIIToUTF16(extracted_url.spec()));
+  if (intent_->share_text.has_value() &&
+      !(intent_->share_text.value().empty())) {
+    std::string extracted_text = intent_->share_text.value();
+    size_t last_space = extracted_text.find_last_of(' ');
+    GURL extracted_url;
 
-  return result;
+    if (last_space == std::string::npos) {
+      extracted_url = GURL(extracted_text);
+      if (extracted_url.is_valid())
+        extracted_text.clear();
+    } else {
+      extracted_url = GURL(extracted_text.substr(last_space + 1));
+      if (extracted_url.is_valid())
+        extracted_text.erase(last_space);
+    }
+
+    if (!extracted_text.empty())
+      text_fields.push_back(base::ASCIIToUTF16(extracted_text));
+
+    if (extracted_url.is_valid())
+      text_fields.push_back(base::ASCIIToUTF16(extracted_url.spec()));
+  }
+
+  // There will always be at least 1 text field.
+  DCHECK_NE(text_fields.size(), 0);
+  return text_fields;
 }
 
 // TODO(crbug.com/2650014) Optimise to load several images.

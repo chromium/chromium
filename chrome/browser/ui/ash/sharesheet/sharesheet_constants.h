@@ -13,6 +13,8 @@ namespace sharesheet {
 // Sizes are in px.
 constexpr int kSpacing = 24;
 
+constexpr size_t kTextPreviewMaximumLines = 3;
+
 constexpr int kTitleTextLineHeight = 24;
 constexpr int kSubtitleTextLineHeight = 22;
 constexpr int kPrimaryTextLineHeight = 20;
