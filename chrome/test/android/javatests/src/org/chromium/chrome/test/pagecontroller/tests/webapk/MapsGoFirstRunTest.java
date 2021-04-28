@@ -20,16 +20,14 @@ import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.firstrun.FirstRunActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
+import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.firstrun.LightweightFirstRunActivity;
 import org.chromium.chrome.browser.webapps.WebappActivity;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
@@ -70,17 +68,16 @@ public class MapsGoFirstRunTest {
     private Activity mFirstRunActivity;
     private Activity mWebappActivity;
     private ApplicationStatus.ActivityStateListener mActivityStateListener;
-    private final CallbackHelper mFreStoppedCallback = new CallbackHelper();
 
     @Before
     public void setUp() {
         WebApkValidator.setDisableValidationForTesting(true);
+        FirstRunUtils.setDisableDelayOnExitFreForTest(true);
         TestThreadUtils.runOnUiThreadBlocking(WebappRegistry::refreshSharedPrefsForTesting);
 
         mActivityStateListener = (activity, newState) -> {
             if (activity instanceof LightweightFirstRunActivity) {
                 if (mLightweightFreActivity == null) mLightweightFreActivity = activity;
-                if (newState == ActivityState.STOPPED) mFreStoppedCallback.notifyCalled();
             } else if (activity instanceof FirstRunActivity) {
                 if (mFirstRunActivity == null) mFirstRunActivity = activity;
             } else if (activity instanceof WebappActivity) {
@@ -92,6 +89,8 @@ public class MapsGoFirstRunTest {
 
     @After
     public void tearDown() {
+        WebApkValidator.setDisableValidationForTesting(false);
+        FirstRunUtils.setDisableDelayOnExitFreForTest(false);
         LightweightFirstRunActivity.setSupportSkippingTos(true);
         ApplicationStatus.unregisterActivityStateListener(mActivityStateListener);
     }
@@ -108,8 +107,7 @@ public class MapsGoFirstRunTest {
         controller.acceptAndContinue();
         // Note for offline devices this PWA will not be healthy, see https://crbug.com/1142821 for
         // details. Just verify the right activity has started.
-        CriteriaHelper.pollInstrumentationThread(
-                () -> mWebappActivity != null, "WebappActivity did not start.");
+        verifyWebappActivityStarted();
     }
 
     @Test
@@ -118,6 +116,7 @@ public class MapsGoFirstRunTest {
         // shown instead.
         WebApkValidator.setDisableValidationForTesting(false);
         launchWebapk("org.chromium.test.maps_go_webapk", "org.chromium.chrome");
+
         CriteriaHelper.pollInstrumentationThread(
                 () -> mFirstRunActivity != null, "FirstRunActivity did not start");
         Assert.assertNull("Lightweight FRE should not have started.", mLightweightFreActivity);
@@ -129,10 +128,8 @@ public class MapsGoFirstRunTest {
         FirstRunStatus.setLightweightFirstRunFlowComplete(true);
         launchWebapk("org.chromium.test.maps_go_webapk", "org.chromium.chrome");
 
-        LightWeightTOSController controller = LightWeightTOSController.getInstance();
-        Assert.assertFalse(
-                "Light weight TOS page should NOT be shown.", controller.isCurrentPageThis());
-        Assert.assertNull("Lightweight FRE should not launch.", mLightweightFreActivity);
+        verifyWebappActivityStarted();
+        Assert.assertNull("Lightweight FRE should not have started.", mLightweightFreActivity);
     }
 
     @Test
@@ -142,17 +139,16 @@ public class MapsGoFirstRunTest {
         FirstRunStatus.setLightweightFirstRunFlowComplete(false);
         launchWebapk("org.chromium.test.maps_go_webapk", "org.chromium.chrome");
 
-        Assert.assertNotNull("Lightweight FRE should launch.", mLightweightFreActivity);
-
-        LightWeightTOSController controller = LightWeightTOSController.getInstance();
-        Assert.assertFalse(
-                "Light weight TOS page should NOT be shown.", controller.isCurrentPageThis());
-        mFreStoppedCallback.waitForCallback("Lightweight Fre never completes.", 0);
+        // Verify LWFRE activity is created before skipped to WebappActivity. See
+        // https://crbug.com/1184149 for previous problems here.
+        CriteriaHelper.pollInstrumentationThread(()
+                                                         -> mLightweightFreActivity != null,
+                "Lightweight FRE should still launch before being skipped.");
+        verifyWebappActivityStarted();
     }
 
     @Test
     @CommandLineFlags.Add({FLAG_POLICY_TOS_DIALOG_BEHAVIOR_STANDARD})
-    @DisabledTest(message = "https://crbug.com/1184149")
     public void testTosNotSkippedByPolicy() {
         LightweightFirstRunActivity.setSupportSkippingTos(true);
         FirstRunStatus.setLightweightFirstRunFlowComplete(false);
@@ -185,5 +181,12 @@ public class MapsGoFirstRunTest {
                 UiAutomatorUtils.getInstance().getLocatorHelper(MAPS_GO_FRE_TIMEOUT_MS);
         IUi2Locator packageLocator = Ui2Locators.withPackageName(chromePackageName);
         helper.verifyOnScreen(packageLocator);
+    }
+
+    private void verifyWebappActivityStarted() {
+        CriteriaHelper.pollInstrumentationThread(()
+                                                         -> mWebappActivity != null,
+                "WebappActivity did not start.", MAPS_GO_FRE_TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 }
