@@ -145,6 +145,11 @@ bool PdfViewWebPlugin::Initialize(blink::WebPluginContainer* container) {
   return InitializeCommon(std::make_unique<BlinkContainerWrapper>(container));
 }
 
+bool PdfViewWebPlugin::InitializeForTesting(
+    std::unique_ptr<ContainerWrapper> container_wrapper) {
+  return InitializeCommon(std::move(container_wrapper));
+}
+
 // Modeled on `OutOfProcessInstance::Init()`.
 bool PdfViewWebPlugin::InitializeCommon(
     std::unique_ptr<ContainerWrapper> container_wrapper) {

@@ -118,6 +118,12 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   // SkiaGraphics::Client:
   void UpdateSnapshot(sk_sp<SkImage> snapshot) override;
 
+  // Initializes the plugin using the `container_wrapper` provided by tests.
+  bool InitializeForTesting(
+      std::unique_ptr<ContainerWrapper> container_wrapper);
+
+  const gfx::Rect& GetPluginRectForTesting() const { return plugin_rect(); }
+
  protected:
   // PdfViewPluginBase:
   base::WeakPtr<PdfViewPluginBase> GetWeakPtr() override;
