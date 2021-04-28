@@ -1960,7 +1960,7 @@
 <translation id="3118319026408854581">Справка <ph name="PRODUCT_NAME" /></translation>
 <translation id="3118654181216384296">Попробуйте запустить Linux снова через несколько секунд.</translation>
 <translation id="3120430004221004537">Неполное шифрование операции на устройстве <ph name="DEVICE_NAME" />.</translation>
-<translation id="3122464029669770682">ЦПУ</translation>
+<translation id="3122464029669770682">Процессор</translation>
 <translation id="3122496702278727796">Не удалось создать каталог данных</translation>
 <translation id="3124111068741548686">USER-дескрипторы</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -4673,7 +4673,7 @@
 <translation id="6229849828796482487">Отключить сеть Wi-Fi</translation>
 <translation id="6231782223312638214">Рекомендуется</translation>
 <translation id="6231881193380278751">Добавьте в URL параметр запроса для автоматического обновления страницы: chrome://device-log/?refresh=&lt;sec&gt;</translation>
-<translation id="6232017090690406397">Аккумулятор</translation>
+<translation id="6232017090690406397">Батарея</translation>
 <translation id="6232116551750539448">Соединение с <ph name="NAME" /> прервано</translation>
 <translation id="6233154960150021497">Использовать голос вместо клавиатуры по умолчанию</translation>
 <translation id="6234108445915742946">Условия использования Chrome будут обновлены 31 марта</translation>

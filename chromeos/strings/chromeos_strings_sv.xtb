@@ -110,9 +110,9 @@
 <translation id="3488065109653206955">Delvis aktiverat</translation>
 <translation id="3527036260304016759">Misslyckades – okänt fel</translation>
 <translation id="3532980081107202182">Ungefär <ph name="MIN_REMAINING" /> minuter kvar</translation>
-<translation id="357889014807611375">Wi-Fi med datapriser</translation>
+<translation id="357889014807611375">wifi med datapriser</translation>
 <translation id="3595596368722241419">Batteriet är fulladdat</translation>
-<translation id="360565022852130722">Wi-Fi-nätverket använder det svaga säkerhetsprotokollet WEP 802.1x</translation>
+<translation id="360565022852130722">wifi-nätverket använder det svaga säkerhetsprotokollet WEP 802.1x</translation>
 <translation id="3689839747745352263">Test – <ph name="TEST_NAME" /></translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recensioner)</translation>
 <translation id="3748026146096797577">Ej ansluten</translation>
@@ -155,7 +155,7 @@
 <translation id="458794348635939462">DNS-matchningen av alla värdar misslyckades</translation>
 <translation id="4593212453765072419">Proxyautentisering krävs</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> av <ph name="TOTAL_PAGE_NUMBER" />. Tryck på retur för att avbryta utskriftsjobbet.</translation>
-<translation id="4646949265910132906">Säker Wi-Fi-anslutning</translation>
+<translation id="4646949265910132906">Säker wifi-anslutning</translation>
 <translation id="4652335678334611408">Spara sessionslogg</translation>
 <translation id="4665014895760275686">Tillverkare</translation>
 <translation id="467510802200863975">Lösenorden matchar inte</translation>
@@ -207,7 +207,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Välj ett nytt nu</translation>
 <translation id="5333530671332546086">Okänd portalstatus</translation>
-<translation id="5372659122375744710">Wi-Fi-nätverket är inte säkert</translation>
+<translation id="5372659122375744710">wifi-nätverket är inte säkert</translation>
 <translation id="5401938042319910061">Kör alla rutiner</translation>
 <translation id="5423849171846380976">Aktiverat</translation>
 <translation id="5430931332414098647">Direktinternetdelning</translation>
@@ -264,7 +264,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="649050271426829538">Har stoppats – papperstrassel</translation>
 <translation id="6516990319416533844">Om du vill testa batteriets laddningshastighet låter du det laddas ur under en kortare period</translation>
 <translation id="6517239166834772319">Utforska</translation>
-<translation id="6527081081771465939">Okänt säkerhetsprotokoll för Wi-Fi</translation>
+<translation id="6527081081771465939">Okänt säkerhetsprotokoll för wifi</translation>
 <translation id="65587193855025101">Flatbädd</translation>
 <translation id="6564646048574748301">Misslyckades – skrivaren kan inte nås</translation>
 <translation id="6618744767048954150">Körs</translation>
@@ -343,7 +343,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="8395584934117017006">Denna <ph name="DEVICE_TYPE" /> är företagshanterad</translation>
 <translation id="8398927464629426868">Hur fort enheten laddas eller laddas ur för närvarande</translation>
 <translation id="8461329675984532579">Hemleverantörens namn</translation>
-<translation id="8475690821716466388">Wi-Fi-nätverket använder det svaga säkerhetsprotokollet WEP PSK</translation>
+<translation id="8475690821716466388">wifi-nätverket använder det svaga säkerhetsprotokollet WEP PSK</translation>
 <translation id="8477551185774834963">DNS-latensen är något högre än det godtagbara tröskelvärdet</translation>
 <translation id="8483248364096924578">IP-adress</translation>
 <translation id="8503813439785031346">Användarnamn</translation>
@@ -360,7 +360,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Standard</translation>
 <translation id="8798441408945964110">Leverantörens namn</translation>
-<translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8814190375133053267">wifi</translation>
 <translation id="8818152010000655963">Bakgrund</translation>
 <translation id="8845001906332463065">Få hjälp</translation>
 <translation id="8881098542468797602">Testet lyckades</translation>

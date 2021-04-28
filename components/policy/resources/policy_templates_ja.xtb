@@ -752,6 +752,7 @@
           必要です。ただし、各プロセスに異なるポリシー値が適用され、実行されても
           問題はありません。
           </translation>
+<translation id="2029985289397958781">企業ユーザーに対して <ph name="GOOGLE_LENS_PRODUCT_NAME" /> のカメラを使用した検索を無効にする</translation>
 <translation id="2030905906517501646">デフォルトの検索プロバイダのキーワード</translation>
 <translation id="203096360153626918">このポリシーは Android アプリには適用されません。このポリシーを <ph name="FALSE" /> に設定した場合でも、Android アプリの全画面表示は可能です。</translation>
 <translation id="2032848225007871645">このポリシーでは、ロック画面を解除できるロックのクイック解除モードを管理できます。
@@ -1831,6 +1832,7 @@
 <translation id="3415954062311826850">このポリシーは ARC でサポートされていません。</translation>
 <translation id="34160070798637152">デバイス共通のネットワーク設定を制御します。</translation>
 <translation id="3417130629744653218">利用可能なお支払い方法の問い合わせをウェブサイトに許可します。</translation>
+<translation id="3417391585519621050">企業ユーザーに対して <ph name="GOOGLE_LENS_PRODUCT_NAME" /> のカメラを使用した検索を有効にする</translation>
 <translation id="3417418267404583991">このポリシーを true に設定した場合または未設定の場合、<ph name="PRODUCT_OS_NAME" /> ではゲスト ログインが有効になります。ゲスト ログインは匿名ユーザーのセッションで、パスワードが不要です。
 
       このポリシーを false に設定した場合、<ph name="PRODUCT_OS_NAME" /> ではゲスト セッションを開始できません。</translation>
@@ -3276,6 +3278,7 @@
       このポリシーの値を 0 以外に設定した場合、現在デモ モードでログインしているユーザーが操作しないまま、ここに指定した時間が経過すると、ユーザーは自動的にログアウトされます。
 
       ポリシーの値は、ミリ秒単位で指定する必要があります。</translation>
+<translation id="55057839818162162"><ph name="GOOGLE_LENS_PRODUCT_NAME" /> のカメラを使用した検索を許可する</translation>
 <translation id="5508307164752647432">Kerberos 機能を有効にする</translation>
 <translation id="5511702823008968136">ブックマーク バーを有効にする</translation>
 <translation id="5512418063782665071">ホームページの URL</translation>
@@ -5907,6 +5910,7 @@
       このポリシーを無効に設定すると、登録済みのデバイスはアクティブな期間を記録または報告しません。</translation>
 <translation id="9077227880520270584">デバイスのローカル アカウントの自動ログイン タイマー</translation>
 <translation id="9084985621503260744">動画操作を電源管理に関連付けるかどうかを指定する</translation>
+<translation id="9088191250434406767">このポリシーを未設定のままにするか有効に設定した場合、ユーザーはカメラと <ph name="GOOGLE_LENS_PRODUCT_NAME" /> を使用して検索できます。このポリシーを無効に設定した場合、<ph name="GOOGLE_LENS_PRODUCT_NAME" /> のカメラを使用した検索が可能な場合でも、検索ボックスに <ph name="GOOGLE_LENS_PRODUCT_NAME" /> ボタンは表示されません。</translation>
 <translation id="9088433379343318874">監視対象ユーザーのコンテンツ プロバイダを有効にする</translation>
 <translation id="9088444059179765143">タイムゾーン自動検出の方法を設定する</translation>
 <translation id="9095999573959728902">この設定が有効な場合、ユーザーはスマートフォン ハブを有効にできます。スマートフォン ハブは、Chrome OS デバイスからスマートフォンを操作できる機能です。

@@ -94,7 +94,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1708345662127501511">Skrivbord: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Nätverksinställningar</translation>
 <translation id="1719094688023114093">Live Caption är aktiverat.</translation>
-<translation id="1720011244392820496">Aktivera Wi-Fi-synkronisering</translation>
+<translation id="1720011244392820496">Aktivera wifi-synkronisering</translation>
 <translation id="1743570585616704562">Identifierades inte</translation>
 <translation id="1746730358044914197">Inmatningsmetoderna konfigureras av administratören.</translation>
 <translation id="1747827819627189109">Skärmen på tangentbordet har aktiverats</translation>
@@ -108,7 +108,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
 <translation id="1836215606488044471">Assistent (läses in …)</translation>
 <translation id="1838895407229022812">Nattljus är inaktiverat.</translation>
-<translation id="1850504506766569011">Wi-Fi är inaktiverat.</translation>
+<translation id="1850504506766569011">wifi är inaktiverat.</translation>
 <translation id="1864454756846565995">USB-C-enhet (bakre port)</translation>
 <translation id="1882814835921407042">Inget mobilnätverk</translation>
 <translation id="1882897271359938046">Spegling av <ph name="DISPLAY_NAME" /></translation>
@@ -204,7 +204,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2678852583403169292">Textuppläsningsmeny</translation>
 <translation id="2689613560355655046">Skrivbord 8</translation>
 <translation id="2700493154570097719">Ställ in tangentbord</translation>
-<translation id="2704781753052663061">Anslut till andra Wi-Fi-nätverk</translation>
+<translation id="2704781753052663061">Anslut till andra wifi-nätverk</translation>
 <translation id="2705001408393684014">Aktivera eller inaktivera mikrofonen. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Upp</translation>
 <translation id="2718395828230677721">Nattljus</translation>
@@ -322,7 +322,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3638400994746983214">Aktivera och inaktivera sekretesskärmen. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Hanterad användare</translation>
 <translation id="3665889125180354336">Spela in via mikrofon</translation>
-<translation id="36813544980941320">Wi-Fi-nätverk delas mellan telefonen och <ph name="DEVICE_NAME" /></translation>
+<translation id="36813544980941320">wifi-nätverk delas mellan telefonen och <ph name="DEVICE_NAME" /></translation>
 <translation id="3702809606464356667">Visar fönster från det aktuella skrivbordet, tryck på uppåtpilen för att visa fönster från alla skrivbord</translation>
 <translation id="3702846122927433391">Befolkning i Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
@@ -885,7 +885,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8433977262951327081">Kortkommandot för att visa menybubblan för inmatningsalternativ i hyllan har ändrats. Använd <ph name="NEW_SHORTCUT" /> i stället för <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8444246603146515890">Skrivbordet <ph name="DESK_TITILE" /> har aktiverats</translation>
 <translation id="8452135315243592079">SIM-kort saknas</translation>
-<translation id="8454013096329229812">Wi-Fi är aktiverat.</translation>
+<translation id="8454013096329229812">wifi är aktiverat.</translation>
 <translation id="8462305545768648477">Stäng av textuppläsningen</translation>
 <translation id="847056008324733326">Inställningar för skala på skärmen</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> har <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
@@ -927,7 +927,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, installerad app, blockerad</translation>
 <translation id="8785070478575117577">Anslut till <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
-<translation id="8814190375133053267">Wi-Fi</translation>
+<translation id="8814190375133053267">wifi</translation>
 <translation id="881757059229893486">Inmatningsinställningar</translation>
 <translation id="8825863694328519386">Återgå genom att svepa från vänster</translation>
 <translation id="8828714802988429505">90°</translation>
@@ -966,7 +966,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> tills batteriet är tomt.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9077515519330855811">Uppspelningskontroller, nu spelas <ph name="MEDIA_TITLE" /></translation>
-<translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
+<translation id="9079731690316798640">wifi: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">Svep uppåt för att öppna startsidan</translation>
 <translation id="9080206825613744995">Mikrofonen används.</translation>
 <translation id="9084606467167974638">Växla menyposition</translation>

@@ -88,7 +88,7 @@
 <translation id="3083667275341675831">Диагностика соединений</translation>
 <translation id="3091839911843451378">Сбой: остановка работы</translation>
 <translation id="3102119246920354026">Кеш</translation>
-<translation id="3122464029669770682">ЦПУ</translation>
+<translation id="3122464029669770682">Процессор</translation>
 <translation id="315116470104423982">Мобильное подключение</translation>
 <translation id="315738237743207937">Обнаружена страница входа</translation>
 <translation id="3188257591659621405">Мои файлы</translation>
@@ -251,7 +251,7 @@
 <translation id="6189418609903030344">Емкость батареи со временем уменьшается</translation>
 <translation id="6191293864534840972">Некорректно указаны серверы доменных имен.</translation>
 <translation id="6223752125779001553">Нет доступных сканеров.</translation>
-<translation id="6232017090690406397">Аккумулятор</translation>
+<translation id="6232017090690406397">Батарея</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />: тестирование отменено.</translation>
 <translation id="6325525973963619867">Ошибка</translation>
 <translation id="636850387210749493">Регистрация в корпоративном домене</translation>
