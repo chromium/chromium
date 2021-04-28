@@ -464,6 +464,14 @@ CalculateDefaultBlockSize(const NGConstraintSpace& space,
                           const NGBlockNode& node,
                           const NGBoxStrut& border_scrollbar_padding);
 
+// Flex layout is interested in ignoring lengths in a particular axis. This
+// enum is used to control this behaviour.
+enum class ReplacedSizeMode {
+  kNormal,
+  kIgnoreInlineLengths,  // Used for determining the min/max content size.
+  kIgnoreBlockLengths    // Used for determining the "intrinsic" block-size.
+};
+
 // Computes the size for a replaced element. See:
 // https://www.w3.org/TR/CSS2/visudet.html#inline-replaced-width
 // https://www.w3.org/TR/CSS2/visudet.html#inline-replaced-height
@@ -473,8 +481,10 @@ CalculateDefaultBlockSize(const NGConstraintSpace& space,
 // This will handle both intrinsic, and layout calculations depending on the
 // space provided. (E.g. if the available inline-size is indefinite it will
 // return the intrinsic size).
-CORE_EXPORT LogicalSize ComputeReplacedSize(const NGBlockNode&,
-                                            const NGConstraintSpace&);
+CORE_EXPORT LogicalSize
+ComputeReplacedSize(const NGBlockNode&,
+                    const NGConstraintSpace&,
+                    ReplacedSizeMode = ReplacedSizeMode::kNormal);
 
 // Based on available inline size, CSS computed column-width, CSS computed
 // column-count and CSS used column-gap, return CSS used column-count.

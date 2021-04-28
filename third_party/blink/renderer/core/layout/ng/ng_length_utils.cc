@@ -791,7 +791,8 @@ base::Optional<LogicalSize> ComputeNormalizedNaturalSize(
 
 // Computes size for a replaced element.
 LogicalSize ComputeReplacedSize(const NGBlockNode& node,
-                                const NGConstraintSpace& space) {
+                                const NGConstraintSpace& space,
+                                ReplacedSizeMode mode) {
   DCHECK(node.IsReplaced());
 
   const ComputedStyle& style = node.Style();
@@ -810,38 +811,45 @@ LogicalSize ComputeReplacedSize(const NGBlockNode& node,
     percentage_resolution_size = space.AvailableSize().block_size;
 
   const Length& block_length = style.LogicalHeight();
-  const MinMaxSizes block_min_max_sizes = {
-      ResolveMinBlockLength(space, style, border_padding,
-                            style.LogicalMinHeight(),
-                            /* available_block_size_adjustment */ LayoutUnit(),
-                            &percentage_resolution_size),
-      ResolveMaxBlockLength(space, style, border_padding,
-                            style.LogicalMaxHeight(),
-                            /* available_block_size_adjustment */ LayoutUnit(),
-                            &percentage_resolution_size)};
+  MinMaxSizes block_min_max_sizes;
   base::Optional<LayoutUnit> replaced_block;
-  if (space.IsFixedBlockSize()) {
-    replaced_block = space.AvailableSize().block_size;
-    DCHECK_GE(*replaced_block, 0);
-  } else if (!block_length.IsAutoOrContentOrIntrinsic() ||
-             space.StretchBlockSizeIfAuto()) {
-    Length block_length_to_resolve = block_length;
-    if (block_length_to_resolve.IsAuto()) {
-      // TODO(dgrogan): This code block (and its corresponding inline version
-      // below) didn't make any tests pass when written so it may be unnecessary
-      // or untested. Check again when launching ReplacedNG.
-      DCHECK(space.StretchBlockSizeIfAuto());
-      DCHECK(space.AvailableSize().block_size != kIndefiniteSize);
-      block_length_to_resolve = Length::FillAvailable();
-    }
+  if (mode == ReplacedSizeMode::kIgnoreBlockLengths) {
+    // Don't resolve any block lengths or constraints.
+    block_min_max_sizes = {LayoutUnit(), LayoutUnit::Max()};
+  } else {
+    block_min_max_sizes = {
+        ResolveMinBlockLength(
+            space, style, border_padding, style.LogicalMinHeight(),
+            /* available_block_size_adjustment */ LayoutUnit(),
+            &percentage_resolution_size),
+        ResolveMaxBlockLength(
+            space, style, border_padding, style.LogicalMaxHeight(),
+            /* available_block_size_adjustment */ LayoutUnit(),
+            &percentage_resolution_size)};
 
-    if (!BlockLengthUnresolvable(space, block_length_to_resolve)) {
-      replaced_block = ResolveMainBlockLength(
-          space, style, border_padding, block_length_to_resolve,
-          /* intrinsic_size */ kIndefiniteSize);
-      DCHECK_NE(*replaced_block, kIndefiniteSize);
-      replaced_block =
-          block_min_max_sizes.ClampSizeToMinAndMax(*replaced_block);
+    if (space.IsFixedBlockSize()) {
+      replaced_block = space.AvailableSize().block_size;
+      DCHECK_GE(*replaced_block, 0);
+    } else if (!block_length.IsAutoOrContentOrIntrinsic() ||
+               space.StretchBlockSizeIfAuto()) {
+      Length block_length_to_resolve = block_length;
+      if (block_length_to_resolve.IsAuto()) {
+        // TODO(dgrogan): This code block (and its corresponding inline version
+        // below) didn't make any tests pass when written so it may be
+        // unnecessary or untested. Check again when launching ReplacedNG.
+        DCHECK(space.StretchBlockSizeIfAuto());
+        DCHECK(space.AvailableSize().block_size != kIndefiniteSize);
+        block_length_to_resolve = Length::FillAvailable();
+      }
+
+      if (!BlockLengthUnresolvable(space, block_length_to_resolve)) {
+        replaced_block = ResolveMainBlockLength(
+            space, style, border_padding, block_length_to_resolve,
+            /* intrinsic_size */ kIndefiniteSize);
+        DCHECK_NE(*replaced_block, kIndefiniteSize);
+        replaced_block =
+            block_min_max_sizes.ClampSizeToMinAndMax(*replaced_block);
+      }
     }
   }
 
@@ -907,32 +915,39 @@ LogicalSize ComputeReplacedSize(const NGBlockNode& node,
   };
 
   const Length& inline_length = style.LogicalWidth();
-  const MinMaxSizes inline_min_max_sizes = {
-      ResolveMinInlineLength(space, style, border_padding, MinMaxSizesFunc,
-                             style.LogicalMinWidth(),
-                             available_inline_size_adjustment),
-      ResolveMaxInlineLength(space, style, border_padding, MinMaxSizesFunc,
-                             style.LogicalMaxWidth(),
-                             available_inline_size_adjustment)};
+  MinMaxSizes inline_min_max_sizes;
   base::Optional<LayoutUnit> replaced_inline;
-  if (space.IsFixedInlineSize()) {
-    replaced_inline = space.AvailableSize().inline_size;
-    DCHECK_GE(*replaced_inline, 0);
-  } else if (!inline_length.IsAuto() || space.StretchInlineSizeIfAuto()) {
-    Length inline_length_to_resolve = inline_length;
-    if (inline_length_to_resolve.IsAuto()) {
-      DCHECK(space.StretchInlineSizeIfAuto());
-      DCHECK(space.AvailableSize().inline_size != kIndefiniteSize);
-      inline_length_to_resolve = Length::FillAvailable();
-    }
+  if (mode == ReplacedSizeMode::kIgnoreInlineLengths) {
+    // Don't resolve any inline lengths or constraints.
+    inline_min_max_sizes = {LayoutUnit(), LayoutUnit::Max()};
+  } else {
+    inline_min_max_sizes = {
+        ResolveMinInlineLength(space, style, border_padding, MinMaxSizesFunc,
+                               style.LogicalMinWidth(),
+                               available_inline_size_adjustment),
+        ResolveMaxInlineLength(space, style, border_padding, MinMaxSizesFunc,
+                               style.LogicalMaxWidth(),
+                               available_inline_size_adjustment)};
 
-    if (!InlineLengthUnresolvable(space, inline_length_to_resolve)) {
-      replaced_inline = ResolveMainInlineLength(
-          space, style, border_padding, MinMaxSizesFunc,
-          inline_length_to_resolve, available_inline_size_adjustment);
-      DCHECK_NE(*replaced_inline, kIndefiniteSize);
-      replaced_inline =
-          inline_min_max_sizes.ClampSizeToMinAndMax(*replaced_inline);
+    if (space.IsFixedInlineSize()) {
+      replaced_inline = space.AvailableSize().inline_size;
+      DCHECK_GE(*replaced_inline, 0);
+    } else if (!inline_length.IsAuto() || space.StretchInlineSizeIfAuto()) {
+      Length inline_length_to_resolve = inline_length;
+      if (inline_length_to_resolve.IsAuto()) {
+        DCHECK(space.StretchInlineSizeIfAuto());
+        DCHECK(space.AvailableSize().inline_size != kIndefiniteSize);
+        inline_length_to_resolve = Length::FillAvailable();
+      }
+
+      if (!InlineLengthUnresolvable(space, inline_length_to_resolve)) {
+        replaced_inline = ResolveMainInlineLength(
+            space, style, border_padding, MinMaxSizesFunc,
+            inline_length_to_resolve, available_inline_size_adjustment);
+        DCHECK_NE(*replaced_inline, kIndefiniteSize);
+        replaced_inline =
+            inline_min_max_sizes.ClampSizeToMinAndMax(*replaced_inline);
+      }
     }
   }
 
