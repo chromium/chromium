@@ -121,11 +121,11 @@ ClusterVisitDatabase::ClusterVisitDatabase() = default;
 ClusterVisitDatabase::~ClusterVisitDatabase() = default;
 
 bool ClusterVisitDatabase::InitClusterVisitTable() {
-  if (!GetDB().DoesTableExist("cluster_visit")) {
+  if (!GetDB().DoesTableExist("cluster_visits")) {
     // See `ClusterVisitRow` and `ClusterVisitContextSignals` for details about
     // these fields.
     if (!GetDB().Execute(
-            "CREATE TABLE cluster_visit("
+            "CREATE TABLE cluster_visits("
             "cluster_visit_id INTEGER PRIMARY KEY,"
             "url_id INTEGER NOT NULL,"
             "visit_id INTEGER NOT NULL,"
@@ -140,13 +140,13 @@ bool ClusterVisitDatabase::InitClusterVisitTable() {
 }
 
 bool ClusterVisitDatabase::DropClusterVisitTable() {
-  return GetDB().Execute("DROP TABLE cluster_visit");
+  return GetDB().Execute("DROP TABLE cluster_visits");
 }
 
 void ClusterVisitDatabase::AddClusterVisit(const ClusterVisitRow& row) {
   sql::Statement statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
-      "INSERT INTO cluster_visit (" HISTORY_CLUSTER_VISIT_ROW_FIELDS_WITHOUT_ID
+      "INSERT INTO cluster_visits (" HISTORY_CLUSTER_VISIT_ROW_FIELDS_WITHOUT_ID
       ") VALUES (?, ?, ?, ?, ?)"));
   statement.BindInt64(0, row.url_id);
   statement.BindInt64(1, row.visit_id);
@@ -163,7 +163,7 @@ void ClusterVisitDatabase::AddClusterVisit(const ClusterVisitRow& row) {
 
 void ClusterVisitDatabase::DeleteClusterVisit(int64_t cluster_visit_id) {
   sql::Statement statement(GetDB().GetCachedStatement(
-      SQL_FROM_HERE, "DELETE FROM cluster_visit WHERE cluster_visit_id = ?"));
+      SQL_FROM_HERE, "DELETE FROM cluster_visits WHERE cluster_visit_id = ?"));
   statement.BindInt64(0, cluster_visit_id);
 
   if (!statement.Run()) {
@@ -176,7 +176,7 @@ std::vector<ClusterVisitRow> ClusterVisitDatabase::GetClusterVisits(
     int max_results) {
   sql::Statement statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE, "SELECT" HISTORY_CLUSTER_VISIT_ROW_FIELDS
-                     "FROM cluster_visit "
+                     "FROM cluster_visits "
                      "JOIN visits ON visit_id = visits.id "
                      "ORDER BY visits.visit_time DESC "
                      "LIMIT ?"));
