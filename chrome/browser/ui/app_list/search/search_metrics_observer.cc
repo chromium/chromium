@@ -85,7 +85,7 @@ void LogOverallAction(ash::AppListNotifier::Location location,
 
 SearchMetricsObserver::SearchMetricsObserver(ash::AppListNotifier* notifier) {
   if (notifier) {
-    observer_.Add(notifier);
+    observation_.Observe(notifier);
   } else {
     LogError(Error::kMissingNotifier);
   }

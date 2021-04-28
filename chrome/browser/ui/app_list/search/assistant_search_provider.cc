@@ -115,8 +115,8 @@ AssistantSearchProvider::AssistantSearchProvider() {
   UpdateResults();
 
   // Bind observers.
-  assistant_controller_observer_.Add(ash::AssistantController::Get());
-  assistant_state_observer_.Add(ash::AssistantState::Get());
+  assistant_controller_observation_.Observe(ash::AssistantController::Get());
+  assistant_state_observation_.Observe(ash::AssistantState::Get());
   ash::AssistantSuggestionsController::Get()->GetModel()->AddObserver(this);
 }
 
@@ -133,8 +133,12 @@ ash::AppListSearchResultType AssistantSearchProvider::ResultType() {
 
 void AssistantSearchProvider::OnAssistantControllerDestroying() {
   ash::AssistantSuggestionsController::Get()->GetModel()->RemoveObserver(this);
-  assistant_state_observer_.Remove(ash::AssistantState::Get());
-  assistant_controller_observer_.Remove(ash::AssistantController::Get());
+  DCHECK(assistant_state_observation_.IsObservingSource(
+      ash::AssistantState::Get()));
+  assistant_state_observation_.Reset();
+  DCHECK(assistant_controller_observation_.IsObservingSource(
+      ash::AssistantController::Get()));
+  assistant_controller_observation_.Reset();
 }
 
 void AssistantSearchProvider::OnAssistantFeatureAllowedChanged(

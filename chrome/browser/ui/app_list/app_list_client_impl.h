@@ -17,7 +17,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
@@ -163,8 +163,8 @@ class AppListClientImpl
   std::unique_ptr<app_list::SearchController> search_controller_;
   std::unique_ptr<AppSyncUIStateWatcher> app_sync_ui_state_watcher_;
 
-  ScopedObserver<TemplateURLService, TemplateURLServiceObserver>
-      template_url_service_observer_{this};
+  base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
+      template_url_service_observation_{this};
 
   ash::AppListController* app_list_controller_ = nullptr;
 

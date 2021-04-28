@@ -332,7 +332,7 @@ void AppListClientImpl::SetProfile(Profile* new_profile) {
     current_model_updater_ = nullptr;
   }
 
-  template_url_service_observer_.RemoveAll();
+  template_url_service_observation_.Reset();
 
   profile_ = new_profile;
   if (!profile_)
@@ -345,7 +345,7 @@ void AppListClientImpl::SetProfile(Profile* new_profile) {
   DCHECK(!profile_->IsGuestSession() || profile_->IsOffTheRecord())
       << "Guest mode must use OffTheRecord profile";
 
-  template_url_service_observer_.Add(
+  template_url_service_observation_.Observe(
       TemplateURLServiceFactory::GetForProfile(profile_));
 
   app_list::AppListSyncableService* syncable_service =

@@ -11,7 +11,7 @@
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_notifier.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 
 namespace app_list {
 
@@ -44,8 +44,8 @@ class SearchMetricsObserver : ash::AppListNotifier::Observer {
   void OnQueryChanged(const std::u16string& query) override;
 
  private:
-  ScopedObserver<ash::AppListNotifier, ash::AppListNotifier::Observer>
-      observer_{this};
+  base::ScopedObservation<ash::AppListNotifier, ash::AppListNotifier::Observer>
+      observation_{this};
 
   // Whether the search box currently contains an empty query.
   bool last_query_empty_ = true;
