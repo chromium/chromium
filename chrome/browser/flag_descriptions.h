@@ -2447,6 +2447,9 @@ extern const char kEnhancedClipboardNudgeSessionResetDescription[];
 extern const char kEnableCrOSActionRecorderName[];
 extern const char kEnableCrOSActionRecorderDescription[];
 
+extern const char kEnableDnsProxyName[];
+extern const char kEnableDnsProxyDescription[];
+
 extern const char kEnableEncryptionMigrationName[];
 extern const char kEnableEncryptionMigrationDescription[];
 

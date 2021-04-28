@@ -274,6 +274,11 @@ const base::Feature kEcheSWAResizing{"EcheSWAResizing",
 const base::Feature kEmojiSuggestAddition{"EmojiSuggestAddition",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables the DNS proxy service providing support split and secure DNS
+// for Chrome OS.
+const base::Feature kEnableDnsProxy{"EnableDnsProxy",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables setting the device hostname.
 const base::Feature kEnableHostnameSetting{"EnableHostnameSetting",
                                            base::FEATURE_DISABLED_BY_DEFAULT};

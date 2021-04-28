@@ -1690,6 +1690,11 @@
     "expiry_milestone": 96
   },
   {
+    "name": "enable-dns-proxy",
+    "owners": [ "garrick", "jasongustaman", "cros-networking@google.com" ],
+    "expiry_milestone": 99
+  },
+  {
     "name": "enable-encryption-migration",
     "owners": [ "fukino" ],
     "expiry_milestone": 76
