@@ -24,10 +24,6 @@ class V4L2H264Accelerator : public H264Decoder::H264Accelerator {
  public:
   using Status = H264Decoder::H264Accelerator::Status;
 
-  // Checks whether drivers support the upstream ABI or whether we should
-  // fallback to the V4L2ChromeH264Accelerator.
-  static bool SupportsUpstreamABI(V4L2Device* device);
-
   explicit V4L2H264Accelerator(V4L2DecodeSurfaceHandler* surface_handler,
                                V4L2Device* device);
   ~V4L2H264Accelerator() override;

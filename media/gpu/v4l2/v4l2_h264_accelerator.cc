@@ -44,32 +44,6 @@ class V4L2H264Picture : public H264Picture {
   DISALLOW_COPY_AND_ASSIGN(V4L2H264Picture);
 };
 
-// static
-bool V4L2H264Accelerator::SupportsUpstreamABI(V4L2Device* device) {
-  struct v4l2_querymenu qmenu;
-
-  // This accelerator currently supports frame-based decoding only. Print an
-  // error at runtime if we try to use it with a slice-based decoder.
-  memset(&qmenu, 0, sizeof(qmenu));
-  qmenu.id = V4L2_CID_STATELESS_H264_DECODE_MODE;
-  qmenu.index = V4L2_STATELESS_H264_DECODE_MODE_FRAME_BASED;
-
-  if (device->Ioctl(VIDIOC_QUERYMENU, &qmenu) < 0) {
-    switch (errno) {
-      case EINVAL:
-        VLOGF(1)
-            << "This decoder does not support the frame-based stateless API";
-        return false;
-      default:
-        VPLOGF(1) << "Error while checking for H264_DECODE_MODE control";
-        return false;
-    }
-  }
-
-  VLOGF(1) << "This decoder supports the frame-based stateless API";
-  return true;
-}
-
 V4L2H264Accelerator::V4L2H264Accelerator(
     V4L2DecodeSurfaceHandler* surface_handler,
     V4L2Device* device)
