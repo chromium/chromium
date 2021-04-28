@@ -339,6 +339,70 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
     return std::move(response);
   }
 
+  const translate::LanguageState& GetLanguageState() {
+    auto* const client = ChromeTranslateClient::FromWebContents(
+        browser()->tab_strip_model()->GetActiveWebContents());
+    CHECK(client);
+
+    return client->GetLanguageState();
+  }
+
+  // This is largely a copy of CheckForTranslateUI() from Translate's
+  // translate_language_browsertest.cc.
+  void NavigateToContentAndWaitForLanguageDetection(const char* content) {
+    ASSERT_TRUE(browser());
+
+    auto waiter = CreateTranslateWaiter(
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        translate::TranslateWaiter::WaitEvent::kLanguageDetermined);
+
+    SetTestUrlResponse(content);
+    ASSERT_NO_FATAL_FAILURE(
+        ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
+    waiter->Wait();
+
+    // Language detection sometimes fires early with an "und" (= undetermined)
+    // detected code.
+    size_t wait_counter = 0;
+    constexpr size_t kMaxWaits = 2;
+    while (GetLanguageState().source_language() == "und" ||
+           GetLanguageState().source_language().empty()) {
+      ++wait_counter;
+      ASSERT_LE(wait_counter, kMaxWaits)
+          << "Translate reported no/undetermined language " << wait_counter
+          << " times";
+      CreateTranslateWaiter(
+          browser()->tab_strip_model()->GetActiveWebContents(),
+          translate::TranslateWaiter::WaitEvent::kLanguageDetermined)
+          ->Wait();
+    }
+
+    const TranslateBubbleModel* model =
+        translate::test_utils::GetCurrentModel(browser());
+    ASSERT_NE(nullptr, model);
+  }
+
+  // This is largely a copy of Translate() from Translate's
+  // translate_language_browsertest.cc.
+  void Translate(const bool first_translate) {
+    auto waiter = CreateTranslateWaiter(
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        translate::TranslateWaiter::WaitEvent::kPageTranslated);
+
+    EXPECT_EQ(
+        TranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE,
+        translate::test_utils::GetCurrentModel(browser())->GetViewState());
+
+    translate::test_utils::PressTranslate(browser());
+    if (first_translate)
+      SimulateURLFetch();
+
+    waiter->Wait();
+    EXPECT_EQ(
+        TranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE,
+        translate::test_utils::GetCurrentModel(browser())->GetViewState());
+  }
+
   void CreateTestProfile() {
     AutofillProfile profile;
     test::SetProfileInfo(&profile, "Milton", "C.", "Waddams",
@@ -1924,18 +1988,9 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillEvents) {
   EXPECT_TRUE(select_blur_triggered);
 }
 
-// Test fails on Linux ASAN and flakes on Windows, see http://crbug.com/532737
-// and http://crbug.com/1203410.
-#if defined(ADDRESS_SANITIZER) || defined(OS_WIN)
-#define MAYBE_AutofillAfterTranslate DISABLED_AutofillAfterTranslate
-#else
-#define MAYBE_AutofillAfterTranslate AutofillAfterTranslate
-#endif  // defined(ADDRESS_SANITIZER) || defined(OS_WIN)
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, MAYBE_AutofillAfterTranslate) {
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillAfterTranslate) {
   ASSERT_TRUE(TranslateService::IsTranslateBubbleEnabled());
-
   translate::TranslateManager::SetIgnoreMissingKeyForTesting(true);
-
   CreateTestProfile();
 
   static const char kForm[] =
@@ -1975,36 +2030,11 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, MAYBE_AutofillAfterTranslate) {
       "彼にいくつかの素晴らしいを調達することができます。それから、いくつかの"
       "利";
 
-  // Set up an observer to be able to wait for the bubble to be shown.
-  auto language_waiter = translate::CreateTranslateWaiter(
-      GetWebContents(),
-      translate::TranslateWaiter::WaitEvent::kLanguageDetermined);
-
-  SetTestUrlResponse(kForm);
-  ASSERT_NO_FATAL_FAILURE(
-      ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
-
-  language_waiter->Wait();
-
-  // Verify current translate step.
-  const TranslateBubbleModel* model =
-      translate::test_utils::GetCurrentModel(browser());
-  ASSERT_NE(nullptr, model);
-  EXPECT_EQ(TranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE,
-            model->GetViewState());
-
-  translate::test_utils::PressTranslate(browser());
-
-  // Wait for translation.
-  auto translate_waiter = translate::CreateTranslateWaiter(
-      GetWebContents(), translate::TranslateWaiter::WaitEvent::kPageTranslated);
-
-  // Simulate the translate script being retrieved.
-  // Pass fake google.translate lib as the translate script.
-  SimulateURLFetch();
-
-  translate_waiter->Wait();
-
+  NavigateToContentAndWaitForLanguageDetection(kForm);
+  ASSERT_EQ("ja", GetLanguageState().current_language());
+  ASSERT_NO_FATAL_FAILURE(Translate(true));
+  ASSERT_EQ("ja", GetLanguageState().source_language());
+  ASSERT_EQ("en", GetLanguageState().current_language());
   TryBasicFormFill();
 }
 
