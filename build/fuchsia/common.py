@@ -124,6 +124,10 @@ def SubprocessCallWithTimeout(command, silent=False, timeout_secs=None):
       process.send_signal(signal.SIGKILL)
 
     timeout_timer = threading.Timer(timeout_secs, interrupt_process)
+
+    # Ensure that keyboard interrupts are handled properly (crbug/1198113).
+    timeout_timer.daemon = True
+
     timeout_timer.start()
 
   out, err = process.communicate()

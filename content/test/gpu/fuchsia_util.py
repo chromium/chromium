@@ -47,6 +47,8 @@ def RunTestOnFuchsiaDevice(script_cmd):
 
   # Pass all other arguments to the gpu integration tests.
   script_cmd.extend(test_args)
+  listener_process = None
+  symbolizer_process = None
   try:
     with GetDeploymentTargetForArgs(runner_script_args) as target:
       target.Start()
@@ -64,15 +66,15 @@ def RunTestOnFuchsiaDevice(script_cmd):
         script_cmd.append('-v')
 
       # Set up logging of WebEngine
-      listener = target.RunCommandPiped(['log_listener'],
-                                        stdout=subprocess.PIPE,
-                                        stderr=subprocess.STDOUT)
+      listener_process = target.RunCommandPiped(['log_listener'],
+                                                stdout=subprocess.PIPE,
+                                                stderr=subprocess.STDOUT)
       build_ids_paths = map(
           lambda package_name: os.path.join(web_engine_dir, package_name,
                                             'ids.txt'), package_names)
-      RunSymbolizer(listener.stdout,
-                    open(runner_script_args.system_log_file, 'w'),
-                    build_ids_paths)
+      symbolizer_process = RunSymbolizer(
+          listener_process.stdout, open(runner_script_args.system_log_file,
+                                        'w'), build_ids_paths)
 
       # Keep the Amber repository live while the test runs.
       with target.GetAmberRepo():
@@ -86,3 +88,7 @@ def RunTestOnFuchsiaDevice(script_cmd):
   finally:
     if temp_log_file:
       shutil.rmtree(os.path.dirname(runner_script_args.system_log_file))
+    if listener_process:
+      listener_process.kill()
+    if symbolizer_process:
+      symbolizer_process.kill()
