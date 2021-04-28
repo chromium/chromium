@@ -52,6 +52,11 @@ Polymer({
   is: 'cr-input',
 
   properties: {
+    /** @type {string|undefined} */
+    ariaDescription: {
+      type: String,
+    },
+
     ariaLabel: {
       type: String,
       value: '',

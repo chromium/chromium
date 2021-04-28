@@ -331,6 +331,20 @@ suite('cr-input', function() {
     assertFalse(input.checkValidity());
   });
 
+  test('ariaDescriptionsCorrect', function() {
+    assertEquals(crInput.inputElement.getAttribute('aria-description'), null);
+
+    const ariaDescription = 'description';
+    crInput.ariaDescription = ariaDescription;
+    flush();
+    assertEquals(
+        crInput.inputElement.getAttribute('aria-description'), ariaDescription);
+
+    crInput.ariaDescription = undefined;
+    flush();
+    assertEquals(crInput.inputElement.getAttribute('aria-description'), null);
+  });
+
   test('ariaLabelsCorrect', function() {
     assertFalse(!!crInput.inputElement.getAttribute('aria-label'));
 
