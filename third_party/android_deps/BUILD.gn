@@ -1258,6 +1258,26 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  android_aar_prebuilt("google_firebase_firebase_iid_java") {
+    aar_path = "libs/com_google_firebase_firebase_iid/firebase-iid-21.0.1.aar"
+    info_path = "libs/com_google_firebase_firebase_iid/com_google_firebase_firebase_iid.info"
+    deps = [
+      ":google_firebase_firebase_common_java",
+      ":google_firebase_firebase_components_java",
+      ":google_firebase_firebase_iid_interop_java",
+      ":google_firebase_firebase_installations_interop_java",
+      ":google_firebase_firebase_installations_java",
+      ":google_play_services_basement_java",
+      ":google_play_services_cloud_messaging_java",
+      ":google_play_services_stats_java",
+      ":google_play_services_tasks_java",
+      "//third_party/androidx:androidx_collection_collection_java",
+      "//third_party/androidx:androidx_core_core_java",
+      "//third_party/androidx:androidx_legacy_legacy_support_core_utils_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("google_firebase_firebase_messaging_java") {
     aar_path = "libs/com_google_firebase_firebase_messaging/firebase-messaging-21.0.1.aar"
     info_path = "libs/com_google_firebase_firebase_messaging/com_google_firebase_firebase_messaging.info"
@@ -1975,33 +1995,6 @@ if (!limit_android_deps) {
     deps = [
       ":google_firebase_firebase_encoders_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
-    ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt("google_firebase_firebase_iid_java") {
-    aar_path = "libs/com_google_firebase_firebase_iid/firebase-iid-21.0.1.aar"
-    info_path = "libs/com_google_firebase_firebase_iid/com_google_firebase_firebase_iid.info"
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    deps = [
-      ":google_firebase_firebase_common_java",
-      ":google_firebase_firebase_components_java",
-      ":google_firebase_firebase_iid_interop_java",
-      ":google_firebase_firebase_installations_interop_java",
-      ":google_firebase_firebase_installations_java",
-      ":google_play_services_basement_java",
-      ":google_play_services_cloud_messaging_java",
-      ":google_play_services_stats_java",
-      ":google_play_services_tasks_java",
-      "//third_party/androidx:androidx_collection_collection_java",
-      "//third_party/androidx:androidx_core_core_java",
-      "//third_party/androidx:androidx_legacy_legacy_support_core_utils_java",
     ]
   }
 
