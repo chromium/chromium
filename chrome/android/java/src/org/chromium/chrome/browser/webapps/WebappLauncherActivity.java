@@ -163,7 +163,11 @@ public class WebappLauncherActivity extends Activity {
 
         if (FirstRunFlowSequencer.launch(this, intent, false /* requiresBroadcast */,
                     shouldPreferLightweightFre(launchData))) {
-            ApiCompatibilityUtils.finishAndRemoveTask(this);
+            // Do not remove the current task. The full FRE reuses the task due to
+            // android:launchMode arguments, while the LWFRE does not. So removing the task would
+            // break the full FRE. The LWFRE will still clean up the task since this is the only
+            // activity in the current task. See https://crbug.com/1201353 for more details.
+            finish();
             return;
         }
 

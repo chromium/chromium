@@ -26,10 +26,11 @@ import org.chromium.base.Log;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
-import org.chromium.chrome.R;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.chrome.browser.firstrun.FirstRunActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.firstrun.LightweightFirstRunActivity;
+import org.chromium.chrome.browser.webapps.WebappActivity;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.chrome.test.pagecontroller.controllers.webapk.first_run.LightWeightTOSController;
 import org.chromium.chrome.test.pagecontroller.rules.ChromeUiApplicationTestRule;
@@ -53,7 +54,11 @@ public class MapsGoFirstRunTest {
             "policy={\"TosDialogBehavior\":1}";
     private static final String FLAG_POLICY_TOS_DIALOG_BEHAVIOR_SKIP =
             "policy={\"TosDialogBehavior\":2}";
-    private static final long MAPS_GO_FRE_TIMEOUT_MS = 9000L;
+
+    // Launching the PWA is currently taking 9-10 seconds on emulators. Increasing this
+    // substantially to avoid flakes. See https://crbug.com/1142821.
+    private static final long MAPS_GO_FRE_TIMEOUT_MS = 20000L;
+
     public ChromeUiAutomatorTestRule mUiAutomatorRule = new ChromeUiAutomatorTestRule();
     public ChromeUiApplicationTestRule mChromeUiRule = new ChromeUiApplicationTestRule();
 
@@ -61,6 +66,8 @@ public class MapsGoFirstRunTest {
     public final TestRule mChain = RuleChain.outerRule(mChromeUiRule).around(mUiAutomatorRule);
 
     private Activity mLightweightFreActivity;
+    private Activity mFirstRunActivity;
+    private Activity mWebappActivity;
     private ApplicationStatus.ActivityStateListener mActivityStateListener;
     private final CallbackHelper mFreStoppedCallback = new CallbackHelper();
 
@@ -73,6 +80,10 @@ public class MapsGoFirstRunTest {
             if (activity instanceof LightweightFirstRunActivity) {
                 if (mLightweightFreActivity == null) mLightweightFreActivity = activity;
                 if (newState == ActivityState.STOPPED) mFreStoppedCallback.notifyCalled();
+            } else if (activity instanceof FirstRunActivity) {
+                if (mFirstRunActivity == null) mFirstRunActivity = activity;
+            } else if (activity instanceof WebappActivity) {
+                if (mWebappActivity == null) mWebappActivity = activity;
             }
         };
         ApplicationStatus.registerStateListenerForAllActivities(mActivityStateListener);
@@ -85,7 +96,6 @@ public class MapsGoFirstRunTest {
     }
 
     @Test
-    @DisabledTest(message = "https://crbug.com/1142821")
     public void testFirstRunIsShown() {
         LightweightFirstRunActivity.setSupportSkippingTos(false);
         FirstRunStatus.setLightweightFirstRunFlowComplete(false);
@@ -95,7 +105,21 @@ public class MapsGoFirstRunTest {
         Assert.assertTrue("Light weight TOS page should be shown.", controller.isCurrentPageThis());
 
         controller.acceptAndContinue();
-        verifyRunningInChromeBannerOnScreen();
+        // Note for offline devices this PWA will not be healthy, see https://crbug.com/1142821 for
+        // details. Just verify the right activity has started.
+        CriteriaHelper.pollInstrumentationThread(
+                () -> mWebappActivity != null, "WebappActivity did not start.");
+    }
+
+    @Test
+    public void testFirstRunFallbackForInvalidPwa() {
+        // Verification will fail for this APK, so instead of using the LWFRE, the full FRE will be
+        // shown instead.
+        WebApkValidator.setDisableValidationForTesting(false);
+        launchWebapk("org.chromium.test.maps_go_webapk", "org.chromium.chrome");
+        CriteriaHelper.pollInstrumentationThread(
+                () -> mFirstRunActivity != null, "FirstRunActivity did not start");
+        Assert.assertNull("Lightweight FRE should not have started.", mLightweightFreActivity);
     }
 
     @Test
@@ -159,13 +183,5 @@ public class MapsGoFirstRunTest {
                 UiAutomatorUtils.getInstance().getLocatorHelper(MAPS_GO_FRE_TIMEOUT_MS);
         IUi2Locator packageLocator = Ui2Locators.withPackageName(chromePackageName);
         helper.verifyOnScreen(packageLocator);
-    }
-
-    private void verifyRunningInChromeBannerOnScreen() {
-        UiLocatorHelper helper =
-                UiAutomatorUtils.getInstance().getLocatorHelper(MAPS_GO_FRE_TIMEOUT_MS);
-        IUi2Locator runningInChromeBanner =
-                Ui2Locators.withContentDescString(R.string.twa_running_in_chrome);
-        helper.verifyOnScreen(runningInChromeBanner);
     }
 }
