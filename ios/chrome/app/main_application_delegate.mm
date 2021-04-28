@@ -26,7 +26,6 @@
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
-#import "ios/testing/perf/startupLoggers.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -122,8 +121,6 @@ const int kMainIntentCheckDelay = 1;
     didFinishLaunchingWithOptions:(NSDictionary*)launchOptions {
   self.didFinishLaunching = YES;
 
-  startup_loggers::RegisterAppDidFinishLaunchingTime();
-
   _mainController.window = self.window;
 
   BOOL inBackground =
@@ -169,7 +166,6 @@ const int kMainIntentCheckDelay = 1;
     self.sceneState.activationLevel = SceneActivationLevelForegroundActive;
   }
 
-  startup_loggers::RegisterAppDidBecomeActiveTime();
   if (_appState.initStage <= InitStageSafeMode)
     return;
 

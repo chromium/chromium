@@ -315,7 +315,6 @@ source_set("app_internal") {
     "//ios/public/provider/chrome/browser/mailto",
     "//ios/public/provider/chrome/browser/signin",
     "//ios/public/provider/chrome/browser/user_feedback",
-    "//ios/testing/perf:startup",
     "//ios/web/common:features",
     "//ios/web/public/webui",
     "//net",
@@ -367,7 +366,6 @@ source_set("main") {
     "//ios/chrome/app/startup:startup_basic",
     "//ios/chrome/browser/crash_report",
     "//ios/chrome/common",
-    "//ios/testing/perf:startup",
   ]
   if (ios_enable_sandbox_dump) {
     deps += [ "//ios/chrome/app/startup:sandbox_dump" ]
