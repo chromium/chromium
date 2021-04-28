@@ -1491,6 +1491,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-commerce-merchant-viewer",
+    "owners": [ "chrome-shopping@google.com" ],
+    "expiry_milestone": 94
+  },
+  {
     "name": "enable-conditional-tabstrip",
     "owners": [ "memex-team@google.com" ],
     "expiry_milestone": 90
@@ -5337,7 +5342,7 @@
     "name": "webnotes-stylize",
     "owners": [ "gayane", "seblalancette"],
     "expiry_milestone": 99
-  },  
+  },
   {
     "name": "webpage-alternative-text-zoom",
     "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
