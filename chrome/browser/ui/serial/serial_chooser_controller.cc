@@ -42,7 +42,7 @@ SerialChooserController::SerialChooserController(
 
   chooser_context_->GetPortManager()->GetDevices(base::BindOnce(
       &SerialChooserController::OnGetDevices, weak_factory_.GetWeakPtr()));
-  observer_.Add(chooser_context_.get());
+  observation_.Observe(chooser_context_.get());
 }
 
 SerialChooserController::~SerialChooserController() {
@@ -152,7 +152,7 @@ void SerialChooserController::OnPortRemoved(
 }
 
 void SerialChooserController::OnPortManagerConnectionError() {
-  observer_.RemoveAll();
+  observation_.Reset();
 }
 
 void SerialChooserController::OnGetDevices(

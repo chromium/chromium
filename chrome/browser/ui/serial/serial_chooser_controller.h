@@ -10,7 +10,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/chooser_controller/chooser_controller.h"
 #include "chrome/browser/serial/serial_chooser_context.h"
 #include "content/public/browser/serial_chooser.h"
@@ -63,11 +63,11 @@ class SerialChooserController final
   const int frame_tree_node_id_;
 
   base::WeakPtr<SerialChooserContext> chooser_context_;
-  ScopedObserver<SerialChooserContext,
-                 SerialChooserContext::PortObserver,
-                 &SerialChooserContext::AddPortObserver,
-                 &SerialChooserContext::RemovePortObserver>
-      observer_{this};
+  base::ScopedObservation<SerialChooserContext,
+                          SerialChooserContext::PortObserver,
+                          &SerialChooserContext::AddPortObserver,
+                          &SerialChooserContext::RemovePortObserver>
+      observation_{this};
 
   std::vector<device::mojom::SerialPortInfoPtr> ports_;
 
