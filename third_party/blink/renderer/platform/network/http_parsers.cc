@@ -252,7 +252,7 @@ blink::ParsedHeadersPtr ConvertToBlink(const ParsedHeadersPtr& in) {
           ? base::make_optional(ConvertToBlink(in->critical_ch.value()))
           : base::nullopt,
       in->xfo, ConvertToBlink(in->link_headers),
-      ConvertToBlink(in->timing_allow_origin));
+      ConvertToBlink(in->timing_allow_origin), in->bfcache_opt_in_unload);
 }
 
 }  // namespace mojom

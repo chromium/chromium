@@ -73,4 +73,8 @@ struct ParsedHeaders {
   array<LinkHeader> link_headers;
 
   TimingAllowOrigin? timing_allow_origin;
+
+  // Parsed BFCache-Opt-In value. Currently "unload" is the only possible value,
+  // so record if that's present.
+  bool bfcache_opt_in_unload = false;
 };
