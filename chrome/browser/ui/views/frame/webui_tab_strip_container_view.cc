@@ -188,6 +188,13 @@ bool EventTypeCanCloseTabStrip(const ui::EventType& type) {
   }
 }
 
+TabStripUI* GetTabStripUI(content::WebContents* web_contents) {
+  content::WebUI* const webui = web_contents->GetWebUI();
+  return webui && webui->GetController()
+             ? webui->GetController()->template GetAs<TabStripUI>()
+             : nullptr;
+}
+
 class WebUITabStripWebView : public views::WebView {
  public:
   METADATA_HEADER(WebUITabStripWebView);
@@ -506,9 +513,8 @@ WebUITabStripContainerView::WebUITabStripContainerView(
   view_observations_.AddObservation(tab_contents_container_);
   view_observations_.AddObservation(top_container_);
 
-  TabStripUI* const tab_strip_ui = static_cast<TabStripUI*>(
-      web_view_->GetWebContents()->GetWebUI()->GetController());
-  tab_strip_ui->Initialize(browser_view_->browser(), this);
+  if (TabStripUI* tab_strip_ui = GetTabStripUI(web_view_->GetWebContents()))
+    tab_strip_ui->Initialize(browser_view_->browser(), this);
 }
 
 WebUITabStripContainerView::~WebUITabStripContainerView() {
@@ -904,9 +910,8 @@ void WebUITabStripContainerView::OnViewBoundsChanged(View* observed_view) {
     // replaceable with PreferredSizeChanged.
     InvalidateLayout();
 
-    TabStripUI* const tab_strip_ui = static_cast<TabStripUI*>(
-        web_view_->GetWebContents()->GetWebUI()->GetController());
-    tab_strip_ui->LayoutChanged();
+    if (TabStripUI* tab_strip_ui = GetTabStripUI(web_view_->GetWebContents()))
+      tab_strip_ui->LayoutChanged();
   }
 }
 
@@ -923,10 +928,8 @@ bool WebUITabStripContainerView::SetPaneFocusAndFocusDefault() {
   // Make sure the pane first receives focus, then send a WebUI event to the
   // front-end so the correct HTML element receives focus.
   bool received_focus = AccessiblePaneView::SetPaneFocusAndFocusDefault();
-  if (received_focus) {
-    TabStripUI* const tab_strip_ui = static_cast<TabStripUI*>(
-        web_view_->GetWebContents()->GetWebUI()->GetController());
+  TabStripUI* tab_strip_ui = GetTabStripUI(web_view_->GetWebContents());
+  if (received_focus && tab_strip_ui)
     tab_strip_ui->ReceivedKeyboardFocus();
-  }
   return received_focus;
 }
