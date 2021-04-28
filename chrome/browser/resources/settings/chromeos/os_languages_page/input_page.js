@@ -501,4 +501,13 @@ Polymer({
     return !this.languageSettingsV2Update2Enabled_ &&
         (this.spellCheckLanguages_ && this.spellCheckLanguages_.length === 0);
   },
+
+  /**
+   * @param {boolean} update2Enabled
+   * @param {boolean} spellCheckOn
+   * @return {boolean}
+   */
+  isCollapseOpened_(update2Enabled, spellCheckOn) {
+    return !update2Enabled || spellCheckOn;
+  },
 });
