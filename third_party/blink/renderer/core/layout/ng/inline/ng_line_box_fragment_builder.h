@@ -72,8 +72,6 @@ class CORE_EXPORT NGLineBoxFragmentBuilder final
     break_token_ = break_token;
   }
 
-  void AddChild(const NGPhysicalFragment&, const LogicalOffset&);
-
   // Propagate data in |ChildList| without adding them to this builder. When
   // adding children as fragment items, they appear in the container, but there
   // are some data that should be propagated through line box fragments.

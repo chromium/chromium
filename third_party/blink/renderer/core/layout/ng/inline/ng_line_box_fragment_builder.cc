@@ -38,12 +38,6 @@ void NGLineBoxFragmentBuilder::SetIsEmptyLineBox() {
   line_box_type_ = NGPhysicalLineBoxFragment::kEmptyLineBox;
 }
 
-void NGLineBoxFragmentBuilder::AddChild(const NGPhysicalFragment& child,
-                                        const LogicalOffset& child_offset) {
-  PropagateChildData(child, child_offset);
-  AddChildInternal(&child, child_offset);
-}
-
 void NGLineBoxFragmentBuilder::PropagateChildrenData(
     NGLogicalLineItems& children) {
   for (unsigned index = 0; index < children.size(); ++index) {
