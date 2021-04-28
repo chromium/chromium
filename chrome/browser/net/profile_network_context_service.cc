@@ -139,7 +139,7 @@ network::mojom::AdditionalCertificatesPtr GetAdditionalCertificates(
 // Tests allowing ambient authentication with default credentials based on the
 // profile type.
 bool IsAmbientAuthAllowedForProfile(Profile* profile) {
-  if (profile->IsRegularProfile() && !profile->IsEphemeralGuestProfile())
+  if (profile->IsRegularProfile())
     return true;
 
   // Non-primary OTR profiles are not used to create browser windows and are

@@ -58,7 +58,7 @@ void ProfileDestroyer::DestroyProfileWhenAppropriate(Profile* const profile) {
   profile->MaybeSendDestroyedNotification();
 
   if (!profile->IsOffTheRecord()) {
-    DestroyRegularProfileNow(profile);
+    DestroyOriginalProfileNow(profile);
     return;
   }
 
@@ -101,10 +101,10 @@ void ProfileDestroyer::DestroyOffTheRecordProfileNow(Profile* const profile) {
 }
 
 // static
-void ProfileDestroyer::DestroyRegularProfileNow(Profile* const profile) {
+void ProfileDestroyer::DestroyOriginalProfileNow(Profile* const profile) {
   DCHECK(profile);
-  DCHECK(profile->IsRegularProfile());
-  TRACE_EVENT("shutdown", "ProfileDestroyer::DestroyRegularProfileNow",
+  DCHECK(!profile->IsOffTheRecord());
+  TRACE_EVENT("shutdown", "ProfileDestroyer::DestroyOriginalProfileNow",
               [&](perfetto::EventContext ctx) {
                 auto* proto =
                     ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()

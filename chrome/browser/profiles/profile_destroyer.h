@@ -51,8 +51,8 @@ class ProfileDestroyer : public content::RenderProcessHostObserver {
   // pointer comparison is allowed, it will never be dereferenced as a Profile.
   static HostSet GetHostsForProfile(void* const profile_ptr);
 
-  // Destroys a regular profile immediately.
-  static void DestroyRegularProfileNow(Profile* const profile);
+  // Destroys an Original (non-off-the-record) profile immediately.
+  static void DestroyOriginalProfileNow(Profile* const profile);
 
   // Destroys an OffTheRecord profile immediately and removes it from all
   // pending destroyers.

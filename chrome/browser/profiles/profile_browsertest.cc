@@ -1042,7 +1042,7 @@ class EphemeralGuestProfileBrowserTest : public ProfileBrowserTest {
 IN_PROC_BROWSER_TEST_F(EphemeralGuestProfileBrowserTest, TestProfileType) {
   Profile* guest_profile = CreateGuestBrowser()->profile();
 
-  EXPECT_TRUE(guest_profile->IsRegularProfile());
+  EXPECT_FALSE(guest_profile->IsRegularProfile());
   EXPECT_FALSE(guest_profile->IsOffTheRecord());
   EXPECT_FALSE(guest_profile->IsGuestSession());
   EXPECT_TRUE(guest_profile->IsEphemeralGuestProfile());

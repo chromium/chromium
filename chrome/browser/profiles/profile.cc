@@ -368,9 +368,8 @@ std::string Profile::GetDebugName() const {
 }
 
 bool Profile::IsRegularProfile() const {
-  // TODO(https://crbug.com/1142370): Update to return false for the non-otr
-  // profile of Guest and System profiles.
-  return !IsOffTheRecord();
+  return profile_metrics::GetBrowserProfileType(this) ==
+         profile_metrics::BrowserProfileType::kRegular;
 }
 
 bool Profile::IsIncognitoProfile() const {
