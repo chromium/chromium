@@ -60,6 +60,7 @@ class UserSessionManagerTestApi;
 }  // namespace test
 
 class EasyUnlockKeyManager;
+class HelpAppNotificationController;
 class InputEventsBlocker;
 class LoginDisplayHost;
 class StubAuthenticatorBuilder;
@@ -331,8 +332,8 @@ class UserSessionManager
   // Shows U2F notification if necessary.
   void MaybeShowU2FNotification();
 
-  // Shows Release Notes notification if necessary.
-  void MaybeShowReleaseNotesNotification(Profile* profile);
+  // Shows Help App notification if necessary.
+  void MaybeShowHelpAppNotification(Profile* profile);
 
  protected:
   // Protected for testability reasons.
@@ -625,7 +626,8 @@ class UserSessionManager
 
   std::unique_ptr<U2FNotification> u2f_notification_;
 
-  std::unique_ptr<ReleaseNotesNotification> release_notes_notification_;
+  std::unique_ptr<HelpAppNotificationController>
+      help_app_notification_controller_;
 
   std::unique_ptr<TurnSyncOnHelper> turn_sync_on_helper_;
 

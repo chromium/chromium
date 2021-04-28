@@ -73,6 +73,7 @@
 #include "chrome/browser/ash/settings/owner_flags_storage.h"
 #include "chrome/browser/ash/sync/os_sync_util.h"
 #include "chrome/browser/ash/sync/turn_sync_on_helper.h"
+#include "chrome/browser/ash/web_applications/help_app/help_app_notification_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -1795,8 +1796,8 @@ void UserSessionManager::ShowNotificationsIfNeeded(Profile* profile) {
   // Show legacy U2F notification if applicable.
   MaybeShowU2FNotification();
 
-  // Show Release Notes notification if applicable.
-  MaybeShowReleaseNotesNotification(profile);
+  // Show a Help app notification if applicable.
+  MaybeShowHelpAppNotification(profile);
 
   g_browser_process->platform_part()
       ->browser_policy_connector_chromeos()
@@ -2205,7 +2206,7 @@ void UserSessionManager::Shutdown() {
   token_observers_.clear();
   always_on_vpn_manager_.reset();
   u2f_notification_.reset();
-  release_notes_notification_.reset();
+  help_app_notification_controller_.reset();
   password_service_voted_.reset();
   password_was_saved_ = false;
   secure_dns_manager_.reset();
@@ -2246,13 +2247,13 @@ void UserSessionManager::MaybeShowU2FNotification() {
   }
 }
 
-void UserSessionManager::MaybeShowReleaseNotesNotification(Profile* profile) {
+void UserSessionManager::MaybeShowHelpAppNotification(Profile* profile) {
   if (!ProfileHelper::IsPrimaryProfile(profile))
     return;
-  if (!release_notes_notification_) {
-    release_notes_notification_ =
-        std::make_unique<ReleaseNotesNotification>(profile);
-    release_notes_notification_->MaybeShowReleaseNotes();
+  if (!help_app_notification_controller_) {
+    help_app_notification_controller_ =
+        std::make_unique<HelpAppNotificationController>(profile);
+    help_app_notification_controller_->MaybeShowNotification();
   }
 }
 
