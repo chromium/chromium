@@ -949,6 +949,8 @@ TEST_P(ParameterizedLocalCaretRectTest, AfterTrimedLineBreak) {
 
 // See also NGCaretPositionTest.MultiColumnSingleText
 TEST_P(ParameterizedLocalCaretRectTest, MultiColumnSingleText) {
+  RuntimeEnabledFeaturesTestHelpers::ScopedLayoutNGBlockFragmentation
+      block_fragmentation(LayoutNGEnabled());
   LoadAhem();
   InsertStyleElement(
       "div { font: 10px/15px Ahem; column-count: 3; width: 20ch; }");
@@ -959,7 +961,7 @@ TEST_P(ParameterizedLocalCaretRectTest, MultiColumnSingleText) {
   const auto& target = *GetElementById("target");
   const Text& text = *To<Text>(target.firstChild());
   const bool block_fragmentation_enabled =
-      target.GetLayoutObject()->IsLayoutNGObject();
+      RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled();
 
   // Note: Legacy layout caret rect is in stitch coordinate space == as if
   // columns are laid out vertically.

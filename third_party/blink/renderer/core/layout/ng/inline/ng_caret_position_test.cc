@@ -320,6 +320,8 @@ TEST_F(NGCaretPositionTest, GeneratedZeroWidthSpace) {
 
 // See also ParameterizedLocalCaretRectTest.MultiColumnSingleText
 TEST_F(NGCaretPositionTest, MultiColumnSingleText) {
+  RuntimeEnabledFeaturesTestHelpers::ScopedLayoutNGBlockFragmentation
+      block_fragmentation(true);
   LoadAhem();
   InsertStyleElement(
       "div { font: 10px/15px Ahem; column-count: 3; width: 20ch; }");
@@ -329,8 +331,6 @@ TEST_F(NGCaretPositionTest, MultiColumnSingleText) {
   //    def jkl
   const auto& target = *GetElementById("target");
   const Text& text = *To<Text>(target.firstChild());
-  if (!target.GetLayoutObject()->IsLayoutNGObject())
-    return;
 
   NGInlineCursor cursor;
   cursor.MoveTo(*text.GetLayoutObject());
