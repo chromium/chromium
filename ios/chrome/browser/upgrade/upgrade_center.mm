@@ -16,6 +16,7 @@
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "components/version_info/version_info.h"
+#include "ios/chrome/browser/infobars/infobar_utils.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/upgrade/upgrade_constants.h"
@@ -312,8 +313,7 @@ class UpgradeInfoBarDismissObserver
                                                tabId:tabId];
 
   [_upgradeInfoBarDelegates setObject:delegateHolder forKey:tabId];
-  infoBarManager->AddInfoBar(
-      infoBarManager->CreateConfirmInfoBar(std::move(infobarDelegate)));
+  infoBarManager->AddInfoBar(CreateConfirmInfoBar(std::move(infobarDelegate)));
 }
 
 - (void)tabWillClose:(NSString*)tabId {

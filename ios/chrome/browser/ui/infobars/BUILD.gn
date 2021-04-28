@@ -194,6 +194,7 @@ source_set("test_support") {
   deps = [
     "//base",
     "//components/infobars/core",
+    "//ios/chrome/browser/infobars",
   ]
 }
 

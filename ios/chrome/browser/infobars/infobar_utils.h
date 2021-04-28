@@ -14,7 +14,6 @@ class InfoBar;
 }
 
 // Returns a confirm infobar that owns |delegate|.
-// Visible for testing.
 std::unique_ptr<infobars::InfoBar> CreateConfirmInfoBar(
     std::unique_ptr<ConfirmInfoBarDelegate> delegate);
 

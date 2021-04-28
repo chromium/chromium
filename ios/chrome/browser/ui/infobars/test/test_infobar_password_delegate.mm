@@ -12,6 +12,7 @@
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/stub_form_saver.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
+#include "ios/chrome/browser/infobars/infobar_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -86,8 +87,8 @@ TestInfobarPasswordDelegate::TestInfobarPasswordDelegate(
 bool TestInfobarPasswordDelegate::Create(
     infobars::InfoBarManager* infobar_manager) {
   DCHECK(infobar_manager);
-  return !!infobar_manager->AddInfoBar(infobar_manager->CreateConfirmInfoBar(
-      std::unique_ptr<ConfirmInfoBarDelegate>(this)));
+  return !!infobar_manager->AddInfoBar(
+      CreateConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate>(this)));
 }
 
 TestInfobarPasswordDelegate::InfoBarIdentifier

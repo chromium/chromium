@@ -16,6 +16,7 @@ source_set("test") {
     "//components/autofill/core/common",
     "//components/infobars/core",
     "//components/password_manager/core/browser:test_support",
+    "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/passwords:infobar_delegates",
     "//ios/chrome/browser/passwords:public",
     "//ios/chrome/browser/ui/infobars:infobars_ui",

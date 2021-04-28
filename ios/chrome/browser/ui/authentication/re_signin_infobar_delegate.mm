@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#include "ios/chrome/browser/infobars/infobar_utils.h"
 #include "ios/chrome/browser/signin/authentication_service.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
@@ -54,7 +55,7 @@ std::unique_ptr<infobars::InfoBar> ReSignInInfoBarDelegate::CreateInfoBar(
       ReSignInInfoBarDelegate::CreateInfoBarDelegate(browser_state, presenter);
   if (!delegate)
     return nullptr;
-  return infobar_manager->CreateConfirmInfoBar(std::move(delegate));
+  return CreateConfirmInfoBar(std::move(delegate));
 }
 
 // static
