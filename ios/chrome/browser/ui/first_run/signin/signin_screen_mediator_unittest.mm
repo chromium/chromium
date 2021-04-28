@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/first_run/signin_screen_mediator.h"
+#import "ios/chrome/browser/ui/first_run/signin/signin_screen_mediator.h"
 
 #import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
-#import "ios/chrome/browser/ui/first_run/signin_screen_consumer.h"
-#import "ios/chrome/browser/ui/first_run/signin_screen_mediator_delegate.h"
+#import "ios/chrome/browser/ui/first_run/signin/signin_screen_consumer.h"
+#import "ios/chrome/browser/ui/first_run/signin/signin_screen_mediator_delegate.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #include "ios/public/provider/chrome/browser/test_chrome_browser_provider.h"

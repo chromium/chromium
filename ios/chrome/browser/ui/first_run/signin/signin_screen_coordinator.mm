@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/first_run/signin_screen_coordinator.h"
+#import "ios/chrome/browser/ui/first_run/signin/signin_screen_coordinator.h"
 
 #include "ios/chrome/browser/first_run/first_run_metrics.h"
 #include "ios/chrome/browser/main/browser.h"
@@ -14,10 +14,10 @@
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
-#import "ios/chrome/browser/ui/first_run/signin_screen_consumer.h"
-#import "ios/chrome/browser/ui/first_run/signin_screen_mediator.h"
-#import "ios/chrome/browser/ui/first_run/signin_screen_mediator_delegate.h"
-#import "ios/chrome/browser/ui/first_run/signin_screen_view_controller.h"
+#import "ios/chrome/browser/ui/first_run/signin/signin_screen_consumer.h"
+#import "ios/chrome/browser/ui/first_run/signin/signin_screen_mediator.h"
+#import "ios/chrome/browser/ui/first_run/signin/signin_screen_mediator_delegate.h"
+#import "ios/chrome/browser/ui/first_run/signin/signin_screen_view_controller.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 

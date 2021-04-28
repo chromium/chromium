@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_FIRST_RUN_SIGNIN_SCREEN_VIEW_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_UI_FIRST_RUN_SIGNIN_SCREEN_VIEW_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_UI_FIRST_RUN_SIGNIN_SIGNIN_SCREEN_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_UI_FIRST_RUN_SIGNIN_SIGNIN_SCREEN_VIEW_CONTROLLER_H_
 
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_view_controller.h"
-#import "ios/chrome/browser/ui/first_run/signin_screen_consumer.h"
+#import "ios/chrome/browser/ui/first_run/signin/signin_screen_consumer.h"
 
 // Delegate of sign-in screen view controller.
 @protocol
@@ -29,4 +29,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_SIGNIN_SCREEN_VIEW_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_UI_FIRST_RUN_SIGNIN_SIGNIN_SCREEN_VIEW_CONTROLLER_H_

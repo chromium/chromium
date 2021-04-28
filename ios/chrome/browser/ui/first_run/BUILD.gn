@@ -29,8 +29,6 @@ source_set("first_run") {
     "first_run_screen_provider.h",
     "first_run_screen_provider.mm",
     "first_run_screen_type.h",
-    "first_run_util.h",
-    "first_run_util.mm",
     "location_permissions_commands.h",
     "location_permissions_coordinator.h",
     "location_permissions_coordinator.mm",
@@ -38,14 +36,6 @@ source_set("first_run") {
     "location_permissions_view_controller.mm",
     "orientation_limiting_navigation_controller.h",
     "orientation_limiting_navigation_controller.mm",
-    "signin_screen_consumer.h",
-    "signin_screen_coordinator.h",
-    "signin_screen_coordinator.mm",
-    "signin_screen_mediator.h",
-    "signin_screen_mediator.mm",
-    "signin_screen_mediator_delegate.h",
-    "signin_screen_view_controller.h",
-    "signin_screen_view_controller.mm",
     "static_file_view_controller.h",
     "static_file_view_controller.mm",
     "welcome_screen_coordinator.h",
@@ -62,6 +52,7 @@ source_set("first_run") {
     ":field_trial",
     ":first_run_ui",
     ":screen_delegate",
+    ":utils",
     "resources:checkbox",
     "resources:checkbox_checked",
     "resources:first_run_location_permissions",
@@ -91,6 +82,7 @@ source_set("first_run") {
     "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/elements:elements_internal",
     "//ios/chrome/browser/ui/fancy_ui",
+    "//ios/chrome/browser/ui/first_run/signin",
     "//ios/chrome/browser/ui/first_run/sync",
     "//ios/chrome/browser/ui/icons",
     "//ios/chrome/browser/ui/material_components",
@@ -113,6 +105,29 @@ source_set("first_run") {
     "//url",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("utils") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "first_run_util.h",
+    "first_run_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/app:tests_hook",
+    "//ios/chrome/browser:utils",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/crash_report",
+    "//ios/chrome/browser/first_run",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/settings/sync/utils",
+    "//ios/chrome/browser/ui/util",
+    "//ios/web/public/thread",
+    "//ui/gfx",
+  ]
 }
 
 source_set("constants") {
@@ -145,10 +160,7 @@ source_set("first_run_ui") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [
-    "signin_screen_mediator_unittest.mm",
-    "welcome_to_chrome_view_controller_unittest.mm",
-  ]
+  sources = [ "welcome_to_chrome_view_controller_unittest.mm" ]
   deps = [
     ":first_run",
     "//base",

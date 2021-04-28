@@ -1,0 +1,64 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("signin") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "signin_screen_coordinator.h",
+    "signin_screen_coordinator.mm",
+    "signin_screen_mediator.h",
+    "signin_screen_mediator.mm",
+    "signin_screen_mediator_delegate.h",
+  ]
+  deps = [
+    ":signin_ui",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/first_run",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication/signin/add_account_signin",
+    "//ios/chrome/browser/ui/authentication/signin/user_signin/logging",
+    "//ios/chrome/browser/ui/authentication/unified_consent/identity_chooser",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/first_run:screen_delegate",
+    "//ios/chrome/browser/ui/first_run:utils",
+    "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/signin",
+  ]
+}
+
+source_set("signin_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "signin_screen_consumer.h",
+    "signin_screen_view_controller.h",
+    "signin_screen_view_controller.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication/views",
+    "//ios/chrome/browser/ui/elements:elements_internal",
+    "//ios/chrome/browser/ui/first_run:first_run_ui",
+    "//ios/chrome/common/ui/util",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "signin_screen_mediator_unittest.mm" ]
+  deps = [
+    ":signin",
+    ":signin_ui",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/ui/authentication",
+    "//ios/public/provider/chrome/browser:test_support",
+    "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
+    "//ios/public/provider/chrome/browser/signin:test_support",
+    "//third_party/ocmock",
+  ]
+}
