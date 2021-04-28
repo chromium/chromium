@@ -31,22 +31,18 @@ ProfileSupported CheckProfileSupported(const Profile* profile) {
   }
 
   if (!chromeos::ProfileHelper::IsPrimaryProfile(profile)) {
-    VLOG(1) << "Plugin VM is not allowed on non-primary profiles.";
     return ProfileSupported::kErrorNonPrimary;
   }
 
   if (profile->IsChild()) {
-    VLOG(1) << "Child accounts are not supported";
     return ProfileSupported::kErrorChildAccount;
   }
 
   if (profile->IsOffTheRecord()) {
-    VLOG(1) << "Off-the-record profiles are not supported";
     return ProfileSupported::kErrorOffTheRecord;
   }
 
   if (chromeos::ProfileHelper::IsEphemeralUserProfile(profile)) {
-    VLOG(1) << "Ephemeral user profiles are not supported";
     return ProfileSupported::kErrorEphemeral;
   }
 
@@ -74,7 +70,6 @@ PolicyConfigured CheckPolicyConfigured(const Profile* profile) {
 
   // Check that the device is enterprise enrolled.
   if (!chromeos::InstallAttributes::Get()->IsEnterpriseManaged()) {
-    VLOG(1) << "Plugin VM is only allowed on enterprise-managed devices.";
     return PolicyConfigured::kErrorNotEnterpriseEnrolled;
   }
 
@@ -82,7 +77,6 @@ PolicyConfigured CheckPolicyConfigured(const Profile* profile) {
   const user_manager::User* const user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
   if (user == nullptr || !user->IsAffiliated()) {
-    VLOG(1) << "Plugin VM is only allowed for affiliated users.";
     return PolicyConfigured::kErrorUserNotAffiliated;
   }
 
@@ -90,25 +84,21 @@ PolicyConfigured CheckPolicyConfigured(const Profile* profile) {
   bool plugin_vm_allowed_for_device;
   if (!ash::CrosSettings::Get()->GetBoolean(chromeos::kPluginVmAllowed,
                                             &plugin_vm_allowed_for_device)) {
-    VLOG(1) << "Unable to determine Plugin VM device-level policy.";
     return PolicyConfigured::kErrorUnableToCheckDevicePolicy;
   }
 
   if (!plugin_vm_allowed_for_device) {
-    VLOG(1) << "Plugin VM is disabled by device-level policy.";
     return PolicyConfigured::kErrorNotAllowedByDevicePolicy;
   }
 
   bool plugin_vm_allowed_for_user =
       profile->GetPrefs()->GetBoolean(plugin_vm::prefs::kPluginVmAllowed);
   if (!plugin_vm_allowed_for_user) {
-    VLOG(1) << "Plugin VM is disabled by user-level policy.";
     return PolicyConfigured::kErrorNotAllowedByUserPolicy;
   }
 
   if (GetPluginVmLicenseKey().empty() &&
       GetPluginVmUserIdForProfile(profile).empty()) {
-    VLOG(1) << "Plugin VM require a license be set up in policy.";
     return PolicyConfigured::kErrorLicenseNotSetUp;
   }
 
@@ -191,11 +181,16 @@ PluginVmFeatures::~PluginVmFeatures() = default;
 // * PluginVmUserId policy is set.
 PluginVmFeatures::IsAllowedDiagnostics
 PluginVmFeatures::GetIsAllowedDiagnostics(const Profile* profile) {
-  return IsAllowedDiagnostics{
+  auto diagnostics = IsAllowedDiagnostics{
       /*device_supported=*/base::FeatureList::IsEnabled(features::kPluginVm),
       /*profile_supported=*/CheckProfileSupported(profile),
       /*policy_configured=*/CheckPolicyConfigured(profile),
   };
+  if (!diagnostics.IsOk()) {
+    VLOG(1) << diagnostics.GetTopError();
+  }
+
+  return diagnostics;
 }
 
 bool PluginVmFeatures::IsAllowed(const Profile* profile, std::string* reason) {
