@@ -2732,12 +2732,16 @@ void DXVAVideoDecodeAccelerator::BindPictureBufferToSample(
       // this |picture_buffer| will be updated when the video frame is created.
       const auto& mailbox = gpu::Mailbox::GenerateForSharedImage();
 
-      auto shared_image = gpu::SharedImageBackingD3D::CreateFromGLTexture(
+      auto shared_image = std::make_unique<gpu::SharedImageBackingD3D>(
           mailbox, viz_formats[texture_idx],
           picture_buffer->texture_size(texture_idx),
           picture_buffer->color_space(), kTopLeft_GrSurfaceOrigin,
-          kPremul_SkAlphaType, shared_image_usage, gl_image_dxgi->texture(),
-          std::move(gl_texture));
+          kPremul_SkAlphaType, shared_image_usage,
+          /*swap_chain=*/nullptr, std::move(gl_texture),
+          picture_buffer->gl_image(),
+          /*buffer_index=*/0, gl_image_dxgi->texture(),
+          base::win::ScopedHandle(),
+          /*dxgi_keyed_mutex=*/nullptr);
 
       // Caller is assumed to provide cleared d3d textures.
       shared_image->SetCleared();

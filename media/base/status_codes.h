@@ -94,7 +94,6 @@ enum class StatusCode : StatusCodeType {
   kGetQuantBufferFailed = 0x00000328,
   kReleaseQuantBufferFailed = 0x00000329,
   kBitstreamBufferSliceTooBig = 0x00000330,
-  kCreateSharedImageFailed = 0x00000331,
 
   // MojoDecoder Errors: 0x04
   kMojoDecoderNoWrappedDecoder = 0x00000401,
