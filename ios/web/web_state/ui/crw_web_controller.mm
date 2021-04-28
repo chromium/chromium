@@ -947,6 +947,8 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   return YES;
 #pragma clang diagnostic pop
 #endif  // BUILDFLAG(WEBKIT_SESSION_RESTORE)
+#else   // BUILDFLAG(CHROMIUM_BRANDING)
+  return NO;
 #endif  // BUILDFLAG(CHROMIUM_BRANDING)
 }
 
