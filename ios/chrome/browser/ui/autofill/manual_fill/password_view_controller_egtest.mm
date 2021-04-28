@@ -243,7 +243,8 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
 }
 
 // Tests that the "Use Other Password..." screen won't open if canceled.
-- (void)testUseOtherPasswordActionCloses {
+// TODO(crbug.com/1203415): Disabled due to flakiness.
+- (void)DISABLED_testUseOtherPasswordActionCloses {
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementUsername)];
