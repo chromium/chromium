@@ -9,7 +9,7 @@
 #include "base/macros.h"
 #include "third_party/blink/renderer/bindings/modules/v8/canvas_image_source.h"
 #include "third_party/blink/renderer/bindings/modules/v8/string_or_canvas_filter.h"
-#include "third_party/blink/renderer/bindings/modules/v8/string_or_canvas_gradient_or_canvas_pattern.h"
+#include "third_party/blink/renderer/bindings/modules/v8/string_or_canvas_gradient_or_canvas_pattern_or_css_color_value.h"
 #include "third_party/blink/renderer/core/geometry/dom_matrix.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_gradient.h"
@@ -32,11 +32,13 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
  public:
   ~BaseRenderingContext2D() override;
 
-  void strokeStyle(StringOrCanvasGradientOrCanvasPattern&) const;
-  void setStrokeStyle(const StringOrCanvasGradientOrCanvasPattern&);
+  void strokeStyle(StringOrCanvasGradientOrCanvasPatternOrCSSColorValue&) const;
+  void setStrokeStyle(
+      const StringOrCanvasGradientOrCanvasPatternOrCSSColorValue&);
 
-  void fillStyle(StringOrCanvasGradientOrCanvasPattern&) const;
-  void setFillStyle(const StringOrCanvasGradientOrCanvasPattern&);
+  void fillStyle(StringOrCanvasGradientOrCanvasPatternOrCSSColorValue&) const;
+  void setFillStyle(
+      const StringOrCanvasGradientOrCanvasPatternOrCSSColorValue&);
 
   double lineWidth() const;
   void setLineWidth(double);
@@ -543,7 +545,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
                            base::TimeTicks start_time);
 
   void IdentifiabilityMaybeUpdateForStyleUnion(
-      const StringOrCanvasGradientOrCanvasPattern& style);
+      const StringOrCanvasGradientOrCanvasPatternOrCSSColorValue& style);
 
   RespectImageOrientationEnum RespectImageOrientationInternal(
       CanvasImageSource*);

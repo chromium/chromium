@@ -28,13 +28,12 @@ class CORE_EXPORT CSSColorValue : public CSSStyleValue {
 
   StyleValueType GetType() const override { return kColorType; }
 
+  virtual Color ToColor() const = 0;
+
  protected:
   static CSSNumericValue* ToNumberOrPercentage(const CSSNumberish&);
   static CSSNumericValue* ToPercentage(const CSSNumberish&);
   static float ComponentToColorInput(CSSNumericValue*);
-
- private:
-  virtual Color ToColor() const = 0;
 };
 
 }  // namespace blink

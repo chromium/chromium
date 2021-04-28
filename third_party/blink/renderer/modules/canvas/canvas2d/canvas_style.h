@@ -44,7 +44,7 @@ class CanvasStyle final : public GarbageCollected<CanvasStyle> {
   explicit CanvasStyle(CanvasGradient*);
   explicit CanvasStyle(CanvasPattern*);
 
-  String GetColor() const {
+  String GetColorAsString() const {
     DCHECK_EQ(type_, kColorRGBA);
     return Color(rgba_).Serialized();
   }

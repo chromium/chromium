@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/string_or_canvas_gradient_or_canvas_pattern_or_css_color_value.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -171,8 +172,8 @@ class CanvasRenderingContext2DTest : public ::testing::Test {
       visitor->Trace(alpha_gradient_);
     }
 
-    StringOrCanvasGradientOrCanvasPattern opaque_gradient_;
-    StringOrCanvasGradientOrCanvasPattern alpha_gradient_;
+    StringOrCanvasGradientOrCanvasPatternOrCSSColorValue opaque_gradient_;
+    StringOrCanvasGradientOrCanvasPatternOrCSSColorValue alpha_gradient_;
   };
 
   // TODO(Oilpan): avoid tedious part-object wrapper by supporting on-heap
@@ -187,10 +188,10 @@ class CanvasRenderingContext2DTest : public ::testing::Test {
   FakeImageSource alpha_bitmap_;
   scoped_refptr<viz::TestContextProvider> test_context_provider_;
 
-  StringOrCanvasGradientOrCanvasPattern& OpaqueGradient() {
+  StringOrCanvasGradientOrCanvasPatternOrCSSColorValue& OpaqueGradient() {
     return wrap_gradients_->opaque_gradient_;
   }
-  StringOrCanvasGradientOrCanvasPattern& AlphaGradient() {
+  StringOrCanvasGradientOrCanvasPatternOrCSSColorValue& AlphaGradient() {
     return wrap_gradients_->alpha_gradient_;
   }
 };
@@ -250,7 +251,7 @@ void CanvasRenderingContext2DTest::SetUp() {
   alpha_gradient->addColorStop(1, String("rgba(0, 0, 255, 0.5)"),
                                exception_state);
   EXPECT_FALSE(exception_state.HadException());
-  StringOrCanvasGradientOrCanvasPattern wrapped_alpha_gradient;
+  StringOrCanvasGradientOrCanvasPatternOrCSSColorValue wrapped_alpha_gradient;
   AlphaGradient().SetCanvasGradient(alpha_gradient);
 
   global_memory_cache_ =

@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/core/css/cssom/css_color_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/html/canvas/text_metrics.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
@@ -171,7 +172,7 @@ void BaseRenderingContext2D::reset() {
 
 static inline void ConvertCanvasStyleToUnionType(
     CanvasStyle* style,
-    StringOrCanvasGradientOrCanvasPattern& return_value) {
+    StringOrCanvasGradientOrCanvasPatternOrCSSColorValue& return_value) {
   if (CanvasGradient* gradient = style->GetCanvasGradient()) {
     return_value.SetCanvasGradient(gradient);
     return;
@@ -180,11 +181,11 @@ static inline void ConvertCanvasStyleToUnionType(
     return_value.SetCanvasPattern(pattern);
     return;
   }
-  return_value.SetString(style->GetColor());
+  return_value.SetString(style->GetColorAsString());
 }
 
 void BaseRenderingContext2D::IdentifiabilityMaybeUpdateForStyleUnion(
-    const StringOrCanvasGradientOrCanvasPattern& style) {
+    const StringOrCanvasGradientOrCanvasPatternOrCSSColorValue& style) {
   if (style.IsString()) {
     identifiability_study_helper_.MaybeUpdateBuilder(
         IdentifiabilityBenignStringToken(style.GetAsString()));
@@ -207,12 +208,12 @@ BaseRenderingContext2D::RespectImageOrientationInternal(
 }
 
 void BaseRenderingContext2D::strokeStyle(
-    StringOrCanvasGradientOrCanvasPattern& return_value) const {
+    StringOrCanvasGradientOrCanvasPatternOrCSSColorValue& return_value) const {
   ConvertCanvasStyleToUnionType(GetState().StrokeStyle(), return_value);
 }
 
 void BaseRenderingContext2D::setStrokeStyle(
-    const StringOrCanvasGradientOrCanvasPattern& style) {
+    const StringOrCanvasGradientOrCanvasPatternOrCSSColorValue& style) {
   DCHECK(!style.IsNull());
   identifiability_study_helper_.MaybeUpdateBuilder(CanvasOps::kSetStrokeStyle);
   IdentifiabilityMaybeUpdateForStyleUnion(style);
@@ -241,6 +242,12 @@ void BaseRenderingContext2D::setStrokeStyle(
       SetOriginTaintedByContent();
 
     canvas_style = MakeGarbageCollected<CanvasStyle>(canvas_pattern);
+  } else if (style.IsCSSColorValue()) {
+    if (!RuntimeEnabledFeatures::NewCanvas2DAPIEnabled())
+      return;
+    CSSColorValue* css_color = style.GetAsCSSColorValue();
+    canvas_style =
+        MakeGarbageCollected<CanvasStyle>(css_color->ToColor().Rgb());
   }
 
   DCHECK(canvas_style);
@@ -251,12 +258,12 @@ void BaseRenderingContext2D::setStrokeStyle(
 }
 
 void BaseRenderingContext2D::fillStyle(
-    StringOrCanvasGradientOrCanvasPattern& return_value) const {
+    StringOrCanvasGradientOrCanvasPatternOrCSSColorValue& return_value) const {
   ConvertCanvasStyleToUnionType(GetState().FillStyle(), return_value);
 }
 
 void BaseRenderingContext2D::setFillStyle(
-    const StringOrCanvasGradientOrCanvasPattern& style) {
+    const StringOrCanvasGradientOrCanvasPatternOrCSSColorValue& style) {
   DCHECK(!style.IsNull());
   ValidateStateStack();
   identifiability_study_helper_.MaybeUpdateBuilder(CanvasOps::kSetFillStyle);
@@ -286,6 +293,12 @@ void BaseRenderingContext2D::setFillStyle(
       SetOriginTaintedByContent();
     }
     canvas_style = MakeGarbageCollected<CanvasStyle>(canvas_pattern);
+  } else if (style.IsCSSColorValue()) {
+    if (!RuntimeEnabledFeatures::NewCanvas2DAPIEnabled())
+      return;
+    CSSColorValue* css_color = style.GetAsCSSColorValue();
+    canvas_style =
+        MakeGarbageCollected<CanvasStyle>(css_color->ToColor().Rgb());
   }
 
   DCHECK(canvas_style);

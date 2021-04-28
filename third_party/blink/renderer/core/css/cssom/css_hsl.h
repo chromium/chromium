@@ -50,13 +50,13 @@ class CORE_EXPORT CSSHSL final : public CSSColorValue {
     CSSColorValue::Trace(visitor);
   }
 
+  Color ToColor() const final;
+
  private:
   Member<CSSNumericValue> h_;
   Member<CSSNumericValue> s_;
   Member<CSSNumericValue> l_;
   Member<CSSNumericValue> alpha_;
-
-  Color ToColor() const final;
 };
 
 }  // namespace blink

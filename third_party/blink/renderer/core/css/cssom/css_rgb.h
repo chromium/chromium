@@ -50,13 +50,13 @@ class CORE_EXPORT CSSRGB final : public CSSColorValue {
     CSSColorValue::Trace(visitor);
   }
 
+  Color ToColor() const final;
+
  private:
   Member<CSSNumericValue> r_;
   Member<CSSNumericValue> g_;
   Member<CSSNumericValue> b_;
   Member<CSSNumericValue> alpha_;
-
-  Color ToColor() const final;
 };
 
 }  // namespace blink

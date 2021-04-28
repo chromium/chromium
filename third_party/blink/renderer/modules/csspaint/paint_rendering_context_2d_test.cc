@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/csspaint/paint_rendering_context_2d.h"
+#include "third_party/blink/renderer/bindings/modules/v8/string_or_canvas_gradient_or_canvas_pattern_or_css_color_value.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -16,7 +17,7 @@ static const float kZoom = 1.0;
 void TrySettingStrokeStyle(PaintRenderingContext2D* ctx,
                            const String& expected,
                            const String& value) {
-  StringOrCanvasGradientOrCanvasPattern result, arg, dummy;
+  StringOrCanvasGradientOrCanvasPatternOrCSSColorValue result, arg, dummy;
   dummy.SetString("red");
   arg.SetString(value);
   ctx->setStrokeStyle(dummy);

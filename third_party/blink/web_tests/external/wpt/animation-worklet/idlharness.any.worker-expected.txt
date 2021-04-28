@@ -15,7 +15,7 @@ PASS WorkletGroupEffect interface: existence and properties of interface object
 PASS Animation interface: existence and properties of interface object
 PASS WorkletGlobalScope interface: existence and properties of interface object
 PASS Worklet interface: existence and properties of interface object
-FAIL CSS namespace: operation escape(CSSOMString) Cannot read property 'hasOwnProperty' of undefined
-FAIL CSS namespace: attribute animationWorklet Cannot read property 'hasOwnProperty' of undefined
+PASS CSS namespace: operation escape(CSSOMString)
+FAIL CSS namespace: attribute animationWorklet assert_own_property: CSS does not have property "animationWorklet" expected property "animationWorklet" missing
 Harness: the test ran to completion.
 

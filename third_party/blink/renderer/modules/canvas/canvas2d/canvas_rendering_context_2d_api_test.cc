@@ -9,6 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings_provider.h"
+#include "third_party/blink/renderer/bindings/modules/v8/string_or_canvas_gradient_or_canvas_pattern_or_css_color_value.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_hit_region_options.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -136,7 +137,7 @@ TEST_F(CanvasRenderingContext2DAPITest, SetShadowColor_Clamping) {
 
 String TrySettingStrokeStyle(CanvasRenderingContext2D* ctx,
                              const String& value) {
-  StringOrCanvasGradientOrCanvasPattern arg1, arg2, arg3;
+  StringOrCanvasGradientOrCanvasPatternOrCSSColorValue arg1, arg2, arg3;
   arg1.SetString("#666");
   ctx->setStrokeStyle(arg1);
   arg2.SetString(value);
@@ -147,7 +148,7 @@ String TrySettingStrokeStyle(CanvasRenderingContext2D* ctx,
 }
 
 String TrySettingFillStyle(CanvasRenderingContext2D* ctx, const String& value) {
-  StringOrCanvasGradientOrCanvasPattern arg1, arg2, arg3;
+  StringOrCanvasGradientOrCanvasPatternOrCSSColorValue arg1, arg2, arg3;
   arg1.SetString("#666");
   ctx->setFillStyle(arg1);
   arg2.SetString(value);
@@ -190,14 +191,14 @@ TEST_F(CanvasRenderingContext2DAPITest, DefaultAttributeValues) {
   CreateContext(kNonOpaque);
 
   {
-    StringOrCanvasGradientOrCanvasPattern value;
+    StringOrCanvasGradientOrCanvasPatternOrCSSColorValue value;
     Context2D()->strokeStyle(value);
     EXPECT_TRUE(value.IsString());
     EXPECT_EQ(String("#000000"), value.GetAsString());
   }
 
   {
-    StringOrCanvasGradientOrCanvasPattern value;
+    StringOrCanvasGradientOrCanvasPatternOrCSSColorValue value;
     Context2D()->fillStyle(value);
     EXPECT_TRUE(value.IsString());
     EXPECT_EQ(String("#000000"), value.GetAsString());
@@ -500,7 +501,7 @@ TEST_F(CanvasRenderingContext2DAPITest,
   StudyParticipationRaii study_participation_raii;
   CreateContext(kNonOpaque);
 
-  StringOrCanvasGradientOrCanvasPattern style;
+  StringOrCanvasGradientOrCanvasPatternOrCSSColorValue style;
   style.SetString("blue");
   Context2D()->setStrokeStyle(style);
   EXPECT_EQ(INT64_C(2059186787917525779),
@@ -514,7 +515,7 @@ TEST_F(CanvasRenderingContext2DAPITest, IdentifiabilityStudyDigest_FillStyle) {
   StudyParticipationRaii study_participation_raii;
   CreateContext(kNonOpaque);
 
-  StringOrCanvasGradientOrCanvasPattern style;
+  StringOrCanvasGradientOrCanvasPatternOrCSSColorValue style;
   style.SetString("blue");
   Context2D()->setFillStyle(style);
   EXPECT_EQ(INT64_C(-6322980727372024031),
@@ -534,7 +535,7 @@ TEST_F(CanvasRenderingContext2DAPITest, IdentifiabilityStudyDigest_Combo) {
   Context2D()->setFont("Helvetica");
   Context2D()->setTextBaseline("bottom");
   Context2D()->setTextAlign("right");
-  StringOrCanvasGradientOrCanvasPattern style;
+  StringOrCanvasGradientOrCanvasPatternOrCSSColorValue style;
   style.SetString("red");
   Context2D()->setFillStyle(style);
   Context2D()->fillText("Bye", 4.0, 3.0);
