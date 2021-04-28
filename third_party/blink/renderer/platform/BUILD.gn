@@ -1941,6 +1941,13 @@ static_library("test_support") {
 
 test("blink_platform_unittests") {
   deps = [ ":blink_platform_unittests_sources" ]
+
+  if (is_fuchsia && enable_blink_heap_use_v8_oilpan) {
+    # Oilpan reuses V8's v8::PageAllocator which generally requires JIT
+    # permissions.
+    additional_manifest_fragments =
+        [ "//build/config/fuchsia/test/jit_capabilities.test-cmx" ]
+  }
 }
 
 source_set("blink_platform_unittests_sources") {
