@@ -25,7 +25,7 @@ bool GetSubjectPublicKeyInfo(const net::X509Certificate& certificate,
           &spki_der_piece)) {
     return false;
   }
-  *spki_der = spki_der_piece.as_string();
+  *spki_der = std::string(spki_der_piece);
   return !spki_der->empty();
 }
 
