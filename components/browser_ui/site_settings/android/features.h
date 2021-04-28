@@ -11,9 +11,6 @@ struct Feature;
 
 namespace browser_ui {
 
-// Enables messaging in the site settings UI to tell users notifications are
-// disabled for the entire app
-extern const base::Feature kAppNotificationStatusMessaging;
 // Enables toggles and slash through diabled icons for content settings.
 extern const base::Feature kActionableContentSettings;
 

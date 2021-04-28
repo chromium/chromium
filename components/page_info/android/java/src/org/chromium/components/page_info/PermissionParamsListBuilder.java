@@ -12,12 +12,8 @@ import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.style.TextAppearanceSpan;
 
-import androidx.core.app.NotificationManagerCompat;
-
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
-import org.chromium.components.browser_ui.site_settings.SiteSettingsFeatureList;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -115,12 +111,6 @@ public class PermissionParamsListBuilder {
                 permissionParams.clickCallback = createPermissionClickCallback(
                         NfcSystemLevelSetting.getNfcSystemLevelSettingIntent(),
                         null /* androidPermissions */);
-            } else if (shouldShowNotificationsDisabledWarning(permission)) {
-                permissionParams.warningTextResource =
-                        R.string.page_info_android_permission_blocked;
-                permissionParams.clickCallback = createPermissionClickCallback(
-                        ApiCompatibilityUtils.getNotificationSettingsIntent(),
-                        null /* androidPermissions */);
             } else if (!hasAndroidPermission(permission.type)) {
                 if (permission.type == ContentSettingsType.AR) {
                     permissionParams.warningTextResource =
@@ -187,13 +177,6 @@ public class PermissionParamsListBuilder {
         permissionParams.status = builder;
 
         return permissionParams;
-    }
-
-    private boolean shouldShowNotificationsDisabledWarning(PageInfoPermissionEntry permission) {
-        return permission.type == ContentSettingsType.NOTIFICATIONS
-                && !NotificationManagerCompat.from(mContext).areNotificationsEnabled()
-                && SiteSettingsFeatureList.isEnabled(
-                        SiteSettingsFeatureList.APP_NOTIFICATION_STATUS_MESSAGING);
     }
 
     private boolean hasAndroidPermission(int contentSettingType) {

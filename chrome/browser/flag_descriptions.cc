@@ -2792,12 +2792,6 @@ const char kAndroidSurfaceControlDescription[] =
     " DisplayCompositor on Android. This feature is only available on "
     " android Q+ devices";
 
-const char kAppNotificationStatusMessagingName[] =
-    "App notification status messaging";
-const char kAppNotificationStatusMessagingDescription[] =
-    "Enables messaging in site permissions UI informing user when "
-    "notifications are disabled for the entire app.";
-
 const char kAssistantIntentPageUrlName[] =
     "Include page URL in Assistant intent";
 const char kAssistantIntentPageUrlDescription[] =

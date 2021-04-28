@@ -38,7 +38,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
-import org.chromium.components.browser_ui.site_settings.SiteSettingsFeatureList;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSettingValues;
@@ -150,52 +149,6 @@ public class PermissionParamsListBuilderUnitTest {
         PageInfoView.PermissionRowParams permissionParams = rows.get(0);
         assertEquals(
                 R.string.page_info_android_ar_camera_blocked, permissionParams.warningTextResource);
-    }
-
-    @Test
-    @Features.EnableFeatures(SiteSettingsFeatureList.APP_NOTIFICATION_STATUS_MESSAGING)
-    public void appNotificationStatusMessagingWhenNotificationsDisabled() {
-        getMutableNotificationManager().setNotificationsEnabled(false);
-
-        mPermissionParamsListBuilder.addPermissionEntry(
-                "", ContentSettingsType.NOTIFICATIONS, ContentSettingValues.ALLOW);
-
-        List<PageInfoView.PermissionRowParams> rows =
-                mPermissionParamsListBuilder.build().permissions;
-
-        assertEquals(1, rows.size());
-        assertEquals(
-                R.string.page_info_android_permission_blocked, rows.get(0).warningTextResource);
-    }
-
-    @Test
-    @Features.EnableFeatures(SiteSettingsFeatureList.APP_NOTIFICATION_STATUS_MESSAGING)
-    public void appNotificationStatusMessagingWhenNotificationsEnabled() {
-        getMutableNotificationManager().setNotificationsEnabled(true);
-
-        mPermissionParamsListBuilder.addPermissionEntry(
-                "", ContentSettingsType.NOTIFICATIONS, ContentSettingValues.ALLOW);
-
-        List<PageInfoView.PermissionRowParams> params =
-                mPermissionParamsListBuilder.build().permissions;
-
-        assertEquals(1, params.size());
-        assertEquals(0, params.get(0).warningTextResource);
-    }
-
-    @Test
-    @Features.DisableFeatures(SiteSettingsFeatureList.APP_NOTIFICATION_STATUS_MESSAGING)
-    public void appNotificationStatusMessagingFlagDisabled() {
-        getMutableNotificationManager().setNotificationsEnabled(false);
-
-        mPermissionParamsListBuilder.addPermissionEntry(
-                "", ContentSettingsType.NOTIFICATIONS, ContentSettingValues.ALLOW);
-
-        List<PageInfoView.PermissionRowParams> params =
-                mPermissionParamsListBuilder.build().permissions;
-
-        assertEquals(1, params.size());
-        assertEquals(0, params.get(0).warningTextResource);
     }
 
     private static ShadowNotificationManager getMutableNotificationManager() {

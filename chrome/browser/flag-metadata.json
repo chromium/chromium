@@ -1316,11 +1316,6 @@
     "expiry_milestone": 75
   },
   {
-    "name": "enable-app-notification-status-messaging",
-    "owners": [ "knollr", "peter" ],
-    "expiry_milestone": 74
-  },
-  {
     "name": "enable-arc-unified-audio-focus",
     "owners": [ "beccahughes", "media-dev" ],
     "expiry_milestone": 82
