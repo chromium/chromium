@@ -1,0 +1,15 @@
+import("//build/config/android/rules.gni")
+import("//chrome/android/features/android_library_factory_tmpl.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/attribution_reporting/AttributionConstants.java",
+    "java/src/org/chromium/chrome/browser/attribution_reporting/AttributionIntentHandler.java",
+  ]
+}
+
+android_library_factory("factory_java") {
+  deps = [ ":java" ]
+
+  sources = [ "internal/java/src/org/chromium/chrome/browser/attribution_reporting/AttributionIntentHandlerFactory.java" ]
+}
