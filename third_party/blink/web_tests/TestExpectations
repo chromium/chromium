@@ -1165,7 +1165,6 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-09
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-092.xht [ Failure ]
 crbug.com/958381 [ Mac ] virtual/text-antialias/hyphen-min-preferred-width.html [ Failure ]
 crbug.com/958381 [ Win ] virtual/text-antialias/hyphen-min-preferred-width.html [ Failure ]
-crbug.com/958381 [ Mac ] virtual/layout_ng_block_frag/fragmentation/fragmented-table-cell.html [ Failure ]
 crbug.com/958381 [ Mac ] fragmentation/single-line-cells-paginated-with-text.html [ Failure ]
 
 # TablesNG ends
