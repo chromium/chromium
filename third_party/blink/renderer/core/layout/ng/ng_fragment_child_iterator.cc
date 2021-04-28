@@ -116,12 +116,16 @@ void NGFragmentChildIterator::UpdateSelfFromFragment(
           To<NGBlockBreakToken>(previous_fragment->BreakToken());
       current_.break_token_for_fragmentainer_only_ = true;
     } else {
-      // This is a column spanner, or in the case of a fieldset, this could be a
-      // rendered legend. We'll leave |current_block_break_token_| alone here,
-      // as it will be used as in incoming break token when we get to the next
-      // column.
-      DCHECK(previous_fragment->IsRenderedLegend() ||
-             previous_fragment->IsColumnSpanAll());
+      // This is not a fragmentainer. It has to be either a column spanner, a
+      // rendered legend (if the parent fieldset also establishes a multicol
+      // container), or an out-of-flow positioned fragment whose containing
+      // block is the multicol container itself (in which case the OOF doesn't
+      // participate in the fragmentation context established by the multicol
+      // container). We'll leave |current_.block_break_token_| alone here, as it
+      // will be used as an incoming break token when we get to the next column.
+      DCHECK(previous_fragment->IsColumnSpanAll() ||
+             previous_fragment->IsRenderedLegend() ||
+             previous_fragment->IsOutOfFlowPositioned());
     }
   } else if (current_.link_.fragment->IsOutOfFlowPositioned() &&
              !To<NGPhysicalBoxFragment>(current_.link_.fragment.Get())
