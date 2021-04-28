@@ -216,16 +216,16 @@ bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
 
   recordreplay::Assert("WaitableEvent::TimedWait #1");
 
-  for (TimeDelta remaining = wait_delta; remaining > TimeDelta() && !sw.fired();
-       remaining = end_time.is_max()
-                       ? TimeDelta::Max()
-                       : end_time - subtle::TimeTicksNowIgnoringOverride()) {
+  for (TimeDelta remaining = wait_delta; remaining > TimeDelta() && !sw.fired();) {
     recordreplay::Assert("WaitableEvent::TimedWait #2 %d", end_time.is_max());
     if (end_time.is_max())
       sw.cv()->Wait();
     else
       sw.cv()->TimedWait(remaining);
-    recordreplay::Assert("WaitableEvent::TimedWait #2.1 %d", sw.fired());
+    remaining = end_time.is_max()
+                    ? TimeDelta::Max()
+                    : end_time - subtle::TimeTicksNowIgnoringOverride();
+    recordreplay::Assert("WaitableEvent::TimedWait #2.1 %d %d", remaining > TimeDelta(), sw.fired());
   }
 
   recordreplay::Assert("WaitableEvent::TimedWait #3");
