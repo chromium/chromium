@@ -13,8 +13,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
-#include "third_party/blink/renderer/core/inspector/inspector_issue.h"
-#include "third_party/blink/renderer/core/inspector/inspector_issue_conversion.h"
 #include "third_party/blink/renderer/core/inspector/inspector_issue_storage.h"
 #include "third_party/blink/renderer/core/inspector/inspector_network_agent.h"
 #include "third_party/blink/renderer/core/inspector/protocol/Audits.h"
@@ -72,10 +70,9 @@ bool EncodeAsImage(char* body,
   return image_to_encode->EncodeImage(mime_type, quality, output);
 }
 
-mojom::blink::InspectorIssueInfoPtr CreateLowTextContrastIssue(
+std::unique_ptr<protocol::Audits::InspectorIssue> CreateLowTextContrastIssue(
     const ContrastInfo& info) {
   Element* element = info.element;
-  auto low_text_contrast_details = mojom::blink::LowTextContrastIssue::New();
 
   StringBuilder sb;
   auto element_id = element->getAttribute("id").LowerASCII();
@@ -89,20 +86,23 @@ mojom::blink::InspectorIssueInfoPtr CreateLowTextContrastIssue(
     sb.Append(element->classList().item(i));
   }
 
-  low_text_contrast_details->threshold_aa = info.threshold_aa;
-  low_text_contrast_details->threshold_aaa = info.threshold_aaa;
-  low_text_contrast_details->font_size = info.font_size;
-  low_text_contrast_details->font_weight = info.font_weight;
-  low_text_contrast_details->violating_node_id = DOMNodeIds::IdForNode(element);
-  low_text_contrast_details->violating_node_selector = sb.ToString();
-  low_text_contrast_details->contrast_ratio = info.contrast_ratio;
+  auto issue_details = protocol::Audits::InspectorIssueDetails::create();
+  auto low_contrast_details =
+      protocol::Audits::LowTextContrastIssueDetails::create()
+          .setThresholdAA(info.threshold_aa)
+          .setThresholdAAA(info.threshold_aaa)
+          .setFontSize(info.font_size)
+          .setFontWeight(info.font_weight)
+          .setContrastRatio(info.contrast_ratio)
+          .setViolatingNodeSelector(sb.ToString())
+          .setViolatingNodeId(DOMNodeIds::IdForNode(element))
+          .build();
+  issue_details.setLowTextContrastIssueDetails(std::move(low_contrast_details));
 
-  auto details = mojom::blink::InspectorIssueDetails::New();
-  details->low_text_contrast_details = std::move(low_text_contrast_details);
-
-  return mojom::blink::InspectorIssueInfo::New(
-      mojom::blink::InspectorIssueCode::kLowTextContrastIssue,
-      std::move(details));
+  return protocol::Audits::InspectorIssue::create()
+      .setCode(protocol::Audits::InspectorIssueCodeEnum::LowTextContrastIssue)
+      .setDetails(issue_details.build())
+      .build();
 }
 
 }  // namespace
@@ -171,8 +171,7 @@ void InspectorAuditsAgent::CheckContrastForDocument(Document* document,
   unsigned max_elements = 100;
   for (ContrastInfo info :
        contrast.GetElementsWithContrastIssues(report_aaa, max_elements)) {
-    GetFrontend()->issueAdded(ConvertInspectorIssueToProtocolFormat(
-        InspectorIssue::Create(CreateLowTextContrastIssue(info))));
+    GetFrontend()->issueAdded(CreateLowTextContrastIssue(info));
   }
   GetFrontend()->flush();
 }
