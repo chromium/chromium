@@ -183,7 +183,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   void InitAssistant(const base::Optional<UserInfo>& user);
   void OnServiceStarted();
   void OnServiceRunning();
-  void OnServiceStopped();
   bool IsServiceStarted() const;
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory> BindURLLoaderFactory();
@@ -228,7 +227,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
 
   void SetStateAndInformObservers(State new_state);
 
-  State state_ = State::kStopped;
+  State state_ = State::STOPPED;
   std::unique_ptr<AssistantSettingsImpl> assistant_settings_;
 
   std::unique_ptr<AssistantProxy> assistant_proxy_;

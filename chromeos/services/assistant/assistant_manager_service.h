@@ -12,7 +12,6 @@
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/cpp/assistant_settings.h"
 #include "chromeos/services/libassistant/public/mojom/authentication_state_observer.mojom.h"
-#include "chromeos/services/libassistant/public/mojom/service_controller.mojom-shared.h"
 #include "services/media_session/public/mojom/media_session.mojom-shared.h"
 
 namespace chromeos {
@@ -34,7 +33,21 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerService
     std::string access_token;
   };
 
-  using State = chromeos::libassistant::mojom::ServiceState;
+  enum State {
+    // Initial state, the service is created but not started yet.
+    STOPPED = 0,
+    // Start has been called but libassistant creation is still in progress.
+    // Calling |assistant_manager()| will still return a nullptr.
+    // TODO(b/171748795): I think we no longer need this state once
+    // Libassistant has migrated to a mojom service (in fact, we should be able
+    // to remove this enum and use chromeos::libassistant::mojom::ServiceState).
+    STARTING = 1,
+    // The service is started, libassistant has been created, but libassistant
+    // is not ready yet to take requests.
+    STARTED = 2,
+    // The service is fully running and ready to take requests.
+    RUNNING = 3
+  };
 
   ~AssistantManagerService() override = default;
 

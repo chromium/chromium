@@ -213,36 +213,33 @@ TEST_F(AssistantServiceTest, RetryRefreshTokenAfterDeviceWakeup) {
 }
 
 TEST_F(AssistantServiceTest, StopImmediatelyIfAssistantIsRunning) {
-  // Test is set up as |State::kStarted|.
+  // Test is set up as |State::STARTED|.
   assistant_manager()->FinishStart();
-  EXPECT_STATE(AssistantManagerService::State::kRunning);
+  EXPECT_STATE(AssistantManagerService::State::RUNNING);
 
   StopAssistantAndWait();
 
-  EXPECT_STATE(AssistantManagerService::State::kStopped);
+  EXPECT_STATE(AssistantManagerService::State::STOPPED);
 }
 
 TEST_F(AssistantServiceTest, StopDelayedIfAssistantNotFinishedStarting) {
-  assistant_manager()->SetStateAndInformObservers(
-      AssistantManagerService::State::kStarted);
-
-  EXPECT_STATE(AssistantManagerService::State::kStarted);
+  EXPECT_STATE(AssistantManagerService::State::STARTING);
 
   // Turning settings off will trigger logic to try to stop it.
   StopAssistantAndWait();
 
-  EXPECT_STATE(AssistantManagerService::State::kStarted);
+  EXPECT_STATE(AssistantManagerService::State::STARTING);
 
   task_environment()->FastForwardBy(kUpdateAssistantManagerDelay);
 
-  // No change of state because it is still not running.
-  EXPECT_STATE(AssistantManagerService::State::kStarted);
+  // No change of state because it is still starting.
+  EXPECT_STATE(AssistantManagerService::State::STARTING);
 
   assistant_manager()->FinishStart();
 
   task_environment()->FastForwardBy(kUpdateAssistantManagerDelay);
 
-  EXPECT_STATE(AssistantManagerService::State::kStopped);
+  EXPECT_STATE(AssistantManagerService::State::STOPPED);
 }
 
 TEST_F(AssistantServiceTest, ShouldSendUserInfoWhenStarting) {
@@ -277,12 +274,10 @@ TEST_F(AssistantServiceTest, ShouldSendUserInfoWhenAccessTokenIsRefreshed) {
   EXPECT_EQ(kGaiaId, assistant_manager()->gaia_id());
 }
 
-TEST_F(AssistantServiceTest, ShouldSetClientStatusToNotReadyWhenStopped) {
+TEST_F(AssistantServiceTest, ShouldSetClientStatusToNotReadyWhenStarting) {
   assistant_manager()->SetStateAndInformObservers(
-      AssistantManagerService::State::kRunning);
+      AssistantManagerService::State::STARTING);
   base::RunLoop().RunUntilIdle();
-
-  StopAssistantAndWait();
 
   EXPECT_EQ(client()->status(), AssistantStatus::NOT_READY);
 }
@@ -291,21 +286,28 @@ TEST_F(AssistantServiceTest, ShouldKeepClientStatusNotReadyWhenStarted) {
   // Note: even though we've started, we are not ready to handle the queries
   // until LibAssistant tells us we are.
   assistant_manager()->SetStateAndInformObservers(
-      AssistantManagerService::State::kStarted);
+      AssistantManagerService::State::STARTED);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(client()->status(), AssistantStatus::NOT_READY);
 }
 
-TEST_F(AssistantServiceTest, ShouldSetClientStatusToReadyWhenRunning) {
+TEST_F(AssistantServiceTest, ShouldSetClientStatusToNewReadyWhenRunning) {
   assistant_manager()->SetStateAndInformObservers(
-      AssistantManagerService::State::kStarted);
-
-  assistant_manager()->SetStateAndInformObservers(
-      AssistantManagerService::State::kRunning);
+      AssistantManagerService::State::RUNNING);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(client()->status(), AssistantStatus::READY);
+}
+
+TEST_F(AssistantServiceTest, ShouldSetClientStatusToNotReadyWhenStopped) {
+  assistant_manager()->SetStateAndInformObservers(
+      AssistantManagerService::State::RUNNING);
+  base::RunLoop().RunUntilIdle();
+
+  StopAssistantAndWait();
+
+  EXPECT_EQ(client()->status(), AssistantStatus::NOT_READY);
 }
 
 }  // namespace assistant
