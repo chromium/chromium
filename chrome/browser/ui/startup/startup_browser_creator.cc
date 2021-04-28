@@ -24,7 +24,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -153,7 +153,7 @@ class ProfileLaunchObserver : public ProfileObserver,
 
   // ProfileObserver:
   void OnProfileWillBeDestroyed(Profile* profile) override {
-    observed_profiles_.Remove(profile);
+    observed_profiles_.RemoveObservation(profile);
     launched_profiles_.erase(profile);
     opened_profiles_.erase(profile);
     if (profile == profile_to_activate_)
@@ -168,8 +168,8 @@ class ProfileLaunchObserver : public ProfileObserver,
   }
 
   void AddLaunched(Profile* profile) {
-    if (!observed_profiles_.IsObserving(profile))
-      observed_profiles_.Add(profile);
+    if (!observed_profiles_.IsObservingSource(profile))
+      observed_profiles_.AddObservation(profile);
     launched_profiles_.insert(profile);
     if (chrome::FindBrowserWithProfile(profile)) {
       // A browser may get opened before we get initialized (e.g., in tests),
@@ -186,8 +186,8 @@ class ProfileLaunchObserver : public ProfileObserver,
   bool activated_profile() { return activated_profile_; }
 
   void set_profile_to_activate(Profile* profile) {
-    if (!observed_profiles_.IsObserving(profile))
-      observed_profiles_.Add(profile);
+    if (!observed_profiles_.IsObservingSource(profile))
+      observed_profiles_.AddObservation(profile);
     profile_to_activate_ = profile;
     MaybeActivateProfile();
   }
@@ -210,7 +210,7 @@ class ProfileLaunchObserver : public ProfileObserver,
         FROM_HERE, base::BindOnce(&ProfileLaunchObserver::ActivateProfile,
                                   base::Unretained(this)));
     // Avoid posting more than once before ActivateProfile gets called.
-    observed_profiles_.RemoveAll();
+    observed_profiles_.RemoveAllObservations();
     BrowserList::RemoveObserver(this);
   }
 
@@ -245,7 +245,8 @@ class ProfileLaunchObserver : public ProfileObserver,
   Profile* profile_to_activate_ = nullptr;
   // Set once we attempted to activate a profile. We only get one shot at this.
   bool activated_profile_ = false;
-  ScopedObserver<Profile, ProfileObserver> observed_profiles_{this};
+  base::ScopedMultiSourceObservation<Profile, ProfileObserver>
+      observed_profiles_{this};
 };
 
 base::LazyInstance<ProfileLaunchObserver>::DestructorAtExit
