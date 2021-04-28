@@ -56,7 +56,8 @@ class OpenInControllerTest : public PlatformTest {
     open_in_controller_ = [[OpenInController alloc]
         initWithBaseViewController:base_view_controller
                   URLLoaderFactory:test_shared_url_loader_factory_
-                          webState:&web_state_];
+                          webState:&web_state_
+                           browser:nullptr];
     [open_in_controller_ enableWithDocumentURL:documentURL
                              suggestedFilename:@"doc.pdf"];
   }

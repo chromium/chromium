@@ -36,17 +36,18 @@ enum class OpenInDownloadResult {
 
 // Class used to handle opening files in other applications.
 @interface OpenInController : NSObject <UIGestureRecognizerDelegate>
-// Designated initializer.
-- (id)initWithBaseViewController:(UIViewController*)baseViewController
-                URLLoaderFactory:
-                    (scoped_refptr<network::SharedURLLoaderFactory>)
-                        urlLoaderFactory
-                        webState:(web::WebState*)webState;
+
+- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
+                          URLLoaderFactory:
+                              (scoped_refptr<network::SharedURLLoaderFactory>)
+                                  urlLoaderFactory
+                                  webState:(web::WebState*)webState
+                                   browser:(Browser*)browser
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
 
 // Base view on which the Open In toolbar will be presented.
 @property(nonatomic, weak) UIView* baseView;
-
-@property(nonatomic, assign) Browser* browser;
 
 // Removes the |openInToolbar_| from the |webController_|'s view and resets the
 // variables specific to the loaded document.

@@ -61,7 +61,7 @@
 
 - (void)disableAll {
   for (const auto& element : _openInControllersForWebStates)
-    [element.second disable];
+    [element.second detachFromWebState];
   _openInControllersForWebStates.clear();
 }
 
@@ -96,8 +96,8 @@
         initWithBaseViewController:_baseViewController
                   URLLoaderFactory:webState->GetBrowserState()
                                        ->GetSharedURLLoaderFactory()
-                          webState:webState];
-    openInController.browser = _browser;
+                          webState:webState
+                           browser:_browser];
     _openInControllersForWebStates[webState] = openInController;
   }
   OpenInController* controller = _openInControllersForWebStates[webState];

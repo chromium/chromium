@@ -26,6 +26,7 @@
 }
 
 - (void)stop {
+  [self.openInMediator disableAll];
   self.openInMediator = nil;
 }
 
