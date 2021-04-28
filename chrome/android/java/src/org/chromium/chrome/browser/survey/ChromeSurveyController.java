@@ -51,16 +51,14 @@ import java.util.Random;
  */
 public class ChromeSurveyController implements InfoBarAnimationListener {
     private static final String TAG = "ChromeSurveyCtrler";
+
+    private static final String MAX_NUMBER = "max-number";
+    private static final String SITE_ID_PARAM_NAME = "site-id";
     private static final long REQUIRED_VISIBILITY_DURATION_MS = 5000;
 
-    @VisibleForTesting
-    static final String COMMAND_LINE_PARAM_NAME = "survey_override_site_id";
-    @VisibleForTesting
-    static final String MAX_NUMBER = "max-number";
-    @VisibleForTesting
-    static final String SITE_ID_PARAM_NAME = "site-id";
-
     private static boolean sForceUmaEnabledForTesting;
+
+    public static final String COMMAND_LINE_PARAM_NAME = "survey_override_site_id";
 
     /**
      * Reasons that the user was rejected from being selected for a survey
@@ -470,7 +468,6 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
     }
 
     /** @return If the survey is enabled by finch flag or commandline switch. */
-    @VisibleForTesting
     static boolean isSurveyEnabled() {
         if (CommandLine.getInstance().hasSwitch(ChromeSwitches.CHROME_FORCE_ENABLE_SURVEY)) {
             return true;
@@ -479,8 +476,7 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
     }
 
     /** @return The trigger Id that used to download / display certain survey. */
-    @VisibleForTesting
-    static String getTriggerId() {
+    private static String getTriggerId() {
         CommandLine commandLine = CommandLine.getInstance();
         if (commandLine.hasSwitch(COMMAND_LINE_PARAM_NAME)) {
             return commandLine.getSwitchValue(COMMAND_LINE_PARAM_NAME);
@@ -493,5 +489,10 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
     @VisibleForTesting
     public static Long getRequiredVisibilityDurationMs() {
         return REQUIRED_VISIBILITY_DURATION_MS;
+    }
+
+    @VisibleForTesting
+    public static String getCommandLineParamName() {
+        return COMMAND_LINE_PARAM_NAME;
     }
 }

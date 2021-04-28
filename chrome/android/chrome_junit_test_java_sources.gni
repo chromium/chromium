@@ -209,7 +209,6 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/signin/SyncConsentActivityLauncherImplTest.java",
   "junit/src/org/chromium/chrome/browser/status_indicator/StatusIndicatorMediatorTest.java",
   "junit/src/org/chromium/chrome/browser/suggestions/SuggestionsImageFetcherTest.java",
-  "junit/src/org/chromium/chrome/browser/survey/ChromeSurveyControllerFlowTest.java",
   "junit/src/org/chromium/chrome/browser/survey/ChromeSurveyControllerTest.java",
   "junit/src/org/chromium/chrome/browser/survey/SurveyHttpClientBridgeUnitTest.java",
   "junit/src/org/chromium/chrome/browser/sync/AndroidSyncSettingsTest.java",
