@@ -115,6 +115,9 @@ dependencies {
     // the full guava and one that supports android.
     compile "com.google.guava:guava:30.1-android"
 
+    // Needed by androidx.
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3"
+
     // buildCompile targets have supports_android = false.
     buildCompile "com.google.guava:guava:30.1-jre"
 
@@ -156,7 +159,7 @@ dependencies {
     buildCompileNoDeps "com.android.tools:sdk-common:${androidToolsVersion}"
     buildCompileNoDeps "com.android.tools:common:${androidToolsVersion}"
     buildCompileNoDeps "com.android.tools.layoutlib:layoutlib-api:${androidToolsVersion}"
-    buildCompile "org.jetbrains.kotlin:kotlin-stdlib:1.4.30"
+    buildCompile "org.jetbrains.kotlin:kotlin-stdlib:1.4.32"
 
     androidTestCompile "com.googlecode.java-diff-utils:diffutils:1.3.0"
     // Version 1.2 is needed by espresso-web, but we'll newer 1.2.1.
