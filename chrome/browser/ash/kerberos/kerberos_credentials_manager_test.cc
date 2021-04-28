@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/kerberos/kerberos_credentials_manager.h"
+#include "chrome/browser/ash/kerberos/kerberos_credentials_manager.h"
 
 #include <memory>
 #include <set>
@@ -1344,7 +1344,7 @@ TEST_F(KerberosCredentialsManagerTest,
 //   KerberosCredentialsManager, UpdateAccountsFromPref is called.
 //
 // See also
-//   https://analysis.chromium.org/p/chromium/coverage/dir?host=chromium.googlesource.com&project=chromium/src&ref=refs/heads/master&revision=8e25360b5986bc807eb05927b59cb698b120140c&path=//chrome/browser/chromeos/kerberos/&platform=linux-chromeos
+//   https://analysis.chromium.org/p/chromium/coverage/dir?host=chromium.googlesource.com&project=chromium/src&ref=refs/heads/master&revision=8e25360b5986bc807eb05927b59cb698b120140c&path=//chrome/browser/ash/kerberos/&platform=linux-chromeos
 // for code coverage (try to get as high as possible!).
 
 }  // namespace chromeos

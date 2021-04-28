@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/kerberos/kerberos_ticket_expiry_notification.h"
+#include "chrome/browser/ash/kerberos/kerberos_ticket_expiry_notification.h"
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"

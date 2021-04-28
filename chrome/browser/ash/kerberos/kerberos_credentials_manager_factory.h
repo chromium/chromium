@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_KERBEROS_KERBEROS_CREDENTIALS_MANAGER_FACTORY_H_
-#define CHROME_BROWSER_CHROMEOS_KERBEROS_KERBEROS_CREDENTIALS_MANAGER_FACTORY_H_
+#ifndef CHROME_BROWSER_ASH_KERBEROS_KERBEROS_CREDENTIALS_MANAGER_FACTORY_H_
+#define CHROME_BROWSER_ASH_KERBEROS_KERBEROS_CREDENTIALS_MANAGER_FACTORY_H_
 
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -72,4 +72,4 @@ class KerberosCredentialsManagerFactory
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_KERBEROS_KERBEROS_CREDENTIALS_MANAGER_FACTORY_H_
+#endif  // CHROME_BROWSER_ASH_KERBEROS_KERBEROS_CREDENTIALS_MANAGER_FACTORY_H_

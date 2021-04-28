@@ -21745,7 +21745,7 @@
     },
     {
       'name': 'KerberosEnabled',
-      'owners': ['file://chrome/browser/chromeos/kerberos/OWNERS', 'fsandrade@chromium.org'],
+      'owners': ['file://chrome/browser/ash/kerberos/OWNERS', 'fsandrade@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:87-'],
@@ -21766,7 +21766,7 @@
     },
     {
       'name': 'KerberosRememberPasswordEnabled',
-      'owners': ['file://chrome/browser/chromeos/kerberos/OWNERS', 'tomdobro@chromium.org'],
+      'owners': ['file://chrome/browser/ash/kerberos/OWNERS', 'tomdobro@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:87-'],
@@ -21787,7 +21787,7 @@
     },
     {
       'name': 'KerberosAddAccountsAllowed',
-      'owners': ['file://chrome/browser/chromeos/kerberos/OWNERS', 'tomdobro@chromium.org'],
+      'owners': ['file://chrome/browser/ash/kerberos/OWNERS', 'tomdobro@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:87-'],
@@ -21808,7 +21808,7 @@
     },
     {
       'name': 'KerberosAccounts',
-      'owners': ['file://chrome/browser/chromeos/kerberos/OWNERS', 'tomdobro@chromium.org'],
+      'owners': ['file://chrome/browser/ash/kerberos/OWNERS', 'tomdobro@chromium.org'],
       'type': 'dict',
       'schema': {
         'type': 'array',
