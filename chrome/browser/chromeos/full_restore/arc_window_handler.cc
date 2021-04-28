@@ -53,10 +53,22 @@ void ArcWindowHandler::LaunchArcGhostWindow(
   container->SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
 
   session_id_to_shell_surface_.emplace(
-      session_id, InitArcGhostWindow(this, app_id, session_id,
-                                     restore_data->display_id.value(),
-                                     restore_data->current_bounds.value(),
-                                     std::move(container)));
+      session_id,
+      InitArcGhostWindow(
+          this, app_id, session_id, restore_data->display_id.value(),
+          restore_data->current_bounds.value(), std::move(container),
+          base::BindRepeating(&ArcWindowHandler::CloseWindow,
+                              weak_ptr_factory_.GetWeakPtr(), session_id)));
+}
+
+void ArcWindowHandler::CloseWindow(int session_id) {
+  auto it = session_id_to_shell_surface_.find(session_id);
+  if (it == session_id_to_shell_surface_.end())
+    return;
+
+  for (auto& observer : observer_list_)
+    observer.OnWindowCloseRequested(session_id);
+  session_id_to_shell_surface_.erase(it);
 }
 
 void ArcWindowHandler::AddObserver(Observer* observer) {

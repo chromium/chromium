@@ -9,6 +9,10 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
+namespace {
+const int kNullWindowState = -1;
+}
+
 namespace chromeos {
 namespace full_restore {
 
@@ -20,6 +24,7 @@ ArcGhostWindowDelegate::ArcGhostWindowDelegate(
     gfx::Rect bounds)
     : window_id_(window_id),
       bounds_(gfx::Rect(bounds)),
+      pending_close_(false),
       window_state_(chromeos::WindowStateType::kDefault),
       shell_surface_(shell_surface) {
   DCHECK(shell_surface);
@@ -117,6 +122,13 @@ void ArcGhostWindowDelegate::OnAppInstanceConnected() {
   UpdateWindowInfoToArc();
 }
 
+void ArcGhostWindowDelegate::OnWindowCloseRequested(int window_id) {
+  if (window_id != window_id_)
+    return;
+  pending_close_ = true;
+  UpdateWindowInfoToArc();
+}
+
 bool ArcGhostWindowDelegate::SetDisplayId(int64_t display_id) {
   base::Optional<double> scale_factor = GetDisplayScaleFactor(display_id);
   if (!scale_factor.has_value()) {
@@ -134,7 +146,7 @@ void ArcGhostWindowDelegate::UpdateWindowInfoToArc() {
   window_info->window_id = window_id_;
   window_info->display_id = display_id_;
   window_info->bounds = gfx::ScaleToRoundedRect(bounds_, scale_factor_);
-  window_info->state = (int)window_state_;
+  window_info->state = pending_close_ ? kNullWindowState : (int)window_state_;
   arc::UpdateWindowInfo(std::move(window_info));
 }
 

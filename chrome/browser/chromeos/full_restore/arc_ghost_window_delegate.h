@@ -49,12 +49,15 @@ class ArcGhostWindowDelegate
   // ArcWindowHandler::Observer
   void OnAppInstanceConnected() override;
 
+  void OnWindowCloseRequested(int window_id) override;
+
  private:
   bool SetDisplayId(int64_t display_id);
   void UpdateWindowInfoToArc();
 
   int window_id_;
   gfx::Rect bounds_;
+  bool pending_close_;
   int64_t display_id_;
   double scale_factor_;
   chromeos::WindowStateType window_state_;

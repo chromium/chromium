@@ -22,7 +22,8 @@ std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
     int window_id,
     int64_t display_id,
     gfx::Rect bounds,
-    std::unique_ptr<views::View> content) {
+    std::unique_ptr<views::View> content,
+    base::RepeatingClosure close_callback) {
   base::Optional<double> scale_factor = GetDisplayScaleFactor(display_id);
   DCHECK(scale_factor.has_value());
 
@@ -33,9 +34,12 @@ std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
   auto shell_surface = std::make_unique<ArcGhostWindowShellSurface>(
       std::move(surface), container, scale_factor.value());
 
-  shell_surface->SetApplicationId(app_id.c_str());
+  // TODO(sstan): Add set_surface_destroyed_callback.
   shell_surface->set_delegate(std::make_unique<ArcGhostWindowDelegate>(
       shell_surface.get(), window_handler, window_id, display_id, bounds));
+  shell_surface->set_close_callback(std::move(close_callback));
+
+  shell_surface->SetApplicationId(app_id.c_str());
   shell_surface->SetBounds(display_id, bounds);
 
   // Set frame buttons.

@@ -26,7 +26,8 @@ std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
     int window_id,
     int64_t display_id,
     gfx::Rect bounds,
-    std::unique_ptr<views::View> content);
+    std::unique_ptr<views::View> content,
+    base::RepeatingClosure close_callback);
 
 // ArcGhostWindowShellSurface class is a shell surface which controlled its
 // root surface.

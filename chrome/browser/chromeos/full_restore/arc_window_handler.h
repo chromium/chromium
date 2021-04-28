@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_FULL_RESTORE_ARC_WINDOW_HANDLER_H_
 #define CHROME_BROWSER_CHROMEOS_FULL_RESTORE_ARC_WINDOW_HANDLER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "components/exo/client_controlled_shell_surface.h"
@@ -48,6 +49,9 @@ class ArcWindowHandler {
     // Observer for app instance connection ready.
     virtual void OnAppInstanceConnected() {}
 
+    // Observer for ghost window close event.
+    virtual void OnWindowCloseRequested(int window_id) {}
+
    protected:
     ~Observer() override = default;
   };
@@ -61,6 +65,8 @@ class ArcWindowHandler {
                             int32_t session_id,
                             ::full_restore::AppRestoreData* restore_data);
 
+  void CloseWindow(int session_id);
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
   bool HasObserver(Observer* observer);
@@ -72,6 +78,8 @@ class ArcWindowHandler {
   ShellSurfaceMap session_id_to_shell_surface_;
 
   base::ObserverList<Observer> observer_list_;
+
+  base::WeakPtrFactory<ArcWindowHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace full_restore
