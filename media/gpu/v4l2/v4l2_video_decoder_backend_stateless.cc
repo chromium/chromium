@@ -490,6 +490,7 @@ void V4L2StatelessVideoDecoderBackend::PumpOutputSurfaces() {
         DVLOGF(2) << "Flush finished.";
         std::move(flush_cb_).Run(DecodeStatus::OK);
         resume_decode = true;
+        client_->CompleteFlush();
         break;
 
       case OutputRequest::kChangeResolutionFence:
@@ -508,7 +509,6 @@ void V4L2StatelessVideoDecoderBackend::PumpOutputSurfaces() {
   }
 
   if (resume_decode) {
-    client_->CompleteFlush();
     task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&V4L2StatelessVideoDecoderBackend::DoDecodeWork,
