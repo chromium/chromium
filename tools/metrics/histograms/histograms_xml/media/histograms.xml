@@ -2607,7 +2607,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Midi.SendReceiveUsage" enum="MidiSendReceiveUsage"
-    expires_after="M85">
+    expires_after="M95">
   <owner>toyoshim@chromium.org</owner>
   <owner>midi-dev@chromium.org</owner>
   <summary>
@@ -2615,17 +2615,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     once per MidiManager instantiation, upon destruction. MidiManager is
     instantiated when the first Web MIDI client starts a session, and destroyed
     when the last client ends the session.
+
+    Warning: this histogram was expired from M86 to M91; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Media.Midi.SysExMessageSizeUpTo1MB" units="bytes"
-    expires_after="M85">
+    expires_after="M95">
   <owner>toyoshim@chromium.org</owner>
   <owner>midi-dev@chromium.org</owner>
-  <summary>Reports sysex message size.</summary>
+  <summary>
+    Reports sysex message size.
+
+    Warning: this histogram was expired from M86 to M91; data may be missing.
+  </summary>
 </histogram>
 
-<histogram name="Media.Midi.Usage" enum="MidiUsage" expires_after="M85">
+<histogram name="Media.Midi.Usage" enum="MidiUsage" expires_after="M95">
   <owner>toyoshim@chromium.org</owner>
   <owner>midi-dev@chromium.org</owner>
   <summary>
@@ -2633,6 +2639,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     the real API usage because this can be counted by feature scanning scripts
     that are often used for footprinting. You may want to track SendReceiveUsage
     to monitor only instances that actually send or receive MIDI messages.
+
+    Warning: this histogram was expired from M86 to M91; data may be missing.
   </summary>
 </histogram>
 
