@@ -139,8 +139,6 @@
 
   if (!base::FeatureList::IsEnabled(kSettingsRefresh)) {
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.tableView.accessibilityIdentifier =
-        kClearBrowsingDataViewAccessibilityIdentifier;
     self.styler.tableViewBackgroundColor =
         [UIColor colorNamed:kPrimaryBackgroundColor];
     self.tableView.backgroundColor = self.styler.tableViewBackgroundColor;
@@ -150,6 +148,9 @@
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedSectionHeaderHeight = 0;
   }
+
+  self.tableView.accessibilityIdentifier =
+      kClearBrowsingDataViewAccessibilityIdentifier;
 
   // Navigation controller configuration.
   self.title = l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_TITLE);
