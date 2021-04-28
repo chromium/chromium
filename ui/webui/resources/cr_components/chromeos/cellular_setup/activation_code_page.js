@@ -444,6 +444,11 @@ Polymer({
       return;
     }
 
+    // Focus on the next button after scanning is successful.
+    if (this.state_ === PageState.SCANNING_SUCCESS) {
+      this.fire('focus-default-button');
+    }
+
     this.expanded_ = false;
   },
 

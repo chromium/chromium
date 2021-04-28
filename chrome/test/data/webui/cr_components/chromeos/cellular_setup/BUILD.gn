@@ -34,5 +34,7 @@ js_modulizer("modulize") {
                          "cellular_setup.FakeMediaDevices|FakeMediaDevices",
                          "cellular_setup.FakeCanvasContext|FakeCanvasContext",
                          "cellular_setup.MockMetricsPrivate|MockMetricsPrivate",
+                         "test_util.eventToPromise|eventToPromise",
+                         "test_util.flushTasks|flushTasks",
                        ]
 }

@@ -10,6 +10,7 @@
 // #import {assertTrue} from '../../../chai_assert.js';
 // #import {FakeMediaDevices} from './fake_media_devices.m.js';
 // #import {FakeBarcodeDetector, FakeImageCapture} from './fake_barcode_detector.m.js';
+// #import {eventToPromise, flushTasks} from 'chrome://test/test_util.m.js';
 // clang-format on
 
 suite('CrComponentsActivationCodePageTest', function() {
@@ -127,12 +128,17 @@ suite('CrComponentsActivationCodePageTest', function() {
     assertTrue(scanFinishContainer.hidden);
     assertTrue(switchCameraButton.hidden);
 
+    const focusNextButtonPromise =
+        test_util.eventToPromise('focus-default-button', activationCodePage);
+
     // Scan a new code.
     await intervalFunction();
     await flushAsync();
 
     // The scanFinishContainer and scanSuccessContainer should now be visible,
-    // video, start scanning UI and scanFailureContainer hidden.
+    // video, start scanning UI, scanFailureContainer hidden and nextbutton
+    // is focused.
+    await Promise.all([focusNextButtonPromise, test_util.flushTasks()]);
     assertFalse(scanFinishContainer.hidden);
     assertTrue(startScanningContainer.hidden);
     assertTrue(video.hidden);
