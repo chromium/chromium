@@ -194,13 +194,13 @@ void ExtensionEnableFlow::OnBlockedByParentDialogDone() {
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 void ExtensionEnableFlow::StartObserving() {
-  extension_registry_observer_.Add(
+  extension_registry_observation_.Observe(
       extensions::ExtensionRegistry::Get(profile_));
   load_error_observation_.Observe(extensions::LoadErrorReporter::GetInstance());
 }
 
 void ExtensionEnableFlow::StopObserving() {
-  extension_registry_observer_.RemoveAll();
+  extension_registry_observation_.Reset();
   load_error_observation_.Reset();
 }
 

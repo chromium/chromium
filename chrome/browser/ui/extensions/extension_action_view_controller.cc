@@ -385,7 +385,7 @@ bool ExtensionActionViewController::TriggerPopupWithUrl(
     return false;
 
   popup_host_ = host.get();
-  popup_host_observer_.Add(popup_host_);
+  popup_host_observation_.Observe(popup_host_);
   extensions_container_->SetPopupOwner(this);
 
   extensions_container_->CloseOverflowMenuIfOpen();
@@ -412,7 +412,8 @@ void ExtensionActionViewController::ShowPopup(
 }
 
 void ExtensionActionViewController::OnPopupClosed() {
-  popup_host_observer_.Remove(popup_host_);
+  DCHECK(popup_host_observation_.IsObservingSource(popup_host_));
+  popup_host_observation_.Reset();
   popup_host_ = nullptr;
   extensions_container_->SetPopupOwner(nullptr);
   if (extensions_container_->GetPoppedOutAction() == this)

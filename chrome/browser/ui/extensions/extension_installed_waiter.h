@@ -7,7 +7,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/extensions/extension_removal_watcher.h"
 #include "extensions/browser/extension_registry.h"
@@ -64,9 +64,9 @@ class ExtensionInstalledWaiter : public extensions::ExtensionRegistryObserver {
   const Browser* const browser_;
   base::OnceClosure done_callback_;
 
-  ScopedObserver<extensions::ExtensionRegistry,
-                 extensions::ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<extensions::ExtensionRegistry,
+                          extensions::ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   std::unique_ptr<ExtensionRemovalWatcher> removal_watcher_;
 

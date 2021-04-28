@@ -13,7 +13,7 @@ ExtensionRemovalWatcher::ExtensionRemovalWatcher(
     scoped_refptr<const extensions::Extension> extension,
     base::OnceClosure callback)
     : browser_(browser), extension_(extension), callback_(std::move(callback)) {
-  extension_registry_observer_.Add(
+  extension_registry_observation_.Observe(
       extensions::ExtensionRegistry::Get(browser->profile()));
   BrowserList::AddObserver(this);
 }

@@ -38,7 +38,7 @@ ExtensionInstalledWaiter::ExtensionInstalledWaiter(
     : extension_(extension),
       browser_(browser),
       done_callback_(std::move(done_callback)) {
-  extension_registry_observer_.Add(
+  extension_registry_observation_.Observe(
       extensions::ExtensionRegistry::Get(browser->profile()));
   removal_watcher_ = std::make_unique<ExtensionRemovalWatcher>(
       browser, extension,

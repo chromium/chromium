@@ -13,7 +13,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/scoped_observer.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/common/buildflags.h"
@@ -120,9 +119,9 @@ class ExtensionEnableFlow : public extensions::LoadErrorReporter::Observer,
   std::unique_ptr<ExtensionInstallPrompt> prompt_;
 
   // Listen to extension load notification.
-  ScopedObserver<extensions::ExtensionRegistry,
-                 extensions::ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<extensions::ExtensionRegistry,
+                          extensions::ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   base::ScopedObservation<extensions::LoadErrorReporter,
                           extensions::LoadErrorReporter::Observer>

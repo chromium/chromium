@@ -7,7 +7,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -37,9 +37,9 @@ class ExtensionRemovalWatcher : public BrowserListObserver,
   const scoped_refptr<const extensions::Extension> extension_;
   base::OnceClosure callback_;
 
-  ScopedObserver<extensions::ExtensionRegistry,
-                 extensions::ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<extensions::ExtensionRegistry,
+                          extensions::ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_REMOVAL_WATCHER_H_

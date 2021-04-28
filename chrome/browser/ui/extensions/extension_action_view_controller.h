@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/extensions/extension_action_icon_factory.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
@@ -203,8 +203,9 @@ class ExtensionActionViewController
   // The associated ExtensionRegistry; cached for quick checking.
   extensions::ExtensionRegistry* extension_registry_;
 
-  ScopedObserver<extensions::ExtensionHost, extensions::ExtensionHostObserver>
-      popup_host_observer_{this};
+  base::ScopedObservation<extensions::ExtensionHost,
+                          extensions::ExtensionHostObserver>
+      popup_host_observation_{this};
 
   base::WeakPtrFactory<ExtensionActionViewController> weak_factory_{this};
 
