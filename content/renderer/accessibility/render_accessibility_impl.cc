@@ -828,6 +828,38 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
   // Save the page language.
   page_language_ = root.Language().Utf8();
 
+  // Popups have a document lifecycle managed separately from the main document
+  // but we need to return a combined accessibility tree for both.
+  // We ensured layout validity for the main document in the loop above; if a
+  // popup is open, do the same for it.
+  WebDocument popup_document = GetPopupDocument();
+  if (!popup_document.IsNull()) {
+    WebAXObject popup_root_obj = WebAXObject::FromWebDocument(popup_document);
+    if (!popup_root_obj.MaybeUpdateLayoutAndCheckValidity()) {
+      // If a popup is open but we can't ensure its validity, return without
+      // sending an update bundle, the same as we would for a node in the main
+      // document.
+      return;
+    }
+  }
+
+#if DCHECK_IS_ON()
+  // Protect against lifecycle changes in the popup document, if any.
+  // If no popup document, use the main document -- it's harmless to protect it
+  // twice, and some document is needed because this cannot be done in an if
+  // statement because it's scoped.
+  WebDocument popup_or_main_document =
+      popup_document.IsNull() ? document : popup_document;
+  blink::WebDisallowTransitionScope disallow2(&popup_or_main_document);
+#endif
+
+  // Keep track of if the host node for a plugin has been invalidated,
+  // because if so, the plugin subtree will need to be re-serialized.
+  bool invalidate_plugin_subtree = false;
+  if (plugin_tree_source_ && !plugin_host_node_.IsDetached()) {
+    invalidate_plugin_subtree = !serializer_->IsInClientTree(plugin_host_node_);
+  }
+
   // Loop over each event and generate an updated event message.
   for (ui::AXEvent& event : src_events) {
     if (event.event_type == ax::mojom::Event::kLayoutComplete)
@@ -917,38 +949,6 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
       dirty_object.event_intents = event.event_intents;
       dirty_objects.push_back(dirty_object);
     }
-  }
-
-  // Popups have a document lifecycle managed separately from the main document
-  // but we need to return a combined accessibility tree for both.
-  // We ensured layout validity for the main document in the loop above; if a
-  // popup is open, do the same for it.
-  WebDocument popup_document = GetPopupDocument();
-  if (!popup_document.IsNull()) {
-    WebAXObject popup_root_obj = WebAXObject::FromWebDocument(popup_document);
-    if (!popup_root_obj.MaybeUpdateLayoutAndCheckValidity()) {
-      // If a popup is open but we can't ensure its validity, return without
-      // sending an update bundle, the same as we would for a node in the main
-      // document.
-      return;
-    }
-  }
-
-#if DCHECK_IS_ON()
-  // Protect against lifecycle changes in the popup document, if any.
-  // If no popup document, use the main document -- it's harmless to protect it
-  // twice, and some document is needed because this cannot be done in an if
-  // statement because it's scoped.
-  WebDocument popup_or_main_document =
-      popup_document.IsNull() ? document : popup_document;
-  blink::WebDisallowTransitionScope disallow2(&popup_or_main_document);
-#endif
-
-  // Keep track of if the host node for a plugin has been invalidated,
-  // because if so, the plugin subtree will need to be re-serialized.
-  bool invalidate_plugin_subtree = false;
-  if (plugin_tree_source_ && !plugin_host_node_.IsDetached()) {
-    invalidate_plugin_subtree = !serializer_->IsInClientTree(plugin_host_node_);
   }
 
   // Now serialize all dirty objects. Keep track of IDs serialized
