@@ -80,7 +80,6 @@ class ThreadSafeInterfaceEndpointClientProxy : public ThreadSafeProxy {
     SyncResponseInfo() = default;
 
     Message message;
-    bool cancelled = false;
     bool received = false;
     base::WaitableEvent event{base::WaitableEvent::ResetPolicy::MANUAL,
                               base::WaitableEvent::InitialState::NOT_SIGNALED};
@@ -101,10 +100,8 @@ class ThreadSafeInterfaceEndpointClientProxy : public ThreadSafeProxy {
     ~SyncResponseSignaler() override {
       // If Accept() was not called we must still notify the waiter that the
       // sync call is finished.
-      if (response_) {
-        response_->cancelled = true;
+      if (response_)
         response_->event.Signal();
-      }
     }
 
     bool Accept(Message* message) override {
@@ -388,14 +385,16 @@ void ThreadSafeInterfaceEndpointClientProxy::SendMessageWithResponder(
     // In the common case where interrupts are allowed, we watch cooperatively
     // with other potential endpoints on the same thread.
     SyncCallRestrictions::AssertSyncCallAllowed();
-    SyncEventWatcher watcher(&response->event, base::DoNothing());
-    const bool* stop_flags[] = {&response->received, &response->cancelled};
+    bool signaled = false;
+    auto set_flag = [](bool* flag) { *flag = true; };
+    SyncEventWatcher watcher(&response->event,
+                             base::BindRepeating(set_flag, &signaled));
+    const bool* stop_flags[] = {&signaled};
     watcher.SyncWatch(stop_flags, base::size(stop_flags));
   } else {
     // Else we can wait on the event directly. It will only signal after our
     // reply has been processed or cancelled.
     response->event.Wait();
-    DCHECK(response->received || response->cancelled);
   }
 
   {
