@@ -544,8 +544,7 @@ void VideoResourceUpdater::AppendQuads(
     gfx::Rect quad_rect,
     gfx::Rect visible_quad_rect,
     const gfx::MaskFilterInfo& mask_filter_info,
-    gfx::Rect clip_rect,
-    bool is_clipped,
+    base::Optional<gfx::Rect> clip_rect,
     bool contents_opaque,
     float draw_opacity,
     int sorting_context_id) {
@@ -553,10 +552,9 @@ void VideoResourceUpdater::AppendQuads(
 
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();
-  shared_quad_state->SetAll(transform, quad_rect, visible_quad_rect,
-                            mask_filter_info, clip_rect, is_clipped,
-                            contents_opaque, draw_opacity,
-                            SkBlendMode::kSrcOver, sorting_context_id);
+  shared_quad_state->SetAll(
+      transform, quad_rect, visible_quad_rect, mask_filter_info, clip_rect,
+      contents_opaque, draw_opacity, SkBlendMode::kSrcOver, sorting_context_id);
 
   bool needs_blending = !contents_opaque;
 

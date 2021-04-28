@@ -110,8 +110,8 @@ void CreateAndAppendSharedRenderPassDrawQuad(
       /*quad_layer_rect=*/rect,
       /*visible_layer_rect=*/rect,
       /*mask_filter_info=*/gfx::MaskFilterInfo(),
-      /*clip_rect=*/gfx::Rect(),
-      /*is_clipped=*/false, /*are_contents_opaque=*/false,
+      /*clip_rect=*/base::nullopt,
+      /*are_contents_opaque=*/false,
       /*opacity=*/opacity,
       /*blend_mode=*/SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
 

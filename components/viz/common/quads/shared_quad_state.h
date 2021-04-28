@@ -34,22 +34,6 @@ class VIZ_COMMON_EXPORT SharedQuadState {
   SharedQuadState(const SharedQuadState& other);
   ~SharedQuadState();
 
-  // If the provided is_clipped is true, this method will set clip_rect to
-  // nullopt, otherwise it will be set to the provided clip_rect.
-  // New usages should use the next SetAll method which accepts clip_rect
-  // as an Optional.
-  // TODO(crbug/1194630): Delete this function after all callsites have been
-  // updated to use the Optional version.
-  void SetAll(const gfx::Transform& quad_to_target_transform,
-              const gfx::Rect& quad_layer_rect,
-              const gfx::Rect& visible_layer_rect,
-              const gfx::MaskFilterInfo& mask_filter_info,
-              const gfx::Rect& clip_rect,
-              bool is_clipped,
-              bool are_contents_opaque,
-              float opacity,
-              SkBlendMode blend_mode,
-              int sorting_context_id);
   void SetAll(const gfx::Transform& quad_to_target_transform,
               const gfx::Rect& quad_layer_rect,
               const gfx::Rect& visible_layer_rect,

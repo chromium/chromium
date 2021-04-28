@@ -363,10 +363,9 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
       dom_quad_state->SetAll(
           gfx::Transform(),
           /*quad_layer_rect=*/output_rect,
-          /*visible_quad_layer_rect=*/output_rect, gfx::MaskFilterInfo(),
-          /*clip_rect=*/gfx::Rect(),
-          /*is_clipped=*/false, /*are_contents_opaque=*/false, /*opacity=*/1.f,
-          SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
+          /*visible_layer_rect=*/output_rect, gfx::MaskFilterInfo(),
+          /*clip_rect=*/base::nullopt, /*are_contents_opaque=*/false,
+          /*opacity=*/1.f, SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
 
       viz::SurfaceDrawQuad* dom_quad =
           render_pass->CreateAndAppendDrawQuad<viz::SurfaceDrawQuad>();
@@ -392,10 +391,9 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
     xr_content_quad_state->SetAll(
         gfx::Transform(),
         /*quad_layer_rect=*/output_rect,
-        /*visible_quad_layer_rect=*/output_rect, gfx::MaskFilterInfo(),
-        /*clip_rect=*/gfx::Rect(),
-        /*is_clipped=*/false, /*are_contents_opaque=*/false, /*opacity=*/1.f,
-        SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
+        /*visible_layer_rect=*/output_rect, gfx::MaskFilterInfo(),
+        /*clip_rect=*/base::nullopt, /*are_contents_opaque=*/false,
+        /*opacity=*/1.f, SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
 
     viz::TextureDrawQuad* xr_content_quad =
         render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
@@ -432,10 +430,9 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
   camera_quad_state->SetAll(
       gfx::Transform(),
       /*quad_layer_rect=*/output_rect,
-      /*visible_quad_layer_rect=*/output_rect, gfx::MaskFilterInfo(),
-      /*clip_rect=*/gfx::Rect(),
-      /*is_clipped=*/false, /*are_contents_opaque=*/true, /*opacity=*/1.f,
-      SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
+      /*visible_layer_rect=*/output_rect, gfx::MaskFilterInfo(),
+      /*clip_rect=*/base::nullopt, /*are_contents_opaque=*/true,
+      /*opacity=*/1.f, SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
 
   viz::TextureDrawQuad* camera_quad =
       render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();

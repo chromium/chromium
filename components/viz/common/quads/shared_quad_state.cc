@@ -25,22 +25,6 @@ void SharedQuadState::SetAll(const gfx::Transform& quad_to_target_transform,
                              const gfx::Rect& quad_layer_rect,
                              const gfx::Rect& visible_quad_layer_rect,
                              const gfx::MaskFilterInfo& mask_filter_info,
-                             const gfx::Rect& clip_rect,
-                             bool is_clipped,
-                             bool are_contents_opaque,
-                             float opacity,
-                             SkBlendMode blend_mode,
-                             int sorting_context_id) {
-  SetAll(quad_to_target_transform, quad_layer_rect, visible_quad_layer_rect,
-         mask_filter_info,
-         is_clipped ? base::make_optional(clip_rect) : base::nullopt,
-         are_contents_opaque, opacity, blend_mode, sorting_context_id);
-}
-
-void SharedQuadState::SetAll(const gfx::Transform& quad_to_target_transform,
-                             const gfx::Rect& quad_layer_rect,
-                             const gfx::Rect& visible_quad_layer_rect,
-                             const gfx::MaskFilterInfo& mask_filter_info,
                              const base::Optional<gfx::Rect>& clip_rect,
                              bool are_contents_opaque,
                              float opacity,

@@ -404,14 +404,14 @@ void FastInkHost::SubmitCompositorFrame() {
 
   viz::SharedQuadState* quad_state =
       render_pass->CreateAndAppendSharedQuadState();
-  quad_state->SetAll(
-      buffer_to_target_transform,
-      /*quad_layer_rect=*/output_rect,
-      /*visible_quad_layer_rect=*/output_rect,
-      /*mask_filter_info=*/gfx::MaskFilterInfo(),
-      /*clip_rect=*/gfx::Rect(),
-      /*is_clipped=*/false, /*are_contents_opaque=*/false, /*opacity=*/1.f,
-      /*blend_mode=*/SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
+  quad_state->SetAll(buffer_to_target_transform,
+                     /*quad_layer_rect=*/output_rect,
+                     /*visible_layer_rect=*/output_rect,
+                     /*mask_filter_info=*/gfx::MaskFilterInfo(),
+                     /*clip_rect=*/base::nullopt, /*are_contents_opaque=*/false,
+                     /*opacity=*/1.f,
+                     /*blend_mode=*/SkBlendMode::kSrcOver,
+                     /*sorting_context_id=*/0);
 
   viz::CompositorFrame frame;
   // TODO(eseckler): FastInkHost should use BeginFrames and set the ack

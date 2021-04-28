@@ -90,7 +90,6 @@ class RemoveOverdrawQuadPerfTest : public testing::Test {
   SharedQuadState* CreateSharedQuadState(AggregatedRenderPass* render_pass,
                                          gfx::Rect rect) {
     gfx::Transform quad_transform = gfx::Transform();
-    bool is_clipped = false;
     bool are_contents_opaque = true;
     float opacity = 1.f;
     int sorting_context_id = 65536;
@@ -98,8 +97,9 @@ class RemoveOverdrawQuadPerfTest : public testing::Test {
 
     SharedQuadState* state = render_pass->CreateAndAppendSharedQuadState();
     state->SetAll(quad_transform, rect, rect,
-                  /*mask_filter_info=*/gfx::MaskFilterInfo(), rect, is_clipped,
-                  are_contents_opaque, opacity, blend_mode, sorting_context_id);
+                  /*mask_filter_info=*/gfx::MaskFilterInfo(),
+                  /*clip_rect=*/base::nullopt, are_contents_opaque, opacity,
+                  blend_mode, sorting_context_id);
     return state;
   }
 

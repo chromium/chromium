@@ -162,10 +162,14 @@ void VideoLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   if (visible_quad_rect.IsEmpty())
     return;
 
+  base::Optional<gfx::Rect> clip_rect_opt;
+  if (is_clipped()) {
+    clip_rect_opt = clip_rect();
+  }
   updater_->AppendQuads(render_pass, frame_, transform, quad_rect,
                         visible_quad_rect, draw_properties().mask_filter_info,
-                        clip_rect(), is_clipped(), contents_opaque(),
-                        draw_opacity(), GetSortingContextId());
+                        clip_rect_opt, contents_opaque(), draw_opacity(),
+                        GetSortingContextId());
 }
 
 void VideoLayerImpl::DidDraw(viz::ClientResourceProvider* resource_provider) {

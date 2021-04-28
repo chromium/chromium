@@ -232,7 +232,6 @@ bool CanvasResourceDispatcher::PrepareFrame(
 
   const gfx::Rect bounds(size_.Width(), size_.Height());
   constexpr viz::CompositorRenderPassId kRenderPassId{1};
-  constexpr bool is_clipped = false;
   auto pass =
       viz::CompositorRenderPass::Create(/*shared_quad_state_list_size=*/1u,
                                         /*quad_list_size=*/1u);
@@ -242,8 +241,8 @@ bool CanvasResourceDispatcher::PrepareFrame(
                gfx::Transform());
 
   viz::SharedQuadState* sqs = pass->CreateAndAppendSharedQuadState();
-  sqs->SetAll(gfx::Transform(), bounds, bounds, gfx::MaskFilterInfo(), bounds,
-              is_clipped, is_opaque, 1.f, SkBlendMode::kSrcOver, 0);
+  sqs->SetAll(gfx::Transform(), bounds, bounds, gfx::MaskFilterInfo(),
+              base::nullopt, is_opaque, 1.f, SkBlendMode::kSrcOver, 0);
 
   viz::TransferableResource resource;
   auto frame_resource = std::make_unique<FrameResource>();
