@@ -108,6 +108,9 @@ class CWTRequestHandler {
   // image.
   base::Value GetSnapshot();
 
+  // Returns the Chrome version and revision number for the current build.
+  base::Value GetVersionInfo();
+
   // Set the target tab's position and size. This is currently a no-op since
   // tabs cannot be arbitrarily sized or positioned on iOS. It may make sense
   // to implement this in the future on iPad-only, once multiwindow support on

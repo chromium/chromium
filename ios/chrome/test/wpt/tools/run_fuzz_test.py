@@ -6,6 +6,8 @@
 import argparse
 import json
 import os
+import psutil
+import re
 import requests
 import subprocess
 import time
@@ -18,31 +20,24 @@ def GetChromiumSrcDir():
 def GetDefaultBuildDir():
   return os.path.join(GetChromiumSrcDir(), 'out', 'Release-iphonesimulator')
 
-def EnsureServerStarted(port, build_dir):
-  # Check if the server is already running. If not, launch the server and wait
-  # for it to be ready.
-  server_url = 'http://localhost:' + port
-  try:
-    requests.post(server_url + '/session', json = {})
-    response = requests.get(server_url + '/session/handles')
-    assert response.status_code == 200
-    # Use a page load timeout of 10 seconds.
-    response = requests.post(
-        server_url + '/session/timeouts', json = {'pageLoad': 10000})
-    return response.status_code == 200
-  except requests.exceptions.ConnectionError:
-    cwt_chromedriver_path = os.path.join(os.path.dirname(__file__),
-                                         'run_cwt_chromedriver.py')
-    subprocess.Popen(cwt_chromedriver_path + ' --asan-build --build-dir ' +
-                     build_dir + ' --port ' + port + ' >/dev/null 2>&1 &',
-                     shell=True)
-    time.sleep(15)
+def StartServer(port, build_dir):
+  cwt_chromedriver_path = os.path.join(os.path.dirname(__file__),
+                                       'run_cwt_chromedriver.py')
+  subprocess.Popen(cwt_chromedriver_path + ' --asan-build --build-dir ' +
+                   build_dir + ' --port ' + port + ' >/dev/null 2>&1 &',
+                   shell=True)
+  time.sleep(15)
 
   # Wait up to 150 seconds for the server to be ready.
+  server_url = 'http://localhost:' + port
   for attempt in range (0, 150):
     try:
       requests.post(server_url + '/session', json= {})
       response = requests.get(server_url + '/session/handles')
+      assert response.status_code == 200
+      # Use a page load timeout of 10 seconds.
+      response = requests.post(
+        server_url + '/session/timeouts', json = {'pageLoad': 10000})
       return response.status_code == 200
     except:
       if attempt == 149:
@@ -50,7 +45,66 @@ def EnsureServerStarted(port, build_dir):
       else:
         time.sleep(1)
 
-  return False
+def IsCurrentVersion(version, revision, build_dir):
+  plist_path = os.path.join(build_dir, 'ios_cwt_chromedriver_tests.app',
+                            'Info.plist')
+  version_command = 'defaults read ' + plist_path + ' CFBundleVersion'
+  completed_process = subprocess.run(version_command, shell=True,
+                                     capture_output=True)
+  current_version = completed_process.stdout.decode('utf-8').strip()
+
+  if version != current_version:
+    return False
+
+  revision_command = 'defaults read ' + plist_path + ' SCMRevision'
+  completed_process = subprocess.run(revision_command, shell=True,
+                                     capture_output=True)
+  full_revision = completed_process.stdout.decode('utf-8').strip()
+  current_revision = re.search('.*{#(.+?)}', full_revision).group(1)
+
+  return current_revision == revision
+
+def KillServer():
+  # Gather all running run_cwt_chromedriver.py and xcodebuild instances. There
+  # should only ever be at most one process of each type, but handle the case
+  # of multiple such processes for extra robustness.
+  cwt_chromedriver_procs = []
+  xcodebuild_procs = []
+  for proc in psutil.process_iter(attrs=['pid', 'cmdline', 'name'],
+                                  ad_value=[]):
+    cmd_line = proc.info['cmdline']
+    if proc.info['name'] == 'xcodebuild':
+      xcodebuild_procs.append(proc)
+    elif len(cmd_line) > 1 and "run_cwt_chromedriver.py" in cmd_line[1]:
+      cwt_chromedriver_procs.append(proc)
+
+  # It's important to kill instances of run_cwt_chromedriver.py before killing
+  # xcodebuild, since if xcodebuild is killed first, run_cwt_chromedriver.py
+  # will detect this and launch another instance.
+  for proc in cwt_chromedriver_procs:
+    proc.kill()
+
+  for proc in xcodebuild_procs:
+    proc.kill()
+
+def EnsureServerStarted(port, build_dir):
+  # Check if the server is already running. If not, launch the server and wait
+  # for it to be ready. If the server is running but its version doesn't match
+  # the current build, kill the running server and relaunch.
+  server_url = 'http://localhost:' + port
+  try:
+    requests.post(server_url + '/session', json = {})
+    response = requests.get(server_url + '/session/chrome_versionInfo')
+    assert response.status_code == 200
+    chrome_version = response.json()['value']['browserVersion']
+    chrome_revision = response.json()['value']['chrome_revisionNumber']
+    if IsCurrentVersion(chrome_version, chrome_revision, build_dir):
+      return True
+    else:
+      KillServer()
+      return StartServer(port, build_dir)
+  except requests.exceptions.ConnectionError:
+    return StartServer(port, build_dir)
 
 parser=argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter)

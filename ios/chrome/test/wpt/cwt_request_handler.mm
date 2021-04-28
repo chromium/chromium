@@ -56,6 +56,10 @@ const char kWebDriverWindowRectCommand[] = "rect";
 // the given file is copied and served from a local EmbeddedTestServer.
 const char kChromeCrashTestCommand[] = "chrome_crashtest";
 
+// This returns the Chrome version (e.g., "92.0.4483.0") along with the
+// revision number (e.g, "872495") used for the current build.
+const char kChromeVersionInfoCommand[] = "chrome_versionInfo";
+
 // WebDriver error codes.
 const char kWebDriverInvalidArgumentError[] = "invalid argument";
 const char kWebDriverInvalidSessionError[] = "invalid session id";
@@ -118,6 +122,8 @@ const char kWebDriverStackTraceValueField[] = "stacktrace";
 // Non-standard value field names, used only when testing Chrome.
 // Stderr output from the app.
 const char kChromeStderrValueField[] = "chrome_stderr";
+// The revision number used for the current build.
+const char kChromeRevisionNumberField[] = "chrome_revisionNumber";
 
 // Field names for the "capabilities" struct that's included in the response
 // when creating a session.
@@ -187,6 +193,9 @@ base::Optional<base::Value> CWTRequestHandler::ProcessCommand(
 
     if (command == kWebDriverScreenshotCommand)
       return GetSnapshot();
+
+    if (command == kChromeVersionInfoCommand)
+      return GetVersionInfo();
 
     return base::nullopt;
   }
@@ -545,4 +554,24 @@ base::Value CWTRequestHandler::GetSnapshot() {
 
 base::Value CWTRequestHandler::SetWindowRect(const base::Value& rect) {
   return base::Value();
+}
+
+base::Value CWTRequestHandler::GetVersionInfo() {
+  base::Value result(base::Value::Type::DICTIONARY);
+  result.SetStringKey(kCapabilitiesBrowserVersionField,
+                      version_info::GetVersionNumber());
+
+  // The full revision starts with a git hash and ends with the revision
+  // number in the following format: @{#123456}
+  std::string full_revision = version_info::GetLastChange();
+  size_t start_position = full_revision.rfind("#") + 1;
+
+  if (start_position == std::string::npos) {
+    result.SetStringKey(kChromeRevisionNumberField, "0");
+  } else {
+    size_t length = full_revision.size() - start_position - 1;
+    result.SetStringKey(kChromeRevisionNumberField,
+                        full_revision.substr(start_position, length));
+  }
+  return result;
 }
