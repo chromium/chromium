@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/bottom_sheet/bottom_sheet_presentation_controller.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/bottom_sheet/bottom_sheet_slide_transition_animator.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_signin_error/consistency_signin_error_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
@@ -27,6 +28,7 @@
 @interface ConsistencyPromoSigninCoordinator () <
     BottomSheetPresentationControllerPresentationDelegate,
     ConsistencyDefaultAccountCoordinatorDelegate,
+    ConsistencySigninErrorCoordinatorDelegate,
     IdentityManagerObserverBridgeDelegate,
     UINavigationControllerDelegate,
     UIViewControllerTransitioningDelegate>
@@ -41,6 +43,9 @@
 // Coordinator for the first screen.
 @property(nonatomic, strong)
     ConsistencyDefaultAccountCoordinator* defaultAccountCoordinator;
+// Coordinator for error screens.
+@property(nonatomic, strong)
+    ConsistencySigninErrorCoordinator* signinErrorCoordinator;
 // Chrome interface to the iOS shared authentication library.
 @property(nonatomic, assign) AuthenticationService* authenticationService;
 // Manager for user's Google identities.
@@ -128,6 +133,7 @@
                                          SigninCoordinatorResultCanceledByUser
                                                identity:nil];
                          }];
+  self.primaryAccountSetCompletion = nil;
 }
 
 // Calls the sign-in completion block.
@@ -177,11 +183,41 @@
   }
 }
 
+- (void)signinWithIdentity:(ChromeIdentity*)identity {
+  __weak __typeof(self) weakSelf = self;
+  // |onPrimaryAccountChanged| notification is sent immediately after calling
+  // SignIn. All callbacks should be set prior to this operation.
+  self.primaryAccountSetCompletion = ^(BOOL success) {
+    [weakSelf.navigationController
+        dismissViewControllerAnimated:YES
+                           completion:^() {
+                             [weakSelf finishedWithResult:
+                                           SigninCoordinatorResultSuccess
+                                                 identity:identity];
+                           }];
+  };
+
+  self.authenticationService->SignIn(identity);
+}
+
 #pragma mark - BottomSheetPresentationControllerPresentationDelegate
 
 - (void)bottomSheetPresentationControllerDismissViewController:
     (BottomSheetPresentationController*)controller {
   [self dismissNavigationViewController];
+
+  [self.signinErrorCoordinator stop];
+  self.signinErrorCoordinator = nil;
+}
+
+#pragma mark - ConsistencySigninErrorCoordinatorDelegate
+
+- (void)consistencySigninErrorCoordinatorRetrySignin {
+  DCHECK(self.signinErrorCoordinator);
+  [self.navigationController popViewControllerAnimated:YES];
+
+  [self.signinErrorCoordinator stop];
+  self.signinErrorCoordinator = nil;
 }
 
 #pragma mark - ConsistencyDefaultAccountCoordinatorDelegate
@@ -198,20 +234,9 @@
 
 - (void)consistencyDefaultAccountCoordinatorSignin:
     (ConsistencyDefaultAccountCoordinator*)coordinator {
+  DCHECK_EQ(coordinator, self.defaultAccountCoordinator);
   ChromeIdentity* identity = self.defaultAccountCoordinator.selectedIdentity;
-  __weak __typeof(self) weakSelf = self;
-  // |onPrimaryAccountChanged| notification is sent immediately after calling
-  // SignIn. All callbacks should be set prior to this operation.
-  self.primaryAccountSetCompletion = ^(BOOL success) {
-    [weakSelf.navigationController
-        dismissViewControllerAnimated:YES
-                           completion:^() {
-                             [weakSelf finishedWithResult:
-                                           SigninCoordinatorResultSuccess
-                                                 identity:identity];
-                           }];
-  };
-  self.authenticationService->SignIn(identity);
+  [self signinWithIdentity:identity];
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate
@@ -228,6 +253,28 @@
          signin::PrimaryAccountChangeEvent::Type::kSet);
   self.primaryAccountSetCompletion(/*success=*/YES);
   self.primaryAccountSetCompletion = nil;
+}
+
+- (void)onAccountsInCookieUpdated:
+            (const signin::AccountsInCookieJarInfo&)accountsInCookieJarInfo
+                            error:(const GoogleServiceAuthError&)error {
+  if (error.state() == GoogleServiceAuthError::State::NONE) {
+    return;
+  }
+
+  self.signinErrorCoordinator = [[ConsistencySigninErrorCoordinator alloc]
+      initWithBaseViewController:self.navigationController
+                         browser:self.browser
+                      errorState:error.state()];
+  self.signinErrorCoordinator.delegate = self;
+  [self.signinErrorCoordinator start];
+
+  // The account was not set because of an error. Reset the completion callback.
+  self.primaryAccountSetCompletion = nil;
+
+  [self.navigationController
+      pushViewController:self.signinErrorCoordinator.viewController
+                animated:YES];
 }
 
 #pragma mark - UINavigationControllerDelegate

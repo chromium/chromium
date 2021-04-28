@@ -2196,8 +2196,23 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_NOT_SIGNED_IN_SETTING_TITLE" desc="The title shown when the user has disabled Chrome sign-in [iOS only]">
         Sign-in Is Disabled
       </message>
+      <message name="IDS_IOS_SIGN_IN_AGAIN" desc="Title displayed when there is an authentication failure in sign-in and the user needs to attempt to sign in again. [Length: 20em] [iOS only]">
+        Sign in again
+      </message>
+      <message name="IDS_IOS_SIGN_IN_TRY_AGAIN" desc="Title displayed when there is an unknown failure in sign-in and the user needs to attempt to sign in again. [Length: 20em] [iOS only]">
+        Try again
+      </message>
+      <message name="IDS_IOS_SIGN_IN_WRONG_CREDENTIALS" desc="Message displayed when the user enters incorrect credentials. [iOS only]">
+        Sorry we couldn't validate your credentials
+      </message>
+      <message name="IDS_IOS_SIGN_IN_AUTH_FAILURE" desc="Message displayed when the user attempts to sign in, but the authentication step fails for an unknown reason. [iOS only]">
+        Chrome couldn't verify your information
+      </message>
       <message name="IDS_IOS_SIGN_IN_FAILED" desc="Explanatory message shown when Sign in to Chrome failed for an unknown technical reason.  [Length: 50em] [iOS only]">
         Failed to sign in. Please try again later.
+      </message>
+      <message name="IDS_IOS_SIGN_IN_FAILURE_TITLE" desc="Title displayed when sign in fails due to an authentication issue. [iOS only]">
+        Something went wrong
       </message>
       <message name="IDS_IOS_SIGN_IN_TO_CHROME_SETTING_SUBTITLE" desc="The subtitle for the setting item to Sign in to Chrome [iOS only]">
         Get your bookmarks, history, passwords, and other settings on all your devices.
