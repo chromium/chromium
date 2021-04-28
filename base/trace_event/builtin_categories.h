@@ -31,6 +31,7 @@
   X("accessibility")                                                     \
   X("AccountFetcherService")                                             \
   X("android_webview")                                                   \
+  /* Actions on Google Hardware, used in Google-internal code. */        \
   X("aogh")                                                              \
   X("audio")                                                             \
   X("base")                                                              \
@@ -149,7 +150,6 @@
   X("stadia_rtc")                                                        \
   X("startup")                                                           \
   X("sync")                                                              \
-  X("sync_lock_contention")                                              \
   X("test_gpu")                                                          \
   X("thread_pool")                                                       \
   X("toplevel")                                                          \
