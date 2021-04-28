@@ -256,6 +256,23 @@ public class PageInfoViewTest {
     }
 
     /**
+     * Tests that PageInfoController converts safe URLs to Unicode.
+     */
+    @Test
+    @MediumTest
+    @Feature({"PageInfoController"})
+    public void testPageInfoUrl() {
+        String testUrl =
+                mTestServerRule.getServer().getURLWithHostName("xn--allestrungen-9ib.ch", "/");
+        loadUrlAndOpenPageInfo(testUrl);
+        onView(withText(
+                allOf(containsString("allestörungen.ch"), not(containsString("https://")))));
+        // Expand to full URL.
+        onView(withId(R.id.page_info_url_wrapper)).perform(click());
+        onView(withText(allOf(containsString("allestörungen.ch"), containsString("https://"))));
+    }
+
+    /**
      * Tests PageInfo on an insecure website.
      */
     @Test

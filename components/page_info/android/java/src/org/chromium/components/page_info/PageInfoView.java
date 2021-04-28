@@ -22,7 +22,6 @@ import android.widget.TextView;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.AppCompatTextView;
 
 import org.chromium.ui.UiUtils;
@@ -491,10 +490,5 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
         }
 
         return animation;
-    }
-
-    @VisibleForTesting
-    public String getUrlTitleForTesting() {
-        return mUrlTitle.getText().toString();
     }
 }

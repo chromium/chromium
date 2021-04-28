@@ -70,7 +70,7 @@ public class PageInfoContainer extends FrameLayout {
         mExpandedUrlTitle = findViewById(R.id.page_info_url);
         initializeUrlView(mExpandedUrlTitle, params);
         mExpandedUrlTitle.setUrl(params.url, params.urlOriginLength);
-        // Adjust the mUrlTitle for displaying the non-truncated URL.
+        // Adjust mExpandedUrlTitle for displaying the non-truncated URL.
         mExpandedUrlTitle.toggleTruncation();
 
         mTruncatedUrlTitle = findViewById(R.id.page_info_truncated_url);
