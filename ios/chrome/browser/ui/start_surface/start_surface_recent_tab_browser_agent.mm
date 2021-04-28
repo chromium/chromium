@@ -54,6 +54,7 @@ void StartSurfaceRecentTabBrowserAgent::RemoveObserver(
 void StartSurfaceRecentTabBrowserAgent::BrowserDestroyed(Browser* browser) {
   browser_->GetWebStateList()->RemoveObserver(this);
   browser_->RemoveObserver(this);
+  favicon_driver_observer_.Reset();
 }
 
 #pragma mark - WebStateListObserver
