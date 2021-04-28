@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/threading/simple_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -124,7 +125,7 @@ class TestOnThread : public base::SimpleThread {
   bool can_modify() const { return can_modify_; }
 
  private:
-  ImageSkia* image_skia_;
+  CheckedPtr<ImageSkia> image_skia_;
 
   bool can_read_;
   bool can_modify_;

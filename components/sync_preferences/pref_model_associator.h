@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "components/sync/model/sync_data.h"
@@ -206,7 +207,7 @@ class PrefModelAssociator : public syncer::SyncableService {
   PreferenceSet legacy_model_type_preferences_;
 
   // The PrefService we are syncing to.
-  PrefServiceSyncable* pref_service_ = nullptr;
+  CheckedPtr<PrefServiceSyncable> pref_service_ = nullptr;
 
   // Sync's syncer::SyncChange handler. We push all our changes through this.
   std::unique_ptr<syncer::SyncChangeProcessor> sync_processor_;
@@ -225,9 +226,9 @@ class PrefModelAssociator : public syncer::SyncableService {
       base::ObserverList<SyncedPrefObserver>::Unchecked;
   std::unordered_map<std::string, std::unique_ptr<SyncedPrefObserverList>>
       synced_pref_observers_;
-  const PrefModelAssociatorClient* client_;  // Weak.
+  CheckedPtr<const PrefModelAssociatorClient> client_;  // Weak.
 
-  PersistentPrefStore* const user_pref_store_;
+  const CheckedPtr<PersistentPrefStore> user_pref_store_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

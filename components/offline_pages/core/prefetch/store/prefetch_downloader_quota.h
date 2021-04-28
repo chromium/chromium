@@ -8,6 +8,7 @@
 #include <cstdint>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 
 namespace base {
 class Clock;
@@ -41,10 +42,10 @@ class PrefetchDownloaderQuota {
 
  private:
   // DB connection. Not owned.
-  sql::Database* db_;
+  CheckedPtr<sql::Database> db_;
 
   // Clock used for time related calculation and quota updates in DB. Not owned.
-  const base::Clock* clock_;
+  CheckedPtr<const base::Clock> clock_;
 
   DISALLOW_COPY_AND_ASSIGN(PrefetchDownloaderQuota);
 };

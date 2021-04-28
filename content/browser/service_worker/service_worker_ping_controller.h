@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_PING_CONTROLLER_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 
@@ -41,7 +42,7 @@ class CONTENT_EXPORT ServiceWorkerPingController final {
   void ClearLastPingTime();
 
   enum class PingState { kNotPinging, kPinging, kPingTimedOut };
-  ServiceWorkerVersion* version_;  // Owns |this|.
+  CheckedPtr<ServiceWorkerVersion> version_;  // Owns |this|.
   // The time the most recent ping was sent.
   base::TimeTicks last_ping_time_;
   PingState ping_state_ = PingState::kNotPinging;

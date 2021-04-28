@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -121,7 +122,7 @@ class PassthroughStatsReportingDelegate : public StatsReportingDelegate {
   }
 
  private:
-  MockStatsReportingDelegate* reporting_delegate_;
+  CheckedPtr<MockStatsReportingDelegate> reporting_delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(PassthroughStatsReportingDelegate);
 };
@@ -227,8 +228,8 @@ class SessionRestoreStatsCollectorTest : public testing::Test {
 
   // These are recreated for each test. The reporting delegate allows the test
   // to observe the behaviour of the SessionRestoreStatsCollector under test.
-  PassthroughStatsReportingDelegate* passthrough_reporting_delegate_;
-  SessionRestoreStatsCollector* stats_collector_;
+  CheckedPtr<PassthroughStatsReportingDelegate> passthrough_reporting_delegate_;
+  CheckedPtr<SessionRestoreStatsCollector> stats_collector_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(SessionRestoreStatsCollectorTest);

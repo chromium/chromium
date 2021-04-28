@@ -6,6 +6,7 @@
 #define UI_TOUCH_SELECTION_TOUCH_HANDLE_DRAWABLE_AURA_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/touch_selection/touch_handle.h"
 #include "ui/touch_selection/touch_handle_orientation.h"
 #include "ui/touch_selection/ui_touch_selection_export.h"
@@ -41,7 +42,7 @@ class UI_TOUCH_SELECTION_EXPORT TouchHandleDrawableAura
   gfx::RectF GetVisibleBounds() const override;
   float GetDrawableHorizontalPaddingRatio() const override;
 
-  aura_extra::ImageWindowDelegate* window_delegate_;
+  CheckedPtr<aura_extra::ImageWindowDelegate> window_delegate_;
   std::unique_ptr<aura::Window> window_;
   bool enabled_;
   float alpha_;

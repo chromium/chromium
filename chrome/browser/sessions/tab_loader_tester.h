@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SESSIONS_TAB_LOADER_TESTER_H_
 #define CHROME_BROWSER_SESSIONS_TAB_LOADER_TESTER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/resource_coordinator/session_restore_policy.h"
 #include "chrome/browser/sessions/tab_loader.h"
@@ -54,7 +55,7 @@ class TabLoaderTester {
   void WaitForTabLoadingEnabled();
 
  private:
-  TabLoader* tab_loader_ = nullptr;
+  CheckedPtr<TabLoader> tab_loader_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(TabLoaderTester);
 };

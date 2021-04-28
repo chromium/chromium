@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -173,7 +174,7 @@ class SettingsResetPromptModelTest
                                  std::move(profile_resetter));
   }
 
-  PrefService* prefs_;
+  CheckedPtr<PrefService> prefs_;
   SessionStartupPref startup_pref_;
   int reset_callbacks_ = 0;
 };

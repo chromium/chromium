@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -177,11 +178,11 @@ class WebFeedSubscriptionModel {
  private:
   // Each of these are non-null and guaranteed to remain valid for the lifetime
   // of WebFeedSubscriptionModel.
-  FeedStore* store_;
-  WebFeedIndex* index_;
+  CheckedPtr<FeedStore> store_;
+  CheckedPtr<WebFeedIndex> index_;
   // Owned by WebFeedSubscriptionCoordinator so that memory of recent
   // subscriptions is retained when the model is deleted.
-  std::vector<feedstore::WebFeedInfo>* recent_unsubscribed_;
+  CheckedPtr<std::vector<feedstore::WebFeedInfo>> recent_unsubscribed_;
 
   // The current known state of subscriptions.
   std::vector<feedstore::WebFeedInfo> subscriptions_;

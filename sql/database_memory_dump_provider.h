@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/trace_event/memory_dump_provider.h"
 
@@ -44,7 +45,7 @@ class DatabaseMemoryDumpProvider
 
   std::string FormatDumpName() const;
 
-  sqlite3* db_;  // not owned.
+  CheckedPtr<sqlite3> db_;  // not owned.
   base::Lock lock_;
   std::string connection_name_;
 

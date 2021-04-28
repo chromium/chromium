@@ -24,6 +24,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/record_histogram_checker.h"
@@ -305,7 +306,7 @@ class BASE_EXPORT StatisticsRecorder {
   std::unique_ptr<RecordHistogramChecker> record_checker_;
 
   // Previous global recorder that existed when this one was created.
-  StatisticsRecorder* previous_ = nullptr;
+  CheckedPtr<StatisticsRecorder> previous_ = nullptr;
 
   // Global lock for internal synchronization.
   static LazyInstance<Lock>::Leaky lock_;

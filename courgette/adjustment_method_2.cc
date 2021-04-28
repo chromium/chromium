@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "courgette/adjustment_method.h"
 
 #include <stddef.h>
@@ -180,7 +181,7 @@ class LabelInfo {
 
   AssignmentCandidates* candidates();
 
-  Label* label_;             // The label that this info a surrogate for.
+  CheckedPtr<Label> label_;  // The label that this info a surrogate for.
 
   uint32_t is_model_ : 1;      // Is the label in the model?
   uint32_t debug_index_ : 31;  // A small number for naming the label in debug
@@ -189,12 +190,13 @@ class LabelInfo {
 
   int refs_;                 // Number of times this Label is referenced.
 
-  LabelInfo* assignment_;    // Label from other program corresponding to this.
+  CheckedPtr<LabelInfo>
+      assignment_;  // Label from other program corresponding to this.
 
   std::vector<uint32_t> positions_;  // Offsets into the trace of references.
 
  private:
-  AssignmentCandidates* candidates_;
+  CheckedPtr<AssignmentCandidates> candidates_;
 
   void operator=(const LabelInfo*);  // Disallow assignment only.
   // Public compiler generated copy constructor is needed to constuct
@@ -349,7 +351,7 @@ class AssignmentCandidates {
   };
   typedef std::set<ScoreAndLabel, OrderScoreAndLabelByScoreDecreasing> Queue;
 
-  LabelInfo* program_info_;
+  CheckedPtr<LabelInfo> program_info_;
   LabelToScore label_to_score_;
   LabelToScore pending_updates_;
   Queue queue_;
@@ -421,7 +423,8 @@ class Shingle {
   size_t exemplar_position_;       // At this position (and other positions).
   std::vector<uint32_t> positions_;  // Includes exemplar_position_.
 
-  ShinglePattern* pattern_;       // Pattern changes as LabelInfos are assigned.
+  CheckedPtr<ShinglePattern>
+      pattern_;  // Pattern changes as LabelInfos are assigned.
 
   friend std::string ToString(const Shingle* instance);
 
@@ -518,7 +521,8 @@ class ShinglePattern {
   ShinglePattern()
       : index_(nullptr), model_coverage_(0), program_coverage_(0) {}
 
-  const Index* index_;  // Points to the key in the owning map value_type.
+  CheckedPtr<const Index>
+      index_;  // Points to the key in the owning map value_type.
   Histogram model_histogram_;
   Histogram program_histogram_;
   int model_coverage_;
@@ -1281,8 +1285,10 @@ class Adjuster : public AdjustmentMethod {
         label, is_model, static_cast<uint32_t>(trace->size())));
   }
 
-  AssemblyProgram* prog_;         // Program to be adjusted, owned by caller.
-  const AssemblyProgram* model_;  // Program to be mimicked, owned by caller.
+  CheckedPtr<AssemblyProgram>
+      prog_;  // Program to be adjusted, owned by caller.
+  CheckedPtr<const AssemblyProgram>
+      model_;  // Program to be mimicked, owned by caller.
 
   LabelInfoMaker label_info_maker_;
 

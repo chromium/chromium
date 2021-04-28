@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/geometry/rect.h"
@@ -180,7 +181,7 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
     bool is_animating = false;
 
     // Unowned.
-    MessagePopupView* popup = nullptr;
+    CheckedPtr<MessagePopupView> popup = nullptr;
   };
 
   // Transition from animation state (FADE_IN, FADE_OUT, and MOVE_DOWN) to

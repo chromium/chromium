@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_METRICS_COMPONENT_METRICS_PROVIDER_H_
 #define COMPONENTS_METRICS_COMPONENT_METRICS_PROVIDER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "components/metrics/metrics_provider.h"
 
 namespace component_updater {
@@ -27,7 +28,8 @@ class ComponentMetricsProvider : public MetricsProvider {
       SystemProfileProto* system_profile_proto) override;
 
  private:
-  component_updater::ComponentUpdateService* component_update_service_;
+  CheckedPtr<component_updater::ComponentUpdateService>
+      component_update_service_;
 
   DISALLOW_COPY_AND_ASSIGN(ComponentMetricsProvider);
 };

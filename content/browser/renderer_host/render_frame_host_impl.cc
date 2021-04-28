@@ -20,6 +20,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/i18n/character_encoding.h"
 #include "base/lazy_instance.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
@@ -421,7 +422,7 @@ class ScopedCommitStateResetter {
   void disable() { disabled_ = true; }
 
  private:
-  RenderFrameHostImpl* render_frame_host_;
+  CheckedPtr<RenderFrameHostImpl> render_frame_host_;
   bool disabled_;
 };
 
@@ -454,7 +455,7 @@ class ActiveURLMessageFilter : public mojo::MessageFilter {
   }
 
  private:
-  RenderFrameHostImpl* render_frame_host_;
+  CheckedPtr<RenderFrameHostImpl> render_frame_host_;
   bool debug_url_set_ = false;
 };
 
@@ -518,7 +519,7 @@ class BackForwardCacheMessageFilter : public mojo::MessageFilter {
         render_frame_host_->GetProcess());
   }
 
-  RenderFrameHostImpl* const render_frame_host_;
+  const CheckedPtr<RenderFrameHostImpl> render_frame_host_;
   const char* const interface_name_;
   const BackForwardCacheImpl::MessageHandlingPolicyWhenCached policy_;
 };
@@ -1029,7 +1030,7 @@ class PepperPluginInstanceHost : public mojom::PepperPluginInstanceHost {
 
  private:
   int32_t const instance_id_;
-  RenderFrameHostImpl* const frame_host_;
+  const CheckedPtr<RenderFrameHostImpl> frame_host_;
   mojo::AssociatedReceiver<mojom::PepperPluginInstanceHost> receiver_;
   mojo::AssociatedRemote<mojom::PepperPluginInstance> remote_;
 };

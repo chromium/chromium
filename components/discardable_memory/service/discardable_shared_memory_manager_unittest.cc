@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/threading/simple_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -257,7 +258,7 @@ class SetMemoryLimitRunner : public base::DelegateSimpleThread::Delegate {
   void Run() override { manager_->SetMemoryLimit(limit_); }
 
  private:
-  DiscardableSharedMemoryManager* const manager_;
+  const CheckedPtr<DiscardableSharedMemoryManager> manager_;
   const size_t limit_;
 };
 

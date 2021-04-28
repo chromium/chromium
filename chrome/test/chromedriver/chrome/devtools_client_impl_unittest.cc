@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
@@ -803,7 +804,7 @@ class OnConnectedListener : public DevToolsEventListener {
 
  private:
   std::string method_;
-  DevToolsClient* client_;
+  CheckedPtr<DevToolsClient> client_;
   bool on_connected_called_;
   bool on_event_called_;
 };
@@ -966,8 +967,8 @@ class OnEventListener : public DevToolsEventListener {
   }
 
  private:
-  DevToolsClient* client_;
-  OtherEventListener* other_listener_;
+  CheckedPtr<DevToolsClient> client_;
+  CheckedPtr<OtherEventListener> other_listener_;
 };
 
 }  // namespace
@@ -1078,7 +1079,7 @@ class MockSyncWebSocket6 : public MockSyncWebSocket {
   bool HasNextMessage() override { return messages_->size(); }
 
  private:
-  std::list<std::string>* messages_;
+  CheckedPtr<std::list<std::string>> messages_;
 };
 
 class MockDevToolsEventListener : public DevToolsEventListener {

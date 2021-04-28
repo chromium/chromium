@@ -211,7 +211,7 @@ FileDescriptorWatcher::Controller::~Controller() {
           // is deleted before it gets to run.
           delete watcher;
         },
-        Unretained(watcher_));
+        Unretained(watcher_.get()));
     io_thread_task_runner_->PostTask(FROM_HERE, std::move(delete_task));
     ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow;
     on_watcher_destroyed_.Wait();
@@ -232,7 +232,8 @@ void FileDescriptorWatcher::Controller::StartWatching() {
     // Controller's destructor. Since this delete task hasn't been posted yet,
     // it can't run before the task posted below.
     io_thread_task_runner_->PostTask(
-        FROM_HERE, BindOnce(&Watcher::StartWatching, Unretained(watcher_)));
+        FROM_HERE,
+        BindOnce(&Watcher::StartWatching, Unretained(watcher_.get())));
   }
 }
 

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/views/animation/ink_drop.h"
@@ -104,11 +105,11 @@ class VIEWS_EXPORT InstallableInkDrop : public InkDrop,
   // The view this ink drop is showing for. |layer_| is added to the layer
   // hierarchy that |view_| belongs to. We track events on |view_| to update our
   // visual state.
-  View* const view_;
+  const CheckedPtr<View> view_;
 
   // If we were installed on an InkDropHostView, this will be non-null. We store
   // this to to remove our InkDropEventHandler override.
-  InkDropHostView* ink_drop_host_view_ = nullptr;
+  CheckedPtr<InkDropHostView> ink_drop_host_view_ = nullptr;
 
   // Contains the colors and opacities used to paint.
   InstallableInkDropConfig config_;

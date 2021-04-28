@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
@@ -159,7 +160,7 @@ class LoadStopNotificationObserver : public WindowedNotificationObserver {
 
   GURL url_;
   int session_index_;
-  NavigationController* controller_;
+  CheckedPtr<NavigationController> controller_;
 };
 
 // Starts a new navigation as soon as the current one commits, but does not
@@ -189,7 +190,7 @@ class NavigateOnCommitObserver : public WebContentsObserver {
     }
   }
 
-  Shell* shell_;
+  CheckedPtr<Shell> shell_;
   GURL url_;
   bool done_;
 };
@@ -232,7 +233,7 @@ class RenderViewSizeObserver : public WebContentsObserver {
   gfx::Size rwhv_create_size() const { return rwhv_create_size_; }
 
  private:
-  Shell* shell_;  // Weak ptr.
+  CheckedPtr<Shell> shell_;  // Weak ptr.
   gfx::Size wcv_new_size_;
   gfx::Size rwhv_create_size_;
 };
@@ -1685,8 +1686,8 @@ class TestWCDelegateForDialogsAndFullscreen : public JavaScriptDialogManager,
                      bool reset_state) override {}
 
  private:
-  WebContentsImpl* web_contents_;
-  WebContentsDelegate* old_delegate_;
+  CheckedPtr<WebContentsImpl> web_contents_;
+  CheckedPtr<WebContentsDelegate> old_delegate_;
 
   enum {
     kNothing,
@@ -2764,7 +2765,7 @@ class LoadStateWaiter : public WebContentsDelegate {
            waiting_state_ == contents->GetLoadState().state;
   }
   base::OnceClosure quit_closure_;
-  content::WebContents* web_contents_ = nullptr;
+  CheckedPtr<content::WebContents> web_contents_ = nullptr;
   std::u16string waiting_host_;
   net::LoadState waiting_state_;
 
@@ -2893,7 +2894,7 @@ class OutgoingSetRendererPrefsMojoWatcher {
       run_loop_->Quit();
   }
 
-  RenderViewHostImpl* rvh_;
+  CheckedPtr<RenderViewHostImpl> rvh_;
   bool outgoing_message_seen_;
   std::unique_ptr<base::RunLoop> run_loop_;
   blink::RendererPreferences renderer_preferences_;
@@ -3120,7 +3121,7 @@ class FullscreenWebContentsObserver : public WebContentsObserver {
  private:
   base::RunLoop run_loop_;
   bool found_value_ = false;
-  RenderFrameHost* wanted_rfh_;
+  CheckedPtr<RenderFrameHost> wanted_rfh_;
 
   DISALLOW_COPY_AND_ASSIGN(FullscreenWebContentsObserver);
 };
@@ -4353,7 +4354,7 @@ class DidStopLoadingInterceptor : public mojom::FrameHostInterceptorForTesting {
   }
 
  private:
-  RenderFrameHostImpl* render_frame_host_;
+  CheckedPtr<RenderFrameHostImpl> render_frame_host_;
 
   DISALLOW_COPY_AND_ASSIGN(DidStopLoadingInterceptor);
 };

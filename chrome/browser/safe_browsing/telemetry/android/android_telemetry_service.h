@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/safe_browsing/telemetry/telemetry_service.h"
 #include "components/download/public/common/download_item.h"
@@ -105,10 +106,10 @@ class AndroidTelemetryService
   const PrefService* GetPrefs();
 
   // Profile associated with this instance. Unowned.
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   // Unowned.
-  SafeBrowsingService* sb_service_;
+  CheckedPtr<SafeBrowsingService> sb_service_;
 
   base::WeakPtrFactory<AndroidTelemetryService> weak_ptr_factory_{this};
 

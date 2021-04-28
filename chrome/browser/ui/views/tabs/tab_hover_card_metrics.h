@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_HOVER_CARD_METRICS_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_HOVER_CARD_METRICS_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 
@@ -122,7 +123,7 @@ class TabHoverCardMetrics {
 
   // TOOD(dfried): in future, change this to a delegate object in order to be
   // able to test it in isolation.
-  Delegate* const delegate_;
+  const CheckedPtr<Delegate> delegate_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_HOVER_CARD_METRICS_H_

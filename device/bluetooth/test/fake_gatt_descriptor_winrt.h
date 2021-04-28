@@ -15,6 +15,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
 
@@ -75,7 +76,7 @@ class FakeGattDescriptorWinrt
       BluetoothGattService::GattErrorCode error_code);
 
  private:
-  BluetoothTestWinrt* bluetooth_test_winrt_;
+  CheckedPtr<BluetoothTestWinrt> bluetooth_test_winrt_;
   GUID uuid_;
   uint16_t attribute_handle_;
 

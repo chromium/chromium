@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
@@ -78,7 +79,7 @@ class FrameTreeNode::OpenerDestroyedObserver : public FrameTreeNode::Observer {
   }
 
  private:
-  FrameTreeNode* owner_;
+  CheckedPtr<FrameTreeNode> owner_;
   bool observing_original_opener_;
 
   DISALLOW_COPY_AND_ASSIGN(OpenerDestroyedObserver);

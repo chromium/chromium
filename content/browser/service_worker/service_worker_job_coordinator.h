@@ -10,6 +10,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "content/browser/service_worker/service_worker_register_job.h"
 #include "content/browser/service_worker/service_worker_unregister_job.h"
 #include "content/common/content_export.h"
@@ -87,7 +88,7 @@ class CONTENT_EXPORT ServiceWorkerJobCoordinator {
   };
 
   // The ServiceWorkerContextCore object must outlive this.
-  ServiceWorkerContextCore* const context_;
+  const CheckedPtr<ServiceWorkerContextCore> context_;
   std::map<GURL, JobQueue> job_queues_;
 
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerJobCoordinator);

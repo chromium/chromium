@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/services/media_gallery_util/public/cpp/safe_media_metadata_parser.h"
 #include "chrome/services/media_gallery_util/public/mojom/media_parser.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -36,7 +37,7 @@ class BlobDataSourceFactory
       mojo::PendingReceiver<chrome::mojom::MediaDataSource> receiver,
       MediaDataCallback media_data_callback) override;
 
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
   std::string blob_uuid_;
   MediaDataCallback callback_;
 };

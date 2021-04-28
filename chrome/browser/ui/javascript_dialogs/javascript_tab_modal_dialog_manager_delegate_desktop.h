@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager_delegate.h"
@@ -64,12 +65,12 @@ class JavaScriptTabModalDialogManagerDelegateDesktop
   //
   // A TabStripModel cannot be destroyed without first detaching all of its
   // WebContents.
-  TabStripModel* tab_strip_model_being_observed_ = nullptr;
+  CheckedPtr<TabStripModel> tab_strip_model_being_observed_ = nullptr;
 
   // The WebContents for the tab over which the dialog will be modal. This may
   // be different from the WebContents that requested the dialog, such as with
   // Chrome app <webview>s.
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
 
   DISALLOW_COPY_AND_ASSIGN(JavaScriptTabModalDialogManagerDelegateDesktop);
 };

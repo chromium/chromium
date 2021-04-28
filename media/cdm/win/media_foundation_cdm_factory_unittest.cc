@@ -5,6 +5,7 @@
 #include "media/cdm/win/media_foundation_cdm_factory.h"
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "media/base/mock_filters.h"
@@ -84,7 +85,7 @@ class MediaFoundationCdmFactoryTest : public testing::Test {
   ComPtr<MockMFCdmFactory> mf_cdm_factory_;
   ComPtr<MockMFCdmAccess> mf_cdm_access_;
   ComPtr<MockMFCdm> mf_cdm_;
-  StrictMock<MockCdmAuxiliaryHelper>* cdm_helper_ = nullptr;
+  CheckedPtr<StrictMock<MockCdmAuxiliaryHelper>> cdm_helper_ = nullptr;
   std::unique_ptr<MediaFoundationCdmFactory> cdm_factory_;
   base::MockCallback<CdmCreatedCB> cdm_created_cb_;
 };

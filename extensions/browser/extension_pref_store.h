@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/prefs/value_map_pref_store.h"
 #include "extensions/browser/extension_pref_value_map.h"
 
@@ -30,7 +31,7 @@ class ExtensionPrefStore : public ValueMapPrefStore,
   ~ExtensionPrefStore() override;
 
  private:
-  ExtensionPrefValueMap* extension_pref_value_map_;  // Weak pointer.
+  CheckedPtr<ExtensionPrefValueMap> extension_pref_value_map_;  // Weak pointer.
   bool incognito_pref_store_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionPrefStore);

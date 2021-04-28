@@ -15,6 +15,7 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/sequenced_task_runner.h"
@@ -246,7 +247,7 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
     scoped_refptr<SequencedTaskRunner> service_thread_task_runner;
 
     // Optional observer notified when a worker enters and exits its main.
-    WorkerThreadObserver* worker_thread_observer = nullptr;
+    CheckedPtr<WorkerThreadObserver> worker_thread_observer = nullptr;
 
     WakeUpStrategy wakeup_strategy;
     bool wakeup_after_getwork;
@@ -346,7 +347,7 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
 
   // ThreadPool.NumTasksBeforeDetach.[thread group name] histogram.
   // Intentionally leaked.
-  HistogramBase* const num_tasks_before_detach_histogram_;
+  const CheckedPtr<HistogramBase> num_tasks_before_detach_histogram_;
 
   // Ensures recently cleaned up workers (ref.
   // WorkerThreadDelegateImpl::CleanupLockRequired()) had time to exit as

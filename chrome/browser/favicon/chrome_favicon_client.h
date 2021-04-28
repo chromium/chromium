@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_FAVICON_CHROME_FAVICON_CLIENT_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/favicon/core/favicon_client.h"
 
 class GURL;
@@ -28,7 +29,7 @@ class ChromeFaviconClient : public favicon::FaviconClient {
       favicon_base::FaviconResultsCallback callback,
       base::CancelableTaskTracker* tracker) override;
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeFaviconClient);
 };

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "components/web_modal/single_web_contents_dialog_manager.h"
@@ -77,9 +78,9 @@ class TestNativeWebContentsModalDialogManager
   void StopTracking() { tracker_ = nullptr; }
 
  private:
-  SingleWebContentsDialogManagerDelegate* delegate_;
+  CheckedPtr<SingleWebContentsDialogManagerDelegate> delegate_;
   gfx::NativeWindow dialog_;
-  NativeManagerTracker* tracker_;
+  CheckedPtr<NativeManagerTracker> tracker_;
 
   DISALLOW_COPY_AND_ASSIGN(TestNativeWebContentsModalDialogManager);
 };
@@ -119,7 +120,7 @@ class WebContentsModalDialogManagerTest
 
   int next_dialog_id;
   std::unique_ptr<TestWebContentsModalDialogManagerDelegate> delegate;
-  WebContentsModalDialogManager* manager;
+  CheckedPtr<WebContentsModalDialogManager> manager;
   std::unique_ptr<WebContentsModalDialogManager::TestApi> test_api;
 
   DISALLOW_COPY_AND_ASSIGN(WebContentsModalDialogManagerTest);

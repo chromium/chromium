@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_BAR_VIEW_TEST_HELPER_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 
 // Used to access private state of BookmarkBarView for testing.
@@ -29,7 +30,7 @@ class BookmarkBarViewTestHelper {
   }
 
  private:
-  BookmarkBarView* bbv_;
+  CheckedPtr<BookmarkBarView> bbv_;
 
   DISALLOW_COPY_AND_ASSIGN(BookmarkBarViewTestHelper);
 };

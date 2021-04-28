@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
@@ -391,8 +392,8 @@ class HistoryURLProvider::VisitClassifier {
   const history::URLRow& url_row() const { return url_row_; }
 
  private:
-  HistoryURLProvider* provider_;
-  history::URLDatabase* db_;
+  CheckedPtr<HistoryURLProvider> provider_;
+  CheckedPtr<history::URLDatabase> db_;
   Type type_;
   history::URLRow url_row_;
 };

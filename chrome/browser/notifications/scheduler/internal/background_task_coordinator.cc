@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/memory/checked_ptr.h"
 #include "base/numerics/ranges.h"
 #include "base/optional.h"
 #include "base/time/clock.h"
@@ -167,9 +168,9 @@ class BackgroundTaskCoordinatorHelper {
         window_start_time + config_->background_task_window_duration);
   }
 
-  NotificationBackgroundTaskScheduler* background_task_;
-  const SchedulerConfig* config_;
-  base::Clock* clock_;
+  CheckedPtr<NotificationBackgroundTaskScheduler> background_task_;
+  CheckedPtr<const SchedulerConfig> config_;
+  CheckedPtr<base::Clock> clock_;
   base::Optional<base::Time> background_task_time_;
 };
 
@@ -204,10 +205,10 @@ class BackgroundTaskCoordinatorImpl : public BackgroundTaskCoordinator {
   std::unique_ptr<NotificationBackgroundTaskScheduler> background_task_;
 
   // System configuration.
-  const SchedulerConfig* config_;
+  CheckedPtr<const SchedulerConfig> config_;
 
   // Clock to query the current timestamp.
-  base::Clock* clock_;
+  CheckedPtr<base::Clock> clock_;
 };
 
 // static

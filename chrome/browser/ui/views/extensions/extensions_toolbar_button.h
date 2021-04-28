@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -49,9 +50,9 @@ class ExtensionsToolbarButton : public ToolbarButton,
   // A lock to keep the button pressed when a popup is visible.
   std::unique_ptr<views::MenuButtonController::PressedLock> pressed_lock_;
 
-  Browser* const browser_;
-  views::MenuButtonController* menu_button_controller_;
-  ExtensionsToolbarContainer* const extensions_container_;
+  const CheckedPtr<Browser> browser_;
+  CheckedPtr<views::MenuButtonController> menu_button_controller_;
+  const CheckedPtr<ExtensionsToolbarContainer> extensions_container_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_BUTTON_H_

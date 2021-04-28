@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/gl/gl_switches.h"
 
 #define GL_IMPL_WRAPPER_TYPE(name) \
@@ -49,7 +50,7 @@ class GLImplementationWrapper {
   std::unique_ptr<GLImplApi> real_gl_;
   std::unique_ptr<GLTraceImplApi> trace_gl_;
   std::unique_ptr<GLLogImplApi> log_gl_;
-  GLImplApi* gl_api_ = nullptr;
+  CheckedPtr<GLImplApi> gl_api_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(GLImplementationWrapper);
 };

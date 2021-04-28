@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/omnibox/browser/omnibox_popup_model.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
@@ -130,14 +131,14 @@ class OmniboxPopupContentsView : public views::View,
   base::WeakPtr<AutocompletePopupWidget> popup_;
 
   // The edit view that invokes us.
-  OmniboxViewViews* omnibox_view_;
+  CheckedPtr<OmniboxViewViews> omnibox_view_;
 
   // The location bar view that owns |omnibox_view_|. May be nullptr in tests.
-  LocationBarView* location_bar_view_;
+  CheckedPtr<LocationBarView> location_bar_view_;
 
   // The child WebView for the suggestions. This only exists if the
   // omnibox::kWebUIOmniboxPopup flag is on.
-  WebUIOmniboxPopupView* webui_view_ = nullptr;
+  CheckedPtr<WebUIOmniboxPopupView> webui_view_ = nullptr;
 
   // A pref change registrar for toggling result view visibility.
   PrefChangeRegistrar pref_change_registrar_;

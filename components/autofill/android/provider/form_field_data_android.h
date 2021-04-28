@@ -7,6 +7,7 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/checked_ptr.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/common/form_field_data.h"
 
@@ -35,7 +36,7 @@ class FormFieldDataAndroid {
   std::vector<AutofillType> server_predictions_;
 
   // Not owned.
-  FormFieldData* field_ptr_;
+  CheckedPtr<FormFieldData> field_ptr_;
   JavaObjectWeakGlobalRef java_ref_;
 
   DISALLOW_COPY_AND_ASSIGN(FormFieldDataAndroid);

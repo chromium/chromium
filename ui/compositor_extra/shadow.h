@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/gfx/geometry/rect.h"
@@ -69,7 +70,7 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
     std::unique_ptr<Layer> RecreateLayer() override;
 
    private:
-    Shadow* const owner_shadow_;
+    const CheckedPtr<Shadow> owner_shadow_;
 
     DISALLOW_COPY_AND_ASSIGN(ShadowLayerOwner);
   };

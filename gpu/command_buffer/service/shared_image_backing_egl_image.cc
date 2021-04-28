@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/shared_image_backing_egl_image.h"
 
+#include "base/memory/checked_ptr.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image_batch_access_manager.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
@@ -44,7 +45,7 @@ class SharedImageBackingEglImage::TextureHolder
       texture_->RemoveLightweightRef(!context_lost_);
   }
 
-  gles2::Texture* const texture_ = nullptr;
+  const CheckedPtr<gles2::Texture> texture_ = nullptr;
   const scoped_refptr<gles2::TexturePassthrough> texture_passthrough_;
   bool context_lost_ = false;
 };
@@ -101,7 +102,7 @@ class SharedImageBackingEglImage::RepresentationGLShared {
   }
 
  private:
-  SharedImageBackingEglImage* const backing_;
+  const CheckedPtr<SharedImageBackingEglImage> backing_;
   scoped_refptr<TextureHolder> texture_holder_;
   RepresentationAccessMode mode_ = RepresentationAccessMode::kNone;
   DISALLOW_COPY_AND_ASSIGN(RepresentationGLShared);

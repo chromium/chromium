@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/frame_messages.h"
@@ -47,7 +48,7 @@ class TestRenderFrameHostCreationObserver : public WebContentsObserver {
   RenderFrameHost* last_created_frame() const { return last_created_frame_; }
 
  private:
-  RenderFrameHost* last_created_frame_;
+  CheckedPtr<RenderFrameHost> last_created_frame_;
 };
 
 class TestRenderFrameHost : public RenderFrameHostImpl,

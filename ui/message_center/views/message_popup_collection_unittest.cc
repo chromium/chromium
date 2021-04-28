@@ -4,6 +4,7 @@
 
 #include "ui/message_center/views/message_popup_collection.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -171,7 +172,7 @@ class MockMessagePopupView : public MessagePopupView {
   }
 
  private:
-  MockMessagePopupCollection* const popup_collection_;
+  const CheckedPtr<MockMessagePopupCollection> popup_collection_;
 
   std::string id_;
   bool updated_ = false;

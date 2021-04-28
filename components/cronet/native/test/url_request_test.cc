@@ -10,6 +10,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
@@ -78,7 +79,7 @@ class StatusListener {
   }
 
   Cronet_UrlRequestStatusListenerPtr const status_listener_;
-  TestUrlRequestCallback* const callback_;
+  const CheckedPtr<TestUrlRequestCallback> callback_;
 
   Cronet_UrlRequestStatusListener_Status status_ =
       Cronet_UrlRequestStatusListener_Status_INVALID;
@@ -1656,9 +1657,9 @@ TEST_F(UrlRequestTestNoParam,
 
   base::WaitableEvent done_event;
   struct ListenerContext {
-    TestUrlRequestCallback* test_callback;
+    CheckedPtr<TestUrlRequestCallback> test_callback;
     Cronet_UrlRequestPtr url_request;
-    base::WaitableEvent* done_event;
+    CheckedPtr<base::WaitableEvent> done_event;
   };
   ListenerContext listener_context = {&test_callback, request, &done_event};
 
@@ -1718,9 +1719,9 @@ TEST_F(UrlRequestTestNoParam,
 
   base::WaitableEvent done_event;
   struct ListenerContext {
-    TestUrlRequestCallback* test_callback;
+    CheckedPtr<TestUrlRequestCallback> test_callback;
     Cronet_UrlRequestPtr url_request;
-    base::WaitableEvent* done_event;
+    CheckedPtr<base::WaitableEvent> done_event;
   };
   ListenerContext listener_context = {&test_callback, request, &done_event};
 

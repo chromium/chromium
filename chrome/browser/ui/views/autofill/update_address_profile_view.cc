@@ -21,11 +21,11 @@ UpdateAddressProfileView::UpdateAddressProfileView(
       features::kAutofillAddressProfileSavePrompt));
   SetAcceptCallback(base::BindOnce(
       &SaveUpdateAddressProfileBubbleController::OnUserDecision,
-      base::Unretained(controller_),
+      base::Unretained(controller_.get()),
       AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted));
   SetCancelCallback(base::BindOnce(
       &SaveUpdateAddressProfileBubbleController::OnUserDecision,
-      base::Unretained(controller_),
+      base::Unretained(controller_.get()),
       AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined));
 }
 

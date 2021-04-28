@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/supports_user_data.h"
 
 namespace content {
@@ -55,7 +56,7 @@ class WebContentsTag : public base::SupportsUserData::Data {
   static void* kTagKey;
 
   // The owning WebContents.
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
 
   DISALLOW_COPY_AND_ASSIGN(WebContentsTag);
 };

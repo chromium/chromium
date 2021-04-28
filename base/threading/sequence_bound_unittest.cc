@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -65,7 +66,7 @@ class SequenceBoundTest : public ::testing::Test {
     Other(Value* ptr) : ptr_(ptr) { *ptr = kOtherCtorValue; }
     virtual ~Other() { *ptr_ = kOtherDtorValue; }
     void SetValue(Value value) { *ptr_ = value; }
-    Value* ptr_;
+    CheckedPtr<Value> ptr_;
   };
 
   class MultiplyDerived : public Other, public Derived {

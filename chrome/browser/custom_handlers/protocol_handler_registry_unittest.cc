@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observer.h"
 #include "base/strings/utf_string_conversions.h"
@@ -183,7 +184,7 @@ class QueryProtocolHandlerOnChange : public ProtocolHandlerRegistry::Observer {
   bool called() const { return called_; }
 
  private:
-  ProtocolHandlerRegistry* local_registry_;
+  CheckedPtr<ProtocolHandlerRegistry> local_registry_;
   bool called_ = false;
 
   ScopedObserver<ProtocolHandlerRegistry, ProtocolHandlerRegistry::Observer>
@@ -313,7 +314,8 @@ class ProtocolHandlerRegistryTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<TestingProfile> profile_;
-  FakeDelegate* delegate_;  // Registry assumes ownership of delegate_.
+  CheckedPtr<FakeDelegate>
+      delegate_;  // Registry assumes ownership of delegate_.
   std::unique_ptr<ProtocolHandlerRegistry> registry_;
   ProtocolHandler test_protocol_handler_;
 };

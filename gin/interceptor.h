@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "gin/gin_export.h"
 #include "v8/include/v8.h"
 
@@ -37,7 +38,7 @@ class GIN_EXPORT NamedPropertyInterceptor {
 
  private:
   v8::Isolate* isolate_;
-  WrappableBase* base_;
+  CheckedPtr<WrappableBase> base_;
 };
 
 class GIN_EXPORT IndexedPropertyInterceptor {
@@ -59,7 +60,7 @@ class GIN_EXPORT IndexedPropertyInterceptor {
 
  private:
   v8::Isolate* isolate_;
-  WrappableBase* base_;
+  CheckedPtr<WrappableBase> base_;
 };
 
 }  // namespace gin

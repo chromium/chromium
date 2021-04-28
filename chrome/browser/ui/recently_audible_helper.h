@@ -7,6 +7,7 @@
 
 #include "base/callback_list.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -92,7 +93,7 @@ class RecentlyAudibleHelper
   CallbackList callback_list_;
 
   // The tick clock this object is using.
-  const base::TickClock* tick_clock_;
+  CheckedPtr<const base::TickClock> tick_clock_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

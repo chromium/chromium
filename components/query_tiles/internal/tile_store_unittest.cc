@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "base/test/task_environment.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/leveldb_proto/testing/fake_db.h"
@@ -95,7 +96,7 @@ class TileStoreTest : public testing::Test {
   bool load_result_;
   EntriesMap in_memory_entries_;
   ProtoMap db_entries_;
-  FakeDB<TileGroupProto, TileGroup>* db_;
+  CheckedPtr<FakeDB<TileGroupProto, TileGroup>> db_;
   std::unique_ptr<Store<TileGroup>> store_;
 };
 

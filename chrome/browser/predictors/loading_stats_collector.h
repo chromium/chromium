@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "url/gurl.h"
@@ -68,7 +69,7 @@ class LoadingStatsCollector {
   void CleanupAbandonedStats();
 
  private:
-  ResourcePrefetchPredictor* predictor_;
+  CheckedPtr<ResourcePrefetchPredictor> predictor_;
   base::TimeDelta max_stats_age_;
   std::map<GURL, std::unique_ptr<PreconnectStats>> preconnect_stats_;
 

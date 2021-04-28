@@ -10,6 +10,7 @@
 #include "base/lazy_instance.h"
 #include "base/logging_win.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/win/event_trace_consumer.h"
 #include "chrome/test/logging/win/mof_data_parser.h"
@@ -84,7 +85,7 @@ class LogFileReader {
   static LogFileReader* instance_;
 
   // The delegate to be notified of events.
-  LogFileDelegate* delegate_;
+  CheckedPtr<LogFileDelegate> delegate_;
 };
 
 // static

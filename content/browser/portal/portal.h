@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/common/content_export.h"
 #include "content/common/frame.mojom.h"
@@ -179,10 +180,10 @@ class CONTENT_EXPORT Portal : public blink::mojom::Portal,
 
    private:
     // The outer Portal object.
-    Portal* portal_ = nullptr;
+    CheckedPtr<Portal> portal_ = nullptr;
 
     // Non-null, even when the contents is not owned.
-    WebContentsImpl* contents_ = nullptr;
+    CheckedPtr<WebContentsImpl> contents_ = nullptr;
 
     // When the portal is not attached, the Portal owns its WebContents.
     // If not null, |owned_contents_| is equal to |contents_|.

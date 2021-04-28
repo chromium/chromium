@@ -15,6 +15,7 @@
 #include <set>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "media/cast/cast_environment.h"
@@ -73,7 +74,7 @@ class RtpSender {
   RtpPacketizerConfig config_;
   PacketStorage storage_;
   std::unique_ptr<RtpPacketizer> packetizer_;
-  PacedSender* const transport_;
+  const CheckedPtr<PacedSender> transport_;
   scoped_refptr<base::SingleThreadTaskRunner> transport_task_runner_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.

@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
@@ -168,9 +169,9 @@ class TileServiceImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::SimpleTestClock clock_;
   std::unique_ptr<TileServiceImpl> tile_service_impl_;
-  MockTileServiceScheduler* scheduler_;
-  MockTileManager* tile_manager_;
-  MockImagePrefetcher* image_prefetcher_;
+  CheckedPtr<MockTileServiceScheduler> scheduler_;
+  CheckedPtr<MockTileManager> tile_manager_;
+  CheckedPtr<MockImagePrefetcher> image_prefetcher_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory>
       test_shared_url_loader_factory_;

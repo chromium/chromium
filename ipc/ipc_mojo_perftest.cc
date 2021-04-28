@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/process/process_metrics.h"
 #include "base/run_loop.h"
@@ -118,7 +119,7 @@ class PerformanceChannelListener : public Listener {
 
  private:
   std::string label_;
-  Sender* sender_;
+  CheckedPtr<Sender> sender_;
   int msg_count_;
   size_t msg_size_;
   bool sync_;

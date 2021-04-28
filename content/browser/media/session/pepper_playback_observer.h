@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 
 namespace content {
 
@@ -56,7 +57,7 @@ class PepperPlaybackObserver {
   PlayersPlayedSoundMap players_played_sound_map_;
 
   // Weak reference to WebContents.
-  WebContents* contents_;
+  CheckedPtr<WebContents> contents_;
 
   DISALLOW_COPY_AND_ASSIGN(PepperPlaybackObserver);
 };

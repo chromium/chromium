@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/api_resource_manager.h"
@@ -73,7 +74,7 @@ class SerialPortManager : public BrowserContextKeyedAPI {
     ReceiveParams(const ReceiveParams& other);
     ~ReceiveParams();
 
-    void* browser_context_id;
+    CheckedPtr<void> browser_context_id;
     std::string extension_id;
     scoped_refptr<ConnectionData> connections;
     int connection_id;

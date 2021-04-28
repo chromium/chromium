@@ -5,6 +5,7 @@
 #include "chrome/browser/profiles/profile_destroyer.h"
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
@@ -64,7 +65,7 @@ class ProfileDestroyerTest : public BrowserWithTestWindowTest,
   bool is_primary_otr_;
   bool original_profile_destroyed_{false};
   bool otr_profile_destroyed_{false};
-  TestingProfile* otr_profile_{nullptr};
+  CheckedPtr<TestingProfile> otr_profile_{nullptr};
 
   std::vector<scoped_refptr<content::SiteInstance>> site_instances_;
 

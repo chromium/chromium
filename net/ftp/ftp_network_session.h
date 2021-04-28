@@ -5,6 +5,7 @@
 #ifndef NET_FTP_FTP_NETWORK_SESSION_H_
 #define NET_FTP_FTP_NETWORK_SESSION_H_
 
+#include "base/memory/checked_ptr.h"
 #include "net/base/net_export.h"
 
 namespace net {
@@ -20,7 +21,7 @@ class NET_EXPORT_PRIVATE FtpNetworkSession {
   HostResolver* host_resolver() { return host_resolver_; }
 
  private:
-  HostResolver* const host_resolver_;
+  const CheckedPtr<HostResolver> host_resolver_;
 };
 
 }  // namespace net

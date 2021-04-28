@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_AURA_TAB_CONTENTS_WEB_DRAG_BOOKMARK_HANDLER_AURA_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_drag_dest_delegate.h"
@@ -38,9 +39,9 @@ class WebDragBookmarkHandlerAura : public content::WebDragDestDelegate {
   // The BookmarkTabHelper.
   // Weak reference; may be NULL if the contents don't have a
   // BookmarkTabHelper (e.g. WebUI dialogs).
-  BookmarkTabHelper* bookmark_tab_helper_;
+  CheckedPtr<BookmarkTabHelper> bookmark_tab_helper_;
 
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
 
   // The bookmark data for the active drag.  Empty when there is no active drag.
   bookmarks::BookmarkNodeData bookmark_drag_data_;

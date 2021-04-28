@@ -64,7 +64,7 @@ void AudioEncoderOpus::InitEncoder() {
     return;
   }
 
-  opus_encoder_ctl(encoder_, OPUS_SET_BITRATE(kOutputBitrateBps));
+  opus_encoder_ctl(encoder_.get(), OPUS_SET_BITRATE(kOutputBitrateBps));
 
   frame_size_ = sampling_rate_ * kFrameSizeMs /
       base::Time::kMillisecondsPerSecond;

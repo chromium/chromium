@@ -12,6 +12,7 @@
 
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -255,7 +256,7 @@ class PrefetchProxyTabHelper
     explicit CurrentPageLoad(content::NavigationHandle* handle);
     ~CurrentPageLoad();
 
-    Profile* profile_;
+    CheckedPtr<Profile> profile_;
 
     // The start time of the current navigation.
     const base::TimeTicks navigation_start_;

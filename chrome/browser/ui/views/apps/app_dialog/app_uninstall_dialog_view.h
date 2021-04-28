@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/uninstall_dialog.h"
 #include "chrome/browser/ui/views/apps/app_dialog/app_dialog_view.h"
@@ -59,10 +60,10 @@ class AppUninstallDialogView : public apps::UninstallDialog::UiBase,
   void OnDialogCancelled();
   void OnDialogAccepted();
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
-  views::Checkbox* report_abuse_checkbox_ = nullptr;
-  views::Checkbox* clear_site_data_checkbox_ = nullptr;
+  CheckedPtr<views::Checkbox> report_abuse_checkbox_ = nullptr;
+  CheckedPtr<views::Checkbox> clear_site_data_checkbox_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(AppUninstallDialogView);
 };

@@ -6,6 +6,7 @@
 #define ANDROID_WEBVIEW_BROWSER_NETWORK_SERVICE_AW_NETWORK_CHANGE_NOTIFIER_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "net/android/network_change_notifier_delegate_android.h"
 #include "net/base/network_change_notifier.h"
 
@@ -56,7 +57,7 @@ class AwNetworkChangeNotifier
 
   static NetworkChangeCalculatorParams DefaultNetworkChangeCalculatorParams();
 
-  net::NetworkChangeNotifierDelegateAndroid* const delegate_;
+  const CheckedPtr<net::NetworkChangeNotifierDelegateAndroid> delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(AwNetworkChangeNotifier);
 };

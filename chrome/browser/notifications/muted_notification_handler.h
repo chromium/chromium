@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "url/gurl.h"
@@ -56,7 +57,7 @@ class MutedNotificationHandler : public NotificationHandler {
   void OpenSettings(Profile* profile, const GURL& origin) override;
 
  private:
-  Delegate* delegate_;
+  CheckedPtr<Delegate> delegate_;
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_MUTED_NOTIFICATION_HANDLER_H_

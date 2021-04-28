@@ -17,6 +17,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -208,8 +209,8 @@ class TestURLFetcher : public URLFetcher {
 
   const int id_;
   const GURL original_url_;
-  URLFetcherDelegate* delegate_;
-  DelegateForTests* delegate_for_tests_;
+  CheckedPtr<URLFetcherDelegate> delegate_;
+  CheckedPtr<DelegateForTests> delegate_for_tests_;
   std::string upload_content_type_;
   std::string upload_data_;
   base::FilePath upload_file_path_;
@@ -409,7 +410,7 @@ class FakeURLFetcherFactory : public URLFetcherFactory,
 
   const FakeURLFetcherCreator creator_;
   FakeResponseMap fake_responses_;
-  URLFetcherFactory* const default_factory_;
+  const CheckedPtr<URLFetcherFactory> default_factory_;
 
   static std::unique_ptr<FakeURLFetcher> DefaultFakeURLFetcherCreator(
       const GURL& url,

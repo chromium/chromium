@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/win/windows_version.h"
 #include "build/build_config.h"
@@ -186,9 +187,9 @@ class TouchEventsViewTest : public ViewEventTestBase {
   }
 
  protected:
-  views::View* touch_view_ = nullptr;
-  TestingGestureRecognizer* gesture_recognizer_ = nullptr;
-  ui::GestureRecognizer* initial_gr_ = nullptr;
+  CheckedPtr<views::View> touch_view_ = nullptr;
+  CheckedPtr<TestingGestureRecognizer> gesture_recognizer_ = nullptr;
+  CheckedPtr<ui::GestureRecognizer> initial_gr_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(TouchEventsViewTest);
 };

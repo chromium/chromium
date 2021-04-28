@@ -17,6 +17,7 @@
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
@@ -46,7 +47,7 @@ class MDnsSocketFactoryImpl : public MDnsSocketFactory {
       std::vector<std::unique_ptr<DatagramServerSocket>>* sockets) override;
 
  private:
-  NetLog* const net_log_;
+  const CheckedPtr<NetLog> net_log_;
 
   DISALLOW_COPY_AND_ASSIGN(MDnsSocketFactoryImpl);
 };
@@ -88,7 +89,7 @@ class NET_EXPORT_PRIVATE MDnsConnection {
     void SendDone(int rv);
 
     std::unique_ptr<DatagramServerSocket> socket_;
-    MDnsConnection* connection_;
+    CheckedPtr<MDnsConnection> connection_;
     IPEndPoint recv_addr_;
     DnsResponse response_;
     IPEndPoint multicast_addr_;
@@ -230,7 +231,7 @@ class NET_EXPORT_PRIVATE MDnsClientImpl : public MDnsClient {
   Core* core() { return core_.get(); }
 
  private:
-  base::Clock* clock_;
+  CheckedPtr<base::Clock> clock_;
   std::unique_ptr<base::OneShotTimer> cleanup_timer_;
 
   std::unique_ptr<Core> core_;

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SYNC_DICE_SIGNIN_BUTTON_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_SYNC_DICE_SIGNIN_BUTTON_VIEW_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/ui/views/hover_button.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -42,8 +43,7 @@ class DiceSigninButtonView : public views::View {
   base::Optional<AccountInfo> account() const { return account_; }
 
  private:
-
-  views::LabelButton* signin_button_ = nullptr;
+  CheckedPtr<views::LabelButton> signin_button_ = nullptr;
 
   const base::Optional<AccountInfo> account_;
 };

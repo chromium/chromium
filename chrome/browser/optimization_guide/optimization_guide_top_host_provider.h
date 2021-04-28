@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "base/values.h"
@@ -58,14 +59,14 @@ class OptimizationGuideTopHostProvider
   // |browser_context_| is used for interaction with the SiteEngagementService
   // and the embedder should guarantee that it is non-null during the lifetime
   // of |this|.
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
 
   // Clock used for getting current time.
-  base::Clock* time_clock_;
+  CheckedPtr<base::Clock> time_clock_;
 
   // |pref_service_| provides information about the current profile's
   // settings. It is not owned and guaranteed to outlive |this|.
-  PrefService* pref_service_;
+  CheckedPtr<PrefService> pref_service_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

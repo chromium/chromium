@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -231,7 +232,7 @@ class BLINK_COMMON_EXPORT URLLoaderThrottle {
  protected:
   URLLoaderThrottle();
 
-  Delegate* delegate_ = nullptr;
+  CheckedPtr<Delegate> delegate_ = nullptr;
 };
 
 }  // namespace blink

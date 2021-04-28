@@ -11,6 +11,7 @@
 #include "base/cfi_buildflags.h"
 #include "base/command_line.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -380,7 +381,7 @@ class LayerTreeHostImplForTesting : public LayerTreeHostImpl {
   }
 
  private:
-  TestHooks* test_hooks_;
+  CheckedPtr<TestHooks> test_hooks_;
   bool block_notify_ready_to_activate_for_testing_ = false;
   bool notify_ready_to_activate_was_blocked_ = false;
 
@@ -485,7 +486,7 @@ class LayerTreeHostClientForTesting : public LayerTreeHostClient,
   explicit LayerTreeHostClientForTesting(TestHooks* test_hooks)
       : test_hooks_(test_hooks) {}
 
-  TestHooks* test_hooks_;
+  CheckedPtr<TestHooks> test_hooks_;
 };
 
 // Adapts LayerTreeHost for test. Injects LayerTreeHostImplForTesting.
@@ -573,7 +574,7 @@ class LayerTreeHostForTesting : public LayerTreeHost {
                           CompositorMode mode)
       : LayerTreeHost(std::move(params), mode), test_hooks_(test_hooks) {}
 
-  TestHooks* test_hooks_;
+  CheckedPtr<TestHooks> test_hooks_;
   bool test_started_ = false;
 };
 
@@ -618,7 +619,7 @@ class LayerTreeTestLayerTreeFrameSinkClient
   }
 
  private:
-  TestHooks* hooks_;
+  CheckedPtr<TestHooks> hooks_;
 };
 
 LayerTreeTest::LayerTreeTest(viz::RendererType renderer_type)

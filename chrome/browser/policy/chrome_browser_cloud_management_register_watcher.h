@@ -11,6 +11,7 @@
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
@@ -107,7 +108,7 @@ class ChromeBrowserCloudManagementRegisterWatcher
 
   void DisplayErrorMessage();
 
-  ChromeBrowserCloudManagementController* controller_;
+  CheckedPtr<ChromeBrowserCloudManagementController> controller_;
 
   base::RunLoop run_loop_;
   std::unique_ptr<EnterpriseStartupDialog> dialog_;

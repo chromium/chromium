@@ -13,6 +13,7 @@
 #include "base/debug/asan_invalid_access.h"
 #include "base/debug/profiler.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/sanitizer_buildflags.h"
 #include "base/third_party/dynamic_annotations/dynamic_annotations.h"
 #include "base/threading/thread.h"
@@ -254,7 +255,7 @@ class TOOLS_SANITY_TEST_CONCURRENT_THREAD : public PlatformThread::Delegate {
     PlatformThread::Sleep(TimeDelta::FromMilliseconds(100));
   }
  private:
-  bool *value_;
+  CheckedPtr<bool> value_;
 };
 
 class ReleaseStoreThread : public PlatformThread::Delegate {
@@ -270,7 +271,7 @@ class ReleaseStoreThread : public PlatformThread::Delegate {
     PlatformThread::Sleep(TimeDelta::FromMilliseconds(100));
   }
  private:
-  base::subtle::Atomic32 *value_;
+  CheckedPtr<base::subtle::Atomic32> value_;
 };
 
 class AcquireLoadThread : public PlatformThread::Delegate {
@@ -283,7 +284,7 @@ class AcquireLoadThread : public PlatformThread::Delegate {
     base::subtle::Acquire_Load(value_);
   }
  private:
-  base::subtle::Atomic32 *value_;
+  CheckedPtr<base::subtle::Atomic32> value_;
 };
 
 void RunInParallel(PlatformThread::Delegate *d1, PlatformThread::Delegate *d2) {

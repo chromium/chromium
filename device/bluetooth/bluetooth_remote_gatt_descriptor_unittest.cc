@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "build/build_config.h"
@@ -63,11 +64,11 @@ class BluetoothRemoteGattDescriptorTest :
     ResetEventCounts();
   }
 
-  BluetoothDevice* device_ = nullptr;
-  BluetoothRemoteGattService* service_ = nullptr;
-  BluetoothRemoteGattCharacteristic* characteristic_ = nullptr;
-  BluetoothRemoteGattDescriptor* descriptor1_ = nullptr;
-  BluetoothRemoteGattDescriptor* descriptor2_ = nullptr;
+  CheckedPtr<BluetoothDevice> device_ = nullptr;
+  CheckedPtr<BluetoothRemoteGattService> service_ = nullptr;
+  CheckedPtr<BluetoothRemoteGattCharacteristic> characteristic_ = nullptr;
+  CheckedPtr<BluetoothRemoteGattDescriptor> descriptor1_ = nullptr;
+  CheckedPtr<BluetoothRemoteGattDescriptor> descriptor2_ = nullptr;
 };
 
 #if defined(OS_WIN)

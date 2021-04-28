@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_PROFILE_INTERACTION_MANAGER_H_
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_PROFILE_INTERACTION_MANAGER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_activation_throttle.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
@@ -67,11 +68,11 @@ class ProfileInteractionManager
 
  private:
   // Unowned and must outlive this object.
-  SubresourceFilterProfileContext* profile_context_ = nullptr;
+  CheckedPtr<SubresourceFilterProfileContext> profile_context_ = nullptr;
 
 #if defined(OS_ANDROID)
   // Unowned and must outlive this object.
-  infobars::ContentInfoBarManager* infobar_manager_ = nullptr;
+  CheckedPtr<infobars::ContentInfoBarManager> infobar_manager_ = nullptr;
 #endif
 
   bool ads_violation_triggered_for_last_committed_navigation_ = false;

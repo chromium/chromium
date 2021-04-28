@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 
 namespace base {
 namespace internal {
@@ -31,7 +32,7 @@ class StackMarker {
 
  private:
   const size_t max_depth_;
-  size_t* const depth_;
+  const CheckedPtr<size_t> depth_;
 
   DISALLOW_COPY_AND_ASSIGN(StackMarker);
 };

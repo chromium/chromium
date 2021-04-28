@@ -7,6 +7,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "media/base/media_export.h"
@@ -63,7 +64,7 @@ class MEDIA_EXPORT NullVideoSink : public VideoRendererSink {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   bool started_;
-  RenderCallback* callback_;
+  CheckedPtr<RenderCallback> callback_;
 
   // Manages cancellation of periodic Render() callback task.
   base::CancelableRepeatingClosure cancelable_worker_;
@@ -79,7 +80,7 @@ class MEDIA_EXPORT NullVideoSink : public VideoRendererSink {
   base::TimeTicks last_now_;
 
   // If specified, used instead of a DefaultTickClock.
-  const base::TickClock* tick_clock_;
+  CheckedPtr<const base::TickClock> tick_clock_;
 
   // If set, called when Stop() is called.
   base::OnceClosure stop_cb_;

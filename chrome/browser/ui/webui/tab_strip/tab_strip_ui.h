@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_TAB_STRIP_TAB_STRIP_UI_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/webui/tab_strip/thumbnail_tracker.h"
 #include "content/public/browser/web_ui_controller.h"
 
@@ -39,7 +40,7 @@ class TabStripUI : public content::WebUIController {
   void HandleThumbnailUpdate(int extension_tab_id,
                              ThumbnailTracker::CompressedThumbnailData image);
 
-  TabStripUIHandler* handler_ = nullptr;
+  CheckedPtr<TabStripUIHandler> handler_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(TabStripUI);
 };

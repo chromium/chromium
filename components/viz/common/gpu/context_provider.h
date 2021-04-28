@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
@@ -50,7 +51,7 @@ class VIZ_COMMON_EXPORT ContextProvider {
     }
 
    private:
-    ContextProvider* const context_provider_;
+    const CheckedPtr<ContextProvider> context_provider_;
     base::AutoLock context_lock_;
     std::unique_ptr<ContextCacheController::ScopedBusy> busy_;
   };

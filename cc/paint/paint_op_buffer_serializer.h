@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "cc/paint/paint_op_buffer.h"
 
 #include "third_party/skia/src/core/SkRemoteGlyphCache.h"
@@ -120,7 +121,7 @@ class CC_PAINT_EXPORT SimpleBufferSerializer : public PaintOpBufferSerializer {
                            const PaintFlags* flags_to_serialize,
                            const SkM44& original_ctm);
 
-  void* memory_;
+  CheckedPtr<void> memory_;
   const size_t total_;
   size_t written_ = 0u;
 };

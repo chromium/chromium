@@ -8,6 +8,7 @@
 
 #include "base/callback.h"
 #include "base/guid.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -85,7 +86,7 @@ class SharingDeviceSourceSyncTest : public testing::Test {
   syncer::FakeDeviceInfoSyncService fake_device_info_sync_service_;
   syncer::FakeLocalDeviceInfoProvider fake_local_device_info_provider_;
   syncer::FakeDeviceInfoTracker fake_device_info_tracker_;
-  const syncer::DeviceInfo* local_device_info_ =
+  CheckedPtr<const syncer::DeviceInfo> local_device_info_ =
       fake_local_device_info_provider_.GetLocalDeviceInfo();
 };
 

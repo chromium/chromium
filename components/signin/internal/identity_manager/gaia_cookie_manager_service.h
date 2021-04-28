@@ -15,6 +15,7 @@
 #include "base/callback_forward.h"
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
@@ -207,7 +208,7 @@ class GaiaCookieManagerService
 
     void GetCheckConnectionInfoCompleted(bool succeeded);
 
-    GaiaCookieManagerService* helper_;
+    CheckedPtr<GaiaCookieManagerService> helper_;
     base::OneShotTimer timer_;
     LoaderToToken loaders_;
     ResultMap results_;

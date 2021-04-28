@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
 
 class Profile;
@@ -40,7 +41,7 @@ class HostedAppsCounter : public browsing_data::BrowsingDataCounter {
   // BrowsingDataCounter:
   void Count() override;
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   DISALLOW_COPY_AND_ASSIGN(HostedAppsCounter);
 };

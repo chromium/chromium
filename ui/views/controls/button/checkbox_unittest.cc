@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -45,7 +46,7 @@ class CheckboxTest : public ViewsTestBase {
 
  private:
   std::unique_ptr<Widget> widget_;
-  Checkbox* checkbox_ = nullptr;
+  CheckedPtr<Checkbox> checkbox_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(CheckboxTest);
 };

@@ -11,6 +11,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
 
@@ -135,8 +136,8 @@ class PersistedData {
                              const std::set<std::string>& active_ids);
 
   SEQUENCE_CHECKER(sequence_checker_);
-  PrefService* pref_service_;
-  ActivityDataService* activity_data_service_;
+  CheckedPtr<PrefService> pref_service_;
+  CheckedPtr<ActivityDataService> activity_data_service_;
 
   DISALLOW_COPY_AND_ASSIGN(PersistedData);
 };

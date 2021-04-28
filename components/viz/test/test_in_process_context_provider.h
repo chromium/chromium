@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "components/viz/common/gpu/context_provider.h"
@@ -75,8 +76,8 @@ class TestInProcessContextProvider
  private:
   const bool enable_gpu_rasterization_;
   const bool enable_oop_rasterization_;
-  gpu::raster::GrShaderCache* gr_shader_cache_ = nullptr;
-  gpu::GpuProcessActivityFlags* activity_flags_ = nullptr;
+  CheckedPtr<gpu::raster::GrShaderCache> gr_shader_cache_ = nullptr;
+  CheckedPtr<gpu::GpuProcessActivityFlags> activity_flags_ = nullptr;
 
   TestGpuMemoryBufferManager gpu_memory_buffer_manager_;
   TestImageFactory image_factory_;

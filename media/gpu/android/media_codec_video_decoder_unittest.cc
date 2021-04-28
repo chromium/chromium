@@ -7,6 +7,7 @@
 #include "base/android/jni_android.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -281,9 +282,9 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
   scoped_refptr<DecoderBuffer> fake_decoder_buffer_;
   std::unique_ptr<MockDeviceInfo> device_info_;
   std::unique_ptr<FakeCodecAllocator> codec_allocator_;
-  MockAndroidVideoSurfaceChooser* surface_chooser_;
-  gpu::MockTextureOwner* texture_owner_;
-  MockVideoFrameFactory* video_frame_factory_;
+  CheckedPtr<MockAndroidVideoSurfaceChooser> surface_chooser_;
+  CheckedPtr<gpu::MockTextureOwner> texture_owner_;
+  CheckedPtr<MockVideoFrameFactory> video_frame_factory_;
   NiceMock<base::MockCallback<VideoDecoder::DecodeCB>> decode_cb_;
   ProvideOverlayInfoCB provide_overlay_info_cb_;
   bool restart_for_transitions_;
@@ -300,7 +301,7 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
 
   // |mcvd_raw_| lets us call PumpCodec() even after |mcvd_| is dropped, for
   // testing the teardown path.
-  MediaCodecVideoDecoder* mcvd_raw_;
+  CheckedPtr<MediaCodecVideoDecoder> mcvd_raw_;
   std::unique_ptr<VideoDecoder> mcvd_;
 };
 

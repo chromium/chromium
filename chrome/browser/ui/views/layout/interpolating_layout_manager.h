@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_manager_base.h"
 
@@ -115,7 +116,7 @@ class InterpolatingLayoutManager : public views::LayoutManagerBase {
 
   // Maps from interpolation range to embedded layout.
   std::map<views::Span, LayoutManagerBase*> embedded_layouts_;
-  LayoutManagerBase* default_layout_ = nullptr;
+  CheckedPtr<LayoutManagerBase> default_layout_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(InterpolatingLayoutManager);
 };

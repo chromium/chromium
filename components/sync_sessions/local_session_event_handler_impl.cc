@@ -127,7 +127,7 @@ LocalSessionEventHandlerImpl::GetTabSpecificsFromDelegateForTest(
 void LocalSessionEventHandlerImpl::CleanupLocalTabs(WriteBatch* batch) {
   std::set<int> deleted_tab_node_ids =
       session_tracker_->CleanupLocalTabs(base::BindRepeating(
-          &Delegate::IsTabNodeUnsynced, base::Unretained(delegate_)));
+          &Delegate::IsTabNodeUnsynced, base::Unretained(delegate_.get())));
 
   for (int tab_node_id : deleted_tab_node_ids) {
     batch->Delete(tab_node_id);

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 
 // static
@@ -19,7 +20,7 @@ struct ThumbnailSchedulerImpl::TabSchedulingData {
 };
 
 struct ThumbnailSchedulerImpl::TabNode : public base::LinkNode<TabNode> {
-  TabCapturer* capturer = nullptr;
+  CheckedPtr<TabCapturer> capturer = nullptr;
   TabSchedulingData data;
   bool is_capturing = false;
 };

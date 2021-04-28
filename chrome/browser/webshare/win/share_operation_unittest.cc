@@ -5,6 +5,7 @@
 #include "chrome/browser/webshare/win/share_operation.h"
 
 #include "base/guid.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
@@ -195,7 +196,7 @@ class ShareOperationUnitTest : public ChromeRenderViewHostTestHarness {
   }
 
  private:
-  FakeDataTransferManager* fake_data_transfer_manager_ = nullptr;
+  CheckedPtr<FakeDataTransferManager> fake_data_transfer_manager_ = nullptr;
   base::test::ScopedFeatureList feature_list_;
   ScopedShareOperationFakeComponents scoped_fake_components_;
 };

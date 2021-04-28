@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "build/build_config.h"
@@ -133,7 +134,7 @@ struct NavigateParams {
 
   // Input parameter.
   // Only used by Singleton tabs. Causes a tab-switch in addition to navigation.
-  content::WebContents* switch_to_singleton_tab = nullptr;
+  CheckedPtr<content::WebContents> switch_to_singleton_tab = nullptr;
 
   // Output parameter.
   // The WebContents in which the navigation occurred or that was inserted.
@@ -143,7 +144,7 @@ struct NavigateParams {
   // new WebContents, this field will remain NULL and the WebContents deleted if
   // the WebContents it created is not added to a TabStripModel before
   // Navigate() returns.
-  content::WebContents* navigated_or_inserted_contents = nullptr;
+  CheckedPtr<content::WebContents> navigated_or_inserted_contents = nullptr;
 
   // [in]  The WebContents that initiated the Navigate() request if such
   //       context is necessary. Default is NULL, i.e. no context.
@@ -152,7 +153,7 @@ struct NavigateParams {
   //       Navigate(). However, if the originating page is from a different
   //       profile (e.g. an OFF_THE_RECORD page originating from a non-OTR
   //       window), then |source_contents| is reset to NULL.
-  content::WebContents* source_contents = nullptr;
+  CheckedPtr<content::WebContents> source_contents = nullptr;
 
   // The disposition requested by the navigation source. Default is
   // CURRENT_TAB. What follows is a set of coercions that happen to this value
@@ -173,7 +174,7 @@ struct NavigateParams {
 
   // Allows setting the opener for the case when new WebContents are created
   // (i.e. when |disposition| asks for a new tab or window).
-  content::RenderFrameHost* opener = nullptr;
+  CheckedPtr<content::RenderFrameHost> opener = nullptr;
 
   // Sets browser->is_trusted_source.
   bool trusted_source = false;
@@ -243,7 +244,7 @@ struct NavigateParams {
   //       Navigate(), the caller is responsible for showing it so that its
   //       window can assume responsibility for the Browser's lifetime (Browser
   //       objects are deleted when the user closes a visible browser window).
-  Browser* browser = nullptr;
+  CheckedPtr<Browser> browser = nullptr;
 
   // The group the caller would like the tab to be added to.
   base::Optional<tab_groups::TabGroupId> group;
@@ -256,7 +257,7 @@ struct NavigateParams {
 
   // The profile that is initiating the navigation. If there is a non-NULL
   // browser passed in via |browser|, it's profile will be used instead.
-  Profile* initiating_profile = nullptr;
+  CheckedPtr<Profile> initiating_profile = nullptr;
 
   // Indicates whether this navigation  should replace the current
   // navigation entry.

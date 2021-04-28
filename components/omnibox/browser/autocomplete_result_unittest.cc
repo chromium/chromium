@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/stl_util.h"
@@ -1454,7 +1455,7 @@ TEST_F(AutocompleteResultTest, SortAndCullPromoteUnconsecutiveMatches) {
 
 struct EntityTestData {
   AutocompleteMatchType::Type type;
-  FakeAutocompleteProvider* provider;
+  CheckedPtr<FakeAutocompleteProvider> provider;
   std::string destination_url;
   int relevance;
   bool allowed_to_be_default_match;

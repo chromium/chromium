@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -169,7 +170,7 @@ class HintCacheTest : public ProtoDatabaseProviderTestBase,
 
   std::unique_ptr<OptimizationGuideStore> optimization_guide_store_;
   std::unique_ptr<HintCache> hint_cache_;
-  const proto::Hint* loaded_hint_;
+  CheckedPtr<const proto::Hint> loaded_hint_;
 
   bool is_store_initialized_;
   bool are_component_hints_updated_;

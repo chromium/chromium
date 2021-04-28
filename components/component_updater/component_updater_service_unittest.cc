@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -182,7 +183,7 @@ class ComponentUpdaterTest : public testing::Test {
 
   scoped_refptr<TestConfigurator> config_ =
       base::MakeRefCounted<TestConfigurator>();
-  MockUpdateScheduler* scheduler_;
+  CheckedPtr<MockUpdateScheduler> scheduler_;
   scoped_refptr<MockUpdateClient> update_client_ =
       base::MakeRefCounted<MockUpdateClient>();
   std::unique_ptr<ComponentUpdateService> component_updater_;

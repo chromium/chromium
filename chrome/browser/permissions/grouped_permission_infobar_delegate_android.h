@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
@@ -80,7 +81,7 @@ class GroupedPermissionInfoBarDelegate : public ConfirmInfoBarDelegate {
   bool EqualsDelegate(infobars::InfoBarDelegate* delegate) const override;
 
   base::WeakPtr<permissions::PermissionPromptAndroid> permission_prompt_;
-  InfoBarService* infobar_service_;
+  CheckedPtr<InfoBarService> infobar_service_;
   bool details_expanded_;
 
   DISALLOW_COPY_AND_ASSIGN(GroupedPermissionInfoBarDelegate);

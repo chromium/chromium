@@ -16,6 +16,7 @@
 
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/process_metrics.h"
 #include "base/stl_util.h"
@@ -116,7 +117,7 @@ class CopyAllArgsOnUnamePolicy : public bpf_dsl::Policy {
   }
 
  private:
-  std::vector<uint64_t>* aux_;
+  CheckedPtr<std::vector<uint64_t>> aux_;
 
   DISALLOW_COPY_AND_ASSIGN(CopyAllArgsOnUnamePolicy);
 };

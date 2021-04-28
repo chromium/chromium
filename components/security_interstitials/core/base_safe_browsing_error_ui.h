@@ -6,6 +6,7 @@
 #define COMPONENTS_SECURITY_INTERSTITIALS_CORE_BASE_SAFE_BROWSING_ERROR_UI_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/security_interstitials/core/controller_client.h"
@@ -198,7 +199,7 @@ class BaseSafeBrowsingErrorUI {
   const std::string app_locale_;
   const base::Time time_triggered_;
 
-  ControllerClient* controller_;
+  CheckedPtr<ControllerClient> controller_;
 
   DISALLOW_COPY_AND_ASSIGN(BaseSafeBrowsingErrorUI);
 };

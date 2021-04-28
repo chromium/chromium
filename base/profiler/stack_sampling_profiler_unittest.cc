@@ -17,6 +17,7 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/profiler/profiler_buildflags.h"
@@ -119,7 +120,7 @@ class TestProfileBuilder : public ProfileBuilder {
                           TimeDelta sampling_period) override;
 
  private:
-  ModuleCache* module_cache_;
+  CheckedPtr<ModuleCache> module_cache_;
 
   // The set of recorded samples.
   std::vector<std::vector<Frame>> samples_;
@@ -292,8 +293,8 @@ void TestLibraryUnload(bool wait_until_unloaded, ModuleCache* module_cache) {
     }
 
    private:
-    WaitableEvent* const stack_copied_;
-    WaitableEvent* const start_stack_walk_;
+    const CheckedPtr<WaitableEvent> stack_copied_;
+    const CheckedPtr<WaitableEvent> start_stack_walk_;
     const bool wait_to_walk_stack_;
   };
 

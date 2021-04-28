@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -87,7 +88,7 @@ class SigninProfileAttributesUpdaterTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
-  TestingProfile* profile_;
+  CheckedPtr<TestingProfile> profile_;
   signin::IdentityTestEnvironment identity_test_env_;
   SigninErrorController signin_error_controller_;
   std::unique_ptr<SigninProfileAttributesUpdater>

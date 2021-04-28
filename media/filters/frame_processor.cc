@@ -10,6 +10,7 @@
 #include <cstdlib>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "media/base/stream_parser_buffer.h"
 #include "media/base/timestamp_constants.h"
 
@@ -170,7 +171,7 @@ class MseTrackBuffer {
 
   // Pointer to the stream associated with this track. The stream is not owned
   // by |this|.
-  ChunkDemuxerStream* const stream_;
+  const CheckedPtr<ChunkDemuxerStream> stream_;
 
   // Queue of processed frames that have not yet been appended to |stream_|.
   // EnqueueProcessedFrame() adds to this queue, and FlushProcessedFrames()
@@ -178,7 +179,7 @@ class MseTrackBuffer {
   StreamParser::BufferQueue processed_frames_;
 
   // MediaLog for reporting messages and properties to debug content and engine.
-  MediaLog* media_log_;
+  CheckedPtr<MediaLog> media_log_;
 
   // Callback for reporting problematic conditions that are not necessarily
   // errors.

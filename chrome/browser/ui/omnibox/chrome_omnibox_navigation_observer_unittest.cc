@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -61,7 +62,7 @@ class MockChromeOmniboxNavigationObserver
   // memory within this class because this class is automatically deleted when
   // all fetchers finish (before the test can query this value), hence the
   // pointer.
-  bool* displayed_infobar_;
+  CheckedPtr<bool> displayed_infobar_;
 
   DISALLOW_COPY_AND_ASSIGN(MockChromeOmniboxNavigationObserver);
 };

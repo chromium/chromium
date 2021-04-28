@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
@@ -217,7 +218,7 @@ class TabRestoreServiceImplTest : public ChromeRenderViewHostTestHarness {
   blink::UserAgentOverride user_agent_override_;
   std::unique_ptr<sessions::LiveTab> live_tab_;
   std::unique_ptr<sessions::TabRestoreServiceImpl> service_;
-  TabRestoreTimeFactory* time_factory_;
+  CheckedPtr<TabRestoreTimeFactory> time_factory_;
   SessionID window_id_;
   SessionID tab_id_;
 };

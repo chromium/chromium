@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 
 namespace base {
@@ -38,7 +39,7 @@ class GeolocationOverrideManager : public DevToolsEventListener {
  private:
   Status ApplyOverrideIfNeeded();
 
-  DevToolsClient* client_;
+  CheckedPtr<DevToolsClient> client_;
   std::unique_ptr<Geoposition> overridden_geoposition_;
 
   DISALLOW_COPY_AND_ASSIGN(GeolocationOverrideManager);

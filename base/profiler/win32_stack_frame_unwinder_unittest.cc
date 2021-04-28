@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -57,7 +58,7 @@ class TestUnwindFunctions : public Win32StackFrameUnwinder::UnwindFunctions {
   DWORD64 expected_program_counter_;
   DWORD64 next_image_base_;
   DWORD64 expected_image_base_;
-  RUNTIME_FUNCTION* next_runtime_function_;
+  CheckedPtr<RUNTIME_FUNCTION> next_runtime_function_;
   std::vector<RUNTIME_FUNCTION> runtime_functions_;
 
   DISALLOW_COPY_AND_ASSIGN(TestUnwindFunctions);
@@ -140,7 +141,7 @@ class Win32StackFrameUnwinderTest : public testing::Test {
   std::unique_ptr<Win32StackFrameUnwinder> CreateUnwinder();
 
   // Weak pointer to the unwind functions used by last created unwinder.
-  TestUnwindFunctions* unwind_functions_;
+  CheckedPtr<TestUnwindFunctions> unwind_functions_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(Win32StackFrameUnwinderTest);

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_PAGE_INFO_CHROME_PAGE_INFO_DELEGATE_H_
 #define CHROME_BROWSER_UI_PAGE_INFO_CHROME_PAGE_INFO_DELEGATE_H_
 
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "components/page_info/page_info_delegate.h"
 #include "content/public/browser/web_contents.h"
@@ -80,7 +81,7 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
   safe_browsing::ChromePasswordProtectionService*
   GetChromePasswordProtectionService() const;
 #endif
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
   security_state::SecurityLevel security_level_for_tests_;
   security_state::VisibleSecurityState visible_security_state_for_tests_;
   bool security_state_for_tests_set_ = false;

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_EDIT_CONTROLLER_H_
 #define COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_EDIT_CONTROLLER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/search_engines/template_url.h"
@@ -58,7 +59,7 @@ class OmniboxEditController {
  private:
   // The details necessary to open the user's desired omnibox match.
   GURL destination_url_;
-  TemplateURLRef::PostContent* post_content_;
+  CheckedPtr<TemplateURLRef::PostContent> post_content_;
   WindowOpenDisposition disposition_;
   ui::PageTransition transition_;
   base::TimeTicks match_selection_timestamp_;

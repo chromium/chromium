@@ -9,6 +9,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/captive_portal/content/captive_portal_service.h"
 #include "components/captive_portal/content/captive_portal_tab_reloader.h"
 #include "components/embedder_support/pref_names.h"
@@ -188,7 +189,7 @@ class CaptivePortalTabHelperTest : public content::RenderViewHostTestHarness {
   std::unique_ptr<CaptivePortalTabHelper> tab_helper_;
 
   // Owned by |tab_helper_|.
-  testing::StrictMock<MockCaptivePortalTabReloader>* mock_reloader_;
+  CheckedPtr<testing::StrictMock<MockCaptivePortalTabReloader>> mock_reloader_;
 
   DISALLOW_COPY_AND_ASSIGN(CaptivePortalTabHelperTest);
 };

@@ -7,6 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -66,7 +67,7 @@ class SyntheticGestureTargetBase : public SyntheticGestureTarget {
  private:
   bool PointIsWithinContents(gfx::PointF point) const;
 
-  RenderWidgetHostImpl* host_;
+  CheckedPtr<RenderWidgetHostImpl> host_;
 
   DISALLOW_COPY_AND_ASSIGN(SyntheticGestureTargetBase);
 };

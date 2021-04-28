@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -64,7 +65,7 @@ class NonBlockingPushClientTest : public testing::Test {
   FakePushClientObserver fake_observer_;
   std::unique_ptr<NonBlockingPushClient> push_client_;
   // Owned by |push_client_|.
-  FakePushClient* fake_push_client_;
+  CheckedPtr<FakePushClient> fake_push_client_;
 };
 
 // Make sure UpdateSubscriptions() gets delegated properly.

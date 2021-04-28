@@ -5,6 +5,7 @@
 #ifndef MEDIA_TEST_FAKE_ENCRYPTED_MEDIA_H_
 #define MEDIA_TEST_FAKE_ENCRYPTED_MEDIA_H_
 
+#include "base/memory/checked_ptr.h"
 #include "media/base/cdm_context.h"
 #include "media/base/content_decryption_module.h"
 
@@ -63,7 +64,7 @@ class FakeEncryptedMedia {
     Decryptor* GetDecryptor() final;
 
    private:
-    Decryptor* decryptor_;
+    CheckedPtr<Decryptor> decryptor_;
   };
 
   scoped_refptr<AesDecryptor> decryptor_;

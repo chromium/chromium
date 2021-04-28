@@ -4,6 +4,7 @@
 
 #include "ui/aura/window_tree_host_platform.h"
 
+#include "base/memory/checked_ptr.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/window_tree_host_observer.h"
 #include "ui/platform_window/stub/stub_window.h"
@@ -69,8 +70,8 @@ class TestWindowTreeHostObserver : public WindowTreeHostObserver {
   }
 
  private:
-  WindowTreeHostPlatform* host_;
-  ui::PlatformWindow* platform_window_;
+  CheckedPtr<WindowTreeHostPlatform> host_;
+  CheckedPtr<ui::PlatformWindow> platform_window_;
   bool should_change_bounds_in_on_resized_ = true;
   int on_host_will_process_bounds_change_count_ = 0;
   int on_host_did_process_bounds_change_count_ = 0;

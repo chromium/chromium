@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "ui/views/accessibility/ax_aura_obj_cache.h"
 #include "ui/views/accessibility/ax_aura_obj_wrapper.h"
 #include "ui/views/views_export.h"
@@ -35,7 +36,7 @@ class AXVirtualViewWrapper : public AXAuraObjWrapper {
 
  private:
   // Weak.
-  AXVirtualView* virtual_view_;
+  CheckedPtr<AXVirtualView> virtual_view_;
 };
 
 }  // namespace views

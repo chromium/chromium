@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/sync/one_click_signin_links_delegate.h"
 
 class Browser;
@@ -22,7 +23,7 @@ class OneClickSigninLinksDelegateImpl : public OneClickSigninLinksDelegate {
   void OnLearnMoreLinkClicked(bool is_dialog) override;
 
   // Browser in which the links should be opened.
-  Browser* const browser_;
+  const CheckedPtr<Browser> browser_;
 
   DISALLOW_COPY_AND_ASSIGN(OneClickSigninLinksDelegateImpl);
 };
