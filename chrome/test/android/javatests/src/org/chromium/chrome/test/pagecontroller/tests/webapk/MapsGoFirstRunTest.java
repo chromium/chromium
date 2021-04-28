@@ -27,6 +27,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.firstrun.FirstRunActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.firstrun.LightweightFirstRunActivity;
@@ -151,6 +152,7 @@ public class MapsGoFirstRunTest {
 
     @Test
     @CommandLineFlags.Add({FLAG_POLICY_TOS_DIALOG_BEHAVIOR_STANDARD})
+    @DisabledTest(message = "https://crbug.com/1184149")
     public void testTosNotSkippedByPolicy() {
         LightweightFirstRunActivity.setSupportSkippingTos(true);
         FirstRunStatus.setLightweightFirstRunFlowComplete(false);
