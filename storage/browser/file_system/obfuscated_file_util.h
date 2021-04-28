@@ -196,13 +196,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
   // on each path segment and add the results.
   static int64_t ComputeFilePathCost(const base::FilePath& path);
 
-  // Tries to prepopulate directory database for the given type strings.
-  // This tries from the first one in the given type_strings and stops
-  // once it succeeds to do so for one database (i.e. it prepopulates
-  // at most one database).
-  void MaybePrepopulateDatabase(
-      const std::vector<std::string>& type_strings_to_prepopulate);
-
   // This will rewrite the databases to remove traces of deleted data from disk.
   void RewriteDatabases();
 

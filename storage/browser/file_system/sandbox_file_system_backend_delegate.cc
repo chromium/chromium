@@ -57,9 +57,6 @@ const char kTemporaryDirectoryName[] = "t";
 const char kPersistentDirectoryName[] = "p";
 const char kSyncableDirectoryName[] = "s";
 
-const char* const kPrepopulateTypes[] = {kPersistentDirectoryName,
-                                         kTemporaryDirectoryName};
-
 enum FileSystemError {
   kOK = 0,
   kIncognito,
@@ -212,19 +209,6 @@ SandboxFileSystemBackendDelegate::SandboxFileSystemBackendDelegate(
       special_storage_policy_(special_storage_policy),
       file_system_options_(file_system_options),
       is_filesystem_opened_(false) {
-  // Prepopulate database only if it can run asynchronously (i.e. the current
-  // sequence is not file_task_runner). Usually this is the case but may not
-  // in test code.
-  if (!file_system_options.is_incognito() &&
-      !file_task_runner_->RunsTasksInCurrentSequence()) {
-    std::vector<std::string> types_to_prepopulate(
-        &kPrepopulateTypes[0],
-        &kPrepopulateTypes[base::size(kPrepopulateTypes)]);
-    file_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&ObfuscatedFileUtil::MaybePrepopulateDatabase,
-                                  base::Unretained(obfuscated_file_util()),
-                                  types_to_prepopulate));
-  }
 }
 
 SandboxFileSystemBackendDelegate::~SandboxFileSystemBackendDelegate() {

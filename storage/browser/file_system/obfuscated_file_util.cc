@@ -29,9 +29,7 @@
 #include "storage/browser/file_system/obfuscated_file_util_memory_delegate.h"
 #include "storage/browser/file_system/quota/quota_limit_type.h"
 #include "storage/browser/file_system/sandbox_file_system_backend.h"
-#include "storage/browser/file_system/sandbox_isolated_origin_database.h"
 #include "storage/browser/file_system/sandbox_origin_database.h"
-#include "storage/browser/file_system/sandbox_prioritized_origin_database.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/common/database/database_identifier.h"
 #include "storage/common/file_system/file_system_util.h"
@@ -979,41 +977,6 @@ int64_t ObfuscatedFileUtil::ComputeFilePathCost(const base::FilePath& path) {
   return UsageForPath(VirtualPath::BaseName(path).value().size());
 }
 
-void ObfuscatedFileUtil::MaybePrepopulateDatabase(
-    const std::vector<std::string>& type_strings_to_prepopulate) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  SandboxPrioritizedOriginDatabase database(file_system_directory_,
-                                            env_override_);
-  std::string origin_string = database.GetPrimaryOrigin();
-  if (origin_string.empty() || !database.HasOriginPath(origin_string))
-    return;
-  const url::Origin origin = GetOriginFromIdentifier(origin_string);
-
-  // Prepopulate the directory database(s) if and only if this instance
-  // has primary origin and the directory database is already there.
-  for (const std::string& type_string : type_strings_to_prepopulate) {
-    // Only handles known types.
-    if (!base::Contains(known_type_strings_, type_string))
-      continue;
-    base::File::Error error = base::File::FILE_ERROR_FAILED;
-    base::FilePath path =
-        GetDirectoryForOriginAndType(origin, type_string, false, &error);
-    if (error != base::File::FILE_OK)
-      continue;
-    std::unique_ptr<SandboxDirectoryDatabase> db =
-        std::make_unique<SandboxDirectoryDatabase>(path, env_override_);
-    if (db->Init(SandboxDirectoryDatabase::FAIL_ON_CORRUPTION)) {
-      directories_[GetDirectoryDatabaseKey(origin, type_string)] =
-          std::move(db);
-      MarkUsed();
-      // Don't populate more than one database, as it may rather hurt
-      // performance.
-      break;
-    }
-  }
-}
-
 base::FilePath ObfuscatedFileUtil::GetDirectoryForURL(
     const FileSystemURL& url,
     bool create,
@@ -1340,19 +1303,8 @@ bool ObfuscatedFileUtil::InitOriginDatabase(const url::Origin& origin_hint,
     }
   }
 
-  std::unique_ptr<SandboxPrioritizedOriginDatabase>
-      prioritized_origin_database =
-          std::make_unique<SandboxPrioritizedOriginDatabase>(
-              file_system_directory_, env_override_);
-
-  if (origin_hint.opaque() && HasIsolatedStorage(origin_hint)) {
-    const std::string isolated_origin_string =
-        GetIdentifierFromOrigin(origin_hint);
-    prioritized_origin_database->InitializePrimaryOrigin(
-        isolated_origin_string);
-  }
-
-  origin_database_ = std::move(prioritized_origin_database);
+  origin_database_ = std::make_unique<SandboxOriginDatabase>(
+      file_system_directory_, env_override_);
 
   return true;
 }
