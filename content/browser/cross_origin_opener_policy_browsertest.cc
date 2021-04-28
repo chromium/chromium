@@ -2812,11 +2812,8 @@ IN_PROC_BROWSER_TEST_P(
     g_iframe.contentWindow.postMessage(sab,"*");
   )");
 
-  EXPECT_THAT(
-      postSharedArrayBuffer.error,
-      HasSubstr(
-          "Failed to execute 'postMessage' on 'Window': SharedArrayBuffer "
-          "transfer requires self.crossOriginIsolated"));
+  EXPECT_THAT(postSharedArrayBuffer.error,
+              HasSubstr("Failed to execute 'postMessage' on 'Window':"));
 }
 
 // Transfer a SharedArrayBuffer in between two COOP+COEP document with a
@@ -3011,11 +3008,8 @@ IN_PROC_BROWSER_TEST_F(UnrestrictedSharedArrayBufferOriginTrialBrowserTest,
     g_iframe.contentWindow.postMessage(sab,"*");
   )");
 
-  EXPECT_THAT(
-      postSharedArrayBuffer.error,
-      HasSubstr(
-          "Failed to execute 'postMessage' on 'Window': ArrayBuffer is not "
-          "detachable and could not be cloned."));
+  EXPECT_THAT(postSharedArrayBuffer.error,
+              HasSubstr("Failed to execute 'postMessage' on 'Window'"));
 #endif  // defined(OS_ANDROID)
 }
 
