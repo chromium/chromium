@@ -28,12 +28,25 @@ function getQueueFor(el) {
  * TODO(b/176879728): Remove @suppress once we fix the getAnimations() extern
  * in upstream Closure compiler.
  * @suppress {checkTypes}
- * @param {!HTMLElement} el
+ * @param {{el: !HTMLElement, onChild: boolean}} param
  * @return {!Array<!Animation>}
  */
-function getAnimations(el) {
+function getAnimations({el, onChild}) {
   return el.getAnimations({subtree: true})
-      .filter((a) => assertInstanceof(a.effect, KeyframeEffect).target === el);
+      .filter(
+          (a) => onChild ||
+              assertInstanceof(a.effect, KeyframeEffect).target === el);
+}
+
+/**
+ * @param {{el: !HTMLElement, onChild: boolean}} param |el| is the
+ *     target element to cancel animation. |onChild| specifies whether the
+ *     cancelled animation is applied to all subtree children, false by default.
+ * @return {!Promise} Promise resolved when the animation is cancelled.
+ */
+async function doCancel({el, onChild}) {
+  getAnimations({el, onChild}).forEach((a) => a.cancel());
+  await getQueueFor(el).flush();
 }
 
 /**
@@ -42,18 +55,28 @@ function getAnimations(el) {
  * @return {!Promise} Promise resolved when the animation is cancelled.
  */
 export async function cancel(el) {
-  getAnimations(el).forEach((a) => a.cancel());
-  await getQueueFor(el).flush();
+  return doCancel({el, onChild: false});
 }
 
 /**
- * Animates the element once by applying the "animate" class. If the animation
- * is already running, the previous one would be cancelled first.
+ * Cancels all running animation on children of the element, if any.
  * @param {!HTMLElement} el
+ * @return {!Promise} Promise resolved when all animation is cancelled.
+ */
+export async function cancelOnChild(el) {
+  return doCancel({el, onChild: true});
+}
+
+/**
+ * Animates the target element once by applying the "animate" class. If the
+ * animation is already running, the previous one would be cancelled first.
+ * @param {{el: !HTMLElement, onChild: boolean}} param |el| is the
+ *     target element to apply "animate" class. |onChild| specifies whether the
+ *     animation is applied to all subtree children.
  * @return {!Promise} Promise resolved when the animation is settled.
  */
-export function play(el) {
-  cancel(el);
+function doPlay({el, onChild}) {
+  doCancel({el, onChild});
   const queue = getQueueFor(el);
   const job = async () => {
     /**
@@ -62,8 +85,28 @@ export function play(el) {
      */
     el.offsetWidth;
     el.classList.add('animate');
-    await Promise.allSettled(getAnimations(el).map((a) => a.finished));
+    await Promise.allSettled(
+        getAnimations({el, onChild}).map((a) => a.finished));
     el.classList.remove('animate');
   };
   return queue.push(job);
+}
+
+/**
+ * Sets "animate" class on the element and waits for its animation settled.
+ * @param {!HTMLElement} el
+ * @return {!Promise} Promise resolved when the animation is settled.
+ */
+export function play(el) {
+  return doPlay({el, onChild: false});
+}
+
+/**
+ * Sets "animate" class on the element and waits for its child's animation
+ * settled.
+ * @param {!HTMLElement} el
+ * @return {!Promise} Promise resolved when the child's animation is settled.
+ */
+export function playOnChild(el) {
+  return doPlay({el, onChild: true});
 }

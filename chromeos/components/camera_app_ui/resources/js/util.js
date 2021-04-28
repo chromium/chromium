@@ -158,6 +158,8 @@ export function bindElementAriaLabelWithState(
  * @param {!HTMLElement} el
  */
 export function setInkdropEffect(el) {
+  const tpl = instantiateTemplate('#inkdrop-template');
+  el.appendChild(tpl);
   el.addEventListener('click', (e) => {
     const tRect =
         assertInstanceof(e.target, HTMLElement).getBoundingClientRect();
@@ -170,7 +172,7 @@ export function setInkdropEffect(el) {
     el.style.setProperty('--drop-x', `${dropX}px`);
     el.style.setProperty('--drop-y', `${dropY}px`);
     el.style.setProperty('--drop-radius', `${radius}px`);
-    animate.play(el);
+    animate.playOnChild(el);
   });
 }
 

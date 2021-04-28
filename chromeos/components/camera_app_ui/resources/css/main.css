@@ -1314,43 +1314,6 @@ label.menu-item:hover {
   background-color: var(--hover-color);
 }
 
-/* Inkdrop effect. */
-button.menu-item,
-label.menu-item {
-  overflow: hidden;
-}
-
-button.menu-item::before,
-label.menu-item::before {
-  background: white;
-  border-radius: 50%;
-  content: '';
-  height: 0;
-  left: var(--drop-x);
-  position: absolute;
-  top: var(--drop-y);
-  transform: translate(-50%, -50%);
-  width: 0;
-}
-
-button.menu-item.animate::before,
-label.menu-item.animate::before {
-  animation: inkdrop var(--moderate1-duration) ease-out;
-}
-
-@keyframes inkdrop {
-  0% {
-    height: 0;
-    opacity: 0.6;
-    width: 0;
-  }
-  100% {
-    height: calc(var(--drop-radius) * 2);
-    opacity: 0;
-    width: calc(var(--drop-radius) * 2);
-  }
-}
-
 .menu-item {
   padding-inline-start: 32px;
 }

@@ -8,7 +8,9 @@
          name by JavaScript -->
     <title>&#xfeff;</title>
     <meta charset="utf-8">
+    <!-- main.css contains all :root styles require to be loaded first. -->
     <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/inkdrop.css">
     <link rel="stylesheet" href="/css/ptz_panel.css">
     <link rel="stylesheet" href="/css/ripple.css">
     <link rel="stylesheet" href="/css/ptz_toast.css">
@@ -272,7 +274,7 @@
           <button class="icon" tabindex="0" i18n-aria="back_button"></button>
           <div i18n-text="settings_button"></div>
         </div>
-        <button id="settings-gridtype" class="menu-item" tabindex="0"
+        <button id="settings-gridtype" class="menu-item inkdrop" tabindex="0"
                 aria-describedby="gridtype-desc">
           <div class="icon"></div>
           <div>
@@ -285,7 +287,7 @@
           </div>
           <div class="icon end"></div>
         </button>
-        <button id="settings-timerdur" class="menu-item" tabindex="0"
+        <button id="settings-timerdur" class="menu-item inkdrop" tabindex="0"
                 aria-describedby="timerdur-desc">
           <div class="icon"></div>
           <div>
@@ -297,23 +299,23 @@
           </div>
           <div class="icon end"></div>
         </button>
-        <button id="settings-resolution" class="menu-item" tabindex="0">
+        <button id="settings-resolution" class="menu-item inkdrop" tabindex="0">
           <div class="icon"></div>
           <div i18n-text="camera_resolution_button">
           </div>
           <div class="icon end"></div>
         </button>
-        <button id="settings-expert" class="menu-item" tabindex="0">
+        <button id="settings-expert" class="menu-item inkdrop" tabindex="0">
           <div class="icon"></div>
           <div i18n-text="expert_mode_button">
           </div>
           <div class="icon end"></div>
         </button>
-        <button id="settings-feedback" class="menu-item" tabindex="0">
+        <button id="settings-feedback" class="menu-item inkdrop" tabindex="0">
           <div class="icon"></div>
           <div i18n-text="feedback_button"></div>
         </button>
-        <button id="settings-help" class="menu-item" tabindex="0">
+        <button id="settings-help" class="menu-item inkdrop" tabindex="0">
           <div class="icon"></div>
           <div i18n-text="help_button"></div>
         </button>
@@ -325,18 +327,18 @@
           <button class="icon" tabindex="0" i18n-aria="back_button"></button>
           <div i18n-text="grid_type_button"></div>
         </div>
-        <label class="menu-item circle">
+        <label class="menu-item circle inkdrop">
           <input id="grid-3x3" class="icon" type="radio" tabindex="0"
                  name="gridtype" data-state="grid-3x3" data-key="toggle3x3"
                  checked>
           <span i18n-text="label_grid_3x3" i18n-aria="aria_grid_3x3"></span>
         </label>
-        <label class="menu-item circle">
+        <label class="menu-item circle inkdrop">
           <input id="grid-4x4" class="icon" type="radio" tabindex="0"
                  name="gridtype" data-state="grid-4x4" data-key="toggle4x4">
           <span i18n-text="label_grid_4x4" i18n-aria="aria_grid_4x4"></span>
         </label>
-        <label class="menu-item circle">
+        <label class="menu-item circle inkdrop">
           <input id="grid-golden" class="icon" type="radio" tabindex="0"
                  name="gridtype" data-state="grid-golden"
                  data-key="toggleGolden">
@@ -350,13 +352,13 @@
           <button class="icon" tabindex="0" i18n-aria="back_button"></button>
           <div i18n-text="timer_duration_button"></div>
         </div>
-        <label class="menu-item circle">
+        <label class="menu-item circle inkdrop">
           <input id="timer-3s" class="icon" type="radio" tabindex="0"
                  name="timerdur" data-state="timer-3s" data-key="toggle3sec"
                  checked>
           <span i18n-text="label_timer_3s"></span>
         </label>
-        <label class="menu-item circle">
+        <label class="menu-item circle inkdrop">
           <input id="timer-10s" class="icon" type="radio" tabindex="0"
                  name="timerdur" data-state="timer-10s" data-key="toggle10sec">
           <span i18n-text="label_timer_10s"></span>
@@ -372,7 +374,7 @@
         <div id="builtin-photo-header" class="menu-item"
           i18n-text="label_switch_take_photo_button"></div>
         <button id="settings-front-photores"
-                class="menu-item resol-item photo-item" tabindex="0"
+                class="menu-item resol-item photo-item inkdrop" tabindex="0"
                 aria-describedby="front-photores-desc">
           <div>
             <div i18n-text="label_front_camera"></div>
@@ -384,7 +386,7 @@
           <div class="icon end"></div>
         </button>
         <button id="settings-back-photores"
-                class="menu-item resol-item photo-item" tabindex="0"
+                class="menu-item resol-item photo-item inkdrop" tabindex="0"
                 aria-describedby="back-photores-desc">
           <div>
             <div i18n-text="label_back_camera"></div>
@@ -397,7 +399,7 @@
         <div id="builtin-video-header" class="menu-item"
           i18n-text="label_switch_record_video_button"></div>
         <button id="settings-front-videores"
-                class="menu-item resol-item video-item" tabindex="0"
+                class="menu-item resol-item video-item inkdrop" tabindex="0"
                 aria-describedby="front-videores-desc">
           <div>
             <div i18n-text="label_front_camera"></div>
@@ -409,7 +411,7 @@
           <div class="icon end"></div>
         </button>
         <button id="settings-back-videores"
-                class="menu-item resol-item video-item" tabindex="0"
+                class="menu-item resol-item video-item inkdrop" tabindex="0"
                 aria-describedby="back-videores-desc">
           <div>
             <div i18n-text="label_back_camera"></div>
@@ -443,25 +445,25 @@
           <button class="icon" tabindex="0" i18n-aria="back_button"></button>
           <div i18n-text="expert_mode_button"></div>
         </div>
-        <label class="menu-item">
+        <label class="menu-item inkdrop">
           <input id="expert-show-metadata" class="icon" type="checkbox"
                  tabindex="0" data-state="show-metadata"
                  data-key="showMetadata">
           <span i18n-text="expert_preview_metadata"></span>
         </label>
-        <label class="menu-item">
+        <label class="menu-item inkdrop">
           <input id="expert-save-metadata" class="icon" type="checkbox"
                  tabindex="0" data-state="save-metadata"
                  data-key="saveMetadata">
           <span i18n-text="expert_save_metadata"></span>
         </label>
-        <label class="menu-item">
+        <label class="menu-item inkdrop">
           <input id="expert-print-performance-logs" class="icon" type="checkbox"
                  tabindex="0" data-state="print-performance-logs"
                  data-key="printPerformanceLogs">
           <span i18n-text="expert_print_performance_logs"></span>
         </label>
-        <label class="menu-item">
+        <label class="menu-item inkdrop">
           <input class="icon" id="custom-video-parameters"
                  type="checkbox" tabindex="0"
                  data-state="custom-video-parameters"
@@ -500,7 +502,7 @@
         muted></video>
     </template>
     <template id="resolution-item-template">
-      <label class="menu-item circle resolution-option">
+      <label class="menu-item circle resolution-option inkdrop">
         <input class="icon" type="radio" tabindex="0">
         <span></span>
       </label>
@@ -508,7 +510,7 @@
     <template id="extcam-resolution-item-template">
         <div class="menu-item external-camera title-item"
           i18n-text="label_external_camera"></div>
-        <button class="menu-item external-camera resol-item photo-item"
+        <button class="menu-item external-camera resol-item photo-item inkdrop"
               tabindex="0">
           <div>
             <div i18n-text="photo_resolution_button"></div>
@@ -518,7 +520,7 @@
           </div>
           <div class="icon end"></div>
         </button>
-        <button class="menu-item external-camera resol-item video-item"
+        <button class="menu-item external-camera resol-item video-item inkdrop"
               tabindex="0">
           <div>
             <div i18n-text="video_resolution_button"></div>
@@ -531,6 +533,9 @@
     </template>
     <template id="video-profile-option-template">
       <option></option>
+    </template>
+    <template id="inkdrop-template">
+      <div class="inkdrop-ripple"></div>
     </template>
   </body>
 </html>

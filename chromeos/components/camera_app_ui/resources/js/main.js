@@ -131,7 +131,7 @@ export class App {
     document.title = loadTimeData.getI18nMessage('name');
     util.setupI18nElements(document.body);
     this.setupToggles_();
-    this.setupSettingEffect_();
+    this.setupEffect_();
 
     const resolutionSettings = new ResolutionSettings(
         this.infoUpdater_, this.photoPreferrer_, this.videoPreferrer_);
@@ -203,12 +203,33 @@ export class App {
   }
 
   /**
-   * Sets up inkdrop effect for settings view.
+   * Sets up visual effect for all applicable elements.
    * @private
    */
-  setupSettingEffect_() {
-    dom.getAll('button.menu-item, label.menu-item', HTMLElement)
+  setupEffect_() {
+    dom.getAll('.inkdrop', HTMLElement)
         .forEach((el) => util.setInkdropEffect(el));
+
+    const observer = new MutationObserver((mutationList) => {
+      mutationList.forEach((mutation) => {
+        assert(mutation.type === 'childList');
+        // Only the newly added nodes with inkdrop class are considered here. So
+        // simply adding class attribute on existing element will not work.
+        for (const node of mutation.addedNodes) {
+          if (!(node instanceof HTMLElement)) {
+            continue;
+          }
+          const el = assertInstanceof(node, HTMLElement);
+          if (el.classList.contains('inkdrop')) {
+            util.setInkdropEffect(el);
+          }
+        }
+      });
+    });
+    observer.observe(document.body, {
+      subtree: true,
+      childList: true,
+    });
   }
 
   /**

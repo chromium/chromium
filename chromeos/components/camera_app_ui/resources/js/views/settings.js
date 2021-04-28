@@ -641,8 +641,6 @@ export class ResolutionSettings extends BaseSettings {
 
     resolutions.forEach((r) => {
       const item = util.instantiateTemplate('#resolution-item-template');
-      const label = dom.getFrom(item, 'label', HTMLLabelElement);
-      util.setInkdropEffect(label);
       const input = dom.getFrom(item, 'input', HTMLInputElement);
       dom.getFrom(item, 'span', HTMLSpanElement).textContent =
           optTextTempl(r, resolutions);
