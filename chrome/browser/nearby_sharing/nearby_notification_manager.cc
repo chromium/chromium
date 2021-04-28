@@ -580,7 +580,7 @@ bool ShouldClearNotification(
     return true;
 
   // While receiving and waiting for the sender to accept, we are showing a
-  // progress notification with indeterminate progress. We need not close the
+  // progress notification with 0% progress. We need not close the
   // progress notification when we move to showing determinate progress.
   if (*last_status == TransferMetadata::Status::kAwaitingRemoteAcceptance &&
       new_status == TransferMetadata::Status::kInProgress)
@@ -657,7 +657,7 @@ void NearbyNotificationManager::OnTransferUpdate(
     case TransferMetadata::Status::kAwaitingRemoteAcceptance:
       // Only incoming transfers are handled via notifications.
       if (share_target.is_incoming)
-        // Show a progress notification with indeterminate progress while
+        // Show a progress notification with 0% progress while
         // waiting for the sender to accept.
         ShowProgress(share_target, transfer_metadata);
       break;
@@ -732,11 +732,11 @@ void NearbyNotificationManager::ShowProgress(
   notification.set_never_timeout(true);
   notification.set_priority(message_center::NotificationPriority::MAX_PRIORITY);
 
-  // Show indeterminate progress while waiting for remote device to accept.
+  // Show 0% progress while waiting for remote device to accept.
   if (transfer_metadata.status() == TransferMetadata::Status::kInProgress)
     notification.set_progress(transfer_metadata.progress());
   else
-    notification.set_progress(-1);
+    notification.set_progress(0);
 
   std::vector<message_center::ButtonInfo> notification_actions;
   notification_actions.emplace_back(l10n_util::GetStringUTF16(IDS_APP_CANCEL));
