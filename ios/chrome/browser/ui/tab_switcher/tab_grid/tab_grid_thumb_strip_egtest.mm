@@ -23,7 +23,6 @@
 #error "This file requires ARC support."
 #endif
 
-using chrome_test_util::ContentSuggestionCollectionView;
 using chrome_test_util::PrimaryToolbar;
 using chrome_test_util::RegularTabGrid;
 using chrome_test_util::TabGridBackground;

@@ -22,8 +22,6 @@
 #import "components/search_engines/template_url_service.h"
 #include "ios/chrome/app/tests_hook.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/discover_feed/discover_feed_service.h"
-#include "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
 #import "ios/chrome/browser/drag_and_drop/url_drag_drop_handler.h"
 #include "ios/chrome/browser/favicon/ios_chrome_large_icon_cache_factory.h"
 #include "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
@@ -47,6 +45,7 @@
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_action_handler.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_data_sink.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_commands.h"
@@ -70,6 +69,7 @@
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_commands.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/ntp/notification_promo_whats_new.h"
@@ -119,8 +119,6 @@
 @property(nonatomic, strong)
     ContentSuggestionsHeaderSynchronizer* headerCollectionInteractionHandler;
 @property(nonatomic, strong) ContentSuggestionsMetricsRecorder* metricsRecorder;
-@property(nonatomic, strong)
-    DiscoverFeedMetricsRecorder* discoverFeedMetricsRecorder;
 @property(nonatomic, strong) UIViewController* discoverFeedViewController;
 @property(nonatomic, strong) UIView* discoverFeedHeaderMenuButton;
 @property(nonatomic, strong) URLDragDropHandler* dragDropHandler;
@@ -223,14 +221,6 @@
       ReadingListModelFactory::GetForBrowserState(
           self.browser->GetBrowserState());
 
-  if (IsDiscoverFeedEnabled()) {
-    // Creating the DiscoverFeedService will start the DiscoverFeed.
-    DiscoverFeedService* discoverFeedService =
-        DiscoverFeedServiceFactory::GetForBrowserState(
-            self.browser->GetBrowserState());
-    self.discoverFeedMetricsRecorder =
-        discoverFeedService->GetDiscoverFeedMetricsRecorder();
-  }
   self.discoverFeedViewController = [self discoverFeed];
 
   TemplateURLService* templateURLService =
@@ -272,8 +262,7 @@
 
   // Offset to maintain Discover feed scroll position.
   CGFloat offset = 0;
-  if (IsDiscoverFeedEnabled() &&
-      (!IsRefactoredNTP() || ![self isDiscoverFeedVisible])) {
+  if (IsDiscoverFeedEnabled() && ![self isRefactoredFeedVisible]) {
     web::NavigationManager* navigationManager =
         self.webState->GetNavigationManager();
     web::NavigationItem* item = navigationManager->GetVisibleItem();
@@ -283,9 +272,9 @@
   }
 
   self.suggestionsViewController = [[ContentSuggestionsViewController alloc]
-      initWithStyle:CollectionViewControllerStyleDefault
-             offset:offset
-        feedVisible:[self isDiscoverFeedVisible]];
+              initWithStyle:CollectionViewControllerStyleDefault
+                     offset:offset
+      refactoredFeedVisible:[self isRefactoredFeedVisible]];
   [self.suggestionsViewController
       setDataSource:self.contentSuggestionsMediator];
   self.suggestionsViewController.suggestionCommandHandler = self.ntpMediator;
@@ -340,7 +329,15 @@
   // synchronizer instead.
   self.suggestionsViewController.headerProvider = self.headerController;
 
-  if (!IsRefactoredNTP() || ![self isDiscoverFeedVisible]) {
+  if ([self isRefactoredFeedVisible]) {
+    self.suggestionsViewController.collectionView.accessibilityIdentifier =
+        kContentSuggestionsCollectionIdentifier;
+  } else {
+    self.suggestionsViewController.collectionView.accessibilityIdentifier =
+        kNTPCollectionViewIdentifier;
+  }
+
+  if (![self isRefactoredFeedVisible]) {
     self.headerCollectionInteractionHandler =
         [[ContentSuggestionsHeaderSynchronizer alloc]
             initWithCollectionController:self.suggestionsViewController
@@ -526,7 +523,7 @@
                              IDS_IOS_DISCOVER_FEED_MENU_TURN_OFF_ITEM)
                   action:^{
                     [weakSelf setDiscoverFeedVisible:NO];
-                    if (IsRefactoredNTP()) {
+                    if ([weakSelf isRefactoredFeedVisible]) {
                       [weakSelf.ntpCommandHandler updateDiscoverFeedVisibility];
                     }
                   }
@@ -537,7 +534,7 @@
                              IDS_IOS_DISCOVER_FEED_MENU_TURN_ON_ITEM)
                   action:^{
                     [weakSelf setDiscoverFeedVisible:YES];
-                    if (IsRefactoredNTP()) {
+                    if ([weakSelf isRefactoredFeedVisible]) {
                       [weakSelf.ntpCommandHandler updateDiscoverFeedVisibility];
                     }
                   }

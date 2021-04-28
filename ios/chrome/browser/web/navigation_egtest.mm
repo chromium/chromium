@@ -21,7 +21,7 @@
 #endif
 
 using base::test::ios::kWaitForUIElementTimeout;
-using chrome_test_util::ContentSuggestionCollectionView;
+using chrome_test_util::NTPCollectionView;
 using chrome_test_util::BackButton;
 using chrome_test_util::ForwardButton;
 using chrome_test_util::OmniboxText;
@@ -325,7 +325,7 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
   // Tap the back button and verify NTP is loaded.
   [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
   [ChromeEarlGrey waitForPageToFinishLoading];
-  [[EarlGrey selectElementWithMatcher:ContentSuggestionCollectionView()]
+  [[EarlGrey selectElementWithMatcher:NTPCollectionView()]
       assertWithMatcher:grey_notNil()];
 
   // Tap the forward button and verify test page is loaded.

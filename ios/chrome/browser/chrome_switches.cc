@@ -39,6 +39,9 @@ const char kEnableSpotlightActions[] = "enable-spotlight-actions";
 const char kEnableThirdPartyKeyboardWorkaround[] =
     "enable-third-party-keyboard-workaround";
 
+// Enabled the NTP Discover feed.
+const char kEnableDiscoverFeed[] = "enable-discover-feed";
+
 // Installs the URLBlocklist and URLAllowlist handlers.
 const char kInstallURLBlocklistHandlers[] = "install-url-blocklist-handlers";
 

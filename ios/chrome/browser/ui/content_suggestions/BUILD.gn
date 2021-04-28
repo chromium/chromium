@@ -32,6 +32,7 @@ source_set("content_suggestions") {
     "theme_change_delegate.h",
   ]
   deps = [
+    ":constants",
     ":feature_flags",
     ":metrics",
     "//base",
@@ -324,6 +325,8 @@ source_set("eg2_tests") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser:pref_names",
+    "//ios/chrome/browser:utils",
+    "//ios/chrome/browser/ui/ntp:constants",
     "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/browser/ui/toolbar/public:constants",
     "//ios/chrome/test:eg_test_support+eg2",
@@ -345,7 +348,7 @@ source_set("eg_test_support+eg2") {
   ]
   testonly = true
 
-  sources = [ "content_suggestions_app_interface.h" ]
+  sources = [ "new_tab_page_app_interface.h" ]
 
   deps = [ "//ios/third_party/earl_grey2:test_lib" ]
 }
@@ -359,8 +362,8 @@ source_set("eg_app_support+eg2") {
   defines = [ "CHROME_EARL_GREY_2" ]
 
   sources = [
-    "content_suggestions_app_interface.h",
-    "content_suggestions_app_interface.mm",
+    "new_tab_page_app_interface.h",
+    "new_tab_page_app_interface.mm",
     "ntp_home_provider_test_singleton.h",
     "ntp_home_provider_test_singleton.mm",
     "ntp_home_test_utils.h",
@@ -382,6 +385,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/ntp_snippets",
     "//ios/chrome/browser/search_engines",
+    "//ios/chrome/browser/ui/ntp:constants",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/test/app:test_support",
     "//ios/testing:block_swizzler",

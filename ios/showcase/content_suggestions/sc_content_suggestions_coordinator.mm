@@ -5,6 +5,7 @@
 #import "ios/showcase/content_suggestions/sc_content_suggestions_coordinator.h"
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/showcase/common/protocol_alerter.h"
 #import "ios/showcase/content_suggestions/sc_content_suggestions_data_source.h"
@@ -39,9 +40,11 @@
   _dataSource = [[SCContentSuggestionsDataSource alloc] init];
 
   _suggestionViewController = [[ContentSuggestionsViewController alloc]
-      initWithStyle:CollectionViewControllerStyleDefault
-             offset:0
-        feedVisible:NO];
+              initWithStyle:CollectionViewControllerStyleDefault
+                     offset:0
+      refactoredFeedVisible:NO];
+  _suggestionViewController.collectionView.accessibilityIdentifier =
+      kContentSuggestionsCollectionIdentifier;
   [_suggestionViewController setDataSource:_dataSource];
 
   _suggestionViewController.suggestionCommandHandler =

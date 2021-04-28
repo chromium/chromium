@@ -21,7 +21,7 @@
 #endif
 
 using chrome_test_util::OmniboxText;
-using chrome_test_util::ContentSuggestionCollectionView;
+using chrome_test_util::NTPCollectionView;
 using chrome_test_util::BackButton;
 using chrome_test_util::ForwardButton;
 
@@ -345,10 +345,10 @@ bool WaitForOmniboxContaining(std::string text) {
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Confirm the NTP is still at the start.
-  [[EarlGrey selectElementWithMatcher:ContentSuggestionCollectionView()]
+  [[EarlGrey selectElementWithMatcher:NTPCollectionView()]
       assertWithMatcher:grey_notNil()];
   [self triggerRestore];
-  [[EarlGrey selectElementWithMatcher:ContentSuggestionCollectionView()]
+  [[EarlGrey selectElementWithMatcher:NTPCollectionView()]
       assertWithMatcher:grey_notNil()];
 }
 

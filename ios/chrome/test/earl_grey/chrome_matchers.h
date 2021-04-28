@@ -321,7 +321,10 @@ id<GREYMatcher> ClearSavedPasswordsButton();
 id<GREYMatcher> ClearAutofillButton();
 
 // Returns matcher for the collection view of content suggestion.
-id<GREYMatcher> ContentSuggestionCollectionView();
+id<GREYMatcher> ContentSuggestionsCollectionView();
+
+// Returns matcher for the collection view of the NTP.
+id<GREYMatcher> NTPCollectionView();
 
 // Returns matcher for the warning message while filling in payment requests.
 id<GREYMatcher> WarningMessageView();

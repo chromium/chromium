@@ -41,7 +41,7 @@
 // Offset is only required if Discover feed is visible.
 - (instancetype)initWithStyle:(CollectionViewControllerStyle)style
                        offset:(CGFloat)offset
-                  feedVisible:(BOOL)visible NS_DESIGNATED_INITIALIZER;
+        refactoredFeedVisible:(BOOL)visible NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithLayout:(UICollectionViewLayout*)layout
                          style:(CollectionViewControllerStyle)style

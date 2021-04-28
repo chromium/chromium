@@ -22,7 +22,7 @@
 #error "This file requires ARC support."
 #endif
 
-using chrome_test_util::ContentSuggestionCollectionView;
+using chrome_test_util::NTPCollectionView;
 using chrome_test_util::PrimaryToolbar;
 using chrome_test_util::WebStateScrollViewMatcher;
 
@@ -228,7 +228,7 @@ id<GREYMatcher> GetAccessibilityValue(__strong NSString** value) {
   }
 
   // Scroll the NTP to reveal the thumb strip.
-  [[EarlGrey selectElementWithMatcher:ContentSuggestionCollectionView()]
+  [[EarlGrey selectElementWithMatcher:NTPCollectionView()]
       performAction:grey_swipeSlowInDirection(kGREYDirectionDown)];
 
   // Make sure that the entire tab thumbnail is fully visible and not covered.
@@ -240,7 +240,7 @@ id<GREYMatcher> GetAccessibilityValue(__strong NSString** value) {
       assertWithMatcher:grey_minimumVisiblePercent(1)];
 
   // Scroll the NTP the other way to close the thumb strip.
-  [[EarlGrey selectElementWithMatcher:ContentSuggestionCollectionView()]
+  [[EarlGrey selectElementWithMatcher:NTPCollectionView()]
       performAction:grey_swipeSlowInDirection(kGREYDirectionUp)];
 
   // Make sure that the tab thumbnail is not visible.

@@ -15,6 +15,8 @@
 #import "components/search_engines/default_search_manager.h"
 #include "ios/chrome/app/tests_hook.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/discover_feed/discover_feed_service.h"
+#import "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
@@ -26,8 +28,10 @@
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_coordinator.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_synchronizer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller.h"
+#import "ios/chrome/browser/ui/content_suggestions/discover_feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_mediator.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
@@ -132,6 +136,9 @@
 // means the feed header is shown, but not any of the feed content.
 @property(nonatomic, strong) PrefBackedBoolean* discoverFeedExpanded;
 
+// The view controller representing the Discover feed.
+@property(nonatomic, weak) UIViewController* discoverFeedViewController;
+
 @end
 
 @implementation NewTabPageCoordinator
@@ -219,25 +226,44 @@
   self.contentSuggestionsCoordinator.ntpCommandHandler = self;
   self.contentSuggestionsCoordinator.bubblePresenter = self.bubblePresenter;
 
-  [self.contentSuggestionsCoordinator start];
+  if (IsDiscoverFeedEnabled()) {
+    // Creating the DiscoverFeedService will start the DiscoverFeed.
+    DiscoverFeedService* discoverFeedService =
+        DiscoverFeedServiceFactory::GetForBrowserState(
+            self.browser->GetBrowserState());
+    self.contentSuggestionsCoordinator.discoverFeedMetricsRecorder =
+        discoverFeedService->GetDiscoverFeedMetricsRecorder();
+  }
 
-  self.ntpMediator.refactoredFeedVisible = [self isNTPRefactoredAndFeedVisible];
+  // Requests a Discover feed here if the correct flags and prefs are enabled.
   if ([self isNTPRefactoredAndFeedVisible]) {
-    self.ntpViewController = [[NewTabPageViewController alloc]
-        initWithContentSuggestionsViewController:
-            self.contentSuggestionsCoordinator.viewController];
-    self.ntpViewController.panGestureHandler = self.panGestureHandler;
-    self.ntpMediator.ntpViewController = self.ntpViewController;
-
-    UIViewController* discoverFeedViewController =
+    self.ntpViewController = [[NewTabPageViewController alloc] init];
+    self.discoverFeedViewController =
         ios::GetChromeBrowserProvider()
             ->GetDiscoverFeedProvider()
             ->NewFeedViewControllerWithScrollDelegate(self.browser,
                                                       self.ntpViewController);
+    if (!self.discoverFeedViewController) {
+      self.ntpViewController = nil;
+    }
+  }
+
+  self.contentSuggestionsCoordinator.refactoredFeedVisible =
+      self.discoverFeedViewController;
+  self.ntpMediator.refactoredFeedVisible = self.discoverFeedViewController;
+
+  [self.contentSuggestionsCoordinator start];
+
+  // Uses refactored NTP if Discover feed was successfully fetched.
+  if (self.discoverFeedViewController) {
+    self.ntpViewController.contentSuggestionsViewController =
+        self.contentSuggestionsCoordinator.viewController;
+    self.ntpViewController.panGestureHandler = self.panGestureHandler;
+    self.ntpMediator.ntpViewController = self.ntpViewController;
 
     self.discoverFeedWrapperViewController =
         [[DiscoverFeedWrapperViewController alloc]
-            initWithDiscoverFeedViewController:discoverFeedViewController];
+            initWithDiscoverFeedViewController:self.discoverFeedViewController];
 
     self.headerSynchronizer = [[ContentSuggestionsHeaderSynchronizer alloc]
         initWithCollectionController:self.ntpViewController
@@ -267,7 +293,7 @@
       sceneState.activationLevel >= SceneActivationLevelForegroundInactive;
 
   UIViewController* containedViewController =
-      [self isNTPRefactoredAndFeedVisible]
+      self.discoverFeedViewController
           ? self.ntpViewController
           : self.contentSuggestionsCoordinator.viewController;
 
@@ -358,7 +384,7 @@
 }
 
 - (id<ThumbStripSupporting>)thumbStripSupporting {
-  return [self isNTPRefactoredAndFeedVisible]
+  return self.discoverFeedViewController
              ? self.ntpViewController
              : self.contentSuggestionsCoordinator.thumbStripSupporting;
 }
@@ -373,7 +399,7 @@
   if (!self.contentSuggestionsCoordinator) {
     return;
   }
-  if ([self isNTPRefactoredAndFeedVisible]) {
+  if (self.discoverFeedViewController) {
     [self.ntpViewController stopScrolling];
   } else {
     [self.contentSuggestionsCoordinator stopScrolling];
@@ -390,7 +416,7 @@
 
 - (void)willUpdateSnapshot {
   if (self.contentSuggestionsCoordinator.started &&
-      [self isNTPRefactoredAndFeedVisible]) {
+      self.discoverFeedViewController) {
     [self.ntpViewController willUpdateSnapshot];
   } else {
     [self.contentSuggestionsCoordinator willUpdateSnapshot];
@@ -402,7 +428,7 @@
 }
 
 - (void)reload {
-  if ([self isNTPRefactoredAndFeedVisible]) {
+  if (self.discoverFeedViewController) {
     ios::GetChromeBrowserProvider()->GetDiscoverFeedProvider()->RefreshFeed();
   }
   [self reloadContentSuggestions];
@@ -441,7 +467,7 @@
 }
 
 - (void)updateDiscoverFeedLayout {
-  if ([self isNTPRefactoredAndFeedVisible]) {
+  if (self.discoverFeedViewController) {
     [self.containedViewController.view setNeedsLayout];
     [self.containedViewController.view layoutIfNeeded];
     [self.ntpViewController updateContentSuggestionForCurrentLayout];
@@ -556,7 +582,7 @@
        preferenceName == prefs::kNTPContentSuggestionsEnabled)) {
     [self updateDiscoverFeedVisibility];
   }
-  if ([self isNTPRefactoredAndFeedVisible] &&
+  if (self.discoverFeedViewController &&
       preferenceName ==
           DefaultSearchManager::kDefaultSearchProviderDataPrefName) {
     [self updateDiscoverFeedLayout];

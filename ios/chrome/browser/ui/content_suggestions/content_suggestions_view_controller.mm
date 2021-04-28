@@ -116,7 +116,7 @@ const CGFloat kDiscoverFeedLoadedHeight = 1000;
 
 - (instancetype)initWithStyle:(CollectionViewControllerStyle)style
                        offset:(CGFloat)offset
-                  feedVisible:(BOOL)visible {
+        refactoredFeedVisible:(BOOL)visible {
   _offset = offset;
   _layout = [[ContentSuggestionsLayout alloc] initWithOffset:offset
                                                  feedVisible:visible];
@@ -264,8 +264,6 @@ const CGFloat kDiscoverFeedLoadedHeight = 1000;
   // to never and internally offset the UI to account for safe area insets.
   self.collectionView.contentInsetAdjustmentBehavior =
       UIScrollViewContentInsetAdjustmentNever;
-  self.collectionView.accessibilityIdentifier =
-      kContentSuggestionsCollectionIdentifier;
   _collectionUpdater.collectionViewController = self;
 
   self.collectionView.delegate = self;

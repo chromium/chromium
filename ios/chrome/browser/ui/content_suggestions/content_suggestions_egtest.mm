@@ -12,10 +12,11 @@
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_app_interface.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
+#import "ios/chrome/browser/ui/content_suggestions/new_tab_page_app_interface.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -34,7 +35,7 @@
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wc++98-compat-extra-semi"
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(ContentSuggestionsAppInterface);
+GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(NewTabPageAppInterface);
 #pragma clang diagnostic pop
 
 namespace {
@@ -49,7 +50,7 @@ void ScrollUp() {
       selectElementWithMatcher:grey_allOf(chrome_test_util::ToolsMenuButton(),
                                           grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionUp, 150)
-      onElementWithMatcher:chrome_test_util::ContentSuggestionCollectionView()]
+      onElementWithMatcher:chrome_test_util::NTPCollectionView()]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -80,7 +81,7 @@ GREYElementInteraction* CellWithMatcher(id<GREYMatcher> matcher) {
       selectElementWithMatcher:grey_allOf(matcher, grey_sufficientlyVisible(),
                                           nil)]
          usingSearchAction:action
-      onElementWithMatcher:chrome_test_util::ContentSuggestionCollectionView()];
+      onElementWithMatcher:chrome_test_util::NTPCollectionView()];
 }
 
 }  // namespace
@@ -110,24 +111,24 @@ GREYElementInteraction* CellWithMatcher(id<GREYMatcher> matcher) {
 + (void)setUpHelper {
   [self closeAllTabs];
 
-  [ContentSuggestionsAppInterface setUpService];
+  [NewTabPageAppInterface setUpService];
 }
 
 + (void)tearDown {
   [self closeAllTabs];
 
-  [ContentSuggestionsAppInterface resetService];
+  [NewTabPageAppInterface resetService];
 
   [super tearDown];
 }
 
 - (void)setUp {
   [super setUp];
-  [ContentSuggestionsAppInterface makeSuggestionsAvailable];
+  [NewTabPageAppInterface makeSuggestionsAvailable];
 }
 
 - (void)tearDown {
-  [ContentSuggestionsAppInterface disableSuggestions];
+  [NewTabPageAppInterface disableSuggestions];
   [ChromeEarlGrey clearBrowsingHistory];
   [super tearDown];
 }
@@ -147,9 +148,8 @@ GREYElementInteraction* CellWithMatcher(id<GREYMatcher> matcher) {
   const GURL pageURL = self.testServer->GetURL(kPageURL);
 
   // Add 3 suggestions, persisted accross page loads.
-  [ContentSuggestionsAppInterface
-        addNumberOfSuggestions:3
-      additionalSuggestionsURL:net::NSURLWithGURL(pageURL)];
+  [NewTabPageAppInterface addNumberOfSuggestions:3
+                        additionalSuggestionsURL:net::NSURLWithGURL(pageURL)];
 
   // Tap on more, which adds 10 elements.
   [CellWithMatcher(chrome_test_util::ButtonWithAccessibilityLabelId(
@@ -179,11 +179,11 @@ GREYElementInteraction* CellWithMatcher(id<GREYMatcher> matcher) {
     EARL_GREY_TEST_DISABLED(@"Legacy Feed Test.");
   }
   // Add 2 suggestions, persisted accross page loads.
-  [ContentSuggestionsAppInterface addNumberOfSuggestions:2
-                                additionalSuggestionsURL:nil];
+  [NewTabPageAppInterface addNumberOfSuggestions:2
+                        additionalSuggestionsURL:nil];
 
   // Change the suggestions to have one the second one.
-  [ContentSuggestionsAppInterface addSuggestionNumber:2];
+  [NewTabPageAppInterface addSuggestionNumber:2];
 
   // Check that the first suggestion is still displayed.
   [CellWithMatcher(grey_accessibilityID(@"http://chromium.org/1"))
@@ -213,9 +213,8 @@ GREYElementInteraction* CellWithMatcher(id<GREYMatcher> matcher) {
   const GURL pageURL = self.testServer->GetURL(kPageURL);
 
   // Add 3 suggestions, persisted accross page loads.
-  [ContentSuggestionsAppInterface
-        addNumberOfSuggestions:3
-      additionalSuggestionsURL:net::NSURLWithGURL(pageURL)];
+  [NewTabPageAppInterface addNumberOfSuggestions:3
+                        additionalSuggestionsURL:net::NSURLWithGURL(pageURL)];
 
   // Tap on more, which adds 10 elements.
   [CellWithMatcher(chrome_test_util::ButtonWithAccessibilityLabelId(
@@ -264,11 +263,11 @@ GREYElementInteraction* CellWithMatcher(id<GREYMatcher> matcher) {
       selectElementWithMatcher:grey_accessibilityID(
                                    kContentSuggestionsLearnMoreIdentifier)]
          usingSearchAction:action
-      onElementWithMatcher:chrome_test_util::ContentSuggestionCollectionView()]
+      onElementWithMatcher:chrome_test_util::NTPCollectionView()]
       assertWithMatcher:grey_nil()];
 
-  [ContentSuggestionsAppInterface addNumberOfSuggestions:1
-                                additionalSuggestionsURL:nil];
+  [NewTabPageAppInterface addNumberOfSuggestions:1
+                        additionalSuggestionsURL:nil];
 
   [CellWithMatcher(grey_accessibilityID(kContentSuggestionsLearnMoreIdentifier))
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -292,8 +291,7 @@ GREYElementInteraction* CellWithMatcher(id<GREYMatcher> matcher) {
   // Check that the tab has been opened in background.
   ConditionBlock condition = ^{
     NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                            ContentSuggestionCollectionView()]
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
         assertWithMatcher:grey_notNil()
                     error:&error];
     return error == nil;

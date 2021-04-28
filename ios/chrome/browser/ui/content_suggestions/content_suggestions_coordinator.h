@@ -13,6 +13,7 @@ class WebState;
 
 @class BubblePresenter;
 @class ContentSuggestionsHeaderViewController;
+@class DiscoverFeedMetricsRecorder;
 @protocol NewTabPageCommands;
 @protocol NewTabPageControllerDelegate;
 @class NTPHomeMediator;
@@ -55,6 +56,16 @@ class WebState;
 
 // Bubble presenter for displaying IPH bubbles relating to the NTP.
 @property(nonatomic, strong) BubblePresenter* bubblePresenter;
+
+// Whether the refactored NTP and feed are enabled and visible.
+// TODO(crbug.com/1114792): Update this property to remove "refactored" when the
+// refactored NTP launches.
+@property(nonatomic, assign, getter=isRefactoredFeedVisible)
+    BOOL refactoredFeedVisible;
+
+// Metrics recorder for the Discover feed events related to ContentSuggestions.
+@property(nonatomic, strong)
+    DiscoverFeedMetricsRecorder* discoverFeedMetricsRecorder;
 
 // Dismisses all modals owned by the NTP mediator.
 - (void)dismissModals;

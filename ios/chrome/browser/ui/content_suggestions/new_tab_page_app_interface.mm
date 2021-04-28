@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_app_interface.h"
+#import "ios/chrome/browser/ui/content_suggestions/new_tab_page_app_interface.h"
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
@@ -59,7 +59,7 @@ ContentSuggestion CreateSuggestion(Category category,
 
 }  // namespace
 
-@implementation ContentSuggestionsAppInterface
+@implementation NewTabPageAppInterface
 
 + (void)setUpService {
   ChromeBrowserState* browserState =
@@ -90,14 +90,13 @@ ContentSuggestion CreateSuggestion(Category category,
 }
 
 + (void)makeSuggestionsAvailable {
-  [self provider] -> FireCategoryStatusChanged([self category],
-                                               CategoryStatus::AVAILABLE);
+  [self provider]->FireCategoryStatusChanged([self category],
+                                             CategoryStatus::AVAILABLE);
 }
 
 + (void)disableSuggestions {
-  [self provider] -> FireCategoryStatusChanged(
-                      [self category],
-                      CategoryStatus::ALL_SUGGESTIONS_EXPLICITLY_DISABLED);
+  [self provider]->FireCategoryStatusChanged(
+      [self category], CategoryStatus::ALL_SUGGESTIONS_EXPLICITLY_DISABLED);
 }
 
 + (void)addNumberOfSuggestions:(NSInteger)numberOfSuggestions
@@ -110,8 +109,8 @@ ContentSuggestion CreateSuggestion(Category category,
         CreateSuggestion([self category], "chromium" + index,
                          GURL("http://chromium.org/" + index)));
   }
-  [self provider] -> FireSuggestionsChanged([self category],
-                                            std::move(suggestions));
+  [self provider]->FireSuggestionsChanged([self category],
+                                          std::move(suggestions));
 
   if (URL) {
     // Set up the action when "More" is tapped.
@@ -130,8 +129,8 @@ ContentSuggestion CreateSuggestion(Category category,
   std::vector<ContentSuggestion> suggestions;
   suggestions.push_back(CreateSuggestion([self category], "chromium" + index,
                                          GURL("http://chromium.org/" + index)));
-  [self provider] -> FireSuggestionsChanged([self category],
-                                            std::move(suggestions));
+  [self provider]->FireSuggestionsChanged([self category],
+                                          std::move(suggestions));
 }
 
 + (NSString*)defaultSearchEngine {
@@ -187,6 +186,10 @@ ContentSuggestion CreateSuggestion(Category category,
 
 + (UICollectionView*)collectionView {
   return ntp_home::CollectionView();
+}
+
++ (UICollectionView*)contentSuggestionsCollectionView {
+  return ntp_home::ContentSuggestionsCollectionView();
 }
 
 + (UIView*)fakeOmnibox {

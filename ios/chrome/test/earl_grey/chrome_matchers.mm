@@ -404,8 +404,12 @@ id<GREYMatcher> ClearAutofillButton() {
   return [ChromeMatchersAppInterface clearAutofillButton];
 }
 
-id<GREYMatcher> ContentSuggestionCollectionView() {
+id<GREYMatcher> ContentSuggestionsCollectionView() {
   return [ChromeMatchersAppInterface contentSuggestionCollectionView];
+}
+
+id<GREYMatcher> NTPCollectionView() {
+  return [ChromeMatchersAppInterface ntpCollectionView];
 }
 
 id<GREYMatcher> WarningMessageView() {

@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/testing/earl_grey/earl_grey_app.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -59,6 +60,13 @@ UIView* SubviewWithAccessibilityIdentifier(NSString* accessibilityID,
 namespace ntp_home {
 
 UICollectionView* CollectionView() {
+  return base::mac::ObjCCast<UICollectionView>(
+      SubviewWithAccessibilityIdentifier(
+          kNTPCollectionViewIdentifier,
+          [[UIApplication sharedApplication] keyWindow]));
+}
+
+UICollectionView* ContentSuggestionsCollectionView() {
   return base::mac::ObjCCast<UICollectionView>(
       SubviewWithAccessibilityIdentifier(
           kContentSuggestionsCollectionIdentifier,

@@ -47,13 +47,14 @@
 // ContentSuggestions.
 @property(nonatomic, weak) UIButton* identityDiscButton;
 
-// Initializes view controller with NTP content view controllers.
-// |discoverFeedViewController| represents the Discover feed for suggesting
-// articles. |contentSuggestionsViewController| represents other content
-// suggestions, such as the most visited site tiles.
-- (instancetype)initWithContentSuggestionsViewController:
-    (UICollectionViewController*)contentSuggestionsViewController
-    NS_DESIGNATED_INITIALIZER;
+// View controller representing the NTP content suggestions. These suggestions
+// include the most visited site tiles, the shortcut tiles, the fake omnibox and
+// the Google doodle.
+@property(nonatomic, strong)
+    UICollectionViewController* contentSuggestionsViewController;
+
+// Initializes the new tab page view controller.
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithNibName:(NSString*)name
                          bundle:(NSBundle*)bundle NS_UNAVAILABLE;

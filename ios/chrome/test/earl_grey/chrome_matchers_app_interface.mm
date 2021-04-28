@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/ui/history/history_ui_constants.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_steady_view.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_views_utils.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
@@ -680,6 +681,10 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)contentSuggestionCollectionView {
   return grey_accessibilityID(kContentSuggestionsCollectionIdentifier);
+}
+
++ (id<GREYMatcher>)ntpCollectionView {
+  return grey_accessibilityID(kNTPCollectionViewIdentifier);
 }
 
 // TODO(crbug.com/1021752): Remove this stub.

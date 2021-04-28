@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_APP_INTERFACE_H_
-#define IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_APP_INTERFACE_H_
+#ifndef IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_NEW_TAB_PAGE_APP_INTERFACE_H_
+#define IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_NEW_TAB_PAGE_APP_INTERFACE_H_
 
 #import <UIKit/UIKit.h>
 
-// App interface for the Content Suggestions.
-@interface ContentSuggestionsAppInterface : NSObject
+// App interface for the NTP.
+// TODO(crbug.com/1200303): Move this to */ui/ntp.
+@interface NewTabPageAppInterface : NSObject
 
 // Sets the fake service up.
 + (void)setUpService;
@@ -52,12 +53,15 @@
                               traitCollection:
                                   (UITraitCollection*)traitCollection;
 
-// Returns the collection view.
+// Returns the NTP collection view.
 + (UICollectionView*)collectionView;
+
+// Returns the content suggestions collection view.
++ (UICollectionView*)contentSuggestionsCollectionView;
 
 // Returns the fake omnibox.
 + (UIView*)fakeOmnibox;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_APP_INTERFACE_H_
+#endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_NEW_TAB_PAGE_APP_INTERFACE_H_
