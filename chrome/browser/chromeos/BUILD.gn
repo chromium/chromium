@@ -3275,9 +3275,11 @@ source_set("chromeos") {
 
   if (!is_official_build) {
     deps += [
+      "//chromeos/components/demo_mode_app_ui",
       "//chromeos/components/file_manager:file_manager_ui",
       "//chromeos/components/sample_system_web_app_ui",
       "//chromeos/components/telemetry_extension_ui",
+      "//chromeos/resources:demo_mode_app_resources_grit",
       "//chromeos/resources:file_manager_resources_grit",
       "//chromeos/resources:sample_system_web_app_resources_grit",
       "//chromeos/resources:telemetry_extension_resources",
@@ -3285,6 +3287,8 @@ source_set("chromeos") {
     sources += [
       "../ash/web_applications/chrome_file_manager_ui_delegate.cc",
       "../ash/web_applications/chrome_file_manager_ui_delegate.h",
+      "../ash/web_applications/demo_mode_web_app_info.cc",
+      "../ash/web_applications/demo_mode_web_app_info.h",
       "../ash/web_applications/file_manager_web_app_info.cc",
       "../ash/web_applications/file_manager_web_app_info.h",
       "../ash/web_applications/sample_system_web_app_info.cc",

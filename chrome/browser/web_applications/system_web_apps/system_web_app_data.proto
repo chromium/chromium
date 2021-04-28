@@ -28,6 +28,7 @@ message SystemWebAppDataProto {
     PERSONALIZATION = 15;
     SHORTCUT_CUSTOMIZATION = 16;
     SHIMLESS_RMA = 17;
+    DEMO_MODE = 18;
   };
 
   optional SystemAppType system_app_type = 1;

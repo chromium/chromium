@@ -438,6 +438,10 @@
     "META": {"sizes": {"includes": [50],}},
     "includes": [2690],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chromeos/components/demo_mode_app_ui/chromeos_demo_mode_app_resources.grd": {
+    "META": {"sizes": {"includes": [50],}},
+   "includes": [2695],
+  },
   # END chromeos/ section.
 
   # START components/ section.

@@ -170,6 +170,21 @@ if (!is_official_build) {
     ]
     output_dir = "$root_gen_dir/chromeos"
   }
+
+  # Resources used by chrome://demo-mode-app
+  grit("demo_mode_app_resources") {
+    enable_input_discovery_for_gn_analyze = false
+    demo_mode_app_gen_dir = "$root_gen_dir/chromeos/components/demo_mode_app_ui"
+    source = "$demo_mode_app_gen_dir/chromeos_demo_mode_app_resources.grd"
+    deps = [ "//chromeos/components/demo_mode_app_ui:build_grd" ]
+    outputs = [
+      "grit/chromeos_demo_mode_app_resources.h",
+      "grit/chromeos_demo_mode_app_resources_map.cc",
+      "grit/chromeos_demo_mode_app_resources_map.h",
+      "chromeos_demo_mode_app_resources.pak",
+    ]
+    output_dir = "$root_gen_dir/chromeos"
+  }
 }
 
 # Resources used by chrome://telemetry-extension

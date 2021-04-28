@@ -2435,6 +2435,7 @@ static_library("browser") {
     ]
     if (!is_official_build) {
       deps += [
+        "//chromeos/components/demo_mode_app_ui",
         "//chromeos/components/file_manager:file_manager_ui",
         "//chromeos/components/file_manager/mojom",
         "//chromeos/components/telemetry_extension_ui",

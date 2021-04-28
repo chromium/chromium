@@ -2800,6 +2800,7 @@ static_library("ui") {
         ]
       }
       deps += [
+        "//chromeos/components/demo_mode_app_ui",
         "//chromeos/components/file_manager:file_manager_ui",
         "//chromeos/components/sample_system_web_app_ui",
         "//chromeos/components/telemetry_extension_ui",

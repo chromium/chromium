@@ -235,6 +235,9 @@ const base::Feature kCryptAuthV2DeviceSync{"CryptAuthV2DeviceSync",
 const base::Feature kCryptAuthV2Enrollment{"CryptAuthV2Enrollment",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kDemoModeSWA{"DemoModeSWA",
+                                 base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables the Diagnostics app.
 const base::Feature kDiagnosticsApp{"DiagnosticsApp",
                                     base::FEATURE_ENABLED_BY_DEFAULT};
@@ -777,6 +780,10 @@ bool IsAmbientModeDevUseProdEnabled() {
 
 bool IsCellularActivationUiEnabled() {
   return base::FeatureList::IsEnabled(kUpdatedCellularActivationUi);
+}
+
+bool IsDemoModeSWAEnabled() {
+  return base::FeatureList::IsEnabled(kDemoModeSWA);
 }
 
 bool IsDeepLinkingEnabled() {

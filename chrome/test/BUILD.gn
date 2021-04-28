@@ -1841,6 +1841,7 @@ if (!is_android) {
 
         if (!is_official_build) {
           deps += [
+            "//chromeos/components/demo_mode_app_ui:browser_tests_js",
             "//chromeos/components/sample_system_web_app_ui:browser_tests_js",
             "//chromeos/components/telemetry_extension_ui/test:browser_tests_js",
           ]
@@ -2923,6 +2924,7 @@ if (!is_android) {
       data += [ "../browser/resources/chromeos/accessibility/switch_access/test_support.js" ]
       if (!is_official_build) {
         sources += [
+          "../browser/ash/web_applications/demo_mode_app_integration_browsertest.cc",
           "../browser/ash/web_applications/sample_system_web_app_integration_browsertest.cc",
           "../browser/ash/web_applications/telemetry_extension_integration_browsertest.cc",
         ]

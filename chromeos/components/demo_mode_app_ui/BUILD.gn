@@ -1,0 +1,44 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/test/base/js2gtest.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(is_chromeos, "Demo Mode App is Chrome OS only")
+assert(!is_official_build, "Demo Mode App is only built for unofficial builds")
+
+static_library("demo_mode_app_ui") {
+  sources = [
+    "demo_mode_app_ui.cc",
+    "demo_mode_app_ui.h",
+    "url_constants.cc",
+    "url_constants.h",
+  ]
+
+  deps = [
+    "//chromeos/resources:demo_mode_app_resources",
+    "//content/public/browser",
+    "//ui/webui",
+  ]
+}
+
+js2gtest("browser_tests_js") {
+  test_type = "mojo_lite_webui"
+
+  sources = [ "test/demo_mode_app_ui_browsertest.js" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+}
+
+generate_grd("build_grd") {
+  input_files_base_dir = rebase_path("resources", "//")
+  input_files = [
+    "app_icon_192.png",
+    "demo_mode_app.js",
+    "demo_mode_app.html",
+  ]
+  manifest_files = []
+  grd_prefix = "chromeos_demo_mode_app"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+}

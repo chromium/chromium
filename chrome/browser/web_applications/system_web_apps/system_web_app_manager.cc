@@ -83,6 +83,7 @@
 #include "chromeos/strings/grit/chromeos_strings.h"  // nogncheck
 #include "extensions/common/constants.h"
 #if !defined(OFFICIAL_BUILD)
+#include "chrome/browser/ash/web_applications/demo_mode_web_app_info.h"
 #include "chrome/browser/ash/web_applications/file_manager_web_app_info.h"
 #include "chrome/browser/ash/web_applications/sample_system_web_app_info.h"
 #include "chrome/browser/ash/web_applications/telemetry_extension_web_app_info.h"
@@ -314,6 +315,14 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
     infos.at(SystemAppType::FILE_MANAGER).single_window = false;
   }
 
+  if (SystemWebAppManager::IsAppEnabled(SystemAppType::DEMO_MODE)) {
+    infos.emplace(
+        SystemAppType::DEMO_MODE,
+        SystemAppInfo("DemoMode", GURL("chrome://demo-mode-app"),
+                      base::BindRepeating(&CreateWebAppInfoForDemoModeApp)));
+    infos.at(SystemAppType::DEMO_MODE).capture_navigations = true;
+  }
+
   infos.emplace(
       SystemAppType::SAMPLE,
       SystemAppInfo(
@@ -442,6 +451,8 @@ bool SystemWebAppManager::IsAppEnabled(SystemAppType type) {
       return chromeos::features::IsWallpaperWebUIEnabled();
     case SystemAppType::SHORTCUT_CUSTOMIZATION:
       return features::IsShortcutCustomizationAppEnabled();
+    case SystemAppType::DEMO_MODE:
+      return chromeos::features::IsDemoModeSWAEnabled();
   }
 #else
   return false;

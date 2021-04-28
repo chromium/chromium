@@ -52,6 +52,17 @@ enum class SystemAppType {
   // Contact: cros-peripherals@google.com
   SHIMLESS_RMA = 17,
 
+  // A System Web App that launches on Demo Mode startup, to display animated
+  // content that highlights various features of ChromeOS
+  //
+  // Currently this SWA is only enabled in unofficial builds while still under
+  // development. Prefer to file bugs to the internal Demo Mode component:
+  // b/components/812312
+  //
+  // Source: //chromeos/components/demo_mode_app_ui/
+  // Contact: jacksontadie@google.com, drcrash@chromium.org
+  DEMO_MODE = 18,
+
   // When adding a new System App, remember to:
   //
   // 1. Add a corresponding histogram suffix in WebAppSystemAppInternalName
