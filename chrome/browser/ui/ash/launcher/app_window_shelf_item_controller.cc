@@ -74,8 +74,8 @@ AppWindowShelfItemController::~AppWindowShelfItemController() {
 
 void AppWindowShelfItemController::AddWindow(AppWindowBase* app_window) {
   aura::Window* window = app_window->GetNativeWindow();
-  if (window && !observed_windows_.IsObserving(window))
-    observed_windows_.Add(window);
+  if (window && !observed_windows_.IsObservingSource(window))
+    observed_windows_.AddObservation(window);
   if (window && window->GetProperty(ash::kHideInShelfKey))
     hidden_windows_.push_front(app_window);
   else
@@ -95,8 +95,8 @@ AppWindowShelfItemController::GetFromNativeWindow(aura::Window* window,
 void AppWindowShelfItemController::RemoveWindow(AppWindowBase* app_window) {
   DCHECK(app_window);
   aura::Window* window = app_window->GetNativeWindow();
-  if (window && observed_windows_.IsObserving(window))
-    observed_windows_.Remove(window);
+  if (window && observed_windows_.IsObservingSource(window))
+    observed_windows_.RemoveObservation(window);
   if (app_window == last_active_window_)
     last_active_window_ = nullptr;
   auto iter = std::find(windows_.begin(), windows_.end(), app_window);

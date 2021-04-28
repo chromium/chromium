@@ -11,7 +11,7 @@
 
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 
@@ -100,7 +100,8 @@ class AppWindowShelfItemController : public ash::ShelfItemDelegate,
   AppWindowBase* last_active_window_ = nullptr;
 
   // Scoped list of observed windows (for removal on destruction)
-  ScopedObserver<aura::Window, aura::WindowObserver> observed_windows_{this};
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      observed_windows_{this};
 
   std::unique_ptr<ShelfContextMenu> context_menu_;
 
