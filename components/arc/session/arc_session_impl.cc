@@ -895,6 +895,11 @@ void ArcSessionImpl::SetDemoModeDelegate(
   client_->SetDemoModeDelegate(delegate);
 }
 
+void ArcSessionImpl::TrimVmMemory(TrimVmMemoryCallback callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  client_->TrimVmMemory(std::move(callback));
+}
+
 void ArcSessionImpl::OnConfigurationSet(bool success,
                                         size_t num_cores_disabled) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

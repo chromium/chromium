@@ -111,6 +111,12 @@ class ArcSessionRunner : public ArcSession::Observer {
   void SetDemoModeDelegate(
       std::unique_ptr<ArcClientAdapter::DemoModeDelegate> delegate);
 
+  // Trims VM's memory by moving it to zram. |callback| is called when the
+  // operation is done.
+  using TrimVmMemoryCallback =
+      base::OnceCallback<void(bool success, const std::string& failure_reason)>;
+  void TrimVmMemory(TrimVmMemoryCallback callback);
+
   // Returns the current ArcSession instance for testing purpose.
   ArcSession* GetArcSessionForTesting() { return arc_session_.get(); }
 

@@ -41,6 +41,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "chromeos/components/sensors/buildflags.h"
@@ -576,6 +577,12 @@ class ArcVmClientAdapter : public ArcClientAdapter,
 
   void SetDemoModeDelegate(DemoModeDelegate* delegate) override {
     demo_mode_delegate_ = delegate;
+  }
+
+  void TrimVmMemory(TrimVmMemoryCallback callback) override {
+    // TODO(yusukes): Implement this.
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), true, std::string()));
   }
 
   // chromeos::ConciergeClient::Observer overrides:

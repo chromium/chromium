@@ -87,6 +87,10 @@ class FakeArcClientAdapter : public ArcClientAdapter {
                    const std::string& serial_number) override {}
 
   void SetDemoModeDelegate(DemoModeDelegate* delegate) override {}
+  void TrimVmMemory(TrimVmMemoryCallback callback) override {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), true, std::string()));
+  }
 
   // Notifies ArcSessionImpl of the ARC instance stop event.
   void NotifyArcInstanceStopped() {

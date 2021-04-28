@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/arc/session/adb_sideloading_availability_delegate.h"
@@ -101,6 +102,12 @@ class ArcSession {
   // apps path.
   virtual void SetDemoModeDelegate(
       ArcClientAdapter::DemoModeDelegate* delegate) = 0;
+
+  // Trims VM's memory by moving it to zram. |callback| is called when the
+  // operation is done.
+  using TrimVmMemoryCallback =
+      base::OnceCallback<void(bool success, const std::string& failure_reason)>;
+  virtual void TrimVmMemory(TrimVmMemoryCallback callback) = 0;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

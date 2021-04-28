@@ -256,6 +256,13 @@ void ArcSessionRunner::SetDemoModeDelegate(
   demo_mode_delegate_ = std::move(delegate);
 }
 
+void ArcSessionRunner::TrimVmMemory(TrimVmMemoryCallback callback) {
+  if (arc_session_)
+    arc_session_->TrimVmMemory(std::move(callback));
+  else
+    LOG(WARNING) << "TrimVmMemory is called when no ARC session is running";
+}
+
 void ArcSessionRunner::SetRestartDelayForTesting(
     const base::TimeDelta& restart_delay) {
   DCHECK(!arc_session_);

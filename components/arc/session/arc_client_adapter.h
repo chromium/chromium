@@ -75,6 +75,12 @@ class ArcClientAdapter {
   // apps path.
   virtual void SetDemoModeDelegate(DemoModeDelegate* delegate) = 0;
 
+  // Trims VM's memory by moving it to zram. |callback| is called when the
+  // operation is done.
+  using TrimVmMemoryCallback =
+      base::OnceCallback<void(bool success, const std::string& failure_reason)>;
+  virtual void TrimVmMemory(TrimVmMemoryCallback callback) = 0;
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 

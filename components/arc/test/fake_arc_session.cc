@@ -48,6 +48,10 @@ void FakeArcSession::SetUserInfo(
 void FakeArcSession::SetDemoModeDelegate(
     ArcClientAdapter::DemoModeDelegate* delegate) {}
 
+void FakeArcSession::TrimVmMemory(TrimVmMemoryCallback callback) {
+  std::move(callback).Run(true, std::string());
+}
+
 void FakeArcSession::StopWithReason(ArcStopReason reason) {
   bool was_mojo_connected = running_;
   running_ = false;

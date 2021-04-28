@@ -1732,6 +1732,17 @@ TEST_F(ArcVmClientAdapterTest, DisableDownloadProviderEnforced) {
                      "androidboot.disable_download_provider=1"));
 }
 
+// TODO(yusukes): Improve the test once the real implementation is in.
+TEST_F(ArcVmClientAdapterTest, TrimVmMemory) {
+  bool result = false;
+  adapter()->TrimVmMemory(base::BindLambdaForTesting(
+      [&result](bool success, const std::string& failure_reason) {
+        result = success;
+      }));
+  run_loop()->RunUntilIdle();
+  EXPECT_TRUE(result);
+}
+
 struct DalvikMemoryProfileTestParam {
   // Requested profile.
   StartParams::DalvikMemoryProfile profile;

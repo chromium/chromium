@@ -10,6 +10,8 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/notreached.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 #include "chromeos/dbus/login_manager/arc.pb.h"
@@ -178,6 +180,15 @@ class ArcContainerClientAdapter
   // ArcContainerClientAdapter gets the demo session apps path from
   // UpgradeParams, so it does not use the DemoModeDelegate.
   void SetDemoModeDelegate(DemoModeDelegate* delegate) override {}
+
+  // The interface is only for ARCVM.
+  void TrimVmMemory(TrimVmMemoryCallback callback) override {
+    NOTREACHED();
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), /*success=*/true,
+                       /*failure_reason=*/"ARC container is not supported."));
+  }
 
   // chromeos::SessionManagerClient::Observer overrides:
   void ArcInstanceStopped() override {
