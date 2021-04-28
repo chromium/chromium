@@ -15,7 +15,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {helloWorld} from 'chrome://resources/js/hello_world.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 export class TsAppElement extends PolymerElement {
   static get is() {
@@ -76,6 +76,7 @@ export class TsAppElement extends PolymerElement {
   ready() {
     super.ready();
     console.log(this.message);
+    console.log(afterNextRender);
   }
 
   connectedCallback() {

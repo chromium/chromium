@@ -4,16 +4,18 @@
 
 import {SanitizeInnerHtmlOpts} from 'chrome://resources/js/parse_html_subset.m.js';
 
-export {I18nBehavior};
-
-interface I18nBehavior {
+export interface I18nBehaviorInterface {
   locale: string|null|undefined;
   i18nUpdateLocale(): void;
   i18n(id: string, ...var_args: Array<string|number>): string;
-  i18nAdvanced(id: string, opts?: SanitizeInnerHtmlOpts|null): string;
+  i18nAdvanced(id: string, opts?: SanitizeInnerHtmlOpts): string;
   i18nDynamic(locale: string, id: string, ...var_args: string[]): string;
   i18nRecursive(locale: string, id: string, ...var_args: string[]): string;
   i18nExists(id: string): boolean;
 }
+
+export {I18nBehavior};
+
+interface I18nBehavior extends I18nBehaviorInterface {}
 
 declare const I18nBehavior: object;

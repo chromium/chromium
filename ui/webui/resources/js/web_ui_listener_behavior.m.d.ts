@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-export {WebUIListenerBehavior};
-
-interface WebUIListenerBehavior {
+export interface WebUIListenerBehaviorInterface {
   addWebUIListener(eventName: string, callback: Function): void;
 }
+
+export {WebUIListenerBehavior};
+
+interface WebUIListenerBehavior extends WebUIListenerBehaviorInterface {}
 
 declare const WebUIListenerBehavior: object;

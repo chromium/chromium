@@ -62,6 +62,12 @@ rsync -c --delete -r -v --prune-empty-dirs \
     --include="*/" --include="*.d.ts" --exclude="*" \
     "node_modules/@polymer/polymer/" "components-chromium/polymer/"
 
+echo 'Generating polymer.d.ts file for Polymer bundle.'
+cp polymer.js components-chromium/polymer/polymer.d.ts
+
+# Apply additional chrome specific patches for the .d.ts files.
+patch -p1 --forward -r - < chromium_dts.patch
+
 echo 'Updating paper/iron elements to point to the minified file.'
 # Replace all paths that point to within polymer/ to point to the bundle.
 find components-chromium/ -name '*.js' -exec sed -i \

@@ -34,6 +34,9 @@ declare class IronA11yAnnouncer {
    */
   announce(text: string): void;
   _onIronAnnounce(event: any): void;
+  // TODO: Delete when following issue is fixed
+  // https://github.com/PolymerElements/iron-a11y-announcer/issues/52
+  static requestAvailability(): void;
 }
 
 interface IronA11yAnnouncer extends LegacyElementMixin, HTMLElement {

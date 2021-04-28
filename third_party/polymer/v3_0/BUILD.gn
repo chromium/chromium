@@ -154,6 +154,7 @@ ts_library("library") {
     "components-chromium/polymer/lib/utils/templatize.d.ts",
     "components-chromium/polymer/lib/utils/unresolved.d.ts",
     "components-chromium/polymer/lib/utils/wrap.d.ts",
+    "components-chromium/polymer/polymer.d.ts",
     "components-chromium/polymer/polymer-element.d.ts",
     "components-chromium/polymer/polymer-legacy.d.ts",
   ]
