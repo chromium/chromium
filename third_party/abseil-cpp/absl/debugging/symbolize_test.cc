@@ -477,6 +477,46 @@ void ABSL_ATTRIBUTE_NOINLINE TestWithReturnAddress() {
 #endif
 }
 
+#if defined(__arm__) && ABSL_HAVE_ATTRIBUTE(target)
+// Test that we correctly identify bounds of Thumb functions on ARM.
+//
+// Thumb functions have the lowest-order bit set in their addresses in the ELF
+// symbol table. This requires some extra logic to properly compute function
+// bounds. To test this logic, nudge a Thumb function right up against an ARM
+// function and try to symbolize the ARM function.
+//
+// A naive implementation will simply use the Thumb function's entry point as
+// written in the symbol table and will therefore treat the Thumb function as
+// extending one byte further in the instruction stream than it actually does.
+// When asked to symbolize the start of the ARM function, it will identify an
+// overlap between the Thumb and ARM functions, and it will return the name of
+// the Thumb function.
+//
+// A correct implementation, on the other hand, will null out the lowest-order
+// bit in the Thumb function's entry point. It will correctly compute the end of
+// the Thumb function, it will find no overlap between the Thumb and ARM
+// functions, and it will return the name of the ARM function.
+
+__attribute__((target("thumb"))) int ArmThumbOverlapThumb(int x) {
+  return x * x * x;
+}
+
+__attribute__((target("arm"))) int ArmThumbOverlapArm(int x) {
+  return x * x * x;
+}
+
+void ABSL_ATTRIBUTE_NOINLINE TestArmThumbOverlap() {
+#if defined(ABSL_HAVE_ATTRIBUTE_NOINLINE)
+  const char *symbol = TrySymbolize((void *)&ArmThumbOverlapArm);
+  ABSL_RAW_CHECK(symbol != nullptr, "TestArmThumbOverlap failed");
+  ABSL_RAW_CHECK(strcmp("ArmThumbOverlapArm()", symbol) == 0,
+                 "TestArmThumbOverlap failed");
+  std::cout << "TestArmThumbOverlap passed" << std::endl;
+#endif
+}
+
+#endif  // defined(__arm__) && ABSL_HAVE_ATTRIBUTE(target)
+
 #elif defined(_WIN32)
 #if !defined(ABSL_CONSUME_DLL)
 
@@ -551,6 +591,9 @@ int main(int argc, char **argv) {
   TestWithPCInsideInlineFunction();
   TestWithPCInsideNonInlineFunction();
   TestWithReturnAddress();
+#if defined(__arm__) && ABSL_HAVE_ATTRIBUTE(target)
+  TestArmThumbOverlap();
+#endif
 #endif
 
   return RUN_ALL_TESTS();

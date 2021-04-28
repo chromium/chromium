@@ -35,6 +35,7 @@
 #include "absl/base/macros.h"
 #include "absl/container/fixed_array.h"
 #include "absl/strings/cord_test_helpers.h"
+#include "absl/strings/cordz_test_helpers.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
 #include "absl/strings/string_view.h"
@@ -239,7 +240,6 @@ TEST(GigabyteCord, FromExternal) {
   // caused crashes in production.  We grow exponentially so that the code will
   // execute in a reasonable amount of time.
   absl::Cord c;
-  ABSL_RAW_LOG(INFO, "Made a Cord with %zu bytes!", c.size());
   c.Append(from);
   while (c.size() < max_size) {
     c.Append(c);

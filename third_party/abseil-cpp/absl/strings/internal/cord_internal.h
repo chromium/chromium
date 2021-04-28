@@ -329,6 +329,9 @@ static constexpr cordz_info_t BigEndianByte(unsigned char value) {
 
 class InlineData {
  public:
+  // DefaultInitType forces the use of the default initialization constructor.
+  enum DefaultInitType { kDefaultInit };
+
   // kNullCordzInfo holds the big endian representation of intptr_t(1)
   // This is the 'null' / initial value of 'cordz_info'. The null value
   // is specifically big endian 1 as with 64-bit pointers, the last
@@ -336,6 +339,7 @@ class InlineData {
   static constexpr cordz_info_t kNullCordzInfo = BigEndianByte(1);
 
   constexpr InlineData() : as_chars_{0} {}
+  explicit InlineData(DefaultInitType) {}
   explicit constexpr InlineData(CordRep* rep) : as_tree_(rep) {}
   explicit constexpr InlineData(absl::string_view chars)
       : as_chars_{

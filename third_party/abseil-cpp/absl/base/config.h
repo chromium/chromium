@@ -166,6 +166,22 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #define ABSL_HAVE_FEATURE(f) 0
 #endif
 
+// Portable check for GCC minimum version:
+// https://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+#define ABSL_INTERNAL_HAVE_MIN_GNUC_VERSION(x, y) \
+  (__GNUC__ > (x) || __GNUC__ == (x) && __GNUC_MINOR__ >= (y))
+#else
+#define ABSL_INTERNAL_HAVE_MIN_GNUC_VERSION(x, y) 0
+#endif
+
+#if defined(__clang__) && defined(__clang_major__) && defined(__clang_minor__)
+#define ABSL_INTERNAL_HAVE_MIN_CLANG_VERSION(x, y) \
+  (__clang_major__ > (x) || __clang_major__ == (x) && __clang_minor__ >= (y))
+#else
+#define ABSL_INTERNAL_HAVE_MIN_CLANG_VERSION(x, y) 0
+#endif
+
 // ABSL_HAVE_TLS is defined to 1 when __thread should be supported.
 // We assume __thread is supported on Linux when compiled with Clang or compiled
 // against libstdc++ with _GLIBCXX_HAVE_TLS defined.
@@ -183,10 +199,9 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 // gcc >= 4.8.1 using libstdc++, and Visual Studio.
 #ifdef ABSL_HAVE_STD_IS_TRIVIALLY_DESTRUCTIBLE
 #error ABSL_HAVE_STD_IS_TRIVIALLY_DESTRUCTIBLE cannot be directly set
-#elif defined(_LIBCPP_VERSION) ||                                        \
-    (!defined(__clang__) && defined(__GNUC__) && defined(__GLIBCXX__) && \
-     (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 8))) ||        \
-    defined(_MSC_VER)
+#elif defined(_LIBCPP_VERSION) || defined(_MSC_VER) || \
+    (!defined(__clang__) && defined(__GLIBCXX__) &&    \
+     ABSL_INTERNAL_HAVE_MIN_GNUC_VERSION(4, 8))
 #define ABSL_HAVE_STD_IS_TRIVIALLY_DESTRUCTIBLE 1
 #endif
 
@@ -205,10 +220,9 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #error ABSL_HAVE_STD_IS_TRIVIALLY_CONSTRUCTIBLE cannot be directly set
 #elif defined(ABSL_HAVE_STD_IS_TRIVIALLY_ASSIGNABLE)
 #error ABSL_HAVE_STD_IS_TRIVIALLY_ASSIGNABLE cannot directly set
-#elif (defined(__clang__) && defined(_LIBCPP_VERSION)) ||        \
-    (!defined(__clang__) && defined(__GNUC__) &&                 \
-     (__GNUC__ > 7 || (__GNUC__ == 7 && __GNUC_MINOR__ >= 4)) && \
-     (defined(_LIBCPP_VERSION) || defined(__GLIBCXX__))) ||      \
+#elif (defined(__clang__) && defined(_LIBCPP_VERSION)) ||                \
+    (!defined(__clang__) && ABSL_INTERNAL_HAVE_MIN_GNUC_VERSION(7, 4) && \
+     (defined(_LIBCPP_VERSION) || defined(__GLIBCXX__))) ||              \
     (defined(_MSC_VER) && !defined(__NVCC__))
 #define ABSL_HAVE_STD_IS_TRIVIALLY_CONSTRUCTIBLE 1
 #define ABSL_HAVE_STD_IS_TRIVIALLY_ASSIGNABLE 1
@@ -222,7 +236,7 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #if ABSL_INTERNAL_HAS_KEYWORD(__builtin_LINE) && \
     ABSL_INTERNAL_HAS_KEYWORD(__builtin_FILE)
 #define ABSL_HAVE_SOURCE_LOCATION_CURRENT 1
-#elif defined(__GNUC__) && __GNUC__ >= 5
+#elif ABSL_INTERNAL_HAVE_MIN_GNUC_VERSION(5, 0)
 #define ABSL_HAVE_SOURCE_LOCATION_CURRENT 1
 #endif
 #endif
@@ -319,25 +333,21 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 // For further details, consult the compiler's documentation.
 #ifdef ABSL_HAVE_EXCEPTIONS
 #error ABSL_HAVE_EXCEPTIONS cannot be directly set.
-
-#elif defined(__clang__)
-
-#if __clang_major__ > 3 || (__clang_major__ == 3 && __clang_minor__ >= 6)
+#elif ABSL_INTERNAL_HAVE_MIN_CLANG_VERSION(3, 6)
 // Clang >= 3.6
 #if ABSL_HAVE_FEATURE(cxx_exceptions)
 #define ABSL_HAVE_EXCEPTIONS 1
 #endif  // ABSL_HAVE_FEATURE(cxx_exceptions)
-#else
+#elif defined(__clang__)
 // Clang < 3.6
 // http://releases.llvm.org/3.6.0/tools/clang/docs/ReleaseNotes.html#the-exceptions-macro
 #if defined(__EXCEPTIONS) && ABSL_HAVE_FEATURE(cxx_exceptions)
 #define ABSL_HAVE_EXCEPTIONS 1
 #endif  // defined(__EXCEPTIONS) && ABSL_HAVE_FEATURE(cxx_exceptions)
-#endif  // __clang_major__ > 3 || (__clang_major__ == 3 && __clang_minor__ >= 6)
-
 // Handle remaining special cases and default to exceptions being supported.
-#elif !(defined(__GNUC__) && (__GNUC__ < 5) && !defined(__EXCEPTIONS)) &&    \
-    !(defined(__GNUC__) && (__GNUC__ >= 5) && !defined(__cpp_exceptions)) && \
+#elif !(defined(__GNUC__) && (__GNUC__ < 5) && !defined(__EXCEPTIONS)) && \
+    !(ABSL_INTERNAL_HAVE_MIN_GNUC_VERSION(5, 0) &&                        \
+      !defined(__cpp_exceptions)) &&                                      \
     !(defined(_MSC_VER) && !defined(_CPPUNWIND))
 #define ABSL_HAVE_EXCEPTIONS 1
 #endif

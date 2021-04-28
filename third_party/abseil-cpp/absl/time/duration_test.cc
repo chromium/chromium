@@ -1320,7 +1320,7 @@ TEST(Duration, SmallConversions) {
 
   EXPECT_EQ(absl::ZeroDuration(), absl::Seconds(0));
   // TODO(bww): Is the next one OK?
-  EXPECT_EQ(absl::ZeroDuration(), absl::Seconds(0.124999999e-9));
+  EXPECT_EQ(absl::ZeroDuration(), absl::Seconds(std::nextafter(0.125e-9, 0)));
   EXPECT_EQ(absl::Nanoseconds(1) / 4, absl::Seconds(0.125e-9));
   EXPECT_EQ(absl::Nanoseconds(1) / 4, absl::Seconds(0.250e-9));
   EXPECT_EQ(absl::Nanoseconds(1) / 2, absl::Seconds(0.375e-9));
@@ -1330,7 +1330,7 @@ TEST(Duration, SmallConversions) {
   EXPECT_EQ(absl::Nanoseconds(1), absl::Seconds(0.875e-9));
   EXPECT_EQ(absl::Nanoseconds(1), absl::Seconds(1.000e-9));
 
-  EXPECT_EQ(absl::ZeroDuration(), absl::Seconds(-0.124999999e-9));
+  EXPECT_EQ(absl::ZeroDuration(), absl::Seconds(std::nextafter(-0.125e-9, 0)));
   EXPECT_EQ(-absl::Nanoseconds(1) / 4, absl::Seconds(-0.125e-9));
   EXPECT_EQ(-absl::Nanoseconds(1) / 4, absl::Seconds(-0.250e-9));
   EXPECT_EQ(-absl::Nanoseconds(1) / 2, absl::Seconds(-0.375e-9));

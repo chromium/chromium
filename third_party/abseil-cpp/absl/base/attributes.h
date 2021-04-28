@@ -281,10 +281,7 @@
 // ABSL_ATTRIBUTE_RETURNS_NONNULL
 //
 // Tells the compiler that a particular function never returns a null pointer.
-#if ABSL_HAVE_ATTRIBUTE(returns_nonnull) || \
-    (defined(__GNUC__) && \
-     (__GNUC__ > 5 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 9)) && \
-     !defined(__clang__))
+#if ABSL_HAVE_ATTRIBUTE(returns_nonnull)
 #define ABSL_ATTRIBUTE_RETURNS_NONNULL __attribute__((returns_nonnull))
 #else
 #define ABSL_ATTRIBUTE_RETURNS_NONNULL
@@ -622,7 +619,7 @@
 #if __has_feature(cxx_attributes) && __has_warning("-Wimplicit-fallthrough")
 #define ABSL_FALLTHROUGH_INTENDED [[clang::fallthrough]]
 #endif
-#elif defined(__GNUC__) && __GNUC__ >= 7
+#elif ABSL_INTERNAL_HAVE_MIN_GNUC_VERSION(7, 0)
 #define ABSL_FALLTHROUGH_INTENDED [[gnu::fallthrough]]
 #endif
 
