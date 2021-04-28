@@ -130,7 +130,14 @@ bool InputMethodContextImplGtk::DispatchKeyEvent(
   gint caret_y = last_caret_bounds_.y();
   gint caret_w = last_caret_bounds_.width();
   gint caret_h = last_caret_bounds_.height();
-  GdkRectangle gdk_rect = {caret_x - win_x, caret_y - win_y, caret_w, caret_h};
+
+  // Chrome's DIPs may be different from GTK's DIPs if
+  // --force-device-scale-factor is used.
+  float factor =
+      GetDeviceScaleFactor() / gtk_widget_get_scale_factor(GetDummyWindow());
+  GdkRectangle gdk_rect = {factor * (caret_x - win_x),
+                           factor * (caret_y - win_y), factor * caret_w,
+                           factor * caret_h};
   gtk_im_context_set_cursor_location(gtk_context_, &gdk_rect);
 
   if (!GtkCheckVersion(4)) {
