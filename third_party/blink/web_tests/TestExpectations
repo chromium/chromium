@@ -3558,7 +3558,6 @@ crbug.com/1203344 [ Mac11.0 ] virtual/plz-dedicated-worker/external/wpt/xhr/idlh
 crbug.com/1203344 [ Mac10.13 ] external/wpt/css/css-paint-api/idlharness.html [ Failure ]
 crbug.com/1203344 [ Mac10.14 ] external/wpt/html/dom/idlharness.https.html?include=(Document|Window) [ Failure ]
 crbug.com/1203344 [ Mac10.14 ] external/wpt/mst-content-hint/idlharness.window.html [ Failure Timeout ]
-crbug.com/1203344 [ Mac10.14 ] virtual/layout_ng_svg_text/external/wpt/svg/idlharness.window.html [ Failure ]
 crbug.com/1203344 [ Mac10.14 ] external/wpt/animation-worklet/idlharness.any.worker.html [ Failure Timeout ]
 crbug.com/1203344 [ Mac10.14 ] external/wpt/badging/idlharness.https.any.worker.html [ Timeout Failure ]
 crbug.com/1203344 [ Mac10.14 ] external/wpt/dom/idlharness.window.html?exclude=Node [ Timeout Failure ]
@@ -5030,6 +5029,12 @@ crbug.com/1179585 virtual/layout_ng_svg_text/svg/zoom/page/zoom-svg-through-obje
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/zoom/page/zoom-zoom-coords.xhtml [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/zoom/text/lowdpi-zoom-text.html [ Failure ]
 crbug.com/1179585 virtual/layout_ng_svg_text/svg/zoom/zoomed-text-in-clippath.html [ Failure ]
+# Ignore older OSes during SVGTextNG development
+crbug.com/1179585 [ Mac10.12 ] virtual/layout_ng_svg_text/* [ Skip ]
+crbug.com/1179585 [ Mac10.13 ] virtual/layout_ng_svg_text/* [ Skip ]
+crbug.com/1179585 [ Mac10.14 ] virtual/layout_ng_svg_text/* [ Skip ]
+crbug.com/1179585 [ Mac11.0 ] virtual/layout_ng_svg_text/* [ Skip ]
+crbug.com/1179585 [ Win7 ] virtual/layout_ng_svg_text/* [ Skip ]
 
 # [css-animations]
 crbug.com/993365 external/wpt/css/css-transitions/Element-getAnimations.tentative.html [ Failure Pass ]
