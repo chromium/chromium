@@ -56,7 +56,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Android.SitesChannel" enum="BooleanUsage"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>peter@chromium.org</owner>
   <summary>
     Recorded when the Sites channel (which we hope to deprecate) is used as a
@@ -291,7 +291,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Database.OldestNotificationTimeInMinutes"
-    units="minutes" expires_after="2021-08-22">
+    units="minutes" expires_after="2021-10-25">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <owner>adelm@google.com</owner>
@@ -355,7 +355,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Database.ReadResult"
-    enum="NotificationDatabaseStatus" expires_after="2021-08-22">
+    enum="NotificationDatabaseStatus" expires_after="2021-10-25">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -365,7 +365,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Database.WriteResult"
-    enum="NotificationDatabaseStatus" expires_after="2021-08-22">
+    enum="NotificationDatabaseStatus" expires_after="2021-10-25">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -525,7 +525,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Permissions.RevokeDeleteCount" units="units"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -536,7 +536,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Notifications.Permissions.UNNotification.Banners.PermissionStatus"
-    enum="UNNotificationPermissionStatus" expires_after="2021-08-22">
+    enum="UNNotificationPermissionStatus" expires_after="2021-10-25">
   <owner>adelm@google.com</owner>
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
@@ -571,7 +571,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.PersistentNotificationActionCount"
-    units="buttons" expires_after="2021-08-22">
+    units="buttons" expires_after="2021-10-25">
   <owner>peter@chromium.org</owner>
   <summary>
     The number of action buttons the developer provided for a persistent Web
@@ -580,7 +580,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.PersistentNotificationDisplayResult"
-    enum="PersistentNotificationDisplayResult" expires_after="2021-08-22">
+    enum="PersistentNotificationDisplayResult" expires_after="2021-10-25">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -600,7 +600,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.PersistentWebNotificationClickResult"
-    enum="PlatformNotificationStatus" expires_after="2021-08-22">
+    enum="PlatformNotificationStatus" expires_after="2021-10-25">
   <owner>peter@chromium.org</owner>
   <owner>deepak.m1@samsung.com</owner>
   <summary>
@@ -620,7 +620,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.PersistentWebNotificationCloseResult"
-    enum="PlatformNotificationStatus" expires_after="2021-08-22">
+    enum="PlatformNotificationStatus" expires_after="2021-10-25">
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -842,7 +842,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Notifications.Triggers.HasShowTrigger" enum="Boolean"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>

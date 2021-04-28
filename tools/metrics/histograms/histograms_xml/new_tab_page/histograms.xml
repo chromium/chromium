@@ -129,7 +129,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.ContentSuggestions.BackgroundFetchTrigger"
-    enum="BackgroundFetchTrigger" expires_after="2021-08-22">
+    enum="BackgroundFetchTrigger" expires_after="2021-10-25">
   <owner>carlosk@chromium.org</owner>
   <owner>freedjm@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -362,7 +362,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.ContentSuggestions.OpenedAge" units="ms"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>carlosk@chromium.org</owner>
   <owner>freedjm@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -400,7 +400,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.ContentSuggestions.Preferences.RemoteSuggestions"
-    enum="BooleanEnabled" expires_after="2021-08-22">
+    enum="BooleanEnabled" expires_after="2021-10-25">
   <owner>carlosk@chromium.org</owner>
   <owner>freedjm@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -485,7 +485,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.ContentSuggestions.TimeSinceSuggestionFetched"
-    units="ms" expires_after="2021-08-22">
+    units="ms" expires_after="2021-10-25">
   <owner>carlosk@chromium.org</owner>
   <owner>freedjm@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -498,7 +498,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="NewTabPage.ContentSuggestions.TimeUntilFirstShownTrigger" units="ms"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>carlosk@chromium.org</owner>
   <owner>freedjm@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -567,7 +567,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.ContentSuggestions.UsageTimeLocal" units="units"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>carlosk@chromium.org</owner>
   <owner>freedjm@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1014,7 +1014,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.Modules.VisibleOnNTPLoad" enum="BooleanVisible"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1290,7 +1290,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.RepeatableQueries.ExtractedCount" units="count"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -1302,7 +1302,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.RepeatableQueries.ExtractionDuration" units="ms"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -1762,7 +1762,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.TileType" enum="NTPTileVisualType"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>dbeam@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
   <summary>
@@ -1773,7 +1773,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NewTabPage.TileTypeClicked" enum="NTPTileVisualType"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>dbeam@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
   <summary>

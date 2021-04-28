@@ -255,7 +255,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Nearby.Share.Certificates.Manager.DownloadPublicCertificatesHttpResult"
-    enum="NearbyShareHttpResult" expires_after="2021-08-19">
+    enum="NearbyShareHttpResult" expires_after="2021-10-25">
   <owner>cclem@chromium.org</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
@@ -279,7 +279,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Nearby.Share.Certificates.Manager.DownloadPublicCertificatesSuccessRate"
-    enum="BooleanSuccess" expires_after="2021-08-19">
+    enum="BooleanSuccess" expires_after="2021-10-25">
   <owner>cclem@chromium.org</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
@@ -291,7 +291,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Nearby.Share.Certificates.Manager.GetDecryptedPublicCertificateResult"
     enum="NearbyShareCertificateManagerGetDecryptedPublicCertificateResult"
-    expires_after="2021-08-19">
+    expires_after="2021-10-25">
   <owner>cclem@chromium.org</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
@@ -343,7 +343,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Nearby.Share.Connection.EstablishOutgoingConnectionStatus"
-    enum="NearbyShareFinalStatus" expires_after="2021-08-19">
+    enum="NearbyShareFinalStatus" expires_after="2021-10-25">
   <owner>nohle@chromium.org</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
@@ -356,7 +356,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Nearby.Share.Connection.TimeToEstablishOutgoingConnection"
-    units="ms" expires_after="2021-08-19">
+    units="ms" expires_after="2021-10-25">
   <owner>nohle@chromium.org</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
@@ -528,7 +528,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Nearby.Share.Discovery.FurthestDiscoveryProgress"
-    enum="NearbyShareDiscoveryProgress" expires_after="2021-08-19">
+    enum="NearbyShareDiscoveryProgress" expires_after="2021-10-25">
   <owner>nohle@chromium.org</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
@@ -584,7 +584,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Nearby.Share.Enabled" enum="NearbyShareEnabledState"
-    expires_after="2021-08-19">
+    expires_after="2021-10-25">
   <owner>nohle@chromium.org</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
@@ -597,7 +597,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Nearby.Share.IsKnownContact" enum="BooleanKnown"
-    expires_after="2021-08-19">
+    expires_after="2021-10-25">
   <owner>nohle@chromium.org</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
@@ -608,7 +608,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Nearby.Share.LocalDeviceData.DeviceDataUpdater.HttpResult"
-    enum="NearbyShareHttpResult" expires_after="2021-08-19">
+    enum="NearbyShareHttpResult" expires_after="2021-10-25">
   <owner>cclem@chromium.org</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
@@ -619,7 +619,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Nearby.Share.Medium.ChangedToMedium"
-    enum="NearbyConnectionsMedium" expires_after="2021-08-19">
+    enum="NearbyConnectionsMedium" expires_after="2021-10-25">
   <owner>nohle@chromium.org</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
@@ -650,7 +650,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Nearby.Share.Medium.InitiateBandwidthUpgradeResult"
-    enum="BooleanSuccess" expires_after="2021-08-19">
+    enum="BooleanSuccess" expires_after="2021-10-25">
   <owner>nohle@chromium.org</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
@@ -664,7 +664,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Nearby.Share.Medium.RequestedBandwidthUpgradeResult"
-    enum="BooleanUpgraded" expires_after="2021-08-19">
+    enum="BooleanUpgraded" expires_after="2021-10-25">
   <owner>nohle@chromium.org</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
@@ -1132,7 +1132,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Nearby.Share.VisibilityChoice" enum="NearbyShareVisibility"
-    expires_after="2021-08-19">
+    expires_after="2021-10-25">
   <owner>nohle@chromium.org</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>

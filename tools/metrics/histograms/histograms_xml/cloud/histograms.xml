@@ -22,7 +22,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="CloudPrint.AuthEvent" enum="CloudPrintAuthEventType"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>thestig@chromium.org</owner>
   <summary>Event counts in CloudPrintAuth.</summary>
 </histogram>
@@ -94,7 +94,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CloudPrint.ServiceEvents" enum="ServiceProcessEventType"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>thestig@chromium.org</owner>
   <summary>Event counts in ServiceProcessControl.</summary>
 </histogram>

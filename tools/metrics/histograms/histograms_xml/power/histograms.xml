@@ -167,7 +167,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="Power.BatteryRemainingAtEndOfSessionOnBattery" units="%"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>tbroch@chromium.org</owner>
   <summary>
     Chrome OS remaining battery charge as percent of the maximum battery charge,
@@ -176,7 +176,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="Power.BatteryRemainingAtStartOfSessionOnAC" units="%"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>tbroch@chromium.org</owner>
   <summary>
     Chrome OS remaining battery charge as percent of the maximum battery charge,
@@ -235,7 +235,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="Power.ConnectedChargingPorts"
-    enum="PowerConnectedChargingPorts" expires_after="2021-08-15">
+    enum="PowerConnectedChargingPorts" expires_after="2021-10-25">
   <owner>bleung@chromium.org</owner>
   <owner>tbroch@chromium.org</owner>
   <summary>
@@ -299,7 +299,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="Power.CpuTimeSecondsPerProcessType" enum="ProcessType2"
-    expires_after="2021-10-17">
+    expires_after="2021-10-25">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
@@ -790,7 +790,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="Power.KernelSuspendTimeOnBattery" units="ms"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>tbroch@chromium.org</owner>
   <summary>
     The time that the kernel took to suspend-to-RAM the Chrome OS device when
@@ -962,7 +962,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="Power.PowerButtonPressInLaptopMode"
-    enum="PowerButtonPressType" expires_after="2021-08-22">
+    enum="PowerButtonPressType" expires_after="2021-10-25">
   <owner>minch@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
@@ -1100,7 +1100,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="Power.UserBrightnessAdjustmentsPerSessionOnBattery"
-    units="units" expires_after="2021-08-22">
+    units="units" expires_after="2021-10-25">
   <owner>tbroch@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <summary>
@@ -1131,7 +1131,7 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 </histogram>
 
 <histogram name="PowerML.ModelNoDim.Result" enum="PowerMLFinalResult"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>

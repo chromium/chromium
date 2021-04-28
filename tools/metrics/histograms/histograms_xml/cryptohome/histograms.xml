@@ -194,7 +194,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cryptohome.DiskCleanupProgress"
-    enum="CryptohomeDiskCleanupProgress" expires_after="2021-08-22">
+    enum="CryptohomeDiskCleanupProgress" expires_after="2021-10-25">
   <owner>slangley@chromium.org</owner>
   <owner>weifangsun@chromium.org</owner>
   <summary>

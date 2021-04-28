@@ -760,7 +760,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.Ranker.Model.Status" enum="RankerModelStatus"
-    expires_after="2021-08-15">
+    expires_after="2021-10-25">
   <owner>rogerm@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -988,7 +988,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.TranslateAssistContentResult"
-    enum="TranslateAssistContentResult" expires_after="2021-08-22">
+    enum="TranslateAssistContentResult" expires_after="2021-10-25">
   <owner>jds@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

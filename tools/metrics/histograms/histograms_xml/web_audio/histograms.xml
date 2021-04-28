@@ -42,7 +42,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAudio.AudioBuffer.SampleRate384kHz" units="Hz"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>rtoy@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
   <summary>

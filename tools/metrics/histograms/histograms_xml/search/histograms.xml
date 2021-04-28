@@ -260,7 +260,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Search.ContextualSearch.TranslationNeeded"
-    enum="ContextualSearchGestureIsTap" expires_after="2021-08-22">
+    enum="ContextualSearchGestureIsTap" expires_after="2021-10-25">
   <owner>donnd@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -284,7 +284,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Search.ContextualSearch.TranslationsOptInIPHWorked"
-    enum="BooleanOptedIn" expires_after="2021-08-22">
+    enum="BooleanOptedIn" expires_after="2021-10-25">
   <owner>donnd@chromium.org</owner>
   <owner>contextual-search-eng@google.com</owner>
   <summary>
@@ -1281,7 +1281,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Search.QueryTiles.FetcherHttpResponseCode"
-    enum="HttpResponseCode" expires_after="2021-08-22">
+    enum="HttpResponseCode" expires_after="2021-10-25">
   <owner>hesen@chromium.org</owner>
   <owner>chrome-upboarding-eng@google.com</owner>
   <summary>Records the HTTP response code get from TileFetcher.</summary>

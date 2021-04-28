@@ -125,7 +125,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.AutofillAssistant.FeatureModuleInstallation"
     enum="AutofillAssistantFeatureModuleInstallation"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>mcarlen@chromium.org</owner>
   <owner>autofill_assistant+watch@google.com</owner>
   <summary>
@@ -570,7 +570,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.DarkTheme.DarkSearchRequested" enum="Boolean"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>wylieb@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
@@ -583,7 +583,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.DarkTheme.EnabledReason" enum="DarkThemeEnabledReason"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -593,7 +593,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.DarkTheme.EnabledState" enum="BooleanEnabled"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -603,7 +603,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.DarkTheme.Preference.State"
-    enum="DarkThemePreferences" expires_after="2021-08-22">
+    enum="DarkThemePreferences" expires_after="2021-10-25">
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -1844,7 +1844,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.PackageStats.CacheSize" units="MB"
-    expires_after="2021-08-25">
+    expires_after="2021-10-25">
   <owner>nyquist@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -1853,7 +1853,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.PackageStats.CodeSize" units="MB"
-    expires_after="2021-08-25">
+    expires_after="2021-10-25">
   <owner>nyquist@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -1864,7 +1864,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.PackageStats.DataSize" units="MB"
-    expires_after="2021-08-25">
+    expires_after="2021-10-25">
   <owner>nyquist@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>

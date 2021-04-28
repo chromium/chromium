@@ -41,7 +41,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </variants>
 
 <histogram name="ChromeOS.Apps.ExternalProtocolDialog"
-    enum="ArcIntentHandlerAction" expires_after="2021-08-22">
+    enum="ArcIntentHandlerAction" expires_after="2021-10-25">
   <owner>dominickn@chromium.org</owner>
   <owner>melzhang@chromium.org</owner>
   <owner>mxcai@chromium.org</owner>
@@ -591,7 +591,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="ChromeOS.HardwareVerifier.Report"
-    enum="HardwareVerifierQualificationStatus" expires_after="2021-08-22">
+    enum="HardwareVerifierQualificationStatus" expires_after="2021-10-25">
 <!-- Name completed by histogram_suffixes name="HardwareVerifierSupportCategory" -->
 
   <owner>itspeter@chromium.org</owner>

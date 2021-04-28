@@ -241,7 +241,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Login.SuccessReason" enum="LoginSuccessReason"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>achuith@chromium.org</owner>
   <summary>Chrome OS login success reason.</summary>
 </histogram>

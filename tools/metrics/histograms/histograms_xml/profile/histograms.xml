@@ -376,7 +376,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Profile.NumberOfAccountsPerProfile" units="units"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>msarda@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -765,7 +765,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ProfileChooser.HasProfilesShown" enum="BooleanShown"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>vasilii@chromium.org</owner>
   <owner>ewald@chromium.org</owner>
   <summary>
@@ -775,7 +775,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ProfilePicker.AskOnStartup" enum="BooleanEnabled"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>msalama@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -786,7 +786,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ProfilePicker.AskOnStartupChanged" enum="BooleanEnabled"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>msalama@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -808,7 +808,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ProfilePicker.NewProfileTheme" enum="ChromeColorsInfo"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>msalama@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -818,7 +818,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ProfilePicker.Shown" enum="ProfilePickerEntryPoint"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>msalama@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -828,7 +828,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ProfilePicker.StartupTime.BeforeCreation" units="ms"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>msalama@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -839,7 +839,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ProfilePicker.StartupTime.FirstPaint" units="ms"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>msalama@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -849,7 +849,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ProfilePicker.StartupTime.FirstPaint.FromApplicationStart"
-    units="ms" expires_after="2021-08-22">
+    units="ms" expires_after="2021-10-25">
   <owner>alexilin@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -863,7 +863,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ProfilePicker.StartupTime.MainViewInitialized" units="ms"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>msalama@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -873,7 +873,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ProfilePicker.StartupTime.WebViewCreated" units="ms"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>msalama@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -883,7 +883,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ProfilePicker.UiVisited" enum="ProfilePickerPages"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>msalama@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -893,7 +893,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ProfilePicker.UserAction" enum="ProfilePickerAction"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>msalama@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>

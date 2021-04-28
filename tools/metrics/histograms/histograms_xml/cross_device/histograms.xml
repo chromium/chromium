@@ -1664,7 +1664,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="MultiDevice.SecureChannel.BLE.Performance.ConnectionToAuthenticationDuration.Background"
-    units="ms" expires_after="2021-08-22">
+    units="ms" expires_after="2021-10-25">
   <owner>vecore@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1882,7 +1882,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MultiDevice.Setup.HasDuplicateEligibleHostDeviceNames"
-    enum="BooleanDuplicate" expires_after="2021-08-22">
+    enum="BooleanDuplicate" expires_after="2021-10-25">
   <owner>nohle@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>

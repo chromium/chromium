@@ -191,7 +191,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSettings.DefaultCookiesSetting" enum="ContentSetting"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>The default cookies setting at profile open.</summary>
@@ -214,14 +214,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSettings.DefaultJavaScriptSetting"
-    enum="ContentSetting" expires_after="2021-08-22">
+    enum="ContentSetting" expires_after="2021-10-25">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>The default JavaScript setting at profile open.</summary>
 </histogram>
 
 <histogram name="ContentSettings.DefaultLocationSetting" enum="ContentSetting"
-    expires_after="2021-08-22">
+    expires_after="2021-10-25">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>The default location setting at profile open.</summary>
@@ -734,7 +734,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.DisplayStatusOnOpen"
-    enum="ContentSuggestionsDisplayStatus" expires_after="2021-08-22">
+    enum="ContentSuggestionsDisplayStatus" expires_after="2021-10-25">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
