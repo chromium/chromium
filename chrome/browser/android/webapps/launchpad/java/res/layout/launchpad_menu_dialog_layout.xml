@@ -17,6 +17,10 @@
       android:id="@+id/dialog_header"
       layout="@layout/launchpad_app_menu_header" />
 
+  <include
+      android:id="@+id/permissions"
+      layout="@layout/launchpad_app_menu_permissions" />
+
   <View
       style="@style/HorizontalDivider"/>
 

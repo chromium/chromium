@@ -14,14 +14,18 @@ import static org.hamcrest.Matchers.allOf;
 
 import android.app.Activity;
 import android.app.Instrumentation.ActivityResult;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.support.test.InstrumentationRegistry;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.intent.Intents;
+import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -33,10 +37,14 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.browser_ui.widget.tile.TileView;
+import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
@@ -131,7 +139,7 @@ public class LaunchpadPageTest {
     }
 
     @Test
-    @SmallTest
+    @MediumTest
     public void testShowAppManagementMenu() {
         openLaunchpadPage();
         ModalDialogManager modalDialogManager =
@@ -150,5 +158,56 @@ public class LaunchpadPageTest {
                 APP_URL_2, ((TextView) dialogView.findViewById(R.id.menu_header_url)).getText());
         ImageView icon = (ImageView) dialogView.findViewById(R.id.menu_header_image);
         Assert.assertEquals(TEST_ICON, ((BitmapDrawable) icon.getDrawable()).getBitmap());
+    }
+
+    @Test
+    @MediumTest
+    public void testAppPermission() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Set permission for Notifications to Allow, Mic to Ask, Camera to Block, and Location
+            // to Allow.
+            Profile profile = Profile.getLastUsedRegularProfile();
+            PermissionInfo notifications = new PermissionInfo(ContentSettingsType.NOTIFICATIONS,
+                    APP_URL_1, null /* embedder */, false /* isEmbargoed */);
+            notifications.setContentSetting(profile, ContentSettingValues.ALLOW);
+            PermissionInfo mic = new PermissionInfo(ContentSettingsType.MEDIASTREAM_MIC, APP_URL_1,
+                    null /* embedder */, false /* isEmbargoed */);
+            mic.setContentSetting(profile, ContentSettingValues.ASK);
+            PermissionInfo camera = new PermissionInfo(ContentSettingsType.MEDIASTREAM_CAMERA,
+                    APP_URL_1, null /* embedder */, false /* isEmbargoed */);
+            camera.setContentSetting(profile, ContentSettingValues.BLOCK);
+            PermissionInfo location = new PermissionInfo(ContentSettingsType.GEOLOCATION, APP_URL_1,
+                    null /* embedder */, false /* isEmbargoed */);
+            location.setContentSetting(profile, ContentSettingValues.ALLOW);
+        });
+
+        openLaunchpadPage();
+        ModalDialogManager modalDialogManager =
+                mActivityTestRule.getActivity().getModalDialogManager();
+
+        View item = mItemContainer.getChildAt(0);
+        TouchCommon.longPressView(item);
+        PropertyModel dialogModel = modalDialogManager.getCurrentDialogForTest();
+        View dialogView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
+
+        Context context = InstrumentationRegistry.getTargetContext();
+
+        ImageView notificationsIcon =
+                (ImageView) dialogView.findViewById(R.id.notifications_button);
+        Assert.assertEquals(
+                AppCompatResources.getColorStateList(context, R.color.default_icon_color),
+                notificationsIcon.getImageTintList());
+        ImageView micIcon = (ImageView) dialogView.findViewById(R.id.mic_button);
+        Assert.assertEquals(
+                AppCompatResources.getColorStateList(context, R.color.default_icon_color_disabled),
+                micIcon.getImageTintList());
+        ImageView cameraIcon = (ImageView) dialogView.findViewById(R.id.camera_button);
+        Assert.assertEquals(
+                AppCompatResources.getColorStateList(context, R.color.default_icon_color_disabled),
+                cameraIcon.getImageTintList());
+        ImageView locationIcon = (ImageView) dialogView.findViewById(R.id.location_button);
+        Assert.assertEquals(
+                AppCompatResources.getColorStateList(context, R.color.default_icon_color),
+                locationIcon.getImageTintList());
     }
 }

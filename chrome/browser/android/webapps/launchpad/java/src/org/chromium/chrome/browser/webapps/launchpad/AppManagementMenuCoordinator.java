@@ -23,6 +23,8 @@ class AppManagementMenuCoordinator implements ModalDialogProperties.Controller {
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private PropertyModel mDialogModel;
 
+    private AppManagementMenuPermissionsCoordinator mPermissionsCoordinator;
+
     AppManagementMenuCoordinator(
             Context context, Supplier<ModalDialogManager> modalDialogManagerSupplier) {
         mContext = context;
@@ -40,6 +42,10 @@ class AppManagementMenuCoordinator implements ModalDialogProperties.Controller {
     @Override
     public void onDismiss(PropertyModel model, int dismissalCause) {
         mDialogModel = null;
+        if (mPermissionsCoordinator != null) {
+            mPermissionsCoordinator.destroy();
+            mPermissionsCoordinator = null;
+        }
     }
 
     void show(LaunchpadItem item) {
@@ -61,6 +67,9 @@ class AppManagementMenuCoordinator implements ModalDialogProperties.Controller {
         PropertyModel headerModel = AppManagementMenuHeaderProperties.buildHeader(item);
         PropertyModelChangeProcessor.create(
                 headerModel, headerView, new AppManagementMenuHeaderViewBinder());
+
+        mPermissionsCoordinator = new AppManagementMenuPermissionsCoordinator(
+                (AppManagementMenuPermissionsView) dialogView.findViewById(R.id.permissions), item);
 
         return dialogView;
     }
