@@ -1756,7 +1756,8 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     }
 
     private void updateProgressBarVisibility() {
-        getProgressBar().setVisibility(mTabSwitcherState != STATIC_TAB ? INVISIBLE : VISIBLE);
+        getProgressBar().setVisibility(
+                mIsShowingStartSurface || mTabSwitcherState != STATIC_TAB ? INVISIBLE : VISIBLE);
     }
 
     @Override
@@ -1871,6 +1872,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         }
 
         getMenuButtonCoordinator().setVisibility(!mIsShowingStartSurface);
+        updateProgressBarVisibility();
 
         // The URL focusing animator set shouldn't be populated before native initialization. It is
         // possible that this function is called before native initialization when Instant Start
