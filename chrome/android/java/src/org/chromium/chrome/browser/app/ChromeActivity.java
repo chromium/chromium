@@ -2414,7 +2414,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         }
 
         UmaSessionStats.updateMetricsServiceState();
-        mUmaSessionStats.startNewSession(getTabModelSelector());
+        mUmaSessionStats.startNewSession(getTabModelSelector(), getWindowAndroid());
     }
 
     /**
