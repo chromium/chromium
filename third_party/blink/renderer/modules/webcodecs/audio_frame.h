@@ -33,7 +33,7 @@ class MODULES_EXPORT AudioFrame final : public ScriptWrappable {
   AudioFrame* clone(ExceptionState&);
 
   void close();
-  uint64_t timestamp() const;
+  int64_t timestamp() const;
   AudioBuffer* buffer();
 
   scoped_refptr<media::AudioBuffer> data() const { return data_; }
@@ -46,7 +46,7 @@ class MODULES_EXPORT AudioFrame final : public ScriptWrappable {
 
   scoped_refptr<media::AudioBuffer> data_;
 
-  uint64_t timestamp_;
+  int64_t timestamp_;
   Member<AudioBuffer> buffer_;
 };
 

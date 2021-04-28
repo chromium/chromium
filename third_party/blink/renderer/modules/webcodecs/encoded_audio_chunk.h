@@ -26,7 +26,7 @@ class MODULES_EXPORT EncodedAudioChunk final : public ScriptWrappable {
 
   // encoded_audio_chunk.idl implementation.
   String type() const;
-  uint64_t timestamp() const;
+  int64_t timestamp() const;
   DOMArrayBuffer* data() const;
 
   void Trace(Visitor* visitor) const override {

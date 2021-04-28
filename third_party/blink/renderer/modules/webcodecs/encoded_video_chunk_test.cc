@@ -28,7 +28,7 @@ class EncodedVideoChunkTest : public testing::Test {
 
 TEST_F(EncodedVideoChunkTest, ConstructorAndAttributes) {
   String type = "key";
-  uint64_t timestamp = 1000000;
+  int64_t timestamp = 1000000;
   std::string data = "test";
   auto* init = EncodedVideoChunkInit::Create();
   init->setTimestamp(timestamp);
@@ -44,7 +44,7 @@ TEST_F(EncodedVideoChunkTest, ConstructorAndAttributes) {
 
 TEST_F(EncodedVideoChunkTest, ConstructorWithDuration) {
   String type = "key";
-  uint64_t timestamp = 1000000;
+  int64_t timestamp = 1000000;
   uint64_t duration = 16667;
   std::string data = "test";
   auto* init = EncodedVideoChunkInit::Create();

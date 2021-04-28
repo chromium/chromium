@@ -417,6 +417,26 @@ promise_test(async t => {
 
   decoder.configure({codec: vp9.codec});
   decoder.decode(new EncodedVideoChunk(
+      {type: 'key', timestamp: -25, data: view(buffer, vp9.frames[0])}));
+
+  await decoder.flush();
+  assert_equals(numOutputs, 1, 'outputs');
+}, 'Test decoding a frame with a negative timestamp.');
+
+promise_test(async t => {
+  let buffer = await vp9.buffer();
+
+  let numOutputs = 0;
+  let decoder = new VideoDecoder({
+    output: t.step_func(frame => {
+      frame.close();
+      ++numOutputs;
+    }),
+    error: t.unreached_func()
+  });
+
+  decoder.configure({codec: vp9.codec});
+  decoder.decode(new EncodedVideoChunk(
       {type: 'key', timestamp: 0, data: view(buffer, vp9.frames[0])}));
 
   // Wait for the first frame to be decoded.

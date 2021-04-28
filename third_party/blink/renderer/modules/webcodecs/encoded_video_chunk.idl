@@ -14,7 +14,7 @@ enum EncodedVideoChunkType {
   constructor(EncodedVideoChunkInit init);
   readonly attribute EncodedVideoChunkType type;
   // TODO: Add frame dependency information
-  readonly attribute unsigned long long timestamp;  // microseconds
+  readonly attribute long long timestamp;  // microseconds
   readonly attribute unsigned long long? duration;  // microseconds
   readonly attribute ArrayBuffer data;
 };

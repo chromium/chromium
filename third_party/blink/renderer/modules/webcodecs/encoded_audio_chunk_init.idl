@@ -6,6 +6,6 @@
 
 dictionary EncodedAudioChunkInit {
   required EncodedAudioChunkType type;
-  required unsigned long long timestamp; // microseconds
+  required long long timestamp; // microseconds
   required BufferSource data;
 };

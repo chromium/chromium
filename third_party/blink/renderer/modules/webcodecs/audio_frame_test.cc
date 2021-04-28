@@ -16,7 +16,7 @@ namespace blink {
 
 namespace {
 // Default test values
-constexpr uint64_t kTimestampInMicroSeconds = 1234;
+constexpr int64_t kTimestampInMicroSeconds = 1234;
 constexpr int kChannels = 2;
 constexpr int kFrames = 20;
 constexpr int kSampleRate = 8000;

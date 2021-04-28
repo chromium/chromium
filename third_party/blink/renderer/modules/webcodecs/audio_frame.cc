@@ -51,7 +51,7 @@ void AudioFrame::close() {
   buffer_.Clear();
 }
 
-uint64_t AudioFrame::timestamp() const {
+int64_t AudioFrame::timestamp() const {
   return timestamp_;
 }
 

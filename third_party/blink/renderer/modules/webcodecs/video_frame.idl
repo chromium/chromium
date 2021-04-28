@@ -23,7 +23,7 @@
   readonly attribute FrozenArray<Plane>? planes;
 
   // Presentation timestamp, in microseconds.
-  readonly attribute unsigned long long? timestamp;
+  readonly attribute long long? timestamp;
   // Presentation duration, in microseconds.
   readonly attribute unsigned long long? duration;
 

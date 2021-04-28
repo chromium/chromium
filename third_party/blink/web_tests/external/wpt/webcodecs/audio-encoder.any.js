@@ -74,10 +74,50 @@ promise_test(async t => {
   assert_equals(outputs[0].timestamp, 0, "first chunk timestamp");
   for (chunk of outputs) {
     assert_greater_than(chunk.data.byteLength, 0);
-    assert_greater_than(timestamp_us, chunk.timestamp);
+    assert_greater_than_equal(timestamp_us, chunk.timestamp);
   }
 }, 'Simple audio encoding');
 
+promise_test(async t => {
+  let sample_rate = 48000;
+  let total_duration_s = 1;
+  let frame_count = 10;
+  let outputs = [];
+  let init = {
+    error: e => {
+      assert_unreached('error: ' + e);
+    },
+    output: chunk => {
+      outputs.push(chunk);
+    }
+  };
+
+  let encoder = new AudioEncoder(init);
+
+  assert_equals(encoder.state, 'unconfigured');
+  let config = {
+    codec: 'opus',
+    sampleRate: sample_rate,
+    numberOfChannels: 2,
+    bitrate: 256000  // 256kbit
+  };
+
+  encoder.configure(config);
+
+  let timestamp_us = -10000;
+  let frame = make_audio_frame(
+      timestamp_us, config.numberOfChannels, config.sampleRate, 10000);
+  encoder.encode(frame);
+  frame.close();
+  await encoder.flush();
+  encoder.close();
+  assert_greater_than_equal(outputs.length, 1);
+  assert_equals(outputs[0].timestamp, -10000, 'first chunk timestamp');
+  for (chunk of outputs) {
+    assert_greater_than(chunk.data.byteLength, 0);
+    assert_greater_than_equal(chunk.timestamp, timestamp_us);
+  }
+}, 'Encode audio with negative timestamp');
 
 async function checkEncodingError(config, good_frames, bad_frame) {
   let error = null;

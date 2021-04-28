@@ -14,6 +14,6 @@
 
   void close();
 
-  readonly attribute unsigned long long timestamp;  // microseconds
+  readonly attribute long long timestamp;  // microseconds
   readonly attribute AudioBuffer buffer;
 };

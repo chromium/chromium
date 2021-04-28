@@ -13,7 +13,7 @@ enum EncodedAudioChunkType {
 ] interface EncodedAudioChunk {
   constructor(EncodedAudioChunkInit init);
   readonly attribute EncodedAudioChunkType type;
-  readonly attribute unsigned long long timestamp;  // microseconds
+  readonly attribute long long timestamp;  // microseconds
   readonly attribute ArrayBuffer data;
 
   // TODO(chcunningham): Duration? Or better yet, should we have a unified audio/video "chunk"?

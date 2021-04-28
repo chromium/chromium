@@ -229,6 +229,35 @@ promise_test(async t => {
     description: view(buffer, opus.description)
   });
 
+  let ts = 0;
+  opus.frames.forEach(chunk => {
+    decoder.decode(new EncodedAudioChunk(
+        {type: 'key', timestamp: -ts, data: view(buffer, chunk)}));
+    ts += opus.duration;
+  });
+
+  await decoder.flush();
+  assert_equals(numOutputs, opus.frames.length, 'outputs');
+}, 'Test Opus decoding with a negative timestamp');
+
+promise_test(async t => {
+  let buffer = await opus.buffer();
+  let numOutputs = 0;
+  let decoder = new AudioDecoder({
+    output: t.step_func(frame => {
+      frame.close();
+      ++numOutputs;
+    }),
+    error: t.unreached_func()
+  });
+
+  decoder.configure({
+    codec: opus.codec,
+    sampleRate: opus.sampleRate,
+    numberOfChannels: opus.numberOfChannels,
+    description: view(buffer, opus.description)
+  });
+
   decoder.decode(new EncodedAudioChunk(
       {type: 'key', timestamp: 0, data: view(buffer, opus.frames[0])}));
 

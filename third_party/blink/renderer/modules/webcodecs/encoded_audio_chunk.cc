@@ -35,7 +35,7 @@ String EncodedAudioChunk::type() const {
   return key_frame_ ? "key" : "delta";
 }
 
-uint64_t EncodedAudioChunk::timestamp() const {
+int64_t EncodedAudioChunk::timestamp() const {
   return timestamp_.InMicroseconds();
 }
 

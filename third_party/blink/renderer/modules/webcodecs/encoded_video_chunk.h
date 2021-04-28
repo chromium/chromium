@@ -26,7 +26,7 @@ class MODULES_EXPORT EncodedVideoChunk final : public ScriptWrappable {
 
   // encoded_video_chunk.idl implementation.
   String type() const;
-  uint64_t timestamp() const;
+  int64_t timestamp() const;
   base::Optional<uint64_t> duration() const;
   DOMArrayBuffer* data() const;
 

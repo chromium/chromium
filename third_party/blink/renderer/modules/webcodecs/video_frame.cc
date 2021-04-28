@@ -790,7 +790,7 @@ uint32_t VideoFrame::displayHeight() const {
   return local_frame->natural_size().width();
 }
 
-base::Optional<uint64_t> VideoFrame::timestamp() const {
+base::Optional<int64_t> VideoFrame::timestamp() const {
   auto local_frame = handle_->frame();
   if (!local_frame || local_frame->timestamp() == media::kNoTimestamp)
     return base::nullopt;

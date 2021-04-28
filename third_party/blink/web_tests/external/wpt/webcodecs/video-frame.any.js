@@ -16,6 +16,13 @@ test(t => {
 }, 'Test we can construct a VideoFrame.');
 
 test(t => {
+  let image = makeImageBitmap(32, 16);
+  let frame = new VideoFrame(image, {timestamp: -10});
+  assert_equals(frame.timestamp, -10, 'timestamp');
+  frame.close();
+}, 'Test we can construct a VideoFrame with a negative timestamp.');
+
+test(t => {
   let image = makeImageBitmap(1, 1);
   let frame = new VideoFrame(image, {timestamp: 10});
 

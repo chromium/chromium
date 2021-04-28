@@ -38,7 +38,7 @@ String EncodedVideoChunk::type() const {
   return key_frame_ ? "key" : "delta";
 }
 
-uint64_t EncodedVideoChunk::timestamp() const {
+int64_t EncodedVideoChunk::timestamp() const {
   return timestamp_.InMicroseconds();
 }
 
