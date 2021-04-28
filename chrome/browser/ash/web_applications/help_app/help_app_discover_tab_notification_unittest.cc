@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/web_applications/help_app/help_app_discover_tab_notification.h"
 
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/notification_handler.h"
@@ -74,6 +75,16 @@ TEST_F(HelpAppDiscoverTabNotificationTest, ShowsNotificationCorrectly) {
             base::UTF16ToASCII(GetDiscoverTabNotification().message()));
 }
 
+TEST_F(HelpAppDiscoverTabNotificationTest, LogsMetricWhenNotificationShown) {
+  base::UserActionTester user_action_tester;
+
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "Discover.DiscoverTabNotification.Shown"));
+  discover_tab_notification_->Show();
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Discover.DiscoverTabNotification.Shown"));
+}
+
 TEST_F(HelpAppDiscoverTabNotificationTest, ClickingNotificationDismissesIt) {
   discover_tab_notification_->Show();
 
@@ -98,6 +109,20 @@ TEST_F(HelpAppDiscoverTabNotificationTest,
                                       /*reply=*/base::nullopt);
 
   EXPECT_EQ(false, HasDiscoverTabNotification());
+}
+
+TEST_F(HelpAppDiscoverTabNotificationTest, LogsMetricWhenNotificationClicked) {
+  base::UserActionTester user_action_tester;
+  discover_tab_notification_->Show();
+
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "Discover.DiscoverTabNotification.Clicked"));
+  notification_tester_->SimulateClick(NotificationHandler::Type::TRANSIENT,
+                                      kShowHelpAppDiscoverTabNotificationId,
+                                      /*action_index=*/0,
+                                      /*reply=*/base::nullopt);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Discover.DiscoverTabNotification.Clicked"));
 }
 
 }  // namespace chromeos

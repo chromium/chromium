@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/web_applications/help_app/help_app_discover_tab_notification.h"
 
 #include "ash/public/cpp/notification_utils.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -42,6 +44,9 @@ void HelpAppDiscoverTabNotification::Show() {
           message_center::SystemNotificationWarningLevel::NORMAL);
 
   SystemNotificationHelper::GetInstance()->Display(*notification);
+
+  base::RecordAction(
+      base::UserMetricsAction("Discover.DiscoverTabNotification.Shown"));
 }
 
 void HelpAppDiscoverTabNotification::OnClick(base::Optional<int> button_index) {
@@ -53,6 +58,9 @@ void HelpAppDiscoverTabNotification::OnClick(base::Optional<int> button_index) {
   params.launch_source =
       apps::mojom::LaunchSource::kFromDiscoverTabNotification;
   LaunchSystemWebAppAsync(profile_, web_app::SystemAppType::HELP, params);
+
+  base::RecordAction(
+      base::UserMetricsAction("Discover.DiscoverTabNotification.Clicked"));
 
   if (onclick_callback_) {
     onclick_callback_.Run();
