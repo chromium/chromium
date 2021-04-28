@@ -324,6 +324,9 @@ void RendererBlinkPlatformImpl::CacheMetadata(
     base::Time response_time,
     const uint8_t* data,
     size_t size) {
+  // The browser-side GeneratedCodeCache ignores writes over 2GB.
+  if (size > std::numeric_limits<int32_t>::max())
+    return;
   // Let the browser know we generated cacheable metadata for this resource.
   // The browser may cache it and return it on subsequent responses to speed
   // the processing of this resource.
