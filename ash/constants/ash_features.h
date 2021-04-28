@@ -209,6 +209,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kLacrosPrimary;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kLanguageSettingsUpdate2;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kLoginDeviceManagementDisclosure;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kMediaAppAnnotation;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kMediaAppDisplayExif;
@@ -362,6 +364,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsImeSandboxEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsInstantTetheringBackgroundAdvertisingSupported();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsKerberosSettingsSectionEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLoginDeviceManagementDisclosureEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsMinimumChromeVersionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNetworkingInDiagnosticsAppEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNewOobeLayoutEnabled();

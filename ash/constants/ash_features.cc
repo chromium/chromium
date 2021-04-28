@@ -475,6 +475,10 @@ const base::Feature kLacrosSupport{"LacrosSupport",
 const base::Feature kLanguageSettingsUpdate2{"LanguageSettingsUpdate2",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables device management disclosure on login / lock screen.
+const base::Feature kLoginDeviceManagementDisclosure{
+    "LoginDeviceManagementDisclosure", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Controls whether to enable the requirement of a minimum chrome version on the
 // device through the policy DeviceMinimumVersion. If the requirement is
 // not met and the warning time in the policy has expired, the user is
@@ -825,6 +829,10 @@ bool IsInstantTetheringBackgroundAdvertisingSupported() {
 
 bool IsKerberosSettingsSectionEnabled() {
   return base::FeatureList::IsEnabled(kKerberosSettingsSection);
+}
+
+bool IsLoginDeviceManagementDisclosureEnabled() {
+  return base::FeatureList::IsEnabled(kLoginDeviceManagementDisclosure);
 }
 
 bool IsMinimumChromeVersionEnabled() {
