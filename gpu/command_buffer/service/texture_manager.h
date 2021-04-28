@@ -474,7 +474,6 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
 
  private:
   friend class MailboxManagerTest;
-  friend class TextureDefinition;
   friend class TextureManager;
   friend class TextureRef;
   friend class TextureTestHelper;

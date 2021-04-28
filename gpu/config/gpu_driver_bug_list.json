@@ -718,9 +718,6 @@
         "value": "1.3",
         "value2": "1.4"
       },
-      "features": [
-        "avoid_egl_image_target_texture_reuse"
-      ],
       "disabled_extensions": [
         "EGL_KHR_wait_sync"
       ]

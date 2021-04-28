@@ -20,7 +20,7 @@
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
-#include "gpu/command_buffer/service/texture_definition.h"
+#include "gpu/command_buffer/service/native_image_buffer.h"
 #include "gpu/config/gpu_switches.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_fence.h"
@@ -1575,10 +1575,6 @@ void FeatureInfo::InitializeFeatures() {
     validators_.src_blend_factor.AddValue(GL_ONE_MINUS_SRC1_ALPHA_EXT);
     validators_.dst_blend_factor.AddValue(GL_ONE_MINUS_SRC1_ALPHA_EXT);
     validators_.g_l_state.AddValue(GL_MAX_DUAL_SOURCE_DRAW_BUFFERS_EXT);
-  }
-
-  if (workarounds_.avoid_egl_image_target_texture_reuse) {
-    TextureDefinition::AvoidEGLTargetTextureReuse();
   }
 
   if (gl_version_info_->IsLowerThanGL(4, 3)) {

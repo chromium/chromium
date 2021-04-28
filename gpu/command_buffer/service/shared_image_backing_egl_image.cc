@@ -4,11 +4,11 @@
 
 #include "gpu/command_buffer/service/shared_image_backing_egl_image.h"
 
+#include "gpu/command_buffer/service/native_image_buffer.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image_batch_access_manager.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image_representation_skia_gl.h"
-#include "gpu/command_buffer/service/texture_definition.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "ui/gl/gl_fence_egl.h"
 #include "ui/gl/gl_utils.h"
