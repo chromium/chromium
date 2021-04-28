@@ -177,7 +177,7 @@ NOINLINE void DetermineAlgorithmAndRun(const NGLayoutAlgorithmParams& params,
   } else if (box.IsLayoutNGGrid() &&
              RuntimeEnabledFeatures::LayoutNGGridEnabled()) {
     CreateAlgorithmAndRun<NGGridLayoutAlgorithm>(params, callback);
-  } else if (box.IsLayoutImage()) {
+  } else if (box.IsLayoutReplaced()) {
     DCHECK(RuntimeEnabledFeatures::LayoutNGReplacedEnabled());
     CreateAlgorithmAndRun<NGReplacedLayoutAlgorithm>(params, callback);
   } else if (box.IsLayoutNGFieldset()) {
@@ -693,13 +693,13 @@ void NGBlockNode::FinishLayout(LayoutBlockFlow* block_flow,
   const auto& physical_fragment =
       To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment());
 
-  if (box_->IsLayoutImage()) {
+  if (box_->IsLayoutReplaced()) {
     DCHECK(RuntimeEnabledFeatures::LayoutNGReplacedEnabled());
     DCHECK(CanUseNewLayout());
-    // NG images are painted with legacy painters. We need to force a legacy
-    // "layout" so that paint invalidation flags are updated. But we don't want
-    // to use the size that legacy calculates, so we force legacy to use NG's
-    // size via BoxLayoutExtraInput's override fields.
+    // NG replaced elements are painted with legacy painters. We need to force
+    // a legacy "layout" so that paint invalidation flags are updated. But we
+    // don't want to use the size that legacy calculates, so we force legacy to
+    // use NG's size via BoxLayoutExtraInput's override fields.
     BoxLayoutExtraInput input(*box_);
     SetupBoxLayoutExtraInput(constraint_space, *box_, &input);
     NGBoxFragment fragment(constraint_space.GetWritingDirection(),
@@ -1023,7 +1023,7 @@ bool NGBlockNode::CanUseNewLayout(const LayoutBox& box) {
   if (box.ForceLegacyLayout())
     return false;
   return box.IsLayoutNGMixin() ||
-         (box.IsLayoutImage() && !box.IsMedia() && !box.IsListMarkerImage() &&
+         (box.IsLayoutReplaced() &&
           RuntimeEnabledFeatures::LayoutNGReplacedEnabled());
 }
 
