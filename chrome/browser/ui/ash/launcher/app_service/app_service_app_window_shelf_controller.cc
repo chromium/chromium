@@ -88,7 +88,7 @@ AppServiceAppWindowShelfController::AppServiceAppWindowShelfController(
 
   for (auto* browser : *BrowserList::GetInstance()) {
     if (browser && browser->window() && browser->window()->GetNativeWindow()) {
-      observed_windows_.Add(browser->window()->GetNativeWindow());
+      observed_windows_.AddObservation(browser->window()->GetNativeWindow());
 
       // Observe the browser tabs
       TabStripModel* tab_strip = browser->tab_strip_model();
@@ -98,7 +98,7 @@ AppServiceAppWindowShelfController::AppServiceAppWindowShelfController(
           continue;
         aura::Window* window = tab->GetNativeView();
         if (window) {
-          observed_windows_.Add(window);
+          observed_windows_.AddObservation(window);
         }
       }
     }
@@ -116,7 +116,7 @@ AppServiceAppWindowShelfController::~AppServiceAppWindowShelfController() {
   }
 
   app_service_instance_helper_.reset();
-  observed_windows_.RemoveAll();
+  observed_windows_.RemoveAllObservations();
 }
 
 AppWindowShelfItemController*
@@ -176,7 +176,7 @@ void AppServiceAppWindowShelfController::OnWindowInitialized(
   if (!widget || !widget->is_top_level())
     return;
 
-  observed_windows_.Add(window);
+  observed_windows_.AddObservation(window);
   if (arc_tracker_)
     arc_tracker_->AddCandidateWindow(window);
 }
@@ -207,7 +207,7 @@ void AppServiceAppWindowShelfController::OnWindowVisibilityChanged(
     aura::Window* window,
     bool visible) {
   // Skip OnWindowVisibilityChanged for ancestors/descendants.
-  if (!observed_windows_.IsObserving(window))
+  if (!observed_windows_.IsObservingSource(window))
     return;
 
   if (arc_tracker_)
@@ -254,8 +254,8 @@ void AppServiceAppWindowShelfController::OnWindowVisibilityChanged(
 
 void AppServiceAppWindowShelfController::OnWindowDestroying(
     aura::Window* window) {
-  DCHECK(observed_windows_.IsObserving(window));
-  observed_windows_.Remove(window);
+  DCHECK(observed_windows_.IsObservingSource(window));
+  observed_windows_.RemoveObservation(window);
   if (arc_tracker_)
     arc_tracker_->RemoveCandidateWindow(window);
   if (crostini_tracker_)
@@ -332,7 +332,7 @@ void AppServiceAppWindowShelfController::OnInstanceUpdate(
   }
 
   aura::Window* window = update.Window();
-  if (!observed_windows_.IsObserving(window))
+  if (!observed_windows_.IsObservingSource(window))
     return;
 
   ash::ShelfID shelf_id(update.AppId(), update.LaunchId());
@@ -452,15 +452,15 @@ AppWindowBase* AppServiceAppWindowShelfController::GetAppWindow(
 }
 
 void AppServiceAppWindowShelfController::ObserveWindow(aura::Window* window) {
-  if (!window || observed_windows_.IsObserving(window))
+  if (!window || observed_windows_.IsObservingSource(window))
     return;
-  observed_windows_.Add(window);
+  observed_windows_.AddObservation(window);
 }
 
 bool AppServiceAppWindowShelfController::IsObservingWindow(
     aura::Window* window) {
   DCHECK(window);
-  return observed_windows_.IsObserving(window);
+  return observed_windows_.IsObservingSource(window);
 }
 
 std::vector<aura::Window*> AppServiceAppWindowShelfController::GetArcWindows() {
@@ -474,7 +474,7 @@ std::vector<aura::Window*> AppServiceAppWindowShelfController::GetArcWindows() {
 void AppServiceAppWindowShelfController::SetWindowActivated(
     aura::Window* window,
     bool active) {
-  if (!window || !observed_windows_.IsObserving(window))
+  if (!window || !observed_windows_.IsObservingSource(window))
     return;
 
   const ash::ShelfID shelf_id = GetShelfId(window);

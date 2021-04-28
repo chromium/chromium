@@ -11,7 +11,7 @@
 
 #include "ash/public/cpp/shelf_types.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ui/ash/launcher/app_service/app_service_instance_registry_helper.h"
 #include "chrome/browser/ui/ash/launcher/app_window_shelf_controller.h"
@@ -140,7 +140,8 @@ class AppServiceAppWindowShelfController
                                  content::BrowserContext* browser_context);
 
   AuraWindowToAppWindow aura_window_to_app_window_;
-  ScopedObserver<aura::Window, aura::WindowObserver> observed_windows_{this};
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      observed_windows_{this};
 
   apps::AppServiceProxyChromeOs* proxy_ = nullptr;
   std::unique_ptr<AppServiceInstanceRegistryHelper>

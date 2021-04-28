@@ -59,7 +59,7 @@ AppServiceAppWindowArcTracker::~AppServiceAppWindowArcTracker() {
   ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(observed_profile_);
   DCHECK(prefs);
   prefs->RemoveObserver(this);
-  observed_windows_.RemoveAll();
+  observed_windows_.RemoveAllObservations();
 }
 
 void AppServiceAppWindowArcTracker::ActiveUserChanged(
@@ -110,8 +110,8 @@ void AppServiceAppWindowArcTracker::HandleWindowDestroying(
   if (it != task_id_to_arc_app_window_info_.end())
     it->second->set_window(nullptr);
 
-  if (observed_windows_.IsObserving(window))
-    observed_windows_.Remove(window);
+  if (observed_windows_.IsObservingSource(window))
+    observed_windows_.RemoveObservation(window);
 }
 
 void AppServiceAppWindowArcTracker::OnAppStatesChanged(
@@ -391,7 +391,7 @@ void AppServiceAppWindowArcTracker::AttachControllerToWindow(
           chromeos::features::kArcPreImeKeyEventSupport)) {
     window->SetProperty(aura::client::kSkipImeProcessing, true);
   }
-  observed_windows_.Add(window);
+  observed_windows_.AddObservation(window);
 
   if (info->app_shelf_id().app_id() == arc::kPlayStoreAppId)
     HandlePlayStoreLaunch(info);
@@ -404,8 +404,8 @@ void AppServiceAppWindowArcTracker::AddCandidateWindow(aura::Window* window) {
 void AppServiceAppWindowArcTracker::RemoveCandidateWindow(
     aura::Window* window) {
   arc_window_candidates_.erase(window);
-  if (observed_windows_.IsObserving(window))
-    observed_windows_.Remove(window);
+  if (observed_windows_.IsObservingSource(window))
+    observed_windows_.RemoveObservation(window);
 }
 
 void AppServiceAppWindowArcTracker::OnItemDelegateDiscarded(
