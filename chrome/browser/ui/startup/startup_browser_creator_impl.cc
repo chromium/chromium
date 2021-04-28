@@ -27,6 +27,7 @@
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/extensions/extension_checkup.h"
 #include "chrome/browser/infobars/infobar_service.h"
+#include "chrome/browser/infobars/simple_alert_infobar_creator.h"
 #include "chrome/browser/obsolete_system/obsolete_system.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
@@ -644,7 +645,7 @@ void StartupBrowserCreatorImpl::AddInfoBarsIfNecessary(
         // Show the experimental lacros info bar. auto_expire must be set to
         // false, since otherwise an automated navigation [which can happen at
         // launch] will cause the info bar to disappear.
-        SimpleAlertInfoBarDelegate::Create(
+        CreateSimpleAlertInfoBar(
             infobar_service,
             infobars::InfoBarDelegate::EXPERIMENTAL_INFOBAR_DELEGATE_LACROS,
             /*vector_icon=*/nullptr,

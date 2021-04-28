@@ -7,9 +7,11 @@
 #include <memory>
 
 #include "base/metrics/histogram_functions.h"
+#include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "components/infobars/core/simple_alert_infobar_delegate.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#include "ios/chrome/browser/infobars/infobar_utils.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -115,12 +117,13 @@ PresentAddPassesDialogResult GetUmaResult(
 
 // Presents "failed to add pkpass" infobar.
 - (void)presentErrorUI {
-  DCHECK(InfoBarManagerImpl::FromWebState(_webState));
-  SimpleAlertInfoBarDelegate::Create(
-      InfoBarManagerImpl::FromWebState(_webState),
-      infobars::InfoBarDelegate::SHOW_PASSKIT_ERROR_INFOBAR_DELEGATE_IOS,
-      /*vector_icon=*/nullptr,
-      l10n_util::GetStringUTF16(IDS_IOS_GENERIC_PASSKIT_ERROR));
+  InfoBarManagerImpl::FromWebState(_webState)->AddInfoBar(
+      CreateConfirmInfoBar(std::make_unique<SimpleAlertInfoBarDelegate>(
+          infobars::InfoBarDelegate::SHOW_PASSKIT_ERROR_INFOBAR_DELEGATE_IOS,
+          /*vector_icon=*/nullptr,
+          l10n_util::GetStringUTF16(IDS_IOS_GENERIC_PASSKIT_ERROR),
+          /*auto_expire=*/true,
+          /*should_animate=*/true)));
 
   // Infobar does not provide callback on dismissal.
   [self stop];

@@ -6,23 +6,7 @@
 
 #include <memory>
 
-#include "components/infobars/core/infobar.h"
-#include "components/infobars/core/infobar_manager.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-
-// static
-void SimpleAlertInfoBarDelegate::Create(
-    infobars::InfoBarManager* infobar_manager,
-    infobars::InfoBarDelegate::InfoBarIdentifier infobar_identifier,
-    const gfx::VectorIcon* vector_icon,
-    const std::u16string& message,
-    bool auto_expire,
-    bool should_animate) {
-  infobar_manager->AddInfoBar(infobar_manager->CreateConfirmInfoBar(
-      std::unique_ptr<ConfirmInfoBarDelegate>(new SimpleAlertInfoBarDelegate(
-          infobar_identifier, vector_icon, message, auto_expire,
-          should_animate))));
-}
 
 SimpleAlertInfoBarDelegate::SimpleAlertInfoBarDelegate(
     infobars::InfoBarDelegate::InfoBarIdentifier infobar_identifier,

@@ -12,10 +12,6 @@
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
-namespace infobars {
-class InfoBar;
-}
-
 namespace web {
 class WebState;
 }
@@ -38,8 +34,6 @@ class InfoBarManagerImpl : public infobars::InfoBarManager,
 
   // InfoBarManager implementation.
   int GetActiveEntryID() override;
-  std::unique_ptr<infobars::InfoBar> CreateConfirmInfoBar(
-      std::unique_ptr<ConfirmInfoBarDelegate> delegate) override;
 
   // web::WebStateObserver implementation.
   void DidFinishNavigation(web::WebState* web_state,

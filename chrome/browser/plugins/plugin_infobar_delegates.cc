@@ -185,6 +185,6 @@ void OutdatedPluginInfoBarDelegate::ReplaceWithInfoBar(
   delegate_ptr.reset(new OutdatedPluginInfoBarDelegate(
       installer(), std::move(plugin_metadata_), message));
   infobar()->owner()->ReplaceInfoBar(
-      infobar(),
-      infobar()->owner()->CreateConfirmInfoBar(std::move(delegate_ptr)));
+      infobar(), static_cast<InfoBarService*>(infobar()->owner())
+                     ->CreateConfirmInfoBar(std::move(delegate_ptr)));
 }

@@ -29,11 +29,11 @@ class InfoBarService : public infobars::ContentInfoBarManager,
  public:
   ~InfoBarService() override;
 
-  // InfoBarManager:
-  // TODO(sdefresne): Change clients to invoke this on infobars::InfoBarManager
-  // and turn the method override private.
-  std::unique_ptr<infobars::InfoBar> CreateConfirmInfoBar(
-      std::unique_ptr<ConfirmInfoBarDelegate> delegate) override;
+  // Cross-platform method for creating a confirm infobar.
+  // TODO(crbug.com/1199686): Move this to a static helper function as part of
+  // eliminating the //chrome-level InfoBarService.
+  virtual std::unique_ptr<infobars::InfoBar> CreateConfirmInfoBar(
+      std::unique_ptr<ConfirmInfoBarDelegate> delegate);
 
  protected:
   explicit InfoBarService(content::WebContents* web_contents);

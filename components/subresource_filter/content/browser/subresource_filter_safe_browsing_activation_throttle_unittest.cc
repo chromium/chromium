@@ -69,19 +69,6 @@ const char kActivationListHistogram[] =
     "SubresourceFilter.PageLoad.ActivationList";
 const char kSubresourceFilterActionsHistogram[] = "SubresourceFilter.Actions2";
 
-class TestInfoBarManager : public infobars::ContentInfoBarManager {
- public:
-  explicit TestInfoBarManager(content::WebContents* web_contents)
-      : ContentInfoBarManager(web_contents) {}
-
-  // infobars::InfoBarManager:
-  std::unique_ptr<infobars::InfoBar> CreateConfirmInfoBar(
-      std::unique_ptr<ConfirmInfoBarDelegate> delegate) override {
-    NOTREACHED();
-    return nullptr;
-  }
-};
-
 class TestSafeBrowsingActivationThrottleDelegate
     : public SubresourceFilterSafeBrowsingActivationThrottle::Delegate {
  public:
@@ -180,7 +167,8 @@ class SubresourceFilterSafeBrowsingActivationThrottleTest
     auto subresource_filter_client =
         std::make_unique<TestSubresourceFilterClient>(contents);
     client_ = subresource_filter_client.get();
-    infobar_manager_ = std::make_unique<TestInfoBarManager>(contents);
+    infobar_manager_ =
+        std::make_unique<infobars::ContentInfoBarManager>(contents);
     throttle_manager_ =
         std::make_unique<ContentSubresourceFilterThrottleManager>(
             std::move(subresource_filter_client), client_->profile_context(),
@@ -370,7 +358,7 @@ class SubresourceFilterSafeBrowsingActivationThrottleTest
 
   std::unique_ptr<content::NavigationSimulator> navigation_simulator_;
   TestSubresourceFilterClient* client_;
-  std::unique_ptr<TestInfoBarManager> infobar_manager_;
+  std::unique_ptr<infobars::ContentInfoBarManager> infobar_manager_;
   std::unique_ptr<TestSubresourceFilterObserver> observer_;
   scoped_refptr<FakeSafeBrowsingDatabaseManager> fake_safe_browsing_database_;
   base::HistogramTester tester_;

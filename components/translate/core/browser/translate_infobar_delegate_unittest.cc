@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/test/task_environment.h"
-#include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "components/language/core/browser/language_model.h"
@@ -46,12 +45,6 @@ class TestInfoBarManager : public infobars::InfoBarManager {
   TestInfoBarManager() = default;
   // infobars::InfoBarManager:
   ~TestInfoBarManager() override {}
-
-  // infobars::InfoBarManager:
-  std::unique_ptr<infobars::InfoBar> CreateConfirmInfoBar(
-      std::unique_ptr<ConfirmInfoBarDelegate> delegate) override {
-    return std::make_unique<infobars::InfoBar>(std::move(delegate));
-  }
 
   // infobars::InfoBarManager:
   int GetActiveEntryID() override { return 0; }

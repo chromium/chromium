@@ -49,6 +49,7 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/owner_flags_storage.h"
 #include "chrome/browser/infobars/infobar_service.h"
+#include "chrome/browser/infobars/simple_alert_infobar_creator.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/account_id/account_id.h"
 #include "components/infobars/core/simple_alert_infobar_delegate.h"
@@ -128,7 +129,7 @@ void FinishInitialization(base::WeakPtr<T> flags_ui,
   // Show a warning info bar when kSafeMode switch is present.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           chromeos::switches::kSafeMode)) {
-    SimpleAlertInfoBarDelegate::Create(
+    CreateSimpleAlertInfoBar(
         InfoBarService::FromWebContents(flags_ui->web_ui()->GetWebContents()),
         infobars::InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE,
         &vector_icons::kWarningIcon,
@@ -138,7 +139,7 @@ void FinishInitialization(base::WeakPtr<T> flags_ui,
 
   // Show a warning info bar for secondary users.
   if (!chromeos::ProfileHelper::IsPrimaryProfile(profile)) {
-    SimpleAlertInfoBarDelegate::Create(
+    CreateSimpleAlertInfoBar(
         InfoBarService::FromWebContents(flags_ui->web_ui()->GetWebContents()),
         infobars::InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE,
         &vector_icons::kWarningIcon,

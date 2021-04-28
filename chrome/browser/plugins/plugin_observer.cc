@@ -14,6 +14,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/infobars/infobar_service.h"
+#include "chrome/browser/infobars/simple_alert_infobar_creator.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/plugins/plugin_finder.h"
 #include "chrome/browser/plugins/plugin_infobar_delegates.h"
@@ -27,7 +28,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/download/public/common/download_url_parameters.h"
-#include "components/infobars/core/simple_alert_infobar_delegate.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_security_policy.h"
@@ -136,7 +136,7 @@ void PluginObserver::PluginCrashed(const base::FilePath& plugin_path,
 void PluginObserver::CreatePluginObserverInfoBar(
     InfoBarService* infobar_service,
     const std::u16string& plugin_name) {
-  SimpleAlertInfoBarDelegate::Create(
+  CreateSimpleAlertInfoBar(
       infobar_service,
       infobars::InfoBarDelegate::PLUGIN_OBSERVER_INFOBAR_DELEGATE,
       &kExtensionCrashedIcon,

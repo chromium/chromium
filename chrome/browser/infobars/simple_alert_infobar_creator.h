@@ -1,0 +1,29 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_INFOBARS_SIMPLE_ALERT_INFOBAR_CREATOR_H_
+#define CHROME_BROWSER_INFOBARS_SIMPLE_ALERT_INFOBAR_CREATOR_H_
+
+#include <string>
+
+#include "components/infobars/core/infobar_delegate.h"
+
+namespace gfx {
+struct VectorIcon;
+}
+
+class InfoBarService;
+
+// Creates a simple alert infobar and delegate and adds the infobar to
+// |infobar_manager|. If |vector_icon| is not null, it will be shown.
+// |infobar_identifier| names what class triggered the infobar for metrics.
+void CreateSimpleAlertInfoBar(
+    InfoBarService* infobar_service,
+    infobars::InfoBarDelegate::InfoBarIdentifier infobar_identifier,
+    const gfx::VectorIcon* vector_icon,
+    const std::u16string& message,
+    bool auto_expire = true,
+    bool should_animate = true);
+
+#endif  // CHROME_BROWSER_INFOBARS_SIMPLE_ALERT_INFOBAR_CREATOR_H_

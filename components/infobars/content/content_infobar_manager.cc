@@ -5,7 +5,6 @@
 #include "components/infobars/content/content_infobar_manager.h"
 
 #include "base/command_line.h"
-#include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
@@ -60,12 +59,6 @@ int ContentInfoBarManager::GetActiveEntryID() {
   content::NavigationEntry* active_entry =
       web_contents()->GetController().GetActiveEntry();
   return active_entry ? active_entry->GetUniqueID() : 0;
-}
-
-std::unique_ptr<InfoBar> ContentInfoBarManager::CreateConfirmInfoBar(
-    std::unique_ptr<ConfirmInfoBarDelegate> delegate) {
-  NOTREACHED();
-  return nullptr;
 }
 
 void ContentInfoBarManager::RenderProcessGone(base::TerminationStatus status) {

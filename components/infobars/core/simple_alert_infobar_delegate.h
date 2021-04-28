@@ -15,24 +15,8 @@ namespace gfx {
 struct VectorIcon;
 }
 
-namespace infobars {
-class InfoBarManager;
-}
-
 class SimpleAlertInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
-  // Creates a simple alert infobar and delegate and adds the infobar to
-  // |infobar_manager|. If |vector_icon| is not null, it will be shown.
-  // |infobar_identifier| names what class triggered the infobar for metrics.
-  static void Create(
-      infobars::InfoBarManager* infobar_manager,
-      infobars::InfoBarDelegate::InfoBarIdentifier infobar_identifier,
-      const gfx::VectorIcon* vector_icon,
-      const std::u16string& message,
-      bool auto_expire = true,
-      bool should_animate = true);
-
- private:
   SimpleAlertInfoBarDelegate(
       infobars::InfoBarDelegate::InfoBarIdentifier infobar_identifier,
       const gfx::VectorIcon* vector_icon,
@@ -41,6 +25,7 @@ class SimpleAlertInfoBarDelegate : public ConfirmInfoBarDelegate {
       bool should_animate);
   ~SimpleAlertInfoBarDelegate() override;
 
+ private:
   // ConfirmInfoBarDelegate:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;

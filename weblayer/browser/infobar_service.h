@@ -5,17 +5,8 @@
 #ifndef WEBLAYER_BROWSER_INFOBAR_SERVICE_H_
 #define WEBLAYER_BROWSER_INFOBAR_SERVICE_H_
 
-#include <memory>
-#include <vector>
-
-#include "base/macros.h"
-#include "build/build_config.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "content/public/browser/web_contents_user_data.h"
-
-#if defined(OS_ANDROID)
-#include "components/infobars/android/infobar_android.h"
-#endif
 
 namespace content {
 class WebContents;
@@ -32,10 +23,6 @@ class InfoBarService : public infobars::ContentInfoBarManager,
   ~InfoBarService() override;
   InfoBarService(const InfoBarService&) = delete;
   InfoBarService& operator=(const InfoBarService&) = delete;
-
-  // InfoBarManager:
-  std::unique_ptr<infobars::InfoBar> CreateConfirmInfoBar(
-      std::unique_ptr<ConfirmInfoBarDelegate> delegate) override;
 
  protected:
   explicit InfoBarService(content::WebContents* web_contents);

@@ -68,19 +68,6 @@ enum PageActivationNotificationTiming {
   WILL_PROCESS_RESPONSE,
 };
 
-class TestInfoBarManager : public infobars::ContentInfoBarManager {
- public:
-  explicit TestInfoBarManager(content::WebContents* web_contents)
-      : ContentInfoBarManager(web_contents) {}
-
-  // infobars::InfoBarManager:
-  std::unique_ptr<infobars::InfoBar> CreateConfirmInfoBar(
-      std::unique_ptr<ConfirmInfoBarDelegate> delegate) override {
-    NOTREACHED();
-    return nullptr;
-  }
-};
-
 class FakeSubresourceFilterAgent : public mojom::SubresourceFilterAgent {
  public:
   FakeSubresourceFilterAgent() = default;
@@ -223,7 +210,8 @@ class ContentSubresourceFilterThrottleManagerTest
     // ShowNotification() being invoked.
     client_->SetShouldUseSmartUI(false);
 
-    infobar_manager_ = std::make_unique<TestInfoBarManager>(web_contents);
+    infobar_manager_ =
+        std::make_unique<infobars::ContentInfoBarManager>(web_contents);
     throttle_manager_ =
         std::make_unique<ContentSubresourceFilterThrottleManager>(
             std::move(subresource_filter_client), client_->profile_context(),
@@ -364,7 +352,7 @@ class ContentSubresourceFilterThrottleManagerTest
   testing::TestRulesetCreator test_ruleset_creator_;
   testing::TestRulesetPair test_ruleset_pair_;
   TestSubresourceFilterClient* client_;
-  std::unique_ptr<TestInfoBarManager> infobar_manager_;
+  std::unique_ptr<infobars::ContentInfoBarManager> infobar_manager_;
 
   std::unique_ptr<VerifiedRulesetDealer::Handle> dealer_handle_;
 
@@ -832,7 +820,7 @@ TEST_F(ContentSubresourceFilterThrottleManagerTest, CreateForWebContents) {
       std::make_unique<TestSubresourceFilterClient>(web_contents.get());
   SubresourceFilterProfileContext* profile_context = client->profile_context();
   auto infobar_manager =
-      std::make_unique<TestInfoBarManager>(web_contents.get());
+      std::make_unique<infobars::ContentInfoBarManager>(web_contents.get());
 
   {
     base::test::ScopedFeatureList scoped_feature;

@@ -593,6 +593,8 @@ static_library("browser") {
     "infobars/infobar_responder.h",
     "infobars/infobar_service.cc",
     "infobars/infobar_service.h",
+    "infobars/simple_alert_infobar_creator.cc",
+    "infobars/simple_alert_infobar_creator.h",
     "installable/installable_utils.cc",
     "installable/installable_utils.h",
     "internal_auth.cc",

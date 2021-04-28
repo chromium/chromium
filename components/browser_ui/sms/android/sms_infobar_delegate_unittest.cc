@@ -12,34 +12,22 @@
 #include "content/public/test/test_renderer_host.h"
 
 namespace sms {
-namespace {
-
-class TestInfoBarManager : public infobars::ContentInfoBarManager {
- public:
-  explicit TestInfoBarManager(content::WebContents* web_contents)
-      : ContentInfoBarManager(web_contents) {}
-
-  // infobars::InfoBarManager:
-  std::unique_ptr<infobars::InfoBar> CreateConfirmInfoBar(
-      std::unique_ptr<ConfirmInfoBarDelegate> delegate) override {
-    return std::make_unique<infobars::InfoBar>(std::move(delegate));
-  }
-};
-
-}  // namespace
 
 class SmsInfoBarDelegateTest : public content::RenderViewHostTestHarness {
  public:
   // content::RenderViewHostTestHarness:
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
-    infobar_manager_ = std::make_unique<TestInfoBarManager>(web_contents());
+    infobar_manager_ =
+        std::make_unique<infobars::ContentInfoBarManager>(web_contents());
   }
 
-  TestInfoBarManager* infobar_manager() { return infobar_manager_.get(); }
+  infobars::ContentInfoBarManager* infobar_manager() {
+    return infobar_manager_.get();
+  }
 
  private:
-  std::unique_ptr<TestInfoBarManager> infobar_manager_;
+  std::unique_ptr<infobars::ContentInfoBarManager> infobar_manager_;
 };
 
 TEST_F(SmsInfoBarDelegateTest, InfoBarForSingleFrame) {

@@ -38,23 +38,6 @@
 
 namespace subresource_filter {
 
-namespace {
-
-class TestInfoBarManager : public infobars::ContentInfoBarManager {
- public:
-  explicit TestInfoBarManager(content::WebContents* web_contents)
-      : ContentInfoBarManager(web_contents) {}
-
-  // infobars::InfoBarManager:
-  std::unique_ptr<infobars::InfoBar> CreateConfirmInfoBar(
-      std::unique_ptr<ConfirmInfoBarDelegate> delegate) override {
-    NOTREACHED();
-    return nullptr;
-  }
-};
-
-}  // namespace
-
 constexpr char const SubresourceFilterTestHarness::kDefaultAllowedSuffix[];
 constexpr char const SubresourceFilterTestHarness::kDefaultDisallowedSuffix[];
 constexpr char const SubresourceFilterTestHarness::kDefaultDisallowedUrl[];
@@ -109,7 +92,8 @@ void SubresourceFilterTestHarness::SetUp() {
   auto client = std::make_unique<TestSubresourceFilterClient>(web_contents());
   client_ = client.get();
   database_manager_ = base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>();
-  infobar_manager_ = std::make_unique<TestInfoBarManager>(web_contents());
+  infobar_manager_ =
+      std::make_unique<infobars::ContentInfoBarManager>(web_contents());
   ContentSubresourceFilterThrottleManager::CreateForWebContents(
       web_contents(), std::move(client), client_->profile_context(),
       infobar_manager_.get(), database_manager_, dealer);
