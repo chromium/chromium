@@ -78,6 +78,9 @@ class MODULES_EXPORT WebSocketChannelImpl final
   USING_PRE_FINALIZER(WebSocketChannelImpl, Dispose);
 
  public:
+  // Public for use in tests.
+  static constexpr size_t kMaxWebSocketsPerRenderProcess = 255u;
+
   // You can specify the source file and the line number information
   // explicitly by passing the last parameter.
   // In the usual case, they are set automatically and you don't have to
@@ -267,6 +270,38 @@ class MODULES_EXPORT WebSocketChannelImpl final
     base::OnceClosure completion_callback_;
   };
 
+  // A handle to a global count of the number of WebSockets that have been
+  // created. Can be used to limit the total number of WebSockets that have been
+  // created in this render process.
+  class ConnectionCountTrackerHandle {
+    DISALLOW_NEW();
+
+   public:
+    enum class CountStatus {
+      OKAY_TO_CONNECT,
+      SHOULD_NOT_CONNECT,
+    };
+
+    ConnectionCountTrackerHandle() = default;
+    ~ConnectionCountTrackerHandle() = default;
+
+    ConnectionCountTrackerHandle(const ConnectionCountTrackerHandle&) = delete;
+    ConnectionCountTrackerHandle& operator=(
+        const ConnectionCountTrackerHandle&) = delete;
+
+    // Increments the count and returns SHOULD_NOT_CONNECT if it exceeds
+    // kMaxWebSocketsPerRenderProcess. Should only be called once.
+    CountStatus IncrementAndCheckStatus();
+
+    // Decrements the count. Should be called at least once. If there is no
+    // matching call to IncrementAndCheckStatus() it does nothing, so it is safe
+    // to call multiple times.
+    void Decrement();
+
+   private:
+    bool incremented_ = false;
+  };
+
   // The state is defined to see the conceptual state more clearly than checking
   // various members (for DCHECKs for example). This is only used internally.
   enum class State {
@@ -364,6 +399,7 @@ class MODULES_EXPORT WebSocketChannelImpl final
   mojo::ScopedDataPipeProducerHandle writable_;
   mojo::SimpleWatcher writable_watcher_;
   bool wait_for_writable_ = false;
+  ConnectionCountTrackerHandle connection_count_tracker_handle_;
 
   const scoped_refptr<base::SingleThreadTaskRunner> file_reading_task_runner_;
 };

@@ -32,6 +32,7 @@
 
 #include <string.h>
 #include <algorithm>
+#include <atomic>
 #include <limits>
 #include <memory>
 
@@ -79,6 +80,12 @@
 namespace blink {
 
 namespace {
+
+// The number of connecting or connected WebSocketChannelImpl objects that
+// currently exist. This needs to be threadsafe because there may also be
+// Workers in the same process. This is default-initialised to 0 because it has
+// static storage.
+std::atomic_size_t g_connection_count;
 
 enum WebSocketOpCode {
   kOpCodeText = 0x1,
@@ -285,8 +292,8 @@ bool WebSocketChannelImpl::Connect(const KURL& url, const String& protocol) {
         "Connecting to a non-secure WebSocket server from a secure origin is "
         "deprecated.";
     execution_context_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::ConsoleMessageSource::kJavaScript,
-        mojom::ConsoleMessageLevel::kWarning, message));
+        mojom::blink::ConsoleMessageSource::kJavaScript,
+        mojom::blink::ConsoleMessageLevel::kWarning, message));
   }
 
   url_ = url;
@@ -303,6 +310,25 @@ bool WebSocketChannelImpl::Connect(const KURL& url, const String& protocol) {
   // failure blocks the worker thread which should be avoided. Note that
   // returning "true" just indicates that this was not a mixed content error.
   if (ShouldDisallowConnection(url)) {
+    execution_context_->GetTaskRunner(TaskType::kNetworking)
+        ->PostTask(FROM_HERE,
+                   WTF::Bind(&WebSocketChannelImpl::TearDownFailedConnection,
+                             WrapPersistent(this)));
+    return true;
+  }
+
+  // Restrict the number of simultaneous connections to avoid a DoS attack on
+  // the browser process. Fail asynchronously, to match the behaviour when we
+  // are throttled by the network service.
+  if (connection_count_tracker_handle_.IncrementAndCheckStatus() ==
+      ConnectionCountTrackerHandle::CountStatus::SHOULD_NOT_CONNECT) {
+    StringBuilder message;
+    message.Append("WebSocket connection to '");
+    message.Append(url.GetString());
+    message.Append("' failed: Insufficient resources");
+    execution_context_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kJavaScript,
+        mojom::blink::ConsoleMessageLevel::kError, message.ToString()));
     execution_context_->GetTaskRunner(TaskType::kNetworking)
         ->PostTask(FROM_HERE,
                    WTF::Bind(&WebSocketChannelImpl::TearDownFailedConnection,
@@ -731,6 +757,28 @@ String WebSocketChannelImpl::Message::Reason() const {
 
 base::OnceClosure WebSocketChannelImpl::Message::CompletionCallback() {
   return std::move(completion_callback_);
+}
+
+// This could be done directly in WebSocketChannelImpl, but is a separate class
+// to make it easier to verify correctness.
+WebSocketChannelImpl::ConnectionCountTrackerHandle::CountStatus
+WebSocketChannelImpl::ConnectionCountTrackerHandle::IncrementAndCheckStatus() {
+  DCHECK(!incremented_);
+  incremented_ = true;
+  const size_t old_count =
+      g_connection_count.fetch_add(1, std::memory_order_relaxed);
+  return old_count >= kMaxWebSocketsPerRenderProcess
+             ? CountStatus::SHOULD_NOT_CONNECT
+             : CountStatus::OKAY_TO_CONNECT;
+}
+
+void WebSocketChannelImpl::ConnectionCountTrackerHandle::Decrement() {
+  if (incremented_) {
+    incremented_ = false;
+    const size_t old_count =
+        g_connection_count.fetch_sub(1, std::memory_order_relaxed);
+    DCHECK_NE(old_count, 0u);
+  }
 }
 
 bool WebSocketChannelImpl::MaybeSendSynchronously(
@@ -1166,6 +1214,7 @@ void WebSocketChannelImpl::OnConnectionError(const base::Location& set_from,
 }
 
 void WebSocketChannelImpl::Dispose() {
+  connection_count_tracker_handle_.Decrement();
   message_chunks_.Reset();
   has_initiated_opening_handshake_ = true;
   feature_handle_for_scheduler_.reset();
