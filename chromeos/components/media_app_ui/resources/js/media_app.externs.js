@@ -68,10 +68,9 @@ mediaApp.AbstractFile.prototype.error;
 mediaApp.AbstractFile.prototype.overwriteOriginal;
 /**
  * A function that will delete the original file. Returns a promise that
- * resolves to an enum value (see DeleteResult in chromium message_types)
- * reflecting the result of the deletion. Errors encountered are thrown from the
- * message pipe and handled by invoking functions in Google3.
- * @type {function(): !Promise<number>|undefined}
+ * resolves on success. Errors encountered are thrown from the message pipe and
+ * handled by invoking functions in Google3.
+ * @type {function(): !Promise<undefined>|undefined}
  */
 mediaApp.AbstractFile.prototype.deleteOriginalFile;
 /**
