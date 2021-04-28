@@ -20,6 +20,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -383,9 +384,8 @@ class RenderFrameHostManagerTest
     if (frame_entry->method() == "POST") {
       request_body = frame_entry->GetPostData(&post_content_type);
       // Might have a LF at end.
-      post_content_type =
-          base::TrimWhitespaceASCII(post_content_type, base::TRIM_ALL)
-              .as_string();
+      post_content_type = std::string(
+          base::TrimWhitespaceASCII(post_content_type, base::TRIM_ALL));
     }
 
     auto& referrer = frame_entry->referrer();

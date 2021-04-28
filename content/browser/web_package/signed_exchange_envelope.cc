@@ -181,7 +181,7 @@ bool ParseResponseMap(const cbor::Value& value,
       signed_exchange_utils::ReportErrorAndTraceEvent(
           devtools_proxy,
           base::StringPrintf("Invalid header name. header_name: %s",
-                             name_str.as_string().c_str()));
+                             std::string(name_str).c_str()));
       return false;
     }
 
@@ -195,7 +195,7 @@ bool ParseResponseMap(const cbor::Value& value,
           devtools_proxy,
           base::StringPrintf(
               "Response header name should be lower-cased. header_name: %s",
-              name_str.as_string().c_str()));
+              std::string(name_str).c_str()));
       return false;
     }
 
@@ -206,7 +206,7 @@ bool ParseResponseMap(const cbor::Value& value,
           devtools_proxy,
           base::StringPrintf(
               "Exchange contains stateful response header. header_name: %s",
-              name_str.as_string().c_str()));
+              std::string(name_str).c_str()));
       return false;
     }
 
@@ -220,7 +220,7 @@ bool ParseResponseMap(const cbor::Value& value,
       signed_exchange_utils::ReportErrorAndTraceEvent(
           devtools_proxy,
           base::StringPrintf("Duplicate header value. header_name: %s",
-                             name_str.as_string().c_str()));
+                             std::string(name_str).c_str()));
       return false;
     }
   }
@@ -353,22 +353,22 @@ SignedExchangeEnvelope& SignedExchangeEnvelope::operator=(
 
 bool SignedExchangeEnvelope::AddResponseHeader(base::StringPiece name,
                                                base::StringPiece value) {
-  std::string name_str = name.as_string();
+  std::string name_str(name);
   DCHECK_EQ(name_str, base::ToLowerASCII(name))
       << "Response header names should be always lower-cased.";
   if (response_headers_.find(name_str) != response_headers_.end())
     return false;
 
-  response_headers_.emplace(std::move(name_str), value.as_string());
+  response_headers_.emplace(std::move(name_str), std::string(value));
   return true;
 }
 
 void SignedExchangeEnvelope::SetResponseHeader(base::StringPiece name,
                                                base::StringPiece value) {
-  std::string name_str = name.as_string();
+  std::string name_str(name);
   DCHECK_EQ(name_str, base::ToLowerASCII(name))
       << "Response header names should be always lower-cased.";
-  response_headers_[name_str] = value.as_string();
+  response_headers_[name_str] = std::string(value);
 }
 
 scoped_refptr<net::HttpResponseHeaders>

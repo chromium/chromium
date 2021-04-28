@@ -5,6 +5,7 @@
 #include "content/browser/cache_storage/cache_storage_histogram_utils.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_piece.h"
 
 namespace content {
 
@@ -92,9 +93,9 @@ base::StringPiece OpToName(CacheStorageSchedulerOp op_type) {
 std::string GetClientHistogramName(CacheStorageSchedulerUMA uma_type,
                                    CacheStorageSchedulerClient client_type) {
   std::string histogram_name("ServiceWorkerCache");
-  histogram_name.append(ClientToName(client_type).as_string());
+  histogram_name.append(std::string(ClientToName(client_type)));
   histogram_name.append(".Scheduler");
-  histogram_name.append(UMAToName(uma_type).as_string());
+  histogram_name.append(std::string(UMAToName(uma_type)));
   return histogram_name;
 }
 
@@ -111,7 +112,7 @@ void RecordCacheStorageSchedulerUMA(CacheStorageSchedulerUMA uma_type,
   base::UmaHistogramCounts10000(histogram_name, value);
   if (!ShouldRecordOpUMA(op_type))
     return;
-  histogram_name.append(OpToName(op_type).as_string());
+  histogram_name.append(std::string(OpToName(op_type)));
   base::UmaHistogramCounts10000(histogram_name, value);
 }
 
@@ -127,7 +128,7 @@ void RecordCacheStorageSchedulerUMA(CacheStorageSchedulerUMA uma_type,
   base::UmaHistogramLongTimes(histogram_name, value);
   if (!ShouldRecordOpUMA(op_type))
     return;
-  histogram_name.append(OpToName(op_type).as_string());
+  histogram_name.append(std::string(OpToName(op_type)));
   base::UmaHistogramLongTimes(histogram_name, value);
 }
 

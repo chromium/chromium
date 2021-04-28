@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/path_service.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
@@ -272,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(CorsFileOriginBrowserTest,
   // Fetching http resources should be allowed by CORS when
   // universal access from file URLs is requested.
   std::string fetch_result = EvalJs(shell(), script).ExtractString();
-  fetch_result = TrimWhitespaceASCII(fetch_result, base::TRIM_ALL).as_string();
+  fetch_result = std::string(TrimWhitespaceASCII(fetch_result, base::TRIM_ALL));
   EXPECT_THAT(fetch_result, ::testing::HasSubstr("SUCCESS:"));
   EXPECT_THAT(fetch_result, ::testing::HasSubstr("This page has a title"));
 }

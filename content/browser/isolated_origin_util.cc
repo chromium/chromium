@@ -7,6 +7,7 @@
 #include "content/browser/isolated_origin_util.h"
 
 #include "base/logging.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -35,7 +36,7 @@ IsolatedOriginPattern& IsolatedOriginPattern::operator=(
     IsolatedOriginPattern&& other) = default;
 
 bool IsolatedOriginPattern::Parse(const base::StringPiece& unparsed_pattern) {
-  pattern_ = unparsed_pattern.as_string();
+  pattern_ = std::string(unparsed_pattern);
   origin_ = url::Origin();
   isolate_all_subdomains_ = false;
   is_valid_ = false;

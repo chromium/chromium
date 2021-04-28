@@ -4,6 +4,7 @@
 
 #include "content/renderer/render_process_impl.h"
 
+#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
@@ -251,7 +252,7 @@ RenderProcessImpl::RenderProcessImpl()
     std::vector<base::StringPiece> flag_list = base::SplitStringPiece(
         js_flags, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     for (const auto& flag : flag_list) {
-      v8::V8::SetFlagsFromString(flag.as_string().c_str(), flag.size());
+      v8::V8::SetFlagsFromString(std::string(flag).c_str(), flag.size());
     }
   }
 }

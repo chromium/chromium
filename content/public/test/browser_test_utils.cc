@@ -1534,7 +1534,7 @@ std::string AnnotateAndAdjustJsStackTraces(const std::string& js_error,
 
         // Some source lines are huge. Elide |source_line| so that it doesn't
         // occupy more than one actual line.
-        std::string source_line = source_lines[line_number - 1].as_string();
+        std::string source_line(source_lines[line_number - 1]);
 
         int max_column_number = 60 - indent.length();
         if (column_number > max_column_number) {

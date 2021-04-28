@@ -8,6 +8,7 @@
 #include "content/browser/sms/sms_parser.h"
 
 #include "base/optional.h"
+#include "base/strings/string_piece.h"
 #include "net/base/url_util.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
@@ -80,7 +81,7 @@ SmsParser::Result SmsParser::Parse(base::StringPiece sms) {
   // TODO(yigu): The existing kOtpFormatRegex may filter out invalid SMSes that
   // would fall into |kHostAndPortNotParsed| or |kGURLNotValid| below. We should
   // clean up the code if the statement is confirmed by metrics.
-  if (!re2::RE2::PartialMatch(sms.as_string(), kOtpFormatRegex, &top_domain,
+  if (!re2::RE2::PartialMatch(std::string(sms), kOtpFormatRegex, &top_domain,
                               &otp, &embedded_domain))
     return Result(SmsParsingStatus::kOTPFormatRegexNotMatch);
 

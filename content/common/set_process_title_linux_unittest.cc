@@ -7,6 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "content/common/set_process_title_linux.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,7 +26,7 @@ std::string ReadCmdline() {
   // "title\0"          (on Linux 5.3--)
   //
   // For unit tests, just trim trailing null characters to support all cases.
-  return base::TrimString(cmdline, kNullChr, base::TRIM_TRAILING).as_string();
+  return std::string(base::TrimString(cmdline, kNullChr, base::TRIM_TRAILING));
 }
 
 TEST(SetProcTitleLinuxTest, Simple) {

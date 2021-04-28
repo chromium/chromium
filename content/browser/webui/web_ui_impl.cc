@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/json/json_writer.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -252,7 +253,7 @@ void WebUIImpl::CallJavascriptFunctionUnsafe(
 
 void WebUIImpl::RegisterMessageCallback(base::StringPiece message,
                                         const MessageCallback& callback) {
-  message_callbacks_.emplace(message.as_string(), callback);
+  message_callbacks_.emplace(std::string(message), callback);
 }
 
 void WebUIImpl::ProcessWebUIMessage(const GURL& source_url,

@@ -10,6 +10,7 @@
 #include "base/rand_util.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/tick_clock.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
@@ -414,7 +415,7 @@ bool IndexedDBTombstoneSweeper::IterateIndex(
       }
       continue;
     }
-    std::string encoded_primary_key = index_value_str.as_string();
+    std::string encoded_primary_key(index_value_str);
     std::string exists_key = ExistsEntryKey::Encode(
         database_id, object_store_id, encoded_primary_key);
 

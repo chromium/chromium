@@ -44,6 +44,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -3714,9 +3715,8 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
   if (frame_entry->method() == "POST") {
     request_body = frame_entry->GetPostData(&post_content_type);
     // Might have a LF at end.
-    post_content_type =
-        base::TrimWhitespaceASCII(post_content_type, base::TRIM_ALL)
-            .as_string();
+    post_content_type = std::string(
+        base::TrimWhitespaceASCII(post_content_type, base::TRIM_ALL));
   }
 
   // Create the NavigationParams based on |entry| and |frame_entry|.

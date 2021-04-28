@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/optional.h"
+#include "base/strings/string_piece.h"
 #include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
@@ -105,7 +106,7 @@ network::mojom::URLLoaderFactoryParamsPtr CreateParams(
   params->url_loader_network_observer = std::move(url_loader_network_observer);
   params->devtools_observer = std::move(devtools_observer);
 
-  params->debug_tag = debug_tag.as_string();
+  params->debug_tag = std::string(debug_tag);
 
   return params;
 }

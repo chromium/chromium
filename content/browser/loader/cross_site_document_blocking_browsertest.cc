@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/macros.h"
 #include "base/strings/pattern.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -746,7 +747,7 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
       EvalJs(shell(), JsReplace("fetch($1).then(response => response.text())",
                                 resource_url))
           .ExtractString();
-  fetch_result = TrimWhitespaceASCII(fetch_result, base::TRIM_ALL).as_string();
+  fetch_result = std::string(TrimWhitespaceASCII(fetch_result, base::TRIM_ALL));
 
   // Verify that the response was not blocked.
   EXPECT_EQ("runMe({ \"name\" : \"chromium\" });", fetch_result);

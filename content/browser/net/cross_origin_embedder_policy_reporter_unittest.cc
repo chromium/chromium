@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "content/public/test/test_storage_partition.h"
@@ -165,19 +166,19 @@ class CrossOriginEmbedderPolicyReporterTest : public testing::Test {
       RequestDestination destination,
       base::StringPiece disposition) const {
     return {std::make_pair("type", "corp"),
-            std::make_pair("blockedURL", blocked_url.as_string()),
+            std::make_pair("blockedURL", std::string(blocked_url)),
             std::make_pair("destination",
                            network::RequestDestinationToString(destination)),
-            std::make_pair("disposition", disposition.as_string())};
+            std::make_pair("disposition", std::string(disposition))};
   }
 
   std::vector<std::pair<std::string, std::string>> CreateBodyInternal(
       base::StringPiece type,
       base::StringPiece blocked_url,
       base::StringPiece disposition) const {
-    return {std::make_pair("type", type.as_string()),
-            std::make_pair("blockedURL", blocked_url.as_string()),
-            std::make_pair("disposition", disposition.as_string())};
+    return {std::make_pair("type", std::string(type)),
+            std::make_pair("blockedURL", std::string(blocked_url)),
+            std::make_pair("disposition", std::string(disposition))};
   }
 
   base::test::TaskEnvironment task_environment_;

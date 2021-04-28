@@ -87,7 +87,7 @@ void TestWebUI::AddMessageHandler(
 
 void TestWebUI::RegisterMessageCallback(base::StringPiece message,
                                         const MessageCallback& callback) {
-  message_callbacks_[message.as_string()].push_back(callback);
+  message_callbacks_[std::string(message)].push_back(callback);
 }
 
 bool TestWebUI::CanCallJavascript() {

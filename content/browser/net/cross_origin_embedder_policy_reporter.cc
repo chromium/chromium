@@ -4,6 +4,7 @@
 
 #include "content/browser/net/cross_origin_embedder_policy_reporter.h"
 
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/request_destination.h"
@@ -94,7 +95,7 @@ void CrossOriginEmbedderPolicyReporter::QueueAndNotify(
 
     for (const auto& pair : body) {
       list.push_back(blink::mojom::ReportBodyElement::New(
-          pair.first.as_string(), pair.second.as_string()));
+          std::string(pair.first), std::string(pair.second)));
     }
     list.push_back(
         blink::mojom::ReportBodyElement::New("disposition", disposition));

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/services/storage/public/cpp/storage_key.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -39,7 +40,7 @@ class SharedWorkerInstanceTest : public testing::Test {
     } else {
       storage_key = storage::StorageKey(url::Origin::Create(GURL(url)));
     }
-    return instance.Matches(GURL(url), name.as_string(), storage_key);
+    return instance.Matches(GURL(url), std::string(name), storage_key);
   }
 
  private:

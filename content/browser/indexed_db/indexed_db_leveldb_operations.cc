@@ -7,6 +7,7 @@
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
@@ -500,7 +501,7 @@ bool FindGreatestKeyLessThanOrEqual(
   }
 
   do {
-    *found_key = it->Key().as_string();
+    *found_key = std::string(it->Key());
 
     // There can be several index keys that compare equal. We want the last one.
     *s = it->Next();
