@@ -210,11 +210,11 @@ void HidChooserController::OnDeviceChanged(
 }
 
 void HidChooserController::OnHidManagerConnectionError() {
-  observer_.RemoveAll();
+  observation_.Reset();
 }
 
 void HidChooserController::OnHidChooserContextShutdown() {
-  observer_.RemoveAll();
+  observation_.Reset();
 }
 
 void HidChooserController::OnGotDevices(
@@ -227,7 +227,7 @@ void HidChooserController::OnGotDevices(
   // Listen to HidChooserContext for OnDeviceAdded/Removed events after the
   // enumeration.
   if (chooser_context_)
-    observer_.Add(chooser_context_.get());
+    observation_.Observe(chooser_context_.get());
 
   if (view())
     view()->OnOptionsInitialized();

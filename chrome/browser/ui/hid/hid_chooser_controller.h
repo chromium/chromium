@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/chooser_controller/chooser_controller.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "content/public/browser/hid_chooser.h"
@@ -104,11 +104,11 @@ class HidChooserController : public ChooserController,
   // in the chooser.
   std::vector<std::string> items_;
 
-  ScopedObserver<HidChooserContext,
-                 HidChooserContext::DeviceObserver,
-                 &HidChooserContext::AddDeviceObserver,
-                 &HidChooserContext::RemoveDeviceObserver>
-      observer_{this};
+  base::ScopedObservation<HidChooserContext,
+                          HidChooserContext::DeviceObserver,
+                          &HidChooserContext::AddDeviceObserver,
+                          &HidChooserContext::RemoveDeviceObserver>
+      observation_{this};
 
   base::WeakPtrFactory<HidChooserController> weak_factory_{this};
 };
