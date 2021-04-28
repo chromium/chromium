@@ -197,10 +197,13 @@ class CORE_EXPORT NGBoxFragmentBuilder final
 
   // Add a layout result. This involves appending the fragment and its relative
   // offset to the builder, but also keeping track of out-of-flow positioned
-  // descendants, propagating fragmentainer breaks, and more.
+  // descendants, propagating fragmentainer breaks, and more. In some cases,
+  // such as grid, the relative offset may need to be computed ahead of time.
+  // If so, a |relative_offset| will be passed in. Otherwise, the relative
+  // offset will be calculated as normal.
   void AddResult(const NGLayoutResult&,
                  const LogicalOffset,
-                 bool offset_includes_relative_position = false,
+                 base::Optional<LogicalOffset> relative_offset = base::nullopt,
                  bool propagate_oof_descendants = true);
 
   void AddChild(
@@ -209,7 +212,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
       const LayoutInline* inline_container = nullptr,
       const NGMarginStrut* margin_strut = nullptr,
       bool is_self_collapsing = false,
-      bool offset_includes_relative_position = false,
+      base::Optional<LogicalOffset> relative_offset = base::nullopt,
       base::Optional<LayoutUnit> adjustment_for_oof_propagation = LayoutUnit());
 
   // Manually add a break token to the builder. Note that we're assuming that

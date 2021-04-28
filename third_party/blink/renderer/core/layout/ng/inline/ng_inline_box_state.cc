@@ -348,6 +348,8 @@ void NGInlineLayoutStateStack::AddBoxData(const NGConstraintSpace& space,
   // An empty box fragment is still flat that we do not have to defer.
   // Also, placeholders cannot be reordred if empty.
   placeholder.rect.offset.inline_offset += box_data.margin_line_left;
+  // TODO(almaher): Handle inline relative positioning correctly for OOF
+  // fragmentation.
   placeholder.rect.offset +=
       ComputeRelativeOffsetForInline(space, *box_data.item->Style());
   LayoutUnit advance = box_data.margin_border_padding_line_left +
@@ -616,6 +618,8 @@ void NGInlineLayoutStateStack::ApplyRelativePositioning(
   for (BoxData& box_data : box_data_list_) {
     unsigned start = box_data.fragment_start;
     unsigned end = box_data.fragment_end;
+    // TODO(almaher): Handle inline relative positioning correctly for OOF
+    // fragmentation.
     const LogicalOffset relative_offset =
         ComputeRelativeOffsetForInline(space, *box_data.item->Style());
 
@@ -711,8 +715,11 @@ const NGLayoutResult* NGInlineLayoutStateStack::BoxData::CreateBoxFragment(
 
     // Propagate any OOF-positioned descendants from any atomic-inlines, etc.
     if (child.layout_result) {
+      // TODO(almaher): Handle the inline case correctly for OOF fragmentation.
+      // The relative offset should not always be set to LogicalOffset() here.
       box.PropagateChildData(child.layout_result->PhysicalFragment(),
-                             child.rect.offset - rect.offset);
+                             child.rect.offset - rect.offset,
+                             /* relative_offset */ LogicalOffset());
     }
 
     // |NGFragmentItems| has a flat list of all descendants, except

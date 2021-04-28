@@ -760,6 +760,8 @@ void NGInlineLayoutAlgorithm::PlaceRelativePositionedItems(
     const auto* physical_fragment = child.PhysicalFragment();
     if (!physical_fragment)
       continue;
+    // TODO(almaher): Handle inline relative positioning correctly for OOF
+    // fragmentation.
     child.rect.offset += ComputeRelativeOffsetForInline(
         ConstraintSpace(), physical_fragment->Style());
   }

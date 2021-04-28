@@ -26,12 +26,19 @@ struct NGContainingBlock {
 
  public:
   OffsetType offset;
+  // The relative offset is stored separately to ensure that it is applied after
+  // fragmentation: https://www.w3.org/TR/css-break-3/#transforms.
+  OffsetType relative_offset;
   Member<const NGPhysicalFragment> fragment;
 
   NGContainingBlock() : fragment(nullptr) {}
 
-  NGContainingBlock(OffsetType offset, const NGPhysicalFragment* fragment)
-      : offset(offset), fragment(std::move(fragment)) {}
+  NGContainingBlock(OffsetType offset,
+                    OffsetType relative_offset,
+                    const NGPhysicalFragment* fragment)
+      : offset(offset),
+        relative_offset(relative_offset),
+        fragment(std::move(fragment)) {}
 
   void Trace(Visitor* visitor) const { visitor->Trace(fragment); }
 };

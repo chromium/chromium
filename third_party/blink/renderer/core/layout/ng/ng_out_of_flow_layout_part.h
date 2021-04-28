@@ -27,7 +27,6 @@ class LayoutObject;
 class NGBlockBreakToken;
 class NGBoxFragmentBuilder;
 class NGLayoutResult;
-class NGPhysicalFragment;
 class NGSimplifiedOOFLayoutAlgorithm;
 template <typename OffsetType>
 struct NGContainingBlock;
@@ -87,6 +86,9 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
                                               TextDirection::kLtr};
     // Size and offset of the container.
     LogicalRect rect;
+    // The relative positioned offset to be applied after fragmentation is
+    // completed.
+    LogicalOffset relative_offset;
   };
 
   // This stores the information needed to update a multicol child inside an
@@ -198,8 +200,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
       HeapHashSet<Member<const LayoutObject>>* placed_objects);
 
   const ContainingBlockInfo GetContainingBlockInfo(
-      const NGLogicalOutOfFlowPositionedNode&,
-      const NGPhysicalFragment* = nullptr);
+      const NGLogicalOutOfFlowPositionedNode&);
 
   void ComputeInlineContainingBlocks(
       const HeapVector<NGLogicalOutOfFlowPositionedNode>&);

@@ -43,8 +43,11 @@ void NGLineBoxFragmentBuilder::PropagateChildrenData(
   for (unsigned index = 0; index < children.size(); ++index) {
     auto& child = children[index];
     if (child.layout_result) {
+      // TODO(almaher): Handle the inline case correctly for OOF fragmentation.
+      // The relative offset should not always be set to LogicalOffset() here.
       PropagateChildData(child.layout_result->PhysicalFragment(),
-                         child.Offset());
+                         child.Offset(),
+                         /* relative_offset */ LogicalOffset());
 
       // Skip over any children, the information should have already been
       // propagated into this layout result.

@@ -89,6 +89,22 @@ void ApplyOverflowClip(OverflowClipAxes overflow_clip_axes,
   }
 }
 
+NGContainingBlock<PhysicalOffset> PhysicalContainingBlock(
+    NGBoxFragmentBuilder* builder,
+    PhysicalSize size,
+    const NGContainingBlock<LogicalOffset>& containing_block) {
+  return NGContainingBlock<PhysicalOffset>(
+      containing_block.offset.ConvertToPhysical(
+          builder->Style().GetWritingDirection(), size,
+          containing_block.fragment ? containing_block.fragment->Size()
+                                    : PhysicalSize()),
+      containing_block.relative_offset.ConvertToPhysical(
+          builder->Style().GetWritingDirection(), size,
+          containing_block.fragment ? containing_block.fragment->Size()
+                                    : PhysicalSize()),
+      containing_block.fragment);
+}
+
 }  // namespace
 
 // static
@@ -432,20 +448,9 @@ NGPhysicalBoxFragment::RareData::RareData(NGBoxFragmentBuilder* builder,
         descendant.node,
         descendant.static_position.ConvertToPhysical(converter),
         descendant.inline_container,
-        NGContainingBlock<PhysicalOffset>(
-            descendant.containing_block.offset.ConvertToPhysical(
-                builder->Style().GetWritingDirection(), size,
-                descendant.containing_block.fragment
-                    ? descendant.containing_block.fragment->Size()
-                    : PhysicalSize()),
-            descendant.containing_block.fragment),
-        NGContainingBlock<PhysicalOffset>(
-            descendant.fixedpos_containing_block.offset.ConvertToPhysical(
-                builder->Style().GetWritingDirection(), size,
-                descendant.fixedpos_containing_block.fragment
-                    ? descendant.fixedpos_containing_block.fragment->Size()
-                    : PhysicalSize()),
-            descendant.fixedpos_containing_block.fragment));
+        PhysicalContainingBlock(builder, size, descendant.containing_block),
+        PhysicalContainingBlock(builder, size,
+                                descendant.fixedpos_containing_block));
   }
   for (const auto& multicol : builder->multicols_with_pending_oofs_) {
     auto& value = multicol.value;
@@ -454,13 +459,8 @@ NGPhysicalBoxFragment::RareData::RareData(NGBoxFragmentBuilder* builder,
         MakeGarbageCollected<NGMulticolWithPendingOOFs<PhysicalOffset>>(
             value->multicol_offset.ConvertToPhysical(
                 builder->Style().GetWritingDirection(), size, PhysicalSize()),
-            NGContainingBlock<PhysicalOffset>(
-                value->fixedpos_containing_block.offset.ConvertToPhysical(
-                    builder->Style().GetWritingDirection(), size,
-                    value->fixedpos_containing_block.fragment
-                        ? value->fixedpos_containing_block.fragment->Size()
-                        : PhysicalSize()),
-                value->fixedpos_containing_block.fragment)));
+            PhysicalContainingBlock(builder, size,
+                                    value->fixedpos_containing_block)));
   }
   if (builder->table_grid_rect_)
     table_grid_rect = *builder->table_grid_rect_;

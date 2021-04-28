@@ -2906,17 +2906,18 @@ void NGGridLayoutAlgorithm::PlaceGridItems(const GridItems& grid_items,
                         grid_item.block_axis_alignment));
 
     // Grid is special in that %-based offsets resolve against the grid-area.
-    // Adjust the offset here (instead of in the builder). This is safe as grid
-    // *also* has special inflow-bounds logic (otherwise this wouldn't work).
-    LogicalOffset adjusted_offset = containing_grid_area.offset;
+    // Determine the relative offset here (instead of in the builder). This is
+    // safe as grid *also* has special inflow-bounds logic (otherwise this
+    // wouldn't work).
+    base::Optional<LogicalOffset> relative_offset = LogicalOffset();
     if (item_style.GetPosition() == EPosition::kRelative) {
-      adjusted_offset += ComputeRelativeOffsetForBoxFragment(
+      *relative_offset += ComputeRelativeOffsetForBoxFragment(
           physical_fragment, ConstraintSpace().GetWritingDirection(),
           containing_grid_area.size);
     }
 
-    container_builder_.AddResult(*result, adjusted_offset,
-                                 /* offset_includes_relative_position */ true);
+    container_builder_.AddResult(*result, containing_grid_area.offset,
+                                 relative_offset);
     NGBlockNode(grid_item.node).StoreMargins(ConstraintSpace(), margins);
 
     // Compares GridArea objects in row-major grid order for baseline

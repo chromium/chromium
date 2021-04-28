@@ -213,6 +213,8 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   void PropagateOOFPositionedInfo(
       const NGPhysicalFragment& fragment,
       LogicalOffset offset,
+      LogicalOffset relative_offset,
+      LogicalOffset offset_adjustment = LogicalOffset(),
       const LayoutInline* inline_container = nullptr,
       LayoutUnit containing_block_adjustment = LayoutUnit(),
       const NGContainingBlock<LogicalOffset>* fixedpos_containing_block =
@@ -288,7 +290,8 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
 
   void PropagateChildData(
       const NGPhysicalFragment& child,
-      const LogicalOffset& child_offset,
+      LogicalOffset child_offset,
+      LogicalOffset relative_offset,
       const LayoutInline* inline_container = nullptr,
       base::Optional<LayoutUnit> adjustment_for_oof_propagation = LayoutUnit());
 

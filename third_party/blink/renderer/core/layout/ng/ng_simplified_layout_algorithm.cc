@@ -287,12 +287,13 @@ void NGSimplifiedLayoutAlgorithm::AddChildFragment(
       WritingModeConverter(writing_direction_,
                            previous_physical_container_size_)
           .ToLogical(old_fragment.Offset(), new_fragment.Size());
+  // Any relative offset will have already been applied, avoid re-adding one.
+  base::Optional<LogicalOffset> relative_offset = LogicalOffset();
 
   // Add the new fragment to the builder.
   container_builder_.AddChild(new_fragment, child_offset,
                               /* inline_container */ nullptr, margin_strut,
-                              is_self_collapsing,
-                              /* offset_includes_relative_position */ true);
+                              is_self_collapsing, relative_offset);
 }
 
 }  // namespace blink
