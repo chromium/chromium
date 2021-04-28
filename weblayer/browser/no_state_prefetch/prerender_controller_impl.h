@@ -36,6 +36,7 @@ class PrerenderControllerImpl : public PrerenderController {
 
   // PrerenderController
   void Prerender(const GURL& url) override;
+  void DestroyAllContents() override;
 
  private:
   content::BrowserContext* browser_context_;

@@ -51,4 +51,13 @@ void PrerenderControllerImpl::Prerender(const GURL& url) {
       /* bounds= */ gfx::Rect());
 }
 
+void PrerenderControllerImpl::DestroyAllContents() {
+  auto* no_state_prefetch_manager =
+      NoStatePrefetchManagerFactory::GetForBrowserContext(browser_context_);
+  DCHECK(no_state_prefetch_manager);
+
+  no_state_prefetch_manager->DestroyAllContents(
+      prerender::FINAL_STATUS_APP_TERMINATING);
+}
+
 }  // namespace weblayer

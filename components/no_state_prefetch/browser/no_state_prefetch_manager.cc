@@ -268,6 +268,15 @@ void NoStatePrefetchManager::CancelAllPrerenders() {
   }
 }
 
+void NoStatePrefetchManager::DestroyAllContents(FinalStatus final_status) {
+  DeleteOldWebContents();
+  while (!active_prefetches_.empty()) {
+    NoStatePrefetchContents* contents = active_prefetches_.front()->contents();
+    contents->Destroy(final_status);
+  }
+  DeleteToDeletePrerenders();
+}
+
 void NoStatePrefetchManager::MoveEntryToPendingDelete(
     NoStatePrefetchContents* entry,
     FinalStatus final_status) {
@@ -921,15 +930,6 @@ NoStatePrefetchManager::GetActivePrerendersAsValue() const {
       list_value->Append(std::move(prefetch_value));
   }
   return list_value;
-}
-
-void NoStatePrefetchManager::DestroyAllContents(FinalStatus final_status) {
-  DeleteOldWebContents();
-  while (!active_prefetches_.empty()) {
-    NoStatePrefetchContents* contents = active_prefetches_.front()->contents();
-    contents->Destroy(final_status);
-  }
-  DeleteToDeletePrerenders();
 }
 
 void NoStatePrefetchManager::SkipNoStatePrefetchContentsAndMaybePreconnect(

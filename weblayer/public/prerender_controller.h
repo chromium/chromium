@@ -21,6 +21,7 @@ namespace weblayer {
 class PrerenderController {
  public:
   virtual void Prerender(const GURL& url) = 0;
+  virtual void DestroyAllContents() = 0;
 
  protected:
   virtual ~PrerenderController() = default;

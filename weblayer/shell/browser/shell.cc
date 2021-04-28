@@ -21,6 +21,7 @@
 #include "weblayer/browser/profile_impl.h"
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/public/navigation_controller.h"
+#include "weblayer/public/prerender_controller.h"
 
 namespace weblayer {
 
@@ -64,6 +65,10 @@ Shell::~Shell() {
   // Always destroy WebContents before calling PlatformExit(). WebContents
   // destruction sequence may depend on the resources destroyed in
   // PlatformExit() (e.g. the display::Screen singleton).
+  if (tab()) {
+    auto* const profile = static_cast<TabImpl*>(tab())->profile();
+    profile->GetPrerenderController()->DestroyAllContents();
+  }
   browser_.reset();
 
   if (windows_.empty()) {

@@ -155,6 +155,11 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   // Cancels all active prerenders.
   void CancelAllPrerenders();
 
+  // Destroys all pending prerenders using FinalStatus.  Also deletes them as
+  // well as any swapped out WebContents queued for destruction.
+  // Used both on destruction, and when clearing the browsing history.
+  void DestroyAllContents(FinalStatus final_status);
+
   // Moves a NoStatePrefetchContents to the pending delete list from the list of
   // active prerenders when prerendering should be cancelled.
   virtual void MoveEntryToPendingDelete(NoStatePrefetchContents* entry,
@@ -456,11 +461,6 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
 
   // Returns a new Value representing the pages currently being prerendered.
   std::unique_ptr<base::ListValue> GetActivePrerendersAsValue() const;
-
-  // Destroys all pending prerenders using FinalStatus.  Also deletes them as
-  // well as any swapped out WebContents queued for destruction.
-  // Used both on destruction, and when clearing the browsing history.
-  void DestroyAllContents(FinalStatus final_status);
 
   // Records the final status a prerender in the case that a
   // NoStatePrefetchContents was never created, adds a PrerenderHistory entry,
