@@ -15,6 +15,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "os": "Mac-10.13"
             }
           ],
@@ -32,6 +33,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "os": "Mac-10.13"
             }
           ],
@@ -56,6 +58,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "os": "Mac-10.13"
             }
           ],
@@ -73,6 +76,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "os": "Mac-10.13"
             }
           ],
@@ -301,6 +305,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "os": "Mac-10.13"
             }
           ],
@@ -318,6 +323,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "os": "Mac-10.13"
             }
           ],
@@ -342,6 +348,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "os": "Mac-10.13"
             }
           ],
@@ -359,6 +366,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "os": "Mac-10.13"
             }
           ],

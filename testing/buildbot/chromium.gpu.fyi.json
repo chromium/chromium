@@ -14248,6 +14248,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -14272,6 +14273,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -14298,6 +14300,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -14323,6 +14326,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -14345,6 +14349,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -14367,6 +14372,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -14386,6 +14392,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -14409,6 +14416,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -14428,6 +14436,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -14463,6 +14472,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -14496,6 +14506,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -14529,6 +14540,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -14562,6 +14574,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -14599,6 +14612,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -14641,6 +14655,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -14683,6 +14698,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -14717,6 +14733,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -14750,6 +14767,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -14784,6 +14802,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -14819,6 +14838,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -14854,6 +14874,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -14891,6 +14912,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -14922,10 +14944,12 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             },
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -14952,10 +14976,12 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             },
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -14985,10 +15011,12 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             },
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -15016,10 +15044,12 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             },
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -15047,10 +15077,12 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             },
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -15075,10 +15107,12 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             },
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -15103,10 +15137,12 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             },
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -15128,10 +15164,12 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             },
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -15157,10 +15195,12 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             },
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -15182,10 +15222,12 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             },
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -15224,10 +15266,12 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             },
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -15264,10 +15308,12 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             },
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -15303,10 +15349,12 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             },
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -15342,10 +15390,12 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             },
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -15381,10 +15431,12 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             },
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -15420,10 +15472,12 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             },
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -15459,10 +15513,12 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             },
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -15507,10 +15563,12 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             },
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -15555,10 +15613,12 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             },
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -15595,10 +15655,12 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             },
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -15634,10 +15696,12 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             },
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -15673,10 +15737,12 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             },
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -15721,10 +15787,12 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             },
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -15769,10 +15837,12 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             },
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -15817,10 +15887,12 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             },
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -15865,10 +15937,12 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             },
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -15905,10 +15979,12 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             },
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -15945,10 +16021,12 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             },
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -15984,10 +16062,12 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             },
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -16025,10 +16105,12 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             },
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -16068,10 +16150,12 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             },
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -16109,10 +16193,12 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             },
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -16150,10 +16236,12 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             },
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -16191,10 +16279,12 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             },
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -16232,10 +16322,12 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             },
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -16267,6 +16359,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -16291,6 +16384,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -16318,6 +16412,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -16343,6 +16438,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -16368,6 +16464,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -16390,6 +16487,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -16412,6 +16510,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -16431,6 +16530,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -16454,6 +16554,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -16473,6 +16574,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -16508,6 +16610,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -16541,6 +16644,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -16574,6 +16678,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -16607,6 +16712,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -16640,6 +16746,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -16673,6 +16780,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -16706,6 +16814,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -16748,6 +16857,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -16790,6 +16900,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -16824,6 +16935,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -16857,6 +16969,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -16890,6 +17003,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -16927,6 +17041,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -16969,6 +17084,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -17011,6 +17127,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -17053,6 +17170,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -17095,6 +17213,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -17120,6 +17239,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -17153,6 +17273,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -17187,6 +17308,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -17220,6 +17342,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -17255,6 +17378,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -17291,6 +17415,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -17326,6 +17451,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -17361,6 +17487,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -17396,6 +17523,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -17430,6 +17558,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:3e9b",
               "os": "Mac-10.15.7"
             }
@@ -17459,6 +17588,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -17483,6 +17613,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -17510,6 +17641,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -17535,6 +17667,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -17560,6 +17693,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -17582,6 +17716,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -17604,6 +17739,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -17623,6 +17759,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -17646,6 +17783,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -17665,6 +17803,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -17700,6 +17839,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -17733,6 +17873,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -17766,6 +17907,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -17799,6 +17941,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -17832,6 +17975,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -17865,6 +18009,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -17898,6 +18043,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -17940,6 +18086,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -17982,6 +18129,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -18016,6 +18164,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -18049,6 +18198,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -18082,6 +18232,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -18119,6 +18270,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -18161,6 +18313,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -18203,6 +18356,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -18245,6 +18399,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -18287,6 +18442,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -18312,6 +18468,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -18345,6 +18502,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -18379,6 +18537,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -18412,6 +18571,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -18447,6 +18607,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -18483,6 +18644,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -18518,6 +18680,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -18553,6 +18716,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -18588,6 +18752,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -18622,6 +18787,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -18651,6 +18817,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -18677,6 +18844,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -18705,6 +18873,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -18732,6 +18901,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -18756,6 +18926,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -18780,6 +18951,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -18801,6 +18973,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -18826,6 +18999,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -18847,6 +19021,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -18884,6 +19059,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -18919,6 +19095,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -18954,6 +19131,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -18989,6 +19167,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -19028,6 +19207,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -19072,6 +19252,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -19116,6 +19297,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -19152,6 +19334,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -19187,6 +19370,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -19223,6 +19407,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -19254,6 +19439,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -19280,6 +19466,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -19308,6 +19495,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -19335,6 +19523,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -19359,6 +19548,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -19383,6 +19573,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -19404,6 +19595,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -19429,6 +19621,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -19450,6 +19643,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -19487,6 +19681,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -19522,6 +19717,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -19557,6 +19753,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -19592,6 +19789,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -19631,6 +19829,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -19675,6 +19874,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -19719,6 +19919,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -19755,6 +19956,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -19790,6 +19992,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -19820,6 +20023,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -19846,6 +20050,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -19875,6 +20080,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -19902,6 +20108,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -19929,6 +20136,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -19953,6 +20161,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -19977,6 +20186,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -19998,6 +20208,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -20023,6 +20234,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -20044,6 +20256,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -20081,6 +20294,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -20116,6 +20330,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -20151,6 +20366,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -20186,6 +20402,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -20221,6 +20438,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -20256,6 +20474,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -20291,6 +20510,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -20335,6 +20555,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -20379,6 +20600,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -20415,6 +20637,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -20450,6 +20673,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -20485,6 +20709,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -20524,6 +20749,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -20568,6 +20794,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -20612,6 +20839,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -20656,6 +20884,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -20700,6 +20929,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -20727,6 +20957,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -20762,6 +20993,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -20798,6 +21030,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -20833,6 +21066,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -20870,6 +21104,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -20908,6 +21143,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -20945,6 +21181,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -20982,6 +21219,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -21019,6 +21257,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -21055,6 +21294,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -21086,6 +21326,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -21112,6 +21353,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -21141,6 +21383,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -21168,6 +21411,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -21195,6 +21439,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -21219,6 +21464,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -21243,6 +21489,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -21264,6 +21511,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -21289,6 +21537,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -21310,6 +21559,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -21347,6 +21597,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -21382,6 +21633,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -21417,6 +21669,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -21452,6 +21705,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -21487,6 +21741,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -21522,6 +21777,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -21557,6 +21813,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -21601,6 +21858,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -21645,6 +21903,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -21681,6 +21940,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -21716,6 +21976,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -21751,6 +22012,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -21790,6 +22052,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -21834,6 +22097,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -21878,6 +22142,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -21922,6 +22187,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -21966,6 +22232,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -22002,6 +22269,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -22038,6 +22306,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -22073,6 +22342,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -22110,6 +22380,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -22147,6 +22418,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -22184,6 +22456,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -22220,6 +22493,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -23480,6 +23754,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:679e",
               "os": "Mac-10.12.6",
               "pool": "chromium.tests.gpu"
@@ -23506,6 +23781,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:679e",
               "os": "Mac-10.12.6",
               "pool": "chromium.tests.gpu"
@@ -23535,6 +23811,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:679e",
               "os": "Mac-10.12.6",
               "pool": "chromium.tests.gpu"
@@ -23562,6 +23839,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:679e",
               "os": "Mac-10.12.6",
               "pool": "chromium.tests.gpu"
@@ -23589,6 +23867,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:679e",
               "os": "Mac-10.12.6",
               "pool": "chromium.tests.gpu"
@@ -23613,6 +23892,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:679e",
               "os": "Mac-10.12.6",
               "pool": "chromium.tests.gpu"
@@ -23637,6 +23917,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:679e",
               "os": "Mac-10.12.6",
               "pool": "chromium.tests.gpu"
@@ -23658,6 +23939,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:679e",
               "os": "Mac-10.12.6",
               "pool": "chromium.tests.gpu"
@@ -23695,6 +23977,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:679e",
               "os": "Mac-10.12.6",
               "pool": "chromium.tests.gpu"
@@ -23730,6 +24013,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:679e",
               "os": "Mac-10.12.6",
               "pool": "chromium.tests.gpu"
@@ -23765,6 +24049,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:679e",
               "os": "Mac-10.12.6",
               "pool": "chromium.tests.gpu"
@@ -23800,6 +24085,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:679e",
               "os": "Mac-10.12.6",
               "pool": "chromium.tests.gpu"
@@ -23835,6 +24121,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:679e",
               "os": "Mac-10.12.6",
               "pool": "chromium.tests.gpu"
@@ -23874,6 +24161,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:679e",
               "os": "Mac-10.12.6",
               "pool": "chromium.tests.gpu"
@@ -23918,6 +24206,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:679e",
               "os": "Mac-10.12.6",
               "pool": "chromium.tests.gpu"
@@ -23962,6 +24251,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:679e",
               "os": "Mac-10.12.6",
               "pool": "chromium.tests.gpu"
@@ -24006,6 +24296,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:679e",
               "os": "Mac-10.12.6",
               "pool": "chromium.tests.gpu"
@@ -24050,6 +24341,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:679e",
               "os": "Mac-10.12.6",
               "pool": "chromium.tests.gpu"
@@ -24086,6 +24378,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:679e",
               "os": "Mac-10.12.6",
               "pool": "chromium.tests.gpu"
@@ -24122,6 +24415,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:679e",
               "os": "Mac-10.12.6",
               "pool": "chromium.tests.gpu"
@@ -24157,6 +24451,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:679e",
               "os": "Mac-10.12.6",
               "pool": "chromium.tests.gpu"
@@ -24194,6 +24489,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:679e",
               "os": "Mac-10.12.6",
               "pool": "chromium.tests.gpu"
@@ -24231,6 +24527,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:679e",
               "os": "Mac-10.12.6",
               "pool": "chromium.tests.gpu"
@@ -24855,6 +25152,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -24879,6 +25177,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -24898,6 +25197,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -24921,6 +25221,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -24940,6 +25241,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -24975,6 +25277,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -25008,6 +25311,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -25041,6 +25345,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -25074,6 +25379,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -25111,6 +25417,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -25153,6 +25460,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -25195,6 +25503,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -25229,6 +25538,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -25262,6 +25572,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -25292,6 +25603,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -25327,6 +25639,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -25362,6 +25675,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -25397,6 +25711,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -25432,6 +25747,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "8086:0a2e",
               "os": "Mac-10.15.5"
             }
@@ -25460,6 +25776,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -25486,6 +25803,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -25507,6 +25825,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -25532,6 +25851,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -25553,6 +25873,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -25590,6 +25911,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -25625,6 +25947,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -25660,6 +25983,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -25695,6 +26019,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -25734,6 +26059,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -25778,6 +26104,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -25822,6 +26149,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -25858,6 +26186,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -25893,6 +26222,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -25925,6 +26255,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -25962,6 +26293,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -25999,6 +26331,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -26036,6 +26369,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -26073,6 +26407,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "1002:6821",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -26103,6 +26438,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -26129,6 +26465,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -26150,6 +26487,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -26175,6 +26513,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -26196,6 +26535,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -26237,6 +26577,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -26272,6 +26613,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",
@@ -26304,6 +26646,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
+              "cpu": "x86-64",
               "gpu": "10de:0fe9",
               "hidpi": "1",
               "os": "Mac-10.14.6",

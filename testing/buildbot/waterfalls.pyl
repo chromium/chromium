@@ -2050,6 +2050,9 @@
         },
       },
       'ToTMac': {
+        'mixins': [
+          'mac_x64',
+        ],
         'test_suites': {
           'gtest_tests': 'chromium_mac_gtests',
           'isolated_scripts': 'chromium_mac_rel_isolated_scripts_and_sizes',
@@ -2059,6 +2062,9 @@
         ],
       },
       'ToTMac (dbg)': {
+        'mixins': [
+          'mac_x64',
+        ],
         'additional_compile_targets': [
           'all',
         ],
@@ -2067,6 +2073,9 @@
         },
       },
       'ToTMacASan': {
+        'mixins': [
+          'mac_x64',
+        ],
         'test_suites': {
           'gtest_tests': 'chromium_mac_gtests',
         },
@@ -2081,6 +2090,7 @@
       'ToTMacOfficial': {
         'mixins': [
           'chrome-tester-service-account',
+          'mac_x64',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_mac_gtests',
@@ -2525,6 +2535,9 @@
         },
       },
       'mac-rel-swarming': {
+        'mixins': [
+          'mac_x64',
+        ],
         'test_suites': {
            'gtest_tests': 'chromium_swarm_desktop_gtests',
         },
@@ -3315,7 +3328,7 @@
         'mixins': [
           'intel_iris_5100',
           'limited_capacity_bot',
-          'mac_11_beta',
+          'mac_11_beta_x64',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_mac_gtests_no_nacl',
@@ -3354,6 +3367,7 @@
         'swarming': {
           'dimension_sets': [
             { # This should match Mac10.12 Tests on chromium.mac.
+              'cpu': 'x86-64',
               'gpu': '8086:0a2e',
               'hidpi': '0',
               'os': 'Mac-10.12.6',
@@ -3367,6 +3381,7 @@
             {
               # This matches the dimensions for "Chromium Mac10.13" in
               # chromium_fyi.py.
+              'cpu': 'x86-64',
               'gpu': '8086:0a2e',
               'hidpi': '0',
               'os': 'Mac-10.13.6',
@@ -3395,6 +3410,7 @@
             {
               # This matches the dimensions for "Chromium Mac10.15" in
               # chromium_fyi.py.
+              'cpu': 'x86-64',
               'gpu': '8086:0a2e',
               'hidpi': '0',
               'os': 'Mac-10.15',
@@ -3408,7 +3424,7 @@
       },
       'mac11.0-blink-rel-dummy': {
         'mixins': [
-            'mac_11',
+            'mac_11_x64',
         ],
         'swarming': {
           'dimension_sets': [
@@ -3556,6 +3572,9 @@
       # Due to disk shortage on Mac, we build 'chrome' instead of 'all'.
       # See crbug.com/899425
       'Chromium Mac Goma RBE Staging': {
+        'mixins': [
+          'mac_x64',
+        ],
         'additional_compile_targets': [
           'chrome',
         ],
@@ -3564,6 +3583,9 @@
         },
       },
       'Chromium Mac Goma RBE Staging (clobber)': {
+        'mixins': [
+          'mac_x64',
+        ],
         'additional_compile_targets': [
           'chrome',
         ],
@@ -3572,6 +3594,9 @@
         },
       },
       'Chromium Mac Goma RBE Staging (dbg)': {
+        'mixins': [
+          'mac_x64',
+        ],
         'additional_compile_targets': [
           'chrome',
         ],
@@ -3580,6 +3605,9 @@
         },
       },
       'Chromium Mac Goma RBE ToT': {
+        'mixins': [
+          'mac_x64',
+        ],
         'additional_compile_targets': [
           'chrome',
         ],
@@ -5161,7 +5189,7 @@
       },
       'Mac11 Tests': {
         'mixins': [
-            'mac_11',
+            'mac_11_x64',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_mac_gtests_no_nacl',
@@ -5352,6 +5380,9 @@
         ],
       },
       'Mac ASan 64 Tests (1)': {
+        'mixins': [
+          'mac_x64',
+        ],
         'test_suites': {
           'gtest_tests': 'chromium_mac_gtests',
         },
@@ -5629,6 +5660,7 @@
        'swarming': {
           'dimension_sets': [
             {
+              'cpu': 'x86-64',
               'pool': 'chromium.updater.mac',
               'os': 'Mac-10.11',
             }
@@ -5642,6 +5674,7 @@
         'swarming': {
           'dimension_sets': [
             {
+              'cpu': 'x86-64',
               'pool': 'chromium.updater.mac',
               'os': 'Mac-10.12',
             }
@@ -5655,6 +5688,7 @@
         'swarming': {
           'dimension_sets': [
             {
+              'cpu': 'x86-64',
               'pool': 'chromium.updater.mac',
               'os': 'Mac-10.13',
             }
@@ -5668,6 +5702,7 @@
         'swarming': {
           'dimension_sets': [
             {
+              'cpu': 'x86-64',
               'pool': 'chromium.updater.mac',
               'os': 'Mac-10.14',
             }
@@ -5681,6 +5716,7 @@
         'swarming': {
           'dimension_sets': [
             {
+              'cpu': 'x86-64',
               'pool': 'chromium.updater.mac',
               'os': 'Mac-10.15',
             }
@@ -5694,6 +5730,7 @@
         'swarming': {
           'dimension_sets': [
             {
+              'cpu': 'x86-64',
               'pool': 'chromium.updater.mac',
               'os': 'Mac-10.15',
             }
@@ -5707,6 +5744,7 @@
         'swarming': {
           'dimension_sets': [
             {
+              'cpu': 'x86-64',
               'pool': 'chromium.updater.mac',
               'os': 'Mac-11',
               'cpu': 'x86-64',
@@ -5853,6 +5891,7 @@
       'WebRTC Chromium Mac Tester': {
         'mixins': [
           'chromium-webrtc-rel-mac',
+          'mac_x64',
         ],
         'test_suites': {
           'gtest_tests': 'webrtc_chromium_tests_with_baremetal_tests',
@@ -6283,6 +6322,7 @@
         'swarming': {
           'dimension_sets': [
             {
+              'cpu': 'x86-64',
               'os': 'Mac-10.13',
             },
           ],

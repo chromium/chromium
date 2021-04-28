@@ -242,6 +242,7 @@
         'swarming': {
           'dimension_sets': [
             {
+              'cpu': 'x86-64',
               'gpu': 'none',
               'os': 'Mac-10.11.6',
             },

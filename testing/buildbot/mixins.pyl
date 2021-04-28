@@ -565,6 +565,7 @@
   'mac_10.11': {
     'swarming': {
       'dimensions': {
+        'cpu': 'x86-64',
         'os': 'Mac-10.11',
       },
     },
@@ -572,6 +573,7 @@
   'mac_10.13': {
     'swarming': {
       'dimensions': {
+        'cpu': 'x86-64',
         'os': 'Mac-10.13.6',
       },
     },
@@ -579,6 +581,7 @@
   'mac_10.14': {
     'swarming': {
       'dimensions': {
+        'cpu': 'x86-64',
         'os': 'Mac-10.14.6',
       },
     },
@@ -586,21 +589,24 @@
   'mac_10.15': {
     'swarming': {
       'dimensions': {
+        'cpu': 'x86-64',
         'os': 'Mac-10.15',
       },
     },
   },
-  'mac_11': {
+  'mac_11_beta_x64': {
     'swarming': {
       'dimensions': {
-        'os': 'Mac-11|Mac-10.16',
+        'cpu': 'x86-64',
+        'os': 'Mac-11.3',
       },
     },
   },
-  'mac_11_beta': {
+  'mac_11_x64': {
     'swarming': {
       'dimensions': {
-        'os': 'Mac-11.3',
+        'cpu': 'x86-64',
+        'os': 'Mac-11|Mac-10.16',
       },
     },
   },
@@ -616,6 +622,7 @@
   'mac_mini_10.12': {
     'swarming': {
       'dimensions': {
+        'cpu': 'x86-64',
         'gpu': '8086:0a2e',
         'os': 'Mac-10.12.6',
       },
@@ -624,6 +631,7 @@
   'mac_mini_10.14': {
     'swarming': {
       'dimensions': {
+        'cpu': 'x86-64',
         'gpu': '8086:0a2e',
         'os': 'Mac-10.14.6',
       },
@@ -632,6 +640,7 @@
   'mac_mini_intel_gpu_experimental': {
     'swarming': {
       'dimensions': {
+        'cpu': 'x86-64',
         'gpu': '8086:0a2e',
         'os': 'Mac-10.15.5',
       },
@@ -640,6 +649,7 @@
   'mac_mini_intel_gpu_stable': {
     'swarming': {
       'dimensions': {
+        'cpu': 'x86-64',
         'gpu': '8086:0a2e',
         'os': 'Mac-10.15.5',
       },
@@ -652,6 +662,7 @@
     'swarming': {
       'dimension_sets': [
         {
+          'cpu': 'x86-64',
           'gpu': '8086:0a2e',
           'os': 'Mac-10.15.5',
         },
@@ -661,6 +672,7 @@
   'mac_mini_intel_uhd_630_gpu_stable': {
     'swarming': {
       'dimensions': {
+        'cpu': 'x86-64',
         'gpu': '8086:3e9b',
         'os': 'Mac-10.15.7',
       },
@@ -669,6 +681,7 @@
   'mac_pro_amd_gpu': {
     'swarming': {
       'dimensions': {
+        'cpu': 'x86-64',
         'gpu': '1002:679e',
         'os': 'Mac-10.12.6',
         'pool': 'chromium.tests.gpu',
@@ -679,6 +692,7 @@
     # Currently same configuration as stable version below.
     'swarming': {
       'dimensions': {
+        'cpu': 'x86-64',
         'gpu': '1002:6821',
         'hidpi': '1',
         'os': 'Mac-10.14.6',
@@ -689,6 +703,7 @@
   'mac_retina_amd_gpu_stable': {
     'swarming': {
       'dimensions': {
+        'cpu': 'x86-64',
         'gpu': '1002:6821',
         'hidpi': '1',
         'os': 'Mac-10.14.6',
@@ -703,6 +718,7 @@
     'swarming': {
       'dimension_sets': [
         {
+          'cpu': 'x86-64',
           'gpu': '1002:6821',
           'hidpi': '1',
           'os': 'Mac-10.14.6',
@@ -715,6 +731,7 @@
     # Currently the same as the stable version.
     'swarming': {
       'dimensions': {
+        'cpu': 'x86-64',
         'gpu': '10de:0fe9',
         'hidpi': '1',
         'os': 'Mac-10.14.6',
@@ -725,6 +742,7 @@
   'mac_retina_nvidia_gpu_stable': {
     'swarming': {
       'dimensions': {
+        'cpu': 'x86-64',
         'gpu': '10de:0fe9',
         'hidpi': '1',
         'os': 'Mac-10.14.6',
@@ -740,6 +758,16 @@
           'location': '.',
           'revision': 'git_revision:8811b82233df02ee372cae1e19e379ca8c6a2776',
         },
+      ],
+    },
+  },
+  'mac_x64': {
+    'swarming': {
+      'dimension_sets': [
+         {
+           'os': 'Mac',
+           'cpu': 'x86-64',
+         },
       ],
     },
   },

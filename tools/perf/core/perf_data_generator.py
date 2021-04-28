@@ -800,6 +800,8 @@ BUILDERS = {
         'platform':
         'mac',
         'dimension': {
+            'cpu':
+            'x86-64',
             'gpu':
             '8086:1626',
             'os':
@@ -876,6 +878,8 @@ BUILDERS = {
         'platform':
         'mac',
         'dimension': {
+            'cpu':
+            'x86-64',
             'gpu':
             '1002:6821-4.0.20-3.2.8',
             'os':
