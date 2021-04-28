@@ -391,9 +391,8 @@ try_.chromium_android_builder(
 try_.chromium_android_builder(
     name = "android-marshmallow-arm64-rel-dual-coverage",
     builderless = True,
-    cores = branches.value(for_main = 32, for_branches = 16),
+    cores = 16,
     goma_jobs = goma.jobs.J300,
-    main_list_view = "try",
     ssd = True,
     use_java_coverage = True,
     tryjob = try_.job(experiment_percentage = 3),
@@ -1234,11 +1233,11 @@ try_.chromium_linux_builder(
     os = os.LINUX_XENIAL_OR_BIONIC,
 )
 
+# Experimental builder to check dual coverage on linux platform.
 try_.chromium_linux_builder(
     name = "linux-rel-dual-coverage",
     builderless = True,
     goma_jobs = goma.jobs.J150,
-    main_list_view = "try",
     tryjob = try_.job(experiment_percentage = 3),
     coverage_test_types = ["unit", "overall"],
     use_clang_coverage = True,
