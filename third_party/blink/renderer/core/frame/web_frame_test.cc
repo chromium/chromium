@@ -9688,56 +9688,12 @@ TEST_F(WebFrameSwapTest, HistoryCommitTypeAfterExistingRemoteToLocalSwap) {
   Reset();
 }
 
-class RemoteFrameHostInterceptor : public mojom::blink::RemoteFrameHost {
+class RemoteFrameHostInterceptor : public FakeRemoteFrameHost {
  public:
-  explicit RemoteFrameHostInterceptor(
-      blink::AssociatedInterfaceProvider* provider) {
-    provider->OverrideBinderForTesting(
-        mojom::blink::RemoteFrameHost::Name_,
-        base::BindRepeating(
-            &RemoteFrameHostInterceptor::BindRemoteFrameHostReceiver,
-            base::Unretained(this)));
-  }
+  RemoteFrameHostInterceptor() = default;
   ~RemoteFrameHostInterceptor() override = default;
 
-  void BindRemoteFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle) {
-    receiver_.Bind(
-        mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrameHost>(
-            std::move(handle)));
-  }
-
-  void SetInheritedEffectiveTouchAction(cc::TouchAction touch_action) override {
-  }
-  void UpdateRenderThrottlingStatus(bool is_throttled,
-                                    bool subtree_throttled,
-                                    bool display_locked) override {}
-  void VisibilityChanged(mojom::blink::FrameVisibility visibility) override {}
-  void DidFocusFrame() override {}
-  void CheckCompleted() override {}
-  void CapturePaintPreviewOfCrossProcessSubframe(
-      const gfx::Rect& clip_rect,
-      const base::UnguessableToken& guid) override {}
-  void SetIsInert(bool inert) override {}
-  void DidChangeOpener(
-      const base::Optional<LocalFrameToken>& opener_frame) override {}
-  void AdvanceFocus(blink::mojom::FocusType focus_type,
-                    const LocalFrameToken& source_frame_token) override {}
-  void RouteMessageEvent(
-      const base::Optional<LocalFrameToken>& source_frame_token,
-      const String& source_origin,
-      const String& target_origin,
-      BlinkTransferableMessage message) override {}
-  void PrintCrossProcessSubframe(const gfx::Rect& rect,
-                                 int document_cookie) override {}
-  void Detach() override {}
-  void UpdateViewportIntersection(
-      blink::mojom::blink::ViewportIntersectionStatePtr intersection_state,
-      const base::Optional<FrameVisualProperties>& visual_properties) override {
-  }
-
-  void SynchronizeVisualProperties(
-      const blink::FrameVisualProperties& properties) override {}
-
+  // FakeRemoteFrameHost:
   void OpenURL(mojom::blink::OpenURLParamsPtr params) override {
     intercepted_params_ = std::move(params);
   }
@@ -9747,7 +9703,6 @@ class RemoteFrameHostInterceptor : public mojom::blink::RemoteFrameHost {
   }
 
  private:
-  mojo::AssociatedReceiver<mojom::blink::RemoteFrameHost> receiver_{this};
   mojom::blink::OpenURLParamsPtr intercepted_params_;
 };
 
@@ -9760,8 +9715,8 @@ TEST_F(WebFrameSwapTest, NavigateRemoteFrameViaLocation) {
   ASSERT_TRUE(MainFrame()->FirstChild());
   ASSERT_EQ(MainFrame()->FirstChild(), remote_frame);
 
-  RemoteFrameHostInterceptor interceptor(
-      client.GetRemoteAssociatedInterfaces());
+  RemoteFrameHostInterceptor interceptor;
+  interceptor.Init(client.GetRemoteAssociatedInterfaces());
   remote_frame->SetReplicatedOrigin(
       WebSecurityOrigin::CreateFromString("http://127.0.0.1"), false);
   MainFrame()->ExecuteScript(
@@ -9789,8 +9744,8 @@ TEST_F(WebFrameSwapTest, WindowOpenOnRemoteFrame) {
   LocalDOMWindow* main_window =
       To<WebLocalFrameImpl>(MainFrame())->GetFrame()->DomWindow();
 
-  RemoteFrameHostInterceptor interceptor(
-      remote_client.GetRemoteAssociatedInterfaces());
+  RemoteFrameHostInterceptor interceptor;
+  interceptor.Init(remote_client.GetRemoteAssociatedInterfaces());
   String destination = "data:text/html:destination";
   NonThrowableExceptionState exception_state;
   ScriptState* script_state =
