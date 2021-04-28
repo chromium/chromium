@@ -109,4 +109,28 @@ TEST_F(GetEnvelopeStyleAddressTest,
   EXPECT_EQ(address.find(u"  "), std::string::npos);
 }
 
+TEST(GetDescriptionForProfileToSave, NameAndAddress) {
+  AutofillProfile profile = test::GetFullProfile();
+  std::u16string description = GetDescriptionForProfileToSave(profile, "en-US");
+  // Should contain full name and address line 1.
+  EXPECT_EQ(description, u"John H. Doe, 666 Erebus St.");
+}
+
+TEST(GetDescriptionForProfileToUpdate, LabelAndDetails) {
+  AutofillProfile profile = test::GetFullProfile();
+  std::u16string description =
+      GetDescriptionForProfileToUpdate(profile, "en-US");
+  // Should contain full name as label and address line 1, separated by hyphen.
+  EXPECT_EQ(description, u"John H. Doe — 666 Erebus St.");
+}
+
+TEST(GetDescriptionForProfileToUpdate, NoLabelOnlyDetails) {
+  AutofillProfile profile = test::GetFullProfile();
+  profile.SetInfo(NAME_FULL, u"", "en-US");
+  std::u16string description =
+      GetDescriptionForProfileToUpdate(profile, "en-US");
+  // Should contain no label, but 2 components: address lines 1 & 2.
+  EXPECT_EQ(description, u"666 Erebus St., Apt 8");
+}
+
 }  // namespace autofill

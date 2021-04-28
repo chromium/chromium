@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/browser_process.h"
+#include "components/autofill/core/browser/autofill_address_util.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
@@ -23,6 +25,7 @@ SaveAddressProfileMessageController::~SaveAddressProfileMessageController() {
 void SaveAddressProfileMessageController::DisplayMessage(
     content::WebContents* web_contents,
     const AutofillProfile& profile,
+    const AutofillProfile* original_profile,
     AutofillClient::AddressProfileSavePromptCallback
         save_address_profile_callback,
     PrimaryActionCallback primary_action_callback) {
@@ -39,6 +42,7 @@ void SaveAddressProfileMessageController::DisplayMessage(
 
   web_contents_ = web_contents;
   profile_ = profile;
+  original_profile_ = original_profile;
   save_address_profile_callback_ = std::move(save_address_profile_callback);
   primary_action_callback_ = std::move(primary_action_callback);
 
@@ -51,10 +55,9 @@ void SaveAddressProfileMessageController::DisplayMessage(
       base::BindOnce(&SaveAddressProfileMessageController::OnMessageDismissed,
                      base::Unretained(this)));
 
-  // TODO(crbug.com/1167061): Replace with proper localized string.
-  message_->SetTitle(u"Save address?");
-  message_->SetDescription(u"Fill forms faster in Chrome");
-  message_->SetPrimaryButtonText(u"Save...");
+  message_->SetTitle(GetTitle());
+  message_->SetDescription(GetDescription());
+  message_->SetPrimaryButtonText(GetPrimaryButtonText());
 
   messages::MessageDispatcherBridge::Get()->EnqueueMessage(
       message_.get(), web_contents, messages::MessageScopeType::WEB_CONTENTS);
@@ -69,7 +72,8 @@ void SaveAddressProfileMessageController::DismissMessage() {
 
 void SaveAddressProfileMessageController::OnPrimaryAction() {
   std::move(primary_action_callback_)
-      .Run(web_contents_, profile_, std::move(save_address_profile_callback_));
+      .Run(web_contents_, profile_, original_profile_,
+           std::move(save_address_profile_callback_));
 }
 
 void SaveAddressProfileMessageController::OnMessageDismissed(
@@ -100,6 +104,28 @@ void SaveAddressProfileMessageController::RunSaveAddressProfileCallback(
     AutofillClient::SaveAddressProfileOfferUserDecision decision) {
   std::move(save_address_profile_callback_).Run(decision, profile_);
   primary_action_callback_.Reset();
+}
+
+std::u16string SaveAddressProfileMessageController::GetTitle() {
+  // TODO(crbug.com/1167061): Replace with proper localized strings.
+  // TODO(crbug.com/1167061): Make update title reflect fields to be updated.
+  return original_profile_ ? u"Update address?" : u"Save address?";
+}
+
+std::u16string SaveAddressProfileMessageController::GetDescription() {
+  const std::string locale = g_browser_process->GetApplicationLocale();
+  if (original_profile_) {
+    // TODO(crbug.com/1167061): Replace with proper localized string.
+    return u"For " +
+           GetDescriptionForProfileToUpdate(*original_profile_, locale);
+  } else {
+    return GetDescriptionForProfileToSave(profile_, locale);
+  }
+}
+
+std::u16string SaveAddressProfileMessageController::GetPrimaryButtonText() {
+  // TODO(crbug.com/1167061): Replace with proper localized strings.
+  return original_profile_ ? u"Update…" : u"Save…";
 }
 
 }  // namespace autofill

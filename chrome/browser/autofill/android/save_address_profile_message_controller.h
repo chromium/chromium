@@ -32,10 +32,12 @@ class SaveAddressProfileMessageController {
   using PrimaryActionCallback = base::OnceCallback<void(
       content::WebContents*,
       const AutofillProfile&,
+      const AutofillProfile* original_profile,
       AutofillClient::AddressProfileSavePromptCallback)>;
 
   void DisplayMessage(content::WebContents* web_contents,
                       const AutofillProfile& profile,
+                      const AutofillProfile* original_profile,
                       AutofillClient::AddressProfileSavePromptCallback
                           save_address_profile_callback,
                       PrimaryActionCallback primary_action_callback);
@@ -54,11 +56,17 @@ class SaveAddressProfileMessageController {
   void RunSaveAddressProfileCallback(
       AutofillClient::SaveAddressProfileOfferUserDecision decision);
 
+  std::u16string GetTitle();
+  std::u16string GetDescription();
+  std::u16string GetPrimaryButtonText();
+
   content::WebContents* web_contents_ = nullptr;
   std::unique_ptr<messages::MessageWrapper> message_;
 
   // The profile which is being confirmed by the user.
   AutofillProfile profile_;
+  // The profile (if exists) which will be updated if the user confirms.
+  const AutofillProfile* original_profile_;
   // The callback to run once the user makes the final decision.
   AutofillClient::AddressProfileSavePromptCallback
       save_address_profile_callback_;

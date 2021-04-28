@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/ui/country_combobox_model.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/strings/grit/components_strings.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_ui.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_ui_component.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/localization.h"
@@ -152,6 +153,59 @@ std::u16string GetEnvelopeStyleAddress(const AutofillProfile& profile,
   re2::RE2::GlobalReplace(&address, re2::RE2("[ ]+"), " ");
 
   return base::UTF8ToUTF16(address);
+}
+
+std::u16string GetDescriptionForProfileToSave(
+    const AutofillProfile& profile,
+    const std::string& ui_language_code) {
+  // All user-visible fields.
+  static constexpr ServerFieldType kDetailsFields[] = {
+      NAME_FULL,
+      ADDRESS_HOME_LINE1,
+      ADDRESS_HOME_LINE2,
+      ADDRESS_HOME_DEPENDENT_LOCALITY,
+      ADDRESS_HOME_CITY,
+      ADDRESS_HOME_STATE,
+      ADDRESS_HOME_ZIP,
+      EMAIL_ADDRESS,
+      PHONE_HOME_WHOLE_NUMBER,
+      COMPANY_NAME,
+      ADDRESS_HOME_COUNTRY};
+
+  return profile.ConstructInferredLabel(
+      kDetailsFields, base::size(kDetailsFields),
+      /*num_fields_to_include=*/2, ui_language_code);
+}
+
+std::u16string GetDescriptionForProfileToUpdate(
+    const AutofillProfile& profile,
+    const std::string& ui_language_code) {
+  // All user-visible fields, except for NAME_FULL, which is used as a preceding
+  // label.
+  static constexpr ServerFieldType kDetailsFields[] = {
+      ADDRESS_HOME_LINE1,
+      ADDRESS_HOME_LINE2,
+      ADDRESS_HOME_DEPENDENT_LOCALITY,
+      ADDRESS_HOME_CITY,
+      ADDRESS_HOME_STATE,
+      ADDRESS_HOME_ZIP,
+      EMAIL_ADDRESS,
+      PHONE_HOME_WHOLE_NUMBER,
+      COMPANY_NAME,
+      ADDRESS_HOME_COUNTRY};
+
+  std::vector<std::u16string> description_components;
+  std::u16string label = profile.GetInfo(NAME_FULL, ui_language_code);
+  if (!label.empty())
+    description_components.push_back(label);
+  std::u16string details = profile.ConstructInferredLabel(
+      kDetailsFields, base::size(kDetailsFields),
+      /*num_fields_to_include=*/label.empty() ? 2 : 1, ui_language_code);
+  DCHECK(!details.empty());
+  description_components.push_back(details);
+  // TODO(crbug.com/1167061): Replace the separator with proper localized
+  // string.
+  return base::JoinString(description_components, u" — ");
 }
 
 }  // namespace autofill

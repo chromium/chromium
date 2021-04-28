@@ -43,6 +43,21 @@ std::u16string GetEnvelopeStyleAddress(const AutofillProfile& profile,
                                        const std::string& ui_language_code,
                                        bool include_country);
 
+// Returns a one-line `profile` description, listing (at max) 2 significant
+// user-visible fields with respect to UI BCP 47 language code in
+// `ui_language_code`.
+std::u16string GetDescriptionForProfileToSave(
+    const AutofillProfile& profile,
+    const std::string& ui_language_code);
+
+// Returns a one-line `profile` description with respect to UI BCP 47
+// language code in `ui_language_code`. It consists of (at max) 2 user-visible
+// fields: the label referring to the profile (full name if exists) and other
+// details, separated by hyphen.
+std::u16string GetDescriptionForProfileToUpdate(
+    const AutofillProfile& profile,
+    const std::string& ui_language_code);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_ADDRESS_UTIL_H_

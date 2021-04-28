@@ -6,6 +6,7 @@
 
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -27,28 +28,45 @@ class SaveAddressProfileMessageControllerTest
   void SetUp() override;
   void TearDown() override;
 
-  void EnqueueMessage(
+  void EnqueueSaveMessage(
       const AutofillProfile& profile,
       AutofillClient::AddressProfileSavePromptCallback save_callback,
       SaveAddressProfileMessageController::PrimaryActionCallback
-          action_callback);
+          action_callback) {
+    EnqueueMessage(profile, nullptr, std::move(save_callback),
+                   std::move(action_callback));
+  }
+  void EnqueueUpdateMessage(
+      const AutofillProfile& profile,
+      const AutofillProfile* original_profile,
+      AutofillClient::AddressProfileSavePromptCallback save_callback,
+      SaveAddressProfileMessageController::PrimaryActionCallback
+          action_callback) {
+    EnqueueMessage(profile, original_profile, std::move(save_callback),
+                   std::move(action_callback));
+  }
   void ExpectDismissMessageCall();
 
   void TriggerActionClick();
   void TriggerMessageDismissedCallback(messages::DismissReason dismiss_reason);
 
   messages::MessageWrapper* GetMessageWrapper();
-  messages::MockMessageDispatcherBridge* message_dispatcher_bridge() {
-    return &message_dispatcher_bridge_;
-  }
 
   AutofillProfile profile_;
+  AutofillProfile original_profile_;
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback>
       save_callback_;
   base::MockCallback<SaveAddressProfileMessageController::PrimaryActionCallback>
       action_callback_;
 
  private:
+  void EnqueueMessage(
+      const AutofillProfile& profile,
+      const AutofillProfile* original_profile,
+      AutofillClient::AddressProfileSavePromptCallback save_callback,
+      SaveAddressProfileMessageController::PrimaryActionCallback
+          action_callback);
+
   SaveAddressProfileMessageController controller_;
   messages::MockMessageDispatcherBridge message_dispatcher_bridge_;
   base::test::ScopedFeatureList feature_list_;
@@ -61,6 +79,7 @@ void SaveAddressProfileMessageControllerTest::SetUp() {
   messages::MessageDispatcherBridge::SetInstanceForTesting(
       &message_dispatcher_bridge_);
   profile_ = test::GetFullProfile();
+  original_profile_ = test::GetFullProfile2();
 }
 
 void SaveAddressProfileMessageControllerTest::TearDown() {
@@ -70,11 +89,13 @@ void SaveAddressProfileMessageControllerTest::TearDown() {
 
 void SaveAddressProfileMessageControllerTest::EnqueueMessage(
     const AutofillProfile& profile,
+    const AutofillProfile* original_profile,
     AutofillClient::AddressProfileSavePromptCallback save_callback,
     SaveAddressProfileMessageController::PrimaryActionCallback
         action_callback) {
   EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
-  controller_.DisplayMessage(web_contents(), profile, std::move(save_callback),
+  controller_.DisplayMessage(web_contents(), profile, original_profile,
+                             std::move(save_callback),
                              std::move(action_callback));
 }
 
@@ -103,13 +124,57 @@ SaveAddressProfileMessageControllerTest::GetMessageWrapper() {
   return controller_.message_.get();
 }
 
+// Tests that the save message properties (title, description with profile
+// details, primary button text) are set correctly.
+TEST_F(SaveAddressProfileMessageControllerTest, SaveMessageContent) {
+  EnqueueSaveMessage(profile_, save_callback_.Get(), action_callback_.Get());
+
+  EXPECT_EQ(u"Save address?", GetMessageWrapper()->GetTitle());
+  EXPECT_EQ(u"Save…", GetMessageWrapper()->GetPrimaryButtonText());
+  EXPECT_EQ(u"John H. Doe, 666 Erebus St.",
+            GetMessageWrapper()->GetDescription());
+
+  TriggerMessageDismissedCallback(messages::DismissReason::UNKNOWN);
+}
+
+// Tests that the update message properties (title, description with original
+// profile details, primary button text) are set correctly.
+TEST_F(SaveAddressProfileMessageControllerTest, UpdateMessageContent) {
+  EnqueueUpdateMessage(profile_, &original_profile_, save_callback_.Get(),
+                       action_callback_.Get());
+
+  EXPECT_EQ(u"Update address?", GetMessageWrapper()->GetTitle());
+  EXPECT_EQ(u"Update…", GetMessageWrapper()->GetPrimaryButtonText());
+  EXPECT_EQ(u"For Jane A. Smith — 123 Main Street",
+            GetMessageWrapper()->GetDescription());
+
+  TriggerMessageDismissedCallback(messages::DismissReason::UNKNOWN);
+}
+
 // Tests that the action callback is triggered when the user clicks on the
-// primary action button.
-TEST_F(SaveAddressProfileMessageControllerTest, ProceedOnActionClick) {
-  EnqueueMessage(profile_, save_callback_.Get(), action_callback_.Get());
+// primary action button of the save message.
+TEST_F(SaveAddressProfileMessageControllerTest, ProceedOnActionClickWhenSave) {
+  EnqueueSaveMessage(profile_, save_callback_.Get(), action_callback_.Get());
   EXPECT_NE(nullptr, GetMessageWrapper());
 
-  EXPECT_CALL(action_callback_, Run(_, profile_, _));
+  EXPECT_CALL(action_callback_, Run(_, profile_, nullptr, _));
+  TriggerActionClick();
+  EXPECT_NE(nullptr, GetMessageWrapper());
+
+  EXPECT_CALL(save_callback_, Run(_, profile_)).Times(0);
+  TriggerMessageDismissedCallback(messages::DismissReason::PRIMARY_ACTION);
+  EXPECT_EQ(nullptr, GetMessageWrapper());
+}
+
+// Tests that the action callback is triggered when the user clicks on the
+// primary action button of the update message.
+TEST_F(SaveAddressProfileMessageControllerTest,
+       ProceedOnActionClickWhenUpdate) {
+  EnqueueUpdateMessage(profile_, &original_profile_, save_callback_.Get(),
+                       action_callback_.Get());
+  EXPECT_NE(nullptr, GetMessageWrapper());
+
+  EXPECT_CALL(action_callback_, Run(_, profile_, &original_profile_, _));
   TriggerActionClick();
   EXPECT_NE(nullptr, GetMessageWrapper());
 
@@ -122,7 +187,7 @@ TEST_F(SaveAddressProfileMessageControllerTest, ProceedOnActionClick) {
 // |SaveAddressProfileOfferUserDecision::kDeclined| when the user dismisses the
 // message.
 TEST_F(SaveAddressProfileMessageControllerTest, DeclineOnGestureDismiss) {
-  EnqueueMessage(profile_, save_callback_.Get(), action_callback_.Get());
+  EnqueueSaveMessage(profile_, save_callback_.Get(), action_callback_.Get());
   EXPECT_NE(nullptr, GetMessageWrapper());
 
   EXPECT_CALL(
@@ -137,7 +202,7 @@ TEST_F(SaveAddressProfileMessageControllerTest, DeclineOnGestureDismiss) {
 // |SaveAddressProfileOfferUserDecision::kIgnored| when the message is
 // autodismissed.
 TEST_F(SaveAddressProfileMessageControllerTest, IgnoreOnTimerAutodismiss) {
-  EnqueueMessage(profile_, save_callback_.Get(), action_callback_.Get());
+  EnqueueSaveMessage(profile_, save_callback_.Get(), action_callback_.Get());
   EXPECT_NE(nullptr, GetMessageWrapper());
 
   EXPECT_CALL(save_callback_,
@@ -149,7 +214,8 @@ TEST_F(SaveAddressProfileMessageControllerTest, IgnoreOnTimerAutodismiss) {
 
 // Tests that the previous prompt gets dismissed when the new one is enqueued.
 TEST_F(SaveAddressProfileMessageControllerTest, OnlyOnePromptAtATime) {
-  EnqueueMessage(profile_, save_callback_.Get(), action_callback_.Get());
+  EnqueueUpdateMessage(profile_, &original_profile_, save_callback_.Get(),
+                       action_callback_.Get());
 
   AutofillProfile another_profile = test::GetFullProfile();
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback>
@@ -160,8 +226,8 @@ TEST_F(SaveAddressProfileMessageControllerTest, OnlyOnePromptAtATime) {
               Run(AutofillClient::SaveAddressProfileOfferUserDecision::kIgnored,
                   profile_));
   ExpectDismissMessageCall();
-  EnqueueMessage(another_profile, another_save_callback.Get(),
-                 another_action_callback.Get());
+  EnqueueSaveMessage(another_profile, another_save_callback.Get(),
+                     another_action_callback.Get());
 
   TriggerMessageDismissedCallback(messages::DismissReason::UNKNOWN);
 }

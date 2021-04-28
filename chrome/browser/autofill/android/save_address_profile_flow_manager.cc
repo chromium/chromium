@@ -19,6 +19,7 @@ SaveAddressProfileFlowManager::~SaveAddressProfileFlowManager() = default;
 void SaveAddressProfileFlowManager::OfferSave(
     content::WebContents* web_contents,
     const AutofillProfile& profile,
+    const AutofillProfile* original_profile,
     AutofillClient::AddressProfileSavePromptCallback callback) {
   DCHECK(web_contents);
   DCHECK(callback);
@@ -31,7 +32,8 @@ void SaveAddressProfileFlowManager::OfferSave(
 
   if (base::FeatureList::IsEnabled(
           messages::kMessagesForAndroidInfrastructure)) {
-    ShowSaveAddressProfileMessage(web_contents, profile, std::move(callback));
+    ShowSaveAddressProfileMessage(web_contents, profile, original_profile,
+                                  std::move(callback));
   } else {
     // Fallback to the default behavior without confirmation.
     std::move(callback).Run(
@@ -43,17 +45,30 @@ void SaveAddressProfileFlowManager::OfferSave(
 void SaveAddressProfileFlowManager::ShowSaveAddressProfileMessage(
     content::WebContents* web_contents,
     const AutofillProfile& profile,
+    const AutofillProfile* original_profile,
     AutofillClient::AddressProfileSavePromptCallback callback) {
   save_address_profile_message_controller_.DisplayMessage(
-      web_contents, profile, std::move(callback),
-      base::BindOnce(
-          &SaveAddressProfileFlowManager::ShowSaveAddressProfileDetails,
-          // Passing base::Unretained(this) is safe since |this|
-          // owns the controller.
-          base::Unretained(this)));
+      web_contents, profile, original_profile, std::move(callback),
+      base::BindOnce(&SaveAddressProfileFlowManager::OnMessageActionTriggered,
+                     // Passing base::Unretained(this) is safe since |this|
+                     // owns the controller.
+                     base::Unretained(this)));
 }
 
-void SaveAddressProfileFlowManager::ShowSaveAddressProfileDetails(
+void SaveAddressProfileFlowManager::OnMessageActionTriggered(
+    content::WebContents* web_contents,
+    const AutofillProfile& profile,
+    const AutofillProfile* original_profile,
+    AutofillClient::AddressProfileSavePromptCallback callback) {
+  if (original_profile) {
+    ShowUpdateAddressProfileDetails(web_contents, profile, original_profile,
+                                    std::move(callback));
+  } else {
+    ShowNewAddressProfileDetails(web_contents, profile, std::move(callback));
+  }
+}
+
+void SaveAddressProfileFlowManager::ShowNewAddressProfileDetails(
     content::WebContents* web_contents,
     const AutofillProfile& profile,
     AutofillClient::AddressProfileSavePromptCallback callback) {
@@ -69,6 +84,16 @@ void SaveAddressProfileFlowManager::ShowSaveAddressProfileDetails(
               // owns the controller.
               base::Unretained(this)));
   save_address_profile_prompt_controller_->DisplayPrompt();
+}
+
+void SaveAddressProfileFlowManager::ShowUpdateAddressProfileDetails(
+    content::WebContents* web_contents,
+    const AutofillProfile& profile,
+    const AutofillProfile* original_profile,
+    AutofillClient::AddressProfileSavePromptCallback callback) {
+  // TODO(crbug.com/1167061): Show prompt with changes, for now just accept.
+  std::move(callback).Run(
+      AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted, profile);
 }
 
 void SaveAddressProfileFlowManager::OnSaveAddressProfileDetailsShown() {
