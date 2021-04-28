@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/bottom_sheet/bottom_sheet_navigation_controller.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/bottom_sheet/bottom_sheet_presentation_controller.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/bottom_sheet/bottom_sheet_slide_transition_animator.h"
+#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_signin_error/consistency_signin_error_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
@@ -27,6 +28,7 @@
 
 @interface ConsistencyPromoSigninCoordinator () <
     BottomSheetPresentationControllerPresentationDelegate,
+    ConsistencyAccountChooserCoordinatorDelegate,
     ConsistencyDefaultAccountCoordinatorDelegate,
     ConsistencySigninErrorCoordinatorDelegate,
     IdentityManagerObserverBridgeDelegate,
@@ -54,6 +56,9 @@
 // its consent level.
 @property(nonatomic, copy)
     signin_ui::CompletionCallback primaryAccountSetCompletion;
+// Coordinator to select another identity.
+@property(nonatomic, strong)
+    ConsistencyAccountChooserCoordinator* accountChooserCoordinator;
 
 @end
 
@@ -81,7 +86,7 @@
 - (void)start {
   [super start];
   self.defaultAccountCoordinator = [[ConsistencyDefaultAccountCoordinator alloc]
-      initWithBaseViewController:nil
+      initWithBaseViewController:self.navigationController
                          browser:self.browser];
   self.defaultAccountCoordinator.delegate = self;
   [self.defaultAccountCoordinator start];
@@ -115,13 +120,6 @@
 }
 
 #pragma mark - Private
-
-// Creates the first view controller.
-- (UIViewController*)firstViewController {
-  // Needs implementation.
-  NOTIMPLEMENTED();
-  return nil;
-}
 
 // Dismisses the bottom sheet view controller.
 - (void)dismissNavigationViewController {
@@ -220,6 +218,16 @@
   self.signinErrorCoordinator = nil;
 }
 
+#pragma mark - ConsistencyAccountChooserCoordinatorDelegate
+
+- (void)consistencyAccountChooserCoordinatorChromeIdentitySelected:
+    (ConsistencyAccountChooserCoordinator*)coordinator {
+  self.defaultAccountCoordinator.selectedIdentity =
+      self.accountChooserCoordinator.selectedIdentity;
+  self.accountChooserCoordinator = nil;
+  [self.navigationController popViewControllerAnimated:YES];
+}
+
 #pragma mark - ConsistencyDefaultAccountCoordinatorDelegate
 
 - (void)consistencyDefaultAccountCoordinatorSkip:
@@ -229,7 +237,16 @@
 
 - (void)consistencyDefaultAccountCoordinatorOpenIdentityChooser:
     (ConsistencyDefaultAccountCoordinator*)coordinator {
-  NOTREACHED();
+  self.accountChooserCoordinator = [[ConsistencyAccountChooserCoordinator alloc]
+      initWithBaseViewController:self.navigationController
+                         browser:self.browser];
+  self.accountChooserCoordinator.delegate = self;
+  [self.accountChooserCoordinator
+      startWithSelectedIdentity:self.defaultAccountCoordinator
+                                    .selectedIdentity];
+  [self.navigationController
+      pushViewController:self.accountChooserCoordinator.viewController
+                animated:YES];
 }
 
 - (void)consistencyDefaultAccountCoordinatorSignin:

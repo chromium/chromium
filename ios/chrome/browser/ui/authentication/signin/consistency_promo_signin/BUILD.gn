@@ -18,6 +18,7 @@ source_set("consistency_promo_signin") {
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication/signin:signin_protected",
     "//ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/bottom_sheet",
+    "//ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser",
     "//ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_default_account",
     "//ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_signin_error",
     "//ios/chrome/browser/ui/image_util",

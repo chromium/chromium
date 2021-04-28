@@ -1,0 +1,36 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+source_set("consistency_account_chooser") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "consistency_account_chooser_consumer.h",
+    "consistency_account_chooser_coordinator.h",
+    "consistency_account_chooser_coordinator.mm",
+    "consistency_account_chooser_mediator.h",
+    "consistency_account_chooser_mediator.mm",
+    "consistency_account_chooser_view_controller.h",
+    "consistency_account_chooser_view_controller.mm",
+    "identity_item_configurator.h",
+    "identity_item_configurator.mm",
+  ]
+  deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication/cells",
+    "//ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/bottom_sheet",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/browser/ui/table_view:utils",
+    "//ios/chrome/common/ui/colors",
+    "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/signin",
+    "//ui/base",
+  ]
+}
