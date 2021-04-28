@@ -118,6 +118,7 @@ const CommandCallbacks = {
   "Pause.evaluateInFrame": Pause_evaluateInFrame,
   "Pause.evaluateInGlobal": Pause_evaluateInGlobal,
   "Pause.getAllFrames": Pause_getAllFrames,
+  "Pause.getExceptionValue": Pause_getExceptionValue,
   "Pause.getObjectPreview": Pause_getObjectPreview,
   "Pause.getObjectProperty": Pause_getObjectProperty,
   "Pause.getScope": Pause_getScope,
@@ -290,6 +291,11 @@ function Pause_getAllFrames() {
     frames: frames.map(f => f.frameId),
     data: { frames },
   };
+}
+
+function Pause_getExceptionValue() {
+  const rv = sendMessage("Debugger.getPendingException", {});
+  return { exception: remoteObjectToProtocolValue(rv.exception), data: {} };
 }
 
 function Pause_getObjectPreview({ object, level = "full" }) {
