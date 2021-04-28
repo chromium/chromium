@@ -38,8 +38,8 @@ class FakeChromeIdentityService : public ChromeIdentityService {
   bool IsValidIdentity(ChromeIdentity* identity) override;
   ChromeIdentity* GetIdentityWithGaiaID(const std::string& gaia_id) override;
   bool HasIdentities() override;
-  NSArray* GetAllIdentities() override;
-  NSArray* GetAllIdentitiesSortedForDisplay() override;
+  NSArray* GetAllIdentities(PrefService* pref_service) override;
+  NSArray* GetAllIdentitiesSortedForDisplay(PrefService* pref_service) override;
   void ForgetIdentity(ChromeIdentity* identity,
                       ForgetIdentityCallback callback) override;
 

@@ -90,7 +90,7 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
 
   ChromeIdentity* fake_identity() {
     return [ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
-                ->GetAllIdentities() firstObject];
+                ->GetAllIdentities(nullptr) firstObject];
   }
 
  protected:

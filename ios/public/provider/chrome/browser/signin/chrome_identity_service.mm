@@ -74,10 +74,19 @@ bool ChromeIdentityService::HasIdentities() {
 }
 
 NSArray* ChromeIdentityService::GetAllIdentities() {
+  return GetAllIdentities(nullptr);
+}
+
+NSArray* ChromeIdentityService::GetAllIdentities(PrefService* pref_service) {
   return nil;
 }
 
 NSArray* ChromeIdentityService::GetAllIdentitiesSortedForDisplay() {
+  return GetAllIdentitiesSortedForDisplay(nullptr);
+}
+
+NSArray* ChromeIdentityService::GetAllIdentitiesSortedForDisplay(
+    PrefService* pref_service) {
   return nil;
 }
 

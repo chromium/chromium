@@ -167,7 +167,7 @@ TEST_F(CredentialProviderServiceTest, AccountChange) {
       ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
   identity_service->AddManagedIdentities(@[ @"Name" ]);
   ChromeIdentity* identity =
-      identity_service->GetAllIdentitiesSortedForDisplay().firstObject;
+      identity_service->GetAllIdentitiesSortedForDisplay(nullptr).firstObject;
   auth_service_->SignIn(identity);
 
   ASSERT_TRUE(auth_service_->GetAuthenticatedIdentity());

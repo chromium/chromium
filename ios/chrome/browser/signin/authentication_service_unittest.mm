@@ -167,7 +167,7 @@ class AuthenticationServiceTest : public PlatformTest {
   }
 
   ChromeIdentity* identity(NSUInteger index) {
-    return [identity_service()->GetAllIdentitiesSortedForDisplay()
+    return [identity_service()->GetAllIdentitiesSortedForDisplay(nullptr)
         objectAtIndex:index];
   }
 

@@ -190,7 +190,7 @@ TEST_F(SigninUtilsTest, TestWillNotShowWithAccountRemoved) {
   signin::SetCurrentVersionForTesting(&version_5_0);
   NSArray* allIdentities =
       ios::FakeChromeIdentityService::GetInstanceFromChromeProvider()
-          ->GetAllIdentities();
+          ->GetAllIdentities(nullptr);
   ChromeIdentity* foo1Identity = nil;
   for (ChromeIdentity* identity in allIdentities) {
     if ([identity.userFullName isEqualToString:newAccountGaiaId]) {

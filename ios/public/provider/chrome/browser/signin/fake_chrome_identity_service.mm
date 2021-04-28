@@ -194,11 +194,13 @@ bool FakeChromeIdentityService::HasIdentities() {
   return [identities_ count] > 0;
 }
 
-NSArray* FakeChromeIdentityService::GetAllIdentities() {
+NSArray* FakeChromeIdentityService::GetAllIdentities(
+    PrefService* pref_service) {
   return identities_;
 }
 
-NSArray* FakeChromeIdentityService::GetAllIdentitiesSortedForDisplay() {
+NSArray* FakeChromeIdentityService::GetAllIdentitiesSortedForDisplay(
+    PrefService* prefService) {
   return identities_;
 }
 

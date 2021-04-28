@@ -94,7 +94,8 @@ class ProfileReportGeneratorIOSTest : public PlatformTest {
         ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
     identityService->AddIdentities(@[ base::SysUTF8ToNSString(kAccount) ]);
     ChromeIdentity* identity =
-        [identityService->GetAllIdentitiesSortedForDisplay() objectAtIndex:0];
+        [identityService->GetAllIdentitiesSortedForDisplay(nullptr)
+            objectAtIndex:0];
     authentication_service_->SignIn(identity);
   }
 

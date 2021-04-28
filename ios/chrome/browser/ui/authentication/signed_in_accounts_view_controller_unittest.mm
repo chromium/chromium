@@ -39,8 +39,8 @@ class SignedInAccountsViewControllerTest : public BlockCleanupTest {
         ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
     identity_service->AddIdentities(
         @[ @"identity1", @"identity2", @"identity3" ]);
-    auth_service_->SignIn(
-        [identity_service->GetAllIdentitiesSortedForDisplay() objectAtIndex:0]);
+    auth_service_->SignIn([identity_service->GetAllIdentitiesSortedForDisplay(
+        nullptr) objectAtIndex:0]);
   }
 
  protected:
