@@ -3658,6 +3658,21 @@
             ]
         }
     ],
+    "IOSPasswordReuseDetection": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PasswordReuseDetectionEnabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSRequestDesktopByDefault": [
         {
             "platforms": [
