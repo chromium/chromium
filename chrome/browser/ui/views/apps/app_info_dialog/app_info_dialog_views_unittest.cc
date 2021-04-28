@@ -123,6 +123,9 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
     if (browser) {
       browser->tab_strip_model()->CloseAllTabs();
       delete browser;
+      // Browser holds a ScopedProfileKeepAlive, which might post a task to the
+      // UI thread on destruction.
+      base::RunLoop().RunUntilIdle();
     }
     extension_environment_.DeleteProfile();
 
