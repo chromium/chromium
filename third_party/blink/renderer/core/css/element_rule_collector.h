@@ -154,6 +154,7 @@ class CORE_EXPORT ElementRuleCollector {
   template <typename RuleDataListType>
   void CollectMatchingRulesForList(const RuleDataListType*,
                                    const MatchRequest&,
+                                   const SelectorChecker&,
                                    PartRequest* = nullptr);
 
   bool Match(SelectorChecker&,
