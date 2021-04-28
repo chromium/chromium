@@ -35,23 +35,6 @@ namespace {
 constexpr base::TimeDelta kInstallationTimeout =
     base::TimeDelta::FromMinutes(5);
 
-constexpr char kManifestFetchFailedNetworkErrorCode[] =
-    "Extensions.ForceInstalledManifestFetchFailedNetworkErrorCode";
-constexpr char kManifestFetchFailedFetchTries[] =
-    "Extensions.ForceInstalledManifestFetchFailedFetchTries";
-constexpr char kCrxFetchFailedNetworkErrorCode[] =
-    "Extensions.ForceInstalledNetworkErrorCode";
-constexpr char kCrxFetchFailedFetchTries[] =
-    "Extensions.ForceInstalledFetchTries";
-
-// This is used to construct histograms for the form
-// `Extensions.*ForceInstalledManifestFetchFailedHttpErrorCode2`.
-constexpr char kManifestFetchFailedHttpErrorCode[] =
-    "ForceInstalledManifestFetchFailedHttpErrorCode2";
-// This is used to construct histograms for the form
-// `Extensions.*ForceInstalledHttpErrorCode2`.
-constexpr char kCrxFetchFailedHttpErrorCode[] = "ForceInstalledHttpErrorCode2";
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Helper method to convert user_manager::UserType to
 // InstallStageTracker::UserType for histogram purposes.
@@ -149,30 +132,55 @@ void ReportInstallationStageTimes(
 }
 
 // Reports the network error code, HTTP error code and number of fetch tries
-// made when extension fails to install with MANIFEST_FETCH_FAILED or
-// CRX_FETCH_FAILED.
-void ReportErrorCodes(const InstallStageTracker::InstallationData& installation,
-                      const std::string& network_error_code_histogram,
-                      const std::string& http_error_code_histogram_suffix,
-                      const std::string& fetch_tries_histogram,
-                      bool is_from_store) {
-  base::UmaHistogramSparse(network_error_code_histogram,
+// made when extension fails to install with MANIFEST_FETCH_FAILED.
+void ReportManifestFetchFailedErrorCodes(
+    const InstallStageTracker::InstallationData& installation,
+    bool is_from_store) {
+  base::UmaHistogramSparse(
+      "Extensions.ForceInstalledManifestFetchFailedNetworkErrorCode",
+      installation.network_error_code.value());
+
+  if (installation.response_code) {
+    if (is_from_store) {
+      base::UmaHistogramSparse(
+          "Extensions.WebStore_ForceInstalledManifestFetchFailedHttpErrorCode2",
+          installation.response_code.value());
+    } else {
+      base::UmaHistogramSparse(
+          "Extensions.OffStore_ForceInstalledManifestFetchFailedHttpErrorCode2",
+          installation.response_code.value());
+    }
+    base::UmaHistogramSparse(
+        "Extensions.ForceInstalledManifestFetchFailedHttpErrorCode2",
+        installation.response_code.value());
+  }
+  base::UmaHistogramExactLinear(
+      "Extensions.ForceInstalledManifestFetchFailedFetchTries",
+      installation.fetch_tries.value(), ExtensionDownloader::kMaxRetries);
+}
+
+// Reports the network error code, HTTP error code and number of fetch tries
+// made when extension fails to install with CRX_FETCH_FAILED.
+void ReportCrxFetchFailedErrorCodes(
+    const InstallStageTracker::InstallationData& installation,
+    bool is_from_store) {
+  base::UmaHistogramSparse("Extensions.ForceInstalledNetworkErrorCode",
                            installation.network_error_code.value());
 
   if (installation.response_code) {
     if (is_from_store) {
       base::UmaHistogramSparse(
-          "Extensions.WebStore_" + http_error_code_histogram_suffix,
+          "Extensions.WebStore_ForceInstalledHttpErrorCode2",
           installation.response_code.value());
     } else {
       base::UmaHistogramSparse(
-          "Extensions.OffStore_" + http_error_code_histogram_suffix,
+          "Extensions.OffStore_ForceInstalledHttpErrorCode2",
           installation.response_code.value());
     }
-    base::UmaHistogramSparse("Extensions." + http_error_code_histogram_suffix,
+    base::UmaHistogramSparse("Extensions.ForceInstalledHttpErrorCode2",
                              installation.response_code.value());
   }
-  base::UmaHistogramExactLinear(fetch_tries_histogram,
+  base::UmaHistogramExactLinear("Extensions.ForceInstalledFetchTries",
                                 installation.fetch_tries.value(),
                                 ExtensionDownloader::kMaxRetries);
 }
@@ -212,16 +220,12 @@ void ReportDetailedFailureReasons(
   // In case of CRX_FETCH_FAILURE, report the network error code, HTTP
   // error code and number of fetch tries made.
   if (failure_reason == FailureReason::CRX_FETCH_FAILED)
-    ReportErrorCodes(installation, kCrxFetchFailedNetworkErrorCode,
-                     kCrxFetchFailedHttpErrorCode, kCrxFetchFailedFetchTries,
-                     is_from_store);
+    ReportCrxFetchFailedErrorCodes(installation, is_from_store);
 
   // In case of MANIFEST_FETCH_FAILURE, report the network error code,
   // HTTP error code and number of fetch tries made.
   if (failure_reason == FailureReason::MANIFEST_FETCH_FAILED)
-    ReportErrorCodes(installation, kManifestFetchFailedNetworkErrorCode,
-                     kManifestFetchFailedHttpErrorCode,
-                     kManifestFetchFailedFetchTries, is_from_store);
+    ReportManifestFetchFailedErrorCodes(installation, is_from_store);
 
   if (installation.install_error_detail) {
     CrxInstallErrorDetail detail = installation.install_error_detail.value();
@@ -285,6 +289,22 @@ void ReportDetailedFailureReasons(
   }
 }
 
+// Returns false if the extension status corresponds to a missing extension
+// which is not yet installed or loaded.
+bool IsStatusGood(ExtensionStatus status) {
+  switch (status) {
+    case ExtensionStatus::kPending:
+      return false;
+    case ExtensionStatus::kLoaded:
+      return true;
+    case ExtensionStatus::kReady:
+      return true;
+    case ExtensionStatus::kFailed:
+      return false;
+  }
+  NOTREACHED();
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Report type of user in case Force Installed Extensions fail to
 // install only if there is a user corresponding to given profile.
@@ -331,22 +351,6 @@ ForceInstalledMetrics::ForceInstalledMetrics(
 }
 
 ForceInstalledMetrics::~ForceInstalledMetrics() = default;
-
-bool ForceInstalledMetrics::IsStatusGood(ExtensionStatus status) {
-  switch (status) {
-    case ExtensionStatus::kPending:
-      return false;
-    case ExtensionStatus::kLoaded:
-      return true;
-    case ExtensionStatus::kReady:
-      return true;
-    case ExtensionStatus::kFailed:
-      return false;
-    default:
-      NOTREACHED();
-  }
-  return false;
-}
 
 void ForceInstalledMetrics::ReportDisableReason(
     const ExtensionId& extension_id) {
