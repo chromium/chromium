@@ -385,11 +385,10 @@ void BuildProfileTitleAndSubtitle(views::View* parent,
 void BuildProfileBackgroundContainer(
     views::View* parent,
     std::unique_ptr<views::View> heading_label,
-    base::Optional<SkColor> background_color,
+    SkColor background_color,
     std::unique_ptr<views::View> avatar_image_view,
     std::unique_ptr<views::View> edit_button,
     const ui::ThemedVectorIcon& avatar_header_art) {
-
   views::View* profile_background_container =
       parent->AddChildView(std::make_unique<views::View>());
 
@@ -405,7 +404,9 @@ void BuildProfileBackgroundContainer(
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetCrossAxisAlignment(views::LayoutAlignment::kEnd)
       .SetInteriorMargin(background_container_insets);
-  if (background_color.has_value()) {
+
+  // Show a colored background iff there is no art.
+  if (avatar_header_art.empty()) {
     // The bottom background edge should match the center of the identity image.
     gfx::Insets background_insets(0, 0, /*bottom=*/kHalfOfAvatarImageViewSize,
                                   0);
@@ -413,8 +414,9 @@ void BuildProfileBackgroundContainer(
     profile_background_container->SetBackground(
         views::CreateBackgroundFromPainter(
             views::Painter::CreateSolidRoundRectPainter(
-                background_color.value(), /*radius=*/0, background_insets)));
+                background_color, /*radius=*/0, background_insets)));
   } else {
+    DCHECK_EQ(SK_ColorTRANSPARENT, background_color);
     profile_background_container->SetBackground(
         views::CreateThemedVectorIconBackground(profile_background_container,
                                                 avatar_header_art));
@@ -633,13 +635,6 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
     return;
   }
 
-  base::Optional<SkColor> background_color;
-  // Only show a colored background when there is an edit button (this
-  // coincides with the profile being a real profile that can be edited).
-  if (edit_button_params.has_value()) {
-    background_color = profile_background_color;
-  }
-
   std::unique_ptr<views::Label> heading_label;
   if (!profile_name.empty()) {
     views::Label::CustomFont font = {
@@ -653,10 +648,10 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
         views::kFlexBehaviorKey,
         views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                  views::MaximumFlexSizeRule::kUnbounded));
-    if (background_color) {
+    if (avatar_header_art.empty()) {
       heading_label->SetAutoColorReadabilityEnabled(false);
       heading_label->SetEnabledColor(
-          GetProfileForegroundTextColor(*background_color));
+          GetProfileForegroundTextColor(profile_background_color));
     }
   }
 
@@ -667,13 +662,14 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
                             base::Unretained(this),
                             std::move(edit_button_params->edit_action)),
         *edit_button_params->edit_icon, edit_button_params->edit_tooltip_text,
-        background_color.value_or(SK_ColorTRANSPARENT));
+        avatar_header_art.empty() ? profile_background_color
+                                  : SK_ColorTRANSPARENT);
   }
 
   BuildProfileBackgroundContainer(
       /*parent=*/identity_info_container_, std::move(heading_label),
-      background_color,
-      std::move(avatar_image_view), std::move(edit_button), avatar_header_art);
+      profile_background_color, std::move(avatar_image_view),
+      std::move(edit_button), avatar_header_art);
   BuildProfileTitleAndSubtitle(/*parent=*/identity_info_container_, title,
                                subtitle);
 }
