@@ -102,11 +102,11 @@ base::Optional<WebImpression> GetImpression(
       impression_data_string.ToUInt64Strict(&impression_data_is_valid);
 
   if (!impression_data_is_valid) {
-    ReportAttributionIssue(
-        frame,
-        mojom::blink::AttributionReportingIssueType::kInvalidAttributionData,
-        frame->GetDevToolsFrameToken(), element, base::nullopt,
-        impression_data_string);
+    ReportAttributionIssue(frame,
+                           mojom::blink::AttributionReportingIssueType::
+                               kInvalidAttributionSourceEventId,
+                           frame->GetDevToolsFrameToken(), element,
+                           base::nullopt, impression_data_string);
   }
 
   // Provide a default of 0 if the impression data was not valid.

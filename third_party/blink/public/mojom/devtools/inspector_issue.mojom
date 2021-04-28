@@ -175,8 +175,10 @@ struct LowTextContrastIssue {
 
 enum AttributionReportingIssueType {
   kPermissionPolicyDisabled,
+  kInvalidAttributionSourceEventId,
   kInvalidAttributionData,
   kAttributionSourceUntrustworthyOrigin,
+  kAttributionUntrustworthyOrigin,
 };
 
 struct AttributionReportingIssue {

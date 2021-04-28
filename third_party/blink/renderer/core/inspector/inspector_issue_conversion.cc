@@ -327,6 +327,10 @@ protocol::String BuildAttributionReportingIssueType(
       return protocol::Audits::AttributionReportingIssueTypeEnum::
           PermissionPolicyDisabled;
     case blink::mojom::blink::AttributionReportingIssueType::
+        kInvalidAttributionSourceEventId:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          InvalidAttributionSourceEventId;
+    case blink::mojom::blink::AttributionReportingIssueType::
         kInvalidAttributionData:
       return protocol::Audits::AttributionReportingIssueTypeEnum::
           InvalidAttributionData;
@@ -334,6 +338,10 @@ protocol::String BuildAttributionReportingIssueType(
         kAttributionSourceUntrustworthyOrigin:
       return protocol::Audits::AttributionReportingIssueTypeEnum::
           AttributionSourceUntrustworthyOrigin;
+    case blink::mojom::blink::AttributionReportingIssueType::
+        kAttributionUntrustworthyOrigin:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          AttributionUntrustworthyOrigin;
   }
 }
 

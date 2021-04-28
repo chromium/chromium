@@ -6,7 +6,7 @@ Issue reported: {
             frame : <object>
             invalidParameter : Must be a number, not a string
             violatingNodeId : <number>
-            violationType : InvalidAttributionData
+            violationType : InvalidAttributionSourceEventId
         }
     }
 }
