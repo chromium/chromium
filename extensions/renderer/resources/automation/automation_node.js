@@ -1376,8 +1376,8 @@ var stringAttributes = [
 
 var boolAttributes = [
   'busy', 'clickable', 'containerLiveAtomic', 'containerLiveBusy',
-  'editableRoot', 'liveAtomic', 'modal', 'notUserSelectableStyle', 'scrollable',
-  'selected', 'supportsTextLocation'
+  'contentEditableRoot', 'liveAtomic', 'modal', 'notUserSelectableStyle',
+  'scrollable', 'selected', 'supportsTextLocation'
 ];
 
 var intAttributes = [

@@ -23,6 +23,7 @@
 #include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
@@ -2372,7 +2373,7 @@ ImplementedAtkInterfaces AXPlatformNodeAuraLinux::GetGTypeInterfaceMask(
 
   if (!IsImageOrVideo(data.role)) {
     interface_mask.Add(ImplementedAtkInterfaces::Value::kText);
-    if (!data.IsNativeTextField())
+    if (!data.IsAtomicTextField())
       interface_mask.Add(ImplementedAtkInterfaces::Value::kHypertext);
   }
 
@@ -3749,7 +3750,7 @@ void AXPlatformNodeAuraLinux::GetFullSelection(int32_t* anchor_node_id,
   DCHECK(focus_node_id);
   DCHECK(focus_offset);
 
-  if (IsNativeTextField() &&
+  if (IsAtomicTextField() &&
       GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart, anchor_offset) &&
       GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd, focus_offset)) {
     int32_t node_id = GetData().id != -1 ? GetData().id : GetUniqueId();
@@ -3767,7 +3768,8 @@ void AXPlatformNodeAuraLinux::GetFullSelection(int32_t* anchor_node_id,
 AXPlatformNodeAuraLinux& AXPlatformNodeAuraLinux::FindEditableRootOrDocument() {
   if (GetAtkRole() == ATK_ROLE_DOCUMENT_WEB)
     return *this;
-  if (GetData().GetBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot))
+  if (GetData().GetBoolAttribute(
+          ax::mojom::BoolAttribute::kContentEditableRoot))
     return *this;
   if (auto* parent = FromAtkObject(GetParent()))
     return parent->FindEditableRootOrDocument();
@@ -4499,7 +4501,7 @@ bool AXPlatformNodeAuraLinux::
 bool AXPlatformNodeAuraLinux::
     GrabFocusOrSetSequentialFocusNavigationStartingPointAtOffset(int offset) {
   int child_count = delegate_->GetChildCount();
-  if (IsNativeTextField() || child_count == 0)
+  if (IsAtomicTextField() || child_count == 0)
     return GrabFocusOrSetSequentialFocusNavigationStartingPoint();
 
   // When this node has children, we walk through them to figure out what child

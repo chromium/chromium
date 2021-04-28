@@ -248,12 +248,12 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
                 focus_object->GetTextFieldAncestor()) {
           EnqueueSelectionChangedEvent(*text_field);
 
-          // Plain text fields (including input and textarea elements) have
+          // Atomic text fields (including input and textarea elements) have
           // descendant objects that are part of their internal implementation
           // in Blink, which are not exposed to platform APIs in the
           // accessibility tree. Firing an event on such descendants will not
           // reach the assistive software.
-          if (text_field->IsNativeTextField()) {
+          if (text_field->IsAtomicTextField()) {
             FireWinAccessibilityEvent(IA2_EVENT_TEXT_CARET_MOVED, text_field);
           } else {
             FireWinAccessibilityEvent(IA2_EVENT_TEXT_CARET_MOVED, focus_object);

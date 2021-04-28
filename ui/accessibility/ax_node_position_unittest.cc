@@ -2909,9 +2909,9 @@ TEST_F(AXPositionTest, AtStartOrEndOfParagraphWithEmbeddedObjectCharacter) {
   // This test ensures that "At{Start|End}OfParagraph" work correctly when there
   // are embedded objects present near a paragraph boundary.
   //
-  // Nodes represented by an embedded object character, such as a plain text
-  // field or a check box, should create an implicit paragraph boundary for
-  // assistive software.
+  // Nodes represented by an embedded object character, such as an <input> or a
+  // <textarea> text field, or a check box, should create an implicit paragraph
+  // boundary for assistive software.
   // ++1 kRootWebArea isLineBreakingObject
   // ++++2 kLink
   // ++++++3 kStaticText "hello"

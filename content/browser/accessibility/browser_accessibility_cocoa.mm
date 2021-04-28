@@ -389,8 +389,11 @@ BrowserAccessibility::AXRange GetSelectedRange(BrowserAccessibility& owner) {
     return {};
 
   // |anchor_offset| and / or |focus_offset| refer to a character offset if
-  // |anchor_object| / |focus_object| are text-only objects or native text
-  // fields. Otherwise, they should be treated as child indices.
+  // |anchor_object| / |focus_object| are text-only objects or atomic text
+  // fields. Otherwise, they should be treated as child indices. An atomic text
+  // field does not expose its internal implementation to assistive software,
+  // appearing as a single leaf node in the accessibility tree. It includes
+  // <input>, <textarea> and Views-based text fields.
   int anchor_offset = unignored_selection.anchor_offset;
   int focus_offset = unignored_selection.focus_offset;
   DCHECK_GE(anchor_offset, 0);
@@ -2380,7 +2383,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   if (![self instanceActive])
     return nil;
 
-  if (_owner->IsNativeTextField() &&
+  if (_owner->IsAtomicTextField() &&
       GetState(_owner, ax::mojom::State::kProtected)) {
     return NSAccessibilitySecureTextFieldSubrole;
   }
@@ -2714,7 +2717,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
 }
 
 - (NSRect)frameForRange:(NSRange)range {
-  if (!_owner->IsText() && !_owner->IsNativeTextField())
+  if (!_owner->IsText() && !_owner->IsAtomicTextField())
     return CGRectNull;
   gfx::Rect rect = _owner->GetUnclippedRootFrameInnerTextRangeBoundsRect(
       range.location, NSMaxRange(range));

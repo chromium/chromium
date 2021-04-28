@@ -157,9 +157,12 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // platform's accessibility layer.
   virtual bool IsChildOfLeaf() const = 0;
 
-  // Returns true if this node is either a plain text field , or one of its
-  // ancestors is.
-  virtual bool IsDescendantOfNativeTextField() const = 0;
+  // Returns true if this node is either an atomic text field , or one of its
+  // ancestors is. An atomic text field does not expose its internal
+  // implementation to assistive software, appearing as a single leaf node in
+  // the accessibility tree. It includes <input>, <textarea> and Views-based
+  // text fields.
+  virtual bool IsDescendantOfAtomicTextField() const = 0;
 
   // Returns true if this is a leaf node, meaning all its
   // children should not be exposed to any platform's native accessibility

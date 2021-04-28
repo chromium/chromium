@@ -1021,25 +1021,25 @@ bool AXNodeData::IsMenuButton() const {
 }
 
 bool AXNodeData::IsTextField() const {
-  return IsNativeTextField() || IsNonNativeTextField();
+  return IsAtomicTextField() || IsNonAtomicTextField();
 }
 
 bool AXNodeData::IsPasswordField() const {
   return IsTextField() && HasState(ax::mojom::State::kProtected);
 }
 
-bool AXNodeData::IsNativeTextField() const {
+bool AXNodeData::IsAtomicTextField() const {
   // ARIA-based textboxes or searchboxes could mistakenly be identified as
   // atomic text fields, i.e. be identified as an <input> or a <textarea>. This
   // can only occur when the web author hasn't specified the "contenteditable"
   // attribute. Since these kinds of text fields are not really usable, we
   // decide not to support them.
   return ui::IsTextField(role) &&
-         !HasBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot);
+         !HasBoolAttribute(ax::mojom::BoolAttribute::kContentEditableRoot);
 }
 
-bool AXNodeData::IsNonNativeTextField() const {
-  return HasBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot);
+bool AXNodeData::IsNonAtomicTextField() const {
+  return HasBoolAttribute(ax::mojom::BoolAttribute::kContentEditableRoot);
 }
 
 bool AXNodeData::IsReadOnlyOrDisabled() const {
@@ -1587,8 +1587,8 @@ std::string AXNodeData::ToString() const {
        bool_attributes) {
     std::string value = bool_attribute.second ? "true" : "false";
     switch (bool_attribute.first) {
-      case ax::mojom::BoolAttribute::kEditableRoot:
-        result += " editable_root=" + value;
+      case ax::mojom::BoolAttribute::kContentEditableRoot:
+        result += " contentEditable_root=" + value;
         break;
       case ax::mojom::BoolAttribute::kLiveAtomic:
         result += " atomic=" + value;

@@ -85,7 +85,7 @@ const AXPosition AXPosition::CreateFirstPositionInObject(
   if (container.IsDetached())
     return {};
 
-  if (container.IsTextObject() || container.IsNativeTextField()) {
+  if (container.IsTextObject() || container.IsAtomicTextField()) {
     AXPosition position(container);
     position.text_offset_or_child_index_ = 0;
 #if DCHECK_IS_ON()
@@ -120,7 +120,7 @@ const AXPosition AXPosition::CreateLastPositionInObject(
   if (container.IsDetached())
     return {};
 
-  if (container.IsTextObject() || container.IsNativeTextField()) {
+  if (container.IsTextObject() || container.IsAtomicTextField()) {
     AXPosition position(container);
     position.text_offset_or_child_index_ = position.MaxTextOffset();
 #if DCHECK_IS_ON()
@@ -420,7 +420,7 @@ int AXPosition::MaxTextOffset() const {
 
   // TODO(nektar): Make AXObject::TextLength() public and use throughout this
   // method.
-  if (container_object_->IsNativeTextField())
+  if (container_object_->IsAtomicTextField())
     return container_object_->GetValueForControl().length();
 
   const Node* container_node = container_object_->GetNode();
@@ -552,7 +552,7 @@ bool AXPosition::IsTextPosition() const {
   if (!container_object_)
     return false;
   return container_object_->IsTextObject() ||
-         container_object_->IsNativeTextField();
+         container_object_->IsAtomicTextField();
 }
 
 const AXPosition AXPosition::CreateNextPosition() const {
@@ -614,7 +614,7 @@ const AXPosition AXPosition::CreatePreviousPosition() const {
       const AXObject* last_child =
           container_object_->LastChildIncludingIgnored();
       // Dont skip over any intervening text.
-      if (last_child->IsTextObject() || last_child->IsNativeTextField()) {
+      if (last_child->IsTextObject() || last_child->IsAtomicTextField()) {
         return CreatePositionAfterObject(
             *last_child, AXPositionAdjustmentBehavior::kMoveLeft);
       }
@@ -636,7 +636,7 @@ const AXPosition AXPosition::CreatePreviousPosition() const {
 
   // Dont skip over any intervening text.
   if (object_before_position->IsTextObject() ||
-      object_before_position->IsNativeTextField()) {
+      object_before_position->IsAtomicTextField()) {
     return CreatePositionAfterObject(*object_before_position,
                                      AXPositionAdjustmentBehavior::kMoveLeft);
   }

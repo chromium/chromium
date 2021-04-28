@@ -706,9 +706,9 @@ enum BoolAttribute {
   // Generic busy state, does not have to be on a live region.
   kBusy,
 
-  // The object is at the root of an editable field, such as a content
-  // editable.
-  kEditableRoot,
+  // The object is at the root of a content editable region, or at a <body>
+  // element that has "design-mode" set to "on".
+  kContentEditableRoot,
 
   // Live region attributes.
   kContainerLiveAtomic,

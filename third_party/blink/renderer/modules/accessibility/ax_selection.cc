@@ -264,18 +264,18 @@ bool AXSelection::IsValid() const {
   // boundaries, replaced elements, CSS user-select, etc.
   //
 
-  if (base_.IsTextPosition() && base_.ContainerObject()->IsNativeTextField() &&
+  if (base_.IsTextPosition() && base_.ContainerObject()->IsAtomicTextField() &&
       !(base_.ContainerObject() == extent_.ContainerObject() &&
         extent_.IsTextPosition() &&
-        extent_.ContainerObject()->IsNativeTextField())) {
+        extent_.ContainerObject()->IsAtomicTextField())) {
     return false;
   }
 
   if (extent_.IsTextPosition() &&
-      extent_.ContainerObject()->IsNativeTextField() &&
+      extent_.ContainerObject()->IsAtomicTextField() &&
       !(base_.ContainerObject() == extent_.ContainerObject() &&
         base_.IsTextPosition() &&
-        base_.ContainerObject()->IsNativeTextField())) {
+        base_.ContainerObject()->IsAtomicTextField())) {
     return false;
   }
 
@@ -358,7 +358,7 @@ bool AXSelection::Select(const AXSelectionBehavior selection_behavior) {
   if (text_control_selection.has_value()) {
     DCHECK_LE(text_control_selection->start, text_control_selection->end);
     TextControlElement& text_control = ToTextControl(
-        *base_.ContainerObject()->GetNativeTextControlAncestor()->GetNode());
+        *base_.ContainerObject()->GetAtomicTextFieldAncestor()->GetNode());
     if (!text_control.SetSelectionRange(text_control_selection->start,
                                         text_control_selection->end,
                                         text_control_selection->direction)) {
@@ -435,7 +435,7 @@ AXSelection::AsTextControlSelection() const {
   }
 
   const AXObject* text_control =
-      base_.ContainerObject()->GetNativeTextControlAncestor();
+      base_.ContainerObject()->GetAtomicTextFieldAncestor();
   if (!text_control)
     return {};
 

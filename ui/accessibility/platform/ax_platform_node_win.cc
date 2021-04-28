@@ -4973,7 +4973,7 @@ HRESULT AXPlatformNodeWin::GetAnnotationTypesAttribute(
   MarkerTypeRangeResult grammar_result = MarkerTypeRangeResult::kNone;
   MarkerTypeRangeResult spelling_result = MarkerTypeRangeResult::kNone;
 
-  if (IsText() || IsNativeTextField()) {
+  if (IsText() || IsAtomicTextField()) {
     grammar_result = GetMarkerTypeFromRange(start_offset, end_offset,
                                             ax::mojom::MarkerType::kGrammar);
     spelling_result = GetMarkerTypeFromRange(start_offset, end_offset,
@@ -5183,13 +5183,13 @@ AXPlatformNodeWin::GetMarkerTypeFromRange(
     const base::Optional<int>& start_offset,
     const base::Optional<int>& end_offset,
     ax::mojom::MarkerType marker_type) {
-  DCHECK(IsText() || IsNativeTextField());
+  DCHECK(IsText() || IsAtomicTextField());
   std::vector<std::pair<int, int>> relevant_ranges;
 
   if (IsText()) {
     AggregateRangesForMarkerType(this, marker_type, /*offset_ranges_amount=*/0,
                                  &relevant_ranges);
-  } else if (IsNativeTextField()) {
+  } else if (IsAtomicTextField()) {
     int offset_ranges_amount = 0;
     for (AXPlatformNodeBase* static_text = GetFirstTextOnlyDescendant();
          static_text; static_text = static_text->GetNextSibling()) {
@@ -5835,7 +5835,7 @@ int32_t AXPlatformNodeWin::ComputeIA2State() {
       // enable paste operations. Eventually this need should go away once IE11
       // support is no longer needed and Slides instead relies on paste events.
       if (!data.HasState(ax::mojom::State::kFocusable) ||
-          GetBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot))
+          GetBoolAttribute(ax::mojom::BoolAttribute::kContentEditableRoot))
         break;  // Not used with activedescendant, so preserve editable state.
       FALLTHROUGH;  // Will clear editable state.
     case ax::mojom::Role::kMenuListPopup:
@@ -7419,7 +7419,8 @@ bool AXPlatformNodeWin::IsUIAControl() const {
     // content as not controls.
     // Doing so helps Narrator find all the content of live regions.
     if (!data.GetBoolAttribute(ax::mojom::BoolAttribute::kHasAriaAttribute) &&
-        !data.GetBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot) &&
+        !data.GetBoolAttribute(
+            ax::mojom::BoolAttribute::kContentEditableRoot) &&
         GetName().empty() &&
         data.GetStringAttribute(ax::mojom::StringAttribute::kDescription)
             .empty() &&
@@ -7490,7 +7491,7 @@ bool AXPlatformNodeWin::IsInaccessibleDueToAncestor() const {
 }
 
 bool AXPlatformNodeWin::ShouldHideChildrenForUIA() const {
-  if (IsNativeTextField())
+  if (IsAtomicTextField())
     return true;
 
   auto role = GetData().role;

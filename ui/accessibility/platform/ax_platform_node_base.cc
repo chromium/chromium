@@ -657,12 +657,12 @@ bool AXPlatformNodeBase::IsTextField() const {
   return GetData().IsTextField();
 }
 
-bool AXPlatformNodeBase::IsNativeTextField() const {
-  return GetData().IsNativeTextField();
+bool AXPlatformNodeBase::IsAtomicTextField() const {
+  return GetData().IsAtomicTextField();
 }
 
-bool AXPlatformNodeBase::IsNonNativeTextField() const {
-  return GetData().IsNonNativeTextField();
+bool AXPlatformNodeBase::IsNonAtomicTextField() const {
+  return GetData().IsNonAtomicTextField();
 }
 
 bool AXPlatformNodeBase::IsText() const {
@@ -902,7 +902,7 @@ base::Optional<float> AXPlatformNodeBase::GetFontSizeInPoints() const {
 }
 
 bool AXPlatformNodeBase::HasCaret(const AXTree::Selection* selection) {
-  if (IsNativeTextField() &&
+  if (IsAtomicTextField() &&
       HasIntAttribute(ax::mojom::IntAttribute::kTextSelStart) &&
       HasIntAttribute(ax::mojom::IntAttribute::kTextSelEnd)) {
     return true;
@@ -1330,7 +1330,7 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
   std::string type;
   std::string html_tag =
       GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
-  if (IsNativeTextField() && base::LowerCaseEqualsASCII(html_tag, "input") &&
+  if (IsAtomicTextField() && base::LowerCaseEqualsASCII(html_tag, "input") &&
       GetData().GetHtmlAttribute("type", &type)) {
     AddAttributeToList("text-input-type", type, attributes);
   }
@@ -1716,7 +1716,7 @@ void AXPlatformNodeBase::GetSelectionOffsets(const AXTree::Selection* selection,
                                              int* selection_end) {
   DCHECK(selection_start && selection_end);
 
-  if (IsNativeTextField() &&
+  if (IsAtomicTextField() &&
       GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart,
                       selection_start) &&
       GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd, selection_end)) {

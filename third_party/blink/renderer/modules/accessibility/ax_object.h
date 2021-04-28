@@ -465,12 +465,12 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // Returns true if this object is an input element of a text field type, such
   // as type="text" or type="tel", or a textarea.
-  bool IsNativeTextField() const;
+  bool IsAtomicTextField() const;
 
   // Returns true if this object is not an <input> or a <textarea>, and is
-  // either a contenteditable, or has role=textbox role=searchbox or
-  // (on certain platforms) role=combobox.
-  bool IsNonNativeTextField() const;
+  // either a contenteditable, or has the CSS user-modify style set to something
+  // editable.
+  bool IsNonAtomicTextField() const;
 
   // Returns true if this object is a text field that is used for entering
   // passwords, i.e. <input type=password>.
@@ -561,8 +561,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool IsBlockedByAriaModalDialog(IgnoredReasons* = nullptr) const;
   bool IsDescendantOfDisabledNode() const;
   bool ComputeAccessibilityIsIgnoredButIncludedInTree() const;
-  const AXObject* GetNativeTextControlAncestor(
-      int max_levels_to_check = 3) const;
+  const AXObject* GetAtomicTextFieldAncestor(int max_levels_to_check = 3) const;
   const AXObject* DatetimeAncestor(int max_levels_to_check = 3) const;
   const AXObject* DisabledAncestor() const;
   bool LastKnownIsIgnoredValue() const;
@@ -735,13 +734,13 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual void GetWordBoundaries(Vector<int>& word_starts,
                                  Vector<int>& word_ends) const;
 
-  // For all inline text fields and native text fields: Returns the length of
-  // the inline's text or the field's value respectively.
+  // For all inline text boxes and atomic text fields: Returns the length of the
+  // inline's text or the field's value respectively.
   virtual int TextLength() const;
 
   // Supported on layout inline, layout text, layout replaced, and layout block
   // flow, provided that they are at inline-level, i.e. "display=inline" or
-  // "display=inline-block". Also supported on native text fields. For all other
+  // "display=inline-block". Also supported on atomic text fields. For all other
   // object types, returns |offset|.
   //
   // For layout inline, text, replaced, and block flow: Translates the given
@@ -756,12 +755,14 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // in the DOM, from the start of the layout inline's deepest block flow
   // ancestor, e.g. the beginning of the paragraph in which the span is found.
   //
-  // For native text fields: Simply returns |offset|, because native text fields
+  // For atomic text fields: Simply returns |offset|, because atomic text fields
   // have no collapsed white space and so no translation from a DOM to an
-  // accessible text offset is necessary.
+  // accessible text offset is necessary. An atomic text field does not expose
+  // its internal implementation to assistive software, appearing as a single
+  // leaf node in the accessibility tree. It includes <input> and <textarea>.
   virtual int TextOffsetInFormattingContext(int offset) const;
 
-  // For all inline text boxes and native text fields. For all other object
+  // For all inline text boxes and atomic text fields. For all other object
   // types, returns |offset|.
   //
   // For inline text boxes: Translates the given character offset to the
@@ -773,7 +774,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // characters, excluding any collapsed white space found in the DOM, from the
   // start of the inline text box's static text parent.
   //
-  // For native text fields: Simply returns |offset|, because native text fields
+  // For atomic text fields: Simply returns |offset|, because atomic text fields
   // have no collapsed white space and so no translation from a DOM to an
   // accessible text offset is necessary.
   virtual int TextOffsetInContainer(int offset) const;

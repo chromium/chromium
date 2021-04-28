@@ -72,7 +72,7 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
   gfx::NativeViewAccessible GetPreviousSibling() override;
 
   bool IsChildOfLeaf() const override;
-  bool IsDescendantOfNativeTextField() const override;
+  bool IsDescendantOfAtomicTextField() const override;
   bool IsLeaf() const override;
   bool IsFocused() const override;
   bool IsToplevelBrowserWindow() override;

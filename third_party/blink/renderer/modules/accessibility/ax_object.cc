@@ -966,7 +966,7 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
       node_data->AddState(ax::mojom::blink::State::kEditable);
       if (IsEditableRoot()) {
         node_data->AddBoolAttribute(
-            ax::mojom::blink::BoolAttribute::kEditableRoot, true);
+            ax::mojom::blink::BoolAttribute::kContentEditableRoot, true);
       }
       if (IsRichlyEditable())
         node_data->AddState(ax::mojom::blink::State::kRichlyEditable);
@@ -1143,7 +1143,7 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
   SerializeSparseAttributes(node_data);
 
   if (Element* element = GetElement()) {
-    if (IsNativeTextField()) {
+    if (IsAtomicTextField()) {
       // Selection offsets are only used for plain text controls, (input of a
       // text field type, and textarea). Rich editable areas, such as
       // contenteditables, use AXTreeData.
@@ -1575,7 +1575,7 @@ bool AXObject::IsAnchor() const {
 }
 
 bool AXObject::IsARIATextField() const {
-  if (IsNativeTextField())
+  if (IsAtomicTextField())
     return false;  // Native role supercedes the ARIA one.
   return AriaRoleAttribute() == ax::mojom::blink::Role::kTextField ||
          AriaRoleAttribute() == ax::mojom::blink::Role::kSearchBox ||
@@ -1779,15 +1779,15 @@ bool AXObject::IsNativeSpinButton() const {
   return false;
 }
 
-bool AXObject::IsNativeTextField() const {
+bool AXObject::IsAtomicTextField() const {
   return blink::IsTextControl(GetNode());
 }
 
-bool AXObject::IsNonNativeTextField() const {
+bool AXObject::IsNonAtomicTextField() const {
   // Consivably, an <input type=text> or a <textarea> might also have the
   // contenteditable attribute applied. In such cases, the <input> or <textarea>
   // tags should supercede.
-  if (IsNativeTextField())
+  if (IsAtomicTextField())
     return false;
   return HasContentEditableAttributeSet() || IsARIATextField();
 }
@@ -1849,7 +1849,7 @@ bool AXObject::IsTabItem() const {
 bool AXObject::IsTextField() const {
   if (IsDetached())
     return false;
-  return IsNativeTextField() || IsNonNativeTextField();
+  return IsAtomicTextField() || IsNonAtomicTextField();
 }
 
 bool AXObject::IsAutofillAvailable() const {
@@ -2456,16 +2456,16 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
   return false;
 }
 
-const AXObject* AXObject::GetNativeTextControlAncestor(
+const AXObject* AXObject::GetAtomicTextFieldAncestor(
     int max_levels_to_check) const {
-  if (IsNativeTextField())
+  if (IsAtomicTextField())
     return this;
 
   if (max_levels_to_check == 0)
     return nullptr;
 
   if (AXObject* parent = ParentObject())
-    return parent->GetNativeTextControlAncestor(max_levels_to_check - 1);
+    return parent->GetAtomicTextFieldAncestor(max_levels_to_check - 1);
 
   return nullptr;
 }
@@ -3214,7 +3214,7 @@ void AXObject::GetWordBoundaries(Vector<int>& word_starts,
                                  Vector<int>& word_ends) const {}
 
 int AXObject::TextLength() const {
-  if (IsNativeTextField())
+  if (IsAtomicTextField())
     return GetValueForControl().length();
   return 0;
 }
@@ -3531,7 +3531,7 @@ ax::mojom::blink::Role AXObject::DetermineAriaRoleAttribute() const {
   // ax::mojom::blink::Role::kComboBoxMenuButton:
   //   <div tabindex=0 role="combobox">Select</div>
   if (role == ax::mojom::blink::Role::kComboBoxGrouping) {
-    if (IsNativeTextField())
+    if (IsAtomicTextField())
       role = ax::mojom::blink::Role::kTextFieldWithComboBox;
     else if (GetElement() && GetElement()->SupportsFocus())
       role = ax::mojom::blink::Role::kComboBoxMenuButton;
@@ -3561,7 +3561,7 @@ bool AXObject::IsEditable() const {
 
   // For the purposes of accessibility, atomic text fields  i.e. input and
   // textarea are editable because the user can potentially enter text in them.
-  if (IsNativeTextField())
+  if (IsAtomicTextField())
     return true;
 
   return false;

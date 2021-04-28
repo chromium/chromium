@@ -1638,7 +1638,7 @@ String AXNodeObject::AutoComplete() const {
       WebAXAutofillState::kAutocompleteAvailable)
     return "list";
 
-  if (IsNativeTextField() || IsARIATextField()) {
+  if (IsAtomicTextField() || IsARIATextField()) {
     const AtomicString& aria_auto_complete =
         GetAOMPropertyOrARIAAttribute(AOMStringProperty::kAutocomplete)
             .LowerASCII();
@@ -2484,7 +2484,7 @@ String AXNodeObject::GetValueForControl() const {
     return select_element->InnerElement().innerText();
   }
 
-  if (IsNativeTextField()) {
+  if (IsAtomicTextField()) {
     // This is an "<input type=text>" or a "<textarea>": We should not simply
     // return the "value" attribute because it might be sanitized in some input
     // control types, e.g. email fields. If we do that, then "selectionStart"
@@ -2569,7 +2569,7 @@ String AXNodeObject::GetValueForControl() const {
 }
 
 String AXNodeObject::SlowGetValueForControlIncludingContentEditable() const {
-  if (IsNonNativeTextField()) {
+  if (IsNonAtomicTextField()) {
     Element* element = GetElement();
     return element ? element->GetInnerTextWithoutUpdate() : String();
   }

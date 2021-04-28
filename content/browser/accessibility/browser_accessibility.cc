@@ -56,7 +56,7 @@ namespace {
 // is not a native text field (input or textarea).
 BrowserAccessibility* GetTextFieldInnerEditorElement(
     const BrowserAccessibility& text_field) {
-  if (!text_field.IsNativeTextField() || !text_field.InternalChildCount())
+  if (!text_field.IsAtomicTextField() || !text_field.InternalChildCount())
     return nullptr;
 
   // Text fields wrap their static text and inline text boxes in generic
@@ -131,9 +131,12 @@ void BrowserAccessibility::Init(BrowserAccessibilityManager* manager,
 }
 
 bool BrowserAccessibility::IsValid() const {
-  // Currently we only perform validity checks on non-empty, native text fields.
-  if (IsNativeTextField() && InternalChildCount()) {
-    // If the native text field is aria-hidden then all its descendants are
+  // Currently we only perform validity checks on non-empty, atomic text fields.
+  // An atomic text field does not expose its internal implementation to
+  // assistive software, appearing as a single leaf node in the accessibility
+  // tree. It includes <input>, <textarea> and Views-based text fields.
+  if (IsAtomicTextField() && InternalChildCount()) {
+    // If the atomic text field is aria-hidden then all its descendants are
     // ignored.
     //   See the dump tree test AccessibilityAriaHiddenFocusedInput.
     //
@@ -1034,12 +1037,12 @@ bool BrowserAccessibility::IsPasswordField() const {
   return GetData().IsPasswordField();
 }
 
-bool BrowserAccessibility::IsNativeTextField() const {
-  return GetData().IsNativeTextField();
+bool BrowserAccessibility::IsAtomicTextField() const {
+  return GetData().IsAtomicTextField();
 }
 
-bool BrowserAccessibility::IsNonNativeTextField() const {
-  return GetData().IsNonNativeTextField();
+bool BrowserAccessibility::IsNonAtomicTextField() const {
+  return GetData().IsNonAtomicTextField();
 }
 
 bool BrowserAccessibility::HasExplicitlyEmptyName() const {
@@ -1563,8 +1566,8 @@ bool BrowserAccessibility::IsToplevelBrowserWindow() {
   return false;
 }
 
-bool BrowserAccessibility::IsDescendantOfNativeTextField() const {
-  return node()->IsDescendantOfNativeTextField();
+bool BrowserAccessibility::IsDescendantOfAtomicTextField() const {
+  return node()->IsDescendantOfAtomicTextField();
 }
 
 gfx::NativeViewAccessible BrowserAccessibility::GetLowestPlatformAncestor()
@@ -2250,7 +2253,7 @@ ui::TextAttributeMap BrowserAccessibility::GetSpellingAndGrammarAttributes()
   // and exposed on the text field itself. Otherwise, assistive software (AT)
   // won't be able to see them because the native field's descendants are an
   // implementation detail that is hidden from AT.
-  if (IsNativeTextField()) {
+  if (IsAtomicTextField()) {
     int start_offset = 0;
     for (BrowserAccessibility* static_text =
              BrowserAccessibilityManager::NextTextOnlyObject(

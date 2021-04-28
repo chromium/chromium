@@ -1285,8 +1285,9 @@ enum SortDirectionType {
     // Indicates the font family.
     DOMString fontFamily;
 
-    // Indicates whether this is a root of an editable subtree.
-    boolean editableRoot;
+    // Indicates whether the object is at the root of a content editable region,
+    // or at a <body> element that has "design-mode" set to "on".
+    boolean contentEditableRoot;
 
     // Indicates aria-current state.
     AriaCurrentState? ariaCurrentState;

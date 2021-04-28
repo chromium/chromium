@@ -854,7 +854,7 @@ bool TestAXNodeWrapper::HasVisibleCaretOrSelection() const {
 
   // Selection or caret will be visible in a focused editable area.
   if (GetData().HasState(ax::mojom::State::kEditable)) {
-    return GetData().IsNativeTextField() ? focus_object == node_
+    return GetData().IsAtomicTextField() ? focus_object == node_
                                          : focus_object->IsDescendantOf(node_);
   }
 

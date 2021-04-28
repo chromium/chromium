@@ -316,11 +316,11 @@ bool WebAXObject::IsModal() const {
   return private_->IsModal();
 }
 
-bool WebAXObject::IsNativeTextField() const {
+bool WebAXObject::IsAtomicTextField() const {
   if (IsDetached())
     return false;
 
-  return private_->IsNativeTextField();
+  return private_->IsAtomicTextField();
 }
 
 bool WebAXObject::IsOffScreen() const {
@@ -695,7 +695,7 @@ void WebAXObject::Selection(bool& is_selection_backward,
     return;
 
   const auto ax_selection =
-      focus.private_->IsNativeTextField()
+      focus.private_->IsAtomicTextField()
           ? AXSelection::FromCurrentSelection(
                 ToTextControl(*focus.private_->GetNode()))
           : AXSelection::FromCurrentSelection(*focus.private_->GetDocument());
@@ -743,7 +743,7 @@ bool WebAXObject::SetSelection(const WebAXObject& anchor_object,
                                   ax::mojom::blink::Action::kSetSelection);
   AXPosition ax_base, ax_extent;
   if (static_cast<const AXObject*>(anchor_object)->IsTextObject() ||
-      static_cast<const AXObject*>(anchor_object)->IsNativeTextField()) {
+      static_cast<const AXObject*>(anchor_object)->IsAtomicTextField()) {
     ax_base =
         AXPosition::CreatePositionInTextObject(*anchor_object, anchor_offset);
   } else if (anchor_offset <= 0) {
@@ -757,7 +757,7 @@ bool WebAXObject::SetSelection(const WebAXObject& anchor_object,
   }
 
   if (static_cast<const AXObject*>(focus_object)->IsTextObject() ||
-      static_cast<const AXObject*>(focus_object)->IsNativeTextField()) {
+      static_cast<const AXObject*>(focus_object)->IsAtomicTextField()) {
     ax_extent =
         AXPosition::CreatePositionInTextObject(*focus_object, focus_offset);
   } else if (focus_offset <= 0) {

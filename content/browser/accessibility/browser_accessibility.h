@@ -348,11 +348,11 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   // See AXNodeData::IsPasswordField().
   bool IsPasswordField() const;
 
-  // See AXNodeData::IsNativeTextField().
-  bool IsNativeTextField() const;
+  // See AXNodeData::IsAtomicTextField().
+  bool IsAtomicTextField() const;
 
-  // See AXNodeData::IsNonNativeTextField().
-  bool IsNonNativeTextField() const;
+  // See AXNodeData::IsNonAtomicTextField().
+  bool IsNonAtomicTextField() const;
 
   // Returns true if the accessible name was explicitly set to "" by the author
   bool HasExplicitlyEmptyName() const;
@@ -400,7 +400,7 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   gfx::NativeViewAccessible GetPreviousSibling() override;
 
   bool IsChildOfLeaf() const override;
-  bool IsDescendantOfNativeTextField() const override;
+  bool IsDescendantOfAtomicTextField() const override;
   bool IsLeaf() const override;
   bool IsFocused() const override;
   bool IsInvisibleOrIgnored() const override;

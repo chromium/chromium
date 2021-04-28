@@ -540,8 +540,11 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
       </html>
   )HTML"));
 
-  // Case 1: Inside of a plain text field, NormalizeTextRange shouldn't modify
-  //         the text range endpoints.
+  // Case 1: Inside of an atomic text field, NormalizeTextRange shouldn't modify
+  // the text range endpoints. An atomic text field does not expose its internal
+  // implementation to assistive software, appearing as a single leaf node in
+  // the accessibility tree. It includes <input>, <textarea> and Views-based
+  // text fields.
   //
   // In order for the test harness to effectively simulate typing in a text
   // input, first change the value of the text input and then focus it. Only
@@ -598,8 +601,8 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   ASSERT_EQ(0, result);
 
   // Calling GetAttributeValue will call NormalizeTextRange, which shouldn't
-  // change the result of CompareEndpoints below since the range is inside a
-  // plain text field.
+  // change the result of CompareEndpoints below since the range is inside an
+  // atomic text field.
   base::win::ScopedVariant value;
   EXPECT_HRESULT_SUCCEEDED(text_range_provider->GetAttributeValue(
       UIA_IsReadOnlyAttributeId, value.Receive()));

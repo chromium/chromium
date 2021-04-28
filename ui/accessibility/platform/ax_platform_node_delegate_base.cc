@@ -172,7 +172,7 @@ bool AXPlatformNodeDelegateBase::IsToplevelBrowserWindow() {
   return false;
 }
 
-bool AXPlatformNodeDelegateBase::IsDescendantOfNativeTextField() const {
+bool AXPlatformNodeDelegateBase::IsDescendantOfAtomicTextField() const {
   return false;
 }
 
@@ -608,7 +608,7 @@ bool AXPlatformNodeDelegateBase::IsWebContent() const {
 }
 
 bool AXPlatformNodeDelegateBase::HasVisibleCaretOrSelection() const {
-  return IsDescendantOfNativeTextField();
+  return IsDescendantOfAtomicTextField();
 }
 
 AXPlatformNode* AXPlatformNodeDelegateBase::GetTargetNodeForRelation(

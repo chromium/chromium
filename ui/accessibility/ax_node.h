@@ -376,14 +376,14 @@ class AX_EXPORT AXNode final {
   // Returns empty string if no appropriate language was found.
   std::string GetLanguage() const;
 
-  // Returns the value of a control such as a plain text field, a content
-  // editable, a submit button, a slider, a progress bar, a scroll bar, a meter,
-  // a spinner, a <select> element, a date picker or an ARIA combo box. In order
-  // to minimize cross-process communication between the renderer and the
-  // browser, this method may compute the value from the control's inner text in
-  // the case of a content editable. For range controls, such as sliders and
-  // scroll bars, the value of aria-valuetext takes priority over the value of
-  // aria-valuenow.
+  // Returns the value of a control such as an atomic text field (<input> or
+  // <textarea>), a content editable, a submit button, a slider, a progress bar,
+  // a scroll bar, a meter, a spinner, a <select> element, a date picker or an
+  // ARIA combo box. In order to minimize cross-process communication between
+  // the renderer and the browser, this method may compute the value from the
+  // control's inner text in the case of a content editable. For range controls,
+  // such as sliders and scroll bars, the value of aria-valuetext takes priority
+  // over the value of aria-valuenow.
   std::string GetValueForControl() const;
 
   //
@@ -514,10 +514,10 @@ class AX_EXPORT AXNode final {
   // layer.
   //
   // The definition of a leaf includes nodes with children that are exclusively
-  // an internal renderer implementation, such as the children of an HTML native
-  // text field, as well as nodes with presentational children according to the
-  // ARIA and HTML5 Specs. Also returns true if all of the node's descendants
-  // are ignored.
+  // an internal renderer implementation, such as the children of an HTML-based
+  // text field (<input> and <textarea>), as well as nodes with presentational
+  // children according to the ARIA and HTML5 Specs. Also returns true if all of
+  // the node's descendants are ignored.
   //
   // A leaf node should never have children that are focusable or
   // that might send notifications.
@@ -547,9 +547,12 @@ class AX_EXPORT AXNode final {
   // an editable region is synonymous to a text field.
   AXNode* GetTextFieldAncestor() const;
 
-  // Returns true if this node is either a native text field , or one of its
-  // ancestors is.
-  bool IsDescendantOfNativeTextField() const;
+  // Returns true if this node is either an atomic text field , or one of its
+  // ancestors is. An atomic text field does not expose its internal
+  // implementation to assistive software, appearing as a single leaf node in
+  // the accessibility tree. It includes <input>, <textarea> and Views-based
+  // text fields.
+  bool IsDescendantOfAtomicTextField() const;
 
   // Finds and returns a pointer to ordered set containing node.
   AXNode* GetOrderedSet() const;

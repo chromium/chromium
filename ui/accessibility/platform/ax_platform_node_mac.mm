@@ -870,7 +870,7 @@ bool IsAXSetter(SEL selector) {
 
 - (NSValue*)AXSelectedTextRange {
   int start = 0, end = 0;
-  if (_node->IsNativeTextField() &&
+  if (_node->IsAtomicTextField() &&
       _node->GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart, &start) &&
       _node->GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd, &end)) {
     // NSRange cannot represent the direction the text was selected in.

@@ -2449,7 +2449,7 @@ TEST_F(
   `,
           function(root) {
             const contentEditable =
-                root.find({attributes: {editableRoot: true}});
+                root.find({attributes: {contentEditableRoot: true}});
             mockFeedback.call(contentEditable.focus.bind(contentEditable))
                 .expectSpeech(/Testing testing\s+one two three/)
                 .call(doCmd('nextLine'))

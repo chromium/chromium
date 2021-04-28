@@ -35,13 +35,8 @@ bool HasFocusableChild(const AXNode* node) {
 }
 
 // TODO(muyuanli): share with BrowserAccessibility.
-bool IsSimpleTextControl(const AXNode* node, uint32_t state) {
-  return (node->data().role == ax::mojom::Role::kTextField ||
-          node->data().role == ax::mojom::Role::kTextFieldWithComboBox ||
-          node->data().role == ax::mojom::Role::kSearchBox ||
-          node->data().HasBoolAttribute(
-              ax::mojom::BoolAttribute::kEditableRoot)) &&
-         !node->data().HasState(ax::mojom::State::kRichlyEditable);
+bool IsTextField(const AXNode* node, uint32_t state) {
+  return node->data().IsTextField();
 }
 
 bool IsRichTextEditable(const AXNode* node) {
@@ -51,7 +46,7 @@ bool IsRichTextEditable(const AXNode* node) {
           !parent->data().HasState(ax::mojom::State::kRichlyEditable));
 }
 
-bool IsNativeTextControl(const AXNode* node) {
+bool IsAtomicTextField(const AXNode* node) {
   const std::string& html_tag =
       node->data().GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
   if (html_tag == "input") {
@@ -70,7 +65,7 @@ bool IsLeaf(const AXNode* node) {
   if (node->children().empty())
     return true;
 
-  if (IsNativeTextControl(node) || node->IsText()) {
+  if (IsAtomicTextField(node) || node->IsText()) {
     return true;
   }
 
@@ -107,9 +102,8 @@ std::u16string GetValue(const AXNode* node) {
       node->data().GetString16Attribute(ax::mojom::StringAttribute::kValue);
 
   if (value.empty() &&
-      (IsSimpleTextControl(node, node->data().state) ||
-       IsRichTextEditable(node)) &&
-      !IsNativeTextControl(node)) {
+      (IsTextField(node, node->data().state) || IsRichTextEditable(node)) &&
+      !IsAtomicTextField(node)) {
     value = GetInnerText(node);
   }
 

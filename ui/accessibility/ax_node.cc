@@ -690,9 +690,9 @@ std::string AXNode::GetInnerText() const {
   // value or its placeholder. Otherwise we prefer to look at its descendant
   // text nodes because Blink doesn't always add all trailing white space to the
   // value attribute.
-  const bool is_plain_text_field_without_descendants =
+  const bool is_atomic_text_field_without_descendants =
       (node->data().IsTextField() && !node->GetUnignoredChildCount());
-  if (is_plain_text_field_without_descendants) {
+  if (is_atomic_text_field_without_descendants) {
     std::string value =
         node->data().GetStringAttribute(ax::mojom::StringAttribute::kValue);
     // If the value is empty, then there might be some placeholder text in the
@@ -702,13 +702,13 @@ std::string AXNode::GetInnerText() const {
       return value;
   }
 
-  // Ordinarily, plain text fields are leaves. We need to exclude them from the
+  // Ordinarily, atomic text fields are leaves. We need to exclude them from the
   // set of leaf nodes when they expose any descendants. This is because we want
   // to compute their inner text from their descendant text nodes as we don't
   // always trust the "value" attribute provided by Blink.
-  const bool is_plain_text_field_with_descendants =
+  const bool is_atomic_text_field_with_descendants =
       (node->data().IsTextField() && node->GetUnignoredChildCount());
-  if (node->IsLeaf() && !is_plain_text_field_with_descendants) {
+  if (node->IsLeaf() && !is_atomic_text_field_with_descendants) {
     switch (node->data().GetNameFrom()) {
       case ax::mojom::NameFrom::kNone:
       case ax::mojom::NameFrom::kUninitialized:
@@ -767,12 +767,12 @@ int AXNode::GetInnerTextLength() const {
     DCHECK(node) << "All child trees should have a non-null rootnode.";
   }
 
-  const bool is_plain_text_field_with_descendants =
+  const bool is_atomic_text_field_with_descendants =
       (node->data().IsTextField() && node->GetUnignoredChildCount());
-  // Plain text fields are always leaves so we need to exclude them when
+  // Atomic text fields are always leaves so we need to exclude them when
   // computing the length of their inner text if that text should be derived
   // from their descendant nodes.
-  if (node->IsLeaf() && !is_plain_text_field_with_descendants)
+  if (node->IsLeaf() && !is_atomic_text_field_with_descendants)
     return int{node->GetInnerText().length()};
 
   int inner_text_length = 0;
@@ -1392,7 +1392,7 @@ std::string AXNode::GetValueForTextField() const {
   // Some screen readers like Jaws and VoiceOver require a value to be set in
   // text fields with rich content, even though the same information is
   // available on the children.
-  if (value.empty() && data().IsNonNativeTextField())
+  if (value.empty() && data().IsNonAtomicTextField())
     return GetInnerText();
   return value;
 }
@@ -1483,7 +1483,7 @@ bool AXNode::IsLeaf() const {
   // different return values here, even though 'contenteditable' has no effect.
   // This needs to be modified from the Blink side, so 'kRichlyEditable' isn't
   // added in this case.
-  if (data().IsNativeTextField() || IsText())
+  if (data().IsAtomicTextField() || IsText())
     return true;
 
   // Roles whose children are only presentational according to the ARIA and
@@ -1621,9 +1621,9 @@ AXNode* AXNode::GetTextFieldAncestor() const {
   return nullptr;
 }
 
-bool AXNode::IsDescendantOfNativeTextField() const {
+bool AXNode::IsDescendantOfAtomicTextField() const {
   AXNode* text_field_node = GetTextFieldAncestor();
-  return text_field_node && text_field_node->data().IsNativeTextField();
+  return text_field_node && text_field_node->data().IsAtomicTextField();
 }
 
 }  // namespace ui

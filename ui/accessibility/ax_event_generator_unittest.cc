@@ -523,7 +523,6 @@ TEST(AXEventGeneratorTest, SelectionInTextFieldChanged) {
   text_field.role = ax::mojom::Role::kTextField;
   text_field.SetValue("Testing");
   text_field.AddState(ax::mojom::State::kEditable);
-  text_field.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot, true);
 
   root.child_ids = {text_field.id};
 
@@ -615,7 +614,6 @@ TEST(AXEventGeneratorTest, ValueInTextFieldChanged) {
   text_field.id = 1;
   text_field.role = ax::mojom::Role::kTextField;
   text_field.AddState(ax::mojom::State::kEditable);
-  text_field.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot, true);
   text_field.SetValue("Before");
 
   AXTreeUpdate initial_state;
@@ -665,7 +663,6 @@ TEST(AXEventGeneratorTest, InvalidStatusChanged) {
   text_field.id = 1;
   text_field.role = ax::mojom::Role::kTextField;
   text_field.AddState(ax::mojom::State::kEditable);
-  text_field.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot, true);
   text_field.AddStringAttribute(ax::mojom::StringAttribute::kValue, "Text");
 
   AXTreeUpdate initial_state;
@@ -2442,7 +2439,6 @@ TEST(AXEventGeneratorTest, RequiredStateChanged) {
   text_field.id = 1;
   text_field.role = ax::mojom::Role::kTextField;
   text_field.AddState(ax::mojom::State::kEditable);
-  text_field.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot, true);
 
   AXTreeUpdate initial_state;
   initial_state.root_id = text_field.id;
@@ -2654,7 +2650,6 @@ TEST(AXEventGeneratorTest, EditableTextChanged) {
   text_field.id = 2;
   text_field.role = ax::mojom::Role::kTextField;
   text_field.AddState(ax::mojom::State::kEditable);
-  text_field.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot, true);
   text_field.SetValue("Before");
   root.child_ids = {text_field.id};
 

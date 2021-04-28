@@ -130,7 +130,7 @@ SmartStickyMode = class {
     }
 
     let editable = this.getEditableOrRelatedEditable_(range.start.node);
-    while (editable && !editable.editableRoot) {
+    while (editable && !editable.contentEditableRoot) {
       if (!editable.parent ||
           editable.parent.state[chrome.automation.StateType.EDITABLE]) {
         // Not all editables from all trees (e.g. Android, views) set the

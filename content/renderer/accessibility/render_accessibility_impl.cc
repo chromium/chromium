@@ -596,12 +596,12 @@ bool RenderAccessibilityImpl::ShouldSerializeNodeForEvent(
     return false;
 
   if (event.event_type == ax::mojom::Event::kTextSelectionChanged &&
-      !obj.IsNativeTextField()) {
-    // Selection changes on non-native text controls cause no change to the
+      !obj.IsAtomicTextField()) {
+    // Selection changes on non-atomic text fields cause no change to the
     // control node's data.
     //
     // Selection offsets exposed via kTextSelStart and kTextSelEnd are only used
-    // for plain text controls, (input of a text field type, and textarea). Rich
+    // for atomic text fields, (input of a text field type, and textarea). Rich
     // editable areas, such as contenteditables, use AXTreeData.
     //
     // TODO(nektar): Remove kTextSelStart and kTextSelEnd from the renderer.

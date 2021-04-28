@@ -3703,8 +3703,8 @@ class AXPosition {
   // a collapsed popup menu. The presence or the absence of accessible content
   // inside a control might alter whether an "object replacement character"
   // would be exposed in that control, in contrast to ordinary text such as in
-  // the case of a non-empty plain text field which should only have textual
-  // nodes inside it. This is because empty controls need to act as a word and
+  // the case of a non-empty text field which should only have textual nodes
+  // inside it. This is because empty controls need to act as a word and
   // character boundary.
   bool IsEmptyObjectReplacedByCharacter() const {
     if (g_ax_embedded_object_behavior ==
@@ -4080,8 +4080,8 @@ class AXPosition {
         // that are descendants of platform leaves should maintain the actual
         // text of all their static text descendants, otherwise there would be
         // loss of information while traversing the accessibility tree upwards.
-        // An example of a platform leaf is a plain text field, because all of
-        // the accessibility subtree inside the text field is hidden from
+        // An example of a platform leaf is an <input> text field, because all
+        // of the accessibility subtree inside the text field is hidden from
         // platform APIs. An example of how an ignored node can affect the
         // hypertext of an unignored ancestor is shown below:
         // ++kTextField "Hello"

@@ -273,7 +273,6 @@ chrome.automation.RoleType = {
   MENU_LIST_POPUP: 'menuListPopup',
   METER: 'meter',
   NAVIGATION: 'navigation',
-  NONE: 'none',
   NOTE: 'note',
   PANE: 'pane',
   PARAGRAPH: 'paragraph',
@@ -432,11 +431,11 @@ chrome.automation.NameFromType = {
  */
 chrome.automation.DescriptionFromType = {
   ARIA_DESCRIPTION: 'ariaDescription',
-  BUTTON_LABEL: 'button-label',
+  BUTTON_LABEL: 'buttonLabel',
   RELATED_ELEMENT: 'relatedElement',
   RUBY_ANNOTATION: 'rubyAnnotation',
-  SUMMARY: 'summary',  // HTML-AAM 5.8.2
-  TABLE_CAPTION: 'tableCaption',  // HTML-AAM 5.9.2
+  SUMMARY: 'summary',
+  TABLE_CAPTION: 'tableCaption',
   TITLE: 'title',
 };
 
@@ -2022,11 +2021,12 @@ chrome.automation.AutomationNode.prototype.fontSize;
 chrome.automation.AutomationNode.prototype.fontFamily;
 
 /**
- * Indicates whether this is a root of an editable subtree.
+ * Indicates whether the object is at the root of a content editable region, or
+ * at a <body> element that has "design-mode" set to "on".
  * @type {boolean}
- * @see https://developer.chrome.com/extensions/automation#type-editableRoot
+ * @see https://developer.chrome.com/extensions/automation#type-contentEditableRoot
  */
-chrome.automation.AutomationNode.prototype.editableRoot;
+chrome.automation.AutomationNode.prototype.contentEditableRoot;
 
 /**
  * Indicates aria-current state.

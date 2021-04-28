@@ -1906,7 +1906,7 @@ std::u16string BrowserAccessibilityAndroid::GetTextChangeBeforeText() const {
 
 int BrowserAccessibilityAndroid::GetSelectionStart() const {
   int sel_start = 0;
-  if (IsNativeTextField() &&
+  if (IsAtomicTextField() &&
       GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart, &sel_start)) {
     return sel_start;
   }
@@ -1928,7 +1928,7 @@ int BrowserAccessibilityAndroid::GetSelectionStart() const {
 
 int BrowserAccessibilityAndroid::GetSelectionEnd() const {
   int sel_end = 0;
-  if (IsNativeTextField() &&
+  if (IsAtomicTextField() &&
       GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd, &sel_end)) {
     return sel_end;
   }
