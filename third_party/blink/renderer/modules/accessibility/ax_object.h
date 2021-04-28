@@ -1106,7 +1106,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // Sets the parent AXObject directly. If the parent of this object is known,
   // this can be faster than using ComputeParent().
-  void SetParent(AXObject* new_parent);
+  void SetParent(AXObject* new_parent) const;
 
   // If parent was not initialized during AddChildren() it can be computed by
   // walking the DOM (or layout for nodeless aka anonymous layout object).
@@ -1124,6 +1124,16 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   static AXObject* ComputeNonARIAParent(AXObjectCacheImpl& cache,
                                         Node* node,
                                         LayoutObject* layout_object = nullptr);
+
+  // Returns true if |parent_| is null and not at the root.
+  bool IsMissingParent() const;
+
+  // Compute a missing parent, and ask it to update children.
+  // Must only be called if IsMissingParent() is true.
+  void RepairMissingParent() const;
+
+  // Is this the root of this object hierarchy.
+  bool IsRoot() const;
 
 #if DCHECK_IS_ON()
   // When the parent on children during AddChildren(), take the opportunity to

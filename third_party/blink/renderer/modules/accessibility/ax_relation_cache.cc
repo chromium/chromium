@@ -7,6 +7,7 @@
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/html/forms/html_label_element.h"
+#include "ui/accessibility/ax_common.h"
 
 namespace blink {
 
@@ -178,7 +179,11 @@ void AXRelationCache::UnmapOwnedChildren(const AXObject* owner,
       removed_child->DetachFromParent();
       // Recompute the real parent and cache it.
       AXObject* real_parent = removed_child->ParentObject();
-      ChildrenChanged(real_parent);
+      SANITIZER_CHECK(real_parent) << "No parent to restore for object with "
+                                      "unmapped aria-owns, child is: "
+                                   << removed_child->ToString(true, true);
+      if (real_parent)
+        ChildrenChanged(real_parent);
     }
   }
 }
@@ -193,17 +198,21 @@ void AXRelationCache::MapOwnedChildren(const AXObject* owner,
 
     // Now detach the object from its original parent and call childrenChanged
     // on the original parent so that it can recompute its list of children.
-    AXObject* original_parent = added_child->ParentObject();
-    added_child->DetachFromParent();
-    added_child->SetParent(const_cast<AXObject*>(owner));
-    ChildrenChanged(original_parent);
+    AXObject* original_parent = added_child->CachedParentObject();
+    if (original_parent != owner) {
+      added_child->DetachFromParent();
+      added_child->SetParent(const_cast<AXObject*>(owner));
+      if (original_parent)
+        ChildrenChanged(original_parent);
+    }
   }
 }
 
 void AXRelationCache::UpdateAriaOwnsFromAttrAssociatedElementsWithCleanLayout(
     AXObject* owner,
     const HeapVector<Member<Element>>& attr_associated_elements,
-    HeapVector<Member<AXObject>>& validated_owned_children_result) {
+    HeapVector<Member<AXObject>>& validated_owned_children_result,
+    bool force) {
   // attr-associated elements have already had their scope validated, but they
   // need to be further validated to determine if they introduce a cycle or are
   // already owned by another element.
@@ -231,7 +240,7 @@ void AXRelationCache::UpdateAriaOwnsFromAttrAssociatedElementsWithCleanLayout(
 
   // Update the internal mappings of owned children.
   UpdateAriaOwnerToChildrenMappingWithCleanLayout(
-      owner, validated_owned_children_result);
+      owner, validated_owned_children_result, force);
 }
 
 void AXRelationCache::GetAriaOwnedChildren(
@@ -250,7 +259,8 @@ void AXRelationCache::GetAriaOwnedChildren(
   }
 }
 
-void AXRelationCache::UpdateAriaOwnsWithCleanLayout(AXObject* owner) {
+void AXRelationCache::UpdateAriaOwnsWithCleanLayout(AXObject* owner,
+                                                    bool force) {
   DCHECK(owner);
   if (!owner->CanHaveChildren())
     return;
@@ -277,7 +287,7 @@ void AXRelationCache::UpdateAriaOwnsWithCleanLayout(AXObject* owner) {
     UpdateAriaOwnsFromAttrAssociatedElementsWithCleanLayout(
         owner,
         element->GetElementArrayAttribute(html_names::kAriaOwnsAttr).value(),
-        owned_children);
+        owned_children, force);
   } else {
     // Figure out the ids that actually correspond to children that exist
     // and that we can legally own (not cyclical, not already owned, etc.) and
@@ -304,12 +314,13 @@ void AXRelationCache::UpdateAriaOwnsWithCleanLayout(AXObject* owner) {
 
   // Update the internal validated mapping of owned children. This will
   // fire an event if the mapping has changed.
-  UpdateAriaOwnerToChildrenMappingWithCleanLayout(owner, owned_children);
+  UpdateAriaOwnerToChildrenMappingWithCleanLayout(owner, owned_children, force);
 }
 
 void AXRelationCache::UpdateAriaOwnerToChildrenMappingWithCleanLayout(
     AXObject* owner,
-    HeapVector<Member<AXObject>>& validated_owned_children_result) {
+    HeapVector<Member<AXObject>>& validated_owned_children_result,
+    bool force) {
   DCHECK(owner);
   if (!owner->CanHaveChildren())
     return;
@@ -322,7 +333,7 @@ void AXRelationCache::UpdateAriaOwnerToChildrenMappingWithCleanLayout(
   // there are no changes.
   Vector<AXID> current_child_axids =
       aria_owner_to_children_mapping_.at(owner->AXObjectID());
-  if (current_child_axids == validated_owned_child_axids)
+  if (!force && current_child_axids == validated_owned_child_axids)
     return;
 
   // The list of owned children has changed. Even if they were just reordered,
@@ -334,6 +345,7 @@ void AXRelationCache::UpdateAriaOwnerToChildrenMappingWithCleanLayout(
 #if DCHECK_IS_ON()
   // Owned children must be in tree to avoid serialization issues.
   for (AXObject* child : validated_owned_children_result) {
+    DCHECK(IsAriaOwned(child));
     DCHECK(child->AccessibilityIsIncludedInTree())
         << "Owned child not in tree: " << child->ToString(true, false)
         << "\nRecompute included in tree: "

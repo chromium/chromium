@@ -1086,6 +1086,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaOwnsList) {
   RunAriaTest(FILE_PATH_LITERAL("aria-owns-list.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaOwnsWithRoleChange) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-owns-with-role-change.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaMath) {
   RunAriaTest(FILE_PATH_LITERAL("aria-math.html"));
 }

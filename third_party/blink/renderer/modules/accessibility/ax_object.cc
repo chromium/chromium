@@ -507,7 +507,7 @@ void AXObject::Init(AXObject* parent) {
   // Determine the parent as soon as possible.
   // Every AXObject must have a parent unless it's the root.
   SetParent(parent);
-  DCHECK(parent_ || IsA<Document>(GetNode()))
+  DCHECK(parent_ || IsRoot())
       << "The following node should have a parent: " << GetNode();
 
   // The parent cannot have children. This object must be destroyed.
@@ -517,6 +517,12 @@ void AXObject::Init(AXObject* parent) {
       << "\n* Child = " << ToString(true, true);
 
   SetNeedsToUpdateChildren();  // Should be called after role_ is set.
+
+  // Ensure that the aria-owns relationship is set before attempting
+  // to update cached attribute values.
+  if (GetNode())
+    AXObjectCache().MaybeNewRelationTarget(*GetNode(), this);
+
   UpdateCachedAttributeValuesIfNeeded(false);
 }
 
@@ -554,12 +560,23 @@ bool AXObject::IsDetached() const {
   return !ax_object_cache_;
 }
 
-void AXObject::SetParent(AXObject* new_parent) {
-  DCHECK(new_parent || IsA<Document>(GetNode()))
+bool AXObject::IsRoot() const {
+  return GetNode() && GetNode() == &AXObjectCache().GetDocument();
+}
+
+void AXObject::SetParent(AXObject* new_parent) const {
+#if DCHECK_IS_ON()
+  DCHECK(new_parent || IsRoot())
       << "Parent cannot be null, except at the root, was null at " << GetNode()
       << " " << GetLayoutObject();
 
-#if DCHECK_IS_ON()
+  if (new_parent) {
+    DCHECK(!new_parent->IsDetached())
+        << "Cannot set parent to a detached object:"
+        << "\n* Child: " << ToString(true, true)
+        << "\n* New parent: " << new_parent->ToString(true, true);
+  }
+
   // Check to ensure that if the parent is changing from a previous parent,
   // that |this| is not still a child of that one.
   // This is similar to the IsParentUnignoredOf() check in
@@ -580,6 +597,26 @@ void AXObject::SetParent(AXObject* new_parent) {
   }
 #endif
   parent_ = new_parent;
+}
+
+bool AXObject::IsMissingParent() const {
+  if (!parent_)
+    return !IsRoot();
+
+  DCHECK(!parent_->IsDetached())
+      << "Parent was detached:\n"
+      << "* Child = " << ToString(true, true)
+      << "\n* Parent = " << parent_->ToString(true, true);
+
+  return false;
+}
+
+void AXObject::RepairMissingParent() const {
+  DCHECK(IsMissingParent());
+
+  SetParent(ComputeParent());
+
+  DCHECK(parent_);
 }
 
 // In many cases, ComputeParent() is not called, because the parent adding
@@ -1927,10 +1964,8 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
       << GetDocument()->Lifecycle().ToString();
 #endif  // DCHECK_IS_ON()
 
-  // TODO(accessibility) Every AXObject must have a parent except the root.
-  // Sometimes the parent is detached and a new parent isn't yet reattached.
-  if (!parent_)
-    parent_ = ComputeParent();
+  if (IsMissingParent())
+    RepairMissingParent();
 
   cached_is_hidden_via_style = ComputeIsHiddenViaStyle();
 
@@ -3997,9 +4032,8 @@ AXObject* AXObject::ParentObject() const {
     DCHECK(!IsVirtualObject())
         << "A virtual object must have a parent, and cannot exist without one. "
            "The parent is set when the object is constructed.";
-    parent_ = ComputeParent();
-    DCHECK(parent_ || IsA<Document>(GetNode()))
-        << "The following node should have a parent: " << GetNode();
+    if (IsMissingParent())
+      RepairMissingParent();
   } else {
     if (parent_->IsDetached()) {
       // TODO(accessibility) This should never happen, but it fails
@@ -5540,23 +5574,28 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
         string_builder = string_builder + " isDisplayLocked";
       }
     }
-    if (const AXObject* aria_hidden_root = AriaHiddenRoot()) {
-      string_builder = string_builder + " ariaHiddenRoot";
-      if (aria_hidden_root != this) {
-        string_builder =
-            string_builder + GetElementString(aria_hidden_root->GetElement());
+    if (cached_values_only) {
+      if (cached_is_inert_or_aria_hidden_ && GetNode() && !GetNode()->IsInert())
+        string_builder = string_builder + " ariaHidden";
+    } else {
+      if (const AXObject* aria_hidden_root = AriaHiddenRoot()) {
+        string_builder = string_builder + " ariaHiddenRoot";
+        if (aria_hidden_root != this) {
+          string_builder =
+              string_builder + GetElementString(aria_hidden_root->GetElement());
+        }
       }
     }
-    if (GetDocument() && GetDocument()->Lifecycle().GetState() <
-                             DocumentLifecycle::kLayoutClean) {
-      string_builder = string_builder + " styleInfoUnavailable";
-    } else if (IsHiddenViaStyle()) {
+    if (cached_values_only ? cached_is_hidden_via_style : IsHiddenViaStyle())
       string_builder = string_builder + " isHiddenViaCSS";
-    }
     if (GetNode() && GetNode()->IsInert())
       string_builder = string_builder + " isInert";
-    if (NeedsToUpdateChildren())
+    if (NeedsToUpdateChildren()) {
       string_builder = string_builder + " needsToUpdateChildren";
+    } else if (!children_.IsEmpty()) {
+      string_builder = string_builder + " #children=";
+      string_builder = string_builder + String::Number(children_.size());
+    }
     if (!GetLayoutObject())
       string_builder = string_builder + " missingLayout";
 

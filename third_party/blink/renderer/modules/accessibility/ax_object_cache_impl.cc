@@ -1910,8 +1910,15 @@ void AXObjectCacheImpl::ProcessInvalidatedObjects(Document& document) {
     // it could be handled in RoleChangedWithCleanLayout(), and the cached
     // parent could be used.
     AXObject* new_object = CreateAndInit(node, nullptr, retained_axid);
-    if (!new_object)
-      RemoveAXID(current);  // Failed to create, so remove object completely.
+    if (new_object) {
+      // Any owned objects need to reset their parent_ to point to the
+      // new object.
+      relation_cache_->UpdateAriaOwnsWithCleanLayout(new_object, true);
+    } else {
+      // Failed to create, so remove object completely.
+      RemoveAXID(current);
+    }
+
     return new_object;
   };
 
@@ -2441,8 +2448,14 @@ void AXObjectCacheImpl::HandleRoleChangeWithCleanLayout(Node* node) {
       // from the table to rows and cells.
       RemoveAXObjectsInLayoutSubtree(obj);
     } else {
-      Remove(node);
+      // The children of this thing need to detach from parent.
+      Remove(obj);
     }
+    // The aria-owns relation may have changed if the role changed,
+    // because some roles allow aria-owns and others don't.
+    // In addition, any owned objects need to reset their parent_ to point
+    // to the new object.
+    relation_cache_->UpdateAriaOwnsWithCleanLayout(GetOrCreate(node), true);
   }
 }
 

@@ -80,7 +80,9 @@ class AXRelationCache {
   // calls ChildrenChanged on all affected nodes (old and new parents).
   // This affects the tree, which is why it should only be called at a
   // specific time in the lifecycle.
-  void UpdateAriaOwnsWithCleanLayout(AXObject* owner);
+  // Pass |force=true| when the mappings must be updated even though the
+  // owned ids have not changed, e.g. when an object has been refreshed.
+  void UpdateAriaOwnsWithCleanLayout(AXObject* owner, bool force = false);
 
   static bool IsValidOwner(AXObject* owner);
   static bool IsValidOwnedChild(AXObject* child);
@@ -94,7 +96,8 @@ class AXRelationCache {
   void UpdateAriaOwnsFromAttrAssociatedElementsWithCleanLayout(
       AXObject* owner,
       const HeapVector<Member<Element>>& attr_associated_elements,
-      HeapVector<Member<AXObject>>& owned_children);
+      HeapVector<Member<AXObject>>& owned_children,
+      bool force);
 
   // If any object is related to this object via <label for>, aria-owns,
   // aria-describedby or aria-labeledby, update the text for the related object.
@@ -109,7 +112,8 @@ class AXRelationCache {
   // either the content attribute or the attr associated elements.
   void UpdateAriaOwnerToChildrenMappingWithCleanLayout(
       AXObject* owner,
-      HeapVector<Member<AXObject>>& validated_owned_children_result);
+      HeapVector<Member<AXObject>>& validated_owned_children_result,
+      bool force);
 
   // Whether the document has been scanned for initial relationships
   // first or not.
