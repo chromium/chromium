@@ -450,6 +450,14 @@ void AppServiceProxyBase::AddAppIconSource(Profile* profile) {
 void AppServiceProxyBase::OnApps(std::vector<apps::mojom::AppPtr> deltas,
                                  apps::mojom::AppType app_type,
                                  bool should_notify_initialized) {
+  if (app_service_.is_connected()) {
+    for (const auto& delta : deltas) {
+      if (delta->readiness == apps::mojom::Readiness::kUninstalledByUser) {
+        app_service_->RemovePreferredApp(delta->app_type, delta->app_id);
+      }
+    }
+  }
+
   app_registry_cache_.OnApps(std::move(deltas), app_type,
                              should_notify_initialized);
 }

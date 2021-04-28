@@ -218,12 +218,6 @@ void ExtensionAppsBase::OnExtensionUninstalled(
 
   SetShowInFields(app, extension);
   Publish(std::move(app), subscribers_);
-
-  if (!app_service_) {
-    return;
-  }
-  app_service_->RemovePreferredApp(apps::mojom::AppType::kExtension,
-                                   extension->id());
 }
 
 void ExtensionAppsBase::SetShowInFields(

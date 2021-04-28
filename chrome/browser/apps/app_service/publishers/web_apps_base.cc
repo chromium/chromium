@@ -127,10 +127,6 @@ void WebAppsBase::OnWebAppWillBeUninstalled(const web_app::AppId& app_id) {
 
   SetShowInFields(app, web_app);
   Publish(std::move(app), subscribers_);
-
-  if (app_service_) {
-    app_service_->RemovePreferredApp(app_type_, web_app->app_id());
-  }
 }
 
 apps::mojom::AppPtr WebAppsBase::ConvertImpl(const web_app::WebApp* web_app,

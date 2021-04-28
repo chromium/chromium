@@ -1008,13 +1008,6 @@ void ArcApps::OnAppRemoved(const std::string& app_id) {
   app->app_id = app_id;
   app->readiness = apps::mojom::Readiness::kUninstalledByUser;
   Publish(std::move(app), subscribers_);
-
-  mojo::Remote<apps::mojom::AppService>& app_service =
-      apps::AppServiceProxyFactory::GetForProfile(profile_)->AppService();
-  if (!app_service.is_bound()) {
-    return;
-  }
-  app_service->RemovePreferredApp(apps::mojom::AppType::kArc, app_id);
 }
 
 void ArcApps::OnAppIconUpdated(const std::string& app_id,
