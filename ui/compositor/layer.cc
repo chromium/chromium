@@ -715,9 +715,22 @@ void Layer::SetIsFastRoundedCorner(bool enable) {
     mirror->dest()->SetIsFastRoundedCorner(enable);
 }
 
+bool Layer::GetTargetTransformRelativeTo(const Layer* ancestor,
+                                         gfx::Transform* transform) const {
+  return GetTransformRelativeToImpl(ancestor, /*is_target_transform=*/true,
+                                    transform);
+}
+
+bool Layer::GetTransformRelativeTo(const Layer* ancestor,
+                                   gfx::Transform* transform) const {
+  return GetTransformRelativeToImpl(ancestor, /*is_target_transform=*/false,
+                                    transform);
+}
+
 // static
 void Layer::ConvertPointToLayer(const Layer* source,
                                 const Layer* target,
+                                bool use_target_transform,
                                 gfx::PointF* point) {
   if (source == target)
     return;
@@ -726,25 +739,9 @@ void Layer::ConvertPointToLayer(const Layer* source,
   CHECK_EQ(root_layer, GetRoot(target));
 
   if (source != root_layer)
-    source->ConvertPointForAncestor(root_layer, point);
+    source->ConvertPointForAncestor(root_layer, use_target_transform, point);
   if (target != root_layer)
-    target->ConvertPointFromAncestor(root_layer, point);
-}
-
-bool Layer::GetTargetTransformRelativeTo(const Layer* ancestor,
-                                         gfx::Transform* transform) const {
-  const Layer* p = this;
-  for (; p && p != ancestor; p = p->parent()) {
-    gfx::Transform translation;
-    translation.Translate(static_cast<float>(p->bounds().x()),
-                          static_cast<float>(p->bounds().y()));
-    // Use target transform so that result will be correct once animation is
-    // finished.
-    if (!p->GetTargetTransform().IsIdentity())
-      transform->ConcatTransform(p->GetTargetTransform());
-    transform->ConcatTransform(translation);
-  }
-  return p == ancestor;
+    target->ConvertPointFromAncestor(root_layer, use_target_transform, point);
 }
 
 void Layer::SetFillsBoundsOpaquely(bool fills_bounds_opaquely) {
@@ -1379,9 +1376,12 @@ void Layer::StackRelativeTo(Layer* child, Layer* other, bool above) {
 }
 
 bool Layer::ConvertPointForAncestor(const Layer* ancestor,
+                                    bool use_target_transform,
                                     gfx::PointF* point) const {
   gfx::Transform transform;
-  bool result = GetTargetTransformRelativeTo(ancestor, &transform);
+  bool result = use_target_transform
+                    ? GetTargetTransformRelativeTo(ancestor, &transform)
+                    : GetTransformRelativeTo(ancestor, &transform);
   auto p = gfx::Point3F(*point);
   transform.TransformPoint(&p);
   *point = p.AsPointF();
@@ -1389,9 +1389,12 @@ bool Layer::ConvertPointForAncestor(const Layer* ancestor,
 }
 
 bool Layer::ConvertPointFromAncestor(const Layer* ancestor,
+                                     bool use_target_transform,
                                      gfx::PointF* point) const {
   gfx::Transform transform;
-  bool result = GetTargetTransformRelativeTo(ancestor, &transform);
+  bool result = use_target_transform
+                    ? GetTargetTransformRelativeTo(ancestor, &transform)
+                    : GetTransformRelativeTo(ancestor, &transform);
   auto p = gfx::Point3F(*point);
   transform.TransformPointReverse(&p);
   *point = p.AsPointF();
@@ -1718,6 +1721,23 @@ void Layer::SetFillsBoundsOpaquelyWithReason(bool fills_bounds_opaquely,
 
   if (delegate_)
     delegate_->OnLayerFillsBoundsOpaquelyChanged(reason);
+}
+
+bool Layer::GetTransformRelativeToImpl(const Layer* ancestor,
+                                       bool is_target_transform,
+                                       gfx::Transform* transform) const {
+  const Layer* p = this;
+  for (; p && p != ancestor; p = p->parent()) {
+    gfx::Transform translation;
+    translation.Translate(static_cast<float>(p->bounds().x()),
+                          static_cast<float>(p->bounds().y()));
+    if (!p->GetTargetTransform().IsIdentity()) {
+      transform->ConcatTransform(is_target_transform ? p->GetTargetTransform()
+                                                     : p->transform());
+    }
+    transform->ConcatTransform(translation);
+  }
+  return p == ancestor;
 }
 
 }  // namespace ui

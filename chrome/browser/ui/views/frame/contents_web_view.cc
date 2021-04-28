@@ -136,7 +136,8 @@ void ContentsWebView::CloneWebContentsLayer() {
   // is now the new parent of the cloned layer). Convert coordinates so that the
   // cloned layer appears at the right location.
   gfx::PointF origin;
-  ui::Layer::ConvertPointToLayer(cloned_layer_tree_->root(), layer(), &origin);
+  ui::Layer::ConvertPointToLayer(cloned_layer_tree_->root(), layer(),
+                                 /*use_target_transform=*/true, &origin);
   cloned_layer_tree_->root()->SetBounds(
       gfx::Rect(gfx::ToFlooredPoint(origin),
                 cloned_layer_tree_->root()->bounds().size()));

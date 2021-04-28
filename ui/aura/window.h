@@ -256,14 +256,30 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
     return subtree_capture_id_;
   }
 
-  // Returns the window's bounds in root window's coordinates.
+  // Returns the window's bounds in root window's coordinates. The returned
+  // value is calculated using the target transform. The target transform is the
+  // end value of a transform animation. If there is no animation ongoing, the
+  // target transform is the same as the current transform.
   gfx::Rect GetBoundsInRootWindow() const;
 
-  // Returns the window's bounds in screen coordinates.
+  // Similar to `GetBoundsInRootWindow()` except that the returned value is
+  // calculated using the current transform. If there is no animation ongoing,
+  // this function returns the same value as `GetBoundsInRootWindow()`.
+  gfx::Rect GetActualBoundsInRootWindow() const;
+
+  // Returns the window's bounds in screen coordinates. The returned
+  // value is calculated using the target transform. The target transform is the
+  // end value of a transform animation. If there is no animation ongoing, the
+  // target transform is the same as the current transform.
   // How the root window's coordinates is mapped to screen's coordinates
   // is platform dependent and defined in the implementation of the
   // |aura::client::ScreenPositionClient| interface.
   gfx::Rect GetBoundsInScreen() const;
+
+  // Similar to `GetBoundsInScreen()` except that the returned value is
+  // calculated using the current transform. If there is no animation ongoing,
+  // this function returns the same value as `GetBoundsInScreen()`.
+  gfx::Rect GetActualBoundsInScreen() const;
 
   void SetTransform(const gfx::Transform& transform);
   const gfx::Transform& transform() const { return layer()->transform(); }
@@ -330,7 +346,10 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
 
   // Converts |point| from |source|'s coordinates to |target|'s. If |source| is
   // nullptr, the function returns without modifying |point|. |target| cannot be
-  // nullptr.
+  // nullptr. Use layers' target transform in coordinate conversions. The target
+  // transform is the end value of a transform animation. If there is no
+  // animation ongoing, the target transform is the same as the current
+  // transform.
   static void ConvertPointToTarget(const Window* source,
                                    const Window* target,
                                    gfx::PointF* point);

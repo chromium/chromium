@@ -330,14 +330,19 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
 
   // Converts a point from the coordinates of |source| to the coordinates of
   // |target|. Necessarily, |source| and |target| must inhabit the same Layer
-  // tree.
+  // tree. If `use_target_transform` is true, the target transform is used in
+  // coordinate conversions; otherwise, the current transform is used. If there
+  // is no animation ongoing, the target transform is the same as the current
+  // transform.
   static void ConvertPointToLayer(const Layer* source,
                                   const Layer* target,
+                                  bool use_target_transform,
                                   gfx::PointF* point);
 
-  // Converts a transform to be relative to the given |ancestor|. Returns
-  // whether success (that is, whether the given ancestor was really an
-  // ancestor of this layer).
+  // Calculates the relative transform. See the comment of
+  // `GetTransformRelativeToImpl()` for further details.
+  bool GetTransformRelativeTo(const Layer* ancestor,
+                              gfx::Transform* transform) const;
   bool GetTargetTransformRelativeTo(const Layer* ancestor,
                                     gfx::Transform* transform) const;
 
@@ -540,8 +545,16 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // StackBelow().
   void StackRelativeTo(Layer* child, Layer* other, bool above);
 
-  bool ConvertPointForAncestor(const Layer* ancestor, gfx::PointF* point) const;
+  // If `use_target_transform` is true, coordinate conversions use the target
+  // transform. The target transform is the end value of a transform animation.
+  // If `use_target_transform` is false, coordinate conversions use the current
+  // transform. If there is no animation ongoing, the target transform is the
+  // same as the current transform.
+  bool ConvertPointForAncestor(const Layer* ancestor,
+                               bool use_target_transform,
+                               gfx::PointF* point) const;
   bool ConvertPointFromAncestor(const Layer* ancestor,
+                                bool use_target_transform,
                                 gfx::PointF* point) const;
 
   // Implementation of LayerAnimatorDelegate
@@ -624,6 +637,15 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // Same as SetFillsBoundsOpaque but with a reason how it's changed.
   void SetFillsBoundsOpaquelyWithReason(bool fills_bounds_opaquely,
                                         PropertyChangeReason reason);
+
+  // Converts a transform to be relative to the given |ancestor|. If
+  // `is_target_transform` is true, the target transform is used in the
+  // coordinate conversions; otherwise, the current transform is used. Returns
+  // whether success (that is, whether the given ancestor was really an ancestor
+  // of this layer).
+  bool GetTransformRelativeToImpl(const Layer* ancestor,
+                                  bool is_target_transform,
+                                  gfx::Transform* transform) const;
 
   const LayerType type_;
 

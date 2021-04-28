@@ -291,13 +291,21 @@ ScopedWindowCaptureRequest Window::MakeWindowCapturable() {
 }
 
 gfx::Rect Window::GetBoundsInRootWindow() const {
-  // TODO(beng): There may be a better way to handle this, and the existing code
-  //             is likely wrong anyway in a multi-display world, but this will
-  //             do for now.
   if (!GetRootWindow())
     return bounds();
   gfx::Rect bounds_in_root(bounds().size());
   ConvertRectToTarget(this, GetRootWindow(), &bounds_in_root);
+  return bounds_in_root;
+}
+
+gfx::Rect Window::GetActualBoundsInRootWindow() const {
+  if (!GetRootWindow())
+    return bounds();
+  gfx::Rect bounds_in_root(bounds().size());
+  gfx::PointF origin_f = gfx::PointF(bounds_in_root.origin());
+  ui::Layer::ConvertPointToLayer(layer(), GetRootWindow()->layer(),
+                                 /*use_target_transform=*/false, &origin_f);
+  bounds_in_root.set_origin(gfx::ToFlooredPoint(origin_f));
   return bounds_in_root;
 }
 
@@ -312,6 +320,17 @@ gfx::Rect Window::GetBoundsInScreen() const {
       screen_position_client->ConvertPointToScreen(root, &origin);
       bounds.set_origin(origin);
     }
+  }
+  return bounds;
+}
+
+gfx::Rect Window::GetActualBoundsInScreen() const {
+  gfx::Rect bounds(GetActualBoundsInRootWindow());
+  const Window* root = GetRootWindow();
+  if (root) {
+    gfx::Point origin_in_screen = root->GetBoundsInScreen().origin();
+    origin_in_screen += bounds.OffsetFromOrigin();
+    bounds.set_origin(origin_in_screen);
   }
   return bounds;
 }
@@ -505,7 +524,8 @@ void Window::ConvertPointToTarget(const Window* source,
     if (target_client)
       target_client->ConvertPointFromScreen(target, point);
   } else {
-    ui::Layer::ConvertPointToLayer(source->layer(), target->layer(), point);
+    ui::Layer::ConvertPointToLayer(source->layer(), target->layer(),
+                                   /*use_target_transform=*/true, point);
   }
 }
 

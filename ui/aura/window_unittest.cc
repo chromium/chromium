@@ -39,6 +39,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/class_property.h"
 #include "ui/base/hit_test.h"
+#include "ui/compositor/compositor_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animator.h"
@@ -94,6 +95,68 @@ class DeletionTracker {
   DeletionOrder order_ = DeletionOrder::UNKNOWN;
 
   DISALLOW_COPY_AND_ASSIGN(DeletionTracker);
+};
+
+// The helper class to wait for the animation completion and run callbacks.
+class LayerTranslationAnimationNotifier : public ui::CompositorObserver {
+ public:
+  using AnimationCallback =
+      base::RepeatingCallback<void(const gfx::Transform&)>;
+
+  LayerTranslationAnimationNotifier(
+      ui::Layer* animation_layer,
+      const gfx::Transform& target_transform,
+      AnimationCallback animation_start_callback,
+      AnimationCallback animation_end_callback,
+      AnimationCallback animation_progress_callback)
+      : animation_layer_(animation_layer),
+        target_transform_(target_transform),
+        animation_start_callback_(animation_start_callback),
+        animation_end_callback_(animation_end_callback),
+        animation_progress_callback_(animation_progress_callback) {
+    DCHECK(!target_transform_.IsIdentity());
+    animation_layer_->GetCompositor()->AddObserver(this);
+  }
+  LayerTranslationAnimationNotifier(const LayerTranslationAnimationNotifier&) =
+      delete;
+  LayerTranslationAnimationNotifier& operator=(
+      const LayerTranslationAnimationNotifier&) = delete;
+  ~LayerTranslationAnimationNotifier() override {
+    animation_layer_->GetCompositor()->RemoveObserver(this);
+  }
+
+  void WaitForAnimationCompletion() { run_loop_.Run(); }
+
+  // ui::CompositorObserver:
+  void OnCompositingDidCommit(ui::Compositor* compositor) override {
+    const gfx::Transform current_transform = animation_layer_->transform();
+    if (current_transform.IsIdentity()) {
+      animation_start_callback_.Run(current_transform);
+    } else if (current_transform == target_transform_) {
+      animation_end_callback_.Run(current_transform);
+      run_loop_.Quit();
+    } else {
+      animation_progress_callback_.Run(current_transform);
+    }
+  }
+
+ private:
+  // The layer to be animated.
+  ui::Layer* const animation_layer_;
+
+  // The target transform.
+  gfx::Transform target_transform_;
+
+  // The callback to run at the start of the animation.
+  AnimationCallback animation_start_callback_;
+
+  // The callback to run at the end of the animation.
+  AnimationCallback animation_end_callback_;
+
+  // The callback to run during the progress of the animation.
+  AnimationCallback animation_progress_callback_;
+
+  base::RunLoop run_loop_;
 };
 
 class DeletionTestProperty {
@@ -1810,6 +1873,63 @@ TEST_F(WindowTest, DeleteLayoutManagerBeforeOwnedProps) {
   EXPECT_TRUE(tracker.property_deleted());
   EXPECT_TRUE(tracker.layout_manager_deleted());
   EXPECT_EQ(DeletionOrder::LAYOUT_MANAGER_FIRST, tracker.order());
+}
+
+// Verifies that the function to get the window's screen bounds during layer
+// animation works as expected.
+TEST_F(WindowTest, VerifyWindowActualBoundsDuringAnimation) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  std::unique_ptr<Window> viewport(
+      CreateTestWindowWithBounds(gfx::Rect(100, 50, 200, 200), root_window()));
+  std::unique_ptr<Window> child(
+      CreateTestWindowWithBounds(gfx::Rect(0, 0, 100, 100), viewport.get()));
+
+  // Store `child''s bounds in screen before animation starts.
+  const gfx::Rect start_screen_bounds = child->GetBoundsInScreen();
+
+  // Start a translation animation on `viewport`.
+  auto* viewport_layer = viewport->layer();
+  auto* viewport_layer_animator = viewport_layer->GetAnimator();
+  gfx::Transform target_transform;
+  target_transform.Translate(-50, -50);
+  {
+    ui::ScopedLayerAnimationSettings settings(viewport_layer_animator);
+    viewport_layer->SetTransform(target_transform);
+  }
+
+  // Verify at the start of the animation.
+  auto animation_start_callback = [](const aura::Window* child,
+                                     const gfx::Transform& transform) {
+    EXPECT_EQ("100,50 100x100", child->GetActualBoundsInScreen().ToString());
+    EXPECT_EQ("50,0 100x100", child->GetBoundsInScreen().ToString());
+  };
+
+  // Verify at the end of the animation.
+  auto animation_end_callback = [](const aura::Window* child,
+                                   const gfx::Transform& transform) {
+    EXPECT_EQ("50,0 100x100", child->GetActualBoundsInScreen().ToString());
+    EXPECT_EQ("50,0 100x100", child->GetBoundsInScreen().ToString());
+  };
+
+  // Verify during the progress of the animation.
+  auto animation_progress_callback = [](const aura::Window* child,
+                                        const gfx::Rect& start_screen_bounds,
+                                        const gfx::Transform& transform) {
+    gfx::RectF current_screen_bounds = gfx::RectF(start_screen_bounds);
+    transform.TransformRect(&current_screen_bounds);
+    EXPECT_EQ(gfx::ToEnclosedRect(current_screen_bounds),
+              child->GetActualBoundsInScreen());
+  };
+
+  LayerTranslationAnimationNotifier bounds_checker(
+      viewport_layer, target_transform,
+      base::BindRepeating(animation_start_callback, child.get()),
+      base::BindRepeating(animation_end_callback, child.get()),
+      base::BindRepeating(animation_progress_callback, child.get(),
+                          start_screen_bounds));
+  bounds_checker.WaitForAnimationCompletion();
 }
 
 TEST_F(WindowTest, SetBoundsInternalShouldCheckTargetBounds) {
