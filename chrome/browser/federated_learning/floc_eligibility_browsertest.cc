@@ -56,8 +56,11 @@ class FlocEligibilityBrowserTest
     : public subresource_filter::SubresourceFilterBrowserTest {
  public:
   FlocEligibilityBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kInterestCohortFeaturePolicy);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::kInterestCohortFeaturePolicy},
+        /*disabled_features=*/{
+            federated_learning::
+                kFlocPagesWithAdResourcesDefaultIncludedInFlocComputation});
   }
 
   void SetUpOnMainThread() override {

@@ -20,7 +20,7 @@ const base::Feature kFlocIdComputedEventLogging{
 // may take a full computation cycle for the floc to meet the configured
 // criteria.
 const base::Feature kFlocPagesWithAdResourcesDefaultIncludedInFlocComputation{
-    "kFlocPagesWithAdResourcesDefaultIncludedInFlocComputation",
+    "FlocPagesWithAdResourcesDefaultIncludedInFlocComputation",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
 // The main floc feature for all the subsidiary control and setting params. It's
