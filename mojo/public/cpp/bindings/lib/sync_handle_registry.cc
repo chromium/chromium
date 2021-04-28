@@ -125,7 +125,12 @@ bool SyncHandleRegistry::Wait(const bool* should_stop[], size_t count) {
     recordreplay::Assert("SyncHandleRegistry::Wait #1");
     for (size_t i = 0; i < count; ++i) {
       recordreplay::Assert("SyncHandleRegistry::Wait #2");
-      if (*should_stop[i]) {
+      // When recording/replaying we can set one of the stop flags to force the
+      // wait to finish when finishing the recording, see SyncEventWatcher::SyncWatch.
+      // Uses of this flag aren't ordered wrt the reads here so we can get mismatches.
+      // For now we hack around this by ensuring the values read are the same.
+      if (recordreplay::RecordReplayValue("SyncHandleRegistry::Wait should_stop",
+                                          *should_stop[i])) {
         recordreplay::Assert("SyncHandleRegistry::Wait #3");
         return true;
       }
