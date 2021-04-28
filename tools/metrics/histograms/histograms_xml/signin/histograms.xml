@@ -924,6 +924,9 @@ should be kept to monitor/debug signin Multilogin issues-->
 
 <histogram name="Signin.RefreshTokenRevocationCompleted"
     enum="GaiaTokenRevocationStatus" expires_after="2021-03-31">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
   <owner>droger@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <summary>
@@ -937,6 +940,9 @@ should be kept to monitor/debug signin Multilogin issues-->
 <histogram name="Signin.RefreshTokenRevocationRequestProgress"
     enum="SigninRefreshTokenRevocationRequestProgress"
     expires_after="2021-03-31">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
   <owner>droger@chromium.org</owner>
   <summary>
     Tracks the progress of revocation requests for refresh tokens, and can be
@@ -947,6 +953,9 @@ should be kept to monitor/debug signin Multilogin issues-->
 
 <histogram name="Signin.RefreshTokenRevocationStatus"
     enum="GaiaTokenRevocationStatus" expires_after="2021-03-31">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
   <owner>droger@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <summary>

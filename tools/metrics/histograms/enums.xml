@@ -34608,6 +34608,9 @@ Called by update_permissions_policy_enum.py.-->
 </enum>
 
 <enum name="GaiaTokenRevocationStatus">
+  <obsolete>
+    Deprecated in M92.
+  </obsolete>
   <int value="0" label="Success"/>
   <int value="1" label="Connection Canceled"/>
   <int value="2" label="Connection Failed"/>
@@ -72071,6 +72074,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="SigninRefreshTokenRevocationRequestProgress">
+  <obsolete>
+    Deprecated in M92.
+  </obsolete>
   <int value="0" label="Request Created"/>
   <int value="1" label="Request Started"/>
   <int value="2" label="Request Failed"/>

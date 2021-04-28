@@ -65,26 +65,23 @@ class GaiaAuthConsumer {
   };
 
   // Possible server responses to a token revocation request.
-  // Used in UMA, do not delete or reorder values.
   enum class TokenRevocationStatus {
     // Token revocation succeeded.
-    kSuccess = 0,
+    kSuccess,
     // Network connection was canceled, no response was received.
-    kConnectionCanceled = 1,
+    kConnectionCanceled,
     // Network connection failed, no response was received.
-    kConnectionFailed = 2,
+    kConnectionFailed,
     // Network connection timed out, no response was received.
-    kConnectionTimeout = 3,
+    kConnectionTimeout,
     // The token is unknown or invalid.
-    kInvalidToken = 4,
+    kInvalidToken,
     // The request was malformed.
-    kInvalidRequest = 5,
+    kInvalidRequest,
     // Internal server error.
-    kServerError = 6,
+    kServerError,
     // Other error.
-    kUnknownError = 7,
-
-    kMaxValue = kUnknownError
+    kUnknownError,
   };
 
   enum class ReAuthProofTokenStatus : int {
