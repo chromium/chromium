@@ -612,7 +612,7 @@ are declared in tools/grit/grit_rule.gni.
           </message>
 
           <message name="IDS_CONTENT_CONTEXT_REMOVELINKTOTEXT" desc="The name of the Remove Highlights command in the content area context menu">
-            Remove highlights
+            Remove highlight
           </message>
 
           <message name="IDS_CONTENT_CONTEXT_SAVEIMAGEAS" desc="The name of the Save Image As command in the content area context menu">
@@ -841,7 +841,7 @@ are declared in tools/grit/grit_rule.gni.
           </message>
 
           <message name="IDS_CONTENT_CONTEXT_REMOVELINKTOTEXT" desc="In TitleCase: The name of the Remove Highlights command in the content area context menu">
-            Remove Highlights
+            Remove Highlight
           </message>
 
           <message name="IDS_CONTENT_CONTEXT_SAVEIMAGEAS" desc="In Title Case: The name of the Save Image As command in the content area context menu">
