@@ -5198,6 +5198,27 @@
             ]
         }
     ],
+    "ParkableImages": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Both_V2",
+                    "enable_features": [
+                        "ParkableImagesToDisk",
+                        "UseParkableImageSegmentReader"
+                    ]
+                }
+            ]
+        }
+    ],
     "PartitionAllocLargeThreadCacheSize": [
         {
             "platforms": [
