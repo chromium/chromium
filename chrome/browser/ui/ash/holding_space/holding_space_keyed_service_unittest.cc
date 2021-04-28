@@ -96,7 +96,8 @@ class HoldingSpaceModelAttachedWaiter : public HoldingSpaceControllerObserver {
  public:
   explicit HoldingSpaceModelAttachedWaiter(Profile* profile)
       : profile_(profile) {
-    holding_space_controller_observer_.Add(HoldingSpaceController::Get());
+    holding_space_controller_observation_.Observe(
+        HoldingSpaceController::Get());
   }
 
   void Wait() {
@@ -125,8 +126,9 @@ class HoldingSpaceModelAttachedWaiter : public HoldingSpaceControllerObserver {
   }
 
   Profile* const profile_;
-  ScopedObserver<HoldingSpaceController, HoldingSpaceControllerObserver>
-      holding_space_controller_observer_{this};
+  base::ScopedObservation<HoldingSpaceController,
+                          HoldingSpaceControllerObserver>
+      holding_space_controller_observation_{this};
   std::unique_ptr<base::RunLoop> wait_loop_;
 };
 

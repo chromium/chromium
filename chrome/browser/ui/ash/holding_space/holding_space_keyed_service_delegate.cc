@@ -31,7 +31,7 @@ HoldingSpaceKeyedServiceDelegate::HoldingSpaceKeyedServiceDelegate(
     : profile_(profile), model_(model) {
   // It is expected that `profile` already be ready prior to delegate creation.
   DCHECK(GetProfileManager()->IsValidProfile(profile));
-  holding_space_model_observer_.Add(model);
+  holding_space_model_observation_.Observe(model);
 }
 
 void HoldingSpaceKeyedServiceDelegate::OnHoldingSpaceItemsAdded(

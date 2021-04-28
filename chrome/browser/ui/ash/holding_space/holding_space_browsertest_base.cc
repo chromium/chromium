@@ -14,7 +14,7 @@
 #include "ash/public/cpp/holding_space/holding_space_test_api.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/unguessable_token.h"
@@ -87,7 +87,8 @@ base::FilePath CreateImageFile(Profile* profile) {
 class SessionStateWaiter : public session_manager::SessionManagerObserver {
  public:
   SessionStateWaiter() {
-    session_manager_observer_.Add(session_manager::SessionManager::Get());
+    session_manager_observation_.Observe(
+        session_manager::SessionManager::Get());
   }
 
   void WaitFor(session_manager::SessionState state) {
@@ -115,9 +116,9 @@ class SessionStateWaiter : public session_manager::SessionManagerObserver {
   session_manager::SessionState state_ = session_manager::SessionState::UNKNOWN;
   std::unique_ptr<base::RunLoop> wait_loop_;
 
-  ScopedObserver<session_manager::SessionManager,
-                 session_manager::SessionManagerObserver>
-      session_manager_observer_{this};
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_manager_observation_{this};
 };
 
 }  // namespace

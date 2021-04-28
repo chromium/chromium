@@ -21,7 +21,6 @@
 #include "ash/public/cpp/holding_space/holding_space_test_api.h"
 #include "base/callback_helpers.h"
 #include "base/scoped_observation.h"
-#include "base/scoped_observer.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -908,8 +907,9 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, OpenItem) {
   // Observe the `activation_client` so we can detect windows becoming active as
   // a result of opening holding space items.
   testing::NiceMock<MockActivationChangeObserver> mock;
-  ScopedObserver<wm::ActivationClient, wm::ActivationChangeObserver> obs{&mock};
-  obs.Add(activation_client);
+  base::ScopedObservation<wm::ActivationClient, wm::ActivationChangeObserver>
+      obs{&mock};
+  obs.Observe(activation_client);
 
   // Create a holding space item.
   AddScreenshotFile();
@@ -1297,8 +1297,9 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiScreenshotBrowserTest, AddScreenshot) {
 
   // Bind an observer to watch for updates to the holding space model.
   testing::NiceMock<MockHoldingSpaceModelObserver> mock;
-  ScopedObserver<HoldingSpaceModel, HoldingSpaceModelObserver> observer{&mock};
-  observer.Add(HoldingSpaceController::Get()->model());
+  base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
+      observer{&mock};
+  observer.Observe(HoldingSpaceController::Get()->model());
 
   // Expect and wait for a screenshot item to be added to holding space.
   base::RunLoop run_loop;
@@ -1352,8 +1353,9 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiScreenCaptureBrowserTest,
 
   // Bind an observer to watch for updates to the holding space model.
   testing::NiceMock<MockHoldingSpaceModelObserver> mock;
-  ScopedObserver<HoldingSpaceModel, HoldingSpaceModelObserver> observer{&mock};
-  observer.Add(HoldingSpaceController::Get()->model());
+  base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
+      observer{&mock};
+  observer.Observe(HoldingSpaceController::Get()->model());
 
   base::RunLoop wait_for_item;
   // Expect and wait for a screen recording item to be added to holding space.

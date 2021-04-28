@@ -6,7 +6,8 @@
 #define CHROME_BROWSER_UI_ASH_HOLDING_SPACE_HOLDING_SPACE_DOWNLOADS_DELEGATE_H_
 
 #include "base/callback.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_delegate.h"
 #include "components/download/public/common/download_item.h"
 #include "content/public/browser/download_manager.h"
@@ -65,11 +66,13 @@ class HoldingSpaceDownloadsDelegate : public HoldingSpaceKeyedServiceDelegate,
   // Callback to invoke when a download is completed.
   ItemDownloadedCallback item_downloaded_callback_;
 
-  ScopedObserver<content::DownloadManager, content::DownloadManager::Observer>
-      download_manager_observer_{this};
+  base::ScopedObservation<content::DownloadManager,
+                          content::DownloadManager::Observer>
+      download_manager_observation_{this};
 
-  ScopedObserver<download::DownloadItem, download::DownloadItem::Observer>
-      download_item_observer_{this};
+  base::ScopedMultiSourceObservation<download::DownloadItem,
+                                     download::DownloadItem::Observer>
+      download_item_observations_{this};
 
   base::WeakPtrFactory<HoldingSpaceDownloadsDelegate> weak_factory_{this};
 };

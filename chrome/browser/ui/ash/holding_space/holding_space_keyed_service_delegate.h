@@ -9,7 +9,7 @@
 
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 
 class Profile;
 
@@ -60,8 +60,8 @@ class HoldingSpaceKeyedServiceDelegate : public HoldingSpaceModelObserver {
   // If persistence is being restored.
   bool is_restoring_persistence_ = true;
 
-  ScopedObserver<HoldingSpaceModel, HoldingSpaceModelObserver>
-      holding_space_model_observer_{this};
+  base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
+      holding_space_model_observation_{this};
 };
 
 }  // namespace ash

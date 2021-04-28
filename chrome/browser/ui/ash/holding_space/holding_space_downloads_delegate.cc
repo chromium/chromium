@@ -35,7 +35,7 @@ void HoldingSpaceDownloadsDelegate::SetDownloadManagerForTesting(
 }
 
 void HoldingSpaceDownloadsDelegate::Init() {
-  download_manager_observer_.Add(
+  download_manager_observation_.Observe(
       download_manager_for_testing
           ? download_manager_for_testing
           : content::BrowserContext::GetDownloadManager(profile()));
@@ -68,7 +68,7 @@ void HoldingSpaceDownloadsDelegate::OnManagerInitialized() {
   for (auto* download : downloads) {
     switch (download->GetState()) {
       case download::DownloadItem::IN_PROGRESS:
-        download_item_observer_.Add(download);
+        download_item_observations_.AddObservation(download);
         break;
       case download::DownloadItem::COMPLETE:
       case download::DownloadItem::CANCELLED:
@@ -90,7 +90,7 @@ void HoldingSpaceDownloadsDelegate::OnDownloadCreated(
   // Ignore `OnDownloadCreated()` events prior to `manager` initialization. For
   // those events we bind any observers necessary in `OnManagerInitialized()`.
   if (!is_restoring_persistence() && manager->IsManagerInitialized())
-    download_item_observer_.Add(item);
+    download_item_observations_.AddObservation(item);
 }
 
 void HoldingSpaceDownloadsDelegate::OnDownloadUpdated(
@@ -101,7 +101,7 @@ void HoldingSpaceDownloadsDelegate::OnDownloadUpdated(
       FALLTHROUGH;
     case download::DownloadItem::CANCELLED:
     case download::DownloadItem::INTERRUPTED:
-      download_item_observer_.Remove(item);
+      download_item_observations_.RemoveObservation(item);
       break;
     case download::DownloadItem::IN_PROGRESS:
     case download::DownloadItem::MAX_DOWNLOAD_STATE:
@@ -116,8 +116,8 @@ void HoldingSpaceDownloadsDelegate::OnDownloadCompleted(
 }
 
 void HoldingSpaceDownloadsDelegate::RemoveObservers() {
-  download_manager_observer_.RemoveAll();
-  download_item_observer_.RemoveAll();
+  download_manager_observation_.Reset();
+  download_item_observations_.RemoveAllObservations();
 }
 
 }  // namespace ash
