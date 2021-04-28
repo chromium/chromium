@@ -500,11 +500,20 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
     /** Clears the Clipboard Primary clip. */
     @CalledByNative
     private void clear() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+        // clearPrimaryClip() has been observed to throw unexpected exceptions for Android P (see
+        // crbug/1203377)
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
             setPrimaryClipNoException(ClipData.newPlainText(null, null));
             return;
         }
-        ApiHelperForP.clearPrimaryClip(mClipboardManager);
+
+        try {
+            ApiHelperForP.clearPrimaryClip(mClipboardManager);
+        } catch (Exception e) {
+            // Fall back to set an empty string to the clipboard.
+            setPrimaryClipNoException(ClipData.newPlainText(null, null));
+            return;
+        }
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
