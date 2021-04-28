@@ -157,18 +157,6 @@ function addModelHeader(model) {
   header.getElementsByClassName('arc-tracing-app-commit-deviation')[0]
       .textContent = renderQualityAndCommitDeviation[1].toFixed(2) + 'ms';
 
-  var cpuPower = getAveragePower(model, 10 /* kCpuPower */);
-  var gpuPower = getAveragePower(model, 11 /* kGpuPower */);
-  var memoryPower = getAveragePower(model, 12 /* kMemoryPower */);
-  header.getElementsByClassName('arc-tracing-app-power-total')[0].textContent =
-      (cpuPower + gpuPower + memoryPower).toFixed(2);
-  header.getElementsByClassName('arc-tracing-app-power-cpu')[0].textContent =
-      cpuPower.toFixed(2);
-  header.getElementsByClassName('arc-tracing-app-power-gpu')[0].textContent =
-      gpuPower.toFixed(2);
-  header.getElementsByClassName('arc-tracing-app-power-memory')[0].textContent =
-      memoryPower.toFixed(2);
-
   // Handler to remove model from the view.
   header.getElementsByClassName('arc-tracing-close-button')[0].onclick =
       function() {
@@ -472,6 +460,9 @@ function addDeltaView(parent, resolution, duration, appView) {
 }
 
 /**
+ * TODO(b/182801299): kernel support was removed for non-root process.
+ * Not using feature for now to prevent confusing users.
+ *
  * Creates power view for the particular counter.
  *
  * @param {HTMLElement} parent container for the newly created chart.
@@ -535,17 +526,10 @@ function refreshModels() {
   addDeltaView(parent, resolution, duration, true /* appView */);
   addFPSView(parent, resolution, duration, false /* appView */);
   addDeltaView(parent, resolution, duration, false /* appView */);
-  addPowerView(
-      parent, 'Package power constraint', resolution, duration,
-      13 /* eventType */);
-  addPowerView(parent, 'CPU Power', resolution, duration, 10 /* eventType */);
-  addPowerView(parent, 'GPU Power', resolution, duration, 11 /* eventType */);
-  addPowerView(
-      parent, 'Memory Power', resolution, duration, 12 /* eventType */);
 }
 
 /**
- * Assigns color for the model. Tries to be peristence in different runs. It
+ * Assigns color for the model. Tries to be persistent in different runs. It
  * uses timestamp as a source for hash that points to the ideal color. If that
  * color is already taken for another chart, it scans all possible colors and
  * selects the first available. If nothing helps, pink color as assigned as a
