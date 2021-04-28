@@ -121,6 +121,11 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeConciergeClient
                DBusMethodCallback<vm_tools::concierge::SetVmIdResponse>
                    callback) override;
 
+  void ReclaimVmMemory(
+      const vm_tools::concierge::ReclaimVmMemoryRequest& request,
+      DBusMethodCallback<vm_tools::concierge::ReclaimVmMemoryResponse> callback)
+      override;
+
   const base::ObserverList<Observer>& observer_list() const {
     return observer_list_;
   }
@@ -169,6 +174,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeConciergeClient
   int start_arc_vm_call_count() const { return start_arc_vm_call_count_; }
   int resize_disk_image_call_count() const {
     return resize_disk_image_call_count_;
+  }
+  int reclaim_vm_memory_call_count() const {
+    return reclaim_vm_memory_call_count_;
   }
 
   void set_vm_started_signal_connected(bool connected) {
@@ -271,6 +279,11 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeConciergeClient
       base::Optional<vm_tools::concierge::SetVmIdResponse> set_vm_id_response) {
     set_vm_id_response_ = set_vm_id_response;
   }
+  void set_reclaim_vm_memory_response(
+      base::Optional<vm_tools::concierge::ReclaimVmMemoryResponse>
+          reclaim_vm_memory_response) {
+    reclaim_vm_memory_response_ = reclaim_vm_memory_response;
+  }
 
   void set_send_create_disk_image_response_delay(base::TimeDelta delay) {
     send_create_disk_image_response_delay_ = delay;
@@ -324,6 +337,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeConciergeClient
   int start_arc_vm_call_count_ = 0;
   int resize_disk_image_call_count_ = 0;
   int set_vm_id_call_count_ = 0;
+  int reclaim_vm_memory_call_count_ = 0;
 
   bool is_vm_started_signal_connected_ = true;
   bool is_vm_stopped_signal_connected_ = true;
@@ -361,6 +375,8 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeConciergeClient
   base::Optional<vm_tools::concierge::ResizeDiskImageResponse>
       resize_disk_image_response_;
   base::Optional<vm_tools::concierge::SetVmIdResponse> set_vm_id_response_;
+  base::Optional<vm_tools::concierge::ReclaimVmMemoryResponse>
+      reclaim_vm_memory_response_;
 
   base::TimeDelta send_create_disk_image_response_delay_;
   base::TimeDelta send_start_vm_response_delay_;

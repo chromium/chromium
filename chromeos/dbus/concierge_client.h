@@ -258,6 +258,13 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) ConciergeClient : public DBusClient {
       const vm_tools::concierge::SetVmIdRequest& request,
       DBusMethodCallback<vm_tools::concierge::SetVmIdResponse> callback) = 0;
 
+  // Reclaims memory of the given VM.
+  // |callback| is called after the method call finishes.
+  virtual void ReclaimVmMemory(
+      const vm_tools::concierge::ReclaimVmMemoryRequest& request,
+      DBusMethodCallback<vm_tools::concierge::ReclaimVmMemoryResponse>
+          callback) = 0;
+
   // Creates an instance of ConciergeClient.
   static std::unique_ptr<ConciergeClient> Create();
 

@@ -322,6 +322,15 @@ void FakeConciergeClient::SetVmId(
       FROM_HERE, base::BindOnce(std::move(callback), set_vm_id_response_));
 }
 
+void FakeConciergeClient::ReclaimVmMemory(
+    const vm_tools::concierge::ReclaimVmMemoryRequest& request,
+    DBusMethodCallback<vm_tools::concierge::ReclaimVmMemoryResponse> callback) {
+  reclaim_vm_memory_call_count_++;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), reclaim_vm_memory_response_));
+}
+
 void FakeConciergeClient::NotifyVmStarted(
     const vm_tools::concierge::VmStartedSignal& signal) {
   for (auto& observer : vm_observer_list_)

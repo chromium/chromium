@@ -238,6 +238,13 @@ class ConciergeClientImpl : public ConciergeClient {
     CallMethod(concierge::kSetVmIdMethod, request, std::move(callback));
   }
 
+  void ReclaimVmMemory(
+      const vm_tools::concierge::ReclaimVmMemoryRequest& request,
+      DBusMethodCallback<vm_tools::concierge::ReclaimVmMemoryResponse> callback)
+      override {
+    CallMethod(concierge::kReclaimVmMemoryMethod, request, std::move(callback));
+  }
+
  protected:
   void Init(dbus::Bus* bus) override {
     concierge_proxy_ = bus->GetObjectProxy(
