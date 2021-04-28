@@ -712,6 +712,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Result of removing an offline copy for a page.</summary>
 </histogram>
 
+<histogram name="OfflinePages.DidNavigationThrottleCancelNavigation"
+    enum="Boolean" expires_after="M94">
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Whether or not the OfflinePageNavigationThrottle canceled a navigation
+    request. Requests are only canceled if and only if the navigation request
+    was initiated by the renderer and the request headers contain the
+    &quot;X-Chrome-offline&quot; header.
+
+    This histogram is recorded each time Chrome tries to create an
+    OfflinePageNavigationThrottle, which only happens on Android (since Offline
+    Pages is on enabled there).
+  </summary>
+</histogram>
+
 <histogram name="OfflinePages.DownloadRequestTimeSinceDuplicateRequested"
     units="seconds" expires_after="2021-09-05">
   <owner>dewittj@chromium.org</owner>
