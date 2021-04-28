@@ -774,8 +774,6 @@ void LockContentsView::FocusPreviousUser() {
 
 void LockContentsView::ShowEnterpriseDomainManager(
     const std::string& entreprise_domain_manager) {
-  if (!chromeos::features::IsLoginDeviceManagementDisclosureEnabled())
-    return;
   bottom_status_indicator_->SetText(l10n_util::GetStringFUTF16(
       IDS_ASH_LOGIN_MANAGED_DEVICE_INDICATOR, ui::GetChromeOSDeviceName(),
       base::UTF8ToUTF16(entreprise_domain_manager)));
