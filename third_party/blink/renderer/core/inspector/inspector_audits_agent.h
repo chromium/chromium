@@ -28,7 +28,7 @@ class CORE_EXPORT InspectorAuditsAgent final
 
   void Trace(Visitor*) const override;
 
-  void InspectorIssueAdded(InspectorIssue*);
+  void InspectorIssueAdded(protocol::Audits::InspectorIssue*);
 
   // Protocol methods.
   protocol::Response enable() override;

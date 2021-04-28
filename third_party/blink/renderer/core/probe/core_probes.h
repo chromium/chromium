@@ -53,6 +53,12 @@ namespace blink {
 class CoreProbeSink;
 class ThreadDebugger;
 
+namespace protocol {
+namespace Audits {
+class InspectorIssue;
+}  // namespace Audits
+}  // namespace protocol
+
 namespace probe {
 
 class AsyncTaskId;

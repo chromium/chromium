@@ -171,9 +171,10 @@ void InspectorAuditsAgent::CheckContrastForDocument(Document* document,
   unsigned max_elements = 100;
   for (ContrastInfo info :
        contrast.GetElementsWithContrastIssues(report_aaa, max_elements)) {
-    InspectorIssueAdded(
-        InspectorIssue::Create(CreateLowTextContrastIssue(info)));
+    GetFrontend()->issueAdded(ConvertInspectorIssueToProtocolFormat(
+        InspectorIssue::Create(CreateLowTextContrastIssue(info))));
   }
+  GetFrontend()->flush();
 }
 
 Response InspectorAuditsAgent::checkContrast(protocol::Maybe<bool> report_aaa) {
@@ -222,10 +223,9 @@ void InspectorAuditsAgent::InnerEnable() {
     InspectorIssueAdded(inspector_issue_storage_->at(i));
 }
 
-void InspectorAuditsAgent::InspectorIssueAdded(InspectorIssue* issue) {
-  auto inspector_issue = ConvertInspectorIssueToProtocolFormat(issue);
-
-  GetFrontend()->issueAdded(std::move(inspector_issue));
+void InspectorAuditsAgent::InspectorIssueAdded(
+    protocol::Audits::InspectorIssue* issue) {
+  GetFrontend()->issueAdded(issue->Clone());
   GetFrontend()->flush();
 }
 
