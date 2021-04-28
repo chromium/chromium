@@ -4631,6 +4631,9 @@
           ],
           'script': '//tools/perf/process_perf_results.py',
         },
+        'resultdb': {
+          'enable': True,
+        },
       },
     },
 
