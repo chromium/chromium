@@ -12,6 +12,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace content {
@@ -24,8 +25,12 @@ void OnSocketCreated(base::OnceCallback<void(int, int)> callback,
   int port = 0;
   if (local_addr)
     port = local_addr->port();
-  GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), result, port));
+  if (base::FeatureList::IsEnabled(features::kProcessHostOnUI)) {
+    std::move(callback).Run(result, port);
+  } else {
+    GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), result, port));
+  }
 }
 
 void CreateSocketOnUiThread(
@@ -55,7 +60,7 @@ void VizDevToolsConnector::ConnectVizDevTools() {
   mojo::PendingReceiver<network::mojom::TCPServerSocket>
       server_socket_receiver = server_socket.InitWithNewPipeAndPassReceiver();
   // Jump to the UI thread to get the network context, create the socket, then
-  // jump back to the IO thread to complete the callback.
+  // jump back to the process thread to complete the callback.
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
