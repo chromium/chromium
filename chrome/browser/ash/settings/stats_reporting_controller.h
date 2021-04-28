@@ -82,6 +82,9 @@ class StatsReportingController
   // setting.
   void SetOnDeviceSettingsStoredCallBack(base::OnceClosure callback);
 
+  // Clears any value waiting to be written (from storage in local state).
+  void ClearPendingValue();
+
  private:
   friend class StatsReportingControllerTest;
 
@@ -124,9 +127,6 @@ class StatsReportingController
   // Sets |*value| to the value signed and stored in CrosSettings, if one
   // exists. Returns false if there is no such value.
   bool GetSignedStoredValue(bool* value);
-
-  // Clears any value waiting to be written (from storage in local state).
-  void ClearPendingValue();
 
   base::WeakPtr<StatsReportingController> as_weak_ptr() {
     return weak_factory_.GetWeakPtr();

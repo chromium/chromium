@@ -1208,42 +1208,45 @@ void DeviceSettingsProvider::OwnershipStatusChanged() {
   // in this case, as during normal operation, the contents of the cache should
   // never overwrite actual device settings.
   if (new_ownership_status == DeviceSettingsService::OWNERSHIP_TAKEN &&
-      ownership_status_ == DeviceSettingsService::OWNERSHIP_NONE &&
-      device_settings_service_->HasPrivateOwnerKey()) {
-    // There shouldn't be any pending writes, since the cache writes are all
-    // immediate.
-    DCHECK(!store_callback_factory_.HasWeakPtrs());
+      ownership_status_ == DeviceSettingsService::OWNERSHIP_NONE) {
+    if (device_settings_service_->HasPrivateOwnerKey()) {
+      // There shouldn't be any pending writes, since the cache writes are all
+      // immediate.
+      DCHECK(!store_callback_factory_.HasWeakPtrs());
 
-    trusted_status_ = TEMPORARILY_UNTRUSTED;
-    // Apply the locally-accumulated device settings on top of the initial
-    // settings from the service and write back the result.
-    if (device_settings_service_->device_settings()) {
-      em::ChromeDeviceSettingsProto new_settings(
-          *device_settings_service_->device_settings());
-      new_settings.MergeFrom(device_settings_);
-      device_settings_.Swap(&new_settings);
+      trusted_status_ = TEMPORARILY_UNTRUSTED;
+      // Apply the locally-accumulated device settings on top of the initial
+      // settings from the service and write back the result.
+      if (device_settings_service_->device_settings()) {
+        em::ChromeDeviceSettingsProto new_settings(
+            *device_settings_service_->device_settings());
+        new_settings.MergeFrom(device_settings_);
+        device_settings_.Swap(&new_settings);
+      }
+
+      std::unique_ptr<em::PolicyData> policy(new em::PolicyData());
+      policy->set_username(device_settings_service_->GetUsername());
+      CHECK(device_settings_.SerializeToString(policy->mutable_policy_value()));
+      if (!device_settings_service_->GetOwnerSettingsService()
+               ->CommitTentativeDeviceSettings(std::move(policy))) {
+        LOG(ERROR) << "Can't store policy";
+      }
+
+      // TODO(https://crbug.com/433840): Some of the above code can be
+      // simplified or removed, once the DoSet function is removed - then there
+      // will be no pending writes. This is because the only value that needs to
+      // be written as a pending write is kStatsReportingPref, and this is now
+      // handled by the StatsReportingController - see below. Once DoSet is
+      // removed and there are no pending writes that are being maintained by
+      // DeviceSettingsProvider, this code for updating the signed settings for
+      // the new owner should probably be moved outside of
+      // DeviceSettingsProvider.
+
+      StatsReportingController::Get()->OnOwnershipTaken(
+          device_settings_service_->GetOwnerSettingsService());
+    } else if (chromeos::InstallAttributes::Get()->IsEnterpriseManaged()) {
+      StatsReportingController::Get()->ClearPendingValue();
     }
-
-    std::unique_ptr<em::PolicyData> policy(new em::PolicyData());
-    policy->set_username(device_settings_service_->GetUsername());
-    CHECK(device_settings_.SerializeToString(policy->mutable_policy_value()));
-    if (!device_settings_service_->GetOwnerSettingsService()
-             ->CommitTentativeDeviceSettings(std::move(policy))) {
-      LOG(ERROR) << "Can't store policy";
-    }
-
-    // TODO(https://crbug.com/433840): Some of the above code can be simplified
-    // or removed, once the DoSet function is removed - then there will be no
-    // pending writes. This is because the only value that needs to be written
-    // as a pending write is kStatsReportingPref, and this is now handled by the
-    // StatsReportingController - see below.
-    // Once DoSet is removed and there are no pending writes that are being
-    // maintained by DeviceSettingsProvider, this code for updating the signed
-    // settings for the new owner should probably be moved outside of
-    // DeviceSettingsProvider.
-
-    StatsReportingController::Get()->OnOwnershipTaken(
-        device_settings_service_->GetOwnerSettingsService());
   }
 
   ownership_status_ = new_ownership_status;
