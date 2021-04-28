@@ -11,7 +11,10 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 preprocessed_dir = "preprocessed"
 preprocessed_gen_manifest = "preprocessed_gen_manifest.json"
 
-polymer_element_files = [ "shortcut_customization_app.js" ]
+polymer_element_files = [
+  "shortcut_customization_app.js",
+  "shortcut_input.js",
+]
 
 generate_grd("build_grd") {
   input_files = [
@@ -32,6 +35,13 @@ js_type_check("closure_compile") {
 }
 
 js_library("shortcut_customization_app") {
+  deps = [
+    ":shortcut_input",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("shortcut_input") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
