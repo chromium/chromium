@@ -18,6 +18,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/platform_shared_memory_region.h"
@@ -34,6 +35,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/chromeos_camera/gpu_mjpeg_decode_accelerator_factory.h"
 #include "components/chromeos_camera/mjpeg_decode_accelerator.h"
@@ -163,14 +165,18 @@ class MjpegDecodeAcceleratorTestEnvironment : public ::testing::Environment {
   MjpegDecodeAcceleratorTestEnvironment(
       const base::FilePath::CharType* jpeg_filenames,
       const base::FilePath::CharType* test_data_path,
+      const base::FilePath::CharType* perf_output_path,
       int perf_decode_times)
       : perf_decode_times_(perf_decode_times ? perf_decode_times
                                              : kDefaultPerfDecodeTimes),
         user_jpeg_filenames_(jpeg_filenames ? jpeg_filenames
                                             : kDefaultJpegFilename),
-        test_data_path_(test_data_path) {}
+        test_data_path_(test_data_path),
+        perf_output_path_(perf_output_path) {}
 
   void SetUp() override;
+
+  void TearDown() override;
 
   // Resolve the specified file path. The file path can be either an absolute
   // path, relative to the current directory, or relative to the test data path.
@@ -214,6 +220,8 @@ class MjpegDecodeAcceleratorTestEnvironment : public ::testing::Environment {
   // CreateDmaBufVideoFrame().
   std::vector<media::VideoPixelFormat> GetSupportedDmaBufFormats();
 
+  void AddMetric(const std::string& name, const base::TimeDelta& time);
+
   // Used for InputSizeChange test case. The image size should be smaller than
   // |kDefaultJpegFilename|.
   std::unique_ptr<ParsedJpegImage> image_data_1280x720_black_;
@@ -236,6 +244,8 @@ class MjpegDecodeAcceleratorTestEnvironment : public ::testing::Environment {
  private:
   const base::FilePath::CharType* user_jpeg_filenames_;
   const base::FilePath::CharType* test_data_path_;
+  const base::FilePath::CharType* perf_output_path_;
+  base::Value metrics_;
 
   std::unique_ptr<media::LocalGpuMemoryBufferManager>
       gpu_memory_buffer_manager_;
@@ -268,6 +278,18 @@ void MjpegDecodeAcceleratorTestEnvironment::SetUp() {
 
   gpu_memory_buffer_manager_ =
       std::make_unique<media::LocalGpuMemoryBufferManager>();
+
+  metrics_ = base::Value(base::Value::Type::DICTIONARY);
+}
+
+void MjpegDecodeAcceleratorTestEnvironment::TearDown() {
+  // Write recorded metrics to file in JSON format.
+  if (perf_output_path_ != nullptr) {
+    std::string json;
+    ASSERT_TRUE(base::JSONWriter::WriteWithOptions(
+        metrics_, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json));
+    ASSERT_TRUE(base::WriteFile(base::FilePath(perf_output_path_), json));
+  }
 }
 
 scoped_refptr<media::VideoFrame>
@@ -461,6 +483,12 @@ MjpegDecodeAcceleratorTestEnvironment::GetSupportedDmaBufFormats() {
       supported_formats.push_back(format);
   }
   return supported_formats;
+}
+
+void MjpegDecodeAcceleratorTestEnvironment::AddMetric(
+    const std::string& name,
+    const base::TimeDelta& time) {
+  metrics_.SetDoubleKey(name, time.InMillisecondsF());
 }
 
 enum ClientState {
@@ -949,14 +977,21 @@ void MjpegDecodeAcceleratorTest::PerfDecodeByJDA(
   }
 
   const PerfMetrics metrics = scoped_client->client()->GetPerfMetrics();
+  const base::TimeDelta avg_decode_time =
+      metrics.total_decode_time / metrics.num_frames_decoded;
   LOG(INFO) << "Decode: " << metrics.total_decode_time << " for "
-            << metrics.num_frames_decoded << " iterations (avg: "
-            << metrics.total_decode_time / metrics.num_frames_decoded << ")";
+            << metrics.num_frames_decoded
+            << " iterations (avg: " << avg_decode_time << ")";
+  g_env->AddMetric(
+      use_dmabuf ? "hw_jpeg_decode_latency" : "hw_shm_jpeg_decode_latency",
+      avg_decode_time);
   if (use_dmabuf) {
+    const base::TimeDelta avg_decode_map_time =
+        metrics.total_decode_map_time / metrics.num_frames_decoded;
     LOG(INFO) << "Decode + map: " << metrics.total_decode_map_time << " for "
-              << metrics.num_frames_decoded << " iterations (avg: "
-              << metrics.total_decode_map_time / metrics.num_frames_decoded
-              << ")";
+              << metrics.num_frames_decoded
+              << " iterations (avg: " << avg_decode_map_time << ")";
+    g_env->AddMetric("hw_jpeg_decode_map_latency", avg_decode_map_time);
   }
   LOG(INFO) << "-- " << images[0]->visible_size.ToString() << " ("
             << images[0]->visible_size.GetArea() << " pixels), "
@@ -979,11 +1014,13 @@ void MjpegDecodeAcceleratorTest::PerfDecodeBySW(
   for (int index = 0; index < decode_times; index++)
     client->GetSoftwareDecodeResult(task_id);
   const base::TimeDelta elapsed_time = timer.Elapsed();
+  const base::TimeDelta avg_decode_time = elapsed_time / decode_times;
   LOG(INFO) << "Decode: " << elapsed_time << " for " << decode_times
-            << " iterations (avg: " << elapsed_time / decode_times << ")";
+            << " iterations (avg: " << avg_decode_time << ")";
   LOG(INFO) << "-- " << images[0]->visible_size.ToString() << ", ("
             << images[0]->visible_size.GetArea() << " pixels) "
             << images[0]->filename();
+  g_env->AddMetric("sw_jpeg_decode_latency", avg_decode_time);
 }
 
 // Returns a media::VideoFrame that contains YUV data using 4:2:0 subsampling.
@@ -1178,6 +1215,7 @@ int main(int argc, char** argv) {
 
   const base::FilePath::CharType* jpeg_filenames = nullptr;
   const base::FilePath::CharType* test_data_path = nullptr;
+  const base::FilePath::CharType* perf_output_path = nullptr;
   int perf_decode_times = 0;
   base::CommandLine::SwitchMap switches = cmd_line->GetSwitches();
   for (base::CommandLine::SwitchMap::const_iterator it = switches.begin();
@@ -1189,6 +1227,10 @@ int main(int argc, char** argv) {
     }
     if (it->first == "test_data_path") {
       test_data_path = it->second.c_str();
+      continue;
+    }
+    if (it->first == "perf_output_path") {
+      perf_output_path = it->second.c_str();
       continue;
     }
     if (it->first == "perf_decode_times") {
@@ -1214,7 +1256,8 @@ int main(int argc, char** argv) {
       reinterpret_cast<chromeos_camera::MjpegDecodeAcceleratorTestEnvironment*>(
           testing::AddGlobalTestEnvironment(
               new chromeos_camera::MjpegDecodeAcceleratorTestEnvironment(
-                  jpeg_filenames, test_data_path, perf_decode_times)));
+                  jpeg_filenames, test_data_path, perf_output_path,
+                  perf_decode_times)));
 
   return RUN_ALL_TESTS();
 }
