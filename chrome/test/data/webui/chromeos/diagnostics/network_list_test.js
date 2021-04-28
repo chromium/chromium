@@ -34,12 +34,20 @@ export function networkListTestSuite() {
     return flushTasks();
   }
 
-  test('NetworkListPopulated', () => {
-    return initializeNetworkList().then(() => {
-      // TODO(michaelcheco): Remove when network-info elements are created
-      // and used in network-list.
-      dx_utils.assertElementContainsText(
-          networkListElement.$$('#networkListContainer'), 'Network list');
-    });
+  /**
+   * Returns the connectivity-card element.
+   * @return {!ConnectivityCardElement}
+   */
+  function getConnectivityCard() {
+    const connectivityCard =
+        /** @type {!ConnectivityCardElement} */ (
+            networkListElement.$$('connectivity-card'));
+    assertTrue(!!connectivityCard);
+    return connectivityCard;
+  }
+
+  test('ConnectivityCardInitialized', () => {
+    return initializeNetworkList().then(
+        () => assertTrue(!!getConnectivityCard()));
   });
 }

@@ -1,6 +1,11 @@
 <style include="diagnostics-shared diagnostics-fonts">
+  #connectivityCard {
+    width: 100%;
+  }
 </style>
 
-<!-- TODO(michaelcheco): Remove "Network list" when connectivy and
-network-info elements are added here. -->
-<div id="networkListContainer">Network list</div>
+<div id="networkListContainer">
+  <connectivity-card id="connectivityCard"
+    is-test-running="{{isTestRunning}}">
+  </connectivity-card>
+</div>

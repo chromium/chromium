@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './connectivity_card.js';
 import './diagnostics_fonts_css.js';
 import './diagnostics_shared_css.js';
 
@@ -17,4 +18,12 @@ Polymer({
 
   _template: html`{__html_template__}`,
 
+  properties: {
+    /** @type {boolean} */
+    isTestRunning: {
+      type: Boolean,
+      value: false,
+      notify: true,
+    },
+  },
 });

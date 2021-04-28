@@ -85,9 +85,6 @@
     <overview-card id="overviewCard"></overview-card>
   </div>
   <div class="diagonstics-cards-container">
-    <div hidden="[[!isNetworkingEnabled_()]]">
-      <network-list></network-list>
-    </div>
     <template is="dom-if" if="[[showBatteryStatusCard_]]" restamp>
       <div class="card-width">
         <battery-status-card id="batteryStatusCard"
@@ -106,9 +103,7 @@
       </memory-card>
     </div>
     <div class="card-width" hidden="[[!isNetworkingEnabled_()]]">
-      <connectivity-card id="connectivityCard"
-        is-test-running="{{isTestRunning}}">
-      </connectivity-card>
+      <network-list></network-list>
     </div>
   </div>
   <div class="session-log-container">

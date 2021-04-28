@@ -80,7 +80,6 @@ js_library("data_point") {
 js_library("diagnostics_app") {
   deps = [
     ":battery_status_card",
-    ":connectivity_card",
     ":cpu_card",
     ":diagnostics_browser_proxy",
     ":diagnostics_card",
@@ -174,6 +173,7 @@ js_library("mojo_utils") {
 
 js_library("network_list") {
   deps = [
+    ":connectivity_card",
     ":mojo_interface_provider",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
