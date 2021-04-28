@@ -405,8 +405,8 @@ class AppElement extends PolymerElement {
   async onLazyRendered_() {
     // Instantiate modules even if |modulesEnabled| is false to counterfactually
     // trigger a HaTS survey in a potential control group.
-    if (!loadTimeData.getBoolean('modulesLoadEnabled') &&
-        !loadTimeData.getBoolean('modulesEnabled')) {
+    if (!loadTimeData.getBoolean('modulesLoadEnabled') ||
+        loadTimeData.getBoolean('modulesEnabled')) {
       return;
     }
     const modules = await ModuleRegistry.getInstance().initializeModules(
