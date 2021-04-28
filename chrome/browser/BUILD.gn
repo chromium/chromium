@@ -4302,6 +4302,8 @@ static_library("browser") {
       "apps/app_service/publishers/web_apps_crosapi_factory.h",
       "apps/app_service/uninstall_dialog.cc",
       "apps/app_service/uninstall_dialog.h",
+      "apps/app_service/webapk/webapk_manager.cc",
+      "apps/app_service/webapk/webapk_manager.h",
       "apps/icon_standardizer.cc",
       "apps/icon_standardizer.h",
       "browser_process_platform_part_chromeos.cc",

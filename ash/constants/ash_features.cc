@@ -733,6 +733,10 @@ const base::Feature kWakeOnWifiAllowed{"WakeOnWifiAllowed",
 const base::Feature kWallpaperWebUI{"WallpaperWebUI",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Generates WebAPKs representing installed PWAs and installs them inside ARC.
+const base::Feature kWebApkGenerator{"WebApkGenerator",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether to enable the syncing of deletes of Wi-Fi configurations.
 // This controls both sending delete events to the Chrome Sync server and
 // applying incoming deletes.

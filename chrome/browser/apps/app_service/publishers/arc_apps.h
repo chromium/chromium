@@ -41,6 +41,7 @@ class Profile;
 namespace apps {
 
 class AppServiceProxyChromeOs;
+class WebApkManager;
 
 // An app publisher (in the App Service sense) of ARC++ apps,
 //
@@ -214,6 +215,8 @@ class ArcApps : public KeyedService,
 
   // Handles requesting app shortcuts from Android.
   std::unique_ptr<arc::ArcAppShortcutsRequest> arc_app_shortcuts_request_;
+
+  std::unique_ptr<apps::WebApkManager> web_apk_manager_;
 
   ScopedObserver<arc::ArcIntentHelperBridge, arc::ArcIntentHelperObserver>
       arc_intent_helper_observer_{this};
