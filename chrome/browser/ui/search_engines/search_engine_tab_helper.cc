@@ -78,7 +78,7 @@ void SearchEngineTabHelper::DidFinishNavigation(
 }
 
 void SearchEngineTabHelper::WebContentsDestroyed() {
-  favicon_driver_observer_.RemoveAll();
+  favicon_driver_observation_.Reset();
 }
 
 SearchEngineTabHelper::SearchEngineTabHelper(WebContents* web_contents)
@@ -87,7 +87,7 @@ SearchEngineTabHelper::SearchEngineTabHelper(WebContents* web_contents)
   DCHECK(web_contents);
 
   favicon::CreateContentFaviconDriverForWebContents(web_contents);
-  favicon_driver_observer_.Add(
+  favicon_driver_observation_.Observe(
       favicon::ContentFaviconDriver::FromWebContents(web_contents));
 }
 

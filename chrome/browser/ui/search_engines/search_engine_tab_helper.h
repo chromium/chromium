@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_SEARCH_ENGINES_SEARCH_ENGINE_TAB_HELPER_H_
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/common/open_search_description_document_handler.mojom.h"
 #include "components/favicon/core/favicon_driver.h"
@@ -52,8 +52,9 @@ class SearchEngineTabHelper
       chrome::mojom::OpenSearchDescriptionDocumentHandler>
       osdd_handler_receivers_;
 
-  ScopedObserver<favicon::FaviconDriver, favicon::FaviconDriverObserver>
-      favicon_driver_observer_{this};
+  base::ScopedObservation<favicon::FaviconDriver,
+                          favicon::FaviconDriverObserver>
+      favicon_driver_observation_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
