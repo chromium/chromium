@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/gfx/mac/scoped_cocoa_disable_screen_updates.h"
 
 namespace remote_cocoa {
 class NativeWidgetNSWindowBridge;
@@ -41,6 +42,8 @@ class CocoaWindowMoveLoop {
   // Pointer to a stack variable holding the exit reason.
   LoopExitReason* exit_reason_ref_ = nullptr;
   base::OnceClosure quit_closure_;
+
+  std::unique_ptr<gfx::ScopedCocoaDisableScreenUpdates> screen_disabler_;
 
   // WeakPtrFactory for event monitor safety.
   base::WeakPtrFactory<CocoaWindowMoveLoop> weak_factory_;

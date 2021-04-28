@@ -65,23 +65,6 @@
 
 @implementation BrowserNativeWidgetWindow
 
-// Prevent detached tabs from glitching when the window is partially offscreen.
-// See https://crbug.com/1095717 for details.
-// This is easy to get wrong so scope very tightly to only disallow large
-// vertical jumps.
-- (NSRect)constrainFrameRect:(NSRect)rect toScreen:(NSScreen*)screen {
-  NSRect proposed = [super constrainFrameRect:rect toScreen:screen];
-  // This boils down to: use the small threshold when we're not avoiding a
-  // Dock on the bottom, and the big threshold otherwise.
-  static constexpr CGFloat kBigThreshold = 200;
-  static constexpr CGFloat kSmallThreshold = 50;
-  const CGFloat yDelta = NSMaxY(proposed) - NSMaxY(rect);
-  if (yDelta > kBigThreshold ||
-      (yDelta > kSmallThreshold && NSMinY(proposed) == 0))
-    return rect;
-  return proposed;
-}
-
 // NSWindow (PrivateAPI) overrides.
 
 + (Class)frameViewClassForStyleMask:(NSUInteger)windowStyle {
