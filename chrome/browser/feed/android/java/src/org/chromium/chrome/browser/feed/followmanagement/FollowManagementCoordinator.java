@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.browser.feed.webfeed.R;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
@@ -39,7 +41,8 @@ public class FollowManagementCoordinator {
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
 
-        mMediator = new FollowManagementMediator(context, listItems, adapter);
+        mMediator = new FollowManagementMediator(context, listItems, adapter,
+                new LargeIconBridge(Profile.getLastUsedRegularProfile()));
     }
 
     public View getView() {

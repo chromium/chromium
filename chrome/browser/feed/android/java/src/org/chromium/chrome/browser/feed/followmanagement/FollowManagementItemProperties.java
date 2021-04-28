@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.feed.followmanagement;
 
+import android.graphics.Bitmap;
 import android.view.View.OnClickListener;
 
 import org.chromium.ui.modelutil.PropertyKey;
@@ -25,7 +26,7 @@ public class FollowManagementItemProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<byte[]> ID_KEY =
             new WritableObjectPropertyKey<>();
-    public static final WritableObjectPropertyKey<byte[]> FAVICON_KEY =
+    public static final WritableObjectPropertyKey<Bitmap> FAVICON_KEY =
             new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS = {

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.feed.followmanagement;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -32,8 +33,8 @@ public class FollowManagementItemView extends LinearLayout {
     public void setUrl(String url) {
         mUrl.setText(url);
     }
-    public void setFavicon(byte[] favicon) {
-        // TODO(1197286): Put bitmap into image view.
+    public void setFavicon(Bitmap favicon) {
+        mFavicon.setImageBitmap(favicon);
     }
     public void setSubscribed(boolean subscribed) {
         mSubscribedCheckbox.setChecked(subscribed);

@@ -5,22 +5,30 @@
 package org.chromium.chrome.browser.feed.followmanagement;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.CheckBox;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.feed.webfeed.R;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.FollowResults;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.UnfollowResults;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.WebFeedMetadata;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionRequestStatus;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionStatus;
+import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
+import org.chromium.components.favicon.IconType;
+import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -35,17 +43,18 @@ class FollowManagementMediator {
     private Adapter mAdapter;
     private boolean mSubscribed;
     private WebFeedBridge mWebFeedBridge;
+    private LargeIconBridge mLargeIconBridge;
 
     /**
      * Nested class to curry arguments into the listener so we can use them later.
      */
-    public class ClickListener {
+    class ClickListener {
         private final byte[] mId;
         private boolean mSubscribed;
         private CheckBox mCheckbox;
 
         /** Callback from the WebFeedBridge's followFromId method */
-        public class FollowCallback implements Callback<FollowResults> {
+        class FollowCallback implements Callback<FollowResults> {
             /** Report reesults of follow operation. */
             @Override
             public void onResult(FollowResults results) {
@@ -58,7 +67,7 @@ class FollowManagementMediator {
         }
 
         /** Callback from WebFeedBridge's unfollow operation. */
-        public class UnfollowCallback implements Callback<UnfollowResults> {
+        class UnfollowCallback implements Callback<UnfollowResults> {
             /** Report results of unfollow operation. */
             @Override
             public void onResult(UnfollowResults results) {
@@ -77,14 +86,14 @@ class FollowManagementMediator {
         /**
          * returns the click handler to use with android.
          */
-        public OnClickListener getClickListener() {
+        OnClickListener getClickListener() {
             return this::clickHandler;
         }
 
         /**
          * Click handler for clicks on the checkbox.  Follows or unfollows as needed.
          */
-        public void clickHandler(View view) {
+        void clickHandler(View view) {
             mCheckbox = (CheckBox) view;
             // Disable the button until we get a callback to prevent duplicate events.
             mCheckbox.setClickable(false);
@@ -98,11 +107,75 @@ class FollowManagementMediator {
         }
     }
 
-    FollowManagementMediator(Context context, ModelList modelList, Adapter adapter) {
+    /**
+     * Generates the favicon to use, and if no favicon is available, creates a monogram.  A monogram
+     * is a rounded icon with the first letter of the domain.  A rounded icon generator is used
+     * to create the monogram.
+     */
+    class FaviconProvider {
+        GURL mUrl;
+        Callback<Bitmap> mInsertFaviconCallback;
+
+        // Constructor - save off arguments we will need to continue.
+        FaviconProvider(GURL url, Callback<Bitmap> insertFaviconCallback) {
+            mUrl = url;
+            mInsertFaviconCallback = insertFaviconCallback;
+        }
+        /**
+         * Retrieve a favicon. Will callback into onFaviconAvailable.
+         */
+        void startFaviconFetch() {
+            // Start the async call for the favicon, passing onFaviconAvailable as the callback.
+            mLargeIconBridge.getLargeIconForUrl(mUrl,
+                    mContext.getResources().getDimensionPixelSize(R.dimen.web_feed_icon_size),
+                    this::onFaviconAvailable);
+        }
+
+        /**
+         * Passed as the callback to {@link LargeIconBridge#getLargeIconForUrl}.
+         */
+        private void onFaviconAvailable(@Nullable Bitmap favicon, @ColorInt int fallbackColor,
+                boolean isColorDefault, @IconType int iconType) {
+            // If we have a favicon, set it into the bitmap.  If not, make a monogram and put that
+            // into the bitmap.
+            int faviconSize =
+                    mContext.getResources().getDimensionPixelSize(R.dimen.web_feed_icon_size);
+
+            if (favicon == null) {
+                // TODO(crbug/1152592): Update monogram according to specs.
+                RoundedIconGenerator iconGenerator =
+                        createRoundedIconGenerator(fallbackColor, faviconSize);
+                favicon = iconGenerator.generateIconForUrl(mUrl.getSpec());
+            } else {
+                // Scale the bitmap to the size of the area on the screen we have for it.
+                favicon = Bitmap.createScaledBitmap(favicon, faviconSize, faviconSize, false);
+            }
+
+            // Update the favicon in the model.
+            mInsertFaviconCallback.onResult(favicon);
+        }
+
+        private RoundedIconGenerator createRoundedIconGenerator(
+                @ColorInt int iconColor, int faviconSize) {
+            int cornerRadius = faviconSize / 2;
+            int textSize = mContext.getResources().getDimensionPixelSize(
+                    R.dimen.web_feed_monogram_text_size);
+
+            return new RoundedIconGenerator(
+                    faviconSize, faviconSize, cornerRadius, iconColor, textSize);
+        }
+    }
+
+    /**
+     * Build a FollowManagementMediator.
+     */
+    FollowManagementMediator(Context context, ModelList modelList, Adapter adapter,
+            LargeIconBridge largeIconBridge) {
         mModelList = modelList;
         mContext = context;
         mAdapter = adapter;
         mWebFeedBridge = new WebFeedBridge();
+        mLargeIconBridge = largeIconBridge;
 
         mWebFeedBridge.getAllFollowedWebFeeds(this::followedWebFeedsCallback);
     }
@@ -111,7 +184,7 @@ class FollowManagementMediator {
     private void followedWebFeedsCallback(List<WebFeedMetadata> followedWebFeeds) {
         for (WebFeedMetadata page : followedWebFeeds) {
             String title = page.title;
-            String url = page.visitUrl.getSpec();
+            GURL url = page.visitUrl;
             byte[] id = page.id;
             boolean subscribed = false;
             int subscriptionStatus = page.subscriptionStatus;
@@ -119,23 +192,31 @@ class FollowManagementMediator {
                     || subscriptionStatus == WebFeedSubscriptionStatus.SUBSCRIBE_IN_PROGRESS) {
                 subscribed = true;
             }
-            OnClickListener listener = (new ClickListener(id)).getClickListener();
-            PropertyModel pageModel = generateListItem(title, url, subscribed, listener);
-            mModelList.add(new SimpleRecyclerViewAdapter.ListItem(
-                    FollowManagementItemProperties.DEFAULT_ITEM_TYPE, pageModel));
-            // TODO(1197286): Get favicons from the item cache async, then attach to the item.
-        }
+            OnClickListener clickListener = (new ClickListener(id)).getClickListener();
+            PropertyModel pageModel =
+                    generateListItem(title, url.getSpec(), subscribed, clickListener);
+            SimpleRecyclerViewAdapter.ListItem listItem = new SimpleRecyclerViewAdapter.ListItem(
+                    FollowManagementItemProperties.DEFAULT_ITEM_TYPE, pageModel);
+            mModelList.add(listItem);
 
-        mAdapter.notifyDataSetChanged();
+            // Obtain the favicon asynchronously, and insert it into the model once it arrives.
+            FaviconProvider faviconProvider = new FaviconProvider(url, (favicon) -> {
+                listItem.model.set(FollowManagementItemProperties.FAVICON_KEY, favicon);
+                mAdapter.notifyDataSetChanged();
+            });
+
+            // getFavicon is async.  We'll get the favicon, then add it to the model.
+            faviconProvider.startFaviconFetch();
+        }
     }
 
     // Generate a list item for the recycler vivew for a followed page.
     private PropertyModel generateListItem(
-            String title, String url, boolean subscribed, OnClickListener listener) {
+            String title, String url, boolean subscribed, OnClickListener clickListener) {
         return new PropertyModel.Builder(FollowManagementItemProperties.ALL_KEYS)
                 .with(FollowManagementItemProperties.TITLE_KEY, title)
                 .with(FollowManagementItemProperties.URL_KEY, url)
-                .with(FollowManagementItemProperties.ON_CLICK_KEY, listener)
+                .with(FollowManagementItemProperties.ON_CLICK_KEY, clickListener)
                 .with(FollowManagementItemProperties.SUBSCRIBED_KEY, subscribed)
                 .build();
     }
