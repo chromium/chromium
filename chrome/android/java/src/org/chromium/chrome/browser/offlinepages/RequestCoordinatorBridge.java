@@ -237,7 +237,7 @@ public class RequestCoordinatorBridge {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         void getRequestsInQueue(Profile profile, Callback<SavePageRequest[]> callback);
         void removeRequestsFromQueue(
                 Profile profile, long[] requestIds, RequestsRemovedCallback callback);

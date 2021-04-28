@@ -29,6 +29,8 @@ import org.chromium.chrome.browser.download.ChromeDownloadDelegate;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
+import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -272,13 +274,22 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
 
     @Override
     public void onReadLater(GURL url, String title) {
+        if (url == null || url.isEmpty()) return;
+        assert url.isValid();
+
         BookmarkModel bookmarkModel = new BookmarkModel();
         bookmarkModel.finishLoadingBookmarkModel(() -> {
+            // Add to reading list.
             BookmarkUtils.addToReadingList(
                     url, title, mSnackbarManagerSupplier.get(), bookmarkModel, mTab.getContext());
             TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
                     .notifyEvent(EventConstants.READ_LATER_CONTEXT_MENU_TAPPED);
             bookmarkModel.destroy();
+
+            // Add to offline pages.
+            RequestCoordinatorBridge.getForProfile(Profile.getLastUsedRegularProfile())
+                    .savePageLater(url.getSpec(), OfflinePageBridge.BOOKMARK_NAMESPACE,
+                            /*userRequested*/ true);
         });
     }
 

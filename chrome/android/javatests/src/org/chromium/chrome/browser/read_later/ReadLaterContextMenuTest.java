@@ -13,7 +13,11 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.toolbar.top.ButtonHighlightMatcher.withHighlight;
@@ -39,12 +43,15 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
+import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridgeJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -60,18 +67,24 @@ import org.chromium.ui.test.util.UiRestriction;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Features.EnableFeatures(ChromeFeatureList.READ_LATER)
 @Batch(Batch.PER_CLASS)
-public class ReadLaterIphTest {
+public class ReadLaterContextMenuTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
     @Rule
     public EmbeddedTestServerRule mTestServer = new EmbeddedTestServerRule();
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public JniMocker mocker = new JniMocker();
     @Mock
     private Tracker mTracker;
+    @Mock
+    RequestCoordinatorBridge.Natives mRequestCoordinatorBridgeJniMock;
 
     private static final String CONTEXT_MENU_TEST_URL =
             "/chrome/test/data/android/contextmenu/context_menu_test.html";
+    private static final String CONTEXT_MENU_LINK_URL =
+            "/chrome/test/data/android/contextmenu/test_link.html";
     private static final String CONTEXT_MENU_LINK_DOM_ID = "testLink";
 
     @Before
@@ -86,6 +99,7 @@ public class ReadLaterIphTest {
                 .addOnInitializedCallback(any());
         TrackerFactory.setTrackerForTests(mTracker);
         mActivityTestRule.startMainActivityOnBlankPage();
+        mocker.mock(RequestCoordinatorBridgeJni.TEST_HOOKS, mRequestCoordinatorBridgeJniMock);
     }
 
     @After
@@ -109,6 +123,21 @@ public class ReadLaterIphTest {
 
         onView(withId(R.id.menu_button_wrapper)).check(matches(withHighlight(true)));
         waitForHelpBubble(withText(R.string.reading_list_save_pages_for_later));
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    public void testContextMenuAddToOfflinePage() throws Throwable {
+        String url = mTestServer.getServer().getURL(CONTEXT_MENU_TEST_URL);
+        mActivityTestRule.loadUrlInNewTab(url);
+        ChromeActivity activity = mActivityTestRule.getActivity();
+        Tab tab = activity.getActivityTab();
+        RevampedContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
+                activity, tab, CONTEXT_MENU_LINK_DOM_ID, R.id.contextmenu_read_later);
+        String linkUrl = mTestServer.getServer().getURL(CONTEXT_MENU_LINK_URL);
+        verify(mRequestCoordinatorBridgeJniMock, times(1))
+                .savePageLater(any(), any(), eq(linkUrl), any(), any(), any(), anyBoolean());
     }
 
     private ViewInteraction waitForHelpBubble(Matcher<View> matcher) {
