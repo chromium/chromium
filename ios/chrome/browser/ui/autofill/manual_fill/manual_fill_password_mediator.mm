@@ -11,6 +11,7 @@
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #include "components/autofill/ios/form_util/form_activity_params.h"
+#include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/password_generation_provider.h"
@@ -100,6 +101,9 @@ BOOL AreCredentialsAtIndexesConnected(
   // Bridge to observe form activity in |_webState|.
   std::unique_ptr<autofill::FormActivityObserverBridge>
       _formActivityObserverBridge;
+
+  // Origin to fetch passwords for.
+  GURL _URL;
 }
 
 - (instancetype)initWithPasswordStore:
@@ -108,6 +112,7 @@ BOOL AreCredentialsAtIndexesConnected(
                         faviconLoader:(FaviconLoader*)faviconLoader
                              webState:(web::WebState*)webState
                           syncService:(SyncSetupService*)syncService
+                                  URL:(const GURL&)URL
                invokedOnPasswordField:(BOOL)invokedOnPasswordField {
   self = [super init];
   if (self) {
@@ -116,6 +121,7 @@ BOOL AreCredentialsAtIndexesConnected(
     _faviconLoader = faviconLoader;
     _webState = webState;
     _syncService = syncService;
+    _URL = URL;
     _activeFieldIsPassword = invokedOnPasswordField;
     _webStateObserverBridge =
         std::make_unique<web::WebStateObserverBridge>(self);
@@ -132,12 +138,12 @@ BOOL AreCredentialsAtIndexesConnected(
   }
 }
 
-- (void)fetchPasswordsForURL:(const GURL&)URL {
+- (void)fetchPasswords {
   self.credentials = @[];
   self.passwordFetcher =
       [[PasswordFetcher alloc] initWithPasswordStore:_passwordStore
                                             delegate:self
-                                                 URL:URL];
+                                                 URL:_URL];
 }
 
 #pragma mark - PasswordFetcherDelegate
@@ -231,9 +237,15 @@ BOOL AreCredentialsAtIndexesConnected(
         [[NSMutableArray alloc] init];
     __weak __typeof(self) weakSelf = self;
 
+    password_manager::PasswordManagerClient* passwordManagerClient =
+        _webState ? PasswordTabHelper::FromWebState(_webState)
+                        ->GetPasswordManagerClient()
+                  : nullptr;
     if (base::FeatureList::IsEnabled(
             password_manager::features::kEnableManualPasswordGeneration) &&
         _syncService && _syncService->IsSyncEnabled() &&
+        passwordManagerClient &&
+        passwordManagerClient->IsSavingAndFillingEnabled(_URL) &&
         _activeFieldIsPassword) {
       NSString* suggestPasswordTitleString = l10n_util::GetNSString(
           IDS_IOS_MANUAL_FALLBACK_SUGGEST_PASSWORD_WITH_DOTS);

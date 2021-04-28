@@ -20,6 +20,7 @@ class Browser;
 namespace password_manager {
 class PasswordGenerationFrameHelper;
 class PasswordManager;
+class PasswordManagerClient;
 }
 
 // Class binding a PasswordController to a WebState.
@@ -49,6 +50,9 @@ class PasswordTabHelper : public web::WebStateObserver,
 
   // Returns the PasswordManager owned by the PasswordController.
   password_manager::PasswordManager* GetPasswordManager();
+
+  // Returns the PasswordManagerClient owned by the PasswordController.
+  password_manager::PasswordManagerClient* GetPasswordManagerClient();
 
   // Returns an object that can provide password generation from the
   // PasswordController. May return nil.
