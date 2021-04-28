@@ -14,6 +14,7 @@
 #include "base/hash/hash.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_message_loop.h"
@@ -110,10 +111,10 @@ class WatchTimeRecorderTest : public testing::Test {
         continue;
       auto it = std::find(keys.begin(), keys.end(), test_key);
       if (it == keys.end()) {
-        histogram_tester_->ExpectTotalCount(test_key.as_string(), 0);
+        histogram_tester_->ExpectTotalCount(test_key, 0);
       } else {
-        histogram_tester_->ExpectUniqueSample(test_key.as_string(),
-                                              value.InMilliseconds(), 1);
+        histogram_tester_->ExpectUniqueSample(test_key, value.InMilliseconds(),
+                                              1);
       }
     }
   }
@@ -124,9 +125,9 @@ class WatchTimeRecorderTest : public testing::Test {
     for (auto key : full_key_list) {
       auto it = std::find(keys.begin(), keys.end(), key);
       if (it == keys.end())
-        histogram_tester_->ExpectTotalCount(key.as_string(), 0);
+        histogram_tester_->ExpectTotalCount(key, 0);
       else
-        histogram_tester_->ExpectUniqueSample(key.as_string(), value, 1);
+        histogram_tester_->ExpectUniqueSample(key, value, 1);
     }
   }
 
@@ -225,7 +226,7 @@ TEST_F(WatchTimeRecorderTest, TestBasicReporting) {
 
     auto key_str = ConvertWatchTimeKeyToStringForUma(key);
     SCOPED_TRACE(key_str.empty() ? base::NumberToString(i)
-                                 : key_str.as_string());
+                                 : std::string(key_str));
 
     // Values for |is_background| and |is_muted| don't matter in this test since
     // they don't prevent the muted or background keys from being recorded.
@@ -558,7 +559,7 @@ TEST_F(WatchTimeRecorderTest, TestRebufferingMetrics) {
   // Nothing should be logged since this doesn't meet requirements.
   ExpectMtbrTime({}, base::TimeDelta());
   for (auto key : smooth_keys_)
-    histogram_tester_->ExpectTotalCount(key.as_string(), 0);
+    histogram_tester_->ExpectTotalCount(key, 0);
 }
 
 TEST_F(WatchTimeRecorderTest, TestRebufferingMetricsMediaStream) {
@@ -607,8 +608,7 @@ TEST_F(WatchTimeRecorderTest, TestDiscardMetrics) {
 
   // Verify the time was instead logged to the discard keys.
   for (auto key : discard_keys_) {
-    histogram_tester_->ExpectUniqueSample(key.as_string(),
-                                          kWatchTime.InMilliseconds(), 1);
+    histogram_tester_->ExpectUniqueSample(key, kWatchTime.InMilliseconds(), 1);
   }
 
   // UKM watch time won't be logged because we aren't sending "All" keys.

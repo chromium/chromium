@@ -5,6 +5,7 @@
 #include "media/base/status.h"
 
 #include <memory>
+#include "base/strings/string_piece.h"
 #include "media/base/media_serializers.h"
 
 namespace media {
@@ -19,7 +20,7 @@ Status::Status(StatusCode code,
     DCHECK(message.empty());
     return;
   }
-  data_ = std::make_unique<StatusInternal>(code, message.as_string());
+  data_ = std::make_unique<StatusInternal>(code, std::string(message));
   AddFrame(location);
 }
 
