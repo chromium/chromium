@@ -580,6 +580,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     previous recording. All buckets from MetricKitExitData are available on iOS
     14 and higher (unless MetricKitExitData bucket comments specify otherwise).
 
+    Note that crashes while in the background are not considered crashes /
+    unclean shutdowns in UMA stability metrics. This is because the
+    &quot;CleanExitBeacon&quot; is set when Chrome is put in the background.
+
     Recorded only if user opted in for sharing diagnostic data on iOS device.
     Note: The date the data is reported is later than the day it account for.
   </summary>
