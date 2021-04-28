@@ -64,6 +64,31 @@ suite('InternetPage', function() {
     mojoApi_.addNetworksForTest(networks);
   }
 
+  /**
+   * @param {boolean} showPSimFlow
+   * @param {boolean} isCellularEnabled
+   * @return {!Promise<function()>}
+   */
+  function navigateToCellularSetupDialog(showPSimFlow, isCellularEnabled) {
+    const params = new URLSearchParams;
+    params.append('guid', 'cellular_guid');
+    params.append('type', 'Cellular');
+    params.append('name', 'cellular');
+    params.append('showCellularSetup', 'true');
+    if (showPSimFlow) {
+      params.append('showPsimFlow', 'true');
+    }
+    settings.Router.getInstance().navigateTo(
+        settings.routes.INTERNET_NETWORKS, params);
+
+    // Update the device state here to trigger an
+    // attemptShowCellularSetupDialog_() call.
+    mojoApi_.setNetworkTypeEnabledState(
+        chromeos.networkConfig.mojom.NetworkType.kCellular, isCellularEnabled);
+
+    return flushAsync();
+  }
+
   setup(function() {
     PolymerTest.clearBody();
     internetPage = document.createElement('settings-internet-page');
@@ -319,22 +344,14 @@ suite('InternetPage', function() {
         loadTimeData.overrideValues({
           updatedCellularActivationUi: true,
         });
-        eSimManagerRemote.addEuiccForTest(1);
         await flushAsync();
 
         let cellularSetupDialog = internetPage.$$('#cellularSetupDialog');
         assertFalse(!!cellularSetupDialog);
 
-        const params = new URLSearchParams;
-        params.append('guid', 'cellular_guid');
-        params.append('type', 'Cellular');
-        params.append('name', 'cellular');
-        params.append('showCellularSetup', 'true');
-        params.append('showPsimFlow', 'true');
-        settings.Router.getInstance().navigateTo(
-            settings.routes.INTERNET_NETWORKS, params);
+        await navigateToCellularSetupDialog(
+            /*showPSimFlow=*/ true, /*isCellularEnabled=*/ true);
 
-        await flushAsync();
         cellularSetupDialog = internetPage.$$('#cellularSetupDialog');
         assertTrue(!!cellularSetupDialog);
         const psimFlow =
@@ -345,8 +362,8 @@ suite('InternetPage', function() {
 
   test(
       'Show eSIM flow cellular setup dialog if route params' +
-          'contains showCellularSetup, does not contain showPsimFlow, and' +
-          'connected to a non-cellular network',
+          'contains showCellularSetup, does not contain showPsimFlow,' +
+          'connected to a non-cellular network, and cellular enabled',
       async function() {
         loadTimeData.overrideValues({
           updatedCellularActivationUi: true,
@@ -363,15 +380,9 @@ suite('InternetPage', function() {
         let cellularSetupDialog = internetPage.$$('#cellularSetupDialog');
         assertFalse(!!cellularSetupDialog);
 
-        const params = new URLSearchParams;
-        params.append('guid', 'cellular_guid');
-        params.append('type', 'Cellular');
-        params.append('name', 'cellular');
-        params.append('showCellularSetup', 'true');
-        settings.Router.getInstance().navigateTo(
-            settings.routes.INTERNET_NETWORKS, params);
+        await navigateToCellularSetupDialog(
+            /*showPSimFlow=*/ false, /*isCellularEnabled=*/ true);
 
-        await flushAsync();
         cellularSetupDialog = internetPage.$$('#cellularSetupDialog');
         assertTrue(!!cellularSetupDialog);
         const esimFlow =
@@ -383,7 +394,7 @@ suite('InternetPage', function() {
   test(
       'Show no connection toast if route params' +
           'contain showCellularSetup, does not contain showPsimFlow,' +
-          'but not connected to a non-cellular network',
+          'cellular is enabled, but not connected to a non-cellular network',
       async function() {
         loadTimeData.overrideValues({
           updatedCellularActivationUi: true,
@@ -392,16 +403,42 @@ suite('InternetPage', function() {
 
         assertFalse(!!internetPage.$$('#cellularSetupDialog'));
 
-        const params = new URLSearchParams;
-        params.append('guid', 'cellular_guid');
-        params.append('type', 'Cellular');
-        params.append('name', 'cellular');
-        params.append('showCellularSetup', 'true');
-        settings.Router.getInstance().navigateTo(
-            settings.routes.INTERNET_NETWORKS, params);
+        await navigateToCellularSetupDialog(
+            /*showPSimFlow=*/ false, /*isCellularEnabled=*/ true);
 
-        await flushAsync();
         assertTrue(internetPage.$.errorToast.open);
+        assertEquals(
+            internetPage.$.errorToastMessage.innerHTML,
+            internetPage.i18n('eSimNoConnectionErrorToast'));
+        assertFalse(!!internetPage.$$('#cellularSetupDialog'));
+      });
+
+  test(
+      'Show mobile data not enabled toast if route params' +
+          'contains showCellularSetup, does not contain showPsimFlow,' +
+          'connected to a non-cellular network, but cellular not enabled',
+      async function() {
+        loadTimeData.overrideValues({
+          updatedCellularActivationUi: true,
+        });
+        eSimManagerRemote.addEuiccForTest(1);
+
+        const mojom = chromeos.networkConfig.mojom;
+        const wifiNetwork =
+            OncMojo.getDefaultNetworkState(mojom.NetworkType.kWiFi, 'wifi');
+        wifiNetwork.connectionState = mojom.ConnectionStateType.kOnline;
+        mojoApi_.addNetworksForTest([wifiNetwork]);
+        await flushAsync();
+
+        assertFalse(!!internetPage.$$('#cellularSetupDialog'));
+
+        await navigateToCellularSetupDialog(
+            /*showPSimFlow=*/ false, /*isCellularEnabled=*/ false);
+
+        assertTrue(internetPage.$.errorToast.open);
+        assertEquals(
+            internetPage.$.errorToastMessage.innerHTML,
+            internetPage.i18n('eSimMobileDataNotEnabledErrorToast'));
         assertFalse(!!internetPage.$$('#cellularSetupDialog'));
       });
 
@@ -434,6 +471,10 @@ suite('InternetPage', function() {
       'Show no connection toast if receive show-cellular-setup' +
           'event and not connected to non-cellular network',
       async function() {
+        mojoApi_.setNetworkTypeEnabledState(
+            chromeos.networkConfig.mojom.NetworkType.kCellular, true);
+        await flushAsync();
+
         assertFalse(internetPage.$.errorToast.open);
 
         // Send event, toast should show, dialog hidden.
@@ -443,6 +484,9 @@ suite('InternetPage', function() {
         internetPage.dispatchEvent(event);
         await flushAsync();
         assertTrue(internetPage.$.errorToast.open);
+        assertEquals(
+            internetPage.$.errorToastMessage.innerHTML,
+            internetPage.i18n('eSimNoConnectionErrorToast'));
         assertFalse(!!internetPage.$$('#cellularSetupDialog'));
 
         // Hide the toast

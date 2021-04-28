@@ -2544,6 +2544,9 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_ESIM_NO_CONNECTION_ERROR_TOAST" desc="Message in toast displayed when user tries to perform an eSIM operation when not connected to a non-cellular network.">
     Establish an internet connection first
   </message>
+  <message name="IDS_SETTINGS_INTERNET_ESIM_MOBILE_DATA_NOT_ENABLED_ERROR_TOAST" desc="Message in toast displayed when user tries to set up an eSIM profile when mobile data is not enabled.">
+    Enable mobile data to install an eSIM profile
+  </message>
 
   <!-- Users Page (OS Settings) -->
   <message name="IDS_SETTINGS_USERS_MODIFIED_BY_OWNER_LABEL" desc="Label saying settings may only be modified by the device owner.">

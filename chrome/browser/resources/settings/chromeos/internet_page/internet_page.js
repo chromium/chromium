@@ -119,6 +119,16 @@ Polymer({
       value: false,
     },
 
+    /**
+     * Page name, if defined, indicating that the next deviceStates update
+     * should call attemptShowCellularSetupDialog_().
+     * @private {cellularSetup.CellularSetupPageName|null}
+     */
+    pendingShowCellularSetupDialogAttemptPageName_: {
+      type: String,
+      value: null,
+    },
+
     /** @private {boolean} */
     showCellularSetupDialog_: {
       type: Boolean,
@@ -285,7 +295,11 @@ Polymer({
         const pageName = queryParams.get('showPsimFlow') === 'true' ?
             cellularSetup.CellularSetupPageName.PSIM_FLOW_UI :
             cellularSetup.CellularSetupPageName.ESIM_FLOW_UI;
-        this.attemptShowCellularSetupDialog_(pageName);
+        // If the page just loaded, deviceStates will not be fully initialized
+        // yet. Set pendingShowCellularSetupDialogAttemptPageName_ to indicate
+        // showCellularSetupDialogAttempt_() should be called next deviceStates
+        // update.
+        this.pendingShowCellularSetupDialogAttemptPageName_ = pageName;
       }
 
       this.showSimLockDialog_ = !!queryParams.get('showSimLockDialog') &&
@@ -413,6 +427,14 @@ Polymer({
    * @private
    */
   attemptShowCellularSetupDialog_(pageName) {
+    const cellularDeviceState =
+        this.getDeviceState_(mojom.NetworkType.kCellular, this.deviceStates);
+    if (!cellularDeviceState ||
+        cellularDeviceState.deviceState !== mojom.DeviceStateType.kEnabled) {
+      this.showErrorToast_(this.i18n('eSimMobileDataNotEnabledErrorToast'));
+      return;
+    }
+
     if (pageName === cellularSetup.CellularSetupPageName.PSIM_FLOW_UI) {
       this.showCellularSetupDialog_ = true;
       this.cellularSetupDialogPageName_ = pageName;
@@ -614,6 +636,12 @@ Polymer({
       if (detailPage) {
         detailPage.close();
       }
+    }
+
+    if (this.pendingShowCellularSetupDialogAttemptPageName_) {
+      this.attemptShowCellularSetupDialog_(
+          this.pendingShowCellularSetupDialogAttemptPageName_);
+      this.pendingShowCellularSetupDialogAttemptPageName_ = null;
     }
   },
 
