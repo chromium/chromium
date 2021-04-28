@@ -132,6 +132,7 @@ source_set("content_suggestions_ui") {
     "content_suggestions_consumer.h",
     "content_suggestions_data_sink.h",
     "content_suggestions_data_source.h",
+    "content_suggestions_header_commands.h",
     "content_suggestions_header_controlling.h",
     "content_suggestions_header_provider.h",
     "content_suggestions_header_synchronizer.h",
