@@ -450,5 +450,5 @@ as required builders.
   * Experiment percentage: 5.0
 
 * [linux_chromium_tsan_rel_ng_bionic](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_tsan_rel_ng_bionic) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux_chromium_tsan_rel_ng_bionic)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux_chromium_tsan_rel_ng_bionic))
-  * Experiment percentage: 10.0
+  * Experiment percentage: 40.0
 
