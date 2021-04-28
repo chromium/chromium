@@ -637,7 +637,8 @@ bool Channel::OnReadComplete(size_t bytes_read, size_t* next_read_size_hint) {
 Channel::DispatchResult Channel::TryDispatchMessage(
     base::span<const char> buffer,
     size_t* size_hint) {
-  TRACE_EVENT("ipc,toplevel", "Mojo dispatch message");
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("toplevel.ipc"),
+              "Mojo dispatch message");
 
   bool did_consume_message = false;
 
