@@ -44,6 +44,7 @@ const char kEnableWebFeedUI[] = "webfeed_ui.enable";
 const char kEnableWebFeedFollowIntroDebug[] =
     "webfeed_follow_intro_debug.enable";
 const char kReliabilityLoggingIdSalt[] = "feedv2.reliability_logging_id_salt";
+const char kIsWebFeedSubscriber[] = "webfeed.is_subscriber";
 
 }  // namespace prefs
 
@@ -104,6 +105,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(feed::prefs::kEnableWebFeedFollowIntroDebug,
                                 false);
   registry->RegisterUint64Pref(feed::prefs::kReliabilityLoggingIdSalt, 0);
+  registry->RegisterBooleanPref(feed::prefs::kIsWebFeedSubscriber, false);
 
 #if defined(OS_IOS)
   registry->RegisterBooleanPref(feed::prefs::kLastFetchHadLoggingEnabled,

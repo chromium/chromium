@@ -287,4 +287,9 @@ static void JNI_WebFeedBridge_GetRecentVisitCountsToHost(
       std::move(callback), &TaskTracker());
 }
 
+static jboolean JNI_WebFeedBridge_IsWebFeedSubscriber(JNIEnv*) {
+  WebFeedSubscriptions* subscriptions = GetSubscriptions();
+  return subscriptions && subscriptions->IsWebFeedSubscriber();
+}
+
 }  // namespace feed

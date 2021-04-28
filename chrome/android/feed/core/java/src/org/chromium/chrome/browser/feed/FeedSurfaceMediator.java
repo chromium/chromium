@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.app.feedmanagement.FeedManagementActivity;
 import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.feed.shared.stream.Stream;
 import org.chromium.chrome.browser.feed.shared.stream.Stream.ContentChangedListener;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
@@ -420,7 +421,7 @@ public class FeedSurfaceMediator
             mSectionHeaderModel.set(
                     SectionHeaderListProperties.MENU_DELEGATE_KEY, this::onItemSelected);
 
-            if (FeedFeatures.isWebFeedUIEnabled()) {
+            if (WebFeedBridge.isWebFeedSubscriber() && FeedFeatures.isWebFeedUIEnabled()) {
                 addHeaderAndStream(mContext.getResources().getString(R.string.ntp_following),
                         mCoordinator.createFeedStream(/* isInterestFeed = */ false));
             }

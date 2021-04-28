@@ -24,6 +24,13 @@ import java.util.Random;
  */
 @JNINamespace("feed")
 public class WebFeedBridge {
+    // Access to JNI test hooks for other libraries. This can go away once more Feed code is
+    // migrated to chrome/browser/feed.
+    public static org.chromium.base.JniStaticTestMocker<WebFeedBridge.Natives>
+    getTestHooksForTesting() {
+        return WebFeedBridgeJni.TEST_HOOKS;
+    }
+
     // TODO(crbug/1152592): remove members needed only for returning mock results.
     private static Random sRandom = new Random();
     private static int sCounter;
@@ -222,6 +229,11 @@ public class WebFeedBridge {
         return sRandom.nextBoolean();
     }
 
+    /** Returns whether the user subscribes to at least one Web Feed. */
+    public static boolean isWebFeedSubscriber() {
+        return WebFeedBridgeJni.get().isWebFeedSubscriber();
+    }
+
     /** This is deprecated, do not use. */
     @Deprecated
     public static class FollowedIds {
@@ -262,8 +274,9 @@ public class WebFeedBridge {
         }
     }
 
+    @VisibleForTesting
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         void followWebFeed(WebFeedPageInformation pageInfo, Callback<FollowResults> callback);
         void followWebFeedById(byte[] webFeedId, Callback<FollowResults> callback);
         void unfollowWebFeed(byte[] webFeedId, Callback<UnfollowResults> callback);
@@ -273,5 +286,6 @@ public class WebFeedBridge {
         void getAllSubscriptions(Callback<Object[]> callback);
         void refreshSubscriptions(Callback<Boolean> callback);
         void getRecentVisitCountsToHost(GURL url, Callback<int[]> callback);
+        boolean isWebFeedSubscriber();
     }
 }

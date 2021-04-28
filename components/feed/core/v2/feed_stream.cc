@@ -143,7 +143,7 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
   wire_response_translator_ = &default_translator;
 
   web_feed_subscription_coordinator_ =
-      std::make_unique<WebFeedSubscriptionCoordinator>(this);
+      std::make_unique<WebFeedSubscriptionCoordinator>(profile_prefs, this);
   Stream& stream = GetStream(kForYouStream);
   offline_page_spy_ = std::make_unique<OfflinePageSpy>(
       stream.surface_updater.get(), offline_page_model);

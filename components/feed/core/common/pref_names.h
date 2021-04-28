@@ -74,6 +74,8 @@ extern const char kEnableWebFeedUI[];
 extern const char kEnableWebFeedFollowIntroDebug[];
 // Random bytes used in generating reliability logging ID.
 extern const char kReliabilityLoggingIdSalt[];
+// Whether the user has subscribed to a web feed.
+extern const char kIsWebFeedSubscriber[];
 
 }  // namespace prefs
 

@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.feed.shared.FeedSurfaceDelegate;
 import org.chromium.chrome.browser.feed.v2.FakeLinearLayoutManager;
 import org.chromium.chrome.browser.feed.v2.FeedStream;
 import org.chromium.chrome.browser.feed.v2.FeedStreamJni;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.ntp.SnapScrollHelper;
@@ -134,6 +135,8 @@ public class FeedSurfaceCoordinatorTest {
     private FeedStream.Natives mFeedStreamJniMock;
     @Mock
     private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
+    @Mock
+    private WebFeedBridge.Natives mWebFeedBridgeJniMock;
 
     // Mocked xSurface setup.
     @Mock
@@ -177,6 +180,7 @@ public class FeedSurfaceCoordinatorTest {
         mActivity = Robolectric.buildActivity(Activity.class).get();
         mocker.mock(FeedStreamJni.TEST_HOOKS, mFeedStreamJniMock);
         mocker.mock(FeedServiceBridgeJni.TEST_HOOKS, mFeedServiceBridgeJniMock);
+        mocker.mock(WebFeedBridge.getTestHooksForTesting(), mWebFeedBridgeJniMock);
 
         when(mFeedServiceBridgeJniMock.getLoadMoreTriggerLookahead()).thenReturn(5);
 

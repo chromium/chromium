@@ -46,6 +46,8 @@ class WebFeedIndex {
   // Populate the recommended feed index.
   void Populate(const feedstore::RecommendedWebFeedIndex& recommended_feeds);
 
+  void Clear();
+
   // Returns the Web Feed `Entry` which matches `page_info`. If there's more
   // than one match, preferentially returns subscribed Web Feed entries.
   Entry FindWebFeed(const WebFeedPageInformation& page_info);
@@ -59,6 +61,7 @@ class WebFeedIndex {
   base::Time GetSubscribedFeedsUpdateTime() const {
     return subscribed_feeds_update_time_;
   }
+  bool HasSubscriptions() const;
 
   std::vector<Entry> GetRecommendedEntriesForTesting() const;
 

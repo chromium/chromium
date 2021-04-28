@@ -371,8 +371,7 @@ using EntrySetBuilder = web_feed_index_internal::EntrySetBuilder;
 }  // namespace
 
 WebFeedIndex::WebFeedIndex() {
-  recommended_ = std::make_unique<EntrySet>();
-  subscribed_ = std::make_unique<EntrySet>();
+  Clear();
 }
 
 WebFeedIndex::~WebFeedIndex() = default;
@@ -413,6 +412,13 @@ void WebFeedIndex::Populate(
   subscribed_ = std::move(builder).Build();
 }
 
+void WebFeedIndex::Clear() {
+  recommended_ = std::make_unique<EntrySet>();
+  subscribed_ = std::make_unique<EntrySet>();
+  recommended_feeds_update_time_ = base::Time();
+  subscribed_feeds_update_time_ = base::Time();
+}
+
 WebFeedIndex::Entry WebFeedIndex::FindWebFeed(const std::string& web_feed_id) {
   for (const Entry& e : subscribed_->entries()) {
     if (e.web_feed_id == web_feed_id)
@@ -441,6 +447,10 @@ bool WebFeedIndex::IsRecommended(const std::string& web_feed_id) const {
       return true;
   }
   return false;
+}
+
+bool WebFeedIndex::HasSubscriptions() const {
+  return !subscribed_->entries().empty();
 }
 
 std::vector<WebFeedIndex::Entry> WebFeedIndex::GetRecommendedEntriesForTesting()

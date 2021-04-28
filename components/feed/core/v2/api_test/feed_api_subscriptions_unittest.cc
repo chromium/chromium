@@ -787,6 +787,7 @@ TEST_F(FeedApiSubscriptionsTest, SubscribedWebFeedsAreFetchedAfterStartup) {
       "{ WebFeedMetadata{ id=id_cats title=Title cats "
       "publisher_url=https://cats.com/ status=kSubscribed } }",
       PrintToString(CheckAllSubscriptions()));
+  EXPECT_TRUE(subscriptions().IsWebFeedSubscriber());
 }
 
 TEST_F(FeedApiSubscriptionsTest, SubscribedWebFeedsAreClearedOnSignOut) {
@@ -812,7 +813,8 @@ TEST_F(FeedApiSubscriptionsTest, SubscribedWebFeedsAreClearedOnSignOut) {
   stream_->OnSignedOut();
   WaitForIdleTaskQueue();
   ASSERT_EQ(1, network_.GetListFollowedWebFeedsRequestCount());
-  EXPECT_EQ("{}", PrintToString(CheckRecommendedFeeds()));
+  EXPECT_EQ("{}", PrintToString(CheckAllSubscriptions()));
+  EXPECT_FALSE(subscriptions().IsWebFeedSubscriber());
 }
 
 TEST_F(FeedApiSubscriptionsTest,
