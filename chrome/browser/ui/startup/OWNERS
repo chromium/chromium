@@ -1,3 +1,4 @@
 tmartino@chromium.org
+grt@chromium.org
 
 per-file credential_provider*=file://chrome/credential_provider/OWNERS
