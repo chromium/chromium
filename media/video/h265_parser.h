@@ -360,6 +360,10 @@ struct MEDIA_EXPORT H265SliceHeader {
   size_t header_size;  // calculated, not including emulation prevention bytes
   size_t header_emulation_prevention_bytes;
 
+  // Calculated, but needs to be preserved when we copy slice dependent data
+  // so put it at the front.
+  bool irap_pic;
+
   // Syntax elements.
   bool first_slice_segment_in_pic_flag;
   bool no_output_of_prior_pics_flag;
@@ -403,7 +407,6 @@ struct MEDIA_EXPORT H265SliceHeader {
   // Calculated.
   int curr_rps_idx;
   int num_pic_total_curr;
-  bool irap_pic;
   // Number of bits st_ref_pic_set takes after removing emulation prevention
   // bytes.
   int st_rps_bits;
