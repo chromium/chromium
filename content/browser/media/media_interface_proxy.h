@@ -89,7 +89,7 @@ class MediaInterfaceProxy final : public media::mojom::InterfaceFactory {
 #endif  // defined(OS_WIN)
   void CreateCdm(const std::string& key_system,
                  const media::CdmConfig& cdm_config,
-                 CreateCdmCallback callback) final;
+                 CreateCdmCallback create_cdm_cb) final;
 
  private:
   // Gets services provided by the browser (at RenderFrameHost level) to the

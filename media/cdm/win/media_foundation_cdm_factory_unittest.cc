@@ -39,8 +39,8 @@ class MediaFoundationCdmFactoryTest : public testing::Test {
     auto cdm_helper =
         std::make_unique<StrictMock<MockCdmAuxiliaryHelper>>(nullptr);
     cdm_helper_ = cdm_helper.get();
-    cdm_factory_ =
-        std::make_unique<MediaFoundationCdmFactory>(std::move(cdm_helper));
+    cdm_factory_ = std::make_unique<MediaFoundationCdmFactory>(
+        std::move(cdm_helper), base::FilePath());
   }
 
   ~MediaFoundationCdmFactoryTest() override = default;

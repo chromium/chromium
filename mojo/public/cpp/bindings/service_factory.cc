@@ -33,6 +33,9 @@ bool ServiceFactory::RunService(GenericPendingReceiver receiver,
     return false;
 
   auto instance = it->second.Run(std::move(receiver));
+  if (!instance)
+    return false;
+
   auto disconnect_callback =
       base::BindOnce(&ServiceFactory::OnInstanceDisconnected,
                      weak_ptr_factory_.GetWeakPtr(), instance.get());

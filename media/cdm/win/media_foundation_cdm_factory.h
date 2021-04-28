@@ -13,6 +13,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/files/file_path.h"
 #include "base/unguessable_token.h"
 #include "base/win/scoped_com_initializer.h"
 #include "media/base/cdm_factory.h"
@@ -23,8 +24,8 @@ namespace media {
 
 class MEDIA_EXPORT MediaFoundationCdmFactory : public CdmFactory {
  public:
-  explicit MediaFoundationCdmFactory(
-      std::unique_ptr<CdmAuxiliaryHelper> helper);
+  MediaFoundationCdmFactory(std::unique_ptr<CdmAuxiliaryHelper> helper,
+                            const base::FilePath& user_data_dir);
   MediaFoundationCdmFactory(const MediaFoundationCdmFactory&) = delete;
   MediaFoundationCdmFactory& operator=(const MediaFoundationCdmFactory&) =
       delete;
@@ -57,6 +58,7 @@ class MEDIA_EXPORT MediaFoundationCdmFactory : public CdmFactory {
       Microsoft::WRL::ComPtr<IMFContentDecryptionModule>& mf_cdm);
 
   std::unique_ptr<CdmAuxiliaryHelper> helper_;
+  base::FilePath user_data_dir_;
 
   // IMFContentDecryptionModule implementations typically require MTA to run.
   base::win::ScopedCOMInitializer com_initializer_{

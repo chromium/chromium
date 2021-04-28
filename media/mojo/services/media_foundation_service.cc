@@ -17,9 +17,11 @@ namespace media {
 
 MediaFoundationService::MediaFoundationService(
     mojo::PendingReceiver<mojom::MediaFoundationService> receiver,
+    const base::FilePath& user_data_dir,
     base::OnceClosure ensure_sandboxed_cb)
     : receiver_(this, std::move(receiver)),
-      ensure_sandboxed_cb_(std::move(ensure_sandboxed_cb)) {
+      ensure_sandboxed_cb_(std::move(ensure_sandboxed_cb)),
+      mojo_media_client_(user_data_dir) {
   mojo_media_client_.Initialize();
 }
 

@@ -5,6 +5,8 @@
 #ifndef MEDIA_MOJO_SERVICES_MEDIA_FOUNDATION_SERVICE_H_
 #define MEDIA_MOJO_SERVICES_MEDIA_FOUNDATION_SERVICE_H_
 
+#include "base/callback.h"
+#include "base/files/file_path.h"
 #include "media/mojo/mojom/frame_interface_factory.mojom.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
 #include "media/mojo/mojom/media_foundation_service.mojom.h"
@@ -27,6 +29,7 @@ class MEDIA_MOJO_EXPORT MediaFoundationService final
   // ensure the process is sandboxed.
   MediaFoundationService(
       mojo::PendingReceiver<mojom::MediaFoundationService> receiver,
+      const base::FilePath& user_data_dir,
       base::OnceClosure ensure_sandboxed_cb);
   MediaFoundationService(const MediaFoundationService&) = delete;
   MediaFoundationService operator=(const MediaFoundationService&) = delete;

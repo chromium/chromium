@@ -137,8 +137,11 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ServiceFactory {
       Func fn,
       GenericPendingReceiver receiver) {
     using Interface = typename internal::ServiceFactoryTraits<Func>::Interface;
-    return std::make_unique<InstanceHolder<Interface>>(
-        fn(receiver.As<Interface>()));
+    auto impl = fn(receiver.As<Interface>());
+    if (!impl)
+      return nullptr;
+
+    return std::make_unique<InstanceHolder<Interface>>(std::move(impl));
   }
 
   void OnInstanceDisconnected(InstanceHolderBase* instance);

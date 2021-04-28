@@ -19,6 +19,7 @@
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/cdm_config.h"
 #include "media/base/win/mf_helpers.h"
+#include "media/cdm/cdm_paths.h"
 #include "media/cdm/win/media_foundation_cdm.h"
 #include "media/cdm/win/media_foundation_cdm_module.h"
 
@@ -124,28 +125,25 @@ HRESULT BuildCdmAccessConfigurations(const CdmConfig& cdm_config,
   return S_OK;
 }
 
-HRESULT BuildCdmProperties(const base::UnguessableToken& cdm_origin_id,
+HRESULT BuildCdmProperties(const base::UnguessableToken& origin_id,
+                           const base::FilePath& store_path,
                            ComPtr<IPropertyStore>& properties) {
+  DCHECK(!origin_id.is_empty());
+
   ComPtr<IPropertyStore> temp_properties;
   RETURN_IF_FAILED(PSCreateMemoryPropertyStore(IID_PPV_ARGS(&temp_properties)));
 
-  base::win::ScopedPropVariant cdm_origin_id_var;
+  base::win::ScopedPropVariant origin_id_var;
   RETURN_IF_FAILED(InitPropVariantFromString(
-      base::UTF8ToWide(cdm_origin_id.ToString()).c_str(),
-      cdm_origin_id_var.Receive()));
+      base::UTF8ToWide(origin_id.ToString()).c_str(), origin_id_var.Receive()));
   RETURN_IF_FAILED(temp_properties->SetValue(
-      EME_CONTENTDECRYPTIONMODULE_ORIGIN_ID, cdm_origin_id_var.get()));
+      EME_CONTENTDECRYPTIONMODULE_ORIGIN_ID, origin_id_var.get()));
 
-  // TODO(xhwang): Provide per-user, per-profile and per-key-system path here.
-  base::FilePath temp_dir;
-  CHECK(base::GetTempDir(&temp_dir));
-  CHECK(base::DirectoryExists(temp_dir));
-
-  base::win::ScopedPropVariant cdm_store_path_var;
-  RETURN_IF_FAILED(InitPropVariantFromString(temp_dir.value().c_str(),
-                                             cdm_store_path_var.Receive()));
+  base::win::ScopedPropVariant store_path_var;
+  RETURN_IF_FAILED(InitPropVariantFromString(store_path.value().c_str(),
+                                             store_path_var.Receive()));
   RETURN_IF_FAILED(temp_properties->SetValue(
-      MF_CONTENTDECRYPTIONMODULE_STOREPATH, cdm_store_path_var.get()));
+      MF_CONTENTDECRYPTIONMODULE_STOREPATH, store_path_var.get()));
 
   properties = temp_properties;
   return S_OK;
@@ -154,8 +152,9 @@ HRESULT BuildCdmProperties(const base::UnguessableToken& cdm_origin_id,
 }  // namespace
 
 MediaFoundationCdmFactory::MediaFoundationCdmFactory(
-    std::unique_ptr<CdmAuxiliaryHelper> helper)
-    : helper_(std::move(helper)) {}
+    std::unique_ptr<CdmAuxiliaryHelper> helper,
+    const base::FilePath& user_data_dir)
+    : helper_(std::move(helper)), user_data_dir_(user_data_dir) {}
 
 MediaFoundationCdmFactory::~MediaFoundationCdmFactory() = default;
 
@@ -237,16 +236,27 @@ HRESULT MediaFoundationCdmFactory::CreateCdmInternal(
       key_system_str.c_str(), configurations, ARRAYSIZE(configurations),
       &cdm_access));
 
-  // Don't cache `cdm_origin_id` in this class since user can clear it any time.
-  base::UnguessableToken cdm_origin_id = helper_->GetCdmOriginId();
-  if (cdm_origin_id.is_empty()) {
+  // Don't cache `origin_id` in this class since user can clear it any time.
+  base::UnguessableToken origin_id = helper_->GetCdmOriginId();
+  if (origin_id.is_empty()) {
     DLOG(ERROR) << "Failed to get CDM origin ID";
+    return E_FAIL;
+  }
+
+  // Provide a per-user, per-arch, per-origin and per-key-system path.
+  auto store_path = GetCdmStorePath(user_data_dir_, origin_id, key_system);
+  DVLOG(1) << "store_path=" << store_path;
+
+  // Ensure the path exists. If it already exists, this call will do nothing.
+  base::File::Error file_error;
+  if (!base::CreateDirectoryAndGetError(store_path, &file_error)) {
+    DLOG(ERROR) << "Create CDM store path failed with " << file_error;
     return E_FAIL;
   }
 
   ComPtr<IPropertyStore> cdm_properties;
   ComPtr<IMFContentDecryptionModule> cdm;
-  RETURN_IF_FAILED(BuildCdmProperties(cdm_origin_id, cdm_properties));
+  RETURN_IF_FAILED(BuildCdmProperties(origin_id, store_path, cdm_properties));
   RETURN_IF_FAILED(
       cdm_access->CreateContentDecryptionModule(cdm_properties.Get(), &cdm));
 

@@ -130,7 +130,10 @@ source_set("cdm") {
 
     libs = [ "Propsys.lib" ]
 
-    deps += [ "//media/base/win:media_foundation_util" ]
+    deps += [
+      ":cdm_paths",
+      "//media/base/win:media_foundation_util",
+    ]
   }
 }
 

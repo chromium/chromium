@@ -26,6 +26,7 @@
 #include "media/mojo/buildflags.h"
 #include "media/mojo/mojom/frame_interface_factory.mojom.h"
 #include "media/mojo/mojom/media_service.mojom.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 
 #if BUILDFLAG(ENABLE_MOJO_CDM)
 #include "content/public/browser/browser_context.h"
@@ -372,9 +373,15 @@ void MediaInterfaceProxy::CreateMediaFoundationRenderer(
 
 void MediaInterfaceProxy::CreateCdm(const std::string& key_system,
                                     const media::CdmConfig& cdm_config,
-                                    CreateCdmCallback callback) {
+                                    CreateCdmCallback create_cdm_cb) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DVLOG(1) << __func__ << ": key_system=" << key_system;
+
+  // The remote process may drop the callback (e.g. in case of crash). Doing it
+  // here instead of in the renderer process because the browser is trusted.
+  auto callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      std::move(create_cdm_cb), mojo::NullRemote(), nullptr,
+      "CDM creation failed");
 
   // Handle `use_hw_secure_codecs` cases first.
 #if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)

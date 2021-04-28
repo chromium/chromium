@@ -229,10 +229,16 @@ auto RunDataDecoder(
 }
 
 #if defined(OS_WIN)
-auto RunMediaFoundationService(
+std::unique_ptr<media::MediaFoundationService> RunMediaFoundationService(
     mojo::PendingReceiver<media::mojom::MediaFoundationService> receiver) {
+  base::FilePath user_data;
+  if (!GetContentClient()->utility()->GetDefaultUserDataDirectory(&user_data)) {
+    receiver.ResetWithReason(0, "Cannot get user data directory!");
+    return nullptr;
+  }
+
   return std::make_unique<media::MediaFoundationService>(
-      std::move(receiver), base::BindOnce(&EnsureSandboxedWin));
+      std::move(receiver), user_data, base::BindOnce(&EnsureSandboxedWin));
 }
 #endif  // defined(OS_WIN)
 

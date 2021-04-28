@@ -73,6 +73,8 @@ class CONTENT_EXPORT ContentUtilityClient {
 
   virtual void RegisterNetworkBinders(
       service_manager::BinderRegistry* registry) {}
+
+  virtual bool GetDefaultUserDataDirectory(base::FilePath* path);
 };
 
 }  // namespace content

@@ -16,4 +16,8 @@ bool ContentUtilityClient::HandleServiceRequestDeprecated(
   return false;
 }
 
+bool ContentUtilityClient::GetDefaultUserDataDirectory(base::FilePath* path) {
+  return false;
+}
+
 }  // namespace content

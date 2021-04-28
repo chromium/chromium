@@ -9,6 +9,8 @@
 
 #include "base/files/file_path.h"
 #include "base/token.h"
+#include "base/unguessable_token.h"
+#include "build/build_config.h"
 
 namespace media {
 
@@ -40,6 +42,17 @@ extern const char kClearKeyCdmFileSystemId[];
 base::FilePath GetPlatformSpecificDirectory(
     const base::FilePath& cdm_base_path);
 base::FilePath GetPlatformSpecificDirectory(const std::string& cdm_base_path);
+
+#if defined(OS_WIN)
+// Returns the "CDM store path" to be passed to `MediaFoundationCdm`. The
+// `user_data_dir` is typically the LPAC specific path, e.g.
+// C:\Users\<user>\AppData\Local\Packages\
+// cr.sb.cdm4b414ceb52402c4e188a185dd531c100416d8daf\AC\Google\Chrome\User Data
+// TODO(xhwang): Separate by Chromium user profile as well.
+base::FilePath GetCdmStorePath(const base::FilePath& user_data_dir,
+                               const base::UnguessableToken& cdm_origin_id,
+                               const std::string& key_system);
+#endif  // defined(OS_WIN)
 
 }  // namespace media
 

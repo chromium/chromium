@@ -11,6 +11,8 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
+#include "base/path_service.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/profiler/thread_profiler.h"
 #include "chrome/common/profiler/thread_profiler_configuration.h"
 #include "chrome/utility/browser_exposed_utility_interfaces.h"
@@ -112,6 +114,11 @@ void ChromeContentUtilityClient::PostIOThreadCreated(
 void ChromeContentUtilityClient::RegisterIOThreadServices(
     mojo::ServiceFactory& services) {
   return ::RegisterIOThreadServices(services);
+}
+
+bool ChromeContentUtilityClient::GetDefaultUserDataDirectory(
+    base::FilePath* path) {
+  return base::PathService::Get(chrome::DIR_USER_DATA, path);
 }
 
 // static

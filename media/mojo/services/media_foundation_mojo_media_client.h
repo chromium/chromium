@@ -5,6 +5,7 @@
 #ifndef MEDIA_MOJO_SERVICES_MEDIA_FOUNDATION_MOJO_MEDIA_CLIENT_H_
 #define MEDIA_MOJO_SERVICES_MEDIA_FOUNDATION_MOJO_MEDIA_CLIENT_H_
 
+#include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/single_thread_task_runner.h"
 #include "media/mojo/services/mojo_media_client.h"
@@ -16,7 +17,7 @@ namespace media {
 // process hosting MediaFoundationRenderer and MediaFoundationCdm.
 class MediaFoundationMojoMediaClient : public MojoMediaClient {
  public:
-  MediaFoundationMojoMediaClient();
+  explicit MediaFoundationMojoMediaClient(const base::FilePath& user_data_dir);
   ~MediaFoundationMojoMediaClient() final;
 
   // MojoMediaClient implementation.
@@ -28,6 +29,7 @@ class MediaFoundationMojoMediaClient : public MojoMediaClient {
       mojom::FrameInterfaceFactory* frame_interfaces) final;
 
  private:
+  base::FilePath user_data_dir_;
   DISALLOW_COPY_AND_ASSIGN(MediaFoundationMojoMediaClient);
 };
 
