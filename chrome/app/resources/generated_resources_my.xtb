@@ -2394,6 +2394,7 @@
 <translation id="3616741288025931835">ဘရောက်လုပ်ထားသည့် အချက်လက်များ ရှင်းလင်းရန်...</translation>
 <translation id="3617891479562106823">နောက်ခံပုံများ မရရှိနိုင်ပါ။ နောက်မှ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="3619115746895587757">ကာပူချီနို</translation>
+<translation id="362266093274784978">{COUNT,plural, =1{အက်ပ်တစ်ခု}other{အက်ပ် # ခု}}</translation>
 <translation id="362333465072914957">အသိအမှတ်ပြုလက်မှတ် ထုတ်ပေးရန် CA ကို စောင့်နေသည်</translation>
 <translation id="3624567683873126087">စက်ကို လော့ခ်ဖွင့်ပြီး Google အကောင့်သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="3625481642044239431">မမှန်ကန်သည့် ဖိုင်ကို ရွေးထားသည်။ ထပ်လုပ်ကြည့်ပါ။</translation>
@@ -2665,6 +2666,7 @@
 <translation id="3895076768659607631">ရှာဖွေရေး အင်ဂျင်များ &amp;စီမံခြင်း...</translation>
 <translation id="3895090224522145010">Kerberos အသုံးပြုသူအမည်</translation>
 <translation id="389521680295183045">သင့်ကိရိယာသုံးနေချိန်ကို သိရန် ဝဘ်ဆိုက်များက ခွင့်တောင်းနိုင်သည်</translation>
+<translation id="3897298432557662720">{COUNT,plural, =1{ပုံတစ်ပုံ}other{ပုံ # ပုံ}}</translation>
 <translation id="3898233949376129212">စက်၏ ဘာသာစကား</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> က အောက်ပါတို့ကို ပြုလုပ်လိုသည်- <ph name="FIRST_PERMISSION" /> နှင့် <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">ကီးဘုတ်ကို ရွေးပါ</translation>
@@ -3577,6 +3579,7 @@
 <translation id="4943368462779413526">ဘောလုံး</translation>
 <translation id="4943691134276646401">"<ph name="CHROME_EXTENSION_NAME" />" က အမှတ်စဉ်ပို့တ်ကို ချိတ်ဆက်လိုသည်</translation>
 <translation id="4944310289250773232">ဤအထောက်အထားစိစစ်ခြင်း ဝန်ဆောင်မှုကို <ph name="SAML_DOMAIN" /> က လက်ခံဝန်ဆောင်ပေးထားခြင်းဖြစ်သည်</translation>
+<translation id="495164417696120157">{COUNT,plural, =1{ဖိုင်တစ်ဖိုင်}other{ဖိုင် # ဖိုင်}}</translation>
 <translation id="495170559598752135">လုပ်ဆောင်ချက်များ</translation>
 <translation id="4953808748584563296">မူရင်းလိမ္မော်ရောင်ချန်နယ်ပုံ</translation>
 <translation id="4955710816792587366">သင်၏ ပင်နံပါတ်ကို ရွေးချယ်ခြင်း</translation>
@@ -5074,6 +5077,7 @@
 <translation id="6664237456442406323">သင်၏ ကွန်ပျူတာကို အန္တရာယ်ရှိ ဟာ့ဒ်ဝဲ ID ဖြင့် စီစဉ်ဖွဲ့စည်းထားသည်မှာ ကံဆိုးပါသည်။ ၎င်းက Chrome OS ကို နောက်ဆုံး လုံခြုံရေး ပြင်ဆင်ချက်များဖြင့် မွမ်းမံမှုကို ဟန့်တားနေရာ သင်၏ ကွန်ပျူတာမှာ <ph name="BEGIN_BOLD" />အန္တရာယ် တိုက်ခိုက်မှုများ ခံရမှာ စိုးရိမ်ရပါသည်<ph name="END_BOLD" />။</translation>
 <translation id="6664774537677393800">သင့်ပရိုဖိုင်ကို ဖွင့်နေစဉ်တွင် တစ်စုံတစ်ခု မှားယွင်းသွားပါသည်။ ထွက်ပြီး ပြန်လည်၍ လက်မှတ်ထိုးဝင်ကြည့်ပါ။</translation>
 <translation id="6670142487971298264"><ph name="APP_NAME" /> အသုံးပြုနိုင်ပါပြီ</translation>
+<translation id="6671320560732140690">{COUNT,plural, =1{လိပ်စာတစ်ခု}other{လိပ်စာ # ခု}}</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
 <translation id="6674571176963658787">စင့်ခ်လုပ်ခြင်းစတင်ရန် သင်၏စကားဝှက်စာ ထည့်ပါ</translation>
 <translation id="6675665718701918026">ညွှန်းပြ ကိရိယာကို ချိတ်ဆက်ထားသည်</translation>
@@ -5770,6 +5774,7 @@
 <translation id="7456142309650173560">dev</translation>
 <translation id="7456847797759667638">တည်နေရာ ဖွင့်ရန်...</translation>
 <translation id="7457384018036134905">Chrome OS ဆက်တင်များတွင် ဘာသာစကားများကို စီမံရန်</translation>
+<translation id="7457831169406914076">{COUNT,plural, =1{လင့်ခ်တစ်ခု}other{လင့်ခ် # ခု}}</translation>
 <translation id="7458168200501453431">Google search တွင်အသုံးပြုသည့် စာလုံးပေါင်းစစ်စနစ် တစ်ခုတည်းကို အသုံးပြုသည်။ ဘရောင်ဇာတွင် သင်ရိုက်သည့် စာသားကို Google သို့ပို့ပါသည်။</translation>
 <translation id="7460045493116006516">သင်လက်ရှိထည့်သွင်းထားသည့် အပြင်အဆင်</translation>
 <translation id="7461924472993315131">ပင်နံပါတ်</translation>
@@ -6170,6 +6175,7 @@
 <translation id="7883792253546618164">မှာယူမှုကို အချိန်မရွေး ရပ်ဆိုင်းနိုင်သည်။</translation>
 <translation id="788453346724465748">အကောင့်အချက်အလက်ကို ဖွင့်နေသည်...</translation>
 <translation id="7885253890047913815">မကြာသေးခင်က ဦးတည်ရာများ</translation>
+<translation id="7886279613512920452">{COUNT,plural, =1{ဖိုင်တစ်ဖိုင်}other{ဖိုင် # ဖိုင်}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">မူပွားယူရန်</translation>
 <translation id="7887864092952184874">ဘလူးတုသ် မောက်စ် ချိတ်တွဲထားပြီ</translation>
@@ -6409,6 +6415,7 @@
 <translation id="8139447493436036221">Google Drive ဖိုင်များ</translation>
 <translation id="8141584439523427891">အရန် ဘရောင်ဇာတွင် ယခုဖွင့်နေသည်</translation>
 <translation id="8141725884565838206">သင့်လျှို့ဝှက်စကားလုံးများကို စီမံမည်</translation>
+<translation id="814204052173971714">{COUNT,plural, =1{ဗီဒီယိုတစ်ကား}other{ဗီဒီယို # ကား}}</translation>
 <translation id="8143442547342702591">မမှန်ကန်သည့် အပလီကေးရှင်း</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> ကို ရွေးပါ</translation>
 <translation id="8146177459103116374">သင်သည် ဒီကိရိယာမှာ မှတ်ပုံတင်ပြီး ဖြစ်လျှင်၊ သင်သည် <ph name="LINK2_START" />ရှိနေဆဲ အသုံးပြုသူ အဖြစ် လက်မှတ်ထိုး ဝင်နိုင်သည်<ph name="LINK2_END" />။</translation>
@@ -6428,6 +6435,7 @@
 <translation id="8161293209665121583">အင်တာနက်စာမျက်နှာများအတွက် ဖတ်ရှုစနစ်မုဒ်</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{တဘ်ကို ဝင်းဒိုးအသစ်သို့ ရွှေ့ခြင်း}other{တဘ်များကို ဝင်းဒိုးအသစ်သို့ ရွှေ့ခြင်း}}</translation>
 <translation id="8165997195302308593">Crostini ပို့တ် ထပ်ဆင့်ပို့ခြင်း</translation>
+<translation id="816704878106051517">{COUNT,plural, =1{ဖုန်းနံပါတ်တစ်ခု}other{ဖုန်းနံပါတ် # ခု}}</translation>
 <translation id="8168435359814927499">ပါဝင်သောအကြောင်းအရာ</translation>
 <translation id="8168943654413034772">'ရွေးရန်' အတွက် သတ်မှတ်ထားသည့် တစ်ခုတည်းသောခလုတ်ကို ဖယ်ရှား၍မရပါ။ ထွက်ရန် ကီးတစ်ခုခုကို နှိပ်ပါ။</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{တဘ်ကို ဖတ်ရန်စာရင်းသို့ထည့်ရန်}other{တဘ်များကို ဖတ်ရန်စာရင်းသို့ထည့်ရန်}}</translation>

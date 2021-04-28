@@ -1331,6 +1331,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2440604414813129000">&amp;Булакты карап көрүү</translation>
 <translation id="244231003699905658">Дарек жараксыз. Даректи текшерип, кайталап көрүңүз.</translation>
 <translation id="2442916515643169563">Текстти көлөкөлөтүү</translation>
+<translation id="24437238714184182"><ph name="SPAN_1_START" /><ph name="NETWORK_NAME" /><ph name="SPAN_1_END" /> - <ph name="SPAN_2_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_2_END" /></translation>
 <translation id="2445081178310039857">Кеңейтүүнүн өзөктүк каталогу талап кылынат.</translation>
 <translation id="2445484935443597917">Жаңы профиль түзүү</translation>
 <translation id="2448312741937722512">Түрү</translation>
@@ -4643,6 +4644,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6184099524311454384">Издөө өтмөктөрү</translation>
 <translation id="6185132558746749656">Түзмөктүн жайгашкан жери</translation>
 <translation id="6186394437969115158">Сайттар жарнамаларды көрсөтүп, акысыз кызматтар жана материалдар менен камсыздайт. Бирок айрым сайттар тажатма же адаштыруучу жарнамаларды көрсөтөт.</translation>
+<translation id="6195005504600220730">Серепчиңиз, OS жана түзмөгүңүз тууралуу маалыматты окуу</translation>
 <translation id="6195693561221576702">Түзмөктү оффлайн демо режиминде жөндөөгө болбойт.</translation>
 <translation id="6195724942939841102">Калыбына келтирилбесин</translation>
 <translation id="6196640612572343990">Үчүнчү жактын кукилери бөгөттөлсүн</translation>

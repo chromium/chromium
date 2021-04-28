@@ -2394,6 +2394,7 @@
 <translation id="3616741288025931835">&amp;Մաքրել դիտարկումների տվյալները…</translation>
 <translation id="3617891479562106823">Ֆոնային պատկերները հասանելի չեն: Փորձեք ավելի ուշ:</translation>
 <translation id="3619115746895587757">Կապուչինո</translation>
+<translation id="362266093274784978">{COUNT,plural, =1{հավելված}one{# հավելված}other{# հավելված}}</translation>
 <translation id="362333465072914957">Սպասում ենք հավաստագրման կենտրոնի կողմից հավաստագրի տրամադրմանը</translation>
 <translation id="3624567683873126087">Ապակողպել սարքը և մտնել Google հաշիվ</translation>
 <translation id="3625481642044239431">Ընտրված ֆայլն անվավեր է։ Նորից փորձեք։</translation>
@@ -2665,6 +2666,7 @@
 <translation id="3895076768659607631">&amp;Կառավարել որոնողական համակարգերը…</translation>
 <translation id="3895090224522145010">Kerberos-ի օգտանուն</translation>
 <translation id="389521680295183045">Կայքերը կարող են թույլտվություն հայցել՝ տեղեկանալու, երբ դուք ակտիվորեն օգտագործում եք ձեր սարքը</translation>
+<translation id="3897298432557662720">{COUNT,plural, =1{պատկեր}one{# պատկեր}other{# պատկեր}}</translation>
 <translation id="3898233949376129212">Սարքի լեզուն</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> կայքն ուզում է <ph name="FIRST_PERMISSION" /> և <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">Ընտրեք ստեղնաշարը</translation>
@@ -3579,6 +3581,7 @@
 <translation id="4943368462779413526">Ֆուտբոլ</translation>
 <translation id="4943691134276646401">«<ph name="CHROME_EXTENSION_NAME" />» ընդլայնումն ուզում է միանալ հերթական միացքին</translation>
 <translation id="4944310289250773232">Նույնականացման ծառայությունը տրամադրվում է <ph name="SAML_DOMAIN" />-ի կողմից</translation>
+<translation id="495164417696120157">{COUNT,plural, =1{ֆայլ}one{# ֆայլ}other{# ֆայլ}}</translation>
 <translation id="495170559598752135">Գործողություններ</translation>
 <translation id="4953808748584563296">Կանխադրված նարնջագույն ավատար</translation>
 <translation id="4955710816792587366">Ընտրեք ձեր PIN-ը</translation>
@@ -5080,6 +5083,7 @@
 <translation id="6664237456442406323">Ձեր համակարգիչը կազմաձևված է սարքակազմի սխալ ID-ով: Սա թույլ չի տալիս, որպեսզի Chrome OS-ը թարմացվի անվտանգության վերջին նորացումներով և ձեր համակարգիչը <ph name="BEGIN_BOLD" />կարող է խոցելի դառնալ վնասարար հարձակումների համար<ph name="END_BOLD" />:</translation>
 <translation id="6664774537677393800">Պրոֆիլը բացելիս սխալ առաջացավ: Դուրս եկեք հաշվից ու նորից մուտք գործեք:</translation>
 <translation id="6670142487971298264"><ph name="APP_NAME" /> հավելվածն այժմ հասանելի է</translation>
+<translation id="6671320560732140690">{COUNT,plural, =1{հասցե}one{# հասցե}other{# հասցե}}</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
 <translation id="6674571176963658787">Համաժամացումը սկսելու համար մուտքագրեք ձեր անցաբառը</translation>
 <translation id="6675665718701918026">Ցուցիչ սարքը միացված է</translation>
@@ -5776,6 +5780,7 @@
 <translation id="7456142309650173560">մշակողների</translation>
 <translation id="7456847797759667638">Open Location...</translation>
 <translation id="7457384018036134905">Կառավարել լեզուները Chrome OS-ի կարգավորումներում</translation>
+<translation id="7457831169406914076">{COUNT,plural, =1{հղում}one{# հղում}other{# հղում}}</translation>
 <translation id="7458168200501453431">Օգտագործում է ուղղագրության նույն ստուգիչը, որն օգտագործվում է Google Որոնման մեջ: Դիտարկիչում մուտքագրած ձեր տեքստերն ուղարկվում են Google-ին:</translation>
 <translation id="7460045493116006516">Ձեր տեղադրած ընթացիկ թեման</translation>
 <translation id="7461924472993315131">Ամրացնել</translation>
@@ -6175,6 +6180,7 @@
 <translation id="7883792253546618164">Դուք ցանկացած պահի կարող եք չեղարկել բաժանորդագրությունը։</translation>
 <translation id="788453346724465748">Հաշվի տվյալները բեռնվում են...</translation>
 <translation id="7885253890047913815">Վերջին նպատակակետերը</translation>
+<translation id="7886279613512920452">{COUNT,plural, =1{տարր}one{# տարր}other{# տարր}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">Կրկնօրինակել</translation>
 <translation id="7887864092952184874">Զուգավորվել է Bluetooth մկնիկ</translation>
@@ -6414,6 +6420,7 @@
 <translation id="8139447493436036221">Google Drive-ի ֆայլեր</translation>
 <translation id="8141584439523427891">Բացվում է այլ դիտարկիչում</translation>
 <translation id="8141725884565838206">Գաղտնաբառերի կառավարում</translation>
+<translation id="814204052173971714">{COUNT,plural, =1{տեսանյութ}one{# տեսանյութ}other{# տեսանյութ}}</translation>
 <translation id="8143442547342702591">Հավելվածն անվավեր է</translation>
 <translation id="8143951647992294073">Ընտրել «<ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />» տարբերակը</translation>
 <translation id="8146177459103116374">Եթե դուք արդեն գրանցված եք այս սարքում, ապա կարող եք <ph name="LINK2_START" />մուտք գործել որպես առկա օգտատեր<ph name="LINK2_END" />:</translation>
@@ -6433,6 +6440,7 @@
 <translation id="8161293209665121583">Ընթերցման ռեժիմ վեբ էջերի համար</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Բացել ներդիրը նոր պատուհանում}one{Բացել ներդիրները նոր պատուհանում}other{Բացել ներդիրները նոր պատուհանում}}</translation>
 <translation id="8165997195302308593">Միացքների փոխանցում Crostini-ում</translation>
+<translation id="816704878106051517">{COUNT,plural, =1{հեռախոսահամար}one{# հեռախոսահամար}other{# հեռախոսահամար}}</translation>
 <translation id="8168435359814927499">Բովանդակություն</translation>
 <translation id="8168943654413034772">Հնարավոր չէ չեղարկել միակ նշանակումը «Ընտրել» փոխանջատիչի համար։ Սեղմեք որևէ ստեղն՝ դուրս գալու համար։</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Ավելացնել ներդիր ընթերցանության ցանկում}one{Ավելացնել ներդիրներ ընթերցանության ցանկում}other{Ավելացնել ներդիրներ ընթերցանության ցանկում}}</translation>

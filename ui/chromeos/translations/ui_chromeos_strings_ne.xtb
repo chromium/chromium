@@ -41,6 +41,7 @@
 <translation id="1395262318152388157">सिक स्लाइडर</translation>
 <translation id="1404323374378969387">नर्वेली</translation>
 <translation id="1430915738399379752">प्रिन्ट गर्नुहोस्</translation>
+<translation id="1433628812591023318">फाइल ड्र्याग गरेर Parallels Desktop मा ड्रप गर्न सो फाइल सारेर 'Windows फाइलहरू' फोल्डरमा लैजानु पर्ने हुन्छ।</translation>
 <translation id="1435838927755162558">Parallels Desktop सँग फोल्डर सेयर गर्नुहोस्</translation>
 <translation id="1467432559032391204">बाँया</translation>
 <translation id="1471718551822868769">स्लोभाकियाली</translation>
@@ -610,6 +611,7 @@
 <translation id="7417453074306512035">इथियोपिक किबोर्ड</translation>
 <translation id="7417705661718309329">Google नक्सा</translation>
 <translation id="7460898608667578234">युक्रेनियन</translation>
+<translation id="7486315294984620427">फाइल ड्र्याग गरेर Parallels Desktop मा ड्रप गर्न सो फाइल कपी गरेर 'Windows फाइलहरू' फोल्डरमा पेस्ट गर्नु पर्ने हुन्छ।</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> फेला पर्‍यो
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google ड्राइभ<ph name="END_LINK" /> मा ब्याकअप गर्न तयार</translation>

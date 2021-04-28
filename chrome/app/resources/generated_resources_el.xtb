@@ -2393,6 +2393,7 @@
 <translation id="3616741288025931835">&amp;Διαγραφή δεδομένων περιήγησης...</translation>
 <translation id="3617891479562106823">Τα φόντα δεν είναι διαθέσιμα. Δοκιμάστε ξανά αργότερα.</translation>
 <translation id="3619115746895587757">Καπουτσίνο</translation>
+<translation id="362266093274784978">{COUNT,plural, =1{μια εφαρμογή}other{# εφαρμογές}}</translation>
 <translation id="362333465072914957">Αναμονή για έκδοση πιστοποιητικού από CA</translation>
 <translation id="3624567683873126087">Ξεκλείδωμα συσκευής και σύνδεση σε Λογαριασμό Google</translation>
 <translation id="3625481642044239431">Επιλέχθηκε μη έγκυρο αρχείο. Δοκιμάστε ξανά.</translation>
@@ -2664,6 +2665,7 @@
 <translation id="3895076768659607631">&amp;Διαχείριση μηχανών αναζήτησης...</translation>
 <translation id="3895090224522145010">Όνομα χρήστη Kerberos</translation>
 <translation id="389521680295183045">Οι ιστότοποι μπορούν να ζητούν να γνωρίζουν πότε χρησιμοποιείτε ενεργά τη συσκευή σας</translation>
+<translation id="3897298432557662720">{COUNT,plural, =1{μια εικόνα}other{# εικόνες}}</translation>
 <translation id="3898233949376129212">Γλώσσα συσκευής</translation>
 <translation id="3898327728850887246">Ο ιστότοπος <ph name="SITE_NAME" /> επιθυμεί τις άδειες: <ph name="FIRST_PERMISSION" /> και <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">Επιλογή πληκτρολογίου</translation>
@@ -3577,6 +3579,7 @@
 <translation id="4943368462779413526">Αμερικάνικο ποδόσφαιρο</translation>
 <translation id="4943691134276646401">Το "<ph name="CHROME_EXTENSION_NAME" />" θέλει να συνδεθεί σε μια σειριακή θύρα</translation>
 <translation id="4944310289250773232">Αυτή η υπηρεσία ελέγχου ταυτότητας φιλοξενείται από <ph name="SAML_DOMAIN" /></translation>
+<translation id="495164417696120157">{COUNT,plural, =1{ένα αρχείο}other{# αρχεία}}</translation>
 <translation id="495170559598752135">Ενέργειες</translation>
 <translation id="4953808748584563296">Προεπιλεγμένο πορτοκαλί avatar</translation>
 <translation id="4955710816792587366">Επιλογή PIN</translation>
@@ -5077,6 +5080,7 @@
 <translation id="6664237456442406323">Δυστυχώς, ο υπολογιστής σας έχει διαμορφωθεί με ένα εσφαλμένο αναγνωριστικό υλικού. Αυτό παρεμποδίζει την ενημέρωση του Chrome OS με τις πιο πρόσφατες επιδιορθώσεις ασφαλείας και ο υπολογιστής σας <ph name="BEGIN_BOLD" />ενδέχεται να είναι ευάλωτος σε κακόβουλες επιθέσεις<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">Παρουσιάστηκε ένα πρόβλημα κατά το άνοιγμα του προφίλ σας. Αποσυνδεθείτε και συνδεθείτε ξανά.</translation>
 <translation id="6670142487971298264">Η εφαρμογή <ph name="APP_NAME" /> είναι πλέον διαθέσιμη</translation>
+<translation id="6671320560732140690">{COUNT,plural, =1{μια διεύθυνση}other{# διευθύνσεις}}</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
 <translation id="6674571176963658787">Για να ξεκινήσετε τον συγχρονισμό, εισαγάγετε τη φράση πρόσβασης.</translation>
 <translation id="6675665718701918026">Η συσκευή κατάδειξης είναι συνδεδεμένη</translation>
@@ -5773,6 +5777,7 @@
 <translation id="7456142309650173560">προγραμματιστές</translation>
 <translation id="7456847797759667638">Άνοιγμα Τοποθεσίας...</translation>
 <translation id="7457384018036134905">Διαχείριση γλωσσών στις ρυθμίσεις του Chrome OS</translation>
+<translation id="7457831169406914076">{COUNT,plural, =1{έναν σύνδεσμο}other{# συνδέσμους}}</translation>
 <translation id="7458168200501453431">Χρησιμοποιεί το ίδιο εργαλείο ορθογραφικού ελέγχου που χρησιμοποιείται στην Αναζήτηση Google. Το κείμενο που πληκτρολογείτε στο πρόγραμμα περιήγησης αποστέλλεται στην Google.</translation>
 <translation id="7460045493116006516">Τρέχον θέμα που έχετε εγκαταστήσει</translation>
 <translation id="7461924472993315131">Καρφίτσωμα</translation>
@@ -6173,6 +6178,7 @@
 <translation id="7883792253546618164">Καταργήστε την εγγραφή σας ανά πάσα στιγμή.</translation>
 <translation id="788453346724465748">Φόρτωση πληροφοριών λογαριασμού…</translation>
 <translation id="7885253890047913815">Πρόσφατοι προορισμοί</translation>
+<translation id="7886279613512920452">{COUNT,plural, =1{ένα στοιχείο}other{# στοιχεία}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">Αντιγραφή</translation>
 <translation id="7887864092952184874">Έγινε σύζευξη του ποντικιού Bluetooth</translation>
@@ -6413,6 +6419,7 @@
 <translation id="8139447493436036221">Αρχεία Google Drive</translation>
 <translation id="8141584439523427891">Άνοιγμα σε εναλλακτικό πρόγραμμα περιήγησης τώρα</translation>
 <translation id="8141725884565838206">Διαχείριση των κωδικών πρόσβασής σας</translation>
+<translation id="814204052173971714">{COUNT,plural, =1{ένα βίντεο}other{# βίντεο}}</translation>
 <translation id="8143442547342702591">Μη έγκυρη εφαρμογή</translation>
 <translation id="8143951647992294073">Επιλέξτε <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8146177459103116374">Εάν έχετε ήδη εγγραφεί σε αυτήν τη συσκευή, μπορείτε <ph name="LINK2_START" />να συνδεθείτε ως υπάρχων χρήστης<ph name="LINK2_END" />.</translation>
@@ -6432,6 +6439,7 @@
 <translation id="8161293209665121583">Λειτουργία ανάγνωσης για ιστοσελίδες</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Μετακίνηση καρτέλας σε νέο παράθυρο}other{Μετακίνηση καρτελών σε νέο παράθυρο}}</translation>
 <translation id="8165997195302308593">Προώθηση θύρας Crostini</translation>
+<translation id="816704878106051517">{COUNT,plural, =1{έναν αριθμό τηλεφώνου}other{# αριθμούς τηλεφώνου}}</translation>
 <translation id="8168435359814927499">Περιεχόμενο</translation>
 <translation id="8168943654413034772">Δεν είναι δυνατή η κατάργηση του μοναδικού διακόπτη που έχει ανατεθεί στην ενέργεια Επιλογή. Πατήστε οποιοδήποτε πλήκτρο για έξοδο.</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Προσθήκη καρτέλας στη λίστα ανάγνωσης}other{Προσθήκη καρτελών στη λίστα ανάγνωσης}}</translation>

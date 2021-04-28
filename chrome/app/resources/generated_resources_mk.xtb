@@ -2394,6 +2394,7 @@
 <translation id="3616741288025931835">&amp;Исчисти податоци од прелистување...</translation>
 <translation id="3617891479562106823">Заднините се недостапни. Обидете се повторно подоцна.</translation>
 <translation id="3619115746895587757">Капучино</translation>
+<translation id="362266093274784978">{COUNT,plural, =1{апликација}one{# апликација}other{# апликации}}</translation>
 <translation id="362333465072914957">Се чека CA да издаде сертификат</translation>
 <translation id="3624567683873126087">Отклучи го уредот и најави се на сметката на Google</translation>
 <translation id="3625481642044239431">Избравте неважечка датотека. Обидете се повторно.</translation>
@@ -2665,6 +2666,7 @@
 <translation id="3895076768659607631">&amp;Управувајте со пребарувачите…</translation>
 <translation id="3895090224522145010">Корисничко име на Kerberos</translation>
 <translation id="389521680295183045">Сајтовите може да прашуваат за да знаат кога активно го користите уредот</translation>
+<translation id="3897298432557662720">{COUNT,plural, =1{слика}one{# слика}other{# слики}}</translation>
 <translation id="3898233949376129212">Јазик на уредот</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> сака да: <ph name="FIRST_PERMISSION" /> и <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">Изберете тастатура</translation>
@@ -3578,6 +3580,7 @@
 <translation id="4943368462779413526">Фудбал</translation>
 <translation id="4943691134276646401">„<ph name="CHROME_EXTENSION_NAME" />“ сака да се поврзе со сериска порта</translation>
 <translation id="4944310289250773232">Оваа услуга за автентикација е хостирана од <ph name="SAML_DOMAIN" /></translation>
+<translation id="495164417696120157">{COUNT,plural, =1{датотека}one{# датотека}other{# датотеки}}</translation>
 <translation id="495170559598752135">Дејства</translation>
 <translation id="4953808748584563296">Стандарден портокалов аватар</translation>
 <translation id="4955710816792587366">Изберете PIN</translation>
@@ -5077,6 +5080,7 @@
 <translation id="6664237456442406323">За жал, вашиот компјутер е конфигуриран со деформиран ИД на хардвер. Ова го спречува Chrome OS да ги ажурира најновите безбедносни поправки и вашиот компјутер <ph name="BEGIN_BOLD" />може да е ранлив на напади од злонамерен софтвер<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">Нешто тргна наопаку при отворањето на профилот. Одјавете се, па најавете се повторно.</translation>
 <translation id="6670142487971298264"><ph name="APP_NAME" /> сега е достапна</translation>
+<translation id="6671320560732140690">{COUNT,plural, =1{адреса}one{# адреса}other{# адреси}}</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
 <translation id="6674571176963658787">За да започне синхронизацијата, внесете ја лозинката</translation>
 <translation id="6675665718701918026">Уредот за покажување е поврзан</translation>
@@ -5773,6 +5777,7 @@
 <translation id="7456142309650173560">dev</translation>
 <translation id="7456847797759667638">Отвори локација...</translation>
 <translation id="7457384018036134905">Управувајте со јазиците во поставките за Chrome OS</translation>
+<translation id="7457831169406914076">{COUNT,plural, =1{линк}one{# линк}other{# линка}}</translation>
 <translation id="7458168200501453431">Ја користи истата проверка на правопис што се користи и во „Пребарување на Google“. Текстот што ќе го напишете во прелистувачот се испраќа до Google.</translation>
 <translation id="7460045493116006516">Темата што ви е инсталирана</translation>
 <translation id="7461924472993315131">Закачи</translation>
@@ -6173,6 +6178,7 @@
 <translation id="7883792253546618164">Отпишете се во секое време.</translation>
 <translation id="788453346724465748">Се вчитуваат податоци за сметката…</translation>
 <translation id="7885253890047913815">Неодамнешни дестинации</translation>
+<translation id="7886279613512920452">{COUNT,plural, =1{ставка}one{# ставка}other{# ставки}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">Направи дупликат</translation>
 <translation id="7887864092952184874">Поврзан глушец со Bluetooth</translation>
@@ -6412,6 +6418,7 @@
 <translation id="8139447493436036221">Датотеки на Google Drive</translation>
 <translation id="8141584439523427891">Се отвора во алтернативен прелистувач сега</translation>
 <translation id="8141725884565838206">Управувај со своите лозинки</translation>
+<translation id="814204052173971714">{COUNT,plural, =1{видео}one{# видео}other{# видеа}}</translation>
 <translation id="8143442547342702591">Неважечка апликација</translation>
 <translation id="8143951647992294073">Изберете <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8146177459103116374">Доколку веќе се регистриравте на овој уред, може да се <ph name="LINK2_START" />пријавите како постоечки корисник<ph name="LINK2_END" />.</translation>
@@ -6431,6 +6438,7 @@
 <translation id="8161293209665121583">Режим на читач за веб-страници</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Преместете ја картичката во нов прозорец}one{Преместете ги картичките во нов прозорец}other{Преместете ги картичките во нов прозорец}}</translation>
 <translation id="8165997195302308593">Проследување порти на Crostini</translation>
+<translation id="816704878106051517">{COUNT,plural, =1{телефонски број}one{# телефонски број}other{# телефонски броја}}</translation>
 <translation id="8168435359814927499">Содржина</translation>
 <translation id="8168943654413034772">Не може да се отстрани единствениот прекинувач назначен за Select. Притиснете го кое било копче за да излезете.</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Додај ја картичката во списокот за читање}one{Додај ги картичките во списокот за читање}other{Додај ги картичките во списокот за читање}}</translation>

@@ -749,6 +749,7 @@
 <translation id="1794791083288629568">हामीलाई यस समस्याको समाधान गर्नमा मद्दत गर्न प्रतिक्रिया पठाउनुहोस्।</translation>
 <translation id="1795214765651529549">क्लासिक प्रयोग गर्नुहोस्</translation>
 <translation id="1799071797295057738">विस्तार "<ph name="EXTENSION_NAME" />" लाई स्वत: असक्षम गरियो।</translation>
+<translation id="1800973090344019061">"<ph name="APP_NAME" />" नामक एक्स्टेन्सन तपाईंको स्क्रिनमा देखिएका सामग्री सेयर गर्न चाहन्छ।</translation>
 <translation id="1802624026913571222">कभर बन्द गरिएको बेला शयन अवस्थामा लानुहोस्</translation>
 <translation id="1802687198411089702">उक्त पृष्ठ चलिरहेको छैन। तपाईं प्रतीक्षा गर्न वा पृष्ठबाट बाहिरिन सक्नुहुन्छ।</translation>
 <translation id="1803531841600994172">अनुवाद गरिनु पर्ने भाषा</translation>
@@ -1347,6 +1348,7 @@
 <translation id="2464089476039395325">HTTP को प्रोक्सी</translation>
 <translation id="2465237718053447668"><ph name="DOMAIN" /> का अनुसार तपाईंले अहिले नै Wi-Fi मा जोडिएर एउटा अद्यावधिक डाउनलोड गर्नु पर्ने हुन्छ। अथवा, डेटाको सीमा भएको इन्टरनेटबाट डाउनलोड गर्नुहोस् (तोकिएको शुल्क लाग्न सक्छ)।</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> नेटवर्क, निष्क्रिय छ</translation>
+<translation id="2467755475704469005">कुनै डिभाइस भेट्टिएन। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">टचप्याड स्क्रोल हुने गति बढाउने कार्य</translation>
 <translation id="2468205691404969808">तपाईं ती पृष्ठहरूमा नजानुभए तापनि तपाईंका प्राथमिकताहरू सम्झनका लागि कुकीहरूको प्रयोग गर्छ</translation>
 <translation id="2468402215065996499">तामागोची</translation>
@@ -2377,6 +2379,7 @@
 <translation id="3608576286259426129">प्रयोगकर्ता छवि पूर्वावलोकन</translation>
 <translation id="3610369246614755442">डकको पङ्खा मर्मत गर्न आवश्यक छ</translation>
 <translation id="361106536627977100">फ्ल्यास डाटा</translation>
+<translation id="3611655097742243705">थप एपहरू डाउनलोड गर्न Play स्टोरमा जानुहोस्</translation>
 <translation id="3612673635130633812">&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt; द्वारा डाउनलोड गरियो</translation>
 <translation id="3613134908380545408"><ph name="FOLDER_NAME" /> देखाउनुहोस्</translation>
 <translation id="3613422051106148727">नयाँ ट्याबमा &amp;खोल्नुहोस्</translation>
@@ -2710,6 +2713,7 @@
 <translation id="3943494825379372497">एप र पेजहरू रिस्टोर गर्ने हो?</translation>
 <translation id="3943582379552582368">&amp;पछाडि</translation>
 <translation id="3943857333388298514">टाँस्नुहोस्</translation>
+<translation id="3945513714196326460">अझ छोटो नाम राखी हेर्नुहोस्</translation>
 <translation id="3948116654032448504">र छविको लागि <ph name="SEARCH_ENGINE" /> खोज्नुहोस्</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> ले निम्न फोल्डरमा रहेका फाइलहरू सम्पादन गर्न सक्छ</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -3096,6 +3100,7 @@
 <translation id="4415245286584082850">कुनै पनि यन्त्र फेला परेन। एउटा नयाँ ट्याबमा मद्दत केन्द्रको लेख खोल्नुहोस्।</translation>
 <translation id="4415276339145661267">आफ्नो Google खाताको व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4415748029120993980">SECG अण्डाकार कर्भ secp384r1 (NIST P-521 पनि भनिन्छ)</translation>
+<translation id="4416450511678320850">यो सामग्रीका लागि कुनै पनि एप उपलब्ध छैन</translation>
 <translation id="4416582610654027550">कुनै मान्य URL टाइप गर्नुहोस्</translation>
 <translation id="4419409365248380979"><ph name="HOST" /> लाई सधैँ कुकीहरू सेट गर्ने अनुमति दिनुहोस्</translation>
 <translation id="4421932782753506458">फ्लफी</translation>
@@ -3387,6 +3392,7 @@
 <translation id="473936925429402449">चयन गरियो, <ph name="TOTAL_ELEMENTS" /> वटा थप सामग्रीमध्ये <ph name="CURRENT_ELEMENT" /> औँ सामग्री</translation>
 <translation id="4739639199548674512">टिकटहरू</translation>
 <translation id="4742334355511750246">फोटोहरू देखाउने अनुमति नदिइएका साइटहरू</translation>
+<translation id="4742970037960872810">हाइलाइट हटाउनुहोस्</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />एपहरू अद्यावधिक गर्ने तरिका सिक्नुहोस्‌<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{साइट अनम्युट गर्नुहोस्}other{साइटहरू अनम्युट गर्नुहोस्}}</translation>
 <translation id="4746351372139058112">सन्देशहरू</translation>
@@ -4593,6 +4599,7 @@
 <translation id="6136114942382973861">डाउनलोडहरूको पट्टी बन्द गर्नुहोस्</translation>
 <translation id="6136287496450963112">तपाईंको सुरक्षा साँचो PIN प्रयोग गरी सुरक्षित गरिएको छैन। फिंगरप्रिन्ट व्यवस्थापन गर्न सर्वप्रथम PIN बनाउनुहोस्।</translation>
 <translation id="6138680304137685902">SHA-384 सहितको X9.62 ECDSA हस्ताक्षर</translation>
+<translation id="6138774640412545950">"<ph name="APP_NAME" />" नामक एक्स्टेन्सन तपाईंको स्क्रिनमा देखिएका सामग्री <ph name="TARGET_NAME" /> सँग सेयर गर्न चाहन्छ।</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, नेटवर्क छैन</translation>
 <translation id="6141988275892716286">डाउनलोड गर्ने पुष्टि गर्नुहोस्</translation>
 <translation id="6143186082490678276">मद्दत प्राप्त गर्नुहोस्</translation>
@@ -5380,6 +5387,7 @@
 <translation id="7009709314043432820"><ph name="APP_NAME" /> ले तपाईंको क्यामेरा प्रयोग गरिरहेको छ</translation>
 <translation id="701080569351381435">स्रोत हेर्नुहोस्</translation>
 <translation id="7014174261166285193">स्थापना असफल भयो।</translation>
+<translation id="7014480873681694324">हाइलाइट हटाउनुहोस्</translation>
 <translation id="7017004637493394352">फेरि "Ok Google" भन्नुहोस्</translation>
 <translation id="7017219178341817193">एउटा नयाँ पृष्ठ थप्नुहोस्</translation>
 <translation id="7017354871202642555">विण्डो कायम भएपछि मोड सेट गर्न सकिँदैन।</translation>

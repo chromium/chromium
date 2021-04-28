@@ -450,6 +450,7 @@
 <translation id="5602622065581044566">Болгарча (фонетикалык баскычтоп)</translation>
 <translation id="5605830556594064952">US Dvorak</translation>
 <translation id="5625294776298156701">Тамилче (Tamil99 баскычтобу)</translation>
+<translation id="5633226425545095130">Эгер бул нерсени жылдырсаңыз, ал "<ph name="DESTINATION_NAME" />" бөлүшүлгөн папкасын көрө алган адамдардын баары менен бөлүшүлөт.</translation>
 <translation id="5649768706273821470">Угуу</translation>
 <translation id="5678784840044122290">Linux колдонмосу Терминалыңызда жеткиликтүү болуп, Жүргүзгүчтө анын сүрөтчөсү көрүнүшү мүмкүн.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Архивден же виртуалдуу дисктен ажыратуу мүмкүн эмес<ph name="END_BOLD" />
@@ -724,6 +725,7 @@
 <translation id="8395901698320285466">Чен-өлчөмү</translation>
 <translation id="8437209419043462667">АКШ</translation>
 <translation id="8456681095658380701">Жараксыз ат</translation>
+<translation id="8459404855768962328">Эгер бул нерсени көчүрсөңүз, ал "<ph name="DESTINATION_NAME" />" бөлүшүлгөн папкасын көрө алган адамдардын баары менен бөлүшүлөт.</translation>
 <translation id="8461467696380332069">Текчедеги файлдарды ыкчам ачуу мүмкүнчүлүгү үчүн курсорду файлдын үстүнө алып келип, чычкандын оң баскычын басып, "Текчеге кадоо" дегенди тандаңыз.</translation>
 <translation id="8463494891489624050">Вьетнамча (VIQR)</translation>
 <translation id="8466234950814670489">Tar архиви</translation>

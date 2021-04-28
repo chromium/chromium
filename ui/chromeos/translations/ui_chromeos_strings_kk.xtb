@@ -450,6 +450,7 @@
 <translation id="5602622065581044566">Болгар (фонетикалық пернетақтамен)</translation>
 <translation id="5605830556594064952">АҚШ Дворак</translation>
 <translation id="5625294776298156701">Тамиль (Tamil99 пернетақтасымен)</translation>
+<translation id="5633226425545095130">Егер бұл элементті тасымалдасаңыз, ол "<ph name="DESTINATION_NAME" />" ортақ қалтасын көре алатын кез келген адаммен бөлісіледі.</translation>
 <translation id="5649768706273821470">Тыңдау</translation>
 <translation id="5678784840044122290">Linux қолданбасы терминалда қолжетімді болады және Launcher қолданбасында белгіше көрсетіледі.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Мұрағаттан немесе виртуалды дискіден ажырату мүмкін емес<ph name="END_BOLD" />
@@ -724,6 +725,7 @@
 <translation id="8395901698320285466">Өлшемдер</translation>
 <translation id="8437209419043462667">АҚШ</translation>
 <translation id="8456681095658380701">Жарамсыз атау</translation>
+<translation id="8459404855768962328">Егер бұл элементті көшірсеңіз, ол "<ph name="DESTINATION_NAME" />" ортақ қалтасын көре алатын кез келген адаммен бөлісіледі.</translation>
 <translation id="8461467696380332069">Сөредегі файлдарға жылдам кіру үшін файлды тінтуірдің оң жақ түймесімен басып, "Сөреге бекіту" тармағын таңдаңыз.</translation>
 <translation id="8463494891489624050">Вьетнам (VIQR)</translation>
 <translation id="8466234950814670489">TAR мұрағаты</translation>

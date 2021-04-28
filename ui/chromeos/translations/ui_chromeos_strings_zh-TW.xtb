@@ -451,6 +451,7 @@
 <translation id="5602622065581044566">保加利亞文搭配拼音鍵盤</translation>
 <translation id="5605830556594064952">Dvorak 美式配置</translation>
 <translation id="5625294776298156701">泰米爾文搭配 Tamil99 鍵盤</translation>
+<translation id="5633226425545095130">這個項目移動至「<ph name="DESTINATION_NAME" />」共用資料夾後，就會與所有看得到該資料夾的使用者共用。</translation>
 <translation id="5649768706273821470">聆聽</translation>
 <translation id="5678784840044122290">這個 Linux 應用程式將出現在你的終端機上，且可能在啟動器中顯示圖示。</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />無法與封存檔或虛擬磁碟中斷連結<ph name="END_BOLD" />
@@ -725,6 +726,7 @@
 <translation id="8395901698320285466">尺寸</translation>
 <translation id="8437209419043462667">美式配置</translation>
 <translation id="8456681095658380701">名稱無效</translation>
+<translation id="8459404855768962328">這個項目複製到「<ph name="DESTINATION_NAME" />」共用資料夾後，就會與所有看得到該資料夾的使用者共用。</translation>
 <translation id="8461467696380332069">在檔案上按一下滑鼠右鍵，然後選取 [固定至檔案櫃]，即可在檔案櫃中快速存取檔案。</translation>
 <translation id="8463494891489624050">越南文 (VIQR)</translation>
 <translation id="8466234950814670489">Tar 封存</translation>

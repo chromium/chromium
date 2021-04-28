@@ -302,6 +302,7 @@
 <translation id="3486220673238053218">аныктама</translation>
 <translation id="3510164367642747937">Чычкан курсору баса белгиленсин</translation>
 <translation id="3513798432020909783">Аккаунтту башкарган: <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3552189655002856821">Wi-Fi өчүрүлгөн</translation>
 <translation id="3563775809269155755">Туташуу түйүнүн иштетүү</translation>
 <translation id="3571734092741541777">Орнотуу</translation>
 <translation id="3573179567135747900">Төмөнкүгө кайра өзгөртүү "<ph name="FROM_LOCALE" />" (өчүрүп күйгүзүү керек)</translation>
@@ -349,6 +350,7 @@
 <translation id="3899995891769452915">Үн менен киргизүү</translation>
 <translation id="3900355044994618856">Сеансыңыз <ph name="SESSION_TIME_REMAINING" /> кийин аяктайт</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> менен туташууда</translation>
+<translation id="3923494859158167397">Мобилдик тармактак жөндөлгөн жок</translation>
 <translation id="3943857333388298514">Чаптоо</translation>
 <translation id="394485226368336402">Аудио жөндөөлөрү</translation>
 <translation id="3945319193631853098">Жөндөп бүтүрүү үчүн таптаңыз</translation>
@@ -379,6 +381,7 @@
 <translation id="4195877955194704651">Автоматтык чыкылдатуу баскычы</translation>
 <translation id="4197790712631116042">Өчүк</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> жеткиликтүү эмес.</translation>
+<translation id="4209973997261364186">Wi-Fi күйгүзүлгөн</translation>
 <translation id="4212472694152630271">PIN кодго которулуу</translation>
 <translation id="4215497585250573029">VPN жөндөөлөрү</translation>
 <translation id="4217571870635786043">Үн менен жазуу</translation>
@@ -555,6 +558,7 @@
 <translation id="5689633613396158040">Түнкү режим күңүрт жерде көзүңүзгө күч келтирбөөгө жардам берет. Түнкү режим күйгүзүлө турган убакытты өзгөртүү же биротоло өчүрүп салуу үчүн таптап коюңуз.</translation>
 <translation id="5691772641933328258">Манжа изи таанылган жок</translation>
 <translation id="5710450975648804523">"Тынчымды алба" режими күйүк</translation>
+<translation id="571295407079589142">Мобилдик трафик өчүрүлгөн</translation>
 <translation id="573413375004481890">Бул түзмөк дисплейлериңиздин баарын кошо алган жок, андыктан алардын бирөө ажыратылды</translation>
 <translation id="574392208103952083">Орточо</translation>
 <translation id="5744083938413354016">Таптап сүйрөө функциясы</translation>

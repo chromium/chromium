@@ -2395,6 +2395,7 @@
 <translation id="3616741288025931835">&amp;Выдаліць гісторыю праглядаў...</translation>
 <translation id="3617891479562106823">Змяненне фону недаступнае. Паўтарыце спробу пазней.</translation>
 <translation id="3619115746895587757">Капучына</translation>
+<translation id="362266093274784978">{COUNT,plural, =1{праграму}one{# праграму}few{# праграмы}many{# праграм}other{# праграмы}}</translation>
 <translation id="362333465072914957">Чакаецца атрыманне сертыфіката ад ЦС</translation>
 <translation id="3624567683873126087">Разблакіраваць прыладу і ўвайсці ва Уліковы запіс Google</translation>
 <translation id="3625481642044239431">Выбраны няправільны файл. Паўтарыце спробу.</translation>
@@ -2666,6 +2667,7 @@
 <translation id="3895076768659607631">&amp;Кіраваць пошукавымі сістэмамі...</translation>
 <translation id="3895090224522145010">Імя карыстальніка Kerberos</translation>
 <translation id="389521680295183045">Сайты могуць запытваць звесткі пра тое, калі вы карыстаецеся прыладай</translation>
+<translation id="3897298432557662720">{COUNT,plural, =1{відарыс}one{# відарыс}few{# відарысы}many{# відарысаў}other{# відарыса}}</translation>
 <translation id="3898233949376129212">Мова прылады</translation>
 <translation id="3898327728850887246">Сайт <ph name="SITE_NAME" /> запытвае наступныя дазволы: <ph name="FIRST_PERMISSION" /> і <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">Выбар клавіятуры</translation>
@@ -3579,6 +3581,7 @@
 <translation id="4943368462779413526">Мяч для амерыканскага футбола</translation>
 <translation id="4943691134276646401">"<ph name="CHROME_EXTENSION_NAME" />" запытвае дазвол на падключэнне да серыйнага порта</translation>
 <translation id="4944310289250773232">Гэты сэрвіс аўтэнтыфікацыі размешчаны на дамене <ph name="SAML_DOMAIN" /></translation>
+<translation id="495164417696120157">{COUNT,plural, =1{файл}one{# файл}few{# файлы}many{# файлаў}other{# файла}}</translation>
 <translation id="495170559598752135">Дзеянні</translation>
 <translation id="4953808748584563296">Стандартны аранжавы аватар</translation>
 <translation id="4955710816792587366">Набярыце PIN-код</translation>
@@ -5078,6 +5081,7 @@
 <translation id="6664237456442406323">Ваш камп'ютар сканфігураваны з няправільным ідэнтыфікатарам апаратнага забеспячэння. Гэта не дае ўсталяваць апошнія выпраўленні сістэмы бяспекі для Chrome OS. Ваш камп'ютар <ph name="BEGIN_BOLD" />можа быць прыступным для атак зламыснікаў<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">Нешта пайшло не так падчас адкрыцця вашага профілю. Выйдзіце і зноў увайдзіце ва ўліковы запіс.</translation>
 <translation id="6670142487971298264">Праграма "<ph name="APP_NAME" />" даступная</translation>
+<translation id="6671320560732140690">{COUNT,plural, =1{адрас}one{# адрас}few{# адрасы}many{# адрасоў}other{# адраса}}</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
 <translation id="6674571176963658787">Каб пачаць сінхранізацыю, увядзіце фразу-пароль</translation>
 <translation id="6675665718701918026">Падключана ўказальная прылада</translation>
@@ -5774,6 +5778,7 @@
 <translation id="7456142309650173560">для распрацоўшчыкаў</translation>
 <translation id="7456847797759667638">Адкрыць размяшчэнне...</translation>
 <translation id="7457384018036134905">Кіраваць моўнымі параметрамі ў наладах Chrome OS</translation>
+<translation id="7457831169406914076">{COUNT,plural, =1{спасылку}one{# спасылку}few{# спасылкі}many{# спасылак}other{# спасылкі}}</translation>
 <translation id="7458168200501453431">Выкарыстоўвае тую ж праверку правапісу, што ў Google Пошуку. Уведзены ў браўзер тэкст адпраўляецца ў Google.</translation>
 <translation id="7460045493116006516">Бягучая тэма, якую вы ўсталявалі</translation>
 <translation id="7461924472993315131">PIN-код</translation>
@@ -6174,6 +6179,7 @@
 <translation id="7883792253546618164">Адпісацца можна ў любы час.</translation>
 <translation id="788453346724465748">Ідзе загрузка інфармацыі пра ўліковы запіс...</translation>
 <translation id="7885253890047913815">Нядаўнія аб'екты прызначэння</translation>
+<translation id="7886279613512920452">{COUNT,plural, =1{элемент}one{# элемент}few{# элементы}many{# элементаў}other{# элемента}}</translation>
 <translation id="7886605625338676841">eSIM-карта</translation>
 <translation id="7887334752153342268">Дубліраваць</translation>
 <translation id="7887864092952184874">Мыш Bluetooth спалучана</translation>
@@ -6413,6 +6419,7 @@
 <translation id="8139447493436036221">Файлы на Google Дыску</translation>
 <translation id="8141584439523427891">Ідзе адкрыццё ў альтэрнатыўным браўзеры</translation>
 <translation id="8141725884565838206">Кіраванне паролямі</translation>
+<translation id="814204052173971714">{COUNT,plural, =1{відэа}one{# відэа}few{# відэа}many{# відэа}other{# відэа}}</translation>
 <translation id="8143442547342702591">Няправільная праграма</translation>
 <translation id="8143951647992294073">Выбраць <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8146177459103116374">Калі вы ўжо рэгістраваліся на гэтай прыладзе, вы можаце <ph name="LINK2_START" />ўвайсці як існуючы карыстальнік<ph name="LINK2_END" />.</translation>
@@ -6432,6 +6439,7 @@
 <translation id="8161293209665121583">Рэжым чытання для вэб-старонак</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Перамясціць укладку ў новае акно}one{Перамясціць укладкі ў новае акно}few{Перамясціць укладкі ў новае акно}many{Перамясціць укладкі ў новае акно}other{Перамясціць укладкі ў новае акно}}</translation>
 <translation id="8165997195302308593">Пераадрасацыя партоў у Crostini</translation>
+<translation id="816704878106051517">{COUNT,plural, =1{нумар тэлефона}one{# нумар тэлефона}few{# нумары тэлефонаў}many{# нумароў тэлефонаў}other{# нумара тэлефона}}</translation>
 <translation id="8168435359814927499">Змесціва</translation>
 <translation id="8168943654413034772">Прызначэнне адзінага пераключальніка, звязанага з дзеяннем "Выбраць", скасаваць нельга. Каб выйсці, націсніце любую клавішу.</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Дадаць укладку ў спіс чытання}one{Дадаць укладкі ў спіс чытання}few{Дадаць укладкі ў спіс чытання}many{Дадаць укладкі ў спіс чытання}other{Дадаць укладкі ў спіс чытання}}</translation>

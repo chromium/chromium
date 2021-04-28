@@ -302,6 +302,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3486220673238053218">định nghĩa</translation>
 <translation id="3510164367642747937">Đánh dấu con trỏ chuột</translation>
 <translation id="3513798432020909783">Người quản lý tài khoản: <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3552189655002856821">Wi-Fi đang tắt</translation>
 <translation id="3563775809269155755">Bật điểm phát sóng</translation>
 <translation id="3571734092741541777">Thiết lập</translation>
 <translation id="3573179567135747900">Thay đổi lại thành "<ph name="FROM_LOCALE" />" (yêu cầu khởi động lại)</translation>
@@ -349,6 +350,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3899995891769452915">Nhập bằng giọng nói</translation>
 <translation id="3900355044994618856">Phiên hoạt động của bạn sẽ kết thúc sau <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Đang kết nối với <ph name="NAME" /></translation>
+<translation id="3923494859158167397">Bạn chưa thiết lập mạng di động nào</translation>
 <translation id="3943857333388298514">Dán</translation>
 <translation id="394485226368336402">Cài đặt âm thanh</translation>
 <translation id="3945319193631853098">Nhấn để hoàn tất quá trình thiết lập</translation>
@@ -379,6 +381,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4195877955194704651">Nút Lượt nhấp tự động</translation>
 <translation id="4197790712631116042">Đang tắt</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> không dùng được.</translation>
+<translation id="4209973997261364186">Wi-Fi đang bật</translation>
 <translation id="4212472694152630271">Chuyển sang mã PIN</translation>
 <translation id="4215497585250573029">Cài đặt mạng riêng ảo (VPN)</translation>
 <translation id="4217571870635786043">Nhập bằng giọng nói</translation>
@@ -555,6 +558,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5689633613396158040">Chế độ Ánh sáng đêm giúp bạn cảm thấy dễ chịu khi nhìn màn hình hoặc đọc trong điều kiện ánh sáng yếu. Hãy nhấn để thay đổi thời gian bật hoặc tắt hoàn toàn chế Ánh sáng đêm.</translation>
 <translation id="5691772641933328258">Không nhận dạng được vân tay</translation>
 <translation id="5710450975648804523">Chế độ Không làm phiền đang bật</translation>
+<translation id="571295407079589142">Dữ liệu di động đang tắt</translation>
 <translation id="573413375004481890">Thiết bị này không thể hỗ trợ tất cả màn hình của bạn nên một màn hình đã bị ngắt kết nối</translation>
 <translation id="574392208103952083">Trung bình</translation>
 <translation id="5744083938413354016">Kéo nhấn</translation>

@@ -451,6 +451,7 @@
 <translation id="5602622065581044566">Bulgare avec clavier phonétique</translation>
 <translation id="5605830556594064952">Dvorak américain</translation>
 <translation id="5625294776298156701">Tamoul (avec clavier Tamil99)</translation>
+<translation id="5633226425545095130">Si vous déplacez cet élément dans le dossier partagé "<ph name="DESTINATION_NAME" />", toute personne autorisée y aura accès.</translation>
 <translation id="5649768706273821470">Écouter</translation>
 <translation id="5678784840044122290">L'application Linux sera disponible dans votre terminal et une icône peut également apparaître dans votre lanceur d'applications.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Impossible de démonter l'archive ou le disque virtuel<ph name="END_BOLD" />
@@ -725,6 +726,7 @@
 <translation id="8395901698320285466">Dimensions</translation>
 <translation id="8437209419043462667">Américain</translation>
 <translation id="8456681095658380701">Ce nom n'est pas valide.</translation>
+<translation id="8459404855768962328">Si vous copiez cet élément dans le dossier partagé "<ph name="DESTINATION_NAME" />", toute personne autorisée y aura accès.</translation>
 <translation id="8461467696380332069">Effectuez un clic droit sur un fichier, puis sélectionnez "Épingler sur l'étagère" pour y accéder ensuite plus rapidement.</translation>
 <translation id="8463494891489624050">Vietnamien (VIQR)</translation>
 <translation id="8466234950814670489">Archive TAR</translation>

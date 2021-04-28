@@ -2388,6 +2388,7 @@
 <translation id="3616741288025931835">&amp; Хайлтын өгөгдлийг цэвэрлэ...</translation>
 <translation id="3617891479562106823">Арын дэвсгэр боломжгүй байна. Дараа дахин оролдоно уу.</translation>
 <translation id="3619115746895587757">Капучино</translation>
+<translation id="362266093274784978">{COUNT,plural, =1{1 апп}other{# апп}}</translation>
 <translation id="362333465072914957">Цахим гэрчилгээний газраас гэрчилгээ олгохыг хүлээж байна</translation>
 <translation id="3624567683873126087">Төхөөрөмжийн түгжээг тайлж Google Туслахдаа нэвтрэх</translation>
 <translation id="3625481642044239431">Буруу файл сонгосон байна. Дахин оролдоно уу.</translation>
@@ -2659,6 +2660,7 @@
 <translation id="3895076768659607631">&amp;Хайлтын системийг удирдах...</translation>
 <translation id="3895090224522145010">Kerberos хэрэглэгчийн нэр</translation>
 <translation id="389521680295183045">Сайтууд таныг төхөөрөмжөө хэзээ идэвхтэй ашиглаж буйг мэдэхийг хүсэх боломжтой</translation>
+<translation id="3897298432557662720">{COUNT,plural, =1{1 зураг}other{# зураг}}</translation>
 <translation id="3898233949376129212">Төхөөрөмжийн хэл</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> дараах зөвшөөрлүүдийг хүсэж байна: <ph name="FIRST_PERMISSION" /> болон <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">Гар сонгох</translation>
@@ -3571,6 +3573,7 @@
 <translation id="4943368462779413526">Хөл бөмбөг</translation>
 <translation id="4943691134276646401">"<ph name="CHROME_EXTENSION_NAME" />" цуваа портод холбогдох хүсэлтэй байна</translation>
 <translation id="4944310289250773232">Энэ нотолгооны үйлчилгээг <ph name="SAML_DOMAIN" />-с удирддаг</translation>
+<translation id="495164417696120157">{COUNT,plural, =1{1 файл}other{# файл}}</translation>
 <translation id="495170559598752135">Авах арга хэмжээ</translation>
 <translation id="4953808748584563296">Өгөгдмөл улбар шар аватар</translation>
 <translation id="4955710816792587366">ПИН-ээ сонгох</translation>
@@ -5070,6 +5073,7 @@
 <translation id="6664237456442406323">Харамсалтай нь таны компьютер хорт вирусаар халдварласан  техник хангамжийн ID-аар тохируулагдсан байна. Энэ нь Chrome OS-ийг хамгийн сүүлийн үеийн аюулгүй байдлын засваруудаас шинэчлэлт хийх боломжгүй болгодог бөгөөд таны компьютер <ph name="BEGIN_BOLD" /> хорт халдлагад өртөх магадлалтай байна<ph name="END_BOLD" /> .</translation>
 <translation id="6664774537677393800">Таны профайлыг нээхэд асуудал гарлаа. Бүртгэлээсээ гараад, дахин нэвтэрнэ үү.</translation>
 <translation id="6670142487971298264"><ph name="APP_NAME" /> одоо боломжтой боллоо</translation>
+<translation id="6671320560732140690">{COUNT,plural, =1{1 хаяг}other{# хаяг}}</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
 <translation id="6674571176963658787">Синк хийж эхлэхийн тулд нэвтрэх үгээ оруулна уу</translation>
 <translation id="6675665718701918026">Сонгосон төхөөрөмжийг холбосон</translation>
@@ -5766,6 +5770,7 @@
 <translation id="7456142309650173560">dev</translation>
 <translation id="7456847797759667638">Байршлыг нээ...</translation>
 <translation id="7457384018036134905">Хэлнүүдийг Chrome үйлдлийн системийн тохиргоонд удирдах</translation>
+<translation id="7457831169406914076">{COUNT,plural, =1{1 холбоос}other{# холбоос}}</translation>
 <translation id="7458168200501453431">Google хайлтад ашигладаг зөв бичгийн ижил алдаа шалгагчийг ашигладаг. Таны хөтчид бичсэн текстийг Google-д илгээдэг.</translation>
 <translation id="7460045493116006516">Таны суулгасан одоогийн загвар</translation>
 <translation id="7461924472993315131">Pin</translation>
@@ -6165,6 +6170,7 @@
 <translation id="7883792253546618164">Хүссэн үедээ захиалгаа цуцална уу.</translation>
 <translation id="788453346724465748">Бүртгэлийн мэдээллийг ачаалж байна...</translation>
 <translation id="7885253890047913815">Хамгийн сүүлд ашигласан</translation>
+<translation id="7886279613512920452">{COUNT,plural, =1{1 зүйл}other{# зүйл}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">Хувилах</translation>
 <translation id="7887864092952184874">Bluetooth хулганыг тохирууллаа</translation>
@@ -6402,6 +6408,7 @@
 <translation id="8139447493436036221">Google Драйвын файлууд</translation>
 <translation id="8141584439523427891">Одоо өөр хөтчид нээж байна</translation>
 <translation id="8141725884565838206">Нууц үгээ удирдана уу</translation>
+<translation id="814204052173971714">{COUNT,plural, =1{1 видео}other{# видео}}</translation>
 <translation id="8143442547342702591">Хүчингүй апп</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />-г сонгох</translation>
 <translation id="8146177459103116374">Хэрэв та энэ төхөөрөмжид аль хэдийн бүртгүүлсэн бол та <ph name="LINK2_START" />бүртгэлтэй хэрэглэгчээр нэвтэрч<ph name="LINK2_END" /> болно.</translation>
@@ -6421,6 +6428,7 @@
 <translation id="8161293209665121583">Веб хуудсанд зориулсан уншигчийн горим</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Табыг шинэ цонх руу зөөх}other{Табуудыг шинэ цонх руу зөөх}}</translation>
 <translation id="8165997195302308593">Crostini-н порт дамжуулах</translation>
+<translation id="816704878106051517">{COUNT,plural, =1{1 утасны дугаар}other{# утасны дугаар}}</translation>
 <translation id="8168435359814927499">Агуулга</translation>
 <translation id="8168943654413034772">Сонгоход оноосон цорын ганц сэлгүүрийг хасах боломжгүй. Гарахын тулд дурын товчийг дарна уу.</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Унших жагсаалтад Таб нэмэх}other{Унших жагсаалтад Табууд нэмэх}}</translation>

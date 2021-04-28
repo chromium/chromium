@@ -1332,6 +1332,7 @@
 <translation id="2440604414813129000">Просмотреть и&amp;сходный код</translation>
 <translation id="244231003699905658">Недопустимый адрес. Проверьте его и повторите попытку.</translation>
 <translation id="2442916515643169563">Тень текста</translation>
+<translation id="24437238714184182"><ph name="SPAN_1_START" /><ph name="NETWORK_NAME" /><ph name="SPAN_1_END" /> – <ph name="SPAN_2_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_2_END" /></translation>
 <translation id="2445081178310039857">Требуется корневой каталог расширения.</translation>
 <translation id="2445484935443597917">Создать профиль</translation>
 <translation id="2448312741937722512">Тип</translation>
@@ -1959,7 +1960,7 @@
 <translation id="3118319026408854581">Справка <ph name="PRODUCT_NAME" /></translation>
 <translation id="3118654181216384296">Попробуйте запустить Linux снова через несколько секунд.</translation>
 <translation id="3120430004221004537">Неполное шифрование операции на устройстве <ph name="DEVICE_NAME" />.</translation>
-<translation id="3122464029669770682">ЦПУ</translation>
+<translation id="3122464029669770682">Процессор</translation>
 <translation id="3122496702278727796">Не удалось создать каталог данных</translation>
 <translation id="3124111068741548686">USER-дескрипторы</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -2392,6 +2393,7 @@
 <translation id="3616741288025931835">Очистить данные просмотров...</translation>
 <translation id="3617891479562106823">Фоновые изображения недоступны. Повторите попытку позже.</translation>
 <translation id="3619115746895587757">Капучино</translation>
+<translation id="362266093274784978">{COUNT,plural, =1{приложение}one{# приложение}few{# приложения}many{# приложений}other{# приложения}}</translation>
 <translation id="362333465072914957">Ожидание выдачи сертификата центром сертификации</translation>
 <translation id="3624567683873126087">Снимать блокировку устройства и входить в аккаунт Google</translation>
 <translation id="3625481642044239431">Выбран недопустимый файл. Повторите попытку.</translation>
@@ -2663,6 +2665,7 @@
 <translation id="3895076768659607631">&amp;Управление поисковыми системами…</translation>
 <translation id="3895090224522145010">Имя пользователя Kerberos</translation>
 <translation id="389521680295183045">Разрешить сайтам запрашивать информацию об использовании устройства</translation>
+<translation id="3897298432557662720">{COUNT,plural, =1{изображение}one{# изображение}few{# изображения}many{# изображений}other{# изображения}}</translation>
 <translation id="3898233949376129212">Язык устройства</translation>
 <translation id="3898327728850887246">Сайт <ph name="SITE_NAME" /> запрашивает следующие разрешения: <ph name="FIRST_PERMISSION" /> и <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">Выберите раскладку клавиатуры</translation>
@@ -3576,6 +3579,7 @@
 <translation id="4943368462779413526">Футбол</translation>
 <translation id="4943691134276646401">Расширение "<ph name="CHROME_EXTENSION_NAME" />" запрашивает разрешение подключиться к последовательному порту</translation>
 <translation id="4944310289250773232">Сервис аутентификации размещен в домене <ph name="SAML_DOMAIN" /></translation>
+<translation id="495164417696120157">{COUNT,plural, =1{файл}one{# файл}few{# файла}many{# файлов}other{# файла}}</translation>
 <translation id="495170559598752135">Действия</translation>
 <translation id="4953808748584563296">Аватар по умолчанию (оранжевый)</translation>
 <translation id="4955710816792587366">Установите PIN-код</translation>
@@ -4643,6 +4647,7 @@
 <translation id="6184099524311454384">Поиск по вкладкам</translation>
 <translation id="6185132558746749656">Местоположение устройства</translation>
 <translation id="6186394437969115158">Обычно сайты показывают рекламу, чтобы зарабатывать на ней и иметь возможность бесплатно предоставлять свой контент или сервисы. Однако на некоторых страницах используется навязчивая или вводящая в заблуждение реклама.</translation>
+<translation id="6195005504600220730">Доступ к информации о вашем браузере, ОС и устройстве</translation>
 <translation id="6195693561221576702">Демонстрационный офлайн-режим на этом устройстве недоступен.</translation>
 <translation id="6195724942939841102">Не восстанавливать</translation>
 <translation id="6196640612572343990">Блокировать сторонние файлы cookie</translation>
@@ -4675,7 +4680,7 @@
 <translation id="6229849828796482487">Отключить сеть Wi-Fi</translation>
 <translation id="6231782223312638214">Рекомендуется</translation>
 <translation id="6231881193380278751">Добавьте в URL параметр запроса для автоматического обновления страницы: chrome://device-log/?refresh=&lt;sec&gt;</translation>
-<translation id="6232017090690406397">Аккумулятор</translation>
+<translation id="6232017090690406397">Батарея</translation>
 <translation id="6232116551750539448">Соединение с <ph name="NAME" /> прервано</translation>
 <translation id="6233154960150021497">Использовать голос вместо клавиатуры по умолчанию</translation>
 <translation id="6234108445915742946">Условия использования Chrome будут обновлены 31 марта</translation>
@@ -5074,6 +5079,7 @@
 <translation id="6664237456442406323">К сожалению, в настройках компьютера указан недействительный аппаратный код. Chrome OS не сможет устанавливать обновления для системы безопасности, и ваш компьютер <ph name="BEGIN_BOLD" />может подвергаться атакам вредоносных сайтов<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">Не удалось открыть профиль. Попробуйте выйти из аккаунта и войти снова.</translation>
 <translation id="6670142487971298264">Срок блокировки приложения "<ph name="APP_NAME" />" истек.</translation>
+<translation id="6671320560732140690">{COUNT,plural, =1{адрес}one{# адрес}few{# адреса}many{# адресов}other{# адреса}}</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
 <translation id="6674571176963658787">Чтобы начать синхронизацию, введите кодовую фразу.</translation>
 <translation id="6675665718701918026">Подключено дополнительное устройство</translation>
@@ -5770,6 +5776,7 @@
 <translation id="7456142309650173560">для разработчиков</translation>
 <translation id="7456847797759667638">Открыть адрес...</translation>
 <translation id="7457384018036134905">Управление языковыми параметрами в настройках Chrome OS</translation>
+<translation id="7457831169406914076">{COUNT,plural, =1{ссылка}one{# ссылка}few{# ссылки}many{# ссылок}other{# ссылки}}</translation>
 <translation id="7458168200501453431">Используется та же технология проверки правописания, что и в Google Поиске. Текст, который вы введете в браузере, будет отправлен в Google.</translation>
 <translation id="7460045493116006516">Тема, которая у вас установлена</translation>
 <translation id="7461924472993315131">Закрепить</translation>
@@ -6170,6 +6177,7 @@
 <translation id="7883792253546618164">Отказаться от рассылки можно в любой момент.</translation>
 <translation id="788453346724465748">Загрузка данных аккаунта…</translation>
 <translation id="7885253890047913815">Недавние места назначения</translation>
+<translation id="7886279613512920452">{COUNT,plural, =1{объект}one{# объект}few{# объекта}many{# объектов}other{# объекта}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">Дублировать</translation>
 <translation id="7887864092952184874">Bluetooth-мышь подключена</translation>
@@ -6409,6 +6417,7 @@
 <translation id="8139447493436036221">Файлы на Google Диске</translation>
 <translation id="8141584439523427891">Запуск альтернативного браузера…</translation>
 <translation id="8141725884565838206">Управление паролями</translation>
+<translation id="814204052173971714">{COUNT,plural, =1{видео}one{# видео}few{# видео}many{# видео}other{# видео}}</translation>
 <translation id="8143442547342702591">Недействительное приложение</translation>
 <translation id="8143951647992294073">Выбрать вариант "<ph name="TOPIC_SOURCE" />" (<ph name="TOPIC_SOURCE_DESC" />)</translation>
 <translation id="8146177459103116374">Вы уже зарегистрированы на этом устройстве и можете <ph name="LINK2_START" />войти, используя свои регистрационные данные<ph name="LINK2_END" />.</translation>
@@ -6428,6 +6437,7 @@
 <translation id="8161293209665121583">Режим чтения веб-страниц</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Открыть вкладку в новом окне}one{Открыть вкладки в новом окне}few{Открыть вкладки в новом окне}many{Открыть вкладки в новом окне}other{Открыть вкладки в новом окне}}</translation>
 <translation id="8165997195302308593">Переадресация портов в Crostini</translation>
+<translation id="816704878106051517">{COUNT,plural, =1{номер телефона}one{# номер телефона}few{# номера телефонов}many{# номеров телефонов}other{# номера телефона}}</translation>
 <translation id="8168435359814927499">Контент</translation>
 <translation id="8168943654413034772">Нельзя снять назначение единственного переключателя, связанного с действием "Выбрать". Нажмите любую клавишу, чтобы выйти.</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Добавить вкладку в список для чтения}one{Добавить вкладки в список для чтения}few{Добавить вкладки в список для чтения}many{Добавить вкладки в список для чтения}other{Добавить вкладки в список для чтения}}</translation>

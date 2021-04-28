@@ -2392,6 +2392,7 @@
 <translation id="3616741288025931835">დათვალიერების მონაცემების &amp;გასუფთავება…</translation>
 <translation id="3617891479562106823">ფონები მიუწვდომელია. ცადეთ მოგვიანებით.</translation>
 <translation id="3619115746895587757">კაპუჩინო</translation>
+<translation id="362266093274784978">{COUNT,plural, =1{აპი}other{# აპი}}</translation>
 <translation id="362333465072914957">სერტიფიკატების ცენტრის მიერ სერტიფიკატის გაცემის მოლოდინში</translation>
 <translation id="3624567683873126087">მოწყობილობის განბლოკვა და Google ანგარიშში შესვლა</translation>
 <translation id="3625481642044239431">არჩეულია არასწორი ფაილი. ცადეთ ხელახლა.</translation>
@@ -2663,6 +2664,7 @@
 <translation id="3895076768659607631">საძიებო სისტემების &amp;მართვა...</translation>
 <translation id="3895090224522145010">Kerberos მომხმარებლის სახელი</translation>
 <translation id="389521680295183045">საიტებს შეუძლია ნებართვის მოთხოვნა, რომ გაიგოს, როდის იყენებთ აქტიურად თქვენს მოწყობილობას</translation>
+<translation id="3897298432557662720">{COUNT,plural, =1{სურათი}other{# სურათი}}</translation>
 <translation id="3898233949376129212">მოწყობილობის ენა</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" />-ს სურს: <ph name="FIRST_PERMISSION" /> და <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">აირჩიეთ კლავიატურა</translation>
@@ -3576,6 +3578,7 @@
 <translation id="4943368462779413526">ამერიკული ფეხბურთის ბურთი</translation>
 <translation id="4943691134276646401">„<ph name="CHROME_EXTENSION_NAME" />“ ითხოვს დაკავშირებას თანმიმდევრულ პორტთან</translation>
 <translation id="4944310289250773232">ავტორიზაციის ამ სერვისის ჰოსტინგს უზრუნველყოფს <ph name="SAML_DOMAIN" /></translation>
+<translation id="495164417696120157">{COUNT,plural, =1{ფაილი}other{# ფაილი}}</translation>
 <translation id="495170559598752135">ქმედებები</translation>
 <translation id="4953808748584563296">ნაგულისხმევი სტაფილოსფერი ავატარი</translation>
 <translation id="4955710816792587366">აირჩიეთ PIN-კოდი</translation>
@@ -5075,6 +5078,7 @@
 <translation id="6664237456442406323">სამწუხაროდ, თქვენი კომპიუტერი კონფიგურირებულია დეფორმირებული აპარატურის ID-თი. ეს ხელს უშლის Chrome OS-ის განახლებას უსაფრთხოების უახლესი გამოსწორებებით და თქვენი კომპიუტერი <ph name="BEGIN_BOLD" />შეიძლება გახდეს მავნე პროგრამების მიერ განხორციელებული შეტევების ობიექტი<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">თქვენი პროფილის გახსნისას შეფერხება წარმოიქმნა. გთხოვთ, გამოხვიდეთ და ხელახლა შეხვიდეთ სისტემაში.</translation>
 <translation id="6670142487971298264"><ph name="APP_NAME" /> ახლა ხელმისაწვდომია</translation>
+<translation id="6671320560732140690">{COUNT,plural, =1{მისამართი}other{# მისამართი}}</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
 <translation id="6674571176963658787">სინქრონიზაციის დასაწყებად შეიყვანეთ თქვენი საიდუმლო ფრაზა</translation>
 <translation id="6675665718701918026">დაკავშირებულია მიმთითებელი მოწყობილობა</translation>
@@ -5771,6 +5775,7 @@
 <translation id="7456142309650173560">dev</translation>
 <translation id="7456847797759667638">მდებარეობის გახსნა…</translation>
 <translation id="7457384018036134905">ენების მართვა Chrome OS-ის პარამეტრებიდან</translation>
+<translation id="7457831169406914076">{COUNT,plural, =1{ბმული}other{# ბმული}}</translation>
 <translation id="7458168200501453431">იყენებს მართლწერის იმ შემმოწმებელს, რომელიც გამოიყენება Google Search-ში. ბრაუზერში თქვენ მიერ აკრეფილი ტექსტი ეგზავნება Google-ს.</translation>
 <translation id="7460045493116006516">თქვენ მიერ ამჟამად დაინსტალირებული თემა</translation>
 <translation id="7461924472993315131">პინი</translation>
@@ -6171,6 +6176,7 @@
 <translation id="7883792253546618164">გამოწერის გაუქმება ნებისმიერ დროს შეგიძლიათ.</translation>
 <translation id="788453346724465748">მიმდინარეობს ანგარიშის ინფორმაციის ჩატვირთვა...</translation>
 <translation id="7885253890047913815">ბოლო მიმართულებები</translation>
+<translation id="7886279613512920452">{COUNT,plural, =1{ერთეული}other{# ერთეული}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">დუბლირება</translation>
 <translation id="7887864092952184874">Bluetooth მაუსი დაწყვილებულია</translation>
@@ -6409,6 +6415,7 @@
 <translation id="8139447493436036221">Google Drive ფაილები</translation>
 <translation id="8141584439523427891">ახლა მიმდინარეობს ალტერნატიულ ბრაუზერში გახსნა</translation>
 <translation id="8141725884565838206">მართეთ თქვენი პაროლები</translation>
+<translation id="814204052173971714">{COUNT,plural, =1{ვიდეო}other{# ვიდეო}}</translation>
 <translation id="8143442547342702591">აპლიკაცია არასწორია</translation>
 <translation id="8143951647992294073">აირჩიეთ <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8146177459103116374">თუ თქვენ უკვე რეგისტრირებული ხართ ამ მოწყობილობაზე, თქვენ შეგიძლიათ <ph name="LINK2_START" />შეხვიდეთ როგორც არსებული მომხმარებელი<ph name="LINK2_END" />.</translation>
@@ -6428,6 +6435,7 @@
 <translation id="8161293209665121583">წამკითხველის რეჟიმი ვებგვერდებისთვის</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{ჩანართის ახალ ფანჯარაში გადატანა}other{ჩანართების ახალ ფანჯარაში გადატანა}}</translation>
 <translation id="8165997195302308593">Crostini-ს პორტების გადამისამართება</translation>
+<translation id="816704878106051517">{COUNT,plural, =1{ტელეფონის ნომერი}other{# ტელეფონის ნომერი}}</translation>
 <translation id="8168435359814927499">შიგთავსი</translation>
 <translation id="8168943654413034772">„არჩევისთვის“ მიმაგრებული ერთადერთი გადამრთველის გაუქმება ვერ მოხერხდება. გასასვლელად დააჭირეთ ნებისმიერ კლავიშს.</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{ჩანართის დამატება საკითხავ სიაში}other{ჩანართების დამატება საკითხავ სიაში}}</translation>

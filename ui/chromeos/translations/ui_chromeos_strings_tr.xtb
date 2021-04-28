@@ -451,6 +451,7 @@
 <translation id="5602622065581044566">Fonetik klavye ile Bulgarca</translation>
 <translation id="5605830556594064952">ABD Dvorak</translation>
 <translation id="5625294776298156701">Tamil99 klavye ile Tamilce</translation>
+<translation id="5633226425545095130">Bu öğe, "<ph name="DESTINATION_NAME" />" adlı paylaşılan klasöre taşınırsa bu klasörü görebilen herkesle paylaşılır.</translation>
 <translation id="5649768706273821470">Dinle</translation>
 <translation id="5678784840044122290">Linux uygulaması sizin Terminalinizde mevcut. Ayrıca Başlatıcınızda bir simgesini görebilirsiniz.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Arşivle veya sanal diskle olan bağlantı kesilemiyor<ph name="END_BOLD" />
@@ -725,6 +726,7 @@
 <translation id="8395901698320285466">Boyutlar</translation>
 <translation id="8437209419043462667">ABD</translation>
 <translation id="8456681095658380701">Geçersiz ad</translation>
+<translation id="8459404855768962328">Bu öğe, "<ph name="DESTINATION_NAME" />" adlı paylaşılan klasöre kopyalanırsa bu klasörü görebilen herkesle paylaşılır.</translation>
 <translation id="8461467696380332069">Raftaki dosyalarınıza hızlı erişim için dosyayı sağ tıklayıp "Rafa sabitle"yi seçin.</translation>
 <translation id="8463494891489624050">Vietnamca VIQR</translation>
 <translation id="8466234950814670489">Tar arşivi</translation>

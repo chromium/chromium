@@ -1328,6 +1328,7 @@
 <translation id="2440604414813129000">ഉറവിടം കാണുക</translation>
 <translation id="244231003699905658">വിലാസം തെറ്റാണ്. വിലാസം പരിശോധിച്ച ശേഷം വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="2442916515643169563">ടെക്‌സ്‌റ്റ് ഷാഡോ</translation>
+<translation id="24437238714184182"><ph name="SPAN_1_START" /><ph name="NETWORK_NAME" /><ph name="SPAN_1_END" /> - <ph name="SPAN_2_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_2_END" /></translation>
 <translation id="2445081178310039857">വിപുലീകരണ റൂട്ട് ഡയറക്‌റ്ററി ആവശ്യമാണ്.</translation>
 <translation id="2445484935443597917">പുതിയ പ്രൊഫൈൽ സൃഷ്‌ടിക്കുക</translation>
 <translation id="2448312741937722512">തരം</translation>
@@ -4641,6 +4642,7 @@
 <translation id="6184099524311454384">ടാബുകൾ തിരയുക</translation>
 <translation id="6185132558746749656">ഉപകരണ ലൊക്കേഷൻ</translation>
 <translation id="6186394437969115158">ഉള്ളടക്കമോ സേവനങ്ങളോ സൗജന്യമായി നൽകുന്നതിനാണ് സൈറ്റുകൾ സാധാരണയായി പരസ്യങ്ങൾ കാണിക്കുന്നത്. എന്നാൽ ചില സൈറ്റുകൾ അനാവശ്യമോ തെറ്റിദ്ധരിപ്പിക്കുന്നതോ ആയ പരസ്യങ്ങൾ കാണിക്കുന്നു.</translation>
+<translation id="6195005504600220730">നിങ്ങളുടെ ബ്രൗസർ, OS, ഉപകരണം എന്നിവയെ കുറിച്ചുള്ള വിവരങ്ങൾ വായിക്കുക</translation>
 <translation id="6195693561221576702">ഈ ഉപകരണം ഓഫ്‌ലൈൻ ഡെമോ മോഡിൽ സജ്ജീകരിക്കാനാവില്ല.</translation>
 <translation id="6195724942939841102">പുനഃസ്ഥാപിക്കരുത്</translation>
 <translation id="6196640612572343990">മൂന്നാം കക്ഷി കുക്കികള്‍ ബ്ലോക്കുചെയ്യുക</translation>

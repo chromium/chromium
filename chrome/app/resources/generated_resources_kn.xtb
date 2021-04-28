@@ -2393,6 +2393,7 @@
 <translation id="3616741288025931835">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು &amp;ತೆರವುಗೊಳಿಸಿ...</translation>
 <translation id="3617891479562106823">ಹಿನ್ನೆಲೆಗಳ ಕಸ್ಟಮೈಸೇಶನ್‌ ಲಭ್ಯವಿಲ್ಲ. ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="3619115746895587757">ಕ್ಯಾಪಚಿನೊ</translation>
+<translation id="362266093274784978">{COUNT,plural, =1{ಒಂದು ಆ್ಯಪ್}one{# ಆ್ಯಪ್‌ಗಳು}other{# ಆ್ಯಪ್‌ಗಳು}}</translation>
 <translation id="362333465072914957">ಪ್ರಮಾಣಪತ್ರ ಒದಗಿಸಲು CA ಗಾಗಿ ನಿರೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3624567683873126087">ಸಾಧನವನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ ಮತ್ತು Google ಖಾತೆಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="3625481642044239431">ಅಮಾನ್ಯ ಫೈಲ್ ಆಯ್ಕೆಯಾಗಿದೆ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -2665,6 +2666,7 @@
 <translation id="3895076768659607631">ಹುಡುಕಾಟ ಎಂಜಿನ್‌ಗಳನ್ನು &amp;ನಿರ್ವಹಿಸಿ...</translation>
 <translation id="3895090224522145010">Kerberos ಬಳಕೆದಾರರ ಹೆಸರು</translation>
 <translation id="389521680295183045">ನಿಮ್ಮ ಸಾಧನವನ್ನು ನೀವು ಸಕ್ರಿಯವಾಗಿ ಬಳಸುತ್ತಿರುವುದನ್ನು ತಿಳಿದುಕೊಳ್ಳಲು ಸೈಟ್‌ಗಳು ಕೇಳಬಹುದು</translation>
+<translation id="3897298432557662720">{COUNT,plural, =1{ಒಂದು ಚಿತ್ರ}one{# ಚಿತ್ರಗಳು}other{# ಚಿತ್ರಗಳು}}</translation>
 <translation id="3898233949376129212">ಸಾಧನದ ಭಾಷೆ</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" />, ಇವುಗಳನ್ನು ಮಾಡಲು ಬಯಸುತ್ತಿದೆ: <ph name="FIRST_PERMISSION" /> ಮತ್ತು <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">ಕೀಬೋರ್ಡ್ ಆಯ್ಕೆ ಮಾಡಿ</translation>
@@ -3579,6 +3581,7 @@
 <translation id="4943368462779413526">ಫುಟ್‌ಬಾಲ್</translation>
 <translation id="4943691134276646401">"<ph name="CHROME_EXTENSION_NAME" />" ಒಂದು ಸೀರಿಯಲ್ ಪೋರ್ಟ್‌ಗೆ ಸಂಪರ್ಕಿಸಲು ಬಯಸುತ್ತದೆ</translation>
 <translation id="4944310289250773232">ಈ ದೃಢೀಕರಣ ಸೇವೆಯನ್ನು <ph name="SAML_DOMAIN" /> ಮೂಲಕ ಹೋಸ್ಟ್ ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="495164417696120157">{COUNT,plural, =1{ಒಂದು ಫೈಲ್}one{# ಫೈಲ್‌ಗಳು}other{# ಫೈಲ್‌ಗಳು}}</translation>
 <translation id="495170559598752135">ಕ್ರಿಯೆಗಳು</translation>
 <translation id="4953808748584563296">ಡಿಫಾಲ್ಟ್ ಕೇಸರಿ ಅವತಾರ್</translation>
 <translation id="4955710816792587366">ನಿಮ್ಮ ಪಿನ್‌ ಆಯ್ಕೆಮಾಡಿ</translation>
@@ -5079,6 +5082,7 @@
 <translation id="6664237456442406323">ದುರದೃಷ್ಟವಶಾತ್, ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್ ಅನ್ನು ತಪ್ಪಾಗಿ ರಚಿಸಲಾದ ಹಾರ್ಡ್‌ವೇರ್ ID ಯೊಂದಿಗೆ ಕಾನ್ಫಿಗರ್ ಮಾಡಲಾಗಿದೆ. ಇದು Chrome OS ಅನ್ನು ಇತ್ತೀಚಿನ ಭದ್ರತೆ ಸರಿಪಡಿಸುವಿಕೆಗಳೊಂದಿಗೆ ನವೀಕರಿಸುವುದನ್ನು ತಡೆಯುತ್ತದೆ ಮತ್ತು ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್ <ph name="BEGIN_BOLD" />ದುರುದ್ದೇಶದ ದಾಳಿಗಳಿಗೆ ಗುರಿಯಾಗುವ ಸಾಧ್ಯತೆಯಿದೆ<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ತೆರೆಯುವಾಗ ಏನೋ ತಪ್ಪು ಸಂಭವಿಸಿದೆ. ದಯವಿಟ್ಟು ಸೈನ್ ಔಟ್ ಮಾಡಿ ನಂತರ ಮತ್ತೆ ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="6670142487971298264"><ph name="APP_NAME" /> ಆ್ಯಪ್ ಈಗ ಲಭ್ಯವಿದೆ</translation>
+<translation id="6671320560732140690">{COUNT,plural, =1{ಒಂದು ವಿಳಾಸ}one{# ವಿಳಾಸಗಳು}other{# ವಿಳಾಸಗಳು}}</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
 <translation id="6674571176963658787">ಸಿಂಕ್ ಪ್ರಾರಂಭಿಸಲು, ನಿಮ್ಮ ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="6675665718701918026">ಪಾಯಿಂಟಿಂಗ್ ಸಾಧನ ಸಂಪರ್ಕಿಸಲಾಗಿದೆ</translation>
@@ -5776,6 +5780,7 @@
 <translation id="7456142309650173560">dev</translation>
 <translation id="7456847797759667638">ಸ್ಥಳವನ್ನು ತೆರೆ...</translation>
 <translation id="7457384018036134905">Chrome OS ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿರುವ ಭಾಷೆಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
+<translation id="7457831169406914076">{COUNT,plural, =1{ಒಂದು ಲಿಂಕ್}one{# ಲಿಂಕ್‌ಗಳು}other{# ಲಿಂಕ್‌ಗಳು}}</translation>
 <translation id="7458168200501453431">Google ಹುಡುಕಾಟದಲ್ಲಿ ಬಳಸುವ ಕಾಗುಣಿತ ಪರೀಕ್ಷಕವನ್ನೇ ಬಳಸಿ. ನೀವು ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಟೈಪ್ ಮಾಡುವ ಪಠ್ಯವನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="7460045493116006516">ನೀವು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿರುವ ಪ್ರಸ್ತುತ ಥೀಮ್</translation>
 <translation id="7461924472993315131">ಪಿನ್</translation>
@@ -6175,6 +6180,7 @@
 <translation id="7883792253546618164">ಯಾವಾಗ ಬೇಕಾದರೂ ಅನ್‌ಸಬ್‌ಸ್ಕ್ರೈಬ್ ಮಾಡಿ.</translation>
 <translation id="788453346724465748">ಖಾತೆ ಮಾಹಿತಿಯನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="7885253890047913815">ಇತ್ತೀಚಿನ ಗಮ್ಯಸ್ಥಾನಗಳು</translation>
+<translation id="7886279613512920452">{COUNT,plural, =1{ಒಂದು ಐಟಂ}one{# ಐಟಂಗಳು}other{# ಐಟಂಗಳು}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">ನಕಲು</translation>
 <translation id="7887864092952184874">ಬ್ಲೂಟೂತ್‌ ಮೌಸ್ ಜೋಡಿಯಾಗಿದೆ</translation>
@@ -6412,6 +6418,7 @@
 <translation id="8139447493436036221">Google Drive ಫೈಲ್‌ಗಳು</translation>
 <translation id="8141584439523427891">ಇದೀಗ ಪರ್ಯಾಯ ಬ್ರೌಸರ್‌ನಲ್ಲಿ ತೆರೆಯಲಾಗುತ್ತಿದೆ</translation>
 <translation id="8141725884565838206">ನಿನ್ನ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
+<translation id="814204052173971714">{COUNT,plural, =1{ಒಂದು ವೀಡಿಯೊ}one{# ವೀಡಿಯೊಗಳು}other{# ವೀಡಿಯೊಗಳು}}</translation>
 <translation id="8143442547342702591">ಅಮಾನ್ಯವಾದ ಅಪ್ಲಿಕೇಶನ್</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="8146177459103116374">ಈ ಸಾಧನದಲ್ಲಿ ನೀವು ಈಗಾಗಲೇ ನೋಂದಾಯಿಸಿದ್ದರೆ, ನೀವು <ph name="LINK2_START" />ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಬಳಕೆದಾರನಂತೆ ಸೈನ್ ಇನ್<ph name="LINK2_END" /> ಮಾಡಬಹುದು.</translation>
@@ -6431,6 +6438,7 @@
 <translation id="8161293209665121583">ವೆಬ್ ಪುಟಗಳಿಗಾಗಿ ರೀಡರ್‌ ಮೋಡ್‌</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{ಟ್ಯಾಬ್ ಅನ್ನು ಹೊಸ ವಿಂಡೋಗೆ ಸರಿಸಿ}one{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹೊಸ ವಿಂಡೋಗೆ ಸರಿಸಿ}other{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹೊಸ ವಿಂಡೋಗೆ ಸರಿಸಿ}}</translation>
 <translation id="8165997195302308593">Crostini ಪೋರ್ಟ್ ಫಾರ್ವರ್ಡ್ ಮಾಡುವಿಕೆ</translation>
+<translation id="816704878106051517">{COUNT,plural, =1{ಒಂದು ಫೋನ್ ಸಂಖ್ಯೆ}one{# ಫೋನ್ ಸಂಖ್ಯೆಗಳು}other{# ಫೋನ್ ಸಂಖ್ಯೆಗಳು}}</translation>
 <translation id="8168435359814927499">ವಿಷಯ</translation>
 <translation id="8168943654413034772">ಆಯ್ಕೆಮಾಡಲು ನಿಯೋಜಿಸಲಾದ ಏಕೈಕ ಸ್ವಿಚ್ ಅನ್ನು ತೆಗೆದುಹಾಕಲು ಸಾಧ್ಯವಿಲ್ಲ. ನಿರ್ಗಮಿಸಲು ಯಾವುದಾದರೂ ಕೀ ಒತ್ತಿರಿ.</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{ಓದುವ ಪಟ್ಟಿಗೆ ಟ್ಯಾಬ್ ಅನ್ನು ಸೇರಿಸಿ}one{ಓದುವ ಪಟ್ಟಿಗೆ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ}other{ಓದುವ ಪಟ್ಟಿಗೆ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ}}</translation>

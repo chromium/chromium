@@ -451,6 +451,7 @@
 <translation id="5602622065581044566">불가리아어(표음 키보드)</translation>
 <translation id="5605830556594064952">영어(미국) 드보락</translation>
 <translation id="5625294776298156701">타밀어(Tamil99 키보드)</translation>
+<translation id="5633226425545095130">이 항목을 옮기면 '<ph name="DESTINATION_NAME" />' 공유 폴더를 볼 수 있는 모든 사용자와 항목이 공유됩니다.</translation>
 <translation id="5649768706273821470">듣기</translation>
 <translation id="5678784840044122290">단말기 내에서 Linux 애플리케이션을 사용할 수 있게 되며 런처에 아이콘이 표시될 수도 있습니다.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />아카이브 또는 가상 디스크의 연결을 해제할 수 없습니다.<ph name="END_BOLD" />
@@ -725,6 +726,7 @@
 <translation id="8395901698320285466">크기</translation>
 <translation id="8437209419043462667">영어(미국)</translation>
 <translation id="8456681095658380701">잘못된 이름입니다.</translation>
+<translation id="8459404855768962328">이 항목을 복사하면 '<ph name="DESTINATION_NAME" />' 공유 폴더를 볼 수 있는 모든 사용자와 항목이 공유됩니다.</translation>
 <translation id="8461467696380332069">파일을 마우스 오른쪽 버튼으로 클릭하고 실행기에서 파일에 빠르게 액세스할 수 있도록 '실행기에 고정'을 선택합니다.</translation>
 <translation id="8463494891489624050">베트남어(VIQR)</translation>
 <translation id="8466234950814670489">Tar 압축 파일</translation>

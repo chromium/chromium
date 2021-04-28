@@ -302,6 +302,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3486220673238053218">définition</translation>
 <translation id="3510164367642747937">Mettre le curseur de la souris en surbrillance</translation>
 <translation id="3513798432020909783">Compte géré par <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3552189655002856821">Le Wi-Fi est désactivé</translation>
 <translation id="3563775809269155755">Activer le point d'accès</translation>
 <translation id="3571734092741541777">Configurer</translation>
 <translation id="3573179567135747900">Revenir à "<ph name="FROM_LOCALE" />" (redémarrage requis)</translation>
@@ -349,6 +350,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3899995891769452915">Saisie vocale</translation>
 <translation id="3900355044994618856">Votre session va être fermée dans <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Connexion à <ph name="NAME" /> en cours…</translation>
+<translation id="3923494859158167397">Aucun réseau mobile configuré</translation>
 <translation id="3943857333388298514">Coller</translation>
 <translation id="394485226368336402">Paramètres audio</translation>
 <translation id="3945319193631853098">Appuyez pour terminer la configuration</translation>
@@ -379,6 +381,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4195877955194704651">Bouton de clics automatiques</translation>
 <translation id="4197790712631116042">Désactivé</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> n'est pas disponible.</translation>
+<translation id="4209973997261364186">Le Wi-Fi est activé</translation>
 <translation id="4212472694152630271">Authentification par code</translation>
 <translation id="4215497585250573029">Paramètres de VPN</translation>
 <translation id="4217571870635786043">Dictée</translation>
@@ -555,6 +558,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5689633613396158040">Cette fonctionnalité facilite la lecture à l'écran lorsque l'éclairage est faible. Appuyez ici pour modifier l'heure à laquelle elle doit s'activer ou désactivez-la complètement.</translation>
 <translation id="5691772641933328258">Empreinte digitale non reconnue</translation>
 <translation id="5710450975648804523">Mode "Ne pas déranger" activé</translation>
+<translation id="571295407079589142">Les données mobiles sont désactivées</translation>
 <translation id="573413375004481890">Cet appareil ne peut pas prendre en charge tous vos écrans. L'un d'eux a été déconnecté</translation>
 <translation id="574392208103952083">Moyen</translation>
 <translation id="5744083938413354016">Déplacement tactile</translation>

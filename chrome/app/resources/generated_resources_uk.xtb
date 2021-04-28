@@ -1334,6 +1334,7 @@
 <translation id="2440604414813129000">Див. д&amp;жерело</translation>
 <translation id="244231003699905658">Недійсна адреса. Перевірте адресу та повторіть спробу.</translation>
 <translation id="2442916515643169563">Тінь тексту</translation>
+<translation id="24437238714184182"><ph name="SPAN_1_START" /><ph name="NETWORK_NAME" /><ph name="SPAN_1_END" /> – <ph name="SPAN_2_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_2_END" /></translation>
 <translation id="2445081178310039857">Потрібен кореневий каталог розширення.</translation>
 <translation id="2445484935443597917">Створити новий профіль</translation>
 <translation id="2448312741937722512">Тип</translation>
@@ -2395,6 +2396,7 @@
 <translation id="3616741288025931835">&amp;Очистити дані веб-перегляду...</translation>
 <translation id="3617891479562106823">Фони недоступні. Повторіть спробу пізніше.</translation>
 <translation id="3619115746895587757">Капучино</translation>
+<translation id="362266093274784978">{COUNT,plural, =1{додаток}one{# додаток}few{# додатки}many{# додатків}other{# додатка}}</translation>
 <translation id="362333465072914957">Очікуємо на сертифікат від центру сертифікації</translation>
 <translation id="3624567683873126087">Розблоковуйте пристрій і входьте в обліковий запис Google</translation>
 <translation id="3625481642044239431">Вибрано недійсний файл. Повторіть спробу.</translation>
@@ -2666,6 +2668,7 @@
 <translation id="3895076768659607631">&amp;Керувати пошуковими системами…</translation>
 <translation id="3895090224522145010">Ім'я користувача Kerberos</translation>
 <translation id="389521680295183045">Сайти можуть запитувати, чи ви активно використовуєте пристрій</translation>
+<translation id="3897298432557662720">{COUNT,plural, =1{зображення}one{# зображення}few{# зображення}many{# зображень}other{# зображення}}</translation>
 <translation id="3898233949376129212">Мова пристрою</translation>
 <translation id="3898327728850887246">Сайту <ph name="SITE_NAME" /> потрібен дозвіл, щоб <ph name="FIRST_PERMISSION" /> та <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">Виберіть клавіатуру</translation>
@@ -3579,6 +3582,7 @@
 <translation id="4943368462779413526">Футбольний м’яч</translation>
 <translation id="4943691134276646401"><ph name="CHROME_EXTENSION_NAME" /> хоче під’єднатися до послідовного порту</translation>
 <translation id="4944310289250773232">Цей сервіс автентифікації розміщує <ph name="SAML_DOMAIN" /></translation>
+<translation id="495164417696120157">{COUNT,plural, =1{файл}one{# файл}few{# файли}many{# файлів}other{# файлу}}</translation>
 <translation id="495170559598752135">Дії</translation>
 <translation id="4953808748584563296">Стандартний оранжевий аватар</translation>
 <translation id="4955710816792587366">Придумайте PIN-код</translation>
@@ -4646,6 +4650,7 @@
 <translation id="6184099524311454384">Шукати вкладки</translation>
 <translation id="6185132558746749656">Місцезнаходження пристрою</translation>
 <translation id="6186394437969115158">Сайти зазвичай показують рекламу, щоб безкоштовно пропонувати контент або послуги. Однак деякі сайти показують нав'язливі чи оманливі оголошення.</translation>
+<translation id="6195005504600220730">Перегляд інформації про ваш веб-переглядач, ОС і пристрій</translation>
 <translation id="6195693561221576702">Не вдається налаштувати пристрій у демо-режимі офлайн.</translation>
 <translation id="6195724942939841102">Не відновлювати</translation>
 <translation id="6196640612572343990">Блокувати сторонні файли cookie</translation>
@@ -5077,6 +5082,7 @@
 <translation id="6664237456442406323">На жаль, ваш комп’ютер налаштовано за допомогою ідентифікатора апаратного забезпечення з невірною структурою. Це перешкоджає оновленню ОС Chrome найновішими виправленнями системи безпеки, а тому ваш комп’ютер <ph name="BEGIN_BOLD" />може бути вразливим до зловмисних атак<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">Не вдалося відкрити профіль. Вийдіть і знову ввійдіть.</translation>
 <translation id="6670142487971298264">Додаток <ph name="APP_NAME" /> уже доступний</translation>
+<translation id="6671320560732140690">{COUNT,plural, =1{адресу}one{# адресу}few{# адреси}many{# адрес}other{# адреси}}</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
 <translation id="6674571176963658787">Щоб почати синхронізацію, введіть парольну фразу</translation>
 <translation id="6675665718701918026">Маніпулятор підключено</translation>
@@ -5773,6 +5779,7 @@
 <translation id="7456142309650173560">версія для розробників</translation>
 <translation id="7456847797759667638">Відкрити розташування...</translation>
 <translation id="7457384018036134905">Керувати мовами в налаштуваннях ОС Chrome</translation>
+<translation id="7457831169406914076">{COUNT,plural, =1{посилання}one{# посилання}few{# посилання}many{# посилань}other{# посилання}}</translation>
 <translation id="7458168200501453431">Використовує ту саму технологію перевірки правопису, що й Пошук Google. Текст, який ви вводите у веб-переглядачі, надсилається в Google.</translation>
 <translation id="7460045493116006516">Поточна встановлена тема</translation>
 <translation id="7461924472993315131">Закріпити</translation>
@@ -6173,6 +6180,7 @@
 <translation id="7883792253546618164">Ви можете будь-коли скасувати підписку.</translation>
 <translation id="788453346724465748">Завантаження даних облікового запису…</translation>
 <translation id="7885253890047913815">Останні місця призначення</translation>
+<translation id="7886279613512920452">{COUNT,plural, =1{елемент}one{# елемент}few{# елементи}many{# елементів}other{# елемента}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">Створити копію</translation>
 <translation id="7887864092952184874">Підключено мишу Bluetooth</translation>
@@ -6413,6 +6421,7 @@
 <translation id="8139447493436036221">Файли з Google Диска</translation>
 <translation id="8141584439523427891">Відкривання в альтернативному веб-переглядачі</translation>
 <translation id="8141725884565838206">Керування паролями</translation>
+<translation id="814204052173971714">{COUNT,plural, =1{відео}one{# відео}few{# відео}many{# відео}other{# відео}}</translation>
 <translation id="8143442547342702591">Недійсний додаток</translation>
 <translation id="8143951647992294073">Вибрати тему "<ph name="TOPIC_SOURCE" />" з описом "<ph name="TOPIC_SOURCE_DESC" />"</translation>
 <translation id="8146177459103116374">Якщо ви вже зареєструвалися на цьому пристрої, можна <ph name="LINK2_START" />ввійти як існуючий користувач<ph name="LINK2_END" /> .</translation>
@@ -6432,6 +6441,7 @@
 <translation id="8161293209665121583">Режим читання для веб-сторінок</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Перемістити вкладку в нове вікно}one{Перемістити вкладки в нове вікно}few{Перемістити вкладки в нове вікно}many{Перемістити вкладки в нове вікно}other{Перемістити вкладки в нове вікно}}</translation>
 <translation id="8165997195302308593">Переадресація порту в Crostini</translation>
+<translation id="816704878106051517">{COUNT,plural, =1{номер телефону}one{# номер телефону}few{# номери телефонів}many{# номерів телефонів}other{# номера телефону}}</translation>
 <translation id="8168435359814927499">Вміст</translation>
 <translation id="8168943654413034772">Не можна видалити призначення єдиного перемикача, пов'язаного з дією "Вибрати". Щоб вийти, натисніть будь-яку клавішу.</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Додати вкладку в список читання}one{Додати вкладки в список читання}few{Додати вкладки в список читання}many{Додати вкладки в список читання}other{Додати вкладки в список читання}}</translation>

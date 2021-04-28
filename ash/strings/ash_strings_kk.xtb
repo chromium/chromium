@@ -302,6 +302,7 @@
 <translation id="3486220673238053218">анықтама</translation>
 <translation id="3510164367642747937">Тінтуір курсорын бөлектеу</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> басқаратын есептік жазба</translation>
+<translation id="3552189655002856821">Wi-Fi өшірулі</translation>
 <translation id="3563775809269155755">Хотспотты қосу</translation>
 <translation id="3571734092741541777">Орнату</translation>
 <translation id="3573179567135747900">Қайта "<ph name="FROM_LOCALE" />" етіп өзгерту (қайта іске қосуды қажет етеді)</translation>
@@ -349,6 +350,7 @@
 <translation id="3899995891769452915">Дауыспен енгізу</translation>
 <translation id="3900355044994618856">Сеанс <ph name="SESSION_TIME_REMAINING" /> өткен соң аяқталады</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> желісіне қосылу</translation>
+<translation id="3923494859158167397">Ешқандай мобильдік желі реттелмеген.</translation>
 <translation id="3943857333388298514">Қою</translation>
 <translation id="394485226368336402">Аудио параметрлері</translation>
 <translation id="3945319193631853098">Реттеуді аяқтау үшін түртіңіз.</translation>
@@ -379,6 +381,7 @@
 <translation id="4195877955194704651">Автоматты басу түймесі</translation>
 <translation id="4197790712631116042">Өшірулі</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> қолжетімді емес.</translation>
+<translation id="4209973997261364186">Wi-Fi қосылды.</translation>
 <translation id="4212472694152630271">PIN кодына ауысу</translation>
 <translation id="4215497585250573029">VPN параметрлері</translation>
 <translation id="4217571870635786043">Мәтінді дауыспен енгізу</translation>
@@ -555,6 +558,7 @@
 <translation id="5689633613396158040">Түнгі жарық режимін қосып қойсаңыз, айнала күңгірттеніп тұрғанда, экран жарығы көзіңізді ауыртпайды. Түнгі жарық қосылатын уақытты өзгерту немесе оны толықтай өшіру үшін түртіңіз.</translation>
 <translation id="5691772641933328258">Саусағыңыздың ізі танылмады</translation>
 <translation id="5710450975648804523">Мазаламау режимі қосулы</translation>
+<translation id="571295407079589142">Мобильдік интернет өшірілді.</translation>
 <translation id="573413375004481890">Бұл құрылғы барлық дисплейлерді бірдей қолдамайтындықтан, бір дисплей ажыратылды.</translation>
 <translation id="574392208103952083">Орташа</translation>
 <translation id="5744083938413354016">Түртіп сүйреу</translation>

@@ -302,6 +302,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3486220673238053218">definición</translation>
 <translation id="3510164367642747937">Resaltar el cursor del mouse</translation>
 <translation id="3513798432020909783">Cuenta administrada por <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3552189655002856821">La conexión Wi-Fi está desactivada</translation>
 <translation id="3563775809269155755">Habilitar el hotspot</translation>
 <translation id="3571734092741541777">Configurar</translation>
 <translation id="3573179567135747900">Volver a "<ph name="FROM_LOCALE" />" (debes reiniciar).</translation>
@@ -350,6 +351,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="3899995891769452915">Entrada de voz</translation>
 <translation id="3900355044994618856">Tu sesión finalizará en <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Conectando con: <ph name="NAME" /></translation>
+<translation id="3923494859158167397">No se configuró ninguna red móvil.</translation>
 <translation id="3943857333388298514">Pegar</translation>
 <translation id="394485226368336402">Configuración de audio</translation>
 <translation id="3945319193631853098">Presiona para completar la configuración.</translation>
@@ -380,6 +382,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4195877955194704651">Botón de clic automáticos</translation>
 <translation id="4197790712631116042">No</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> no está disponible.</translation>
+<translation id="4209973997261364186">La conexión Wi-Fi está activada.</translation>
 <translation id="4212472694152630271">Cambiar a PIN</translation>
 <translation id="4215497585250573029">Configuración de la VPN</translation>
 <translation id="4217571870635786043">Dictado</translation>
@@ -556,6 +559,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5689633613396158040">La Luz nocturna te permite ver la pantalla o leer mejor con luz tenue. Presiona para cambiar el horario en el que se activa la Luz nocturna o desactívala por completo.</translation>
 <translation id="5691772641933328258">No se reconoció la huella dactilar</translation>
 <translation id="5710450975648804523">"No interrumpir" activado</translation>
+<translation id="571295407079589142">Los datos móviles están desactivados.</translation>
 <translation id="573413375004481890">Este dispositivo no admite tantas pantallas, por lo que se desconectó una de ellas</translation>
 <translation id="574392208103952083">Media</translation>
 <translation id="5744083938413354016">Función tocar y arrastrar</translation>

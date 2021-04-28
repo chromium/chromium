@@ -451,6 +451,7 @@
 <translation id="5602622065581044566">ブルガリア語（表音）キーボード</translation>
 <translation id="5605830556594064952">US Dvorak 配列</translation>
 <translation id="5625294776298156701">タミル語（Tamil99）キーボード</translation>
+<translation id="5633226425545095130">このアイテムを移動すると、アイテムは共有フォルダ「<ph name="DESTINATION_NAME" />」を閲覧できるすべてのユーザーと共有されます。</translation>
 <translation id="5649768706273821470">聴く</translation>
 <translation id="5678784840044122290">Linux アプリケーションはお使いのデバイスでご利用いただけるようになります。ランチャーにアイコンが追加されている可能性もあります。</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />アーカイブまたは仮想ディスクから切断できません<ph name="END_BOLD" />
@@ -725,6 +726,7 @@
 <translation id="8395901698320285466">サイズ</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8456681095658380701">名前が無効です</translation>
+<translation id="8459404855768962328">このアイテムをコピーすると、アイテムは共有フォルダ「<ph name="DESTINATION_NAME" />」を閲覧できるすべてのユーザーと共有されます。</translation>
 <translation id="8461467696380332069">ファイルを右クリックして、[シェルフに固定] を選択すると、シェルフからファイルに簡単にアクセスできます。</translation>
 <translation id="8463494891489624050">ベトナム語（VIQR）</translation>
 <translation id="8466234950814670489">tar アーカイブ</translation>
