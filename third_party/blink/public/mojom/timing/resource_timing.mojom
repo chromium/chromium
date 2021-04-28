@@ -87,9 +87,8 @@ struct ResourceTimingInfo {
   // Whether the connection was reused or not.
   bool did_reuse_connection;
 
-  // Whether the execution context that created this resource entry
-  // was a secure context or not.
-  bool is_secure_context;
+  // Whether the connection used secured transport or not.
+  bool is_secure_transport;
 
   // TODO(dcheng): The way this code works is fairly confusing: it might seem
   // unusual to store policy members like |allow_timing_details| inline, rather

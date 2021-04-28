@@ -25,6 +25,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/url_util.h"
 
 namespace content {
 
@@ -185,8 +186,9 @@ blink::mojom::ResourceTimingInfoPtr GenerateResourceTiming(
   // The final value for `transfer_size`, as well as `encoded_body_size`, and
   // `decoded_body_size` will be populated after loading the body.
   timing_info->did_reuse_connection = response_head.load_timing.socket_reused;
-  timing_info->is_secure_context =
-      network::IsUrlPotentiallyTrustworthy(common_params.url);
+  // Use url::Origin to handle cases like blob:https://.
+  timing_info->is_secure_transport = base::Contains(
+      url::GetSecureSchemes(), url::Origin::Create(common_params.url).scheme());
   timing_info->allow_negative_values = false;
   return timing_info;
 }

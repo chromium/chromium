@@ -87,7 +87,7 @@ PerformanceResourceTiming::PerformanceResourceTiming(
       allow_timing_details_(info.allow_timing_details),
       allow_redirect_details_(info.allow_redirect_details),
       allow_negative_value_(info.allow_negative_values),
-      is_secure_context_(info.is_secure_context),
+      is_secure_transport_(info.is_secure_transport),
       server_timing_(
           PerformanceServerTiming::FromParsedServerTiming(info.server_timing)),
       worker_timing_receiver_(this, context) {
@@ -105,7 +105,7 @@ PerformanceResourceTiming::PerformanceResourceTiming(
     const AtomicString& name,
     base::TimeTicks time_origin,
     bool cross_origin_isolated_capability,
-    bool is_secure_context,
+    bool is_secure_transport,
     HeapVector<Member<PerformanceServerTiming>> server_timing,
     ExecutionContext* context)
     : PerformanceEntry(name, 0.0, 0.0),
@@ -113,7 +113,7 @@ PerformanceResourceTiming::PerformanceResourceTiming(
       cross_origin_isolated_capability_(cross_origin_isolated_capability),
       context_type_(mojom::blink::RequestContextType::HYPERLINK),
       request_destination_(network::mojom::RequestDestination::kDocument),
-      is_secure_context_(is_secure_context),
+      is_secure_transport_(is_secure_transport),
       server_timing_(std::move(server_timing)),
       worker_timing_receiver_(this, context) {
   DCHECK(context);
@@ -316,7 +316,7 @@ DOMHighResTimeStamp PerformanceResourceTiming::connectEnd() const {
 }
 
 DOMHighResTimeStamp PerformanceResourceTiming::secureConnectionStart() const {
-  if (!AllowTimingDetails() || !is_secure_context_)
+  if (!AllowTimingDetails() || !is_secure_transport_)
     return 0.0;
 
   // Step 2 of

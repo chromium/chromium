@@ -57,8 +57,8 @@ PerformanceNavigationTiming::PerformanceNavigationTiming(
                : g_empty_atom,
           time_origin,
           cross_origin_isolated_capability,
-          // TODO(crbug.com/1153336) Use network::IsUrlPotentiallyTrustworthy().
-          SecurityOrigin::IsSecure(window->Url()),
+          base::Contains(url::GetSecureSchemes(),
+                         window->Url().Protocol().Ascii()),
           std::move(server_timing),
           window),
       ExecutionContextClient(window),

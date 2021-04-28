@@ -61,7 +61,7 @@ class CORE_EXPORT PerformanceResourceTiming
       const AtomicString& name,
       base::TimeTicks time_origin,
       bool cross_origin_isolated_capability,
-      bool is_secure_context,
+      bool is_secure_transport,
       HeapVector<Member<PerformanceServerTiming>> server_timing,
       ExecutionContext* context);
   PerformanceResourceTiming(
@@ -148,7 +148,7 @@ class CORE_EXPORT PerformanceResourceTiming
   bool allow_timing_details_ = false;
   bool allow_redirect_details_ = false;
   bool allow_negative_value_ = false;
-  bool is_secure_context_ = false;
+  bool is_secure_transport_ = false;
   HeapVector<Member<PerformanceServerTiming>> server_timing_;
   HeapVector<Member<PerformanceEntry>> worker_timing_;
 
