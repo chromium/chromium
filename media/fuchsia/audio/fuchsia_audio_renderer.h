@@ -14,6 +14,7 @@
 #include "media/base/buffering_state.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/time_source.h"
+#include "media/fuchsia/common/vmo_buffer_writer_queue.h"
 
 namespace media {
 
@@ -65,13 +66,6 @@ class FuchsiaAudioRenderer : public AudioRenderer, public TimeSource {
     kPlaying,
   };
 
-  // Struct used to store state of an input buffer shared with the
-  // |stream_sink_|.
-  struct StreamSinkBuffer {
-    zx::vmo vmo;
-    bool is_used = false;
-  };
-
   // Returns current PlaybackState. Should be used only on the main thread.
   PlaybackState GetPlaybackState() NO_THREAD_SAFETY_ANALYSIS;
 
@@ -105,8 +99,14 @@ class FuchsiaAudioRenderer : public AudioRenderer, public TimeSource {
   void OnDemuxerStreamReadDone(DemuxerStream::Status status,
                                scoped_refptr<DecoderBuffer> buffer);
 
+  // Callbacks for VmoBufferWriterQueue.
+  void SendInputPacket(const DecoderBuffer* buffer,
+                       StreamProcessorHelper::IoPacket packet);
+  void ProcessEndOfStream();
+
   // Result handler for StreamSink::SendPacket().
-  void OnStreamSendDone(size_t buffer_index);
+  void OnStreamSendDone(
+      std::unique_ptr<StreamProcessorHelper::IoPacket> packet);
 
   // Updates buffer state and notifies the |client_| if necessary.
   void SetBufferState(BufferingState buffer_state);
@@ -160,8 +160,7 @@ class FuchsiaAudioRenderer : public AudioRenderer, public TimeSource {
   base::TimeDelta last_packet_timestamp_ = base::TimeDelta::Min();
   base::OneShotTimer read_timer_;
 
-  std::vector<StreamSinkBuffer> stream_sink_buffers_;
-  size_t num_pending_packets_ = 0u;
+  VmoBufferWriterQueue input_queue_;
 
   // Lead time range requested by the |audio_consumer_|. Initialized to 0 until
   // the initial AudioConsumerStatus is received.

@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/threading/thread_checker.h"
+#include "media/base/media_export.h"
 #include "media/fuchsia/common/stream_processor_helper.h"
 #include "media/fuchsia/common/vmo_buffer.h"
 
@@ -23,7 +24,7 @@ class DecoderBuffer;
 
 // A helper that keeps a queue of pending DecodeBuffers, writes them to a set of
 // VmoBuffers and generates StreamProcessor packets.
-class VmoBufferWriterQueue {
+class MEDIA_EXPORT VmoBufferWriterQueue {
  public:
   // Callback passed to StartSender(). |buffer| corresponds to the original
   // buffer from which the |packet| was generated.
@@ -75,6 +76,10 @@ class VmoBufferWriterQueue {
   // Number of buffers in the sysmem collection or 0 if sysmem buffers has not
   // been allocated (i.e. before Start()).
   size_t num_buffers() const;
+
+  // Returns true of the queue is currently blocked, i.e. buffers passed
+  // to EnqueueBuffer() will not be sent immediately.
+  bool IsBlocked() const;
 
  private:
   struct PendingBuffer;

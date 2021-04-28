@@ -163,32 +163,44 @@ void FuchsiaAudioRenderer::InitializeStreamSink(
     const AudioDecoderConfig& config) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!stream_sink_);
-  DCHECK(stream_sink_buffers_.empty());
-  DCHECK_EQ(num_pending_packets_, 0U);
 
   // Allocate input buffers for the StreamSink.
-  stream_sink_buffers_.resize(kNumBuffers);
+  std::vector<VmoBuffer> buffers;
+  buffers.resize(kNumBuffers);
+
   std::vector<zx::vmo> vmos_for_stream_sink;
   vmos_for_stream_sink.reserve(kNumBuffers);
-  for (StreamSinkBuffer& buffer : stream_sink_buffers_) {
-    zx_status_t status = zx::vmo::create(kBufferSize, 0, &buffer.vmo);
+  for (VmoBuffer& buffer : buffers) {
+    zx::vmo vmo;
+    zx_status_t status = zx::vmo::create(kBufferSize, 0, &vmo);
     ZX_CHECK(status == ZX_OK, status) << "zx_vmo_create";
 
     constexpr char kName[] = "cr-audio-renderer";
-    status =
-        buffer.vmo.set_property(ZX_PROP_NAME, kName, base::size(kName) - 1);
+    status = vmo.set_property(ZX_PROP_NAME, kName, base::size(kName) - 1);
     ZX_DCHECK(status == ZX_OK, status);
 
     // Duplicate VMO handle to pass to AudioConsumer.
     zx::vmo readonly_vmo;
-    status = buffer.vmo.duplicate(ZX_RIGHT_DUPLICATE | ZX_RIGHT_TRANSFER |
-                                      ZX_RIGHT_READ | ZX_RIGHT_MAP |
-                                      ZX_RIGHT_GET_PROPERTY,
-                                  &readonly_vmo);
+    status =
+        vmo.duplicate(ZX_RIGHT_DUPLICATE | ZX_RIGHT_TRANSFER | ZX_RIGHT_READ |
+                          ZX_RIGHT_MAP | ZX_RIGHT_GET_PROPERTY,
+                      &readonly_vmo);
     ZX_CHECK(status == ZX_OK, status) << "zx_handle_duplicate";
+
+    bool buffer_initialized =
+        buffer.Initialize(std::move(vmo), /*writable=*/true, /*offset=*/0,
+                          kBufferSize, fuchsia::sysmem::CoherencyDomain::RAM);
+    CHECK(buffer_initialized);
 
     vmos_for_stream_sink.push_back(std::move(readonly_vmo));
   }
+
+  input_queue_.Start(
+      std::move(buffers),
+      base::BindRepeating(&FuchsiaAudioRenderer::SendInputPacket,
+                          base::Unretained(this)),
+      base::BindRepeating(&FuchsiaAudioRenderer::ProcessEndOfStream,
+                          base::Unretained(this)));
 
   auto compression = GetFuchsiaCompressionFromDecoderConfig(config);
   if (!compression) {
@@ -470,8 +482,7 @@ void FuchsiaAudioRenderer::ScheduleReadDemuxerStream() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (!demuxer_stream_ || read_timer_.IsRunning() || is_demuxer_read_pending_ ||
-      is_at_end_of_stream_ ||
-      num_pending_packets_ >= stream_sink_buffers_.size()) {
+      is_at_end_of_stream_ || input_queue_.IsBlocked()) {
     return;
   }
 
@@ -523,8 +534,7 @@ void FuchsiaAudioRenderer::OnDemuxerStreamReadDone(
       OnError(PIPELINE_ERROR_READ);
     } else if (read_status == DemuxerStream::kConfigChanged) {
       stream_sink_.Unbind();
-      stream_sink_buffers_.clear();
-      num_pending_packets_ = 0;
+      input_queue_.ResetBuffers();
 
       InitializeStreamSink(demuxer_stream_->audio_decoder_config());
       ScheduleReadDemuxerStream();
@@ -534,73 +544,63 @@ void FuchsiaAudioRenderer::OnDemuxerStreamReadDone(
     return;
   }
 
-  if (buffer->end_of_stream()) {
-    is_at_end_of_stream_ = true;
-    stream_sink_->EndOfStream();
+  if (!buffer->end_of_stream()) {
+    if (buffer->data_size() > kBufferSize) {
+      DLOG(ERROR) << "Demuxer returned buffer that is too big: "
+                  << buffer->data_size();
+      OnError(AUDIO_RENDERER_ERROR);
+      return;
+    }
 
-    // No more data is going to be buffered. Update buffering state to ensure
-    // RendererImpl starts playback in case it was waiting for buffering to
-    // finish.
-    SetBufferState(BUFFERING_HAVE_ENOUGH);
-
-    return;
+    last_packet_timestamp_ = buffer->timestamp();
   }
 
-  if (buffer->data_size() > kBufferSize) {
-    DLOG(ERROR) << "Demuxer returned buffer that is too big: "
-                << buffer->data_size();
-    OnError(AUDIO_RENDERER_ERROR);
-    return;
-  }
+  input_queue_.EnqueueBuffer(std::move(buffer));
 
-  // Find unused buffer.
-  auto it = std::find_if(
-      stream_sink_buffers_.begin(), stream_sink_buffers_.end(),
-      [](const StreamSinkBuffer& b) -> bool { return !b.is_used; });
+  ScheduleReadDemuxerStream();
+}
 
-  // ReadDemuxerStream() is not supposed to be called unless there are unused
-  // buffers.
-  CHECK(it != stream_sink_buffers_.end());
+void FuchsiaAudioRenderer::SendInputPacket(
+    const DecoderBuffer* buffer,
+    StreamProcessorHelper::IoPacket packet) {
+  fuchsia::media::StreamPacket stream_packet;
+  stream_packet.payload_buffer_id = packet.buffer_index();
+  stream_packet.pts = packet.timestamp().ToZxDuration();
+  stream_packet.payload_offset = packet.offset();
+  stream_packet.payload_size = packet.size();
 
-  ++num_pending_packets_;
-  DCHECK_LE(num_pending_packets_, stream_sink_buffers_.size());
-
-  it->is_used = true;
-  zx_status_t status = it->vmo.write(buffer->data(), 0, buffer->data_size());
-  ZX_CHECK(status == ZX_OK, status) << "zx_vmo_write";
-
-  size_t buffer_index = it - stream_sink_buffers_.begin();
-
-  fuchsia::media::StreamPacket packet;
-  packet.payload_buffer_id = buffer_index;
-  packet.pts = buffer->timestamp().ToZxDuration();
-  packet.payload_offset = 0;
-  packet.payload_size = buffer->data_size();
-
-  stream_sink_->SendPacket(std::move(packet), [this, buffer_index]() {
-    OnStreamSendDone(buffer_index);
-  });
+  stream_sink_->SendPacket(
+      std::move(stream_packet),
+      [this, packet = std::make_unique<StreamProcessorHelper::IoPacket>(
+                 std::move(packet))]() mutable {
+        OnStreamSendDone(std::move(packet));
+      });
 
   // AudioConsumer doesn't report exact time when the data is decoded, but it's
   // safe to report it as decoded right away since the packet is expected to be
   // decoded soon after AudioConsumer receives it.
   PipelineStatistics stats;
-  stats.audio_bytes_decoded = buffer->data_size();
+  stats.audio_bytes_decoded = packet.size();
   client_->OnStatisticsUpdate(stats);
-
-  last_packet_timestamp_ = buffer->timestamp();
-
-  ScheduleReadDemuxerStream();
 }
 
-void FuchsiaAudioRenderer::OnStreamSendDone(size_t buffer_index) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK_LT(buffer_index, stream_sink_buffers_.size());
-  DCHECK(stream_sink_buffers_[buffer_index].is_used);
-  stream_sink_buffers_[buffer_index].is_used = false;
+void FuchsiaAudioRenderer::ProcessEndOfStream() {
+  is_at_end_of_stream_ = true;
+  stream_sink_->EndOfStream();
 
-  DCHECK_GT(num_pending_packets_, 0U);
-  --num_pending_packets_;
+  // No more data is going to be buffered. Update buffering state to ensure
+  // RendererImpl starts playback in case it was waiting for buffering to
+  // finish.
+  SetBufferState(BUFFERING_HAVE_ENOUGH);
+}
+
+void FuchsiaAudioRenderer::OnStreamSendDone(
+    std::unique_ptr<StreamProcessorHelper::IoPacket> packet) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  // Release the packet first to ensure it's returned to VmoBufferWriterQueue
+  // before ScheduleReadDemuxerStream().
+  packet.reset();
 
   ScheduleReadDemuxerStream();
 }

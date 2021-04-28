@@ -14,10 +14,11 @@
 #include "base/containers/span.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/optional.h"
+#include "media/base/media_export.h"
 
 namespace media {
 
-class VmoBuffer {
+class MEDIA_EXPORT VmoBuffer {
  public:
   // Returns sysmem buffer constraints to use to ensure that sysmem buffer
   // collection is compatible with this class.

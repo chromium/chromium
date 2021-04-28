@@ -42,7 +42,10 @@ struct VmoBufferWriterQueue::PendingBuffer {
   base::Optional<size_t> tail_sysmem_buffer_index;
 };
 
-VmoBufferWriterQueue::VmoBufferWriterQueue() = default;
+VmoBufferWriterQueue::VmoBufferWriterQueue() {
+  DETACH_FROM_THREAD(thread_checker_);
+}
+
 VmoBufferWriterQueue::~VmoBufferWriterQueue() = default;
 
 void VmoBufferWriterQueue::EnqueueBuffer(scoped_refptr<DecoderBuffer> buffer) {
@@ -69,6 +72,10 @@ void VmoBufferWriterQueue::Start(std::vector<VmoBuffer> buffers,
   }
 
   PumpPackets();
+}
+
+bool VmoBufferWriterQueue::IsBlocked() const {
+  return input_queue_position_ < pending_buffers_.size();
 }
 
 void VmoBufferWriterQueue::PumpPackets() {

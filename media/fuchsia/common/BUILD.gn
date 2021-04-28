@@ -16,6 +16,8 @@ source_set("common") {
     "vmo_buffer_writer_queue.h",
   ]
 
+  configs += [ "//media:subcomponent_config" ]
+
   deps = [
     "//base",
     "//media/base",
