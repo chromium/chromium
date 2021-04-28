@@ -1301,8 +1301,10 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,
   EXPECT_WV(IsVideoEncryptionSchemeSupported(kWidevine, "cbcs-1-9",
                                              "SW_SECURE_DECODE"));
 
-  // For HW_SECURE* robustness levels. 'cenc' is always supported. 'cbcs' is
-  // supported on ChromeOS, but not on other platforms.
+  // For HW_SECURE* robustness levels, 'cenc' is always supported by setting
+  // the command line switch kOverrideHardwareSecureCodecsForTesting.
+  // ChromeOS has special handling for hardware support, so 'cbcs' is supported
+  // on ChromeOS, but not on other platforms.
   EXPECT_WV(
       IsAudioEncryptionSchemeSupported(kWidevine, "cenc", "HW_SECURE_CRYPTO"));
   EXPECT_WV(

@@ -80,11 +80,12 @@ GetHardwareSecureCapabilityOverriddenFromCommandLine() {
     return base::nullopt;
   }
 
-  // Overridden codecs assume CENC/CBCS and temporary session support.
-  return media::CdmCapability(
-      std::move(video_codecs),
-      {media::EncryptionScheme::kCenc, media::EncryptionScheme::kCbcs},
-      {media::CdmSessionType::kTemporary});
+  // Overridden codecs assume CENC and temporary session support.
+  // The EncryptedMediaSupportedTypesWidevineHwSecureTest tests depend
+  // on 'cbcs' not being supported.
+  return media::CdmCapability(std::move(video_codecs),
+                              {media::EncryptionScheme::kCenc},
+                              {media::CdmSessionType::kTemporary});
 }
 
 // Software secure capability can be obtained synchronously in all supported
