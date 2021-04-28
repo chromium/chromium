@@ -30,6 +30,8 @@
 #include "third_party/blink/renderer/core/paint/text_painter_base.h"
 #include "third_party/blink/renderer/core/style/applied_text_decoration.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/svg/svg_element.h"
+#include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
@@ -236,8 +238,15 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   // Determine text colors.
 
   Node* node = layout_object->GetNode();
+  DCHECK(!svg_inline_text ||
+         (!IsA<SVGElement>(node) && IsA<SVGElement>(node->parentNode())));
   TextPaintStyle text_style =
-      TextPainterBase::TextPaintingStyle(document, style, paint_info);
+      svg_inline_text
+          ? TextPainterBase::SvgTextPaintingStyle(
+                document, SVGLengthContext(To<SVGElement>(node->parentNode())),
+                style, paint_info)
+          : TextPainterBase::TextPaintingStyle(document, style, paint_info);
+  // TODO(crbug.com/1179585): Support SVG Paint Servers (e.g. Gradient, Pattern)
   if (UNLIKELY(selection)) {
     selection->ComputeSelectionStyle(document, style, node, paint_info,
                                      text_style);
