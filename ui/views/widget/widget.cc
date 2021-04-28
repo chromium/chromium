@@ -760,10 +760,7 @@ void Widget::SetFullscreen(bool fullscreen) {
   if (IsFullscreen() == fullscreen)
     return;
 
-  auto weak_ptr = GetWeakPtr();
   native_widget_->SetFullscreen(fullscreen);
-  if (!weak_ptr)
-    return;
 
   if (non_client_view_)
     non_client_view_->InvalidateLayout();
