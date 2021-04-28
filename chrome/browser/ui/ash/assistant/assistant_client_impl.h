@@ -11,7 +11,7 @@
 #include "ash/public/cpp/assistant/assistant_client.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/ash/assistant/device_actions.h"
 #include "chromeos/assistant/buildflags.h"
 #include "chromeos/services/assistant/public/cpp/assistant_client.h"
@@ -116,8 +116,8 @@ class AssistantClientImpl : public ash::AssistantClient,
   Profile* profile_ = nullptr;
   signin::IdentityManager* identity_manager_ = nullptr;
 
-  ScopedObserver<ash::AssistantStateBase, ash::AssistantStateObserver>
-      assistant_state_observer_{this};
+  base::ScopedObservation<ash::AssistantStateBase, ash::AssistantStateObserver>
+      assistant_state_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AssistantClientImpl);
 };

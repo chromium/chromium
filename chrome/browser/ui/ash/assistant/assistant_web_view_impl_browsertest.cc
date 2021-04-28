@@ -10,7 +10,7 @@
 #include "ash/public/cpp/assistant/assistant_web_view.h"
 #include "ash/public/cpp/assistant/assistant_web_view_factory.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ui/ash/assistant/assistant_test_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -41,7 +41,7 @@ constexpr int kVersion = 1;
   {                                                                      \
     MockViewObserver mock;                                               \
     ScopedObserver<views::View, views::ViewObserver> observer{&mock};    \
-    observer.Add(static_cast<views::View*>(web_view_));                  \
+    observer.Observe(static_cast<views::View*>(web_view_));              \
                                                                          \
     base::RunLoop run_loop;                                              \
     EXPECT_CALL(mock, OnViewPreferredSizeChanged)                        \
@@ -56,7 +56,7 @@ constexpr int kVersion = 1;
   {                                                                            \
     MockAssistantWebViewObserver mock;                                         \
     ScopedObserver<AssistantWebView, AssistantWebView::Observer> obs{&mock};   \
-    obs.Add(web_view_);                                                        \
+    obs.Observe(web_view_);                                                    \
                                                                                \
     base::RunLoop run_loop;                                                    \
     EXPECT_CALL(mock, DidStopLoading).WillOnce(testing::Invoke([&run_loop]() { \
@@ -71,7 +71,7 @@ constexpr int kVersion = 1;
   {                                                                          \
     MockAssistantWebViewObserver mock;                                       \
     ScopedObserver<AssistantWebView, AssistantWebView::Observer> obs{&mock}; \
-    obs.Add(web_view_);                                                      \
+    obs.Observe(web_view_);                                                  \
                                                                              \
     base::RunLoop run_loop;                                                  \
     EXPECT_CALL(mock, DidSuppressNavigation)                                 \
@@ -90,7 +90,7 @@ constexpr int kVersion = 1;
   {                                                                          \
     MockAssistantWebViewObserver mock;                                       \
     ScopedObserver<AssistantWebView, AssistantWebView::Observer> obs{&mock}; \
-    obs.Add(web_view_);                                                      \
+    obs.Observe(web_view_);                                                  \
                                                                              \
     base::RunLoop run_loop;                                                  \
     EXPECT_CALL(mock, DidChangeCanGoBack)                                    \
