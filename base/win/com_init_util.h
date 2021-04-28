@@ -20,6 +20,9 @@ enum class ComApartmentType {
   MTA,
 };
 
+// Get the current apartment type.
+BASE_EXPORT ComApartmentType GetComApartmentTypeForThread();
+
 #if DCHECK_IS_ON()
 
 // DCHECKs if COM is not initialized on this thread as an STA or MTA.
