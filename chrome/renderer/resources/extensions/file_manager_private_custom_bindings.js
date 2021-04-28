@@ -231,7 +231,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   });
 
   apiFunctions.setHandleRequest('zipSelection', function(
-        parentEntry, entries, destName, callback) {
+        entries, parentEntry, destName, callback) {
     var parentUrl = getEntryURL(parentEntry);
     var urls = entries.map(function(entry) {
       return getEntryURL(entry);

@@ -621,7 +621,6 @@
   }
 
   /**
-   * TODO(crbug.com/912236) Remove dead code.
    * Creates a zip file for the selection of files.
    *
    * @param {!Array<!Entry>} selectionEntries The selected entries.
