@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/remote_cocoa/app_shim/window_move_loop.h"
-#include <memory>
 
 #include "base/debug/stack_trace.h"
 #include "base/run_loop.h"
@@ -81,9 +80,6 @@ bool CocoaWindowMoveLoop::Run() {
       [[[WeakCocoaWindowMoveLoop alloc]
           initWithWeakPtr:weak_factory_.GetWeakPtr()] autorelease];
 
-  __block BOOL has_moved = NO;
-  screen_disabler_ = std::make_unique<gfx::ScopedCocoaDisableScreenUpdates>();
-
   // Esc keypress is handled by EscapeTracker, which is installed by
   // TabDragController.
   NSEventMask mask =
@@ -108,11 +104,8 @@ bool CocoaWindowMoveLoop::Run() {
       NSRect ns_frame = NSOffsetRect(
           initial_frame, mouse_in_screen.x - initial_mouse_in_screen_.x,
           mouse_in_screen.y - initial_mouse_in_screen_.y);
+      ns_frame = [window constrainFrameRect:ns_frame toScreen:window.screen];
       [window setFrame:ns_frame display:NO animate:NO];
-      if (!has_moved) {
-        has_moved = YES;
-        strong->screen_disabler_.reset();
-      }
 
       return event;
     }
@@ -143,7 +136,6 @@ bool CocoaWindowMoveLoop::Run() {
 }
 
 void CocoaWindowMoveLoop::End() {
-  screen_disabler_.reset();
   if (exit_reason_ref_) {
     DCHECK_EQ(*exit_reason_ref_, ENDED_EXTERNALLY);
     // Ensure the destructor doesn't replace the reason.
