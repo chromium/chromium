@@ -5,6 +5,7 @@
 #include "ios/chrome/browser/browser_state/off_the_record_chrome_browser_state_impl.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
@@ -37,6 +38,7 @@ OffTheRecordChromeBrowserStateImpl::OffTheRecordChromeBrowserStateImpl(
       this);
   profile_metrics::SetBrowserProfileType(
       this, profile_metrics::BrowserProfileType::kIncognito);
+  base::RecordAction(base::UserMetricsAction("IncognitoMode_Started"));
 }
 
 OffTheRecordChromeBrowserStateImpl::~OffTheRecordChromeBrowserStateImpl() {
