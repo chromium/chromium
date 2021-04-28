@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_REMOTE_APPS_REMOTE_APPS_IMPL_H_
-#define CHROME_BROWSER_CHROMEOS_REMOTE_APPS_REMOTE_APPS_IMPL_H_
+#ifndef CHROME_BROWSER_ASH_REMOTE_APPS_REMOTE_APPS_IMPL_H_
+#define CHROME_BROWSER_ASH_REMOTE_APPS_REMOTE_APPS_IMPL_H_
 
 #include <set>
 #include <string>
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
-#include "chrome/browser/chromeos/remote_apps/remote_apps_types.h"
+#include "chrome/browser/ash/remote_apps/remote_apps_types.h"
 #include "chromeos/components/remote_apps/mojom/remote_apps.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -76,4 +76,4 @@ class RemoteAppsImpl : public remote_apps::mojom::RemoteApps {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_REMOTE_APPS_REMOTE_APPS_IMPL_H_
+#endif  // CHROME_BROWSER_ASH_REMOTE_APPS_REMOTE_APPS_IMPL_H_

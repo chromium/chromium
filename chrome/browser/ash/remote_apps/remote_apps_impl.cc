@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/remote_apps/remote_apps_impl.h"
+#include "chrome/browser/ash/remote_apps/remote_apps_impl.h"
 
 #include <utility>
 
@@ -10,8 +10,8 @@
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/optional.h"
-#include "chrome/browser/chromeos/remote_apps/remote_apps_manager.h"
-#include "chrome/browser/chromeos/remote_apps/remote_apps_manager_factory.h"
+#include "chrome/browser/ash/remote_apps/remote_apps_manager.h"
+#include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/render_frame_host.h"
 #include "extensions/common/extension.h"

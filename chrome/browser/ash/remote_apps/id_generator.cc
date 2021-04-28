@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/remote_apps/id_generator.h"
+#include "chrome/browser/ash/remote_apps/id_generator.h"
 
 #include "base/guid.h"
 

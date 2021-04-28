@@ -19,9 +19,9 @@
 #include "extensions/common/permissions/permissions_data.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/remote_apps/remote_apps_impl.h"
-#include "chrome/browser/chromeos/remote_apps/remote_apps_manager.h"
-#include "chrome/browser/chromeos/remote_apps/remote_apps_manager_factory.h"
+#include "chrome/browser/ash/remote_apps/remote_apps_impl.h"
+#include "chrome/browser/ash/remote_apps/remote_apps_manager.h"
+#include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
 #include "chrome/common/extensions/extension_constants.h"

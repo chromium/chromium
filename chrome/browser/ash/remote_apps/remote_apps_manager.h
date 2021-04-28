@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_REMOTE_APPS_REMOTE_APPS_MANAGER_H_
-#define CHROME_BROWSER_CHROMEOS_REMOTE_APPS_REMOTE_APPS_MANAGER_H_
+#ifndef CHROME_BROWSER_ASH_REMOTE_APPS_REMOTE_APPS_MANAGER_H_
+#define CHROME_BROWSER_ASH_REMOTE_APPS_REMOTE_APPS_MANAGER_H_
 
 #include <map>
 #include <vector>
@@ -13,9 +13,9 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/publishers/remote_apps.h"
-#include "chrome/browser/chromeos/remote_apps/remote_apps_impl.h"
-#include "chrome/browser/chromeos/remote_apps/remote_apps_model.h"
-#include "chrome/browser/chromeos/remote_apps/remote_apps_types.h"
+#include "chrome/browser/ash/remote_apps/remote_apps_impl.h"
+#include "chrome/browser/ash/remote_apps/remote_apps_model.h"
+#include "chrome/browser/ash/remote_apps/remote_apps_types.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater_observer.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_model_updater.h"
@@ -27,10 +27,6 @@
 class AppListModelUpdater;
 class ChromeAppListItem;
 class Profile;
-
-namespace apps {
-class AppUpdate;
-}  // namespace apps
 
 namespace gfx {
 class ImageSkia;
@@ -186,4 +182,4 @@ class RemoteAppsManager : public KeyedService,
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_REMOTE_APPS_REMOTE_APPS_MANAGER_H_
+#endif  // CHROME_BROWSER_ASH_REMOTE_APPS_REMOTE_APPS_MANAGER_H_

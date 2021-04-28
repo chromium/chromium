@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/remote_apps/remote_apps_impl.h"
+#include "chrome/browser/ash/remote_apps/remote_apps_impl.h"
 
 #include <string>
 #include <vector>
@@ -20,11 +20,11 @@
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/remote_apps/id_generator.h"
+#include "chrome/browser/ash/remote_apps/remote_apps_manager.h"
+#include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
+#include "chrome/browser/ash/remote_apps/remote_apps_model.h"
 #include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
-#include "chrome/browser/chromeos/remote_apps/id_generator.h"
-#include "chrome/browser/chromeos/remote_apps/remote_apps_manager.h"
-#include "chrome/browser/chromeos/remote_apps/remote_apps_manager_factory.h"
-#include "chrome/browser/chromeos/remote_apps/remote_apps_model.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"

@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "chrome/browser/apps/app_service/icon_key_util.h"
-#include "chrome/browser/chromeos/remote_apps/remote_apps_model.h"
+#include "chrome/browser/ash/remote_apps/remote_apps_model.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

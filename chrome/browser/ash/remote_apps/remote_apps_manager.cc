@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/remote_apps/remote_apps_manager.h"
+#include "chrome/browser/ash/remote_apps/remote_apps_manager.h"
 
 #include <utility>
 
@@ -13,14 +13,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "cc/paint/paint_flags.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
-#include "chrome/browser/chromeos/remote_apps/remote_apps_impl.h"
+#include "chrome/browser/ash/remote_apps/remote_apps_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/services/app_service/public/cpp/app_update.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"

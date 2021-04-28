@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/remote_apps/remote_apps_manager_factory.h"
+#include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
 
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
