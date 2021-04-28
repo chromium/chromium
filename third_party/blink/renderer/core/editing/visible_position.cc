@@ -139,9 +139,8 @@ VisiblePositionTemplate<Strategy> VisiblePositionTemplate<Strategy>::Create(
                                                       downstream_position)) {
       const PositionWithAffinityTemplate<Strategy>& start_of_line =
           StartOfLine(position_with_affinity);
-      if (start_of_line.IsNull())
-        return VisiblePositionTemplate<Strategy>();
-      return VisiblePositionTemplate<Strategy>(start_of_line);
+      if (start_of_line.IsNotNull())
+        return VisiblePositionTemplate<Strategy>(start_of_line);
     }
 
     // Otherwise use the canonical position.
