@@ -86,6 +86,18 @@ export class ScanningBrowserProxy {
    * @param {number} numChanges
    */
   recordNumScanSettingChanges(numChanges) {}
+
+  /**
+   * Saves scan settings to the Prefs service.
+   * @param {string} scanSettings
+   */
+  saveScanSettings(scanSettings) {}
+
+  /**
+   * Returns the saved scan settings from the Prefs service.
+   * @return {!Promise<string>}
+   */
+  getScanSettings() {}
 }
 
 /** @implements {ScanningBrowserProxy} */
@@ -133,6 +145,16 @@ export class ScanningBrowserProxyImpl {
   /** @override */
   recordNumScanSettingChanges(numChanges) {
     chrome.send('recordNumScanSettingChanges', [numChanges]);
+  }
+
+  /** @override */
+  saveScanSettings(scanSettings) {
+    chrome.send('saveScanSettings', [scanSettings]);
+  }
+
+  /** @override */
+  getScanSettings() {
+    return sendWithPromise('getScanSettings');
   }
 }
 

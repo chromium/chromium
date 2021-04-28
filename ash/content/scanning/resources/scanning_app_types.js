@@ -10,11 +10,12 @@ export const AppState = {
   GETTING_SCANNERS: 0,
   GOT_SCANNERS: 1,
   GETTING_CAPS: 2,
-  READY: 3,
-  SCANNING: 4,
-  DONE: 5,
-  CANCELING: 6,
-  NO_SCANNERS: 7,
+  SETTING_SAVED_SETTINGS: 3,
+  READY: 4,
+  SCANNING: 5,
+  DONE: 6,
+  CANCELING: 7,
+  NO_SCANNERS: 8,
 };
 
 /**
@@ -34,3 +35,38 @@ export const ScanCompleteAction = {
  * @typedef {!Array<!ash.scanning.mojom.Scanner>}
  */
 export let ScannerArr;
+
+/**
+ * @typedef {{capabilities: !ash.scanning.mojom.ScannerCapabilities}}
+ */
+export let ScannerCapabilitiesResponse;
+
+/**
+ * @typedef {{
+ *   token: !mojoBase.mojom.UnguessableToken,
+ *   displayName: string,
+ * }}
+ */
+export let ScannerInfo;
+
+/**
+ * @typedef {{
+ *   name: string,
+ *   lastScanDate: !Date,
+ *   sourceName: string,
+ *   fileType: ash.scanning.mojom.FileType,
+ *   colorMode: ash.scanning.mojom.ColorMode,
+ *   pageSize: ash.scanning.mojom.PageSize,
+ *   resolutionDpi: number,
+ * }}
+ */
+export let ScannerSetting;
+
+/**
+ * @typedef {{
+ *   lastUsedScannerName: string,
+ *   scanToPath: string,
+ *   scanners: !Array<ScannerSetting>,
+ * }}
+ */
+export let ScanSettings;

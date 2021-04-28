@@ -128,6 +128,9 @@ void AddFeatureFlags(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "scanAppMediaLinkEnabled",
       base::FeatureList::IsEnabled(chromeos::features::kScanAppMediaLink));
+  html_source->AddBoolean(
+      "scanAppStickySettingsEnabled",
+      base::FeatureList::IsEnabled(chromeos::features::kScanAppStickySettings));
 }
 
 }  // namespace
