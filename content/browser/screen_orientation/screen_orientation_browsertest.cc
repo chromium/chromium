@@ -7,11 +7,13 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
+#include "content/browser/screen_orientation/screen_orientation_provider.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -21,11 +23,13 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/common/shell_switches.h"
 #include "net/dns/mock_host_resolver.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/display/screen.h"
 
@@ -415,5 +419,89 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationOOPIFBrowserTest,
   }
 }
 #endif  // OS_ANDROID
+
+class ScreenOrientationLockForPrerenderBrowserTest
+    : public ScreenOrientationBrowserTest {
+ public:
+  ScreenOrientationLockForPrerenderBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &ScreenOrientationLockForPrerenderBrowserTest::web_contents,
+            base::Unretained(this))) {
+    feature_list_.InitAndEnableFeature(blink::features::kPrerender2);
+  }
+  void SetUpOnMainThread() override {
+    prerender_helper_.SetUpOnMainThread(embedded_test_server());
+    ScreenOrientationBrowserTest::SetUpOnMainThread();
+  }
+
+  content::WebContents* web_contents() { return shell()->web_contents(); }
+
+ protected:
+  test::PrerenderTestHelper prerender_helper_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class FakeScreenOrientationDelegate : public ScreenOrientationDelegate {
+ public:
+  FakeScreenOrientationDelegate() {
+    ScreenOrientationProvider::SetDelegate(this);
+  }
+
+  ~FakeScreenOrientationDelegate() override = default;
+
+  bool FullScreenRequired(WebContents* web_contents) override { return false; }
+
+  bool ScreenOrientationProviderSupported() override { return true; }
+
+  void Lock(
+      WebContents* web_contents,
+      device::mojom::ScreenOrientationLockType lock_orientation) override {
+    lock_count_++;
+  }
+
+  void Unlock(WebContents* web_contents) override { unlock_count_++; }
+
+  int lock_count() const { return lock_count_; }
+  int unlock_count() const { return unlock_count_; }
+
+ private:
+  int lock_count_ = 0;
+  int unlock_count_ = 0;
+};
+
+// Unlock should not triggered the orientation upon the completion of a
+// non-primary navigation.
+IN_PROC_BROWSER_TEST_F(ScreenOrientationLockForPrerenderBrowserTest,
+                       ShouldNotUnlockWhenPrerenderNavigation) {
+  FakeScreenOrientationDelegate delegate;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to a site.
+  GURL initial_url =
+      embedded_test_server()->GetURL("/prerender/add_prerender.html");
+  NavigateToURLBlockUntilNavigationsComplete(shell(), initial_url, 1);
+
+  EXPECT_TRUE(ExecuteScript(web_contents()->GetMainFrame(),
+                            "screen.orientation.lock('portrait')"));
+
+  // Delegate did apply lock once.
+  EXPECT_EQ(1, delegate.lock_count());
+  EXPECT_EQ(0, delegate.unlock_count());
+
+  GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
+
+  // Prerender to another site.
+  prerender_helper_.AddPrerender(prerender_url);
+
+  // Delegate should not apply unlock.
+  EXPECT_EQ(0, delegate.unlock_count());
+
+  // Navigate to the prerendered site.
+  prerender_helper_.NavigatePrimaryPage(prerender_url);
+
+  // Delegate did apply unlock once.
+  EXPECT_EQ(1, delegate.unlock_count());
+}
 
 } // namespace content

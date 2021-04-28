@@ -139,7 +139,7 @@ void ScreenOrientationProvider::DidToggleFullscreenModeForTab(
 
 void ScreenOrientationProvider::DidFinishNavigation(
     NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame() ||
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
       !navigation_handle->HasCommitted() ||
       navigation_handle->IsSameDocument()) {
     return;
