@@ -476,7 +476,8 @@ TEST_F(ConversionHostTest, NavigationWithNoImpression_Ignored) {
   EXPECT_EQ(0u, test_manager_.num_impressions());
 }
 
-TEST_F(ConversionHostTest, ValidImpression_ForwardedToManager) {
+// TODO(crbug.com/1203601): Disabled due to flakiness.
+TEST_F(ConversionHostTest, DISABLED_ValidImpression_ForwardedToManager) {
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
       GURL(kConversionUrl), main_rfh());
