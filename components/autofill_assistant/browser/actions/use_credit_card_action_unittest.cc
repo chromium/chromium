@@ -100,10 +100,9 @@ class UseCreditCardActionTest : public testing::Test {
     return action;
   }
 
-  UseCreditCardProto::RequiredField* AddRequiredField(
-      ActionProto* action,
-      std::string value_expression,
-      std::string selector) {
+  RequiredFieldProto* AddRequiredField(ActionProto* action,
+                                       std::string value_expression,
+                                       std::string selector) {
     auto* required_field = action->mutable_use_card()->add_required_fields();
     required_field->set_value_expression(value_expression);
     *required_field->mutable_element() = ToSelectorProto(selector);

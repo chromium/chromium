@@ -81,6 +81,7 @@ import org.chromium.chrome.browser.autofill_assistant.proto.ProcessedActionProto
 import org.chromium.chrome.browser.autofill_assistant.proto.ProcessedActionStatusProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto.Choice;
+import org.chromium.chrome.browser.autofill_assistant.proto.RequiredFieldProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SelectorProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ShowCastProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ShowDetailsProto;
@@ -90,7 +91,6 @@ import org.chromium.chrome.browser.autofill_assistant.proto.TextInputProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.TextInputProto.InputType;
 import org.chromium.chrome.browser.autofill_assistant.proto.TextInputSectionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.UseCreditCardProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.UseCreditCardProto.RequiredField;
 import org.chromium.chrome.browser.autofill_assistant.proto.UserFormSectionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ValueProto;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
@@ -158,8 +158,8 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
                                                             TermsAndConditionsState.ACCEPTED))
                         .build());
 
-        RequiredField fallbackTextField =
-                (RequiredField) RequiredField.newBuilder()
+        RequiredFieldProto fallbackTextField =
+                RequiredFieldProto.newBuilder()
                         .setForced(true) // Make sure we do actual work.
                         .setValueExpression("${57}")
                         .setElement(SelectorProto.newBuilder().addFilters(
@@ -167,8 +167,8 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
                                         "#fallback_entry")))
                         .setFillStrategy(KeyboardValueFillStrategy.SIMULATE_KEY_PRESSES)
                         .build();
-        RequiredField fallbackDropdownField =
-                (RequiredField) RequiredField.newBuilder()
+        RequiredFieldProto fallbackDropdownField =
+                RequiredFieldProto.newBuilder()
                         .setForced(true) // Make sure we do actual work.
                         .setValueExpression("${-2}")
                         .setElement(SelectorProto.newBuilder().addFilters(
@@ -176,8 +176,8 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
                                         "#fallback_dropdown")))
                         .setSelectStrategy(DropdownSelectStrategy.VALUE_MATCH)
                         .build();
-        RequiredField fallbackJsDropdownField =
-                (RequiredField) RequiredField.newBuilder()
+        RequiredFieldProto fallbackJsDropdownField =
+                RequiredFieldProto.newBuilder()
                         .setValueExpression("${55}")
                         .setElement(SelectorProto.newBuilder().addFilters(
                                 SelectorProto.Filter.newBuilder().setCssSelector(
@@ -261,8 +261,8 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
                                                             TermsAndConditionsState.ACCEPTED))
                         .build());
 
-        RequiredField fallbackTextField =
-                (RequiredField) RequiredField.newBuilder()
+        RequiredFieldProto fallbackTextField =
+                RequiredFieldProto.newBuilder()
                         .setForced(true) // Make sure we fail here while trying to fill the field.
                         .setValueExpression("${-99}") // Use non-existent key to force an error.
                         .setElement(SelectorProto.newBuilder().addFilters(

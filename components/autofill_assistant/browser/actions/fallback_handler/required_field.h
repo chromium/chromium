@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_FALLBACK_HANDLER_REQUIRED_FIELD_H_
 
 #include "base/optional.h"
+#include "components/autofill_assistant/browser/action_value.pb.h"
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 
@@ -20,22 +21,10 @@ struct RequiredField {
   RequiredField();
   RequiredField(const RequiredField& copy);
 
-  template <typename T>
-  void FromProto(const T& required_field_proto) {
-    selector = Selector(required_field_proto.element());
-    value_expression = required_field_proto.value_expression();
-    forced = required_field_proto.forced();
-    optional = required_field_proto.is_optional();
-    fill_strategy = required_field_proto.fill_strategy();
-    delay_in_millisecond = required_field_proto.delay_in_millisecond();
-    select_strategy = required_field_proto.select_strategy();
+  void FromProto(const RequiredFieldProto& required_field_proto);
 
-    if (required_field_proto.has_option_element_to_click()) {
-      fallback_click_element =
-          Selector(required_field_proto.option_element_to_click());
-      click_type = required_field_proto.click_type();
-    }
-  }
+  // Returns true if fallback is required for this field.
+  bool ShouldFallback(bool apply_fallback) const;
 
   // The selector of the field that must be filled.
   Selector selector;
@@ -77,9 +66,6 @@ struct RequiredField {
   // Optional. The click type to be used for clicking JavaScript driven
   // dropdown elements.
   ClickType click_type = ClickType::NOT_SET;
-
-  // Returns true if fallback is required for this field.
-  bool ShouldFallback(bool apply_fallback) const;
 };
 
 }  // namespace autofill_assistant
