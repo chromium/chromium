@@ -15,6 +15,19 @@
 
 namespace chromeos {
 namespace diagnostics {
+// Stores network state, managed properties, and an observer for a network.
+// TODO(michaelcheco): Use NetworkProperties to construct a mojo::Network
+// struct and send it to its corresponding observer.
+struct NetworkProperties {
+  explicit NetworkProperties(
+      chromeos::network_config::mojom::NetworkStatePropertiesPtr network_state);
+  ~NetworkProperties();
+  chromeos::network_config::mojom::NetworkStatePropertiesPtr network_state;
+  chromeos::network_config::mojom::ManagedPropertiesPtr managed_properties;
+  // TODO(michaelcheco): Add NetworkStateObserver as a member of this struct.
+};
+
+using NetworkPropertiesMap = std::map<std::string, NetworkProperties>;
 
 using DeviceMap = std::map<network_config::mojom::NetworkType,
                            network_config::mojom::DeviceStatePropertiesPtr>;
@@ -44,6 +57,8 @@ class NetworkHealthProvider
 
   const DeviceMap& GetDeviceTypeMapForTesting();
 
+  const NetworkPropertiesMap& GetNetworkPropertiesMapForTesting();
+
  private:
   // Handler for receiving a list of active networks.
   void OnActiveNetworkStateListReceived(
@@ -53,10 +68,17 @@ class NetworkHealthProvider
   void OnDeviceStateListReceived(
       std::vector<network_config::mojom::DeviceStatePropertiesPtr> devices);
 
+  // Handler for receiving managed properties for a network.
+  void OnManagedPropertiesReceived(
+      const std::string& guid,
+      network_config::mojom::ManagedPropertiesPtr managed_properties);
+
+  // Gets ManagedProperties for a network |guid| from CrosNetworkConfig.
+  void GetManagedPropertiesForNetwork(const std::string& guid);
+
   // Map of networks that are active and of a supported
   // type (Ethernet, WiFi, Cellular).
-  std::map<std::string, network_config::mojom::NetworkStatePropertiesPtr>
-      guid_to_network_map_;
+  NetworkPropertiesMap network_properties_map_;
 
   // Maps device type to device properties, used to find corresponding device
   // for a network.

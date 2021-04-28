@@ -5,10 +5,28 @@
 #include "chromeos/components/diagnostics_ui/backend/network_health_provider.h"
 
 #include "base/containers/contains.h"
+#include "base/memory/ptr_util.h"
 #include "base/test/task_environment.h"
+#include "chromeos/login/login_state/login_state.h"
+#include "chromeos/network/managed_network_configuration_handler.h"
+#include "chromeos/network/network_cert_loader.h"
+#include "chromeos/network/network_certificate_handler.h"
+#include "chromeos/network/network_configuration_handler.h"
+#include "chromeos/network/network_device_handler.h"
+#include "chromeos/network/network_profile_handler.h"
+#include "chromeos/network/network_state_test_helper.h"
+#include "chromeos/network/onc/onc_utils.h"
+#include "chromeos/network/proxy/ui_proxy_config_service.h"
+#include "chromeos/network/system_token_cert_db_storage.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-shared.h"
+#include "components/onc/onc_constants.h"
+#include "components/onc/onc_pref_names.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/proxy_config/pref_proxy_config_tracker_impl.h"
+#include "components/proxy_config/proxy_config_pref_names.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -16,113 +34,163 @@ namespace chromeos {
 namespace diagnostics {
 namespace {
 
-// Values for fake devices and services.
-constexpr char kEthServicePath[] = "/service/eth/0";
-constexpr char kEthServiceName[] = "eth_service_name";
-constexpr char kEthGuid[] = "eth_guid";
-constexpr char kEthDevicePath[] = "/device/eth1";
-constexpr char kEthName[] = "eth_name";
-constexpr char kWifiDevicePath[] = "/device/wifi1";
-constexpr char kWifiGuid[] = "wifi_guid";
-constexpr char kWifiName[] = "wifi_name";
-constexpr char kVPNGuid[] = "vpn_guid";
-constexpr char kVPNName[] = "vpn_name";
+void ValidateManagedPropertiesSet(
+    const NetworkPropertiesMap& network_properties_map,
+    const std::string& guid) {
+  EXPECT_TRUE(base::Contains(network_properties_map, guid));
+  auto network_props_iter_wifi = network_properties_map.find(guid);
+  auto managed_properties_guid =
+      network_props_iter_wifi->second.managed_properties->guid;
+  EXPECT_EQ(managed_properties_guid, guid);
+}
 
 }  // namespace
 
 class NetworkHealthProviderTest : public testing::Test {
  public:
-  NetworkHealthProviderTest() {}
+  NetworkHealthProviderTest() {
+    // Initialize the ManagedNetworkConfigurationHandler and any associated
+    // properties.
+    LoginState::Initialize();
+    SystemTokenCertDbStorage::Initialize();
+    NetworkCertLoader::Initialize();
+    InitializeManagedNetworkConfigurationHandler();
 
-  ~NetworkHealthProviderTest() override = default;
+    cros_network_config_test_helper().Initialize(
+        managed_network_configuration_handler_.get());
+    // Wait until |cros_network_config_test_helper_| has initialized.
+    base::RunLoop().RunUntilIdle();
+    network_health_provider_ = std::make_unique<NetworkHealthProvider>();
+  }
 
-  void SetUp() override {
-    // Wait until CrosNetworkConfigTestHelper is fully setup.
-    task_environment_.RunUntilIdle();
+  ~NetworkHealthProviderTest() override {
+    managed_network_configuration_handler_.reset();
+    ui_proxy_config_service_.reset();
+    network_configuration_handler_.reset();
+    network_profile_handler_.reset();
+    network_health_provider_.reset();
+    LoginState::Shutdown();
+    NetworkCertLoader::Shutdown();
+    SystemTokenCertDbStorage::Shutdown();
+  }
+
+  void InitializeManagedNetworkConfigurationHandler() {
+    network_profile_handler_ = NetworkProfileHandler::InitializeForTesting();
+    network_configuration_handler_ =
+        base::WrapUnique<NetworkConfigurationHandler>(
+            NetworkConfigurationHandler::InitializeForTest(
+                network_state_helper().network_state_handler(),
+                cros_network_config_test_helper().network_device_handler()));
+
+    PrefProxyConfigTrackerImpl::RegisterProfilePrefs(user_prefs_.registry());
+    PrefProxyConfigTrackerImpl::RegisterPrefs(local_state_.registry());
+    ::onc::RegisterProfilePrefs(user_prefs_.registry());
+    ::onc::RegisterPrefs(local_state_.registry());
+
+    ui_proxy_config_service_ = std::make_unique<chromeos::UIProxyConfigService>(
+        &user_prefs_, &local_state_,
+        network_state_helper().network_state_handler(),
+        network_profile_handler_.get());
+
+    managed_network_configuration_handler_ =
+        ManagedNetworkConfigurationHandler::InitializeForTesting(
+            network_state_helper().network_state_handler(),
+            network_profile_handler_.get(),
+            cros_network_config_test_helper().network_device_handler(),
+            network_configuration_handler_.get(),
+            ui_proxy_config_service_.get());
+
+    managed_network_configuration_handler_->SetPolicy(
+        ::onc::ONC_SOURCE_DEVICE_POLICY,
+        /*userhash=*/std::string(),
+        /*network_configs_onc=*/base::ListValue(),
+        /*global_network_config=*/base::DictionaryValue());
+
+    // Wait until the |managed_network_configuration_handler_| is initialized
+    // and set up.
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetupWiFiNetwork() {
+    network_state_helper().ConfigureService(
+        R"({"GUID": "wifi1_guid", "Type": "wifi", "State": "ready",
+            "Strength": 50, "AutoConnect": true, "WiFi.HiddenSSID": false})");
+
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetupEthernetNetwork() {
+    network_state_helper().device_test()->AddDevice(
+        "/device/stub_eth_device", shill::kTypeEthernet, "stub_eth_device");
+    network_state_helper().ConfigureService(
+        R"({"GUID": "eth_guid", "Type": "ethernet", "State": "online"})");
+
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetupVPNNetwork() {
+    network_state_helper().ConfigureService(
+        R"({"GUID": "vpn_guid", "Type": "vpn", "State": "association",
+            "Provider": {"Type": "l2tpipsec"}})");
+    base::RunLoop().RunUntilIdle();
   }
 
  protected:
-  // Adds a Service to the Manager and Service stubs.
-  void AddService(const std::string& service_path,
-                  const std::string& guid,
-                  const std::string& name,
-                  const std::string& type,
-                  const std::string& state,
-                  bool visible) {
-    cros_network_config_test_helper_.network_state_helper()
-        .service_test()
-        ->AddService(service_path, guid, name, type, state, visible);
-
-    task_environment_.RunUntilIdle();
+  network_config::CrosNetworkConfigTestHelper&
+  cros_network_config_test_helper() {
+    return cros_network_config_test_helper_;
   }
 
-  // Adds a device for testing.
-  void AddDevice(const std::string& device_path,
-                 const std::string& type,
-                 const std::string& name) {
-    cros_network_config_test_helper_.network_state_helper()
-        .device_test()
-        ->AddDevice(device_path, type, name);
-
-    task_environment_.RunUntilIdle();
+  chromeos::NetworkStateTestHelper& network_state_helper() {
+    return cros_network_config_test_helper_.network_state_helper();
   }
 
-  void ResetCrosNetworkConfigDevicesAndServices() {
+  void ResetDevicesAndServices() {
     // Clear test devices and services and setup the default wifi device.
-    cros_network_config_test_helper_.network_state_helper()
-        .ResetDevicesAndServices();
+    network_state_helper().ResetDevicesAndServices();
     task_environment_.RunUntilIdle();
   }
 
   base::test::TaskEnvironment task_environment_;
-  network_config::CrosNetworkConfigTestHelper cros_network_config_test_helper_;
-  NetworkHealthProvider network_health_provider_;
+  std::unique_ptr<NetworkProfileHandler> network_profile_handler_;
+  std::unique_ptr<NetworkConfigurationHandler> network_configuration_handler_;
+  std::unique_ptr<ManagedNetworkConfigurationHandler>
+      managed_network_configuration_handler_;
+  std::unique_ptr<UIProxyConfigService> ui_proxy_config_service_;
+  sync_preferences::TestingPrefServiceSyncable user_prefs_;
+  TestingPrefServiceSimple local_state_;
+  network_config::CrosNetworkConfigTestHelper cros_network_config_test_helper_{
+      false};
+  std::unique_ptr<NetworkHealthProvider> network_health_provider_;
 };
 
-TEST_F(NetworkHealthProviderTest, ConnectedNetworkStoredInActiveList) {
-  ResetCrosNetworkConfigDevicesAndServices();
-  AddService(kWifiDevicePath, kWifiGuid, kWifiName, shill::kTypeWifi,
-             shill::kStateOnline, true);
-
-  const std::vector<std::string>& network_guid_list =
-      network_health_provider_.GetNetworkGuidListForTesting();
-  ASSERT_EQ(1u, network_guid_list.size());
-  ASSERT_EQ(kWifiGuid, network_guid_list[0]);
-}
-
 TEST_F(NetworkHealthProviderTest, MultipleConnectedNetworksStoredInActiveList) {
-  ResetCrosNetworkConfigDevicesAndServices();
-  AddService(kWifiDevicePath, kWifiGuid, kWifiName, shill::kTypeWifi,
-             shill::kStateOnline, true);
-  AddDevice(kEthDevicePath, shill::kTypeEthernet, kEthName);
-  AddService(kEthServicePath, kEthGuid, kEthServiceName, shill::kTypeEthernet,
-             shill::kStateReady, true);
+  ResetDevicesAndServices();
+  SetupWiFiNetwork();
+  SetupEthernetNetwork();
 
   const std::vector<std::string>& network_guid_list =
-      network_health_provider_.GetNetworkGuidListForTesting();
+      network_health_provider_->GetNetworkGuidListForTesting();
   ASSERT_EQ(2u, network_guid_list.size());
-  ASSERT_TRUE(base::Contains(network_guid_list, kWifiGuid));
-  ASSERT_TRUE(base::Contains(network_guid_list, kEthGuid));
+  ASSERT_TRUE(base::Contains(network_guid_list, "wifi1_guid"));
+  ASSERT_TRUE(base::Contains(network_guid_list, "eth_guid"));
 }
 
 TEST_F(NetworkHealthProviderTest, UnsupportedNetworkTypeIgnored) {
-  ResetCrosNetworkConfigDevicesAndServices();
-  AddService(kWifiDevicePath, kVPNGuid, kVPNName, shill::kTypeVPN,
-             shill::kStateOffline, true);
-
-  task_environment_.RunUntilIdle();
+  ResetDevicesAndServices();
+  SetupVPNNetwork();
 
   const std::vector<std::string>& network_guid_list =
-      network_health_provider_.GetNetworkGuidListForTesting();
+      network_health_provider_->GetNetworkGuidListForTesting();
   ASSERT_TRUE(network_guid_list.empty());
 }
 
 TEST_F(NetworkHealthProviderTest, SingleSupportedDeviceStoredInDeviceTypeMap) {
-  ResetCrosNetworkConfigDevicesAndServices();
-  AddDevice(kWifiDevicePath, shill::kTypeWifi, kWifiName);
+  ResetDevicesAndServices();
+  SetupWiFiNetwork();
 
   const DeviceMap& device_type_map =
-      network_health_provider_.GetDeviceTypeMapForTesting();
+      network_health_provider_->GetDeviceTypeMapForTesting();
 
   EXPECT_EQ(1U, device_type_map.size());
   EXPECT_TRUE(base::Contains(device_type_map,
@@ -131,12 +199,12 @@ TEST_F(NetworkHealthProviderTest, SingleSupportedDeviceStoredInDeviceTypeMap) {
 
 TEST_F(NetworkHealthProviderTest,
        MultipleSupportedDevicesStoredInDeviceTypeMap) {
-  ResetCrosNetworkConfigDevicesAndServices();
-  AddDevice(kEthDevicePath, shill::kTypeEthernet, kEthName);
-  AddDevice(kWifiDevicePath, shill::kTypeWifi, kWifiName);
+  ResetDevicesAndServices();
+  SetupWiFiNetwork();
+  SetupEthernetNetwork();
 
   const DeviceMap& device_type_map =
-      network_health_provider_.GetDeviceTypeMapForTesting();
+      network_health_provider_->GetDeviceTypeMapForTesting();
 
   EXPECT_EQ(2U, device_type_map.size());
   EXPECT_TRUE(base::Contains(device_type_map,
@@ -146,7 +214,7 @@ TEST_F(NetworkHealthProviderTest,
 }
 
 TEST_F(NetworkHealthProviderTest, DeviceTypeMapEmptyWithNoDevices) {
-  ResetCrosNetworkConfigDevicesAndServices();
+  ResetDevicesAndServices();
   // Remove the default WiFi device created by network_state_helper.
   cros_network_config_test_helper_.network_state_helper()
       .manager_test()
@@ -154,8 +222,32 @@ TEST_F(NetworkHealthProviderTest, DeviceTypeMapEmptyWithNoDevices) {
   task_environment_.RunUntilIdle();
 
   const DeviceMap& device_type_map =
-      network_health_provider_.GetDeviceTypeMapForTesting();
+      network_health_provider_->GetDeviceTypeMapForTesting();
   EXPECT_EQ(0U, device_type_map.size());
+}
+
+TEST_F(NetworkHealthProviderTest, ManagedPropertiesSetForNetwork) {
+  ResetDevicesAndServices();
+  SetupWiFiNetwork();
+
+  const NetworkPropertiesMap& network_properties_map =
+      network_health_provider_->GetNetworkPropertiesMapForTesting();
+
+  EXPECT_EQ(1U, network_properties_map.size());
+  ValidateManagedPropertiesSet(network_properties_map, "wifi1_guid");
+}
+
+TEST_F(NetworkHealthProviderTest, ManagedPropertiesSetForMultipleNetwork) {
+  ResetDevicesAndServices();
+  SetupWiFiNetwork();
+  SetupEthernetNetwork();
+
+  const NetworkPropertiesMap& network_properties_map =
+      network_health_provider_->GetNetworkPropertiesMapForTesting();
+
+  EXPECT_EQ(2U, network_properties_map.size());
+  ValidateManagedPropertiesSet(network_properties_map, "wifi1_guid");
+  ValidateManagedPropertiesSet(network_properties_map, "eth_guid");
 }
 
 }  // namespace diagnostics

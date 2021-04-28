@@ -7,6 +7,8 @@
 #include <string>
 #include <utility>
 
+#include "base/bind.h"
+#include "base/containers/contains.h"
 #include "chromeos/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 
@@ -33,6 +35,12 @@ bool IsSupportedNetworkType(network_mojom::NetworkType type) {
 }
 
 }  // namespace
+
+NetworkProperties::NetworkProperties(
+    network_mojom::NetworkStatePropertiesPtr network_state)
+    : network_state(std::move(network_state)) {}
+
+NetworkProperties::~NetworkProperties() = default;
 
 NetworkHealthProvider::NetworkHealthProvider() {
   network_config::BindToInProcessInstance(
@@ -63,10 +71,14 @@ void NetworkHealthProvider::OnNetworkCertificatesChanged() {}
 
 void NetworkHealthProvider::OnActiveNetworkStateListReceived(
     std::vector<network_mojom::NetworkStatePropertiesPtr> networks) {
-  guid_to_network_map_.clear();
+  network_properties_map_.clear();
   for (auto& network : networks) {
     if (IsSupportedNetworkType(network->type)) {
-      guid_to_network_map_[network->guid] = std::move(network);
+      const std::string guid = mojo::Clone(network->guid);
+      network_properties_map_.emplace(guid, std::move(network));
+      // This method depends on the |network_properties_map_| being populated
+      // before being called.
+      GetManagedPropertiesForNetwork(guid);
     }
   }
   // TODO(michaelcheco): Call Mojo API here.
@@ -84,7 +96,8 @@ void NetworkHealthProvider::OnDeviceStateListReceived(
 
 std::vector<std::string> NetworkHealthProvider::GetNetworkGuidListForTesting() {
   std::vector<std::string> network_guids;
-  for (const auto& entry : guid_to_network_map_) {
+  network_guids.reserve(network_properties_map_.size());
+  for (const auto& entry : network_properties_map_) {
     network_guids.push_back(entry.first);
   }
   return network_guids;
@@ -92,6 +105,31 @@ std::vector<std::string> NetworkHealthProvider::GetNetworkGuidListForTesting() {
 
 const DeviceMap& NetworkHealthProvider::GetDeviceTypeMapForTesting() {
   return device_type_map_;
+}
+
+const NetworkPropertiesMap&
+NetworkHealthProvider::GetNetworkPropertiesMapForTesting() {
+  return network_properties_map_;
+}
+
+void NetworkHealthProvider::GetManagedPropertiesForNetwork(
+    const std::string& guid) {
+  remote_cros_network_config_->GetManagedProperties(
+      guid, base::BindOnce(&NetworkHealthProvider::OnManagedPropertiesReceived,
+                           base::Unretained(this), guid));
+}
+
+void NetworkHealthProvider::OnManagedPropertiesReceived(
+    const std::string& guid,
+    network_mojom::ManagedPropertiesPtr managed_properties) {
+  if (!managed_properties) {
+    DVLOG(1) << "No managed properties found for guid: " << guid;
+    return;
+  }
+  // Add managed properties to corresponding NetworkProperties struct.
+  DCHECK(base::Contains(network_properties_map_, guid));
+  auto network_props_iter = network_properties_map_.find(guid);
+  network_props_iter->second.managed_properties = std::move(managed_properties);
 }
 
 }  // namespace diagnostics
