@@ -316,9 +316,13 @@ public class StatusMediator
     }
 
     void updateStatusVisibility() {
+        // This logic doesn't apply to tablets.
+        if (mIsTablet) return;
+
         boolean shouldShowLogo = mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
                 mLocationBarDataProvider.isIncognito());
         setShowIconsWhenUrlFocused(shouldShowLogo);
+        if (!shouldShowLogo) return;
 
         if (mLocationBarDataProvider.isInOverviewAndShowingOmnibox()) {
             setStatusIconShown(true);
@@ -338,11 +342,7 @@ public class StatusMediator
         // On tablets, the status icon should always be shown so the following logic doesn't apply.
         assert !mIsTablet : "This logic shouldn't be called on tablets";
 
-        // Note: This uses mUrlFocusPercent rather than mUrlHasFocus because when the user scrolls
-        // the NTP we want the status icon to show.
-        if (mUrlFocusPercent > 0) {
-            setStatusIconShown(true);
-        }
+        updateStatusVisibility();
 
         // Only fade the animation on the new tab page.
         if (UrlUtilities.isCanonicalizedNTPUrl(mLocationBarDataProvider.getCurrentUrl())) {
@@ -504,12 +504,12 @@ public class StatusMediator
     @VisibleForTesting
     boolean maybeUpdateStatusIconForSearchEngineIcon() {
         // Show the logo unfocused if we're on the NTP.
-        if (shouldUpdateStatusIconForSearchEngineIcon()) {
+        if (shouldDisplaySearchEngineIcon()) {
             getStatusIconResourceForSearchEngineIcon(
                     mLocationBarDataProvider.isIncognito(), (statusIconRes) -> {
                         // Check again in case the conditions have changed since this callback was
                         // created.
-                        if (shouldUpdateStatusIconForSearchEngineIcon()) {
+                        if (shouldDisplaySearchEngineIcon()) {
                             mModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIconRes);
                         }
                     });
@@ -520,16 +520,20 @@ public class StatusMediator
         }
     }
 
-    private boolean shouldUpdateStatusIconForSearchEngineIcon() {
+    /**
+     * Returns whether the search engine icon should be displayed in the current context. This is
+     * independent from alpha/visibility.
+     */
+    @VisibleForTesting
+    boolean shouldDisplaySearchEngineIcon() {
         boolean showIconWhenFocused = mUrlHasFocus && mShowStatusIconWhenUrlFocused;
-        boolean showIconWhenScrollingOnNTP =
+        boolean showIconOnNTP =
                 UrlUtilities.isCanonicalizedNTPUrl(mLocationBarDataProvider.getCurrentUrl())
-                && mUrlFocusPercent > 0 && !mUrlHasFocus && !mLocationBarDataProvider.isLoading()
-                && mShowStatusIconWhenUrlFocused;
+                && !mLocationBarDataProvider.isLoading() && !mIsTablet;
 
         return mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
                        mLocationBarDataProvider.isIncognito())
-                && (showIconWhenFocused || showIconWhenScrollingOnNTP);
+                && (showIconWhenFocused || showIconOnNTP);
     }
 
     /**
@@ -606,6 +610,7 @@ public class StatusMediator
         mModel.set(StatusProperties.INCOGNITO_BADGE_VISIBLE, incognitoBadgeVisible);
         mModel.set(StatusProperties.STATUS_ICON_RESOURCE, null);
         setStatusIconAlpha(1f);
+        setStatusIconShown(false);
     }
 
     // PermissionDialogController.Observer interface

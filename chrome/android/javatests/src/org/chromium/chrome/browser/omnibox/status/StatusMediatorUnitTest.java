@@ -115,21 +115,23 @@ public final class StatusMediatorUnitTest {
                 .getSearchEngineLogo(
                         eq(mResources), /* inNightMode= */ eq(false), any(), any(), any());
 
+        mBitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
+        setupStatusMediator(/* isTablet= */ false);
+    }
+
+    private void setupStatusMediator(boolean isTablet) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mTemplateUrlServiceSupplier = new OneshotSupplierImpl<>();
             mMediator = new StatusMediator(mModel, mResources, mContext,
-                    mUrlBarEditingTextStateProvider,
-                    /* isTablet */ false, mLocationBarDataProvider, mPermissionDialogController,
-                    mSearchEngineLogoUtils, mTemplateUrlServiceSupplier,
-                    () -> mProfile, mPageInfoIPHController, null);
+                    mUrlBarEditingTextStateProvider, isTablet, mLocationBarDataProvider,
+                    mPermissionDialogController, mSearchEngineLogoUtils,
+                    mTemplateUrlServiceSupplier, () -> mProfile, mPageInfoIPHController, null);
             mTemplateUrlServiceSupplier.set(mTemplateUrlService);
         });
-        mBitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
     }
 
     @Test
     @SmallTest
-
     @UiThreadTest
     public void searchEngineLogo_isGoogleLogo() {
         setupSearchEngineLogoForTesting(
@@ -143,7 +145,6 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-
     @UiThreadTest
     public void searchEngineLogo_isGoogleLogo_hideAfterUnfocusFinished() {
         doReturn(UrlConstants.NTP_URL).when(mLocationBarDataProvider).getCurrentUrl();
@@ -173,15 +174,30 @@ public final class StatusMediatorUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    public void searchEngineLogo_isGoogleLogoOnNtpScroll() {
+    public void searchEngineLogo_isGoogleLogoOnNtp() {
         doReturn(UrlConstants.NTP_URL).when(mLocationBarDataProvider).getCurrentUrl();
         setupSearchEngineLogoForTesting(
                 /* showLogo= */ true, /* isGoogle= */ false, /* loupeEverywhere= */ false);
 
         mMediator.setUrlHasFocus(false);
         mMediator.setShowIconsWhenUrlFocused(true);
-        mMediator.setUrlFocusChangePercent(1f);
         Assert.assertTrue(mModel.get(StatusProperties.SHOW_STATUS_ICON));
+        Assert.assertTrue(mMediator.shouldDisplaySearchEngineIcon());
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void searchEngineLogo_isGoogleLogoOnNtpTablet() {
+        setupStatusMediator(/* isTablet= */ true);
+        doReturn(UrlConstants.NTP_URL).when(mLocationBarDataProvider).getCurrentUrl();
+        setupSearchEngineLogoForTesting(
+                /* showLogo= */ true, /* isGoogle= */ false, /* loupeEverywhere= */ false);
+
+        mMediator.setUrlHasFocus(false);
+        mMediator.setShowIconsWhenUrlFocused(true);
+        Assert.assertTrue(mModel.get(StatusProperties.SHOW_STATUS_ICON));
+        Assert.assertFalse(mMediator.shouldDisplaySearchEngineIcon());
     }
 
     @Test
@@ -237,7 +253,6 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-
     @UiThreadTest
     public void searchEngineLogo_onTextChanged_noGlobeReplacementWhenUrlBarTextDoesNotMatch() {
         mMediator.setUrlHasFocus(true);
@@ -271,7 +286,16 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
+    @UiThreadTest
+    public void searchEngineLogo_incognitoStateChanged() {
+        mMediator.onIncognitoStateChanged();
 
+        Assert.assertEquals(false, mModel.get(StatusProperties.SHOW_STATUS_ICON));
+        Assert.assertEquals(1f, mModel.get(StatusProperties.STATUS_ICON_ALPHA), 0f);
+    }
+
+    @Test
+    @SmallTest
     @UiThreadTest
     public void searchEngineLogo_incognitoNoIcon() {
         doReturn(true).when(mLocationBarDataProvider).isIncognito();
@@ -287,7 +311,6 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-
     @UiThreadTest
     public void searchEngineLogo_maybeUpdateStatusIconForSearchEngineIconChanges() {
         mMediator.setUrlHasFocus(true);
@@ -317,7 +340,6 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-
     @UiThreadTest
     public void resolveUrlBarTextWithAutocomplete_urlBarTextEmpty() {
         Assert.assertEquals("Empty urlBarText should resolve to empty urlBarTextWithAutocomplete",
@@ -326,7 +348,6 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-
     @UiThreadTest
     public void resolveUrlBarTextWithAutocomplete_urlBarTextMismatchesAutocompleteText() {
         doReturn("https://foo.com").when(mUrlBarEditingTextStateProvider).getTextWithAutocomplete();
@@ -339,7 +360,6 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
-
     @UiThreadTest
     public void testIncognitoStateChange_goingToIncognito() {
         mMediator.setShowIconsWhenUrlFocused(true);
