@@ -10,7 +10,7 @@
   [RaisesException] constructor(AudioFrameInit init);
 
   // Creates a AudioFrame, which needs to be independently closed.
-  [RaisesException] VideoFrame clone();
+  [RaisesException] AudioFrame clone();
 
   void close();
 
