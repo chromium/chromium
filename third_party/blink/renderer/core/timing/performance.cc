@@ -181,7 +181,7 @@ PerformanceNavigation* Performance::navigation() const {
   return nullptr;
 }
 
-MemoryInfo* Performance::memory() const {
+MemoryInfo* Performance::memory(ScriptState*) const {
   return nullptr;
 }
 

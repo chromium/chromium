@@ -65,7 +65,7 @@ interface Performance : EventTarget {
 
     // TODO(foolip): There is no spec for the Memory Info API, see blink-dev:
     // https://groups.google.com/a/chromium.org/d/msg/blink-dev/g5YRCGpC9vs/b4OJz71NmPwJ
-    [Exposed=Window, Measure] readonly attribute MemoryInfo memory;
+    [Exposed=Window, Measure, CallWith=ScriptState] readonly attribute MemoryInfo memory;
 
     [MeasureAs=MeasureMemory, Exposed=Window, CallWith=ScriptState, RuntimeEnabled=MeasureMemory, RaisesException] Promise<MemoryMeasurement> measureUserAgentSpecificMemory();
 

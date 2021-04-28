@@ -64,7 +64,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   PerformanceTiming* timing() const override;
   PerformanceNavigation* navigation() const override;
 
-  MemoryInfo* memory() const override;
+  MemoryInfo* memory(ScriptState*) const override;
 
   EventCounts* eventCounts() override;
 

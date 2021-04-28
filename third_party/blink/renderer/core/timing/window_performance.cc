@@ -189,7 +189,7 @@ PerformanceNavigation* WindowPerformance::navigation() const {
   return navigation_.Get();
 }
 
-MemoryInfo* WindowPerformance::memory() const {
+MemoryInfo* WindowPerformance::memory(ScriptState* script_state) const {
   // The performance.memory() API has been improved so that we report precise
   // values when the process is locked to a site. The intent (which changed
   // course over time about what changes would be implemented) can be found at
@@ -201,10 +201,10 @@ MemoryInfo* WindowPerformance::memory() const {
                                            : MemoryInfo::Precision::Bucketized);
   // Record Web Memory UKM.
   const uint64_t kBytesInKB = 1024;
-  ukm::builders::PerformanceAPI_Memory_Legacy(
-      GetExecutionContext()->UkmSourceID())
+  auto* execution_context = ExecutionContext::From(script_state);
+  ukm::builders::PerformanceAPI_Memory_Legacy(execution_context->UkmSourceID())
       .SetJavaScript(memory_info->usedJSHeapSize() / kBytesInKB)
-      .Record(GetExecutionContext()->UkmRecorder());
+      .Record(execution_context->UkmRecorder());
   return memory_info;
 }
 

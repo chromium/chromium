@@ -98,7 +98,7 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
   // Overriden by WindowPerformance but not by WorkerPerformance.
   virtual PerformanceTiming* timing() const;
   virtual PerformanceNavigation* navigation() const;
-  virtual MemoryInfo* memory() const;
+  virtual MemoryInfo* memory(ScriptState*) const;
   virtual ScriptPromise measureUserAgentSpecificMemory(
       ScriptState*,
       ExceptionState& exception_state) const;
