@@ -8,6 +8,7 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/bottom_sheet/child_bottom_sheet_view_controller.h"
+#import "ios/chrome/common/ui/util/background_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -24,7 +25,7 @@ CGFloat kMaxBottomSheetHeightRatioWithWindow = .75;
 @interface BottomSheetNavigationController ()
 
 // View to get transparent blurred background.
-@property(nonatomic, strong, readwrite) UIVisualEffectView* visualEffectView;
+@property(nonatomic, strong, readwrite) UIView* backgroundView;
 
 @end
 
@@ -47,7 +48,7 @@ CGFloat kMaxBottomSheetHeightRatioWithWindow = .75;
 }
 
 - (void)didUpdateControllerViewFrame {
-  self.visualEffectView.frame = self.view.bounds;
+  self.backgroundView.frame = self.view.bounds;
   // The dimmer view should never be under the bottom sheet view, since the
   // background of the botther sheet is transparent.
   CGRect dimmerViewFrame = self.backgroundDimmerView.superview.bounds;
@@ -59,17 +60,9 @@ CGFloat kMaxBottomSheetHeightRatioWithWindow = .75;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  UIVisualEffect* blurEffect = nil;
-  if (@available(iOS 13, *)) {
-    blurEffect =
-        [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemThickMaterial];
-  } else {
-    blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
-  }
-  self.visualEffectView =
-      [[UIVisualEffectView alloc] initWithEffect:blurEffect];
-  [self.view insertSubview:self.visualEffectView atIndex:0];
-  self.visualEffectView.frame = self.view.bounds;
+  self.backgroundView = PrimaryBackgroundBlurView();
+  [self.view insertSubview:self.backgroundView atIndex:0];
+  self.backgroundView.frame = self.view.bounds;
 }
 
 - (void)viewWillAppear:(BOOL)animated {

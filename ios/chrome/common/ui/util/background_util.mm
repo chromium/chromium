@@ -1,0 +1,24 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/common/ui/util/background_util.h"
+
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+UIView* PrimaryBackgroundBlurView() {
+  UIView* view;
+  if (@available(iOS 13, *)) {
+    UIVisualEffect* blurEffect =
+        [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemThickMaterial];
+    view = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+  } else {
+    view = [[UIView alloc] init];
+    view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+  }
+  return view;
+}
