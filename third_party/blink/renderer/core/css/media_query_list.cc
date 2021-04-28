@@ -102,7 +102,7 @@ bool MediaQueryList::UpdateMatches() {
 bool MediaQueryList::matches() {
   // If this is an iframe, viewport size depends on the layout of the embedding
   // document.
-  if (matcher_->GetDocument()) {
+  if (matcher_->GetDocument() && matcher_->GetDocument()->GetFrame()) {
     if (auto* owner =
             matcher_->GetDocument()->GetFrame()->OwnerLayoutObject()) {
       owner->GetDocument().UpdateStyleAndLayout(
