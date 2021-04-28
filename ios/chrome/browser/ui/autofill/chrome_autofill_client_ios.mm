@@ -327,11 +327,16 @@ void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
     AddressProfileSavePromptCallback callback) {
   DCHECK(base::FeatureList::IsEnabled(
       features::kAutofillAddressProfileSavePrompt));
-  auto delegate = std::make_unique<AutofillSaveAddressProfileDelegateIOS>(
-      profile, std::move(callback));
-  infobar_manager_->AddInfoBar(std::make_unique<InfoBarIOS>(
-      InfobarType::kInfobarTypeSaveAutofillAddressProfile,
-      std::move(delegate)));
+  if (IsInfobarOverlayUIEnabled()) {
+    auto delegate = std::make_unique<AutofillSaveAddressProfileDelegateIOS>(
+        profile, std::move(callback));
+    infobar_manager_->AddInfoBar(std::make_unique<InfoBarIOS>(
+        InfobarType::kInfobarTypeSaveAutofillAddressProfile,
+        std::move(delegate)));
+  } else {
+    DCHECK(personal_data_manager_);
+    personal_data_manager_->SaveImportedProfile(profile);
+  }
 }
 
 bool ChromeAutofillClientIOS::HasCreditCardScanFeature() {
