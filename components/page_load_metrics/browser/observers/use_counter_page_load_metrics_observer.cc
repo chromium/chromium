@@ -9,7 +9,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
-using Features = page_load_metrics::mojom::PageLoadFeatures;
 using UkmFeatureList = UseCounterPageLoadMetricsObserver::UkmFeatureList;
 using WebFeature = blink::mojom::WebFeature;
 using WebFeatureBitSet =
@@ -98,89 +97,62 @@ UseCounterPageLoadMetricsObserver::OnCommit(
 
 void UseCounterPageLoadMetricsObserver::OnFeaturesUsageObserved(
     content::RenderFrameHost* rfh,
-    const Features& features) {
-  for (WebFeature feature : features.features) {
-    // Verify that kPageVisits is observed at most once per observer.
-    if (feature == WebFeature::kPageVisits) {
-      mojo::ReportBadMessage(
-          "kPageVisits should not be passed to "
-          "PageLoadMetricsObserver::OnFeaturesUsageObserved");
-      return;
-    }
+    const std::vector<blink::UseCounterFeature>& features) {
+  using FeatureType = blink::mojom::UseCounterFeatureType;
+  for (const blink::UseCounterFeature& feature : features) {
+    switch (feature.type()) {
+      case FeatureType::kWebFeature: {
+        WebFeature web_feature = static_cast<WebFeature>(feature.value());
+        // Record feature usage in main frame.
+        // If a feature is already recorded in the main frame, it is also
+        // recorded on the page.
+        if (main_frame_features_recorded_.test(feature.value()))
+          continue;
+        if (rfh->GetParent() == nullptr) {
+          RecordMainFrameFeature(web_feature);
+          main_frame_features_recorded_.set(feature.value());
+        }
 
-    // Record feature usage in main frame.
-    // If a feature is already recorded in the main frame, it is also recorded
-    // on the page.
-    if (main_frame_features_recorded_.test(static_cast<size_t>(feature)))
-      continue;
-    if (rfh->GetParent() == nullptr) {
-      RecordMainFrameFeature(feature);
-      main_frame_features_recorded_.set(static_cast<size_t>(feature));
+        if (features_recorded_.test(feature.value()))
+          continue;
+        PossiblyWarnFeatureDeprecation(rfh, web_feature);
+        RecordFeature(web_feature);
+        features_recorded_.set(feature.value());
+        break;
+      }
+      case FeatureType::kCssProperty: {
+        CSSSampleId css_property = static_cast<CSSSampleId>(feature.value());
+        // Same as above, the usage of each CSS property should be only measured
+        // once.
+        if (css_properties_recorded_.test(feature.value()))
+          continue;
+        // There are about 600 enums, so the memory required for a vector
+        // histogram is about 600 * 8 byes = 5KB 50% of the time there are about
+        // 100 CSS properties recorded per page load. Storage in sparce
+        // histogram entries are 48 bytes instead of 8 bytes so the memory
+        // required for a sparse histogram is about 100 * 48 bytes = 5KB. On top
+        // there will be std::map overhead and the acquire/release of a
+        // base::Lock to protect the map during each update. Overal it is still
+        // better to use a vector histogram here since it is faster to access
+        // and merge and uses about same amount of memory.
+        RecordCssProperty(css_property);
+        css_properties_recorded_.set(feature.value());
+        break;
+      }
+      case FeatureType::kAnimatedCssProperty: {
+        CSSSampleId animated_css_property =
+            static_cast<CSSSampleId>(feature.value());
+        // Same as above, the usage of each animated CSS property should be only
+        // measured once.
+        if (animated_css_properties_recorded_.test(feature.value()))
+          continue;
+        // See comments above (in the css property section) for reasoning of
+        // using a vector histogram here instead of a sparse histogram.
+        RecordAnimatedCssProperty(animated_css_property);
+        animated_css_properties_recorded_.set(feature.value());
+        break;
+      }
     }
-
-    if (features_recorded_.test(static_cast<size_t>(feature)))
-      continue;
-    PossiblyWarnFeatureDeprecation(rfh, feature);
-    RecordFeature(feature);
-    features_recorded_.set(static_cast<size_t>(feature));
-  }
-
-  for (CSSSampleId css_property : features.css_properties) {
-    // Verify that page visit is observed at most once per observer.
-    if (css_property == CSSSampleId::kTotalPagesMeasured) {
-      mojo::ReportBadMessage(
-          "CSSSampleId::kTotalPagesMeasured should not be passed to "
-          "PageLoadMetricsObserver::OnFeaturesUsageObserved");
-      return;
-    }
-    if (css_property > CSSSampleId::kMaxValue) {
-      mojo::ReportBadMessage(
-          "Invalid CSS property passed to "
-          "PageLoadMetricsObserver::OnFeaturesUsageObserved");
-      return;
-    }
-    // Same as above, the usage of each CSS property should be only measured
-    // once.
-    if (css_properties_recorded_.test(static_cast<size_t>(css_property)))
-      continue;
-    // There are about 600 enums, so the memory required for a vector histogram
-    // is about 600 * 8 byes = 5KB
-    // 50% of the time there are about 100 CSS properties recorded per page
-    // load. Storage in sparce histogram entries are 48 bytes instead of 8
-    // bytes so the memory required for a sparse histogram is about
-    // 100 * 48 bytes = 5KB. On top there will be std::map overhead and the
-    // acquire/release of a base::Lock to protect the map during each update.
-    // Overal it is still better to use a vector histogram here since it is
-    // faster to access and merge and uses about same amount of memory.
-    RecordCssProperty(css_property);
-    css_properties_recorded_.set(static_cast<size_t>(css_property));
-  }
-
-  for (CSSSampleId animated_css_property : features.animated_css_properties) {
-    // Verify that page visit is observed at most once per observer.
-    if (animated_css_property ==
-        blink::mojom::CSSSampleId::kTotalPagesMeasured) {
-      mojo::ReportBadMessage(
-          "CSSSampleId::kTotalPagesMeasured should not be passed to "
-          "PageLoadMetricsObserver::OnFeaturesUsageObserved");
-      return;
-    }
-    if (animated_css_property > blink::mojom::CSSSampleId::kMaxValue) {
-      mojo::ReportBadMessage(
-          "Invalid animated CSS property passed to "
-          "PageLoadMetricsObserver::OnFeaturesUsageObserved");
-      return;
-    }
-    // Same as above, the usage of each animated CSS property should be only
-    // measured once.
-    if (animated_css_properties_recorded_.test(
-            static_cast<size_t>(animated_css_property)))
-      continue;
-    // See comments above (in the css property section) for reasoning of using
-    // a vector histogram here instead of a sparse histogram.
-    RecordAnimatedCssProperty(animated_css_property);
-    animated_css_properties_recorded_.set(
-        static_cast<size_t>(animated_css_property));
   }
 }
 

@@ -195,7 +195,7 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
                                  const mojom::FrameMetadata& metadata) override;
   void UpdateFeaturesUsage(
       content::RenderFrameHost* rfh,
-      const mojom::PageLoadFeatures& new_features) override;
+      const std::vector<blink::UseCounterFeature>& new_features) override;
   void UpdateResourceDataUse(
       content::RenderFrameHost* rfh,
       const std::vector<mojom::ResourceDataUpdatePtr>& resources) override;

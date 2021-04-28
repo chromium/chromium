@@ -83,17 +83,25 @@ bool ShouldProcessNavigation(content::NavigationHandle* navigation_handle) {
 // static
 void MetricsWebContentsObserver::RecordFeatureUsage(
     content::RenderFrameHost* render_frame_host,
-    std::vector<blink::mojom::WebFeature> features) {
+    const std::vector<blink::mojom::WebFeature>& web_features) {
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
   MetricsWebContentsObserver* observer =
       MetricsWebContentsObserver::FromWebContents(web_contents);
 
-  if (observer)
-    observer->OnBrowserFeatureUsage(
-        render_frame_host, page_load_metrics::mojom::PageLoadFeatures(
-                               std::move(features), /* css_properties= */ {},
-                               /* animated_css_properties= */ {}));
+  if (observer) {
+    std::vector<blink::UseCounterFeature> features;
+    for (auto web_feature : web_features) {
+      DCHECK_NE(web_feature, blink::mojom::WebFeature::kPageVisits)
+          << "WebFeature::kPageVisits is a reserved feature.";
+      if (web_feature == blink::mojom::WebFeature::kPageVisits)
+        continue;
+
+      features.emplace_back(blink::mojom::UseCounterFeatureType::kWebFeature,
+                            static_cast<uint32_t>(web_feature));
+    }
+    observer->OnBrowserFeatureUsage(render_frame_host, features);
+  }
 }
 
 // static
@@ -866,7 +874,7 @@ void MetricsWebContentsObserver::OnTimingUpdated(
     content::RenderFrameHost* render_frame_host,
     mojom::PageLoadTimingPtr timing,
     mojom::FrameMetadataPtr metadata,
-    mojom::PageLoadFeaturesPtr new_features,
+    const std::vector<blink::UseCounterFeature>& new_features,
     const std::vector<mojom::ResourceDataUpdatePtr>& resources,
     mojom::FrameRenderDataUpdatePtr render_data,
     mojom::CpuTimingPtr cpu_timing,
@@ -923,7 +931,7 @@ bool MetricsWebContentsObserver::DoesTimingUpdateHaveError() {
 void MetricsWebContentsObserver::UpdateTiming(
     mojom::PageLoadTimingPtr timing,
     mojom::FrameMetadataPtr metadata,
-    mojom::PageLoadFeaturesPtr new_features,
+    const std::vector<blink::UseCounterFeature>& new_features,
     std::vector<mojom::ResourceDataUpdatePtr> resources,
     mojom::FrameRenderDataUpdatePtr render_data,
     mojom::CpuTimingPtr cpu_timing,
@@ -933,7 +941,7 @@ void MetricsWebContentsObserver::UpdateTiming(
   content::RenderFrameHost* render_frame_host =
       page_load_metrics_receiver_.GetCurrentTargetFrame();
   OnTimingUpdated(render_frame_host, std::move(timing), std::move(metadata),
-                  std::move(new_features), resources, std::move(render_data),
+                  new_features, resources, std::move(render_data),
                   std::move(cpu_timing), std::move(new_deferred_resource_data),
                   std::move(input_timing_delta),
                   std::move(mobile_friendliness));
@@ -994,7 +1002,7 @@ bool MetricsWebContentsObserver::ShouldTrackMainFrameNavigation(
 
 void MetricsWebContentsObserver::OnBrowserFeatureUsage(
     content::RenderFrameHost* render_frame_host,
-    const mojom::PageLoadFeatures& new_features) {
+    const std::vector<blink::UseCounterFeature>& new_features) {
   // Since this call is coming directly from the browser, it should not pass us
   // data from frames that have already been navigated away from. However, this
   // could be false if this is called for the page that is prerendering with

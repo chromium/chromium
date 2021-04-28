@@ -52,7 +52,7 @@ class MojoPageTimingSender : public PageTimingSender {
   void SendTiming(
       const mojom::PageLoadTimingPtr& timing,
       const mojom::FrameMetadataPtr& metadata,
-      mojom::PageLoadFeaturesPtr new_features,
+      const std::vector<blink::UseCounterFeature>& new_features,
       std::vector<mojom::ResourceDataUpdatePtr> resources,
       const mojom::FrameRenderDataUpdate& render_data,
       const mojom::CpuTimingPtr& cpu_timing,
@@ -62,7 +62,7 @@ class MojoPageTimingSender : public PageTimingSender {
     DCHECK(page_load_metrics_);
     page_load_metrics_->UpdateTiming(
         limited_sending_mode_ ? CreatePageLoadTiming() : timing->Clone(),
-        metadata->Clone(), std::move(new_features), std::move(resources),
+        metadata->Clone(), new_features, std::move(resources),
         render_data.Clone(), cpu_timing->Clone(),
         std::move(new_deferred_resource_data), std::move(input_timing_delta),
         std::move(mobile_friendliness));

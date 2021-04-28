@@ -28,7 +28,9 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
+#include "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom-shared.h"
 #include "url/url_constants.h"
 
 using content::NavigationSimulator;
@@ -110,7 +112,7 @@ class MetricsWebContentsObserverTest
     observer()->OnTimingUpdated(
         render_frame_host, previous_timing_->Clone(),
         mojom::FrameMetadataPtr(base::in_place),
-        mojom::PageLoadFeaturesPtr(base::in_place),
+        std::vector<blink::UseCounterFeature>(),
         std::vector<mojom::ResourceDataUpdatePtr>(),
         mojom::FrameRenderDataUpdatePtr(base::in_place), timing.Clone(),
         mojom::DeferredResourceCountsPtr(base::in_place),
@@ -135,7 +137,7 @@ class MetricsWebContentsObserverTest
     observer()->OnTimingUpdated(
         render_frame_host, timing.Clone(),
         mojom::FrameMetadataPtr(base::in_place),
-        mojom::PageLoadFeaturesPtr(base::in_place),
+        std::vector<blink::UseCounterFeature>(),
         std::vector<mojom::ResourceDataUpdatePtr>(),
         mojom::FrameRenderDataUpdatePtr(base::in_place),
         mojom::CpuTimingPtr(base::in_place),
@@ -214,7 +216,7 @@ class MetricsWebContentsObserverTest
     return embedder_interface_->observed_aborted_urls();
   }
 
-  const std::vector<mojom::PageLoadFeatures>& observed_features() const {
+  const std::vector<blink::UseCounterFeature>& observed_features() const {
     return embedder_interface_->observed_features();
   }
 
@@ -1454,12 +1456,19 @@ TEST_F(MetricsWebContentsObserverTest, RecordFeatureUsage) {
       main_rfh(), {blink::mojom::WebFeature::kHTMLMarqueeElement,
                    blink::mojom::WebFeature::kFormAttribute});
 
-  ASSERT_EQ(observed_features().size(), 1ul);
-  ASSERT_EQ(observed_features()[0].features.size(), 2ul);
-  EXPECT_EQ(observed_features()[0].features[0],
-            blink::mojom::WebFeature::kHTMLMarqueeElement);
-  EXPECT_EQ(observed_features()[0].features[1],
-            blink::mojom::WebFeature::kFormAttribute);
+  blink::UseCounterFeature feature1 = {
+      blink::mojom::UseCounterFeatureType::kWebFeature,
+      static_cast<uint32_t>(blink::mojom::WebFeature::kHTMLMarqueeElement),
+  };
+
+  blink::UseCounterFeature feature2 = {
+      blink::mojom::UseCounterFeatureType::kWebFeature,
+      static_cast<uint32_t>(blink::mojom::WebFeature::kFormAttribute),
+  };
+
+  ASSERT_EQ(observed_features().size(), 2ul);
+  EXPECT_EQ(observed_features()[0], feature1);
+  EXPECT_EQ(observed_features()[1], feature2);
 }
 
 TEST_F(MetricsWebContentsObserverTest, RecordFeatureUsageNoObserver) {
@@ -1541,16 +1550,13 @@ TEST_F(MetricsWebContentsObserverBackForwardCacheTest,
   MetricsWebContentsObserver::RecordFeatureUsage(
       main_rfh(), blink::mojom::WebFeature::kFormAttribute);
 
-  std::vector<std::vector<blink::mojom::WebFeature>> features;
-  for (const auto& observation : observed_features()) {
-    features.push_back(observation.features);
-  }
-
   // For now back-forward cached navigations are not tracked and the events
   // after the history navigation are not tracked.
-  EXPECT_THAT(features,
-              testing::ElementsAre(std::vector<blink::mojom::WebFeature>{
-                  blink::mojom::WebFeature::kHTMLMarqueeElement}));
+  blink::UseCounterFeature feature = {
+      blink::mojom::UseCounterFeatureType::kWebFeature,
+      static_cast<uint32_t>(blink::mojom::WebFeature::kHTMLMarqueeElement),
+  };
+  EXPECT_THAT(observed_features(), testing::ElementsAre(feature));
 }
 
 // Checks OnEnterBackForwardCache is called appropriately with back-forward

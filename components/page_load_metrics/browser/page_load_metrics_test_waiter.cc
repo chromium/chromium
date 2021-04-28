@@ -204,12 +204,13 @@ void PageLoadMetricsTestWaiter::OnResourceDataUseObserved(
 
 void PageLoadMetricsTestWaiter::OnFeaturesUsageObserved(
     content::RenderFrameHost* rfh,
-    const mojom::PageLoadFeatures& features) {
-  for (blink::mojom::WebFeature feature : features.features) {
-    size_t feature_idx = static_cast<size_t>(feature);
-    if (observed_.web_features_.test(feature_idx))
+    const std::vector<blink::UseCounterFeature>& features) {
+  for (const auto& feature : features) {
+    // TODO(crbug.com/1194678): Expand test converage to other feature types.
+    if (feature.type() != blink::mojom::UseCounterFeatureType::kWebFeature)
       continue;
-    observed_.web_features_.set(feature_idx);
+
+    observed_.web_features_.set(feature.value());
   }
 
   if (ExpectationsSatisfied() && run_loop_)
@@ -475,7 +476,7 @@ void PageLoadMetricsTestWaiter::WaiterMetricsObserver::
 
 void PageLoadMetricsTestWaiter::WaiterMetricsObserver::OnFeaturesUsageObserved(
     content::RenderFrameHost* rfh,
-    const mojom::PageLoadFeatures& features) {
+    const std::vector<blink::UseCounterFeature>& features) {
   if (waiter_)
     waiter_->OnFeaturesUsageObserved(nullptr, features);
 }

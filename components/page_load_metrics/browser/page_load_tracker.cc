@@ -799,7 +799,7 @@ void PageLoadTracker::DidActivatePortal(base::TimeTicks activation_time) {
 
 void PageLoadTracker::UpdateFeaturesUsage(
     content::RenderFrameHost* rfh,
-    const mojom::PageLoadFeatures& new_features) {
+    const std::vector<blink::UseCounterFeature>& new_features) {
   for (const auto& observer : observers_) {
     observer->OnFeaturesUsageObserved(rfh, new_features);
   }

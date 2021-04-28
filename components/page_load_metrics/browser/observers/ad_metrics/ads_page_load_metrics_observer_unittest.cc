@@ -205,7 +205,7 @@ class ResourceLoadingCancellingThrottle
     observer->OnTimingUpdated(
         navigation_handle()->GetRenderFrameHost(), std::move(timing),
         mojom::FrameMetadataPtr(base::in_place),
-        mojom::PageLoadFeaturesPtr(base::in_place), resources,
+        std::vector<blink::UseCounterFeature>(), resources,
         mojom::FrameRenderDataUpdatePtr(base::in_place),
         mojom::CpuTimingPtr(base::in_place),
         mojom::DeferredResourceCountsPtr(base::in_place),

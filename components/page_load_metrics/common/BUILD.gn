@@ -46,8 +46,10 @@ mojom("page_load_metrics_mojom") {
   public_deps = [
     "//mojo/public/mojom/base",
     "//third_party/blink/public/mojom:mobile_metrics",
-    "//third_party/blink/public/mojom:web_feature_mojo_bindings",
+    "//third_party/blink/public/mojom:mojom_platform",
     "//ui/gfx/geometry/mojom",
     "//url/mojom:url_mojom_origin",
   ]
+  overridden_deps = [ "//third_party/blink/public/mojom:mojom_platform" ]
+  component_deps = [ "//third_party/blink/public/common" ]
 }

@@ -45,7 +45,6 @@ PageTimingMetricsSender::PageTimingMetricsSender(
       last_cpu_timing_(mojom::CpuTiming::New()),
       input_timing_delta_(mojom::InputTiming::New()),
       metadata_(mojom::FrameMetadata::New()),
-      new_features_(mojom::PageLoadFeatures::New()),
       new_deferred_resource_data_(mojom::DeferredResourceCounts::New()),
       buffer_timer_delay_ms_(GetBufferTimerDelayMillis(TimerType::kRenderer)),
       metadata_recorder_(initial_monotonic_timing) {
@@ -79,21 +78,7 @@ void PageTimingMetricsSender::DidObserveNewFeatureUsage(
   if (feature_tracker_.TestAndSet(feature))
     return;
 
-  switch (feature.type()) {
-    case blink::mojom::UseCounterFeatureType::kWebFeature:
-      new_features_->features.push_back(
-          static_cast<blink::mojom::WebFeature>(feature.value()));
-      break;
-    case blink::mojom::UseCounterFeatureType::kCssProperty:
-      new_features_->css_properties.push_back(
-          static_cast<blink::mojom::CSSSampleId>(feature.value()));
-      break;
-    case blink::mojom::UseCounterFeatureType::kAnimatedCssProperty:
-      new_features_->animated_css_properties.push_back(
-          static_cast<blink::mojom::CSSSampleId>(feature.value()));
-      break;
-  }
-
+  new_features_.push_back(feature);
   EnsureSendTimer();
 }
 
@@ -350,7 +335,7 @@ void PageTimingMetricsSender::SendNow() {
                       std::move(input_timing_delta_), mobile_friendliness_);
   input_timing_delta_ = mojom::InputTiming::New();
   new_deferred_resource_data_ = mojom::DeferredResourceCounts::New();
-  new_features_ = mojom::PageLoadFeatures::New();
+  new_features_.clear();
   metadata_->intersection_update.reset();
   last_cpu_timing_->task_time = base::TimeDelta();
   modified_resources_.clear();

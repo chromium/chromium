@@ -34,7 +34,7 @@ class UseCounterPageLoadMetricsObserver
                          ukm::SourceId source_id) override;
   void OnFeaturesUsageObserved(
       content::RenderFrameHost* rfh,
-      const page_load_metrics::mojom::PageLoadFeatures&) override;
+      const std::vector<blink::UseCounterFeature>&) override;
   void OnComplete(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnFailedProvisionalLoad(

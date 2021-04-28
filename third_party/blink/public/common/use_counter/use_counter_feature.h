@@ -16,6 +16,9 @@ class BLINK_COMMON_EXPORT UseCounterFeature {
  public:
   using EnumValue = uint32_t;
 
+  // The default constructor should only be called by mojom interface.
+  UseCounterFeature() = default;
+
   UseCounterFeature(mojom::UseCounterFeatureType type, EnumValue value);
 
   // Getters.

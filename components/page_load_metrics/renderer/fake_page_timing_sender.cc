@@ -20,7 +20,7 @@ FakePageTimingSender::~FakePageTimingSender() {}
 void FakePageTimingSender::SendTiming(
     const mojom::PageLoadTimingPtr& timing,
     const mojom::FrameMetadataPtr& metadata,
-    mojom::PageLoadFeaturesPtr new_features,
+    const std::vector<blink::UseCounterFeature>& new_features,
     std::vector<mojom::ResourceDataUpdatePtr> resources,
     const mojom::FrameRenderDataUpdate& render_data,
     const mojom::CpuTimingPtr& cpu_timing,
@@ -137,7 +137,7 @@ void FakePageTimingSender::PageTimingValidator::
 void FakePageTimingSender::PageTimingValidator::UpdateTiming(
     const mojom::PageLoadTimingPtr& timing,
     const mojom::FrameMetadataPtr& metadata,
-    const mojom::PageLoadFeaturesPtr& new_features,
+    const std::vector<blink::UseCounterFeature>& new_features,
     const std::vector<mojom::ResourceDataUpdatePtr>& resources,
     const mojom::FrameRenderDataUpdate& render_data,
     const mojom::CpuTimingPtr& cpu_timing,
@@ -148,36 +148,10 @@ void FakePageTimingSender::PageTimingValidator::UpdateTiming(
   if (!cpu_timing->task_time.is_zero()) {
     actual_cpu_timings_.push_back(cpu_timing.Clone());
   }
-  for (const blink::mojom::WebFeature web_feature : new_features->features) {
-    blink::UseCounterFeature feature = {
-        blink::mojom::UseCounterFeatureType::kWebFeature,
-        static_cast<uint32_t>(web_feature)};
-
+  for (const blink::UseCounterFeature& feature : new_features) {
     EXPECT_EQ(actual_features_.find(feature), actual_features_.end())
-        << "Feature " << web_feature << "has been sent more than once";
-    actual_features_.insert(feature);
-  }
-
-  for (const blink::mojom::CSSSampleId css_property :
-       new_features->css_properties) {
-    blink::UseCounterFeature feature = {
-        blink::mojom::UseCounterFeatureType::kCssProperty,
-        static_cast<uint32_t>(css_property)};
-
-    EXPECT_EQ(actual_features_.find(feature), actual_features_.end())
-        << "Feature " << css_property << "has been sent more than once";
-    actual_features_.insert(feature);
-  }
-
-  for (const blink::mojom::CSSSampleId animated_css_property :
-       new_features->animated_css_properties) {
-    blink::UseCounterFeature feature = {
-        blink::mojom::UseCounterFeatureType::kAnimatedCssProperty,
-        static_cast<uint32_t>(animated_css_property)};
-
-    EXPECT_EQ(actual_features_.find(feature), actual_features_.end())
-        << "Feature " << animated_css_property
-        << "has been sent more than once";
+        << "Feature " << feature.type() << ": " << feature.value()
+        << " has been sent more than once";
     actual_features_.insert(feature);
   }
 

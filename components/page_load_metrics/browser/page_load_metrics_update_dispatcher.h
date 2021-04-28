@@ -126,7 +126,7 @@ class PageLoadMetricsUpdateDispatcher {
         const mojom::FrameRenderDataUpdate& render_data) = 0;
     virtual void UpdateFeaturesUsage(
         content::RenderFrameHost* rfh,
-        const mojom::PageLoadFeatures& new_features) = 0;
+        const std::vector<blink::UseCounterFeature>& new_features) = 0;
     virtual void UpdateResourceDataUse(
         content::RenderFrameHost* rfh,
         const std::vector<mojom::ResourceDataUpdatePtr>& resources) = 0;
@@ -152,7 +152,7 @@ class PageLoadMetricsUpdateDispatcher {
       content::RenderFrameHost* render_frame_host,
       mojom::PageLoadTimingPtr new_timing,
       mojom::FrameMetadataPtr new_metadata,
-      mojom::PageLoadFeaturesPtr new_features,
+      const std::vector<blink::UseCounterFeature>& new_features,
       const std::vector<mojom::ResourceDataUpdatePtr>& resources,
       mojom::FrameRenderDataUpdatePtr render_data,
       mojom::CpuTimingPtr new_cpu_timing,
@@ -167,8 +167,9 @@ class PageLoadMetricsUpdateDispatcher {
   // This method is only intended to be called for PageLoadFeatures being
   // recorded directly from the browser process. Features coming from the
   // renderer process should use the main flow into |UpdateMetrics|.
-  void UpdateFeatures(content::RenderFrameHost* render_frame_host,
-                      const mojom::PageLoadFeatures& new_features);
+  void UpdateFeatures(
+      content::RenderFrameHost* render_frame_host,
+      const std::vector<blink::UseCounterFeature>& new_features);
 
   void DidFinishSubFrameNavigation(
       content::NavigationHandle* navigation_handle);

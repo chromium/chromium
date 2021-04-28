@@ -23,6 +23,7 @@
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -438,7 +439,7 @@ class PageLoadMetricsObserver {
   // Invoked when new use counter features are observed across all frames.
   virtual void OnFeaturesUsageObserved(
       content::RenderFrameHost* rfh,
-      const mojom::PageLoadFeatures& features) {}
+      const std::vector<blink::UseCounterFeature>& features) {}
 
   // The smoothness metrics is shared over shared-memory. The observer should
   // create a mapping (by calling |shared_memory.Map()|) so that they are able

@@ -96,7 +96,7 @@ class FakePageTimingSender : public PageTimingSender {
     void UpdateTiming(
         const mojom::PageLoadTimingPtr& timing,
         const mojom::FrameMetadataPtr& metadata,
-        const mojom::PageLoadFeaturesPtr& new_features,
+        const std::vector<blink::UseCounterFeature>& new_features,
         const std::vector<mojom::ResourceDataUpdatePtr>& resources,
         const mojom::FrameRenderDataUpdate& render_data,
         const mojom::CpuTimingPtr& cpu_timing,
@@ -127,7 +127,7 @@ class FakePageTimingSender : public PageTimingSender {
   void SendTiming(
       const mojom::PageLoadTimingPtr& timing,
       const mojom::FrameMetadataPtr& metadata,
-      mojom::PageLoadFeaturesPtr new_features,
+      const std::vector<blink::UseCounterFeature>& new_features,
       std::vector<mojom::ResourceDataUpdatePtr> resources,
       const mojom::FrameRenderDataUpdate& render_data,
       const mojom::CpuTimingPtr& cpu_timing,

@@ -29,9 +29,8 @@ class UseCounterPageLoadMetricsObserverTest
   UseCounterPageLoadMetricsObserverTest() {}
 
   void HistogramBasicTest(
-      const page_load_metrics::mojom::PageLoadFeatures& first_features,
-      const page_load_metrics::mojom::PageLoadFeatures& second_features =
-          page_load_metrics::mojom::PageLoadFeatures()) {
+      const std::vector<blink::UseCounterFeature>& first_features,
+      const std::vector<blink::UseCounterFeature>& second_features = {}) {
     NavigateAndCommit(GURL(kTestUrl));
     tester()->SimulateFeaturesUpdate(first_features);
     // Verify that kPageVisits is observed on commit.
@@ -49,85 +48,33 @@ class UseCounterPageLoadMetricsObserverTest
         internal::kAnimatedCssPropertiesHistogramName,
         blink::mojom::CSSSampleId::kTotalPagesMeasured, 1);
 
-    for (auto feature : first_features.features) {
+    // TODO (crbug.com/1194678): Make test compatible with features other than
+    // WebFeature.
+    for (const auto& feature : first_features) {
       tester()->histogram_tester().ExpectBucketCount(
           internal::kFeaturesHistogramName,
-          static_cast<base::Histogram::Sample>(feature), 1);
+          static_cast<base::Histogram::Sample>(feature.value()), 1);
       tester()->histogram_tester().ExpectBucketCount(
           internal::kFeaturesHistogramMainFrameName,
-          static_cast<base::Histogram::Sample>(feature), 1);
+          static_cast<base::Histogram::Sample>(feature.value()), 1);
     }
 
     tester()->SimulateFeaturesUpdate(second_features);
-    for (auto feature : first_features.features) {
+    for (const auto& feature : first_features) {
       tester()->histogram_tester().ExpectBucketCount(
           internal::kFeaturesHistogramName,
-          static_cast<base::Histogram::Sample>(feature), 1);
+          static_cast<base::Histogram::Sample>(feature.value()), 1);
       tester()->histogram_tester().ExpectBucketCount(
           internal::kFeaturesHistogramMainFrameName,
-          static_cast<base::Histogram::Sample>(feature), 1);
+          static_cast<base::Histogram::Sample>(feature.value()), 1);
     }
-    for (auto feature : second_features.features) {
+    for (const auto& feature : second_features) {
       tester()->histogram_tester().ExpectBucketCount(
           internal::kFeaturesHistogramName,
-          static_cast<base::Histogram::Sample>(feature), 1);
+          static_cast<base::Histogram::Sample>(feature.value()), 1);
       tester()->histogram_tester().ExpectBucketCount(
           internal::kFeaturesHistogramMainFrameName,
-          static_cast<base::Histogram::Sample>(feature), 1);
-    }
-  }
-
-  void CssHistogramBasicTest(
-      const page_load_metrics::mojom::PageLoadFeatures& first_features,
-      const page_load_metrics::mojom::PageLoadFeatures& second_features =
-          page_load_metrics::mojom::PageLoadFeatures()) {
-    NavigateAndCommit(GURL(kTestUrl));
-    tester()->SimulateFeaturesUpdate(first_features);
-    // Verify that page visit is recorded for CSS histograms.
-    tester()->histogram_tester().ExpectBucketCount(
-        internal::kCssPropertiesHistogramName,
-        blink::mojom::CSSSampleId::kTotalPagesMeasured, 1);
-
-    for (auto feature : first_features.css_properties) {
-      tester()->histogram_tester().ExpectBucketCount(
-          internal::kCssPropertiesHistogramName, feature, 1);
-    }
-
-    tester()->SimulateFeaturesUpdate(second_features);
-    for (auto feature : first_features.css_properties) {
-      tester()->histogram_tester().ExpectBucketCount(
-          internal::kCssPropertiesHistogramName, feature, 1);
-    }
-    for (auto feature : second_features.css_properties) {
-      tester()->histogram_tester().ExpectBucketCount(
-          internal::kCssPropertiesHistogramName, feature, 1);
-    }
-  }
-
-  void AnimatedCssHistogramBasicTest(
-      const page_load_metrics::mojom::PageLoadFeatures& first_features,
-      const page_load_metrics::mojom::PageLoadFeatures& second_features =
-          page_load_metrics::mojom::PageLoadFeatures()) {
-    NavigateAndCommit(GURL(kTestUrl));
-    tester()->SimulateFeaturesUpdate(first_features);
-    // Verify that page visit is recorded for CSS histograms.
-    tester()->histogram_tester().ExpectBucketCount(
-        internal::kAnimatedCssPropertiesHistogramName,
-        blink::mojom::CSSSampleId::kTotalPagesMeasured, 1);
-
-    for (auto feature : first_features.animated_css_properties) {
-      tester()->histogram_tester().ExpectBucketCount(
-          internal::kAnimatedCssPropertiesHistogramName, feature, 1);
-    }
-
-    tester()->SimulateFeaturesUpdate(second_features);
-    for (auto feature : first_features.animated_css_properties) {
-      tester()->histogram_tester().ExpectBucketCount(
-          internal::kAnimatedCssPropertiesHistogramName, feature, 1);
-    }
-    for (auto feature : second_features.animated_css_properties) {
-      tester()->histogram_tester().ExpectBucketCount(
-          internal::kAnimatedCssPropertiesHistogramName, feature, 1);
+          static_cast<base::Histogram::Sample>(feature.value()), 1);
     }
   }
 
@@ -141,57 +88,27 @@ class UseCounterPageLoadMetricsObserverTest
 };
 
 TEST_F(UseCounterPageLoadMetricsObserverTest, CountOneFeature) {
-  std::vector<WebFeature> features({WebFeature::kFetch});
-  page_load_metrics::mojom::PageLoadFeatures page_load_features;
-  page_load_features.features = features;
-  HistogramBasicTest(page_load_features);
+  HistogramBasicTest({{blink::mojom::UseCounterFeatureType::kWebFeature, 0}});
 }
 
 TEST_F(UseCounterPageLoadMetricsObserverTest, CountFeatures) {
-  std::vector<WebFeature> features_0(
-      {WebFeature::kFetch, WebFeature::kFetchBodyStream});
-  std::vector<WebFeature> features_1({WebFeature::kWindowFind});
-  page_load_metrics::mojom::PageLoadFeatures page_load_features_0;
-  page_load_metrics::mojom::PageLoadFeatures page_load_features_1;
-  page_load_features_0.features = features_0;
-  page_load_features_1.features = features_1;
-  HistogramBasicTest(page_load_features_0, page_load_features_1);
+  HistogramBasicTest(
+      {
+          {blink::mojom::UseCounterFeatureType::kWebFeature, 0},
+          {blink::mojom::UseCounterFeatureType::kWebFeature, 1},
+      },
+      {{blink::mojom::UseCounterFeatureType::kWebFeature, 2}});
 }
 
 TEST_F(UseCounterPageLoadMetricsObserverTest, CountDuplicatedFeatures) {
-  std::vector<WebFeature> features_0(
-      {WebFeature::kFetch, WebFeature::kFetch, WebFeature::kFetchBodyStream});
-  std::vector<WebFeature> features_1(
-      {WebFeature::kFetch, WebFeature::kWindowFind});
-  page_load_metrics::mojom::PageLoadFeatures page_load_features_0;
-  page_load_metrics::mojom::PageLoadFeatures page_load_features_1;
-  page_load_features_0.features = features_0;
-  page_load_features_1.features = features_1;
-  HistogramBasicTest(page_load_features_0, page_load_features_1);
-}
-
-TEST_F(UseCounterPageLoadMetricsObserverTest, RecordCSSProperties) {
-  // CSSPropertyID::kFont (5), CSSPropertyID::kZoom (19)
-  page_load_metrics::mojom::PageLoadFeatures page_load_features_0;
-  page_load_metrics::mojom::PageLoadFeatures page_load_features_1;
-  page_load_features_0.css_properties = {CSSSampleId::kFont,
-                                         CSSSampleId::kZoom};
-  page_load_features_1.css_properties = {CSSSampleId::kZoom};
-  CssHistogramBasicTest(page_load_features_0, page_load_features_1);
-}
-
-TEST_F(UseCounterPageLoadMetricsObserverTest, RecordAnimatedCSSProperties) {
-  page_load_metrics::mojom::PageLoadFeatures page_load_features_0;
-  page_load_metrics::mojom::PageLoadFeatures page_load_features_1;
-  page_load_features_0.css_properties = {CSSSampleId::kFont,
-                                         CSSSampleId::kZoom};
-  page_load_features_1.css_properties = {CSSSampleId::kZoom};
-  AnimatedCssHistogramBasicTest(page_load_features_0, page_load_features_1);
-}
-
-TEST_F(UseCounterPageLoadMetricsObserverTest, RecordCSSPropertiesInRange) {
-  page_load_metrics::mojom::PageLoadFeatures page_load_features;
-  page_load_features.css_properties = {CSSSampleId::kColor,
-                                       CSSSampleId::kMaxValue};
-  CssHistogramBasicTest(page_load_features);
+  HistogramBasicTest(
+      {
+          {blink::mojom::UseCounterFeatureType::kWebFeature, 0},
+          {blink::mojom::UseCounterFeatureType::kWebFeature, 0},
+          {blink::mojom::UseCounterFeatureType::kWebFeature, 1},
+      },
+      {
+          {blink::mojom::UseCounterFeatureType::kWebFeature, 0},
+          {blink::mojom::UseCounterFeatureType::kWebFeature, 2},
+      });
 }

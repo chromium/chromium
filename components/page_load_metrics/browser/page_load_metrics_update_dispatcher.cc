@@ -464,7 +464,7 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
     content::RenderFrameHost* render_frame_host,
     mojom::PageLoadTimingPtr new_timing,
     mojom::FrameMetadataPtr new_metadata,
-    mojom::PageLoadFeaturesPtr new_features,
+    const std::vector<blink::UseCounterFeature>& new_features,
     const std::vector<mojom::ResourceDataUpdatePtr>& resources,
     mojom::FrameRenderDataUpdatePtr render_data,
     mojom::CpuTimingPtr new_cpu_timing,
@@ -506,7 +506,7 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
     OnSubFrameRenderDataChanged(render_frame_host, *render_data);
   }
 
-  client_->UpdateFeaturesUsage(render_frame_host, *new_features);
+  client_->UpdateFeaturesUsage(render_frame_host, new_features);
 }
 
 void PageLoadMetricsUpdateDispatcher::UpdateHasSeenInputOrScroll(
@@ -525,7 +525,7 @@ void PageLoadMetricsUpdateDispatcher::UpdateHasSeenInputOrScroll(
 
 void PageLoadMetricsUpdateDispatcher::UpdateFeatures(
     content::RenderFrameHost* render_frame_host,
-    const mojom::PageLoadFeatures& new_features) {
+    const std::vector<blink::UseCounterFeature>& new_features) {
   if (embedder_interface_->IsExtensionUrl(
           render_frame_host->GetLastCommittedURL())) {
     // Extensions can inject child frames into a page. We don't want to track

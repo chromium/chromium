@@ -111,7 +111,7 @@ class PageTimingMetricsSender {
   mojom::FrameMetadataPtr metadata_;
   // A list of newly observed features during page load, to be sent to the
   // browser.
-  mojom::PageLoadFeaturesPtr new_features_;
+  std::vector<blink::UseCounterFeature> new_features_;
   mojom::FrameRenderDataUpdate render_data_;
   mojom::DeferredResourceCountsPtr new_deferred_resource_data_;
 

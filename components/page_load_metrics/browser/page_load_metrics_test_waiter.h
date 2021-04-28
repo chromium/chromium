@@ -153,7 +153,7 @@ class PageLoadMetricsTestWaiter
 
     void OnFeaturesUsageObserved(
         content::RenderFrameHost* rfh,
-        const page_load_metrics::mojom::PageLoadFeatures&) override;
+        const std::vector<blink::UseCounterFeature>&) override;
 
     void OnDidFinishSubFrameNavigation(
         content::NavigationHandle* navigation_handle) override;
@@ -248,8 +248,9 @@ class PageLoadMetricsTestWaiter
 
   // Updates |observed_.web_features_| to record any new feature observed.
   // Stops waiting if expectations are satisfied after update.
-  void OnFeaturesUsageObserved(content::RenderFrameHost* rfh,
-                               const mojom::PageLoadFeatures& features);
+  void OnFeaturesUsageObserved(
+      content::RenderFrameHost* rfh,
+      const std::vector<blink::UseCounterFeature>& features);
 
   void FrameSizeChanged(content::RenderFrameHost* render_frame_host,
                         const gfx::Size& frame_size);

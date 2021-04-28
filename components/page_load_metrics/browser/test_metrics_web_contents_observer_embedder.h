@@ -59,7 +59,7 @@ class TestMetricsWebContentsObserverEmbedder
     return observed_aborted_urls_;
   }
 
-  const std::vector<mojom::PageLoadFeatures>& observed_features() const {
+  const std::vector<blink::UseCounterFeature>& observed_features() const {
     return observed_features_;
   }
 
@@ -89,7 +89,7 @@ class TestMetricsWebContentsObserverEmbedder
   std::vector<GURL> observed_aborted_urls_;
   std::vector<ExtraRequestCompleteInfo> loaded_resources_;
   std::vector<GURL> completed_filtered_urls_;
-  std::vector<mojom::PageLoadFeatures> observed_features_;
+  std::vector<blink::UseCounterFeature> observed_features_;
   base::Optional<bool> is_first_navigation_in_web_contents_;
   bool is_ntp_ = false;
   int count_on_enter_back_forward_cache_ = 0;

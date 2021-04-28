@@ -41,7 +41,7 @@ class MetricsWebContentsObserverTest : public ChromeRenderViewHostTestHarness {
     AttachObserver();
   }
 
-  const std::vector<mojom::PageLoadFeatures>& observed_features() const {
+  const std::vector<blink::UseCounterFeature>& observed_features() const {
     return embedder_interface_->observed_features();
   }
 

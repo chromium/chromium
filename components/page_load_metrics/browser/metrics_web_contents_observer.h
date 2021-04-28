@@ -94,7 +94,7 @@ class MetricsWebContentsObserver
   // sources from the renderer should go via MetricsRenderFrameObserver.
   static void RecordFeatureUsage(
       content::RenderFrameHost* render_frame_host,
-      std::vector<blink::mojom::WebFeature> features);
+      const std::vector<blink::mojom::WebFeature>& features);
   static void RecordFeatureUsage(content::RenderFrameHost* render_frame_host,
                                  blink::mojom::WebFeature feature);
 
@@ -171,7 +171,7 @@ class MetricsWebContentsObserver
       content::RenderFrameHost* render_frame_host,
       mojom::PageLoadTimingPtr timing,
       mojom::FrameMetadataPtr metadata,
-      mojom::PageLoadFeaturesPtr new_features,
+      const std::vector<blink::UseCounterFeature>& new_features,
       const std::vector<mojom::ResourceDataUpdatePtr>& resources,
       mojom::FrameRenderDataUpdatePtr render_data,
       mojom::CpuTimingPtr cpu_timing,
@@ -210,7 +210,7 @@ class MetricsWebContentsObserver
   void UpdateTiming(
       mojom::PageLoadTimingPtr timing,
       mojom::FrameMetadataPtr metadata,
-      mojom::PageLoadFeaturesPtr new_features,
+      const std::vector<blink::UseCounterFeature>& new_features,
       std::vector<mojom::ResourceDataUpdatePtr> resources,
       mojom::FrameRenderDataUpdatePtr render_data,
       mojom::CpuTimingPtr cpu_timing,
@@ -271,8 +271,9 @@ class MetricsWebContentsObserver
   bool ShouldTrackMainFrameNavigation(
       content::NavigationHandle* navigation_handle) const;
 
-  void OnBrowserFeatureUsage(content::RenderFrameHost* render_frame_host,
-                             const mojom::PageLoadFeatures& new_features);
+  void OnBrowserFeatureUsage(
+      content::RenderFrameHost* render_frame_host,
+      const std::vector<blink::UseCounterFeature>& new_features);
 
   // Before deleting PageLoadTracker, check if we need to keep it alive as the
   // page is stored in back-forward cache. The page can either be restored later

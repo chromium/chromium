@@ -25,7 +25,7 @@ class TestPageLoadMetricsObserver : public PageLoadMetricsObserver {
       std::vector<ExtraRequestCompleteInfo>* loaded_resources,
       std::vector<GURL>* observed_committed_urls,
       std::vector<GURL>* observed_aborted_urls,
-      std::vector<mojom::PageLoadFeatures>* observed_features,
+      std::vector<blink::UseCounterFeature>* observed_features,
       base::Optional<bool>* is_first_navigation_in_web_contents,
       int* count_on_enter_back_forward_cache)
       : updated_timings_(updated_timings),
@@ -80,8 +80,9 @@ class TestPageLoadMetricsObserver : public PageLoadMetricsObserver {
 
   void OnFeaturesUsageObserved(
       content::RenderFrameHost* rfh,
-      const mojom::PageLoadFeatures& features) override {
-    observed_features_->push_back(features);
+      const std::vector<blink::UseCounterFeature>& features) override {
+    observed_features_->insert(observed_features_->end(), features.begin(),
+                               features.end());
   }
 
   void OnDidInternalNavigationAbort(
@@ -101,7 +102,7 @@ class TestPageLoadMetricsObserver : public PageLoadMetricsObserver {
   std::vector<mojom::PageLoadTimingPtr>* const complete_timings_;
   std::vector<mojom::CpuTimingPtr>* const updated_cpu_timings_;
   std::vector<ExtraRequestCompleteInfo>* const loaded_resources_;
-  std::vector<mojom::PageLoadFeatures>* const observed_features_;
+  std::vector<blink::UseCounterFeature>* const observed_features_;
   std::vector<GURL>* const observed_committed_urls_;
   std::vector<GURL>* const observed_aborted_urls_;
   base::Optional<bool>* is_first_navigation_in_web_contents_;

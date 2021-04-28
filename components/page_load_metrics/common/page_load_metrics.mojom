@@ -10,7 +10,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/web_feature/web_feature.mojom";
 import
   "third_party/blink/public/mojom/mobile_metrics/mobile_friendliness.mojom";
-import "third_party/blink/public/mojom/use_counter/css_property_id.mojom";
+import "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom";
 import "url/mojom/origin.mojom";
 
 // TimeDeltas below relative to navigation start.
@@ -185,17 +185,6 @@ struct FrameMetadata {
   FrameIntersectionUpdate? intersection_update;
 };
 
-// PageLoadFeatures contains a list of features newly observed by use counter.
-// In a given page load, no PageLoadFeatures sent will contain previously seen
-// values.
-struct PageLoadFeatures {
-  // These features are defined as blink::mojom::WebFeature enums.
-  array<blink.mojom.WebFeature> features;
-  // CSS properties are defined as blink::mojom::CSSSampleId enums.
-  array<blink.mojom.CSSSampleId> css_properties;
-  array<blink.mojom.CSSSampleId> animated_css_properties;
-};
-
 // Enumeration of distinct cache types.
 enum CacheType {
   kNotCached, // Resource came from network.
@@ -343,7 +332,8 @@ interface PageLoadMetrics {
   // Only called when at least one change has been observed within the frame.
   UpdateTiming(PageLoadTiming page_load_timing,
                FrameMetadata frame_metadata,
-               PageLoadFeatures new_features,
+               // `new_features` will not contain any previously seen values.
+               array<blink.mojom.UseCounterFeature> new_features,
                array<ResourceDataUpdate> resources,
                FrameRenderDataUpdate render_data,
                CpuTiming cpu_load_timing,
