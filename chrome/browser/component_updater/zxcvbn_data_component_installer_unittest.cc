@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/optional.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -97,7 +98,6 @@ TEST_F(ZxcvbnDataComponentInstallerPolicyTest, ComponentReady) {
   // Empty / non-existent files should result in empty dictionaries.
   policy().ComponentReady(version(), GetPath(), nullptr);
   task_env().RunUntilIdle();
-  EXPECT_THAT(zxcvbn::default_ranked_dicts(), ::testing::IsEmpty());
 
   // Populated files should be read and fed to the correct ranked zxcvbn
   // dictionary.
@@ -108,11 +108,11 @@ TEST_F(ZxcvbnDataComponentInstallerPolicyTest, ComponentReady) {
   base::WriteFile(
       GetPath().Append(
           ZxcvbnDataComponentInstallerPolicy::kFemaleNamesTxtFileName),
-      "female\nnames");
+      "female\nfnames");
   base::WriteFile(
       GetPath().Append(
           ZxcvbnDataComponentInstallerPolicy::kMaleNamesTxtFileName),
-      "male\nnames");
+      "male\nmnames");
   base::WriteFile(
       GetPath().Append(
           ZxcvbnDataComponentInstallerPolicy::kPasswordsTxtFileName),
@@ -128,27 +128,19 @@ TEST_F(ZxcvbnDataComponentInstallerPolicyTest, ComponentReady) {
   policy().ComponentReady(version(), GetPath(), nullptr);
   task_env().RunUntilIdle();
 
-  zxcvbn::RankedDicts ranked_dicts = zxcvbn::default_ranked_dicts();
-  EXPECT_THAT(
-      zxcvbn::default_ranked_dicts(),
-      UnorderedElementsAre(
-          Pair(zxcvbn::DictionaryTag::ENGLISH_WIKIPEDIA,
-               Pointee(UnorderedElementsAre(Pair("english", 1),
-                                            Pair("wikipedia", 2)))),
-          Pair(zxcvbn::DictionaryTag::FEMALE_NAMES,
-               Pointee(
-                   UnorderedElementsAre(Pair("female", 1), Pair("names", 2)))),
-          Pair(
-              zxcvbn::DictionaryTag::MALE_NAMES,
-              Pointee(UnorderedElementsAre(Pair("male", 1), Pair("names", 2)))),
-          Pair(zxcvbn::DictionaryTag::PASSWORDS,
-               Pointee(UnorderedElementsAre(Pair("passwords", 1)))),
-          Pair(zxcvbn::DictionaryTag::SURNAMES,
-               Pointee(UnorderedElementsAre(Pair("surnames", 1)))),
-          Pair(
-              zxcvbn::DictionaryTag::US_TV_AND_FILM,
-              Pointee(UnorderedElementsAre(Pair("us", 1), Pair("tv", 2),
-                                           Pair("and", 3), Pair("film", 4))))));
+  zxcvbn::RankedDicts& ranked_dicts = zxcvbn::default_ranked_dicts();
+  EXPECT_EQ(ranked_dicts.Find("english"), 1UL);
+  EXPECT_EQ(ranked_dicts.Find("wikipedia"), 2UL);
+  EXPECT_EQ(ranked_dicts.Find("female"), 1UL);
+  EXPECT_EQ(ranked_dicts.Find("fnames"), 2UL);
+  EXPECT_EQ(ranked_dicts.Find("male"), 1UL);
+  EXPECT_EQ(ranked_dicts.Find("mnames"), 2UL);
+  EXPECT_EQ(ranked_dicts.Find("passwords"), 1UL);
+  EXPECT_EQ(ranked_dicts.Find("surnames"), 1UL);
+  EXPECT_EQ(ranked_dicts.Find("us"), 1UL);
+  EXPECT_EQ(ranked_dicts.Find("tv"), 2UL);
+  EXPECT_EQ(ranked_dicts.Find("and"), 3UL);
+  EXPECT_EQ(ranked_dicts.Find("film"), 4UL);
 }
 
 }  // namespace component_updater

@@ -20,6 +20,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -31,7 +32,6 @@
 #include "components/update_client/update_client_errors.h"
 #include "components/update_client/utils.h"
 #include "third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.hpp"
-#include "third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists_common.hpp"
 
 namespace component_updater {
 
@@ -50,46 +50,39 @@ constexpr base::FilePath::StringPieceType
 
 namespace {
 
-// Small struct linking a dictionary tag with the corresponding filename.
-struct TagAndFileName {
-  zxcvbn::DictionaryTag tag;
-  base::FilePath::StringPieceType file_name;
-};
-
-constexpr std::array<TagAndFileName, 6> kTagAndFileNamePairs = {{
-    {zxcvbn::DictionaryTag::ENGLISH_WIKIPEDIA,
-     ZxcvbnDataComponentInstallerPolicy::kEnglishWikipediaTxtFileName},
-    {zxcvbn::DictionaryTag::FEMALE_NAMES,
-     ZxcvbnDataComponentInstallerPolicy::kFemaleNamesTxtFileName},
-    {zxcvbn::DictionaryTag::MALE_NAMES,
-     ZxcvbnDataComponentInstallerPolicy::kMaleNamesTxtFileName},
-    {zxcvbn::DictionaryTag::PASSWORDS,
-     ZxcvbnDataComponentInstallerPolicy::kPasswordsTxtFileName},
-    {zxcvbn::DictionaryTag::SURNAMES,
-     ZxcvbnDataComponentInstallerPolicy::kSurnamesTxtFileName},
-    {zxcvbn::DictionaryTag::US_TV_AND_FILM,
-     ZxcvbnDataComponentInstallerPolicy::kUsTvAndFilmTxtFileName},
+constexpr std::array<base::FilePath::StringPieceType, 6> kFileNames = {{
+    ZxcvbnDataComponentInstallerPolicy::kEnglishWikipediaTxtFileName,
+    ZxcvbnDataComponentInstallerPolicy::kFemaleNamesTxtFileName,
+    ZxcvbnDataComponentInstallerPolicy::kMaleNamesTxtFileName,
+    ZxcvbnDataComponentInstallerPolicy::kPasswordsTxtFileName,
+    ZxcvbnDataComponentInstallerPolicy::kSurnamesTxtFileName,
+    ZxcvbnDataComponentInstallerPolicy::kUsTvAndFilmTxtFileName,
 }};
 
-using RankedDictionaries =
-    base::flat_map<zxcvbn::DictionaryTag, zxcvbn::RankedDict>;
-RankedDictionaries ParseRankedDictionaries(const base::FilePath& install_dir) {
-  RankedDictionaries result;
-  for (const auto& pair : kTagAndFileNamePairs) {
-    base::FilePath dictionary_path = install_dir.Append(pair.file_name);
+zxcvbn::RankedDicts ParseRankedDictionaries(const base::FilePath& install_dir) {
+  std::vector<std::string> raw_dicts;
+  for (const auto& file_name : kFileNames) {
+    base::FilePath dictionary_path = install_dir.Append(file_name);
     DVLOG(1) << "Reading Dictionary from file: " << dictionary_path;
 
     std::string dictionary;
     if (base::ReadFileToString(dictionary_path, &dictionary)) {
-      result.emplace(pair.tag, zxcvbn::build_ranked_dict(base::SplitStringPiece(
-                                   dictionary, "\r\n", base::TRIM_WHITESPACE,
-                                   base::SPLIT_WANT_NONEMPTY)));
+      raw_dicts.push_back(std::move(dictionary));
     } else {
       VLOG(1) << "Failed reading from " << dictionary_path;
     }
   }
 
-  return result;
+  // The contained StringPieces hold references to the strings in raw_dicts.
+  std::vector<std::vector<base::StringPiece>> dicts;
+  for (const auto& raw_dict : raw_dicts) {
+    dicts.push_back(base::SplitStringPiece(
+        raw_dict, "\r\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
+  }
+
+  // This copies the words; after this call, the original strings can be
+  // discarded.
+  return zxcvbn::RankedDicts(dicts);
 }
 
 // The SHA256 of the SubjectPublicKeyInfo used to sign the extension.
@@ -105,8 +98,8 @@ constexpr std::array<uint8_t, 32> kZxcvbnDataPublicKeySha256 = {
 bool ZxcvbnDataComponentInstallerPolicy::VerifyInstallation(
     const base::DictionaryValue& manifest,
     const base::FilePath& install_dir) const {
-  return base::ranges::all_of(kTagAndFileNamePairs, [&](const auto& pair) {
-    return base::PathExists(install_dir.Append(pair.file_name));
+  return base::ranges::all_of(kFileNames, [&](const auto& file_name) {
+    return base::PathExists(install_dir.Append(file_name));
   });
 }
 
