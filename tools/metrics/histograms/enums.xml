@@ -27198,6 +27198,7 @@ Called by update_extension_histograms.py.-->
   <int value="1551" label="ENTERPRISEREPORTINGPRIVATE_GETCERTIFICATE"/>
   <int value="1552" label="AUTOTESTPRIVATE_ISSYSTEMWEBAPPOPENFUNCTION"/>
   <int value="1553" label="TTSENGINE_SENDTTSAUDIO"/>
+  <int value="1554" label="AUTOTESTPRIVATE_ACTIVATEAPPWINDOW"/>
 </enum>
 
 <enum name="ExtensionIconState">

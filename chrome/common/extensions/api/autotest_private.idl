@@ -954,9 +954,14 @@ namespace autotestPrivate {
                                   WindowStateChangeDict change,
                                   WindowStateCallback callback);
 
+    // Activate app window given by "id".
+    // |id|: the id of the window
+    // |callback|: called when the window is requested to activate.
+    static void activateAppWindow(long id, VoidCallback callback);
+
     // Closes an app window given by "id".
     // |id|: the id of the window
-    // |callback|: called when the window state is requested to close.
+    // |callback|: called when the window is requested to close.
     static void closeAppWindow(long id, VoidCallback callback);
 
     // Installs the Progressive Web App (PWA) that is in the current URL.

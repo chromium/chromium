@@ -3951,6 +3951,30 @@ void AutotestPrivateSetAppWindowStateFunction::WindowStateChanged(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateActivateAppWindowFunction
+///////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateActivateAppWindowFunction::
+    ~AutotestPrivateActivateAppWindowFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateActivateAppWindowFunction::Run() {
+  std::unique_ptr<api::autotest_private::ActivateAppWindow::Params> params(
+      api::autotest_private::ActivateAppWindow::Params::Create(*args_));
+  EXTENSION_FUNCTION_VALIDATE(params);
+  DVLOG(1) << "AutotestPrivateActivateAppWindowFunction " << params->id;
+
+  auto* window = FindAppWindowById(params->id);
+  if (!window) {
+    return RespondNow(Error(
+        base::StringPrintf("No app window was found : id=%d", params->id)));
+  }
+  ash::WindowState::Get(window)->Activate();
+
+  return RespondNow(NoArguments());
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // AutotestPrivateCloseAppWindowFunction
 ///////////////////////////////////////////////////////////////////////////////
 

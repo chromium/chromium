@@ -23,6 +23,7 @@
 #include "chromeos/ui/base/window_state_type.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/browser/extension_function_histogram_value.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_observer.h"
@@ -1048,6 +1049,16 @@ class AutotestPrivateSetAppWindowStateFunction : public ExtensionFunction {
                           bool success);
 
   std::unique_ptr<WindowStateChangeObserver> window_state_observer_;
+};
+
+class AutotestPrivateActivateAppWindowFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.activateAppWindow",
+                             AUTOTESTPRIVATE_ACTIVATEAPPWINDOW)
+
+ private:
+  ~AutotestPrivateActivateAppWindowFunction() override;
+  ResponseAction Run() override;
 };
 
 class AutotestPrivateCloseAppWindowFunction : public ExtensionFunction {
