@@ -59,10 +59,12 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             }
           })");
 
-void LogSendResult(bool success, const NearbyShareHttpStatus& http_status) {
+void LogSendResult(bool success,
+                   const NearbyShareHttpStatus& http_status,
+                   const std::string& request_id) {
   std::stringstream ss;
   ss << "Instant messaging send express " << (success ? "succeeded" : "failed")
-     << ". HTTP status: " << http_status;
+     << " for request " << request_id << ". HTTP status: " << http_status;
   if (success) {
     NS_LOG(VERBOSE) << ss.str();
   } else {
@@ -111,7 +113,7 @@ void SendMessageExpress::DoSendMessage(
     return;
   }
 
-  std::string message_id = request.header().requester_id().id();
+  std::string request_id = request.header().request_id();
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = GURL(kInstantMessagingSendMessageAPI);
@@ -132,13 +134,13 @@ void SendMessageExpress::DoSendMessage(
   send_url_loader_ptr->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&SendMessageExpress::OnSendMessageResponse,
-                     weak_ptr_factory_.GetWeakPtr(), message_id,
+                     weak_ptr_factory_.GetWeakPtr(), request_id,
                      std::move(send_url_loader), std::move(callback)),
       kMaxSendResponseSize);
 }
 
 void SendMessageExpress::OnSendMessageResponse(
-    const std::string& message_id,
+    const std::string& request_id,
     std::unique_ptr<network::SimpleURLLoader> url_loader,
     SuccessCallback callback,
     std::unique_ptr<std::string> response_body) {
@@ -146,7 +148,7 @@ void SendMessageExpress::OnSendMessageResponse(
                                     url_loader->ResponseInfo());
   bool success =
       http_status.IsSuccess() && response_body && !response_body->empty();
-  LogSendResult(success, http_status);
+  LogSendResult(success, http_status, request_id);
   std::move(callback).Run(success);
   // NOTE: |this| might be destroyed here after running the callback
 }

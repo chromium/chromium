@@ -102,6 +102,7 @@ class ReceiveMessagesExpress : public sharing::mojom::ReceiveMessagesSession,
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   StreamParser stream_parser_;
   base::OneShotTimer fast_path_ready_timeout_timer_;
+  std::string request_id_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

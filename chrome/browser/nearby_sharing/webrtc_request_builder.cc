@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/i18n/timezone.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/proto/instantmessaging.pb.h"
 
 namespace {
@@ -51,6 +52,7 @@ void BuildHeader(
     const std::string& requester_id,
     sharing::mojom::LocationHintPtr location_hint) {
   DCHECK(header);
+  header->set_request_id(base::UnguessableToken::Create().ToString());
   header->set_app(kAppName);
   BuildId(header->mutable_requester_id(), requester_id,
           std::move(location_hint));
