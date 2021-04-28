@@ -76,7 +76,7 @@ const base::Feature kSearchProviderWarmUpOnFocus{
 
 // Feature used to display the title of the current URL match.
 const base::Feature kDisplayTitleForCurrentUrl{
-    "OmniboxDisplayTitleForCurrentUrl", enabled_by_default_desktop_android};
+    "OmniboxDisplayTitleForCurrentUrl", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Feature used to always swap the title and URL.
 const base::Feature kUIExperimentSwapTitleAndUrl{
