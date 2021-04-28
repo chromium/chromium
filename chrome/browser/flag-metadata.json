@@ -448,6 +448,11 @@
     "expiry_milestone": 89
   },
   {
+    "name": "biometric-reauth-password-filling",
+    "owners": [ "ioanap" ],
+    "expiry_milestone": 93
+  },
+  {
     "name": "block-external-form-redirects-no-gesture",
     "owners": [ "jochen", "tedchoc" ],
     "expiry_milestone": 89

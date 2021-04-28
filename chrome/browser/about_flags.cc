@@ -7273,7 +7273,15 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-penetrating-image-selection",
      flag_descriptions::kEnablePenetratingImageSelectionName,
      flag_descriptions::kEnablePenetratingImageSelectionDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kEnablePenetratingImageSelection)}
+     FEATURE_VALUE_TYPE(blink::features::kEnablePenetratingImageSelection)},
+
+#if defined(OS_ANDROID)
+    {"biometric-reauth-password-filling",
+     flag_descriptions::kBiometricReauthForPasswordFillingName,
+     flag_descriptions::kBiometricReauthForPasswordFillingDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(password_manager::features::kBiometricTouchToFill)},
+#endif
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
