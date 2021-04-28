@@ -281,11 +281,10 @@ TEST_F(SkiaGoldPixelDiffTest, DoNotMakeGerritCommentHasRetryLeft) {
 
   MockSkiaGoldPixelDiff mock_pixel;
   EXPECT_CALL(mock_pixel, LaunchProcess(_)).Times(AnyNumber());
-  EXPECT_CALL(
-      mock_pixel,
-      LaunchProcess(AllOf(Property(
-          &base::CommandLine::GetCommandLineString,
-          HasSubstr(FILE_PATH_LITERAL("--add-test-optional-key=ignore:1"))))))
+  EXPECT_CALL(mock_pixel,
+              LaunchProcess(AllOf(Property(
+                  &base::CommandLine::GetCommandLineString,
+                  HasSubstr(FILE_PATH_LITERAL("--add-test-key=ignore:1"))))))
       .Times(1);
   mock_pixel.Init("Prefix");
   bool ret = mock_pixel.CompareScreenshot("test", GetTestBitmap());
@@ -300,9 +299,9 @@ TEST_F(SkiaGoldPixelDiffTest, DoNotMakeGerritCommentForCIJob) {
   EXPECT_CALL(mock_pixel, LaunchProcess(_)).Times(AnyNumber());
   EXPECT_CALL(
       mock_pixel,
-      LaunchProcess(AllOf(Property(&base::CommandLine::GetCommandLineString,
-                                   Not(HasSubstr(FILE_PATH_LITERAL(
-                                       "--add-test-optional-key=ignore:1")))))))
+      LaunchProcess(AllOf(Property(
+          &base::CommandLine::GetCommandLineString,
+          Not(HasSubstr(FILE_PATH_LITERAL("--add-test-key=ignore:1")))))))
       .Times(3);
   mock_pixel.Init("Prefix");
   bool ret = mock_pixel.CompareScreenshot("test", GetTestBitmap());
@@ -320,9 +319,9 @@ TEST_F(SkiaGoldPixelDiffTest, MakeGerritCommentNoRetryLeft) {
   EXPECT_CALL(mock_pixel, LaunchProcess(_)).Times(AnyNumber());
   EXPECT_CALL(
       mock_pixel,
-      LaunchProcess(AllOf(Property(&base::CommandLine::GetCommandLineString,
-                                   Not(HasSubstr(FILE_PATH_LITERAL(
-                                       "--add-test-optional-key=ignore:1")))))))
+      LaunchProcess(AllOf(Property(
+          &base::CommandLine::GetCommandLineString,
+          Not(HasSubstr(FILE_PATH_LITERAL("--add-test-key=ignore:1")))))))
       .Times(3);
   mock_pixel.Init("Prefix");
   bool ret = mock_pixel.CompareScreenshot("test", GetTestBitmap());
@@ -340,9 +339,9 @@ TEST_F(SkiaGoldPixelDiffTest, MakeGerritCommentInvalidFlag) {
   EXPECT_CALL(mock_pixel, LaunchProcess(_)).Times(AnyNumber());
   EXPECT_CALL(
       mock_pixel,
-      LaunchProcess(AllOf(Property(&base::CommandLine::GetCommandLineString,
-                                   Not(HasSubstr(FILE_PATH_LITERAL(
-                                       "--add-test-optional-key=ignore:1")))))))
+      LaunchProcess(AllOf(Property(
+          &base::CommandLine::GetCommandLineString,
+          Not(HasSubstr(FILE_PATH_LITERAL("--add-test-key=ignore:1")))))))
       .Times(3);
   mock_pixel.Init("Prefix");
   bool ret = mock_pixel.CompareScreenshot("test", GetTestBitmap());

@@ -291,12 +291,12 @@ bool SkiaGoldPixelDiff::UploadToSkiaGoldServer(
     cmd.AppendSwitch(kDryRun);
   }
 
-  std::map<std::string, std::string> optional_keys;
+  std::map<std::string, std::string> test_keys;
   if (!ShouldMakeGerritCommentsOnFailures()) {
-    optional_keys["ignore"] = "1";
+    test_keys["ignore"] = "1";
   }
-  for (auto key : optional_keys) {
-    cmd.AppendSwitchASCII("add-test-optional-key",
+  for (auto key : test_keys) {
+    cmd.AppendSwitchASCII("add-test-key",
                           base::StrCat({key.first, ":", key.second}));
   }
 
