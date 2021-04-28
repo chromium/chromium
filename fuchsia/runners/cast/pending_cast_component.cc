@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/strings/string_piece.h"
 #include "fuchsia/base/agent_manager.h"
 
 PendingCastComponent::PendingCastComponent(

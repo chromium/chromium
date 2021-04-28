@@ -8,6 +8,7 @@
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
+#include "base/strings/string_piece.h"
 
 namespace cr_fuchsia {
 

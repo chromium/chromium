@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "fuchsia/base/frame_test_util.h"
+#include "base/strings/string_piece.h"
 
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
