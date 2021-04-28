@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chromeos/dbus/hermes/hermes_clients.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/prefs/pref_service.h"
@@ -129,10 +130,12 @@ void ShellBrowserMainParts::PostMainMessageLoopStart() {
   chromeos::DBusThreadManager::Initialize();
   dbus::Bus* bus = chromeos::DBusThreadManager::Get()->GetSystemBus();
   if (bus) {
+    chromeos::hermes_clients::Initialize(bus);
     bluez::BluezDBusManager::Initialize(bus);
     chromeos::CrasAudioClient::Initialize(bus);
     chromeos::PowerManagerClient::Initialize(bus);
   } else {
+    chromeos::hermes_clients::InitializeFakes();
     bluez::BluezDBusManager::InitializeFake();
     chromeos::CrasAudioClient::InitializeFake();
     chromeos::PowerManagerClient::InitializeFake();
