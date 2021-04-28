@@ -35,7 +35,7 @@
   const harString = await new Promise(async resolve => {
     const stream = new TestRunner.StringOutputStream(resolve);
     const progress = new Common.Progress();
-    await Network.HARWriter.write(
+    await NetworkTestRunner.writeHARLog(
         stream, NetworkTestRunner.networkRequests(), progress);
     progress.done();
     stream.close();

@@ -18,7 +18,8 @@
   async function makeHAR() {
     var stream = new TestRunner.StringOutputStream(onSaved);
     var progress = new Common.Progress();
-    await Network.HARWriter.write(stream, NetworkTestRunner.networkRequests(), progress);
+    await NetworkTestRunner.writeHARLog(
+        stream, NetworkTestRunner.networkRequests(), progress);
     progress.done();
     stream.close();
   }
