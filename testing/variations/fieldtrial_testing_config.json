@@ -2337,6 +2337,21 @@
             ]
         }
     ],
+    "DeprecateMenagerieAPI": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DeprecateMenagerieAPI"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopNtpModules": [
         {
             "platforms": [
