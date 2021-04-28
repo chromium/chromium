@@ -13,6 +13,7 @@
 #include "chrome/browser/accessibility/caption_host_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/caption.mojom.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -75,6 +76,11 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
                ? base::UTF16ToUTF8(
                      controller_->caption_bubble_->GetAccessibleWindowTitle())
                : "";
+  }
+
+  views::Button* GetBackToTabButton() {
+    return controller_ ? controller_->caption_bubble_->back_to_tab_button_
+                       : nullptr;
   }
 
   views::Button* GetCloseButton() {
@@ -1025,6 +1031,18 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_FALSE(GetAccessibleWindowTitle().empty());
   EXPECT_EQ(GetAccessibleWindowTitle(),
             base::UTF16ToUTF8(GetTitle()->GetText()));
+}
+
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
+                       BackToTabButtonActivatesTab) {
+  OnPartialTranscription("Whale sharks are the world's largest fish.");
+  chrome::AddTabAt(browser(), GURL(), -1, true);
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+  ClickButton(GetBackToTabButton());
+  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+  // TODO(crbug.com/1055150): Test that browser window is active. It works in
+  // app but the tests aren't working.
 }
 
 }  // namespace captions

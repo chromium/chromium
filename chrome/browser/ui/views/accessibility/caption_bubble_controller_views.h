@@ -11,6 +11,10 @@
 
 #include "chrome/browser/ui/caption_bubble_controller.h"
 
+namespace content {
+class WebContents;
+}
+
 namespace views {
 class Widget;
 }
@@ -61,6 +65,10 @@ class CaptionBubbleControllerViews : public CaptionBubbleController {
   // media player id, and creates a new CaptionBubbleModel if one does not
   // already exist.
   void SetActiveModel(CaptionHostImpl* caption_host_impl);
+
+  // A callback passed to the CaptionBubbleModel which is called when the
+  // BackToTab button is clicked in the CaptionBubble.
+  void ActivateContext(content::WebContents* web_contents);
 
   bool IsWidgetVisibleForTesting() override;
   std::string GetBubbleLabelTextForTesting() override;

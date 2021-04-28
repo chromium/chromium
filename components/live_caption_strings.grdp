@@ -13,6 +13,9 @@
   <message name="IDS_LIVE_CAPTION_BUBBLE_COLLAPSE" desc="Tooltip for the Live Caption collapse button">
     Show fewer lines
   </message>
+  <message name="IDS_LIVE_CAPTION_BUBBLE_BACK_TO_TAB" desc="Tooltip for the Live Caption back-to-tab button. Clicking the button brings a user's focus back to the tab which is streaming the audio or video.">
+    Back to tab
+  </message>
   <message name="IDS_LIVE_CAPTION_BUBBLE_ERROR" desc="Error message for the Live Caption bubble when Live Captions are unavailable.">
     Live Caption is not available right now
   </message>

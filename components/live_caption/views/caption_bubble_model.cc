@@ -15,8 +15,10 @@ constexpr int kMaxLines = 9;
 namespace captions {
 
 CaptionBubbleModel::CaptionBubbleModel(
-    const base::Optional<gfx::Rect>& context_bound_in_screen)
-    : context_bound_in_screen_(context_bound_in_screen) {}
+    const base::Optional<gfx::Rect>& context_bounds_in_screen,
+    base::RepeatingClosure activate_context_callback)
+    : context_bounds_in_screen_(context_bounds_in_screen),
+      activate_context_callback_(activate_context_callback) {}
 
 CaptionBubbleModel::~CaptionBubbleModel() {
   if (observer_)
@@ -101,6 +103,15 @@ void CaptionBubbleModel::CommitPartialText() {
     final_text_.erase(0, truncate_index);
     OnTextChanged();
   }
+}
+
+bool CaptionBubbleModel::IsContextActivatable() {
+  return activate_context_callback_ != base::NullCallback();
+}
+
+void CaptionBubbleModel::ActivateContext() {
+  DCHECK(IsContextActivatable());
+  activate_context_callback_.Run();
 }
 
 }  // namespace captions

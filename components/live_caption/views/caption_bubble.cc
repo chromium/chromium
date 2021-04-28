@@ -142,13 +142,9 @@ namespace captions {
 class CaptionBubbleFrameView : public views::BubbleFrameView {
  public:
   METADATA_HEADER(CaptionBubbleFrameView);
-  explicit CaptionBubbleFrameView(views::View* close_button,
-                                  views::View* expand_button,
-                                  views::View* collapse_button)
+  explicit CaptionBubbleFrameView(std::vector<views::View*> buttons)
       : views::BubbleFrameView(gfx::Insets(), gfx::Insets()),
-        close_button_(close_button),
-        expand_button_(expand_button),
-        collapse_button_(collapse_button) {
+        buttons_(buttons) {
     auto border = std::make_unique<views::BubbleBorder>(
         views::BubbleBorder::FLOAT, views::BubbleBorder::DIALOG_SHADOW,
         gfx::kPlaceholderColor);
@@ -175,10 +171,10 @@ class CaptionBubbleFrameView : public views::BubbleFrameView {
     // handled by CaptionBubble::BubblePressed().
     gfx::Point point_in_screen =
         GetBoundsInScreen().origin() + gfx::Vector2d(point.x(), point.y());
-    if (close_button_->GetBoundsInScreen().Contains(point_in_screen) ||
-        expand_button_->GetBoundsInScreen().Contains(point_in_screen) ||
-        collapse_button_->GetBoundsInScreen().Contains(point_in_screen))
-      return HTCLIENT;
+    for (views::View* button : buttons_) {
+      if (button->GetBoundsInScreen().Contains(point_in_screen))
+        return HTCLIENT;
+    }
 
     // Ensure it's within the BubbleFrameView. This takes into account the
     // rounded corners and drop shadow of the BubbleBorder.
@@ -193,9 +189,7 @@ class CaptionBubbleFrameView : public views::BubbleFrameView {
   }
 
  private:
-  views::View* close_button_;
-  views::View* expand_button_;
-  views::View* collapse_button_;
+  std::vector<views::View*> buttons_;
 };
 
 BEGIN_METADATA(CaptionBubbleFrameView, views::BubbleFrameView)
@@ -332,6 +326,20 @@ gfx::Rect CaptionBubble::GetBubbleBounds() {
 }
 
 void CaptionBubble::Init() {
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+                       views::BoxLayout::Orientation::kVertical))
+      ->set_cross_axis_alignment(
+          views::BoxLayout::CrossAxisAlignment::kStretch);
+  UseCompactMargins();
+  set_close_on_deactivate(false);
+  SetCanActivate(true);
+
+  views::View* header_container = new views::View();
+  header_container
+      ->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal))
+      ->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kEnd);
+
   views::View* content_container = new views::View();
   content_container->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
@@ -343,14 +351,6 @@ void CaptionBubble::Init() {
           views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                    views::MaximumFlexSizeRule::kPreferred,
                                    /*adjust_height_for_width*/ true));
-
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-                       views::BoxLayout::Orientation::kVertical))
-      ->set_cross_axis_alignment(views::BoxLayout::CrossAxisAlignment::kEnd);
-  UseCompactMargins();
-
-  set_close_on_deactivate(false);
-  SetCanActivate(true);
 
   auto label = std::make_unique<CaptionBubbleLabel>();
   label->SetMultiLine(true);
@@ -398,10 +398,20 @@ void CaptionBubble::Init() {
       std::move(expand_or_collapse_callback), IDS_LIVE_CAPTION_BUBBLE_COLLAPSE);
   collapse_button->SetVisible(is_expanded_);
 
+  auto back_to_tab_button = BuildImageButton(
+      base::BindRepeating(&CaptionBubble::BackToTabButtonPressed,
+                          base::Unretained(this)),
+      IDS_LIVE_CAPTION_BUBBLE_BACK_TO_TAB);
+  back_to_tab_button->SetVisible(false);
+
   auto close_button =
       BuildImageButton(base::BindRepeating(&CaptionBubble::CloseButtonPressed,
                                            base::Unretained(this)),
                        IDS_LIVE_CAPTION_BUBBLE_CLOSE);
+
+  back_to_tab_button_ =
+      header_container->AddChildView(std::move(back_to_tab_button));
+  close_button_ = header_container->AddChildView(std::move(close_button));
 
   title_ = content_container->AddChildView(std::move(title));
   label_ = content_container->AddChildView(std::move(label));
@@ -414,8 +424,8 @@ void CaptionBubble::Init() {
   collapse_button_ =
       content_container->AddChildView(std::move(collapse_button));
 
-  close_button_ = AddChildView(std::move(close_button));
-  content_container_ = AddChildView(std::move(content_container));
+  AddChildView(std::move(header_container));
+  AddChildView(std::move(content_container));
 
   SetCaptionBubbleStyle();
   UpdateContentSize();
@@ -437,8 +447,9 @@ bool CaptionBubble::ShouldShowCloseButton() const {
 
 std::unique_ptr<views::NonClientFrameView>
 CaptionBubble::CreateNonClientFrameView(views::Widget* widget) {
-  auto frame = std::make_unique<CaptionBubbleFrameView>(
-      close_button_, expand_button_, collapse_button_);
+  std::vector<views::View*> buttons = {back_to_tab_button_, close_button_,
+                                       expand_button_, collapse_button_};
+  auto frame = std::make_unique<CaptionBubbleFrameView>(buttons);
   frame_ = frame.get();
   return frame;
 }
@@ -477,6 +488,11 @@ std::u16string CaptionBubble::GetAccessibleWindowTitle() const {
   return title_->GetText();
 }
 
+void CaptionBubble::BackToTabButtonPressed() {
+  DCHECK(model_);
+  model_->ActivateContext();
+}
+
 void CaptionBubble::CloseButtonPressed() {
   LogSessionEvent(SessionEvent::kCloseButtonClicked);
   if (model_)
@@ -506,6 +522,7 @@ void CaptionBubble::SetModel(CaptionBubbleModel* model) {
   model_ = model;
   if (model_) {
     model_->SetObserver(this);
+    back_to_tab_button_->SetVisible(model_->IsContextActivatable());
   } else {
     UpdateBubbleVisibility();
   }
@@ -656,6 +673,8 @@ void CaptionBubble::SetTextColor() {
 
   error_icon_->SetImage(
       gfx::CreateVectorIcon(vector_icons::kErrorOutlineIcon, text_color));
+  views::SetImageFromVectorIcon(back_to_tab_button_, vector_icons::kLaunchIcon,
+                                kButtonDip, text_color);
   views::SetImageFromVectorIcon(close_button_, vector_icons::kCloseRoundedIcon,
                                 kButtonDip, text_color);
   views::SetImageFromVectorIcon(expand_button_, vector_icons::kCaretDownIcon,
@@ -663,6 +682,7 @@ void CaptionBubble::SetTextColor() {
   views::SetImageFromVectorIcon(collapse_button_, vector_icons::kCaretUpIcon,
                                 kButtonDip, text_color);
 
+  back_to_tab_button_->SetInkDropBaseColor(text_color);
   close_button_->SetInkDropBaseColor(text_color);
   expand_button_->SetInkDropBaseColor(text_color);
   collapse_button_->SetInkDropBaseColor(text_color);
@@ -693,7 +713,8 @@ void CaptionBubble::UpdateContentSize() {
                          ? content_height - kLineHeightDip * text_scale_factor
                          : content_height;
   label_->SetPreferredSize(gfx::Size(width - kSidePaddingDip, label_height));
-  content_container_->SetPreferredSize(gfx::Size(width, content_height));
+  // The header height is the same as the close button height. The footer height
+  // is the same as the expand button height.
   SetPreferredSize(gfx::Size(
       width, content_height + close_button_->GetPreferredSize().height() +
                  expand_button_->GetPreferredSize().height()));

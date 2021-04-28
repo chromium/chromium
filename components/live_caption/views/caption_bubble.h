@@ -93,6 +93,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   friend class CaptionBubbleControllerViewsTest;
   friend class CaptionBubbleModel;
 
+  void BackToTabButtonPressed();
   void CloseButtonPressed();
   void ExpandOrCollapseButtonPressed();
 
@@ -148,11 +149,11 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   views::Label* error_text_;
   views::ImageView* error_icon_;
   views::View* error_message_;
+  views::ImageButton* back_to_tab_button_;
   views::ImageButton* close_button_;
   views::ImageButton* expand_button_;
   views::ImageButton* collapse_button_;
   CaptionBubbleFrameView* frame_;
-  views::View* content_container_;
 
   base::Optional<ui::CaptionStyle> caption_style_;
   CaptionBubbleModel* model_ = nullptr;

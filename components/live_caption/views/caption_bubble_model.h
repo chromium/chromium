@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "base/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -38,8 +39,8 @@ class CaptionBubble;
 //
 class CaptionBubbleModel {
  public:
-  explicit CaptionBubbleModel(
-      const base::Optional<gfx::Rect>& context_bound_in_screen);
+  CaptionBubbleModel(const base::Optional<gfx::Rect>& context_bounds_in_screen,
+                     base::RepeatingClosure activate_context_callback);
   ~CaptionBubbleModel();
   CaptionBubbleModel(const CaptionBubbleModel&) = delete;
   CaptionBubbleModel& operator=(const CaptionBubbleModel&) = delete;
@@ -66,11 +67,17 @@ class CaptionBubbleModel {
   // Clears the partial and final text and alerts the observer.
   void ClearText();
 
+  // Calls the activate context callback.
+  void ActivateContext();
+
+  // Returns whether there is an activate context callback available.
+  bool IsContextActivatable();
+
   bool IsClosed() const { return is_closed_; }
   bool HasError() const { return has_error_; }
   std::string GetFullText() const { return final_text_ + partial_text_; }
   const base::Optional<gfx::Rect>& GetContextBoundsInScreen() const {
-    return context_bound_in_screen_;
+    return context_bounds_in_screen_;
   }
 
  private:
@@ -86,15 +93,21 @@ class CaptionBubbleModel {
   // Whether an error should be displayed one the bubble.
   bool has_error_ = false;
 
-  // The bounds of context widget for this caption bubble. On Chrome browser,
-  // this is the bounds in screen of the top level widget of the browser window.
-  // When this feature is implemented in ash, this will be bounds of the top
-  // level widget of the ash window.
-  base::Optional<gfx::Rect> context_bound_in_screen_;
+  // The bounds of the context widget. On Chrome browser, this is the bounds in
+  // screen of the top level widget of the browser window. When Live Caption is
+  // implemented in ash, this will be bounds of the top level widget of the ash
+  // window.
+  const base::Optional<gfx::Rect> context_bounds_in_screen_;
+
+  // A callback which activates the context for this CaptionBubbleModel. In
+  // Live Caption on browser, this activates the browser window and tab of the
+  // web contents to which this CaptionBubbleModel belongs.
+  const base::RepeatingClosure activate_context_callback_;
 
   // The CaptionBubble observing changes to this model.
   CaptionBubble* observer_ = nullptr;
 };
+
 }  // namespace captions
 
 #endif  // COMPONENTS_LIVE_CAPTION_VIEWS_CAPTION_BUBBLE_MODEL_H_

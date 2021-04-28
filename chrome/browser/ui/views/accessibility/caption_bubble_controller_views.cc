@@ -7,9 +7,13 @@
 #include <memory>
 #include <string>
 
+#include "base/bind.h"
 #include "chrome/browser/accessibility/caption_controller.h"
 #include "chrome/browser/accessibility/caption_controller_factory.h"
 #include "chrome/browser/accessibility/caption_host_impl.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/live_caption/views/caption_bubble.h"
 #include "components/live_caption/views/caption_bubble_model.h"
 #include "content/public/browser/web_contents.h"
@@ -97,18 +101,19 @@ void CaptionBubbleControllerViews::SetActiveModel(
     CaptionHostImpl* caption_host_impl) {
   if (!caption_bubble_models_.count(caption_host_impl)) {
     content::WebContents* web_contents = caption_host_impl->GetWebContents();
-    views::Widget* context =
+    views::Widget* context_widget =
         web_contents ? views::Widget::GetTopLevelWidgetForNativeView(
                            web_contents->GetNativeView())
                      : nullptr;
-
     base::Optional<gfx::Rect> context_bounds = base::nullopt;
-    if (context)
-      context_bounds = context->GetClientAreaBoundsInScreen();
-
+    if (context_widget)
+      context_bounds = context_widget->GetClientAreaBoundsInScreen();
     caption_bubble_models_.emplace(
         caption_host_impl,
-        std::make_unique<CaptionBubbleModel>(context_bounds));
+        std::make_unique<CaptionBubbleModel>(
+            context_bounds,
+            base::BindRepeating(&CaptionBubbleControllerViews::ActivateContext,
+                                base::Unretained(this), web_contents)));
   }
 
   CaptionBubbleModel* caption_bubble_model =
@@ -117,6 +122,23 @@ void CaptionBubbleControllerViews::SetActiveModel(
     active_model_ = caption_bubble_model;
     caption_bubble_->SetModel(active_model_);
   }
+}
+
+void CaptionBubbleControllerViews::ActivateContext(
+    content::WebContents* web_contents) {
+  if (!web_contents)
+    return;
+  // Activate the web contents and the browser window that the web contents is
+  // in. Order matters: web contents needs to be active in order for the widget
+  // getter to work.
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  TabStripModel* tab_strip_model = browser->tab_strip_model();
+  int index = tab_strip_model->GetIndexOfWebContents(web_contents);
+  tab_strip_model->ActivateTabAt(index);
+  views::Widget* context_widget = views::Widget::GetTopLevelWidgetForNativeView(
+      web_contents->GetNativeView());
+  if (context_widget)
+    context_widget->Activate();
 }
 
 bool CaptionBubbleControllerViews::IsWidgetVisibleForTesting() {

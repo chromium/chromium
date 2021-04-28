@@ -67,7 +67,7 @@ class ProjectorUiController::CaptionBubbleController
       : controller_(controller) {
     aura::Window* root_window = Shell::Get()->GetRootWindowForNewWindows();
     caption_bubble_model_ = std::make_unique<captions::CaptionBubbleModel>(
-        root_window->GetBoundsInScreen());
+        root_window->GetBoundsInScreen(), base::NullCallback());
 
     auto* caption_bubble = new captions::CaptionBubble(
         base::NullCallback(), /* hide_on_inactivity= */ false);
