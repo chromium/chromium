@@ -101,6 +101,8 @@ void EmojiUI::Show(Profile* profile) {
   auto weak_ptr = bubble_view->GetWeakPtr();
   views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_view));
   weak_ptr->SetAnchorRect(anchor_rect);
+  weak_ptr->GetBubbleFrameView()->SetPreferredArrowAdjustment(
+      views::BubbleFrameView::PreferredArrowAdjustment::kOffset);
   weak_ptr->set_adjust_if_offscreen(true);
 }
 
