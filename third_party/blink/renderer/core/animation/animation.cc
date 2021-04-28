@@ -78,6 +78,17 @@ namespace blink {
 
 namespace {
 
+// Ensure the time is bounded such that it can be resolved to microsecond
+// accuracy. Beyond this limit, we can effectively stall an animation when
+// ticking (i.e. b + delta == b for high enough floating point value of b).
+// Furthermore, we can encounter numeric overflows when converting to a
+// time format that is backed by a 64-bit integer.
+bool SupportedTimeValue(double time_in_ms) {
+  return std::abs(time_in_ms) < std::pow(std::numeric_limits<double>::radix,
+                                         std::numeric_limits<double>::digits) /
+                                    1000;
+}
+
 enum PseudoPriority { kNone, kMarker, kBefore, kOther, kAfter };
 
 unsigned NextSequenceNumber() {
@@ -1899,6 +1910,15 @@ Animation::CheckCanStartAnimationOnCompositorInternal() const {
   // there is no reason to composite it.
   if (EffectivePlaybackRate() == 0)
     reasons |= CompositorAnimations::kInvalidAnimationOrEffect;
+
+  // Animation times with large magnitudes cannot be accurately reflected by
+  // TimeTicks. These animations will stall, be finished next frame, or
+  // stuck in the before phase. In any case, there will be no visible changes
+  // after the initial frame.
+  base::Optional<AnimationTimeDelta> current_time = CurrentTimeInternal();
+  if (current_time.has_value() &&
+      !SupportedTimeValue(current_time.value().InMillisecondsF()))
+    reasons |= CompositorAnimations::kEffectHasUnsupportedTimingParameters;
 
   if (!CurrentTimeInternal())
     reasons |= CompositorAnimations::kInvalidAnimationOrEffect;

@@ -404,16 +404,35 @@ TEST_F(AnimationAnimationTestNoCompositing, SetCurrentTimePastContentEnd) {
   EXPECT_TIME(10000, GetCurrentTimeMs(animation));
 }
 
-TEST_F(AnimationAnimationTestNoCompositing, SetCurrentTimeMax) {
+TEST_F(AnimationAnimationTestCompositing, SetCurrentTimeMax) {
+  ResetWithCompositedAnimation();
+  EXPECT_EQ(CompositorAnimations::kNoFailure,
+            animation->CheckCanStartAnimationOnCompositor(nullptr));
   double limit = std::numeric_limits<double>::max();
   animation->setCurrentTime(CSSNumberish::FromDouble(limit));
   CSSNumberish current_time;
   animation->currentTime(current_time);
   ExpectRelativeErrorWithinEpsilon(limit, current_time.GetAsDouble());
-
+  EXPECT_TRUE(animation->CheckCanStartAnimationOnCompositor(nullptr) &
+              CompositorAnimations::kEffectHasUnsupportedTimingParameters);
   SimulateFrame(100000);
   animation->currentTime(current_time);
   ExpectRelativeErrorWithinEpsilon(limit, current_time.GetAsDouble());
+}
+
+TEST_F(AnimationAnimationTestCompositing, SetCurrentTimeAboveMaxTimeDelta) {
+  // Similar to the SetCurrentTimeMax test. The limit is much less, but still
+  // too large to be expressed as a 64-bit int and thus not able to run on the
+  // compositor.
+  ResetWithCompositedAnimation();
+  EXPECT_EQ(CompositorAnimations::kNoFailure,
+            animation->CheckCanStartAnimationOnCompositor(nullptr));
+  double limit = 1e30;
+  animation->setCurrentTime(CSSNumberish::FromDouble(limit));
+  CSSNumberish current_time;
+  animation->currentTime(current_time);
+  EXPECT_TRUE(animation->CheckCanStartAnimationOnCompositor(nullptr) &
+              CompositorAnimations::kEffectHasUnsupportedTimingParameters);
 }
 
 TEST_F(AnimationAnimationTestNoCompositing, SetCurrentTimeSetsStartTime) {
