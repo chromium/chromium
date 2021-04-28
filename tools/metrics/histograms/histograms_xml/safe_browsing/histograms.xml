@@ -1603,6 +1603,16 @@ Safe Browsing lookup mechanism is working as expected -->
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.V4ProcessFullUpdate.ApplyUpdateDuration"
+    units="ms" expires_after="2022-04-27">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records how long it took to perform a full update of a V4 store. This is
+    recorded in thread time, to avoid recording any disk operations.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.V4ProcessFullUpdate.DecodeAdditions.Result"
     enum="SafeBrowsingV4DecodeResult" expires_after="never">
 <!-- expires-never: This reports the outcome of decoding the latest update
@@ -1646,6 +1656,16 @@ and applied correctly. -->
   <summary>
     Track the result of applying a partial update for a store received from
     PVer4 SafeBrowsing service.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4ProcessPartialUpdate.ApplyUpdateDuration"
+    units="ms" expires_after="2022-04-27">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records how long it took to perform a partial update of a V4 store. This is
+    recorded in thread time, to avoid recording any disk operations.
   </summary>
 </histogram>
 
@@ -1719,6 +1739,16 @@ and applied correctly. -->
     Track the result of decoding the Rice-encoded list of additions of 4-byte
     hash prefixes. This is logged once per store, per Chrome launch. It is
     specific to processing V4StoreFileFormat proto read from disk.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4ReadFromDisk.VerifyChecksumDuration" units="ms"
+    expires_after="2022-04-27">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records how long it took to verify the checksum of a V4 store. This is
+    recorded in thread time, to avoid recording any disk operations.
   </summary>
 </histogram>
 

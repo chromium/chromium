@@ -16522,6 +16522,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       name="SafeBrowsing.V4ProcessFullUpdate.ApplyUpdate.Result"/>
   <affected-histogram name="SafeBrowsing.V4ProcessFullUpdate.ApplyUpdate.Time"/>
   <affected-histogram
+      name="SafeBrowsing.V4ProcessFullUpdate.ApplyUpdateDuration"/>
+  <affected-histogram
       name="SafeBrowsing.V4ProcessFullUpdate.DecodeAdditions.Result"/>
   <affected-histogram
       name="SafeBrowsing.V4ProcessFullUpdate.DecodeAdditions.Time"/>
@@ -16534,6 +16536,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       name="SafeBrowsing.V4ProcessPartialUpdate.ApplyUpdate.Result"/>
   <affected-histogram
       name="SafeBrowsing.V4ProcessPartialUpdate.ApplyUpdate.Time"/>
+  <affected-histogram
+      name="SafeBrowsing.V4ProcessPartialUpdate.ApplyUpdateDuration"/>
   <affected-histogram
       name="SafeBrowsing.V4ProcessPartialUpdate.DecodeAdditions.Result"/>
   <affected-histogram
@@ -16552,6 +16556,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       name="SafeBrowsing.V4ReadFromDisk.DecodeAdditions.Result"/>
   <affected-histogram name="SafeBrowsing.V4ReadFromDisk.DecodeAdditions.Time"/>
   <affected-histogram name="SafeBrowsing.V4ReadFromDisk.MergeUpdate.Time"/>
+  <affected-histogram
+      name="SafeBrowsing.V4ReadFromDisk.VerifyChecksumDuration"/>
   <affected-histogram name="SafeBrowsing.V4Store.IsStoreValid"/>
 </histogram_suffixes>
 
