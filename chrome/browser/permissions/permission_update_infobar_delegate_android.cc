@@ -14,6 +14,7 @@
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/infobars/android/confirm_infobar.h"
 #include "components/infobars/core/infobar.h"
 #include "components/permissions/android/android_permission_util.h"
 #include "components/permissions/permission_uma_util.h"
@@ -120,7 +121,7 @@ infobars::InfoBar* PermissionUpdateInfoBarDelegate::Create(
     return nullptr;
   }
 
-  return infobar_service->AddInfoBar(infobar_service->CreateConfirmInfoBar(
+  return infobar_service->AddInfoBar(std::make_unique<infobars::ConfirmInfoBar>(
       // Using WrapUnique as the PermissionUpdateInfoBarDelegate ctor is
       // private.
       base::WrapUnique<ConfirmInfoBarDelegate>(

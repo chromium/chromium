@@ -10,6 +10,7 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/infobars/android/confirm_infobar.h"
 #include "components/infobars/core/infobar.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
@@ -27,7 +28,7 @@ void ScreenCaptureInfoBarDelegateAndroid::Create(
   InfoBarService* infobar_service =
       InfoBarService::FromWebContents(web_contents);
 
-  infobar_service->AddInfoBar(infobar_service->CreateConfirmInfoBar(
+  infobar_service->AddInfoBar(std::make_unique<infobars::ConfirmInfoBar>(
       std::unique_ptr<ConfirmInfoBarDelegate>(
           new ScreenCaptureInfoBarDelegateAndroid(web_contents, request,
                                                   std::move(callback)))));

@@ -11,6 +11,7 @@
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/infobars/android/confirm_infobar.h"
 #include "components/infobars/core/infobar.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -18,8 +19,8 @@
 void DangerousDownloadInfoBarDelegate::Create(
     InfoBarService* infobar_service,
     download::DownloadItem* download_item) {
-  infobar_service->AddInfoBar(infobar_service->CreateConfirmInfoBar(
-    base::WrapUnique(new DangerousDownloadInfoBarDelegate(download_item))));
+  infobar_service->AddInfoBar(std::make_unique<infobars::ConfirmInfoBar>(
+      base::WrapUnique(new DangerousDownloadInfoBarDelegate(download_item))));
 }
 
 DangerousDownloadInfoBarDelegate::DangerousDownloadInfoBarDelegate(
