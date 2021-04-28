@@ -27,6 +27,7 @@
 #include "components/password_manager/core/browser/password_store_factory_util.h"
 #include "components/password_manager/core/browser/password_store_impl.h"
 #include "components/password_manager/core/browser/password_store_signin_notifier_impl.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -172,6 +173,18 @@ PasswordStoreFactory::BuildServiceInstanceFor(
           IdentityManagerFactory::GetForProfile(profile));
   ps->SetPasswordStoreSigninNotifier(std::move(notifier));
 #endif
+
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kFillingAcrossAffiliatedWebsites)) {
+    // Try to create affiliation service without awaiting synced state changes.
+    // TODO(http://crbug.com/1202699): Remove sync service completely after
+    // launching HashAffiliationLookup.
+    password_manager::ToggleAffiliationBasedMatchingBasedOnPasswordSyncedState(
+        ps.get(), /*sync_service=*/nullptr,
+        content::BrowserContext::GetDefaultStoragePartition(profile)
+            ->GetURLLoaderFactoryForBrowserProcess(),
+        content::GetNetworkConnectionTracker(), profile->GetPath());
+  }
 
   return ps;
 }
