@@ -142,6 +142,11 @@ class CONTENT_EXPORT FileSystemAccessFileWriterImpl
   // explicitly closed.
   bool auto_close_ = false;
 
+  // The writer should not attempt to purge the swap file if the move operation
+  // to the target file is successful, since this may incidentally remove the
+  // active swap file of a different writer.
+  bool should_purge_swap_file_on_destruction_ = true;
+
   base::WeakPtr<FileSystemAccessHandleBase> AsWeakPtr() override;
 
   base::WeakPtrFactory<FileSystemAccessFileWriterImpl> weak_factory_{this};

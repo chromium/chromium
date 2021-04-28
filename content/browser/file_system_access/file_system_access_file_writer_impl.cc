@@ -151,21 +151,22 @@ FileSystemAccessFileWriterImpl::FileSystemAccessFileWriterImpl(
 }
 
 FileSystemAccessFileWriterImpl::~FileSystemAccessFileWriterImpl() {
-  // Purge the swap file. The swap file should be deleted after Close(), but
-  // we'll try to delete it anyways in case the writer wasn't closed cleanly.
-  DoFileSystemOperation(
-      FROM_HERE, &FileSystemOperationRunner::RemoveFile,
-      base::BindOnce(
-          [](const storage::FileSystemURL& swap_url, base::File::Error result) {
-            if (result != base::File::FILE_OK &&
-                result != base::File::FILE_ERROR_NOT_FOUND) {
-              DLOG(ERROR) << "Error Deleting Swap File, status: "
-                          << base::File::ErrorToString(result)
-                          << " path: " << swap_url.path();
-            }
-          },
-          swap_url()),
-      swap_url());
+  if (should_purge_swap_file_on_destruction_) {
+    DoFileSystemOperation(
+        FROM_HERE, &FileSystemOperationRunner::RemoveFile,
+        base::BindOnce(
+            [](const storage::FileSystemURL& swap_url,
+               base::File::Error result) {
+              if (result != base::File::FILE_OK &&
+                  result != base::File::FILE_ERROR_NOT_FOUND) {
+                DLOG(ERROR) << "Error Deleting Swap File, status: "
+                            << base::File::ErrorToString(result)
+                            << " path: " << swap_url.path();
+              }
+            },
+            swap_url()),
+        swap_url());
+  }
 }
 
 void FileSystemAccessFileWriterImpl::Write(
@@ -228,6 +229,8 @@ void FileSystemAccessFileWriterImpl::Abort(AbortCallback callback) {
 // Do not call this method if |close_callback_| is not set.
 void FileSystemAccessFileWriterImpl::CallCloseCallbackAndDeleteThis(
     blink::mojom::FileSystemAccessErrorPtr result) {
+  should_purge_swap_file_on_destruction_ =
+      result->status != blink::mojom::FileSystemAccessStatus::kOk;
   std::move(close_callback_).Run(std::move(result));
 
   // |this| is deleted after this call.
