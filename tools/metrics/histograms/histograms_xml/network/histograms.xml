@@ -1527,6 +1527,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Network.Shill.WiFi.HiddenSSIDEverConnected"
+    enum="BooleanEverConnected" expires_after="2022-04-27">
+  <owner>tnagel@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <owner>cros-privacy-core@google.com</owner>
+  <summary>
+    Chrome OS network metric tracking whether WiFi networks configured with
+    hidden SSID have ever been connected. The metric includes networks from
+    system and user profile and it's recorded each time a user configuration
+    profile is loaded, such as when a user logs in.
+  </summary>
+</histogram>
+
 <histogram name="Network.Shill.WiFi.HiddenSSIDNetworkCount" units="units"
     expires_after="2021-12-01">
   <owner>tnagel@chromium.org</owner>

@@ -8480,6 +8480,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Error"/>
 </enum>
 
+<enum name="BooleanEverConnected">
+  <int value="0" label="Never connected"/>
+  <int value="1" label="Previously connected"/>
+</enum>
+
 <enum name="BooleanEverWorked">
   <int value="0" label="Has never worked"/>
   <int value="1" label="Has worked at least once"/>
