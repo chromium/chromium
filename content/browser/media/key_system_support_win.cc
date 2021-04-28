@@ -34,7 +34,7 @@ void OnKeySystemCapability(
   // TODO(xhwang/jrummell): Support hardware session types. Now only assume
   // temporary session support.
   std::move(cdm_capability_cb)
-      .Run(CdmCapability(
+      .Run(media::CdmCapability(
           key_system_capability->hw_secure_video_codecs,
           VectorToSet(key_system_capability->hw_secure_encryption_schemes),
           {media::CdmSessionType::kTemporary}));

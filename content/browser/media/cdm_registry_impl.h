@@ -14,6 +14,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/cdm_registry.h"
 #include "content/public/common/cdm_info.h"
+#include "media/cdm/cdm_capability.h"
 
 namespace content {
 
@@ -38,9 +39,10 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry {
   // removed if `cdm_capability` is null, since the CDM does not support any
   // capability. Returns whether the CdmInfo was successfully updated with a
   // valid CdmCapability.
-  bool FinalizeCdmCapability(const std::string& key_system,
-                             CdmInfo::Robustness robustness,
-                             base::Optional<CdmCapability> cdm_capability);
+  bool FinalizeCdmCapability(
+      const std::string& key_system,
+      CdmInfo::Robustness robustness,
+      base::Optional<media::CdmCapability> cdm_capability);
 
  private:
   friend class CdmRegistryImplTest;

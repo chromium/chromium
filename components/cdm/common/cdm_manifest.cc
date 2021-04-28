@@ -23,6 +23,7 @@
 #include "media/base/content_decryption_module.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/video_codecs.h"
+#include "media/cdm/cdm_capability.h"
 #include "media/cdm/supported_cdm_versions.h"
 #include "media/media_buildflags.h"
 
@@ -278,7 +279,7 @@ bool IsCdmManifestCompatibleWithChrome(const base::Value& manifest) {
 }
 
 bool ParseCdmManifest(const base::Value& manifest,
-                      content::CdmCapability* capability) {
+                      media::CdmCapability* capability) {
   DCHECK(manifest.is_dict());
 
   return GetCodecs(manifest, &capability->video_codecs) &&
@@ -288,7 +289,7 @@ bool ParseCdmManifest(const base::Value& manifest,
 
 bool ParseCdmManifestFromPath(const base::FilePath& manifest_path,
                               base::Version* version,
-                              content::CdmCapability* capability) {
+                              media::CdmCapability* capability) {
   JSONFileValueDeserializer deserializer(manifest_path);
   int error_code;
   std::string error_message;

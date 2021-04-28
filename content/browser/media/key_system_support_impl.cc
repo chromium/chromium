@@ -49,7 +49,7 @@ std::vector<T> SetToVector(const base::flat_set<T>& s) {
 // Returns a CdmCapability with codecs specified on command line. Returns null
 // if kOverrideHardwareSecureCodecsForTesting was not specified or not valid
 // codecs specified.
-base::Optional<CdmCapability>
+base::Optional<media::CdmCapability>
 GetHardwareSecureCapabilityOverriddenFromCommandLine() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line || !command_line->HasSwitch(
@@ -81,7 +81,7 @@ GetHardwareSecureCapabilityOverriddenFromCommandLine() {
   }
 
   // Overridden codecs assume CENC/CBCS and temporary session support.
-  return CdmCapability(
+  return media::CdmCapability(
       std::move(video_codecs),
       {media::EncryptionScheme::kCenc, media::EncryptionScheme::kCbcs},
       {media::CdmSessionType::kTemporary});
@@ -89,7 +89,7 @@ GetHardwareSecureCapabilityOverriddenFromCommandLine() {
 
 // Software secure capability can be obtained synchronously in all supported
 // cases. If needed, this can be easily converted to an asynchronous call.
-base::Optional<CdmCapability> GetSoftwareSecureCapability(
+base::Optional<media::CdmCapability> GetSoftwareSecureCapability(
     const std::string& key_system) {
   auto cdm_info = CdmRegistryImpl::GetInstance()->GetCdmInfo(
       key_system, CdmInfo::Robustness::kSoftwareSecure);
@@ -111,7 +111,7 @@ base::Optional<CdmCapability> GetSoftwareSecureCapability(
 
 // Trying to get hardware secure capability synchronously. If lazy
 // initialization is needed, set `lazy_initialize` to true.
-base::Optional<CdmCapability> GetHardwareSecureCapability(
+base::Optional<media::CdmCapability> GetHardwareSecureCapability(
     const std::string& key_system,
     bool* lazy_initialize) {
   *lazy_initialize = false;
@@ -237,7 +237,7 @@ void KeySystemSupportImpl::OnHardwareSecureCapability(
     const std::string& key_system,
     IsKeySystemSupportedCallback callback,
     bool lazy_initialize,
-    base::Optional<CdmCapability> hw_secure_capability) {
+    base::Optional<media::CdmCapability> hw_secure_capability) {
   // See comment above. This could be called multiple times when we have
   // parallel `IsKeySystemSupported()` calls from different renderer processes.
   // This is okay and won't cause collision or corruption of data.

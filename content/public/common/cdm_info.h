@@ -17,31 +17,9 @@
 #include "media/base/content_decryption_module.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/video_codecs.h"
+#include "media/cdm/cdm_capability.h"
 
 namespace content {
-
-// Capabilites supported by a Content Decryption Module.
-struct CONTENT_EXPORT CdmCapability {
-  CdmCapability();
-  CdmCapability(std::vector<media::VideoCodec> video_codecs,
-                base::flat_set<media::EncryptionScheme> encryption_schemes,
-                base::flat_set<media::CdmSessionType> session_types);
-  CdmCapability(const CdmCapability& other);
-  ~CdmCapability();
-
-  // List of video codecs supported by the CDM (e.g. vp8). This is the set of
-  // codecs that can be decrypted and decoded by the CDM. As this is generic,
-  // not all profiles or levels of the specified codecs may actually be
-  // supported.
-  // TODO(crbug.com/796725) Find a way to include profiles and levels.
-  std::vector<media::VideoCodec> video_codecs;
-
-  // List of encryption schemes supported by the CDM (e.g. cenc).
-  base::flat_set<media::EncryptionScheme> encryption_schemes;
-
-  // List of session types supported by the CDM.
-  base::flat_set<media::CdmSessionType> session_types;
-};
 
 // Represents a Content Decryption Module implementation and its capabilities.
 struct CONTENT_EXPORT CdmInfo {
@@ -52,7 +30,7 @@ struct CONTENT_EXPORT CdmInfo {
 
   CdmInfo(const std::string& key_system,
           Robustness robustness,
-          base::Optional<CdmCapability> capability,
+          base::Optional<media::CdmCapability> capability,
           bool supports_sub_key_systems,
           const std::string& name,
           const base::Token& guid,
@@ -61,7 +39,7 @@ struct CONTENT_EXPORT CdmInfo {
           const std::string& file_system_id);
   CdmInfo(const std::string& key_system,
           Robustness robustness,
-          base::Optional<CdmCapability> capability);
+          base::Optional<media::CdmCapability> capability);
   CdmInfo(const CdmInfo& other);
   ~CdmInfo();
 
@@ -78,7 +56,7 @@ struct CONTENT_EXPORT CdmInfo {
   // CDM capability, e.g. video codecs, encryption schemes and session types.
   // Optional to allow lazy initialization, i.e. to populate the capability
   // after registration.
-  base::Optional<CdmCapability> capability;
+  base::Optional<media::CdmCapability> capability;
 
   // Whether we also support sub key systems of the `key_system`.
   // A sub key system to a key system is like a sub domain to a domain.

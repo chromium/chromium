@@ -51,6 +51,8 @@ source_set("cdm") {
     "aes_decryptor.h",
     "cbcs_decryptor.cc",
     "cbcs_decryptor.h",
+    "cdm_capability.cc",
+    "cdm_capability.h",
     "cdm_context_ref_impl.cc",
     "cdm_context_ref_impl.h",
     "cenc_decryptor.cc",

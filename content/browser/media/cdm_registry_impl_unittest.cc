@@ -18,6 +18,7 @@
 #include "base/version.h"
 #include "content/public/common/cdm_info.h"
 #include "media/base/video_codecs.h"
+#include "media/cdm/cdm_capability.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -67,8 +68,8 @@ class CdmRegistryImplTest : public testing::Test {
   ~CdmRegistryImplTest() override {}
 
  protected:
-  CdmCapability GetTestCdmCapability() {
-    return CdmCapability(
+  media::CdmCapability GetTestCdmCapability() {
+    return media::CdmCapability(
         {media::kCodecVP8, media::kCodecVP9}, {EncryptionScheme::kCenc},
         {CdmSessionType::kTemporary, CdmSessionType::kPersistentLicense});
   }

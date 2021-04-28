@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
+#include "media/cdm/cdm_capability.h"
 #include "third_party/widevine/cdm/buildflags.h"
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -52,7 +53,7 @@ using Robustness = content::CdmInfo::Robustness;
 std::unique_ptr<content::CdmInfo> CreateWidevineCdmInfo(
     const base::Version& version,
     const base::FilePath& cdm_library_path,
-    content::CdmCapability capability) {
+    media::CdmCapability capability) {
   return std::make_unique<content::CdmInfo>(
       kWidevineKeySystem, Robustness::kSoftwareSecure, std::move(capability),
       /*supports_sub_key_systems=*/false, kWidevineCdmDisplayName,
@@ -76,7 +77,7 @@ std::unique_ptr<content::CdmInfo> CreateCdmInfoFromWidevineDirectory(
   // Manifest should be at the top level.
   auto manifest_path = cdm_base_path.Append(FILE_PATH_LITERAL("manifest.json"));
   base::Version version;
-  content::CdmCapability capability;
+  media::CdmCapability capability;
   if (!ParseCdmManifestFromPath(manifest_path, &version, &capability))
     return nullptr;
 
@@ -108,7 +109,7 @@ std::unique_ptr<content::CdmInfo> CreateCdmInfoForChromeOS(
 
   // As there is no manifest, set |capability| as if it came from one. These
   // values must match the CDM that is being bundled with Chrome.
-  content::CdmCapability capability;
+  media::CdmCapability capability;
 
   // Add the supported codecs as if they came from the component manifest.
   capability.video_codecs.push_back(media::VideoCodec::kCodecVP8);
@@ -226,7 +227,7 @@ void AddSoftwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
 
 void AddHardwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
 #if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-  content::CdmCapability capability;
+  media::CdmCapability capability;
 
   // We currently support VP9, H264 and HEVC.
   capability.video_codecs.push_back(media::VideoCodec::kCodecVP9);
@@ -294,7 +295,7 @@ void AddExternalClearKey(std::vector<content::CdmInfo>* cdms) {
       "org.chromium.externalclearkey.differentguid";
 
   // Supported codecs are hard-coded in ExternalClearKeyProperties.
-  content::CdmCapability capability(
+  media::CdmCapability capability(
       {}, {media::EncryptionScheme::kCenc, media::EncryptionScheme::kCbcs},
       {media::CdmSessionType::kTemporary,
        media::CdmSessionType::kPersistentLicense});

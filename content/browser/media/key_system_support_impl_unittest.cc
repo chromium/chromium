@@ -22,6 +22,7 @@
 #include "media/base/decrypt_config.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
+#include "media/cdm/cdm_capability.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -88,8 +89,8 @@ class KeySystemSupportImplTest : public testing::Test {
         key_system_support_.BindNewPipeAndPassReceiver());
   }
 
-  CdmCapability TestCdmCapability() {
-    return CdmCapability(
+  media::CdmCapability TestCdmCapability() {
+    return media::CdmCapability(
         {VideoCodec::kCodecVP8, VideoCodec::kCodecVP9},
         {EncryptionScheme::kCenc, EncryptionScheme::kCbcs},
         {CdmSessionType::kTemporary, CdmSessionType::kPersistentLicense});
@@ -98,7 +99,7 @@ class KeySystemSupportImplTest : public testing::Test {
   // Registers |key_system| with |capability|. All other values for CdmInfo have
   // some default value as they're not returned by IsKeySystemSupported().
   void Register(const std::string& key_system,
-                base::Optional<CdmCapability> capability,
+                base::Optional<media::CdmCapability> capability,
                 Robustness robustness = Robustness::kSoftwareSecure) {
     DVLOG(1) << __func__;
 

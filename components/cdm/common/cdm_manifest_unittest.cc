@@ -20,10 +20,11 @@
 #include "base/version.h"
 #include "content/public/common/cdm_info.h"
 #include "media/cdm/api/content_decryption_module.h"
+#include "media/cdm/cdm_capability.h"
 #include "media/cdm/supported_cdm_versions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using content::CdmCapability;
+using media::CdmCapability;
 
 namespace {
 

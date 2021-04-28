@@ -50,6 +50,7 @@
 #if BUILDFLAG(BUNDLE_WIDEVINE_CDM) && defined(OS_LINUX)
 #include "base/no_destructor.h"
 #include "components/cdm/common/cdm_manifest.h"
+#include "media/cdm/cdm_capability.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"  // nogncheck
 // component updated CDM on all desktop platforms and remove this.
 // This file is In SHARED_INTERMEDIATE_DIR.
@@ -97,7 +98,7 @@ std::string BuildAndroidOsInfo() {
 std::unique_ptr<content::CdmInfo> CreateWidevineCdmInfo(
     const base::Version& version,
     const base::FilePath& cdm_library_path,
-    content::CdmCapability capability) {
+    media::CdmCapability capability) {
   return std::make_unique<content::CdmInfo>(
       kWidevineKeySystem, content::CdmInfo::Robustness::kSoftwareSecure,
       std::move(capability), /*supports_sub_key_systems=*/false,
@@ -125,7 +126,7 @@ std::unique_ptr<content::CdmInfo> CreateCdmInfoFromWidevineDirectory(
   // Manifest should be at the top level.
   auto manifest_path = cdm_base_path.Append(FILE_PATH_LITERAL("manifest.json"));
   base::Version version;
-  content::CdmCapability capability;
+  media::CdmCapability capability;
   if (!ParseCdmManifestFromPath(manifest_path, &version, &capability))
     return nullptr;
 

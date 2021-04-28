@@ -11,10 +11,12 @@
 #include "base/files/file_path.h"
 #include "base/optional.h"
 #include "content/public/common/cdm_info.h"
+#include "media/cdm/cdm_capability.h"
 
 namespace content {
 
-using CdmCapabilityCB = base::OnceCallback<void(base::Optional<CdmCapability>)>;
+using CdmCapabilityCB =
+    base::OnceCallback<void(base::Optional<media::CdmCapability>)>;
 
 // Returns the hardware secure CdmCapability supported in MediaFoundationService
 // for `key_system` by the CDM located in `cdm_path`.
