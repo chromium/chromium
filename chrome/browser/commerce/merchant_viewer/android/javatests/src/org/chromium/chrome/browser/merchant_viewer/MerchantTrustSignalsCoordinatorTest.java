@@ -37,6 +37,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.MessageClearReason;
@@ -147,6 +148,7 @@ public class MerchantTrustSignalsCoordinatorTest {
 
     @UiThreadTest
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1203461")
     @Test
     @CommandLineFlags.
     Add({"force-fieldtrial-params=Study.Group:trust_signals_message_window_duration_ms/-1"})
@@ -181,6 +183,7 @@ public class MerchantTrustSignalsCoordinatorTest {
 
     @UiThreadTest
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1203461")
     @Test
     @CommandLineFlags.
     Add({"force-fieldtrial-params=Study.Group:trust_signals_message_window_duration_ms/60000"})
@@ -210,6 +213,7 @@ public class MerchantTrustSignalsCoordinatorTest {
 
     @UiThreadTest
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1203461")
     @Test
     @CommandLineFlags.
     Add({"force-fieldtrial-params=Study.Group:trust_signals_message_window_duration_ms/-1"})
@@ -239,6 +243,7 @@ public class MerchantTrustSignalsCoordinatorTest {
 
     @UiThreadTest
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1203461")
     @Test
     @CommandLineFlags.
     Add({"force-fieldtrial-params=Study.Group:trust_signals_message_window_duration_ms/-1"})
@@ -269,6 +274,7 @@ public class MerchantTrustSignalsCoordinatorTest {
 
     @UiThreadTest
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1203461")
     @Test
     public void testMaybeDisplayMessageWithScheduledMessage() {
         // Verify previous scheduled message is canceled.
@@ -286,6 +292,7 @@ public class MerchantTrustSignalsCoordinatorTest {
 
     @UiThreadTest
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1203461")
     @Test
     public void testMaybeDisplayMessageWithScheduledMessageForDifferentHost() {
         MerchantTrustSignalsCoordinator coordinator = getCoordinatorUnderTest();
@@ -309,6 +316,7 @@ public class MerchantTrustSignalsCoordinatorTest {
     }
 
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1203461")
     @Test
     public void testOnMessageDismissed() {
         MerchantTrustSignalsCoordinator coordinator = getCoordinatorUnderTest();
