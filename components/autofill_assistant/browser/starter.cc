@@ -156,6 +156,10 @@ void Starter::Start(std::unique_ptr<TriggerContext> trigger_context,
           switches::kAutofillAssistantForceOnboarding) == "true") {
     platform_delegate_->SetOnboardingAccepted(false);
   }
+  if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kAutofillAssistantForceFirstTimeUser) == "true") {
+    platform_delegate_->SetIsFirstTimeUser(true);
+  }
 
   StartupMode startup_mode = StartupUtil().ChooseStartupModeForIntent(
       *pending_trigger_context_,

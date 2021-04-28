@@ -402,6 +402,49 @@ TEST_F(StarterTest, ForceOnboardingFlagForReturningUsersSucceeds) {
                                       Metrics::OnBoarding::OB_SHOWN, 1u);
 }
 
+TEST_F(StarterTest, ForceFirstTimeUserExperienceForReturningUser) {
+  GetTriggerScriptsResponseProto get_trigger_scripts_response;
+  auto* first_time_user_script =
+      get_trigger_scripts_response.add_trigger_scripts();
+  first_time_user_script->mutable_user_interface()->set_status_message(
+      "First time user");
+  first_time_user_script->mutable_trigger_condition()
+      ->mutable_is_first_time_user();
+  auto* returning_user_script =
+      get_trigger_scripts_response.add_trigger_scripts();
+  returning_user_script->mutable_user_interface()->set_status_message(
+      "Returning user");
+  returning_user_script->mutable_trigger_condition()
+      ->mutable_none_of()
+      ->add_conditions()
+      ->mutable_is_first_time_user();
+  std::string serialized_get_trigger_scripts_response;
+  get_trigger_scripts_response.SerializeToString(
+      &serialized_get_trigger_scripts_response);
+  std::string base64_get_trigger_scripts_response;
+  base::Base64UrlEncode(serialized_get_trigger_scripts_response,
+                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
+                        &base64_get_trigger_scripts_response);
+
+  SetupPlatformDelegateForReturningUser();
+  fake_platform_delegate_.trigger_script_request_sender_for_test_ = nullptr;
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kAutofillAssistantForceFirstTimeUser, "true");
+
+  std::map<std::string, std::string> script_parameters = {
+      {"ENABLED", "true"},
+      {"START_IMMEDIATELY", "false"},
+      {"TRIGGER_SCRIPTS_BASE64", base64_get_trigger_scripts_response},
+      {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
+
+  EXPECT_CALL(*mock_trigger_script_ui_delegate_,
+              ShowTriggerScript(first_time_user_script->user_interface()));
+  starter_->Start(std::make_unique<TriggerContext>(
+                      std::make_unique<ScriptParameters>(script_parameters),
+                      TriggerContext::Options()),
+                  mock_callback_.Get());
+}
+
 TEST_F(StarterTest, RegularStartupFailsIfDfmInstallationFails) {
   SetupPlatformDelegateForFirstTimeUser();
   fake_platform_delegate_.feature_module_installation_result_ =

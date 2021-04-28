@@ -8,10 +8,12 @@
 namespace autofill_assistant {
 namespace switches {
 
+// All switches in alphabetical order.
+extern const char kAutofillAssistantAuth[];
+extern const char kAutofillAssistantForceFirstTimeUser[];
+extern const char kAutofillAssistantForceOnboarding[];
 extern const char kAutofillAssistantServerKey[];
 extern const char kAutofillAssistantUrl[];
-extern const char kAutofillAssistantAuth[];
-extern const char kAutofillAssistantForceOnboarding[];
 
 }  // namespace switches
 }  // namespace autofill_assistant
