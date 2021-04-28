@@ -44,7 +44,8 @@ class EventReportValidator {
       const std::set<std::string>* expected_mimetypes,
       int expected_content_size,
       const std::string& expected_result,
-      const std::string& expected_username);
+      const std::string& expected_username,
+      const base::Optional<std::string>& expected_scan_id);
 
   void ExpectSensitiveDataEvent(
       const std::string& expected_url,
@@ -56,7 +57,8 @@ class EventReportValidator {
       const std::set<std::string>* expected_mimetypes,
       int expected_content_size,
       const std::string& expected_result,
-      const std::string& expected_username);
+      const std::string& expected_username,
+      const std::string& expected_scan_id);
 
   void ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
       const std::string& expected_url,
@@ -69,7 +71,8 @@ class EventReportValidator {
       const std::set<std::string>* expected_mimetypes,
       int expected_content_size,
       const std::string& expected_result,
-      const std::string& expected_username);
+      const std::string& expected_username,
+      const std::string& expected_scan_id);
 
   void ExpectSensitiveDataEventAndDangerousDeepScanningResult(
       const std::string& expected_url,
@@ -82,7 +85,8 @@ class EventReportValidator {
       const std::set<std::string>* expected_mimetypes,
       int expected_content_size,
       const std::string& expected_result,
-      const std::string& expected_username);
+      const std::string& expected_username,
+      const std::string& expected_scan_id);
 
   void ExpectUnscannedFileEvent(const std::string& expected_url,
                                 const std::string& expected_filename,
@@ -114,7 +118,8 @@ class EventReportValidator {
       const std::set<std::string>* expected_mimetypes,
       int expected_content_size,
       const std::string& expected_result,
-      const std::string& expected_username);
+      const std::string& expected_username,
+      const base::Optional<std::string>& expected_scan_id);
 
   void ExpectNoReport();
 
@@ -152,6 +157,7 @@ class EventReportValidator {
   const std::set<std::string>* mimetypes_ = nullptr;
   base::Optional<std::string> result_ = base::nullopt;
   std::string username_;
+  base::Optional<std::string> scan_id_ = base::nullopt;
 
   // When multiple files generate events, we don't necessarily know in which
   // order they will be reported. As such, we use a map to ensure all of them

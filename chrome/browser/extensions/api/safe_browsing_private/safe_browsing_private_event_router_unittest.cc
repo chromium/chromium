@@ -137,7 +137,7 @@ class SafeBrowsingPrivateEventRouterTest : public testing::Test {
     SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
         ->OnDangerousDownloadOpened(
             GURL("https://evil.com/malware.exe"), "/path/to/malware.exe",
-            "sha256_of_malware_exe", "exe",
+            "sha256_of_malware_exe", "exe", "scan_id",
             download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
             1234);
   }
@@ -158,15 +158,15 @@ class SafeBrowsingPrivateEventRouterTest : public testing::Test {
     SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
         ->OnDangerousDownloadEvent(
             GURL("https://maybevil.com/warning.exe"), "/path/to/warning.exe",
-            "sha256_of_warning_exe", "POTENTIALLY_UNWANTED", "exe", 567,
-            safe_browsing::EventResult::WARNED);
+            "sha256_of_warning_exe", "POTENTIALLY_UNWANTED", "exe", "scan_id",
+            567, safe_browsing::EventResult::WARNED);
   }
 
   void TriggerOnDangerousDownloadEventBypass() {
     SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
         ->OnDangerousDownloadWarningBypassed(
             GURL("https://bypassevil.com/bypass.exe"), "/path/to/bypass.exe",
-            "sha256_of_bypass_exe", "BYPASSED_WARNING", "exe", 890);
+            "sha256_of_bypass_exe", "BYPASSED_WARNING", "exe", "scan_id", 890);
   }
 
   void TriggerOnSensitiveDataEvent(safe_browsing::EventResult event_result) {
@@ -183,7 +183,7 @@ class SafeBrowsingPrivateEventRouterTest : public testing::Test {
         ->OnAnalysisConnectorResult(
             GURL("https://evil.com/sensitive_data.txt"), "sensitive_data.txt",
             "sha256_of_data", "text/plain",
-            SafeBrowsingPrivateEventRouter::kTriggerFileUpload,
+            SafeBrowsingPrivateEventRouter::kTriggerFileUpload, "scan_id",
             safe_browsing::DeepScanAccessPoint::UPLOAD, result, 12345,
             event_result);
   }
@@ -369,6 +369,8 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnDangerousDownloadOpened) {
   EXPECT_EQ(
       safe_browsing::EventResultToString(safe_browsing::EventResult::BYPASSED),
       *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyEventResult));
+  EXPECT_EQ("scan_id",
+            *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyScanId));
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest,
@@ -491,6 +493,8 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnDangerousDownloadWarning) {
   EXPECT_EQ(
       safe_browsing::EventResultToString(safe_browsing::EventResult::WARNED),
       *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyEventResult));
+  EXPECT_EQ("scan_id",
+            *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyScanId));
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest,
@@ -533,6 +537,8 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
   EXPECT_EQ(
       safe_browsing::EventResultToString(safe_browsing::EventResult::BYPASSED),
       *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyEventResult));
+  EXPECT_EQ("scan_id",
+            *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyScanId));
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, PolicyControlOnToOffIsDynamic) {
@@ -741,6 +747,8 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSensitiveDataEvent_Allowed) {
   EXPECT_EQ("fake rule",
             *triggered_rule.FindStringKey(
                 SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName));
+  EXPECT_EQ("scan_id",
+            *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyScanId));
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSensitiveDataEvent_Blocked) {
@@ -791,6 +799,8 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSensitiveDataEvent_Blocked) {
   EXPECT_EQ("fake rule",
             *triggered_rule.FindStringKey(
                 SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName));
+  EXPECT_EQ("scan_id",
+            *event->FindStringKey(SafeBrowsingPrivateEventRouter::kKeyScanId));
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnUnscannedFileEvent_Allowed) {

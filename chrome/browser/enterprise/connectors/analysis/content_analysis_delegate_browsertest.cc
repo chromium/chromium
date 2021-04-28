@@ -41,6 +41,9 @@ namespace {
 
 constexpr char kUserName[] = "test@chromium.org";
 
+constexpr char kScanId1[] = "scan id 1";
+constexpr char kScanId2[] = "scan id 2";
+
 std::u16string text() {
   return base::UTF8ToUTF16(std::string(100, 'a'));
 }
@@ -381,14 +384,16 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Files) {
       /*size*/ std::string("bad file content").size(),
       /*result*/
       safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED),
-      /*username*/ kUserName);
+      /*username*/ kUserName, /*scan_id*/ kScanId2);
 
   ContentAnalysisResponse ok_response;
+  ok_response.set_request_token(kScanId1);
   auto* ok_result = ok_response.add_results();
   ok_result->set_status(ContentAnalysisResponse::Result::SUCCESS);
   ok_result->set_tag("malware");
 
   ContentAnalysisResponse bad_response;
+  bad_response.set_request_token(kScanId2);
   auto* bad_result = bad_response.add_results();
   bad_result->set_status(ContentAnalysisResponse::Result::SUCCESS);
   bad_result->set_tag("malware");
@@ -445,6 +450,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Texts) {
   // Prepare a complex DLP response to test that the verdict is reported
   // correctly in the sensitive data event.
   ContentAnalysisResponse response;
+  response.set_request_token(kScanId1);
   auto* result = response.add_results();
   result->set_status(ContentAnalysisResponse::Result::SUCCESS);
   result->set_tag("dlp");
@@ -476,7 +482,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Texts) {
       /*size*/ 400,
       /*result*/
       safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED),
-      /*username*/ kUserName);
+      /*username*/ kUserName,
+      /*scan_id*/ kScanId1);
 
   bool called = false;
   base::RunLoop run_loop;
@@ -896,6 +903,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   // The file should be reported as malware and sensitive content.
   safe_browsing::EventReportValidator validator(client());
   ContentAnalysisResponse response;
+  response.set_request_token(kScanId1);
 
   auto* malware_result = response.add_results();
   malware_result->set_status(ContentAnalysisResponse::Result::SUCCESS);
@@ -932,7 +940,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
       safe_browsing::EventResultToString(
           expected_result() ? safe_browsing::EventResult::ALLOWED
                             : safe_browsing::EventResult::BLOCKED),
-      /*username*/ kUserName);
+      /*username*/ kUserName,
+      /*scan_id*/ kScanId1);
 
   bool called = false;
   base::RunLoop run_loop;

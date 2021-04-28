@@ -718,7 +718,8 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest, MultipleFCMResponses) {
       /*mimetypes*/ &zip_types,
       /*size*/ 276,
       /*result*/ EventResultToString(EventResult::WARNED),
-      /*username*/ kUserName);
+      /*username*/ kUserName,
+      /*scan_id*/ last_enterprise_request().request_token());
 
   // The DLP scan finishes asynchronously, and finds nothing. The malware result
   // is attached to the response again.
@@ -808,7 +809,8 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
       /*mimetypes*/ &zip_types,
       /*size*/ 276,
       /*result*/ EventResultToString(EventResult::WARNED),
-      /*username*/ kUserName);
+      /*username*/ kUserName,
+      /*scan_id*/ last_enterprise_request().request_token());
   WaitForDownloadToFinish();
 
   // The file should be blocked.
@@ -898,7 +900,7 @@ IN_PROC_BROWSER_TEST_P(DownloadRestrictionsDeepScanningBrowserTest,
       /*mimetypes*/ &zip_types,
       /*size*/ 276,
       /*result*/ EventResultToString(EventResult::BLOCKED),
-      /*username*/ kUserName);
+      /*username*/ kUserName, /*scan_id*/ base::nullopt);
 
   WaitForDownloadToFinish();
 
@@ -1152,6 +1154,14 @@ IN_PROC_BROWSER_TEST_P(MetadataCheckAndDeepScanningBrowserTest, Test) {
   if (threat_type.empty()) {
     validator.ExpectNoReport();
   } else {
+    // A scan ID is only expected when a deep scan is performed and when its
+    // result will be reported over the metadata check one.
+    auto scan_id =
+        deep_scan_needed() && scanning_verdict() != ScanningVerdict::SAFE
+            ? base::Optional<std::string>(
+                  last_enterprise_request().request_token())
+            : base::nullopt;
+
     validator.ExpectDangerousDeepScanningResult(
         /*url*/ url.spec(),
         /*filename*/
@@ -1166,7 +1176,8 @@ IN_PROC_BROWSER_TEST_P(MetadataCheckAndDeepScanningBrowserTest, Test) {
         /*mimetypes*/ &zip_types,
         /*size*/ 276,
         /*result*/ EventResultToString(EventResult::WARNED),
-        /*username*/ kUserName);
+        /*username*/ kUserName,
+        /*scan_id*/ scan_id);
   }
 
   // The deep scanning malware verdict is returned asynchronously. It is not

@@ -99,7 +99,8 @@ void MaybeReportDeepScanningVerdict(
                                    event_result);
     } else if (result.triggered_rules_size() > 0) {
       router->OnAnalysisConnectorResult(url, file_name, download_digest_sha256,
-                                        mime_type, trigger, access_point,
+                                        mime_type, trigger,
+                                        response.request_token(), access_point,
                                         result, content_size, event_result);
     }
   }
@@ -132,7 +133,7 @@ void ReportAnalysisConnectorWarningBypass(
 
     router->OnAnalysisConnectorWarningBypassed(
         url, file_name, download_digest_sha256, mime_type, trigger,
-        access_point, result, content_size);
+        response.request_token(), access_point, result, content_size);
   }
 }
 

@@ -57,7 +57,7 @@ void MaybeReportDangerousDownloadWarning(download::DownloadItem* download) {
       router->OnDangerousDownloadEvent(
           download->GetURL(), download->GetTargetFilePath().AsUTF8Unsafe(),
           base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),
-          download->GetDangerType(), download->GetMimeType(),
+          download->GetDangerType(), download->GetMimeType(), /*scan_id*/ "",
           download->GetTotalBytes(), EventResult::WARNED);
     }
   }
@@ -75,10 +75,15 @@ void ReportDangerousDownloadWarningBypassed(
         extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
             profile);
     if (router) {
+      enterprise_connectors::ScanResult* stored_result =
+          static_cast<enterprise_connectors::ScanResult*>(
+              download->GetUserData(enterprise_connectors::ScanResult::kKey));
       router->OnDangerousDownloadWarningBypassed(
           download->GetURL(), download->GetTargetFilePath().AsUTF8Unsafe(),
           base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),
           original_danger_type, download->GetMimeType(),
+          /*scan_id*/
+          stored_result ? stored_result->response.request_token() : "",
           download->GetTotalBytes());
     }
   }

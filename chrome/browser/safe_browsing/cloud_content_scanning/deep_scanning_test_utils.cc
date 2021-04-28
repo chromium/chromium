@@ -106,7 +106,8 @@ void EventReportValidator::ExpectDangerousDeepScanningResult(
     const std::set<std::string>* expected_mimetypes,
     int expected_content_size,
     const std::string& expected_result,
-    const std::string& expected_username) {
+    const std::string& expected_username,
+    const base::Optional<std::string>& expected_scan_id) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent;
   url_ = expected_url;
   filenames_and_hashes_[expected_filename] = expected_sha256;
@@ -116,6 +117,7 @@ void EventReportValidator::ExpectDangerousDeepScanningResult(
   content_size_ = expected_content_size;
   result_ = expected_result;
   username_ = expected_username;
+  scan_id_ = expected_scan_id;
   EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _))
       .WillOnce([this](content::BrowserContext* context,
                        bool include_device_info, base::Value& report,
@@ -136,7 +138,8 @@ void EventReportValidator::ExpectSensitiveDataEvent(
     const std::set<std::string>* expected_mimetypes,
     int expected_content_size,
     const std::string& expected_result,
-    const std::string& expected_username) {
+    const std::string& expected_username,
+    const std::string& expected_scan_id) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent;
   url_ = expected_url;
   dlp_verdict_ = expected_dlp_verdict;
@@ -146,6 +149,7 @@ void EventReportValidator::ExpectSensitiveDataEvent(
   content_size_ = expected_content_size;
   result_ = expected_result;
   username_ = expected_username;
+  scan_id_ = expected_scan_id;
   EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _))
       .WillOnce([this](content::BrowserContext* context,
                        bool include_device_info, base::Value& report,
@@ -168,7 +172,8 @@ void EventReportValidator::
         const std::set<std::string>* expected_mimetypes,
         int expected_content_size,
         const std::string& expected_result,
-        const std::string& expected_username) {
+        const std::string& expected_username,
+        const std::string& expected_scan_id) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent;
   url_ = expected_url;
   filenames_and_hashes_[expected_filename] = expected_sha256;
@@ -178,6 +183,7 @@ void EventReportValidator::
   content_size_ = expected_content_size;
   result_ = expected_result;
   username_ = expected_username;
+  scan_id_ = expected_scan_id;
   EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _))
       .WillOnce([this](content::BrowserContext* context,
                        bool include_device_info, base::Value& report,
@@ -209,7 +215,8 @@ void EventReportValidator::
         const std::set<std::string>* expected_mimetypes,
         int expected_content_size,
         const std::string& expected_result,
-        const std::string& expected_username) {
+        const std::string& expected_username,
+        const std::string& expected_scan_id) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeySensitiveDataEvent;
   url_ = expected_url;
   filenames_and_hashes_[expected_filename] = expected_sha256;
@@ -219,6 +226,7 @@ void EventReportValidator::
   result_ = expected_result;
   dlp_verdict_ = expected_dlp_verdict;
   username_ = expected_username;
+  scan_id_ = expected_scan_id;
   EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _))
       .WillOnce([this](content::BrowserContext* context,
                        bool include_device_info, base::Value& report,
@@ -232,6 +240,7 @@ void EventReportValidator::
         event_key_ = SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent;
         threat_type_ = expected_threat_type;
         dlp_verdict_ = base::nullopt;
+        scan_id_ = base::nullopt;
         ValidateReport(&report);
         if (!done_closure_.is_null())
           done_closure_.Run();
@@ -247,7 +256,8 @@ void EventReportValidator::ExpectDangerousDownloadEvent(
     const std::set<std::string>* expected_mimetypes,
     int expected_content_size,
     const std::string& expected_result,
-    const std::string& expected_username) {
+    const std::string& expected_username,
+    const base::Optional<std::string>& expected_scan_id) {
   event_key_ = SafeBrowsingPrivateEventRouter::kKeyDangerousDownloadEvent;
   url_ = expected_url;
   filenames_and_hashes_[expected_filename] = expected_sha256;
@@ -257,6 +267,7 @@ void EventReportValidator::ExpectDangerousDownloadEvent(
   content_size_ = expected_content_size;
   result_ = expected_result;
   username_ = expected_username;
+  scan_id_ = expected_scan_id;
   EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _))
       .WillOnce([this](content::BrowserContext* context,
                        bool include_device_info, base::Value& report,
@@ -299,6 +310,7 @@ void EventReportValidator::ValidateReport(base::Value* report) {
                 unscanned_reason_);
   ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyProfileUserName,
                 username_);
+  ValidateField(event, SafeBrowsingPrivateEventRouter::kKeyScanId, scan_id_);
   ValidateMimeType(event);
   ValidateDlpVerdict(event);
 }

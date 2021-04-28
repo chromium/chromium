@@ -164,6 +164,7 @@ const char SafeBrowsingPrivateEventRouter::kKeyMalwareCategory[] =
     "malwareCategory";
 const char SafeBrowsingPrivateEventRouter::kKeyEvidenceLockerFilePath[] =
     "evidenceLockerFilepath";
+const char SafeBrowsingPrivateEventRouter::kKeyScanId[] = "scanId";
 
 // All new event names should be added to the kAllEvents array below!
 const char SafeBrowsingPrivateEventRouter::kKeyPasswordReuseEvent[] =
@@ -284,6 +285,7 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadOpened(
     const std::string& file_name,
     const std::string& download_digest_sha256,
     const std::string& mime_type,
+    const std::string& scan_id,
     const download::DownloadDangerType danger_type,
     const int64_t content_size) {
   api::safe_browsing_private::DangerousDownloadInfo params;
@@ -326,6 +328,10 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadOpened(
       safe_browsing::EventResultToString(safe_browsing::EventResult::BYPASSED));
   event.SetBoolKey(kKeyClickedThrough, true);
   event.SetStringKey(kKeyThreatType, DangerTypeToThreatType(danger_type));
+  // The scan ID can be empty when the reported dangerous download is from a
+  // Safe Browsing verdict.
+  if (!scan_id.empty())
+    event.SetStringKey(kKeyScanId, scan_id);
 
   ReportRealtimeEvent(kKeyDangerousDownloadEvent, std::move(settings.value()),
                       std::move(event));
@@ -431,6 +437,7 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorResult(
     const std::string& download_digest_sha256,
     const std::string& mime_type,
     const std::string& trigger,
+    const std::string& scan_id,
     safe_browsing::DeepScanAccessPoint /* access_point */,
     const enterprise_connectors::ContentAnalysisResponse::Result& result,
     const int64_t content_size,
@@ -441,10 +448,10 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorResult(
         url, file_name, download_digest_sha256,
         MalwareRuleToThreatType(result.triggered_rules(0).rule_name()),
         mime_type, trigger, content_size, event_result, result.malware_family(),
-        result.malware_category(), result.evidence_locker_filepath());
+        result.malware_category(), result.evidence_locker_filepath(), scan_id);
   } else if (result.tag() == "dlp") {
     OnSensitiveDataEvent(url, file_name, download_digest_sha256, mime_type,
-                         trigger, result, content_size, event_result);
+                         trigger, scan_id, result, content_size, event_result);
   }
 }
 
@@ -459,7 +466,8 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDeepScanningResult(
     safe_browsing::EventResult event_result,
     const std::string& malware_family,
     const std::string& malware_category,
-    const std::string& evidence_locker_filepath) {
+    const std::string& evidence_locker_filepath,
+    const std::string& scan_id) {
   auto settings = GetReportingSettings();
   if (!settings.has_value() ||
       settings->enabled_event_names.count(kKeyDangerousDownloadEvent) == 0) {
@@ -489,6 +497,10 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDeepScanningResult(
   if (!evidence_locker_filepath.empty()) {
     event.SetStringKey(kKeyEvidenceLockerFilePath, evidence_locker_filepath);
   }
+  // The scan ID can be empty when the reported dangerous download is from a
+  // Safe Browsing verdict.
+  if (!scan_id.empty())
+    event.SetStringKey(kKeyScanId, scan_id);
 
   ReportRealtimeEvent(kKeyDangerousDownloadEvent, std::move(settings.value()),
                       std::move(event));
@@ -500,6 +512,7 @@ void SafeBrowsingPrivateEventRouter::OnSensitiveDataEvent(
     const std::string& download_digest_sha256,
     const std::string& mime_type,
     const std::string& trigger,
+    const std::string& scan_id,
     const enterprise_connectors::ContentAnalysisResponse::Result& result,
     const int64_t content_size,
     safe_browsing::EventResult event_result) {
@@ -528,6 +541,7 @@ void SafeBrowsingPrivateEventRouter::OnSensitiveDataEvent(
     event.SetStringKey(kKeyEvidenceLockerFilePath,
                        result.evidence_locker_filepath());
   }
+  event.SetStringKey(kKeyScanId, scan_id);
 
   AddAnalysisConnectorVerdictToEvent(result, &event);
 
@@ -541,6 +555,7 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorWarningBypassed(
     const std::string& download_digest_sha256,
     const std::string& mime_type,
     const std::string& trigger,
+    const std::string& scan_id,
     safe_browsing::DeepScanAccessPoint access_point,
     const enterprise_connectors::ContentAnalysisResponse::Result& result,
     const int64_t content_size) {
@@ -569,6 +584,7 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorWarningBypassed(
     event.SetStringKey(kKeyEvidenceLockerFilePath,
                        result.evidence_locker_filepath());
   }
+  event.SetStringKey(kKeyScanId, scan_id);
 
   AddAnalysisConnectorVerdictToEvent(result, &event);
 
@@ -619,11 +635,12 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadEvent(
     const std::string& download_digest_sha256,
     const download::DownloadDangerType danger_type,
     const std::string& mime_type,
+    const std::string& scan_id,
     const int64_t content_size,
     safe_browsing::EventResult event_result) {
   OnDangerousDownloadEvent(url, file_name, download_digest_sha256,
                            DangerTypeToThreatType(danger_type), mime_type,
-                           content_size, event_result);
+                           scan_id, content_size, event_result);
 }
 
 void SafeBrowsingPrivateEventRouter::OnDangerousDownloadEvent(
@@ -632,6 +649,7 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadEvent(
     const std::string& download_digest_sha256,
     const std::string& threat_type,
     const std::string& mime_type,
+    const std::string& scan_id,
     const int64_t content_size,
     safe_browsing::EventResult event_result) {
   auto settings = GetReportingSettings();
@@ -656,6 +674,11 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadEvent(
   event.SetStringKey(kKeyEventResult,
                      safe_browsing::EventResultToString(event_result));
 
+  // The scan ID can be empty when the reported dangerous download is from a
+  // Safe Browsing verdict.
+  if (!scan_id.empty())
+    event.SetStringKey(kKeyScanId, scan_id);
+
   ReportRealtimeEvent(kKeyDangerousDownloadEvent, std::move(settings.value()),
                       std::move(event));
 }
@@ -666,10 +689,11 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarningBypassed(
     const std::string& download_digest_sha256,
     const download::DownloadDangerType danger_type,
     const std::string& mime_type,
+    const std::string& scan_id,
     const int64_t content_size) {
   OnDangerousDownloadWarningBypassed(url, file_name, download_digest_sha256,
                                      DangerTypeToThreatType(danger_type),
-                                     mime_type, content_size);
+                                     mime_type, scan_id, content_size);
 }
 
 void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarningBypassed(
@@ -678,6 +702,7 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarningBypassed(
     const std::string& download_digest_sha256,
     const std::string& threat_type,
     const std::string& mime_type,
+    const std::string& scan_id,
     const int64_t content_size) {
   auto settings = GetReportingSettings();
   if (!settings.has_value() ||
@@ -701,6 +726,10 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarningBypassed(
   event.SetStringKey(
       kKeyEventResult,
       safe_browsing::EventResultToString(safe_browsing::EventResult::BYPASSED));
+  // The scan ID can be empty when the reported dangerous download is from a
+  // Safe Browsing verdict.
+  if (!scan_id.empty())
+    event.SetStringKey(kKeyScanId, scan_id);
 
   ReportRealtimeEvent(kKeyDangerousDownloadEvent, std::move(settings.value()),
                       std::move(event));

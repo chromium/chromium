@@ -579,10 +579,14 @@ void DownloadProtectionService::OnDangerousDownloadOpened(
   auto* router =
       extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile);
   if (router) {
+    auto* scan_result = static_cast<enterprise_connectors::ScanResult*>(
+        item->GetUserData(enterprise_connectors::ScanResult::kKey));
     router->OnDangerousDownloadOpened(
         item->GetURL(), item->GetTargetFilePath().AsUTF8Unsafe(),
         base::HexEncode(raw_digest_sha256.data(), raw_digest_sha256.size()),
-        item->GetMimeType(), item->GetDangerType(), item->GetTotalBytes());
+        item->GetMimeType(),
+        scan_result ? scan_result->response.request_token() : "",
+        item->GetDangerType(), item->GetTotalBytes());
   }
 }
 
