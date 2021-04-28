@@ -5,6 +5,7 @@
 #include "chromecast/browser/webview/webview_browser_context.h"
 #include "base/files/file_path.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/resource_context.h"
@@ -23,7 +24,10 @@ class WebviewBrowserContext::ResourceContext : public content::ResourceContext {
 WebviewBrowserContext::WebviewBrowserContext(
     content::BrowserContext* main_browser_context)
     : main_browser_context_(main_browser_context),
-      resource_context_(std::make_unique<ResourceContext>()) {}
+      resource_context_(std::make_unique<ResourceContext>()) {
+  profile_metrics::SetBrowserProfileType(
+      this, profile_metrics::BrowserProfileType::kIncognito);
+}
 
 WebviewBrowserContext::~WebviewBrowserContext() {
   BrowserContext::NotifyWillBeDestroyed(this);

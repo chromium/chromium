@@ -16,6 +16,7 @@ cast_source_set("unittests") {
     "//chromecast/browser",
     "//chromecast/browser:public",
     "//chromecast/browser:test_support",
+    "//components/profile_metrics",
     "//content/public/common",
   ]
 }
