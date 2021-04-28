@@ -7,6 +7,7 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/api/tabs/tabs_api.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -183,6 +184,8 @@ class ExtensionApiCaptureTest : public ExtensionApiTabTest {
   ExtensionApiCaptureTest() {}
 
   void SetUp() override {
+    extensions::TabsCaptureVisibleTabFunction::set_disable_throttling_for_tests(
+        true);
     EnablePixelOutput();
     ExtensionApiTabTest::SetUp();
   }

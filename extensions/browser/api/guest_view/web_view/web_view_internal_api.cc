@@ -330,6 +330,17 @@ WebViewInternalCaptureVisibleRegionFunction::Run() {
   return RespondNow(Error(GetErrorMessage(capture_result)));
 }
 
+void WebViewInternalCaptureVisibleRegionFunction::GetQuotaLimitHeuristics(
+    QuotaLimitHeuristics* heuristics) const {
+  constexpr base::TimeDelta kSecond = base::TimeDelta::FromSeconds(1);
+  QuotaLimitHeuristic::Config limit = {
+      web_view_internal::MAX_CAPTURE_VISIBLE_REGION_CALLS_PER_SECOND, kSecond};
+
+  heuristics->push_back(std::make_unique<QuotaService::TimedLimit>(
+      limit, std::make_unique<QuotaLimitHeuristic::SingletonBucketMapper>(),
+      "MAX_CAPTURE_VISIBLE_REGION_CALLS_PER_SECOND"));
+}
+
 WebContentsCaptureClient::ScreenshotAccess
 WebViewInternalCaptureVisibleRegionFunction::GetScreenshotAccess(
     content::WebContents* web_contents) const {

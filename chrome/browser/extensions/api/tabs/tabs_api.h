@@ -240,8 +240,15 @@ class TabsCaptureVisibleTabFunction
   TabsCaptureVisibleTabFunction();
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
+  static void set_disable_throttling_for_tests(
+      bool disable_throttling_for_test) {
+    disable_throttling_for_test_ = disable_throttling_for_test;
+  }
+
   // ExtensionFunction implementation.
   ResponseAction Run() override;
+  void GetQuotaLimitHeuristics(QuotaLimitHeuristics* heuristics) const override;
+  bool ShouldSkipQuotaLimiting() const override;
 
  protected:
   ~TabsCaptureVisibleTabFunction() override {}
@@ -267,6 +274,8 @@ class TabsCaptureVisibleTabFunction
   DECLARE_EXTENSION_FUNCTION("tabs.captureVisibleTab", TABS_CAPTUREVISIBLETAB)
 
   static std::string CaptureResultToErrorMessage(CaptureResult result);
+
+  static bool disable_throttling_for_test_;
 
   DISALLOW_COPY_AND_ASSIGN(TabsCaptureVisibleTabFunction);
 };

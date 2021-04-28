@@ -141,6 +141,10 @@
       }
     ],
     "properties": {
+      "MAX_CAPTURE_VISIBLE_TAB_CALLS_PER_SECOND": {
+        "value": 1,
+        "description": "The maximum number of times that $(ref:captureVisibleTab) can be called per second. $(ref:captureVisibleTab) is expensive and should not be called too often."
+      },
       "TAB_ID_NONE": {
         "value": -1,
         "description": "An ID that represents the absence of a browser tab."

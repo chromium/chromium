@@ -49,6 +49,7 @@ class WebViewInternalCaptureVisibleRegionFunction
 
   // ExtensionFunction:
   ResponseAction Run() override;
+  void GetQuotaLimitHeuristics(QuotaLimitHeuristics* heuristics) const override;
 
  private:
   // extensions::WebContentsCaptureClient:

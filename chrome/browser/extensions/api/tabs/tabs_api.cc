@@ -1896,6 +1896,9 @@ bool TabsUngroupFunction::UngroupTab(int tab_id, std::string* error) {
   return true;
 }
 
+// static
+bool TabsCaptureVisibleTabFunction::disable_throttling_for_test_ = false;
+
 TabsCaptureVisibleTabFunction::TabsCaptureVisibleTabFunction()
     : chrome_details_(this) {
 }
@@ -1970,6 +1973,21 @@ ExtensionFunction::ResponseAction TabsCaptureVisibleTabFunction::Run() {
   }
 
   return RespondNow(Error(CaptureResultToErrorMessage(capture_result)));
+}
+
+void TabsCaptureVisibleTabFunction::GetQuotaLimitHeuristics(
+    QuotaLimitHeuristics* heuristics) const {
+  constexpr base::TimeDelta kSecond = base::TimeDelta::FromSeconds(1);
+  QuotaLimitHeuristic::Config limit = {
+      tabs::MAX_CAPTURE_VISIBLE_TAB_CALLS_PER_SECOND, kSecond};
+
+  heuristics->push_back(std::make_unique<QuotaService::TimedLimit>(
+      limit, std::make_unique<QuotaLimitHeuristic::SingletonBucketMapper>(),
+      "MAX_CAPTURE_VISIBLE_TAB_CALLS_PER_SECOND"));
+}
+
+bool TabsCaptureVisibleTabFunction::ShouldSkipQuotaLimiting() const {
+  return disable_throttling_for_test_;
 }
 
 void TabsCaptureVisibleTabFunction::OnCaptureSuccess(const SkBitmap& bitmap) {
