@@ -27,16 +27,17 @@ from mojom.parse import parser
 from mojom.parse import conditional_features
 
 
-# TODO(crbug.com/1187708): The multiprocessing code below seems
-# like it doesn't work on (at least) Mac Python3, and so it's
-# disabled for now until we can dig into it. Once that's working,
-# we can restore the logic to just be disabled under Python2.
-#
-# # Disable this for easier debugging.
-# # In Python 2, subprocesses just hang when exceptions are thrown :(.
-# ENABLE_MULTIPROCESSING = sys.version_info[0] > 2
-#
-ENABLE_MULTIPROCESSING = False
+# Disable this for easier debugging.
+# In Python 2, subprocesses just hang when exceptions are thrown :(.
+_ENABLE_MULTIPROCESSING = sys.version_info[0] > 2
+
+if sys.version_info < (3, 4):
+  _MULTIPROCESSING_USES_FORK = sys.platform.startswith('linux')
+else:
+  # https://docs.python.org/3/library/multiprocessing.html#:~:text=bpo-33725
+  if __name__ == '__main__' and sys.platform == 'darwin':
+    multiprocessing.set_start_method('fork')
+  _MULTIPROCESSING_USES_FORK = multiprocessing.get_start_method() == 'fork'
 
 
 def _ResolveRelativeImportPath(path, roots):
@@ -211,7 +212,7 @@ def _Shard(target_func, args, processes=None):
     processes = min(processes, 56)
 
   # Don't spin up processes unless there is enough work to merit doing so.
-  if not ENABLE_MULTIPROCESSING or processes < 2:
+  if not _ENABLE_MULTIPROCESSING or processes < 2:
     for result in map(target_func, args):
       yield result
     return
@@ -326,7 +327,7 @@ def _ParseMojoms(mojom_files,
   _SerializeHelper.loaded_modules = loaded_modules
   _SerializeHelper.output_root_path = output_root_path
   # Doesn't seem to help past 4. Perhaps IO bound here?
-  processes = 0 if sys.platform == 'win32' else 4
+  processes = 4 if _MULTIPROCESSING_USES_FORK else 0
   map_args = mojom_files_to_parse.items()
   for _ in _Shard(_SerializeHelper, map_args, processes=processes):
     pass
