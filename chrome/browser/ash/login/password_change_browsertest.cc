@@ -39,6 +39,7 @@
 #include "chromeos/login/auth/stub_authenticator_builder.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
+#include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -490,6 +491,44 @@ IN_PROC_BROWSER_TEST_F(TokenAfterCrash, ValidToken) {
   auto user_info = login_mixin_.users()[0];
   EXPECT_FALSE(UserSessionManager::GetInstance()
                    ->token_handle_backfill_tried_for_testing());
+}
+
+class RotationTokenTest : public LoginManagerTest {
+ public:
+  RotationTokenTest() {
+    login_mixin_.AppendRegularUsers(1);
+    account_id_ = login_mixin_.users()[0].account_id;
+  }
+
+ protected:
+  LoginManagerMixin login_mixin_{&mixin_host_};
+  AccountId account_id_;
+};
+
+// Test verifies one-time rotation for the token handle.
+IN_PROC_BROWSER_TEST_F(RotationTokenTest, PRE_Rotated) {
+  TokenHandleUtil::StoreTokenHandle(account_id_, kTokenHandle);
+
+  // Emulate state before rotation.
+  user_manager::known_user::RemovePref(account_id_, "TokenHandleRotated");
+
+  // Focus should not trigger online login.
+  ash::LoginScreenTestApi::FocusUser(account_id_);
+  ASSERT_FALSE(ash::LoginScreenTestApi::IsForcedOnlineSignin(account_id_));
+
+  // Should be considered for rotation.
+  EXPECT_TRUE(TokenHandleUtil::ShouldObtainHandle(account_id_));
+
+  login_mixin_.LoginWithDefaultContext(login_mixin_.users().back());
+  login_mixin_.WaitForActiveSession();
+
+  // Emulate obtaining token handle.
+  TokenHandleUtil::StoreTokenHandle(account_id_, kTokenHandle);
+}
+
+IN_PROC_BROWSER_TEST_F(RotationTokenTest, Rotated) {
+  // Token should not be considered for rotation..
+  EXPECT_FALSE(TokenHandleUtil::ShouldObtainHandle(account_id_));
 }
 
 }  // namespace chromeos
