@@ -126,8 +126,13 @@ void TaskAnnotator::RunTask(const char* trace_event_name,
               "TaskAnnotator::RunTask", [&](perfetto::EventContext ctx) {
                 auto* event =
                     ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
-                event->set_chrome_task_annotator()->set_ipc_hash(
-                    pending_task->ipc_hash);
+                auto* annotator = event->set_chrome_task_annotator();
+                annotator->set_ipc_hash(pending_task->ipc_hash);
+                if (!pending_task->delayed_run_time.is_null()) {
+                  annotator->set_task_delay_us((pending_task->delayed_run_time -
+                                                pending_task->queue_time)
+                                                   .InMicroseconds());
+                }
               });
 
   TRACE_EVENT_WITH_FLOW0("toplevel.flow", trace_event_name,

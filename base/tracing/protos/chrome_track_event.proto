@@ -28,6 +28,9 @@ message ChromeMemoryPressureNotification {
 
 message ChromeTaskAnnotator {
   optional uint32 ipc_hash = 1;
+  // The delay in microseconds that was specified, if any, when this task was
+  // posted. This is only valid for delayed tasks.
+  optional uint64 task_delay_us = 2;
 }
 
 message ChromeBrowserContext {
