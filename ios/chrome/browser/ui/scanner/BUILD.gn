@@ -3,10 +3,7 @@
 # found in the LICENSE file.
 
 source_set("scanner") {
-  configs += [
-    "//build/config/compiler:enable_arc",
-    "//build/config/ios:disable_implicit_retain_self_warning",
-  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "camera_controller.h",
     "camera_controller.mm",
