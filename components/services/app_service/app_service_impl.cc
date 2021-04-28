@@ -376,11 +376,11 @@ void AppServiceImpl::RemovePreferredApp(apps::mojom::AppType app_type,
     return;
   }
 
-  preferred_apps_.DeleteAppId(app_id);
+  if (preferred_apps_.DeleteAppId(app_id)) {
+    WriteToJSON(profile_dir_, preferred_apps_);
+  }
 
   LogPreferredAppUpdateAction(PreferredAppsUpdateAction::kDeleteForAppId);
-
-  WriteToJSON(profile_dir_, preferred_apps_);
 }
 
 void AppServiceImpl::RemovePreferredAppForFilter(
@@ -396,12 +396,12 @@ void AppServiceImpl::RemovePreferredAppForFilter(
     return;
   }
 
-  preferred_apps_.DeletePreferredApp(app_id, intent_filter);
+  if (preferred_apps_.DeletePreferredApp(app_id, intent_filter)) {
+    WriteToJSON(profile_dir_, preferred_apps_);
 
-  WriteToJSON(profile_dir_, preferred_apps_);
-
-  for (auto& subscriber : subscribers_) {
-    subscriber->OnPreferredAppRemoved(app_id, intent_filter->Clone());
+    for (auto& subscriber : subscribers_) {
+      subscriber->OnPreferredAppRemoved(app_id, intent_filter->Clone());
+    }
   }
 
   LogPreferredAppUpdateAction(PreferredAppsUpdateAction::kDeleteForFilter);
