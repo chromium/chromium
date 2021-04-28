@@ -504,20 +504,8 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
   // Set completion callback.
   __weak OpenInController* weakSelf = self;
   activityViewController.completionWithItemsHandler =
-      ^(NSString* activityType, BOOL completed, NSArray* returnedItems,
-        NSError* activityError) {
-        weakSelf.sequencedTaskRunner->PostTask(FROM_HERE, base::BindOnce(^{
-                                                 RemoveDocumentAtPath(fileURL);
-                                               }));
-
-        if (IsIPadIdiom()) {
-          _openInTimer = [NSTimer
-              scheduledTimerWithTimeInterval:kOpenInToolbarDisplayDuration
-                                      target:self
-                                    selector:@selector(hideOpenInToolbar)
-                                    userInfo:nil
-                                     repeats:NO];
-        }
+      ^(NSString*, BOOL, NSArray*, NSError*) {
+        [weakSelf completedPresentOpenInMenuForFileAtURL:fileURL];
       };
 
   // UIActivityViewController is presented in a popover on iPad.
@@ -530,6 +518,21 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
   [self.baseViewController presentViewController:activityViewController
                                         animated:YES
                                       completion:nil];
+}
+
+- (void)completedPresentOpenInMenuForFileAtURL:(NSURL*)fileURL {
+  _sequencedTaskRunner->PostTask(FROM_HERE, base::BindOnce(^{
+                                   RemoveDocumentAtPath(fileURL);
+                                 }));
+
+  if (IsIPadIdiom()) {
+    _openInTimer =
+        [NSTimer scheduledTimerWithTimeInterval:kOpenInToolbarDisplayDuration
+                                         target:self
+                                       selector:@selector(hideOpenInToolbar)
+                                       userInfo:nil
+                                        repeats:NO];
+  }
 }
 
 - (void)showDownloadOverlayView {
