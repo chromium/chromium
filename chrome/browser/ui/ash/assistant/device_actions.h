@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "ash/public/cpp/android_intent_helper.h"
-#include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observer.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/ash/assistant/device_actions_delegate.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
@@ -57,8 +57,8 @@ class DeviceActions : public ash::AndroidIntentHelper,
 
   std::unique_ptr<DeviceActionsDelegate> delegate_;
 
-  base::ScopedMultiSourceObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>
-      scoped_prefs_observations_{this};
+  ScopedObserver<ArcAppListPrefs, ArcAppListPrefs::Observer>
+      scoped_prefs_observer_{this};
   base::ObserverList<chromeos::assistant::AppListEventSubscriber>
       app_list_subscribers_;
   DISALLOW_COPY_AND_ASSIGN(DeviceActions);
