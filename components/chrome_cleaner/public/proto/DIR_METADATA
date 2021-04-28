@@ -1,5 +1,5 @@
 monorail {
-  component: "UI>Browser>Preferences>Protector"
+  component: "Services>Safebrowsing>ChromeCleanup"
 }
 
 team_email: "security-dev@chromium.org"

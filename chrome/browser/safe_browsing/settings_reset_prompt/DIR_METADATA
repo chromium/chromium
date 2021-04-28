@@ -1,4 +1,4 @@
 monorail: {
-  component: "UI>Browser>Preferences>Protector"
+  component: "Services>Safebrowsing"
 }
 team_email: "security-dev@chromium.org"
