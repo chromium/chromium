@@ -85,7 +85,7 @@ class NewTabPageTabHelper : public web::WebStateObserver,
   web::WebState* web_state_ = nullptr;
 
   // |YES| if the current tab helper is active.
-  BOOL active_;
+  BOOL active_ = NO;
 
   // |YES| if the NTP's underlying ios/web page is still loading.
   BOOL ignore_load_requests_ = NO;

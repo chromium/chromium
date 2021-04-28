@@ -75,7 +75,7 @@ struct IdentityManagerBuildParams {
   std::unique_ptr<ProfileOAuth2TokenService> token_service;
 
 #if !defined(OS_ANDROID)
-  bool delete_signin_cookies_on_exit;
+  bool delete_signin_cookies_on_exit = false;
   scoped_refptr<TokenWebData> token_web_data;
 #endif
 
