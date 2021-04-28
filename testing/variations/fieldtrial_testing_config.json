@@ -817,47 +817,81 @@
             ],
             "experiments": [
                 {
-                    "name": "AutofillFixFillableFieldTypes_2021-02-12",
+                    "name": "AutofillFixFillableFieldTypes_2021-05-01",
                     "enable_features": [
                         "AutofillFixFillableFieldTypes"
                     ],
                     "disable_features": [
                         "AutofillEnableDependentLocalityParsing",
+                        "AutofillEnableImportWhenMultiplePhoneNumbers",
                         "AutofillEnableLabelPrecedenceForTurkishAddresses",
-                        "AutofillSectionUponRedundantNameInfo"
+                        "AutofillSectionUponRedundantNameInfo",
+                        "AutofillUseAlternativeStateNameMap"
                     ]
                 },
                 {
-                    "name": "EnableAutofillSectionUponRedundantNameInfo_2021-02-12",
+                    "name": "EnableAutofillSectionUponRedundantNameInfo_2021-05-01",
                     "enable_features": [
                         "AutofillSectionUponRedundantNameInfo"
                     ],
                     "disable_features": [
                         "AutofillEnableDependentLocalityParsing",
+                        "AutofillEnableImportWhenMultiplePhoneNumbers",
                         "AutofillEnableLabelPrecedenceForTurkishAddresses",
-                        "AutofillFixFillableFieldTypes"
+                        "AutofillFixFillableFieldTypes",
+                        "AutofillUseAlternativeStateNameMap"
                     ]
                 },
                 {
-                    "name": "AutofillEnableLabelPrecedenceForTurkishAddresses_2021-02-12",
+                    "name": "AutofillEnableLabelPrecedenceForTurkishAddresses_2021-05-01",
                     "enable_features": [
                         "AutofillEnableLabelPrecedenceForTurkishAddresses"
                     ],
                     "disable_features": [
                         "AutofillEnableDependentLocalityParsing",
+                        "AutofillEnableImportWhenMultiplePhoneNumbers",
+                        "AutofillFixFillableFieldTypes",
+                        "AutofillSectionUponRedundantNameInfo",
+                        "AutofillUseAlternativeStateNameMap"
+                    ]
+                },
+                {
+                    "name": "AutofillUseAlternativeStateNameMap_2021-05-01",
+                    "enable_features": [
+                        "AutofillUseAlternativeStateNameMap"
+                    ],
+                    "disable_features": [
+                        "AutofillEnableDependentLocalityParsing",
+                        "AutofillEnableImportWhenMultiplePhoneNumbers",
+                        "AutofillEnableLabelPrecedenceForTurkishAddresses",
                         "AutofillFixFillableFieldTypes",
                         "AutofillSectionUponRedundantNameInfo"
                     ]
                 },
                 {
-                    "name": "AutofillEnableDependentLocalityParsing_2021-02-12",
+                    "name": "AutofillEnableImportWhenMultiplePhoneNumbers_2021-05-01",
+                    "enable_features": [
+                        "AutofillEnableImportWhenMultiplePhoneNumbers"
+                    ],
+                    "disable_features": [
+                        "AutofillEnableDependentLocalityParsing",
+                        "AutofillEnableLabelPrecedenceForTurkishAddresses",
+                        "AutofillFixFillableFieldTypes",
+                        "AutofillSectionUponRedundantNameInfo",
+                        "AutofillUseAlternativeStateNameMap"
+                    ]
+                },
+                {
+                    "name": "AutofillEnableDependentLocalityParsing_2021-05-01",
                     "enable_features": [
                         "AutofillEnableDependentLocalityParsing"
                     ],
                     "disable_features": [
+                        "AutofillEnableImportWhenMultiplePhoneNumbers",
                         "AutofillEnableLabelPrecedenceForTurkishAddresses",
                         "AutofillFixFillableFieldTypes",
-                        "AutofillSectionUponRedundantNameInfo"
+                        "AutofillSectionUponRedundantNameInfo",
+                        "AutofillUseAlternativeStateNameMap"
                     ]
                 }
             ]
