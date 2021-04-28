@@ -32126,6 +32126,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3875" label="FileHandlingLaunch"/>
   <int value="3876" label="SameOriginDocumentsWithDifferentCOOPStatus"/>
   <int value="3877" label="HTMLMediaElementSetSinkId"/>
+  <int value="3882" label="PostMessageFromSecureToSecure"/>
+  <int value="3883" label="PostMessageFromInsecureToInsecure"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

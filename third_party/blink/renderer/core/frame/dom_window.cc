@@ -33,7 +33,6 @@
 #include "third_party/blink/renderer/core/frame/user_activation.h"
 #include "third_party/blink/renderer/core/input/input_device_capabilities.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
-#include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -628,20 +627,28 @@ void DOMWindow::DoPostMessage(scoped_refptr<SerializedScriptValue> message,
   const SecurityOrigin* target_security_origin =
       GetFrame()->GetSecurityContext()->GetSecurityOrigin();
   const SecurityOrigin* source_security_origin = source->GetSecurityOrigin();
-  auto* local_dom_window = DynamicTo<LocalDOMWindow>(this);
-  KURL target_url = local_dom_window
-                        ? local_dom_window->Url()
-                        : KURL(NullURL(), target_security_origin->ToString());
-  if (MixedContentChecker::IsMixedContent(source_security_origin, target_url)) {
-    UseCounter::Count(source, WebFeature::kPostMessageFromSecureToInsecure);
-  } else if (MixedContentChecker::IsMixedContent(target_security_origin,
-                                                 source->Url())) {
-    UseCounter::Count(source, WebFeature::kPostMessageFromInsecureToSecure);
-    if (MixedContentChecker::IsMixedContent(
-            GetFrame()->Tree().Top().GetSecurityContext()->GetSecurityOrigin(),
-            source->Url())) {
-      UseCounter::Count(source,
-                        WebFeature::kPostMessageFromInsecureToSecureToplevel);
+  bool is_source_secure = source_security_origin->IsPotentiallyTrustworthy();
+  bool is_target_secure = target_security_origin->IsPotentiallyTrustworthy();
+  if (is_target_secure) {
+    if (is_source_secure) {
+      UseCounter::Count(source, WebFeature::kPostMessageFromSecureToSecure);
+    } else {
+      UseCounter::Count(source, WebFeature::kPostMessageFromInsecureToSecure);
+      if (!GetFrame()
+               ->Tree()
+               .Top()
+               .GetSecurityContext()
+               ->GetSecurityOrigin()
+               ->IsPotentiallyTrustworthy()) {
+        UseCounter::Count(source,
+                          WebFeature::kPostMessageFromInsecureToSecureToplevel);
+      }
+    }
+  } else {
+    if (is_source_secure) {
+      UseCounter::Count(source, WebFeature::kPostMessageFromSecureToInsecure);
+    } else {
+      UseCounter::Count(source, WebFeature::kPostMessageFromInsecureToInsecure);
     }
   }
 
@@ -657,13 +664,11 @@ void DOMWindow::DoPostMessage(scoped_refptr<SerializedScriptValue> message,
         UseCounter::Count(source, WebFeature::kSchemefulSameSitePostMessage);
       } else {
         UseCounter::Count(source, WebFeature::kSchemelesslySameSitePostMessage);
-        if (MixedContentChecker::IsMixedContent(source_security_origin,
-                                                target_url)) {
+        if (is_source_secure && !is_target_secure) {
           UseCounter::Count(
               source,
               WebFeature::kSchemelesslySameSitePostMessageSecureToInsecure);
-        } else if (MixedContentChecker::IsMixedContent(target_security_origin,
-                                                       source->Url())) {
+        } else if (!is_source_secure && is_target_secure) {
           UseCounter::Count(
               source,
               WebFeature::kSchemelesslySameSitePostMessageInsecureToSecure);
@@ -673,6 +678,10 @@ void DOMWindow::DoPostMessage(scoped_refptr<SerializedScriptValue> message,
       UseCounter::Count(source, WebFeature::kCrossSitePostMessage);
     }
   }
+  auto* local_dom_window = DynamicTo<LocalDOMWindow>(this);
+  KURL target_url = local_dom_window
+                        ? local_dom_window->Url()
+                        : KURL(NullURL(), target_security_origin->ToString());
   if (!source->GetContentSecurityPolicy()->AllowConnectToSource(
           target_url, target_url, RedirectStatus::kNoRedirect,
           ReportingDisposition::kSuppressReporting)) {
