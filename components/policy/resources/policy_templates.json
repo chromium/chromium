@@ -17306,11 +17306,11 @@
       'items': [
         {
           'value': True,
-          'caption': 'Enables PCIe tunneling for Thunderbolt/USB4 peripheral devices, limiting the device capabilities',
+          'caption': 'Enables PCIe tunneling for Thunderbolt/USB4 peripheral devices, peripheral devices will function at their full capabilities',
         },
         {
           'value': False,
-          'caption': 'Disables PCIe tunneling. Supported Thunderbolt/USB4 peripheral devices will function at their full capabilities',
+          'caption': 'Disables PCIe tunneling for Thunderbolt/USB4 peripheral devices, limiting the device capabilities',
         },
       ],
       'example_value': False,
