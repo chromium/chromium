@@ -5026,7 +5026,7 @@
             ]
         }
     ],
-    "OptimizationHintsDesktop": [
+    "OptimizationHintsDesktopM91": [
         {
             "platforms": [
                 "chromeos",
@@ -5037,12 +5037,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20210323",
+                    "name": "Enabled_20210426",
                     "enable_features": [
-                        "OptimizationHints"
-                    ],
-                    "disable_features": [
-                        "OptimizationGuideModelDownloading",
+                        "OptimizationHints",
                         "OptimizationHintsFetching"
                     ]
                 }
