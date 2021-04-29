@@ -303,4 +303,38 @@ IN_PROC_BROWSER_TEST_F(AccessibilityScriptsMacBrowserTest,
   AssertOutputMatchesExpectations();
 }
 
+IN_PROC_BROWSER_TEST_F(AccessibilityScriptsMacBrowserTest,
+                       SetSelectedTextRange_ContentEditable) {
+  LoadFile("set-selectedtextrange-contenteditable.html");
+
+  // AXValue='The quick brown foxes jumps over the lazy dog'
+  AttributeInvoker textarea = GetInvokerAndAssertRole(":2", "AXTextArea");
+  // select 1st word
+  {
+    OptionalNSObject range{[NSValue valueWithRange:NSMakeRange(0, 3)]};
+    textarea.SetValue("AXSelectedTextRange", range);
+    WaitForEvent(ax::mojom::Event::kTextSelectionChanged);
+    OptionalNSObject selected_text = textarea.GetValue("AXSelectedText");
+    Print(selected_text);
+  }
+  // select text inside span
+  {
+    OptionalNSObject range{[NSValue valueWithRange:NSMakeRange(22, 4)]};
+    textarea.SetValue("AXSelectedTextRange", range);
+    WaitForEvent(ax::mojom::Event::kTextSelectionChanged);
+    OptionalNSObject selected_text = textarea.GetValue("AXSelectedText");
+    Print(selected_text);
+  }
+  // select text across several elements
+  {
+    OptionalNSObject range{[NSValue valueWithRange:NSMakeRange(24, 15)]};
+    textarea.SetValue("AXSelectedTextRange", range);
+    WaitForEvent(ax::mojom::Event::kTextSelectionChanged);
+    OptionalNSObject selected_text = textarea.GetValue("AXSelectedText");
+    Print(selected_text);
+  }
+
+  AssertOutputMatchesExpectations();
+}
+
 }  // namespace content

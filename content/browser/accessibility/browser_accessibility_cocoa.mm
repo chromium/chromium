@@ -3822,8 +3822,8 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     NSRange range = [(NSValue*)value rangeValue];
     BrowserAccessibilityManager* manager = _owner->manager();
     manager->SetSelection(BrowserAccessibility::AXRange(
-        _owner->CreatePositionAt(range.location),
-        _owner->CreatePositionAt(NSMaxRange(range))));
+        _owner->CreatePositionAt(range.location)->AsLeafTextPosition(),
+        _owner->CreatePositionAt(NSMaxRange(range))->AsLeafTextPosition()));
   }
   if ([attribute
           isEqualToString:NSAccessibilitySelectedTextMarkerRangeAttribute]) {
