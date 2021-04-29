@@ -43,3 +43,11 @@ imageset("sync_screen_banner") {
     "sync_screen_banner.imageset/sync_screen_banner_light@3x.png",
   ]
 }
+
+imageset("read_more_arrow") {
+  sources = [
+    "read_more_arrow.imageset/Contents.json",
+    "read_more_arrow.imageset/read_more_arrow@2x.png",
+    "read_more_arrow.imageset/read_more_arrow@3x.png",
+  ]
+}

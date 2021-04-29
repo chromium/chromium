@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/first_run/first_run_screen_view_controller.h"
 
 #include "base/check.h"
+#include "base/i18n/rtl.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
@@ -33,6 +34,7 @@ constexpr CGFloat kDefaultBannerMultiplier = 0.25;
 constexpr CGFloat kSubtitleBottomMarginViewHeight = 0.05;
 constexpr CGFloat kContentWidthMultiplier = 0.65;
 constexpr CGFloat kContentMaxWidth = 327;
+constexpr CGFloat kMoreArrowMargin = 4;
 constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
 
 }  // namespace
@@ -228,15 +230,6 @@ constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
   actionBottomConstraint.active = YES;
 }
 
-- (void)setPrimaryActionString:(NSString*)text {
-  _primaryActionString = text;
-  if (_primaryActionButton &&
-      (!self.scrollToEndMandatory || self.didReachBottom)) {
-    [_primaryActionButton setTitle:_primaryActionString
-                          forState:UIControlStateNormal];
-  }
-}
-
 - (void)viewWillAppear:(BOOL)animated {
   // Only add the scroll view delegate after all the view layouts are fully
   // done.
@@ -251,12 +244,64 @@ constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
       if ([self isScrolledToBottom]) {
         self.didReachBottom = YES;
       } else {
+        NSDictionary* textAttributes = @{
+          NSForegroundColorAttributeName :
+              [UIColor colorNamed:kSolidButtonTextColor],
+          NSFontAttributeName :
+              [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]
+        };
+
         // TODO(crbug.com/1186762): Use final string and add localization.
-        [self.primaryActionButton setTitle:@"More - testing"
-                                  forState:UIControlStateNormal];
+        NSMutableAttributedString* attributedString =
+            [[NSMutableAttributedString alloc] initWithString:@"More - testing"
+                                                   attributes:textAttributes];
+
+        // Use |ceilf()| when calculating the icon's bounds to ensure the
+        // button's content height does not shrink by fractional points, as the
+        // attributed string's actual height is slightly smaller than the
+        // assigned height.
+        NSTextAttachment* attachment = [[NSTextAttachment alloc] init];
+        attachment.image = [[UIImage imageNamed:@"read_more_arrow"]
+            imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        CGFloat height = ceilf(attributedString.size.height);
+        CGFloat capHeight =
+            ceilf([UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]
+                      .capHeight);
+        CGFloat horizontalOffset =
+            base::i18n::IsRTL() ? -1.f * kMoreArrowMargin : kMoreArrowMargin;
+        CGFloat verticalOffset = (capHeight - height) / 2.f;
+        attachment.bounds =
+            CGRectMake(horizontalOffset, verticalOffset, height, height);
+        [attributedString
+            appendAttributedString:
+                [NSAttributedString attributedStringWithAttachment:attachment]];
+
+        // Make the title change without animation, as the UIButton's default
+        // animation when using setTitle:forState: doesn't handle adding a
+        // UIImage well (the old title gets abruptly pushed to the side as it's
+        // fading out to make room for the new image, which looks awkward).
+        __weak FirstRunScreenViewController* weakSelf = self;
+        [UIView performWithoutAnimation:^{
+          [weakSelf.primaryActionButton
+              setAttributedTitle:attributedString
+                        forState:UIControlStateNormal];
+          [weakSelf.primaryActionButton layoutIfNeeded];
+        }];
       }
     }
   });
+}
+
+- (void)setPrimaryActionString:(NSString*)text {
+  _primaryActionString = text;
+  // Change the button's label, unless scrolling to the end is mandatory and the
+  // scroll view hasn't been scrolled to the end at least once yet.
+  if (_primaryActionButton &&
+      (!self.scrollToEndMandatory || self.didReachBottom)) {
+    [_primaryActionButton setAttributedTitle:nil forState:UIControlStateNormal];
+    [_primaryActionButton setTitle:_primaryActionString
+                          forState:UIControlStateNormal];
+  }
 }
 
 #pragma mark - Private
@@ -336,6 +381,8 @@ constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
     _primaryActionButton.titleLabel.adjustsFontForContentSizeCategory = YES;
     _primaryActionButton.accessibilityIdentifier =
         kFirstRunPrimaryActionAccessibilityIdentifier;
+    _primaryActionButton.titleEdgeInsets =
+        UIEdgeInsetsMake(0, kMoreArrowMargin, 0, kMoreArrowMargin);
     [_primaryActionButton addTarget:self
                              action:@selector(didTapPrimaryActionButton)
                    forControlEvents:UIControlEventTouchUpInside];
@@ -415,6 +462,8 @@ constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
   if (self.scrollToEndMandatory && !self.didReachBottom &&
       [self isScrolledToBottom]) {
     self.didReachBottom = YES;
+    [self.primaryActionButton setAttributedTitle:nil
+                                        forState:UIControlStateNormal];
     [self.primaryActionButton setTitle:self.primaryActionString
                               forState:UIControlStateNormal];
   }
@@ -434,7 +483,7 @@ constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
         CGPointMake(0, self.scrollView.contentSize.height -
                            self.scrollView.bounds.size.height +
                            self.scrollView.contentInset.bottom + 1);
-    // Scroll the the smaller of the two offsets.
+    // Scroll to the smaller of the two offsets.
     CGPoint newOffset =
         targetOffset.y < bottomOffset.y ? targetOffset : bottomOffset;
     [self.scrollView setContentOffset:newOffset animated:YES];

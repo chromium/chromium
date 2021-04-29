@@ -50,6 +50,7 @@ source_set("first_run") {
     "resources:checkbox",
     "resources:checkbox_checked",
     "resources:first_run_location_permissions",
+    "resources:read_more_arrow",
     "//base",
     "//base:i18n",
     "//components/metrics",
@@ -143,6 +144,7 @@ source_set("first_run_ui") {
   ]
   deps = [
     "//base",
+    "//base:i18n",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
   ]
