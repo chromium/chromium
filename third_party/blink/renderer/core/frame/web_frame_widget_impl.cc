@@ -2188,6 +2188,8 @@ void WebFrameWidgetImpl::RecordEndOfFrameMetrics(
   if (!LocalRootImpl())
     return;
 
+  recordreplay::Assert("WebFrameWidgetImpl::RecordEndOfFrameMetrics");
+
   LocalRootImpl()
       ->GetFrame()
       ->View()
