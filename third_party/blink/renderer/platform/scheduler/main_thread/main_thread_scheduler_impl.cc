@@ -1556,6 +1556,8 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
   if (helper_.IsShutdown())
     return;
 
+  recordreplay::Assert("MainThreadSchedulerImpl::UpdatePolicyLocked");
+
   base::TimeTicks now = helper_.NowTicks();
   policy_may_need_update_.SetWhileLocked(false);
 
