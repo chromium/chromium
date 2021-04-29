@@ -5473,6 +5473,7 @@ void Document::EnqueueUniqueAnimationFrameEvent(Event* event) {
 void Document::EnqueueScrollEventForNode(Node* target) {
   // Per the W3C CSSOM View Module only scroll events fired at the document
   // should bubble.
+  recordreplay::Assert("Document::EnqueueScrollEventForNode");
   overscroll_accumulated_delta_x_ = overscroll_accumulated_delta_y_ = 0;
   Event* scroll_event = target->IsDocumentNode()
                             ? Event::CreateBubble(event_type_names::kScroll)

@@ -125,6 +125,7 @@ LocalFrameUkmAggregator::~LocalFrameUkmAggregator() {
 
 LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer
 LocalFrameUkmAggregator::GetScopedTimer(size_t metric_index) {
+  recordreplay::Assert("LocalFrameUkmAggregator::GetScopedTimer");
   return ScopedUkmHierarchicalTimer(this, metric_index, clock_);
 }
 
