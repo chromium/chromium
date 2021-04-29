@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/views/frame/system_menu_model_builder.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "ui/base/hit_test.h"
 #include "ui/events/event_handler.h"
@@ -337,10 +338,21 @@ void BrowserFrame::SelectNativeTheme() {
   // Select between regular, dark and GTK theme.
   ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
 
-  if (browser_view_->browser()->profile()->IsIncognitoProfile() &&
-      ThemeServiceFactory::GetForProfile(browser_view_->browser()->profile())
-          ->UsingDefaultTheme()) {
-    native_theme = ui::NativeTheme::GetInstanceForDarkUI();
+  if (browser_view_->browser()->profile()->IsIncognitoProfile()) {
+    // If the flag is enabled, then no matter if we are using the default theme
+    // or not we always use the dark ui instance.
+    if (base::FeatureList::IsEnabled(
+            features::kIncognitoBrandConsistencyForDesktop)) {
+      SetNativeTheme(ui::NativeTheme::GetInstanceForDarkUI());
+      return;
+    }
+
+    // Flag is disabled, fallback to using dark theme only if the incognito
+    // profile is using a default theme.
+    if (ThemeServiceFactory::GetForProfile(browser_view_->browser()->profile())
+            ->UsingDefaultTheme()) {
+      native_theme = ui::NativeTheme::GetInstanceForDarkUI();
+    }
   }
 
 #if defined(OS_LINUX) || defined(IS_CHROMEOS_LACROS)
