@@ -171,64 +171,121 @@ std::string VariationsFieldTrialCreator::GetLatestCountry() const {
              : local_state()->GetString(prefs::kVariationsCountry);
 }
 
-bool VariationsFieldTrialCreator::CreateTrialsFromSeed(
-    const base::FieldTrial::EntropyProvider* low_entropy_provider,
-    base::FeatureList* feature_list,
-    SafeSeedManager* safe_seed_manager) {
-  TRACE_EVENT0("startup", "VariationsFieldTrialCreator::CreateTrialsFromSeed");
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!create_trials_from_seed_called_);
-  create_trials_from_seed_called_ = true;
-
-  base::TimeTicks start_time = base::TimeTicks::Now();
-
-  const base::Version& current_version = version_info::GetVersion();
-  if (!current_version.IsValid())
-    return false;
-
-  std::unique_ptr<ClientFilterableState> client_filterable_state =
-      GetClientFilterableStateForVersion(current_version);
-  base::UmaHistogramSparse("Variations.UserChannel",
-                           client_filterable_state->channel);
-  base::UmaHistogramEnumeration("Variations.PolicyRestriction",
-                                client_filterable_state->policy_restriction);
-
-  VariationsSeed seed;
-  bool run_in_safe_mode = safe_seed_manager->ShouldRunInSafeMode() &&
-                          LoadSafeSeed(&seed, client_filterable_state.get());
-
-  std::string seed_data;
-  std::string base64_seed_signature;
-  if (!run_in_safe_mode && !LoadSeed(&seed, &seed_data, &base64_seed_signature))
-    return false;
-
-  UMA_HISTOGRAM_BOOLEAN("Variations.SafeMode.FellBackToSafeMode2",
-                        run_in_safe_mode);
-
-  // Note that passing base::Unretained(this) below is safe because the callback
-  // is executed synchronously. It is not possible to pass UIStringOverrider
-  // directly to VariationsSeedProcessor (which is in components/variations and
-  // not components/variations/service) as the variations component should not
-  // depend on //ui/base.
-  VariationsSeedProcessor().CreateTrialsFromSeed(
-      seed, *client_filterable_state,
-      base::BindRepeating(&VariationsFieldTrialCreator::OverrideUIString,
-                          base::Unretained(this)),
-      low_entropy_provider, feature_list);
-
-  // Store into the |safe_seed_manager| the combined server and client data used
-  // to create the field trials. But, as an optimization, skip this step when
-  // running in safe mode – once running in safe mode, there can never be a need
-  // to save the active state to the safe seed prefs.
-  if (!run_in_safe_mode) {
-    safe_seed_manager->SetActiveSeedState(seed_data, base64_seed_signature,
-                                          std::move(client_filterable_state),
-                                          seed_store_->GetLastFetchTime());
+bool VariationsFieldTrialCreator::SetupFieldTrials(
+    const char* kEnableGpuBenchmarking,
+    const char* kEnableFeatures,
+    const char* kDisableFeatures,
+    const std::vector<std::string>& variation_ids,
+    const std::vector<base::FeatureList::FeatureOverrideInfo>& extra_overrides,
+    std::unique_ptr<const base::FieldTrial::EntropyProvider>
+        low_entropy_provider,
+    std::unique_ptr<base::FeatureList> feature_list,
+    PlatformFieldTrials* platform_field_trials,
+    SafeSeedManager* safe_seed_manager,
+    base::Optional<int> low_entropy_source_value) {
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kEnableBenchmarking) ||
+      command_line->HasSwitch(kEnableGpuBenchmarking)) {
+    base::FieldTrial::EnableBenchmarking();
   }
 
-  UMA_HISTOGRAM_TIMES("Variations.SeedProcessingTime",
-                      base::TimeTicks::Now() - start_time);
-  return true;
+  if (command_line->HasSwitch(switches::kForceFieldTrialParams)) {
+    bool result = AssociateParamsFromString(
+        command_line->GetSwitchValueASCII(switches::kForceFieldTrialParams));
+    if (!result) {
+      // Some field trial params implement things like csv or json with a
+      // particular param. If some control characters are not %-encoded, it can
+      // lead to confusing error messages, so add a hint here.
+      ExitWithMessage(base::StringPrintf(
+          "Invalid --%s list specified. Make sure you %%-"
+          "encode the following characters in param values: %%:/.,",
+          switches::kForceFieldTrialParams));
+    }
+  }
+
+  // Ensure any field trials specified on the command line are initialized.
+  if (command_line->HasSwitch(::switches::kForceFieldTrials)) {
+    // Create field trials without activating them, so that this behaves in a
+    // consistent manner with field trials created from the server.
+    bool result = base::FieldTrialList::CreateTrialsFromString(
+        command_line->GetSwitchValueASCII(::switches::kForceFieldTrials));
+    if (!result) {
+      ExitWithMessage(base::StringPrintf("Invalid --%s list specified.",
+                                         ::switches::kForceFieldTrials));
+    }
+  }
+
+  VariationsIdsProvider* http_header_provider =
+      VariationsIdsProvider::GetInstance();
+  http_header_provider->SetLowEntropySourceValue(low_entropy_source_value);
+  // Force the variation ids selected in chrome://flags and/or specified using
+  // the command-line flag.
+  auto result = http_header_provider->ForceVariationIds(
+      variation_ids,
+      command_line->GetSwitchValueASCII(switches::kForceVariationIds));
+
+  switch (result) {
+    case VariationsIdsProvider::ForceIdsResult::INVALID_SWITCH_ENTRY:
+      ExitWithMessage(base::StringPrintf("Invalid --%s list specified.",
+                                         switches::kForceVariationIds));
+      break;
+    case VariationsIdsProvider::ForceIdsResult::INVALID_VECTOR_ENTRY:
+      // It should not be possible to have invalid variation ids from the
+      // vector param (which corresponds to chrome://flags).
+      NOTREACHED();
+      break;
+    case VariationsIdsProvider::ForceIdsResult::SUCCESS:
+      break;
+  }
+
+  bool success = http_header_provider->ForceDisableVariationIds(
+      command_line->GetSwitchValueASCII(switches::kForceDisableVariationIds));
+  if (!success) {
+    ExitWithMessage(base::StringPrintf("Invalid --%s list specified.",
+                                       switches::kForceDisableVariationIds));
+  }
+
+  feature_list->InitializeFromCommandLine(
+      command_line->GetSwitchValueASCII(kEnableFeatures),
+      command_line->GetSwitchValueASCII(kDisableFeatures));
+
+  // This needs to happen here: After the InitializeFromCommandLine() call,
+  // because the explicit cmdline --disable-features and --enable-features
+  // should take precedence over these extra overrides. Before the call to
+  // SetInstance(), because overrides cannot be registered after the FeatureList
+  // instance is set.
+  feature_list->RegisterExtraFeatureOverrides(extra_overrides);
+
+  bool used_testing_config = false;
+#if BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
+  if (!command_line->HasSwitch(switches::kDisableFieldTrialTestingConfig) &&
+      !command_line->HasSwitch(::switches::kForceFieldTrials) &&
+      !command_line->HasSwitch(switches::kVariationsServerURL)) {
+    // Note that passing base::Unretained(this) below is safe because the
+    // callback is executed synchronously.
+    AssociateDefaultFieldTrialConfig(
+        base::BindRepeating(&VariationsFieldTrialCreator::OverrideUIString,
+                            base::Unretained(this)),
+        GetPlatform(), client_->GetCurrentFormFactor(), feature_list.get());
+    used_testing_config = true;
+  }
+#endif  // BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
+  bool used_seed = false;
+  if (!used_testing_config) {
+    used_seed = CreateTrialsFromSeed(low_entropy_provider.get(),
+                                     feature_list.get(), safe_seed_manager);
+  }
+
+  platform_field_trials->SetupFeatureControllingFieldTrials(
+      used_seed, low_entropy_provider.get(), feature_list.get());
+
+  base::FeatureList::SetInstance(std::move(feature_list));
+
+  // This must be called after |local_state_| is initialized.
+  platform_field_trials->SetupFieldTrials();
+
+  return used_seed;
 }
 
 std::unique_ptr<ClientFilterableState>
@@ -386,6 +443,10 @@ void VariationsFieldTrialCreator::OverrideCachedUIStrings() {
   overridden_strings_map_.clear();
 }
 
+bool VariationsFieldTrialCreator::IsOverrideResourceMapEmpty() {
+  return overridden_strings_map_.empty();
+}
+
 bool VariationsFieldTrialCreator::LoadSeed(VariationsSeed* seed,
                                            std::string* seed_data,
                                            std::string* base64_signature) {
@@ -431,121 +492,64 @@ bool VariationsFieldTrialCreator::LoadSafeSeed(
   return true;
 }
 
-bool VariationsFieldTrialCreator::SetupFieldTrials(
-    const char* kEnableGpuBenchmarking,
-    const char* kEnableFeatures,
-    const char* kDisableFeatures,
-    const std::vector<std::string>& variation_ids,
-    const std::vector<base::FeatureList::FeatureOverrideInfo>& extra_overrides,
-    std::unique_ptr<const base::FieldTrial::EntropyProvider>
-        low_entropy_provider,
-    std::unique_ptr<base::FeatureList> feature_list,
-    PlatformFieldTrials* platform_field_trials,
-    SafeSeedManager* safe_seed_manager,
-    base::Optional<int> low_entropy_source_value) {
-  const base::CommandLine* command_line =
-      base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kEnableBenchmarking) ||
-      command_line->HasSwitch(kEnableGpuBenchmarking)) {
-    base::FieldTrial::EnableBenchmarking();
+bool VariationsFieldTrialCreator::CreateTrialsFromSeed(
+    const base::FieldTrial::EntropyProvider* low_entropy_provider,
+    base::FeatureList* feature_list,
+    SafeSeedManager* safe_seed_manager) {
+  TRACE_EVENT0("startup", "VariationsFieldTrialCreator::CreateTrialsFromSeed");
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!create_trials_from_seed_called_);
+  create_trials_from_seed_called_ = true;
+
+  base::TimeTicks start_time = base::TimeTicks::Now();
+
+  const base::Version& current_version = version_info::GetVersion();
+  if (!current_version.IsValid())
+    return false;
+
+  std::unique_ptr<ClientFilterableState> client_filterable_state =
+      GetClientFilterableStateForVersion(current_version);
+  base::UmaHistogramSparse("Variations.UserChannel",
+                           client_filterable_state->channel);
+  base::UmaHistogramEnumeration("Variations.PolicyRestriction",
+                                client_filterable_state->policy_restriction);
+
+  VariationsSeed seed;
+  bool run_in_safe_mode = safe_seed_manager->ShouldRunInSafeMode() &&
+                          LoadSafeSeed(&seed, client_filterable_state.get());
+
+  std::string seed_data;
+  std::string base64_seed_signature;
+  if (!run_in_safe_mode && !LoadSeed(&seed, &seed_data, &base64_seed_signature))
+    return false;
+
+  UMA_HISTOGRAM_BOOLEAN("Variations.SafeMode.FellBackToSafeMode2",
+                        run_in_safe_mode);
+
+  // Note that passing base::Unretained(this) below is safe because the callback
+  // is executed synchronously. It is not possible to pass UIStringOverrider
+  // directly to VariationsSeedProcessor (which is in components/variations and
+  // not components/variations/service) as the variations component should not
+  // depend on //ui/base.
+  VariationsSeedProcessor().CreateTrialsFromSeed(
+      seed, *client_filterable_state,
+      base::BindRepeating(&VariationsFieldTrialCreator::OverrideUIString,
+                          base::Unretained(this)),
+      low_entropy_provider, feature_list);
+
+  // Store into the |safe_seed_manager| the combined server and client data used
+  // to create the field trials. But, as an optimization, skip this step when
+  // running in safe mode – once running in safe mode, there can never be a need
+  // to save the active state to the safe seed prefs.
+  if (!run_in_safe_mode) {
+    safe_seed_manager->SetActiveSeedState(seed_data, base64_seed_signature,
+                                          std::move(client_filterable_state),
+                                          seed_store_->GetLastFetchTime());
   }
 
-  if (command_line->HasSwitch(switches::kForceFieldTrialParams)) {
-    bool result = AssociateParamsFromString(
-        command_line->GetSwitchValueASCII(switches::kForceFieldTrialParams));
-    if (!result) {
-      // Some field trial params implement things like csv or json with a
-      // particular param. If some control characters are not %-encoded, it can
-      // lead to confusing error messages, so add a hint here.
-      ExitWithMessage(base::StringPrintf(
-          "Invalid --%s list specified. Make sure you %%-"
-          "encode the following characters in param values: %%:/.,",
-          switches::kForceFieldTrialParams));
-    }
-  }
-
-  // Ensure any field trials specified on the command line are initialized.
-  if (command_line->HasSwitch(::switches::kForceFieldTrials)) {
-    // Create field trials without activating them, so that this behaves in a
-    // consistent manner with field trials created from the server.
-    bool result = base::FieldTrialList::CreateTrialsFromString(
-        command_line->GetSwitchValueASCII(::switches::kForceFieldTrials));
-    if (!result) {
-      ExitWithMessage(base::StringPrintf("Invalid --%s list specified.",
-                                         ::switches::kForceFieldTrials));
-    }
-  }
-
-  VariationsIdsProvider* http_header_provider =
-      VariationsIdsProvider::GetInstance();
-  http_header_provider->SetLowEntropySourceValue(low_entropy_source_value);
-  // Force the variation ids selected in chrome://flags and/or specified using
-  // the command-line flag.
-  auto result = http_header_provider->ForceVariationIds(
-      variation_ids,
-      command_line->GetSwitchValueASCII(switches::kForceVariationIds));
-
-  switch (result) {
-    case VariationsIdsProvider::ForceIdsResult::INVALID_SWITCH_ENTRY:
-      ExitWithMessage(base::StringPrintf("Invalid --%s list specified.",
-                                         switches::kForceVariationIds));
-      break;
-    case VariationsIdsProvider::ForceIdsResult::INVALID_VECTOR_ENTRY:
-      // It should not be possible to have invalid variation ids from the
-      // vector param (which corresponds to chrome://flags).
-      NOTREACHED();
-      break;
-    case VariationsIdsProvider::ForceIdsResult::SUCCESS:
-      break;
-  }
-
-  bool success = http_header_provider->ForceDisableVariationIds(
-      command_line->GetSwitchValueASCII(switches::kForceDisableVariationIds));
-  if (!success) {
-    ExitWithMessage(base::StringPrintf("Invalid --%s list specified.",
-                                       switches::kForceDisableVariationIds));
-  }
-
-  feature_list->InitializeFromCommandLine(
-      command_line->GetSwitchValueASCII(kEnableFeatures),
-      command_line->GetSwitchValueASCII(kDisableFeatures));
-
-  // This needs to happen here: After the InitializeFromCommandLine() call,
-  // because the explicit cmdline --disable-features and --enable-features
-  // should take precedence over these extra overrides. Before the call to
-  // SetInstance(), because overrides cannot be registered after the FeatureList
-  // instance is set.
-  feature_list->RegisterExtraFeatureOverrides(extra_overrides);
-
-  bool used_testing_config = false;
-#if BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
-  if (!command_line->HasSwitch(switches::kDisableFieldTrialTestingConfig) &&
-      !command_line->HasSwitch(::switches::kForceFieldTrials) &&
-      !command_line->HasSwitch(switches::kVariationsServerURL)) {
-    // Note that passing base::Unretained(this) below is safe because the
-    // callback is executed synchronously.
-    AssociateDefaultFieldTrialConfig(
-        base::BindRepeating(&VariationsFieldTrialCreator::OverrideUIString,
-                            base::Unretained(this)),
-        GetPlatform(), client_->GetCurrentFormFactor(), feature_list.get());
-    used_testing_config = true;
-  }
-#endif  // BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
-  bool used_seed = false;
-  if (!used_testing_config) {
-    used_seed = CreateTrialsFromSeed(low_entropy_provider.get(),
-                                     feature_list.get(), safe_seed_manager);
-  }
-
-  platform_field_trials->SetupFeatureControllingFieldTrials(
-      used_seed, low_entropy_provider.get(), feature_list.get());
-
-  base::FeatureList::SetInstance(std::move(feature_list));
-
-  // This must be called after |local_state_| is initialized.
-  platform_field_trials->SetupFieldTrials();
-
-  return used_seed;
+  UMA_HISTOGRAM_TIMES("Variations.SeedProcessingTime",
+                      base::TimeTicks::Now() - start_time);
+  return true;
 }
 
 void VariationsFieldTrialCreator::OverrideUIString(uint32_t resource_hash,
@@ -563,10 +567,6 @@ void VariationsFieldTrialCreator::OverrideUIString(uint32_t resource_hash,
 
   ui::ResourceBundle::GetSharedInstance().OverrideLocaleStringResource(
       resource_id, str);
-}
-
-bool VariationsFieldTrialCreator::IsOverrideResourceMapEmpty() {
-  return overridden_strings_map_.empty();
 }
 
 VariationsSeedStore* VariationsFieldTrialCreator::GetSeedStore() {

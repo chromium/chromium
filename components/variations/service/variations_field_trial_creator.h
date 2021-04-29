@@ -115,9 +115,6 @@ class VariationsFieldTrialCreator {
   // client.
   void StoreVariationsOverriddenCountry(const std::string& country);
 
-  // Records the time of the most recent successful fetch.
-  void RecordLastFetchTime();
-
   // Allow the platform that is used to filter the set of active trials to be
   // overridden.
   void OverrideVariationsPlatform(Study::Platform platform_override);
