@@ -272,16 +272,6 @@
       'trichrome_chrome_bundle_smoke_test': {},
     },
 
-    'android_vega_vr_gtests': {
-      'chrome_public_test_vr_apk-vega': {
-        'args': [
-          '--shared-prefs-file=//chrome/android/shared_preference_files/test/vr_ddview_skipdon_setupcomplete.json',
-        ],
-        'test': 'chrome_public_test_vr_apk',
-        'experiment_percentage': 100,
-      },
-    },
-
     'android_webapk_launch_tests': {
       'chrome_java_test_webapk_launch_tests': {},
     },
@@ -5634,7 +5624,6 @@
       'android_monochrome_smoke_tests',
       'android_oreo_standard_gtests',
       'android_smoke_tests',
-      'android_vega_vr_gtests',
     ],
 
     'android_pie_gtests': [
