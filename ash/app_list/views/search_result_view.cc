@@ -151,11 +151,10 @@ void SearchResultView::CreateTitleRenderText() {
   for (const auto& tag : tags) {
     if (tag.styles & SearchResult::Tag::URL) {
       render_text->ApplyColor(kUrlColor, tag.range);
-    } else if (tag.styles & SearchResult::Tag::MATCH) {
-      render_text->ApplyColor(
-          AppListColorProvider::Get()->GetSearchBoxTextColor(
-              kDeprecatedSearchBoxTextDefaultColor),
-          tag.range);
+    }
+    if (tag.styles & SearchResult::Tag::MATCH &&
+        app_list_features::IsLauncherQueryHighlightingEnabled()) {
+      render_text->ApplyWeight(gfx::Font::Weight::BOLD, tag.range);
     }
   }
   title_text_ = std::move(render_text);
@@ -177,8 +176,13 @@ void SearchResultView::CreateDetailsRenderText() {
       kDeprecatedSearchBoxTextDefaultColor));
   const SearchResult::Tags& tags = result()->details_tags();
   for (const auto& tag : tags) {
-    if (tag.styles & SearchResult::Tag::URL)
+    if (tag.styles & SearchResult::Tag::URL) {
       render_text->ApplyColor(kUrlColor, tag.range);
+    }
+    if (tag.styles & SearchResult::Tag::MATCH &&
+        app_list_features::IsLauncherQueryHighlightingEnabled()) {
+      render_text->ApplyWeight(gfx::Font::Weight::BOLD, tag.range);
+    }
   }
   details_text_ = std::move(render_text);
 }
