@@ -127,8 +127,8 @@ Polymer({
   handleSetProfileNicknameResponse_(result) {
     this.isRenameInProgress_ = false;
     if (result === chromeos.cellularSetup.mojom.ESimOperationResult.kFailure) {
-      this.errorMessage_ = this.i18n('eSimRenameProfileDialogError');
-      return;
+      this.fire(
+          'show-error-toast', this.i18n('eSimRenameProfileDialogErrorToast'));
     }
     this.$.profileRenameDialog.close();
   },

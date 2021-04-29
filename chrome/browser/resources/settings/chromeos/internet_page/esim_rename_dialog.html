@@ -77,6 +77,7 @@
             <cr-input id="eSimprofileName"
                 value="{{esimProfileName_}}"
                 spellcheck="false"
+                disabled="[[isRenameInProgress_]]"
                 invalid="[[isInputInvalid_]]"
                 aria-description="[[i18n('eSimRenameProfileInputA11yLabel',
                     MAX_INPUT_LENGTH)]]"
@@ -101,6 +102,7 @@
         <template is="dom-if" if="[[!errorMessage_]]" restamp>
           <cr-button id="cancel"
               on-click="onCancelTap_"
+              disabled="[[isRenameInProgress_]]"
               class="cancel-button">
             $i18n{eSimRenameProfileDialogCancel}
           </cr-button>

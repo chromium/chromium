@@ -12,6 +12,7 @@
 // #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertEquals, assertTrue} from '../../chai_assert.js';
+// #import {eventToPromise} from 'chrome://test/test_util.m.js';
 // clang-format on
 
 suite('EsimRenameDialog', function() {
@@ -171,23 +172,35 @@ suite('EsimRenameDialog', function() {
       inputBox.value = 'new profile nickname';
       await flushAsync();
 
+      const showErrorToastPromise =
+          test_util.eventToPromise('show-error-toast', esimRenameDialog);
+
       const doneBtn = esimRenameDialog.$$('#done');
+      const cancelBtn = esimRenameDialog.$$('#cancel');
       assertTrue(!!doneBtn);
+      assertTrue(!!cancelBtn);
       assertFalse(doneBtn.disabled);
+      assertFalse(cancelBtn.disabled);
+      assertFalse(inputBox.disabled);
       doneBtn.click();
       await flushAsync();
+
       assertTrue(doneBtn.disabled);
+      assertTrue(cancelBtn.disabled);
+      assertTrue(inputBox.disabled);
 
       profile.resolveSetProfileNicknamePromise_();
       await flushAsync();
       assertFalse(doneBtn.disabled);
+      assertFalse(cancelBtn.disabled);
+      assertFalse(inputBox.disabled);
 
       const profileProperties = (await profile.getProperties()).properties;
 
+      const showErrorToastEvent = await showErrorToastPromise;
       assertEquals(
-          'block',
-          window.getComputedStyle(esimRenameDialog.$$('#errorMessage'))
-              .display);
+          showErrorToastEvent.detail,
+          esimRenameDialog.i18n('eSimRenameProfileDialogErrorToast'));
       assertNotEquals(
           convertString16ToJSString_(profileProperties.nickname),
           'new profile nickname');
