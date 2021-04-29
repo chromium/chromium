@@ -825,7 +825,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FolderShortcuts, /* folder_shortcuts.js */
     FilesAppBrowserTest,
-    ::testing::Values(TestCase("traverseFolderShortcuts"),
+    ::testing::Values(/* crbug.com/1204065: traverseFolderShortcuts flaky
+                      TestCase("traverseFolderShortcuts"), */
                       TestCase("addRemoveFolderShortcuts")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
