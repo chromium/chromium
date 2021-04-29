@@ -69,8 +69,7 @@ HistoryMenuBridge::HistoryMenuBridge(Profile* profile)
       history_service_(NULL),
       tab_restore_service_(NULL),
       create_in_progress_(false),
-      need_recreate_(false),
-      history_service_observer_(this) {
+      need_recreate_(false) {
   // If we don't have a profile, do not bother initializing our data sources.
   // This shouldn't happen except in unit tests.
   if (profile_) {
@@ -80,7 +79,7 @@ HistoryMenuBridge::HistoryMenuBridge(Profile* profile)
     history::HistoryService* hs = HistoryServiceFactory::GetForProfile(
         profile_, ServiceAccessType::EXPLICIT_ACCESS);
     if (hs) {
-      history_service_observer_.Add(hs);
+      history_service_observation_.Observe(hs);
       if (hs->BackendLoaded()) {
         history_service_ = hs;
         Init();
