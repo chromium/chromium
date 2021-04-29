@@ -1,0 +1,144 @@
+This is a testharness.js-based test.
+Found 140 tests; 119 PASS, 21 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS display: grid
+PASS display: inline-grid
+PASS grid-template-columns
+PASS grid-template-columns.initial
+PASS grid-template-columns.none
+PASS grid-template-columns.<line-names>
+PASS grid-template-columns.<track-size>.auto
+PASS grid-template-columns.<track-size>.<track-breadth>.<length>
+PASS grid-template-columns.<track-size>.<track-breadth>.<percentage>
+PASS grid-template-columns.<track-size>.<track-breadth>.<flex>
+PASS grid-template-columns.<track-size>.<track-breadth>.min-content
+PASS grid-template-columns.<track-size>.<track-breadth>.max-content
+PASS grid-template-columns.<track-size>.<track-breadth>.minmax()
+PASS grid-template-columns.reset
+PASS grid-template-rows
+PASS grid-template-rows.initial
+PASS grid-template-rows.none
+PASS grid-template-rows.<line-names>
+PASS grid-template-rows.<track-size>.auto
+PASS grid-template-rows.<track-size>.<track-breadth>.<length>
+PASS grid-template-rows.<track-size>.<track-breadth>.<percentage>
+PASS grid-template-rows.<track-size>.<track-breadth>.<flex>
+PASS grid-template-rows.<track-size>.<track-breadth>.min-content
+PASS grid-template-rows.<track-size>.<track-breadth>.max-content
+PASS grid-template-rows.<track-size>.<track-breadth>.minmax()
+PASS grid-template-rows.reset
+PASS grid-template-areas
+PASS grid-template-areas.initial
+PASS grid-template-areas.none
+PASS grid-template-areas.<string>+
+PASS grid-template-areas.reset
+PASS grid-template
+FAIL grid-template.initial assert_equals: initial value of grid-template should be 50px 50px 50px / 150px expected "50px 50px 50px / 150px" but got "50px 50px 50px / 150px / none"
+FAIL grid-template.none assert_equals: none expected "50px 50px 50px / 150px" but got "50px 50px 50px / 150px / none"
+FAIL grid-template.<grid-template-rows> / <grid-template-columns> assert_equals: <grid-template-rows> / <grid-template-columns> expected "100px 100px / 200px 200px" but got ""
+FAIL grid-template.<line-names> assert_equals: <line-names> expected "[a] auto [b] auto [c] / [d] auto [e] auto [f]" but got ""
+FAIL grid-template.<string>+ assert_equals: <string>+ expected "\"a b\" \"a b\"" but got ""
+FAIL grid-template.<string><track-size>+ assert_equals: <string><track-size>+ expected "100px / \"a b\" 50px" but got ""
+FAIL grid-template.reset assert_equals: reset expected "50px 50px 50px / 150px" but got "50px 50px 50px / 150px / none"
+PASS grid-auto-columns
+PASS grid-auto-columns.initial
+PASS grid-auto-columns.<track-size>.auto
+PASS grid-auto-columns.<track-size>.<track-breadth>.<length>
+PASS grid-auto-columns.<track-size>.<track-breadth>.<percentage>
+PASS grid-auto-columns.<track-size>.<track-breadth>.<flex>
+PASS grid-auto-columns.<track-size>.<track-breadth>.min-content
+PASS grid-auto-columns.<track-size>.<track-breadth>.max-content
+PASS grid-auto-columns.<track-size>.<track-breadth>.minmax()
+PASS grid-auto-columns.reset
+PASS grid-auto-rows
+PASS grid-auto-rows.initial
+PASS grid-auto-rows.<track-size>.auto
+PASS grid-auto-rows.<track-size>.<track-breadth>.<length>
+PASS grid-auto-rows.<track-size>.<track-breadth>.<percentage>
+PASS grid-auto-rows.<track-size>.<track-breadth>.<flex>
+PASS grid-auto-rows.<track-size>.<track-breadth>.min-content
+PASS grid-auto-rows.<track-size>.<track-breadth>.max-content
+PASS grid-auto-rows.<track-size>.<track-breadth>.minmax()
+PASS grid-auto-rows.reset
+PASS grid-auto-flow
+PASS grid-auto-flow.initial
+PASS grid-auto-flow.row
+PASS grid-auto-flow.column
+FAIL grid-auto-flow.dense assert_equals: dense expected "dense" but got "row dense"
+FAIL grid-auto-flow.row dense assert_equals: row dense expected "dense" but got "row dense"
+PASS grid-auto-flow.column dense
+PASS grid-auto-flow.reset
+PASS grid-row-start
+PASS grid-row-start.initial
+PASS grid-row-start.auto
+PASS grid-row-start.<custom-ident>
+PASS grid-row-start.<integer>
+PASS grid-row-start.<integer> <ident>
+PASS grid-row-start.span <integer>
+PASS grid-row-start.span <custom-ident>
+PASS grid-row-start.span <integer> <custom-ident>
+PASS grid-row-start.reset
+PASS grid-column-start
+PASS grid-column-start.initial
+PASS grid-column-start.auto
+PASS grid-column-start.<custom-ident>
+PASS grid-column-start.<integer>
+PASS grid-column-start.<integer> <ident>
+PASS grid-column-start.span <integer>
+PASS grid-column-start.span <custom-ident>
+PASS grid-column-start.span <integer> <custom-ident>
+PASS grid-column-start.reset
+PASS grid-row-end
+PASS grid-row-end.initial
+PASS grid-row-end.auto
+PASS grid-row-end.<custom-ident>
+PASS grid-row-end.<integer>
+PASS grid-row-end.<integer> <ident>
+PASS grid-row-end.span <integer>
+PASS grid-row-end.span <custom-ident>
+PASS grid-row-end.span <integer> <custom-ident>
+PASS grid-row-end.reset
+PASS grid-column-end
+PASS grid-column-end.initial
+PASS grid-column-end.auto
+PASS grid-column-end.<custom-ident>
+PASS grid-column-end.<integer>
+PASS grid-column-end.<integer> <ident>
+PASS grid-column-end.span <integer>
+PASS grid-column-end.span <custom-ident>
+PASS grid-column-end.span <integer> <custom-ident>
+PASS grid-column-end.reset
+PASS grid-column
+FAIL grid-column.initial assert_equals: initial value of grid-column should be auto expected "auto" but got "auto / auto"
+FAIL grid-column.auto assert_equals: auto expected "auto" but got "auto / auto"
+PASS grid-column.<custom-ident>
+FAIL grid-column.<integer> start assert_equals: <integer> start expected "1" but got "1 / auto"
+PASS grid-column.<integer>
+PASS grid-column.<integer> <ident>
+PASS grid-column.span <integer>
+PASS grid-column.span <custom-ident>
+PASS grid-column.span <integer> <custom-ident>
+FAIL grid-column.reset assert_equals: reset expected "auto" but got "auto / auto"
+PASS grid-row
+FAIL grid-row.initial assert_equals: initial value of grid-row should be auto expected "auto" but got "auto / auto"
+FAIL grid-row.auto assert_equals: auto expected "auto" but got "auto / auto"
+PASS grid-row.<custom-ident>
+FAIL grid-row.<integer> start assert_equals: <integer> start expected "1" but got "1 / auto"
+PASS grid-row.<integer>
+PASS grid-row.<integer> <ident>
+PASS grid-row.span <integer>
+PASS grid-row.span <custom-ident>
+PASS grid-row.span <integer> <custom-ident>
+FAIL grid-row.reset assert_equals: reset expected "auto" but got "auto / auto"
+PASS grid-area
+FAIL grid-area.initial assert_equals: initial value of grid-area should be auto expected "auto" but got "auto / auto / auto / auto"
+FAIL grid-area.auto assert_equals: auto expected "auto" but got "auto / auto / auto / auto"
+PASS grid-area.<custom-ident>
+FAIL grid-area.<integer> start assert_equals: <integer> start expected "1 / 2" but got "1 / 2 / auto / auto"
+PASS grid-area.<integer>
+PASS grid-area.<integer> <ident>
+PASS grid-area.span <integer>
+PASS grid-area.span <custom-ident>
+PASS grid-area.span <integer> <custom-ident>
+FAIL grid-area.reset assert_equals: reset expected "auto" but got "auto / auto / auto / auto"
+Harness: the test ran to completion.
+

@@ -1,0 +1,32 @@
+This is a testharness.js-based test.
+PASS Property grid-area value 'auto / auto / auto / auto'
+PASS Property grid-row value 'auto / auto'
+PASS Property grid-column-end value 'auto'
+PASS Property grid-row value '-zπ'
+PASS Property grid-row-start value 'AZ'
+PASS Property grid-column-start value '-_π'
+PASS Property grid-row-end value '_9'
+PASS Property grid-area value '1 / 90 -a- / auto / auto'
+PASS Property grid-row value '2 az / auto'
+PASS Property grid-column value '9 / -19 zA'
+PASS Property grid-row-start value '-19'
+PASS Property grid-row-start value '9 -Z_'
+PASS Property grid-column-start value '-44 Z'
+PASS Property grid-row-end value '1 -πA'
+PASS Property grid-column-end value '5 π_'
+PASS Property grid-area value 'span 2 i / auto / auto / auto'
+PASS Property grid-row value 'span 2 / auto'
+PASS Property grid-column-start value 'span 1 i'
+PASS Property grid-row-end value 'span 2 i'
+PASS Property grid-column-end value 'span 2'
+FAIL Property grid-row-start value 'span i' assert_equals: expected "span i" but got "span 1 i"
+FAIL Property grid-row value 'span i / auto' assert_equals: expected "span i / auto" but got "span 1 i / auto"
+PASS Property grid-area value 'auto / i / auto / i'
+PASS Property grid-area value 'auto / i / 2 j'
+PASS Property grid-area value 'auto / i / 2 j / span 3 k'
+PASS Property grid-row value 'auto / i'
+PASS Property grid-column value '2 j / span 3 k'
+PASS Property grid-column-end value '\31st'
+PASS Property grid-column-end value '\31 st'
+Harness: the test ran to completion.
+

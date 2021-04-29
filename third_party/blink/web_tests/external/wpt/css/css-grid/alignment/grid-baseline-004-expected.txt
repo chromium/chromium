@@ -1,0 +1,75 @@
+This is a testharness.js-based test.
+PASS .grid, container 1
+PASS .grid, container 2
+PASS .grid, container 3
+PASS .grid, container 4
+PASS .grid, container 5
+PASS .grid, container 6
+PASS .grid, container 7
+PASS .grid, container 8
+PASS .grid, container 9
+PASS .grid, container 10
+PASS .grid, container 11
+PASS .grid, container 12
+PASS .grid, container 13
+PASS .grid, container 14
+PASS .grid, container 15
+FAIL .grid, container 16 assert_equals: 
+<div class="container" data-expected-width="480" data-expected-height="250">
+    <div id="first" class="grid twoRows" data-offset-x="0" data-offset-y="80">
+        <div class="firstRowFirstColumn target" data-offset-x="0" data-offset-y="0"></div>
+        <div class="firstRowBothColumn" data-offset-x="0" data-offset-y="15"></div>
+        <div class="bothRowFirstColumn" data-offset-x="0" data-offset-y="10"></div>
+    </div>
+    <div id="second" class="grid threeRows" data-offset-x="160" data-offset-y="55">
+        <div class="thirdRowFirstColumn" data-offset-x="0" data-offset-y="100"></div>
+        <div class="secondRowBothColumn" data-offset-x="0" data-offset-y="65"></div>
+        <div class="secondRowSecondColumn style3 alignSelfBaseline target" id="first" data-offset-x="0" data-offset-y="80"></div>
+    </div>
+    <div class="grid empty threeRows" data-offset-x="320" data-offset-y="15">
+        <div class="thirdRowSecondColumn" data-offset-x="50" data-offset-y="110"></div>
+        <div class="secondRowFirstColumn target" data-offset-x="0" data-offset-y="60"></div>
+        <div class="secondRowBothColumn" data-offset-x="0" data-offset-y="75"></div>
+    </div>
+</div>
+height expected 250 but got 300
+FAIL .grid, container 17 assert_equals: 
+<div class="container" data-expected-width="480" data-expected-height="250">
+    <div id="first" class="grid twoRows" data-offset-x="0" data-offset-y="80">
+        <div class="firstRowFirstColumn target" data-offset-x="0" data-offset-y="0"></div>
+        <div class="firstRowBothColumn" data-offset-x="0" data-offset-y="15"></div>
+        <div class="bothRowFirstColumn" data-offset-x="0" data-offset-y="10"></div>
+    </div>
+    <div id="second" class="grid threeRows" data-offset-x="160" data-offset-y="55">
+        <div class="thirdRowFirstColumn" data-offset-x="0" data-offset-y="100"></div>
+        <div class="secondRowBothColumn" data-offset-x="0" data-offset-y="65"></div>
+        <div class="secondRowSecondColumn style3 alignSelfBaseline target" id="first" data-offset-x="0" data-offset-y="80"></div>
+    </div>
+    <div class="grid empty threeRows" data-offset-x="320" data-offset-y="15">
+        <div class="thirdRowSecondColumn" data-offset-x="50" data-offset-y="110"></div>
+        <div class="secondRowFirstColumn target" data-offset-x="0" data-offset-y="60"></div>
+        <div class="secondRowBothColumn" data-offset-x="0" data-offset-y="75"></div>
+    </div>
+</div>
+height expected 250 but got 300
+FAIL .grid, container 18 assert_equals: 
+<div class="container" data-expected-width="480" data-expected-height="250">
+    <div id="first" class="grid twoRows" data-offset-x="0" data-offset-y="80">
+        <div class="firstRowFirstColumn target" data-offset-x="0" data-offset-y="0"></div>
+        <div class="firstRowBothColumn" data-offset-x="0" data-offset-y="15"></div>
+        <div class="bothRowFirstColumn" data-offset-x="0" data-offset-y="10"></div>
+    </div>
+    <div id="second" class="grid threeRows" data-offset-x="160" data-offset-y="55">
+        <div class="thirdRowFirstColumn" data-offset-x="0" data-offset-y="100"></div>
+        <div class="secondRowBothColumn" data-offset-x="0" data-offset-y="65"></div>
+        <div class="secondRowSecondColumn style3 alignSelfBaseline target" id="first" data-offset-x="0" data-offset-y="80"></div>
+    </div>
+    <div class="grid empty threeRows" data-offset-x="320" data-offset-y="15">
+        <div class="thirdRowSecondColumn" data-offset-x="50" data-offset-y="110"></div>
+        <div class="secondRowFirstColumn target" data-offset-x="0" data-offset-y="60"></div>
+        <div class="secondRowBothColumn" data-offset-x="0" data-offset-y="75"></div>
+    </div>
+</div>
+height expected 250 but got 300
+Harness: the test ran to completion.
+

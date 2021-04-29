@@ -1,0 +1,31 @@
+This is a testharness.js-based test.
+PASS .grid 1
+PASS .grid 2
+PASS .grid 3
+PASS .grid 4
+PASS .grid 5
+PASS .grid 6
+PASS .grid 7
+PASS .grid 8
+PASS .grid 9
+PASS .grid 10
+PASS .grid 11
+PASS .grid 12
+PASS .grid 13
+PASS .grid 14
+PASS .grid 15
+FAIL .grid 16 assert_equals: 
+<div class="grid border border-box pad-percent" style="width: min-content; height: min-content;" data-expected-width="300" data-expected-height="160">
+    <div class="item" data-offset-x="130" data-offset-y="80" data-expected-width="100" data-expected-height="50"></div>
+  </div>
+width expected 300 but got 260
+PASS .grid 17
+PASS .grid 18
+FAIL .grid 19 assert_equals: 
+<div class="grid border border-box pad-percent" style="width: max-content; height: max-content;" data-expected-width="300" data-expected-height="160">
+    <div class="item" data-offset-x="130" data-offset-y="80" data-expected-width="100" data-expected-height="50"></div>
+  </div>
+width expected 300 but got 260
+PASS .grid 20
+Harness: the test ran to completion.
+
