@@ -4,6 +4,7 @@
 
 #include "extensions/renderer/bindings/argument_spec_builder.h"
 
+#include "base/strings/string_piece.h"
 
 namespace extensions {
 
@@ -27,7 +28,7 @@ ArgumentSpecBuilder& ArgumentSpecBuilder::MakeOptional() {
 ArgumentSpecBuilder& ArgumentSpecBuilder::AddProperty(
     base::StringPiece property_name,
     std::unique_ptr<ArgumentSpec> property_spec) {
-  properties_[property_name.as_string()] = std::move(property_spec);
+  properties_[std::string(property_name)] = std::move(property_spec);
   return *this;
 }
 

@@ -83,9 +83,9 @@ class ArgumentSpec {
   ArgumentType type() const { return type_; }
   const std::set<std::string>& enum_values() const { return enum_values_; }
 
-  void set_name(base::StringPiece name) { name_ = name.as_string(); }
+  void set_name(base::StringPiece name) { name_ = std::string(name); }
   void set_optional(bool optional) { optional_ = optional; }
-  void set_ref(base::StringPiece ref) { ref_ = ref.as_string(); }
+  void set_ref(base::StringPiece ref) { ref_ = std::string(ref); }
   void set_minimum(int minimum) { minimum_ = minimum; }
   void set_properties(PropertiesMap properties) {
     properties_ = std::move(properties);

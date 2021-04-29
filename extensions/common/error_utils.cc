@@ -7,6 +7,7 @@
 #include <initializer_list>
 
 #include "base/check_op.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -18,7 +19,7 @@ namespace {
 std::string FormatErrorMessageInternal(
     base::StringPiece format,
     std::initializer_list<base::StringPiece> args) {
-  std::string format_str = format.as_string();
+  std::string format_str(format);
   base::StringTokenizer tokenizer(format_str, "*");
   tokenizer.set_options(base::StringTokenizer::RETURN_DELIMS);
 

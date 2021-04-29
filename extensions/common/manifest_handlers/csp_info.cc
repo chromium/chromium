@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/no_destructor.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -253,7 +254,7 @@ bool CSPHandler::ParseExtensionPagesCSP(
 
   std::vector<InstallWarning> warnings;
   std::string sanitized_content_security_policy = SanitizeContentSecurityPolicy(
-      content_security_policy_str, manifest_key.as_string(),
+      content_security_policy_str, std::string(manifest_key),
       GetValidatorOptions(extension), &warnings);
   extension->AddInstallWarnings(std::move(warnings));
 
@@ -287,7 +288,7 @@ bool CSPHandler::ParseSandboxCSP(Extension* extension,
   std::vector<InstallWarning> warnings;
   std::string effective_sandbox_csp =
       csp_validator::GetEffectiveSandoxedPageCSP(
-          sandbox_csp_str, manifest_key.as_string(), &warnings);
+          sandbox_csp_str, std::string(manifest_key), &warnings);
   SetSandboxCSP(extension, std::move(effective_sandbox_csp));
   extension->AddInstallWarnings(std::move(warnings));
   return true;
@@ -304,7 +305,7 @@ bool CSPHandler::SetExtensionPagesCSP(Extension* extension,
   } else {
     DCHECK_EQ(content_security_policy,
               SanitizeContentSecurityPolicy(
-                  content_security_policy, manifest_key.as_string(),
+                  content_security_policy, std::string(manifest_key),
                   GetValidatorOptions(extension), nullptr));
   }
 

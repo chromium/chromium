@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -48,15 +49,15 @@ Feature::Feature() : no_parent_(false) {}
 Feature::~Feature() {}
 
 void Feature::set_name(base::StringPiece name) {
-  name_ = name.as_string();
+  name_ = std::string(name);
 }
 
 void Feature::set_alias(base::StringPiece alias) {
-  alias_ = alias.as_string();
+  alias_ = std::string(alias);
 }
 
 void Feature::set_source(base::StringPiece source) {
-  source_ = source.as_string();
+  source_ = std::string(source);
 }
 
 }  // namespace extensions

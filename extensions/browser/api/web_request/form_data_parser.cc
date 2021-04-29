@@ -12,6 +12,7 @@
 #include "base/lazy_instance.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "net/base/escape.h"
@@ -552,11 +553,11 @@ bool FormDataParserMultipart::GetNextNameValue(Result* result) {
   result->set_name(net::UnescapeBinaryURLComponent(name));
   if (value_assigned) {
     // Hold filename as value.
-    result->SetStringValue(value.as_string());
+    result->SetStringValue(std::string(value));
   } else if (value_is_binary) {
     result->SetBinaryValue(value);
   } else {
-    result->SetStringValue(value.as_string());
+    result->SetStringValue(std::string(value));
   }
 
   return return_value;

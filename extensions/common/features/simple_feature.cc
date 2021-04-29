@@ -14,6 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/crx_file/id_util.h"
@@ -531,7 +532,7 @@ void SimpleFeature::set_blocklist(
 
 void SimpleFeature::set_command_line_switch(
     base::StringPiece command_line_switch) {
-  command_line_switch_ = command_line_switch.as_string();
+  command_line_switch_ = std::string(command_line_switch);
 }
 
 void SimpleFeature::set_contexts(std::initializer_list<Context> contexts) {
@@ -549,7 +550,7 @@ void SimpleFeature::set_extension_types(
 }
 
 void SimpleFeature::set_feature_flag(base::StringPiece feature_flag) {
-  feature_flag_ = feature_flag.as_string();
+  feature_flag_ = std::string(feature_flag);
 }
 
 void SimpleFeature::set_session_types(

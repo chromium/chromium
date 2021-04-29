@@ -11,7 +11,9 @@
 #include "base/debug/alias.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
@@ -196,11 +198,11 @@ const FeatureMap& FeatureProvider::GetAllFeatures() const {
 
 void FeatureProvider::AddFeature(base::StringPiece name,
                                  std::unique_ptr<Feature> feature) {
-  features_[name.as_string()] = std::move(feature);
+  features_[std::string(name)] = std::move(feature);
 }
 
 void FeatureProvider::AddFeature(base::StringPiece name, Feature* feature) {
-  features_[name.as_string()] = std::unique_ptr<Feature>(feature);
+  features_[std::string(name)] = base::WrapUnique(feature);
 }
 
 }  // namespace extensions

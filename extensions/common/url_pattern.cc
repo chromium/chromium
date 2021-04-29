@@ -12,6 +12,7 @@
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -308,7 +309,7 @@ URLPattern::ParseResult URLPattern::Parse(base::StringPiece pattern) {
       host_piece = host_piece.substr(2);
     }
 
-    host_ = host_piece.as_string();
+    host_ = std::string(host_piece);
 
     path_start_pos = host_end_pos;
   }

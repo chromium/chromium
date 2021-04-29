@@ -6,6 +6,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "content/public/renderer/v8_value_converter.h"
@@ -49,7 +50,7 @@ bool RunFunctionImpl(v8::Local<v8::Function> function,
 
 std::string ReplaceSingleQuotes(base::StringPiece str) {
   std::string result;
-  base::ReplaceChars(str.as_string(), "'", "\"", &result);
+  base::ReplaceChars(str, "'", "\"", &result);
   return result;
 }
 

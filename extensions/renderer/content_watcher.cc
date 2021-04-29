@@ -8,6 +8,7 @@
 
 #include <set>
 
+#include "base/strings/string_piece.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
@@ -129,7 +130,7 @@ void FrameContentWatcher::NotifyBrowserOfChange() {
 
   std::vector<std::string> selector_strings;
   for (const base::StringPiece& selector : transitive_selectors)
-    selector_strings.push_back(selector.as_string());
+    selector_strings.push_back(std::string(selector));
 
   ExtensionFrameHelper::Get(render_frame())
       ->GetLocalFrameHost()
