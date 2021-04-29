@@ -14,6 +14,25 @@
 #include "base/posix/eintr_wrapper.h"
 #endif
 
+#include <dlfcn.h>
+
+static void (*gRecordReplayAssertFn)(const char*, va_list);
+
+static void RecordReplayAssert(const char* aFormat, ...) {
+  if (!gRecordReplayAssertFn) {
+    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayAssert");
+    if (!fnptr) {
+      return;
+    }
+    gRecordReplayAssertFn = reinterpret_cast<void(*)(const char*, va_list)>(fnptr);
+  }
+
+  va_list ap;
+  va_start(ap, aFormat);
+  gRecordReplayAssertFn(aFormat, ap);
+  va_end(ap);
+}
+
 namespace base {
 namespace internal {
 
@@ -21,6 +40,8 @@ namespace internal {
 
 // static
 void ScopedFDCloseTraits::Free(int fd) {
+  RecordReplayAssert("ScopedFDCloseTraits::Free %d", fd);
+
   // It's important to crash here.
   // There are security implications to not closing a file descriptor
   // properly. As file descriptors are "capabilities", keeping them open
