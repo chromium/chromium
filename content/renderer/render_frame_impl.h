@@ -29,7 +29,6 @@
 #include "base/process/process_handle.h"
 #include "base/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
-#include "base/values.h"
 #include "build/build_config.h"
 #include "cc/input/browser_controls_state.h"
 #include "content/common/buildflags.h"
@@ -885,8 +884,6 @@ class CONTENT_EXPORT RenderFrameImpl
   // called, that means we have got whole html page. In here we should
   // finally get right encoding of page.
   void UpdateEncoding(blink::WebFrame* frame, const std::string& encoding_name);
-
-  base::Value GetJavaScriptExecutionResult(v8::Local<v8::Value> result);
 
   void InitializeMediaStreamDeviceObserver();
 
