@@ -553,7 +553,7 @@ class GpuIntegrationTest(
       skia_renderer = gpu_helper.GetSkiaRenderer(gpu_info.feature_status,
                                                  startup_args)
       tags.append(skia_renderer)
-    display_server = gpu_helper.GetDisplayServer()
+    display_server = gpu_helper.GetDisplayServer(browser.browser_type)
     if display_server:
       tags.append(display_server)
     return tags

@@ -249,7 +249,7 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     params.model_name = system_info.model_name
     params.driver_version = device.driver_version
     params.driver_vendor = device.driver_vendor
-    params.display_server = gpu_helper.GetDisplayServer()
+    params.display_server = gpu_helper.GetDisplayServer(browser.browser_type)
 
   @classmethod
   def _UploadBitmapToCloudStorage(cls, bucket, name, bitmap, public=False):

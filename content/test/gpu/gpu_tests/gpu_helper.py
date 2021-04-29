@@ -25,6 +25,13 @@ EXPECTATIONS_DRIVER_TAGS = frozenset([
 DRIVER_TAG_MATCHER = re.compile(
     r'^([a-z\d]+)_(eq|ne|ge|gt|le|lt)_([a-z\d\.]+)$')
 
+REMOTE_BROWSER_TYPES = [
+    'android-chromium',
+    'android-webview-instrumentation',
+    'cros-chrome',
+    'web-engine-shell',
+]
+
 
 def _ParseANGLEGpuVendorString(device_string):
   if not device_string:
@@ -158,7 +165,12 @@ def GetSkiaRenderer(gpu_feature_status, extra_browser_args):
   return retval
 
 
-def GetDisplayServer():
+def GetDisplayServer(browser_type):
+  # Browser types run on a remote device aren't Linux, but the host running
+  # this code uses Linux, so return early to avoid erroneously reporting a
+  # display server.
+  if browser_type in REMOTE_BROWSER_TYPES:
+    return None
   if sys.platform == 'linux2':
     if 'WAYLAND_DISPLAY' in os.environ:
       return 'display-server-wayland'
