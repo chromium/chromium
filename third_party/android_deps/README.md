@@ -30,14 +30,24 @@ Full steps to add a new third party library or update existing libraries:
 2. Run `fetch_all.py` to update your current workspace with the changes. This
    will update, among other things, your top-level DEPS file.
 
-3. `git add` all the 3pp related changes and create a CL for review. Revert all
-   of the non-3pp files as they will be committed in a followup CL.
+3. `git add` all the 3pp related changes and create a CL for review. Keep the
+   3pp/ and .gradle changes in the CL and revert the other files. The other
+   files will be committed in a follow up CL.
 
 4. Land the first CL in step 3 and wait for the corresponding 3pp packager to
-   create the new CIPD packages. See [`//docs/cipd_and_3pp.md`][cipd_and_3pp_doc]
-   for how it works.
+   create the new CIPD packages. The 3pp packager runs every 6 hours. You can
+   see the latest runs
+   [here](https://ci.chromium.org/p/chromium/builders/ci/3pp-linux-amd64-packager).
+   See [`//docs/cipd_and_3pp.md`][cipd_and_3pp_doc] for how it works.
 
-5. Run `fetch_all.py` again. There should not be any 3pp related changes. Create
+5. If your follow up cl takes more than a day please revert the original cl.
+  The bot runs 4 times a day and once it uploads to cipd there is no need to
+  keep the modified 3pp files. When you are ready to land the follow up cl, you
+  can land everything together since the cipd packages have already been
+  uploaded.
+
+
+6. Run `fetch_all.py` again. There should not be any 3pp related changes. Create
    a commit.
 
    If the CL is doing more than upgrading existing packages or adding packages
