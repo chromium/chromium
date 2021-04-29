@@ -64,6 +64,28 @@ suite('EsimRenameDialog', function() {
     mojoApi_.setManagedPropertiesForTest(cellular);
   }
 
+  /**
+   * @param {string} value The value of the input
+   * @param {boolean} invalid If the input is invalid or not
+   * @param {string} inputCount The length of value in string
+   *     format, with 2 digits
+   */
+  function assertInput(value, invalid, valueLength) {
+    const inputBox = esimRenameDialog.$$('#eSimprofileName');
+    const inputCount = esimRenameDialog.$$('#inputCount');
+    assertTrue(!!inputBox);
+    assertTrue(!!inputCount);
+
+    assertEquals(inputBox.value, value);
+    assertEquals(inputBox.invalid, invalid);
+    const characterCountText = esimRenameDialog.i18n(
+        'eSimRenameProfileInputCharacterCount', valueLength, 20);
+    assertEquals(inputCount.textContent.trim(), characterCountText);
+    assertEquals(
+        inputBox.ariaDescription,
+        esimRenameDialog.i18n('eSimRenameProfileInputA11yLabel', 20));
+  }
+
   test('Rename esim profile', async function() {
     eSimManagerRemote.addEuiccForTest(1);
     addEsimCellularNetwork(TEST_CELLULAR_GUID, '1');
@@ -181,5 +203,97 @@ suite('EsimRenameDialog', function() {
 
     esimRenameDialog.showCellularDisconnectWarning = true;
     assertFalse(warningMessage.hidden);
+  });
+
+  test('Input is sanitized', async function() {
+    eSimManagerRemote.addEuiccForTest(1);
+    addEsimCellularNetwork(TEST_CELLULAR_GUID, '1');
+    await flushAsync();
+    init();
+
+    await flushAsync();
+    const inputBox = esimRenameDialog.$$('#eSimprofileName');
+    assertTrue(!!inputBox);
+    const profileName = inputBox.value;
+    assertEquals(profileName, 'profile1');
+
+    // Test empty name.
+    inputBox.value = '';
+    assertInput(
+        /*value=*/ '', /*invalid=*/ false, /*valueLength=*/ '00');
+
+    // Test name with no emojis, under character limit.
+    inputBox.value = '1234567890123456789';
+    assertInput(
+        /*value=*/ '1234567890123456789', /*invalid=*/ false,
+        /*valueLength=*/ '19');
+
+    // Test name with emojis, under character limit.
+    inputBox.value = '1234😀5678901234🧟';
+    assertInput(
+        /*value=*/ '12345678901234', /*invalid=*/ false,
+        /*valueLength=*/ '14');
+
+    // Test name with only emojis, under character limit.
+    inputBox.value = '😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀';
+    assertInput(
+        /*value=*/ '', /*invalid=*/ false, /*valueLength=*/ '00');
+
+    // Test name with no emojis, at character limit.
+    inputBox.value = '12345678901234567890';
+    assertInput(
+        /*value=*/ '12345678901234567890', /*invalid=*/ false,
+        /*valueLength=*/ '20');
+
+    // Test name with emojis, at character limit.
+    inputBox.value = '1234567890123456789🧟';
+    assertInput(
+        /*value=*/ '1234567890123456789', /*invalid=*/ false,
+        /*valueLength=*/ '19');
+
+    // Test name with only emojis, at character limit.
+    inputBox.value = '😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀';
+    assertInput(
+        /*value=*/ '', /*invalid=*/ false, /*valueLength=*/ '00');
+
+    // Test name with no emojis, above character limit.
+    inputBox.value = '123456789012345678901';
+    assertInput(
+        /*value=*/ '12345678901234567890', /*invalid=*/ true,
+        /*valueLength=*/ '20');
+
+    // Make sure input is not invalid once its value changes to a string below
+    // the character limit. (Simulates the user pressing backspace once they've
+    // reached the limit).
+    inputBox.value = '1234567890123456789';
+    assertInput(
+        /*value=*/ '1234567890123456789', /*invalid=*/ false,
+        /*valueLength=*/ '19');
+
+    // Test name with emojis, above character limit.
+    inputBox.value = '12345678901234567890🧟';
+    assertInput(
+        /*value=*/ '12345678901234567890', /*invalid=*/ false,
+        /*valueLength=*/ '20');
+
+    // Test name with only emojis, above character limit.
+    inputBox.value = '😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀';
+    assertInput(
+        /*value=*/ '', /*invalid=*/ false, /*valueLength=*/ '00');
+
+    // Set name with emojis, above character limit
+    inputBox.value = '12345678901234567890🧟';
+    const doneBtn = esimRenameDialog.$$('#done');
+    assertTrue(!!doneBtn);
+    doneBtn.click();
+    await flushAsync();
+
+    const euicc = (await eSimManagerRemote.getAvailableEuiccs()).euiccs[0];
+    const profile = (await euicc.getProfileList()).profiles[0];
+    const profileProperties = (await profile.getProperties()).properties;
+
+    assertEquals(
+        convertString16ToJSString_(profileProperties.nickname),
+        '12345678901234567890');
   });
 });
