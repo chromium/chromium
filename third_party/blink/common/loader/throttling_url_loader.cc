@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
@@ -1064,7 +1065,7 @@ void ThrottlingURLLoader::DisconnectClient(base::StringPiece custom_reason) {
   if (!custom_reason.empty()) {
     url_loader_.ResetWithReason(
         network::mojom::URLLoader::kClientDisconnectReason,
-        custom_reason.as_string());
+        std::string(custom_reason));
   } else {
     url_loader_.reset();
   }

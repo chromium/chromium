@@ -5,12 +5,13 @@
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 
 #include <memory>
-#include <set>
 #include <string>
 
 #include "base/bind.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
@@ -193,11 +194,11 @@ class TestOriginTrialPolicy : public OriginTrialPolicy {
     return keys_;
   }
   bool IsFeatureDisabled(base::StringPiece feature) const override {
-    return disabled_features_.count(feature.as_string()) > 0;
+    return disabled_features_.count(feature) > 0;
   }
 
   bool IsFeatureDisabledForUser(base::StringPiece feature) const override {
-    return disabled_features_for_user_.count(feature.as_string()) > 0;
+    return disabled_features_for_user_.count(std::string(feature)) > 0;
   }
 
   // Test setup methods
@@ -220,14 +221,14 @@ class TestOriginTrialPolicy : public OriginTrialPolicy {
 
  protected:
   bool IsTokenDisabled(base::StringPiece token_signature) const override {
-    return disabled_tokens_.count(token_signature.as_string()) > 0;
+    return disabled_tokens_.count(std::string(token_signature)) > 0;
   }
 
  private:
   std::vector<base::StringPiece> keys_;
-  std::set<std::string> disabled_features_;
-  std::set<std::string> disabled_features_for_user_;
-  std::set<std::string> disabled_tokens_;
+  base::flat_set<std::string> disabled_features_;
+  base::flat_set<std::string> disabled_features_for_user_;
+  base::flat_set<std::string> disabled_tokens_;
 };
 
 class TrialTokenValidatorTest : public testing::Test {
