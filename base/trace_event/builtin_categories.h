@@ -37,14 +37,15 @@
   X("base")                                                              \
   X("benchmark")                                                         \
   X("blink")                                                             \
-  X("blink.bindings")                                                    \
   X("blink.animations")                                                  \
+  X("blink.bindings")                                                    \
   X("blink.console")                                                     \
-  X("blink_gc")                                                          \
   X("blink.net")                                                         \
-  X("blink_style")                                                       \
+  X("blink.resource")                                                    \
   X("blink.user_timing")                                                 \
   X("blink.worker")                                                      \
+  X("blink_gc")                                                          \
+  X("blink_style")                                                       \
   X("Blob")                                                              \
   X("browser")                                                           \
   X("browsing_data")                                                     \
@@ -271,13 +272,14 @@
   X("benchmark,rail")                                                         \
   X("benchmark,uma")                                                          \
   X("benchmark,viz")                                                          \
-  X("blink.animations,devtools.timeline,benchmark,rail")                      \
   X("blink,benchmark")                                                        \
   X("blink,benchmark,rail," TRACE_DISABLED_BY_DEFAULT("blink.debug.layout"))  \
+  X("blink,blink.resource")                                                   \
   X("blink,blink_style")                                                      \
   X("blink,devtools.timeline")                                                \
   X("blink,loading")                                                          \
   X("blink,rail")                                                             \
+  X("blink.animations,devtools.timeline,benchmark,rail")                      \
   X("blink.user_timing,rail")                                                 \
   X("blink_gc,devtools.timeline")                                             \
   X("browser,content,navigation")                                             \

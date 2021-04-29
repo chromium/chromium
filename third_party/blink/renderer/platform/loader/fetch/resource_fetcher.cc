@@ -113,21 +113,21 @@ static constexpr base::TimeDelta kUnusedPreloadTimeout =
     break;                                                                     \
   }
 
-#define DEFINE_RESOURCE_HISTOGRAM(prefix)                    \
-  switch (factory.GetType()) {                               \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, CSSStyleSheet)  \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Font)           \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Image)          \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, LinkPrefetch)   \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Manifest)       \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Audio)          \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Video)          \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Mock)           \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Raw)            \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Script)         \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, SVGDocument)    \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, TextTrack)      \
-    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, XSLStyleSheet)  \
+#define DEFINE_RESOURCE_HISTOGRAM(prefix)                   \
+  switch (factory.GetType()) {                              \
+    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, CSSStyleSheet) \
+    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Font)          \
+    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Image)         \
+    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, LinkPrefetch)  \
+    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Manifest)      \
+    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Audio)         \
+    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Video)         \
+    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Mock)          \
+    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Raw)           \
+    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, Script)        \
+    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, SVGDocument)   \
+    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, TextTrack)     \
+    DEFINE_SINGLE_RESOURCE_HISTOGRAM(prefix, XSLStyleSheet) \
   }
 
 ResourceLoadPriority TypeToPriority(ResourceType type) {
@@ -985,8 +985,8 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
       resource_request.Url());
   SCOPED_BLINK_UMA_HISTOGRAM_TIMER_THREAD_SAFE(
       "Blink.Fetch.RequestResourceTime");
-  TRACE_EVENT1("blink", "ResourceFetcher::requestResource", "url",
-               params.Url().GetString().Utf8());
+  TRACE_EVENT1("blink,blink.resource", "ResourceFetcher::requestResource",
+               "url", params.Url().GetString().Utf8());
 
   // |resource_request|'s origin can be null here, corresponding to the "client"
   // value in the spec. In that case client's origin is used.
