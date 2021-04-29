@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/timing/performance_mark.h"
 #include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/renderer_resource_coordinator.h"
-#include "third_party/blink/renderer/platform/network/network_utils.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/number_parsing_options.h"
@@ -142,12 +141,10 @@ BackgroundTracingHelper::BackgroundTracingHelper(ExecutionContext* context) {
     return;
   }
 
-  // Get the hash of the site (eTLD+1) in an encoded format (friendly for
-  // converting to ASCII, and matching the format in which URLs will be encoded
-  // prior to hashing in the Finch list).
-  String this_site =
-      EncodeWithURLEscapeSequences(network_utils::GetDomainAndRegistry(
-          origin->Host(), network_utils::kIncludePrivateRegistries));
+  // Get the hash of the domain in an encoded format (friendly for converting to
+  // ASCII, and matching the format in which URLs will be encoded prior to
+  // hashing in the Finch list).
+  String this_site = EncodeWithURLEscapeSequences(origin->Domain());
   uint32_t this_site_hash = MD5Hash32(this_site.Ascii());
 
   // Get the allow-list for this site, if there is one.
