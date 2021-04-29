@@ -274,6 +274,7 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="281504910091592009">Shranjena gesla si lahko ogledate in jih upravljate v <ph name="BEGIN_LINK" />Google Računu<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Če želite dostopati do zaznamkov v vseh napravah, se prijavite in vklopite sinhronizacijo</translation>
 <translation id="2827278682606527653">Meni kartice vira je odprt pri pol višine</translation>
+<translation id="2830783625999891985">Vsebina odložišča je skrita</translation>
 <translation id="2839327205551510876">Spremljanje <ph name="SITE_NAME" /> je preklicano.</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Preverjeno pred 1 dnevom}one{Preverjeno pred # dnevom}two{Preverjeno pred # dnevoma}few{Preverjeno pred # dnevi}other{Preverjeno pred # dnevi}}</translation>
 <translation id="2842985007712546952">Nadrejena mapa</translation>
@@ -389,6 +390,7 @@ Zasebni peskovnik je še vedno v aktivnem razvoju in na voljo le na izbranih obm
 <translation id="3542235761944717775">Na voljo: <ph name="KILOBYTES" /> KB</translation>
 <translation id="3549657413697417275">Iščite v svoji zgodovini</translation>
 <translation id="3557336313807607643">Dodaj med stike</translation>
+<translation id="3563767357928833671">Vsebina odložišča je prikazana</translation>
 <translation id="3566923219790363270">Chrome se še vedno pripravlja na navidezno resničnost. Znova zaženite Chrome pozneje.</translation>
 <translation id="3568688522516854065">Če želite dostopati do zavihkov iz drugih naprav, vklopite sinhronizacijo</translation>
 <translation id="3587482841069643663">Vse</translation>

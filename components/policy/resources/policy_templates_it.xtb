@@ -6162,6 +6162,7 @@ Se la norma non viene impostata o viene impostata su false, la posizione non vie
 <translation id="927444535723396977">Se il criterio è impostato su 1, i siti web possono eseguire JavaScript. Se il criterio è impostato su 2, JavaScript viene negato.
 
       Se non viene configurato, JavaScript è consentito, ma gli utenti possono cambiare l'impostazione.</translation>
+<translation id="928189505080808353">Porta 554 (scadenza: 15/10/2021)</translation>
 <translation id="929549405492388749">Se questo criterio viene impostato su true, viene forzata l'attivazione della funzionalità AppCache, anche se in Chrome non è disponibile per impostazione predefinita.
 
       Se non viene impostato o viene impostato su false, la funzionalità AppCache dipenderà dalle impostazioni predefinite di Chrome.</translation>

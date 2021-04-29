@@ -1323,6 +1323,7 @@
 <translation id="2428939361789119025">‏إيقاف شبكة Wi-Fi</translation>
 <translation id="2428978615149723410">سلات التسوّق هذه</translation>
 <translation id="2431027948063157455">‏تعذّر تحميل مساعد Google، يُرجى التحقُّق من اتصال الشبكة وإعادة المحاولة.</translation>
+<translation id="243179355394256322">‏لا تسمح مؤسستك بتسجيل الأجهزة إلا للمستخدمين المصرّح لهم. هذا المستخدم غير مصرح له بتسجيل الأجهزة. يُرجى التأكّد من أنّ المستخدم لديه امتياز المشرف "تسجيل جهاز Google Meet" في قسم المستخدمين ضِمن وحدة تحكُّم المشرف.</translation>
 <translation id="2433452467737464329">‏إضافة معلمة لطلب البحث في عنوان URL لإعادة تحميل الصفحة تلقائيًا: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">المظهر</translation>
 <translation id="2433836460518180625">فتح قفل الجهاز فقط</translation>
@@ -1424,7 +1425,7 @@
 <translation id="252502352004572774">‏يتحقّق متصفِّح Chrome حاليًا من البرامج الضارّة على جهاز الكمبيوتر...</translation>
 <translation id="2526277209479171883">التثبيت والمتابعة</translation>
 <translation id="2526590354069164005">سطح المكتب</translation>
-<translation id="2526619973349913024">التحقق من وجود تحديث</translation>
+<translation id="2526619973349913024">التحقّق من توفّر تحديث</translation>
 <translation id="2527167509808613699">جميع أنواع الاتصالات</translation>
 <translation id="2530166226437958497">تحديد المشاكل وحلّها</translation>
 <translation id="2532589005999780174">وضع التباين العالي</translation>
@@ -4421,6 +4422,7 @@
 <translation id="5932124097031739492">‏تمت ترقية نظام التشغيل Linux بنجاح.</translation>
 <translation id="5932224571077948991">يعرض الموقع الإلكتروني إعلانات مضلِّلة أو غير مرغوب فيها</translation>
 <translation id="59324397759951282">‏جهاز USB من <ph name="MANUFACTURER_NAME" /></translation>
+<translation id="5932441198730183141">‏لا تتوفّر لديك تراخيص كافية لتسجيل جهاز Google Meet هذا. يُرجى التواصل مع قسم المبيعات لشراء المزيد من التراخيص. إذا كنت تعتقد أنك تلقّيت هذه الرسالة عن طريق الخطأ، يُرجى التواصل مع فريق الدعم.</translation>
 <translation id="5932881020239635062">الرقم التسلسلي</translation>
 <translation id="5933376509899483611">المنطقة الزمنية</translation>
 <translation id="5933522550144185133">يستخدم تطبيق <ph name="APP_NAME" /> الكاميرا والميكروفون.</translation>
@@ -5356,7 +5358,7 @@
 <translation id="6979044105893951891">بدء جلسات الضيوف المُدارة والخروج منها</translation>
 <translation id="6979440798594660689">كتم الصوت (تلقائي)</translation>
 <translation id="6979737339423435258">جميع الأوقات</translation>
-<translation id="6981982820502123353">إمكانية الوصول</translation>
+<translation id="6981982820502123353">تسهيل الاستخدام</translation>
 <translation id="6983507711977005608">قطع الاتصال بشبكة "التوصيل الفوري"</translation>
 <translation id="6983783921975806247">‏معرّف الكائنات (OID) المسجل</translation>
 <translation id="6984299437918708277">اختر صورة لعرضها لحسابك في شاشة تسجيل الدخول</translation>
@@ -5410,6 +5412,7 @@
 <translation id="7029307918966275733">‏نظام التشغيل Crostini غير مثبّت. يُرجى تثبيت نظام التشغيل Crostini لعرض أسماء المساهمين.</translation>
 <translation id="7029809446516969842">كلمات المرور</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - تم ربط المنفذ التسلسلي</translation>
+<translation id="7034692021407794547">‏أولاً، يجب أن يوافق أحد المشرفين الذين لديهم امتيازات إدارة الفوترة على بنود خدمة جهاز Goolge Meet في قسم جهاز Goolge Meet ضِمن وحدة تحكُّم المشرف.</translation>
 <translation id="7036706669646341689">‏يُنصَح بتوفير <ph name="DISK_SIZE" /> من المساحة لنظام التشغيل Linux. ولزيادة المساحة الخالية، يجب حذف ملفات من جهازك.</translation>
 <translation id="7037509989619051237">نص للمعاينة</translation>
 <translation id="7038632520572155338">الوصول عبر مفتاح تبديل</translation>

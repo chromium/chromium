@@ -1318,6 +1318,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2428939361789119025">Desactivar wifi</translation>
 <translation id="2428978615149723410">estes carros</translation>
 <translation id="2431027948063157455">Non se puido cargar o Asistente de Google. Comproba a conexión de rede e volve tentalo.</translation>
+<translation id="243179355394256322">A túa organización só lles permite inscribir dispositivos aos usuarios autorizados. Este usuario non está autorizado para inscribir dispositivos. Comproba que o usuario teña o privilexio de administrador Inscribir hardware de Google Meet, na sección da consola de administración Usuarios.</translation>
 <translation id="2433452467737464329">Engade un parámetro de consulta no URL para actualizar a páxina automaticamente: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Aparencia</translation>
 <translation id="2433836460518180625">Desbloquear só o dispositivo</translation>
@@ -4416,6 +4417,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5932124097031739492">Linux actualizouse correctamente.</translation>
 <translation id="5932224571077948991">O sitio mostra anuncios enganosos ou intrusivos</translation>
 <translation id="59324397759951282">Dispositivo USB de <ph name="MANUFACTURER_NAME" /></translation>
+<translation id="5932441198730183141">Non tes suficientes licenzas dispoñibles para inscribir este dispositivo de hardware de Google Meet. Se queres comprar máis, ponte en contacto co departamento de vendas. Se consideras que esta mensaxe se che mostrou por erro, ponte en contacto co servizo de asistencia.</translation>
 <translation id="5932881020239635062">Número de serie</translation>
 <translation id="5933376509899483611">Fuso horario</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> está utilizando a cámara e o micrófono</translation>
@@ -5405,6 +5407,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="7029307918966275733">Crostini non está instalado. Instálao para ver os créditos.</translation>
 <translation id="7029809446516969842">Contrasinais</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Porto en serie conectado</translation>
+<translation id="7034692021407794547">Antes de nada, cómpre que un administrador con privilexios para xestionar a facturación acepte as condicións de servizo do hardware de Google Meet na sección da consola de administración Hardware de Google Meet.</translation>
 <translation id="7036706669646341689">É recomendable dispoñer de <ph name="DISK_SIZE" /> de espazo para Linux. Se queres aumentar o espazo libre, elimina ficheiros do dispositivo.</translation>
 <translation id="7037509989619051237">Texto de vista previa</translation>
 <translation id="7038632520572155338">Acceso con interruptores</translation>

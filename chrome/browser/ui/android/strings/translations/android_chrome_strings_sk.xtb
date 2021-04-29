@@ -274,6 +274,7 @@ Vyhľadávanie spustíte pridržaním ľubovoľného slova. Spresníte ho výber
 <translation id="281504910091592009">Zobrazenie a správa uložených hesiel v <ph name="BEGIN_LINK" />účte Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Ak chcete získať záložky vo všetkých zariadeniach, prihláste sa a zapnite synchronizáciu</translation>
 <translation id="2827278682606527653">Ponuka karty feedu je otvorená do polovice</translation>
+<translation id="2830783625999891985">Obsah schránky je skrytý</translation>
 <translation id="2839327205551510876">Zrušili ste sledovanie webu <ph name="SITE_NAME" /></translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Kontrola prebehla včera}few{Kontrola prebehla pred # dňami}many{Kontrola prebehla pred # dňa}other{Kontrola prebehla pred # dňami}}</translation>
 <translation id="2842985007712546952">Nadradený priečinok</translation>
@@ -389,6 +390,7 @@ Na vývoji technológií Privacy Sandbox sa stále aktívne pracuje a je k dis
 <translation id="3542235761944717775">Voľné miesto: <ph name="KILOBYTES" /> kB</translation>
 <translation id="3549657413697417275">Prehľadať históriu</translation>
 <translation id="3557336313807607643">Pridať do kontaktov</translation>
+<translation id="3563767357928833671">Zobrazuje sa obsah schránky</translation>
 <translation id="3566923219790363270">Chrome sa stále pripravuje na používanie VR. Skúste Chrome reštartovať neskôr.</translation>
 <translation id="3568688522516854065">Ak chcete získať karty zo svojich ostatných zariadení, prihláste sa a zapnite synchronizáciu</translation>
 <translation id="3587482841069643663">Všetko</translation>

@@ -6209,6 +6209,7 @@ Kebijakan akan dihapus pada M75.</translation>
 <translation id="927444535723396977">Jika kebijakan disetel ke 1, situs akan dapat menjalankan JavaScript. Jika kebijakan disetel ke 2, JavaScript tidak akan dapat dijalankan.
 
       Jika tidak disetel, kebijakan akan mengizinkan JavaScript, tetapi pengguna dapat mengubah setelan ini.</translation>
+<translation id="928189505080808353">port 554 (berakhir 15/10/2021)</translation>
 <translation id="929549405492388749">Jika ditetapkan ke benar, AppCache akan dipaksa aktif, meskipun AppCache di Chrome tidak tersedia secara default.
 
       Jika tidak ditetapkan atau ditetapkan ke salah, AppCache akan mengikuti default Chrome.</translation>

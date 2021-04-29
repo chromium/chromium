@@ -1319,6 +1319,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2428939361789119025">Turn off Wi-Fi</translation>
 <translation id="2428978615149723410">these baskets</translation>
 <translation id="2431027948063157455">Google Assistant was unable to load. Please check your network connection and retry.</translation>
+<translation id="243179355394256322">Your organisation limits device enrolment to authorised users only. This user is not authorised to enrol devices. Please make sure that the user has the 'Enrol Google Meet hardware' administrator privilege in the Users section of the Admin console.</translation>
 <translation id="2433452467737464329">Add a query param in URL to auto-refresh the page: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Appearance</translation>
 <translation id="2433836460518180625">Unlock device only</translation>
@@ -4418,6 +4419,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5932124097031739492">Linux has been successfully upgraded.</translation>
 <translation id="5932224571077948991">Site shows intrusive or misleading ads</translation>
 <translation id="59324397759951282">USB device from <ph name="MANUFACTURER_NAME" /></translation>
+<translation id="5932441198730183141">You do not have enough available licences to enrol this Google Meet hardware device. Please contact sales to purchase more. If you believe that you're seeing this message in error, please contact support.</translation>
 <translation id="5932881020239635062">Serial</translation>
 <translation id="5933376509899483611">Time Zone</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> is using your camera and microphone</translation>
@@ -5407,6 +5409,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7029307918966275733">Crostini is not installed. Please install Crostini to view credits.</translation>
 <translation id="7029809446516969842">Passwords</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – Serial port connected</translation>
+<translation id="7034692021407794547">An administrator with billing management privileges must first accept the Google Meet hardware Terms of Service in the Google Meet hardware section of the Admin console.</translation>
 <translation id="7036706669646341689"><ph name="DISK_SIZE" /> of space is recommended for Linux. To increase free space, delete files from your device.</translation>
 <translation id="7037509989619051237">Text to preview</translation>
 <translation id="7038632520572155338">Switch access</translation>

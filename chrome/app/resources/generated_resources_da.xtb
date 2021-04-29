@@ -1320,6 +1320,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2428939361789119025">Deaktiver Wi-Fi</translation>
 <translation id="2428978615149723410">disse indkøbskurve</translation>
 <translation id="2431027948063157455">Google Assistent kunne ikke indlæses. Tjek din netværksforbindelse, og prøv igen.</translation>
+<translation id="243179355394256322">Din organisation har sat begrænsninger, så det kun er autoriserede brugere, der kan foretage tilmelding af enheder. Denne bruger er ikke autoriseret til at tilmelde enheder. Sørg for, at brugeren har administratorrettigheden til tilmelding af Google Meet-hardware under sektionen Brugere i Administrationskonsol.</translation>
 <translation id="2433452467737464329">Tilføj et forespørgselsparameter i webadressen for at opdatere siden automatisk: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Udseende</translation>
 <translation id="2433836460518180625">Lås kun denne enhed op</translation>
@@ -4419,6 +4420,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5932124097031739492">Linux er blevet opgraderet.</translation>
 <translation id="5932224571077948991">Websitet viser påtrængende eller vildledende annoncer</translation>
 <translation id="59324397759951282">USB-enhed fra <ph name="MANUFACTURER_NAME" /></translation>
+<translation id="5932441198730183141">Du har ikke nok tilgængelige licenser til at tilmelde denne Google Meet-hardwareenhed. Kontakt salgsafdelingen for at købe flere. Hvis du mener, at du får denne meddelelse ved en fejl, skal du kontakte support.</translation>
 <translation id="5932881020239635062">Serienummer</translation>
 <translation id="5933376509899483611">Tidszone</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> bruger dit kamera og din mikrofon</translation>
@@ -5209,7 +5211,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6825184156888454064">Sorter efter navn</translation>
 <translation id="6826872289184051766">Bekræft via USB</translation>
 <translation id="6827604573767207488">Det ser ud til, at du allerede har konfigureret Google Assistent på en anden enhed. Du kan få endnu mere ud af Google Assistent ved at aktivere følgende indstilling.</translation>
-<translation id="6828153365543658583">Begræns login for følgende brugere:</translation>
+<translation id="6828153365543658583">Begræns login for disse brugere:</translation>
 <translation id="6828182567531805778">Angiv din adgangssætning for at synkronisere dine data</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">Automatiske opdateringer kunne ikke konfigureres for alle brugere (fejl ved forhåndsudførelse: <ph name="ERROR_NUMBER" />)</translation>
@@ -5408,6 +5410,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7029307918966275733">Crostini er ikke installeret. Installer Crostini for at se krediteringer.</translation>
 <translation id="7029809446516969842">Adgangskoder</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – tilsluttet en serieport</translation>
+<translation id="7034692021407794547">En administrator med rettigheden Faktureringsadministration skal først acceptere servicevilkårene for Google Meet-hardware under sektionen for Google Meet-hardware i Administrationskonsol.</translation>
 <translation id="7036706669646341689">Du bør have mindst <ph name="DISK_SIZE" /> plads til Linux. Du kan frigøre plads ved at slette filer fra enheden.</translation>
 <translation id="7037509989619051237">Tekst til eksempel på oplæsning</translation>
 <translation id="7038632520572155338">Kontaktadgang</translation>

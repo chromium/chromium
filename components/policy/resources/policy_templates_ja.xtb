@@ -6000,6 +6000,7 @@
 <translation id="927444535723396977">このポリシーを 1 に設定した場合、ウェブサイトによる JavaScript の実行が許可されます。このポリシーを 2 に設定した場合、JavaScript は拒否されます。
 
       このポリシーを未設定のままにした場合、JavaScript は許可されますが、ユーザーはこの設定を変更できます。</translation>
+<translation id="928189505080808353">ポート 554（有効期限: 2021 年 10 月 15 日）</translation>
 <translation id="929549405492388749">このポリシーを true に設定した場合、Chrome の AppCache がデフォルトで無効になっていても、強制的に有効化します。
 
       このポリシーを未設定のままにするか、false に設定した場合、AppCache の設定は Chrome のデフォルト設定に準拠します。</translation>

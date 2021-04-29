@@ -274,6 +274,7 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="281504910091592009">Visa och hantera sparade lösenord i <ph name="BEGIN_LINK" />Google-kontot<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Logga in och aktivera synkronisering om du vill ha dina bokmärken tillgängliga på alla enheter</translation>
 <translation id="2827278682606527653">Menyn med flödeskort är öppen och tar upp halva skärmen</translation>
+<translation id="2830783625999891985">Innehållet i Urklipp döljs</translation>
 <translation id="2839327205551510876">Slutade följa <ph name="SITE_NAME" /></translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Genomsöktes för 1 dag sedan}other{Genomsöktes för # dagar sedan}}</translation>
 <translation id="2842985007712546952">Överordnad mapp</translation>
@@ -389,6 +390,7 @@ Privacy Sandbox är för närvarande under utveckling och tillgängligt i vissa 
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> kB tillgängligt</translation>
 <translation id="3549657413697417275">Sök i historik</translation>
 <translation id="3557336313807607643">Lägg till i kontakter</translation>
+<translation id="3563767357928833671">Innehållet i Urklipp visas</translation>
 <translation id="3566923219790363270">Chrome förbereds fortfarande för VR. Starta om Chrome senare.</translation>
 <translation id="3568688522516854065">Logga in och aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter</translation>
 <translation id="3587482841069643663">Alla</translation>

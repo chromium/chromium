@@ -274,6 +274,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="281504910091592009">Zapisane hasła znajdziesz na swoim <ph name="BEGIN_LINK" />koncie Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Aby korzystać ze swoich zakładek na wszystkich urządzeniach, zaloguj się i włącz synchronizację</translation>
 <translation id="2827278682606527653">Menu karty kanału – połowa wysokości</translation>
+<translation id="2830783625999891985">Zawartość schowka została ukryta</translation>
 <translation id="2839327205551510876">Usunięto z obserwowanych: <ph name="SITE_NAME" /></translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Sprawdzano 1 dzień temu}few{Sprawdzano # dni temu}many{Sprawdzano # dni temu}other{Sprawdzano # dnia temu}}</translation>
 <translation id="2842985007712546952">Folder nadrzędny</translation>
@@ -389,6 +390,7 @@ Prace nad rozwojem Piaskownicy prywatności wciąż trwają. Jest ona dostępna 
 <translation id="3542235761944717775">Dostępne: <ph name="KILOBYTES" /> KB</translation>
 <translation id="3549657413697417275">Przeszukaj historię</translation>
 <translation id="3557336313807607643">Dodaj do kontaktów</translation>
+<translation id="3563767357928833671">Widoczna jest zawartość schowka</translation>
 <translation id="3566923219790363270">Wirtualna rzeczywistość w Chrome nie jest jeszcze gotowa. Uruchom Chrome ponownie później.</translation>
 <translation id="3568688522516854065">Aby korzystać z kart ze swoich innych urządzeń, zaloguj się i włącz synchronizację</translation>
 <translation id="3587482841069643663">Wszystkie</translation>

@@ -1320,6 +1320,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2428939361789119025">Dezactivează conexiunea Wi-Fi</translation>
 <translation id="2428978615149723410">coșurile de cumpărături</translation>
 <translation id="2431027948063157455">Asistentul Google nu s-a putut încărca; încearcă din nou.</translation>
+<translation id="243179355394256322">Organizația ta limitează înregistrarea dispozitivelor doar la utilizatorii autorizați. Acest utilizator nu este autorizat să înregistreze dispozitive. Verifică dacă utilizatorul are privilegiul de administrator „Înregistrează hardware Google Meet” în secțiunea Utilizatori din Consola de administrare.</translation>
 <translation id="2433452467737464329">Pentru actualizarea automată a paginii: chrome://network/?refresh=&lt;sec&gt;, adăugați un parametru de interogare în adresa URL</translation>
 <translation id="2433507940547922241">Aspect</translation>
 <translation id="2433836460518180625">Deblochează numai dispozitivul</translation>
@@ -4419,6 +4420,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5932124097031739492">S-a făcut upgrade la Linux.</translation>
 <translation id="5932224571077948991">Site-ul afișează anunțuri deranjante sau înșelătoare</translation>
 <translation id="59324397759951282">Dispozitiv USB de la <ph name="MANUFACTURER_NAME" /></translation>
+<translation id="5932441198730183141">Nu ai suficiente licențe disponibile ca să înregistrezi acest dispozitiv hardware Google Meet. Contactează departamentul de vânzări ca să cumperi mai multe. În cazul în care consideri că acest mesaj este afișat din greșeală, contactează serviciul de asistență.</translation>
 <translation id="5932881020239635062">Număr de serie</translation>
 <translation id="5933376509899483611">Fus orar</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> folosește camera și microfonul</translation>
@@ -5408,6 +5410,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="7029307918966275733">Crostini nu este instalat. Instalează Crostini pentru a afișa datele de conectare.</translation>
 <translation id="7029809446516969842">Parole</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Portul serial este conectat</translation>
+<translation id="7034692021407794547">Un administrator cu privilegii de gestionare a facturării trebuie întâi să accepte Termenii și condițiile pentru hardware Google Meet din secțiunea Hardware Google Meet a Consolei de administrare.</translation>
 <translation id="7036706669646341689">Pentru Linux, se recomandă un spațiu de <ph name="DISK_SIZE" />. Pentru a elibera spațiu, șterge fișiere de pe dispozitiv.</translation>
 <translation id="7037509989619051237">Textul pentru previzualizare</translation>
 <translation id="7038632520572155338">Acces prin comutare</translation>

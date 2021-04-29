@@ -1319,6 +1319,7 @@
 <translation id="2428939361789119025">Wi-Fiን አጥፋ</translation>
 <translation id="2428978615149723410">እነዚህ ተሳቢዎች</translation>
 <translation id="2431027948063157455">Google ረዳት የአውታረ መረብ ግንኙነትዎን መፈተሽ እና ዳግም መሞከር አልቻለም።</translation>
+<translation id="243179355394256322">የእርስዎ ድርጅት መሣሪያን ማስመዘገብ ለተፈቀደላቸው ተጠቃሚዎች ብቻ ይገድባል። ይህ ተጠቃሚ መሣሪያዎችን እንዲያስመዘግባቸው አልተፈቀደለትም። እባክዎ በአስተዳዳሪው console በተጠቃሚዎች ክፍል ውስጥ ተጠቃሚው «የGoogle Meet ሃርድዌርን አስመዝግብ» የአስተዳዳሪ መብት እንዳለው ያረጋግጡ።</translation>
 <translation id="2433452467737464329">ገጹን በራስ-ሰር ለማደስ በዩ አር ኤል ውስጥ የመጠይቅ ልኬት ያክሉ፦ chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">ገጽታ</translation>
 <translation id="2433836460518180625">መሣሪያ ብቻ ክፈት</translation>
@@ -4416,6 +4417,7 @@
 <translation id="5932124097031739492">Linux በተሳካ ሁኔታ ደረጃው ተሻሽሏል።</translation>
 <translation id="5932224571077948991">ጣቢያ ረባሽ ወይም አሳሳች ማስታወቂያዎችን ያሳያል</translation>
 <translation id="59324397759951282">የዩኤስቢ መሣሪያ ከ<ph name="MANUFACTURER_NAME" /></translation>
+<translation id="5932441198730183141">ይህንን የGoogle Meet ሃርድዌር መሳሪያ ለማስመዝገብ በቂ የሚገኙ ፈቃዶች የሉዎትም። የበለጠ ለመግዛት እባክዎ ሽያጮችን ያነጋግሩ። ይህን መልዕክት የሚያዩት በስህተት ነው ብለው ካመኑ እባክዎ ድጋፍን ያነጋግሩ።</translation>
 <translation id="5932881020239635062">ተከታታይ</translation>
 <translation id="5933376509899483611">የጊዜ ሰቅ</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> የእርስዎን ካሜራ እና ማይክሮፎን እየተጠቀመ ነው</translation>
@@ -5405,6 +5407,7 @@
 <translation id="7029307918966275733">Crostini አልተጫነም። ምስጋናዎችን ለመመልከት እባክዎ Crostiniን ይጫኑ።</translation>
 <translation id="7029809446516969842">የይለፍ ቃላት</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - ተከታታይ ወደብ ተገናኝቷል</translation>
+<translation id="7034692021407794547">የየሂሳብ አከፋፈል አስተዳደር መብቶች ያለው አስተዳዳሪ በመጀመሪያ በአስተዳዳሪው console በGoogle Meet ሃርድዌር ክፍል ውስጥ የGoogle Meet ሃርድዌር የአገልግሎት ውሎችን መቀበል አለበት።</translation>
 <translation id="7036706669646341689">ለLinux <ph name="DISK_SIZE" /> ቦታ ይመከራል። ባዶ ቦታን ለመጨመር ከመሣሪያዎ ፋይሎችን ይሰርዙ።</translation>
 <translation id="7037509989619051237">ቅድሚያ የሚታይ ጽሑፍ</translation>
 <translation id="7038632520572155338">የመዳረሻ መቀየሪያ</translation>

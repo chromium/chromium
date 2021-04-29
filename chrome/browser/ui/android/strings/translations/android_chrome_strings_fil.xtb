@@ -274,6 +274,7 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="281504910091592009">Tingnan at pamahalaan ang mga naka-save na password sa iyong <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Para makuha ang iyong mga bookmark sa lahat ng device mo, mag-sign in at i-on ang pag-sync</translation>
 <translation id="2827278682606527653">Half height ng menu ng feed card</translation>
+<translation id="2830783625999891985">Nakatago ang mga content ng clipboard</translation>
 <translation id="2839327205551510876">Hindi na sinusubaybayan ang <ph name="SITE_NAME" /></translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Nagsuri 1 araw ang nakalipas}one{Nagsuri # araw ang nakalipas}other{Nagsuri # na araw ang nakalipas}}</translation>
 <translation id="2842985007712546952">Pangunahing folder</translation>
@@ -389,6 +390,7 @@ Kasalukuyan pa ring dine-develop ang Privacy Sandbox at available ito sa mga pil
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB ang available</translation>
 <translation id="3549657413697417275">Hanapin sa iyong history</translation>
 <translation id="3557336313807607643">Idagdag sa mga contact</translation>
+<translation id="3563767357928833671">Ipinapakita ang mga content ng clipboard</translation>
 <translation id="3566923219790363270">Naghahanda pa rin ang Chrome para sa VR. I-restart ang Chrome sa ibang pagkakataon.</translation>
 <translation id="3568688522516854065">Para makuha ang iyong mga tab sa iba mo pang device, mag-sign in at i-on ang pag-sync</translation>
 <translation id="3587482841069643663">Lahat</translation>

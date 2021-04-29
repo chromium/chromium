@@ -274,6 +274,7 @@
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google アカウント<ph name="END_LINK" />での保存パスワードの表示と管理</translation>
 <translation id="2818669890320396765">お使いのどのデバイスでも同じブックマークを使用するには、ログインして同期を有効にします</translation>
 <translation id="2827278682606527653">フィードカード メニューが画面の下半分に開いています</translation>
+<translation id="2830783625999891985">クリップボードの内容は非表示になっています</translation>
 <translation id="2839327205551510876"><ph name="SITE_NAME" /> のフォローを解除しました</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{前回の確認: 1 日前}other{前回の確認: # 日前}}</translation>
 <translation id="2842985007712546952">親フォルダ</translation>
@@ -389,6 +390,7 @@
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB の空き</translation>
 <translation id="3549657413697417275">履歴を検索</translation>
 <translation id="3557336313807607643">連絡先に追加</translation>
+<translation id="3563767357928833671">クリップボードの内容が表示されています</translation>
 <translation id="3566923219790363270">Chrome はまだ VR の準備中です。しばらく待ってから Chrome を再起動してください。</translation>
 <translation id="3568688522516854065">他のデバイスと同じタブを使用するには、ログインして同期を有効にします</translation>
 <translation id="3587482841069643663">すべて</translation>

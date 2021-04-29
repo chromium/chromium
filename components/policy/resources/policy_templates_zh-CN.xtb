@@ -754,6 +754,7 @@
 
           请注意，此政策是按渲染程序进程来应用的，当有渲染程序进程启动时，此政策设置中的最新值会生效。必须完全重启设备，才能确保所加载的所有标签页都会收到一致的政策设置。不同的进程可以使用此政策的不同值运行。
           </translation>
+<translation id="2029985289397958781">为企业用户停用由 <ph name="GOOGLE_LENS_PRODUCT_NAME" />提供支持的摄像头辅助搜索功能</translation>
 <translation id="2030905906517501646">默认搜索服务提供商关键字</translation>
 <translation id="203096360153626918">此政策对 Android 应用没有任何影响。即使此政策设为 <ph name="FALSE" />，这些应用也将能够进入全屏模式。</translation>
 <translation id="2032848225007871645">通过设置此政策，您可以控制哪些快速解锁模式可为锁定屏幕解锁。
@@ -1862,6 +1863,7 @@
 <translation id="3415954062311826850">此政策在 Arc 中不受支持。</translation>
 <translation id="34160070798637152">控制设备级网络配置。</translation>
 <translation id="3417130629744653218">允许网站查询可用的付款方式。</translation>
+<translation id="3417391585519621050">为企业用户启用由 <ph name="GOOGLE_LENS_PRODUCT_NAME" />提供支持的摄像头辅助搜索功能</translation>
 <translation id="3417418267404583991">如果未配置此政策或将其设置为 true，<ph name="PRODUCT_OS_NAME" />将启用访客登录。访客登录是匿名用户会话，不需要密码。
 
       如果将此政策设置为 false，<ph name="PRODUCT_OS_NAME" />就不会允许访客会话启动。</translation>
@@ -3346,6 +3348,7 @@
       当该策略值已设置，且不为零，那么当不活动期达到指定的时间期间后，当前登录的演示用户就会自动退出。
 
       该策略值应该以毫秒为单位。</translation>
+<translation id="55057839818162162">启用由 <ph name="GOOGLE_LENS_PRODUCT_NAME" />提供支持的摄像头辅助搜索功能</translation>
 <translation id="5508307164752647432">启用 Kerberos 功能</translation>
 <translation id="5511702823008968136">启用书签栏</translation>
 <translation id="5512418063782665071">主页网址</translation>
@@ -6032,6 +6035,7 @@
       如果此政策已停用，已注册的设备将不会记录或报告活动时间。</translation>
 <translation id="9077227880520270584">设备本地帐号自动登录计时器</translation>
 <translation id="9084985621503260744">指定视频活动是否影响电源管理</translation>
+<translation id="9088191250434406767">如果此政策未设置或已启用，用户便可借助 <ph name="GOOGLE_LENS_PRODUCT_NAME" />使用摄像头进行搜索。如果此政策已停用，那么即使可以使用由 <ph name="GOOGLE_LENS_PRODUCT_NAME" />提供支持的摄像头辅助搜索功能，用户也不会在搜索框中看到 <ph name="GOOGLE_LENS_PRODUCT_NAME" />按钮。</translation>
 <translation id="9088433379343318874">启用受监管用户内容提供方</translation>
 <translation id="9088444059179765143">配置自动检测时区方法</translation>
 <translation id="9095999573959728902">如果您启用了此设置，用户将能够选择启用 Phone Hub 功能，以便在 Chrome 操作系统设备上与其手机互动。
@@ -6121,6 +6125,7 @@
 <translation id="927444535723396977">如果此政策设为 1，系统会允许网站运行 JavaScript。如果此政策设为 2，系统会禁止网站运行 JavaScript。
 
       如果此政策未设置，系统会允许运行 JavaScript，但用户可以更改此设置。</translation>
+<translation id="928189505080808353">端口 554（2021/10/15 到期）</translation>
 <translation id="929549405492388749">如果设为 true，即使 AppCache 在 Chrome 中默认不可用，此政策仍会强制启用 AppCache。
 
       如果此政策设为 false 或未设置，AppCache 会遵从 Chrome 的默认设置。</translation>

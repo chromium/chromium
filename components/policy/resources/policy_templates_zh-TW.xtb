@@ -6103,6 +6103,7 @@
 <translation id="927444535723396977">如果將這項政策設為 1，網站即可執行 JavaScript。如果將這項政策設為 2，網站將無法執行 JavaScript。
 
       如果不設定，網站可執行 JavaScript，但使用者可以變更這項設定。</translation>
+<translation id="928189505080808353">通訊埠 554 (2021 年 10 月 15 日到期)</translation>
 <translation id="929549405492388749">如果設為 True，即使 Chrome 預設為不提供 AppCache，系統仍會強制啟用 AppCache。
 
       如果不設定或設為 False，系統會按照 Chrome 的預設值啟用或停用 AppCache。</translation>

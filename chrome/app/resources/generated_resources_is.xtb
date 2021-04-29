@@ -1320,6 +1320,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2428939361789119025">Slökkva á Wi-Fi</translation>
 <translation id="2428978615149723410">þessar körfur</translation>
 <translation id="2431027948063157455">Ekki var hægt að hlaða Google hjálparanum. Athugaðu nettenginguna og reyndu aftur.</translation>
+<translation id="243179355394256322">Fyrirtækið takmarkar skráningu tækja við notendur með heimild. Þessi notandi hefur ekki heimild til að skrá tæki. Gakktu úr skugga um að notandinn sé með heimild til að „Skrá Google Meet vélbúnað“ á notandasvæði stjórnborðs stjórnanda.</translation>
 <translation id="2433452467737464329">Bættu fyrirspurnarbreytu við vefslóðina til að endurnýja síðuna sjálfkrafa: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Útlit</translation>
 <translation id="2433836460518180625">Taka aðeins tæki úr lás</translation>
@@ -4418,6 +4419,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5932124097031739492">Linux var uppfært.</translation>
 <translation id="5932224571077948991">Vefsvæðið sýnir ágengar eða villandi auglýsingar.</translation>
 <translation id="59324397759951282">USB-tæki frá <ph name="MANUFACTURER_NAME" /></translation>
+<translation id="5932441198730183141">Þú ert ekki með nógu mörg laus leyfi til að skrá þetta Google Meet vélbúnaðartæki. Hafðu samband við söludeild til að kaupa fleiri. Ef þú telur að þessi villuboð eigi ekki við rök að styðjast skaltu tala við þjónustudeild.</translation>
 <translation id="5932881020239635062">Raðnúmer</translation>
 <translation id="5933376509899483611">Tímabelti</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> er að nota myndavélina þína og hljóðnemann</translation>
@@ -5407,6 +5409,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7029307918966275733">Crostini er ekki sett upp. Settu upp Crostini til að skoða einingar.</translation>
 <translation id="7029809446516969842">Aðgangsorð</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – raðtengi tengt</translation>
+<translation id="7034692021407794547">Stjórnandi með heimild til að innheimta verður fyrst að samþykkja þjónustuskilmála Google Meet vélbúnaðar í hlutanum „Google Meet vélbúnaður“ á stjórnborði stjórnanda.</translation>
 <translation id="7036706669646341689"><ph name="DISK_SIZE" /> af plássi er nauðsynlegt fyrir Linux. Eyddu skrám úr tækinu til að auka geymslurýmið.</translation>
 <translation id="7037509989619051237">Texti til að nota sem sýnishorn</translation>
 <translation id="7038632520572155338">Rofaaðgangur</translation>

@@ -1316,6 +1316,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2428939361789119025">Çaktivizo Wi-Fi</translation>
 <translation id="2428978615149723410">këto karroca</translation>
 <translation id="2431027948063157455">"Asistenti i Google" nuk ishte në gjendje të ngarkohej, kontrollo lidhjen e rrjetit provo sërish.</translation>
+<translation id="243179355394256322">Organizata jote e kufizon regjistrimin e pajisjes vetëm për përdoruesit e autorizuar. Ky përdorues nuk është i autorizuar për të regjistruar pajisje. Sigurohu që përdoruesi të ketë privilegjin e administratorit "Regjistro harduerin e Google Meet" në seksionin "Përdoruesit" të panelit të administratorit.</translation>
 <translation id="2433452467737464329">Shto një parametër pyetjeje në URL për të rifreskuar automatikisht faqen: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Pamja</translation>
 <translation id="2433836460518180625">Shkyç vetëm pajisjen</translation>
@@ -4414,6 +4415,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5932124097031739492">Linux është përmirësuar me sukses.</translation>
 <translation id="5932224571077948991">Sajti shfaq reklama ndërhyrëse ose mashtruese</translation>
 <translation id="59324397759951282">Pajisje USB nga <ph name="MANUFACTURER_NAME" /></translation>
+<translation id="5932441198730183141">Nuk ke licenca të mjaftueshme të disponueshme për të regjistruar këtë pajisje të harduerit të Google Meet. Kontakto me ekipin e shitjeve për të blerë më shumë. Nëse beson se po e shikon gabimisht këtë mesazh, kontakto me ekipin e mbështetjes.</translation>
 <translation id="5932881020239635062">Numri i serisë</translation>
 <translation id="5933376509899483611">Brezi orar</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> po përdor kamerën dhe mikrofonin tënd.</translation>
@@ -5403,6 +5405,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="7029307918966275733">Crostini nuk është instaluar. Instalo Crostini për të parë kreditet.</translation>
 <translation id="7029809446516969842">Fjalëkalimet</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Porta seriale e lidhur</translation>
+<translation id="7034692021407794547">Një administrator me privilegjet e "Menaxhimit të faturimit" duhet të pranojë në fillim Kushtet e shërbimit të Google Meet Hardware në seksionin Google Meet Hardware të panelit të administratorit.</translation>
 <translation id="7036706669646341689">Për Linux rekomandohet <ph name="DISK_SIZE" /> hapësirë. Për të rritur nivelin e hapësirës së lirë, fshi skedarë nga pajisja jote.</translation>
 <translation id="7037509989619051237">Teksti për t'u shikuar paraprakisht</translation>
 <translation id="7038632520572155338">Qasja me çelës</translation>

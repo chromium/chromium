@@ -1319,6 +1319,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2428939361789119025">Laita Wi-Fi pois päältä</translation>
 <translation id="2428978615149723410">nämä ostoskorit</translation>
 <translation id="2431027948063157455">Google Assistantin lataaminen epäonnistui. Tarkista verkkoyhteys ja yritä uudelleen.</translation>
+<translation id="243179355394256322">Organisaatiosi sallii laitteiden rekisteröinnin vain valtuutetuille käyttäjille. Tällä käyttäjällä ei ole lupaa rekisteröidä laitteita. Varmista hallintakonsolin Käyttäjät-kohdasta, että käyttäjällä on lupa rekisteröidä Google Meet ‑laitteita.</translation>
 <translation id="2433452467737464329">Lisää kyselyparametri URL-osoitteeseen, jos haluat päivittää sivun automaattisesti: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Ulkoasu</translation>
 <translation id="2433836460518180625">Avaa vain laitteen lukitus</translation>
@@ -4415,6 +4416,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="5932124097031739492">Linuxin päivitys onnistui.</translation>
 <translation id="5932224571077948991">Sivustolla on häiritseviä tai harhaanjohtavia mainoksia</translation>
 <translation id="59324397759951282">USB-laite (<ph name="MANUFACTURER_NAME" />)</translation>
+<translation id="5932441198730183141">Sinulla ei ole tarpeeksi lisenssejä tämän Google Meet ‑laitteen rekisteröintiin. Osta lisää lisenssejä myyntitiimiltä. Jos sinun ei mielestäsi pitäisi nähdä tätä viestiä, ota yhteyttä tukeen.</translation>
 <translation id="5932881020239635062">Sarjanumero</translation>
 <translation id="5933376509899483611">Aikavyöhyke</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> käyttää kameraa ja mikrofonia</translation>
@@ -5404,6 +5406,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="7029307918966275733">Crostinia ei ole asennettu. Asenna Crostini nähdäksesi tekijätiedot.</translation>
 <translation id="7029809446516969842">Salasanat</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – Sarjaportti yhdistetty</translation>
+<translation id="7034692021407794547">Järjestelmänvalvojan, jolla on Laskutuksen hallinta ‑lupa, täytyy ensin hyväksyä Google Meet ‑laitteiston käyttöehdot hallintakonsolin kohdasta "Google Meet ‑laitteisto".</translation>
 <translation id="7036706669646341689">Linuxin käyttöön suositellaan <ph name="DISK_SIZE" /> vapaata tilaa. Lisää vapaata tilaa poistamalla laitteelta tiedostoja.</translation>
 <translation id="7037509989619051237">Esikatseltava teksti</translation>
 <translation id="7038632520572155338">Kytkimen käyttö</translation>

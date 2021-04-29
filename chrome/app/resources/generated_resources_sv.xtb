@@ -1319,6 +1319,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2428939361789119025">Stäng av wifi</translation>
 <translation id="2428978615149723410">dessa kundvagnar</translation>
 <translation id="2431027948063157455">Det gick inte att läsa in Google Assistent. Kontrollera nätverksanslutningen och försök igen.</translation>
+<translation id="243179355394256322">Organisationen tillåter endast auktoriserade användare att registrera enheter. Den här användaren har inte behörighet att registrera enheter. Se till att användaren har administratörsbehörigheten Registrera Google Meet-maskinvara i avsnittet Användare i administratörskonsolen.</translation>
 <translation id="2433452467737464329">Lägg till en frågeparameter i webbadressen om du vill uppdatera sidan automatiskt: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Utseende</translation>
 <translation id="2433836460518180625">Lås bara upp enheten</translation>
@@ -4418,6 +4419,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="5932124097031739492">Linux har uppgraderats.</translation>
 <translation id="5932224571077948991">Påträngande eller vilseledande annonser visas på webbplatsen</translation>
 <translation id="59324397759951282">USB-enhet från <ph name="MANUFACTURER_NAME" /></translation>
+<translation id="5932441198730183141">Du har inte tillräckligt många licenser tillgängliga för att registrera den här maskinvaruenheten för Google Meet. Kontakta säljavdelningen om du vill köpa fler. Om du anser att detta meddelande visas på felaktig grund kontaktar du supporten.</translation>
 <translation id="5932881020239635062">Serienummer</translation>
 <translation id="5933376509899483611">Tidszon</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> använder kameran och mikrofonen</translation>
@@ -5407,6 +5409,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="7029307918966275733">Crostini har inte installerats. Installera Crostini för att visa upphovspersoner.</translation>
 <translation id="7029809446516969842">Lösenord</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – Serieporten är ansluten</translation>
+<translation id="7034692021407794547">En administratör med behörigheten Fakturahantering måste först godkänna användarvillkoren för Google Meet-maskinvara i avsnittet Google Meet-maskinvara i administratörskonsolen.</translation>
 <translation id="7036706669646341689"><ph name="DISK_SIZE" /> utrymme rekommenderas för Linux. Frigör utrymme genom att radera filer på enheten.</translation>
 <translation id="7037509989619051237">Text för förhandsgranskning</translation>
 <translation id="7038632520572155338">Brytarstyrning</translation>

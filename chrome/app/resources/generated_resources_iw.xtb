@@ -1318,6 +1318,7 @@
 <translation id="2428939361789119025">‏כיבוי Wi-Fi</translation>
 <translation id="2428978615149723410">עגלות הקניות האלה</translation>
 <translation id="2431027948063157455">‏לא ניתן היה לטעון את Google Assistant. יש לבדוק את חיבור הרשת ולנסות שוב.</translation>
+<translation id="243179355394256322">‏הארגון שלך מגביל שיוך מכשיר לארגון למשתמשים מורשים בלבד. משתמש זה אינו מורשה לשייך מכשירים. יש לוודא שלמשתמש יש הרשאת אדמין מסוג "שיוך ציוד ל-Google Meet" בקטע 'משתמשים' של מסוף ה-Admin.</translation>
 <translation id="2433452467737464329">‏יש להוסיף פרמטר שאילתה בכתובת אתר לריענון אוטומטי של הדף: chrome://network/?refresh=&lt;sec&gt;‎</translation>
 <translation id="2433507940547922241">מראה</translation>
 <translation id="2433836460518180625">ביטול הנעילה של המכשיר בלבד</translation>
@@ -4418,6 +4419,7 @@
 <translation id="5932124097031739492">‏מערכת Linux שודרגה בהצלחה.</translation>
 <translation id="5932224571077948991">באתר מוצגות מודעות מפריעות או מטעות</translation>
 <translation id="59324397759951282">‏התקן USB של <ph name="MANUFACTURER_NAME" /></translation>
+<translation id="5932441198730183141">‏אין ברשותך מספיק רישיונות זמינים לשיוך מכשיר הציוד ל-Google Meet זה. עליך לפנות למחלקת המכירות כדי לרכוש רישיונות נוספים. אם לדעתך ההודעה הזו מוצגת לך בטעות, אפשר לפנות לתמיכה.</translation>
 <translation id="5932881020239635062">סידורי</translation>
 <translation id="5933376509899483611">אזור זמן</translation>
 <translation id="5933522550144185133">האפליקציה <ph name="APP_NAME" /> משתמשת במצלמה ובמיקרופון שלך</translation>
@@ -5407,6 +5409,7 @@
 <translation id="7029307918966275733">‏Crostini לא מותקן. יש להתקין את Crostini כדי להציג קרדיטים.</translation>
 <translation id="7029809446516969842">סיסמאות</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - מחובר ליציאה טורית</translation>
+<translation id="7034692021407794547">‏תחילה מנהל מערכת עם הרשאות 'ניהול חיובים' חייב לקבל את התנאים וההגבלות של הציוד ל-Google Meet בקטע 'ציוד ל-Google Meet' של מסוף ה-Admin.</translation>
 <translation id="7036706669646341689">‏מומלץ לפנות שטח אחסון של <ph name="DISK_SIZE" /> להתקנת Linux. כדי לפנות שטח אחסון, יש למחוק קבצים מהמכשיר.</translation>
 <translation id="7037509989619051237">טקסט לתצוגה מקדימה</translation>
 <translation id="7038632520572155338">גישה באמצעות מתג</translation>

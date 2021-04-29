@@ -1319,6 +1319,7 @@
 <translation id="2428939361789119025">Wi-Fi をオフにする</translation>
 <translation id="2428978615149723410">これらのカート</translation>
 <translation id="2431027948063157455">Google アシスタントを読み込めませんでした。ネットワーク接続を確認してから、もう一度お試しください。</translation>
+<translation id="243179355394256322">お客様の組織では、デバイスの登録は権限のあるユーザーしか行えません。このユーザーにはデバイスを登録する権限がありません。管理コンソールの [ユーザー] で、ユーザーに「Google Meet ハードウェアの登録」管理者権限があることをご確認ください。</translation>
 <translation id="2433452467737464329">ページを自動更新するには URL に次のようなクエリ パラメータを追加してください: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">デザイン</translation>
 <translation id="2433836460518180625">デバイスのロック解除のみ</translation>
@@ -4418,6 +4419,7 @@
 <translation id="5932124097031739492">Linux のアップグレードが完了しました。</translation>
 <translation id="5932224571077948991">このサイトでは煩わしい広告や誤解を招く広告が表示されます</translation>
 <translation id="59324397759951282"><ph name="MANUFACTURER_NAME" /> の USB デバイス</translation>
+<translation id="5932441198730183141">この Google Meet ハードウェア デバイスを登録するには、ライセンスが足りません。さらに購入するには、販売担当者にお問い合わせください。このメッセージが間違って表示されていると思われる場合は、サポートにお問い合わせください。</translation>
 <translation id="5932881020239635062">シリアル番号</translation>
 <translation id="5933376509899483611">タイムゾーン</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> がカメラとマイクを使用しています</translation>
@@ -5407,6 +5409,7 @@
 <translation id="7029307918966275733">Crostini はインストールされていません。クレジットを表示するには Crostini をインストールしてください。</translation>
 <translation id="7029809446516969842">パスワード</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - シリアルポートを接続しました</translation>
+<translation id="7034692021407794547">「お支払いの管理」権限のある管理者は、まず管理コンソールの [Google Meet ハードウェア] で Google Meet ハードウェアの利用規約に同意する必要があります。</translation>
 <translation id="7036706669646341689">Linux 用の推奨される空き容量は <ph name="DISK_SIZE" /> です。空き容量を増やすには、デバイスからファイルを削除してください。</translation>
 <translation id="7037509989619051237">テキスト読み上げの音声をプレビュー</translation>
 <translation id="7038632520572155338">スイッチ アクセス</translation>

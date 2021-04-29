@@ -1320,6 +1320,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2428939361789119025">Isključite Wi-Fi</translation>
 <translation id="2428978615149723410">te košarice</translation>
 <translation id="2431027948063157455">Učitavanje Google asistenta nije uspjelo, provjerite mrežnu vezu i pokušajte ponovo.</translation>
+<translation id="243179355394256322">Vaša organizacija ograničila je prijavu uređaja samo na ovlaštene korisnike. Korisnik nije ovlašten za prijavu uređaja. Provjerite ima li korisnik administratorsku ovlast Prijavi hardver za Meet u odjeljku Korisnici administratorske konzole.</translation>
 <translation id="2433452467737464329">Dodajte parametar upita u URL da biste automatski osvježili stranicu: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Prikaz</translation>
 <translation id="2433836460518180625">Otključaj samo uređaj</translation>
@@ -4419,6 +4420,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="5932124097031739492">Linux je uspješno nadograđen.</translation>
 <translation id="5932224571077948991">Web-lokacija prikazuje ometajuće ili obmanjujuće oglase</translation>
 <translation id="59324397759951282">USB uređaj proizvođača <ph name="MANUFACTURER_NAME" /></translation>
+<translation id="5932441198730183141">Nemate dovoljno softverskih licenci za prijavu ovog hardvera za Google Meet. Obratite se prodaji da biste kupili više licenci. Ako smatrate da vam se ova poruka prikazuje pogreškom, obratite se podršci.</translation>
 <translation id="5932881020239635062">Serijski</translation>
 <translation id="5933376509899483611">Vremenska zona</translation>
 <translation id="5933522550144185133">Aplikacija <ph name="APP_NAME" /> upotrebljava vaš fotoaparat i mikrofon</translation>
@@ -5408,6 +5410,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="7029307918966275733">Crostini nije instaliran. Instalirajte Crostini da biste vidjeli bonuse.</translation>
 <translation id="7029809446516969842">Zaporke</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – povezano sa serijskim priključkom</translation>
+<translation id="7034692021407794547">Administrator s ovlašću upravljanja naplatom mora prvo prihvatiti uvjete pružanja usluge hardvera za Google Meet u odjeljku Hardver za Google Meet administratorske konzole.</translation>
 <translation id="7036706669646341689">Za Linux se preporučuje <ph name="DISK_SIZE" /> prostora. Da biste oslobodili prostor, izbrišite datoteke s uređaja.</translation>
 <translation id="7037509989619051237">Tekst za pregled</translation>
 <translation id="7038632520572155338">Prekidač za pristup</translation>

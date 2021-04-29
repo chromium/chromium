@@ -274,6 +274,7 @@ Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako žel
 <translation id="281504910091592009">Spremljene zaporke možete pregledati i upravljati njima na svojem <ph name="BEGIN_LINK" />Google računu<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Da bi se vaše oznake prikazale na svim vašim uređajima, prijavite se i uključite sinkronizaciju</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
+<translation id="2830783625999891985">Sadržaj međumemorije je skriven</translation>
 <translation id="2839327205551510876">Prestali ste pratiti <ph name="SITE_NAME" /></translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Provjera je izvršena jučer}one{Provjera je izvršena prije # dana}few{Provjera je izvršena prije # dana}other{Provjera je izvršena prije # dana}}</translation>
 <translation id="2842985007712546952">Nadređena mapa</translation>
@@ -389,6 +390,7 @@ Privacy Sandbox još uvijek je u aktivnoj fazi razvoja te je dostupan u određen
 <translation id="3542235761944717775">Dostupno: <ph name="KILOBYTES" /> KB</translation>
 <translation id="3549657413697417275">Pretraži povijest</translation>
 <translation id="3557336313807607643">Dodaj u kontakte</translation>
+<translation id="3563767357928833671">Sadržaj međumemorije se prikazuje</translation>
 <translation id="3566923219790363270">Chrome se još priprema za VR. Ponovo pokrenite Chrome kasnije.</translation>
 <translation id="3568688522516854065">Da bi se prikazale kartice s vaših ostalih uređaja, prijavite se i uključite sinkronizaciju</translation>
 <translation id="3587482841069643663">Sve</translation>

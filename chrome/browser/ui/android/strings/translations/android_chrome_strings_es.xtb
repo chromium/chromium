@@ -274,6 +274,7 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="281504910091592009">Consulta y gestiona las contraseñas guardadas en tu <ph name="BEGIN_LINK" />cuenta de Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Inicia sesión y activa la sincronización para ver tus marcadores en todos tus dispositivos</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
+<translation id="2830783625999891985">Contenido del portapapeles ocultado</translation>
 <translation id="2839327205551510876">Has dejado de seguir a <ph name="SITE_NAME" /></translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Comprobado hace 1 día}other{Comprobado hace # días}}</translation>
 <translation id="2842985007712546952">Carpeta principal</translation>
@@ -389,6 +390,7 @@ Privacy Sandbox sigue en desarrollo y está disponible solo en ciertas regiones.
 <translation id="3542235761944717775">kB disponibles: <ph name="KILOBYTES" /></translation>
 <translation id="3549657413697417275">Buscar en el historial</translation>
 <translation id="3557336313807607643">Añadir a contactos</translation>
+<translation id="3563767357928833671">Contenido del portapapeles mostrado</translation>
 <translation id="3566923219790363270">Chrome todavía se está preparando para la realidad virtual. Reinicia Chrome más tarde.</translation>
 <translation id="3568688522516854065">Inicia sesión y activa la sincronización para ver las pestañas de tus otros dispositivos</translation>
 <translation id="3587482841069643663">Todo</translation>

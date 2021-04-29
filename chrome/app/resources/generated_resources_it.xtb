@@ -1318,6 +1318,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2428939361789119025">Disattiva Wi-Fi</translation>
 <translation id="2428978615149723410">questi carrelli</translation>
 <translation id="2431027948063157455">Impossibile caricare l'Assistente Google, controlla la connessione di rete e riprova.</translation>
+<translation id="243179355394256322">La tua organizzazione ha limitato la registrazione dei dispositivi ai soli utenti autorizzati. Questo utente non è autorizzato a registrare i dispositivi. Assicurati che l'utente disponga del privilegio di amministratore per Registrazione dell'hardware Google Meet nella sezione Utenti della Console di amministrazione.</translation>
 <translation id="2433452467737464329">Aggiungi un parametro di ricerca nell'URL per aggiornare automaticamente la pagina: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Aspetto</translation>
 <translation id="2433836460518180625">Sblocca solo il dispositivo</translation>
@@ -4417,6 +4418,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="5932124097031739492">Upgrade di Linux eseguito.</translation>
 <translation id="5932224571077948991">Il sito mostra annunci invasivi o fuorvianti</translation>
 <translation id="59324397759951282">Dispositivo USB da <ph name="MANUFACTURER_NAME" /></translation>
+<translation id="5932441198730183141">Non disponi di licenze sufficienti per registrare questo dispositivo hardware Google Meet. Contatta il team di vendita per acquistarne altre. Se ritieni di aver visualizzato messaggio per errore, contatta l'assistenza.</translation>
 <translation id="5932881020239635062">Numero di serie</translation>
 <translation id="5933376509899483611">Fuso orario</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> sta usando la videocamera e il microfono</translation>
@@ -5406,6 +5408,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="7029307918966275733">Crostini non è installato. Per visualizzare i crediti, installa Crostini.</translation>
 <translation id="7029809446516969842">Password</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Porta seriale collegata</translation>
+<translation id="7034692021407794547">Un amministratore con privilegi per Gestione della fatturazione deve prima accettare i Termini di servizio dell'hardware Google Meet nella relativa sezione della Console di amministrazione.</translation>
 <translation id="7036706669646341689">Sono consigliati <ph name="DISK_SIZE" /> di spazio libero per Linux. Per aumentare lo spazio disponibile, elimina i file dal dispositivo.</translation>
 <translation id="7037509989619051237">Anteprima del testo</translation>
 <translation id="7038632520572155338">Switch Access</translation>

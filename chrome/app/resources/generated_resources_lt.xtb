@@ -1322,6 +1322,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2428939361789119025">Išjungti „Wi-Fi“</translation>
 <translation id="2428978615149723410">šie krepšeliai</translation>
 <translation id="2431027948063157455">Nepavyko įkelti „Google“ padėjėjo, patikrinkite tinklo ryšį ir bandykite dar kartą.</translation>
+<translation id="243179355394256322">Jūsų organizacija leidžia užregistruoti įrenginius tik prieigos teisę turintiems naudotojams. Šis naudotojas neturi teisės užregistruoti įrenginių. Įsitikinkite, kad administratoriaus pulto skiltyje „Naudotojai“ naudotojui priskirta administratoriaus privilegija „Užregistruoti „Google Meet“ aparatūrinę įrangą“.</translation>
 <translation id="2433452467737464329">Pridėkite užklausos parametrą prie URL, kad puslapis būtų automatiškai atnaujinamas: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Išvaizda</translation>
 <translation id="2433836460518180625">Atrakinti tik įrenginį</translation>
@@ -4422,6 +4423,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5932124097031739492">„Linux“ buvo sėkmingai naujovinta.</translation>
 <translation id="5932224571077948991">Svetainėje rodomi nepageidaujami arba klaidinantys skelbimai</translation>
 <translation id="59324397759951282">USB įrenginys iš „<ph name="MANUFACTURER_NAME" />“</translation>
+<translation id="5932441198730183141">Neturite pakankamai pasiekiamų licencijų, kad galėtumėte užregistruoti šį „Google Meet“ aparatinės įrangos įrenginį. Norėdami įsigyti jų daugiau, susisiekite su pardavimo skyriumi. Jei manote, kad šis pranešimas rodomas per klaidą, susisiekite su palaikymo komanda.</translation>
 <translation id="5932881020239635062">Serijos</translation>
 <translation id="5933376509899483611">Laiko juosta</translation>
 <translation id="5933522550144185133">„<ph name="APP_NAME" />“ naudoja fotoaparatą ir mikrofoną</translation>
@@ -5411,6 +5413,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7029307918966275733">„Crostini“ neįdiegta. Jei norite peržiūrėti titrus, įdiekite „Crostini“.</translation>
 <translation id="7029809446516969842">Slaptažodžiai</translation>
 <translation id="7031608529463141342">„<ph name="WINDOW_TITLE" />“ – nuoseklusis prievadas prijungtas</translation>
+<translation id="7034692021407794547">Administratorius, kuriam suteikta privilegija „Atsiskaitymo valdymas“, pirmiausia turi administratoriaus pulto skiltyje „Google Meet“ aparatinė įranga“ sutikti su „Google Meet“ aparatinės įrangos paslaugų teikimo sąlygomis.</translation>
 <translation id="7036706669646341689">„Linux“ rekomenduojama turėti <ph name="DISK_SIZE" /> vietos. Kad padidintumėte nemokamos saugyklos vietos, ištrinkite failus iš įrenginio.</translation>
 <translation id="7037509989619051237">Tekstas, kurį galima išklausyti</translation>
 <translation id="7038632520572155338">Prieiga jungikliu</translation>

@@ -1319,6 +1319,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2428939361789119025">Matikan Wi-Fi</translation>
 <translation id="2428978615149723410">troli ini</translation>
 <translation id="2431027948063157455">Google Assistant tidak dapat dimuatkan, sila periksa sambungan rangkaian anda, kemudian cuba semula.</translation>
+<translation id="243179355394256322">Organisasi anda mengehadkan pendaftaran peranti kepada pengguna yang dibenarkan sahaja. Pengguna ini tidak dibenarkan untuk mendaftarkan peranti. Sila pastikan pengguna ini mempunyai keistimewaan pentadbir "Daftarkan perkakasan Google Meet" di bahagian Pengguna dalam Konsol pentadbir.</translation>
 <translation id="2433452467737464329">Tambahkan parameter pertanyaan dalam URL untuk auto muat semula halaman: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Tampilan</translation>
 <translation id="2433836460518180625">Buka kunci peranti sahaja</translation>
@@ -4418,6 +4419,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5932124097031739492">Linux telah berjaya ditingkatkan.</translation>
 <translation id="5932224571077948991">Tapak menyiarkan iklan yang mengganggu atau mengelirukan</translation>
 <translation id="59324397759951282">Peranti USB daripada <ph name="MANUFACTURER_NAME" /></translation>
+<translation id="5932441198730183141">Anda tidak mempunyai lesen tersedia yang mencukupi untuk mendaftarkan peranti perkakasan Google Meet ini. Sila hubungi bahagian jualan untuk membeli lebih banyak lesen. Jika anda percaya mesej ini merupakan satu kesilapan, sila hubungi sokongan.</translation>
 <translation id="5932881020239635062">Siri</translation>
 <translation id="5933376509899483611">Zon waktu</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> sedang menggunakan kamera dan mikrofon anda</translation>
@@ -5407,6 +5409,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="7029307918966275733">Crostini tidak dipasang. Sila pasang Crostini untuk melihat kredit.</translation>
 <translation id="7029809446516969842">Kata laluan</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Port bersiri disambungkan</translation>
+<translation id="7034692021407794547">Pentadbir yang mempunyai keistimewaan Pengurusan Pengebilan mesti menerima Syarat Perkhidmatan Perkakasan Google Meet di bahagian Perkakasan Google Meet dalam Konsol pentadbir dahulu.</translation>
 <translation id="7036706669646341689"><ph name="DISK_SIZE" /> ruang disyorkan untuk Linux. Untuk meningkatkan ruang kosong, padamkan fail daripada peranti anda.</translation>
 <translation id="7037509989619051237">Teks ke pratonton</translation>
 <translation id="7038632520572155338">Akses suis</translation>

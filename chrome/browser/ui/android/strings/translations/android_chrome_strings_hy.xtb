@@ -274,6 +274,7 @@
 <translation id="281504910091592009">Դիտեք և կառավարեք պահված գաղտնաբառերը ձեր <ph name="BEGIN_LINK" />Google հաշվում<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Ձեր էջանիշները բոլոր սարքերում օգտագործելու համար մտեք հաշիվ և միացրեք համաժամացումը</translation>
 <translation id="2827278682606527653">Լրահոսի քարտի ընտրացանկը բացված է կիսով չափ</translation>
+<translation id="2830783625999891985">Սեղմատախտակի բովանդակությունը թաքցված է</translation>
 <translation id="2839327205551510876">«<ph name="SITE_NAME" />» կայքի բաժանորդագրությունը չեղարկվեց</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Ստուգվել է 1 օր առաջ}one{Ստուգվել է # օր առաջ}other{Ստուգվել է # օր առաջ}}</translation>
 <translation id="2842985007712546952">Վերադաս պանակ</translation>
@@ -389,6 +390,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="3542235761944717775">Հասանելի է <ph name="KILOBYTES" /> ԿԲ</translation>
 <translation id="3549657413697417275">Որոնեք պատմության մեջ</translation>
 <translation id="3557336313807607643">Ավելացնել կոնտակտներում</translation>
+<translation id="3563767357928833671">Ցուցադրվում է սեղմատախտակի բովանդակությունը</translation>
 <translation id="3566923219790363270">Chrome-ը դեռ նախապատրաստվում է VR-ի համար։ Վերագործարկեք այն ավելի ուշ։</translation>
 <translation id="3568688522516854065">Ձեր մյուս սարքերում եղած ներդիրներն օգտագործելու համար մտեք հաշիվ և միացրեք համաժամացումը</translation>
 <translation id="3587482841069643663">Բոլորը</translation>

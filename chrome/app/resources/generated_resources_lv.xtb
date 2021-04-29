@@ -1321,6 +1321,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2428939361789119025">Izslēgt Wi-Fi savienojumu</translation>
 <translation id="2428978615149723410">šie grozi</translation>
 <translation id="2431027948063157455">Nevarēja ielādēt Google asistentu, lūdzu, pārbaudiet tīkla savienojumu un pēc tam mēģiniet vēlreiz.</translation>
+<translation id="243179355394256322">Jūsu organizācijā tikai pilnvaroti lietotāji drīkst reģistrēt ierīces. Šis lietotājs nav pilnvarots reģistrēt ierīces. Administrēšanas konsoles sadaļā “Lietotāji” piešķiriet lietotājam administrēšanas atļauju reģistrēt Google Meet aparatūru.</translation>
 <translation id="2433452467737464329">Pievienojiet vaicājuma parametru vietrādī URL, lai atsvaidzinātu šo lapu: chrome://network/?refresh=&lt;sec&gt;.</translation>
 <translation id="2433507940547922241">Izskats</translation>
 <translation id="2433836460518180625">Atbloķēt tikai ierīci</translation>
@@ -4420,6 +4421,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5932124097031739492">Operētājsistēma Linux ir sekmīgi jaunināta.</translation>
 <translation id="5932224571077948991">Vietnē tiek rādītas traucējošas vai maldinošas reklāmas</translation>
 <translation id="59324397759951282">USB ierīce no <ph name="MANUFACTURER_NAME" /></translation>
+<translation id="5932441198730183141">Jums nav pietiekami daudz pieejamu licenču, lai reģistrētu šo Google Meet aparatūras ierīci. Lai iegādātos papildu licences, sazinieties ar pārdošanas nodaļu. Ja uzskatāt, ka šis ziņojums tiek rādīts kļūdas dēļ, lūdzu, sazinieties ar atbalsta dienestu.</translation>
 <translation id="5932881020239635062">Sērijas numurs</translation>
 <translation id="5933376509899483611">Laika josla</translation>
 <translation id="5933522550144185133">Lietotne <ph name="APP_NAME" /> izmanto jūsu kameru un mikrofonu</translation>
@@ -5409,6 +5411,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7029307918966275733">Rīks Crostini nav instalēts. Lai skatītu izstrādātāju informāciju, instalējiet Crostini.</translation>
 <translation id="7029809446516969842">Paroles</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> — Seriālais ports pievienots</translation>
+<translation id="7034692021407794547">Vispirms administratoram ar norēķinu pārvaldības atļauju ir jāpiekrīt Google Meet aparatūras pakalpojumu sniegšanas noteikumiem, kas pieejami administrēšanas konsoles sadaļā par Google Meet aparatūru.</translation>
 <translation id="7036706669646341689">Sistēmai Linux ir nepieciešams <ph name="DISK_SIZE" /> vietas krātuvē. Lai atbrīvotu vietu, dzēsiet failus no ierīces.</translation>
 <translation id="7037509989619051237">Teksta priekšskatījums</translation>
 <translation id="7038632520572155338">Slēdžu piekļuve</translation>

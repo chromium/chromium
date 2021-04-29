@@ -1315,6 +1315,7 @@
 <translation id="2428939361789119025">关闭 Wi-Fi</translation>
 <translation id="2428978615149723410">这些购物车</translation>
 <translation id="2431027948063157455">无法加载 Google 助理。请检查您的网络连接，然后重试。</translation>
+<translation id="243179355394256322">贵单位仅允许已获授权的用户注册设备。此用户无权注册设备。请确保此用户在管理控制台的“用户”部分中拥有“注册 Google Meet 设备”管理员权限。</translation>
 <translation id="2433452467737464329">在网址中添加查询参数以便自动刷新网页：chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">外观</translation>
 <translation id="2433836460518180625">仅解锁设备</translation>
@@ -4412,6 +4413,7 @@
 <translation id="5932124097031739492">已成功升级 Linux。</translation>
 <translation id="5932224571077948991">网站展示过侵扰性或误导性广告</translation>
 <translation id="59324397759951282">由<ph name="MANUFACTURER_NAME" />生产的 USB 设备</translation>
+<translation id="5932441198730183141">您没有足够的可用许可来注册此 Google Meet 设备。请与销售代表联系，以购买更多许可。如果您认为自己不该看到这条消息，请与支持人员联系。</translation>
 <translation id="5932881020239635062">序列号</translation>
 <translation id="5933376509899483611">时区</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> 正在使用您的摄像头和麦克风</translation>
@@ -5401,6 +5403,7 @@
 <translation id="7029307918966275733">未安装 Crostini。请安装 Crostini 以查看开发人员名单。</translation>
 <translation id="7029809446516969842">密码</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - 已连接到串行端口</translation>
+<translation id="7034692021407794547">拥有结算管理权限的管理员必须先接受管理控制台的“Google Meet 设备”部分中的 Google Meet 设备服务条款。</translation>
 <translation id="7036706669646341689">建议为 Linux 留出 <ph name="DISK_SIZE" /> 的空间。如需增加可用空间，请从您的设备中删除文件。</translation>
 <translation id="7037509989619051237">要试听的文字</translation>
 <translation id="7038632520572155338">开关控制</translation>

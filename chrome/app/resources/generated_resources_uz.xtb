@@ -1317,6 +1317,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2428939361789119025">Wi-Fi aloqasini uzish</translation>
 <translation id="2428978615149723410">bu savatchalar</translation>
 <translation id="2431027948063157455">Google Assistent yuklanmadi, tarmoq sozlamalarini tekshiring va qaytadan urining.</translation>
+<translation id="243179355394256322">Tashkilotingiz qurilmalarini faqatgina vakolatli foydalanuvchilar qayd qilishi mumkin. Bu foydalanuvchi qurilmalarni qayd qilish vakolatiga ega emas. Foydalanuvchi uchun Administrator konsoli orqali foydalanuvchilar boʻlimida ”Google Meet qurilmalarini qayd qilish” vakolati yoqilgan boʻlishi kerak.</translation>
 <translation id="2433452467737464329">Sahifa avtomatik yangilanishi uchun URL manzilga so‘rov parametrini qo‘shing: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Tashqi ko‘rinish</translation>
 <translation id="2433836460518180625">Faqat qurilmani qulfdan chiqarsin</translation>
@@ -4416,6 +4417,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="5932124097031739492">Linux tizimi yangilandi.</translation>
 <translation id="5932224571077948991">Saytda yoqimsiz yoki befoyda reklamalar chiqadi</translation>
 <translation id="59324397759951282"><ph name="MANUFACTURER_NAME" /> USB qurilmasi</translation>
+<translation id="5932441198730183141">Bu Google Meet qurilmasini qoʻshish uchun mavjud litsenziyalaringiz soni yetarli emas. Qoʻshimcha litsenziya xarid qilish uchun savdo boʻlimiga murojaat qiling. Agar bu xabarni xato deb hisoblasangiz, yordam xizmatiga murojaat qiling.</translation>
 <translation id="5932881020239635062">Seriya raqami</translation>
 <translation id="5933376509899483611">Vaqt mintaqasi</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> kamera va mikrofondan foydalanmoqda</translation>
@@ -5405,6 +5407,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="7029307918966275733">Crostini oʻrnatilmadi. Mualliflarni koʻrish uchun Crostini tizimini oʻrnating.</translation>
 <translation id="7029809446516969842">Parollar</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – Seriyali portga ulangan</translation>
+<translation id="7034692021407794547">Hisob-kitobni boshqarish vakolatiga ega administrator avval Administrator konsoli orqali Google Meet qurilmalari boʻlimida Google Meet qurilmalari xizmat shartlarini qabul qilishi lozim.</translation>
 <translation id="7036706669646341689">Linux uchun <ph name="DISK_SIZE" /> joy tavsiya etiladi. Boʻsh joyni koʻpaytirish uchun qurilma xotirasidan fayllarni oʻchiring.</translation>
 <translation id="7037509989619051237">Ovoz namunasi</translation>
 <translation id="7038632520572155338">Switch Access</translation>

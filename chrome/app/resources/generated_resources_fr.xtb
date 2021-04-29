@@ -1320,6 +1320,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2428939361789119025">Désactiver le Wi-Fi</translation>
 <translation id="2428978615149723410">ces paniers</translation>
 <translation id="2431027948063157455">Impossible de charger l'Assistant Google. Veuillez vérifier votre connexion réseau et réessayer.</translation>
+<translation id="243179355394256322">Votre organisation limite l'enregistrement d'un appareil aux seuls utilisateurs autorisés. Cet utilisateur n'est pas autorisé à enregistrer des appareils. Veuillez vous assurer qu'il dispose du droit d'administrateur "Enregistrer du matériel Google Meet" dans la section "Utilisateurs" de la Console d'administration.</translation>
 <translation id="2433452467737464329">Ajoutez un paramètre de requête dans l'URL pour une actualisation automatique de la page : chrome://network/?refresh=&lt;sec&gt;.</translation>
 <translation id="2433507940547922241">Apparence</translation>
 <translation id="2433836460518180625">Déverrouiller l'appareil uniquement</translation>
@@ -4420,6 +4421,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5932124097031739492">Linux a bien été mis à niveau.</translation>
 <translation id="5932224571077948991">Le site affiche des annonces intrusives ou trompeuses</translation>
 <translation id="59324397759951282">Appareil USB <ph name="MANUFACTURER_NAME" /></translation>
+<translation id="5932441198730183141">Vous n'avez pas assez de licences disponibles pour enregistrer cet appareil comme matériel Google Meet. Veuillez contacter le service commercial pour en acheter d'autres. Si vous pensez que ce message s'affiche par erreur, veuillez contacter l'assistance.</translation>
 <translation id="5932881020239635062">Série</translation>
 <translation id="5933376509899483611">Fuseau horaire</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> utilise votre caméra et votre micro</translation>
@@ -5409,6 +5411,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7029307918966275733">Crostini n'est pas installé. Veuillez installer Crostini pour afficher le fichier des crédits.</translation>
 <translation id="7029809446516969842">Mots de passe</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> (port de série connecté)</translation>
+<translation id="7034692021407794547">Un administrateur qui dispose du droit "Gestion de la facturation" doit d'abord accepter les conditions d'utilisation du matériel Google Meet dans la section "Matériel Google Meet" de la Console d'administration.</translation>
 <translation id="7036706669646341689">Espace libre recommandé pour Linux : <ph name="DISK_SIZE" />. Pour libérer de l'espace, supprimez des fichiers de votre appareil.</translation>
 <translation id="7037509989619051237">Texte de test</translation>
 <translation id="7038632520572155338">Switch Access</translation>

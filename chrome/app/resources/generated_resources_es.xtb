@@ -1319,6 +1319,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2428939361789119025">Desactivar Wi‑Fi</translation>
 <translation id="2428978615149723410">estos carritos</translation>
 <translation id="2431027948063157455">No se ha podido cargar el Asistente de Google. Comprueba tu conexión de red y vuelve a intentarlo.</translation>
+<translation id="243179355394256322">Tu organización solo permite el registro de dispositivos a los usuarios autorizados. Este usuario no tiene autorización para registrar dispositivos. Asegúrate de que el usuario tiene el privilegio de administrador "Registrar hardware de Google Meet" en la sección Usuarios de la consola de administración.</translation>
 <translation id="2433452467737464329">Añade un parámetro de consulta en la URL para actualizar la página de forma automática: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Aspecto</translation>
 <translation id="2433836460518180625">Solo bloquear dispositivo</translation>
@@ -4416,6 +4417,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="5932124097031739492">Linux se ha actualizado correctamente.</translation>
 <translation id="5932224571077948991">El sitio web muestra anuncios invasivos o engañosos</translation>
 <translation id="59324397759951282">Dispositivo USB de <ph name="MANUFACTURER_NAME" /></translation>
+<translation id="5932441198730183141">No cuentas con suficientes licencias como para registrar este dispositivo de hardware de Google Meet. Ponte en contacto con el equipo de ventas para comprar más. Si crees que estás viendo este mensaje por error, ponte en contacto con el equipo de asistencia.</translation>
 <translation id="5932881020239635062">Número de serie</translation>
 <translation id="5933376509899483611">Zona horaria</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> está utilizando tu cámara y tu micrófono</translation>
@@ -5405,6 +5407,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7029307918966275733">Crostini no está instalado. Para ver los créditos, instala Crostini.</translation>
 <translation id="7029809446516969842">Contraseñas</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Puerto serie conectado</translation>
+<translation id="7034692021407794547">Un administrador con privilegios de gestión de facturación debe aceptar antes los Términos del Servicio del Hardware de Google Meet en la sección correspondiente a estos dispositivos en la consola de administración.</translation>
 <translation id="7036706669646341689">Se recomienda <ph name="DISK_SIZE" /> de espacio disponible para Linux. Para liberar espacio, elimina archivos de tu dispositivo.</translation>
 <translation id="7037509989619051237">Texto de vista previa</translation>
 <translation id="7038632520572155338">Accesibilidad con interruptores</translation>

@@ -6163,6 +6163,7 @@ Auf <ph name="PRODUCT_OS_NAME" />-Version 75 und höher unterstützt. Bei älte
 <translation id="927444535723396977">Wenn die Richtlinie auf "1" gesetzt ist, können Websites JavaScript ausführen. Wenn sie auf "2" gesetzt ist, wird die Ausführung von JavaScript verweigert.
 
       Wird die Richtlinie nicht konfiguriert, können Websites JavaScript ausführen, aber Nutzer können diese Einstellung ändern.</translation>
+<translation id="928189505080808353">Port 554 (gültig bis 15.10.2021)</translation>
 <translation id="929549405492388749">Wird die Richtlinie auf "true" gesetzt, wird die Aktivierung von AppCache erzwungen, selbst wenn AppCache in Chrome nicht standardmäßig verfügbar ist.
 
       Wird die Richtlinie nicht festgelegt oder auf "false" gesetzt, folgt AppCache der Standardeinstellung von Chrome.</translation>

@@ -274,6 +274,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="281504910091592009">Se og administrer gemte adgangskoder på din <ph name="BEGIN_LINK" />Google-konto<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Log ind, og aktivér synkronisering for at få vist dine bogmærker på alle dine enheder</translation>
 <translation id="2827278682606527653">Feedkortmenu i halv højde</translation>
+<translation id="2830783625999891985">Indholdet i udklipsholderen er skjult</translation>
 <translation id="2839327205551510876">Følger ikke længere <ph name="SITE_NAME" /></translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Tjekket for 1 dag siden}one{Tjekket for # dag siden}other{Tjekket for # dage siden}}</translation>
 <translation id="2842985007712546952">Overordnet mappe</translation>
@@ -389,6 +390,7 @@ Privacy Sandbox er stadig under udvikling og kan anvendes i udvalgte områder. I
 <translation id="3542235761944717775">Der er <ph name="KILOBYTES" /> kB til rådighed</translation>
 <translation id="3549657413697417275">Søg i din historik</translation>
 <translation id="3557336313807607643">Føj til kontakter</translation>
+<translation id="3563767357928833671">Indholdet af udklipsholderen vises</translation>
 <translation id="3566923219790363270">Chrome er stadig i gang med at forberede VR. Genstart Chrome senere.</translation>
 <translation id="3568688522516854065">Log ind, og aktivér synkronisering for at få adgang til dine faner på dine andre enheder</translation>
 <translation id="3587482841069643663">Alle</translation>

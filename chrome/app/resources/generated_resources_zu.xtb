@@ -1318,6 +1318,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2428939361789119025">Vala i-WiFi</translation>
 <translation id="2428978615149723410">lamakalishi</translation>
 <translation id="2431027948063157455">Umsizi we-Google akakwazanga ukulayisha, sicela uhlole ukuxhumeka kwakho kwenethiwekhi uphinde uzame futhi.</translation>
+<translation id="243179355394256322">Inhlangano yakho ivumela ukubhalisa idivayisi kubasebenzisi abagunyaziwe kuphela. Lo msebenzisi akagunyaziwe ukubhalisa amadivayisi. Sicela uqiniseke ukuthi umsebenzisa unelungelo lomlawuli "Lokubhalisa izingxenyekazi zekhompuyutha ze-Google Meet" esigabeni Sabasebenzisi sekhonsoli Yomphathi.</translation>
 <translation id="2433452467737464329">Engeza i-param yombuzo ku-URL ukuze uvuselele ikhasi: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Ukubonakala</translation>
 <translation id="2433836460518180625">Vula idivayisi kuphela</translation>
@@ -4419,6 +4420,7 @@ Qiniseka ukuthi awuvezi noma yiluphi ulwazi olubucayi.</translation>
 <translation id="5932124097031739492">I-Linux ithuthukiswe ngempumelelo.</translation>
 <translation id="5932224571077948991">Isayithi libonisa izikhangiso ezingathandeki noma ezidukisayo</translation>
 <translation id="59324397759951282">Idivayisi ye-USB kusuka ku-<ph name="MANUFACTURER_NAME" /></translation>
+<translation id="5932441198730183141">Awunawo amalayisense atholakalayo anele wokubhalisa le divayisi yezingxenyekazi zekhompuyutha ze-Google Meet. Sicela uxhumane nabokuthengisa ukuze uthenge okuningi. Uma ukholelwa ukuthi ubona lo myalezo ngephutha, sicela uxhumane nosekelo.</translation>
 <translation id="5932881020239635062">Umkhiqizo</translation>
 <translation id="5933376509899483611">Indawo yesikhathi</translation>
 <translation id="5933522550144185133">I-<ph name="APP_NAME" /> isebenzisa ikhamera yakho nemakrofoni</translation>
@@ -5408,6 +5410,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="7029307918966275733">I-Crostini ayifakiwe. Sicela ufake i-Crostini ukuze ubuke amakhredithi.</translation>
 <translation id="7029809446516969842">Amaphasiwedi</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Imbobo ye-serial ixhunyiwe</translation>
+<translation id="7034692021407794547">Umlawuli onamalungelo Wokuphatha Inkokhelo kufanele amukele kuqala Imigomo Yesevisi Yezingxenyekazi Zekhompuyutha ze-Google Meet esigabeni Sezingxenyekazi zekhompuyutha ze-Google Meet zekhonsoli Yomphathi.</translation>
 <translation id="7036706669646341689">Kunconywa u-<ph name="DISK_SIZE" /> wesikhala ku-Linux. Ukukhuphula isikhala esingenalutho. susa amafayela kusuka kudivayisi yakho.</translation>
 <translation id="7037509989619051237">Umbhalo ozobukwa kuqala</translation>
 <translation id="7038632520572155338">Shintsha ukufinyelela</translation>

@@ -1319,6 +1319,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2428939361789119025">Nonaktifkan Wi-Fi</translation>
 <translation id="2428978615149723410">keranjang ini</translation>
 <translation id="2431027948063157455">Asisten Google tidak dapat dimuat, periksa koneksi internet dan coba lagi.</translation>
+<translation id="243179355394256322">Organisasi Anda membatasi pendaftaran perangkat hanya untuk pengguna yang diberi otorisasi. Pengguna ini tidak memiliki otorisasi untuk mendaftarkan perangkat. Pastikan pengguna memiliki hak istimewa administrator "Mendaftar Google Meet hardware" di bagian Pengguna pada konsol Admin.</translation>
 <translation id="2433452467737464329">Tambahkan parameter kueri di URL untuk menyegarkan halaman secara otomatis: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Tampilan</translation>
 <translation id="2433836460518180625">Hanya buka kunci perangkat</translation>
@@ -4418,6 +4419,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5932124097031739492">Linux berhasil diupgrade.</translation>
 <translation id="5932224571077948991">Situs menampilkan iklan yang mengganggu atau menyesatkan</translation>
 <translation id="59324397759951282">Perangkat USB dari <ph name="MANUFACTURER_NAME" /></translation>
+<translation id="5932441198730183141">Anda tidak memiliki cukup lisensi yang tersedia untuk mendaftarkan perangkat Google Meet hardware ini. Hubungi pihak penjualan untuk membeli yang lainnya. Jika Anda yakin Anda tidak seharusnya mendapatkan pesan ini, hubungi dukungan.</translation>
 <translation id="5932881020239635062">Nomor Seri</translation>
 <translation id="5933376509899483611">Zona waktu</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> menggunakan kamera dan mikrofon Anda</translation>
@@ -5407,6 +5409,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="7029307918966275733">Crostini tidak diinstal. Instal Crostini untuk melihat kredit.</translation>
 <translation id="7029809446516969842">Sandi</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Port serial tersambung</translation>
+<translation id="7034692021407794547">Administrator yang memiliki hak istimewa Pengelolaan Penagihan harus menerima Persyaratan Layanan Google Meet Hardware terlebih dahulu di bagian Google Meet Hardware pada konsol Admin.</translation>
 <translation id="7036706669646341689">Sebaiknya sediakan ruang sebesar <ph name="DISK_SIZE" /> untuk Linux. Untuk menambah ruang kosong, hapus file dari perangkat Anda.</translation>
 <translation id="7037509989619051237">Teks untuk dipratinjau</translation>
 <translation id="7038632520572155338">Tombol akses</translation>

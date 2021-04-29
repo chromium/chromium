@@ -1316,6 +1316,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2428939361789119025">Slå av Wi-Fi</translation>
 <translation id="2428978615149723410">disse handlekurvene</translation>
 <translation id="2431027948063157455">Google-assistenten kunne ikke lastes inn. Kontrollér nettverkstilkoblingen din, og prøv på nytt.</translation>
+<translation id="243179355394256322">Organisasjonen din begrenser registrering av enheter til kun autoriserte brukere. Denne brukeren er ikke autorisert til å registrere enheter. Sørg for at brukeren har administratorrettigheten «Registrer Google Meet-enheter» i Brukere-delen av administrasjonskonsollen.</translation>
 <translation id="2433452467737464329">Legg til en søkeparameter i nettadressen for å automatisk laste inn siden på nytt: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Utseende</translation>
 <translation id="2433836460518180625">Lås kun opp enheten</translation>
@@ -4413,6 +4414,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5932124097031739492">Linux er oppgradert.</translation>
 <translation id="5932224571077948991">Nettstedet viser forstyrrende eller villedende annonser</translation>
 <translation id="59324397759951282">USB-enhet fra <ph name="MANUFACTURER_NAME" /></translation>
+<translation id="5932441198730183141">Du har ikke nok ledige lisenser til å registrere denne Google Meet-enheten. Kontakt salgsavdelingen for å kjøpe flere. Hvis du mener dette er en feil, kan du kontakte brukerstøtten.</translation>
 <translation id="5932881020239635062">Serienummer</translation>
 <translation id="5933376509899483611">Tidssone</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> bruker kameraet ditt og mikrofonen din</translation>
@@ -5402,6 +5404,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7029307918966275733">Crostini er ikke installert. Installer Crostini for å se anerkjennelser.</translation>
 <translation id="7029809446516969842">Passord</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – seriell port er tilkoblet</translation>
+<translation id="7034692021407794547">En administrator med rettigheter til faktureringsadministrasjon må først godta vilkårene for bruk av Google Meet-enheter i delen Google Meet-enheter i administrasjonskonsollen.</translation>
 <translation id="7036706669646341689"><ph name="DISK_SIZE" /> ledig plass anbefales for Linux. For å få mer ledig plass, slett filer fra enheten.</translation>
 <translation id="7037509989619051237">Tekst til forhåndsvisning</translation>
 <translation id="7038632520572155338">Brytertilgang</translation>

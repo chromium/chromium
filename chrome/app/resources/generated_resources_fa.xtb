@@ -1317,6 +1317,7 @@
 <translation id="2428939361789119025">‏خاموش کردن Wi-Fi</translation>
 <translation id="2428978615149723410">این سبدهای خرید</translation>
 <translation id="2431027948063157455">‏«دستیار Google» بارگیری نشد. لطفاً اتصال شبکه را بررسی کرده و دوباره امتحان کنید.</translation>
+<translation id="243179355394256322">‏سازمانتان ثبت‌نام دستگاه را به «فقط کاربران مجاز» محدود می‌کند. این کاربر مجاز نیست دستگاه‌ها را ثبت‌نام کند. لطفاً مطمئن شوید کاربر امتیاز سرپرستی «ثبت‌نام کردن Google Meet hardware» را در بخش «کاربران» از «کنسول سرپرست» داشته باشد.</translation>
 <translation id="2433452467737464329">‏برای بازخوانی خودکار صفحه، یک پارامتر جستجو به نشانی وب اضافه کنید: chrome://network/?refresh=&lt;sec&gt;‎</translation>
 <translation id="2433507940547922241">شکل ظاهری</translation>
 <translation id="2433836460518180625">فقط باز کردن قفل دستگاه</translation>
@@ -4416,6 +4417,7 @@
 <translation id="5932124097031739492">‏Linux باموفقیت ارتقا پیدا کرد.</translation>
 <translation id="5932224571077948991">سایتْ آگهی‌های مزاحم یا گمراه‌کننده نشان می‌دهد</translation>
 <translation id="59324397759951282">‏دستگاه USB ساخت <ph name="MANUFACTURER_NAME" /></translation>
+<translation id="5932441198730183141">‏پروانه‌های موجود شما برای ثبت‌نام این دستگاه Google Meet hardware کافی نیست. برای خرید پروانه‌های بیشتر، با بخش فروش تماس بگیرید. اگر فکر می‌کنید این پیام به‌اشتباه به شما نشان داده شده است، لطفاً با مرکز پشتیبانی تماس بگیرید.</translation>
 <translation id="5932881020239635062">سریال</translation>
 <translation id="5933376509899483611">منطقه زمانی</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> درحال استفاده از دوربین و میکروفون شما است</translation>
@@ -5405,6 +5407,7 @@
 <translation id="7029307918966275733">‏Crostini نصب نشده است. لطفاً برای مشاهده اعتبارها، Crostini را نصب کنید.</translation>
 <translation id="7029809446516969842">گذرواژه‌ها</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - متصل به درگاه سریال</translation>
+<translation id="7034692021407794547">‏سرپرستی که امتیازهای «مدیریت صورت‌حساب» را دارد باید ابتدا «شرایط خدمات Google Meet Hardware» را در بخش Google Meet Hardware از «کنسول سرپرست» بپذیرد.</translation>
 <translation id="7036706669646341689">‏توصیه می‌شود <ph name="DISK_SIZE" /> فضا برای Linux داشته باشید برای افزایش فضای آزاد، فایل‌ها را از دستگاه حذف کنید.</translation>
 <translation id="7037509989619051237">نوشتار برای پیش‌نمایش</translation>
 <translation id="7038632520572155338">دسترسی کلیدی</translation>

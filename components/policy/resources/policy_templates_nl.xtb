@@ -6140,6 +6140,7 @@ Dit beleid wordt verwijderd in M75.</translation>
 <translation id="927444535723396977">Als je het beleid instelt op 1, mogen websites JavaScript uitvoeren. Als je het beleid instelt op 2, wordt JavaScript geblokkeerd.
 
       Als je het beleid niet instelt, is JavaScript toegestaan maar kunnen gebruikers deze instelling wijzigen.</translation>
+<translation id="928189505080808353">poort 554 (verloopt op 15-10-2021)</translation>
 <translation id="929549405492388749">Als dit wordt ingesteld op True, wordt AppCache verplicht aangezet, ook als AppCache in Chrome niet standaard beschikbaar is.
 
       Als dit niet is ingesteld of is ingesteld op False, volgt AppCache de standaardinstellingen van Chrome.</translation>

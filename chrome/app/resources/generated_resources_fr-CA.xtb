@@ -1319,6 +1319,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2428939361789119025">Désactiver le Wi-Fi</translation>
 <translation id="2428978615149723410">ces paniers</translation>
 <translation id="2431027948063157455">Impossible de charger l'Assistant Google, veuillez vérifier votre connexion réseau et réessayer.</translation>
+<translation id="243179355394256322">Votre organisation limite les inscriptions d'appareils aux utilisateurs autorisés seulement. Cet utilisateur n'est pas autorisé à inscrire des appareils. Veuillez vous assurer que l'utilisateur possède les privilèges d'administrateur « Inscription des appareils Google Meet » dans la section Utilisateurs de la console d'administrateur.</translation>
 <translation id="2433452467737464329">Ajouter un paramètre de demande dans l'URL pour actualiser automatiquement la page : chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Apparence</translation>
 <translation id="2433836460518180625">Déverrouiller l'appareil uniquement</translation>
@@ -4418,6 +4419,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5932124097031739492">La mise à niveau de Linux a été effectuée.</translation>
 <translation id="5932224571077948991">Site diffusant des annonces intrusives ou trompeuses</translation>
 <translation id="59324397759951282">Appareil USB fabriqué par <ph name="MANUFACTURER_NAME" /></translation>
+<translation id="5932441198730183141">Vous n'avez pas suffisamment de licences disponibles pour inscrire cet accessoire. Veuillez communiquer avec le service des ventes pour en acheter davantage. Si vous pensez que ce message s'affiche par erreur, veuillez communiquer avec l'assistance technique.</translation>
 <translation id="5932881020239635062">Série</translation>
 <translation id="5933376509899483611">Fuseau horaire</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> utilise votre caméra et votre microphone</translation>
@@ -5407,6 +5409,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7029307918966275733">Crostini n'est pas installé. Veuillez installer Crostini pour voir le générique.</translation>
 <translation id="7029809446516969842">Mots de passe</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> : connecté à un port série</translation>
+<translation id="7034692021407794547">Un administrateur possédant les privilèges Gestion de la facturation doit d'abord accepter les conditions d'utilisation des accessoires Google Meet, dans la section Accessoires Google Meet de la console d'administrateur.</translation>
 <translation id="7036706669646341689"><ph name="DISK_SIZE" /> d'espace est recommandé pour utiliser Linux. Pour libérer de l'espace, supprimez des fichiers sur votre appareil.</translation>
 <translation id="7037509989619051237">Aperçu du texte</translation>
 <translation id="7038632520572155338">Switch Access</translation>

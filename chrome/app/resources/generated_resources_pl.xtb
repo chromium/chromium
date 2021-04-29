@@ -1317,6 +1317,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2428939361789119025">Wyłączanie sieci Wi-Fi</translation>
 <translation id="2428978615149723410">te koszyki</translation>
 <translation id="2431027948063157455">Nie udało się załadować Asystenta Google. Spróbuj ponownie.</translation>
+<translation id="243179355394256322">W Twojej organizacji urządzenia mogą rejestrować tylko autoryzowani użytkownicy. Ten użytkownik nie ma takich uprawnień. Przyznaj mu uprawnienia administratora „Rejestrowanie sprzętu do Google Meet” w sekcji Użytkownicy w konsoli administracyjnej.</translation>
 <translation id="2433452467737464329">Aby strona była odświeżana automatycznie, dodaj parametr zapytania w adresie URL: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Wygląd</translation>
 <translation id="2433836460518180625">Tylko odblokowywanie urządzenia</translation>
@@ -4415,6 +4416,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5932124097031739492">Linux został uaktualniony.</translation>
 <translation id="5932224571077948991">Na tej stronie wyświetlają się uciążliwe lub wprowadzające w błąd reklamy</translation>
 <translation id="59324397759951282">Urządzenie USB firmy <ph name="MANUFACTURER_NAME" /></translation>
+<translation id="5932441198730183141">Nie możesz zarejestrować tego sprzętu do Google Meet, bo nie masz wystarczającej liczby licencji. Skontaktuj się z działem sprzedaży, aby kupić ich więcej. Jeśli uważasz, że ta wiadomość jest błędna, skontaktuj się z zespołem pomocy.</translation>
 <translation id="5932881020239635062">Numer seryjny</translation>
 <translation id="5933376509899483611">Strefa czasowa</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> używa Twojej kamery i mikrofonu</translation>
@@ -5404,6 +5406,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7029307918966275733">Nie zainstalowano Crostini. Zainstaluj Crostini, by zobaczyć autorów.</translation>
 <translation id="7029809446516969842">Hasła</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – podłączono port szeregowy</translation>
+<translation id="7034692021407794547">Administrator z uprawnieniami do zarządzania płatnościami musi najpierw zaakceptować Warunki korzystania ze sprzętu do Google Meet w sekcji Sprzęt do Google Meet w konsoli administracyjnej.</translation>
 <translation id="7036706669646341689">Do korzystania z Linuksa zalecane jest <ph name="DISK_SIZE" /> wolnego miejsca. Aby zwolnić miejsce, usuń pliki z urządzenia.</translation>
 <translation id="7037509989619051237">Tekst do sprawdzenia mowy</translation>
 <translation id="7038632520572155338">Switch Access</translation>

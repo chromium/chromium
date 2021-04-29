@@ -1319,6 +1319,7 @@
 <translation id="2428939361789119025">Wi-Fi 사용 중지</translation>
 <translation id="2428978615149723410">장바구니</translation>
 <translation id="2431027948063157455">Google 어시스턴트를 로드할 수 없습니다. 네트워크 연결 상태를 확인하고 다시 시도해 보세요.</translation>
+<translation id="243179355394256322">조직에서 승인된 사용자만 기기를 등록할 수 있도록 제한하고 있습니다. 이 사용자는 기기를 등록할 권한이 없습니다. 관리 콘솔의 사용자 섹션에서 사용자가 'Google Meet 하드웨어 등록' 관리자 권한을 보유하고 있는지 확인하세요.</translation>
 <translation id="2433452467737464329">URL에 다음 검색어 매개변수를 추가하여 페이지를 자동으로 새로고침: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">모양</translation>
 <translation id="2433836460518180625">기기만 잠금 해제</translation>
@@ -4416,6 +4417,7 @@
 <translation id="5932124097031739492">Linux가 업그레이드되었습니다.</translation>
 <translation id="5932224571077948991">사이트에서 방해가 되거나 사용자를 현혹하는 광고를 표시함</translation>
 <translation id="59324397759951282"><ph name="MANUFACTURER_NAME" />의 USB 기기</translation>
+<translation id="5932441198730183141">사용 가능한 라이선스가 부족하여 Google Meet 하드웨어 기기를 등록할 수 없습니다. 판매처에 문의하여 추가로 구매하세요. 이 메시지가 잘못 표시되었다고 생각하는 경우 지원팀에 문의하세요.</translation>
 <translation id="5932881020239635062">일련번호</translation>
 <translation id="5933376509899483611">시간대</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" />에서 카메라와 마이크를 사용 중입니다.</translation>
@@ -5405,6 +5407,7 @@
 <translation id="7029307918966275733">Crostini가 설치되지 않았습니다. 크레딧을 확인하려면 Crostini를 설치하세요.</translation>
 <translation id="7029809446516969842">비밀번호</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - 직렬 포트 연결됨</translation>
+<translation id="7034692021407794547">먼저 결제 관리 권한을 보유한 관리자가 관리 콘솔의 Google Meet 하드웨어 섹션에서 Google Meet 하드웨어 서비스 약관에 동의해야 합니다.</translation>
 <translation id="7036706669646341689">Linux를 사용하려면 <ph name="DISK_SIZE" />의 여유 공간이 권장됩니다. 여유 공간을 늘리려면 기기에서 파일을 삭제하세요.</translation>
 <translation id="7037509989619051237">텍스트 미리보기</translation>
 <translation id="7038632520572155338">스위치 제어</translation>

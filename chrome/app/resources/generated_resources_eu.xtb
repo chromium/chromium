@@ -1319,6 +1319,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2428939361789119025">Desaktibatu wifia</translation>
 <translation id="2428978615149723410">saski hauek</translation>
 <translation id="2431027948063157455">Ezin izan da kargatu Google-ren Laguntzailea. Egiaztatu sarera konektatuta zaudela eta saiatu berriro.</translation>
+<translation id="243179355394256322">Zure erakundeak ezarritako mugen arabera, baimendutako erabiltzaileek soilik erregistra ditzakete gailuak. Erabiltzaileak ez du baimenik gailuak erregistratzeko. Egiaztatu erabiltzaileak "Erregistratu Google Meet-en hardwarea" administratzaile-pribilegioa duela administrazio-kontsolako Erabiltzaileak atalean.</translation>
 <translation id="2433452467737464329">Orria automatikoki freskatzeko, gehitu kontsulta-parametro bat URLan: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Itxura</translation>
 <translation id="2433836460518180625">Desblokeatu gailua bakarrik</translation>
@@ -4417,6 +4418,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5932124097031739492">Bertsio-berritu da Linux.</translation>
 <translation id="5932224571077948991">Webguneak iragarki oztopatzaile edo iruzurrezkoak erakusten ditu</translation>
 <translation id="59324397759951282"><ph name="MANUFACTURER_NAME" /> fabrikatzailearen USB bidezko gailua</translation>
+<translation id="5932441198730183141">Ez dituzu behar adina lizentzia erabilgarri Google Meet-en hardware-gailu hau erregistratzeko. Lizentzia gehiago erosteko, jarri salmenta-sailarekin harremanetan. Mezu hau ikusi beharko ez zenukeela uste baduzu, jarri laguntza-zerbitzuarekin harremanetan.</translation>
 <translation id="5932881020239635062">Serie-zenbakia</translation>
 <translation id="5933376509899483611">Ordu-zona</translation>
 <translation id="5933522550144185133">Kamera eta mikrofonoa erabiltzen ari da <ph name="APP_NAME" /></translation>
@@ -5406,6 +5408,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="7029307918966275733">Crostini ez dago instalatuta. Zerrendak ikusi nahi badituzu, instalatu Crostini.</translation>
 <translation id="7029809446516969842">Pasahitzak</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Serieko ataka konektatuta</translation>
+<translation id="7034692021407794547">Fakturazio-pribilegioak dituzten administratzaileek Google Meet-en hardwarearen Zerbitzu-baldintzak onartu behar dituzte lehendabizi administrazio-kontsolako Google Meet-en hardwarea atalean.</translation>
 <translation id="7036706669646341689">Linux instalatzeko, gutxienez <ph name="DISK_SIZE" /> eduki behar dira libre. Tokia egiteko, ezabatu gailuan dauden fitxategiak.</translation>
 <translation id="7037509989619051237">Aurreikusteko testua</translation>
 <translation id="7038632520572155338">Erabilerraztasun-osagarria</translation>

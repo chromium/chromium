@@ -1320,6 +1320,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2428939361789119025">Vypnúť Wi-Fi</translation>
 <translation id="2428978615149723410">tieto košíky</translation>
 <translation id="2431027948063157455">Asistent Google sa nenačítal. Skontrolujte sieťové pripojenie a skúste to znova.</translation>
+<translation id="243179355394256322">Vaša organizácia obmedzuje registráciu zariadení iba na oprávnených používateľov. Tento používateľ nemá oprávnenie registrovať zariadenia. V sekcii Používatelia v správcovskej konzole skontrolujte, či má používateľ správcovské oprávnenie na registráciu súpravy Google Meet hardware.</translation>
 <translation id="2433452467737464329">Pridajte parameter dopytu do webovej adresy na automatické obnovenie stránky: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Vzhľad</translation>
 <translation id="2433836460518180625">Iba odomknúť zariadenie</translation>
@@ -4419,6 +4420,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5932124097031739492">Systém Linux bol úspešne inovovaný.</translation>
 <translation id="5932224571077948991">Web zobrazuje obťažujúce alebo zavádzajúce reklamy</translation>
 <translation id="59324397759951282">Zariadenie USB od výrobcu <ph name="MANUFACTURER_NAME" /></translation>
+<translation id="5932441198730183141">Nemáte dostatok dostupných licencií na registráciu tohto zariadenia súpravy Google Meet hardware. Ak si chcete kúpiť ďalšie, kontaktujte zástupcu predaja. Ak si myslíte, že táto správa sa vám zobrazuje omylom, kontaktujte podporu.</translation>
 <translation id="5932881020239635062">Sériové č.</translation>
 <translation id="5933376509899483611">Časové pásmo</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> používa vašu kameru a mikrofón</translation>
@@ -5408,6 +5410,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="7029307918966275733">Systém Crostini nie je nainštalovaný. Ak si chcete zobraziť poďakovania, nainštalujte si Crostini.</translation>
 <translation id="7029809446516969842">Heslá</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – sériový port je pripojený</translation>
+<translation id="7034692021407794547">Správca s oprávneniami na správu fakturácie musí najprv prijať zmluvné podmienky súpravy Google Meet hardware v sekcii Google Meet Hardware v správcovskej konzole.</translation>
 <translation id="7036706669646341689">Na používanie systému Linux sa vyžaduje <ph name="DISK_SIZE" /> voľného priestoru. Uvoľníte ho odstránením súborov zo zariadenia.</translation>
 <translation id="7037509989619051237">Ukážka textu</translation>
 <translation id="7038632520572155338">Ovládanie prepínačmi</translation>

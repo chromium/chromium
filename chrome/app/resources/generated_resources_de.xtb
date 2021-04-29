@@ -1315,6 +1315,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2428939361789119025">WLAN deaktivieren</translation>
 <translation id="2428978615149723410">diese Einkaufswagen</translation>
 <translation id="2431027948063157455">Google Assistant konnte nicht geladen werden. Überprüfen Sie Ihre Netzverbindung und versuchen Sie es noch einmal.</translation>
+<translation id="243179355394256322">In Ihrer Organisation darf die Geräteregistrierung nur von autorisierten Nutzern durchgeführt werden. Dieser Nutzer ist nicht für die Geräteregistrierung autorisiert. Der Nutzer muss im Bereich „Nutzer“ in der Admin-Konsole über die Administratorberechtigung „Google Meet-Hardware registrieren“ verfügen.</translation>
 <translation id="2433452467737464329">Fügen Sie einen Anfrageparameter zur URL hinzu, damit die Seite automatisch aktualisiert wird: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Darstellung</translation>
 <translation id="2433836460518180625">Gerät nur entsperren</translation>
@@ -4414,6 +4415,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5932124097031739492">Linux wurde aktualisiert.</translation>
 <translation id="5932224571077948991">Website zeigt aufdringliche oder irreführende Werbung an</translation>
 <translation id="59324397759951282">USB-Gerät von <ph name="MANUFACTURER_NAME" /></translation>
+<translation id="5932441198730183141">Sie haben nicht genügend Lizenzen zum Registrieren dieses Google Meet-Hardware-Geräts. Weitere Lizenzen können Sie beim Vertriebsteam erwerben. Wenn Sie glauben, dass Sie diese Meldung fälschlicherweise erhalten, kontaktieren Sie bitte den Support.</translation>
 <translation id="5932881020239635062">Seriennummer</translation>
 <translation id="5933376509899483611">Zeitzone</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> verwendet deine Kamera und dein Mikrofon</translation>
@@ -5403,6 +5405,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7029307918966275733">Crostini ist nicht installiert. Bitte installieren Sie Crostini, um die Credits anzuzeigen.</translation>
 <translation id="7029809446516969842">Passwörter</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" />: serielle Schnittstelle verbunden</translation>
+<translation id="7034692021407794547">Ein Administrator mit der Berechtigung „Abrechnungsverwaltung“ muss zuerst im Bereich „Google Meet-Hardware“ in der Admin-Konsole die Nutzungsbedingungen der Google Meet-Hardware akzeptieren.</translation>
 <translation id="7036706669646341689">Für Linux sind mindestens <ph name="DISK_SIZE" /> freier Speicherplatz erforderlich. Löschen Sie Dateien von Ihrem Gerät, um Speicherplatz freizugeben.</translation>
 <translation id="7037509989619051237">Text zum Anhören</translation>
 <translation id="7038632520572155338">Schalterzugriff</translation>

@@ -274,6 +274,7 @@
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google аккаунтуңузда<ph name="END_LINK" /> сакталган сырсөздөрдү көрүп, башкарыңыз</translation>
 <translation id="2818669890320396765">Кыстармаларыңызды бардык түзмөктөрүңүздө колдонуу үчүн аккаунтуңузга кирип, шайкештирүүнү күйгүзүңүз</translation>
 <translation id="2827278682606527653">Түрмөктөгү меню экрандын жарымына чейин ачылды</translation>
+<translation id="2830783625999891985">Алмашуу буфериндеги мазмундар жашырылган</translation>
 <translation id="2839327205551510876">Төмөнкүгө көз салуу токтотулду: <ph name="SITE_NAME" /></translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 күн мурда текшерилди}other{# күн мурда текшерилди}}</translation>
 <translation id="2842985007712546952">Түпкү куржун</translation>
@@ -389,6 +390,7 @@ Privacy Sandbox дагы эле иштелип жатат, андыктан ай
 <translation id="3542235761944717775"><ph name="KILOBYTES" />Кб жеткиликтүү</translation>
 <translation id="3549657413697417275">Серептөө таржымалынан издеңиз</translation>
 <translation id="3557336313807607643">Байланыштарга кошуу</translation>
+<translation id="3563767357928833671">Алмашуу буфериндеги мазмундар көрсөтүлдү</translation>
 <translation id="3566923219790363270">Chrome VR'га дагы деле даярданууда. Chrome'ду кийинчерээк өчүрүп күйгүзүү.</translation>
 <translation id="3568688522516854065">Өтмөктөрүңүздү башка түзмөктөрүңүздөн алуу үчүн аккаунтуңузга кирип, шайкештирүүнү күйгүзүңүз</translation>
 <translation id="3587482841069643663">Баары</translation>

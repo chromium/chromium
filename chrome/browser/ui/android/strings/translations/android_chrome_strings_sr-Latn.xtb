@@ -274,6 +274,7 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="281504910091592009">Pregledajte sačuvane lozinke i upravljajte njima na <ph name="BEGIN_LINK" />Google nalogu<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Da bi vam obeleživači bili dostupni na svim uređajima, prijavite se i uključite sinhronizaciju</translation>
 <translation id="2827278682606527653">Meni kartice fida je do polovine ekrana</translation>
+<translation id="2830783625999891985">Sadržaj privremene memorije je sakriven</translation>
 <translation id="2839327205551510876">Opozvali ste praćenje sajta <ph name="SITE_NAME" /></translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Provereno pre 1 dan}one{Provereno pre # dan}few{Provereno pre # dana}other{Provereno pre # dana}}</translation>
 <translation id="2842985007712546952">Nadređeni direktorijum</translation>
@@ -389,6 +390,7 @@ Aktivno programiranje Zaštićenog okruženja privatnosti je još uvek u toku i
 <translation id="3542235761944717775">Dostupno je <ph name="KILOBYTES" /> KB</translation>
 <translation id="3549657413697417275">Pretražite svoju istoriju</translation>
 <translation id="3557336313807607643">Dodaj u kontakte</translation>
+<translation id="3563767357928833671">Prikazan je sadržaj privremene memorije</translation>
 <translation id="3566923219790363270">Chrome se još priprema za VR. Kasnije restartujte Chrome.</translation>
 <translation id="3568688522516854065">Da bi vam kartice bile dostupne na drugim uređajima, prijavite se i uključite sinhronizaciju</translation>
 <translation id="3587482841069643663">Sve</translation>

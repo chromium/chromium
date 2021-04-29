@@ -274,6 +274,7 @@
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google 계정<ph name="END_LINK" />에서 저장된 비밀번호 보기 및 관리</translation>
 <translation id="2818669890320396765">어느 기기에서나 내 북마크를 사용하려면 로그인하고 동기화를 사용 설정하세요.</translation>
 <translation id="2827278682606527653">피드 카드 메뉴 절반 높이</translation>
+<translation id="2830783625999891985">클립보드 콘텐츠 숨김</translation>
 <translation id="2839327205551510876"><ph name="SITE_NAME" /> 팔로우 해제함</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1일 전에 확인됨}other{#일 전에 확인됨}}</translation>
 <translation id="2842985007712546952">상위 폴더</translation>
@@ -389,6 +390,7 @@
 <translation id="3542235761944717775"><ph name="KILOBYTES" />KB 사용 가능</translation>
 <translation id="3549657413697417275">방문 기록 검색</translation>
 <translation id="3557336313807607643">주소록에 추가</translation>
+<translation id="3563767357928833671">클립보드 콘텐츠 표시됨</translation>
 <translation id="3566923219790363270">Chrome에서 아직 VR을 준비하고 있습니다. 나중에 Chrome을 다시 시작하세요.</translation>
 <translation id="3568688522516854065">다른 기기에서 탭을 가져오려면 로그인하고 동기화를 사용 설정하세요.</translation>
 <translation id="3587482841069643663">전체</translation>

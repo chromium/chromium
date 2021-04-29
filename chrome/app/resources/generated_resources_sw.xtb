@@ -1316,6 +1316,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2428939361789119025">Zima Wi-Fi</translation>
 <translation id="2428978615149723410">vikapu hivi</translation>
 <translation id="2431027948063157455">Programu ya Mratibu wa Google haijapakiwa, tafadhali angalia muunganisho wako wa mtandao na ujaribu tena.</translation>
+<translation id="243179355394256322">Shirika lako linaruhusu vifaa visajiliwe na watumiaji walioidhinishwa pekee. Mtumiaji huyu hajaidhinishwa kusajili vifaa. Tafadhali hakikisha kwamba mtumiaji ana mamlaka ya msimamizi ya "Kusajili maunzi ya Google Meet" katika sehemu ya Watumiaji kwenye dashibodi ya Msimamizi.</translation>
 <translation id="2433452467737464329">Ongeza hoja ya param katika URL ili uonyeshe ukurasa upya kiotomatiki: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Sura</translation>
 <translation id="2433836460518180625">Fungua kifaa tu</translation>
@@ -4413,6 +4414,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5932124097031739492">Umepata toleo jipya la Linux.</translation>
 <translation id="5932224571077948991">Tovuti inaonyesha matangazo yanayopotosha au yanayokatiza huduma</translation>
 <translation id="59324397759951282">Kifaa cha USB kutoka <ph name="MANUFACTURER_NAME" /></translation>
+<translation id="5932441198730183141">Huna leseni za kutosha za kusajili kifaa hiki cha maunzi ya Google Meet. Tafadhali wasiliana na timu ya mauzo ili ununue leseni zaidi. Kama unaamini kuwa unaona ujumbe huu kimakosa, tafadhali wasiliana na kituo cha usaidizi.</translation>
 <translation id="5932881020239635062">Nambari Tambulishi</translation>
 <translation id="5933376509899483611">Saa za eneo:</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> inatumia kamera na maikrofoni yako</translation>
@@ -5402,6 +5404,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7029307918966275733">Crostini haijasakinishwa. Tafadhali sakinisha Crostini ili uone waliohusika.</translation>
 <translation id="7029809446516969842">Manenosiri</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Imeunganisha kwenye mlango wa kuchomeka vifaa</translation>
+<translation id="7034692021407794547">Ni lazima msimamizi aliye na mamlaka ya Kudhibiti Malipo akubali Sheria na Masharti ya Google Meet Hardware katika sehemu ya Google Meet Hardware kwenye dashibodi ya Msimamizi.</translation>
 <translation id="7036706669646341689">Tunapendekeza uwe na nafasi ya <ph name="DISK_SIZE" /> kwenye Linux. Ili upate nafasi zaidi ya hifadhi, futa faili kwenye kifaa chako.</translation>
 <translation id="7037509989619051237">Maandishi kwa ajili ya kukagua</translation>
 <translation id="7038632520572155338">Kufikia kupitia swichi</translation>

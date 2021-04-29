@@ -1319,6 +1319,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2428939361789119025">Tắt Wi-Fi</translation>
 <translation id="2428978615149723410">những giỏ hàng này</translation>
 <translation id="2431027948063157455">Không thể tải Trợ lý Google, vui lòng kiểm tra kết nối mạng của bạn rồi thử lại.</translation>
+<translation id="243179355394256322">Tổ chức của bạn chỉ cho phép những người dùng được ủy quyền đăng ký thiết bị. Người dùng này không được phép đăng ký thiết bị. Hãy kiểm tra trong phần Người dùng của Bảng điều khiển dành cho quản trị viên để đảm bảo rằng người dùng này có đặc quyền của quản trị viên "Đăng ký thiết bị Google Meet".</translation>
 <translation id="2433452467737464329">Thêm một tham số truy vấn trong URL để tự động làm mới trang: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Hình thức</translation>
 <translation id="2433836460518180625">Chỉ mở khóa thiết bị</translation>
@@ -4332,7 +4333,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="583281660410589416">Không xác định</translation>
 <translation id="5832976493438355584">Đã khóa</translation>
 <translation id="5833397272224757657">Dùng nội dung trên trang web bạn truy cập cũng như các tương tác và hoạt động trên trình duyệt để cá nhân hóa</translation>
-<translation id="5833726373896279253">Chỉ chủ sở hữu mới có thể sửa đổi các tùy chọn cài đặt này:</translation>
+<translation id="5833726373896279253">Chỉ chủ sở hữu mới có thể sửa đổi các chế độ cài đặt này:</translation>
 <translation id="5834581999798853053">Còn khoảng <ph name="TIME" /> phút</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - Đang ghi âm hoặc quay phim</translation>
 <translation id="5840680448799937675">Tệp sẽ luôn được chia sẻ mà không dùng Internet</translation>
@@ -4418,6 +4419,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5932124097031739492">Đã nâng cấp Linux thành công.</translation>
 <translation id="5932224571077948991">Trang web hiển thị quảng cáo xâm nhập hoặc quảng cáo gây hiểu nhầm</translation>
 <translation id="59324397759951282">Thiết bị USB của <ph name="MANUFACTURER_NAME" /></translation>
+<translation id="5932441198730183141">Bạn hiện không có đủ giấy phép để đăng ký thiết bị Google Meet này. Vui lòng liên hệ với bộ phận bán hàng để mua thêm giấy phép. Nếu bạn nhận được thông báo này do nhầm lẫn, hãy liên hệ với nhóm hỗ trợ.</translation>
 <translation id="5932881020239635062">Sê-ri</translation>
 <translation id="5933376509899483611">Múi giờ</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> đang sử dụng máy ảnh và micrô của bạn</translation>
@@ -5407,6 +5409,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="7029307918966275733">Chưa cài đặt Crostini. Vui lòng cài đặt Crostini để xem thông tin về người đóng góp.</translation>
 <translation id="7029809446516969842">Mật khẩu</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – Đã kết nối với cổng nối tiếp</translation>
+<translation id="7034692021407794547">Trước tiên, một quản trị viên có đặc quyền Quản lý thanh toán phải chấp nhận Điều khoản dịch vụ dành cho Thiết bị Google Meet trong phần Thiết bị Google Meet của Bảng điều khiển dành cho quản trị viên.</translation>
 <translation id="7036706669646341689">Linux nên có dung lượng là <ph name="DISK_SIZE" />. Để tăng dung lượng trống, hãy xóa bớt tệp khỏi thiết bị.</translation>
 <translation id="7037509989619051237">Văn bản để xem trước</translation>
 <translation id="7038632520572155338">Tiếp cận bằng công tắc</translation>
@@ -7031,7 +7034,7 @@ Nhấn một công tắc đã gán để xóa.</translation>
 <translation id="8846132060409673887">Đọc thông tin về nhà sản xuất và kiểu máy của máy tính này</translation>
 <translation id="8847523528195140327">Đăng xuất khi đóng nắp màn hình</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8849001918648564819">Ẩn</translation>
+<translation id="8849001918648564819">Đã ẩn</translation>
 <translation id="8850251000316748990">Xem thêm...</translation>
 <translation id="885246833287407341">Đối số hàm API</translation>
 <translation id="8853586775156634952">Thẻ này sẽ chỉ được lưu vào thiết bị này</translation>

@@ -1320,6 +1320,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2428939361789119025">I-off ang Wi-Fi</translation>
 <translation id="2428978615149723410">ang mga cart na ito</translation>
 <translation id="2431027948063157455">Hindi na-load ang Google Assistant, pakitingnan ang iyong koneksyon sa network at subukang muli.</translation>
+<translation id="243179355394256322">Nililimitahan lang ng iyong organisasyon ang pag-enroll ng device sa mga pinapahintulutang user. Hindi pinapahintulutan ang user na ito na mag-enroll ng mga device. Pakitiyak na may pribilehiyong pang-administrator na "I-enroll ang hardware ng Google Meet" ang user sa seksyong Mga User ng Admin console.</translation>
 <translation id="2433452467737464329">Magdagdag ng query param sa URL upang i-auto-refresh ang pahina: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Hitsura</translation>
 <translation id="2433836460518180625">I-unlock lang ang device</translation>
@@ -4419,6 +4420,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5932124097031739492">Na-upgrade na ang Linux.</translation>
 <translation id="5932224571077948991">Nagpapakita ang site ng mga nakakasagabal o nakakapanlinlang na ad</translation>
 <translation id="59324397759951282">USB device mula sa <ph name="MANUFACTURER_NAME" /></translation>
+<translation id="5932441198730183141">Wala kang sapat na mga available na lisensya para ma-enroll ang hardware device ng Google Meet na ito. Makipag-ugnayan sa sales para bumili pa. Kung sa tingin mo ay hindi mo dapat nakikita ang mensaheng ito, makipag-ugnayan sa suporta.</translation>
 <translation id="5932881020239635062">Serial</translation>
 <translation id="5933376509899483611">Timezone</translation>
 <translation id="5933522550144185133">Ginagamit ng <ph name="APP_NAME" /> ang iyong camera at mikropono</translation>
@@ -5408,6 +5410,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7029307918966275733">Hindi naka-install ang Crostini. Paki-install ang Crostini para matingnan ang mga credit.</translation>
 <translation id="7029809446516969842">Mga Password</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Nakakonekta ang serial port</translation>
+<translation id="7034692021407794547">Dapat munang tanggapin ng administrator na may mga pribilehiyo ng Pamamahala ng Pagsingil ang Mga Tuntunin ng Serbisyo ng Hardware ng Google Meet sa seksyong Hardware ng Google Meet ng Admin console.</translation>
 <translation id="7036706669646341689"><ph name="DISK_SIZE" /> na espasyo ang inirerekomenda para sa Linux. Para madagdagan ang bakanteng espasyo, mag-delete ng mga file sa iyong device.</translation>
 <translation id="7037509989619051237">Text na ipi-preview</translation>
 <translation id="7038632520572155338">Switch access</translation>

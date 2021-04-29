@@ -6181,6 +6181,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="927444535723396977">Se a política for definida como 1, os sites poderão executar o JavaScript. Se for definida como 2, o JavaScript não será executado.
 
       Se ela não for definida, o JavaScript será executado, mas os usuários poderão mudar essa configuração.</translation>
+<translation id="928189505080808353">porta 554 (expira em 15/10/2021)</translation>
 <translation id="929549405492388749">Se definida como verdadeira, esta política forçará a ativação do AppCache, mesmo que ele esteja indisponível no Chrome por padrão.
 
       Se a política não for definida ou for definida como falsa, o AppCache seguirá o padrão do Chrome.</translation>

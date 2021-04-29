@@ -1322,6 +1322,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2428939361789119025">Izklop Wi-Fi-ja</translation>
 <translation id="2428978615149723410">ti vozički</translation>
 <translation id="2431027948063157455">Pomočnika Google ni bilo mogoče naložiti. Preverite omrežno povezavo in poskusite znova.</translation>
+<translation id="243179355394256322">Zaradi omejitev vaše organizacije je včlanitev naprav dovoljena samo pooblaščenim uporabnikom. Ta uporabnik nima dovoljenja za včlanitev naprav. V razdelku Uporabniki v skrbniški konzoli preverite, ali ima uporabnik omogočeno skrbniško dovoljenje »Včlanitev strojne opreme za Google Meet«.</translation>
 <translation id="2433452467737464329">V URL dodajte parameter poizvedbe, da samodejno osvežite stran: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Videz</translation>
 <translation id="2433836460518180625">Samo odklepanje naprave</translation>
@@ -4423,6 +4424,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5932124097031739492">Linux je uspešno nadgrajen.</translation>
 <translation id="5932224571077948991">Spletno mesto prikazuje vsiljive ali zavajajoče oglase</translation>
 <translation id="59324397759951282">USB naprava proizvajalca <ph name="MANUFACTURER_NAME" /></translation>
+<translation id="5932441198730183141">Nimate dovolj razpoložljivih licenc za včlanitev te strojne opreme za Google Meet. Obrnite se na prodajni oddelek za nakup dodatnih licenc. Če menite, da ste to sporočilo prejeli pomotoma, se obrnite na podporo.</translation>
 <translation id="5932881020239635062">Serijska št.</translation>
 <translation id="5933376509899483611">Časovni pas</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> uporablja vašo kamero in mikrofon</translation>
@@ -5412,6 +5414,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="7029307918966275733">Crostini ni nameščen. Namestite ga, če si želite ogledati datoteko z ustvarjalci.</translation>
 <translation id="7029809446516969842">Gesla</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – povezana so serijska vrata</translation>
+<translation id="7034692021407794547">Skrbnik s pravicami za upravljanje obračunavanja mora najprej sprejeti pogoje storitve za strojno opremo za Google Meet v razdelku Strojna oprema za Google Meet v skrbniški konzoli.</translation>
 <translation id="7036706669646341689">Za Linux priporočamo <ph name="DISK_SIZE" /> prostora. Če želite povečati nezasedeni prostor, izbrišite datoteke iz naprave.</translation>
 <translation id="7037509989619051237">Besedilo za predogled</translation>
 <translation id="7038632520572155338">Stikalni dostop</translation>

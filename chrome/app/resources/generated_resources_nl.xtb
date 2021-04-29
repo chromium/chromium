@@ -1319,6 +1319,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2428939361789119025">Wifi uitzetten</translation>
 <translation id="2428978615149723410">deze kaarten</translation>
 <translation id="2431027948063157455">De Google Assistent kan niet worden geladen. Controleer de netwerkverbinding en probeer het opnieuw.</translation>
+<translation id="243179355394256322">Je organisatie beperkt apparaatinschrijving tot alleen geautoriseerde gebruikers. Deze gebruiker is niet geautoriseerd om apparaten in te schrijven. Zorg ervoor dat de gebruiker het beheerdersrecht Google Meet-hardware inschrijven heeft in het gedeelte Gebruikers van de Beheerdersconsole.</translation>
 <translation id="2433452467737464329">Voeg een queryparameter toe aan de URL om de pagina automatisch te laten vernieuwen: chrome://network/?refresh=&lt;sec&gt;</translation>
 <translation id="2433507940547922241">Vormgeving</translation>
 <translation id="2433836460518180625">Alleen apparaat ontgrendelen</translation>
@@ -4417,6 +4418,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5932124097031739492">Linux is geüpgraded.</translation>
 <translation id="5932224571077948991">Site toont opdringerige of misleidende advertenties</translation>
 <translation id="59324397759951282">USB-apparaat van <ph name="MANUFACTURER_NAME" /></translation>
+<translation id="5932441198730183141">Je hebt niet genoeg beschikbare licenties om dit Google Meet-hardwareapparaat in te schrijven. Neem contact op met sales om er meer aan te schaffen. Als je denkt dat dit bericht ten onrechte wordt weergegeven, neem je contact op met support.</translation>
 <translation id="5932881020239635062">Serienummer</translation>
 <translation id="5933376509899483611">Tijdzone</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> gebruikt je camera en microfoon</translation>
@@ -5406,6 +5408,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7029307918966275733">Crostini is niet geïnstalleerd. Installeer Crostini om credits te bekijken.</translation>
 <translation id="7029809446516969842">Wachtwoorden</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" />: seriële poort verbonden</translation>
+<translation id="7034692021407794547">Een beheerder met rechten voor factureringsbeheer moet eerst de Servicevoorwaarden voor Google Meet-hardware accepteren in het gedeelte Google Meet-hardware van de Beheerdersconsole.</translation>
 <translation id="7036706669646341689">Er wordt <ph name="DISK_SIZE" /> vrije opslagruimte aanbevolen voor Linux. Verwijder bestanden op het apparaat om opslagruimte vrij te maken.</translation>
 <translation id="7037509989619051237">Tekst voor voorbeeld</translation>
 <translation id="7038632520572155338">Toegang via schakelaar</translation>

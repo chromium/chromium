@@ -274,6 +274,7 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="281504910091592009">Mentett jelszavait megtekintheti és kezelheti <ph name="BEGIN_LINK" />Google-fiókjában<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Ha az összes eszközén szeretné elérni könyvjelzőit, jelentkezzen be, és kapcsolja be a szinkronizálást</translation>
 <translation id="2827278682606527653">A hírcsatornakártya menüje félmagasságban van megnyitva</translation>
+<translation id="2830783625999891985">A vágólap tartalma elrejtve</translation>
 <translation id="2839327205551510876">Felhagyott a(z) <ph name="SITE_NAME" /> követésével.</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 napja ellenőrizve}other{# napja ellenőrizve}}</translation>
 <translation id="2842985007712546952">Szülőmappa</translation>
@@ -389,6 +390,7 @@ A Privacy Sandbox még mindig aktív fejlesztés alatt áll, és csak egyes rég
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB szabad</translation>
 <translation id="3549657413697417275">Keresés az előzményekben</translation>
 <translation id="3557336313807607643">Hozzáadás a névjegyekhez</translation>
+<translation id="3563767357928833671">A vágólap tartalma látható</translation>
 <translation id="3566923219790363270">A Chrome még mindig a VR használatára készül fel. Indítsa újra a Chrome-ot később.</translation>
 <translation id="3568688522516854065">Ha a többi eszközén is szeretné elérni lapjait, jelentkezzen be, és kapcsolja be a szinkronizálást</translation>
 <translation id="3587482841069643663">Mind</translation>

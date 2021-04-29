@@ -6212,6 +6212,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="927444535723396977">Si estableces la política en 1, los sitios web podrán ejecutar JavaScript. Si la estableces en 2, se rechazará JavaScript.
 
       Si no la estableces, se podrá ejecutar JavaScript, pero los usuarios podrán cambiar esta configuración.</translation>
+<translation id="928189505080808353">puerto 554 (caduca el 15/10/2021)</translation>
 <translation id="929549405492388749">Si se establece esta política como verdadera, se forzará la habilitación de la función AppCache, incluso cuando no esté disponible en Chrome de forma predeterminada.
 
       Si no se establece o se establece como falsa, AppCache funcionará según la configuración predeterminada de Chrome.</translation>

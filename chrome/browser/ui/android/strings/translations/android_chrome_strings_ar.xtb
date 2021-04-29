@@ -274,6 +274,7 @@
 <translation id="281504910091592009">‏بإمكانك عرض كلمات المرور المحفوظة وإدارتها في <ph name="BEGIN_LINK" />حسابك على Google<ph name="END_LINK" />.</translation>
 <translation id="2818669890320396765">للحصول على الإشارات المرجعية على جميع أجهزتك، يُرجى تسجيل الدخول وتفعيل المزامنة.</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
+<translation id="2830783625999891985">تم إخفاء محتوى الحافظة.</translation>
 <translation id="2839327205551510876">تم إلغاء متابعة <ph name="SITE_NAME" />.</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{تمّ إجراء عملية التحقُّق قبل يوم واحد.}zero{تمّ إجراء عملية التحقُّق قبل # يوم.}two{تمّ إجراء عملية التحقُّق قبل يومَين.}few{تمّ إجراء عملية التحقُّق قبل # أيام.}many{تمّ إجراء عملية التحقُّق قبل # يومًا.}other{تمّ إجراء عملية التحقُّق قبل # يوم.}}</translation>
 <translation id="2842985007712546952">المجلد الرئيسي</translation>
@@ -389,6 +390,7 @@
 <translation id="3542235761944717775">تتوفر مساحة <ph name="KILOBYTES" /> كيلوبايت</translation>
 <translation id="3549657413697417275">البحث في السجل</translation>
 <translation id="3557336313807607643">إضافة إلى جهات الاتصال</translation>
+<translation id="3563767357928833671">تم عرض محتوى الحافظة.</translation>
 <translation id="3566923219790363270">‏لا يزال Chrome يستعد للواقع الافتراضي. يُرجى إعادة تشغيل Chrome لاحقًا.</translation>
 <translation id="3568688522516854065">للحصول على علامات التبويب من أجهزتك الأخرى، يُرجى تسجيل الدخول وتفعيل المزامنة.</translation>
 <translation id="3587482841069643663">الكل</translation>
@@ -914,7 +916,7 @@
 <translation id="6955535239952325894">لقد تم إيقاف هذا الإعداد على متصفّحات مُدارة.</translation>
 <translation id="6963766334940102469">حذف الإشارات المرجعية</translation>
 <translation id="6979737339423435258">جميع الأوقات</translation>
-<translation id="6981982820502123353">إمكانية الوصول</translation>
+<translation id="6981982820502123353">تسهيل الاستخدام</translation>
 <translation id="6989267951144302301">تعذّر التنزيل</translation>
 <translation id="6995899638241819463">التحذير إذا تم الكشف عن كلمات المرور في عملية اختراق بيانات</translation>
 <translation id="7001056293070445572">هذا الملف كبير (<ph name="FILE_SIZE" />)</translation>

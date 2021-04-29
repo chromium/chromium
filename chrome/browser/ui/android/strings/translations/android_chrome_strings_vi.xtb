@@ -274,6 +274,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="281504910091592009">Xem và quản lý các mật khẩu đã lưu trong <ph name="BEGIN_LINK" />Tài khoản Google<ph name="END_LINK" /> của bạn</translation>
 <translation id="2818669890320396765">Để sử dụng dấu trang trên tất cả các thiết bị, hãy đăng nhập và bật tính năng đồng bộ hóa</translation>
 <translation id="2827278682606527653">Trình đơn thẻ nguồn cấp dữ liệu mở ở nửa dưới của màn hình</translation>
+<translation id="2830783625999891985">Đã ẩn nội dung của bảng nhớ tạm</translation>
 <translation id="2839327205551510876">Đã ngừng theo dõi <ph name="SITE_NAME" /></translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Đã kiểm tra 1 ngày trước}other{Đã kiểm tra # ngày trước}}</translation>
 <translation id="2842985007712546952">Thư mục mẹ</translation>
@@ -389,6 +390,7 @@ Hộp cát về quyền riêng tư vẫn đang trong giai đoạn phát triển 
 <translation id="3542235761944717775">Còn <ph name="KILOBYTES" /> KB</translation>
 <translation id="3549657413697417275">Tìm kiếm trong lịch sử duyệt web</translation>
 <translation id="3557336313807607643">Thêm vào danh bạ</translation>
+<translation id="3563767357928833671">Đã hiện nội dung của bảng nhớ tạm</translation>
 <translation id="3566923219790363270">Chrome vẫn đang chuẩn bị mô-đun Thực tế ảo. Hãy khởi động lại Chrome sau.</translation>
 <translation id="3568688522516854065">Để sử dụng các thẻ từ những thiết bị khác, hãy đăng nhập và bật tính năng đồng bộ hóa</translation>
 <translation id="3587482841069643663">Tất cả</translation>
@@ -1192,7 +1194,7 @@ Dữ liệu của phiên Ẩn danh sẽ chỉ bị xóa khỏi Chrome khi bạn 
 <translation id="8820817407110198400">Dấu trang</translation>
 <translation id="883806473910249246">Đã xảy ra lỗi khi tải nội dung xuống.</translation>
 <translation id="8840953339110955557">Trang này có thể khác với phiên bản trực tuyến.</translation>
-<translation id="8849001918648564819">Ẩn</translation>
+<translation id="8849001918648564819">Đã ẩn</translation>
 <translation id="8853345339104747198">Thẻ <ph name="TAB_TITLE" /></translation>
 <translation id="8854223127042600341">Xem tệp khi không có mạng</translation>
 <translation id="8856607253650333758">Tải nội dung mô tả</translation>

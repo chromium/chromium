@@ -1318,6 +1318,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2428939361789119025">Desactiva la Wi‑Fi</translation>
 <translation id="2428978615149723410">aquests carretons</translation>
 <translation id="2431027948063157455">L'Assistent de Google no s'ha pogut carregar. Comprova la connexió a la xarxa i tornar-ho a provar.</translation>
+<translation id="243179355394256322">La teva organització limita la inscripció de dispositius només als usuaris autoritzats. Aquest usuari no té autorització per inscriure dispositius. Assegura't que l'usuari tingui el privilegi d'administrador "Inscriure maquinari de Google Meet" a la secció de la consola d'administració Usuaris.</translation>
 <translation id="2433452467737464329">Afegiu un paràmetre de consulta a l'URL per actualitzar la pàgina automàticament: chrome://network/?refresh=&lt;seg.&gt;</translation>
 <translation id="2433507940547922241">Aparença</translation>
 <translation id="2433836460518180625">Desbloqueja només el dispositiu</translation>
@@ -4418,6 +4419,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5932124097031739492">Linux s'ha actualitzat correctament.</translation>
 <translation id="5932224571077948991">El lloc web mostra anuncis intrusius o enganyosos</translation>
 <translation id="59324397759951282">Dispositiu USB fabricat per <ph name="MANUFACTURER_NAME" /></translation>
+<translation id="5932441198730183141">No tens prou llicències disponibles per inscriure aquest dispositiu de maquinari de Google Meet. Contacta amb l'equip de vendes per comprar-ne més. Si creus que veus aquest missatge per error, posa't en contacte amb el servei d'assistència.</translation>
 <translation id="5932881020239635062">Número de sèrie</translation>
 <translation id="5933376509899483611">Zona horària</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> està utilitzant la càmera i el micròfon</translation>
@@ -5407,6 +5409,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7029307918966275733">Crostini no està instal·lat. Instal·la'l per veure els crèdits.</translation>
 <translation id="7029809446516969842">Contrasenyes</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" />: port en sèrie connectat</translation>
+<translation id="7034692021407794547">Un administrador amb privilegis de gestió de la facturació ha d'acceptar primer les condicions del servei del maquinari de Google Meet a la secció de la consola d'administració Maquinari de Google Meet.</translation>
 <translation id="7036706669646341689">Es recomana tenir <ph name="DISK_SIZE" /> d'espai lliure per a Linux. Per augmentar l'espai lliure, suprimeix fitxers del dispositiu.</translation>
 <translation id="7037509989619051237">Text de prova</translation>
 <translation id="7038632520572155338">Accés amb interruptors</translation>

@@ -6156,6 +6156,7 @@ Bu politika "true" (doğru) olarak ayarlanırsa kullanıcının tarayıcıyı ku
 <translation id="927444535723396977">Politikayı True (Doğru) değerine ayarlanmak web sitelerinin JavaScript çalıştırmasına izin verir. Politikayı False (Yanlış) değerine ayarlamak web sitelerinin JavaScript çalıştırmasını engeller.
 
       Politikayı ayarlamadan bırakırsanız JavaScript'e izin verilir. Kullanıcılar bu ayarı değiştirebilir.</translation>
+<translation id="928189505080808353">bağlantı noktası 554 (geçerlilik süresi sonu: 15.10.2021)</translation>
 <translation id="929549405492388749">Politika true (doğru) değerine ayarlanırsa Chrome'da AppCacheIf varsayılan olarak kullanılabilir olmasa bile, bu politika AppCache'in etkinleştirilmesini zorunlu tutar.
 
       Politika ayarlanmazsa veya false (yanlış) değerine ayarlanırsa AppCache, Chrome'un varsayılan ayarlarını izler.</translation>
