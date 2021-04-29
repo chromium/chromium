@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/ui/commands/thumb_strip_commands.h"
 #import "ios/chrome/browser/ui/gestures/view_controller_trait_collection_observer.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
@@ -837,6 +838,16 @@
                           params:params
                       originView:view];
   [self.sharingCoordinator start];
+}
+
+- (void)addToReadingListURL:(const GURL&)URL title:(NSString*)title {
+  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands
+  // protocol clean up.
+  id<BrowserCommands> readingListAdder = static_cast<id<BrowserCommands>>(
+      self.regularBrowser->GetCommandDispatcher());
+  ReadingListAddCommand* command =
+      [[ReadingListAddCommand alloc] initWithURL:URL title:title];
+  [readingListAdder addToReadingList:command];
 }
 
 - (void)removeSessionAtTableSectionWithIdentifier:(NSInteger)sectionIdentifier {

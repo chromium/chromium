@@ -174,6 +174,10 @@ id<GREYMatcher> ShowTabsButton() {
   return [ChromeMatchersAppInterface showTabsButton];
 }
 
+id<GREYMatcher> AddToReadingListButton() {
+  return [ChromeMatchersAppInterface addToReadingListButton];
+}
+
 id<GREYMatcher> SettingsSwitchCell(NSString* accessibility_identifier,
                                    BOOL is_toggled_on) {
   return [ChromeMatchersAppInterface settingsSwitchCell:accessibility_identifier

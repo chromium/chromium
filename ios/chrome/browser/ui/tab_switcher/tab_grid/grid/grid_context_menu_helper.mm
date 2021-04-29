@@ -73,7 +73,14 @@
                                                          title:item.title
                                                       fromView:gridCell];
                       }]];
-
+        if ([weakSelf.contextMenuDelegate
+                respondsToSelector:@selector(addToReadingListURL:title:)]) {
+          [menuElements
+              addObject:[actionFactory actionToAddToReadingListWithBlock:^{
+                [weakSelf.contextMenuDelegate addToReadingListURL:item.URL
+                                                            title:item.title];
+              }]];
+        }
         return [UIMenu menuWithTitle:@"" children:menuElements];
       };
 

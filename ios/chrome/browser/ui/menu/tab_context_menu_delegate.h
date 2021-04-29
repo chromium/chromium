@@ -14,7 +14,7 @@ class DistantSession;
 }
 
 // Methods used to create context menu actions for tabs.
-@protocol TabContextMenuDelegate
+@protocol TabContextMenuDelegate <NSObject>
 
 // Tells the delegate to trigger the URL sharing flow for the given |URL| and
 // |title|, with the origin |view| representing the UI component for that URL.
@@ -29,6 +29,10 @@ class DistantSession;
 // |sectionIdentifier|.
 - (synced_sessions::DistantSession const*)sessionForTableSectionWithIdentifier:
     (NSInteger)sectionIdentifier;
+
+@optional
+// Tells the delegate to add |URL| and |title| to the reading list.
+- (void)addToReadingListURL:(const GURL&)URL title:(NSString*)title;
 
 @end
 

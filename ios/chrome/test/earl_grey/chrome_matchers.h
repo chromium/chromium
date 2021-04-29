@@ -133,6 +133,9 @@ id<GREYMatcher> TabShareButton();
 // Matcher for show tabs button.
 id<GREYMatcher> ShowTabsButton();
 
+// Matcher for Add to reading list button.
+id<GREYMatcher> AddToReadingListButton();
+
 // Matcher for SettingsSwitchCell.
 id<GREYMatcher> SettingsSwitchCell(NSString* accessibility_identifier,
                                    BOOL is_toggled_on);
