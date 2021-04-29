@@ -4788,6 +4788,8 @@ ci.linux_builder(
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
     os = os.LINUX_BIONIC,
+    # TODO(crbug.com/1173333): Make it tree-closing.
+    tree_closing = False,
 )
 
 ci.linux_builder(
