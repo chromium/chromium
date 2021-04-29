@@ -53,10 +53,12 @@ class BASE_EXPORT SamplingHeapProfiler
     // the PC pointers.
     std::vector<void*> stack;
 
+    // Public for testing.
+    Sample(size_t size, size_t total, uint32_t ordinal);
+
    private:
     friend class SamplingHeapProfiler;
 
-    Sample(size_t size, size_t total, uint32_t ordinal);
 
     uint32_t ordinal;
   };

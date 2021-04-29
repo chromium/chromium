@@ -75,6 +75,34 @@ void HeapProfilerController::Start() {
   ScheduleNextSnapshot(stopped_, base::TimeDelta::FromMinutes(interval));
 }
 
+bool HeapProfilerController::SampleComparator::operator()(
+    const Sample& lhs,
+    const Sample& rhs) const {
+  // We consider two samples to be equal if and only if their stacks are equal.
+  // Note that equal stack implies equal allocator. It's technically possible
+  // for two equal stacks to have different thread names, but it's an edge
+  // condition and marking them as equal will not significantly change analysis.
+  return lhs.stack < rhs.stack;
+}
+
+// Merges samples that have identical stack traces, excluding total and size.
+HeapProfilerController::SampleMap HeapProfilerController::MergeSamples(
+    const std::vector<Sample>& samples) {
+  SampleMap results;
+  for (const Sample& sample : samples) {
+    size_t count = std::max<size_t>(
+        static_cast<size_t>(
+            std::llround(static_cast<double>(sample.total) / sample.size)),
+        1);
+    // Either update the existing entry or construct a new entry [with default
+    // initializer 0].
+    SampleValue& value = results[sample];
+    value.total += sample.total;
+    value.count += count;
+  }
+  return results;
+}
+
 // static
 void HeapProfilerController::ScheduleNextSnapshot(
     scoped_refptr<StoppedFlag> stopped,
@@ -116,7 +144,12 @@ void HeapProfilerController::RetrieveAndSendSnapshot() {
       metrics::CallStackProfileParams::PERIODIC_HEAP_COLLECTION);
   metrics::CallStackProfileBuilder profile_builder(params);
 
-  for (const base::SamplingHeapProfiler::Sample& sample : samples) {
+  SampleMap merged_samples = MergeSamples(samples);
+
+  for (auto& pair : merged_samples) {
+    const Sample& sample = pair.first;
+    const SampleValue& value = pair.second;
+
     std::vector<base::Frame> frames;
     frames.reserve(sample.stack.size());
     for (const void* frame : sample.stack) {
@@ -125,14 +158,10 @@ void HeapProfilerController::RetrieveAndSendSnapshot() {
           module_cache.GetModuleForAddress(address);
       frames.emplace_back(address, module);
     }
-    size_t count = std::max<size_t>(
-        static_cast<size_t>(
-            std::llround(static_cast<double>(sample.total) / sample.size)),
-        1);
     // Heap "samples" represent allocation stacks aggregated over time so do not
     // have a meaningful timestamp.
     profile_builder.OnSampleCompleted(std::move(frames), base::TimeTicks(),
-                                      sample.total, count);
+                                      value.total, value.count);
   }
 
   profile_builder.OnProfileCompleted(base::TimeDelta(), base::TimeDelta());
