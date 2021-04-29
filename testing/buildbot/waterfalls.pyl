@@ -1713,7 +1713,7 @@
           'chrome',
         ],
         'test_suites': {
-          'gtest_tests': 'lacros_smoke_tast_tests_amd64_generic',
+          'gtest_tests': 'lacros_device_or_vm_tests',
         },
         'os_type': 'chromeos'
       },
