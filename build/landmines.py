@@ -4,9 +4,9 @@
 # found in the LICENSE file.
 
 """
-This script runs every build as the first hook (See DEPS). If it detects that
-the build should be clobbered, it will delete the contents of the build
-directory.
+This script runs every gclient runhooks as the first hook (See DEPS). If it
+detects that the build should be clobbered, it will delete the contents of the
+build directory.
 
 A landmine is tripped when a builder checks out a different revision, and the
 diff between the new landmines and the old ones is non-null. At this point, the
@@ -38,13 +38,10 @@ import landmine_utils
 
 def get_build_dir(src_dir):
   r"""
-  Returns output directory absolute path dependent on build and targets.
+  Returns the absolute path to the directory containing the build directories.
   Examples:
-    r'c:\b\build\slave\win\build\src\out'
-    '/mnt/data/b/build/slave/linux/build/src/out'
-    '/b/build/slave/ios_rel_device/build/src/out'
-
-  Keep this function in sync with tools/build/scripts/slave/compile.py
+    'C:\src\out'
+    '/b/s/w/ir/cache/builder/src/out'
   """
   if 'CHROMIUM_OUT_DIR' in os.environ:
     output_dir = os.environ.get('CHROMIUM_OUT_DIR').strip()
