@@ -88,8 +88,6 @@ NearbySharingServiceFactory::~NearbySharingServiceFactory() = default;
 KeyedService* NearbySharingServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   if (!IsNearbyShareSupportedForBrowserContext(context)) {
-    NS_LOG(WARNING) << __func__
-                    << ": Nearby Share not supported for browser context.";
     return nullptr;
   }
 
