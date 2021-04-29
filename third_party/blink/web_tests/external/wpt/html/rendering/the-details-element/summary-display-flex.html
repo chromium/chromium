@@ -1,9 +1,15 @@
 <!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Test: summary with 'display: flex'</title>
+<link rel="author" title="Xing Xu" href="mailto:xing.xu@intel.com">
+<link rel="match" href="summary-display-flex-ref.html">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/rendering.html#the-details-and-summary-elements">
+<meta name="assert" content="Checks that styling a <summary> with 'display: flex' makes it a flex container.">
 <style>
 .flex-container {
   background: #333;
   border: 0px;
-  display: inline-flex;
+  display: flex;
   margin: 0px;
   padding: 0px;
 }
@@ -50,7 +56,7 @@
 }
 </style>
 
-<summary style="display: inline-flex;">
+<summary style="display: flex;">
   <div>these fields</div>
   <div>shouldn't be</div>
   <div>stacked vertically</div>

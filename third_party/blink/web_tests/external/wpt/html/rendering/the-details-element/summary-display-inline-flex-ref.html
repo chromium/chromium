@@ -1,9 +1,10 @@
 <!DOCTYPE html>
+<link rel="author" title="Xing Xu" href="mailto:xing.xu@intel.com">
 <style>
 .flex-container {
   background: #333;
   border: 0px;
-  display: flex;
+  display: inline-flex;
   margin: 0px;
   padding: 0px;
 }
@@ -50,57 +51,55 @@
 }
 </style>
 
-<summary style="display: flex;">
-  <div>these fields</div>
-  <div>shouldn't be</div>
-  <div>stacked vertically</div>
+<summary>
+  <div>these fieldsshouldn't bestacked vertically</div>
 </summary>
 
 <h1>flex-direction: row</h1>
-<summary class="flex-container flex-direction-row">
+<div class="flex-container flex-direction-row">
   <div class="flex-item">1</div>
   <div class="flex-item">2</div>
   <div class="flex-item">3</div>
-</summary>
+</div>
 
 <h1>flex-direction: row-reverse</h1>
-<summary class="flex-container flex-direction-row-reverse">
+<div class="flex-container flex-direction-row-reverse">
   <div class="flex-item">1</div>
   <div class="flex-item">2</div>
   <div class="flex-item">3</div>
-</summary>
+</div>
 
 <h1>flex-direction: column</h1>
-<summary class="flex-container flex-direction-column">
+<div class="flex-container flex-direction-column">
   <div class="flex-item">1</div>
   <div class="flex-item">2</div>
   <div class="flex-item">3</div>
-</summary>
+</div>
 
 <h1>flex-direction: column-reverse</h1>
-<summary class="flex-container flex-direction-column-reverse">
+<div class="flex-container flex-direction-column-reverse">
   <div class="flex-item">1</div>
   <div class="flex-item">2</div>
   <div class="flex-item">3</div>
-</summary>
+</div>
 
 <h1>justify-content: center</h1>
-<summary class="flex-container justify-content-center">
+<div class="flex-container justify-content-center">
   <div class="flex-item">1</div>
   <div class="flex-item">2</div>
   <div class="flex-item">3</div>
-</summary>
+</div>
 
 <h1>justify-content: space-around</h1>
-<summary class="flex-container justify-content-space-around">
+<div class="flex-container justify-content-space-around">
   <div class="flex-item">1</div>
   <div class="flex-item">2</div>
   <div class="flex-item">3</div>
-</summary>
+</div>
 
 <h1>justify-content: space-between</h1>
-<summary class="flex-container justify-content-space-between">
+<div class="flex-container justify-content-space-between">
   <div class="flex-item">1</div>
   <div class="flex-item">2</div>
   <div class="flex-item">3</div>
-</summary>
+</div>
