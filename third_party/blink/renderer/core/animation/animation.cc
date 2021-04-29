@@ -252,6 +252,9 @@ Animation::Animation(ExecutionContext* execution_context,
       compositor_pending_(false),
       compositor_group_(0),
       effect_suppressed_(false) {
+  // Pointer registration is needed for sorting in Animation::HasLowerCompositeOrdering.
+  recordreplay::RegisterPointer(this);
+
   if (content_) {
     if (content_->GetAnimation()) {
       content_->GetAnimation()->cancel();
@@ -272,6 +275,8 @@ Animation::Animation(ExecutionContext* execution_context,
 }
 
 Animation::~Animation() {
+  recordreplay::UnregisterPointer(this);
+
   // Verify that compositor_animation_ has been disposed of.
   DCHECK(!compositor_animation_);
 }
@@ -585,6 +590,11 @@ bool Animation::HasLowerCompositeOrdering(
         return originating_element1->compareDocumentPosition(
                    originating_element2) &
                Node::kDocumentPositionFollowing;
+      } else if (recordreplay::IsRecordingOrReplaying()) {
+        int ida = recordreplay::PointerId(originating_element1);
+        int idb = recordreplay::PointerId(originating_element2);
+        CHECK(ida && idb);
+        return ida < idb;
       } else {
         return originating_element1 < originating_element2;
       }
