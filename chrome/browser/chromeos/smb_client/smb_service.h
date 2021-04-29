@@ -131,8 +131,6 @@ class SmbService : public KeyedService,
   void SuspendDone(base::TimeDelta sleep_duration) override;
 
  private:
-  friend class SmbServiceTest;
-
   using MountInternalCallback =
       base::OnceCallback<void(SmbMountResult result,
                               const base::FilePath& mount_path)>;

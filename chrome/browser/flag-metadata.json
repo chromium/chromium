@@ -4869,11 +4869,6 @@
     "expiry_milestone": 93
   },
   {
-    "name": "smbfs-file-shares",
-    "owners": [ "simmonsjosh@google.com", "dats" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "smooth-scrolling",
     "owners": [ "bokan", "input-dev" ],
     // This needs to continue to be extended until the UI contains a proper

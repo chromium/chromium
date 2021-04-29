@@ -4808,10 +4808,6 @@ const char kShowTouchHudDescription[] =
     "Ctrl-Alt-I shows a heads-up display view in the top-left corner. Helps "
     "debug hardware issues that generate spurious touch events.";
 
-const char kSmbfsFileSharesName[] = "Smbfs file shares";
-const char kSmbfsFileSharesDescription[] =
-    "Use smbfs for accessing network file shares.";
-
 const char kSpectreVariant2MitigationName[] = "Spectre variant 2 mitigation";
 const char kSpectreVariant2MitigationDescription[] =
     "Controls whether Spectre variant 2 mitigation is enabled when "

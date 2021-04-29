@@ -4147,9 +4147,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kForceSpectreVariant2MitigationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(
          sandbox::policy::features::kForceSpectreVariant2Mitigation)},
-    {"smbfs-file-shares", flag_descriptions::kSmbfsFileSharesName,
-     flag_descriptions::kSmbfsFileSharesName, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kSmbFs)},
     {"spectre-v2-mitigation", flag_descriptions::kSpectreVariant2MitigationName,
      flag_descriptions::kSpectreVariant2MitigationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(sandbox::policy::features::kSpectreVariant2Mitigation)},

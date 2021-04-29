@@ -91,11 +91,6 @@ struct TestCase {
     return *this;
   }
 
-  TestCase& EnableSmbfs() {
-    options.smbfs = true;
-    return *this;
-  }
-
   TestCase& DontMountVolumes() {
     options.mount_volumes = false;
     return *this;
@@ -553,7 +548,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openQuickViewMhtml"),
         TestCase("openQuickViewBackgroundColorHtml"),
         TestCase("openQuickViewDrive"),
-        TestCase("openQuickViewSmbfs").EnableSmbfs(),
+        TestCase("openQuickViewSmbfs"),
         TestCase("openQuickViewAndroid"),
         TestCase("openQuickViewDocumentsProvider")
             .EnableGenericDocumentsProvider(),
@@ -963,7 +958,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         // Disabled until Drive quota can be properly displayed.
         // crbug.com/1177203
         // TestCase("showAvailableStorageDrive"),
-        TestCase("showAvailableStorageSmbfs").EnableSmbfs(),
+        TestCase("showAvailableStorageSmbfs"),
         TestCase("showAvailableStorageDocProvider")
             .EnableGenericDocumentsProvider()));
 

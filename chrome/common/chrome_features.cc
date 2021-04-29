@@ -864,9 +864,6 @@ const base::Feature kSitePerProcess {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables or disables SmartDim on Chrome OS.
 const base::Feature kSmartDim{"SmartDim", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enables or disables using smbfs for accessing SMB file shares.
-const base::Feature kSmbFs{"SmbFs", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Enables or disables the ability to use the sound content setting to mute a

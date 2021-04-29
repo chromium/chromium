@@ -2806,9 +2806,6 @@ extern const char kShowTapsDescription[];
 extern const char kShowTouchHudName[];
 extern const char kShowTouchHudDescription[];
 
-extern const char kSmbfsFileSharesName[];
-extern const char kSmbfsFileSharesDescription[];
-
 extern const char kSpectreVariant2MitigationName[];
 extern const char kSpectreVariant2MitigationDescription[];
 

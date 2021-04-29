@@ -94,9 +94,6 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
     // Whether test needs a native SMB file system provider.
     bool native_smb = true;
 
-    // Whether test needs smbfs for native SMB integration.
-    bool smbfs = false;
-
     // Whether FilesApp should start with volumes mounted.
     bool mount_volumes = true;
 

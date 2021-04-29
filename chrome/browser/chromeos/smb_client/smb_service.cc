@@ -83,8 +83,10 @@ std::unique_ptr<NetBiosClientInterface> GetNetBiosClient(Profile* profile) {
   return std::make_unique<NetBiosClient>(network_context);
 }
 
+// TODO(crbug.com/1203884): Remove this method and any code conditional on it
+// being false.
 bool IsSmbFsEnabled() {
-  return base::FeatureList::IsEnabled(features::kSmbFs);
+  return true;
 }
 
 // Metric recording functions.
