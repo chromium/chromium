@@ -93,7 +93,7 @@ const base::Feature kUseRealBuffersForPageFlipTest{
 #if defined(OS_FUCHSIA)
 // Enables SkiaOutputDeviceBufferQueue instead of Vulkan swapchain on Fuchsia.
 const base::Feature kUseSkiaOutputDeviceBufferQueue{
-    "UseSkiaOutputDeviceBufferQueue", base::FEATURE_DISABLED_BY_DEFAULT};
+    "UseSkiaOutputDeviceBufferQueue", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 // Whether we should log extra debug information to webrtc native log.
