@@ -73,31 +73,7 @@ bool IsDisabledByPolicy(const Profile* profile) {
 // Metrics utilities
 //------------------
 
-// TODO(crbug.com/1034842): Add unit tests for histograms
-
-// Possible outcomes of a call to the ItemSuggest API. These values persist to
-// logs. Entries should not be renumbered and numeric values should never be
-// reused.
-enum class Status {
-  kOk = 0,
-  kDisabledByExperiment = 1,
-  kDisabledByPolicy = 2,
-  kInvalidServerUrl = 3,
-  kNoIdentityManager = 4,
-  kGoogleAuthError = 5,
-  kNetError = 6,
-  kResponseTooLarge = 7,
-  k3xxStatus = 8,
-  k4xxStatus = 9,
-  k5xxStatus = 10,
-  kEmptyResponse = 11,
-  kNoResultsInResponse = 12,
-  kJsonParseFailure = 13,
-  kJsonConversionFailure = 14,
-  kMaxValue = kJsonConversionFailure,
-};
-
-void LogStatus(Status status) {
+void LogStatus(ItemSuggestCache::Status status) {
   UMA_HISTOGRAM_ENUMERATION("Apps.AppList.ItemSuggestCache.Status", status);
 }
 
