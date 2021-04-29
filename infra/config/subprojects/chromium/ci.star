@@ -933,6 +933,16 @@ ci.android_builder(
 )
 
 ci.android_builder(
+    name = "android-weblayer-marshmallow-x86-rel-tests",
+    console_view_entry = consoles.console_view_entry(
+        category = "tester|weblayer",
+        short_name = "M",
+    ),
+    triggered_by = ["android-weblayer-with-aosp-webview-x86-rel"],
+    notifies = ["weblayer-sheriff"],
+)
+
+ci.android_builder(
     name = "android-weblayer-oreo-x86-rel-tests",
     console_view_entry = consoles.console_view_entry(
         category = "tester|weblayer",
@@ -950,6 +960,14 @@ ci.android_builder(
     ),
     triggered_by = ["android-weblayer-x86-rel"],
     notifies = ["weblayer-sheriff"],
+)
+
+ci.android_builder(
+    name = "android-weblayer-with-aosp-webview-x86-rel",
+    console_view_entry = consoles.console_view_entry(
+        category = "builder|weblayer_with_aosp_webview",
+        short_name = "x86",
+    ),
 )
 
 ci.android_builder(
@@ -1046,16 +1064,6 @@ ci.android_fyi_builder(
     console_view_entry = consoles.console_view_entry(
         category = "tester|weblayer",
         short_name = "10",
-    ),
-    triggered_by = ["android-weblayer-with-aosp-webview-x86-fyi-rel"],
-    notifies = ["weblayer-sheriff"],
-)
-
-ci.android_fyi_builder(
-    name = "android-weblayer-marshmallow-x86-rel-tests",
-    console_view_entry = consoles.console_view_entry(
-        category = "tester|weblayer",
-        short_name = "M",
     ),
     triggered_by = ["android-weblayer-with-aosp-webview-x86-fyi-rel"],
     notifies = ["weblayer-sheriff"],
