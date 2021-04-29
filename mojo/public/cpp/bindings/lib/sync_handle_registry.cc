@@ -16,6 +16,10 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "mojo/public/c/system/core.h"
 
+// Used to make sure we finish recordings on the main thread, even if we're
+// blocked in a sync event.
+extern "C" void V8RecordReplayMaybeTerminate(void (*callback)(void*), void* data);
+
 namespace mojo {
 
 SyncHandleRegistry::Subscription::Subscription(base::OnceClosure remove_closure,
@@ -123,14 +127,11 @@ bool SyncHandleRegistry::Wait(const bool* should_stop[], size_t count) {
   scoped_refptr<SyncHandleRegistry> preserver(this);
   while (true) {
     recordreplay::Assert("SyncHandleRegistry::Wait #1");
+    V8RecordReplayMaybeTerminate(nullptr, nullptr);
+
     for (size_t i = 0; i < count; ++i) {
       recordreplay::Assert("SyncHandleRegistry::Wait #2");
-      // When recording/replaying we can set one of the stop flags to force the
-      // wait to finish when finishing the recording, see SyncEventWatcher::SyncWatch.
-      // Uses of this flag aren't ordered wrt the reads here so we can get mismatches.
-      // For now we hack around this by ensuring the values read are the same.
-      if (recordreplay::RecordReplayValue("SyncHandleRegistry::Wait should_stop",
-                                          *should_stop[i])) {
+      if (*should_stop[i]) {
         recordreplay::Assert("SyncHandleRegistry::Wait #3");
         return true;
       }
