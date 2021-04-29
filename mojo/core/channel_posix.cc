@@ -67,6 +67,7 @@ class MessageView {
   MessageView& operator=(MessageView&& other) = default;
 
   ~MessageView() {
+    recordreplay::Assert("MessageView::~MessageView %d", !!message_);
     if (message_) {
       UMA_HISTOGRAM_TIMES("Mojo.Channel.WriteMessageLatency",
                           base::TimeTicks::Now() - start_time_);

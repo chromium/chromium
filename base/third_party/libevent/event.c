@@ -56,6 +56,26 @@
 #include "evutil.h"
 #include "log.h"
 
+#include <dlfcn.h>
+
+static void (*gRecordReplayAssertFn)(const char*, va_list);
+
+static void RecordReplayAssertFromC(const char* aFormat, ...) {
+  if (!gRecordReplayAssertFn) {
+    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayAssert");
+    if (!fnptr) {
+      return;
+    }
+    gRecordReplayAssertFn = fnptr;
+    //gRecordReplayAssertFn = reinterpret_cast<void(*)(const char*, va_list)>(fnptr);
+  }
+
+  va_list ap;
+  va_start(ap, aFormat);
+  gRecordReplayAssertFn(aFormat, ap);
+  va_end(ap);
+}
+
 #ifdef HAVE_EVENT_PORTS
 extern const struct eventop evportops;
 #endif
@@ -123,6 +143,8 @@ static void	timeout_correct(struct event_base *, struct timeval *);
 static int
 gettime(struct event_base *base, struct timeval *tp)
 {
+  RecordReplayAssertFromC("gettime");
+
 	if (base->tv_cache.tv_sec) {
 		*tp = base->tv_cache;
 		return (0);
