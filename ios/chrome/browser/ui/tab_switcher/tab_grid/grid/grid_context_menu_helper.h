@@ -11,11 +11,13 @@
 
 class Browser;
 @protocol TabContextMenuDelegate;
+@protocol GridMenuActionsDataSource;
 
 //  GridContextMenuHelper controls the creation of context menus for the Grid
 //  view.
 @interface GridContextMenuHelper : NSObject <GridContextMenuProvider>
 - (instancetype)initWithBrowser:(Browser*)browser
+              actionsDataSource:(id<GridMenuActionsDataSource>)actionsDataSource
          tabContextMenuDelegate:
              (id<TabContextMenuDelegate>)tabContextMenuDelegate
     NS_DESIGNATED_INITIALIZER;

@@ -29,6 +29,7 @@
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -51,9 +52,8 @@ TabSwitcherItem* CreateItem(web::WebState* web_state) {
   TabIdTabHelper* tab_helper = TabIdTabHelper::FromWebState(web_state);
   TabSwitcherItem* item =
       [[TabSwitcherItem alloc] initWithIdentifier:tab_helper->tab_id()];
-  item.URL = web_state->GetVisibleURL();
   // chrome://newtab (NTP) tabs have no title.
-  if (IsURLNtp(item.URL)) {
+  if (IsURLNtp(web_state->GetVisibleURL())) {
     item.hidesTitle = YES;
   }
   item.title = tab_util::GetTabTitle(web_state);
@@ -580,6 +580,16 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
 
 - (void)clearPreloadedSnapshots {
   [self.appearanceCache removeAllObjects];
+}
+
+#pragma mark - GridMenuActionsDataSource
+
+- (GridItem*)gridItemForCellIdentifier:(NSString*)identifier {
+  web::WebState* webState = GetWebStateWithId(self.webStateList, identifier);
+  GridItem* item =
+      [[GridItem alloc] initWithTitle:tab_util::GetTabTitle(webState)
+                                  url:webState->GetVisibleURL()];
+  return item;
 }
 
 #pragma mark - Private

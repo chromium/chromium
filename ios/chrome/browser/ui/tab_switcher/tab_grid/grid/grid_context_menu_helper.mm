@@ -8,7 +8,9 @@
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/menu/tab_context_menu_delegate.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_cell.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_menu_actions_data_source.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -19,6 +21,7 @@
 @property(nonatomic, assign) Browser* browser;
 
 @property(nonatomic, weak) id<TabContextMenuDelegate> contextMenuDelegate;
+@property(nonatomic, weak) id<GridMenuActionsDataSource> actionsDataSource;
 
 @end
 
@@ -27,20 +30,20 @@
 #pragma mark - GridContextMenuProvider
 
 - (instancetype)initWithBrowser:(Browser*)browser
+              actionsDataSource:(id<GridMenuActionsDataSource>)actionsDataSource
          tabContextMenuDelegate:
              (id<TabContextMenuDelegate>)tabContextMenuDelegate {
   self = [super init];
   if (self) {
     _browser = browser;
     _contextMenuDelegate = tabContextMenuDelegate;
+    _actionsDataSource = actionsDataSource;
   }
   return self;
 }
 
-- (UIContextMenuConfiguration*)contextMenuConfigurationForItem:
-                                   (TabSwitcherItem*)item
-                                                      fromView:(UIView*)view
-    API_AVAILABLE(ios(13.0)) {
+- (UIContextMenuConfiguration*)contextMenuConfigurationForGridCell:
+    (GridCell*)gridCell API_AVAILABLE(ios(13.0)) {
   __weak __typeof(self) weakSelf = self;
 
   UIContextMenuActionProvider actionProvider =
@@ -59,13 +62,16 @@
             [[ActionFactory alloc] initWithBrowser:strongSelf.browser
                                           scenario:MenuScenario::kTabGridEntry];
 
+        GridItem* item = [weakSelf.actionsDataSource
+            gridItemForCellIdentifier:gridCell.itemIdentifier];
+
         NSMutableArray<UIMenuElement*>* menuElements =
             [[NSMutableArray alloc] init];
 
         [menuElements addObject:[actionFactory actionToShareWithBlock:^{
                         [weakSelf.contextMenuDelegate shareURL:item.URL
                                                          title:item.title
-                                                      fromView:view];
+                                                      fromView:gridCell];
                       }]];
 
         return [UIMenu menuWithTitle:@"" children:menuElements];

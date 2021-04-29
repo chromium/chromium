@@ -550,12 +550,14 @@
   if (@available(iOS 13.0, *)) {
     self.regularTabsGridContextMenuHelper =
         [[GridContextMenuHelper alloc] initWithBrowser:self.regularBrowser
+                                     actionsDataSource:self.regularTabsMediator
                                 tabContextMenuDelegate:self];
     self.baseViewController.regularTabsContextMenuProvider =
         self.regularTabsGridContextMenuHelper;
-    self.incognitoTabsGridContextMenuHelper =
-        [[GridContextMenuHelper alloc] initWithBrowser:self.incognitoBrowser
-                                tabContextMenuDelegate:self];
+    self.incognitoTabsGridContextMenuHelper = [[GridContextMenuHelper alloc]
+               initWithBrowser:self.incognitoBrowser
+             actionsDataSource:self.incognitoTabsMediator
+        tabContextMenuDelegate:self];
     self.baseViewController.incognitoTabsContextMenuProvider =
         self.incognitoTabsGridContextMenuHelper;
   }

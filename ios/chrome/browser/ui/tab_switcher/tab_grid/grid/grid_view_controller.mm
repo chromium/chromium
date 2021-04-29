@@ -407,9 +407,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   if (!IsTabGridContextMenuEnabled()) {
     return nil;
   }
-  UIView* cell = [self.collectionView cellForItemAtIndexPath:indexPath];
-  TabSwitcherItem* item = self.items[indexPath.item];
-  return [self.menuProvider contextMenuConfigurationForItem:item fromView:cell];
+  GridCell* cell = base::mac::ObjCCastStrict<GridCell>(
+      [self.collectionView cellForItemAtIndexPath:indexPath]);
+  return [self.menuProvider contextMenuConfigurationForGridCell:cell];
 }
 
 #pragma mark - UIPointerInteractionDelegate
