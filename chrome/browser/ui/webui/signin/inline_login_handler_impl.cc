@@ -83,7 +83,6 @@
 
 #if defined(OS_WIN)
 #include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #endif  // defined(OS_WIN)
 

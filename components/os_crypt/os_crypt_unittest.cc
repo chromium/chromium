@@ -26,7 +26,6 @@
 #endif
 
 #if defined(OS_WIN)
-#include "base/strings/string_util.h"
 #include "components/prefs/testing_pref_service.h"
 #include "crypto/random.h"
 #endif

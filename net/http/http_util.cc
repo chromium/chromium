@@ -4,7 +4,6 @@
 
 // The rules for parsing content-types were borrowed from Firefox:
 // http://lxr.mozilla.org/mozilla/source/netwerk/base/src/nsURLHelper.cpp#834
-#include "base/strings/string_util.h"
 
 #include "net/http/http_util.h"
 
