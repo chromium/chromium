@@ -8,11 +8,14 @@
 #include <set>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
+#include "base/values.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -83,7 +86,7 @@ class PaymentsClient {
     bool offer_fido_opt_in = false;
     // Public Key Credential Request Options required for authentication.
     // https://www.w3.org/TR/webauthn/#dictdef-publickeycredentialrequestoptions
-    base::Optional<base::Value> fido_request_options = base::nullopt;
+    base::Optional<base::Value> fido_request_options;
     // Set of credit cards ids that are eligible for FIDO Authentication.
     std::set<std::string> fido_eligible_card_ids;
   };
@@ -100,7 +103,7 @@ class PaymentsClient {
     CreditCard card;
     std::string risk_data;
     CardUnmaskDelegate::UserProvidedUnmaskDetails user_response;
-    base::Optional<base::Value> fido_assertion_info = base::nullopt;
+    base::Optional<base::Value> fido_assertion_info;
   };
 
   // Information retrieved from an UnmaskRequest.
@@ -124,10 +127,10 @@ class PaymentsClient {
     std::string dcvv;
     // Challenge required for enrolling user into FIDO authentication for future
     // card unmasking.
-    base::Optional<base::Value> fido_creation_options = base::nullopt;
+    base::Optional<base::Value> fido_creation_options;
     // Challenge required for authorizing user for FIDO authentication for
     // future card unmasking.
-    base::Optional<base::Value> fido_request_options = base::nullopt;
+    base::Optional<base::Value> fido_request_options;
     // An opaque token used to logically chain consecutive UnmaskCard and
     // OptChange calls together.
     std::string card_authorization_token = std::string();
@@ -159,7 +162,7 @@ class PaymentsClient {
     Reason reason;
     // Signature required for enrolling user into FIDO authentication for future
     // card unmasking.
-    base::Optional<base::Value> fido_authenticator_response = base::nullopt;
+    base::Optional<base::Value> fido_authenticator_response;
     // An opaque token used to logically chain consecutive UnmaskCard and
     // OptChange calls together.
     std::string card_authorization_token = std::string();
@@ -176,10 +179,10 @@ class PaymentsClient {
     base::Optional<bool> user_is_opted_in;
     // Challenge required for enrolling user into FIDO authentication for future
     // card unmasking.
-    base::Optional<base::Value> fido_creation_options = base::nullopt;
+    base::Optional<base::Value> fido_creation_options;
     // Challenge required for authorizing user for FIDO authentication for
     // future card unmasking.
-    base::Optional<base::Value> fido_request_options = base::nullopt;
+    base::Optional<base::Value> fido_request_options;
   };
 
   // A collection of the information required to make a credit card upload
