@@ -192,8 +192,22 @@ void TooltipController::OnMouseEvent(ui::MouseEvent* event) {
     return;
   }
   switch (event->type()) {
-    case ui::ET_MOUSE_CAPTURE_CHANGED:
     case ui::ET_MOUSE_EXITED:
+      // TODO(bebeaudr): Keyboard-triggered tooltips that show up right where
+      // the cursor currently is are hidden as soon as they show up because of
+      // this event. Handle this case differently to fix the issue.
+      //
+      // Whenever a tooltip is closed, an ET_MOUSE_EXITED event is fired, even
+      // if the cursor is not in the tooltip's window. Make sure that these
+      // mouse exited events don't interfere with keyboard triggered tooltips by
+      // returning early.
+      if (state_manager_->tooltip_parent_window() &&
+          state_manager_->tooltip_trigger() == TooltipTrigger::kKeyboard) {
+        return;
+      }
+      SetObservedWindow(nullptr);
+      break;
+    case ui::ET_MOUSE_CAPTURE_CHANGED:
     case ui::ET_MOUSE_MOVED:
     case ui::ET_MOUSE_DRAGGED: {
       last_mouse_loc_ = event->location();

@@ -684,6 +684,52 @@ TEST_F(TooltipControllerTest, ShowAndHideTooltipTriggeredFromKeyboard) {
   EXPECT_EQ(nullptr, helper_->GetTooltipParentWindow());
 }
 
+TEST_F(TooltipControllerTest,
+       KeyboardTriggeredTooltipStaysVisibleOnMouseExitedEvent) {
+  std::u16string expected_tooltip = u"Tooltip Text";
+
+  wm::SetTooltipText(GetWindow(), &expected_tooltip);
+  view_->set_tooltip_text(expected_tooltip);
+  EXPECT_EQ(std::u16string(), helper_->GetTooltipText());
+  EXPECT_EQ(nullptr, helper_->GetTooltipParentWindow());
+
+  // For this test to execute properly, make sure that the cursor location is
+  // somewhere out of the |view_|, different than (0, 0). This shouldn't show
+  // the tooltip.
+  gfx::Point off_view_point = view_->bounds().bottom_right();
+  off_view_point.Offset(1, 1);
+  generator_->MoveMouseRelativeTo(widget_->GetNativeWindow(), off_view_point);
+  EXPECT_FALSE(helper_->IsTooltipVisible());
+
+  // Trigger the tooltip from the keyboard.
+  helper_->controller()->UpdateTooltipFromKeyboard(
+      view_->ConvertRectToWidget(view_->bounds()), GetWindow());
+
+  EXPECT_EQ(expected_tooltip, wm::GetTooltipText(GetWindow()));
+  EXPECT_EQ(expected_tooltip, helper_->GetTooltipText());
+  EXPECT_EQ(GetWindow(), helper_->GetTooltipParentWindow());
+  EXPECT_TRUE(helper_->IsTooltipVisible());
+  EXPECT_EQ(helper_->state_manager()->tooltip_trigger(),
+            TooltipTrigger::kKeyboard);
+
+  // Sending a mouse exited event shouldn't hide a keyboard triggered tooltip.
+  generator_->SendMouseExit();
+  EXPECT_TRUE(helper_->IsTooltipVisible());
+
+  helper_->HideAndReset();
+  expected_tooltip = u"Tooltip Text 2";
+  EXPECT_FALSE(helper_->IsTooltipVisible());
+
+  // However, a cursor triggered tooltip should still be hidden by a mouse
+  // exited event.
+  generator_->MoveMouseRelativeTo(widget_->GetNativeWindow(),
+                                  view_->bounds().CenterPoint());
+  EXPECT_TRUE(helper_->IsTooltipVisible());
+
+  generator_->SendMouseExit();
+  EXPECT_FALSE(helper_->IsTooltipVisible());
+}
+
 namespace {
 
 // Returns the index of |window| in its parent's children.
