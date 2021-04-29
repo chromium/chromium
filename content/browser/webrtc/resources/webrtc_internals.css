@@ -132,3 +132,7 @@ th {
 details[open] details summary {
     background-color: rgb(220, 220, 220);
 }
+
+.peerconnection-deprecations {
+  font-weight: bold;
+}
