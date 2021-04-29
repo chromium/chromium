@@ -329,6 +329,7 @@ MultiplexRouter::MultiplexRouter(
                  primary_interface_name),
       control_message_handler_(this),
       control_message_proxy_(&connector_) {
+  recordreplay::RegisterPointer(this);
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   if (config == MULTI_INTERFACE)
@@ -367,6 +368,9 @@ MultiplexRouter::MultiplexRouter(
 }
 
 MultiplexRouter::~MultiplexRouter() {
+  recordreplay::Assert("MultiplexRouter::~MultiplexRouter Start %lu", recordreplay::PointerId(this));
+  recordreplay::UnregisterPointer(this);
+
   MayAutoLock locker(&lock_);
 
   being_destructed_ = true;
@@ -374,6 +378,7 @@ MultiplexRouter::~MultiplexRouter() {
   sync_message_tasks_.clear();
   tasks_.clear();
   endpoints_.clear();
+  recordreplay::Assert("MultiplexRouter::~MultiplexRouter Done");
 }
 
 void MultiplexRouter::SetIncomingMessageFilter(
