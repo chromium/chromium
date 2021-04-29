@@ -49,6 +49,7 @@ Prerequisite:
        ```
        include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
        include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/out/Default/gen)
+       include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/third_party/protobuf/src)
        include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/third_party/googletest/src/googletest/include)
        ```
     1. (Optional) Replace the `add_executable` files to include a single file;
