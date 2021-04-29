@@ -89,13 +89,13 @@ void SubresourceFilterTestHarness::SetUp() {
 
   VerifiedRulesetDealer::Handle* dealer =
       ruleset_service_.get()->GetRulesetDealer();
-  auto client = std::make_unique<TestSubresourceFilterClient>(web_contents());
-  client_ = client.get();
+  throttle_manager_test_support_ =
+      std::make_unique<ThrottleManagerTestSupport>(web_contents());
   database_manager_ = base::MakeRefCounted<FakeSafeBrowsingDatabaseManager>();
   infobar_manager_ =
       std::make_unique<infobars::ContentInfoBarManager>(web_contents());
   ContentSubresourceFilterThrottleManager::CreateForWebContents(
-      web_contents(), std::move(client), client_->profile_context(),
+      web_contents(), throttle_manager_test_support_->profile_context(),
       infobar_manager_.get(), database_manager_, dealer);
 
   // Observe web_contents() to add subresource filter navigation throttles at
@@ -164,7 +164,7 @@ void SubresourceFilterTestHarness::RemoveURLFromBlocklist(const GURL& url) {
 
 SubresourceFilterContentSettingsManager*
 SubresourceFilterTestHarness::GetSettingsManager() {
-  return client_->profile_context()->settings_manager();
+  return throttle_manager_test_support_->profile_context()->settings_manager();
 }
 
 void SubresourceFilterTestHarness::SetIsAdSubframe(

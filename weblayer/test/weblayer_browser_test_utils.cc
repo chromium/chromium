@@ -11,7 +11,6 @@
 #include "components/subresource_filter/content/browser/fake_safe_browsing_database_manager.h"
 #include "url/gurl.h"
 #include "weblayer/browser/browser_process.h"
-#include "weblayer/browser/subresource_filter_client_impl.h"
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/public/navigation_controller.h"
 #include "weblayer/public/tab.h"

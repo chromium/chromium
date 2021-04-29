@@ -34,6 +34,8 @@
 #include "components/permissions/permission_result.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
+#include "components/subresource_filter/content/browser/ruleset_service.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/webapps/browser/installable/installable_manager.h"
@@ -78,7 +80,8 @@
 #include "weblayer/browser/persistence/browser_persister.h"
 #include "weblayer/browser/popup_navigation_delegate_impl.h"
 #include "weblayer/browser/profile_impl.h"
-#include "weblayer/browser/subresource_filter_client_impl.h"
+#include "weblayer/browser/safe_browsing/safe_browsing_service.h"
+#include "weblayer/browser/subresource_filter_profile_context_factory.h"
 #include "weblayer/browser/translate_client_impl.h"
 #include "weblayer/browser/weblayer_features.h"
 #include "weblayer/common/isolated_world_ids.h"
@@ -104,6 +107,7 @@
 #include "components/embedder_support/android/contextmenu/context_menu_builder.h"
 #include "components/embedder_support/android/delegate/color_chooser_android.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"  // nogncheck
+#include "components/safe_browsing/android/remote_database_manager.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "ui/android/view_android.h"
 #include "ui/gfx/android/java_bitmap.h"
@@ -253,6 +257,46 @@ class WebContentsTracker : public content::WebContentsObserver {
       : content::WebContentsObserver(web_contents) {}
 };
 
+// Returns a scoped refptr to the SafeBrowsingService's database manager, if
+// available. Otherwise returns nullptr.
+const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
+GetDatabaseManagerFromSafeBrowsingService() {
+#if defined(OS_ANDROID)
+  SafeBrowsingService* safe_browsing_service =
+      BrowserProcess::GetInstance()->GetSafeBrowsingService();
+  return safe_browsing_service
+             ? scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>(
+                   safe_browsing_service->GetSafeBrowsingDBManager())
+             : nullptr;
+#else
+  return nullptr;
+#endif
+}
+
+// Creates a ContentSubresourceFilterThrottleManager for |web_contents|, passing
+// it the needed embedder-level state.
+void CreateContentSubresourceFilterThrottleManagerForWebContents(
+    content::WebContents* web_contents) {
+  subresource_filter::RulesetService* ruleset_service =
+      BrowserProcess::GetInstance()->subresource_filter_ruleset_service();
+  subresource_filter::VerifiedRulesetDealer::Handle* dealer =
+      ruleset_service ? ruleset_service->GetRulesetDealer() : nullptr;
+  subresource_filter::ContentSubresourceFilterThrottleManager::
+      CreateForWebContents(
+          web_contents,
+          SubresourceFilterProfileContextFactory::GetForBrowserContext(
+              web_contents->GetBrowserContext()),
+  // Infobars are supported only on Android in WebLayer. This is not a
+  // problem as the subresource filter shows the infobar only on Android
+  // as well.
+#if defined(OS_ANDROID)
+          InfoBarService::FromWebContents(web_contents),
+#else
+          nullptr,
+#endif
+          GetDatabaseManagerFromSafeBrowsingService(), dealer);
+}
+
 }  // namespace
 
 #if defined(OS_ANDROID)
@@ -327,7 +371,7 @@ TabImpl::TabImpl(ProfileImpl* profile,
   InfoBarService::CreateForWebContents(web_contents_.get());
 #endif
 
-  SubresourceFilterClientImpl::CreateThrottleManagerWithClientForWebContents(
+  CreateContentSubresourceFilterThrottleManagerForWebContents(
       web_contents_.get());
 
   sessions::SessionTabHelper::CreateForWebContents(

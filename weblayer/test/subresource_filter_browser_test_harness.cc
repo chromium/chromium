@@ -14,7 +14,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "weblayer/browser/browser_process.h"
 #include "weblayer/browser/heavy_ad_service_factory.h"
-#include "weblayer/browser/subresource_filter_client_impl.h"
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/shell/browser/shell.h"
 #include "weblayer/test/weblayer_browser_test_utils.h"

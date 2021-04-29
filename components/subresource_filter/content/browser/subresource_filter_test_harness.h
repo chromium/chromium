@@ -9,7 +9,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "components/subresource_filter/content/browser/fake_safe_browsing_database_manager.h"
-#include "components/subresource_filter/content/browser/test_subresource_filter_client.h"
+#include "components/subresource_filter/content/browser/throttle_manager_test_support.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features_test_support.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -105,7 +105,7 @@ class SubresourceFilterTestHarness : public content::RenderViewHostTestHarness,
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   testing::ScopedSubresourceFilterConfigurator scoped_configuration_;
   scoped_refptr<FakeSafeBrowsingDatabaseManager> database_manager_;
-  TestSubresourceFilterClient* client_;
+  std::unique_ptr<ThrottleManagerTestSupport> throttle_manager_test_support_;
   std::unique_ptr<infobars::ContentInfoBarManager> infobar_manager_;
   std::unique_ptr<RulesetService> ruleset_service_;
 };

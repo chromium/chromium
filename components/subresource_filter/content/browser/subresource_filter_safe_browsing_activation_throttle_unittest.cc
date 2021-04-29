@@ -28,7 +28,7 @@
 #include "components/subresource_filter/content/browser/subresource_filter_observer_test_utils.h"
 #include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_client.h"
 #include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_client_request.h"
-#include "components/subresource_filter/content/browser/test_subresource_filter_client.h"
+#include "components/subresource_filter/content/browser/throttle_manager_test_support.h"
 #include "components/subresource_filter/content/browser/verified_ruleset_dealer.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features_test_support.h"
@@ -164,14 +164,13 @@ class SubresourceFilterSafeBrowsingActivationThrottleTest
                                               base::DoNothing());
 
     auto* contents = RenderViewHostTestHarness::web_contents();
-    auto subresource_filter_client =
-        std::make_unique<TestSubresourceFilterClient>(contents);
-    client_ = subresource_filter_client.get();
+    throttle_manager_test_support_ =
+        std::make_unique<ThrottleManagerTestSupport>(contents);
     infobar_manager_ =
         std::make_unique<infobars::ContentInfoBarManager>(contents);
     throttle_manager_ =
         std::make_unique<ContentSubresourceFilterThrottleManager>(
-            std::move(subresource_filter_client), client_->profile_context(),
+            throttle_manager_test_support_->profile_context(),
             infobar_manager_.get(), /*database_manager=*/nullptr,
             ruleset_dealer_.get(), contents);
     fake_safe_browsing_database_ = new FakeSafeBrowsingDatabaseManager();
@@ -333,8 +332,6 @@ class SubresourceFilterSafeBrowsingActivationThrottleTest
 
   const base::HistogramTester& tester() const { return tester_; }
 
-  TestSubresourceFilterClient* client() { return client_; }
-
   TestSafeBrowsingActivationThrottleDelegate* delegate() { return &delegate_; }
   base::TestMockTimeTaskRunner* test_io_task_runner() const {
     return test_io_task_runner_.get();
@@ -342,6 +339,20 @@ class SubresourceFilterSafeBrowsingActivationThrottleTest
 
   testing::ScopedSubresourceFilterConfigurator* scoped_configuration() {
     return &scoped_configuration_;
+  }
+
+  bool presenting_ads_blocked_infobar() const {
+    if (infobar_manager_->infobar_count() == 0)
+      return false;
+
+    // No infobars other than the ads blocked infobar should be displayed in the
+    // context of these tests.
+    EXPECT_EQ(infobar_manager_->infobar_count(), 1u);
+    auto* infobar = infobar_manager_->infobar_at(0);
+    EXPECT_EQ(infobar->delegate()->GetIdentifier(),
+              infobars::InfoBarDelegate::ADS_BLOCKED_INFOBAR_DELEGATE_ANDROID);
+
+    return true;
   }
 
  private:
@@ -357,7 +368,7 @@ class SubresourceFilterSafeBrowsingActivationThrottleTest
   std::unique_ptr<ContentSubresourceFilterThrottleManager> throttle_manager_;
 
   std::unique_ptr<content::NavigationSimulator> navigation_simulator_;
-  TestSubresourceFilterClient* client_;
+  std::unique_ptr<ThrottleManagerTestSupport> throttle_manager_test_support_;
   std::unique_ptr<infobars::ContentInfoBarManager> infobar_manager_;
   std::unique_ptr<TestSubresourceFilterObserver> observer_;
   scoped_refptr<FakeSafeBrowsingDatabaseManager> fake_safe_browsing_database_;
@@ -567,7 +578,9 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest,
   content::RenderFrameHost* rfh = SimulateNavigateAndCommit({url}, main_rfh());
 
   EXPECT_FALSE(CreateAndNavigateDisallowedSubframe(rfh));
-  EXPECT_EQ(1, client()->disallowed_notification_count());
+#if defined(OS_ANDROID)
+  EXPECT_TRUE(presenting_ads_blocked_infobar());
+#endif
 }
 
 TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest, ActivationList) {
@@ -735,7 +748,9 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest,
   // Navigate initially, should be no activation.
   SimulateNavigateAndCommit({url}, main_rfh());
   EXPECT_TRUE(CreateAndNavigateDisallowedSubframe(main_rfh()));
-  EXPECT_EQ(0, client()->disallowed_notification_count());
+#if defined(OS_ANDROID)
+  EXPECT_FALSE(presenting_ads_blocked_infobar());
+#endif
 
   // Simulate opening devtools and forcing activation.
   devtools_interaction_tracker->ToggleForceActivation(true);
@@ -745,7 +760,9 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest,
 
   SimulateNavigateAndCommit({url}, main_rfh());
   EXPECT_FALSE(CreateAndNavigateDisallowedSubframe(main_rfh()));
-  EXPECT_EQ(1, client()->disallowed_notification_count());
+#if defined(OS_ANDROID)
+  EXPECT_TRUE(presenting_ads_blocked_infobar());
+#endif
 
   histogram_tester.ExpectBucketCount(
       "SubresourceFilter.PageLoad.ActivationDecision",
@@ -776,7 +793,9 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest,
 
   // Resource should be disallowed, since navigation commit had activation.
   EXPECT_FALSE(CreateAndNavigateDisallowedSubframe(main_rfh()));
-  EXPECT_EQ(1, client()->disallowed_notification_count());
+#if defined(OS_ANDROID)
+  EXPECT_TRUE(presenting_ads_blocked_infobar());
+#endif
 }
 
 TEST_P(SubresourceFilterSafeBrowsingActivationThrottleScopeTest,

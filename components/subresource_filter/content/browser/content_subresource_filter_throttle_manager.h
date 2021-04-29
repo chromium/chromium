@@ -45,7 +45,6 @@ class ActivationStateComputingNavigationThrottle;
 class PageLoadStatistics;
 class ProfileInteractionManager;
 class SubresourceFilterProfileContext;
-class SubresourceFilterClient;
 
 // This enum backs a histogram. Make sure new elements are only added to the
 // end. Keep histograms.xml up to date with any changes.
@@ -81,10 +80,7 @@ enum class SubresourceFilterAction {
 // RenderFrameHosts, along with their associated DocumentSubresourceFilters.
 //
 // The class is designed to be attached to a WebContents instance by an embedder
-// via CreateForWebContents(), with the embedder passing a
-// SubresourceFilterClient instance customized for that embedder. The client
-// will be notified of the first disallowed subresource load for a top level
-// navgation, and has veto power for frame activation.
+// via CreateForWebContents().
 class ContentSubresourceFilterThrottleManager
     : public base::SupportsUserData::Data,
       public content::WebContentsObserver,
@@ -100,7 +96,6 @@ class ContentSubresourceFilterThrottleManager
   // not enabled.
   static void CreateForWebContents(
       content::WebContents* web_contents,
-      std::unique_ptr<SubresourceFilterClient> client,
       SubresourceFilterProfileContext* profile_context,
       infobars::ContentInfoBarManager* infobar_manager,
       scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
@@ -111,7 +106,6 @@ class ContentSubresourceFilterThrottleManager
       content::WebContents* web_contents);
 
   ContentSubresourceFilterThrottleManager(
-      std::unique_ptr<SubresourceFilterClient> client,
       SubresourceFilterProfileContext* profile_context,
       infobars::ContentInfoBarManager* infobar_manager,
       scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
@@ -135,8 +129,6 @@ class ContentSubresourceFilterThrottleManager
 
   PageLoadStatistics* page_load_statistics() const { return statistics_.get(); }
 
-  SubresourceFilterClient* client() { return client_.get(); }
-
   VerifiedRuleset::Handle* ruleset_handle_for_testing() {
     return ruleset_handle_.get();
   }
@@ -152,7 +144,7 @@ class ContentSubresourceFilterThrottleManager
   base::Optional<LoadPolicy> LoadPolicyForLastCommittedNavigation(
       content::RenderFrameHost* frame_host) const;
 
-  // Notifies the client that the user has requested a reload of a page with
+  // Called when the user has requested a reload of a page with
   // blocked ads (e.g., via an infobar).
   void OnReloadRequested();
 
@@ -230,8 +222,8 @@ class ContentSubresourceFilterThrottleManager
   const base::Optional<subresource_filter::mojom::ActivationState>
   GetFrameActivationState(content::RenderFrameHost* frame_host);
 
-  // Calls ShowNotification on |client_| at most once per committed,
-  // non-same-page navigation in the main frame.
+  // Calls MaybeShowNotification on |profile_interaction_manager_| at most once
+  // per committed, non-same-page navigation in the main frame.
   void MaybeShowNotification();
 
   VerifiedRuleset::Handle* EnsureRulesetHandle();
@@ -334,7 +326,6 @@ class ContentSubresourceFilterThrottleManager
   // This member outlives this class.
   VerifiedRulesetDealer::Handle* dealer_handle_;
 
-  std::unique_ptr<SubresourceFilterClient> client_;
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
 
   std::unique_ptr<ProfileInteractionManager> profile_interaction_manager_;

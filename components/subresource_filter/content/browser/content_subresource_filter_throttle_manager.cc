@@ -19,7 +19,6 @@
 #include "components/subresource_filter/content/browser/async_document_subresource_filter.h"
 #include "components/subresource_filter/content/browser/page_load_statistics.h"
 #include "components/subresource_filter/content/browser/profile_interaction_manager.h"
-#include "components/subresource_filter/content/browser/subresource_filter_client.h"
 #include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_activation_throttle.h"
 #include "components/subresource_filter/content/mojom/subresource_filter_agent.mojom.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
@@ -89,7 +88,6 @@ const char ContentSubresourceFilterThrottleManager::
 // static
 void ContentSubresourceFilterThrottleManager::CreateForWebContents(
     content::WebContents* web_contents,
-    std::unique_ptr<SubresourceFilterClient> client,
     SubresourceFilterProfileContext* profile_context,
     infobars::ContentInfoBarManager* infobar_manager,
     scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager,
@@ -103,8 +101,8 @@ void ContentSubresourceFilterThrottleManager::CreateForWebContents(
   web_contents->SetUserData(
       kContentSubresourceFilterThrottleManagerWebContentsUserDataKey,
       std::make_unique<ContentSubresourceFilterThrottleManager>(
-          std::move(client), profile_context, infobar_manager, database_manager,
-          dealer_handle, web_contents));
+          profile_context, infobar_manager, database_manager, dealer_handle,
+          web_contents));
 }
 
 // static
@@ -118,7 +116,6 @@ ContentSubresourceFilterThrottleManager::FromWebContents(
 
 ContentSubresourceFilterThrottleManager::
     ContentSubresourceFilterThrottleManager(
-        std::unique_ptr<SubresourceFilterClient> client,
         SubresourceFilterProfileContext* profile_context,
         infobars::ContentInfoBarManager* infobar_manager,
         scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
@@ -128,7 +125,6 @@ ContentSubresourceFilterThrottleManager::
     : content::WebContentsObserver(web_contents),
       receiver_(web_contents, this),
       dealer_handle_(dealer_handle),
-      client_(std::move(client)),
       database_manager_(std::move(database_manager)),
       profile_interaction_manager_(
           std::make_unique<subresource_filter::ProfileInteractionManager>(
@@ -622,7 +618,7 @@ void ContentSubresourceFilterThrottleManager::MaybeShowNotification() {
     return;
   }
 
-  profile_interaction_manager_->MaybeShowNotification(client_.get());
+  profile_interaction_manager_->MaybeShowNotification();
 
   current_committed_load_has_notified_disallowed_load_ = true;
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/subresource_filter/content/browser/test_subresource_filter_client.h"
+#include "components/subresource_filter/content/browser/throttle_manager_test_support.h"
 
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/browser/test_page_specific_content_settings_delegate.h"
@@ -13,7 +13,7 @@
 
 namespace subresource_filter {
 
-TestSubresourceFilterClient::TestSubresourceFilterClient(
+ThrottleManagerTestSupport::ThrottleManagerTestSupport(
     content::WebContents* web_contents) {
   // Set up the state that's required by ProfileInteractionManager.
   HostContentSettingsMap::RegisterProfilePrefs(prefs_.registry());
@@ -32,15 +32,11 @@ TestSubresourceFilterClient::TestSubresourceFilterClient(
           /*prefs=*/nullptr, settings_map_.get()));
 }
 
-TestSubresourceFilterClient::~TestSubresourceFilterClient() {
+ThrottleManagerTestSupport::~ThrottleManagerTestSupport() {
   settings_map_->ShutdownOnUIThread();
 }
 
-void TestSubresourceFilterClient::OnNotificationShown() {
-  ++disallowed_notification_count_;
-}
-
-void TestSubresourceFilterClient::SetShouldUseSmartUI(bool enabled) {
+void ThrottleManagerTestSupport::SetShouldUseSmartUI(bool enabled) {
   profile_context_->settings_manager()->set_should_use_smart_ui_for_testing(
       enabled);
 }

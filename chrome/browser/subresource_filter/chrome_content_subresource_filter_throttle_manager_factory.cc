@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/subresource_filter/chrome_subresource_filter_client.h"
+#include "chrome/browser/subresource_filter/chrome_content_subresource_filter_throttle_manager_factory.h"
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/infobars/infobar_service.h"
@@ -12,10 +12,6 @@
 #include "components/safe_browsing/core/db/database_manager.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
-
-#if defined(OS_ANDROID)
-#include "chrome/browser/infobars/infobar_service.h"
-#endif
 
 namespace {
 
@@ -31,18 +27,8 @@ GetDatabaseManagerFromSafeBrowsingService() {
 
 }  // namespace
 
-ChromeSubresourceFilterClient::ChromeSubresourceFilterClient(
-    content::WebContents* web_contents)
-    : web_contents_(web_contents) {
-  DCHECK(web_contents_);
-}
-
-ChromeSubresourceFilterClient::~ChromeSubresourceFilterClient() = default;
-
-// static
-void ChromeSubresourceFilterClient::
-    CreateThrottleManagerWithClientForWebContents(
-        content::WebContents* web_contents) {
+void CreateSubresourceFilterThrottleManagerForWebContents(
+    content::WebContents* web_contents) {
   subresource_filter::RulesetService* ruleset_service =
       g_browser_process->subresource_filter_ruleset_service();
   subresource_filter::VerifiedRulesetDealer::Handle* dealer =
@@ -50,7 +36,6 @@ void ChromeSubresourceFilterClient::
   subresource_filter::ContentSubresourceFilterThrottleManager::
       CreateForWebContents(
           web_contents,
-          std::make_unique<ChromeSubresourceFilterClient>(web_contents),
           SubresourceFilterProfileContextFactory::GetForProfile(
               Profile::FromBrowserContext(web_contents->GetBrowserContext())),
           InfoBarService::FromWebContents(web_contents),

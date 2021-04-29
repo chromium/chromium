@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_TEST_SUBRESOURCE_FILTER_CLIENT_H_
-#define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_TEST_SUBRESOURCE_FILTER_CLIENT_H_
+#ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_THROTTLE_MANAGER_TEST_SUPPORT_H_
+#define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_THROTTLE_MANAGER_TEST_SUPPORT_H_
 
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "components/subresource_filter/content/browser/subresource_filter_client.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 
 class HostContentSettingsMap;
@@ -21,14 +20,16 @@ namespace subresource_filter {
 
 class SubresourceFilterProfileContext;
 
-// An implementation of SubresourceFilterClient suitable for use in unittests.
-class TestSubresourceFilterClient : public SubresourceFilterClient {
+// Sets up necessary dependencies of ContentSubresourceFilterThrottleManager for
+// convenience in unittests.
+class ThrottleManagerTestSupport {
  public:
-  explicit TestSubresourceFilterClient(content::WebContents* web_contents);
-  ~TestSubresourceFilterClient() override;
+  explicit ThrottleManagerTestSupport(content::WebContents* web_contents);
+  ~ThrottleManagerTestSupport();
 
-  // SubresourceFilterClient:
-  void OnNotificationShown() override;
+  ThrottleManagerTestSupport(const ThrottleManagerTestSupport&) = delete;
+  ThrottleManagerTestSupport& operator=(const ThrottleManagerTestSupport&) =
+      delete;
 
   SubresourceFilterProfileContext* profile_context() {
     return profile_context_.get();
@@ -38,19 +39,12 @@ class TestSubresourceFilterClient : public SubresourceFilterClient {
   // some platforms only).
   void SetShouldUseSmartUI(bool enabled);
 
-  // Returns the number of times that ShowNotification() was invoked.
-  int disallowed_notification_count() const {
-    return disallowed_notification_count_;
-  }
-
  private:
   sync_preferences::TestingPrefServiceSyncable prefs_;
   scoped_refptr<HostContentSettingsMap> settings_map_;
   std::unique_ptr<SubresourceFilterProfileContext> profile_context_;
-
-  int disallowed_notification_count_ = 0;
 };
 
 }  // namespace subresource_filter
 
-#endif  // COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_TEST_SUBRESOURCE_FILTER_CLIENT_H_
+#endif  // COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_THROTTLE_MANAGER_TEST_SUPPORT_H_

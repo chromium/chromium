@@ -9,7 +9,6 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/subresource_filter/content/browser/ads_intervention_manager.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
-#include "components/subresource_filter/content/browser/subresource_filter_client.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
 #include "content/public/browser/navigation_controller.h"
@@ -129,16 +128,13 @@ mojom::ActivationLevel ProfileInteractionManager::OnPageActivationComputed(
   return effective_activation_level;
 }
 
-void ProfileInteractionManager::MaybeShowNotification(
-    SubresourceFilterClient* client) {
+void ProfileInteractionManager::MaybeShowNotification() {
   const GURL& top_level_url = web_contents()->GetLastCommittedURL();
   if (profile_context_->settings_manager()->ShouldShowUIForSite(
           top_level_url)) {
 #if defined(OS_ANDROID)
     subresource_filter::AdsBlockedInfobarDelegate::Create(infobar_manager_);
 #endif
-
-    client->OnNotificationShown();
 
     // TODO(https://crbug.com/1103176): Plumb the actual frame reference here
     // (it comes from
