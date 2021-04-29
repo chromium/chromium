@@ -68,3 +68,28 @@ TEST_F(
             .replay();
       });
     });
+
+TEST_F(
+    'ChromeVoxDesktopAutomationHandlerTest', 'TaskManagerTableView',
+    function() {
+      const mockFeedback = this.createMockFeedback();
+      this.runWithLoadedDesktop((desktop) => {
+        mockFeedback
+            .call(() => {
+              EventGenerator.sendKeyPress(KeyCode.ESCAPE, {search: true});
+            })
+            .expectSpeech('Task Manager, window')
+            .call(() => {
+              EventGenerator.sendKeyPress(KeyCode.DOWN);
+            })
+            .expectSpeech('Browser', 'row 2 column 1', 'Task')
+            .call(() => {
+              EventGenerator.sendKeyPress(KeyCode.DOWN);
+            })
+            // Make sure it doesn't repeat the previous line!
+            .expectNextSpeechUtteranceIsNot('Browser')
+            .expectSpeech('row 3 column 1');
+
+        mockFeedback.replay();
+      });
+    });

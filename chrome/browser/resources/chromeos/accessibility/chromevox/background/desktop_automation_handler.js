@@ -578,12 +578,32 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
         return;
       }
 
-      // Some cases (e.g. in overview mode), require overriding the assumption
-      // that focus is an ancestor of a selection target.
-      const override = AutomationPredicate.menuItem(evt.target) ||
+      let override = false;
+      const isDesktop =
           (evt.target.root === focus.root &&
-           focus.root.role === RoleType.DESKTOP) ||
-          evt.target.role === RoleType.IME_CANDIDATE;
+           focus.root.role === RoleType.DESKTOP);
+
+      // Menu items and IME candidates always announce on selection events,
+      // independent of focus.
+      if (AutomationPredicate.menuItem(evt.target) ||
+          evt.target.role === RoleType.IME_CANDIDATE) {
+        override = true;
+      }
+
+      // Selection events that happen in native UI (the desktop tree) should
+      // generally announce as long as focus isn't in some other tree; this is
+      // all first-party code that's firing the event for a good reason.
+      if (isDesktop) {
+        // TableView is an exception; it fires selection events on rows/cells
+        // and we want to ignore those because it also fires focus events.
+        if (evt.target.role === RoleType.CELL ||
+            evt.target.role === RoleType.ROW) {
+          return;
+        }
+
+        override = true;
+      }
+
       if (override || AutomationUtil.isDescendantOf(evt.target, focus)) {
         this.onEventDefault(evt);
       }
