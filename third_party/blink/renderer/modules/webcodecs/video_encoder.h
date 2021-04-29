@@ -58,6 +58,7 @@ class MODULES_EXPORT VideoEncoderTraits {
 
   // Can't be a virtual method, because it's used from base ctor.
   static const char* GetNameForDevTools();
+  static const char* GetName();
 };
 
 class MODULES_EXPORT VideoEncoder final

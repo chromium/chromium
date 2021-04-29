@@ -10,6 +10,7 @@
 
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "media/media_buildflags.h"
 #include "media/video/gpu_video_accelerator_factories.h"
@@ -104,6 +105,11 @@ DecoderTemplate<Traits>::DecoderTemplate(ScriptState* script_state,
 template <typename Traits>
 DecoderTemplate<Traits>::~DecoderTemplate() {
   DVLOG(1) << __func__;
+  base::UmaHistogramSparse(
+      String::Format("Blink.WebCodecs.%s.FinalStatus", Traits::GetName())
+          .Ascii()
+          .c_str(),
+      static_cast<int>(logger_->status_code()));
 }
 
 template <typename Traits>

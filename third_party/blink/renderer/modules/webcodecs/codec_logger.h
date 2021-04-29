@@ -61,7 +61,12 @@ class MODULES_EXPORT CodecLogger final {
   // destroyed.
   void Neuter();
 
+  // Records the first media::Status passed to MakeException.
+  media::StatusCode status_code() const { return status_code_; }
+
  private:
+  media::StatusCode status_code_ = media::StatusCode::kOk;
+
   // |parent_media_log_| must be destroyed if ever the ExecutionContext is
   // destroyed, since the blink::MediaInspectorContext* pointer given to
   // InspectorMediaEventHandler might no longer be valid.

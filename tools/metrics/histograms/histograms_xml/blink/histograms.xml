@@ -2949,6 +2949,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Blink.WebCodecs.{CodecApi}.FinalStatus" enum="MediaStatusCode"
+    expires_after="2022-02-01">
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    The final media::StatusCode for each {CodecApi} instance. The final status
+    code is either StatusCode::kOk or the first fatal error encountered.
+    Recorded once upon destruction for each codec type.
+  </summary>
+  <token key="CodecApi">
+    <variant name="AudioDecoder"/>
+    <variant name="AudioEncoder"/>
+    <variant name="VideoDecoder"/>
+    <variant name="VideoEncoder"/>
+  </token>
+</histogram>
+
 <histogram name="Blink.WindowOpen.FromAdState" enum="WindowOpenFromAdState"
     expires_after="2019-08-30">
   <owner>yaoxia@chromium.org</owner>

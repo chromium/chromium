@@ -362,6 +362,11 @@ int VideoDecoderTraits::GetMaxDecodeRequests(const MediaDecoderType& decoder) {
 }
 
 // static
+const char* VideoDecoderTraits::GetName() {
+  return "VideoDecoder";
+}
+
+// static
 VideoDecoder* VideoDecoder::Create(ScriptState* script_state,
                                    const VideoDecoderInit* init,
                                    ExceptionState& exception_state) {

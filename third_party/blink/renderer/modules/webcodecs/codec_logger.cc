@@ -45,6 +45,11 @@ DOMException* CodecLogger::MakeException(std::string error_msg,
                                          media::Status status) {
   media_log_->NotifyError(status);
 
+  if (status_code_ == media::StatusCode::kOk) {
+    DCHECK(!status.is_ok());
+    status_code_ = status.code();
+  }
+
   return MakeGarbageCollected<DOMException>(DOMExceptionCode::kOperationError,
                                             error_msg.c_str());
 }
@@ -52,6 +57,11 @@ DOMException* CodecLogger::MakeException(std::string error_msg,
 DOMException* CodecLogger::MakeException(std::string error_msg,
                                          media::StatusCode code,
                                          const base::Location& location) {
+  if (status_code_ == media::StatusCode::kOk) {
+    DCHECK_NE(code, media::StatusCode::kOk);
+    status_code_ = code;
+  }
+
   return MakeException(error_msg, media::Status(code, error_msg, location));
 }
 

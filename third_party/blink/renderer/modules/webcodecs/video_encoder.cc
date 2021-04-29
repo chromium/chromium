@@ -339,6 +339,11 @@ const char* VideoEncoderTraits::GetNameForDevTools() {
 }
 
 // static
+const char* VideoEncoderTraits::GetName() {
+  return "VideoEncoder";
+}
+
+// static
 VideoEncoder* VideoEncoder::Create(ScriptState* script_state,
                                    const VideoEncoderInit* init,
                                    ExceptionState& exception_state) {

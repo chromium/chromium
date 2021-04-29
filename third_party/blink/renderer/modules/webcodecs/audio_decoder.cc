@@ -137,6 +137,11 @@ int AudioDecoderTraits::GetMaxDecodeRequests(const MediaDecoderType& decoder) {
 }
 
 // static
+const char* AudioDecoderTraits::GetName() {
+  return "AudioDecoder";
+}
+
+// static
 AudioDecoder* AudioDecoder::Create(ScriptState* script_state,
                                    const AudioDecoderInit* init,
                                    ExceptionState& exception_state) {

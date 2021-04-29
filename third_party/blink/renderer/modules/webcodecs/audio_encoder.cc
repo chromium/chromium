@@ -134,6 +134,11 @@ const char* AudioEncoderTraits::GetNameForDevTools() {
   return "AudioEncoder(WebCodecs)";
 }
 
+// static
+const char* AudioEncoderTraits::GetName() {
+  return "AudioEncoder";
+}
+
 AudioEncoder* AudioEncoder::Create(ScriptState* script_state,
                                    const AudioEncoderInit* init,
                                    ExceptionState& exception_state) {

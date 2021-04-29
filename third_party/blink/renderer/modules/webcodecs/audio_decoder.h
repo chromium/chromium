@@ -67,6 +67,7 @@ class MODULES_EXPORT AudioDecoderTraits {
                                media::MediaLog* media_log);
   static media::StatusOr<OutputType*> MakeOutput(scoped_refptr<MediaOutputType>,
                                                  ExecutionContext*);
+  static const char* GetName();
 };
 
 class MODULES_EXPORT AudioDecoder : public DecoderTemplate<AudioDecoderTraits> {
