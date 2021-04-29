@@ -627,7 +627,6 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation(
     state.direct_compositing_reasons =
         full_context_.direct_compositing_reasons &
         CompositingReason::kDirectReasonsForPaintOffsetTranslationProperty;
-    state.rendering_context_id = context_.current.rendering_context_id;
     if (IsA<LayoutView>(object_)) {
       DCHECK(object_.GetFrame());
       state.flags.is_frame_paint_offset_translation = true;
@@ -2135,7 +2134,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
       state.direct_compositing_reasons =
           full_context_.direct_compositing_reasons &
           CompositingReason::kDirectReasonsForScrollTranslationProperty;
-      state.rendering_context_id = context_.current.rendering_context_id;
       state.scroll = properties_->Scroll();
       // If scroll and transform are both present, we should use the
       // transform property tree node to determine visibility of the
