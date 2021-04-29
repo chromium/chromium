@@ -58,6 +58,9 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
       const GURL& file_system_url,
       ImageResolver image_resolver);
 
+  // Returns `true` if `type` is a download type, `false` otherwise.
+  static bool IsDownload(HoldingSpaceItem::Type type);
+
   // Deserializes from `base::DictionaryValue` to `HoldingSpaceItem`.
   // This creates a partially initialized item with an empty file system URL.
   // The item should be finalized using `Finalize()`.

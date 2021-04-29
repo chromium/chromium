@@ -40,6 +40,8 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/disks/disk_mount_manager.h"
 #include "components/account_id/account_id.h"
+#include "components/arc/arc_service_manager.h"
+#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync_preferences/pref_service_mock_factory.h"
@@ -77,6 +79,14 @@ std::vector<HoldingSpaceItem::Type> GetHoldingSpaceItemTypes() {
   for (int i = 0; i <= static_cast<int>(HoldingSpaceItem::Type::kMaxValue); ++i)
     types.push_back(static_cast<HoldingSpaceItem::Type>(i));
   return types;
+}
+
+std::unique_ptr<KeyedService> BuildArcIntentHelperBridge(
+    content::BrowserContext* context) {
+  EXPECT_TRUE(arc::ArcServiceManager::Get());
+  EXPECT_TRUE(arc::ArcServiceManager::Get()->arc_bridge_service());
+  return std::make_unique<arc::ArcIntentHelperBridge>(
+      context, arc::ArcServiceManager::Get()->arc_bridge_service());
 }
 
 std::unique_ptr<KeyedService> BuildVolumeManager(
@@ -274,9 +284,7 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
  public:
   HoldingSpaceKeyedServiceTest()
       : fake_user_manager_(new FakeChromeUserManager),
-        user_manager_enabler_(base::WrapUnique(fake_user_manager_)),
-        download_manager_(
-            std::make_unique<testing::NiceMock<MockDownloadManager>>()) {
+        user_manager_enabler_(base::WrapUnique(fake_user_manager_)) {
     scoped_feature_list_.InitAndEnableFeature(features::kTemporaryHoldingSpace);
     HoldingSpaceImage::SetUseZeroInvalidationDelayForTesting(true);
   }
@@ -302,6 +310,8 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
     return profile_manager()->CreateTestingProfile(
         kPrimaryProfileName,
         /*testing_factories=*/{
+            {arc::ArcIntentHelperBridge::GetFactory(),
+             base::BindRepeating(&BuildArcIntentHelperBridge)},
             {file_manager::VolumeManagerFactory::GetInstance(),
              base::BindRepeating(&BuildVolumeManager)}});
   }
@@ -316,7 +326,9 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
         kSecondaryProfileName, std::move(prefs), u"Test profile",
         1 /*avatar_id*/, std::string() /*supervised_user_id*/,
         /*testing_factories=*/
-        {{file_manager::VolumeManagerFactory::GetInstance(),
+        {{arc::ArcIntentHelperBridge::GetFactory(),
+          base::BindRepeating(&BuildArcIntentHelperBridge)},
+         {file_manager::VolumeManagerFactory::GetInstance(),
           base::BindRepeating(&BuildVolumeManager)}});
   }
 
@@ -414,7 +426,7 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
     return item;
   }
 
-  MockDownloadManager* download_manager() { return download_manager_.get(); }
+  MockDownloadManager* download_manager() { return &download_manager_; }
 
  private:
   // BrowserWithTestWindowTest:
@@ -447,7 +459,8 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
 
   FakeChromeUserManager* fake_user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
-  std::unique_ptr<MockDownloadManager> download_manager_;
+  testing::NiceMock<MockDownloadManager> download_manager_;
+  arc::ArcServiceManager arc_service_manager_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -547,7 +560,9 @@ TEST_F(HoldingSpaceKeyedServiceTest, GuestUserProfile) {
   guest_profile_builder.SetGuestSession();
   guest_profile_builder.SetProfileName("guest_profile");
   guest_profile_builder.AddTestingFactories(
-      {{file_manager::VolumeManagerFactory::GetInstance(),
+      {{arc::ArcIntentHelperBridge::GetFactory(),
+        base::BindRepeating(&BuildArcIntentHelperBridge)},
+       {file_manager::VolumeManagerFactory::GetInstance(),
         base::BindRepeating(&BuildVolumeManager)}});
   std::unique_ptr<TestingProfile> guest_profile = guest_profile_builder.Build();
 
@@ -1468,10 +1483,12 @@ TEST_F(HoldingSpaceKeyedServiceTest, RemoveItemsFromUnmountedVolumes) {
   holding_space_service->AddScreenshot(file_path_1);
 
   const base::FilePath file_path_2 = test_mount_2->CreateArbitraryFile();
-  holding_space_service->AddDownload(file_path_2);
+  holding_space_service->AddDownload(HoldingSpaceItem::Type::kDownload,
+                                     file_path_2);
 
   const base::FilePath file_path_3 = test_mount_1->CreateArbitraryFile();
-  holding_space_service->AddDownload(file_path_3);
+  holding_space_service->AddDownload(HoldingSpaceItem::Type::kDownload,
+                                     file_path_3);
 
   EXPECT_EQ(3u, GetProfile()
                     ->GetPrefs()
@@ -1656,16 +1673,60 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddDownloadItem) {
                                   downloads_mount->name()));
 }
 
+class HoldingSpaceKeyedServiceArcIntegrationTest
+    : public HoldingSpaceKeyedServiceTest {
+ public:
+  HoldingSpaceKeyedServiceArcIntegrationTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kTemporaryHoldingSpaceArcIntegration);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(HoldingSpaceKeyedServiceArcIntegrationTest, AddArcDownloadItem) {
+  // Wait for the holding space model to attach.
+  TestingProfile* profile = GetProfile();
+  HoldingSpaceModelAttachedWaiter(profile).Wait();
+
+  // Verify the holding space `model` is empty.
+  HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
+  ASSERT_EQ(0u, model->items().size());
+
+  // Create a test downloads mount point.
+  std::unique_ptr<ScopedTestMountPoint> downloads_mount =
+      ScopedTestMountPoint::CreateAndMountDownloads(profile);
+  ASSERT_TRUE(downloads_mount->IsValid());
+
+  // Create a fake download file on the local file system.
+  const base::FilePath file_path = downloads_mount->CreateFile(
+      /*relative_path=*/base::FilePath("Download.png"), /*content=*/"foo");
+
+  // Simulate an event from ARC to indicate that the Android application with
+  // package `com.bar.foo` added a download at `file_path`.
+  auto* arc_intent_helper_bridge =
+      arc::ArcIntentHelperBridge::GetForBrowserContext(profile);
+  ASSERT_TRUE(arc_intent_helper_bridge);
+  arc_intent_helper_bridge->OnDownloadAdded(
+      /*relative_path=*/"Download/Download.png",
+      /*owner_package_name=*/"com.bar.foo");
+
+  // Verify that an item of type `kArcDownload` was added to holding space.
+  ASSERT_EQ(1u, model->items().size());
+  const HoldingSpaceItem* arc_download_item = model->items()[0].get();
+  EXPECT_EQ(arc_download_item->type(), HoldingSpaceItem::Type::kArcDownload);
+  EXPECT_EQ(arc_download_item->file_path(),
+            file_manager::util::GetDownloadsFolderForProfile(profile).Append(
+                base::FilePath("Download.png")));
+}
+
 class HoldingSpaceKeyedServiceNearbySharingTest
     : public HoldingSpaceKeyedServiceTest {
  public:
   HoldingSpaceKeyedServiceNearbySharingTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {::features::kNearbySharing, ash::features::kTemporaryHoldingSpace},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(::features::kNearbySharing);
   }
-
-  ~HoldingSpaceKeyedServiceNearbySharingTest() override = default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

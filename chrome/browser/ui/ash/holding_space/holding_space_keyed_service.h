@@ -76,8 +76,10 @@ class HoldingSpaceKeyedService : public KeyedService,
   // manager app (otherwise, the item will be dropped silently).
   void AddScreenshot(const base::FilePath& screenshot_path);
 
-  // Adds a download item backed by the provided absolute file path.
-  void AddDownload(const base::FilePath& download_path);
+  // Adds a download item of the specified `type` backed by the provided
+  // absolute file path. Note that `type` must refer to a download type.
+  void AddDownload(HoldingSpaceItem::Type type,
+                   const base::FilePath& download_path);
 
   // Adds a nearby share item backed by the provided absolute file path.
   void AddNearbyShare(const base::FilePath& nearby_share_path);

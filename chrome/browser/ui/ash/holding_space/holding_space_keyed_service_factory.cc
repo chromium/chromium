@@ -11,6 +11,7 @@
 #include "chrome/browser/chromeos/fileapi/file_change_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
+#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_type.h"
@@ -28,6 +29,8 @@ HoldingSpaceKeyedServiceFactory::HoldingSpaceKeyedServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "HoldingSpaceService",
           BrowserContextDependencyManager::GetInstance()) {
+  if (features::IsTemporaryHoldingSpaceArcIntegrationEnabled())
+    DependsOn(arc::ArcIntentHelperBridge::GetFactory());
   DependsOn(chromeos::FileChangeServiceFactory::GetInstance());
   DependsOn(drive::DriveIntegrationServiceFactory::GetInstance());
   DependsOn(file_manager::VolumeManagerFactory::GetInstance());

@@ -21,7 +21,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/gurl.h"
 
-class KeyedServiceBaseFactory;
+class BrowserContextKeyedServiceFactory;
 
 namespace content {
 class BrowserContext;
@@ -55,7 +55,7 @@ class ArcIntentHelperBridge : public KeyedService,
       content::BrowserContext* context);
 
   // Returns factory for the ArcIntentHelperBridge.
-  static KeyedServiceBaseFactory* GetFactory();
+  static BrowserContextKeyedServiceFactory* GetFactory();
 
   // Appends '.' + |to_append| to the intent helper package name.
   static std::string AppendStringToIntentHelperPackageName(

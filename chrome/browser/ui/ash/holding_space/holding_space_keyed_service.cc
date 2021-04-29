@@ -232,7 +232,9 @@ void HoldingSpaceKeyedService::AddScreenshot(
 }
 
 void HoldingSpaceKeyedService::AddDownload(
+    HoldingSpaceItem::Type type,
     const base::FilePath& download_file) {
+  DCHECK(HoldingSpaceItem::IsDownload(type));
   const bool already_exists = holding_space_model_.ContainsItem(
       HoldingSpaceItem::Type::kDownload, download_file);
   if (already_exists)
@@ -244,7 +246,7 @@ void HoldingSpaceKeyedService::AddDownload(
     return;
 
   AddItem(HoldingSpaceItem::CreateFileBackedItem(
-      HoldingSpaceItem::Type::kDownload, download_file, file_system_url,
+      type, download_file, file_system_url,
       base::BindOnce(&holding_space_util::ResolveImage, &thumbnail_loader_)));
 }
 

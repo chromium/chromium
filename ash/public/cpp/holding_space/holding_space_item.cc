@@ -56,6 +56,20 @@ std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::CreateFileBackedItem(
 }
 
 // static
+bool HoldingSpaceItem::IsDownload(HoldingSpaceItem::Type type) {
+  switch (type) {
+    case Type::kArcDownload:
+    case Type::kDownload:
+      return true;
+    case Type::kNearbyShare:
+    case Type::kPinnedFile:
+    case Type::kScreenRecording:
+    case Type::kScreenshot:
+      return false;
+  }
+}
+
+// static
 // NOTE: This method must remain in sync with `Serialize()`. If multiple
 // serialization versions are supported, care must be taken to handle each.
 std::unique_ptr<HoldingSpaceItem> HoldingSpaceItem::Deserialize(

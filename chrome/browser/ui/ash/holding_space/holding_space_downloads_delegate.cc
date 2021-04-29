@@ -6,6 +6,8 @@
 
 #include <vector>
 
+#include "ash/public/cpp/ash_features.h"
+#include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"
 
@@ -35,6 +37,17 @@ void HoldingSpaceDownloadsDelegate::SetDownloadManagerForTesting(
 }
 
 void HoldingSpaceDownloadsDelegate::Init() {
+  // ARC downloads.
+  if (features::IsTemporaryHoldingSpaceArcIntegrationEnabled()) {
+    // NOTE: The `arc_intent_helper_bridge` may be `nullptr` if the `profile()`
+    // is not allowed to use ARC, e.g. if the `profile()` is OTR.
+    auto* const arc_intent_helper_bridge =
+        arc::ArcIntentHelperBridge::GetForBrowserContext(profile());
+    if (arc_intent_helper_bridge)
+      arc_intent_helper_observation_.Observe(arc_intent_helper_bridge);
+  }
+
+  // Chrome downloads.
   download_manager_observation_.Observe(
       download_manager_for_testing
           ? download_manager_for_testing
@@ -49,6 +62,33 @@ void HoldingSpaceDownloadsDelegate::OnPersistenceRestored() {
 
   if (download_manager->IsManagerInitialized())
     OnManagerInitialized();
+}
+
+void HoldingSpaceDownloadsDelegate::OnArcDownloadAdded(
+    const base::FilePath& relative_path,
+    const std::string& owner_package_name) {
+  DCHECK(features::IsTemporaryHoldingSpaceArcIntegrationEnabled());
+  if (is_restoring_persistence())
+    return;
+
+  // It is expected that `owner_package_name` be non-empty. Media files from
+  // Chrome are synced to ARC via media scan and have `NULL` owning packages but
+  // are expected *not* to have generated `OnArcDownloadAdded()` events.
+  if (owner_package_name.empty()) {
+    NOTREACHED();
+    return;
+  }
+
+  // It is expected that `relative_path` always be contained within `Download/`
+  // which refers to the public downloads folder for the current `profile()`.
+  base::FilePath path(
+      file_manager::util::GetDownloadsFolderForProfile(profile()));
+  if (!base::FilePath("Download/").AppendRelativePath(relative_path, &path)) {
+    NOTREACHED();
+    return;
+  }
+
+  OnDownloadCompleted(HoldingSpaceItem::Type::kArcDownload, path);
 }
 
 void HoldingSpaceDownloadsDelegate::OnManagerInitialized() {
@@ -97,7 +137,8 @@ void HoldingSpaceDownloadsDelegate::OnDownloadUpdated(
     download::DownloadItem* item) {
   switch (item->GetState()) {
     case download::DownloadItem::COMPLETE:
-      OnDownloadCompleted(item->GetFullPath());
+      OnDownloadCompleted(HoldingSpaceItem::Type::kDownload,
+                          item->GetFullPath());
       FALLTHROUGH;
     case download::DownloadItem::CANCELLED:
     case download::DownloadItem::INTERRUPTED:
@@ -110,9 +151,11 @@ void HoldingSpaceDownloadsDelegate::OnDownloadUpdated(
 }
 
 void HoldingSpaceDownloadsDelegate::OnDownloadCompleted(
+    HoldingSpaceItem::Type type,
     const base::FilePath& file_path) {
+  DCHECK(HoldingSpaceItem::IsDownload(type));
   if (!is_restoring_persistence())
-    item_downloaded_callback_.Run(file_path);
+    item_downloaded_callback_.Run(type, file_path);
 }
 
 void HoldingSpaceDownloadsDelegate::RemoveObservers() {
