@@ -4809,7 +4809,9 @@
   {
     "name": "show-overdraw-feedback",
     "owners": [ "andrescj", "chromeos-gfx@google.com" ],
-    "expiry_milestone": 88
+    // This is a debug flag to visualize compositing and rendering issues in
+    // the field.
+    "expiry_milestone": -1
   },
   {
     "name": "show-performance-metrics-hud",
