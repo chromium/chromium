@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
+#include "chrome/browser/ui/app_list/search/search_tags_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
@@ -67,47 +68,6 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             "No content is uploaded or saved, this request downloads a "
             "publicly available image."
         })");
-
-int ACMatchStyleToTagStyle(int styles) {
-  int tag_styles = 0;
-  if (styles & ACMatchClassification::URL)
-    tag_styles |= ash::SearchResultTag::URL;
-  if (styles & ACMatchClassification::MATCH)
-    tag_styles |= ash::SearchResultTag::MATCH;
-  if (styles & ACMatchClassification::DIM)
-    tag_styles |= ash::SearchResultTag::DIM;
-
-  return tag_styles;
-}
-
-// Translates ACMatchClassifications into ChromeSearchResult tags.
-void ACMatchClassificationsToTags(const std::u16string& text,
-                                  const ACMatchClassifications& text_classes,
-                                  ChromeSearchResult::Tags* tags) {
-  int tag_styles = ash::SearchResultTag::NONE;
-  size_t tag_start = 0;
-
-  for (size_t i = 0; i < text_classes.size(); ++i) {
-    const ACMatchClassification& text_class = text_classes[i];
-
-    // Closes current tag.
-    if (tag_styles != ash::SearchResultTag::NONE) {
-      tags->push_back(
-          ash::SearchResultTag(tag_styles, tag_start, text_class.offset));
-      tag_styles = ash::SearchResultTag::NONE;
-    }
-
-    if (text_class.style == ACMatchClassification::NONE)
-      continue;
-
-    tag_start = text_class.offset;
-    tag_styles = ACMatchStyleToTagStyle(text_class.style);
-  }
-
-  if (tag_styles != ash::SearchResultTag::NONE) {
-    tags->push_back(ash::SearchResultTag(tag_styles, tag_start, text.length()));
-  }
-}
 
 // AutocompleteMatchType::Type to vector icon, used for app list.
 const gfx::VectorIcon& TypeToVectorIcon(AutocompleteMatchType::Type type) {
