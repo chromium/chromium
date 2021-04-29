@@ -82,6 +82,7 @@ def ParseArgs():
           'gpu_process',
           'info_collection',
           'maps',
+          'mediapipe',
           'pixel',
           'power',
           'screenshot_sync',
