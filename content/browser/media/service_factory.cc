@@ -93,7 +93,8 @@ T& GetService(const base::Token& guid,
     auto site_display_name =
         GetContentClient()->browser()->GetSiteDisplayNameForCdmProcess(
             browser_context, site);
-    display_name += " (" + site_display_name + ")";
+    if (!site_display_name.empty())
+      display_name += " (" + site_display_name + ")";
   } else {
     key = {guid, nullptr, GURL()};
   }
