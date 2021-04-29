@@ -776,8 +776,7 @@ const char kDesktopPWAsTabStripLinkCapturingDescription[] =
 const char kDesktopPWAsRunOnOsLoginName[] = "Desktop PWAs run on OS login";
 const char kDesktopPWAsRunOnOsLoginDescription[] =
     "Enable installed PWAs to be configured to automatically start when the OS "
-    "user logs in. Launching a PWA while the browser is not running is known "
-    "to cause a failure to restore sessions. See https://crbug.com/938759.";
+    "user logs in.";
 
 const char kDesktopPWAsProtocolHandlingName[] = "Desktop PWA Protocol handling";
 const char kDesktopPWAsProtocolHandlingDescription[] =
