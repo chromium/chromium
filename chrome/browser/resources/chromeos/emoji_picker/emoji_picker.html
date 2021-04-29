@@ -143,11 +143,13 @@
 </div>
 
 <div id="message" class="sr-only" aria-live="polite"></div>
-<div class="side-padding">
-  <emoji-search id$="search-container" emoji-data="[[emojiData]]"
-    search="{{search}}">
+  <emoji-search
+    class="side-padding"
+    id$="search-container"
+    emoji-data="[[emojiData]]"
+    search="{{search}}"
+    on-scroll="onSearchScroll">
   </emoji-search>
-</div>
 
 <div id="list-container">
   <div class="sr-only" role="heading" aria-level="1">Emoji Group Buttons</div>

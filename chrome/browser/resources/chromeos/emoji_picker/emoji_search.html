@@ -2,8 +2,7 @@
   :host {
     display: flex;
     flex-direction: column;
-    height: 100%;
-    width: 100%;
+    overflow-y: scroll;
   }
   cr-search-field {
     --cr-search-field-clear-icon-margin-end: 14px;
@@ -29,11 +28,6 @@
 
   cr-search-field:focus-within {
     border: 2px solid var(--cr-focus-outline-color);
-  }
-
-  #container {
-    flex-grow: 1;
-    overflow-y: scroll;
   }
 
   .result {
@@ -75,11 +69,14 @@
     top: 50%;
     transform: translate(-50%, -50%);
   }
-
   #search-shadow {
+    background-color: var(--cr-card-background-color);
+    margin-inline-end: calc(0px - var(--emoji-picker-side-padding));
     margin-inline-start: calc(0px - var(--emoji-picker-side-padding));
     padding-inline-end: var(--emoji-picker-side-padding);
     padding-inline-start: var(--emoji-picker-side-padding);
+    position: sticky;
+    top:0;
     width: calc(var(--emoji-picker-width) - 2*var(--emoji-picker-side-padding));
   }
 </style>
@@ -88,29 +85,25 @@
 <cr-search-field id="search" label="Search" autofocus="true"></cr-search-field>
 </div>
 
-<div id="container" on-scroll="onContainerScroll">
+<template is="dom-if" if="[[search]]">
 
-  <template is="dom-if" if="[[search]]">
-
-    <div class="sr-only" role="heading" aria-level="1">
-      Emoji Search Results
+  <div class="sr-only" role="heading" aria-level="1">
+    Emoji Search Results
+  </div>
+  <template is="dom-repeat" items="[[results]]">
+    <div class="result" tabindex="0" on-click="onResultClick">
+      <emoji-button tabindex="-1"
+          emoji="[[item.item.base.string]]"
+          variants="[[item.item.alternates]]">
+      </emoji-button>
+      <div class="name">[[item.item.base.name]]</div>
     </div>
-    <template is="dom-repeat" items="[[results]]">
-      <div class="result" tabindex="0" on-click="onResultClick">
-        <emoji-button tabindex="-1"
-            emoji="[[item.item.base.string]]"
-            variants="[[item.item.alternates]]">
-        </emoji-button>
-        <div class="name">[[item.item.base.name]]</div>
+  </template>
+  <template is="dom-if" if="[[!results.length]]">
+    <div class="no-result">
+      <img src="no_results.svg">
+      No emoji found
       </div>
-    </template>
-    <template is="dom-if" if="[[!results.length]]">
-      <div class="no-result">
-        <img src="no_results.svg">
-        No emoji found
-        </div>
-    </template>
-
   </template>
 
-</div>
+</template>
