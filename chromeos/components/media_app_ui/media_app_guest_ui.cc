@@ -3,47 +3,20 @@
 // found in the LICENSE file.
 
 #include "chromeos/components/media_app_ui/media_app_guest_ui.h"
-#include "base/command_line.h"
-#include "base/memory/ref_counted_memory.h"
 #include "chromeos/components/media_app_ui/url_constants.h"
+#include "chromeos/components/web_applications/webui_test_prod_util.h"
 #include "chromeos/grit/chromeos_media_app_bundle_resources.h"
 #include "chromeos/grit/chromeos_media_app_bundle_resources_map.h"
 #include "chromeos/grit/chromeos_media_app_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "content/public/common/content_switches.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/file_manager/grit/file_manager_resources.h"
 
 namespace chromeos {
 
 namespace {
-
-content::WebUIDataSource::ShouldHandleRequestCallback&
-GetTestShouldHandleRequest() {
-  static base::NoDestructor<
-      content::WebUIDataSource::ShouldHandleRequestCallback>
-      callback;
-  return *callback;
-}
-
-content::WebUIDataSource::HandleRequestCallback& GetTestRequestFilterHandler() {
-  static base::NoDestructor<content::WebUIDataSource::HandleRequestCallback>
-      callback;
-  return *callback;
-}
-
-bool InvokeTestShouldHandleRequestCallback(const std::string& path) {
-  const auto& callback = GetTestShouldHandleRequest();
-  return callback ? callback.Run(path) : false;
-}
-
-void InvokeTestFileRequestFilterCallback(
-    const std::string& path,
-    content::WebUIDataSource::GotDataCallback callback) {
-  return GetTestRequestFilterHandler().Run(path, std::move(callback));
-}
 
 content::WebUIDataSource* CreateMediaAppUntrustedDataSource(
     MediaAppGuestUIDelegate* delegate) {
@@ -67,13 +40,8 @@ content::WebUIDataSource* CreateMediaAppUntrustedDataSource(
   source->AddResourcePath("js/app_image_handler_module.js",
                           IDR_MEDIA_APP_APP_IMAGE_HANDLER_MODULE_JS);
 
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  const bool is_running_test = command_line->HasSwitch(::switches::kTestType);
-  if (is_running_test) {
-    source->SetRequestFilter(
-        base::BindRepeating(&InvokeTestShouldHandleRequestCallback),
-        base::BindRepeating(&InvokeTestFileRequestFilterCallback));
-  }
+  MaybeConfigureTestableDataSource(source);
+
   // Add all resources from chromeos_media_app_bundle_resources.pak.
   source->AddResourcePaths(base::make_span(
       kChromeosMediaAppBundleResources, kChromeosMediaAppBundleResourcesSize));
@@ -126,13 +94,6 @@ content::WebUIDataSource* CreateMediaAppUntrustedDataSource(
 }
 
 }  // namespace
-
-void SetMediaAppGuestUITestRequestHandlerForTesting(  // IN-TEST
-    content::WebUIDataSource::ShouldHandleRequestCallback should_handle,
-    content::WebUIDataSource::HandleRequestCallback handler) {
-  GetTestShouldHandleRequest() = std::move(should_handle);
-  GetTestRequestFilterHandler() = std::move(handler);
-}
 
 MediaAppGuestUI::MediaAppGuestUI(content::WebUI* web_ui,
                                  MediaAppGuestUIDelegate* delegate)

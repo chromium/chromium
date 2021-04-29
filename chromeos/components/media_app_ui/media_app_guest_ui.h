@@ -5,8 +5,11 @@
 #ifndef CHROMEOS_COMPONENTS_MEDIA_APP_UI_MEDIA_APP_GUEST_UI_H_
 #define CHROMEOS_COMPONENTS_MEDIA_APP_UI_MEDIA_APP_GUEST_UI_H_
 
-#include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
+
+namespace content {
+class WebUIDataSource;
+}
 
 namespace chromeos {
 
@@ -26,11 +29,6 @@ class MediaAppGuestUI : public ui::UntrustedWebUIController {
   MediaAppGuestUI& operator=(const MediaAppGuestUI&) = delete;
   ~MediaAppGuestUI() override;
 };
-
-// Configures the data source request filter used for testing.
-void SetMediaAppGuestUITestRequestHandlerForTesting(
-    content::WebUIDataSource::ShouldHandleRequestCallback should_handle,
-    content::WebUIDataSource::HandleRequestCallback handler);
 
 }  // namespace chromeos
 

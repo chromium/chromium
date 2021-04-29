@@ -28,6 +28,17 @@ class SandboxedWebUiAppTestBase : public MojoWebUIBrowserTest {
   SandboxedWebUiAppTestBase& operator=(const SandboxedWebUiAppTestBase&) =
       delete;
 
+  // Configures and installs a handler to deliver testing resources into a
+  // WebUIDataSource configured using MaybeConfigureTestableDataSource().
+  // This installs the "default" handler which serves requests of the form
+  // scheme://origin/<file>, where <file> is in |resource_files| and can be
+  // found from |root_folder| under the source tree.
+  // Tests can invoke SetTestableDataSourceRequestHandlerForTesting() directly
+  // for more elaborate handlers.
+  static void ConfigureDefaultTestRequestHandler(
+      const base::FilePath& root_folder,
+      const std::vector<std::string>& resource_files);
+
   // Returns the contents of the JavaScript library used to help test the
   // sandboxed frame.
   static std::string LoadJsTestLibrary(const base::FilePath& script_path);

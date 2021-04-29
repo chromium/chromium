@@ -4,11 +4,7 @@
 
 #include "chromeos/components/media_app_ui/test/media_app_ui_browsertest.h"
 
-#include "base/base_paths.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/memory/ref_counted_memory.h"
-#include "base/path_service.h"
 #include "chromeos/components/media_app_ui/media_app_guest_ui.h"
 #include "chromeos/components/media_app_ui/media_app_ui.h"
 #include "chromeos/components/media_app_ui/url_constants.h"
@@ -35,27 +31,12 @@ constexpr char kGuestTestCases[] = "media_app_guest_ui_browsertest.js";
 constexpr base::FilePath::CharType kTestFileLocation[] =
     FILE_PATH_LITERAL("chromeos/components/media_app_ui/test");
 
-void HandleTestFileRequestCallback(
-    const std::string& path,
-    content::WebUIDataSource::GotDataCallback callback) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-
-  base::FilePath source_root;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root);
-  const base::FilePath test_file_path =
-      source_root.AppendASCII(kTestFileLocation).AppendASCII(path);
-
-  std::string contents;
-  CHECK(base::ReadFileToString(test_file_path, &contents)) << test_file_path;
-
-  std::move(callback).Run(base::RefCountedString::TakeString(&contents));
-}
-
-bool GuestTestShouldHandleRequest(const std::string& path) {
-  return path == "test_worker.js" ||
-         path == "media_app_guest_ui_browsertest.js" ||
-         path == "guest_query_receiver.js";
-}
+// Paths requested on the media-app origin that should be delivered by the test
+// handler.
+constexpr const char* kTestFiles[] = {
+    kGuestTestCases,  "media_app_ui_browsertest.js", "driver.js",
+    "test_worker.js", "guest_query_receiver.js",
+};
 
 }  // namespace
 
@@ -66,12 +47,9 @@ MediaAppUiBrowserTest::MediaAppUiBrowserTest()
           {base::FilePath(kTestLibraryPath), base::FilePath(kCr),
            base::FilePath(kWebUiTestUtil)},
           kGuestTestCases) {
-  chromeos::SetMediaAppGuestUITestRequestHandlerForTesting(
-      base::BindRepeating(&GuestTestShouldHandleRequest),
-      base::BindRepeating(&HandleTestFileRequestCallback));
-
-  chromeos::SetMediaAppUITestRequestHandlerForTesting(
-      base::BindRepeating(&HandleTestFileRequestCallback));
+  ConfigureDefaultTestRequestHandler(
+      base::FilePath(kTestFileLocation),
+      {std::begin(kTestFiles), std::end(kTestFiles)});
 }
 
 MediaAppUiBrowserTest::~MediaAppUiBrowserTest() = default;

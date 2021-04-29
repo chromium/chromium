@@ -6,16 +6,16 @@
 
 #include <utility>
 
-#include "base/command_line.h"
 #include "chromeos/components/media_app_ui/media_app_page_handler.h"
 #include "chromeos/components/media_app_ui/url_constants.h"
+#include "chromeos/components/web_applications/webui_test_prod_util.h"
 #include "chromeos/grit/chromeos_media_app_bundle_resources.h"
 #include "chromeos/grit/chromeos_media_app_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
-#include "content/public/common/content_switches.h"
+#include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/webui/webui_allowlist.h"
@@ -56,22 +56,6 @@ content::WebUIDataSource* CreateHostDataSource() {
   return source;
 }
 
-bool TestShouldHandleRequest(const std::string& path) {
-  return path == "media_app_ui_browsertest.js" || path == "driver.js";
-}
-
-content::WebUIDataSource::HandleRequestCallback& GetTestRequestFilterHandler() {
-  static base::NoDestructor<content::WebUIDataSource::HandleRequestCallback>
-      callback;
-  return *callback;
-}
-
-void InvokeTestFileRequestFilterCallback(
-    const std::string& path,
-    content::WebUIDataSource::GotDataCallback callback) {
-  return GetTestRequestFilterHandler().Run(path, std::move(callback));
-}
-
 }  // namespace
 
 MediaAppUI::MediaAppUI(content::WebUI* web_ui,
@@ -90,17 +74,10 @@ MediaAppUI::MediaAppUI(content::WebUI* web_ui,
   host_source->OverrideCrossOriginOpenerPolicy("same-origin");
   host_source->OverrideCrossOriginEmbedderPolicy("require-corp");
 
-  // Only add a filter when running as test.
-  const bool is_running_test =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(::switches::kTestType);
-  if (is_running_test) {
+  if (MaybeConfigureTestableDataSource(host_source)) {
     host_source->OverrideContentSecurityPolicy(
         network::mojom::CSPDirectiveName::TrustedTypes,
         std::string("trusted-types test-harness;"));
-
-    host_source->SetRequestFilter(
-        base::BindRepeating(&TestShouldHandleRequest),
-        base::BindRepeating(&InvokeTestFileRequestFilterCallback));
   }
 
   // Register auto-granted permissions.
@@ -142,10 +119,5 @@ bool MediaAppUI::IsJavascriptErrorReportingEnabled() {
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(MediaAppUI)
-
-void SetMediaAppUITestRequestHandlerForTesting(
-    content::WebUIDataSource::HandleRequestCallback callback) {
-  GetTestRequestFilterHandler() = std::move(callback);
-}
 
 }  // namespace chromeos

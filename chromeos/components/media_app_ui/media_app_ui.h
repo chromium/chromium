@@ -9,7 +9,6 @@
 
 #include "chromeos/components/media_app_ui/media_app_ui.mojom.h"
 #include "chromeos/components/media_app_ui/media_app_ui_delegate.h"
-#include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
@@ -46,10 +45,6 @@ class MediaAppUI : public ui::MojoWebUIController,
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
-
-// Lets tests add their own handlers for requests made from testing code.
-void SetMediaAppUITestRequestHandlerForTesting(
-    content::WebUIDataSource::HandleRequestCallback callback);
 
 }  // namespace chromeos
 

@@ -5,6 +5,10 @@
 assert(is_chromeos, "These utils are Chrome OS only")
 
 static_library("web_applications") {
+  sources = [
+    "webui_test_prod_util.cc",
+    "webui_test_prod_util.h",
+  ]
   deps = [
     "//base",
     "//base:i18n",
