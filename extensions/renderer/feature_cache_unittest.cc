@@ -4,7 +4,7 @@
 
 #include "extensions/renderer/feature_cache.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/common/extension.h"

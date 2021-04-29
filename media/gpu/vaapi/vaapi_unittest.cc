@@ -14,12 +14,12 @@
 #include <va/va_str.h>
 
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/files/file.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/optional.h"
 #include "base/process/launch.h"
-#include "base/stl_util.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_split.h"
 #include "base/test/launcher/unit_test_launcher.h"

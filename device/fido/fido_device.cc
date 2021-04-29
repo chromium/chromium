@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/device_response_converter.h"
 #include "device/fido/fido_constants.h"

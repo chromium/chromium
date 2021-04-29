@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/user_education/scoped_new_badge_tracker.h"
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
-#include "base/stl_util.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "components/feature_engagement/public/tracker.h"
 

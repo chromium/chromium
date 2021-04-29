@@ -7,9 +7,9 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/task_environment.h"
 #include "components/reading_list/core/offline_url_utils.h"

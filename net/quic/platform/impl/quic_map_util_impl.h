@@ -5,7 +5,7 @@
 #ifndef NET_QUIC_PLATFORM_IMPL_QUIC_MAP_UTIL_IMPL_H_
 #define NET_QUIC_PLATFORM_IMPL_QUIC_MAP_UTIL_IMPL_H_
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 
 namespace quic {
 

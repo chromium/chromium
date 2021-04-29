@@ -4,8 +4,8 @@
 
 #include "device/bluetooth/bluez/metrics_recorder.h"
 
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/stl_util.h"
 
 namespace bluetooth {
 namespace {

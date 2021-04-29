@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/android/jni_string.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "chrome/browser/android/metrics/jni_headers/UkmUtilsForTest_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"

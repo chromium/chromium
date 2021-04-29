@@ -4,9 +4,9 @@
 
 #include "media/blink/new_session_cdm_result_promise.h"
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/stl_util.h"
 #include "media/blink/cdm_result_promise_helper.h"
 #include "third_party/blink/public/platform/web_string.h"
 

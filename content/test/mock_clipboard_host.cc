@@ -4,7 +4,7 @@
 
 #include "content/test/mock_clipboard_host.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 
 namespace content {

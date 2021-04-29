@@ -9,8 +9,8 @@
 #import <MaterialComponents/MaterialTypography.h>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/hash/md5.h"
-#include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/favicon/core/fallback_url_util.h"

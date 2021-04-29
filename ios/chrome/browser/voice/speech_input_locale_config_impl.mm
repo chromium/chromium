@@ -6,10 +6,10 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/containers/contains.h"
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ios/chrome/browser/voice/speech_input_locale_match.h"

@@ -5,10 +5,10 @@
 
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "base/supports_user_data.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host_factory.h"

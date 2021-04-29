@@ -13,8 +13,8 @@
 #endif
 
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/numerics/ranges.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "content/browser/xr/service/vr_service_impl.h"
 #include "content/browser/xr/xr_utils.h"

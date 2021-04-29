@@ -4,7 +4,7 @@
 
 #include "ui/gl/gl_surface_egl_x11.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/base/x/x11_xrandr_interval_only_vsync_provider.h"
 #include "ui/gfx/x/xproto.h"

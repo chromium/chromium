@@ -4,9 +4,9 @@
 
 #include "content/public/common/origin_util.h"
 
+#include "base/containers/contains.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
-#include "base/stl_util.h"
 #include "base/strings/pattern.h"
 #include "content/common/url_schemes.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"

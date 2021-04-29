@@ -4,7 +4,7 @@
 
 #include "media/capture/video/chromeos/camera_buffer_factory.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "media/capture/video/chromeos/video_capture_device_factory_chromeos.h"
 
 namespace media {

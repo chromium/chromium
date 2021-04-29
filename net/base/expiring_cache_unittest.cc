@@ -7,7 +7,7 @@
 #include <functional>
 #include <string>
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"

@@ -4,7 +4,7 @@
 
 #include "extensions/browser/renderer_startup_helper.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "extensions/browser/extension_prefs.h"

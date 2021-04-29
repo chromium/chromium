@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/task/post_task.h"
 #include "content/browser/payments/payment_manager.h"
 #include "content/public/browser/browser_task_traits.h"

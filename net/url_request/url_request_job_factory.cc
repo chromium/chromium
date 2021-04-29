@@ -4,7 +4,7 @@
 
 #include "net/url_request/url_request_job_factory.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "net/base/net_errors.h"
 #include "net/net_buildflags.h"
 #include "net/url_request/url_request.h"

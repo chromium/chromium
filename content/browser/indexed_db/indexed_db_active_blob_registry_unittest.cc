@@ -8,8 +8,8 @@
 #include <set>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/macros.h"
-#include "base/stl_util.h"
 #include "base/test/task_environment.h"
 #include "content/browser/indexed_db/indexed_db_active_blob_registry.h"
 #include "testing/gtest/include/gtest/gtest.h"

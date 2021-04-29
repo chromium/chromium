@@ -9,7 +9,7 @@
 #include <algorithm>
 
 #include "base/check_op.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "content/browser/notification_service_impl.h"
 
 namespace content {

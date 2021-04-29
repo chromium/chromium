@@ -5,7 +5,7 @@
 #include "mojo/public/cpp/bindings/service_factory.h"
 
 #include "base/bind.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 
 namespace mojo {
 
