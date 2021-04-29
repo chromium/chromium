@@ -134,31 +134,29 @@
   self.sharingCoordinator = nil;
 
   if (self.historyNavigationController) {
-    void (^dismissHistoryNavigation)(void) = ^void() {
-      // Make sure to stop
-      // |self.historyTableViewController.contextMenuCoordinator| before
-      // dismissing, or |self.historyNavigationController| will dismiss that
-      // instead of itself.
-      [self.historyTableViewController.contextMenuCoordinator stop];
-      [self.historyNavigationController
-          dismissViewControllerAnimated:YES
-                             completion:completionHandler];
-      self.historyNavigationController = nil;
-      _browsingHistoryDriver = nullptr;
-      _browsingHistoryService = nullptr;
-    };
     if (self.historyClearBrowsingDataCoordinator) {
-      [self.historyClearBrowsingDataCoordinator stopWithCompletion:^() {
-        dismissHistoryNavigation();
-        self.historyClearBrowsingDataCoordinator = nil;
+      [self.historyClearBrowsingDataCoordinator stopWithCompletion:^{
+        [self dismissHistoryNavigationWithCompletion:completionHandler];
       }];
-
     } else {
-      dismissHistoryNavigation();
+      [self dismissHistoryNavigationWithCompletion:completionHandler];
     }
   } else if (completionHandler) {
     completionHandler();
   }
+}
+
+- (void)dismissHistoryNavigationWithCompletion:(ProceduralBlock)completion {
+  // Make sure to stop |self.historyTableViewController.contextMenuCoordinator|
+  // before dismissing, or |self.historyNavigationController| will dismiss that
+  // instead of itself.
+  [self.historyTableViewController.contextMenuCoordinator stop];
+  [self.historyNavigationController dismissViewControllerAnimated:YES
+                                                       completion:completion];
+  self.historyNavigationController = nil;
+  self.historyClearBrowsingDataCoordinator = nil;
+  _browsingHistoryDriver = nullptr;
+  _browsingHistoryService = nullptr;
 }
 
 #pragma mark - HistoryUIDelegate
