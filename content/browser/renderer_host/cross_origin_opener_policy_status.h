@@ -29,10 +29,18 @@ class CrossOriginOpenerPolicyStatus {
   explicit CrossOriginOpenerPolicyStatus(NavigationRequest* navigation_request);
   ~CrossOriginOpenerPolicyStatus();
 
-  // Called after receiving a network response. Returns a BlockedByResponse
-  // reason if the navigation should be blocked, nullopt otherwise.
-  base::Optional<network::mojom::BlockedByResponseReason> EnforceCOOP(
+  // Called after receiving a network response. Returns the
+  // Cross-Origin-Opener-Policy contained in the response.
+  network::CrossOriginOpenerPolicy& RetrieveCOOPFromResponse(
       network::mojom::URLResponseHead* response_head,
+      const url::Origin& response_origin);
+
+  // Called when receiving a redirect or the final response. Returns a
+  // BlockedByResponse reason if the navigation should be blocked, nullopt
+  // otherwise.
+  base::Optional<network::mojom::BlockedByResponseReason> EnforceCOOP(
+      const network::CrossOriginOpenerPolicy& response_coop,
+      const url::Origin& response_origin,
       const net::NetworkIsolationKey& network_isolation_key);
 
   // Set to true whenever the Cross-Origin-Opener-Policy spec requires a

@@ -114,28 +114,33 @@ CrossOriginOpenerPolicyStatus::CrossOriginOpenerPolicyStatus(
 
 CrossOriginOpenerPolicyStatus::~CrossOriginOpenerPolicyStatus() = default;
 
-base::Optional<network::mojom::BlockedByResponseReason>
-CrossOriginOpenerPolicyStatus::EnforceCOOP(
+network::CrossOriginOpenerPolicy&
+CrossOriginOpenerPolicyStatus::RetrieveCOOPFromResponse(
     network::mojom::URLResponseHead* response_head,
-    const net::NetworkIsolationKey& network_isolation_key) {
+    const url::Origin& response_origin) {
   const GURL& response_url = navigation_request_->common_params().url;
-  const GURL& response_referrer_url =
-      navigation_request_->common_params().referrer->url;
-
-  // TODO(https://crbug.com/1063518): Take sandbox into account.
-  url::Origin response_origin = url::Origin::Create(response_url);
 
   SanitizeCoopHeaders(response_url, response_origin, response_head);
+
   network::mojom::ParsedHeaders* parsed_headers =
       response_head->parsed_headers.get();
 
-  // Return early if the situation prevents COOP from operating.
-  if (!frame_tree_node_->IsMainFrame() || response_url.IsAboutBlank()) {
+  return parsed_headers->cross_origin_opener_policy;
+}
+
+base::Optional<network::mojom::BlockedByResponseReason>
+CrossOriginOpenerPolicyStatus::EnforceCOOP(
+    const network::CrossOriginOpenerPolicy& response_coop,
+    const url::Origin& response_origin,
+    const net::NetworkIsolationKey& network_isolation_key) {
+  // COOP only applies to top level browsing contexts.
+  if (!frame_tree_node_->IsMainFrame()) {
     return base::nullopt;
   }
 
-  network::CrossOriginOpenerPolicy& response_coop =
-      parsed_headers->cross_origin_opener_policy;
+  const GURL& response_url = navigation_request_->common_params().url;
+  const GURL& response_referrer_url =
+      navigation_request_->common_params().referrer->url;
 
   // Popups with a sandboxing flag, inherited from their opener, are not
   // allowed to navigate to a document with a Cross-Origin-Opener-Policy that
@@ -146,6 +151,13 @@ CrossOriginOpenerPolicyStatus::EnforceCOOP(
           network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone &&
       (frame_tree_node_->pending_frame_policy().sandbox_flags !=
        network::mojom::WebSandboxFlags::kNone)) {
+    // Blob and Filesystem documents' cross-origin-opener-policy values are
+    // defaulted to the default unsafe-none.
+    // Data documents can only be loaded on main documents through browser
+    // initiated navigations. These never inherit sandbox flags.
+    DCHECK(!response_url.SchemeIsBlob());
+    DCHECK(!response_url.SchemeIsFileSystem());
+    DCHECK(!response_url.SchemeIs(url::kDataScheme));
     return network::mojom::BlockedByResponseReason::
         kCoopSandboxedIFrameCannotNavigateToCoopPage;
   }

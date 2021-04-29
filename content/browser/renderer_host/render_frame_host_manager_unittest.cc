@@ -424,6 +424,9 @@ class RenderFrameHostManagerTest
     TestRenderFrameHost* frame_host = static_cast<TestRenderFrameHost*>(
         manager->GetFrameHostForNavigation(navigation_request.get()));
     CHECK(frame_host);
+
+    frame_host->SetPolicyContainerHost(
+        base::MakeRefCounted<PolicyContainerHost>());
     return frame_host;
   }
 

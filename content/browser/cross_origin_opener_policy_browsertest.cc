@@ -182,12 +182,19 @@ int VirtualBrowsingContextGroup(WebContents* wc) {
 
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                        NewPopupCOOP_InheritsSameOrigin) {
-  GURL starting_page(
-      https_server()->GetURL("a.com", "/cross_site_iframe_factory.html?a(a)"));
+  GURL starting_page(https_server()->GetURL(
+      "a.com", "/set-header?cross-origin-opener-policy: same-origin"));
   EXPECT_TRUE(NavigateToURL(shell(), starting_page));
 
   RenderFrameHostImpl* main_frame = current_frame_host();
-  main_frame->set_cross_origin_opener_policy_for_testing(CoopSameOrigin());
+
+  // Create same origin child frame.
+  ASSERT_TRUE(ExecJs(main_frame, R"(
+    let frame = document.createElement('iframe');
+    frame.src = '/empty.html';
+    document.body.appendChild(frame);
+  )"));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
   ShellAddedObserver shell_observer;
   RenderFrameHostImpl* iframe = main_frame->child_at(0)->current_frame_host();
@@ -205,13 +212,20 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                        NewPopupCOOP_InheritsSameOriginAllowPopups) {
-  GURL starting_page(
-      https_server()->GetURL("a.com", "/cross_site_iframe_factory.html?a(a)"));
+  GURL starting_page(https_server()->GetURL(
+      "a.com",
+      "/set-header?cross-origin-opener-policy: same-origin-allow-popups"));
   EXPECT_TRUE(NavigateToURL(shell(), starting_page));
 
   RenderFrameHostImpl* main_frame = current_frame_host();
-  main_frame->set_cross_origin_opener_policy_for_testing(
-      CoopSameOriginAllowPopups());
+
+  // Create same origin child frame.
+  ASSERT_TRUE(ExecJs(current_frame_host(), R"(
+    let frame = document.createElement('iframe');
+    frame.src = '/empty.html';
+    document.body.appendChild(frame);
+  )"));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
   ShellAddedObserver shell_observer;
   RenderFrameHostImpl* iframe = main_frame->child_at(0)->current_frame_host();
@@ -231,12 +245,22 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                        NewPopupCOOP_CrossOriginDoesNotInherit) {
-  GURL starting_page(
-      https_server()->GetURL("a.com", "/cross_site_iframe_factory.html?a(b)"));
+  GURL starting_page(https_server()->GetURL(
+      "a.com", "/set-header?cross-origin-opener-policy: same-origin"));
+  GURL url_b(https_server()->GetURL("b.com", "/empty.html"));
+
   EXPECT_TRUE(NavigateToURL(shell(), starting_page));
 
   RenderFrameHostImpl* main_frame = current_frame_host();
-  main_frame->set_cross_origin_opener_policy_for_testing(CoopSameOrigin());
+
+  // Create cross origin child frame.
+  ASSERT_TRUE(ExecJs(main_frame, JsReplace(R"(
+    let frame = document.createElement('iframe');
+    frame.src = $1;
+    document.body.appendChild(frame);
+  )",
+                                           url_b)));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
   ShellAddedObserver shell_observer;
   RenderFrameHostImpl* iframe = main_frame->child_at(0)->current_frame_host();
@@ -255,13 +279,26 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 IN_PROC_BROWSER_TEST_P(
     CrossOriginOpenerPolicyBrowserTest,
     NewPopupCOOP_SameOriginPolicyAndCrossOriginIframeSetsNoopener) {
-  for (auto coop_value : {CoopSameOriginPlusCoep(), CoopSameOrigin()}) {
-    GURL starting_page(https_server()->GetURL(
-        "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  for (const char* header :
+       {"cross-origin-opener-policy: same-origin",
+        "cross-origin-opener-policy: same-origin&cross-origin-embedder-policy: "
+        "require-corp"}) {
+    GURL starting_page(
+        https_server()->GetURL("a.com", std::string("/set-header?") + header));
+    GURL url_b(https_server()->GetURL("b.com", "/empty.html"));
+
     EXPECT_TRUE(NavigateToURL(shell(), starting_page));
 
     RenderFrameHostImpl* main_frame = current_frame_host();
-    main_frame->set_cross_origin_opener_policy_for_testing(coop_value);
+
+    // Create cross origin child frame.
+    ASSERT_TRUE(ExecJs(main_frame, JsReplace(R"(
+        let frame = document.createElement('iframe');
+        frame.src = $1;
+        document.body.appendChild(frame);
+    )",
+                                             url_b)));
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
     ShellAddedObserver new_shell_observer;
     RenderFrameHostImpl* iframe = main_frame->child_at(0)->current_frame_host();
@@ -442,7 +479,152 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   EXPECT_EQ(iframe_rfh->GetLastCommittedURL(), iframe_navigation_url);
   EXPECT_EQ(iframe_rfh->GetSiteInstance(), non_coop_iframe_site_instance);
 
+  // The iframe's COOP value is defaulted to unsafe-none since the iframe is
+  // cross origin with its top frame.
   EXPECT_EQ(iframe_rfh->cross_origin_opener_policy(), CoopUnsafeNone());
+}
+
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       CoopSameOriginIframeInheritance) {
+  GURL coop_url(embedded_test_server()->GetURL(
+      "/set-header?cross-origin-opener-policy: same-origin"));
+  ASSERT_TRUE(NavigateToURL(shell(), coop_url));
+
+  // Create same origin child frame.
+  ASSERT_TRUE(ExecJs(current_frame_host(), R"(
+    let frame = document.createElement('iframe');
+    frame.src = '/empty.html';
+    document.body.appendChild(frame);
+  )"));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  RenderFrameHostImpl* child_rfh =
+      current_frame_host()->child_at(0)->current_frame_host();
+
+  // The embedded document has a COOP value that is always inherited from its
+  // top level document if they are same-origin. This has no incidence on the
+  // embeddee but is inherited by the popup opened hereafter.
+  EXPECT_EQ(
+      network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin,
+      child_rfh->policy_container_host()->cross_origin_opener_policy().value);
+
+  // Create a popup from the iframe.
+  ShellAddedObserver shell_observer;
+  EXPECT_TRUE(ExecJs(child_rfh, R"(
+    w = window.open("about:blank");
+  )"));
+  WebContentsImpl* popup_webcontents =
+      static_cast<WebContentsImpl*>(shell_observer.GetShell()->web_contents());
+  RenderFrameHostImpl* popup_rfh = popup_webcontents->GetMainFrame();
+
+  // Verify inheritance from the opener:
+  // The second about:blank document of the popup, due to the synchronous
+  // re-navigation to about:blank, inherits COOP from its opener.
+  // When the opener is same-origin with its top-level document, the top-level
+  // document's COOP value (same-origin) is used.
+  // In practice policy container handles the inheritance, taking the value
+  // from the opener directly, which was properly set when the document was
+  // committed.
+  EXPECT_EQ(
+      network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin,
+      popup_rfh->policy_container_host()->cross_origin_opener_policy().value);
+
+  PolicyContainerHost* popup_initial_policy_container =
+      popup_rfh->policy_container_host();
+
+  // Navigate the popup from the iframe to about:blank.
+  EXPECT_TRUE(ExecJs(child_rfh, R"(
+    w.location.href = "about:blank";
+  )"));
+  EXPECT_TRUE(WaitForLoadStop(popup_webcontents));
+  popup_rfh = popup_webcontents->GetMainFrame();
+
+  // Verify the policy container changed, highlighting that the popup has
+  // navigated to a different about:blank document.
+  EXPECT_NE(popup_initial_policy_container, popup_rfh->policy_container_host());
+
+  // Verify inheritance from the initiator:
+  // The navigation to a local scheme inherits COOP from the initiator. When the
+  // initiator is same-origin with its top-level document, the top-level
+  // document's COOP value (same-origin) is used.
+  // In practice policy container handles the inheritance, taking the value
+  // from the initiator directly, which was properly set when the document was
+  // committed.
+  EXPECT_EQ(
+      network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin,
+      popup_rfh->policy_container_host()->cross_origin_opener_policy().value);
+}
+
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       CoopCrossOriginIframeInheritance) {
+  GURL coop_url(embedded_test_server()->GetURL(
+      "/set-header?cross-origin-opener-policy: same-origin-allow-popups"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/empty.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), coop_url));
+
+  // Create child frame.
+  ASSERT_TRUE(ExecJs(current_frame_host(), JsReplace(R"(
+    let frame = document.createElement('iframe');
+    frame.src = $1;
+    document.body.appendChild(frame);
+  )",
+                                                     url_b)));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  RenderFrameHostImpl* child_rfh =
+      current_frame_host()->child_at(0)->current_frame_host();
+
+  // The embedded document has a COOP value that is always defaulted when it is
+  // cross origin with its top level document. This has no incidence on the
+  // embeddee but is inherited by the popup opened hereafter.
+  EXPECT_EQ(
+      network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone,
+      child_rfh->policy_container_host()->cross_origin_opener_policy().value);
+
+  // Create a popup from the iframe.
+  ShellAddedObserver shell_observer;
+  EXPECT_TRUE(ExecJs(child_rfh, R"(
+    w = window.open("about:blank");
+  )"));
+  WebContentsImpl* popup_webcontents =
+      static_cast<WebContentsImpl*>(shell_observer.GetShell()->web_contents());
+  RenderFrameHostImpl* popup_rfh = popup_webcontents->GetMainFrame();
+
+  // The second about:blank document of the popup, due to the synchronous
+  // re-navigation to about:blank, inherits COOP from its opener.
+  // When the opener is cross-origin with its top-level document, the COOP value
+  // is defaulted to unsafe-none.
+  // In practice policy container handles the inheritance, taking the value
+  // from the opener directly, which was properly set when the document was
+  // committed.
+  EXPECT_EQ(
+      network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone,
+      popup_rfh->policy_container_host()->cross_origin_opener_policy().value);
+
+  PolicyContainerHost* popup_initial_policy_container =
+      popup_rfh->policy_container_host();
+
+  // Navigate the popup from the iframe.
+  EXPECT_TRUE(ExecJs(child_rfh, R"(
+    w.location.href = "about:blank";
+  )"));
+  EXPECT_TRUE(WaitForLoadStop(popup_webcontents));
+  popup_rfh = popup_webcontents->GetMainFrame();
+
+  // Verify the policy container changed, highlighting that the popup has
+  // navigated to a different about:blank document.
+  EXPECT_NE(popup_initial_policy_container, popup_rfh->policy_container_host());
+
+  // Verify inheritance from the initiator:
+  // The navigation to a local scheme inherits COOP from the initiator. When the
+  // initiator is cross-origin with its top-level document, the COOP value is
+  // defaulted to unsafe-none.
+  // In practice policy container handles the inheritance, taking the value
+  // from the initiator directly, which was properly set when the document was
+  // committed.
+  EXPECT_EQ(
+      network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone,
+      popup_rfh->policy_container_host()->cross_origin_opener_policy().value);
 }
 
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,

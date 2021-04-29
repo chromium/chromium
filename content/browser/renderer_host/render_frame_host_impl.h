@@ -1639,12 +1639,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Semi-formal definition of COOP:
   // https://gist.github.com/annevk/6f2dd8c79c77123f39797f6bdac43f3e
   network::CrossOriginOpenerPolicy cross_origin_opener_policy() const {
-    return cross_origin_opener_policy_;
+    return policy_container_host_->cross_origin_opener_policy();
   }
-  void set_cross_origin_opener_policy_for_testing(
-      const network::CrossOriginOpenerPolicy& cross_origin_opener_policy) {
-    cross_origin_opener_policy_ = cross_origin_opener_policy;
-  }
+
   CrossOriginOpenerPolicyReporter* coop_reporter() {
     return coop_reporter_.get();
   }
@@ -2961,8 +2958,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
           kBlockFromInsecureToMorePrivate;
 
   network::CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
-
-  network::CrossOriginOpenerPolicy cross_origin_opener_policy_;
 
   // Track the SiteInfo of the last site we committed successfully, as obtained
   // from SiteInstanceImpl::GetSiteInfoForURL().

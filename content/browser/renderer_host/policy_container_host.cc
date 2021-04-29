@@ -44,7 +44,8 @@ bool operator==(const PolicyContainerPolicies& lhs,
          std::equal(lhs.content_security_policies.begin(),
                     lhs.content_security_policies.end(),
                     rhs.content_security_policies.begin(),
-                    rhs.content_security_policies.end());
+                    rhs.content_security_policies.end()) &&
+         lhs.cross_origin_opener_policy == rhs.cross_origin_opener_policy;
 }
 
 bool operator!=(const PolicyContainerPolicies& lhs,
@@ -59,15 +60,30 @@ std::ostream& operator<<(std::ostream& out,
       << ", is_web_secure_context: " << policies.is_web_secure_context
       << ", content_security_policies: ";
 
-  if (policies.content_security_policies.empty())
-    return out << "[] }";
-
-  out << "[ ";
-  auto it = policies.content_security_policies.begin();
-  for (; it + 1 != policies.content_security_policies.end(); ++it) {
-    out << (*it)->header->header_value << ", ";
+  if (policies.content_security_policies.empty()) {
+    out << "[]";
+  } else {
+    out << "[ ";
+    auto it = policies.content_security_policies.begin();
+    for (; it + 1 != policies.content_security_policies.end(); ++it) {
+      out << (*it)->header->header_value << ", ";
+    }
+    out << (*it)->header->header_value << " ]";
   }
-  return out << (*it)->header->header_value << " ] }";
+
+  out << ", cross_origin_opener_policy: "
+      << "{ value: " << policies.cross_origin_opener_policy.value
+      << ", reporting_endpoint: "
+      << policies.cross_origin_opener_policy.reporting_endpoint.value_or(
+             "<null>")
+      << ", report_only_value: "
+      << policies.cross_origin_opener_policy.report_only_value
+      << ", report_only_reporting_endpoint: "
+      << policies.cross_origin_opener_policy.report_only_reporting_endpoint
+             .value_or("<null>")
+      << " }";
+
+  return out << " }";
 }
 
 PolicyContainerPolicies::PolicyContainerPolicies() = default;
@@ -77,11 +93,13 @@ PolicyContainerPolicies::PolicyContainerPolicies(
     network::mojom::IPAddressSpace ip_address_space,
     bool is_web_secure_context,
     std::vector<network::mojom::ContentSecurityPolicyPtr>
-        content_security_policies)
+        content_security_policies,
+    const network::CrossOriginOpenerPolicy& cross_origin_opener_policy)
     : referrer_policy(referrer_policy),
       ip_address_space(ip_address_space),
       is_web_secure_context(is_web_secure_context),
-      content_security_policies(std::move(content_security_policies)) {}
+      content_security_policies(std::move(content_security_policies)),
+      cross_origin_opener_policy(cross_origin_opener_policy) {}
 
 PolicyContainerPolicies::~PolicyContainerPolicies() = default;
 
@@ -89,7 +107,7 @@ std::unique_ptr<PolicyContainerPolicies> PolicyContainerPolicies::Clone()
     const {
   return std::make_unique<PolicyContainerPolicies>(
       referrer_policy, ip_address_space, is_web_secure_context,
-      mojo::Clone(content_security_policies));
+      mojo::Clone(content_security_policies), cross_origin_opener_policy);
 }
 
 void PolicyContainerPolicies::AddContentSecurityPolicies(

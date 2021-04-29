@@ -1599,6 +1599,16 @@ void NavigationRequest::BeginNavigation() {
     if (IsSameDocument()) {
       render_frame_host_ = frame_tree_node_->current_frame_host();
     } else {
+      // Enforce cross-origin-opener-policy for about:blank, about:srcdoc and
+      // MHTML iframe, before selecting the RenderFrameHost.
+      const url::Origin origin = GetOriginForURLLoaderFactoryUnchecked(this);
+      const base::Optional<network::mojom::BlockedByResponseReason>
+          coop_requires_blocking = coop_status_.EnforceCOOP(
+              policy_container_navigation_bundle_->FinalPolicies()
+                  .cross_origin_opener_policy,
+              origin, net::NetworkIsolationKey(origin, origin));
+      DCHECK(!coop_requires_blocking);
+
       // Select an appropriate RenderFrameHost.
       std::string frame_host_choice_reason;
       render_frame_host_ =
@@ -2189,12 +2199,11 @@ void NavigationRequest::OnRequestRedirected(
     return;
   }
 
-  // TODO(clamy): When we are able to compute the origin of a response in the
-  // browser process, we should use the computed origin instead of extracting it
-  // from the response URL.
+  const url::Origin origin = GetOriginForURLLoaderFactoryUnchecked(this);
   const base::Optional<network::mojom::BlockedByResponseReason>
-      coop_requires_blocking =
-          coop_status_.EnforceCOOP(response_head_.get(), network_isolation_key);
+      coop_requires_blocking = coop_status_.EnforceCOOP(
+          coop_status_.RetrieveCOOPFromResponse(response_head_.get(), origin),
+          origin, network_isolation_key);
   if (coop_requires_blocking) {
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(*coop_requires_blocking),
@@ -2675,6 +2684,30 @@ void NavigationRequest::OnResponseStarted(
     return;
   }
 
+  {
+    const url::Origin origin = GetOriginForURLLoaderFactoryUnchecked(this);
+    // TODO(pmeuleman) Move the enforcement of COOP to after
+    // ComputePoliciesToCommit and use the origin from
+    // GetOriginForURLLoaderFactory.
+    const base::Optional<network::mojom::BlockedByResponseReason>
+        coop_requires_blocking = coop_status_.EnforceCOOP(
+            coop_status_.RetrieveCOOPFromResponse(response_head_.get(), origin),
+            origin, network_isolation_key);
+    policy_container_navigation_bundle_->SetCrossOriginOpenerPolicy(
+        coop_status_.current_coop());
+    if (coop_requires_blocking) {
+      // TODO(https://crbug.com/1172169): Investigate what must be done in case
+      // of a download.
+      OnRequestFailedInternal(
+          network::URLLoaderCompletionStatus(*coop_requires_blocking),
+          false /* skip_throttles */, base::nullopt /* error_page_content */,
+          false /* collapse_frame */);
+      // DO NOT ADD CODE after this. The previous call to
+      // OnRequestFailedInternal has destroyed the NavigationRequest.
+      return;
+    }
+  }
+
   ComputePoliciesToCommit();
 
   // The navigation may have encountered a header that requests isolation for
@@ -2763,24 +2796,6 @@ void NavigationRequest::OnResponseStarted(
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(net::ERR_BLOCKED_BY_RESPONSE),
         false /* skip_throttles */, base::nullopt /* error_page_contnet */,
-        false /* collapse_frame */);
-    // DO NOT ADD CODE after this. The previous call to
-    // OnRequestFailedInternal has destroyed the NavigationRequest.
-    return;
-  }
-
-  // TODO(clamy): When we are able to compute the origin of a response in the
-  // browser process, we should use the computed origin instead of extracting it
-  // from the response URL.
-  const base::Optional<network::mojom::BlockedByResponseReason>
-      coop_requires_blocking =
-          coop_status_.EnforceCOOP(response_head_.get(), network_isolation_key);
-  if (coop_requires_blocking) {
-    // TODO(https://crbug.com/1172169): Investigate what must be done in case of
-    // a download.
-    OnRequestFailedInternal(
-        network::URLLoaderCompletionStatus(*coop_requires_blocking),
-        false /* skip_throttles */, base::nullopt /* error_page_content */,
         false /* collapse_frame */);
     // DO NOT ADD CODE after this. The previous call to
     // OnRequestFailedInternal has destroyed the NavigationRequest.

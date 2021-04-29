@@ -6442,6 +6442,9 @@ crbug.com/1069714 [ Mac10.13 ] external/wpt/webrtc/RTCRtpSender-replaceTrack.htt
 # COOP access reporting:
 crbug.com/1090273 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/property-opener-set.https.html [ Timeout ]
 
+# COOP top navigation:
+crbug.com/1153648 external/wpt/html/cross-origin-opener-policy/navigate-top-to-aboutblank.https.html [ Failure ]
+
 # Stale revalidation shouldn't be blocked:
 crbug.com/1079188 external/wpt/fetch/stale-while-revalidate/revalidate-not-blocked-by-csp.html [ Timeout ]
 

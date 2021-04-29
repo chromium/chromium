@@ -79,6 +79,11 @@ class CONTENT_EXPORT PolicyContainerNavigationBundle {
   // if the entry had no policies.
   const PolicyContainerPolicies* HistoryPolicies() const;
 
+  // Sets the cross origin opener policy of the new document.
+  //
+  // This must be called before |ComputePolicies()|.
+  void SetCrossOriginOpenerPolicy(network::CrossOriginOpenerPolicy coop);
+
   // Sets the IP address space of the delivered policies of the new document.
   //
   // This must be called before |ComputePolicies()|.
@@ -163,6 +168,7 @@ class CONTENT_EXPORT PolicyContainerNavigationBundle {
   // Helper for `FinalizePolicies()`. Appends the delivered Content Security
   // Policies to `policies` and returns them.
   std::unique_ptr<PolicyContainerPolicies> IncorporateDeliveredPolicies(
+      const GURL& url,
       std::unique_ptr<PolicyContainerPolicies> policies);
 
   // Helper for `FinalizePolicies()`. Returns, depending on `url`, the policies

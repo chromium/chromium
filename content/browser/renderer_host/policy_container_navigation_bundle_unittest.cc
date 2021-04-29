@@ -45,7 +45,8 @@ std::unique_ptr<PolicyContainerPolicies> MakeTestPolicies() {
   return std::make_unique<PolicyContainerPolicies>(
       network::mojom::ReferrerPolicy::kAlways,
       network::mojom::IPAddressSpace::kPublic,
-      /*is_web_secure_context=*/true, std::move(csp_list));
+      /*is_web_secure_context=*/true, std::move(csp_list),
+      network::CrossOriginOpenerPolicy());
 }
 
 // Shorthand.
@@ -111,6 +112,26 @@ TEST_F(PolicyContainerNavigationBundleTest, SetIsOriginPotentiallyTrustworthy) {
   bundle.SetIsOriginPotentiallyTrustworthy(false);
 
   expected_policies.is_web_secure_context = false;
+  EXPECT_EQ(bundle.DeliveredPoliciesForTesting(), expected_policies);
+}
+
+// Verifies that SetCrossOriginOpenerPolicy sets the cross-origin-opener-policy
+// in the bundle's delivered policies.
+TEST_F(PolicyContainerNavigationBundleTest, SetCrossOriginOpenerPolicy) {
+  PolicyContainerNavigationBundle bundle(nullptr, nullptr, nullptr);
+
+  network::CrossOriginOpenerPolicy coop;
+  coop.value = network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin;
+  coop.report_only_value =
+      network::mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopups;
+  coop.reporting_endpoint = "A";
+  coop.report_only_reporting_endpoint = "B";
+
+  bundle.SetCrossOriginOpenerPolicy(coop);
+
+  PolicyContainerPolicies expected_policies;
+  expected_policies.cross_origin_opener_policy = coop;
+
   EXPECT_EQ(bundle.DeliveredPoliciesForTesting(), expected_policies);
 }
 
@@ -268,6 +289,32 @@ TEST_F(PolicyContainerNavigationBundleTest,
   const blink::LocalFrameToken& token = initiator->GetFrameToken();
   PolicyContainerNavigationBundle bundle(nullptr, &token, nullptr);
   bundle.ComputePolicies(AboutBlankUrl());
+
+  EXPECT_EQ(bundle.FinalPolicies(), *initiator_policies);
+}
+
+// Verifies that when the URL of the document to commit is `blob:.*`, the
+// bundle's final policies are copied from the initiator, with the exception of
+// cross-origin-opener-policy.
+TEST_F(PolicyContainerNavigationBundleTest, FinalPoliciesBlobWithInitiator) {
+  std::unique_ptr<PolicyContainerPolicies> initiator_policies =
+      MakeTestPolicies();
+  TestRenderFrameHost* initiator = contents()->GetMainFrame();
+  initiator->SetPolicyContainerHost(NewHost(initiator_policies->Clone()));
+
+  // Force implicit conversion from LocalFrameToken to UnguessableToken.
+  const blink::LocalFrameToken& token = initiator->GetFrameToken();
+  PolicyContainerNavigationBundle bundle(nullptr, &token, nullptr);
+
+  // Set a delivered cross-origin-opener-policy.
+  network::CrossOriginOpenerPolicy coop;
+  coop.value = network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin;
+  bundle.SetCrossOriginOpenerPolicy(coop);
+
+  bundle.ComputePolicies(
+      GURL("blob:https://example.com/016ece86-b7f9-4b07-88c2-a0e36b7f1dd6"));
+
+  initiator_policies->cross_origin_opener_policy = coop;
 
   EXPECT_EQ(bundle.FinalPolicies(), *initiator_policies);
 }

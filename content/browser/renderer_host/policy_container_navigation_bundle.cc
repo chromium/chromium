@@ -128,6 +128,13 @@ void PolicyContainerNavigationBundle::AddContentSecurityPolicies(
   delivered_policies_->AddContentSecurityPolicies(std::move(policies));
 }
 
+void PolicyContainerNavigationBundle::SetCrossOriginOpenerPolicy(
+    network::CrossOriginOpenerPolicy coop) {
+  DCHECK(!HasComputedPolicies());
+
+  delivered_policies_->cross_origin_opener_policy = coop;
+}
+
 const PolicyContainerPolicies&
 PolicyContainerNavigationBundle::DeliveredPoliciesForTesting() const {
   DCHECK(!HasComputedPolicies());
@@ -153,6 +160,15 @@ void PolicyContainerNavigationBundle::ComputePoliciesForError() {
   // crbug.com/1180140.
   policies->ip_address_space = delivered_policies_->ip_address_space;
 
+  // TODO(https://crbug.com/1153648) This keeps the existing behavior which is
+  // to keep the last value stored in cross_origin_opener_policy_status for the
+  // error page. This will be the previous document COOP value or the last
+  // redirect. This should be changed to a default value to be decided, for that
+  // this will need to be executed before determining the render frame host to
+  // use for the error.
+  policies->cross_origin_opener_policy =
+      delivered_policies_->cross_origin_opener_policy;
+
   SetFinalPolicies(std::move(policies));
 
   DCHECK(HasComputedPolicies());
@@ -173,6 +189,7 @@ void PolicyContainerNavigationBundle::ComputeIsWebSecureContext() {
 
 std::unique_ptr<PolicyContainerPolicies>
 PolicyContainerNavigationBundle::IncorporateDeliveredPolicies(
+    const GURL& url,
     std::unique_ptr<PolicyContainerPolicies> policies) {
   // Delivered content security policies must be appended.
   policies->AddContentSecurityPolicies(
@@ -182,6 +199,14 @@ PolicyContainerNavigationBundle::IncorporateDeliveredPolicies(
   if (delivered_policies_->ip_address_space !=
       network::mojom::IPAddressSpace::kUnknown) {
     policies->ip_address_space = delivered_policies_->ip_address_space;
+  }
+
+  // Ignore inheritance of COOP for blobs or filesystem schemes as this
+  // conflicts with COEP.
+  // TODO(https://crbug.com/1057296) properly implement inheritance for blobs
+  if (url.SchemeIs(url::kBlobScheme) || url.SchemeIs(url::kFileSystemScheme)) {
+    policies->cross_origin_opener_policy =
+        delivered_policies_->cross_origin_opener_policy;
   }
 
   return policies;
@@ -220,7 +245,7 @@ PolicyContainerNavigationBundle::ComputeFinalPolicies(const GURL& url) {
   if (history_policies_)
     return history_policies_->Clone();
 
-  return IncorporateDeliveredPolicies(ComputeInheritedPolicies(url));
+  return IncorporateDeliveredPolicies(url, ComputeInheritedPolicies(url));
 }
 
 void PolicyContainerNavigationBundle::ComputePolicies(const GURL& url) {

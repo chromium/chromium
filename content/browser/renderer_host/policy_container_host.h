@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
+#include "services/network/public/cpp/cross_origin_opener_policy.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
@@ -22,11 +23,13 @@ namespace content {
 // The contents of a PolicyContainerHost.
 struct CONTENT_EXPORT PolicyContainerPolicies {
   PolicyContainerPolicies();
-  PolicyContainerPolicies(network::mojom::ReferrerPolicy referrer_policy,
-                          network::mojom::IPAddressSpace ip_address_space,
-                          bool is_web_secure_context,
-                          std::vector<network::mojom::ContentSecurityPolicyPtr>
-                              content_security_policies);
+  PolicyContainerPolicies(
+      network::mojom::ReferrerPolicy referrer_policy,
+      network::mojom::IPAddressSpace ip_address_space,
+      bool is_web_secure_context,
+      std::vector<network::mojom::ContentSecurityPolicyPtr>
+          content_security_policies,
+      const network::CrossOriginOpenerPolicy& cross_origin_opener_policy);
   PolicyContainerPolicies(const PolicyContainerPolicies&) = delete;
   PolicyContainerPolicies operator=(const PolicyContainerPolicies&) = delete;
   ~PolicyContainerPolicies();
@@ -64,6 +67,11 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
   // The content security policies of the associated document.
   std::vector<network::mojom::ContentSecurityPolicyPtr>
       content_security_policies;
+
+  // The cross-origin-opener-policy (COOP) of the document
+  // See:
+  // https://html.spec.whatwg.org/multipage/origin.html#cross-origin-opener-policies
+  network::CrossOriginOpenerPolicy cross_origin_opener_policy;
 };
 
 // PolicyContainerPolicies structs are comparable for equality.
@@ -137,9 +145,18 @@ class CONTENT_EXPORT PolicyContainerHost
     return policies_->ip_address_space;
   }
 
+  network::CrossOriginOpenerPolicy cross_origin_opener_policy() const {
+    return policies_->cross_origin_opener_policy;
+  }
+
   void AddContentSecurityPolicies(
       std::vector<network::mojom::ContentSecurityPolicyPtr>
           content_security_policies) final;
+
+  void set_cross_origin_opener_policy(
+      const network::CrossOriginOpenerPolicy& policy) {
+    policies_->cross_origin_opener_policy = policy;
+  }
 
   // Return a PolicyContainer containing copies of the policies and a pending
   // mojo remote that can be used to update policies in this object. If called a
