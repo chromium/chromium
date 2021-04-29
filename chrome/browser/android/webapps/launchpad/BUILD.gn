@@ -69,7 +69,11 @@ android_resources("java_resources") {
 
 android_library("javatests") {
   testonly = true
-  sources = [ "java/src/org/chromium/chrome/browser/webapps/launchpad/LaunchpadPageTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/webapps/launchpad/LaunchpadActivityTest.java",
+    "java/src/org/chromium/chrome/browser/webapps/launchpad/LaunchpadPageTest.java",
+    "java/src/org/chromium/chrome/browser/webapps/launchpad/LaunchpadTestUtils.java",
+  ]
 
   deps = [
     ":java",
@@ -96,6 +100,7 @@ android_library("javatests") {
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
     "//ui/android:ui_full_java",
+    "//ui/android:ui_java_test_support",
   ]
 }
 

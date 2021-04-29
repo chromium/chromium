@@ -15,7 +15,6 @@ import static org.hamcrest.Matchers.allOf;
 import android.app.Activity;
 import android.app.Instrumentation.ActivityResult;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
@@ -36,28 +35,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.chrome.browser.browserservices.intents.WebApkExtras.ShortcutItem;
-import org.chromium.chrome.browser.browserservices.intents.WebappIcon;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.browser_ui.widget.tile.TileView;
-import org.chromium.components.content_settings.ContentSettingValues;
-import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.modaldialog.ModalDialogProperties;
-import org.chromium.ui.modelutil.PropertyModel;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Tests for the Launchpad page.
@@ -66,22 +53,6 @@ import java.util.List;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Features.EnableFeatures({ChromeFeatureList.APP_LAUNCHPAD})
 public class LaunchpadPageTest {
-    private static final String APP_PACKAGE_NAME_1 = "package.name.1";
-    private static final String APP_NAME_1 = "App Name 1";
-    private static final String APP_SHORT_NAME_1 = "App 1";
-    private static final String APP_URL_1 = "https://example.com/1";
-    private static final String APP_PACKAGE_NAME_2 = "package.name.2";
-    private static final String APP_NAME_2 = "App Name 2";
-    private static final String APP_SHORT_NAME_2 = "App 2 with long short name";
-    private static final String APP_URL_2 = "https://example.com/2";
-    private static final Bitmap TEST_ICON = Bitmap.createBitmap(20, 20, Bitmap.Config.ARGB_8888);
-
-    private static final List<LaunchpadItem> MOCK_APP_LIST =
-            new ArrayList<>(Arrays.asList(new LaunchpadItem(APP_PACKAGE_NAME_1, APP_SHORT_NAME_1,
-                                                  APP_NAME_1, APP_URL_1, TEST_ICON, null),
-                    new LaunchpadItem(APP_PACKAGE_NAME_2, APP_SHORT_NAME_2, APP_NAME_2, APP_URL_2,
-                            TEST_ICON, null)));
-
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
@@ -92,7 +63,7 @@ public class LaunchpadPageTest {
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
-        LaunchpadUtils.setOverrideItemListForTesting(MOCK_APP_LIST);
+        LaunchpadUtils.setOverrideItemListForTesting(LaunchpadTestUtils.MOCK_APP_LIST);
     }
 
     private void openLaunchpadPage() {
@@ -113,16 +84,18 @@ public class LaunchpadPageTest {
         TileView app1 = (TileView) mItemContainer.getChildAt(0);
         TextView title1 = (TextView) app1.findViewById(R.id.tile_view_title);
         ImageView icon1 = (ImageView) app1.findViewById(R.id.tile_view_icon);
-        Assert.assertEquals(APP_SHORT_NAME_1, title1.getText());
+        Assert.assertEquals(LaunchpadTestUtils.APP_SHORT_NAME_1, title1.getText());
         Assert.assertEquals(1, title1.getLineCount());
-        Assert.assertEquals(TEST_ICON, ((BitmapDrawable) icon1.getDrawable()).getBitmap());
+        Assert.assertEquals(
+                LaunchpadTestUtils.TEST_ICON, ((BitmapDrawable) icon1.getDrawable()).getBitmap());
 
         TileView app2 = (TileView) mItemContainer.getChildAt(1);
         TextView title2 = (TextView) app2.findViewById(R.id.tile_view_title);
         ImageView icon2 = (ImageView) app2.findViewById(R.id.tile_view_icon);
-        Assert.assertEquals(APP_SHORT_NAME_2, title2.getText());
+        Assert.assertEquals(LaunchpadTestUtils.APP_SHORT_NAME_2, title2.getText());
         Assert.assertEquals(1, title2.getLineCount());
-        Assert.assertEquals(TEST_ICON, ((BitmapDrawable) icon2.getDrawable()).getBitmap());
+        Assert.assertEquals(
+                LaunchpadTestUtils.TEST_ICON, ((BitmapDrawable) icon2.getDrawable()).getBitmap());
     }
 
     @Test
@@ -131,128 +104,109 @@ public class LaunchpadPageTest {
         openLaunchpadPage();
 
         Intents.init();
-        intending(allOf(hasPackage(APP_PACKAGE_NAME_1)))
+        intending(allOf(hasPackage(LaunchpadTestUtils.APP_PACKAGE_NAME_1)))
                 .respondWith(new ActivityResult(Activity.RESULT_OK, null));
 
         View item = mItemContainer.getChildAt(0);
         TestThreadUtils.runOnUiThreadBlocking(() -> TouchCommon.singleClickView(item));
 
-        intended(allOf(hasPackage(APP_PACKAGE_NAME_1), hasData(APP_URL_1)), times(1));
+        intended(allOf(hasPackage(LaunchpadTestUtils.APP_PACKAGE_NAME_1),
+                         hasData(LaunchpadTestUtils.APP_URL_1)),
+                times(1));
         Intents.release();
     }
 
     @Test
     @MediumTest
-    public void testShowAppManagementMenu() {
+    public void testManagementMenuHeaderProperties() {
         openLaunchpadPage();
-        ModalDialogManager modalDialogManager =
-                mActivityTestRule.getActivity().getModalDialogManager();
+        View dialogView = LaunchpadTestUtils.openAppManagementMenu(mLaunchpadCoordinator,
+                mActivityTestRule.getActivity().getModalDialogManager(), 1 /* itemIndex */);
 
-        View item = mItemContainer.getChildAt(1);
-        TouchCommon.longPressView(item);
-
-        PropertyModel dialogModel = modalDialogManager.getCurrentDialogForTest();
-        Assert.assertNotNull(dialogModel);
-
-        View dialogView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
-        Assert.assertEquals(
-                APP_NAME_2, ((TextView) dialogView.findViewById(R.id.menu_header_title)).getText());
-        Assert.assertEquals(
-                APP_URL_2, ((TextView) dialogView.findViewById(R.id.menu_header_url)).getText());
+        Assert.assertEquals(LaunchpadTestUtils.APP_NAME_2,
+                ((TextView) dialogView.findViewById(R.id.menu_header_title)).getText());
+        Assert.assertEquals(LaunchpadTestUtils.APP_URL_2,
+                ((TextView) dialogView.findViewById(R.id.menu_header_url)).getText());
         ImageView icon = (ImageView) dialogView.findViewById(R.id.menu_header_image);
-        Assert.assertEquals(TEST_ICON, ((BitmapDrawable) icon.getDrawable()).getBitmap());
+        Assert.assertEquals(
+                LaunchpadTestUtils.TEST_ICON, ((BitmapDrawable) icon.getDrawable()).getBitmap());
     }
 
     @Test
     @MediumTest
-    public void testAppPermission() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Set permission for Notifications to Allow, Mic to Ask, Camera to Block, and Location
-            // to Allow.
-            Profile profile = Profile.getLastUsedRegularProfile();
-            PermissionInfo notifications = new PermissionInfo(ContentSettingsType.NOTIFICATIONS,
-                    APP_URL_1, null /* embedder */, false /* isEmbargoed */);
-            notifications.setContentSetting(profile, ContentSettingValues.ALLOW);
-            PermissionInfo mic = new PermissionInfo(ContentSettingsType.MEDIASTREAM_MIC, APP_URL_1,
-                    null /* embedder */, false /* isEmbargoed */);
-            mic.setContentSetting(profile, ContentSettingValues.ASK);
-            PermissionInfo camera = new PermissionInfo(ContentSettingsType.MEDIASTREAM_CAMERA,
-                    APP_URL_1, null /* embedder */, false /* isEmbargoed */);
-            camera.setContentSetting(profile, ContentSettingValues.BLOCK);
-            PermissionInfo location = new PermissionInfo(ContentSettingsType.GEOLOCATION, APP_URL_1,
-                    null /* embedder */, false /* isEmbargoed */);
-            location.setContentSetting(profile, ContentSettingValues.ALLOW);
-        });
-
+    public void testManagementMenuAppPermissions() {
+        LaunchpadTestUtils.setPermissionDefaults(LaunchpadTestUtils.APP_URL_2);
         openLaunchpadPage();
-        ModalDialogManager modalDialogManager =
-                mActivityTestRule.getActivity().getModalDialogManager();
-
-        View item = mItemContainer.getChildAt(0);
-        TouchCommon.longPressView(item);
-        PropertyModel dialogModel = modalDialogManager.getCurrentDialogForTest();
-        View dialogView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
+        View dialogView = LaunchpadTestUtils.openAppManagementMenu(mLaunchpadCoordinator,
+                mActivityTestRule.getActivity().getModalDialogManager(), 1 /* itemIndex */);
 
         Context context = InstrumentationRegistry.getTargetContext();
 
         ImageView notificationsIcon =
                 (ImageView) dialogView.findViewById(R.id.notifications_button);
         Assert.assertEquals(
-                AppCompatResources.getColorStateList(context, R.color.default_icon_color),
+                AppCompatResources.getColorStateList(context, R.color.default_icon_color_disabled),
                 notificationsIcon.getImageTintList());
         ImageView micIcon = (ImageView) dialogView.findViewById(R.id.mic_button);
         Assert.assertEquals(
-                AppCompatResources.getColorStateList(context, R.color.default_icon_color_disabled),
+                AppCompatResources.getColorStateList(context, R.color.default_icon_color),
                 micIcon.getImageTintList());
         ImageView cameraIcon = (ImageView) dialogView.findViewById(R.id.camera_button);
         Assert.assertEquals(
-                AppCompatResources.getColorStateList(context, R.color.default_icon_color_disabled),
+                AppCompatResources.getColorStateList(context, R.color.default_icon_color),
                 cameraIcon.getImageTintList());
         ImageView locationIcon = (ImageView) dialogView.findViewById(R.id.location_button);
         Assert.assertEquals(
-                AppCompatResources.getColorStateList(context, R.color.default_icon_color),
+                AppCompatResources.getColorStateList(context, R.color.default_icon_color_disabled),
                 locationIcon.getImageTintList());
     }
 
     @Test
     @MediumTest
-    public void testAppShortcuts() {
-        String testShortcutName = "Test Shortcut";
-        String testShortcutUrl = "https://example.com/11";
-        List<ShortcutItem> shortcutList =
-                new ArrayList<>(Arrays.asList(new ShortcutItem(testShortcutName, testShortcutName,
-                        testShortcutUrl, "iconUrl", "iconHash", new WebappIcon(TEST_ICON))));
-        List<LaunchpadItem> testAppListWithShortCut =
-                new ArrayList<>(Arrays.asList(new LaunchpadItem(APP_PACKAGE_NAME_1,
-                        APP_SHORT_NAME_1, APP_NAME_1, APP_URL_1, TEST_ICON, shortcutList)));
-
-        LaunchpadUtils.setOverrideItemListForTesting(testAppListWithShortCut);
+    public void testManagementMenuAppShortcutsProperties() {
         openLaunchpadPage();
-
-        ModalDialogManager modalDialogManager =
-                mActivityTestRule.getActivity().getModalDialogManager();
-
-        View item = mItemContainer.getChildAt(0);
-        TouchCommon.longPressView(item);
-        PropertyModel dialogModel = modalDialogManager.getCurrentDialogForTest();
-        View dialogView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
+        View dialogView = LaunchpadTestUtils.openAppManagementMenu(mLaunchpadCoordinator,
+                mActivityTestRule.getActivity().getModalDialogManager(), 0 /* itemIndex */);
 
         ListView listView = dialogView.findViewById(R.id.shortcuts_list_view);
 
         // Assert icon and name in shortcut item view is set correctly.
-        Assert.assertEquals(1, listView.getChildCount());
-        View shortcut = listView.getChildAt(0);
-        Assert.assertEquals(
-                testShortcutName, ((TextView) shortcut.findViewById(R.id.shortcut_name)).getText());
-        ImageView icon = (ImageView) shortcut.findViewById(R.id.shortcut_icon);
-        Assert.assertEquals(TEST_ICON, ((BitmapDrawable) icon.getDrawable()).getBitmap());
+        Assert.assertEquals(2, listView.getChildCount());
 
-        // Tests launching app shortcut.
+        View shortcut1 = listView.getChildAt(0);
+        Assert.assertEquals(LaunchpadTestUtils.SHORTCUT_NAME_1,
+                ((TextView) shortcut1.findViewById(R.id.shortcut_name)).getText());
+        ImageView icon = (ImageView) shortcut1.findViewById(R.id.shortcut_icon);
+        Assert.assertEquals(
+                LaunchpadTestUtils.TEST_ICON, ((BitmapDrawable) icon.getDrawable()).getBitmap());
+
+        View shortcut2 = listView.getChildAt(1);
+        Assert.assertEquals(LaunchpadTestUtils.SHORTCUT_NAME_2,
+                ((TextView) shortcut2.findViewById(R.id.shortcut_name)).getText());
+        icon = (ImageView) shortcut2.findViewById(R.id.shortcut_icon);
+        Assert.assertEquals(
+                LaunchpadTestUtils.TEST_ICON, ((BitmapDrawable) icon.getDrawable()).getBitmap());
+    }
+
+    @Test
+    @MediumTest
+    public void testLaunchAppShortcuts() {
+        openLaunchpadPage();
+        ModalDialogManager modalDialogManager =
+                mActivityTestRule.getActivity().getModalDialogManager();
+        View dialogView = LaunchpadTestUtils.openAppManagementMenu(
+                mLaunchpadCoordinator, modalDialogManager, 0 /* itemIndex */);
+
+        ListView listView = dialogView.findViewById(R.id.shortcuts_list_view);
+        View shortcut = listView.getChildAt(0);
+
         Intents.init();
-        intending(allOf(hasPackage(APP_PACKAGE_NAME_1)))
+        intending(allOf(hasPackage(LaunchpadTestUtils.APP_PACKAGE_NAME_1)))
                 .respondWith(new ActivityResult(Activity.RESULT_OK, null));
         TestThreadUtils.runOnUiThreadBlocking(() -> TouchCommon.singleClickView(shortcut));
-        intended(allOf(hasPackage(APP_PACKAGE_NAME_1), hasData(testShortcutUrl)), times(1));
+        intended(allOf(hasPackage(LaunchpadTestUtils.APP_PACKAGE_NAME_1),
+                         hasData(LaunchpadTestUtils.SHORTCUT_URL_1)),
+                times(1));
         Intents.release();
 
         // Assert dialog is dismissed.

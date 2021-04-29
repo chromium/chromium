@@ -137,9 +137,10 @@ public class AppManagementMenuCoordinatorTest {
         View dialogView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
         ListView shortcutsView = dialogView.findViewById(R.id.shortcuts_list_view);
         assertNotNull(shortcutsView);
+
         assertEquals(2, shortcutsView.getAdapter().getCount());
 
-        // Assert the shortcut ListItem.
+        // Assert the shortcuts list model are set correctly.
         ListItem listItem = (ListItem) shortcutsView.getAdapter().getItem(0);
         assertEquals(SHORTCUT_NAME_1, listItem.model.get(ShortcutItemProperties.NAME));
         assertEquals(SHORTCUT_URL_1, listItem.model.get(ShortcutItemProperties.LAUNCH_URL));
