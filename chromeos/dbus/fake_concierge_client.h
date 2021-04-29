@@ -11,7 +11,7 @@
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/cicerone_client.h"
+#include "chromeos/dbus/cicerone/cicerone_client.h"
 #include "chromeos/dbus/concierge_client.h"
 
 namespace chromeos {

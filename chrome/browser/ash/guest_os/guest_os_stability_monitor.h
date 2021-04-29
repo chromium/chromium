@@ -8,7 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chromeos/dbus/chunneld_client.h"
-#include "chromeos/dbus/cicerone_client.h"
+#include "chromeos/dbus/cicerone/cicerone_client.h"
 #include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/seneschal_client.h"
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_CICERONE_CLIENT_H_
-#define CHROMEOS_DBUS_CICERONE_CLIENT_H_
+#ifndef CHROMEOS_DBUS_CICERONE_CICERONE_CLIENT_H_
+#define CHROMEOS_DBUS_CICERONE_CICERONE_CLIENT_H_
 
 #include <memory>
 
@@ -359,4 +359,4 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) CiceroneClient : public DBusClient {
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_DBUS_CICERONE_CLIENT_H_
+#endif  // CHROMEOS_DBUS_CICERONE_CICERONE_CLIENT_H_

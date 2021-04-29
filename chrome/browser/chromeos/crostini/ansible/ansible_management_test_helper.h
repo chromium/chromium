@@ -7,7 +7,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/dbus/cicerone/cicerone_service.pb.h"
-#include "chromeos/dbus/fake_cicerone_client.h"
+#include "chromeos/dbus/cicerone/fake_cicerone_client.h"
 
 class Profile;
 

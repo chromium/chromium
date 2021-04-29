@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_FAKE_CICERONE_CLIENT_H_
-#define CHROMEOS_DBUS_FAKE_CICERONE_CLIENT_H_
+#ifndef CHROMEOS_DBUS_CICERONE_FAKE_CICERONE_CLIENT_H_
+#define CHROMEOS_DBUS_CICERONE_FAKE_CICERONE_CLIENT_H_
 
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/cicerone_client.h"
+#include "chromeos/dbus/cicerone/cicerone_client.h"
 
 namespace chromeos {
 
@@ -480,4 +480,4 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeCiceroneClient
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_DBUS_FAKE_CICERONE_CLIENT_H_
+#endif  // CHROMEOS_DBUS_CICERONE_FAKE_CICERONE_CLIENT_H_
