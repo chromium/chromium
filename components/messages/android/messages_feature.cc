@@ -30,7 +30,7 @@ bool IsPopupBlockedMessagesUiEnabled() {
 
 bool IsSafetyTipMessagesUiEnabled() {
   return base::FeatureList::IsEnabled(kMessagesForAndroidInfrastructure) &&
-         base::FeatureList::IsEnabled(kMessagesForAndroidPopupBlocked);
+         base::FeatureList::IsEnabled(kMessagesForAndroidSafetyTip);
 }
 
 }  // namespace messages
