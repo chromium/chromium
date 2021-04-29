@@ -549,7 +549,7 @@ TEST_F(ToolbarActionsModelUnitTest, ReorderOnPrefChange) {
 
 // Test that new extension actions are always visible on installation and
 // inserted at the "end" of the visible section.
-TEST_F(ToolbarActionsModelUnitTest, NewToolbarExtensionsAreVisible) {
+TEST_F(ToolbarActionsModelUnitTest, NewToolbarExtensionsAreUnpinned) {
   Init();
 
   // Three extensions with actions.
@@ -568,81 +568,33 @@ TEST_F(ToolbarActionsModelUnitTest, NewToolbarExtensionsAreVisible) {
           .SetAction(ActionType::BROWSER_ACTION)
           .SetLocation(ManifestLocation::kInternal)
           .Build();
-  scoped_refptr<const extensions::Extension> extension_d =
-      extensions::ExtensionBuilder("d")
-          .SetAction(ActionType::BROWSER_ACTION)
-          .SetLocation(ManifestLocation::kInternal)
-          .Build();
 
   // We should start off without any actions.
   EXPECT_EQ(0u, num_actions());
-  EXPECT_EQ(0u, toolbar_model()->visible_icon_count());
 
-  // Add one action. It should be visible.
+  // Add one action. It should be unpinned.
   service()->AddExtension(extension_a.get());
   EXPECT_EQ(1u, num_actions());
-  EXPECT_EQ(1u, toolbar_model()->visible_icon_count());
-  EXPECT_EQ(extension_a.get()->id(), GetActionIdAtIndex(0u));
+  EXPECT_THAT(toolbar_model()->pinned_action_ids(), ::testing::IsEmpty());
 
-  // Hide all actions.
-  toolbar_model()->SetVisibleIconCount(0);
-  EXPECT_EQ(0u, toolbar_model()->visible_icon_count());
-
-  // Add a new action - it should be visible, so it should be in the first
-  // index. The other action should remain hidden.
+  // Add a second. It should also be unpinned (even with existing extensions,
+  // default state is unpinned).
   service()->AddExtension(extension_b.get());
   EXPECT_EQ(2u, num_actions());
-  EXPECT_EQ(1u, toolbar_model()->visible_icon_count());
-  EXPECT_EQ(extension_b.get()->id(), GetActionIdAtIndex(0u));
-  EXPECT_EQ(extension_a.get()->id(), GetActionIdAtIndex(1u));
+  EXPECT_THAT(toolbar_model()->pinned_action_ids(), ::testing::IsEmpty());
 
-  // Show all actions.
-  toolbar_model()->SetVisibleIconCount(2);
-  EXPECT_EQ(2u, toolbar_model()->visible_icon_count());
-  EXPECT_TRUE(toolbar_model()->all_icons_visible());
+  // Pin the second. It should now be the only pinned icon.
+  toolbar_model()->SetActionVisibility(extension_b->id(), true);
+  EXPECT_EQ(2u, num_actions());
+  EXPECT_THAT(toolbar_model()->pinned_action_ids(),
+              ::testing::ElementsAre(extension_b->id()));
 
-  // Add the third action. Since all action are visible, it should go in the
-  // last index.
+  // Add a third extension. It should be unpinned (pin state should not carry
+  // to new extensions).
   service()->AddExtension(extension_c.get());
   EXPECT_EQ(3u, num_actions());
-  EXPECT_EQ(3u, toolbar_model()->visible_icon_count());
-  EXPECT_TRUE(toolbar_model()->all_icons_visible());
-  EXPECT_EQ(extension_b.get()->id(), GetActionIdAtIndex(0u));
-  EXPECT_EQ(extension_a.get()->id(), GetActionIdAtIndex(1u));
-  EXPECT_EQ(extension_c.get()->id(), GetActionIdAtIndex(2u));
-
-  // Hide one action (two remaining visible).
-  toolbar_model()->SetVisibleIconCount(2);
-  EXPECT_EQ(2u, toolbar_model()->visible_icon_count());
-
-  // Add a fourth action. It should go at the end of the visible section and
-  // be visible, so it increases visible count by 1, and goes into the fourth
-  // index. The hidden action should remain hidden.
-  service()->AddExtension(extension_d.get());
-  EXPECT_EQ(4u, num_actions());
-  EXPECT_EQ(3u, toolbar_model()->visible_icon_count());
-  EXPECT_EQ(extension_b.get()->id(), GetActionIdAtIndex(0u));
-  EXPECT_EQ(extension_a.get()->id(), GetActionIdAtIndex(1u));
-  EXPECT_EQ(extension_d.get()->id(), GetActionIdAtIndex(2u));
-  EXPECT_EQ(extension_c.get()->id(), GetActionIdAtIndex(3u));
-}
-
-// Test that the action toolbar maintains the proper size, even after a pref
-// change.
-TEST_F(ToolbarActionsModelUnitTest, ActionsToolbarSizeAfterPrefChange) {
-  Init();
-
-  // Add the three browser action extensions.
-  ASSERT_TRUE(AddBrowserActionExtensions());
-  EXPECT_EQ(3u, num_actions());
-
-  // Should be at max size.
-  EXPECT_TRUE(toolbar_model()->all_icons_visible());
-  EXPECT_EQ(num_actions(), toolbar_model()->visible_icon_count());
-  toolbar_model()->OnActionToolbarPrefChange();
-  // Should still be at max size.
-  EXPECT_TRUE(toolbar_model()->all_icons_visible());
-  EXPECT_EQ(num_actions(), toolbar_model()->visible_icon_count());
+  EXPECT_THAT(toolbar_model()->pinned_action_ids(),
+              ::testing::ElementsAre(extension_b->id()));
 }
 
 // Test that, with the extension-action-redesign switch, the model contains
@@ -697,7 +649,7 @@ TEST_F(ToolbarActionsModelUnitTest, TestToolbarExtensionTypesEnabledSwitch) {
   EXPECT_TRUE(ModelHasActionForId(internal_extension_no_action->id()));
 }
 
-TEST_F(ToolbarActionsModelUnitTest, ActionsToolbarIncognitoModeTest) {
+TEST_F(ToolbarActionsModelUnitTest, PinnedStateIsTransferredToIncognito) {
   Init();
   ASSERT_TRUE(AddBrowserActionExtensions());
 
@@ -711,69 +663,85 @@ TEST_F(ToolbarActionsModelUnitTest, ActionsToolbarIncognitoModeTest) {
   extension_prefs->SetIsIncognitoEnabled(browser_action_b()->id(), true);
   extension_prefs->SetIsIncognitoEnabled(browser_action_c()->id(), true);
 
-  extensions::util::SetIsIncognitoEnabled(browser_action_b()->id(), profile(),
-                                          true);
-  extensions::util::SetIsIncognitoEnabled(browser_action_c()->id(), profile(),
-                                          true);
-
-  // Move C to the second index.
-  toolbar_model()->MoveActionIcon(browser_action_c()->id(), 1u);
-  // Set visible count to 3 so that C is overflowed. State is A, C, [B].
-  toolbar_model()->SetVisibleIconCount(2);
-  EXPECT_EQ(1u, observer()->moved_count());
+  // Pin extensions A and C. State is A, C, [B].
+  toolbar_model()->SetActionVisibility(browser_action_a()->id(), true);
+  toolbar_model()->SetActionVisibility(browser_action_c()->id(), true);
+  EXPECT_THAT(toolbar_model()->pinned_action_ids(),
+              ::testing::ElementsAre(browser_action_a()->id(),
+                                     browser_action_c()->id()));
 
   // Get an incognito profile and toolbar.
   ToolbarActionsModel* incognito_model =
       extensions::extension_action_test_util::CreateToolbarModelForProfile(
           profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
-  ToolbarActionsModelTestObserver incognito_observer(incognito_model);
-  EXPECT_EQ(0u, incognito_observer.moved_count());
+  // We should have two actions in the incognito bar, C and B. The pinned state
+  // should be preserved, so C should be pinned.
+  EXPECT_THAT(incognito_model->action_ids(),
+              ::testing::ElementsAre(browser_action_b()->id(),
+                                     browser_action_c()->id()));
+  EXPECT_THAT(incognito_model->pinned_action_ids(),
+              ::testing::ElementsAre(browser_action_c()->id()));
 
-  // We should have two actions: C, B, and the order should be preserved from
-  // the original model.
-  EXPECT_EQ(2u, incognito_model->action_ids().size());
-  EXPECT_EQ(browser_action_c()->id(), GetActionIdAtIndex(0u, incognito_model));
-  EXPECT_EQ(browser_action_b()->id(), GetActionIdAtIndex(1u, incognito_model));
+  // Pinning from the original profile transfers to the incognito profile, so
+  // pinning B results in a change.
+  // TODO(devlin): That seems questionable. It's not a leak (since it's not
+  // incognito -> on-the-record), but it still seems uncharacteristic.
+  toolbar_model()->SetActionVisibility(browser_action_b()->id(), true);
+  EXPECT_THAT(incognito_model->pinned_action_ids(),
+              ::testing::ElementsAre(browser_action_c()->id(),
+                                     browser_action_b()->id()));
+  // Similarly, unpinning C transfers to the incognito profile.
+  toolbar_model()->SetActionVisibility(browser_action_c()->id(), false);
+  EXPECT_THAT(incognito_model->pinned_action_ids(),
+              ::testing::ElementsAre(browser_action_b()->id()));
+}
 
-  // Actions in the overflow menu in the regular toolbar should remain in
-  // overflow in the incognito toolbar. So, we should have C, [B].
-  EXPECT_EQ(1u, incognito_model->visible_icon_count());
-  // The regular model should still have two icons visible.
-  EXPECT_EQ(2u, toolbar_model()->visible_icon_count());
+TEST_F(ToolbarActionsModelUnitTest,
+       MovingPinnedActionsTransfersBetweenIncognito) {
+  Init();
+  ASSERT_TRUE(AddBrowserActionExtensions());
 
-  // Changing the incognito model size should not affect the regular model.
-  incognito_model->SetVisibleIconCount(0);
-  EXPECT_EQ(0u, incognito_model->visible_icon_count());
-  EXPECT_EQ(2u, toolbar_model()->visible_icon_count());
+  // Give all extensions incognito access.
+  // Note: We use ExtensionPrefs::SetIsIncognitoEnabled instead of
+  // util::SetIsIncognitoEnabled because the latter tries to reload the
+  // extension, which requires a filepath associated with the extension (and,
+  // for this test, reloading the extension is irrelevant to us).
+  extensions::ExtensionPrefs* extension_prefs =
+      extensions::ExtensionPrefs::Get(profile());
+  extension_prefs->SetIsIncognitoEnabled(browser_action_a()->id(), true);
+  extension_prefs->SetIsIncognitoEnabled(browser_action_b()->id(), true);
+  extension_prefs->SetIsIncognitoEnabled(browser_action_c()->id(), true);
 
-  // Expanding the incognito model to 3 should register as "all icons"
-  // since it is all of the incognito-enabled extensions.
-  incognito_model->SetVisibleIconCount(2u);
-  EXPECT_EQ(2u, incognito_model->visible_icon_count());
-  EXPECT_TRUE(incognito_model->all_icons_visible());
+  // Pin all extensions, to allow moving them around.
+  toolbar_model()->SetActionVisibility(browser_action_a()->id(), true);
+  toolbar_model()->SetActionVisibility(browser_action_b()->id(), true);
+  toolbar_model()->SetActionVisibility(browser_action_c()->id(), true);
 
-  // Moving icons in the incognito toolbar should not affect the regular
-  // toolbar. Incognito currently has C, B...
-  incognito_model->MoveActionIcon(browser_action_b()->id(), 0u);
-  // So now it should be B, C...
-  EXPECT_EQ(1u, incognito_observer.moved_count());
-  EXPECT_EQ(browser_action_b()->id(), GetActionIdAtIndex(0u, incognito_model));
-  EXPECT_EQ(browser_action_c()->id(), GetActionIdAtIndex(1u, incognito_model));
-  // ... and the regular toolbar should be unaffected.
-  EXPECT_EQ(browser_action_a()->id(), GetActionIdAtIndex(0u));
-  EXPECT_EQ(browser_action_c()->id(), GetActionIdAtIndex(1u));
-  EXPECT_EQ(browser_action_b()->id(), GetActionIdAtIndex(2u));
+  // Get an incognito profile and toolbar.
+  ToolbarActionsModel* incognito_model =
+      extensions::extension_action_test_util::CreateToolbarModelForProfile(
+          profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
-  // Similarly, the observer for the regular model should not have received
-  // any updates.
-  EXPECT_EQ(1u, observer()->moved_count());
+  // The incognito pinned actions should be A, B, C (matching the order from
+  // the on-the-record profile).
+  EXPECT_THAT(
+      incognito_model->pinned_action_ids(),
+      ::testing::ElementsAre(browser_action_a()->id(), browser_action_b()->id(),
+                             browser_action_c()->id()));
 
-  // And performing moves on the regular model should have no effect on the
-  // incognito model or its observers.
-  toolbar_model()->MoveActionIcon(browser_action_c()->id(), 2u);
-  EXPECT_EQ(2u, observer()->moved_count());
-  EXPECT_EQ(1u, incognito_observer.moved_count());
+  // Moving extension C to index 0 affects both profiles.
+  // As above, this is questionable.
+  // TODO(https://crbug.com/1203833): Rationalize this.
+  toolbar_model()->MovePinnedAction(browser_action_c()->id(), 0);
+  EXPECT_THAT(
+      toolbar_model()->pinned_action_ids(),
+      ::testing::ElementsAre(browser_action_c()->id(), browser_action_a()->id(),
+                             browser_action_b()->id()));
+  EXPECT_THAT(
+      incognito_model->pinned_action_ids(),
+      ::testing::ElementsAre(browser_action_c()->id(), browser_action_a()->id(),
+                             browser_action_b()->id()));
 }
 
 // Test that enabling extensions incognito with an active incognito profile
@@ -820,13 +788,10 @@ TEST_F(ToolbarActionsModelUnitTest, ActionsToolbarIncognitoEnableExtension) {
   std::string extension_a = extensions[0]->id();
   std::string extension_b = extensions[1]->id();
 
-  // The first model should have both extensions visible.
-  EXPECT_EQ(2u, toolbar_model()->action_ids().size());
-  EXPECT_EQ(extension_a, GetActionIdAtIndex(0u));
-  EXPECT_EQ(extension_b, GetActionIdAtIndex(1u));
-
-  // Set the model to only show one extension, so the order is A, [B].
-  toolbar_model()->SetVisibleIconCount(1u);
+  // Pin Extension A in the on-the-record profile.
+  toolbar_model()->SetActionVisibility(extension_a, true);
+  EXPECT_THAT(toolbar_model()->pinned_action_ids(),
+              ::testing::ElementsAre(extension_a));
 
   // Get an incognito profile and toolbar.
   ToolbarActionsModel* incognito_model =
@@ -834,10 +799,10 @@ TEST_F(ToolbarActionsModelUnitTest, ActionsToolbarIncognitoEnableExtension) {
           profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   ToolbarActionsModelTestObserver incognito_observer(incognito_model);
 
-  // Right now, no actions are enabled in incognito mode.
-  EXPECT_EQ(0u, incognito_model->action_ids().size());
+  // Right now, no extensions are enabled in incognito mode.
+  EXPECT_THAT(incognito_model->action_ids(), ::testing::IsEmpty());
 
-  // Set extension B (which is overflowed) to be enabled in incognito. This
+  // Set extension B (which is unpinned) to be enabled in incognito. This
   // results in b reloading, so wait for it.
   {
     extensions::TestExtensionRegistryObserver observer(registry(), extension_b);
@@ -846,25 +811,24 @@ TEST_F(ToolbarActionsModelUnitTest, ActionsToolbarIncognitoEnableExtension) {
   }
 
   // Now, we should have one icon in the incognito bar. But, since B is
-  // overflowed in the main bar, it shouldn't be visible.
-  EXPECT_EQ(1u, incognito_model->action_ids().size());
-  EXPECT_EQ(extension_b, GetActionIdAtIndex(0u, incognito_model));
-  EXPECT_EQ(0u, incognito_model->visible_icon_count());
+  // unpinned in the main bar, it shouldn't be visible.
+  EXPECT_THAT(incognito_model->action_ids(),
+              ::testing::ElementsAre(extension_b));
+  EXPECT_THAT(incognito_model->pinned_action_ids(), ::testing::IsEmpty());
 
-  // Also enable extension a for incognito (again, wait for the reload).
+  // Also enable extension A for incognito (again, wait for the reload).
   {
     extensions::TestExtensionRegistryObserver observer(registry(), extension_a);
     extensions::util::SetIsIncognitoEnabled(extension_a, profile(), true);
     observer.WaitForExtensionLoaded();
   }
 
-  // Now, both extensions should be enabled in incognito mode. In addition, the
-  // incognito toolbar should have expanded to show extension A (since it isn't
-  // overflowed in the main bar).
-  EXPECT_EQ(2u, incognito_model->action_ids().size());
-  EXPECT_EQ(extension_a, GetActionIdAtIndex(0u, incognito_model));
-  EXPECT_EQ(extension_b, GetActionIdAtIndex(1u, incognito_model));
-  EXPECT_EQ(1u, incognito_model->visible_icon_count());
+  // Now, both extensions should be enabled in incognito mode. Extension A
+  // should be pinned (since it's pinned in the main bar).
+  EXPECT_THAT(incognito_model->action_ids(),
+              ::testing::ElementsAre(extension_a, extension_b));
+  EXPECT_THAT(incognito_model->pinned_action_ids(),
+              ::testing::ElementsAre(extension_a));
 }
 
 // Test that observers receive no Added notifications until after the
@@ -932,28 +896,6 @@ TEST_F(ToolbarActionsModelUnitTest, LocationBarModelPrefChange) {
             observer()->inserted_count() - observer()->removed_count());
 }
 
-TEST_F(ToolbarActionsModelUnitTest,
-       TestUninstallVisibleExtensionDoesntBringOutOther) {
-  Init();
-  ASSERT_TRUE(AddBrowserActionExtensions());
-  toolbar_model()->SetVisibleIconCount(2u);
-  EXPECT_EQ(3u, num_actions());
-  EXPECT_EQ(2u, toolbar_model()->visible_icon_count());
-  EXPECT_EQ(browser_action_a()->id(), GetActionIdAtIndex(0u));
-  EXPECT_EQ(browser_action_b()->id(), GetActionIdAtIndex(1u));
-  EXPECT_EQ(browser_action_c()->id(), GetActionIdAtIndex(2u));
-
-  service()->UninstallExtension(browser_action_b()->id(),
-                                extensions::UNINSTALL_REASON_FOR_TESTING,
-                                nullptr);
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(2u, num_actions());
-  EXPECT_EQ(1u, toolbar_model()->visible_icon_count());
-  EXPECT_EQ(browser_action_a()->id(), GetActionIdAtIndex(0u));
-  EXPECT_EQ(browser_action_c()->id(), GetActionIdAtIndex(1u));
-}
-
 // Test that user-script extensions show up on the toolbar.
 TEST_F(ToolbarActionsModelUnitTest, AddUserScriptExtension) {
   Init();
@@ -968,13 +910,11 @@ TEST_F(ToolbarActionsModelUnitTest, AddUserScriptExtension) {
 
   // We should start off without any actions.
   EXPECT_EQ(0u, num_actions());
-  EXPECT_EQ(0u, toolbar_model()->visible_icon_count());
 
-  // Add the extension. It should be visible.
+  // Add the extension and verify it gets an icon.
   service()->AddExtension(extension.get());
   EXPECT_EQ(1u, num_actions());
-  EXPECT_EQ(1u, toolbar_model()->visible_icon_count());
-  EXPECT_EQ(extension.get()->id(), GetActionIdAtIndex(0u));
+  EXPECT_EQ(extension->id(), GetActionIdAtIndex(0u));
 }
 
 TEST_F(ToolbarActionsModelUnitTest, IsActionPinnedCorrespondsToPinningState) {
