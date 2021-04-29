@@ -478,11 +478,8 @@ public abstract class SyncConsentFragmentBase
                 mAccountPickerDialogCoordinator = null;
             }
             // Wait for the account cache to be updated and select newly-added account.
-            mAccountManagerFacade.waitForPendingUpdates(() -> {
-                mAccountSelectionPending = true;
-                mRequestedAccountName = addedAccountName;
-                triggerUpdateAccounts();
-            });
+            mAccountSelectionPending = true;
+            mRequestedAccountName = addedAccountName;
         }
     }
 

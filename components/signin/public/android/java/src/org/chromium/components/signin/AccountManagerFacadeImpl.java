@@ -252,21 +252,6 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     }
 
     /**
-     * Executes the callback after all pending account list updates finish. If there are no pending
-     * account list updates, executes the callback right away.
-     * @param callback the callback to be executed
-     */
-    @Override
-    public void waitForPendingUpdates(Runnable callback) {
-        ThreadUtils.assertOnUiThread();
-        if (!isUpdatePending().get()) {
-            callback.run();
-            return;
-        }
-        mCallbacksWaitingForAccountsFetch.add(callback);
-    }
-
-    /**
      * Checks whether there are pending updates for account list cache.
      * @return true if there are no pending updates, false otherwise
      */

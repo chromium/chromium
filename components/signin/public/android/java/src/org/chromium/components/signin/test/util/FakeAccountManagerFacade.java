@@ -54,9 +54,6 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
         return mFakeProfileDataSource;
     }
 
-    @Override
-    public void waitForPendingUpdates(Runnable callback) {}
-
     @MainThread
     @Override
     public void addObserver(AccountsChangeObserver observer) {

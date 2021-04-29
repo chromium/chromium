@@ -150,14 +150,6 @@ public interface AccountManagerFacade {
     ProfileDataSource getProfileDataSource();
 
     /**
-     * Executes the callback after all pending account list updates finish. If there are no
-     * pending account list updates, executes the callback right away.
-     * @param callback the callback to be executed
-     */
-    @MainThread
-    void waitForPendingUpdates(Runnable callback);
-
-    /**
      * Returns the Gaia id for the account associated with the given email address.
      * If an account with the given email address is not installed on the device
      * then null is returned.
