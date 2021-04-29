@@ -310,6 +310,10 @@ class ProfileAttributesEntry {
   // should remain *the* place to drop deprecated profile attributes keys at.
   void MigrateObsoleteProfileAttributes();
 
+  // Internal version of `SetIsOmitted()` that doesn't trigger any
+  // notifications.
+  void SetIsOmittedInternal(bool is_omitted);
+
   // These members are an implementation detail meant to smooth the migration
   // of the ProfileInfoCache to the ProfileAttributesStorage interface. They can
   // be safely removed once the ProfileInfoCache stops using indices

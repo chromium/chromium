@@ -45,6 +45,17 @@ struct ProfileAttributesInitParams {
   // `AccountId` of the user of the profile. Empty if the profile doesn't have
   // any associated `user_manager::User`.
   AccountId account_id{EmptyAccountId()};
+  // Whether the profile is guest.
+  bool is_guest = false;
+  // Whether the profile is ephemeral. Ephemeral profiles are cleaned up on
+  // every Chrome restart.
+  bool is_ephemeral = false;
+  // Whether the profile is omitted from all UIs displaying multi-profile
+  // choice.
+  bool is_omitted = false;
+  // Whether the profile was signed in with information from a credential
+  // provider.
+  bool is_signed_in_with_credential_provider = false;
 };
 
 #endif  // CHROME_BROWSER_PROFILES_PROFILE_ATTRIBUTES_INIT_PARAMS_H_

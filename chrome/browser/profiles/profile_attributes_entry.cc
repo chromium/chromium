@@ -505,12 +505,8 @@ void ProfileAttributesEntry::SetActiveTimeToNow() {
 }
 
 void ProfileAttributesEntry::SetIsOmitted(bool is_omitted) {
-  if (is_omitted) {
-    DCHECK(IsEphemeral()) << "Only ephemeral profiles can be omitted.";
-  }
-
   bool old_value = IsOmitted();
-  is_omitted_ = is_omitted;
+  SetIsOmittedInternal(is_omitted);
 
   // Send a notification only if the value has really changed.
   if (old_value != is_omitted_)
@@ -949,4 +945,12 @@ void ProfileAttributesEntry::MigrateObsoleteProfileAttributes() {
   // Added 3/2021.
   ClearValue(kAuthCredentialsKey);
   ClearValue(kPasswordTokenKey);
+}
+
+void ProfileAttributesEntry::SetIsOmittedInternal(bool is_omitted) {
+  if (is_omitted) {
+    DCHECK(IsEphemeral()) << "Only ephemeral profiles can be omitted.";
+  }
+
+  is_omitted_ = is_omitted;
 }

@@ -33,6 +33,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
@@ -93,7 +94,8 @@ ProfileInfoCache::ProfileInfoCache(PrefService* prefs,
     }
 
     // `info` may become invalid after this call.
-    InitEntryWithKey(it.key());
+    // Profiles loaded from disk can never be omitted.
+    InitEntryWithKey(it.key(), /*is_omitted=*/false);
   }
 
   // A profile name can depend on other profile names. Do an additional pass to
@@ -149,8 +151,9 @@ void ProfileInfoCache::AddProfileToCache(ProfileAttributesInitParams params) {
   info->SetBoolean(ProfileAttributesEntry::kBackgroundAppsKey, false);
   info->SetString(ProfileAttributesEntry::kSupervisedUserId,
                   params.supervised_user_id);
-  info->SetBoolean(ProfileAttributesEntry::kProfileIsEphemeral, false);
-  info->SetBoolean(ProfileAttributesEntry::kProfileIsGuest, false);
+  info->SetBoolean(ProfileAttributesEntry::kProfileIsEphemeral,
+                   params.is_ephemeral);
+  info->SetBoolean(ProfileAttributesEntry::kProfileIsGuest, params.is_guest);
   // Either the user has provided a name manually on purpose, and in this case
   // we should not check for legacy profile names or this a new profile but then
   // it is not a legacy name, so we dont need to check for legacy names.
@@ -162,8 +165,10 @@ void ProfileInfoCache::AddProfileToCache(ProfileAttributesInitParams params) {
   info->SetBoolean(kIsUsingDefaultAvatarKey, true);
   if (params.account_id.HasAccountIdKey())
     info->SetString(kAccountIdKey, params.account_id.GetAccountIdKey());
+  info->SetBoolKey(prefs::kSignedInWithCredentialProvider,
+                   params.is_signed_in_with_credential_provider);
   cache->SetWithoutPathExpansion(key, std::move(info));
-  ProfileAttributesEntry* entry = InitEntryWithKey(key);
+  ProfileAttributesEntry* entry = InitEntryWithKey(key, params.is_omitted);
   entry->InitializeLastNameToDisplay();
 
   // `OnProfileAdded()` must be the first observer method being called right
@@ -558,7 +563,8 @@ void ProfileInfoCache::LoadGAIAPictureIfNeeded() {
 #endif
 
 ProfileAttributesEntry* ProfileInfoCache::InitEntryWithKey(
-    const std::string& key) {
+    const std::string& key,
+    bool is_omitted) {
   DCHECK(!base::Contains(keys_, key));
   keys_.push_back(key);
   base::FilePath path = user_data_dir_.AppendASCII(key);
@@ -566,6 +572,7 @@ ProfileAttributesEntry* ProfileInfoCache::InitEntryWithKey(
   auto new_entry = std::make_unique<ProfileAttributesEntry>();
   auto* new_entry_raw = new_entry.get();
   new_entry->Initialize(this, path, prefs_);
+  new_entry->SetIsOmittedInternal(is_omitted);
   profile_attributes_entries_[path.value()] = std::move(new_entry);
   return new_entry_raw;
 }

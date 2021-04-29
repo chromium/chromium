@@ -2006,22 +2006,17 @@ void ProfileManager::AddProfileToStorage(Profile* profile) {
   init_params.gaia_id = account_info.gaia;
   init_params.user_name = username;
   init_params.is_consented_primary_account = is_consented_primary_account;
-  storage.AddProfile(std::move(init_params));
 
-  ProfileAttributesEntry* entry =
-      storage.GetProfileAttributesWithPath(profile->GetPath());
-  DCHECK(entry);
-
-  if (IsEphemeral(profile))
-    entry->SetIsEphemeral(true);
-
+  init_params.is_ephemeral = IsEphemeral(profile);
   if (profile->IsEphemeralGuestProfile()) {
-    entry->SetIsGuest(true);
-    entry->SetIsOmitted(true);
+    init_params.is_guest = true;
+    init_params.is_omitted = true;
   }
 
-  entry->SetSignedInWithCredentialProvider(
-      profile->GetPrefs()->GetBoolean(prefs::kSignedInWithCredentialProvider));
+  init_params.is_signed_in_with_credential_provider =
+      profile->GetPrefs()->GetBoolean(prefs::kSignedInWithCredentialProvider);
+
+  storage.AddProfile(std::move(init_params));
 }
 
 void ProfileManager::SetNonPersonalProfilePrefs(Profile* profile) {
