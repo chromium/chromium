@@ -167,8 +167,8 @@ class WebUIRequiringGestureBrowserTest : public ContentBrowserTest {
  protected:
   void SendMessageAndWaitForFinish() {
     main_rfh()->ExecuteJavaScriptForTests(
-        base::ASCIIToUTF16("chrome.send('messageRequiringGesture');"
-                           "chrome.send('notifyFinish');"),
+        u"chrome.send('messageRequiringGesture');"
+        u"chrome.send('notifyFinish');",
         base::NullCallback());
     base::RunLoop run_loop;
     test_handler()->set_finish_closure(run_loop.QuitClosure());
@@ -349,8 +349,8 @@ IN_PROC_BROWSER_TEST_F(WebUIRequiringGestureBrowserTest,
   // to use a test-only helper to instantiate a scoped user gesture in the
   // renderer.
   main_rfh()->ExecuteJavaScriptWithUserGestureForTests(
-      base::ASCIIToUTF16("chrome.send('messageRequiringGesture');"
-                         "chrome.send('notifyFinish');"));
+      u"chrome.send('messageRequiringGesture');"
+      u"chrome.send('notifyFinish');");
   base::RunLoop run_loop;
   test_handler()->set_finish_closure(run_loop.QuitClosure());
   run_loop.Run();

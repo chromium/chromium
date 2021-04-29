@@ -17,7 +17,7 @@ namespace extensions {
 namespace error_test_util {
 
 namespace {
-const char kDefaultStackTrace[] = "function_name (https://url.com:1:1)";
+const char16_t kDefaultStackTrace[] = u"function_name (https://url.com:1:1)";
 }
 
 std::unique_ptr<ExtensionError> CreateNewRuntimeError(
@@ -26,7 +26,7 @@ std::unique_ptr<ExtensionError> CreateNewRuntimeError(
     bool from_incognito) {
   StackTrace stack_trace;
   std::unique_ptr<StackFrame> frame =
-      StackFrame::CreateFromText(base::ASCIIToUTF16(kDefaultStackTrace));
+      StackFrame::CreateFromText(kDefaultStackTrace);
   CHECK(frame.get());
   stack_trace.push_back(*frame);
 

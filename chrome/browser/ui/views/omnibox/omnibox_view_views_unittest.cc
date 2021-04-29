@@ -1084,8 +1084,8 @@ TEST_F(OmniboxViewViewsTest, OverflowingAutocompleteText) {
 
   omnibox_textfield()->OnFocus();
   omnibox_view()->OnInlineAutocompleteTextMaybeChanged(
-      base::ASCIIToUTF16("user text. Followed by very long autocompleted text "
-                         "that is unlikely to fit in |kOmniboxWidth|"),
+      u"user text. Followed by very long autocompleted text that is unlikely "
+      u"to fit in |kOmniboxWidth|",
       {{94, 10}}, 10);
 
   // NOTE: Technically (depending on the font), this expectation could fail if

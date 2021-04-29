@@ -33,11 +33,10 @@ class NewBadgeLabelTest : public views::ViewsTestBase {
         ->SetOrientation(views::LayoutOrientation::kVertical)
         .SetCrossAxisAlignment(views::LayoutAlignment::kStart);
 
-    const std::u16string text = base::ASCIIToUTF16("test");
     control_label_ = contents_->AddChildView(
-        std::make_unique<views::Label>(text, views::style::CONTEXT_LABEL));
+        std::make_unique<views::Label>(u"test", views::style::CONTEXT_LABEL));
     new_badge_label_ = contents_->AddChildView(
-        std::make_unique<NewBadgeLabel>(text, views::style::CONTEXT_LABEL));
+        std::make_unique<NewBadgeLabel>(u"test", views::style::CONTEXT_LABEL));
   }
 
   void TearDown() override {

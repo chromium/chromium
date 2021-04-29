@@ -18,7 +18,7 @@
 
 const char kFileURL[] = "file:///home/user/file.txt";
 const char kFileName[] = "/home/user/file.txt";
-const char kGoogleTitle[] = "Google";
+const char16_t kGoogleTitle[] = u"Google";
 const char kGoogleURL[] = "http://www.google.com/";
 
 namespace ui {
@@ -45,13 +45,13 @@ class OSExchangeDataProviderX11Test : public testing::Test {
 
 TEST_F(OSExchangeDataProviderX11Test, MozillaURL) {
   // Check that we can get titled entries.
-  provider.SetURL(GURL(kGoogleURL), base::ASCIIToUTF16(kGoogleTitle));
+  provider.SetURL(GURL(kGoogleURL), kGoogleTitle);
   {
     GURL out_gurl;
     std::u16string out_str;
     EXPECT_TRUE(provider.GetURLAndTitle(
         FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES, &out_gurl, &out_str));
-    EXPECT_EQ(base::ASCIIToUTF16(kGoogleTitle), out_str);
+    EXPECT_EQ(kGoogleTitle, out_str);
     EXPECT_EQ(kGoogleURL, out_gurl.spec());
   }
 

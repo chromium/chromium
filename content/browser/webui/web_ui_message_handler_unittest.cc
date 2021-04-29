@@ -95,11 +95,11 @@ TEST(WebUIMessageHandlerTest, ExtractDoubleValue) {
 
 TEST(WebUIMessageHandlerTest, ExtractStringValue) {
   base::ListValue list;
-  static const char in_string[] =
-      "The facts, though interesting, are irrelevant.";
-  list.AppendString(in_string);
+  static constexpr char16_t kInString[] =
+      u"The facts, though interesting, are irrelevant.";
+  list.AppendString(kInString);
   std::u16string out_string = WebUIMessageHandler::ExtractStringValue(&list);
-  EXPECT_EQ(base::ASCIIToUTF16(in_string), out_string);
+  EXPECT_EQ(kInString, out_string);
 }
 
 class TestWebUIMessageHandler : public WebUIMessageHandler {

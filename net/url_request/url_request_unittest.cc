@@ -4697,7 +4697,9 @@ TEST_F(URLRequestTestHTTP, RedirectEscaping) {
 
 // First and second pieces of information logged by delegates to URLRequests.
 const char kFirstDelegateInfo[] = "Wonderful delegate";
+const char16_t kFirstDelegateInfo16[] = u"Wonderful delegate";
 const char kSecondDelegateInfo[] = "Exciting delegate";
+const char16_t kSecondDelegateInfo16[] = u"Exciting delegate";
 
 // Logs delegate information to a URLRequest.  The first string is logged
 // synchronously on Start(), using DELEGATE_INFO_DEBUG_ONLY.  The second is
@@ -4780,7 +4782,7 @@ class AsyncDelegateLogger : public base::RefCounted<AsyncDelegateLogger> {
     url_request_->LogBlockedBy(kFirstDelegateInfo);
     LoadStateWithParam load_state = url_request_->GetLoadState();
     EXPECT_EQ(expected_first_load_state_, load_state.state);
-    EXPECT_NE(ASCIIToUTF16(kFirstDelegateInfo), load_state.param);
+    EXPECT_NE(kFirstDelegateInfo16, load_state.param);
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(&AsyncDelegateLogger::LogSecondDelegate, this));
@@ -4791,9 +4793,9 @@ class AsyncDelegateLogger : public base::RefCounted<AsyncDelegateLogger> {
     LoadStateWithParam load_state = url_request_->GetLoadState();
     EXPECT_EQ(expected_second_load_state_, load_state.state);
     if (expected_second_load_state_ == LOAD_STATE_WAITING_FOR_DELEGATE) {
-      EXPECT_EQ(ASCIIToUTF16(kSecondDelegateInfo), load_state.param);
+      EXPECT_EQ(kSecondDelegateInfo16, load_state.param);
     } else {
-      EXPECT_NE(ASCIIToUTF16(kSecondDelegateInfo), load_state.param);
+      EXPECT_NE(kSecondDelegateInfo16, load_state.param);
     }
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&AsyncDelegateLogger::LogComplete, this));

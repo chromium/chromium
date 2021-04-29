@@ -48,6 +48,7 @@ namespace printing {
 namespace {
 
 const char kDummyInitiatorName[] = "TestInitiator";
+const char16_t kDummyInitiatorName16[] = u"TestInitiator";
 const char kEmptyPrinterName[] = "EmptyPrinter";
 const char kTestData[] = "abc";
 
@@ -356,7 +357,7 @@ class PrintPreviewHandlerTest : public testing::Test {
 
     auto preview_ui = std::make_unique<FakePrintPreviewUI>(
         web_ui(), std::move(preview_handler));
-    preview_ui->SetInitiatorTitle(base::ASCIIToUTF16(kDummyInitiatorName));
+    preview_ui->SetInitiatorTitle(kDummyInitiatorName16);
     web_ui()->SetController(std::move(preview_ui));
   }
 

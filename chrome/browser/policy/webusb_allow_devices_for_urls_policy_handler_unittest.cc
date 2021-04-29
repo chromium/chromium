@@ -260,9 +260,9 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
   EXPECT_FALSE(handler()->CheckPolicySettings(policy, &errors));
   EXPECT_EQ(1ul, errors.size());
 
-  const std::u16string kExpected = base::ASCIIToUTF16(
-      "Schema validation error at \"items[1]\": Missing or invalid required "
-      "property: devices");
+  static constexpr char16_t kExpected[] =
+      u"Schema validation error at \"items[1]\": Missing or invalid required "
+      u"property: devices";
   EXPECT_EQ(kExpected, errors.GetErrors(key::kWebUsbAllowDevicesForUrls));
 }
 
@@ -280,9 +280,9 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
   EXPECT_FALSE(handler()->CheckPolicySettings(policy, &errors));
   EXPECT_EQ(1ul, errors.size());
 
-  const std::u16string kExpected = base::ASCIIToUTF16(
-      "Schema validation error at \"items[0]\": Missing or invalid required "
-      "property: devices");
+  static constexpr char16_t kExpected[] =
+      u"Schema validation error at \"items[0]\": Missing or invalid required "
+      u"property: devices";
   EXPECT_EQ(kExpected, errors.GetErrors(key::kWebUsbAllowDevicesForUrls));
 }
 
@@ -300,9 +300,9 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
   EXPECT_FALSE(handler()->CheckPolicySettings(policy, &errors));
   EXPECT_EQ(1ul, errors.size());
 
-  const std::u16string kExpected = base::ASCIIToUTF16(
-      "Schema validation error at \"items[0]\": Missing or invalid required "
-      "property: urls");
+  static constexpr char16_t kExpected[] =
+      u"Schema validation error at \"items[0]\": Missing or invalid required "
+      u"property: urls";
   EXPECT_EQ(kExpected, errors.GetErrors(key::kWebUsbAllowDevicesForUrls));
 }
 
@@ -320,9 +320,9 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
   EXPECT_TRUE(handler()->CheckPolicySettings(policy, &errors));
   EXPECT_EQ(1ul, errors.size());
 
-  const std::u16string kExpected = base::ASCIIToUTF16(
-      "Schema validation error at \"items[0].devices.items[0]\": Unknown "
-      "property: serialNumber");
+  static constexpr char16_t kExpected[] =
+      u"Schema validation error at \"items[0].devices.items[0]\": Unknown "
+      u"property: serialNumber";
   EXPECT_EQ(kExpected, errors.GetErrors(key::kWebUsbAllowDevicesForUrls));
 }
 
@@ -380,9 +380,9 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
   EXPECT_FALSE(handler()->CheckPolicySettings(policy, &errors));
   EXPECT_EQ(1ul, errors.size());
 
-  const std::u16string kExpected = base::ASCIIToUTF16(
-      "Schema validation error at \"items[0].devices.items[0]\": A vendor_id "
-      "must also be specified");
+  static constexpr char16_t kExpected[] =
+      u"Schema validation error at \"items[0].devices.items[0]\": A vendor_id "
+      u"must also be specified";
   EXPECT_EQ(kExpected, errors.GetErrors(key::kWebUsbAllowDevicesForUrls));
 }
 
@@ -400,9 +400,9 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
   EXPECT_FALSE(handler()->CheckPolicySettings(policy, &errors));
   EXPECT_EQ(1ul, errors.size());
 
-  const std::u16string kExpected = base::ASCIIToUTF16(
-      "Schema validation error at \"items[0].urls.items[0]\": The urls item "
-      "must contain valid URLs");
+  static constexpr char16_t kExpected[] =
+      u"Schema validation error at \"items[0].urls.items[0]\": The urls item "
+      u"must contain valid URLs";
   EXPECT_EQ(kExpected, errors.GetErrors(key::kWebUsbAllowDevicesForUrls));
 }
 
@@ -420,9 +420,9 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
   EXPECT_FALSE(handler()->CheckPolicySettings(policy, &errors));
   EXPECT_EQ(1ul, errors.size());
 
-  const std::u16string kExpected = base::ASCIIToUTF16(
-      "Schema validation error at \"items[0].urls.items[0]\": The urls item "
-      "must contain valid URLs");
+  static constexpr char16_t kExpected[] =
+      u"Schema validation error at \"items[0].urls.items[0]\": The urls item "
+      u"must contain valid URLs";
   EXPECT_EQ(kExpected, errors.GetErrors(key::kWebUsbAllowDevicesForUrls));
 }
 
@@ -440,9 +440,9 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
   EXPECT_FALSE(handler()->CheckPolicySettings(policy, &errors));
   EXPECT_EQ(1ul, errors.size());
 
-  const std::u16string kExpected = base::ASCIIToUTF16(
-      "Schema validation error at \"items[0].urls.items[0]\": Each urls "
-      "string entry must contain between 1 to 2 URLs");
+  static constexpr char16_t kExpected[] =
+      u"Schema validation error at \"items[0].urls.items[0]\": Each urls "
+      u"string entry must contain between 1 to 2 URLs";
   EXPECT_EQ(kExpected, errors.GetErrors(key::kWebUsbAllowDevicesForUrls));
 }
 
@@ -460,9 +460,9 @@ TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest,
   EXPECT_FALSE(handler()->CheckPolicySettings(policy, &errors));
   EXPECT_EQ(1ul, errors.size());
 
-  const std::u16string kExpected = base::ASCIIToUTF16(
-      "Schema validation error at \"items[0].urls.items[0]\": Each urls "
-      "string entry must contain between 1 to 2 URLs");
+  static constexpr char16_t kExpected[] =
+      u"Schema validation error at \"items[0].urls.items[0]\": Each urls "
+      u"string entry must contain between 1 to 2 URLs";
   EXPECT_EQ(kExpected, errors.GetErrors(key::kWebUsbAllowDevicesForUrls));
 }
 

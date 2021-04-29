@@ -128,10 +128,10 @@ TEST_F(OmniboxViewTest, SanitizeTextForPaste) {
       {u" \n\t", u" "},
 
       // Broken URL has newlines stripped.
-      {ASCIIToUTF16("http://www.chromium.org/developers/testing/chromium-\n"
-                    "build-infrastructure/tour-of-the-chromium-buildbot"),
-       ASCIIToUTF16("http://www.chromium.org/developers/testing/chromium-"
-                    "build-infrastructure/tour-of-the-chromium-buildbot")},
+      {u"http://www.chromium.org/developers/testing/chromium-\n"
+       u"build-infrastructure/tour-of-the-chromium-buildbot",
+       u"http://www.chromium.org/developers/testing/"
+       u"chromium-build-infrastructure/tour-of-the-chromium-buildbot"},
 
       // Multi-line address is converted to a single-line address.
       {u"1600 Amphitheatre Parkway\nMountain View, CA",

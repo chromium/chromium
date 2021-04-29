@@ -28,16 +28,16 @@ using base::ASCIIToUTF16;
 namespace bookmarks {
 namespace {
 
-const char kUrl1Title[] = "url1";
+const char16_t kUrl1Title[] = u"url1";
 const char kUrl1Url[] = "http://www.url1.com";
-const char kUrl2Title[] = "url2";
+const char16_t kUrl2Title[] = u"url2";
 const char kUrl2Url[] = "http://www.url2.com";
-const char kUrl3Title[] = "url3";
+const char16_t kUrl3Title[] = u"url3";
 const char kUrl3Url[] = "http://www.url3.com";
-const char kUrl4Title[] = "url4";
+const char16_t kUrl4Title[] = u"url4";
 const char kUrl4Url[] = "http://www.url4.com";
-const char kFolder1Title[] = "folder1";
-const char kFolder2Title[] = "folder2";
+const char16_t kFolder1Title[] = u"folder1";
+const char16_t kFolder2Title[] = u"folder2";
 
 const base::FilePath& GetTestDataDir() {
   static base::NoDestructor<base::FilePath> dir([]() {
@@ -96,23 +96,23 @@ class BookmarkCodecTest : public testing::Test {
   BookmarkModel* CreateTestModel1() {
     std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
     const BookmarkNode* bookmark_bar = model->bookmark_bar_node();
-    model->AddURL(bookmark_bar, 0, ASCIIToUTF16(kUrl1Title), GURL(kUrl1Url));
+    model->AddURL(bookmark_bar, 0, kUrl1Title, GURL(kUrl1Url));
     return model.release();
   }
   BookmarkModel* CreateTestModel2() {
     std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
     const BookmarkNode* bookmark_bar = model->bookmark_bar_node();
-    model->AddURL(bookmark_bar, 0, ASCIIToUTF16(kUrl1Title), GURL(kUrl1Url));
-    model->AddURL(bookmark_bar, 1, ASCIIToUTF16(kUrl2Title), GURL(kUrl2Url));
+    model->AddURL(bookmark_bar, 0, kUrl1Title, GURL(kUrl1Url));
+    model->AddURL(bookmark_bar, 1, kUrl2Title, GURL(kUrl2Url));
     return model.release();
   }
   BookmarkModel* CreateTestModel3() {
     std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
     const BookmarkNode* bookmark_bar = model->bookmark_bar_node();
-    model->AddURL(bookmark_bar, 0, ASCIIToUTF16(kUrl1Title), GURL(kUrl1Url));
+    model->AddURL(bookmark_bar, 0, kUrl1Title, GURL(kUrl1Url));
     const BookmarkNode* folder1 =
-        model->AddFolder(bookmark_bar, 1, ASCIIToUTF16(kFolder1Title));
-    model->AddURL(folder1, 0, ASCIIToUTF16(kUrl2Title), GURL(kUrl2Url));
+        model->AddFolder(bookmark_bar, 1, kFolder1Title);
+    model->AddURL(folder1, 0, kUrl2Title, GURL(kUrl2Url));
     return model.release();
   }
 
@@ -359,12 +359,10 @@ TEST_F(BookmarkCodecTest, PersistIDsTest) {
   // ID persistence is working properly.
   const BookmarkNode* bookmark_bar = decoded_model->bookmark_bar_node();
   decoded_model->AddURL(bookmark_bar, bookmark_bar->children().size(),
-                        ASCIIToUTF16(kUrl3Title), GURL(kUrl3Url));
-  const BookmarkNode* folder2_node =
-      decoded_model->AddFolder(bookmark_bar, bookmark_bar->children().size(),
-                               ASCIIToUTF16(kFolder2Title));
-  decoded_model->AddURL(
-      folder2_node, 0, ASCIIToUTF16(kUrl4Title), GURL(kUrl4Url));
+                        kUrl3Title, GURL(kUrl3Url));
+  const BookmarkNode* folder2_node = decoded_model->AddFolder(
+      bookmark_bar, bookmark_bar->children().size(), kFolder2Title);
+  decoded_model->AddURL(folder2_node, 0, kUrl4Title, GURL(kUrl4Url));
 
   BookmarkCodec encoder2;
   std::unique_ptr<base::Value> model_value2(

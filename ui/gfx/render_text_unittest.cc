@@ -2258,9 +2258,8 @@ TEST_F(RenderTextTest, ElidedText_NoTrimWhitespace) {
   // [       ...]
   // and not like:
   // [...       ]
-  constexpr char kInputString[] = "                     foo";
-  const std::u16string input = ASCIIToUTF16(kInputString);
-  render_text->SetText(input);
+  constexpr char16_t kInputString[] = u"                     foo";
+  render_text->SetText(kInputString);
 
   // Choose a width based on being able to display 12 characters (one of which
   // will be the trailing ellipsis).
@@ -2269,12 +2268,13 @@ TEST_F(RenderTextTest, ElidedText_NoTrimWhitespace) {
   render_text->SetDisplayRect(Rect(0, 0, kRequiredWidth, 100));
 
   // Verify this doesn't change the full text.
-  EXPECT_EQ(input, render_text->text());
+  EXPECT_EQ(kInputString, render_text->text());
 
   // Verify that the string is truncated to |kDesiredChars| with the ellipsis.
   const std::u16string result = render_text->GetDisplayText();
   const std::u16string expected =
-      input.substr(0, kDesiredChars - 1) + kEllipsisUTF16[0];
+      std::u16string(kInputString).substr(0, kDesiredChars - 1) +
+      kEllipsisUTF16[0];
   EXPECT_EQ(expected, result);
 }
 
@@ -5819,14 +5819,14 @@ TEST_F(RenderTextTest, Multiline_Newline) {
 
 // Make sure that multiline mode ignores elide behavior.
 TEST_F(RenderTextTest, Multiline_IgnoreElide) {
-  const char kTestString[] =
-      "very very very long string xxxxxxxxxxxxxxxxxxxxxxxxxx";
+  const char16_t kTestString[] =
+      u"very very very long string xxxxxxxxxxxxxxxxxxxxxxxxxx";
   const char kEllipsis[] = "\u2026";
 
   RenderText* render_text = GetRenderText();
   render_text->SetElideBehavior(ELIDE_TAIL);
   render_text->SetDisplayRect(Rect(20, 1000));
-  render_text->SetText(base::ASCIIToUTF16(kTestString));
+  render_text->SetText(kTestString);
   EXPECT_NE(std::u16string::npos,
             render_text->GetDisplayText().find(base::UTF8ToUTF16(kEllipsis)));
 
@@ -6197,10 +6197,10 @@ TEST_F(RenderTextTest, NewlineWithoutMultilineFlag) {
 }
 
 TEST_F(RenderTextTest, ControlCharacterReplacement) {
-  static const char kTextWithControlCharacters[] = "\b\r\a\t\n\v\f";
+  static const char16_t kTextWithControlCharacters[] = u"\b\r\a\t\n\v\f";
 
   RenderText* render_text = GetRenderText();
-  render_text->SetText(ASCIIToUTF16(kTextWithControlCharacters));
+  render_text->SetText(kTextWithControlCharacters);
 
   // The control characters should have been replaced by their symbols.
   EXPECT_EQ(u"␈␍␇␉␊␋␌", render_text->GetDisplayText());

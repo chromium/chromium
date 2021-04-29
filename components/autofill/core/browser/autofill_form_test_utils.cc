@@ -5,10 +5,7 @@
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 
 #include "base/optional.h"
-#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/form_structure.h"
-
-using base::ASCIIToUTF16;
 
 namespace autofill {
 
@@ -93,7 +90,7 @@ FormData GetFormData(const TestFormAttributes& test_form_attributes) {
 
   form_data.url = GURL(test_form_attributes.url);
   form_data.action = GURL(test_form_attributes.action);
-  form_data.name = ASCIIToUTF16(test_form_attributes.name);
+  form_data.name = test_form_attributes.name.data();
   static int field_count = 0;
   if (test_form_attributes.unique_renderer_id)
     form_data.unique_renderer_id = *test_form_attributes.unique_renderer_id;
@@ -102,16 +99,18 @@ FormData GetFormData(const TestFormAttributes& test_form_attributes) {
   for (const FieldDataDescription& field_description :
        test_form_attributes.fields) {
     FormFieldData field = CreateFieldByRole(field_description.role);
-    field.form_control_type = field_description.form_control_type;
+    field.form_control_type = field_description.form_control_type.data();
     field.is_focusable = field_description.is_focusable;
-    if (field_description.autocomplete_attribute)
-      field.autocomplete_attribute = field_description.autocomplete_attribute;
-    if (ASCIIToUTF16(field_description.label) != ASCIIToUTF16(kLabelText))
-      field.label = ASCIIToUTF16(field_description.label);
-    if (ASCIIToUTF16(field_description.name) != ASCIIToUTF16(kNameText))
-      field.name = ASCIIToUTF16(field_description.name);
+    if (!field_description.autocomplete_attribute.empty()) {
+      field.autocomplete_attribute =
+          field_description.autocomplete_attribute.data();
+    }
+    if (field_description.label != kLabelText)
+      field.label = field_description.label.data();
+    if (field_description.name != kNameText)
+      field.name = field_description.name.data();
     if (field_description.value)
-      field.value = ASCIIToUTF16(*field_description.value);
+      field.value = *field_description.value;
     if (field_description.is_autofilled)
       field.is_autofilled = *field_description.is_autofilled;
     field.unique_renderer_id = FieldRendererId(field_count++);

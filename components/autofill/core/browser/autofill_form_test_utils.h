@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/optional.h"
+#include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/form_data.h"
@@ -20,10 +21,10 @@ namespace test {
 namespace {
 
 // Default label assigned to fields.
-constexpr char kLabelText[] = "label";
+constexpr char16_t kLabelText[] = u"label";
 
 // Default name attribute assigned to fields.
-constexpr char kNameText[] = "name";
+constexpr char16_t kNameText[] = u"name";
 
 // Default form url.
 constexpr char kFormUrl[] = "http://example.com/form.html";
@@ -40,11 +41,11 @@ template <typename = void>
 struct FieldDataDescription {
   ServerFieldType role = ServerFieldType::EMPTY_TYPE;
   bool is_focusable = true;
-  const char* label = kLabelText;
-  const char* name = kNameText;
-  base::Optional<const char*> value = base::nullopt;
-  const char* autocomplete_attribute = nullptr;
-  const char* form_control_type = "text";
+  const base::StringPiece16 label = kLabelText;
+  const base::StringPiece16 name = kNameText;
+  base::Optional<const char16_t*> value = base::nullopt;
+  const base::StringPiece autocomplete_attribute;
+  const base::StringPiece form_control_type = "text";
   bool should_autocomplete = true;
   base::Optional<bool> is_autofilled = base::nullopt;
 };
@@ -52,12 +53,12 @@ struct FieldDataDescription {
 // Attributes provided to the test form.
 template <typename = void>
 struct TestFormAttributes {
-  const char* description_for_logging;
+  const base::StringPiece description_for_logging;
   std::vector<FieldDataDescription<>> fields;
   base::Optional<FormRendererId> unique_renderer_id = base::nullopt;
-  const char* name = "TestForm";
-  const char* url = kFormUrl;
-  const char* action = kFormActionUrl;
+  const base::StringPiece16 name = u"TestForm";
+  const base::StringPiece url = kFormUrl;
+  const base::StringPiece action = kFormActionUrl;
   base::Optional<url::Origin> main_frame_origin = base::nullopt;
   bool is_form_tag = true;
 };

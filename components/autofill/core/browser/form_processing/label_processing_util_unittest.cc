@@ -104,8 +104,8 @@ TEST(LabelProcessingUtil, GetParseableNameStringPieces_TooLongLabel) {
   std::vector<std::u16string> labels;
   labels.push_back(u"City");
   labels.push_back(
-      ASCIIToUTF16("Street & House Number with a lot of additional text that "
-                   "exceeds 40 characters by far"));
+      u"Street & House Number with a lot of additional text that exceeds 40 "
+      u"characters by far");
   labels.push_back(u"");
   labels.push_back(u"Zip");
 

@@ -36,6 +36,7 @@ const int kMaxNumberOfExtensionRequest = 1000;
 
 constexpr char kProfile[] = "Profile";
 constexpr char kIdleProfile[] = "IdleProfile";
+constexpr char16_t kIdleProfile16[] = u"IdleProfile";
 constexpr char kExtensionId[] = "abcdefghijklmnopabcdefghijklmnop";
 constexpr char kExtensionId2[] = "abcdefghijklmnopabcdefghijklmnpo";
 constexpr int kFakeTime = 123456;
@@ -155,7 +156,7 @@ TEST_F(ProfileReportGeneratorTest, ProfileNotActivated) {
       profile_manager()->profiles_dir().AppendASCII(kIdleProfile);
   ProfileAttributesInitParams params;
   params.profile_path = profile_path;
-  params.profile_name = base::ASCIIToUTF16(kIdleProfile);
+  params.profile_name = kIdleProfile16;
   profile_manager()->profile_attributes_storage()->AddProfile(
       std::move(params));
   std::unique_ptr<em::ChromeUserProfileInfo> response =

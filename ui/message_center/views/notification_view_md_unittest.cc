@@ -950,10 +950,10 @@ TEST_F(NotificationViewMDTest, ExpandLongMessage) {
   // Without doing this, inappropriate fix such as
   // message_view_->GetPreferredSize() returning gfx::Size() can pass.
   notification->set_title(std::u16string());
-  notification->set_message(base::ASCIIToUTF16(
-      "consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore "
-      "et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud "
-      "exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."));
+  notification->set_message(
+      u"consectetur adipiscing elit, sed do eiusmod tempor incididunt ut "
+      u"labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud "
+      u"exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.");
 
   UpdateNotificationViews(*notification);
   EXPECT_FALSE(notification_view()->expanded_);
@@ -1374,10 +1374,10 @@ TEST_F(NotificationViewMDTest, TestDeleteOnToggleExpanded) {
   std::unique_ptr<Notification> notification = CreateSimpleNotification();
   notification->set_type(NotificationType::NOTIFICATION_TYPE_SIMPLE);
   notification->set_title(std::u16string());
-  notification->set_message(base::ASCIIToUTF16(
-      "consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore "
-      "et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud "
-      "exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."));
+  notification->set_message(
+      u"consectetur adipiscing elit, sed do eiusmod tempor incididunt ut "
+      u"labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud "
+      u"exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.");
   UpdateNotificationViews(*notification);
   EXPECT_FALSE(notification_view()->expanded_);
 
@@ -1406,20 +1406,20 @@ TEST_F(NotificationViewMDTest, TestLongTitleAndMessage) {
   std::unique_ptr<Notification> notification = CreateSimpleNotification();
   notification->set_type(NotificationType::NOTIFICATION_TYPE_SIMPLE);
   notification->set_title(u"title");
-  notification->set_message(base::ASCIIToUTF16(
-      "consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore "
-      "et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud "
-      "exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."));
+  notification->set_message(
+      u"consectetur adipiscing elit, sed do eiusmod tempor incididunt ut "
+      u"labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud "
+      u"exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.");
   UpdateNotificationViews(*notification);
   notification_view()->ToggleExpanded();
 
   // Get the height of the message view with a short title.
   const int message_height = notification_view()->message_view_->height();
 
-  notification->set_title(base::ASCIIToUTF16(
-      "consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore "
-      "et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud "
-      "exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."));
+  notification->set_title(
+      u"consectetur adipiscing elit, sed do eiusmod tempor incididunt ut "
+      u"labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud "
+      u"exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.");
   UpdateNotificationViews(*notification);
 
   // The height of the message view should stay the same with a long title.

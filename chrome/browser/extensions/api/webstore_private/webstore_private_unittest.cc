@@ -491,9 +491,7 @@ TEST_F(WebstorePrivateBeginInstallWithManifest3Test, BlockedByPolicy) {
                               GenerateArgs(kExtensionId, kExtensionManifest),
                               profile());
   VerifyBlockedByPolicyFunctionResult(
-      function.get(),
-      base::ASCIIToUTF16(
-          "From your administrator: This extension is blocked."));
+      function.get(), u"From your administrator: This extension is blocked.");
 }
 
 TEST_F(WebstorePrivateBeginInstallWithManifest3Test,

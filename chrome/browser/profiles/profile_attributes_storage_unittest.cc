@@ -54,10 +54,10 @@ namespace {
                   first_value, \
                   second_value);
 
-#define TEST_STRING16_ACCESSORS(entry_type, entry, member) \
-    TEST_ACCESSORS(entry_type, entry, member, \
-        base::ASCIIToUTF16("first_" #member "_value"), \
-        base::ASCIIToUTF16("second_" #member "_value"));
+#define TEST_STRING16_ACCESSORS(entry_type, entry, member)   \
+  TEST_ACCESSORS(entry_type, entry, member,                  \
+                 std::u16string(u"first_" #member "_value"), \
+                 std::u16string(u"second_" #member "_value"));
 
 #define TEST_STRING_ACCESSORS(entry_type, entry, member) \
     TEST_ACCESSORS(entry_type, entry, member, \

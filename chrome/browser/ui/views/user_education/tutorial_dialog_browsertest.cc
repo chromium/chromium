@@ -21,7 +21,7 @@ class TutorialDialogTest : public DialogBrowserTest {
     FeaturePromoBubbleView::CreateParams params;
     params.anchor_view = browser_view->toolbar()->app_menu_button();
     params.arrow = views::BubbleBorder::TOP_RIGHT;
-    params.body_text = base::ASCIIToUTF16("Hello world, I am a tutorial");
+    params.body_text = u"Hello world, I am a tutorial";
     params.focusable = true;
     params.persist_on_blur = true;
     params.tutorial_progress_current = 3;

@@ -26,8 +26,8 @@ using Purpose = blink::mojom::ManifestImageResource_Purpose;
 
 namespace {
 
-const char kAppShortName[] = "Test short name";
-const char kAppTitle[] = "Test title";
+const char16_t kAppShortName[] = u"Test short name";
+const char16_t kAppTitle[] = u"Test title";
 const char kAlternativeAppTitle[] = "Different test title";
 const char kShortcutItemName[] = "shortcut item ";
 
@@ -62,7 +62,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   const GURL kAppUrl("http://www.chromium.org/index.html");
   manifest.start_url = kAppUrl;
   manifest.scope = kAppUrl.GetWithoutFilename();
-  manifest.short_name = base::ASCIIToUTF16(kAppShortName);
+  manifest.short_name = kAppShortName;
 
   {
     blink::Manifest::FileHandler handler;
@@ -89,7 +89,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
 
   const GURL kAppManifestUrl("http://www.chromium.org/manifest.json");
   UpdateWebAppInfoFromManifest(manifest, kAppManifestUrl, &web_app_info);
-  EXPECT_EQ(base::UTF8ToUTF16(kAppShortName), web_app_info.title);
+  EXPECT_EQ(kAppShortName, web_app_info.title);
   EXPECT_EQ(kAppUrl, web_app_info.start_url);
   EXPECT_EQ(kAppUrl.GetWithoutFilename(), web_app_info.scope);
   EXPECT_EQ(DisplayMode::kBrowser, web_app_info.display_mode);
@@ -103,7 +103,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
 
   // Test that |manifest.name| takes priority over |manifest.short_name|, and
   // that icons provided by the manifest replace icons in |web_app_info|.
-  manifest.name = base::ASCIIToUTF16(kAppTitle);
+  manifest.name = kAppTitle;
   manifest.display = DisplayMode::kMinimalUi;
 
   blink::Manifest::ImageResource icon;
@@ -121,7 +121,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   manifest.display_override.push_back(DisplayMode::kStandalone);
 
   UpdateWebAppInfoFromManifest(manifest, kAppManifestUrl, &web_app_info);
-  EXPECT_EQ(base::UTF8ToUTF16(kAppTitle), web_app_info.title);
+  EXPECT_EQ(kAppTitle, web_app_info.title);
   EXPECT_EQ(DisplayMode::kMinimalUi, web_app_info.display_mode);
   ASSERT_EQ(2u, web_app_info.display_override.size());
   EXPECT_EQ(DisplayMode::kMinimalUi, web_app_info.display_override[0]);
@@ -157,11 +157,11 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_EmptyName) {
 
   blink::Manifest manifest;
   manifest.name = std::u16string();
-  manifest.short_name = base::ASCIIToUTF16(kAppShortName);
+  manifest.short_name = kAppShortName;
 
   UpdateWebAppInfoFromManifest(
       manifest, GURL("http://www.chromium.org/manifest.json"), &web_app_info);
-  EXPECT_EQ(base::UTF8ToUTF16(kAppShortName), web_app_info.title);
+  EXPECT_EQ(kAppShortName, web_app_info.title);
 }
 
 // Test that maskable icons are parsed as separate icon_infos from the manifest.
@@ -317,7 +317,7 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
   const GURL kAppUrl("http://www.chromium.org/index.html");
   manifest.start_url = kAppUrl;
   manifest.scope = kAppUrl.GetWithoutFilename();
-  manifest.short_name = base::ASCIIToUTF16(kAppShortName);
+  manifest.short_name = kAppShortName;
 
   {
     blink::Manifest::FileHandler handler;
@@ -344,7 +344,7 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
 
   const GURL kAppManifestUrl("http://www.chromium.org/manifest.json");
   UpdateWebAppInfoFromManifest(manifest, kAppManifestUrl, &web_app_info);
-  EXPECT_EQ(base::UTF8ToUTF16(kAppShortName), web_app_info.title);
+  EXPECT_EQ(kAppShortName, web_app_info.title);
   EXPECT_EQ(kAppUrl, web_app_info.start_url);
   EXPECT_EQ(kAppUrl.GetWithoutFilename(), web_app_info.scope);
   EXPECT_EQ(DisplayMode::kBrowser, web_app_info.display_mode);
@@ -369,7 +369,7 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
 
   // Test that |manifest.name| takes priority over |manifest.short_name|, and
   // that icons provided by the manifest replace icons in |web_app_info|.
-  manifest.name = base::ASCIIToUTF16(kAppTitle);
+  manifest.name = kAppTitle;
   manifest.display = DisplayMode::kMinimalUi;
 
   blink::Manifest::ImageResource icon;
@@ -411,7 +411,7 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
   manifest.shortcuts.push_back(shortcut_item);
 
   UpdateWebAppInfoFromManifest(manifest, kAppManifestUrl, &web_app_info);
-  EXPECT_EQ(base::UTF8ToUTF16(kAppTitle), web_app_info.title);
+  EXPECT_EQ(kAppTitle, web_app_info.title);
   EXPECT_EQ(DisplayMode::kMinimalUi, web_app_info.display_mode);
 
   EXPECT_EQ(2u, web_app_info.icon_infos.size());

@@ -260,8 +260,8 @@ class USBDevicePermissionMessagesTest : public testing::Test {
 
 TEST_F(USBDevicePermissionMessagesTest, SingleDevice) {
   {
-    const char kMessage[] =
-        "Access any PVR Mass Storage from HUMAX Co., Ltd. via USB";
+    const char16_t kMessage[] =
+        u"Access any PVR Mass Storage from HUMAX Co., Ltd. via USB";
 
     std::unique_ptr<base::ListValue> permission_list(new base::ListValue());
     permission_list->Append(
@@ -273,10 +273,10 @@ TEST_F(USBDevicePermissionMessagesTest, SingleDevice) {
 
     PermissionMessages messages = GetMessages(permission.GetPermissions());
     ASSERT_EQ(1U, messages.size());
-    EXPECT_EQ(base::ASCIIToUTF16(kMessage), messages.front().message());
+    EXPECT_EQ(kMessage, messages.front().message());
   }
   {
-    const char kMessage[] = "Access USB devices from HUMAX Co., Ltd.";
+    const char16_t kMessage[] = u"Access USB devices from HUMAX Co., Ltd.";
 
     std::unique_ptr<base::ListValue> permission_list(new base::ListValue());
     permission_list->Append(
@@ -288,10 +288,10 @@ TEST_F(USBDevicePermissionMessagesTest, SingleDevice) {
 
     PermissionMessages messages = GetMessages(permission.GetPermissions());
     ASSERT_EQ(1U, messages.size());
-    EXPECT_EQ(base::ASCIIToUTF16(kMessage), messages.front().message());
+    EXPECT_EQ(kMessage, messages.front().message());
   }
   {
-    const char kMessage[] = "Access USB devices from an unknown vendor";
+    const char16_t kMessage[] = u"Access USB devices from an unknown vendor";
 
     std::unique_ptr<base::ListValue> permission_list(new base::ListValue());
     permission_list->Append(
@@ -303,12 +303,12 @@ TEST_F(USBDevicePermissionMessagesTest, SingleDevice) {
 
     PermissionMessages messages = GetMessages(permission.GetPermissions());
     ASSERT_EQ(1U, messages.size());
-    EXPECT_EQ(base::ASCIIToUTF16(kMessage), messages.front().message());
+    EXPECT_EQ(kMessage, messages.front().message());
   }
 }
 
 TEST_F(USBDevicePermissionMessagesTest, MultipleDevice) {
-  const char kMessage[] = "Access any of these USB devices";
+  const char16_t kMessage[] = u"Access any of these USB devices";
   const char* kDetails[] = {
       "PVR Mass Storage from HUMAX Co., Ltd.",
       "unknown devices from HUMAX Co., Ltd.",
@@ -338,7 +338,7 @@ TEST_F(USBDevicePermissionMessagesTest, MultipleDevice) {
 
   PermissionMessages messages = GetMessages(permission.GetPermissions());
   ASSERT_EQ(1U, messages.size());
-  EXPECT_EQ(base::ASCIIToUTF16(kMessage), messages.front().message());
+  EXPECT_EQ(kMessage, messages.front().message());
   const std::vector<std::u16string>& submessages =
       messages.front().submessages();
   ASSERT_EQ(base::size(kDetails), submessages.size());

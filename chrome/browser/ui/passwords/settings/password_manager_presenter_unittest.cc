@@ -65,6 +65,7 @@ constexpr char kUsername[] = "user";
 constexpr char kUsername2[] = "user2";
 #if !defined(OS_ANDROID)
 constexpr char kHistogramName[] = "PasswordManager.AccessPasswordInSettings";
+constexpr char16_t kPassword16[] = u"pass";
 #endif
 MATCHER(IsNotBlocked, "") {
   return !arg->blocked_by_user;
@@ -350,8 +351,7 @@ TEST_F(PasswordManagerPresenterTest, TestRequestPlaintextPassword) {
   UpdatePasswordLists();
   base::MockOnceCallback<void(base::Optional<std::u16string>)>
       password_callback;
-  EXPECT_CALL(password_callback,
-              Run(testing::Eq(base::ASCIIToUTF16(kPassword))));
+  EXPECT_CALL(password_callback, Run(testing::Eq(kPassword16)));
   std::string sort_key = password_manager::CreateSortKey(form);
   GetUIController().GetPasswordManagerPresenter()->RequestPlaintextPassword(
       sort_key, password_manager::PlaintextReason::kView,
@@ -372,8 +372,7 @@ TEST_F(PasswordManagerPresenterTest, TestRequestPlaintextPasswordEdit) {
   UpdatePasswordLists();
   base::MockOnceCallback<void(base::Optional<std::u16string>)>
       password_callback;
-  EXPECT_CALL(password_callback,
-              Run(testing::Eq(base::ASCIIToUTF16(kPassword))));
+  EXPECT_CALL(password_callback, Run(testing::Eq(kPassword16)));
   std::string sort_key = password_manager::CreateSortKey(form);
   GetUIController().GetPasswordManagerPresenter()->RequestPlaintextPassword(
       sort_key, password_manager::PlaintextReason::kEdit,

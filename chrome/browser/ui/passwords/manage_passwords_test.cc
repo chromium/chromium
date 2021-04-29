@@ -42,7 +42,7 @@ using testing::Return;
 using testing::ReturnRef;
 
 namespace {
-constexpr char kTestUsername[] = "test_username";
+constexpr char16_t kTestUsername[] = u"test_username";
 constexpr char kTestOrigin[] = "https://www.example.com";
 }  // namespace
 
@@ -51,7 +51,7 @@ ManagePasswordsTest::ManagePasswordsTest() {
 
   password_form_.signon_realm = kTestOrigin;
   password_form_.url = GURL(kTestOrigin);
-  password_form_.username_value = ASCIIToUTF16(kTestUsername);
+  password_form_.username_value = kTestUsername;
   password_form_.password_value = u"test_password";
 
   federated_form_.signon_realm =
@@ -156,7 +156,7 @@ void ManagePasswordsTest::SetupMoreToFixState() {
                                           ServiceAccessType::IMPLICIT_ACCESS);
   // This is an unrelated insecure credential that should still be fixed.
   password_manager::InsecureCredential credential(
-      "https://somesite.com/", ASCIIToUTF16(kTestUsername), base::Time(),
+      "https://somesite.com/", kTestUsername, base::Time(),
       password_manager::InsecureType::kLeaked,
       password_manager::IsMuted(false));
   password_store->AddInsecureCredential(credential);

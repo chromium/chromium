@@ -346,9 +346,10 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion53ToCurrent) {
     EXPECT_EQ("00000000-0000-0000-0000-000000000001",
               s_profiles.ColumnString(0));
     EXPECT_EQ(u"Google, Inc.", s_profiles.ColumnString16(1));
-    EXPECT_EQ(ASCIIToUTF16("1950 Charleston Rd.\n"
-                           "(2nd floor)"),
-              s_profiles.ColumnString16(2));
+    EXPECT_EQ(
+        u"1950 Charleston Rd.\n"
+        u"(2nd floor)",
+        s_profiles.ColumnString16(2));
     EXPECT_EQ(std::u16string(), s_profiles.ColumnString16(3));
     EXPECT_EQ(u"Mountain View", s_profiles.ColumnString16(4));
     EXPECT_EQ(u"CA", s_profiles.ColumnString16(5));

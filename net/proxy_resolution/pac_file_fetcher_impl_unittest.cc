@@ -544,12 +544,12 @@ TEST_F(PacFileFetcherImplTest, DataURLs) {
       "data:application/x-ns-proxy-autoconfig;base64,ZnVuY3Rpb24gRmluZFByb3h5R"
       "m9yVVJMKHVybCwgaG9zdCkgewogIGlmIChob3N0ID09ICdmb29iYXIuY29tJykKICAgIHJl"
       "dHVybiAnUFJPWFkgYmxhY2tob2xlOjgwJzsKICByZXR1cm4gJ0RJUkVDVCc7Cn0=";
-  const char kPacScript[] =
-      "function FindProxyForURL(url, host) {\n"
-      "  if (host == 'foobar.com')\n"
-      "    return 'PROXY blackhole:80';\n"
-      "  return 'DIRECT';\n"
-      "}";
+  const char16_t kPacScript[] =
+      u"function FindProxyForURL(url, host) {\n"
+      u"  if (host == 'foobar.com')\n"
+      u"    return 'PROXY blackhole:80';\n"
+      u"  return 'DIRECT';\n"
+      u"}";
 
   // Test fetching a "data:"-url containing a base64 encoded PAC script.
   {
@@ -559,7 +559,7 @@ TEST_F(PacFileFetcherImplTest, DataURLs) {
     int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                     TRAFFIC_ANNOTATION_FOR_TESTS);
     EXPECT_THAT(result, IsOk());
-    EXPECT_EQ(ASCIIToUTF16(kPacScript), text);
+    EXPECT_EQ(kPacScript, text);
   }
 
   const char kEncodedUrlBroken[] =

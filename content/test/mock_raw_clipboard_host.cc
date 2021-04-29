@@ -68,16 +68,16 @@ void MockRawClipboardHost::Write(const std::u16string& format,
   // automatically convert between certain format names, for use in testing.
   // Platforms often provide many converted formats, so not all converted-to
   // formats are provided.
-  static constexpr char kPlatformTextFormat[] =
+  static constexpr char16_t kPlatformTextFormat[] =
 #if defined(OS_WIN)
-      "CF_TEXT";
+      u"CF_TEXT";
 #elif defined(USE_X11)
-      "text/plain";
+      u"text/plain";
 #else
-      "";
+      u"";
 #endif
 
-  if (format == base::ASCIIToUTF16(kPlatformTextFormat)) {
+  if (format == kPlatformTextFormat) {
     EXPECT_TRUE(mock_clipboard_host_);
     std::u16string text = base::UTF8ToUTF16(base::StringPiece(
         reinterpret_cast<const char*>(data_copy.data()), data_copy.size()));

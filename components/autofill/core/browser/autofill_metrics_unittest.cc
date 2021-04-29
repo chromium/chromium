@@ -628,29 +628,29 @@ TEST_F(AutofillMetricsTest, NumberOfAutofilledFieldsAtSubmission) {
   // Set up our form data with two autofilled fields.
   FormData form =
       test::GetFormData({.description_for_logging = "NumberOfAutofilledFields",
-                         .fields = {{.label = "Autofilled",
-                                     .name = "autofilled",
-                                     .value = "Elvis Aaron Presley",
+                         .fields = {{.label = u"Autofilled",
+                                     .name = u"autofilled",
+                                     .value = u"Elvis Aaron Presley",
                                      .is_autofilled = true},
-                                    {.label = "Autofilled but corrected",
-                                     .name = "autofillfailed",
-                                     .value = "buddy@gmail.com",
+                                    {.label = u"Autofilled but corrected",
+                                     .name = u"autofillfailed",
+                                     .value = u"buddy@gmail.com",
                                      .is_autofilled = true},
-                                    {.label = "Empty",
-                                     .name = "empty",
-                                     .value = "",
+                                    {.label = u"Empty",
+                                     .name = u"empty",
+                                     .value = u"",
                                      .is_autofilled = false},
-                                    {.label = "Unknown",
-                                     .name = "unknown",
-                                     .value = "garbage",
+                                    {.label = u"Unknown",
+                                     .name = u"unknown",
+                                     .value = u"garbage",
                                      .is_autofilled = false},
-                                    {.label = "Select",
-                                     .name = "select",
-                                     .value = "USA",
+                                    {.label = u"Select",
+                                     .name = u"select",
+                                     .value = u"USA",
                                      .form_control_type = "select-one",
                                      .is_autofilled = false},
                                     {.role = ServerFieldType::PHONE_HOME_NUMBER,
-                                     .value = "2345678901",
+                                     .value = u"2345678901",
                                      .form_control_type = "tel",
                                      .is_autofilled = true}},
                          .unique_renderer_id = test::MakeFormRendererId(),
@@ -702,29 +702,29 @@ TEST_F(AutofillMetricsTest, QualityMetrics) {
   // Set up our form data.
   FormData form =
       test::GetFormData({.description_for_logging = "QualityMetrics",
-                         .fields = {{.label = "Autofilled",
-                                     .name = "autofilled",
-                                     .value = "Elvis Aaron Presley",
+                         .fields = {{.label = u"Autofilled",
+                                     .name = u"autofilled",
+                                     .value = u"Elvis Aaron Presley",
                                      .is_autofilled = true},
-                                    {.label = "Autofill Failed",
-                                     .name = "autofillfailed",
-                                     .value = "buddy@gmail.com",
+                                    {.label = u"Autofill Failed",
+                                     .name = u"autofillfailed",
+                                     .value = u"buddy@gmail.com",
                                      .is_autofilled = false},
-                                    {.label = "Empty",
-                                     .name = "empty",
-                                     .value = "",
+                                    {.label = u"Empty",
+                                     .name = u"empty",
+                                     .value = u"",
                                      .is_autofilled = false},
-                                    {.label = "Unknown",
-                                     .name = "unknown",
-                                     .value = "garbage",
+                                    {.label = u"Unknown",
+                                     .name = u"unknown",
+                                     .value = u"garbage",
                                      .is_autofilled = false},
-                                    {.label = "Select",
-                                     .name = "select",
-                                     .value = "USA",
+                                    {.label = u"Select",
+                                     .name = u"select",
+                                     .value = u"USA",
                                      .form_control_type = "select-one",
                                      .is_autofilled = false},
                                     {.role = ServerFieldType::PHONE_HOME_NUMBER,
-                                     .value = "2345678901",
+                                     .value = u"2345678901",
                                      .form_control_type = "tel",
                                      .is_autofilled = true}},
                          .unique_renderer_id = test::MakeFormRendererId(),
@@ -882,17 +882,18 @@ TEST_F(AutofillMetricsTest, ProfileImportStatus_NoImport) {
   FormData form = test::GetFormData(
       {.description_for_logging = "ProfileImportStatus_NoImport",
        .fields = {
-           {.role = ServerFieldType::NAME_FULL, .value = "Elvis Aaron Presley"},
+           {.role = ServerFieldType::NAME_FULL,
+            .value = u"Elvis Aaron Presley"},
            {.role = ServerFieldType::ADDRESS_HOME_LINE1,
-            .value = "3734 Elvis Presley Blvd."},
-           {.role = ServerFieldType::ADDRESS_HOME_CITY, .value = "New York"},
-           {.role = ServerFieldType::PHONE_HOME_NUMBER, .value = "2345678901"},
+            .value = u"3734 Elvis Presley Blvd."},
+           {.role = ServerFieldType::ADDRESS_HOME_CITY, .value = u"New York"},
+           {.role = ServerFieldType::PHONE_HOME_NUMBER, .value = u"2345678901"},
            {.role = ServerFieldType::ADDRESS_HOME_STATE,
-            .value = "Invalid State"},
+            .value = u"Invalid State"},
            {.role = ServerFieldType::ADDRESS_HOME_ZIP,
-            .value = "00000000000000000"},
+            .value = u"00000000000000000"},
            {.role = ServerFieldType::ADDRESS_HOME_COUNTRY,
-            .value = "NoACountry"}}});
+            .value = u"NoACountry"}}});
 
   std::vector<ServerFieldType> heuristic_types = {
       NAME_FULL,           ADDRESS_HOME_LINE1,
@@ -936,14 +937,15 @@ TEST_F(AutofillMetricsTest, ProfileImportStatus_RegularImport) {
   FormData form = test::GetFormData(
       {.description_for_logging = "ProfileImportStatus_RegularImport",
        .fields = {
-           {.role = ServerFieldType::NAME_FULL, .value = "Elvis Aaron Presley"},
+           {.role = ServerFieldType::NAME_FULL,
+            .value = u"Elvis Aaron Presley"},
            {.role = ServerFieldType::ADDRESS_HOME_LINE1,
-            .value = "3734 Elvis Presley Blvd."},
-           {.role = ServerFieldType::ADDRESS_HOME_CITY, .value = "New York"},
-           {.role = ServerFieldType::PHONE_HOME_NUMBER, .value = "2345678901"},
-           {.role = ServerFieldType::ADDRESS_HOME_STATE, .value = "CA"},
-           {.role = ServerFieldType::ADDRESS_HOME_ZIP, .value = "37373"},
-           {.role = ServerFieldType::ADDRESS_HOME_COUNTRY, .value = "USA"}}});
+            .value = u"3734 Elvis Presley Blvd."},
+           {.role = ServerFieldType::ADDRESS_HOME_CITY, .value = u"New York"},
+           {.role = ServerFieldType::PHONE_HOME_NUMBER, .value = u"2345678901"},
+           {.role = ServerFieldType::ADDRESS_HOME_STATE, .value = u"CA"},
+           {.role = ServerFieldType::ADDRESS_HOME_ZIP, .value = u"37373"},
+           {.role = ServerFieldType::ADDRESS_HOME_COUNTRY, .value = u"USA"}}});
 
   std::vector<ServerFieldType> heuristic_types = {
       NAME_FULL,           ADDRESS_HOME_LINE1,
@@ -987,18 +989,19 @@ TEST_F(AutofillMetricsTest, ProfileImportStatus_UnionImport) {
   FormData form = test::GetFormData(
       {.description_for_logging = "ProfileImportStatus_UnionImport",
        .fields = {
-           {.role = ServerFieldType::NAME_FULL, .value = "Elvis Aaron Presley"},
+           {.role = ServerFieldType::NAME_FULL,
+            .value = u"Elvis Aaron Presley"},
            {.role = ServerFieldType::ADDRESS_HOME_LINE1,
-            .value = "3734 Elvis Presley Blvd."},
-           {.role = ServerFieldType::ADDRESS_HOME_ZIP, .value = "37373"},
-           {.role = ServerFieldType::ADDRESS_HOME_COUNTRY, .value = "USA"},
-           {.role = ServerFieldType::PHONE_HOME_NUMBER, .value = "2345678901"},
+            .value = u"3734 Elvis Presley Blvd."},
+           {.role = ServerFieldType::ADDRESS_HOME_ZIP, .value = u"37373"},
+           {.role = ServerFieldType::ADDRESS_HOME_COUNTRY, .value = u"USA"},
+           {.role = ServerFieldType::PHONE_HOME_NUMBER, .value = u"2345678901"},
            {.role = ServerFieldType::ADDRESS_HOME_CITY,
-            .value = "New York",
+            .value = u"New York",
             .autocomplete_attribute = "section-billing locality"},
            // Add the last field of the form into a new section.
            {.role = ServerFieldType::ADDRESS_HOME_STATE,
-            .value = "CA",
+            .value = u"CA",
             .autocomplete_attribute = "section-shipping address-level1"}}});
 
   // Set the heuristic types.
@@ -1052,14 +1055,15 @@ TEST_F(AutofillMetricsTest, ProfileImportRequirements_AllFulfilled) {
   FormData form = test::GetFormData(
       {.description_for_logging = "ProfileImportRequirements_AllFulfilled",
        .fields = {
-           {.role = ServerFieldType::NAME_FULL, .value = "Elvis Aaron Presley"},
+           {.role = ServerFieldType::NAME_FULL,
+            .value = u"Elvis Aaron Presley"},
            {.role = ServerFieldType::ADDRESS_HOME_LINE1,
-            .value = "3734 Elvis Presley Blvd."},
-           {.role = ServerFieldType::ADDRESS_HOME_CITY, .value = "New York"},
-           {.role = ServerFieldType::PHONE_HOME_NUMBER, .value = "2345678901"},
-           {.role = ServerFieldType::ADDRESS_HOME_STATE, .value = "CA"},
-           {.role = ServerFieldType::ADDRESS_HOME_ZIP, .value = "37373"},
-           {.role = ServerFieldType::ADDRESS_HOME_COUNTRY, .value = "USA"}}});
+            .value = u"3734 Elvis Presley Blvd."},
+           {.role = ServerFieldType::ADDRESS_HOME_CITY, .value = u"New York"},
+           {.role = ServerFieldType::PHONE_HOME_NUMBER, .value = u"2345678901"},
+           {.role = ServerFieldType::ADDRESS_HOME_STATE, .value = u"CA"},
+           {.role = ServerFieldType::ADDRESS_HOME_ZIP, .value = u"37373"},
+           {.role = ServerFieldType::ADDRESS_HOME_COUNTRY, .value = u"USA"}}});
 
   std::vector<ServerFieldType> heuristic_types = {
       NAME_FULL,           ADDRESS_HOME_LINE1,
@@ -1132,13 +1136,14 @@ TEST_F(AutofillMetricsTest, ProfileImportRequirements_MissingHomeLineOne) {
       {.description_for_logging =
            "ProfileImportRequirements_MissingHomeLineOne",
        .fields = {
-           {.role = ServerFieldType::NAME_FULL, .value = "Elvis Aaron Presley"},
-           {.role = ServerFieldType::ADDRESS_HOME_LINE1, .value = ""},
-           {.role = ServerFieldType::ADDRESS_HOME_CITY, .value = "New York"},
-           {.role = ServerFieldType::PHONE_HOME_NUMBER, .value = "2345678901"},
-           {.role = ServerFieldType::ADDRESS_HOME_STATE, .value = "CA"},
-           {.role = ServerFieldType::ADDRESS_HOME_ZIP, .value = "37373"},
-           {.role = ServerFieldType::ADDRESS_HOME_COUNTRY, .value = "USA"}}});
+           {.role = ServerFieldType::NAME_FULL,
+            .value = u"Elvis Aaron Presley"},
+           {.role = ServerFieldType::ADDRESS_HOME_LINE1, .value = u""},
+           {.role = ServerFieldType::ADDRESS_HOME_CITY, .value = u"New York"},
+           {.role = ServerFieldType::PHONE_HOME_NUMBER, .value = u"2345678901"},
+           {.role = ServerFieldType::ADDRESS_HOME_STATE, .value = u"CA"},
+           {.role = ServerFieldType::ADDRESS_HOME_ZIP, .value = u"37373"},
+           {.role = ServerFieldType::ADDRESS_HOME_COUNTRY, .value = u"USA"}}});
 
   std::vector<ServerFieldType> heuristic_types = {
       NAME_FULL,           ADDRESS_HOME_LINE1,
@@ -1213,15 +1218,16 @@ TEST_F(AutofillMetricsTest,
       {.description_for_logging =
            "ProfileImportRequirements_AllFulfilledForNonStateCountry",
        .fields = {
-           {.role = ServerFieldType::NAME_FULL, .value = "Elvis Aaron Presley"},
+           {.role = ServerFieldType::NAME_FULL,
+            .value = u"Elvis Aaron Presley"},
            {.role = ServerFieldType::ADDRESS_HOME_LINE1,
-            .value = "3734 Elvis Presley Blvd."},
-           {.role = ServerFieldType::ADDRESS_HOME_CITY, .value = "New York"},
-           {.role = ServerFieldType::PHONE_HOME_NUMBER, .value = "2345678901"},
-           {.role = ServerFieldType::ADDRESS_HOME_STATE, .value = ""},
-           {.role = ServerFieldType::ADDRESS_HOME_ZIP, .value = "37373"},
+            .value = u"3734 Elvis Presley Blvd."},
+           {.role = ServerFieldType::ADDRESS_HOME_CITY, .value = u"New York"},
+           {.role = ServerFieldType::PHONE_HOME_NUMBER, .value = u"2345678901"},
+           {.role = ServerFieldType::ADDRESS_HOME_STATE, .value = u""},
+           {.role = ServerFieldType::ADDRESS_HOME_ZIP, .value = u"37373"},
            {.role = ServerFieldType::ADDRESS_HOME_COUNTRY,
-            .value = "Germany"}}});
+            .value = u"Germany"}}});
 
   std::vector<ServerFieldType> heuristic_types = {
       NAME_FULL,           ADDRESS_HOME_LINE1,
@@ -1294,17 +1300,18 @@ TEST_F(AutofillMetricsTest,
       {.description_for_logging =
            "ProfileImportRequirements_FilledButInvalidZipEmailAndState",
        .fields = {
-           {.role = ServerFieldType::NAME_FULL, .value = "Elvis Aaron Presley"},
+           {.role = ServerFieldType::NAME_FULL,
+            .value = u"Elvis Aaron Presley"},
            {.role = ServerFieldType::ADDRESS_HOME_LINE1,
-            .value = "3734 Elvis Presley Blvd."},
-           {.role = ServerFieldType::ADDRESS_HOME_CITY, .value = "New York"},
-           {.role = ServerFieldType::PHONE_HOME_NUMBER, .value = "2345678901"},
+            .value = u"3734 Elvis Presley Blvd."},
+           {.role = ServerFieldType::ADDRESS_HOME_CITY, .value = u"New York"},
+           {.role = ServerFieldType::PHONE_HOME_NUMBER, .value = u"2345678901"},
            {.role = ServerFieldType::ADDRESS_HOME_STATE,
-            .value = "DefNotAState"},
-           {.role = ServerFieldType::ADDRESS_HOME_ZIP, .value = "1234567890"},
-           {.role = ServerFieldType::ADDRESS_HOME_COUNTRY, .value = "USA"},
+            .value = u"DefNotAState"},
+           {.role = ServerFieldType::ADDRESS_HOME_ZIP, .value = u"1234567890"},
+           {.role = ServerFieldType::ADDRESS_HOME_COUNTRY, .value = u"USA"},
            {.role = ServerFieldType::EMAIL_ADDRESS,
-            .value = "test_noat_test.io"}}});
+            .value = u"test_noat_test.io"}}});
 
   std::vector<ServerFieldType> heuristic_types = {NAME_FULL,
                                                   ADDRESS_HOME_LINE1,
@@ -1382,19 +1389,20 @@ TEST_F(AutofillMetricsTest, ProfileImportRequirements_NonUniqueEmail) {
   FormData form = test::GetFormData(
       {.description_for_logging = "ProfileImportRequirements_NonUniqueEmail",
        .fields = {
-           {.role = ServerFieldType::NAME_FULL, .value = "Elvis Aaron Presley"},
+           {.role = ServerFieldType::NAME_FULL,
+            .value = u"Elvis Aaron Presley"},
            {.role = ServerFieldType::ADDRESS_HOME_LINE1,
-            .value = "3734 Elvis Presley Blvd."},
-           {.role = ServerFieldType::ADDRESS_HOME_CITY, .value = "New York"},
-           {.role = ServerFieldType::PHONE_HOME_NUMBER, .value = "2345678901"},
-           {.role = ServerFieldType::ADDRESS_HOME_STATE, .value = "CA"},
-           {.role = ServerFieldType::ADDRESS_HOME_ZIP, .value = "37373"},
-           {.role = ServerFieldType::ADDRESS_HOME_COUNTRY, .value = "USA"},
+            .value = u"3734 Elvis Presley Blvd."},
+           {.role = ServerFieldType::ADDRESS_HOME_CITY, .value = u"New York"},
+           {.role = ServerFieldType::PHONE_HOME_NUMBER, .value = u"2345678901"},
+           {.role = ServerFieldType::ADDRESS_HOME_STATE, .value = u"CA"},
+           {.role = ServerFieldType::ADDRESS_HOME_ZIP, .value = u"37373"},
+           {.role = ServerFieldType::ADDRESS_HOME_COUNTRY, .value = u"USA"},
            {.role = ServerFieldType::EMAIL_ADDRESS,
-            .value = "test_noat_test.io"},
-           {.label = "Email1",
-            .name = ".email1",
-            .value = "not_test@test.io"}}});
+            .value = u"test_noat_test.io"},
+           {.label = u"Email1",
+            .name = u".email1",
+            .value = u"not_test@test.io"}}});
 
   std::vector<ServerFieldType> heuristic_types = {NAME_FULL,
                                                   ADDRESS_HOME_LINE1,
@@ -1475,14 +1483,15 @@ TEST_F(AutofillMetricsTest, ProfileImportRequirements_OnlyAddressLineOne) {
       {.description_for_logging =
            "ProfileImportRequirements_OnlyAddressLineOne",
        .fields = {
-           {.role = ServerFieldType::NAME_FULL, .value = "Elvis Aaron Presley"},
+           {.role = ServerFieldType::NAME_FULL,
+            .value = u"Elvis Aaron Presley"},
            {.role = ServerFieldType::ADDRESS_HOME_LINE1,
-            .value = "3734 Elvis Presley Blvd."},
-           {.role = ServerFieldType::ADDRESS_HOME_CITY, .value = ""},
-           {.role = ServerFieldType::PHONE_HOME_NUMBER, .value = ""},
-           {.role = ServerFieldType::ADDRESS_HOME_STATE, .value = ""},
-           {.role = ServerFieldType::ADDRESS_HOME_ZIP, .value = ""},
-           {.role = ServerFieldType::ADDRESS_HOME_COUNTRY, .value = ""}}});
+            .value = u"3734 Elvis Presley Blvd."},
+           {.role = ServerFieldType::ADDRESS_HOME_CITY, .value = u""},
+           {.role = ServerFieldType::PHONE_HOME_NUMBER, .value = u""},
+           {.role = ServerFieldType::ADDRESS_HOME_STATE, .value = u""},
+           {.role = ServerFieldType::ADDRESS_HOME_ZIP, .value = u""},
+           {.role = ServerFieldType::ADDRESS_HOME_COUNTRY, .value = u""}}});
 
   std::vector<ServerFieldType> heuristic_types = {
       NAME_FULL,           ADDRESS_HOME_LINE1,

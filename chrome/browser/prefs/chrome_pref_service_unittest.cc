@@ -89,13 +89,13 @@ TEST_F(ChromePrefServiceWebKitPrefs, PrefsCopied) {
 
   // These should still be the default values.
 #if defined(OS_MAC)
-  const char kDefaultFont[] = "Times";
+  const char16_t kDefaultFont[] = u"Times";
 #elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  const char kDefaultFont[] = "Tinos";
+  const char16_t kDefaultFont[] = u"Tinos";
 #else
-  const char kDefaultFont[] = "Times New Roman";
+  const char16_t kDefaultFont[] = u"Times New Roman";
 #endif
-  EXPECT_EQ(base::ASCIIToUTF16(kDefaultFont),
+  EXPECT_EQ(kDefaultFont,
             webkit_prefs.standard_font_family_map[prefs::kWebKitCommonScript]);
   EXPECT_TRUE(webkit_prefs.javascript_enabled);
 

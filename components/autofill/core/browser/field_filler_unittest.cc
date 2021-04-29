@@ -1278,9 +1278,9 @@ TEST_F(AutofillFieldFillerTest, FillStreetAddressTextArea) {
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
   field.set_heuristic_type(ADDRESS_HOME_STREET_ADDRESS);
 
-  std::u16string value = ASCIIToUTF16(
-      "123 Fake St.\n"
-      "Apt. 42");
+  std::u16string value =
+      u"123 Fake St.\n"
+      u"Apt. 42";
   address()->SetInfo(AutofillType(ADDRESS_HOME_STREET_ADDRESS), value, "en-US");
   filler.FillFormField(field, address(), &field, /*cvc=*/std::u16string());
   EXPECT_EQ(value, field.value);
@@ -1301,9 +1301,9 @@ TEST_F(AutofillFieldFillerTest, FillStreetAddressTextField) {
   field.set_server_type(ADDRESS_HOME_STREET_ADDRESS);
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
 
-  std::u16string value = ASCIIToUTF16(
-      "123 Fake St.\n"
-      "Apt. 42");
+  std::u16string value =
+      u"123 Fake St.\n"
+      u"Apt. 42";
   address()->SetInfo(AutofillType(ADDRESS_HOME_STREET_ADDRESS), value, "en-US");
   filler.FillFormField(field, address(), &field, /*cvc=*/std::u16string());
   EXPECT_EQ(u"123 Fake St., Apt. 42", field.value);

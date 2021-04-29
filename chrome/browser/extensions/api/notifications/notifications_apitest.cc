@@ -301,21 +301,21 @@ IN_PROC_BROWSER_TEST_P(NotificationsApiTestWithBackgroundType,
   const extensions::Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
 
-  const char kNewTitle[] = "Changed!";
-  const char kNewMessage[] = "Too late! The show ended yesterday";
+  const char16_t kNewTitle[] = u"Changed!";
+  const char16_t kNewMessage[] = u"Too late! The show ended yesterday";
   int kNewPriority = 2;
-  const char kButtonTitle[] = "NewButton";
+  const char16_t kButtonTitle[] = u"NewButton";
 
   message_center::Notification* notification =
       GetNotificationForExtension(extension);
   ASSERT_TRUE(notification);
 
-  EXPECT_EQ(base::ASCIIToUTF16(kNewTitle), notification->title());
-  EXPECT_EQ(base::ASCIIToUTF16(kNewMessage), notification->message());
+  EXPECT_EQ(kNewTitle, notification->title());
+  EXPECT_EQ(kNewMessage, notification->message());
   EXPECT_EQ(kNewPriority, notification->priority());
   EXPECT_TRUE(notification->silent());
   EXPECT_EQ(1u, notification->buttons().size());
-  EXPECT_EQ(base::ASCIIToUTF16(kButtonTitle), notification->buttons()[0].title);
+  EXPECT_EQ(kButtonTitle, notification->buttons()[0].title);
 }
 
 IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestGetPermissionLevel) {

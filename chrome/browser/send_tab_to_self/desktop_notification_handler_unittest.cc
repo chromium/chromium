@@ -36,11 +36,12 @@ const char kDesktopNotificationOrigin[] = "https://www.google.com";
 const char kDesktopNotificationId[] = "notification_id";
 const char kDesktopNotificationGuid[] = "guid";
 const char kDesktopNotificationTitle[] = "title";
+const char16_t kDesktopNotificationTitle16[] = u"title";
 const char kDesktopNotificationDeviceInfo[] = "device_info";
 const char kDesktopNotificationTargetDeviceSyncCacheGuid[] =
     "target_device_sync_cache_guid";
-const char kDesktopNotificationDeviceInfoWithPrefix[] =
-    "Shared from device_info";
+const char16_t kDesktopNotificationDeviceInfoWithPrefix[] =
+    u"Shared from device_info";
 
 class SendTabToSelfModelMock : public TestSendTabToSelfModel {
  public:
@@ -144,8 +145,7 @@ TEST_F(DesktopNotificationHandlerTest, DisplayNewEntries) {
   optional_fields.never_timeout = true;
   message_center::Notification notification(
       message_center::NOTIFICATION_TYPE_SIMPLE, kDesktopNotificationGuid,
-      base::ASCIIToUTF16(kDesktopNotificationTitle),
-      base::ASCIIToUTF16(kDesktopNotificationDeviceInfoWithPrefix),
+      kDesktopNotificationTitle16, kDesktopNotificationDeviceInfoWithPrefix,
       gfx::Image(), base::UTF8ToUTF16(url.host()), url,
       message_center::NotifierId(url), optional_fields, /*delegate=*/nullptr);
 

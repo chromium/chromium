@@ -1324,23 +1324,26 @@ TEST_P(AutofillProfileTest, IsPresentButInvalid) {
 TEST_P(AutofillProfileTest, SetRawInfoPreservesLineBreaks) {
   AutofillProfile profile(base::GenerateGUID(), test::kEmptyOrigin);
 
-  profile.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, ASCIIToUTF16("123 Super St.\n"
-                                                               "Apt. #42"));
-  EXPECT_EQ(ASCIIToUTF16("123 Super St.\n"
-                         "Apt. #42"),
-            profile.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS));
+  profile.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS,
+                     u"123 Super St.\n"
+                     u"Apt. #42");
+  EXPECT_EQ(
+      u"123 Super St.\n"
+      u"Apt. #42",
+      profile.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS));
 }
 
 TEST_P(AutofillProfileTest, SetInfoPreservesLineBreaks) {
   AutofillProfile profile(base::GenerateGUID(), test::kEmptyOrigin);
 
   profile.SetInfo(ADDRESS_HOME_STREET_ADDRESS,
-                  ASCIIToUTF16("123 Super St.\n"
-                               "Apt. #42"),
+                  u"123 Super St.\n"
+                  u"Apt. #42",
                   "en-US");
-  EXPECT_EQ(ASCIIToUTF16("123 Super St.\n"
-                         "Apt. #42"),
-            profile.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS));
+  EXPECT_EQ(
+      u"123 Super St.\n"
+      u"Apt. #42",
+      profile.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS));
 }
 
 TEST_P(AutofillProfileTest, SetRawInfoDoesntTrimWhitespace) {
@@ -1365,11 +1368,11 @@ TEST_P(AutofillProfileTest, FullAddress) {
 
   AutofillType full_address(HTML_TYPE_FULL_ADDRESS, HTML_MODE_NONE);
   std::u16string formatted_address(
-      ASCIIToUTF16("Marion Mitchell Morrison\n"
-                   "Fox\n"
-                   "123 Zoo St.\n"
-                   "unit 5\n"
-                   "Hollywood, CA 91601"));
+      u"Marion Mitchell Morrison\n"
+      u"Fox\n"
+      u"123 Zoo St.\n"
+      u"unit 5\n"
+      u"Hollywood, CA 91601");
   EXPECT_EQ(formatted_address, profile.GetInfo(full_address, "en-US"));
   // This should fail and leave the profile unchanged.
   EXPECT_FALSE(profile.SetInfo(full_address, u"foobar", "en-US"));
@@ -1378,11 +1381,12 @@ TEST_P(AutofillProfileTest, FullAddress) {
   // Some things can be missing...
   profile.SetInfo(ADDRESS_HOME_LINE2, std::u16string(), "en-US");
   profile.SetInfo(EMAIL_ADDRESS, std::u16string(), "en-US");
-  EXPECT_EQ(ASCIIToUTF16("Marion Mitchell Morrison\n"
-                         "Fox\n"
-                         "123 Zoo St.\n"
-                         "Hollywood, CA 91601"),
-            profile.GetInfo(full_address, "en-US"));
+  EXPECT_EQ(
+      u"Marion Mitchell Morrison\n"
+      u"Fox\n"
+      u"123 Zoo St.\n"
+      u"Hollywood, CA 91601",
+      profile.GetInfo(full_address, "en-US"));
 
   // ...but nothing comes out if a required field is missing.
   profile.SetInfo(ADDRESS_HOME_STATE, std::u16string(), "en-US");

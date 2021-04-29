@@ -29,8 +29,8 @@ using testing::ElementsAre;
 using testing::Pointee;
 using testing::StrictMock;
 
-const char kUsername[] = "user1";
-const char kUsername2[] = "user2";
+const char16_t kUsername[] = u"user1";
+const char16_t kUsername2[] = u"user2";
 
 class MockPasswordPrompt : public AccountChooserPrompt,
                            public AutoSigninFirstRunPrompt {
@@ -47,7 +47,7 @@ class MockPasswordPrompt : public AccountChooserPrompt,
 
 password_manager::PasswordForm GetLocalForm() {
   password_manager::PasswordForm form;
-  form.username_value = base::ASCIIToUTF16(kUsername);
+  form.username_value = kUsername;
   form.url = GURL("http://example.com");
   return form;
 }
@@ -77,7 +77,7 @@ TEST_F(CredentialManagerDialogControllerTest, ShowAccountChooser) {
   StrictMock<MockPasswordPrompt> prompt;
   password_manager::PasswordForm local_form = GetLocalForm();
   password_manager::PasswordForm local_form2 = local_form;
-  local_form2.username_value = base::ASCIIToUTF16(kUsername2);
+  local_form2.username_value = kUsername2;
   std::vector<std::unique_ptr<password_manager::PasswordForm>> locals;
   locals.push_back(
       std::make_unique<password_manager::PasswordForm>(local_form));

@@ -40,12 +40,19 @@ namespace {
 
 const char kProfileId[] = "profile_id";
 const char kProfileName[] = "profile_name";
+const char16_t kProfileName16[] = u"profile_name";
 
+const char16_t kPluginName16[] = u"plugin_name";
+const char16_t kPluginVersion16[] = u"plugin_version";
+const char16_t kPluginDescription16[] = u"plugin_description";
+const char kPluginFolderPath[] = "plugin_folder_path";
+const char kPluginFileName[] = "plugin_file_name";
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 const char kPluginName[] = "plugin_name";
 const char kPluginVersion[] = "plugin_version";
 const char kPluginDescription[] = "plugin_description";
-const char kPluginFolderPath[] = "plugin_folder_path";
-const char kPluginFileName[] = "plugin_file_name";
+#endif
 
 }  // namespace
 
@@ -75,7 +82,7 @@ class BrowserReportGeneratorTest : public ::testing::Test,
     ProfileAttributesInitParams params;
     params.profile_path =
         profile_manager()->profiles_dir().AppendASCII(kProfileId);
-    params.profile_name = base::ASCIIToUTF16(kProfileName);
+    params.profile_name = kProfileName16;
     profile_manager_.profile_attributes_storage()->AddProfile(
         std::move(params));
   }
@@ -92,9 +99,9 @@ class BrowserReportGeneratorTest : public ::testing::Test,
 
   void InitializePlugin() {
     content::WebPluginInfo info;
-    info.name = base::ASCIIToUTF16(kPluginName);
-    info.version = base::ASCIIToUTF16(kPluginVersion);
-    info.desc = base::ASCIIToUTF16(kPluginDescription);
+    info.name = kPluginName16;
+    info.version = kPluginVersion16;
+    info.desc = kPluginDescription16;
     info.path = base::FilePath()
                     .AppendASCII(kPluginFolderPath)
                     .AppendASCII(kPluginFileName);

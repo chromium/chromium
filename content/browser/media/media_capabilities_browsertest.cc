@@ -22,8 +22,10 @@ namespace {
 
 const char kDecodeTestFile[] = "decode_capabilities_test.html";
 const char kSupported[] = "SUPPORTED";
+const char16_t kSupported16[] = u"SUPPORTED";
 const char kUnsupported[] = "UNSUPPORTED";
-const char kError[] = "ERROR";
+const char16_t kUnsupported16[] = u"UNSUPPORTED";
+const char16_t kError[] = u"ERROR";
 const char kFileString[] = "file";
 const char kMediaSourceString[] = "media-source";
 
@@ -141,10 +143,9 @@ class MediaCapabilitiesTest : public ContentBrowserTest {
 
     EXPECT_TRUE(ExecJs(shell(), command));
 
-    TitleWatcher title_watcher(shell()->web_contents(),
-                               base::ASCIIToUTF16(kSupported));
-    title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16(kUnsupported));
-    title_watcher.AlsoWaitForTitle(base::ASCIIToUTF16(kError));
+    TitleWatcher title_watcher(shell()->web_contents(), kSupported16);
+    title_watcher.AlsoWaitForTitle(kUnsupported16);
+    title_watcher.AlsoWaitForTitle(kError);
     return base::UTF16ToASCII(title_watcher.WaitAndGetTitle());
   }
 

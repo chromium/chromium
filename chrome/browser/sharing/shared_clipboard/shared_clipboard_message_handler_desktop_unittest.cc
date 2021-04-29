@@ -25,7 +25,9 @@ namespace {
 const char kText[] = "clipboard text";
 const char kEmptyDeviceName[] = "";
 const char kDeviceNameInDeviceInfo[] = "DeviceNameInDeviceInfo";
+const char16_t kDeviceNameInDeviceInfo16[] = u"DeviceNameInDeviceInfo";
 const char kDeviceNameInMessage[] = "DeviceNameInMessage";
+const char16_t kDeviceNameInMessage16[] = u"DeviceNameInMessage";
 
 class SharedClipboardMessageHandlerTest : public SharedClipboardTestBase {
  public:
@@ -96,7 +98,7 @@ TEST_F(SharedClipboardMessageHandlerTest,
   EXPECT_EQ(GetClipboardText(), kText);
   EXPECT_EQ(l10n_util::GetStringFUTF16(
                 IDS_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_NOTIFICATION_TITLE,
-                base::ASCIIToUTF16(kDeviceNameInDeviceInfo)),
+                kDeviceNameInDeviceInfo16),
             GetNotification().title());
 }
 
@@ -117,6 +119,6 @@ TEST_F(SharedClipboardMessageHandlerTest,
   EXPECT_EQ(GetClipboardText(), kText);
   EXPECT_EQ(l10n_util::GetStringFUTF16(
                 IDS_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_NOTIFICATION_TITLE,
-                base::ASCIIToUTF16(kDeviceNameInMessage)),
+                kDeviceNameInMessage16),
             GetNotification().title());
 }

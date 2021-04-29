@@ -16,8 +16,6 @@
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/test/views_test_base.h"
 
-#define EXPECT_STR_EQ(ascii, utf16) EXPECT_EQ(base::ASCIIToUTF16(ascii), utf16)
-
 namespace ui {
 namespace test {
 class EventGenerator;

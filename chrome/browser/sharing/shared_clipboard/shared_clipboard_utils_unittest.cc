@@ -34,8 +34,8 @@ using ::testing::Return;
 
 namespace {
 
-const char kEmptyText[] = "";
-const char kText[] = "Some text to copy to phone device.";
+const char16_t kEmptyText[] = u"";
+const char16_t kText[] = u"Some text to copy to phone device.";
 
 class MockSharingDeviceRegistration : public SharingDeviceRegistration {
  public:
@@ -84,39 +84,34 @@ class SharedClipboardUtilsTest : public testing::Test {
 
 TEST_F(SharedClipboardUtilsTest, UIFlagDisabled_DoNotShowMenu) {
   scoped_feature_list_.InitAndDisableFeature(kSharedClipboardUI);
-  EXPECT_FALSE(
-      ShouldOfferSharedClipboard(&profile_, base::ASCIIToUTF16(kText)));
+  EXPECT_FALSE(ShouldOfferSharedClipboard(&profile_, kText));
 }
 
 TEST_F(SharedClipboardUtilsTest, IncognitoProfile_DoNotShowMenu) {
   scoped_feature_list_.InitAndEnableFeature(kSharedClipboardUI);
   EXPECT_FALSE(ShouldOfferSharedClipboard(
-      profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true),
-      base::ASCIIToUTF16(kText)));
+      profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true), kText));
 }
 
 TEST_F(SharedClipboardUtilsTest, EmptyClipboardProtocol_DoNotShowMenu) {
   scoped_feature_list_.InitAndEnableFeature(kSharedClipboardUI);
-  EXPECT_FALSE(
-      ShouldOfferSharedClipboard(&profile_, base::ASCIIToUTF16(kEmptyText)));
+  EXPECT_FALSE(ShouldOfferSharedClipboard(&profile_, kEmptyText));
 }
 
 TEST_F(SharedClipboardUtilsTest, ClipboardProtocol_ShowMenu) {
   scoped_feature_list_.InitAndEnableFeature(kSharedClipboardUI);
-  EXPECT_TRUE(ShouldOfferSharedClipboard(&profile_, base::ASCIIToUTF16(kText)));
+  EXPECT_TRUE(ShouldOfferSharedClipboard(&profile_, kText));
 }
 
 TEST_F(SharedClipboardUtilsTest, NoSharingService_DoNotShowMenu) {
   scoped_feature_list_.InitAndEnableFeature(kSharedClipboardUI);
   create_service_ = false;
-  EXPECT_FALSE(
-      ShouldOfferSharedClipboard(&profile_, base::ASCIIToUTF16(kText)));
+  EXPECT_FALSE(ShouldOfferSharedClipboard(&profile_, kText));
 }
 
 TEST_F(SharedClipboardUtilsTest, EnterprisePolicy_Disabled) {
   scoped_feature_list_.InitAndEnableFeature(kSharedClipboardUI);
   // Set the enterprise policy to false:
   profile_.GetPrefs()->SetBoolean(prefs::kSharedClipboardEnabled, false);
-  EXPECT_FALSE(
-      ShouldOfferSharedClipboard(&profile_, base::ASCIIToUTF16(kText)));
+  EXPECT_FALSE(ShouldOfferSharedClipboard(&profile_, kText));
 }

@@ -63,8 +63,9 @@ const char kExternalClearKeyKeySystem[] = "org.chromium.externalclearkey";
 #endif
 
 // EME-specific test results and errors.
-const char kEmeKeyError[] = "KEYERROR";
+const char16_t kEmeKeyError[] = u"KEYERROR";
 const char kEmeNotSupportedError[] = "NOTSUPPORTEDERROR";
+const char16_t kEmeNotSupportedError16[] = u"NOTSUPPORTEDERROR";
 
 const char kDefaultEmePlayer[] = "eme_player.html";
 const char kDefaultMseOnlyEmePlayer[] = "mse_different_containers.html";
@@ -175,8 +176,8 @@ class EncryptedMediaTest
   // We want to fail quickly when a test fails because an error is encountered.
   void AddTitlesToAwait(content::TitleWatcher* title_watcher) override {
     MediaBrowserTest::AddTitlesToAwait(title_watcher);
-    title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(kEmeNotSupportedError));
-    title_watcher->AlsoWaitForTitle(base::ASCIIToUTF16(kEmeKeyError));
+    title_watcher->AlsoWaitForTitle(kEmeNotSupportedError16);
+    title_watcher->AlsoWaitForTitle(kEmeKeyError);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

@@ -129,8 +129,7 @@ TEST_F(DevicePermissionsManagerTest, AllowAndClearDevices) {
   EXPECT_FALSE(device_permissions->FindHidDeviceEntry(*device7_));
   EXPECT_EQ(4U, device_permissions->entries().size());
 
-  EXPECT_EQ(base::ASCIIToUTF16(
-                "Test Product from Test Manufacturer (serial number ABCDE)"),
+  EXPECT_EQ(u"Test Product from Test Manufacturer (serial number ABCDE)",
             device0_entry->GetPermissionMessageString());
   EXPECT_EQ(u"Test Product from Test Manufacturer",
             device1_entry->GetPermissionMessageString());
@@ -328,8 +327,7 @@ TEST_F(DevicePermissionsManagerTest, LoadPrefs) {
   EXPECT_FALSE(device_permissions->FindHidDeviceEntry(*device6_));
   EXPECT_FALSE(device_permissions->FindHidDeviceEntry(*device7_));
 
-  EXPECT_EQ(base::ASCIIToUTF16(
-                "Test Product from Test Manufacturer (serial number ABCDE)"),
+  EXPECT_EQ(u"Test Product from Test Manufacturer (serial number ABCDE)",
             device0_entry->GetPermissionMessageString());
   EXPECT_EQ(u"Test HID Device (serial number abcde)",
             device4_entry->GetPermissionMessageString());
@@ -345,8 +343,7 @@ TEST_F(DevicePermissionsManagerTest, PermissionMessages) {
             DevicePermissionsManager::GetPermissionMessage(
                 0x0000, 0x0001, empty, empty, empty, false));
 
-  EXPECT_EQ(base::ASCIIToUTF16(
-                "Unknown product 0001 from vendor 0000 (serial number A)"),
+  EXPECT_EQ(u"Unknown product 0001 from vendor 0000 (serial number A)",
             DevicePermissionsManager::GetPermissionMessage(
                 0x0000, 0x0001, empty, empty, u"A", false));
 
@@ -354,8 +351,7 @@ TEST_F(DevicePermissionsManagerTest, PermissionMessages) {
             DevicePermissionsManager::GetPermissionMessage(
                 0x18D1, 0x0001, empty, empty, empty, false));
 
-  EXPECT_EQ(base::ASCIIToUTF16(
-                "Unknown product 0001 from Google Inc. (serial number A)"),
+  EXPECT_EQ(u"Unknown product 0001 from Google Inc. (serial number A)",
             DevicePermissionsManager::GetPermissionMessage(
                 0x18D1, 0x0001, empty, empty, serial_number, false));
 

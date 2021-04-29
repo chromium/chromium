@@ -61,13 +61,13 @@ constexpr char kExampleApp[] = "com.example.app";
 
 constexpr char kTestEmail[] = "user@gmail.com";
 
-constexpr char kUsername1[] = "alice";
-constexpr char kUsername2[] = "bob";
+constexpr char16_t kUsername1[] = u"alice";
+constexpr char16_t kUsername2[] = u"bob";
 
-constexpr char kPassword1[] = "s3cre3t";
-constexpr char kPassword2[] = "f00b4r";
-constexpr char kWeakPassword1[] = "123456";
-constexpr char kWeakPassword2[] = "111111";
+constexpr char16_t kPassword1[] = u"s3cre3t";
+constexpr char16_t kPassword2[] = u"f00b4r";
+constexpr char16_t kWeakPassword1[] = u"123456";
+constexpr char16_t kWeakPassword2[] = u"111111";
 
 using api::passwords_private::CompromisedInfo;
 using api::passwords_private::InsecureCredential;
@@ -136,24 +136,24 @@ BulkLeakCheckService* CreateAndUseBulkLeakCheckService(
 
 password_manager::InsecureCredential MakeInsecureCredential(
     base::StringPiece signon_realm,
-    base::StringPiece username,
+    base::StringPiece16 username,
     base::TimeDelta time_since_creation = base::TimeDelta(),
     InsecureType compromise_type = InsecureType::kLeaked) {
   return password_manager::InsecureCredential(
-      std::string(signon_realm), base::ASCIIToUTF16(username),
+      std::string(signon_realm), std::u16string(username),
       base::Time::Now() - time_since_creation, compromise_type, IsMuted(false));
 }
 
 PasswordForm MakeSavedPassword(base::StringPiece signon_realm,
-                               base::StringPiece username,
-                               base::StringPiece password = kPassword1,
-                               base::StringPiece username_element = "") {
+                               base::StringPiece16 username,
+                               base::StringPiece16 password = kPassword1,
+                               base::StringPiece16 username_element = u"") {
   PasswordForm form;
   form.signon_realm = std::string(signon_realm);
   form.url = GURL(signon_realm);
-  form.username_value = base::ASCIIToUTF16(username);
-  form.password_value = base::ASCIIToUTF16(password);
-  form.username_element = base::ASCIIToUTF16(username_element);
+  form.username_value = std::u16string(username);
+  form.password_value = std::u16string(password);
+  form.username_element = std::u16string(username_element);
   return form;
 }
 
@@ -163,16 +163,16 @@ std::string MakeAndroidRealm(base::StringPiece package_name) {
 
 PasswordForm MakeSavedAndroidPassword(
     base::StringPiece package_name,
-    base::StringPiece username,
+    base::StringPiece16 username,
     base::StringPiece app_display_name = "",
     base::StringPiece affiliated_web_realm = "",
-    base::StringPiece password = kPassword1) {
+    base::StringPiece16 password = kPassword1) {
   PasswordForm form;
   form.signon_realm = MakeAndroidRealm(package_name);
-  form.username_value = base::ASCIIToUTF16(username);
+  form.username_value = std::u16string(username);
   form.app_display_name = std::string(app_display_name);
   form.affiliated_web_realm = std::string(affiliated_web_realm);
-  form.password_value = base::ASCIIToUTF16(password);
+  form.password_value = std::u16string(password);
   return form;
 }
 
@@ -181,16 +181,17 @@ auto ExpectInsecureCredential(
     const std::string& formatted_origin,
     const std::string& detailed_origin,
     const base::Optional<std::string>& change_password_url,
-    const std::string& username) {
+    const std::u16string& username) {
   auto change_password_url_field_matcher =
       change_password_url.has_value()
           ? Field(&InsecureCredential::change_password_url,
                   Pointee(change_password_url.value()))
           : Field(&InsecureCredential::change_password_url, IsNull());
-  return AllOf(Field(&InsecureCredential::formatted_origin, formatted_origin),
-               Field(&InsecureCredential::detailed_origin, detailed_origin),
-               change_password_url_field_matcher,
-               Field(&InsecureCredential::username, username));
+  return AllOf(
+      Field(&InsecureCredential::formatted_origin, formatted_origin),
+      Field(&InsecureCredential::detailed_origin, detailed_origin),
+      change_password_url_field_matcher,
+      Field(&InsecureCredential::username, base::UTF16ToASCII(username)));
 }
 
 // Creates matcher for a given compromised info.
@@ -211,7 +212,7 @@ auto ExpectCompromisedCredential(
     const std::string& formatted_origin,
     const std::string& detailed_origin,
     const base::Optional<std::string>& change_password_url,
-    const std::string& username,
+    const std::u16string& username,
     base::TimeDelta elapsed_time_since_compromise,
     const std::string& elapsed_time_since_compromise_str,
     api::passwords_private::CompromiseType compromise_type) {
@@ -595,11 +596,11 @@ TEST_F(PasswordCheckDelegateTest,
 
   InsecureCredential credential =
       std::move(delegate().GetCompromisedCredentials().at(0));
-  EXPECT_EQ(kUsername1, credential.username);
+  EXPECT_EQ(base::UTF16ToASCII(kUsername1), credential.username);
 
   // Purposefully set a wrong username and verify that trying to get a
   // plaintext password fails.
-  credential.signon_realm = kUsername2;
+  credential.signon_realm = base::UTF16ToASCII(kUsername2);
   EXPECT_EQ(base::nullopt,
             delegate().GetPlaintextInsecurePassword(std::move(credential)));
 }
@@ -615,7 +616,7 @@ TEST_F(PasswordCheckDelegateTest,
       std::move(delegate().GetCompromisedCredentials().at(0));
   EXPECT_EQ(0, credential.id);
   EXPECT_EQ(kExampleCom, credential.signon_realm);
-  EXPECT_EQ(kUsername1, credential.username);
+  EXPECT_EQ(base::UTF16ToASCII(kUsername1), credential.username);
   EXPECT_EQ(nullptr, credential.password);
 
   base::Optional<InsecureCredential> opt_credential =
@@ -623,8 +624,8 @@ TEST_F(PasswordCheckDelegateTest,
   ASSERT_TRUE(opt_credential.has_value());
   EXPECT_EQ(0, opt_credential->id);
   EXPECT_EQ(kExampleCom, opt_credential->signon_realm);
-  EXPECT_EQ(kUsername1, opt_credential->username);
-  EXPECT_EQ(kPassword1, *opt_credential->password);
+  EXPECT_EQ(base::UTF16ToASCII(kUsername1), opt_credential->username);
+  EXPECT_EQ(base::UTF16ToASCII(kPassword1), *opt_credential->password);
 }
 
 // Test that changing a insecure password fails if the ids don't match.
@@ -670,14 +671,15 @@ TEST_F(PasswordCheckDelegateTest, ChangeInsecureCredentialSuccess) {
       std::move(delegate().GetCompromisedCredentials().at(0));
   EXPECT_EQ(0, credential.id);
   EXPECT_EQ(kExampleCom, credential.signon_realm);
-  EXPECT_EQ(kUsername1, credential.username);
-  EXPECT_EQ(base::UTF8ToUTF16(kPassword1),
+  EXPECT_EQ(base::UTF16ToASCII(kUsername1), credential.username);
+  EXPECT_EQ(kPassword1,
             store().stored_passwords().at(kExampleCom).at(0).password_value);
 
-  EXPECT_TRUE(delegate().ChangeInsecureCredential(credential, kPassword2));
+  EXPECT_TRUE(delegate().ChangeInsecureCredential(
+      credential, base::UTF16ToASCII(kPassword2)));
   RunUntilIdle();
 
-  EXPECT_EQ(base::UTF8ToUTF16(kPassword2),
+  EXPECT_EQ(kPassword2,
             store().stored_passwords().at(kExampleCom).at(0).password_value);
 }
 
@@ -685,7 +687,7 @@ TEST_F(PasswordCheckDelegateTest, ChangeInsecureCredentialSuccess) {
 TEST_F(PasswordCheckDelegateTest, ChangeInsecureCredentialRemovesDupes) {
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1, kPassword1));
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1, kPassword1,
-                                     "different_element"));
+                                     u"different_element"));
   store().AddInsecureCredential(
       MakeInsecureCredential(kExampleCom, kUsername1));
   RunUntilIdle();
@@ -694,14 +696,13 @@ TEST_F(PasswordCheckDelegateTest, ChangeInsecureCredentialRemovesDupes) {
 
   InsecureCredential credential =
       std::move(delegate().GetCompromisedCredentials().at(0));
-  EXPECT_TRUE(delegate().ChangeInsecureCredential(credential, kPassword2));
+  EXPECT_TRUE(delegate().ChangeInsecureCredential(
+      credential, base::UTF16ToASCII(kPassword2)));
   RunUntilIdle();
 
   EXPECT_EQ(1u, store().stored_passwords().at(kExampleCom).size());
-  EXPECT_EQ(
-      kPassword2,
-      base::UTF16ToUTF8(
-          store().stored_passwords().at(kExampleCom).at(0).password_value));
+  EXPECT_EQ(kPassword2,
+            store().stored_passwords().at(kExampleCom).at(0).password_value);
 }
 
 // Test that removing a insecure password fails if the ids don't match.
@@ -762,9 +763,7 @@ TEST_F(PasswordCheckDelegateTest, OnLeakFoundDoesNotCreateCredential) {
   store().RemoveLogin(MakeSavedPassword(kExampleCom, kUsername1, kPassword1));
   RunUntilIdle();
   static_cast<BulkLeakCheckDelegateInterface*>(service())->OnFinishedCredential(
-      LeakCheckCredential(base::ASCIIToUTF16(kUsername1),
-                          base::ASCIIToUTF16(kPassword1)),
-      IsLeaked(true));
+      LeakCheckCredential(kUsername1, kPassword1), IsLeaked(true));
   RunUntilIdle();
 
   EXPECT_THAT(store().insecure_credentials(), IsEmpty());
@@ -777,9 +776,7 @@ TEST_F(PasswordCheckDelegateTest, NoLeakedFound) {
   RunUntilIdle();
 
   static_cast<BulkLeakCheckDelegateInterface*>(service())->OnFinishedCredential(
-      LeakCheckCredential(base::ASCIIToUTF16(kUsername1),
-                          base::ASCIIToUTF16(kPassword1)),
-      IsLeaked(false));
+      LeakCheckCredential(kUsername1, kPassword1), IsLeaked(false));
   RunUntilIdle();
 
   EXPECT_THAT(store().insecure_credentials(), IsEmpty());
@@ -794,22 +791,21 @@ TEST_F(PasswordCheckDelegateTest, OnLeakFoundCreatesCredential) {
 
   delegate().StartPasswordCheck();
   static_cast<BulkLeakCheckDelegateInterface*>(service())->OnFinishedCredential(
-      LeakCheckCredential(base::ASCIIToUTF16(kUsername1),
-                          base::ASCIIToUTF16(kPassword1)),
-      IsLeaked(true));
+      LeakCheckCredential(kUsername1, kPassword1), IsLeaked(true));
   RunUntilIdle();
 
   EXPECT_THAT(store().insecure_credentials(),
               ElementsAre(password_manager::InsecureCredential(
-                  kExampleCom, base::ASCIIToUTF16(kUsername1),
-                  base::Time::Now(), InsecureType::kLeaked, IsMuted(false))));
+                  kExampleCom, kUsername1, base::Time::Now(),
+                  InsecureType::kLeaked, IsMuted(false))));
 }
 
 // Test that a found leak creates a compromised credential in the password
 // store for each combination of the same canonicalized username and password.
 TEST_F(PasswordCheckDelegateTest, OnLeakFoundCreatesMultipleCredential) {
-  const std::string kUsername2Upper = base::ToUpperASCII(kUsername2);
-  const std::string kUsername2Email = base::StrCat({kUsername2, "@email.com"});
+  const std::u16string kUsername2Upper = base::ToUpperASCII(kUsername2);
+  const std::u16string kUsername2Email =
+      base::StrCat({kUsername2, u"@email.com"});
 
   store().AddLogin(MakeSavedPassword(kExampleCom, kUsername1, kPassword1));
   store().AddLogin(MakeSavedPassword(kExampleOrg, kUsername1, kPassword1));
@@ -820,30 +816,25 @@ TEST_F(PasswordCheckDelegateTest, OnLeakFoundCreatesMultipleCredential) {
   identity_test_env().MakeAccountAvailable(kTestEmail);
   delegate().StartPasswordCheck();
   static_cast<BulkLeakCheckDelegateInterface*>(service())->OnFinishedCredential(
-      LeakCheckCredential(base::ASCIIToUTF16(kUsername1),
-                          base::ASCIIToUTF16(kPassword1)),
-      IsLeaked(true));
+      LeakCheckCredential(kUsername1, kPassword1), IsLeaked(true));
   static_cast<BulkLeakCheckDelegateInterface*>(service())->OnFinishedCredential(
-      LeakCheckCredential(base::ASCIIToUTF16(kUsername2Email),
-                          base::ASCIIToUTF16(kPassword2)),
-      IsLeaked(true));
+      LeakCheckCredential(kUsername2Email, kPassword2), IsLeaked(true));
   RunUntilIdle();
 
   EXPECT_THAT(
       store().insecure_credentials(),
-      UnorderedElementsAre(
-          password_manager::InsecureCredential(
-              kExampleCom, base::ASCIIToUTF16(kUsername1), base::Time::Now(),
-              InsecureType::kLeaked, IsMuted(false)),
-          password_manager::InsecureCredential(
-              kExampleOrg, base::ASCIIToUTF16(kUsername1), base::Time::Now(),
-              InsecureType::kLeaked, IsMuted(false)),
-          password_manager::InsecureCredential(
-              kExampleCom, base::ASCIIToUTF16(kUsername2Upper),
-              base::Time::Now(), InsecureType::kLeaked, IsMuted(false)),
-          password_manager::InsecureCredential(
-              kExampleOrg, base::ASCIIToUTF16(kUsername2Email),
-              base::Time::Now(), InsecureType::kLeaked, IsMuted(false))));
+      UnorderedElementsAre(password_manager::InsecureCredential(
+                               kExampleCom, kUsername1, base::Time::Now(),
+                               InsecureType::kLeaked, IsMuted(false)),
+                           password_manager::InsecureCredential(
+                               kExampleOrg, kUsername1, base::Time::Now(),
+                               InsecureType::kLeaked, IsMuted(false)),
+                           password_manager::InsecureCredential(
+                               kExampleCom, kUsername2Upper, base::Time::Now(),
+                               InsecureType::kLeaked, IsMuted(false)),
+                           password_manager::InsecureCredential(
+                               kExampleOrg, kUsername2Email, base::Time::Now(),
+                               InsecureType::kLeaked, IsMuted(false))));
 }
 
 // Verifies that the case where the user has no saved passwords is reported
@@ -1045,9 +1036,7 @@ TEST_F(PasswordCheckDelegateTest, OnCredentialDoneUpdatesProgress) {
   EXPECT_EQ(4, *status->remaining_in_queue);
 
   static_cast<BulkLeakCheckDelegateInterface*>(service())->OnFinishedCredential(
-      LeakCheckCredential(base::ASCIIToUTF16(kUsername1),
-                          base::ASCIIToUTF16(kPassword1)),
-      IsLeaked(false));
+      LeakCheckCredential(kUsername1, kPassword1), IsLeaked(false));
 
   status = PasswordCheckStatus::FromValue(
       event_iter->second->event_args->GetList().front());
@@ -1057,9 +1046,7 @@ TEST_F(PasswordCheckDelegateTest, OnCredentialDoneUpdatesProgress) {
   EXPECT_EQ(2, *status->remaining_in_queue);
 
   static_cast<BulkLeakCheckDelegateInterface*>(service())->OnFinishedCredential(
-      LeakCheckCredential(base::ASCIIToUTF16(kUsername2),
-                          base::ASCIIToUTF16(kPassword2)),
-      IsLeaked(false));
+      LeakCheckCredential(kUsername2, kPassword2), IsLeaked(false));
 
   status = PasswordCheckStatus::FromValue(
       event_iter->second->event_args->GetList().front());

@@ -44,9 +44,9 @@ namespace {
 
 constexpr char kProfile[] = "Profile";
 
-const char kPluginName[] = "plugin";
-const char kPluginVersion[] = "1.0";
-const char kPluginDescription[] = "This is a plugin.";
+const char16_t kPluginName16[] = u"plugin";
+const char16_t kPluginVersion16[] = u"1.0";
+const char16_t kPluginDescription16[] = u"This is a plugin.";
 const char kPluginFileName[] = "file_name";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -56,6 +56,10 @@ const char kArcActivityName1[] = "activity_name1";
 const char kArcAppName2[] = "app_name2";
 const char kArcPackageName2[] = "package_name2";
 const char kArcActivityName2[] = "activity_name2";
+#else
+const char kPluginName[] = "plugin";
+const char kPluginVersion[] = "1.0";
+const char kPluginDescription[] = "This is a plugin.";
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -196,9 +200,9 @@ class ReportGeneratorTest : public ::testing::Test,
 
   void CreatePlugin() {
     content::WebPluginInfo info;
-    info.name = base::ASCIIToUTF16(kPluginName);
-    info.version = base::ASCIIToUTF16(kPluginVersion);
-    info.desc = base::ASCIIToUTF16(kPluginDescription);
+    info.name = kPluginName16;
+    info.version = kPluginVersion16;
+    info.desc = kPluginDescription16;
     info.path =
         base::FilePath().AppendASCII("path").AppendASCII(kPluginFileName);
     content::PluginService* plugin_service =

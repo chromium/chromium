@@ -92,17 +92,17 @@ TEST_F(TextareaTest, MAYBE_InsertNewlineTest) {
     SendKeyEvent(static_cast<ui::KeyboardCode>(ui::VKEY_A + i));
     SendKeyEvent(ui::VKEY_RETURN);
   }
-  EXPECT_STR_EQ("a\nb\nc\nd\ne\n", textarea_->GetText());
+  EXPECT_EQ(u"a\nb\nc\nd\ne\n", textarea_->GetText());
 }
 
 TEST_F(TextareaTest, PasteNewlineTest) {
-  const std::string& kText = "abc\n   \n";
-  textarea_->SetText(base::ASCIIToUTF16(kText));
+  const std::u16string kText = u"abc\n   \n";
+  textarea_->SetText(kText);
   textarea_->SelectAll(false);
   textarea_->ExecuteCommand(Textfield::kCopy, 0);
   textarea_->SetText(std::u16string());
   textarea_->ExecuteCommand(Textfield::kPaste, 0);
-  EXPECT_STR_EQ(kText, textarea_->GetText());
+  EXPECT_EQ(kText, textarea_->GetText());
 }
 
 // Re-enable when crbug.com/1163587 is fixed.
@@ -165,16 +165,16 @@ TEST_F(TextareaTest, LineSelection) {
 
   // Select line towards right.
   SendEndEvent(true);
-  EXPECT_STR_EQ("67 89", textarea_->GetSelectedText());
+  EXPECT_EQ(u"67 89", textarea_->GetSelectedText());
 
   // Select line towards left. On Mac, the existing selection should be extended
   // to cover the whole line.
   SendHomeEvent(true);
 
   if (Textarea::kLineSelectionBehavior == gfx::SELECTION_EXTEND)
-    EXPECT_STR_EQ("34567 89", textarea_->GetSelectedText());
+    EXPECT_EQ(u"34567 89", textarea_->GetSelectedText());
   else
-    EXPECT_STR_EQ("345", textarea_->GetSelectedText());
+    EXPECT_EQ(u"345", textarea_->GetSelectedText());
 
   EXPECT_TRUE(textarea_->GetSelectedRange().is_reversed());
 
@@ -182,9 +182,9 @@ TEST_F(TextareaTest, LineSelection) {
   SendEndEvent(true);
 
   if (Textarea::kLineSelectionBehavior == gfx::SELECTION_EXTEND)
-    EXPECT_STR_EQ("34567 89", textarea_->GetSelectedText());
+    EXPECT_EQ(u"34567 89", textarea_->GetSelectedText());
   else
-    EXPECT_STR_EQ("67 89", textarea_->GetSelectedText());
+    EXPECT_EQ(u"67 89", textarea_->GetSelectedText());
 
   EXPECT_FALSE(textarea_->GetSelectedRange().is_reversed());
 }

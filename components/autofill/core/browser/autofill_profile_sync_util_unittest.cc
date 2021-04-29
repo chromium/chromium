@@ -72,11 +72,10 @@ AutofillProfile ConstructCompleteProfile() {
   profile.SetRawInfo(EMAIL_ADDRESS, u"user@example.com");
   profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"1.800.555.1234");
   profile.SetRawInfo(COMPANY_NAME, u"Google, Inc.");
-  profile.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_STREET_ADDRESS,
-      ASCIIToUTF16("123 Fake St. Dep Premise\n"
-                   "Apt. 10 Floor 2"),
-      VerificationStatus::kObserved);
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_ADDRESS,
+                                           u"123 Fake St. Dep Premise\n"
+                                           u"Apt. 10 Floor 2",
+                                           VerificationStatus::kObserved);
 
   // Set testing values and statuses for the address.
   EXPECT_EQ(u"123 Fake St. Dep Premise",

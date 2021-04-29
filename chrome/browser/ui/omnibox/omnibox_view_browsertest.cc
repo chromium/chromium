@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observer.h"
 #include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -68,14 +69,14 @@ using bookmarks::BookmarkModel;
 
 namespace {
 
-const char kSearchKeyword[] = "foo";
-const char kSearchKeyword2[] = "footest.com";
+const char16_t kSearchKeyword[] = u"foo";
+const char16_t kSearchKeyword2[] = u"footest.com";
 const ui::KeyboardCode kSearchKeywordKeys[] = {
   ui::VKEY_F, ui::VKEY_O, ui::VKEY_O, ui::VKEY_UNKNOWN
 };
 const char kSearchURL[] = "http://www.foo.com/search?q={searchTerms}";
-const char kSearchShortName[] = "foo";
-const char kSearchText[] = "abc";
+const char16_t kSearchShortName[] = u"foo";
+const char16_t kSearchText[] = u"abc";
 const ui::KeyboardCode kSearchTextKeys[] = {
   ui::VKEY_A, ui::VKEY_B, ui::VKEY_C, ui::VKEY_UNKNOWN
 };
@@ -266,13 +267,13 @@ class OmniboxViewTest : public InProcessBrowserTest {
     ASSERT_TRUE(model->loaded());
 
     TemplateURLData data;
-    data.SetShortName(ASCIIToUTF16(kSearchShortName));
-    data.SetKeyword(ASCIIToUTF16(kSearchKeyword));
+    data.SetShortName(kSearchShortName);
+    data.SetKeyword(kSearchKeyword);
     data.SetURL(kSearchURL);
     TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
     model->SetUserSelectedDefaultSearchProvider(template_url);
 
-    data.SetKeyword(ASCIIToUTF16(kSearchKeyword2));
+    data.SetKeyword(kSearchKeyword2);
     model->Add(std::make_unique<TemplateURL>(data));
 
     // Remove built-in template urls, like google.com, bing.com etc., as they
@@ -481,22 +482,22 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, BackspaceInKeywordMode) {
   // Trigger keyword hint mode.
   ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchKeywordKeys));
   ASSERT_TRUE(omnibox_view->model()->is_keyword_hint());
-  ASSERT_EQ(kSearchKeyword, UTF16ToUTF8(omnibox_view->model()->keyword()));
+  ASSERT_EQ(kSearchKeyword, omnibox_view->model()->keyword());
 
   // Trigger keyword mode.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_TAB, 0));
   ASSERT_FALSE(omnibox_view->model()->is_keyword_hint());
-  ASSERT_EQ(kSearchKeyword, UTF16ToUTF8(omnibox_view->model()->keyword()));
+  ASSERT_EQ(kSearchKeyword, omnibox_view->model()->keyword());
 
   // Backspace without search text should bring back keyword hint mode.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_BACK, 0));
   ASSERT_TRUE(omnibox_view->model()->is_keyword_hint());
-  ASSERT_EQ(kSearchKeyword, UTF16ToUTF8(omnibox_view->model()->keyword()));
+  ASSERT_EQ(kSearchKeyword, omnibox_view->model()->keyword());
 
   // Trigger keyword mode again.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_TAB, 0));
   ASSERT_FALSE(omnibox_view->model()->is_keyword_hint());
-  ASSERT_EQ(kSearchKeyword, UTF16ToUTF8(omnibox_view->model()->keyword()));
+  ASSERT_EQ(kSearchKeyword, omnibox_view->model()->keyword());
 
   // Input something as search text.
   ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchTextKeys));
@@ -506,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, BackspaceInKeywordMode) {
   for (size_t i = 0; i < base::size(kSearchText) - 1; ++i) {
     ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_BACK, 0));
     ASSERT_FALSE(omnibox_view->model()->is_keyword_hint());
-    ASSERT_EQ(kSearchKeyword, UTF16ToUTF8(omnibox_view->model()->keyword()));
+    ASSERT_EQ(kSearchKeyword, omnibox_view->model()->keyword());
   }
 
   // Input something as search text.
@@ -526,12 +527,12 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, BackspaceInKeywordMode) {
   // persist as long as the entry begins with a keyword.
   if (OmniboxFieldTrial::IsKeywordSearchButtonEnabled()) {
     ASSERT_TRUE(omnibox_view->model()->is_keyword_hint());
-    ASSERT_EQ(kSearchKeyword, UTF16ToUTF8(omnibox_view->model()->keyword()));
+    ASSERT_EQ(kSearchKeyword, omnibox_view->model()->keyword());
   } else {
     ASSERT_FALSE(omnibox_view->model()->is_keyword_hint());
     ASSERT_EQ(std::u16string(), omnibox_view->model()->keyword());
-    ASSERT_EQ(std::string(kSearchKeyword) + ' ' + kSearchText,
-              UTF16ToUTF8(omnibox_view->GetText()));
+    ASSERT_EQ(base::StrCat({kSearchKeyword, u" ", kSearchText}),
+              omnibox_view->GetText());
   }
 }
 
@@ -572,7 +573,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_DesiredTLDWithTemporaryText) {
   // can set "abc" as temporary text in the omnibox.
   TemplateURLData data;
   data.SetShortName(u"abc");
-  data.SetKeyword(ASCIIToUTF16(kSearchText));
+  data.SetKeyword(kSearchText);
   data.SetURL("http://abc.com/");
   template_url_service->Add(std::make_unique<TemplateURL>(data));
 
@@ -840,7 +841,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, FocusSearchLongUrl) {
   OmniboxView* omnibox_view = NULL;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
-  ASSERT_GT(strlen(url::kAboutBlankURL), strlen(kSearchKeyword));
+  ASSERT_GT(strlen(url::kAboutBlankURL),
+            std::char_traits<char16_t>::length(kSearchKeyword));
   ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
 
   // Make sure nothing DCHECKs.
@@ -852,7 +854,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, AcceptKeywordByTypingQuestionMark) {
   OmniboxView* omnibox_view = NULL;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
-  std::u16string search_keyword(ASCIIToUTF16(kSearchKeyword));
+  std::u16string search_keyword(kSearchKeyword);
 
   // If the user gets into keyword mode by typing '?', they should be put into
   // keyword mode for their default search provider.
@@ -906,7 +908,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, NonSubstitutingKeywordTest) {
   // Add a non-default substituting keyword.
   TemplateURLData data;
   data.SetShortName(u"Search abc");
-  data.SetKeyword(ASCIIToUTF16(kSearchText));
+  data.SetKeyword(kSearchText);
   data.SetURL("http://abc.com/{searchTerms}");
   TemplateURL* template_url =
       template_url_service->Add(std::make_unique<TemplateURL>(data));
@@ -1048,7 +1050,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, TabAcceptKeyword) {
   OmniboxView* omnibox_view = NULL;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
-  std::u16string text = ASCIIToUTF16(kSearchKeyword);
+  std::u16string text = kSearchKeyword;
 
   // Trigger keyword hint mode.
   ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchKeywordKeys));
@@ -1092,12 +1094,12 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, PersistKeywordModeOnTabSwitch) {
   // Trigger keyword hint mode.
   ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchKeywordKeys));
   ASSERT_TRUE(omnibox_view->model()->is_keyword_hint());
-  ASSERT_EQ(kSearchKeyword, UTF16ToUTF8(omnibox_view->model()->keyword()));
+  ASSERT_EQ(kSearchKeyword, omnibox_view->model()->keyword());
 
   // Trigger keyword mode.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_TAB, 0));
   ASSERT_FALSE(omnibox_view->model()->is_keyword_hint());
-  ASSERT_EQ(kSearchKeyword, UTF16ToUTF8(omnibox_view->model()->keyword()));
+  ASSERT_EQ(kSearchKeyword, omnibox_view->model()->keyword());
 
   // Create a new tab.
   chrome::NewTab(browser());
@@ -1108,7 +1110,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, PersistKeywordModeOnTabSwitch) {
 
   // Make sure we're still in keyword mode.
   ASSERT_TRUE(omnibox_view->model()->is_keyword_selected());
-  ASSERT_EQ(kSearchKeyword, UTF16ToUTF8(omnibox_view->model()->keyword()));
+  ASSERT_EQ(kSearchKeyword, omnibox_view->model()->keyword());
   ASSERT_EQ(omnibox_view->GetText(), std::u16string());
 
   // Input something as search text.
@@ -1122,8 +1124,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, PersistKeywordModeOnTabSwitch) {
 
   // Make sure we're still in keyword mode.
   ASSERT_TRUE(omnibox_view->model()->is_keyword_selected());
-  ASSERT_EQ(kSearchKeyword, UTF16ToUTF8(omnibox_view->model()->keyword()));
-  ASSERT_EQ(omnibox_view->GetText(), base::ASCIIToUTF16(kSearchText));
+  ASSERT_EQ(kSearchKeyword, omnibox_view->model()->keyword());
+  ASSERT_EQ(omnibox_view->GetText(), kSearchText);
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxViewTest,
@@ -1270,10 +1272,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, Paste) {
   EXPECT_FALSE(popup_model->IsOpen());
 
   // Paste should yield the expected text and open the popup.
-  SetClipboardText(ASCIIToUTF16(kSearchText));
+  SetClipboardText(kSearchText);
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_V, kCtrlOrCmdMask));
   ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
-  EXPECT_EQ(ASCIIToUTF16(kSearchText), omnibox_view->GetText());
+  EXPECT_EQ(kSearchText, omnibox_view->GetText());
   EXPECT_TRUE(popup_model->IsOpen());
 
   // Close the popup and select all.
@@ -1284,7 +1286,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, Paste) {
   // Pasting the same text again over itself should re-open the popup.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_V, kCtrlOrCmdMask));
   ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
-  EXPECT_EQ(ASCIIToUTF16(kSearchText), omnibox_view->GetText());
+  EXPECT_EQ(kSearchText, omnibox_view->GetText());
   EXPECT_TRUE(popup_model->IsOpen());
   omnibox_view->CloseOmniboxPopup();
   EXPECT_FALSE(popup_model->IsOpen());
