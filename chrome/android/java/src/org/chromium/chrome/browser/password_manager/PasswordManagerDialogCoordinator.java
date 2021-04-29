@@ -37,11 +37,10 @@ public class PasswordManagerDialogCoordinator {
     private PropertyModel mModel;
 
     public PasswordManagerDialogCoordinator(ModalDialogManager modalDialogManager,
-            View androidContentView, BrowserControlsStateProvider browserControlsStateProvider,
-            int containerHeightResource) {
+            View androidContentView, BrowserControlsStateProvider browserControlsStateProvider) {
         mMediator = new PasswordManagerDialogMediator(
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS), modalDialogManager,
-                androidContentView, browserControlsStateProvider, containerHeightResource);
+                androidContentView, browserControlsStateProvider);
     }
 
     public void initialize(Context context, PasswordManagerDialogContents contents) {

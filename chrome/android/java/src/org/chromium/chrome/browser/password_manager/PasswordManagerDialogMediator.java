@@ -29,7 +29,6 @@ class PasswordManagerDialogMediator implements View.OnLayoutChangeListener {
     private final ModalDialogManager mDialogManager;
     private final View mAndroidContentView;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
-    private final int mContainerHeightResource;
 
     private PropertyModel.Builder mHostDialogModelBuilder;
     private PropertyModel mHostDialogModel;
@@ -66,12 +65,11 @@ class PasswordManagerDialogMediator implements View.OnLayoutChangeListener {
 
     PasswordManagerDialogMediator(PropertyModel.Builder hostDialogModelBuilder,
             ModalDialogManager manager, View androidContentView,
-            BrowserControlsStateProvider controlsStateProvider, int containerHeightResource) {
+            BrowserControlsStateProvider controlsStateProvider) {
         mDialogManager = manager;
         mHostDialogModelBuilder = hostDialogModelBuilder;
         mAndroidContentView = androidContentView;
         mBrowserControlsStateProvider = controlsStateProvider;
-        mContainerHeightResource = containerHeightResource;
         mAndroidContentView.addOnLayoutChangeListener(this);
     }
 

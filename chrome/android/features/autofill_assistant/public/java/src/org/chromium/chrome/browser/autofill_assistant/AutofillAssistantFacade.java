@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Function;
+import org.chromium.base.Log;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill_assistant.metrics.DropOutReason;
@@ -85,12 +86,16 @@ public class AutofillAssistantFacade {
 
     /**
      * Starts Autofill Assistant.
-     * @param activity {@link ChromeActivity} the activity on which the Autofill Assistant is being
+     * @param activity {@link Activity} the activity on which the Autofill Assistant is being
      *         started.
      * @param triggerContext {@link TriggerContext} the trigger context, containing startup
      *         parameters and information.
      */
-    public static void start(ChromeActivity activity, TriggerContext triggerContext) {
+    public static void start(@Nullable Activity activity, TriggerContext triggerContext) {
+        if (!(activity instanceof ChromeActivity)) {
+            Log.v(TAG, "Failed to retrieve ChromeActivity.");
+            return;
+        }
         // Register synthetic trial as soon as possible.
         UmaSessionStats.registerSyntheticFieldTrial(TRIGGERED_SYNTHETIC_TRIAL, ENABLED_GROUP);
         // Synthetic trial for experiments.
@@ -105,7 +110,8 @@ public class AutofillAssistantFacade {
         String intent = triggerContext.getParameters().get("INTENT");
         // Have an "attempted starts" baseline for the drop out histogram.
         AutofillAssistantMetrics.recordDropOut(DropOutReason.AA_START, intent);
-        waitForTab(activity, tab -> { AutofillAssistantTabHelper.get(tab).start(triggerContext); });
+        waitForTab((ChromeActivity) activity,
+                tab -> { AutofillAssistantTabHelper.get(tab).start(triggerContext); });
     }
 
     /**

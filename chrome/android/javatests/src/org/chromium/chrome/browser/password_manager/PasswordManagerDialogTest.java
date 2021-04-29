@@ -71,8 +71,7 @@ public class PasswordManagerDialogTest {
                 TestThreadUtils.runOnUiThreadBlockingNoException(activity::getModalDialogManager);
 
         mCoordinator = new PasswordManagerDialogCoordinator(dialogManager,
-                activity.findViewById(android.R.id.content), activity.getBrowserControlsManager(),
-                activity.getControlContainerHeightResource());
+                activity.findViewById(android.R.id.content), activity.getBrowserControlsManager());
         PasswordManagerDialogContents contents = new PasswordManagerDialogContents(TITLE, DETAILS,
                 R.drawable.data_reduction_illustration, OK_BUTTON, CANCEL_BUTTON, mOnClick);
         contents.setDialogType(ModalDialogManager.ModalDialogType.TAB);

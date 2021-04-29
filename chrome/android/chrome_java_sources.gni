@@ -619,6 +619,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/firstrun/TosDialogBehaviorSharedPrefInvalidator.java",
   "java/src/org/chromium/chrome/browser/fonts/FontPreloader.java",
   "java/src/org/chromium/chrome/browser/fullscreen/BrowserControlsManager.java",
+  "java/src/org/chromium/chrome/browser/fullscreen/BrowserControlsManagerSupplier.java",
   "java/src/org/chromium/chrome/browser/fullscreen/FullscreenHtmlApiHandler.java",
   "java/src/org/chromium/chrome/browser/gcore/ChromeGoogleApiClient.java",
   "java/src/org/chromium/chrome/browser/gcore/ChromeGoogleApiClientImpl.java",

@@ -32,8 +32,7 @@ public class SafeBrowsingPasswordReuseDialogBridge {
         ChromeActivity activity = (ChromeActivity) windowAndroid.getActivity().get();
         mActivity = new WeakReference<>(activity);
         mDialogCoordinator = new PasswordManagerDialogCoordinator(activity.getModalDialogManager(),
-                activity.findViewById(android.R.id.content), activity.getBrowserControlsManager(),
-                activity.getControlContainerHeightResource());
+                activity.findViewById(android.R.id.content), activity.getBrowserControlsManager());
     }
 
     @CalledByNative

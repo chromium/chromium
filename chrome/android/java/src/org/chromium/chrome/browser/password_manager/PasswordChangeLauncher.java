@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.password_manager;
 
-import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantFacade;
 import org.chromium.chrome.browser.autofill_assistant.TriggerContext;
 import org.chromium.ui.base.WindowAndroid;
@@ -14,8 +12,6 @@ import org.chromium.url.GURL;
 
 /** Class for starting a password change flow in Autofill Assistant. */
 public class PasswordChangeLauncher {
-    private static final String TAG = "AutofillAssistant";
-
     /**
      * Name for the parameter that stores session username. Should be synced with
      * |kSessionUsernameParameterName| from
@@ -35,12 +31,7 @@ public class PasswordChangeLauncher {
 
     public static void start(WindowAndroid windowAndroid, GURL origin, String username,
             String debugBundleId, String debutSocketId) {
-        ChromeActivity activity = (ChromeActivity) windowAndroid.getActivity().get();
-        if (activity == null) {
-            Log.v(TAG, "Failed to retrieve ChromeActivity.");
-            return;
-        }
-        AutofillAssistantFacade.start(activity,
+        AutofillAssistantFacade.start(windowAndroid.getActivity().get(),
                 TriggerContext.newBuilder()
                         .withInitialUrl(origin.getSpec())
                         .addParameter(DEBUG_BUNDLE_ID, debugBundleId)
