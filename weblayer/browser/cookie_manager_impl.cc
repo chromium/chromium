@@ -17,6 +17,7 @@
 
 namespace weblayer {
 namespace {
+constexpr base::TimeDelta kCookieFlushDelay = base::TimeDelta::FromSeconds(1);
 
 void GetCookieComplete(CookieManager::GetCookieCallback callback,
                        const net::CookieAccessResultList& cookies,
@@ -136,6 +137,17 @@ void CookieManagerImpl::RemoveCookieChangedCallback(JNIEnv* env, int id) {
 }
 #endif
 
+bool CookieManagerImpl::FireFlushTimerForTesting() {
+  if (!flush_timer_)
+    return false;
+
+  flush_run_loop_for_testing_ = std::make_unique<base::RunLoop>();
+  flush_timer_->FireNow();
+  flush_run_loop_for_testing_->Run();
+  flush_run_loop_for_testing_ = nullptr;
+  return true;
+}
+
 bool CookieManagerImpl::SetCookieInternal(const GURL& url,
                                           const std::string& value,
                                           SetCookieCallback callback) {
@@ -149,7 +161,9 @@ bool CookieManagerImpl::SetCookieInternal(const GURL& url,
       ->GetCookieManagerForBrowserProcess()
       ->SetCanonicalCookie(
           *cc, url, net::CookieOptions::MakeAllInclusive(),
-          net::cookie_util::AdaptCookieAccessResultToBool(std::move(callback)));
+          net::cookie_util::AdaptCookieAccessResultToBool(
+              base::BindOnce(&CookieManagerImpl::OnCookieSet,
+                             weak_factory_.GetWeakPtr(), std::move(callback))));
   return true;
 }
 
@@ -174,6 +188,25 @@ int CookieManagerImpl::AddCookieChangedCallbackInternal(
 
 void CookieManagerImpl::RemoveCookieChangedCallbackInternal(int id) {
   cookie_change_receivers_.Remove(id);
+}
+
+void CookieManagerImpl::OnCookieSet(SetCookieCallback callback, bool success) {
+  std::move(callback).Run(success);
+  if (!flush_timer_) {
+    flush_timer_ = std::make_unique<base::OneShotTimer>();
+    flush_timer_->Start(FROM_HERE, kCookieFlushDelay,
+                        base::BindOnce(&CookieManagerImpl::OnFlushTimerFired,
+                                       weak_factory_.GetWeakPtr()));
+  }
+}
+
+void CookieManagerImpl::OnFlushTimerFired() {
+  content::BrowserContext::GetDefaultStoragePartition(browser_context_)
+      ->GetCookieManagerForBrowserProcess()
+      ->FlushCookieStore(flush_run_loop_for_testing_
+                             ? flush_run_loop_for_testing_->QuitClosure()
+                             : base::DoNothing());
+  flush_timer_ = nullptr;
 }
 
 }  // namespace weblayer
