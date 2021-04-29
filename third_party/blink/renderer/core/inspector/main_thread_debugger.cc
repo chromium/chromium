@@ -304,12 +304,16 @@ v8::Local<v8::Context> MainThreadDebugger::ensureDefaultContextInGroup(
 
 void MainThreadDebugger::beginEnsureAllContextsInGroup(int context_group_id) {
   LocalFrame* frame = WeakIdentifierMap<LocalFrame>::Lookup(context_group_id);
-  frame->GetSettings()->SetForceMainWorldInitialization(true);
+  if (frame) {
+    frame->GetSettings()->SetForceMainWorldInitialization(true);
+  }
 }
 
 void MainThreadDebugger::endEnsureAllContextsInGroup(int context_group_id) {
   LocalFrame* frame = WeakIdentifierMap<LocalFrame>::Lookup(context_group_id);
-  frame->GetSettings()->SetForceMainWorldInitialization(false);
+  if (frame) {
+    frame->GetSettings()->SetForceMainWorldInitialization(false);
+  }
 }
 
 bool MainThreadDebugger::canExecuteScripts(int context_group_id) {
