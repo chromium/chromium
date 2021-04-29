@@ -1331,7 +1331,6 @@
 <translation id="2440604414813129000">ஆ&amp;தாரத்தைக் காண்பி</translation>
 <translation id="244231003699905658">தவறான முகவரி. முகவரியைச் சரிபார்த்துவிட்டு மீண்டும் முயலவும்.</translation>
 <translation id="2442916515643169563">டெக்ஸ்ட் ஷேடோ</translation>
-<translation id="24437238714184182"><ph name="SPAN_1_START" /><ph name="NETWORK_NAME" /><ph name="SPAN_1_END" /> - <ph name="SPAN_2_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_2_END" /></translation>
 <translation id="2445081178310039857">நீட்டிப்பு மூல கோப்பகம் தேவை.</translation>
 <translation id="2445484935443597917">ஒரு புதிய சுயவிவரத்தை உருவாக்கு</translation>
 <translation id="2448312741937722512">வகை</translation>
@@ -1637,7 +1636,6 @@
 <translation id="2766006623206032690">ஒட்&amp;டி விட்டு செல்</translation>
 <translation id="2766161002040448006">பெற்றோரிடம் கேள்</translation>
 <translation id="2767127727915954024">இந்தத் தளத்தின் தாவல்கள் அனைத்தையும் மூடும் வரை <ph name="ORIGIN" /> தளத்தால் <ph name="FILENAME" /> கோப்பைத் திருத்த முடியும்</translation>
-<translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> ஆக உள்நுழைந்துள்ளீர்கள்.</translation>
 <translation id="2770465223704140727">பட்டியலிலிருந்து நீக்கு</translation>
 <translation id="2770690685823456775">மற்றொரு கோப்புறைக்குக் கடவுச்சொற்களை ஏற்றவும்</translation>
 <translation id="2770929488047004208">மானிட்டரின் தெளிவுத்திறன்</translation>
@@ -2393,6 +2391,7 @@
 <translation id="3616741288025931835">உலாவிய தரவை &amp;சுத்தமாக்கு...</translation>
 <translation id="3617891479562106823">பின்னணிகள் கிடைக்கவில்லை. பின்னர் மீண்டும் முயலவும்.</translation>
 <translation id="3619115746895587757">காப்பச்சினோ</translation>
+<translation id="362266093274784978">{COUNT,plural, =1{ஓர் ஆப்ஸை}other{# ஆப்ஸை}}</translation>
 <translation id="362333465072914957">CAயிடமிருந்து சான்றிதழ் பெறுவதற்காகக் காத்திருக்கிறது</translation>
 <translation id="3624567683873126087">ஃபோனைத் திறந்து, Google கணக்கில் உள்நுழை</translation>
 <translation id="3625481642044239431">தவறான கோப்பைத் தேர்ந்தெடுத்துள்ளீர்கள். மீண்டும் முயலவும்.</translation>
@@ -2664,6 +2663,7 @@
 <translation id="3895076768659607631">&amp;தேடல் இன்ஜின்களை நிர்வகிக்கவும்...</translation>
 <translation id="3895090224522145010">Kerberos பயனர்பெயர்</translation>
 <translation id="389521680295183045">சாதனத்தில் நான் செயலில் இருப்பது குறித்து அறிந்துகொள்ள தளங்கள் அனுமதி கேட்க வேண்டும்</translation>
+<translation id="3897298432557662720">{COUNT,plural, =1{ஒரு படத்தை}other{# படங்களை}}</translation>
 <translation id="3898233949376129212">சாதனத்தின் மொழி</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> இந்த அனுமதிகளைக் கோருகிறது: <ph name="FIRST_PERMISSION" /> &amp; <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">கீபோர்டைத் தேர்ந்தெடுக்கவும்</translation>
@@ -3577,6 +3577,7 @@
 <translation id="4943368462779413526">கால்பந்து</translation>
 <translation id="4943691134276646401">"<ph name="CHROME_EXTENSION_NAME" />" ஒரு சீரியல் போர்ட்டுடன் இணைக்க விரும்புகிறது</translation>
 <translation id="4944310289250773232"><ph name="SAML_DOMAIN" /> நிறுவனத்தின் மூலம் அடையாளச் சேவை ஹோஸ்ட் செய்யப்படுகிறது</translation>
+<translation id="495164417696120157">{COUNT,plural, =1{ஒரு கோப்பினை}other{# கோப்புகளை}}</translation>
 <translation id="495170559598752135">செயல்கள்</translation>
 <translation id="4953808748584563296">இயல்பு ஆரஞ்சுநிற அவதார்</translation>
 <translation id="4955710816792587366">பின்னைத் தேர்ந்தெடுக்கவும்</translation>
@@ -5077,6 +5078,7 @@
 <translation id="6664237456442406323">எதிர்பாராதவிதமாக, உங்கள் கம்ப்யூட்டர் ஒரு தவறான வன்பொருள் ஐடியுடன் உள்ளமைக்கப்பட்டது. இது சமீபத்திய பாதுகாப்பு திருத்தங்களைக் கொண்டு Chrome OSஸைப் புதுப்பிப்பதிலிருந்து தடுக்கும், உங்கள் கம்ப்யூட்டர் <ph name="BEGIN_BOLD" />தீங்கிழைக்கும் தாக்குதல்களின்<ph name="END_BOLD" /> மூலம் பாதிக்கப்படலாம்.</translation>
 <translation id="6664774537677393800">சுயவிவரத்தைத் திறக்கும் போது, ஏதோ தவறாகிவிட்டது. வெளியேறி, மீண்டும் உள்நுழையவும்.</translation>
 <translation id="6670142487971298264">இப்போது <ph name="APP_NAME" /> ஆப்ஸைப் பயன்படுத்தலாம்</translation>
+<translation id="6671320560732140690">{COUNT,plural, =1{ஒரு முகவரியை}other{# முகவரிகளை}}</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
 <translation id="6674571176963658787">ஒத்திசைவைத் தொடங்க, கடவுச்சொற்றொடரை உள்ளிடவும்</translation>
 <translation id="6675665718701918026">சுட்டும் சாதனம் இணைக்கப்பட்டது</translation>
@@ -5773,6 +5775,7 @@
 <translation id="7456142309650173560">dev</translation>
 <translation id="7456847797759667638">இருப்பிடத்தைத் திற...</translation>
 <translation id="7457384018036134905">Chrome OS அமைப்புகளில் மொழிகளை நிர்வகியுங்கள்</translation>
+<translation id="7457831169406914076">{COUNT,plural, =1{ஓர் இணைப்பை}other{# இணைப்புகளை}}</translation>
 <translation id="7458168200501453431">Google தேடலில் பயன்படுத்தப்படும் அதே பிழைத்திருத்தியைப் பயன்படுத்தும். உலாவியில் நீங்கள் உள்ளிடும் உரை Googleளுக்கு அனுப்பப்படும்.</translation>
 <translation id="7460045493116006516">தற்போது நிறுவியுள்ள தீம்</translation>
 <translation id="7461924472993315131">நிலையாக வை</translation>
@@ -6173,6 +6176,7 @@
 <translation id="7883792253546618164">எப்போது வேண்டுமானாலும் குழுவிலகலாம்.</translation>
 <translation id="788453346724465748">கணக்குத் தகவல்களை ஏற்றுகிறது...</translation>
 <translation id="7885253890047913815">சமீபத்திய இலக்குகள்</translation>
+<translation id="7886279613512920452">{COUNT,plural, =1{ஓர் ஆவணத்தை}other{# ஆவணங்களை}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">பிரதி எடு</translation>
 <translation id="7887864092952184874">புளூடூத் மவுஸ் இணைக்கப்பட்டது</translation>
@@ -6413,6 +6417,7 @@
 <translation id="8139447493436036221">Google Drive கோப்புகள்</translation>
 <translation id="8141584439523427891">மாற்று உலாவியில் இப்போது திறக்கிறது</translation>
 <translation id="8141725884565838206">உங்கள் கடவுச்சொற்களை நிர்வகிக்கவும்</translation>
+<translation id="814204052173971714">{COUNT,plural, =1{ஒரு வீடியோவை}other{# வீடியோக்களை}}</translation>
 <translation id="8143442547342702591">தவறான ஆப்ஸ்</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> ஐத் தேர்ந்தெடுங்கள்</translation>
 <translation id="8146177459103116374">இந்த சாதனத்தில் ஏற்கனவே பதிவுசெய்திருந்தால், <ph name="LINK2_START" />நடப்புப் பயனராக உள்நுழையலாம்<ph name="LINK2_END" />.</translation>
@@ -6432,6 +6437,7 @@
 <translation id="8161293209665121583">இணையப் பக்கங்களுக்கான படித்தல் பயன்முறை</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{தாவலைப் புதிய சாளரத்திற்கு நகர்த்து}other{தாவல்களைப் புதிய சாளரத்திற்கு நகர்த்து}}</translation>
 <translation id="8165997195302308593">Crostini போர்ட் அனுப்புதல்</translation>
+<translation id="816704878106051517">{COUNT,plural, =1{ஒரு ஃபோன் எண்ணை}other{# ஃபோன் எண்களை}}</translation>
 <translation id="8168435359814927499">உள்ளடக்கம்</translation>
 <translation id="8168943654413034772">தேர்ந்தெடுப்பதற்கு ஒரு ஸ்விட்ச் மட்டுமே இருப்பதால் அதை அகற்ற முடியாது. வெளியேற ஏதாவது ஒரு விசையை அழுத்தவும்.</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{தாவலை வாசிப்புப் பட்டியலில் சேர்}other{தாவல்களை வாசிப்புப் பட்டியலில் சேர்}}</translation>

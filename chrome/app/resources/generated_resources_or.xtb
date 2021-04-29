@@ -1629,7 +1629,6 @@
 <translation id="2766006623206032690">ଲେ&amp;ପନ କରନ୍ତୁ ଓ ଯାଆନ୍ତୁ</translation>
 <translation id="2766161002040448006">ଜଣେ ବାପା କିମ୍ବା ମା'ଙ୍କୁ ପଚାରନ୍ତୁ</translation>
 <translation id="2767127727915954024">ଆପଣ ଏହି ସାଇଟ୍ ପାଇଁ ସମସ୍ତ ଟାବକୁ ବନ୍ଦ ନକରିବା ପର୍ଯ୍ୟନ୍ତ <ph name="ORIGIN" />, <ph name="FILENAME" />କୁ ସମ୍ପାଦନ କରିବାକୁ ସକ୍ଷମ ହେବ</translation>
-<translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> ଭାବରେ ସାଇନ୍-ଇନ୍ କରିଛନ୍ତି।</translation>
 <translation id="2770465223704140727">ତାଲିକାରୁ ବାହାର କରନ୍ତୁ</translation>
 <translation id="2770690685823456775">ଆପଣଙ୍କର ପାସ୍‌ୱର୍ଡ୍ ଅନ୍ୟ ଏକ ଫୋଲ୍ଡର୍‌କୁ ଏକ୍ସପୋର୍ଟ୍ କରନ୍ତୁ</translation>
 <translation id="2770929488047004208">ମନିଟର୍ ରିଜୋଲ୍ୟୁସନ୍</translation>
@@ -2385,6 +2384,7 @@
 <translation id="3616741288025931835">&amp;ବ୍ରାଉଜିଂ ଡାଟା ଖାଲି କରନ୍ତୁ...</translation>
 <translation id="3617891479562106823">ପୃଷ୍ଠଭୂମି ଉପଲବ୍ଧ ନାହିଁ। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="3619115746895587757">କ୍ୟାପାଚିନୋ</translation>
+<translation id="362266093274784978">{COUNT,plural, =1{ଏକ ଆପ୍}other{#ଟି ଆପ୍}}</translation>
 <translation id="362333465072914957">ଏକ ସାର୍ଟିଫିକେଟ୍ ଜାରି କରିବାକୁ CA ପାଇଁ ଅପେକ୍ଷା କରାଯାଉଛି</translation>
 <translation id="3624567683873126087">ଡିଭାଇସ୍ ଅନ୍‌ଲକ୍ କରନ୍ତୁ ଏବଂ Google ଆକାଉଣ୍ଟକୁ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
 <translation id="3625481642044239431">ଅବୈଧ ଫାଇଲ୍ ବଛାଯାଇଛି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
@@ -2656,6 +2656,7 @@
 <translation id="3895076768659607631">ସନ୍ଧାନ ଇଞ୍ଜିନଗୁଡ଼ିକୁ &amp;ପରିଚାଳନା କରନ୍ତୁ...</translation>
 <translation id="3895090224522145010">Kerberos ଉପଯୋଗକର୍ତ୍ତାନାମ</translation>
 <translation id="389521680295183045">ଆପଣ କେତେବେଳେ ଆପଣଙ୍କ ଡିଭାଇସକୁ ସକ୍ରିୟ ଭାବରେ ବ୍ୟବହାର କରୁଛନ୍ତି ତାହା ଜାଣିବାକୁ ସାଇଟଗୁଡ଼ିକ ପଚାରିପାରେ</translation>
+<translation id="3897298432557662720">{COUNT,plural, =1{ଏକ ଛବି}other{#ଟି ଛବି}}</translation>
 <translation id="3898233949376129212">ଡିଭାଇସର ଭାଷା</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> ଏହା ଚାହୁଁଛି: <ph name="FIRST_PERMISSION" /> ଏବଂ <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">କୀ'ବୋର୍ଡ୍ ଚୟନ କରନ୍ତୁ</translation>
@@ -3568,6 +3569,7 @@
 <translation id="4943368462779413526">ଫୁଟ୍‍ବଲ୍‌</translation>
 <translation id="4943691134276646401">"<ph name="CHROME_EXTENSION_NAME" />" ଏକ ସିରିୟାଲ୍ ପୋର୍ଟ ସହ ସଂଯୋଗ କରିବାକୁ ଚାହୁଁଛି</translation>
 <translation id="4944310289250773232"><ph name="SAML_DOMAIN" /> ଦ୍ୱାରା ପ୍ରାମାଣିକତା ସେବା ହୋଷ୍ଟ କରାଯାଇଛି</translation>
+<translation id="495164417696120157">{COUNT,plural, =1{ଏକ ଫାଇଲ୍}other{#ଟି ଫାଇଲ୍}}</translation>
 <translation id="495170559598752135">କାର୍ଯ୍ୟ</translation>
 <translation id="4953808748584563296">ଡିଫଲ୍ଟ ଅରେଞ୍ଜ ଅବତାର</translation>
 <translation id="4955710816792587366">ଆପଣଙ୍କର ପିନ୍‌ ନମ୍ବର ବାଛନ୍ତୁ</translation>
@@ -4635,6 +4637,7 @@
 <translation id="6184099524311454384">ଟାବଗୁଡ଼ିକୁ ସନ୍ଧାନ କରନ୍ତୁ</translation>
 <translation id="6185132558746749656">ଡିଭାଇସ୍ ଲୋକେସନ୍</translation>
 <translation id="6186394437969115158">ସାଇଟଗୁଡ଼ିକ ସାଧାରଣତଃ ବିଜ୍ଞାପନଗୁଡ଼ିକ ଦେଖାଇଥାଏ ଯାହା ଫଳରେ ସେଗୁଡ଼ିକ ବିଷୟବସ୍ତୁ କିମ୍ବା ସେବାଗୁଡ଼ିକୁ ମାଗଣାରେ ପ୍ରଦାନ କରିପାରିବ। କିନ୍ତୁ, କିଛି ସାଇଟ୍ ଅନଧିକାର ପ୍ରବେଶ କରିଥିବା କିମ୍ବା ବିଭ୍ରାନ୍ତିକର ବିଜ୍ଞାପନ ପ୍ରଦର୍ଶନ କରିଥିବାର ଜଣାଯାଏ।</translation>
+<translation id="6195005504600220730">ଆପଣଙ୍କ ବ୍ରାଉଜର୍, OS ଏବଂ ଡିଭାଇସ୍ ବିଷୟରେ ସୂଚନା ପଢ଼ନ୍ତୁ</translation>
 <translation id="6195693561221576702">ଏହି ଡିଭାଇସ୍‌ଟି ଅଫ୍‌ଲାଇନ୍ ଡେମୋ ମୋଡ୍‌ରେ ସେଟ୍‍ ଅପ୍ କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="6195724942939841102">ରିଷ୍ଟୋର କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="6196640612572343990">ତୃତୀୟ ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ବ୍ଲକ୍ କରନ୍ତୁ</translation>
@@ -5068,6 +5071,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6664237456442406323">ଦୁର୍ଭାଗ୍ୟବଶତଃ, ଆପଣଙ୍କର କମ୍ପ୍ୟୁଟର୍‌ କୌଣସି ବିକୃତ ହାର୍ଡୱେର୍‌ ID ଦ୍ୱାରା କନ୍‌ଫିଗର୍‌ କରାଯାଇଛି। ଏହାଦ୍ୱାରା Chrome OSକୁ ନବୀନତମ ସୁରକ୍ଷା ସମାଧାନରୁ ଅପ୍‌ଡେଟ୍‌ ହେବାରେ ପ୍ରତିବନ୍ଧତା ହେଉଛି ଏବଂ ଆପଣଙ୍କର କମ୍ପ୍ୟୁଟର୍‌ <ph name="BEGIN_BOLD" />ବିଦ୍ୱେଷ ପ୍ରଣୋଦିତ ଆକ୍ରମଣଗୁଡ଼ିକର ସମ୍ଭାବନା ଥାଇପାରେ <ph name="END_BOLD" />।</translation>
 <translation id="6664774537677393800">ଆପଣଙ୍କର ପ୍ରୋଫାଇଲ୍‌ ଖୋଲିବା ସମୟରେ କିଛି ତ୍ରୁଟି ହୋ‍ଇଛି। ଦୟାକରି ସାଇନ୍ ଆଉଟ୍ କରିବା ପରେ ପୁଣିଥରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ।</translation>
 <translation id="6670142487971298264"><ph name="APP_NAME" /> ବର୍ତ୍ତମାନ ଉପଲବ୍ଧ ଅଛି</translation>
+<translation id="6671320560732140690">{COUNT,plural, =1{ଏକ ଠିକଣା}other{#ଟି ଠିକଣା}}</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
 <translation id="6674571176963658787">ସିଙ୍କ୍ ଆରମ୍ଭ କରିବାକୁ, ଆପଣଙ୍କ ପାସଫ୍ରେଜ୍ ଲେଖନ୍ତୁ</translation>
 <translation id="6675665718701918026">ପଏଣ୍ଟିଂ ଡିଭାଇସ୍ ସଂଯୋଗ ହୋଇଛି</translation>
@@ -5764,6 +5768,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7456142309650173560">ଡେଭ୍</translation>
 <translation id="7456847797759667638">ଲୋକେସନ୍ ଖୋଲନ୍ତୁ...</translation>
 <translation id="7457384018036134905">Chrome OS ସେଟିଂସରେ ଭାଷାଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
+<translation id="7457831169406914076">{COUNT,plural, =1{ଏକ ଲିଙ୍କ୍}other{#ଟି ଲିଙ୍କ୍}}</translation>
 <translation id="7458168200501453431">ଏହା Google ସନ୍ଧାନରେ ବ୍ୟବହୃତ ହୋଇଥିବା ସମାନ ବନାନ ଯାଞ୍ଚକାରୀ ବ୍ୟବହାର କରେ। ବ୍ରାଉଜର୍‌ରେ ଆପଣ ଟାଇପ୍ କରିଥିବା ଟେକ୍ସଟ୍ Googleକୁ ପଠାଯାଏ।</translation>
 <translation id="7460045493116006516">ଆପଣ ଇନ୍‌ଷ୍ଟଲ୍ କରିଥିବା ବର୍ତ୍ତମାନର ଥିମ୍</translation>
 <translation id="7461924472993315131">ପିନ୍‍</translation>
@@ -6164,6 +6169,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7883792253546618164">ଯେ କୌଣସି ସମୟରେ ସଦସ୍ୟତା ତ୍ୟାଗ କରନ୍ତୁ।</translation>
 <translation id="788453346724465748">ଆକାଉଣ୍ଟ ସୂଚନା ଲୋଡ୍ କରାଯାଉଛି...</translation>
 <translation id="7885253890047913815">ନିକଟର ଲକ୍ଷସ୍ଥଳଗୁଡ଼ିକ</translation>
+<translation id="7886279613512920452">{COUNT,plural, =1{ଏକ ଆଇଟମ୍}other{#ଟି ଆଇଟମ୍}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">ନକଲ</translation>
 <translation id="7887864092952184874">ବ୍ଲୁଟୁଥ୍ ମାଉସ୍‌ ପେୟାର୍‌ ହୋ‍ଇଛି</translation>
@@ -6401,6 +6407,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8139447493436036221">Google Drive ଫାଇଲଗୁଡ଼ିକ</translation>
 <translation id="8141584439523427891">ବର୍ତ୍ତମାନ ବିକଳ୍ପ ବ୍ରାଉଜର୍‌ରେ ଖୋଲୁଛି</translation>
 <translation id="8141725884565838206">ଆପଣଙ୍କର ପାସ୍‌ୱର୍ଡଗୁଡ଼ିକ ପରିଚାଳିତ କରନ୍ତୁ</translation>
+<translation id="814204052173971714">{COUNT,plural, =1{ଏକ ଭିଡିଓ}other{#ଟି ଭିଡିଓ}}</translation>
 <translation id="8143442547342702591">ଅବୈଧ ଆପ୍ଲିକେସନ୍</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> ଚୟନ କରନ୍ତୁ</translation>
 <translation id="8146177459103116374">ଯଦି ଆପଣ ଆଗରୁ ଏହି ଡିଭାଇସ୍‌ରେ ପଞ୍ଜିକୃତ କରିସାରିଛନ୍ତି, ତେବେ ଆପଣ <ph name="LINK2_START" />ଜଣେ ବିଦ୍ୟମାନ ଉପଯୋଗକର୍ତ୍ତା ଭାବରେ ସାଇନ୍ ଇନ୍<ph name="LINK2_END" /> କରିପାରିବେ।</translation>
@@ -6420,6 +6427,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8161293209665121583">ୱେବ୍ ପୃଷ୍ଠା ପାଇଁ ରିଡର୍ ମୋଡ୍</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{ନୂଆ ୱିଣ୍ଡୋକୁ ଟାବ୍ ମୁଭ୍ କରନ୍ତୁ}other{ନୂଆ ୱିଣ୍ଡୋକୁ ଟାବଗୁଡ଼ିକ ମୁଭ୍ କରନ୍ତୁ}}</translation>
 <translation id="8165997195302308593">Crostini ପୋର୍ଟ ଫରୱାର୍ଡିଂ</translation>
+<translation id="816704878106051517">{COUNT,plural, =1{ଏକ ଫୋନ୍ ନମ୍ବର}other{#ଟି ଫୋନ୍ ନମ୍ବର}}</translation>
 <translation id="8168435359814927499">ବିଷୟବସ୍ତୁ</translation>
 <translation id="8168943654413034772">ଚୟନ କରିବାକୁ ଆସାଇନ୍ କରାଯାଇଥିବା ଏକମାତ୍ର ସ୍ୱିଚକୁ କାଢ଼ି ଦିଆଯାଇପାରିବ ନାହିଁ। ବାହାରି ଯିବା ପାଇଁ ଯେ କୌଣସି କୀକୁ ଦବାନ୍ତୁ।</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{ପଢ଼ିବା ତାଲିକାରେ ଟାବ୍ ଯୋଗ କରନ୍ତୁ}other{ପଢ଼ିବା ତାଲିକାରେ ଟାବଗୁଡ଼ିକୁ ଯୋଗ କରନ୍ତୁ}}</translation>

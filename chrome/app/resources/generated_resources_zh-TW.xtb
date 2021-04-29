@@ -1330,7 +1330,6 @@
 <translation id="2440604414813129000">檢視原始碼(&amp;O)</translation>
 <translation id="244231003699905658">位址無效。請檢查位址是否正確，然後再試一次。</translation>
 <translation id="2442916515643169563">文字陰影</translation>
-<translation id="24437238714184182"><ph name="SPAN_1_START" /><ph name="NETWORK_NAME" /><ph name="SPAN_1_END" /> - <ph name="SPAN_2_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_2_END" /></translation>
 <translation id="2445081178310039857">請指定擴充功能根目錄。</translation>
 <translation id="2445484935443597917">建立新的個人資料</translation>
 <translation id="2448312741937722512">類型</translation>
@@ -1636,7 +1635,6 @@
 <translation id="2766006623206032690">貼上及前往(&amp;S)</translation>
 <translation id="2766161002040448006">詢問家長</translation>
 <translation id="2767127727915954024">在你關閉這個網站的所有分頁前，<ph name="ORIGIN" /> 都可以編輯「<ph name="FILENAME" />」</translation>
-<translation id="276969039800130567">以 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入。</translation>
 <translation id="2770465223704140727">從清單中移除</translation>
 <translation id="2770690685823456775">將你的密碼匯出至其他資料夾</translation>
 <translation id="2770929488047004208">顯示器解析度</translation>

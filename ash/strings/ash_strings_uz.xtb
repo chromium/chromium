@@ -129,7 +129,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1993072747612765854"><ph name="SYSTEM_APP_NAME" /> oxirgi yangilanishi haqida batafsil axborot</translation>
 <translation id="1995660704900986789">O‘chirish</translation>
 <translation id="1998100899771863792">Joriy ish stoli</translation>
-<translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">Xabar yozing</translation>
 <translation id="2018630726571919839">Bitta latifa aytib ber</translation>
 <translation id="2021864487439853900">Ochish uchun bosing</translation>
@@ -466,7 +465,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="4890408602550914571">Telefoningiz yoningizda va undagi Bluetooth yoniqligini tekshiring.</translation>
 <translation id="4895488851634969361">Batareya to‘ldi.</translation>
 <translation id="490375751687810070">Vertikal</translation>
-<translation id="4905614135390995787">Yuqori kontrastli rejim uchun tugmalar birikmasi o‘zgardi. Endi <ph name="NEW_SHORTCUT" /> o‘rniga <ph name="OLD_SHORTCUT" /> birikmasidan boydalaning.</translation>
 <translation id="490788395437447240">Batareya quvvati: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="4917385247580444890">Kuchli</translation>
 <translation id="4918086044614829423">Qabul qilish</translation>
@@ -673,7 +671,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="6667908387435388584">Telefoningizning hotspotiga ulang, tovushsiz qiling, qurilmangizni toping va telefoningizdagi oxirgi ochilgan Chrome varaqlarini koʻring</translation>
 <translation id="6670153871843998651">Desk 3</translation>
 <translation id="6671495933530132209">Rasmni nusxalash</translation>
-<translation id="6691659475504239918">Qidiruv+Shift+H</translation>
 <translation id="6692996468359469499">Tanlovingizga aloqador axborot olish</translation>
 <translation id="6696025732084565524">Tashqi klaviatura yangilanishi zarur</translation>
 <translation id="6700713906295497288">IME menyusi tugmasi</translation>

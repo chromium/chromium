@@ -76,6 +76,7 @@
 <translation id="147113415845704694">“आज मौसम कस्तो छ?” भनी हेर्नुहोस्</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> डाउनलोड सर्भरको समस्याको कारण असफल भयो।</translation>
 <translation id="1492417797159476138">तपाईंले यो साइटका लागि यो युजरनेम सुरक्षित गरिसक्नुभएको छ</translation>
+<translation id="1493287004536771723">तपाईं <ph name="SITE_NAME" /> फलो गर्दै हुनुहुन्छ</translation>
 <translation id="1506061864768559482">सर्च इन्जिन</translation>
 <translation id="1513352483775369820">बुकमार्कहरू र वेब इतिहास</translation>
 <translation id="1513858653616922153">पासवर्ड मेट्नुहोस्</translation>
@@ -265,6 +266,7 @@
 <translation id="2744248271121720757">तत्कालै खोज्नका लागि कुनै शब्दमा ट्याप गर्नुहोस् वा सम्बन्धित कारबाहीहरू हेर्नुहोस्</translation>
 <translation id="2760989362628427051">तपाईंको डिभाइसमा अँध्यारो थिम वा ब्याट्री सेभर मोड सक्रिय हुँदा अँध्यारो थिम सक्रिय गर्नुहोस्</translation>
 <translation id="2762000892062317888">भर्खरै</translation>
+<translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> को रूपमा साइन इन गरिएको।</translation>
 <translation id="2776236159752647997">गोपनीयता, सुरक्षा र डेटाको सङ्कलनसँग सम्बन्धित थप सेटिङका लागि <ph name="BEGIN_LINK" />Google का सेवाहरू<ph name="END_LINK" /> नामक खण्ड हेर्नुहोस्</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> सेकेन्ड बाँकी छ</translation>
 <translation id="2779651927720337254">डाउनलोड गर्न सकिएन</translation>
@@ -275,6 +277,7 @@
 <translation id="281504910091592009">आफ्नो <ph name="BEGIN_LINK" />Google खाता<ph name="END_LINK" /> मा सुरक्षित गरिएका पासवर्डहरू हेर्नुहोस् र व्यवस्थापन गर्नुहोस्</translation>
 <translation id="2818669890320396765">आफ्ना सबै डिभाइसमा पुस्तक चिन्हहरू प्राप्त गर्न साइन इन गरी सिंक गर्ने सुविधा सक्रिय गर्नुहोस्</translation>
 <translation id="2827278682606527653">फिड कार्ड मेनु आधा उचाइमा खुला छ</translation>
+<translation id="2830783625999891985">क्लिपबोर्डमा भएका सामग्री लुकाइए</translation>
 <translation id="2839327205551510876"><ph name="SITE_NAME" /> अनफलो गरियो</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{१ दिनअघि जाँच गरिएको}other{# दिनअघि जाँच गरिएको}}</translation>
 <translation id="2842985007712546952">अभिभावक फोल्डर</translation>
@@ -390,6 +393,7 @@
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> के.बि. उपलब्ध छ</translation>
 <translation id="3549657413697417275">आफ्नो ब्राउजिङको इतिहासमा खोज्नुहोस्।</translation>
 <translation id="3557336313807607643">सम्पर्क ठेगानामा थप्नुहोस्</translation>
+<translation id="3563767357928833671">क्लिपबोर्डमा भएका सामग्री देखाइए</translation>
 <translation id="3566923219790363270">Chrome ले अझै VR का लागि तयारी गर्दै छ। Chrome पछि पुनः सुरु गर्नुहोस्।</translation>
 <translation id="3568688522516854065">आफ्ना अन्य यन्त्रहरूबाट आफ्ना ट्याबहरू प्राप्त गर्न साइन इन गरी सिंक गर्ने सुविधा सक्रिय गर्नुहोस्</translation>
 <translation id="3587482841069643663">सबै</translation>
@@ -541,6 +545,7 @@
 <translation id="4684427112815847243">सबै सिंक गर्नुहोस्</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> थप}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> थप}}</translation>
 <translation id="4696983787092045100">आफ्ना यन्त्रहरूमा टेक्स्ट म्यासेज पठाउनुहोस्</translation>
+<translation id="4697543623252708062">चाँडै नै, तपाईंले नयाँ ट्याब खोल्दा <ph name="SITE_NAME" /> सम्बन्धी लेखहरू देखाइने छन्। तपाईं 'फलो गरिएका साइटहरू व्यवस्थापन गर्नुहोस्' नामक खण्डमा गई आफूले फलो गरिरहेका साइटहरू व्यवस्थापन गर्न सक्नुहुन्छ।</translation>
 <translation id="4699172675775169585">क्यास गरिएका छविहरू र फाइलहरू</translation>
 <translation id="4714588616299687897">आफ्नो डेटाको ६०% सम्म जोगाउनुहोस्</translation>
 <translation id="4716066120200945007">फलो गरिरहेको</translation>
@@ -690,6 +695,7 @@
 <translation id="562289928968387744">प्रतिक्रियाहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="5626134646977739690">नाम:</translation>
 <translation id="5628604359369369630">नपढिएको - अफलाइन उपलब्ध छ</translation>
+<translation id="5632627355679805402">तपाईंको डेटालाई <ph name="TIME" /> मा तपाईंको<ph name="BEGIN_LINK" />Google पासवर्ड<ph name="END_LINK" /> मार्फत इन्क्रिप्ट गरियो। सिंक सुरु गर्न उक्त पासवर्ड प्रविष्टि गर्नुहोस्।</translation>
 <translation id="5639724618331995626">सबै साइटहरूलाई अनुमति दिनुहोस्</translation>
 <translation id="5648166631817621825">पछिल्ला ७ दिन</translation>
 <translation id="5655963694829536461">आफ्ना डाउनलोडहरू खोज्नुहोस्</translation>
@@ -883,6 +889,7 @@
 <translation id="670498945988402717">हिजो जाँच गरिएको</translation>
 <translation id="6710213216561001401">अघिल्लो</translation>
 <translation id="671481426037969117">तपाईंको <ph name="FQDN" /> टाइमरको समय सकियो। यो भोलि फेरि सुरु हुने छ।</translation>
+<translation id="6738516213925468394">तपाईंको डेटा तपाईंको <ph name="BEGIN_LINK" />पासफ्रेज सिंक गर्नुहोस्<ph name="END_LINK" /> मार्फत <ph name="TIME" /> मा इन्क्रिप्ट गरियो। सिंक प्रक्रिया सुरु गर्न उक्स पासफ्रेज प्रविष्टि गर्नुहोस्।</translation>
 <translation id="6738867403308150051">डाउनलोड गर्दैछ…</translation>
 <translation id="6767294960381293877">ट्याब आदान प्रदान गरिनु पर्ने डिभाइसहरूको सूची आधा उचाइमा खोलिएको छ।</translation>
 <translation id="6783942555455976443">यो पृष्ठ पछि पढ्ने प्रयोजनका लागि सेभ गर्नुहोस् र रिमाइन्डर प्राप्त गर्नुहोस्</translation>
@@ -1213,6 +1220,7 @@
 <translation id="8993760627012879038">इनकोग्निटो मोडमा एउटा नयाँ ट्याब खोल्नुहोस्</translation>
 <translation id="8996847606757455498">अर्को सेवा प्रदायक छनौट गर्नुहोस्</translation>
 <translation id="8998729206196772491">तपाईं <ph name="MANAGED_DOMAIN" /> द्वारा व्यवस्थापन गरिएको खाता मार्फत साइन इन गर्दै हुनुहुन्छ र त्यसको प्रशासकलाई तपाईंको Chrome को डेटालाई नियन्त्रण गर्न दिँदै हुनुहुन्छ। तपाईंको डेटा सदाका लागि यस खातामा बाँधिनेछ। Chrome बाट साइन आउट गर्नाले तपाईंको डेटा यस डिभाइसबाट मेटिनेछ तर यो तपाईंको Google खातामा भण्डारण गरिएको अवस्थामा रहनेछ।</translation>
+<translation id="9000233047676755924">तपाईंले नयाँ ट्याब खोल्दा अब <ph name="SITE_NAME" /> सम्बन्धी लेखहरू देखाइने छन्। तपाईं 'फलो गरिएका साइटहरू व्यवस्थापन गर्नुहोस्' नामक खण्डमा गई आफूले फलो गरिरहेका साइटहरू व्यवस्थापन गर्न सक्नुहुन्छ।</translation>
 <translation id="9022774213089566801">बारम्बार हेरिएका</translation>
 <translation id="9028914725102941583">यन्त्रहरूभरि आदान प्रदान गर्न सिंक गर्ने सुविधा सक्रिय गर्नुहोस्</translation>
 <translation id="9040142327097499898">सूचनाहरूलाई अनुमति दिइएको छ। यो डिभाइसमा स्थानसम्बन्धी सुविधा निष्क्रिय पारिएको छ।</translation>

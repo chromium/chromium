@@ -1328,7 +1328,6 @@
 <translation id="2440604414813129000">ഉറവിടം കാണുക</translation>
 <translation id="244231003699905658">വിലാസം തെറ്റാണ്. വിലാസം പരിശോധിച്ച ശേഷം വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="2442916515643169563">ടെക്‌സ്‌റ്റ് ഷാഡോ</translation>
-<translation id="24437238714184182"><ph name="SPAN_1_START" /><ph name="NETWORK_NAME" /><ph name="SPAN_1_END" /> - <ph name="SPAN_2_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_2_END" /></translation>
 <translation id="2445081178310039857">വിപുലീകരണ റൂട്ട് ഡയറക്‌റ്ററി ആവശ്യമാണ്.</translation>
 <translation id="2445484935443597917">പുതിയ പ്രൊഫൈൽ സൃഷ്‌ടിക്കുക</translation>
 <translation id="2448312741937722512">തരം</translation>
@@ -1634,7 +1633,6 @@
 <translation id="2766006623206032690">ഒട്ടി&amp;ക്കൂ കൂടാതെ പോകൂ</translation>
 <translation id="2766161002040448006">രക്ഷിതാവിനോട് ചോദിക്കുക</translation>
 <translation id="2767127727915954024">ഈ സൈറ്റിനുള്ള എല്ലാ ടാബുകളും നിങ്ങൾ അടയ്ക്കുന്നത് വരെ <ph name="ORIGIN" />-ന് <ph name="FILENAME" /> എഡിറ്റ് ചെയ്യാനാവും</translation>
-<translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> എന്നായി സൈൻ ഇൻ ചെയ്‌തു.</translation>
 <translation id="2770465223704140727">പട്ടികയില്‍‌ നിന്നും നീക്കംചെയ്യുക</translation>
 <translation id="2770690685823456775">നിങ്ങളുടെ പാസ്‍വേഡുകൾ മറ്റൊരു ഫോൾഡറിലേക്ക് എക്‌സ്‌പോർട്ട് ചെയ്യുക</translation>
 <translation id="2770929488047004208">മോണിറ്റർ റെസല്യൂഷൻ</translation>
@@ -2390,6 +2388,7 @@
 <translation id="3616741288025931835">&amp;ബ്രൌസിംഗ് ഡാറ്റ ഇല്ലാതാക്കുക...</translation>
 <translation id="3617891479562106823">പശ്ചാത്തലങ്ങൾ ലഭ്യമല്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="3619115746895587757">കാപ്പുചീനോ</translation>
+<translation id="362266093274784978">{COUNT,plural, =1{ഒരു ആപ്പ്}other{# ആപ്പുകൾ}}</translation>
 <translation id="362333465072914957">സര്‍ട്ടിഫിക്കറ്റ് ഇഷ്യൂ ചെയ്യാൻ CA-ക്കായി കാത്തിരിക്കുന്നു</translation>
 <translation id="3624567683873126087">ഉപകരണം അൺലോക്ക് ചെയ്‌ത് Google അക്കൗണ്ടിലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="3625481642044239431">അസാധുവായ ഫയൽ തിരഞ്ഞെടുത്തു. വീണ്ടും ശ്രമിക്കുക.</translation>
@@ -2661,6 +2660,7 @@
 <translation id="3895076768659607631">&amp;തിരയൽ യന്ത്രങ്ങൾ മാനേജ് ചെയ്യുക...</translation>
 <translation id="3895090224522145010">Kerberos ഉപയോക്തൃനാമം</translation>
 <translation id="389521680295183045">നിങ്ങൾ സജീവമായി ഉപകരണം ഉപയോഗിക്കുന്നത് എപ്പോഴാണെന്ന് അറിയാൻ സൈറ്റുകൾക്ക് ആവശ്യപ്പെടാനാകും</translation>
+<translation id="3897298432557662720">{COUNT,plural, =1{ഒരു ചിത്രം}other{# ചിത്രങ്ങൾ}}</translation>
 <translation id="3898233949376129212">ഉപകരണത്തിന്റെ ഭാഷ</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> ഇവ ചെയ്യാൻ താൽപ്പര്യപ്പെടുന്നു: <ph name="FIRST_PERMISSION" />, <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">കീബോർഡ് തിരഞ്ഞെടുക്കുക</translation>
@@ -3573,6 +3573,7 @@
 <translation id="4943368462779413526">ഫുട്‌ബോള്‍</translation>
 <translation id="4943691134276646401">"<ph name="CHROME_EXTENSION_NAME" />", ഒരു സീരിയല്‍ പോർട്ടിലേക്ക് കണക്‌റ്റ് ചെയ്യാൻ താൽപ്പര്യപ്പെടുന്നു</translation>
 <translation id="4944310289250773232">ഈ പരിശോധിച്ചുറപ്പിക്കൽ സേവനം ഹോസ്‌റ്റ് ചെയ്‌തിരിക്കുന്നത് <ph name="SAML_DOMAIN" /> ആണ്</translation>
+<translation id="495164417696120157">{COUNT,plural, =1{ഒരു ഫയൽ}other{# ഫയലുകൾ}}</translation>
 <translation id="495170559598752135">പ്രവര്‍ത്തനങ്ങള്‍</translation>
 <translation id="4953808748584563296">ഡിഫോൾട്ടായ ഓറഞ്ച് അവതാർ</translation>
 <translation id="4955710816792587366">നിങ്ങളുടെ പിൻ തിരഞ്ഞെടുക്കുക</translation>
@@ -5074,6 +5075,7 @@
 <translation id="6664237456442406323">നിർഭാഗ്യവശാൽ, കേടായ ഒരു ഹാർഡ്‌വെയർ ID ഉപയോഗിച്ചാണ് നിങ്ങളുടെ കമ്പ്യൂട്ടർ കോൺഫിഗർ ചെയ്‌തിരിക്കുന്നത്. ഇത് ഏറ്റവും പുതിയ സുരക്ഷാ പരിഹാരങ്ങൾ അപ്‌ഡേറ്റ് ചെയ്യുന്നതിൽ നിന്നും Chrome OS-നെ തടയുന്നു, ഒപ്പം നിങ്ങളുടെ കമ്പ്യൂട്ടർ <ph name="BEGIN_BOLD" />ക്ഷുദ്രകരമായ ആക്രമണങ്ങളാൽ കേടാകാനുമിടയുണ്ട്<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">നിങ്ങളുടെ പ്രൊഫൈൽ തുറക്കുമ്പോൾ എന്തോ കുഴപ്പമുണ്ടായി. സൈൻ ഔട്ട് ചെയ്‌ത്, വീണ്ടും സൈൻ ഇൻ ചെയ്യുക.</translation>
 <translation id="6670142487971298264"><ph name="APP_NAME" /> ഇപ്പോൾ ലഭ്യമാണ്</translation>
+<translation id="6671320560732140690">{COUNT,plural, =1{ഒരു വിലാസം}other{# വിലാസങ്ങൾ}}</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
 <translation id="6674571176963658787">സമന്വയിപ്പിക്കാൻ തുടങ്ങുന്നതിന്, നിങ്ങളുടെ പാസ്‌ഫ്രെയ്‌സ് നൽകുക</translation>
 <translation id="6675665718701918026">പോയിന്റ് ചെയ്യുന്ന ഉപകരണം കണക്റ്റ് ചെയ്‌തു</translation>
@@ -5770,6 +5772,7 @@
 <translation id="7456142309650173560">ഡെവലപ്പർ</translation>
 <translation id="7456847797759667638">സ്ഥാനം തുറക്കുക...</translation>
 <translation id="7457384018036134905">Chrome OS ക്രമീകരണത്തിൽ ഭാഷകൾ മാനേജ് ചെയ്യുക</translation>
+<translation id="7457831169406914076">{COUNT,plural, =1{ഒരു ലിങ്ക്}other{# ലിങ്കുകൾ}}</translation>
 <translation id="7458168200501453431">Google തിരയലിൽ ഉപയോഗിക്കുന്ന അതേ സ്‌പെൽ ചെക്കർ ഉപയോഗിക്കുന്നു. നിങ്ങൾ ബ്രൗസറിൽ ടൈപ്പ് ചെയ്യുന്ന ടെക്‌സ്‌റ്റ് Google-ന് അയയ്ക്കുന്നു.</translation>
 <translation id="7460045493116006516">നിങ്ങൾ നിലവിൽ ഇൻസ്‌റ്റാൾ ചെയ്‌തിരിക്കുന്ന തീം</translation>
 <translation id="7461924472993315131">പിൻ ചെയ്യുക</translation>
@@ -6170,6 +6173,7 @@
 <translation id="7883792253546618164">ഏത് സമയത്തും വരിക്കാരല്ലാതാവുക.</translation>
 <translation id="788453346724465748">അക്കൗണ്ട് വിവരങ്ങൾ ലോഡ് ചെയ്യുന്നു...</translation>
 <translation id="7885253890047913815">സമീപകാല ലക്ഷ്യസ്ഥാനങ്ങൾ</translation>
+<translation id="7886279613512920452">{COUNT,plural, =1{ഒരു ഇനം}other{# ഇനങ്ങൾ}}</translation>
 <translation id="7886605625338676841">ഇ-സിം</translation>
 <translation id="7887334752153342268">തനിപ്പകര്‍പ്പ്</translation>
 <translation id="7887864092952184874">Bluetooth മൗസ് ജോടിയാക്കി</translation>
@@ -6410,6 +6414,7 @@
 <translation id="8139447493436036221">Google Drive ഫയലുകൾ</translation>
 <translation id="8141584439523427891">ഇപ്പോൾ മറ്റൊരു ബ്രൗസറിൽ തുറക്കുന്നു</translation>
 <translation id="8141725884565838206">നിങ്ങളുടെ പാസ്‌വേഡുകൾ നിയന്ത്രിക്കുക</translation>
+<translation id="814204052173971714">{COUNT,plural, =1{ഒരു വീഡിയോ}other{# വീഡിയോകൾ}}</translation>
 <translation id="8143442547342702591">ആപ്പ് അസാധുവാണ്</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> തിരഞ്ഞെടുക്കുക</translation>
 <translation id="8146177459103116374">നിങ്ങൾ ഇതിനകം ഈ ഉപകരണത്തിൽ രജിസ്റ്റർ ചെയ്‌തെങ്കിൽ, <ph name="LINK2_START" />നിലവിലുള്ള ഉപയോക്താവായി സൈൻ ഇൻ ചെയ്യാൻ<ph name="LINK2_END" /> നിങ്ങൾക്ക് കഴിയും.</translation>
@@ -6429,6 +6434,7 @@
 <translation id="8161293209665121583">വെബ് പേജുകൾക്കുള്ള വായനാ മോഡ്</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{ടാബ് പുതിയ വിൻഡോയിലേക്ക് നീക്കുക}other{ടാബുകൾ പുതിയ വിൻഡോയിലേക്ക് നീക്കുക}}</translation>
 <translation id="8165997195302308593">Crostini പോർട്ട് ഫോർവേഡിംഗ്</translation>
+<translation id="816704878106051517">{COUNT,plural, =1{ഒരു ഫോൺ നമ്പർ}other{# ഫോൺ നമ്പറുകൾ}}</translation>
 <translation id="8168435359814927499">ഉള്ളടക്കം</translation>
 <translation id="8168943654413034772">'തിരഞ്ഞെടുക്കുക' പ്രവർത്തനത്തിന് അസൈൻ ചെയ്തിട്ടുള്ള ഏക സ്വിച്ച് നീക്കം ചെയ്യാനാകില്ല. പുറത്ത് കടക്കാൻ ഏതെങ്കിലും കീ അമർത്തുക.</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{വായനാ ലിസ്‌റ്റിലേക്ക് ടാബ് ചേർക്കുക}other{വായനാ ലിസ്‌റ്റിലേക്ക് ടാബുകൾ ചേർക്കുക}}</translation>

@@ -444,7 +444,7 @@
 <translation id="1478607704480248626">Орнату мүмкіндігі қосылмаған</translation>
 <translation id="1481537595330271162">Дискінің көлемі өзгертілмеді.</translation>
 <translation id="1482626744466814421">Осы қойындыға бетбелгі қою…</translation>
-<translation id="1483272013430662157">Вебқолданбалар белгілі бір файл түрлерін ашуды сұрай алады</translation>
+<translation id="1483272013430662157">Веб-қолданбалар белгілі бір файл түрлерін ашуды сұрай алады</translation>
 <translation id="1483493594462132177">Жіберу</translation>
 <translation id="1484979925941077974">Сайт Bluetooth функциясын пайдаланып жатыр.</translation>
 <translation id="1485015260175968628">Енді келесі мүмкіндіктерге ие:</translation>
@@ -610,7 +610,7 @@
 <translation id="1651008383952180276">Бір құпия фразаны екі рет енгізу керек</translation>
 <translation id="1652326691684645429">Nearby Share функциясын қосу</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Кез келген жерден басып шығара алу үшін, принтерді Google Cloud Print қызметіне қосыңыз.}other{Кез келген жерден басып шығара алу үшін, # принтерді Google Cloud Print қызметіне қосыңыз.}}</translation>
-<translation id="1653631694606464309">Вебқолданбалар әдетте белгілі бір файл түрлерімен қалағаныңызша жұмыс істей алуыңыз үшін оларды ашуды сұрайды. Мысалы, құжаттарды қалаған мәтін өңдегіште ашуға болады.</translation>
+<translation id="1653631694606464309">Веб-қолданбалар әдетте белгілі бір файл түрлерімен қалағаныңызша жұмыс істей алуыңыз үшін оларды ашуды сұрайды. Мысалы, құжаттарды қалаған мәтін өңдегіште ашуға болады.</translation>
 <translation id="1656528038316521561">Фон бұлдырлығы</translation>
 <translation id="1657406563541664238">Пайдалану статистикасын және бұзылу туралы есептерді Google компаниясына автоматты түрде жіберу арқылы <ph name="PRODUCT_NAME" /> өнімін жақсартуға көмектесіңіз</translation>
 <translation id="1657937299377480641">Білім беру ресурстарын пайдалануға қайта кіру үшін ата-анадан рұқсат сұрау қажет.</translation>
@@ -1328,7 +1328,6 @@
 <translation id="2440604414813129000">Д&amp;ереккөзді көру</translation>
 <translation id="244231003699905658">Мекенжай дұрыс емес. Оны тексеріп, қайталап көріңіз.</translation>
 <translation id="2442916515643169563">Мәтін көлеңкесі</translation>
-<translation id="24437238714184182"><ph name="SPAN_1_START" /><ph name="NETWORK_NAME" /><ph name="SPAN_1_END" /> – <ph name="SPAN_2_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_2_END" /></translation>
 <translation id="2445081178310039857">Кеңейтімнің түпкі каталогі қажет.</translation>
 <translation id="2445484935443597917">Жаңа профиль жасау</translation>
 <translation id="2448312741937722512">Түрі</translation>
@@ -1633,7 +1632,6 @@
 <translation id="2766006623206032690">Қ&amp;ою және өту</translation>
 <translation id="2766161002040448006">Ата-анадан сұрау</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> сайтының барлық қойындысы жабылғанға дейін, ол <ph name="FILENAME" /> файлын өзгерте алады.</translation>
-<translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> ретінде кірген.</translation>
 <translation id="2770465223704140727">Тізімнен алып тастау</translation>
 <translation id="2770690685823456775">Құпия сөздерді басқа қалтаға экспорттаңыз</translation>
 <translation id="2770929488047004208">Монитор ажыратымдылығы</translation>
@@ -2389,6 +2387,7 @@
 <translation id="3616741288025931835">&amp;Шолу деректерін жою…</translation>
 <translation id="3617891479562106823">Фондар жоқ. Кейінірек қайталап көріңіз.</translation>
 <translation id="3619115746895587757">Капучино</translation>
+<translation id="362266093274784978">{COUNT,plural, =1{қолданба}other{# қолданба}}</translation>
 <translation id="362333465072914957">Сертификат шығуы үшін CA күтілуде</translation>
 <translation id="3624567683873126087">Құрылғының құлпын ашу және Google есептік жазбасына кіру</translation>
 <translation id="3625481642044239431">Жарамсыз файл таңдалды. Әрекетті қайталаңыз.</translation>
@@ -2660,6 +2659,7 @@
 <translation id="3895076768659607631">&amp;Іздеу жүйелерін басқару...</translation>
 <translation id="3895090224522145010">Kerberos билетінің пайдаланушы аты</translation>
 <translation id="389521680295183045">Сайттар құрылғыңызды белсенді пайдаланатын уақытыңыз туралы білу рұқсатын сұрай алады</translation>
+<translation id="3897298432557662720">{COUNT,plural, =1{сурет}other{# сурет}}</translation>
 <translation id="3898233949376129212">Құрылғы тілі</translation>
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> сайтына келесі рұқсаттар қажет: <ph name="FIRST_PERMISSION" /> және <ph name="SECOND_PERMISSION" /></translation>
 <translation id="389901847090970821">Пернетақтаны таңдау</translation>
@@ -3573,6 +3573,7 @@
 <translation id="4943368462779413526">Футбол</translation>
 <translation id="4943691134276646401">"<ph name="CHROME_EXTENSION_NAME" />" сериялық портқа қосылғысы келеді</translation>
 <translation id="4944310289250773232">Бұл аутентификация қызметі <ph name="SAML_DOMAIN" /> кеңейтімінде орналасқан.</translation>
+<translation id="495164417696120157">{COUNT,plural, =1{файл}other{# файл}}</translation>
 <translation id="495170559598752135">Әрекеттер</translation>
 <translation id="4953808748584563296">Әдепкі сарғыш түсті аватар</translation>
 <translation id="4955710816792587366">PIN кодын таңдаңыз</translation>
@@ -5072,6 +5073,7 @@
 <translation id="6664237456442406323">Өкінішке орай, сіздің компьютеріңіз бұзылған жабдық идентификаторымен конфигурацияланған. Бұл Chrome OS жүйесіне соңғы қауіпсіздік түзетулерімен жаңартылуына кедергі жасайды және компьютеріңіз <ph name="BEGIN_BOLD" />зиянды шабуылдарға шалдығуы мүмкін<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">Профильді ашу кезінде бірдеңе дұрыс болмады. Жүйеден шығып, қайта кіріңіз.</translation>
 <translation id="6670142487971298264"><ph name="APP_NAME" /> қазір қолжетімді.</translation>
+<translation id="6671320560732140690">{COUNT,plural, =1{мекенжай}other{# мекенжай}}</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
 <translation id="6674571176963658787">Синхрондауды бастау үшін құпия фразаны енгізіңіз.</translation>
 <translation id="6675665718701918026">Меңзеу құрылғысы қосылған</translation>
@@ -5768,6 +5770,7 @@
 <translation id="7456142309650173560">dev</translation>
 <translation id="7456847797759667638">Орынды ашу…</translation>
 <translation id="7457384018036134905">Chrome OS параметрлеріндегі тілдерді басқару</translation>
+<translation id="7457831169406914076">{COUNT,plural, =1{сілтеме}other{# сілтеме}}</translation>
 <translation id="7458168200501453431">Google Search функциясында пайдаланылатын емлені тексеру құралын қолданады. Браузерде терілген мәтін Google-ға жіберіледі.</translation>
 <translation id="7460045493116006516">Орнатулы тұрған тақырып</translation>
 <translation id="7461924472993315131">Бекіту</translation>
@@ -5966,7 +5969,7 @@
 <translation id="7680416688940118410">Сенсорлық экранды калибрлеу</translation>
 <translation id="7681095912841365527">Сайт Bluetooth функциясын пайдалана алады</translation>
 <translation id="7681597159868843240">Сайттар әдетте виртуалды шындық немесе фитнес-трекер сияқты функциялар үшін құрылғының қозғалыс датчиктерін пайдаланады.</translation>
-<translation id="7683164815270164555">Вебқолданба белгілі бір файл түрлерін ашқысы келгенде сұрау</translation>
+<translation id="7683164815270164555">Веб-қолданба белгілі бір файл түрлерін ашқысы келгенде сұрау</translation>
 <translation id="7683373461016844951">Жалғастыру үшін "Жарайды" түймесін түртіп, <ph name="DOMAIN" /> электрондық пошта мекенжайыңыздың жаңа профилін жасау үшін "Адамды қосу" түймесін түртіңіз.</translation>
 <translation id="7683593009096723900">{COUNT,plural, =0{Барлығын &amp;инкогнито терезесінде ашу}=1{&amp;Инкогнито терезесінде ашу}other{Барлығын ({COUNT}) &amp;инкогнито терезесінде ашу}}</translation>
 <translation id="7684212569183643648">Әкімшіңіз орнатқан</translation>
@@ -6168,6 +6171,7 @@
 <translation id="7883792253546618164">Кез келген уақытта жазылымнан бас тарта аласыз.</translation>
 <translation id="788453346724465748">Есептік жазба туралы ақпарат жүктелуде…</translation>
 <translation id="7885253890047913815">Соңғы бағыттар</translation>
+<translation id="7886279613512920452">{COUNT,plural, =1{элемент}other{# элемент}}</translation>
 <translation id="7886605625338676841">eSIM</translation>
 <translation id="7887334752153342268">Көшірме</translation>
 <translation id="7887864092952184874">Bluetooth тінтуірі жұптастырылды</translation>
@@ -6407,6 +6411,7 @@
 <translation id="8139447493436036221">Google Drive файлдары</translation>
 <translation id="8141584439523427891">Балама браузер ашылуда.</translation>
 <translation id="8141725884565838206">Құпия сөздеріңізді басқару</translation>
+<translation id="814204052173971714">{COUNT,plural, =1{бейне}other{# бейне}}</translation>
 <translation id="8143442547342702591">Жарамсыз қолданба</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> таңдау</translation>
 <translation id="8146177459103116374">Бұл құрылғыда әлдеқашан тіркелген болсаңыз, <ph name="LINK2_START" />бұрыннан бар пайдаланушы ретінде кіруіңізге<ph name="LINK2_END" /> болады.</translation>
@@ -6426,6 +6431,7 @@
 <translation id="8161293209665121583">Веб-беттерге арналған оқу құралы режимі</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Қойындыны жаңа терезеден ашу}other{Қойындыларды жаңа терезеден ашу}}</translation>
 <translation id="8165997195302308593">Crostini жүйесінде порттардың бағытын өзгерту</translation>
+<translation id="816704878106051517">{COUNT,plural, =1{телефон нөмірі}other{# телефон нөмірі}}</translation>
 <translation id="8168435359814927499">Мазмұн</translation>
 <translation id="8168943654413034772">"Таңдау" әрекетіне тағайындалған жалғыз ауыстырғышты өшіруге болмайды. Шығу үшін кез келген пернені басыңыз.</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Қойындыны оқу тізіміне қосу}other{Қойындыларды оқу тізіміне қосу}}</translation>

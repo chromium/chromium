@@ -129,7 +129,6 @@
 <translation id="1993072747612765854">Хамгийн сүүлийн <ph name="SYSTEM_APP_NAME" /> шинэчлэлтийн талаар дэлгэрэнгүй үзэх</translation>
 <translation id="1995660704900986789">Унтраах</translation>
 <translation id="1998100899771863792">Одоогийн дэлгэц</translation>
-<translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">Мессеж бичих</translation>
 <translation id="2018630726571919839">Надад онигоо ярьж өгөөч</translation>
 <translation id="2021864487439853900">Түгжээг тайлахын тулд товших</translation>
@@ -467,7 +466,6 @@
 <translation id="4890408602550914571">Таны утас ойролцоо бөгөөд Bluetooth-г нь асаасан эсэхийг шалгана уу.</translation>
 <translation id="4895488851634969361">Цэнэг дүүрсэн байна.</translation>
 <translation id="490375751687810070">Босоо</translation>
-<translation id="4905614135390995787">Өндөр нягтралтай горимыг асаах/унтраах товчлол өөрчлөгдсөн байна. <ph name="OLD_SHORTCUT" />-н оронд <ph name="NEW_SHORTCUT" />-г ашиглана уу.</translation>
 <translation id="490788395437447240">Батерей <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="4917385247580444890">Хүчтэй</translation>
 <translation id="4918086044614829423">Хүлээн зөвшөөрөх</translation>
@@ -674,7 +672,6 @@
 <translation id="6667908387435388584">Утасныхаа сүлжээний цэгт холбогдож, төхөөрөмжөө чимээгүй болгож, байршлыг нь тогтоож мөн утсан дээр тань нээлттэй байгаа Chrome-н саяхны табуудыг хараарай</translation>
 <translation id="6670153871843998651">Дэлгэц 3</translation>
 <translation id="6671495933530132209">Зургийг хуулах</translation>
-<translation id="6691659475504239918">Search+Shift+H</translation>
 <translation id="6692996468359469499">Сонголттойгоо холбоотой мэдээлэл авах</translation>
 <translation id="6696025732084565524">Та салгах боломжтой гараа зайлшгүй шинэчлэх шаардлагатай байна</translation>
 <translation id="6700713906295497288">IME цэсийн товчлуур</translation>

@@ -266,6 +266,7 @@
 <translation id="2744248271121720757">Докоснете дума, за да извършите незабавно търсене, или вижте свързаните действия</translation>
 <translation id="2760989362628427051">Включване на тъмната тема, когато тъмната тема на устройството или режимът за запазване на батерията в него са включени</translation>
 <translation id="2762000892062317888">току-що</translation>
+<translation id="276969039800130567">Влезли сте като <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2776236159752647997">За още настройки за поверителността, сигурността и събирането на данни вижте <ph name="BEGIN_LINK" />услуги на Google<ph name="END_LINK" /></translation>
 <translation id="2777555524387840389">Остават <ph name="SECONDS" /> сек</translation>
 <translation id="2779651927720337254">неуспешно</translation>
@@ -695,6 +696,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="562289928968387744">Управление на реакциите</translation>
 <translation id="5626134646977739690">Име:</translation>
 <translation id="5628604359369369630">Непрочетено – налице офлайн</translation>
+<translation id="5632627355679805402">Данните ви са шифровани с <ph name="BEGIN_LINK" />паролата ви за Google<ph name="END_LINK" /> от <ph name="TIME" />. Въведете я, за да стартирате синхронизирането.</translation>
 <translation id="5639724618331995626">Разрешаване на всички сайтове</translation>
 <translation id="5648166631817621825">Последните 7 дни</translation>
 <translation id="5655963694829536461">Търсете в изтеглянията</translation>
@@ -888,6 +890,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="670498945988402717">Проверено вчера</translation>
 <translation id="6710213216561001401">Предишно</translation>
 <translation id="671481426037969117">Таймерът ви за <ph name="FQDN" /> изтече и ще се стартира отново утре.</translation>
+<translation id="6738516213925468394">На <ph name="TIME" /> данните ви бяха шифровани с <ph name="BEGIN_LINK" />пропуска ви за синхронизиране<ph name="END_LINK" />. Въведете го, за да стартирате синхронизирането.</translation>
 <translation id="6738867403308150051">Изтегля се…</translation>
 <translation id="6767294960381293877">Списъкът с устройства, с които да се сподели даден раздел, е отворен на половин височина.</translation>
 <translation id="6783942555455976443">Запазване на тази страница за по-късно и получаване на напомняне</translation>

@@ -129,7 +129,6 @@
 <translation id="1993072747612765854"><ph name="SYSTEM_APP_NAME" /> қолданбасының ең соңғы жаңартылған нұсқасы туралы толығырақ</translation>
 <translation id="1995660704900986789">Өшіру</translation>
 <translation id="1998100899771863792">Қазіргі жұмыс үстелі</translation>
-<translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">Хабар мәтінін енгізіңіз</translation>
 <translation id="2018630726571919839">Әзіл айтып бер</translation>
 <translation id="2021864487439853900">Құлыпты ашу үшін басыңыз</translation>
@@ -302,7 +301,7 @@
 <translation id="3486220673238053218">анықтама</translation>
 <translation id="3510164367642747937">Тінтуір курсорын бөлектеу</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> басқаратын есептік жазба</translation>
-<translation id="3552189655002856821">Wi-Fi өшірулі</translation>
+<translation id="3552189655002856821">Wi-Fi өшірулі.</translation>
 <translation id="3563775809269155755">Хотспотты қосу</translation>
 <translation id="3571734092741541777">Орнату</translation>
 <translation id="3573179567135747900">Қайта "<ph name="FROM_LOCALE" />" етіп өзгерту (қайта іске қосуды қажет етеді)</translation>
@@ -466,7 +465,6 @@
 <translation id="4890408602550914571">Телефоныңыз жаныңызда болуы және Bluetooth қосылып тұруы керек.</translation>
 <translation id="4895488851634969361">Батарея толы.</translation>
 <translation id="490375751687810070">Тік</translation>
-<translation id="4905614135390995787">Жоғары контраст режимін ауыстыру таңбашасы өзгертілді. <ph name="OLD_SHORTCUT" /> таңбашасының орнына <ph name="NEW_SHORTCUT" /> таңбашасын пайдаланыңыз.</translation>
 <translation id="490788395437447240">Батарея заряды: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="4917385247580444890">Күшті</translation>
 <translation id="4918086044614829423">Қабылдау</translation>
@@ -673,7 +671,6 @@
 <translation id="6667908387435388584">Телефоныңыздың хотспотына қосылыңыз, құрылғыңыздың дауысын өшіріп, қай жерде тұрғанын көріңіз, сондай-ақ телефоныңызда соңғы ашылған Chrome қойындыларын көре аласыз.</translation>
 <translation id="6670153871843998651">3-ші жұмыс үстелі</translation>
 <translation id="6671495933530132209">Кескінді көшіру</translation>
-<translation id="6691659475504239918">Search+Shift+H</translation>
 <translation id="6692996468359469499">Таңдауға қатысты ақпарат алу</translation>
 <translation id="6696025732084565524">Алынбалы пернетақтаны жаңарту қажет</translation>
 <translation id="6700713906295497288">IME мәзір түймесі</translation>

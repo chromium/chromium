@@ -81,6 +81,7 @@
 <translation id="2862104018715411648">วางเอกสารบนเครื่องสแกนและเลือก "สแกน" เพื่อเริ่มต้น</translation>
 <translation id="2872961005593481000">ปิด</translation>
 <translation id="2878387241690264070">คายประจุ <ph name="RATE" /> ใน <ph name="NUM_SECONDS" /> วินาที</translation>
+<translation id="2983662233540284543">เรียนรู้จากครีเอเตอร์เกม ดาวน์โหลดแอปออกแบบเกม และอีกมากมาย</translation>
 <translation id="3008341117444806826">รีเฟรช</translation>
 <translation id="3009958530611748826">เลือกโฟลเดอร์ที่จะใช้บันทึก</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -192,6 +193,8 @@
 <translation id="5142961317498132443">การตรวจสอบสิทธิ์</translation>
 <translation id="5154917547274118687">หน่วยความจำ</translation>
 <translation id="5168185087976003268">ประสิทธิภาพของแบตเตอรี่</translation>
+<translation id="5170568018924773124">แสดงในโฟลเดอร์</translation>
+<translation id="519607504553633437">ออกแบบและสร้างเกมของคุณเอง</translation>
 <translation id="5212543919916444558">ฉันไม่พบสิ่งที่จะช่วยได้ในหน้าจอ
 ลองแตะไมโครโฟนเพื่อถามเรื่องอะไรก็ได้</translation>
 <translation id="5222676887888702881">ออกจากระบบ</translation>

@@ -81,6 +81,7 @@
 <translation id="2862104018715411648">Эхлүүлэхийн тулд документоо сканнер дээр байрлуулж, скан хийхийг сонгоно уу</translation>
 <translation id="2872961005593481000">Унтраах</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> секундэд <ph name="RATE" /> цэнэггүй болсон.</translation>
+<translation id="2983662233540284543">Тоглоомын зохиогчоос суралцаж, тоглоом бүтээх аппуудыг авч, илүү ихийг хийгээрэй</translation>
 <translation id="3008341117444806826">ДАХИН ШИНЭЧЛЭХ</translation>
 <translation id="3009958530611748826">Хадгалах фолдероо сонгоно уу</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />мA</translation>
@@ -192,6 +193,8 @@
 <translation id="5142961317498132443">Баталгаажуулалт</translation>
 <translation id="5154917547274118687">Санах ойн</translation>
 <translation id="5168185087976003268">Батарей барилт</translation>
+<translation id="5170568018924773124">Хавтсанд харуул</translation>
+<translation id="519607504553633437">Өөрийн тоглоомуудыг бүтээж, боловсруулаарай</translation>
 <translation id="5212543919916444558">Би таны дэлгэцээс туслах боломжтой зүйл олсонгүй.
 Асуух зүйл байвал микрофоныг товшиж үзнэ үү.</translation>
 <translation id="5222676887888702881">Гарах</translation>

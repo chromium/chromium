@@ -210,6 +210,7 @@
 <translation id="3169472444629675720">पत्ता लगाउनुहोस्</translation>
 <translation id="3175081911749765310">वेब सेवाहरू</translation>
 <translation id="3178650076442119961">आज सक्रिय</translation>
+<translation id="3181825792072797598">सिंकलाई सक्रिय गर्नुहोस्</translation>
 <translation id="3181954750937456830">सुरक्षित ब्राउजिङ (तपाईं र तपाईंको यन्त्रलाई खतरनाक साइटहरूबाट सुरक्षित राख्छ)</translation>
 <translation id="3184767182050912705">"<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />" प्रयोग गरेर अनलक गर्नुहोस्</translation>
 <translation id="3196681740617426482">साइटहरूले तपाईंलाई राम्रो ब्राउजिङको अनुभव प्रदान गर्न कुकीहरूको प्रयोग गर्न सक्छन्। उदाहरणको लागि साइटहरूले कुकीहरूको प्रयोग गरी तपाईंलाई साइन इन अवस्थामै राख्न वा तपाईंको किनमेलको कार्टमा भएका वस्तुहरू सम्झन सक्छन्।
@@ -220,6 +221,7 @@
 <translation id="3240426699337459095">लिंक प्रतिलिपि गरियो</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3252394070589632019"><ph name="NUM_SUGGESTIONS" /> को <ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /></translation>
+<translation id="3261971309013797455">तपाईं पछि पढ्न सेभ गरिएका वेबपेजको आफ्नो सूची इन्टरनेट नभएका बेलामा पनि प्रयोग गर्न सक्नुहुन्छ। उक्त सूचीमा कुनै पेज हाल्न <ph name="SHARE_OPENING_ICON" /> मा अनि त्यसपछि <ph name="ADD_TO_READING_LIST_TEXT" /> मा ट्याप गर्नुहोस्।</translation>
 <translation id="3268451620468152448">ट्याबहरू खोल्नुहोस्</translation>
 <translation id="3272527697863656322">रद्द गर्नुहोस्</translation>
 <translation id="3277021493514034324">साइटको ठेगाना प्रतिलिपि गरियो</translation>
@@ -446,6 +448,7 @@
 <translation id="5738887413654608789">यसले तपाईं वरिपरिको परिवेशमा आधारित सान्दर्भिक वेब पृष्ठहरू पत्ता लगाउन अनुमति दिन्छ।</translation>
 <translation id="5758631781033351321">तपाईंको अध्ययन सूची यहाँ देखिने छ</translation>
 <translation id="5782227691023083829">अनुवाद गर्दै...</translation>
+<translation id="5797070761912323120">Google ले खोज, विज्ञापन र Google का अन्य सेवाहरूलाई वैयक्तीकृत गर्न तपाईंको इतिहाससम्बन्धी जानकारी प्रयोग गर्न सक्छ</translation>
 <translation id="5803566855766646066">तपाईंले यो नयाँ कार्ड हटाउन खोज्नुभएकै हो?</translation>
 <translation id="5816228676161003208">यसले तपाईँलाई आफ्नो आवाजको प्रयोग गरी अझ छिटो खोज्न दिन्छ।</translation>
 <translation id="581659025233126501">सिंक गर्ने सुविधा अन गर्नुहोस्</translation>
@@ -623,6 +626,7 @@
 <translation id="7346909386216857016">ठिक छ, बुझेँ</translation>
 <translation id="734758817008927353">कार्ड सुरक्षित गर्ने विकल्पहरू</translation>
 <translation id="7348502496356775519">पुस्तक चिन्ह लगाउनुहोस्</translation>
+<translation id="7352651011704765696">केही गल्ती भयो</translation>
 <translation id="7353432112255316844">यो व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्नुहोस्</translation>
 <translation id="7383797227493018512">अध्ययन सूची</translation>
 <translation id="7398893703713203428">लिंक सिर्जना गर्नुहोस्</translation>

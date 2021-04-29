@@ -129,7 +129,6 @@
 <translation id="1993072747612765854"><ph name="SYSTEM_APP_NAME" /> колдонмосундагы жаңыртуу жөнүндө кененирээк маалымат алуу</translation>
 <translation id="1995660704900986789">Өчүрүү</translation>
 <translation id="1998100899771863792">Учурдагы иш такта</translation>
-<translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">Бир нерсе деп жазыңыз</translation>
 <translation id="2018630726571919839">Мага тамаша айтып бер</translation>
 <translation id="2021864487439853900">Кулпусун ачуу үчүн басыңыз</translation>
@@ -466,7 +465,6 @@
 <translation id="4890408602550914571">Телефонуңуз жакын жерде турганын жана анда Bluetooth күйгүзүлгөнүн текшериңиз.</translation>
 <translation id="4895488851634969361">Батарея толду.</translation>
 <translation id="490375751687810070">Тигинен</translation>
-<translation id="4905614135390995787">Жогорку контраст режимин которуштуруучу кыска жол өзгөрдү. <ph name="OLD_SHORTCUT" /> ордуна <ph name="NEW_SHORTCUT" /> кыска жолун колдонуңуз.</translation>
 <translation id="490788395437447240">Батарея <ph name="BATTERY_PERCENTAGE" />% кубатталган</translation>
 <translation id="4917385247580444890">Күчтүү</translation>
 <translation id="4918086044614829423">Кабыл алуу</translation>
@@ -651,7 +649,7 @@
 <translation id="649452524636452238">Акылдуу картанын PIN коду</translation>
 <translation id="6501401484702599040">Тышкы экранга чыгаруу <ph name="RECEIVER_NAME" /></translation>
 <translation id="6520517963145875092">Сүрөткө тартуу үчүн терезе тандаңыз</translation>
-<translation id="652139407789908527">Бул жаңыртуу учурунда экраныңыз адаттагыдан узагыраак (бир мүнөткө чейин) өчүп турушу мүмкүн. Жаңыртылып жатканда күйгүзүү/өчүрүү баскычын баспай туруңуз.</translation>
+<translation id="652139407789908527">Бул жаңыртуу учурунда экраныңыз адаттагыдан узагыраак (бир мүнөткө чейин) өчүп турушу мүмкүн. Жаңыртылып жатканда кубат баскычын баспай туруңуз.</translation>
 <translation id="6528179044667508675">Тынчымды алба</translation>
 <translation id="65320610082834431">Быйтыкчалар</translation>
 <translation id="6537270692134705506">Экранды тартуу</translation>
@@ -673,7 +671,6 @@
 <translation id="6667908387435388584">Телефонуңуздагы байланыш түйүнүнө туташтырып, үнүн басып, түзмөгүңүздү аныктаңыз да, андан соң телефонуңузда ачылган акыркы Chrome өтмөктөрүн көрүңүз</translation>
 <translation id="6670153871843998651">3-иш такта</translation>
 <translation id="6671495933530132209">Сүрөттү көчүрүү</translation>
-<translation id="6691659475504239918">Search+Shift+H</translation>
 <translation id="6692996468359469499">Сиз тандаган нерсеге тиешелүү маалыматты алуу</translation>
 <translation id="6696025732084565524">Ажыратылуучу баскычтопко жаңыртуу талап кылынат</translation>
 <translation id="6700713906295497288">IME меню баскычы</translation>

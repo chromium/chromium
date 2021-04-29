@@ -81,6 +81,7 @@
 <translation id="2862104018715411648">Place your document on the scanner and select 'Scan' to get started</translation>
 <translation id="2872961005593481000">Shut down</translation>
 <translation id="2878387241690264070">Discharged <ph name="RATE" /> in <ph name="NUM_SECONDS" /> seconds.</translation>
+<translation id="2983662233540284543">Learn from a game creator, get game design apps and more</translation>
 <translation id="3008341117444806826">REFRESH</translation>
 <translation id="3009958530611748826">Select a folder to save to</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -192,6 +193,8 @@
 <translation id="5142961317498132443">Authentication</translation>
 <translation id="5154917547274118687">Memory</translation>
 <translation id="5168185087976003268">Battery health</translation>
+<translation id="5170568018924773124">Show in folder</translation>
+<translation id="519607504553633437">Design and build your own games</translation>
 <translation id="5212543919916444558">I can't find anything on your screen that I can help with.
 Try tapping the mic to ask me anything.</translation>
 <translation id="5222676887888702881">Sign out</translation>

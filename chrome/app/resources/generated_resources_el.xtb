@@ -1331,7 +1331,6 @@
 <translation id="2440604414813129000">Προβολή κώ&amp;δικα</translation>
 <translation id="244231003699905658">Μη έγκυρη διεύθυνση. Βεβαιωθείτε ότι η διεύθυνση είναι σωστή και δοκιμάστε ξανά.</translation>
 <translation id="2442916515643169563">Σκίαση κειμένου</translation>
-<translation id="24437238714184182"><ph name="SPAN_1_START" /><ph name="NETWORK_NAME" /><ph name="SPAN_1_END" /> - <ph name="SPAN_2_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_2_END" /></translation>
 <translation id="2445081178310039857">Απαιτείται ο κατάλογος ρίζας επέκτασης.</translation>
 <translation id="2445484935443597917">Δημιουργία νέου προφίλ</translation>
 <translation id="2448312741937722512">Τύπος</translation>
@@ -1637,7 +1636,6 @@
 <translation id="2766006623206032690">Επικό&amp;λληση και μετάβαση</translation>
 <translation id="2766161002040448006">Άδεια γονέα</translation>
 <translation id="2767127727915954024">Ο ιστότοπος <ph name="ORIGIN" /> θα μπορεί να επεξεργάζεται το αρχείο <ph name="FILENAME" /> μέχρι να κλείσετε όλες τις καρτέλες για αυτόν τον ιστότοπο</translation>
-<translation id="276969039800130567">Συνδεδεμένος ως <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2770465223704140727">Κατάργηση από τη λίστα</translation>
 <translation id="2770690685823456775">Εξαγάγετε τους κωδικούς πρόσβασης σε άλλο φάκελο</translation>
 <translation id="2770929488047004208">Ανάλυση οθόνης</translation>

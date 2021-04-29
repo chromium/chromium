@@ -349,6 +349,7 @@
 <translation id="1383597849754832576">មិនអាចទាញយក​ឯកសារនិយាយ​បានទេ។ សូមព្យាយាមម្តងទៀតនៅពេលក្រោយ។</translation>
 <translation id="1383861834909034572">បើកនៅពេលបញ្ចប់</translation>
 <translation id="1383876407941801731">ស្វែងរក</translation>
+<translation id="1384849755549338773">ផ្ដល់ជូន Google បកប្រែសម្រាប់​គេហទំព័រជាភាសាផ្សេងទៀត</translation>
 <translation id="1386791642444521222">បើកដំណើរការ​ស៊ីមកាត</translation>
 <translation id="138784436342154190">ស្តារទំព័រចាប់ផ្តើមលំនាំដើម?</translation>
 <translation id="1388253969141979417">អនុញ្ញាតឱ្យប្រើមីក្រូហ្វូនរបស់អ្នក</translation>
@@ -871,6 +872,7 @@
 <translation id="1920390473494685033">ទំនាក់ទំនង</translation>
 <translation id="1921050530041573580">ផ្គូផ្គង​ទូរសព្ទរបស់អ្នក​ដោយប្រើ Messages</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
+<translation id="1923468477587371721">គេហទំព័រ Google ដូចជា Gmail, ថាស និង YouTube ជាដើមប្រើ​ភាសា​គណនី Google របស់អ្នក លុះត្រាតែអ្នក​បានប្ដូរភាសាផលិតផល​នីមួយៗ</translation>
 <translation id="192494336144674234">បើកដោយប្រើ</translation>
 <translation id="1925017091976104802">ចុច <ph name="MODIFIER_KEY_DESCRIPTION" /> ដើម្បី​ដាក់ចូល</translation>
 <translation id="1925021887439448749">បញ្ចូល​អាសយដ្ឋាន​ទំព័រ​ផ្ទាល់ខ្លួន</translation>
@@ -1331,7 +1333,6 @@
 <translation id="2440604414813129000">មើលប្រភព</translation>
 <translation id="244231003699905658">អាសយដ្ឋាន​មិន​ត្រឹមត្រូវ។ សូមពិនិត្យអាសយដ្ឋាន រួចព្យាយាមម្តងទៀត។</translation>
 <translation id="2442916515643169563">ស្រមោលអក្សរ</translation>
-<translation id="24437238714184182"><ph name="SPAN_1_START" /><ph name="NETWORK_NAME" /><ph name="SPAN_1_END" /> - <ph name="SPAN_2_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_2_END" /></translation>
 <translation id="2445081178310039857">តម្រូវឲ្យមានថតឯកសារគោលកម្មវិធីបន្ថែម។</translation>
 <translation id="2445484935443597917">បង្កើត​កម្រង​ព័ត៌មាន​ថ្មី</translation>
 <translation id="2448312741937722512">ប្រភេទ</translation>
@@ -1637,7 +1638,6 @@
 <translation id="2766006623206032690">បិទភ្ជាប់ និងទៅ</translation>
 <translation id="2766161002040448006">ស្នើសុំមាតាបិតា</translation>
 <translation id="2767127727915954024"><ph name="ORIGIN" /> នឹងអាចកែ <ph name="FILENAME" /> បាន រហូតទាល់តែអ្នកបិទផ្ទាំងទាំងអស់​សម្រាប់គេហទំព័រនេះ</translation>
-<translation id="276969039800130567">បានចូលជា <ph name="USER_EMAIL_ADDRESS" />។</translation>
 <translation id="2770465223704140727">ដកចេញពីបញ្ជី</translation>
 <translation id="2770690685823456775">នាំចេញ​ពាក្យ​សម្ងាត់​របស់​អ្នក​ទៅ​ថត​ផ្សេង</translation>
 <translation id="2770929488047004208">កម្រិតច្បាស់របស់អេក្រង់</translation>
@@ -1955,6 +1955,7 @@
 <translation id="311394601889664316">មិនអនុញ្ញាតឱ្យ​គេហទំព័រ​កែឯកសារ ឬថត​នៅក្នុងឧបករណ៍​របស់អ្នកទេ</translation>
 <translation id="3115147772012638511">កំពុងរង់ចាំឃ្លាំងសម្ងាត់...</translation>
 <translation id="3115580024857770654">បង្រួម​ទាំងអស់</translation>
+<translation id="3115743155098198207">គ្រប់គ្រង​ភាសា​គណនី Google</translation>
 <translation id="3117362587799608430">ឧបករណ៍ភ្ជាប់​មិនត្រូវគ្នាទាំងស្រុងទេ</translation>
 <translation id="3117791853215125017">{COUNT,plural, =1{មិន​អាច​ផ្ញើ​ <ph name="ATTACHMENTS" /> ទៅ <ph name="DEVICE_NAME" /> បានទេ}other{មិន​អាច​ផ្ញើ​ <ph name="ATTACHMENTS" /> ទៅ <ph name="DEVICE_NAME" /> បានទេ}}</translation>
 <translation id="3118319026408854581">ជំនួយ <ph name="PRODUCT_NAME" /></translation>
@@ -2374,6 +2375,7 @@
 <translation id="3599863153486145794">សម្អាតប្រវត្តិពីឧបករណ៍ទាំងអស់ដែលបានចូលគណនី។ គណនី Google របស់អ្នកអាចនឹងមានទម្រង់ប្រវត្តិរុករកផ្សេងទៀតនៅ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> ។</translation>
 <translation id="3600051066689725006">ព័ត៌មានអំពីសំណើបណ្ដាញ</translation>
 <translation id="3600792891314830896">បិទសំឡេងទំព័រដែលចាក់សំឡេង</translation>
+<translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="360180734785106144">ផ្ដល់ជូនមុខងារថ្មីៗនៅពេលដែលមាន</translation>
 <translation id="3602290021589620013">ពិនិត្យមើល</translation>
 <translation id="3602870520245633055">បោះពុម្ព និង​ស្កេន</translation>
@@ -3699,6 +3701,7 @@
 <translation id="5107443654503185812">កម្មវិធីបន្ថែមមួយបានបិទការរុករកដោយសុវត្ថិភាព</translation>
 <translation id="5108967062857032718">ការកំណត់៖ យកកម្មវិធី Android ចេញ</translation>
 <translation id="5109044022078737958">ម៉ៃ</translation>
+<translation id="5109816792918100764">ដក <ph name="LANGUAGE_NAME" /> ចេញ</translation>
 <translation id="5111646998522066203">ចាកចេញពី​ផ្ទាំងឯកជន</translation>
 <translation id="5111692334209731439">កម្មវិធីគ្រប់គ្រងចំណាំ</translation>
 <translation id="5112577000029535889">ឧបករណ៍អ្នកអភិវឌ្ឍន៍</translation>
@@ -4440,6 +4443,7 @@
 <translation id="5943127421590245687">ការផ្ទៀងផ្ទាត់​របស់អ្នកបានជោគជ័យហើយ។ ដើម្បីដោះសោ ឬស្ដារទិន្នន័យមូលដ្ឋានរបស់អ្នក សូមបញ្ចូលពាក្យសម្ងាត់ <ph name="DEVICE_TYPE" /> ចាស់របស់អ្នក។</translation>
 <translation id="5944869793365969636">ស្កេន​កូដ QR</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> អាច​បង្ក​គ្រោះថ្នាក់​។ បញ្ជូនទៅ Google រុករក​ដោយ​សុវត្ថិភាព​សម្រាប់​ស្កេនដែរទេ?</translation>
+<translation id="5945363896952315544">សោសុវត្ថិភាពរបស់អ្នក​មិនអាចរក្សាទុកស្នាម​ម្រាមដៃបន្ថែមទៀត​បានទេ។ ដើម្បីបញ្ចូល​ស្នាមម្រាមដៃថ្មី សូមលុបស្នាមម្រាមដៃ​ដែលមានស្រាប់​ជាមុនសិន។</translation>
 <translation id="5946591249682680882">លេខសម្គាល់របាយការណ៍ <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5948536763493709626">ភ្ជាប់ក្ដារចុច ឬកណ្ដុរ ឬបន្ដការរៀបចំដោយប្រើអេក្រង់ថាច់របស់អ្នក។ ប្រសិនបើអ្នកកំពុងប្រើឧបករណ៍​ប៊្លូធូស សូមប្រាកដថា ឧបករណ៍របស់អ្នកអាចផ្គូផ្គងបាន។</translation>
 <translation id="5949544233750246342">មិនអាច​ញែក​ឯកសារ​បានទេ</translation>
@@ -5385,6 +5389,7 @@
 <translation id="7001036685275644873">កំពុងបម្រុងទុក​កម្មវិធី និងឯកសារ Linux</translation>
 <translation id="7002055706763150362">ដើម្បីដំឡើង Smart Lock សម្រាប់ Chromebook, Google ត្រូវធ្វើឲ្យប្រាកដថានេះគឺជាអ្នក—វាយបញ្ចូលពាក្យសម្ងាត់របស់អ្នកដើម្បីចាប់ផ្តើម។</translation>
 <translation id="7003339318920871147">មូលដ្ឋានទិន្នន័យគេហទំព័រ</translation>
+<translation id="7003454175711353260">{COUNT,plural, =1{ឯកសារ {COUNT}}other{ឯកសារ {COUNT}}}</translation>
 <translation id="7003723821785740825">កំណត់​វិធី​លឿនជាងនេះ​ដើម្បី​ដោះសោ​ឧបករណ៍​របស់អ្នក</translation>
 <translation id="7003844668372540529">មិនស្គាល់ផលិតផល <ph name="PRODUCT_ID" /> ពី <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">គេហទំព័រ​អាចប្រើ MIDI</translation>
@@ -5649,6 +5654,7 @@
 <translation id="7306521477691455105">បើកការកំណត់ ដើម្បីភ្ជាប់ <ph name="USB_DEVICE_NAME" /> ជាមួយ <ph name="USB_VM_NAME" /></translation>
 <translation id="7307129035224081534">បានផ្អាក</translation>
 <translation id="7308436126008021607">សមកាលកម្ម​ផ្ទៃខាងក្រោយ</translation>
+<translation id="7308643132139167865">ភាសាគេហទំព័រ</translation>
 <translation id="7309257895202129721">បង្ហាញឧបករណ៍បញ្ជា</translation>
 <translation id="7310598146671372464">មិនអាច​ចូលគណនី​បានទេ។ ម៉ាសីុនមេ​មិនស្គាល់ប្រភេទ​អ៊ីនគ្រីប Kerberos ដែលបាន​បញ្ជាក់​ទេ។ សូម​ទាក់ទង​អ្នកគ្រប់គ្រង​របស់អ្នក។</translation>
 <translation id="7320213904474460808">កំណត់​បណ្ដាញ​ជាលំនាំដើម</translation>
@@ -5860,6 +5866,7 @@
 <translation id="7552846755917812628">សាកល្បងធ្វើតាមគន្លឹះខាងក្រោម៖</translation>
 <translation id="7553012839257224005">កំពុងពិនិត្យមើល​ទម្រង់ផ្ទុក Linux</translation>
 <translation id="7553242001898162573">បញ្ចូលពាក្យសម្ងាត់របស់អ្នក។</translation>
+<translation id="755472745191515939">អ្នកគ្រប់គ្រងរបស់អ្នក​មិនអនុញ្ញាតឱ្យប្រើ​ភាសានេះទេ</translation>
 <translation id="7554791636758816595">ផ្ទាំងថ្មី</translation>
 <translation id="7556033326131260574">Smart Lock មិនអាចផ្ទៀងផ្ទាត់គណនីរបស់អ្នកបានទេ។ វាយបញ្ចូលពាក្យសម្ងាត់របស់អ្នកដើម្បីចូល។</translation>
 <translation id="7556242789364317684">ជាអកុសល្យ <ph name="SHORT_PRODUCT_NAME" /> មិនអាចសង្គ្រោះការកំណត់របស់អ្នកទេ។ ដើម្បីដោះស្រាយកំហុសឆ្គងនេះ <ph name="SHORT_PRODUCT_NAME" /> ត្រូវកំណត់ឧបករណ៍របស់អ្នកឡើងវិញជាមួយ Powerwash។</translation>
@@ -6161,6 +6168,7 @@
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">សេវាកម្ម៖ <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">ទាញយក</translation>
+<translation id="7861846108263890455">ភាសា​គណនី Google</translation>
 <translation id="7864539943188674973">បិទដំណើរការប៊្លូធូស</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> - ត្រូវបានផ្គូផ្គង</translation>
 <translation id="7870730066603611552">ពិនិត្យ​មើល​ជម្រើស​សមកាលកម្ម​បន្ទាប់ពី​រៀបចំរួច</translation>
@@ -6422,6 +6430,7 @@
 <translation id="8143442547342702591">កម្មវិធីគ្មានសុពលភាព</translation>
 <translation id="8143951647992294073">ជ្រើសរើស <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8146177459103116374">ប្រសិនបើអ្នកបានចុះឈ្មោះរួចហើយនៅលើឧបករណ៍នេះ អ្នកអាច <ph name="LINK2_START" />ចូលជាអ្នកប្រើដែលមានស្រាប់<ph name="LINK2_END" />។</translation>
+<translation id="8146287226035613638">បញ្ចូល និងចាត់ថ្នាក់​ភាសាដែលអ្នកចង់ប្រើ។ គេហទំព័រនឹងបង្ហាញ​ជាភាសា​ដែលអ្នកចង់ប្រើ នៅពេល​ដែលសមស្រប។ ចំណូលចិត្តទាំងនេះ​ត្រូវបានធ្វើសមកាលកម្ម​ជាមួយការកំណត់​កម្មវិធីរុករកតាមអ៊ីនធឺណិត​របស់អ្នក។ <ph name="BEGIN_LINK_LEARN_MORE" />ស្វែងយល់បន្ថែម<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8146793085009540321">បានបរាជ័យក្នុងការចូលគណនី។ សូមទាក់ទងអ្នកគ្រប់គ្រងរបស់អ្នក ឬព្យាយាមម្តងទៀត។</translation>
 <translation id="8147900440966275470">បានរកឃើញផ្ទាំង <ph name="NUM" /></translation>
 <translation id="8148760431881541277">ដាក់កំហិត​ការចូលគណនី</translation>
@@ -7433,6 +7442,7 @@
 <translation id="983511809958454316">មិនស្គាល់​មុខងារនេះ​នៅក្នុង VR ទេ</translation>
 <translation id="984136553749462603">នៅពេលគេហទំព័រចាក់ខ្លឹមសារដែលការពារដោយកម្មសិទ្ធិបញ្ញា វាអាចស្នើសុំសម្គាល់ឧបករណ៍របស់អ្នក</translation>
 <translation id="984275831282074731">វិធី​បង់ប្រាក់</translation>
+<translation id="984705303330760860">បញ្ចូលភាសាដែលអាច​ពិនិត្យអក្ខរាវិរុទ្ធ</translation>
 <translation id="98515147261107953">ផ្តេក</translation>
 <translation id="987068745968718743">Parallels Desktop៖ <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">ទូទៅ</translation>
