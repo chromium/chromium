@@ -269,6 +269,8 @@ AutofillProfile& AutofillProfile::operator=(const AutofillProfile& profile) {
   if (this == &profile)
     return *this;
 
+  set_disallow_settings_visible_updates(
+      profile.disallow_settings_visible_updates());
   set_use_count(profile.use_count());
   set_use_date(profile.use_date());
   set_previous_use_date(profile.previous_use_date());
@@ -1316,6 +1318,8 @@ FormGroup* AutofillProfile::MutableFormGroupForType(const AutofillType& type) {
 
 bool AutofillProfile::EqualsSansGuid(const AutofillProfile& profile) const {
   return origin() == profile.origin() &&
+         disallow_settings_visible_updates() ==
+             profile.disallow_settings_visible_updates() &&
          language_code() == profile.language_code() &&
          profile_label() == profile.profile_label() && Compare(profile) == 0;
 }

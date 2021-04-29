@@ -1299,6 +1299,7 @@ TEST_F(AutofillTableTest, AutofillProfile_StructuredNames) {
   home_profile.SetRawInfo(ADDRESS_HOME_SORTING_CODE, u"MAGIC ###");
   home_profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
   home_profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"18181234567");
+  home_profile.set_disallow_settings_visible_updates(true);
   home_profile.set_language_code("en");
   home_profile.SetClientValidityFromBitfieldValue(6);
   home_profile.set_is_client_validity_states_updated(true);

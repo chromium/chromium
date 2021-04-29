@@ -97,6 +97,8 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
   if (!entry.profile_label().empty())
     specifics->set_profile_label(entry.profile_label());
 
+  specifics->set_disallow_settings_visible_updates(
+      entry.disallow_settings_visible_updates());
   specifics->set_use_count(entry.use_count());
   specifics->set_use_date(entry.use_date().ToTimeT());
   specifics->set_address_home_language_code(
@@ -259,6 +261,11 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
   // Set the profile label if it exists.
   if (specifics.has_profile_label())
     profile->set_profile_label(specifics.profile_label());
+
+  // Set the `disallow_settings_visible_updates state` if it exists.
+  if (specifics.has_disallow_settings_visible_updates())
+    profile->set_disallow_settings_visible_updates(
+        specifics.disallow_settings_visible_updates());
 
   // Set repeated fields.
   profile->SetRawInfoWithVerificationStatus(

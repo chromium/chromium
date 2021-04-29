@@ -150,6 +150,12 @@ message AutofillProfileSpecifics {
   // changes in the autofill profile values.
   optional bool is_client_validity_states_updated = 25;
 
+  // The state indicates if the profile qualifies to get merged with a
+  // profile observed in a form submission. If true, the profile can still be
+  // updated silently, but it should not be considered for merges that need to
+  // involve user interactions.
+  optional bool disallow_settings_visible_updates = 63;
+
   // Deprecated.
   optional string deprecated_label = 1 [deprecated = true];
   optional string phone_fax_whole_number = 14 [deprecated = true];

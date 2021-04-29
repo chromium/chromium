@@ -102,6 +102,9 @@ struct PaymentsCustomerData;
 //                      A flag indicating whether the validity states of
 //                      different fields according to the client validity api is
 //                      updated or not. Added in version 80.
+//   disallow_settings_visible_updates
+//                      If true, a profile does not qualify to get merged with
+//                      a profile observed in a form submission.
 //
 // autofill_profile_addresses
 //   guid               The guid string that identifies the profile to which
@@ -719,6 +722,7 @@ class AutofillTable : public WebDatabaseTable,
   bool MigrateToVersion93AddAutofillProfileLabelColumn();
   bool MigrateToVersion94AddPromoCodeColumnsToOfferData();
   bool MigrateToVersion95AddVirtualCardMetadata();
+  bool MigrateToVersion96AddAutofillProfileDisallowConfirmableMergesColumn();
 
   // Max data length saved in the table, AKA the maximum length allowed for
   // form data.

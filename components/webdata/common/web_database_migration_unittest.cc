@@ -125,7 +125,7 @@ class WebDatabaseMigrationTest : public testing::Test {
   DISALLOW_COPY_AND_ASSIGN(WebDatabaseMigrationTest);
 };
 
-const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 95;
+const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 96;
 
 void WebDatabaseMigrationTest::LoadDatabase(
     const base::FilePath::StringType& file) {
@@ -2124,5 +2124,38 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion94ToCurrent) {
         connection.DoesColumnExist("credit_card_art_images", "instrument_id"));
     EXPECT_TRUE(
         connection.DoesColumnExist("credit_card_art_images", "card_art_image"));
+  }
+}
+
+// Tests addition of lock state to the autofill_profile table.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion95ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_95.sql")));
+
+  // Verify pre-conditions.
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    sql::MetaTable meta_table;
+    ASSERT_TRUE(meta_table.Init(&connection, 95, 83));
+
+    EXPECT_FALSE(connection.DoesColumnExist(
+        "autofill_profile", "disallow_settings_visible_updates"));
+  }
+
+  DoMigration();
+
+  // Verify post-conditions.
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    // Check version.
+    EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
+
+    EXPECT_FALSE(connection.DoesColumnExist(
+        "autofill_profile", "disallow_settings_visible_updates"));
   }
 }
