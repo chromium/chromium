@@ -114,6 +114,7 @@ void PermissionChip::DisplayRequest(
 
 void PermissionChip::FinalizeRequest() {
   SetVisible(false);
+  chip_button_->ResetAnimation();
   collapse_timer_.AbandonAndStop();
   dismiss_timer_.AbandonAndStop();
   delegate_ = nullptr;
