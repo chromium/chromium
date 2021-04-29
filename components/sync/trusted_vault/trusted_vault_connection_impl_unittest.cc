@@ -48,6 +48,16 @@ std::unique_ptr<SecureBoxKeyPair> MakeTestKeyPair() {
   return SecureBoxKeyPair::CreateByPrivateKeyImport(private_key_bytes);
 }
 
+sync_pb::SecurityDomain MakeSecurityDomainWithDegradedRecoverability(
+    bool recoverability_degraded) {
+  sync_pb::SecurityDomain security_domain;
+  security_domain.set_name(kSyncSecurityDomainName);
+  security_domain.mutable_security_domain_details()
+      ->mutable_sync_details()
+      ->set_degraded_recoverability(recoverability_degraded);
+  return security_domain;
+}
+
 class FakeTrustedVaultAccessTokenFetcher
     : public TrustedVaultAccessTokenFetcher {
  public:
@@ -126,6 +136,15 @@ class TrustedVaultConnectionImplTest : public testing::Test {
             kTestURL, MakeTestKeyPair()->public_key().ExportToBytes())
             .spec(),
         /*content=*/std::string(), response_http_code);
+  }
+
+  bool RespondToGetSecurityDomainRequest(net::HttpStatusCode response_http_code,
+                                         const std::string& response_body) {
+    // Allow request to reach |test_url_loader_factory_|.
+    base::RunLoop().RunUntilIdle();
+    return test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetFullGetSecurityDomainURLForTesting(kTestURL).spec(), response_body,
+        response_http_code);
   }
 
   const std::vector<uint8_t> kTrustedVaultKey = {1, 2, 3, 4};
@@ -485,6 +504,121 @@ TEST_F(TrustedVaultConnectionImplTest,
   // Returned value isn't checked here, because the request can be cancelled
   // before reaching TestURLLoaderFactory.
   RespondToGetSecurityDomainMemberRequest(net::HTTP_OK);
+}
+
+TEST_F(TrustedVaultConnectionImplTest,
+       ShouldSendGetSecurityDomainRequestWhenRetrievingRecoverability) {
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->RetrieveIsRecoverabilityDegraded(
+          /*account_info=*/CoreAccountInfo(),
+          TrustedVaultConnection::IsRecoverabilityDegradedCallback());
+  ASSERT_THAT(request, NotNull());
+
+  const network::TestURLLoaderFactory::PendingRequest* pending_http_request =
+      GetPendingHTTPRequest();
+  ASSERT_THAT(pending_http_request, NotNull());
+
+  const network::ResourceRequest& resource_request =
+      pending_http_request->request;
+  EXPECT_THAT(resource_request.method, Eq("GET"));
+  EXPECT_THAT(resource_request.url,
+              Eq(GetFullGetSecurityDomainURLForTesting(kTestURL)));
+}
+
+TEST_F(TrustedVaultConnectionImplTest,
+       ShouldHandleValidResponseWhenRetrievingRecoverability) {
+  base::MockCallback<TrustedVaultConnection::IsRecoverabilityDegradedCallback>
+      callback;
+
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->RetrieveIsRecoverabilityDegraded(
+          /*account_info=*/CoreAccountInfo(), callback.Get());
+  ASSERT_THAT(request, NotNull());
+
+  EXPECT_CALL(callback, Run(TrustedVaultRecoverabilityStatus::kNotDegraded));
+  EXPECT_TRUE(RespondToGetSecurityDomainRequest(
+      net::HTTP_OK,
+      /*response_body=*/MakeSecurityDomainWithDegradedRecoverability(
+          /*recoverability_degraded=*/false)
+          .SerializeAsString()));
+  testing::Mock::VerifyAndClearExpectations(&callback);
+
+  request = connection()->RetrieveIsRecoverabilityDegraded(
+      /*account_info=*/CoreAccountInfo(), callback.Get());
+  ASSERT_THAT(request, NotNull());
+
+  EXPECT_CALL(callback, Run(TrustedVaultRecoverabilityStatus::kDegraded));
+  EXPECT_TRUE(RespondToGetSecurityDomainRequest(
+      net::HTTP_OK,
+      /*response_body=*/MakeSecurityDomainWithDegradedRecoverability(
+          /*recoverability_degraded=*/true)
+          .SerializeAsString()));
+}
+
+TEST_F(TrustedVaultConnectionImplTest,
+       ShouldHandleFailedRequestWhenRetrievingRecoverability) {
+  base::MockCallback<TrustedVaultConnection::IsRecoverabilityDegradedCallback>
+      callback;
+
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->RetrieveIsRecoverabilityDegraded(
+          /*account_info=*/CoreAccountInfo(), callback.Get());
+  ASSERT_THAT(request, NotNull());
+
+  EXPECT_CALL(callback, Run(TrustedVaultRecoverabilityStatus::kError));
+  EXPECT_TRUE(RespondToGetSecurityDomainRequest(
+      net::HTTP_INTERNAL_SERVER_ERROR,
+      /*response_body=*/MakeSecurityDomainWithDegradedRecoverability(
+          /*recoverability_degraded=*/false)
+          .SerializeAsString()));
+}
+
+TEST_F(TrustedVaultConnectionImplTest,
+       ShouldHandleCorruptedResponseWhenRetrievingRecoverability) {
+  base::MockCallback<TrustedVaultConnection::IsRecoverabilityDegradedCallback>
+      callback;
+
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->RetrieveIsRecoverabilityDegraded(
+          /*account_info=*/CoreAccountInfo(), callback.Get());
+  ASSERT_THAT(request, NotNull());
+
+  EXPECT_CALL(callback, Run(TrustedVaultRecoverabilityStatus::kError));
+  // Respond with invalid proto.
+  EXPECT_TRUE(
+      RespondToGetSecurityDomainRequest(net::HTTP_OK,
+                                        /*response_body=*/"invalid proto"));
+
+  request = connection()->RetrieveIsRecoverabilityDegraded(
+      /*account_info=*/CoreAccountInfo(), callback.Get());
+  ASSERT_THAT(request, NotNull());
+
+  EXPECT_CALL(callback, Run(TrustedVaultRecoverabilityStatus::kError));
+  // Respond with empty proto.
+  EXPECT_TRUE(RespondToGetSecurityDomainRequest(
+      net::HTTP_OK,
+      /*response_body=*/sync_pb::SecurityDomain().SerializeAsString()));
+}
+
+TEST_F(TrustedVaultConnectionImplTest,
+       ShouldCancelRequestWhenRetrievingRecoverability) {
+  base::MockCallback<TrustedVaultConnection::IsRecoverabilityDegradedCallback>
+      callback;
+
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->RetrieveIsRecoverabilityDegraded(
+          /*account_info=*/CoreAccountInfo(), callback.Get());
+  ASSERT_THAT(request, NotNull());
+
+  EXPECT_CALL(callback, Run).Times(0);
+  request.reset();
+  // Returned value isn't checked here, because the request can be cancelled
+  // before reaching TestURLLoaderFactory.
+  RespondToGetSecurityDomainRequest(
+      net::HTTP_OK,
+      /*response_body=*/MakeSecurityDomainWithDegradedRecoverability(
+          /*recoverability_degraded=*/false)
+          .SerializeAsString());
 }
 
 }  // namespace

@@ -84,6 +84,11 @@ class MockTrustedVaultConnection : public TrustedVaultConnection {
                std::unique_ptr<SecureBoxKeyPair> device_key_pair,
                DownloadNewKeysCallback callback),
               (override));
+  MOCK_METHOD(std::unique_ptr<Request>,
+              RetrieveIsRecoverabilityDegraded,
+              (const CoreAccountInfo& account_info,
+               IsRecoverabilityDegradedCallback),
+              (override));
 };
 
 class StandaloneTrustedVaultBackendTest : public testing::Test {

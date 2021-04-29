@@ -43,6 +43,13 @@ enum class TrustedVaultDownloadKeysStatus {
   kOtherError
 };
 
+enum class TrustedVaultRecoverabilityStatus {
+  // Recoverability status not retrieved due to network, http or protocol error.
+  kError,
+  kNotDegraded,
+  kDegraded
+};
+
 enum class AuthenticationFactorType { kPhysicalDevice };
 
 struct TrustedVaultKeyAndVersion {
@@ -65,6 +72,8 @@ class TrustedVaultConnection {
       base::OnceCallback<void(TrustedVaultDownloadKeysStatus,
                               const std::vector<std::vector<uint8_t>>& /*keys*/,
                               int /*last_key_version*/)>;
+  using IsRecoverabilityDegradedCallback =
+      base::OnceCallback<void(TrustedVaultRecoverabilityStatus)>;
 
   // Used to control ongoing request lifetime, destroying Request object causes
   // request cancellation.
@@ -107,6 +116,13 @@ class TrustedVaultConnection {
           last_trusted_vault_key_and_version,
       std::unique_ptr<SecureBoxKeyPair> device_key_pair,
       DownloadNewKeysCallback callback) WARN_UNUSED_RESULT = 0;
+
+  // Asynchronously attempts to retrieve degraded recoverability status from the
+  // trusted vault server. Caller should hold returned request object until
+  // |callback| call or until request needs to be cancelled.
+  virtual std::unique_ptr<Request> RetrieveIsRecoverabilityDegraded(
+      const CoreAccountInfo& account_info,
+      IsRecoverabilityDegradedCallback callback) WARN_UNUSED_RESULT = 0;
 };
 
 }  // namespace syncer

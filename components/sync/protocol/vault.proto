@@ -20,8 +20,15 @@ message RotationProof {
   optional bytes rotation_proof = 2;
 }
 
+message SecurityDomainDetails {
+  message SyncDetails { optional bool degraded_recoverability = 1; }
+
+  optional SyncDetails sync_details = 1;
+}
+
 message SecurityDomain {
   optional string name = 1;
+  optional SecurityDomainDetails security_domain_details = 3;
 }
 
 message SecurityDomainMember {

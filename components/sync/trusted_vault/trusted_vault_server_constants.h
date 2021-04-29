@@ -16,6 +16,7 @@ namespace syncer {
 extern const char kSyncSecurityDomainName[];
 extern const char kSecurityDomainMemberNamePrefix[];
 extern const char kJoinSecurityDomainsURLPath[];
+extern const char kGetSecurityDomainURLPathAndQuery[];
 
 std::vector<uint8_t> GetConstantTrustedVaultKey();
 std::string GetGetSecurityDomainMemberURLPathAndQuery(
@@ -26,6 +27,8 @@ GURL GetFullJoinSecurityDomainsURLForTesting(const GURL& server_url);
 GURL GetFullGetSecurityDomainMemberURLForTesting(
     const GURL& server_url,
     base::span<const uint8_t> public_key);
+GURL GetFullGetSecurityDomainURLForTesting(const GURL& server_url);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_TRUSTED_VAULT_TRUSTED_VAULT_SERVER_CONSTANTS_H_

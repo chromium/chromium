@@ -20,6 +20,8 @@ const char kSyncSecurityDomainName[] = "users/me/securitydomains/chromesync";
 const char kSecurityDomainMemberNamePrefix[] = "users/me/members/";
 const char kJoinSecurityDomainsURLPath[] =
     "users/me/securitydomains/chromesync:join";
+extern const char kGetSecurityDomainURLPathAndQuery[] =
+    "users/me/securitydomains/chromesync?view=2";
 
 std::vector<uint8_t> GetConstantTrustedVaultKey() {
   return std::vector<uint8_t>(16, 0);
@@ -46,6 +48,12 @@ GURL GetFullGetSecurityDomainMemberURLForTesting(
   return net::AppendQueryParameter(
       /*url=*/GURL(server_url.spec() +
                    GetGetSecurityDomainMemberURLPathAndQuery(public_key)),
+      kQueryParameterAlternateOutputKey, kQueryParameterAlternateOutputProto);
+}
+
+GURL GetFullGetSecurityDomainURLForTesting(const GURL& server_url) {
+  return net::AppendQueryParameter(
+      /*url=*/GURL(server_url.spec() + kGetSecurityDomainURLPathAndQuery),
       kQueryParameterAlternateOutputKey, kQueryParameterAlternateOutputProto);
 }
 

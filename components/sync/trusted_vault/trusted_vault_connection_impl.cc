@@ -119,6 +119,37 @@ void ProcessDownloadKeysResponse(
                           processed_response.last_key_version);
 }
 
+void ProcessRetrieveIsRecoverabilityDegradedResponse(
+    TrustedVaultConnection::IsRecoverabilityDegradedCallback callback,
+    TrustedVaultRequest::HttpStatus http_status,
+    const std::string& response_body) {
+  // TODO(crbug.com/1201659): consider special handling when security domain
+  // doesn't exist.
+  switch (http_status) {
+    case TrustedVaultRequest::HttpStatus::kSuccess:
+      break;
+    case TrustedVaultRequest::HttpStatus::kOtherError:
+    case TrustedVaultRequest::HttpStatus::kNotFound:
+    case TrustedVaultRequest::HttpStatus::kFailedPrecondition:
+      std::move(callback).Run(TrustedVaultRecoverabilityStatus::kError);
+      return;
+  }
+  sync_pb::SecurityDomain security_domain;
+  if (!security_domain.ParseFromString(response_body) ||
+      !security_domain.security_domain_details().has_sync_details()) {
+    std::move(callback).Run(TrustedVaultRecoverabilityStatus::kError);
+    return;
+  }
+  TrustedVaultRecoverabilityStatus status =
+      TrustedVaultRecoverabilityStatus::kNotDegraded;
+  if (security_domain.security_domain_details()
+          .sync_details()
+          .degraded_recoverability()) {
+    status = TrustedVaultRecoverabilityStatus::kDegraded;
+  }
+  std::move(callback).Run(status);
+}
+
 }  // namespace
 
 TrustedVaultConnectionImpl::TrustedVaultConnectionImpl(
@@ -181,6 +212,25 @@ TrustedVaultConnectionImpl::DownloadNewKeys(
           std::make_unique<DownloadKeysResponseHandler>(
               last_trusted_vault_key_and_version, std::move(device_key_pair)),
           std::move(callback)));
+
+  return request;
+}
+
+std::unique_ptr<TrustedVaultConnection::Request>
+TrustedVaultConnectionImpl::RetrieveIsRecoverabilityDegraded(
+    const CoreAccountInfo& account_info,
+    IsRecoverabilityDegradedCallback callback) {
+  auto request = std::make_unique<TrustedVaultRequest>(
+      TrustedVaultRequest::HttpMethod::kGet,
+      GURL(trusted_vault_service_url_.spec() +
+           kGetSecurityDomainURLPathAndQuery),
+      /*serialized_request_proto=*/base::nullopt);
+
+  request->FetchAccessTokenAndSendRequest(
+      account_info.account_id, GetOrCreateURLLoaderFactory(),
+      access_token_fetcher_.get(),
+      base::BindOnce(&ProcessRetrieveIsRecoverabilityDegradedResponse,
+                     std::move(callback)));
 
   return request;
 }

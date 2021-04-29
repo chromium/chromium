@@ -51,6 +51,10 @@ class TrustedVaultConnectionImpl : public TrustedVaultConnection {
       std::unique_ptr<SecureBoxKeyPair> device_key_pair,
       DownloadNewKeysCallback callback) override;
 
+  std::unique_ptr<Request> RetrieveIsRecoverabilityDegraded(
+      const CoreAccountInfo& account_info,
+      IsRecoverabilityDegradedCallback callback) override;
+
  private:
   // SharedURLLoaderFactory is created lazily, because it needs to be done on
   // the backend sequence, while this class ctor is called on UI thread.
