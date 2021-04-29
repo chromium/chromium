@@ -556,6 +556,7 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
                        forState:UIControlStateNormal];
   primaryActionButton.accessibilityIdentifier =
       kConfirmationAlertPrimaryActionAccessibilityIdentifier;
+  primaryActionButton.titleLabel.adjustsFontSizeToFitWidth = YES;
 
   return primaryActionButton;
 }
@@ -582,6 +583,7 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
   secondaryActionButton.translatesAutoresizingMaskIntoConstraints = NO;
   secondaryActionButton.accessibilityIdentifier =
       kConfirmationAlertSecondaryActionAccessibilityIdentifier;
+  secondaryActionButton.titleLabel.adjustsFontSizeToFitWidth = YES;
 
   if (@available(iOS 13.4, *)) {
     if (self.pointerInteractionEnabled) {

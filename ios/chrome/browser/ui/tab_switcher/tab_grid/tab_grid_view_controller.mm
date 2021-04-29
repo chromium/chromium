@@ -1486,6 +1486,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     case TabGridPageRemoteTabs:
       base::RecordAction(
           base::UserMetricsAction("MobileTabGridSelectRemotePanel"));
+      LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
       break;
   }
   switch (self.pageChangeInteraction) {
