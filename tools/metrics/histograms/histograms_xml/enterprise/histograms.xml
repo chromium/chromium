@@ -1275,8 +1275,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.PolicyUserVerification"
-    enum="EnterprisePolicyUserVerification" expires_after="M92">
+    enum="EnterprisePolicyUserVerification" expires_after="M100">
   <owner>poromov@chromium.org</owner>
+  <owner>chromeos-commercial-stability@google.com</owner>
   <summary>Tracking the results of policy user verification.</summary>
 </histogram>
 
