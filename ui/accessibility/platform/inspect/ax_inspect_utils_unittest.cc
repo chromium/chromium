@@ -55,4 +55,11 @@ TEST(AXInspectUtilsTest, FormatSet) {
   EXPECT_EQ(AXFormatValue(set), std::string("{:1, 2, down}"));
 }
 
+TEST(AXInspectUtilsTest, FormatOrderedDict) {
+  base::Value ordered_dict(base::Value::Type::DICTIONARY);
+  ordered_dict.SetIntPath(AXMakeOrderedKey("w", 0), 40);
+  ordered_dict.SetIntPath(AXMakeOrderedKey("h", 1), 30);
+  EXPECT_EQ(AXFormatValue(ordered_dict), std::string("{w: 40, h: 30}"));
+}
+
 }  // namespace ui

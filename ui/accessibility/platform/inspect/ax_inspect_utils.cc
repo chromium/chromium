@@ -12,13 +12,19 @@ namespace ui {
 
 constexpr char kConstValuePrefix[] = "_const_";
 constexpr char kSetKeyPrefixDictAttr[] = "_setkey_";
+constexpr char kOrderedKeyPrefixDictAttr[] = "_index_";
 
-std::string AX_EXPORT AXMakeConst(const std::string& value) {
+std::string AXMakeConst(const std::string& value) {
   return kConstValuePrefix + value;
 }
 
-std::string AX_EXPORT AXMakeSetKey(const std::string& value) {
-  return kSetKeyPrefixDictAttr + value;
+std::string AXMakeSetKey(const std::string& key_name) {
+  return kSetKeyPrefixDictAttr + key_name;
+}
+
+std::string AXMakeOrderedKey(const std::string& key_name, int position) {
+  // Works for single-diget orders.
+  return kOrderedKeyPrefixDictAttr + base::NumberToString(position) + key_name;
 }
 
 std::string AXFormatValue(const base::Value& value) {
@@ -60,17 +66,26 @@ std::string AXFormatValue(const base::Value& value) {
   // dictionary is exposed as {value1, ..., valueN}.
   if (value.is_dict()) {
     const std::string setkey_prefix(kSetKeyPrefixDictAttr);
+    const std::string orderedkey_prefix(kOrderedKeyPrefixDictAttr);
+
     std::string output;
     for (const auto& item : value.DictItems()) {
       if (!output.empty()) {
         output += ", ";
       }
-      // Some of the dictionary's keys should not be appended to the output, so
-      // that the dictionary can also be used as a set. Such keys start with
-      // the _setkey_ prefix.
       if (base::StartsWith(item.first, setkey_prefix,
                            base::CompareCase::SENSITIVE)) {
+        // Some of the dictionary's keys should not be appended to the output,
+        // so that the dictionary can also be used as a set. Such keys start
+        // with the _setkey_ prefix.
         output += AXFormatValue(item.second);
+      } else if (base::StartsWith(item.first, orderedkey_prefix,
+                                  base::CompareCase::SENSITIVE)) {
+        // Process ordered dictionaries. Remove order number from keys before
+        // formatting.
+        std::string key = item.first;
+        key.erase(0, orderedkey_prefix.length() + 1);
+        output += key + ": " + AXFormatValue(item.second);
       } else {
         output += item.first + ": " + AXFormatValue(item.second);
       }

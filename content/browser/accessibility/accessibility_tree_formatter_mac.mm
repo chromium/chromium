@@ -42,6 +42,7 @@ using ui::AXPropertyFilter;
 using ui::AXPropertyNode;
 using ui::AXFormatValue;
 using ui::AXMakeConst;
+using ui::AXMakeOrderedKey;
 using ui::AXMakeSetKey;
 
 namespace content {
@@ -329,18 +330,23 @@ base::Value AccessibilityTreeFormatterMac::PopulatePoint(
 base::Value AccessibilityTreeFormatterMac::PopulateSize(
     NSSize size_value) const {
   base::Value size(base::Value::Type::DICTIONARY);
-  size.SetIntPath("w", static_cast<int>(size_value.width));
-  size.SetIntPath("h", static_cast<int>(size_value.height));
+  size.SetIntPath(AXMakeOrderedKey("w", 0), static_cast<int>(size_value.width));
+  size.SetIntPath(AXMakeOrderedKey("h", 1),
+                  static_cast<int>(size_value.height));
   return size;
 }
 
 base::Value AccessibilityTreeFormatterMac::PopulateRect(
     NSRect rect_value) const {
   base::Value rect(base::Value::Type::DICTIONARY);
-  rect.SetIntPath("x", static_cast<int>(rect_value.origin.x));
-  rect.SetIntPath("y", static_cast<int>(rect_value.origin.y));
-  rect.SetIntPath("w", static_cast<int>(rect_value.size.width));
-  rect.SetIntPath("h", static_cast<int>(rect_value.size.height));
+  rect.SetIntPath(AXMakeOrderedKey("x", 0),
+                  static_cast<int>(rect_value.origin.x));
+  rect.SetIntPath(AXMakeOrderedKey("y", 1),
+                  static_cast<int>(rect_value.origin.y));
+  rect.SetIntPath(AXMakeOrderedKey("w", 2),
+                  static_cast<int>(rect_value.size.width));
+  rect.SetIntPath(AXMakeOrderedKey("h", 3),
+                  static_cast<int>(rect_value.size.height));
   return rect;
 }
 
@@ -378,10 +384,12 @@ base::Value AccessibilityTreeFormatterMac::PopulateTextPosition(
   }
 
   base::Value set(base::Value::Type::DICTIONARY);
-  set.SetStringPath(AXMakeSetKey("index1_anchor"),
+  set.SetStringPath(AXMakeSetKey(AXMakeOrderedKey("anchor", 0)),
                     NodeToLineIndex(cocoa_anchor, line_indexer));
-  set.SetIntPath(AXMakeSetKey("index2_offset"), position->text_offset());
-  set.SetStringPath(AXMakeSetKey("index3_affinity"), AXMakeConst(affinity));
+  set.SetIntPath(AXMakeSetKey(AXMakeOrderedKey("offset", 1)),
+                 position->text_offset());
+  set.SetStringPath(AXMakeSetKey(AXMakeOrderedKey("affinity", 2)),
+                    AXMakeConst(affinity));
   return set;
 }
 
