@@ -261,14 +261,18 @@ class KeySystemConfigSelector::ConfigState {
       case EmeConfigRule::PERSISTENCE_REQUIRED:
         return !is_persistence_not_allowed_;
       case EmeConfigRule::IDENTIFIER_AND_PERSISTENCE_REQUIRED:
-        return (!is_identifier_not_allowed_ && IsPermissionPossible() &&
-                !is_persistence_not_allowed_);
+        return !is_identifier_not_allowed_ && IsPermissionPossible() &&
+               !is_persistence_not_allowed_;
       case EmeConfigRule::HW_SECURE_CODECS_NOT_ALLOWED:
         return !are_hw_secure_codecs_required_;
       case EmeConfigRule::HW_SECURE_CODECS_REQUIRED:
         return !are_hw_secure_codecs_not_allowed_;
       case EmeConfigRule::IDENTIFIER_AND_HW_SECURE_CODECS_REQUIRED:
         return !is_identifier_not_allowed_ && IsPermissionPossible() &&
+               !are_hw_secure_codecs_not_allowed_;
+      case EmeConfigRule::IDENTIFIER_PERSISTENCE_AND_HW_SECURE_CODECS_REQUIRED:
+        return !is_identifier_not_allowed_ && IsPermissionPossible() &&
+               !is_persistence_not_allowed_ &&
                !are_hw_secure_codecs_not_allowed_;
       case EmeConfigRule::SUPPORTED:
         return true;
@@ -311,6 +315,11 @@ class KeySystemConfigSelector::ConfigState {
         return;
       case EmeConfigRule::IDENTIFIER_AND_HW_SECURE_CODECS_REQUIRED:
         is_identifier_required_ = true;
+        are_hw_secure_codecs_required_ = true;
+        return;
+      case EmeConfigRule::IDENTIFIER_PERSISTENCE_AND_HW_SECURE_CODECS_REQUIRED:
+        is_identifier_required_ = true;
+        is_persistence_required_ = true;
         are_hw_secure_codecs_required_ = true;
         return;
       case EmeConfigRule::SUPPORTED:

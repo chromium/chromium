@@ -5,6 +5,7 @@
 #include "components/cdm/renderer/widevine_key_system_properties.h"
 
 #include "base/feature_list.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
@@ -160,12 +161,16 @@ EmeConfigRule WidevineKeySystemProperties::GetRobustnessConfigRule(
   if (robustness >= Robustness::SW_SECURE_DECODE) {
     return EmeConfigRule::HW_SECURE_CODECS_REQUIRED;
   }
+#elif defined(OS_WIN)
+  // On Windows, hardware security uses MediaFoundation-based CDM which requires
+  // identifier and persistent state.
+  if (robustness >= Robustness::HW_SECURE_CRYPTO)
+    return EmeConfigRule::IDENTIFIER_PERSISTENCE_AND_HW_SECURE_CODECS_REQUIRED;
 #else
-  // On other platforms, generally hardware security requires hardware secure
-  // codecs and an identifier.
-  if (robustness >= Robustness::HW_SECURE_CRYPTO) {
-    return EmeConfigRule::IDENTIFIER_AND_HW_SECURE_CODECS_REQUIRED;
-  }
+  // On other platforms, require hardware secure codecs for HW_SECURE_CRYPTO and
+  // above.
+  if (robustness >= Robustness::HW_SECURE_CRYPTO)
+    return EmeConfigRule::HW_SECURE_CODECS_REQUIRED;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return EmeConfigRule::SUPPORTED;
