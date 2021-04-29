@@ -20,6 +20,7 @@
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/test/test_pending_task.h"
+#include "base/threading/sequence_local_storage_map.h"
 #include "base/threading/thread_checker_impl.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/clock.h"
@@ -120,6 +121,8 @@ class TestMockTimeTaskRunner : public SingleThreadTaskRunner,
    private:
     ThreadTaskRunnerHandleOverrideForTesting
         thread_task_runner_handle_override_;
+    internal::SequenceLocalStorageMapOverrideForTesting
+        sequence_local_storage_map_override_;
     DISALLOW_COPY_AND_ASSIGN(ScopedContext);
   };
 
@@ -204,7 +207,11 @@ class TestMockTimeTaskRunner : public SingleThreadTaskRunner,
                                   OnceClosure task,
                                   TimeDelta delay) override;
 
+  // TaskRunner:
+  void OnDestruct() const override;
+
  protected:
+  friend class DeleteHelper<TestMockTimeTaskRunner>;
   ~TestMockTimeTaskRunner() override;
 
   // Called before the next task to run is selected, so that subclasses have a
@@ -284,6 +291,12 @@ class TestMockTimeTaskRunner : public SingleThreadTaskRunner,
   // needs to be a ThreadCheckerImpl.
   ThreadCheckerImpl thread_checker_;
 
+  // The task runner this TestMockTimeTaskRunner was created on, if any. If
+  // non-null, destruction will be posted back to this thread if it happens
+  // elsewhere. It's null in unit tests without a main thread task environment
+  // where deletion will thus always proceed synchronously.
+  const scoped_refptr<SingleThreadTaskRunner> owning_thread_;
+
   Time now_;
   TimeTicks now_ticks_;
 
@@ -300,6 +313,8 @@ class TestMockTimeTaskRunner : public SingleThreadTaskRunner,
 
   const scoped_refptr<NonOwningProxyTaskRunner> proxy_task_runner_;
   std::unique_ptr<ThreadTaskRunnerHandle> thread_task_runner_handle_;
+  std::unique_ptr<internal::SequenceLocalStorageMap>
+      sequence_local_storage_map_;
 
   // Set to true in RunLoop::Delegate::Quit() to signal the topmost
   // RunLoop::Delegate::Run() instance to stop, reset to false when it does.

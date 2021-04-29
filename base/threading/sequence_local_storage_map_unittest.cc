@@ -113,5 +113,36 @@ TEST(SequenceLocalStorageMapTest, DestructorCalledOnSetOverwrite) {
   EXPECT_TRUE(set_on_destruction2);
 }
 
+TEST(SequenceLocalStorageMapTest, NestedSequenceLocalStorageMap) {
+  SequenceLocalStorageMap outer_sequence_local_storage_map;
+  SequenceLocalStorageMap::ValueDestructorPair outer_value_pair =
+      CreateValueDestructorPair<int>(5);
+  outer_sequence_local_storage_map.Set(kSlotId, std::move(outer_value_pair));
+
+  SequenceLocalStorageMap inner_sequence_local_storage_map;
+  SequenceLocalStorageMap::ValueDestructorPair inner_value_pair =
+      CreateValueDestructorPair<int>(6);
+  inner_sequence_local_storage_map.Set(kSlotId, std::move(inner_value_pair));
+
+  SequenceLocalStorageMapOverrideForTesting outer_override(
+      &outer_sequence_local_storage_map);
+  ASSERT_TRUE(SequenceLocalStorageMap::IsSetForCurrentThread());
+  EXPECT_EQ(*static_cast<int*>(
+                SequenceLocalStorageMap::GetForCurrentThread().Get(kSlotId)),
+            5);
+  {
+    SequenceLocalStorageMapOverrideForTesting inner_override(
+        &inner_sequence_local_storage_map);
+    ASSERT_TRUE(SequenceLocalStorageMap::IsSetForCurrentThread());
+    EXPECT_EQ(*static_cast<int*>(
+                  SequenceLocalStorageMap::GetForCurrentThread().Get(kSlotId)),
+              6);
+  }
+  ASSERT_TRUE(SequenceLocalStorageMap::IsSetForCurrentThread());
+  EXPECT_EQ(*static_cast<int*>(
+                SequenceLocalStorageMap::GetForCurrentThread().Get(kSlotId)),
+            5);
+}
+
 }  // namespace internal
 }  // namespace base

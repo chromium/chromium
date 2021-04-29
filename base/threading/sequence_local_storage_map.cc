@@ -34,6 +34,18 @@ ScopedSetSequenceLocalStorageMapForCurrentThread::
   tls_current_sequence_local_storage.Get().Set(nullptr);
 }
 
+SequenceLocalStorageMapOverrideForTesting::
+    SequenceLocalStorageMapOverrideForTesting(
+        SequenceLocalStorageMap* sequence_local_storage)
+    : old_sls_map_(tls_current_sequence_local_storage.Get().Get()) {
+  tls_current_sequence_local_storage.Get().Set(sequence_local_storage);
+}
+
+SequenceLocalStorageMapOverrideForTesting::
+    ~SequenceLocalStorageMapOverrideForTesting() {
+  tls_current_sequence_local_storage.Get().Set(old_sls_map_);
+}
+
 // static
 SequenceLocalStorageMap& SequenceLocalStorageMap::GetForCurrentThread() {
   SequenceLocalStorageMap* current_sequence_local_storage =

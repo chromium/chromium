@@ -89,6 +89,21 @@ class BASE_EXPORT ScopedSetSequenceLocalStorageMapForCurrentThread {
  private:
   DISALLOW_COPY_AND_ASSIGN(ScopedSetSequenceLocalStorageMapForCurrentThread);
 };
+
+// This is analogous to ThreadTaskRunnerHandleOverrideForTesting but for
+// SequenceLocalStorageMaps.
+class BASE_EXPORT SequenceLocalStorageMapOverrideForTesting {
+ public:
+  explicit SequenceLocalStorageMapOverrideForTesting(
+      SequenceLocalStorageMap* sequence_local_storage);
+  ~SequenceLocalStorageMapOverrideForTesting();
+
+ private:
+  SequenceLocalStorageMap* const old_sls_map_;
+
+  DISALLOW_COPY_AND_ASSIGN(SequenceLocalStorageMapOverrideForTesting);
+};
+
 }  // namespace internal
 }  // namespace base
 
