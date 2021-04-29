@@ -155,5 +155,21 @@ TEST(ProtoUtilTest, NoticeCardNotAcknowledged) {
                    .notice_card_acknowledged());
 }
 
+TEST(ProtoUtilTest, AutoplayEnabled) {
+  RequestMetadata request_metadata;
+  request_metadata.autoplay_enabled = true;
+
+  feedwire::FeedRequest request =
+      CreateFeedQueryRefreshRequest(
+          kForYouStream, feedwire::FeedQuery::MANUAL_REFRESH, request_metadata,
+          /*consistency_token=*/std::string())
+          .feed_request();
+
+  ASSERT_THAT(request.client_capability(),
+              testing::Contains(feedwire::Capability::INLINE_VIDEO_AUTOPLAY));
+  ASSERT_THAT(request.client_capability(),
+              testing::Contains(feedwire::Capability::OPEN_VIDEO_COMMAND));
+}
+
 }  // namespace
 }  // namespace feed

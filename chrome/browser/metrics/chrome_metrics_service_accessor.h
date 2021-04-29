@@ -75,6 +75,7 @@ class MetricsReportingHandler;
 }
 
 namespace feed {
+class FeedServiceBridge;
 class FeedServiceDelegateImpl;
 }  // namespace feed
 
@@ -132,6 +133,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class WebUITabStripFieldTrial;
   friend class feed::FeedServiceDelegateImpl;
   friend class browser_sync::DeviceInfoSyncClientImpl;
+  friend class feed::FeedServiceBridge;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   friend class ChromeCameraAppUIDelegate;

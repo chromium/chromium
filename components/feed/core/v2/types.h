@@ -45,6 +45,7 @@ struct RequestMetadata {
   std::string session_id;
   DisplayMetrics display_metrics;
   bool notice_card_acknowledged = false;
+  bool autoplay_enabled = false;
 };
 
 // Data internal to MetricsReporter which is persisted to Prefs.

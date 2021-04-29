@@ -69,6 +69,8 @@ class FeedService : public KeyedService {
     virtual std::string GetLanguageTag() = 0;
     // Returns display metrics for the device.
     virtual DisplayMetrics GetDisplayMetrics() = 0;
+    // Returns true if autoplay is enabled.
+    virtual bool IsAutoplayEnabled() = 0;
     // Clear all stored data.
     virtual void ClearAll() = 0;
     // Fetch the image and store it in the disk cache.
@@ -116,6 +118,9 @@ class FeedService : public KeyedService {
   // Returns the client ID for reliability logging.
   static uint64_t GetReliabilityLoggingId(const std::string& metrics_id,
                                           PrefService* pref_service);
+
+  //  Whether autoplay is enabled.
+  static bool IsAutoplayEnabled(const PrefService& pref_service);
 
  private:
   class StreamDelegateImpl;

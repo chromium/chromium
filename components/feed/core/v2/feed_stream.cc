@@ -721,6 +721,7 @@ RequestMetadata FeedStream::GetRequestMetadata(const StreamType& stream_type,
   result.language_tag = delegate_->GetLanguageTag();
   result.notice_card_acknowledged =
       notice_card_tracker_.HasAcknowledgedNoticeCard();
+  result.autoplay_enabled = delegate_->IsAutoplayEnabled();
 
   if (is_for_next_page) {
     // If we are continuing an existing feed, use whatever session continuity

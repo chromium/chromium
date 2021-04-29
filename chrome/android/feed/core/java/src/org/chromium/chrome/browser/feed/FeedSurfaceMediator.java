@@ -684,7 +684,7 @@ public class FeedSurfaceMediator
                         R.id.ntp_feed_header_menu_item_reactions, iconId));
             }
         }
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.INTEREST_FEED_V2_AUTOPLAY)) {
+        if (FeedServiceBridge.isAutoplayEnabled()) {
             itemList.add(buildMenuListItem(
                     R.string.ntp_manage_autoplay, R.id.ntp_feed_header_menu_item_autoplay, iconId));
         }

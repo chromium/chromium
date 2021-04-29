@@ -706,6 +706,9 @@ DisplayMetrics FeedApiTest::GetDisplayMetrics() {
 std::string FeedApiTest::GetLanguageTag() {
   return "en-US";
 }
+bool FeedApiTest::IsAutoplayEnabled() {
+  return false;
+}
 void FeedApiTest::PrefetchImage(const GURL& url) {
   prefetched_images_.push_back(url);
   prefetch_image_call_count_++;

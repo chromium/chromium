@@ -46,6 +46,9 @@ class FeedServiceDelegateImpl : public FeedService::Delegate {
   DisplayMetrics GetDisplayMetrics() override {
     return FeedServiceBridge::GetDisplayMetrics();
   }
+  bool IsAutoplayEnabled() override {
+    return FeedServiceBridge::IsAutoplayEnabled();
+  }
   void ClearAll() override { FeedServiceBridge::ClearAll(); }
   void PrefetchImage(const GURL& url) override {
     FeedServiceBridge::PrefetchImage(url);

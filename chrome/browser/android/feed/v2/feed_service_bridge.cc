@@ -15,11 +15,13 @@
 #include "chrome/browser/android/feed/v2/feed_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/feed/android/jni_headers/FeedServiceBridge_jni.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/public/feed_service.h"
+#include "components/feed/feed_feature_list.h"
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
 
@@ -94,6 +96,10 @@ static jlong JNI_FeedServiceBridge_GetReliabilityLoggingId(JNIEnv* env) {
   return FeedServiceBridge::GetReliabilityLoggingId();
 }
 
+static jboolean JNI_FeedServiceBridge_IsAutoplayEnabled(JNIEnv* env) {
+  return FeedServiceBridge::IsAutoplayEnabled();
+}
+
 static jlong JNI_FeedServiceBridge_AddUnreadContentObserver(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_observer,
@@ -125,6 +131,13 @@ DisplayMetrics FeedServiceBridge::GetDisplayMetrics() {
   result.width_pixels = numbers[1];
   result.height_pixels = numbers[2];
   return result;
+}
+
+bool FeedServiceBridge::IsAutoplayEnabled() {
+  // For now, disable autoplay if metrics are disabled until we can ensure that
+  // the autoplay feature does not report metrics.
+  return base::FeatureList::IsEnabled(kInterestFeedV2Autoplay) &&
+         ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled();
 }
 
 void FeedServiceBridge::ClearAll() {

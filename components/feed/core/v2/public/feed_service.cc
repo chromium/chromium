@@ -142,6 +142,9 @@ class FeedService::StreamDelegateImpl : public FeedStream::Delegate {
   std::string GetLanguageTag() override {
     return service_delegate_->GetLanguageTag();
   }
+  bool IsAutoplayEnabled() override {
+    return service_delegate_->IsAutoplayEnabled();
+  }
   void ClearAll() override { service_delegate_->ClearAll(); }
   void PrefetchImage(const GURL& url) override {
     service_delegate_->PrefetchImage(url);

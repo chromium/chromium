@@ -138,7 +138,7 @@ feedwire::Request CreateFeedQueryRequest(
   if (base::FeatureList::IsEnabled(kInterestFeedV2Hearts)) {
     feed_request.add_client_capability(feedwire::Capability::HEART);
   }
-  if (base::FeatureList::IsEnabled(kInterestFeedV2Autoplay)) {
+  if (request_metadata.autoplay_enabled) {
     feed_request.add_client_capability(
         feedwire::Capability::INLINE_VIDEO_AUTOPLAY);
     feed_request.add_client_capability(

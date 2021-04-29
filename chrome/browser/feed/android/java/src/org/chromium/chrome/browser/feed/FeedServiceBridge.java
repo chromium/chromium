@@ -91,7 +91,6 @@ public final class FeedServiceBridge {
             }
         }
     }
-
     /** Called at startup to trigger creation of |FeedService|. */
     public static void startup() {
         FeedServiceBridgeJni.get().startup();
@@ -125,6 +124,10 @@ public final class FeedServiceBridge {
 
     public static long getReliabilityLoggingId() {
         return FeedServiceBridgeJni.get().getReliabilityLoggingId();
+    }
+
+    public static boolean isAutoplayEnabled() {
+        return FeedServiceBridgeJni.get().isAutoplayEnabled();
     }
 
     /** Observes whether or not the Feed stream contains unread content */
@@ -165,6 +168,7 @@ public final class FeedServiceBridge {
         int getVideoPreviewsTypePreference();
         void setVideoPreviewsTypePreference(int videoPreviewsType);
         long getReliabilityLoggingId();
+        boolean isAutoplayEnabled();
         long addUnreadContentObserver(Object object, boolean isWebFeed);
         @NativeClassQualifiedName("feed::JavaUnreadContentObserver")
         void destroy(long nativePtr);

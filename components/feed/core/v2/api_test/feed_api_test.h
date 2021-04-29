@@ -399,6 +399,7 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   bool IsOffline() override;
   DisplayMetrics GetDisplayMetrics() override;
   std::string GetLanguageTag() override;
+  bool IsAutoplayEnabled() override;
   void ClearAll() override {}
   std::string GetSyncSignedInGaia() override;
   void PrefetchImage(const GURL& url) override;
