@@ -209,6 +209,8 @@ public class ContextualSearchManagerTest {
             ChromeFeatureList.RELATED_SEARCHES, true, ChromeFeatureList.RELATED_SEARCHES_UI, false);
     private static final ImmutableMap<String, Boolean> ENABLE_RELATED_SEARCHES_UI = ImmutableMap.of(
             ChromeFeatureList.RELATED_SEARCHES, true, ChromeFeatureList.RELATED_SEARCHES_UI, true);
+    private static final ImmutableMap<String, Boolean> DISABLE_FORCE_CAPTION =
+            ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, false);
     private static final ImmutableMap<String, Boolean> ENABLE_FORCE_CAPTION =
             ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, true);
 
@@ -3797,6 +3799,7 @@ public class ContextualSearchManagerTest {
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void testNonResolveCaption() throws Exception {
         // Simulate a non-resolve search and make sure no Caption is shown.
+        FeatureList.setTestFeatures(DISABLE_FORCE_CAPTION);
         simulateNonResolveSearch("search");
         Assert.assertFalse(mPanel.getSearchBarControl().getCaptionVisible());
         closePanel();

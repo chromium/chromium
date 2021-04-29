@@ -2079,7 +2079,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Translations_20210322",
+                    "name": "TranslationsCaption_20210422",
                     "params": {
                         "availability": "any",
                         "event_trigger": "name:translations_bubble_shown;comparator:<3;window:30;storage:180",
@@ -2087,6 +2087,7 @@
                         "session_rate": "<1"
                     },
                     "enable_features": [
+                        "ContextualSearchForceCaption",
                         "ContextualSearchLiteralSearchTap",
                         "ContextualSearchTranslations",
                         "IPH_ContextualSearchTranslationEnable"
