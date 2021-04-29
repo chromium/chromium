@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_RULES_MANAGER_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_RULES_MANAGER_H_
 
+#include <string>
+
 #include "components/keyed_service/core/keyed_service.h"
 
 class GURL;
@@ -93,6 +95,13 @@ class DlpRulesManager : public KeyedService {
   // serverside. Should always return a nullptr if reporting is disabled (see
   // IsReportingEnabled).
   virtual DlpReportingManager* GetReportingManager() const = 0;
+
+  // Returns the URL pattern that `source_url` is matched against. The returned
+  // URL pattern should be configured in a policy rule with the same
+  // `restriction` and `level`.
+  virtual std::string GetSourceUrlPattern(const GURL& source_url,
+                                          Restriction restriction,
+                                          Level level) const = 0;
 };
 
 }  // namespace policy

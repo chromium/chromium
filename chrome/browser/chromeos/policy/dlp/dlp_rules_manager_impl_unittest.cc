@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -507,6 +508,75 @@ TEST_F(DlpRulesManagerImplTest, FilesRestriction_DlpClientNotified) {
   EXPECT_EQ(1, chromeos::DlpClient::Get()
                    ->GetTestInterface()
                    ->GetSetDlpFilesPolicyCount());
+}
+
+TEST_F(DlpRulesManagerImplTest, GetSourceUrlPattern) {
+  base::Value rules(base::Value::Type::LIST);
+
+  base::Value src_urls_1(base::Value::Type::LIST);
+  src_urls_1.Append(kChatPattern);
+  src_urls_1.Append(kSalesforcePattern);
+  src_urls_1.Append(kDocsPattern);
+  src_urls_1.Append(kDrivePattern);
+  src_urls_1.Append(kCompanyPattern);
+
+  base::Value restrictions_1(base::Value::Type::LIST);
+  restrictions_1.Append(dlp_test_util::CreateRestrictionWithLevel(
+      dlp::kScreenshotRestriction, dlp::kBlockLevel));
+
+  rules.Append(dlp_test_util::CreateRule(
+      "Block screenshots", "Block screenshots of work urls",
+      std::move(src_urls_1),
+      /*dst_urls=*/base::Value(base::Value::Type::LIST),
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
+      std::move(restrictions_1)));
+
+  base::Value src_urls_2(base::Value::Type::LIST);
+  src_urls_1.Append(kWildCardMatching);
+
+  base::Value restrictions_2(base::Value::Type::LIST);
+  restrictions_2.Append(dlp_test_util::CreateRestrictionWithLevel(
+      dlp::kPrintingRestriction, dlp::kBlockLevel));
+
+  rules.Append(dlp_test_util::CreateRule(
+      "Block any printing", "Block printing any docs", std::move(src_urls_1),
+      /*dst_urls=*/base::Value(base::Value::Type::LIST),
+      /*dst_components=*/base::Value(base::Value::Type::LIST),
+      std::move(restrictions_2)));
+
+  UpdatePolicyPref(std::move(rules));
+
+  EXPECT_EQ(std::string(kChatPattern),
+            dlp_rules_manager_.GetSourceUrlPattern(
+                GURL(std::string("https://") + std::string(kChatPattern)),
+                DlpRulesManager::Restriction::kScreenshot,
+                DlpRulesManager::Level::kBlock));
+  EXPECT_EQ(std::string(kSalesforcePattern),
+            dlp_rules_manager_.GetSourceUrlPattern(
+                GURL(std::string("https://") + std::string(kSalesforcePattern) +
+                     std::string("/xyz")),
+                DlpRulesManager::Restriction::kScreenshot,
+                DlpRulesManager::Level::kBlock));
+  EXPECT_EQ(std::string(kDocsPattern),
+            dlp_rules_manager_.GetSourceUrlPattern(
+                GURL(std::string("https://") + std::string(kDocsPattern) +
+                     std::string("/path?v=1")),
+                DlpRulesManager::Restriction::kScreenshot,
+                DlpRulesManager::Level::kBlock));
+  EXPECT_EQ(std::string(""),
+            dlp_rules_manager_.GetSourceUrlPattern(
+                GURL(std::string("https://") + std::string(kDrivePattern)),
+                DlpRulesManager::Restriction::kScreenshot,
+                DlpRulesManager::Level::kAllow));
+  EXPECT_EQ(std::string(""),
+            dlp_rules_manager_.GetSourceUrlPattern(
+                GURL(std::string("https://") + std::string(kCompanyPattern)),
+                DlpRulesManager::Restriction::kPrivacyScreen,
+                DlpRulesManager::Level::kBlock));
+  EXPECT_EQ(std::string(kWildCardMatching),
+            dlp_rules_manager_.GetSourceUrlPattern(
+                GURL(kGoogleUrl), DlpRulesManager::Restriction::kPrinting,
+                DlpRulesManager::Level::kBlock));
 }
 
 }  // namespace policy

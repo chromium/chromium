@@ -255,6 +255,36 @@ DlpReportingManager* DlpRulesManagerImpl::GetReportingManager() const {
   return reporting_manager_.get();
 }
 
+std::string DlpRulesManagerImpl::GetSourceUrlPattern(const GURL& source_url,
+                                                     Restriction restriction,
+                                                     Level level) const {
+  const std::set<UrlConditionId> url_conditions_ids =
+      src_url_matcher_->MatchURL(source_url);
+
+  std::map<RuleId, UrlConditionId> rules_conditions_map;
+  for (const auto& condition_id : url_conditions_ids) {
+    rules_conditions_map.insert(
+        std::make_pair(src_url_rules_mapping_.at(condition_id), condition_id));
+  }
+  auto restriction_itr = restrictions_map_.find(restriction);
+  if (restriction_itr == restrictions_map_.end())
+    return std::string();
+
+  const auto rules_levels_map = restriction_itr->second;
+  for (const auto& rule_level_entry : rules_levels_map) {
+    auto rule_id = rule_level_entry.first;
+    auto lvl = rule_level_entry.second;
+    auto rule_condition_itr = rules_conditions_map.find(rule_id);
+    if (lvl == level && rule_condition_itr != rules_conditions_map.end()) {
+      auto condition_id = rule_condition_itr->second;
+      auto condition_pattern_itr = src_pattterns_mapping_.find(condition_id);
+      if (condition_pattern_itr != src_pattterns_mapping_.end())
+        return condition_pattern_itr->second;
+    }
+  }
+  return std::string();
+}
+
 void DlpRulesManagerImpl::OnPolicyUpdate() {
   components_rules_.clear();
   restrictions_map_.clear();

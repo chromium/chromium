@@ -42,6 +42,9 @@ class DlpRulesManagerImpl : public DlpRulesManager {
                               Restriction restriction) const override;
   bool IsReportingEnabled() const override;
   DlpReportingManager* GetReportingManager() const override;
+  std::string GetSourceUrlPattern(const GURL& source_url,
+                                  Restriction restriction,
+                                  Level level) const override;
 
  protected:
   friend class DlpRulesManagerFactory;
