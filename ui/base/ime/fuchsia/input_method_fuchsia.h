@@ -34,8 +34,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_FUCHSIA) InputMethodFuchsia
   // InputMethodBase interface implementation.
   VirtualKeyboardController* GetVirtualKeyboardController() final;
   ui::EventDispatchDetails DispatchKeyEvent(ui::KeyEvent* event) final;
-  void OnCaretBoundsChanged(const TextInputClient* client) final;
   void CancelComposition(const TextInputClient* client) final;
+  void OnTextInputTypeChanged(const TextInputClient* client) final;
+  void OnCaretBoundsChanged(const TextInputClient* client) final;
   bool IsCandidatePopupOpen() const final;
 
  private:

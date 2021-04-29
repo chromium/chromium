@@ -122,10 +122,6 @@
 #include "ui/wm/core/ime_util_chromeos.h"
 #endif
 
-#if defined(OS_FUCHSIA)
-#include "ui/base/ime/virtual_keyboard_controller.h"
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/base/ime/chromeos/extension_ime_util.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
@@ -1827,12 +1823,6 @@ void RenderWidgetHostViewAura::FocusedNodeChanged(
 #if defined(OS_WIN)
   if (window_ && virtual_keyboard_controller_win_) {
     virtual_keyboard_controller_win_->FocusedNodeChanged(editable);
-  }
-#elif defined(OS_FUCHSIA)
-  if (!editable && window_) {
-    if (input_method) {
-      input_method->GetVirtualKeyboardController()->DismissVirtualKeyboard();
-    }
   }
 #endif
 }
