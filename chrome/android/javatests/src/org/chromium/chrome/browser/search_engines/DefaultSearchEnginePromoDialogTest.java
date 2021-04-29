@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.locale;
+package org.chromium.chrome.browser.search_engines;
 
 import android.app.Activity;
 import android.support.test.InstrumentationRegistry;
@@ -22,7 +22,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
-import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ActivityTestUtils;
@@ -30,6 +30,7 @@ import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -98,15 +99,23 @@ public class DefaultSearchEnginePromoDialogTest {
 
     private DefaultSearchEnginePromoDialog showDialog(final Activity activity)
             throws ExecutionException {
-        return TestThreadUtils.runOnUiThreadBlocking(
-                new Callable<DefaultSearchEnginePromoDialog>() {
+        DefaultSearchEngineDialogHelper.Delegate delegate =
+                new DefaultSearchEngineDialogHelper.Delegate() {
                     @Override
-                    public DefaultSearchEnginePromoDialog call() {
-                        DefaultSearchEnginePromoDialog dialog = new DefaultSearchEnginePromoDialog(
-                                activity, LocaleManager.SearchEnginePromoType.SHOW_EXISTING, null);
-                        dialog.show();
-                        return dialog;
+                    public List<TemplateUrl> getSearchEnginesForPromoDialog(
+                            @SearchEnginePromoType int type) {
+                        return new ArrayList<>();
                     }
-                });
+
+                    @Override
+                    public void onUserSearchEngineChoice(@SearchEnginePromoType int type,
+                            List<String> keywords, String keyword) {}
+                };
+        return TestThreadUtils.runOnUiThreadBlocking(() -> {
+            DefaultSearchEnginePromoDialog dialog = new DefaultSearchEnginePromoDialog(
+                    activity, delegate, SearchEnginePromoType.SHOW_EXISTING, null);
+            dialog.show();
+            return dialog;
+        });
     }
 }

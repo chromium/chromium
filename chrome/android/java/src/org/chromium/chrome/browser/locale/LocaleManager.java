@@ -26,6 +26,9 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelper;
+import org.chromium.chrome.browser.search_engines.DefaultSearchEnginePromoDialog;
+import org.chromium.chrome.browser.search_engines.SogouPromoDialog;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -45,8 +48,8 @@ import java.util.List;
  * Manager for some locale specific logics.
  * TODO(https://crbug.com/1198923) Turn this into a per-activity object.
  */
-public class LocaleManager {
-    public static final String SPECIAL_LOCALE_ID = "US";
+public class LocaleManager implements DefaultSearchEngineDialogHelper.Delegate {
+    private static final String SPECIAL_LOCALE_ID = "US";
 
     /** The current state regarding search engine promo dialogs. */
     @IntDef({SearchEnginePromoState.SHOULD_CHECK, SearchEnginePromoState.CHECKED_NOT_SHOWN,
@@ -262,14 +265,14 @@ public class LocaleManager {
                 return;
             case SearchEnginePromoType.SHOW_SOGOU:
                 dialogSupplier = ()
-                        -> new SogouPromoDialog(activity, LocaleManager.this,
+                        -> new SogouPromoDialog(activity, this::onSelectSearchEngine,
                                 finalizeInternalCallback, mSettingsLauncher);
                 break;
             case SearchEnginePromoType.SHOW_EXISTING:
             case SearchEnginePromoType.SHOW_NEW:
                 dialogSupplier = ()
                         -> new DefaultSearchEnginePromoDialog(
-                                activity, shouldShow, finalizeInternalCallback);
+                                activity, LocaleManager.this, shouldShow, finalizeInternalCallback);
                 break;
             default:
                 assert false;
@@ -285,6 +288,16 @@ public class LocaleManager {
         }
         dialogSupplier.get().show();
         mSearchEnginePromoShownThisSession = true;
+    }
+
+    /**
+     * Called when search engine to use is selected on SogouPromoDialog.
+     * @param useSogou {@code true} if Sogou engine is chosen.
+     */
+    private void onSelectSearchEngine(boolean useSogou) {
+        setSearchEngineAutoSwitch(useSogou);
+        addSpecialSearchEngines();
+        if (useSogou) overrideDefaultSearchEngine();
     }
 
     /**
@@ -388,14 +401,16 @@ public class LocaleManager {
         return mLocaleTemplateUrlLoader;
     }
 
-    /**
-     * Get the list of search engines that a user may choose between.
-     * @param promoType Which search engine list to show.
-     * @return List of engines to show.
-     */
+    @Override
     public List<TemplateUrl> getSearchEnginesForPromoDialog(@SearchEnginePromoType int promoType) {
         throw new IllegalStateException(
                 "Not applicable unless existing or new promos are required");
+    }
+
+    @Override
+    public void onUserSearchEngineChoice(
+            @SearchEnginePromoType int type, List<String> keywords, String keyword) {
+        onUserSearchEngineChoiceFromPromoDialog(type, keywords, keyword);
     }
 
     /** Set a LocaleManager instance. This is called only by AppHooks. */
