@@ -51,6 +51,9 @@ configuration most system services (like the power manager, bluetooth daemon,
 etc.) are stubbed out. The entire system UI runs in a single X11 window on your
 desktop.
 
+You can test sign-in/sync in this mode by adding the --login-manager flag, see
+the [Login notes](#Login-notes) section.
+
 ### Building and running Chromium with Chromium OS UI on your local machine
 
 Run the following in your chromium checkout:
@@ -114,9 +117,10 @@ By default this build signs in with a stub user. To specify a real user:
 *   For first run, add the following options to chrome's command line:
     `--user-data-dir=/tmp/chrome --login-manager`
 *   Go through the out-of-the-box UX and sign in with a real Gmail account.
-*   For subsequent runs, add:
+*   For subsequent runs, if you want to skip the login manager page, add:
     `--user-data-dir=/tmp/chrome --login-user=username@gmail.com
-    --login-profile=username@gmail.com-hash`
+    --login-profile=username@gmail.com-hash`. It's also fine to just keep
+    --login-manager instead.
 *   To run in guest mode instantly, add:
     `--user-data-dir=/tmp/chrome --bwsi --incognito --login-user='$guest'
     --login-profile=user`
