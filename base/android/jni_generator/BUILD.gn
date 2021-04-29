@@ -27,7 +27,9 @@ android_library("jni_sample_java") {
 
 android_library("jni_annotation_sample_java") {
   sources = [ "java/src/org/chromium/example/jni_generator/SampleForAnnotationProcessor.java" ]
+
   deps = [ "//base:base_java" ]
+
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 

@@ -3772,6 +3772,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/NativeLibraryLoadedStatus.java",
       "android/java/src/org/chromium/base/annotations/NativeMethods.java",
     ]
+
     deps = [ "//build/android:build_config_java" ]
   }
 
@@ -3971,20 +3972,18 @@ if (is_android) {
 
   android_library("base_javatests") {
     testonly = true
+
     deps = [
       ":base_java",
       ":base_java_test_support",
-      ":jni_java",
       "//base/test:test_support_java",
-      "//third_party/android_support_test_runner:rules_java",
       "//third_party/android_support_test_runner:runner_java",
-      "//third_party/androidx:androidx_test_monitor_java",
       "//third_party/androidx:androidx_test_runner_java",
-      "//third_party/androidx:androidx_test_uiautomator_uiautomator_java",
       "//third_party/hamcrest:hamcrest_java",
       "//third_party/junit:junit",
       "//third_party/mockito:mockito_java",
     ]
+
     sources = [
       # AssertsTest doesn't really belong in //base but it's preferable to
       # stick it here than create another target for a single test.
@@ -4031,21 +4030,15 @@ if (is_android) {
 
   android_library("base_java_test_support") {
     testonly = true
+
     deps = [
       ":base_java",
-      ":jni_java",
       "//third_party/android_sdk:android_support_chromium_java",
       "//third_party/android_sdk:android_test_base_java",
       "//third_party/android_sdk:android_test_mock_java",
-      "//third_party/android_support_test_runner:exposed_instrumentation_api_publish_java",
-      "//third_party/android_support_test_runner:rules_java",
       "//third_party/android_support_test_runner:runner_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_core_core_java",
-      "//third_party/androidx:androidx_test_monitor_java",
-      "//third_party/androidx:androidx_test_runner_java",
-      "//third_party/androidx:androidx_test_uiautomator_uiautomator_java",
-      "//third_party/hamcrest:hamcrest_core_java",
       "//third_party/hamcrest:hamcrest_java",
       "//third_party/junit",
       "//third_party/ub-uiautomator:ub_uiautomator_java",
@@ -4129,10 +4122,9 @@ if (is_android) {
 
   android_library("base_java_process_launcher_test_support") {
     testonly = true
-    deps = [
-      ":base_java",
-      ":base_java_test_support",
-    ]
+
+    deps = [ ":base_java" ]
+
     sources = [ "test/android/javatests/src/org/chromium/base/process_launcher/TestChildProcessConnection.java" ]
   }
 
@@ -4154,14 +4146,13 @@ if (is_android) {
     # Make sure robolectric tests have classes filtered out of base_java by
     # jar_excluded_patterns.
     srcjar_deps = [ "//build/android:native_libraries_gen" ]
+
     deps = [
       ":base_java",
       "//testing/android/junit:junit_test_support",
       "//third_party/android_deps:robolectric_all_java",
       "//third_party/android_support_test_runner:runner_java",
       "//third_party/androidx:androidx_test_core_java",
-      "//third_party/androidx:androidx_test_monitor_java",
-      "//third_party/androidx:androidx_test_uiautomator_uiautomator_java",
       "//third_party/hamcrest:hamcrest_java",
       "//third_party/junit:junit",
     ]
@@ -4247,12 +4238,15 @@ if (is_android) {
         [ "android/javatests/src/org/chromium/base/profiler/TestSupport.java" ]
 
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
     deps = [ "//base:base_java" ]
   }
 
   android_library("base_java_unittest_support") {
     testonly = true
+
     deps = [ ":base_java" ]
+
     sources = [
       "test/android/java/src/org/chromium/base/ContentUriTestUtils.java",
       "test/android/java/src/org/chromium/base/JavaHandlerThreadHelpers.java",
