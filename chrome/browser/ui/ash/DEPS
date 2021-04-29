@@ -17,4 +17,7 @@ specific_include_rules = {
   "assistant_timers_browsertest\.cc": [
     "+ui/message_center",
   ],
+  "chrome_shell_delegate\.cc": [
+    "+cc/input/touch_action.h",
+  ],
 }

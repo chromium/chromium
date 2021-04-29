@@ -10,6 +10,7 @@
 #include "ash/public/cpp/ash_features.h"
 #include "ash/screenshot_delegate.h"
 #include "base/bind.h"
+#include "cc/input/touch_action.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
 #include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_service_factory.h"
