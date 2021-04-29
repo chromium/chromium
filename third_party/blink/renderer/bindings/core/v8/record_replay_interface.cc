@@ -939,6 +939,10 @@ void SetupRecordReplayCommands(v8::Isolate* isolate) {
 static ErrorEvent* gCurrentErrorEvent;
 
 void RecordReplayOnErrorEvent(ErrorEvent* error_event) {
+  if (!v8::IsMainThread()) {
+    return;
+  }
+
   CHECK(!gCurrentErrorEvent);
   gCurrentErrorEvent = error_event;
 
