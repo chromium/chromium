@@ -344,6 +344,15 @@ HRESULT FakeOSUserManager::FindUserBySID(const wchar_t* sid,
                                          DWORD username_size,
                                          wchar_t* domain,
                                          DWORD domain_size) {
+  auto it = to_be_failed_find_user_sids_.find(sid);
+  if (it != to_be_failed_find_user_sids_.end()) {
+    to_be_failed_find_user_sids_[sid]--;
+    if (to_be_failed_find_user_sids_[sid] == 0)
+      to_be_failed_find_user_sids_.erase(it);
+
+    return E_FAIL;
+  }
+
   for (auto& kv : username_to_info_) {
     if (kv.second.sid == sid) {
       if (username)
@@ -355,6 +364,11 @@ HRESULT FakeOSUserManager::FindUserBySID(const wchar_t* sid,
   }
 
   return HRESULT_FROM_WIN32(ERROR_NONE_MAPPED);
+}
+
+void FakeOSUserManager::FailFindUserBySID(const wchar_t* sid,
+                                          int number_of_failures) {
+  to_be_failed_find_user_sids_[sid] = number_of_failures;
 }
 
 HRESULT FakeOSUserManager::RemoveUser(const wchar_t* username,
