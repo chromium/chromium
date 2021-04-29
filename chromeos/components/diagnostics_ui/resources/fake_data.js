@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BatteryChargeStatus, BatteryHealth, BatteryInfo, CpuUsage, ExternalPowerSource, MemoryUsage, PowerRoutineResult, RoutineType, StandardRoutineResult, SystemInfo} from './diagnostics_types.js'
+import {BatteryChargeStatus, BatteryHealth, BatteryInfo, CpuUsage, ExternalPowerSource, MemoryUsage, NetworkGuidInfo, PowerRoutineResult, RoutineType, StandardRoutineResult, SystemInfo} from './diagnostics_types.js'
 import {stringToMojoString16} from './mojo_utils.js';
 
 /** @type {!Array<!BatteryChargeStatus>} */
@@ -253,17 +253,20 @@ export const fakePowerRoutineResults = new Map([
   ],
 ]);
 
-export const fakeNetworkGuids = [
-  {
-    networkGuids: ['guid_1', 'guid_2'],
-    activeGuid: 'active_guid',
-  },
-  {
-    networkGuids: ['guid_1'],
-    activeGuid: 'active_guid',
-  },
-  {
-    networkGuids: ['guid_1', 'guid_3'],
-    activeGuid: '',
-  },
-]
+/** @type {!NetworkGuidInfo} */
+export const fakeAllNetworksAvailable = {
+  networkGuids: ['wifiGuid', 'ethernetGuid', 'cellularGuid'],
+  activeGuid: 'ethernetGuid',
+};
+
+/** @type {!NetworkGuidInfo} */
+export const fakeWifiAndCellularNetworksAvailable = {
+  networkGuids: ['cellularGuid', 'wifiGuid'],
+  activeGuid: 'wifiGuid',
+};
+
+/** @type {!Array<!NetworkGuidInfo>} */
+export const fakeNetworkGuidInfoList = [
+  fakeAllNetworksAvailable,
+  fakeWifiAndCellularNetworksAvailable,
+];

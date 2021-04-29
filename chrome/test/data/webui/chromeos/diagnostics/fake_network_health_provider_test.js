@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {NetworkListObserver} from 'chrome://diagnostics/diagnostics_types.js';
-import {fakeNetworkGuids} from 'chrome://diagnostics/fake_data.js';
+import {fakeNetworkGuidInfoList} from 'chrome://diagnostics/fake_data.js';
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
@@ -23,8 +23,8 @@ export function fakeNetworkHealthProviderTestSuite() {
 
   test('ObserveNetworkListTwiceWithTrigger', () => {
     // The fake needs to have at least 2 samples.
-    assertTrue(fakeNetworkGuids.length >= 2);
-    provider.setFakeNetworkGuids(fakeNetworkGuids);
+    assertTrue(fakeNetworkGuidInfoList.length >= 2);
+    provider.setFakeNetworkGuidInfo(fakeNetworkGuidInfoList);
 
     // Keep track of which observation we should get.
     let whichSample = 0;
@@ -37,7 +37,7 @@ export function fakeNetworkHealthProviderTestSuite() {
         // Only expect 2 calls.
         assertTrue(whichSample >= 0);
         assertTrue(whichSample <= 1);
-        assertDeepEquals(fakeNetworkGuids[whichSample], networkGuids);
+        assertDeepEquals(fakeNetworkGuidInfoList[whichSample], networkGuids);
 
         if (whichSample === 0) {
           firstResolver.resolve();

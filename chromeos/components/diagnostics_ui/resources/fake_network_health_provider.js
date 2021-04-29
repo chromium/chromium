@@ -37,11 +37,11 @@ export class FakeNetworkHealthProvider {
 
   /**
    * Sets the values that will be observed from observeNetworkList.
-   * @param {!Array<!NetworkGuidInfo>} networkGuidList
+   * @param {!Array<!NetworkGuidInfo>} networkGuidInfoList
    */
-  setFakeNetworkGuids(networkGuidList) {
+  setFakeNetworkGuidInfo(networkGuidInfoList) {
     this.observables_.setObservableData(
-        ON_NETWORK_LIST_CHANGED_METHOD_NAME, networkGuidList);
+        ON_NETWORK_LIST_CHANGED_METHOD_NAME, networkGuidInfoList);
   }
 
   /**
