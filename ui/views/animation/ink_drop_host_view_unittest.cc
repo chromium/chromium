@@ -48,8 +48,6 @@ class TestInkDropHostView : public InkDropHostView {
   }
 
   // InkDropHostView:
-  void OnInkDropCreated() override { ++on_ink_drop_created_count_; }
-
   std::unique_ptr<InkDrop> CreateInkDrop() override {
     last_created_inkdrop_ = new TestInkDrop();
     return base::WrapUnique(last_created_inkdrop_);
@@ -143,23 +141,6 @@ TEST_F(InkDropHostViewTest, HasInkDrop) {
 
   test_api_.SetInkDropMode(InkDropMode::OFF);
   EXPECT_FALSE(test_api_.HasInkDrop());
-}
-
-TEST_F(InkDropHostViewTest, OnInkDropCreatedOnlyNotfiedOnCreation) {
-  EXPECT_EQ(0, host_view_.on_ink_drop_created_count());
-
-  test_api_.GetInkDrop();
-  EXPECT_EQ(1, host_view_.on_ink_drop_created_count());
-
-  test_api_.GetInkDrop();
-  EXPECT_EQ(1, host_view_.on_ink_drop_created_count());
-
-  test_api_.SetInkDropMode(InkDropMode::OFF);
-  test_api_.SetInkDropMode(InkDropMode::ON);
-  EXPECT_EQ(1, host_view_.on_ink_drop_created_count());
-
-  test_api_.GetInkDrop();
-  EXPECT_EQ(2, host_view_.on_ink_drop_created_count());
 }
 
 // Verifies that mouse events trigger ink drops when ink drop mode is ON.

@@ -146,9 +146,6 @@ class VIEWS_EXPORT InkDropHostView : public View {
   // Size used for the default SquareInkDropRipple.
   static constexpr gfx::Size kDefaultInkDropSize = gfx::Size(24, 24);
 
-  // Called after a new InkDrop instance is created.
-  virtual void OnInkDropCreated() {}
-
   // Returns an InkDropImpl suitable for use with a square ink drop.
   // TODO(pbos): Rename to CreateDefaultSquareInkDropImpl.
   std::unique_ptr<InkDropImpl> CreateDefaultInkDropImpl();

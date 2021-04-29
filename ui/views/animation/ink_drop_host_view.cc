@@ -173,7 +173,6 @@ InkDrop* InkDropHostView::GetInkDrop() {
       ink_drop_ = std::make_unique<InkDropStub>();
     else
       ink_drop_ = CreateInkDrop();
-    OnInkDropCreated();
   }
   return ink_drop_.get();
 }
