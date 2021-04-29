@@ -16,6 +16,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "ui/accessibility/platform/ax_fragment_root_delegate_win.h"
 #include "ui/gfx/geometry/rect.h"
@@ -138,10 +139,11 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
   friend class AccessibilityObjectLifetimeWinBrowserTest;
   friend class DirectManipulationBrowserTestBase;
 
-  explicit LegacyRenderWidgetHostHWND(HWND parent);
+  LegacyRenderWidgetHostHWND();
   ~LegacyRenderWidgetHostHWND() override;
 
-  void Init();
+  // If initialization fails, deletes `this` and returns false.
+  bool InitOrDeleteSelf(HWND parent);
 
   // Returns the target to which the windows input events are forwarded.
   static ui::WindowEventTarget* GetWindowEventTarget(HWND parent);
@@ -199,6 +201,8 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
   // Direct Manipulation consumer. This allows us to support smooth scroll
   // in Chrome on Windows 10.
   std::unique_ptr<DirectManipulationHelper> direct_manipulation_helper_;
+
+  base::WeakPtrFactory<LegacyRenderWidgetHostHWND> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(LegacyRenderWidgetHostHWND);
 };
