@@ -1,0 +1,6 @@
+specific_include_rules = {
+  # Allow access from test file.
+  "page_info_unittest\.cc": [
+    "+chrome/browser/ui/views",
+  ]
+}

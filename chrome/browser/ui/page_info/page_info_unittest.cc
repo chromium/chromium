@@ -19,7 +19,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
-#include "chrome/browser/infobars/mock_infobar_service.h"
+#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/browser/ssl/tls_deprecation_test_utils.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
@@ -66,6 +66,7 @@
 #include "chrome/browser/android/android_theme_resources.h"
 #else
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "media/base/media_switches.h"
@@ -138,7 +139,7 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
         net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
     ASSERT_TRUE(cert_);
 
-    MockInfoBarService::CreateForWebContents(web_contents());
+    InfoBarService::CreateForWebContents(web_contents());
     content_settings::PageSpecificContentSettings::CreateForWebContents(
         web_contents(),
         std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
@@ -270,6 +271,10 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<content::WebContents> incognito_web_contents_;
   std::unique_ptr<PageInfo> incognito_page_info_;
   std::unique_ptr<MockPageInfoUI> incognito_mock_ui_;
+
+#if !defined(OS_ANDROID)
+  ChromeLayoutProvider layout_provider_;
+#endif
 
   scoped_refptr<net::X509Certificate> cert_;
   GURL url_;

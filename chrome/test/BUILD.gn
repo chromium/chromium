@@ -3628,8 +3628,6 @@ test("unit_tests") {
     "../browser/history/history_tab_helper_unittest.cc",
     "../browser/history_clusters/history_clusters_tab_helper_unittest.cc",
     "../browser/idle/idle_detection_permission_context_unittest.cc",
-    "../browser/infobars/mock_infobar_service.cc",
-    "../browser/infobars/mock_infobar_service.h",
     "../browser/internal_auth_unittest.cc",
     "../browser/language/language_model_manager_factory_unittest.cc",
     "../browser/language/url_language_histogram_factory_unittest.cc",
