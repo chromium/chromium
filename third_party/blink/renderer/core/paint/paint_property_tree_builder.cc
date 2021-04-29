@@ -672,6 +672,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
           box_model.UniqueId(),
           CompositorElementIdNamespace::kStickyTranslation);
       state.rendering_context_id = context_.current.rendering_context_id;
+      state.flags.flattens_inherited_transform =
+          context_.current.should_flatten_inherited_transform;
 
       auto* layer = box_model.Layer();
       const auto* scroller_properties = layer->AncestorScrollContainerLayer()
