@@ -127,15 +127,13 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
     if (!quit_closure_.is_null())
       std::move(quit_closure_).Run();
     callback_called_ = true;
+    callback_count_++;
     callback_result_ = permission;
   }
 
  protected:
   PermissionManagerTest()
-      : url_("https://example.com"),
-        other_url_("https://foo.com"),
-        callback_called_(false),
-        callback_result_(PermissionStatus::ASK) {}
+      : url_("https://example.com"), other_url_("https://foo.com") {}
 
   PermissionManager* GetPermissionControllerDelegate() {
     return static_cast<PermissionManager*>(
@@ -184,10 +182,13 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
 
   bool callback_called() const { return callback_called_; }
 
+  int callback_count() const { return callback_count_; }
+
   PermissionStatus callback_result() const { return callback_result_; }
 
   void Reset() {
     callback_called_ = false;
+    callback_count_ = 0;
     callback_result_ = PermissionStatus::ASK;
   }
 
@@ -259,8 +260,9 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
 
   const GURL url_;
   const GURL other_url_;
-  bool callback_called_;
-  PermissionStatus callback_result_;
+  bool callback_called_ = false;
+  int callback_count_ = 0;
+  PermissionStatus callback_result_ = PermissionStatus::ASK;
   base::OnceClosure quit_closure_;
   std::unique_ptr<content::TestBrowserContext> browser_context_;
   TestPermissionsClient client_;
@@ -414,6 +416,28 @@ TEST_F(PermissionManagerTest, ChangeAfterUnsubscribeDoesNotNotify) {
       url(), url(), ContentSettingsType::GEOLOCATION, CONTENT_SETTING_ALLOW);
 
   EXPECT_FALSE(callback_called());
+}
+
+TEST_F(PermissionManagerTest,
+       ChangeAfterUnsubscribeOnlyNotifiesActiveSubscribers) {
+  content::PermissionControllerDelegate::SubscriptionId subscription_id =
+      GetPermissionControllerDelegate()->SubscribePermissionStatusChange(
+          PermissionType::GEOLOCATION, main_rfh(), url(),
+          base::BindRepeating(&PermissionManagerTest::OnPermissionChange,
+                              base::Unretained(this)));
+
+  GetPermissionControllerDelegate()->SubscribePermissionStatusChange(
+      PermissionType::GEOLOCATION, main_rfh(), url(),
+      base::BindRepeating(&PermissionManagerTest::OnPermissionChange,
+                          base::Unretained(this)));
+
+  GetPermissionControllerDelegate()->UnsubscribePermissionStatusChange(
+      subscription_id);
+
+  GetHostContentSettingsMap()->SetContentSettingDefaultScope(
+      url(), url(), ContentSettingsType::GEOLOCATION, CONTENT_SETTING_ALLOW);
+
+  EXPECT_EQ(callback_count(), 1);
 }
 
 TEST_F(PermissionManagerTest, DifferentPrimaryUrlDoesNotNotify) {

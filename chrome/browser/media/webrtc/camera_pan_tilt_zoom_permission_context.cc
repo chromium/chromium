@@ -20,6 +20,7 @@ CameraPanTiltZoomPermissionContext::CameraPanTiltZoomPermissionContext(
                             blink::mojom::PermissionsPolicyFeature::kNotFound) {
   host_content_settings_map_ =
       permissions::PermissionsClient::Get()->GetSettingsMap(browser_context);
+  content_setting_observer_registered_by_subclass_ = true;
   host_content_settings_map_->AddObserver(this);
 }
 
@@ -73,6 +74,9 @@ void CameraPanTiltZoomPermissionContext::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type) {
+  PermissionContextBase::OnContentSettingChanged(
+      primary_pattern, secondary_pattern, content_type);
+
   if (content_type != ContentSettingsType::MEDIASTREAM_CAMERA &&
       content_type != ContentSettingsType::CAMERA_PAN_TILT_ZOOM) {
     return;

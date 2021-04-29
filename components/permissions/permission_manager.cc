@@ -276,10 +276,15 @@ void PermissionManager::Shutdown() {
   is_shutting_down_ = true;
 
   if (!subscriptions_.IsEmpty()) {
-    PermissionsClient::Get()
-        ->GetSettingsMap(browser_context_)
-        ->RemoveObserver(this);
     subscriptions_.Clear();
+    for (const auto& type_to_count : subscription_type_counts_) {
+      if (type_to_count.second > 0) {
+        PermissionContextBase* context =
+            GetPermissionContext(type_to_count.first);
+        context->RemoveObserver(this);
+      }
+    }
+    subscription_type_counts_.clear();
   }
 }
 
@@ -545,12 +550,16 @@ PermissionManager::SubscribePermissionStatusChange(
   if (is_shutting_down_)
     return SubscriptionId();
 
-  if (subscriptions_.IsEmpty())
-    PermissionsClient::Get()
-        ->GetSettingsMap(browser_context_)
-        ->AddObserver(this);
-
   ContentSettingsType content_type = PermissionTypeToContentSetting(permission);
+  auto type_count = subscription_type_counts_.find(content_type);
+  if (type_count != subscription_type_counts_.end()) {
+    type_count->second++;
+  } else {
+    PermissionContextBase* context = GetPermissionContext(content_type);
+    context->AddObserver(this);
+    subscription_type_counts_.emplace(content_type, 1);
+  }
+
   auto subscription = std::make_unique<Subscription>();
 
   // The RFH may be null if the request is for a worker.
@@ -591,14 +600,19 @@ void PermissionManager::UnsubscribePermissionStatusChange(
   if (is_shutting_down_)
     return;
 
-  if (subscriptions_.Lookup(subscription_id)) {
-    subscriptions_.Remove(subscription_id);
-  }
+  Subscription* subscription = subscriptions_.Lookup(subscription_id);
+  if (!subscription)
+    return;
 
-  if (subscriptions_.IsEmpty()) {
-    PermissionsClient::Get()
-        ->GetSettingsMap(browser_context_)
-        ->RemoveObserver(this);
+  ContentSettingsType type = subscription->permission;
+  subscriptions_.Remove(subscription_id);
+  auto type_count = subscription_type_counts_.find(type);
+  CHECK(type_count != subscription_type_counts_.end());
+  CHECK_GT(type_count->second, size_t(0));
+  type_count->second--;
+  if (type_count->second == 0) {
+    PermissionContextBase* context = GetPermissionContext(type);
+    context->RemoveObserver(this);
   }
 }
 
@@ -608,7 +622,7 @@ bool PermissionManager::IsPermissionKillSwitchOn(
   return GetPermissionContext(permission)->IsPermissionKillSwitchOn();
 }
 
-void PermissionManager::OnContentSettingChanged(
+void PermissionManager::OnPermissionChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type) {

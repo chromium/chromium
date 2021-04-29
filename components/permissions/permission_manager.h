@@ -8,11 +8,13 @@
 #include <unordered_map>
 
 #include "base/callback_forward.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/id_map.h"
 #include "base/macros.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/permission_controller_delegate.h"
@@ -29,7 +31,7 @@ struct PermissionResult;
 
 class PermissionManager : public KeyedService,
                           public content::PermissionControllerDelegate,
-                          public content_settings::Observer {
+                          public permissions::Observer {
  public:
   using PermissionContextMap =
       std::unordered_map<ContentSettingsType,
@@ -164,6 +166,7 @@ class PermissionManager : public KeyedService,
   struct Subscription;
   using SubscriptionsMap =
       base::IDMap<std::unique_ptr<Subscription>, SubscriptionId>;
+  using SubscriptionTypeCounts = base::flat_map<ContentSettingsType, size_t>;
 
   PermissionContextBase* GetPermissionContext(ContentSettingsType type);
 
@@ -178,10 +181,10 @@ class PermissionManager : public KeyedService,
       int permission_id,
       ContentSetting status);
 
-  // content_settings::Observer implementation.
-  void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
-                               const ContentSettingsPattern& secondary_pattern,
-                               ContentSettingsType content_type) override;
+  // permissions::Observer:
+  void OnPermissionChanged(const ContentSettingsPattern& primary_pattern,
+                           const ContentSettingsPattern& secondary_pattern,
+                           ContentSettingsType content_type) override;
 
   PermissionResult GetPermissionStatusHelper(
       ContentSettingsType permission,
@@ -200,6 +203,13 @@ class PermissionManager : public KeyedService,
 
   SubscriptionsMap subscriptions_;
   SubscriptionId::Generator subscription_id_generator_;
+
+  // Tracks the number of Subscriptions in |subscriptions_| which have a
+  // certain ContentSettingsType. An entry for a given ContentSettingsType key
+  // is added on first use and never removed. This is done to utilize the
+  // flat_map's efficiency in accessing/editing items and minimize the use of
+  // the unefficient addition/removal of items.
+  SubscriptionTypeCounts subscription_type_counts_;
 
   PermissionContextMap permission_contexts_;
   using ContentSettingsTypeOverrides =

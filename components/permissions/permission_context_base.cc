@@ -109,6 +109,7 @@ PermissionContextBase::PermissionContextBase(
 }
 
 PermissionContextBase::~PermissionContextBase() {
+  DCHECK(permission_observers_.empty());
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
@@ -421,6 +422,39 @@ void PermissionContextBase::PermissionDecided(
 
 content::BrowserContext* PermissionContextBase::browser_context() const {
   return browser_context_;
+}
+
+void PermissionContextBase::OnContentSettingChanged(
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern,
+    ContentSettingsType content_type) {
+  if (content_type != content_settings_type_)
+    return;
+
+  for (permissions::Observer& obs : permission_observers_)
+    obs.OnPermissionChanged(primary_pattern, secondary_pattern, content_type);
+}
+
+void PermissionContextBase::AddObserver(
+    permissions::Observer* permission_observer) {
+  if (permission_observers_.empty() &&
+      !content_setting_observer_registered_by_subclass_) {
+    PermissionsClient::Get()
+        ->GetSettingsMap(browser_context_)
+        ->AddObserver(this);
+  }
+  permission_observers_.AddObserver(permission_observer);
+}
+
+void PermissionContextBase::RemoveObserver(
+    permissions::Observer* permission_observer) {
+  permission_observers_.RemoveObserver(permission_observer);
+  if (permission_observers_.empty() &&
+      !content_setting_observer_registered_by_subclass_) {
+    PermissionsClient::Get()
+        ->GetSettingsMap(browser_context_)
+        ->RemoveObserver(this);
+  }
 }
 
 void PermissionContextBase::NotifyPermissionSet(

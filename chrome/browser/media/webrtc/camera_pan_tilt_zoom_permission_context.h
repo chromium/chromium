@@ -7,7 +7,6 @@
 
 #include "base/macros.h"
 #include "build/build_config.h"
-#include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/permission_context_base.h"
 
@@ -15,8 +14,7 @@
 // zoom). Those permissions are automatically reset when the "regular" camera
 // permission is blocked or reset.
 class CameraPanTiltZoomPermissionContext
-    : public permissions::PermissionContextBase,
-      public content_settings::Observer {
+    : public permissions::PermissionContextBase {
  public:
   explicit CameraPanTiltZoomPermissionContext(
       content::BrowserContext* browser_context);
