@@ -9,6 +9,7 @@
 
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_features.h"
+#include "base/allocator/partition_allocator/starscan/stack/stack.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,6 +18,24 @@
 
 namespace base {
 namespace internal {
+
+namespace {
+struct DisableStackScanningScope final {
+  DisableStackScanningScope() {
+    if (PCScan::IsStackScanningEnabled()) {
+      PCScan::DisableStackScanning();
+      changed_ = true;
+    }
+  }
+  ~DisableStackScanningScope() {
+    if (changed_)
+      PCScan::EnableStackScanning();
+  }
+
+ private:
+  bool changed_ = false;
+};
+}  // namespace
 
 class PCScanTest : public testing::Test {
  public:
@@ -477,6 +496,8 @@ TEST_F(PCScanTest, Safepoint) {
   using SourceList = List<64>;
   using ValueList = SourceList;
 
+  DisableStackScanningScope no_stack_scanning;
+
   auto* source = SourceList::Create(root());
   auto* value = ValueList::Create(root());
   source->next = value;
@@ -484,6 +505,50 @@ TEST_F(PCScanTest, Safepoint) {
   TestDanglingReferenceWithSafepoint(*this, source, value);
 }
 #endif  // PCSCAN_DISABLE_SAFEPOINTS
+
+TEST_F(PCScanTest, StackScanning) {
+  using ValueList = List<8>;
+
+  PCScan::EnableStackScanning();
+
+  static void* dangling_reference = nullptr;
+  // Set to nullptr if the test is retried.
+  dangling_reference = nullptr;
+
+  // Create and set dangling reference in the global.
+  [this]() NOINLINE {
+    auto* value = ValueList::Create(root(), nullptr);
+    ValueList::Destroy(root(), value);
+    dangling_reference = value;
+  }();
+
+  [this]() NOINLINE {
+    // Register the top of the stack to be the current pointer.
+    PCScan::NotifyThreadCreated(GetStackPointer());
+    [this]() NOINLINE {
+      // This writes the pointer to the stack.
+      auto* volatile stack_ref = dangling_reference;
+      ALLOW_UNUSED_LOCAL(stack_ref);
+      [this]() NOINLINE {
+        // Schedule PCScan but don't scan.
+        SchedulePCScan();
+        // Enter safepoint and scan from mutator. This will scan the stack.
+        JoinPCScanAsMutator();
+        // Check that the object is still quarantined since it's referenced by
+        // |dangling_reference|.
+        EXPECT_TRUE(IsInQuarantine(dangling_reference));
+        // Check that value is not in the freelist.
+        EXPECT_FALSE(IsInFreeList(
+            root().AdjustPointerForExtrasSubtract(dangling_reference)));
+        // Run sweeper.
+        FinishPCScanAsScanner();
+        // Check that |dangling_reference| still exists.
+        EXPECT_FALSE(IsInFreeList(
+            root().AdjustPointerForExtrasSubtract(dangling_reference)));
+      }();
+    }();
+  }();
+}
 
 }  // namespace internal
 }  // namespace base

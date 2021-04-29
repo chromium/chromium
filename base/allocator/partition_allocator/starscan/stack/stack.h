@@ -19,6 +19,31 @@ BASE_EXPORT NOINLINE uintptr_t* GetStackPointer();
 // Returns the top of the stack using system API.
 BASE_EXPORT void* GetStackTop();
 
+// Interface for stack visitation.
+class StackVisitor {
+ public:
+  virtual void VisitStack(uintptr_t* stack_ptr, uintptr_t* stack_top) = 0;
+};
+
+// Abstraction over the stack. Supports handling of:
+// - native stack;
+// - SafeStack: https://releases.llvm.org/10.0.0/tools/clang/docs/SafeStack.html
+class BASE_EXPORT Stack final {
+ public:
+  // Sets start of the stack.
+  explicit Stack(void* stack_top);
+
+  // Word-aligned iteration of the stack. Flushes callee saved registers and
+  // passes the range of the stack on to |visitor|.
+  void IteratePointers(StackVisitor* visitor) const;
+
+  // Returns the top of the stack.
+  void* stack_top() const { return stack_top_; }
+
+ private:
+  void* stack_top_;
+};
+
 }  // namespace internal
 }  // namespace base
 

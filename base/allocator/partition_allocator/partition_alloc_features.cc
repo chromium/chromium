@@ -44,5 +44,15 @@ const Feature kPartitionAllocLazyCommit{"PartitionAllocLazyCommit",
 const Feature kPartitionAllocPCScanMUAwareScheduler{
     "PartitionAllocPCScanMUAwareScheduler", FEATURE_ENABLED_BY_DEFAULT};
 
+// In addition to heap, scan also the stack of the current mutator.
+const Feature kPartitionAllocPCScanStackScanning {
+  "PartitionAllocPCScanStackScanning",
+#if defined(PA_PCSCAN_STACK_SUPPORTED)
+      FEATURE_ENABLED_BY_DEFAULT
+#else
+      FEATURE_DISABLED_BY_DEFAULT
+#endif  // defined(PA_PCSCAN_STACK_SUPPORTED)
+};
+
 }  // namespace features
 }  // namespace base

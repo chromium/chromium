@@ -1938,6 +1938,22 @@ component("base") {
           "allocator/partition_allocator/page_allocator_internals_fuchsia.h",
         ]
       }
+
+      if (current_cpu == "x64") {
+        defines += [ "PA_PCSCAN_STACK_SUPPORTED" ]
+        sources += [ "allocator/partition_allocator/starscan/stack/asm/x64/push_registers_asm.cc" ]
+      } else if (current_cpu == "x86") {
+        defines += [ "PA_PCSCAN_STACK_SUPPORTED" ]
+        sources += [ "allocator/partition_allocator/starscan/stack/asm/x86/push_registers_asm.cc" ]
+      } else if (current_cpu == "arm") {
+        defines += [ "PA_PCSCAN_STACK_SUPPORTED" ]
+        sources += [ "allocator/partition_allocator/starscan/stack/asm/arm/push_registers_asm.cc" ]
+      } else if (current_cpu == "arm64") {
+        defines += [ "PA_PCSCAN_STACK_SUPPORTED" ]
+        sources += [ "allocator/partition_allocator/starscan/stack/asm/arm64/push_registers_asm.cc" ]
+      } else {
+        # To support a trampoline for another arch, please refer to v8/src/heap/base.
+      }
     }
   }
 
@@ -3481,6 +3497,7 @@ test("base_unittests") {
       "allocator/partition_allocator/starscan/object_bitmap_unittest.cc",
       "allocator/partition_allocator/starscan/pcscan_scheduling_unittest.cc",
       "allocator/partition_allocator/starscan/pcscan_unittest.cc",
+      "allocator/partition_allocator/starscan/stack/stack_unittest.cc",
       "allocator/partition_allocator/thread_cache_unittest.cc",
     ]
   }

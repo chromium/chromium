@@ -51,23 +51,27 @@ void SetProcessNameForPCScan(const std::string& process_type) {
   }
 }
 
-void EnablePCScanForMallocPartitionsIfNeeded() {
+bool EnablePCScanForMallocPartitionsIfNeeded() {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_ALLOW_PCSCAN
   DCHECK(base::FeatureList::GetInstance());
   if (base::FeatureList::IsEnabled(base::features::kPartitionAllocPCScan)) {
     base::allocator::EnablePCScan();
+    return true;
   }
 #endif
+  return false;
 }
 
-void EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded() {
+bool EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded() {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_ALLOW_PCSCAN
   DCHECK(base::FeatureList::GetInstance());
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocPCScanBrowserOnly)) {
     base::allocator::EnablePCScan();
+    return true;
   }
 #endif
+  return false;
 }
 
 // This function should be executed as early as possible once we can get the
@@ -201,16 +205,24 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
-  EnablePCScanForMallocPartitionsIfNeeded();
+  bool scan_enabled = EnablePCScanForMallocPartitionsIfNeeded();
   // No specified process type means this is the Browser process.
   if (process_type.empty()) {
-    EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded();
+    scan_enabled = scan_enabled ||
+                   EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded();
   }
+  if (scan_enabled) {
+    if (base::FeatureList::IsEnabled(
+            base::features::kPartitionAllocPCScanStackScanning)) {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  // Notify PCScan about the main thread.
-  base::internal::PCScan::NotifyThreadCreated(base::internal::GetStackTop());
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  SetProcessNameForPCScan(process_type);
+      base::internal::PCScan::EnableStackScanning();
+      // Notify PCScan about the main thread.
+      base::internal::PCScan::NotifyThreadCreated(
+          base::internal::GetStackTop());
+#endif
+    }
+    SetProcessNameForPCScan(process_type);
+  }
 }
 
 void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(

@@ -81,6 +81,10 @@ class BASE_EXPORT PCScan final {
   // Sets process name (used for histograms). |name| must be a string literal.
   static void SetProcessName(const char* name);
 
+  static void EnableStackScanning();
+  static void DisableStackScanning();
+  static bool IsStackScanningEnabled();
+
   // Notify PCScan that a new thread was created/destroyed.
   static void NotifyThreadCreated(void* stack_top);
   static void NotifyThreadDestroyed();

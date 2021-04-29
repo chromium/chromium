@@ -25,6 +25,7 @@ extern const BASE_EXPORT Feature kPartitionAllocLargeThreadCacheSize;
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 extern const BASE_EXPORT Feature kPartitionAllocPCScanMUAwareScheduler;
+extern const BASE_EXPORT Feature kPartitionAllocPCScanStackScanning;
 
 extern const BASE_EXPORT Feature kPartitionAllocLazyCommit;
 

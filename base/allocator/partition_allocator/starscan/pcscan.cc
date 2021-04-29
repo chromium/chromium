@@ -28,6 +28,7 @@
 #include "base/allocator/partition_allocator/starscan/metadata_allocator.h"
 #include "base/allocator/partition_allocator/starscan/pcscan_scheduling.h"
 #include "base/allocator/partition_allocator/starscan/raceful_worklist.h"
+#include "base/allocator/partition_allocator/starscan/stack/stack.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/compiler_specific.h"
 #include "base/cpu.h"
@@ -210,6 +211,7 @@ bool IsScannerQuarantineBitmapEmpty(char* super_page, size_t epoch) {
 
 #define FOR_ALL_PCSCAN_MUTATOR_SCOPES(V) \
   V(Clear)                               \
+  V(ScanStack)                           \
   V(Scan)                                \
   V(Overall)
 
@@ -353,6 +355,8 @@ class StatsCollector final {
     switch (id) {
       case MutatorId::kClear:
         return "PCScan.Mutator.Clear";
+      case MutatorId::kScanStack:
+        return "PCScan.Mutator.ScanStack";
       case MutatorId::kScan:
         return "PCScan.Mutator.Scan";
       case MutatorId::kOverall:
@@ -385,6 +389,8 @@ class StatsCollector final {
     switch (id) {
       case MutatorId::kClear:
         return "PA.PCScan." + process_name + ".Mutator.Clear";
+      case MutatorId::kScanStack:
+        return "PA.PCScan." + process_name + ".Mutator.ScanStack";
       case MutatorId::kScan:
         return "PA.PCScan." + process_name + ".Mutator.Scan";
       case MutatorId::kOverall:
@@ -557,13 +563,21 @@ class PCScanInternal final {
 
   SimdSupport simd_support() const { return simd_support_; }
 
+  void EnableStackScanning();
+  void DisableStackScanning();
+  bool IsStackScanningEnabled() const;
+
   void NotifyThreadCreated(void* stack_top);
   void NotifyThreadDestroyed();
 
+  void* GetCurrentThreadStackTop() const;
+
   void ClearRootsForTesting();  // IN-TEST
-  void ReinitForTesting();  // IN-TEST
+  void ReinitForTesting();      // IN-TEST
 
  private:
+  using StackTops = MetadataHashMap<PlatformThreadId, void*>;
+
   friend base::NoDestructor<PCScanInternal>;
 
   PCScanInternal();
@@ -573,6 +587,12 @@ class PCScanInternal final {
 
   Roots scannable_roots_{};
   Roots nonscannable_roots_{};
+
+  bool stack_scanning_enabled_{false};
+  // TLS emulation of stack tops. Since this is guaranteed to go through
+  // non-quarantinable partition, using it from safepoints is safe.
+  StackTops stack_tops_;
+  mutable std::mutex stack_tops_mutex_;
 
   const char* process_name_ = nullptr;
   const SimdSupport simd_support_;
@@ -662,12 +682,37 @@ size_t PCScanInternal::CalculateTotalHeapSize() const {
                          0u, acc);
 }
 
+void PCScanInternal::EnableStackScanning() {
+  PA_DCHECK(!stack_scanning_enabled_);
+  stack_scanning_enabled_ = true;
+}
+void PCScanInternal::DisableStackScanning() {
+  PA_DCHECK(stack_scanning_enabled_);
+  stack_scanning_enabled_ = false;
+}
+bool PCScanInternal::IsStackScanningEnabled() const {
+  return stack_scanning_enabled_;
+}
+
 void PCScanInternal::NotifyThreadCreated(void* stack_top) {
-  // TODO(bikineev,1202644): Add implementation.
+  const auto tid = base::PlatformThread::CurrentId();
+  std::lock_guard<std::mutex> lock(stack_tops_mutex_);
+  const auto res = stack_tops_.insert({tid, stack_top});
+  PA_DCHECK(res.second);
 }
 
 void PCScanInternal::NotifyThreadDestroyed() {
-  // TODO(bikineev,1202644): Add implementation.
+  const auto tid = base::PlatformThread::CurrentId();
+  std::lock_guard<std::mutex> lock(stack_tops_mutex_);
+  PA_DCHECK(1 == stack_tops_.count(tid));
+  stack_tops_.erase(tid);
+}
+
+void* PCScanInternal::GetCurrentThreadStackTop() const {
+  const auto tid = base::PlatformThread::CurrentId();
+  std::lock_guard<std::mutex> lock(stack_tops_mutex_);
+  auto it = stack_tops_.find(tid);
+  return it != stack_tops_.end() ? it->second : nullptr;
 }
 
 void PCScanInternal::ClearRootsForTesting() {
@@ -845,6 +890,7 @@ class PCScanTask final : public base::RefCountedThreadSafe<PCScanTask> {
 
  private:
   class ScanLoop;
+  class StackVisitor;
 
   using Root = PCScan::Root;
   using SlotSpan = SlotSpanMetadata<ThreadSafe>;
@@ -950,8 +996,10 @@ class PCScanTask final : public base::RefCountedThreadSafe<PCScanTask> {
   template <typename LookupPolicy>
   ALWAYS_INLINE size_t TryMarkObjectInNormalBuckets(uintptr_t maybe_ptr) const;
 
-  // Scans all registeres partitions and marks reachable quarantined objects.
-  // Returns the size of marked objects.
+  // Scans stack, only called from safepoints.
+  void ScanStack();
+
+  // Scans all registered partitions and marks reachable quarantined objects.
   void ScanPartitions();
 
   // Clear quarantined objects and prepare card table for fast lookup
@@ -1269,10 +1317,51 @@ class PCScanTask::ScanLoop final {
 #endif
 };
 
+class PCScanTask::StackVisitor final : public internal::StackVisitor {
+ public:
+  explicit StackVisitor(const PCScanTask& task) : task_(task) {}
+
+  void VisitStack(uintptr_t* stack_ptr, uintptr_t* stack_top) override {
+    static constexpr size_t kMinimalAlignment = 32;
+    stack_ptr = reinterpret_cast<uintptr_t*>(
+        reinterpret_cast<uintptr_t>(stack_ptr) & ~(kMinimalAlignment - 1));
+    stack_top = reinterpret_cast<uintptr_t*>(
+        (reinterpret_cast<uintptr_t>(stack_top) + kMinimalAlignment - 1) &
+        ~(kMinimalAlignment - 1));
+    PA_CHECK(stack_ptr < stack_top);
+    ScanLoop loop(task_);
+    quarantine_size_ += loop.Run(stack_ptr, stack_top);
+  }
+
+  // Returns size of quarantined objects that are reachable from the current
+  // stack.
+  size_t quarantine_size() const { return quarantine_size_; }
+
+ private:
+  const PCScanTask& task_;
+  size_t quarantine_size_ = 0;
+};
+
 PCScanTask::PCScanTask(PCScan& pcscan)
     : pcscan_epoch_(pcscan.epoch()),
       stats_(PCScanInternal::Instance().process_name()),
       pcscan_(pcscan) {}
+
+void PCScanTask::ScanStack() {
+  const auto& pcscan = PCScanInternal::Instance();
+  if (!pcscan.IsStackScanningEnabled())
+    return;
+  // Check if the stack top was registered. It may happen that it's not if the
+  // current allocation happens from pthread trampolines.
+  void* stack_top = pcscan.GetCurrentThreadStackTop();
+  if (UNLIKELY(!stack_top))
+    return;
+
+  Stack stack_scanner(stack_top);
+  StackVisitor visitor(*this);
+  stack_scanner.IteratePointers(&visitor);
+  stats_.IncreaseSurvivedQuarantineSize(visitor.quarantine_size());
+}
 
 void PCScanTask::ScanPartitions() {
   const ScanLoop scan_loop(*this);
@@ -1395,6 +1484,12 @@ void PCScanTask::RunFromMutator() {
       StatsCollector::MutatorScope clear_scope(
           stats_, StatsCollector::MutatorId::kClear);
       ClearQuarantinedObjectsAndPrepareCardTable();
+    }
+    {
+      // Scan the thread's stack to find dangling references.
+      StatsCollector::MutatorScope scan_scope(
+          stats_, StatsCollector::MutatorId::kScanStack);
+      ScanStack();
     }
     {
       // Scan heap for dangling references.
@@ -1624,6 +1719,16 @@ void PCScan::RegisterNonScannableRoot(Root* root) {
 
 void PCScan::SetProcessName(const char* process_name) {
   PCScanInternal::Instance().SetProcessName(process_name);
+}
+
+void PCScan::EnableStackScanning() {
+  PCScanInternal::Instance().EnableStackScanning();
+}
+void PCScan::DisableStackScanning() {
+  PCScanInternal::Instance().DisableStackScanning();
+}
+bool PCScan::IsStackScanningEnabled() {
+  return PCScanInternal::Instance().IsStackScanningEnabled();
 }
 
 void PCScan::NotifyThreadCreated(void* stack_top) {
