@@ -1172,6 +1172,25 @@
           'shards': 15,
         },
       },
+      # TODO(crbug/1199425): Remove it once bionic is the default option.
+      'Linux Tests': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'os': 'Ubuntu-18.04',
+            }
+          ],
+        },
+      },
+      'Linux Tests (dbg)(1)': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'os': 'Ubuntu-18.04',
+            }
+          ],
+        },
+      },
       'Lollipop Phone Tester': {
         'swarming': {
           'shards': 10,
@@ -2658,12 +2677,28 @@
           '--xvfb',
           '--jobs=1',
         ],
+        # TODO(crbug/1199425): Remove it once bionic is the default option.
+        'swarming': {
+          'dimension_sets': [
+            {
+              'os': 'Ubuntu-18.04',
+            }
+          ],
+        },
       },
       'Linux Tests (dbg)(1)': {
         'args': [
           '--xvfb',
           '--jobs=1',
         ],
+        # TODO(crbug/1199425): Remove it once bionic is the default option.
+        'swarming': {
+          'dimension_sets': [
+            {
+              'os': 'Ubuntu-18.04',
+            }
+          ],
+        },
       },
       # TODO crbug.com/1143924: Remove when experimentation is complete
       'Linux Tests Robocrop': {
@@ -2746,6 +2781,25 @@
   },
   'telemetry_unittests': {
     'modifications': {
+      # TODO(crbug/1199425): Remove it once bionic is the default option.
+      'Linux Tests': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'os': 'Ubuntu-18.04',
+            }
+          ],
+        },
+      },
+      'Linux Tests (dbg)(1)': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'os': 'Ubuntu-18.04',
+            }
+          ],
+        },
+      },
       'Win10 Tests x64 (dbg)': {
         'experiment_percentage': 100,  # crbug.com/870673
       },
