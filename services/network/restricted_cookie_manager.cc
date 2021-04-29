@@ -569,9 +569,11 @@ void RestrictedCookieManager::CookiesEnabledFor(
 }
 
 void RestrictedCookieManager::RemoveChangeListener(Listener* listener) {
+  recordreplay::Assert("RestrictedCookieManager::RemoveChangeListener Start");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   listener->RemoveFromList();
   delete listener;
+  recordreplay::Assert("RestrictedCookieManager::RemoveChangeListener Done");
 }
 
 bool RestrictedCookieManager::ValidateAccessToCookiesAt(

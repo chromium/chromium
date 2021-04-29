@@ -24,9 +24,9 @@ SequenceLocalStorageMap::SequenceLocalStorageMap() {
 }
 
 SequenceLocalStorageMap::~SequenceLocalStorageMap() {
-  recordreplay::UnregisterPointer(this);
   recordreplay::Assert("SequenceLocalStorageMap::~SequenceLocalStorageMap %lu",
                        recordreplay::PointerId(this));
+  recordreplay::UnregisterPointer(this);
 }
 
 ScopedSetSequenceLocalStorageMapForCurrentThread::
