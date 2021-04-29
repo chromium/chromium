@@ -138,18 +138,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
       base::RepeatingCallback<void(bool)> switch_finished_callback,
       Profile* new_profile,
       Profile::CreateStatus status);
-  // Switches the layout to the sync confirmation screen.
-  void SwitchToSyncConfirmation();
-  void SwitchToSyncConfirmationFinished();
-  // Switches the layout to the profile switch screen.
-  void SwitchToProfileSwitch(const base::FilePath& profile_path);
-  // Switches the layout to the enterprise welcome screen.
-  void SwitchToEnterpriseProfileWelcome(
-      EnterpriseProfileWelcomeUI::ScreenType type,
-      base::OnceCallback<void(bool)> proceed_callback);
-  void SwitchToEnterpriseProfileWelcomeFinished(
-      EnterpriseProfileWelcomeUI::ScreenType type,
-      base::OnceCallback<void(bool)> proceed_callback);
 
   // views::WidgetDelegate:
   void WindowClosing() override;
@@ -213,10 +201,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // profile selection instead of the new tab page.
   GURL GetOnSelectProfileTargetUrl() const;
 
-  // Getter of the path of profile which is displayed on the profile switch
-  // screen.
-  base::FilePath GetSwitchProfilePath() const;
-
   ScopedKeepAlive keep_alive_;
   ProfilePicker::EntryPoint entry_point_ =
       ProfilePicker::EntryPoint::kOnStartup;
@@ -257,9 +241,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // A target page url that opens on profile selection instead of the new tab
   // page.
   GURL on_select_profile_target_url_;
-
-  // Path to a profile that should be displayed on the profile switch screen.
-  base::FilePath switch_profile_path_;
 
   base::WeakPtrFactory<ProfilePickerView> weak_ptr_factory_{this};
 };

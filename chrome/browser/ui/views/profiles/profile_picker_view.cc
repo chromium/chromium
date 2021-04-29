@@ -169,8 +169,8 @@ GURL ProfilePicker::GetOnSelectProfileTargetUrl() {
 
 // static
 base::FilePath ProfilePicker::GetSwitchProfilePath() {
-  if (g_profile_picker_view) {
-    return g_profile_picker_view->GetSwitchProfilePath();
+  if (g_profile_picker_view && g_profile_picker_view->sign_in_) {
+    return g_profile_picker_view->sign_in_->switch_profile_path();
   }
   return base::FilePath();
 }
@@ -189,30 +189,6 @@ void ProfilePicker::SwitchToSignIn(
 void ProfilePicker::CancelSignIn() {
   if (g_profile_picker_view) {
     g_profile_picker_view->CancelSignIn();
-  }
-}
-
-// static
-void ProfilePicker::SwitchToSyncConfirmation() {
-  if (g_profile_picker_view) {
-    g_profile_picker_view->SwitchToSyncConfirmation();
-  }
-}
-
-// static
-void ProfilePicker::SwitchToProfileSwitch(const base::FilePath& profile_path) {
-  if (g_profile_picker_view) {
-    g_profile_picker_view->SwitchToProfileSwitch(profile_path);
-  }
-}
-
-// static
-void ProfilePicker::SwitchToEnterpriseProfileWelcome(
-    EnterpriseProfileWelcomeUI::ScreenType type,
-    base::OnceCallback<void(bool)> proceed_callback) {
-  if (g_profile_picker_view) {
-    g_profile_picker_view->SwitchToEnterpriseProfileWelcome(
-        type, std::move(proceed_callback));
   }
 }
 
@@ -641,69 +617,6 @@ void ProfilePickerView::OnProfileForSigninCreated(
   sign_in_->Init();
 }
 
-void ProfilePickerView::SwitchToSyncConfirmation() {
-  ShowScreen(
-      sign_in_->contents(), GURL(chrome::kChromeUISyncConfirmationURL),
-      /*show_toolbar=*/false,
-      /*enable_navigating_back=*/false,
-      /*navigation_finished_closure=*/
-      base::BindOnce(&ProfilePickerView::SwitchToSyncConfirmationFinished,
-                     // Unretained is enough as the callback is called by a
-                     // member of this class appearing after `sign_in_`.
-                     base::Unretained(this)));
-}
-
-void ProfilePickerView::SwitchToSyncConfirmationFinished() {
-  // Initialize the WebUI page once we know it's committed.
-  SyncConfirmationUI* sync_confirmation_ui = static_cast<SyncConfirmationUI*>(
-      sign_in_->contents()->GetWebUI()->GetController());
-
-  sync_confirmation_ui->InitializeMessageHandlerForCreationFlow(
-      sign_in_->GetProfileColor());
-}
-
-void ProfilePickerView::SwitchToProfileSwitch(
-    const base::FilePath& profile_path) {
-  DCHECK(sign_in_);
-  // The sign-in flow is finished, no profile window should be shown in the end.
-  sign_in_->Cancel();
-
-  switch_profile_path_ = profile_path;
-  ShowScreenInSystemContents(
-      GURL(chrome::kChromeUIProfilePickerUrl).Resolve("profile-switch"),
-      /*show_toolbar=*/false,
-      /*enable_navigating_back=*/false);
-}
-
-void ProfilePickerView::SwitchToEnterpriseProfileWelcome(
-    EnterpriseProfileWelcomeUI::ScreenType type,
-    base::OnceCallback<void(bool)> proceed_callback) {
-  ShowScreen(sign_in_->contents(),
-             GURL(chrome::kChromeUIEnterpriseProfileWelcomeURL),
-             /*show_toolbar=*/false,
-             /*enable_navigating_back=*/false,
-             /*navigation_finished_closure=*/
-             base::BindOnce(
-                 &ProfilePickerView::SwitchToEnterpriseProfileWelcomeFinished,
-                 // Unretained is enough as the callback is called by a member
-                 // of this class appearing after `sign_in_`.
-                 base::Unretained(this), type, std::move(proceed_callback)));
-}
-
-void ProfilePickerView::SwitchToEnterpriseProfileWelcomeFinished(
-    EnterpriseProfileWelcomeUI::ScreenType type,
-    base::OnceCallback<void(bool)> proceed_callback) {
-  // Initialize the WebUI page once we know it's committed.
-  EnterpriseProfileWelcomeUI* enterprise_profile_welcome_ui =
-      sign_in_->contents()
-          ->GetWebUI()
-          ->GetController()
-          ->GetAs<EnterpriseProfileWelcomeUI>();
-  enterprise_profile_welcome_ui->Initialize(type, sign_in_->GetUserDomain(),
-                                            sign_in_->GetProfileColor(),
-                                            std::move(proceed_callback));
-}
-
 void ProfilePickerView::WindowClosing() {
   // Now that the window is closed, we can allow a new one to be opened.
   // (WindowClosing comes in asynchronously from the call to Close() and we
@@ -959,10 +872,6 @@ base::FilePath ProfilePickerView::GetForceSigninProfilePath() const {
 
 GURL ProfilePickerView::GetOnSelectProfileTargetUrl() const {
   return on_select_profile_target_url_;
-}
-
-base::FilePath ProfilePickerView::GetSwitchProfilePath() const {
-  return switch_profile_path_;
 }
 
 BEGIN_METADATA(ProfilePickerView, views::WidgetDelegateView)

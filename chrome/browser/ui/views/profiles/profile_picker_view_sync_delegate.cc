@@ -82,10 +82,9 @@ bool IsEnterpriseFlowEnabled() {
 }  // namespace
 
 ProfilePickerViewSyncDelegate::ProfilePickerViewSyncDelegate(
-    Profile* profile,
-    OpenBrowserCallback open_browser_callback)
-    : profile_(profile),
-      open_browser_callback_(std::move(open_browser_callback)) {}
+    base::WeakPtr<ProfilePickerSignInFlowController> controller,
+    Profile* profile)
+    : controller_(controller), profile_(profile) {}
 
 ProfilePickerViewSyncDelegate::~ProfilePickerViewSyncDelegate() = default;
 
@@ -99,21 +98,19 @@ void ProfilePickerViewSyncDelegate::ShowLoginError(const SigninUIError& error) {
   if (error.type() ==
           SigninUIError::Type::kAccountAlreadyUsedByAnotherProfile &&
       IsEnterpriseFlowEnabled()) {
-    ProfilePicker::SwitchToProfileSwitch(error.another_profile_path());
+    if (controller_) {
+      controller_->SwitchToProfileSwitch(error.another_profile_path());
+    }
     return;
   }
 
   // Open the browser and when it's done, show the login error.
-  // TODO(crbug.com/1126913): In some cases, the current behavior is not ideal
-  // because it is not designed with profile creation in mind. Concretely, for
-  // sync not being available because there already is a syncing profile with
-  // this account, we should likely auto-delete the profile and offer to either
-  // switch or to start sign-in once again.
-  std::move(open_browser_callback_)
-      .Run(
-          base::BindOnce(
-              &DiceTurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser, error),
-          /*enterprise_sync_consent_needed=*/false);
+  if (controller_) {
+    controller_->FinishAndOpenBrowser(
+        base::BindOnce(
+            &DiceTurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser, error),
+        /*enterprise_sync_consent_needed=*/false);
+  }
 }
 
 void ProfilePickerViewSyncDelegate::ShowMergeSyncDataConfirmation(
@@ -136,12 +133,14 @@ void ProfilePickerViewSyncDelegate::ShowEnterpriseAccountConfirmation(
     // Open the browser and when it's done, show the confirmation dialog.
     // We have a guarantee that the profile is brand new, no need to prompt for
     // another profile.
-    std::move(open_browser_callback_)
-        .Run(base::BindOnce(&DiceTurnSyncOnHelper::Delegate::
-                                ShowEnterpriseAccountConfirmationForBrowser,
-                            email, /*prompt_for_new_profile=*/false,
-                            std::move(wrapped_callback)),
-             /*enterprise_sync_consent_needed=*/true);
+    if (controller_) {
+      controller_->FinishAndOpenBrowser(
+          base::BindOnce(&DiceTurnSyncOnHelper::Delegate::
+                             ShowEnterpriseAccountConfirmationForBrowser,
+                         email, /*prompt_for_new_profile=*/false,
+                         std::move(wrapped_callback)),
+          /*enterprise_sync_consent_needed=*/true);
+    }
     return;
   }
 
@@ -202,9 +201,11 @@ void ProfilePickerViewSyncDelegate::ShowSyncDisabledConfirmation(
     }
 
     // Open the browser and when it's done, show the confirmation dialog.
-    std::move(open_browser_callback_)
-        .Run(base::BindOnce(&OpenSyncConfirmationDialogInBrowser),
-             /*enterprise_sync_consent_needed=*/false);
+    if (controller_) {
+      controller_->FinishAndOpenBrowser(
+          base::BindOnce(&OpenSyncConfirmationDialogInBrowser),
+          /*enterprise_sync_consent_needed=*/false);
+    }
     return;
   }
 
@@ -225,9 +226,10 @@ void ProfilePickerViewSyncDelegate::ShowSyncSettings() {
   }
 
   // Open the browser and when it's done, open settings in the browser.
-  std::move(open_browser_callback_)
-      .Run(base::BindOnce(&OpenSettingsInBrowser),
-           /*enterprise_sync_consent_needed=*/false);
+  if (controller_) {
+    controller_->FinishAndOpenBrowser(base::BindOnce(&OpenSettingsInBrowser),
+                                      /*enterprise_sync_consent_needed=*/false);
+  }
 }
 
 void ProfilePickerViewSyncDelegate::SwitchToProfile(Profile* new_profile) {
@@ -253,7 +255,8 @@ void ProfilePickerViewSyncDelegate::ShowSyncConfirmationScreen() {
   scoped_login_ui_service_observation_.Observe(
       LoginUIServiceFactory::GetForProfile(profile_));
 
-  ProfilePicker::SwitchToSyncConfirmation();
+  if (controller_)
+    controller_->SwitchToSyncConfirmation();
 }
 
 void ProfilePickerViewSyncDelegate::FinishSyncConfirmation(
@@ -270,10 +273,12 @@ void ProfilePickerViewSyncDelegate::ShowEnterpriseWelcome(
   DCHECK(sync_confirmation_callback_);
   // Unretained as the delegate lives until `sync_confirmation_callback_` gets
   // called and thus always outlives the enterprise screen.
-  ProfilePicker::SwitchToEnterpriseProfileWelcome(
-      type,
-      base::BindOnce(&ProfilePickerViewSyncDelegate::OnEnterpriseWelcomeClosed,
-                     base::Unretained(this), type));
+  if (controller_) {
+    controller_->SwitchToEnterpriseProfileWelcome(
+        type, base::BindOnce(
+                  &ProfilePickerViewSyncDelegate::OnEnterpriseWelcomeClosed,
+                  base::Unretained(this), type));
+  }
 }
 
 void ProfilePickerViewSyncDelegate::OnEnterpriseWelcomeClosed(

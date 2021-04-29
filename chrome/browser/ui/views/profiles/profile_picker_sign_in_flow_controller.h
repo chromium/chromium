@@ -76,6 +76,30 @@ class ProfilePickerSignInFlowController
 
   Profile* profile() const { return profile_; }
 
+  // Getter of the path of profile which is displayed on the profile switch
+  // screen. Returns an empty path if no such screen has been displayed.
+  base::FilePath switch_profile_path() const { return switch_profile_path_; }
+
+  // Finishes the creation flow by marking `profile_being_created_` as fully
+  // created, opening a browser window for this profile and calling
+  // `callback`.
+  void FinishAndOpenBrowser(BrowserOpenedCallback callback,
+                            bool enterprise_sync_consent_needed);
+
+  // Finishes the sign-in process by moving to the sync confirmation screen.
+  void SwitchToSyncConfirmation();
+
+  // Finishes the sign-in process by moving to the enterprise profile welcome
+  // screen.
+  void SwitchToEnterpriseProfileWelcome(
+      EnterpriseProfileWelcomeUI::ScreenType type,
+      base::OnceCallback<void(bool)> proceed_callback);
+
+  // When the sign-in flow cannot be completed because another profile at
+  // `profile_path` is already syncing with a chosen account, shows the profile
+  // switch screen. It uses the system profile for showing the switch screen.
+  void SwitchToProfileSwitch(const base::FilePath& profile_path);
+
  private:
   // content::WebContentsDelegate:
   bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
@@ -106,17 +130,18 @@ class ProfilePickerSignInFlowController
   void OnExtendedAccountInfoTimeout(const CoreAccountInfo& account);
   void OnProfileNameAvailable();
 
-  // Finishes the creation flow by marking `profile_being_created_` as fully
-  // created, opening a browser window for this profile and calling
-  // `callback`.
-  void FinishSignedInCreationFlow(BrowserOpenedCallback callback,
-                                  bool enterprise_sync_consent_needed);
-  void FinishSignedInCreationFlowImpl(BrowserOpenedCallback callback,
-                                      bool enterprise_sync_consent_needed);
+  // Callbacks that finalize initialization of WebUI pages.
+  void SwitchToSyncConfirmationFinished();
+  void SwitchToEnterpriseProfileWelcomeFinished(
+      EnterpriseProfileWelcomeUI::ScreenType type,
+      base::OnceCallback<void(bool)> proceed_callback);
+
+  void FinishAndOpenBrowserImpl(BrowserOpenedCallback callback,
+                                bool enterprise_sync_consent_needed);
 
   // Finishes the flow by finalizing the profile and continuing the SAML
   // sign-in in a browser window.
-  void FinishSignedInCreationFlowForSAML();
+  void FinishAndOpenBrowserForSAML();
   void OnSignInContentsFreedUp();
 
   // Internal callback to finish the last steps of the signed-in creation
@@ -150,6 +175,9 @@ class ProfilePickerSignInFlowController
   // Email of the signed-in account. It is set after the user finishes the
   // sign-in flow on GAIA and Chrome receives the account info.
   std::string email_;
+
+  // Path to a profile that should be displayed on the profile switch screen.
+  base::FilePath switch_profile_path_;
 
   std::u16string name_for_signed_in_profile_;
   base::OnceClosure on_profile_name_available_;

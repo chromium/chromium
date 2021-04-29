@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_VIEW_SYNC_DELEGATE_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_VIEW_SYNC_DELEGATE_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_sign_in_flow_controller.h"
@@ -23,12 +24,9 @@ class SigninUIError;
 class ProfilePickerViewSyncDelegate : public DiceTurnSyncOnHelper::Delegate,
                                       public LoginUIService::Observer {
  public:
-  using OpenBrowserCallback = base::OnceCallback<void(
-      ProfilePickerSignInFlowController::BrowserOpenedCallback,
-      bool enterprise_sync_consent_needed)>;
-
-  ProfilePickerViewSyncDelegate(Profile* profile,
-                                OpenBrowserCallback open_browser_callback);
+  ProfilePickerViewSyncDelegate(
+      base::WeakPtr<ProfilePickerSignInFlowController> controller,
+      Profile* profile);
   ~ProfilePickerViewSyncDelegate() override;
 
  private:
@@ -70,10 +68,13 @@ class ProfilePickerViewSyncDelegate : public DiceTurnSyncOnHelper::Delegate,
   void OnEnterpriseWelcomeClosed(EnterpriseProfileWelcomeUI::ScreenType type,
                                  bool proceed);
 
+  // Controls the sign-in flow. Is not guaranteed to outlive this object (gets
+  // destroyed when the flow window closes).
+  base::WeakPtr<ProfilePickerSignInFlowController> controller_;
+
   Profile* profile_;
   bool enterprise_account_ = false;
   bool sync_disabled_ = false;
-  OpenBrowserCallback open_browser_callback_;
   base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
       sync_confirmation_callback_;
   base::ScopedObservation<LoginUIService, LoginUIService::Observer>

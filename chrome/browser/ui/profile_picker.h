@@ -85,21 +85,6 @@ class ProfilePicker {
   // for the sign-in flow.
   static void CancelSignIn();
 
-  // Finishes the sign-in flow by moving to the sync confirmation screen. It
-  // uses the same new profile created by `SwitchToSignIn()`.
-  static void SwitchToSyncConfirmation();
-
-  // Finishes the sign-in flow by moving to the enterprise profile welcome
-  // screen. It uses the same new profile created by `SwitchToSignIn()`.
-  static void SwitchToEnterpriseProfileWelcome(
-      EnterpriseProfileWelcomeUI::ScreenType type,
-      base::OnceCallback<void(bool)> proceed_callback);
-
-  // When the sign-in flow cannot be completed because another profile at
-  // `profile_path` is already syncing with a chosen account, shows the profile
-  // switch screen. It uses the system profile.
-  static void SwitchToProfileSwitch(const base::FilePath& profile_path);
-
   // Shows a dialog where the user can auth the profile or see the
   // auth error message. If a dialog is already shown, this destroys the current
   // dialog and creates a new one.
