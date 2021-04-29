@@ -115,15 +115,25 @@
             </intent-filter>
         </service>
 
+        <!-- GooglePay payment app support -->
+        <meta-data
+            android:name="com.google.android.gms.wallet.api.enabled"
+            android:value="true" />
+
+        <!-- Service used by payment apps to notify the browser about changes in user selected
+             payment method, shipping address, or shipping option. -->
+        <service
+            android:name="org.chromium.weblayer.PaymentDetailsUpdateServiceWrapper"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="org.chromium.intent.action.UPDATE_PAYMENT_DETAILS"/>
+            </intent-filter>
+        </service>
+
         <!-- Cast support -->
         <!-- TODO(crbug.com/1148410): remove this. -->
         <meta-data
             android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
             android:value="org.chromium.components.media_router.caf.CastOptionsProvider"/>
-
-        <!-- GooglePay payment app support -->
-        <meta-data
-            android:name="com.google.android.gms.wallet.api.enabled"
-            android:value="true" />
     </application>
 </manifest>

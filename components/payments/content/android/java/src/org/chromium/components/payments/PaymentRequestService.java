@@ -298,6 +298,15 @@ public class PaymentRequestService
         }
 
         /**
+         * Creates an instance of Android payment app factory.
+         * @return The instance, can be null for testing.
+         */
+        @Nullable
+        default PaymentAppFactoryInterface createAndroidPaymentAppFactory() {
+            return new AndroidPaymentAppFactory();
+        }
+
+        /**
          * @return The context of the current activity, can be null when WebContents has been
          *         destroyed, the activity is gone, the window is closed, etc.
          */
@@ -543,6 +552,12 @@ public class PaymentRequestService
     private void startPaymentAppService() {
         PaymentAppService service = mDelegate.getPaymentAppService();
         mBrowserPaymentRequest.addPaymentAppFactories(service, /*delegate=*/this);
+
+        String androidFactoryId = AndroidPaymentAppFactory.class.getName();
+        if (!service.containsFactory(androidFactoryId)) {
+            service.addUniqueFactory(mDelegate.createAndroidPaymentAppFactory(), androidFactoryId);
+        }
+
         service.create(/*delegate=*/this);
     }
 
@@ -658,6 +673,11 @@ public class PaymentRequestService
      */
     public void invokePaymentApp(
             PaymentApp paymentApp, PaymentResponseHelperInterface paymentResponseHelper) {
+        if (paymentApp.getPaymentAppType() == PaymentAppType.NATIVE_MOBILE_APP) {
+            PaymentDetailsUpdateServiceHelper.getInstance().initialize(new PackageManagerDelegate(),
+                    ((AndroidPaymentApp) paymentApp).packageName(),
+                    this /* PaymentApp.PaymentRequestUpdateEventListener */);
+        }
         mPaymentResponseHelper = paymentResponseHelper;
         mJourneyLogger.recordCheckoutStep(CheckoutFunnelStep.PAYMENT_HANDLER_INVOKED);
         // Create maps that are subsets of mMethodData and mModifiers, that contain the payment
@@ -1299,6 +1319,7 @@ public class PaymentRequestService
         assert !mSpec.isDestroyed() : "mSpec should not be used after being destroyed.";
         mSpec.retry(errors);
         mBrowserPaymentRequest.onRetry(errors);
+        PaymentDetailsUpdateServiceHelper.getInstance().reset();
     }
 
     /** The component part of the {@link PaymentRequest#canMakePayment} implementation. */
@@ -1406,6 +1427,8 @@ public class PaymentRequestService
         if (sNativeObserverForTest != null) {
             sNativeObserverForTest.onClosed();
         }
+
+        PaymentDetailsUpdateServiceHelper.getInstance().reset();
     }
 
     /** @return An observer for the payment request service, if any; otherwise, null. */
@@ -1674,5 +1697,6 @@ public class PaymentRequestService
         mInvokedPaymentApp = null;
         if (mBrowserPaymentRequest == null) return;
         mBrowserPaymentRequest.onInstrumentDetailsError(errorMessage);
+        PaymentDetailsUpdateServiceHelper.getInstance().reset();
     }
 }

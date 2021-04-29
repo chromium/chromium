@@ -1180,6 +1180,9 @@
         android:name="org.chromium.components.payments.PaymentDetailsUpdateService"
         android:exported="true"
         tools:ignore="ExportedService">
+      <intent-filter>  # DIFF-ANCHOR: c68af934
+        <action android:name="org.chromium.intent.action.UPDATE_PAYMENT_DETAILS"/>
+      </intent-filter>  # DIFF-ANCHOR: c68af934
     </service>  # DIFF-ANCHOR: 2a1cd701
     <service  # DIFF-ANCHOR: 0c6c4fd9
         android:name="org.chromium.content.app.PrivilegedProcessService0"

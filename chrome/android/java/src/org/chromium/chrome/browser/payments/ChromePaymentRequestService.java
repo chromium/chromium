@@ -20,19 +20,15 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.payments.AbortReason;
-import org.chromium.components.payments.AndroidPaymentApp;
-import org.chromium.components.payments.AndroidPaymentAppFactory;
 import org.chromium.components.payments.BrowserPaymentRequest;
 import org.chromium.components.payments.ErrorStrings;
 import org.chromium.components.payments.JourneyLogger;
 import org.chromium.components.payments.MethodStrings;
-import org.chromium.components.payments.PackageManagerDelegate;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppFactoryDelegate;
 import org.chromium.components.payments.PaymentAppFactoryInterface;
 import org.chromium.components.payments.PaymentAppService;
 import org.chromium.components.payments.PaymentAppType;
-import org.chromium.components.payments.PaymentDetailsUpdateServiceHelper;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentHandlerHost;
 import org.chromium.components.payments.PaymentOptionsUtils;
@@ -137,15 +133,6 @@ public class ChromePaymentRequestService
         @Nullable
         default Activity getActivity(WebContents webContents) {
             return ChromeActivity.fromWebContents(webContents);
-        }
-
-        /**
-         * Creates an instance of Android payment app factory.
-         * @return The instance, can be null for testing.
-         */
-        @Nullable
-        default PaymentAppFactoryInterface createAndroidPaymentAppFactory() {
-            return new AndroidPaymentAppFactory();
         }
 
         /**
@@ -328,10 +315,6 @@ public class ChromePaymentRequestService
     @Override
     public void addPaymentAppFactories(
             PaymentAppService service, PaymentAppFactoryDelegate delegate) {
-        String androidFactoryId = AndroidPaymentAppFactory.class.getName();
-        if (!service.containsFactory(androidFactoryId)) {
-            service.addUniqueFactory(mDelegate.createAndroidPaymentAppFactory(), androidFactoryId);
-        }
         String swFactoryId = PaymentAppServiceBridge.class.getName();
         if (!service.containsFactory(swFactoryId)) {
             service.addUniqueFactory(mDelegate.createServiceWorkerPaymentAppFactory(), swFactoryId);
@@ -561,12 +544,6 @@ public class ChromePaymentRequestService
             EditableOption selectedShippingOption, PaymentApp selectedPaymentApp) {
         if (mPaymentRequestService == null || mSpec == null || mSpec.isDestroyed()) return false;
         selectedPaymentApp.setPaymentHandlerHost(getPaymentHandlerHost());
-        // Only native apps can use PaymentDetailsUpdateService.
-        if (selectedPaymentApp.getPaymentAppType() == PaymentAppType.NATIVE_MOBILE_APP) {
-            PaymentDetailsUpdateServiceHelper.getInstance().initialize(new PackageManagerDelegate(),
-                    ((AndroidPaymentApp) selectedPaymentApp).packageName(),
-                    mPaymentRequestService /* PaymentApp.PaymentRequestUpdateEventListener */);
-        }
         PaymentResponseHelperInterface paymentResponseHelper =
                 new ChromePaymentResponseHelper(selectedShippingAddress, selectedShippingOption,
                         mPaymentUiService.getSelectedContact(), selectedPaymentApp,
@@ -644,7 +621,6 @@ public class ChromePaymentRequestService
             mPaymentHandlerHost.destroy();
             mPaymentHandlerHost = null;
         }
-        PaymentDetailsUpdateServiceHelper.getInstance().reset();
     }
 
     // Implements BrowserPaymentRequest:
@@ -756,7 +732,6 @@ public class ChromePaymentRequestService
             disconnectFromClientWithDebugMessage(errorMessage);
         } else {
             mPaymentUiService.onPayButtonProcessingCancelled();
-            PaymentDetailsUpdateServiceHelper.getInstance().reset();
         }
     }
 

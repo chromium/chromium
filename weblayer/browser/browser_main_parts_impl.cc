@@ -44,6 +44,7 @@
 #include "weblayer/browser/subresource_filter_profile_context_factory.h"
 #include "weblayer/browser/translate_accept_languages_factory.h"
 #include "weblayer/browser/translate_ranker_factory.h"
+#include "weblayer/browser/web_data_service_factory.h"
 #include "weblayer/browser/webui/web_ui_controller_factory.h"
 #include "weblayer/grit/weblayer_resources.h"
 #include "weblayer/public/main.h"
@@ -132,6 +133,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
     MediaRouterFactory::GetInstance();
   }
 #endif
+  WebDataServiceFactory::GetInstance();
 }
 
 void StopMessageLoop(base::OnceClosure quit_closure) {

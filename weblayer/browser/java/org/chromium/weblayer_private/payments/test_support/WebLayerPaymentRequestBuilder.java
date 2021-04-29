@@ -13,6 +13,7 @@ import org.mockito.Mockito;
 import org.chromium.components.payments.BrowserPaymentRequest;
 import org.chromium.components.payments.JourneyLogger;
 import org.chromium.components.payments.MojoPaymentRequestGateKeeper;
+import org.chromium.components.payments.PaymentAppFactoryInterface;
 import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.PaymentRequestSpec;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -194,5 +195,10 @@ public class WebLayerPaymentRequestBuilder implements PaymentRequestService.Dele
         Mockito.doReturn(context).when(weakContext).get();
         Mockito.doReturn(weakContext).when(window).getContext();
         return window;
+    }
+
+    @Override
+    public PaymentAppFactoryInterface createAndroidPaymentAppFactory() {
+        return null;
     }
 }
