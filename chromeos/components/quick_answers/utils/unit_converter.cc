@@ -46,7 +46,8 @@ const std::string UnitConverter::Convert(const double src_value,
       (src_rate_a.value() / dst_rate_a.value()) * src_value;
 
   return BuildUnitConversionResultText(
-      base::StringPrintf(kResultValueTemplate, result_value), *dst_name);
+      base::StringPrintf(kResultValueTemplate, result_value),
+      GetUnitDisplayText(*dst_name));
 }
 
 const Value* UnitConverter::FindProperDestinationUnit(

@@ -205,7 +205,7 @@ TEST_F(UnitConversionResultParserTest,
   auto expected_result = BuildUnitConversionResultText(
       base::StringPrintf(kResultValueTemplate, (kKilogramRateA / kPoundRateA) *
                                                    kSourceAmountKilogram),
-      kPoundName);
+      GetUnitDisplayText(kPoundName));
 
   EXPECT_EQ(1u, quick_answer.first_answer_row.size());
   EXPECT_EQ(0u, quick_answer.title.size());

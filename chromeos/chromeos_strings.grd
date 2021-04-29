@@ -895,6 +895,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_QUICK_ANSWERS_UNIT_CONVERSION_RESULT_TEXT" desc="The result text format string used for Quick Answers unit conversion result card. The first placeholder contains the value of result unit and the second placeholder contains the display name of the result unit.">
         <ph name="VALUE">$1<ex>220.462</ex></ph> <ph name="DISPLAY_NAME">$2<ex>pounds</ex></ph>
       </message>
+      <message name="IDS_UNIT_CONVERSION_POUND_DISPLAY_TEXT" desc="The display text of pound unit type.">
+        pounds
+      </message>
 
     <!-- Common Network type strings -->
       <message name="IDS_NETWORK_TYPE" desc="Label for network types">

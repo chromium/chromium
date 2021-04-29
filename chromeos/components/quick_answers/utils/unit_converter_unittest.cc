@@ -218,7 +218,7 @@ TEST_F(UnitConverterTest, ConvertWithProperInputShouldSuccess) {
   auto expected_result = BuildUnitConversionResultText(
       base::StringPrintf(kResultValueTemplate,
                          (kKilogramRateA / kPoundRateA) * kConvertSouceValue),
-      kPoundName);
+      GetUnitDisplayText(kPoundName));
   EXPECT_EQ(result, expected_result);
 }
 

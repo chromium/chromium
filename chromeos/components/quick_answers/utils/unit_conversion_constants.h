@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_COMPONENTS_QUICK_ANSWERS_UTILS_UNIT_CONVERSION_CONSTANTS_H_
 #define CHROMEOS_COMPONENTS_QUICK_ANSWERS_UTILS_UNIT_CONVERSION_CONSTANTS_H_
 
+#include <string>
+
 namespace chromeos {
 namespace quick_answers {
 
@@ -19,6 +21,8 @@ extern const char kConversionRateAPath[];
 extern const char kResultValueTemplate[];
 extern const char kNamePath[];
 extern const char kUnitsPath[];
+
+std::string GetUnitDisplayText(const std::string& name);
 
 }  // namespace quick_answers
 }  // namespace chromeos
