@@ -387,6 +387,8 @@ class MyAppElement extends PolymerElement {
     };
   }
 }
+
+customElements.define(MyAppElement.is, MyAppElement);
 ```
 
 * Use a consistent ordering for common methods (or, in legacy code, the
