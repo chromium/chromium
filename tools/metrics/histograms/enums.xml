@@ -72120,6 +72120,16 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="Request Succeeded"/>
 </enum>
 
+<enum name="SigninRemoveLocalAccountOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="AccountsStale">
+    Not removed because the account list was stale.
+  </int>
+  <int value="2" label="SignedOutAccountMissing">
+    Not removed because the account was not in the list of signed out accounts.
+  </int>
+</enum>
+
 <enum name="SigninRequestHeaderOperation">
   <obsolete>
     Removed 2019-07

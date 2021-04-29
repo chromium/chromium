@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
@@ -97,6 +98,11 @@ void RecordListAccountsFailure(GoogleServiceAuthError::State error_state) {
 
 void RecordLogoutRequestState(LogoutRequestState logout_state) {
   UMA_HISTOGRAM_ENUMERATION("Signin.GaiaCookieManager.Logout", logout_state);
+}
+
+void RecordRemoveLocalAccountOutcome(
+    GaiaCookieManagerService::RemoveLocalAccountOutcome outcome) {
+  base::UmaHistogramEnumeration("Signin.RemoveLocalAccountOutcome", outcome);
 }
 
 }  // namespace
@@ -665,11 +671,10 @@ void GaiaCookieManagerService::LogOutAllAccounts(
 
 void GaiaCookieManagerService::RemoveLoggedOutAccountByGaiaId(
     const std::string& gaia_id) {
-  // TODO(crbug.com/1078762): Add UMA for the various codepaths in this
-  // function.
   VLOG(1) << "GaiaCookieManagerService::RemoveLoggedOutAccountByGaiaId";
 
   if (list_accounts_stale_) {
+    RecordRemoveLocalAccountOutcome(RemoveLocalAccountOutcome::kAccountsStale);
     return;
   }
 
@@ -680,8 +685,12 @@ void GaiaCookieManagerService::RemoveLoggedOutAccountByGaiaId(
                     }) != 0;
 
   if (!accounts_updated) {
+    RecordRemoveLocalAccountOutcome(
+        RemoveLocalAccountOutcome::kSignedOutAccountMissing);
     return;
   }
+
+  RecordRemoveLocalAccountOutcome(RemoveLocalAccountOutcome::kSuccess);
 
   if (gaia_accounts_updated_in_cookie_callback_) {
     gaia_accounts_updated_in_cookie_callback_.Run(

@@ -1014,6 +1014,17 @@ accounts .-->
   </summary>
 </histogram>
 
+<histogram name="Signin.RemoveLocalAccountOutcome"
+    enum="SigninRemoveLocalAccountOutcome" expires_after="2021-09-30">
+  <owner>droger@chromium.org</owner>
+  <owner>mastiz@chromium.org</owner>
+  <summary>
+    This histogram records the outcome of processing
+    Google-Accounts-RemoveLocalAccount from Gaia, when an HTTP response includes
+    such header (usually upon user action to remove an account).
+  </summary>
+</histogram>
+
 <histogram name="Signin.SecondaryAccountConsentLog"
     enum="SecondaryAccountConsentLoggerResult" expires_after="2021-03-30">
   <obsolete>
