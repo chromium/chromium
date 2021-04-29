@@ -117,7 +117,7 @@ std::vector<SkBitmap> ImageDataToSkBitmapsWithMaxSize(NSData* image_data,
 
     CGSize size = CGSizeMake(CGImageGetWidth(cg_image),
                              CGImageGetHeight(cg_image));
-    if (size.width > max_size || size.width >= max_size)
+    if (size.width > max_size || size.height > max_size)
       continue;
     if (size.width >= 88 && size.height >= 88 && skip_images_88x88_or_larger)
       continue;
