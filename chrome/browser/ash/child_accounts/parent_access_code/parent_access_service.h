@@ -11,8 +11,9 @@
 
 #include "base/macros.h"
 #include "base/no_destructor.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/config_source.h"
-#include "chrome/browser/ui/ash/login_screen_client.h"
 #include "components/account_id/account_id.h"
 
 class PrefRegistrySimple;

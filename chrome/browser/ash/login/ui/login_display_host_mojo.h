@@ -20,7 +20,7 @@
 #include "chrome/browser/ash/login/security_token_pin_dialog_host_ash_impl.h"
 #include "chrome/browser/ash/login/ui/login_display_host_common.h"
 #include "chrome/browser/ash/login/ui/oobe_ui_dialog_delegate.h"
-#include "chrome/browser/ui/ash/login_screen_client.h"
+#include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chromeos/login/auth/auth_status_consumer.h"
 #include "chromeos/login/auth/challenge_response_key.h"
@@ -43,7 +43,7 @@ class MojoSystemInfoDispatcher;
 // A LoginDisplayHost instance that sends requests to the views-based signin
 // screen.
 class LoginDisplayHostMojo : public LoginDisplayHostCommon,
-                             public LoginScreenClient::Delegate,
+                             public LoginScreenClientImpl::Delegate,
                              public AuthStatusConsumer,
                              public OobeUI::Observer,
                              public views::ViewObserver {
@@ -97,7 +97,7 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
   void AddObserver(LoginDisplayHost::Observer* observer) override;
   void RemoveObserver(LoginDisplayHost::Observer* observer) override;
 
-  // LoginScreenClient::Delegate:
+  // LoginScreenClientImpl::Delegate:
   void HandleAuthenticateUserWithPasswordOrPin(
       const AccountId& account_id,
       const std::string& password,

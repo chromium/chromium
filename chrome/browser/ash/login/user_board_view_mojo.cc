@@ -10,7 +10,7 @@
 #include "ash/public/cpp/login_screen_model.h"
 #include "ash/public/cpp/login_types.h"
 #include "chrome/browser/ash/login/lock_screen_utils.h"
-#include "chrome/browser/ui/ash/login_screen_client.h"
+#include "chrome/browser/ui/ash/login_screen_client_impl.h"
 
 namespace chromeos {
 
@@ -86,8 +86,8 @@ void UserBoardViewMojo::SetPublicSessionLocales(
       default_locale, multiple_recommended_locales);
 
   // Send a request to get keyboard layouts for `default_locale`.
-  LoginScreenClient::Get()->RequestPublicSessionKeyboardLayouts(account_id,
-                                                                default_locale);
+  LoginScreenClientImpl::Get()->RequestPublicSessionKeyboardLayouts(
+      account_id, default_locale);
 }
 
 void UserBoardViewMojo::SetPublicSessionShowFullManagementDisclosure(

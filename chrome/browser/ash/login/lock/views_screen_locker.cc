@@ -45,7 +45,7 @@ namespace chromeos {
 ViewsScreenLocker::ViewsScreenLocker(ScreenLocker* screen_locker)
     : screen_locker_(screen_locker),
       system_info_updater_(std::make_unique<MojoSystemInfoDispatcher>()) {
-  LoginScreenClient::Get()->SetDelegate(this);
+  LoginScreenClientImpl::Get()->SetDelegate(this);
   user_board_view_mojo_ = std::make_unique<UserBoardViewMojo>();
   user_selection_screen_ =
       std::make_unique<ChromeUserSelectionScreen>(DisplayedScreen::LOCK_SCREEN);
@@ -54,7 +54,7 @@ ViewsScreenLocker::ViewsScreenLocker(ScreenLocker* screen_locker)
 
 ViewsScreenLocker::~ViewsScreenLocker() {
   lock_screen_apps::StateController::Get()->SetFocusCyclerDelegate(nullptr);
-  LoginScreenClient::Get()->SetDelegate(nullptr);
+  LoginScreenClientImpl::Get()->SetDelegate(nullptr);
 }
 
 void ViewsScreenLocker::Init() {

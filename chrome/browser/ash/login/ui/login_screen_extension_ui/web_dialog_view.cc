@@ -6,7 +6,7 @@
 
 #include "ash/public/cpp/login_screen.h"
 #include "chrome/browser/ash/login/ui/login_screen_extension_ui/dialog_delegate.h"
-#include "chrome/browser/ui/ash/login_screen_client.h"
+#include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 
@@ -23,14 +23,14 @@ WebDialogView::WebDialogView(
       delegate_(delegate) {
   views::WidgetDelegate::SetShowTitle(!delegate_ ||
                                       delegate_->ShouldCenterDialogTitleText());
-  if (LoginScreenClient::HasInstance()) {
-    LoginScreenClient::Get()->AddSystemTrayObserver(this);
+  if (LoginScreenClientImpl::HasInstance()) {
+    LoginScreenClientImpl::Get()->AddSystemTrayObserver(this);
   }
 }
 
 WebDialogView::~WebDialogView() {
-  if (LoginScreenClient::HasInstance()) {
-    LoginScreenClient::Get()->RemoveSystemTrayObserver(this);
+  if (LoginScreenClientImpl::HasInstance()) {
+    LoginScreenClientImpl::Get()->RemoveSystemTrayObserver(this);
   }
 }
 

@@ -30,7 +30,7 @@
 #include "chrome/browser/renderer_preferences_util.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
-#include "chrome/browser/ui/ash/login_screen_client.h"
+#include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/ash/system_tray_client.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
@@ -122,8 +122,8 @@ WebUILoginView::WebUILoginView(const WebViewSettings& settings,
     AddAccelerator(i->first);
   }
 
-  if (LoginScreenClient::HasInstance()) {
-    LoginScreenClient::Get()->AddSystemTrayObserver(this);
+  if (LoginScreenClientImpl::HasInstance()) {
+    LoginScreenClientImpl::Get()->AddSystemTrayObserver(this);
     observing_system_tray_focus_ = true;
   }
 }
@@ -133,8 +133,8 @@ WebUILoginView::~WebUILoginView() {
     observer.OnHostDestroying();
 
   // TODO(crbug.com/1188526) - Improve the observation of the system tray
-  if (observing_system_tray_focus_ && LoginScreenClient::HasInstance())
-    LoginScreenClient::Get()->RemoveSystemTrayObserver(this);
+  if (observing_system_tray_focus_ && LoginScreenClientImpl::HasInstance())
+    LoginScreenClientImpl::Get()->RemoveSystemTrayObserver(this);
   ChromeKeyboardControllerClient::Get()->RemoveObserver(this);
 
   // Clear any delegates we have set on the WebView.
@@ -318,11 +318,11 @@ void WebUILoginView::Observe(int type,
       break;
     }
     case chrome::NOTIFICATION_APP_TERMINATING: {
-      // In some tests, WebUILoginView remains after LoginScreenClient gets
+      // In some tests, WebUILoginView remains after LoginScreenClientImpl gets
       // deleted on shutdown. It should unregister itself before the deletion
       // happens.
       if (observing_system_tray_focus_) {
-        LoginScreenClient::Get()->RemoveSystemTrayObserver(this);
+        LoginScreenClientImpl::Get()->RemoveSystemTrayObserver(this);
         observing_system_tray_focus_ = false;
       }
       break;
@@ -421,8 +421,8 @@ void WebUILoginView::OnSystemTrayBubbleShown() {
 }
 
 void WebUILoginView::OnLoginPromptVisible() {
-  if (!observing_system_tray_focus_ && LoginScreenClient::HasInstance()) {
-    LoginScreenClient::Get()->AddSystemTrayObserver(this);
+  if (!observing_system_tray_focus_ && LoginScreenClientImpl::HasInstance()) {
+    LoginScreenClientImpl::Get()->AddSystemTrayObserver(this);
     observing_system_tray_focus_ = true;
   }
   // If we're hidden than will generate this signal once we're shown.

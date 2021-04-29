@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host_mojo.h"
 #include "chrome/browser/ash/login/ui/login_display_host_webui.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen_input_methods_controller.h"
-#include "chrome/browser/ui/ash/login_screen_client.h"
+#include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
@@ -42,16 +42,16 @@ class UserAddingScreenImpl : public UserAddingScreen {
   class LoadTimeReporter : public LoginScreenShownObserver {
    public:
     LoadTimeReporter() : start_time_(base::TimeTicks::Now()) {
-      LoginScreenClient::Get()->AddLoginScreenShownObserver(this);
+      LoginScreenClientImpl::Get()->AddLoginScreenShownObserver(this);
     }
     LoadTimeReporter(const LoadTimeReporter&) = delete;
     LoadTimeReporter& operator=(const LoadTimeReporter&) = delete;
 
     ~LoadTimeReporter() override {
-      // In tests, LoginScreenClient's instance may be destroyed before
+      // In tests, LoginScreenClientImpl's instance may be destroyed before
       // LoadTimeReporterMojo's destructor is called.
-      if (LoginScreenClient::HasInstance())
-        LoginScreenClient::Get()->RemoveLoginScreenShownObserver(this);
+      if (LoginScreenClientImpl::HasInstance())
+        LoginScreenClientImpl::Get()->RemoveLoginScreenShownObserver(this);
     }
 
     // LoginScreenShownObserver:
@@ -59,7 +59,7 @@ class UserAddingScreenImpl : public UserAddingScreen {
       const base::TimeDelta load_time = base::TimeTicks::Now() - start_time_;
       UmaHistogramTimes("ChromeOS.UserAddingScreen.LoadTimeViewsBased",
                         load_time);
-      LoginScreenClient::Get()->RemoveLoginScreenShownObserver(this);
+      LoginScreenClientImpl::Get()->RemoveLoginScreenShownObserver(this);
     }
 
    private:

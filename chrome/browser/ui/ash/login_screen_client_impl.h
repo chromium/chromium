@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_LOGIN_SCREEN_CLIENT_H_
-#define CHROME_BROWSER_UI_ASH_LOGIN_SCREEN_CLIENT_H_
+#ifndef CHROME_BROWSER_UI_ASH_LOGIN_SCREEN_CLIENT_IMPL_H_
+#define CHROME_BROWSER_UI_ASH_LOGIN_SCREEN_CLIENT_IMPL_H_
 
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_screen_client.h"
@@ -28,7 +28,7 @@ class LoginAuthRecorder;
 
 // Handles method calls sent from ash to chrome. Also sends messages from chrome
 // to ash.
-class LoginScreenClient : public ash::LoginScreenClient {
+class LoginScreenClientImpl : public ash::LoginScreenClient {
  public:
   // Handles method calls coming from ash into chrome.
   class Delegate {
@@ -69,10 +69,10 @@ class LoginScreenClient : public ash::LoginScreenClient {
     virtual bool ValidateParentAccessCode(const std::string& access_code) = 0;
   };
 
-  LoginScreenClient();
-  ~LoginScreenClient() override;
+  LoginScreenClientImpl();
+  ~LoginScreenClientImpl() override;
   static bool HasInstance();
-  static LoginScreenClient* Get();
+  static LoginScreenClientImpl* Get();
 
   // Set the object which will handle calls coming from ash.
   void SetDelegate(Delegate* delegate);
@@ -148,9 +148,9 @@ class LoginScreenClient : public ash::LoginScreenClient {
 
   base::ObserverList<LoginScreenShownObserver> login_screen_shown_observers_;
 
-  base::WeakPtrFactory<LoginScreenClient> weak_ptr_factory_{this};
+  base::WeakPtrFactory<LoginScreenClientImpl> weak_ptr_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(LoginScreenClient);
+  DISALLOW_COPY_AND_ASSIGN(LoginScreenClientImpl);
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_LOGIN_SCREEN_CLIENT_H_
+#endif  // CHROME_BROWSER_UI_ASH_LOGIN_SCREEN_CLIENT_IMPL_H_

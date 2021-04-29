@@ -14,7 +14,7 @@
 #include "chrome/browser/chromeos/language_preferences.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/login_screen_client.h"
+#include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/common/pref_names.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -112,7 +112,7 @@ void InputMethodPersistence::InputMethodChanged(InputMethodManager* manager,
       return;
     case InputMethodManager::UIStyle::kLock:
       // We are either in unit test, or screen should be locked.
-      DCHECK(!LoginScreenClient::HasInstance() ||
+      DCHECK(!LoginScreenClientImpl::HasInstance() ||
              ScreenLocker::default_screen_locker());
       return;
     case InputMethodManager::UIStyle::kSecondaryLogin:

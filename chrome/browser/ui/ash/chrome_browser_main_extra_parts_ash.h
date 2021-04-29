@@ -30,7 +30,7 @@ class AshShellInit;
 class CastConfigControllerMediaRouter;
 class ImeControllerClient;
 class InSessionAuthDialogClient;
-class LoginScreenClient;
+class LoginScreenClientImpl;
 class MediaClientImpl;
 class MobileDataNotifications;
 class NetworkConnectDelegateChromeOS;
@@ -109,7 +109,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
 #endif
 
   // Initialized in PostProfileInit in all configs:
-  std::unique_ptr<LoginScreenClient> login_screen_client_;
+  std::unique_ptr<LoginScreenClientImpl> login_screen_client_;
   std::unique_ptr<MediaClientImpl> media_client_;
   std::unique_ptr<policy::DisplaySettingsHandler> display_settings_handler_;
 

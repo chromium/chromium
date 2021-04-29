@@ -37,7 +37,7 @@
 #include "chrome/browser/ui/ash/in_session_auth_dialog_client.h"
 #include "chrome/browser/ui/ash/launcher/app_service/exo_app_type_resolver.h"
 #include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
-#include "chrome/browser/ui/ash/login_screen_client.h"
+#include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/ash/media_client_impl.h"
 #include "chrome/browser/ui/ash/media_notification_provider_impl.h"
 #include "chrome/browser/ui/ash/network/mobile_data_notifications.h"
@@ -208,8 +208,8 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
 }
 
 void ChromeBrowserMainExtraPartsAsh::PostProfileInit() {
-  login_screen_client_ = std::make_unique<LoginScreenClient>();
-  // https://crbug.com/884127 ensuring that LoginScreenClient is initialized
+  login_screen_client_ = std::make_unique<LoginScreenClientImpl>();
+  // https://crbug.com/884127 ensuring that LoginScreenClientImpl is initialized
   // before using it InitializeDeviceDisablingManager.
   g_browser_process->platform_part()->InitializeDeviceDisablingManager();
 

@@ -24,7 +24,7 @@
 #include "chrome/browser/chromeos/input_method/mock_input_method_manager_impl.h"
 #include "chrome/browser/ui/ash/accessibility/fake_accessibility_controller.h"
 #include "chrome/browser/ui/ash/assistant/assistant_client_impl.h"
-#include "chrome/browser/ui/ash/login_screen_client.h"
+#include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
 #include "chrome/browser/ui/ash/test_login_screen.h"
 #include "chrome/browser/ui/ash/test_session_controller.h"
@@ -163,10 +163,10 @@ class ScreenLockerUnitTest : public testing::Test {
   // ScreenLocker dependencies:
   // * AccessibilityManager dependencies:
   FakeAccessibilityController fake_accessibility_controller_;
-  // * LoginScreenClient dependencies:
+  // * LoginScreenClientImpl dependencies:
   session_manager::SessionManager session_manager_;
   TestLoginScreen test_login_screen_;
-  LoginScreenClient login_screen_client_;
+  LoginScreenClientImpl login_screen_client_;
   // * SessionControllerClientImpl dependencies:
   FakeChromeUserManager* fake_user_manager_{new FakeChromeUserManager()};
   user_manager::ScopedUserManager scoped_user_manager_{

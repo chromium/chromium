@@ -31,7 +31,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/login_screen_client.h"
+#include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/ash/system_tray_client.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_password_changed_screen_handler.h"
@@ -96,7 +96,7 @@ LoginDisplayHostMojo::~LoginDisplayHostMojo() {
         ->pin_dialog_manager()
         ->RemovePinDialogHost(&security_token_pin_dialog_host_ash_impl_);
   }
-  LoginScreenClient::Get()->SetDelegate(nullptr);
+  LoginScreenClientImpl::Get()->SetDelegate(nullptr);
   if (dialog_) {
     dialog_->GetOobeUI()->signin_screen_handler()->SetDelegate(nullptr);
     StopObservingOobeUI();
@@ -235,10 +235,10 @@ void LoginDisplayHostMojo::CancelUserAdding() {
 }
 
 void LoginDisplayHostMojo::OnStartSignInScreen() {
-  // This function may be called early in startup flow, before LoginScreenClient
-  // has been initialized. Wait until LoginScreenClient is initialized as it is
-  // a common dependency.
-  if (!LoginScreenClient::HasInstance()) {
+  // This function may be called early in startup flow, before
+  // LoginScreenClientImpl has been initialized. Wait until
+  // LoginScreenClientImpl is initialized as it is a common dependency.
+  if (!LoginScreenClientImpl::HasInstance()) {
     // TODO(jdufault): Add a timeout here / make sure we do not post infinitely.
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&LoginDisplayHostMojo::OnStartSignInScreen,

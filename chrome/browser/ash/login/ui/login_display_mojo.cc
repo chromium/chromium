@@ -18,7 +18,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host_mojo.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/ui/ash/login_screen_client.h"
+#include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/webui/chromeos/login/enable_adb_sideloading_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/enable_debugging_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/kiosk_autolaunch_screen_handler.h"
@@ -64,7 +64,7 @@ void LoginDisplayMojo::Init(const user_manager::UserList& filtered_users,
                             bool show_users,
                             bool show_new_user) {
   host_->SetUserCount(filtered_users.size());
-  auto* client = LoginScreenClient::Get();
+  auto* client = LoginScreenClientImpl::Get();
 
   // ExistingUserController::DeviceSettingsChanged and others may initialize the
   // login screen multiple times. Views-login only supports initialization once.

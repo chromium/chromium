@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/login_screen_client.h"
 #include "chrome/browser/ui/ash/system_tray_client.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/arc/arc_prefs.h"

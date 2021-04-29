@@ -10,7 +10,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/lock_screen_apps/focus_cycler_delegate.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
-#include "chrome/browser/ui/ash/login_screen_client.h"
+#include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 
 namespace chromeos {
@@ -19,11 +19,11 @@ class UserBoardViewMojo;
 class UserSelectionScreen;
 class MojoSystemInfoDispatcher;
 
-// ViewsScreenLocker acts like LoginScreenClient::Delegate which handles method
-// calls coming from ash into chrome.
+// ViewsScreenLocker acts like LoginScreenClientImpl::Delegate which handles
+// method calls coming from ash into chrome.
 // It is also a ScreenLocker::Delegate which handles calls from chrome into
 // ash (views-based lockscreen).
-class ViewsScreenLocker : public LoginScreenClient::Delegate,
+class ViewsScreenLocker : public LoginScreenClientImpl::Delegate,
                           public ScreenLocker::Delegate,
                           public PowerManagerClient::Observer,
                           public lock_screen_apps::FocusCyclerDelegate {
@@ -39,7 +39,7 @@ class ViewsScreenLocker : public LoginScreenClient::Delegate,
   void ClearErrors() override;
   void OnAshLockAnimationFinished() override;
 
-  // LoginScreenClient::Delegate
+  // LoginScreenClientImpl::Delegate
   void HandleAuthenticateUserWithPasswordOrPin(
       const AccountId& account_id,
       const std::string& password,

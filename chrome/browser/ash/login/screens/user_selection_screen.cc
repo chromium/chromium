@@ -41,7 +41,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/ui/ash/login_screen_client.h"
+#include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/webui/chromeos/login/l10n_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -963,8 +963,8 @@ UserSelectionScreen::UpdateAndReturnUserListForAsh() {
     user_info.can_remove = CanRemoveUser(user);
 
     // Send a request to get keyboard layouts for default locale.
-    if (is_public_account && LoginScreenClient::HasInstance()) {
-      LoginScreenClient::Get()->RequestPublicSessionKeyboardLayouts(
+    if (is_public_account && LoginScreenClientImpl::HasInstance()) {
+      LoginScreenClientImpl::Get()->RequestPublicSessionKeyboardLayouts(
           account_id, user_info.public_account_info->default_locale);
     }
 

@@ -17,7 +17,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/ui/ash/login_screen_client.h"
+#include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "extensions/grit/extensions_browser_resources.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_skia.h"
@@ -46,7 +46,7 @@ void KioskAppMenuController::OnKioskAppsSettingsChanged() {
 }
 
 void KioskAppMenuController::SendKioskApps() {
-  if (!LoginScreenClient::HasInstance())
+  if (!LoginScreenClientImpl::HasInstance())
     return;
 
   std::vector<ash::KioskAppMenuEntry> output;

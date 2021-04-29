@@ -15,7 +15,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
-#include "chrome/browser/ui/ash/login_screen_client.h"
+#include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
@@ -154,10 +154,10 @@ class OobeUIDialogDelegate : public ui::WebDialogDelegate,
   base::ScopedObservation<OobeUI, OobeUI::Observer> oobe_ui_observer_{this};
 
   std::unique_ptr<
-      base::ScopedObservation<LoginScreenClient,
+      base::ScopedObservation<LoginScreenClientImpl,
                               ash::SystemTrayObserver,
-                              &LoginScreenClient::AddSystemTrayObserver,
-                              &LoginScreenClient::RemoveSystemTrayObserver>>
+                              &LoginScreenClientImpl::AddSystemTrayObserver,
+                              &LoginScreenClientImpl::RemoveSystemTrayObserver>>
       scoped_system_tray_observer_;
 
   std::map<ui::Accelerator, ash::LoginAcceleratorAction> accel_map_;

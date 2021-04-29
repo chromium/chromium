@@ -14,7 +14,7 @@ namespace chromeos {
 // A metrics recorder that records login authentication related metrics.
 // This keeps track of the last authentication method we used and records
 // switching between different authentication methods.
-// This is tied to LoginScreenClient lifetime.
+// This is tied to LoginScreenClientImpl lifetime.
 class LoginAuthRecorder : public session_manager::SessionManagerObserver {
  public:
   // Authentication method to unlock the screen. This enum is used to back an

@@ -25,7 +25,6 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
-#include "chrome/browser/ui/ash/login_screen_client.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/settings/cros_settings_names.h"

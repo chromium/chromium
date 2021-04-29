@@ -46,7 +46,7 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/login_screen_client.h"
+#include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/browser_resources.h"
@@ -211,7 +211,7 @@ void ScreenLocker::Init() {
   delegate_ = views_screen_locker_.get();
 
   // Create and display lock screen.
-  CHECK(LoginScreenClient::HasInstance());
+  CHECK(LoginScreenClientImpl::HasInstance());
   ash::LoginScreen::Get()->ShowLockScreen();
   views_screen_locker_->Init();
 
@@ -804,7 +804,7 @@ void ScreenLocker::OnAuthScanDone(
     return;
   }
 
-  LoginScreenClient::Get()->auth_recorder()->RecordAuthMethod(
+  LoginScreenClientImpl::Get()->auth_recorder()->RecordAuthMethod(
       LoginAuthRecorder::AuthMethod::kFingerprint);
 
   if (scan_result != device::mojom::ScanResult::SUCCESS) {
