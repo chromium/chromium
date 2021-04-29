@@ -12,6 +12,8 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
  * Properties for Launchpad app management menu's app permissions.
  */
 class AppManagementMenuPermissionsProperties {
+    private AppManagementMenuPermissionsProperties() {}
+
     public static final WritableIntPropertyKey NOTIFICATIONS = new WritableIntPropertyKey();
     public static final WritableIntPropertyKey MIC = new WritableIntPropertyKey();
     public static final WritableIntPropertyKey CAMERA = new WritableIntPropertyKey();

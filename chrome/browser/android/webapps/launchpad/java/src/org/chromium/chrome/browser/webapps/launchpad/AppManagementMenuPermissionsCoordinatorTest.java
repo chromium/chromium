@@ -50,7 +50,7 @@ public class AppManagementMenuPermissionsCoordinatorTest {
     private static final String APP_URL = "https://example.com/";
 
     private static final LaunchpadItem MOCK_ITEM =
-            new LaunchpadItem(APP_PACKAGE_NAME, APP_SHORT_NAME, APP_NAME, APP_URL, null);
+            new LaunchpadItem(APP_PACKAGE_NAME, APP_SHORT_NAME, APP_NAME, APP_URL, null, null);
 
     @Mock
     Activity mActivity;

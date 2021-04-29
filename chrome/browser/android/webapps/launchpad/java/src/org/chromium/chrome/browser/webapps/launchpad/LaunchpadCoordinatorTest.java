@@ -45,9 +45,11 @@ public class LaunchpadCoordinatorTest {
     private static final String APP_SHORT_NAME_2 = "App 2 with long short name";
     private static final String APP_URL_2 = "https://example.com/2";
 
-    private static final List<LaunchpadItem> MOCK_APP_LIST = new ArrayList<>(Arrays.asList(
-            new LaunchpadItem(APP_PACKAGE_NAME_1, APP_SHORT_NAME_1, APP_NAME_1, APP_URL_1, null),
-            new LaunchpadItem(APP_PACKAGE_NAME_2, APP_SHORT_NAME_2, APP_NAME_2, APP_URL_2, null)));
+    private static final List<LaunchpadItem> MOCK_APP_LIST =
+            new ArrayList<>(Arrays.asList(new LaunchpadItem(APP_PACKAGE_NAME_1, APP_SHORT_NAME_1,
+                                                  APP_NAME_1, APP_URL_1, null, null),
+                    new LaunchpadItem(APP_PACKAGE_NAME_2, APP_SHORT_NAME_2, APP_NAME_2, APP_URL_2,
+                            null, null)));
 
     private Activity mActivity;
 

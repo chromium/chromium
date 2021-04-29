@@ -19,6 +19,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.browserservices.intents.WebApkExtras.ShortcutItem;
+import org.chromium.chrome.browser.browserservices.intents.WebappIcon;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -51,8 +53,9 @@ public final class LaunchpadActivityTest {
     private static final String APP_URL = "https://example.com/1";
     private static final Bitmap TEST_ICON = Bitmap.createBitmap(20, 20, Bitmap.Config.ARGB_8888);
 
-    private static final List<LaunchpadItem> MOCK_APP_LIST = new ArrayList<>(Arrays.asList(
-            new LaunchpadItem(APP_PACKAGE_NAME, APP_SHORT_NAME, APP_NAME, APP_URL, TEST_ICON)));
+    private static final List<LaunchpadItem> MOCK_APP_LIST =
+            new ArrayList<>(Arrays.asList(new LaunchpadItem(APP_PACKAGE_NAME, APP_SHORT_NAME,
+                    APP_NAME, APP_URL, TEST_ICON, new ArrayList<ShortcutItem>())));
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
@@ -66,6 +69,7 @@ public final class LaunchpadActivityTest {
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
+        LaunchpadUtils.setOverrideItemListForTesting(MOCK_APP_LIST);
     }
 
     @After
@@ -76,7 +80,6 @@ public final class LaunchpadActivityTest {
     }
 
     private void openLaunchpadActivity() {
-        LaunchpadUtils.setOverrideItemListForTesting(MOCK_APP_LIST);
         mLaunchpadActivity = ActivityTestUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), LaunchpadActivity.class, () -> {
                     TestThreadUtils.runOnUiThreadBlocking(
@@ -112,6 +115,34 @@ public final class LaunchpadActivityTest {
         View dialogView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
 
         mRenderTestRule.render(dialogView, "launchpad_management_menu");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testAppManagementMenuWithShortcut() throws IOException {
+        String testShortcutName = "Test Shortcut";
+        String testShortcutUrl = "https://example.com/11";
+        List<ShortcutItem> shortcutList =
+                new ArrayList<>(Arrays.asList(new ShortcutItem(testShortcutName, testShortcutName,
+                        testShortcutUrl, "iconUrl", "iconHash", new WebappIcon(TEST_ICON))));
+        List<LaunchpadItem> testAppListWithShortCut =
+                new ArrayList<>(Arrays.asList(new LaunchpadItem(APP_PACKAGE_NAME, APP_SHORT_NAME,
+                        APP_NAME, APP_URL, TEST_ICON, shortcutList)));
+
+        LaunchpadUtils.setOverrideItemListForTesting(testAppListWithShortCut);
+        openLaunchpadActivity();
+
+        View item = ((RecyclerView) mLaunchpadCoordinator.getView().findViewById(
+                             R.id.launchpad_recycler))
+                            .getChildAt(0);
+        TouchCommon.longPressView(item);
+
+        ModalDialogManager modalDialogManager = mLaunchpadActivity.getModalDialogManager();
+        PropertyModel dialogModel = modalDialogManager.getCurrentDialogForTest();
+        View dialogView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
+
+        mRenderTestRule.render(dialogView, "launchpad_management_menu_shortcuts");
     }
 
     /**

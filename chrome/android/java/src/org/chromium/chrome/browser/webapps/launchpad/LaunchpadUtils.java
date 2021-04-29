@@ -72,7 +72,7 @@ public class LaunchpadUtils {
                     if (webApkInfo != null) {
                         LaunchpadItem item = new LaunchpadItem(webApkInfo.webApkPackageName(),
                                 webApkInfo.shortName(), webApkInfo.name(), webApkInfo.url(),
-                                webApkInfo.icon().bitmap());
+                                webApkInfo.icon().bitmap(), webApkInfo.shortcutItems());
                         apps.add(item);
                     }
                 } catch (PackageManager.NameNotFoundException e) {

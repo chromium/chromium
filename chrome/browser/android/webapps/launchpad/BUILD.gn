@@ -19,12 +19,15 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/webapps/launchpad/LaunchpadCoordinator.java",
     "java/src/org/chromium/chrome/browser/webapps/launchpad/LaunchpadItem.java",
     "java/src/org/chromium/chrome/browser/webapps/launchpad/LaunchpadPage.java",
+    "java/src/org/chromium/chrome/browser/webapps/launchpad/ShortcutItemProperties.java",
+    "java/src/org/chromium/chrome/browser/webapps/launchpad/ShortcutItemViewBinder.java",
   ]
 
   deps = [
     ":java_resources",
     "//base:base_java",
     "//chrome/android/webapk/libs/client:client_java",
+    "//chrome/browser/android/browserservices/intents:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/ui/android/native_page:java",
     "//components/browser_ui/settings/android:java",
@@ -51,6 +54,7 @@ android_resources("java_resources") {
     "java/res/layout/launchpad_menu_dialog_layout.xml",
     "java/res/layout/launchpad_menu_dialog_layout.xml",
     "java/res/layout/launchpad_page_layout.xml",
+    "java/res/layout/launchpad_shortcut_item_view.xml",
     "java/res/layout/launchpad_tile_view.xml",
     "java/res/menu/launchpad_action_bar_menu.xml",
     "java/res/values/dimens.xml",
@@ -72,6 +76,7 @@ android_library("javatests") {
     ":java_resources",
     "//base:base_java_test_support",
     "//chrome/android:chrome_java",
+    "//chrome/browser/android/browserservices/intents:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
@@ -100,6 +105,7 @@ android_library("junit_tests") {
   testonly = true
 
   sources = [
+    "java/src/org/chromium/chrome/browser/webapps/launchpad/AppManagementMenuCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/webapps/launchpad/AppManagementMenuPermissionsCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/webapps/launchpad/LaunchpadCoordinatorTest.java",
   ]
@@ -110,6 +116,7 @@ android_library("junit_tests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//chrome/browser/android/browserservices/intents:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/test/android:chrome_java_test_support",
     "//components/browser_ui/site_settings/android:java",

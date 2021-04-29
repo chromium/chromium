@@ -20,6 +20,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
@@ -35,6 +36,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.chrome.browser.browserservices.intents.WebApkExtras.ShortcutItem;
+import org.chromium.chrome.browser.browserservices.intents.WebappIcon;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -75,9 +78,9 @@ public class LaunchpadPageTest {
 
     private static final List<LaunchpadItem> MOCK_APP_LIST =
             new ArrayList<>(Arrays.asList(new LaunchpadItem(APP_PACKAGE_NAME_1, APP_SHORT_NAME_1,
-                                                  APP_NAME_1, APP_URL_1, TEST_ICON),
+                                                  APP_NAME_1, APP_URL_1, TEST_ICON, null),
                     new LaunchpadItem(APP_PACKAGE_NAME_2, APP_SHORT_NAME_2, APP_NAME_2, APP_URL_2,
-                            TEST_ICON)));
+                            TEST_ICON, null)));
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -209,5 +212,50 @@ public class LaunchpadPageTest {
         Assert.assertEquals(
                 AppCompatResources.getColorStateList(context, R.color.default_icon_color),
                 locationIcon.getImageTintList());
+    }
+
+    @Test
+    @MediumTest
+    public void testAppShortcuts() {
+        String testShortcutName = "Test Shortcut";
+        String testShortcutUrl = "https://example.com/11";
+        List<ShortcutItem> shortcutList =
+                new ArrayList<>(Arrays.asList(new ShortcutItem(testShortcutName, testShortcutName,
+                        testShortcutUrl, "iconUrl", "iconHash", new WebappIcon(TEST_ICON))));
+        List<LaunchpadItem> testAppListWithShortCut =
+                new ArrayList<>(Arrays.asList(new LaunchpadItem(APP_PACKAGE_NAME_1,
+                        APP_SHORT_NAME_1, APP_NAME_1, APP_URL_1, TEST_ICON, shortcutList)));
+
+        LaunchpadUtils.setOverrideItemListForTesting(testAppListWithShortCut);
+        openLaunchpadPage();
+
+        ModalDialogManager modalDialogManager =
+                mActivityTestRule.getActivity().getModalDialogManager();
+
+        View item = mItemContainer.getChildAt(0);
+        TouchCommon.longPressView(item);
+        PropertyModel dialogModel = modalDialogManager.getCurrentDialogForTest();
+        View dialogView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
+
+        ListView listView = dialogView.findViewById(R.id.shortcuts_list_view);
+
+        // Assert icon and name in shortcut item view is set correctly.
+        Assert.assertEquals(1, listView.getChildCount());
+        View shortcut = listView.getChildAt(0);
+        Assert.assertEquals(
+                testShortcutName, ((TextView) shortcut.findViewById(R.id.shortcut_name)).getText());
+        ImageView icon = (ImageView) shortcut.findViewById(R.id.shortcut_icon);
+        Assert.assertEquals(TEST_ICON, ((BitmapDrawable) icon.getDrawable()).getBitmap());
+
+        // Tests launching app shortcut.
+        Intents.init();
+        intending(allOf(hasPackage(APP_PACKAGE_NAME_1)))
+                .respondWith(new ActivityResult(Activity.RESULT_OK, null));
+        TestThreadUtils.runOnUiThreadBlocking(() -> TouchCommon.singleClickView(shortcut));
+        intended(allOf(hasPackage(APP_PACKAGE_NAME_1), hasData(testShortcutUrl)), times(1));
+        Intents.release();
+
+        // Assert dialog is dismissed.
+        Assert.assertNull(modalDialogManager.getCurrentDialogForTest());
     }
 }
