@@ -16,6 +16,10 @@
   </tr>
 </table>
 
+<ul role="presentation" id="list1">
+    <li id="listitem1">List item</li>
+</ul>
+
 <canvas id="myCanvas" width="300" height="300">
   <input type="radio" id="input">
 </canvas>
@@ -67,6 +71,23 @@ test(function(t) {
     assert_equals(axElementById('tr1').role, "AXRole: AXGenericContainer");
     assert_equals(axElementById('td1').role, "AXRole: AXGenericContainer");
 }, "Role presentation toggled on table.");
+
+test(function(t) {
+    assert_equals(axElementById('list1'), undefined);
+    assert_equals(axElementById('listitem1').role, "AXRole: AXNone");
+
+    // Change role="presentation"
+    document.getElementById('list1').removeAttribute('role');
+
+    assert_equals(axElementById('list1').role, 'AXRole: AXList');
+    assert_equals(axElementById('listitem1').role, 'AXRole: AXListItem');
+
+    // Change role attribute back to "presentation"
+    document.getElementById('list1').setAttribute('role', 'presentation');
+
+    assert_equals(axElementById('list1'), undefined);
+    assert_equals(axElementById('listitem1').role, "AXRole: AXNone");
+}, "Role presentation toggled on list.");
 
 test(function(t) {
     assert_equals(axElementById('opt1').role, "AXRole: AXListBoxOption");

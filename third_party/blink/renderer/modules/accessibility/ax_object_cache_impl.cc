@@ -139,6 +139,27 @@ bool HasAriaCellRole(Element* elem) {
   return ui::IsCellOrTableHeader(AXObject::AriaRoleStringToRoleEnum(role_str));
 }
 
+// How deep can role="presentation" propagate from this node (inclusive)?
+// For example, propagates from table->tbody->tr->td (4).
+// Limiting the depth is an optimization that keeps recursion under control.
+int RolePresentationPropagationDepth(Node* node) {
+  // Check for list markup.
+  if (IsA<HTMLMenuElement>(node) || IsA<HTMLUListElement>(node) ||
+      IsA<HTMLOListElement>(node)) {
+    return 2;
+  }
+
+  // Check for <table>
+  if (IsA<HTMLTableElement>(node))
+    return 4;  // table section, table row, table cells,
+
+  // Check for display: table CSS.
+  if (node->GetLayoutObject() && node->GetLayoutObject()->IsTable())
+    return 4;
+
+  return 0;
+}
+
 // Return true if whitespace is not necessary to keep adjacent_node separate
 // in screen reader output from surrounding nodes.
 bool CanIgnoreSpaceNextTo(LayoutObject* layout_object,
@@ -1162,15 +1183,18 @@ AXObject* AXObjectCacheImpl::CreateAndInit(ax::mojom::blink::Role role,
   return obj;
 }
 
-void AXObjectCacheImpl::RemoveAXObjectsInLayoutSubtree(AXObject* subtree) {
-  if (!subtree)
+void AXObjectCacheImpl::RemoveAXObjectsInLayoutSubtree(AXObject* subtree,
+                                                       int depth) {
+  if (!subtree || depth <= 0)
     return;
+
+  depth--;
 
   LayoutObject* layout_object = subtree->GetLayoutObject();
   if (layout_object) {
     LayoutObject* layout_child = layout_object->SlowFirstChild();
     while (layout_child) {
-      RemoveAXObjectsInLayoutSubtree(Get(layout_child));
+      RemoveAXObjectsInLayoutSubtree(Get(layout_child), depth);
       layout_child = layout_child->NextSibling();
     }
   }
@@ -2441,12 +2465,12 @@ void AXObjectCacheImpl::HandleRoleChangeWithCleanLayout(Node* node) {
     // AXObject in this method and call ChildrenChangeWithCleanLayout() on the
     // parent so that future updates to its children will create the alert.
     ChildrenChangedWithCleanLayout(nullptr, obj->CachedParentObject());
-    LayoutObject* layout_object = node->GetLayoutObject();
-    if (layout_object && layout_object->IsTable()) {
-      // If role changes on a table, invalidate the entire table subtree as many
-      // objects may suddenly need to change, because presentation is inherited
-      // from the table to rows and cells.
-      RemoveAXObjectsInLayoutSubtree(obj);
+    if (int depth = RolePresentationPropagationDepth(node)) {
+      // If role changes on a table, menu, or list invalidate the subtree of
+      // objects that may require a specific parent role in order to keep their
+      // role. For example, rows and cells require a table ancestor, and list
+      // items require a parent list (must be direct DOM parent).
+      RemoveAXObjectsInLayoutSubtree(obj, depth);
     } else {
       // The children of this thing need to detach from parent.
       Remove(obj);
