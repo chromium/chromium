@@ -23,7 +23,8 @@ static_library("browser_util") {
   deps = [
     ":embedder_support",
     "//build:branding_buildflags",
-    "//components/content_settings/core/browser:browser",
+    "//components/content_settings/browser",
+    "//components/content_settings/core/browser",
     "//components/version_info",
     "//content/public/browser",
   ]

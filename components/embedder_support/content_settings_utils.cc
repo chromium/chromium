@@ -4,6 +4,7 @@
 
 #include "components/embedder_support/content_settings_utils.h"
 
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
@@ -46,30 +47,59 @@ bool AllowSharedWorker(
     const GURL& worker_url,
     const GURL& site_for_cookies,
     const base::Optional<url::Origin>& top_frame_origin,
+    const std::string& name,
+    const storage::StorageKey& storage_key,
+    int render_process_id,
+    int render_frame_id,
     const content_settings::CookieSettings* cookie_settings) {
-  return cookie_settings->IsCookieAccessAllowed(worker_url, site_for_cookies,
-                                                top_frame_origin);
+  bool allow = cookie_settings->IsCookieAccessAllowed(
+      worker_url, site_for_cookies, top_frame_origin);
+
+  content_settings::PageSpecificContentSettings::SharedWorkerAccessed(
+      render_process_id, render_frame_id, worker_url, name, storage_key,
+      !allow);
+  return allow;
 }
 
 bool AllowWorkerFileSystem(
     const GURL& url,
+    const std::vector<content::GlobalFrameRoutingId>& render_frames,
     const content_settings::CookieSettings* cookie_settings) {
-  return cookie_settings->IsCookieAccessAllowed(url, url,
-                                                url::Origin::Create(url));
+  bool allow = cookie_settings->IsCookieAccessAllowed(url, url,
+                                                      url::Origin::Create(url));
+  for (const auto& it : render_frames) {
+    content_settings::PageSpecificContentSettings::FileSystemAccessed(
+        it.child_id, it.frame_routing_id, url, !allow);
+  }
+  return allow;
 }
 
 bool AllowWorkerIndexedDB(
     const GURL& url,
+    const std::vector<content::GlobalFrameRoutingId>& render_frames,
     const content_settings::CookieSettings* cookie_settings) {
-  return cookie_settings->IsCookieAccessAllowed(url, url,
-                                                url::Origin::Create(url));
+  bool allow = cookie_settings->IsCookieAccessAllowed(url, url,
+                                                      url::Origin::Create(url));
+
+  for (const auto& it : render_frames) {
+    content_settings::PageSpecificContentSettings::IndexedDBAccessed(
+        it.child_id, it.frame_routing_id, url, !allow);
+  }
+  return allow;
 }
 
 bool AllowWorkerCacheStorage(
     const GURL& url,
+    const std::vector<content::GlobalFrameRoutingId>& render_frames,
     const content_settings::CookieSettings* cookie_settings) {
-  return cookie_settings->IsCookieAccessAllowed(url, url,
-                                                url::Origin::Create(url));
+  bool allow = cookie_settings->IsCookieAccessAllowed(url, url,
+                                                      url::Origin::Create(url));
+
+  for (const auto& it : render_frames) {
+    content_settings::PageSpecificContentSettings::CacheStorageAccessed(
+        it.child_id, it.frame_routing_id, url, !allow);
+  }
+  return allow;
 }
 
 bool AllowWorkerWebLocks(

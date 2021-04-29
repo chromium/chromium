@@ -340,7 +340,8 @@ bool ContentBrowserClientImpl::AllowSharedWorker(
     int render_process_id,
     int render_frame_id) {
   return embedder_support::AllowSharedWorker(
-      worker_url, site_for_cookies, top_frame_origin,
+      worker_url, site_for_cookies, top_frame_origin, name, storage_key,
+      render_process_id, render_frame_id,
       CookieSettingsFactory::GetForBrowserContext(context).get());
 }
 
@@ -350,7 +351,8 @@ void ContentBrowserClientImpl::AllowWorkerFileSystem(
     const std::vector<content::GlobalFrameRoutingId>& render_frames,
     base::OnceCallback<void(bool)> callback) {
   std::move(callback).Run(embedder_support::AllowWorkerFileSystem(
-      url, CookieSettingsFactory::GetForBrowserContext(browser_context).get()));
+      url, render_frames,
+      CookieSettingsFactory::GetForBrowserContext(browser_context).get()));
 }
 
 bool ContentBrowserClientImpl::AllowWorkerIndexedDB(
@@ -358,7 +360,8 @@ bool ContentBrowserClientImpl::AllowWorkerIndexedDB(
     content::BrowserContext* browser_context,
     const std::vector<content::GlobalFrameRoutingId>& render_frames) {
   return embedder_support::AllowWorkerIndexedDB(
-      url, CookieSettingsFactory::GetForBrowserContext(browser_context).get());
+      url, render_frames,
+      CookieSettingsFactory::GetForBrowserContext(browser_context).get());
 }
 
 bool ContentBrowserClientImpl::AllowWorkerCacheStorage(
@@ -366,7 +369,8 @@ bool ContentBrowserClientImpl::AllowWorkerCacheStorage(
     content::BrowserContext* browser_context,
     const std::vector<content::GlobalFrameRoutingId>& render_frames) {
   return embedder_support::AllowWorkerCacheStorage(
-      url, CookieSettingsFactory::GetForBrowserContext(browser_context).get());
+      url, render_frames,
+      CookieSettingsFactory::GetForBrowserContext(browser_context).get());
 }
 
 bool ContentBrowserClientImpl::AllowWorkerWebLocks(

@@ -2596,15 +2596,11 @@ bool ChromeContentBrowserClient::AllowSharedWorker(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Check if cookies are allowed.
-  bool allow = embedder_support::AllowSharedWorker(
-      worker_url, site_for_cookies, top_frame_origin,
+  return embedder_support::AllowSharedWorker(
+      worker_url, site_for_cookies, top_frame_origin, name, storage_key,
+      render_process_id, render_frame_id,
       CookieSettingsFactory::GetForProfile(Profile::FromBrowserContext(context))
           .get());
-
-  content_settings::PageSpecificContentSettings::SharedWorkerAccessed(
-      render_process_id, render_frame_id, worker_url, name, storage_key,
-      !allow);
-  return allow;
 }
 
 bool ChromeContentBrowserClient::DoesSchemeAllowCrossOriginSharedWorker(
@@ -2630,10 +2626,13 @@ void ChromeContentBrowserClient::AllowWorkerFileSystem(
     content::BrowserContext* browser_context,
     const std::vector<content::GlobalFrameRoutingId>& render_frames,
     base::OnceCallback<void(bool)> callback) {
+  // An empty list is passed for render_frames here since we manually notify
+  // PageSpecificContentSettings that the file system was accessed below.
   bool allow = embedder_support::AllowWorkerFileSystem(
-      url, CookieSettingsFactory::GetForProfile(
-               Profile::FromBrowserContext(browser_context))
-               .get());
+      url, {},
+      CookieSettingsFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context))
+          .get());
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   GuestPermissionRequestHelper(url, render_frames, std::move(callback), allow);
 #else
@@ -2695,36 +2694,22 @@ bool ChromeContentBrowserClient::AllowWorkerIndexedDB(
     const GURL& url,
     content::BrowserContext* browser_context,
     const std::vector<content::GlobalFrameRoutingId>& render_frames) {
-  bool allow = embedder_support::AllowWorkerIndexedDB(
-      url, CookieSettingsFactory::GetForProfile(
-               Profile::FromBrowserContext(browser_context))
-               .get());
-
-  // Record access to IndexedDB for potential display in UI.
-  for (const auto& it : render_frames) {
-    content_settings::PageSpecificContentSettings::IndexedDBAccessed(
-        it.child_id, it.frame_routing_id, url, !allow);
-  }
-
-  return allow;
+  return embedder_support::AllowWorkerIndexedDB(
+      url, render_frames,
+      CookieSettingsFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context))
+          .get());
 }
 
 bool ChromeContentBrowserClient::AllowWorkerCacheStorage(
     const GURL& url,
     content::BrowserContext* browser_context,
     const std::vector<content::GlobalFrameRoutingId>& render_frames) {
-  bool allow = embedder_support::AllowWorkerCacheStorage(
-      url, CookieSettingsFactory::GetForProfile(
-               Profile::FromBrowserContext(browser_context))
-               .get());
-
-  // Record access to CacheStorage for potential display in UI.
-  for (const auto& it : render_frames) {
-    content_settings::PageSpecificContentSettings::CacheStorageAccessed(
-        it.child_id, it.frame_routing_id, url, !allow);
-  }
-
-  return allow;
+  return embedder_support::AllowWorkerCacheStorage(
+      url, render_frames,
+      CookieSettingsFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context))
+          .get());
 }
 
 bool ChromeContentBrowserClient::AllowWorkerWebLocks(

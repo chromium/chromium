@@ -7,6 +7,7 @@
 
 #include "base/optional.h"
 #include "content/public/browser/allow_service_worker_result.h"
+#include "content/public/browser/global_routing_id.h"
 #include "url/origin.h"
 
 class GURL;
@@ -14,6 +15,10 @@ class HostContentSettingsMap;
 
 namespace content_settings {
 class CookieSettings;
+}
+
+namespace storage {
+class StorageKey;
 }
 
 namespace embedder_support {
@@ -32,25 +37,36 @@ content::AllowServiceWorkerResult AllowServiceWorker(
     const content_settings::CookieSettings* cookie_settings,
     const HostContentSettingsMap* settings_map);
 
-// See ContentBrowserClient::AllowSharedWorker.
+// See ContentBrowserClient::AllowSharedWorker. This also notifies content
+// settings of shared worker access.
 bool AllowSharedWorker(const GURL& worker_url,
                        const GURL& site_for_cookies,
                        const base::Optional<url::Origin>& top_frame_origin,
+                       const std::string& name,
+                       const storage::StorageKey& storage_key,
+                       int render_process_id,
+                       int render_frame_id,
                        const content_settings::CookieSettings* cookie_settings);
 
-// See ContentBrowserClient::AllowWorkerFileSystem.
+// See ContentBrowserClient::AllowWorkerFileSystem. This also notifies content
+// settings of file system access.
 bool AllowWorkerFileSystem(
     const GURL& url,
+    const std::vector<content::GlobalFrameRoutingId>& render_frames,
     const content_settings::CookieSettings* cookie_settings);
 
-// See ContentBrowserClient::AllowWorkerIndexedDB.
+// See ContentBrowserClient::AllowWorkerIndexedDB. This also notifies content
+// settings of Indexed DB access.
 bool AllowWorkerIndexedDB(
     const GURL& url,
+    const std::vector<content::GlobalFrameRoutingId>& render_frames,
     const content_settings::CookieSettings* cookie_settings);
 
-// See ContentBrowserClient::AllowWorkerCacheStorage.
+// See ContentBrowserClient::AllowWorkerCacheStorage. This also notifies content
+// settings of cache storage access.
 bool AllowWorkerCacheStorage(
     const GURL& url,
+    const std::vector<content::GlobalFrameRoutingId>& render_frames,
     const content_settings::CookieSettings* cookie_settings);
 
 // See ContentBrowserClient::AllowWorkerWebLocks.
