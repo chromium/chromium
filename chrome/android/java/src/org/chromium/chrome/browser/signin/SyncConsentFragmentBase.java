@@ -42,7 +42,6 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.externalauth.UserRecoverableErrorHandler;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.components.signin.AccountManagerResult;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.ChildAccountStatus;
@@ -279,8 +278,9 @@ public abstract class SyncConsentFragmentBase
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         boolean cancelable = !ChildAccountStatus.isChild(mChildAccountStatus);
-        ExternalAuthUtils.getInstance().canUseGooglePlayServices(
+        mHasGmsError = !ExternalAuthUtils.getInstance().canUseGooglePlayServices(
                 new UserRecoverableErrorHandler.ModalDialog(requireActivity(), cancelable));
+        mView.getAcceptButton().setEnabled(!mHasGmsError);
     }
 
     /**
@@ -507,21 +507,15 @@ public abstract class SyncConsentFragmentBase
     }
 
     private void triggerUpdateAccounts() {
-        mAccountManagerFacade.getGoogleAccounts(this::updateAccounts);
+        mAccountManagerFacade.tryGetGoogleAccounts(accounts -> {
+            if (isResumed() && !mHasGmsError) {
+                updateAccounts(accounts);
+            }
+        });
     }
 
-    private void updateAccounts(AccountManagerResult<List<Account>> accounts) {
-        if (!isResumed()) {
-            return;
-        }
-
-        List<String> accountNames =
-                accounts.hasValue() ? AccountUtils.toAccountNames(accounts.getValue()) : null;
-        mHasGmsError = accountNames == null;
-        mView.getAcceptButton().setEnabled(accountNames != null);
-        if (accountNames == null) {
-            return;
-        } else if (accountNames.isEmpty()) {
+    private void updateAccounts(List<Account> accounts) {
+        if (accounts.isEmpty()) {
             mSelectedAccountName = null;
             mAccountSelectionPending = false;
             setHasAccounts(false);
@@ -529,9 +523,8 @@ public abstract class SyncConsentFragmentBase
         } else {
             setHasAccounts(true);
         }
-
         if (mAccountSelectionPending) {
-            String defaultAccount = accountNames.get(0);
+            String defaultAccount = accounts.get(0).name;
             String accountToSelect =
                     mRequestedAccountName != null ? mRequestedAccountName : defaultAccount;
             selectAccount(accountToSelect, accountToSelect.equals(defaultAccount));
@@ -539,7 +532,10 @@ public abstract class SyncConsentFragmentBase
             mRequestedAccountName = null;
         }
 
-        if (mSelectedAccountName != null && accountNames.contains(mSelectedAccountName)) return;
+        if (mSelectedAccountName != null
+                && AccountUtils.findAccountByName(accounts, mSelectedAccountName) != null) {
+            return;
+        }
 
         if (mConfirmSyncDataStateMachine != null) {
             // Any dialogs that may have been showing are now invalid (they were created
@@ -554,7 +550,7 @@ public abstract class SyncConsentFragmentBase
             return;
         }
 
-        selectAccount(accountNames.get(0), true);
+        selectAccount(accounts.get(0).name, true);
         // Show account picker to user to confirm the account selection
         mAccountPickerDialogCoordinator =
                 new AccountPickerDialogCoordinator(requireContext(), this);

@@ -67,7 +67,6 @@ class SigninManagerImpl
     private final IdentityManager mIdentityManager;
     private final IdentityMutator mIdentityMutator;
     private final AndroidSyncSettings mAndroidSyncSettings;
-    private final ExternalAuthUtils mExternalAuthUtils;
     private final ObserverList<SignInStateObserver> mSignInStateObservers = new ObserverList<>();
     private final ObserverList<SignInAllowedObserver> mSignInAllowedObservers =
             new ObserverList<>();
@@ -109,8 +108,7 @@ class SigninManagerImpl
         assert identityManager != null;
         assert identityMutator != null;
         final SigninManagerImpl signinManager = new SigninManagerImpl(nativeSigninManagerAndroid,
-                accountTrackerService, identityManager, identityMutator, AndroidSyncSettings.get(),
-                ExternalAuthUtils.getInstance());
+                accountTrackerService, identityManager, identityMutator, AndroidSyncSettings.get());
 
         identityManager.addObserver(signinManager);
         AccountInfoService.init(identityManager, accountTrackerService);
@@ -125,8 +123,7 @@ class SigninManagerImpl
 
     private SigninManagerImpl(long nativeSigninManagerAndroid,
             AccountTrackerService accountTrackerService, IdentityManager identityManager,
-            IdentityMutator identityMutator, AndroidSyncSettings androidSyncSettings,
-            ExternalAuthUtils externalAuthUtils) {
+            IdentityMutator identityMutator, AndroidSyncSettings androidSyncSettings) {
         ThreadUtils.assertOnUiThread();
         assert androidSyncSettings != null;
         mNativeSigninManagerAndroid = nativeSigninManagerAndroid;
@@ -134,7 +131,6 @@ class SigninManagerImpl
         mIdentityManager = identityManager;
         mIdentityMutator = identityMutator;
         mAndroidSyncSettings = androidSyncSettings;
-        mExternalAuthUtils = externalAuthUtils;
 
         mSigninAllowedByPolicy =
                 SigninManagerImplJni.get().isSigninAllowedByPolicy(mNativeSigninManagerAndroid);
@@ -634,7 +630,7 @@ class SigninManagerImpl
     }
 
     private boolean isGooglePlayServicesPresent() {
-        return !mExternalAuthUtils.isGooglePlayServicesMissing(
+        return !ExternalAuthUtils.getInstance().isGooglePlayServicesMissing(
                 ContextUtils.getApplicationContext());
     }
 
