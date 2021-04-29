@@ -580,9 +580,21 @@ class ArcVmClientAdapter : public ArcClientAdapter,
   }
 
   void TrimVmMemory(TrimVmMemoryCallback callback) override {
-    // TODO(yusukes): Implement this.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), true, std::string()));
+    VLOG(2) << "Start trimming VM memory";
+    if (user_id_hash_.empty()) {
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(callback), /*success=*/false,
+                         /*failure_reason=*/"user_id_hash_ is not set"));
+      return;
+    }
+    vm_tools::concierge::ReclaimVmMemoryRequest request;
+    request.set_name(kArcVmName);
+    request.set_owner_id(user_id_hash_);
+    GetConciergeClient()->ReclaimVmMemory(
+        request,
+        base::BindOnce(&ArcVmClientAdapter::OnTrimVmMemory,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
   }
 
   // chromeos::ConciergeClient::Observer overrides:
@@ -968,6 +980,27 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     // isn't either.
     LOG(ERROR) << "Failed to stop ARCVM: empty reply.";
     OnArcInstanceStopped();
+  }
+
+  void OnTrimVmMemory(
+      TrimVmMemoryCallback callback,
+      base::Optional<vm_tools::concierge::ReclaimVmMemoryResponse> reply) {
+    bool success = false;
+    std::string failure_reason;
+
+    if (!reply.has_value()) {
+      failure_reason = "Empty response";
+    } else {
+      const vm_tools::concierge::ReclaimVmMemoryResponse& response =
+          reply.value();
+      success = response.success();
+      if (!success)
+        failure_reason = response.failure_reason();
+    }
+
+    VLOG(2) << "Finished trimming memory: success=" << success
+            << (failure_reason.empty() ? "" : " reason=") << failure_reason;
+    std::move(callback).Run(success, failure_reason);
   }
 
   base::Optional<bool> is_dev_mode_;

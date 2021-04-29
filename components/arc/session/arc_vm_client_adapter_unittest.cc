@@ -1732,15 +1732,86 @@ TEST_F(ArcVmClientAdapterTest, DisableDownloadProviderEnforced) {
                      "androidboot.disable_download_provider=1"));
 }
 
-// TODO(yusukes): Improve the test once the real implementation is in.
-TEST_F(ArcVmClientAdapterTest, TrimVmMemory) {
+TEST_F(ArcVmClientAdapterTest, TrimVmMemory_Success) {
+  SetValidUserInfo();
+
+  vm_tools::concierge::ReclaimVmMemoryResponse response;
+  response.set_success(true);
+  GetTestConciergeClient()->set_reclaim_vm_memory_response(response);
+
   bool result = false;
+  std::string reason("non empty");
   adapter()->TrimVmMemory(base::BindLambdaForTesting(
-      [&result](bool success, const std::string& failure_reason) {
+      [&result, &reason](bool success, const std::string& failure_reason) {
         result = success;
+        reason = failure_reason;
       }));
   run_loop()->RunUntilIdle();
   EXPECT_TRUE(result);
+  EXPECT_TRUE(reason.empty());
+}
+
+TEST_F(ArcVmClientAdapterTest, TrimVmMemory_Failure) {
+  SetValidUserInfo();
+
+  constexpr const char kReason[] = "This is the reason";
+  vm_tools::concierge::ReclaimVmMemoryResponse response;
+  response.set_success(false);
+  response.set_failure_reason(kReason);
+  GetTestConciergeClient()->set_reclaim_vm_memory_response(response);
+
+  bool result = true;
+  std::string reason;
+  adapter()->TrimVmMemory(base::BindLambdaForTesting(
+      [&result, &reason](bool success, const std::string& failure_reason) {
+        result = success;
+        reason = failure_reason;
+      }));
+  run_loop()->RunUntilIdle();
+  EXPECT_FALSE(result);
+  EXPECT_EQ(kReason, reason);
+}
+
+TEST_F(ArcVmClientAdapterTest, TrimVmMemory_EmptyResponse) {
+  SetValidUserInfo();
+
+  // By default, the fake concierge client returns an empty response.
+  // This is to make sure TrimMemoty() can handle such a response.
+  bool result = true;
+  std::string reason;
+  adapter()->TrimVmMemory(base::BindLambdaForTesting(
+      [&result, &reason](bool success, const std::string& failure_reason) {
+        result = success;
+        reason = failure_reason;
+      }));
+  run_loop()->RunUntilIdle();
+  EXPECT_FALSE(result);
+  EXPECT_FALSE(reason.empty());
+}
+
+TEST_F(ArcVmClientAdapterTest, TrimVmMemory_EmptyUserIdHash) {
+  adapter()->SetUserInfo(cryptohome::Identification(), std::string(),
+                         std::string());
+
+  constexpr const char kReason[] = "This is the reason";
+  vm_tools::concierge::ReclaimVmMemoryResponse response;
+  response.set_success(false);
+  response.set_failure_reason(kReason);
+  GetTestConciergeClient()->set_reclaim_vm_memory_response(response);
+
+  bool result = true;
+  std::string reason;
+  adapter()->TrimVmMemory(base::BindLambdaForTesting(
+      [&result, &reason](bool success, const std::string& failure_reason) {
+        result = success;
+        reason = failure_reason;
+      }));
+  run_loop()->RunUntilIdle();
+  EXPECT_FALSE(result);
+  // When |user_id_hash_| is empty, the call will fail without talking to
+  // Concierge.
+  EXPECT_NE(kReason, reason);
+  EXPECT_FALSE(reason.empty());
 }
 
 struct DalvikMemoryProfileTestParam {
