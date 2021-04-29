@@ -2272,6 +2272,7 @@
     // --enable-experimental-web-platform-features flag.
     {
       name: "WebGPU",
+      origin_trial_feature_name: "WebGPU",
     },
     {
       // Requires both WebGPU and --enable-experimental-web-platform-features

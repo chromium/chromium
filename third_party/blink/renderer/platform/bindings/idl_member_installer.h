@@ -148,6 +148,14 @@ class PLATFORM_EXPORT IDLMemberInstaller final {
       v8::Local<v8::Template> interface_template,
       v8::Local<v8::Signature> signature,
       base::span<const NoAllocDirectCallOperationConfig> configs);
+  static void InstallOperations(
+      v8::Isolate* isolate,
+      const DOMWrapperWorld& world,
+      v8::Local<v8::Object> instance_object,
+      v8::Local<v8::Object> prototype_object,
+      v8::Local<v8::Object> interface_object,
+      v8::Local<v8::Signature> signature,
+      base::span<const NoAllocDirectCallOperationConfig> configs);
 
   // Global property reference
   // https://heycam.github.io/webidl/#define-the-global-property-references

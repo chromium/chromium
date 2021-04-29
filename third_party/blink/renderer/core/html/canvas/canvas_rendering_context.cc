@@ -114,7 +114,8 @@ void CanvasRenderingContext::RecordUKMCanvasDrawnToRenderingAPI(
 }
 
 CanvasRenderingContext::ContextType CanvasRenderingContext::ContextTypeFromId(
-    const String& id) {
+    const String& id,
+    const ExecutionContext* execution_context) {
   if (id == "2d")
     return kContext2D;
   if (id == "experimental-webgl")
@@ -125,7 +126,8 @@ CanvasRenderingContext::ContextType CanvasRenderingContext::ContextTypeFromId(
     return kContextWebgl2;
   if (id == "bitmaprenderer")
     return kContextImageBitmap;
-  if (id == "gpupresent" && RuntimeEnabledFeatures::WebGPUEnabled())
+  if (id == "gpupresent" &&
+      RuntimeEnabledFeatures::WebGPUEnabled(execution_context))
     return kContextGPUPresent;
   return kContextTypeUnknown;
 }

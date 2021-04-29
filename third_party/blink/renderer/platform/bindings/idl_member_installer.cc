@@ -173,16 +173,19 @@ v8::Local<v8::FunctionTemplate> CreateFunctionTemplate(
 }
 
 template <FunctionKind kind, typename Config>
-v8::Local<v8::Function> CreateFunction(v8::Isolate* isolate,
-                                       v8::Local<v8::Context> context,
-                                       const DOMWrapperWorld& world,
-                                       v8::Local<v8::Signature> signature,
-                                       v8::Local<v8::String> name,
-                                       const Config& config) {
+v8::Local<v8::Function> CreateFunction(
+    v8::Isolate* isolate,
+    v8::Local<v8::Context> context,
+    const DOMWrapperWorld& world,
+    v8::Local<v8::Signature> signature,
+    v8::Local<v8::String> name,
+    const Config& config,
+    const v8::CFunction* v8_c_function = nullptr) {
   if (!GetConfigCallback<kind>(config))
     return v8::Local<v8::Function>();
 
-  return CreateFunctionTemplate<kind>(isolate, world, signature, name, config)
+  return CreateFunctionTemplate<kind>(isolate, world, signature, name, config,
+                                      v8_c_function)
       ->GetFunction(context)
       .ToLocalChecked();
 }
@@ -338,7 +341,8 @@ void InstallOperation(v8::Isolate* isolate,
                       v8::Local<v8::Object> prototype_object,
                       v8::Local<v8::Object> interface_object,
                       v8::Local<v8::Signature> signature,
-                      const IDLMemberInstaller::OperationConfig& config) {
+                      const IDLMemberInstaller::OperationConfig& config,
+                      const v8::CFunction* v8_c_function = nullptr) {
   if (!DoesWorldMatch(config, world))
     return;
 
@@ -352,7 +356,7 @@ void InstallOperation(v8::Isolate* isolate,
 
   v8::Local<v8::String> name = V8AtomicString(isolate, config.name);
   v8::Local<v8::Function> func = CreateFunction<FunctionKind::kOperation>(
-      isolate, context, world, signature, name, config);
+      isolate, context, world, signature, name, config, v8_c_function);
 
   v8::Local<v8::Object> target_object;
   switch (location) {
@@ -507,6 +511,23 @@ void IDLMemberInstaller::InstallOperations(
   for (const auto& config : configs) {
     InstallOperation(isolate, world, instance_template, prototype_template,
                      interface_template, signature, config.operation_config,
+                     &config.v8_c_function);
+  }
+}
+
+// static
+void IDLMemberInstaller::InstallOperations(
+    v8::Isolate* isolate,
+    const DOMWrapperWorld& world,
+    v8::Local<v8::Object> instance_object,
+    v8::Local<v8::Object> prototype_object,
+    v8::Local<v8::Object> interface_object,
+    v8::Local<v8::Signature> signature,
+    base::span<const NoAllocDirectCallOperationConfig> configs) {
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+  for (const auto& config : configs) {
+    InstallOperation(isolate, context, world, instance_object, prototype_object,
+                     interface_object, signature, config.operation_config,
                      &config.v8_c_function);
   }
 }

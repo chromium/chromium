@@ -286,7 +286,7 @@ CanvasRenderingContext* OffscreenCanvas::GetCanvasRenderingContext(
     const CanvasContextCreationAttributesCore& attributes) {
   DCHECK_EQ(execution_context, GetTopExecutionContext());
   CanvasRenderingContext::ContextType context_type =
-      CanvasRenderingContext::ContextTypeFromId(id);
+      CanvasRenderingContext::ContextTypeFromId(id, execution_context);
 
   // Unknown type.
   if (context_type == CanvasRenderingContext::kContextTypeUnknown ||

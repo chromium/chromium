@@ -85,7 +85,9 @@ class CORE_EXPORT CanvasRenderingContext : public ScriptWrappable,
   void RecordUKMCanvasDrawnToRenderingAPI(
       CanvasRenderingAPI canvasRenderingAPI);
 
-  static ContextType ContextTypeFromId(const String& id);
+  static ContextType ContextTypeFromId(
+      const String& id,
+      const ExecutionContext* execution_context);
   static ContextType ResolveContextTypeAliases(ContextType);
 
   CanvasRenderingContextHost* Host() const { return host_; }

@@ -313,7 +313,7 @@ def expr_from_exposure(exposure,
     if exposed_selector_terms:
         selector_terms.append(expr_or(exposed_selector_terms))
     if feature_selector_names:
-        selector_terms.append(ref_selected(feature_selector_names))
+        selector_terms.append(ref_selected(set(feature_selector_names)))
 
     terms = []
     terms.append(expr_and(all_enabled_terms))
