@@ -177,11 +177,19 @@ class FollowManagementMediator {
         mWebFeedBridge = new WebFeedBridge();
         mLargeIconBridge = largeIconBridge;
 
-        mWebFeedBridge.getAllFollowedWebFeeds(this::followedWebFeedsCallback);
+        // Control flow is to refresh the feeds, then get the feed list, then display it.
+        // TODO(https://.crbug.com/1197286) Add a spinner while waiting for results.
+        mWebFeedBridge.refreshFollowedWebFeeds(this::getFollowedWebFeeds);
+    }
+
+    // Once the list of feeds has been refreshed, get the list.
+    private void getFollowedWebFeeds(boolean success) {
+        // TODO(https://.crbug.com/1197286) If this fails, show a snackbar with a failure message.
+        mWebFeedBridge.getAllFollowedWebFeeds(this::fillRecyclerView);
     }
 
     // When we get the list of followed pages, add them to the recycler view.
-    private void followedWebFeedsCallback(List<WebFeedMetadata> followedWebFeeds) {
+    private void fillRecyclerView(List<WebFeedMetadata> followedWebFeeds) {
         for (WebFeedMetadata page : followedWebFeeds) {
             String title = page.title;
             GURL url = page.visitUrl;
