@@ -4779,6 +4779,18 @@ ci.linux_builder(
 )
 
 ci.linux_builder(
+    name = "Cast Linux Debug",
+    branch_selector = branches.STANDARD_MILESTONE,
+    console_view_entry = consoles.console_view_entry(
+        category = "cast",
+        short_name = "dbg",
+    ),
+    cq_mirrors_console_view = "mirrors",
+    main_console_view = "main",
+    os = os.LINUX_BIONIC,
+)
+
+ci.linux_builder(
     name = "Deterministic Fuchsia (dbg)",
     console_view_entry = consoles.console_view_entry(
         category = "fuchsia|x64",

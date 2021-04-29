@@ -29,6 +29,15 @@
       "use_goma": true
     }
   },
+  "cast_shell_linux_dbg": {
+    "gn_args": {
+      "is_chromecast": true,
+      "is_component_build": true,
+      "is_debug": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
   "fuchsia-arm64-cast": {
     "gn_args": {
       "dcheck_always_on": true,

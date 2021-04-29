@@ -500,6 +500,7 @@
     'chromium.linux': {
       'Cast Audio Linux': 'cast_audio_release_bot',
       'Cast Linux': 'cast_release_bot',
+      'Cast Linux Debug': 'cast_debug_bot',
       'Deterministic Fuchsia (dbg)': 'debug_bot_fuchsia',
       'Deterministic Linux (dbg)': {
         'local': 'debug_bot_local_build',
@@ -967,6 +968,7 @@
     'tryserver.chromium.linux': {
       'cast_shell_audio_linux': 'cast_audio_release_trybot',
       'cast_shell_linux': 'cast_release_trybot',
+      'cast_shell_linux_dbg': 'cast_debug_bot',
       'cast-binary-size': 'cast_binary_size',
       'chromium_presubmit': 'presubmit',
       'fuchsia_arm64': 'release_trybot_fuchsia_arm64',
@@ -1696,6 +1698,10 @@
 
     'cast_release_trybot': [
       'cast', 'release_trybot',
+    ],
+
+    'cast_debug_bot': [
+      'cast', 'debug_bot',
     ],
 
     'cast_binary_size': [
