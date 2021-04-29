@@ -376,6 +376,9 @@ vars = {
   'libcxx_revision':       'd9040c75cfea5928c804ab7c235fed06a63f743a',
   'libcxxabi_revision':    '196ba1aaa8ac285d94f4ea8d9836390a45360533',
   'libunwind_revision':    'd999d54f4bca789543a2eb6c995af2d9b5a1f3ed',
+
+  # resultdb CIPD package version.
+  'resultdb_version': 'git_revision:708b8c96ec364e58a15db4a9b5b89a9c7a78bcfb',
 }
 
 # Only these hosts are allowed for dependencies in this DEPS file.
@@ -4117,6 +4120,16 @@ deps = {
   },
 
   # === ANDROID_DEPS Generated Code End ===
+
+  'src/tools/resultdb': {
+      'packages': [
+        {
+          'package': 'infra/tools/result_adapter/${{platform}}',
+          'version': Var('resultdb_version'),
+        },
+      ],
+      'dep_type': 'cipd',
+  },
 }
 
 
