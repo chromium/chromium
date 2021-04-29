@@ -407,6 +407,50 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.Capture.Win.VolumeRangeAvailable"
+    enum="BooleanAvailable" expires_after="2021-09-30">
+  <owner>alessiob@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Availability of volume range information on the audio capture stream on
+    Windows. Only uploaded when analog AGC is enabled - i.e., for WebRTC-based
+    audio input streams.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.Capture.Win.VolumeRangeMax" units="dB"
+    expires_after="2021-09-30">
+  <owner>alessiob@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Volume range maximum for the audio capture stream on Windows. Only uploaded
+    when volume range information is available and when analog AGC is enabled -
+    i.e., for WebRTC-based audio input streams.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.Capture.Win.VolumeRangeMin" units="dB"
+    expires_after="2021-09-30">
+  <owner>alessiob@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Volume range minimum for the audio capture stream on Windows. Only uploaded
+    when volume range information is available and when analog AGC is enabled -
+    i.e., for WebRTC-based audio input streams.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.Capture.Win.VolumeRangeNumSteps" units="units"
+    expires_after="2021-09-30">
+  <owner>alessiob@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Number of volume range steps for the audio capture stream on Windows. Only
+    uploaded when volume range information is available and when analog AGC is
+    enabled - i.e., for WebRTC-based audio input streams.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.Capture.Win.{AudioProcessingMode}EffectType"
     enum="AudioEffectType" expires_after="2021-10-22">
   <owner>henrika@chromium.org</owner>

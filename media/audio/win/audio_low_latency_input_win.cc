@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/optional.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -245,6 +246,54 @@ bool InitializeUWPSupport() {
   }();
 
   return initialization_result;
+}
+
+// Microphone volume range in decibels.
+struct VolumeRange {
+  float min_volume_db;  // Range minimum.
+  float max_volume_db;  // Range maximum.
+  // The range above is divided into N uniform intervals of size
+  // `volume_step_db`.
+  float volume_step_db;
+};
+
+constexpr int CountVolumeRangeIntervals(VolumeRange range) {
+  DCHECK_LT(range.min_volume_db, range.max_volume_db);
+  DCHECK_GT(range.volume_step_db, 0.0f);
+  return (range.max_volume_db - range.min_volume_db) / range.volume_step_db;
+}
+
+void LogVolumeRangeUmaHistograms(base::Optional<VolumeRange> range) {
+  base::UmaHistogramBoolean("Media.Audio.Capture.Win.VolumeRangeAvailable",
+                            range.has_value());
+  if (!range.has_value()) {
+    return;
+  }
+
+  // Example of volume range returned by the API.
+  constexpr VolumeRange kSampleRange{.min_volume_db = -17.0f,
+                                     .max_volume_db = 30.0f,
+                                     .volume_step_db = 0.03125f};
+  // Log range.
+  constexpr int kMinDb = -60;
+  constexpr int kMaxDb = 60;
+  static_assert(kMinDb < kMaxDb, "");
+  static_assert(kSampleRange.min_volume_db >= kMinDb, "Decrease `kMinDb`.");
+  static_assert(kSampleRange.max_volume_db <= kMaxDb, "Increase `kMaxDb`.");
+  constexpr int kNumBuckets = kMaxDb - kMinDb + 1;
+  base::UmaHistogramCustomCounts("Media.Audio.Capture.Win.VolumeRangeMin",
+                                 std::floor(range->min_volume_db), kMinDb,
+                                 kMaxDb, kNumBuckets);
+  base::UmaHistogramCustomCounts("Media.Audio.Capture.Win.VolumeRangeMax",
+                                 std::ceil(range->max_volume_db), kMinDb,
+                                 kMaxDb, kNumBuckets);
+  // Log number of intervals in the volume range.
+  constexpr int kMaxVolumeSteps = 2000;
+  static_assert(kMaxVolumeSteps > CountVolumeRangeIntervals(kSampleRange),
+                "Increase `kMaxVolumeSteps`.");
+  base::UmaHistogramCustomCounts("Media.Audio.Capture.Win.VolumeRangeNumSteps",
+                                 CountVolumeRangeIntervals(*range), 0,
+                                 kMaxVolumeSteps, kMaxVolumeSteps + 1);
 }
 
 }  // namespace
@@ -510,6 +559,23 @@ void WASAPIAudioInputStream::Stop() {
     }
   }
 
+  base::Optional<VolumeRange> volume_range;
+  if (add_uma_histogram && system_audio_volume_ &&
+      !AudioDeviceDescription::IsLoopbackDevice(device_id_)) {
+    VolumeRange range;
+    HRESULT hr = system_audio_volume_->GetVolumeRange(
+        &range.min_volume_db, &range.max_volume_db, &range.volume_step_db);
+    if (FAILED(hr)) {
+      SendLogMessage("%s => (ERROR: IAudioEndpointVolume::GetVolumeRange=[%s])",
+                     __func__, ErrorToString(hr).c_str());
+    } else {
+      SendLogMessage("%s => (IAudioEndpointVolume::GetVolumeRange) %f %f %f",
+                     __func__, range.min_volume_db, range.max_volume_db,
+                     range.volume_step_db);
+      volume_range = range;
+    }
+  }
+
   // Stops periodic AGC microphone measurements.
   StopAgc();
 
@@ -538,6 +604,7 @@ void WASAPIAudioInputStream::Stop() {
     base::UmaHistogramBoolean("Media.Audio.InputVolumeStartsAtZeroWin",
                               audio_session_starts_at_zero_volume_);
     audio_session_starts_at_zero_volume_ = false;
+    LogVolumeRangeUmaHistograms(volume_range);
   }
 
   SendLogMessage(
