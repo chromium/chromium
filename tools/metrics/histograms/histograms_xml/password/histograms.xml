@@ -1059,7 +1059,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.DynamicFormChanges" units="units"
-    expires_after="M92">
+    expires_after="M95">
   <owner>kazinova@google.com</owner>
   <owner>battre@chromium.org</owner>
   <summary>
@@ -1242,6 +1242,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PasswordManager.GooglePasswordManager.NavigationResult"
     enum="GooglePasswordManagerNavigationResult" expires_after="2019-12-31">
+  <obsolete>
+    Expired in M80. Removed in M92.
+  </obsolete>
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -1253,6 +1256,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PasswordManager.GooglePasswordManager.TimeToFailure"
     units="units" expires_after="2019-12-31">
+  <obsolete>
+    Expired in M80. Removed in M92.
+  </obsolete>
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -1265,6 +1271,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PasswordManager.GooglePasswordManager.TimeToSuccess"
     units="units" expires_after="2019-12-31">
+  <obsolete>
+    Expired in M80. Removed in M92.
+  </obsolete>
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -1941,7 +1950,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.ProvisionalSaveFailure"
-    enum="ProvisionalSaveFailure" expires_after="M87">
+    enum="ProvisionalSaveFailure" expires_after="M95">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -2214,7 +2223,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="PasswordManager.TimesPasswordUsed"
-    units="PasswordUses" expires_after="2021-06-30">
+    units="PasswordUses" expires_after="2021-10-28">
   <owner>kazinova@google.com</owner>
   <owner>battre@chromium.org</owner>
   <summary>

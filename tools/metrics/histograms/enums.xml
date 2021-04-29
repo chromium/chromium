@@ -37013,6 +37013,9 @@ Called by update_permissions_policy_enum.py.-->
 </enum>
 
 <enum name="GooglePasswordManagerNavigationResult">
+  <obsolete>
+    Removed 04/2021
+  </obsolete>
   <int value="0" label="Success"/>
   <int value="1" label="Failure"/>
   <int value="2" label="Timeout"/>
