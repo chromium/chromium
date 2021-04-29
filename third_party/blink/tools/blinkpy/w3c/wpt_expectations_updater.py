@@ -197,6 +197,10 @@ class WPTExpectationsUpdater(object):
         #         config3: AnotherSimpleTestResult
         #     }
         # }
+
+        self.add_results_for_configs_without_results(
+            test_expectations, self.configs_with_no_results)
+
         # And then we merge results for different platforms that had the same results.
         for test_name, platform_result in test_expectations.iteritems():
             # platform_result is a dict mapping platforms to results.
@@ -215,14 +219,60 @@ class WPTExpectationsUpdater(object):
         exp_lines_dict = self.write_to_test_expectations(test_expectations)
         return rebaselined_tests, exp_lines_dict
 
+    def add_results_for_configs_without_results(self, test_expectations,
+                                                configs_with_no_results):
+        # Handle any platforms with missing results.
+        def os_name(port_name):
+            # Port names are typically "os-os_version". So we can grab the os by
+            # taking everything up to the '-'
+            if '-' not in port_name:
+                return port_name
+            return port_name[:port_name.rfind('-')]
+
+        # When a config has no results, we try to guess at what its results are
+        # based on other results. We prefer to use results from other builds on
+        # the same OS, but fallback to all other builders otherwise (eg: there
+        # is usually only one Linux).
+        # In both cases, we union the results across the other builders (whether
+        # same OS or all builders), so we are usually over-expecting.
+        for config_no_result in configs_with_no_results:
+            _log.warning("No results for %s, inheriting from other builds" %
+                         config_no_result)
+            for test_name in test_expectations:
+                # The union of all other actual statuses is used when there is
+                # no similar OS to inherit from (eg: no results on Linux, and
+                # inheriting from Mac and Win).
+                union_actual_all = set()
+                # The union of statuses on the same OS is used when there are
+                # multiple versions of the same OS with results (eg: no results
+                # on Mac10.12, and inheriting from Mac10.15 and Mac11)
+                union_actual_sameos = set()
+                config_result_dict = test_expectations[test_name]
+                for config in config_result_dict.keys():
+                    result = config_result_dict[config]
+                    union_actual_all.add(result.actual)
+                    if os_name(config.port_name) == os_name(
+                            config_no_result.port_name):
+                        union_actual_sameos.add(result.actual)
+
+                statuses = union_actual_sameos or union_actual_all
+                union_result = SimpleTestResult(expected="",
+                                                actual=" ".join(statuses),
+                                                bug=self.UMBRELLA_BUG)
+                _log.debug("Inheriting result for test %s on config %s. "
+                           "Same-os? %s Result: %s." %
+                           (test_name, config_no_result,
+                            len(union_actual_sameos) > 0, union_result))
+                test_expectations[test_name][config_no_result] = union_result
+
     def get_issue_number(self):
         """Returns current CL number. Can be replaced in unit tests."""
         return self.git_cl.get_issue_number()
 
     def get_latest_try_jobs(self):
         """Returns the latest finished try jobs as Build objects."""
-        return self.git_cl.latest_try_jobs(
-            builder_names=self._get_try_bots(), patchset=self.patchset)
+        return self.git_cl.latest_try_jobs(builder_names=self._get_try_bots(),
+                                           patchset=self.patchset)
 
     def get_failing_results_dicts(self, build):
         """Returns a list of nested dicts of failing test results.
@@ -338,10 +388,14 @@ class WPTExpectationsUpdater(object):
                 continue
             test_dict[test_name] = {
                 config:
-                SimpleTestResult(
-                    expected=result.expected_results(),
-                    actual=result.actual_results(),
-                    bug=self.UMBRELLA_BUG)
+                # Note: we omit `expected` so that existing expectation lines
+                # don't prevent us from merging current results across platform.
+                # Eg: if a test FAILs everywhere, it should not matter that it
+                # has a pre-existing TIMEOUT expectation on Win7. This code is
+                # not currently capable of updating that existing expectation.
+                SimpleTestResult(expected="",
+                                 actual=result.actual_results(),
+                                 bug=self.UMBRELLA_BUG)
             }
         return test_dict
 
@@ -527,15 +581,6 @@ class WPTExpectationsUpdater(object):
             |test_name|.
         """
         lines = []
-        # The ports with no results are generally ports of builders that
-        # failed, maybe for unrelated reasons. It is possible to have multiple
-        # builders using the same port, where one gets results while the other
-        # does not.
-        # At this point, we add ports with no results to the list of platforms
-        # because we're guessing that this new expectation might be
-        # cross-platform and should also apply to any ports that we weren't able
-        # to get results for.
-        configs = tuple(set(configs) | set(self.configs_with_no_results))
 
         expectations = '[ %s ]' % \
             ' '.join(self.get_expectations(result, test_name))
