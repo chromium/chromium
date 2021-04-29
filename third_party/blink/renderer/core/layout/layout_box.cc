@@ -1023,6 +1023,15 @@ int LayoutBox::PixelSnappedOffsetHeight(const Element*) const {
   return SnapSizeToPixel(OffsetHeight(), Location().Y() + ClientTop());
 }
 
+bool LayoutBox::UsesOverlayScrollbars() const {
+  NOT_DESTROYED();
+  if (StyleRef().HasCustomScrollbarStyle())
+    return false;
+  if (GetFrame()->GetPage()->GetScrollbarTheme().UsesOverlayScrollbars())
+    return true;
+  return false;
+}
+
 LayoutUnit LayoutBox::ScrollWidth() const {
   NOT_DESTROYED();
   if (IsScrollContainer())

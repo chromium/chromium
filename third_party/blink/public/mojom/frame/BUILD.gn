@@ -27,6 +27,7 @@ mojom_component("frame") {
     "policy_container.mojom",
     "reporting_observer.mojom",
     "sudden_termination_disabler_type.mojom",
+    "text_autosizer_page_info.mojom",
     "tree_scope_type.mojom",
     "triggering_event_info.mojom",
     "user_activation_notification_type.mojom",

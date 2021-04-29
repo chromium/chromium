@@ -91,6 +91,7 @@
 #include "third_party/blink/renderer/core/mathml/mathml_space_element.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/snap_coordinator.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/style/style_initial_data.h"

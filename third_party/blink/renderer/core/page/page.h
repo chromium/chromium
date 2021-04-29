@@ -28,7 +28,7 @@
 #include "base/macros.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/text_autosizer_page_info.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/page.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"

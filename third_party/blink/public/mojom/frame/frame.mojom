@@ -45,6 +45,7 @@ import "third_party/blink/public/mojom/frame/media_player_action.mojom";
 import "third_party/blink/public/mojom/frame/policy_container.mojom";
 import "third_party/blink/public/mojom/frame/reporting_observer.mojom";
 import "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mojom";
+import "third_party/blink/public/mojom/frame/text_autosizer_page_info.mojom";
 import "third_party/blink/public/mojom/frame/triggering_event_info.mojom";
 import "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom";
 import "third_party/blink/public/mojom/frame/user_activation_update_types.mojom";
@@ -137,16 +138,6 @@ enum PluginActionType {
 // The maximum number of characters of the document's title that we're willing
 // to accept in the browser process.
 const uint16 kMaxTitleChars = 4096; // 4 * 1024;
-
-struct TextAutosizerPageInfo {
-  // Frame width in density-independent pixels.
-  int32 main_frame_width;
-
-  // Layout width in CSS pixels.
-  int32 main_frame_layout_width;
-
-  float device_scale_adjustment;
-};
 
 // This struct holds parameters included in the OpenURL method sent by the
 // renderer to the browser, |is_history_navigation_in_new_child_frame| is true

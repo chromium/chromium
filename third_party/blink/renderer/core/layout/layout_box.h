@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
 #include "third_party/blink/renderer/core/layout/overflow_model.h"
-#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
@@ -805,14 +804,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   int PixelSnappedOffsetWidth(const Element*) const final;
   int PixelSnappedOffsetHeight(const Element*) const final;
 
-  bool UsesOverlayScrollbars() const {
-    NOT_DESTROYED();
-    if (StyleRef().HasCustomScrollbarStyle())
-      return false;
-    if (GetFrame()->GetPage()->GetScrollbarTheme().UsesOverlayScrollbars())
-      return true;
-    return false;
-  }
+  bool UsesOverlayScrollbars() const;
 
   // Clamps the left scrollbar size so it is not wider than the content box.
   DISABLE_CFI_PERF LayoutUnit LogicalLeftScrollbarWidth() const {
