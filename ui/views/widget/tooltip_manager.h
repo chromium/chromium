@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_WIDGET_TOOLTIP_MANAGER_H_
 #define UI_VIEWS_WIDGET_TOOLTIP_MANAGER_H_
 
-#include <string>
 
 #include "ui/views/views_export.h"
 

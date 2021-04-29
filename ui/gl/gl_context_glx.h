@@ -5,7 +5,6 @@
 #ifndef UI_GL_GL_CONTEXT_GLX_H_
 #define UI_GL_GL_CONTEXT_GLX_H_
 
-#include <string>
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"

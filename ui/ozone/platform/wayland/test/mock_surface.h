@@ -5,8 +5,6 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_TEST_MOCK_SURFACE_H_
 #define UI_OZONE_PLATFORM_WAYLAND_TEST_MOCK_SURFACE_H_
 
-#include <memory>
-#include <utility>
 
 #include <wayland-server-protocol.h>
 

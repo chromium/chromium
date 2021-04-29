@@ -8,7 +8,6 @@
 #include <fuchsia/ui/input/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
-#include <memory>
 
 #include "base/component_export.h"
 #include "base/macros.h"

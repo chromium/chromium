@@ -6,7 +6,6 @@
 #define UI_GFX_GDI_UTIL_H_
 
 #include <windows.h>
-#include <vector>
 
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/gfx_export.h"

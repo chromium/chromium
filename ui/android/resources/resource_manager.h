@@ -5,10 +5,6 @@
 #ifndef UI_ANDROID_RESOURCES_RESOURCE_MANAGER_H_
 #define UI_ANDROID_RESOURCES_RESOURCE_MANAGER_H_
 
-#include <memory>
-#include <unordered_map>
-#include <unordered_set>
-
 #include "base/android/jni_android.h"
 #include "cc/resources/scoped_ui_resource.h"
 #include "third_party/skia/include/core/SkColor.h"

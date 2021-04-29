@@ -7,8 +7,6 @@
 
 #include <wayland-server-protocol.h>
 
-#include <memory>
-#include <utility>
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/geometry/point.h"

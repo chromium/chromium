@@ -6,6 +6,8 @@
 #define UI_ANDROID_RESOURCES_RESOURCE_MANAGER_IMPL_H_
 
 #include <memory>
+#include <unordered_map>
+#include <unordered_set>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"

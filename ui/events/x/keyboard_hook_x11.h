@@ -5,7 +5,6 @@
 #ifndef UI_EVENTS_X_KEYBOARD_HOOK_X11_H_
 #define UI_EVENTS_X_KEYBOARD_HOOK_X11_H_
 
-#include <vector>
 
 #include "base/optional.h"
 #include "base/threading/thread_checker.h"

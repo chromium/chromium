@@ -5,7 +5,6 @@
 #ifndef UI_NATIVE_THEME_NATIVE_THEME_BASE_H_
 #define UI_NATIVE_THEME_NATIVE_THEME_BASE_H_
 
-#include <memory>
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"

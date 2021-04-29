@@ -5,8 +5,6 @@
 #ifndef UI_GFX_SKIA_UTIL_H_
 #define UI_GFX_SKIA_UTIL_H_
 
-#include <string>
-#include <vector>
 
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRect.h"

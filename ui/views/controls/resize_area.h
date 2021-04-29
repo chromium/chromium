@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_CONTROLS_RESIZE_AREA_H_
 #define UI_VIEWS_CONTROLS_RESIZE_AREA_H_
 
-#include <string>
 
 #include "base/macros.h"
 #include "ui/views/view.h"

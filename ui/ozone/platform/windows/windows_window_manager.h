@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <memory>
 
 #include "base/containers/id_map.h"
 #include "base/files/file_path.h"

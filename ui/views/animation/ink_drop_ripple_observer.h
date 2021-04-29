@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_ANIMATION_INK_DROP_RIPPLE_OBSERVER_H_
 #define UI_VIEWS_ANIMATION_INK_DROP_RIPPLE_OBSERVER_H_
 
-#include <string>
 
 #include "base/macros.h"
 #include "ui/views/animation/ink_drop_animation_ended_reason.h"

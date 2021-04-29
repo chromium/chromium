@@ -7,8 +7,6 @@
 
 #include <stddef.h>
 
-#include <map>
-#include <memory>
 
 #include "base/macros.h"
 #include "base/time/time.h"

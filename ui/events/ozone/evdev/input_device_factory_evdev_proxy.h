@@ -5,9 +5,6 @@
 #ifndef UI_EVENTS_OZONE_EVDEV_INPUT_DEVICE_FACTORY_EVDEV_PROXY_H_
 #define UI_EVENTS_OZONE_EVDEV_INPUT_DEVICE_FACTORY_EVDEV_PROXY_H_
 
-#include <memory>
-#include <set>
-#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"

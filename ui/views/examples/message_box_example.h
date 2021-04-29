@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_EXAMPLES_MESSAGE_BOX_EXAMPLE_H_
 #define UI_VIEWS_EXAMPLES_MESSAGE_BOX_EXAMPLE_H_
 
-#include <string>
 
 #include "base/macros.h"
 #include "ui/views/examples/example_base.h"

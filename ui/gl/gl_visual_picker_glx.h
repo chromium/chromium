@@ -5,7 +5,6 @@
 #ifndef UI_GL_GL_VISUAL_PICKER_GLX_H_
 #define UI_GL_GL_VISUAL_PICKER_GLX_H_
 
-#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"

@@ -8,7 +8,6 @@
 #include "ui/ozone/platform/wayland/host/shell_surface_wrapper.h"
 
 #include <cstdint>
-#include <string>
 
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 

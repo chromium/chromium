@@ -8,8 +8,6 @@
 #include <stdint.h>
 #include <windows.h>
 
-#include <memory>
-#include <string>
 
 #include "build/build_config.h"
 #include "ui/display/display.h"

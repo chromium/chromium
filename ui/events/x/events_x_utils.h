@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <memory>
 
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"

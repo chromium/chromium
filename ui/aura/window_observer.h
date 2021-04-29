@@ -5,7 +5,6 @@
 #ifndef UI_AURA_WINDOW_OBSERVER_H_
 #define UI_AURA_WINDOW_OBSERVER_H_
 
-#include <string>
 
 #include "base/observer_list_types.h"
 #include "ui/aura/aura_export.h"

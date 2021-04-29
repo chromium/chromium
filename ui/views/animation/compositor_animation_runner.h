@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_ANIMATION_COMPOSITOR_ANIMATION_RUNNER_H_
 #define UI_VIEWS_ANIMATION_COMPOSITOR_ANIMATION_RUNNER_H_
 
-#include <memory>
 
 #include "base/time/time.h"
 #include "ui/compositor/compositor.h"

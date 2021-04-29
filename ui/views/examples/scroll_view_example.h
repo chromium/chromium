@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_EXAMPLES_SCROLL_VIEW_EXAMPLE_H_
 #define UI_VIEWS_EXAMPLES_SCROLL_VIEW_EXAMPLE_H_
 
-#include <string>
 
 #include "base/macros.h"
 #include "ui/views/controls/scroll_view.h"

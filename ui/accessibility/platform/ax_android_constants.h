@@ -5,7 +5,6 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_AX_ANDROID_CONSTANTS_H_
 #define UI_ACCESSIBILITY_PLATFORM_AX_ANDROID_CONSTANTS_H_
 
-#include <string>
 
 #include "ui/accessibility/ax_export.h"
 

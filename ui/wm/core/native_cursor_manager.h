@@ -5,7 +5,6 @@
 #ifndef UI_WM_CORE_NATIVE_CURSOR_MANAGER_H_
 #define UI_WM_CORE_NATIVE_CURSOR_MANAGER_H_
 
-#include <string>
 
 #include "ui/base/cursor/cursor.h"
 #include "ui/wm/core/native_cursor_manager_delegate.h"

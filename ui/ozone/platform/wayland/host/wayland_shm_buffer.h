@@ -5,7 +5,6 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_SHM_BUFFER_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_SHM_BUFFER_H_
 
-#include <memory>
 
 #include "base/macros.h"
 #include "base/memory/shared_memory_mapping.h"

@@ -5,7 +5,6 @@
 #ifndef UI_BASE_CLIPBOARD_CLIPBOARD_CONSTANTS_H_
 #define UI_BASE_CLIPBOARD_CLIPBOARD_CONSTANTS_H_
 
-#include <string>
 
 #include "base/component_export.h"
 #include "build/build_config.h"

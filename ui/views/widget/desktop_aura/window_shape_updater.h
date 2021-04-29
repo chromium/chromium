@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_WIDGET_DESKTOP_AURA_WINDOW_SHAPE_UPDATER_H_
 #define UI_VIEWS_WIDGET_DESKTOP_AURA_WINDOW_SHAPE_UPDATER_H_
 
-#include <memory>
 
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer.h"

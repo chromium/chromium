@@ -5,7 +5,6 @@
 #ifndef UI_OZONE_PLATFORM_DRM_HOST_DRM_DEVICE_CONNECTOR_H_
 #define UI_OZONE_PLATFORM_DRM_HOST_DRM_DEVICE_CONNECTOR_H_
 
-#include <string>
 
 #include "base/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

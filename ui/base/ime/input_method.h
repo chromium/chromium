@@ -7,9 +7,6 @@
 
 #include <stdint.h>
 
-#include <memory>
-#include <string>
-#include <vector>
 
 #include "build/build_config.h"
 #include "ui/base/ime/text_input_mode.h"

@@ -5,7 +5,6 @@
 #ifndef UI_BASE_IME_MOCK_INPUT_METHOD_H_
 #define UI_BASE_IME_MOCK_INPUT_METHOD_H_
 
-#include <string>
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"

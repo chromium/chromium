@@ -5,7 +5,6 @@
 #ifndef UI_EVENTS_TEST_X11_EVENT_WAITER_H_
 #define UI_EVENTS_TEST_X11_EVENT_WAITER_H_
 
-#include <memory>
 
 #include "base/callback.h"
 #include "ui/gfx/x/connection.h"

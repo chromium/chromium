@@ -5,7 +5,6 @@
 #ifndef UI_COMPOSITOR_PAINT_CONTEXT_H_
 #define UI_COMPOSITOR_PAINT_CONTEXT_H_
 
-#include <memory>
 
 #include "base/check.h"
 #include "base/macros.h"

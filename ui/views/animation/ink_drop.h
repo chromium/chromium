@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_ANIMATION_INK_DROP_H_
 #define UI_VIEWS_ANIMATION_INK_DROP_H_
 
-#include <memory>
 
 #include "base/time/time.h"
 #include "ui/compositor/layer_tree_owner.h"

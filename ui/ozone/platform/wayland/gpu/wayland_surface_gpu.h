@@ -5,7 +5,6 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_GPU_WAYLAND_SURFACE_GPU_H_
 #define UI_OZONE_PLATFORM_WAYLAND_GPU_WAYLAND_SURFACE_GPU_H_
 
-#include <memory>
 
 namespace gfx {
 enum class SwapResult;

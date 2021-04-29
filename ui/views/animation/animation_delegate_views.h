@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_ANIMATION_ANIMATION_DELEGATE_VIEWS_H_
 #define UI_VIEWS_ANIMATION_ANIMATION_DELEGATE_VIEWS_H_
 
-#include <memory>
 
 #include "base/scoped_observation.h"
 #include "ui/gfx/animation/animation_container_observer.h"

@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_WIDGET_DROP_HELPER_H_
 #define UI_VIEWS_WIDGET_DROP_HELPER_H_
 
-#include <utility>
 
 #include "base/callback_forward.h"
 #include "base/macros.h"

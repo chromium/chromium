@@ -5,7 +5,6 @@
 #ifndef UI_EVENTS_OZONE_LAYOUT_KEYBOARD_LAYOUT_ENGINE_MANAGER_H_
 #define UI_EVENTS_OZONE_LAYOUT_KEYBOARD_LAYOUT_ENGINE_MANAGER_H_
 
-#include <memory>
 
 #include "base/check.h"
 #include "base/component_export.h"

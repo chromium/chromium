@@ -5,8 +5,6 @@
 #ifndef UI_VIEWS_EXAMPLES_TEXT_EXAMPLE_H_
 #define UI_VIEWS_EXAMPLES_TEXT_EXAMPLE_H_
 
-#include <memory>
-#include <vector>
 
 #include "base/macros.h"
 #include "ui/views/examples/example_base.h"

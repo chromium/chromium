@@ -5,7 +5,6 @@
 #ifndef UI_OZONE_PUBLIC_SWAP_COMPLETION_CALLBACK_H_
 #define UI_OZONE_PUBLIC_SWAP_COMPLETION_CALLBACK_H_
 
-#include <memory>
 
 #include "base/callback.h"
 #include "ui/gfx/gpu_fence_handle.h"

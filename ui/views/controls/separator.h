@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_CONTROLS_SEPARATOR_H_
 #define UI_VIEWS_CONTROLS_SEPARATOR_H_
 
-#include <string>
 
 #include "base/macros.h"
 #include "base/optional.h"

@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <string>
 
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"

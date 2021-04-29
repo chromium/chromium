@@ -5,7 +5,6 @@
 #ifndef UI_OZONE_PUBLIC_PLATFORM_USER_INPUT_MONITOR_H_
 #define UI_OZONE_PUBLIC_PLATFORM_USER_INPUT_MONITOR_H_
 
-#include <memory>
 
 #include "base/component_export.h"
 #include "base/memory/shared_memory_mapping.h"

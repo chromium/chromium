@@ -7,7 +7,6 @@
 
 #include <fuchsia/ui/input3/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
-#include <memory>
 
 #include "base/component_export.h"
 #include "ui/events/event.h"

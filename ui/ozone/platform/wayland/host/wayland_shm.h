@@ -5,7 +5,6 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_SHM_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_SHM_H_
 
-#include <memory>
 
 #include "base/files/scoped_file.h"
 #include "base/macros.h"

@@ -8,7 +8,6 @@
 #include <shobjidl.h>
 #include <wrl/client.h>
 
-#include <map>
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"

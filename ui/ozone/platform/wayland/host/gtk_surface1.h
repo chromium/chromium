@@ -5,7 +5,6 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_GTK_SURFACE1_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_GTK_SURFACE1_H_
 
-#include <memory>
 
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 

@@ -6,7 +6,6 @@
 #define UI_GFX_WIN_SINGLETON_HWND_H_
 
 #include <windows.h>
-#include <vector>
 
 #include "base/macros.h"
 #include "base/observer_list.h"

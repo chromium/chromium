@@ -5,7 +5,6 @@
 #ifndef UI_DISPLAY_TEST_TEST_SCREEN_H_
 #define UI_DISPLAY_TEST_TEST_SCREEN_H_
 
-#include <vector>
 
 #include "base/macros.h"
 #include "ui/display/display.h"

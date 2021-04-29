@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_BUBBLE_BUBBLE_BORDER_H_
 #define UI_VIEWS_BUBBLE_BUBBLE_BORDER_H_
 
-#include <memory>
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"

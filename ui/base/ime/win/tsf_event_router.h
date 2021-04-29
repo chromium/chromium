@@ -8,7 +8,6 @@
 #include <msctf.h>
 #include <wrl/client.h>
 
-#include <set>
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"

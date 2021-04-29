@@ -7,7 +7,6 @@
 
 #include <wrl/client.h>
 
-#include <string>
 
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 

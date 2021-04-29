@@ -5,7 +5,6 @@
 #ifndef UI_COMPOSITOR_TEST_THROUGHPUT_REPORT_CHECKER_H_
 #define UI_COMPOSITOR_TEST_THROUGHPUT_REPORT_CHECKER_H_
 
-#include <memory>
 
 #include "base/bind.h"
 #include "cc/metrics/frame_sequence_metrics.h"

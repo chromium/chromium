@@ -5,7 +5,6 @@
 #ifndef UI_NATIVE_THEME_COMMON_THEME_H_
 #define UI_NATIVE_THEME_COMMON_THEME_H_
 
-#include <memory>
 
 #include "ui/color/color_id.h"
 #include "ui/native_theme/native_theme.h"

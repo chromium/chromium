@@ -5,9 +5,6 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_GTK_PRIMARY_SELECTION_DEVICE_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_GTK_PRIMARY_SELECTION_DEVICE_H_
 
-#include <memory>
-#include <string>
-#include <vector>
 
 #include "base/callback.h"
 #include "base/macros.h"

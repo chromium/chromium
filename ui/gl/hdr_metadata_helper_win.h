@@ -9,9 +9,6 @@
 #include <dxgi1_6.h>
 #include <wrl/client.h>
 
-#include <memory>
-#include <utility>
-#include <vector>
 
 #include "base/macros.h"
 #include "base/optional.h"

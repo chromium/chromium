@@ -5,7 +5,6 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_ZAURA_SHELL_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_ZAURA_SHELL_H_
 
-#include <string>
 
 #include "base/containers/flat_set.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"

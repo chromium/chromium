@@ -5,7 +5,6 @@
 #ifndef UI_BASE_SCOPED_VISIBILITY_TRACKER_H_
 #define UI_BASE_SCOPED_VISIBILITY_TRACKER_H_
 
-#include <memory>
 
 #include "base/component_export.h"
 #include "base/time/time.h"

@@ -7,7 +7,6 @@
 
 #include <QuartzCore/CVDisplayLink.h>
 
-#include <map>
 
 #include "base/mac/scoped_typeref.h"
 #include "base/memory/ref_counted.h"

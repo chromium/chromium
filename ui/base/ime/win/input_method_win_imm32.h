@@ -7,7 +7,6 @@
 
 #include <windows.h>
 
-#include <string>
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"

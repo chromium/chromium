@@ -5,7 +5,6 @@
 #ifndef UI_COMPOSITOR_PAINT_RECORDER_H_
 #define UI_COMPOSITOR_PAINT_RECORDER_H_
 
-#include <memory>
 
 #include "base/macros.h"
 #include "cc/paint/display_item_list.h"

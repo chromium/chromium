@@ -5,8 +5,6 @@
 #ifndef UI_VIEWS_ANIMATION_FLOOD_FILL_INK_DROP_RIPPLE_H_
 #define UI_VIEWS_ANIMATION_FLOOD_FILL_INK_DROP_RIPPLE_H_
 
-#include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "base/time/time.h"

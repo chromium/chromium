@@ -5,7 +5,6 @@
 #ifndef UI_EVENTS_BASE_EVENT_UTILS_H_
 #define UI_EVENTS_BASE_EVENT_UTILS_H_
 
-#include <memory>
 #include <stdint.h>
 
 #include "base/time/tick_clock.h"
