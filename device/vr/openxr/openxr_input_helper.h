@@ -56,6 +56,7 @@ class OpenXRInputHelper {
   struct OpenXrControllerState {
     OpenXrController controller;
     bool primary_button_pressed;
+    bool squeeze_button_pressed;
   };
   std::array<OpenXrControllerState,
              static_cast<size_t>(OpenXrHandednessType::kCount)>

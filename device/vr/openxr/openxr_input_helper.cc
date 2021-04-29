@@ -138,6 +138,7 @@ XrResult OpenXRInputHelper::Initialize(
         static_cast<OpenXrHandednessType>(i), instance, session_,
         path_helper_.get(), extension_helper, &bindings));
     controller_states_[i].primary_button_pressed = false;
+    controller_states_[i].squeeze_button_pressed = false;
   }
 
   for (auto it = bindings.begin(); it != bindings.end(); it++) {
@@ -172,6 +173,7 @@ std::vector<mojom::XRInputSourceStatePtr> OpenXRInputHelper::GetInputState(
   if (XR_FAILED(SyncActions(predicted_display_time))) {
     for (OpenXrControllerState& state : controller_states_) {
       state.primary_button_pressed = false;
+      state.squeeze_button_pressed = false;
     }
     return input_states;
   }
@@ -181,6 +183,8 @@ std::vector<mojom::XRInputSourceStatePtr> OpenXRInputHelper::GetInputState(
 
     base::Optional<GamepadButton> primary_button =
         controller->GetButton(OpenXrButtonType::kTrigger);
+    base::Optional<GamepadButton> squeeze_button =
+        controller->GetButton(OpenXrButtonType::kSqueeze);
 
     // Having a trigger button is the minimum for an webxr input.
     // No trigger button indicates input is not connected.
@@ -207,6 +211,15 @@ std::vector<mojom::XRInputSourceStatePtr> OpenXRInputHelper::GetInputState(
         controller_states_[i].primary_button_pressed &&
         !state->primary_input_pressed;
     controller_states_[i].primary_button_pressed = state->primary_input_pressed;
+    if (squeeze_button) {
+      state->primary_squeeze_pressed = squeeze_button.value().pressed;
+      state->primary_squeeze_clicked =
+          controller_states_[i].squeeze_button_pressed &&
+          !state->primary_squeeze_pressed;
+      controller_states_[i].squeeze_button_pressed =
+          state->primary_squeeze_pressed;
+    }
+
     state->gamepad = GetWebXRGamepad(*controller);
 
     // Return hand state if controller is a hand and the hand tracking feature
