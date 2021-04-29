@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SIGNIN_HEADER_MODIFICATION_DELEGATE_IMPL_H_
 #define CHROME_BROWSER_SIGNIN_HEADER_MODIFICATION_DELEGATE_IMPL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "build/buildflag.h"
 #include "chrome/browser/signin/header_modification_delegate.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -43,7 +42,7 @@ class HeaderModificationDelegateImpl : public HeaderModificationDelegate {
 #endif
 
  private:
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
 
   DISALLOW_COPY_AND_ASSIGN(HeaderModificationDelegateImpl);

@@ -13,7 +13,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "ui/android/ui_android_export.h"
@@ -119,7 +118,7 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
     ~ScopedSelectionHandles();
 
    private:
-    CheckedPtr<WindowAndroid> window_;
+    WindowAndroid* window_;
   };
 
  private:

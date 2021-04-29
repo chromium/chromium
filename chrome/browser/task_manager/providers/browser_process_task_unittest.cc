@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/task_manager/providers/browser_process_task_provider.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "chrome/grit/generated_resources.h"
@@ -32,7 +31,7 @@ class BrowserProcessTaskProviderTest
   }
 
  protected:
-  CheckedPtr<Task> provided_task_;
+  Task* provided_task_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(BrowserProcessTaskProviderTest);
@@ -41,7 +40,7 @@ class BrowserProcessTaskProviderTest
 // Tests the browser process task provider and browser process task itself.
 TEST_F(BrowserProcessTaskProviderTest, TestObserving) {
   BrowserProcessTaskProvider provider;
-  EXPECT_EQ(nullptr, provided_task_.get());
+  EXPECT_EQ(nullptr, provided_task_);
   provider.SetObserver(this);
   EXPECT_NE(nullptr, provided_task_);
   provider.ClearObserver();
@@ -51,7 +50,7 @@ TEST_F(BrowserProcessTaskProviderTest, TestObserving) {
 // Testing retrieving the task from the provider using the ids of a URL request.
 TEST_F(BrowserProcessTaskProviderTest, GetTaskOfUrlRequest) {
   BrowserProcessTaskProvider provider;
-  EXPECT_EQ(nullptr, provided_task_.get());
+  EXPECT_EQ(nullptr, provided_task_);
   provider.SetObserver(this);
   EXPECT_NE(nullptr, provided_task_);
 
@@ -64,7 +63,7 @@ TEST_F(BrowserProcessTaskProviderTest, GetTaskOfUrlRequest) {
 // Test the provided browser process task itself.
 TEST_F(BrowserProcessTaskProviderTest, TestProvidedTask) {
   BrowserProcessTaskProvider provider;
-  EXPECT_EQ(nullptr, provided_task_.get());
+  EXPECT_EQ(nullptr, provided_task_);
   provider.SetObserver(this);
   ASSERT_NE(nullptr, provided_task_);
 

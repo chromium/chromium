@@ -7,7 +7,6 @@
 
 #include <unordered_set>
 
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_export.h"
@@ -173,7 +172,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
       bool* paint_image_needs_mips,
       gpu::Mailbox* mailbox_out);
 
-  CheckedPtr<char> memory_ = nullptr;
+  char* memory_ = nullptr;
   size_t size_ = 0u;
   size_t remaining_bytes_ = 0u;
   const PaintOp::SerializeOptions& options_;

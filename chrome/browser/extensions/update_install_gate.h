@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_EXTENSIONS_UPDATE_INSTALL_GATE_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/extensions/install_gate.h"
 
 class Profile;
@@ -23,7 +22,7 @@ class UpdateInstallGate : public InstallGate {
 
  private:
   // Not owned.
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
 
   DISALLOW_COPY_AND_ASSIGN(UpdateInstallGate);
 };

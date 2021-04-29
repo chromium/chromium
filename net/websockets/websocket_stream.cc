@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
@@ -77,7 +76,7 @@ class Delegate : public URLRequest::Delegate {
   void OnAuthRequiredComplete(URLRequest* request,
                               const AuthCredentials* auth_credentials);
 
-  CheckedPtr<WebSocketStreamRequestImpl> owner_;
+  WebSocketStreamRequestImpl* owner_;
 };
 
 class WebSocketStreamRequestImpl : public WebSocketStreamRequestAPI {

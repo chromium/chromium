@@ -12,7 +12,6 @@
 
 #include "base/callback_list.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -232,13 +231,13 @@ class CertificateReportingService : public KeyedService {
   // this age is ignored and is not re-uploaded.
   const base::TimeDelta max_report_age_;
 
-  const CheckedPtr<base::Clock> clock_;
+  base::Clock* const clock_;
 
   // Called when the service is reset. Used for testing.
   base::RepeatingClosure reset_callback_;
 
   // Encryption parameters.
-  CheckedPtr<uint8_t> server_public_key_;
+  uint8_t* server_public_key_;
   uint32_t server_public_key_version_;
 
   DISALLOW_COPY_AND_ASSIGN(CertificateReportingService);

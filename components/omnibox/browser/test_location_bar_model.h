@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "components/omnibox/browser/location_bar_model.h"
 
 namespace gfx {
@@ -69,7 +68,7 @@ class TestLocationBarModel : public LocationBarModel {
 
   GURL url_;
   security_state::SecurityLevel security_level_ = security_state::NONE;
-  CheckedPtr<const gfx::VectorIcon> icon_ = nullptr;
+  const gfx::VectorIcon* icon_ = nullptr;
   bool should_display_url_ = false;
   bool offline_page_ = false;
   std::u16string secure_display_text_ = std::u16string();

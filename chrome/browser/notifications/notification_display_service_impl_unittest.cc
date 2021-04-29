@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -171,9 +170,8 @@ class NotificationDisplayServiceImplTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   std::unique_ptr<NotificationDisplayServiceImpl> service_;
-  CheckedPtr<TestNotificationPlatformBridgeDelegator> notification_delegator_ =
-      nullptr;
-  CheckedPtr<FakeNotificationBlocker> notification_blocker_ = nullptr;
+  TestNotificationPlatformBridgeDelegator* notification_delegator_ = nullptr;
+  FakeNotificationBlocker* notification_blocker_ = nullptr;
 };
 
 TEST_F(NotificationDisplayServiceImplTest, DisplayWithoutBlockers) {

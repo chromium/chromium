@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_APPS_SHAPED_APP_WINDOW_TARGETER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/aura/window_targeter.h"
 
 class ChromeNativeAppWindowViews;
@@ -21,7 +20,7 @@ class ShapedAppWindowTargeter : public aura::WindowTargeter {
   std::unique_ptr<aura::WindowTargeter::HitTestRects> GetExtraHitTestShapeRects(
       aura::Window* target) const override;
 
-  CheckedPtr<ChromeNativeAppWindowViews> app_window_;
+  ChromeNativeAppWindowViews* app_window_;
 
   DISALLOW_COPY_AND_ASSIGN(ShapedAppWindowTargeter);
 };

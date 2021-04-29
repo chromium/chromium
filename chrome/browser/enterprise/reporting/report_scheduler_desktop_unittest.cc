@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 
 #include <utility>
@@ -183,7 +182,7 @@ class ReportSchedulerTest : public ::testing::Test {
 #else
     EXPECT_CALL(*client_, SetupRegistration(kDMToken, kClientId, _))
         .WillOnce(WithArgs<0>(
-            Invoke(client_.get(), &policy::MockCloudPolicyClient::SetDMToken)));
+            Invoke(client_, &policy::MockCloudPolicyClient::SetDMToken)));
 #endif
   }
 
@@ -201,9 +200,9 @@ class ReportSchedulerTest : public ::testing::Test {
 
   ReportingDelegateFactoryDesktop report_delegate_factory_;
   std::unique_ptr<ReportScheduler> scheduler_;
-  CheckedPtr<policy::MockCloudPolicyClient> client_;
-  CheckedPtr<MockReportGenerator> generator_;
-  CheckedPtr<MockReportUploader> uploader_;
+  policy::MockCloudPolicyClient* client_;
+  MockReportGenerator* generator_;
+  MockReportUploader* uploader_;
   policy::FakeBrowserDMTokenStorage storage_;
   base::Time previous_set_last_upload_timestamp_;
   base::HistogramTester histogram_tester_;

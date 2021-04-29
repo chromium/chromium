@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_OFFLINE_PAGES_OFFLINER_USER_DATA_H_
 #define CHROME_BROWSER_OFFLINE_PAGES_OFFLINER_USER_DATA_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/offline_pages/background_loader_offliner.h"
 #include "chrome/browser/offline_pages/resource_loading_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -34,7 +33,7 @@ class OfflinerUserData : public content::WebContentsUserData<OfflinerUserData> {
   // Delegate which owns the WebContents that this data is attached to.
   // Therefore, its lifetime should exceed that of the WebContents, so this
   // should always be non-null.
-  CheckedPtr<BackgroundLoaderOffliner> offliner_;
+  BackgroundLoaderOffliner* offliner_;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 

@@ -6,7 +6,6 @@
 #define UI_GFX_RENDER_TEXT_TEST_API_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/gfx/break_list.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/render_text.h"
@@ -118,7 +117,7 @@ class RenderTextTestApi {
   }
 
  private:
-  CheckedPtr<RenderText> render_text_;
+  RenderText* render_text_;
 
   DISALLOW_COPY_AND_ASSIGN(RenderTextTestApi);
 };

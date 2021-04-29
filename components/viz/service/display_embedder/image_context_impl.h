@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
@@ -115,7 +114,7 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
   const bool maybe_concurrent_reads_ = false;
 
   // Fallback in case we cannot produce a |representation_|.
-  CheckedPtr<gpu::SharedContextState> fallback_context_state_ = nullptr;
+  gpu::SharedContextState* fallback_context_state_ = nullptr;
   GrBackendTexture fallback_texture_;
 
   // Only one of the follow should be non-null at the same time.
@@ -133,7 +132,7 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
 
   // The |promise_image_texture| is used for fulfilling the promise image. It is
   // used on GPU thread.
-  CheckedPtr<SkPromiseImageTexture> promise_image_texture_ = nullptr;
+  SkPromiseImageTexture* promise_image_texture_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ImageContextImpl);
 };

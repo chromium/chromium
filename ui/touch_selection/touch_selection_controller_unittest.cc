@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/motion_event_test_utils.h"
@@ -42,7 +41,7 @@ class MockTouchHandleDrawable : public TouchHandleDrawable {
   float GetDrawableHorizontalPaddingRatio() const override { return 0; }
 
  private:
-  CheckedPtr<bool> intersects_rect_;
+  bool* intersects_rect_;
 
   DISALLOW_COPY_AND_ASSIGN(MockTouchHandleDrawable);
 };

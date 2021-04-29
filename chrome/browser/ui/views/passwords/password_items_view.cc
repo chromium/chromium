@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/strong_alias.h"
 #include "build/branding_buildflags.h"
@@ -153,8 +152,8 @@ class PasswordItemsView::PasswordRow {
   void DeleteButtonPressed();
   void UndoButtonPressed();
 
-  const CheckedPtr<PasswordItemsView> parent_;
-  const CheckedPtr<const password_manager::PasswordForm> password_form_;
+  PasswordItemsView* const parent_;
+  const password_manager::PasswordForm* const password_form_;
   bool deleted_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(PasswordRow);

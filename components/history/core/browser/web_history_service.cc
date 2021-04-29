@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
@@ -229,7 +228,7 @@ class RequestImpl : public WebHistoryService::Request {
     user_agent_ = user_agent;
   }
 
-  CheckedPtr<signin::IdentityManager> identity_manager_;
+  signin::IdentityManager* identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // The URL of the API endpoint.

@@ -14,7 +14,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -423,8 +422,8 @@ class WindowsSystemProxyResolverTest : public TestWithTaskEnvironment {
     // In general, the WindowsSystemProxyResolver should be created via
     // CreateWindowsSystemProxyResolver(), so the constructor is protected. Thus
     // base::MakeRefCounted cannot be used here.
-    proxy_resolver_ = base::WrapRefCounted(new WindowsSystemProxyResolver(
-        base::WrapUnique(winhttp_api_wrapper_.get())));
+    proxy_resolver_ = base::WrapRefCounted(
+        new WindowsSystemProxyResolver(base::WrapUnique(winhttp_api_wrapper_)));
   }
 
   void TearDown() override {
@@ -551,7 +550,7 @@ class WindowsSystemProxyResolverTest : public TestWithTaskEnvironment {
   }
 
  private:
-  CheckedPtr<MockWinHttpAPIWrapper> winhttp_api_wrapper_ = nullptr;
+  MockWinHttpAPIWrapper* winhttp_api_wrapper_ = nullptr;
   scoped_refptr<WindowsSystemProxyResolver> proxy_resolver_;
 };
 

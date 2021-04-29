@@ -12,7 +12,6 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -177,8 +176,8 @@ class ProfileSigninConfirmationHelperTest : public testing::Test {
   base::ScopedTempDir profile_dir_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  CheckedPtr<TestingPrefStoreWithCustomReadError> user_prefs_;
-  CheckedPtr<BookmarkModel> model_;
+  TestingPrefStoreWithCustomReadError* user_prefs_;
+  BookmarkModel* model_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;

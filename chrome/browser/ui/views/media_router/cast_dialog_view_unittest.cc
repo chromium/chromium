@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -143,7 +142,7 @@ class CastDialogViewTest : public ChromeViewsTestBase {
 
   std::unique_ptr<views::Widget> anchor_widget_;
   MockCastDialogController controller_;
-  CheckedPtr<CastDialogView> dialog_ = nullptr;
+  CastDialogView* dialog_ = nullptr;
   TestingProfile profile_;
 };
 

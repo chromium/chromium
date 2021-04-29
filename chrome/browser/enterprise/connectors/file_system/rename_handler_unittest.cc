@@ -5,7 +5,6 @@
 #include "chrome/browser/enterprise/connectors/file_system/rename_handler.h"
 
 #include "base/json/json_reader.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/connectors/common.h"
@@ -78,7 +77,7 @@ class RenameHandlerTestBase : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
-  CheckedPtr<TestingProfile> profile_;
+  TestingProfile* profile_;
 };
 
 class FileSystemRenameHandlerCreateTest
@@ -272,7 +271,7 @@ class FileSystemRenameHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  CheckedPtr<TestingProfile> profile_;
+  TestingProfile* profile_;
   std::unique_ptr<content::WebContents> web_contents_;
   content::FakeDownloadItem item_;
 };

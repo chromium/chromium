@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_HOST_DELEGATE_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CLIENT_SIDE_DETECTION_HOST_DELEGATE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/content/browser/client_side_detection_host.h"
 
@@ -44,9 +43,8 @@ class ClientSideDetectionHostDelegate
       SafeBrowsingNavigationObserverManager::AttributionResult result);
 
  private:
-  CheckedPtr<content::WebContents> web_contents_;
-  CheckedPtr<SafeBrowsingNavigationObserverManager>
-      navigation_observer_manager_;
+  content::WebContents* web_contents_;
+  SafeBrowsingNavigationObserverManager* navigation_observer_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(ClientSideDetectionHostDelegate);
 };

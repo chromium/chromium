@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "net/base/address_list.h"
 #include "net/base/ip_address.h"
@@ -79,7 +78,7 @@ class NET_EXPORT_PRIVATE AddressSorterPosix
   // found in most recent OnIPAddressChanged.
   mutable SourceAddressMap source_map_;
 
-  CheckedPtr<ClientSocketFactory> socket_factory_;
+  ClientSocketFactory* socket_factory_;
   PolicyTable precedence_table_;
   PolicyTable label_table_;
   PolicyTable ipv4_scope_table_;

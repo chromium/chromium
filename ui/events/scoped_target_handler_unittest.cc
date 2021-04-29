@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_handler.h"
@@ -80,9 +79,9 @@ class NestedEventHandler : public EventHandler {
   }
 
  private:
-  CheckedPtr<TestEventTarget> target_;
+  TestEventTarget* target_;
   int nesting_;
-  CheckedPtr<EventHandler> original_handler_;
+  EventHandler* original_handler_;
 
   DISALLOW_COPY_AND_ASSIGN(NestedEventHandler);
 };
@@ -111,9 +110,9 @@ class TargetDestroyingEventHandler : public EventHandler {
   }
 
  private:
-  CheckedPtr<TestEventTarget> target_;
+  TestEventTarget* target_;
   int nesting_;
-  CheckedPtr<EventHandler> original_handler_;
+  EventHandler* original_handler_;
 
   DISALLOW_COPY_AND_ASSIGN(TargetDestroyingEventHandler);
 };
@@ -132,7 +131,7 @@ class EventCountingEventHandler : public EventHandler {
 
  private:
   std::unique_ptr<ScopedTargetHandler> scoped_target_handler_;
-  CheckedPtr<int> count_;
+  int* count_;
 
   DISALLOW_COPY_AND_ASSIGN(EventCountingEventHandler);
 };

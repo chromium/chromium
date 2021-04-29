@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/media_router/common/media_sink.h"
 #include "components/media_router/common/media_source.h"
 #include "url/origin.h"
@@ -64,7 +63,7 @@ class MediaSinksObserver {
  private:
   const base::Optional<const MediaSource> source_;
   const url::Origin origin_;
-  const CheckedPtr<MediaRouter> router_;
+  MediaRouter* const router_;
   bool initialized_;
 
 #if DCHECK_IS_ON()

@@ -9,7 +9,6 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
@@ -393,8 +392,8 @@ class QueueTouchEventDelegate : public GestureEventConsumeDelegate {
         false /* is_source_touch_event_set_blocking */);
   }
 
-  CheckedPtr<Window> window_;
-  CheckedPtr<WindowEventDispatcher> dispatcher_;
+  Window* window_;
+  WindowEventDispatcher* dispatcher_;
   AckState synchronous_ack_for_next_event_;
   std::list<uint32_t> sent_events_ids_;
 
@@ -4263,7 +4262,7 @@ class GestureEventDeleteWindowOnLongPress : public GestureEventConsumeDelegate {
   }
 
  private:
-  CheckedPtr<aura::Window*> window_;
+  aura::Window** window_;
   DISALLOW_COPY_AND_ASSIGN(GestureEventDeleteWindowOnLongPress);
 };
 

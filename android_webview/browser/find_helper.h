@@ -6,7 +6,6 @@
 #define ANDROID_WEBVIEW_BROWSER_FIND_HELPER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace android_webview {
@@ -49,7 +48,7 @@ class FindHelper : public content::WebContentsObserver {
   void NotifyResults(int active_ordinal, int match_count, bool finished);
 
   // Listener results are reported to.
-  CheckedPtr<Listener> listener_;
+  Listener* listener_;
 
   // Used to check the validity of FindNext operations.
   bool async_find_started_;

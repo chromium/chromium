@@ -19,7 +19,6 @@
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -313,7 +312,7 @@ class SocketDataProvider {
   virtual void Reset() = 0;
 
   MockConnect connect_;
-  CheckedPtr<AsyncSocket> socket_ = nullptr;
+  AsyncSocket* socket_ = nullptr;
 
   int receive_buffer_size_ = -1;
   int send_buffer_size_ = -1;
@@ -851,7 +850,7 @@ class MockTCPClientSocket : public MockClientSocket, public AsyncSocket {
 
   AddressList addresses_;
 
-  CheckedPtr<SocketDataProvider> data_;
+  SocketDataProvider* data_;
   int read_offset_;
   MockRead read_data_;
   bool need_read_data_;
@@ -1160,8 +1159,8 @@ class TestSocketRequest : public TestCompletionCallbackBase {
   void OnComplete(int result);
 
   ClientSocketHandle handle_;
-  CheckedPtr<std::vector<TestSocketRequest*>> request_order_;
-  CheckedPtr<size_t> completion_count_;
+  std::vector<TestSocketRequest*>* request_order_;
+  size_t* completion_count_;
 
   DISALLOW_COPY_AND_ASSIGN(TestSocketRequest);
 };
@@ -1264,7 +1263,7 @@ class MockTransportClientSocketPool : public TransportClientSocketPool {
     void OnConnect(int rv);
 
     std::unique_ptr<StreamSocket> socket_;
-    CheckedPtr<ClientSocketHandle> handle_;
+    ClientSocketHandle* handle_;
     const SocketTag socket_tag_;
     CompletionOnceCallback user_callback_;
     RequestPriority priority_;
@@ -1313,7 +1312,7 @@ class MockTransportClientSocketPool : public TransportClientSocketPool {
                      int64_t generation) override;
 
  private:
-  CheckedPtr<ClientSocketFactory> client_socket_factory_;
+  ClientSocketFactory* client_socket_factory_;
   std::vector<std::unique_ptr<MockConnectJob>> job_list_;
   RequestPriority last_request_priority_;
   int release_count_;
@@ -1423,8 +1422,8 @@ class MockTaggingClientSocketFactory : public MockClientSocketFactory {
   MockUDPClientSocket* GetLastProducedUDPSocket() const { return udp_socket_; }
 
  private:
-  CheckedPtr<MockTaggingStreamSocket> tcp_socket_ = nullptr;
-  CheckedPtr<MockUDPClientSocket> udp_socket_ = nullptr;
+  MockTaggingStreamSocket* tcp_socket_ = nullptr;
+  MockUDPClientSocket* udp_socket_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(MockTaggingClientSocketFactory);
 };

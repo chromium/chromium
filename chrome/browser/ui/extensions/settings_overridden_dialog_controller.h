@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -26,7 +25,7 @@ class SettingsOverriddenDialogController {
     // The icon to display, if any. If non-null, the VectorIcon should have
     // all its colors fully specified; otherwise a placehold grey color will
     // be used.
-    CheckedPtr<const gfx::VectorIcon> icon = nullptr;
+    const gfx::VectorIcon* icon = nullptr;
   };
 
   // The result (i.e., user input) from the dialog being shown.

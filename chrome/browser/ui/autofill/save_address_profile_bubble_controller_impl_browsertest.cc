@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller_impl.h"
 
 #include "base/callback_helpers.h"
@@ -47,8 +46,7 @@ class SaveUpdateAddressProfileBubbleControllerImplTest
   }
 
  private:
-  CheckedPtr<SaveUpdateAddressProfileBubbleControllerImpl> controller_ =
-      nullptr;
+  SaveUpdateAddressProfileBubbleControllerImpl* controller_ = nullptr;
   base::test::ScopedFeatureList feature_list_;
 };
 

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "media/learning/common/learning_task_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -76,7 +75,7 @@ class LearningExperimentHelperTest : public testing::Test {
   }
 
   LearningTask task_;
-  CheckedPtr<MockLearningTaskController> controller_raw_ = nullptr;
+  MockLearningTaskController* controller_raw_ = nullptr;
   std::unique_ptr<LearningExperimentHelper> helper_;
 
   FeatureDictionary dict_;

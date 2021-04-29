@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/optional.h"
@@ -163,7 +162,7 @@ class HudGpuBacking : public ResourcePool::GpuBacking {
     pmd->AddOwnershipEdge(buffer_dump_guid, tracing_guid, importance);
   }
 
-  CheckedPtr<gpu::SharedImageInterface> shared_image_interface = nullptr;
+  gpu::SharedImageInterface* shared_image_interface = nullptr;
 };
 
 class HudSoftwareBacking : public ResourcePool::SoftwareBacking {
@@ -181,7 +180,7 @@ class HudSoftwareBacking : public ResourcePool::SoftwareBacking {
                                          shared_mapping.guid(), importance);
   }
 
-  CheckedPtr<LayerTreeFrameSink> layer_tree_frame_sink;
+  LayerTreeFrameSink* layer_tree_frame_sink;
   base::WritableSharedMemoryMapping shared_mapping;
 };
 

@@ -13,7 +13,6 @@
 
 #include "base/check.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/layout/layout_manager.h"
 
@@ -266,7 +265,7 @@ class VIEWS_EXPORT GridLayout : public LayoutManager {
   ColumnSet* GetLastValidColumnSet();
 
   // The View this is installed on.
-  CheckedPtr<View> host_ = nullptr;
+  View* host_ = nullptr;
 
   // Whether or not we've calculated the master/linked columns.
   mutable bool calculated_master_columns_ = false;
@@ -282,7 +281,7 @@ class VIEWS_EXPORT GridLayout : public LayoutManager {
   int next_column_ = 0;
 
   // Column set for the current row. This is null for padding rows.
-  CheckedPtr<ColumnSet> current_row_col_set_ = nullptr;
+  ColumnSet* current_row_col_set_ = nullptr;
 
   // Set to true when adding a View.
   bool adding_view_ = false;

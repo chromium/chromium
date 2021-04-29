@@ -13,7 +13,6 @@
 
 #include "base/containers/adapters.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_occlusion_tracker.h"
 #include "ui/views/view.h"
@@ -81,7 +80,7 @@ class WindowReorderer::AssociationObserver : public aura::WindowObserver {
   void OnWindowDestroying(aura::Window* window) override;
 
   // Not owned.
-  CheckedPtr<WindowReorderer> reorderer_;
+  WindowReorderer* reorderer_;
 
   std::set<aura::Window*> windows_;
 

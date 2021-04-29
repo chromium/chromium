@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 
 namespace storage {
 
@@ -29,7 +28,7 @@ class ScopedTextBlob {
 
  private:
   const std::string blob_id_;
-  CheckedPtr<BlobStorageContext> context_;
+  BlobStorageContext* context_;
   std::unique_ptr<BlobDataHandle> handle_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedTextBlob);

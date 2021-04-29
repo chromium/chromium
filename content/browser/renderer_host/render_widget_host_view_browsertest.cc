@@ -8,7 +8,6 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -176,7 +175,7 @@ class CommitBeforeSwapAckSentHelper : public DidCommitNavigationInterceptor {
   }
 
   // Not owned.
-  const CheckedPtr<RenderFrameSubmissionObserver> frame_observer_;
+  RenderFrameSubmissionObserver* const frame_observer_;
 
   DISALLOW_COPY_AND_ASSIGN(CommitBeforeSwapAckSentHelper);
 };

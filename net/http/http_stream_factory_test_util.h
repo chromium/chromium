@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "net/http/http_stream.h"
 #include "net/http/http_stream_factory.h"
@@ -172,8 +171,8 @@ class TestJobFactory : public HttpStreamFactory::JobFactory {
   }
 
  private:
-  CheckedPtr<MockHttpStreamFactoryJob> main_job_;
-  CheckedPtr<MockHttpStreamFactoryJob> alternative_job_;
+  MockHttpStreamFactoryJob* main_job_;
+  MockHttpStreamFactoryJob* alternative_job_;
   bool override_main_job_url_;
   GURL main_job_alternative_url_;
 };

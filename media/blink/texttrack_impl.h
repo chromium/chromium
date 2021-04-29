@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "media/base/text_track.h"
 
 namespace base {
@@ -51,7 +50,7 @@ class TextTrackImpl : public TextTrack {
                             std::unique_ptr<WebInbandTextTrackImpl> text_track);
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  CheckedPtr<blink::WebMediaPlayerClient> client_;
+  blink::WebMediaPlayerClient* client_;
   std::unique_ptr<WebInbandTextTrackImpl> text_track_;
   DISALLOW_COPY_AND_ASSIGN(TextTrackImpl);
 };

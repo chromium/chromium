@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/strings/string_piece.h"
 
@@ -50,7 +49,7 @@ class TestElfImage {
 
  private:
   std::vector<uint8_t> buffer_;
-  CheckedPtr<const void> elf_start_;
+  const void* elf_start_;
 };
 
 // Builds an in-memory image of an ELF file for testing.

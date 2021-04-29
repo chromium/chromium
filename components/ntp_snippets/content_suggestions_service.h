@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/scoped_observation.h"
@@ -398,11 +397,11 @@ class ContentSuggestionsService : public KeyedService,
   // Keep a direct reference to this special provider to redirect debugging
   // calls to it. If the RemoteSuggestionsProvider is loaded, it is also present
   // in |providers_|, otherwise this is a nullptr.
-  CheckedPtr<RemoteSuggestionsProvider> remote_suggestions_provider_;
+  RemoteSuggestionsProvider* remote_suggestions_provider_;
 
-  CheckedPtr<favicon::LargeIconService> large_icon_service_;
+  favicon::LargeIconService* large_icon_service_;
 
-  CheckedPtr<PrefService> pref_service_;
+  PrefService* pref_service_;
 
   // Interface for informing about external events that have influence on
   // scheduling remote fetches.

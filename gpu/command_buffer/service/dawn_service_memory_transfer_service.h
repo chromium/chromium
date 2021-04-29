@@ -7,8 +7,6 @@
 
 #include <dawn_wire/WireServer.h>
 
-#include "base/memory/checked_ptr.h"
-
 namespace gpu {
 
 class CommonDecoder;
@@ -38,7 +36,7 @@ class DawnServiceMemoryTransferService final
                               WriteHandle** write_handle) override;
 
  private:
-  CheckedPtr<CommonDecoder> decoder_;
+  CommonDecoder* decoder_;
 };
 
 }  // namespace webgpu

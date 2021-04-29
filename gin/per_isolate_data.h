@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
 #include "gin/gin_export.h"
@@ -88,7 +87,7 @@ class GIN_EXPORT PerIsolateData {
   // PerIsolateData doesn't actually own |isolate_|. Instead, the isolate is
   // owned by the IsolateHolder, which also owns the PerIsolateData.
   v8::Isolate* isolate_;
-  CheckedPtr<v8::ArrayBuffer::Allocator> allocator_;
+  v8::ArrayBuffer::Allocator* allocator_;
   ObjectTemplateMap object_templates_;
   FunctionTemplateMap function_templates_;
   IndexedPropertyInterceptorMap indexed_interceptors_;

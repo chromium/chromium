@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "media/base/bind_to_current_loop.h"
@@ -80,7 +79,7 @@ class CallbackRegistry<void(Args...)> {
     ~RegistrationImpl() override { registry_->Unregister(registration_id_); }
 
    private:
-    CheckedPtr<CallbackRegistry<void(Args...)>> registry_ = nullptr;
+    CallbackRegistry<void(Args...)>* registry_ = nullptr;
     uint32_t registration_id_ = 0;
 
     DISALLOW_COPY_AND_ASSIGN(RegistrationImpl);

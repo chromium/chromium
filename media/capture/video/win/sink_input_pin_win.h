@@ -9,7 +9,6 @@
 #define MEDIA_CAPTURE_VIDEO_WIN_SINK_INPUT_PIN_WIN_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/win/pin_base_win.h"
 #include "media/capture/video/win/sink_filter_win.h"
@@ -43,7 +42,7 @@ class SinkInputPin : public PinBase {
   BITMAPINFOHEADER requested_info_header_;
   VideoCaptureFormat resulting_format_;
   bool flip_y_;
-  CheckedPtr<SinkFilterObserver> observer_;
+  SinkFilterObserver* observer_;
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(SinkInputPin);
 };

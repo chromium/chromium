@@ -17,7 +17,6 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 
 namespace base {
 class ListValue;
@@ -248,7 +247,7 @@ class FlagsState {
 
   // Delegate used for embedders to control display and application of flags.
   // May be null.
-  CheckedPtr<Delegate> delegate_;
+  Delegate* delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(FlagsState);
 };

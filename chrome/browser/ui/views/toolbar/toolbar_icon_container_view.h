@@ -7,7 +7,6 @@
 
 #include <list>
 
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/views/controls/button/button.h"
@@ -87,7 +86,7 @@ class ToolbarIconContainerView : public views::View,
                                     float new_device_scale_factor) override;
 
    private:
-    CheckedPtr<views::View> parent_;
+    views::View* parent_;
     ui::Layer layer_;
   };
 
@@ -111,7 +110,7 @@ class ToolbarIconContainerView : public views::View,
 
   // The main view is nominally always present and is last child in the view
   // hierarchy.
-  CheckedPtr<views::Button> main_button_ = nullptr;
+  views::Button* main_button_ = nullptr;
 
   // Override for the icon color. If not set, |COLOR_TOOLBAR_BUTTON_ICON| is
   // used.

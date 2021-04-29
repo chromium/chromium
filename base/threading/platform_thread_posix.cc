@@ -19,7 +19,6 @@
 #include "base/debug/activity_tracker.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/no_destructor.h"
 #include "base/threading/platform_thread_internal_posix.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -57,7 +56,7 @@ struct ThreadParams {
   ThreadParams()
       : delegate(nullptr), joinable(false), priority(ThreadPriority::NORMAL) {}
 
-  CheckedPtr<PlatformThread::Delegate> delegate;
+  PlatformThread::Delegate* delegate;
   bool joinable;
   ThreadPriority priority;
 };

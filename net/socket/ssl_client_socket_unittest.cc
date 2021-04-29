@@ -17,7 +17,6 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
@@ -577,7 +576,7 @@ class DeleteSocketCallback : public TestCompletionCallbackBase {
     SetResult(result);
   }
 
-  CheckedPtr<StreamSocket> socket_;
+  StreamSocket* socket_;
 
   DISALLOW_COPY_AND_ASSIGN(DeleteSocketCallback);
 };
@@ -628,8 +627,8 @@ class MockExpectCTReporter : public TransportSecurityState::ExpectCTReporter {
   HostPortPair host_port_pair_;
   GURL report_uri_;
   uint32_t num_failures_;
-  CheckedPtr<const X509Certificate> served_certificate_chain_;
-  CheckedPtr<const X509Certificate> validated_certificate_chain_;
+  const X509Certificate* served_certificate_chain_;
+  const X509Certificate* validated_certificate_chain_;
   SignedCertificateTimestampAndStatusList signed_certificate_timestamps_;
   NetworkIsolationKey network_isolation_key_;
 };
@@ -898,7 +897,7 @@ class SSLClientSocketTest : public PlatformTest, public WithTaskEnvironment {
   }
 
   RecordingTestNetLog log_;
-  CheckedPtr<ClientSocketFactory> socket_factory_;
+  ClientSocketFactory* socket_factory_;
   std::unique_ptr<TestSSLConfigService> ssl_config_service_;
   std::unique_ptr<MockCertVerifier> cert_verifier_;
   std::unique_ptr<TransportSecurityState> transport_security_state_;
@@ -996,7 +995,7 @@ class ClientSocketFactoryWithoutReadIfReady : public ClientSocketFactory {
   }
 
  private:
-  const CheckedPtr<ClientSocketFactory> factory_;
+  ClientSocketFactory* const factory_;
 };
 
 std::vector<uint16_t> GetTLSVersions() {
@@ -1487,7 +1486,7 @@ class HangingCertVerifier : public CertVerifier {
     ~HangingRequest() override { verifier_->num_active_requests_--; }
 
    private:
-    CheckedPtr<HangingCertVerifier> verifier_;
+    HangingCertVerifier* verifier_;
   };
 
   base::RunLoop run_loop_;

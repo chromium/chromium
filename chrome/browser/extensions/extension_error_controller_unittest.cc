@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/extension_error_controller.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "chrome/browser/extensions/extension_error_controller.h"
 #include "chrome/browser/extensions/extension_error_ui.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -43,7 +42,7 @@ class MockExtensionErrorUI : public ExtensionErrorUI {
   void Close() override;
 
   // Keep a copy of the delegate around for ourselves.
-  CheckedPtr<ExtensionErrorUI::Delegate> delegate_;
+  ExtensionErrorUI::Delegate* delegate_;
 };
 
 // We use this as a slight hack to get the created Error UI, if any. We should

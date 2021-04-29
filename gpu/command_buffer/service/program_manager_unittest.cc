@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -2295,13 +2294,12 @@ class ProgramManagerWithCacheTest : public ProgramManagerTestBase {
   }
 
   void SetExpectationsForProgramNotLoaded() {
-    EXPECT_CALL(
-        *cache_.get(),
-        LoadLinkedProgram(
-            program_->service_id(), vertex_shader_.get(),
-            fragment_shader_.get(), &program_->bind_attrib_location_map(),
-            program_->effective_transform_feedback_varyings(),
-            program_->effective_transform_feedback_buffer_mode(), _))
+    EXPECT_CALL(*cache_.get(),
+                LoadLinkedProgram(
+                    program_->service_id(), vertex_shader_, fragment_shader_,
+                    &program_->bind_attrib_location_map(),
+                    program_->effective_transform_feedback_varyings(),
+                    program_->effective_transform_feedback_buffer_mode(), _))
         .Times(Exactly(0));
   }
 
@@ -2357,9 +2355,9 @@ class ProgramManagerWithCacheTest : public ProgramManagerTestBase {
 
   std::unique_ptr<MockProgramCache> cache_;
 
-  CheckedPtr<Shader> vertex_shader_;
-  CheckedPtr<Shader> fragment_shader_;
-  CheckedPtr<Program> program_;
+  Shader* vertex_shader_;
+  Shader* fragment_shader_;
+  Program* program_;
   ShaderManager shader_manager_;
 };
 

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
@@ -39,9 +38,9 @@ class MockAsyncProxyResolver : public ProxyResolver {
     ~Job();
 
    private:
-    CheckedPtr<MockAsyncProxyResolver> resolver_;
+    MockAsyncProxyResolver* resolver_;
     const GURL url_;
-    CheckedPtr<ProxyInfo> results_;
+    ProxyInfo* results_;
     CompletionOnceCallback callback_;
   };
 
@@ -137,9 +136,9 @@ class MockAsyncProxyResolverFactory::Request
 
   void FactoryDestroyed();
 
-  CheckedPtr<MockAsyncProxyResolverFactory> factory_;
+  MockAsyncProxyResolverFactory* factory_;
   const scoped_refptr<PacFileData> script_data_;
-  CheckedPtr<std::unique_ptr<ProxyResolver>> resolver_;
+  std::unique_ptr<ProxyResolver>* resolver_;
   CompletionOnceCallback callback_;
 };
 
@@ -158,7 +157,7 @@ class ForwardingProxyResolver : public ProxyResolver {
                      const NetLogWithSource& net_log) override;
 
  private:
-  CheckedPtr<ProxyResolver> impl_;
+  ProxyResolver* impl_;
 
   DISALLOW_COPY_AND_ASSIGN(ForwardingProxyResolver);
 };

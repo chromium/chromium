@@ -8,7 +8,6 @@
 
 #include "base/command_line.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/numerics/ranges.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -132,7 +131,7 @@ class DefaultStateProvider : public WindowSizer::StateProvider {
   std::string app_name_;
 
   // If set, is used as the reference browser for GetLastActiveWindowState.
-  CheckedPtr<const Browser> browser_;
+  const Browser* browser_;
   DISALLOW_COPY_AND_ASSIGN(DefaultStateProvider);
 };
 

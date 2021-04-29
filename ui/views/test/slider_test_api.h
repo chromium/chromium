@@ -6,7 +6,6 @@
 #define UI_VIEWS_TEST_SLIDER_TEST_API_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 
 namespace views {
 
@@ -29,7 +28,7 @@ class SliderTestApi {
   int initial_button_offset() const;
 
  private:
-  CheckedPtr<Slider> slider_;
+  Slider* slider_;
 
   DISALLOW_COPY_AND_ASSIGN(SliderTestApi);
 };

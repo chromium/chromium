@@ -5,7 +5,6 @@
 #ifndef CC_TEST_TASK_GRAPH_RUNNER_TEST_TEMPLATE_H_
 #define CC_TEST_TASK_GRAPH_RUNNER_TEST_TEMPLATE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "cc/raster/task_graph_runner.h"
 
 #include <vector>
@@ -74,7 +73,7 @@ class TaskGraphRunnerTestBase {
     ~FakeTaskImpl() override {}
 
    private:
-    CheckedPtr<TaskGraphRunnerTestBase> test_;
+    TaskGraphRunnerTestBase* test_;
     int namespace_index_;
     int id_;
   };
@@ -96,7 +95,7 @@ class TaskGraphRunnerTestBase {
     ~FakeDependentTaskImpl() override {}
   };
 
-  CheckedPtr<TaskGraphRunner> task_graph_runner_;
+  TaskGraphRunner* task_graph_runner_;
   NamespaceToken namespace_token_[kNamespaceCount];
   Task::Vector tasks_[kNamespaceCount];
   Task::Vector dependents_[kNamespaceCount];

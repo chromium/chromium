@@ -18,7 +18,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -414,7 +413,7 @@ class SQLitePersistentCookieStore::Backend
   // cookies stored persistently).
   //
   // Not owned.
-  CheckedPtr<CookieCryptoDelegate> crypto_;
+  CookieCryptoDelegate* crypto_;
 
   DISALLOW_COPY_AND_ASSIGN(Backend);
 };
@@ -527,7 +526,7 @@ class IncrementTimeDelta {
   }
 
  private:
-  CheckedPtr<base::TimeDelta> delta_;
+  base::TimeDelta* delta_;
   base::TimeDelta original_value_;
   base::Time start_;
 

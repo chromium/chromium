@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "extensions/common/event_filter.h"
 #include "extensions/common/extension_id.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
@@ -121,7 +120,7 @@ class EventListener {
   const std::string event_name_;
   const std::string extension_id_;
   const GURL listener_url_;
-  CheckedPtr<content::RenderProcessHost> process_ = nullptr;
+  content::RenderProcessHost* process_ = nullptr;
 
   const bool is_for_service_worker_ = false;
 
@@ -231,7 +230,7 @@ class EventListenerMap {
       base::DictionaryValue* filter_dict);
 
   // Listens for removals from this map.
-  const CheckedPtr<Delegate> delegate_;
+  Delegate* const delegate_;
 
   std::set<std::string> filtered_events_;
   ListenerMap listeners_;

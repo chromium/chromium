@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_PERMISSION_CHIP_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_PERMISSION_CHIP_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
 #include "components/permissions/permission_prompt.h"
@@ -91,7 +90,7 @@ class PermissionChip : public views::AccessiblePaneView,
   void AnimateCollapse();
   void AnimateExpand();
 
-  CheckedPtr<permissions::PermissionPrompt::Delegate> delegate_ = nullptr;
+  permissions::PermissionPrompt::Delegate* delegate_ = nullptr;
 
   // A timer used to collapse the chip after a delay.
   base::OneShotTimer collapse_timer_;
@@ -101,7 +100,7 @@ class PermissionChip : public views::AccessiblePaneView,
   base::OneShotTimer dismiss_timer_;
 
   // The button that displays the icon and text.
-  CheckedPtr<OmniboxChipButton> chip_button_ = nullptr;
+  OmniboxChipButton* chip_button_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_PERMISSION_CHIP_H_

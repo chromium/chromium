@@ -11,7 +11,6 @@
 #include <wrl/client.h>
 
 #include "base/containers/circular_deque.h"
-#include "base/memory/checked_ptr.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/time/time.h"
 #include "base/win/scoped_handle.h"
@@ -194,7 +193,7 @@ class SwapChainPresenter : public base::PowerStateObserver {
   Microsoft::WRL::ComPtr<IDXGISwapChainMedia> GetSwapChainMedia() const;
 
   // Layer tree instance that owns this swap chain presenter.
-  CheckedPtr<DCLayerTree> layer_tree_ = nullptr;
+  DCLayerTree* layer_tree_ = nullptr;
 
   const HWND window_;
 

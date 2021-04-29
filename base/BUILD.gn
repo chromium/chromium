@@ -71,9 +71,9 @@ declare_args() {
   # metadata if a slot starts at the page boundary).
   # The _fake option doesn't enable BackupRefPtr, but pretends it's enabled for
   # syntethic field trial (for testing purposes only).
-  use_backup_ref_ptr = true
+  use_backup_ref_ptr = false
   use_backup_ref_ptr_fake = false
-  enable_runtime_backup_ref_ptr_control = true
+  enable_runtime_backup_ref_ptr_control = false
   put_ref_count_in_previous_slot = false
 
   # Enable additional safety checks for BackupRefPtr that are too expensive to

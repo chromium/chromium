@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_FLING_SCHEDULER_ANDROID_H_
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_FLING_SCHEDULER_ANDROID_H_
 
-#include "base/memory/checked_ptr.h"
 #include "content/browser/renderer_host/input/fling_scheduler_base.h"
 #include "content/common/content_export.h"
 #include "ui/android/window_android.h"
@@ -32,7 +31,7 @@ class CONTENT_EXPORT FlingSchedulerAndroid : public FlingSchedulerBase,
   void ProgressFlingOnBeginFrameIfneeded(base::TimeTicks current_time) override;
 
  protected:
-  CheckedPtr<RenderWidgetHostImpl> host_;
+  RenderWidgetHostImpl* host_;
   base::WeakPtr<FlingController> fling_controller_;
 
  private:
@@ -47,7 +46,7 @@ class CONTENT_EXPORT FlingSchedulerAndroid : public FlingSchedulerBase,
   void OnActivityStopped() override {}
   void OnActivityStarted() override {}
 
-  CheckedPtr<ui::WindowAndroid> observed_window_ = nullptr;
+  ui::WindowAndroid* observed_window_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(FlingSchedulerAndroid);
 };

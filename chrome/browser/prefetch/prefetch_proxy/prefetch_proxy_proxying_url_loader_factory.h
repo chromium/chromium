@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_prefetch_status.h"
@@ -155,10 +154,10 @@ class PrefetchProxyProxyingURLLoaderFactory
     void MaybeReportResourceLoadSuccess(
         const network::URLLoaderCompletionStatus& status);
 
-    CheckedPtr<Profile> profile_;
+    Profile* profile_;
 
     // Back pointer to the factory which owns this class.
-    const CheckedPtr<PrefetchProxyProxyingURLLoaderFactory> parent_factory_;
+    PrefetchProxyProxyingURLLoaderFactory* const parent_factory_;
 
     // Callback for recording metrics during |OnComplete|. Not always set.
     OnCompleteRecordMetricsCallback on_complete_metrics_callback_;

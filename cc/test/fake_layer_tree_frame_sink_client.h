@@ -5,7 +5,6 @@
 #ifndef CC_TEST_FAKE_LAYER_TREE_FRAME_SINK_CLIENT_H_
 #define CC_TEST_FAKE_LAYER_TREE_FRAME_SINK_CLIENT_H_
 
-#include "base/memory/checked_ptr.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
 
 #include "cc/trees/managed_memory_policy.h"
@@ -62,7 +61,7 @@ class FakeLayerTreeFrameSinkClient : public LayerTreeFrameSinkClient {
   int ack_count_ = 0;
   bool did_lose_layer_tree_frame_sink_called_ = false;
   ManagedMemoryPolicy memory_policy_{0};
-  CheckedPtr<viz::BeginFrameSource> begin_frame_source_;
+  viz::BeginFrameSource* begin_frame_source_;
   base::Optional<viz::HitTestRegionList> hit_test_region_list_;
 };
 

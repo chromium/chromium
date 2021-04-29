@@ -47,7 +47,7 @@ std::vector<debug::ViewDebugWrapper*> ViewDebugWrapperImpl::GetChildren() {
 }
 
 void ViewDebugWrapperImpl::ForAllProperties(PropCallback callback) {
-  views::View* view = const_cast<views::View*>(view_.get());
+  views::View* view = const_cast<views::View*>(view_);
   for (auto* member : *(view->GetClassMetaData())) {
     auto flags = member->GetPropertyFlags();
     if (!!(flags & views::metadata::PropertyFlags::kSerializable)) {

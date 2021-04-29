@@ -5,7 +5,6 @@
 #include "base/threading/thread_local.h"
 #include "base/check_op.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
@@ -27,8 +26,8 @@ class ThreadLocalTesterBase : public DelegateSimpleThreadPool::Delegate {
   ~ThreadLocalTesterBase() override = default;
 
  protected:
-  CheckedPtr<TLPType> tlp_;
-  CheckedPtr<WaitableEvent> done_;
+  TLPType* tlp_;
+  WaitableEvent* done_;
 };
 
 class SetThreadLocal : public ThreadLocalTesterBase {
@@ -41,12 +40,12 @@ class SetThreadLocal : public ThreadLocalTesterBase {
 
   void Run() override {
     DCHECK(!done_->IsSignaled());
-    tlp_->Set(val_.get());
+    tlp_->Set(val_);
     done_->Signal();
   }
 
  private:
-  CheckedPtr<char> val_;
+  char* val_;
 };
 
 class GetThreadLocal : public ThreadLocalTesterBase {
@@ -64,7 +63,7 @@ class GetThreadLocal : public ThreadLocalTesterBase {
   }
 
  private:
-  CheckedPtr<char*> ptr_;
+  char** ptr_;
 };
 
 }  // namespace
@@ -160,7 +159,7 @@ class SetTrueOnDestruction {
   }
 
  private:
-  const CheckedPtr<bool> was_destroyed_;
+  bool* const was_destroyed_;
 
   DISALLOW_COPY_AND_ASSIGN(SetTrueOnDestruction);
 };

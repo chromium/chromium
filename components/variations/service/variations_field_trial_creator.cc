@@ -237,7 +237,7 @@ VariationsFieldTrialCreator::GetClientFilterableStateForVersion(
   // Note that passing base::Unretained(client_) is safe here because |client_|
   // lives until Chrome exits.
   auto IsEnterpriseCallback = base::BindRepeating(
-      &VariationsServiceClient::IsEnterprise, base::Unretained(client_.get()));
+      &VariationsServiceClient::IsEnterprise, base::Unretained(client_));
   std::unique_ptr<ClientFilterableState> state =
       std::make_unique<ClientFilterableState>(IsEnterpriseCallback);
   state->locale = application_locale_;

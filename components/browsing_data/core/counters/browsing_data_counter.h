@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/timer/timer.h"
 #include "components/browsing_data/core/clear_browsing_data_tab.h"
 #include "components/prefs/pref_member.h"
@@ -37,7 +36,7 @@ class BrowsingDataCounter {
     virtual bool Finished() const;
 
    private:
-    CheckedPtr<const BrowsingDataCounter> source_;
+    const BrowsingDataCounter* source_;
 
     DISALLOW_COPY_AND_ASSIGN(Result);
   };

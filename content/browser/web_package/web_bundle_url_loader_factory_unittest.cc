@@ -6,7 +6,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -169,7 +168,7 @@ class WebBundleURLLoaderFactoryTest : public testing::Test {
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<MockWebBundleReaderFactory> mock_factory_;
   std::unique_ptr<WebBundleURLLoaderFactory> loader_factory_;
-  CheckedPtr<WebBundleReader> reader_;
+  WebBundleReader* reader_;
   network::TestURLLoaderClient test_client_;
   const std::string body_ = std::string("present day, present time");
   const GURL primary_url_ = GURL("https://test.example.org/");

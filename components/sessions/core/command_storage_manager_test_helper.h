@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 
 namespace sessions {
 class SessionCommand;
@@ -42,7 +41,7 @@ class CommandStorageManagerTestHelper {
   void ForceAppendCommandsToFailForTesting();
 
  private:
-  CheckedPtr<CommandStorageManager> command_storage_manager_;
+  CommandStorageManager* command_storage_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(CommandStorageManagerTestHelper);
 };

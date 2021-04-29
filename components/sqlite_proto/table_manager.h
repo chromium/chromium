@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/atomic_flag.h"
 
@@ -66,7 +65,7 @@ class TableManager : public base::RefCountedThreadSafe<TableManager> {
   friend class base::RefCountedThreadSafe<TableManager>;
 
   scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
-  CheckedPtr<sql::Database> db_;
+  sql::Database* db_;
 };
 
 }  // namespace sqlite_proto

@@ -9,7 +9,6 @@
 
 #include "base/auto_reset.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_container.h"
 #include "ui/gfx/animation/animation_export.h"
@@ -34,7 +33,7 @@ class AnimationTestApi {
   void Step(base::TimeTicks ticks);
 
  private:
-  CheckedPtr<Animation> animation_;
+  Animation* animation_;
 
   DISALLOW_COPY_AND_ASSIGN(AnimationTestApi);
 };
@@ -52,7 +51,7 @@ class AnimationContainerTestApi {
   void IncrementTime(base::TimeDelta delta);
 
  private:
-  CheckedPtr<AnimationContainer> container_;
+  AnimationContainer* container_;
 };
 
 }  // namespace gfx

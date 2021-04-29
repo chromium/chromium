@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/media_galleries/gallery_watch_manager_observer.h"
 #include "chrome/browser/media_galleries/media_file_system_registry.h"
@@ -85,7 +84,7 @@ class MediaGalleriesEventRouter : public extensions::BrowserContextKeyedAPI,
   void OnListenerRemoved(const extensions::EventListenerInfo& details) override;
 
   // Current profile.
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   base::WeakPtrFactory<MediaGalleriesEventRouter> weak_ptr_factory_{this};
 };

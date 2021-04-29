@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -71,10 +70,10 @@ class NTPTilesInternalsMessageHandler : public MostVisitedSites::Observer {
                            const GURL& page_url,
                            const favicon_base::FaviconRawBitmapResult& result);
 
-  CheckedPtr<favicon::FaviconService> favicon_service_;
+  favicon::FaviconService* favicon_service_;
 
   // Bridge to embedder's API.
-  CheckedPtr<NTPTilesInternalsMessageHandlerClient> client_;
+  NTPTilesInternalsMessageHandlerClient* client_;
 
   int site_count_;
   std::unique_ptr<MostVisitedSites> most_visited_sites_;

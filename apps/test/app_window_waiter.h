@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 
@@ -57,11 +56,11 @@ class AppWindowWaiter : public extensions::AppWindowRegistry::Observer {
     WAIT_FOR_ACTIVATED,
   };
 
-  const CheckedPtr<extensions::AppWindowRegistry> registry_;
+  extensions::AppWindowRegistry* const registry_;
   const std::string app_id_;
   std::unique_ptr<base::RunLoop> run_loop_;
   WaitType wait_type_ = WAIT_FOR_NONE;
-  CheckedPtr<extensions::AppWindow> window_ = nullptr;
+  extensions::AppWindow* window_ = nullptr;
 };
 
 }  // namespace apps

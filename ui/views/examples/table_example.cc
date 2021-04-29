@@ -89,7 +89,7 @@ void TableExample::CreateExampleView(View* container) {
         [](TableView* table, int id, Checkbox* checkbox) {
           table->SetColumnVisibility(id, checkbox->GetChecked());
         },
-        base::Unretained(table_.get()), id, checkbox));
+        base::Unretained(table_), id, checkbox));
     checkbox->SetChecked(true);
     return checkbox;
   };

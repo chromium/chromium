@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/extension_function_test_utils.h"
-#include "base/memory/checked_ptr.h"
 
 #include <string>
 #include <utility>
@@ -44,7 +43,7 @@ class TestFunctionDispatcherDelegate
 
   WebContents* GetAssociatedWebContents() const override { return NULL; }
 
-  CheckedPtr<Browser> browser_;
+  Browser* browser_;
 };
 
 }  // namespace

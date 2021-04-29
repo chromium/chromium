@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -155,17 +154,17 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
 
  private:
   // Not owned.
-  CheckedPtr<content::BrowserContext> main_context_ = nullptr;
+  content::BrowserContext* main_context_ = nullptr;
   // Not owned.
-  CheckedPtr<content::BrowserContext> incognito_context_ = nullptr;
+  content::BrowserContext* incognito_context_ = nullptr;
   // Not owned.
-  CheckedPtr<content::BrowserContext> lock_screen_context_ = nullptr;
+  content::BrowserContext* lock_screen_context_ = nullptr;
 
   // Not owned.
-  CheckedPtr<ProcessManagerDelegate> process_manager_delegate_ = nullptr;
+  ProcessManagerDelegate* process_manager_delegate_ = nullptr;
 
   // Not owned.
-  CheckedPtr<ExtensionSystemProvider> extension_system_factory_ = nullptr;
+  ExtensionSystemProvider* extension_system_factory_ = nullptr;
 
   std::unique_ptr<ExtensionCache> extension_cache_;
 

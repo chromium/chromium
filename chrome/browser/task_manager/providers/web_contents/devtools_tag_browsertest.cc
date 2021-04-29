@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/task_manager/mock_web_contents_task_manager.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tags_manager.h"
@@ -56,7 +55,7 @@ class DevToolsTagTest : public InProcessBrowserTest {
   }
 
  private:
-  CheckedPtr<DevToolsWindow> devtools_window_;
+  DevToolsWindow* devtools_window_;
 
   DISALLOW_COPY_AND_ASSIGN(DevToolsTagTest);
 };

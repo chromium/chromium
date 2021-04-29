@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "extensions/browser/lazy_context_id.h"
 #include "extensions/browser/lazy_context_task_queue.h"
 #include "extensions/common/extension_id.h"
@@ -68,7 +67,7 @@ class LazyEventDispatcher {
 
   content::BrowserContext* GetIncognitoContext(const Extension* extension);
 
-  const CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* const browser_context_;
   DispatchFunction dispatch_function_;
 
   std::set<LazyContextId> dispatched_ids_;

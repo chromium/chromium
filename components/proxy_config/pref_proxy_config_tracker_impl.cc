@@ -320,10 +320,9 @@ void PrefProxyConfigTrackerImpl::OnProxyConfigChanged(
   }
 
   proxy_config_service_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ProxyConfigServiceImpl::UpdateProxyConfig,
-                     base::Unretained(proxy_config_service_impl_.get()),
-                     config_state, config));
+      FROM_HERE, base::BindOnce(&ProxyConfigServiceImpl::UpdateProxyConfig,
+                                base::Unretained(proxy_config_service_impl_),
+                                config_state, config));
 }
 
 bool PrefProxyConfigTrackerImpl::PrefConfigToNetConfig(

@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/vr/vr_export.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -46,8 +45,8 @@ class VR_EXPORT VrWebContentsObserver : public content::WebContentsObserver {
                              content::RenderViewHost* new_host) override;
 
   // This class does not own these pointers.
-  CheckedPtr<BrowserUiInterface> ui_interface_;
-  CheckedPtr<LocationBarHelper> toolbar_;
+  BrowserUiInterface* ui_interface_;
+  LocationBarHelper* toolbar_;
 
   base::OnceClosure on_destroy_;
 

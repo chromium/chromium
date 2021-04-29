@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/password_manager/core/browser/password_account_storage_settings_watcher.h"
@@ -48,8 +47,8 @@ class PasswordSessionDurationsMetricsRecorder
  private:
   void CheckForUserStateChange();
 
-  const CheckedPtr<PrefService> pref_service_;
-  const CheckedPtr<syncer::SyncService> sync_service_;
+  PrefService* const pref_service_;
+  syncer::SyncService* const sync_service_;
 
   PasswordAccountStorageSettingsWatcher settings_watcher_;
 

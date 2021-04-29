@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_SIDE_PANEL_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_SIDE_PANEL_CONTROLLER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {
@@ -35,8 +34,8 @@ class ExtensionsSidePanelController : public content::WebContentsObserver {
   void NavigationEntryCommitted(
       const content::LoadCommittedDetails& load_details) override;
 
-  CheckedPtr<SidePanel> side_panel_;
-  CheckedPtr<views::WebView> web_view_;
+  SidePanel* side_panel_;
+  views::WebView* web_view_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_SIDE_PANEL_CONTROLLER_H_

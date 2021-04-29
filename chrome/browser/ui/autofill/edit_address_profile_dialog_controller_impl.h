@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_EDIT_ADDRESS_PROFILE_DIALOG_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_UI_AUTOFILL_EDIT_ADDRESS_PROFILE_DIALOG_CONTROLLER_IMPL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "content/public/browser/web_contents.h"
@@ -59,7 +58,7 @@ class EditAddressProfileDialogControllerImpl
   // before saving.
   AutofillProfile address_profile_to_edit_;
 
-  CheckedPtr<AutofillBubbleBase> edit_dialog_ = nullptr;
+  AutofillBubbleBase* edit_dialog_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

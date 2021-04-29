@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "content/browser/payments/installed_payment_apps_finder_impl.h"
 #include "content/browser/payments/payment_app_content_unittest_base.h"
@@ -142,7 +141,7 @@ class PaymentAppProviderTest : public PaymentAppContentUnitTestBase {
 
  private:
   TestWebContentsFactory test_web_contents_factory_;
-  CheckedPtr<WebContents> web_contents_;
+  WebContents* web_contents_;
 
   DISALLOW_COPY_AND_ASSIGN(PaymentAppProviderTest);
 };

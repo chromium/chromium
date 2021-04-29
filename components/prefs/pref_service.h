@@ -22,7 +22,6 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -170,7 +169,7 @@ class COMPONENTS_PREFS_EXPORT PrefService {
     const uint32_t registration_flags_;
 
     // Reference to the PrefService in which this pref was created.
-    const CheckedPtr<const PrefService> pref_service_;
+    const PrefService* const pref_service_;
   };
 
   // You may wish to use PrefServiceFactory or one of its subclasses

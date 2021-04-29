@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/guid.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/download/internal/background_service/entry.h"
 #include "components/download/internal/background_service/stats.h"
@@ -42,7 +41,7 @@ class DownloadServiceModelImplTest : public testing::Test {
 
  protected:
   test::MockModelClient client_;
-  CheckedPtr<test::TestStore> store_;
+  test::TestStore* store_;
   std::unique_ptr<ModelImpl> model_;
 
  private:

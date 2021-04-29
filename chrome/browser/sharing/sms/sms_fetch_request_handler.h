@@ -12,7 +12,6 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_message_handler.h"
 #include "content/public/browser/sms_fetcher.h"
@@ -69,8 +68,8 @@ class SmsFetchRequestHandler : public SharingMessageHandler {
     void SendFailureMessage(FailureType);
 
    private:
-    CheckedPtr<SmsFetchRequestHandler> handler_;
-    CheckedPtr<content::SmsFetcher> fetcher_;
+    SmsFetchRequestHandler* handler_;
+    content::SmsFetcher* fetcher_;
     const content::OriginList origin_list_;
     std::string one_time_code_;
     SharingMessageHandler::DoneCallback respond_callback_;

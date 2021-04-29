@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -161,7 +160,7 @@ class DnsProbeServiceImpl
   std::unique_ptr<DnsProbeRunner> google_config_runner_;
 
   // Time source for cache expiry.
-  CheckedPtr<const base::TickClock> tick_clock_;  // Not owned.
+  const base::TickClock* tick_clock_;  // Not owned.
 
   SEQUENCE_CHECKER(sequence_checker_);
 

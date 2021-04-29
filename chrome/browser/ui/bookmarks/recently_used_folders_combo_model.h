@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "ui/base/models/combobox_model.h"
@@ -84,7 +83,7 @@ class RecentlyUsedFoldersComboModel : public ui::ComboboxModel,
   struct Item;
   std::vector<Item> items_;
 
-  CheckedPtr<bookmarks::BookmarkModel> bookmark_model_;
+  bookmarks::BookmarkModel* bookmark_model_;
 
   // The index of the original parent folder.
   int node_parent_index_;

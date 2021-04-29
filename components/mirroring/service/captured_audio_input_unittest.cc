@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "media/base/audio_parameters.h"
@@ -140,7 +139,7 @@ class CapturedAudioInputTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<media::AudioInputIPC> audio_input_;
   MockDelegate delegate_;
-  CheckedPtr<MockStream> stream_ = nullptr;
+  MockStream* stream_ = nullptr;
   mojo::Remote<media::mojom::AudioInputStreamClient> stream_client_;
   base::CancelableSyncSocket socket_;
 

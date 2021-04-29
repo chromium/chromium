@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -147,29 +146,29 @@ class BackendIO : public BackgroundIO {
   void ExecuteBackendOperation();
   void ExecuteEntryOperation();
 
-  CheckedPtr<BackendImpl> backend_;
+  BackendImpl* backend_;
   net::CompletionOnceCallback callback_;
   Operation operation_;
 
   // Used for ops that open or create entries.
   EntryResultCallback entry_result_callback_;
-  CheckedPtr<Entry> out_entry_;  // if set, already has the user's ref added.
+  Entry* out_entry_;  // if set, already has the user's ref added.
   bool out_entry_opened_;
 
   // The arguments of all the operations we proxy:
   std::string key_;
   base::Time initial_time_;
   base::Time end_time_;
-  CheckedPtr<Rankings::Iterator> iterator_;
+  Rankings::Iterator* iterator_;
   std::unique_ptr<Rankings::Iterator> scoped_iterator_;
-  CheckedPtr<EntryImpl> entry_;
+  EntryImpl* entry_;
   int index_;
   int offset_;
   scoped_refptr<net::IOBuffer> buf_;
   int buf_len_;
   bool truncate_;
   int64_t offset64_;
-  CheckedPtr<int64_t> start_;
+  int64_t* start_;
   base::TimeTicks start_time_;
   base::OnceClosure task_;
 

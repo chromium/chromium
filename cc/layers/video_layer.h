@@ -6,7 +6,6 @@
 #define CC_LAYERS_VIDEO_LAYER_H_
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/layers/layer.h"
 #include "media/base/video_transformation.h"
@@ -40,7 +39,7 @@ class CC_EXPORT VideoLayer : public Layer {
 
   // This pointer is only for passing to VideoLayerImpl's constructor. It should
   // never be dereferenced by this class.
-  CheckedPtr<VideoFrameProvider> provider_;
+  VideoFrameProvider* provider_;
 
   media::VideoRotation video_rotation_;
 };

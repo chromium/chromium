@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_simple_task_runner.h"
@@ -44,7 +43,7 @@ class DownloadServiceImplTest : public testing::Test {
   }
 
  protected:
-  CheckedPtr<test::MockController> controller_;
+  test::MockController* controller_;
   std::unique_ptr<DownloadServiceImpl> service_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::ThreadTaskRunnerHandle handle_;

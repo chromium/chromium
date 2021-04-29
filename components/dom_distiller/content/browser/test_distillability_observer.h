@@ -6,7 +6,6 @@
 #define COMPONENTS_DOM_DISTILLER_CONTENT_BROWSER_TEST_DISTILLABILITY_OBSERVER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "components/dom_distiller/content/browser/distillable_page_utils.h"
 #include "content/public/browser/web_contents.h"
@@ -33,7 +32,7 @@ class TestDistillabilityObserver : public DistillabilityObserver {
 
   bool WasResultFound(const DistillabilityResult& result);
 
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
   std::unique_ptr<base::RunLoop> run_loop_;
   base::Optional<DistillabilityResult> result_to_wait_for_;
   std::vector<DistillabilityResult> results_;

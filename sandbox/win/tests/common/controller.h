@@ -8,7 +8,6 @@
 #include <windows.h>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "base/win/scoped_handle.h"
 #include "sandbox/win/src/sandbox.h"
@@ -140,7 +139,7 @@ class TestRunner {
   int InternalRunTest(const wchar_t* command);
   DWORD timeout_ms();
 
-  CheckedPtr<BrokerServices> broker_;
+  BrokerServices* broker_;
   scoped_refptr<TargetPolicy> policy_;
   base::TimeDelta timeout_;
   SboxTestsState state_;

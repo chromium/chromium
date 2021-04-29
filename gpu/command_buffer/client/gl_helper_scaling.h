@@ -10,7 +10,6 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "gpu/command_buffer/client/gl_helper.h"
 #include "gpu/gpu_export.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -177,8 +176,8 @@ class GPU_EXPORT GLHelperScaling {
   // 2-dimentional texture coordinates (s, t).
   static const GLfloat kVertexAttributes[];
 
-  CheckedPtr<gles2::GLES2Interface> gl_;
-  CheckedPtr<GLHelper> helper_;
+  gles2::GLES2Interface* gl_;
+  GLHelper* helper_;
 
   // The buffer that holds the vertices and the texture coordinates data for
   // drawing a quad.

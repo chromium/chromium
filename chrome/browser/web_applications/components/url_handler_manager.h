@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_origin_association_manager.h"
 
@@ -54,8 +53,8 @@ class UrlHandlerManager {
   }
 
  private:
-  const CheckedPtr<Profile> profile_;
-  CheckedPtr<AppRegistrar> registrar_;
+  Profile* const profile_;
+  AppRegistrar* registrar_;
   std::unique_ptr<WebAppOriginAssociationManager> association_manager_;
 };
 

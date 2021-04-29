@@ -7,7 +7,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "remoting/base/protobuf_http_request_base.h"
 
 namespace google {
@@ -68,7 +67,7 @@ class ProtobufHttpRequest final : public ProtobufHttpRequestBase {
   base::TimeDelta timeout_duration_ = base::TimeDelta::FromSeconds(30);
 
   // This is owned by |response_callback_|.
-  CheckedPtr<google::protobuf::MessageLite> response_message_;
+  google::protobuf::MessageLite* response_message_;
   base::OnceCallback<void(const ProtobufHttpStatus&)> response_callback_;
 };
 

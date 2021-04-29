@@ -7,7 +7,6 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
@@ -45,11 +44,11 @@ class ProfileKey : public SimpleFactoryKey {
 #endif  // OS_ANDROID
 
  private:
-  CheckedPtr<PrefService> prefs_ = nullptr;
-  CheckedPtr<leveldb_proto::ProtoDatabaseProvider> db_provider_ = nullptr;
+  PrefService* prefs_ = nullptr;
+  leveldb_proto::ProtoDatabaseProvider* db_provider_ = nullptr;
 
   // Points to the original (non off-the-record) ProfileKey.
-  CheckedPtr<ProfileKey> original_key_ = nullptr;
+  ProfileKey* original_key_ = nullptr;
 
 #if defined(OS_ANDROID)
   std::unique_ptr<ProfileKeyAndroid> profile_key_android_;

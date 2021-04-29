@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -175,7 +174,7 @@ class WorkerProcessLauncherTest
   std::unique_ptr<IPC::ChannelProxy> channel_client_;
   std::unique_ptr<IPC::ChannelProxy> channel_server_;
 
-  CheckedPtr<WorkerProcessLauncher> event_handler_;
+  WorkerProcessLauncher* event_handler_;
 
   // The worker process launcher.
   std::unique_ptr<WorkerProcessLauncher> launcher_;

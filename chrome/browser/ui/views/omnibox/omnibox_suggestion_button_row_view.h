@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_SUGGESTION_BUTTON_ROW_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_SUGGESTION_BUTTON_ROW_VIEW_H_
 
-#include "base/memory/checked_ptr.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_popup_model.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -51,12 +50,12 @@ class OmniboxSuggestionButtonRowView : public views::View {
   void ButtonPressed(OmniboxPopupModel::LineState state,
                      const ui::Event& event);
 
-  const CheckedPtr<OmniboxPopupContentsView> popup_contents_view_;
+  OmniboxPopupContentsView* const popup_contents_view_;
   size_t const model_index_;
 
-  CheckedPtr<OmniboxSuggestionRowButton> keyword_button_ = nullptr;
-  CheckedPtr<OmniboxSuggestionRowButton> pedal_button_ = nullptr;
-  CheckedPtr<OmniboxSuggestionRowButton> tab_switch_button_ = nullptr;
+  OmniboxSuggestionRowButton* keyword_button_ = nullptr;
+  OmniboxSuggestionRowButton* pedal_button_ = nullptr;
+  OmniboxSuggestionRowButton* tab_switch_button_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_SUGGESTION_BUTTON_ROW_VIEW_H_

@@ -8,7 +8,6 @@
 #include <atomic>
 #include <cstdint>
 
-#include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/base_export.h"

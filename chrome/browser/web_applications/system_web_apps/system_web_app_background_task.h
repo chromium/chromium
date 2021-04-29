@@ -9,7 +9,6 @@
 
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
 #include "base/optional.h"
@@ -131,7 +130,7 @@ class SystemAppBackgroundTask {
     void CloseContents(content::WebContents* contents) override;
 
    private:
-    CheckedPtr<SystemAppBackgroundTask> task_;
+    SystemAppBackgroundTask* task_;
   };
   // A state machine to either poll and fail, stop polling and succeed, or stop
   // polling and fail

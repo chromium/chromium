@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane_listener.h"
 #include "ui/views/examples/example_base.h"
@@ -45,10 +44,10 @@ class VIEWS_EXAMPLES_EXPORT TabbedPaneExample : public ExampleBase,
   void SelectAt();
 
   // The tabbed pane to be tested.
-  CheckedPtr<TabbedPane> tabbed_pane_;
+  TabbedPane* tabbed_pane_;
 
   // The button that toggles highlighted style.
-  CheckedPtr<Button> toggle_highlighted_;
+  Button* toggle_highlighted_;
 };
 
 }  // namespace examples

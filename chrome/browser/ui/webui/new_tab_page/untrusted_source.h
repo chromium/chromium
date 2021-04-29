@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/search/one_google_bar/one_google_bar_service.h"
 #include "chrome/browser/search/one_google_bar/one_google_bar_service_observer.h"
@@ -79,11 +78,11 @@ class UntrustedSource : public content::URLDataSource,
 
   std::vector<content::URLDataSource::GotDataCallback>
       one_google_bar_callbacks_;
-  CheckedPtr<OneGoogleBarService> one_google_bar_service_;
+  OneGoogleBarService* one_google_bar_service_;
   base::ScopedObservation<OneGoogleBarService, OneGoogleBarServiceObserver>
       one_google_bar_service_observation_{this};
   base::Optional<base::TimeTicks> one_google_bar_load_start_time_;
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_UNTRUSTED_SOURCE_H_

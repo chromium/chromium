@@ -4,7 +4,6 @@
 
 #include "content/public/test/multiple_pages_per_webcontents_helper.h"
 
-#include "base/memory/checked_ptr.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_controller_delegate.h"
@@ -76,7 +75,7 @@ class PageHolder : public TestPageHolder,
   void UpdateOverridingUserAgent() override {}
 
  private:
-  CheckedPtr<WebContentsImpl> web_contents_;
+  WebContentsImpl* web_contents_;
   FrameTree frame_tree_;
 };
 

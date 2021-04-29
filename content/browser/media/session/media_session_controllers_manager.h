@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_observer.h"  // For MediaPlayerId.
@@ -90,7 +89,7 @@ class CONTENT_EXPORT MediaSessionControllersManager {
   // one and placing it in |controllers_map_| if necessary.
   MediaSessionController* FindOrCreateController(const MediaPlayerId& id);
 
-  const CheckedPtr<WebContentsImpl> web_contents_;
+  WebContentsImpl* const web_contents_;
 
   ControllersMap controllers_map_;
 

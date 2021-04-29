@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/bind.h"
 #include "content/browser/bluetooth/bluetooth_adapter_factory_wrapper.h"
 #include "content/public/browser/bluetooth_delegate.h"
@@ -302,9 +301,9 @@ class WebBluetoothServiceImplTest : public RenderViewHostImplTestHarness {
     return result;
   }
 
-  CheckedPtr<WebBluetoothServiceImpl> service_;
+  WebBluetoothServiceImpl* service_;
   TestContentBrowserClient browser_client_;
-  CheckedPtr<ContentBrowserClient> old_browser_client_ = nullptr;
+  ContentBrowserClient* old_browser_client_ = nullptr;
 };
 
 TEST_F(WebBluetoothServiceImplTest, ClearStateDuringRequestDevice) {

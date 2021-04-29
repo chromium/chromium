@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 
 class SigninStatusMetricsProvider;
@@ -56,7 +55,7 @@ class SigninStatusMetricsProviderDelegate {
   SigninStatusMetricsProvider* owner() { return owner_; }
 
  private:
-  CheckedPtr<SigninStatusMetricsProvider> owner_;
+  SigninStatusMetricsProvider* owner_;
 
   DISALLOW_COPY_AND_ASSIGN(SigninStatusMetricsProviderDelegate);
 };

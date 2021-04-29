@@ -11,7 +11,6 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
@@ -63,13 +62,13 @@ class AddInObserve : public Foo {
 
   void Observe(int x) override {
     if (to_add_) {
-      observer_list->AddObserver(to_add_.get());
+      observer_list->AddObserver(to_add_);
       to_add_ = nullptr;
     }
   }
 
-  CheckedPtr<ObserverListThreadSafe<Foo>> observer_list;
-  CheckedPtr<Foo> to_add_;
+  ObserverListThreadSafe<Foo>* observer_list;
+  Foo* to_add_;
 };
 
 // A task for use in the ThreadSafeObserver test which will add and remove

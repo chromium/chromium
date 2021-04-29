@@ -15,7 +15,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -144,7 +143,7 @@ class DownloadPersistedObserver : public DownloadHistory::Observer {
   }
 
  private:
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   PersistedFilter filter_;
   base::OnceClosure quit_waiting_callback_;
   bool persisted_;
@@ -278,7 +277,7 @@ class DownloadItemCreatedObserver : public DownloadManager::Observer {
   }
 
   base::OnceClosure quit_waiting_callback_;
-  CheckedPtr<DownloadManager> manager_;
+  DownloadManager* manager_;
   std::vector<DownloadItem*> items_seen_;
 
   DISALLOW_COPY_AND_ASSIGN(DownloadItemCreatedObserver);

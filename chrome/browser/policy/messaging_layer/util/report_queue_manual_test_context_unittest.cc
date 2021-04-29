@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/policy/messaging_layer/util/report_queue_manual_test_context.h"
-#include "base/memory/checked_ptr.h"
 
 #include "base/task/thread_pool.h"
 #include "base/task_runner.h"
@@ -52,7 +51,7 @@ class ReportQueueManualTestContextTest : public testing::Test {
 
   const Priority priority_ = Priority::FAST_BATCH;
   const Destination destination_ = Destination::UPLOAD_EVENTS;
-  CheckedPtr<reporting::MockReportQueue> mock_report_queue_;
+  reporting::MockReportQueue* mock_report_queue_;
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::SYSTEM_TIME};

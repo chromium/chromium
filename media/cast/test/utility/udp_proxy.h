@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
@@ -47,7 +46,7 @@ class PacketPipe {
   std::unique_ptr<PacketPipe> pipe_;
   // Allows injection of fake task runner for testing.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  CheckedPtr<const base::TickClock> clock_;
+  const base::TickClock* clock_;
 };
 
 // Implements a Interrupted Poisson Process for packet delivery.

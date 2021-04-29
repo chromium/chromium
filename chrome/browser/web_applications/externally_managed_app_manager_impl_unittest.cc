@@ -12,7 +12,6 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/one_shot_event.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
@@ -347,8 +346,7 @@ class TestExternallyManagedAppManagerImpl
     }
 
    private:
-    CheckedPtr<TestExternallyManagedAppManagerImpl>
-        externally_managed_app_manager_impl_;
+    TestExternallyManagedAppManagerImpl* externally_managed_app_manager_impl_;
     ExternallyInstalledWebAppPrefs externally_installed_app_prefs_;
     TestExternallyManagedAppInstallTaskManager& test_install_task_manager_;
   };
@@ -389,7 +387,7 @@ class TestExternallyManagedAppManagerImpl
         weak_ptr_factory_{this};
   };
 
-  CheckedPtr<TestAppRegistrar> test_app_registrar_;
+  TestAppRegistrar* test_app_registrar_;
   TestWebAppUrlLoader test_url_loader_;
   TestExternallyManagedAppInstallTaskManager& test_install_task_manager_;
 
@@ -561,11 +559,11 @@ class ExternallyManagedAppManagerImplTest
   TestInstallFinalizer* install_finalizer() { return install_finalizer_; }
 
  private:
-  CheckedPtr<TestAppRegistrar> app_registrar_ = nullptr;
-  CheckedPtr<TestExternallyManagedAppManagerImpl>
-      externally_managed_app_manager_impl_ = nullptr;
-  CheckedPtr<TestInstallFinalizer> install_finalizer_ = nullptr;
-  CheckedPtr<TestWebAppUiManager> ui_manager_ = nullptr;
+  TestAppRegistrar* app_registrar_ = nullptr;
+  TestExternallyManagedAppManagerImpl* externally_managed_app_manager_impl_ =
+      nullptr;
+  TestInstallFinalizer* install_finalizer_ = nullptr;
+  TestWebAppUiManager* ui_manager_ = nullptr;
 
   TestExternallyManagedAppInstallTaskManager test_install_task_manager_;
 };

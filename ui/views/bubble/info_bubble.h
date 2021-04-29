@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace views {
@@ -53,10 +52,10 @@ class VIEWS_EXPORT InfoBubble : public BubbleDialogDelegateView {
   // Updates the position of the bubble.
   void UpdatePosition();
 
-  CheckedPtr<Widget> widget_;          // Weak, may be NULL.
-  const CheckedPtr<View> anchor_;      // Weak.
-  CheckedPtr<InfoBubbleFrame> frame_;  // Weak, owned by widget.
-  CheckedPtr<Label> label_;
+  Widget* widget_;          // Weak, may be NULL.
+  View* const anchor_;      // Weak.
+  InfoBubbleFrame* frame_;  // Weak, owned by widget.
+  Label* label_;
 
   // The width this bubble prefers to be. Default is 0 (no preference).
   int preferred_width_;

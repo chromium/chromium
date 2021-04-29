@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -125,11 +124,11 @@ class MediaRouterFileDialogTest : public Test {
 
  protected:
   std::unique_ptr<MockDelegate> mock_delegate_;
-  CheckedPtr<MockFileSystemDelegate> mock_file_system_delegate = nullptr;
+  MockFileSystemDelegate* mock_file_system_delegate = nullptr;
   std::unique_ptr<MediaRouterFileDialog> dialog_;
 
   // Used for simulating calls from a SelectFileDialog.
-  CheckedPtr<ui::SelectFileDialog::Listener> dialog_as_listener_ = nullptr;
+  ui::SelectFileDialog::Listener* dialog_as_listener_ = nullptr;
 
   const base::FilePath fake_path_;
 

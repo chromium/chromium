@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/sync/engine/model_type_processor.h"
 
 namespace syncer {
@@ -36,7 +35,7 @@ class ForwardingModelTypeProcessor : public ModelTypeProcessor {
                         UpdateResponseDataList updates) override;
 
  private:
-  const CheckedPtr<ModelTypeProcessor> processor_;
+  ModelTypeProcessor* const processor_;
 
   DISALLOW_COPY_AND_ASSIGN(ForwardingModelTypeProcessor);
 };

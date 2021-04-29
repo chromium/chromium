@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -187,7 +186,7 @@ class HttpStreamParser::SeekableIOBuffer : public IOBuffer {
     data_ = real_data_;
   }
 
-  CheckedPtr<char> real_data_;
+  char* real_data_;
   const int capacity_;
   int size_;
   int used_;

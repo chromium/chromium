@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/platform_thread.h"
@@ -38,7 +37,7 @@ class TaskDestructionDetector {
   void Disable() { timer_ = nullptr; }
 
  private:
-  CheckedPtr<TimerBase> timer_;
+  TimerBase* timer_;
 
   DISALLOW_COPY_AND_ASSIGN(TaskDestructionDetector);
 };

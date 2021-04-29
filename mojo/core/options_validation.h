@@ -18,7 +18,6 @@
 
 #include "base/check.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "mojo/core/system_impl_export.h"
 #include "mojo/public/c/system/types.h"
 
@@ -75,7 +74,7 @@ class UserOptionsReader {
     return reinterpret_cast<uintptr_t>(pointer) % alignment == 0;
   }
 
-  CheckedPtr<const Options> options_;
+  const Options* options_;
 
   DISALLOW_COPY_AND_ASSIGN(UserOptionsReader);
 };

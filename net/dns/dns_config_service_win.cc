@@ -18,7 +18,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/free_deleter.h"
 #include "base/sequence_checker.h"
 #include "base/single_thread_task_runner.h"
@@ -718,7 +717,7 @@ class DnsConfigServiceWin::ConfigReader : public SerialWorker {
     }
   }
 
-  CheckedPtr<DnsConfigServiceWin> service_;
+  DnsConfigServiceWin* service_;
   // Written in DoWork(), read in OnWorkFinished(). No locking required.
   base::Optional<DnsConfig> dns_config_;
 };

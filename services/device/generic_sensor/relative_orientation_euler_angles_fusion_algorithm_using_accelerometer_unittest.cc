@@ -4,7 +4,6 @@
 
 #include <cmath>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/math_constants.h"
 #include "base/test/task_environment.h"
@@ -58,7 +57,7 @@ class RelativeOrientationEulerAnglesFusionAlgorithmUsingAccelerometerTest
  protected:
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<FakePlatformSensorFusion> fake_fusion_sensor_;
-  CheckedPtr<RelativeOrientationEulerAnglesFusionAlgorithmUsingAccelerometer>
+  RelativeOrientationEulerAnglesFusionAlgorithmUsingAccelerometer*
       fusion_algorithm_;
 };
 

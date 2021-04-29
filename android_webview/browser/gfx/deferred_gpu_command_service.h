@@ -6,7 +6,6 @@
 #define ANDROID_WEBVIEW_BROWSER_GFX_DEFERRED_GPU_COMMAND_SERVICE_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "gpu/ipc/command_buffer_task_executor.h"
 
 namespace gl {
@@ -44,8 +43,8 @@ class DeferredGpuCommandService : public gpu::CommandBufferTaskExecutor {
 
   static DeferredGpuCommandService* CreateDeferredGpuCommandService();
 
-  CheckedPtr<TaskQueueWebView> task_queue_;
-  CheckedPtr<GpuServiceWebView> gpu_service_;
+  TaskQueueWebView* task_queue_;
+  GpuServiceWebView* gpu_service_;
   scoped_refptr<gl::GLShareGroup> share_group_;
 
   DISALLOW_COPY_AND_ASSIGN(DeferredGpuCommandService);

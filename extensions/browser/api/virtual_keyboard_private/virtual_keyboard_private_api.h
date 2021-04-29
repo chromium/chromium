@@ -6,7 +6,6 @@
 #define EXTENSIONS_BROWSER_API_VIRTUAL_KEYBOARD_PRIVATE_VIRTUAL_KEYBOARD_PRIVATE_API_H_
 
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_function.h"
 
@@ -31,7 +30,7 @@ class VirtualKeyboardPrivateFunction : public ExtensionFunction {
   ~VirtualKeyboardPrivateFunction() override;
 
  private:
-  CheckedPtr<VirtualKeyboardDelegate> delegate_ = nullptr;
+  VirtualKeyboardDelegate* delegate_ = nullptr;
 };
 
 class VirtualKeyboardPrivateInsertTextFunction

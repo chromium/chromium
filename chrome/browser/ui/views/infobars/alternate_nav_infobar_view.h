@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/infobars/infobar_view.h"
 
 class AlternateNavInfoBarDelegate;
@@ -40,9 +39,9 @@ class AlternateNavInfoBarView : public InfoBarView {
   std::u16string link_text_;
   std::u16string label_2_text_;
 
-  CheckedPtr<views::Label> label_1_ = nullptr;
-  CheckedPtr<views::Link> link_ = nullptr;
-  CheckedPtr<views::Label> label_2_ = nullptr;
+  views::Label* label_1_ = nullptr;
+  views::Link* link_ = nullptr;
+  views::Label* label_2_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(AlternateNavInfoBarView);
 };

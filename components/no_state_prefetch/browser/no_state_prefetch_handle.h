@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 
@@ -84,7 +83,7 @@ class NoStatePrefetchHandle : public NoStatePrefetchContents::Observer {
   void OnPrefetchNetworkBytesChanged(
       NoStatePrefetchContents* no_state_prefetch_contents) override;
 
-  CheckedPtr<Observer> observer_;
+  Observer* observer_;
 
   base::WeakPtr<NoStatePrefetchManager::NoStatePrefetchData> prefetch_data_;
   base::WeakPtrFactory<NoStatePrefetchHandle> weak_ptr_factory_{this};

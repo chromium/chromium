@@ -69,8 +69,7 @@ void SaveAddressProfileMessageController::DismissMessage() {
 
 void SaveAddressProfileMessageController::OnPrimaryAction() {
   std::move(primary_action_callback_)
-      .Run(web_contents_.get(), profile_,
-           std::move(save_address_profile_callback_));
+      .Run(web_contents_, profile_, std::move(save_address_profile_callback_));
 }
 
 void SaveAddressProfileMessageController::OnMessageDismissed(

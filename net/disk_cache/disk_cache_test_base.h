@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/threading/thread.h"
 #include "net/base/cache_type.h"
 #include "net/disk_cache/disk_cache.h"
@@ -193,10 +192,10 @@ class DiskCacheTestWithCache : public DiskCacheTest {
   // cache_ will always have a valid object, regardless of how the cache was
   // initialized. The implementation pointers can be NULL.
   std::unique_ptr<disk_cache::Backend> cache_;
-  CheckedPtr<disk_cache::BackendImpl> cache_impl_;
+  disk_cache::BackendImpl* cache_impl_;
   std::unique_ptr<disk_cache::SimpleFileTracker> simple_file_tracker_;
-  CheckedPtr<disk_cache::SimpleBackendImpl> simple_cache_impl_;
-  CheckedPtr<disk_cache::MemBackendImpl> mem_cache_;
+  disk_cache::SimpleBackendImpl* simple_cache_impl_;
+  disk_cache::MemBackendImpl* mem_cache_;
 
   uint32_t mask_;
   int64_t size_;

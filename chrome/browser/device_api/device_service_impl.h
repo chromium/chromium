@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_DEVICE_API_DEVICE_SERVICE_IMPL_H_
 #define CHROME_BROWSER_DEVICE_API_DEVICE_SERVICE_IMPL_H_
 
-#include "base/memory/checked_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/frame_service_base.h"
 #include "third_party/blink/public/mojom/device/device.mojom.h"
@@ -43,7 +42,7 @@ class DeviceServiceImpl final
 
   void OnForceInstallWebAppListChanged();
 
-  const CheckedPtr<content::RenderFrameHost> host_;
+  content::RenderFrameHost* const host_;
   PrefChangeRegistrar pref_change_registrar_;
 };
 

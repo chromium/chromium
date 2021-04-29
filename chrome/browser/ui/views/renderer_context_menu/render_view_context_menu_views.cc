@@ -9,7 +9,6 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/current_thread.h"
 #include "build/build_config.h"
@@ -94,8 +93,8 @@ class RenderViewContextMenuViews::SubmenuViewObserver
   }
 
  private:
-  const CheckedPtr<RenderViewContextMenuViews> parent_;
-  const CheckedPtr<views::SubmenuView> submenu_view_;
+  RenderViewContextMenuViews* const parent_;
+  views::SubmenuView* const submenu_view_;
   base::ScopedObservation<views::View, views::ViewObserver>
       submenu_view_observation_{this};
   base::ScopedObservation<views::Widget, views::WidgetObserver>
