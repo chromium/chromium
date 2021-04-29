@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings_test_utils.h"
-#include "base/strings/string_piece.h"
 
 #include <stdint.h>
 
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_compression_stats.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_test_utils.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_headers_test_utils.h"

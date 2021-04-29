@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/url_pattern_index/url_rule_test_support.h"
-#include "base/strings/string_piece.h"
 
 #include "base/check.h"
+#include "base/strings/string_piece.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
 #include "url/origin.h"

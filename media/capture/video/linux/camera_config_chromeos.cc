@@ -12,8 +12,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 
-#include "base/strings/string_piece.h"
-
 namespace media {
 
 namespace {

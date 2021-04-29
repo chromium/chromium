@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "fuchsia/base/url_request_rewrite_test_util.h"
-#include "base/strings/string_piece.h"
 
+#include "base/strings/string_piece.h"
 #include "fuchsia/base/string_util.h"
 
 namespace cr_fuchsia {

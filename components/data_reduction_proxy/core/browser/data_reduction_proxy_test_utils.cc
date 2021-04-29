@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_test_utils.h"
-#include "base/strings/string_piece.h"
 
 #include <map>
 #include <memory>
@@ -14,6 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_compression_stats.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_prefs.h"

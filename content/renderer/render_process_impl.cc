@@ -4,7 +4,6 @@
 
 #include "content/renderer/render_process_impl.h"
 
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
@@ -26,6 +25,7 @@
 #include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool/initialization_util.h"
