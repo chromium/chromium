@@ -35,6 +35,14 @@ Polymer({
         return loadTimeData.getBoolean('updatedCellularActivationUi');
       }
     },
+
+    /** @private */
+    isGuest_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('isGuest');
+      },
+    },
   },
 
   /**
@@ -87,6 +95,18 @@ Polymer({
    * @private
    */
   shouldShowDotsMenuButton_() {
+    // Only shown if the flag is enabled.
+    if (!this.isUpdatedCellularUiEnabled_) {
+      return false;
+    }
+
+    // Not shown in guest mode.
+    if (this.isGuest_) {
+      return false;
+    }
+
+    // Show if |this.networkState_| has been fetched. Note that this only occurs
+    // if this is a cellular network with an ICCID.
     return !!this.networkState_;
   },
 

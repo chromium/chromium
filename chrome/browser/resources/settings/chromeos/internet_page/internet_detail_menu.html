@@ -25,7 +25,8 @@
         margin: 6px 0 0 0;
       }
     </style>
-    <template is="dom-if" if="[[shouldShowDotsMenuButton_(networkState_)]]">
+    <template is="dom-if"
+        if="[[shouldShowDotsMenuButton_(networkState_, isGuest_)]]" restamp>
       <cr-icon-button class="icon-more-vert"
           title="$i18n{moreActions}"
           id="moreNetworkDetail"

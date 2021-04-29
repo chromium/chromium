@@ -20,9 +20,6 @@ suite('InternetDetailMenu', function() {
   let mojom;
 
   setup(function() {
-    loadTimeData.overrideValues({
-      updatedCellularActivationUi: true,
-    });
     mojoApi_ = new FakeNetworkConfig();
     network_config.MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
     mojoApi_.resetForTest();
@@ -37,7 +34,12 @@ suite('InternetDetailMenu', function() {
     return result;
   }
 
-  async function init() {
+  /** @param {boolean=} opt_isGuest */
+  async function init(opt_isGuest) {
+    const isGuest = !!opt_isGuest;
+    loadTimeData.overrideValues(
+        {updatedCellularActivationUi: true, isGuest: isGuest});
+
     const params = new URLSearchParams;
     params.append('guid', 'cellular_guid');
     settings.Router.getInstance().navigateTo(
@@ -102,6 +104,20 @@ suite('InternetDetailMenu', function() {
     await flushAsync();
     tripleDot = internetDetailMenu.$$('#moreNetworkDetail');
     assertTrue(!!tripleDot);
+  });
+
+  test('Do not show triple dot menu in guest mode', async function() {
+    addEsimCellularNetwork('100000', '11111111111111111111111111111111');
+    await init(/*opt_isGuest=*/ true);
+
+    const params = new URLSearchParams;
+    params.append('guid', 'cellular_guid');
+    settings.Router.getInstance().navigateTo(
+        settings.routes.NETWORK_DETAIL, params);
+    await flushAsync();
+
+    // Has ICCID and EID, but not shown since the user is in guest mode.
+    assertFalse(!!internetDetailMenu.$$('#moreNetworkDetail'));
   });
 
   test('Rename menu click', async function() {
