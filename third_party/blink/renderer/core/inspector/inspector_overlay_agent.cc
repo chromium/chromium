@@ -1161,6 +1161,8 @@ void InspectorOverlayAgent::LoadOverlayPageResource() {
   ScriptState* script_state = ToScriptStateForMainWorld(frame);
   DCHECK(script_state);
   ScriptState::Scope scope(script_state);
+  v8::MicrotasksScope microtasks_scope(
+      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::Local<v8::Object> global = script_state->GetContext()->Global();
   v8::Local<v8::Value> overlay_host_obj =
       ToV8(overlay_host_.Get(), global, isolate);
