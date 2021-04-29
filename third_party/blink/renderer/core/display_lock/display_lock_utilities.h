@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
+#include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -161,7 +162,9 @@ class CORE_EXPORT DisplayLockUtilities {
 
   // Returns true if the element is in a locked subtree (or is self-locked with
   // no self-updates). This crosses frames while navigating the ancestor chain.
-  static bool IsInLockedSubtreeCrossingFrames(const Node& node);
+  static bool IsInLockedSubtreeCrossingFrames(
+      const Node& node,
+      IncludeSelfOrNot self = kExcludeSelf);
 
   // Called when the focused element changes. These functions update locks to
   // ensure that focused element ancestors remain unlocked for 'auto' state.

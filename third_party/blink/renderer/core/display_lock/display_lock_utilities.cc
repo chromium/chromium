@@ -402,7 +402,8 @@ bool DisplayLockUtilities::IsInUnlockedOrActivatableSubtree(
 }
 
 bool DisplayLockUtilities::IsInLockedSubtreeCrossingFrames(
-    const Node& source_node) {
+    const Node& source_node,
+    IncludeSelfOrNot self) {
   if (!RuntimeEnabledFeatures::CSSContentVisibilityEnabled())
     return false;
   if (LocalFrameView* frame_view = source_node.GetDocument().View()) {
@@ -411,9 +412,10 @@ bool DisplayLockUtilities::IsInLockedSubtreeCrossingFrames(
   }
   const Node* node = &source_node;
 
-  // Since we handled the self-check above, we need to do inclusive checks
-  // starting from the parent.
-  node = FlatTreeTraversal::Parent(*node);
+  // If we don't need to check self, skip to the parent immediately.
+  if (self == kExcludeSelf)
+    node = FlatTreeTraversal::Parent(*node);
+
   // If we don't have a flat-tree parent, get the |source_node|'s owner node
   // instead.
   if (!node)

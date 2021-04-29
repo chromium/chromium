@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/dom/slot_assignment.h"
 
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -18,6 +19,7 @@
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/parser/nesting_level_incrementer.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/paint/paint_layer.h"
 
 namespace blink {
 
@@ -256,6 +258,16 @@ void SlotAssignment::RecalcAssignment() {
     SlotAssignmentRecalcForbiddenScope forbid_slot_recalc(
         owner_->GetDocument());
 
+    // Before forbidding flat tree traversal, figure out which slots' subtrees
+    // are in display locked state. Note that it could be the slot itself is
+    // locked or it could be that some flat tree ancestor of the slot is locked.
+    HeapHashMap<Member<HTMLSlotElement>, bool> display_lock_map;
+    for (Member<HTMLSlotElement> slot : Slots()) {
+      display_lock_map.Set(
+          slot, DisplayLockUtilities::IsInLockedSubtreeCrossingFrames(
+                    *slot, kIncludeSelf));
+    }
+
     FlatTreeTraversalForbiddenScope forbid_flat_tree_traversal(
         owner_->GetDocument());
 
@@ -338,7 +350,7 @@ void SlotAssignment::RecalcAssignment() {
     }
 
     for (auto& slot : Slots())
-      slot->DidRecalcAssignedNodes();
+      slot->DidRecalcAssignedNodes(display_lock_map.at(slot));
   }
 
   // Update an dir=auto flag from a host of slots to its all descendants.

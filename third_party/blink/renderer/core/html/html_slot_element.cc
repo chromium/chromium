@@ -255,6 +255,19 @@ void HTMLSlotElement::UpdateFlatTreeNodeDataForAssignedNodes() {
   }
 }
 
+void HTMLSlotElement::DetachDisplayLockedAssignedNodesLayoutTreeIfNeeded() {
+  // If the assigned node is now under a display locked subtree and its layout
+  // is in 'forced reattach' mode, it means that this node potentially changed
+  // slots into a display locked subtree. We would normally update its layout
+  // tree during a layout tree update phase, but that is skipped in display
+  // locked subtrees. In order to avoid a corrupt layout tree as a result, we
+  // detach the node's layout tree.
+  for (auto& current : assigned_nodes_) {
+    if (current->GetForceReattachLayoutTree())
+      current->DetachLayoutTree();
+  }
+}
+
 void HTMLSlotElement::RecalcFlatTreeChildren() {
   DCHECK(SupportsAssignment());
 

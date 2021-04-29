@@ -72,9 +72,11 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
   const HeapVector<Member<Node>> FlattenedAssignedNodes();
 
   void WillRecalcAssignedNodes() { ClearAssignedNodes(); }
-  void DidRecalcAssignedNodes() {
+  void DidRecalcAssignedNodes(bool display_locked_subtree) {
     UpdateFlatTreeNodeDataForAssignedNodes();
     RecalcFlatTreeChildren();
+    if (display_locked_subtree)
+      DetachDisplayLockedAssignedNodesLayoutTreeIfNeeded();
   }
 
   void AttachLayoutTree(AttachContext&) final;
@@ -145,6 +147,7 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
   void RecalcFlatTreeChildren();
   void UpdateFlatTreeNodeDataForAssignedNodes();
   void ClearAssignedNodesAndFlatTreeChildren();
+  void DetachDisplayLockedAssignedNodesLayoutTreeIfNeeded();
 
   HeapVector<Member<Node>> assigned_nodes_;
   HeapVector<Member<Node>> flat_tree_children_;
