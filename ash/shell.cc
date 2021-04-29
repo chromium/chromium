@@ -74,7 +74,6 @@
 #include "ash/login_status.h"
 #include "ash/marker/marker_controller.h"
 #include "ash/media/media_controller_impl.h"
-#include "ash/media/media_notification_controller_impl.h"
 #include "ash/metrics/login_unlock_throughput_recorder.h"
 #include "ash/multi_device_setup/multi_device_notification_presenter.h"
 #include "ash/policy/policy_recommendation_restorer.h"
@@ -880,10 +879,6 @@ Shell::~Shell() {
   // before it.
   detachable_base_handler_.reset();
 
-  // MediaNotificationControllerImpl depends on MessageCenter and must be
-  // destructed before it.
-  media_notification_controller_.reset();
-
   pcie_peripheral_notification_controller_.reset();
 
   // Destroys the MessageCenter singleton, so must happen late.
@@ -1262,12 +1257,6 @@ void Shell::Init(
   // order to create mirror window. Run it after the main message loop
   // is started.
   display_manager_->CreateMirrorWindowAsyncIfAny();
-
-  if (base::FeatureList::IsEnabled(features::kMediaSessionNotification) &&
-      !base::FeatureList::IsEnabled(media::kGlobalMediaControlsForChromeOS)) {
-    media_notification_controller_ =
-        std::make_unique<MediaNotificationControllerImpl>();
-  }
 
   // TODO(1091497): Consider combining DisplayHighlightController and
   // DisplayAlignmentController.

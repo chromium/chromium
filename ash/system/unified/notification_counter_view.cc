@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "ash/media/media_notification_constants.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/vm_camera_mic_constants.h"
 #include "ash/resources/vector_icons/vector_icons.h"
