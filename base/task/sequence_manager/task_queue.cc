@@ -165,10 +165,14 @@ void TaskQueue::TaskTiming::RecordTaskEnd(LazyNow* now) {
     return;
   state_ = State::Finished;
 
-  if (has_wall_time())
+  if (has_wall_time()) {
+    recordreplay::Assert("TaskQueue::TaskTiming::RecordTaskEnd #1");
     end_time_ = now->Now();
-  if (has_thread_time())
+  }
+  if (has_thread_time()) {
+    recordreplay::Assert("TaskQueue::TaskTiming::RecordTaskEnd #2");
     end_thread_time_ = base::ThreadTicks::Now();
+  }
 }
 
 void TaskQueue::ShutdownTaskQueue() {

@@ -56,6 +56,8 @@ int64_t BufferedDataSourceHostImpl::UnloadedBytesInInterval(
 
 void BufferedDataSourceHostImpl::AddBufferedByteRange(int64_t start,
                                                       int64_t end) {
+  recordreplay::Assert("BufferedDataSourceHostImpl::AddBufferedByteRange");
+
   int64_t new_bytes = UnloadedBytesInInterval(Interval<int64_t>(start, end));
   if (new_bytes > 0)
     did_loading_progress_ = true;
