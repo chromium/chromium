@@ -32,8 +32,9 @@ mojom("mojom") {
       traits_sources = [ "print_backend_mojom_traits.cc" ]
       traits_headers = [ "print_backend_mojom_traits.h" ]
       traits_deps = [
+        "//base",
         "//build:chromeos_buildflags",
-        "//printing:printing",
+        "//printing/backend",
       ]
     },
   ]
