@@ -67,6 +67,37 @@ void FakeShillProfileClient::GetProperties(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(properties)));
 }
 
+void FakeShillProfileClient::SetProperty(const dbus::ObjectPath& profile_path,
+                                         const std::string& name,
+                                         const base::Value& property,
+                                         base::OnceClosure callback,
+                                         ErrorCallback error_callback) {
+  ProfileProperties* profile = GetProfile(profile_path);
+  if (!profile) {
+    std::move(error_callback).Run("Error.InvalidProfile", "Invalid profile");
+    return;
+  }
+  profile->properties.SetKey(name, property.Clone());
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback)));
+}
+
+void FakeShillProfileClient::SetObjectPathProperty(
+    const dbus::ObjectPath& profile_path,
+    const std::string& name,
+    const dbus::ObjectPath& property,
+    base::OnceClosure callback,
+    ErrorCallback error_callback) {
+  ProfileProperties* profile = GetProfile(profile_path);
+  if (!profile) {
+    std::move(error_callback).Run("Error.InvalidProfile", "Invalid profile");
+    return;
+  }
+  profile->properties.SetStringKey(name, property.value());
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback)));
+}
+
 void FakeShillProfileClient::GetEntry(
     const dbus::ObjectPath& profile_path,
     const std::string& entry_path,
@@ -233,6 +264,13 @@ void FakeShillProfileClient::GetProfilePathsContainingService(
       profiles->push_back(profile.profile_path);
     }
   }
+}
+
+base::Value FakeShillProfileClient::GetProfileProperties(
+    const std::string& profile_path) {
+  ProfileProperties* profile = GetProfile(dbus::ObjectPath(profile_path));
+  DCHECK(profile);
+  return profile->properties.Clone();
 }
 
 base::Value FakeShillProfileClient::GetService(const std::string& service_path,

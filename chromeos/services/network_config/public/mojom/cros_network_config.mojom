@@ -135,6 +135,18 @@ enum InhibitReason {
   kRefreshingProfileList
 };
 
+// Always-on VPN operating mode.
+enum AlwaysOnVpnMode {
+  // Always-on VPN is disabled.
+  kOff,
+  // Always-on VPN is enabled, traffic goes through the tunnel as long as it is
+  // available, otherwise it falls back to the default network.
+  kBestEffort,
+  // Always-on VPN is enabled and traffic is blocked when the tunnel is not
+  // available.
+  kStrict,
+};
+
 // The SIM card lock status for Cellular networks.
 struct SIMLockStatus {
   // The status of SIM lock. Possible values are 'sim-pin', 'sim-puk' or empty.
@@ -883,6 +895,18 @@ struct NetworkCertificate {
   bool device_wide;
 };
 
+// Always-on VPN configuration obtained with GetAlwaysOnVpn and set using
+// SetAlwaysOnVpn for the purpose of enabling/disabling the feature and choosing
+// the service to be automatically started.
+struct AlwaysOnVpnProperties {
+  // Always-on VPN operating mode.
+  AlwaysOnVpnMode mode;
+  // GUID of the VPN service managed by always-on VPN. This can be configured
+  // independently of |mode|, but it expected to be only used when |mode| is not
+  // AlwaysOnVpnMode::kOff.
+  string service_guid;
+};
+
 // Interface for fetching and setting network configuration properties, e.g.
 // from Settings WebUI or the SystemTray.
 interface CrosNetworkConfig {
@@ -992,6 +1016,13 @@ interface CrosNetworkConfig {
   // available for network configuration. See NetworkCerificate for more info.
   GetNetworkCertificates() => (array<NetworkCertificate> server_cas,
                                array<NetworkCertificate> user_certs);
+
+  // Returns the current always-on VPN configuration.
+  GetAlwaysOnVpn() => (AlwaysOnVpnProperties properties);
+
+  // Sets the always-on VPN mode and service with |properties.mode| and
+  // |properties.service_guid|. The service GUID must match a VPN service.
+  SetAlwaysOnVpn(AlwaysOnVpnProperties properties);
 };
 
 interface CrosNetworkConfigObserver {

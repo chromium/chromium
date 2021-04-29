@@ -125,7 +125,8 @@ class CrosNetworkConfigTest : public testing::Test {
         helper_.network_state_handler(), network_device_handler_.get(),
         cellular_inhibitor_.get(), cellular_esim_profile_handler_.get(),
         managed_network_configuration_handler_.get(),
-        network_connection_handler_.get(), network_certificate_handler_.get());
+        network_connection_handler_.get(), network_certificate_handler_.get(),
+        network_profile_handler_.get());
     SetupPolicy();
     SetupNetworks();
   }
@@ -233,7 +234,7 @@ class CrosNetworkConfigTest : public testing::Test {
             "Cellular.EID": "%s", "Profile": "%s"})",
         kCellularTestIccid, kCellularTestEid,
         NetworkProfileHandler::GetSharedProfilePath().c_str()));
-    helper().ConfigureService(
+    vpn_path_ = helper().ConfigureService(
         R"({"GUID": "vpn_guid", "Type": "vpn", "State": "association",
             "Provider": {"Type": "l2tpipsec"}})");
 
@@ -535,6 +536,26 @@ class CrosNetworkConfigTest : public testing::Test {
     run_loop.Run();
   }
 
+  mojom::AlwaysOnVpnPropertiesPtr GetAlwaysOnVpn() {
+    mojom::AlwaysOnVpnPropertiesPtr result;
+    base::RunLoop run_loop;
+    cros_network_config()->GetAlwaysOnVpn(base::BindOnce(
+        [](mojom::AlwaysOnVpnPropertiesPtr* result,
+           base::OnceClosure quit_closure,
+           mojom::AlwaysOnVpnPropertiesPtr properties) {
+          *result = std::move(properties);
+          std::move(quit_closure).Run();
+        },
+        &result, run_loop.QuitClosure()));
+    run_loop.Run();
+    return result;
+  }
+
+  void SetAlwaysOnVpn(mojom::AlwaysOnVpnPropertiesPtr properties) {
+    cros_network_config()->SetAlwaysOnVpn(std::move(properties));
+    base::RunLoop().RunUntilIdle();
+  }
+
   bool ContainsVpnDeviceState(
       std::vector<mojom::DeviceStatePropertiesPtr> devices) {
     for (auto& device : devices) {
@@ -574,6 +595,7 @@ class CrosNetworkConfigTest : public testing::Test {
     return network_certificate_handler_.get();
   }
   std::string wifi1_path() { return wifi1_path_; }
+  std::string vpn_path() { return vpn_path_; }
 
  protected:
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
@@ -596,6 +618,7 @@ class CrosNetworkConfigTest : public testing::Test {
   std::unique_ptr<CrosNetworkConfig> cros_network_config_;
   std::unique_ptr<CrosNetworkConfigTestObserver> observer_;
   std::string wifi1_path_;
+  std::string vpn_path_;
 
   DISALLOW_COPY_AND_ASSIGN(CrosNetworkConfigTest);
 };
@@ -1721,6 +1744,68 @@ TEST_F(CrosNetworkConfigTest, ESimManagedPropertiesNameComesFromHermes) {
   std::string esim_guid = std::string("esim_guid") + kTestIccid;
   mojom::ManagedPropertiesPtr properties = GetManagedProperties(esim_guid);
   EXPECT_EQ(kTestProfileName, properties->name->active_value);
+}
+
+TEST_F(CrosNetworkConfigTest, GetAlwaysOnVpn) {
+  mojom::AlwaysOnVpnPropertiesPtr properties;
+
+  helper().SetProfileProperty(helper().ProfilePathUser(),
+                              shill::kAlwaysOnVpnModeProperty,
+                              base::Value("off"));
+  helper().SetProfileProperty(helper().ProfilePathUser(),
+                              shill::kAlwaysOnVpnServiceProperty,
+                              base::Value(vpn_path()));
+  properties = GetAlwaysOnVpn();
+  EXPECT_EQ(mojom::AlwaysOnVpnMode::kOff, properties->mode);
+  EXPECT_EQ("vpn_guid", properties->service_guid);
+
+  helper().SetProfileProperty(helper().ProfilePathUser(),
+                              shill::kAlwaysOnVpnModeProperty,
+                              base::Value("best-effort"));
+  properties = GetAlwaysOnVpn();
+  EXPECT_EQ(mojom::AlwaysOnVpnMode::kBestEffort, properties->mode);
+
+  helper().SetProfileProperty(helper().ProfilePathUser(),
+                              shill::kAlwaysOnVpnModeProperty,
+                              base::Value("strict"));
+  properties = GetAlwaysOnVpn();
+  EXPECT_EQ(mojom::AlwaysOnVpnMode::kStrict, properties->mode);
+}
+
+TEST_F(CrosNetworkConfigTest, SetAlwaysOnVpn) {
+  mojom::AlwaysOnVpnPropertiesPtr properties =
+      mojom::AlwaysOnVpnProperties::New(mojom::AlwaysOnVpnMode::kBestEffort,
+                                        "vpn_guid");
+  SetAlwaysOnVpn(std::move(properties));
+
+  EXPECT_EQ("best-effort",
+            helper().GetProfileStringProperty(helper().ProfilePathUser(),
+                                              shill::kAlwaysOnVpnModeProperty));
+  EXPECT_EQ(vpn_path(), helper().GetProfileStringProperty(
+                            helper().ProfilePathUser(),
+                            shill::kAlwaysOnVpnServiceProperty));
+
+  properties = mojom::AlwaysOnVpnProperties::New(mojom::AlwaysOnVpnMode::kOff,
+                                                 std::string());
+  SetAlwaysOnVpn(std::move(properties));
+
+  EXPECT_EQ("off",
+            helper().GetProfileStringProperty(helper().ProfilePathUser(),
+                                              shill::kAlwaysOnVpnModeProperty));
+  EXPECT_EQ(vpn_path(), helper().GetProfileStringProperty(
+                            helper().ProfilePathUser(),
+                            shill::kAlwaysOnVpnServiceProperty));
+
+  properties = mojom::AlwaysOnVpnProperties::New(mojom::AlwaysOnVpnMode::kOff,
+                                                 "another_service");
+  SetAlwaysOnVpn(std::move(properties));
+
+  EXPECT_EQ("off",
+            helper().GetProfileStringProperty(helper().ProfilePathUser(),
+                                              shill::kAlwaysOnVpnModeProperty));
+  EXPECT_EQ(vpn_path(), helper().GetProfileStringProperty(
+                            helper().ProfilePathUser(),
+                            shill::kAlwaysOnVpnServiceProperty));
 }
 
 }  // namespace network_config

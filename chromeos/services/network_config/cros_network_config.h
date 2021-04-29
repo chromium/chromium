@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/network_certificate_handler.h"
+#include "chromeos/network/network_profile_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -48,7 +49,8 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
       CellularESimProfileHandler* cellular_esim_profile_handler,
       ManagedNetworkConfigurationHandler* network_configuration_handler,
       NetworkConnectionHandler* network_connection_handler,
-      NetworkCertificateHandler* network_certificate_handler);
+      NetworkCertificateHandler* network_certificate_handler,
+      NetworkProfileHandler* network_profile_handler);
   ~CrosNetworkConfig() override;
 
   void BindReceiver(mojo::PendingReceiver<mojom::CrosNetworkConfig> receiver);
@@ -90,6 +92,8 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
   void SetVpnProviders(std::vector<mojom::VpnProviderPtr> providers) override;
   void GetVpnProviders(GetVpnProvidersCallback callback) override;
   void GetNetworkCertificates(GetNetworkCertificatesCallback callback) override;
+  void GetAlwaysOnVpn(GetAlwaysOnVpnCallback callback) override;
+  void SetAlwaysOnVpn(mojom::AlwaysOnVpnPropertiesPtr properties) override;
 
  private:
   void OnGetManagedProperties(GetManagedPropertiesCallback callback,
@@ -146,6 +150,9 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
       int callback_id,
       const std::string& error_name,
       std::unique_ptr<base::DictionaryValue> error_data);
+  void OnGetAlwaysOnVpn(GetAlwaysOnVpnCallback callback,
+                        std::string mode,
+                        std::string service_path);
 
   // NetworkStateHandlerObserver:
   void NetworkListChanged() override;
@@ -174,6 +181,7 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
       network_configuration_handler_;                       // Unowned
   NetworkConnectionHandler* network_connection_handler_;    // Unowned
   NetworkCertificateHandler* network_certificate_handler_;  // Unowned
+  NetworkProfileHandler* network_profile_handler_;          // Unowned
 
   mojo::RemoteSet<mojom::CrosNetworkConfigObserver> observers_;
   mojo::ReceiverSet<mojom::CrosNetworkConfig> receivers_;

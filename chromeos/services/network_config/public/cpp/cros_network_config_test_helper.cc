@@ -36,7 +36,8 @@ void CrosNetworkConfigTestHelper::Initialize(
         /*cellular_esim_profile_handler=*/nullptr,
         network_configuration_handler,
         /*network_connection_handler=*/nullptr,
-        /*network_certificate_handler=*/nullptr);
+        /*network_certificate_handler=*/nullptr,
+        /*network_profile_handler=*/nullptr);
   }
   OverrideInProcessInstanceForTesting(cros_network_config_impl_.get());
 }

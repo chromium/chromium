@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/containers/flat_map.h"
+#include "base/guid.h"
 #include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1826,7 +1827,8 @@ CrosNetworkConfig::CrosNetworkConfig()
           NetworkHandler::Get()->cellular_esim_profile_handler(),
           NetworkHandler::Get()->managed_network_configuration_handler(),
           NetworkHandler::Get()->network_connection_handler(),
-          NetworkHandler::Get()->network_certificate_handler()) {}
+          NetworkHandler::Get()->network_certificate_handler(),
+          NetworkHandler::Get()->network_profile_handler()) {}
 
 CrosNetworkConfig::CrosNetworkConfig(
     NetworkStateHandler* network_state_handler,
@@ -1835,14 +1837,16 @@ CrosNetworkConfig::CrosNetworkConfig(
     CellularESimProfileHandler* cellular_esim_profile_handler,
     ManagedNetworkConfigurationHandler* network_configuration_handler,
     NetworkConnectionHandler* network_connection_handler,
-    NetworkCertificateHandler* network_certificate_handler)
+    NetworkCertificateHandler* network_certificate_handler,
+    NetworkProfileHandler* network_profile_handler)
     : network_state_handler_(network_state_handler),
       network_device_handler_(network_device_handler),
       cellular_inhibitor_(cellular_inhibitor),
       cellular_esim_profile_handler_(cellular_esim_profile_handler),
       network_configuration_handler_(network_configuration_handler),
       network_connection_handler_(network_connection_handler),
-      network_certificate_handler_(network_certificate_handler) {
+      network_certificate_handler_(network_certificate_handler),
+      network_profile_handler_(network_profile_handler) {
   CHECK(network_state_handler);
 }
 
@@ -2709,6 +2713,85 @@ void CrosNetworkConfig::GetNetworkCertificates(
     user_certs.push_back(GetMojoCert(cert, mojom::CertificateType::kUserCert));
 
   std::move(callback).Run(std::move(server_cas), std::move(user_certs));
+}
+
+void CrosNetworkConfig::GetAlwaysOnVpn(GetAlwaysOnVpnCallback callback) {
+  const NetworkProfile* profile =
+      network_profile_handler_->GetDefaultUserProfile();
+  if (!profile) {
+    NET_LOG(ERROR) << "GetAlwaysOnVpn: no user profile found";
+    return;
+  }
+
+  network_profile_handler_->GetAlwaysOnVpnConfiguration(
+      profile->path,
+      base::BindOnce(&CrosNetworkConfig::OnGetAlwaysOnVpn,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void CrosNetworkConfig::OnGetAlwaysOnVpn(GetAlwaysOnVpnCallback callback,
+                                         std::string mode,
+                                         std::string service_path) {
+  mojom::AlwaysOnVpnMode vpn_mode;
+  if (mode == shill::kAlwaysOnVpnModeOff) {
+    vpn_mode = mojom::AlwaysOnVpnMode::kOff;
+  } else if (mode == shill::kAlwaysOnVpnModeBestEffort) {
+    vpn_mode = mojom::AlwaysOnVpnMode::kBestEffort;
+  } else if (mode == shill::kAlwaysOnVpnModeStrict) {
+    vpn_mode = mojom::AlwaysOnVpnMode::kStrict;
+  } else {
+    NOTREACHED() << "OnGetAlwaysOnVpn: invalid always-on VPN mode: " << mode;
+    vpn_mode = mojom::AlwaysOnVpnMode::kOff;
+  }
+
+  std::string guid;
+  const NetworkState* network =
+      network_state_handler_->GetNetworkState(service_path);
+  // |network| is expected to be null when the service has not been set (yet)
+  // or has been removed.
+  if (network) {
+    guid = network->guid();
+  }
+
+  mojom::AlwaysOnVpnPropertiesPtr properties =
+      mojom::AlwaysOnVpnProperties::New(vpn_mode, guid);
+  std::move(callback).Run(std::move(properties));
+}
+
+void CrosNetworkConfig::SetAlwaysOnVpn(
+    mojom::AlwaysOnVpnPropertiesPtr properties) {
+  const NetworkProfile* profile =
+      network_profile_handler_->GetDefaultUserProfile();
+  if (!profile) {
+    NET_LOG(ERROR) << "SetAlwaysOnVpn: no user profile found";
+    return;
+  }
+
+  std::string mode;
+  switch (properties->mode) {
+    case mojom::AlwaysOnVpnMode::kBestEffort:
+      mode = shill::kAlwaysOnVpnModeBestEffort;
+      break;
+    case mojom::AlwaysOnVpnMode::kStrict:
+      mode = shill::kAlwaysOnVpnModeStrict;
+      break;
+    case mojom::AlwaysOnVpnMode::kOff:
+      mode = shill::kAlwaysOnVpnModeOff;
+      break;
+    default:
+      NOTREACHED() << "SetAlwaysOnVpn: invalid mode: " << properties->mode;
+      return;
+  }
+  network_profile_handler_->SetAlwaysOnVpnMode(profile->path, mode);
+
+  if (properties->service_guid.empty()) {
+    return;
+  }
+  std::string service_path = GetServicePathFromGuid(properties->service_guid);
+  if (service_path.empty()) {
+    return;
+  }
+  network_profile_handler_->SetAlwaysOnVpnService(profile->path, service_path);
 }
 
 // NetworkStateHandlerObserver

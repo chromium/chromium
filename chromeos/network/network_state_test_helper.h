@@ -79,6 +79,13 @@ class NetworkStateTestHelper {
                           const std::string& key,
                           const base::Value& value);
 
+  std::string GetProfileStringProperty(const std::string& profile_path,
+                                       const std::string& key);
+
+  void SetProfileProperty(const std::string& profile_path,
+                          const std::string& key,
+                          const base::Value& value);
+
   network_config::mojom::NetworkStatePropertiesPtr
   CreateStandaloneNetworkProperties(
       const std::string& id,

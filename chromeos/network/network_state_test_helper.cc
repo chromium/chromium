@@ -176,6 +176,25 @@ void NetworkStateTestHelper::SetServiceProperty(const std::string& service_path,
   base::RunLoop().RunUntilIdle();
 }
 
+std::string NetworkStateTestHelper::GetProfileStringProperty(
+    const std::string& profile_path,
+    const std::string& key) {
+  base::Value properties = profile_test_->GetProfileProperties(profile_path);
+  std::string* result = properties.FindStringKey(key);
+  if (result)
+    return *result;
+  return std::string();
+}
+
+void NetworkStateTestHelper::SetProfileProperty(const std::string& profile_path,
+                                                const std::string& key,
+                                                const base::Value& value) {
+  ShillProfileClient::Get()->SetProperty(dbus::ObjectPath(profile_path), key,
+                                         value, base::BindOnce([] {}),
+                                         base::BindOnce(&FailErrorCallback));
+  base::RunLoop().RunUntilIdle();
+}
+
 network_config::mojom::NetworkStatePropertiesPtr
 NetworkStateTestHelper::CreateStandaloneNetworkProperties(
     const std::string& id,
