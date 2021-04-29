@@ -548,7 +548,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/toji/webvr.info.git' + '@' + 'c58ae99b9ff9e2aa4c524633519570bf33536248',
 
   'src/ios/third_party/earl_grey2/src': {
-      'url': Var('chromium_git') + '/external/github.com/google/EarlGrey.git' + '@' + 'aa4852822741a0cc59902469077376f84664b45d',
+      'url': Var('chromium_git') + '/external/github.com/google/EarlGrey.git' + '@' + 'bd4649d035b14a8ef54a686a0717122d529a4478',
       'condition': 'checkout_ios',
   },
 
