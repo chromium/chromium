@@ -71,7 +71,7 @@ static void RecordReplayLoadSymbol(void* handle, const char* name, T& function) 
   CastPointer(sym, &function);
 }
 
-static const char* gBuildId = "macOS-chromium-experimental";
+#include "../../base/record_replay_build_id.cc"
 
 static void RecordReplayAttach(int* pargc, char*** pargv) {
   const char* driver = getenv("RECORD_REPLAY_DRIVER");
@@ -129,7 +129,7 @@ static void RecordReplayAttach(int* pargc, char*** pargv) {
                          gRecordReplayRecordCommandLineArguments);
 
   if (gRecordReplayAttach) {
-    gRecordReplayAttach(dispatchAddress, gBuildId);
+    gRecordReplayAttach(dispatchAddress, recordreplay::gBuildId);
     gRecordReplayRecordCommandLineArguments(pargc, pargv);
   }
 }

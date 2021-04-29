@@ -10,6 +10,11 @@ fs.writeFileSync(
   `namespace recordreplay { char gBuildId[] = "${buildId}"; }`
 );
 
+if (currentPlatform() == "macOS") {
+  // Make sure the main executable gets rebuilt with the new build ID.
+  spawnChecked("touch", [`${__dirname}/chrome/app/chrome_exe_main_mac.cc`]);
+}
+
 spawnChecked("autoninja", ["-C", "out/Release", "chrome"], { stdio: "inherit" });
 
 function spawnChecked(cmd, args, options) {
