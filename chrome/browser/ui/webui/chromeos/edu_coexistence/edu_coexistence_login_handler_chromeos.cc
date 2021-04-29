@@ -273,7 +273,7 @@ void EduCoexistenceLoginHandler::SendInitializeEduArgs() {
   base::Value params(base::Value::Type::DICTIONARY);
 
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
-  params.SetStringKey("h1", app_locale);
+  params.SetStringKey("hl", app_locale);
 
   params.SetStringKey("url", GetEduCoexistenceURL());
 
