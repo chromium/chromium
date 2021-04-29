@@ -71,6 +71,7 @@ list(APPEND ABSL_LLVM_FLAGS
     "-Wformat-security"
     "-Wgnu-redeclared-enum"
     "-Winfinite-recursion"
+    "-Winvalid-constexpr"
     "-Wliteral-conversion"
     "-Wmissing-declarations"
     "-Woverlength-strings"

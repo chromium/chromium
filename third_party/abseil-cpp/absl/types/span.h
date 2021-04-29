@@ -243,8 +243,8 @@ class Span {
   //
   template <typename LazyT = T,
             typename = EnableIfConstView<LazyT>>
-  Span(
-      std::initializer_list<value_type> v) noexcept  // NOLINT(runtime/explicit)
+  Span(std::initializer_list<value_type> v
+           ABSL_ATTRIBUTE_LIFETIME_BOUND) noexcept  // NOLINT(runtime/explicit)
       : Span(v.begin(), v.size()) {}
 
   // Accessors

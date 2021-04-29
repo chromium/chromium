@@ -468,7 +468,7 @@ using absl::base_internal::ValgrindSlowdown;
   __sanitizer_annotate_contiguous_container(beg, end, old_mid, new_mid)
 #define ABSL_ADDRESS_SANITIZER_REDZONE(name) \
   struct {                                   \
-    char x[8] __attribute__((aligned(8)));   \
+    alignas(8) char x[8];                    \
   } name
 
 #else

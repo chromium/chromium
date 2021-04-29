@@ -817,27 +817,27 @@ inline uint128 operator-(uint128 val) {
   return MakeUint128(hi, lo);
 }
 
-inline bool operator!(uint128 val) {
+constexpr inline bool operator!(uint128 val) {
   return !Uint128High64(val) && !Uint128Low64(val);
 }
 
 // Logical operators.
 
-inline uint128 operator~(uint128 val) {
+constexpr inline uint128 operator~(uint128 val) {
   return MakeUint128(~Uint128High64(val), ~Uint128Low64(val));
 }
 
-inline uint128 operator|(uint128 lhs, uint128 rhs) {
+constexpr inline uint128 operator|(uint128 lhs, uint128 rhs) {
   return MakeUint128(Uint128High64(lhs) | Uint128High64(rhs),
                            Uint128Low64(lhs) | Uint128Low64(rhs));
 }
 
-inline uint128 operator&(uint128 lhs, uint128 rhs) {
+constexpr inline uint128 operator&(uint128 lhs, uint128 rhs) {
   return MakeUint128(Uint128High64(lhs) & Uint128High64(rhs),
                            Uint128Low64(lhs) & Uint128Low64(rhs));
 }
 
-inline uint128 operator^(uint128 lhs, uint128 rhs) {
+constexpr inline uint128 operator^(uint128 lhs, uint128 rhs) {
   return MakeUint128(Uint128High64(lhs) ^ Uint128High64(rhs),
                            Uint128Low64(lhs) ^ Uint128Low64(rhs));
 }

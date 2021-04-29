@@ -17,10 +17,49 @@
 #ifndef ABSL_STRINGS_CORD_TEST_HELPERS_H_
 #define ABSL_STRINGS_CORD_TEST_HELPERS_H_
 
+#include <cstdint>
+#include <iostream>
+
 #include "absl/strings/cord.h"
+#include "absl/strings/internal/cord_internal.h"
+#include "absl/strings/string_view.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
+
+// Cord sizes relevant for testing
+enum class TestCordSize {
+  kEmpty = 0,
+  kInlined = cord_internal::kMaxInline / 2 + 1,
+  kSmall = cord_internal::kMaxBytesToCopy / 2 + 1,
+  kMedium = cord_internal::kMaxFlatLength / 2 + 1,
+  kLarge = cord_internal::kMaxFlatLength * 4
+};
+
+// To string helper
+inline absl::string_view ToString(TestCordSize size) {
+  switch (size) {
+    case TestCordSize::kEmpty:
+      return "Empty";
+    case TestCordSize::kInlined:
+      return "Inlined";
+    case TestCordSize::kSmall:
+      return "Small";
+    case TestCordSize::kMedium:
+      return "Medium";
+    case TestCordSize::kLarge:
+      return "Large";
+  }
+  return "???";
+}
+
+// Returns the length matching the specified size
+inline size_t Length(TestCordSize size) { return static_cast<size_t>(size); }
+
+// Stream output helper
+inline std::ostream& operator<<(std::ostream& stream, TestCordSize size) {
+  return stream << ToString(size);
+}
 
 // Creates a multi-segment Cord from an iterable container of strings.  The
 // resulting Cord is guaranteed to have one segment for every string in the

@@ -1352,7 +1352,7 @@ constexpr Duration MakeDuration(int64_t hi, int64_t lo) {
 inline Duration MakePosDoubleDuration(double n) {
   const int64_t int_secs = static_cast<int64_t>(n);
   const uint32_t ticks = static_cast<uint32_t>(
-      (n - static_cast<double>(int_secs)) * kTicksPerSecond + 0.5);
+      std::round((n - static_cast<double>(int_secs)) * kTicksPerSecond));
   return ticks < kTicksPerSecond
              ? MakeDuration(int_secs, ticks)
              : MakeDuration(int_secs + 1, ticks - kTicksPerSecond);
