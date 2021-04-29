@@ -22,7 +22,7 @@
 @synthesize didWork = _didWork;
 @synthesize next = _next;
 
-- (id)init {
+- (instancetype)init {
   if ((self = [super init])) {
     [self performSelector:@selector(doWork) withObject:nil afterDelay:0];
   }

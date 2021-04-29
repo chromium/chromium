@@ -86,7 +86,7 @@ class Observer : public BrowserListObserver, public AvatarMenuObserver {
 
 @implementation ProfileMenuController
 
-- (id)initWithMainMenuItem:(NSMenuItem*)item {
+- (instancetype)initWithMainMenuItem:(NSMenuItem*)item {
   if ((self = [super init])) {
     _mainMenuItem = item;
 

@@ -24,9 +24,9 @@ const int kMinWindowHeight = 17;
 
 @implementation WindowSizeAutosaver
 
-- (id)initWithWindow:(NSWindow*)window
-         prefService:(PrefService*)prefs
-                path:(const char*)path {
+- (instancetype)initWithWindow:(NSWindow*)window
+                   prefService:(PrefService*)prefs
+                          path:(const char*)path {
   if ((self = [super init])) {
     _window = window;
     _prefService = prefs;

@@ -16,7 +16,7 @@
   HistoryMenuBridge* _bridge;  // weak; owns us
 }
 
-- (id)initWithBridge:(HistoryMenuBridge*)bridge;
+- (instancetype)initWithBridge:(HistoryMenuBridge*)bridge;
 
 // Called by any history menu item.
 - (IBAction)openHistoryMenuItem:(id)sender;

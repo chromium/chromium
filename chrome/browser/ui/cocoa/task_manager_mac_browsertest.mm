@@ -138,10 +138,8 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, TableStartsWithDefaultColumns) {
   EXPECT_EQ(0u, [[table sortDescriptors] count]);
   NSArray* tableColumns = [table tableColumns];
   for (size_t i = 0; i < kColumnsSize; ++i) {
-    EXPECT_EQ(kColumns[i].id,
-              [[[tableColumns objectAtIndex:i] identifier] intValue]);
-    EXPECT_EQ(kColumns[i].default_visibility,
-              ![[tableColumns objectAtIndex:i] isHidden]);
+    EXPECT_EQ(kColumns[i].id, [[tableColumns[i] identifier] intValue]);
+    EXPECT_EQ(kColumns[i].default_visibility, ![tableColumns[i] isHidden]);
   }
 }
 
@@ -160,10 +158,8 @@ IN_PROC_BROWSER_TEST_F(TaskManagerMacTest, ColumnsSettingsAreRestored) {
   EXPECT_EQ(0u, [[table sortDescriptors] count]);
   NSArray* tableColumns = [table tableColumns];
   for (size_t i = 0; i < kColumnsSize; ++i) {
-    EXPECT_EQ(kColumns[i].id,
-              [[[tableColumns objectAtIndex:i] identifier] intValue]);
-    EXPECT_EQ(kColumns[i].default_visibility,
-              ![[tableColumns objectAtIndex:i] isHidden]);
+    EXPECT_EQ(kColumns[i].id, [[tableColumns[i] identifier] intValue]);
+    EXPECT_EQ(kColumns[i].default_visibility, ![tableColumns[i] isHidden]);
     ToggleColumnVisibility(task_manager, kColumns[i].id);
   }
 

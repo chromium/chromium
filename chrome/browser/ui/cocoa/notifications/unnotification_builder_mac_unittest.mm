@@ -35,7 +35,7 @@ base::scoped_nsobject<UNNotificationBuilder> NewTestBuilder(
   [builder setIncognito:false];
   [builder setCreatorPid:@1];
   [builder setShowSettingsButton:NO];
-  [builder setNotificationType:[NSNumber numberWithInt:static_cast<int>(type)]];
+  [builder setNotificationType:@(static_cast<int>(type))];
   return builder;
 }
 
@@ -72,9 +72,10 @@ TEST(UNNotificationBuilderMacTest, TestNotificationNoOrigin) {
     base::scoped_nsobject<UNNotificationBuilder> builder =
         NewTestBuilder(NotificationHandler::Type::WEB_PERSISTENT);
     UNMutableNotificationContent* content = [builder buildUserNotification];
-    EXPECT_EQ("",
-              base::SysNSStringToUTF8([[content userInfo]
-                  objectForKey:notification_constants::kNotificationOrigin]));
+    EXPECT_EQ(
+        "",
+        base::SysNSStringToUTF8(
+            [content userInfo][notification_constants::kNotificationOrigin]));
   }
 }
 
@@ -84,9 +85,10 @@ TEST(UNNotificationBuilderMacTest, TestNotificationWithOrigin) {
         NewTestBuilder(NotificationHandler::Type::WEB_PERSISTENT);
     [builder setOrigin:@"example.co.uk"];
     UNMutableNotificationContent* content = [builder buildUserNotification];
-    EXPECT_EQ("example.co.uk",
-              base::SysNSStringToUTF8([[content userInfo]
-                  objectForKey:notification_constants::kNotificationOrigin]));
+    EXPECT_EQ(
+        "example.co.uk",
+        base::SysNSStringToUTF8(
+            [content userInfo][notification_constants::kNotificationOrigin]));
   }
 }
 
@@ -97,25 +99,20 @@ TEST(UNNotificationBuilderMacTest, TestNotificationUserInfo) {
     UNMutableNotificationContent* content = [builder buildUserNotification];
 
     NSDictionary* userInfo = [content userInfo];
-    EXPECT_EQ("",
-              base::SysNSStringToUTF8([userInfo
-                  objectForKey:notification_constants::kNotificationOrigin]));
+    EXPECT_EQ("", base::SysNSStringToUTF8(
+                      userInfo[notification_constants::kNotificationOrigin]));
     EXPECT_EQ("notificationId",
-              base::SysNSStringToUTF8([userInfo
-                  objectForKey:notification_constants::kNotificationId]));
-    EXPECT_EQ(
-        "profileId",
-        base::SysNSStringToUTF8([userInfo
-            objectForKey:notification_constants::kNotificationProfileId]));
+              base::SysNSStringToUTF8(
+                  userInfo[notification_constants::kNotificationId]));
+    EXPECT_EQ("profileId",
+              base::SysNSStringToUTF8(
+                  userInfo[notification_constants::kNotificationProfileId]));
     EXPECT_FALSE(
-        [[userInfo objectForKey:notification_constants::kNotificationIncognito]
-            boolValue]);
-    EXPECT_TRUE(
-        [[userInfo objectForKey:notification_constants::kNotificationCreatorPid]
-            isEqualToNumber:@1]);
-    EXPECT_TRUE(
-        [[userInfo objectForKey:notification_constants::kNotificationType]
-            isEqualToNumber:@0]);
+        [userInfo[notification_constants::kNotificationIncognito] boolValue]);
+    EXPECT_TRUE([userInfo[notification_constants::kNotificationCreatorPid]
+        isEqualToNumber:@1]);
+    EXPECT_TRUE([userInfo[notification_constants::kNotificationType]
+        isEqualToNumber:@0]);
   }
 }
 
@@ -133,24 +130,20 @@ TEST(UNNotificationBuilderMacTest, TestNotificationUserInfoNonDefaultValues) {
 
     NSDictionary* userInfo = [content userInfo];
     EXPECT_EQ("neworigin.co.uk",
-              base::SysNSStringToUTF8([userInfo
-                  objectForKey:notification_constants::kNotificationOrigin]));
+              base::SysNSStringToUTF8(
+                  userInfo[notification_constants::kNotificationOrigin]));
     EXPECT_EQ("modified id",
-              base::SysNSStringToUTF8([userInfo
-                  objectForKey:notification_constants::kNotificationId]));
-    EXPECT_EQ(
-        "new profile id",
-        base::SysNSStringToUTF8([userInfo
-            objectForKey:notification_constants::kNotificationProfileId]));
+              base::SysNSStringToUTF8(
+                  userInfo[notification_constants::kNotificationId]));
+    EXPECT_EQ("new profile id",
+              base::SysNSStringToUTF8(
+                  userInfo[notification_constants::kNotificationProfileId]));
     EXPECT_TRUE(
-        [[userInfo objectForKey:notification_constants::kNotificationIncognito]
-            boolValue]);
-    EXPECT_TRUE(
-        [[userInfo objectForKey:notification_constants::kNotificationCreatorPid]
-            isEqualToNumber:@1512]);
-    EXPECT_TRUE(
-        [[userInfo objectForKey:notification_constants::kNotificationType]
-            isEqualToNumber:@1]);
+        [userInfo[notification_constants::kNotificationIncognito] boolValue]);
+    EXPECT_TRUE([userInfo[notification_constants::kNotificationCreatorPid]
+        isEqualToNumber:@1512]);
+    EXPECT_TRUE([userInfo[notification_constants::kNotificationType]
+        isEqualToNumber:@1]);
   }
 }
 
@@ -173,25 +166,20 @@ TEST(UNNotificationBuilderMacTest, TestBuildDictionary) {
               base::SysNSStringToUTF8([content subtitle]));
 
     NSDictionary* userInfo = [content userInfo];
-    EXPECT_EQ("",
-              base::SysNSStringToUTF8([userInfo
-                  objectForKey:notification_constants::kNotificationOrigin]));
+    EXPECT_EQ("", base::SysNSStringToUTF8(
+                      userInfo[notification_constants::kNotificationOrigin]));
     EXPECT_EQ("notificationId",
-              base::SysNSStringToUTF8([userInfo
-                  objectForKey:notification_constants::kNotificationId]));
-    EXPECT_EQ(
-        "profileId",
-        base::SysNSStringToUTF8([userInfo
-            objectForKey:notification_constants::kNotificationProfileId]));
+              base::SysNSStringToUTF8(
+                  userInfo[notification_constants::kNotificationId]));
+    EXPECT_EQ("profileId",
+              base::SysNSStringToUTF8(
+                  userInfo[notification_constants::kNotificationProfileId]));
     EXPECT_FALSE(
-        [[userInfo objectForKey:notification_constants::kNotificationIncognito]
-            boolValue]);
-    EXPECT_TRUE(
-        [[userInfo objectForKey:notification_constants::kNotificationCreatorPid]
-            isEqualToNumber:@1]);
-    EXPECT_TRUE(
-        [[userInfo objectForKey:notification_constants::kNotificationType]
-            isEqualToNumber:@0]);
+        [userInfo[notification_constants::kNotificationIncognito] boolValue]);
+    EXPECT_TRUE([userInfo[notification_constants::kNotificationCreatorPid]
+        isEqualToNumber:@1]);
+    EXPECT_TRUE([userInfo[notification_constants::kNotificationType]
+        isEqualToNumber:@0]);
   }
 }
 

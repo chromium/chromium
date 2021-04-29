@@ -30,10 +30,8 @@ TEST(NotificationBuilderMacTest, TestNotificationNoButtons) {
   [builder setIncognito:false];
   [builder setCreatorPid:@1];
   [builder
-      setNotificationType:[NSNumber
-                              numberWithInteger:static_cast<int>(
-                                                    NotificationHandler::Type::
-                                                        WEB_NON_PERSISTENT)]];
+      setNotificationType:@(static_cast<int>(
+                              NotificationHandler::Type::WEB_NON_PERSISTENT))];
   [builder setShowSettingsButton:true];
 
   NSUserNotification* notification = [builder buildUserNotification];
@@ -67,11 +65,8 @@ TEST(NotificationBuilderMacTest, TestNotificationOneButton) {
   [builder setProfileId:@"profileId"];
   [builder setIncognito:false];
   [builder setCreatorPid:@1];
-  [builder
-      setNotificationType:[NSNumber
-                              numberWithInteger:static_cast<int>(
-                                                    NotificationHandler::Type::
-                                                        WEB_PERSISTENT)]];
+  [builder setNotificationType:@(static_cast<int>(
+                                   NotificationHandler::Type::WEB_PERSISTENT))];
   [builder setShowSettingsButton:true];
 
   NSUserNotification* notification = [builder buildUserNotification];
@@ -92,8 +87,8 @@ TEST(NotificationBuilderMacTest, TestNotificationOneButton) {
 
   NSArray* buttons = [notification valueForKey:@"_alternateActionButtonTitles"];
   ASSERT_EQ(2u, buttons.count);
-  EXPECT_EQ("Button1", base::SysNSStringToUTF8([buttons objectAtIndex:0]));
-  EXPECT_EQ("Settings", base::SysNSStringToUTF8([buttons objectAtIndex:1]));
+  EXPECT_EQ("Button1", base::SysNSStringToUTF8(buttons[0]));
+  EXPECT_EQ("Settings", base::SysNSStringToUTF8(buttons[1]));
 }
 
 TEST(NotificationBuilderMacTest, TestNotificationTwoButtons) {
@@ -109,11 +104,8 @@ TEST(NotificationBuilderMacTest, TestNotificationTwoButtons) {
   [builder setProfileId:@"profileId"];
   [builder setIncognito:false];
   [builder setCreatorPid:@1];
-  [builder
-      setNotificationType:[NSNumber
-                              numberWithInteger:static_cast<int>(
-                                                    NotificationHandler::Type::
-                                                        WEB_PERSISTENT)]];
+  [builder setNotificationType:@(static_cast<int>(
+                                   NotificationHandler::Type::WEB_PERSISTENT))];
   [builder setShowSettingsButton:true];
 
   NSUserNotification* notification = [builder buildUserNotification];
@@ -134,9 +126,9 @@ TEST(NotificationBuilderMacTest, TestNotificationTwoButtons) {
 
   NSArray* buttons = [notification valueForKey:@"_alternateActionButtonTitles"];
   ASSERT_EQ(3u, buttons.count);
-  EXPECT_EQ("Button1", base::SysNSStringToUTF8([buttons objectAtIndex:0]));
-  EXPECT_EQ("Button2", base::SysNSStringToUTF8([buttons objectAtIndex:1]));
-  EXPECT_EQ("Settings", base::SysNSStringToUTF8([buttons objectAtIndex:2]));
+  EXPECT_EQ("Button1", base::SysNSStringToUTF8(buttons[0]));
+  EXPECT_EQ("Button2", base::SysNSStringToUTF8(buttons[1]));
+  EXPECT_EQ("Settings", base::SysNSStringToUTF8(buttons[2]));
 }
 
 TEST(NotificationBuilderMacTest, TestNotificationExtensionNoButtons) {
@@ -151,10 +143,8 @@ TEST(NotificationBuilderMacTest, TestNotificationExtensionNoButtons) {
   [builder setProfileId:@"profileId"];
   [builder setIncognito:false];
   [builder setCreatorPid:@1];
-  [builder setNotificationType:[NSNumber
-                                   numberWithInteger:static_cast<int>(
-                                                         NotificationHandler::
-                                                             Type::EXTENSION)]];
+  [builder setNotificationType:@(static_cast<int>(
+                                   NotificationHandler::Type::EXTENSION))];
   [builder setShowSettingsButton:false];
 
   NSUserNotification* notification = [builder buildUserNotification];
@@ -180,10 +170,8 @@ TEST(NotificationBuilderMacTest, TestNotificationExtensionOneButton) {
   [builder setProfileId:@"profileId"];
   [builder setIncognito:false];
   [builder setCreatorPid:@1];
-  [builder setNotificationType:[NSNumber
-                                   numberWithInteger:static_cast<int>(
-                                                         NotificationHandler::
-                                                             Type::EXTENSION)]];
+  [builder setNotificationType:@(static_cast<int>(
+                                   NotificationHandler::Type::EXTENSION))];
   [builder setShowSettingsButton:false];
 
   NSUserNotification* notification = [builder buildUserNotification];
@@ -212,10 +200,8 @@ TEST(NotificationBuilderMacTest, TestNotificationExtensionButtons) {
   [builder setProfileId:@"profileId"];
   [builder setIncognito:false];
   [builder setCreatorPid:@1];
-  [builder setNotificationType:[NSNumber
-                                   numberWithInteger:static_cast<int>(
-                                                         NotificationHandler::
-                                                             Type::EXTENSION)]];
+  [builder setNotificationType:@(static_cast<int>(
+                                   NotificationHandler::Type::EXTENSION))];
   [builder setShowSettingsButton:false];
 
   NSUserNotification* notification = [builder buildUserNotification];
@@ -224,8 +210,8 @@ TEST(NotificationBuilderMacTest, TestNotificationExtensionButtons) {
 
   // No settings button
   ASSERT_EQ(2u, buttons.count);
-  EXPECT_EQ("Button1", base::SysNSStringToUTF8([buttons objectAtIndex:0]));
-  EXPECT_EQ("Button2", base::SysNSStringToUTF8([buttons objectAtIndex:1]));
+  EXPECT_EQ("Button1", base::SysNSStringToUTF8(buttons[0]));
+  EXPECT_EQ("Button2", base::SysNSStringToUTF8(buttons[1]));
 }
 
 TEST(NotificationBuilderMacTest, TestUserInfo) {
@@ -239,11 +225,8 @@ TEST(NotificationBuilderMacTest, TestUserInfo) {
   [builder setNotificationId:@"Notification1"];
   [builder setIncognito:true];
   [builder setCreatorPid:@1];
-  [builder
-      setNotificationType:[NSNumber
-                              numberWithInteger:static_cast<int>(
-                                                    NotificationHandler::Type::
-                                                        WEB_PERSISTENT)]];
+  [builder setNotificationType:@(static_cast<int>(
+                                   NotificationHandler::Type::WEB_PERSISTENT))];
   [builder setShowSettingsButton:true];
 
   NSUserNotification* notification = [builder buildUserNotification];
@@ -252,16 +235,16 @@ TEST(NotificationBuilderMacTest, TestUserInfo) {
   NSDictionary* userInfo = [notification userInfo];
 
   EXPECT_EQ("https://www.miguel.com",
-            base::SysNSStringToUTF8([userInfo
-                objectForKey:notification_constants::kNotificationOrigin]));
+            base::SysNSStringToUTF8(
+                userInfo[notification_constants::kNotificationOrigin]));
   EXPECT_EQ("Notification1",
-            base::SysNSStringToUTF8([userInfo
-                objectForKey:notification_constants::kNotificationId]));
+            base::SysNSStringToUTF8(
+                userInfo[notification_constants::kNotificationId]));
   EXPECT_EQ("Profile1",
-            base::SysNSStringToUTF8([userInfo
-                objectForKey:notification_constants::kNotificationProfileId]));
-  EXPECT_TRUE([[userInfo
-      objectForKey:notification_constants::kNotificationIncognito] boolValue]);
+            base::SysNSStringToUTF8(
+                userInfo[notification_constants::kNotificationProfileId]));
+  EXPECT_TRUE(
+      [userInfo[notification_constants::kNotificationIncognito] boolValue]);
 }
 
 TEST(NotificationBuilderMacTest, TestBuildDictionary) {
@@ -280,9 +263,7 @@ TEST(NotificationBuilderMacTest, TestBuildDictionary) {
     [sourceBuilder setCreatorPid:@1];
     [sourceBuilder
         setNotificationType:
-            [NSNumber
-                numberWithInteger:static_cast<int>(NotificationHandler::Type::
-                                                       WEB_NON_PERSISTENT)]];
+            @(static_cast<int>(NotificationHandler::Type::WEB_NON_PERSISTENT))];
     [sourceBuilder setShowSettingsButton:true];
 
     notificationData = [sourceBuilder buildDictionary];
@@ -307,14 +288,11 @@ TEST(NotificationBuilderMacTest, TestSetClosedFromAlert_YES) {
   [builder setClosedFromAlert:YES];
   NSDictionary* data = [builder buildDictionary];
 
-  EXPECT_NSEQ(@YES,
-              [data objectForKey:notification_constants::kNotificationIsAlert]);
-  EXPECT_NSEQ(
-      @(static_cast<int>(NotificationOperation::NOTIFICATION_CLOSE)),
-      [data objectForKey:notification_constants::kNotificationOperation]);
-  EXPECT_NSEQ(
-      @(notification_constants::kNotificationInvalidButtonIndex),
-      [data objectForKey:notification_constants::kNotificationButtonIndex]);
+  EXPECT_NSEQ(@YES, data[notification_constants::kNotificationIsAlert]);
+  EXPECT_NSEQ(@(static_cast<int>(NotificationOperation::NOTIFICATION_CLOSE)),
+              data[notification_constants::kNotificationOperation]);
+  EXPECT_NSEQ(@(notification_constants::kNotificationInvalidButtonIndex),
+              data[notification_constants::kNotificationButtonIndex]);
 }
 
 TEST(NotificationBuilderMacTest, TestSetClosedFromAlert_NO) {
@@ -325,12 +303,9 @@ TEST(NotificationBuilderMacTest, TestSetClosedFromAlert_NO) {
   [builder setClosedFromAlert:NO];
   NSDictionary* data = [builder buildDictionary];
 
-  EXPECT_NSEQ(@NO,
-              [data objectForKey:notification_constants::kNotificationIsAlert]);
-  EXPECT_NSEQ(
-      @(static_cast<int>(NotificationOperation::NOTIFICATION_CLOSE)),
-      [data objectForKey:notification_constants::kNotificationOperation]);
-  EXPECT_NSEQ(
-      @(notification_constants::kNotificationInvalidButtonIndex),
-      [data objectForKey:notification_constants::kNotificationButtonIndex]);
+  EXPECT_NSEQ(@NO, data[notification_constants::kNotificationIsAlert]);
+  EXPECT_NSEQ(@(static_cast<int>(NotificationOperation::NOTIFICATION_CLOSE)),
+              data[notification_constants::kNotificationOperation]);
+  EXPECT_NSEQ(@(notification_constants::kNotificationInvalidButtonIndex),
+              data[notification_constants::kNotificationButtonIndex]);
 }

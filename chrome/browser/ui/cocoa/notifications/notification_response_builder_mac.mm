@@ -14,32 +14,29 @@
                        fromAlert:(BOOL)fromAlert
                        dismissed:(BOOL)dismissed {
   NSString* origin =
-      [[notification userInfo]
-          objectForKey:notification_constants::kNotificationOrigin]
-          ? [[notification userInfo]
-                objectForKey:notification_constants::kNotificationOrigin]
+      [notification userInfo][notification_constants::kNotificationOrigin]
+          ? [notification userInfo][notification_constants::kNotificationOrigin]
           : @"";
-  DCHECK([[notification userInfo]
-      objectForKey:notification_constants::kNotificationId]);
-  NSString* notificationId = [[notification userInfo]
-      objectForKey:notification_constants::kNotificationId];
+  DCHECK([notification userInfo][notification_constants::kNotificationId]);
+  NSString* notificationId =
+      [notification userInfo][notification_constants::kNotificationId];
 
-  DCHECK([[notification userInfo]
-      objectForKey:notification_constants::kNotificationProfileId]);
-  NSString* profileId = [[notification userInfo]
-      objectForKey:notification_constants::kNotificationProfileId];
+  DCHECK(
+      [notification userInfo][notification_constants::kNotificationProfileId]);
+  NSString* profileId =
+      [notification userInfo][notification_constants::kNotificationProfileId];
 
-  NSNumber* creatorPid = [[notification userInfo]
-      objectForKey:notification_constants::kNotificationCreatorPid];
+  NSNumber* creatorPid =
+      [notification userInfo][notification_constants::kNotificationCreatorPid];
 
-  DCHECK([[notification userInfo]
-      objectForKey:notification_constants::kNotificationIncognito]);
-  NSNumber* incognito = [[notification userInfo]
-      objectForKey:notification_constants::kNotificationIncognito];
-  NSNumber* notificationType = [[notification userInfo]
-      objectForKey:notification_constants::kNotificationType];
-  NSNumber* hasSettingsButton = [[notification userInfo]
-      objectForKey:notification_constants::kNotificationHasSettingsButton];
+  DCHECK(
+      [notification userInfo][notification_constants::kNotificationIncognito]);
+  NSNumber* incognito =
+      [notification userInfo][notification_constants::kNotificationIncognito];
+  NSNumber* notificationType =
+      [notification userInfo][notification_constants::kNotificationType];
+  NSNumber* hasSettingsButton = [notification userInfo]
+      [notification_constants::kNotificationHasSettingsButton];
 
   // Closed notifications are not activated.
   NSUserNotificationActivationType activationType =

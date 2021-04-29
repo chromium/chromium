@@ -24,7 +24,7 @@
 
 @implementation FakeHistoryMenuController
 
-- (id)initTest {
+- (instancetype)initTest {
   if ((self = [super init])) {
     _opened[1] = NO;
     _opened[2] = NO;

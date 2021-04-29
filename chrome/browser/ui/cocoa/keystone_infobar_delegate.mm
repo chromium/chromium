@@ -156,7 +156,7 @@ bool KeystonePromotionInfoBarDelegate::Cancel() {
 - (void)updateStatus:(NSNotification*)notification {
   NSDictionary* dictionary = [notification userInfo];
   AutoupdateStatus status = static_cast<AutoupdateStatus>(
-      [[dictionary objectForKey:kAutoupdateStatusStatus] intValue]);
+      [dictionary[kAutoupdateStatusStatus] intValue]);
 
   if (status == kAutoupdateNone || status == kAutoupdateRegistering) {
     return;

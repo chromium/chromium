@@ -17,14 +17,14 @@
 @interface StatusItemController : NSObject {
   StatusIconMac* _statusIcon; // weak
 }
-- (id)initWithIcon:(StatusIconMac*)icon;
+- (instancetype)initWithIcon:(StatusIconMac*)icon;
 - (void)handleClick:(id)sender;
 
 @end // @interface StatusItemController
 
 @implementation StatusItemController
 
-- (id)initWithIcon:(StatusIconMac*)icon {
+- (instancetype)initWithIcon:(StatusIconMac*)icon {
   _statusIcon = icon;
   return self;
 }

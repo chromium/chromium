@@ -29,7 +29,7 @@ enum HistoryOverlayMode {
 }
 
 // Designated initializer.
-- (id)initForMode:(HistoryOverlayMode)mode;
+- (instancetype)initForMode:(HistoryOverlayMode)mode;
 
 // Shows the shield above |view|.
 - (void)showPanelForView:(NSView*)view;

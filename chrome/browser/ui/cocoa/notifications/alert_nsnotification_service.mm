@@ -56,11 +56,12 @@
   NSArray* deliveredNotifications = [notificationCenter deliveredNotifications];
   for (NSUserNotification* toast in deliveredNotifications) {
     NSString* toastId =
-        [toast.userInfo objectForKey:notification_constants::kNotificationId];
-    NSString* toastProfileId = [toast.userInfo
-        objectForKey:notification_constants::kNotificationProfileId];
-    BOOL toastIncognito = [[toast.userInfo
-        objectForKey:notification_constants::kNotificationIncognito] boolValue];
+        (toast.userInfo)[notification_constants::kNotificationId];
+    NSString* toastProfileId =
+        (toast.userInfo)[notification_constants::kNotificationProfileId];
+    BOOL toastIncognito =
+        [(toast.userInfo)[notification_constants::kNotificationIncognito]
+            boolValue];
 
     if ([notificationId isEqualToString:toastId] &&
         [profileId isEqualToString:toastProfileId] &&
@@ -80,10 +81,11 @@
   BOOL removedNotifications = NO;
 
   for (NSUserNotification* toast in deliveredNotifications) {
-    NSString* toastProfileId = [toast.userInfo
-        objectForKey:notification_constants::kNotificationProfileId];
-    BOOL toastIncognito = [[toast.userInfo
-        objectForKey:notification_constants::kNotificationIncognito] boolValue];
+    NSString* toastProfileId =
+        (toast.userInfo)[notification_constants::kNotificationProfileId];
+    BOOL toastIncognito =
+        [(toast.userInfo)[notification_constants::kNotificationIncognito]
+            boolValue];
 
     if ([profileId isEqualToString:toastProfileId] &&
         incognito == toastIncognito) {
@@ -111,16 +113,16 @@
   NSMutableArray* notificationIds =
       [NSMutableArray arrayWithCapacity:[deliveredNotifications count]];
   for (NSUserNotification* toast in deliveredNotifications) {
-    NSString* toastProfileId = [toast.userInfo
-        objectForKey:notification_constants::kNotificationProfileId];
-    BOOL toastIncognito = [[toast.userInfo
-        objectForKey:notification_constants::kNotificationIncognito] boolValue];
+    NSString* toastProfileId =
+        (toast.userInfo)[notification_constants::kNotificationProfileId];
+    BOOL toastIncognito =
+        [(toast.userInfo)[notification_constants::kNotificationIncognito]
+            boolValue];
 
     if ([profileId isEqualToString:toastProfileId] &&
         incognito == toastIncognito) {
       [notificationIds
-          addObject:[toast.userInfo
-                        objectForKey:notification_constants::kNotificationId]];
+          addObject:(toast.userInfo)[notification_constants::kNotificationId]];
     }
   }
   reply(notificationIds);
@@ -134,11 +136,11 @@
       [NSMutableArray arrayWithCapacity:[deliveredNotifications count]];
   for (NSUserNotification* toast in deliveredNotifications) {
     NSString* toastId =
-        [toast.userInfo objectForKey:notification_constants::kNotificationId];
-    NSString* toastProfileId = [toast.userInfo
-        objectForKey:notification_constants::kNotificationProfileId];
-    NSNumber* toastIncognito = [toast.userInfo
-        objectForKey:notification_constants::kNotificationIncognito];
+        (toast.userInfo)[notification_constants::kNotificationId];
+    NSString* toastProfileId =
+        (toast.userInfo)[notification_constants::kNotificationProfileId];
+    NSNumber* toastIncognito =
+        (toast.userInfo)[notification_constants::kNotificationIncognito];
 
     [notificationIds addObject:@{
       notification_constants::kNotificationId : toastId,

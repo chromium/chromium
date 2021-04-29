@@ -50,8 +50,9 @@ class TaskManagerMac;
 }
 
 // Creates and shows the task manager's window.
-- (id)initWithTaskManagerMac:(task_manager::TaskManagerMac*)taskManagerMac
-                  tableModel:(task_manager::TaskManagerTableModel*)tableModel;
+- (instancetype)
+    initWithTaskManagerMac:(task_manager::TaskManagerMac*)taskManagerMac
+                tableModel:(task_manager::TaskManagerTableModel*)tableModel;
 
 // Refreshes all data in the task manager table.
 - (void)reloadData;

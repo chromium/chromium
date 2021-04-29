@@ -33,7 +33,7 @@ class Observer;
 }
 
 // Designated initializer.
-- (id)initWithMainMenuItem:(NSMenuItem*)item;
+- (instancetype)initWithMainMenuItem:(NSMenuItem*)item;
 
 // Actions for the menu items.
 - (IBAction)switchToProfileFromMenu:(id)sender;

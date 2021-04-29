@@ -76,15 +76,15 @@ class AppShimMenuControllerBrowserTest
     ASSERT_EQ(initial_menu_item_count_ + kExtraTopLevelItems,
               [item_array count]);
     for (NSUInteger i = 0; i < initial_menu_item_count_; ++i)
-      EXPECT_TRUE([[item_array objectAtIndex:i] isHidden]);
-    NSMenuItem* app_menu = [item_array objectAtIndex:initial_menu_item_count_];
+      EXPECT_TRUE([item_array[i] isHidden]);
+    NSMenuItem* app_menu = item_array[initial_menu_item_count_];
     EXPECT_EQ(app->id(), base::SysNSStringToUTF8([app_menu title]));
     EXPECT_EQ(app->name(),
               base::SysNSStringToUTF8([[app_menu submenu] title]));
     for (NSUInteger i = initial_menu_item_count_;
          i < initial_menu_item_count_ + kExtraTopLevelItems;
          ++i) {
-      NSMenuItem* menu = [item_array objectAtIndex:i];
+      NSMenuItem* menu = item_array[i];
       EXPECT_GT([[menu submenu] numberOfItems], 0);
       EXPECT_FALSE([menu isHidden]);
     }
@@ -94,14 +94,13 @@ class AppShimMenuControllerBrowserTest
     NSArray* item_array = [[NSApp mainMenu] itemArray];
     EXPECT_EQ(initial_menu_item_count_, [item_array count]);
     for (NSUInteger i = 0; i < initial_menu_item_count_; ++i)
-      EXPECT_FALSE([[item_array objectAtIndex:i] isHidden]);
+      EXPECT_FALSE([item_array[i] isHidden]);
   }
 
   void CheckEditMenu(const extensions::Extension* app) const {
     const int edit_menu_index = initial_menu_item_count_ + 2;
 
-    NSMenuItem* edit_menu =
-        [[[NSApp mainMenu] itemArray] objectAtIndex:edit_menu_index];
+    NSMenuItem* edit_menu = [[NSApp mainMenu] itemArray][edit_menu_index];
     NSMenu* edit_submenu = [edit_menu submenu];
     NSMenuItem* paste_match_style_menu_item =
         [edit_submenu itemWithTag:IDC_CONTENT_CONTEXT_PASTE_AND_MATCH_STYLE];

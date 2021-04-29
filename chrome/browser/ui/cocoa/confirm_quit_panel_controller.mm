@@ -40,7 +40,7 @@ const NSTimeInterval kTimeDeltaFuzzFactor = 1.0;
 
 @implementation ConfirmQuitFrameView
 
-- (id)initWithFrame:(NSRect)frameRect {
+- (instancetype)initWithFrame:(NSRect)frameRect {
   if ((self = [super initWithFrame:frameRect])) {
     base::scoped_nsobject<NSTextField> message(
         // The frame will be fixed up when |-setMessageText:| is called.
@@ -112,15 +112,15 @@ const NSTimeInterval kTimeDeltaFuzzFactor = 1.0;
  @private
   NSApplication* _application;
 }
-- (id)initWithApplication:(NSApplication*)app
-        animationDuration:(NSTimeInterval)duration;
+- (instancetype)initWithApplication:(NSApplication*)app
+                  animationDuration:(NSTimeInterval)duration;
 @end
 
 
 @implementation FadeAllWindowsAnimation
 
-- (id)initWithApplication:(NSApplication*)app
-        animationDuration:(NSTimeInterval)duration {
+- (instancetype)initWithApplication:(NSApplication*)app
+                  animationDuration:(NSTimeInterval)duration {
   if ((self = [super initWithDuration:duration
                        animationCurve:NSAnimationLinear])) {
     _application = app;
@@ -170,7 +170,7 @@ ConfirmQuitPanelController* g_confirmQuitPanelController = nil;
   return [[g_confirmQuitPanelController retain] autorelease];
 }
 
-- (id)init {
+- (instancetype)init {
   const NSRect kWindowFrame = NSMakeRect(0, 0, 350, 70);
   base::scoped_nsobject<NSWindow> window(
       [[NSWindow alloc] initWithContentRect:kWindowFrame
@@ -299,7 +299,7 @@ ConfirmQuitPanelController* g_confirmQuitPanelController = nil;
 - (void)windowWillClose:(NSNotification*)notif {
   // Release all animations because CAAnimation retains its delegate (self),
   // which will cause a retain cycle. Break it!
-  [[self window] setAnimations:[NSDictionary dictionary]];
+  [[self window] setAnimations:@{}];
   g_confirmQuitPanelController = nil;
   [self autorelease];
 }
@@ -308,7 +308,7 @@ ConfirmQuitPanelController* g_confirmQuitPanelController = nil;
   // If a panel that is fading out is going to be reused here, make sure it
   // does not get released when the animation finishes.
   base::scoped_nsobject<ConfirmQuitPanelController> keepAlive([self retain]);
-  [[self window] setAnimations:[NSDictionary dictionary]];
+  [[self window] setAnimations:@{}];
   [[self window] center];
   [[self window] setAlphaValue:1.0];
   [super showWindow:sender];
@@ -328,7 +328,7 @@ ConfirmQuitPanelController* g_confirmQuitPanelController = nil;
   [animation setDuration:0.2];
   NSMutableDictionary* dictionary =
       [NSMutableDictionary dictionaryWithDictionary:[window animations]];
-  [dictionary setObject:animation forKey:@"alphaValue"];
+  dictionary[@"alphaValue"] = animation;
   [window setAnimations:dictionary];
   [[window animator] setAlphaValue:0.0];
 }
