@@ -92,6 +92,10 @@ class TabStripModelDelegate {
   // Returns whether some contents can be duplicated.
   virtual bool CanDuplicateContentsAt(int index) = 0;
 
+  // Returns whether tabs can be highlighted. This may return false due to tab
+  // dragging in process for instance
+  virtual bool CanHighlightTabs() = 0;
+
   // Duplicates the contents at the provided index and places it into a new tab.
   virtual void DuplicateContentsAt(int index) = 0;
 

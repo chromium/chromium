@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -4538,6 +4539,48 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestTouch,
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+namespace {
+
+class SelectTabDuringDragObserver : public TabStripModelObserver {
+ public:
+  SelectTabDuringDragObserver() = default;
+  ~SelectTabDuringDragObserver() override = default;
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override {
+    if (change.type() != TabStripModelChange::kMoved)
+      return;
+    const TabStripModelChange::Move* move = change.GetMove();
+    int index_to_select = move->to_index == 0 ? 1 : 0;
+    tab_strip_model->ToggleSelectionAt(index_to_select);
+  }
+};
+
+}  // namespace
+
+// Bug fix for crbug.com/1196309. Don't change tab selection while dragging.
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+                       SelectTabDuringDrag) {
+  TabStripModel* model = browser()->tab_strip_model();
+  TabStrip* tab_strip = GetTabStripForBrowser(browser());
+
+  SelectTabDuringDragObserver observer;
+  model->AddObserver(&observer);
+
+  AddTabsAndResetBrowser(browser(), 1);
+  ASSERT_EQ(2, model->count());
+
+  ASSERT_TRUE(PressInput(GetCenterInScreenCoordinates(tab_strip->tab_at(0))));
+  ASSERT_TRUE(DragInputTo(GetCenterInScreenCoordinates(tab_strip->tab_at(1))));
+  {
+    gfx::Rect tab_bounds = tab_strip->tab_at(1)->GetLocalBounds();
+    views::View::ConvertRectToScreen(tab_strip->tab_at(1), &tab_bounds);
+    ASSERT_TRUE(DragInputTo(tab_bounds.right_center()));
+  }
+  ASSERT_TRUE(ReleaseInput());
+}
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 INSTANTIATE_TEST_SUITE_P(TabDragging,
