@@ -1612,14 +1612,6 @@ config("default_warnings") {
           "-Wno-non-c-typedef-for-linkage",
         ]
 
-        if (llvm_force_head_revision) {
-          # TODO(https://crbug.com/1203071): Clean up and enable.
-          cflags += [
-            "-Wno-unused-but-set-parameter",
-            "-Wno-unused-but-set-variable",
-          ]
-        }
-
         cflags_c += [
           # TODO(https://crbug.com/995993): Clean up and enable.
           "-Wno-implicit-fallthrough",
