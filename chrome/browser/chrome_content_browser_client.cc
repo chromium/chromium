@@ -840,14 +840,14 @@ bool HandleNewTabPageLocationOverride(
 }
 
 #if !defined(OS_ANDROID)
-// Check if the current url is whitelisted based on a list of whitelisted urls.
-bool IsURLWhitelisted(const GURL& current_url,
-                      base::Value::ConstListView whitelisted_urls) {
+// Check if the current url is allowlisted based on a list of allowlisted urls.
+bool IsURLAllowlisted(const GURL& current_url,
+                      base::Value::ConstListView allowlisted_urls) {
   // Only check on HTTP and HTTPS pages.
   if (!current_url.SchemeIsHTTPOrHTTPS())
     return false;
 
-  for (auto const& value : whitelisted_urls) {
+  for (auto const& value : allowlisted_urls) {
     ContentSettingsPattern pattern =
         ContentSettingsPattern::FromString(value.GetString());
     if (pattern == ContentSettingsPattern::Wildcard() || !pattern.IsValid())
@@ -873,12 +873,12 @@ bool IsAutoplayAllowedByPolicy(content::WebContents* contents,
   if (!contents)
     return false;
 
-  // Check if the current URL matches a URL pattern on the whitelist.
-  const base::ListValue* autoplay_whitelist =
+  // Check if the current URL matches a URL pattern on the allowlist.
+  const base::ListValue* autoplay_allowlist =
       prefs->GetList(prefs::kAutoplayWhitelist);
-  return autoplay_whitelist &&
+  return autoplay_allowlist &&
          prefs->IsManagedPreference(prefs::kAutoplayWhitelist) &&
-         IsURLWhitelisted(contents->GetURL(), autoplay_whitelist->GetList());
+         IsURLAllowlisted(contents->GetURL(), autoplay_allowlist->GetList());
 }
 #endif
 
@@ -1129,21 +1129,21 @@ void LaunchURL(const GURL& url,
       protocol_handler_registry->IsHandledProtocol(url.scheme()))
     return;
 
-  bool is_whitelisted = false;
+  bool is_allowlisted = false;
   PolicyBlocklistService* service =
       PolicyBlocklistFactory::GetForBrowserContext(
           web_contents->GetBrowserContext());
   if (ShouldHonorPolicies() && service) {
     const policy::URLBlocklist::URLBlocklistState url_state =
         service->GetURLBlocklistState(url);
-    is_whitelisted =
+    is_allowlisted =
         url_state == policy::URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST;
   }
 
-  // If the URL is in whitelist, we launch it without asking the user and
-  // without any additional security checks. Since the URL is whitelisted,
+  // If the URL is in allowlist, we launch it without asking the user and
+  // without any additional security checks. Since the URL is allowlisted,
   // we assume it can be executed.
-  if (is_whitelisted) {
+  if (is_allowlisted) {
     ExternalProtocolHandler::LaunchUrlWithoutSecurityCheck(url, web_contents);
   } else {
     ExternalProtocolHandler::LaunchUrl(
@@ -4468,9 +4468,9 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
       static_cast<ChromeNavigationUIData*>(navigation_ui_data);
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  bool matches_enterprise_whitelist = safe_browsing::IsURLAllowlistedByPolicy(
+  bool matches_enterprise_allowlist = safe_browsing::IsURLAllowlistedByPolicy(
       request.url, *profile->GetPrefs());
-  if (!matches_enterprise_whitelist) {
+  if (!matches_enterprise_allowlist) {
 #if BUILDFLAG(SAFE_BROWSING_DB_LOCAL)
     auto* connectors_service =
         enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
