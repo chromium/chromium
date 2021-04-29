@@ -23,6 +23,10 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/service/display/record_replay_render.h"
 
+namespace viz {
+  extern void RecordReplayAssertSharedQuadContents(const SharedQuadState* state);
+}
+
 namespace cc {
 namespace mojo_embedder {
 
@@ -121,6 +125,17 @@ void AsyncLayerTreeFrameSink::SetLocalSurfaceId(
   local_surface_id_ = local_surface_id;
 }
 
+static void RecordReplayAssertCompositorFrameContents(const viz::CompositorFrame& frame) {
+  recordreplay::Assert("AssertCompositorFrameContents Start %lu", frame.render_pass_list.size());
+  for (const auto& render_pass : frame.render_pass_list) {
+    for (const viz::DrawQuad* quad : render_pass->quad_list) {
+      if (quad->shared_quad_state) {
+        RecordReplayAssertSharedQuadContents(quad->shared_quad_state);
+      }
+    }
+  }
+}
+
 void AsyncLayerTreeFrameSink::SubmitCompositorFrame(
     viz::CompositorFrame frame,
     bool hit_test_data_changed,
@@ -211,6 +226,8 @@ void AsyncLayerTreeFrameSink::SubmitCompositorFrame(
   }
 
   recordreplay::Assert("AsyncLayerTreeFrameSink::SubmitCompositorFrame #2");
+
+  RecordReplayAssertCompositorFrameContents(frame);
 
   compositor_frame_sink_ptr_->SubmitCompositorFrame(
       local_surface_id_, std::move(frame), std::move(hit_test_region_list), 0);
