@@ -14,10 +14,10 @@
 
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioplugininterface.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "device/gamepad/abstract_haptic_gamepad.h"
+#include "device/gamepad/gamepad_id_list.h"
 #include "device/gamepad/public/mojom/gamepad.mojom-forward.h"
 
 struct IOUSBDeviceStruct320;
@@ -27,28 +27,6 @@ namespace device {
 
 class XboxControllerMac final : public AbstractHapticGamepad {
  public:
-  static const uint16_t kVendorMicrosoft = 0x045e;
-  static const uint16_t kProductXbox360Controller = 0x028e;
-  static const uint16_t kProductXboxOneController2013 = 0x02d1;
-  static const uint16_t kProductXboxOneController2015 = 0x02dd;
-  static const uint16_t kProductXboxOneEliteController = 0x02e3;
-  static const uint16_t kProductXboxOneSController = 0x02ea;
-  static const uint16_t kProductXboxOneEliteController2 = 0x0b00;
-  static const uint16_t kProductXboxAdaptiveController = 0x0b0a;
-  static const uint16_t kProductXboxSeriesXController = 0x0b12;
-
-  enum ControllerType {
-    UNKNOWN_CONTROLLER,
-    XBOX_360_CONTROLLER,
-    XBOX_ONE_CONTROLLER_2013,
-    XBOX_ONE_CONTROLLER_2015,
-    XBOX_ONE_ELITE_CONTROLLER,
-    XBOX_ONE_ELITE_CONTROLLER_2,
-    XBOX_ONE_S_CONTROLLER,
-    XBOX_ADAPTIVE_CONTROLLER,
-    XBOX_SERIES_X_CONTROLLER,
-  };
-
   enum LEDPattern {
     LED_OFF = 0,
 
@@ -107,6 +85,8 @@ class XboxControllerMac final : public AbstractHapticGamepad {
   };
 
   explicit XboxControllerMac(Delegate* delegate);
+  XboxControllerMac(const XboxControllerMac& entry) = delete;
+  XboxControllerMac& operator=(const XboxControllerMac& entry) = delete;
   ~XboxControllerMac() override;
 
   // Open the Xbox controller represented by |service| and perform any necessary
@@ -126,12 +106,12 @@ class XboxControllerMac final : public AbstractHapticGamepad {
   void SetVibration(double strong_magnitude, double weak_magnitude) override;
   base::WeakPtr<AbstractHapticGamepad> GetWeakPtr() override;
 
-  UInt32 location_id() { return location_id_; }
-  uint16_t GetVendorId() const;
-  uint16_t GetProductId() const;
-  ControllerType GetControllerType() const;
-  std::string GetControllerTypeString() const;
-  std::string GetIdString() const;
+  uint32_t location_id() const { return location_id_; }
+  GamepadId gamepad_id() const { return gamepad_id_; }
+  XInputType xinput_type() const { return xinput_type_; }
+  uint16_t vendor_id() const { return vendor_id_; }
+  uint16_t product_id() const { return product_id_; }
+  std::string product_name() const { return product_name_; }
   bool SupportsVibration() const;
 
  private:
@@ -209,19 +189,22 @@ class XboxControllerMac final : public AbstractHapticGamepad {
   // LED_NUM_PATTERNS if unknown.
   LEDPattern led_pattern_ = LED_NUM_PATTERNS;
 
-  UInt32 location_id_ = 0;
+  uint32_t location_id_ = 0;
 
   Delegate* delegate_ = nullptr;
 
-  ControllerType controller_type_ = UNKNOWN_CONTROLLER;
+  XInputType xinput_type_ = kXInputTypeNone;
+  GamepadId gamepad_id_ = GamepadId::kUnknownGamepad;
+  uint16_t vendor_id_ = 0;
+  uint16_t product_id_ = 0;
+  std::string product_name_;
+
   int read_endpoint_ = 0;
   int control_endpoint_ = 0;
 
   uint8_t counter_ = 0;
 
   base::WeakPtrFactory<XboxControllerMac> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(XboxControllerMac);
 };
 
 }  // namespace device

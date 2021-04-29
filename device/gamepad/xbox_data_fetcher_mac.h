@@ -15,7 +15,6 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/mac/scoped_ionotificationportref.h"
 #include "base/mac/scoped_ioobject.h"
-#include "base/macros.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/xbox_controller_mac.h"
 
@@ -29,6 +28,8 @@ class XboxDataFetcher : public GamepadDataFetcher,
       Factory;
 
   XboxDataFetcher();
+  XboxDataFetcher(const XboxDataFetcher& entry) = delete;
+  XboxDataFetcher& operator=(const XboxDataFetcher& entry) = delete;
   ~XboxDataFetcher() override;
 
   GamepadSource source() override;
@@ -51,6 +52,8 @@ class XboxDataFetcher : public GamepadDataFetcher,
   struct PendingController {
    public:
     PendingController(XboxDataFetcher*, std::unique_ptr<XboxControllerMac>);
+    PendingController(const PendingController& entry);
+    PendingController& operator=(const PendingController& entry);
     ~PendingController();
 
     XboxDataFetcher* fetcher;
@@ -67,11 +70,7 @@ class XboxDataFetcher : public GamepadDataFetcher,
 
   bool TryOpenDevice(io_service_t iterator);
   bool RegisterForNotifications();
-  bool RegisterForDeviceNotifications(
-      int vendor_id,
-      int product_id,
-      base::mac::ScopedIOObject<io_iterator_t>* added_iter,
-      base::mac::ScopedIOObject<io_iterator_t>* removed_iter);
+  bool RegisterForDeviceNotifications(int vendor_id, int product_id);
   bool RegisterForInterestNotifications(io_service_t service,
                                         PendingController* pending);
   void PendingControllerBecameAvailable(io_service_t service,
@@ -105,25 +104,12 @@ class XboxDataFetcher : public GamepadDataFetcher,
   // do need to maintain a reference to it so we can invalidate it.
   CFRunLoopSourceRef source_ = nullptr;
   base::mac::ScopedIONotificationPortRef port_;
-  base::mac::ScopedIOObject<io_iterator_t> xbox_360_device_added_iter_;
-  base::mac::ScopedIOObject<io_iterator_t> xbox_360_device_removed_iter_;
-  base::mac::ScopedIOObject<io_iterator_t> xbox_one_2013_device_added_iter_;
-  base::mac::ScopedIOObject<io_iterator_t> xbox_one_2013_device_removed_iter_;
-  base::mac::ScopedIOObject<io_iterator_t> xbox_one_2015_device_added_iter_;
-  base::mac::ScopedIOObject<io_iterator_t> xbox_one_2015_device_removed_iter_;
-  base::mac::ScopedIOObject<io_iterator_t> xbox_one_elite_device_added_iter_;
-  base::mac::ScopedIOObject<io_iterator_t> xbox_one_elite_device_removed_iter_;
-  base::mac::ScopedIOObject<io_iterator_t> xbox_one_elite_2_device_added_iter_;
-  base::mac::ScopedIOObject<io_iterator_t>
-      xbox_one_elite_2_device_removed_iter_;
-  base::mac::ScopedIOObject<io_iterator_t> xbox_one_s_device_added_iter_;
-  base::mac::ScopedIOObject<io_iterator_t> xbox_one_s_device_removed_iter_;
-  base::mac::ScopedIOObject<io_iterator_t> xbox_series_x_device_added_iter_;
-  base::mac::ScopedIOObject<io_iterator_t> xbox_series_x_device_removed_iter_;
-  base::mac::ScopedIOObject<io_iterator_t> xbox_adaptive_device_added_iter_;
-  base::mac::ScopedIOObject<io_iterator_t> xbox_adaptive_device_removed_iter_;
 
-  DISALLOW_COPY_AND_ASSIGN(XboxDataFetcher);
+  // Iterators returned by calls to IOServiceAddMatchingNotification for
+  // kIOFirstMatchNotification (connection) and kIOTerminatedNotification
+  // (disconnection) events. These iterators are not referenced directly but
+  // must be kept alive in order to continue to receive notifications.
+  std::vector<base::mac::ScopedIOObject<io_iterator_t>> device_event_iterators_;
 };
 
 }  // namespace device

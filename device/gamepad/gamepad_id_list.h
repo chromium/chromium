@@ -36,6 +36,7 @@ enum class GamepadId : uint32_t {
   // Fake IDs for devices which report as 0x0000 0x0000
   kPowerALicPro = 0x0000ff00,
   // ID values for supported devices.
+  kAmazonProduct041a = 0x1949041a,
   kAsusTekProduct4500 = 0x0b054500,
   kBroadcomProduct8502 = 0x0a5c8502,
   kDragonRiseProduct0006 = 0x00790006,
@@ -109,12 +110,18 @@ class DEVICE_GAMEPAD_EXPORT GamepadIdList {
   // Returns a singleton instance of the GamepadId list.
   static GamepadIdList& Get();
 
+  GamepadIdList(const GamepadIdList& entry) = delete;
+  GamepadIdList& operator=(const GamepadIdList& entry) = delete;
+
   // Returns a GamepadId value suitable for identifying a specific model of
   // gamepad. If the gamepad is not contained in the list of known gamepads,
   // returns kUnknownGamepad.
   GamepadId GetGamepadId(base::StringPiece product_name,
                          uint16_t vendor_id,
                          uint16_t product_id) const;
+
+  std::pair<uint16_t, uint16_t> GetDeviceIdsFromGamepadId(
+      GamepadId gamepad_id) const;
 
   // Return the XInput flavor (Xbox, Xbox 360, or Xbox One) for the device with
   // the specified |vendor_id| and |product_id|, or kXInputTypeNone if the
@@ -128,8 +135,6 @@ class DEVICE_GAMEPAD_EXPORT GamepadIdList {
  private:
   friend base::LazyInstanceTraitsBase<GamepadIdList>;
   GamepadIdList();
-
-  DISALLOW_COPY_AND_ASSIGN(GamepadIdList);
 };
 
 }  // namespace device

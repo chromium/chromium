@@ -468,6 +468,7 @@ constexpr struct GamepadInfo {
     {0x18d1, 0x9400, kXInputTypeNone},
     // Lab126, Inc.
     {0x1949, 0x0402, kXInputTypeNone},
+    {0x1949, 0x041a, kXInputTypeXbox360},
     // Gampaq Co.Ltd
     {0x19fa, 0x0607, kXInputTypeNone},
     // ACRUX
@@ -669,6 +670,26 @@ GamepadId GamepadIdList::GetGamepadId(base::StringPiece product_name,
     return GamepadId::kPowerALicPro;
   }
   return GamepadId::kUnknownGamepad;
+}
+
+std::pair<uint16_t, uint16_t> GamepadIdList::GetDeviceIdsFromGamepadId(
+    GamepadId gamepad_id) const {
+  // For most devices, the vendor/product ID pair is unique to a single gamepad
+  // model. The GamepadId for these devices contains the 16-bit vendor and
+  // product IDs packed into a 32-bit value. Some devices use duplicate or
+  // invalid vendor and product IDs and are assigned "fake" GamepadIds that are
+  // not derived from the vendor and product IDs.
+
+  // Handle devices that have been assigned fake GamepadId values.
+  if (gamepad_id == GamepadId::kPowerALicPro)
+    return {0, 0};
+
+  // Handle devices that use packed vendor/product GamepadId values.
+  auto vendor_and_product = static_cast<uint32_t>(gamepad_id);
+  const uint16_t vendor_id = vendor_and_product >> 16;
+  const uint16_t product_id = vendor_and_product & 0xffff;
+  DCHECK(GetGamepadInfo(vendor_id, product_id));
+  return {vendor_id, product_id};
 }
 
 std::vector<std::tuple<uint16_t, uint16_t, XInputType>>

@@ -22,9 +22,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/sequenced_task_runner.h"
-#include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "device/gamepad/gamepad_id_list.h"
 #include "device/gamepad/gamepad_uma.h"
 
 namespace device {
@@ -299,46 +297,13 @@ void NormalizeXboxOneButtonData(const XboxOneButtonData& data,
                 &normalized_data->axes[2], &normalized_data->axes[3]);
 }
 
-XboxControllerMac::ControllerType ControllerTypeFromIds(uint16_t vendor_id,
-                                                        uint16_t product_id) {
-  if (vendor_id == XboxControllerMac::kVendorMicrosoft) {
-    switch (product_id) {
-      case XboxControllerMac::kProductXbox360Controller:
-        return XboxControllerMac::XBOX_360_CONTROLLER;
-      case XboxControllerMac::kProductXboxOneController2013:
-        return XboxControllerMac::XBOX_ONE_CONTROLLER_2013;
-      case XboxControllerMac::kProductXboxOneController2015:
-        return XboxControllerMac::XBOX_ONE_CONTROLLER_2015;
-      case XboxControllerMac::kProductXboxOneEliteController:
-        return XboxControllerMac::XBOX_ONE_ELITE_CONTROLLER;
-      case XboxControllerMac::kProductXboxOneEliteController2:
-        return XboxControllerMac::XBOX_ONE_ELITE_CONTROLLER_2;
-      case XboxControllerMac::kProductXboxOneSController:
-        return XboxControllerMac::XBOX_ONE_S_CONTROLLER;
-      case XboxControllerMac::kProductXboxSeriesXController:
-        return XboxControllerMac::XBOX_SERIES_X_CONTROLLER;
-      case XboxControllerMac::kProductXboxAdaptiveController:
-        return XboxControllerMac::XBOX_ADAPTIVE_CONTROLLER;
-      default:
-        break;
-    }
-  }
-  return XboxControllerMac::UNKNOWN_CONTROLLER;
-}
+std::string GetDeviceName(io_service_t service) {
+  io_name_t device_name;
+  kern_return_t kr = IORegistryEntryGetName(service, device_name);
+  if (kr != KERN_SUCCESS)
+    return "Unknown Gamepad";
 
-bool ControllerNeedsXboxOneInit(XboxControllerMac::ControllerType type) {
-  switch (type) {
-    case XboxControllerMac::XBOX_ONE_CONTROLLER_2013:
-    case XboxControllerMac::XBOX_ONE_CONTROLLER_2015:
-    case XboxControllerMac::XBOX_ONE_ELITE_CONTROLLER:
-    case XboxControllerMac::XBOX_ONE_ELITE_CONTROLLER_2:
-    case XboxControllerMac::XBOX_ONE_S_CONTROLLER:
-    case XboxControllerMac::XBOX_SERIES_X_CONTROLLER:
-    case XboxControllerMac::XBOX_ADAPTIVE_CONTROLLER:
-      return true;
-    default:
-      return false;
-  }
+  return std::string(device_name);
 }
 
 }  // namespace
@@ -368,20 +333,18 @@ double XboxControllerMac::GetMaxEffectDurationMillis() {
 
 void XboxControllerMac::SetVibration(double strong_magnitude,
                                      double weak_magnitude) {
+  if (!SupportsVibration())
+    return;
+
   // Clamp magnitudes to [0,1]
   strong_magnitude =
       std::max<double>(0.0, std::min<double>(strong_magnitude, 1.0));
   weak_magnitude = std::max<double>(0.0, std::min<double>(weak_magnitude, 1.0));
 
-  if (controller_type_ == XBOX_360_CONTROLLER) {
+  if (xinput_type_ == kXInputTypeXbox360) {
     WriteXbox360Rumble(static_cast<uint8_t>(strong_magnitude * 255.0),
                        static_cast<uint8_t>(weak_magnitude * 255.0));
-  } else if (controller_type_ == XBOX_ONE_CONTROLLER_2013 ||
-             controller_type_ == XBOX_ONE_CONTROLLER_2015 ||
-             controller_type_ == XBOX_ONE_ELITE_CONTROLLER ||
-             controller_type_ == XBOX_ONE_ELITE_CONTROLLER_2 ||
-             controller_type_ == XBOX_ONE_S_CONTROLLER ||
-             controller_type_ == XBOX_SERIES_X_CONTROLLER) {
+  } else if (xinput_type_ == kXInputTypeXboxOne) {
     WriteXboxOneRumble(static_cast<uint8_t>(strong_magnitude * 255.0),
                        static_cast<uint8_t>(weak_magnitude * 255.0));
   }
@@ -404,33 +367,48 @@ XboxControllerMac::OpenDeviceResult XboxControllerMac::OpenDevice(
   if (!SUCCEEDED(res) || !device_)
     return OPEN_FAILED;
 
-  uint16_t vendor_id;
-  kr = (*device_)->GetDeviceVendor(device_, &vendor_id);
+  kr = (*device_)->GetDeviceVendor(device_, &vendor_id_);
   if (kr != KERN_SUCCESS)
     return OPEN_FAILED;
 
-  uint16_t product_id;
-  kr = (*device_)->GetDeviceProduct(device_, &product_id);
+  kr = (*device_)->GetDeviceProduct(device_, &product_id_);
   if (kr != KERN_SUCCESS)
     return OPEN_FAILED;
 
   // Record a connected XInput gamepad. Non-XInput devices are recorded
   // elsewhere.
-  DCHECK_NE(kXInputTypeNone,
-            GamepadIdList::Get().GetXInputType(vendor_id, product_id));
-  GamepadId gamepad_id = GamepadIdList::Get().GetGamepadId(
-      base::StringPiece(), vendor_id, product_id);
-  RecordConnectedGamepad(gamepad_id);
+  xinput_type_ = GamepadIdList::Get().GetXInputType(vendor_id_, product_id_);
+  DCHECK_NE(xinput_type_, kXInputTypeNone);
+  gamepad_id_ = GamepadIdList::Get().GetGamepadId(base::StringPiece(),
+                                                  vendor_id_, product_id_);
+  RecordConnectedGamepad(gamepad_id_);
 
-  // Only genuine Microsoft Xbox, Xbox 360, and Xbox One devices are supported.
-  if (vendor_id != kVendorMicrosoft)
-    return OPEN_FAILED;
-
-  controller_type_ = ControllerTypeFromIds(vendor_id, product_id);
+  // Get the product name. Use hard-coded strings for older devices to avoid
+  // breaking applications that expect these strings. New devices should use
+  // the product name reported by the device.
+  switch (gamepad_id_) {
+    case GamepadId::kMicrosoftProduct028e:  // Xbox 360
+      product_name_ = "Xbox 360 Controller";
+      break;
+    case GamepadId::kMicrosoftProduct02d1:  // Xbox One
+    case GamepadId::kMicrosoftProduct02dd:  // Xbox One, 2015 firmware
+    case GamepadId::kMicrosoftProduct02e3:  // Xbox One Elite
+    case GamepadId::kMicrosoftProduct0b00:  // Xbox One Elite v2
+    case GamepadId::kMicrosoftProduct02ea:  // Xbox One S
+    case GamepadId::kMicrosoftProduct0b0a:  // Xbox Adaptive
+      product_name_ = "Xbox One Controller";
+      break;
+    case GamepadId::kMicrosoftProduct0b12:  // Xbox Series X
+      product_name_ = "Xbox Series X Controller";
+      break;
+    default:
+      product_name_ = GetDeviceName(service);
+      break;
+  }
 
   IOUSBFindInterfaceRequest request;
-  switch (controller_type_) {
-    case XBOX_360_CONTROLLER:
+  switch (xinput_type_) {
+    case kXInputTypeXbox360:
       read_endpoint_ = kXbox360ReadEndpoint;
       control_endpoint_ = kXbox360ControlEndpoint;
       request.bInterfaceClass = 255;
@@ -438,13 +416,7 @@ XboxControllerMac::OpenDeviceResult XboxControllerMac::OpenDevice(
       request.bInterfaceProtocol = 1;
       request.bAlternateSetting = kIOUSBFindInterfaceDontCare;
       break;
-    case XBOX_ONE_CONTROLLER_2013:
-    case XBOX_ONE_CONTROLLER_2015:
-    case XBOX_ONE_ELITE_CONTROLLER:
-    case XBOX_ONE_ELITE_CONTROLLER_2:
-    case XBOX_ONE_S_CONTROLLER:
-    case XBOX_SERIES_X_CONTROLLER:
-    case XBOX_ADAPTIVE_CONTROLLER:
+    case kXInputTypeXboxOne:
       read_endpoint_ = kXboxOneReadEndpoint;
       control_endpoint_ = kXboxOneControlEndpoint;
       request.bInterfaceClass = 255;
@@ -577,7 +549,8 @@ XboxControllerMac::OpenDeviceResult XboxControllerMac::OpenDevice(
       if (direction != kUSBOut)
         return OPEN_FAILED;
 
-      if (ControllerNeedsXboxOneInit(controller_type_) && !WriteXboxOneInit())
+      // Xbox One controllers require an initialization packet.
+      if (xinput_type_ == kXInputTypeXboxOne && !WriteXboxOneInit())
         return OPEN_FAILED;
     }
   }
@@ -612,76 +585,9 @@ void XboxControllerMac::SetLEDPattern(LEDPattern pattern) {
   }
 }
 
-uint16_t XboxControllerMac::GetVendorId() const {
-  switch (controller_type_) {
-    case XBOX_360_CONTROLLER:
-    case XBOX_ONE_CONTROLLER_2013:
-    case XBOX_ONE_CONTROLLER_2015:
-    case XBOX_ONE_ELITE_CONTROLLER:
-    case XBOX_ONE_ELITE_CONTROLLER_2:
-    case XBOX_ONE_S_CONTROLLER:
-    case XBOX_SERIES_X_CONTROLLER:
-    case XBOX_ADAPTIVE_CONTROLLER:
-      return kVendorMicrosoft;
-    default:
-      return 0;
-  }
-}
-
-uint16_t XboxControllerMac::GetProductId() const {
-  switch (controller_type_) {
-    case XBOX_360_CONTROLLER:
-      return kProductXbox360Controller;
-    case XBOX_ONE_CONTROLLER_2013:
-      return kProductXboxOneController2013;
-    case XBOX_ONE_CONTROLLER_2015:
-      return kProductXboxOneController2015;
-    case XBOX_ONE_ELITE_CONTROLLER:
-      return kProductXboxOneEliteController;
-    case XBOX_ONE_ELITE_CONTROLLER_2:
-      return kProductXboxOneEliteController2;
-    case XBOX_ONE_S_CONTROLLER:
-      return kProductXboxOneSController;
-    case XBOX_SERIES_X_CONTROLLER:
-      return kProductXboxSeriesXController;
-    case XBOX_ADAPTIVE_CONTROLLER:
-      return kProductXboxAdaptiveController;
-    default:
-      return 0;
-  }
-}
-
-XboxControllerMac::ControllerType XboxControllerMac::GetControllerType() const {
-  return controller_type_;
-}
-
-std::string XboxControllerMac::GetControllerTypeString() const {
-  switch (controller_type_) {
-    case XBOX_360_CONTROLLER:
-      return "Xbox 360 Controller";
-    case XBOX_ONE_CONTROLLER_2013:
-    case XBOX_ONE_CONTROLLER_2015:
-    case XBOX_ONE_ELITE_CONTROLLER:
-    case XBOX_ONE_ELITE_CONTROLLER_2:
-    case XBOX_ONE_S_CONTROLLER:
-    case XBOX_ADAPTIVE_CONTROLLER:
-      return "Xbox One Controller";
-    case XBOX_SERIES_X_CONTROLLER:
-      return "Xbox Series X Controller";
-    default:
-      return "Unrecognized Controller";
-  }
-}
-
-std::string XboxControllerMac::GetIdString() const {
-  return base::StringPrintf("%s (STANDARD GAMEPAD Vendor: %04x Product: %04x)",
-                            GetControllerTypeString().c_str(), GetVendorId(),
-                            GetProductId());
-}
-
 bool XboxControllerMac::SupportsVibration() const {
   // The Xbox Adaptive Controller has no vibration actuators.
-  return controller_type_ != XBOX_ADAPTIVE_CONTROLLER;
+  return gamepad_id_ != GamepadId::kMicrosoftProduct0b0a;
 }
 
 // static
@@ -711,9 +617,10 @@ void XboxControllerMac::GotData(void* context, IOReturn result, void* arg0) {
     return;
   }
 
-  if (controller->GetControllerType() == XBOX_360_CONTROLLER)
+  auto xinput_type = controller->xinput_type();
+  if (xinput_type == kXInputTypeXbox360)
     controller->ProcessXbox360Packet(bytes_read);
-  else
+  else if (xinput_type == kXInputTypeXboxOne)
     controller->ProcessXboxOnePacket(bytes_read);
 
   // Queue up another read.
@@ -789,7 +696,9 @@ void XboxControllerMac::ProcessXboxOnePacket(size_t length) {
         return;
       }
       Data normalized_data;
-      if (controller_type_ == XboxControllerMac::XBOX_SERIES_X_CONTROLLER) {
+      if (gamepad_id_ == GamepadId::kMicrosoftProduct0b12) {
+        // Xbox Series X received a firmware update that modified the input
+        // report. Distinguish the old and new reports by size.
         if (length == kXboxSeriesXOldFirmwareButtonDataBytes) {
           XboxSeriesXOldFirmwareButtonData* data =
               reinterpret_cast<XboxSeriesXOldFirmwareButtonData*>(buffer);
