@@ -104,6 +104,15 @@ bool MicroarchitectureHasCyclesPPPEvent(const std::string& uarch) {
          uarch == "Broadwell" || uarch == "Kabylake" || uarch == "Tigerlake";
 }
 
+// Returns if a kernel release properly flushes PEBS on a context switch. The
+// fix landed in kernel 5.12 upstream, but it was backported to CrOS kernels
+// 4.14, 4.19, 5.4 and 5.10.
+bool KernelReleaseHasPEBSFlushingFix(const std::string& release) {
+  int32_t major, minor, bugfix;
+  ExtractVersionNumbers(release, &major, &minor, &bugfix);
+  return major >= 5 || (major == 4 && minor >= 14);
+}
+
 // Returns if a micro-architecture supports LBR callgraph profiling.
 bool MicroarchitectureHasLBRCallgraph(const std::string& uarch) {
   return uarch == "Haswell" || uarch == "Broadwell" || uarch == "Skylake" ||
@@ -120,9 +129,17 @@ bool KernelReleaseHasLBRCallgraph(const std::string& release) {
 // Hopefully we never need a space in a command argument.
 const char kPerfCommandDelimiter[] = " ";
 
-// Collect precise=3 (:ppp) cycle events on microarchitectures that support it.
+// Collect precise=3 (:ppp) cycle events on microarchitectures and kernels that
+// support it.
+const char kPerfCyclesPPPCmd[] = "perf record -a -e cycles:ppp -c 1000003";
+
 const char kPerfFPCallgraphPPPCmd[] =
     "perf record -a -e cycles:ppp -g -c 4000037";
+
+const char kPerfLBRCallgraphPPPCmd[] =
+    "perf record -a -e cycles:ppp -c 4000037 --call-graph lbr";
+
+const char kPerfCyclesPPPHGCmd[] = "perf record -a -e cycles:pppHG -c 1000003";
 
 const char kPerfFPCallgraphPPPHGCmd[] =
     "perf record -a -e cycles:pppHG -g -c 4000037";
@@ -210,8 +227,18 @@ const std::vector<RandomSelector::WeightAndValue> GetDefaultCommands_x86_64(
   }
   if (MicroarchitectureHasCyclesPPPEvent(cpu_uarch)) {
     fp_callgraph_cmd = kPerfFPCallgraphPPPCmd;
-    if (base::FeatureList::IsEnabled(kCWPCollectionOnHostAndGuest))
+    if (base::FeatureList::IsEnabled(kCWPCollectionOnHostAndGuest)) {
       fp_callgraph_cmd = kPerfFPCallgraphPPPHGCmd;
+    }
+    // Enable precise events for cycles.flat and cycles.lbr only if the kernel
+    // has the fix for flushing PEBS on context switch.
+    if (KernelReleaseHasPEBSFlushingFix(cpuid.release)) {
+      cycles_cmd = kPerfCyclesPPPCmd;
+      lbr_callgraph_cmd = kPerfLBRCallgraphPPPCmd;
+      if (base::FeatureList::IsEnabled(kCWPCollectionOnHostAndGuest)) {
+        cycles_cmd = kPerfCyclesPPPHGCmd;
+      }
+    }
   }
 
   cmds.emplace_back(WeightAndValue(50.0, cycles_cmd));

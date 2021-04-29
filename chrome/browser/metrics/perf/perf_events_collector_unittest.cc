@@ -42,10 +42,14 @@ const char kPerfFPCallgraphHGCmd[] =
     "perf record -a -e cycles:HG -g -c 4000037";
 const char kPerfLBRCallgraphCmd[] =
     "perf record -a -e cycles -c 4000037 --call-graph lbr";
+const char kPerfCyclesPPPCmd[] = "perf record -a -e cycles:ppp -c 1000003";
+const char kPerfCyclesPPPHGCmd[] = "perf record -a -e cycles:pppHG -c 1000003";
 const char kPerfFPCallgraphPPPCmd[] =
     "perf record -a -e cycles:ppp -g -c 4000037";
 const char kPerfFPCallgraphPPPHGCmd[] =
     "perf record -a -e cycles:pppHG -g -c 4000037";
+const char kPerfLBRCallgraphPPPCmd[] =
+    "perf record -a -e cycles:ppp -c 4000037 --call-graph lbr";
 const char kPerfLBRCmd[] = "perf record -a -e r20c4 -b -c 200011";
 const char kPerfLBRCmdAtom[] = "perf record -a -e rc4 -b -c 300001";
 const char kPerfITLBMissCyclesCmdIvyBridge[] =
@@ -599,11 +603,11 @@ TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_Tigerlake) {
   std::vector<RandomSelector::WeightAndValue> cmds =
       internal::GetDefaultCommandsForCpu(cpuid);
   ASSERT_GE(cmds.size(), 3UL);
-  EXPECT_EQ(cmds[0].value, kPerfCyclesCmd);
+  EXPECT_EQ(cmds[0].value, kPerfCyclesPPPCmd);
   // We have both FP and LBR based callstacks.
   EXPECT_EQ(cmds[1].value, kPerfFPCallgraphPPPCmd);
   EXPECT_TRUE(DoesCommandSampleCycles(cmds[0].value));
-  EXPECT_EQ(cmds[2].value, kPerfLBRCallgraphCmd);
+  EXPECT_EQ(cmds[2].value, kPerfLBRCallgraphPPPCmd);
   EXPECT_TRUE(DoesCommandSampleCycles(cmds[1].value));
   auto found =
       std::find_if(cmds.begin(), cmds.end(),
@@ -637,11 +641,11 @@ TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_Tigerlake_HostAndGuest) {
   std::vector<RandomSelector::WeightAndValue> cmds =
       internal::GetDefaultCommandsForCpu(cpuid);
   ASSERT_GE(cmds.size(), 3UL);
-  EXPECT_EQ(cmds[0].value, kPerfCyclesHGCmd);
+  EXPECT_EQ(cmds[0].value, kPerfCyclesPPPHGCmd);
   // We have both FP and LBR based callstacks.
   EXPECT_EQ(cmds[1].value, kPerfFPCallgraphPPPHGCmd);
   EXPECT_TRUE(DoesCommandSampleCycles(cmds[0].value));
-  EXPECT_EQ(cmds[2].value, kPerfLBRCallgraphCmd);
+  EXPECT_EQ(cmds[2].value, kPerfLBRCallgraphPPPCmd);
   EXPECT_TRUE(DoesCommandSampleCycles(cmds[1].value));
 }
 
@@ -691,11 +695,11 @@ TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_GoldmontPlus) {
   cpuid.family = 0x06;
   cpuid.model = 0x7a;  // GoldmontPlus
   cpuid.model_name = "";
-  cpuid.release = "4.4.196";
+  cpuid.release = "4.14.214";
   std::vector<RandomSelector::WeightAndValue> cmds =
       internal::GetDefaultCommandsForCpu(cpuid);
   ASSERT_GE(cmds.size(), 2UL);
-  EXPECT_EQ(cmds[0].value, kPerfCyclesCmd);
+  EXPECT_EQ(cmds[0].value, kPerfCyclesPPPCmd);
   EXPECT_TRUE(DoesCommandSampleCycles(cmds[0].value));
   EXPECT_EQ(cmds[1].value, kPerfFPCallgraphPPPCmd);
   EXPECT_TRUE(DoesCommandSampleCycles(cmds[1].value));
