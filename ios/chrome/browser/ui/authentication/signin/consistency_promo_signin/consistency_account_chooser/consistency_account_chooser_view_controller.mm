@@ -5,11 +5,9 @@
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_view_controller.h"
 
 #import "base/check.h"
-#import "base/mac/foundation_util.h"
-#import "ios/chrome/browser/ui/authentication/cells/table_view_identity_item.h"
-#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/identity_item_configurator.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_image_item.h"
-#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_table_view_controller.h"
+#import "ios/chrome/browser/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -17,111 +15,68 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-
-// List of sections.
-typedef NS_ENUM(NSInteger, SectionIdentifier) {
-  IdentitySectionIdentifier = kSectionIdentifierEnumZero,
-  AddAccountSectionIdentifier,
-};
-
-typedef NS_ENUM(NSInteger, ItemType) {
-  // IdentitySectionIdentifier section.
-  IdentityItemType = kItemTypeEnumZero,
-  // AddAccountSectionIdentifier section.
-  AddAccountItemType,
-};
-
-// Table view header/footer height.
-CGFloat kSectionHeaderHeight = 8.;
-CGFloat kSectionFooterHeight = 8.;
-
-}  // naemspace
-
 @interface ConsistencyAccountChooserViewController ()
+
+@property(nonatomic, strong)
+    ConsistencyAccountChooserTableViewController* tableViewController;
 
 @end
 
 @implementation ConsistencyAccountChooserViewController
 
-#pragma mark - UITableViewController
-
-- (void)loadModel {
-  [super loadModel];
-  [self loadIdentitySection];
-  [self loadAddAccountSection];
-}
-
-- (void)tableView:(UITableView*)tableView
-    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-  ListItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  switch ((ItemType)item.type) {
-    case IdentityItemType: {
-      TableViewIdentityItem* identityItem =
-          base::mac::ObjCCastStrict<TableViewIdentityItem>(item);
-      DCHECK(identityItem);
-      [self.actionDelegate
-          consistencyAccountChooserViewController:self
-                      didSelectIdentityWithGaiaID:identityItem.gaiaID];
-      break;
-    }
-    case AddAccountItemType:
-      [self.actionDelegate
-          consistencyAccountChooserViewControllerDidTapOnAddAccount:self];
-      break;
-  }
-}
-
-- (CGFloat)tableView:(UITableView*)tableView
-    heightForHeaderInSection:(NSInteger)section {
-  return kSectionHeaderHeight;
-}
-
-- (CGFloat)tableView:(UITableView*)tableView
-    heightForFooterInSection:(NSInteger)section {
-  return kSectionFooterHeight;
-}
-
-#pragma mark - UIView
-
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.title = l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_CHOOSE_ACCOUNT);
-  [self loadModel];
-  [self.tableView reloadData];
+  [self addChildViewController:self.tableViewController];
+  UIView* subView = self.tableViewController.view;
+  subView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:subView];
+  [NSLayoutConstraint activateConstraints:@[
+    [subView.topAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
+    [subView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor],
+    [subView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+    [subView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+  ]];
+  [self didMoveToParentViewController:self.tableViewController];
 }
 
-#pragma mark - Private
+#pragma mark - Properties
 
-// Creates the identity section in the table view model.
-- (void)loadIdentitySection {
-  TableViewModel* model = self.tableViewModel;
-  [model addSectionWithIdentifier:IdentitySectionIdentifier];
-  [self loadIdentityItems];
+- (id<ConsistencyAccountChooserTableViewControllerActionDelegate>)
+    actionDelegate {
+  return self.tableViewController.actionDelegate;
 }
 
-// Creates all the identity items in the table view model.
-- (void)loadIdentityItems {
-  TableViewModel* model = self.tableViewModel;
-  for (IdentityItemConfigurator* configurator in self.modelDelegate
-           .sortedIdentityItemConfigurators) {
-    TableViewIdentityItem* item =
-        [[TableViewIdentityItem alloc] initWithType:IdentityItemType];
-    [configurator configureIdentityChooser:item];
-    [model addItem:item toSectionWithIdentifier:IdentitySectionIdentifier];
+- (void)setActionDelegate:
+    (id<ConsistencyAccountChooserTableViewControllerActionDelegate>)
+        actionDelegate {
+  self.tableViewController.actionDelegate = actionDelegate;
+}
+
+- (id<ConsistencyAccountChooserTableViewControllerModelDelegate>)modelDelegate {
+  return self.tableViewController.modelDelegate;
+}
+
+- (void)setModelDelegate:
+    (id<ConsistencyAccountChooserTableViewControllerModelDelegate>)
+        modelDelegate {
+  self.tableViewController.modelDelegate = modelDelegate;
+}
+
+- (id<ConsistencyAccountChooserConsumer>)consumer {
+  return self.tableViewController;
+}
+
+- (ConsistencyAccountChooserTableViewController*)tableViewController {
+  if (!_tableViewController) {
+    UITableViewStyle style = base::FeatureList::IsEnabled(kSettingsRefresh)
+                                 ? ChromeTableViewStyle()
+                                 : UITableViewStylePlain;
+    _tableViewController = [[ConsistencyAccountChooserTableViewController alloc]
+        initWithStyle:style];
   }
-}
-
-// Creates the add account section in the table view model.
-- (void)loadAddAccountSection {
-  TableViewModel* model = self.tableViewModel;
-  [model addSectionWithIdentifier:AddAccountSectionIdentifier];
-  TableViewImageItem* item =
-      [[TableViewImageItem alloc] initWithType:AddAccountItemType];
-  item.title = l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_ADD_ACCOUNT);
-  item.textColor = [UIColor colorNamed:kBlueColor];
-  [model addItem:item toSectionWithIdentifier:AddAccountSectionIdentifier];
+  return _tableViewController;
 }
 
 #pragma mark - ChildBottomSheetViewController
@@ -136,29 +91,6 @@ CGFloat kSectionFooterHeight = 8.;
   CGFloat screenHeight =
       self.navigationController.view.window.bounds.size.height;
   return MAX(screenHeight / 2., firstViewHeight);
-}
-
-#pragma mark - ConsistencyAccountChooserConsumer
-
-- (void)reloadAllIdentities {
-  TableViewModel* model = self.tableViewModel;
-  [model deleteAllItemsFromSectionWithIdentifier:IdentitySectionIdentifier];
-  [self loadIdentityItems];
-  [self.tableView reloadData];
-}
-
-- (void)reloadIdentityForIdentityItemConfigurator:
-    (IdentityItemConfigurator*)configurator {
-  TableViewModel* model = self.tableViewModel;
-  NSArray* items =
-      [model itemsInSectionWithIdentifier:IdentitySectionIdentifier];
-  for (TableViewIdentityItem* item in items) {
-    if ([item.gaiaID isEqual:configurator.gaiaID]) {
-      [configurator configureIdentityChooser:item];
-      [self reconfigureCellsForItems:@[ item ]];
-      break;
-    }
-  }
 }
 
 @end

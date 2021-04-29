@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_view_controller.h"
+#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_table_view_controller_model_delegate.h"
 
 @class ChromeIdentity;
 @protocol ConsistencyAccountChooserConsumer;
@@ -15,7 +15,7 @@
 
 // Mediator for ConsistencyAccountChooserCoordinator.
 @interface ConsistencyAccountChooserMediator
-    : NSObject <ConsistencyAccountChooserViewControllerModelDelegate>
+    : NSObject <ConsistencyAccountChooserTableViewControllerModelDelegate>
 
 @property(nonatomic, strong) id<ConsistencyAccountChooserConsumer> consumer;
 @property(nonatomic, strong) ChromeIdentity* selectedIdentity;

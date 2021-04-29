@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/chrome_browser_provider_observer_bridge.h"
 #import "ios/chrome/browser/signin/chrome_identity_service_observer_bridge.h"
 #import "ios/chrome/browser/ui/authentication/resized_avatar_cache.h"
+#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_consumer.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/identity_item_configurator.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
@@ -17,8 +18,7 @@
 
 @interface ConsistencyAccountChooserMediator () <
     ChromeBrowserProviderObserver,
-    ChromeIdentityServiceObserver,
-    ConsistencyAccountChooserViewControllerModelDelegate> {
+    ChromeIdentityServiceObserver> {
   std::unique_ptr<ChromeIdentityServiceObserverBridge> _identityServiceObserver;
   std::unique_ptr<ChromeBrowserProviderObserverBridge> _browserProviderObserver;
 }
@@ -140,7 +140,7 @@
   _identityServiceObserver.reset();
 }
 
-#pragma mark - ConsistencyAccountChooserViewControllerModelDelegate
+#pragma mark - ConsistencyAccountChooserTableViewControllerModelDelegate
 
 - (NSArray*)sortedIdentityItemConfigurators {
   if (!_sortedIdentityItemConfigurators) {

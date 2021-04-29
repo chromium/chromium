@@ -8,43 +8,23 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/bottom_sheet/child_bottom_sheet_view_controller.h"
-#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_consumer.h"
-#import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
-@class ConsistencyAccountChooserViewController;
-
-// Delegate protocol for ConsistencyAccountChooserViewController.
-@protocol ConsistencyAccountChooserViewControllerActionDelegate <NSObject>
-
-// Invoked when the user selects an identity.
-- (void)consistencyAccountChooserViewController:
-            (ConsistencyAccountChooserViewController*)viewController
-                    didSelectIdentityWithGaiaID:(NSString*)gaiaID;
-// Invoked when the user taps on "Add account".
-- (void)consistencyAccountChooserViewControllerDidTapOnAddAccount:
-    (ConsistencyAccountChooserViewController*)viewController;
-
-@end
-
-// Protocol to get the model.
-@protocol ConsistencyAccountChooserViewControllerModelDelegate <NSObject>
-
-// Returns all the configurators to generate model items.
-@property(nonatomic, strong, readonly) NSArray* sortedIdentityItemConfigurators;
-
-@end
+@protocol ConsistencyAccountChooserTableViewControllerActionDelegate;
+@protocol ConsistencyAccountChooserTableViewControllerModelDelegate;
+@protocol ConsistencyAccountChooserConsumer;
 
 // View controller for ConsistencyAccountChooserCoordinator.
 @interface ConsistencyAccountChooserViewController
-    : ChromeTableViewController <ChildBottomSheetViewController,
-                                 ConsistencyAccountChooserConsumer>
+    : UIViewController <ChildBottomSheetViewController>
 
 @property(nonatomic, weak)
-    id<ConsistencyAccountChooserViewControllerActionDelegate>
+    id<ConsistencyAccountChooserTableViewControllerActionDelegate>
         actionDelegate;
 @property(nonatomic, weak)
-    id<ConsistencyAccountChooserViewControllerModelDelegate>
+    id<ConsistencyAccountChooserTableViewControllerModelDelegate>
         modelDelegate;
+@property(nonatomic, strong, readonly) id<ConsistencyAccountChooserConsumer>
+    consumer;
 
 @end
 

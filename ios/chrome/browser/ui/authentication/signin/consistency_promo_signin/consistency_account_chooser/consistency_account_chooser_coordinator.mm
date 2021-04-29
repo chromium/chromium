@@ -6,10 +6,9 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_mediator.h"
+#import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_table_view_controller_action_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_view_controller.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
-#import "ios/chrome/browser/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
@@ -19,7 +18,7 @@
 #endif
 
 @interface ConsistencyAccountChooserCoordinator () <
-    ConsistencyAccountChooserViewControllerActionDelegate>
+    ConsistencyAccountChooserTableViewControllerActionDelegate>
 
 @property(nonatomic, strong)
     ConsistencyAccountChooserViewController* accountChooserViewController;
@@ -35,13 +34,10 @@
   [super start];
   self.mediator = [[ConsistencyAccountChooserMediator alloc]
       initWithSelectedIdentity:selectedIdentity];
-  UITableViewStyle style = base::FeatureList::IsEnabled(kSettingsRefresh)
-                               ? ChromeTableViewStyle()
-                               : UITableViewStylePlain;
   self.accountChooserViewController =
-      [[ConsistencyAccountChooserViewController alloc] initWithStyle:style];
+      [[ConsistencyAccountChooserViewController alloc] init];
   self.accountChooserViewController.modelDelegate = self.mediator;
-  self.mediator.consumer = self.accountChooserViewController;
+  self.mediator.consumer = self.accountChooserViewController.consumer;
   self.accountChooserViewController.actionDelegate = self;
   [self.accountChooserViewController view];
 }
@@ -56,11 +52,11 @@
   return self.mediator.selectedIdentity;
 }
 
-#pragma mark - ConsistencyAccountChooserViewControllerPresentationDelegate
+#pragma mark - ConsistencyAccountChooserTableViewControllerPresentationDelegate
 
-- (void)consistencyAccountChooserViewController:
-            (ConsistencyAccountChooserViewController*)viewController
-                    didSelectIdentityWithGaiaID:(NSString*)gaiaID {
+- (void)consistencyAccountChooserTableViewController:
+            (ConsistencyAccountChooserTableViewController*)viewController
+                         didSelectIdentityWithGaiaID:(NSString*)gaiaID {
   ios::ChromeIdentityService* identityService =
       ios::GetChromeBrowserProvider()->GetChromeIdentityService();
   ChromeIdentity* identity =
@@ -71,8 +67,8 @@
       consistencyAccountChooserCoordinatorChromeIdentitySelected:self];
 }
 
-- (void)consistencyAccountChooserViewControllerDidTapOnAddAccount:
-    (ConsistencyAccountChooserViewController*)viewController {
+- (void)consistencyAccountChooserTableViewControllerDidTapOnAddAccount:
+    (ConsistencyAccountChooserTableViewController*)viewController {
   self.addAccountSigninCoordinator = [SigninCoordinator
       addAccountCoordinatorWithBaseViewController:self.viewController
                                           browser:self.browser
