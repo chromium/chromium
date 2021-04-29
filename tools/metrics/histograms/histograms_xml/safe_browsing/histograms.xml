@@ -1586,10 +1586,24 @@ Safe Browsing lookup mechanism is working as expected -->
 
 <histogram name="SafeBrowsing.V4ProcessFullUpdate.AdditionsHashesCount"
     units="entries" expires_after="2021-08-29">
+  <obsolete>
+    Removed in M92 and replaced with
+    SafeBrowsing.V4ProcessFullUpdate.AdditionsHashesCount2
+  </obsolete>
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Records the number of additions hashes in a SafeBrowsing list full update.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.V4ProcessFullUpdate.AdditionsHashesCount2"
+    units="entries" expires_after="2021-08-29">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the number of additions hashes in a SafeBrowsing list full update.
+    This was added in M92 to accomodate a larger maximum size.
   </summary>
 </histogram>
 

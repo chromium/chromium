@@ -16517,7 +16517,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="UrlUws" label=""/>
   <affected-histogram name="SafeBrowsing.V4Database.Size"/>
   <affected-histogram
-      name="SafeBrowsing.V4ProcessFullUpdate.AdditionsHashesCount"/>
+      name="SafeBrowsing.V4ProcessFullUpdate.AdditionsHashesCount">
+    <obsolete>
+      Removed in M92 in favor of
+      SafeBrowsing.V4ProcessFullUpdate.AdditionsHashesCount2, which has a larger
+      maximum count.
+    </obsolete>
+  </affected-histogram>
+  <affected-histogram
+      name="SafeBrowsing.V4ProcessFullUpdate.AdditionsHashesCount2"/>
   <affected-histogram
       name="SafeBrowsing.V4ProcessFullUpdate.ApplyUpdate.Result"/>
   <affected-histogram name="SafeBrowsing.V4ProcessFullUpdate.ApplyUpdate.Time"/>

@@ -40,7 +40,8 @@ const char kReadFromDisk[] = "SafeBrowsing.V4ReadFromDisk";
 const char kApplyUpdate[] = ".ApplyUpdate";
 const char kDecodeAdditions[] = ".DecodeAdditions";
 const char kDecodeRemovals[] = ".DecodeRemovals";
-const char kAdditionsHashesCount[] = ".AdditionsHashesCount";
+const char kAdditionsHashesCountPartialUpdate[] = ".AdditionsHashesCount";
+const char kAdditionsHashesCountFullUpdate[] = ".AdditionsHashesCount2";
 const char kRemovalsHashesCount[] = ".RemovalsHashesCount";
 const char kApplyUpdateDuration[] = ".ApplyUpdateDuration";
 const char kVerifyChecksumDuration[] = ".VerifyChecksumDuration";
@@ -61,7 +62,9 @@ const uint32_t kFileVersion = 9;
 constexpr size_t kMaxStoreSizeBytes = 50 * 1000 * 1000;
 
 // The maximum size of additions hashes in a single update response.
-const int32_t ADDITIONS_HASHES_COUNT_MAX = 10000;
+const int32_t ADDITIONS_HASHES_COUNT_PARTIAL_UPDATE_MAX = 10000;
+const int32_t ADDITIONS_HASHES_COUNT_FULL_UPDATE_MAX = 5000000;
+
 // The maximum size of removals hashes in a single update response.
 const int32_t REMOVALS_HASHES_COUNT_MAX = 10000;
 
@@ -125,8 +128,15 @@ void RecordDecodeRemovalsResult(const std::string& base_metric,
 void RecordAdditionsHashesCount(const std::string& base_metric,
                                 int32_t count,
                                 const base::FilePath& file_path) {
-  RecordCountWithAndWithoutSuffix(base_metric + kAdditionsHashesCount, count,
-                                  ADDITIONS_HASHES_COUNT_MAX, file_path);
+  if (base_metric == kProcessFullUpdate) {
+    RecordCountWithAndWithoutSuffix(
+        base_metric + kAdditionsHashesCountFullUpdate, count,
+        ADDITIONS_HASHES_COUNT_FULL_UPDATE_MAX, file_path);
+  } else {
+    RecordCountWithAndWithoutSuffix(
+        base_metric + kAdditionsHashesCountPartialUpdate, count,
+        ADDITIONS_HASHES_COUNT_PARTIAL_UPDATE_MAX, file_path);
+  }
 }
 
 void RecordRemovalsHashesCount(const std::string& base_metric,
