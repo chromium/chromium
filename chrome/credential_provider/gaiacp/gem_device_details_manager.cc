@@ -162,10 +162,21 @@ HRESULT GemDeviceDetailsManager::UploadDeviceDetails(
     return status;
   }
 
+  wchar_t found_username[kWindowsUsernameBufferLength] = {};
+  wchar_t found_domain[kWindowsDomainBufferLength] = {};
+
+  status = OSUserManager::Get()->FindUserBySID(
+      context.user_sid.c_str(), found_username, base::size(found_username),
+      found_domain, base::size(found_domain));
+  if (FAILED(status)) {
+    LOGFN(ERROR) << "Could not get username and domain from sid "
+                 << context.user_sid;
+  }
+
   return UploadDeviceDetailsInternal(
       /* access_token= */ std::string(), obfuscated_user_id, context.dm_token,
-      context.user_sid, context.device_resource_id,
-      /* username= */ L"", /* domain= */ L"");
+      context.user_sid, context.device_resource_id, found_username,
+      found_domain);
 }
 
 // Uploads the device details into GEM database using |access_token|
