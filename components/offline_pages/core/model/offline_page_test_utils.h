@@ -5,9 +5,7 @@
 #ifndef COMPONENTS_OFFLINE_PAGES_CORE_MODEL_OFFLINE_PAGE_TEST_UTILS_H_
 #define COMPONENTS_OFFLINE_PAGES_CORE_MODEL_OFFLINE_PAGE_TEST_UTILS_H_
 
-#include <stdint.h>
-
-#include <string>
+#include <stddef.h>
 
 namespace base {
 
