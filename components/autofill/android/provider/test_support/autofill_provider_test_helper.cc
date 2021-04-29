@@ -18,7 +18,7 @@
 namespace autofill {
 
 namespace {
-AutofillHandler* GetAutofillHandler(content::WebContents* web_contents,
+AutofillManager* GetAutofillManager(content::WebContents* web_contents,
                                     content::RenderFrameHost* rfh) {
   // Avoid using ContentAutofillDriver::GetForRenderFrameHost(), it will create
   // a new ContentAutofillDriver.
@@ -26,21 +26,21 @@ AutofillHandler* GetAutofillHandler(content::WebContents* web_contents,
           ContentAutofillDriverFactory::FromWebContents(web_contents)) {
     if (ContentAutofillDriver* driver =
             static_cast<ContentAutofillDriver*>(factory->DriverForKey(rfh))) {
-      return driver->autofill_handler();
+      return driver->autofill_manager();
     }
   }
   return nullptr;
 }
 
-AutofillHandler* ToMainFrameAutofillHandler(
+AutofillManager* ToMainFrameAutofillManager(
     const base::android::JavaParamRef<jobject>& jweb_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   CHECK(web_contents);
-  AutofillHandler* autofill_handler =
-      GetAutofillHandler(web_contents, web_contents->GetMainFrame());
-  CHECK(autofill_handler);
-  return autofill_handler;
+  AutofillManager* autofill_manager =
+      GetAutofillManager(web_contents, web_contents->GetMainFrame());
+  CHECK(autofill_manager);
+  return autofill_manager;
 }
 
 }  // namespace
@@ -62,9 +62,9 @@ JNI_AutofillProviderTestHelper_SimulateMainFrameAutofillServerResponseForTesting
   std::vector<int> field_types;
   base::android::JavaIntArrayToIntVector(env, jfield_types, &field_types);
 
-  AutofillHandler* autofill_handler = ToMainFrameAutofillHandler(jweb_contents);
+  AutofillManager* autofill_manager = ToMainFrameAutofillManager(jweb_contents);
   const std::map<FormGlobalId, std::unique_ptr<FormStructure>>&
-      form_structures = autofill_handler->form_structures();
+      form_structures = autofill_manager->form_structures();
   CHECK(!form_structures.empty());
 
   // Make API response with suggestions.
@@ -99,7 +99,7 @@ JNI_AutofillProviderTestHelper_SimulateMainFrameAutofillServerResponseForTesting
   CHECK(response.SerializeToString(&response_string));
   std::string encoded_response_string;
   base::Base64Encode(response_string, &encoded_response_string);
-  autofill_handler->OnLoadedServerPredictionsForTest(encoded_response_string,
+  autofill_manager->OnLoadedServerPredictionsForTest(encoded_response_string,
                                                      signatures);
   return true;
 }
@@ -117,9 +117,9 @@ JNI_AutofillProviderTestHelper_SimulateMainFramePredictionsAutofillServerRespons
   base::android::JavaArrayOfIntArrayToIntVector(env, jfield_types,
                                                 &field_types);
 
-  AutofillHandler* autofill_handler = ToMainFrameAutofillHandler(jweb_contents);
+  AutofillManager* autofill_manager = ToMainFrameAutofillManager(jweb_contents);
   const std::map<FormGlobalId, std::unique_ptr<FormStructure>>&
-      form_structures = autofill_handler->form_structures();
+      form_structures = autofill_manager->form_structures();
   CHECK(!form_structures.empty());
 
   // Make API response with suggestions.
@@ -151,7 +151,7 @@ JNI_AutofillProviderTestHelper_SimulateMainFramePredictionsAutofillServerRespons
   CHECK(response.SerializeToString(&response_string));
   std::string encoded_response_string;
   base::Base64Encode(response_string, &encoded_response_string);
-  autofill_handler->OnLoadedServerPredictionsForTest(encoded_response_string,
+  autofill_manager->OnLoadedServerPredictionsForTest(encoded_response_string,
                                                      signatures);
   return true;
 }
@@ -160,12 +160,12 @@ static void
 JNI_AutofillProviderTestHelper_SimulateMainFrameAutofillQueryFailedForTesting(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jweb_contents) {
-  AutofillHandler* autofill_handler = ToMainFrameAutofillHandler(jweb_contents);
+  AutofillManager* autofill_manager = ToMainFrameAutofillManager(jweb_contents);
   const std::map<FormGlobalId, std::unique_ptr<FormStructure>>&
-      form_structures = autofill_handler->form_structures();
+      form_structures = autofill_manager->form_structures();
   // Always use first form.
   CHECK(form_structures.size());
-  autofill_handler->OnServerRequestErrorForTest(
+  autofill_manager->OnServerRequestErrorForTest(
       *(autofill::test::GetEncodedSignatures(*(form_structures.begin()->second))
             .begin()),
       AutofillDownloadManager::RequestType::REQUEST_QUERY, 400);

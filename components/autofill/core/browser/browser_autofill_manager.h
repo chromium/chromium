@@ -25,7 +25,7 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
-#include "components/autofill/core/browser/autofill_handler.h"
+#include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/field_filler.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/metrics/address_form_event_logger.h"
@@ -74,7 +74,7 @@ enum class ValuePatternsMetric {
 // Manages saving and restoring the user's personal information entered into web
 // forms. One per frame; owned by the AutofillDriver.
 class BrowserAutofillManager
-    : public AutofillHandler,
+    : public AutofillManager,
       public AutocompleteHistoryManager::SuggestionsHandler,
       public CreditCardAccessManager::Accessor {
  public:
@@ -205,7 +205,7 @@ class BrowserAutofillManager
   // metrics.
   void DidSuppressPopup(const FormData& form, const FormFieldData& field);
 
-  // AutofillHandler:
+  // AutofillManager:
   void OnFocusNoLongerOnForm(bool had_interacted_form) override;
   void OnFocusOnFormFieldImpl(const FormData& form,
                               const FormFieldData& field,
@@ -338,7 +338,7 @@ class BrowserAutofillManager
                        std::string* cc_backend_id,
                        std::string* profile_backend_id) const;
 
-  // AutofillHandler:
+  // AutofillManager:
   void OnFormSubmittedImpl(const FormData& form,
                            bool known_success,
                            mojom::SubmissionSource source) override;

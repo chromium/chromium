@@ -325,8 +325,8 @@ void AwContents::InitAutofillIfNecessary(bool autocomplete_enabled) {
           autofill::features::kAndroidAutofillQueryServerFieldTypes) &&
               (!autofill::AutofillProvider::
                    is_download_manager_disabled_for_testing())
-          ? autofill::AutofillHandler::ENABLE_AUTOFILL_DOWNLOAD_MANAGER
-          : autofill::AutofillHandler::DISABLE_AUTOFILL_DOWNLOAD_MANAGER,
+          ? autofill::AutofillManager::ENABLE_AUTOFILL_DOWNLOAD_MANAGER
+          : autofill::AutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER,
       autofill_provider_.get());
 }
 

@@ -458,7 +458,7 @@ BrowserAutofillManager::BrowserAutofillManager(
     const std::string app_locale,
     AutofillDownloadManagerState enable_download_manager,
     std::unique_ptr<CreditCardAccessManager> cc_access_manager)
-    : AutofillHandler(driver, client, enable_download_manager),
+    : AutofillManager(driver, client, enable_download_manager),
       external_delegate_(
           std::make_unique<AutofillExternalDelegate>(this, driver)),
       app_locale_(app_locale),
@@ -1559,7 +1559,7 @@ void BrowserAutofillManager::Reset() {
   // save a card is shown after page navigation.
   ProcessPendingFormForUpload();
   DCHECK(!pending_form_data_);
-  AutofillHandler::Reset();
+  AutofillManager::Reset();
   address_form_event_logger_ = std::make_unique<AddressFormEventLogger>(
       driver()->IsInMainFrame(), form_interactions_ukm_logger(), client());
   credit_card_form_event_logger_ = std::make_unique<CreditCardFormEventLogger>(

@@ -14,8 +14,8 @@ AndroidAutofillManager::AndroidAutofillManager(
     AutofillDriver* driver,
     AutofillClient* client,
     AutofillProvider* provider,
-    AutofillHandler::AutofillDownloadManagerState enable_download_manager)
-    : AutofillHandler(driver,
+    AutofillManager::AutofillDownloadManagerState enable_download_manager)
+    : AutofillManager(driver,
                       client,
                       enable_download_manager,
                       version_info::Channel::UNKNOWN),
@@ -109,7 +109,7 @@ void AndroidAutofillManager::OnServerRequestError(
 }
 
 void AndroidAutofillManager::Reset() {
-  AutofillHandler::Reset();
+  AutofillManager::Reset();
   has_server_prediction_ = false;
   provider_->Reset(this);
 }

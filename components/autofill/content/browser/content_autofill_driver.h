@@ -62,7 +62,7 @@ class ContentAutofillDriver : public AutofillDriver,
       content::RenderFrameHost* render_frame_host,
       AutofillClient* client,
       const std::string& app_locale,
-      AutofillHandler::AutofillDownloadManagerState enable_download_manager,
+      AutofillManager::AutofillDownloadManagerState enable_download_manager,
       AutofillProvider* provider);
   ~ContentAutofillDriver() override;
 
@@ -149,7 +149,7 @@ class ContentAutofillDriver : public AutofillDriver,
   BrowserAutofillManager* browser_autofill_manager() {
     return browser_autofill_manager_;
   }
-  AutofillHandler* autofill_handler() { return autofill_handler_.get(); }
+  AutofillManager* autofill_manager() { return autofill_manager_.get(); }
   content::RenderFrameHost* render_frame_host() { return render_frame_host_; }
 
   const mojo::AssociatedRemote<mojom::AutofillAgent>& GetAutofillAgent();
@@ -191,7 +191,7 @@ class ContentAutofillDriver : public AutofillDriver,
   void SetAutofillProvider(
       AutofillProvider* provider,
       AutofillClient* client,
-      AutofillHandler::AutofillDownloadManagerState enable_download_manager);
+      AutofillManager::AutofillDownloadManagerState enable_download_manager);
 
   // Returns whether navigator.credentials.get({otp: {transport:"sms"}}) has
   // been used.
@@ -215,12 +215,12 @@ class ContentAutofillDriver : public AutofillDriver,
   // to avoid duplicates fired by AutofillAgent.
   std::set<FormRendererId> submitted_forms_;
 
-  // AutofillHandler instance via which this object drives the shared Autofill
+  // AutofillManager instance via which this object drives the shared Autofill
   // code.
-  std::unique_ptr<AutofillHandler> autofill_handler_;
+  std::unique_ptr<AutofillManager> autofill_manager_;
 
-  // The pointer to autofill_handler_ if it is BrowserAutofillManager instance.
-  // TODO: unify autofill_handler_ and browser_autofill_manager_ to a single
+  // The pointer to autofill_manager_ if it is BrowserAutofillManager instance.
+  // TODO: unify autofill_manager_ and browser_autofill_manager_ to a single
   // pointer to a common root.
   BrowserAutofillManager* browser_autofill_manager_;
 

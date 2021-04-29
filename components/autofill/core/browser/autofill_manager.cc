@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/autofill_handler.h"
+#include "components/autofill/core/browser/autofill_manager.h"
 
 #include "base/bind.h"
 #include "base/containers/adapters.h"
@@ -28,7 +28,7 @@ namespace {
 
 // Set a conservative upper bound on the number of forms we are willing to
 // cache, simply to prevent unbounded memory consumption.
-const size_t kAutofillHandlerMaxFormCacheSize = 100;
+const size_t kAutofillManagerMaxFormCacheSize = 100;
 
 // Returns the AutofillField* corresponding to |field| in |form| or nullptr,
 // if not found.
@@ -79,7 +79,7 @@ std::string GetAPIKeyForUrl(version_info::Channel channel) {
 using base::TimeTicks;
 
 // static
-void AutofillHandler::LogAutofillTypePredictionsAvailable(
+void AutofillManager::LogAutofillTypePredictionsAvailable(
     LogManager* log_manager,
     const std::vector<FormStructure*>& forms) {
   if (VLOG_IS_ON(1)) {
@@ -100,17 +100,17 @@ void AutofillHandler::LogAutofillTypePredictionsAvailable(
 }
 
 // static
-bool AutofillHandler::IsRawMetadataUploadingEnabled(
+bool AutofillManager::IsRawMetadataUploadingEnabled(
     version_info::Channel channel) {
   return channel == version_info::Channel::CANARY ||
          channel == version_info::Channel::DEV;
 }
 
-AutofillHandler::AutofillHandler(
+AutofillManager::AutofillManager(
     AutofillDriver* driver,
     AutofillClient* client,
     AutofillDownloadManagerState enable_download_manager)
-    : AutofillHandler(driver,
+    : AutofillManager(driver,
                       client,
                       enable_download_manager,
                       client->GetChannel()) {
@@ -118,7 +118,7 @@ AutofillHandler::AutofillHandler(
   DCHECK(client);
 }
 
-AutofillHandler::AutofillHandler(
+AutofillManager::AutofillManager(
     AutofillDriver* driver,
     AutofillClient* client,
     AutofillDownloadManagerState enable_download_manager,
@@ -142,13 +142,13 @@ AutofillHandler::AutofillHandler(
   }
 }
 
-AutofillHandler::~AutofillHandler() {
+AutofillManager::~AutofillManager() {
   translate_observation_.Reset();
   if (!query_result_delay_task_.IsCancelled())
     query_result_delay_task_.Cancel();
 }
 
-void AutofillHandler::OnLanguageDetermined(
+void AutofillManager::OnLanguageDetermined(
     const translate::LanguageDetectionDetails& details) {
   if (!base::FeatureList::IsEnabled(
           features::kAutofillParsingPatternsLanguageDetection)) {
@@ -163,12 +163,12 @@ void AutofillHandler::OnLanguageDetermined(
   }
 }
 
-void AutofillHandler::OnTranslateDriverDestroyed(
+void AutofillManager::OnTranslateDriverDestroyed(
     translate::TranslateDriver* translate_driver) {
   translate_observation_.Reset();
 }
 
-LanguageCode AutofillHandler::GetCurrentPageLanguage() const {
+LanguageCode AutofillManager::GetCurrentPageLanguage() const {
   DCHECK(client_);
   const translate::LanguageState* language_state = client_->GetLanguageState();
   if (!language_state)
@@ -176,14 +176,14 @@ LanguageCode AutofillHandler::GetCurrentPageLanguage() const {
   return LanguageCode(language_state->current_language());
 }
 
-void AutofillHandler::OnFormSubmitted(const FormData& form,
+void AutofillManager::OnFormSubmitted(const FormData& form,
                                       bool known_success,
                                       mojom::SubmissionSource source) {
   if (IsValidFormData(form))
     OnFormSubmittedImpl(form, known_success, source);
 }
 
-void AutofillHandler::OnFormsSeen(const std::vector<FormData>& forms) {
+void AutofillManager::OnFormsSeen(const std::vector<FormData>& forms) {
   if (!IsValidFormDataVector(forms) || !driver_->RendererIsAvailable())
     return;
 
@@ -229,7 +229,7 @@ void AutofillHandler::OnFormsSeen(const std::vector<FormData>& forms) {
   OnFormsParsed(new_forms);
 }
 
-void AutofillHandler::OnFormsParsed(const std::vector<const FormData*>& forms) {
+void AutofillManager::OnFormsParsed(const std::vector<const FormData*>& forms) {
   DCHECK(!forms.empty());
   OnBeforeProcessParsedForms();
 
@@ -276,7 +276,7 @@ void AutofillHandler::OnFormsParsed(const std::vector<const FormData*>& forms) {
   }
 }
 
-void AutofillHandler::OnTextFieldDidChange(const FormData& form,
+void AutofillManager::OnTextFieldDidChange(const FormData& form,
                                            const FormFieldData& field,
                                            const gfx::RectF& bounding_box,
                                            const TimeTicks timestamp) {
@@ -289,7 +289,7 @@ void AutofillHandler::OnTextFieldDidChange(const FormData& form,
   OnTextFieldDidChangeImpl(form, field, transformed_box, timestamp);
 }
 
-void AutofillHandler::OnTextFieldDidScroll(const FormData& form,
+void AutofillManager::OnTextFieldDidScroll(const FormData& form,
                                            const FormFieldData& field,
                                            const gfx::RectF& bounding_box) {
   if (!IsValidFormData(form) || !IsValidFormFieldData(field))
@@ -301,7 +301,7 @@ void AutofillHandler::OnTextFieldDidScroll(const FormData& form,
   OnTextFieldDidScrollImpl(form, field, transformed_box);
 }
 
-void AutofillHandler::OnSelectControlDidChange(const FormData& form,
+void AutofillManager::OnSelectControlDidChange(const FormData& form,
                                                const FormFieldData& field,
                                                const gfx::RectF& bounding_box) {
   if (!IsValidFormData(form) || !IsValidFormFieldData(field))
@@ -313,7 +313,7 @@ void AutofillHandler::OnSelectControlDidChange(const FormData& form,
   OnSelectControlDidChangeImpl(form, field, transformed_box);
 }
 
-void AutofillHandler::OnQueryFormFieldAutofill(
+void AutofillManager::OnQueryFormFieldAutofill(
     int query_id,
     const FormData& form,
     const FormFieldData& field,
@@ -329,7 +329,7 @@ void AutofillHandler::OnQueryFormFieldAutofill(
                                autoselect_first_suggestion);
 }
 
-void AutofillHandler::OnFocusOnFormField(const FormData& form,
+void AutofillManager::OnFocusOnFormField(const FormData& form,
                                          const FormFieldData& field,
                                          const gfx::RectF& bounding_box) {
   if (!IsValidFormData(form) || !IsValidFormFieldData(field))
@@ -341,7 +341,7 @@ void AutofillHandler::OnFocusOnFormField(const FormData& form,
   OnFocusOnFormFieldImpl(form, field, transformed_box);
 }
 
-void AutofillHandler::SendFormDataToRenderer(
+void AutofillManager::SendFormDataToRenderer(
     int query_id,
     AutofillDriver::RendererFormDataAction action,
     const FormData& data) {
@@ -349,7 +349,7 @@ void AutofillHandler::SendFormDataToRenderer(
 }
 
 // Returns true if |live_form| does not match |cached_form|.
-bool AutofillHandler::GetCachedFormAndField(const FormData& form,
+bool AutofillManager::GetCachedFormAndField(const FormData& form,
                                             const FormFieldData& field,
                                             FormStructure** form_structure,
                                             AutofillField** autofill_field) {
@@ -388,7 +388,7 @@ bool AutofillHandler::GetCachedFormAndField(const FormData& form,
 }
 
 std::unique_ptr<AutofillMetrics::FormInteractionsUkmLogger>
-AutofillHandler::CreateFormInteractionsUkmLogger() {
+AutofillManager::CreateFormInteractionsUkmLogger() {
   if (!client())
     return nullptr;
 
@@ -396,7 +396,7 @@ AutofillHandler::CreateFormInteractionsUkmLogger() {
       client()->GetUkmRecorder(), client()->GetUkmSourceId());
 }
 
-size_t AutofillHandler::FindCachedFormsBySignature(
+size_t AutofillManager::FindCachedFormsBySignature(
     FormSignature form_signature,
     std::vector<FormStructure*>* form_structures) const {
   size_t hits_num = 0;
@@ -410,15 +410,15 @@ size_t AutofillHandler::FindCachedFormsBySignature(
   return hits_num;
 }
 
-FormStructure* AutofillHandler::FindCachedFormByRendererId(
+FormStructure* AutofillManager::FindCachedFormByRendererId(
     FormGlobalId form_id) const {
   auto it = form_structures_.find(form_id);
   return it != form_structures_.end() ? it->second.get() : nullptr;
 }
 
-FormStructure* AutofillHandler::ParseForm(const FormData& form,
+FormStructure* AutofillManager::ParseForm(const FormData& form,
                                           const FormStructure* cached_form) {
-  if (form_structures_.size() >= kAutofillHandlerMaxFormCacheSize) {
+  if (form_structures_.size() >= kAutofillManagerMaxFormCacheSize) {
     if (log_manager_) {
       log_manager_->Log() << LoggingScope::kAbortParsing
                           << LogMessage::kAbortParsingTooManyForms << form;
@@ -454,7 +454,7 @@ FormStructure* AutofillHandler::ParseForm(const FormData& form,
   FormStructure* parsed_form_structure = form_structure.get();
 
   // Ownership is transferred to |form_structures_| which maintains it until
-  // the form is parsed again or the AutofillHandler is destroyed.
+  // the form is parsed again or the AutofillManager is destroyed.
   //
   // Note that this insert/update takes ownership of the new form structure
   // and also destroys the previously cached form structure.
@@ -464,12 +464,12 @@ FormStructure* AutofillHandler::ParseForm(const FormData& form,
   return parsed_form_structure;
 }
 
-void AutofillHandler::Reset() {
+void AutofillManager::Reset() {
   form_structures_.clear();
   form_interactions_ukm_logger_ = CreateFormInteractionsUkmLogger();
 }
 
-void AutofillHandler::OnLoadedServerPredictions(
+void AutofillManager::OnLoadedServerPredictions(
     std::string response,
     const std::vector<FormSignature>& queried_form_signatures) {
   // Get the current valid FormStructures represented by
@@ -527,7 +527,7 @@ void AutofillHandler::OnLoadedServerPredictions(
 
   if (delay > 0) {
     query_result_delay_task_.Reset(
-        base::BindOnce(&AutofillHandler::PropagateAutofillPredictionsToDriver,
+        base::BindOnce(&AutofillManager::PropagateAutofillPredictionsToDriver,
                        base::Unretained(this)));
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
@@ -538,14 +538,14 @@ void AutofillHandler::OnLoadedServerPredictions(
   }
 }
 
-void AutofillHandler::PropagateAutofillPredictionsToDriver(
+void AutofillManager::PropagateAutofillPredictionsToDriver(
     const std::vector<FormStructure*>& queried_forms) {
   // Forward form structures to the password generation manager to detect
   // account creation forms.
   driver()->PropagateAutofillPredictions(queried_forms);
 }
 
-void AutofillHandler::OnServerRequestError(
+void AutofillManager::OnServerRequestError(
     FormSignature form_signature,
     AutofillDownloadManager::RequestType request_type,
     int http_error) {}

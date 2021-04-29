@@ -6,21 +6,21 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_ANDROID_AUTOFILL_MANAGER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "components/autofill/core/browser/autofill_handler.h"
+#include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/common/dense_set.h"
 
 namespace autofill {
 
 class AutofillProvider;
 
-// This class forwards AutofillHandler calls to AutofillProvider.
-class AndroidAutofillManager : public AutofillHandler {
+// This class forwards AutofillManager calls to AutofillProvider.
+class AndroidAutofillManager : public AutofillManager {
  public:
   AndroidAutofillManager(
       AutofillDriver* driver,
       AutofillClient* client,
       AutofillProvider* provider,
-      AutofillHandler::AutofillDownloadManagerState enable_download_manager);
+      AutofillManager::AutofillDownloadManagerState enable_download_manager);
   ~AndroidAutofillManager() override;
 
   void OnFocusNoLongerOnForm(bool had_interacted_form) override;

@@ -50,7 +50,7 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
             personal_data,
             autocomplete_history_manager,
             "en-US",
-            AutofillHandler::DISABLE_AUTOFILL_DOWNLOAD_MANAGER,
+            AutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER,
             std::move(cc_access_manager)) {}
 
   ~TestBrowserAutofillManager() override = default;

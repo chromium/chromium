@@ -132,7 +132,7 @@ namespace autofill {
 
 class SaveCardBubbleViewsFullFormBrowserTest
     : public SyncTest,
-      public AutofillHandler::ObserverForTest,
+      public AutofillManager::ObserverForTest,
       public CreditCardSaveManager::ObserverForTest,
       public SaveCardBubbleControllerImpl::ObserverForTest {
  protected:
@@ -226,11 +226,11 @@ class SaveCardBubbleViewsFullFormBrowserTest
     AddEventObserverToController();
 
     // Set up this class as the ObserverForTest implementation.
-    AutofillHandler* autofill_handler =
+    AutofillManager* autofill_manager =
         ContentAutofillDriver::GetForRenderFrameHost(
             GetActiveWebContents()->GetMainFrame())
-            ->autofill_handler();
-    autofill_handler->SetEventObserverForTesting(this);
+            ->autofill_manager();
+    autofill_manager->SetEventObserverForTesting(this);
 
     // Set up the fake geolocation data.
     geolocation_overrider_ =
@@ -238,7 +238,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
             kFakeGeolocationLatitude, kFakeGeolocationLongitude);
   }
 
-  // AutofillHandler::ObserverForTest:
+  // AutofillManager::ObserverForTest:
   void OnFormParsed() override {
     if (event_waiter_)
       event_waiter_->OnEvent(DialogEvent::DYNAMIC_FORM_PARSED);

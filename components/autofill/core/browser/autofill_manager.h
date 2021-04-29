@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_HANDLER_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_HANDLER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_MANAGER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_MANAGER_H_
 
 #include <map>
 #include <memory>
@@ -41,7 +41,7 @@ class LogManager;
 
 // This class defines the interface should be implemented by autofill
 // implementation in browser side to interact with AutofillDriver.
-class AutofillHandler
+class AutofillManager
     : public AutofillDownloadManager::Observer,
       public translate::TranslateDriver::LanguageDetectionObserver {
  public:
@@ -63,12 +63,12 @@ class AutofillHandler
 
   // TODO(crbug.com/1151542): Move to anonymous namespace once
   // BrowserAutofillManager::OnLoadedServerPredictions() moves to
-  // AutofillHandler.
+  // AutofillManager.
   static void LogAutofillTypePredictionsAvailable(
       LogManager* log_manager,
       const std::vector<FormStructure*>& forms);
 
-  ~AutofillHandler() override;
+  ~AutofillManager() override;
 
   AutofillClient* client() { return client_; }
   const AutofillClient* client() const { return client_; }
@@ -224,10 +224,10 @@ class AutofillHandler
 #endif  // UNIT_TEST
 
  protected:
-  AutofillHandler(AutofillDriver* driver,
+  AutofillManager(AutofillDriver* driver,
                   AutofillClient* client,
                   AutofillDownloadManagerState enable_download_manager);
-  AutofillHandler(AutofillDriver* driver,
+  AutofillManager(AutofillDriver* driver,
                   AutofillClient* client,
                   AutofillDownloadManagerState enable_download_manager,
                   version_info::Channel channel);
@@ -361,9 +361,9 @@ class AutofillHandler
   // Will be not null only for |SaveCardBubbleViewsFullFormBrowserTest|.
   ObserverForTest* observer_for_testing_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(AutofillHandler);
+  DISALLOW_COPY_AND_ASSIGN(AutofillManager);
 };
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_HANDLER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_MANAGER_H_
