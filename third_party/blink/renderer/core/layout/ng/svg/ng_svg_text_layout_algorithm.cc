@@ -103,7 +103,8 @@ void NGSVGTextLayoutAlgorithm::Layout(
   ResolvedIterator iterator(inline_node_.SVGCharacterDataList());
   for (wtf_size_t i = 0; i < result_.size(); ++i) {
     const NGSVGCharacterData& resolve = iterator.AdvanceTo(i);
-    result_[i].rotate = resolve.rotate;
+    if (resolve.HasRotate())
+      result_[i].rotate = resolve.rotate;
     if (resolve.anchored_chunk)
       result_[i].anchored_chunk = true;
   }
@@ -145,7 +146,8 @@ void NGSVGTextLayoutAlgorithm::Layout(
                                LayoutUnit(width / scaling_factor),
                                LayoutUnit(height / scaling_factor));
     item.item.ConvertToSVGText(unscaled_rect, scaled_rect,
-                               info.length_adjust_scale);
+                               info.length_adjust_scale,
+                               info.rotate.value_or(0.0f));
   }
 }
 

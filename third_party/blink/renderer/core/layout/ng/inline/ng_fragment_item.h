@@ -32,6 +32,7 @@ struct NGSVGFragmentData {
   NGTextOffset text_offset;
   FloatRect rect;
   float length_adjust_scale;
+  float angle;
 };
 
 // This class represents a text run or a box in an inline formatting context.
@@ -122,7 +123,8 @@ class CORE_EXPORT NGFragmentItem final {
   // Make this kSVGText type. |this| type must be kText.
   void ConvertToSVGText(const PhysicalRect& unscaled_rect,
                         const FloatRect& scaled_rect,
-                        float length_adjust_scale);
+                        float length_adjust_scale,
+                        float angle);
 
   // A sequence number of fragments generated from a |LayoutObject|.
   // For line boxes, please see |kInitialLineFragmentId|.
@@ -421,6 +423,19 @@ class CORE_EXPORT NGFragmentItem final {
   const NGSVGFragmentData* SVGFragmentData() const {
     return Type() == kSVGText ? svg_text_.data.get() : nullptr;
   }
+  // Returns true if BuildSVGTransformForPaint() returns non-identity transform.
+  bool HasSVGTransformForPaint() const;
+  // A transform which should be used on painting this fragment.
+  // This contains a transform for lengthAdjust=spacingAndGlyphs.
+  AffineTransform BuildSVGTransformForPaint() const;
+  // Returns true if BuildSVGTransformForBoundingBox() returns non-identity
+  // transform.
+  bool HasSVGTransformForBoundingBox() const;
+  // A transform which should be used on computing a bounding box.
+  // This contains no transform for lengthAdjust=spacingAndGlyphs because
+  // FloatRectInContainerFragment() already takes into account of
+  // lengthAdjust=spacingAndGlyphs.
+  AffineTransform BuildSVGTransformForBoundingBox() const;
 
   // Get a description of |this| for the debug purposes.
   String ToString() const;

@@ -326,7 +326,8 @@ bool NGFragmentItem::IsListMarker() const {
 
 void NGFragmentItem::ConvertToSVGText(const PhysicalRect& unscaled_rect,
                                       const FloatRect& scaled_rect,
-                                      float length_adjust_scale) {
+                                      float length_adjust_scale,
+                                      float angle) {
   DCHECK(RuntimeEnabledFeatures::SVGTextNGEnabled());
   DCHECK_EQ(Type(), kText);
   auto data = std::make_unique<NGSVGFragmentData>();
@@ -334,6 +335,7 @@ void NGFragmentItem::ConvertToSVGText(const PhysicalRect& unscaled_rect,
   data->text_offset = std::move(text_.text_offset);
   data->rect = scaled_rect;
   data->length_adjust_scale = length_adjust_scale;
+  data->angle = angle;
   text_.~TextItem();
   new (&svg_text_) SVGTextItem();
   svg_text_.data = std::move(data);
@@ -508,6 +510,60 @@ TextDirection NGFragmentItem::BaseDirection() const {
 TextDirection NGFragmentItem::ResolvedDirection() const {
   DCHECK(IsText() || IsAtomicInline());
   return static_cast<TextDirection>(text_direction_);
+}
+
+bool NGFragmentItem::HasSVGTransformForPaint() const {
+  return Type() == kSVGText && (svg_text_.data->length_adjust_scale != 1.0f ||
+                                svg_text_.data->angle != 0.0f);
+}
+
+bool NGFragmentItem::HasSVGTransformForBoundingBox() const {
+  return Type() == kSVGText && svg_text_.data->angle != 0.0f;
+}
+
+AffineTransform NGFragmentItem::BuildSVGTransformForPaint() const {
+  DCHECK_EQ(Type(), kSVGText);
+  const NGSVGFragmentData& svg_data = *svg_text_.data;
+  const bool is_horizontal = IsHorizontal();
+  AffineTransform transform = BuildSVGTransformForBoundingBox();
+  float scale = svg_data.length_adjust_scale;
+  if (scale != 1.0f) {
+    AffineTransform scale_transform;
+    // We'd like to scale only inline-size without moving inline position.
+    if (is_horizontal) {
+      float x = svg_data.rect.X();
+      scale_transform.SetMatrix(scale, 0, 0, 1, x - scale * x, 0);
+    } else {
+      float y = svg_data.rect.Y();
+      scale_transform.SetMatrix(1, 0, 0, scale, 0, y - scale * y);
+    }
+    transform.PreMultiply(scale_transform);
+  }
+  return transform;
+}
+
+AffineTransform NGFragmentItem::BuildSVGTransformForBoundingBox() const {
+  DCHECK_EQ(Type(), kSVGText);
+  const NGSVGFragmentData& svg_data = *svg_text_.data;
+  AffineTransform transform;
+  if (svg_data.angle != 0.0f) {
+    // https://svgwg.org/svg2-draft/text.html#TextElementRotateAttribute
+    // > The supplemental rotation, in degrees, about the current text position
+    //
+    // TODO(crbug.com/1179585): The following code is equivalent to the legacy
+    // SVG. That is to say, rotation around the left edge of the baseline.
+    // However it doesn't look correct for RTL and vertical text.
+    const SimpleFontData* font_data =
+        To<LayoutSVGInlineText>(GetLayoutObject())->ScaledFont().PrimaryFont();
+    float ascent =
+        font_data ? font_data->GetFontMetrics().FixedAscent().ToFloat() : 0.0f;
+    transform.Rotate(svg_data.angle);
+    float y = svg_data.rect.Y() + ascent;
+    transform.SetE(transform.E() + svg_data.rect.X());
+    transform.SetF(transform.F() + y);
+    transform.Translate(-svg_data.rect.X(), -y);
+  }
+  return transform;
 }
 
 String NGFragmentItem::ToString() const {

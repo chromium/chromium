@@ -82,8 +82,12 @@ FloatRect LayoutSVGInline::ObjectBoundingBox() const {
     for (cursor.MoveToIncludingCulledInline(*this); cursor;
          cursor.MoveToNextForSameLayoutObject()) {
       const NGFragmentItem& item = *cursor.CurrentItem();
-      if (item.Type() == NGFragmentItem::kSVGText)
-        bounds.Unite(item.FloatRectInContainerFragment());
+      if (item.Type() != NGFragmentItem::kSVGText)
+        continue;
+      FloatRect item_rect = item.FloatRectInContainerFragment();
+      if (item.HasSVGTransformForBoundingBox())
+        item_rect = item.BuildSVGTransformForBoundingBox().MapRect(item_rect);
+      bounds.Unite(item_rect);
     }
     return bounds;
   }
