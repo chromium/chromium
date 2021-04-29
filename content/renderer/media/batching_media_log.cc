@@ -134,6 +134,8 @@ void BatchingMediaLog::AddLogRecordLocked(
     if (ipc_send_pending_)
       return;
 
+    recordreplay::Assert("BatchingMediaLog::AddLogRecordLocked #5");
+
     ipc_send_pending_ = true;
     delay_for_next_ipc_send = base::TimeDelta::FromSeconds(1) -
                               (tick_clock_->NowTicks() - last_ipc_send_time_);

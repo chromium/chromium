@@ -295,8 +295,10 @@ void TaskQueueImpl::PostImmediateTaskImpl(PostedTask task,
     base::internal::CheckedAutoLock lock(any_thread_lock_);
     LazyNow lazy_now = any_thread_.time_domain->CreateLazyNow();
     bool add_queue_time_to_tasks = sequence_manager_->GetAddQueueTimeToTasks();
-    if (add_queue_time_to_tasks || delayed_fence_allowed_)
+    if (add_queue_time_to_tasks || delayed_fence_allowed_) {
+      recordreplay::Assert("TaskQueueImpl::PostImmediateTaskImpl #1");
       task.queue_time = lazy_now.Now();
+    }
 
     // The sequence number must be incremented atomically with pushing onto the
     // incoming queue. Otherwise if there are several threads posting task we
@@ -304,7 +306,7 @@ void TaskQueueImpl::PostImmediateTaskImpl(PostedTask task,
     // within a queue.
     EnqueueOrder sequence_number = sequence_manager_->GetNextSequenceNumber();
 
-    recordreplay::Assert("TaskQueueImpl::PostImmediateTaskImpl %lu",
+    recordreplay::Assert("TaskQueueImpl::PostImmediateTaskImpl #2 %lu",
                         (size_t)sequence_number);
 
     bool was_immediate_incoming_queue_empty =
