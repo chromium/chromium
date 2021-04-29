@@ -7,7 +7,9 @@
 #include <string>
 
 #include "ash/clipboard/clipboard_history_util.h"
+#include "ash/display/display_util.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
+#include "ash/public/cpp/window_tree_host_lookup.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
@@ -18,9 +20,13 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/aura/window_tree_host.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/custom_data_helper.h"
+#include "ui/base/ime/input_method.h"
+#include "ui/base/ime/text_input_client.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/canvas_image_source.h"
@@ -279,8 +285,20 @@ void ClipboardHistoryResourceManager::OnClipboardHistoryItemAdded(
     cached_image_model.clipboard_history_item_ids.push_back(item.id());
     cached_image_models_.push_back(std::move(cached_image_model));
 
+    // `text_input_client` can be nullptr in tests.
+    const auto* text_input_client =
+        ash::GetWindowTreeHostForDisplay(
+            display::Screen::GetScreen()->GetPrimaryDisplay().id())
+            ->GetInputMethod()
+            ->GetTextInputClient();
+
+    const gfx::Rect bounding_box =
+        text_input_client ? text_input_client->GetSelectionBoundingBox()
+                          : gfx::Rect();
     ClipboardImageModelFactory::Get()->Render(
         id, item.data().markup_data(),
+        IsRectContainedByAnyDisplay(bounding_box) ? bounding_box.size()
+                                                  : gfx::Size(),
         base::BindOnce(&ClipboardHistoryResourceManager::CacheImageModel,
                        weak_factory_.GetWeakPtr(), id));
     return;

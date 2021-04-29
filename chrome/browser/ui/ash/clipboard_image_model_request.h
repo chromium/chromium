@@ -44,6 +44,7 @@ class ClipboardImageModelRequest : public content::WebContentsDelegate,
     Params() = delete;
     Params(const base::UnguessableToken& id,
            const std::string& html_markup,
+           const gfx::Size& bounding_box_size,
            ImageModelCallback request_finished_callback);
     Params(Params&&);
     Params& operator=(Params&&);
@@ -53,6 +54,12 @@ class ClipboardImageModelRequest : public content::WebContentsDelegate,
     base::UnguessableToken id;
     // Markup being rendered.
     std::string html_markup;
+
+    // The size of the rectangle which encloses the selection region on the
+    // original page. It is used to calculate the size of the HTML preview image
+    // shown on the clipboard history menu.
+    gfx::Size bounding_box_size;
+
     // The callback to return the results of the request. Not called if the
     // request is stopped via Stop(), or if timeout occurs.
     ImageModelCallback callback;
@@ -139,8 +146,6 @@ class ClipboardImageModelRequest : public content::WebContentsDelegate,
 
   // content::WebContentsObserver:
   void DidStopLoading() override;
-  void RenderViewHostChanged(content::RenderViewHost* old_host,
-                             content::RenderViewHost* new_host) override;
 
   // Configures test parameter.
   static void SetTestParams(TestParams* test_params);
@@ -161,8 +166,10 @@ class ClipboardImageModelRequest : public content::WebContentsDelegate,
   // Called when the running request takes too long to complete.
   void OnTimeout();
 
-  // Returns whether the auto resize mode should be used for rendering.
-  bool ShouldEnableAutoResize() const;
+  // Returns whether the auto-resize mode should be enabled. If auto-resize mode
+  // is enabled, Blink decides the preview image's size which may be different
+  // from that of the original selection region.
+  bool ShouldEnableAutoResizeMode() const;
 
   // A Widget that is not shown, but forces |web_view_| to render.
   std::unique_ptr<views::Widget> const widget_;
@@ -176,6 +183,9 @@ class ClipboardImageModelRequest : public content::WebContentsDelegate,
 
   // The HTML being rendered.
   std::string html_markup_;
+
+  // The size of the rectangle enclosing the copied HTML on the original page.
+  gfx::Size bounding_box_size_;
 
   // Whether `DidStopLoading()` was called. Used to prevent the request from
   // responding to load events that happen after the initial load.

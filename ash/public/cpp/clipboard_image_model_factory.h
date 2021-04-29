@@ -35,6 +35,7 @@ class ASH_PUBLIC_EXPORT ClipboardImageModelFactory {
   // empty ImageModel will be passed through |callback|.
   virtual void Render(const base::UnguessableToken& id,
                       const std::string& html_markup,
+                      const gfx::Size& bounding_box_size,
                       ImageModelCallback callback) = 0;
 
   // Called to stop rendering which was requested with |id|.

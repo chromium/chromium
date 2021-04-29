@@ -20,9 +20,11 @@ ClipboardImageModelFactoryImpl::~ClipboardImageModelFactoryImpl() = default;
 
 void ClipboardImageModelFactoryImpl::Render(const base::UnguessableToken& id,
                                             const std::string& html_markup,
+                                            const gfx::Size& bounding_box_size,
                                             ImageModelCallback callback) {
   DCHECK(!html_markup.empty());
-  pending_list_.emplace_front(id, html_markup, std::move(callback));
+  pending_list_.emplace_front(id, html_markup, bounding_box_size,
+                              std::move(callback));
   StartNextRequest();
 }
 

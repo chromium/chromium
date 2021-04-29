@@ -28,6 +28,7 @@ class ClipboardImageModelFactoryImpl : public ash::ClipboardImageModelFactory {
   // ash::ClipboardImageModelFactory:
   void Render(const base::UnguessableToken& id,
               const std::string& html_markup,
+              const gfx::Size& bounding_box_size,
               ImageModelCallback callback) override;
   void CancelRequest(const base::UnguessableToken& id) override;
   void Activate() override;

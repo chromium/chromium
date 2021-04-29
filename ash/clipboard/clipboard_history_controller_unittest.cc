@@ -59,6 +59,7 @@ class MockClipboardImageModelFactory : public ClipboardImageModelFactory {
   // ClipboardImageModelFactory:
   void Render(const base::UnguessableToken& clipboard_history_item_id,
               const std::string& markup,
+              const gfx::Size& bounding_box_size,
               ImageModelCallback callback) override {
     std::move(callback).Run(ui::ImageModel());
   }
