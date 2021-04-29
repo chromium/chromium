@@ -391,8 +391,6 @@ TEST(TimeDelta, ToWinrtDateTime) {
 }
 
 TEST(HighResolutionTimer, GetUsage) {
-  EXPECT_EQ(0.0, Time::GetHighResolutionTimerUsage());
-
   Time::ResetHighResolutionTimerUsage();
 
   // 0% usage since the timer isn't activated regardless of how much time has
