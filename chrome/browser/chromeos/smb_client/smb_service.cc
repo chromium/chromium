@@ -183,9 +183,6 @@ SmbService::SmbService(Profile* profile,
 
 SmbService::~SmbService() {
   net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
-  if (chromeos::PowerManagerClient::Get()) {
-    chromeos::PowerManagerClient::Get()->RemoveObserver(this);
-  }
 }
 
 void SmbService::Shutdown() {
@@ -821,9 +818,6 @@ void SmbService::CompleteSetup() {
                           base::Unretained(this))));
   RestoreMounts();
   net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
-  if (chromeos::PowerManagerClient::Get()) {
-    chromeos::PowerManagerClient::Get()->AddObserver(this);
-  }
 
   if (setup_complete_callback_) {
     std::move(setup_complete_callback_).Run();
@@ -1025,65 +1019,6 @@ void SmbService::RecordMountCount() const {
       GetProviderService()->GetProvidedFileSystemInfoList(provider_id_);
   UMA_HISTOGRAM_COUNTS_100("NativeSmbFileShare.MountCount",
                            file_systems.size() + smbfs_shares_.size());
-}
-
-void SmbService::SuspendImminent(
-    power_manager::SuspendImminent::Reason reason) {
-  for (auto it = smbfs_shares_.begin(); it != smbfs_shares_.end(); ++it) {
-    SmbFsShare* share = it->second.get();
-
-    // For each share, block suspend until the unmount has completed, to ensure
-    // that no smbfs instances are active when the system goes to sleep.
-    auto token = base::UnguessableToken::Create();
-    chromeos::PowerManagerClient::Get()->BlockSuspend(token, "SmbService");
-    share->Unmount(
-        base::BindOnce(&SmbService::OnSuspendUnmountDone, AsWeakPtr(), token));
-  }
-}
-
-void SmbService::OnSuspendUnmountDone(
-    base::UnguessableToken power_manager_suspend_token,
-    chromeos::MountError result) {
-  LOG_IF(ERROR, result != chromeos::MountError::MOUNT_ERROR_NONE)
-      << "Could not unmount smbfs share during suspension: "
-      << static_cast<int>(result);
-  // Regardless of the outcome, unblock suspension for this share.
-  chromeos::PowerManagerClient::Get()->UnblockSuspend(
-      power_manager_suspend_token);
-}
-
-void SmbService::SuspendDone(base::TimeDelta sleep_duration) {
-  // Don't iterate directly over the share map during the remount
-  // process as shares can be removed on failure in OnSmbfsMountDone.
-  std::vector<std::string> mount_ids;
-  for (const auto& s : smbfs_shares_)
-    mount_ids.push_back(s.first);
-
-  for (const auto& mount_id : mount_ids) {
-    auto share_it = smbfs_shares_.find(mount_id);
-    if (share_it == smbfs_shares_.end()) {
-      LOG(WARNING) << "Smbfs mount id " << mount_id
-                   << " no longer present during remount after suspend";
-      continue;
-    }
-    SmbFsShare* share = share_it->second.get();
-
-    // Don't try to reconnect as we race the network stack in getting an IP
-    // address.
-    SmbFsShare::MountOptions options = share->options();
-    options.skip_connect = true;
-    // Observing power management changes from SmbService allows us to remove
-    // the share in OnSmbfsMountDone if remount fails.
-    share->Remount(
-        options, base::BindOnce(
-                     &SmbService::OnSmbfsMountDone, AsWeakPtr(), mount_id,
-                     base::BindOnce([](SmbMountResult result,
-                                       const base::FilePath& mount_path) {
-                       LOG_IF(ERROR, result != SmbMountResult::kSuccess)
-                           << "Error remounting smbfs share after suspension: "
-                           << static_cast<int>(result);
-                     })));
-  }
 }
 
 }  // namespace smb_client

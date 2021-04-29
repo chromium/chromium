@@ -368,35 +368,6 @@ class HoldingSpaceKeyedServiceBrowserTest
     return drive_integration_service_;
   }
 
-  void WaitForVolumeUnmountIfNeeded() {
-    // Drive fs gets unmounted on suspend, and the fake cros disks client
-    // deletes the mount point on unmount event - wait for the drive mount point
-    // to get deleted from file system.
-    if (GetParam() != FileSystemType::kDriveFs)
-      return;
-
-    // Clear the list of predefined test files, as they are getting deleted with
-    // the mount point dir.
-    predefined_test_files_.clear();
-
-    const base::FilePath mount_path = GetTestMountPoint();
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    if (!base::PathExists(mount_path))
-      return;
-
-    base::RunLoop waiter_loop;
-    base::FilePathWatcher watcher;
-    watcher.Watch(mount_path, base::FilePathWatcher::Type::kNonRecursive,
-                  base::BindRepeating(
-                      [](const base::RepeatingClosure& callback,
-                         const base::FilePath& path, bool error) {
-                        if (!base::PathExists(path))
-                          callback.Run();
-                      },
-                      waiter_loop.QuitClosure()));
-    waiter_loop.Run();
-  }
-
   drive::DriveIntegrationService* drive_integration_service() {
     return drive_integration_service_;
   }
@@ -481,11 +452,6 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceBrowserTest,
 
   // Holding space model gets cleared on suspend.
   EXPECT_TRUE(holding_space_model->items().empty());
-
-  // Wait for test volume unmount to finish, if necessary for the test file
-  // system - for example, the drive fs will be unmounted, and fake cros disks
-  // client will delete the backing directory from files system.
-  WaitForVolumeUnmountIfNeeded();
 
   EnsurePredefinedTestFiles();
   // Verify that holding space model gets restored on resume.

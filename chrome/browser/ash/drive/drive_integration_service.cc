@@ -25,7 +25,6 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "base/unguessable_token.h"
 #include "chrome/browser/ash/drive/drivefs_native_message_host.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -601,10 +600,6 @@ DriveIntegrationService::DriveIntegrationService(
         blocking_task_runner_.get()));
   }
 
-  // PowerManagerClient is unset in unit tests.
-  if (chromeos::PowerManagerClient::Get()) {
-    power_manager_observation_.Observe(chromeos::PowerManagerClient::Get());
-  }
   SetEnabled(drive::util::IsDriveEnabledForProfile(profile));
 }
 
@@ -1035,20 +1030,6 @@ void DriveIntegrationService::PinFiles(
     GetDriveFsInterface()->SetPinned(path, true, base::DoNothing());
   }
   profile_->GetPrefs()->SetBoolean(prefs::kDriveFsPinnedMigrated, true);
-}
-
-void DriveIntegrationService::SuspendImminent(
-    power_manager::SuspendImminent::Reason reason) {
-  // This may a bit racy since it doesn't prevent suspend until the unmount is
-  // completed, instead relying on something else to defer suspending long
-  // enough.
-  RemoveDriveMountPoint();
-}
-
-void DriveIntegrationService::SuspendDone(base::TimeDelta sleep_duration) {
-  if (is_enabled()) {
-    AddDriveMountPoint();
-  }
 }
 
 void DriveIntegrationService::GetQuickAccessItems(

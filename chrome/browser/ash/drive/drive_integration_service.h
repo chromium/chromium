@@ -16,9 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/scoped_observation.h"
 #include "chromeos/components/drivefs/drivefs_host.h"
-#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/drive/drive_notification_observer.h"
 #include "components/drive/file_errors.h"
 #include "components/drive/file_system_core_util.h"
@@ -91,8 +89,7 @@ class DriveIntegrationServiceObserver : public base::CheckedObserver {
 // that are used to integrate Drive to Chrome. The object of this class is
 // created per-profile.
 class DriveIntegrationService : public KeyedService,
-                                public drivefs::DriveFsHost::MountObserver,
-                                public chromeos::PowerManagerClient::Observer {
+                                public drivefs::DriveFsHost::MountObserver {
  public:
   class PreferenceWatcher;
   using DriveFsMojoListenerFactory = base::RepeatingCallback<
@@ -282,10 +279,6 @@ class DriveIntegrationService : public KeyedService,
   // Pin all the files in |files_to_pin| with DriveFS.
   void PinFiles(const std::vector<base::FilePath>& files_to_pin);
 
-  // chromeos::PowerManagerClient::Observer overrides:
-  void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
-  void SuspendDone(base::TimeDelta sleep_duration) override;
-
   void OnGetQuickAccessItems(
       GetQuickAccessItemsCallback callback,
       drive::FileError error,
@@ -321,10 +314,6 @@ class DriveIntegrationService : public KeyedService,
   bool remount_when_online_ = false;
 
   base::TimeTicks mount_start_;
-
-  base::ScopedObservation<chromeos::PowerManagerClient,
-                          chromeos::PowerManagerClient::Observer>
-      power_manager_observation_{this};
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
