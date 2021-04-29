@@ -217,6 +217,9 @@ public class PaintPreviewPlayerTest extends DummyUiActivityTestCase {
                         public boolean isAccessibilityEnabled() {
                             return false;
                         }
+
+                        @Override
+                        public void onAccessibilityNotSupported() {}
                     }, 0xffffffff, false);
             mPlayerManager.setCompressOnClose(false);
         });
@@ -427,6 +430,9 @@ public class PaintPreviewPlayerTest extends DummyUiActivityTestCase {
                         public boolean isAccessibilityEnabled() {
                             return false;
                         }
+
+                        @Override
+                        public void onAccessibilityNotSupported() {}
                     }, 0xffffffff, false);
             mPlayerManager.setCompressOnClose(false);
             getActivity().setContentView(mPlayerManager.getView());

@@ -88,6 +88,30 @@ class PaintPreviewFrame {
         return mSubFrameClips;
     }
 
+    /**
+     *
+     * @param checkDirectChildren Should direct children of this frame be considered.
+     * @return Whether this frame has any scrollable descendants.
+     */
+    boolean hasScrollableDescendants(boolean checkDirectChildren) {
+        if (mSubFrameClips == null || mSubFrames == null) {
+            return false;
+        }
+
+        for (int i = 0; i < mSubFrames.length; i++) {
+            PaintPreviewFrame subFrame = mSubFrames[i];
+            Rect subFrameClip = mSubFrameClips[i];
+            if (checkDirectChildren) {
+                if (subFrame.mContentWidth > subFrameClip.width()
+                        || subFrame.mContentHeight > subFrameClip.height()) {
+                    return true;
+                }
+            }
+            if (subFrame.hasScrollableDescendants(true)) return true;
+        }
+        return false;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null || getClass() != obj.getClass()) return false;

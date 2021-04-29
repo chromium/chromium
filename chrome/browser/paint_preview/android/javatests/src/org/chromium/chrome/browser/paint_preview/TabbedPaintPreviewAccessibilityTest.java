@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabService;
 import org.chromium.chrome.browser.tab.Tab;
@@ -90,8 +91,11 @@ public class TabbedPaintPreviewAccessibilityTest {
         viewReadyCallback.waitForFirst("Paint preview view ready never happened.");
 
         // Assert accessibility support is initialized.
-        Assert.assertNotNull("PlayerManager doesn't have a valid WebContentsAccessibility.",
-                tabbedPaintPreview.getPlayerManagerForTesting()
-                        .getWebContentsAccessibilityForTesting());
+        CriteriaHelper.pollInstrumentationThread(
+                ()
+                        -> tabbedPaintPreview.getPlayerManagerForTesting()
+                                   .getWebContentsAccessibilityForTesting()
+                        != null,
+                "PlayerManager doesn't have a valid WebContentsAccessibility.");
     }
 }

@@ -24,12 +24,13 @@ public class PlayerAccessibilityDelegate implements AccessibilityDelegate {
     private final long mNativeAxTree;
     private final PlayerAccessibilityCoordinatesImpl mPlayerAccessibilityCoordinates;
 
-    public PlayerAccessibilityDelegate(PlayerFrameCoordinator coordinator, long nativeAxTree) {
+    public PlayerAccessibilityDelegate(
+            PlayerFrameCoordinator coordinator, long nativeAxTree, Size constantOffset) {
         mRootCoordinator = coordinator;
         mNativeAxTree = nativeAxTree;
         mPlayerAccessibilityCoordinates = new PlayerAccessibilityCoordinatesImpl(
                 mRootCoordinator.getViewportForAccessibility(),
-                mRootCoordinator.getContentSizeForAccessibility());
+                mRootCoordinator.getContentSizeForAccessibility(), constantOffset);
     }
 
     @Override
@@ -92,10 +93,13 @@ public class PlayerAccessibilityDelegate implements AccessibilityDelegate {
     static class PlayerAccessibilityCoordinatesImpl implements AccessibilityCoordinates {
         private final PlayerFrameViewport mViewport;
         private final Size mContentSize;
+        private final Size mConstantOffset;
 
-        PlayerAccessibilityCoordinatesImpl(PlayerFrameViewport viewport, Size contentSize) {
+        PlayerAccessibilityCoordinatesImpl(
+                PlayerFrameViewport viewport, Size contentSize, Size constantOffset) {
             mViewport = viewport;
             mContentSize = contentSize;
+            mConstantOffset = constantOffset;
         }
 
         @Override
@@ -137,13 +141,13 @@ public class PlayerAccessibilityDelegate implements AccessibilityDelegate {
         @Override
         public float getScrollX() {
             Rect rect = mViewport.asRect();
-            return rect.left;
+            return rect.left + (mConstantOffset == null ? 0 : mConstantOffset.getWidth());
         }
 
         @Override
         public float getScrollY() {
             Rect rect = mViewport.asRect();
-            return rect.top;
+            return rect.top + (mConstantOffset == null ? 0 : mConstantOffset.getHeight());
         }
     }
 }

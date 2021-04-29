@@ -413,5 +413,8 @@ public class TabbedPaintPreviewTest {
         public boolean isAccessibilityEnabled() {
             return false;
         }
+
+        @Override
+        public void onAccessibilityNotSupported() {}
     }
 }

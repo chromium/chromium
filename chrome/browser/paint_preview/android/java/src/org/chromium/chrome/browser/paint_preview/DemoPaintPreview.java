@@ -111,6 +111,15 @@ public class DemoPaintPreview implements PlayerManager.Listener {
         return ChromeAccessibilityUtil.get().isAccessibilityEnabled();
     }
 
+    @Override
+    public void onAccessibilityNotSupported() {
+        if (isAccessibilityEnabled()) {
+            Toast.makeText(mTab.getContext(), R.string.paint_preview_demo_no_accessibility,
+                         Toast.LENGTH_LONG)
+                    .show();
+        }
+    }
+
     private class DemoPaintPreviewTabObserver extends EmptyTabObserver {
         @Override
         public void onDidStartNavigation(Tab tab, NavigationHandle navigationHandle) {

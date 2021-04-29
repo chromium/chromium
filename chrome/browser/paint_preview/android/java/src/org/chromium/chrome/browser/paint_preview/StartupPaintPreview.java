@@ -290,6 +290,14 @@ public class StartupPaintPreview implements PlayerManager.Listener {
         return ChromeAccessibilityUtil.get().isAccessibilityEnabled();
     }
 
+    @Override
+    public void onAccessibilityNotSupported() {
+        // Ignore accessibility failures if accessibility is not enabled.
+        if (!isAccessibilityEnabled()) return;
+
+        remove(ExitCause.ACCESSIBILITY_NOT_SUPPORTED);
+    }
+
     @VisibleForTesting
     TabObserver getTabObserverForTesting() {
         return mStartupTabObserver;

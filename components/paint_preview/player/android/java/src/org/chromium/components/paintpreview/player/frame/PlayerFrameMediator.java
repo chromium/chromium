@@ -72,10 +72,11 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
     private final PlayerFrameBitmapStateController mBitmapStateController;
 
     private PlayerGestureListener mGestureListener;
+    private Runnable mInitialViewportSizeAvailable;
 
     PlayerFrameMediator(PropertyModel model, PlayerCompositorDelegate compositorDelegate,
             PlayerGestureListener gestureListener, UnguessableToken frameGuid, Size contentSize,
-            int initialScrollX, int initialScrollY) {
+            int initialScrollX, int initialScrollY, Runnable initialViewportSizeAvailable) {
         mBitmapScaleMatrix = new Matrix();
         mModel = model;
         mModel.set(PlayerFrameProperties.SCALE_MATRIX, mBitmapScaleMatrix);
@@ -93,6 +94,7 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
                 mGuid, mViewport, mContentSize, mCompositorDelegate, this, taskRunner);
         mViewport.offset(initialScrollX, initialScrollY);
         mViewport.setScale(0f);
+        mInitialViewportSizeAvailable = initialViewportSizeAvailable;
     }
 
     void destroy() {
@@ -164,6 +166,11 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
         final float scaleFactor = mViewport.getScale();
         updateViewportSize(
                 width, height, (scaleFactor == 0f) ? getInitialScaleFactor() : scaleFactor);
+
+        if (mInitialViewportSizeAvailable != null) {
+            mInitialViewportSizeAvailable.run();
+            mInitialViewportSizeAvailable = null;
+        }
     }
 
     @Override

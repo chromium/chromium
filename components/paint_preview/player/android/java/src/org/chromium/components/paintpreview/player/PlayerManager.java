@@ -7,6 +7,7 @@ package org.chromium.components.paintpreview.player;
 import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.util.Size;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -80,6 +81,11 @@ public class PlayerManager {
          * @return Whether accessibility is currently enabled.
          */
         boolean isAccessibilityEnabled();
+
+        /**
+         * Called when accessibility for paint preview cannot be provided.
+         */
+        void onAccessibilityNotSupported();
     }
 
     private static PlayerCompositorDelegate.Factory sCompositorDelegateFactory =
@@ -87,6 +93,7 @@ public class PlayerManager {
 
     private Context mContext;
     private PlayerCompositorDelegate mDelegate;
+    private PaintPreviewFrame mRootFrameData;
     private PlayerFrameCoordinator mRootFrameCoordinator;
     private FrameLayout mHostView;
     private static final String sInitEvent = "paint_preview PlayerManager init";
@@ -94,8 +101,16 @@ public class PlayerManager {
     private PlayerGestureListener mPlayerGestureListener;
     private boolean mIgnoreInitialScrollOffset;
     private Listener mListener;
+    private long mNativeAxTree;
     private PlayerAccessibilityDelegate mAccessibilityDelegate;
     private WebContentsAccessibilityImpl mWebContentsAccessibility;
+
+    // The minimum ratio value of a sub-frame's area to its parent, for the sub-frame to be
+    // considered 'large'.
+    private static final float LARGE_SUB_FRAME_RATIO = .8f;
+    // The maximum scroll extent value that is allowed for a frame to be considered non-scrollable,
+    // in pixels.
+    private static final float SCROLLABLE_FRAME_LENIENCY_THRESHOLD = 50;
 
     /**
      * Creates a new {@link PlayerManager}.
@@ -152,16 +167,17 @@ public class PlayerManager {
     private void onCompositorReady(UnguessableToken rootFrameGuid, UnguessableToken[] frameGuids,
             int[] frameContentSize, int[] scrollOffsets, int[] subFramesCount,
             UnguessableToken[] subFrameGuids, int[] subFrameClipRects, long nativeAxTree) {
-        PaintPreviewFrame rootFrame = buildFrameTreeHierarchy(rootFrameGuid, frameGuids,
-                frameContentSize, scrollOffsets, subFramesCount, subFrameGuids, subFrameClipRects,
+        mRootFrameData = buildFrameTreeHierarchy(rootFrameGuid, frameGuids, frameContentSize,
+                scrollOffsets, subFramesCount, subFrameGuids, subFrameClipRects,
                 mIgnoreInitialScrollOffset);
 
-        mRootFrameCoordinator = new PlayerFrameCoordinator(mContext, mDelegate, rootFrame.getGuid(),
-                rootFrame.getContentWidth(), rootFrame.getContentHeight(),
-                rootFrame.getInitialScrollX(), rootFrame.getInitialScrollY(), true,
-                mPlayerSwipeRefreshHandler, mPlayerGestureListener, mListener::onFirstPaint,
-                mListener::isAccessibilityEnabled);
-        buildSubFrameCoordinators(mRootFrameCoordinator, rootFrame);
+        mRootFrameCoordinator = new PlayerFrameCoordinator(mContext, mDelegate,
+                mRootFrameData.getGuid(), mRootFrameData.getContentWidth(),
+                mRootFrameData.getContentHeight(), mRootFrameData.getInitialScrollX(),
+                mRootFrameData.getInitialScrollY(), true, mPlayerSwipeRefreshHandler,
+                mPlayerGestureListener, mListener::onFirstPaint, mListener::isAccessibilityEnabled,
+                this::initializeAccessibility);
+        buildSubFrameCoordinators(mRootFrameCoordinator, mRootFrameData);
         mHostView.addView(mRootFrameCoordinator.getView(),
                 new FrameLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -169,15 +185,115 @@ public class PlayerManager {
             mHostView.addView(mPlayerSwipeRefreshHandler.getView());
         }
 
-        if (nativeAxTree != 0) {
+        mNativeAxTree = nativeAxTree;
+        TraceEvent.finishAsync(sInitEvent, hashCode());
+        mListener.onViewReady();
+    }
+
+    /**
+     * Attempts to initialize accessibility support for the player. The conditional logic exists
+     * because of the lack of accessibility support for paint previews with multiple scrollable
+     * sub-frames. The following cases can happen for a given paint preview:
+     * - If the root frame has no scrollable sub-frames, accessibility support will be added to it.
+     * - If the root frame has any scrollable sub-frames that are not its direct children, we can't
+     * add accessibility support.
+     * - If the root frame is scrollable and has any direct or indirect scrollable sub-frames,
+     * we can't have accessibility support.
+     * - If the root frame is not scrollable and has one large direct scrollable sub-frame (which
+     * is the case for AMP), it adds accessibility support for that sub-frame.
+     * - In any other case, we can't add accessibility support.
+     */
+    private void initializeAccessibility() {
+        if (mNativeAxTree == 0) {
+            mListener.onAccessibilityNotSupported();
+            return;
+        }
+
+        if (mRootFrameData.hasScrollableDescendants(false)) {
+            // If there are any scrollable sub-frames that are not direct children of root frame,
+            // we can't add accessibility support regardless of root frame's scrollability.
+            mListener.onAccessibilityNotSupported();
+            return;
+        }
+
+        if (!mRootFrameData.hasScrollableDescendants(true)) {
+            // In the absence of scrollable sub-frames, we can add accessibility support to the root
+            // frame.
             mAccessibilityDelegate =
-                    new PlayerAccessibilityDelegate(mRootFrameCoordinator, nativeAxTree);
+                    new PlayerAccessibilityDelegate(mRootFrameCoordinator, mNativeAxTree, null);
             mWebContentsAccessibility =
                     WebContentsAccessibilityImpl.fromDelegate(mAccessibilityDelegate);
             mRootFrameCoordinator.getView().setWebContentsAccessibility(mWebContentsAccessibility);
+            return;
         }
-        TraceEvent.finishAsync(sInitEvent, hashCode());
-        mListener.onViewReady();
+
+        float mainFrameScale = mRootFrameCoordinator.getViewportForAccessibility().getScale();
+        int mainFrameViewportHeight =
+                mRootFrameCoordinator.getViewportForAccessibility().getHeight();
+        boolean isMainFrameScrollable =
+                (mainFrameScale * mRootFrameData.getContentHeight()) - mainFrameViewportHeight
+                < SCROLLABLE_FRAME_LENIENCY_THRESHOLD;
+        if (isMainFrameScrollable) {
+            // We cannot have accessibility support if we have scrollable sub-frames as well as a
+            // scrollable main frame.
+            mListener.onAccessibilityNotSupported();
+            return;
+        }
+
+        // If the main frame is not scrollable and we have exactly 1 large scrollable sub-frame
+        // (which is the case in AMPs), we can add accessibility support.
+        int scrollableSubFrameIndex = indexOfLargeScrollableSubFrame();
+        if (scrollableSubFrameIndex == -1) {
+            // There were either more than 1 scrollable sub-frames, or the scrollable sub-frame
+            // was not large enough.
+            mListener.onAccessibilityNotSupported();
+            return;
+        }
+
+        PlayerFrameCoordinator scrollableSubFrame =
+                mRootFrameCoordinator.getSubFrameForAccessibility(scrollableSubFrameIndex);
+        if (scrollableSubFrame == null) {
+            mListener.onAccessibilityNotSupported();
+            return;
+        }
+
+        Size subFrameOffset =
+                new Size(mRootFrameData.getSubFrameClips()[scrollableSubFrameIndex].left,
+                        mRootFrameData.getSubFrameClips()[scrollableSubFrameIndex].top);
+        mAccessibilityDelegate =
+                new PlayerAccessibilityDelegate(scrollableSubFrame, mNativeAxTree, subFrameOffset);
+        mWebContentsAccessibility =
+                WebContentsAccessibilityImpl.fromDelegate(mAccessibilityDelegate);
+        scrollableSubFrame.getView().setWebContentsAccessibility(mWebContentsAccessibility);
+    }
+
+    /**
+     * Searches for a large scrollable sub-frame. Only returns a valid index if there is only one
+     * scrollable direct sub-frame, and that sub-frame is sufficiently large (80% of main frame).
+     */
+    private int indexOfLargeScrollableSubFrame() {
+        Rect mainFrameViewPort = mRootFrameCoordinator.getViewportForAccessibility().asRect();
+        int scrollableSubFrameIndex = -1;
+        boolean hasLargeScrollableSubFrame = false;
+        for (int i = 0; i < mRootFrameData.getSubFrames().length; i++) {
+            PaintPreviewFrame subFrame = mRootFrameData.getSubFrames()[i];
+            Rect subFrameClip = mRootFrameData.getSubFrameClips()[i];
+            if (subFrame.getContentWidth() > subFrameClip.width()
+                    || subFrame.getContentHeight() > subFrameClip.width()) {
+                if (scrollableSubFrameIndex != -1) {
+                    // This is the second scrollable sub-frame. We can't have accessibility support.
+                    scrollableSubFrameIndex = -1;
+                    break;
+                }
+                scrollableSubFrameIndex = i;
+                float subFrameArea = subFrameClip.width() * subFrameClip.height();
+                float mainFrameArea = mainFrameViewPort.width() * mainFrameViewPort.height();
+                if (subFrameArea / mainFrameArea > LARGE_SUB_FRAME_RATIO) {
+                    hasLargeScrollableSubFrame = true;
+                }
+            }
+        }
+        return hasLargeScrollableSubFrame ? scrollableSubFrameIndex : -1;
     }
 
     /**
@@ -238,7 +354,7 @@ public class PlayerManager {
                     new PlayerFrameCoordinator(mContext, mDelegate, childFrame.getGuid(),
                             childFrame.getContentWidth(), childFrame.getContentHeight(),
                             childFrame.getInitialScrollX(), childFrame.getInitialScrollY(), false,
-                            null, mPlayerGestureListener, null, null);
+                            null, mPlayerGestureListener, null, null, null);
             buildSubFrameCoordinators(childCoordinator, childFrame);
             frameCoordinator.addSubFrame(childCoordinator, frame.getSubFrameClips()[i]);
         }

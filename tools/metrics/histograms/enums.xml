@@ -76634,6 +76634,7 @@ would be helpful to identify which type is being sent.
   <int value="6" label="Tab Destroyed"/>
   <int value="7" label="Tab Hidden"/>
   <int value="8" label="Offline Available"/>
+  <int value="9" label="Accessibility Not Supported"/>
 </enum>
 
 <enum name="TabDiscardingEvents">

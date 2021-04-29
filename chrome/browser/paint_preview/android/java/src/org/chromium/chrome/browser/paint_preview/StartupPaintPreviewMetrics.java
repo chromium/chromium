@@ -22,7 +22,8 @@ public class StartupPaintPreviewMetrics {
     /** Used for recording the cause for exiting the Paint Preview player. */
     @IntDef({ExitCause.PULL_TO_REFRESH, ExitCause.SNACK_BAR_ACTION, ExitCause.COMPOSITOR_FAILURE,
             ExitCause.TAB_FINISHED_LOADING, ExitCause.LINK_CLICKED, ExitCause.NAVIGATION_STARTED,
-            ExitCause.TAB_DESTROYED, ExitCause.TAB_HIDDEN, ExitCause.OFFLINE_AVAILABLE})
+            ExitCause.TAB_DESTROYED, ExitCause.TAB_HIDDEN, ExitCause.OFFLINE_AVAILABLE,
+            ExitCause.ACCESSIBILITY_NOT_SUPPORTED})
     @interface ExitCause {
         int PULL_TO_REFRESH = 0;
         int SNACK_BAR_ACTION = 1;
@@ -33,7 +34,8 @@ public class StartupPaintPreviewMetrics {
         int TAB_DESTROYED = 6;
         int TAB_HIDDEN = 7;
         int OFFLINE_AVAILABLE = 8;
-        int COUNT = 9;
+        int ACCESSIBILITY_NOT_SUPPORTED = 9;
+        int COUNT = 10;
     }
 
     private static final Map<Integer, String> UPTIME_HISTOGRAM_MAP = new HashMap<>();
@@ -56,6 +58,8 @@ public class StartupPaintPreviewMetrics {
                 "Browser.PaintPreview.TabbedPlayer.UpTime.RemovedOnTabHidden");
         UPTIME_HISTOGRAM_MAP.put(ExitCause.OFFLINE_AVAILABLE,
                 "Browser.PaintPreview.TabbedPlayer.UpTime.RemovedOnOfflineAvailable");
+        UPTIME_HISTOGRAM_MAP.put(ExitCause.ACCESSIBILITY_NOT_SUPPORTED,
+                "Browser.PaintPreview.TabbedPlayer.UpTime.RemovedOnAccessibilityNotSupported");
     }
 
     private long mShownTime;

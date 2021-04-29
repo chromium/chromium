@@ -19193,6 +19193,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="RemovedByNavigation" label="Removed by navigation"/>
   <suffix name="RemovedByPullToRefresh" label="Removed by pull to refresh"/>
   <suffix name="RemovedBySnackBar" label="Removed by SnackBar"/>
+  <suffix name="RemovedOnAccessibilityNotSupported"
+      label="Removed on accessibility not supported"/>
   <suffix name="RemovedOnLoad" label="Removed on load"/>
   <suffix name="RemovedOnOfflineAvailable"
       label="Removed on offline page available"/>
