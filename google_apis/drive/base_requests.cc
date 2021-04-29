@@ -18,6 +18,7 @@
 #include "base/macros.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -455,7 +456,7 @@ void UrlFetchRequestBase::OnDataReceived(base::StringPiece string_piece,
     base::PostTaskAndReplyWithResult(
         blocking_task_runner(), FROM_HERE,
         base::BindOnce(&UrlFetchRequestBase::WriteFileData,
-                       string_piece.as_string(), download_data_ptr),
+                       std::string(string_piece), download_data_ptr),
         base::BindOnce(&UrlFetchRequestBase::OnWriteComplete,
                        weak_ptr_factory_.GetWeakPtr(),
                        std::move(download_data_), std::move(resume)));

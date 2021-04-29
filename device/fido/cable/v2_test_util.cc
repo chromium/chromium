@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -62,10 +63,10 @@ class TestNetworkContext : public network::TestNetworkContext {
     static const char kContactPrefix[] = "/cable/contact/";
     if (path.find(kNewPrefix) == 0) {
       path.remove_prefix(sizeof(kNewPrefix) - 1);
-      CHECK(!base::Contains(connections_, path.as_string()));
-      connections_.emplace(path.as_string(), std::make_unique<Connection>(
-                                                 Connection::Type::NEW,
-                                                 std::move(handshake_client)));
+      CHECK(!base::Contains(connections_, std::string(path)));
+      connections_.emplace(std::string(path), std::make_unique<Connection>(
+                                                  Connection::Type::NEW,
+                                                  std::move(handshake_client)));
     } else if (path.find(kConnectPrefix) == 0) {
       path.remove_prefix(sizeof(kConnectPrefix) - 1);
       // The first part of |path| will be a hex-encoded routing ID followed by a
@@ -74,7 +75,7 @@ class TestNetworkContext : public network::TestNetworkContext {
       CHECK_GE(path.size(), kRoutingIdComponentSize);
       path.remove_prefix(kRoutingIdComponentSize);
 
-      const auto it = connections_.find(path.as_string());
+      const auto it = connections_.find(std::string(path));
       CHECK(it != connections_.end()) << "Unknown tunnel requested";
       it->second->set_peer(std::make_unique<Connection>(
           Connection::Type::CONNECT, std::move(handshake_client)));

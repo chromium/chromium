@@ -192,7 +192,7 @@ RecoveredColumnSpec ParseColumnSpec(const char* sqlite_arg) {
     result.is_non_null = true;
   }
 
-  result.name = column_name.as_string();
+  result.name = std::string(column_name);
   return result;
 }
 
@@ -212,7 +212,7 @@ TargetTableSpec ParseTableSpec(const char* sqlite_arg) {
 
   base::StringPiece db_name = sql.substr(0, separator_pos);
   base::StringPiece table_name = sql.substr(separator_pos + 1);
-  return TargetTableSpec{db_name.as_string(), table_name.as_string()};
+  return TargetTableSpec{std::string(db_name), std::string(table_name)};
 }
 
 }  // namespace recover

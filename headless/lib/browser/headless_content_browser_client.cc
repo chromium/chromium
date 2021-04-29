@@ -14,6 +14,7 @@
 #include "base/i18n/rtl.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "components/embedder_support/switches.h"
@@ -250,7 +251,7 @@ void HeadlessContentBrowserClient::AppendExtraCommandLineSwitches(
           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
       if (!languages.empty()) {
         command_line->AppendSwitchASCII(::switches::kLang,
-                                        languages[0].as_string());
+                                        std::string(languages[0]));
       }
     }
 

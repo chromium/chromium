@@ -92,7 +92,7 @@ void GetSwitchValueWithDefault(base::StringPiece switch_value,
   if (command_line->HasSwitch(switch_value)) {
     *output_value = command_line->GetSwitchValueASCII(switch_value);
   } else {
-    *output_value = default_value.as_string();
+    *output_value = std::string(default_value);
   }
 }
 

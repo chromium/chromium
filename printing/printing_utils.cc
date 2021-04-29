@@ -82,7 +82,7 @@ gfx::Size GetDefaultPaperSizeFromLocaleMicrons(base::StringPiece locale) {
   int32_t width = 0;
   int32_t height = 0;
   UErrorCode error = U_ZERO_ERROR;
-  ulocdata_getPaperSize(locale.as_string().c_str(), &height, &width, &error);
+  ulocdata_getPaperSize(std::string(locale).c_str(), &height, &width, &error);
   if (error > U_ZERO_ERROR) {
     // If the call failed, assume Letter paper size.
     LOG(WARNING) << "ulocdata_getPaperSize failed, using ISO A4 Paper, error: "

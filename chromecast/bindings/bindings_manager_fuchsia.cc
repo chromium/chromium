@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/strings/string_piece.h"
 #include "components/cast/message_port/message_port_fuchsia.h"
 #include "fuchsia/base/mem_buffer_util.h"
 #include "fuchsia/base/message_port.h"
@@ -22,7 +23,7 @@ BindingsManagerFuchsia::~BindingsManagerFuchsia() = default;
 
 void BindingsManagerFuchsia::AddBinding(base::StringPiece binding_name,
                                         base::StringPiece binding_script) {
-  bindings_[binding_name.as_string()] =
+  bindings_[std::string(binding_name)] =
       cr_fuchsia::MemBufferFromString(binding_script, "cast-binding-script");
 }
 

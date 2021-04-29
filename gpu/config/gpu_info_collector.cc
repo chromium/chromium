@@ -255,7 +255,7 @@ bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
     // Also declare the driver_vendor to be <software GL> to be able to
     // specify exceptions based on driver_vendor==<software GL> for some
     // blocklist rules.
-    gpu_info->gpu.driver_vendor = software_gl_impl_name.as_string();
+    gpu_info->gpu.driver_vendor = std::string(software_gl_impl_name);
 
     return true;
   } else if ((implementation == gl::GetSoftwareGLImplementation()) ||

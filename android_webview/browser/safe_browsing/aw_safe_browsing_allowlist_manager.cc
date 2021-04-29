@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/sequenced_task_runner.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task_runner_util.h"
@@ -67,7 +68,7 @@ void InsertRuleToTrie(const std::vector<base::StringPiece>& components,
   for (auto hostcomp = components.rbegin(); hostcomp != components.rend();
        ++hostcomp) {
     DCHECK(!node->match_prefix);
-    std::string component = hostcomp->as_string();
+    std::string component(*hostcomp);
     auto child_node = node->children.find(component);
     if (child_node == node->children.end()) {
       std::unique_ptr<TrieNode> temp = std::make_unique<TrieNode>();
@@ -117,7 +118,7 @@ bool AddRuleToAllowlist(base::StringPiece rule, TrieNode* root) {
     started_with_dot = true;
   }
   // With the dot removed |rule| should look like a hostname.
-  GURL test_url("http://" + rule.as_string());
+  GURL test_url("http://" + std::string(rule));
   if (!test_url.is_valid()) {
     return false;
   }
@@ -162,7 +163,7 @@ bool IsAllowed(const GURL& url, const TrieNode* node) {
     if (node->match_prefix) {
       return true;
     }
-    auto child_node = node->children.find(component->as_string());
+    auto child_node = node->children.find(std::string(*component));
     if (child_node == node->children.end()) {
       return false;
     } else {
