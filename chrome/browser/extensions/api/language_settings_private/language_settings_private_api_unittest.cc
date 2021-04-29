@@ -25,12 +25,14 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/prefs/pref_member.h"
 #include "components/spellcheck/common/spellcheck_features.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_prefs.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "ui/base/ime/chromeos/component_extension_ime_manager.h"
 #include "ui/base/ime/chromeos/extension_ime_util.h"
 #include "ui/base/ime/chromeos/fake_input_method_delegate.h"
@@ -113,6 +115,9 @@ class LanguageSettingsPrivateApiTest : public ExtensionServiceTestBase {
     // Force Windows hybrid spellcheck to be enabled.
     feature_list_.InitAndEnableFeature(spellcheck::kWinUseBrowserSpellChecker);
 #endif  // defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    feature_list_.InitAndEnableFeature(ash::features::kLanguageSettingsUpdate2);
+#endif
   }
 
 #if defined(OS_WIN)
@@ -567,8 +572,12 @@ TEST_F(LanguageSettingsPrivateApiTest, AddInputMethodTest) {
   enabled_imes.Init(prefs::kLanguageEnabledImes, profile()->GetPrefs());
   StringPrefMember preload_engines;
   preload_engines.Init(prefs::kLanguagePreloadEngines, profile()->GetPrefs());
+  BooleanPrefMember language_menu_enabled;
+  language_menu_enabled.Init(prefs::kLanguageImeMenuActivated,
+                             profile()->GetPrefs());
   enabled_imes.SetValue(std::string());
   preload_engines.SetValue(std::string());
+  language_menu_enabled.SetValue(false);
 
   {
     // Add an extension IME. kLanguageEnabledImes should be updated.
@@ -579,10 +588,12 @@ TEST_F(LanguageSettingsPrivateApiTest, AddInputMethodTest) {
 
     EXPECT_EQ(GetExtensionImeId(), enabled_imes.GetValue());
     EXPECT_TRUE(preload_engines.GetValue().empty());
+    EXPECT_FALSE(language_menu_enabled.GetValue());
   }
 
   enabled_imes.SetValue(std::string());
   preload_engines.SetValue(std::string());
+  language_menu_enabled.SetValue(false);
   {
     // Add a component extension IME. kLanguagePreloadEngines should be
     // updated.
@@ -594,10 +605,12 @@ TEST_F(LanguageSettingsPrivateApiTest, AddInputMethodTest) {
 
     EXPECT_TRUE(enabled_imes.GetValue().empty());
     EXPECT_EQ(GetComponentExtensionImeId(), preload_engines.GetValue());
+    EXPECT_FALSE(language_menu_enabled.GetValue());
   }
 
   enabled_imes.SetValue(std::string());
   preload_engines.SetValue(std::string());
+  language_menu_enabled.SetValue(false);
   {
     // Add an ARC IME. kLanguageEnabledImes should be updated.
     auto function =
@@ -607,6 +620,28 @@ TEST_F(LanguageSettingsPrivateApiTest, AddInputMethodTest) {
 
     EXPECT_EQ(GetArcImeId(), enabled_imes.GetValue());
     EXPECT_TRUE(preload_engines.GetValue().empty());
+    EXPECT_FALSE(language_menu_enabled.GetValue());
+  }
+
+  enabled_imes.SetValue(std::string());
+  preload_engines.SetValue(std::string());
+  language_menu_enabled.SetValue(false);
+  {
+    // Add an extension IME and a component extension IME. Both should be
+    // updated, and the language menu should be enabled.
+    auto function =
+        base::MakeRefCounted<LanguageSettingsPrivateAddInputMethodFunction>();
+    api_test_utils::RunFunctionAndReturnSingleResult(
+        function.get(), "[\"" + GetExtensionImeId() + "\"]", profile());
+    function =
+        base::MakeRefCounted<LanguageSettingsPrivateAddInputMethodFunction>();
+    api_test_utils::RunFunctionAndReturnSingleResult(
+        function.get(), "[\"" + GetComponentExtensionImeId() + "\"]",
+        profile());
+
+    EXPECT_EQ(GetExtensionImeId(), enabled_imes.GetValue());
+    EXPECT_EQ(GetComponentExtensionImeId(), preload_engines.GetValue());
+    EXPECT_TRUE(language_menu_enabled.GetValue());
   }
 
   TestInputMethodManager::Shutdown();
