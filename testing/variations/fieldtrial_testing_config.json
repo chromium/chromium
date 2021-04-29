@@ -7238,6 +7238,21 @@
             ]
         }
     ],
+    "UseNotificationCompatBuilder": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseNotificationCompatBuilder"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseSkiaRenderer": [
         {
             "platforms": [
