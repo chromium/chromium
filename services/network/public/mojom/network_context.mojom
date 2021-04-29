@@ -228,7 +228,7 @@ struct NetworkContextParams {
   // used if |proxy_resolver_factory| is set. Note: optional because some tests
   // build their own NetworkContextParams and don't need a DHCP WPAD client.
   [EnableIf=is_chromeos_ash]
-  DhcpWpadUrlClient? dhcp_wpad_url_client;
+  pending_remote<DhcpWpadUrlClient>? dhcp_wpad_url_client;
 
   // Points to the cookie file. An in-memory cookie store is used if it's empty.
   mojo_base.mojom.FilePath? cookie_path;
