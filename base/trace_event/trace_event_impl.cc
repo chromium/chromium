@@ -31,15 +31,8 @@ namespace perfetto {
 namespace legacy {
 
 template <>
-bool ConvertThreadId(const ::base::PlatformThreadId& thread,
-                     uint64_t* track_uuid_out,
-                     int32_t* pid_override_out,
-                     int32_t* tid_override_out) {
-  // Only support threads in the current process.
-  *track_uuid_out = perfetto::ThreadTrack::ForThread(
-                        static_cast<base::PlatformThreadId>(thread))
-                        .uuid;
-  return true;
+perfetto::ThreadTrack ConvertThreadId(const ::base::PlatformThreadId& thread) {
+  return perfetto::ThreadTrack::ForThread(static_cast<int32_t>(thread));
 }
 
 }  // namespace legacy
