@@ -52,7 +52,7 @@ void TextFragmentHandler::RemoveFragments() {
 
 // static
 bool TextFragmentHandler::IsOverTextFragment(HitTestResult result) {
-  if (!result.InnerNode()) {
+  if (!result.InnerNode() || !result.InnerNodeFrame()) {
     return false;
   }
 
