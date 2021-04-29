@@ -118,9 +118,16 @@ SMILTimeContainer::TimingUpdate::~TimingUpdate() {
   if (!ShouldDispatchEvents())
     return;
   DCHECK(IsSeek() || updated_elements_.IsEmpty());
+  HeapVector<Member<SVGSMILElement>> updated_elements_vector;
   for (const auto& entry : updated_elements_) {
-    SVGSMILElement* element = entry.key;
-    if (auto events_to_dispatch = element->ComputeSeekEvents(entry.value))
+    updated_elements_vector.push_back(entry.key);
+  }
+  std::sort(updated_elements_vector.begin(), updated_elements_vector.end(),
+            recordreplay::CompareMemberByPointerId<Member<SVGSMILElement>>());
+  for (const Member<SVGSMILElement>& element : updated_elements_vector) {
+    auto iter = updated_elements_.find(element);
+    CHECK(iter != updated_elements_.end());
+    if (auto events_to_dispatch = element->ComputeSeekEvents(iter->value))
       element->DispatchEvents(events_to_dispatch);
   }
 }
