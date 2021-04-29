@@ -317,11 +317,15 @@ struct PasswordForm {
     // Default value.
     kNotSet = 0,
     // Credential came from the profile (i.e. local) storage.
-    kProfileStore = 1,
+    kProfileStore = 1 << 0,
     // Credential came from the Gaia-account-scoped storage.
-    kAccountStore = 2,
+    kAccountStore = 1 << 1,
     kMaxValue = kAccountStore
   };
+  // Please use IsUsingAccountStore and IsUsingProfileStore to check in which
+  // store the form is present.
+  // TODO(crbug.com/1201643): Rename to in_stores to reflect possibility of
+  // password presence in both stores.
   Store in_store = Store::kNotSet;
 
   // Vector of hashes of the gaia id for users who prefer not to move this
@@ -354,9 +358,11 @@ struct PasswordForm {
   // not set.
   bool IsSingleUsername() const;
 
-  // Returns whether this form is stored in the account-scoped store, i.e.
-  // whether |in_store == Store::kAccountStore|.
+  // Returns whether this form is stored in the account-scoped store.
   bool IsUsingAccountStore() const;
+
+  // Returns whether this form is stored in the profile-scoped store.
+  bool IsUsingProfileStore() const;
 
   // Returns true when |password_value| or |new_password_value| are non-empty.
   bool HasNonEmptyPasswordValue() const;
@@ -386,6 +392,18 @@ std::ostream& operator<<(std::ostream& os, PasswordForm::Scheme scheme);
 std::ostream& operator<<(std::ostream& os, const PasswordForm& form);
 std::ostream& operator<<(std::ostream& os, PasswordForm* form);
 #endif
+
+constexpr PasswordForm::Store operator&(PasswordForm::Store lhs,
+                                        PasswordForm::Store rhs) {
+  return static_cast<PasswordForm::Store>(static_cast<int>(lhs) &
+                                          static_cast<int>(rhs));
+}
+
+constexpr PasswordForm::Store operator|(PasswordForm::Store lhs,
+                                        PasswordForm::Store rhs) {
+  return static_cast<PasswordForm::Store>(static_cast<int>(lhs) |
+                                          static_cast<int>(rhs));
+}
 
 }  // namespace password_manager
 

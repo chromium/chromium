@@ -77,8 +77,7 @@ class SavedPasswordsPresenter : public PasswordStore::Observer,
   // Modifies the provided password form and its duplicates
   // with `new_username` and `new_password`.
   //
-  // Note: this will only change credentials in the store that `form` comes
-  // from.
+  // Note: this will also change duplicates of 'form' in all stores.
   bool EditSavedPasswords(const PasswordForm& form,
                           const std::u16string& new_username,
                           const std::u16string& new_password);
@@ -93,6 +92,13 @@ class SavedPasswordsPresenter : public PasswordStore::Observer,
   // Returns a list of the currently saved credentials.
   SavedPasswordsView GetSavedPasswords() const;
 
+  // Returns a list of unique credentials. If a same password is present both on
+  // account and profile stores it will be represented as a single entity.
+  // Uniqueness is determined using site name, username, password. For Android
+  // credentials package name is also taken into account and for Federated
+  // credentials federation origin.
+  std::vector<PasswordForm> GetUniquePasswords() const;
+
   // Returns all the usernames for credentials saved for `signon_realm`. If
   // `is_using_account_store` is true, this method will only consider
   // credentials saved in the account store. Otherwiser it will only consider
@@ -106,6 +112,7 @@ class SavedPasswordsPresenter : public PasswordStore::Observer,
   void RemoveObserver(Observer* observer);
 
  private:
+  using DuplicatePasswordsMap = std::multimap<std::string, PasswordForm>;
   // PasswordStore::Observer
   void OnLoginsChanged(const PasswordStoreChangeList& changes) override;
   void OnLoginsChangedIn(PasswordStore* store,
@@ -122,6 +129,11 @@ class SavedPasswordsPresenter : public PasswordStore::Observer,
   void NotifyEdited(const PasswordForm& password);
   void NotifySavedPasswordsChanged();
 
+  // Returns the `profile_store_` or `account_store_` if `form` is stored in the
+  // profile store or the account store accordingly. This function should be
+  // used only for credential stored in a single store.
+  PasswordStore& GetStoreFor(const PasswordForm& form);
+
   // The password stores containing the saved passwords.
   scoped_refptr<PasswordStore> profile_store_;
   scoped_refptr<PasswordStore> account_store_;
@@ -129,6 +141,9 @@ class SavedPasswordsPresenter : public PasswordStore::Observer,
   // Cache of the most recently obtained saved passwords. Profile store
   // passwords are always stored first, and then account store passwords if any.
   std::vector<PasswordForm> passwords_;
+
+  // Structure used to deduplicate list of passwords.
+  DuplicatePasswordsMap sort_key_to_password_forms;
 
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
 };

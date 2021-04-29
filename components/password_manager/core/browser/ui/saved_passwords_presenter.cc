@@ -19,6 +19,7 @@
 namespace {
 using password_manager::metrics_util::IsPasswordChanged;
 using password_manager::metrics_util::IsUsernameChanged;
+using Store = password_manager::PasswordForm::Store;
 using SavedPasswordsView =
     password_manager::SavedPasswordsPresenter::SavedPasswordsView;
 
@@ -37,6 +38,13 @@ bool IsUsernameAlreadyUsed(SavedPasswordsView all_forms,
            });
   };
   return base::ranges::any_of(all_forms, has_conflicting_username);
+}
+
+// Returns trues if there is at least one password store that contains both
+// passwords.
+constexpr bool ShareSameStore(const password_manager::PasswordForm& lhs,
+                              const password_manager::PasswordForm& rhs) {
+  return (lhs.in_store & rhs.in_store) != Store::kNotSet;
 }
 
 }  // namespace
@@ -67,14 +75,19 @@ void SavedPasswordsPresenter::Init() {
 }
 
 void SavedPasswordsPresenter::RemovePassword(const PasswordForm& form) {
-  std::string current_form_key = CreateSortKey(form);
-  for (const auto& saved_form : passwords_) {
-    if (CreateSortKey(saved_form) == current_form_key) {
-      PasswordStore& store =
-          saved_form.IsUsingAccountStore() ? *account_store_ : *profile_store_;
-      store.RemoveLogin(saved_form);
+  std::string current_form_key = CreateSortKey(form, IgnoreStore(true));
+  const auto range = sort_key_to_password_forms.equal_range(current_form_key);
+
+  std::for_each(range.first, range.second, [&](const auto& pair) {
+    const auto& current_form = pair.second;
+    // Make sure |form| and |current_form| share the same store.
+    if (ShareSameStore(form, current_form)) {
+      // |current_form| is unchanged result obtained from
+      // 'OnGetPasswordStoreResultsFrom'. So it can be present only in one store
+      // at a time..
+      GetStoreFor(current_form).RemoveLogin(current_form);
     }
-  }
+  });
 }
 
 bool SavedPasswordsPresenter::EditPassword(const PasswordForm& form,
@@ -98,15 +111,16 @@ bool SavedPasswordsPresenter::EditSavedPasswords(
     const PasswordForm& form,
     const std::u16string& new_username,
     const std::u16string& new_password) {
-  // TODO(crbug.com/1184691): Adapt this code to support credentials
-  // coming from both account and profile store, then change desktop
-  // settings and maybe iOS to use this presenter for updating the duplicates.
+  // TODO(crbug.com/1184691): Change desktop settings and maybe iOS to use this
+  // presenter for updating the duplicates.
   std::vector<PasswordForm> forms_to_change;
-  std::string current_form_key = CreateSortKey(form);
-  for (const auto& saved_form : passwords_) {
-    if (CreateSortKey(saved_form) == current_form_key)
-      forms_to_change.push_back(saved_form);
-  }
+
+  std::string current_form_key = CreateSortKey(form, IgnoreStore(true));
+  const auto range = sort_key_to_password_forms.equal_range(current_form_key);
+
+  base::ranges::transform(range.first, range.second,
+                          std::back_inserter(forms_to_change),
+                          [](const auto& pair) { return pair.second; });
   return EditSavedPasswords(forms_to_change, new_username, new_password);
 }
 
@@ -128,9 +142,7 @@ bool SavedPasswordsPresenter::EditSavedPasswords(
   // class.
   if (username_changed || password_changed) {
     for (const auto& old_form : forms) {
-      PasswordStore& store =
-          old_form.IsUsingAccountStore() ? *account_store_ : *profile_store_;
-
+      PasswordStore& store = GetStoreFor(old_form);
       PasswordForm new_form = old_form;
       new_form.username_value = new_username;
       new_form.password_value = new_password;
@@ -154,6 +166,25 @@ bool SavedPasswordsPresenter::EditSavedPasswords(
 SavedPasswordsPresenter::SavedPasswordsView
 SavedPasswordsPresenter::GetSavedPasswords() const {
   return passwords_;
+}
+
+std::vector<PasswordForm> SavedPasswordsPresenter::GetUniquePasswords() const {
+  std::vector<PasswordForm> forms;
+
+  auto it = sort_key_to_password_forms.begin();
+  std::string current_key;
+
+  while (it != sort_key_to_password_forms.end()) {
+    if (current_key != it->first) {
+      current_key = it->first;
+      forms.push_back(it->second);
+    } else {
+      forms.back().in_store = forms.back().in_store | it->second.in_store;
+    }
+    ++it;
+  }
+
+  return forms;
 }
 
 std::vector<std::u16string> SavedPasswordsPresenter::GetUsernamesForRealm(
@@ -242,7 +273,19 @@ void SavedPasswordsPresenter::OnGetPasswordStoreResultsFrom(
     base::ranges::transform(results, std::back_inserter(passwords_),
                             [](auto& result) { return std::move(*result); });
   }
+
+  sort_key_to_password_forms.clear();
+  base::ranges::for_each(passwords_, [&](const auto& result) {
+    sort_key_to_password_forms.insert(
+        std::make_pair(CreateSortKey(result, IgnoreStore(true)), result));
+  });
+
   NotifySavedPasswordsChanged();
+}
+
+PasswordStore& SavedPasswordsPresenter::GetStoreFor(const PasswordForm& form) {
+  DCHECK_NE(form.IsUsingAccountStore(), form.IsUsingProfileStore());
+  return form.IsUsingAccountStore() ? *account_store_ : *profile_store_;
 }
 
 }  // namespace password_manager

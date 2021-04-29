@@ -202,7 +202,11 @@ bool PasswordForm::IsSingleUsername() const {
 }
 
 bool PasswordForm::IsUsingAccountStore() const {
-  return in_store == Store::kAccountStore;
+  return (in_store & Store::kAccountStore) != Store::kNotSet;
+}
+
+bool PasswordForm::IsUsingProfileStore() const {
+  return (in_store & Store::kProfileStore) != Store::kNotSet;
 }
 
 bool PasswordForm::HasNonEmptyPasswordValue() const {
