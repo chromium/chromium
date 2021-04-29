@@ -1935,8 +1935,7 @@ CookiesTreeModel::GetCookieDeletionDisabledCallback(Profile* profile) {
 // static
 std::unique_ptr<CookiesTreeModel> CookiesTreeModel::CreateForProfile(
     Profile* profile) {
-  auto* storage_partition =
-      content::BrowserContext::GetDefaultStoragePartition(profile);
+  auto* storage_partition = profile->GetDefaultStoragePartition();
   auto* file_system_context = storage_partition->GetFileSystemContext();
   auto* native_io_context = storage_partition->GetNativeIOContext();
 

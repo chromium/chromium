@@ -223,8 +223,7 @@ void LoginTabHelper::HandleCredentials(
 
   if (credentials.has_value()) {
     content::StoragePartition* storage_partition =
-        content::BrowserContext::GetStoragePartition(
-            web_contents()->GetBrowserContext(),
+        web_contents()->GetBrowserContext()->GetStoragePartition(
             web_contents()->GetSiteInstance());
     // Pass a weak pointer for the callback, as the WebContents (and thus this
     // LoginTabHelper) could be destroyed while the network service is

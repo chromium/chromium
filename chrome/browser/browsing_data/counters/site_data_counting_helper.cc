@@ -46,8 +46,7 @@ SiteDataCountingHelper::SiteDataCountingHelper(
 SiteDataCountingHelper::~SiteDataCountingHelper() {}
 
 void SiteDataCountingHelper::CountAndDestroySelfWhenFinished() {
-  content::StoragePartition* partition =
-      content::BrowserContext::GetDefaultStoragePartition(profile_);
+  content::StoragePartition* partition = profile_->GetDefaultStoragePartition();
 
   scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy(
       profile_->GetSpecialStoragePolicy());
@@ -100,8 +99,7 @@ void SiteDataCountingHelper::CountAndDestroySelfWhenFinished() {
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   // Count origins with media licenses.
   storage::FileSystemContext* file_system_context =
-      content::BrowserContext::GetDefaultStoragePartition(profile_)
-          ->GetFileSystemContext();
+      profile_->GetDefaultStoragePartition()->GetFileSystemContext();
   media_license_helper_ =
       BrowsingDataMediaLicenseHelper::Create(file_system_context);
   if (media_license_helper_) {

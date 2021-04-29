@@ -18,8 +18,7 @@ using content::BrowserThread;
 namespace browser_ui {
 
 StorageInfoFetcher::StorageInfoFetcher(content::BrowserContext* context) {
-  quota_manager_ = content::BrowserContext::GetDefaultStoragePartition(context)
-                       ->GetQuotaManager();
+  quota_manager_ = context->GetDefaultStoragePartition()->GetQuotaManager();
 }
 
 StorageInfoFetcher::~StorageInfoFetcher() = default;

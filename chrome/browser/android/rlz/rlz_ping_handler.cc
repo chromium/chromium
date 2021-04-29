@@ -44,9 +44,8 @@ namespace android {
 RlzPingHandler::RlzPingHandler(const JavaRef<jobject>& jprofile) {
   Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
   DCHECK(profile);
-  url_loader_factory_ =
-      content::BrowserContext::GetDefaultStoragePartition(profile)
-          ->GetURLLoaderFactoryForBrowserProcess();
+  url_loader_factory_ = profile->GetDefaultStoragePartition()
+                            ->GetURLLoaderFactoryForBrowserProcess();
 }
 
 RlzPingHandler::~RlzPingHandler() = default;

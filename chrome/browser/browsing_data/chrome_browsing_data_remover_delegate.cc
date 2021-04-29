@@ -289,8 +289,7 @@ ChromeBrowsingDataRemoverDelegate::ChromeBrowsingDataRemoverDelegate(
          network::mojom::NetworkContext::ClearDomainReliabilityCallback
              callback) {
         network::mojom::NetworkContext* network_context =
-            BrowserContext::GetDefaultStoragePartition(browser_context)
-                ->GetNetworkContext();
+            browser_context->GetDefaultStoragePartition()->GetNetworkContext();
         network_context->ClearDomainReliability(
             filter_builder->BuildNetworkServiceFilter(), mode,
             std::move(callback));
@@ -489,11 +488,9 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     // Need to clear the host cache and accumulated speculative data, as it also
     // reveals some history. We have no mechanism to track when these items were
     // created, so we'll not honor the time range.
-    BrowserContext::GetDefaultStoragePartition(profile_)
-        ->GetNetworkContext()
-        ->ClearHostCache(
-            filter_builder->BuildNetworkServiceFilter(),
-            CreateTaskCompletionClosureForMojo(TracingDataType::kHostCache));
+    profile_->GetDefaultStoragePartition()->GetNetworkContext()->ClearHostCache(
+        filter_builder->BuildNetworkServiceFilter(),
+        CreateTaskCompletionClosureForMojo(TracingDataType::kHostCache));
 
     // The NoStatePrefetchManager keeps history of pages scanned for prefetch,
     // so clear that. It also may have a scanned page. If so, the page could be
@@ -829,7 +826,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
           CreateTaskCompletionClosure(TracingDataType::kPasswords));
     }
 
-    BrowserContext::GetDefaultStoragePartition(profile_)
+    profile_->GetDefaultStoragePartition()
         ->GetNetworkContext()
         ->ClearHttpAuthCache(
             delete_begin_.is_null() ? base::Time::Min() : delete_begin_,
@@ -1177,8 +1174,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 #if BUILDFLAG(ENABLE_REPORTING)
   if (remove_mask & constants::DATA_TYPE_HISTORY) {
     network::mojom::NetworkContext* network_context =
-        BrowserContext::GetDefaultStoragePartition(profile_)
-            ->GetNetworkContext();
+        profile_->GetDefaultStoragePartition()->GetNetworkContext();
     network_context->ClearReportingCacheReports(
         filter_builder->BuildNetworkServiceFilter(),
         CreateTaskCompletionClosureForMojo(TracingDataType::kReportingCache));

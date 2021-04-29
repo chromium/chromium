@@ -239,8 +239,8 @@ InstallableManager::InstallableManager(content::WebContents* web_contents)
   // This is null in unit tests.
   if (web_contents) {
     content::StoragePartition* storage_partition =
-        content::BrowserContext::GetStoragePartition(
-            web_contents->GetBrowserContext(), web_contents->GetSiteInstance());
+        web_contents->GetBrowserContext()->GetStoragePartition(
+            web_contents->GetSiteInstance());
     DCHECK(storage_partition);
 
     service_worker_context_ = storage_partition->GetServiceWorkerContext();

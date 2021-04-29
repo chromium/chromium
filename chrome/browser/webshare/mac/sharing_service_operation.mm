@@ -97,7 +97,7 @@ void SharingServiceOperation::Share(
 
   BrowserContext* browser_context = web_contents()->GetBrowserContext();
   StoragePartition* const partition =
-      BrowserContext::GetDefaultStoragePartition(browser_context);
+      browser_context->GetDefaultStoragePartition();
   directory_ = partition->GetPath().Append(kWebShareDirname);
 
   prepare_directory_task_ = std::make_unique<PrepareDirectoryTask>(

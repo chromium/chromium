@@ -138,8 +138,8 @@ void WebAuthFlow::DetachDelegateAndDelete() {
 }
 
 content::StoragePartition* WebAuthFlow::GetGuestPartition() {
-  return content::BrowserContext::GetStoragePartition(
-      profile_, GetWebViewPartitionConfig(partition_, profile_));
+  return profile_->GetStoragePartition(
+      GetWebViewPartitionConfig(partition_, profile_));
 }
 
 const std::string& WebAuthFlow::GetAppWindowKey() const {

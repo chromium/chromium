@@ -180,9 +180,8 @@ CastExtensionURLLoaderFactory::CastExtensionURLLoaderFactory(
     : network::SelfDeletingURLLoaderFactory(std::move(factory_receiver)),
       extension_registry_(extensions::ExtensionRegistry::Get(browser_context)),
       extension_factory_(std::move(extension_factory)),
-      network_factory_(
-          content::BrowserContext::GetDefaultStoragePartition(browser_context)
-              ->GetURLLoaderFactoryForBrowserProcess()) {
+      network_factory_(browser_context->GetDefaultStoragePartition()
+                           ->GetURLLoaderFactoryForBrowserProcess()) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // base::Unretained is safe below, because lifetime of

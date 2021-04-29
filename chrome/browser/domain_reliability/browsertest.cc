@@ -59,8 +59,9 @@ class DomainReliabilityBrowserTest : public InProcessBrowserTest {
   }
 
   network::mojom::NetworkContext* GetNetworkContext() {
-    return content::BrowserContext::GetDefaultStoragePartition(
-               browser()->profile())
+    return browser()
+        ->profile()
+        ->GetDefaultStoragePartition()
         ->GetNetworkContext();
   }
 
@@ -216,8 +217,7 @@ IN_PROC_BROWSER_TEST_F(DomainReliabilityBrowserTest, RequestAtShutdown) {
   resource_request->url = hung_url;
   auto simple_loader = network::SimpleURLLoader::Create(
       std::move(resource_request), TRAFFIC_ANNOTATION_FOR_TESTS);
-  auto* storage_partition =
-      content::BrowserContext::GetDefaultStoragePartition(browser()->profile());
+  auto* storage_partition = browser()->profile()->GetDefaultStoragePartition();
   simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       storage_partition->GetURLLoaderFactoryForBrowserProcess().get(),
       base::BindOnce([](std::unique_ptr<std::string> body) {}));

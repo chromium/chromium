@@ -231,8 +231,9 @@ class ServiceWorkerTest : public ExtensionApiTest {
 
   size_t GetWorkerRefCount(const url::Origin& origin) {
     content::ServiceWorkerContext* sw_context =
-        content::BrowserContext::GetDefaultStoragePartition(
-            browser()->profile())
+        browser()
+            ->profile()
+            ->GetDefaultStoragePartition()
             ->GetServiceWorkerContext();
     return sw_context->CountExternalRequestsForTest(origin);
   }
@@ -1750,10 +1751,10 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   // Stop the service worker.
   {
     base::RunLoop run_loop;
-    content::ServiceWorkerContext* context =
-        content::BrowserContext::GetDefaultStoragePartition(
-            browser()->profile())
-            ->GetServiceWorkerContext();
+    content::ServiceWorkerContext* context = browser()
+                                                 ->profile()
+                                                 ->GetDefaultStoragePartition()
+                                                 ->GetServiceWorkerContext();
     // The service worker is registered at the root scope.
     content::StopServiceWorkerForScope(context, extension->url(),
                                        run_loop.QuitClosure());
@@ -2018,7 +2019,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
                        WorkerStartFailureClearsPendingTasks) {
   content::StoragePartition* storage_partition =
-      content::BrowserContext::GetDefaultStoragePartition(browser()->profile());
+      browser()->profile()->GetDefaultStoragePartition();
   content::ServiceWorkerContext* context =
       storage_partition->GetServiceWorkerContext();
 
@@ -2106,8 +2107,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
     // once //content API allows to override test timeouts for Service Workers.
     base::RunLoop run_loop;
     content::StoragePartition* storage_partition =
-        content::BrowserContext::GetDefaultStoragePartition(
-            browser()->profile());
+        browser()->profile()->GetDefaultStoragePartition();
     GURL scope = extension->url();
     content::StopServiceWorkerForScope(
         storage_partition->GetServiceWorkerContext(),
@@ -2429,7 +2429,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerLazyBackgroundTest, ConsoleLogging) {
                            const std::string& expected_message)
         : expected_message_(base::UTF8ToUTF16(expected_message)) {
       content::StoragePartition* partition =
-          content::BrowserContext::GetDefaultStoragePartition(browser_context);
+          browser_context->GetDefaultStoragePartition();
       scoped_observation_.Observe(partition->GetServiceWorkerContext());
     }
     ~ConsoleMessageObserver() override = default;

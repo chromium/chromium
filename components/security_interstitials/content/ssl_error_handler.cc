@@ -450,7 +450,7 @@ void SSLErrorHandlerDelegateImpl::CheckSuggestedUrl(
     const GURL& suggested_url,
     CommonNameMismatchHandler::CheckUrlCallback callback) {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory(
-      content::BrowserContext::GetDefaultStoragePartition(browser_context_)
+      browser_context_->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess());
   common_name_mismatch_handler_ = std::make_unique<CommonNameMismatchHandler>(
       request_url_, url_loader_factory);

@@ -54,8 +54,7 @@ BudgetDatabase::BudgetInfo::~BudgetInfo() = default;
 BudgetDatabase::BudgetDatabase(Profile* profile)
     : profile_(profile), clock_(base::WrapUnique(new base::DefaultClock)) {
   auto* protodb_provider =
-      content::BrowserContext::GetDefaultStoragePartition(profile)
-          ->GetProtoDatabaseProvider();
+      profile->GetDefaultStoragePartition()->GetProtoDatabaseProvider();
   // In incognito mode the provider service is not created.
   if (!protodb_provider)
     return;

@@ -71,7 +71,7 @@ void RecordUserVisibleStatus(blink::mojom::PushUserVisibleStatus status) {
 
 content::StoragePartition* GetStoragePartition(Profile* profile,
                                                const GURL& origin) {
-  return content::BrowserContext::GetStoragePartitionForUrl(profile, origin);
+  return profile->GetStoragePartitionForUrl(origin);
 }
 
 NotificationDatabaseData CreateDatabaseData(

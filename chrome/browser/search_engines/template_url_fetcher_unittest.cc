@@ -155,7 +155,7 @@ void TemplateURLFetcherTest::StartDownload(const std::u16string& keyword,
   TestingProfile* profile = test_util_.profile();
   template_url_fetcher_->ScheduleDownload(
       keyword, osdd_url, favicon_url, url::Origin::Create(GURL()),
-      content::BrowserContext::GetDefaultStoragePartition(profile)
+      profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess()
           .get(),
       0 /* render_frame_id */, kRequestID);

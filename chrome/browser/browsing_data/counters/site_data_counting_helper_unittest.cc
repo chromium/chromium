@@ -32,7 +32,7 @@ class SiteDataCountingHelperTest : public testing::Test {
     // Let the storage system finish setting up, to avoid test flakiness caused
     // by the quota storage system shutting down at test end, while still being
     // set up. TODO(crbug.com/1182630) Remove when crbug.com/1182630 is fixed.
-    content::BrowserContext::GetDefaultStoragePartition(profile());
+    profile()->GetDefaultStoragePartition();
     task_environment_.RunUntilIdle();
   }
 
@@ -44,7 +44,7 @@ class SiteDataCountingHelperTest : public testing::Test {
   void CreateCookies(base::Time creation_time,
                      const std::vector<std::string>& urls) {
     content::StoragePartition* partition =
-        content::BrowserContext::GetDefaultStoragePartition(profile());
+        profile()->GetDefaultStoragePartition();
     network::mojom::CookieManager* cookie_manager =
         partition->GetCookieManagerForBrowserProcess();
 

@@ -693,7 +693,7 @@ IN_PROC_BROWSER_TEST_F(
           TRAFFIC_ANNOTATION_FOR_TESTS);
 
   content::StoragePartition* partition =
-      content::BrowserContext::GetDefaultStoragePartition(browser()->profile());
+      browser()->profile()->GetDefaultStoragePartition();
   network::SharedURLLoaderFactory* loader_factory =
       partition->GetURLLoaderFactoryForBrowserProcess().get();
   content::SimpleURLLoaderTestHelper loader_helper;

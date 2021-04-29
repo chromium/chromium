@@ -41,9 +41,8 @@ void FullBodySearchPrefetchRequest::StartPrefetchRequestInternal(
   simple_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                     network_traffic_annotation);
 
-  auto url_loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(profile)
-          ->GetURLLoaderFactoryForBrowserProcess();
+  auto url_loader_factory = profile->GetDefaultStoragePartition()
+                                ->GetURLLoaderFactoryForBrowserProcess();
 
   simple_loader_->DownloadToString(
       url_loader_factory.get(),

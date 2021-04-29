@@ -510,8 +510,9 @@ WebTestControlHost::WebTestControlHost() {
   // protocol) until we enter the protocol mode (see TestInfo::protocol_mode).
   printer_->set_capture_text_only(true);
 
-  InjectTestSharedWorkerService(BrowserContext::GetDefaultStoragePartition(
-      ShellContentBrowserClient::Get()->browser_context()));
+  InjectTestSharedWorkerService(ShellContentBrowserClient::Get()
+                                    ->browser_context()
+                                    ->GetDefaultStoragePartition());
 
   GpuDataManager::GetInstance()->AddObserver(this);
   ResetBrowserAfterWebTest();
@@ -704,7 +705,7 @@ bool WebTestControlHost::ResetBrowserAfterWebTest() {
     BrowserContext* browser_context =
         ShellContentBrowserClient::Get()->browser_context();
     StoragePartition* storage_partition =
-        BrowserContext::GetDefaultStoragePartition(browser_context);
+        browser_context->GetDefaultStoragePartition();
     storage_partition->GetCookieManagerForBrowserProcess()->DeleteCookies(
         network::mojom::CookieDeletionFilter::New(), base::DoNothing());
   }
@@ -1250,17 +1251,17 @@ void WebTestControlHost::OnTestFinished() {
                         weak_factory_.GetWeakPtr()));
 
   StoragePartition* storage_partition =
-      BrowserContext::GetDefaultStoragePartition(browser_context);
+      browser_context->GetDefaultStoragePartition();
   storage_partition->GetServiceWorkerContext()->ClearAllServiceWorkersForTest(
       barrier_closure);
   storage_partition->ClearBluetoothAllowedDevicesMapForTesting();
 
   // TODO(nhiroki): Add a comment about the reason why we terminate all shared
   // workers here.
-  TerminateAllSharedWorkers(
-      BrowserContext::GetDefaultStoragePartition(
-          ShellContentBrowserClient::Get()->browser_context()),
-      barrier_closure);
+  TerminateAllSharedWorkers(ShellContentBrowserClient::Get()
+                                ->browser_context()
+                                ->GetDefaultStoragePartition(),
+                            barrier_closure);
 }
 
 void WebTestControlHost::OnDumpFrameLayoutResponse(int frame_tree_node_id,
@@ -1567,7 +1568,7 @@ void WebTestControlHost::ClearTrustTokenState(base::OnceClosure callback) {
   BrowserContext* browser_context =
       ShellContentBrowserClient::Get()->browser_context();
   StoragePartition* storage_partition =
-      BrowserContext::GetDefaultStoragePartition(browser_context);
+      browser_context->GetDefaultStoragePartition();
   storage_partition->GetNetworkContext()->ClearTrustTokenData(
       nullptr,  // A wildcard filter.
       std::move(callback));
@@ -1592,7 +1593,7 @@ void WebTestControlHost::SetDatabaseQuota(int32_t quota) {
   BrowserContext* browser_context =
       ShellContentBrowserClient::Get()->browser_context();
   StoragePartition* storage_partition =
-      BrowserContext::GetDefaultStoragePartition(browser_context);
+      browser_context->GetDefaultStoragePartition();
   scoped_refptr<storage::QuotaManager> quota_manager =
       base::WrapRefCounted(storage_partition->GetQuotaManager());
 
@@ -1611,7 +1612,7 @@ void WebTestControlHost::ClearAllDatabases() {
   BrowserContext* browser_context =
       ShellContentBrowserClient::Get()->browser_context();
   StoragePartition* storage_partition =
-      BrowserContext::GetDefaultStoragePartition(browser_context);
+      browser_context->GetDefaultStoragePartition();
   scoped_refptr<storage::DatabaseTracker> db_tracker =
       base::WrapRefCounted(storage_partition->GetDatabaseTracker());
 
@@ -1654,8 +1655,8 @@ void WebTestControlHost::SimulateWebContentIndexDelete(const std::string& id) {
       content_index_provider->GetRegistrationDataFromId(id);
 
   StoragePartition* storage_partition =
-      BrowserContext::GetStoragePartitionForUrl(
-          browser_context, registration_data.second.GetURL(),
+      browser_context->GetStoragePartitionForUrl(
+          registration_data.second.GetURL(),
           /*can_create=*/false);
   storage_partition->GetContentIndexContext()->OnUserDeletedItem(
       registration_data.first, registration_data.second, id);
@@ -1920,7 +1921,7 @@ void WebTestControlHost::BlockThirdPartyCookies(bool block) {
   ShellBrowserContext* browser_context =
       ShellContentBrowserClient::Get()->browser_context();
   StoragePartition* storage_partition =
-      BrowserContext::GetDefaultStoragePartition(browser_context);
+      browser_context->GetDefaultStoragePartition();
   storage_partition->GetCookieManagerForBrowserProcess()
       ->BlockThirdPartyCookies(block);
 }

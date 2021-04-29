@@ -675,8 +675,7 @@ static void JNI_WebsitePreferenceBridge_ClearCookieData(
   BrowserContext* browser_context = unwrap(jbrowser_context_handle);
   GURL url(ConvertJavaStringToUTF8(env, jorigin));
 
-  auto* storage_partition =
-      content::BrowserContext::GetDefaultStoragePartition(browser_context);
+  auto* storage_partition = browser_context->GetDefaultStoragePartition();
   auto* cookie_manager = storage_partition->GetCookieManagerForBrowserProcess();
   cookie_manager->GetAllCookies(
       base::BindOnce(&OnCookiesReceived, cookie_manager, url));

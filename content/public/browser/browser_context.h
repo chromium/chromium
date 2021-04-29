@@ -97,13 +97,13 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // layer (e.g. there is no need to override these methods in layers above
   // //content).
   //
-  // The current practice is to make the methods in this section static and have
-  // them take `BrowserContext* self` as the first parameter.  (It is known that
-  // not all the methods below follow this pattern.)
+  // The currently recommended practice is to make the methods in this section
+  // non-virtual instance methods.
   //
-  // TODO(https://crbug.com/1179776): Consider converting methods in this
-  // section into non-virtual instance methods (dropping the `BrowserContext*`
-  // parameter along the way).
+  // TODO(https://crbug.com/1179776): Finish converting the methods in this
+  // section into non-virtual instance methods.  (The old, abandoned  practice
+  // was to make the methods in this section `static` and have them take
+  // `BrowserContext* self` as the first parameter.)
   //
   // TODO(https://crbug.com/1179776): Consider moving these methods to
   // BrowserContext::Impl or (in the future) BrowserContextImpl class.
@@ -129,15 +129,13 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // Returns a StoragePartition for the given SiteInstance. By default this will
   // create a new StoragePartition if it doesn't exist, unless |can_create| is
   // false.
-  static StoragePartition* GetStoragePartition(BrowserContext* self,
-                                               SiteInstance* site_instance,
-                                               bool can_create = true);
+  StoragePartition* GetStoragePartition(SiteInstance* site_instance,
+                                        bool can_create = true);
 
   // Returns a StoragePartition for the given StoragePartitionConfig. By
   // default this will create a new StoragePartition if it doesn't exist,
   // unless |can_create| is false.
-  static StoragePartition* GetStoragePartition(
-      BrowserContext* self,
+  StoragePartition* GetStoragePartition(
       const StoragePartitionConfig& storage_partition_config,
       bool can_create = true);
 
@@ -146,30 +144,25 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // Returns a StoragePartition for the given URL. By default this will
   // create a new StoragePartition if it doesn't exist, unless |can_create| is
   // false.
-  static StoragePartition* GetStoragePartitionForUrl(BrowserContext* self,
-                                                     const GURL& url,
-                                                     bool can_create = true);
+  StoragePartition* GetStoragePartitionForUrl(const GURL& url,
+                                              bool can_create = true);
 
   using StoragePartitionCallback =
       base::RepeatingCallback<void(StoragePartition*)>;
-  static void ForEachStoragePartition(BrowserContext* self,
-                                      StoragePartitionCallback callback);
-  // Returns the number of StoragePartitions that exist for the given
-  // |browser_context|.
-  static size_t GetStoragePartitionCount(BrowserContext* self);
-  static void AsyncObliterateStoragePartition(
-      BrowserContext* self,
-      const std::string& partition_domain,
-      base::OnceClosure on_gc_required);
+  void ForEachStoragePartition(StoragePartitionCallback callback);
+  // Returns the number of StoragePartitions that exist for `this`
+  // BrowserContext.
+  size_t GetStoragePartitionCount();
+  void AsyncObliterateStoragePartition(const std::string& partition_domain,
+                                       base::OnceClosure on_gc_required);
 
   // This function clears the contents of |active_paths| but does not take
   // ownership of the pointer.
-  static void GarbageCollectStoragePartitions(
-      BrowserContext* self,
+  void GarbageCollectStoragePartitions(
       std::unique_ptr<std::unordered_set<base::FilePath>> active_paths,
       base::OnceClosure done);
 
-  static StoragePartition* GetDefaultStoragePartition(BrowserContext* self);
+  StoragePartition* GetDefaultStoragePartition();
 
   using BlobCallback = base::OnceCallback<void(std::unique_ptr<BlobHandle>)>;
   using BlobContextGetter =

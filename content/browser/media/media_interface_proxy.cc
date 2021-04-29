@@ -201,8 +201,8 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory {
   void CreateProvisionFetcher(
       mojo::PendingReceiver<media::mojom::ProvisionFetcher> receiver) override {
 #if BUILDFLAG(ENABLE_MOJO_CDM)
-    ProvisionFetcherImpl::Create(BrowserContext::GetDefaultStoragePartition(
-                                     render_frame_host_->GetBrowserContext())
+    ProvisionFetcherImpl::Create(render_frame_host_->GetBrowserContext()
+                                     ->GetDefaultStoragePartition()
                                      ->GetURLLoaderFactoryForBrowserProcess(),
                                  std::move(receiver));
 #endif

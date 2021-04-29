@@ -3058,8 +3058,7 @@ base::OnceClosure ChromeContentBrowserClient::SelectClientCertificate(
     may_show_cert_selection = false;
 
     content::StoragePartition* storage_partition =
-        content::BrowserContext::GetStoragePartition(
-            profile, web_contents->GetSiteInstance());
+        profile->GetStoragePartition(web_contents->GetSiteInstance());
     chromeos::login::SigninPartitionManager* signin_partition_manager =
         chromeos::login::SigninPartitionManager::Factory::GetForBrowserContext(
             profile);

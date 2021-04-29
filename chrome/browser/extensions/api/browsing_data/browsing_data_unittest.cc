@@ -66,7 +66,7 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
     // TODO(crbug.com/1182630): This can be removed once crbug.com/1182630 is
     // fixed. Make sure quota manager for storage partition is finished
     // initializing.
-    content::BrowserContext::GetDefaultStoragePartition(profile());
+    profile()->GetDefaultStoragePartition();
     task_environment()->RunUntilIdle();
   }
 

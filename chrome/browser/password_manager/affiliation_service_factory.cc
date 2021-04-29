@@ -37,7 +37,7 @@ KeyedService* AffiliationServiceFactory::BuildServiceInstanceFor(
   syncer::SyncService* sync_service =
       ProfileSyncServiceFactory::GetForProfile(profile);
   network::SharedURLLoaderFactory* url_loader_factory =
-      context->GetDefaultStoragePartition(profile)
+      context->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess()
           .get();
   return new password_manager::AffiliationServiceImpl(sync_service,

@@ -290,8 +290,9 @@ class NoStatePrefetchBrowserTest
   void WaitForAppcache(const GURL& manifest_url) {
     bool found_manifest = false;
     content::AppCacheService* appcache_service =
-        content::BrowserContext::GetDefaultStoragePartition(
-            current_browser()->profile())
+        current_browser()
+            ->profile()
+            ->GetDefaultStoragePartition()
             ->GetAppCacheService();
     do {
       base::RunLoop wait_loop;
@@ -835,8 +836,7 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, PrefetchCookie) {
       PrefetchFromURL(url, FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
 
   content::StoragePartition* storage_partition =
-      content::BrowserContext::GetStoragePartitionForUrl(
-          current_browser()->profile(), url, false);
+      current_browser()->profile()->GetStoragePartitionForUrl(url, false);
   net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
   base::RunLoop loop;
   storage_partition->GetCookieManagerForBrowserProcess()->GetCookieList(
@@ -857,8 +857,8 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, PrefetchCookieCrossDomain) {
   // While the request is cross-site, it's permitted to set (implicitly) lax
   // cookies on a cross-site navigation.
   content::StoragePartition* storage_partition =
-      content::BrowserContext::GetStoragePartitionForUrl(
-          current_browser()->profile(), cross_domain_url, false);
+      current_browser()->profile()->GetStoragePartitionForUrl(cross_domain_url,
+                                                              false);
   net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
   base::RunLoop loop;
   storage_partition->GetCookieManagerForBrowserProcess()->GetCookieList(

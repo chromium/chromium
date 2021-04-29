@@ -113,8 +113,7 @@ IN_PROC_BROWSER_TEST_F(ConversionsOriginTrialBrowserTest,
 
   ConversionManagerImpl* conversion_manager =
       static_cast<StoragePartitionImpl*>(
-          BrowserContext::GetDefaultStoragePartition(
-              web_contents()->GetBrowserContext()))
+          web_contents()->GetBrowserContext()->GetDefaultStoragePartition())
           ->GetConversionManager();
 
   base::RunLoop run_loop;

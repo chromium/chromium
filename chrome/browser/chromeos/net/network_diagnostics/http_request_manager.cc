@@ -53,9 +53,8 @@ HttpRequestManager::HttpRequestManager(Profile* profile) {
   if (!profile) {
     return;
   }
-  shared_url_loader_factory_ =
-      content::BrowserContext::GetDefaultStoragePartition(profile)
-          ->GetURLLoaderFactoryForBrowserProcess();
+  shared_url_loader_factory_ = profile->GetDefaultStoragePartition()
+                                   ->GetURLLoaderFactoryForBrowserProcess();
 }
 
 HttpRequestManager::~HttpRequestManager() = default;

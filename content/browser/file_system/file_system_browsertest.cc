@@ -73,8 +73,10 @@ class FileSystemBrowserTestWithLowQuota : public FileSystemBrowserTest {
  public:
   void SetUpOnMainThread() override {
     FileSystemBrowserTest::SetUpOnMainThread();
-    SetLowQuota(BrowserContext::GetDefaultStoragePartition(
-                    browser()->web_contents()->GetBrowserContext())
+    SetLowQuota(browser()
+                    ->web_contents()
+                    ->GetBrowserContext()
+                    ->GetDefaultStoragePartition()
                     ->GetQuotaManager());
   }
 

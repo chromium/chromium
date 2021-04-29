@@ -105,8 +105,7 @@ IN_PROC_BROWSER_TEST_F(SocketsTcpApiTest, SocketTcpExtension) {
   // Make sure the extension's NetworkIsolationKey was used. Do a cache only DNS
   // lookup using the expected NIK, and make sure the IP address is retrieved.
   network::mojom::NetworkContext* network_context =
-      content::BrowserContext::GetDefaultStoragePartition(browser_context())
-          ->GetNetworkContext();
+      browser_context()->GetDefaultStoragePartition()->GetNetworkContext();
   network::mojom::ResolveHostParametersPtr params =
       network::mojom::ResolveHostParameters::New();
   // Cache only lookup.

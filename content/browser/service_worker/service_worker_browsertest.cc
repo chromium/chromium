@@ -353,8 +353,10 @@ class ServiceWorkerBrowserTest : public ContentBrowserTest {
 
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    StoragePartition* partition = BrowserContext::GetDefaultStoragePartition(
-        shell()->web_contents()->GetBrowserContext());
+    StoragePartition* partition = shell()
+                                      ->web_contents()
+                                      ->GetBrowserContext()
+                                      ->GetDefaultStoragePartition();
     wrapper_ = static_cast<ServiceWorkerContextWrapper*>(
         partition->GetServiceWorkerContext());
   }
@@ -2253,8 +2255,10 @@ class ServiceWorkerV8CodeCacheForCacheStorageTest
   static const char kScriptUrl[];
 
   int GetSideDataSize() {
-    StoragePartition* partition = BrowserContext::GetDefaultStoragePartition(
-        shell()->web_contents()->GetBrowserContext());
+    StoragePartition* partition = shell()
+                                      ->web_contents()
+                                      ->GetBrowserContext()
+                                      ->GetDefaultStoragePartition();
     return CacheStorageSideDataSizeChecker::GetSize(
         partition->GetCacheStorageControl(), embedded_test_server()->base_url(),
         std::string("cache_name"), embedded_test_server()->GetURL(kScriptUrl));

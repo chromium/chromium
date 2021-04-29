@@ -455,7 +455,7 @@ class SessionRestoreImpl : public BrowserListObserver {
     if (windows->empty()) {
       // Restore was unsuccessful. The DOM storage system can also delete its
       // data, since no session restore will happen at a later point in time.
-      content::BrowserContext::GetDefaultStoragePartition(profile_)
+      profile_->GetDefaultStoragePartition()
           ->GetDOMStorageContext()
           ->StartScavengingUnusedSessionStorage();
       return FinishedTabCreation(false, false, created_contents);
@@ -602,7 +602,7 @@ class SessionRestoreImpl : public BrowserListObserver {
     // sessionStorages needed for the session restore have now been recreated
     // by RestoreTab. Now it's safe for the DOM storage system to start
     // deleting leftover data.
-    content::BrowserContext::GetDefaultStoragePartition(profile_)
+    profile_->GetDefaultStoragePartition()
         ->GetDOMStorageContext()
         ->StartScavengingUnusedSessionStorage();
     return last_normal_browser;
@@ -711,7 +711,7 @@ class SessionRestoreImpl : public BrowserListObserver {
     scoped_refptr<content::SessionStorageNamespace> session_storage_namespace;
     if (!tab.session_storage_persistent_id.empty()) {
       session_storage_namespace =
-          content::BrowserContext::GetDefaultStoragePartition(profile_)
+          profile_->GetDefaultStoragePartition()
               ->GetDOMStorageContext()
               ->RecreateSessionStorage(tab.session_storage_persistent_id);
     }

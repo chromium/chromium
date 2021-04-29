@@ -46,12 +46,9 @@ void TriggerNotificationsForProfile(Profile* profile) {
 
   // Unretained is safe here because BrowserContext::ForEachStoragePartition is
   // synchronous and the profile just got fetched via GetLoadedProfiles.
-  BrowserContext::ForEachStoragePartition(
-      profile,
-      base::BindRepeating(
-          &NotificationTriggerScheduler::
-              TriggerNotificationsForStoragePartition,
-          base::Unretained(service->GetNotificationTriggerScheduler())));
+  profile->ForEachStoragePartition(base::BindRepeating(
+      &NotificationTriggerScheduler::TriggerNotificationsForStoragePartition,
+      base::Unretained(service->GetNotificationTriggerScheduler())));
 }
 
 }  // namespace

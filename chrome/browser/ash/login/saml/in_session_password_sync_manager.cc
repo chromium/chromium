@@ -196,8 +196,7 @@ void InSessionPasswordSyncManager::CheckCredentials(
   }
 
   ProfileAuthData::Transfer(
-      signin_partition,
-      content::BrowserContext::GetDefaultStoragePartition(primary_profile_),
+      signin_partition, primary_profile_->GetDefaultStoragePartition(),
       false /*transfer_auth_cookies_on_first_login*/,
       transfer_saml_auth_cookies_on_subsequent_login,
       base::BindOnce(&InSessionPasswordSyncManager::OnCookiesTransfered,

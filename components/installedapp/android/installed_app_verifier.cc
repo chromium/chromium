@@ -45,7 +45,7 @@ void JNI_InstalledAppProviderImpl_CheckDigitalAssetLinksRelationshipForWebApk(
 
   auto handler =
       std::make_unique<digital_asset_links::DigitalAssetLinksHandler>(
-          content::BrowserContext::GetDefaultStoragePartition(browser_context)
+          browser_context->GetDefaultStoragePartition()
               ->GetURLLoaderFactoryForBrowserProcess());
   auto* handler_ptr = handler.get();
 

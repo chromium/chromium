@@ -182,8 +182,8 @@ void ChromeOmniboxNavigationObserver::Observe(
     if (loader_factory_for_testing_) {
       loader_factory = loader_factory_for_testing_.get();
     } else {
-      loader_factory = content::BrowserContext::GetDefaultStoragePartition(
-                           controller->GetBrowserContext())
+      loader_factory = controller->GetBrowserContext()
+                           ->GetDefaultStoragePartition()
                            ->GetURLLoaderFactoryForBrowserProcess()
                            .get();
     }

@@ -144,7 +144,7 @@ class ServiceWorkerConsoleObserver
   explicit ServiceWorkerConsoleObserver(
       content::BrowserContext* browser_context) {
     content::StoragePartition* partition =
-        content::BrowserContext::GetDefaultStoragePartition(browser_context);
+        browser_context->GetDefaultStoragePartition();
     scoped_observation_.Observe(partition->GetServiceWorkerContext());
   }
   ~ServiceWorkerConsoleObserver() override = default;

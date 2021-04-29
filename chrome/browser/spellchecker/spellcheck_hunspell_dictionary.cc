@@ -321,7 +321,7 @@ void SpellcheckHunspellDictionary::DownloadDictionary(GURL url) {
   simple_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                     traffic_annotation);
   network::mojom::URLLoaderFactory* loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(browser_context_)
+      browser_context_->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess()
           .get();
   simple_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(

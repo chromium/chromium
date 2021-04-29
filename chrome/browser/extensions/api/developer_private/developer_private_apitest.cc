@@ -155,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
   {
     base::RunLoop run_loop;
     content::StoragePartition* storage_partition =
-        content::BrowserContext::GetDefaultStoragePartition(profile());
+        profile()->GetDefaultStoragePartition();
     content::ServiceWorkerContext* context =
         storage_partition->GetServiceWorkerContext();
     content::StopServiceWorkerForScope(context, extension->url(),

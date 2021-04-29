@@ -47,8 +47,10 @@ class ServiceWorkerProcessBrowserTest
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
 
-    StoragePartition* partition = BrowserContext::GetDefaultStoragePartition(
-        shell()->web_contents()->GetBrowserContext());
+    StoragePartition* partition = shell()
+                                      ->web_contents()
+                                      ->GetBrowserContext()
+                                      ->GetDefaultStoragePartition();
     wrapper_ = static_cast<ServiceWorkerContextWrapper*>(
         partition->GetServiceWorkerContext());
   }

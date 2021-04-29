@@ -167,10 +167,9 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
     Profile* profile =
         Profile::FromBrowserContext(web_contents->GetBrowserContext());
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-        url_loader_for_testing
-            ? url_loader_for_testing
-            : content::BrowserContext::GetDefaultStoragePartition(profile)
-                  ->GetURLLoaderFactoryForBrowserProcess();
+        url_loader_for_testing ? url_loader_for_testing
+                               : profile->GetDefaultStoragePartition()
+                                     ->GetURLLoaderFactoryForBrowserProcess();
     if (should_trigger_reporting) {
       threat_details_in_progress_ =
           g_browser_process->safe_browsing_service()

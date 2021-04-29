@@ -783,8 +783,7 @@ class AppCacheUpdateJobTest : public testing::Test,
     weak_partition_factory_ =
         std::make_unique<base::WeakPtrFactory<StoragePartitionImpl>>(
             static_cast<StoragePartitionImpl*>(
-                BrowserContext::GetDefaultStoragePartition(
-                    browser_context_.get())));
+                browser_context_->GetDefaultStoragePartition()));
 
     ChildProcessSecurityPolicyImpl::GetInstance()->AddForTesting(
         process_id_, browser_context_.get());

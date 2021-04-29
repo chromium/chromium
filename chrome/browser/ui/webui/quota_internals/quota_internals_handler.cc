@@ -101,9 +101,9 @@ void QuotaInternalsHandler::OnRequestInfo(const base::ListValue*) {
   if (!proxy_.get())
     proxy_ = new QuotaInternalsProxy(this);
   ReportStoragePressureFlag();
-  proxy_->RequestInfo(
-      BrowserContext::GetDefaultStoragePartition(
-          Profile::FromWebUI(web_ui()))->GetQuotaManager());
+  proxy_->RequestInfo(Profile::FromWebUI(web_ui())
+                          ->GetDefaultStoragePartition()
+                          ->GetQuotaManager());
 }
 
 void QuotaInternalsHandler::OnTriggerStoragePressure(
@@ -116,10 +116,10 @@ void QuotaInternalsHandler::OnTriggerStoragePressure(
 
   if (!proxy_.get())
     proxy_ = new QuotaInternalsProxy(this);
-  proxy_->TriggerStoragePressure(
-      url::Origin::Create(url),
-      BrowserContext::GetDefaultStoragePartition(Profile::FromWebUI(web_ui()))
-          ->GetQuotaManager());
+  proxy_->TriggerStoragePressure(url::Origin::Create(url),
+                                 Profile::FromWebUI(web_ui())
+                                     ->GetDefaultStoragePartition()
+                                     ->GetQuotaManager());
 }
 
 }  // namespace quota_internals

@@ -629,7 +629,9 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
                        SimpleURLLoaderUsingMainContextDuringShutdown) {
   ASSERT_TRUE(embedded_test_server()->Start());
   StartActiveLoaderDuringProfileShutdownTest(
-      content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
+      browser()
+          ->profile()
+          ->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess()
           .get());
 }
@@ -643,8 +645,8 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
       OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
   RunURLLoaderActiveDuringIncognitoTeardownTest(
       embedded_test_server(), incognito_browser,
-      content::BrowserContext::GetDefaultStoragePartition(
-          incognito_browser->profile())
+      incognito_browser->profile()
+          ->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess()
           .get());
 }

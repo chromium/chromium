@@ -232,7 +232,9 @@ void NetInternalsTest::MessageHandler::DnsLookup(
   new DnsLookupClient(client.InitWithNewPipeAndPassReceiver(),
                       base::BindOnce(&MessageHandler::RunJavascriptCallback,
                                      weak_factory_.GetWeakPtr()));
-  content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
+  browser()
+      ->profile()
+      ->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->ResolveHost(net::HostPortPair(hostname, 80), network_isolation_key_,
                     std::move(resolve_host_parameters), std::move(client));

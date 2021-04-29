@@ -37,8 +37,7 @@ class UDPSocketUnitTest : public extensions::ExtensionServiceTestBase {
 
   std::unique_ptr<UDPSocket> CreateSocket() {
     network::mojom::NetworkContext* network_context =
-        content::BrowserContext::GetDefaultStoragePartition(profile())
-            ->GetNetworkContext();
+        profile()->GetDefaultStoragePartition()->GetNetworkContext();
     mojo::PendingRemote<network::mojom::UDPSocket> socket;
     mojo::PendingRemote<network::mojom::UDPSocketListener> listener_remote;
     mojo::PendingReceiver<network::mojom::UDPSocketListener> listener_receiver =

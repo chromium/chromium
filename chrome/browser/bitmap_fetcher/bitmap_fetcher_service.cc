@@ -237,10 +237,9 @@ std::unique_ptr<BitmapFetcher> BitmapFetcherService::CreateFetcher(
       std::string(),
       net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,
       network::mojom::CredentialsMode::kInclude);
-  new_fetcher->Start(
-      content::BrowserContext::GetDefaultStoragePartition(context_)
-          ->GetURLLoaderFactoryForBrowserProcess()
-          .get());
+  new_fetcher->Start(context_->GetDefaultStoragePartition()
+                         ->GetURLLoaderFactoryForBrowserProcess()
+                         .get());
   return new_fetcher;
 }
 

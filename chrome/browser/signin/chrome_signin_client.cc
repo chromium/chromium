@@ -133,12 +133,12 @@ ChromeSigninClient::GetURLLoaderFactory() {
   if (url_loader_factory_for_testing_)
     return url_loader_factory_for_testing_;
 
-  return content::BrowserContext::GetDefaultStoragePartition(profile_)
+  return profile_->GetDefaultStoragePartition()
       ->GetURLLoaderFactoryForBrowserProcess();
 }
 
 network::mojom::CookieManager* ChromeSigninClient::GetCookieManager() {
-  return content::BrowserContext::GetDefaultStoragePartition(profile_)
+  return profile_->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess();
 }
 

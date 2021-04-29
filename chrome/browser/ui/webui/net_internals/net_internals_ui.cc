@@ -313,8 +313,9 @@ void NetInternalsMessageHandler::OnCloseIdleSockets(
 
 network::mojom::NetworkContext*
 NetInternalsMessageHandler::GetNetworkContext() {
-  return content::BrowserContext::GetDefaultStoragePartition(
-             web_ui_->GetWebContents()->GetBrowserContext())
+  return web_ui_->GetWebContents()
+      ->GetBrowserContext()
+      ->GetDefaultStoragePartition()
       ->GetNetworkContext();
 }
 

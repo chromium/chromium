@@ -147,7 +147,7 @@ void UserPolicySigninService::TryInitializeForSignedInUser() {
   InitializeForSignedInUser(
       AccountIdFromAccountInfo(identity_manager()->GetPrimaryAccountInfo(
           signin::ConsentLevel::kSync)),
-      content::BrowserContext::GetDefaultStoragePartition(profile_)
+      profile_->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess());
 }
 

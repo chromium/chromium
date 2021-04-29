@@ -94,8 +94,7 @@ KeyedService* ProfileProtoDBFactory<T>::BuildServiceInstanceFor(
   DCHECK(!context->IsOffTheRecord());
 
   leveldb_proto::ProtoDatabaseProvider* proto_database_provider =
-      content::BrowserContext::GetDefaultStoragePartition(context)
-          ->GetProtoDatabaseProvider();
+      context->GetDefaultStoragePartition()->GetProtoDatabaseProvider();
 
   // The following will become a proto -> dir and proto ->
   // leveldb_proto::ProtoDbType mapping as more protos are added.

@@ -274,7 +274,7 @@ void RemoteCopyMessageHandler::HandleImage(const std::string& image_url) {
                             base::Unretained(this)));
   }
   url_loader_->DownloadToString(
-      content::BrowserContext::GetDefaultStoragePartition(profile_)
+      profile_->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess()
           .get(),
       base::BindOnce(&RemoteCopyMessageHandler::OnURLLoadComplete,

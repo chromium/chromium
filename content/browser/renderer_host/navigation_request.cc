@@ -892,9 +892,10 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
       // resolving the blob URL in the site instance it was loaded in.
       navigation_request->blob_url_loader_factory_ =
           ChromeBlobStorageContext::URLLoaderFactoryForUrl(
-              BrowserContext::GetStoragePartition(
-                  frame_tree_node->navigator().controller().GetBrowserContext(),
-                  frame_entry->site_instance()),
+              frame_tree_node->navigator()
+                  .controller()
+                  .GetBrowserContext()
+                  ->GetStoragePartition(frame_entry->site_instance()),
               navigation_request->common_params().url);
     }
   }
@@ -3327,8 +3328,8 @@ void NavigationRequest::OnStartChecksComplete(
 
   BrowserContext* browser_context =
       frame_tree_node_->navigator().controller().GetBrowserContext();
-  StoragePartition* partition = BrowserContext::GetStoragePartition(
-      browser_context, navigating_frame_host->GetSiteInstance());
+  StoragePartition* partition = browser_context->GetStoragePartition(
+      navigating_frame_host->GetSiteInstance());
   DCHECK(partition);
 
   // |loader_| should not exist if the service worker handle and app cache

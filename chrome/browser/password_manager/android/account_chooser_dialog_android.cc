@@ -143,8 +143,8 @@ bool AccountChooserDialogAndroid::ShowDialog() {
       base::android::ConvertUTF8ToJavaString(env, origin),
       base::android::ConvertUTF16ToJavaString(env, signin_button)));
   network::mojom::URLLoaderFactory* loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(
-          Profile::FromBrowserContext(web_contents_->GetBrowserContext()))
+      web_contents_->GetBrowserContext()
+          ->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess()
           .get();
   int avatar_index = 0;

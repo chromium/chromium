@@ -247,8 +247,7 @@ class RemoveLocalStorageTester {
   RemoveLocalStorageTester(content::BrowserTaskEnvironment* task_environment,
                            TestBrowserContext* browser_context)
       : task_environment_(task_environment),
-        storage_partition_(
-            BrowserContext::GetDefaultStoragePartition(browser_context)),
+        storage_partition_(browser_context->GetDefaultStoragePartition()),
         dom_storage_context_(storage_partition_->GetDOMStorageContext()) {}
 
   ~RemoveLocalStorageTester() {
@@ -872,8 +871,7 @@ class StoragePartitionShaderClearTest : public testing::Test {
     InitShaderCacheFactorySingleton(base::ThreadTaskRunnerHandle::Get());
     GetShaderCacheFactorySingleton()->SetCacheInfo(
         kDefaultClientId,
-        BrowserContext::GetDefaultStoragePartition(browser_context())
-            ->GetPath());
+        browser_context()->GetDefaultStoragePartition()->GetPath());
     cache_ = GetShaderCacheFactorySingleton()->Get(kDefaultClientId);
   }
 
@@ -916,8 +914,7 @@ TEST_F(StoragePartitionShaderClearTest, ClearShaderCache) {
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&ClearData,
-                                BrowserContext::GetDefaultStoragePartition(
-                                    browser_context()),
+                                browser_context()->GetDefaultStoragePartition(),
                                 &run_loop));
   run_loop.Run();
   EXPECT_EQ(0u, Size());
@@ -997,7 +994,7 @@ TEST_F(StoragePartitionImplTest, RemoveQuotaManagedDataForeverBoth) {
   PopulateTestQuotaManagedData(GetMockManager(), kOrigin1, kOrigin2, kOrigin3);
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
   partition->OverrideQuotaManagerForTesting(GetMockManager());
 
   base::RunLoop run_loop;
@@ -1026,7 +1023,7 @@ TEST_F(StoragePartitionImplTest, RemoveQuotaManagedDataForeverOnlyTemporary) {
   PopulateTestQuotaManagedTemporaryData(GetMockManager(), kOrigin1, kOrigin2);
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
   partition->OverrideQuotaManagerForTesting(GetMockManager());
 
   base::RunLoop run_loop;
@@ -1051,7 +1048,7 @@ TEST_F(StoragePartitionImplTest, RemoveQuotaManagedDataForeverOnlyPersistent) {
   PopulateTestQuotaManagedPersistentData(GetMockManager(), kOrigin1, kOrigin2);
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
   partition->OverrideQuotaManagerForTesting(GetMockManager());
 
   base::RunLoop run_loop;
@@ -1075,7 +1072,7 @@ TEST_F(StoragePartitionImplTest, RemoveQuotaManagedDataForeverNeither) {
   const url::Origin kOrigin3 = url::Origin::Create(GURL("http://host3:1/"));
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
   partition->OverrideQuotaManagerForTesting(GetMockManager());
 
   base::RunLoop run_loop;
@@ -1105,7 +1102,7 @@ TEST_F(StoragePartitionImplTest, RemoveQuotaManagedDataForeverSpecificOrigin) {
   PopulateTestQuotaManagedData(GetMockManager(), kOrigin1, kOrigin2, kOrigin3);
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
   partition->OverrideQuotaManagerForTesting(GetMockManager());
 
   base::RunLoop run_loop;
@@ -1136,7 +1133,7 @@ TEST_F(StoragePartitionImplTest, RemoveQuotaManagedDataForLastHour) {
   PopulateTestQuotaManagedData(GetMockManager(), kOrigin1, kOrigin2, kOrigin3);
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
   partition->OverrideQuotaManagerForTesting(GetMockManager());
 
   base::RunLoop run_loop;
@@ -1170,7 +1167,7 @@ TEST_F(StoragePartitionImplTest, RemoveQuotaManagedDataForLastWeek) {
 
   base::RunLoop run_loop;
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
   partition->OverrideQuotaManagerForTesting(GetMockManager());
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -1205,7 +1202,7 @@ TEST_F(StoragePartitionImplTest, RemoveQuotaManagedUnprotectedOrigins) {
   PopulateTestQuotaManagedData(GetMockManager(), kOrigin1, kOrigin2, kOrigin3);
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
   partition->OverrideQuotaManagerForTesting(GetMockManager());
   partition->OverrideSpecialStoragePolicyForTesting(mock_policy.get());
 
@@ -1245,7 +1242,7 @@ TEST_F(StoragePartitionImplTest, RemoveQuotaManagedProtectedOrigins) {
   // Try to remove kOrigin1. Expect success.
   base::RunLoop run_loop;
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
   partition->OverrideQuotaManagerForTesting(GetMockManager());
   partition->OverrideSpecialStoragePolicyForTesting(mock_policy.get());
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -1278,7 +1275,7 @@ TEST_F(StoragePartitionImplTest, RemoveQuotaManagedIgnoreDevTools) {
 
   base::RunLoop run_loop;
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
   partition->OverrideQuotaManagerForTesting(GetMockManager());
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
@@ -1297,8 +1294,7 @@ TEST_F(StoragePartitionImplTest, RemoveQuotaManagedIgnoreDevTools) {
 TEST_F(StoragePartitionImplTest, RemoveCookieForever) {
   const url::Origin kOrigin = url::Origin::Create(GURL("http://host1:1/"));
 
-  StoragePartition* partition =
-      BrowserContext::GetDefaultStoragePartition(browser_context());
+  StoragePartition* partition = browser_context()->GetDefaultStoragePartition();
 
   RemoveCookieTester tester(partition);
   tester.AddCookie(kOrigin);
@@ -1316,8 +1312,7 @@ TEST_F(StoragePartitionImplTest, RemoveCookieForever) {
 TEST_F(StoragePartitionImplTest, RemoveCookieLastHour) {
   const url::Origin kOrigin = url::Origin::Create(GURL("http://host1:1/"));
 
-  StoragePartition* partition =
-      BrowserContext::GetDefaultStoragePartition(browser_context());
+  StoragePartition* partition = browser_context()->GetDefaultStoragePartition();
 
   RemoveCookieTester tester(partition);
   tester.AddCookie(kOrigin);
@@ -1337,8 +1332,7 @@ TEST_F(StoragePartitionImplTest, RemoveCookieLastHour) {
 TEST_F(StoragePartitionImplTest, RemoveCookieWithDeleteInfo) {
   const url::Origin kOrigin = url::Origin::Create(GURL("http://host1:1/"));
 
-  StoragePartition* partition =
-      BrowserContext::GetDefaultStoragePartition(browser_context());
+  StoragePartition* partition = browser_context()->GetDefaultStoragePartition();
 
   RemoveCookieTester tester(partition);
   tester.AddCookie(kOrigin);
@@ -1356,7 +1350,7 @@ TEST_F(StoragePartitionImplTest, RemoveInterestGroupForever) {
   const url::Origin kOrigin = url::Origin::Create(GURL("http://host1:1/"));
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
 
   RemoveInterestGroupTester tester(partition);
   tester.AddInterestGroup(kOrigin);
@@ -1385,7 +1379,7 @@ TEST_F(StoragePartitionImplTest, RemoveUnprotectedLocalStorageForever) {
   tester.AddDOMStorageTestData(kOrigin1, kOrigin2, kOrigin3);
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
   partition->OverrideSpecialStoragePolicyForTesting(mock_policy.get());
 
   base::RunLoop run_loop;
@@ -1420,7 +1414,7 @@ TEST_F(StoragePartitionImplTest, RemoveProtectedLocalStorageForever) {
   tester.AddDOMStorageTestData(kOrigin1, kOrigin2, kOrigin3);
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
   partition->OverrideSpecialStoragePolicyForTesting(mock_policy.get());
 
   base::RunLoop run_loop;
@@ -1455,7 +1449,7 @@ TEST_F(StoragePartitionImplTest, RemoveLocalStorageForLastWeek) {
   tester.AddDOMStorageTestData(kOrigin1, kOrigin2, kOrigin3);
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
   base::Time a_week_ago = base::Time::Now() - base::TimeDelta::FromDays(7);
 
   base::RunLoop run_loop;
@@ -1483,7 +1477,7 @@ TEST_F(StoragePartitionImplTest, ClearCodeCache) {
   const GURL kResourceURL("http://host4/script.js");
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
   // Ensure code cache is initialized.
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(partition->GetGeneratedCodeCacheContext() != nullptr);
@@ -1517,7 +1511,7 @@ TEST_F(StoragePartitionImplTest, ClearCodeCacheSpecificURL) {
   const GURL kFilterResourceURLForCodeCache("http://host5/script.js");
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
   // Ensure code cache is initialized.
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(partition->GetGeneratedCodeCacheContext() != nullptr);
@@ -1559,7 +1553,7 @@ TEST_F(StoragePartitionImplTest, ClearCodeCacheDateRange) {
   const GURL kFilterResourceURLForCodeCache("http://host5/script.js");
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
   // Ensure code cache is initialized.
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(partition->GetGeneratedCodeCacheContext() != nullptr);
@@ -1611,7 +1605,7 @@ TEST_F(StoragePartitionImplTest, ClearWasmCodeCache) {
   const GURL kResourceURL("http://host4/script.js");
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
   // Ensure code cache is initialized.
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(partition->GetGeneratedCodeCacheContext() != nullptr);
@@ -1645,7 +1639,7 @@ TEST_F(StoragePartitionImplTest, ClearCodeCacheIncognito) {
   browser_context()->set_is_off_the_record(true);
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
   base::RunLoop().RunUntilIdle();
   // We should not create GeneratedCodeCacheContext for off the record mode.
   EXPECT_EQ(nullptr, partition->GetGeneratedCodeCacheContext());
@@ -1665,7 +1659,7 @@ TEST_F(StoragePartitionImplTest, RemovePluginPrivateDataForever) {
   const url::Origin kOrigin2 = url::Origin::Create(GURL("http://host2:1/"));
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
 
   RemovePluginPrivateDataTester tester(partition->GetFileSystemContext());
   tester.AddPluginPrivateTestData(kOrigin1.GetURL(), kOrigin2.GetURL());
@@ -1687,7 +1681,7 @@ TEST_F(StoragePartitionImplTest, RemovePluginPrivateDataLastWeek) {
   const url::Origin kOrigin2 = url::Origin::Create(GURL("http://host2:1/"));
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
   base::Time a_week_ago = base::Time::Now() - base::TimeDelta::FromDays(7);
 
   RemovePluginPrivateDataTester tester(partition->GetFileSystemContext());
@@ -1713,7 +1707,7 @@ TEST_F(StoragePartitionImplTest, RemovePluginPrivateDataForOrigin) {
   const url::Origin kOrigin2 = url::Origin::Create(GURL("http://host2:1/"));
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
 
   RemovePluginPrivateDataTester tester(partition->GetFileSystemContext());
   tester.AddPluginPrivateTestData(kOrigin1.GetURL(), kOrigin2.GetURL());
@@ -1737,7 +1731,7 @@ TEST_F(StoragePartitionImplTest, RemovePluginPrivateDataAfterDeletion) {
   const url::Origin kOrigin2 = url::Origin::Create(GURL("http://host2:1/"));
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
 
   RemovePluginPrivateDataTester tester(partition->GetFileSystemContext());
   tester.AddPluginPrivateTestData(kOrigin1.GetURL(), kOrigin2.GetURL());
@@ -1800,7 +1794,7 @@ TEST(StoragePartitionImplStaticTest, CreatePredicateForHostCookies) {
 
 TEST_F(StoragePartitionImplTest, ConversionsClearDataForOrigin) {
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
 
   ConversionManagerImpl* conversion_manager = partition->GetConversionManager();
 
@@ -1823,7 +1817,7 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForOrigin) {
 
 TEST_F(StoragePartitionImplTest, ConversionsClearDataWrongMask) {
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
 
   ConversionManagerImpl* conversion_manager = partition->GetConversionManager();
 
@@ -1850,7 +1844,7 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataWrongMask) {
 
 TEST_F(StoragePartitionImplTest, ConversionsClearAllData) {
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
 
   ConversionManagerImpl* conversion_manager = partition->GetConversionManager();
 
@@ -1878,7 +1872,7 @@ TEST_F(StoragePartitionImplTest, ConversionsClearAllData) {
 
 TEST_F(StoragePartitionImplTest, ConversionsClearDataForFilter) {
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
 
   ConversionManagerImpl* conversion_manager = partition->GetConversionManager();
 
@@ -1936,7 +1930,7 @@ TEST_F(StoragePartitionImplTest, DataRemovalObserver) {
       };
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
   MockDataRemovalObserver observer(partition);
 
   // Confirm that each of the StoragePartition interfaces for clearing origin
@@ -2029,7 +2023,7 @@ TEST_F(StoragePartitionImplTest, BindsTrustTokenFulfiller) {
       }));
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
 
   auto request = network::mojom::FulfillTrustTokenIssuanceRequest::New();
   request->request = "Some tokens, please";
@@ -2089,7 +2083,7 @@ TEST_F(StoragePartitionImplTest, HandlesDisconnectedTrustTokenFulfiller) {
                           base::Unretained(&mock_fulfiller)));
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
 
   auto request = network::mojom::FulfillTrustTokenIssuanceRequest::New();
   base::RunLoop run_loop;
@@ -2137,7 +2131,7 @@ TEST_F(StoragePartitionImplTest, HandlesMissingTrustTokenFulfiller) {
 #endif  // defined(OS_ANDROID)
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
 
   auto request = network::mojom::FulfillTrustTokenIssuanceRequest::New();
   base::RunLoop run_loop;

@@ -140,8 +140,8 @@ content::StoragePartition* GetStoragePartitionForExtensionId(
   auto storage_partition_config =
       GetStoragePartitionConfigForExtensionId(extension_id, browser_context);
   content::StoragePartition* storage_partition =
-      content::BrowserContext::GetStoragePartition(
-          browser_context, storage_partition_config, can_create);
+      browser_context->GetStoragePartition(storage_partition_config,
+                                           can_create);
   return storage_partition;
 }
 

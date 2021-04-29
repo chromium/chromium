@@ -288,7 +288,7 @@ bool SetGaiaCookieForProfile(Profile* profile) {
         loop.Quit();
       });
   network::mojom::CookieManager* cookie_manager =
-      content::BrowserContext::GetDefaultStoragePartition(profile)
+      profile->GetDefaultStoragePartition()
           ->GetCookieManagerForBrowserProcess();
   cookie_manager->SetCanonicalCookie(*cookie, google_url,
                                      net::CookieOptions::MakeAllInclusive(),
@@ -401,8 +401,7 @@ class BrowsingDataRemoverBrowserTest
     base::RunLoop run_loop;
     int count = -1;
     content::StoragePartition* partition =
-        content::BrowserContext::GetDefaultStoragePartition(
-            browser()->profile());
+        browser()->profile()->GetDefaultStoragePartition();
     scoped_refptr<BrowsingDataMediaLicenseHelper> media_license_helper =
         BrowsingDataMediaLicenseHelper::Create(
             partition->GetFileSystemContext());
@@ -437,8 +436,9 @@ class BrowsingDataRemoverBrowserTest
   }
 
   network::mojom::NetworkContext* network_context() const {
-    return content::BrowserContext::GetDefaultStoragePartition(
-               GetBrowser()->profile())
+    return GetBrowser()
+        ->profile()
+        ->GetDefaultStoragePartition()
         ->GetNetworkContext();
   }
 
@@ -460,7 +460,7 @@ class BrowsingDataRemoverBrowserTest
   std::unique_ptr<CookiesTreeModel> GetCookiesTreeModel() {
     Profile* profile = GetBrowser()->profile();
     content::StoragePartition* storage_partition =
-        content::BrowserContext::GetDefaultStoragePartition(profile);
+        profile->GetDefaultStoragePartition();
     content::ServiceWorkerContext* service_worker_context =
         storage_partition->GetServiceWorkerContext();
     storage::FileSystemContext* file_system_context =

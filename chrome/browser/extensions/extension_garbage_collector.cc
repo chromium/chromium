@@ -238,8 +238,8 @@ void ExtensionGarbageCollector::GarbageCollectIsolatedStorageIfNeeded() {
 
   DCHECK(!installs_delayed_for_gc_);
   installs_delayed_for_gc_ = true;
-  content::BrowserContext::GarbageCollectStoragePartitions(
-      context_, std::move(active_paths),
+  context_->GarbageCollectStoragePartitions(
+      std::move(active_paths),
       base::BindOnce(
           &ExtensionGarbageCollector::OnGarbageCollectIsolatedStorageFinished,
           weak_factory_.GetWeakPtr()));

@@ -76,7 +76,7 @@ void OperationManager::StartWriteFromUrl(
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
       url_loader_factory_remote;
-  content::BrowserContext::GetDefaultStoragePartition(browser_context_)
+  browser_context_->GetDefaultStoragePartition()
       ->GetURLLoaderFactoryForBrowserProcess()
       ->Clone(url_loader_factory_remote.InitWithNewPipeAndPassReceiver());
 

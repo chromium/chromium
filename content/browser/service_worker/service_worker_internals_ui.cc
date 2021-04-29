@@ -418,11 +418,9 @@ void ServiceWorkerInternalsHandler::OnJavascriptDisallowed() {
       web_ui()->GetWebContents()->GetBrowserContext();
   // Safe to use base::Unretained(this) because
   // ForEachStoragePartition is synchronous.
-  BrowserContext::ForEachStoragePartition(
-      browser_context,
-      base::BindRepeating(
-          &ServiceWorkerInternalsHandler::RemoveObserverFromStoragePartition,
-          base::Unretained(this)));
+  browser_context->ForEachStoragePartition(base::BindRepeating(
+      &ServiceWorkerInternalsHandler::RemoveObserverFromStoragePartition,
+      base::Unretained(this)));
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
@@ -509,11 +507,9 @@ void ServiceWorkerInternalsHandler::HandleGetAllRegistrations(
       web_ui()->GetWebContents()->GetBrowserContext();
   // Safe to use base::Unretained(this) because
   // ForEachStoragePartition is synchronous.
-  BrowserContext::ForEachStoragePartition(
-      browser_context,
-      base::BindRepeating(
-          &ServiceWorkerInternalsHandler::AddContextFromStoragePartition,
-          base::Unretained(this)));
+  browser_context->ForEachStoragePartition(base::BindRepeating(
+      &ServiceWorkerInternalsHandler::AddContextFromStoragePartition,
+      base::Unretained(this)));
 }
 
 void ServiceWorkerInternalsHandler::AddContextFromStoragePartition(
@@ -573,11 +569,9 @@ bool ServiceWorkerInternalsHandler::GetServiceWorkerContext(
   BrowserContext* browser_context =
       web_ui()->GetWebContents()->GetBrowserContext();
   StoragePartition* result_partition(nullptr);
-  BrowserContext::ForEachStoragePartition(
-      browser_context,
-      base::BindRepeating(&ServiceWorkerInternalsHandler::FindContext,
-                          base::Unretained(this), partition_id,
-                          &result_partition));
+  browser_context->ForEachStoragePartition(base::BindRepeating(
+      &ServiceWorkerInternalsHandler::FindContext, base::Unretained(this),
+      partition_id, &result_partition));
   if (!result_partition)
     return false;
   *context = static_cast<ServiceWorkerContextWrapper*>(

@@ -35,7 +35,7 @@ void AddSigninCookie(Profile* profile) {
       /*same_party=*/false);
 
   network::mojom::CookieManager* cookie_manager =
-      content::BrowserContext::GetDefaultStoragePartition(profile)
+      profile->GetDefaultStoragePartition()
           ->GetCookieManagerForBrowserProcess();
   DCHECK(cookie_manager);
 
@@ -51,7 +51,7 @@ void AddSigninCookie(Profile* profile) {
 void DeleteSigninCookies(Profile* profile) {
   DCHECK(profile);
   network::mojom::CookieManager* cookie_manager =
-      content::BrowserContext::GetDefaultStoragePartition(profile)
+      profile->GetDefaultStoragePartition()
           ->GetCookieManagerForBrowserProcess();
   DCHECK(cookie_manager);
 

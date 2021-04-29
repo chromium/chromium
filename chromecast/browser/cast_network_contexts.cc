@@ -202,7 +202,7 @@ void CastNetworkContexts::OnLocaleUpdate() {
   GetSystemContext()->SetAcceptLanguage(accept_language);
 
   auto* browser_context = CastBrowserProcess::GetInstance()->browser_context();
-  content::BrowserContext::GetDefaultStoragePartition(browser_context)
+  browser_context->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->SetAcceptLanguage(accept_language);
 }

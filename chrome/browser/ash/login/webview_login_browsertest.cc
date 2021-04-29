@@ -313,8 +313,7 @@ class WebviewLoginTest : public OobeBaseTest {
                       bool* out_web_view_found,
                       content::WebContents* guest_contents) {
     content::StoragePartition* guest_storage_partition =
-        content::BrowserContext::GetStoragePartition(
-            browser_context, guest_contents->GetSiteInstance());
+        browser_context->GetStoragePartition(guest_contents->GetSiteInstance());
     if (guest_storage_partition == expected_storage_partition)
       *out_web_view_found = true;
 

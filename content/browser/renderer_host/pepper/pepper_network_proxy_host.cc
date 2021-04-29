@@ -42,8 +42,8 @@ bool LookUpProxyForURLCallback(
     return false;
 
   SiteInstance* site_instance = render_frame_host->GetSiteInstance();
-  StoragePartition* storage_partition = BrowserContext::GetStoragePartition(
-      site_instance->GetBrowserContext(), site_instance);
+  StoragePartition* storage_partition =
+      site_instance->GetBrowserContext()->GetStoragePartition(site_instance);
 
   storage_partition->GetNetworkContext()->LookUpProxyForURL(
       url, render_frame_host->GetNetworkIsolationKey(),

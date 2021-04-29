@@ -43,9 +43,9 @@ class ContentIndexTest : public ContentBrowserTest {
         shell_->web_contents()->GetBrowserContext()->GetContentIndexProvider());
     ASSERT_TRUE(provider_);
 
-    auto* storage_partition = BrowserContext::GetStoragePartition(
-        shell_->web_contents()->GetBrowserContext(),
-        shell_->web_contents()->GetSiteInstance());
+    auto* storage_partition =
+        shell_->web_contents()->GetBrowserContext()->GetStoragePartition(
+            shell_->web_contents()->GetSiteInstance());
     context_ = storage_partition->GetContentIndexContext();
     ASSERT_TRUE(context_);
   }

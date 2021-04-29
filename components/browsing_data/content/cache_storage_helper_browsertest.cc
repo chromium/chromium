@@ -27,8 +27,10 @@ using TestCompletionCallback =
 class CacheStorageHelperTest : public content::ContentBrowserTest {
  public:
   content::StoragePartition* storage_partition() const {
-    return content::BrowserContext::GetDefaultStoragePartition(
-        shell()->web_contents()->GetBrowserContext());
+    return shell()
+        ->web_contents()
+        ->GetBrowserContext()
+        ->GetDefaultStoragePartition();
   }
 
   scoped_refptr<CannedCacheStorageHelper> MakeHelper() {

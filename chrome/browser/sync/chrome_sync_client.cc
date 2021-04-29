@@ -236,7 +236,7 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile) : profile_(profile) {
       std::make_unique<syncer::StandaloneTrustedVaultClient>(
           profile_->GetPath().Append(kTrustedVaultFilename),
           IdentityManagerFactory::GetForProfile(profile_),
-          content::BrowserContext::GetDefaultStoragePartition(profile_)
+          profile_->GetDefaultStoragePartition()
               ->GetURLLoaderFactoryForBrowserProcess());
 #endif  // defined(OS_ANDROID)
 }

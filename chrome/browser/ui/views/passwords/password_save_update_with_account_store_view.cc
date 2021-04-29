@@ -365,8 +365,8 @@ PasswordSaveUpdateWithAccountStoreView::PasswordSaveUpdateWithAccountStoreView(
     AddChildView(std::make_unique<CredentialsItemView>(
                      views::Button::PressedCallback(), titles.first,
                      titles.second, &password_form,
-                     content::BrowserContext::GetDefaultStoragePartition(
-                         controller_.GetProfile())
+                     controller_.GetProfile()
+                         ->GetDefaultStoragePartition()
                          ->GetURLLoaderFactoryForBrowserProcess()
                          .get()))
         ->SetEnabled(false);

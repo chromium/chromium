@@ -45,7 +45,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNetworkServiceRestartBrowserTest,
   // |NetworkServiceTestHelper| doesn't work on browser_tests on macOS.
 #if !defined(OS_MAC)
   StoragePartition* partition =
-      BrowserContext::GetDefaultStoragePartition(browser()->profile());
+      browser()->profile()->GetDefaultStoragePartition();
 
   network::mojom::NetworkContext* old_network_context =
       partition->GetNetworkContext();

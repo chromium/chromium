@@ -120,7 +120,7 @@ void PolicyCertService::GetPolicyCertificatesForStoragePartition(
   // corresponds to |partition_path|.
 
   base::FilePath default_storage_partition_path =
-      content::BrowserContext::GetDefaultStoragePartition(profile_)->GetPath();
+      profile_->GetDefaultStoragePartition()->GetPath();
   // Among the extension IDs that have policy-provided certificates, attempt to
   // find the extension ID which corresponds to |partition_path|.
   // This is done by iterating the extension IDs because there's no trivial

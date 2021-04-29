@@ -92,8 +92,7 @@ void IndexedDBInternalsHandler::GetAllOrigins(const base::ListValue* args) {
   BrowserContext* browser_context =
       web_ui()->GetWebContents()->GetBrowserContext();
 
-  BrowserContext::ForEachStoragePartition(
-      browser_context,
+  browser_context->ForEachStoragePartition(
       base::BindRepeating(
           [](base::WeakPtr<IndexedDBInternalsHandler> handler,
              StoragePartition* partition) {
@@ -167,8 +166,7 @@ bool IndexedDBInternalsHandler::GetOriginControl(
 
   StoragePartition* result_partition = nullptr;
   *control = nullptr;
-  BrowserContext::ForEachStoragePartition(
-      browser_context,
+  browser_context->ForEachStoragePartition(
       base::BindRepeating(&FindControl, path, &result_partition, control));
 
   if (!result_partition || !control)

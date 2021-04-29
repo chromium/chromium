@@ -212,7 +212,7 @@ void OffTheRecordProfileImpl::Init() {
   HeavyAdServiceFactory::GetForBrowserContext(this)->InitializeOffTheRecord();
 
   key_->SetProtoDatabaseProvider(
-      GetDefaultStoragePartition(this)->GetProtoDatabaseProvider());
+      GetDefaultStoragePartition()->GetProtoDatabaseProvider());
 
   if (IsIncognitoProfile())
     base::RecordAction(base::UserMetricsAction("IncognitoMode_Started"));
@@ -434,8 +434,7 @@ OffTheRecordProfileImpl::GetUserCloudPolicyManager() {
 
 scoped_refptr<network::SharedURLLoaderFactory>
 OffTheRecordProfileImpl::GetURLLoaderFactory() {
-  return GetDefaultStoragePartition(this)
-      ->GetURLLoaderFactoryForBrowserProcess();
+  return GetDefaultStoragePartition()->GetURLLoaderFactoryForBrowserProcess();
 }
 
 content::BrowserPluginGuestManager* OffTheRecordProfileImpl::GetGuestManager() {

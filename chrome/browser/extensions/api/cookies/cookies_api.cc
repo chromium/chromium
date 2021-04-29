@@ -82,7 +82,7 @@ network::mojom::CookieManager* ParseStoreCookieManager(
     *store_id = cookies_helpers::GetStoreIdFromProfile(store_profile);
   }
 
-  return content::BrowserContext::GetDefaultStoragePartition(store_profile)
+  return store_profile->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess();
 }
 
@@ -191,7 +191,7 @@ void CookiesEventRouter::BindToCookieManager(
     mojo::Receiver<network::mojom::CookieChangeListener>* receiver,
     Profile* profile) {
   network::mojom::CookieManager* cookie_manager =
-      content::BrowserContext::GetDefaultStoragePartition(profile)
+      profile->GetDefaultStoragePartition()
           ->GetCookieManagerForBrowserProcess();
   if (!cookie_manager)
     return;

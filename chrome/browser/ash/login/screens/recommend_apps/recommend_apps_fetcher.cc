@@ -55,8 +55,8 @@ std::unique_ptr<RecommendAppsFetcher> RecommendAppsFetcher::Create(
       display_config.InitWithNewPipeAndPassReceiver());
   return std::make_unique<RecommendAppsFetcherImpl>(
       delegate, std::move(display_config),
-      content::BrowserContext::GetDefaultStoragePartition(
-          ProfileManager::GetActiveUserProfile())
+      ProfileManager::GetActiveUserProfile()
+          ->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess()
           .get());
 }

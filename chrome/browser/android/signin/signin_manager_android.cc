@@ -235,7 +235,7 @@ void SigninManagerAndroid::FetchPolicyBeforeSignIn(
     base::OnceCallback<void()> policy_callback,
     const ManagementCredentials& credentials) {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(profile_)
+      profile_->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess();
   user_policy_signin_service_->FetchPolicyForSignedInUser(
       AccountIdFromAccountInfo(account), credentials.dm_token,

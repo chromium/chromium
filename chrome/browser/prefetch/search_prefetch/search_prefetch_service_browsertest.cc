@@ -1430,7 +1430,9 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   // Clearing cache should cause the back forward loader to fail over to the
   // regular URL.
   base::RunLoop run_loop;
-  content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
+  browser()
+      ->profile()
+      ->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->ClearHttpCache(base::Time(), base::Time(), nullptr,
                        run_loop.QuitClosure());
@@ -2324,11 +2326,10 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   RegisterStaticFile(kServiceWorkerUrl, kEnableNavigationPreloadScript,
                      "text/javascript");
 
-  auto* service_worker_context =
-      browser()
-          ->profile()
-          ->GetDefaultStoragePartition(browser()->profile())
-          ->GetServiceWorkerContext();
+  auto* service_worker_context = browser()
+                                     ->profile()
+                                     ->GetDefaultStoragePartition()
+                                     ->GetServiceWorkerContext();
 
   base::RunLoop run_loop;
   blink::mojom::ServiceWorkerRegistrationOptions options(

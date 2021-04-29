@@ -45,7 +45,7 @@ KeyedService* PasswordRequirementsServiceFactory::BuildServiceInstanceFor(
     return nullptr;
 
   return CreatePasswordRequirementsService(
-             content::BrowserContext::GetDefaultStoragePartition(context)
+             context->GetDefaultStoragePartition()
                  ->GetURLLoaderFactoryForBrowserProcess())
       .release();
 }

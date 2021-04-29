@@ -55,8 +55,10 @@ class DOMStorageBrowserTest : public ContentBrowserTest {
   }
 
   StoragePartition* partition() {
-    return BrowserContext::GetDefaultStoragePartition(
-        shell()->web_contents()->GetBrowserContext());
+    return shell()
+        ->web_contents()
+        ->GetBrowserContext()
+        ->GetDefaultStoragePartition();
   }
 
   std::vector<StorageUsageInfo> GetUsage() {

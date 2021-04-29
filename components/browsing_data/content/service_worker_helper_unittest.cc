@@ -20,8 +20,7 @@ namespace {
 class CannedServiceWorkerHelperTest : public testing::Test {
  public:
   content::ServiceWorkerContext* ServiceWorkerContext() {
-    return content::BrowserContext::GetDefaultStoragePartition(
-               &browser_context_)
+    return browser_context_.GetDefaultStoragePartition()
         ->GetServiceWorkerContext();
   }
 

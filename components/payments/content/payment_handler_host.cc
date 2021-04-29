@@ -29,9 +29,9 @@ content::DevToolsBackgroundServicesContext* GetDevTools(
   if (!web_contents)
     return nullptr;
 
-  auto* storage_partition = content::BrowserContext::GetStoragePartitionForUrl(
-      web_contents->GetBrowserContext(), sw_origin.GetURL(),
-      /*can_create=*/true);
+  auto* storage_partition =
+      web_contents->GetBrowserContext()->GetStoragePartitionForUrl(
+          sw_origin.GetURL(), /*can_create=*/true);
   if (!storage_partition)
     return nullptr;
 

@@ -108,8 +108,10 @@ class ServiceWorkerFetchDispatcherBrowserTest : public ContentBrowserTest {
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
 
-    StoragePartition* partition = BrowserContext::GetDefaultStoragePartition(
-        shell()->web_contents()->GetBrowserContext());
+    StoragePartition* partition = shell()
+                                      ->web_contents()
+                                      ->GetBrowserContext()
+                                      ->GetDefaultStoragePartition();
     wrapper_ = base::WrapRefCounted(static_cast<ServiceWorkerContextWrapper*>(
         partition->GetServiceWorkerContext()));
   }

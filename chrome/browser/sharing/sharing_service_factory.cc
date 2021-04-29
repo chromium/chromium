@@ -113,7 +113,7 @@ KeyedService* SharingServiceFactory::BuildServiceInstanceFor(
           instance_id_service->driver(), sync_service);
 
   auto web_push_sender = std::make_unique<WebPushSender>(
-      content::BrowserContext::GetDefaultStoragePartition(profile)
+      profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess());
   SharingMessageBridge* message_bridge =
       SharingMessageBridgeFactory::GetForBrowserContext(profile);

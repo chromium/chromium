@@ -200,8 +200,7 @@ AccountPasswordStoreFactory::BuildServiceInstanceFor(
       [](Profile* profile) -> network::mojom::NetworkContext* {
         if (!g_browser_process->profile_manager()->IsValidProfile(profile))
           return nullptr;
-        return content::BrowserContext::GetDefaultStoragePartition(profile)
-            ->GetNetworkContext();
+        return profile->GetDefaultStoragePartition()->GetNetworkContext();
       },
       profile);
   password_manager_util::RemoveUselessCredentials(

@@ -60,8 +60,7 @@ void HistogramProbe(error_page::DnsProbeStatus status,
 
 network::mojom::NetworkContext* GetNetworkContextForProfile(
     content::BrowserContext* context) {
-  return content::BrowserContext::GetDefaultStoragePartition(context)
-      ->GetNetworkContext();
+  return context->GetDefaultStoragePartition()->GetNetworkContext();
 }
 
 mojo::Remote<network::mojom::DnsConfigChangeManager>

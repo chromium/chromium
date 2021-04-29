@@ -16,11 +16,10 @@ namespace browsing_data {
 MockFileSystemHelper::MockFileSystemHelper(
     content::BrowserContext* browser_context)
     : FileSystemHelper(
-          content::BrowserContext::GetDefaultStoragePartition(browser_context)
-              ->GetFileSystemContext(),
+          browser_context->GetDefaultStoragePartition()->GetFileSystemContext(),
           {},
-          content::BrowserContext::GetDefaultStoragePartition(browser_context)
-              ->GetNativeIOContext()) {}
+          browser_context->GetDefaultStoragePartition()->GetNativeIOContext()) {
+}
 
 MockFileSystemHelper::~MockFileSystemHelper() {}
 

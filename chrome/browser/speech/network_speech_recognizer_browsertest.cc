@@ -83,7 +83,9 @@ class NetworkSpeechRecognizerBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(NetworkSpeechRecognizerBrowserTest, RecognizeSpeech) {
   NetworkSpeechRecognizer recognizer(
       mock_speech_delegate_->GetWeakPtr(),
-      content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
+      browser()
+          ->profile()
+          ->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcessIOThread(),
       "en" /* accept_language */, "en" /* locale */);
 

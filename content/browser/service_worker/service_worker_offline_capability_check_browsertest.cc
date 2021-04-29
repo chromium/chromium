@@ -204,8 +204,10 @@ class ServiceWorkerOfflineCapabilityCheckBrowserTest
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());
 
-    StoragePartition* partition = BrowserContext::GetDefaultStoragePartition(
-        shell()->web_contents()->GetBrowserContext());
+    StoragePartition* partition = shell()
+                                      ->web_contents()
+                                      ->GetBrowserContext()
+                                      ->GetDefaultStoragePartition();
     wrapper_ = static_cast<ServiceWorkerContextWrapper*>(
         partition->GetServiceWorkerContext());
   }

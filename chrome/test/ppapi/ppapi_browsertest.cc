@@ -1238,8 +1238,7 @@ TEST_PPAPI_NACL_DISALLOWED_SOCKETS(UDPSocketPrivateDisallowed)
 // looked up across tabs with different first party origins.
 void CheckTestHostNameUsedWithCorrectNetworkIsolationKey(Browser* browser) {
   network::mojom::NetworkContext* network_context =
-      content::BrowserContext::GetDefaultStoragePartition(browser->profile())
-          ->GetNetworkContext();
+      browser->profile()->GetDefaultStoragePartition()->GetNetworkContext();
   const net::HostPortPair kHostPortPair(
       net::HostPortPair("host_resolver.test", 80));
 

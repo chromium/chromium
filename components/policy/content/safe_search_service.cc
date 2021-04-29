@@ -64,8 +64,7 @@ bool SafeSearchService::CheckSafeSearchURL(const GURL& url,
 
     safe_search_url_checker_ = std::make_unique<safe_search_api::URLChecker>(
         std::make_unique<safe_search_api::SafeSearchURLCheckerClient>(
-            content::BrowserContext::GetDefaultStoragePartition(
-                browser_context_)
+            browser_context_->GetDefaultStoragePartition()
                 ->GetURLLoaderFactoryForBrowserProcess(),
             traffic_annotation));
   }

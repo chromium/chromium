@@ -172,7 +172,7 @@ StoragePartition* AwQuotaManagerBridge::GetStoragePartition() const {
 
   // AndroidWebview does not use per-site storage partitions.
   StoragePartition* storage_partition =
-      content::BrowserContext::GetDefaultStoragePartition(browser_context_);
+      browser_context_->GetDefaultStoragePartition();
   DCHECK(storage_partition);
   return storage_partition;
 }

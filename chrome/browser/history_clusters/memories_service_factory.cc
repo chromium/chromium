@@ -38,9 +38,8 @@ KeyedService* MemoriesServiceFactory::BuildServiceInstanceFor(
   auto* profile = Profile::FromBrowserContext(context);
   auto* history_service = HistoryServiceFactory::GetForProfile(
       profile, ServiceAccessType::EXPLICIT_ACCESS);
-  auto url_loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(context)
-          ->GetURLLoaderFactoryForBrowserProcess();
+  auto url_loader_factory = context->GetDefaultStoragePartition()
+                                ->GetURLLoaderFactoryForBrowserProcess();
   return new history_clusters::MemoriesService(history_service,
                                                url_loader_factory);
 }

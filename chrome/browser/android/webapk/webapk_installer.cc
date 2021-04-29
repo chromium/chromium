@@ -652,7 +652,7 @@ void WebApkInstaller::OnURLLoaderComplete(
 
 network::SharedURLLoaderFactory* GetURLLoaderFactory(
     content::BrowserContext* browser_context) {
-  return content::BrowserContext::GetDefaultStoragePartition(browser_context)
+  return browser_context->GetDefaultStoragePartition()
       ->GetURLLoaderFactoryForBrowserProcess()
       .get();
 }

@@ -94,8 +94,8 @@ void SigninPartitionManager::StartSigninSession(
   auto storage_partition_config = content::StoragePartitionConfig::Create(
       browser_context_, storage_partition_domain_,
       current_storage_partition_name_, true /*in_memory */);
-  current_storage_partition_ = content::BrowserContext::GetStoragePartition(
-      browser_context_, storage_partition_config, true);
+  current_storage_partition_ =
+      browser_context_->GetStoragePartition(storage_partition_config, true);
   if (on_create_new_storage_partition_) {
     on_create_new_storage_partition_.Run(current_storage_partition_);
   }

@@ -129,8 +129,8 @@ void SpeechRecognitionDispatcherHost::StartRequestOnUI(
           ->FilterProfanities(embedder_render_process_id);
 
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();
-  StoragePartition* storage_partition = BrowserContext::GetStoragePartition(
-      browser_context, web_contents->GetSiteInstance());
+  StoragePartition* storage_partition =
+      browser_context->GetStoragePartition(web_contents->GetSiteInstance());
 
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,

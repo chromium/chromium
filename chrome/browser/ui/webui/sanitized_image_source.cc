@@ -25,11 +25,10 @@
 #include "url/url_util.h"
 
 SanitizedImageSource::SanitizedImageSource(Profile* profile)
-    : SanitizedImageSource(
-          profile,
-          content::BrowserContext::GetDefaultStoragePartition(profile)
-              ->GetURLLoaderFactoryForBrowserProcess(),
-          std::make_unique<ImageDecoderImpl>()) {}
+    : SanitizedImageSource(profile,
+                           profile->GetDefaultStoragePartition()
+                               ->GetURLLoaderFactoryForBrowserProcess(),
+                           std::make_unique<ImageDecoderImpl>()) {}
 
 SanitizedImageSource::SanitizedImageSource(
     Profile* profile,

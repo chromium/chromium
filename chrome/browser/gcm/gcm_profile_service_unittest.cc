@@ -57,7 +57,7 @@ void RequestProxyResolvingSocketFactoryOnUIThread(
         receiver) {
   if (!service)
     return;
-  return content::BrowserContext::GetDefaultStoragePartition(profile)
+  return profile->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->CreateProxyResolvingSocketFactory(std::move(receiver));
 }
@@ -81,7 +81,7 @@ std::unique_ptr<KeyedService> BuildGCMProfileService(
   return std::make_unique<gcm::GCMProfileService>(
       profile->GetPrefs(), profile->GetPath(),
       base::BindRepeating(&RequestProxyResolvingSocketFactory, profile),
-      content::BrowserContext::GetDefaultStoragePartition(profile)
+      profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
       network::TestNetworkConnectionTracker::GetInstance(),
       chrome::GetChannel(),

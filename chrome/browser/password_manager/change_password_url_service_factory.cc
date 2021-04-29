@@ -36,7 +36,7 @@ ChangePasswordUrlServiceFactory::GetForBrowserContext(
 KeyedService* ChangePasswordUrlServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new password_manager::ChangePasswordUrlServiceImpl(
-      content::BrowserContext::GetDefaultStoragePartition(context)
+      context->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
       Profile::FromBrowserContext(context)->GetPrefs());
 }

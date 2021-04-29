@@ -149,8 +149,9 @@ class IndexedDBBrowserTest : public ContentBrowserTest,
   storage::mojom::IndexedDBControl& GetControl(Shell* browser = nullptr) {
     if (!browser)
       browser = shell();
-    StoragePartition* partition = BrowserContext::GetDefaultStoragePartition(
-        browser->web_contents()->GetBrowserContext());
+    StoragePartition* partition = browser->web_contents()
+                                      ->GetBrowserContext()
+                                      ->GetDefaultStoragePartition();
     return partition->GetIndexedDBControl();
   }
 
@@ -163,17 +164,19 @@ class IndexedDBBrowserTest : public ContentBrowserTest,
   void BindControlTest(
       mojo::PendingReceiver<storage::mojom::IndexedDBControlTest> receiver) {
     auto* browser = shell();
-    StoragePartition* partition = BrowserContext::GetDefaultStoragePartition(
-        browser->web_contents()->GetBrowserContext());
+    StoragePartition* partition = browser->web_contents()
+                                      ->GetBrowserContext()
+                                      ->GetDefaultStoragePartition();
     auto& control = partition->GetIndexedDBControl();
     control.BindTestInterface(std::move(receiver));
   }
 
   void SetQuota(int per_host_quota_kilobytes) {
-    SetTempQuota(per_host_quota_kilobytes,
-                 BrowserContext::GetDefaultStoragePartition(
-                     shell()->web_contents()->GetBrowserContext())
-                     ->GetQuotaManager());
+    SetTempQuota(per_host_quota_kilobytes, shell()
+                                               ->web_contents()
+                                               ->GetBrowserContext()
+                                               ->GetDefaultStoragePartition()
+                                               ->GetQuotaManager());
   }
 
   static void SetTempQuota(int per_host_quota_kilobytes,

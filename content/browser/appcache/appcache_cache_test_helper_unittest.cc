@@ -208,7 +208,7 @@ class AppCacheCacheTestHelperTest : public testing::Test {
   AppCacheCacheTestHelperTest()
       : process_id_(123),
         weak_partition_factory_(static_cast<StoragePartitionImpl*>(
-            BrowserContext::GetDefaultStoragePartition(&browser_context_))) {}
+            browser_context_.GetDefaultStoragePartition())) {}
 
   void SetUp() override {
     ChildProcessSecurityPolicyImpl::GetInstance()->Add(process_id_,

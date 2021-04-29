@@ -197,7 +197,8 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
   // partition has updated and ack'd the update. This prevents a race where
   // the renderer could initiate a network request based on the response to this
   // request before the access grants have updated in the network service.
-  content::BrowserContext::GetDefaultStoragePartition(browser_context())
+  browser_context()
+      ->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess()
       ->SetStorageAccessGrantSettings(
           grants, base::BindOnce(std::move(callback), content_setting));

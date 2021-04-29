@@ -135,8 +135,9 @@ IN_PROC_BROWSER_TEST_F(NativeIOManagerBrowserTest,
   Shell* browser = CreateBrowser();
   base::RunLoop run_loop;
   scoped_refptr<storage::QuotaManager> quota_manager =
-      BrowserContext::GetDefaultStoragePartition(
-          browser->web_contents()->GetBrowserContext())
+      browser->web_contents()
+          ->GetBrowserContext()
+          ->GetDefaultStoragePartition()
           ->GetQuotaManager();
 
   NavigateToURLBlockUntilNavigationsComplete(browser, test_url,

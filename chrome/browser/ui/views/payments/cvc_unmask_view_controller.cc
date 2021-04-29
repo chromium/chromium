@@ -57,8 +57,8 @@ CvcUnmaskViewController::CvcUnmaskViewController(
       frame_routing_id_(
           web_contents->GetMainFrame()->GetGlobalFrameRoutingId()),
       payments_client_(
-          content::BrowserContext::GetDefaultStoragePartition(
-              web_contents->GetBrowserContext())
+          web_contents->GetBrowserContext()
+              ->GetDefaultStoragePartition()
               ->GetURLLoaderFactoryForBrowserProcess(),
           IdentityManagerFactory::GetForProfile(
               Profile::FromBrowserContext(web_contents->GetBrowserContext())

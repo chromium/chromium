@@ -127,8 +127,9 @@ class ChromeServiceWorkerTest : public InProcessBrowserTest {
   }
 
   content::ServiceWorkerContext* GetServiceWorkerContext() {
-    return content::BrowserContext::GetDefaultStoragePartition(
-               browser()->profile())
+    return browser()
+        ->profile()
+        ->GetDefaultStoragePartition()
         ->GetServiceWorkerContext();
   }
 

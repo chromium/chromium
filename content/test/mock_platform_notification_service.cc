@@ -101,8 +101,8 @@ void MockPlatformNotificationService::ScheduleTrigger(base::Time timestamp) {
   if (timestamp > base::Time::Now())
     return;
 
-  BrowserContext::ForEachStoragePartition(
-      context_, base::BindRepeating([](content::StoragePartition* partition) {
+  context_->ForEachStoragePartition(
+      base::BindRepeating([](content::StoragePartition* partition) {
         partition->GetPlatformNotificationContext()->TriggerNotifications();
       }));
 }

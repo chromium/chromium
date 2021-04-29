@@ -249,9 +249,8 @@ CastMediaNotificationItem::GetObserverPendingRemote() {
 CastMediaNotificationItem::ImageDownloader::ImageDownloader(
     Profile* profile,
     base::RepeatingCallback<void(const SkBitmap&)> callback)
-    : url_loader_factory_(
-          content::BrowserContext::GetDefaultStoragePartition(profile)
-              ->GetURLLoaderFactoryForBrowserProcess()),
+    : url_loader_factory_(profile->GetDefaultStoragePartition()
+                              ->GetURLLoaderFactoryForBrowserProcess()),
       callback_(std::move(callback)) {}
 
 CastMediaNotificationItem::ImageDownloader::~ImageDownloader() = default;

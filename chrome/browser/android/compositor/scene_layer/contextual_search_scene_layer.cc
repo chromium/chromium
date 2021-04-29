@@ -214,7 +214,7 @@ void ContextualSearchSceneLayer::FetchThumbnail(
   GURL gurl(thumbnail_url_);
   Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
   network::mojom::URLLoaderFactory* loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(profile)
+      profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess()
           .get();
   fetcher_ =

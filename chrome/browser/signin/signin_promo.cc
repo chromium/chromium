@@ -96,8 +96,7 @@ content::StoragePartition* GetSigninPartition(
   const auto signin_partition_config = content::StoragePartitionConfig::Create(
       browser_context, "chrome-signin", /* partition_name= */ "",
       /* in_memory= */ true);
-  return content::BrowserContext::GetStoragePartition(browser_context,
-                                                      signin_partition_config);
+  return browser_context->GetStoragePartition(signin_partition_config);
 }
 
 signin_metrics::AccessPoint GetAccessPointForEmbeddedPromoURL(const GURL& url) {

@@ -76,7 +76,7 @@ void SendRequestImpl(
 #endif
   auto* const loader_ptr = loader.get();
   loader_ptr->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      content::BrowserContext::GetDefaultStoragePartition(context)
+      context->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess()
           .get(),
       base::BindOnce(&OnURLLoaderComplete, std::move(callback),

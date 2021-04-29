@@ -52,9 +52,8 @@ KeyedService* OneGoogleBarServiceFactory::BuildServiceInstanceFor(
       IdentityManagerFactory::GetForProfile(profile);
   content_settings::CookieSettings* cookie_settings =
       CookieSettingsFactory::GetForProfile(profile).get();
-  auto url_loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(context)
-          ->GetURLLoaderFactoryForBrowserProcess();
+  auto url_loader_factory = context->GetDefaultStoragePartition()
+                                ->GetURLLoaderFactoryForBrowserProcess();
   return new OneGoogleBarService(
       identity_manager,
       std::make_unique<OneGoogleBarLoaderImpl>(

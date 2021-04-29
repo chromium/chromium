@@ -18,8 +18,9 @@ namespace content {
 class ExplicitlyAllowedPortsSwitchBrowserTest : public InProcessBrowserTest {
  protected:
   network::mojom::NetworkContext* network_context() {
-    return content::BrowserContext::GetDefaultStoragePartition(
-               browser()->profile())
+    return browser()
+        ->profile()
+        ->GetDefaultStoragePartition()
         ->GetNetworkContext();
   }
 };

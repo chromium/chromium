@@ -50,8 +50,8 @@ void GetUsageInfoCallback(LocalStorageHelper::FetchCallback callback,
 }  // namespace
 
 LocalStorageHelper::LocalStorageHelper(BrowserContext* context)
-    : dom_storage_context_(BrowserContext::GetDefaultStoragePartition(context)
-                               ->GetDOMStorageContext()) {
+    : dom_storage_context_(
+          context->GetDefaultStoragePartition()->GetDOMStorageContext()) {
   DCHECK(dom_storage_context_);
 }
 

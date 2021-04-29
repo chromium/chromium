@@ -261,9 +261,11 @@ class SignedExchangeRequestHandlerBrowserTestBase
 
   void SetAcceptLangs(const std::string langs) {
     client_.SetAcceptLangs(langs);
-    StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-        BrowserContext::GetDefaultStoragePartition(
-            shell()->web_contents()->GetBrowserContext()));
+    StoragePartitionImpl* partition =
+        static_cast<StoragePartitionImpl*>(shell()
+                                               ->web_contents()
+                                               ->GetBrowserContext()
+                                               ->GetDefaultStoragePartition());
     partition->GetPrefetchURLLoaderService()->SetAcceptLanguages(langs);
   }
 
@@ -1483,8 +1485,10 @@ class SignedExchangeExpectCTReportBrowserTest
                       const net::NetworkIsolationKey& network_isolation_key) {
     base::RunLoop run_loop;
     network::mojom::NetworkContext* network_context =
-        BrowserContext::GetDefaultStoragePartition(
-            shell()->web_contents()->GetBrowserContext())
+        shell()
+            ->web_contents()
+            ->GetBrowserContext()
+            ->GetDefaultStoragePartition()
             ->GetNetworkContext();
     network_context->AddExpectCT(
         domain, base::Time::Now() + base::TimeDelta::FromDays(1) /* expiry */,

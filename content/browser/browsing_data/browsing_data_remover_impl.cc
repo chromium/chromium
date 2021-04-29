@@ -529,8 +529,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(
   // Reporting cache.
   if (remove_mask & DATA_TYPE_COOKIES) {
     network::mojom::NetworkContext* network_context =
-        BrowserContext::GetDefaultStoragePartition(browser_context_)
-            ->GetNetworkContext();
+        browser_context_->GetDefaultStoragePartition()->GetNetworkContext();
     network_context->ClearReportingCacheClients(
         filter_builder->BuildNetworkServiceFilter(),
         CreateTaskCompletionClosureForMojo(TracingDataType::kReportingCache));
@@ -545,7 +544,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(
   // Auth cache.
   if ((remove_mask & DATA_TYPE_COOKIES) &&
       !(remove_mask & DATA_TYPE_AVOID_CLOSING_CONNECTIONS)) {
-    BrowserContext::GetDefaultStoragePartition(browser_context_)
+    browser_context_->GetDefaultStoragePartition()
         ->GetNetworkContext()
         ->ClearHttpAuthCache(
             delete_begin_.is_null() ? base::Time::Min() : delete_begin_,
@@ -628,7 +627,7 @@ bool BrowsingDataRemoverImpl::RemovalTask::IsSameDeletion(
 StoragePartition* BrowsingDataRemoverImpl::GetStoragePartition() {
   return storage_partition_for_testing_
              ? storage_partition_for_testing_
-             : BrowserContext::GetDefaultStoragePartition(browser_context_);
+             : browser_context_->GetDefaultStoragePartition();
 }
 
 void BrowsingDataRemoverImpl::OnDelegateDone(

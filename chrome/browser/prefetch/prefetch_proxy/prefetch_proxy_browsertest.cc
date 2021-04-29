@@ -1001,7 +1001,9 @@ IN_PROC_BROWSER_TEST_F(
                            "register('network_fallback_worker.js');"));
 
   content::ServiceWorkerContext* service_worker_context_ =
-      content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
+      browser()
+          ->profile()
+          ->GetDefaultStoragePartition()
           ->GetServiceWorkerContext();
   EXPECT_EQ(true, service_worker_context_->MaybeHasRegistrationForOrigin(
                       url::Origin::Create(GetOriginServerURL("/"))));
@@ -2108,7 +2110,9 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyWithDecoyRequestsBrowserTest,
                            "register('network_fallback_worker.js');"));
 
   content::ServiceWorkerContext* service_worker_context_ =
-      content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
+      browser()
+          ->profile()
+          ->GetDefaultStoragePartition()
           ->GetServiceWorkerContext();
   ASSERT_TRUE(service_worker_context_->MaybeHasRegistrationForOrigin(
       url::Origin::Create(starting_page)));
@@ -2424,8 +2428,9 @@ class DomainReliabilityPrefetchProxyBrowserTest
   }
 
   network::mojom::NetworkContext* GetNormalNetworkContext() {
-    return content::BrowserContext::GetDefaultStoragePartition(
-               browser()->profile())
+    return browser()
+        ->profile()
+        ->GetDefaultStoragePartition()
         ->GetNetworkContext();
   }
 

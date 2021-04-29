@@ -45,18 +45,17 @@ EndpointFetcher::EndpointFetcher(
     int64_t timeout_ms,
     const std::string& post_data,
     const net::NetworkTrafficAnnotationTag& annotation_tag)
-    : EndpointFetcher(
-          oauth_consumer_name,
-          url,
-          http_method,
-          content_type,
-          scopes,
-          timeout_ms,
-          post_data,
-          annotation_tag,
-          content::BrowserContext::GetDefaultStoragePartition(profile)
-              ->GetURLLoaderFactoryForBrowserProcess(),
-          IdentityManagerFactory::GetForProfile(profile)) {}
+    : EndpointFetcher(oauth_consumer_name,
+                      url,
+                      http_method,
+                      content_type,
+                      scopes,
+                      timeout_ms,
+                      post_data,
+                      annotation_tag,
+                      profile->GetDefaultStoragePartition()
+                          ->GetURLLoaderFactoryForBrowserProcess(),
+                      IdentityManagerFactory::GetForProfile(profile)) {}
 
 EndpointFetcher::EndpointFetcher(
     Profile* const profile,
@@ -75,9 +74,8 @@ EndpointFetcher::EndpointFetcher(
       post_data_(post_data),
       headers_(headers),
       annotation_tag_(annotation_tag),
-      url_loader_factory_(
-          content::BrowserContext::GetDefaultStoragePartition(profile)
-              ->GetURLLoaderFactoryForBrowserProcess()),
+      url_loader_factory_(profile->GetDefaultStoragePartition()
+                              ->GetURLLoaderFactoryForBrowserProcess()),
       identity_manager_(nullptr),
       sanitize_response_(true) {}
 
@@ -92,9 +90,8 @@ EndpointFetcher::EndpointFetcher(
       timeout_ms_(0),
       post_data_(std::string()),
       annotation_tag_(annotation_tag),
-      url_loader_factory_(
-          content::BrowserContext::GetDefaultStoragePartition(profile)
-              ->GetURLLoaderFactoryForBrowserProcess()),
+      url_loader_factory_(profile->GetDefaultStoragePartition()
+                              ->GetURLLoaderFactoryForBrowserProcess()),
       identity_manager_(nullptr),
       sanitize_response_(false) {}
 

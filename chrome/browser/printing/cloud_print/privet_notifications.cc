@@ -329,7 +329,7 @@ void PrivetNotificationService::StartLister() {
 
   std::unique_ptr<PrivetHTTPAsynchronousFactory> http_factory(
       PrivetHTTPAsynchronousFactory::CreateInstance(
-          content::BrowserContext::GetDefaultStoragePartition(profile_)
+          profile_->GetDefaultStoragePartition()
               ->GetURLLoaderFactoryForBrowserProcess()));
 
   privet_notifications_listener_ =

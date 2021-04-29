@@ -71,8 +71,10 @@ void MediaResourceProviderImpl::CreateCdm(
     fidl::InterfaceRequest<fuchsia::media::drm::ContentDecryptionModule>
         request) {
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(
-          render_frame_host()->GetProcess()->GetBrowserContext())
+      render_frame_host()
+          ->GetProcess()
+          ->GetBrowserContext()
+          ->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess();
   media::CreateFetcherCB create_fetcher_cb = base::BindRepeating(
       &content::CreateProvisionFetcher, std::move(loader_factory));

@@ -874,14 +874,13 @@ signin::IdentityManager* ChromePasswordManagerClient::GetIdentityManager() {
 
 scoped_refptr<network::SharedURLLoaderFactory>
 ChromePasswordManagerClient::GetURLLoaderFactory() {
-  return content::BrowserContext::GetDefaultStoragePartition(profile_)
+  return profile_->GetDefaultStoragePartition()
       ->GetURLLoaderFactoryForBrowserProcess();
 }
 
 network::mojom::NetworkContext* ChromePasswordManagerClient::GetNetworkContext()
     const {
-  return content::BrowserContext::GetDefaultStoragePartition(profile_)
-      ->GetNetworkContext();
+  return profile_->GetDefaultStoragePartition()->GetNetworkContext();
 }
 
 bool ChromePasswordManagerClient::IsUnderAdvancedProtection() const {

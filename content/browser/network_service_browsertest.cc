@@ -228,8 +228,10 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest,
   request->url = embedded_test_server()->GetURL("/auth-basic?password=");
   auto loader = network::SimpleURLLoader::Create(std::move(request),
                                                  TRAFFIC_ANNOTATION_FOR_TESTS);
-  auto loader_factory = BrowserContext::GetDefaultStoragePartition(
-                            shell()->web_contents()->GetBrowserContext())
+  auto loader_factory = shell()
+                            ->web_contents()
+                            ->GetBrowserContext()
+                            ->GetDefaultStoragePartition()
                             ->GetURLLoaderFactoryForBrowserProcess();
   scoped_refptr<net::HttpResponseHeaders> headers;
   base::RunLoop loop;
@@ -569,8 +571,10 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, FactoryOverride) {
   params->factory_override = network::mojom::URLLoaderFactoryOverride::New();
   params->factory_override->overriding_factory =
       test_loader_factory_receiver.BindNewPipeAndPassRemote();
-  BrowserContext::GetDefaultStoragePartition(
-      shell()->web_contents()->GetBrowserContext())
+  shell()
+      ->web_contents()
+      ->GetBrowserContext()
+      ->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->CreateURLLoaderFactory(
           loader_factory_remote.BindNewPipeAndPassReceiver(),
@@ -616,9 +620,11 @@ class NetworkServiceInProcessBrowserTest : public ContentBrowserTest {
 // Verifies that in-process network service works.
 IN_PROC_BROWSER_TEST_F(NetworkServiceInProcessBrowserTest, Basic) {
   GURL test_url = embedded_test_server()->GetURL("foo.com", "/echo");
-  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(
-          shell()->web_contents()->GetBrowserContext()));
+  StoragePartitionImpl* partition =
+      static_cast<StoragePartitionImpl*>(shell()
+                                             ->web_contents()
+                                             ->GetBrowserContext()
+                                             ->GetDefaultStoragePartition());
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
   ASSERT_EQ(net::OK,
             LoadBasicRequest(partition->GetNetworkContext(), test_url));
@@ -644,9 +650,11 @@ class NetworkServiceInvalidLogBrowserTest : public ContentBrowserTest {
 // Verifies that an invalid --log-net-log flag won't crash the browser.
 IN_PROC_BROWSER_TEST_F(NetworkServiceInvalidLogBrowserTest, Basic) {
   GURL test_url = embedded_test_server()->GetURL("foo.com", "/echo");
-  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(
-          shell()->web_contents()->GetBrowserContext()));
+  StoragePartitionImpl* partition =
+      static_cast<StoragePartitionImpl*>(shell()
+                                             ->web_contents()
+                                             ->GetBrowserContext()
+                                             ->GetDefaultStoragePartition());
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
   ASSERT_EQ(net::OK,
             LoadBasicRequest(partition->GetNetworkContext(), test_url));

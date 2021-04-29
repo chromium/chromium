@@ -72,7 +72,7 @@ class ConversionReporterImplTest : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         browser_context_(std::make_unique<TestBrowserContext>()),
         reporter_(std::make_unique<ConversionReporterImpl>(
-            BrowserContext::GetDefaultStoragePartition(browser_context_.get()),
+            browser_context_->GetDefaultStoragePartition(),
             task_environment_.GetMockClock())) {
     auto network_sender = std::make_unique<MockNetworkSender>();
     sender_ = network_sender.get();

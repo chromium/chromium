@@ -72,7 +72,7 @@ AwSafeBrowsingBlockingPage::AwSafeBrowsingBlockingPage(
     AwBrowserContext* aw_browser_context =
         AwBrowserContext::FromWebContents(web_contents);
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-        content::BrowserContext::GetDefaultStoragePartition(aw_browser_context)
+        aw_browser_context->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess();
     // TODO(timvolodine): create a proper history service; currently the
     // HistoryServiceFactory lives in the chrome/ layer and relies on Profile

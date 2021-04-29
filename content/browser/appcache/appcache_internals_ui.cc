@@ -375,10 +375,8 @@ void AppCacheInternalsHandler::RegisterMessages() {
 }
 
 void AppCacheInternalsHandler::OnJavascriptAllowed() {
-  BrowserContext::ForEachStoragePartition(
-      GetBrowserContext(),
-      base::BindRepeating(&AppCacheInternalsHandler::CreateProxyForPartition,
-                          AsWeakPtr()));
+  GetBrowserContext()->ForEachStoragePartition(base::BindRepeating(
+      &AppCacheInternalsHandler::CreateProxyForPartition, AsWeakPtr()));
 }
 
 void AppCacheInternalsHandler::OnJavascriptDisallowed() {

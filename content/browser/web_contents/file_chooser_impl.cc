@@ -179,10 +179,7 @@ void FileChooserImpl::FileSelected(
       if (file->is_file_system()) {
         if (!file_system_context) {
           file_system_context =
-              BrowserContext::GetStoragePartition(
-                  render_frame_host_->GetProcess()->GetBrowserContext(),
-                  render_frame_host_->GetSiteInstance())
-                  ->GetFileSystemContext();
+              render_frame_host_->GetStoragePartition()->GetFileSystemContext();
         }
         policy->GrantReadFileSystem(
             pid, file_system_context->CrackURL(file->get_file_system()->url)

@@ -156,8 +156,7 @@ class NotificationScheduleServiceTest : public InProcessBrowserTest {
         std::make_unique<TestBackgroundTaskScheduler>();
     task_scheduler_ = background_task_scheduler.get();
     auto* db_provider =
-        content::BrowserContext::GetDefaultStoragePartition(profile)
-            ->GetProtoDatabaseProvider();
+        profile->GetDefaultStoragePartition()->GetProtoDatabaseProvider();
     service_ = CreateNotificationScheduleService(
         std::move(client_registrar), std::move(background_task_scheduler),
         std::move(display_agent), db_provider,

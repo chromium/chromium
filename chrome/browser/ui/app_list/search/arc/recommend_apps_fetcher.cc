@@ -15,8 +15,8 @@ namespace app_list {
 std::unique_ptr<RecommendAppsFetcher> RecommendAppsFetcher::Create(
     RecommendAppsFetcherDelegate* delegate) {
   return std::make_unique<RecommendAppsFetcherImpl>(
-      delegate, content::BrowserContext::GetDefaultStoragePartition(
-                    ProfileManager::GetActiveUserProfile())
+      delegate, ProfileManager::GetActiveUserProfile()
+                    ->GetDefaultStoragePartition()
                     ->GetURLLoaderFactoryForBrowserProcess()
                     .get());
 }

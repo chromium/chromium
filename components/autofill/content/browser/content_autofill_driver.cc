@@ -131,8 +131,9 @@ ui::AXTreeID ContentAutofillDriver::GetAxTreeId() const {
 
 scoped_refptr<network::SharedURLLoaderFactory>
 ContentAutofillDriver::GetURLLoaderFactory() {
-  return content::BrowserContext::GetDefaultStoragePartition(
-             render_frame_host_->GetSiteInstance()->GetBrowserContext())
+  return render_frame_host_->GetSiteInstance()
+      ->GetBrowserContext()
+      ->GetDefaultStoragePartition()
       ->GetURLLoaderFactoryForBrowserProcess();
 }
 

@@ -2160,8 +2160,7 @@ url::Origin WebBluetoothServiceImpl::GetOrigin() {
 
 BluetoothAllowedDevices& WebBluetoothServiceImpl::allowed_devices() {
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(
-          web_contents()->GetBrowserContext()));
+      web_contents()->GetBrowserContext()->GetDefaultStoragePartition());
   return partition->GetBluetoothAllowedDevicesMap()->GetOrCreateAllowedDevices(
       GetOrigin());
 }

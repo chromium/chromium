@@ -51,7 +51,7 @@ void TriggerCreator::MaybeCreateTriggersForWebContents(
   SBErrorOptions options = TriggerManager::GetSBErrorDisplayOptions(
       *profile->GetPrefs(), web_contents);
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(profile)
+      profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess();
   if (trigger_manager->CanStartDataCollection(options,
                                               TriggerType::AD_SAMPLE)) {

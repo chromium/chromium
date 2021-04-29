@@ -27,8 +27,10 @@ using TestCompletionCallback =
 class IndexedDBHelperTest : public content::ContentBrowserTest {
  public:
   content::StoragePartition* StoragePartition() {
-    return content::BrowserContext::GetDefaultStoragePartition(
-        shell()->web_contents()->GetBrowserContext());
+    return shell()
+        ->web_contents()
+        ->GetBrowserContext()
+        ->GetDefaultStoragePartition();
   }
 };
 

@@ -151,8 +151,10 @@ class WorkerTest : public ContentBrowserTest,
   }
 
   void SetSameSiteCookie(const std::string& host) {
-    StoragePartition* partition = BrowserContext::GetDefaultStoragePartition(
-        shell()->web_contents()->GetBrowserContext());
+    StoragePartition* partition = shell()
+                                      ->web_contents()
+                                      ->GetBrowserContext()
+                                      ->GetDefaultStoragePartition();
     mojo::Remote<network::mojom::CookieManager> cookie_manager;
     partition->GetNetworkContext()->GetCookieManager(
         cookie_manager.BindNewPipeAndPassReceiver());
@@ -204,8 +206,10 @@ class WorkerTest : public ContentBrowserTest,
   }
 
   SharedWorkerHost* GetSharedWorkerHost(const GURL& url) {
-    StoragePartition* partition = BrowserContext::GetDefaultStoragePartition(
-        shell()->web_contents()->GetBrowserContext());
+    StoragePartition* partition = shell()
+                                      ->web_contents()
+                                      ->GetBrowserContext()
+                                      ->GetDefaultStoragePartition();
     DCHECK(partition);
     auto* service = static_cast<SharedWorkerServiceImpl*>(
         partition->GetSharedWorkerService());

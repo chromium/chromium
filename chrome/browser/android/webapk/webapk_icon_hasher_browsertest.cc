@@ -108,8 +108,8 @@ IN_PROC_BROWSER_TEST_F(WebApkIconHasherBrowserTest,
 
   {
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-        content::BrowserContext::GetDefaultStoragePartition(
-            web_contents->GetBrowserContext())
+        web_contents->GetBrowserContext()
+            ->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess();
 
     base::RunLoop run_loop;

@@ -333,10 +333,9 @@ ExternalInstallError::ExternalInstallError(
 
   webstore_data_fetcher_ =
       std::make_unique<WebstoreDataFetcher>(this, GURL(), extension_id_);
-  webstore_data_fetcher_->Start(
-      content::BrowserContext::GetDefaultStoragePartition(browser_context_)
-          ->GetURLLoaderFactoryForBrowserProcess()
-          .get());
+  webstore_data_fetcher_->Start(browser_context_->GetDefaultStoragePartition()
+                                    ->GetURLLoaderFactoryForBrowserProcess()
+                                    .get());
 }
 
 ExternalInstallError::~ExternalInstallError() {

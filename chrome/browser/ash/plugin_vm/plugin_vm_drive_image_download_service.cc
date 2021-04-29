@@ -125,7 +125,7 @@ PluginVmDriveImageDownloadService::PluginVmDriveImageDownloadService(
       IdentityManagerFactory::GetForProfile(profile);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(profile)
+      profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess();
 
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner =

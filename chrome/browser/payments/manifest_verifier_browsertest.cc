@@ -51,7 +51,7 @@ class ManifestVerifierBrowserTest : public InProcessBrowserTest {
         browser()->tab_strip_model()->GetActiveWebContents();
     content::BrowserContext* context = web_contents->GetBrowserContext();
     auto downloader = std::make_unique<TestDownloader>(
-        content::BrowserContext::GetDefaultStoragePartition(context)
+        context->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess());
     downloader->AddTestServerURL("https://", https_server_->GetURL("/"));
     auto parser = std::make_unique<payments::PaymentManifestParser>(

@@ -1086,8 +1086,8 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
         network::NetworkService::GetNetworkServiceForTesting(),
         network_context_remote.InitWithNewPipeAndPassReceiver(),
         std::move(network_context_params));
-    content::BrowserContext::GetDefaultStoragePartition(profile_.get())
-        ->SetNetworkContextForTesting(std::move(network_context_remote));
+    profile_->GetDefaultStoragePartition()->SetNetworkContextForTesting(
+        std::move(network_context_remote));
 
     ProtocolHandlerRegistryFactory::GetInstance()->SetTestingFactory(
         profile_.get(), base::BindRepeating(&BuildProtocolHandlerRegistry));

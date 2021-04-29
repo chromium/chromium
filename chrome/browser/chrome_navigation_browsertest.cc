@@ -749,7 +749,9 @@ IN_PROC_BROWSER_TEST_F(
       extension_loader.LoadExtension(ext_dir.UnpackedPath());
   ASSERT_TRUE(extension);
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
-  content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
+  browser()
+      ->profile()
+      ->GetDefaultStoragePartition()
       ->FlushNetworkInterfaceForTesting();
 
   // 2. Open a popup containing a cross-site subframe.
@@ -885,7 +887,9 @@ IN_PROC_BROWSER_TEST_F(
       extension_loader.LoadExtension(ext_dir.UnpackedPath());
   ASSERT_TRUE(extension);
   ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
-  content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
+  browser()
+      ->profile()
+      ->GetDefaultStoragePartition()
       ->FlushNetworkInterfaceForTesting();
 
   // 2. Open a popup containing a cross-site subframe.

@@ -74,10 +74,10 @@ TEST_F(NotificationTriggerSchedulerTest,
   EXPECT_CALL(*data2.scheduler_, TriggerNotificationsForStoragePartition(_))
       .Times(0);
 
-  auto* partition1 = content::BrowserContext::GetStoragePartitionForUrl(
-      data1.profile_, GURL("http://example.com"));
-  auto* partition2 = content::BrowserContext::GetStoragePartitionForUrl(
-      data2.profile_, GURL("http://example.com"));
+  auto* partition1 =
+      data1.profile_->GetStoragePartitionForUrl(GURL("http://example.com"));
+  auto* partition2 =
+      data2.profile_->GetStoragePartitionForUrl(GURL("http://example.com"));
 
   auto now = base::Time::Now();
   auto delta = base::TimeDelta::FromSeconds(3);

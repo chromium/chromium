@@ -35,8 +35,9 @@ using storage::DatabaseIdentifier;
 namespace browsing_data {
 
 DatabaseHelper::DatabaseHelper(content::BrowserContext* browser_context)
-    : tracker_(BrowserContext::GetDefaultStoragePartition(browser_context)
-                   ->GetDatabaseTracker()) {}
+    : tracker_(
+          browser_context->GetDefaultStoragePartition()->GetDatabaseTracker()) {
+}
 
 DatabaseHelper::~DatabaseHelper() {}
 

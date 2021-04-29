@@ -188,7 +188,7 @@ void MockRenderProcessHost::OnForegroundServiceWorkerRemoved() {
 }
 
 StoragePartition* MockRenderProcessHost::GetStoragePartition() {
-  return BrowserContext::GetDefaultStoragePartition(browser_context_);
+  return browser_context_->GetDefaultStoragePartition();
 }
 
 void MockRenderProcessHost::AddWord(const std::u16string& word) {}

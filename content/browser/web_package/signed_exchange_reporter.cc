@@ -133,8 +133,8 @@ void ReportResult(int frame_tree_node_id,
   WebContents* web_contents = WebContents::FromRenderFrameHost(frame_host);
   if (!web_contents)
     return;
-  StoragePartition* partition = BrowserContext::GetStoragePartition(
-      web_contents->GetBrowserContext(), site_instance);
+  StoragePartition* partition =
+      web_contents->GetBrowserContext()->GetStoragePartition(site_instance);
   DCHECK(partition);
   partition->GetNetworkContext()->QueueSignedExchangeReport(
       std::move(report), network_isolation_key);

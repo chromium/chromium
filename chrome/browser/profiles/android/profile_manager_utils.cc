@@ -30,19 +30,18 @@ void CommitPendingWritesForProfile(Profile* profile) {
   // start!) before the Android OS kills our process. But we can't wait for them
   // to finish because blocking the UI thread is illegal.
   profile->GetPrefs()->CommitPendingWrite();
-  content::BrowserContext::GetDefaultStoragePartition(profile)
+  profile->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess()
       ->FlushCookieStore(
           network::mojom::CookieManager::FlushCookieStoreCallback());
-  content::BrowserContext::ForEachStoragePartition(
-      profile, base::BindRepeating(FlushStoragePartition));
+  profile->ForEachStoragePartition(base::BindRepeating(FlushStoragePartition));
 }
 
 void RemoveSessionCookiesForProfile(Profile* profile) {
   auto filter = network::mojom::CookieDeletionFilter::New();
   filter->session_control =
       network::mojom::CookieDeletionSessionControl::SESSION_COOKIES;
-  content::BrowserContext::GetDefaultStoragePartition(profile)
+  profile->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess()
       ->DeleteCookies(std::move(filter),
                       network::mojom::CookieManager::DeleteCookiesCallback());

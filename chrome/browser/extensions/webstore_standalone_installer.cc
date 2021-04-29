@@ -69,10 +69,9 @@ void WebstoreStandaloneInstaller::BeginInstall() {
   webstore_data_fetcher_ =
       std::make_unique<WebstoreDataFetcher>(this, GURL(), id_);
 
-  webstore_data_fetcher_->Start(
-      content::BrowserContext::GetDefaultStoragePartition(profile_)
-          ->GetURLLoaderFactoryForBrowserProcess()
-          .get());
+  webstore_data_fetcher_->Start(profile_->GetDefaultStoragePartition()
+                                    ->GetURLLoaderFactoryForBrowserProcess()
+                                    .get());
 }
 
 //
@@ -302,7 +301,7 @@ void WebstoreStandaloneInstaller::OnWebstoreResponseParseSuccess(
                                                             icon_url);
   // The helper will call us back via OnWebstoreParseSuccess() or
   // OnWebstoreParseFailure().
-  helper->Start(content::BrowserContext::GetDefaultStoragePartition(profile_)
+  helper->Start(profile_->GetDefaultStoragePartition()
                     ->GetURLLoaderFactoryForBrowserProcess()
                     .get());
 }

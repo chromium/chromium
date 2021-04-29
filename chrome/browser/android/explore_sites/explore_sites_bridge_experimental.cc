@@ -126,7 +126,7 @@ static void JNI_ExploreSitesBridgeExperimental_GetIcon(
   Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
   GURL icon_url(ConvertJavaStringToUTF8(env, j_url));
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(profile)
+      profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess();
   image_fetcher::ImageFetcherParams params(kTrafficAnnotation,
                                            kImageFetcherUmaClientName);

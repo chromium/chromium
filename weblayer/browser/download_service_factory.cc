@@ -168,8 +168,7 @@ KeyedService* DownloadServiceFactory::BuildServiceInstanceFor(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
 
   leveldb_proto::ProtoDatabaseProvider* proto_db_provider =
-      content::BrowserContext::GetDefaultStoragePartition(context)
-          ->GetProtoDatabaseProvider();
+      context->GetDefaultStoragePartition()->GetProtoDatabaseProvider();
   return download::BuildDownloadService(
              key, std::move(clients), content::GetNetworkConnectionTracker(),
              storage_dir,

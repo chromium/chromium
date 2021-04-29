@@ -325,9 +325,8 @@ void ChromeJsErrorReportProcessor::SendErrorReport(
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   // loader_factory must be created on UI thread. Get it now while we still
   // know the browser_context pointer is valid.
-  loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(browser_context)
-          ->GetURLLoaderFactoryForBrowserProcess();
+  loader_factory = browser_context->GetDefaultStoragePartition()
+                       ->GetURLLoaderFactoryForBrowserProcess();
 #endif
 
   // Get browser uptime before swapping threads to reduce lag time between the

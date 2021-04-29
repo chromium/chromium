@@ -1403,8 +1403,8 @@ ExtensionFunction::ResponseAction DeveloperPrivateLoadDirectoryFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(args_->GetString(1, &filesystem_path));
   EXTENSION_FUNCTION_VALIDATE(args_->GetString(2, &directory_url_str));
 
-  context_ = content::BrowserContext::GetStoragePartition(
-                 browser_context(), render_frame_host()->GetSiteInstance())
+  context_ = browser_context()
+                 ->GetStoragePartition(render_frame_host()->GetSiteInstance())
                  ->GetFileSystemContext();
 
   // Directory url is non empty only for syncfilesystem.

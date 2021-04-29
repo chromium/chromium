@@ -68,8 +68,7 @@ bool IsQuicEnabled(network::mojom::NetworkContext* network_context) {
 
 bool IsQuicEnabled(Profile* profile) {
   return IsQuicEnabled(
-      content::BrowserContext::GetDefaultStoragePartition(profile)
-          ->GetNetworkContext());
+      profile->GetDefaultStoragePartition()->GetNetworkContext());
 }
 
 bool IsQuicEnabledForSystem() {
@@ -234,7 +233,9 @@ IN_PROC_BROWSER_TEST_F(QuicAllowedPolicyIsFalse, QuicDisallowedForProfile) {
   if (content::IsOutOfProcessNetworkService()) {
     CrashNetworkServiceAndRestartQuicServer();
     // Make sure the NetworkContext has noticed the pipe was closed.
-    content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
+    browser()
+        ->profile()
+        ->GetDefaultStoragePartition()
         ->FlushNetworkInterfaceForTesting();
     EXPECT_FALSE(IsQuicEnabled(browser()->profile()));
   }
@@ -302,7 +303,9 @@ IN_PROC_BROWSER_TEST_F(QuicAllowedPolicyIsTrue, QuicAllowedForProfile) {
   if (content::IsOutOfProcessNetworkService()) {
     CrashNetworkServiceAndRestartQuicServer();
     // Make sure the NetworkContext has noticed the pipe was closed.
-    content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
+    browser()
+        ->profile()
+        ->GetDefaultStoragePartition()
         ->FlushNetworkInterfaceForTesting();
     EXPECT_TRUE(IsQuicEnabled(browser()->profile()));
   }

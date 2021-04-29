@@ -309,7 +309,7 @@ class AppCacheStorageImplTest : public testing::Test {
     // including setting up a disk cache, which checks feature lists.
     // Defer until here so test constructors can set feature lists first.
     weak_partition_factory_.emplace(static_cast<StoragePartitionImpl*>(
-        BrowserContext::GetDefaultStoragePartition(&browser_context_)));
+        browser_context_.GetDefaultStoragePartition()));
   }
 
   void SetUpTest() {

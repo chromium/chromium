@@ -289,8 +289,8 @@ void SafetyCheckHandler::PerformSafetyCheck() {
   DCHECK(version_updater_);
   if (!update_helper_) {
     update_helper_ = std::make_unique<safety_check::UpdateCheckHelper>(
-        content::BrowserContext::GetDefaultStoragePartition(
-            Profile::FromWebUI(web_ui()))
+        Profile::FromWebUI(web_ui())
+            ->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess());
   }
   DCHECK(update_helper_);

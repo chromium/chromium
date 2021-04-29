@@ -36,9 +36,8 @@ OriginVerifier::OriginVerifier(JNIEnv* env,
   jobject_.Reset(obj);
   Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
   DCHECK(profile);
-  url_loader_factory_ =
-      content::BrowserContext::GetDefaultStoragePartition(profile)
-          ->GetURLLoaderFactoryForBrowserProcess();
+  url_loader_factory_ = profile->GetDefaultStoragePartition()
+                            ->GetURLLoaderFactoryForBrowserProcess();
   web_contents_ = content::WebContents::FromJavaWebContents(jweb_contents);
 }
 

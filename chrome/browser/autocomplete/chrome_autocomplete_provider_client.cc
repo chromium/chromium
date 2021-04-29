@@ -206,7 +206,7 @@ ChromeAutocompleteProviderClient::~ChromeAutocompleteProviderClient() {
 
 scoped_refptr<network::SharedURLLoaderFactory>
 ChromeAutocompleteProviderClient::GetURLLoaderFactory() {
-  return content::BrowserContext::GetDefaultStoragePartition(profile_)
+  return profile_->GetDefaultStoragePartition()
       ->GetURLLoaderFactoryForBrowserProcess();
 }
 
@@ -443,7 +443,7 @@ void ChromeAutocompleteProviderClient::StartServiceWorker(
 
   content::StoragePartition* partition = storage_partition_;
   if (!partition)
-    partition = content::BrowserContext::GetDefaultStoragePartition(profile_);
+    partition = profile_->GetDefaultStoragePartition();
   if (!partition)
     return;
 

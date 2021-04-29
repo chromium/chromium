@@ -161,15 +161,14 @@ void BrowsingDataSizeCalculator::PerformCalculation() {
 
   // Fetch the size of http cache in browsing data.
   browsing_data::ConditionalCacheCountingHelper::Count(
-      content::BrowserContext::GetDefaultStoragePartition(profile_),
-      base::Time(), base::Time::Max(),
+      profile_->GetDefaultStoragePartition(), base::Time(), base::Time::Max(),
       base::BindOnce(&BrowsingDataSizeCalculator::OnGetCacheSize,
                      weak_ptr_factory_.GetWeakPtr()));
 
   // Fetch the size of site data in browsing data.
   if (!site_data_size_collector_.get()) {
     content::StoragePartition* storage_partition =
-        content::BrowserContext::GetDefaultStoragePartition(profile_);
+        profile_->GetDefaultStoragePartition();
     site_data_size_collector_ = std::make_unique<SiteDataSizeCollector>(
         storage_partition->GetPath(),
         new browsing_data::CookieHelper(storage_partition,

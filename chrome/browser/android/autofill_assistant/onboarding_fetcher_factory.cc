@@ -34,6 +34,6 @@ OnboardingFetcherFactory::GetForBrowserContext(
 KeyedService* OnboardingFetcherFactory::BuildServiceInstanceFor(
     content::BrowserContext* browser_context) const {
   return new autofill_assistant::AutofillAssistantOnboardingFetcher(
-      content::BrowserContext::GetDefaultStoragePartition(browser_context)
+      browser_context->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess());
 }

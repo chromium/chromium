@@ -68,8 +68,9 @@ class ThirdPartyDataRemoverTest : public InProcessBrowserTest {
   }
 
   network::mojom::CookieManager* CookieManager() {
-    return content::BrowserContext::GetDefaultStoragePartition(
-               browser()->profile())
+    return browser()
+        ->profile()
+        ->GetDefaultStoragePartition()
         ->GetCookieManagerForBrowserProcess();
   }
 

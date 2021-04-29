@@ -64,8 +64,7 @@ RemoveCookieTester::RemoveCookieTester(Profile* profile)
     : waiting_callback_(false),
       profile_(profile) {
   network::mojom::NetworkContext* network_context =
-      content::BrowserContext::GetDefaultStoragePartition(profile_)
-          ->GetNetworkContext();
+      profile_->GetDefaultStoragePartition()->GetNetworkContext();
   network_context->GetCookieManager(
       cookie_manager_.BindNewPipeAndPassReceiver());
 }

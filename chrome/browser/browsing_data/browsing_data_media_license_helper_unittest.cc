@@ -89,8 +89,7 @@ class BrowsingDataMediaLicenseHelperTest : public testing::Test {
     now_ = base::Time::Now();
     profile_ = std::make_unique<TestingProfile>();
     filesystem_context_ =
-        BrowserContext::GetDefaultStoragePartition(profile_.get())
-            ->GetFileSystemContext();
+        profile_->GetDefaultStoragePartition()->GetFileSystemContext();
     helper_ = BrowsingDataMediaLicenseHelper::Create(filesystem_context_);
     base::RunLoop().RunUntilIdle();
   }

@@ -81,8 +81,7 @@ class ServiceWorkerMessagingTest : public ExtensionApiTest {
   // tests.
   void StopServiceWorker(const Extension& extension) {
     content::StoragePartition* storage_partition =
-        content::BrowserContext::GetDefaultStoragePartition(
-            browser()->profile());
+        browser()->profile()->GetDefaultStoragePartition();
     content::ServiceWorkerContext* context =
         storage_partition->GetServiceWorkerContext();
     base::RunLoop run_loop;

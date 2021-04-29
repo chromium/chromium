@@ -59,9 +59,8 @@ void BackForwardSearchPrefetchURLLoader::SetUpForwardingClient(
   prefetch_request.load_flags |= net::LOAD_ONLY_FROM_CACHE;
   prefetch_request.url = prefetch_url_;
 
-  auto url_loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(profile_)
-          ->GetURLLoaderFactoryForBrowserProcess();
+  auto url_loader_factory = profile_->GetDefaultStoragePartition()
+                                ->GetURLLoaderFactoryForBrowserProcess();
 
   // Create a network service URL loader with passed in params.
   url_loader_factory->CreateLoaderAndStart(
@@ -97,9 +96,8 @@ void BackForwardSearchPrefetchURLLoader::RestartDirect() {
   if (service)
     service->ClearCacheEntry(resource_request_->url);
 
-  auto url_loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(profile_)
-          ->GetURLLoaderFactoryForBrowserProcess();
+  auto url_loader_factory = profile_->GetDefaultStoragePartition()
+                                ->GetURLLoaderFactoryForBrowserProcess();
 
   // Create a network service URL loader with passed in params.
   url_loader_factory->CreateLoaderAndStart(

@@ -237,9 +237,8 @@ ArcAuthService::ArcAuthService(content::BrowserContext* browser_context,
     : profile_(Profile::FromBrowserContext(browser_context)),
       identity_manager_(IdentityManagerFactory::GetForProfile(profile_)),
       arc_bridge_service_(arc_bridge_service),
-      url_loader_factory_(
-          content::BrowserContext::GetDefaultStoragePartition(profile_)
-              ->GetURLLoaderFactoryForBrowserProcess()) {
+      url_loader_factory_(profile_->GetDefaultStoragePartition()
+                              ->GetURLLoaderFactoryForBrowserProcess()) {
   arc_bridge_service_->auth()->SetHost(this);
   arc_bridge_service_->auth()->AddObserver(this);
 

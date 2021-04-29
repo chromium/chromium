@@ -1652,8 +1652,7 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, CorpVsBrowserInitiatedRequest) {
 
   BrowserContext* browser_context =
       shell()->web_contents()->GetBrowserContext();
-  StoragePartition* partition =
-      BrowserContext::GetDefaultStoragePartition(browser_context);
+  StoragePartition* partition = browser_context->GetDefaultStoragePartition();
   ASSERT_EQ(net::OK,
             LoadBasicRequest(partition->GetNetworkContext(), test_url));
 }

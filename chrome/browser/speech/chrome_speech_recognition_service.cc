@@ -52,8 +52,7 @@ void ChromeSpeechRecognitionService::OnNetworkServiceDisconnect() {
     params->is_trusted = false;
     params->automatically_assign_isolation_info = true;
     network::mojom::NetworkContext* network_context =
-        content::BrowserContext::GetDefaultStoragePartition(context_)
-            ->GetNetworkContext();
+        context_->GetDefaultStoragePartition()->GetNetworkContext();
     network_context->CreateURLLoaderFactory(
         url_loader_factory.InitWithNewPipeAndPassReceiver(), std::move(params));
     speech_recognition_service_->SetUrlLoaderFactory(

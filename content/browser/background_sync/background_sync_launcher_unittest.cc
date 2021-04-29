@@ -64,8 +64,8 @@ class BackgroundSyncLauncherTest : public testing::Test {
     DCHECK(!urls.empty());
 
     for (const auto& url : urls) {
-      auto* storage_partition = BrowserContext::GetStoragePartitionForUrl(
-          &test_browser_context_, url);
+      auto* storage_partition =
+          test_browser_context_.GetStoragePartitionForUrl(url);
 
       auto iter = wakeup_deltas.find(url);
       if (iter == wakeup_deltas.end())
@@ -97,8 +97,7 @@ class BackgroundSyncLauncherTest : public testing::Test {
     auto done_closure = base::BindLambdaForTesting(
         [&]() { num_invocations_fire_background_sync_events_++; });
 
-    BrowserContext::ForEachStoragePartition(
-        &test_browser_context_,
+    test_browser_context_.ForEachStoragePartition(
         base::BindRepeating(
             [](base::OnceClosure done_closure,
                StoragePartition* storage_partition) {

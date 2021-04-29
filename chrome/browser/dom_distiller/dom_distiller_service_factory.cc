@@ -71,7 +71,7 @@ KeyedService* DomDistillerServiceFactory::BuildServiceInstanceFor(
       new DistillerPageWebContentsFactory(context));
   std::unique_ptr<DistillerURLFetcherFactory> distiller_url_fetcher_factory(
       new DistillerURLFetcherFactory(
-          content::BrowserContext::GetDefaultStoragePartition(context)
+          context->GetDefaultStoragePartition()
               ->GetURLLoaderFactoryForBrowserProcess()));
 
   dom_distiller::proto::DomDistillerOptions options;

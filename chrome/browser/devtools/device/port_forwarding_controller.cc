@@ -162,11 +162,9 @@ class PortForwardingHostResolver : public network::ResolveHostClientBase {
     net::HostPortPair host_port_pair(host, port);
     // Use a transient NetworkIsolationKey, as there's no need to share cached
     // DNS results from this request with anything else.
-    content::BrowserContext::GetDefaultStoragePartition(profile)
-        ->GetNetworkContext()
-        ->ResolveHost(host_port_pair,
-                      net::NetworkIsolationKey::CreateTransient(), nullptr,
-                      receiver_.BindNewPipeAndPassRemote());
+    profile->GetDefaultStoragePartition()->GetNetworkContext()->ResolveHost(
+        host_port_pair, net::NetworkIsolationKey::CreateTransient(), nullptr,
+        receiver_.BindNewPipeAndPassRemote());
     receiver_.set_disconnect_handler(
         base::BindOnce(&PortForwardingHostResolver::OnComplete,
                        base::Unretained(this), net::ERR_NAME_NOT_RESOLVED,

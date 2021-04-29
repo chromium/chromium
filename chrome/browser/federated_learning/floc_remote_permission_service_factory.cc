@@ -30,7 +30,7 @@ KeyedService* FlocRemotePermissionServiceFactory::BuildServiceInstanceFor(
   Profile* profile = static_cast<Profile*>(context);
 
   return new federated_learning::FlocRemotePermissionService(
-      content::BrowserContext::GetDefaultStoragePartition(profile)
+      profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess());
 }
 

@@ -412,7 +412,7 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
 
   void WaitForStorageCleanup() {
     content::StoragePartition* partition =
-        content::BrowserContext::GetDefaultStoragePartition(profile());
+        profile()->GetDefaultStoragePartition();
     if (partition)
       partition->WaitForDeletionTasksForTesting();
   }

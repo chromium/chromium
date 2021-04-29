@@ -51,11 +51,11 @@ KeyedService* AccessContextAuditServiceFactory::BuildServiceInstanceFor(
       new AccessContextAuditService(profile));
   if (!context_audit_service->Init(
           context->GetPath(),
-          content::BrowserContext::GetDefaultStoragePartition(context)
+          context->GetDefaultStoragePartition()
               ->GetCookieManagerForBrowserProcess(),
           HistoryServiceFactory::GetForProfile(
               profile, ServiceAccessType::EXPLICIT_ACCESS),
-          content::BrowserContext::GetDefaultStoragePartition(context))) {
+          context->GetDefaultStoragePartition())) {
     return nullptr;
   }
 

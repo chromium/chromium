@@ -335,8 +335,7 @@ network::mojom::NetworkContext* PreconnectManager::GetNetworkContext() const {
     return nullptr;
   }
 
-  return content::BrowserContext::GetDefaultStoragePartition(profile_)
-      ->GetNetworkContext();
+  return profile_->GetDefaultStoragePartition()->GetNetworkContext();
 }
 
 }  // namespace predictors

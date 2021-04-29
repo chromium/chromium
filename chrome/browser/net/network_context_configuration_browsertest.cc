@@ -324,18 +324,14 @@ class NetworkContextConfigurationBrowserTest
         NOTREACHED() << "Network context has no storage partition";
         return nullptr;
       case NetworkContextType::kProfile:
-        return content::BrowserContext::GetDefaultStoragePartition(
-            browser()->profile());
+        return browser()->profile()->GetDefaultStoragePartition();
       case NetworkContextType::kIncognitoProfile:
         DCHECK(incognito_);
-        return content::BrowserContext::GetDefaultStoragePartition(
-            incognito_->profile());
+        return incognito_->profile()->GetDefaultStoragePartition();
       case NetworkContextType::kOnDiskApp:
-        return content::BrowserContext::GetStoragePartition(
-            browser()->profile(), kOnDiskConfig);
+        return browser()->profile()->GetStoragePartition(kOnDiskConfig);
       case NetworkContextType::kInMemoryApp:
-        return content::BrowserContext::GetStoragePartition(
-            browser()->profile(), kInMemoryConfig);
+        return browser()->profile()->GetStoragePartition(kInMemoryConfig);
       case NetworkContextType::kOnDiskAppWithIncognitoProfile: {
         DCHECK(incognito_);
         // Note: Even though we are requesting an on-disk config, the function
@@ -346,8 +342,7 @@ class NetworkContextConfigurationBrowserTest
             /*in_memory=*/false);
         DCHECK(kIncognitoConfig.in_memory());
 
-        return content::BrowserContext::GetStoragePartition(
-            incognito_->profile(), kIncognitoConfig);
+        return incognito_->profile()->GetStoragePartition(kIncognitoConfig);
       }
     }
     NOTREACHED();

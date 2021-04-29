@@ -72,7 +72,7 @@ void InstalledPaymentAppsFinderImpl::GetAllPaymentApps(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context_));
+      browser_context_->GetDefaultStoragePartition());
   scoped_refptr<PaymentAppContextImpl> payment_app_context =
       partition->GetPaymentAppContext();
 

@@ -331,7 +331,7 @@ class PrefetchProxyTabHelperTestBase : public ChromeRenderViewHostTestHarness {
     bool result = false;
     base::RunLoop run_loop;
     mojo::Remote<network::mojom::CookieManager> cookie_manager;
-    content::BrowserContext::GetDefaultStoragePartition(browser_context)
+    browser_context->GetDefaultStoragePartition()
         ->GetNetworkContext()
         ->GetCookieManager(cookie_manager.BindNewPipeAndPassReceiver());
     std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(

@@ -61,8 +61,7 @@ void DomainReliabilityInternalsHandler::HandleUpdateData(
 
   Profile* profile = Profile::FromWebUI(web_ui());
   network::mojom::NetworkContext* network_context =
-      content::BrowserContext::GetDefaultStoragePartition(profile)
-          ->GetNetworkContext();
+      profile->GetDefaultStoragePartition()->GetNetworkContext();
   network_context->GetDomainReliabilityJSON(
       base::BindOnce(&DomainReliabilityInternalsHandler::OnDataUpdated,
                      weak_factory_.GetWeakPtr()));

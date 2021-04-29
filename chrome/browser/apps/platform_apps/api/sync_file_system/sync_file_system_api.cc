@@ -97,8 +97,8 @@ SyncFileSystemDeleteFileSystemFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &url));
 
   scoped_refptr<storage::FileSystemContext> file_system_context =
-      BrowserContext::GetStoragePartition(
-          browser_context(), render_frame_host()->GetSiteInstance())
+      browser_context()
+          ->GetStoragePartition(render_frame_host()->GetSiteInstance())
           ->GetFileSystemContext();
   storage::FileSystemURL file_system_url(
       file_system_context->CrackURL(GURL(url)));
@@ -162,8 +162,8 @@ SyncFileSystemRequestFileSystemFunction::Run() {
 storage::FileSystemContext*
 SyncFileSystemRequestFileSystemFunction::GetFileSystemContext() {
   DCHECK(render_frame_host());
-  return BrowserContext::GetStoragePartition(
-             browser_context(), render_frame_host()->GetSiteInstance())
+  return browser_context()
+      ->GetStoragePartition(render_frame_host()->GetSiteInstance())
       ->GetFileSystemContext();
 }
 
@@ -199,8 +199,8 @@ ExtensionFunction::ResponseAction SyncFileSystemGetFileStatusFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &url));
 
   scoped_refptr<storage::FileSystemContext> file_system_context =
-      BrowserContext::GetStoragePartition(
-          browser_context(), render_frame_host()->GetSiteInstance())
+      browser_context()
+          ->GetStoragePartition(render_frame_host()->GetSiteInstance())
           ->GetFileSystemContext();
   storage::FileSystemURL file_system_url(
       file_system_context->CrackURL(GURL(url)));
@@ -242,8 +242,8 @@ ExtensionFunction::ResponseAction SyncFileSystemGetFileStatusesFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(args_->GetList(0, &file_entry_urls));
 
   scoped_refptr<storage::FileSystemContext> file_system_context =
-      BrowserContext::GetStoragePartition(
-          browser_context(), render_frame_host()->GetSiteInstance())
+      browser_context()
+          ->GetStoragePartition(render_frame_host()->GetSiteInstance())
           ->GetFileSystemContext();
 
   // Map each file path->SyncFileStatus in the callback map.
@@ -322,15 +322,15 @@ SyncFileSystemGetUsageAndQuotaFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &url));
 
   scoped_refptr<storage::FileSystemContext> file_system_context =
-      BrowserContext::GetStoragePartition(
-          browser_context(), render_frame_host()->GetSiteInstance())
+      browser_context()
+          ->GetStoragePartition(render_frame_host()->GetSiteInstance())
           ->GetFileSystemContext();
   storage::FileSystemURL file_system_url(
       file_system_context->CrackURL(GURL(url)));
 
   scoped_refptr<storage::QuotaManager> quota_manager =
-      BrowserContext::GetStoragePartition(
-          browser_context(), render_frame_host()->GetSiteInstance())
+      browser_context()
+          ->GetStoragePartition(render_frame_host()->GetSiteInstance())
           ->GetQuotaManager();
 
   content::GetIOThreadTaskRunner({})->PostTask(

@@ -213,7 +213,7 @@ std::unique_ptr<SyncEngine> SyncEngine::CreateForBrowserContext(
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(context)
+      context->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess();
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(context);

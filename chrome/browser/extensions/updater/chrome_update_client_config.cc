@@ -210,7 +210,7 @@ ChromeUpdateClientConfig::GetNetworkFetcherFactory() {
   if (!network_fetcher_factory_) {
     network_fetcher_factory_ =
         base::MakeRefCounted<update_client::NetworkFetcherChromiumFactory>(
-            content::BrowserContext::GetDefaultStoragePartition(context_)
+            context_->GetDefaultStoragePartition()
                 ->GetURLLoaderFactoryForBrowserProcess(),
             // Only extension updates that require authentication are served
             // from chrome.google.com, so send cookies if and only if that is

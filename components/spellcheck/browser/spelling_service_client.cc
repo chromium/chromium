@@ -149,11 +149,10 @@ bool SpellingServiceClient::RequestTextCheck(
       std::make_unique<TextCheckCallbackData>(std::move(simple_url_loader),
                                               std::move(callback), text));
   network::SimpleURLLoader* loader = it->get()->simple_url_loader.get();
-  auto url_loader_factory =
-      url_loader_factory_for_testing_
-          ? url_loader_factory_for_testing_
-          : content::BrowserContext::GetDefaultStoragePartition(context)
-                ->GetURLLoaderFactoryForBrowserProcess();
+  auto url_loader_factory = url_loader_factory_for_testing_
+                                ? url_loader_factory_for_testing_
+                                : context->GetDefaultStoragePartition()
+                                      ->GetURLLoaderFactoryForBrowserProcess();
   loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory.get(),
       base::BindOnce(&SpellingServiceClient::OnSimpleLoaderComplete,

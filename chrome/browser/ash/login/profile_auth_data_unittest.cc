@@ -70,8 +70,8 @@ CreateNetworkContextForDefaultStoragePartition(
   auto network_context = std::make_unique<network::NetworkContext>(
       network_service, network_context_remote.InitWithNewPipeAndPassReceiver(),
       std::move(params));
-  content::BrowserContext::GetDefaultStoragePartition(browser_context)
-      ->SetNetworkContextForTesting(std::move(network_context_remote));
+  browser_context->GetDefaultStoragePartition()->SetNetworkContextForTesting(
+      std::move(network_context_remote));
   return network_context;
 }
 
@@ -143,10 +143,8 @@ void ProfileAuthDataTest::Transfer(
     bool transfer_auth_cookies_on_first_login,
     bool transfer_saml_auth_cookies_on_subsequent_login) {
   base::RunLoop run_loop;
-  ProfileAuthData::Transfer(content::BrowserContext::GetDefaultStoragePartition(
-                                &login_browser_context_),
-                            content::BrowserContext::GetDefaultStoragePartition(
-                                &user_browser_context_),
+  ProfileAuthData::Transfer(login_browser_context_.GetDefaultStoragePartition(),
+                            user_browser_context_.GetDefaultStoragePartition(),
                             transfer_auth_cookies_on_first_login,
                             transfer_saml_auth_cookies_on_subsequent_login,
                             run_loop.QuitClosure());
@@ -265,7 +263,7 @@ net::HttpAuthCache* ProfileAuthDataTest::GetAuthCache(
 
 network::mojom::CookieManager* ProfileAuthDataTest::GetCookies(
     content::BrowserContext* browser_context) {
-  return content::BrowserContext::GetDefaultStoragePartition(browser_context)
+  return browser_context->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess();
 }
 

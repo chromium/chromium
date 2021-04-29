@@ -337,8 +337,7 @@ IN_PROC_BROWSER_TEST_F(DataReductionProxyBrowsertest, SimpleURLLoader) {
   auto simple_loader = network::SimpleURLLoader::Create(
       std::move(resource_request), TRAFFIC_ANNOTATION_FOR_TESTS);
 
-  auto* storage_partition =
-      content::BrowserContext::GetDefaultStoragePartition(browser()->profile());
+  auto* storage_partition = browser()->profile()->GetDefaultStoragePartition();
   auto url_loader_factory =
       storage_partition->GetURLLoaderFactoryForBrowserProcess();
 
@@ -353,7 +352,5 @@ IN_PROC_BROWSER_TEST_F(DataReductionProxyBrowsertest, SimpleURLLoader) {
           }));
   loop.Run();
 }
-
-
 
 }  // namespace data_reduction_proxy

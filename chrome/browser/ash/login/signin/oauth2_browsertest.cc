@@ -478,7 +478,7 @@ class CookieReader {
 
   void ReadCookies(Profile* profile) {
     base::RunLoop run_loop;
-    content::BrowserContext::GetDefaultStoragePartition(profile)
+    profile->GetDefaultStoragePartition()
         ->GetCookieManagerForBrowserProcess()
         ->GetAllCookies(base::BindOnce(&CookieReader::OnGotAllCookies,
                                        base::Unretained(this),

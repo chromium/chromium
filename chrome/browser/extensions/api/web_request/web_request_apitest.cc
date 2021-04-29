@@ -328,7 +328,8 @@ class ExtensionWebRequestApiTest : public ExtensionApiTest {
     params->automatically_assign_isolation_info = true;
     params->is_corb_enabled = false;
     mojo::PendingRemote<network::mojom::URLLoaderFactory> loader_factory;
-    content::BrowserContext::GetDefaultStoragePartition(profile())
+    profile()
+        ->GetDefaultStoragePartition()
         ->GetNetworkContext()
         ->CreateURLLoaderFactory(
             loader_factory.InitWithNewPipeAndPassReceiver(), std::move(params));
@@ -1316,10 +1317,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
     request->resource_type =
         static_cast<int>(blink::mojom::ResourceType::kSubResource);
 
-    auto* url_loader_factory =
-        content::BrowserContext::GetDefaultStoragePartition(profile())
-            ->GetURLLoaderFactoryForBrowserProcess()
-            .get();
+    auto* url_loader_factory = profile()
+                                   ->GetDefaultStoragePartition()
+                                   ->GetURLLoaderFactoryForBrowserProcess()
+                                   .get();
     content::SimpleURLLoaderTestHelper loader_helper;
     auto loader = network::SimpleURLLoader::Create(
         std::move(request), TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -1669,10 +1670,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
 
   // Next, try a series of requests through URLRequestFetchers (rather than a
   // renderer).
-  auto* url_loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(profile())
-          ->GetURLLoaderFactoryForBrowserProcess()
-          .get();
+  auto* url_loader_factory = profile()
+                                 ->GetDefaultStoragePartition()
+                                 ->GetURLLoaderFactoryForBrowserProcess()
+                                 .get();
 
   {
     // google.com should be unaffected by the extension and should succeed.
@@ -1790,8 +1791,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
       base::BindLambdaForTesting([&]() { has_connection_error = true; }));
 
   InstallWebRequestExtension("extension1");
-  content::BrowserContext::GetDefaultStoragePartition(profile())
-      ->FlushNetworkInterfaceForTesting();
+  profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
   EXPECT_TRUE(has_connection_error);
   loader_factory.reset();
 
@@ -1801,8 +1801,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   loader_factory.set_disconnect_handler(
       base::BindLambdaForTesting([&]() { has_connection_error = true; }));
   InstallWebRequestExtension("extension2");
-  content::BrowserContext::GetDefaultStoragePartition(profile())
-      ->FlushNetworkInterfaceForTesting();
+  profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
   EXPECT_FALSE(has_connection_error);
 }
 
@@ -1826,8 +1825,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   auto api = std::make_unique<WebRequestAPI>(temp_profile);
   // Make sure we are proxying for |temp_profile|.
   api->ForceProxyForTesting();
-  content::BrowserContext::GetDefaultStoragePartition(temp_profile)
-      ->FlushNetworkInterfaceForTesting();
+  temp_profile->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
 
   mojo::Remote<network::mojom::URLLoaderFactory> factory;
   auto pending_receiver = factory.BindNewPipeAndPassReceiver();
@@ -1842,7 +1840,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   temp_web_contents.reset();
   auto params = network::mojom::URLLoaderFactoryParams::New();
   params->process_id = 0;
-  content::BrowserContext::GetDefaultStoragePartition(temp_profile)
+  temp_profile->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->CreateURLLoaderFactory(std::move(pending_receiver), std::move(params));
 
@@ -1916,8 +1914,7 @@ IN_PROC_BROWSER_TEST_F(NTPInterceptionWebRequestAPITest,
   ASSERT_TRUE(extension);
   EXPECT_TRUE(listener.WaitUntilSatisfied());
   // Wait for webRequest listeners to be set up.
-  content::BrowserContext::GetDefaultStoragePartition(profile())
-      ->FlushNetworkInterfaceForTesting();
+  profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
 
   // Have the extension listen for requests to |fake_ntp_script.js|.
   listener.Reply(https_test_server()->GetURL("/fake_ntp_script.js").spec());
@@ -3130,7 +3127,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   ui_test_utils::NavigateToURL(browser(), https_test_server.GetURL("/echo"));
 
   content::StoragePartition* partition =
-      content::BrowserContext::GetDefaultStoragePartition(profile());
+      profile()->GetDefaultStoragePartition();
   base::RunLoop run_loop;
   partition->GetNetworkContext()->AddHSTS(
       https_test_server.host_port_pair().host(),
@@ -3315,7 +3312,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, HSTSUpgradeAfterRedirect) {
   EXPECT_TRUE(listener.WaitUntilSatisfied());
 
   content::StoragePartition* partition =
-      content::BrowserContext::GetDefaultStoragePartition(profile());
+      profile()->GetDefaultStoragePartition();
   base::RunLoop run_loop;
   partition->GetNetworkContext()->AddHSTS(
       "hsts.com", base::Time::Now() + base::TimeDelta::FromDays(100), true,

@@ -546,7 +546,7 @@ class SpareRenderProcessHostManager : public RenderProcessHostObserver {
   void WarmupSpareRenderProcessHost(BrowserContext* browser_context) {
     if (spare_render_process_host_ &&
         spare_render_process_host_->GetBrowserContext() == browser_context) {
-      DCHECK_EQ(BrowserContext::GetDefaultStoragePartition(browser_context),
+      DCHECK_EQ(browser_context->GetDefaultStoragePartition(),
                 spare_render_process_host_->GetStoragePartition());
       return;  // Nothing to warm up.
     }
@@ -627,7 +627,7 @@ class SpareRenderProcessHostManager : public RenderProcessHostObserver {
     // Get the StoragePartition for |site_instance|.  Note that this might be
     // different than the default StoragePartition for |browser_context|.
     StoragePartition* site_storage =
-        BrowserContext::GetStoragePartition(browser_context, site_instance);
+        browser_context->GetStoragePartition(site_instance);
 
     // Log UMA metrics.
     using SpareProcessMaybeTakeAction =
@@ -981,7 +981,7 @@ bool ShouldUseSiteProcessTracking(BrowserContext* browser_context,
   // TODO(alexmos): Sites should be tracked separately for each
   // StoragePartition.  For now, track them only in the default one.
   StoragePartition* default_partition =
-      BrowserContext::GetDefaultStoragePartition(browser_context);
+      browser_context->GetDefaultStoragePartition();
   if (dest_partition != default_partition)
     return false;
 
@@ -1004,9 +1004,9 @@ bool ShouldFindReusableProcessHostForSite(BrowserContext* browser_context,
     return false;
 
   return ShouldUseSiteProcessTracking(
-      browser_context, BrowserContext::GetStoragePartition(
-                           browser_context, site_info.GetStoragePartitionConfig(
-                                                browser_context)));
+      browser_context,
+      browser_context->GetStoragePartition(
+          site_info.GetStoragePartitionConfig(browser_context)));
 }
 
 const void* const kUnmatchedServiceWorkerProcessTrackerKey =
@@ -1534,7 +1534,7 @@ RenderProcessHost* RenderProcessHostImpl::CreateRenderProcessHost(
 
   StoragePartitionImpl* storage_partition_impl =
       static_cast<StoragePartitionImpl*>(
-          BrowserContext::GetStoragePartition(browser_context, site_instance));
+          browser_context->GetStoragePartition(site_instance));
 
   // If we've made a StoragePartition for guests (e.g., for the <webview> tag),
   // stash the Site URL on it. This way, when we start a service worker inside
@@ -3952,8 +3952,8 @@ bool RenderProcessHostImpl::IsSuitableHost(
   // Check whether the given host and the intended site_info will be using the
   // same StoragePartition, since a RenderProcessHost can only support a
   // single StoragePartition.  This is relevant for packaged apps.
-  StoragePartition* dest_partition = BrowserContext::GetStoragePartition(
-      browser_context, site_info.GetStoragePartitionConfig(browser_context));
+  StoragePartition* dest_partition = browser_context->GetStoragePartition(
+      site_info.GetStoragePartitionConfig(browser_context));
   if (!host->InSameStoragePartition(dest_partition))
     return false;
 
@@ -4377,8 +4377,8 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
   // Make sure the chosen process is in the correct StoragePartition for the
   // SiteInstance.
   CHECK(render_process_host->InSameStoragePartition(
-      BrowserContext::GetStoragePartition(browser_context, site_instance,
-                                          false /* can_create */)));
+      browser_context->GetStoragePartition(site_instance,
+                                           false /* can_create */)));
 
   return render_process_host;
 }

@@ -424,8 +424,7 @@ int VerifyTestServerCert(
     Profile* profile,
     const scoped_refptr<net::X509Certificate>& certificate) {
   return VerifyTestServerCertInStoragePartition(
-      content::BrowserContext::GetDefaultStoragePartition(profile),
-      certificate);
+      profile->GetDefaultStoragePartition(), certificate);
 }
 
 // Returns true if |cert_handle| refers to a certificate that has a subject
@@ -1000,7 +999,7 @@ IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsForSigninExtensionTest,
   chromeos::OobeScreenWaiter(chromeos::OobeBaseTest::GetFirstSigninScreen())
       .Wait();
   content::StoragePartition* signin_profile_default_partition =
-      content::BrowserContext::GetDefaultStoragePartition(signin_profile_);
+      signin_profile_->GetDefaultStoragePartition();
 
   // Active in the StoragePartition of the extension for which the certificate
   // has been specified in policy.

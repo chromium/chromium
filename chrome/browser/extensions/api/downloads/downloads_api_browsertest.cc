@@ -2671,7 +2671,9 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 
   // Setup a file in the filesystem which we can download.
   ASSERT_TRUE(HTML5FileWriter::CreateFileForTesting(
-      BrowserContext::GetDefaultStoragePartition(current_browser()->profile())
+      current_browser()
+          ->profile()
+          ->GetDefaultStoragePartition()
           ->GetFileSystemContext(),
       storage::FileSystemURL::CreateForTest(GURL(download_url)), kPayloadData,
       strlen(kPayloadData)));

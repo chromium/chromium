@@ -2626,7 +2626,7 @@ SessionStorageNamespace* NavigationControllerImpl::GetSessionStorageNamespace(
       site_info.GetStoragePartitionConfig(browser_context_);
 
   StoragePartition* partition =
-      BrowserContext::GetStoragePartition(browser_context_, partition_config);
+      browser_context_->GetStoragePartition(partition_config);
   DOMStorageContextWrapper* context_wrapper =
       static_cast<DOMStorageContextWrapper*>(partition->GetDOMStorageContext());
 

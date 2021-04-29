@@ -21,8 +21,7 @@ namespace {
 class CannedIndexedDBHelperTest : public testing::Test {
  public:
   content::StoragePartition* StoragePartition() {
-    return content::BrowserContext::GetDefaultStoragePartition(
-        &browser_context_);
+    return browser_context_.GetDefaultStoragePartition();
   }
 
  private:

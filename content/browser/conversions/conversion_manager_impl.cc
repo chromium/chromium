@@ -48,8 +48,7 @@ const constexpr base::TimeDelta kConversionManagerQueueReportsInterval =
 ConversionManager* ConversionManagerProviderImpl::GetManager(
     WebContents* web_contents) const {
   return static_cast<StoragePartitionImpl*>(
-             BrowserContext::GetDefaultStoragePartition(
-                 web_contents->GetBrowserContext()))
+             web_contents->GetBrowserContext()->GetDefaultStoragePartition())
       ->GetConversionManager();
 }
 

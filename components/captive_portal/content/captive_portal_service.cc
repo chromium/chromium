@@ -130,9 +130,8 @@ CaptivePortalService::CaptivePortalService(
   if (loader_factory_for_testing) {
     loader_factory = loader_factory_for_testing;
   } else {
-    shared_url_loader_factory_ =
-        content::BrowserContext::GetDefaultStoragePartition(browser_context)
-            ->GetURLLoaderFactoryForBrowserProcess();
+    shared_url_loader_factory_ = browser_context->GetDefaultStoragePartition()
+                                     ->GetURLLoaderFactoryForBrowserProcess();
     loader_factory = shared_url_loader_factory_.get();
   }
   captive_portal_detector_ =

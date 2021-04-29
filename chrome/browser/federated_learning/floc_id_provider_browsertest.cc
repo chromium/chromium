@@ -432,7 +432,7 @@ class FlocIdProviderSortingLshUninitializedBrowserTest
 
     auto remote_permission_service =
         std::make_unique<MockFlocRemotePermissionService>(
-            content::BrowserContext::GetDefaultStoragePartition(profile)
+            profile->GetDefaultStoragePartition()
                 ->GetURLLoaderFactoryForBrowserProcess());
     return std::move(remote_permission_service);
   }

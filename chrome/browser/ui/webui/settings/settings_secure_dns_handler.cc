@@ -143,8 +143,10 @@ void SecureDnsHandler::SetNetworkContextForTesting(
 }
 
 network::mojom::NetworkContext* SecureDnsHandler::GetNetworkContext() {
-  return content::BrowserContext::GetDefaultStoragePartition(
-             web_ui()->GetWebContents()->GetBrowserContext())
+  return web_ui()
+      ->GetWebContents()
+      ->GetBrowserContext()
+      ->GetDefaultStoragePartition()
       ->GetNetworkContext();
 }
 

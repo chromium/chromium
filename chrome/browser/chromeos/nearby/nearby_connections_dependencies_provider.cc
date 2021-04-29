@@ -56,8 +56,7 @@ class MdnsResponderFactory
 
   void CreateMdnsResponder(mojo::PendingReceiver<network::mojom::MdnsResponder>
                                responder_receiver) override {
-    auto* partition =
-        content::BrowserContext::GetDefaultStoragePartition(profile_);
+    auto* partition = profile_->GetDefaultStoragePartition();
     if (!partition) {
       LOG(ERROR) << "MdnsResponderFactory::" << __func__
                  << ": GetDefaultStoragePartition(profile) failed.";
@@ -145,8 +144,7 @@ NearbyConnectionsDependenciesProvider::GetBluetoothAdapterPendingRemote() {
 location::nearby::connections::mojom::WebRtcDependenciesPtr
 NearbyConnectionsDependenciesProvider::GetWebRtcDependencies() {
   auto* network_context =
-      content::BrowserContext::GetDefaultStoragePartition(profile_)
-          ->GetNetworkContext();
+      profile_->GetDefaultStoragePartition()->GetNetworkContext();
 
   MojoPipe<network::mojom::P2PTrustedSocketManagerClient> socket_manager_client;
   MojoPipe<network::mojom::P2PTrustedSocketManager> trusted_socket_manager;

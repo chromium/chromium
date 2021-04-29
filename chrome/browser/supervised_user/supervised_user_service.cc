@@ -613,7 +613,7 @@ void SupervisedUserService::UpdateAsyncUrlChecker() {
   if (use_online_check != url_filter_.HasAsyncURLChecker()) {
     if (use_online_check) {
       url_filter_.InitAsyncURLChecker(
-          content::BrowserContext::GetDefaultStoragePartition(profile_)
+          profile_->GetDefaultStoragePartition()
               ->GetURLLoaderFactoryForBrowserProcess());
     } else {
       url_filter_.ClearAsyncURLChecker();
@@ -677,7 +677,7 @@ void SupervisedUserService::OnDenylistFileChecked(const base::FilePath& path,
           }
         })");
 
-  auto factory = content::BrowserContext::GetDefaultStoragePartition(profile_)
+  auto factory = profile_->GetDefaultStoragePartition()
                      ->GetURLLoaderFactoryForBrowserProcess();
   denylist_downloader_ = std::make_unique<FileDownloader>(
       url, path, false, std::move(factory),

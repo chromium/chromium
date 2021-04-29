@@ -53,8 +53,7 @@ base::TimeDelta MedianLatency(std::vector<base::TimeDelta>& latencies) {
 network::mojom::NetworkContext* GetNetworkContext() {
   Profile* profile = util::GetUserProfile();
 
-  return content::BrowserContext::GetDefaultStoragePartition(profile)
-      ->GetNetworkContext();
+  return profile->GetDefaultStoragePartition()->GetNetworkContext();
 }
 
 std::unique_ptr<HttpRequestManager> GetHttpRequestManager() {

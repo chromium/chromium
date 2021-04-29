@@ -20,7 +20,7 @@ PerProfileWorkerTaskTracker::PerProfileWorkerTaskTracker(
   DCHECK(profile);
 
   content::StoragePartition* storage_partition =
-      content::BrowserContext::GetDefaultStoragePartition(profile);
+      profile->GetDefaultStoragePartition();
 
   // Dedicated workers:
   content::DedicatedWorkerService* dedicated_worker_service =

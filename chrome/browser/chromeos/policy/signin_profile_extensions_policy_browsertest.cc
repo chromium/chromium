@@ -331,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsPolicyTest,
       extensions::util::GetStoragePartitionForExtensionId(
           kWhitelistedExtensionId, profile, /*can_create=*/false);
   content::StoragePartition* default_storage_partition =
-      content::BrowserContext::GetDefaultStoragePartition(profile);
+      profile->GetDefaultStoragePartition();
 
   ASSERT_TRUE(storage_partition_for_app);
   ASSERT_TRUE(storage_partition_for_extension);

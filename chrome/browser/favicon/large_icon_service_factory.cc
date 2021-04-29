@@ -73,7 +73,7 @@ KeyedService* LargeIconServiceFactory::BuildServiceInstanceFor(
       favicon_service,
       std::make_unique<image_fetcher::ImageFetcherImpl>(
           std::make_unique<ImageDecoderImpl>(),
-          content::BrowserContext::GetDefaultStoragePartition(profile)
+          profile->GetDefaultStoragePartition()
               ->GetURLLoaderFactoryForBrowserProcess()),
       kDipForServerRequests, kIconTypeForServerRequests,
       kGoogleServerClientParam);

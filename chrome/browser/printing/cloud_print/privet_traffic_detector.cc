@@ -68,8 +68,7 @@ void CreateUDPSocketOnUIThread(
     mojo::PendingRemote<network::mojom::UDPSocketListener> listener_remote) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   network::mojom::NetworkContext* network_context =
-      content::BrowserContext::GetDefaultStoragePartition(profile)
-          ->GetNetworkContext();
+      profile->GetDefaultStoragePartition()->GetNetworkContext();
   network_context->CreateUDPSocket(std::move(receiver),
                                    std::move(listener_remote));
 }

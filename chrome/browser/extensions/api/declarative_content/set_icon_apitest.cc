@@ -77,8 +77,7 @@ IN_PROC_BROWSER_TEST_F(SetIconAPITest, Overview) {
   const Extension* extension = LoadExtension(ext_dir_.UnpackedPath());
   ASSERT_TRUE(extension);
   // Wait for declarative rules to be set up.
-  content::BrowserContext::GetDefaultStoragePartition(profile())
-      ->FlushNetworkInterfaceForTesting();
+  profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
   const ExtensionAction* action =
       ExtensionActionManager::Get(browser()->profile())
           ->GetExtensionAction(*extension);

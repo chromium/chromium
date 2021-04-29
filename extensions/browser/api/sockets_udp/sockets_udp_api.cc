@@ -100,7 +100,8 @@ bool SocketsUdpCreateFunction::Prepare() {
 
   mojo::PendingRemote<network::mojom::UDPSocketListener> listener_remote;
   socket_listener_receiver_ = listener_remote.InitWithNewPipeAndPassReceiver();
-  content::BrowserContext::GetDefaultStoragePartition(browser_context())
+  browser_context()
+      ->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->CreateUDPSocket(socket_.InitWithNewPipeAndPassReceiver(),
                         std::move(listener_remote));

@@ -364,8 +364,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest, ReusedActionInstance) {
   const Extension* extension = LoadExtension(ext_dir_.UnpackedPath());
   ASSERT_TRUE(extension);
   // Wait for declarative rules to be set up.
-  content::BrowserContext::GetDefaultStoragePartition(profile())
-      ->FlushNetworkInterfaceForTesting();
+  profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
   const ExtensionAction* action =
       ExtensionActionManager::Get(browser()->profile())
           ->GetExtensionAction(*extension);
@@ -477,8 +476,7 @@ void ParameterizedShowActionDeclarativeContentApiTest::TestShowAction(
       loader.LoadExtension(ext_dir_.UnpackedPath());
   ASSERT_TRUE(extension);
   // Wait for declarative rules to be set up.
-  content::BrowserContext::GetDefaultStoragePartition(profile())
-      ->FlushNetworkInterfaceForTesting();
+  profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
 
   ExtensionAction* action = ExtensionActionManager::Get(browser()->profile())
                                 ->GetExtensionAction(*extension);
@@ -793,8 +791,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
 
   UnloadExtension(extension_id);
   // Wait for declarative rules to be removed.
-  content::BrowserContext::GetDefaultStoragePartition(profile())
-      ->FlushNetworkInterfaceForTesting();
+  profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
   NavigateInRenderer(tab, GURL("http://test/"));
   EXPECT_TRUE(WaitForPageActionVisibilityChangeTo(0));
   EXPECT_EQ(0u, extension_action_test_util::GetVisiblePageActionCount(tab));

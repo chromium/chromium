@@ -22,7 +22,7 @@ namespace content {
 network::mojom::CookieManager* GetCookieManager(
     BrowserContext* browser_context) {
   StoragePartition* storage_partition =
-      BrowserContext::GetDefaultStoragePartition(browser_context);
+      browser_context->GetDefaultStoragePartition();
   return storage_partition->GetCookieManagerForBrowserProcess();
 }
 

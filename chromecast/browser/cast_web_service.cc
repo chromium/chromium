@@ -72,8 +72,7 @@ CastWebView::Scoped CastWebService::CreateWebView(
 }
 
 void CastWebService::FlushDomLocalStorage() {
-  content::BrowserContext::ForEachStoragePartition(
-      browser_context_,
+  browser_context_->ForEachStoragePartition(
       base::BindRepeating([](content::StoragePartition* storage_partition) {
         DVLOG(1) << "Starting DOM localStorage flush.";
         storage_partition->Flush();
@@ -81,8 +80,7 @@ void CastWebService::FlushDomLocalStorage() {
 }
 
 void CastWebService::ClearLocalStorage(base::OnceClosure callback) {
-  content::BrowserContext::ForEachStoragePartition(
-      browser_context_,
+  browser_context_->ForEachStoragePartition(
       base::BindRepeating(
           [](base::OnceClosure cb, content::StoragePartition* partition) {
             auto cookie_delete_filter =

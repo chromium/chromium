@@ -51,9 +51,8 @@ KeyedService* SearchSuggestServiceFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  auto url_loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(context)
-          ->GetURLLoaderFactoryForBrowserProcess();
+  auto url_loader_factory = context->GetDefaultStoragePartition()
+                                ->GetURLLoaderFactoryForBrowserProcess();
   return new SearchSuggestService(
       profile, identity_manager,
       std::make_unique<SearchSuggestLoaderImpl>(

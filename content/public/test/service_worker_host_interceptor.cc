@@ -28,7 +28,7 @@ ServiceWorkerHostInterceptor::InterceptServiceWorkerHostWithScope(
   base::RunLoop run_loop;
   scoped_refptr<ServiceWorkerContextWrapper> context =
       static_cast<ServiceWorkerContextWrapper*>(
-          BrowserContext::GetDefaultStoragePartition(browser_context)
+          browser_context->GetDefaultStoragePartition()
               ->GetServiceWorkerContext());
   BrowserThread::ID run_done_thread;
   bool is_known_thread =

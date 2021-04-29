@@ -123,8 +123,8 @@ static jlong JNI_PaymentManifestDownloader_Init(
 
   return reinterpret_cast<jlong>(new PaymentManifestDownloaderAndroid(
       std::make_unique<DeveloperConsoleLogger>(web_contents),
-      content::BrowserContext::GetDefaultStoragePartition(
-          web_contents->GetBrowserContext())
+      web_contents->GetBrowserContext()
+          ->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess()));
 }
 

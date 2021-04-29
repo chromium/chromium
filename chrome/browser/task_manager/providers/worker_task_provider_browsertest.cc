@@ -104,8 +104,8 @@ class WorkerTaskProviderBrowserTest : public InProcessBrowserTest,
   }
 
   content::ServiceWorkerContext* GetServiceWorkerContext(Browser* browser) {
-    return content::BrowserContext::GetDefaultStoragePartition(
-               browser->profile())
+    return browser->profile()
+        ->GetDefaultStoragePartition()
         ->GetServiceWorkerContext();
   }
 

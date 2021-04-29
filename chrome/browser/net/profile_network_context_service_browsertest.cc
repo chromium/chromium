@@ -83,8 +83,9 @@ class ProfileNetworkContextServiceBrowsertest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     EXPECT_TRUE(embedded_test_server()->Start());
-    loader_factory_ = content::BrowserContext::GetDefaultStoragePartition(
-                          browser()->profile())
+    loader_factory_ = browser()
+                          ->profile()
+                          ->GetDefaultStoragePartition()
                           ->GetURLLoaderFactoryForBrowserProcess()
                           .get();
   }
@@ -570,8 +571,7 @@ IN_PROC_BROWSER_TEST_P(
     ProfileNetworkContextServiceCertVerifierBuiltinPermissionsPolicyTest,
     Test) {
   {
-    content::BrowserContext::GetDefaultStoragePartition(CreateNewProfile())
-        ->GetNetworkContext();
+    CreateNewProfile()->GetDefaultStoragePartition()->GetNetworkContext();
 
     ExpectUseBuiltinCertVerifierCorrect(
         use_builtin_cert_verifier()
@@ -590,8 +590,7 @@ IN_PROC_BROWSER_TEST_P(
   UpdateProviderPolicy(policies);
 
   {
-    content::BrowserContext::GetDefaultStoragePartition(CreateNewProfile())
-        ->GetNetworkContext();
+    CreateNewProfile()->GetDefaultStoragePartition()->GetNetworkContext();
 
     ExpectUseBuiltinCertVerifierCorrect(
         cert_verifier::mojom::CertVerifierCreationParams::CertVerifierImpl::
@@ -603,8 +602,7 @@ IN_PROC_BROWSER_TEST_P(
   UpdateProviderPolicy(policies);
 
   {
-    content::BrowserContext::GetDefaultStoragePartition(CreateNewProfile())
-        ->GetNetworkContext();
+    CreateNewProfile()->GetDefaultStoragePartition()->GetNetworkContext();
 
     ExpectUseBuiltinCertVerifierCorrect(
         cert_verifier::mojom::CertVerifierCreationParams::CertVerifierImpl::

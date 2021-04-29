@@ -35,8 +35,7 @@ ExternallyManagedAppRegistrationTask::ExternallyManagedAppRegistrationTask(
       web_contents_(web_contents),
       callback_(std::move(callback)) {
   content::StoragePartition* storage_partition =
-      content::BrowserContext::GetStoragePartition(
-          Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
+      web_contents_->GetBrowserContext()->GetStoragePartition(
           web_contents_->GetSiteInstance());
   DCHECK(storage_partition);
 

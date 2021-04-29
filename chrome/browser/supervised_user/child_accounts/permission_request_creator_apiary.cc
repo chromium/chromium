@@ -99,9 +99,8 @@ std::unique_ptr<PermissionRequestCreator>
 PermissionRequestCreatorApiary::CreateWithProfile(Profile* profile) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   return std::make_unique<PermissionRequestCreatorApiary>(
-      identity_manager,
-      content::BrowserContext::GetDefaultStoragePartition(profile)
-          ->GetURLLoaderFactoryForBrowserProcess());
+      identity_manager, profile->GetDefaultStoragePartition()
+                            ->GetURLLoaderFactoryForBrowserProcess());
 }
 
 bool PermissionRequestCreatorApiary::IsEnabled() const {

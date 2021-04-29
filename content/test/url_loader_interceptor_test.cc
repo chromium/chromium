@@ -265,8 +265,10 @@ IN_PROC_BROWSER_TEST_F(URLLoaderInterceptorTest, InterceptBrowser) {
         params->client->OnComplete(status);
         return true;
       }));
-  auto* factory = BrowserContext::GetDefaultStoragePartition(
-                      shell()->web_contents()->GetBrowserContext())
+  auto* factory = shell()
+                      ->web_contents()
+                      ->GetBrowserContext()
+                      ->GetDefaultStoragePartition()
                       ->GetURLLoaderFactoryForBrowserProcess()
                       .get();
   factory->CreateLoaderAndStart(

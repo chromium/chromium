@@ -179,12 +179,11 @@ std::unique_ptr<SearchController> CreateSearchController(
                             std::make_unique<ZeroStateFileProvider>(profile));
     size_t drive_zero_state_group_id =
         controller->AddGroup(kMaxZeroStateDriveResults);
-    controller->AddProvider(
-        drive_zero_state_group_id,
-        std::make_unique<ZeroStateDriveProvider>(
-            profile, controller.get(),
-            content::BrowserContext::GetDefaultStoragePartition(profile)
-                ->GetURLLoaderFactoryForBrowserProcess()));
+    controller->AddProvider(drive_zero_state_group_id,
+                            std::make_unique<ZeroStateDriveProvider>(
+                                profile, controller.get(),
+                                profile->GetDefaultStoragePartition()
+                                    ->GetURLLoaderFactoryForBrowserProcess()));
   }
 
   if (app_list_features::IsLauncherSettingsSearchEnabled()) {

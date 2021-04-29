@@ -282,7 +282,7 @@ PrefetchProxyOriginProber::PrefetchProxyOriginProber(Profile* profile)
 
   tls_canary_check_ = std::make_unique<AvailabilityProber>(
       GetCanaryCheckDelegate(),
-      content::BrowserContext::GetDefaultStoragePartition(profile_)
+      profile_->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
       profile_->GetPrefs(),
       AvailabilityProber::ClientName::kIsolatedPrerenderTLSCanaryCheck,
@@ -296,7 +296,7 @@ PrefetchProxyOriginProber::PrefetchProxyOriginProber(Profile* profile)
 
   dns_canary_check_ = std::make_unique<AvailabilityProber>(
       GetCanaryCheckDelegate(),
-      content::BrowserContext::GetDefaultStoragePartition(profile_)
+      profile_->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
       profile_->GetPrefs(),
       AvailabilityProber::ClientName::kIsolatedPrerenderDNSCanaryCheck,
@@ -414,11 +414,9 @@ void PrefetchProxyOriginProber::StartDNSResolution(
           url, std::move(callback), also_do_tls_connect)),
       client_remote.InitWithNewPipeAndPassReceiver());
 
-  content::BrowserContext::GetDefaultStoragePartition(profile_)
-      ->GetNetworkContext()
-      ->ResolveHost(net::HostPortPair::FromURL(url), nik,
-                    std::move(resolve_host_parameters),
-                    std::move(client_remote));
+  profile_->GetDefaultStoragePartition()->GetNetworkContext()->ResolveHost(
+      net::HostPortPair::FromURL(url), nik, std::move(resolve_host_parameters),
+      std::move(client_remote));
 }
 
 void PrefetchProxyOriginProber::HTTPProbe(const GURL& url,
@@ -431,7 +429,7 @@ void PrefetchProxyOriginProber::HTTPProbe(const GURL& url,
   std::unique_ptr<AvailabilityProber> prober =
       std::make_unique<AvailabilityProber>(
           GetOriginProbeDelegate(),
-          content::BrowserContext::GetDefaultStoragePartition(profile_)
+          profile_->GetDefaultStoragePartition()
               ->GetURLLoaderFactoryForBrowserProcess(),
           nullptr /* pref_service */,
           AvailabilityProber::ClientName::kIsolatedPrerenderOriginCheck, url,
@@ -482,7 +480,7 @@ void PrefetchProxyOriginProber::DoTLSProbeAfterDNSResolution(
   std::unique_ptr<TLSProber> prober =
       std::make_unique<TLSProber>(url, std::move(callback));
 
-  content::BrowserContext::GetDefaultStoragePartition(profile_)
+  profile_->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->CreateTCPConnectedSocket(
           /*local_addr=*/base::nullopt, addresses,

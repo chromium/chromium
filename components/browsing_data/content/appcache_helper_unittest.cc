@@ -37,8 +37,7 @@ class CannedAppCacheHelperTest : public testing::Test {
  protected:
   scoped_refptr<CannedAppCacheHelper> CreateHelper() {
     return base::MakeRefCounted<CannedAppCacheHelper>(
-        content::BrowserContext::GetDefaultStoragePartition(&browser_context_)
-            ->GetAppCacheService());
+        browser_context_.GetDefaultStoragePartition()->GetAppCacheService());
   }
 
   static bool ContainsOrigin(

@@ -2324,7 +2324,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, TestRawHeadersWithRedirectAndHSTS) {
   bool include_subdomains = false;
   mojo::ScopedAllowSyncCallForTesting allow_sync_call;
   content::StoragePartition* partition =
-      content::BrowserContext::GetDefaultStoragePartition(browser()->profile());
+      browser()->profile()->GetDefaultStoragePartition();
   base::RunLoop run_loop;
   partition->GetNetworkContext()->AddHSTS(
       https_url.host(), expiry, include_subdomains, run_loop.QuitClosure());

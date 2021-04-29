@@ -41,8 +41,7 @@ KeyedService* NtpBackgroundServiceFactory::BuildServiceInstanceFor(
   // TODO(crbug.com/914898): Background service URLs should be
   // configurable server-side, so they can be changed mid-release.
 
-  auto url_loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(context)
-          ->GetURLLoaderFactoryForBrowserProcess();
+  auto url_loader_factory = context->GetDefaultStoragePartition()
+                                ->GetURLLoaderFactoryForBrowserProcess();
   return new NtpBackgroundService(url_loader_factory);
 }

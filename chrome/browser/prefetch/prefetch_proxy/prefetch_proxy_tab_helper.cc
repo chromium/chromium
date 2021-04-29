@@ -1278,8 +1278,7 @@ content::ServiceWorkerContext* PrefetchProxyTabHelper::GetServiceWorkerContext(
     Profile* profile) {
   if (g_service_worker_context_for_test)
     return g_service_worker_context_for_test;
-  return content::BrowserContext::GetDefaultStoragePartition(profile)
-      ->GetServiceWorkerContext();
+  return profile->GetDefaultStoragePartition()->GetServiceWorkerContext();
 }
 
 // static
@@ -1335,15 +1334,14 @@ void PrefetchProxyTabHelper::CheckEligibilityOfURL(
   }
 
   content::StoragePartition* default_storage_partition =
-      content::BrowserContext::GetDefaultStoragePartition(profile);
+      profile->GetDefaultStoragePartition();
 
   // Only the default storage partition is supported since that is the only
   // place where service workers are observed by
   // |PrefetchProxyServiceWorkersObserver|.
   if (default_storage_partition !=
-      content::BrowserContext::GetStoragePartitionForUrl(
-          profile, url,
-          /*can_create=*/false)) {
+      profile->GetStoragePartitionForUrl(url,
+                                         /*can_create=*/false)) {
     std::move(result_callback)
         .Run(url, false,
              PrefetchProxyPrefetchStatus::
@@ -1518,7 +1516,7 @@ void PrefetchProxyTabHelper::OnGotIsolatedCookiesToCopyAfterSRPClick(
           weak_factory_.GetWeakPtr()));
 
   content::StoragePartition* default_storage_partition =
-      content::BrowserContext::GetDefaultStoragePartition(profile_);
+      profile_->GetDefaultStoragePartition();
   net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
 
   for (const net::CookieWithAccessResult& cookie : cookie_list) {

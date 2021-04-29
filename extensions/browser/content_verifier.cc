@@ -695,7 +695,7 @@ void ContentVerifier::BindURLLoaderFactoryReceiverOnUIThread(
   if (shutdown_on_ui_)
     return;
 
-  content::BrowserContext::GetDefaultStoragePartition(context_)
+  context_->GetDefaultStoragePartition()
       ->GetURLLoaderFactoryForBrowserProcess()
       ->Clone(std::move(url_loader_factory_receiver));
 }

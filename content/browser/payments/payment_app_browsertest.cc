@@ -183,9 +183,10 @@ class PaymentAppBrowserTest : public ContentBrowserTest {
     // for service workers, for all origins, for an unbounded time range.
     base::RunLoop run_loop;
 
-    static_cast<StoragePartitionImpl*>(
-        content::BrowserContext::GetDefaultStoragePartition(
-            shell()->web_contents()->GetBrowserContext()))
+    static_cast<StoragePartitionImpl*>(shell()
+                                           ->web_contents()
+                                           ->GetBrowserContext()
+                                           ->GetDefaultStoragePartition())
         ->ClearData(StoragePartition::REMOVE_DATA_MASK_SERVICE_WORKERS,
                     StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, GURL(),
                     base::Time(), base::Time::Max(), run_loop.QuitClosure());

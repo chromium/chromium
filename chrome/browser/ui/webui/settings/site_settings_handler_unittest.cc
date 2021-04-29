@@ -187,8 +187,7 @@ class SiteSettingsHandlerTest : public testing::Test {
 
   void TearDown() override {
     if (profile_) {
-      auto* partition =
-          content::BrowserContext::GetDefaultStoragePartition(profile_.get());
+      auto* partition = profile_->GetDefaultStoragePartition();
       if (partition)
         partition->WaitForDeletionTasksForTesting();
     }

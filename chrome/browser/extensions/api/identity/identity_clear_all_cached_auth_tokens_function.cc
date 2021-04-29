@@ -40,8 +40,9 @@ IdentityClearAllCachedAuthTokensFunction::Run() {
   id_api->token_cache()->EraseAllTokensForExtension(extension()->id());
 
   for (WebAuthFlow::Partition partition : kPartitionsToClean) {
-    content::BrowserContext::GetStoragePartition(
-        profile, WebAuthFlow::GetWebViewPartitionConfig(partition, profile))
+    profile
+        ->GetStoragePartition(
+            WebAuthFlow::GetWebViewPartitionConfig(partition, profile))
         ->GetCookieManagerForBrowserProcess()
         ->DeleteCookies(
             network::mojom::CookieDeletionFilter::New(),

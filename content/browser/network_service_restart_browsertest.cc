@@ -366,7 +366,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
   if (IsInProcessNetworkService())
     return;
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
 
   network::mojom::NetworkContext* old_network_context =
       partition->GetNetworkContext();
@@ -391,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
   if (IsInProcessNetworkService())
     return;
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
   scoped_refptr<URLLoaderFactoryGetter> url_loader_factory_getter =
       partition->url_loader_factory_getter();
 
@@ -421,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
   if (IsInProcessNetworkService())
     return;
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
 
   auto factory_owner = IOThreadSharedURLLoaderFactoryOwner::Create(
       partition->url_loader_factory_getter().get());
@@ -451,7 +451,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
   std::unique_ptr<ShellBrowserContext> browser_context =
       std::make_unique<ShellBrowserContext>(true);
   auto* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context.get()));
+      browser_context->GetDefaultStoragePartition());
   auto factory_owner = IOThreadSharedURLLoaderFactoryOwner::Create(
       partition->url_loader_factory_getter().get());
 
@@ -469,7 +469,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
   if (IsInProcessNetworkService())
     return;
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
 
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
@@ -491,7 +491,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, BasicXHR) {
   if (IsInProcessNetworkService())
     return;
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
 
   EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL("/echo")));
   EXPECT_TRUE(CheckCanLoadHttp(shell(), "/title1.html"));
@@ -517,8 +517,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, BasicXHR) {
 IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, BrowserUIFactory) {
   if (IsInProcessNetworkService())
     return;
-  auto* partition =
-      BrowserContext::GetDefaultStoragePartition(browser_context());
+  auto* partition = browser_context()->GetDefaultStoragePartition();
   auto* factory = partition->GetURLLoaderFactoryForBrowserProcess().get();
 
   EXPECT_EQ(net::OK, LoadBasicRequestOnUIThread(factory, GetTestURL()));
@@ -540,8 +539,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
   base::ScopedAllowBlockingForTesting allow_blocking;
   std::unique_ptr<ShellBrowserContext> browser_context =
       std::make_unique<ShellBrowserContext>(true);
-  auto* partition =
-      BrowserContext::GetDefaultStoragePartition(browser_context.get());
+  auto* partition = browser_context->GetDefaultStoragePartition();
   scoped_refptr<network::SharedURLLoaderFactory> factory(
       partition->GetURLLoaderFactoryForBrowserProcess());
 
@@ -566,8 +564,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
                        MAYBE_BrowserIOPendingFactory) {
   if (IsInProcessNetworkService())
     return;
-  auto* partition =
-      BrowserContext::GetDefaultStoragePartition(browser_context());
+  auto* partition = browser_context()->GetDefaultStoragePartition();
   auto pending_shared_url_loader_factory =
       partition->GetURLLoaderFactoryForBrowserProcessIOThread();
 
@@ -590,8 +587,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
 IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, BrowserIOFactory) {
   if (IsInProcessNetworkService())
     return;
-  auto* partition =
-      BrowserContext::GetDefaultStoragePartition(browser_context());
+  auto* partition = browser_context()->GetDefaultStoragePartition();
   auto factory_owner = IOThreadSharedURLLoaderFactoryOwner::Create(
       partition->GetURLLoaderFactoryForBrowserProcessIOThread());
 
@@ -612,7 +608,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, WindowOpenXHR) {
   if (IsInProcessNetworkService())
     return;
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
 
   EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL("/echo")));
   EXPECT_TRUE(CheckCanLoadHttpInWindowOpen("/title1.html"));
@@ -663,7 +659,7 @@ IN_PROC_BROWSER_TEST_P(NetworkServiceRestartForWorkerBrowserTest, WorkerFetch) {
   if (IsInProcessNetworkService())
     return;
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
 
   EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL("/echo")));
   EXPECT_TRUE(CheckCanWorkerFetch("worker1", "/title1.html"));
@@ -689,7 +685,7 @@ IN_PROC_BROWSER_TEST_P(NetworkServiceRestartForWorkerBrowserTest,
   if (IsInProcessNetworkService())
     return;
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
 
   EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL("/echo")));
   EXPECT_TRUE(CheckCanWorkerFetch("worker1", "/title1.html"));
@@ -732,7 +728,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
   if (IsInProcessNetworkService())
     return;
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
   ServiceWorkerStatusObserver observer;
   ServiceWorkerContextWrapper* service_worker_context =
       partition->GetServiceWorkerContext();
@@ -775,7 +771,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
   if (IsInProcessNetworkService())
     return;
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
   ServiceWorkerStatusObserver observer;
   ServiceWorkerContextWrapper* service_worker_context =
       partition->GetServiceWorkerContext();
@@ -818,7 +814,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
   if (IsInProcessNetworkService())
     return;
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
   ServiceWorkerStatusObserver observer;
   ServiceWorkerContextWrapper* service_worker_context =
       partition->GetServiceWorkerContext();
@@ -860,7 +856,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, ServiceWorkerFetch) {
   if (IsInProcessNetworkService())
     return;
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
   ServiceWorkerStatusObserver observer;
   ServiceWorkerContextWrapper* service_worker_context =
       partition->GetServiceWorkerContext();
@@ -905,7 +901,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, MAYBE_SharedWorker) {
   if (IsInProcessNetworkService())
     return;
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
 
   InjectTestSharedWorkerService(partition);
 
@@ -1156,7 +1152,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
 
     // Flush the interface to make sure the error notification was received.
     StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-        BrowserContext::GetDefaultStoragePartition(browser_context()));
+        browser_context()->GetDefaultStoragePartition());
     partition->FlushNetworkInterfaceForTesting();
   };
   CommitMessageDelayer::DidCommitCallback pre_did_commit_callback =

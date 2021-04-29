@@ -542,8 +542,7 @@ Response StorageHandler::FindStoragePartition(
       BrowserHandler::FindBrowserContext(browser_context_id, &browser_context);
   if (!response.IsSuccess())
     return response;
-  *storage_partition =
-      BrowserContext::GetDefaultStoragePartition(browser_context);
+  *storage_partition = browser_context->GetDefaultStoragePartition();
   if (!*storage_partition)
     return Response::InternalError();
   return Response::Success();

@@ -37,8 +37,7 @@ KeyedService* StrikeDatabaseFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
 
   leveldb_proto::ProtoDatabaseProvider* db_provider =
-      content::BrowserContext::GetDefaultStoragePartition(profile)
-          ->GetProtoDatabaseProvider();
+      profile->GetDefaultStoragePartition()->GetProtoDatabaseProvider();
 
   // Note: This instance becomes owned by an object that never gets destroyed,
   // effectively leaking it until browser close. Only one is created per

@@ -86,8 +86,7 @@ void RequestProxyResolvingSocketFactoryOnUIThread(
   if (!service)
     return;
   network::mojom::NetworkContext* network_context =
-      content::BrowserContext::GetDefaultStoragePartition(profile)
-          ->GetNetworkContext();
+      profile->GetDefaultStoragePartition()->GetNetworkContext();
   network_context->CreateProxyResolvingSocketFactory(std::move(receiver));
 }
 
@@ -235,7 +234,7 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
     return std::make_unique<gcm::GCMProfileService>(
         profile->GetPrefs(), profile->GetPath(),
         base::BindRepeating(&RequestProxyResolvingSocketFactory, profile),
-        content::BrowserContext::GetDefaultStoragePartition(profile)
+        profile->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess(),
         network::TestNetworkConnectionTracker::GetInstance(),
         chrome::GetChannel(),
@@ -300,8 +299,7 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
 
     waiter_.PumpUILoop();
     gcm_app_handler_->Shutdown();
-    auto* partition =
-        content::BrowserContext::GetDefaultStoragePartition(profile());
+    auto* partition = profile()->GetDefaultStoragePartition();
     if (partition)
       partition->WaitForDeletionTasksForTesting();
   }

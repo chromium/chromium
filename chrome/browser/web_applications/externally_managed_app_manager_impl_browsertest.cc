@@ -63,9 +63,8 @@ class ExternallyManagedAppManagerImplBrowserTest : public InProcessBrowserTest {
         content::WebContents::Create(
             content::WebContents::CreateParams(browser()->profile()));
     content::ServiceWorkerContext* service_worker_context =
-        content::BrowserContext::GetStoragePartition(
-            Profile::FromBrowserContext(web_contents->GetBrowserContext()),
-            web_contents->GetSiteInstance())
+        web_contents->GetBrowserContext()
+            ->GetStoragePartition(web_contents->GetSiteInstance())
             ->GetServiceWorkerContext();
     service_worker_context->CheckHasServiceWorker(
         url,

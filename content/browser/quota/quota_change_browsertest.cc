@@ -89,8 +89,10 @@ class QuotaChangeBrowserTest : public ContentBrowserTest,
   bool is_incognito() const { return is_incognito_; }
 
   QuotaManager* quota_manager() {
-    return BrowserContext::GetDefaultStoragePartition(
-               browser()->web_contents()->GetBrowserContext())
+    return browser()
+        ->web_contents()
+        ->GetBrowserContext()
+        ->GetDefaultStoragePartition()
         ->GetQuotaManager();
   }
 

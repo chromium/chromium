@@ -318,7 +318,7 @@ void PrefetchManager::TryToLaunchPrefetchJobs() {
   // partition here, e.g., from WebContentsObserver. And make a similar change
   // in PreconnectManager.
   content::StoragePartition* storage_partition =
-      content::BrowserContext::GetDefaultStoragePartition(profile_);
+      profile_->GetDefaultStoragePartition();
   scoped_refptr<network::SharedURLLoaderFactory> factory =
       storage_partition->GetURLLoaderFactoryForBrowserProcess();
 

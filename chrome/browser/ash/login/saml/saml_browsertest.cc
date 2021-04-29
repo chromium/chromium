@@ -1127,7 +1127,7 @@ void SAMLPolicyTest::GetCookies() {
       user_manager::UserManager::Get()->GetActiveUser());
   ASSERT_TRUE(profile);
   base::RunLoop run_loop;
-  content::BrowserContext::GetDefaultStoragePartition(profile)
+  profile->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess()
       ->GetAllCookies(base::BindLambdaForTesting(
           [&](const std::vector<net::CanonicalCookie>& cookies) {

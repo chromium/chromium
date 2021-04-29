@@ -343,8 +343,7 @@ void ExtensionServiceTestBase::SetUp() {
 
 void ExtensionServiceTestBase::TearDown() {
   if (profile_) {
-    auto* partition =
-        content::BrowserContext::GetDefaultStoragePartition(profile_.get());
+    auto* partition = profile_->GetDefaultStoragePartition();
     if (partition)
       partition->WaitForDeletionTasksForTesting();
   }

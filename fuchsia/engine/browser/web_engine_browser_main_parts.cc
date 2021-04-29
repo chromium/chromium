@@ -269,7 +269,7 @@ void WebEngineBrowserMainParts::OnIntlProfileChanged(
         binding->impl()->browser_context();
     std::string accept_language = net::HttpUtil::GenerateAcceptLanguageHeader(
         browser_client_->GetAcceptLangs(browser_context));
-    content::BrowserContext::GetDefaultStoragePartition(browser_context)
+    browser_context->GetDefaultStoragePartition()
         ->GetNetworkContext()
         ->SetAcceptLanguage(accept_language);
   }

@@ -64,16 +64,15 @@ GURL HostZoomMap::GetURLFromEntry(NavigationEntry* entry) {
 
 HostZoomMap* HostZoomMap::GetDefaultForBrowserContext(BrowserContext* context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  StoragePartition* partition =
-      BrowserContext::GetDefaultStoragePartition(context);
+  StoragePartition* partition = context->GetDefaultStoragePartition();
   DCHECK(partition);
   return partition->GetHostZoomMap();
 }
 
 HostZoomMap* HostZoomMap::Get(SiteInstance* instance) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  StoragePartition* partition = BrowserContext::GetStoragePartition(
-      instance->GetBrowserContext(), instance);
+  StoragePartition* partition =
+      instance->GetBrowserContext()->GetStoragePartition(instance);
   DCHECK(partition);
   return partition->GetHostZoomMap();
 }
@@ -83,8 +82,8 @@ HostZoomMap* HostZoomMap::GetForWebContents(WebContents* contents) {
   // TODO(wjmaclean): Update this behaviour to work with OOPIF.
   // See crbug.com/528407.
   StoragePartition* partition =
-      BrowserContext::GetStoragePartition(contents->GetBrowserContext(),
-                                          contents->GetSiteInstance());
+      contents->GetBrowserContext()->GetStoragePartition(
+          contents->GetSiteInstance());
   DCHECK(partition);
   return partition->GetHostZoomMap();
 }

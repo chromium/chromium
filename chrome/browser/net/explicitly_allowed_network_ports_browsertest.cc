@@ -31,8 +31,9 @@ class ExplicitlyAllowedNetworkPortsBrowserTest : public policy::PolicyTest {
   ExplicitlyAllowedNetworkPortsBrowserTest() : scoped_allowable_port_(79) {}
 
   network::mojom::NetworkContext* network_context() {
-    return content::BrowserContext::GetDefaultStoragePartition(
-               browser()->profile())
+    return browser()
+        ->profile()
+        ->GetDefaultStoragePartition()
         ->GetNetworkContext();
   }
 

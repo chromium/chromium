@@ -209,8 +209,8 @@ class AccessContextAuditBrowserTest : public PlatformBrowserTest {
   std::vector<net::CanonicalCookie> GetAllCookies() {
     base::RunLoop run_loop;
     std::vector<net::CanonicalCookie> cookies_out;
-    content::BrowserContext::GetDefaultStoragePartition(
-        chrome_test_utils::GetProfile(this))
+    chrome_test_utils::GetProfile(this)
+        ->GetDefaultStoragePartition()
         ->GetCookieManagerForBrowserProcess()
         ->GetAllCookies(base::BindLambdaForTesting(
             [&](const std::vector<net::CanonicalCookie>& cookies) {

@@ -60,8 +60,7 @@ class BackgroundXhrTest : public ExtensionBrowserTest {
     GURL test_url = net::AppendQueryParameter(extension->GetResourceURL(path),
                                               "url", url.spec());
     ui_test_utils::NavigateToURL(browser(), test_url);
-    content::BrowserContext::GetDefaultStoragePartition(profile())
-        ->FlushNetworkInterfaceForTesting();
+    profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
     constexpr char kSendXHRScript[] = R"(
       var xhr = new XMLHttpRequest();
       xhr.open('GET', '%s');

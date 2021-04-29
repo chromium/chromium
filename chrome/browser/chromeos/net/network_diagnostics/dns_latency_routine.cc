@@ -85,8 +85,7 @@ DnsLatencyRoutine::DnsLatencyRoutine()
     : tick_clock_(base::DefaultTickClock::GetInstance()) {
   profile_ = GetUserProfile();
   network_context_ =
-      content::BrowserContext::GetDefaultStoragePartition(profile_)
-          ->GetNetworkContext();
+      profile_->GetDefaultStoragePartition()->GetNetworkContext();
   DCHECK(network_context_);
   set_verdict(mojom::RoutineVerdict::kNotRun);
 }

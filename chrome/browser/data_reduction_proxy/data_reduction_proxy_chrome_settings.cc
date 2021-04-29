@@ -241,7 +241,7 @@ void DataReductionProxyChromeSettings::InitDataReductionProxySettings(
 
   PrefService* profile_prefs = profile->GetPrefs();
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(profile)
+      profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess();
   std::unique_ptr<data_reduction_proxy::DataReductionProxyService> service =
       std::make_unique<data_reduction_proxy::DataReductionProxyService>(

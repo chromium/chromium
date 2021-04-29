@@ -17,9 +17,8 @@ namespace browsing_data {
 
 MockServiceWorkerHelper::MockServiceWorkerHelper(
     content::BrowserContext* browser_context)
-    : ServiceWorkerHelper(
-          content::BrowserContext::GetDefaultStoragePartition(browser_context)
-              ->GetServiceWorkerContext()) {}
+    : ServiceWorkerHelper(browser_context->GetDefaultStoragePartition()
+                              ->GetServiceWorkerContext()) {}
 
 MockServiceWorkerHelper::~MockServiceWorkerHelper() {}
 

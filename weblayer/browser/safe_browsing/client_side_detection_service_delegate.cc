@@ -29,7 +29,7 @@ PrefService* ClientSideDetectionServiceDelegate::GetPrefs() {
 
 scoped_refptr<network::SharedURLLoaderFactory>
 ClientSideDetectionServiceDelegate::GetURLLoaderFactory() {
-  return content::BrowserContext::GetDefaultStoragePartition(browser_context_)
+  return browser_context_->GetDefaultStoragePartition()
       ->GetURLLoaderFactoryForBrowserProcess();
 }
 

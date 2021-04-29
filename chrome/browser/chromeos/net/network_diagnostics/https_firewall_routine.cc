@@ -146,8 +146,7 @@ network::mojom::NetworkContext* HttpsFirewallRoutine::GetNetworkContext() {
   Profile* profile = util::GetUserProfile();
   DCHECK(profile);
 
-  return content::BrowserContext::GetDefaultStoragePartition(profile)
-      ->GetNetworkContext();
+  return profile->GetDefaultStoragePartition()->GetNetworkContext();
 }
 
 std::unique_ptr<TlsProber> HttpsFirewallRoutine::CreateAndExecuteTlsProber(

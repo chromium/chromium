@@ -225,9 +225,8 @@ BrowserContextImpl::RetriveInProgressDownloadManager() {
   // Override this to provide a connection to the wake lock service.
   auto* download_manager = new download::InProgressDownloadManager(
       nullptr, path_,
-      path_.empty()
-          ? nullptr
-          : GetDefaultStoragePartition(this)->GetProtoDatabaseProvider(),
+      path_.empty() ? nullptr
+                    : GetDefaultStoragePartition()->GetProtoDatabaseProvider(),
       base::BindRepeating(&IgnoreOriginSecurityCheck),
       base::BindRepeating(&content::DownloadRequestUtils::IsURLSafe),
       base::BindRepeating(&BindWakeLockProvider));

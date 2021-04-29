@@ -52,8 +52,7 @@ KeyedService* TrackerFactory::BuildServiceInstanceFor(
       chrome::kFeatureEngagementTrackerStorageDirname);
 
   leveldb_proto::ProtoDatabaseProvider* db_provider =
-      content::BrowserContext::GetDefaultStoragePartition(profile)
-          ->GetProtoDatabaseProvider();
+      profile->GetDefaultStoragePartition()->GetProtoDatabaseProvider();
   return feature_engagement::Tracker::Create(
       storage_dir, background_task_runner, db_provider);
 }

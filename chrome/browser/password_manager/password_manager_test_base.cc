@@ -737,8 +737,7 @@ void PasswordManagerBrowserTestBase::SetUpInProcessBrowserTestFixture() {
 
 void PasswordManagerBrowserTestBase::AddHSTSHost(const std::string& host) {
   network::mojom::NetworkContext* network_context =
-      content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
-          ->GetNetworkContext();
+      browser()->profile()->GetDefaultStoragePartition()->GetNetworkContext();
   base::Time expiry = base::Time::Now() + base::TimeDelta::FromDays(1000);
   bool include_subdomains = false;
   base::RunLoop run_loop;

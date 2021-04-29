@@ -68,8 +68,8 @@ CreateNetworkContextForDefaultStoragePartition(
   auto network_context = std::make_unique<network::NetworkContext>(
       network_service, network_context_remote.InitWithNewPipeAndPassReceiver(),
       std::move(params));
-  content::BrowserContext::GetDefaultStoragePartition(browser_context)
-      ->SetNetworkContextForTesting(std::move(network_context_remote));
+  browser_context->GetDefaultStoragePartition()->SetNetworkContextForTesting(
+      std::move(network_context_remote));
   return network_context;
 }
 

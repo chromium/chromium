@@ -5094,8 +5094,7 @@ TEST_F(ExtensionServiceTest, ClearExtensionData) {
 
   // Open a database.
   storage::DatabaseTracker* db_tracker =
-      BrowserContext::GetDefaultStoragePartition(profile())
-          ->GetDatabaseTracker();
+      profile()->GetDefaultStoragePartition()->GetDatabaseTracker();
   db_tracker->task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&CreateDatabase, base::Unretained(db_tracker), origin_id));
@@ -5115,8 +5114,8 @@ TEST_F(ExtensionServiceTest, ClearExtensionData) {
   // Create indexed db. Similarly, it is enough to only simulate this by
   // creating the directory on the disk, and resetting the caches of
   // "known" origins.
-  auto& idb_control = BrowserContext::GetDefaultStoragePartition(profile())
-                          ->GetIndexedDBControl();
+  auto& idb_control =
+      profile()->GetDefaultStoragePartition()->GetIndexedDBControl();
   mojo::Remote<storage::mojom::IndexedDBControlTest> idb_control_test;
   idb_control.BindTestInterface(idb_control_test.BindNewPipeAndPassReceiver());
 
@@ -5219,8 +5218,7 @@ TEST_F(ExtensionServiceTest, ClearAppData) {
       origin2));
 
   network::mojom::NetworkContext* network_context =
-      content::BrowserContext::GetDefaultStoragePartition(profile())
-          ->GetNetworkContext();
+      profile()->GetDefaultStoragePartition()->GetNetworkContext();
   mojo::Remote<network::mojom::CookieManager> cookie_manager_remote;
   network_context->GetCookieManager(
       cookie_manager_remote.BindNewPipeAndPassReceiver());
@@ -5254,8 +5252,7 @@ TEST_F(ExtensionServiceTest, ClearAppData) {
 
   // Open a database.
   storage::DatabaseTracker* db_tracker =
-      BrowserContext::GetDefaultStoragePartition(profile())
-          ->GetDatabaseTracker();
+      profile()->GetDefaultStoragePartition()->GetDatabaseTracker();
   db_tracker->task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&CreateDatabase, base::Unretained(db_tracker), origin_id));
@@ -5275,8 +5272,8 @@ TEST_F(ExtensionServiceTest, ClearAppData) {
   // Create indexed db. Similarly, it is enough to only simulate this by
   // creating the directory on the disk, and resetting the caches of
   // "known" origins.
-  auto& idb_control = BrowserContext::GetDefaultStoragePartition(profile())
-                          ->GetIndexedDBControl();
+  auto& idb_control =
+      profile()->GetDefaultStoragePartition()->GetIndexedDBControl();
   mojo::Remote<storage::mojom::IndexedDBControlTest> idb_control_test;
   idb_control.BindTestInterface(idb_control_test.BindNewPipeAndPassReceiver());
 

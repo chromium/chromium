@@ -477,7 +477,7 @@ class InlineLoginHelperBrowserTest : public InProcessBrowserTest {
   }
 
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory() {
-    return content::BrowserContext::GetDefaultStoragePartition(profile_)
+    return profile_->GetDefaultStoragePartition()
         ->GetURLLoaderFactoryForBrowserProcess();
   }
 
@@ -536,7 +536,8 @@ IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
   MockSyncStarterInlineSigninHelper* helper =
       new MockSyncStarterInlineSigninHelper(
           handler.GetWeakPtr(),
-          content::BrowserContext::GetDefaultStoragePartition(profile())
+          profile()
+              ->GetDefaultStoragePartition()
               ->GetURLLoaderFactoryForBrowserProcess(),
           profile(), url, "foo@gmail.com", "gaiaid-12345", "password",
           "auth_code", /*signin_scoped_device_id=*/std::string(),

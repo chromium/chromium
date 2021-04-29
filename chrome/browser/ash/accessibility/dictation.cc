@@ -109,7 +109,7 @@ bool Dictation::OnToggleDictation() {
   } else {
     speech_recognizer_ = std::make_unique<NetworkSpeechRecognizer>(
         weak_ptr_factory_.GetWeakPtr(),
-        content::BrowserContext::GetDefaultStoragePartition(profile_)
+        profile_->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcessIOThread(),
         profile_->GetPrefs()->GetString(language::prefs::kAcceptLanguages),
         language);

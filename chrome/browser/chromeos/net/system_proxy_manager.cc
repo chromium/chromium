@@ -637,7 +637,7 @@ void SystemProxyManager::OnAuthenticationRequired(
     SendEmptyCredentials(protection_space);
     return;
   }
-  content::BrowserContext::GetDefaultStoragePartition(primary_profile_)
+  primary_profile_->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->LookupProxyAuthCredentials(
           proxy_server, protection_space.scheme(),

@@ -50,11 +50,9 @@ class FileSystemHelperTest : public testing::Test {
  public:
   FileSystemHelperTest() {
     auto* file_system_context =
-        BrowserContext::GetDefaultStoragePartition(&browser_context_)
-            ->GetFileSystemContext();
+        browser_context_.GetDefaultStoragePartition()->GetFileSystemContext();
     auto* native_io_context =
-        BrowserContext::GetDefaultStoragePartition(&browser_context_)
-            ->GetNativeIOContext();
+        browser_context_.GetDefaultStoragePartition()->GetNativeIOContext();
     helper_ =
         FileSystemHelper::Create(file_system_context, {}, native_io_context);
     content::RunAllTasksUntilIdle();
@@ -82,7 +80,7 @@ class FileSystemHelperTest : public testing::Test {
                       storage::FileSystemType type,
                       storage::OpenFileSystemMode open_mode) {
     base::RunLoop run_loop;
-    BrowserContext::GetDefaultStoragePartition(&browser_context_)
+    browser_context_.GetDefaultStoragePartition()
         ->GetFileSystemContext()
         ->OpenFileSystem(
             origin, type, open_mode,

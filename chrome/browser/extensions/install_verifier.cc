@@ -504,9 +504,8 @@ void InstallVerifier::BeginFetch() {
     ids_to_sign.insert(operation.ids.begin(), operation.ids.end());
   }
 
-  auto url_loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(context_)
-          ->GetURLLoaderFactoryForBrowserProcess();
+  auto url_loader_factory = context_->GetDefaultStoragePartition()
+                                ->GetURLLoaderFactoryForBrowserProcess();
   signer_ = std::make_unique<InstallSigner>(url_loader_factory, ids_to_sign);
   signer_->GetSignature(base::BindOnce(&InstallVerifier::SignatureCallback,
                                        weak_factory_.GetWeakPtr()));

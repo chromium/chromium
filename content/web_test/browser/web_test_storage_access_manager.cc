@@ -63,8 +63,7 @@ void WebTestStorageAccessManager::SetStorageAccess(
   // Content Shell, then we should update this class to handle those other
   // types are well.
 
-  auto* storage_partition =
-      BrowserContext::GetDefaultStoragePartition(browser_context_);
+  auto* storage_partition = browser_context_->GetDefaultStoragePartition();
   auto* cookie_manager = storage_partition->GetCookieManagerForBrowserProcess();
 
   // Enable third-party cookies blocking if we have not done so yet. This will

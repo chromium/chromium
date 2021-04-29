@@ -251,7 +251,7 @@ InstantService::InstantService(Profile* profile)
 
   image_fetcher_ = std::make_unique<image_fetcher::ImageFetcherImpl>(
       std::make_unique<ImageDecoderImpl>(),
-      content::BrowserContext::GetDefaultStoragePartition(profile_)
+      profile_->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess());
 
   theme_observer_.Add(native_theme_);

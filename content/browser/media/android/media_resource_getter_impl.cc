@@ -49,7 +49,7 @@ GetRestrictedCookieManagerForContext(
 
   url::Origin request_origin = url::Origin::Create(url);
   StoragePartition* storage_partition =
-      BrowserContext::GetDefaultStoragePartition(browser_context);
+      browser_context->GetDefaultStoragePartition();
 
   // `request_origin` cannot be used to create `isolation_info` since it
   // represents the media resource, not the frame origin. Here we use the
@@ -153,7 +153,7 @@ void MediaResourceGetterImpl::GetAuthCredentials(
     return;
   }
 
-  BrowserContext::GetDefaultStoragePartition(browser_context_)
+  browser_context_->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->LookupServerBasicAuthCredentials(
           url, render_frame_host->GetNetworkIsolationKey(),

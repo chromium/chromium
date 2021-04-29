@@ -278,8 +278,7 @@ class CookieSettingsTest
     }
 
     auto* network_context =
-        content::BrowserContext::GetDefaultStoragePartition(browser->profile())
-            ->GetNetworkContext();
+        browser->profile()->GetDefaultStoragePartition()->GetNetworkContext();
     content::LoadBasicRequest(network_context, url);
 
     {

@@ -247,8 +247,7 @@ ProxyResolutionServiceProvider::GetNetworkContext() {
   if (!primary_profile)
     return nullptr;
 
-  auto* storage_partition =
-      primary_profile->GetDefaultStoragePartition(primary_profile);
+  auto* storage_partition = primary_profile->GetDefaultStoragePartition();
 
   if (!storage_partition)
     return nullptr;

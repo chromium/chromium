@@ -128,8 +128,7 @@ HttpFirewallRoutine::HostResolver::HostResolver(
 
   profile_ = GetUserProfile();
   network_context_ =
-      content::BrowserContext::GetDefaultStoragePartition(profile_)
-          ->GetNetworkContext();
+      profile_->GetDefaultStoragePartition()->GetNetworkContext();
   DCHECK(network_context_);
 }
 

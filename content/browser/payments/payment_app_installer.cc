@@ -66,7 +66,7 @@ class SelfDeleteInstaller
         web_contents->GetBrowserContext();
     service_worker_context_ =
         base::WrapRefCounted(static_cast<ServiceWorkerContextWrapper*>(
-            browser_context->GetDefaultStoragePartition(browser_context)
+            browser_context->GetDefaultStoragePartition()
                 ->GetServiceWorkerContext()));
     service_worker_context_->FindReadyRegistrationForScope(
         scope_,
@@ -186,8 +186,7 @@ class SelfDeleteInstaller
     DCHECK(web_contents()->GetBrowserContext());
 
     StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-        BrowserContext::GetDefaultStoragePartition(
-            web_contents()->GetBrowserContext()));
+        web_contents()->GetBrowserContext()->GetDefaultStoragePartition());
     scoped_refptr<PaymentAppContextImpl> payment_app_context =
         partition->GetPaymentAppContext();
 

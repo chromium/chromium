@@ -103,7 +103,7 @@ KeyedService* FeedServiceFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
 
   content::StoragePartition* storage_partition =
-      content::BrowserContext::GetDefaultStoragePartition(context);
+      context->GetDefaultStoragePartition();
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);

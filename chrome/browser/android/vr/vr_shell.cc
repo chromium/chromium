@@ -818,7 +818,7 @@ void VrShell::SetVoiceSearchActive(bool active) {
     std::string profile_locale = g_browser_process->GetApplicationLocale();
     speech_recognizer_.reset(new SpeechRecognizer(
         this, ui_,
-        content::BrowserContext::GetDefaultStoragePartition(profile)
+        profile->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcessIOThread(),
         profile->GetPrefs()->GetString(language::prefs::kAcceptLanguages),
         profile_locale));

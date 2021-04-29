@@ -593,7 +593,7 @@ void ChromePasswordProtectionService::MaybeStartThreatDetailsCollection(
       web_contents->GetMainFrame()->GetRoutingID());
   resource.token = token;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(profile_)
+      profile_->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess();
   // Ignores the return of |StartCollectingThreatDetails()| here and
   // let TriggerManager decide whether it should start data

@@ -251,7 +251,7 @@ TEST_F(ServiceWorkerProcessManagerTest,
   // would be no added value to this test since MockRenderProcessHost is not
   // StoragePartition-aware.
   StoragePartitionImpl* storage_partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context_.get()));
+      browser_context_->GetDefaultStoragePartition());
   storage_partition->set_site_for_guest_service_worker_or_shared_worker(
       site_instance->GetSiteURL());
   process_manager_->set_storage_partition(storage_partition);

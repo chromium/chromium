@@ -199,9 +199,8 @@ KeyedService* ProfileSyncServiceFactory::BuildServiceInstanceFor(
   init_params.sync_client = std::move(sync_client);
   init_params.network_time_update_callback =
       base::BindRepeating(&UpdateNetworkTime);
-  init_params.url_loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(profile)
-          ->GetURLLoaderFactoryForBrowserProcess();
+  init_params.url_loader_factory = profile->GetDefaultStoragePartition()
+                                       ->GetURLLoaderFactoryForBrowserProcess();
   init_params.network_connection_tracker =
       content::GetNetworkConnectionTracker();
   init_params.channel = chrome::GetChannel();

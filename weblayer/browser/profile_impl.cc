@@ -401,15 +401,13 @@ void ProfileImpl::ClearRendererCache() {
 }
 
 void ProfileImpl::OnLocaleChanged() {
-  content::BrowserContext::ForEachStoragePartition(
-      GetBrowserContext(),
-      base::BindRepeating(
-          [](const std::string& accept_language,
-             content::StoragePartition* storage_partition) {
-            storage_partition->GetNetworkContext()->SetAcceptLanguage(
-                accept_language);
-          },
-          i18n::GetAcceptLangs()));
+  GetBrowserContext()->ForEachStoragePartition(base::BindRepeating(
+      [](const std::string& accept_language,
+         content::StoragePartition* storage_partition) {
+        storage_partition->GetNetworkContext()->SetAcceptLanguage(
+            accept_language);
+      },
+      i18n::GetAcceptLangs()));
 }
 
 // static

@@ -168,8 +168,8 @@ void FileSystemSigninDialogDelegate::DidFinishNavigation(
   }
 
   content::StoragePartition* partition =
-      content::BrowserContext::GetStoragePartitionForUrl(
-          web_view_->GetBrowserContext(), GURL(kFileSystemBoxEndpointApi));
+      web_view_->GetBrowserContext()->GetStoragePartitionForUrl(
+          GURL(kFileSystemBoxEndpointApi));
   auto url_loader = partition->GetURLLoaderFactoryForBrowserProcess();
   auto callback =
       base::BindOnce(&FileSystemSigninDialogDelegate::OnGotOAuthTokens,

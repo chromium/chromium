@@ -163,7 +163,8 @@ int BrowsingDataRemoverBrowserTestBase::GetSiteDataCount() {
 
 network::mojom::NetworkContext*
 BrowsingDataRemoverBrowserTestBase::network_context() const {
-  return content::BrowserContext::GetDefaultStoragePartition(
-             GetBrowser()->profile())
+  return GetBrowser()
+      ->profile()
+      ->GetDefaultStoragePartition()
       ->GetNetworkContext();
 }

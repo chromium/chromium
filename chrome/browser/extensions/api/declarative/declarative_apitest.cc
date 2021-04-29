@@ -193,8 +193,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeApiTest, PRE_PersistRules) {
 
 IN_PROC_BROWSER_TEST_F(DeclarativeApiTest, PersistRules) {
   // Wait for declarative rules to be set up from PRE test.
-  content::BrowserContext::GetDefaultStoragePartition(profile())
-      ->FlushNetworkInterfaceForTesting();
+  profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
   ui_test_utils::NavigateToURL(browser(), GURL(kArbitraryUrl));
   EXPECT_EQ(kTestTitle, GetTitle());
 }
@@ -216,8 +215,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeApiTest, ExtensionLifetimeRulesHandling) {
       ext_dir.Pack(), 1 /*+1 installed extension*/, browser());
   ASSERT_TRUE(extension);
   // Wait for declarative rules to be set up.
-  content::BrowserContext::GetDefaultStoragePartition(profile())
-      ->FlushNetworkInterfaceForTesting();
+  profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
   std::string extension_id(extension->id());
   ASSERT_TRUE(ready.WaitUntilSatisfied());
   ui_test_utils::NavigateToURL(browser(), GURL(kArbitraryUrl));
@@ -286,8 +284,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeApiTest, NoTracesAfterUninstalling) {
       ext_dir.Pack(), 1 /*+1 installed extension*/, browser());
   ASSERT_TRUE(extension);
   // Wait for declarative rules to be set up.
-  content::BrowserContext::GetDefaultStoragePartition(profile())
-      ->FlushNetworkInterfaceForTesting();
+  profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
   std::string extension_id(extension->id());
   ASSERT_TRUE(ready.WaitUntilSatisfied());
   ui_test_utils::NavigateToURL(browser(), GURL(kArbitraryUrl));
@@ -299,8 +296,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeApiTest, NoTracesAfterUninstalling) {
   // 2. Uninstall the extension. Rules are gone and preferences should be empty.
   UninstallExtension(extension_id);
   // Wait for declarative rules to be removed.
-  content::BrowserContext::GetDefaultStoragePartition(profile())
-      ->FlushNetworkInterfaceForTesting();
+  profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
   ui_test_utils::NavigateToURL(browser(), GURL(kArbitraryUrl));
   EXPECT_NE(kTestTitle, GetTitle());
   EXPECT_EQ(0u, NumberOfRegisteredRules(extension_id));

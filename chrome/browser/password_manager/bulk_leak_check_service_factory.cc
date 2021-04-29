@@ -38,6 +38,6 @@ KeyedService* BulkLeakCheckServiceFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
   return new password_manager::BulkLeakCheckService(
       IdentityManagerFactory::GetForProfile(profile),
-      content::BrowserContext::GetDefaultStoragePartition(profile)
+      profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess());
 }

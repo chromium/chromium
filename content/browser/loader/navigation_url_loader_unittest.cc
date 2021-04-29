@@ -79,7 +79,7 @@ class NavigationURLLoaderTest : public testing::Test {
     common_params->initiator_origin = url::Origin::Create(url);
 
     StoragePartition* storage_partition =
-        BrowserContext::GetDefaultStoragePartition(browser_context_.get());
+        browser_context_->GetDefaultStoragePartition();
 
     url::Origin origin = url::Origin::Create(url);
     std::unique_ptr<NavigationRequestInfo> request_info(
@@ -161,8 +161,7 @@ TEST_F(NavigationURLLoaderTest, RequestFailedCertErrorFatal) {
   // Set HSTS for the test domain in order to make SSL errors fatal.
   base::Time expiry = base::Time::Now() + base::TimeDelta::FromDays(1000);
   bool include_subdomains = false;
-  auto* storage_partition =
-      BrowserContext::GetDefaultStoragePartition(browser_context_.get());
+  auto* storage_partition = browser_context_->GetDefaultStoragePartition();
   base::RunLoop run_loop;
   storage_partition->GetNetworkContext()->AddHSTS(
       url.host(), expiry, include_subdomains, run_loop.QuitClosure());

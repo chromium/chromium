@@ -3362,9 +3362,9 @@ class ClearAllCachedAuthTokensFunctionTestWithPartitionParam
  public:
   network::mojom::CookieManager* GetCookieManager() {
     Profile* profile = browser()->profile();
-    return content::BrowserContext::GetStoragePartition(
-               profile,
-               WebAuthFlow::GetWebViewPartitionConfig(GetParam(), profile))
+    return profile
+        ->GetStoragePartition(
+            WebAuthFlow::GetWebViewPartitionConfig(GetParam(), profile))
         ->GetCookieManagerForBrowserProcess();
   }
 

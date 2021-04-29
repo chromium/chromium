@@ -30,7 +30,7 @@ using content::BrowserContext;
 // static
 BrowsingDataQuotaHelper* BrowsingDataQuotaHelper::Create(Profile* profile) {
   return new BrowsingDataQuotaHelperImpl(
-      BrowserContext::GetDefaultStoragePartition(profile)->GetQuotaManager());
+      profile->GetDefaultStoragePartition()->GetQuotaManager());
 }
 
 void BrowsingDataQuotaHelperImpl::StartFetching(FetchResultCallback callback) {

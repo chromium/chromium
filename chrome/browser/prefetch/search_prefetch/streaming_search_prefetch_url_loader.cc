@@ -33,9 +33,8 @@ StreamingSearchPrefetchURLLoader::StreamingSearchPrefetchURLLoader(
     : resource_request_(std::move(resource_request)),
       streaming_prefetch_request_(streaming_prefetch_request) {
   DCHECK(streaming_prefetch_request_);
-  auto url_loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(profile)
-          ->GetURLLoaderFactoryForBrowserProcess();
+  auto url_loader_factory = profile->GetDefaultStoragePartition()
+                                ->GetURLLoaderFactoryForBrowserProcess();
 
   // Create a network service URL loader with passed in params.
   url_loader_factory->CreateLoaderAndStart(

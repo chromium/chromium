@@ -489,9 +489,9 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, SpareRendererDuringClosing) {
 
 // Class that simulates the fact that some //content embedders (e.g. by
 // overriding ChromeContentBrowserClient::GetStoragePartitionConfigForSite) can
-// cause BrowserContext::GetDefaultStoragePartition(browser_context) to differ
-// from BrowserContext::GetStoragePartition(browser_context, site_instance) even
-// if |site_instance| is not for guests.
+// cause `browser_context->GetDefaultStoragePartition()` to differ from
+// `browser_context->GetStoragePartition(site_instance)` even if `site_instance`
+// is not for guests.
 class CustomStoragePartitionForSomeSites : public TestContentBrowserClient {
  public:
   explicit CustomStoragePartitionForSomeSites(const GURL& site_to_isolate)
@@ -542,9 +542,9 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
   ContentBrowserClient* old_client =
       SetBrowserClientForTesting(&modified_client);
   StoragePartition* default_storage =
-      BrowserContext::GetDefaultStoragePartition(browser_context);
-  StoragePartition* custom_storage = BrowserContext::GetStoragePartition(
-      browser_context, test_site_instance.get());
+      browser_context->GetDefaultStoragePartition();
+  StoragePartition* custom_storage =
+      browser_context->GetStoragePartition(test_site_instance.get());
   EXPECT_NE(default_storage, custom_storage);
 
   // Open a test window - it should be associated with the default storage

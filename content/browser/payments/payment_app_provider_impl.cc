@@ -149,8 +149,8 @@ void PaymentAppProviderImpl::InvokePaymentApp(
   }
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(
-          payment_request_web_contents_->GetBrowserContext()));
+      payment_request_web_contents_->GetBrowserContext()
+          ->GetDefaultStoragePartition());
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context =
       partition->GetServiceWorkerContext();
 
@@ -215,8 +215,8 @@ void PaymentAppProviderImpl::UpdatePaymentAppIcon(
     const SupportedDelegations& supported_delegations,
     PaymentAppProvider::UpdatePaymentAppIconCallback callback) {
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(
-          payment_request_web_contents_->GetBrowserContext()));
+      payment_request_web_contents_->GetBrowserContext()
+          ->GetDefaultStoragePartition());
   scoped_refptr<PaymentAppContextImpl> payment_app_context =
       partition->GetPaymentAppContext();
 
@@ -256,8 +256,8 @@ void PaymentAppProviderImpl::CanMakePayment(
   }
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(
-          payment_request_web_contents_->GetBrowserContext()));
+      payment_request_web_contents_->GetBrowserContext()
+          ->GetDefaultStoragePartition());
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context =
       partition->GetServiceWorkerContext();
 
@@ -288,8 +288,8 @@ void PaymentAppProviderImpl::AbortPayment(int64_t registration_id,
   }
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(
-          payment_request_web_contents_->GetBrowserContext()));
+      payment_request_web_contents_->GetBrowserContext()
+          ->GetDefaultStoragePartition());
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context =
       partition->GetServiceWorkerContext();
 
@@ -339,9 +339,10 @@ scoped_refptr<DevToolsBackgroundServicesContextImpl>
 PaymentAppProviderImpl::GetDevTools(const url::Origin& sw_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(payment_request_web_contents_);
-  auto* storage_partition = BrowserContext::GetStoragePartitionForUrl(
-      payment_request_web_contents_->GetBrowserContext(), sw_origin.GetURL(),
-      /*can_create=*/true);
+  auto* storage_partition =
+      payment_request_web_contents_->GetBrowserContext()
+          ->GetStoragePartitionForUrl(sw_origin.GetURL(),
+                                      /*can_create=*/true);
   if (!storage_partition)
     return nullptr;
 
@@ -361,8 +362,8 @@ void PaymentAppProviderImpl::StartServiceWorkerForDispatch(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(
-          payment_request_web_contents_->GetBrowserContext()));
+      payment_request_web_contents_->GetBrowserContext()
+          ->GetDefaultStoragePartition());
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context =
       partition->GetServiceWorkerContext();
 

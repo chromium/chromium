@@ -50,7 +50,7 @@ QuickAnswersMenuObserver::QuickAnswersMenuObserver(
       return;
 
     quick_answers_client_ = std::make_unique<QuickAnswersClient>(
-        content::BrowserContext::GetDefaultStoragePartition(browser_context)
+        browser_context->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess()
             .get(),
         assistant_state, /*delegate=*/this);
@@ -58,7 +58,7 @@ QuickAnswersMenuObserver::QuickAnswersMenuObserver(
     if (!quick_answers_controller_)
       return;
     quick_answers_controller_->SetClient(std::make_unique<QuickAnswersClient>(
-        content::BrowserContext::GetDefaultStoragePartition(browser_context)
+        browser_context->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess()
             .get(),
         assistant_state, quick_answers_controller_->GetQuickAnswersDelegate()));

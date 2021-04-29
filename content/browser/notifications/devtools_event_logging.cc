@@ -32,8 +32,7 @@ using DevToolsCallback =
 DevToolsBackgroundServicesContext* GetDevToolsContext(
     BrowserContext* browser_context,
     const GURL& origin) {
-  auto* storage_partition =
-      BrowserContext::GetStoragePartitionForUrl(browser_context, origin);
+  auto* storage_partition = browser_context->GetStoragePartitionForUrl(origin);
   if (!storage_partition)
     return nullptr;
 

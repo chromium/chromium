@@ -69,8 +69,7 @@ bool DoesOriginMatchDomain(const std::set<std::string>& same_site_none_domains,
 SameSiteDataRemoverImpl::SameSiteDataRemoverImpl(
     BrowserContext* browser_context)
     : browser_context_(browser_context),
-      storage_partition_(
-          BrowserContext::GetDefaultStoragePartition(browser_context_)) {
+      storage_partition_(browser_context_->GetDefaultStoragePartition()) {
   DCHECK(browser_context_);
 }
 

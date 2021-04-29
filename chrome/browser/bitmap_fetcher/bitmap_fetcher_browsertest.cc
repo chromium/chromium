@@ -153,10 +153,11 @@ IN_PROC_BROWSER_TEST_F(BitmapFetcherBrowserTest, StartTest) {
       std::string(),
       net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,
       network::mojom::CredentialsMode::kInclude);
-  fetcher.Start(
-      content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
-          ->GetURLLoaderFactoryForBrowserProcess()
-          .get());
+  fetcher.Start(browser()
+                    ->profile()
+                    ->GetDefaultStoragePartition()
+                    ->GetURLLoaderFactoryForBrowserProcess()
+                    .get());
 
   // Blocks until test delegate is notified via a callback.
   delegate.Wait();
@@ -200,10 +201,11 @@ IN_PROC_BROWSER_TEST_F(BitmapFetcherBrowserTest, OnURLFetchFailureTest) {
       std::string(),
       net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,
       network::mojom::CredentialsMode::kInclude);
-  fetcher.Start(
-      content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
-          ->GetURLLoaderFactoryForBrowserProcess()
-          .get());
+  fetcher.Start(browser()
+                    ->profile()
+                    ->GetDefaultStoragePartition()
+                    ->GetURLLoaderFactoryForBrowserProcess()
+                    .get());
 
   // Blocks until test delegate is notified via a callback.
   delegate.Wait();
@@ -220,10 +222,11 @@ IN_PROC_BROWSER_TEST_F(BitmapFetcherBrowserTest, HandleImageFailedTest) {
       std::string(),
       net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,
       network::mojom::CredentialsMode::kInclude);
-  fetcher.Start(
-      content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
-          ->GetURLLoaderFactoryForBrowserProcess()
-          .get());
+  fetcher.Start(browser()
+                    ->profile()
+                    ->GetDefaultStoragePartition()
+                    ->GetURLLoaderFactoryForBrowserProcess()
+                    .get());
 
   // Blocks until test delegate is notified via a callback.
   delegate.Wait();
@@ -240,10 +243,11 @@ IN_PROC_BROWSER_TEST_F(BitmapFetcherBrowserTest, DataURLNonImage) {
       std::string(),
       net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,
       network::mojom::CredentialsMode::kInclude);
-  fetcher.Start(
-      content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
-          ->GetURLLoaderFactoryForBrowserProcess()
-          .get());
+  fetcher.Start(browser()
+                    ->profile()
+                    ->GetDefaultStoragePartition()
+                    ->GetURLLoaderFactoryForBrowserProcess()
+                    .get());
   delegate.Wait();
 
   EXPECT_FALSE(delegate.success());
@@ -263,10 +267,11 @@ IN_PROC_BROWSER_TEST_F(BitmapFetcherBrowserTest, DataURLImage) {
       std::string(),
       net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,
       network::mojom::CredentialsMode::kInclude);
-  fetcher.Start(
-      content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
-          ->GetURLLoaderFactoryForBrowserProcess()
-          .get());
+  fetcher.Start(browser()
+                    ->profile()
+                    ->GetDefaultStoragePartition()
+                    ->GetURLLoaderFactoryForBrowserProcess()
+                    .get());
   delegate.Wait();
 
   // Ensure image is marked as succeeded.

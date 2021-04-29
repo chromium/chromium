@@ -17,9 +17,8 @@
 namespace browsing_data {
 
 MockCookieHelper::MockCookieHelper(content::BrowserContext* browser_context)
-    : CookieHelper(
-          content::BrowserContext::GetDefaultStoragePartition(browser_context),
-          base::NullCallback()) {}
+    : CookieHelper(browser_context->GetDefaultStoragePartition(),
+                   base::NullCallback()) {}
 
 MockCookieHelper::~MockCookieHelper() {}
 

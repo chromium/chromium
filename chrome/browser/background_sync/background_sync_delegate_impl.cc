@@ -159,8 +159,8 @@ void BackgroundSyncDelegateImpl::OnEngagementEvent(
 
   suspended_periodic_sync_origins_.erase(iter);
 
-  auto* storage_partition = content::BrowserContext::GetStoragePartitionForUrl(
-      profile_, url, /* can_create= */ false);
+  auto* storage_partition =
+      profile_->GetStoragePartitionForUrl(url, /* can_create= */ false);
   if (!storage_partition)
     return;
 

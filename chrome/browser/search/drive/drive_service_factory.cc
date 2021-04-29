@@ -33,9 +33,8 @@ DriveServiceFactory::~DriveServiceFactory() = default;
 
 KeyedService* DriveServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  auto url_loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(context)
-          ->GetURLLoaderFactoryForBrowserProcess();
+  auto url_loader_factory = context->GetDefaultStoragePartition()
+                                ->GetURLLoaderFactoryForBrowserProcess();
   return new DriveService(url_loader_factory,
                           IdentityManagerFactory::GetForProfile(
                               Profile::FromBrowserContext(context)),

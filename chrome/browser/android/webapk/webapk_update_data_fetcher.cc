@@ -173,7 +173,7 @@ void WebApkUpdateDataFetcher::OnDidGetInstallableData(
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 
   WebApkIconHasher::DownloadAndComputeMurmur2Hash(
-      content::BrowserContext::GetDefaultStoragePartition(profile)
+      profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess()
           .get(),
       url::Origin::Create(last_fetched_url_), urls,

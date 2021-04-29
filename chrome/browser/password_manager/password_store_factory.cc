@@ -97,7 +97,7 @@ void PasswordStoreFactory::OnPasswordsSyncedStatePotentiallyChanged(
 
   password_manager::ToggleAffiliationBasedMatchingBasedOnPasswordSyncedState(
       password_store.get(), sync_service,
-      content::BrowserContext::GetDefaultStoragePartition(profile)
+      profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
       content::GetNetworkConnectionTracker(), profile->GetPath());
 }
@@ -155,8 +155,7 @@ PasswordStoreFactory::BuildServiceInstanceFor(
       [](Profile* profile) -> network::mojom::NetworkContext* {
         if (!g_browser_process->profile_manager()->IsValidProfile(profile))
           return nullptr;
-        return content::BrowserContext::GetDefaultStoragePartition(profile)
-            ->GetNetworkContext();
+        return profile->GetDefaultStoragePartition()->GetNetworkContext();
       },
       profile);
   password_manager_util::RemoveUselessCredentials(
@@ -181,7 +180,7 @@ PasswordStoreFactory::BuildServiceInstanceFor(
     // launching HashAffiliationLookup.
     password_manager::ToggleAffiliationBasedMatchingBasedOnPasswordSyncedState(
         ps.get(), /*sync_service=*/nullptr,
-        content::BrowserContext::GetDefaultStoragePartition(profile)
+        profile->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess(),
         content::GetNetworkConnectionTracker(), profile->GetPath());
   }

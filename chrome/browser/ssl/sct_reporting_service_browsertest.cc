@@ -363,7 +363,9 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
   // Crash the NetworkService to force it to restart.
   SimulateNetworkServiceCrash();
   // Flush the network interface to make sure it notices the crash.
-  content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
+  browser()
+      ->profile()
+      ->GetDefaultStoragePartition()
       ->FlushNetworkInterfaceForTesting();
   g_browser_process->system_network_context_manager()
       ->FlushNetworkInterfaceForTesting();

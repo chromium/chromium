@@ -481,9 +481,7 @@ bool ProfileCompare::operator()(Profile* a, Profile* b) const {
 
 #if !defined(OS_ANDROID)
 double Profile::GetDefaultZoomLevelForProfile() {
-  return GetDefaultStoragePartition(this)
-      ->GetHostZoomMap()
-      ->GetDefaultZoomLevel();
+  return GetDefaultStoragePartition()->GetHostZoomMap()->GetDefaultZoomLevel();
 }
 #endif  // !defined(OS_ANDROID)
 

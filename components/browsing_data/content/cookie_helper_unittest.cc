@@ -218,8 +218,7 @@ class CookieHelperTest : public testing::Test {
   }
 
   content::StoragePartition* storage_partition() {
-    return content::BrowserContext::GetDefaultStoragePartition(
-        testing_browser_context_.get());
+    return testing_browser_context_->GetDefaultStoragePartition();
   }
 
  protected:

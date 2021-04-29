@@ -118,8 +118,8 @@ bool VerifyOpenURLParams(SiteInstance* site_instance,
   if (params->blob_url_token.is_valid()) {
     *out_blob_url_loader_factory =
         ChromeBlobStorageContext::URLLoaderFactoryForToken(
-            BrowserContext::GetStoragePartition(
-                site_instance->GetBrowserContext(), site_instance),
+            site_instance->GetBrowserContext()->GetStoragePartition(
+                site_instance),
             std::move(params->blob_url_token));
   }
 

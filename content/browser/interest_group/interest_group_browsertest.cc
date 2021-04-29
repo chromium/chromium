@@ -97,10 +97,12 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
         &InterestGroupBrowserTest::OnHttpsTestServerRequestMonitor,
         base::Unretained(this)));
     ASSERT_TRUE(https_server_->Start());
-    storage_ = static_cast<StoragePartitionImpl*>(
-                   BrowserContext::GetDefaultStoragePartition(
-                       shell()->web_contents()->GetBrowserContext()))
-                   ->GetInterestGroupStorage();
+    storage_ =
+        static_cast<StoragePartitionImpl*>(shell()
+                                               ->web_contents()
+                                               ->GetBrowserContext()
+                                               ->GetDefaultStoragePartition())
+            ->GetInterestGroupStorage();
     content_browser_client_.SetAllowList(
         {url::Origin::Create(https_server_->GetURL("a.test", "/echo")),
          url::Origin::Create(https_server_->GetURL("b.test", "/echo"))});

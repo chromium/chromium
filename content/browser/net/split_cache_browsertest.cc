@@ -760,8 +760,7 @@ class SplitCacheComputeHttpCacheSize {
                                base::Time end_time) {
     last_computed_cache_size_ = -1;
     auto* network_context =
-        content::BrowserContext::GetDefaultStoragePartition(context)
-            ->GetNetworkContext();
+        context->GetDefaultStoragePartition()->GetNetworkContext();
     network::mojom::NetworkContext::ComputeHttpCacheSizeCallback size_callback =
         base::BindOnce(
             &SplitCacheComputeHttpCacheSize::ComputeCacheSizeCallback,

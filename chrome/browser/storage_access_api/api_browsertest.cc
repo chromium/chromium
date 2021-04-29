@@ -566,7 +566,9 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
       base::Value(CONTENT_SETTING_ALLOW), "preference",
       /*incognito=*/false, base::Time());
 
-  content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
+  browser()
+      ->profile()
+      ->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess()
       ->SetStorageAccessGrantSettings(settings, base::DoNothing());
 

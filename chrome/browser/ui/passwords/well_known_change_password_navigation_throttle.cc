@@ -128,10 +128,11 @@ WellKnownChangePasswordNavigationThrottle::
 
 NavigationThrottle::ThrottleCheckResult
 WellKnownChangePasswordNavigationThrottle::WillStartRequest() {
-  auto url_loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(
-          navigation_handle()->GetWebContents()->GetBrowserContext())
-          ->GetURLLoaderFactoryForBrowserProcess();
+  auto url_loader_factory = navigation_handle()
+                                ->GetWebContents()
+                                ->GetBrowserContext()
+                                ->GetDefaultStoragePartition()
+                                ->GetURLLoaderFactoryForBrowserProcess();
   // In order to avoid bypassing Sec-Fetch-Site headers and extracting user data
   // across redirects, we need to set both the initiator origin and network
   // isolation key when fetching the well-known non-existing resource.

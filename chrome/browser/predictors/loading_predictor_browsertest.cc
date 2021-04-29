@@ -591,9 +591,8 @@ class LoadingPredictorBrowserTest : public InProcessBrowserTest {
   }
 
   void ResetNetworkState() {
-    auto* network_context = content::BrowserContext::GetDefaultStoragePartition(
-                                browser()->profile())
-                                ->GetNetworkContext();
+    auto* network_context =
+        browser()->profile()->GetDefaultStoragePartition()->GetNetworkContext();
     base::RunLoop clear_host_cache_loop;
     base::RunLoop close_all_connections_loop;
     network_context->ClearHostCache(nullptr,

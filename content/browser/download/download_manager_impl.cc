@@ -111,7 +111,7 @@ StoragePartitionImpl* GetStoragePartition(BrowserContext* context,
       site_instance = render_frame_host_->GetSiteInstance();
   }
   return static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetStoragePartition(context, site_instance));
+      context->GetStoragePartition(site_instance));
 }
 
 // TODO(acolwell): Update DownloadManager and related code to pass around
@@ -121,7 +121,7 @@ StoragePartitionImpl* GetStoragePartitionForSiteUrl(BrowserContext* context,
   auto partition_config = SiteInfo::GetStoragePartitionConfigForUrl(
       context, site_url, /*is_site_url=*/true);
   return static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetStoragePartition(context, partition_config));
+      context->GetStoragePartition(partition_config));
 }
 
 void OnDownloadStarted(
@@ -329,9 +329,8 @@ DownloadManagerImpl::DownloadManagerImpl(BrowserContext* browser_context)
   download::SetIOTaskRunner(GetIOThreadTaskRunner({}));
 
   if (!in_progress_manager_) {
-    auto* proto_db_provider =
-        BrowserContext::GetDefaultStoragePartition(browser_context)
-            ->GetProtoDatabaseProvider();
+    auto* proto_db_provider = browser_context->GetDefaultStoragePartition()
+                                  ->GetProtoDatabaseProvider();
     in_progress_manager_ =
         std::make_unique<download::InProgressDownloadManager>(
             this, base::FilePath(), proto_db_provider,

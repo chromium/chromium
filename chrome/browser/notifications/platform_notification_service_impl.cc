@@ -173,8 +173,7 @@ void PlatformNotificationServiceImpl::OnContentSettingChanged(
     return;
 
   auto recorder = base::MakeRefCounted<RevokeDeleteCountRecorder>();
-  content::BrowserContext::ForEachStoragePartition(
-      profile_,
+  profile_->ForEachStoragePartition(
       base::BindRepeating(
           [](scoped_refptr<RevokeDeleteCountRecorder> recorder,
              content::StoragePartition* partition) {

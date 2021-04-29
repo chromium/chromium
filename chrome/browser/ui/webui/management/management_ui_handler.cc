@@ -860,10 +860,9 @@ void ManagementUIHandler::AsyncUpdateLogo() {
     icon_fetcher_->Init(std::string(), net::ReferrerPolicy::NEVER_CLEAR,
                         network::mojom::CredentialsMode::kOmit);
     auto* profile = Profile::FromWebUI(web_ui());
-    icon_fetcher_->Start(
-        content::BrowserContext::GetDefaultStoragePartition(profile)
-            ->GetURLLoaderFactoryForBrowserProcess()
-            .get());
+    icon_fetcher_->Start(profile->GetDefaultStoragePartition()
+                             ->GetURLLoaderFactoryForBrowserProcess()
+                             .get());
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }

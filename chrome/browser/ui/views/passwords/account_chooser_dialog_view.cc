@@ -119,8 +119,8 @@ void AccountChooserDialogView::InitWindow() {
                 &AccountChooserDialogView::CredentialsItemPressed,
                 base::Unretained(this), base::Unretained(form.get())),
             titles.first, titles.second, form.get(),
-            content::BrowserContext::GetDefaultStoragePartition(
-                Profile::FromBrowserContext(web_contents_->GetBrowserContext()))
+            web_contents_->GetBrowserContext()
+                ->GetDefaultStoragePartition()
                 ->GetURLLoaderFactoryForBrowserProcess()
                 .get()));
     credential_view->SetStoreIndicatorIcon(form->in_store);

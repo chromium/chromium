@@ -38,8 +38,7 @@ UsageStatsDatabase::UsageStatsDatabase(Profile* profile)
       suspension_db_initialized_(false),
       token_mapping_db_initialized_(false) {
   ProtoDatabaseProvider* db_provider =
-      content::BrowserContext::GetDefaultStoragePartition(profile)
-          ->GetProtoDatabaseProvider();
+      profile->GetDefaultStoragePartition()->GetProtoDatabaseProvider();
 
   base::FilePath usage_stats_dir = profile->GetPath().Append(kNamespace);
 

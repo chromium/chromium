@@ -219,8 +219,7 @@ class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
   }
 
   network::mojom::NetworkContext* GetNetworkContext() {
-    return BrowserContext::GetDefaultStoragePartition(browser_context())
-        ->GetNetworkContext();
+    return browser_context()->GetDefaultStoragePartition()->GetNetworkContext();
   }
 
   std::string CreateMDNSHostName() {

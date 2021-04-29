@@ -275,7 +275,7 @@ const GURL& PaymentAppContentUnitTestBase::last_sw_scope_url() const {
 
 StoragePartitionImpl* PaymentAppContentUnitTestBase::storage_partition() {
   return static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
 }
 
 PaymentAppContextImpl* PaymentAppContentUnitTestBase::payment_app_context() {

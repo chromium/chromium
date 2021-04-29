@@ -596,7 +596,7 @@ void BlockFileTaskRunner(Profile* profile)
     EXCLUSIVE_LOCK_FUNCTION(GetLockForBlockingDefaultFileTaskRunner()) {
   GetLockForBlockingDefaultFileTaskRunner().Acquire();
 
-  content::BrowserContext::GetDefaultStoragePartition(profile)
+  profile->GetDefaultStoragePartition()
       ->GetFileSystemContext()
       ->default_file_task_runner()
       ->PostTask(FROM_HERE, base::BindOnce([] {

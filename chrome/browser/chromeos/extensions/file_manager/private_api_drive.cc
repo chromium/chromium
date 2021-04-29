@@ -861,7 +861,8 @@ void FileManagerPrivateInternalGetDownloadUrlFunction::OnGotDownloadUrl(
   scopes.emplace_back("https://www.googleapis.com/auth/drive.readonly");
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(browser_context())
+      browser_context()
+          ->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess();
   auth_service_ = std::make_unique<google_apis::AuthService>(
       identity_manager, account_id, url_loader_factory, scopes);

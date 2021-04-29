@@ -163,9 +163,8 @@ struct KidsChromeManagementClient::KidsChromeManagementRequest {
 };
 
 KidsChromeManagementClient::KidsChromeManagementClient(Profile* profile) {
-  url_loader_factory_ =
-      content::BrowserContext::GetDefaultStoragePartition(profile)
-          ->GetURLLoaderFactoryForBrowserProcess();
+  url_loader_factory_ = profile->GetDefaultStoragePartition()
+                            ->GetURLLoaderFactoryForBrowserProcess();
 
   identity_manager_ = IdentityManagerFactory::GetForProfile(profile);
 }

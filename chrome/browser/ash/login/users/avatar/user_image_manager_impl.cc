@@ -719,8 +719,9 @@ signin::IdentityManager* UserImageManagerImpl::GetIdentityManager() {
 }
 
 network::mojom::URLLoaderFactory* UserImageManagerImpl::GetURLLoaderFactory() {
-  return content::BrowserContext::GetDefaultStoragePartition(
-             ProfileHelper::Get()->GetProfileByUserUnsafe(GetUser()))
+  return ProfileHelper::Get()
+      ->GetProfileByUserUnsafe(GetUser())
+      ->GetDefaultStoragePartition()
       ->GetURLLoaderFactoryForBrowserProcess()
       .get();
 }

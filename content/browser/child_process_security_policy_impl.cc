@@ -1360,8 +1360,8 @@ bool ChildProcessSecurityPolicyImpl::CanReadRequestBody(
 
   int child_id = site_instance->GetProcess()->GetID();
 
-  StoragePartition* storage_partition = BrowserContext::GetStoragePartition(
-      site_instance->GetBrowserContext(), site_instance);
+  StoragePartition* storage_partition =
+      site_instance->GetBrowserContext()->GetStoragePartition(site_instance);
   const storage::FileSystemContext* file_system_context =
       storage_partition->GetFileSystemContext();
 

@@ -43,7 +43,7 @@ class PaymentHandlerIconRefetchTest : public PaymentRequestBrowserTestBase {
     content::BrowserContext* context =
         GetActiveWebContents()->GetBrowserContext();
     auto downloader = std::make_unique<TestDownloader>(
-        content::BrowserContext::GetDefaultStoragePartition(context)
+        context->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess());
     downloader->AddTestServerURL("https://kylepay.com/",
                                  kylepay_server_.GetURL("kylepay.com", "/"));

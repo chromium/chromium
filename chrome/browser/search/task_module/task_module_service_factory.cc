@@ -34,9 +34,8 @@ TaskModuleServiceFactory::~TaskModuleServiceFactory() = default;
 
 KeyedService* TaskModuleServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  auto url_loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(context)
-          ->GetURLLoaderFactoryForBrowserProcess();
+  auto url_loader_factory = context->GetDefaultStoragePartition()
+                                ->GetURLLoaderFactoryForBrowserProcess();
   return new TaskModuleService(url_loader_factory,
                                Profile::FromBrowserContext(context),
                                g_browser_process->GetApplicationLocale());

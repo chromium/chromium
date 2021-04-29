@@ -4159,8 +4159,7 @@ void RenderFrameHostImpl::WriteIntoTrace(perfetto::TracedValue context) {
 }
 
 StoragePartition* RenderFrameHostImpl::GetStoragePartition() {
-  return BrowserContext::GetStoragePartition(GetBrowserContext(),
-                                             GetSiteInstance());
+  return GetBrowserContext()->GetStoragePartition(GetSiteInstance());
 }
 
 void RenderFrameHostImpl::RequestTextSurroundingSelection(
@@ -5614,8 +5613,7 @@ void RenderFrameHostImpl::CreateNewWindow(
   }
 
   // This will clone the sessionStorage for namespace_id_to_clone.
-  StoragePartition* storage_partition = BrowserContext::GetStoragePartition(
-      GetSiteInstance()->GetBrowserContext(), GetSiteInstance());
+  StoragePartition* storage_partition = GetStoragePartition();
   DOMStorageContextWrapper* dom_storage_context =
       static_cast<DOMStorageContextWrapper*>(
           storage_partition->GetDOMStorageContext());
@@ -6922,9 +6920,7 @@ void RenderFrameHostImpl::CommitNavigation(
     }
 #endif
 
-    auto* partition =
-        static_cast<StoragePartitionImpl*>(BrowserContext::GetStoragePartition(
-            browser_context, GetSiteInstance()));
+    auto* partition = static_cast<StoragePartitionImpl*>(GetStoragePartition());
     non_network_factories.emplace(
         url::kFileSystemScheme, CreateFileSystemURLLoaderFactory(
                                     GetProcess()->GetID(), GetFrameTreeNodeId(),
@@ -7017,9 +7013,8 @@ void RenderFrameHostImpl::CommitNavigation(
       // factories. TODO(kinuko): Consider setting this up only when prefetch
       // is used. Currently we have this here to make sure we have non-racy
       // situation (https://crbug.com/849929).
-      auto* storage_partition = static_cast<StoragePartitionImpl*>(
-          BrowserContext::GetStoragePartition(
-              GetSiteInstance()->GetBrowserContext(), GetSiteInstance()));
+      auto* storage_partition =
+          static_cast<StoragePartitionImpl*>(GetStoragePartition());
       storage_partition->GetPrefetchURLLoaderService()->GetFactory(
           prefetch_loader_factory.InitWithNewPipeAndPassReceiver(),
           frame_tree_node_->frame_tree_node_id(),
@@ -7882,8 +7877,7 @@ bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactoryAndObserve(
       (!network_service_disconnect_handler_holder_ ||
        !network_service_disconnect_handler_holder_.is_connected())) {
     network_service_disconnect_handler_holder_.reset();
-    StoragePartition* storage_partition = BrowserContext::GetStoragePartition(
-        GetSiteInstance()->GetBrowserContext(), GetSiteInstance());
+    StoragePartition* storage_partition = GetStoragePartition();
     network::mojom::URLLoaderFactoryParamsPtr monitoring_factory_params =
         network::mojom::URLLoaderFactoryParams::New();
     monitoring_factory_params->process_id = GetProcess()->GetID();

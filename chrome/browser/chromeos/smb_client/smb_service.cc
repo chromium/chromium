@@ -78,8 +78,7 @@ net::NetworkInterfaceList GetInterfaces() {
 
 std::unique_ptr<NetBiosClientInterface> GetNetBiosClient(Profile* profile) {
   auto* network_context =
-      content::BrowserContext::GetDefaultStoragePartition(profile)
-          ->GetNetworkContext();
+      profile->GetDefaultStoragePartition()->GetNetworkContext();
   return std::make_unique<NetBiosClient>(network_context);
 }
 

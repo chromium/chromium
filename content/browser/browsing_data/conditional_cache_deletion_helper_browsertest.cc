@@ -98,7 +98,7 @@ class ConditionalCacheDeletionHelperBrowserTest : public ContentBrowserTest {
   }
 
   StoragePartition* storage_partition() {
-    return BrowserContext::GetDefaultStoragePartition(browser_context());
+    return browser_context()->GetDefaultStoragePartition();
   }
 
  private:

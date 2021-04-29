@@ -52,8 +52,10 @@ class ServiceWorkerClientsApiBrowserTest : public ContentBrowserTest {
   void SetUpOnMainThread() override {
     embedded_test_server()->StartAcceptingConnections();
 
-    StoragePartition* partition = BrowserContext::GetDefaultStoragePartition(
-        shell()->web_contents()->GetBrowserContext());
+    StoragePartition* partition = shell()
+                                      ->web_contents()
+                                      ->GetBrowserContext()
+                                      ->GetDefaultStoragePartition();
     wrapper_ = static_cast<ServiceWorkerContextWrapper*>(
         partition->GetServiceWorkerContext());
   }

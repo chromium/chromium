@@ -111,8 +111,7 @@ void SetSCTAuditingEnabledForStoragePartition(
 void SCTReportingService::SetReportingEnabled(bool enabled) {
   // Iterate over StoragePartitions for this Profile, and for each get the
   // NetworkContext and enable or disable SCT auditing.
-  content::BrowserContext::ForEachStoragePartition(
-      profile_,
+  profile_->ForEachStoragePartition(
       base::BindRepeating(&SetSCTAuditingEnabledForStoragePartition, enabled));
 
   if (!enabled)

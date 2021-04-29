@@ -16,8 +16,7 @@ namespace browsing_data {
 
 MockIndexedDBHelper::MockIndexedDBHelper(
     content::BrowserContext* browser_context)
-    : IndexedDBHelper(content::BrowserContext::GetDefaultStoragePartition(
-          browser_context)) {}
+    : IndexedDBHelper(browser_context->GetDefaultStoragePartition()) {}
 
 MockIndexedDBHelper::~MockIndexedDBHelper() {}
 

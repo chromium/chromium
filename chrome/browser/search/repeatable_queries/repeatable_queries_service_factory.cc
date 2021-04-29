@@ -54,9 +54,8 @@ KeyedService* RepeatableQueriesServiceFactory::BuildServiceInstanceFor(
                                            ServiceAccessType::EXPLICIT_ACCESS);
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile);
-  auto url_loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(context)
-          ->GetURLLoaderFactoryForBrowserProcess();
+  auto url_loader_factory = context->GetDefaultStoragePartition()
+                                ->GetURLLoaderFactoryForBrowserProcess();
   return new RepeatableQueriesService(identity_manager, history_service,
                                       template_url_service, url_loader_factory,
                                       GURL(chrome::kChromeUINewTabURL));

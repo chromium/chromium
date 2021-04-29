@@ -58,8 +58,8 @@ class ServiceWorkerContextWrapperTest : public testing::Test {
         base::Unretained(this)));
     StoragePartitionImpl* storage_partition =
         static_cast<StoragePartitionImpl*>(
-            BrowserContext::GetStoragePartitionForUrl(
-                browser_context_.get(), GURL("https://example.com")));
+            browser_context_->GetStoragePartitionForUrl(
+                GURL("https://example.com")));
     wrapper_->set_storage_partition(storage_partition);
     wrapper_->Init(user_data_directory_.GetPath(), nullptr, nullptr, nullptr,
                    url_loader_factory_getter_.get());

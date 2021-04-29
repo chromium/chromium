@@ -1297,8 +1297,7 @@ class PKPModelClientTest : public SecurityStateTabHelperTest {
     network_service_test->SetTransportSecurityStateSource(80);
 
     content::StoragePartition* partition =
-        content::BrowserContext::GetDefaultStoragePartition(
-            browser()->profile());
+        browser()->profile()->GetDefaultStoragePartition();
     partition->GetNetworkContext()->EnableStaticKeyPinningForTesting();
   }
 };

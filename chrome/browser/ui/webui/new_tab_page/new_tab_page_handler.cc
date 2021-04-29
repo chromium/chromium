@@ -1108,9 +1108,8 @@ void NewTabPageHandler::Fetch(const GURL& url,
             }
           }
         })");
-  auto url_loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(profile_)
-          ->GetURLLoaderFactoryForBrowserProcess();
+  auto url_loader_factory = profile_->GetDefaultStoragePartition()
+                                ->GetURLLoaderFactoryForBrowserProcess();
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = url;
   auto loader =

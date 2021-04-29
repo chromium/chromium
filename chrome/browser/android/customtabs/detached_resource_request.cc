@@ -145,8 +145,7 @@ void DetachedResourceRequest::Start(
     std::unique_ptr<DetachedResourceRequest> request,
     content::BrowserContext* browser_context) {
   request->start_time_ = base::TimeTicks::Now();
-  auto* storage_partition =
-      content::BrowserContext::GetStoragePartition(browser_context, nullptr);
+  auto* storage_partition = browser_context->GetStoragePartition(nullptr);
 
   request->url_loader_->SetOnRedirectCallback(
       base::BindRepeating(&DetachedResourceRequest::OnRedirectCallback,

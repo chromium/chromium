@@ -41,9 +41,8 @@ PromoServiceFactory::~PromoServiceFactory() = default;
 
 KeyedService* PromoServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  auto url_loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(context)
-          ->GetURLLoaderFactoryForBrowserProcess();
+  auto url_loader_factory = context->GetDefaultStoragePartition()
+                                ->GetURLLoaderFactoryForBrowserProcess();
   return new PromoService(url_loader_factory,
                           Profile::FromBrowserContext(context));
 }

@@ -118,7 +118,7 @@ class ImageWriterWriteFromUrlOperationTest : public ImageWriterUnitTestBase {
       const std::string& hash) {
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         url_loader_factory_remote;
-    content::BrowserContext::GetDefaultStoragePartition(&test_profile_)
+    test_profile_.GetDefaultStoragePartition()
         ->GetURLLoaderFactoryForBrowserProcess()
         ->Clone(url_loader_factory_remote.InitWithNewPipeAndPassReceiver());
 

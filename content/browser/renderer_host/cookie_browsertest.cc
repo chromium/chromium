@@ -70,7 +70,8 @@ void SetCookieDirect(WebContentsImpl* tab,
       url, cookie_line, base::Time::Now(), base::nullopt /* server_time */);
 
   base::RunLoop run_loop;
-  BrowserContext::GetDefaultStoragePartition(tab->GetBrowserContext())
+  tab->GetBrowserContext()
+      ->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess()
       ->SetCanonicalCookie(
           *cookie_obj, url, options,
@@ -86,7 +87,8 @@ std::string GetCookiesDirect(WebContentsImpl* tab, const GURL& url) {
       net::CookieOptions::SameSiteCookieContext::MakeInclusive());
   net::CookieList result;
   base::RunLoop run_loop;
-  BrowserContext::GetDefaultStoragePartition(tab->GetBrowserContext())
+  tab->GetBrowserContext()
+      ->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess()
       ->GetCookieList(
           url, options,

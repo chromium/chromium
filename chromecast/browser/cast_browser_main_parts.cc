@@ -559,8 +559,8 @@ int CastBrowserMainParts::PreMainMessageLoopRun() {
 
   cast_browser_process_->SetConnectivityChecker(ConnectivityChecker::Create(
       content::GetIOThreadTaskRunner({}),
-      content::BrowserContext::GetDefaultStoragePartition(
-          cast_browser_process_->browser_context())
+      cast_browser_process_->browser_context()
+          ->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcessIOThread(),
       content::GetNetworkConnectionTracker()));
 
@@ -568,8 +568,8 @@ int CastBrowserMainParts::PreMainMessageLoopRun() {
       std::make_unique<metrics::CastMetricsServiceClient>(
           cast_browser_process_->browser_client(),
           cast_browser_process_->pref_service(),
-          content::BrowserContext::GetDefaultStoragePartition(
-              cast_browser_process_->browser_context())
+          cast_browser_process_->browser_context()
+              ->GetDefaultStoragePartition()
               ->GetURLLoaderFactoryForBrowserProcess()));
   cast_browser_process_->SetRemoteDebuggingServer(
       std::make_unique<RemoteDebuggingServer>(

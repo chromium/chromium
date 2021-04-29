@@ -59,9 +59,11 @@ PrefetchBrowserTestBase::~PrefetchBrowserTestBase() = default;
 
 void PrefetchBrowserTestBase::SetUpOnMainThread() {
   ContentBrowserTest::SetUpOnMainThread();
-  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      BrowserContext::GetDefaultStoragePartition(
-          shell()->web_contents()->GetBrowserContext()));
+  StoragePartitionImpl* partition =
+      static_cast<StoragePartitionImpl*>(shell()
+                                             ->web_contents()
+                                             ->GetBrowserContext()
+                                             ->GetDefaultStoragePartition());
   partition->GetPrefetchURLLoaderService()
       ->RegisterPrefetchLoaderCallbackForTest(base::BindRepeating(
           &PrefetchBrowserTestBase::OnPrefetchURLLoaderCalled,

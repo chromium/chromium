@@ -285,8 +285,7 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
           local_device_data_manager_.get(),
           contact_manager_.get(),
           prefs,
-          content::BrowserContext::GetDefaultStoragePartition(profile)
-              ->GetProtoDatabaseProvider(),
+          profile->GetDefaultStoragePartition()->GetProtoDatabaseProvider(),
           profile->GetPath(),
           http_client_factory_.get())),
       settings_(prefs, local_device_data_manager_.get()),

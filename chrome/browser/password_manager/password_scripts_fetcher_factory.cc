@@ -34,6 +34,6 @@ PasswordScriptsFetcherFactory::GetForBrowserContext(
 KeyedService* PasswordScriptsFetcherFactory::BuildServiceInstanceFor(
     content::BrowserContext* browser_context) const {
   return new password_manager::PasswordScriptsFetcherImpl(
-      content::BrowserContext::GetDefaultStoragePartition(browser_context)
+      browser_context->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess());
 }

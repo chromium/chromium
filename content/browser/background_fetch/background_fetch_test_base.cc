@@ -80,8 +80,7 @@ BackgroundFetchTestBase::BackgroundFetchTestBase()
       delegate_(browser_context_.GetBackgroundFetchDelegate()),
       embedded_worker_test_helper_(base::FilePath()),
       origin_(url::Origin::Create(GURL(kTestOrigin))),
-      storage_partition_(
-          BrowserContext::GetDefaultStoragePartition(browser_context())) {}
+      storage_partition_(browser_context()->GetDefaultStoragePartition()) {}
 
 BackgroundFetchTestBase::~BackgroundFetchTestBase() {
   DCHECK(set_up_called_);

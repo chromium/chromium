@@ -541,7 +541,7 @@ ProfileImpl::ProfileImpl(
 #if defined(OS_ANDROID)
   // On Android StartupData creates proto database provider for the profile
   // before profile is created, so move ownership to storage partition.
-  GetDefaultStoragePartition(this)->SetProtoDatabaseProvider(
+  GetDefaultStoragePartition()->SetProtoDatabaseProvider(
       startup_data->TakeProtoDatabaseProvider());
 #endif
 
@@ -758,8 +758,7 @@ void ProfileImpl::DoFinalInit() {
   ChromePluginServiceFilter::GetInstance()->RegisterProfile(this);
 #endif
 
-  auto* db_provider =
-      GetDefaultStoragePartition(this)->GetProtoDatabaseProvider();
+  auto* db_provider = GetDefaultStoragePartition()->GetProtoDatabaseProvider();
   key_->SetProtoDatabaseProvider(db_provider);
 
   // The DomDistillerViewerSource is not a normal WebUI so it must be registered
@@ -1208,7 +1207,7 @@ const PrefService* ProfileImpl::GetPrefs() const {
 #if !defined(OS_ANDROID)
 ChromeZoomLevelPrefs* ProfileImpl::GetZoomLevelPrefs() {
   return static_cast<ChromeZoomLevelPrefs*>(
-      GetDefaultStoragePartition(this)->GetZoomLevelDelegate());
+      GetDefaultStoragePartition()->GetZoomLevelDelegate());
 }
 #endif  // !defined(OS_ANDROID)
 
@@ -1265,8 +1264,7 @@ const policy::ProfilePolicyConnector* ProfileImpl::GetProfilePolicyConnector()
 
 scoped_refptr<network::SharedURLLoaderFactory>
 ProfileImpl::GetURLLoaderFactory() {
-  return GetDefaultStoragePartition(this)
-      ->GetURLLoaderFactoryForBrowserProcess();
+  return GetDefaultStoragePartition()->GetURLLoaderFactoryForBrowserProcess();
 }
 
 content::BrowserPluginGuestManager* ProfileImpl::GetGuestManager() {

@@ -131,88 +131,71 @@ PermissionController* BrowserContext::GetPermissionController(
   return self->impl()->GetPermissionController();
 }
 
-// static
 StoragePartition* BrowserContext::GetStoragePartition(
-    BrowserContext* self,
     SiteInstance* site_instance,
     bool can_create) {
   if (site_instance)
-    DCHECK_EQ(self, site_instance->GetBrowserContext());
+    DCHECK_EQ(this, site_instance->GetBrowserContext());
 
   auto* site_instance_impl = static_cast<SiteInstanceImpl*>(site_instance);
   auto partition_config =
       site_instance_impl
-          ? site_instance_impl->GetSiteInfo().GetStoragePartitionConfig(self)
-          : StoragePartitionConfig::CreateDefault(self);
-  return GetStoragePartition(self, partition_config, can_create);
+          ? site_instance_impl->GetSiteInfo().GetStoragePartitionConfig(this)
+          : StoragePartitionConfig::CreateDefault(this);
+  return GetStoragePartition(partition_config, can_create);
 }
 
-// static
 StoragePartition* BrowserContext::GetStoragePartition(
-    BrowserContext* self,
     const StoragePartitionConfig& storage_partition_config,
     bool can_create) {
-  if (self->IsOffTheRecord()) {
+  if (IsOffTheRecord()) {
     // An off the record profile MUST only use in memory storage partitions.
     CHECK(storage_partition_config.in_memory());
   }
 
-  return self->impl()->GetOrCreateStoragePartitionMap()->Get(
-      storage_partition_config, can_create);
+  return impl()->GetOrCreateStoragePartitionMap()->Get(storage_partition_config,
+                                                       can_create);
 }
 
-// static
 StoragePartition* BrowserContext::GetStoragePartitionForUrl(
-    BrowserContext* self,
     const GURL& url,
     bool can_create) {
   auto storage_partition_config = SiteInfo::GetStoragePartitionConfigForUrl(
-      self, url, /*is_site_url=*/false);
+      this, url, /*is_site_url=*/false);
 
-  return GetStoragePartition(self, storage_partition_config, can_create);
+  return GetStoragePartition(storage_partition_config, can_create);
 }
 
-// static
 void BrowserContext::ForEachStoragePartition(
-    BrowserContext* self,
     StoragePartitionCallback callback) {
-  StoragePartitionImplMap* partition_map =
-      self->impl()->storage_partition_map();
+  StoragePartitionImplMap* partition_map = impl()->storage_partition_map();
   if (!partition_map)
     return;
 
   partition_map->ForEach(std::move(callback));
 }
 
-// static
-size_t BrowserContext::GetStoragePartitionCount(BrowserContext* self) {
-  StoragePartitionImplMap* partition_map =
-      self->impl()->storage_partition_map();
+size_t BrowserContext::GetStoragePartitionCount() {
+  StoragePartitionImplMap* partition_map = impl()->storage_partition_map();
   return partition_map ? partition_map->size() : 0;
 }
 
-// static
 void BrowserContext::AsyncObliterateStoragePartition(
-    BrowserContext* self,
     const std::string& partition_domain,
     base::OnceClosure on_gc_required) {
-  self->impl()->GetOrCreateStoragePartitionMap()->AsyncObliterate(
+  impl()->GetOrCreateStoragePartitionMap()->AsyncObliterate(
       partition_domain, std::move(on_gc_required));
 }
 
-// static
 void BrowserContext::GarbageCollectStoragePartitions(
-    BrowserContext* self,
     std::unique_ptr<std::unordered_set<base::FilePath>> active_paths,
     base::OnceClosure done) {
-  self->impl()->GetOrCreateStoragePartitionMap()->GarbageCollect(
+  impl()->GetOrCreateStoragePartitionMap()->GarbageCollect(
       std::move(active_paths), std::move(done));
 }
 
-// static
-StoragePartition* BrowserContext::GetDefaultStoragePartition(
-    BrowserContext* self) {
-  return GetStoragePartition(self, StoragePartitionConfig::CreateDefault(self));
+StoragePartition* BrowserContext::GetDefaultStoragePartition() {
+  return GetStoragePartition(StoragePartitionConfig::CreateDefault(this));
 }
 
 // static
@@ -292,13 +275,12 @@ void BrowserContext::EnsureResourceContextInitialized(BrowserContext* self) {
   // end up rewriting the same value but this still causes a race condition.
   //
   // See http://crbug.com/115678.
-  GetDefaultStoragePartition(self);
+  self->GetDefaultStoragePartition();
 }
 
 // static
 void BrowserContext::SaveSessionState(BrowserContext* self) {
-  StoragePartition* storage_partition =
-      BrowserContext::GetDefaultStoragePartition(self);
+  StoragePartition* storage_partition = self->GetDefaultStoragePartition();
 
   storage::DatabaseTracker* database_tracker =
       storage_partition->GetDatabaseTracker();
@@ -436,8 +418,8 @@ BrowserContext::CreateVideoDecodePerfHistory() {
   if (use_in_memory_db) {
     stats_db = std::make_unique<media::InMemoryVideoDecodeStatsDBImpl>(nullptr);
   } else {
-    auto* db_provider = BrowserContext::GetDefaultStoragePartition(this)
-                            ->GetProtoDatabaseProvider();
+    auto* db_provider =
+        GetDefaultStoragePartition()->GetProtoDatabaseProvider();
 
     stats_db = media::VideoDecodeStatsDBImpl::Create(
         GetPath().Append(FILE_PATH_LITERAL("VideoDecodeStats")), db_provider);

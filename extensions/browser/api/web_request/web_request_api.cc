@@ -819,8 +819,7 @@ bool WebRequestAPI::MayHaveProxies() const {
 void WebRequestAPI::UpdateMayHaveProxies() {
   bool may_have_proxies = MayHaveProxies();
   if (!may_have_proxies_ && may_have_proxies) {
-    content::BrowserContext::GetDefaultStoragePartition(browser_context_)
-        ->ResetURLLoaderFactories();
+    browser_context_->GetDefaultStoragePartition()->ResetURLLoaderFactories();
   }
   may_have_proxies_ = may_have_proxies;
 }

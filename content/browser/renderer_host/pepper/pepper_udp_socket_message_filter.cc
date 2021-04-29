@@ -389,8 +389,8 @@ int32_t PepperUDPSocketMessageFilter::OnMsgBind(
 
   SiteInstance* site_instance = render_frame_host->GetSiteInstance();
   network::mojom::NetworkContext* network_context =
-      BrowserContext::GetStoragePartition(site_instance->GetBrowserContext(),
-                                          site_instance)
+      site_instance->GetBrowserContext()
+          ->GetStoragePartition(site_instance)
           ->GetNetworkContext();
   if (g_create_udp_socket_callback_for_testing) {
     g_create_udp_socket_callback_for_testing->Run(

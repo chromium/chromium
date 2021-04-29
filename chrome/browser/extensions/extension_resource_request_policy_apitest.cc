@@ -679,8 +679,7 @@ IN_PROC_BROWSER_TEST_F(
 
     GURL scope_url = embedded_test_server()->GetURL("/service_worker/");
     content::StoragePartition* storage_partition =
-        content::BrowserContext::GetDefaultStoragePartition(
-            browser()->profile());
+        browser()->profile()->GetDefaultStoragePartition();
     content::ServiceWorkerContext* context =
         storage_partition->GetServiceWorkerContext();
 

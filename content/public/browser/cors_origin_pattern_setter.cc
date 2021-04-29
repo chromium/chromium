@@ -53,8 +53,7 @@ void CorsOriginPatternSetter::Set(
       base::MakeRefCounted<CorsOriginPatternSetter>(
           PassKey(), source_origin, mojo::Clone(allow_patterns),
           mojo::Clone(block_patterns), barrier_closure);
-  content::BrowserContext::ForEachStoragePartition(
-      browser_context,
+  browser_context->ForEachStoragePartition(
       base::BindRepeating(&CorsOriginPatternSetter::SetForStoragePartition,
                           base::RetainedRef(setter)));
 

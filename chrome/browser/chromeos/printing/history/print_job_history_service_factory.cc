@@ -53,8 +53,7 @@ KeyedService* PrintJobHistoryServiceFactory::BuildServiceInstanceFor(
   }
 
   leveldb_proto::ProtoDatabaseProvider* database_provider =
-      content::BrowserContext::GetDefaultStoragePartition(profile)
-          ->GetProtoDatabaseProvider();
+      profile->GetDefaultStoragePartition()->GetProtoDatabaseProvider();
 
   auto print_job_database = std::make_unique<PrintJobDatabaseImpl>(
       database_provider, profile->GetPath());

@@ -31,7 +31,6 @@ ResetReportUploaderFactory::~ResetReportUploaderFactory() {}
 
 KeyedService* ResetReportUploaderFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new ResetReportUploader(
-      content::BrowserContext::GetDefaultStoragePartition(context)
-          ->GetURLLoaderFactoryForBrowserProcess());
+  return new ResetReportUploader(context->GetDefaultStoragePartition()
+                                     ->GetURLLoaderFactoryForBrowserProcess());
 }

@@ -1869,7 +1869,7 @@ std::string GetCookies(BrowserContext* browser_context,
   std::string cookies;
   base::RunLoop run_loop;
   mojo::Remote<network::mojom::CookieManager> cookie_manager;
-  BrowserContext::GetDefaultStoragePartition(browser_context)
+  browser_context->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->GetCookieManager(cookie_manager.BindNewPipeAndPassReceiver());
   net::CookieOptions options;
@@ -1894,7 +1894,7 @@ std::vector<net::CanonicalCookie> GetCanonicalCookies(
   std::vector<net::CanonicalCookie> cookies;
   base::RunLoop run_loop;
   mojo::Remote<network::mojom::CookieManager> cookie_manager;
-  BrowserContext::GetDefaultStoragePartition(browser_context)
+  browser_context->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->GetCookieManager(cookie_manager.BindNewPipeAndPassReceiver());
   // Allow access to SameSite cookies in tests.
@@ -1924,7 +1924,7 @@ bool SetCookie(BrowserContext* browser_context,
   bool result = false;
   base::RunLoop run_loop;
   mojo::Remote<network::mojom::CookieManager> cookie_manager;
-  BrowserContext::GetDefaultStoragePartition(browser_context)
+  browser_context->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->GetCookieManager(cookie_manager.BindNewPipeAndPassReceiver());
   std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
@@ -1952,7 +1952,7 @@ uint32_t DeleteCookies(BrowserContext* browser_context,
                        network::mojom::CookieDeletionFilter filter) {
   base::RunLoop run_loop;
   mojo::Remote<network::mojom::CookieManager> cookie_manager;
-  BrowserContext::GetDefaultStoragePartition(browser_context)
+  browser_context->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->GetCookieManager(cookie_manager.BindNewPipeAndPassReceiver());
 
@@ -3379,8 +3379,8 @@ int LoadBasicRequest(RenderFrameHost* frame, const GURL& url) {
 }
 
 void EnsureCookiesFlushed(BrowserContext* browser_context) {
-  BrowserContext::ForEachStoragePartition(
-      browser_context, base::BindRepeating([](StoragePartition* partition) {
+  browser_context->ForEachStoragePartition(
+      base::BindRepeating([](StoragePartition* partition) {
         base::RunLoop run_loop;
         partition->GetCookieManagerForBrowserProcess()->FlushCookieStore(
             run_loop.QuitClosure());

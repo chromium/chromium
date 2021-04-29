@@ -32,9 +32,11 @@ class StorageServiceRestartBrowserTest : public ContentBrowserTest {
   }
 
   DOMStorageContextWrapper* dom_storage() {
-    auto* partition = static_cast<StoragePartitionImpl*>(
-        BrowserContext::GetDefaultStoragePartition(
-            shell()->web_contents()->GetBrowserContext()));
+    auto* partition =
+        static_cast<StoragePartitionImpl*>(shell()
+                                               ->web_contents()
+                                               ->GetBrowserContext()
+                                               ->GetDefaultStoragePartition());
     return partition->GetDOMStorageContext();
   }
 

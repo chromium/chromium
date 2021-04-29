@@ -181,7 +181,7 @@ class SharedWorkerServiceImplTest : public RenderViewHostImplTestHarness {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             fake_url_loader_factory_.get());
     static_cast<SharedWorkerServiceImpl*>(
-        BrowserContext::GetDefaultStoragePartition(browser_context_.get())
+        browser_context_->GetDefaultStoragePartition()
             ->GetSharedWorkerService())
         ->SetURLLoaderFactoryForTesting(url_loader_factory_wrapper_);
   }
@@ -1263,9 +1263,7 @@ TEST_F(SharedWorkerServiceImplTest, Observer) {
   base::ScopedObservation<SharedWorkerService, SharedWorkerService::Observer>
       scoped_observation(&observer);
   scoped_observation.Observe(
-      content::BrowserContext::GetDefaultStoragePartition(
-          browser_context_.get())
-          ->GetSharedWorkerService());
+      browser_context_->GetDefaultStoragePartition()->GetSharedWorkerService());
 
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("http://example.com/"));
@@ -1351,7 +1349,7 @@ TEST_F(SharedWorkerServiceImplTest, EnumerateSharedWorkers) {
   EXPECT_EQ(0u, observer.GetWorkerCount());
 
   // Retrieve running shared workers.
-  content::BrowserContext::GetDefaultStoragePartition(browser_context_.get())
+  browser_context_->GetDefaultStoragePartition()
       ->GetSharedWorkerService()
       ->EnumerateSharedWorkers(&observer);
 
@@ -1368,9 +1366,7 @@ TEST_F(SharedWorkerServiceImplTest, CollapseDuplicateNotifications) {
   base::ScopedObservation<SharedWorkerService, SharedWorkerService::Observer>
       scoped_observation(&observer);
   scoped_observation.Observe(
-      content::BrowserContext::GetDefaultStoragePartition(
-          browser_context_.get())
-          ->GetSharedWorkerService());
+      browser_context_->GetDefaultStoragePartition()->GetSharedWorkerService());
 
   const GURL kUrl("http://example.com/w.js");
   const char kName[] = "name";
@@ -1455,9 +1451,7 @@ TEST_F(SharedWorkerServiceImplTest, Observer_OnClientConnectionLost) {
   base::ScopedObservation<SharedWorkerService, SharedWorkerService::Observer>
       scoped_observation(&observer);
   scoped_observation.Observe(
-      content::BrowserContext::GetDefaultStoragePartition(
-          browser_context_.get())
-          ->GetSharedWorkerService());
+      browser_context_->GetDefaultStoragePartition()->GetSharedWorkerService());
 
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("http://example.com/"));

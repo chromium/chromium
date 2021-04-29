@@ -77,10 +77,10 @@ DashboardPrivateShowPermissionPromptForDelegatedInstallFunction::Run() {
 
   network::mojom::URLLoaderFactory* loader_factory = nullptr;
   if (!icon_url.is_empty()) {
-    loader_factory =
-        content::BrowserContext::GetDefaultStoragePartition(browser_context())
-            ->GetURLLoaderFactoryForBrowserProcess()
-            .get();
+    loader_factory = browser_context()
+                         ->GetDefaultStoragePartition()
+                         ->GetURLLoaderFactoryForBrowserProcess()
+                         .get();
   }
 
   auto helper = base::MakeRefCounted<WebstoreInstallHelper>(

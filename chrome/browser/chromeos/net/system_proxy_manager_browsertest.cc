@@ -699,9 +699,7 @@ class SystemProxyCredentialsReuseBrowserTest
                                  const std::string& expected_username,
                                  const std::string& expected_password) {
     network::mojom::NetworkContext* network_context =
-        content::BrowserContext::GetDefaultStoragePartition(
-            browser()->profile())
-            ->GetNetworkContext();
+        browser()->profile()->GetDefaultStoragePartition()->GetNetworkContext();
     std::string username;
     std::string password;
     base::RunLoop loop;

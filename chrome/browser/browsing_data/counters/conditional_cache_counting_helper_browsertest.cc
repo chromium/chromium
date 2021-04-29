@@ -61,9 +61,8 @@ class ConditionalCacheCountingHelperBrowserTest : public InProcessBrowserTest {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     last_size_ = -1;
     ConditionalCacheCountingHelper::Count(
-        content::BrowserContext::GetDefaultStoragePartition(
-            browser()->profile()),
-        begin_time, end_time,
+        browser()->profile()->GetDefaultStoragePartition(), begin_time,
+        end_time,
         base::BindOnce(
             &ConditionalCacheCountingHelperBrowserTest::CountCallback,
             base::Unretained(this)));
@@ -101,8 +100,9 @@ class ConditionalCacheCountingHelperBrowserTest : public InProcessBrowserTest {
           network::SimpleURLLoader::Create(std::move(request),
                                            TRAFFIC_ANNOTATION_FOR_TESTS);
       simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-          content::BrowserContext::GetDefaultStoragePartition(
-              browser()->profile())
+          browser()
+              ->profile()
+              ->GetDefaultStoragePartition()
               ->GetURLLoaderFactoryForBrowserProcess()
               .get(),
           simple_loader_helper.GetCallback());

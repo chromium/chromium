@@ -122,9 +122,8 @@ ConnectivityChecker::ConnectivityChecker(
     const GURL& url,
     const base::TimeDelta& timeout,
     const base::android::JavaRef<jobject>& java_callback)
-    : shared_url_loader_factory_(
-          content::BrowserContext::GetDefaultStoragePartition(profile)
-              ->GetURLLoaderFactoryForBrowserProcess()),
+    : shared_url_loader_factory_(profile->GetDefaultStoragePartition()
+                                     ->GetURLLoaderFactoryForBrowserProcess()),
       url_(url),
       timeout_(timeout),
       java_callback_(java_callback),

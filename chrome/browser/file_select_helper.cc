@@ -308,8 +308,7 @@ void FileSelectHelper::ConvertToFileChooserFileInfoList(
     content::SiteInstance* site_instance =
         render_frame_host_->GetSiteInstance();
     storage::FileSystemContext* file_system_context =
-        content::BrowserContext::GetStoragePartition(profile_, site_instance)
-            ->GetFileSystemContext();
+        profile_->GetStoragePartition(site_instance)->GetFileSystemContext();
     file_manager::util::ConvertSelectedFileInfoListToFileChooserFileInfoList(
         file_system_context, site_instance->GetSiteURL(), files,
         base::BindOnce(&FileSelectHelper::PerformContentAnalysisIfNeeded,

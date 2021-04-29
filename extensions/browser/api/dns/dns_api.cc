@@ -38,7 +38,8 @@ ExtensionFunction::ResponseAction DnsResolveFunction::Run() {
   // determining its answer.
   net::HostPortPair host_port_pair(params->hostname, 0);
   url::Origin origin = url::Origin::Create(extension_->url());
-  content::BrowserContext::GetDefaultStoragePartition(browser_context())
+  browser_context()
+      ->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->ResolveHost(host_port_pair, net::NetworkIsolationKey(origin, origin),
                     nullptr, receiver_.BindNewPipeAndPassRemote());

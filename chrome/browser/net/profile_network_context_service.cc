@@ -179,28 +179,26 @@ void UpdateCookieSettings(Profile* profile) {
   ContentSettingsForOneType settings;
   HostContentSettingsMapFactory::GetForProfile(profile)->GetSettingsForOneType(
       ContentSettingsType::COOKIES, &settings);
-  content::BrowserContext::ForEachStoragePartition(
-      profile, base::BindRepeating(
-                   [](ContentSettingsForOneType settings,
-                      content::StoragePartition* storage_partition) {
-                     storage_partition->GetCookieManagerForBrowserProcess()
-                         ->SetContentSettings(settings);
-                   },
-                   settings));
+  profile->ForEachStoragePartition(base::BindRepeating(
+      [](ContentSettingsForOneType settings,
+         content::StoragePartition* storage_partition) {
+        storage_partition->GetCookieManagerForBrowserProcess()
+            ->SetContentSettings(settings);
+      },
+      settings));
 }
 
 void UpdateLegacyCookieSettings(Profile* profile) {
   ContentSettingsForOneType settings;
   HostContentSettingsMapFactory::GetForProfile(profile)->GetSettingsForOneType(
       ContentSettingsType::LEGACY_COOKIE_ACCESS, &settings);
-  content::BrowserContext::ForEachStoragePartition(
-      profile, base::BindRepeating(
-                   [](ContentSettingsForOneType settings,
-                      content::StoragePartition* storage_partition) {
-                     storage_partition->GetCookieManagerForBrowserProcess()
-                         ->SetContentSettingsForLegacyCookieAccess(settings);
-                   },
-                   settings));
+  profile->ForEachStoragePartition(base::BindRepeating(
+      [](ContentSettingsForOneType settings,
+         content::StoragePartition* storage_partition) {
+        storage_partition->GetCookieManagerForBrowserProcess()
+            ->SetContentSettingsForLegacyCookieAccess(settings);
+      },
+      settings));
 }
 
 void UpdateStorageAccessSettings(Profile* profile) {
@@ -209,15 +207,13 @@ void UpdateStorageAccessSettings(Profile* profile) {
     HostContentSettingsMapFactory::GetForProfile(profile)
         ->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS, &settings);
 
-    content::BrowserContext::ForEachStoragePartition(
-        profile, base::BindRepeating(
-                     [](ContentSettingsForOneType settings,
-                        content::StoragePartition* storage_partition) {
-                       storage_partition->GetCookieManagerForBrowserProcess()
-                           ->SetStorageAccessGrantSettings(settings,
-                                                           base::DoNothing());
-                     },
-                     settings));
+    profile->ForEachStoragePartition(base::BindRepeating(
+        [](ContentSettingsForOneType settings,
+           content::StoragePartition* storage_partition) {
+          storage_partition->GetCookieManagerForBrowserProcess()
+              ->SetStorageAccessGrantSettings(settings, base::DoNothing());
+        },
+        settings));
   }
 }
 
@@ -309,17 +305,15 @@ void ProfileNetworkContextService::UpdateAdditionalCertificates() {
       policy::PolicyCertServiceFactory::GetForProfile(profile_);
   if (!policy_cert_service)
     return;
-  content::BrowserContext::ForEachStoragePartition(
-      profile_, base::BindRepeating(
-                    [](const policy::PolicyCertService* policy_cert_service,
-                       content::StoragePartition* storage_partition) {
-                      auto additional_certificates = GetAdditionalCertificates(
-                          policy_cert_service, storage_partition->GetPath());
-                      storage_partition->GetNetworkContext()
-                          ->UpdateAdditionalCertificates(
-                              std::move(additional_certificates));
-                    },
-                    policy_cert_service));
+  profile_->ForEachStoragePartition(base::BindRepeating(
+      [](const policy::PolicyCertService* policy_cert_service,
+         content::StoragePartition* storage_partition) {
+        auto additional_certificates = GetAdditionalCertificates(
+            policy_cert_service, storage_partition->GetPath());
+        storage_partition->GetNetworkContext()->UpdateAdditionalCertificates(
+            std::move(additional_certificates));
+      },
+      policy_cert_service));
 }
 #endif
 
@@ -358,26 +352,24 @@ void ProfileNetworkContextService::DisableQuicIfNotAllowed() {
 }
 
 void ProfileNetworkContextService::UpdateAcceptLanguage() {
-  content::BrowserContext::ForEachStoragePartition(
-      profile_, base::BindRepeating(
-                    [](const std::string& accept_language,
-                       content::StoragePartition* storage_partition) {
-                      storage_partition->GetNetworkContext()->SetAcceptLanguage(
-                          accept_language);
-                    },
-                    ComputeAcceptLanguage()));
+  profile_->ForEachStoragePartition(base::BindRepeating(
+      [](const std::string& accept_language,
+         content::StoragePartition* storage_partition) {
+        storage_partition->GetNetworkContext()->SetAcceptLanguage(
+            accept_language);
+      },
+      ComputeAcceptLanguage()));
 }
 
 void ProfileNetworkContextService::OnThirdPartyCookieBlockingChanged(
     bool block_third_party_cookies) {
-  content::BrowserContext::ForEachStoragePartition(
-      profile_, base::BindRepeating(
-                    [](bool block_third_party_cookies,
-                       content::StoragePartition* storage_partition) {
-                      storage_partition->GetCookieManagerForBrowserProcess()
-                          ->BlockThirdPartyCookies(block_third_party_cookies);
-                    },
-                    block_third_party_cookies));
+  profile_->ForEachStoragePartition(base::BindRepeating(
+      [](bool block_third_party_cookies,
+         content::StoragePartition* storage_partition) {
+        storage_partition->GetCookieManagerForBrowserProcess()
+            ->BlockThirdPartyCookies(block_third_party_cookies);
+      },
+      block_third_party_cookies));
 }
 
 std::string ProfileNetworkContextService::ComputeAcceptLanguage() const {
@@ -390,15 +382,12 @@ std::string ProfileNetworkContextService::ComputeAcceptLanguage() const {
 }
 
 void ProfileNetworkContextService::UpdateReferrersEnabled() {
-  content::BrowserContext::ForEachStoragePartition(
-      profile_,
-      base::BindRepeating(
-          [](bool enable_referrers,
-             content::StoragePartition* storage_partition) {
-            storage_partition->GetNetworkContext()->SetEnableReferrers(
-                enable_referrers);
-          },
-          enable_referrers_.GetValue()));
+  profile_->ForEachStoragePartition(base::BindRepeating(
+      [](bool enable_referrers, content::StoragePartition* storage_partition) {
+        storage_partition->GetNetworkContext()->SetEnableReferrers(
+            enable_referrers);
+      },
+      enable_referrers_.GetValue()));
 }
 
 network::mojom::CTPolicyPtr ProfileNetworkContextService::GetCTPolicy() {
@@ -433,14 +422,12 @@ void ProfileNetworkContextService::UpdateCTPolicyForContexts(
 
 void ProfileNetworkContextService::UpdateCTPolicy() {
   std::vector<network::mojom::NetworkContext*> contexts;
-  content::BrowserContext::ForEachStoragePartition(
-      profile_,
-      base::BindRepeating(
-          [](std::vector<network::mojom::NetworkContext*>* contexts_ptr,
-             content::StoragePartition* storage_partition) {
-            contexts_ptr->push_back(storage_partition->GetNetworkContext());
-          },
-          &contexts));
+  profile_->ForEachStoragePartition(base::BindRepeating(
+      [](std::vector<network::mojom::NetworkContext*>* contexts_ptr,
+         content::StoragePartition* storage_partition) {
+        contexts_ptr->push_back(storage_partition->GetNetworkContext());
+      },
+      &contexts));
 
   UpdateCTPolicyForContexts(contexts);
 }
@@ -464,15 +451,14 @@ void ProfileNetworkContextService::UpdateSplitAuthCacheByNetworkIsolationKey() {
   bool split_auth_cache_by_network_isolation_key =
       ShouldSplitAuthCacheByNetworkIsolationKey();
 
-  content::BrowserContext::ForEachStoragePartition(
-      profile_, base::BindRepeating(
-                    [](bool split_auth_cache_by_network_isolation_key,
-                       content::StoragePartition* storage_partition) {
-                      storage_partition->GetNetworkContext()
-                          ->SetSplitAuthCacheByNetworkIsolationKey(
-                              split_auth_cache_by_network_isolation_key);
-                    },
-                    split_auth_cache_by_network_isolation_key));
+  profile_->ForEachStoragePartition(base::BindRepeating(
+      [](bool split_auth_cache_by_network_isolation_key,
+         content::StoragePartition* storage_partition) {
+        storage_partition->GetNetworkContext()
+            ->SetSplitAuthCacheByNetworkIsolationKey(
+                split_auth_cache_by_network_isolation_key);
+      },
+      split_auth_cache_by_network_isolation_key));
 }
 
 // static

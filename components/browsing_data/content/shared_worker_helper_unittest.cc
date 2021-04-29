@@ -31,7 +31,7 @@ TEST_F(CannedSharedWorkerHelperTest, Empty) {
       storage::StorageKey(url::Origin::Create(worker));
 
   auto helper = base::MakeRefCounted<CannedSharedWorkerHelper>(
-      content::BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
 
   EXPECT_TRUE(helper->empty());
   helper->AddSharedWorker(worker, name, storage_key);
@@ -49,7 +49,7 @@ TEST_F(CannedSharedWorkerHelperTest, Delete) {
   const storage::StorageKey storage_key2(url::Origin::Create(worker2));
 
   auto helper = base::MakeRefCounted<CannedSharedWorkerHelper>(
-      content::BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
 
   EXPECT_TRUE(helper->empty());
   helper->AddSharedWorker(worker1, name1, storage_key1);
@@ -67,7 +67,7 @@ TEST_F(CannedSharedWorkerHelperTest, IgnoreExtensionsAndDevTools) {
   const storage::StorageKey storage_key2(url::Origin::Create(worker2));
 
   auto helper = base::MakeRefCounted<CannedSharedWorkerHelper>(
-      content::BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
 
   EXPECT_TRUE(helper->empty());
   helper->AddSharedWorker(worker1, name, storage_key1);

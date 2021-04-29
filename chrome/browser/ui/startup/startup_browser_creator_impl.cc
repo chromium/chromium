@@ -588,7 +588,7 @@ Browser* StartupBrowserCreatorImpl::RestoreOrCreateBrowser(
   // Now that a restore is no longer possible, it is safe to clear DOM storage,
   // unless this is a crash recovery.
   if (!is_post_crash_launch) {
-    content::BrowserContext::GetDefaultStoragePartition(profile_)
+    profile_->GetDefaultStoragePartition()
         ->GetDOMStorageContext()
         ->StartScavengingUnusedSessionStorage();
   }

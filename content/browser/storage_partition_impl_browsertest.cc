@@ -167,8 +167,10 @@ IN_PROC_BROWSER_TEST_F(StoragePartitionImplBrowsertest, NetworkContext) {
   params->automatically_assign_isolation_info = true;
   params->is_corb_enabled = false;
   mojo::Remote<network::mojom::URLLoaderFactory> loader_factory;
-  BrowserContext::GetDefaultStoragePartition(
-      shell()->web_contents()->GetBrowserContext())
+  shell()
+      ->web_contents()
+      ->GetBrowserContext()
+      ->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->CreateURLLoaderFactory(loader_factory.BindNewPipeAndPassReceiver(),
                                std::move(params));
@@ -203,8 +205,10 @@ IN_PROC_BROWSER_TEST_F(StoragePartitionImplBrowsertest,
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   auto pending_shared_url_loader_factory =
-      BrowserContext::GetDefaultStoragePartition(
-          shell()->web_contents()->GetBrowserContext())
+      shell()
+          ->web_contents()
+          ->GetBrowserContext()
+          ->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcessIOThread();
 
   auto factory_owner = IOThreadSharedURLLoaderFactoryOwner::Create(
@@ -223,8 +227,7 @@ IN_PROC_BROWSER_TEST_F(StoragePartitionImplBrowsertest,
   base::ScopedAllowBlockingForTesting allow_blocking;
   std::unique_ptr<ShellBrowserContext> browser_context =
       std::make_unique<ShellBrowserContext>(true);
-  auto* partition =
-      BrowserContext::GetDefaultStoragePartition(browser_context.get());
+  auto* partition = browser_context->GetDefaultStoragePartition();
   auto pending_shared_url_loader_factory =
       partition->GetURLLoaderFactoryForBrowserProcessIOThread();
 
@@ -247,8 +250,7 @@ IN_PROC_BROWSER_TEST_F(StoragePartitionImplBrowsertest,
   base::ScopedAllowBlockingForTesting allow_blocking;
   std::unique_ptr<ShellBrowserContext> browser_context =
       std::make_unique<ShellBrowserContext>(true);
-  auto* partition =
-      BrowserContext::GetDefaultStoragePartition(browser_context.get());
+  auto* partition = browser_context->GetDefaultStoragePartition();
   auto factory_owner = IOThreadSharedURLLoaderFactoryOwner::Create(
       partition->GetURLLoaderFactoryForBrowserProcessIOThread());
 
@@ -269,8 +271,7 @@ IN_PROC_BROWSER_TEST_F(StoragePartitionImplBrowsertest, URLLoaderInterceptor) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   std::unique_ptr<ShellBrowserContext> browser_context =
       std::make_unique<ShellBrowserContext>(true);
-  auto* partition =
-      BrowserContext::GetDefaultStoragePartition(browser_context.get());
+  auto* partition = browser_context->GetDefaultStoragePartition();
 
   // Run a request the first time without the interceptor set, as the
   // StoragePartitionImpl lazily creates the factory and we want to make sure

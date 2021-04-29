@@ -196,9 +196,9 @@ void UserPolicySigninServiceBase::InitializeOnProfileReady(Profile* profile) {
   if (!account_id.is_valid())
     ShutdownUserCloudPolicyManager();
   else
-    InitializeForSignedInUser(
-        account_id, content::BrowserContext::GetDefaultStoragePartition(profile)
-                        ->GetURLLoaderFactoryForBrowserProcess());
+    InitializeForSignedInUser(account_id,
+                              profile->GetDefaultStoragePartition()
+                                  ->GetURLLoaderFactoryForBrowserProcess());
 }
 
 void UserPolicySigninServiceBase::InitializeForSignedInUser(

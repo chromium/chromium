@@ -45,10 +45,11 @@ const char kTestIdentifierExtension[] =
 class DatabaseHelperTest : public content::ContentBrowserTest {
  public:
   virtual void CreateDatabases() {
-    storage::DatabaseTracker* db_tracker =
-        BrowserContext::GetDefaultStoragePartition(
-            shell()->web_contents()->GetBrowserContext())
-            ->GetDatabaseTracker();
+    storage::DatabaseTracker* db_tracker = shell()
+                                               ->web_contents()
+                                               ->GetBrowserContext()
+                                               ->GetDefaultStoragePartition()
+                                               ->GetDatabaseTracker();
     base::RunLoop run_loop;
     db_tracker->task_runner()->PostTaskAndReply(
         FROM_HERE, base::BindLambdaForTesting([&]() {

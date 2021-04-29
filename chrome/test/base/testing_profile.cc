@@ -546,7 +546,6 @@ TestingProfile::~TestingProfile() {
 
   // Make sure SharedProtoDatabase doesn't post delayed tasks anymore.
   ForEachStoragePartition(
-      this,
       base::BindRepeating([](content::StoragePartition* storage_partition) {
         if (auto* provider =
                 storage_partition->GetProtoDatabaseProviderForTesting()) {
@@ -837,7 +836,7 @@ const PrefService* TestingProfile::GetPrefs() const {
 #if !defined(OS_ANDROID)
 ChromeZoomLevelPrefs* TestingProfile::GetZoomLevelPrefs() {
   return static_cast<ChromeZoomLevelPrefs*>(
-      GetDefaultStoragePartition(this)->GetZoomLevelDelegate());
+      GetDefaultStoragePartition()->GetZoomLevelDelegate());
 }
 #endif  // !defined(OS_ANDROID)
 

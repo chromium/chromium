@@ -1899,8 +1899,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsZoomTest, GetDefaultZoom) {
   // Change the default zoom level and verify GetDefaultZoom returns the
   // correct value.
   content::StoragePartition* partition =
-      content::BrowserContext::GetStoragePartition(
-          web_contents->GetBrowserContext(), web_contents->GetSiteInstance());
+      web_contents->GetBrowserContext()->GetStoragePartition(
+          web_contents->GetSiteInstance());
   ChromeZoomLevelPrefs* zoom_prefs =
       static_cast<ChromeZoomLevelPrefs*>(partition->GetZoomLevelDelegate());
 
@@ -1924,8 +1924,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsZoomTest, SetToDefaultZoom) {
   double new_default_zoom_level = default_zoom_level + 0.42;
 
   content::StoragePartition* partition =
-      content::BrowserContext::GetStoragePartition(
-          web_contents->GetBrowserContext(), web_contents->GetSiteInstance());
+      web_contents->GetBrowserContext()->GetStoragePartition(
+          web_contents->GetSiteInstance());
   ChromeZoomLevelPrefs* zoom_prefs =
       static_cast<ChromeZoomLevelPrefs*>(partition->GetZoomLevelDelegate());
 

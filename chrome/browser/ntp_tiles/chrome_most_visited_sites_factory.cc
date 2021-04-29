@@ -142,7 +142,7 @@ ChromeMostVisitedSitesFactory::NewForProfile(Profile* profile) {
           LargeIconServiceFactory::GetForBrowserContext(profile),
           std::make_unique<image_fetcher::ImageFetcherImpl>(
               std::make_unique<ImageDecoderImpl>(),
-              content::BrowserContext::GetDefaultStoragePartition(profile)
+              profile->GetDefaultStoragePartition()
                   ->GetURLLoaderFactoryForBrowserProcess())),
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
       std::make_unique<SupervisorBridge>(profile)

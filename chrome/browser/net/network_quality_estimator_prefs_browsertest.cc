@@ -154,8 +154,7 @@ class NetworkQualityEstimatorPrefsBrowserTest : public InProcessBrowserTest {
 
     mojo::ScopedAllowSyncCallForTesting allow_sync_call;
     content::StoragePartition* partition =
-        content::BrowserContext::GetDefaultStoragePartition(
-            browser()->profile());
+        browser()->profile()->GetDefaultStoragePartition();
     DCHECK(partition->GetNetworkContext());
     DCHECK(content::GetNetworkService());
 

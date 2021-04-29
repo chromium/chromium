@@ -337,7 +337,7 @@ void ChildAccountService::OnAccountsInCookieUpdated(
 void ChildAccountService::StartFetchingFamilyInfo() {
   family_fetcher_ = std::make_unique<FamilyInfoFetcher>(
       this, identity_manager_,
-      content::BrowserContext::GetDefaultStoragePartition(profile_)
+      profile_->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess());
   family_fetcher_->StartGetFamilyMembers();
 }

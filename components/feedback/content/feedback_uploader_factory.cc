@@ -19,7 +19,7 @@ namespace {
 // be expensive, this is delayed so that it does not happen during startup.
 scoped_refptr<network::SharedURLLoaderFactory>
 CreateURLLoaderFactoryForBrowserContext(content::BrowserContext* context) {
-  return content::BrowserContext::GetDefaultStoragePartition(context)
+  return context->GetDefaultStoragePartition()
       ->GetURLLoaderFactoryForBrowserProcess();
 }
 

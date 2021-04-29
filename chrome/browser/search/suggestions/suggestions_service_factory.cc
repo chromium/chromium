@@ -66,7 +66,7 @@ KeyedService* SuggestionsServiceFactory::BuildServiceInstanceFor(
 
   return new SuggestionsServiceImpl(
       identity_manager, sync_service,
-      content::BrowserContext::GetDefaultStoragePartition(profile)
+      profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
       std::move(suggestions_store), std::move(blocklist_store),
       base::DefaultTickClock::GetInstance());

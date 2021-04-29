@@ -375,7 +375,9 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, TestBasicAuth) {
 
       SimulateNetworkServiceCrash();
       // Flush the network interface to make sure it notices the crash.
-      content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
+      browser()
+          ->profile()
+          ->GetDefaultStoragePartition()
           ->FlushNetworkInterfaceForTesting();
     }
 
@@ -1466,7 +1468,9 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   EXPECT_EQ(1, observer.auth_needed_count());
 
   base::RunLoop run_loop;
-  content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
+  browser()
+      ->profile()
+      ->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->ClearHttpCache(base::Time(), base::Time(), nullptr,
                        run_loop.QuitClosure());
@@ -1523,7 +1527,9 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   // the same pipe that the pref change uses, making sure the change is applied
   // before the network process receives credentials, but seems safest to flush
   // the NetworkContext pipe explicitly.
-  content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
+  browser()
+      ->profile()
+      ->GetDefaultStoragePartition()
       ->FlushNetworkInterfaceForTesting();
 
   GURL test_page = embedded_test_server()->GetURL(kAuthBasicPage);
@@ -1553,7 +1559,9 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest,
   EXPECT_EQ(1, observer.auth_needed_count());
 
   base::RunLoop run_loop;
-  content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
+  browser()
+      ->profile()
+      ->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->ClearHttpCache(base::Time(), base::Time(), nullptr,
                        run_loop.QuitClosure());
@@ -1841,7 +1849,9 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, TestBasicAuthDisabled) {
     if (crash_network_service && content::IsOutOfProcessNetworkService()) {
       SimulateNetworkServiceCrash();
       // Flush the network interface to make sure it notices the crash.
-      content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
+      browser()
+          ->profile()
+          ->GetDefaultStoragePartition()
           ->FlushNetworkInterfaceForTesting();
     }
 

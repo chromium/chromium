@@ -44,8 +44,7 @@ DnsResolutionRoutine::DnsResolutionRoutine() {
   profile_ = GetUserProfile();
   DCHECK(profile_);
   network_context_ =
-      content::BrowserContext::GetDefaultStoragePartition(profile_)
-          ->GetNetworkContext();
+      profile_->GetDefaultStoragePartition()->GetNetworkContext();
   DCHECK(network_context_);
   set_verdict(mojom::RoutineVerdict::kNotRun);
 }

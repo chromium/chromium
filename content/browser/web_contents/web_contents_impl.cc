@@ -3566,8 +3566,8 @@ RenderFrameHostDelegate* WebContentsImpl::CreateNewWindow(
           GetBrowserContext());
 
   {
-    StoragePartition* partition = BrowserContext::GetStoragePartition(
-        GetBrowserContext(), source_site_instance);
+    StoragePartition* partition =
+        GetBrowserContext()->GetStoragePartition(source_site_instance);
     DOMStorageContextWrapper* dom_storage_context =
         static_cast<DOMStorageContextWrapper*>(
             partition->GetDOMStorageContext());

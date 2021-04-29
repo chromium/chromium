@@ -62,7 +62,7 @@ class SameSiteDataRemoverBrowserTest : public ContentBrowserTest {
   }
 
   StoragePartition* GetStoragePartition() {
-    return BrowserContext::GetDefaultStoragePartition(GetBrowserContext());
+    return GetBrowserContext()->GetDefaultStoragePartition();
   }
 
   net::EmbeddedTestServer* GetHttpsServer() { return https_server_.get(); }

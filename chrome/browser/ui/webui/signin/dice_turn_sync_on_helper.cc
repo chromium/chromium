@@ -395,7 +395,7 @@ void DiceTurnSyncOnHelper::LoadPolicyWithCachedCredentials() {
       policy::UserPolicySigninServiceFactory::GetForProfile(profile_);
   policy_service->FetchPolicyForSignedInUser(
       AccountIdFromAccountInfo(account_info_), dm_token_, client_id_,
-      content::BrowserContext::GetDefaultStoragePartition(profile_)
+      profile_->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
       base::BindOnce(&DiceTurnSyncOnHelper::OnPolicyFetchComplete,
                      weak_pointer_factory_.GetWeakPtr()));

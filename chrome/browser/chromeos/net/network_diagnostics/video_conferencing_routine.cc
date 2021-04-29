@@ -117,8 +117,7 @@ network::mojom::NetworkContext* VideoConferencingRoutine::GetNetworkContext() {
   Profile* profile = util::GetUserProfile();
   DCHECK(profile);
 
-  return content::BrowserContext::GetDefaultStoragePartition(profile)
-      ->GetNetworkContext();
+  return profile->GetDefaultStoragePartition()->GetNetworkContext();
 }
 
 std::unique_ptr<UdpProber> VideoConferencingRoutine::CreateAndExecuteUdpProber(

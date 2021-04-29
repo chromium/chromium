@@ -8566,8 +8566,7 @@ class SSLPKPBrowserTest : public CertVerifierBrowserTest {
   void EnableStaticPins(int reporting_port) {
     mojo::ScopedAllowSyncCallForTesting allow_sync_call;
     content::StoragePartition* partition =
-        content::BrowserContext::GetDefaultStoragePartition(
-            browser()->profile());
+        browser()->profile()->GetDefaultStoragePartition();
     partition->GetNetworkContext()->EnableStaticKeyPinningForTesting();
     partition->FlushNetworkInterfaceForTesting();
 

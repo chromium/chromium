@@ -136,7 +136,7 @@ class DedicatedWorkerServiceImplTest
   }
 
   DedicatedWorkerService* GetDedicatedWorkerService() const {
-    return BrowserContext::GetDefaultStoragePartition(browser_context_.get())
+    return browser_context_->GetDefaultStoragePartition()
         ->GetDedicatedWorkerService();
   }
 

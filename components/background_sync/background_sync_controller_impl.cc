@@ -78,9 +78,8 @@ void BackgroundSyncControllerImpl::OnContentSettingChanged(
     if (!IsContentSettingBlocked(origin))
       continue;
 
-    auto* storage_partition =
-        content::BrowserContext::GetStoragePartitionForUrl(
-            browser_context_, origin.GetURL(), /* can_create= */ false);
+    auto* storage_partition = browser_context_->GetStoragePartitionForUrl(
+        origin.GetURL(), /* can_create= */ false);
     if (!storage_partition)
       continue;
 

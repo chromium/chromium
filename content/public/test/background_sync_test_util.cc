@@ -41,8 +41,9 @@ void SetOnlineOnCoreThread(
 }
 
 StoragePartitionImpl* GetStoragePartition(WebContents* web_contents) {
-  return static_cast<StoragePartitionImpl*>(BrowserContext::GetStoragePartition(
-      web_contents->GetBrowserContext(), web_contents->GetSiteInstance()));
+  return static_cast<StoragePartitionImpl*>(
+      web_contents->GetBrowserContext()->GetStoragePartition(
+          web_contents->GetSiteInstance()));
 }
 
 }  // namespace

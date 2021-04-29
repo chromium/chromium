@@ -86,7 +86,7 @@ void PaymentRequestPlatformBrowserTestBase::
   content::BrowserContext* context =
       GetActiveWebContents()->GetBrowserContext();
   auto downloader = std::make_unique<TestDownloader>(
-      content::BrowserContext::GetDefaultStoragePartition(context)
+      context->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess());
   for (const auto& method : payment_methods) {
     downloader->AddTestServerURL("https://" + method.first + "/",

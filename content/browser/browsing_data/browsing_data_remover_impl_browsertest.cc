@@ -213,15 +213,19 @@ class BrowsingDataRemoverImplBrowserTest : public ContentBrowserTest {
   }
 
   network::mojom::URLLoaderFactory* url_loader_factory() {
-    return BrowserContext::GetDefaultStoragePartition(
-               shell()->web_contents()->GetBrowserContext())
+    return shell()
+        ->web_contents()
+        ->GetBrowserContext()
+        ->GetDefaultStoragePartition()
         ->GetURLLoaderFactoryForBrowserProcess()
         .get();
   }
 
   network::mojom::NetworkContext* network_context() {
-    return BrowserContext::GetDefaultStoragePartition(
-               shell()->web_contents()->GetBrowserContext())
+    return shell()
+        ->web_contents()
+        ->GetBrowserContext()
+        ->GetDefaultStoragePartition()
         ->GetNetworkContext();
   }
 

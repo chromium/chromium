@@ -196,8 +196,7 @@ void SetHSTSForHostName(content::BrowserContext* context,
   const base::Time expiry = base::Time::Now() + base::TimeDelta::FromDays(1000);
   bool include_subdomains = false;
   mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-  content::StoragePartition* partition =
-      content::BrowserContext::GetDefaultStoragePartition(context);
+  content::StoragePartition* partition = context->GetDefaultStoragePartition();
   base::RunLoop run_loop;
   partition->GetNetworkContext()->AddHSTS(hostname, expiry, include_subdomains,
                                           run_loop.QuitClosure());

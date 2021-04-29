@@ -1016,7 +1016,9 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyCapReferrerToOriginOnCrossOriginTest,
 IN_PROC_BROWSER_TEST_F(ReferrerPolicyCapReferrerToOriginOnCrossOriginTest,
                        RespectsNoReferrerPref) {
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kEnableReferrers, false);
-  content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
+  browser()
+      ->profile()
+      ->GetDefaultStoragePartition()
       ->FlushNetworkInterfaceForTesting();
   RunReferrerTest(network::mojom::ReferrerPolicy::kAlways, START_ON_HTTPS,
                   REGULAR_LINK, NO_REDIRECT, WindowOpenDisposition::CURRENT_TAB,

@@ -160,7 +160,7 @@ class ClearSiteDataHandlerBrowserTest : public ContentBrowserTest {
   }
 
   StoragePartition* storage_partition() {
-    return BrowserContext::GetDefaultStoragePartition(browser_context());
+    return browser_context()->GetDefaultStoragePartition();
   }
 
   // Adds a cookie for the |url|. Used in the cookie integration tests.

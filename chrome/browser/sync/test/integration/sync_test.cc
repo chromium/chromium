@@ -1091,10 +1091,9 @@ std::unique_ptr<KeyedService> SyncTest::CreateProfileInvalidationProvider(
           base::BindRepeating(
               &CreatePerUserTopicSubscriptionManager,
               profile_identity_provider.get(), profile->GetPrefs(),
-              base::RetainedRef(
-                  content::BrowserContext::GetDefaultStoragePartition(profile)
-                      ->GetURLLoaderFactoryForBrowserProcess()
-                      .get())),
+              base::RetainedRef(profile->GetDefaultStoragePartition()
+                                    ->GetURLLoaderFactoryForBrowserProcess()
+                                    .get())),
           instance_id_driver, profile->GetPrefs(), kInvalidationGCMSenderId);
   fcm_invalidation_service->Init();
 

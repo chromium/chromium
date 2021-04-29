@@ -163,6 +163,6 @@ void DeleteSessionOnlyData(Profile* profile) {
   scoped_refptr<SessionDataDeleter> deleter(
       new SessionDataDeleter(profile->GetSpecialStoragePolicy(),
                              startup_pref_type == SessionStartupPref::LAST));
-  deleter->Run(Profile::GetDefaultStoragePartition(profile),
+  deleter->Run(profile->GetDefaultStoragePartition(),
                HostContentSettingsMapFactory::GetForProfile(profile));
 }

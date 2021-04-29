@@ -82,8 +82,9 @@ class CacheCounterTest : public InProcessBrowserTest {
         network::SimpleURLLoader::Create(std::move(request),
                                          TRAFFIC_ANNOTATION_FOR_TESTS);
     simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-        content::BrowserContext::GetDefaultStoragePartition(
-            browser()->profile())
+        browser()
+            ->profile()
+            ->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess()
             .get(),
         simple_loader_helper.GetCallback());
@@ -138,7 +139,9 @@ IN_PROC_BROWSER_TEST_F(CacheCounterTest, Empty) {
   // Clear the |profile| to ensure that there was no data added from other
   // processes unrelated to this test.
   base::RunLoop wait_until_empty;
-  content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
+  browser()
+      ->profile()
+      ->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->ClearHttpCache(base::Time(), base::Time::Max(), nullptr,
                        wait_until_empty.QuitClosure());
@@ -203,7 +206,9 @@ IN_PROC_BROWSER_TEST_F(CacheCounterTest, AfterDoom) {
                base::BindRepeating(&CacheCounterTest::CountingCallback,
                                    base::Unretained(this)));
 
-  content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
+  browser()
+      ->profile()
+      ->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->ClearHttpCache(
           base::Time(), base::Time::Max(), nullptr,

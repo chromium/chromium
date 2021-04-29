@@ -197,8 +197,8 @@ void TransferHttpAuthCaches() {
   }
 
   network::mojom::NetworkContext* default_network_context =
-      content::BrowserContext::GetDefaultStoragePartition(
-          ProfileHelper::GetSigninProfile())
+      ProfileHelper::GetSigninProfile()
+          ->GetDefaultStoragePartition()
           ->GetNetworkContext();
   default_network_context->SaveHttpAuthCacheProxyEntries(base::BindOnce(
       &TransferHttpAuthCacheToSystemNetworkContext, completion_callback));

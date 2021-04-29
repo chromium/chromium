@@ -154,7 +154,7 @@ void PerformanceManagerRegistryImpl::NotifyBrowserContextAdded(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   content::StoragePartition* storage_partition =
-      content::BrowserContext::GetDefaultStoragePartition(browser_context);
+      browser_context->GetDefaultStoragePartition();
 
   // Create an adapter for the service worker context.
   auto insertion_result = service_worker_context_adapters_.emplace(

@@ -48,7 +48,7 @@ KeyedService* WebHistoryServiceFactory::BuildServiceInstanceFor(
 
   return new history::WebHistoryService(
       IdentityManagerFactory::GetForProfile(profile),
-      content::BrowserContext::GetDefaultStoragePartition(profile)
+      profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess());
 }
 
