@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/ios/ios_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
@@ -68,6 +69,18 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
 @end
 
 @implementation TabGridTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+
+  // Features are enabled or disabled based on the name of the test that is
+  // running. This is done because it is inefficient to use
+  // ensureAppLaunchedWithConfiguration for each test.
+  if ([self isRunningTest:@selector(testTabGridItemContextMenuShare)]) {
+    config.features_enabled.push_back(kTabGridContextMenu);
+  }
+  return config;
+}
 
 - (void)setUp {
   [super setUp];
@@ -199,6 +212,8 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
   [ChromeEarlGreyUI assertHistoryHasNoEntries];
 }
 
+#pragma mark - Recent Tabs Context Menu
+
 // Tests the Copy Link action on a recent tab's context menu.
 - (void)testRecentTabsContextMenuCopyLink {
   if (![ChromeEarlGrey isNativeContextMenusEnabled]) {
@@ -207,7 +222,7 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
   }
 
   [self prepareRecentTabWithURL:_URL1 response:kResponse1];
-  [self longPressRecentTabWithTitle:[NSString stringWithUTF8String:kTitle1]];
+  [self longPressTabWithTitle:[NSString stringWithUTF8String:kTitle1]];
 
   [ChromeEarlGrey
       verifyCopyLinkActionWithText:[NSString stringWithUTF8String:_URL1.spec()
@@ -223,7 +238,7 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
   }
 
   [self prepareRecentTabWithURL:_URL1 response:kResponse1];
-  [self longPressRecentTabWithTitle:[NSString stringWithUTF8String:kTitle1]];
+  [self longPressTabWithTitle:[NSString stringWithUTF8String:kTitle1]];
 
   [ChromeEarlGrey verifyOpenInNewTabActionWithURL:_URL1.GetContent()];
 
@@ -244,7 +259,7 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
   }
 
   [self prepareRecentTabWithURL:_URL1 response:kResponse1];
-  [self longPressRecentTabWithTitle:[NSString stringWithUTF8String:kTitle1]];
+  [self longPressTabWithTitle:[NSString stringWithUTF8String:kTitle1]];
 
   [ChromeEarlGrey verifyOpenInNewWindowActionWithContent:kResponse1];
 }
@@ -257,11 +272,34 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
   }
 
   [self prepareRecentTabWithURL:_URL1 response:kResponse1];
-  [self longPressRecentTabWithTitle:[NSString stringWithUTF8String:kTitle1]];
+  [self longPressTabWithTitle:[NSString stringWithUTF8String:kTitle1]];
 
   [ChromeEarlGrey
       verifyShareActionWithPageTitle:[NSString stringWithUTF8String:kTitle1]];
 }
+
+#pragma mark - Tab Grid Item Context Menu
+
+// Tests the Share action on a tab grid item's context menu.
+- (void)testTabGridItemContextMenuShare {
+  if (!base::ios::IsRunningOnIOS13OrLater()) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Tab Grid context menu only supported on iOS 13 and later.");
+  }
+
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
+      performAction:grey_tap()];
+
+  [self longPressTabWithTitle:[NSString stringWithUTF8String:kTitle1]];
+
+  [ChromeEarlGrey
+      verifyShareActionWithPageTitle:[NSString stringWithUTF8String:kTitle1]];
+}
+
+#pragma mark -
 
 // Tests that tapping on "Close All" shows a confirmation dialog.
 // It also tests that tapping on "Close x Tab(s)" on the confirmation dialog
@@ -797,7 +835,9 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
       performAction:grey_tap()];
 }
 
-- (void)longPressRecentTabWithTitle:(NSString*)title {
+// Long press on the recent tab entry or the tab item in the tab grid with
+// |title|.
+- (void)longPressTabWithTitle:(NSString*)title {
   // The test page may be there multiple times.
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(title),
