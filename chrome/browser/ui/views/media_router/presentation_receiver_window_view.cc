@@ -149,6 +149,10 @@ void PresentationReceiverWindowView::Init() {
   auto* const web_contents = GetWebContents();
   DCHECK(web_contents);
 
+  // InfoBarService comes before common tab helpers since
+  // ContentSubresourceFilterThrottleManager has it as a dependency.
+  InfoBarService::CreateForWebContents(web_contents);
+
   SecurityStateTabHelper::CreateForWebContents(web_contents);
   ChromeTranslateClient::CreateForWebContents(web_contents);
   autofill::ChromeAutofillClient::CreateForWebContents(web_contents);
@@ -165,7 +169,6 @@ void PresentationReceiverWindowView::Init() {
   TabDialogs::CreateForWebContents(web_contents);
   FramebustBlockTabHelper::CreateForWebContents(web_contents);
   CreateSubresourceFilterThrottleManagerForWebContents(web_contents);
-  InfoBarService::CreateForWebContents(web_contents);
   MixedContentSettingsTabHelper::CreateForWebContents(web_contents);
   blocked_content::PopupBlockerTabHelper::CreateForWebContents(web_contents);
   content_settings::PageSpecificContentSettings::CreateForWebContents(
