@@ -202,6 +202,11 @@ void TestingProfileManager::DeleteAllTestingProfiles() {
   for (auto it = testing_profiles_.begin(); it != testing_profiles_.end();
        ++it) {
     TestingProfile* profile = it->second;
+    if (profile->IsGuestSession() || profile->IsSystemProfile() ||
+        profile->IsEphemeralGuestProfile()) {
+      // This Profile was skipped in ProfileManager::AddProfileToStorage().
+      continue;
+    }
     storage.RemoveProfile(profile->GetPath());
   }
   testing_profiles_.clear();
