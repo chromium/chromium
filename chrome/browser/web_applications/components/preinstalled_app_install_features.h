@@ -9,6 +9,8 @@
 #include "base/feature_list.h"
 #include "base/strings/string_piece_forward.h"
 
+class Profile;
+
 namespace web_app {
 
 extern const base::Feature kMigrateDefaultChromeAppToWebAppsGSuite;
@@ -17,12 +19,15 @@ extern const base::Feature kMigrateDefaultChromeAppToWebAppsNonGSuite;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 extern const base::Feature kMigrateDefaultChromeAppToWebAppsChromeOsBeta;
-#endif
+
+extern const base::Feature kMigrateDefaultChromeAppToWebAppsChromeOsManaged;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Returns the base::Feature in |kPreinstalledAppInstallFeatures| that
 // corresponds to |feature_name|. Used by external app install configs to gate
 // installation on features listed in |kPreinstalledAppInstallFeatures|.
-bool IsPreinstalledAppInstallFeatureEnabled(base::StringPiece feature_name);
+bool IsPreinstalledAppInstallFeatureEnabled(base::StringPiece feature_name,
+                                            const Profile& profile);
 
 base::AutoReset<bool> SetPreinstalledAppInstallFeatureAlwaysEnabledForTesting();
 
