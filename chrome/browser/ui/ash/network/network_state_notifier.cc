@@ -16,10 +16,12 @@
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/ui/ash/system_tray_client.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/network/cellular_esim_profile_handler.h"
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_connect.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_event_log.h"
+#include "chromeos/network/network_name_util.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/shill_property_util.h"
@@ -504,11 +506,21 @@ void NetworkStateNotifier::ShowConnectErrorNotification(
   NET_LOG(ERROR) << "Notify: " << log_id
                  << ": Connect error: " + base::UTF16ToUTF8(error);
 
+  CellularESimProfileHandler* cellular_esim_profile_handler =
+      NetworkHandler::Get()->cellular_esim_profile_handler();
   std::string network_name;
-  if (shill_properties) {
+  if (network) {
+    base::Optional<std::string> esim_name =
+        network_name_util::GetESimProfileName(cellular_esim_profile_handler,
+                                              network);
+    if (esim_name)
+      network_name = *esim_name;
+  }
+  if (network_name.empty() && shill_properties) {
     network_name = shill_property_util::GetNameFromProperties(
         service_path, shill_properties.value());
   }
+
   std::string network_error_details =
       GetStringFromDictionary(shill_properties, shill::kErrorDetailsProperty);
 
