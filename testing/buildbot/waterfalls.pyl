@@ -6206,7 +6206,7 @@
     'machines': {
       'Linux - Future': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'additional_compile_targets': ['all'],
         'test_suites': {
@@ -6216,7 +6216,7 @@
       },
       'Linux - Future (dbg)': {
         'mixins': [
-          'linux-xenial',
+          'linux-bionic',
         ],
         'additional_compile_targets': ['all'],
         'test_suites': {
