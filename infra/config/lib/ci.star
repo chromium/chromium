@@ -191,11 +191,12 @@ def angle_linux_builder(
         *,
         name,
         goma_backend = builders.goma.backend.RBE_PROD,
+        os = builders.os.LINUX_DEFAULT,
         **kwargs):
     return angle_builder(
         name = name,
         goma_backend = goma_backend,
-        os = builders.os.LINUX_DEFAULT,
+        os = os,
         pool = "luci.chromium.gpu.ci",
         **kwargs
     )
@@ -222,6 +223,7 @@ def angle_thin_tester(
         # Setting goma_backend for testers is a no-op, but better to be explicit
         # here and also leave the generated configs unchanged for these testers.
         goma_backend = None,
+        os = builders.os.LINUX_BIONIC,
         **kwargs
     )
 
@@ -316,12 +318,13 @@ def dawn_linux_builder(
         *,
         name,
         goma_backend = builders.goma.backend.RBE_PROD,
+        os = builders.os.LINUX_DEFAULT,
         **kwargs):
     return dawn_builder(
         name = name,
         builderless = True,
         goma_backend = goma_backend,
-        os = builders.os.LINUX_DEFAULT,
+        os = os,
         pool = "luci.chromium.gpu.ci",
         **kwargs
     )
@@ -347,6 +350,7 @@ def dawn_thin_tester(
         cores = 2,
         # Setting goma_backend for testers is a no-op, but better to be explicit
         goma_backend = None,
+        os = builders.os.LINUX_BIONIC,
         **kwargs
     )
 
@@ -480,12 +484,13 @@ def gpu_fyi_linux_builder(
         name,
         execution_timeout = 6 * time.hour,
         goma_backend = builders.goma.backend.RBE_PROD,
+        os = builders.os.LINUX_DEFAULT,
         **kwargs):
     return gpu_fyi_builder(
         name = name,
         execution_timeout = execution_timeout,
         goma_backend = goma_backend,
-        os = builders.os.LINUX_DEFAULT,
+        os = os,
         pool = "luci.chromium.gpu.ci",
         **kwargs
     )
@@ -515,6 +520,7 @@ def gpu_fyi_thin_tester(
         # Setting goma_backend for testers is a no-op, but better to be explicit
         # here and also leave the generated configs unchanged for these testers.
         goma_backend = None,
+        os = builders.os.LINUX_BIONIC,
         **kwargs
     )
 
@@ -543,12 +549,13 @@ def gpu_linux_builder(
         *,
         name,
         goma_backend = builders.goma.backend.RBE_PROD,
+        os = builders.os.LINUX_DEFAULT,
         **kwargs):
     return gpu_builder(
         name = name,
         builderless = True,
         goma_backend = goma_backend,
-        os = builders.os.LINUX_DEFAULT,
+        os = os,
         pool = "luci.chromium.gpu.ci",
         **kwargs
     )
@@ -572,6 +579,7 @@ def gpu_thin_tester(*, name, tree_closing = True, **kwargs):
         tree_closing = tree_closing,
         # Setting goma_backend for testers is a no-op, but better to be explicit
         goma_backend = None,
+        os = builders.os.LINUX_BIONIC,
         **kwargs
     )
 
