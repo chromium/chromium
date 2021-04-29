@@ -118,6 +118,7 @@ class FocusedViewClassRecorder : public views::FocusChangeListener {
   }
 
   bool GetHasFocusedOnNonWebView() { return has_focused_on_non_webview_; }
+  int GetFocusChangeCount() { return focus_change_count; }
 
  private:
   // Inherited from views::FocusChangeListener
@@ -130,10 +131,12 @@ class FocusedViewClassRecorder : public views::FocusChangeListener {
         // Focused views could be destroyed. Track what we want to test for when
         // OnDidChangeFocus is called.
         has_focused_on_non_webview_ = true;
+    focus_change_count++;
   }
 
   views::FocusManager* focus_manager_;
   bool has_focused_on_non_webview_ = false;
+  int focus_change_count = 0;
 };
 
 // Switching tabs does not focus views unexpectedly.
@@ -161,4 +164,5 @@ IN_PROC_BROWSER_TEST_F(BrowserViewFocusTest, TabChangesAvoidSpuriousFocus) {
 
   // Everything that was focused on must be a WebView.
   EXPECT_FALSE(focus_change_recorder.GetHasFocusedOnNonWebView());
+  EXPECT_EQ(focus_change_recorder.GetFocusChangeCount(), 2);
 }

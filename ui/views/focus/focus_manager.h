@@ -302,6 +302,9 @@ class VIEWS_EXPORT FocusManager : public ViewObserver {
   // necessary.
   void SetKeyboardAccessible(bool keyboard_accessible);
 
+  // Checks if a focused view is being set.
+  bool IsSettingFocusedView() const;
+
  private:
   // Returns the focusable view found in the FocusTraversable specified starting
   // at the specified view. This traverses down along the FocusTraversable
@@ -369,6 +372,11 @@ class VIEWS_EXPORT FocusManager : public ViewObserver {
 
   // Whether FocusManager is currently trying to restore a focused view.
   bool in_restoring_focused_view_ = false;
+
+  // Count of SetFocusedViewWithReason() in the current stack.
+  // This value is ideally 0 or 1, i.e. no nested focus change.
+  // See crbug.com/1203960.
+  int setting_focused_view_entrance_count = 0;
 };
 
 }  // namespace views

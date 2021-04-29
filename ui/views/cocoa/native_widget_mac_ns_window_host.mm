@@ -874,14 +874,22 @@ void NativeWidgetMacNSWindowHost::SetKeyboardAccessible(bool enabled) {
 void NativeWidgetMacNSWindowHost::OnIsFirstResponderChanged(
     bool is_first_responder) {
   accessibility_focus_overrider_.SetViewIsFirstResponder(is_first_responder);
+
+  FocusManager* focus_manager = root_view_->GetWidget()->GetFocusManager();
+  if (focus_manager->IsSettingFocusedView()) {
+    // This first responder change is not initiated by the os,
+    // but by the focus change within the browser (e.g. tab switch),
+    // so skip setting the focus.
+    return;
+  }
+
   if (is_first_responder) {
-    root_view_->GetWidget()->GetFocusManager()->RestoreFocusedView();
+    focus_manager->RestoreFocusedView();
   } else {
     // Do not call ClearNativeFocus because that will re-make the
     // BridgedNativeWidget first responder (and this is called to indicate that
     // it is no longer first responder).
-    root_view_->GetWidget()->GetFocusManager()->StoreFocusedView(
-        false /* clear_native_focus */);
+    focus_manager->StoreFocusedView(false /* clear_native_focus */);
   }
 }
 

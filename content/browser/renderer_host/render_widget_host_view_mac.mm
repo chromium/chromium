@@ -10,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -509,9 +510,11 @@ gfx::NativeViewAccessible RenderWidgetHostViewMac::GetNativeViewAccessible() {
 
 void RenderWidgetHostViewMac::Focus() {
   // Ignore redundant calls, as they can cause unending loops of focus-setting.
-  // https://crbug.com/998123
-  if (is_first_responder_)
+  // crbug.com/998123, crbug.com/804184.
+  if (is_first_responder_ || is_getting_focus_)
     return;
+
+  base::AutoReset<bool> is_getting_focus_bit(&is_getting_focus_, true);
   ns_view_->MakeFirstResponder();
 }
 
@@ -1474,6 +1477,7 @@ void RenderWidgetHostViewMac::OnFirstResponderChanged(bool is_first_responder) {
     return;
   is_first_responder_ = is_first_responder;
   accessibility_focus_overrider_.SetViewIsFirstResponder(is_first_responder_);
+
   if (is_first_responder_) {
     host()->GotFocus();
     SetTextInputActive(true);

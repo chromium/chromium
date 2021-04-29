@@ -571,6 +571,9 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   // Whether or not the NSView is first responder.
   bool is_first_responder_ = false;
 
+  // Whether Focus() is being called.
+  bool is_getting_focus_ = false;
+
   // Indicates if the page is loading.
   bool is_loading_;
 
