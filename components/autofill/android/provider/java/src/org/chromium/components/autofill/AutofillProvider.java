@@ -430,6 +430,11 @@ public class AutofillProvider {
         sAutofillManagerForTestingFactory = factory;
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    public void replaceAutofillManagerWrapperForTesting(AutofillManagerWrapper wrapper) {
+        mAutofillManager = wrapper;
+    }
+
     /**
      * Invoked when filling form is need. AutofillProvider shall ask autofill
      * service for the values with which to fill the form.

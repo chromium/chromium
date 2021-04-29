@@ -56,8 +56,15 @@ public class AutofillTest {
         mEventsObserved = new ArrayList<>();
         mHelper = new CallbackHelper();
         mActivity = mActivityTestRule.launchShell(new Bundle());
+        // There is no way to talk to TestWebLayer before the WebLayer is created.
+        // TestAutofillManagerWrapper can only replace AutofillProvider's AutofillMangerWrapper
+        // after initialization is done. So this test can't be used to test AutofillProvider's
+        // initialization. As WebLayer doesn't have specific code in AutofillProvider
+        // initialization, the AutofillProvider initialization is sufficiently tested via
+        // AwAutofillTest.
         TestWebLayer.getTestWebLayer(mActivity.getApplicationContext())
-                .notifyOfAutofillEvents(null, () -> mHelper.notifyCalled(), mEventsObserved);
+                .notifyOfAutofillEvents(
+                        mActivity.getBrowser(), () -> mHelper.notifyCalled(), mEventsObserved);
         mWebServer = TestWebServer.start();
     }
 
@@ -93,7 +100,7 @@ public class AutofillTest {
 
         // Load the test page.
         mActivityTestRule.navigateAndWait(url);
-
+        int callCount = mHelper.getCallCount();
         // Select the "text1" element.
         mActivityTestRule.executeScriptSync("document.getElementById('text1').select();", false);
         // Press "a" to trigger Autofill.
@@ -108,7 +115,7 @@ public class AutofillTest {
 
         // Wait for Autofill events.
         mHelper.waitForCallback(
-                /* currentCallCount */ 0, /* numberOfCallsToWaitFor */ expected.size(),
+                /* currentCallCount */ callCount, /* numberOfCallsToWaitFor */ expected.size(),
                 CallbackHelper.WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
         Assert.assertEquals(expected, mEventsObserved);
