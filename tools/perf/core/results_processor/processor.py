@@ -99,7 +99,6 @@ def ProcessResults(options):
   if should_compute_metrics:
     histogram_dicts = ExtractHistograms(test_results)
 
-  util.TryUploadingResultToResultSink(test_results)
   for output_format in options.output_formats:
     logging.info('Processing format: %s', output_format)
     formatter = formatters.FORMATTERS[output_format]
@@ -107,7 +106,6 @@ def ProcessResults(options):
       output_file = formatter.ProcessHistogramDicts(histogram_dicts, options)
     else:
       output_file = formatter.ProcessIntermediateResults(test_results, options)
-
     print('View results at file://', output_file, sep='')
 
   return GenerateExitCode(test_results)

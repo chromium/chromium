@@ -5974,9 +5974,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite",
-        "resultdb": {
-          "enable": true
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
@@ -9077,9 +9074,6 @@
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite",
-        "resultdb": {
-          "enable": true
-        },
         "swarming": {
           "can_use_on_swarming_builders": true,
           "hard_timeout": 960,
