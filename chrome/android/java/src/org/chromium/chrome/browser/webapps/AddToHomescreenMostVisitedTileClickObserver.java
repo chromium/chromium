@@ -13,7 +13,6 @@ import org.chromium.chrome.browser.suggestions.tile.TileSource;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.url.GURL;
 
 /**
@@ -38,7 +37,7 @@ public class AddToHomescreenMostVisitedTileClickObserver implements MostVisitedT
         mCurrentTabObserver = new CurrentTabObserver(tabSupplier, new EmptyTabObserver() {
             @Override
             public void onPageLoadFinished(Tab tab, GURL url) {
-                if (UrlUtilities.isNTPUrl(url)) {
+                if (isNTP(tab)) {
                     // If we are on NTP, add ourselves as an observer for most visited tiles.
                     NewTabPage ntp = (NewTabPage) tab.getNativePage();
                     ntp.addMostVisitedTileClickObserver(
@@ -67,10 +66,13 @@ public class AddToHomescreenMostVisitedTileClickObserver implements MostVisitedT
     }
 
     private void removeObserver(Tab tab) {
-        if (tab.getNativePage() == null) return;
-        if (!UrlUtilities.isNTPUrl(tab.getNativePage().getUrl())) return;
+        if (!isNTP(tab)) return;
 
         NewTabPage ntp = (NewTabPage) tab.getNativePage();
         ntp.removeMostVisitedTileClickObserver(this);
+    }
+
+    private boolean isNTP(Tab tab) {
+        return tab != null && tab.getNativePage() instanceof NewTabPage;
     }
 }
