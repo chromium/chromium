@@ -10671,7 +10671,9 @@ class BackForwardCacheOptInBrowserTest : public BackForwardCacheBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheOptInBrowserTest, NoCacheWithoutHeader) {
+// TODO(crbug.com/1204058): This test is flaky.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheOptInBrowserTest,
+                       DISABLED_NoCacheWithoutHeader) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
