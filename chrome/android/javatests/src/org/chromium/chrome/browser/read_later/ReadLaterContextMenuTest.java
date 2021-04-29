@@ -43,6 +43,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -128,6 +129,7 @@ public class ReadLaterContextMenuTest {
     @Test
     @MediumTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @DisabledTest(message = "crbug.com/1204238")
     public void testContextMenuAddToOfflinePage() throws Throwable {
         String url = mTestServer.getServer().getURL(CONTEXT_MENU_TEST_URL);
         mActivityTestRule.loadUrlInNewTab(url);
