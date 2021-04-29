@@ -601,4 +601,10 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, Crash) {
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
+IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, Xslt) {
+  content::IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ASSERT_TRUE(RunExtensionTest("webnavigation/xslt")) << message_;
+}
+
 }  // namespace extensions

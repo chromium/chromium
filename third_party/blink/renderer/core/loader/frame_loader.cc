@@ -1017,11 +1017,17 @@ void FrameLoader::CommitNavigation(
     scoped_refptr<SecurityOrigin> security_origin =
         SecurityOrigin::Create(navigation_params->url);
 
-    // If `frame_` is provisional, this is largely a no-op other than cleaning
-    // up the initial (and unused) empty document. Otherwise, this unloads the
-    // previous Document and detaches subframes. If `DetachDocument()` returns
-    // false, JS caused `frame_` to be removed, so just return.
+    // If `frame_` is provisional, `DetachDocument()` is largely a no-op other
+    // than cleaning up the initial (and unused) empty document. Otherwise, this
+    // unloads the previous Document and detaches subframes. If
+    // `DetachDocument()` returns false, JS caused `frame_` to be removed, so
+    // just return.
     const bool is_provisional = frame_->IsProvisional();
+    // For an XSLT document, set SentDidFinishLoad now to prevent the
+    // DocumentLoader from reporting an error when detaching the pre-XSLT
+    // document.
+    if (commit_reason == CommitReason::kXSLT && document_loader_)
+      document_loader_->SetSentDidFinishLoad();
     if (!DetachDocument(security_origin.get(), &unload_timing)) {
       DCHECK(!is_provisional);
       return;
