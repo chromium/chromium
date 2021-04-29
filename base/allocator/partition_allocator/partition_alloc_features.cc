@@ -28,7 +28,7 @@ const Feature kPartitionAllocBackupRefPtrControl{
 
 // If enabled, the thread cache will be periodically purged.
 const Feature kPartitionAllocThreadCachePeriodicPurge{
-    "PartitionAllocThreadCachePeriodicPurge", FEATURE_DISABLED_BY_DEFAULT};
+    "PartitionAllocThreadCachePeriodicPurge", FEATURE_ENABLED_BY_DEFAULT};
 
 // Use a larger maximum thread cache cacheable bucket size.
 const Feature kPartitionAllocLargeThreadCacheSize{

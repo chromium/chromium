@@ -5256,24 +5256,6 @@
             ]
         }
     ],
-    "PartitionAllocThreadCachePeriodicPurge": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "linux",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PartitionAllocThreadCachePeriodicPurge"
-                    ]
-                }
-            ]
-        }
-    ],
     "PartitionConnectionsByNetworkIsolationKey": [
         {
             "platforms": [
