@@ -60,6 +60,19 @@ SodaInstaller* SodaInstaller::GetInstance() {
   return instance.get();
 }
 
+// static
+void speech::SodaInstaller::RegisterLocalStatePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterTimePref(prefs::kSodaScheduledDeletionTime, base::Time());
+  registry->RegisterFilePathPref(prefs::kSodaBinaryPath, base::FilePath());
+
+  // Register language pack config path preferences.
+  for (const speech::SodaLanguagePackComponentConfig& config :
+       speech::kLanguageComponentConfigs) {
+    registry->RegisterFilePathPref(config.config_path_pref, base::FilePath());
+  }
+}
+
 SodaInstallerImpl::SodaInstallerImpl() = default;
 
 SodaInstallerImpl::~SodaInstallerImpl() {

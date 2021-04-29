@@ -167,10 +167,15 @@ class CaptionControllerTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(CaptionControllerTest, ProfilePrefsAreRegistered) {
   EXPECT_FALSE(
       browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+
+#if !defined(OS_CHROMEOS)
+  // These prefs are used for the component updater, but SODA does not use the
+  // component updater on Chrome OS.
   EXPECT_EQ(base::FilePath(), g_browser_process->local_state()->GetFilePath(
                                   prefs::kSodaBinaryPath));
   EXPECT_EQ(base::FilePath(), g_browser_process->local_state()->GetFilePath(
                                   prefs::kSodaEnUsConfigPath));
+#endif  // !defined(OS_CHROMEOS)
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionControllerTest,
@@ -179,20 +184,28 @@ IN_PROC_BROWSER_TEST_F(CaptionControllerTest,
   SetLiveCaptionEnabled(true);
   EXPECT_TRUE(
       browser()->profile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+#if !defined(OS_CHROMEOS)
+  // These prefs are used for the component updater, but SODA does not use the
+  // component updater on Chrome OS.
   EXPECT_EQ(base::FilePath(), g_browser_process->local_state()->GetFilePath(
                                   prefs::kSodaBinaryPath));
   EXPECT_EQ(base::FilePath(), g_browser_process->local_state()->GetFilePath(
                                   prefs::kSodaEnUsConfigPath));
+#endif  // !defined(OS_CHROMEOS)
 
   // Ensure that live caption is also enabled in the incognito profile.
   Profile* incognito_profile =
       browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   EXPECT_TRUE(
       incognito_profile->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+#if !defined(OS_CHROMEOS)
+  // These prefs are used for the component updater, but SODA does not use the
+  // component updater on Chrome OS.
   EXPECT_EQ(base::FilePath(), g_browser_process->local_state()->GetFilePath(
                                   prefs::kSodaBinaryPath));
   EXPECT_EQ(base::FilePath(), g_browser_process->local_state()->GetFilePath(
                                   prefs::kSodaEnUsConfigPath));
+#endif  // !defined(OS_CHROMEOS)
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionControllerTest, LiveCaptionEnabledChanged) {

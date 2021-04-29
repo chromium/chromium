@@ -61,10 +61,6 @@ class SodaComponentInstallerPolicy : public ComponentInstallerPolicy {
   OnSodaComponentReadyCallback on_ready_callback_;
 };
 
-// Registers user preferences related to the Speech On-Device API (SODA)
-// component.
-void RegisterPrefsForSodaComponent(PrefRegistrySimple* registry);
-
 // Call once during startup to make the component update service aware of
 // the File Type Policies component. Should only be called by SodaInstaller.
 void RegisterSodaComponent(ComponentUpdateService* cus,

@@ -213,17 +213,6 @@ void UpdateSodaInstallDirPref(PrefService* prefs,
 #endif
 }
 
-void RegisterPrefsForSodaComponent(PrefRegistrySimple* registry) {
-  registry->RegisterTimePref(prefs::kSodaScheduledDeletionTime, base::Time());
-  registry->RegisterFilePathPref(prefs::kSodaBinaryPath, base::FilePath());
-
-  // Register language pack config path preferences.
-  for (const speech::SodaLanguagePackComponentConfig& config :
-       speech::kLanguageComponentConfigs) {
-    registry->RegisterFilePathPref(config.config_path_pref, base::FilePath());
-  }
-}
-
 void RegisterSodaComponent(ComponentUpdateService* cus,
                            PrefService* global_prefs,
                            base::OnceClosure on_ready_callback,

@@ -28,6 +28,11 @@ SodaInstaller* SodaInstaller::GetInstance() {
   return instance.get();
 }
 
+// static
+void SodaInstaller::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterTimePref(prefs::kSodaScheduledDeletionTime, base::Time());
+}
+
 SodaInstallerImplChromeOS::SodaInstallerImplChromeOS() = default;
 
 SodaInstallerImplChromeOS::~SodaInstallerImplChromeOS() = default;

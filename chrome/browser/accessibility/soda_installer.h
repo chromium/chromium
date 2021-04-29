@@ -7,6 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "base/observer_list.h"
+#include "components/prefs/pref_registry_simple.h"
 
 class PrefService;
 
@@ -38,6 +39,10 @@ class SodaInstaller {
   // Implemented in the platform-specific subclass to get the SodaInstaller
   // instance.
   static SodaInstaller* GetInstance();
+
+  // Registers user preferences related to the Speech On-Device API (SODA)
+  // component.
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   // Initialize SODA if any SODA-utilising feature is enabled. Intended to be
   // called during embedder startup. Checks whether SODA is due for
