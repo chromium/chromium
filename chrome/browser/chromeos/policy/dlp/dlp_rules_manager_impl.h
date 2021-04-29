@@ -67,17 +67,23 @@ class DlpRulesManagerImpl : public DlpRulesManager {
   // Used to track kDlpRulesList local state pref.
   PrefChangeRegistrar pref_change_registrar_;
 
-  // Used to match the URLs of the sources.
-  std::unique_ptr<url_matcher::URLMatcher> src_url_matcher_;
-
-  // Used to match the URLs of the destinations.
-  std::unique_ptr<url_matcher::URLMatcher> dst_url_matcher_;
-
   // Map from the components to their configured rules IDs.
   std::map<Component, std::set<RuleId>> components_rules_;
 
   // Map from the restrictions to their configured rules IDs and levels.
   std::map<Restriction, std::map<RuleId, Level>> restrictions_map_;
+
+  // Vector of source urls conditions.
+  url_matcher::URLMatcherConditionSet::Vector src_conditions_;
+
+  // Vector of destination urls conditions.
+  url_matcher::URLMatcherConditionSet::Vector dst_conditions_;
+
+  // Used to match the URLs of the sources.
+  std::unique_ptr<url_matcher::URLMatcher> src_url_matcher_;
+
+  // Used to match the URLs of the destinations.
+  std::unique_ptr<url_matcher::URLMatcher> dst_url_matcher_;
 
   // Map from the URL matching conditions IDs of the sources to their configured
   // rules IDs.
@@ -86,6 +92,14 @@ class DlpRulesManagerImpl : public DlpRulesManager {
   // Map from the URL matching conditions IDs of the destinations to their
   // configured rules IDs.
   std::map<UrlConditionId, RuleId> dst_url_rules_mapping_;
+
+  // Map from the URL matching conditions IDs of the sources to their string
+  // patterns.
+  std::map<UrlConditionId, std::string> src_pattterns_mapping_;
+
+  // Map from the URL matching conditions IDs of the destinations to their
+  // string patterns.
+  std::map<UrlConditionId, std::string> dst_pattterns_mapping_;
 
   std::unique_ptr<DlpReportingManager> reporting_manager_;
 };

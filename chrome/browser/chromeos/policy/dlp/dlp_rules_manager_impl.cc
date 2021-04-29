@@ -93,16 +93,38 @@ DlpRulesManager::Level GetMaxLevel(const DlpRulesManager::Level& level_1,
                                                                    : level_2;
 }
 
-// Inserts a mapping between URLs conditions IDs range to `rule_id` in `map`.
-void InsertUrlsRulesMapping(
-    DlpRulesManagerImpl::UrlConditionId url_condition_id_start,
-    DlpRulesManagerImpl::UrlConditionId url_condition_id_end,
-    DlpRulesManagerImpl::RuleId rule_id,
-    std::map<DlpRulesManagerImpl::UrlConditionId, DlpRulesManagerImpl::RuleId>&
-        map) {
-  for (auto url_condition_id = url_condition_id_start;
-       url_condition_id <= url_condition_id_end; ++url_condition_id) {
-    map[url_condition_id] = rule_id;
+// Creates `urls` conditions, saves patterns strings mapping in
+// `patterns_mapping`, and saves conditions ids to rules ids mapping in `map`.
+void AddUrlConditions(url_matcher::URLMatcher* matcher,
+                      DlpRulesManagerImpl::UrlConditionId& condition_id,
+                      const base::Value* urls,
+                      url_matcher::URLMatcherConditionSet::Vector& conditions,
+                      std::map<DlpRulesManagerImpl::UrlConditionId,
+                               std::string>& patterns_mapping,
+                      DlpRulesManagerImpl::RuleId rule_id,
+                      std::map<DlpRulesManagerImpl::UrlConditionId,
+                               DlpRulesManagerImpl::RuleId>& map) {
+  DCHECK(urls);
+  std::string scheme;
+  std::string host;
+  uint16_t port = 0;
+  std::string path;
+  std::string query;
+  bool match_subdomains = true;
+  for (const auto& list_entry : urls->GetList()) {
+    std::string url = list_entry.GetString();
+    if (!url_util::FilterToComponents(url, &scheme, &host, &match_subdomains,
+                                      &port, &path, &query)) {
+      LOG(ERROR) << "Invalid pattern " << url;
+      continue;
+    }
+    auto condition_set = url_util::CreateConditionSet(
+        matcher, ++condition_id, scheme, host, match_subdomains, port, path,
+        query, /*allow=*/true);
+
+    conditions.push_back(std::move(condition_set));
+    map[condition_id] = rule_id;
+    patterns_mapping[condition_id] = url;
   }
 }
 
@@ -238,6 +260,10 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
   dst_url_rules_mapping_.clear();
   src_url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
   dst_url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
+  src_pattterns_mapping_.clear();
+  dst_pattterns_mapping_.clear();
+  src_conditions_.clear();
+  dst_conditions_.clear();
 
   if (!base::FeatureList::IsEnabled(features::kDataLeakPreventionPolicy)) {
     return;
@@ -268,24 +294,18 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
     DCHECK(sources_urls);  // This DCHECK should be removed when other types are
                            // supported as sources.
 
-    UrlConditionId prev_src_url_condition_id = src_url_condition_id;
-    url_util::AddFilters(src_url_matcher_.get(), /* allowed= */ true,
-                         &src_url_condition_id,
-                         &base::Value::AsListValue(*sources_urls));
-    InsertUrlsRulesMapping(prev_src_url_condition_id + 1, src_url_condition_id,
-                           rules_counter, src_url_rules_mapping_);
+    AddUrlConditions(src_url_matcher_.get(), src_url_condition_id, sources_urls,
+                     src_conditions_, src_pattterns_mapping_, rules_counter,
+                     src_url_rules_mapping_);
 
     const auto* destinations = rule.FindDictKey("destinations");
     const auto* destinations_urls =
         destinations ? destinations->FindListKey("urls") : nullptr;
     if (destinations_urls) {
-      UrlConditionId prev_dst_url_condition_id = dst_url_condition_id;
-      url_util::AddFilters(dst_url_matcher_.get(), /* allowed= */ true,
-                           &dst_url_condition_id,
-                           &base::Value::AsListValue(*destinations_urls));
-      InsertUrlsRulesMapping(prev_dst_url_condition_id + 1,
-                             dst_url_condition_id, rules_counter,
-                             dst_url_rules_mapping_);
+      AddUrlConditions(dst_url_matcher_.get(), dst_url_condition_id,
+                       destinations_urls, dst_conditions_,
+                       dst_pattterns_mapping_, rules_counter,
+                       dst_url_rules_mapping_);
     }
     const auto* destinations_components =
         destinations ? destinations->FindListKey("components") : nullptr;
@@ -334,6 +354,9 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
     }
     ++rules_counter;
   }
+
+  src_url_matcher_->AddConditionSets(src_conditions_);
+  dst_url_matcher_->AddConditionSets(dst_conditions_);
 
   if (base::Contains(restrictions_map_, Restriction::kClipboard)) {
     DataTransferDlpController::Init(*this);
