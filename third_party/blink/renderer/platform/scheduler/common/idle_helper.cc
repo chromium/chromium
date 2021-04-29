@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/scheduler/common/idle_helper.h"
 
 #include "base/bind.h"
+#include "base/record_replay.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/sequence_manager/time_domain.h"
