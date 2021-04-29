@@ -470,23 +470,24 @@ def _LoadJSONFile(json_file):
 
 def _WritePolicyConstantHeader(policies, policy_atomic_groups, target_platform,
                                f, risk_tags):
-  f.write('#ifndef CHROME_COMMON_POLICY_CONSTANTS_H_\n'
-          '#define CHROME_COMMON_POLICY_CONSTANTS_H_\n'
-          '\n'
-          '#include <cstdint>\n'
-          '#include <string>\n'
-          '\n'
-          '#include "base/values.h"\n'
-          '#include "build/chromeos_buildflags.h"\n'
-          '#include "components/policy/core/common/policy_details.h"\n'
-          '#include "components/policy/core/common/policy_map.h"\n'
-          '#include "components/policy/proto/cloud_policy.pb.h"\n'
-          '\n'
-          'namespace policy {\n'
-          '\n'
-          'namespace internal {\n'
-          'struct SchemaData;\n'
-          '}\n\n')
+  f.write('''#ifndef COMPONENTS_POLICY_POLICY_CONSTANTS_H_
+#define COMPONENTS_POLICY_POLICY_CONSTANTS_H_
+
+#include <cstdint>
+#include <string>
+
+#include "build/chromeos_buildflags.h"
+#include "components/policy/core/common/policy_details.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/proto/cloud_policy.pb.h"
+
+namespace policy {
+
+namespace internal {
+struct SchemaData;
+}
+
+''')
 
   if target_platform == 'win':
     f.write('// The windows registry path where Chrome policy '
@@ -544,7 +545,7 @@ def _WritePolicyConstantHeader(policies, policy_atomic_groups, target_platform,
           % _ComputeTotalDevicePolicyExternalDataMaxSize(policies))
 
   f.write('\n}  // namespace policy\n\n'
-          '#endif  // CHROME_COMMON_POLICY_CONSTANTS_H_\n')
+          '#endif  // COMPONENTS_POLICY_POLICY_CONSTANTS_H_\n')
 
 
 def _WriteChromePolicyAccessHeader(f, protobuf_type):
@@ -1039,6 +1040,7 @@ def _WritePolicyConstantSource(policies, policy_atomic_groups, target_platform,
 
 #include "base/check_op.h"
 #include "base/stl_util.h"  // base::size()
+#include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/schema_internal.h"
