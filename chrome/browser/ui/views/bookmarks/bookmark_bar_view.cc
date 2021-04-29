@@ -161,13 +161,11 @@ class BookmarkButtonBase : public views::LabelButton {
   METADATA_HEADER(BookmarkButtonBase);
   BookmarkButtonBase(PressedCallback callback, const std::u16string& title)
       : LabelButton(std::move(callback), title) {
+    ConfigureInkDropForToolbar(this);
     SetImageLabelSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
         DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
 
     views::InstallPillHighlightPathGenerator(this);
-    SetInkDropMode(InkDropMode::ON);
-    SetHasInkDropActionOnClick(true);
-    SetInkDropVisibleOpacity(kToolbarInkDropVisibleOpacity);
 
     SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
@@ -304,11 +302,10 @@ class BookmarkMenuButtonBase : public MenuButton {
       PressedCallback callback,
       const std::u16string& title = std::u16string())
       : MenuButton(std::move(callback), title) {
+    ConfigureInkDropForToolbar(this);
     SetImageLabelSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
         DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
     views::InstallPillHighlightPathGenerator(this);
-    SetInkDropMode(InkDropMode::ON);
-    SetInkDropVisibleOpacity(kToolbarInkDropVisibleOpacity);
   }
   BookmarkMenuButtonBase(const BookmarkMenuButtonBase&) = delete;
   BookmarkMenuButtonBase& operator=(const BookmarkMenuButtonBase&) = delete;

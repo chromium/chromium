@@ -112,6 +112,7 @@ ReadLaterButton::ReadLaterButton(Browser* browser)
       })),
       highlight_color_animation_(
           std::make_unique<HighlightColorAnimation>(this)) {
+  ConfigureInkDropForToolbar(this);
   // Note: BrowserView may not exist during tests.
   if (BrowserView::GetBrowserViewForBrowser(browser_))
     DCHECK(!BrowserView::GetBrowserViewForBrowser(browser_)
@@ -128,9 +129,6 @@ ReadLaterButton::ReadLaterButton(Browser* browser)
       DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
 
   views::InstallPillHighlightPathGenerator(this);
-  SetInkDropMode(InkDropMode::ON);
-  SetHasInkDropActionOnClick(true);
-  SetInkDropVisibleOpacity(kToolbarInkDropVisibleOpacity);
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   SetTooltipText(l10n_util::GetStringUTF16(IDS_READ_LATER_TITLE));
   GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kMenu);

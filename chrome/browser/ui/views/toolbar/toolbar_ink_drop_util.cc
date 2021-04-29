@@ -83,16 +83,11 @@ views::InstallableInkDropConfig GetToolbarInstallableInkDropConfig(
   return config;
 }
 
-void InstallToolbarButtonHighlightPathGenerator(views::View* host) {
-  views::HighlightPathGenerator::Install(
-      host, std::make_unique<ToolbarButtonHighlightPathGenerator>());
-}
-
 void ConfigureInkDropForToolbar(views::Button* host) {
   host->SetHasInkDropActionOnClick(true);
-  InstallToolbarButtonHighlightPathGenerator(host);
+  views::HighlightPathGenerator::Install(
+      host, std::make_unique<ToolbarButtonHighlightPathGenerator>());
   host->SetInkDropMode(views::InkDropHostView::InkDropMode::ON);
   host->SetInkDropVisibleOpacity(kToolbarInkDropVisibleOpacity);
   host->SetInkDropHighlightOpacity(kToolbarInkDropHighlightVisibleOpacity);
-  host->SetInkDropBaseColor(GetToolbarInkDropBaseColor(host));
 }

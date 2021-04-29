@@ -158,7 +158,7 @@ ToolbarButton::ToolbarButton(PressedCallback callback,
       tab_strip_model_(tab_strip_model),
       trigger_menu_on_long_press_(trigger_menu_on_long_press),
       highlight_color_animation_(this) {
-  SetHasInkDropActionOnClick(true);
+  ConfigureInkDropForToolbar(this);
   set_context_menu_controller(this);
 
   if (base::FeatureList::IsEnabled(views::kInstallableInkDropFeature)) {
@@ -166,15 +166,9 @@ ToolbarButton::ToolbarButton(PressedCallback callback,
     installable_ink_drop_->SetConfig(GetToolbarInstallableInkDropConfig(this));
   }
 
-  InstallToolbarButtonHighlightPathGenerator(this);
-
-  SetInkDropMode(InkDropMode::ON);
-
   // Make sure icons are flipped by default so that back, forward, etc. follows
   // UI direction.
   SetFlipCanvasOnPaintForRTLUI(true);
-
-  SetInkDropVisibleOpacity(kToolbarInkDropVisibleOpacity);
 
   SetImageLabelSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));

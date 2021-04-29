@@ -54,10 +54,7 @@ BrowserAppMenuButton::BrowserAppMenuButton(ToolbarView* toolbar_view)
     : AppMenuButton(base::BindRepeating(&BrowserAppMenuButton::ButtonPressed,
                                         base::Unretained(this))),
       toolbar_view_(toolbar_view) {
-  SetInkDropMode(InkDropMode::ON);
   SetHorizontalAlignment(gfx::ALIGN_RIGHT);
-
-  SetInkDropVisibleOpacity(kToolbarInkDropVisibleOpacity);
 }
 
 BrowserAppMenuButton::~BrowserAppMenuButton() {}
@@ -169,11 +166,6 @@ void BrowserAppMenuButton::UpdateTextAndHighlightColor() {
 
   SetTooltipText(l10n_util::GetStringUTF16(tooltip_message_id));
   SetHighlight(text, color);
-}
-
-std::unique_ptr<views::InkDropHighlight>
-BrowserAppMenuButton::CreateInkDropHighlight() const {
-  return CreateToolbarInkDropHighlight(this);
 }
 
 void BrowserAppMenuButton::OnTouchUiChanged() {

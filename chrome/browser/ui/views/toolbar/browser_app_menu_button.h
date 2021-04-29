@@ -42,8 +42,6 @@ class BrowserAppMenuButton : public AppMenuButton {
   static bool g_open_app_immediately_for_testing;
 
   // AppMenuButton:
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override;
   void OnThemeChanged() override;
   // Updates the presentation according to |severity_| and the theme provider.
   void UpdateIcon() override;

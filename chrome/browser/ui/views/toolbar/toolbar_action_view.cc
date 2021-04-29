@@ -59,8 +59,7 @@ ToolbarActionView::ToolbarActionView(
                                      base::Unretained(this))),
       view_controller_(view_controller),
       delegate_(delegate) {
-  SetInkDropMode(InkDropMode::ON);
-  SetHasInkDropActionOnClick(true);
+  ConfigureInkDropForToolbar(this);
   SetHideInkDropWhenShowingContextMenu(false);
   SetShowInkDropWhenHotTracked(true);
   SetID(VIEW_ID_BROWSER_ACTION);
@@ -71,10 +70,6 @@ ToolbarActionView::ToolbarActionView(
   context_menu_controller_ =
       std::make_unique<ExtensionContextMenuController>(view_controller);
   set_context_menu_controller(context_menu_controller_.get());
-
-  InstallToolbarButtonHighlightPathGenerator(this);
-
-  SetInkDropVisibleOpacity(kToolbarInkDropVisibleOpacity);
 
   UpdateState();
 }

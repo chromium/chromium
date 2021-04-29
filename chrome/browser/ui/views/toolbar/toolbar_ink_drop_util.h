@@ -37,9 +37,6 @@ SkColor GetToolbarInkDropBaseColor(const views::View* host_view);
 views::InstallableInkDropConfig GetToolbarInstallableInkDropConfig(
     const views::View* host_view);
 
-// Installs a highlight path generator that matches the toolbar button style.
-void InstallToolbarButtonHighlightPathGenerator(views::View* host);
-
 void ConfigureInkDropForToolbar(views::Button* host);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_INK_DROP_UTIL_H_

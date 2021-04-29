@@ -495,6 +495,7 @@ WebUITabCounterButton::WebUITabCounterButton(PressedCallback pressed_callback,
     : Button(std::move(pressed_callback)),
       tab_strip_model_(browser_view->browser()->tab_strip_model()),
       browser_view_(browser_view) {
+  ConfigureInkDropForToolbar(this);
   // Not focusable by default, only for accessibility.
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 }
@@ -611,7 +612,7 @@ void WebUITabCounterButton::RemoveLayerBeneathView(ui::Layer* old_layer) {
 void WebUITabCounterButton::OnThemeChanged() {
   views::Button::OnThemeChanged();
   UpdateColors();
-  ConfigureInkDropForToolbar(this);
+  SetInkDropBaseColor(GetToolbarInkDropBaseColor(this));
 }
 
 void WebUITabCounterButton::Layout() {
