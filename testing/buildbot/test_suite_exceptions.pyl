@@ -2443,6 +2443,11 @@
       },
     },
   },
+  'pixel_tests': {
+    'remove_from': [
+      'Fuchsia x64' # https://crbug.com/1203236
+    ],
+  },
   'rendering_representative_perf_tests': {
     'modifications': {
       'Win10 FYI x64 Exp Release (Intel HD 630)': {
@@ -2502,6 +2507,11 @@
     },
     'remove_from': [
       'android-asan',  # https://crbug.com/962650
+    ],
+  },
+  'screenshot_sync_tests': {
+    'remove_from': [
+      'Fuchsia x64' # https://crbug.com/1203236
     ],
   },
   'screenshot_sync_validating_tests': {

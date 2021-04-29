@@ -2968,6 +2968,7 @@
           ],
         },
         'test_suites': {
+          'gpu_telemetry_tests': 'fuchsia_gpu_telemetry_tests',
           'gtest_tests': 'web_engine_gtests',
         },
       },
