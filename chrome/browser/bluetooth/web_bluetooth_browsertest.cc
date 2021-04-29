@@ -234,11 +234,15 @@ class TestBluetoothDelegate : public ChromeBluetoothDelegate {
   TestBluetoothDelegate(const TestBluetoothDelegate&) = delete;
   TestBluetoothDelegate& operator=(const TestBluetoothDelegate&) = delete;
 
-  void SetDeviceToSelect(const std::string& device_address) {
-    device_to_select_ = device_address;
+  void UseRealChooser() {
+    EXPECT_FALSE(device_to_select_.has_value());
+    use_real_chooser_ = true;
   }
 
-  void UseRealChooser() { use_real_chooser_ = true; }
+  void SetDeviceToSelect(const std::string& device_address) {
+    EXPECT_FALSE(use_real_chooser_);
+    device_to_select_ = device_address;
+  }
 
  protected:
   // content::BluetoothDelegate implementation:
@@ -500,6 +504,31 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTest, NavigateWithChooserCrossOrigin) {
   waiter->WaitForChange();
   EXPECT_TRUE(waiter->has_closed());
   EXPECT_EQ(GURL("https://google.com"), web_contents_->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(WebBluetoothTest, ShowChooserInBackgroundTab) {
+  UseRealChooser();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Create a new foreground tab that covers |web_contents|.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://example.com"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Try to show the chooser in the background tab.
+  EXPECT_EQ("NotFoundError: User cancelled the requestDevice() chooser.",
+            content::EvalJs(web_contents,
+                            R"((async () => {
+      try {
+        await navigator.bluetooth.requestDevice({ filters: [{name: 'Hello'}] });
+        return "Expected error, got success.";
+      } catch (e) {
+        return `${e.name}: ${e.message}`;
+      }
+    })())"));
 }
 
 // The new Web Bluetooth permissions backend is currently implemented behind a

@@ -1592,16 +1592,10 @@ void WebBluetoothServiceImpl::RequestDeviceImpl(
   device_chooser_controller_ =
       std::make_unique<BluetoothDeviceChooserController>(
           this, render_frame_host_, std::move(adapter));
-
-  // TODO(crbug.com/730593): Remove AdaptCallbackForRepeating() by updating
-  // the callee interface.
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
   device_chooser_controller_->GetDevice(
       std::move(options),
-      base::BindOnce(&WebBluetoothServiceImpl::OnGetDeviceSuccess,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback),
-      base::BindOnce(&WebBluetoothServiceImpl::OnGetDeviceFailed,
-                     weak_ptr_factory_.GetWeakPtr(), copyable_callback));
+      base::BindOnce(&WebBluetoothServiceImpl::OnGetDevice,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void WebBluetoothServiceImpl::GetDevicesImpl(
@@ -1816,11 +1810,18 @@ void WebBluetoothServiceImpl::RemoteServerGetPrimaryServicesImpl(
       base::nullopt /* services */);
 }
 
-void WebBluetoothServiceImpl::OnGetDeviceSuccess(
+void WebBluetoothServiceImpl::OnGetDevice(
     RequestDeviceCallback callback,
+    blink::mojom::WebBluetoothResult result,
     blink::mojom::WebBluetoothRequestDeviceOptionsPtr options,
     const std::string& device_address) {
   device_chooser_controller_.reset();
+
+  if (result != blink::mojom::WebBluetoothResult::SUCCESS) {
+    // Errors are recorded by |device_chooser_controller_|.
+    std::move(callback).Run(result, /*device=*/nullptr);
+    return;
+  }
 
   const BluetoothDevice* const device = GetAdapter()->GetDevice(device_address);
   if (device == nullptr) {
@@ -1854,14 +1855,6 @@ void WebBluetoothServiceImpl::OnGetDeviceSuccess(
 
   std::move(callback).Run(blink::mojom::WebBluetoothResult::SUCCESS,
                           std::move(web_bluetooth_device));
-}
-
-void WebBluetoothServiceImpl::OnGetDeviceFailed(
-    RequestDeviceCallback callback,
-    blink::mojom::WebBluetoothResult result) {
-  // Errors are recorded by the *device_chooser_controller_.
-  std::move(callback).Run(result, nullptr /* device */);
-  device_chooser_controller_.reset();
 }
 
 void WebBluetoothServiceImpl::OnCreateGATTConnectionSuccess(

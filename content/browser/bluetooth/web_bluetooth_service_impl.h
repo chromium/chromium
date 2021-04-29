@@ -275,13 +275,11 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
       RemoteServerGetPrimaryServicesCallback callback,
       device::BluetoothDevice* device);
 
-  // Callbacks for BluetoothDeviceChooserController::GetDevice.
-  void OnGetDeviceSuccess(
-      RequestDeviceCallback callback,
-      blink::mojom::WebBluetoothRequestDeviceOptionsPtr options,
-      const std::string& device_id);
-  void OnGetDeviceFailed(RequestDeviceCallback callback,
-                         blink::mojom::WebBluetoothResult result);
+  // Callback for BluetoothDeviceChooserController::GetDevice.
+  void OnGetDevice(RequestDeviceCallback callback,
+                   blink::mojom::WebBluetoothResult result,
+                   blink::mojom::WebBluetoothRequestDeviceOptionsPtr options,
+                   const std::string& device_id);
 
   // Callbacks for BluetoothDevice::CreateGattConnection.
   void OnCreateGATTConnectionSuccess(

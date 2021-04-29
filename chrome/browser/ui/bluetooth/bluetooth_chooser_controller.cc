@@ -66,7 +66,12 @@ BluetoothChooserController::BluetoothChooserController(
   }
 }
 
-BluetoothChooserController::~BluetoothChooserController() {}
+BluetoothChooserController::~BluetoothChooserController() {
+  if (event_handler_) {
+    event_handler_.Run(content::BluetoothChooserEvent::CANCELLED,
+                       std::string());
+  }
+}
 
 bool BluetoothChooserController::ShouldShowIconBeforeText() const {
   return true;
@@ -170,6 +175,7 @@ void BluetoothChooserController::Select(const std::vector<size_t>& indices) {
   DCHECK_LT(index, devices_.size());
   event_handler_.Run(content::BluetoothChooserEvent::SELECTED,
                      devices_[index].id);
+  event_handler_.Reset();
 }
 
 void BluetoothChooserController::Cancel() {
@@ -177,6 +183,7 @@ void BluetoothChooserController::Cancel() {
   if (event_handler_.is_null())
     return;
   event_handler_.Run(content::BluetoothChooserEvent::CANCELLED, std::string());
+  event_handler_.Reset();
 }
 
 void BluetoothChooserController::Close() {
@@ -184,6 +191,7 @@ void BluetoothChooserController::Close() {
   if (event_handler_.is_null())
     return;
   event_handler_.Run(content::BluetoothChooserEvent::CANCELLED, std::string());
+  event_handler_.Reset();
 }
 
 void BluetoothChooserController::OpenHelpCenterUrl() const {
