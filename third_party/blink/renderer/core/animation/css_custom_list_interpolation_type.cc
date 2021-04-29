@@ -27,8 +27,8 @@ InterpolationValue CSSCustomListInterpolationType::MaybeConvertNeutral(
   ConversionCheckers null_checkers;
 
   auto convert_inner = [this, &null_underlying, &null_checkers](size_t) {
-    return this->inner_interpolation_type_->MaybeConvertNeutral(null_underlying,
-                                                                null_checkers);
+    return inner_interpolation_type_->MaybeConvertNeutral(null_underlying,
+                                                          null_checkers);
   };
 
   return ListInterpolationFunctions::CreateList(underlying_length,
@@ -47,7 +47,7 @@ InterpolationValue CSSCustomListInterpolationType::MaybeConvertValue(
 
   return ListInterpolationFunctions::CreateList(
       list->length(), [this, list, state, &null_checkers](size_t index) {
-        return this->inner_interpolation_type_->MaybeConvertValue(
+        return inner_interpolation_type_->MaybeConvertValue(
             list->Item(index), state, null_checkers);
       });
 }

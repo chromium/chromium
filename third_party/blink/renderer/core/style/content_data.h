@@ -108,7 +108,7 @@ class ImageContentData final : public ContentData {
 
  private:
   ContentData* CloneInternal() const override {
-    StyleImage* image = const_cast<StyleImage*>(this->GetImage());
+    StyleImage* image = const_cast<StyleImage*>(GetImage());
     return MakeGarbageCollected<ImageContentData>(image);
   }
 

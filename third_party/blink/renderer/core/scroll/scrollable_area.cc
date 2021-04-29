@@ -409,9 +409,9 @@ void ScrollableArea::ScrollOffsetChanged(const ScrollOffset& offset,
   // If the scrollbar does not have its own layer, it must always be
   // invalidated to reflect the new thumb offset, even if the theme did not
   // invalidate any individual part.
-  if (Scrollbar* horizontal_scrollbar = this->HorizontalScrollbar())
+  if (Scrollbar* horizontal_scrollbar = HorizontalScrollbar())
     horizontal_scrollbar->OffsetDidChange(scroll_type);
-  if (Scrollbar* vertical_scrollbar = this->VerticalScrollbar())
+  if (Scrollbar* vertical_scrollbar = VerticalScrollbar())
     vertical_scrollbar->OffsetDidChange(scroll_type);
 
   ScrollOffset delta = GetScrollOffset() - old_offset;

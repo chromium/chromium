@@ -135,7 +135,7 @@ void Page::InsertOrdinaryPageForTesting(Page* page) {
 
 HeapVector<Member<Page>> Page::RelatedPages() {
   HeapVector<Member<Page>> result;
-  Page* ptr = this->next_related_page_;
+  Page* ptr = next_related_page_;
   while (ptr != this) {
     result.push_back(ptr);
     ptr = ptr->next_related_page_;
@@ -979,12 +979,12 @@ void Page::WillBeDestroyed() {
     // Before: ... -> prev -> this -> next -> ...
     // After: ... -> prev -> next -> ...
     // (this is ok even if |this| is the only element on the list).
-    Page* prev = this->prev_related_page_;
-    Page* next = this->next_related_page_;
+    Page* prev = prev_related_page_;
+    Page* next = next_related_page_;
     next->prev_related_page_ = prev;
     prev->next_related_page_ = next;
-    this->prev_related_page_ = nullptr;
-    this->next_related_page_ = nullptr;
+    prev_related_page_ = nullptr;
+    next_related_page_ = nullptr;
   }
 
   if (scrolling_coordinator_)

@@ -171,7 +171,7 @@ base::TimeTicks PointerEvent::OldestPlatformTimeStamp() const {
     // Assume that time stamps of coalesced events are in ascending order.
     return coalesced_events_[0]->PlatformTimeStamp();
   }
-  return this->PlatformTimeStamp();
+  return PlatformTimeStamp();
 }
 
 void PointerEvent::Trace(Visitor* visitor) const {

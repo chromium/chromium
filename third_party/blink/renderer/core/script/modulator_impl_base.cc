@@ -334,7 +334,7 @@ void ModulatorImplBase::ProduceCacheModuleTree(
     KURL child_url =
         module_script->ResolveModuleSpecifier(module_request.specifier);
 
-    ModuleType child_module_type = this->ModuleTypeFromRequest(module_request);
+    ModuleType child_module_type = ModuleTypeFromRequest(module_request);
     CHECK_NE(child_module_type, ModuleType::kInvalid);
 
     CHECK(child_url.IsValid())

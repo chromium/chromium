@@ -104,7 +104,7 @@ v8::Local<v8::Value> DOMArrayBuffer::Wrap(
     v8::Local<v8::Object> creation_context) {
   DCHECK(!DOMDataStore::ContainsWrapper(this, isolate));
 
-  const WrapperTypeInfo* wrapper_type_info = this->GetWrapperTypeInfo();
+  const WrapperTypeInfo* wrapper_type_info = GetWrapperTypeInfo();
 
   v8::Local<v8::ArrayBuffer> wrapper;
   {
@@ -118,7 +118,7 @@ v8::Local<v8::Value> DOMArrayBuffer::Wrap(
 v8::MaybeLocal<v8::Value> DOMArrayBuffer::WrapV2(ScriptState* script_state) {
   DCHECK(!DOMDataStore::ContainsWrapper(this, script_state->GetIsolate()));
 
-  const WrapperTypeInfo* wrapper_type_info = this->GetWrapperTypeInfo();
+  const WrapperTypeInfo* wrapper_type_info = GetWrapperTypeInfo();
 
   v8::Local<v8::ArrayBuffer> wrapper;
   {

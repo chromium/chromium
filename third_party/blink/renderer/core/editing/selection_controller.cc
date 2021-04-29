@@ -349,14 +349,14 @@ bool SelectionController::HandleSingleClick(
                 .ToPositionWithAffinity()
           : visible_hit_position;
   const VisibleSelectionInFlatTree& selection =
-      this->Selection().ComputeVisibleSelectionInFlatTree();
+      Selection().ComputeVisibleSelectionInFlatTree();
 
   // Don't restart the selection when the mouse is pressed on an
   // existing selection so we can allow for text dragging.
   if (LocalFrameView* view = frame_->View()) {
     const PhysicalOffset v_point(view->ConvertFromRootFrame(
         FlooredIntPoint(event.Event().PositionInRootFrame())));
-    if (!extend_selection && this->Selection().Contains(v_point)) {
+    if (!extend_selection && Selection().Contains(v_point)) {
       mouse_down_was_single_click_in_selection_ = true;
       if (!event.Event().FromTouch())
         return false;
@@ -602,7 +602,7 @@ bool SelectionController::UpdateSelectionForMouseDownDispatchingSelectStart(
   }
 
   // |DispatchSelectStart()| can change document hosted by |frame_|.
-  if (!this->Selection().IsAvailable())
+  if (!Selection().IsAvailable())
     return false;
 
   // TODO(editing-dev): Use of UpdateStyleAndLayout
@@ -1321,8 +1321,7 @@ void SelectionController::NotifySelectionChanged() {
   DocumentLifecycle::DisallowTransitionScope disallow_transition(
       frame_->GetDocument()->Lifecycle());
 
-  const SelectionInDOMTree& selection =
-      this->Selection().GetSelectionInDOMTree();
+  const SelectionInDOMTree& selection = Selection().GetSelectionInDOMTree();
   if (selection.IsNone()) {
     selection_state_ = SelectionState::kHaveNotStartedSelection;
     return;

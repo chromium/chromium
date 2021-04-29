@@ -222,7 +222,7 @@ static ChromeClient& GetEmptyChromeClient() {
 }
 
 ChromeClient& Frame::GetChromeClient() const {
-  if (Page* page = this->GetPage())
+  if (Page* page = GetPage())
     return page->GetChromeClient();
   return GetEmptyChromeClient();
 }

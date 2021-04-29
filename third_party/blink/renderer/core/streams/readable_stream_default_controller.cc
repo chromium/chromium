@@ -31,12 +31,12 @@ void ReadableStreamDefaultController::close(ScriptState* script_state,
   if (!CanCloseOrEnqueue(this)) {
     // The following code is just to provide a nice exception message.
     const char* errorDescription = nullptr;
-    if (this->is_close_requested_) {
+    if (is_close_requested_) {
       errorDescription =
           "Cannot close a readable stream that has already been requested to "
           "be closed";
     } else {
-      const ReadableStream* stream = this->controlled_readable_stream_;
+      const ReadableStream* stream = controlled_readable_stream_;
       switch (stream->state_) {
         case ReadableStream::kErrored:
           errorDescription = "Cannot close an errored readable stream";

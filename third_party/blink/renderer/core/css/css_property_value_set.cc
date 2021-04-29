@@ -97,9 +97,9 @@ ImmutableCSSPropertyValueSet::ImmutableCSSPropertyValueSet(
     CSSParserMode css_parser_mode)
     : CSSPropertyValueSet(css_parser_mode, length) {
   CSSPropertyValueMetadata* metadata_array =
-      const_cast<CSSPropertyValueMetadata*>(this->MetadataArray());
+      const_cast<CSSPropertyValueMetadata*>(MetadataArray());
   Member<const CSSValue>* value_array =
-      const_cast<Member<const CSSValue>*>(this->ValueArray());
+      const_cast<Member<const CSSValue>*>(ValueArray());
   for (unsigned i = 0; i < array_size_; ++i) {
     metadata_array[i] = properties[i].Metadata();
     value_array[i] = properties[i].Value();

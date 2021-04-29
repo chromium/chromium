@@ -549,7 +549,7 @@ void LocalFrame::CreateView(const IntSize& viewport_size,
   DCHECK(this);
   DCHECK(GetPage());
 
-  bool is_local_root = this->IsLocalRoot();
+  bool is_local_root = IsLocalRoot();
 
   if (is_local_root && View())
     View()->SetParentVisible(false);
@@ -976,8 +976,8 @@ const LocalDOMWindow* LocalFrame::DomWindow() const {
 
 void LocalFrame::SetDOMWindow(LocalDOMWindow* dom_window) {
   DCHECK(dom_window);
-  if (this->DomWindow()) {
-    this->DomWindow()->Reset();
+  if (DomWindow()) {
+    DomWindow()->Reset();
     // SystemClipboard and RawSystemClipboard uses HeapMojo wrappers. HeapMojo
     // wrappers uses LocalDOMWindow (ExecutionContext) to reset the mojo
     // objects when the ExecutionContext was destroyed. So when new
@@ -1404,11 +1404,11 @@ void LocalFrame::SetPageAndTextZoomFactors(float page_zoom_factor,
       text_zoom_factor_ == text_zoom_factor)
     return;
 
-  Page* page = this->GetPage();
+  Page* page = GetPage();
   if (!page)
     return;
 
-  Document* document = this->GetDocument();
+  Document* document = GetDocument();
   if (!document)
     return;
 
@@ -3171,7 +3171,7 @@ void LocalFrame::NotifyVirtualKeyboardOverlayRectObservers(
 
 void LocalFrame::NotifyVirtualKeyboardOverlayRect(
     const gfx::Rect& keyboard_rect) {
-  Page* page = this->GetPage();
+  Page* page = GetPage();
   if (!page)
     return;
 

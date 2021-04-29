@@ -150,7 +150,7 @@ void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   DCHECK(IsShadowHost(this));
 
   root.EnableNameBasedSlotAssignment();
-  Document& document = this->GetDocument();
+  Document& document = GetDocument();
 
   // TODO(crbug.com/1121840) Where to put the styles for the default elements in
   // the shadow tree? We'd like to have them in the UA styles (html.css), but

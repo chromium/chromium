@@ -27,8 +27,8 @@ v8::Local<v8::Value> DOMTypedArray<T, V8TypedArray, clamped>::Wrap(
     v8::Local<v8::Object> creation_context) {
   DCHECK(!DOMDataStore::ContainsWrapper(this, isolate));
 
-  const WrapperTypeInfo* wrapper_type_info = this->GetWrapperTypeInfo();
-  DOMArrayBufferBase* buffer = this->BufferBase();
+  const WrapperTypeInfo* wrapper_type_info = GetWrapperTypeInfo();
+  DOMArrayBufferBase* buffer = BufferBase();
   v8::Local<v8::Value> v8_buffer = ToV8(buffer, creation_context, isolate);
   if (v8_buffer.IsEmpty())
     return v8::Local<v8::Object>();
@@ -54,8 +54,8 @@ v8::MaybeLocal<v8::Value> DOMTypedArray<T, V8TypedArray, clamped>::WrapV2(
     ScriptState* script_state) {
   DCHECK(!DOMDataStore::ContainsWrapper(this, script_state->GetIsolate()));
 
-  const WrapperTypeInfo* wrapper_type_info = this->GetWrapperTypeInfo();
-  DOMArrayBufferBase* buffer = this->BufferBase();
+  const WrapperTypeInfo* wrapper_type_info = GetWrapperTypeInfo();
+  DOMArrayBufferBase* buffer = BufferBase();
   v8::Local<v8::Value> v8_buffer;
   if (!ToV8Traits<DOMArrayBufferBase>::ToV8(script_state, buffer)
            .ToLocal(&v8_buffer)) {

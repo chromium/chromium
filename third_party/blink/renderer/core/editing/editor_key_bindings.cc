@@ -45,7 +45,7 @@ bool Editor::HandleEditingKeyboardEvent(KeyboardEvent* evt) {
     return false;
 
   String command_name = Behavior().InterpretKeyEvent(*evt);
-  const EditorCommand command = this->CreateCommand(command_name);
+  const EditorCommand command = CreateCommand(command_name);
 
   if (key_event->GetType() == WebInputEvent::Type::kRawKeyDown) {
     // WebKit doesn't have enough information about mode to decide how

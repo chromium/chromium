@@ -294,17 +294,17 @@ ScriptPromise CanvasRenderingContextHost::convertToBlob(
     ExceptionState& exception_state,
     const CanvasRenderingContext* const context) {
   WTF::String object_name = "Canvas";
-  if (this->IsOffscreenCanvas())
+  if (IsOffscreenCanvas())
     object_name = "OffscreenCanvas";
   std::stringstream error_msg;
 
-  if (this->IsOffscreenCanvas() && this->IsNeutered()) {
+  if (IsOffscreenCanvas() && IsNeutered()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "OffscreenCanvas object is detached.");
     return ScriptPromise();
   }
 
-  if (!this->OriginClean()) {
+  if (!OriginClean()) {
     error_msg << "Tainted " << object_name << " may not be exported.";
     exception_state.ThrowSecurityError(error_msg.str().c_str());
     return ScriptPromise();
@@ -316,7 +316,7 @@ ScriptPromise CanvasRenderingContextHost::convertToBlob(
   if (RenderingContext())
     RenderingContext()->FinalizeFrame();
 
-  if (!this->IsPaintable() || Size().IsEmpty()) {
+  if (!IsPaintable() || Size().IsEmpty()) {
     error_msg << "The size of " << object_name << " is zero.";
     exception_state.ThrowDOMException(DOMExceptionCode::kIndexSizeError,
                                       error_msg.str().c_str());
@@ -337,7 +337,7 @@ ScriptPromise CanvasRenderingContextHost::convertToBlob(
     auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
     CanvasAsyncBlobCreator::ToBlobFunctionType function_type =
         CanvasAsyncBlobCreator::kHTMLCanvasConvertToBlobPromise;
-    if (this->IsOffscreenCanvas()) {
+    if (IsOffscreenCanvas()) {
       function_type =
           CanvasAsyncBlobCreator::kOffscreenCanvasConvertToBlobPromise;
     }

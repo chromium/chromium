@@ -438,7 +438,7 @@ void HTMLOptionElement::OptionInsertedIntoSelectMenuElement() {
   // TODO(crbug.com/1196022) Refine the content that an option can render.
   // Enable the option element to render arbitrary content.
   root->RemoveChildren();
-  Document& document = this->GetDocument();
+  Document& document = GetDocument();
   auto* default_slot = MakeGarbageCollected<HTMLSlotElement>(document);
   root->AppendChild(default_slot);
 }

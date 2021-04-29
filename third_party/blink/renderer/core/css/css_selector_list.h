@@ -105,7 +105,7 @@ class CORE_EXPORT CSSSelectorList {
 
   wtf_size_t IndexOfNextSelectorAfter(wtf_size_t index) const {
     const CSSSelector& current = SelectorAt(index);
-    const CSSSelector* next = this->Next(current);
+    const CSSSelector* next = Next(current);
     if (!next)
       return kNotFound;
     return SelectorIndex(*next);

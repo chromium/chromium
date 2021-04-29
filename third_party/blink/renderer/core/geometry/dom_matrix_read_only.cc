@@ -279,19 +279,19 @@ DOMMatrix* DOMMatrixReadOnly::skewY(double sy) {
 
 DOMMatrix* DOMMatrixReadOnly::flipX() {
   DOMMatrix* flip_x = DOMMatrix::Create(this);
-  flip_x->setM11(-this->m11());
-  flip_x->setM12(-this->m12());
-  flip_x->setM13(-this->m13());
-  flip_x->setM14(-this->m14());
+  flip_x->setM11(-m11());
+  flip_x->setM12(-m12());
+  flip_x->setM13(-m13());
+  flip_x->setM14(-m14());
   return flip_x;
 }
 
 DOMMatrix* DOMMatrixReadOnly::flipY() {
   DOMMatrix* flip_y = DOMMatrix::Create(this);
-  flip_y->setM21(-this->m21());
-  flip_y->setM22(-this->m22());
-  flip_y->setM23(-this->m23());
-  flip_y->setM24(-this->m24());
+  flip_y->setM21(-m21());
+  flip_y->setM22(-m22());
+  flip_y->setM23(-m23());
+  flip_y->setM24(-m24());
   return flip_y;
 }
 

@@ -1053,7 +1053,7 @@ void LocalFrameView::ForceUpdateViewportIntersections() {
 }
 
 LayoutSVGRoot* LocalFrameView::EmbeddedReplacedContent() const {
-  auto* layout_view = this->GetLayoutView();
+  auto* layout_view = GetLayoutView();
   if (!layout_view)
     return nullptr;
 
@@ -1672,7 +1672,7 @@ void LocalFrameView::ScheduleRelayoutOfSubtree(LayoutObject* relayout_root) {
   if (!frame_->GetDocument()->IsActive())
     return;
 
-  LayoutView* layout_view = this->GetLayoutView();
+  LayoutView* layout_view = GetLayoutView();
   if (layout_view && layout_view->NeedsLayout()) {
     if (relayout_root)
       relayout_root->MarkContainerChainForLayout(false);
@@ -3321,7 +3321,7 @@ void LocalFrameView::ForceLayoutForPagination(
     float maximum_shrink_factor) {
   // Dumping externalRepresentation(m_frame->layoutObject()).ascii() is a good
   // trick to see the state of things before and after the layout
-  if (LayoutView* layout_view = this->GetLayoutView()) {
+  if (LayoutView* layout_view = GetLayoutView()) {
     float page_logical_width = layout_view->StyleRef().IsHorizontalWritingMode()
                                    ? page_size.Width()
                                    : page_size.Height();

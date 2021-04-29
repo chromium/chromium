@@ -65,7 +65,7 @@ bool StyleSheetCandidate::IsEnabledAndLoading() const {
 
 bool StyleSheetCandidate::CanBeActivated(
     const String& current_preferrable_name) const {
-  StyleSheet* sheet = this->Sheet();
+  StyleSheet* sheet = Sheet();
   auto* css_style_sheet = DynamicTo<CSSStyleSheet>(sheet);
   if (!css_style_sheet || sheet->disabled())
     return false;
