@@ -3,9 +3,3 @@ include_rules = [
  "+components/viz/host",
  "+ui/platform_window",
 ]
-
-specific_include_rules = {
-  "viz_process_transport_factory\.h" : [
-    "+components/viz/service/main/viz_compositor_thread_runner_impl.h",
-  ]
-}

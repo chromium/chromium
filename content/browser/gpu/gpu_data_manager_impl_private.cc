@@ -528,13 +528,7 @@ void GpuDataManagerImplPrivate::InitializeGpuModes() {
   // process initialization fails or GPU process is too unstable then crash the
   // browser process to reset everything.
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  // On Windows, with GPU access disabled, the display compositor is run in the
-  // browser process.
-#if defined(OS_WIN)
-  fallback_modes_.push_back(gpu::GpuMode::DISABLED);
-#else
   fallback_modes_.push_back(gpu::GpuMode::DISPLAY_COMPOSITOR);
-#endif  // OS_WIN
   if (SwiftShaderAllowed())
     fallback_modes_.push_back(gpu::GpuMode::SWIFTSHADER);
 #endif  // !OS_ANDROID && !OS_CHROMEOS
@@ -542,11 +536,11 @@ void GpuDataManagerImplPrivate::InitializeGpuModes() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kDisableGpu)) {
     // Chomecast audio-only builds run with the flag --disable-gpu. The GPU
-    // process should not be started in this case.
+    // process should not access hardware GPU in this case.
 #if BUILDFLAG(IS_CHROMECAST)
 #if BUILDFLAG(IS_CAST_AUDIO_ONLY)
     fallback_modes_.clear();
-    fallback_modes_.push_back(gpu::GpuMode::DISABLED);
+    fallback_modes_.push_back(gpu::GpuMode::DISPLAY_COMPOSITOR);
 #endif
 #elif defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
     CHECK(false) << "GPU acceleration is required on certain platforms!";
@@ -627,10 +621,6 @@ bool GpuDataManagerImplPrivate::GpuAccessAllowedForHardwareGpu(
   if (reason)
     *reason = gpu_access_blocked_reason_for_hardware_gpu_;
   return gpu_access_allowed_for_hardware_gpu_;
-}
-
-bool GpuDataManagerImplPrivate::GpuProcessStartAllowed() const {
-  return gpu_mode_ != gpu::GpuMode::DISABLED;
 }
 
 void GpuDataManagerImplPrivate::RequestDxdiagDx12VulkanGpuInfoIfNeeded(
@@ -1564,10 +1554,8 @@ void GpuDataManagerImplPrivate::FallBackToNextGpuMode() {
   gpu_mode_ = fallback_modes_.back();
   fallback_modes_.pop_back();
   DCHECK_NE(gpu_mode_, gpu::GpuMode::UNKNOWN);
-  if (gpu_mode_ == gpu::GpuMode::DISPLAY_COMPOSITOR ||
-      gpu_mode_ == gpu::GpuMode::DISABLED) {
+  if (gpu_mode_ == gpu::GpuMode::DISPLAY_COMPOSITOR)
     OnGpuBlocked();
-  }
 }
 
 void GpuDataManagerImplPrivate::RecordCompositingMode() {

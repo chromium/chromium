@@ -20,9 +20,6 @@ enum class GpuMode {
   SWIFTSHADER,
   // The GPU process is running for the display compositor.
   DISPLAY_COMPOSITOR,
-  // The GPU process is disabled and won't start. This is only used on Windows
-  // when GPU acceleration and SwiftShader are both disabled.
-  DISABLED,
 };
 
 }  // namespace gpu

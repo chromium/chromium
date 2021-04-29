@@ -167,53 +167,30 @@ void VizProcessTransportFactory::ConnectHostFrameSinkManager() {
       std::move(frame_sink_manager_client_receiver), resize_task_runner_,
       std::move(frame_sink_manager));
 
-  if (GpuDataManagerImpl::GetInstance()->GpuProcessStartAllowed()) {
-    // Hop to the IO thread, then send the other side of interface to viz
-    // process.
-    auto connect_on_io_thread =
-        [](mojo::PendingReceiver<viz::mojom::FrameSinkManager> receiver,
-           mojo::PendingRemote<viz::mojom::FrameSinkManagerClient> client,
-           const viz::DebugRendererSettings& debug_renderer_settings) {
-          // There should always be a GpuProcessHost instance, and GPU process,
-          // for running the compositor thread. The exception is during shutdown
-          // the GPU process won't be restarted and GpuProcessHost::Get() can
-          // return null.
-          auto* gpu_process_host = GpuProcessHost::Get();
-          if (gpu_process_host) {
-            gpu_process_host->gpu_host()->ConnectFrameSinkManager(
-                std::move(receiver), std::move(client),
-                debug_renderer_settings);
-          }
-        };
-    auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
-                           ? GetUIThreadTaskRunner({})
-                           : GetIOThreadTaskRunner({});
-    task_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(connect_on_io_thread,
-                       std::move(frame_sink_manager_receiver),
-                       std::move(frame_sink_manager_client),
-                       GetHostFrameSinkManager()->debug_renderer_settings()));
-  } else {
-    DCHECK(!viz_compositor_thread_);
-
-    // GPU process access is disabled. Start a new thread to run the display
-    // compositor in-process and connect HostFrameSinkManager to it.
-    viz_compositor_thread_ =
-        std::make_unique<viz::VizCompositorThreadRunnerImpl>();
-
-    viz::mojom::FrameSinkManagerParamsPtr params =
-        viz::mojom::FrameSinkManagerParams::New();
-    params->restart_id = viz::BeginFrameSource::kNotRestartableId;
-    base::Optional<uint32_t> activation_deadline_in_frames =
-        switches::GetDeadlineToSynchronizeSurfaces();
-    params->use_activation_deadline = activation_deadline_in_frames.has_value();
-    params->activation_deadline_in_frames =
-        activation_deadline_in_frames.value_or(0u);
-    params->frame_sink_manager = std::move(frame_sink_manager_receiver);
-    params->frame_sink_manager_client = std::move(frame_sink_manager_client);
-    viz_compositor_thread_->CreateFrameSinkManager(std::move(params));
-  }
+  // Hop to the IO thread, then send the other side of interface to viz process.
+  auto connect_on_io_thread =
+      [](mojo::PendingReceiver<viz::mojom::FrameSinkManager> receiver,
+         mojo::PendingRemote<viz::mojom::FrameSinkManagerClient> client,
+         const viz::DebugRendererSettings& debug_renderer_settings) {
+        // There should always be a GpuProcessHost instance, and GPU process,
+        // for running the compositor thread. The exception is during shutdown
+        // the GPU process won't be restarted and GpuProcessHost::Get() can
+        // return null.
+        auto* gpu_process_host = GpuProcessHost::Get();
+        if (gpu_process_host) {
+          gpu_process_host->gpu_host()->ConnectFrameSinkManager(
+              std::move(receiver), std::move(client), debug_renderer_settings);
+        }
+      };
+  auto task_runner = base::FeatureList::IsEnabled(features::kProcessHostOnUI)
+                         ? GetUIThreadTaskRunner({})
+                         : GetIOThreadTaskRunner({});
+  task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(connect_on_io_thread,
+                     std::move(frame_sink_manager_receiver),
+                     std::move(frame_sink_manager_client),
+                     GetHostFrameSinkManager()->debug_renderer_settings()));
 }
 
 void VizProcessTransportFactory::CreateLayerTreeFrameSink(

@@ -44,7 +44,6 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   gpu::GPUInfo GetGPUInfoForHardwareGpu() const;
   bool GpuAccessAllowed(std::string* reason) const;
   bool GpuAccessAllowedForHardwareGpu(std::string* reason) const;
-  bool GpuProcessStartAllowed() const;
   void RequestDxdiagDx12VulkanGpuInfoIfNeeded(GpuInfoRequest request,
                                               bool delayed);
   bool IsEssentialGpuInfoAvailable() const;

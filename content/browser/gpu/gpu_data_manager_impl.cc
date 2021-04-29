@@ -155,11 +155,6 @@ void GpuDataManagerImpl::StartUmaTimer() {
   private_->StartUmaTimer();
 }
 
-bool GpuDataManagerImpl::GpuProcessStartAllowed() const {
-  base::AutoLock auto_lock(lock_);
-  return private_->GpuProcessStartAllowed();
-}
-
 void GpuDataManagerImpl::UpdateGpuInfo(
     const gpu::GPUInfo& gpu_info,
     const base::Optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu) {

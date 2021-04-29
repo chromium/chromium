@@ -2852,10 +2852,7 @@ source_set("browser") {
       "renderer_host/delegated_frame_host.cc",
       "renderer_host/delegated_frame_host.h",
     ]
-    deps += [
-      "//components/viz/service/main",
-      "//ui/compositor",
-    ]
+    deps += [ "//ui/compositor" ]
     if (is_mac) {
       sources += [
         "renderer_host/browser_compositor_view_mac.h",
