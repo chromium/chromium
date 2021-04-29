@@ -8,7 +8,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
 
@@ -99,7 +98,7 @@ public class TasksSurfaceCoordinator implements TasksSurface {
                 trendyTermsUpdater);
 
         if (hasMVTiles) {
-            LinearLayout mvTilesLayout = mView.findViewById(R.id.mv_tiles_layout);
+            MvTilesLayout mvTilesLayout = mView.findViewById(R.id.mv_tiles_layout);
             mMostVisitedList = new MostVisitedListCoordinator(
                     activity, mvTilesLayout, mPropertyModel, parentTabSupplier);
             mMostVisitedList.initialize();

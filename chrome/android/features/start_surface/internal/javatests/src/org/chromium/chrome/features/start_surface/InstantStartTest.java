@@ -1138,7 +1138,7 @@ public class InstantStartTest {
         });
         View surface =
                 mActivityTestRule.getActivity().findViewById(R.id.primary_tasks_surface_view);
-        mRenderTestRule.render(surface, "singlePane_landscape");
+        mRenderTestRule.render(surface, "singlePane_landscapeV2");
     }
 
     @Test
@@ -1238,7 +1238,7 @@ public class InstantStartTest {
         ViewUtils.onViewWaiting(
                 allOf(withId(R.id.tile_view_title), withText("0 EXPLORE_SITES"), isDisplayed()));
         ChromeRenderTestRule.sanitize(surface);
-        mRenderTestRule.render(surface, "singlePane_MV_withExploreSitesView");
+        mRenderTestRule.render(surface, "singlePane_MV_withExploreSitesViewV2");
 
         // Initializes native.
         startAndWaitNativeInitialization();

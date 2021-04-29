@@ -65,6 +65,7 @@ android_resources("java_resources") {
     "java/res/layout/incognito_description_container_layout.xml",
     "java/res/layout/iph_drag_and_drop_dialog_layout.xml",
     "java/res/layout/large_message_card_item.xml",
+    "java/res/layout/mv_tiles_layout.xml",
     "java/res/layout/new_tab_tile_card_item.xml",
     "java/res/layout/price_card.xml",
     "java/res/layout/price_tracking_dialog_layout.xml",
@@ -97,6 +98,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/tasks/MostVisitedListCoordinator.java",
     "java/src/org/chromium/chrome/browser/tasks/MostVisitedListViewBinder.java",
+    "java/src/org/chromium/chrome/browser/tasks/MvTilesLayout.java",
     "java/src/org/chromium/chrome/browser/tasks/SingleTabSwitcherCoordinator.java",
     "java/src/org/chromium/chrome/browser/tasks/SingleTabSwitcherMediator.java",
     "java/src/org/chromium/chrome/browser/tasks/SingleTabView.java",
