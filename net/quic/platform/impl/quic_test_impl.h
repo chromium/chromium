@@ -66,15 +66,6 @@ class ScopedEnvironmentForThreadsImpl {
 
 std::string QuicGetTestMemoryCachePathImpl();
 
-#if GTEST_HAS_DEATH_TEST && !defined(NDEBUG)
-#define EXPECT_QUIC_DEBUG_DEATH_IMPL(condition, message) \
-  EXPECT_DEBUG_DEATH(condition, message)
-#else
-#define EXPECT_QUIC_DEBUG_DEATH_IMPL(condition, message) \
-  do {                                                   \
-  } while (0)
-#endif
-
 #define QUIC_SLOW_TEST_IMPL(name) DISABLED_##name
 
 #endif  // NET_QUIC_PLATFORM_IMPL_QUIC_TEST_IMPL_H_
