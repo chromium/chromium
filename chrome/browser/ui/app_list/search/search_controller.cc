@@ -15,6 +15,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/metrics_hashes.h"
+#include "base/sequence_token.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -32,6 +33,8 @@
 #include "chrome/browser/ui/app_list/search/search_result_ranker/search_result_ranker.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 
 namespace app_list {
 
@@ -77,8 +80,10 @@ SearchController::SearchController(AppListModelUpdater* model_updater,
       list_controller_(list_controller) {
   if (app_list_features::IsCategoricalSearchEnabled()) {
     ranker_ = std::make_unique<RankerDelegate>(profile, model_updater, this);
+    mixer_ = nullptr;
   } else {
     mixer_ = std::make_unique<Mixer>(model_updater);
+    ranker_ = nullptr;
   }
 }
 
@@ -101,8 +106,9 @@ void SearchController::Start(const std::u16string& query) {
                                 : last_query_.length() - query.length();
     UMA_HISTOGRAM_BOOLEAN(kLauncherSearchQueryLengthJumped, length_diff > 1);
   }
-  for (const auto& provider : providers_)
+  for (const auto& provider : providers_) {
     provider->Start(query);
+  }
 
   dispatching_query_ = false;
   last_query_ = query;
@@ -154,24 +160,49 @@ size_t SearchController::AddGroup(size_t max_results) {
 
 void SearchController::AddProvider(size_t group_id,
                                    std::unique_ptr<SearchProvider> provider) {
-  if (!ranker_) {
+  if (ranker_) {
+    provider->set_controller(this);
+  } else {
     mixer_->AddProviderToGroup(group_id, provider.get());
+    provider->set_controller(this);
+    provider->set_result_changed_callback(
+        base::BindRepeating(&SearchController::OnResultsChangedWithType,
+                            base::Unretained(this), provider->ResultType()));
+  }
+  providers_.emplace_back(std::move(provider));
+}
+
+void SearchController::SetResults(
+    const ash::AppListSearchResultType provider_type,
+    Results results) {
+  DCHECK(ranker_);
+
+  auto ui_thread = content::GetUIThreadTaskRunner({});
+  if (!ui_thread->RunsTasksInCurrentSequence()) {
+    ui_thread->PostTask(
+        FROM_HERE,
+        base::BindOnce(&SearchController::SetResults, base::Unretained(this),
+                       provider_type, std::move(results)));
+    return;
   }
 
-  provider->set_result_changed_callback(
-      base::BindRepeating(&SearchController::OnResultsChangedWithType,
-                          base::Unretained(this), provider->ResultType()));
-  providers_.emplace_back(std::move(provider));
+  results_[provider_type] = std::move(results);
 }
 
 void SearchController::OnResultsChangedWithType(
     ash::AppListSearchResultType result_type) {
+  if (!mixer_)
+    return;
+
   OnResultsChanged();
   if (results_changed_callback_)
     results_changed_callback_.Run(result_type);
 }
 
 void SearchController::OnResultsChanged() {
+  if (!mixer_)
+    return;
+
   if (dispatching_query_)
     return;
 
@@ -179,11 +210,7 @@ void SearchController::OnResultsChanged() {
       query_for_recommendation_
           ? ash::SharedAppListConfig::instance().num_start_page_tiles()
           : ash::SharedAppListConfig::instance().max_search_results();
-  if (ranker_) {
-    // TODO(crbug.com/1199206): Implement.
-  } else {
-    mixer_->MixAndPublish(num_max_results, last_query_);
-  }
+  mixer_->MixAndPublish(num_max_results, last_query_);
 }
 
 ChromeSearchResult* SearchController::FindSearchResult(
@@ -218,17 +245,31 @@ void SearchController::OnSearchResultsImpressionMade(
 ChromeSearchResult* SearchController::GetResultByTitleForTest(
     const std::string& title) {
   std::u16string target_title = base::ASCIIToUTF16(title);
-  for (const auto& provider : providers_) {
-    for (const auto& result : provider->results()) {
-      if (result->title() == target_title &&
-          result->result_type() ==
-              ash::AppListSearchResultType::kInstalledApp &&
-          !result->is_recommendation()) {
-        return result.get();
+  if (ranker_) {
+    for (const auto& provider_results : results_) {
+      for (const auto& result : provider_results.second) {
+        if (result->title() == target_title &&
+            result->result_type() ==
+                ash::AppListSearchResultType::kInstalledApp &&
+            !result->is_recommendation()) {
+          return result.get();
+        }
       }
     }
+    return nullptr;
+  } else {
+    for (const auto& provider : providers_) {
+      for (const auto& result : provider->results()) {
+        if (result->title() == target_title &&
+            result->result_type() ==
+                ash::AppListSearchResultType::kInstalledApp &&
+            !result->is_recommendation()) {
+          return result.get();
+        }
+      }
+    }
+    return nullptr;
   }
-  return nullptr;
 }
 
 int SearchController::GetLastQueryLength() const {

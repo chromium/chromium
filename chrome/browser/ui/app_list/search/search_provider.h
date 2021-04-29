@@ -18,6 +18,7 @@ class ChromeSearchResult;
 namespace app_list {
 
 enum class RankingItemType;
+class SearchController;
 
 class SearchProvider {
  public:
@@ -41,6 +42,10 @@ class SearchProvider {
   virtual void AppListShown() {}
   // Returns the main result type created by this provider.
   virtual ash::AppListSearchResultType ResultType() = 0;
+
+  void set_controller(SearchController* controller) {
+    search_controller_ = controller;
+  }
 
   void set_result_changed_callback(ResultChangedCallback callback) {
     result_changed_callback_ = std::move(callback);
@@ -67,6 +72,7 @@ class SearchProvider {
   void FireResultChanged();
 
   ResultChangedCallback result_changed_callback_;
+  SearchController* search_controller_;
   Results results_;
 
   DISALLOW_COPY_AND_ASSIGN(SearchProvider);

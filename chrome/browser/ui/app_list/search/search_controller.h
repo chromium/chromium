@@ -42,11 +42,20 @@ class SearchController {
   using ResultsChangedCallback =
       base::RepeatingCallback<void(ash::AppListSearchResultType)>;
 
+  using ProviderType = ash::AppListSearchResultType;
+  using ResultType = ash::AppListSearchResultType;
+
+  using Results = std::vector<std::unique_ptr<ChromeSearchResult>>;
+  using ResultsMap = base::flat_map<ProviderType, Results>;
+
   SearchController(AppListModelUpdater* model_updater,
                    AppListControllerDelegate* list_controller,
                    ash::AppListNotifier* notifier,
                    Profile* profile);
   virtual ~SearchController();
+
+  SearchController(const SearchController&) = delete;
+  SearchController& operator=(const SearchController&) = delete;
 
   void InitializeRankers();
 
@@ -61,6 +70,10 @@ class SearchController {
 
   // Takes ownership of |provider| and associates it with given mixer group.
   void AddProvider(size_t group_id, std::unique_ptr<SearchProvider> provider);
+
+  // Update the controller with the given results. Used only if the categorical
+  // search feature flag is enabled.
+  void SetResults(ash::AppListSearchResultType provider_type, Results results);
 
   virtual ChromeSearchResult* FindSearchResult(const std::string& result_id);
   ChromeSearchResult* GetResultByTitleForTest(const std::string& title);
@@ -118,13 +131,15 @@ class SearchController {
   // is enabled.
   std::unique_ptr<RankerDelegate> ranker_;
 
+  // Storage for all search results for the current query. Only used when
+  // categorical search is enabled.
+  ResultsMap results_;
+
   std::unique_ptr<Mixer> mixer_;
   std::unique_ptr<SearchMetricsObserver> metrics_observer_;
   using Providers = std::vector<std::unique_ptr<SearchProvider>>;
   Providers providers_;
   AppListControllerDelegate* list_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchController);
 };
 
 }  // namespace app_list
