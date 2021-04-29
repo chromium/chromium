@@ -10,8 +10,7 @@
 #include "base/bind.h"
 #include "base/json/json_writer.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/history_clusters/core/memories_features.h"
@@ -23,19 +22,15 @@ namespace {
 
 const size_t kMaxExpectedResponseSize = 1024 * 1024;
 
-// Best effort attempt to clean a serialized protobuff for debug prints.
-std::string CleanSerializedProto(const std::string& serialized) {
-  auto copy = serialized;
-  base::ranges::replace_if(
-      copy, [](char c) { return !std::isalnum(c); }, ' ');
-  copy = base::CollapseWhitespaceASCII(copy, true);
-  return copy;
-}
-
+// Also writes one line of debug information per visit to `debug_string`, if
+// the parameter is non-nullptr.
 proto::GetClustersRequest CreateRequestProto(
-    const std::vector<history::ClusterVisit>& visits) {
+    const std::vector<history::ClusterVisit>& visits,
+    base::Optional<DebugLoggerCallback> debug_logger) {
   proto::GetClustersRequest request;
   request.set_experiment_name(ExperimentNameForRemoteModelEndpoint());
+
+  base::ListValue debug_visits_list;
   for (auto& visit : visits) {
     proto::Visit* request_visit = request.add_visits();
     request_visit->set_visit_id(visit.visit_row.visit_id);
@@ -51,6 +46,38 @@ proto::GetClustersRequest CreateRequestProto(
     //  |foreground_time_secs|
     //  |site_engagement_score|
     //  |is_from_google_search|
+
+    if (debug_logger) {
+      base::DictionaryValue debug_visit;
+      debug_visit.SetStringKey("visitId",
+                               base::NumberToString(request_visit->visit_id()));
+      debug_visit.SetStringKey("url", request_visit->url());
+      debug_visit.SetStringKey(
+          "navigationTimeMs",
+          base::NumberToString(request_visit->navigation_time_ms()));
+      debug_visit.SetStringKey(
+          "pageEndReason",
+          base::NumberToString(request_visit->page_end_reason()));
+      debug_visit.SetStringKey(
+          "pageTransition",
+          base::NumberToString(request_visit->page_transition()));
+      debug_visits_list.Append(std::move(debug_visit));
+    }
+  }
+
+  if (debug_logger) {
+    debug_logger->Run("MemoriesRemoteModelHelper CreateRequestProto:");
+
+    base::DictionaryValue debug_value;
+    debug_value.SetStringKey("experiment_name", request.experiment_name());
+    debug_value.SetKey("visits", std::move(debug_visits_list));
+
+    std::string debug_string;
+    if (base::JSONWriter::WriteWithOptions(
+            debug_value, base::JSONWriter::OPTIONS_PRETTY_PRINT,
+            &debug_string)) {
+      debug_logger->Run(debug_string);
+    }
   }
   return request;
 }
@@ -80,8 +107,10 @@ mojom::VisitPtr CreateVisitMojom(
 }
 
 Memories ParseResponseProto(const std::vector<history::ClusterVisit>& visits,
-                            const proto::GetClustersResponse& response_proto) {
+                            const proto::GetClustersResponse& response_proto,
+                            base::Optional<DebugLoggerCallback> debug_logger) {
   Memories result;
+  base::ListValue debug_clusters_list;
   for (const proto::Cluster& cluster : response_proto.clusters()) {
     auto memory = mojom::Memory::New();
     memory->id = base::UnguessableToken::Create();
@@ -93,6 +122,25 @@ Memories ParseResponseProto(const std::vector<history::ClusterVisit>& visits,
       memory->top_visits.push_back(CreateVisitMojom(visits, visit_id));
     }
 
+    if (debug_logger) {
+      base::DictionaryValue debug_cluster;
+      debug_cluster.SetStringKey("id", memory->id.ToString());
+
+      base::ListValue debug_keywords;
+      for (const std::string& keyword : cluster.keywords()) {
+        debug_keywords.Append(keyword);
+      }
+      debug_cluster.SetKey("keywords", std::move(debug_keywords));
+
+      base::ListValue debug_visit_ids;
+      for (int64_t visit_id : cluster.visit_ids()) {
+        debug_visit_ids.Append(base::NumberToString(visit_id));
+      }
+      debug_cluster.SetKey("visit_ids", std::move(debug_visit_ids));
+
+      debug_clusters_list.Append(std::move(debug_cluster));
+    }
+
     // TODO(manukh) fill out:
     //  |related_searches|
     //  |related_tab_groups|
@@ -102,6 +150,18 @@ Memories ParseResponseProto(const std::vector<history::ClusterVisit>& visits,
 
     result.emplace_back(std::move(memory));
   }
+
+  if (debug_logger) {
+    debug_logger->Run("MemoriesRemoteModelHelper ParseResponseProto Clusters:");
+
+    std::string debug_string;
+    if (base::JSONWriter::WriteWithOptions(
+            debug_clusters_list, base::JSONWriter::OPTIONS_PRETTY_PRINT,
+            &debug_string)) {
+      debug_logger->Run(debug_string);
+    }
+  }
+
   return result;
 }
 
@@ -109,7 +169,7 @@ Memories ParseResponseProto(const std::vector<history::ClusterVisit>& visits,
 
 MemoriesRemoteModelHelper::MemoriesRemoteModelHelper(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    base::RepeatingCallback<void(const std::string&)> debug_logger)
+    base::Optional<DebugLoggerCallback> debug_logger)
     : url_loader_(nullptr),
       url_loader_factory_(url_loader_factory),
       debug_logger_(debug_logger) {}
@@ -128,15 +188,12 @@ void MemoriesRemoteModelHelper::GetMemories(
 
   // It's weird but the endpoint only accepts JSON, so wrap our serialized proto
   // like this: {"data":"<base64-encoded-proto-serialization>"}
-  proto::GetClustersRequest request_proto = CreateRequestProto(visits);
+  proto::GetClustersRequest request_proto =
+      CreateRequestProto(visits, debug_logger_);
   const std::string serialized_request_proto =
       request_proto.SerializeAsString();
   std::string request_proto_base64;
   base::Base64Encode(serialized_request_proto, &request_proto_base64);
-
-  debug_logger_.Run(base::StringPrintf(
-      "MemoriesRemoteModelHelper::GetMemories request = %s",
-      CleanSerializedProto(serialized_request_proto).c_str()));
 
   base::DictionaryValue container_value;
   container_value.SetStringPath("data", request_proto_base64);
@@ -150,19 +207,18 @@ void MemoriesRemoteModelHelper::GetMemories(
   url_loader_->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(
-          [](base::RepeatingCallback<void(const std::string&)> debug_logger,
+          [](base::Optional<DebugLoggerCallback> debug_logger,
              const std::vector<history::ClusterVisit>& visits,
              std::unique_ptr<std::string> response) {
-            debug_logger.Run(base::StringPrintf(
-                "MemoriesRemoteModelHelper::GetMemories response = %s",
-                response ? CleanSerializedProto(*response).c_str()
-                         : "nullptr"));
             if (!response) {
+              if (debug_logger) {
+                debug_logger->Run("MemoriesRemoteModelHelper response nullptr");
+              }
               return history_clusters::Memories();
             }
             proto::GetClustersResponse response_proto;
             response_proto.ParseFromString(*response);
-            return ParseResponseProto(visits, response_proto);
+            return ParseResponseProto(visits, response_proto, debug_logger);
           },
           debug_logger_, visits)
           .Then(std::move(callback)),

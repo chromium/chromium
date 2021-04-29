@@ -47,7 +47,8 @@ class MemoriesService : public KeyedService {
   void AddObserver(Observer* obs);
   void RemoveObserver(Observer* obs);
 
-  // Notifies the observers of a debug message being available.
+  // Notifies the observers of a debug message being available. Caller is
+  // responsible for checking that logging is enabled before calling this.
   void NotifyDebugMessage(const std::string& message) const;
 
   // TODO(manukh) |MemoriesService| should be responsible for constructing the

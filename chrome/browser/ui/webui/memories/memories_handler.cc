@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/history_clusters/memories_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -109,12 +108,6 @@ void MemoriesHandler::QueryMemories(
 }
 
 void MemoriesHandler::OnMemoriesDebugMessage(const std::string& message) {
-  // Ignore messages if all the debug flags are off.
-  if (!base::FeatureList::IsEnabled(history_clusters::kDebug) &&
-      !history_clusters::RemoteModelEndpointForDebugging().is_valid()) {
-    return;
-  }
-
   if (content::RenderFrameHost* rfh = web_contents_->GetMainFrame()) {
     rfh->AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kInfo, message);
   }

@@ -20,6 +20,9 @@ GURL RemoteModelEndpointForDebugging();
 // remote model debug endpoint is disabled.
 std::string ExperimentNameForRemoteModelEndpoint();
 
+// Returns true if debug logs should be generated and shown in WebUI inspector.
+bool DebugLoggingEnabled();
+
 // If enabled, completed visits are persisted to the history DB and read back
 // when clustering. If disabled, completed visits are kept in-memory and used
 // these in-memory visits are used when clustering.

@@ -18,6 +18,13 @@ std::string ExperimentNameForRemoteModelEndpoint() {
       kRemoteModelForDebugging, "MemoriesRemoteModelEndpointExperimentName");
 }
 
+bool DebugLoggingEnabled() {
+  // Do debug logging if the kDebug feature is enabled. Additionally, remote
+  // endpoint for debugging users are implied to be in debug mode.
+  return base::FeatureList::IsEnabled(kDebug) ||
+         RemoteModelEndpointForDebugging().is_valid();
+}
+
 bool StoreVisitsInHistoryDb() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kMemories, "MemoriesStoreVisitsInHistoryDb", false);

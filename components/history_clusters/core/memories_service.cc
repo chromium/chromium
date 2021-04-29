@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/history_clusters/core/memories_features.h"
 #include "components/query_parser/query_parser.h"
@@ -61,13 +62,14 @@ MemoriesService::MemoriesService(
     history::HistoryService* history_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : history_service_(history_service) {
-  // Can't do this in initialization list, because |weak_ptr_factory_| usage.
-  // TODO(tommycli): Investigate if we can simplify some lifetime issues with
-  // using free-lambdas within |remote_model_helper_|.
+  base::Optional<DebugLoggerCallback> debug_logger;
+  if (DebugLoggingEnabled()) {
+    debug_logger = base::BindRepeating(&MemoriesService::NotifyDebugMessage,
+                                       weak_ptr_factory_.GetWeakPtr());
+  }
+
   remote_model_helper_ = std::make_unique<MemoriesRemoteModelHelper>(
-      url_loader_factory,
-      base::BindRepeating(&MemoriesService::NotifyDebugMessage,
-                          weak_ptr_factory_.GetWeakPtr()));
+      url_loader_factory, debug_logger);
   remote_model_helper_weak_factory_ =
       std::make_unique<base::WeakPtrFactory<MemoriesRemoteModelHelper>>(
           remote_model_helper_.get());
@@ -86,6 +88,8 @@ void MemoriesService::RemoveObserver(Observer* obs) {
 }
 
 void MemoriesService::NotifyDebugMessage(const std::string& message) const {
+  DCHECK(DebugLoggingEnabled()) << "Callers must ensure logging is enabled.";
+
   for (Observer& obs : observers_) {
     obs.OnMemoriesDebugMessage(message);
   }

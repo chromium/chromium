@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/optional.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/memories.mojom.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -22,14 +23,16 @@ namespace history_clusters {
 
 using Memories = std::vector<mojom::MemoryPtr>;
 using MemoriesCallback = base::OnceCallback<void(Memories)>;
+using DebugLoggerCallback = base::RepeatingCallback<void(const std::string&)>;
 
 // A helper class to communicate with the remote model. Forms requests from
 // |ClusterVisit|s and parses the response into |mojom::MemoryPtr|s.
 class MemoriesRemoteModelHelper {
  public:
+  // Pass in a defined `debug_logger` to enable debug logging from this class.
   MemoriesRemoteModelHelper(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      base::RepeatingCallback<void(const std::string&)> debug_logger);
+      base::Optional<DebugLoggerCallback> debug_logger);
   ~MemoriesRemoteModelHelper();
 
   // POSTs |visits| to |endpoint_| and invokes |callback| with the retrieved
@@ -54,8 +57,10 @@ class MemoriesRemoteModelHelper {
   // Used to make requests.
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
-  // Used to log debug messages.
-  base::RepeatingCallback<void(const std::string&)> debug_logger_;
+  // This should be set to base::nullopt if debug logging is disabled.
+  // This is base::Optional, so we can skip the expense of constructing the log
+  // messages if the logger is disabled.
+  base::Optional<DebugLoggerCallback> debug_logger_;
 };
 
 }  // namespace history_clusters
