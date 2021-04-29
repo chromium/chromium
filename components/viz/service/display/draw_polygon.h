@@ -32,13 +32,6 @@ class VIZ_SERVICE_EXPORT DrawPolygon {
               const gfx::Transform& transform,
               int draw_order_index = 0);
 
-  // Split takes this DrawPolygon and splits it into two pieces that are on
-  // either side of |splitter|. Any edges of this polygon that cross the plane
-  // of |splitter| will have an intersection point that is shared by both
-  // polygons on either side.
-  // Split will only return true if it determines that we got back 2
-  // intersection points. Only when it returns true will front and back both be
-  // valid new polygons that are on opposite sides of the splitting plane.
   void SplitPolygon(std::unique_ptr<DrawPolygon> polygon,
                     std::unique_ptr<DrawPolygon>* front,
                     std::unique_ptr<DrawPolygon>* back,
