@@ -11,7 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/stl_util.h"
-#include "net/third_party/quiche/src/spdy/platform/api/spdy_string_utils.h"
+#include "net/base/hex_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -100,8 +100,7 @@ TEST(HpackFuzzUtilTest, SerializedHeaderBlockPrefixes) {
 
 TEST(HpackFuzzUtilTest, PassValidInputThroughAllStages) {
   // Example lifted from HpackDecoderTest.SectionD4RequestHuffmanExamples.
-  std::string input =
-      absl::HexStringToBytes("828684418cf1e3c2e5f23a6ba0ab90f4ff");
+  std::string input = net::HexDecode("828684418cf1e3c2e5f23a6ba0ab90f4ff");
 
   HpackFuzzUtil::FuzzerContext context;
   HpackFuzzUtil::InitializeFuzzerContext(&context);

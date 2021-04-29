@@ -4,8 +4,7 @@
 
 #include "net/spdy/alps_decoder.h"
 
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
+#include "net/base/hex_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -16,13 +15,6 @@ using ::testing::Pair;
 
 namespace net {
 namespace {
-
-std::string HexDecode(base::StringPiece hex) {
-  std::string output;
-  bool success = base::HexStringToString(hex, &output);
-  DCHECK(success);
-  return output;
-}
 
 TEST(AlpsDecoderTest, EmptyInput) {
   AlpsDecoder decoder;

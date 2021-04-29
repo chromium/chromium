@@ -10,6 +10,13 @@
 
 namespace net {
 
+std::string HexDecode(base::StringPiece hex) {
+  std::string output;
+  const bool success = base::HexStringToString(hex, &output);
+  DCHECK(success);
+  return output;
+}
+
 std::string HexDump(base::StringPiece input) {
   const int kBytesPerLine = 16;  // Maximum bytes dumped per line.
   int offset = 0;

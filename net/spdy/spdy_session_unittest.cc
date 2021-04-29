@@ -95,13 +95,6 @@ base::TimeTicks InstantaneousReads() {
   return g_time_now;
 }
 
-std::string HexDecode(base::StringPiece hex) {
-  std::string output;
-  bool success = base::HexStringToString(hex, &output);
-  DCHECK(success);
-  return output;
-}
-
 class MockRequireCTDelegate : public TransportSecurityState::RequireCTDelegate {
  public:
   MOCK_METHOD3(IsCTRequiredForHost,

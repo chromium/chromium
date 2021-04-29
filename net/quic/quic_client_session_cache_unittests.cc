@@ -9,7 +9,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "net/third_party/quiche/src/common/platform/api/quiche_text_utils.h"
+#include "net/base/hex_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
@@ -128,7 +128,7 @@ class QuicClientSessionCacheTest : public testing::Test {
 
  protected:
   bssl::UniquePtr<SSL_SESSION> NewSSLSession() {
-    std::string cached_session = absl::HexStringToBytes(kCachedSession);
+    std::string cached_session = HexDecode(kCachedSession);
     SSL_SESSION* session = SSL_SESSION_from_bytes(
         reinterpret_cast<const uint8_t*>(cached_session.data()),
         cached_session.size(), ssl_ctx_.get());
