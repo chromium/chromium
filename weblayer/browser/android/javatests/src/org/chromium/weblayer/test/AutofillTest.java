@@ -19,7 +19,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
@@ -79,7 +78,6 @@ public class AutofillTest {
      */
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1201631")
     public void testBasicAutofill() throws Throwable {
         final String data = "<html><head></head><body><form action='a.html' name='formname'>"
                 + "<label>User Name:</label>"
