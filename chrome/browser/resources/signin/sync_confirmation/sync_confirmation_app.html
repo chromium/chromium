@@ -236,13 +236,21 @@
           on-click="onConfirm_" consent-confirmation autofocus>
         $i18n{syncConfirmationConfirmLabel}
       </cr-button>
+      <if expr="is_macosx or is_linux">
+        <cr-button id="settingsButton" on-click="onGoToSettings_"
+            consent-confirmation>
+          $i18n{syncConfirmationSettingsLabel}
+        </cr-button>
+      </if>
       <cr-button id="cancelButton" on-click="onUndo_">
         $i18n{syncConfirmationUndoLabel}
       </cr-button>
-      <cr-button id="settingsButton" on-click="onGoToSettings_"
-          consent-confirmation>
-        $i18n{syncConfirmationSettingsLabel}
-      </cr-button>
+      <if expr="not is_macosx and not is_linux">
+        <cr-button id="settingsButton" on-click="onGoToSettings_"
+            consent-confirmation>
+          $i18n{syncConfirmationSettingsLabel}
+        </cr-button>
+      </if>
     </div>
   </div>
 </template>
@@ -279,12 +287,20 @@
         on-click="onConfirm_" consent-confirmation>
       $i18n{syncConfirmationConfirmLabel}
     </cr-button>
+    <if expr="is_macosx or is_linux">
+      <cr-button id="settingsButton" on-click="onGoToSettings_"
+          consent-confirmation>
+        $i18n{syncConfirmationSettingsLabel}
+      </cr-button>
+    </if>
     <cr-button id="notNowButton" on-click="onUndo_">
       $i18n{syncConfirmationUndoLabel}
     </cr-button>
-    <cr-button id="settingsButton" on-click="onGoToSettings_"
-        consent-confirmation>
-      $i18n{syncConfirmationSettingsLabel}
-    </cr-button>
+    <if expr="not is_macosx and not is_linux">
+      <cr-button id="settingsButton" on-click="onGoToSettings_"
+          consent-confirmation>
+        $i18n{syncConfirmationSettingsLabel}
+      </cr-button>
+    </if>
   </div>
 </template>
