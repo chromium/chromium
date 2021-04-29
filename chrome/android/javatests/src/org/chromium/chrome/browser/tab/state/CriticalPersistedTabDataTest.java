@@ -152,7 +152,7 @@ public class CriticalPersistedTabDataTest {
         Assert.assertEquals(mCriticalPersistedTabData.getThemeColor(), THEME_COLOR);
         Assert.assertEquals(
                 mCriticalPersistedTabData.getTabLaunchTypeAtCreation(), LAUNCH_TYPE_AT_CREATION);
-        Assert.assertArrayEquals(getByteArrayFromByteBuffer(
+        Assert.assertArrayEquals(CriticalPersistedTabData.getContentStateByteArray(
                                          mCriticalPersistedTabData.getWebContentsState().buffer()),
                 WEB_CONTENTS_STATE_BYTES);
         Semaphore deleteSemaphore = new Semaphore(0);
@@ -271,7 +271,8 @@ public class CriticalPersistedTabDataTest {
         Assert.assertEquals(THEME_COLOR, deserialized.getThemeColor());
         Assert.assertEquals(LAUNCH_TYPE_AT_CREATION, deserialized.getTabLaunchTypeAtCreation());
         Assert.assertArrayEquals(WEB_CONTENTS_STATE_BYTES,
-                getByteArrayFromByteBuffer(deserialized.getWebContentsState().buffer()));
+                CriticalPersistedTabData.getContentStateByteArray(
+                        deserialized.getWebContentsState().buffer()));
     }
 
     @UiThreadTest
@@ -492,12 +493,5 @@ public class CriticalPersistedTabDataTest {
             if (type == CriticalPersistedTabDataProto.LaunchTypeAtCreation.UNKNOWN) continue;
             CriticalPersistedTabData.getLaunchType(type);
         }
-    }
-
-    private static final byte[] getByteArrayFromByteBuffer(ByteBuffer buffer) {
-        byte[] contentsStateBytes = new byte[buffer.limit()];
-        buffer.rewind();
-        buffer.get(contentsStateBytes);
-        return contentsStateBytes;
     }
 }
