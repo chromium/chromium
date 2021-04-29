@@ -479,6 +479,10 @@ void V4L2StatelessVideoDecoderBackend::PumpOutputSurfaces() {
   while (!output_request_queue_.empty()) {
     if (!output_request_queue_.front().IsReady()) {
       DVLOGF(3) << "The first surface is not ready yet.";
+      // It is possible that that V4L2 buffers for this output surface are not
+      // even queued yet. Make sure that avd_->Decode() is called to continue
+      // that work and prevent the decoding thread from starving.
+      resume_decode = true;
       break;
     }
 
