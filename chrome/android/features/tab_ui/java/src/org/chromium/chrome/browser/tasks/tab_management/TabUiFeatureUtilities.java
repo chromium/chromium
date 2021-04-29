@@ -132,9 +132,8 @@ public class TabUiFeatureUtilities {
         }
 
         // Having Tab Groups or Start implies Grid Tab Switcher.
-        return (!DeviceClassManager.enableAccessibilityLayout()
-                       && isTabManagementModuleSupported())
-                || isTabGroupsAndroidEnabled() || StartSurfaceConfiguration.isStartSurfaceEnabled();
+        return isTabManagementModuleSupported() || isTabGroupsAndroidEnabled()
+                || StartSurfaceConfiguration.isStartSurfaceEnabled();
     }
 
     /**

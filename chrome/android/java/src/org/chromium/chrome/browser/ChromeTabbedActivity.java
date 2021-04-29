@@ -2173,7 +2173,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 || state == StartSurfaceState.SHOWING_HOMEPAGE
                 || state == StartSurfaceState.SHOWING_PREVIOUS
                 || state == StartSurfaceState.SHOWING_START);
-        if (mStartSurfaceSupplier.get() != null) {
+        if (mIsAccessibilityTabSwitcherEnabled != null && mIsAccessibilityTabSwitcherEnabled
+                && mOverviewModeController != null) {
+            // TODO(1200727): This is a temporary fix that should be removed once grid tab switcher
+            //                is completely launched. The "start surface" is now created regardless
+            //                of the state of accessibility, so we check that mode first and try
+            //                showing the overview list before going to the start surface.
+            mOverviewModeController.showOverview(false);
+        } else if (mStartSurfaceSupplier.get() != null) {
             if (StartSurfaceConfiguration.shouldHideStartSurfaceWithAccessibilityOn()) {
                 state = StartSurfaceState.SHOWING_TABSWITCHER;
             }

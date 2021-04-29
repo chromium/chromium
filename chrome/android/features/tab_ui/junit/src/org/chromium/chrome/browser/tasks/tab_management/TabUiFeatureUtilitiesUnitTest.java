@@ -85,7 +85,7 @@ public class TabUiFeatureUtilitiesUnitTest {
         cacheFeatureFlags();
 
         CachedFeatureFlags.resetFlagsForTesting();
-        assertFalse(TabUiFeatureUtilities.isGridTabSwitcherEnabled());
+        assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled());
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidEnabled());
 
         setAccessibilityEnabledForTesting(true);
@@ -93,7 +93,7 @@ public class TabUiFeatureUtilitiesUnitTest {
         cacheFeatureFlags();
 
         CachedFeatureFlags.resetFlagsForTesting();
-        assertFalse(TabUiFeatureUtilities.isGridTabSwitcherEnabled());
+        assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled());
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidEnabled());
     }
 
@@ -117,7 +117,7 @@ public class TabUiFeatureUtilitiesUnitTest {
         cacheFeatureFlags();
 
         CachedFeatureFlags.resetFlagsForTesting();
-        assertFalse(TabUiFeatureUtilities.isGridTabSwitcherEnabled());
+        assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled());
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidEnabled());
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled());
     }
@@ -133,7 +133,7 @@ public class TabUiFeatureUtilitiesUnitTest {
         cacheFeatureFlags();
 
         CachedFeatureFlags.resetFlagsForTesting();
-        assertFalse(TabUiFeatureUtilities.isGridTabSwitcherEnabled());
+        assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled());
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidEnabled());
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled());
 
@@ -142,7 +142,7 @@ public class TabUiFeatureUtilitiesUnitTest {
         cacheFeatureFlags();
 
         CachedFeatureFlags.resetFlagsForTesting();
-        assertFalse(TabUiFeatureUtilities.isGridTabSwitcherEnabled());
+        assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled());
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidEnabled());
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled());
     }
@@ -167,7 +167,7 @@ public class TabUiFeatureUtilitiesUnitTest {
         cacheFeatureFlags();
 
         CachedFeatureFlags.resetFlagsForTesting();
-        assertFalse(TabUiFeatureUtilities.isGridTabSwitcherEnabled());
+        assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled());
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidEnabled());
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled());
     }
@@ -183,7 +183,7 @@ public class TabUiFeatureUtilitiesUnitTest {
         cacheFeatureFlags();
 
         CachedFeatureFlags.resetFlagsForTesting();
-        assertFalse(TabUiFeatureUtilities.isGridTabSwitcherEnabled());
+        assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled());
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidEnabled());
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled());
 
@@ -191,7 +191,7 @@ public class TabUiFeatureUtilitiesUnitTest {
         DeviceClassManager.resetForTesting();
         cacheFeatureFlags();
 
-        assertFalse(TabUiFeatureUtilities.isGridTabSwitcherEnabled());
+        assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled());
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidEnabled());
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled());
     }
@@ -215,7 +215,7 @@ public class TabUiFeatureUtilitiesUnitTest {
         DeviceClassManager.resetForTesting();
         cacheFeatureFlags();
 
-        assertFalse(TabUiFeatureUtilities.isGridTabSwitcherEnabled());
+        assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled());
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidEnabled());
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled());
     }
@@ -231,7 +231,7 @@ public class TabUiFeatureUtilitiesUnitTest {
         cacheFeatureFlags();
 
         CachedFeatureFlags.resetFlagsForTesting();
-        assertFalse(TabUiFeatureUtilities.isGridTabSwitcherEnabled());
+        assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled());
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidEnabled());
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled());
 
@@ -239,7 +239,7 @@ public class TabUiFeatureUtilitiesUnitTest {
         DeviceClassManager.resetForTesting();
         cacheFeatureFlags();
 
-        assertFalse(TabUiFeatureUtilities.isGridTabSwitcherEnabled());
+        assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled());
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidEnabled());
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled());
     }
@@ -255,7 +255,7 @@ public class TabUiFeatureUtilitiesUnitTest {
         cacheFeatureFlags();
 
         CachedFeatureFlags.resetFlagsForTesting();
-        assertFalse(TabUiFeatureUtilities.isGridTabSwitcherEnabled());
+        assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled());
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidEnabled());
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled());
 
@@ -263,7 +263,7 @@ public class TabUiFeatureUtilitiesUnitTest {
         DeviceClassManager.resetForTesting();
         cacheFeatureFlags();
 
-        assertFalse(TabUiFeatureUtilities.isGridTabSwitcherEnabled());
+        assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled());
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidEnabled());
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled());
     }
@@ -336,7 +336,7 @@ public class TabUiFeatureUtilitiesUnitTest {
         DeviceClassManager.resetForTesting();
         cacheFeatureFlags();
 
-        assertFalse(TabUiFeatureUtilities.isGridTabSwitcherEnabled());
+        assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled());
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidEnabled());
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled());
     }
@@ -352,7 +352,7 @@ public class TabUiFeatureUtilitiesUnitTest {
         cacheFeatureFlags();
 
         CachedFeatureFlags.resetFlagsForTesting();
-        assertFalse(TabUiFeatureUtilities.isGridTabSwitcherEnabled());
+        assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled());
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidEnabled());
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled());
 
@@ -360,7 +360,7 @@ public class TabUiFeatureUtilitiesUnitTest {
         DeviceClassManager.resetForTesting();
         cacheFeatureFlags();
 
-        assertFalse(TabUiFeatureUtilities.isGridTabSwitcherEnabled());
+        assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled());
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidEnabled());
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled());
     }
@@ -431,7 +431,7 @@ public class TabUiFeatureUtilitiesUnitTest {
         CachedFeatureFlags.resetFlagsForTesting();
         // Pretend that we've flipped the continuation flag.
         CachedFeatureFlags.setForTesting(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID, false);
-        assertFalse(TabUiFeatureUtilities.isGridTabSwitcherEnabled());
+        assertTrue(TabUiFeatureUtilities.isGridTabSwitcherEnabled());
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidEnabled());
         assertFalse(TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled());
     }
