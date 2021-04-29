@@ -22,7 +22,6 @@
 #include "base/task_runner_util.h"
 #include "base/trace_event/trace_event.h"
 #include "components/services/storage/public/cpp/constants.h"
-#include "components/services/storage/public/cpp/storage_key.h"
 #include "components/services/storage/service_worker/service_worker_disk_cache.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/completion_once_callback.h"
@@ -67,10 +66,10 @@ ServiceWorkerStorage::InitialData::~InitialData() = default;
 
 ServiceWorkerStorage::DidDeleteRegistrationParams::DidDeleteRegistrationParams(
     int64_t registration_id,
-    GURL origin,
+    const StorageKey& key,
     DeleteRegistrationCallback callback)
     : registration_id(registration_id),
-      origin(origin),
+      key(key),
       callback(std::move(callback)) {}
 
 ServiceWorkerStorage::DidDeleteRegistrationParams::
@@ -108,13 +107,14 @@ void ServiceWorkerStorage::GetRegisteredOrigins(
   }
 
   std::vector<url::Origin> origins;
-  for (const auto& origin : registered_origins_)
-    origins.push_back(origin);
+  for (const auto& key : registered_keys_)
+    origins.push_back(key.origin());
   std::move(callback).Run(std::move(origins));
 }
 
 void ServiceWorkerStorage::FindRegistrationForClientUrl(
     const GURL& client_url,
+    const StorageKey& key,
     FindRegistrationDataCallback callback) {
   DCHECK(!client_url.has_ref());
   switch (state_) {
@@ -128,7 +128,7 @@ void ServiceWorkerStorage::FindRegistrationForClientUrl(
     case STORAGE_STATE_UNINITIALIZED:
       LazyInitialize(base::BindOnce(
           &ServiceWorkerStorage::FindRegistrationForClientUrl,
-          weak_factory_.GetWeakPtr(), client_url, std::move(callback)));
+          weak_factory_.GetWeakPtr(), client_url, key, std::move(callback)));
       TRACE_EVENT_INSTANT1(
           "ServiceWorker",
           "ServiceWorkerStorage::FindRegistrationForClientUrl:LazyInitialize",
@@ -139,7 +139,7 @@ void ServiceWorkerStorage::FindRegistrationForClientUrl(
   }
 
   // Bypass database lookup when there is no stored registration.
-  if (!base::Contains(registered_origins_, url::Origin::Create(client_url))) {
+  if (!base::Contains(registered_keys_, key)) {
     std::move(callback).Run(
         /*data=*/nullptr, /*resources=*/nullptr,
         ServiceWorkerDatabase::Status::kErrorNotFound);
@@ -149,11 +149,12 @@ void ServiceWorkerStorage::FindRegistrationForClientUrl(
   database_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&FindForClientUrlInDB, database_.get(),
                                 base::ThreadTaskRunnerHandle::Get(), client_url,
-                                std::move(callback)));
+                                key, std::move(callback)));
 }
 
 void ServiceWorkerStorage::FindRegistrationForScope(
     const GURL& scope,
+    const StorageKey& key,
     FindRegistrationDataCallback callback) {
   switch (state_) {
     case STORAGE_STATE_DISABLED:
@@ -167,14 +168,14 @@ void ServiceWorkerStorage::FindRegistrationForScope(
     case STORAGE_STATE_UNINITIALIZED:
       LazyInitialize(base::BindOnce(
           &ServiceWorkerStorage::FindRegistrationForScope,
-          weak_factory_.GetWeakPtr(), scope, std::move(callback)));
+          weak_factory_.GetWeakPtr(), scope, key, std::move(callback)));
       return;
     case STORAGE_STATE_INITIALIZED:
       break;
   }
 
   // Bypass database lookup when there is no stored registration.
-  if (!base::Contains(registered_origins_, url::Origin::Create(scope))) {
+  if (!base::Contains(registered_keys_, key)) {
     RunSoon(FROM_HERE,
             base::BindOnce(std::move(callback),
                            /*data=*/nullptr, /*resources=*/nullptr,
@@ -184,13 +185,13 @@ void ServiceWorkerStorage::FindRegistrationForScope(
 
   database_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&FindForScopeInDB, database_.get(),
-                                base::ThreadTaskRunnerHandle::Get(), scope,
+                                base::ThreadTaskRunnerHandle::Get(), scope, key,
                                 std::move(callback)));
 }
 
 void ServiceWorkerStorage::FindRegistrationForId(
     int64_t registration_id,
-    const url::Origin& origin,
+    const StorageKey& key,
     FindRegistrationDataCallback callback) {
   switch (state_) {
     case STORAGE_STATE_DISABLED:
@@ -203,7 +204,7 @@ void ServiceWorkerStorage::FindRegistrationForId(
     case STORAGE_STATE_UNINITIALIZED:
       LazyInitialize(
           base::BindOnce(&ServiceWorkerStorage::FindRegistrationForId,
-                         weak_factory_.GetWeakPtr(), registration_id, origin,
+                         weak_factory_.GetWeakPtr(), registration_id, key,
                          std::move(callback)));
       return;
     case STORAGE_STATE_INITIALIZED:
@@ -211,7 +212,7 @@ void ServiceWorkerStorage::FindRegistrationForId(
   }
 
   // Bypass database lookup when there is no stored registration.
-  if (!base::Contains(registered_origins_, origin)) {
+  if (!base::Contains(registered_keys_, key)) {
     std::move(callback).Run(
         /*data=*/nullptr, /*resources=*/nullptr,
         ServiceWorkerDatabase::Status::kErrorNotFound);
@@ -221,7 +222,7 @@ void ServiceWorkerStorage::FindRegistrationForId(
   database_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&FindForIdInDB, database_.get(),
                                 base::ThreadTaskRunnerHandle::Get(),
-                                registration_id, origin, std::move(callback)));
+                                registration_id, key, std::move(callback)));
 }
 
 void ServiceWorkerStorage::FindRegistrationForIdOnly(
@@ -250,8 +251,8 @@ void ServiceWorkerStorage::FindRegistrationForIdOnly(
                                 registration_id, std::move(callback)));
 }
 
-void ServiceWorkerStorage::GetRegistrationsForOrigin(
-    const url::Origin& origin,
+void ServiceWorkerStorage::GetRegistrationsForStorageKey(
+    const StorageKey& key,
     GetRegistrationsDataCallback callback) {
   switch (state_) {
     case STORAGE_STATE_DISABLED:
@@ -264,9 +265,9 @@ void ServiceWorkerStorage::GetRegistrationsForOrigin(
     case STORAGE_STATE_INITIALIZING:
       // Fall-through.
     case STORAGE_STATE_UNINITIALIZED:
-      LazyInitialize(base::BindOnce(
-          &ServiceWorkerStorage::GetRegistrationsForOrigin,
-          weak_factory_.GetWeakPtr(), origin, std::move(callback)));
+      LazyInitialize(
+          base::BindOnce(&ServiceWorkerStorage::GetRegistrationsForStorageKey,
+                         weak_factory_.GetWeakPtr(), key, std::move(callback)));
       return;
     case STORAGE_STATE_INITIALIZED:
       break;
@@ -280,15 +281,15 @@ void ServiceWorkerStorage::GetRegistrationsForOrigin(
   base::PostTaskAndReplyWithResult(
       database_task_runner_.get(), FROM_HERE,
       base::BindOnce(&ServiceWorkerDatabase::GetRegistrationsForStorageKey,
-                     base::Unretained(database_.get()), StorageKey(origin),
-                     registrations_ptr, resource_lists_ptr),
-      base::BindOnce(&ServiceWorkerStorage::DidGetRegistrationsForOrigin,
+                     base::Unretained(database_.get()), key, registrations_ptr,
+                     resource_lists_ptr),
+      base::BindOnce(&ServiceWorkerStorage::DidGetRegistrationsForStorageKey,
                      weak_factory_.GetWeakPtr(), std::move(callback),
                      std::move(registrations), std::move(resource_lists)));
 }
 
-void ServiceWorkerStorage::GetUsageForOrigin(
-    const url::Origin& origin,
+void ServiceWorkerStorage::GetUsageForStorageKey(
+    const StorageKey& key,
     GetUsageForOriginCallback callback) {
   switch (state_) {
     case STORAGE_STATE_DISABLED:
@@ -300,9 +301,9 @@ void ServiceWorkerStorage::GetUsageForOrigin(
     case STORAGE_STATE_INITIALIZING:
       // Fall-through.
     case STORAGE_STATE_UNINITIALIZED:
-      LazyInitialize(base::BindOnce(&ServiceWorkerStorage::GetUsageForOrigin,
-                                    weak_factory_.GetWeakPtr(), origin,
-                                    std::move(callback)));
+      LazyInitialize(
+          base::BindOnce(&ServiceWorkerStorage::GetUsageForStorageKey,
+                         weak_factory_.GetWeakPtr(), key, std::move(callback)));
       return;
     case STORAGE_STATE_INITIALIZED:
       break;
@@ -310,9 +311,9 @@ void ServiceWorkerStorage::GetUsageForOrigin(
 
   database_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&ServiceWorkerStorage::GetUsageForOriginInDB,
-                     database_.get(), base::ThreadTaskRunnerHandle::Get(),
-                     origin, std::move(callback)));
+      base::BindOnce(&ServiceWorkerStorage::GetUsageForStorageKeyInDB,
+                     database_.get(), base::ThreadTaskRunnerHandle::Get(), key,
+                     std::move(callback)));
 }
 
 void ServiceWorkerStorage::GetAllRegistrations(
@@ -389,7 +390,7 @@ void ServiceWorkerStorage::StoreRegistrationData(
 
 void ServiceWorkerStorage::UpdateToActiveState(
     int64_t registration_id,
-    const GURL& origin,
+    const StorageKey& key,
     DatabaseStatusCallback callback) {
   switch (state_) {
     case STORAGE_STATE_DISABLED:
@@ -400,7 +401,7 @@ void ServiceWorkerStorage::UpdateToActiveState(
     case STORAGE_STATE_UNINITIALIZED:
       LazyInitialize(base::BindOnce(&ServiceWorkerStorage::UpdateToActiveState,
                                     weak_factory_.GetWeakPtr(), registration_id,
-                                    origin, std::move(callback)));
+                                    key, std::move(callback)));
       return;
     case STORAGE_STATE_INITIALIZED:
       break;
@@ -409,14 +410,13 @@ void ServiceWorkerStorage::UpdateToActiveState(
   base::PostTaskAndReplyWithResult(
       database_task_runner_.get(), FROM_HERE,
       base::BindOnce(&ServiceWorkerDatabase::UpdateVersionToActive,
-                     base::Unretained(database_.get()), registration_id,
-                     StorageKey(url::Origin::Create(origin))),
+                     base::Unretained(database_.get()), registration_id, key),
       std::move(callback));
 }
 
 void ServiceWorkerStorage::UpdateLastUpdateCheckTime(
     int64_t registration_id,
-    const GURL& origin,
+    const StorageKey& key,
     base::Time last_update_check_time,
     DatabaseStatusCallback callback) {
   switch (state_) {
@@ -428,7 +428,7 @@ void ServiceWorkerStorage::UpdateLastUpdateCheckTime(
     case STORAGE_STATE_UNINITIALIZED:
       LazyInitialize(
           base::BindOnce(&ServiceWorkerStorage::UpdateLastUpdateCheckTime,
-                         weak_factory_.GetWeakPtr(), registration_id, origin,
+                         weak_factory_.GetWeakPtr(), registration_id, key,
                          last_update_check_time, std::move(callback)));
       return;
     case STORAGE_STATE_INITIALIZED:
@@ -438,15 +438,14 @@ void ServiceWorkerStorage::UpdateLastUpdateCheckTime(
   base::PostTaskAndReplyWithResult(
       database_task_runner_.get(), FROM_HERE,
       base::BindOnce(&ServiceWorkerDatabase::UpdateLastCheckTime,
-                     base::Unretained(database_.get()), registration_id,
-                     StorageKey(url::Origin::Create(origin)),
+                     base::Unretained(database_.get()), registration_id, key,
                      last_update_check_time),
       std::move(callback));
 }
 
 void ServiceWorkerStorage::UpdateNavigationPreloadEnabled(
     int64_t registration_id,
-    const GURL& origin,
+    const StorageKey& key,
     bool enable,
     DatabaseStatusCallback callback) {
   switch (state_) {
@@ -458,7 +457,7 @@ void ServiceWorkerStorage::UpdateNavigationPreloadEnabled(
     case STORAGE_STATE_UNINITIALIZED:
       LazyInitialize(
           base::BindOnce(&ServiceWorkerStorage::UpdateNavigationPreloadEnabled,
-                         weak_factory_.GetWeakPtr(), registration_id, origin,
+                         weak_factory_.GetWeakPtr(), registration_id, key,
                          enable, std::move(callback)));
       return;
     case STORAGE_STATE_INITIALIZED:
@@ -468,14 +467,14 @@ void ServiceWorkerStorage::UpdateNavigationPreloadEnabled(
   base::PostTaskAndReplyWithResult(
       database_task_runner_.get(), FROM_HERE,
       base::BindOnce(&ServiceWorkerDatabase::UpdateNavigationPreloadEnabled,
-                     base::Unretained(database_.get()), registration_id,
-                     StorageKey(url::Origin::Create(origin)), enable),
+                     base::Unretained(database_.get()), registration_id, key,
+                     enable),
       std::move(callback));
 }
 
 void ServiceWorkerStorage::UpdateNavigationPreloadHeader(
     int64_t registration_id,
-    const GURL& origin,
+    const StorageKey& key,
     const std::string& value,
     DatabaseStatusCallback callback) {
   switch (state_) {
@@ -487,7 +486,7 @@ void ServiceWorkerStorage::UpdateNavigationPreloadHeader(
     case STORAGE_STATE_UNINITIALIZED:
       LazyInitialize(
           base::BindOnce(&ServiceWorkerStorage::UpdateNavigationPreloadHeader,
-                         weak_factory_.GetWeakPtr(), registration_id, origin,
+                         weak_factory_.GetWeakPtr(), registration_id, key,
                          value, std::move(callback)));
       return;
     case STORAGE_STATE_INITIALIZED:
@@ -497,14 +496,14 @@ void ServiceWorkerStorage::UpdateNavigationPreloadHeader(
   base::PostTaskAndReplyWithResult(
       database_task_runner_.get(), FROM_HERE,
       base::BindOnce(&ServiceWorkerDatabase::UpdateNavigationPreloadHeader,
-                     base::Unretained(database_.get()), registration_id,
-                     StorageKey(url::Origin::Create(origin)), value),
+                     base::Unretained(database_.get()), registration_id, key,
+                     value),
       std::move(callback));
 }
 
 void ServiceWorkerStorage::DeleteRegistration(
     int64_t registration_id,
-    const GURL& origin,
+    const StorageKey& key,
     DeleteRegistrationCallback callback) {
   switch (state_) {
     case STORAGE_STATE_DISABLED:
@@ -520,7 +519,7 @@ void ServiceWorkerStorage::DeleteRegistration(
     case STORAGE_STATE_UNINITIALIZED:
       LazyInitialize(base::BindOnce(&ServiceWorkerStorage::DeleteRegistration,
                                     weak_factory_.GetWeakPtr(), registration_id,
-                                    origin, std::move(callback)));
+                                    key, std::move(callback)));
       return;
     case STORAGE_STATE_INITIALIZED:
       break;
@@ -530,13 +529,13 @@ void ServiceWorkerStorage::DeleteRegistration(
     DeleteStaleResources();
 
   auto params = std::make_unique<DidDeleteRegistrationParams>(
-      registration_id, origin, std::move(callback));
+      registration_id, key, std::move(callback));
 
   database_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           &DeleteRegistrationFromDB, database_.get(),
-          base::ThreadTaskRunnerHandle::Get(), registration_id, origin,
+          base::ThreadTaskRunnerHandle::Get(), registration_id, key,
           base::BindOnce(&ServiceWorkerStorage::DidDeleteRegistration,
                          weak_factory_.GetWeakPtr(), std::move(params))));
 }
@@ -704,7 +703,7 @@ void ServiceWorkerStorage::DoomUncommittedResources(
 
 void ServiceWorkerStorage::StoreUserData(
     int64_t registration_id,
-    const url::Origin& origin,
+    const StorageKey& key,
     std::vector<mojom::ServiceWorkerUserDataPtr> user_data,
     DatabaseStatusCallback callback) {
   switch (state_) {
@@ -718,7 +717,7 @@ void ServiceWorkerStorage::StoreUserData(
     case STORAGE_STATE_UNINITIALIZED:
       LazyInitialize(base::BindOnce(
           &ServiceWorkerStorage::StoreUserData, weak_factory_.GetWeakPtr(),
-          registration_id, origin, std::move(user_data), std::move(callback)));
+          registration_id, key, std::move(user_data), std::move(callback)));
       return;
     case STORAGE_STATE_INITIALIZED:
       break;
@@ -744,8 +743,8 @@ void ServiceWorkerStorage::StoreUserData(
   base::PostTaskAndReplyWithResult(
       database_task_runner_.get(), FROM_HERE,
       base::BindOnce(&ServiceWorkerDatabase::WriteUserData,
-                     base::Unretained(database_.get()), registration_id,
-                     StorageKey(origin), std::move(user_data)),
+                     base::Unretained(database_.get()), registration_id, key,
+                     std::move(user_data)),
       std::move(callback));
 }
 
@@ -1199,11 +1198,11 @@ void ServiceWorkerStorage::ApplyPolicyUpdates(
   }
 
   for (const auto& update : policy_updates) {
-    GURL url = update->origin.GetURL();
+    StorageKey key(update->origin);
     if (!update->purge_on_shutdown)
-      origins_to_purge_on_shutdown_.erase(url);
+      keys_to_purge_on_shutdown_.erase(key);
     else
-      origins_to_purge_on_shutdown_.insert(std::move(url));
+      keys_to_purge_on_shutdown_.insert(std::move(key));
   }
 
   std::move(callback).Run(ServiceWorkerDatabase::Status::kOk);
@@ -1305,10 +1304,10 @@ void ServiceWorkerStorage::DidReadInitialData(
     next_registration_id_ = data->next_registration_id;
     next_version_id_ = data->next_version_id;
     next_resource_id_ = data->next_resource_id;
-    registered_origins_.swap(data->origins);
+    registered_keys_.swap(data->keys);
     state_ = STORAGE_STATE_INITIALIZED;
     base::UmaHistogramCounts1M("ServiceWorker.RegisteredOriginCount",
-                               registered_origins_.size());
+                               registered_keys_.size());
   } else {
     DVLOG(2) << "Failed to initialize: "
              << ServiceWorkerDatabase::StatusToString(status);
@@ -1320,7 +1319,7 @@ void ServiceWorkerStorage::DidReadInitialData(
   pending_tasks_.clear();
 }
 
-void ServiceWorkerStorage::DidGetRegistrationsForOrigin(
+void ServiceWorkerStorage::DidGetRegistrationsForStorageKey(
     GetRegistrationsDataCallback callback,
     std::unique_ptr<RegistrationList> registration_data_list,
     std::unique_ptr<std::vector<ResourceList>> resource_lists,
@@ -1339,7 +1338,7 @@ void ServiceWorkerStorage::DidGetAllRegistrations(
 void ServiceWorkerStorage::DidStoreRegistrationData(
     StoreRegistrationDataCallback callback,
     uint64_t new_resources_total_size_bytes,
-    const GURL& origin,
+    const StorageKey& key,
     const ServiceWorkerDatabase::DeletedVersion& deleted_version,
     ServiceWorkerDatabase::Status status) {
   if (status != ServiceWorkerDatabase::Status::kOk) {
@@ -1348,7 +1347,7 @@ void ServiceWorkerStorage::DidStoreRegistrationData(
                             deleted_version.newly_purgeable_resources);
     return;
   }
-  registered_origins_.insert(url::Origin::Create(origin));
+  registered_keys_.insert(key);
 
   std::move(callback).Run(ServiceWorkerDatabase::Status::kOk,
                           deleted_version.version_id,
@@ -1370,7 +1369,7 @@ void ServiceWorkerStorage::DidDeleteRegistration(
   }
 
   if (origin_state == OriginState::kDelete)
-    registered_origins_.erase(url::Origin::Create(params->origin));
+    registered_keys_.erase(params->key);
 
   std::move(params->callback)
       .Run(ServiceWorkerDatabase::Status::kOk, origin_state,
@@ -1523,7 +1522,7 @@ void ServiceWorkerStorage::DidCollectStaleResources(
 void ServiceWorkerStorage::ClearSessionOnlyOrigins() {
   database_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&DeleteAllDataForOriginsFromDB, database_.get(),
-                                origins_to_purge_on_shutdown_));
+                                keys_to_purge_on_shutdown_));
 }
 
 void ServiceWorkerStorage::OnResourceReaderDisconnected(
@@ -1596,13 +1595,7 @@ void ServiceWorkerStorage::ReadInitialDataFromDB(
     return;
   }
 
-  std::set<StorageKey> keys;
-  status = database->GetStorageKeysWithRegistrations(&keys);
-  // TODO(crbug.com/1199077) Remove adaptor once upstream code uses StorageKey.
-  std::transform(keys.begin(), keys.end(),
-                 std::inserter(data->origins, data->origins.begin()),
-                 [](const StorageKey& key) { return key.origin(); });
-
+  status = database->GetStorageKeysWithRegistrations(&data->keys);
   if (status != ServiceWorkerDatabase::Status::kOk) {
     original_task_runner->PostTask(
         FROM_HERE,
@@ -1618,11 +1611,9 @@ void ServiceWorkerStorage::DeleteRegistrationFromDB(
     ServiceWorkerDatabase* database,
     scoped_refptr<base::SequencedTaskRunner> original_task_runner,
     int64_t registration_id,
-    const GURL& origin,
+    const StorageKey& key,
     DeleteRegistrationInDBCallback callback) {
   DCHECK(database);
-
-  const StorageKey key(url::Origin::Create(origin));
 
   ServiceWorkerDatabase::DeletedVersion deleted_version;
   ServiceWorkerDatabase::Status status =
@@ -1665,7 +1656,8 @@ void ServiceWorkerStorage::WriteRegistrationInDB(
       database->WriteRegistration(*registration, resources, &deleted_version);
   original_task_runner->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback), registration->script.GetOrigin(),
+      base::BindOnce(std::move(callback),
+                     StorageKey(url::Origin::Create(registration->script)),
                      deleted_version, status));
 }
 
@@ -1674,8 +1666,8 @@ void ServiceWorkerStorage::FindForClientUrlInDB(
     ServiceWorkerDatabase* database,
     scoped_refptr<base::SequencedTaskRunner> original_task_runner,
     const GURL& client_url,
+    const StorageKey& key,
     FindInDBCallback callback) {
-  StorageKey key(url::Origin::Create(client_url.GetOrigin()));
   RegistrationList registration_data_list;
   ServiceWorkerDatabase::Status status =
       database->GetRegistrationsForStorageKey(key, &registration_data_list,
@@ -1711,8 +1703,8 @@ void ServiceWorkerStorage::FindForScopeInDB(
     ServiceWorkerDatabase* database,
     scoped_refptr<base::SequencedTaskRunner> original_task_runner,
     const GURL& scope,
+    const StorageKey& key,
     FindInDBCallback callback) {
-  StorageKey key(url::Origin::Create(scope.GetOrigin()));
   RegistrationList registration_data_list;
   ServiceWorkerDatabase::Status status =
       database->GetRegistrationsForStorageKey(key, &registration_data_list,
@@ -1747,12 +1739,12 @@ void ServiceWorkerStorage::FindForIdInDB(
     ServiceWorkerDatabase* database,
     scoped_refptr<base::SequencedTaskRunner> original_task_runner,
     int64_t registration_id,
-    const url::Origin& origin,
+    const StorageKey& key,
     FindInDBCallback callback) {
   mojom::ServiceWorkerRegistrationDataPtr data;
   auto resources = std::make_unique<ResourceList>();
-  ServiceWorkerDatabase::Status status = database->ReadRegistration(
-      registration_id, StorageKey(origin), &data, resources.get());
+  ServiceWorkerDatabase::Status status =
+      database->ReadRegistration(registration_id, key, &data, resources.get());
   original_task_runner->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(data),
                                 std::move(resources), status));
@@ -1774,19 +1766,19 @@ void ServiceWorkerStorage::FindForIdOnlyInDB(
                                   /*resources=*/nullptr, status));
     return;
   }
-  FindForIdInDB(database, original_task_runner, registration_id, key.origin(),
+  FindForIdInDB(database, original_task_runner, registration_id, key,
                 std::move(callback));
 }
 
 // static
-void ServiceWorkerStorage::GetUsageForOriginInDB(
+void ServiceWorkerStorage::GetUsageForStorageKeyInDB(
     ServiceWorkerDatabase* database,
     scoped_refptr<base::SequencedTaskRunner> original_task_runner,
-    url::Origin origin,
+    const StorageKey& key,
     GetUsageForOriginCallback callback) {
   int64_t usage = 0;
   ServiceWorkerDatabase::Status status =
-      database->GetUsageForStorageKey(StorageKey(origin), usage);
+      database->GetUsageForStorageKey(key, usage);
   original_task_runner->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), status, usage));
 }
@@ -1860,16 +1852,10 @@ void ServiceWorkerStorage::GetUserDataForAllRegistrationsByKeyPrefixInDB(
 
 void ServiceWorkerStorage::DeleteAllDataForOriginsFromDB(
     ServiceWorkerDatabase* database,
-    const std::set<GURL>& origins) {
+    const std::set<StorageKey>& keys) {
   DCHECK(database);
 
   std::vector<int64_t> newly_purgeable_resources;
-  // TODO(crbug.com/1199077) Remove adaptor once upstream code uses StorageKey.
-  std::set<StorageKey> keys;
-  std::transform(origins.begin(), origins.end(),
-                 std::inserter(keys, keys.begin()), [](const GURL& origin) {
-                   return StorageKey(url::Origin::Create(origin));
-                 });
   database->DeleteAllDataForStorageKeys(keys, &newly_purgeable_resources);
 }
 
