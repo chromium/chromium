@@ -27,6 +27,13 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     // Not much point in going on with an empty CSP string.
     return EXIT_SUCCESS;
   }
+  if (it - data > 250) {
+    // Origins should not be too long. The origin of size 'N' is copied into 'M'
+    // policies. The fuzzer can send an input of size N+M and use O(N*M) memory.
+    // Due to this quadratic behavior, we must limit the size of the origin to
+    // prevent the fuzzer from triggering OOM crash. Note that real domain names
+    // are limited to 253 characters.
+  }
 
   String url = String(data, it - 1 - data);
   String header = String(it, size - (it - data));
