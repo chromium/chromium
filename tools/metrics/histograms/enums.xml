@@ -74,6 +74,11 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="3" label="both valid and invalid entries"/>
 </enum>
 
+<enum name="AcceptCHFrameRestart">
+  <int value="0" label="Frame present"/>
+  <int value="1" label="Navigation restarted"/>
+</enum>
+
 <enum name="AccessibilityAndroidAnimationsEnabled">
   <obsolete>
     Removed from code 2020/10.
