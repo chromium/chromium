@@ -23,6 +23,9 @@ class MotionMarkPage(rendering_story.RenderingStory):
         shared_page_state_class=shared_page_state_class,
         name_suffix=name_suffix,
         extra_browser_args=['--report-silk-details', '--disable-top-sites'])
+    self._score = 0
+    self._scoreLowerBound = 0
+    self._scoreUpperBound = 0
 
   def RunNavigateSteps(self, action_runner):
     action_runner.Navigate(self.url)
@@ -32,11 +35,32 @@ class MotionMarkPage(rendering_story.RenderingStory):
   def RunPageInteractions(self, action_runner):
     action_runner.Wait(3)
     with action_runner.CreateInteraction('Filter'):
-      action_runner.Wait(5)
+      action_runner.Wait(20)
+      action_runner.WaitForJavaScriptCondition(
+          'window.benchmarkRunnerClient.results._results')
+      [score, lower, upper] = action_runner.EvaluateJavaScript(
+          '''[window.benchmarkRunnerClient.results.score,
+             window.benchmarkRunnerClient.results.scoreLowerBound,
+             window.benchmarkRunnerClient.results.scoreUpperBound]''')
+      self._score = score
+      self._scoreLowerBound = lower
+      self._scoreUpperBound = upper
 
     # Navigate to about:blank to stop rendering frames and let the device
     # cool down while the trace data for the story is processed.
     action_runner.Navigate('about:blank')
+
+  @property
+  def score(self):
+    return self._score
+
+  @property
+  def scoreLowerBound(self):
+    return self._scoreLowerBound
+
+  @property
+  def scoreUpperBound(self):
+    return self._scoreUpperBound
 
   @classmethod
   def GetUrl(cls, suite_name, test_name, complexity):

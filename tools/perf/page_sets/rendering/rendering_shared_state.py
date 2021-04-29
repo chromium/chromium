@@ -59,6 +59,15 @@ class RenderingSharedState(shared_page_state.SharedPageState):
       self._EnsureScreenOn()
 
   def DidRunStory(self, results):
+    if (self.current_page.TAGS
+        and story_tags.MOTIONMARK in self.current_page.TAGS):
+      unit = 'unitless_biggerIsBetter'
+      results.AddMeasurement('motionmark', unit, [self.current_page.score])
+      results.AddMeasurement('motionmarkLower', unit,
+                             [self.current_page.scoreLowerBound])
+      results.AddMeasurement('motionmarkUpper', unit,
+                             [self.current_page.scoreUpperBound])
+
     if (self.current_page.TAGS and
         story_tags.KEY_IDLE_POWER in self.current_page.TAGS):
       try:
