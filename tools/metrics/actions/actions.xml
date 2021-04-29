@@ -9421,6 +9421,41 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.StartSurface.HideShortcuts">
+  <owner>gogerald@chromium.org</owner>
+  <description>
+    Recorded when hiding the shortcuts for the Start Surface. iOS only.
+  </description>
+</action>
+
+<action name="IOS.StartSurface.OpenMostRecentTab">
+  <owner>gogerald@chromium.org</owner>
+  <description>
+    Recorded when opening the most recent tab after tapping on the Start Surface
+    return to recent tab tile. iOS only.
+  </description>
+</action>
+
+<action name="IOS.StartSurface.Show">
+  <owner>gogerald@chromium.org</owner>
+  <description>Recorded when showing the Start Surface. iOS only.</description>
+</action>
+
+<action name="IOS.StartSurface.ShowReturnToRecentTabTile">
+  <owner>gogerald@chromium.org</owner>
+  <description>
+    Recorded when showing the return to recent tab tile for the Start Surface.
+    iOS only.
+  </description>
+</action>
+
+<action name="IOS.StartSurface.ShrinkLogo">
+  <owner>gogerald@chromium.org</owner>
+  <description>
+    Recorded when shrinking the logo for the Start Surface. iOS only.
+  </description>
+</action>
+
 <action name="IOSAccountsSettingsCloseWithSwipe">
   <owner>msarda@chromium.org</owner>
   <owner>jlebel@chromium.org</owner>

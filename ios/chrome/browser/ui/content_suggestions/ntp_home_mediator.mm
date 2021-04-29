@@ -439,6 +439,8 @@ const char kNTPHelpURL[] =
 
 - (void)openMostRecentTab:(CollectionViewItem*)item {
   DCHECK([item isKindOfClass:[ContentSuggestionsReturnToRecentTabItem class]]);
+  base::RecordAction(
+      base::UserMetricsAction("IOS.StartSurface.OpenMostRecentTab"));
   [self.suggestionsMediator hideRecentTabTile];
   WebStateList* web_state_list = self.browser->GetWebStateList();
   web::WebState* web_state =

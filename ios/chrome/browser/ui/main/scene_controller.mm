@@ -12,6 +12,8 @@
 #import "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
 #include "components/infobars/core/infobar_manager.h"
@@ -568,6 +570,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     return;
   }
 
+  base::RecordAction(base::UserMetricsAction("IOS.StartSurface.Show"));
   self.sceneState.modifytVisibleNTPForStartSurface = YES;
   Browser* browser = self.currentInterface.browser;
   StartSurfaceRecentTabBrowserAgent::FromBrowser(browser)->SaveMostRecentTab();
