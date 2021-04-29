@@ -54,6 +54,9 @@
     <color name="white_alpha_50">#80FFFFFF</color>
     <color name="white_alpha_70">#B3FFFFFF</color>
 
+    <color name="modern_yellow_300">#FDD663</color>
+    <color name="modern_yellow_500">#FBBC04</color>
+
     <!-- Old color palette -->
     <color name="google_red_300">#F28B82</color>
     <color name="google_red_600">#D93025</color>
