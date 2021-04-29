@@ -202,6 +202,8 @@ vs-chromium-project.txt
 /content/content_unittests_run.xml
 /content/test/data/gpu/generated/
 /content/test/data/gpu/gpu_reference/
+/content/test/data/gpu/mediapipe/
+/content/test/data/gpu/mediapipe_zip/mediapipe_chromium_tests.zip
 /content/test/data/layout_tests/
 /content/test/data/plugin/
 /content/web_ui_test_mojo_bindings.xml
