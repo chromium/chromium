@@ -30,11 +30,13 @@
 #include "content/public/browser/media_session.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "media/base/media_switches.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/media_session/public/cpp/media_metadata.h"
 #include "services/media_session/public/cpp/test/mock_media_session.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace media_history {
 
@@ -1137,6 +1139,76 @@ IN_PROC_BROWSER_TEST_P(MediaHistoryBrowserTest, DoNotRecordWatchtime_Muted) {
   // No playbacks should have been saved since we were muted.
   auto playbacks = GetPlaybacksSync(service);
   EXPECT_TRUE(playbacks.empty());
+}
+
+class MediaHistoryForPrerenderBrowserTest : public MediaHistoryBrowserTest {
+ public:
+  MediaHistoryForPrerenderBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &MediaHistoryForPrerenderBrowserTest::web_contents,
+            base::Unretained(this))) {
+    feature_list_.InitAndEnableFeature(blink::features::kPrerender2);
+  }
+  void SetUpOnMainThread() override {
+    web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
+    prerender_helper_.SetUpOnMainThread(embedded_test_server());
+    MediaHistoryBrowserTest::SetUpOnMainThread();
+  }
+
+  content::WebContents* web_contents() { return web_contents_; }
+
+ protected:
+  content::WebContents* web_contents_ = nullptr;
+  content::test::PrerenderTestHelper prerender_helper_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(MediaHistoryForPrerenderBrowserTest,
+                       KeepRecordingMediaSession) {
+  // Start a page and wait for significant playback so we record watchtime.
+  ASSERT_TRUE(SetupPageAndStartPlaying(browser(), GetTestURL()));
+  EXPECT_TRUE(SetMediaMetadata(browser()));
+
+  media_session::MediaMetadata expected_metadata = GetExpectedMetadata();
+
+  {
+    media_session::test::MockMediaSessionMojoObserver observer(
+        *GetMediaSession(browser()));
+    observer.WaitForState(
+        media_session::mojom::MediaSessionInfo::SessionState::kActive);
+    observer.WaitForExpectedMetadata(expected_metadata);
+  }
+  EXPECT_TRUE(WaitForSignificantPlayback(browser()));
+
+  GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
+
+  // We should not fetch the URL while prerendering.
+  prerender_helper_.AddPrerenderWithTestUtilJS(prerender_url);
+
+  EXPECT_TRUE(SetMediaMetadataWithArtwork(browser()));
+  auto expected_artwork = GetExpectedArtwork();
+  {
+    media_session::test::MockMediaSessionMojoObserver observer(
+        *GetMediaSession(browser()));
+    observer.WaitForExpectedImagesOfType(
+        media_session::mojom::MediaSessionImageType::kArtwork,
+        expected_artwork);
+  }
+
+  SimulateNavigationToCommit(browser());
+
+  // Verify the session in the database.
+  auto sessions = GetPlaybackSessionsSync(GetMediaHistoryService(browser()), 1);
+
+  EXPECT_EQ(1u, sessions.size());
+  EXPECT_EQ(GetTestURL(), sessions[0]->url);
+  EXPECT_EQ(kTestClipDuration, sessions[0]->duration);
+  EXPECT_LT(base::TimeDelta(), sessions[0]->position);
+  EXPECT_EQ(expected_metadata.title, sessions[0]->metadata.title);
+  EXPECT_EQ(expected_metadata.artist, sessions[0]->metadata.artist);
+  EXPECT_EQ(expected_metadata.album, sessions[0]->metadata.album);
+  EXPECT_EQ(expected_metadata.source_title, sessions[0]->metadata.source_title);
+  EXPECT_EQ(expected_artwork, sessions[0]->artwork);
 }
 
 }  // namespace media_history

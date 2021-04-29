@@ -89,6 +89,10 @@ class PrerenderTestHelper {
   int AddPrerender(const GURL& gurl);
   void AddPrerenderAsync(const GURL& gurl);
 
+  // Adds <link rel=prerender> in the current main frame without loading
+  // add_prerender.html and waits until the completion of prerendering.
+  int AddPrerenderWithTestUtilJS(const GURL& gurl);
+
   // This navigates, but does not activate, the prerendered page.
   void NavigatePrerenderedPage(int host_id, const GURL& gurl);
 

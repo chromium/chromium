@@ -32,7 +32,7 @@ MediaHistoryContentsObserver::~MediaHistoryContentsObserver() = default;
 
 void MediaHistoryContentsObserver::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame())
+  if (!navigation_handle->IsInPrimaryMainFrame())
     return;
 
   frozen_ = true;
@@ -40,7 +40,7 @@ void MediaHistoryContentsObserver::DidStartNavigation(
 
 void MediaHistoryContentsObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame())
+  if (!navigation_handle->IsInPrimaryMainFrame())
     return;
 
   MaybeCommitMediaSession();

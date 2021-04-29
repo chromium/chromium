@@ -217,6 +217,38 @@ void PrerenderTestHelper::AddPrerenderAsync(const GURL& gurl) {
       << "AddPrerender failed. Did you load add_prerender.html?";
 }
 
+int PrerenderTestHelper::AddPrerenderWithTestUtilJS(const GURL& gurl) {
+  EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
+
+  std::string start_prerender = R"(
+      (() => {
+        const script = document.createElement('script');
+        script.addEventListener('load', () => {
+          window.domAutomationController.send(true);
+        });
+        script.addEventListener('error', () => {
+          window.domAutomationController.send(false);
+        });
+        script.src = '/prerender/test_utils.js';
+        document.body.appendChild(script);
+      })();
+    )";
+  bool script_loaded = false;
+  // Load test_utils.js and wait util loading done.
+  EXPECT_TRUE(ExecuteScriptAndExtractBool(GetWebContents()->GetMainFrame(),
+                                          start_prerender, &script_loaded));
+  EXPECT_TRUE(script_loaded);
+
+  EXPECT_TRUE(ExecJs(GetWebContents(), JsReplace("add_prerender($1)", gurl)))
+      << "AddPrerender failed. Did you set the right path to load "
+         "/prerender/test_utils.js?";
+
+  WaitForPrerenderLoadCompletion(gurl);
+  int host_id = GetHostForUrl(gurl);
+  EXPECT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
+  return host_id;
+}
+
 void PrerenderTestHelper::NavigatePrerenderedPage(int host_id,
                                                   const GURL& gurl) {
   auto* prerender_host = GetPrerenderHostById(GetWebContents(), host_id);
