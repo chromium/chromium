@@ -13,12 +13,13 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "components/invalidation/impl/invalidation_switches.h"
 #include "components/invalidation/public/invalidation_util.h"
-#include "components/invalidation/public/topic_invalidation_map.h"
 #include "components/sync/base/invalidation_adapter.h"
 #include "components/sync/base/legacy_directory_deletion.h"
 #include "components/sync/base/sync_base_switches.h"
 #include "components/sync/driver/configure_context.h"
+#include "components/sync/driver/glue/sync_engine_impl.h"
 #include "components/sync/driver/model_type_controller.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
@@ -37,17 +38,9 @@
 // Helper macros to log with the syncer thread name; useful when there
 // are multiple syncers involved.
 
-#define SLOG(severity) LOG(severity) << name_ << ": "
-
 #define SDVLOG(verbose_level) DVLOG(verbose_level) << name_ << ": "
 
-namespace net {
-class URLFetcher;
-}
-
 namespace syncer {
-
-class EngineComponentsFactory;
 
 namespace {
 
@@ -351,14 +344,17 @@ void SyncEngineBackend::ShutdownOnUIThread() {
 void SyncEngineBackend::DoShutdown(ShutdownReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // |nigori_controller_| and |sync_manager_| might be null if DoInitialize()
-  // wasn't called.
-  if (nigori_controller_) {
-    DCHECK(sync_manager_);
+  // |sync_manager_| and |nigori_controller_| may be null if DoInitialize() was
+  // never called.
+  if (sync_manager_) {
+    // However, |sync_manager_| and |nigori_controller_| are always either both
+    // null or both non-null.
+    DCHECK(nigori_controller_);
+
     sync_manager_->GetModelTypeConnector()->DisconnectDataType(NIGORI);
     nigori_controller_->Stop(reason, base::DoNothing());
-  }
-  if (sync_manager_) {
+    nigori_controller_.reset();
+
     sync_manager_->RemoveObserver(this);
     sync_manager_->ShutdownOnSyncThread();
     sync_manager_.reset();

@@ -5,16 +5,14 @@
 #ifndef COMPONENTS_SYNC_ENGINE_SYNC_ENGINE_H_
 #define COMPONENTS_SYNC_ENGINE_SYNC_ENGINE_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
-#include "base/compiler_specific.h"
+#include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/extensions_activity.h"
@@ -27,7 +25,6 @@
 #include "components/sync/engine/sync_credentials.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine/sync_manager_factory.h"
-#include "google_apis/gaia/core_account_id.h"
 #include "url/gurl.h"
 
 namespace syncer {

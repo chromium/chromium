@@ -5,15 +5,12 @@
 #ifndef COMPONENTS_SYNC_DRIVER_GLUE_SYNC_ENGINE_IMPL_H_
 #define COMPONENTS_SYNC_DRIVER_GLUE_SYNC_ENGINE_IMPL_H_
 
-#include <stdint.h>
-
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
-#include "base/compiler_specific.h"
+#include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -31,8 +28,6 @@
 #include "components/sync/engine/sync_engine.h"
 #include "components/sync/engine/sync_status.h"
 #include "components/sync/invalidations/invalidations_listener.h"
-#include "components/sync/protocol/encryption.pb.h"
-#include "components/sync/protocol/sync_protocol_error.h"
 
 namespace invalidation {
 class InvalidationService;
@@ -47,6 +42,7 @@ class ModelTypeConnector;
 class ProtocolEvent;
 class SyncEngineBackend;
 class SyncInvalidationsService;
+struct SyncProtocolError;
 class SyncTransportDataPrefs;
 
 // The only real implementation of the SyncEngine. See that interface's
