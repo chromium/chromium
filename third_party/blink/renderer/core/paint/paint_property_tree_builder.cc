@@ -746,7 +746,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
         state.sticky_constraint = std::move(constraint);
       }
 
-      // TODO(crbug.com/1189428): Should this set state.rendering_context_id ?
       OnUpdate(properties_->UpdateStickyTranslation(*context_.current.transform,
                                                     std::move(state)));
     } else {
@@ -855,7 +854,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransformForSVGChild(
 
       // TODO(pdr): There is additional logic in
       // FragmentPaintPropertyTreeBuilder::UpdateTransform that likely needs to
-      // be included here, such as setting rendering context ids, etc.
+      // be included here, such as setting animation_is_axis_aligned, which
+      // may be the only important difference remaining.
       if (RuntimeEnabledFeatures::CompositeSVGEnabled()) {
         state.direct_compositing_reasons =
             direct_compositing_reasons &
@@ -871,8 +871,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransformForSVGChild(
       TransformPaintPropertyNode::AnimationState animation_state;
       animation_state.is_running_animation_on_compositor =
           object_.StyleRef().IsRunningTransformAnimationOnCompositor();
-      // TODO(crbug.com/1189428): Should this set state.rendering_context_id ?
-      // (The comment above already says so!)
       auto effective_change_type = properties_->UpdateTransform(
           *context_.current.transform, std::move(state), animation_state);
       if (effective_change_type ==
@@ -1962,7 +1960,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateReplacedContentTransform() {
       state.flags.flattens_inherited_transform =
           context_.current.should_flatten_inherited_transform;
       state.rendering_context_id = context_.current.rendering_context_id;
-      // TODO(crbug.com/1189428): Should this set state.rendering_context_id ?
       OnUpdate(properties_->UpdateReplacedContentTransform(
           *context_.current.transform, std::move(state)));
     } else {
