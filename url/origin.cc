@@ -16,6 +16,7 @@
 #include "base/pickle.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "url/gurl.h"
@@ -77,7 +78,7 @@ base::Optional<Origin> Origin::UnsafelyCreateTupleOriginWithoutNormalization(
     base::StringPiece scheme,
     base::StringPiece host,
     uint16_t port) {
-  SchemeHostPort tuple(scheme.as_string(), host.as_string(), port,
+  SchemeHostPort tuple(std::string(scheme), std::string(host), port,
                        SchemeHostPort::CHECK_CANONICALIZATION);
   if (!tuple.IsValid())
     return base::nullopt;
@@ -90,8 +91,8 @@ base::Optional<Origin> Origin::UnsafelyCreateOpaqueOriginWithoutNormalization(
     base::StringPiece precursor_host,
     uint16_t precursor_port,
     const Origin::Nonce& nonce) {
-  SchemeHostPort precursor(precursor_scheme.as_string(),
-                           precursor_host.as_string(), precursor_port,
+  SchemeHostPort precursor(std::string(precursor_scheme),
+                           std::string(precursor_host), precursor_port,
                            SchemeHostPort::CHECK_CANONICALIZATION);
   // For opaque origins, it is okay for the SchemeHostPort to be invalid;
   // however, this should only arise when the arguments indicate the

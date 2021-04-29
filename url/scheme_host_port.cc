@@ -14,6 +14,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "url/gurl.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon.h"
@@ -159,8 +160,8 @@ SchemeHostPort::SchemeHostPort(std::string scheme,
 SchemeHostPort::SchemeHostPort(base::StringPiece scheme,
                                base::StringPiece host,
                                uint16_t port)
-    : SchemeHostPort(scheme.as_string(),
-                     host.as_string(),
+    : SchemeHostPort(std::string(scheme),
+                     std::string(host),
                      port,
                      ConstructPolicy::CHECK_CANONICALIZATION) {}
 

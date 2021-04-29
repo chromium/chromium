@@ -413,11 +413,11 @@ base::StringPiece GURL::PathForRequestPiece() const {
 }
 
 std::string GURL::PathForRequest() const {
-  return PathForRequestPiece().as_string();
+  return std::string(PathForRequestPiece());
 }
 
 std::string GURL::HostNoBrackets() const {
-  return HostNoBracketsPiece().as_string();
+  return std::string(HostNoBracketsPiece());
 }
 
 base::StringPiece GURL::HostNoBracketsPiece() const {
@@ -502,7 +502,7 @@ bool GURL::IsAboutPath(base::StringPiece actual_path,
 
   if ((actual_path.size() == allowed_path.size() + 1) &&
       actual_path.back() == '/') {
-    DCHECK_EQ(actual_path, allowed_path.as_string() + '/');
+    DCHECK_EQ(actual_path, std::string(allowed_path) + '/');
     return true;
   }
 
