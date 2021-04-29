@@ -2314,10 +2314,10 @@ Press an assigned switch to remove assignment.
     Automatically connect to cellular network
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_MENU_REMOVE" desc="Settings > Internet > Network details > Dot menu: Label for the button to remove an eSIM cellular network">
-    Remove profile
+    Remove Profile
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_MENU_RENAME" desc="Settings > Internet > Network details > Dot menu: Label for the button to rename an eSIM cellular network">
-    Rename
+    Rename Profile
   </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_INSTALL_ERROR_DIALOG_TITLE" desc="Settings > Network > Mobile data > Download > Install error dialog: Title for the dialog prompting the user to enter the confirmation code required to activate the eSIM profile they are attempting to install">
     Set up new network
