@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("save_address_profile") {
+source_set("autofill_address_profile") {
   sources = [
     "save_address_profile_infobar_banner_overlay_mediator.h",
     "save_address_profile_infobar_banner_overlay_mediator.mm",
@@ -31,7 +31,7 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
-    ":save_address_profile",
+    ":autofill_address_profile",
     "//base/test:test_support",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",

@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("save_address_profile") {
+source_set("autofill_address_profile") {
   sources = [
     "save_address_profile_infobar_modal_overlay_coordinator.h",
     "save_address_profile_infobar_modal_overlay_coordinator.mm",

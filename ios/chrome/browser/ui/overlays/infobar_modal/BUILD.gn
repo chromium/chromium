@@ -9,8 +9,8 @@ source_set("infobar_modal") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
+    "//ios/chrome/browser/ui/overlays/infobar_modal/autofill_address_profile",
     "//ios/chrome/browser/ui/overlays/infobar_modal/passwords",
-    "//ios/chrome/browser/ui/overlays/infobar_modal/save_address_profile",
     "//ios/chrome/browser/ui/overlays/infobar_modal/save_card",
     "//ios/chrome/browser/ui/overlays/infobar_modal/translate",
   ]
