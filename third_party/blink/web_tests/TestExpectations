@@ -7324,3 +7324,5 @@ crbug.com/1198443 [ Mac10.14 ] virtual/plz-dedicated-worker/external/wpt/fetch/a
 crbug.com/1198443 [ Mac10.14 ] virtual/plz-dedicated-worker/external/wpt/fetch/api/basic/request-upload.any.worker.html [ Pass Failure Timeout ]
 crbug.com/1198443 [ Mac10.14 ] virtual/plz-dedicated-worker/external/wpt/service-workers/idlharness.https.any.serviceworker.html [ Pass Failure Timeout ]
 crbug.com/1198443 [ Mac10.14 ] virtual/plz-service-worker/external/wpt/service-workers/idlharness.https.any.serviceworker.html [ Pass Failure Timeout ]
+crbug.com/1204086 external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/report-only-same-origin-report-to.https.html [ Pass Failure ]
+crbug.com/1204086 external/wpt/requestidlecallback/callback-invoked.html [ Pass Failure ]
