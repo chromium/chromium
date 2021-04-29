@@ -4,11 +4,29 @@
 
 #include "components/browser_ui/photo_picker/android/features.h"
 
+#include "components/browser_ui/photo_picker/android/photo_picker_jni_headers/PhotoPickerFeatures_jni.h"
+
 namespace photo_picker {
 namespace features {
 
+namespace {
+
+// Array of features exposed through the Java Features brdige class. Entries in
+// this array may either refer to features defined in the header of this file or
+// in other locations in the code base (e.g. content_features.h), and must be
+// replicated in the same order in PhotoPickerFeatures.java.
+const base::Feature* kFeaturesExposedToJava[] = {
+    &kPhotoPickerVideoSupport,
+};
+
+}  // namespace
+
 const base::Feature kPhotoPickerVideoSupport{"PhotoPickerVideoSupport",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
+
+static jlong JNI_PhotoPickerFeatures_GetFeature(JNIEnv* env, jint ordinal) {
+  return reinterpret_cast<jlong>(kFeaturesExposedToJava[ordinal]);
+}
 
 }  // namespace features
 }  // namespace photo_picker

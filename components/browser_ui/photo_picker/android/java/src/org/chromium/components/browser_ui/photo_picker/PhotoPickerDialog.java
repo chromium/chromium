@@ -84,21 +84,18 @@ public class PhotoPickerDialog
      * @param listener The listener object that gets notified when an action is taken.
      * @param multiSelectionAllowed Whether the photo picker should allow multiple items to be
      *                              selected.
-     * @param animatedThumbnailsSupported Whether animated thumbnails should be generated for video
-     *         clips.
      * @param mimeTypes A list of mime types to show in the dialog.
      */
     public PhotoPickerDialog(WindowAndroid windowAndroid, ContentResolver contentResolver,
-            PhotoPickerListener listener, boolean multiSelectionAllowed,
-            boolean animatedThumbnailsSupported, List<String> mimeTypes) {
+            PhotoPickerListener listener, boolean multiSelectionAllowed, List<String> mimeTypes) {
         super(windowAndroid.getContext().get(), R.style.Theme_Chromium_Fullscreen);
 
         mWindowAndroid = windowAndroid;
         mListenerWrapper = new PhotoPickerListenerWrapper(listener);
 
         // Initialize the main content view.
-        mCategoryView = new PickerCategoryView(windowAndroid, contentResolver,
-                multiSelectionAllowed, animatedThumbnailsSupported, this);
+        mCategoryView =
+                new PickerCategoryView(windowAndroid, contentResolver, multiSelectionAllowed, this);
         mCategoryView.initialize(this, mListenerWrapper, mimeTypes);
         setView(mCategoryView);
     }

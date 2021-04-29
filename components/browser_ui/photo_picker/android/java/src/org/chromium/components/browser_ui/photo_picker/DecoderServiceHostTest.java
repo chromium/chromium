@@ -23,6 +23,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.File;
@@ -63,6 +64,7 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
     @Before
     public void setUp() throws Exception {
         mContext = InstrumentationRegistry.getTargetContext();
+        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             DecoderServiceHost.setIntentSupplier(
@@ -143,8 +145,7 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
         lowerPri = new DecoderServiceHost.DecoderServiceParams(uri, width, fullWidth,
                 PickerBitmap.TileTypes.VIDEO,
                 /* firstFrame= */ true, callback);
-        DecoderServiceHost host =
-                new DecoderServiceHost(this, mContext, /* animatedThumbnailsSupported = */ true);
+        DecoderServiceHost host = new DecoderServiceHost(this, mContext);
         Assert.assertTrue("Still images have priority over requests for initial video frame",
                 host.mRequestComparator.compare(higherPri, lowerPri) < 0);
 
@@ -203,8 +204,8 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
     @LargeTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O) // Video is only supported on O+.
     public void testDecodingOrder() throws Throwable {
-        DecoderServiceHost host =
-                new DecoderServiceHost(this, mContext, /* animatedThumbnailsSupported = */ true);
+        DecoderServiceHost host = new DecoderServiceHost(this, mContext);
+        host.setAnimatedThumbnailsSupportedForTesting(true);
         host.bind();
         waitForDecoder();
 
@@ -269,8 +270,8 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
     @LargeTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O) // Video is only supported on O+.
     public void testDecodingOrderNoAnimationSupported() throws Throwable {
-        DecoderServiceHost host =
-                new DecoderServiceHost(this, mContext, /* animatedThumbnailsSupported = */ false);
+        DecoderServiceHost host = new DecoderServiceHost(this, mContext);
+        host.setAnimatedThumbnailsSupportedForTesting(false);
         host.bind();
         waitForDecoder();
 
@@ -331,8 +332,8 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
     @LargeTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O) // Video is only supported on O+.
     public void testDecodingSizes() throws Throwable {
-        DecoderServiceHost host =
-                new DecoderServiceHost(this, mContext, /* animatedThumbnailsSupported = */ true);
+        DecoderServiceHost host = new DecoderServiceHost(this, mContext);
+        host.setAnimatedThumbnailsSupportedForTesting(true);
         host.bind();
         waitForDecoder();
 
@@ -411,8 +412,7 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
     @Test
     @LargeTest
     public void testCancelation() throws Throwable {
-        DecoderServiceHost host =
-                new DecoderServiceHost(this, mContext, /* animatedThumbnailsSupported = */ true);
+        DecoderServiceHost host = new DecoderServiceHost(this, mContext);
         host.bind();
         waitForDecoder();
 
@@ -448,8 +448,7 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
     @Test
     @LargeTest
     public void testNoConnectionFailureMode() throws Throwable {
-        DecoderServiceHost host =
-                new DecoderServiceHost(this, mContext, /* animatedThumbnailsSupported = */ true);
+        DecoderServiceHost host = new DecoderServiceHost(this, mContext);
 
         // Try decoding without a connection to the decoder.
         String green = "green100x100.jpg";
@@ -463,8 +462,7 @@ public class DecoderServiceHostTest implements DecoderServiceHost.DecoderStatusC
     @Test
     @LargeTest
     public void testFileNotFoundFailureMode() throws Throwable {
-        DecoderServiceHost host =
-                new DecoderServiceHost(this, mContext, /* animatedThumbnailsSupported = */ true);
+        DecoderServiceHost host = new DecoderServiceHost(this, mContext);
         host.bind();
         waitForDecoder();
 

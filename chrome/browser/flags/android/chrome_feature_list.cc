@@ -297,7 +297,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &password_manager::features::kRecoverFromNeverSaveAndroid,
     &performance_hints::features::kContextMenuPerformanceInfo,
     &performance_hints::features::kPageInfoPerformanceHints,
-    &photo_picker::features::kPhotoPickerVideoSupport,
     &query_tiles::features::kQueryTilesGeoFilter,
     &query_tiles::features::kQueryTiles,
     &query_tiles::features::kQueryTilesInNTP,

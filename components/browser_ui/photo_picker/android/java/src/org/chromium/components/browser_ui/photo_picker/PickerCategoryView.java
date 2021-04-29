@@ -192,20 +192,17 @@ public class PickerCategoryView extends RelativeLayout
      *         selection.
      * @param contentResolver The ContentResolver to use to retrieve image metadata from disk.
      * @param multiSelectionAllowed Whether to allow the user to select more than one image.
-     * @param animatedThumbnailsSupported Whether animated thumbnails should be generated for video
-     *         clips.
      */
     @SuppressWarnings("unchecked") // mSelectableListLayout
     public PickerCategoryView(WindowAndroid windowAndroid, ContentResolver contentResolver,
-            boolean multiSelectionAllowed, boolean animatedThumbnailsSupported,
-            PhotoPickerToolbar.PhotoPickerToolbarDelegate delegate) {
+            boolean multiSelectionAllowed, PhotoPickerToolbar.PhotoPickerToolbarDelegate delegate) {
         super(windowAndroid.getContext().get());
         mWindowAndroid = windowAndroid;
         Context context = mWindowAndroid.getContext().get();
         mContentResolver = contentResolver;
         mMultiSelectionAllowed = multiSelectionAllowed;
 
-        mDecoderServiceHost = new DecoderServiceHost(this, context, animatedThumbnailsSupported);
+        mDecoderServiceHost = new DecoderServiceHost(this, context);
         mDecoderServiceHost.bind();
 
         mSelectionDelegate = new SelectionDelegate<PickerBitmap>();

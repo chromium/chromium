@@ -55,6 +55,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.components.browser_ui.contacts_picker.ContactsPickerDialog;
 import org.chromium.components.browser_ui.photo_picker.DecoderServiceHost;
 import org.chromium.components.browser_ui.photo_picker.ImageDecoder;
+import org.chromium.components.browser_ui.photo_picker.PhotoPickerDelegateBase;
 import org.chromium.components.browser_ui.photo_picker.PhotoPickerDialog;
 import org.chromium.components.embedder_support.application.ClassLoaderContextWrapperFactory;
 import org.chromium.components.embedder_support.application.FirebaseConfig;
@@ -68,7 +69,6 @@ import org.chromium.content_public.browser.DeviceUtils;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.ui.base.PhotoPicker;
-import org.chromium.ui.base.PhotoPickerDelegate;
 import org.chromium.ui.base.PhotoPickerListener;
 import org.chromium.ui.base.ResourceBundle;
 import org.chromium.ui.base.SelectFileDialog;
@@ -326,20 +326,15 @@ public final class WebLayerImpl extends IWebLayer.Stub {
                 });
 
         DecoderServiceHost.setIntentSupplier(() -> { return createImageDecoderServiceIntent(); });
-        SelectFileDialog.setPhotoPickerDelegate(new PhotoPickerDelegate() {
+        SelectFileDialog.setPhotoPickerDelegate(new PhotoPickerDelegateBase() {
             @Override
             public PhotoPicker showPhotoPicker(WindowAndroid windowAndroid,
                     PhotoPickerListener listener, boolean allowMultiple, List<String> mimeTypes) {
                 PhotoPickerDialog dialog = new PhotoPickerDialog(windowAndroid,
                         windowAndroid.getContext().get().getContentResolver(), listener,
-                        allowMultiple, /* animatedThumbnailsSupported = */ false, mimeTypes);
+                        allowMultiple, mimeTypes);
                 dialog.show();
                 return dialog;
-            }
-
-            @Override
-            public boolean supportsVideos() {
-                return false;
             }
         });
 

@@ -78,6 +78,7 @@ import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.browser_ui.contacts_picker.ContactsPickerDialog;
 import org.chromium.components.browser_ui.photo_picker.DecoderServiceHost;
+import org.chromium.components.browser_ui.photo_picker.PhotoPickerDelegateBase;
 import org.chromium.components.browser_ui.photo_picker.PhotoPickerDialog;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.util.ConversionUtils;
@@ -98,7 +99,6 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.PhotoPicker;
-import org.chromium.ui.base.PhotoPickerDelegate;
 import org.chromium.ui.base.PhotoPickerListener;
 import org.chromium.ui.base.SelectFileDialog;
 import org.chromium.ui.base.WindowAndroid;
@@ -122,9 +122,6 @@ public class ProcessInitializationHandler {
     /** Prevents race conditions when deleting snapshot database. */
     private static final Object SNAPSHOT_DATABASE_LOCK = new Object();
     private static final String SNAPSHOT_DATABASE_NAME = "snapshots.db";
-
-    // The feature param for determining whether the PhotoPicker should animate thumbnails.
-    private static final String FEATURE_PARAM_ANIMATE_THUMBNAILS = "animate_thumbnails";
 
     private static ProcessInitializationHandler sInstance;
 
@@ -217,25 +214,17 @@ public class ProcessInitializationHandler {
             return new Intent(ContextUtils.getApplicationContext(), DecoderService.class);
         });
 
-        SelectFileDialog.setPhotoPickerDelegate(new PhotoPickerDelegate() {
+        SelectFileDialog.setPhotoPickerDelegate(new PhotoPickerDelegateBase() {
             @Override
             public PhotoPicker showPhotoPicker(WindowAndroid windowAndroid,
                     PhotoPickerListener listener, boolean allowMultiple, List<String> mimeTypes) {
                 PhotoPickerDialog dialog = new PhotoPickerDialog(windowAndroid,
                         windowAndroid.getContext().get().getContentResolver(), listener,
                         allowMultiple,
-                        ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                                ChromeFeatureList.PHOTO_PICKER_VIDEO_SUPPORT,
-                                FEATURE_PARAM_ANIMATE_THUMBNAILS, false),
                         mimeTypes);
                 dialog.getWindow().getAttributes().windowAnimations = R.style.PickerDialogAnimation;
                 dialog.show();
                 return dialog;
-            }
-
-            @Override
-            public boolean supportsVideos() {
-                return ChromeFeatureList.isEnabled(ChromeFeatureList.PHOTO_PICKER_VIDEO_SUPPORT);
             }
         });
 

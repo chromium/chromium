@@ -49,6 +49,9 @@ public class DecoderServiceHost
     // A tag for logging error messages.
     private static final String TAG = "ImageDecoderHost";
 
+    // The feature param for determining whether the PhotoPicker should animate thumbnails.
+    private static final String FEATURE_PARAM_ANIMATE_THUMBNAILS = "animate_thumbnails";
+
     // The current context.
     private final Context mContext;
 
@@ -80,7 +83,7 @@ public class DecoderServiceHost
     private int mFailedVideoDecodesUnknown;
 
     // Whether animated thumbnails should be generated for video clips.
-    private final boolean mAnimatedThumbnailsSupported;
+    private boolean mAnimatedThumbnailsSupported;
 
     // A worker task for asynchronously handling video decode requests.
     private DecodeVideoTask mWorkerTask;
@@ -234,18 +237,17 @@ public class DecoderServiceHost
      * The DecoderServiceHost constructor.
      * @param callback The callback to use when communicating back to the client.
      * @param context The current context.
-     * @param animatedThumbnailsSupported Whether animated thumbnails should be generated for video
-     *         clips.
      */
-    public DecoderServiceHost(
-            DecoderStatusCallback callback, Context context, boolean animatedThumbnailsSupported) {
+    public DecoderServiceHost(DecoderStatusCallback callback, Context context) {
         mCallbacks.add(callback);
-        mAnimatedThumbnailsSupported = animatedThumbnailsSupported;
         if (sStatusCallbackForTesting != null) {
             mCallbacks.add(sStatusCallbackForTesting);
         }
         mContext = context;
         mContentResolver = mContext.getContentResolver();
+        mAnimatedThumbnailsSupported =
+                PhotoPickerFeatures.PHOTO_PICKER_VIDEO_SUPPORT.getFieldTrialParamByFeatureAsBoolean(
+                        FEATURE_PARAM_ANIMATE_THUMBNAILS, false);
     }
 
     /**
@@ -282,6 +284,7 @@ public class DecoderServiceHost
         DecoderServiceParams params = new DecoderServiceParams(
                 uri, width, fullWidth, fileType, /*firstFrame=*/true, callback);
         mPendingRequests.add(params);
+
         if (params.mFileType == PickerBitmap.TileTypes.VIDEO && mAnimatedThumbnailsSupported) {
             // Decoding requests for videos are requests for first frames only. Add another
             // low-priority request for decoding the rest of the frames.
@@ -601,5 +604,10 @@ public class DecoderServiceHost
     @VisibleForTesting
     public static void setStatusCallback(DecoderStatusCallback callback) {
         sStatusCallbackForTesting = callback;
+    }
+
+    @VisibleForTesting
+    void setAnimatedThumbnailsSupportedForTesting(boolean supported) {
+        mAnimatedThumbnailsSupported = supported;
     }
 }

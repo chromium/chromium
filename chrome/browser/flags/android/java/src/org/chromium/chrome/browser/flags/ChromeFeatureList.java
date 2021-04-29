@@ -408,7 +408,6 @@ public abstract class ChromeFeatureList {
     public static final String PAINT_PREVIEW_SHOW_ON_STARTUP = "PaintPreviewShowOnStartup";
     public static final String PASSWORD_SCRIPTS_FETCHING = "PasswordScriptsFetching";
     public static final String PERMISSION_DELEGATION = "PermissionDelegation";
-    public static final String PHOTO_PICKER_VIDEO_SUPPORT = "PhotoPickerVideoSupport";
     public static final String PORTALS = "Portals";
     public static final String PORTALS_CROSS_ORIGIN = "PortalsCrossOrigin";
     public static final String PREEMPTIVE_LINK_TO_TEXT_GENERATION =

@@ -33,11 +33,26 @@ public abstract class Features {
         return FeaturesJni.get().isEnabled(getFeaturePointer());
     }
 
+    /**
+     * Returns a field trial param as a boolean for the specified feature.
+     *
+     * @param paramName The name of the param.
+     * @param defaultValue The boolean value to use if the param is not available.
+     * @return The parameter value as a boolean. Default value if the feature does not exist or the
+     *         specified parameter does not exist or its string value is neither "true" nor "false".
+     */
+    public boolean getFieldTrialParamByFeatureAsBoolean(String paramName, boolean defaultValue) {
+        return FeaturesJni.get().getFieldTrialParamByFeatureAsBoolean(
+                getFeaturePointer(), paramName, defaultValue);
+    }
+
     /** Returns a pointer to the native Feature object represented by this object instance. */
     protected abstract long getFeaturePointer();
 
     @NativeMethods
     interface Natives {
         boolean isEnabled(long featurePointer);
+        boolean getFieldTrialParamByFeatureAsBoolean(
+                long featurePointer, String paramName, boolean defaultValue);
     }
 }

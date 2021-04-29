@@ -37,6 +37,7 @@ import org.chromium.base.test.util.UrlUtils;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -128,6 +129,7 @@ public class PhotoPickerDialogTest extends DummyUiActivityTestCase
 
     @Before
     public void setUp() throws Exception {
+        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         mWindowAndroid = TestThreadUtils.runOnUiThreadBlocking(
                 () -> { return new ActivityWindowAndroid(getActivity()); });
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -272,9 +274,9 @@ public class PhotoPickerDialogTest extends DummyUiActivityTestCase
                 TestThreadUtils.runOnUiThreadBlocking(new Callable<PhotoPickerDialog>() {
                     @Override
                     public PhotoPickerDialog call() {
-                        final PhotoPickerDialog dialog = new PhotoPickerDialog(mWindowAndroid,
-                                contentResolver, PhotoPickerDialogTest.this, multiselect,
-                                /* animatedThumbnailsSupported = */ true, mimeTypes);
+                        final PhotoPickerDialog dialog =
+                                new PhotoPickerDialog(mWindowAndroid, contentResolver,
+                                        PhotoPickerDialogTest.this, multiselect, mimeTypes);
                         dialog.show();
                         return dialog;
                     }
