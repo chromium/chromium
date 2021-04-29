@@ -234,13 +234,13 @@ class ShelfPlatformAppBrowserTest : public extensions::PlatformAppBrowserTest {
 
   ash::ShelfModel* shelf_model() { return controller_->shelf_model(); }
 
-  ash::ShelfID CreateAppShortcutLauncherItem(const ash::ShelfID& shelf_id) {
-    return controller_->CreateAppShortcutLauncherItem(
-        shelf_id, shelf_model()->item_count());
+  ash::ShelfID CreateAppShortcutItem(const ash::ShelfID& shelf_id) {
+    return controller_->CreateAppShortcutItem(shelf_id,
+                                              shelf_model()->item_count());
   }
 
   // Returns the last item in the shelf.
-  const ash::ShelfItem& GetLastLauncherItem() {
+  const ash::ShelfItem& GetLastShelfItem() {
     return shelf_model()->items()[shelf_model()->item_count() - 1];
   }
 
@@ -271,7 +271,7 @@ class ShelfAppBrowserTest : public extensions::ExtensionBrowserTest {
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
   }
 
-  size_t NumberOfDetectedLauncherBrowsers(bool show_all_tabs) {
+  size_t BrowserShortcutMenuItemCount(bool show_all_tabs) {
     ash::ShelfItemDelegate* item_controller =
         controller_->GetBrowserShortcutShelfItemControllerForTesting();
     return item_controller
@@ -308,8 +308,8 @@ class ShelfAppBrowserTest : public extensions::ExtensionBrowserTest {
 
     // Then create a shortcut.
     int item_count = shelf_model()->item_count();
-    ash::ShelfID shortcut_id = controller_->CreateAppShortcutLauncherItem(
-        ash::ShelfID(app_id), item_count);
+    ash::ShelfID shortcut_id =
+        controller_->CreateAppShortcutItem(ash::ShelfID(app_id), item_count);
     controller_->SyncPinPosition(shortcut_id);
     EXPECT_EQ(++item_count, shelf_model()->item_count());
     const ash::ShelfItem& item = *shelf_model()->ItemByID(shortcut_id);
@@ -468,7 +468,7 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, LaunchUnpinned) {
   AppWindow* window = CreateAppWindow(browser()->profile(), extension);
   ++item_count;
   ASSERT_EQ(item_count, shelf_model()->item_count());
-  const ash::ShelfItem& item = GetLastLauncherItem();
+  const ash::ShelfItem& item = GetLastShelfItem();
   EXPECT_EQ(ash::TYPE_APP, item.type);
   EXPECT_EQ(ash::STATUS_RUNNING, item.status);
   CloseAppWindow(window);
@@ -485,8 +485,7 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, LaunchPinned) {
   const std::string app_id = extension->id();
 
   // Then create a shortcut.
-  ash::ShelfID shortcut_id =
-      CreateAppShortcutLauncherItem(ash::ShelfID(app_id));
+  ash::ShelfID shortcut_id = CreateAppShortcutItem(ash::ShelfID(app_id));
   ++item_count;
   ASSERT_EQ(item_count, shelf_model()->item_count());
   ash::ShelfItem item = *shelf_model()->ItemByID(shortcut_id);
@@ -516,14 +515,14 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, PinRunning) {
   AppWindow* window = CreateAppWindow(browser()->profile(), extension);
   ++item_count;
   ASSERT_EQ(item_count, shelf_model()->item_count());
-  const ash::ShelfItem& item1 = GetLastLauncherItem();
+  const ash::ShelfItem& item1 = GetLastShelfItem();
   ash::ShelfID id = item1.id;
   EXPECT_EQ(ash::TYPE_APP, item1.type);
   EXPECT_EQ(ash::STATUS_RUNNING, item1.status);
 
   // Create a shortcut. The app item should be after it.
-  ash::ShelfID foo_id = CreateAppShortcutLauncherItem(
-      ash::ShelfID(extension_misc::kYoutubeAppId));
+  ash::ShelfID foo_id =
+      CreateAppShortcutItem(ash::ShelfID(extension_misc::kYoutubeAppId));
   ++item_count;
   ASSERT_EQ(item_count, shelf_model()->item_count());
   EXPECT_LT(shelf_model()->ItemIndexByID(foo_id),
@@ -537,8 +536,8 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, PinRunning) {
   EXPECT_EQ(ash::STATUS_RUNNING, item2.status);
 
   // New shortcuts should come after the item.
-  ash::ShelfID bar_id = CreateAppShortcutLauncherItem(
-      ash::ShelfID(extension_misc::kGoogleDocAppId));
+  ash::ShelfID bar_id =
+      CreateAppShortcutItem(ash::ShelfID(extension_misc::kGoogleDocAppId));
   ++item_count;
   ASSERT_EQ(item_count, shelf_model()->item_count());
   EXPECT_LT(shelf_model()->ItemIndexByID(id),
@@ -557,8 +556,7 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, UnpinRunning) {
   const std::string app_id = extension->id();
 
   // Then create a shortcut.
-  ash::ShelfID shortcut_id =
-      CreateAppShortcutLauncherItem(ash::ShelfID(app_id));
+  ash::ShelfID shortcut_id = CreateAppShortcutItem(ash::ShelfID(app_id));
   ++item_count;
   ASSERT_EQ(item_count, shelf_model()->item_count());
   ash::ShelfItem item = *shelf_model()->ItemByID(shortcut_id);
@@ -567,8 +565,8 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, UnpinRunning) {
 
   // Create a second shortcut. This will be needed to force the first one to
   // move once it gets unpinned.
-  ash::ShelfID foo_id = CreateAppShortcutLauncherItem(
-      ash::ShelfID(extension_misc::kYoutubeAppId));
+  ash::ShelfID foo_id =
+      CreateAppShortcutItem(ash::ShelfID(extension_misc::kYoutubeAppId));
   ++item_count;
   ASSERT_EQ(item_count, shelf_model()->item_count());
   EXPECT_LT(shelf_model()->ItemIndexByID(shortcut_id),
@@ -646,7 +644,7 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, MultipleWindows) {
   const Extension* extension = LoadAndLaunchPlatformApp("launch", "Launched");
   AppWindow* window1 = CreateAppWindow(browser()->profile(), extension);
   ASSERT_EQ(item_count + 1, shelf_model()->item_count());
-  const ash::ShelfItem& item1 = GetLastLauncherItem();
+  const ash::ShelfItem& item1 = GetLastShelfItem();
   ash::ShelfID item_id = item1.id;
   EXPECT_EQ(ash::TYPE_APP, item1.type);
   EXPECT_EQ(ash::STATUS_RUNNING, item1.status);
@@ -679,7 +677,7 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, MultipleApps) {
   AppWindow* window1 = CreateAppWindow(browser()->profile(), extension1);
   ++item_count;
   ASSERT_EQ(item_count, shelf_model()->item_count());
-  const ash::ShelfItem& item1 = GetLastLauncherItem();
+  const ash::ShelfItem& item1 = GetLastShelfItem();
   ash::ShelfID item_id1 = item1.id;
   EXPECT_EQ(ash::TYPE_APP, item1.type);
   EXPECT_EQ(ash::STATUS_RUNNING, item1.status);
@@ -690,7 +688,7 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, MultipleApps) {
   AppWindow* window2 = CreateAppWindow(browser()->profile(), extension2);
   ++item_count;
   ASSERT_EQ(item_count, shelf_model()->item_count());
-  const ash::ShelfItem& item2 = GetLastLauncherItem();
+  const ash::ShelfItem& item2 = GetLastShelfItem();
   ash::ShelfID item_id2 = item2.id;
   EXPECT_EQ(ash::TYPE_APP, item2.type);
   EXPECT_EQ(ash::STATUS_RUNNING, item2.status);
@@ -721,7 +719,7 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, WindowActivation) {
   AppWindow* window1 = CreateAppWindow(browser()->profile(), extension1);
   ++item_count;
   ASSERT_EQ(item_count, shelf_model()->item_count());
-  const ash::ShelfItem& item1 = GetLastLauncherItem();
+  const ash::ShelfItem& item1 = GetLastShelfItem();
   ash::ShelfID item_id1 = item1.id;
   EXPECT_EQ(ash::TYPE_APP, item1.type);
   EXPECT_EQ(ash::STATUS_RUNNING, item1.status);
@@ -732,7 +730,7 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, WindowActivation) {
   AppWindow* window2 = CreateAppWindow(browser()->profile(), extension2);
   ++item_count;
   ASSERT_EQ(item_count, shelf_model()->item_count());
-  const ash::ShelfItem& item2 = GetLastLauncherItem();
+  const ash::ShelfItem& item2 = GetLastShelfItem();
   ash::ShelfID item_id2 = item2.id;
   EXPECT_EQ(ash::TYPE_APP, item2.type);
   EXPECT_EQ(ash::STATUS_RUNNING, item2.status);
@@ -806,7 +804,7 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, MultipleBrowsers) {
   ui::BaseWindow* const app_window =
       CreateAppWindow(browser()->profile(), app)->GetBaseWindow();
 
-  const ash::ShelfItem item = GetLastLauncherItem();
+  const ash::ShelfItem item = GetLastShelfItem();
   EXPECT_EQ(app->id(), item.id.app_id);
   EXPECT_EQ(ash::TYPE_APP, item.type);
   EXPECT_EQ(ash::STATUS_RUNNING, item.status);
@@ -832,7 +830,7 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest,
   EXPECT_TRUE(window1->GetBaseWindow()->IsActive());
 
   // Confirm that a controller item was created and is the correct state.
-  const ash::ShelfItem& item = GetLastLauncherItem();
+  const ash::ShelfItem& item = GetLastShelfItem();
   EXPECT_EQ(ash::TYPE_APP, item.type);
   EXPECT_EQ(ash::STATUS_RUNNING, item.status);
   // Since it is already active, clicking it should minimize.
@@ -865,9 +863,9 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest,
   EXPECT_TRUE(window1a->GetBaseWindow()->IsActive());
 
   // Ensure the same shelf item and delegate are used for |window1a|.
-  EXPECT_EQ(item.id, GetLastLauncherItem().id);
+  EXPECT_EQ(item.id, GetLastShelfItem().id);
   EXPECT_EQ(GetShelfItemDelegate(item.id),
-            GetShelfItemDelegate(GetLastLauncherItem().id));
+            GetShelfItemDelegate(GetLastShelfItem().id));
 
   // The first click does nothing.
   SelectItem(item.id);
@@ -891,7 +889,7 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, BrowserActivation) {
   CreateAppWindow(browser()->profile(), extension1);
   ++item_count;
   ASSERT_EQ(item_count, shelf_model()->item_count());
-  const ash::ShelfItem& item = GetLastLauncherItem();
+  const ash::ShelfItem& item = GetLastShelfItem();
   ash::ShelfID item_id1 = item.id;
   EXPECT_EQ(ash::TYPE_APP, item.type);
   EXPECT_EQ(ash::STATUS_RUNNING, item.status);
@@ -1408,7 +1406,7 @@ IN_PROC_BROWSER_TEST_F(FilesManagerExtensionTest, VerifyFirstItem) {
         ->FlushMojoCallsForTesting();
   }
 
-  CreateAppShortcutLauncherItem(ash::ShelfID(extension->id()));
+  CreateAppShortcutItem(ash::ShelfID(extension->id()));
 
   const int item_count = shelf_model()->item_count();
   ash::ShelfItem item = shelf_model()->items()[item_count - 1];
@@ -1558,7 +1556,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, RefocusFilterLaunch) {
   EXPECT_EQ(tab_strip->GetActiveWebContents(), second_tab);
 }
 
-// Check that the launcher activation state for a V1 application stays closed
+// Check that the shelf item activation state for a V1 application stays closed
 // even after an asynchronous browser event comes in after the tab got
 // destroyed.
 IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, AsyncActivationStateCheck) {
@@ -1637,7 +1635,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, AppWindowRestoreBehaviorTest) {
 IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
                        WindowedAppDoesNotAddToBrowser) {
   // Get the number of items in the browser menu.
-  size_t items = NumberOfDetectedLauncherBrowsers(false);
+  size_t items = BrowserShortcutMenuItemCount(false);
   size_t running_browser = chrome::GetTotalBrowserCount();
   EXPECT_EQ(0u, items);
   EXPECT_EQ(0u, running_browser);
@@ -1650,7 +1648,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
   ASSERT_TRUE(extension);
 
   // No new browser should get detected, even though one more is running.
-  EXPECT_EQ(0u, NumberOfDetectedLauncherBrowsers(false));
+  EXPECT_EQ(0u, BrowserShortcutMenuItemCount(false));
   EXPECT_EQ(++running_browser, chrome::GetTotalBrowserCount());
 
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
@@ -1665,7 +1663,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
   proxy->FlushMojoCallsForTesting();
 
   // A new browser should get detected and one more should be running.
-  EXPECT_EQ(NumberOfDetectedLauncherBrowsers(false), 1u);
+  EXPECT_EQ(BrowserShortcutMenuItemCount(false), 1u);
   EXPECT_EQ(++running_browser, chrome::GetTotalBrowserCount());
 }
 
@@ -1678,8 +1676,8 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
       apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerTab,
                           WindowOpenDisposition::NEW_FOREGROUND_TAB,
                           true /* prefer_containner */));
-  size_t browsers = NumberOfDetectedLauncherBrowsers(false);
-  size_t tabs = NumberOfDetectedLauncherBrowsers(true);
+  size_t browsers = BrowserShortcutMenuItemCount(false);
+  size_t tabs = BrowserShortcutMenuItemCount(true);
 
   // Create a second browser.
   //
@@ -1695,8 +1693,8 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
           WindowOpenDisposition::NEW_WINDOW,
           apps::mojom::AppLaunchSource::kSourceTest));
 
-  EXPECT_EQ(++browsers, NumberOfDetectedLauncherBrowsers(false));
-  EXPECT_EQ(++tabs, NumberOfDetectedLauncherBrowsers(true));
+  EXPECT_EQ(++browsers, BrowserShortcutMenuItemCount(false));
+  EXPECT_EQ(++tabs, BrowserShortcutMenuItemCount(true));
 
   // Create only a tab.
   LoadAndLaunchExtension(
@@ -1705,11 +1703,11 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
                           WindowOpenDisposition::NEW_FOREGROUND_TAB,
                           true /* prefer_containner */));
 
-  EXPECT_EQ(browsers, NumberOfDetectedLauncherBrowsers(false));
-  EXPECT_EQ(++tabs, NumberOfDetectedLauncherBrowsers(true));
+  EXPECT_EQ(browsers, BrowserShortcutMenuItemCount(false));
+  EXPECT_EQ(++tabs, BrowserShortcutMenuItemCount(true));
 }
 
-// Check that the keyboard activation of a launcher item tabs properly through
+// Check that the keyboard activation of a shelf item tabs properly through
 // the items at hand.
 IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, AltNumberTabsTabbing) {
   TabStripModel* tab_strip = browser()->tab_strip_model();
@@ -1756,7 +1754,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, AltNumberTabsTabbing) {
   EXPECT_EQ(content2, browser()->tab_strip_model()->GetActiveWebContents());
 }
 
-// Check that the keyboard activation of a launcher item tabs properly through
+// Check that the keyboard activation of a shelf item tabs properly through
 // the items at hand.
 IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, AltNumberAppsTabbing) {
   // First run app.
@@ -1764,7 +1762,7 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, AltNumberAppsTabbing) {
   ui::BaseWindow* window1 =
       CreateAppWindow(browser()->profile(), extension1)->GetBaseWindow();
 
-  const ash::ShelfItem item = GetLastLauncherItem();
+  const ash::ShelfItem item = GetLastShelfItem();
   EXPECT_EQ(ash::TYPE_APP, item.type);
   EXPECT_EQ(ash::STATUS_RUNNING, item.status);
 
@@ -1792,7 +1790,7 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, AltNumberAppsTabbing) {
   EXPECT_TRUE(window1a->IsActive());
 }
 
-// Check that the keyboard activation of a launcher item tabs even if the app is
+// Check that the keyboard activation of a shelf item tabs even if the app is
 // not currently activated.
 IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest,
                        AltNumberAppsTabbingFromOtherApp) {
@@ -1803,7 +1801,7 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest,
       CreateAppWindow(browser()->profile(), app1_extension1)->GetBaseWindow();
   ui::BaseWindow* app1_window2 =
       CreateAppWindow(browser()->profile(), app1_extension1)->GetBaseWindow();
-  const ash::ShelfItem item1 = GetLastLauncherItem();
+  const ash::ShelfItem item1 = GetLastShelfItem();
   EXPECT_EQ(ash::TYPE_APP, item1.type);
   EXPECT_EQ(ash::STATUS_RUNNING, item1.status);
 
@@ -1814,7 +1812,7 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest,
       CreateAppWindow(browser()->profile(), app2_extension1)->GetBaseWindow();
   ui::BaseWindow* app2_window2 =
       CreateAppWindow(browser()->profile(), app2_extension1)->GetBaseWindow();
-  const ash::ShelfItem item2 = GetLastLauncherItem();
+  const ash::ShelfItem item2 = GetLastShelfItem();
   EXPECT_EQ(ash::TYPE_APP, item2.type);
   EXPECT_EQ(ash::STATUS_RUNNING, item2.status);
 
@@ -1882,7 +1880,7 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, WindowAttentionStatus) {
   // The window should not be active by default.
   EXPECT_FALSE(window->GetBaseWindow()->IsActive());
   // Confirm that a shelf item was created and is the correct state.
-  const ash::ShelfItem& item = GetLastLauncherItem();
+  const ash::ShelfItem& item = GetLastShelfItem();
   EXPECT_TRUE(GetShelfItemDelegate(item.id));
   EXPECT_EQ(ash::TYPE_APP, item.type);
   EXPECT_EQ(ash::STATUS_RUNNING, item.status);
@@ -2294,7 +2292,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, SettingsAndTaskManagerWindows) {
   // Get the number of items in the shelf and browser menu.
   int item_count = shelf_model()->item_count();
   ASSERT_GE(item_count, 0);
-  size_t browser_count = NumberOfDetectedLauncherBrowsers(false);
+  size_t browser_count = BrowserShortcutMenuItemCount(false);
 
   // Open a settings window. Number of browser items should remain unchanged,
   // number of shelf items should increase.
@@ -2306,7 +2304,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, SettingsAndTaskManagerWindows) {
   Browser* settings_browser =
       settings_manager->FindBrowserForProfile(browser()->profile());
   ASSERT_TRUE(settings_browser);
-  EXPECT_EQ(browser_count, NumberOfDetectedLauncherBrowsers(false));
+  EXPECT_EQ(browser_count, BrowserShortcutMenuItemCount(false));
   EXPECT_EQ(item_count + 1, shelf_model()->item_count());
 
   aura::Window* settings_window = settings_browser->window()->GetNativeWindow();
@@ -2360,7 +2358,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, TabbedHostedAndWebApps) {
   EXPECT_EQ(ash::STATUS_RUNNING,
             shelf_model()->ItemByID(web_app_shelf_id)->status);
 
-  // Now use the launcher controller to activate the apps.
+  // Now use the shelf controller to activate the apps.
   controller_->ActivateApp(hosted_app->id(), ash::LAUNCH_FROM_APP_LIST, 0,
                            display::kInvalidDisplayId);
   controller_->ActivateApp(web_app_id, ash::LAUNCH_FROM_APP_LIST, 0,
@@ -2413,7 +2411,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WindowedHostedAndWebApps) {
   EXPECT_EQ(ash::STATUS_CLOSED,
             shelf_model()->ItemByID(web_app_shelf_id)->status);
 
-  // Now use the launcher controller to activate the apps.
+  // Now use the shelf controller to activate the apps.
   ActivateAppAndFlushMojoCallsForAppService(hosted_app->id(),
                                             ash::LAUNCH_FROM_APP_LIST, 0,
                                             display::kInvalidDisplayId);

@@ -295,7 +295,7 @@ ChromeShelfController::~ChromeShelfController() {
 
 void ChromeShelfController::Init() {
   if (!crosapi::browser_util::IsLacrosPrimaryBrowser()) {
-    CreateBrowserShortcutLauncherItem(/*pinned=*/true);
+    CreateBrowserShortcutItem(/*pinned=*/true);
     UpdateBrowserItemState();
   }
 
@@ -313,12 +313,12 @@ void ChromeShelfController::Init() {
   browser_status_monitor_->Initialize();
 }
 
-ash::ShelfID ChromeShelfController::CreateAppLauncherItem(
+ash::ShelfID ChromeShelfController::CreateAppItem(
     std::unique_ptr<ash::ShelfItemDelegate> item_delegate,
     ash::ShelfItemStatus status,
     const std::u16string& title) {
-  return InsertAppLauncherItem(std::move(item_delegate), status,
-                               model_->item_count(), ash::TYPE_APP, title);
+  return InsertAppItem(std::move(item_delegate), status, model_->item_count(),
+                       ash::TYPE_APP, title);
 }
 
 const ash::ShelfItem* ChromeShelfController::GetItem(
@@ -356,7 +356,7 @@ void ChromeShelfController::SetItemTitle(const ash::ShelfID& id,
   }
 }
 
-void ChromeShelfController::CloseLauncherItem(const ash::ShelfID& id) {
+void ChromeShelfController::CloseItem(const ash::ShelfID& id) {
   CHECK(!id.IsNull());
   if (IsPinned(id)) {
     // Create a new shortcut delegate.
@@ -396,9 +396,8 @@ void ChromeShelfController::SetV1AppStatus(const std::string& app_id,
   if (item) {
     SetItemStatusOrRemove(id, status);
   } else if (status != ash::STATUS_CLOSED && !app_id.empty()) {
-    InsertAppLauncherItem(
-        AppShortcutShelfItemController::Create(ash::ShelfID(app_id)), status,
-        model_->item_count(), ash::TYPE_APP);
+    InsertAppItem(AppShortcutShelfItemController::Create(ash::ShelfID(app_id)),
+                  status, model_->item_count(), ash::TYPE_APP);
   }
 }
 
@@ -459,8 +458,8 @@ void ChromeShelfController::ActivateApp(const std::string& app_id,
   }
 }
 
-void ChromeShelfController::SetLauncherItemImage(const ash::ShelfID& shelf_id,
-                                                 const gfx::ImageSkia& image) {
+void ChromeShelfController::SetItemImage(const ash::ShelfID& shelf_id,
+                                         const gfx::ImageSkia& image) {
   DCHECK(!image.isNull());
   if (const auto* item = GetItem(shelf_id)) {
     ash::ShelfItem new_item = *item;
@@ -472,7 +471,7 @@ void ChromeShelfController::SetLauncherItemImage(const ash::ShelfID& shelf_id,
   }
 }
 
-void ChromeShelfController::UpdateLauncherItemImage(const std::string& app_id) {
+void ChromeShelfController::UpdateItemImage(const std::string& app_id) {
   if (auto* icon_loader = GetAppIconLoaderForApp(app_id))
     icon_loader->UpdateImage(app_id);
 }
@@ -719,7 +718,7 @@ void ChromeShelfController::UpdateBrowserItemState() {
       model_->ItemIndexByID(chrome_id) < 0) {
     // If browser short cut is not present, create it.
     // This happens iff browser shortcut is not pinned.
-    CreateBrowserShortcutLauncherItem(/*pinned=*/false);
+    CreateBrowserShortcutItem(/*pinned=*/false);
   }
 
   int browser_index = model_->ItemIndexByID(chrome_id);
@@ -1022,19 +1021,18 @@ void ChromeShelfController::OnAppImageUpdated(const std::string& app_id,
 ///////////////////////////////////////////////////////////////////////////////
 // ChromeShelfController private:
 
-ash::ShelfID ChromeShelfController::CreateAppShortcutLauncherItem(
+ash::ShelfID ChromeShelfController::CreateAppShortcutItem(
     const ash::ShelfID& shelf_id,
     int index) {
-  return CreateAppShortcutLauncherItem(shelf_id, index, std::u16string());
+  return CreateAppShortcutItem(shelf_id, index, std::u16string());
 }
 
-ash::ShelfID ChromeShelfController::CreateAppShortcutLauncherItem(
+ash::ShelfID ChromeShelfController::CreateAppShortcutItem(
     const ash::ShelfID& shelf_id,
     int index,
     const std::u16string& title) {
-  return InsertAppLauncherItem(AppShortcutShelfItemController::Create(shelf_id),
-                               ash::STATUS_CLOSED, index, ash::TYPE_PINNED_APP,
-                               title);
+  return InsertAppItem(AppShortcutShelfItemController::Create(shelf_id),
+                       ash::STATUS_CLOSED, index, ash::TYPE_PINNED_APP, title);
 }
 
 void ChromeShelfController::RememberUnpinnedRunningApplicationOrder() {
@@ -1207,7 +1205,7 @@ void ChromeShelfController::UpdatePinnedAppsFromSync() {
       // shortcut is unpinned. Do nothing then.
       if (pref_shelf_id.app_id != kChromeAppId) {
         // This is fresh pin. Create new one.
-        CreateAppShortcutLauncherItem(pref_shelf_id, index);
+        CreateAppShortcutItem(pref_shelf_id, index);
       }
     }
     ++index;
@@ -1255,7 +1253,7 @@ ash::ShelfItemStatus ChromeShelfController::GetAppState(
   return ash::STATUS_CLOSED;
 }
 
-ash::ShelfID ChromeShelfController::InsertAppLauncherItem(
+ash::ShelfID ChromeShelfController::InsertAppItem(
     std::unique_ptr<ash::ShelfItemDelegate> item_delegate,
     ash::ShelfItemStatus status,
     int index,
@@ -1282,7 +1280,7 @@ ash::ShelfID ChromeShelfController::InsertAppLauncherItem(
   return item.id;
 }
 
-void ChromeShelfController::CreateBrowserShortcutLauncherItem(bool pinned) {
+void ChromeShelfController::CreateBrowserShortcutItem(bool pinned) {
   // Do not sync the pin position of the browser shortcut item yet; its initial
   // position before prefs have loaded is unimportant and the sync service may
   // not yet be initialized.

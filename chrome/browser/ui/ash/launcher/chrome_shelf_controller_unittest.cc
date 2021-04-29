@@ -262,7 +262,7 @@ class TestShelfControllerHelper : public ShelfControllerHelper {
   TabToStringMap tab_id_map_;
 };
 
-// Test implementation of a V2 app launcher item controller.
+// Test implementation of a V2 app shelf item controller.
 class TestV2AppShelfItemController : public ash::ShelfItemDelegate {
  public:
   explicit TestV2AppShelfItemController(const std::string& app_id)
@@ -478,11 +478,11 @@ class ChromeShelfControllerTest : public BrowserWithTestWindowTest {
   // Creates a running platform V2 app (not pinned) of type |app_id|.
   virtual void CreateRunningV2App(const std::string& app_id) {
     DCHECK(!test_controller_);
-    // Change the created launcher controller into a V2 app controller.
+    // Change the created shelf item controller into a V2 app controller.
     std::unique_ptr<TestV2AppShelfItemController> controller =
         std::make_unique<TestV2AppShelfItemController>(app_id);
     test_controller_ = controller.get();
-    ash::ShelfID id = shelf_controller_->InsertAppLauncherItem(
+    ash::ShelfID id = shelf_controller_->InsertAppItem(
         std::move(controller), ash::STATUS_RUNNING, model_->item_count(),
         ash::TYPE_APP);
     DCHECK(shelf_controller_->IsPlatformApp(id));
@@ -548,7 +548,7 @@ class ChromeShelfControllerTest : public BrowserWithTestWindowTest {
     return CreateBrowser(profile, Browser::TYPE_NORMAL, false, browser_window);
   }
 
-  // Create an uninitialized chrome launcher controller instance.
+  // Create an uninitialized controller instance.
   ChromeShelfController* CreateShelfController() {
     shelf_controller_ =
         std::make_unique<ChromeShelfController>(profile(), model_.get());
@@ -2158,7 +2158,7 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcDeferredLaunchForActiveApp) {
   EXPECT_FALSE(shelf_controller_->GetShelfSpinnerController()->HasApp(app_id));
 
   // Closing the app should leave a pinned but closed shelf item shortcut.
-  shelf_controller_->CloseLauncherItem(shelf_id);
+  shelf_controller_->CloseItem(shelf_id);
   item = shelf_controller_->GetItem(shelf_id);
   ASSERT_NE(nullptr, item);
   EXPECT_EQ(ash::STATUS_CLOSED, item->status);
@@ -4044,7 +4044,7 @@ TEST_F(ChromeShelfControllerTest, MultipleAppIconLoaders) {
   SetAppIconLoaders(std::unique_ptr<AppIconLoader>(app_icon_loader1),
                     std::unique_ptr<AppIconLoader>(app_icon_loader2));
 
-  shelf_controller_->CreateAppLauncherItem(
+  shelf_controller_->CreateAppItem(
       std::make_unique<AppServiceAppWindowShelfItemController>(
           shelf_id3, shelf_controller_->app_service_app_window_controller()),
       ash::STATUS_RUNNING);
@@ -4053,7 +4053,7 @@ TEST_F(ChromeShelfControllerTest, MultipleAppIconLoaders) {
   EXPECT_EQ(0, app_icon_loader2->fetch_count());
   EXPECT_EQ(0, app_icon_loader2->clear_count());
 
-  shelf_controller_->CreateAppLauncherItem(
+  shelf_controller_->CreateAppItem(
       std::make_unique<AppServiceAppWindowShelfItemController>(
           shelf_id2, shelf_controller_->app_service_app_window_controller()),
       ash::STATUS_RUNNING);
@@ -4062,7 +4062,7 @@ TEST_F(ChromeShelfControllerTest, MultipleAppIconLoaders) {
   EXPECT_EQ(1, app_icon_loader2->fetch_count());
   EXPECT_EQ(0, app_icon_loader2->clear_count());
 
-  shelf_controller_->CreateAppLauncherItem(
+  shelf_controller_->CreateAppItem(
       std::make_unique<AppServiceAppWindowShelfItemController>(
           shelf_id1, shelf_controller_->app_service_app_window_controller()),
       ash::STATUS_RUNNING);
@@ -4071,19 +4071,19 @@ TEST_F(ChromeShelfControllerTest, MultipleAppIconLoaders) {
   EXPECT_EQ(1, app_icon_loader2->fetch_count());
   EXPECT_EQ(0, app_icon_loader2->clear_count());
 
-  shelf_controller_->CloseLauncherItem(shelf_id1);
+  shelf_controller_->CloseItem(shelf_id1);
   EXPECT_EQ(1, app_icon_loader1->fetch_count());
   EXPECT_EQ(1, app_icon_loader1->clear_count());
   EXPECT_EQ(1, app_icon_loader2->fetch_count());
   EXPECT_EQ(0, app_icon_loader2->clear_count());
 
-  shelf_controller_->CloseLauncherItem(shelf_id2);
+  shelf_controller_->CloseItem(shelf_id2);
   EXPECT_EQ(1, app_icon_loader1->fetch_count());
   EXPECT_EQ(1, app_icon_loader1->clear_count());
   EXPECT_EQ(1, app_icon_loader2->fetch_count());
   EXPECT_EQ(1, app_icon_loader2->clear_count());
 
-  shelf_controller_->CloseLauncherItem(shelf_id3);
+  shelf_controller_->CloseItem(shelf_id3);
   EXPECT_EQ(1, app_icon_loader1->fetch_count());
   EXPECT_EQ(1, app_icon_loader1->clear_count());
   EXPECT_EQ(1, app_icon_loader2->fetch_count());

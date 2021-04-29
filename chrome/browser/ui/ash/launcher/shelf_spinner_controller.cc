@@ -213,7 +213,7 @@ void ShelfSpinnerController::CloseSpinner(const std::string& app_id) {
   if (!RemoveSpinnerFromControllerMap(app_id))
     return;
 
-  owner_->CloseLauncherItem(ash::ShelfID(app_id));
+  owner_->CloseItem(ash::ShelfID(app_id));
   UpdateShelfItemIcon(app_id);
 }
 
@@ -308,7 +308,7 @@ void ShelfSpinnerController::ActiveUserChanged(const AccountId& account_id) {
 }
 
 void ShelfSpinnerController::UpdateShelfItemIcon(const std::string& app_id) {
-  owner_->UpdateLauncherItemImage(app_id);
+  owner_->UpdateItemImage(app_id);
 }
 
 void ShelfSpinnerController::UpdateApps() {
@@ -349,7 +349,7 @@ void ShelfSpinnerController::AddSpinnerToShelf(
   controller->SetHost(weak_ptr_factory_.GetWeakPtr());
   ShelfSpinnerItemController* item_controller = controller.get();
   if (!item) {
-    owner_->CreateAppLauncherItem(std::move(controller), ash::STATUS_RUNNING);
+    owner_->CreateAppItem(std::move(controller), ash::STATUS_RUNNING);
   } else {
     owner_->shelf_model()->SetShelfItemDelegate(shelf_id,
                                                 std::move(controller));

@@ -425,9 +425,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ShelfIconFocusForward) {
   // pinned apps in user preference will be removed.
   EnableChromeVox();
   sm_.Call([controller, title]() {
-    controller->CreateAppShortcutLauncherItem(
-        ShelfID("FakeApp"), controller->shelf_model()->item_count(),
-        base::ASCIIToUTF16(title));
+    controller->CreateAppShortcutItem(ShelfID("FakeApp"),
+                                      controller->shelf_model()->item_count(),
+                                      base::ASCIIToUTF16(title));
   });
 
   // Focus on the shelf.
@@ -471,8 +471,8 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, SpeakingTextUnderMouseForShelfItem) {
     for (int i = 0; i < insert_app_num; i++) {
       std::string app_title = title + base::NumberToString(i);
       std::string app_id = id + base::NumberToString(i);
-      controller->CreateAppShortcutLauncherItem(ShelfID(app_id), base_index + i,
-                                                base::ASCIIToUTF16(app_title));
+      controller->CreateAppShortcutItem(ShelfID(app_id), base_index + i,
+                                        base::ASCIIToUTF16(app_title));
     }
 
     // Enable the function of speaking text under mouse.

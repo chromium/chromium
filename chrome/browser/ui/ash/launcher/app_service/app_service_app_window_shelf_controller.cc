@@ -572,7 +572,7 @@ void AppServiceAppWindowShelfController::AddAppWindowToShelf(
   app_window->SetController(item_controller);
 
   if (!owner()->GetItem(shelf_id)) {
-    owner()->CreateAppLauncherItem(std::move(controller), ash::STATUS_RUNNING);
+    owner()->CreateAppItem(std::move(controller), ash::STATUS_RUNNING);
   } else {
     owner()->shelf_model()->SetShelfItemDelegate(shelf_id,
                                                  std::move(controller));
@@ -593,7 +593,7 @@ void AppServiceAppWindowShelfController::RemoveAppWindowFromShelf(
           app_window->shelf_id());
 
   if (item_controller && item_controller->window_count() == 0)
-    owner()->CloseLauncherItem(item_controller->shelf_id());
+    owner()->CloseItem(item_controller->shelf_id());
 }
 
 void AppServiceAppWindowShelfController::OnItemDelegateDiscarded(

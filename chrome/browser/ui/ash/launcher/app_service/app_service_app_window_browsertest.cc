@@ -160,7 +160,7 @@ class AppServiceAppWindowBrowserTest
   ash::ShelfModel* shelf_model() { return controller_->shelf_model(); }
 
   // Returns the last item in the shelf.
-  const ash::ShelfItem& GetLastLauncherItem() {
+  const ash::ShelfItem& GetLastShelfItem() {
     return shelf_model()->items()[shelf_model()->item_count() - 1];
   }
 
@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowBrowserTest, ExtensionAppsWindow) {
                 apps::InstanceState::kActive | apps::InstanceState::kVisible,
             GetAppInstanceState(app->id(), *windows.begin()));
 
-  const ash::ShelfItem& item = GetLastLauncherItem();
+  const ash::ShelfItem& item = GetLastShelfItem();
   // Since it is already active, clicking it should minimize.
   SelectItem(item.id);
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning,
@@ -509,7 +509,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowWebAppBrowserTest, WebAppsWindow) {
                 apps::InstanceState::kActive | apps::InstanceState::kVisible,
             GetAppInstanceState(app_id, window));
 
-  const ash::ShelfItem& item = GetLastLauncherItem();
+  const ash::ShelfItem& item = GetLastShelfItem();
   // Since it is already active, clicking it should minimize.
   SelectItem(item.id);
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning,
@@ -541,7 +541,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowWebAppBrowserTest,
                 apps::InstanceState::kActive | apps::InstanceState::kVisible,
             GetAppInstanceState(app_id, window1));
 
-  const ash::ShelfItem item = GetLastLauncherItem();
+  const ash::ShelfItem item = GetLastShelfItem();
   // Since it is already active, clicking it should minimize.
   SelectItem(item.id);
   EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning,

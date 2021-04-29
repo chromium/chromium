@@ -80,8 +80,7 @@ void AppServiceAppWindowArcTracker::ActiveUserChanged(
     // Some controllers might have no windows attached, for example background
     // task when foreground tasks is in full screen.
     for (const auto& it : app_shelf_group_to_controller_map_)
-      app_service_controller_->owner()->CloseLauncherItem(
-          it.second->shelf_id());
+      app_service_controller_->owner()->CloseItem(it.second->shelf_id());
     app_shelf_group_to_controller_map_.clear();
   }
 }
@@ -231,7 +230,7 @@ void AppServiceAppWindowArcTracker::OnTaskDestroyed(int32_t task_id) {
   if (it_controller != app_shelf_group_to_controller_map_.end()) {
     it_controller->second->RemoveTaskId(task_id);
     if (!it_controller->second->HasAnyTasks()) {
-      app_service_controller_->owner()->CloseLauncherItem(
+      app_service_controller_->owner()->CloseItem(
           it_controller->second->shelf_id());
       app_shelf_group_to_controller_map_.erase(app_shelf_id);
     }
@@ -452,8 +451,8 @@ void AppServiceAppWindowArcTracker::AttachControllerToTask(int task_id) {
   AppServiceAppWindowShelfItemController* item_controller = controller.get();
 
   if (!app_service_controller_->owner()->GetItem(shelf_id)) {
-    app_service_controller_->owner()->CreateAppLauncherItem(
-        std::move(controller), ash::STATUS_RUNNING);
+    app_service_controller_->owner()->CreateAppItem(std::move(controller),
+                                                    ash::STATUS_RUNNING);
   } else {
     app_service_controller_->owner()->shelf_model()->SetShelfItemDelegate(
         shelf_id, std::move(controller));

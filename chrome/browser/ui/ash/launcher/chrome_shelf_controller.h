@@ -82,7 +82,7 @@ class ChromeShelfController
   void Init();
 
   // Creates a new app item on the shelf for |item_delegate|.
-  ash::ShelfID CreateAppLauncherItem(
+  ash::ShelfID CreateAppItem(
       std::unique_ptr<ash::ShelfItemDelegate> item_delegate,
       ash::ShelfItemStatus status,
       const std::u16string& title = std::u16string());
@@ -101,7 +101,7 @@ class ChromeShelfController
   void SetItemTitle(const ash::ShelfID& id, const std::u16string& title);
 
   // Closes or unpins the shelf item.
-  void CloseLauncherItem(const ash::ShelfID& id);
+  void CloseItem(const ash::ShelfID& id);
 
   // Returns true if the item identified by |id| is pinned.
   bool IsPinned(const ash::ShelfID& id);
@@ -139,11 +139,10 @@ class ChromeShelfController
                    int64_t display_id);
 
   // Set the image for a specific shelf item (e.g. when set by the app).
-  void SetLauncherItemImage(const ash::ShelfID& shelf_id,
-                            const gfx::ImageSkia& image);
+  void SetItemImage(const ash::ShelfID& shelf_id, const gfx::ImageSkia& image);
 
   // Updates the image for a specific shelf item from the app's icon loader.
-  void UpdateLauncherItemImage(const std::string& app_id);
+  void UpdateItemImage(const std::string& app_id);
 
   // Notifies the controller that |contents| changed so it can update the state
   // of v1 (non-packaged) apps in the shelf. If |remove| is true then it removes
@@ -294,11 +293,10 @@ class ChromeShelfController
   using WebContentsToAppIDMap = std::map<content::WebContents*, std::string>;
 
   // Creates a new app shortcut item and controller on the shelf at |index|.
-  ash::ShelfID CreateAppShortcutLauncherItem(const ash::ShelfID& shelf_id,
-                                             int index);
-  ash::ShelfID CreateAppShortcutLauncherItem(const ash::ShelfID& shelf_id,
-                                             int index,
-                                             const std::u16string& title);
+  ash::ShelfID CreateAppShortcutItem(const ash::ShelfID& shelf_id, int index);
+  ash::ShelfID CreateAppShortcutItem(const ash::ShelfID& shelf_id,
+                                     int index,
+                                     const std::u16string& title);
 
   // Remembers / restores list of running applications.
   // Note that this order will neither be stored in the preference nor will it
@@ -333,10 +331,10 @@ class ChromeShelfController
   // STATUS_RUNNING (if there is such an app) or STATUS_CLOSED.
   ash::ShelfItemStatus GetAppState(const std::string& app_id);
 
-  // Creates an app launcher to insert at |index|. Note that |index| may be
+  // Creates an app item to insert at |index|. Note that |index| may be
   // adjusted by the model to meet ordering constraints.
   // The |shelf_item_type| will be set into the ShelfModel.
-  ash::ShelfID InsertAppLauncherItem(
+  ash::ShelfID InsertAppItem(
       std::unique_ptr<ash::ShelfItemDelegate> item_delegate,
       ash::ShelfItemStatus status,
       int index,
@@ -344,7 +342,7 @@ class ChromeShelfController
       const std::u16string& title = std::u16string());
 
   // Create the Chrome browser shortcut ShelfItem.
-  void CreateBrowserShortcutLauncherItem(bool pinned);
+  void CreateBrowserShortcutItem(bool pinned);
 
   // Finds the index of where to insert the next item.
   int FindInsertionPoint();

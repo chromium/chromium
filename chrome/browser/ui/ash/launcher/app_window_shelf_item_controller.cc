@@ -284,12 +284,10 @@ void AppWindowShelfItemController::UpdateShelfItemIcon() {
   // TODO(khmel): Remove using image_set_by_controller
   if (app_icon && !app_icon->isNull()) {
     set_image_set_by_controller(true);
-    ChromeShelfController::instance()->SetLauncherItemImage(shelf_id(),
-                                                            *app_icon);
+    ChromeShelfController::instance()->SetItemImage(shelf_id(), *app_icon);
   } else if (image_set_by_controller()) {
     set_image_set_by_controller(false);
-    ChromeShelfController::instance()->UpdateLauncherItemImage(
-        shelf_id().app_id);
+    ChromeShelfController::instance()->UpdateItemImage(shelf_id().app_id);
   }
 }
 
