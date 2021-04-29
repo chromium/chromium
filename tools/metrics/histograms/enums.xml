@@ -38285,6 +38285,27 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
       label="Search canceled because the search backend isn't available"/>
 </enum>
 
+<enum name="HermesResponseStatus">
+  <summary>
+    Statuses returned by Hermes, the Chrome OS daemon process which configures
+    eSIM profiles a device's hardware.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Error: Already disabled"/>
+  <int value="2" label="Error: Already enabled"/>
+  <int value="3" label="Error: Invalid activation code"/>
+  <int value="4" label="Error: Invalid ICCID"/>
+  <int value="5" label="Error: Invalid parameter"/>
+  <int value="6" label="Error: Need confirmation code"/>
+  <int value="7" label="Error: Send notification failure"/>
+  <int value="8" label="Error: Test profile in prod"/>
+  <int value="9" label="Error: Unknown"/>
+  <int value="10" label="Error: Unsupported"/>
+  <int value="11" label="Error: Wrong state"/>
+  <int value="12" label="Error: Invalid response"/>
+  <int value="13" label="Error: No response"/>
+</enum>
+
 <enum name="HIDContinueScenarioType">
   <summary>Possible detected devices combination on leaving dialog</summary>
   <int value="0" label="Pointing device only detected."/>

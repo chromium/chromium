@@ -12,21 +12,24 @@
 namespace chromeos {
 
 // Enum values the represent response status of hermes client method calls.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class HermesResponseStatus {
-  kSuccess,
-  kErrorAlreadyDisabled,
-  kErrorAlreadyEnabled,
-  kErrorInvalidActivationCode,
-  kErrorInvalidIccid,
-  kErrorInvalidParameter,
-  kErrorNeedConfirmationCode,
-  kErrorSendNotificationFailure,
-  kErrorTestProfileInProd,
-  kErrorUnknown,
-  kErrorUnsupported,
-  kErrorWrongState,
-  kErrorInvalidResponse,
-  kErrorNoResponse,
+  kSuccess = 0,
+  kErrorAlreadyDisabled = 1,
+  kErrorAlreadyEnabled = 2,
+  kErrorInvalidActivationCode = 3,
+  kErrorInvalidIccid = 4,
+  kErrorInvalidParameter = 5,
+  kErrorNeedConfirmationCode = 6,
+  kErrorSendNotificationFailure = 7,
+  kErrorTestProfileInProd = 8,
+  kErrorUnknown = 9,
+  kErrorUnsupported = 10,
+  kErrorWrongState = 11,
+  kErrorInvalidResponse = 12,
+  kErrorNoResponse = 13,
+  kMaxValue = kErrorNoResponse
 };
 
 // Callback that receives only a HermesResponseStatus.

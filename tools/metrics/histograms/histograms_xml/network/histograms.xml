@@ -130,6 +130,39 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Network.Cellular.ESim.InstallPendingProfile.Result"
+    enum="HermesResponseStatus" expires_after="2022-03-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>khorimoto@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Tracks the success rate of installing a &quot;pending&quot; eSIM profile
+    found via SM-DS. SM-DS provides all profiles which a carrier has associated
+    with a device's EID; once this occurs, the user has the chance to install
+    one of these pending profiles via the UI. The installation process involves
+    making a network request to the cellular carrier and downloading a profile
+    to the device.
+
+    Emitted once the operation completes.
+  </summary>
+</histogram>
+
+<histogram name="Network.Cellular.ESim.InstallViaQrCode.Result"
+    enum="HermesResponseStatus" expires_after="2022-03-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>khorimoto@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Tracks the success rate of installing an eSIM profile via a QR code. During
+    this process, the user can either scan a QR code by using the device's
+    webcam or can enter the QR code's decoded contents into a text field
+    manually. Once this occurs, the device contacts the cellular carrier and
+    downloads a profile to the device.
+
+    Emitted once the operation completes.
+  </summary>
+</histogram>
+
 <histogram name="Network.Cellular.ESim.ProfileDiscovery.Latency" units="ms"
     expires_after="2022-03-01">
   <owner>azeemarshad@chromium.org</owner>

@@ -36,6 +36,8 @@ static_library("esim_manager") {
     "esim_profile.h",
     "euicc.cc",
     "euicc.h",
+    "metrics_util.cc",
+    "metrics_util.h",
   ]
 
   deps = [

@@ -24,6 +24,10 @@ const char kProfileUninstallationResultHistogram[] =
     "Network.Cellular.ESim.ProfileUninstallationResult";
 const char kProfileRenameResultHistogram[] =
     "Network.Cellular.ESim.ProfileRenameResult";
+const char kPendingProfileLatencyHistogram[] =
+    "Network.Cellular.ESim.ProfileDownload.PendingProfile.Latency";
+const char kPendingProfileInstallHistogram[] =
+    "Network.Cellular.ESim.InstallPendingProfile.Result";
 
 mojom::ESimOperationResult UninstallProfile(
     const mojo::Remote<mojom::ESimProfile>& esim_profile) {
@@ -191,6 +195,8 @@ TEST_F(ESimProfileTest, GetProperties) {
 }
 
 TEST_F(ESimProfileTest, InstallProfile) {
+  base::HistogramTester histogram_tester;
+
   HermesEuiccClient::TestInterface* euicc_test =
       HermesEuiccClient::Get()->GetTestInterface();
   dbus::ObjectPath profile_path = euicc_test->AddFakeCarrierProfile(
@@ -213,9 +219,11 @@ TEST_F(ESimProfileTest, InstallProfile) {
   EXPECT_EQ(mojom::ProfileInstallResult::kErrorNeedsConfirmationCode,
             install_result);
 
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount(
-      "Network.Cellular.ESim.ProfileDownload.PendingProfile.Latency", 0);
+  histogram_tester.ExpectTotalCount(kPendingProfileLatencyHistogram, 0);
+  histogram_tester.ExpectBucketCount(
+      kPendingProfileInstallHistogram,
+      HermesResponseStatus::kErrorNeedConfirmationCode,
+      /*expected_count=*/1);
 
   // Verify that installing pending profile returns proper results
   // and updates esim_profile properties.
@@ -230,8 +238,10 @@ TEST_F(ESimProfileTest, InstallProfile) {
   EXPECT_NE(mojo_properties->state, mojom::ProfileState::kPending);
   EXPECT_EQ(1u, observer()->profile_list_change_calls().size());
 
-  histogram_tester.ExpectTotalCount(
-      "Network.Cellular.ESim.ProfileDownload.PendingProfile.Latency", 1);
+  histogram_tester.ExpectTotalCount(kPendingProfileLatencyHistogram, 1);
+  histogram_tester.ExpectBucketCount(kPendingProfileInstallHistogram,
+                                     HermesResponseStatus::kSuccess,
+                                     /*expected_count=*/1);
 }
 
 TEST_F(ESimProfileTest, InstallProfileAlreadyConnected) {
