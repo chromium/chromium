@@ -143,7 +143,7 @@ void AddOldestVisit(ui::PageTransition transition,
 }
 
 // Create a new row object and the typed visit çorresponding with the time at
-// |last_visit| in the |visits| vector.
+// `last_visit` in the `visits` vector.
 URLRow MakeTypedUrlRow(const std::string& url,
                        const std::string& title,
                        int typed_count,
@@ -161,11 +161,11 @@ URLRow MakeTypedUrlRow(const std::string& url,
   history_url.set_last_visit(last_visit_time);
 
   if (typed_count > 0) {
-    // Add a typed visit for time |last_visit_time|.
+    // Add a typed visit for time `last_visit_time`.
     visits->push_back(VisitRow(history_url.id(), last_visit_time, 0,
                                ui::PAGE_TRANSITION_TYPED, 0, true, false));
   } else {
-    // Add a non-typed visit for time |last_visit_time|.
+    // Add a non-typed visit for time `last_visit_time`.
     visits->push_back(VisitRow(history_url.id(), last_visit_time, 0,
                                ui::PAGE_TRANSITION_RELOAD, 0, false, false));
   }
@@ -197,7 +197,7 @@ URLRow MakeTypedUrlRowWithTwoVisits(const std::string& url,
 
   visits->push_back(VisitRow(history_url.id(), typed_visit_time, 0,
                              ui::PAGE_TRANSITION_TYPED, 0, true, false));
-  // Add a non-typed visit for time |last_visit|.
+  // Add a non-typed visit for time `last_visit`.
   visits->push_back(VisitRow(history_url.id(), reload_visit_time, 0,
                              ui::PAGE_TRANSITION_RELOAD, 0, false, false));
   return history_url;
@@ -323,7 +323,7 @@ class TypedURLSyncBridgeTest : public testing::Test {
     fake_history_backend_->Closing();
   }
 
-  // Starts sync for |typed_url_sync_bridge_| with |initial_data| as the
+  // Starts sync for `typed_url_sync_bridge_` with `initial_data` as the
   // initial sync data.
   void StartSyncing(const std::vector<TypedUrlSpecifics>& specifics) {
     ON_CALL(mock_processor_, IsTrackingMetadata()).WillByDefault(Return(true));
@@ -415,7 +415,7 @@ class TypedURLSyncBridgeTest : public testing::Test {
 
   void RemoveObserver() { bridge()->history_backend_observation_.Reset(); }
 
-  // Fills |specifics| with the sync data for |url| and |visits|.
+  // Fills `specifics` with the sync data for `url` and `visits`.
   static bool WriteToTypedUrlSpecifics(const URLRow& url,
                                        const VisitVector& visits,
                                        TypedUrlSpecifics* specifics) {
@@ -1150,7 +1150,7 @@ TEST_F(TypedURLSyncBridgeTest, MaxVisitLocalTypedUrl) {
   URLRow url_row = url_rows.front();
   VisitVector visits;
 
-  // Add |kMaxTypedUrlVisits| + 10 visits to the url. The 10 oldest
+  // Add `kMaxTypedUrlVisits` + 10 visits to the url. The 10 oldest
   // non-typed visits are expected to be skipped.
   int i = 1;
   for (; i <= kMaxTypedUrlVisits - 20; ++i)

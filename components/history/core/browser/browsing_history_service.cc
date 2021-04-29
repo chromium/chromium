@@ -184,10 +184,10 @@ BrowsingHistoryService::BrowsingHistoryService(
   if (web_history) {
     web_history_service_observation_.Observe(web_history);
   } else if (sync_service_) {
-    // If |web_history| is not available, it means that history sync is
-    // disabled. If |sync_service_| is not null, it means that syncing is
+    // If `web_history` is not available, it means that history sync is
+    // disabled. If `sync_service_` is not null, it means that syncing is
     // possible, and that history sync/web history may become enabled later, so
-    // attach start observing. If |sync_service_| is null then we cannot start
+    // attach start observing. If `sync_service_` is null then we cannot start
     // observing. This is okay because sync will never start for us, for example
     // it may be disabled by flag or we're part of an incognito/guest mode
     // window.
@@ -216,7 +216,7 @@ void BrowsingHistoryService::WebHistoryTimeout(
     scoped_refptr<QueryHistoryState> state) {
   state->remote_status = TIMED_OUT;
 
-  // Don't reset |web_history_request_| so we can still record histogram.
+  // Don't reset `web_history_request_` so we can still record histogram.
   // TODO(dubroy): Communicate the failure to the front end.
   if (!query_task_tracker_.HasTrackedTasks())
     ReturnResultsToDriver(std::move(state));
@@ -463,7 +463,7 @@ void BrowsingHistoryService::MergeDuplicateResults(
   // Maps a URL to the most recent entry on a particular day.
   std::map<GURL, HistoryEntry*> current_day_entries;
 
-  // Keeps track of the day that |current_day_entries| is holding entries for
+  // Keeps track of the day that `current_day_entries` is holding entries for
   // in order to handle removing per-day duplicates.
   base::Time current_day_midnight;
 
@@ -517,7 +517,7 @@ void BrowsingHistoryService::MergeDuplicateResults(
   } else if (CanRetry(state->remote_status)) {
     // TODO(skym): It is unclear if this is the best behavior. The UI is going
     // to behave incorrectly if out of order results are received. So to
-    // guarantee that doesn't happen, use |oldest_local| for continuation
+    // guarantee that doesn't happen, use `oldest_local` for continuation
     // calls. This will result in missing history entries for the failed calls.
     // crbug.com/685866 is related to this problem.
     state->remote_end_time_for_continuation = oldest_local;

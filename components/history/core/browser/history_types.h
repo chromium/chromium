@@ -161,12 +161,12 @@ class QueryResults {
   }
 
   // Returns a pointer to the beginning of an array of all matching indices
-  // for entries with the given URL. The array will be |*num_matches| long.
-  // |num_matches| can be NULL if the caller is not interested in the number of
+  // for entries with the given URL. The array will be `*num_matches` long.
+  // `num_matches` can be NULL if the caller is not interested in the number of
   // results (commonly it will only be interested in the first one and can test
   // the pointer for NULL).
   //
-  // When there is no match, it will return NULL and |*num_matches| will be 0.
+  // When there is no match, it will return NULL and `*num_matches` will be 0.
   const size_t* MatchesForURL(const GURL& url, size_t* num_matches) const;
 
   // Swaps the current result with another. This allows ownership to be
@@ -190,11 +190,11 @@ class QueryResults {
   // memory when possible.
   typedef std::map<GURL, base::StackVector<size_t, 4>> URLToResultIndices;
 
-  // Inserts an entry into the |url_to_results_| map saying that the given URL
+  // Inserts an entry into the `url_to_results_` map saying that the given URL
   // is at the given index in the results_.
   void AddURLUsageAtIndex(const GURL& url, size_t index);
 
-  // Adds |delta| to each index in url_to_results_ in the range [begin,end]
+  // Adds `delta` to each index in url_to_results_ in the range [begin,end]
   // (this is inclusive). This is used when inserting or deleting.
   void AdjustResultMap(size_t begin, size_t end, ptrdiff_t delta);
 
@@ -227,7 +227,7 @@ struct QueryOptions {
   base::Time begin_time;
   base::Time end_time;
 
-  // Sets the query time to the last |days_ago| days to the present time.
+  // Sets the query time to the last `days_ago` days to the present time.
   void SetRecentDayRange(int days_ago);
 
   // The maximum number of results to return. The results will be sorted with
@@ -276,7 +276,7 @@ struct QueryURLResult {
   ~QueryURLResult();
 
   // Indicates whether the call to HistoryBackend::QueryURL was successful
-  // or not. If false, then both |row| and |visits| fields are undefined.
+  // or not. If false, then both `row` and `visits` fields are undefined.
   bool success = false;
   URLRow row;
   VisitVector visits;
@@ -288,7 +288,7 @@ struct QueryURLResult {
 // HistoryBackend::GetVisibleVisitCountToHost.
 struct VisibleVisitCountToHostResult {
   // Indicates whether the call to HistoryBackend::GetVisibleVisitCountToHost
-  // was successful or not. If false, then both |count| and |first_visit| are
+  // was successful or not. If false, then both `count` and `first_visit` are
   // undefined.
   bool success = false;
   int count = 0;
@@ -423,7 +423,7 @@ typedef std::map<GURL, std::pair<int, base::Time>> OriginCountAndLastVisitMap;
 // HistoryBackend::GetHistoryCount or
 // HistoryBackend::CountUniqueHostsVisitedLastMonth.
 struct HistoryCountResult {
-  // Indicates whether the call was successful or not. If false, then |count|
+  // Indicates whether the call was successful or not. If false, then `count`
   // is undefined.
   bool success = false;
   int count = 0;
@@ -481,9 +481,9 @@ enum DomainMetricType : DomainMetricBitmaskType {
 struct HistoryLastVisitResult {
   // Indicates whether the call was successful or not. This can happen if there
   // are internal database errors or the query was called with invalid
-  // arguments. |success| will be true and |last_visit| will be null if
-  // the host was never visited before. |last_visit| will always be null if
-  // |success| is false.
+  // arguments. `success` will be true and `last_visit` will be null if
+  // the host was never visited before. `last_visit` will always be null if
+  // `success` is false.
   bool success = false;
   base::Time last_visit;
 };
@@ -506,8 +506,8 @@ struct ExpireHistoryArgs {
   ExpireHistoryArgs(const ExpireHistoryArgs& other);
   ~ExpireHistoryArgs();
 
-  // Sets |begin_time| and |end_time| to the beginning and end of the day (in
-  // local time) on which |time| occurs.
+  // Sets `begin_time` and `end_time` to the beginning and end of the day (in
+  // local time) on which `time` occurs.
   void SetTimeRangeForOneDay(base::Time time);
 
   std::set<GURL> urls;
@@ -515,7 +515,7 @@ struct ExpireHistoryArgs {
   base::Time end_time;
 };
 
-// Represents the time range of a history deletion. If |IsValid()| is false,
+// Represents the time range of a history deletion. If `IsValid()` is false,
 // the time range doesn't apply to this deletion e.g. because only a list of
 // urls was deleted.
 class DeletionTimeRange {
@@ -555,11 +555,11 @@ class DeletionTimeRange {
 };
 
 // Describes the urls that have been removed due to a history deletion.
-// If |IsAllHistory()| returns true, all urls haven been deleted.
-// In this case, |deleted_rows()| and |favicon_urls()| are undefined.
-// Otherwise |deleted_rows()| contains the urls where all visits have been
+// If `IsAllHistory()` returns true, all urls haven been deleted.
+// In this case, `deleted_rows()` and `favicon_urls()` are undefined.
+// Otherwise `deleted_rows()` contains the urls where all visits have been
 // removed from history.
-// If |expired()| returns true, this deletion is due to a regularly performed
+// If `expired()` returns true, this deletion is due to a regularly performed
 // history expiration. Otherwise it is an explicit deletion due to a user
 // action.
 class DeletionInfo {
@@ -581,15 +581,15 @@ class DeletionInfo {
   DeletionInfo(DeletionInfo&& other) noexcept;
   DeletionInfo& operator=(DeletionInfo&& rhs) noexcept;
 
-  // If IsAllHistory() returns true, all URLs are deleted and |deleted_rows()|
-  //  and |favicon_urls()| are undefined.
+  // If IsAllHistory() returns true, all URLs are deleted and `deleted_rows()`
+  //  and `favicon_urls()` are undefined.
   bool IsAllHistory() const { return time_range_.IsAllTime(); }
 
-  // If time_range.IsValid() is true, |restrict_urls| (or all URLs if empty)
+  // If time_range.IsValid() is true, `restrict_urls` (or all URLs if empty)
   // between time_range.begin() and time_range.end() have been removed.
   const DeletionTimeRange& time_range() const { return time_range_; }
 
-  // Restricts deletions within |time_range()|.
+  // Restricts deletions within `time_range()`.
   const base::Optional<std::set<GURL>>& restrict_urls() const {
     return restrict_urls_;
   }
@@ -598,11 +598,11 @@ class DeletionInfo {
   bool is_from_expiration() const { return is_from_expiration_; }
 
   // Returns the list of the deleted URLs.
-  // Undefined if |IsAllHistory()| returns true.
+  // Undefined if `IsAllHistory()` returns true.
   const URLRows& deleted_rows() const { return deleted_rows_; }
 
   // Returns the list of favicon URLs that correspond to the deleted URLs.
-  // Undefined if |IsAllHistory()| returns true.
+  // Undefined if `IsAllHistory()` returns true.
   const std::set<GURL>& favicon_urls() const { return favicon_urls_; }
 
   // Returns a map from origins with deleted urls to a count of remaining URLs
@@ -664,7 +664,7 @@ enum class UrlsModifiedReason {
 
 // Context signals about a page visit collected during the page lifetime.
 // This struct encapsulates data that's shared between UKM and the on-device
-// storage for |HistoryCluster| metadata, recorded to both when the page
+// storage for `HistoryCluster` metadata, recorded to both when the page
 // lifetime ends. This is to ensure that History actually has the visit row
 // already written.
 struct ClusterVisitContextSignals {
@@ -684,7 +684,7 @@ struct ClusterVisitContextSignals {
 
   // True if the page was NOT a bookmark when the navigation was committed and
   // was MADE a bookmark during the page's lifetime. In other words:
-  // If |is_existing_bookmark| is true, that implies |is_new_bookmark| is false.
+  // If `is_existing_bookmark` is true, that implies `is_new_bookmark` is false.
   bool is_new_bookmark = false;
 
   // True if the page has been explicitly added (by the user) to the list of
@@ -712,15 +712,15 @@ struct ClusterVisitContextSignals {
   int page_end_reason = 0;
 };
 
-// A |VisitRow| along with its corresponding |URLRow| and
-// |ClusterVisitContextSignals|. This is used to cluster visits.
+// A `VisitRow` along with its corresponding `URLRow` and
+// `ClusterVisitContextSignals`. This is used to cluster visits.
 struct ClusterVisit {
   URLRow url_row;
   VisitRow visit_row;
   ClusterVisitContextSignals context_signals;
 };
 
-// The DB representation of |ClusterVisit|.
+// The DB representation of `ClusterVisit`.
 struct ClusterVisitRow {
   ClusterVisitRow() = default;
   explicit ClusterVisitRow(const ClusterVisit& cluster_visit)

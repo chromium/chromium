@@ -46,7 +46,7 @@ void RunOrPostGetMostVisitedURLsCallback(
     task_runner->PostTask(FROM_HERE, base::BindOnce(std::move(callback), urls));
 }
 
-// Checks if the titles stored in |old_list| and |new_list| have changes.
+// Checks if the titles stored in `old_list` and `new_list` have changes.
 bool DoTitlesDiffer(const MostVisitedURLList& old_list,
                     const MostVisitedURLList& new_list) {
   // If the two lists have different sizes, the most visited titles are
@@ -419,7 +419,7 @@ void TopSitesImpl::ScheduleUpdateTimer() {
 void TopSitesImpl::OnGotMostVisitedURLs(MostVisitedURLList sites) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  // Set |top_sites_| directly so that SetTopSites() diffs correctly.
+  // Set `top_sites_` directly so that SetTopSites() diffs correctly.
   top_sites_ = sites;
   SetTopSites(std::move(sites), CALL_LOCATION_FROM_ON_GOT_MOST_VISITED_URLS);
 

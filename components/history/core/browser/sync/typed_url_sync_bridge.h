@@ -26,7 +26,7 @@ namespace history {
 class TypedURLSyncBridge : public syncer::ModelTypeSyncBridge,
                            public HistoryBackendObserver {
  public:
-  // |sync_metadata_store| is owned by |history_backend|, and must outlive
+  // `sync_metadata_store` is owned by `history_backend`, and must outlive
   // TypedURLSyncBridge.
   TypedURLSyncBridge(
       HistoryBackend* history_backend,
@@ -88,7 +88,7 @@ class TypedURLSyncBridge : public syncer::ModelTypeSyncBridge,
   typedef std::map<GURL, URLRow> TypedURLMap;
 
   // This is a helper map used to associate visit vectors from the history db
-  // to the typed urls in the above map |TypedURLMap|.
+  // to the typed urls in the above map `TypedURLMap`.
   typedef std::map<GURL, VisitVector> URLVisitVectorMap;
 
   // Bitfield returned from MergeUrls to specify the result of a merge.
@@ -98,14 +98,14 @@ class TypedURLSyncBridge : public syncer::ModelTypeSyncBridge,
   static const MergeResult DIFF_LOCAL_ROW_CHANGED = 1 << 1;
   static const MergeResult DIFF_LOCAL_VISITS_ADDED = 1 << 2;
 
-  // Merges the URL information in |typed_url| with the URL information from the
-  // history database in |url| and |visits|, and returns a bitmask with the
+  // Merges the URL information in `typed_url` with the URL information from the
+  // history database in `url` and `visits`, and returns a bitmask with the
   // results of the merge:
-  // DIFF_UPDATE_NODE - changes have been made to |new_url| and |visits| which
+  // DIFF_UPDATE_NODE - changes have been made to `new_url` and `visits` which
   //   should be persisted to the sync node.
-  // DIFF_LOCAL_ROW_CHANGED - The history data in |new_url| should be persisted
+  // DIFF_LOCAL_ROW_CHANGED - The history data in `new_url` should be persisted
   //   to the history DB.
-  // DIFF_LOCAL_VISITS_ADDED - |new_visits| contains a list of visits that
+  // DIFF_LOCAL_VISITS_ADDED - `new_visits` contains a list of visits that
   //   should be written to the history DB for this URL. Deletions are not
   //   written to the DB - each client is left to age out visits on their own.
   static MergeResult MergeUrls(const sync_pb::TypedUrlSpecifics& typed_url,
@@ -115,16 +115,16 @@ class TypedURLSyncBridge : public syncer::ModelTypeSyncBridge,
                                std::vector<VisitInfo>* new_visits);
 
   // Diffs the set of visits between the history DB and the sync DB, using the
-  // sync DB as the canonical copy. Result is the set of |new_visits| and
-  // |removed_visits| that can be applied to the history DB to make it match
-  // the sync DB version. |removed_visits| can be null if the caller does not
+  // sync DB as the canonical copy. Result is the set of `new_visits` and
+  // `removed_visits` that can be applied to the history DB to make it match
+  // the sync DB version. `removed_visits` can be null if the caller does not
   // care about which visits to remove.
   static void DiffVisits(const VisitVector& history_visits,
                          const sync_pb::TypedUrlSpecifics& sync_specifics,
                          std::vector<VisitInfo>* new_visits,
                          VisitVector* removed_visits);
 
-  // Fills |new_url| with formatted data from |typed_url|.
+  // Fills `new_url` with formatted data from `typed_url`.
   static void UpdateURLRowFromTypedUrlSpecifics(
       const sync_pb::TypedUrlSpecifics& typed_url,
       URLRow* new_url);
@@ -133,7 +133,7 @@ class TypedURLSyncBridge : public syncer::ModelTypeSyncBridge,
   // pass it to the processor so that it can start tracking changes.
   void LoadMetadata();
 
-  // Compares |server_typed_url| from the server against local history to decide
+  // Compares `server_typed_url` from the server against local history to decide
   // how to merge any existing data, and updates appropriate data containers to
   // write to server and backend.
   void MergeURLWithSync(const sync_pb::TypedUrlSpecifics& server_typed_url,
@@ -146,9 +146,9 @@ class TypedURLSyncBridge : public syncer::ModelTypeSyncBridge,
   // Given a typed URL in the sync DB, looks for an existing entry in the
   // local history DB and generates a list of visits to add to the
   // history DB to bring it up to date (avoiding duplicates).
-  // Updates the passed |visits_to_add| and |visits_to_remove| vectors with the
+  // Updates the passed `visits_to_add` and `visits_to_remove` vectors with the
   // visits to add to/remove from the history DB, and adds a new entry to either
-  // |updated_urls| or |new_urls| depending on whether the URL already existed
+  // `updated_urls` or `new_urls` depending on whether the URL already existed
   // in the history DB.
   void UpdateFromSync(const sync_pb::TypedUrlSpecifics& typed_url,
                       TypedURLVisitVector* visits_to_add,
@@ -157,14 +157,14 @@ class TypedURLSyncBridge : public syncer::ModelTypeSyncBridge,
                       URLRows* new_urls);
 
   // Utility routine that (a) updates an existing sync node or (b) creates a
-  // new one for the passed |typed_url| if one does not already exist or (c)
-  // removes metadata for |row| if |is_from_expiration| is true and the |row|
+  // new one for the passed `typed_url` if one does not already exist or (c)
+  // removes metadata for `row` if `is_from_expiration` is true and the `row`
   // has no more typed visits.
   void UpdateSyncFromLocal(URLRow row,
                            bool is_from_expiration,
                            syncer::MetadataChangeList* metadata_change_list);
 
-  // Deletes metadata for an expired URL |row| but does not send up the deletion
+  // Deletes metadata for an expired URL `row` but does not send up the deletion
   // to the server (each client expires them independently). It is an no-op when
   // called on an url with already expired metadata.
   void ExpireMetadataForURL(const URLRow& row);
@@ -201,21 +201,21 @@ class TypedURLSyncBridge : public syncer::ModelTypeSyncBridge,
   // function compensates for the fact that the history DB has rather poor data
   // integrity (duplicate visits, visit timestamps that don't match the
   // last_visit timestamp, huge data sets that exhaust memory when fetched,
-  // expired visits that are not deleted by |ExpireHistoryBackend|, etc) by
-  // modifying the passed |url| object and |visits| vector. The order of
-  // |visits| will be from the oldest to the newest order.
+  // expired visits that are not deleted by `ExpireHistoryBackend`, etc) by
+  // modifying the passed `url` object and `visits` vector. The order of
+  // `visits` will be from the oldest to the newest order.
   // Returns false in two cases.
   // 1. we could not fetch the visits for the passed URL, DB error.
   // 2. No visits for the passed url, or all the visits are expired.
   bool FixupURLAndGetVisits(URLRow* url, VisitVector* visits);
 
-  // Create an EntityData by URL |row| and its visits |visits|.
+  // Create an EntityData by URL `row` and its visits `visits`.
   std::unique_ptr<syncer::EntityData> CreateEntityData(
       const URLRow& row,
       const VisitVector& visits);
 
   // Get all the typed urls and visits from the history db, after filtering
-  // them, put them into |url_to_visit| and |url_to_urlrow|.
+  // them, put them into `url_to_visit` and `url_to_urlrow`.
   // Return false if cannot get urls from HistoryBackend.
   bool GetValidURLsAndVisits(URLVisitVectorMap* url_to_visit,
                              TypedURLMap* url_to_urlrow);

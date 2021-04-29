@@ -13,11 +13,11 @@ class FilePath;
 
 namespace history {
 
-// Sets |dir| to the path of the history data directory. Returns true on success
-// or false, in which case |dir| is undefined.
+// Sets `dir` to the path of the history data directory. Returns true on success
+// or false, in which case `dir` is undefined.
 WARN_UNUSED_RESULT bool GetTestDataHistoryDir(base::FilePath* dir);
 
-// Create the test database at |db_path| from the golden file at |ascii_path| in
+// Create the test database at `db_path` from the golden file at `ascii_path` in
 // the "history" subdir of the components test data dir.
 WARN_UNUSED_RESULT bool CreateDatabaseFromSQL(const base::FilePath& db_path,
                                               const char* ascii_path);

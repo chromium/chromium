@@ -101,7 +101,7 @@ struct DownloadRow {
   std::string hash;
 
   // The id of the download in the database. Is not changed by UpdateDownload().
-  // Note: This field should be considered deprecated in favor of |guid| below.
+  // Note: This field should be considered deprecated in favor of `guid` below.
   // See http://crbug.com/593020.
   DownloadId id = kInvalidDownloadId;
 

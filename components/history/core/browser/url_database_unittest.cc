@@ -343,7 +343,7 @@ TEST_F(URLDatabaseTest, GetAndDeleteKeywordSearchTermByTerm) {
 
   ASSERT_TRUE(SetKeywordSearchTermsForURL(url_id3, keyword_id, keyword2));
 
-  // We should get 2 rows for |keyword|.
+  // We should get 2 rows for `keyword`.
   std::vector<KeywordSearchTermRow> rows;
   ASSERT_TRUE(GetKeywordSearchTermRows(keyword, &rows));
   ASSERT_EQ(2u, rows.size());
@@ -358,7 +358,7 @@ TEST_F(URLDatabaseTest, GetAndDeleteKeywordSearchTermByTerm) {
     EXPECT_EQ(url_id2, rows[0].url_id);
   }
 
-  // We should get 1 row for |keyword2|.
+  // We should get 1 row for `keyword2`.
   rows.clear();
   ASSERT_TRUE(GetKeywordSearchTermRows(keyword2, &rows));
   ASSERT_EQ(1u, rows.size());

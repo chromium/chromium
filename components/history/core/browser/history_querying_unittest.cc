@@ -128,7 +128,7 @@ class HistoryQueryTest : public testing::Test {
       options.end_time = results.back().visit_time();
     }
 
-    // Add a couple of entries with duplicate timestamps. Use |query_text| as
+    // Add a couple of entries with duplicate timestamps. Use `query_text` as
     // the title of both entries so that they match a text query.
     TestEntry duplicates[] = {
       { "http://www.google.com/x",  query_text.c_str(), 1, },
@@ -266,7 +266,7 @@ TEST_F(HistoryQueryTest, ReachedBeginning) {
   QueryHistory("some", options, &results);
   EXPECT_FALSE(results.reached_beginning());
 
-  // Try |begin_time| just later than the oldest visit.
+  // Try `begin_time` just later than the oldest visit.
   options.begin_time =
       test_entries[0].time + base::TimeDelta::FromMicroseconds(1);
   QueryHistory(std::string(), options, &results);
@@ -274,14 +274,14 @@ TEST_F(HistoryQueryTest, ReachedBeginning) {
   QueryHistory("some", options, &results);
   EXPECT_FALSE(results.reached_beginning());
 
-  // Try |begin_time| equal to the oldest visit.
+  // Try `begin_time` equal to the oldest visit.
   options.begin_time = test_entries[0].time;
   QueryHistory(std::string(), options, &results);
   EXPECT_TRUE(results.reached_beginning());
   QueryHistory("some", options, &results);
   EXPECT_TRUE(results.reached_beginning());
 
-  // Try |begin_time| just earlier than the oldest visit.
+  // Try `begin_time` just earlier than the oldest visit.
   options.begin_time =
       test_entries[0].time - base::TimeDelta::FromMicroseconds(1);
   QueryHistory(std::string(), options, &results);
@@ -289,14 +289,14 @@ TEST_F(HistoryQueryTest, ReachedBeginning) {
   QueryHistory("some", options, &results);
   EXPECT_TRUE(results.reached_beginning());
 
-  // Test with |max_count| specified.
+  // Test with `max_count` specified.
   options.max_count = 1;
   QueryHistory(std::string(), options, &results);
   EXPECT_FALSE(results.reached_beginning());
   QueryHistory("some", options, &results);
   EXPECT_FALSE(results.reached_beginning());
 
-  // Test with |max_count| greater than the number of results,
+  // Test with `max_count` greater than the number of results,
   // and exactly equal to the number of results.
   options.max_count = 100;
   QueryHistory(std::string(), options, &results);

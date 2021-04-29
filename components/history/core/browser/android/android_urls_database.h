@@ -34,24 +34,24 @@ class AndroidURLsDatabase {
   // table was created or already exists.
   bool CreateAndroidURLsTable();
 
-  // Adds a new mapping between |raw_url| and |url_id|, returns the id if it
+  // Adds a new mapping between `raw_url` and `url_id`, returns the id if it
   // succeeds, otherwise 0 is returned.
   AndroidURLID AddAndroidURLRow(const std::string& raw_url, URLID url_id);
 
-  // Looks up the given |url_id| in android_urls table. Returns true if success,
-  // and fill in the |row| if it not NULL, returns false if the |url_id| is not
+  // Looks up the given `url_id` in android_urls table. Returns true if success,
+  // and fill in the `row` if it not NULL, returns false if the `url_id` is not
   // found.
   bool GetAndroidURLRow(URLID url_id, AndroidURLRow* row);
 
-  // Deletes the rows whose url_id is in |url_ids|. Returns true if all
-  // |url_ids| were found and deleted, otherwise false is returned.
+  // Deletes the rows whose url_id is in `url_ids`. Returns true if all
+  // `url_ids` were found and deleted, otherwise false is returned.
   bool DeleteAndroidURLRows(const std::vector<URLID>& url_ids);
 
   // Deletes all the rows whose url_id doesn't exist in urls table. Returns true
   // on success.
   bool DeleteUnusedAndroidURLs();
 
-  // Updates the row of |id| with the given |raw_url| and |url_id|. Returns true
+  // Updates the row of `id` with the given `raw_url` and `url_id`. Returns true
   // on success.
   bool UpdateAndroidURLRow(AndroidURLID id,
                            const std::string& raw_url,

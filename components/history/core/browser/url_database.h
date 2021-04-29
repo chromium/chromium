@@ -72,7 +72,7 @@ class URLDatabase {
   bool UpdateURLRow(URLID url_id, const URLRow& info);
 
   // Adds a line to the URL database with the given information and returns the
-  // newly generated ID for the row (the |id| in |info| is ignored). A row with
+  // newly generated ID for the row (the `id` in `info` is ignored). A row with
   // the given URL must not exist. Returns 0 on error.
   //
   // This does NOT add a row to the full text search database. Use
@@ -82,8 +82,8 @@ class URLDatabase {
   }
 
   // Either adds a new row to the URL table with the given information (with the
-  // the |id| as specified in |info|), or updates the pre-existing row with this
-  // |id| if there is one already. This is also known as an "upsert" or "merge"
+  // the `id` as specified in `info`), or updates the pre-existing row with this
+  // `id` if there is one already. This is also known as an "upsert" or "merge"
   // operation. Returns true on success.
   bool InsertOrUpdateURLRowByID(const URLRow& info);
 
@@ -154,7 +154,7 @@ class URLDatabase {
 
   // Fills the given array with URLs matching the given prefix.  They will be
   // sorted by typed count, then by visit count, then by visit date (most recent
-  // first) up to the given maximum number.  If |typed_only| is true, only urls
+  // first) up to the given maximum number.  If `typed_only` is true, only urls
   // that have been typed once are returned.  For caller convenience, returns
   // whether any results were found.
   bool AutocompleteForPrefix(const std::string& prefix,
@@ -163,16 +163,16 @@ class URLDatabase {
                              URLRows* results);
 
   // Returns true if the database holds some past typed navigation to a URL on
-  // the provided hostname. If the return value is true and |scheme| is not
-  // nullptr, |scheme| holds the scheme of one of the corresponding entries in
+  // the provided hostname. If the return value is true and `scheme` is not
+  // nullptr, `scheme` holds the scheme of one of the corresponding entries in
   // the database.
   bool IsTypedHost(const std::string& host, std::string* scheme);
 
-  // Tries to find the shortest URL beginning with |base| that strictly
-  // prefixes |url|, and has minimum visit_ and typed_counts as specified.
-  // If found, fills in |info| and returns true; otherwise returns false,
-  // leaving |info| unchanged.
-  // We allow matches of exactly |base| iff |allow_base| is true.
+  // Tries to find the shortest URL beginning with `base` that strictly
+  // prefixes `url`, and has minimum visit_ and typed_counts as specified.
+  // If found, fills in `info` and returns true; otherwise returns false,
+  // leaving `info` unchanged.
+  // We allow matches of exactly `base` iff `allow_base` is true.
   bool FindShortestURLFromBase(const std::string& base,
                                const std::string& url,
                                int min_visits,
@@ -183,11 +183,11 @@ class URLDatabase {
   // History search ------------------------------------------------------------
 
   // Performs a brute force search over the database to find any URLs or titles
-  // which match the |query| string, using the default text matching algorithm.
-  // Returns any matches in |results|.
+  // which match the `query` string, using the default text matching algorithm.
+  // Returns any matches in `results`.
   bool GetTextMatches(const std::u16string& query, URLRows* results);
 
-  // Same as GetTextMatches, using |algorithm| as the text matching
+  // Same as GetTextMatches, using `algorithm` as the text matching
   // algorithm.
   bool GetTextMatchesWithAlgorithm(const std::u16string& query,
                                    query_parser::MatchingAlgorithm algorithm,
@@ -201,7 +201,7 @@ class URLDatabase {
                                    const std::u16string& term);
 
   // Looks up a keyword search term given a url id. Returns all the search terms
-  // in |rows|. Returns true on success.
+  // in `rows`. Returns true on success.
   bool GetKeywordSearchTermRow(URLID url_id, KeywordSearchTermRow* row);
 
   // Looks up all keyword search terms given a term, Fills the rows with data.
@@ -221,22 +221,22 @@ class URLDatabase {
       int max_count,
       std::vector<KeywordSearchTermVisit>* matches);
 
-  // Returns the most recent (i.e., no older than |age_threshold|) normalized
+  // Returns the most recent (i.e., no older than `age_threshold`) normalized
   // search terms (i.e., search terms in lower case with whitespaces collapsed)
   // for the specified keyword.
   std::vector<NormalizedKeywordSearchTermVisit>
   GetMostRecentNormalizedKeywordSearchTerms(KeywordID keyword_id,
                                             base::Time age_threshold);
 
-  // Deletes all searches matching |term|.
+  // Deletes all searches matching `term`.
   bool DeleteKeywordSearchTerm(const std::u16string& term);
 
-  // Deletes any search corresponding to |normalized_term|.
+  // Deletes any search corresponding to `normalized_term`.
   bool DeleteKeywordSearchTermForNormalizedTerm(
       KeywordID keyword_id,
       const std::u16string& normalized_term);
 
-  // Deletes any search corresponding to |url_id|.
+  // Deletes any search corresponding to `url_id`.
   bool DeleteKeywordSearchTermForURL(URLID url_id);
 
   // This is a cover for VisitDatabase::GetVisitsForURL(). It's here to avoid
@@ -289,7 +289,7 @@ class URLDatabase {
 
   // Inserts the given URL row into the URLs table, using the regular table
   // if is_temporary is false, or the temporary URL table if is temporary is
-  // true. The current |id| of |info| will be ignored in both cases and a new ID
+  // true. The current `id` of `info` will be ignored in both cases and a new ID
   // will be generated, which will also constitute the return value, except in
   // case of an error, when the return value is 0. The temporary table may only
   // be used in between CreateTemporaryURLTable() and CommitTemporaryURLTable().
@@ -350,11 +350,11 @@ extern const base::TimeDelta kAutocompleteDuplicateVisitIntervalThreshold;
 // Returns the date threshold for considering an history item as significant.
 base::Time AutocompleteAgeThreshold();
 
-// Return true if |row| qualifies as an autocomplete candidate. If |threshold|
+// Return true if `row` qualifies as an autocomplete candidate. If `threshold`
 // is_null() then this function determines a new time threshold each time it is
 // called. Since getting system time can be costly (such as for cases where
 // this function will be called in a loop over many history items), you can
-// provide a non-null |threshold| by simply initializing |threshold| with
+// provide a non-null `threshold` by simply initializing `threshold` with
 // AutocompleteAgeThreshold() (or any other desired time in the past).
 bool RowQualifiesAsSignificant(const URLRow& row, const base::Time& threshold);
 

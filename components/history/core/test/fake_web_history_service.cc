@@ -212,7 +212,7 @@ FakeWebHistoryService::GetVisitsBetween(base::Time begin,
                                         base::Time end,
                                         size_t count,
                                         bool* more_results_left) {
-  // Make sure that |visits_| is sorted in reverse chronological order before we
+  // Make sure that `visits_` is sorted in reverse chronological order before we
   // return anything. This means that the most recent results are returned
   // first.
   std::sort(visits_.begin(), visits_.end(),
@@ -222,7 +222,7 @@ FakeWebHistoryService::GetVisitsBetween(base::Time begin,
   *more_results_left = false;
   std::vector<Visit> result;
   for (const Visit& visit : visits_) {
-    // |begin| is inclusive, |end| is exclusive.
+    // `begin` is inclusive, `end` is exclusive.
     if (visit.timestamp >= begin && visit.timestamp < end) {
       // We found another valid result, but cannot return it because we've
       // reached max count.

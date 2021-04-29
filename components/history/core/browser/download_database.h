@@ -40,7 +40,7 @@ class DownloadDatabase {
   void QueryDownloads(std::vector<DownloadRow>* results);
 
   // Update the state of one download. Returns true if successful.
-  // Does not update |url|, |start_time|; uses |id| only
+  // Does not update `url`, `start_time`; uses `id` only
   // to select the row in the database table to update.
   bool UpdateDownload(const DownloadRow& data);
 
@@ -48,7 +48,7 @@ class DownloadDatabase {
   // creation succeeded, false otherwise.
   bool CreateDownload(const DownloadRow& info);
 
-  // Remove |id| from the database.
+  // Remove `id` from the database.
   void RemoveDownload(DownloadId id);
 
   size_t CountDownloads();
@@ -61,7 +61,7 @@ class DownloadDatabase {
   bool MigrateMimeType();
 
   // Returns true if able to successfully rewrite the invalid values for the
-  // |state| field from 3 to 4. Returns false if there was an error fixing the
+  // `state` field from 3 to 4. Returns false if there was an error fixing the
   // database. See http://crbug.com/140687
   bool MigrateDownloadsState();
 
@@ -116,14 +116,14 @@ class DownloadDatabase {
   // Fixes state of the download entries. Sometimes entries with IN_PROGRESS
   // state are not updated during browser shutdown (particularly when crashing).
   // On the next start such entries are considered interrupted with
-  // interrupt reason |DOWNLOAD_INTERRUPT_REASON_CRASH|.  This function
+  // interrupt reason `DOWNLOAD_INTERRUPT_REASON_CRASH`.  This function
   // fixes such entries.
   void EnsureInProgressEntriesCleanedUp();
 
   // Ensures a column exists in downloads table.
   bool EnsureColumnExists(const std::string& name, const std::string& type);
 
-  // Ensures a column exists in |table|.
+  // Ensures a column exists in `table`.
   bool EnsureColumnExistsInTable(const std::string& table,
                                  const std::string& name,
                                  const std::string& type);
@@ -138,7 +138,7 @@ class DownloadDatabase {
   void RemoveDownloadSlices(DownloadId id);
 
   // Helper method to query the download slices for all the records in
-  // |download_row_map|.
+  // `download_row_map`.
   using DownloadRowMap = std::map<DownloadId, DownloadRow*>;
   void QueryDownloadSlices(DownloadRowMap* download_row_map);
 

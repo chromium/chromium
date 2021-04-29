@@ -554,19 +554,19 @@ TEST_F(VisitDatabaseTest, GetHistoryCount) {
   EXPECT_TRUE(GetHistoryCount(Time(), Time::Max(), &result));
   EXPECT_EQ(5, result);
 
-  // Narrowing the range to exclude |first_day_1| will still return 5,
-  // because |first_day_1| is not unique.
+  // Narrowing the range to exclude `first_day_1` will still return 5,
+  // because `first_day_1` is not unique.
   EXPECT_TRUE(
       GetHistoryCount(two_days_ago + TimeDelta::FromHours(2), today, &result));
   EXPECT_EQ(5, result);
 
-  // Narrowing the range to exclude |second_day_4| will return 4,
-  // because |second_day_4| is unique.
+  // Narrowing the range to exclude `second_day_4` will return 4,
+  // because `second_day_4` is unique.
   EXPECT_TRUE(GetHistoryCount(two_days_ago, yesterday + TimeDelta::FromHours(3),
                               &result));
   EXPECT_EQ(4, result);
 
-  // Narrowing the range to exclude both |first_day_1| and |second_day_4| will
+  // Narrowing the range to exclude both `first_day_1` and `second_day_4` will
   // still return 4.
   EXPECT_TRUE(GetHistoryCount(two_days_ago + TimeDelta::FromHours(2),
                               yesterday + TimeDelta::FromHours(3), &result));
@@ -582,7 +582,7 @@ TEST_F(VisitDatabaseTest, GetHistoryCount) {
   // TimeDelta::FromDays(1) to move one day, as this simply removes 24 hours and
   // thus does not work correctly with DST shifts. Instead, we'll go back
   // 1 second (i.e. somewhere in the middle of the previous day), and use
-  // |LocalMidnight()| to round down to the beginning of the day in the local
+  // `LocalMidnight()` to round down to the beginning of the day in the local
   // time, taking timezones and DST into account. This is necessary to achieve
   // the same equivalence class on days as the DATE(..., 'localtime') function
   // in SQL.
@@ -824,7 +824,7 @@ TEST_F(VisitDatabaseTest, GetLastVisitToURL) {
                                   base::Time::FromTimeT(1000), &last_visit));
     EXPECT_EQ(last_visit, base::Time::FromTimeT(200));
   }
-  // Test getting the older visit using an |end_time| of 150.
+  // Test getting the older visit using an `end_time` of 150.
   {
     base::Time last_visit;
     EXPECT_TRUE(GetLastVisitToURL(GURL("https://foo.com/bar/baz"),

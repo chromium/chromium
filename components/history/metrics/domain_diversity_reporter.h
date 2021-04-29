@@ -29,7 +29,7 @@ class DomainDiversityReporter : public KeyedService,
                           base::Clock* clock);
   ~DomainDiversityReporter() override;
 
-  // Registers Profile preferences in |registry|.
+  // Registers Profile preferences in `registry`.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Invokes ComputeDomainMetrics() if history backend is already loaded.

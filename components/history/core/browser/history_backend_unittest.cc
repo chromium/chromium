@@ -365,12 +365,12 @@ class HistoryBackendTest : public HistoryBackendTestBase {
   }
 
   // Adds CLIENT_REDIRECT page transition.
-  // |url1| is the source URL and |url2| is the destination.
-  // |did_replace| is true if the transition is non-user initiated and the
-  // navigation entry for |url2| has replaced that for |url1|. The possibly
-  // updated transition code of the visit records for |url1| and |url2| is
-  // returned by filling in |*transition1| and |*transition2|, respectively,
-  // unless null. |time| is a time of the redirect.
+  // `url1` is the source URL and `url2` is the destination.
+  // `did_replace` is true if the transition is non-user initiated and the
+  // navigation entry for `url2` has replaced that for `url1`. The possibly
+  // updated transition code of the visit records for `url1` and `url2` is
+  // returned by filling in `*transition1` and `*transition2`, respectively,
+  // unless null. `time` is a time of the redirect.
   void AddClientRedirect(const GURL& url1,
                          const GURL& url2,
                          bool did_replace,
@@ -397,12 +397,12 @@ class HistoryBackendTest : public HistoryBackendTestBase {
   }
 
   // Adds SERVER_REDIRECT page transition.
-  // |url1| is the source URL and |url2| is the destination.
-  // |did_replace| is true if the transition is non-user initiated and the
-  // navigation entry for |url2| has replaced that for |url1|. The possibly
-  // updated transition code of the visit records for |url1| and |url2| is
-  // returned by filling in |*transition1| and |*transition2|, respectively,
-  // unless null. |time| is a time of the redirect.
+  // `url1` is the source URL and `url2` is the destination.
+  // `did_replace` is true if the transition is non-user initiated and the
+  // navigation entry for `url2` has replaced that for `url1`. The possibly
+  // updated transition code of the visit records for `url1` and `url2` is
+  // returned by filling in `*transition1` and `*transition2`, respectively,
+  // unless null. `time` is a time of the redirect.
   void AddServerRedirect(const GURL& url1,
                          const GURL& url2,
                          bool did_replace,
@@ -444,7 +444,7 @@ class HistoryBackendTest : public HistoryBackendTestBase {
     return sizes_small_and_large;
   }
 
-  // Returns the number of icon mappings of |icon_type| to |page_url|.
+  // Returns the number of icon mappings of `icon_type` to `page_url`.
   size_t NumIconMappingsForPageURL(const GURL& page_url, IconType icon_type) {
     std::vector<IconMapping> icon_mappings;
     favicon_db()->GetIconMappingsForPageURL(page_url, {icon_type},
@@ -452,14 +452,14 @@ class HistoryBackendTest : public HistoryBackendTestBase {
     return icon_mappings.size();
   }
 
-  // Returns the icon mappings for |page_url|.
+  // Returns the icon mappings for `page_url`.
   std::vector<IconMapping> GetIconMappingsForPageURL(const GURL& page_url) {
     std::vector<IconMapping> icon_mappings;
     favicon_db()->GetIconMappingsForPageURL(page_url, &icon_mappings);
     return icon_mappings;
   }
 
-  // Returns the favicon bitmaps for |icon_id| sorted by pixel size in
+  // Returns the favicon bitmaps for `icon_id` sorted by pixel size in
   // ascending order. Returns true if there is at least one favicon bitmap.
   bool GetSortedFaviconBitmaps(favicon_base::FaviconID icon_id,
                                std::vector<FaviconBitmap>* favicon_bitmaps) {
@@ -473,7 +473,7 @@ class HistoryBackendTest : public HistoryBackendTestBase {
   }
 
   // Returns true if there is exactly one favicon bitmap associated to
-  // |favicon_id|. If true, returns favicon bitmap in output parameter.
+  // `favicon_id`. If true, returns favicon bitmap in output parameter.
   bool GetOnlyFaviconBitmap(const favicon_base::FaviconID icon_id,
                             FaviconBitmap* favicon_bitmap) {
     std::vector<FaviconBitmap> favicon_bitmaps;
@@ -485,7 +485,7 @@ class HistoryBackendTest : public HistoryBackendTestBase {
     return true;
   }
 
-  // Creates an |edge_size|x|edge_size| bitmap of |color|.
+  // Creates an `edge_size`x`edge_size` bitmap of `color`.
   SkBitmap CreateBitmap(SkColor color, int edge_size) {
     SkBitmap bitmap;
     bitmap.allocN32Pixels(edge_size, edge_size);
@@ -493,7 +493,7 @@ class HistoryBackendTest : public HistoryBackendTestBase {
     return bitmap;
   }
 
-  // Returns true if |bitmap_data| is equal to |expected_data|.
+  // Returns true if `bitmap_data` is equal to `expected_data`.
   bool BitmapDataEqual(char expected_data,
                        scoped_refptr<base::RefCountedMemory> bitmap_data) {
     return bitmap_data.get() &&
@@ -735,7 +735,7 @@ TEST_F(HistoryBackendTest, DeleteAllURLPreviouslyDeleted) {
   GURL kPageURL("http://www.google.com");
   GURL kFaviconURL("http://www.google.com/favicon.ico");
 
-  // Setup: Add visit for |kPageURL|.
+  // Setup: Add visit for `kPageURL`.
   URLRow row(kPageURL);
   row.set_visit_count(2);
   row.set_typed_count(1);
@@ -743,7 +743,7 @@ TEST_F(HistoryBackendTest, DeleteAllURLPreviouslyDeleted) {
   backend_->AddPagesWithDetails(std::vector<URLRow>(1u, row),
                                 history::SOURCE_BROWSED);
 
-  // Setup: Add favicon for |kPageURL|.
+  // Setup: Add favicon for `kPageURL`.
   std::vector<unsigned char> data;
   data.push_back('a');
   favicon_base::FaviconID favicon = favicon_db()->AddFavicon(
@@ -765,7 +765,7 @@ TEST_F(HistoryBackendTest, DeleteAllURLPreviouslyDeleted) {
       kPageURL, {IconType::kFavicon}, &icon_mappings));
   ASSERT_EQ(1u, icon_mappings.size());
 
-  // Delete information for |kPageURL|, then clear all browsing data.
+  // Delete information for `kPageURL`, then clear all browsing data.
   backend_->DeleteURL(kPageURL);
   backend_->DeleteAllHistory();
 
@@ -1067,7 +1067,7 @@ TEST_F(HistoryBackendTest, AddPagesWithDetails) {
   rows.push_back(row4);
   backend_->AddPagesWithDetails(rows, history::SOURCE_BROWSED);
 
-  // Verify that recent URLs have ended up in the main |db_|, while the already
+  // Verify that recent URLs have ended up in the main `db_`, while the already
   // expired URL has been ignored.
   URLRow stored_row1, stored_row2, stored_row3, stored_row4;
   EXPECT_NE(0, backend_->db_->GetRowForURL(row1.url(), &stored_row1));
@@ -1968,7 +1968,7 @@ TEST_F(HistoryBackendTest, MigrationVisitSource) {
   EXPECT_FALSE(s.Step());
 }
 
-// Test that |recent_redirects_| stores the full redirect chain in case of
+// Test that `recent_redirects_` stores the full redirect chain in case of
 // client redirects. In this case, a server-side redirect is followed by a
 // client-side one.
 TEST_F(HistoryBackendTest, RecentRedirectsForClientRedirects) {
@@ -2103,8 +2103,8 @@ TEST_F(HistoryBackendTest, FaviconChangedNotificationIconMappingChanged) {
     backend_->SetFavicons({page_url1}, IconType::kFavicon, icon_url1, bitmaps);
     backend_->SetFavicons({page_url2}, IconType::kFavicon, icon_url2, bitmaps);
 
-    // Map |page_url3| to |icon_url1| so that the test does not delete the
-    // favicon at |icon_url1|.
+    // Map `page_url3` to `icon_url1` so that the test does not delete the
+    // favicon at `icon_url1`.
     std::vector<favicon_base::FaviconRawBitmapResult> bitmap_results =
         backend_->UpdateFaviconMappingsAndFetch({page_url3}, icon_url1,
                                                 IconType::kFavicon,
@@ -2206,8 +2206,8 @@ TEST_F(HistoryBackendTest,
     backend_->SetFavicons({page_url1}, IconType::kFavicon, icon_url1, bitmaps);
     backend_->SetFavicons({page_url2}, IconType::kFavicon, icon_url2, bitmaps);
 
-    // Map |page_url3| to |icon_url1| so that the test does not delete the
-    // favicon at |icon_url1|.
+    // Map `page_url3` to `icon_url1` so that the test does not delete the
+    // favicon at `icon_url1`.
     std::vector<favicon_base::FaviconRawBitmapResult> bitmap_results =
         backend_->UpdateFaviconMappingsAndFetch({page_url3}, icon_url1,
                                                 IconType::kFavicon,
@@ -2264,17 +2264,17 @@ TEST_F(HistoryBackendTest, FaviconChangedNotificationsMergeCopy) {
                          new base::RefCountedBytes(png_bytes2), kLargeSize);
   ClearBroadcastedNotifications();
 
-  // Calling MergeFavicon() with |page_url2|, |icon_url1|, |png_bytes1| and
-  // |kSmallSize| should cause the large favicon bitmap from |icon_url2| to
-  // be copied to |icon_url1|.
+  // Calling MergeFavicon() with `page_url2`, `icon_url1`, `png_bytes1` and
+  // `kSmallSize` should cause the large favicon bitmap from `icon_url2` to
+  // be copied to `icon_url1`.
   backend_->MergeFavicon(page_url2, icon_url1, IconType::kFavicon,
                          new base::RefCountedBytes(png_bytes1), kSmallSize);
 
   ASSERT_EQ(1u, favicon_changed_notifications_page_urls().size());
   EXPECT_EQ(page_url2, favicon_changed_notifications_page_urls()[0]);
 
-  // A favicon bitmap was copied to the favicon at |icon_url1|. A notification
-  // that the favicon at |icon_url1| has changed should be sent.
+  // A favicon bitmap was copied to the favicon at `icon_url1`. A notification
+  // that the favicon at `icon_url1` has changed should be sent.
   ASSERT_EQ(1u, favicon_changed_notifications_icon_urls().size());
   EXPECT_EQ(icon_url1, favicon_changed_notifications_icon_urls()[0]);
 }
@@ -2327,7 +2327,7 @@ TEST_F(HistoryBackendTest, CloneFaviconMappingsForPages) {
 
   // Setup
   {
-    // A mapping exists for |landing_page_url1|.
+    // A mapping exists for `landing_page_url1`.
     std::vector<favicon_base::FaviconRawBitmapData> favicon_bitmap_data;
     backend_->SetFavicons({landing_page_url1}, IconType::kFavicon, icon_url,
                           {CreateBitmap(SK_ColorBLUE, kSmallEdgeSize)});

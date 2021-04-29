@@ -25,7 +25,7 @@ class HistoryDeleteDirectivesModelTypeController
     : public syncer::SyncableServiceBasedModelTypeController,
       public syncer::SyncServiceObserver {
  public:
-  // |sync_service| and |history_service| must not be null and must outlive this
+  // `sync_service` and `history_service` must not be null and must outlive this
   // object.
   HistoryDeleteDirectivesModelTypeController(
       const base::RepeatingClosure& dump_stack,

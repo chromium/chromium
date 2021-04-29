@@ -137,7 +137,7 @@ class HistoryAndBookmarkRow {
   }
   URLID url_id() const { return url_id_; }
 
-  // Returns true if the given |id| has been set explicitly.
+  // Returns true if the given `id` has been set explicitly.
   bool is_value_set_explicitly(ColumnID id) const {
     return values_set_.find(id) != values_set_.end();
   }
@@ -214,7 +214,7 @@ class SearchRow {
     keyword_id_ = keyword_id;
   }
 
-  // Returns true if the given |id| has been set explicitly.
+  // Returns true if the given `id` has been set explicitly.
   bool is_value_set_explicitly(ColumnID id) const {
     return values_set_.find(id) != values_set_.end();
   }

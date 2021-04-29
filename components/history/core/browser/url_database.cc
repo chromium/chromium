@@ -378,7 +378,7 @@ bool URLDatabase::FindShortestURLFromBase(const std::string& base,
                                           int min_typed,
                                           bool allow_base,
                                           URLRow* info) {
-  // Select URLs that start with |base| and are prefixes of |url|.  All parts
+  // Select URLs that start with `base` and are prefixes of `url`.  All parts
   // of this query except the substr() call can be done using the index.  We
   // could do this query with a couple of LIKE or GLOB statements as well, but
   // those wouldn't use the index, and would run into problems with "wildcard"
@@ -732,7 +732,7 @@ bool URLDatabase::CreateURLTable(bool is_temporary) {
   sql.append(name);
   sql.append(
       "("
-      // The id uses AUTOINCREMENT is for sync propose. Sync uses this |id| as
+      // The id uses AUTOINCREMENT is for sync propose. Sync uses this `id` as
       // an unique key to identify the URLs. If here did not use AUTOINCREMENT,
       // and Sync was not working somehow, a ROWID could be deleted and re-used
       // during this period. Once Sync come back, Sync would use ROWIDs and

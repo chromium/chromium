@@ -48,17 +48,17 @@ class DeleteDirectiveHandler : public syncer::SyncableService {
   void OnBackendLoaded();
 
   // Create delete directives for the deletion of visits identified by
-  // |global_ids| (which may be empty), in the time range specified by
-  // |begin_time| and |end_time|.
+  // `global_ids` (which may be empty), in the time range specified by
+  // `begin_time` and `end_time`.
   bool CreateDeleteDirectives(const std::set<int64_t>& global_ids,
                               base::Time begin_time,
                               base::Time end_time);
 
   bool CreateUrlDeleteDirective(const GURL& url);
 
-  // Sends the given |delete_directive| to SyncChangeProcessor (if it exists).
+  // Sends the given `delete_directive` to SyncChangeProcessor (if it exists).
   // Returns any error resulting from sending the delete directive to sync.
-  // NOTE: the given |delete_directive| is not processed to remove local
+  // NOTE: the given `delete_directive` is not processed to remove local
   //       history entries that match. Caller still needs to call other
   //       interfaces, e.g. HistoryService::ExpireHistoryBetween(), to delete
   //       local history entries.
@@ -85,7 +85,7 @@ class DeleteDirectiveHandler : public syncer::SyncableService {
   enum PostProcessingAction { KEEP_AFTER_PROCESSING, DROP_AFTER_PROCESSING };
 
   // Callback when history backend finishes deleting visits according to
-  // |delete_directives|.
+  // `delete_directives`.
   void FinishProcessing(PostProcessingAction post_processing_action,
                         const syncer::SyncDataList& delete_directives);
 

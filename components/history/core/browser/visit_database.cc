@@ -172,7 +172,7 @@ bool VisitDatabase::FillVisitVectorWithOptions(sql::Statement& statement,
                                                VisitVector* visits) {
   std::set<URLID> found_urls;
 
-  // Keeps track of the day that |found_urls| is holding the URLs for, in order
+  // Keeps track of the day that `found_urls` is holding the URLs for, in order
   // to handle removing per-day duplicates.
   base::Time found_urls_midnight;
 

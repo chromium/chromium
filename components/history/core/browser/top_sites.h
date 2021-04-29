@@ -86,7 +86,7 @@ class TopSites : public RefcountedKeyedService {
   // Returns the set of prepopulated pages.
   virtual PrepopulatedPageList GetPrepopulatedPages() = 0;
 
-  // Called when user has navigated to |url|.
+  // Called when user has navigated to `url`.
   virtual void OnNavigationCommitted(const GURL& url) = 0;
 
   // Add Observer to the list.

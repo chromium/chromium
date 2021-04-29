@@ -85,7 +85,7 @@ class BrowsingHistoryService : public HistoryServiceObserver,
     std::u16string title;  // Title of the entry. May be empty.
 
     // The time of the entry. Usually this will be the time of the most recent
-    // visit to |url| on a particular day as defined in the local timezone.
+    // visit to `url` on a particular day as defined in the local timezone.
     base::Time time;
 
     // The sync ID of the client on which the most recent visit occurred.
@@ -144,7 +144,7 @@ class BrowsingHistoryService : public HistoryServiceObserver,
   void QueryHistory(const std::u16string& search_text,
                     const QueryOptions& options);
 
-  // Removes |items| from history.
+  // Removes `items` from history.
   void RemoveVisits(const std::vector<HistoryEntry>& items);
 
   // SyncServiceObserver implementation.
@@ -164,12 +164,12 @@ class BrowsingHistoryService : public HistoryServiceObserver,
   // Used to hold and track query state between asynchronous calls.
   struct QueryHistoryState;
 
-  // Moves results from |state| into |results|, merging both remote and local
+  // Moves results from `state` into `results`, merging both remote and local
   // results together and maintaining reverse chronological order. Any results
   // with the same URL will be merged together for each day. Often holds back
-  // some results in |state| from one of the two sources to ensure that they're
+  // some results in `state` from one of the two sources to ensure that they're
   // always returned to the driver in correct order. This function also updates
-  // the end times in |state| for both sources that the next query should be
+  // the end times in `state` for both sources that the next query should be
   // made against.
   static void MergeDuplicateResults(QueryHistoryState* state,
                                     std::vector<HistoryEntry>* results);
@@ -186,7 +186,7 @@ class BrowsingHistoryService : public HistoryServiceObserver,
   // BrowsingHistoryDriver.
   void ReturnResultsToDriver(scoped_refptr<QueryHistoryState> state);
 
-  // Callback from |web_history_timer_| when a response from web history has
+  // Callback from `web_history_timer_` when a response from web history has
   // not been received in time.
   void WebHistoryTimeout(scoped_refptr<QueryHistoryState> state);
 

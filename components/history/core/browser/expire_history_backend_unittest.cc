@@ -62,7 +62,7 @@ base::Time PretendNow() {
   return out_time;
 }
 
-// Returns whether |url| can be added to history.
+// Returns whether `url` can be added to history.
 bool MockCanAddURLToHistory(const GURL& url) {
   return url.is_valid();
 }
@@ -99,7 +99,7 @@ class ExpireHistoryTest : public testing::Test, public HistoryBackendNotifier {
 
   // EXPECTs that each URL-specific history thing (basically, everything but
   // favicons) is gone, the reason being either that it was automatically
-  // |expired|, or manually deleted.
+  // `expired`, or manually deleted.
   void EnsureURLInfoGone(const URLRow& row, bool expired);
 
   const DeletionInfo* GetLastDeletionInfo() {
@@ -109,7 +109,7 @@ class ExpireHistoryTest : public testing::Test, public HistoryBackendNotifier {
   }
 
   // Returns whether HistoryBackendNotifier::NotifyURLsModified was
-  // called for |url|.
+  // called for `url`.
   bool ModifiedNotificationSentDueToExpiry(const GURL& url);
   bool ModifiedNotificationSentDueToUserAction(const GURL& url);
 
@@ -335,8 +335,8 @@ favicon_base::FaviconID ExpireHistoryTest::GetFavicon(
 }
 
 void ExpireHistoryTest::EnsureURLInfoGone(const URLRow& row, bool expired) {
-  // The passed in |row| must originate from |main_db_| so that its ID will be
-  // set to what had been in effect in |main_db_| before the deletion.
+  // The passed in `row` must originate from `main_db_` so that its ID will be
+  // set to what had been in effect in `main_db_` before the deletion.
   ASSERT_NE(0, row.id());
 
   // Verify the URL no longer exists.

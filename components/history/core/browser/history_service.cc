@@ -1005,7 +1005,7 @@ void HistoryService::Cleanup() {
                                                  std::move(history_backend_)));
   }
 
-  // Clear |backend_task_runner_| to make sure it's not used after Cleanup().
+  // Clear `backend_task_runner_` to make sure it's not used after Cleanup().
   backend_task_runner_ = nullptr;
 }
 
@@ -1015,7 +1015,7 @@ bool HistoryService::Init(
   TRACE_EVENT0("browser,startup", "HistoryService::Init");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Unit tests can inject |backend_task_runner_| before this is called.
+  // Unit tests can inject `backend_task_runner_` before this is called.
   if (!backend_task_runner_) {
     backend_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
         {base::MayBlock(), base::WithBaseSyncPrimitives(),
@@ -1186,7 +1186,7 @@ void HistoryService::DeleteLocalAndRemoteHistoryBetween(
     // Attempt online deletion from the history server, but ignore the result.
     // Deletion directives ensure that the results will eventually be deleted.
     //
-    // TODO(davidben): |callback| should not run until this operation completes
+    // TODO(davidben): `callback` should not run until this operation completes
     // too.
     net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
         net::DefinePartialNetworkTrafficAnnotation(

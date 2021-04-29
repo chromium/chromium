@@ -160,7 +160,7 @@ void FixTopSitesTable(sql::Database* db, int version) {
   sql::Statement update_statement(db->GetUniqueStatement(
       base::StringPrintf(kAdjustRankSql, kTableName).c_str()));
 
-  // Update any rows where |next_rank| doesn't match |url_rank|.
+  // Update any rows where `next_rank` doesn't match `url_rank`.
   int next_rank = 0;
   bool adjusted = false;
   while (select_statement.Step()) {
@@ -246,7 +246,7 @@ void DatabaseErrorCallback(sql::Database* db,
     // Prevent reentrant calls.
     db->reset_error_callback();
 
-    // After this call, the |db| handle is poisoned so that future calls will
+    // After this call, the `db` handle is poisoned so that future calls will
     // return errors until the handle is re-opened.
     RecoverAndFixup(db, db_path);
 

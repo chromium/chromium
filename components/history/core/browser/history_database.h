@@ -93,7 +93,7 @@ class HistoryDatabase : public DownloadDatabase,
   int CountUniqueHostsVisitedLastMonth();
 
   // Counts the number of unique domains (eLTD+1) visited within
-  // [|begin_time|, |end_time|).
+  // [`begin_time`, `end_time`).
   int CountUniqueDomainsVisited(base::Time begin_time, base::Time end_time);
 
   // Call to set the mode on the database to exclusive. The default locking mode
@@ -172,7 +172,7 @@ class HistoryDatabase : public DownloadDatabase,
 
  private:
 #if defined(OS_ANDROID)
-  // AndroidProviderBackend uses the |db_|.
+  // AndroidProviderBackend uses the `db_`.
   friend class AndroidProviderBackend;
   FRIEND_TEST_ALL_PREFIXES(AndroidURLsMigrationTest, MigrateToVersion22);
 #endif

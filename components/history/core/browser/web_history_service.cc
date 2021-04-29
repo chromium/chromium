@@ -111,7 +111,7 @@ class RequestImpl : public WebHistoryService::Request {
       UMA_HISTOGRAM_BOOLEAN("WebHistory.OAuthTokenCompletion", false);
       std::move(callback_).Run(this, false);
 
-      // It is valid for the callback to delete |this|, so do not access any
+      // It is valid for the callback to delete `this`, so do not access any
       // members below here.
       return;
     }
@@ -210,7 +210,7 @@ class RequestImpl : public WebHistoryService::Request {
     }
     is_pending_ = false;
     std::move(callback_).Run(this, true);
-    // It is valid for the callback to delete |this|, so do not access any
+    // It is valid for the callback to delete `this`, so do not access any
     // members below here.
   }
 
@@ -283,7 +283,7 @@ std::string ServerTimeString(base::Time time) {
 }
 
 // Returns a URL for querying the history server for a query specified by
-// |options|. |version_info|, if not empty, should be a token that was received
+// `options`. `version_info`, if not empty, should be a token that was received
 // from the server in response to a write operation. It is used to help ensure
 // read consistency after a write.
 GURL GetQueryUrl(const std::u16string& text_query,
@@ -292,9 +292,9 @@ GURL GetQueryUrl(const std::u16string& text_query,
   GURL url = GURL(kHistoryQueryHistoryUrl);
   url = net::AppendQueryParameter(url, "titles", "1");
 
-  // Take |begin_time|, |end_time|, and |max_count| from the original query
+  // Take `begin_time`, `end_time`, and `max_count` from the original query
   // options, and convert them to the equivalent URL parameters. Note that
-  // QueryOptions uses exclusive |end_time| while the history.google.com API
+  // QueryOptions uses exclusive `end_time` while the history.google.com API
   // uses it inclusively, so we subtract 1us during conversion.
 
   base::Time end_time =
@@ -325,7 +325,7 @@ GURL GetQueryUrl(const std::u16string& text_query,
 
 // Creates a DictionaryValue to hold the parameters for a deletion.
 // Ownership is passed to the caller.
-// |url| may be empty, indicating a time-range deletion.
+// `url` may be empty, indicating a time-range deletion.
 std::unique_ptr<base::DictionaryValue> CreateDeletion(
     const std::string& min_time,
     const std::string& max_time,
@@ -616,7 +616,7 @@ void WebHistoryService::AudioHistoryCompletionCallback(
   }
 
   // If there is no response_value, then for our purposes, the request has
-  // failed, despite receiving a true |success| value. This can happen if
+  // failed, despite receiving a true `success` value. This can happen if
   // the user is offline.
   std::move(callback).Run(success && response_value, enabled_value);
 }

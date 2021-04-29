@@ -111,11 +111,11 @@ class TopSitesImpl : public TopSites, public HistoryServiceObserver {
   // Generates the diff of things that happened between "old" and "new."
   //
   // The URLs that are in "new" but not "old" will be have their index from
-  // "new" placed in |added_urls|. The URLs that are in "old" but not "new" will
-  // have their index from "old" placed in |deleted_urls|.
+  // "new" placed in `added_urls`. The URLs that are in "old" but not "new" will
+  // have their index from "old" placed in `deleted_urls`.
   //
   // URLs that appear in both lists but have different indices will have their
-  // index from "new" placed in |moved_urls|.
+  // index from "new" placed in `moved_urls`.
   static void DiffMostVisited(const MostVisitedURLList& old_list,
                               const MostVisitedURLList& new_list,
                               TopSitesDelta* delta);
@@ -123,15 +123,15 @@ class TopSitesImpl : public TopSites, public HistoryServiceObserver {
   // Adds prepopulated pages to TopSites. Returns true if any pages were added.
   bool AddPrepopulatedPages(MostVisitedURLList* urls) const;
 
-  // Takes |urls|, produces it's copy in |out| after removing blocked urls.
+  // Takes `urls`, produces it's copy in `out` after removing blocked urls.
   // Also ensures we respect the maximum number TopSites URLs.
   MostVisitedURLList ApplyBlockedUrls(const MostVisitedURLList& urls);
 
   // Returns an MD5 hash of the URL. Hashing is required for blocking urls.
   static std::string GetURLHash(const GURL& url);
 
-  // Updates URLs in |cache_| and the db (in the background). The URLs in
-  // |new_top_sites| replace those in |cache_|. All mutations to cache_ *must*
+  // Updates URLs in `cache_` and the db (in the background). The URLs in
+  // `new_top_sites` replace those in `cache_`. All mutations to cache_ *must*
   // go through this. Should be called from the UI thread.
   void SetTopSites(MostVisitedURLList new_top_sites,
                    const CallLocation location);
@@ -167,15 +167,15 @@ class TopSitesImpl : public TopSites, public HistoryServiceObserver {
 
   scoped_refptr<TopSitesBackend> backend_;
 
-  // Lock used to access |thread_safe_cache_|.
+  // Lock used to access `thread_safe_cache_`.
   mutable base::Lock lock_;
 
   // The top sites data.
   MostVisitedURLList top_sites_;
 
   // Copy of the top sites data that may be accessed on any thread (assuming
-  // you hold |lock_|). The data in |thread_safe_cache_| has blocked urls
-  // applied (|top_sites_| does not).
+  // you hold `lock_`). The data in `thread_safe_cache_` has blocked urls
+  // applied (`top_sites_` does not).
   MostVisitedURLList thread_safe_cache_ GUARDED_BY(lock_);
 
   // Task tracker for history and backend requests.

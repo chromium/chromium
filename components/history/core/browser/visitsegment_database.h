@@ -35,9 +35,9 @@ class VisitSegmentDatabase {
   // is no segment with that name.
   SegmentID GetSegmentNamed(const std::string& segment_name);
 
-  // Update the segment identified by |out_segment_id| with the provided URL ID.
+  // Update the segment identified by `out_segment_id` with the provided URL ID.
   // The URL identifies the page that will now represent the segment. If url_id
-  // is non zero, it is assumed to be the row id of |url|.
+  // is non zero, it is assumed to be the row id of `url`.
   bool UpdateSegmentRepresentationURL(SegmentID segment_id,
                                       URLID url_id);
 
@@ -50,9 +50,9 @@ class VisitSegmentDatabase {
   bool IncreaseSegmentVisitCount(SegmentID segment_id, base::Time ts,
                                  int amount);
 
-  // Computes the segment usage since |from_time|. If |url_filter| is non-null,
+  // Computes the segment usage since `from_time`. If `url_filter` is non-null,
   // then only URLs for which it returns true will be included.
-  // Returns the highest-scored segments up to |max_result_count|.
+  // Returns the highest-scored segments up to `max_result_count`.
   std::vector<std::unique_ptr<PageUsageData>> QuerySegmentUsage(
       base::Time from_time,
       int max_result_count,
@@ -79,16 +79,16 @@ class VisitSegmentDatabase {
 
   // Runs ComputeSegmentName() to recompute 'name'. If multiple segments have
   // the same name, they are merged by:
-  // 1. Choosing one arbitrary |segment_id| and updating all references.
-  // 2. Merging duplicate |segment_usage| entries (add up visit counts).
+  // 1. Choosing one arbitrary `segment_id` and updating all references.
+  // 2. Merging duplicate `segment_usage` entries (add up visit counts).
   // 3. Deleting old data for the absorbed segment.
   bool MigrateVisitSegmentNames();
 
  private:
-  // Updates the |name| column for a single segment. Returns true on success.
+  // Updates the `name` column for a single segment. Returns true on success.
   bool RenameSegment(SegmentID segment_id, const std::string& new_name);
   // Merges two segments such that data is aggregated, all former references to
-  // |from_segment_id| are updated to |to_segment_id| and |from_segment_id| is
+  // `from_segment_id` are updated to `to_segment_id` and `from_segment_id` is
   // deleted. Returns true on success.
   bool MergeSegments(SegmentID from_segment_id, SegmentID to_segment_id);
 

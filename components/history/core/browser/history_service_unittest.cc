@@ -760,8 +760,8 @@ TEST_F(HistoryServiceTest, GetDomainDiversityShortBasetimeRange) {
 
   base::Time query_time = base::Time::Now();
 
-  // Make sure |query_time| is at least some time past the midnight so that
-  // some domain visits can be inserted between |query_time| and midnight
+  // Make sure `query_time` is at least some time past the midnight so that
+  // some domain visits can be inserted between `query_time` and midnight
   // for testing.
   query_time =
       std::max(query_time.LocalMidnight() + base::TimeDelta::FromMinutes(10),
@@ -791,7 +791,7 @@ TEST_F(HistoryServiceTest, GetDomainDiversityShortBasetimeRange) {
                 GetTimeInThePast(query_time, 1, 8));
   AddPageAtTime(history, "http://ak/", GetTimeInThePast(query_time, 1, 14));
 
-  // Should return empty result if |begin_time| == |end_time|.
+  // Should return empty result if `begin_time` == `end_time`.
   DomainDiversityResults res = GetDomainDiversityHelper(
       history, query_time, query_time,
       history::kEnableLast1DayMetric | history::kEnableLast7DayMetric |

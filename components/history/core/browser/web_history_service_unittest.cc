@@ -179,7 +179,7 @@ std::unique_ptr<base::DictionaryValue> TestingWebHistoryService::ReadResponse(
 void TestingWebHistoryService::SetAudioHistoryCallback(
     bool success, bool new_enabled_value) {
   EXPECT_TRUE(success);
-  // |new_enabled_value| should be equal to whatever the audio history value
+  // `new_enabled_value` should be equal to whatever the audio history value
   // was just set to.
   EXPECT_EQ(expected_audio_history_value_, new_enabled_value);
 }

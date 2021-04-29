@@ -62,7 +62,7 @@ class VisitDatabase {
   // and match the set of options passed, sorted in ascending order of date.
   //
   // Returns true if there are more results available, i.e. if the number of
-  // results was restricted by |options.max_count|.
+  // results was restricted by `options.max_count`.
   bool GetVisibleVisitsForURL(URLID url_id,
                               const QueryOptions& options,
                               VisitVector* visits);
@@ -70,8 +70,8 @@ class VisitDatabase {
   // Fills the vector with all visits with times in the given list.
   //
   // The results will be in no particular order.  Also, no duplicate
-  // detection is performed, so if |times| has duplicate times,
-  // |visits| may have duplicate visits.
+  // detection is performed, so if `times` has duplicate times,
+  // `visits` may have duplicate visits.
   bool GetVisitsForTimes(const std::vector<base::Time>& times,
                          VisitVector* visits);
 
@@ -79,7 +79,7 @@ class VisitDatabase {
   // time can be is_null(), in which case the times in that direction are
   // unbounded.
   //
-  // If |max_results| is non-zero, up to that many results will be returned. If
+  // If `max_results` is non-zero, up to that many results will be returned. If
   // there are more results than that, the oldest ones will be returned. (This
   // is used for history expiration.)
   //
@@ -93,7 +93,7 @@ class VisitDatabase {
   // to the given vector. Either time can be is_null(), in which case the times
   // in that direction are unbounded.
   //
-  // If |max_results| is non-zero, up to that many results will be returned. If
+  // If `max_results` is non-zero, up to that many results will be returned. If
   // there are more results than that, the oldest ones will be returned. (This
   // is used for history expiration.)
   //
@@ -114,15 +114,15 @@ class VisitDatabase {
   // begin time is inclusive, the end time is exclusive. Either time can be
   // is_null(), in which case the times in that direction are unbounded.
   //
-  // Up to |max_count| visits will be returned. If there are more visits than
-  // that, the most recent |max_count| will be returned. If 0, all visits in the
+  // Up to `max_count` visits will be returned. If there are more visits than
+  // that, the most recent `max_count` will be returned. If 0, all visits in the
   // range will be computed.
   //
   // Only one visit for each URL will be returned, and it will be the most
   // recent one in the time range.
   //
   // Returns true if there are more results available, i.e. if the number of
-  // results was restricted by |options.max_count|.
+  // results was restricted by `options.max_count`.
   bool GetVisibleVisitsInRange(const QueryOptions& options,
                                VisitVector* visits);
 
@@ -133,16 +133,16 @@ class VisitDatabase {
   // the found visit. When no visit is found, the row will be unchanged.
   VisitID GetMostRecentVisitForURL(URLID url_id, VisitRow* visit_row);
 
-  // Returns the |max_results| most recent visit sessions for |url_id|.
+  // Returns the `max_results` most recent visit sessions for `url_id`.
   //
   // Returns false if there's a failure preparing the statement. True
-  // otherwise. (No results are indicated with an empty |visits|
+  // otherwise. (No results are indicated with an empty `visits`
   // vector.)
   bool GetMostRecentVisitsForURL(URLID url_id,
                                  int max_results,
                                  VisitVector* visits);
 
-  // Finds a redirect coming from the given |from_visit|. If a redirect is
+  // Finds a redirect coming from the given `from_visit`. If a redirect is
   // found, it fills the visit ID and URL into the out variables and returns
   // true. If there is no redirect from the given visit, returns false.
   //
@@ -157,13 +157,13 @@ class VisitDatabase {
                             GURL* to_url);
 
   // Similar to the above function except finds a redirect going to a given
-  // |to_visit|.
+  // `to_visit`.
   bool GetRedirectToVisit(VisitID to_visit,
                           VisitID* from_visit,
                           GURL* from_url);
 
   // Gets the number of user-visible visits to all URLs on the same
-  // scheme/host/port as |url|, as well as the time of the earliest visit.
+  // scheme/host/port as `url`, as well as the time of the earliest visit.
   // "User-visible" is defined as in GetVisibleVisitsInRange() above, i.e.
   // excluding redirects and subframes.
   // This function is only valid for HTTP and HTTPS URLs; all other schemes
@@ -173,7 +173,7 @@ class VisitDatabase {
                                   base::Time* first_visit);
 
   // Gets the number of URLs as seen in chrome://history within the time
-  // range [|begin_time|, |end_time|). "User-visible" is defined as in
+  // range [`begin_time`, `end_time`). "User-visible" is defined as in
   // GetVisibleVisitsInRange() above, i.e. excluding redirects and subframes.
   // Each URL is counted only once per day. For determination of the date,
   // timestamps are converted to dates using local time. Returns false if
@@ -183,8 +183,8 @@ class VisitDatabase {
                        int* count);
 
   // Gets the last time any webpage on the given host was visited within the
-  // time range [|begin_time|, |end_time|). If the given host has not been
-  // visited in the given time range, this will return true and |last_visit|
+  // time range [`begin_time`, `end_time`). If the given host has not been
+  // visited in the given time range, this will return true and `last_visit`
   // will be set to base::Time(). False will be returned if the host is not a
   // valid HTTP or HTTPS url or for other database errors.
   bool GetLastVisitToHost(const GURL& host,
@@ -192,15 +192,15 @@ class VisitDatabase {
                           base::Time end_time,
                           base::Time* last_visit);
 
-  // Gets the last time |url| was visited before |end_time|. If the given |url|
-  // has no past visits, this will return true and |last_visit| will be set to
-  // base::Time(). False will be returned if |url| is not a valid HTTP or HTTPS
+  // Gets the last time `url` was visited before `end_time`. If the given `url`
+  // has no past visits, this will return true and `last_visit` will be set to
+  // base::Time(). False will be returned if `url` is not a valid HTTP or HTTPS
   // url or for other database errors.
   bool GetLastVisitToURL(const GURL& url,
                          base::Time end_time,
                          base::Time* last_visit);
 
-  // Gets counts for total visits and days visited for pages matching |host|'s
+  // Gets counts for total visits and days visited for pages matching `host`'s
   // scheme, port, and host. Counts only user-visible visits.
   DailyVisitsResult GetDailyVisitsToHost(const GURL& host,
                                          base::Time begin_time,
@@ -236,7 +236,7 @@ class VisitDatabase {
   static bool FillVisitVector(sql::Statement& statement, VisitVector* visits);
 
   // Convenience to fill a VisitVector while respecting the set of options.
-  // |statement| should order the query descending by visit_time to ensure
+  // `statement` should order the query descending by visit_time to ensure
   // correct duplicate management behavior. Assumes that statement.step()
   // hasn't happened yet.
   static bool FillVisitVectorWithOptions(sql::Statement& statement,

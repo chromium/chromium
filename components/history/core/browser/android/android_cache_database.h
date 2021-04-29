@@ -38,27 +38,27 @@ class AndroidCacheDatabase {
   // Clears all rows in the bookmark_cache table; returns true on success.
   bool ClearAllBookmarkCache();
 
-  // Marks the given |url_ids| as bookmarked; Returns true on success.
+  // Marks the given `url_ids` as bookmarked; Returns true on success.
   bool MarkURLsAsBookmarked(const std::vector<URLID>& url_id);
 
-  // Set the given |url_id|'s favicon column to |favicon_id|. Returns true on
+  // Set the given `url_id`'s favicon column to `favicon_id`. Returns true on
   // success.
   bool SetFaviconID(URLID url_id, favicon_base::FaviconID favicon_id);
 
   // The search_terms table -------------------------------------------------
   //
-  // Add a row in the search_term table with the given |term| and
-  // |last_visit_time|. Return the new row's id on success, otherwise 0 is
+  // Add a row in the search_term table with the given `term` and
+  // `last_visit_time`. Return the new row's id on success, otherwise 0 is
   // returned.
   SearchTermID AddSearchTerm(const std::u16string& term,
                              const base::Time& last_visit_time);
 
-  // Updates the |id|'s row with the given |row|; returns true on success.
+  // Updates the `id`'s row with the given `row`; returns true on success.
   bool UpdateSearchTerm(SearchTermID id, const SearchTermRow& row);
 
-  // Get SearchTermRow of the given |term|; return the row id on success.
+  // Get SearchTermRow of the given `term`; return the row id on success.
   // otherwise 0 is returned.
-  // The found row is return in |row| if it is not NULL.
+  // The found row is return in `row` if it is not NULL.
   SearchTermID GetSearchTerm(const std::u16string& term, SearchTermRow* row);
 
   // Delete the search terms which don't exist in keyword_search_terms table.

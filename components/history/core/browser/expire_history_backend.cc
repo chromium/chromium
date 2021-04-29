@@ -68,9 +68,9 @@ class AllVisitsReader : public ExpiringVisitsReader {
 
 // Reads only AUTO_SUBFRAME visits, within a computed range. The range is
 // computed as follows:
-// * |begin_time| is read from the meta table. This value is updated whenever
+// * `begin_time` is read from the meta table. This value is updated whenever
 //   there are no more additional visits to expire by this reader.
-// * |end_time| is advanced forward by a constant (kEarlyExpirationAdvanceDay),
+// * `end_time` is advanced forward by a constant (kEarlyExpirationAdvanceDay),
 //   but not past the current time.
 class AutoSubframeVisitsReader : public ExpiringVisitsReader {
  public:
@@ -82,7 +82,7 @@ class AutoSubframeVisitsReader : public ExpiringVisitsReader {
     DCHECK(visits) << "visit vector has to exist in order to populate it";
 
     base::Time begin_time = db->GetEarlyExpirationThreshold();
-    // Advance |end_time| to expire early.
+    // Advance `end_time` to expire early.
     base::Time early_end_time = end_time +
         base::TimeDelta::FromDays(kEarlyExpirationAdvanceDays);
 
@@ -213,7 +213,7 @@ void ExpireHistoryBackend::DeleteURLs(const std::vector<GURL>& urls,
     main_db_->GetVisitsForURL(url_row.id(), &visits_to_delete);
     size_t total_visits = visits_to_delete.size();
     if (!end_time.is_null() && !end_time.is_max()) {
-      // Remove all items that should not be deleted from |visits_to_delete|.
+      // Remove all items that should not be deleted from `visits_to_delete`.
       base::EraseIf(visits_to_delete,
                     [=](auto& v) { return v.visit_time > end_time; });
     }
@@ -265,7 +265,7 @@ void ExpireHistoryBackend::ExpireHistoryBetween(
 
 void ExpireHistoryBackend::ExpireHistoryForTimes(
     const std::vector<base::Time>& times) {
-  // |times| must be in reverse chronological order and have no
+  // `times` must be in reverse chronological order and have no
   // duplicates, i.e. each member must be earlier than the one before
   // it.
   DCHECK(

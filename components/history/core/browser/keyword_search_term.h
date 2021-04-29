@@ -27,8 +27,8 @@ struct NormalizedKeywordSearchTermVisit {
   //                   recency_in_seconds + recency_decay_unit_in_seconds
   // This score combines frequency and recency of the visit favoring ones that
   // are more frequent and more recent (see go/local-zps-frecency-ranking).
-  // |recency_decay_unit_sec| is the number of seconds until the recency
-  // component of the score decays to half. |frequency_exponent| is factor by
+  // `recency_decay_unit_sec` is the number of seconds until the recency
+  // component of the score decays to half. `frequency_exponent` is factor by
   // which the frequency of the visit is exponentiated.
   double GetFrecency(base::Time now,
                      int recency_decay_unit_sec,

@@ -68,12 +68,12 @@ class HistoryBackendHelper;
 class TypedURLSyncBridge;
 class URLDatabase;
 
-// Returns a formatted version of |url| with the HTTP/HTTPS scheme, port,
+// Returns a formatted version of `url` with the HTTP/HTTPS scheme, port,
 // username/password, and any trivial subdomains (e.g., "www.", "m.") removed.
 std::u16string FormatUrlForRedirectComparison(const GURL& url);
 
-// Advances (if |day| >= 0) or backtracks (if |day| < 0) from |time| by
-// abs(|day|) calendar days in local timezone and returns the midnight of the
+// Advances (if `day` >= 0) or backtracks (if `day` < 0) from `time` by
+// abs(`day`) calendar days in local timezone and returns the midnight of the
 // resulting day.
 base::Time MidnightNDaysLater(base::Time time, int days);
 
@@ -123,7 +123,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
     virtual ~Delegate() = default;
 
     // Called when the database cannot be read correctly for some reason.
-    // |diagnostics| contains information about the underlying database
+    // `diagnostics` contains information about the underlying database
     // which can help in identifying the cause of the profile error.
     virtual void NotifyProfileError(sql::InitStatus init_status,
                                     const std::string& diagnostics) = 0;
@@ -142,7 +142,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
     // http://www.google.com) and the given icon URL (e.g.
     // http://www.google.com/favicon.ico) have changed. HistoryService notifies
     // any registered callbacks. It is valid to call NotifyFaviconsChanged()
-    // with non-empty |page_urls| and an empty |icon_url| and vice versa.
+    // with non-empty `page_urls` and an empty `icon_url` and vice versa.
     virtual void NotifyFaviconsChanged(const std::set<GURL>& page_urls,
                                        const GURL& icon_url) = 0;
 
@@ -190,11 +190,11 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // constructed on any thread, but all other functions including Init() must
   // be called on the history thread.
   //
-  // |history_dir| is the directory where the history files will be placed.
+  // `history_dir` is the directory where the history files will be placed.
   // See the definition of BroadcastNotificationsCallback above. This function
   // takes ownership of the callback pointer.
   //
-  // |history_client| is used to determine bookmarked URLs when deleting and
+  // `history_client` is used to determine bookmarked URLs when deleting and
   // may be null.
   //
   // This constructor is fast and does no I/O, so can be called at any time.
@@ -206,7 +206,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // fails, all other functions will fail as well. (Since this runs on another
   // thread, we don't bother returning failure.)
   //
-  // |force_fail| can be set during unittests to unconditionally fail to init.
+  // `force_fail` can be set during unittests to unconditionally fail to init.
   void Init(bool force_fail,
             const HistoryDatabaseParams& history_database_params);
 
@@ -226,7 +226,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // Clears all on-demand favicons.
   void ClearAllOnDemandFavicons();
 
-  // Gets the counts and last last time of URLs that belong to |origins| in the
+  // Gets the counts and last last time of URLs that belong to `origins` in the
   // history database. Origins that are not in the history database will be in
   // the map with a count and time of 0.
   // Returns an empty map if db_ is not initialized.
@@ -235,7 +235,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   // Navigation ----------------------------------------------------------------
 
-  // |request.time| must be unique with high probability.
+  // `request.time` must be unique with high probability.
   void AddPage(const HistoryAddPageArgs& request);
   virtual void SetPageTitle(const GURL& url, const std::u16string& title);
   void AddPageNoVisitForBookmark(const GURL& url, const std::u16string& title);
@@ -250,8 +250,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   // Querying ------------------------------------------------------------------
 
-  // Run the |callback| on the History thread.
-  // |callback| should handle the null database case.
+  // Run the `callback` on the History thread.
+  // `callback` should handle the null database case.
   void ScheduleAutocomplete(
       base::OnceCallback<void(HistoryBackend*, URLDatabase*)> callback);
 
@@ -267,22 +267,22 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   RedirectList QueryRedirectsFrom(const GURL& url);
 
   // Similar to above function except computes a chain of redirects to the
-  // given URL. Stores the most recent list of redirects ending at |url| in the
+  // given URL. Stores the most recent list of redirects ending at `url` in the
   // given RedirectList. For example, if we have the redirect list A -> B -> C,
   // then calling this function with url=C would fill redirects with {B, A}.
   RedirectList QueryRedirectsTo(const GURL& url);
 
   VisibleVisitCountToHostResult GetVisibleVisitCountToHost(const GURL& url);
 
-  // Request the |result_count| most visited URLs and the chain of
-  // redirects leading to each of these URLs. |days_back| is the
+  // Request the `result_count` most visited URLs and the chain of
+  // redirects leading to each of these URLs. `days_back` is the
   // number of days of history to use. Used by TopSites.
   MostVisitedURLList QueryMostVisitedURLs(int result_count, int days_back);
 
   // Statistics ----------------------------------------------------------------
 
   // Gets the number of URLs as seen in chrome://history within the time range
-  // [|begin_time|, |end_time|). Each URL is counted only once per day. For
+  // [`begin_time`, `end_time`). Each URL is counted only once per day. For
   // determination of the date, timestamps are converted to dates using local
   // time.
   HistoryCountResult GetHistoryCount(const base::Time& begin_time,
@@ -296,21 +296,21 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // top-level domain (eTLD) + 1, e.g. "foo.com", "bar.co.uk") visited within
   // the 1-day, 7-day or 28-day span that ends at a midnight in local timezone.
   //
-  // For each of the most recent |number_of_days_to_report| midnights before
-  // |report_time|(inclusive), this function computes a subset of
+  // For each of the most recent `number_of_days_to_report` midnights before
+  // `report_time`(inclusive), this function computes a subset of
   // {1-day, 7-day, 28-day} metrics whose spanning periods all end on that
   // midnight. This subset of metrics to compute is specified by a bitmask
-  // |metric_type_bitmask|, which takes a bitwise combination of
+  // `metric_type_bitmask`, which takes a bitwise combination of
   // kEnableLast1DayMetric, kEnableLast7DayMetric and kEnableLast28DayMetric.
   //
   // All computed metrics are stored in DomainDiversityResults, which represents
   // a collection of DomainMetricSet's. Each DomainMetricSet contains up to 3
   // metrics ending at one unique midnight in the time range of
-  // |number_of_days_to_report| days before |report_time|. The collection of
+  // `number_of_days_to_report` days before `report_time`. The collection of
   // DomainMetricSet is sorted reverse chronologically by the ending midnight.
   //
-  // For example, when |report_time| = 2019/11/01 00:01am, |number_of_days| = 3,
-  // |metric_type_bitmask| = kEnableLast28DayMetric | kEnableLast1DayMetric,
+  // For example, when `report_time` = 2019/11/01 00:01am, `number_of_days` = 3,
+  // `metric_type_bitmask` = kEnableLast28DayMetric | kEnableLast1DayMetric,
   // DomainDiversityResults will hold 3 DomainMetricSets, each containing 2
   // metrics measuring domain visit counts spanning the following date ranges
   // (all dates are inclusive):
@@ -321,20 +321,20 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
       DomainMetricBitmaskType metric_type_bitmask);
 
   // Gets the last time any webpage on the given host was visited within the
-  // time range [|begin_time|, |end_time|). If the given host has not been
+  // time range [`begin_time`, `end_time`). If the given host has not been
   // visited in the given time range, the result will have a null base::Time,
   // but still report success.
   HistoryLastVisitResult GetLastVisitToHost(const GURL& host,
                                             base::Time begin_time,
                                             base::Time end_time);
 
-  // Gets the last time |url| was visited before |end_time|. If the given URL
+  // Gets the last time `url` was visited before `end_time`. If the given URL
   // has not been visited in the past, the result will have a null base::Time,
   // but still report success.
   HistoryLastVisitResult GetLastVisitToURL(const GURL& url,
                                            base::Time end_time);
 
-  // Gets counts for total visits and days visited for pages matching |host|'s
+  // Gets counts for total visits and days visited for pages matching `host`'s
   // scheme, port, and host. Counts only user-visible visits.
   DailyVisitsResult GetDailyVisitsToHost(const GURL& host,
                                          base::Time begin_time,
@@ -377,7 +377,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
                     scoped_refptr<base::RefCountedMemory> bitmap_data,
                     const gfx::Size& pixel_size);
 
-  // |page_urls| must not be empty.
+  // `page_urls` must not be empty.
   void SetFavicons(const base::flat_set<GURL>& page_urls,
                    favicon_base::IconType icon_type,
                    const GURL& icon_url,
@@ -448,12 +448,12 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   virtual bool GetVisitsForURL(URLID id, VisitVector* visits);
 
-  // Fetches up to |max_visits| most recent visits for the passed URL.
+  // Fetches up to `max_visits` most recent visits for the passed URL.
   virtual bool GetMostRecentVisitsForURL(URLID id,
                                          int max_visits,
                                          VisitVector* visits);
 
-  // For each element in |urls|, updates the pre-existing URLRow in the database
+  // For each element in `urls`, updates the pre-existing URLRow in the database
   // with the same ID; or ignores the element if no such row exists. Returns the
   // number of records successfully updated.
   virtual size_t UpdateURLs(const URLRows& urls);
@@ -475,7 +475,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   bool GetURLByID(URLID url_id, URLRow* url_row);
 
   // Returns the sync controller delegate for syncing typed urls. The returned
-  // delegate is owned by |this| object.
+  // delegate is owned by `this` object.
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetTypedURLSyncControllerDelegate();
 
@@ -495,9 +495,9 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
                             base::Time end_time,
                             bool user_initiated);
 
-  // Finds the URLs visited at |times| and expires all their visits within
-  // [|begin_time|, |end_time|). All times in |times| should be in
-  // [|begin_time|, |end_time|). This is used when expiration request is from
+  // Finds the URLs visited at `times` and expires all their visits within
+  // [`begin_time`, `end_time`). All times in `times` should be in
+  // [`begin_time`, `end_time`). This is used when expiration request is from
   // server side, i.e. web history deletes, where only visit times (possibly
   // incomplete) are transmitted to protect user's privacy.
   void ExpireHistoryForTimes(const std::set<base::Time>& times,
@@ -505,7 +505,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
                              base::Time end_time);
 
   // Calls ExpireHistoryBetween() once for each element in the vector.
-  // The fields of |ExpireHistoryArgs| map directly to the arguments of
+  // The fields of `ExpireHistoryArgs` map directly to the arguments of
   // of ExpireHistoryBetween().
   void ExpireHistory(const std::vector<ExpireHistoryArgs>& expire_list);
 
@@ -699,20 +699,20 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
       bool floc_allowed,
       base::Optional<std::u16string> title = base::nullopt);
 
-  // Returns a redirect chain in |redirects| for the VisitID
-  // |cur_visit|. |cur_visit| is assumed to be valid. Assumes that
+  // Returns a redirect chain in `redirects` for the VisitID
+  // `cur_visit`. `cur_visit` is assumed to be valid. Assumes that
   // this HistoryBackend object has been Init()ed successfully.
   void GetRedirectsFromSpecificVisit(VisitID cur_visit,
                                      RedirectList* redirects);
 
   // Similar to the above function except returns a redirect list ending
-  // at |cur_visit|.
+  // at `cur_visit`.
   void GetRedirectsToSpecificVisit(VisitID cur_visit, RedirectList* redirects);
 
   // Updates the visit_duration information in visits table.
   void UpdateVisitDuration(VisitID visit_id, const base::Time end_ts);
 
-  // Returns whether |url| is on an untyped intranet host.
+  // Returns whether `url` is on an untyped intranet host.
   bool IsUntypedIntranetHost(const GURL& url);
 
   // Querying ------------------------------------------------------------------
@@ -762,19 +762,19 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   // Favicons ------------------------------------------------------------------
 
-  // Returns all the page URLs in the redirect chain for |page_url|. If there
-  // are no known redirects for |page_url|, returns a vector with |page_url|.
+  // Returns all the page URLs in the redirect chain for `page_url`. If there
+  // are no known redirects for `page_url`, returns a vector with `page_url`.
   RedirectList GetCachedRecentRedirects(const GURL& page_url);
 
-  // Send notification that the favicon has changed for |page_url| and all its
+  // Send notification that the favicon has changed for `page_url` and all its
   // redirects. This should be called if the mapping between the page URL
   // (e.g. http://www.google.com) and the icon URL (e.g.
   // http://www.google.com/favicon.ico) has changed.
   void SendFaviconChangedNotificationForPageAndRedirects(const GURL& page_url);
 
-  // Send notification that the bitmap data for the favicon at |icon_url| has
+  // Send notification that the bitmap data for the favicon at `icon_url` has
   // changed. Sending this notification is important because the favicon at
-  // |icon_url| may be mapped to hundreds of page URLs.
+  // `icon_url` may be mapped to hundreds of page URLs.
   void SendFaviconChangedNotificationForIconURL(const GURL& icon_url);
 
   // Generic stuff -------------------------------------------------------------

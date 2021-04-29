@@ -47,7 +47,7 @@ const char kApplicationScheme[] = "application";
 const char kPrepopulatedPageURL[] =
     "http://www.google.com/int/chrome/welcome.html";
 
-// Returns whether |url| can be added to history.
+// Returns whether `url` can be added to history.
 bool MockCanAddURLToHistory(const GURL& url) {
   return url.is_valid() && !url.SchemeIs(kApplicationScheme);
 }
@@ -59,7 +59,7 @@ class TopSitesQuerier {
  public:
   TopSitesQuerier() : number_of_callbacks_(0), waiting_(false) {}
 
-  // Queries top sites. If |wait| is true a nested run loop is run until the
+  // Queries top sites. If `wait` is true a nested run loop is run until the
   // callback is notified.
   void QueryTopSites(TopSitesImpl* top_sites, bool wait) {
     int start_number_of_callbacks = number_of_callbacks_;
@@ -149,7 +149,7 @@ class TopSitesImplTest : public HistoryUnitTestBase {
   }
 
   // Returns true if the TopSitesQuerier contains the prepopulate data starting
-  // at |start_index|.
+  // at `start_index`.
   void ContainsPrepopulatePages(const TopSitesQuerier& querier,
                                 size_t start_index) {
     PrepopulatedPageList prepopulate_pages = GetPrepopulatedPages();
@@ -308,7 +308,7 @@ TEST_F(TopSitesImplTest, DoTitlesDiffer) {
   SetTopSites(list_1);
   EXPECT_FALSE(observer.is_notified());
 
-  // Change |url_2|'s title to |title_1| in list_2. The two lists are different
+  // Change `url_2`'s title to `title_1` in list_2. The two lists are different
   // in titles now. TopSites should notify its observers.
   list_2.pop_back();
   list_2.emplace_back(url_2, title_1);

@@ -70,7 +70,7 @@ int64_t TimeToUnixUsec(base::Time time) {
   return (time - base::Time::UnixEpoch()).InMicroseconds();
 }
 
-// Converts global IDs in |global_id_directive| to times.
+// Converts global IDs in `global_id_directive` to times.
 void GetTimesFromGlobalIds(
     const sync_pb::GlobalIdDirective& global_id_directive,
     std::set<base::Time>* times) {
@@ -158,8 +158,8 @@ class DeleteDirectiveHandler::DeleteDirectiveTask : public HistoryDBTask {
       const syncer::SyncDataList& global_id_directives);
 
   // Process a list of time range directives, all history entries within the
-  // time ranges are deleted. |time_range_directives| should be sorted by
-  // |start_time_usec| and |end_time_usec| already.
+  // time ranges are deleted. `time_range_directives` should be sorted by
+  // `start_time_usec` and `end_time_usec` already.
   void ProcessTimeRangeDeleteDirectives(
       HistoryBackend* history_backend,
       const syncer::SyncDataList& time_range_directives);

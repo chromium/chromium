@@ -329,7 +329,7 @@ bool VisitSegmentDatabase::MigrateVisitSegmentNames() {
 
     SegmentID to_segment_id = GetSegmentNamed(new_name);
     if (to_segment_id) {
-      // |new_name| is already in use, so merge.
+      // `new_name` is already in use, so merge.
       success = success && MergeSegments(/*from_segment_id=*/id, to_segment_id);
     } else {
       // Trivial rename of the segment.
@@ -355,8 +355,8 @@ bool VisitSegmentDatabase::MergeSegments(SegmentID from_segment_id,
     return false;
 
   // For each time slot where there are visits for the absorbed segment
-  // (|from_segment_id|), add them to the absorbing/staying segment
-  // (|to_segment_id|).
+  // (`from_segment_id`), add them to the absorbing/staying segment
+  // (`to_segment_id`).
   sql::Statement select(
       GetDB().GetCachedStatement(SQL_FROM_HERE,
                                  "SELECT time_slot, visit_count FROM "

@@ -103,10 +103,10 @@ class DomainDiversityReporterTest : public testing::Test {
   TestClock& test_clock() { return test_clock_; }
 
  protected:
-  // A |task_environment_| configured to MOCK_TIME so tests can
+  // A `task_environment_` configured to MOCK_TIME so tests can
   // FastForwardAndWait() when waiting for a specific timeout (delayed task)
-  // to fire. DomainDiversityReporter internally uses a |test_clock_| instead of
-  // |task_environment_|'s clock because it needs to test very specific times
+  // to fire. DomainDiversityReporter internally uses a `test_clock_` instead of
+  // `task_environment_`'s clock because it needs to test very specific times
   // rather than just advance in deltas from Now().
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

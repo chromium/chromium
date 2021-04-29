@@ -30,16 +30,16 @@ class VisitSQLHandler : public SQLHandler {
   bool Delete(const TableIDRows& ids_set) override;
 
  private:
-  // Add a row in visit table with the given |url_id| and |visit_time|.
+  // Add a row in visit table with the given `url_id` and `visit_time`.
   bool AddVisit(URLID url_id, const base::Time& visit_time);
 
-  // Add the given |visit_count| rows for |url_id|. The visit time of each row
-  // has minium difference and ends with the |last_visit_time|.
+  // Add the given `visit_count` rows for `url_id`. The visit time of each row
+  // has minium difference and ends with the `last_visit_time`.
   bool AddVisitRows(URLID url_id,
                     int visit_count,
                     const base::Time& last_visit_time);
 
-  // Delete the visits of the given |url_id|.
+  // Delete the visits of the given `url_id`.
   bool DeleteVisitsForURL(URLID url_id);
 
   URLDatabase* url_db_;

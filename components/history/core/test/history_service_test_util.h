@@ -17,8 +17,8 @@ class FilePath;
 namespace history {
 class HistoryService;
 
-// Creates a new HistoryService that stores its data in |history_dir|.  If
-// |create_db| is false, the HistoryService will fail to initialize its
+// Creates a new HistoryService that stores its data in `history_dir`.  If
+// `create_db` is false, the HistoryService will fail to initialize its
 // database; this is useful for testing error conditions.  This method spins the
 // runloop before returning to ensure that any initialization-related tasks are
 // run.

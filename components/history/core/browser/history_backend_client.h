@@ -30,7 +30,7 @@ class HistoryBackendClient {
   // Returns the set of pinned URLs with their titles.
   virtual std::vector<URLAndTitle> GetPinnedURLs() = 0;
 
-  // Returns whether |url| should be considered web-safe (see
+  // Returns whether `url` should be considered web-safe (see
   // content::ChildProcessSecurityPolicy).
   virtual bool IsWebSafe(const GURL& url) = 0;
 

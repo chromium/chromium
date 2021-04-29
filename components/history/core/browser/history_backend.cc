@@ -199,7 +199,7 @@ QueuedHistoryDBTask::QueuedHistoryDBTask(
 }
 
 QueuedHistoryDBTask::~QueuedHistoryDBTask() {
-  // Ensure that |task_| is destroyed on its origin thread.
+  // Ensure that `task_` is destroyed on its origin thread.
   origin_loop_->PostTask(FROM_HERE,
                          base::BindOnce(&base::DeletePointer<HistoryDBTask>,
                                         base::Unretained(task_.release())));
@@ -645,12 +645,12 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
     ui::PageTransition redirect_info = ui::PAGE_TRANSITION_CHAIN_START;
 
     RedirectList redirects = request.redirects;
-    // In the presence of client redirects, |request.redirects| can be a partial
+    // In the presence of client redirects, `request.redirects` can be a partial
     // chain because previous calls to this function may have reported a
     // redirect chain already. This is fine for the visits database where we'll
-    // just append data but insufficient for |recent_redirects_|
+    // just append data but insufficient for `recent_redirects_`
     // (backpropagation of favicons and titles), where we'd like the full
-    // (extended) redirect chain. We use |extended_redirect_chain| to represent
+    // (extended) redirect chain. We use `extended_redirect_chain` to represent
     // this.
     RedirectList extended_redirect_chain;
 
@@ -1714,9 +1714,9 @@ void HistoryBackend::GetRedirectsFromSpecificVisit(VisitID cur_visit,
 
 void HistoryBackend::GetRedirectsToSpecificVisit(VisitID cur_visit,
                                                  RedirectList* redirects) {
-  // Follow redirects going to cur_visit. These are added to |redirects| in
+  // Follow redirects going to cur_visit. These are added to `redirects` in
   // the order they are found. If a redirect chain looks like A -> B -> C and
-  // |cur_visit| = C, redirects will be {B, A} in that order.
+  // `cur_visit` = C, redirects will be {B, A} in that order.
   if (!db_)
     return;
 
@@ -1986,7 +1986,7 @@ RedirectList HistoryBackend::GetCachedRecentRedirects(const GURL& page_url) {
     DCHECK_EQ(iter->second.back(), page_url);
     return iter->second;
   }
-  // No known redirects, construct mock redirect chain containing |page_url|.
+  // No known redirects, construct mock redirect chain containing `page_url`.
   return RedirectList{page_url};
 }
 
@@ -2164,7 +2164,7 @@ void HistoryBackend::ExpireHistoryForTimes(const std::set<base::Time>& times,
   QueryResults results;
   QueryHistoryBasic(options, &results);
 
-  // 1st pass: find URLs that are visited at one of |times|.
+  // 1st pass: find URLs that are visited at one of `times`.
   std::set<GURL> urls;
   for (const auto& result : results) {
     if (times.count(result.visit_time()) > 0)
@@ -2194,7 +2194,7 @@ void HistoryBackend::ExpireHistoryForTimes(const std::set<base::Time>& times,
   Commit();
 
   DCHECK_GE(times_to_expire.back(), first_recorded_time_);
-  // Update |first_recorded_time_| if we expired it.
+  // Update `first_recorded_time_` if we expired it.
   if (times_to_expire.back() == first_recorded_time_)
     db_->GetStartDate(&first_recorded_time_);
 }
@@ -2213,7 +2213,7 @@ void HistoryBackend::ExpireHistory(
     }
     Commit();
 
-    // Update |first_recorded_time_| if any deletion might have affected it.
+    // Update `first_recorded_time_` if any deletion might have affected it.
     if (update_first_recorded_time)
       db_->GetStartDate(&first_recorded_time_);
   }
@@ -2251,7 +2251,7 @@ void HistoryBackend::DatabaseErrorCallback(int error, sql::Statement* stmt) {
 
     db_diagnostics_ = db_->GetDiagnosticInfo(error, stmt);
 
-    // Don't just do the close/delete here, as we are being called by |db| and
+    // Don't just do the close/delete here, as we are being called by `db` and
     // that seems dangerous.
     // TODO(https://crbug.com/854258): It is also dangerous to kill the database
     // by a posted task: tasks that run before KillHistoryDatabase still can try
@@ -2286,7 +2286,7 @@ void HistoryBackend::KillHistoryDatabase() {
   // databases which will be closed.
   expirer_.SetDatabases(nullptr, nullptr);
 
-  // Reopen a new transaction for |db_| for the sake of CloseAllDatabases().
+  // Reopen a new transaction for `db_` for the sake of CloseAllDatabases().
   db_->BeginTransaction();
   CloseAllDatabases();
 }

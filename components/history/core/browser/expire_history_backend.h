@@ -37,7 +37,7 @@ class HistoryDatabase;
 class ExpiringVisitsReader {
  public:
   virtual ~ExpiringVisitsReader() {}
-  // Populates |visits| from |db|, using provided |end_time| and |max_visits|
+  // Populates `visits` from `db`, using provided `end_time` and `max_visits`
   // cap.
   virtual bool Read(base::Time end_time, HistoryDatabase* db,
                     VisitVector* visits, int max_visits) const = 0;
@@ -74,10 +74,10 @@ class ExpireHistoryBackend {
   // will continue until the object is deleted.
   void StartExpiringOldStuff(base::TimeDelta expiration_threshold);
 
-  // Deletes everything associated with a URL until |end_time|.
+  // Deletes everything associated with a URL until `end_time`.
   void DeleteURL(const GURL& url, base::Time end_time);
 
-  // Deletes everything associated with each URL in the list until |end_time|.
+  // Deletes everything associated with each URL in the list until `end_time`.
   void DeleteURLs(const std::vector<GURL>& url, base::Time end_time);
 
   // Removes all visits to restrict_urls (or all URLs if empty) in the given
@@ -88,7 +88,7 @@ class ExpireHistoryBackend {
                             bool user_initiated);
 
   // Removes all visits to all URLs with the given times, updating the
-  // URLs accordingly.  |times| must be in reverse chronological order
+  // URLs accordingly.  `times` must be in reverse chronological order
   // and not contain any duplicates.
   void ExpireHistoryForTimes(const std::vector<base::Time>& times);
 
@@ -152,7 +152,7 @@ class ExpireHistoryBackend {
     std::set<GURL> deleted_favicons;
   };
 
-  // Returns a vector with all visits that eventually redirect to |visits|.
+  // Returns a vector with all visits that eventually redirect to `visits`.
   VisitVector GetVisitsAndRedirectParents(const VisitVector& visits);
 
   // Deletes the visit-related stuff for all the visits in the given list, and
@@ -180,7 +180,7 @@ class ExpireHistoryBackend {
                     bool is_pinned,
                     DeleteEffects* effects);
 
-  // Deletes all favicons associated with |gurl|.
+  // Deletes all favicons associated with `gurl`.
   void DeleteIcons(const GURL& gurl, DeleteEffects* effects);
 
   // Deletes all the URLs in the given vector and handles their dependencies.
@@ -197,7 +197,7 @@ class ExpireHistoryBackend {
   //
   // The visits in the given vector should have already been deleted from the
   // database, and the list of affected URLs already be filled into
-  // |depenencies->affected_urls|.
+  // `depenencies->affected_urls`.
   //
   // Starred URLs will not be deleted. The information in the dependencies that
   // DeleteOneURL fills in will be updated, and this function will also delete
@@ -218,9 +218,9 @@ class ExpireHistoryBackend {
                             const std::set<GURL>& restrict_urls,
                             DeletionType type);
 
-  // Deletes the favicons listed in |effects->affected_favicons| if they are
+  // Deletes the favicons listed in `effects->affected_favicons` if they are
   // unused. Fails silently (we don't care about favicons so much, so don't want
-  // to stop everything if it fails). Fills |expired_favicons| with the set of
+  // to stop everything if it fails). Fills `expired_favicons` with the set of
   // favicon urls that no longer have associated visits and were therefore
   // expired.
   void DeleteFaviconsIfPossible(DeleteEffects* effects);
@@ -239,8 +239,8 @@ class ExpireHistoryBackend {
   // future.
   void DoExpireIteration();
 
-  // Tries to expire the oldest |max_visits| visits from history that are older
-  // than |time_threshold|. The return value indicates if we think there might
+  // Tries to expire the oldest `max_visits` visits from history that are older
+  // than `time_threshold`. The return value indicates if we think there might
   // be more history to expire with the current time threshold (it does not
   // indicate success or failure).
   bool ExpireSomeOldHistory(base::Time end_time,

@@ -32,7 +32,7 @@ class TypedURLSyncMetadataDatabase : public syncer::SyncMetadataStore {
   TypedURLSyncMetadataDatabase();
   ~TypedURLSyncMetadataDatabase() override;
 
-  // Read all the stored metadata for typed URL and fill |metadata_batch|
+  // Read all the stored metadata for typed URL and fill `metadata_batch`
   // with it.
   bool GetAllSyncMetadata(syncer::MetadataBatch* metadata_batch);
 
@@ -63,7 +63,7 @@ class TypedURLSyncMetadataDatabase : public syncer::SyncMetadataStore {
   bool InitSyncTable();
 
   // Cleans up orphaned metadata for typed URLs, i.e. deletes all metadata
-  // entries for rowids not present in |sorted_valid_rowids| (which must be
+  // entries for rowids not present in `sorted_valid_rowids` (which must be
   // sorted in ascending order). Returns true if the clean up finishes without
   // any DB error.
   bool CleanTypedURLOrphanedMetadataForMigrationToVersion40(
@@ -71,10 +71,10 @@ class TypedURLSyncMetadataDatabase : public syncer::SyncMetadataStore {
 
  private:
   // Read all sync_pb::EntityMetadata for typed URL and fill
-  // |metadata_records| with it.
+  // `metadata_records` with it.
   bool GetAllSyncEntityMetadata(syncer::MetadataBatch* metadata_batch);
 
-  // Read sync_pb::ModelTypeState for typed URL and fill |state| with it.
+  // Read sync_pb::ModelTypeState for typed URL and fill `state` with it.
   bool GetModelTypeState(sync_pb::ModelTypeState* state);
 
   DISALLOW_COPY_AND_ASSIGN(TypedURLSyncMetadataDatabase);
