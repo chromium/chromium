@@ -355,6 +355,8 @@ if (enable_pdf) {
       "test/test_client.h",
       "test/test_document_loader.cc",
       "test/test_document_loader.h",
+      "test/test_helpers.cc",
+      "test/test_helpers.h",
     ]
 
     configs += [ ":common" ]
@@ -365,6 +367,7 @@ if (enable_pdf) {
       "//base",
       "//ppapi/cpp:objects",
       "//testing/gtest",
+      "//ui/gfx:geometry_skia",
       "//ui/gfx/range",
     ]
   }
