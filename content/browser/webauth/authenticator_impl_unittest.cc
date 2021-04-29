@@ -69,6 +69,7 @@
 #include "device/fido/pin.h"
 #include "device/fido/public_key.h"
 #include "device/fido/test_callback_receiver.h"
+#include "device/fido/virtual_ctap2_device.h"
 #include "device/fido/virtual_fido_device.h"
 #include "device/fido/virtual_fido_device_factory.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -76,6 +77,7 @@
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom-shared.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
@@ -3951,7 +3953,10 @@ class PINTestAuthenticatorRequestDelegate
       : supports_pin_(supports_pin),
         expected_(pins),
         failure_reason_(failure_reason) {}
-  ~PINTestAuthenticatorRequestDelegate() override { DCHECK(expected_.empty()); }
+  ~PINTestAuthenticatorRequestDelegate() override {
+    DCHECK(expected_.empty())
+        << expected_.size() << " unsatisifed PIN expectations";
+  }
 
   bool SupportsPIN() const override { return supports_pin_; }
 
@@ -3959,7 +3964,7 @@ class PINTestAuthenticatorRequestDelegate
       CollectPINOptions options,
       base::OnceCallback<void(std::u16string)> provide_pin_cb) override {
     DCHECK(supports_pin_);
-    DCHECK(!expected_.empty());
+    DCHECK(!expected_.empty()) << "unexpected PIN request";
     if (expected_.front().reason == PINReason::kChallenge) {
       DCHECK(options.attempts == expected_.front().attempts)
           << "got: " << options.attempts
@@ -3993,12 +3998,19 @@ class PINTestAuthenticatorRequestDelegate
 
 class PINTestAuthenticatorContentBrowserClient : public ContentBrowserClient {
  public:
+  // ContentBrowserClient:
+  WebAuthenticationDelegate* GetWebAuthenticationDelegate() override {
+    return &web_authentication_delegate;
+  }
+
   std::unique_ptr<AuthenticatorRequestClientDelegate>
   GetWebAuthenticationRequestDelegate(
       RenderFrameHost* render_frame_host) override {
     return std::make_unique<PINTestAuthenticatorRequestDelegate>(
         supports_pin, expected, &failure_reason);
   }
+
+  TestWebAuthenticationDelegate web_authentication_delegate;
 
   bool supports_pin = true;
   std::list<PINExpectation> expected;
@@ -4408,6 +4420,86 @@ TEST_F(PINAuthenticatorImplTest, MakeCredentialForcePINChange) {
       AuthenticatorMakeCredential(make_credential_options());
   EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
   EXPECT_EQ("567890", virtual_device_factory_->mutable_state()->pin);
+}
+
+TEST_F(PINAuthenticatorImplTest, MakeCredUvNotRqd) {
+  // Test that on an authenticator with the makeCredUvNotRqd option enabled,
+  // non-discoverable credentials can be created without requiring a PIN.
+  for (bool discoverable : {false, true}) {
+    for (bool request_uv : {false, true}) {
+      SCOPED_TRACE(testing::Message() << "discoverable=" << discoverable
+                                      << " request_uv=" << request_uv);
+
+      test_client_.web_authentication_delegate.supports_resident_keys = true;
+      ResetVirtualDevice();
+      device::VirtualCtap2Device::Config config;
+      config.u2f_support = true;
+      config.pin_support = true;
+      config.resident_key_support = true;
+      config.pin_uv_auth_token_support = true;
+      config.allow_non_resident_credential_creation_without_uv = true;
+      config.ctap2_versions = {device::Ctap2Version::kCtap2_1};
+      virtual_device_factory_->SetCtap2Config(config);
+      virtual_device_factory_->mutable_state()->pin = kTestPIN;
+      // PIN is still required for discoverable credentials, or if the caller
+      // requests it.
+      if (discoverable || request_uv) {
+        test_client_.expected = {{PINReason::kChallenge, kTestPIN,
+                                  device::kMaxPinRetries,
+                                  device::kMinPinLength}};
+      } else {
+        test_client_.expected = {};
+      }
+
+      PublicKeyCredentialCreationOptionsPtr request = make_credential_options();
+      request->authenticator_selection
+          ->SetUserVerificationRequirementForTesting(
+              request_uv ? device::UserVerificationRequirement::kPreferred
+                         : device::UserVerificationRequirement::kDiscouraged);
+      request->authenticator_selection->SetResidentKeyForTesting(
+          discoverable ? device::ResidentKeyRequirement::kPreferred
+                       : device::ResidentKeyRequirement::kDiscouraged);
+
+      MakeCredentialResult result =
+          AuthenticatorMakeCredential(std::move(request));
+      EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+      // Requests shouldn't fall back to creating U2F credentials.
+      EXPECT_FALSE(virtual_device_factory_->mutable_state()
+                       ->registrations.begin()
+                       ->second.is_u2f);
+    }
+  }
+}
+
+TEST_F(PINAuthenticatorImplTest, MakeCredUvNotRqdAndAlwaysUv) {
+  // makeCredUvNotRqd and alwaysUv can be combined even though they contradict
+  // each other. In that case, makeCredUvNotRqd should be ignored and PIN/UV
+  // should be collected before creating non-discoverable credentials. If PIN/UV
+  // isn't configured, that should be taken care of first.
+  for (bool pin_set : {false, true}) {
+    SCOPED_TRACE(testing::Message() << "pin_set=" << pin_set);
+
+    ResetVirtualDevice();
+    device::VirtualCtap2Device::Config config;
+    config.pin_support = true;
+    config.pin_uv_auth_token_support = true;
+    config.always_uv = true;
+    config.allow_non_resident_credential_creation_without_uv = true;
+    config.ctap2_versions = {device::Ctap2Version::kCtap2_1};
+    virtual_device_factory_->SetCtap2Config(config);
+    if (pin_set) {
+      virtual_device_factory_->mutable_state()->pin = kTestPIN;
+      test_client_.expected = {{PINReason::kChallenge, kTestPIN,
+                                device::kMaxPinRetries, device::kMinPinLength}};
+    } else {
+      test_client_.expected = {{PINReason::kSet, kTestPIN,
+                                device::kMaxPinRetries, device::kMinPinLength}};
+    }
+
+    MakeCredentialResult result =
+        AuthenticatorMakeCredential(make_credential_options());
+    EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+  }
 }
 
 TEST_F(PINAuthenticatorImplTest, GetAssertion) {

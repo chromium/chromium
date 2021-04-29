@@ -34,6 +34,12 @@ bool CtapDeviceShouldUseU2fBecauseClientPinIsSet(
   }
 
   DCHECK_EQ(device->supported_protocol(), ProtocolVersion::kCtap2);
+
+  // No need to fall back to U2F if CTAP2 registrations don't require UV.
+  if (device->device_info()->options.make_cred_uv_not_required) {
+    return false;
+  }
+
   // Don't use U2F for requests that require UV or PIN which U2F doesn't
   // support. Note that |pin_auth| may also be set by GetTouchRequest(), but we
   // don't want those requests to use U2F either if CTAP is supported.

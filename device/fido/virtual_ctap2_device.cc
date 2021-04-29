@@ -33,6 +33,7 @@
 #include "device/fido/device_response_converter.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "device/fido/fido_types.h"
 #include "device/fido/large_blob.h"
 #include "device/fido/opaque_attestation_statement.h"
 #include "device/fido/p256_public_key.h"
@@ -465,7 +466,6 @@ VirtualCtap2Device::VirtualCtap2Device(scoped_refptr<State> state,
     : VirtualFidoDevice(std::move(state)), config_(config) {
   RegenerateKeyAgreementKey();
 
-  Init({ProtocolVersion::kCtap2});
   std::vector<ProtocolVersion> versions = {ProtocolVersion::kCtap2};
   if (config.u2f_support) {
     versions.emplace_back(ProtocolVersion::kU2f);
@@ -569,6 +569,11 @@ VirtualCtap2Device::VirtualCtap2Device(scoped_refptr<State> state,
     DCHECK(config.pin_support || config.internal_uv_support);
     options_updated = true;
     options.always_uv = true;
+  }
+
+  if (config.allow_non_resident_credential_creation_without_uv) {
+    options.make_cred_uv_not_required = true;
+    options_updated = true;
   }
 
   if (options_updated) {
@@ -785,7 +790,7 @@ void VirtualCtap2Device::Init(std::vector<ProtocolVersion> versions) {
 
 base::Optional<CtapDeviceResponseCode>
 VirtualCtap2Device::CheckUserVerification(
-    bool is_make_credential,
+    CheckUserVerificationMode mode,
     const AuthenticatorGetInfoResponse& authenticator_info,
     const std::string& rp_id,
     const base::Optional<std::vector<uint8_t>>& pin_auth,
@@ -899,7 +904,7 @@ VirtualCtap2Device::CheckUserVerification(
           return base::nullopt;
 
         if (!config_.user_verification_succeeds) {
-          if (is_make_credential)
+          if (mode != CheckUserVerificationMode::kGetAssertion)
             return CtapDeviceResponseCode::kCtap2ErrPinAuthInvalid;
           return CtapDeviceResponseCode::kCtap2ErrOperationDenied;
         }
@@ -919,8 +924,9 @@ VirtualCtap2Device::CheckUserVerification(
 
       // "Verify that the pinUvAuthToken has the {mc,ga} permission, if not,
       // return CTAP2_ERR_PIN_AUTH_INVALID."
-      auto permission = is_make_credential ? pin::Permissions::kMakeCredential
-                                           : pin::Permissions::kGetAssertion;
+      auto permission = mode == CheckUserVerificationMode::kGetAssertion
+                            ? pin::Permissions::kGetAssertion
+                            : pin::Permissions::kMakeCredential;
       if (!(mutable_state()->pin_uv_token_permissions &
             static_cast<uint8_t>(permission))) {
         return CtapDeviceResponseCode::kCtap2ErrPinAuthInvalid;
@@ -949,7 +955,7 @@ VirtualCtap2Device::CheckUserVerification(
       uv = true;
     }
 
-    if (is_make_credential && !uv) {
+    if (mode == CheckUserVerificationMode::kMakeCredential && !uv) {
       return CtapDeviceResponseCode::kCtap2ErrPinRequired;
     }
   }
@@ -980,9 +986,15 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
   CtapMakeCredentialRequest request = std::move(*opt_request);
 
   bool user_verified = false;
+  const CheckUserVerificationMode check_uv_mode =
+      (!request.resident_key_required && !request.pin_auth &&
+       request.user_verification == UserVerificationRequirement::kDiscouraged &&
+       device_info_->options.make_cred_uv_not_required)
+          ? CheckUserVerificationMode::kMakeCredentialUvNotRequired
+          : CheckUserVerificationMode::kMakeCredential;
   const base::Optional<CtapDeviceResponseCode> uv_error = CheckUserVerification(
-      /*is_make_credential=*/true, *device_info_, request.rp.id,
-      request.pin_auth, request.pin_protocol, mutable_state()->pin_token,
+      check_uv_mode, *device_info_, request.rp.id, request.pin_auth,
+      request.pin_protocol, mutable_state()->pin_token,
       request.client_data_hash, request.user_verification,
       /*user_presence_required=*/true, &user_verified);
   if (uv_error != CtapDeviceResponseCode::kSuccess) {
@@ -1260,7 +1272,7 @@ base::Optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
 
   bool user_verified;
   const base::Optional<CtapDeviceResponseCode> uv_error = CheckUserVerification(
-      /*is_make_credential=*/false, *device_info_, request.rp_id,
+      CheckUserVerificationMode::kGetAssertion, *device_info_, request.rp_id,
       request.pin_auth, request.pin_protocol, mutable_state()->pin_token,
       request.client_data_hash, request.user_verification,
       request.user_presence_required, &user_verified);

@@ -185,6 +185,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
     // with a given code. The actual command won't be executed.
     base::flat_map<CtapRequestCommand, CtapDeviceResponseCode>
         override_response_map;
+
+    // allow_non_resident_credential_creation_without_uv corresponds to the
+    // make_cred_uv_not_required field in AuthenticatorSupportedOptions.
+    bool allow_non_resident_credential_creation_without_uv = false;
   };
 
   VirtualCtap2Device();
@@ -255,8 +259,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
 
   // CheckUserVerification implements the first, common steps of
   // makeCredential and getAssertion from the CTAP2 spec.
+  enum class CheckUserVerificationMode {
+    kGetAssertion,
+    kMakeCredential,
+    kMakeCredentialUvNotRequired,
+  };
   base::Optional<CtapDeviceResponseCode> CheckUserVerification(
-      bool is_make_credential,
+      CheckUserVerificationMode mode,
       const AuthenticatorGetInfoResponse& authenticator_info,
       const std::string& rp_id,
       const base::Optional<std::vector<uint8_t>>& pin_auth,

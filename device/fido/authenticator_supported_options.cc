@@ -104,6 +104,10 @@ cbor::Value AsCBOR(const AuthenticatorSupportedOptions& options) {
     option_map.emplace(kAlwaysUvKey, true);
   }
 
+  if (options.make_cred_uv_not_required) {
+    option_map.emplace(kMakeCredUvNotRqdKey, true);
+  }
+
   return cbor::Value(std::move(option_map));
 }
 

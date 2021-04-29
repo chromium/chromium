@@ -102,6 +102,9 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorSupportedOptions {
   // |always_uv| value of true will make uv=0 get assertion requests return
   // invalid signatures, which is okay for pre-flighting.
   bool always_uv = false;
+  // If true, indicates that the authenticator permits creation of non-resident
+  // credentials without UV.
+  bool make_cred_uv_not_required = false;
 };
 
 COMPONENT_EXPORT(DEVICE_FIDO)

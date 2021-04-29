@@ -22,6 +22,7 @@
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_device.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "device/fido/fido_types.h"
 #include "device/fido/get_assertion_task.h"
 #include "device/fido/large_blob.h"
 #include "device/fido/make_credential_task.h"
@@ -353,12 +354,14 @@ FidoAuthenticator::PINUVDisposition
 FidoDeviceAuthenticator::PINUVDispositionForMakeCredential(
     const CtapMakeCredentialRequest& request,
     const FidoRequestHandlerBase::Observer* observer) {
+  DCHECK(device_->SupportedProtocolIsInitialized());
+  DCHECK(options_);
+
   const bool can_collect_pin = observer && observer->SupportsPIN();
   const bool pin_supported = Options()->client_pin_availability !=
                              ClientPinAvailability::kNotSupported;
   const bool pin_configured = Options()->client_pin_availability ==
                               ClientPinAvailability::kSupportedAndPinSet;
-
   const bool uv_configured =
       Options()->user_verification_availability ==
       UserVerificationAvailability::kSupportedAndConfigured;
@@ -371,8 +374,15 @@ FidoDeviceAuthenticator::PINUVDispositionForMakeCredential(
       IsConvertibleToU2fRegisterCommand(request) &&
       !ShouldPreferCTAP2EvenIfItNeedsAPIN(request);
 
+  // CTAP 2.1 authenticators on the other hand can indicate that they allow
+  // credential creation with PIN or UV.
+  const bool can_make_ctap2_credential_without_uv =
+      request.user_verification == UserVerificationRequirement::kDiscouraged &&
+      options_->make_cred_uv_not_required;
+
   const UserVerificationRequirement uv_requirement =
-      (pin_configured && !u2f_fallback_possible)
+      (pin_configured && !u2f_fallback_possible &&
+       !can_make_ctap2_credential_without_uv)
           ? UserVerificationRequirement::kRequired
           : request.user_verification;
 

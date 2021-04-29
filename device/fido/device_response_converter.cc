@@ -440,6 +440,14 @@ base::Optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
       options.always_uv = option_map_it->second.GetBool();
     }
 
+    option_map_it = option_map.find(CBOR(kMakeCredUvNotRqdKey));
+    if (option_map_it != option_map.end()) {
+      if (!option_map_it->second.is_bool()) {
+        return base::nullopt;
+      }
+      options.make_cred_uv_not_required = option_map_it->second.GetBool();
+    }
+
     response.options = std::move(options);
   }
 
