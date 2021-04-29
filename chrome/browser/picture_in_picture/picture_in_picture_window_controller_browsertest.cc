@@ -77,7 +77,7 @@ class MockPictureInPictureWindowController
   MOCK_METHOD0(Show, void());
   MOCK_METHOD1(Close, void(bool));
   MOCK_METHOD0(CloseAndFocusInitiator, void());
-  MOCK_METHOD0(OnWindowDestroyed, void());
+  MOCK_METHOD1(OnWindowDestroyed, void(bool));
   MOCK_METHOD0(GetWindowForTesting, content::OverlayWindow*());
   MOCK_METHOD0(UpdateLayerBounds, void());
   MOCK_METHOD0(IsPlayerActive, bool());

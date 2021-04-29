@@ -29,7 +29,7 @@ class TestPictureInPictureWindowController
   void Show() override {}
   void Close(bool) override {}
   void CloseAndFocusInitiator() override {}
-  void OnWindowDestroyed() override {}
+  void OnWindowDestroyed(bool) override {}
   content::OverlayWindow* GetWindowForTesting() override { return nullptr; }
   void UpdateLayerBounds() override {}
   bool IsPlayerActive() override { return false; }

@@ -83,7 +83,7 @@ void OverlayWindowAndroid::Destroy(JNIEnv* env) {
   }
 
   controller_->CloseAndFocusInitiator();
-  controller_->OnWindowDestroyed();
+  controller_->OnWindowDestroyed(/*should_pause_video=*/true);
 }
 
 void OverlayWindowAndroid::Play(JNIEnv* env) {
@@ -113,6 +113,16 @@ void OverlayWindowAndroid::OnViewSizeChanged(JNIEnv* env,
 }
 
 void OverlayWindowAndroid::Close() {
+  CloseInternal();
+  controller_->OnWindowDestroyed(/*should_pause_video=*/true);
+}
+
+void OverlayWindowAndroid::Hide() {
+  CloseInternal();
+  controller_->OnWindowDestroyed(/*should_pause_video=*/false);
+}
+
+void OverlayWindowAndroid::CloseInternal() {
   if (java_ref_.is_uninitialized())
     return;
 
@@ -121,11 +131,6 @@ void OverlayWindowAndroid::Close() {
   window_android_ = nullptr;
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PictureInPictureActivity_close(env, java_ref_.get(env));
-  controller_->OnWindowDestroyed();
-}
-
-void OverlayWindowAndroid::Hide() {
-  Close();
 }
 
 bool OverlayWindowAndroid::IsActive() {

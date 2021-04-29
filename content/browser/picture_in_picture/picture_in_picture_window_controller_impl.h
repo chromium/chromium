@@ -60,7 +60,7 @@ class CONTENT_EXPORT PictureInPictureWindowControllerImpl
   void Show() override;
   void Close(bool should_pause_video) override;
   void CloseAndFocusInitiator() override;
-  void OnWindowDestroyed() override;
+  void OnWindowDestroyed(bool should_pause_video) override;
   OverlayWindow* GetWindowForTesting() override;
   void UpdateLayerBounds() override;
   bool IsPlayerActive() override;

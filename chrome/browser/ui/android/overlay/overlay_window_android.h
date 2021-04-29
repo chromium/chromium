@@ -72,6 +72,8 @@ class OverlayWindowAndroid : public content::OverlayWindow,
   cc::Layer* GetLayerForTesting() override;
 
  private:
+  void CloseInternal();
+
   // A weak reference to Java PictureInPictureActivity object.
   JavaObjectWeakGlobalRef java_ref_;
   ui::WindowAndroid* window_android_;

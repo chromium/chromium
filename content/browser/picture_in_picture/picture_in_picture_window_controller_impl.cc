@@ -107,9 +107,10 @@ void PictureInPictureWindowControllerImpl::CloseAndFocusInitiator() {
   GetWebContentsImpl()->Activate();
 }
 
-void PictureInPictureWindowControllerImpl::OnWindowDestroyed() {
+void PictureInPictureWindowControllerImpl::OnWindowDestroyed(
+    bool should_pause_video) {
   window_ = nullptr;
-  CloseInternal(true /* should_pause_video */);
+  CloseInternal(should_pause_video);
 }
 
 void PictureInPictureWindowControllerImpl::EmbedSurface(

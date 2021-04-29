@@ -989,7 +989,7 @@ void OverlayWindowViews::OnNativeBlur() {
 }
 
 void OverlayWindowViews::OnNativeWidgetDestroyed() {
-  controller_->OnWindowDestroyed();
+  controller_->OnWindowDestroyed(/*should_pause_video=*/true);
 }
 
 gfx::Size OverlayWindowViews::GetMinimumSize() const {
