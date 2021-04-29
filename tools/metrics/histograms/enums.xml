@@ -13397,6 +13397,9 @@ Called by update_net_error_codes.py.-->
   <int value="71" label="Font Access"/>
   <int value="74" label="Display Capture"/>
   <int value="75" label="File Handling"/>
+  <int value="76" label="File system access chooser data"/>
+  <int value="77" label="Federated identity sharing"/>
+  <int value="78" label="Federated identity request"/>
 </enum>
 
 <enum name="ContentTypeParseableResult">
