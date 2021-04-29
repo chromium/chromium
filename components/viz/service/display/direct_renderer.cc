@@ -798,12 +798,12 @@ gfx::Rect DirectRenderer::ComputeScissorRectForRenderPass(
   const AggregatedRenderPass* root_render_pass =
       current_frame()->root_render_pass;
   gfx::Rect root_damage_rect = current_frame()->root_damage_rect;
+  gfx::Rect frame_buffer_damage =
+      output_surface_->GetCurrentFramebufferDamage();
 
   if (render_pass == root_render_pass) {
     base::CheckedNumeric<int64_t> display_area =
         current_frame()->device_viewport_size.GetCheckedArea();
-    gfx::Rect frame_buffer_damage =
-        output_surface_->GetCurrentFramebufferDamage();
     base::CheckedNumeric<int64_t> root_damage_area =
         root_damage_rect.size().GetCheckedArea();
     if (display_area.IsValid() && root_damage_area.IsValid()) {
@@ -878,7 +878,17 @@ gfx::Rect DirectRenderer::ComputeScissorRectForRenderPass(
 
   DCHECK(render_pass->copy_requests.empty() ||
          (render_pass->damage_rect == render_pass->output_rect));
-  return render_pass->damage_rect;
+
+  gfx::Rect damage_rect = render_pass->damage_rect;
+  gfx::Transform inverse_transform(gfx::Transform::kSkipInitialization);
+  if (render_pass->transform_to_root_target.GetInverse(&inverse_transform)) {
+    gfx::Rect frame_buffer_damage_in_render_space =
+        cc::MathUtil::MapEnclosingClippedRect(inverse_transform,
+                                              frame_buffer_damage);
+    damage_rect.Union(frame_buffer_damage_in_render_space);
+  }
+
+  return damage_rect;
 }
 
 gfx::Size DirectRenderer::CalculateTextureSizeForRenderPass(
