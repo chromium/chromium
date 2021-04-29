@@ -69,7 +69,7 @@ size_t SessionStorageManager::ExtensionStorage::CalculateUsage(
 
 std::map<std::string, const base::Value*>
 SessionStorageManager::ExtensionStorage::Get(
-    const std::vector<std::string>& keys) {
+    const std::vector<std::string>& keys) const {
   std::map<std::string, const base::Value*> values;
   for (auto& key : keys) {
     auto value_it = values_.find(key);
@@ -80,7 +80,7 @@ SessionStorageManager::ExtensionStorage::Get(
 }
 
 std::map<std::string, const base::Value*>
-SessionStorageManager::ExtensionStorage::GetAll() {
+SessionStorageManager::ExtensionStorage::GetAll() const {
   std::map<std::string, const base::Value*> values;
   for (auto& value : values_) {
     values.emplace(value.first, &value.second->value);
@@ -145,7 +145,24 @@ void SessionStorageManager::ExtensionStorage::Clear(
         base::Optional<base::Value>(std::move(value.second->value)), nullptr);
     changes.push_back(std::move(change));
   }
+
+  used_total_ = 0;
   values_.clear();
+}
+
+size_t SessionStorageManager::ExtensionStorage::GetBytesInUse(
+    const std::vector<std::string>& keys) const {
+  size_t total = 0;
+  for (const auto& key : keys) {
+    auto value_it = values_.find(key);
+    if (value_it != values_.end())
+      total += value_it->second->size;
+  }
+  return total;
+}
+
+size_t SessionStorageManager::ExtensionStorage::GetTotalBytesInUse() const {
+  return used_total_;
 }
 
 // Implementation of SessionStorageManager.
@@ -218,6 +235,28 @@ void SessionStorageManager::Clear(const ExtensionId& extension_id,
   auto storage_it = extensions_storage_.find(extension_id);
   if (storage_it != extensions_storage_.end())
     storage_it->second->Clear(changes);
+}
+
+size_t SessionStorageManager::GetBytesInUse(const ExtensionId& extension_id,
+                                            const std::string& key) const {
+  return GetBytesInUse(extension_id, std::vector<std::string>(1, key));
+}
+
+size_t SessionStorageManager::GetBytesInUse(
+    const ExtensionId& extension_id,
+    const std::vector<std::string>& keys) const {
+  auto storage_it = extensions_storage_.find(extension_id);
+  if (storage_it != extensions_storage_.end())
+    return storage_it->second->GetBytesInUse(keys);
+  return 0;
+}
+
+size_t SessionStorageManager::GetTotalBytesInUse(
+    const ExtensionId& extension_id) const {
+  auto storage_it = extensions_storage_.find(extension_id);
+  if (storage_it != extensions_storage_.end())
+    return storage_it->second->GetTotalBytesInUse();
+  return 0;
 }
 
 }  // namespace extensions

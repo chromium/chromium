@@ -6,6 +6,7 @@
 
 #include "base/values.h"
 #include "extensions/browser/api/storage/session_storage_manager.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -20,6 +21,9 @@ constexpr char kTestExtensionId2[] = "extension id2";
 
 using ValueChangeList =
     std::vector<extensions::SessionStorageManager::ValueChange>;
+using testing::AllOf;
+using testing::Ge;
+using testing::Le;
 
 }  // namespace
 
@@ -330,6 +334,104 @@ TEST_F(SessionStorageManagerUnittest, GetEmptyWhenInvalidKey) {
       manager_
           ->Get(kTestExtensionId1, std::vector<std::string>(1, "invalid key"))
           .empty());
+}
+
+TEST_F(SessionStorageManagerUnittest, GetBytesInUse) {
+  // `value` is a string with 32 bytes in size. Due to reserved space and
+  // overhead of members (and also likely dependent on OS/compiler variations),
+  // the actual memory usage is >32 bytes. It should be less than 100 bytes,
+  // though, so we use this as a benchmark.
+  const base::Value value(std::string(32, 'a'));
+  // GetBytesInUse includes both the key and the value it stores. The key's size
+  // is estimated using short string optimization, which could return a size of
+  // 0. Since this test uses short keys, we will use the value size as the size
+  // bounds.
+  const size_t kOneEntryLowerBound = 32u;
+  const size_t kOneEntryUpperBound = 100u;
+
+  EXPECT_EQ(0u, manager_->GetBytesInUse(kTestExtensionId1, "key1"));
+  EXPECT_EQ(0u, manager_->GetBytesInUse(kTestExtensionId1, "key2"));
+  EXPECT_EQ(0u, manager_->GetBytesInUse(kTestExtensionId1, "key3"));
+  EXPECT_EQ(
+      0u, manager_->GetBytesInUse(kTestExtensionId1, {"key1", "key2", "key3"}));
+  EXPECT_EQ(0u, manager_->GetTotalBytesInUse(kTestExtensionId1));
+
+  {
+    ValueChangeList changes;
+    std::map<std::string, base::Value> values;
+    values.emplace("key1", value.Clone());
+    EXPECT_TRUE(manager_->Set(kTestExtensionId1, std::move(values), changes));
+  }
+
+  EXPECT_THAT(manager_->GetBytesInUse(kTestExtensionId1, "key1"),
+              AllOf(Ge(kOneEntryLowerBound), Le(kOneEntryUpperBound)));
+  EXPECT_EQ(manager_->GetBytesInUse(kTestExtensionId1, "key2"), 0u);
+  EXPECT_EQ(manager_->GetBytesInUse(kTestExtensionId1, "key3"), 0u);
+  EXPECT_THAT(
+      manager_->GetBytesInUse(kTestExtensionId1, {"key1", "key2", "key3"}),
+      AllOf(Ge(kOneEntryLowerBound), Le(kOneEntryUpperBound)));
+  EXPECT_THAT(manager_->GetTotalBytesInUse(kTestExtensionId1),
+              AllOf(Ge(kOneEntryLowerBound), Le(kOneEntryUpperBound)));
+
+  {
+    ValueChangeList changes;
+    std::map<std::string, base::Value> values;
+    values.emplace("key2", value.Clone());
+    EXPECT_TRUE(manager_->Set(kTestExtensionId1, std::move(values), changes));
+  }
+
+  EXPECT_THAT(manager_->GetBytesInUse(kTestExtensionId1, "key1"),
+              AllOf(Ge(kOneEntryLowerBound), Le(kOneEntryUpperBound)));
+  EXPECT_THAT(manager_->GetBytesInUse(kTestExtensionId1, "key2"),
+              AllOf(Ge(kOneEntryLowerBound), Le(kOneEntryUpperBound)));
+  EXPECT_EQ(manager_->GetBytesInUse(kTestExtensionId1, "key3"), 0u);
+  EXPECT_THAT(
+      manager_->GetBytesInUse(kTestExtensionId1, {"key1", "key2", "key3"}),
+      AllOf(Ge(2u * kOneEntryLowerBound), Le(2u * kOneEntryUpperBound)));
+  EXPECT_THAT(
+      manager_->GetTotalBytesInUse(kTestExtensionId1),
+      AllOf(Ge(2u * kOneEntryLowerBound), Le(2u * kOneEntryUpperBound)));
+
+  {
+    ValueChangeList changes;
+    manager_->Remove(kTestExtensionId1, "key1", changes);
+  }
+
+  EXPECT_EQ(manager_->GetBytesInUse(kTestExtensionId1, "key1"), 0u);
+  EXPECT_THAT(manager_->GetBytesInUse(kTestExtensionId1, "key2"),
+              AllOf(Ge(kOneEntryLowerBound), Le(kOneEntryUpperBound)));
+  EXPECT_EQ(manager_->GetBytesInUse(kTestExtensionId1, "key3"), 0u);
+  EXPECT_THAT(
+      manager_->GetBytesInUse(kTestExtensionId1, {"key1", "key2", "key3"}),
+      AllOf(Ge(kOneEntryLowerBound), Le(kOneEntryUpperBound)));
+  EXPECT_THAT(manager_->GetTotalBytesInUse(kTestExtensionId1),
+              AllOf(Ge(kOneEntryLowerBound), Le(kOneEntryUpperBound)));
+
+  {
+    ValueChangeList changes;
+    manager_->Clear(kTestExtensionId1, changes);
+  }
+
+  EXPECT_EQ(manager_->GetBytesInUse(kTestExtensionId1, "key1"), 0u);
+  EXPECT_EQ(manager_->GetBytesInUse(kTestExtensionId1, "key2"), 0u);
+  EXPECT_EQ(manager_->GetBytesInUse(kTestExtensionId1, "key3"), 0u);
+  EXPECT_EQ(
+      manager_->GetBytesInUse(kTestExtensionId1, {"key1", "key2", "key3"}), 0u);
+  EXPECT_EQ(manager_->GetTotalBytesInUse(kTestExtensionId1), 0u);
+
+  // The key should also count towards used storage. This ensures that
+  // extensions don't game our quota limit by using the key itself to store
+  // data.
+  const std::string massive_key(500, 'a');
+  {
+    ValueChangeList changes;
+    std::map<std::string, base::Value> values;
+    values.emplace(massive_key, base::Value());
+    EXPECT_TRUE(manager_->Set(kTestExtensionId1, std::move(values), changes));
+  }
+
+  EXPECT_THAT(manager_->GetBytesInUse(kTestExtensionId1, massive_key),
+              AllOf(Ge(500u), Le(600u)));
 }
 
 }  // namespace extensions

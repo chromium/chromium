@@ -81,6 +81,19 @@ class SessionStorageManager : public base::SupportsUserData::Data {
   void Clear(const ExtensionId& extension_id,
              std::vector<ValueChange>& changes);
 
+  // Gets the total amount of bytes being used by multiple keys and values of
+  // the given `extension_id`.
+  size_t GetBytesInUse(const ExtensionId& extension_id,
+                       const std::vector<std::string>& keys) const;
+
+  // Gets the total amount of bytes being used by a key for the given
+  // `extension_id`.
+  size_t GetBytesInUse(const ExtensionId& extension_id,
+                       const std::string& key) const;
+
+  // Gets the total amount of bytes being used by the given `extension_id`.
+  size_t GetTotalBytesInUse(const ExtensionId& extension_id) const;
+
  private:
   struct SessionValue {
     SessionValue(base::Value value, size_t size);
@@ -98,10 +111,10 @@ class SessionStorageManager : public base::SupportsUserData::Data {
 
     // Returns a map with keys and values found in storage.
     std::map<std::string, const base::Value*> Get(
-        const std::vector<std::string>& keys);
+        const std::vector<std::string>& keys) const;
 
     // Returns a map with all keys and values found in storage.
-    std::map<std::string, const base::Value*> GetAll();
+    std::map<std::string, const base::Value*> GetAll() const;
 
     // Stores the input values in the values map, and updates the changes list
     // if a change occurs.
@@ -114,6 +127,12 @@ class SessionStorageManager : public base::SupportsUserData::Data {
 
     // Clears the storage.
     void Clear(std::vector<ValueChange>& changes);
+
+    // Gets the total amount of bytes being used by multiple keys and values.
+    size_t GetBytesInUse(const std::vector<std::string>& keys) const;
+
+    // Gets the total amount of bytes stored.
+    size_t GetTotalBytesInUse() const;
 
    private:
     // Returns the updated usage for the input values and adds them as session
