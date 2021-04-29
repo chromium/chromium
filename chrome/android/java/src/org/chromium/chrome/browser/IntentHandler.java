@@ -1149,9 +1149,10 @@ public class IntentHandler {
     }
 
     /**
-     * Returns whether the Intent specifies to create a new Tab from the launcher shortcut.
+     * @param intent The {@link Intent} to extract the info from.
+     * @return Whether the Intent specifies to create a new Tab from the launcher shortcut.
      */
-    static boolean isTabOpenAsNewTabFromLauncher(Intent intent) {
+    public static boolean isTabOpenAsNewTabFromLauncher(Intent intent) {
         return IntentUtils.safeGetBooleanExtra(intent, Browser.EXTRA_CREATE_NEW_TAB, false)
                 && IntentUtils.safeGetBooleanExtra(
                         intent, IntentHandler.EXTRA_INVOKED_FROM_SHORTCUT, false);

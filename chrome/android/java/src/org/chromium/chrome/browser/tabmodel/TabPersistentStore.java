@@ -11,6 +11,7 @@ import android.util.Pair;
 import android.util.SparseBooleanArray;
 import android.util.SparseIntArray;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.AtomicFile;
@@ -64,6 +65,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -96,6 +99,17 @@ public class TabPersistentStore {
     /** Prevents two TabPersistentStores from saving the same file simultaneously. */
     private static final Object SAVE_LIST_LOCK = new Object();
     private TabModelObserver mTabModelObserver;
+
+    @IntDef({ActiveTabState.OTHER, ActiveTabState.NTP, ActiveTabState.EMPTY})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ActiveTabState {
+        /** No active tab. */
+        int EMPTY = 0;
+        /** Active tab is NTP. */
+        int NTP = 1;
+        /** Active tab is anything other than NTP. */
+        int OTHER = 2;
+    }
 
     public void onNativeLibraryReady(TabContentManager tabContentManager) {
         setTabContentManager(tabContentManager);
@@ -936,12 +950,20 @@ public class TabPersistentStore {
         // Cache the active tab id to be pre-loaded next launch.
         int activeTabId = Tab.INVALID_TAB_ID;
         int activeIndex = normalModel.index();
+        @ActiveTabState
+        int activeTabState = ActiveTabState.EMPTY;
         if (activeIndex != TabList.INVALID_TAB_INDEX) {
-            activeTabId = normalModel.getTabAt(activeIndex).getId();
+            Tab activeTab = normalModel.getTabAt(activeIndex);
+            activeTabId = activeTab.getId();
+            activeTabState = UrlUtilities.isNTPUrl(activeTab.getUrl()) ? ActiveTabState.NTP
+                                                                       : ActiveTabState.OTHER;
         }
         // Always override the existing value in case there is no active tab.
         SharedPreferencesManager.getInstance().writeInt(
                 ChromePreferenceKeys.TABMODEL_ACTIVE_TAB_ID, activeTabId);
+
+        SharedPreferencesManager.getInstance().writeInt(
+                ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE, activeTabState);
 
         // Add information about the tabs that haven't finished being loaded.
         // We shouldn't have to worry about Tab duplication because the tab details are processed
@@ -1733,6 +1755,15 @@ public class TabPersistentStore {
      */
     public static boolean isStateFile(String fileName) {
         return fileName.startsWith(SAVED_STATE_FILE_PREFIX);
+    }
+
+    /**
+     * @return The shared pref APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE. This is used when we need to
+     *         know the last known tab state before the active tab from the tab state is read.
+     */
+    public static @ActiveTabState int readLastKnownActiveTabStatePref() {
+        return SharedPreferencesManager.getInstance().readInt(
+                ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE, ActiveTabState.EMPTY);
     }
 
     @VisibleForTesting

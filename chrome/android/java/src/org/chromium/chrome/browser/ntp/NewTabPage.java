@@ -471,6 +471,16 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     }
 
     /**
+     * @param isTablet Whether the activity is running in tablet mode.
+     * @param searchProviderHasLogo Whether the default search engine has logo.
+     * @return Whether the NTP is in single url bar mode, i.e. the url bar is shown in-line on the
+     *         NTP.
+     */
+    public static boolean isInSingleUrlBarMode(boolean isTablet, boolean searchProviderHasLogo) {
+        return !isTablet && searchProviderHasLogo;
+    }
+
+    /**
      * Update the margins for the content when browser controls constraints or bottom control
      *  height are changed.
      */
@@ -534,7 +544,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     }
 
     private boolean isInSingleUrlBarMode() {
-        return !mIsTablet && mSearchProviderHasLogo;
+        return isInSingleUrlBarMode(mIsTablet, mSearchProviderHasLogo);
     }
 
     private void updateSearchProviderHasLogo() {

@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomiza
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -162,6 +163,19 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
     public static boolean isHomepageNonNtp() {
         String currentHomepage = getHomepageUri();
         return !TextUtils.isEmpty(currentHomepage) && !UrlUtilities.isNTPUrl(currentHomepage);
+    }
+
+    /**
+     * Determines whether the homepage is set to something other than the NTP or empty/null. This is
+     * the same as {@link #isHomepageNonNtp()}, but uses {@link UrlUtilities#isCanonicalizedNTPUrl}
+     * instead of {@link UrlUtilities#isNTPUrl} to make it possible to use before native is loaded.
+     * Prefer {@link #isHomepageNonNtp()} if possible.
+     * @return Whether the current homepage is something other than the NTP.
+     */
+    public static boolean isHomepageNonNtpPreNative() {
+        String currentHomepage = getHomepageUri();
+        return !TextUtils.isEmpty(currentHomepage)
+                && !ReturnToChromeExperimentsUtil.isCanonicalizedNTPUrl(currentHomepage);
     }
 
     /**

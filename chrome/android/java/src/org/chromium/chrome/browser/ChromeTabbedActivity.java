@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser;
 
+import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.shouldIntentShowNewTabOmniboxFocused;
+
 import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.content.ComponentName;
@@ -159,6 +161,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
 import org.chromium.chrome.browser.translate.TranslateIntentHandler;
+import org.chromium.chrome.browser.ui.AppLaunchDrawBlocker;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
@@ -290,6 +293,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
      */
     private ChromeInactivityTracker mInactivityTracker;
 
+    // This is the cached value of mIntentHandler#shouldIgnoreIntent and shouldn't be read directly.
+    // Use #shouldIgnoreIntent instead.
+    private Boolean mShouldIgnoreIntent;
     // Supplier for a dependency to inform about the type of intent used to launch Chrome.
     private OneshotSupplierImpl<ToolbarIntentMetadata> mIntentMetadataOneshotSupplier =
             new OneshotSupplierImpl<>();
@@ -323,6 +329,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     private CallbackController mCallbackController = new CallbackController();
     private TabbedModeTabDelegateFactory mTabDelegateFactory;
+
+    private final AppLaunchDrawBlocker mAppLaunchDrawBlocker;
 
     private final IncognitoTabHost mIncognitoTabHost = new IncognitoTabHost() {
         @Override
@@ -423,6 +431,15 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         } else {
             mMultiInstanceManager = null;
         }
+
+        // AppLaunchDrawBlocker may block drawing the Activity content until the initial tab is
+        // available.
+        // clang-format off
+        mAppLaunchDrawBlocker = new AppLaunchDrawBlocker(getLifecycleDispatcher(),
+                () -> findViewById(android.R.id.content),
+                this::getIntent, this::shouldIgnoreIntent, this::isTablet,
+                this::shouldShowTabSwitcherOnStart);
+        // clang-format on
     }
 
     @Override
@@ -1053,9 +1070,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         // shown on Startup.
         boolean isCanonicalizedNTPUrl =
                 ReturnToChromeExperimentsUtil.isCanonicalizedNTPUrl(intentUrl);
-        if (isCanonicalizedNTPUrl && IntentHandler.isTabOpenAsNewTabFromLauncher(getIntent())
-                && StartSurfaceConfiguration.OMNIBOX_FOCUSED_ON_NEW_TAB.getValue()
-                && IntentHandler.wasIntentSenderChrome(getIntent())) {
+        if (shouldIntentShowNewTabOmniboxFocused(getIntent())) {
             return false;
         }
 
@@ -1152,7 +1167,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             boolean isIntentWithEffect = false;
             boolean isMainIntentFromLauncher = false;
             if (getSavedInstanceState() == null && intent != null) {
-                if (!mIntentHandler.shouldIgnoreIntent(intent, /*startedActivity=*/true)) {
+                if (!shouldIgnoreIntent()) {
                     isIntentWithEffect = mIntentHandler.onNewIntent(intent);
                 }
 
@@ -1201,6 +1216,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     if (!isActivityFinishingOrDestroyed()) createInitialTab();
                 }, INITIAL_TAB_CREATION_TIMEOUT_MS);
             }
+
+            // If initial tab creation is pending, this will instead be handled when we create the
+            // initial tab in #createInitialTab.
+            if (!mPendingInitialTabCreation) {
+                mAppLaunchDrawBlocker.onActiveTabAvailable(isTabRegularNtp(getActivityTab()));
+            }
         } finally {
             TraceEvent.end("ChromeTabbedActivity.initializeState");
         }
@@ -1239,6 +1260,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (hasStartWithNativeBeenCalled()) {
             setInitialOverviewState();
         }
+
+        mAppLaunchDrawBlocker.onActiveTabAvailable(isTabRegularNtp(getActivityTab()));
     }
 
     @Override
@@ -1621,6 +1644,15 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         }
     }
 
+    private boolean shouldIgnoreIntent() {
+        if (mShouldIgnoreIntent == null) {
+            // We call this only once because mIntentHandler#shouldIgnoreIntent has side effects.
+            mShouldIgnoreIntent =
+                    mIntentHandler.shouldIgnoreIntent(getIntent(), /*startedActivity=*/true);
+        }
+        return mShouldIgnoreIntent;
+    }
+
     @Override
     protected final void dispatchOnInflationComplete() {
         super.dispatchOnInflationComplete();
@@ -1812,7 +1844,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     @Override
     public boolean onMenuOrKeyboardAction(final int id, boolean fromMenu) {
         final Tab currentTab = getActivityTab();
-        boolean currentTabIsNtp = currentTab != null && UrlUtilities.isNTPUrl(currentTab.getUrl());
+        boolean currentTabIsNtp = isTabNtp(currentTab);
         if (id == R.id.new_tab_menu_id) {
             getTabModelSelector().getModel(false).commitAllTabClosures();
             RecordUserAction.record("MobileMenuNewTab");
@@ -1912,6 +1944,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             return super.onMenuOrKeyboardAction(id, fromMenu);
         }
         return true;
+    }
+
+    private boolean isTabNtp(Tab tab) {
+        return tab != null && UrlUtilities.isNTPUrl(tab.getUrl());
+    }
+
+    private boolean isTabRegularNtp(Tab tab) {
+        return isTabNtp(tab) && !tab.isIncognito();
     }
 
     private void onOmniboxFocusChanged(boolean hasFocus) {
@@ -2308,6 +2348,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         ChromeAccessibilityUtil.get().removeObserver(mLayoutManager);
 
         if (mTabDelegateFactory != null) mTabDelegateFactory.destroy();
+
+        mAppLaunchDrawBlocker.destroy();
+
         super.onDestroyInternal();
     }
 
