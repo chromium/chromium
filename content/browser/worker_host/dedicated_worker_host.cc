@@ -33,6 +33,7 @@
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "net/base/isolation_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
@@ -436,25 +437,26 @@ bool DedicatedWorkerHost::CheckCrossOriginEmbedderPolicy(
   if (!creator_coep_reporter_)
     return false;
 
-  // > 4. If ownerPolicy's report-only value is "require-corp" and policy's
-  // value is "unsafe-none", then queue a cross-origin embedder policy
-  // inheritance violation with response, "worker initialization", owner's
-  // policy's report only reporting endpoint, "reporting", and owner.
-  if (creator_cross_origin_embedder_policy.report_only_value ==
-          network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp &&
-      worker_cross_origin_embedder_policy.value ==
-          network::mojom::CrossOriginEmbedderPolicyValue::kNone) {
+  // > 4. If ownerPolicy's report-only value is "require-corp" or
+  // "cors-or-credentialless" and policy's value is "unsafe-none", then queue a
+  // cross-origin embedder policy inheritance violation with response, "worker
+  // initialization", owner's policy's report only reporting endpoint,
+  // "reporting", and owner.
+  if (network::CompatibleWithCrossOriginIsolated(
+          creator_cross_origin_embedder_policy.report_only_value) &&
+      !network::CompatibleWithCrossOriginIsolated(
+          worker_cross_origin_embedder_policy)) {
     creator_coep_reporter_->QueueWorkerInitializationReport(
         final_response_url_.value(),
         /*report_only=*/true);
   }
 
   // > 5. If ownerPolicy's value is "unsafe-none" or policy's value is
-  // "require-corp", then return true.
-  if (creator_cross_origin_embedder_policy.value ==
-          network::mojom::CrossOriginEmbedderPolicyValue::kNone ||
-      worker_cross_origin_embedder_policy.value ==
-          network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp) {
+  // "require-corp" or "cors-or-credentialless", then return true.
+  if (!network::CompatibleWithCrossOriginIsolated(
+          creator_cross_origin_embedder_policy) ||
+      network::CompatibleWithCrossOriginIsolated(
+          worker_cross_origin_embedder_policy)) {
     return true;
   }
 
