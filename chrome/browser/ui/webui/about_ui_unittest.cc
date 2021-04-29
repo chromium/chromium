@@ -53,9 +53,8 @@ class TestDataReceiver {
 
   void OnDataReceived(scoped_refptr<base::RefCountedMemory> bytes) {
     data_received_ = true;
-    data_ = base::StringPiece(reinterpret_cast<const char*>(bytes->front()),
-                              bytes->size())
-                .as_string();
+    data_ = std::string(base::StringPiece(
+        reinterpret_cast<const char*>(bytes->front()), bytes->size()));
   }
 
  private:

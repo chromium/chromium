@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
@@ -322,7 +323,7 @@ Status AdbImpl::GetSocketByPattern(const std::string& device_serial,
         base::SPLIT_WANT_NONEMPTY);
     if (tokens.size() != 8)
       continue;
-    *socket_name = tokens[7].as_string();
+    *socket_name = std::string(tokens[7]);
     return Status(kOk);
   }
 

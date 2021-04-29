@@ -167,7 +167,7 @@ void SmbUrl::CanonicalizeSmbUrl(const std::string& url) {
         path_str, "/", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
     if (split_path.size() >= 2) {
       DCHECK_EQ(split_path[0], "");
-      share_ = split_path[1].as_string();
+      share_ = std::string(split_path[1]);
     }
   }
 

@@ -18,6 +18,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -561,7 +562,7 @@ ServerCacheReplayer::Status PopulateCacheFromQueryNode(
         "could not cache query node content";
     if (fail_on_error) {
       return ServerCacheReplayer::Status{
-          ServerCacheReplayer::StatusCode::kBadNode, status_msg.as_string()};
+          ServerCacheReplayer::StatusCode::kBadNode, std::string(status_msg)};
     } else {
       // Keep a trace when not set to fail on bad node.
       VLOG(1) << status_msg;

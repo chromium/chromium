@@ -52,7 +52,7 @@ ExtensionNotificationHandler::~ExtensionNotificationHandler() = default;
 std::string ExtensionNotificationHandler::GetExtensionId(const GURL& url) {
   if (!url.is_valid() || !url.SchemeIs(extensions::kExtensionScheme))
     return "";
-  return url.GetOrigin().host_piece().as_string();
+  return std::string(url.GetOrigin().host_piece());
 }
 
 void ExtensionNotificationHandler::OnClose(

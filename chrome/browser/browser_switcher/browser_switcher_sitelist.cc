@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
@@ -186,7 +187,7 @@ void CanonicalizeRule(std::string* pattern) {
                        base::CompareCase::INSENSITIVE_ASCII))
     spec = spec.substr(strlen(placeholder_scheme));
 
-  *pattern = base::StrCat({prefix, spec.as_string()});
+  *pattern = base::StrCat({prefix, spec});
 }
 
 Decision::Decision(Action action_,

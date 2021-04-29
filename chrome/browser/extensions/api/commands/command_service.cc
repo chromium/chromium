@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/lazy_instance.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -319,7 +320,7 @@ Command CommandService::FindCommandByName(const std::string& extension_id,
         shortcut, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     CHECK(tokens.size() >= 2);
 
-    return Command(command_name, std::u16string(), tokens[1].as_string(),
+    return Command(command_name, std::u16string(), std::string(tokens[1]),
                    global);
   }
 

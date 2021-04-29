@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -54,7 +55,7 @@ class ParsedMetadata {
       const base::StringPiece key = key_value.substr(0, equal_pos);
       const base::StringPiece value = key_value.substr(equal_pos + 1);
       if (key == "rs")
-        rs_ = value.as_string();
+        rs_ = std::string(value);
     }
   }
   ParsedMetadata(const ParsedMetadata&) = delete;

@@ -76,7 +76,7 @@ bool DigestVerifier::InitializeFromResource(int resource_id) {
   }
 
   chrome_cleaner::FileDigests digests_pb;
-  if (!digests_pb.ParseFromString(serialized_digest_pb.as_string())) {
+  if (!digests_pb.ParseFromString(std::string(serialized_digest_pb))) {
     LOG(ERROR) << "Failed to parse digests protobuf";
     return false;
   }

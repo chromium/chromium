@@ -20,6 +20,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/nix/xdg_util.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -47,12 +48,12 @@ class MockEnvironment : public base::Environment {
   MockEnvironment& operator=(const MockEnvironment&) = delete;
 
   void Set(base::StringPiece name, const std::string& value) {
-    variables_[name.as_string()] = value;
+    variables_[std::string(name)] = value;
   }
 
   bool GetVar(base::StringPiece variable_name, std::string* result) override {
-    if (base::Contains(variables_, variable_name.as_string())) {
-      *result = variables_[variable_name.as_string()];
+    if (base::Contains(variables_, std::string(variable_name))) {
+      *result = variables_[std::string(variable_name)];
       return true;
     }
 

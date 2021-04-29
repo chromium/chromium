@@ -18,6 +18,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -620,21 +621,20 @@ bool ParseIntent(const std::string& intent_as_string, Intent* intent) {
   for (size_t i = 1; i < parts.size() - 1; ++i) {
     const size_t separator = parts[i].find('=');
     if (separator == std::string::npos) {
-      intent->AddExtraParam(parts[i].as_string());
+      intent->AddExtraParam(std::string(parts[i]));
       continue;
     }
     const base::StringPiece key = parts[i].substr(0, separator);
     const base::StringPiece value = parts[i].substr(separator + 1);
     if (key == kAction) {
-      intent->set_action(value.as_string());
+      intent->set_action(std::string(value));
     } else if (key == kCategory) {
-      intent->set_category(value.as_string());
+      intent->set_category(std::string(value));
     } else if (key == kLaunchFlags) {
       uint32_t launch_flags;
-      const bool parsed =
-          base::HexStringToUInt(value.as_string(), &launch_flags);
+      const bool parsed = base::HexStringToUInt(value, &launch_flags);
       if (!parsed) {
-        DVLOG(1) << "Failed to parse launchFlags: " << value.as_string() << ".";
+        DVLOG(1) << "Failed to parse launchFlags: " << value << ".";
         return false;
       }
       intent->set_launch_flags(launch_flags);
@@ -643,18 +643,18 @@ bool ParseIntent(const std::string& intent_as_string, Intent* intent) {
       if (component_separator == std::string::npos)
         return false;
       intent->set_package_name(
-          value.substr(0, component_separator).as_string());
+          std::string(value.substr(0, component_separator)));
       const base::StringPiece activity_compact_name =
           value.substr(component_separator + 1);
       if (!activity_compact_name.empty() && activity_compact_name[0] == '.') {
-        std::string activity = value.substr(0, component_separator).as_string();
-        activity += activity_compact_name.as_string();
+        std::string activity(value.substr(0, component_separator));
+        activity += std::string(activity_compact_name);
         intent->set_activity(activity);
       } else {
-        intent->set_activity(activity_compact_name.as_string());
+        intent->set_activity(std::string(activity_compact_name));
       }
     } else {
-      intent->AddExtraParam(parts[i].as_string());
+      intent->AddExtraParam(std::string(parts[i]));
     }
   }
 

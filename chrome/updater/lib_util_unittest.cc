@@ -23,8 +23,8 @@ TEST(UnescapeUrlComponentTest, ReservedCharacters) {
 
   for (auto pair : reserved_characters) {
     // If input contains a reserved character, just ignore it.
-    std::string escaped_includes_reserved = pair.first.as_string() + "%20";
-    std::string unescaped = pair.first.as_string() + " ";
+    std::string escaped_includes_reserved = std::string(pair.first) + "%20";
+    std::string unescaped = std::string(pair.first) + " ";
     EXPECT_EQ(unescaped, UnescapeURLComponent(escaped_includes_reserved));
   }
 }

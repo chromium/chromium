@@ -48,7 +48,7 @@ base::StringPiece ExtractUUID(const base::StringPiece& sink_id) {
 
 // Returns the last four characters of UUID. UUID is extracted from |sink_id|.
 std::string TruncateSinkId(const std::string& sink_id) {
-  std::string uuid = ExtractUUID(sink_id).as_string();
+  std::string uuid(ExtractUUID(sink_id));
   return uuid.length() <= 4 ? uuid : uuid.substr(uuid.length() - 4);
 }
 

@@ -7,6 +7,7 @@
 #include "base/callback_helpers.h"
 #include "base/guid.h"
 #include "base/json/json_reader.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -536,9 +537,8 @@ void ExpectValidSiteExceptionObject(const base::Value& actual_site_object,
 }  // namespace
 
 TEST_F(SiteSettingsHelperTest, CreateChooserExceptionObject) {
-  const std::string kUsbChooserGroupName =
-      ContentSettingsTypeToGroupName(ContentSettingsType::USB_CHOOSER_DATA)
-          .as_string();
+  const std::string kUsbChooserGroupName(
+      ContentSettingsTypeToGroupName(ContentSettingsType::USB_CHOOSER_DATA));
   const std::string& kPolicySource =
       SiteSettingSourceToString(SiteSettingSource::kPolicy);
   const std::string& kPreferenceSource =
@@ -729,9 +729,8 @@ void ExpectDisplayNameEq(const base::Value& actual_exception_object,
 
 TEST_F(SiteSettingsHelperChooserExceptionTest,
        GetChooserExceptionListFromProfile) {
-  const std::string kUsbChooserGroupName =
-      ContentSettingsTypeToGroupName(ContentSettingsType::USB_CHOOSER_DATA)
-          .as_string();
+  const std::string kUsbChooserGroupName(
+      ContentSettingsTypeToGroupName(ContentSettingsType::USB_CHOOSER_DATA));
   const ChooserTypeNameEntry* chooser_type =
       ChooserTypeFromGroupName(kUsbChooserGroupName);
   const std::string& kPolicySource =

@@ -18,6 +18,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
 #include "base/scoped_generic.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/pe_image_reader.h"
@@ -266,7 +267,7 @@ StringMapping GetEnvironmentVariablesMapping(
   for (const std::wstring& variable : environment_variables) {
     std::string value;
     if (environment->GetVar(base::WideToASCII(variable).c_str(), &value)) {
-      value = base::TrimString(value, "\\", base::TRIM_TRAILING).as_string();
+      value = std::string(base::TrimString(value, "\\", base::TRIM_TRAILING));
       string_mapping.push_back(std::make_pair(
           base::i18n::ToLower(base::UTF8ToUTF16(value)),
           u"%" + base::i18n::ToLower(base::AsString16(variable)) + u"%"));

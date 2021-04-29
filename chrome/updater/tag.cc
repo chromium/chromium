@@ -118,22 +118,22 @@ ErrorCode ParseBundleName(base::StringPiece value, TagArgs* args) {
   if (value.empty())
     return ErrorCode::kGlobal_BundleNameCannotBeWhitespace;
 
-  args->bundle_name = value.as_string();
+  args->bundle_name = std::string(value);
   return ErrorCode::kSuccess;
 }
 
 ErrorCode ParseInstallationId(base::StringPiece value, TagArgs* args) {
-  args->installation_id = value.as_string();
+  args->installation_id = std::string(value);
   return ErrorCode::kSuccess;
 }
 
 ErrorCode ParseBrandCode(base::StringPiece value, TagArgs* args) {
-  args->brand_code = value.as_string();
+  args->brand_code = std::string(value);
   return ErrorCode::kSuccess;
 }
 
 ErrorCode ParseClientId(base::StringPiece value, TagArgs* args) {
-  args->client_id = value.as_string();
+  args->client_id = std::string(value);
   return ErrorCode::kSuccess;
 }
 
@@ -142,12 +142,12 @@ ErrorCode ParseOmahaExperimentLabels(base::StringPiece value, TagArgs* args) {
   if (value.empty())
     return ErrorCode::kGlobal_ExperimentLabelsCannotBeWhitespace;
 
-  args->experiment_labels = value.as_string();
+  args->experiment_labels = std::string(value);
   return ErrorCode::kSuccess;
 }
 
 ErrorCode ParseReferralId(base::StringPiece value, TagArgs* args) {
-  args->referral_id = value.as_string();
+  args->referral_id = std::string(value);
   return ErrorCode::kSuccess;
 }
 
@@ -170,7 +170,7 @@ ErrorCode ParseBrowserType(base::StringPiece value, TagArgs* args) {
 ErrorCode ParseLanguage(base::StringPiece value, TagArgs* args) {
   // Even if we don't support the language, we want to pass it to the
   // installer. Omaha will pick its language later. See http://b/1336966.
-  args->language = value.as_string();
+  args->language = std::string(value);
   return ErrorCode::kSuccess;
 }
 
@@ -239,7 +239,7 @@ const GlobalParseTable& GetTable() {
 namespace app_attributes {
 
 ErrorCode ParseAdditionalParameters(base::StringPiece value, AppArgs* args) {
-  args->ap = value.as_string();
+  args->ap = std::string(value);
   return ErrorCode::kSuccess;
 }
 
@@ -248,7 +248,7 @@ ErrorCode ParseExperimentLabels(base::StringPiece value, AppArgs* args) {
   if (value.empty())
     return ErrorCode::kApp_ExperimentLabelsCannotBeWhitespace;
 
-  args->experiment_labels = value.as_string();
+  args->experiment_labels = std::string(value);
   return ErrorCode::kSuccess;
 }
 
@@ -257,7 +257,7 @@ ErrorCode ParseAppName(base::StringPiece value, AppArgs* args) {
   if (value.empty())
     return ErrorCode::kApp_AppNameCannotBeWhitespace;
 
-  args->app_name = value.as_string();
+  args->app_name = std::string(value);
   return ErrorCode::kSuccess;
 }
 
@@ -271,12 +271,12 @@ ErrorCode ParseNeedsAdmin(base::StringPiece value, AppArgs* args) {
 }
 
 ErrorCode ParseInstallDataIndex(base::StringPiece value, AppArgs* args) {
-  args->install_data_index = value.as_string();
+  args->install_data_index = std::string(value);
   return ErrorCode::kSuccess;
 }
 
 ErrorCode ParseUntrustedData(base::StringPiece value, AppArgs* args) {
-  args->untrusted_data = value.as_string();
+  args->untrusted_data = std::string(value);
   return ErrorCode::kSuccess;
 }
 
@@ -333,7 +333,7 @@ ErrorCode ParseInstallerData(base::StringPiece value,
         kAppInstallerData_InstallerDataCannotBeSpecifiedBeforeAppId;
 
   args->apps[current_app_index->value()].encoded_installer_data =
-      value.as_string();
+      std::string(value);
 
   return ErrorCode::kSuccess;
 }
@@ -394,7 +394,7 @@ std::vector<Attribute> Split(base::StringPiece query_string,
                                     base::TrimPositions::TRIM_ALL);
       attributes.emplace_back(name, unescape_value
                                         ? updater::UnescapeURLComponent(value)
-                                        : value.as_string());
+                                        : std::string(value));
     }
   }
   return attributes;

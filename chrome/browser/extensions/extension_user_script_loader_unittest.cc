@@ -18,6 +18,7 @@
 #include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/values_test_util.h"
@@ -287,7 +288,7 @@ TEST_F(ExtensionUserScriptLoaderTest, SkipBOMAtTheBeginning) {
   user_scripts = loader.LoadScriptsForTest(std::move(user_scripts));
 
   EXPECT_EQ(content.substr(3),
-            (*user_scripts)[0]->js_scripts()[0]->GetContent().as_string());
+            std::string((*user_scripts)[0]->js_scripts()[0]->GetContent()));
 }
 
 TEST_F(ExtensionUserScriptLoaderTest, LeaveBOMNotAtTheBeginning) {
@@ -311,7 +312,7 @@ TEST_F(ExtensionUserScriptLoaderTest, LeaveBOMNotAtTheBeginning) {
   user_scripts = loader.LoadScriptsForTest(std::move(user_scripts));
 
   EXPECT_EQ(content,
-            (*user_scripts)[0]->js_scripts()[0]->GetContent().as_string());
+            std::string((*user_scripts)[0]->js_scripts()[0]->GetContent()));
 }
 
 TEST_F(ExtensionUserScriptLoaderTest, ComponentExtensionContentScriptIsLoaded) {

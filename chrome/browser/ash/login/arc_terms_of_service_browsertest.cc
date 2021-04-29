@@ -249,10 +249,9 @@ class ArcTermsOfServiceScreenTest : public OobeBaseTest {
   // The string will have the format "http://127.0.0.1:${PORT_NUMBER}" where
   // PORT_NUMBER is a randomly assigned port number.
   std::string TestServerBaseUrl() {
-    return base::TrimString(
-               embedded_test_server()->base_url().GetOrigin().spec(), "/",
-               base::TrimPositions::TRIM_TRAILING)
-        .as_string();
+    return std::string(
+        base::TrimString(embedded_test_server()->base_url().GetOrigin().spec(),
+                         "/", base::TrimPositions::TRIM_TRAILING));
   }
 
   // Handles both Terms of Service and Privacy policy requests.

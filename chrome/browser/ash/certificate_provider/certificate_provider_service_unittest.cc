@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/stl_util.h"
+#include "base/strings/string_piece.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider.h"
@@ -567,7 +568,7 @@ TEST_F(CertificateProviderServiceTest, SignUsingSpkiAsIdentification) {
       net::x509_util::CryptoBufferAsStringPiece(
           cert_info1_.certificate->cert_buffer()),
       &client1_spki_piece));
-  std::string client1_spki = client1_spki_piece.as_string();
+  std::string client1_spki(client1_spki_piece);
 
   std::unique_ptr<net::ClientCertIdentity> cert(ProvideDefaultCert());
   ASSERT_TRUE(cert);

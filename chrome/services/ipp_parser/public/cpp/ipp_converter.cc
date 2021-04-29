@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
 #include "net/http/http_util.h"
@@ -74,12 +75,12 @@ base::Optional<HttpHeader> ParseHeader(base::StringPiece header) {
   const size_t value_begin_index = key_end_index + 1;
   if (value_begin_index == header.size()) {
     // Empty header value is valid
-    return HttpHeader{key.as_string(), ""};
+    return HttpHeader{std::string(key), ""};
   }
 
   base::StringPiece value = header.substr(value_begin_index);
   value = net::HttpUtil::TrimLWS(value);
-  return HttpHeader{key.as_string(), value.as_string()};
+  return HttpHeader{std::string(key), std::string(value)};
 }
 
 // Converts |value_tag| to corresponding mojom type for marshalling.

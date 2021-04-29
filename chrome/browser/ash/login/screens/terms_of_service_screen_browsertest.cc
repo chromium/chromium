@@ -153,10 +153,9 @@ class TermsOfServiceScreenTest : public OobeBaseTest {
   }
 
   std::string TestServerBaseUrl() {
-    return base::TrimString(
-               embedded_test_server()->base_url().GetOrigin().spec(), "/",
-               base::TrimPositions::TRIM_TRAILING)
-        .as_string();
+    return std::string(
+        base::TrimString(embedded_test_server()->base_url().GetOrigin().spec(),
+                         "/", base::TrimPositions::TRIM_TRAILING));
   }
 
   std::unique_ptr<HttpResponse> HandleRequest(const HttpRequest& request) {

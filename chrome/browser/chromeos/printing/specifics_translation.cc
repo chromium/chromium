@@ -131,7 +131,7 @@ void MergePrinterToSpecifics(const Printer& printer,
 }
 
 std::string MakeAndModel(base::StringPiece make, base::StringPiece model) {
-  return base::StartsWith(model, make) ? model.as_string()
+  return base::StartsWith(model, make) ? std::string(model)
                                        : base::JoinString({make, model}, " ");
 }
 

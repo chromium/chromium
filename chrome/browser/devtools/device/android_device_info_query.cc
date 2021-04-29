@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -230,9 +231,9 @@ StringMap MapIdsToUsers(const std::string& response) {
       size_t first_pos = fields.find_first_of(":");
       size_t last_pos = fields.find_last_of(":");
       if (first_pos != std::string::npos && last_pos != std::string::npos) {
-        std::string id = fields.substr(0, first_pos).as_string();
-        std::string name = fields.substr(first_pos + 1,
-                                         last_pos - first_pos - 1).as_string();
+        std::string id(fields.substr(0, first_pos));
+        std::string name(
+            fields.substr(first_pos + 1, last_pos - first_pos - 1));
         id_to_username[id] = name;
       }
     }

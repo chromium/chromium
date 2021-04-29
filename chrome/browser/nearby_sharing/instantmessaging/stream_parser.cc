@@ -5,6 +5,7 @@
 #include "chrome/browser/nearby_sharing/instantmessaging/stream_parser.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_piece.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/proto/instantmessaging.pb.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 

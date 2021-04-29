@@ -20,6 +20,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/pattern.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -3054,7 +3055,7 @@ class PDFExtensionAccessibilityTextExtractionTest : public PDFExtensionTest {
             << "Our back pointer points to something unexpected.";
         if (!line.empty())
           lines.push_back(line);
-        line = trimmed_name.as_string();
+        line = std::string(trimmed_name);
       }
 
       previous_node_id = node->id();

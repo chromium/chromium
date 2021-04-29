@@ -191,9 +191,8 @@ std::string BrowserDMTokenStorageWin::InitDMToken() {
       continue;
 
     DCHECK_LE(size, installer::kMaxDMTokenLength);
-    return base::TrimWhitespaceASCII(base::StringPiece(raw_value.data(), size),
-                                     base::TRIM_ALL)
-        .as_string();
+    return std::string(base::TrimWhitespaceASCII(
+        base::StringPiece(raw_value.data(), size), base::TRIM_ALL));
   }
 
   DVLOG(1) << "Failed to get DMToken from Registry.";

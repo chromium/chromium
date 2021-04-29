@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
@@ -98,9 +99,8 @@ class DevToolsUIDataSourceTest : public testing::Test {
   void OnDataReceived(scoped_refptr<base::RefCountedMemory> bytes) {
     data_received_ = true;
     if (bytes.get()) {
-      data_ = base::StringPiece(reinterpret_cast<const char*>(bytes->front()),
-                                bytes->size())
-                  .as_string();
+      data_ = std::string(base::StringPiece(
+          reinterpret_cast<const char*>(bytes->front()), bytes->size()));
     }
   }
 

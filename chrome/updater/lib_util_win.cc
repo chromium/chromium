@@ -4,6 +4,7 @@
 
 #include "chrome/updater/lib_util.h"
 
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/win/shlwapi.h"
 #include "base/win/windows_full.h"
@@ -16,7 +17,7 @@ std::string UnescapeURLComponent(base::StringPiece escaped_text_piece) {
   if (escaped_text_piece.empty())
     return {};
 
-  std::string escaped_text = escaped_text_piece.as_string();
+  std::string escaped_text(escaped_text_piece);
 
   // UrlUnescapeA doesn't modify the buffer unless passed URL_UNESCAPE_INPLACE.
   char* escaped_text_ptr = const_cast<char*>(escaped_text.data());

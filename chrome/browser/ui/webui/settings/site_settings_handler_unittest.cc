@@ -14,6 +14,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
@@ -2150,10 +2151,9 @@ class SiteSettingsHandlerChooserExceptionTest : public SiteSettingsHandlerTest {
 
 TEST_F(SiteSettingsHandlerChooserExceptionTest,
        HandleGetChooserExceptionListForUsb) {
-  const std::string kUsbChooserGroupName =
+  const std::string kUsbChooserGroupName(
       site_settings::ContentSettingsTypeToGroupName(
-          ContentSettingsType::USB_CHOOSER_DATA)
-          .as_string();
+          ContentSettingsType::USB_CHOOSER_DATA));
 
   const base::Value& exceptions = GetChooserExceptionListFromWebUiCallData(
       kUsbChooserGroupName, /*expected_total_calls=*/1u);
@@ -2167,10 +2167,9 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
 
 TEST_F(SiteSettingsHandlerChooserExceptionTest,
        HandleGetChooserExceptionListForUsbOffTheRecord) {
-  const std::string kUsbChooserGroupName =
+  const std::string kUsbChooserGroupName(
       site_settings::ContentSettingsTypeToGroupName(
-          ContentSettingsType::USB_CHOOSER_DATA)
-          .as_string();
+          ContentSettingsType::USB_CHOOSER_DATA));
   SetUpOffTheRecordUsbChooserContext();
   web_ui()->ClearTrackedCalls();
 
@@ -2204,10 +2203,9 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
 
 TEST_F(SiteSettingsHandlerChooserExceptionTest,
        HandleResetChooserExceptionForSiteForUsb) {
-  const std::string kUsbChooserGroupName =
+  const std::string kUsbChooserGroupName(
       site_settings::ContentSettingsTypeToGroupName(
-          ContentSettingsType::USB_CHOOSER_DATA)
-          .as_string();
+          ContentSettingsType::USB_CHOOSER_DATA));
   const auto kAndroidOrigin = url::Origin::Create(kAndroidUrl);
   const auto kChromiumOrigin = url::Origin::Create(kChromiumUrl);
   const auto kGoogleOrigin = url::Origin::Create(kGoogleUrl);

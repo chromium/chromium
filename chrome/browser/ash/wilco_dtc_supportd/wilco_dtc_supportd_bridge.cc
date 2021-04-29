@@ -337,7 +337,7 @@ void WilcoDtcSupportdBridge::SendWilcoDtcMessageToUi(
   }
 
   DeliverWilcoDtcSupportdUiMessageToExtensions(
-      json_message_string.as_string(),
+      std::string(json_message_string),
       base::BindOnce(
           [](SendWilcoDtcMessageToUiCallback callback,
              const std::string& response) {

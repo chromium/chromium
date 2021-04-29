@@ -113,7 +113,7 @@ CastInternalMessage::Type CastInternalMessageTypeFromString(
 std::string CastInternalMessageTypeToString(CastInternalMessage::Type type) {
   auto found = cast_util::EnumToString(type);
   DCHECK(found);
-  return found.value_or(base::StringPiece()).as_string();
+  return std::string(found.value_or(base::StringPiece()));
 }
 
 // Possible types in a receiver_action message.

@@ -8,6 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/macros.h"
+#include "base/strings/string_piece.h"
 #include "base/token.h"
 #include "base/values.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -45,7 +46,7 @@ class SafeXmlParserTest : public InProcessBrowserTest {
     }
 
     data_decoder::DataDecoder::ParseXmlIsolated(
-        xml.as_string(),
+        std::string(xml),
         base::BindOnce(&SafeXmlParserTest::XmlParsingDone,
                        base::Unretained(this), run_loop.QuitClosure(),
                        std::move(expected_value)));

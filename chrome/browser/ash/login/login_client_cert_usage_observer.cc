@@ -42,7 +42,7 @@ bool ObtainSignatureAlgorithms(
   std::vector<uint16_t> ssl_algorithms;
   std::string extension_id;
   if (!certificate_provider_service->LookUpSpki(
-          spki.as_string(), &ssl_algorithms, &extension_id)) {
+          std::string(spki), &ssl_algorithms, &extension_id)) {
     return false;
   }
   signature_algorithms->clear();

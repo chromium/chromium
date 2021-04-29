@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/string_piece.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/printing/test_cups_printers_manager.h"
@@ -122,7 +123,7 @@ class FakePpdProvider : public chromeos::PpdProvider {
         base::BindOnce(std::move(cb),
                        effective_make_and_model.empty() ? PpdProvider::NOT_FOUND
                                                         : PpdProvider::SUCCESS,
-                       effective_make_and_model.as_string()));
+                       std::string(effective_make_and_model)));
   }
 
   // These methods are not used by `CupsPrintersManager`.

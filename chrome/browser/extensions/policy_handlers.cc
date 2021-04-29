@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -42,7 +43,7 @@ bool IsValidIdList(const std::string& extension_ids) {
   if (ids.size() == 0)
     return false;
   for (const auto& id : ids) {
-    if (!crx_file::id_util::IdIsValid(id.as_string()))
+    if (!crx_file::id_util::IdIsValid(std::string(id)))
       return false;
   }
   return true;

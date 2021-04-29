@@ -4,6 +4,7 @@
 
 #include "chrome/browser/pdf/pdf_extension_util.h"
 
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -162,9 +163,9 @@ void AddPdfViewerStrings(base::Value* dict) {
 }  // namespace
 
 std::string GetManifest() {
-  std::string manifest_contents = ui::ResourceBundle::GetSharedInstance()
-                                      .GetRawDataResource(IDR_PDF_MANIFEST)
-                                      .as_string();
+  std::string manifest_contents(
+      ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
+          IDR_PDF_MANIFEST));
   DCHECK(manifest_contents.find(kNameTag) != std::string::npos);
   base::ReplaceFirstSubstringAfterOffset(
       &manifest_contents, 0, kNameTag,

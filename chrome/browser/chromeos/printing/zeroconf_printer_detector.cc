@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/hash/md5.h"
 #include "base/stl_util.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -81,24 +82,24 @@ class ParsedMetadata {
       base::StringPiece value(m.data() + equal_pos + 1,
                               m.length() - (equal_pos + 1));
       if (key == "note") {
-        note = value.as_string();
+        note = std::string(value);
       } else if (key == "pdl") {
-        pdl = value.as_string();
+        pdl = std::string(value);
       } else if (key == "product") {
         // Strip parens; ignore anything not enclosed in parens as malformed.
         if (base::StartsWith(value, "(") && base::EndsWith(value, ")")) {
-          product = value.substr(1, value.size() - 2).as_string();
+          product = std::string(value.substr(1, value.size() - 2));
         }
       } else if (key == "rp") {
-        rp = value.as_string();
+        rp = std::string(value);
       } else if (key == "ty") {
-        ty = value.as_string();
+        ty = std::string(value);
       } else if (key == "usb_MDL") {
-        usb_MDL = value.as_string();
+        usb_MDL = std::string(value);
       } else if (key == "usb_MFG") {
-        usb_MFG = value.as_string();
+        usb_MFG = std::string(value);
       } else if (key == "UUID") {
-        UUID = value.as_string();
+        UUID = std::string(value);
       }
     }
   }

@@ -16,6 +16,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process_iterator.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
@@ -152,7 +153,7 @@ bool ReadNameFromStatus(pid_t pid, pid_t tid, std::string* out_name) {
     std::vector<base::StringPiece> split_value_str = base::SplitStringPiece(
         value_str, "\t", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     DCHECK_EQ(2U, split_value_str.size());
-    *out_name = split_value_str[1].as_string();
+    *out_name = std::string(split_value_str[1]);
     return true;
   }
 

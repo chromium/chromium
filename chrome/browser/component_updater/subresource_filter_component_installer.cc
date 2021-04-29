@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
+#include "base/strings/string_piece.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
 #include "components/component_updater/component_updater_paths.h"
@@ -114,10 +115,9 @@ std::string SubresourceFilterComponentInstallerPolicy::GetName() const {
 
 // static
 std::string SubresourceFilterComponentInstallerPolicy::GetInstallerTag() {
-  const std::string ruleset_flavor =
+  const std::string ruleset_flavor(
       subresource_filter::GetEnabledConfigurations()
-          ->lexicographically_greatest_ruleset_flavor()
-          .as_string();
+          ->lexicographically_greatest_ruleset_flavor());
 
   // Allow the empty, and 4 non-empty ruleset flavor identifiers: a, b, c, d.
   if (ruleset_flavor.empty())

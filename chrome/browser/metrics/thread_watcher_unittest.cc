@@ -17,6 +17,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/synchronization/condition_variable.h"
@@ -500,7 +501,7 @@ TEST_F(ThreadWatcherTest, ThreadNamesOnlyArgs) {
   while (tokens.GetNext()) {
     std::vector<base::StringPiece> values = base::SplitStringPiece(
         tokens.token_piece(), ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-    std::string thread_name = values[0].as_string();
+    std::string thread_name(values[0]);
 
     auto it = crash_on_hang_threads.find(thread_name);
     bool crash_on_hang = (it != crash_on_hang_threads.end());
@@ -529,7 +530,7 @@ TEST_F(ThreadWatcherTest, CrashOnHangThreadsAllArgs) {
   while (tokens.GetNext()) {
     std::vector<base::StringPiece> values = base::SplitStringPiece(
         tokens.token_piece(), ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-    std::string thread_name = values[0].as_string();
+    std::string thread_name(values[0]);
 
     auto it = crash_on_hang_threads.find(thread_name);
 

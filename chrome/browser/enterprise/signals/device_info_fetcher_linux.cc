@@ -17,6 +17,7 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/nix/xdg_util.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -44,8 +45,8 @@ std::string GetOsVersion() {
       return v.first == "VERSION_ID";
     });
     if (version_id != values.end()) {
-      return base::TrimString(version_id->second, "\"", base::TRIM_ALL)
-          .as_string();
+      return std::string(
+          base::TrimString(version_id->second, "\"", base::TRIM_ALL));
     }
   }
   return base::SysInfo::OperatingSystemVersion();

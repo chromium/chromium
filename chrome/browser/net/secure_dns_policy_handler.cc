@@ -93,7 +93,7 @@ void SecureDnsPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   if (mode && mode->is_string()) {
     mode_str = mode->GetString();
     if (SecureDnsConfig::ParseMode(mode_str)) {
-      prefs->SetString(prefs::kDnsOverHttpsMode, mode_str.as_string());
+      prefs->SetString(prefs::kDnsOverHttpsMode, std::string(mode_str));
     } else {
       // Default to "off".
       prefs->SetString(prefs::kDnsOverHttpsMode, SecureDnsConfig::kModeOff);

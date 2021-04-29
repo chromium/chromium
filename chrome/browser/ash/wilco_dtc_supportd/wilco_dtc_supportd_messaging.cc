@@ -189,7 +189,7 @@ class WilcoDtcSupportdExtensionOwnedMessageHost final
       return;
     }
 
-    client_->PostMessageFromNativeHost(response_json_string.as_string());
+    client_->PostMessageFromNativeHost(std::string(response_json_string));
     DisposeSelf(std::string() /* error_message */);
   }
 

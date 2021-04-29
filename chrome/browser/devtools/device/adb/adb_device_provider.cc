@@ -5,6 +5,7 @@
 #include "chrome/browser/devtools/device/adb/adb_device_provider.h"
 
 #include "base/bind.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/devtools/device/adb/adb_client_socket.h"
@@ -39,7 +40,7 @@ static void ReceivedAdbDevices(AdbDeviceProvider::SerialsCallback callback,
     std::vector<base::StringPiece> tokens =
         base::SplitStringPiece(line, "\t ", base::KEEP_WHITESPACE,
                                base::SPLIT_WANT_NONEMPTY);
-    result.push_back(tokens[0].as_string());
+    result.push_back(std::string(tokens[0]));
   }
   std::move(callback).Run(std::move(result));
 }

@@ -182,7 +182,7 @@ std::string TestCertificateProviderExtension::GetCertificateSpki() {
           &spki_bytes)) {
     return {};
   }
-  return spki_bytes.as_string();
+  return std::string(spki_bytes);
 }
 
 TestCertificateProviderExtension::TestCertificateProviderExtension(

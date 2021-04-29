@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/syslog_logging.h"
 #include "base/values.h"
@@ -87,9 +88,8 @@ void SpellcheckLanguagePolicyHandler::SortForcedLanguages(
 
   // Separate the valid languages from the unknown / unsupported languages.
   for (const base::Value& language : value->GetList()) {
-    std::string candidate_language =
-        base::TrimWhitespaceASCII(language.GetString(), base::TRIM_ALL)
-            .as_string();
+    std::string candidate_language(
+        base::TrimWhitespaceASCII(language.GetString(), base::TRIM_ALL));
     std::string current_language =
         SpellcheckService::GetSupportedAcceptLanguageCode(candidate_language);
 

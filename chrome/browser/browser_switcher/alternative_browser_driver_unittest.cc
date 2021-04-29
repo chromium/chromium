@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
@@ -32,7 +33,7 @@ StringType UTF8ToNative(base::StringPiece src) {
 #if defined(OS_WIN)
   return base::UTF8ToWide(src);
 #elif defined(OS_POSIX)
-  return src.as_string();
+  return std::string(src);
 #else
 #error "Invalid platform for browser_switcher"
 #endif

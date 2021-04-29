@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
@@ -120,8 +121,8 @@ std::string BrowserDMTokenStorageLinux::InitEnrollmentToken() {
   if (!base::ReadFileToString(token_file_path, &enrollment_token))
     return std::string();
 
-  return base::TrimWhitespaceASCII(enrollment_token, base::TRIM_ALL)
-      .as_string();
+  return std::string(
+      base::TrimWhitespaceASCII(enrollment_token, base::TRIM_ALL));
 }
 
 std::string BrowserDMTokenStorageLinux::InitDMToken() {
@@ -133,7 +134,7 @@ std::string BrowserDMTokenStorageLinux::InitDMToken() {
   if (!base::ReadFileToString(token_file_path, &token))
     return std::string();
 
-  return base::TrimWhitespaceASCII(token, base::TRIM_ALL).as_string();
+  return std::string(base::TrimWhitespaceASCII(token, base::TRIM_ALL));
 }
 
 bool BrowserDMTokenStorageLinux::InitEnrollmentErrorOption() {
@@ -151,7 +152,7 @@ bool BrowserDMTokenStorageLinux::InitEnrollmentErrorOption() {
   if (!base::ReadFileToString(options_file_path, &options))
     return false;
 
-  return base::TrimWhitespaceASCII(options, base::TRIM_ALL).as_string() ==
+  return base::TrimWhitespaceASCII(options, base::TRIM_ALL) ==
          kEnrollmentMandatoryOption;
 }
 

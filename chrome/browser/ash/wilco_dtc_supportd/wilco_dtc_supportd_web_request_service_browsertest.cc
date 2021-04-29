@@ -90,9 +90,8 @@ class ServiceRequestPerformer {
   std::string response_body_release() {
     DCHECK(request_performed_);
     base::ReadOnlySharedMemoryMapping response_shared_memory;
-    return MojoUtils::GetStringPieceFromMojoHandle(std::move(response_handle_),
-                                                   &response_shared_memory)
-        .as_string();
+    return std::string(MojoUtils::GetStringPieceFromMojoHandle(
+        std::move(response_handle_), &response_shared_memory));
   }
 
  private:

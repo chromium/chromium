@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/stl_util.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
@@ -356,7 +357,7 @@ void ComponentExtensionIMEManagerDelegateImpl::ReadComponentExtensionsInfo(
     ComponentExtensionIME component_ime;
     ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
     component_ime.manifest =
-        rb.GetRawDataResource(extension.manifest_resource_id).as_string();
+        std::string(rb.GetRawDataResource(extension.manifest_resource_id));
 
     if (component_ime.manifest.empty()) {
       LOG(ERROR) << "Couldn't get manifest from resource_id("
