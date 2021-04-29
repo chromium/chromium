@@ -230,3 +230,11 @@ helpApp.ClientApi.prototype.setDelegate = function(delegate) {};
  * @return {!helpApp.ClientApiDelegate}
  */
 helpApp.ClientApi.prototype.getDelegate = function() {};
+
+/**
+ * Launch data that can be read by the app when it first loads.
+ * @type {{
+ *     delegate: (!helpApp.ClientApiDelegate | undefined),
+ * }}
+ */
+window.customLaunchData;

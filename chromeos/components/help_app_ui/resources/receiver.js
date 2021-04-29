@@ -57,6 +57,10 @@ const DELEGATE = {
   },
 };
 
+window.customLaunchData = {
+  delegate: DELEGATE,
+};
+
 /**
  * Returns the help app if it can find it in the DOM.
  * @return {?helpApp.ClientApi}
