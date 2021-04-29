@@ -37,6 +37,14 @@
   [self.defaultAccountViewController view];
 }
 
+- (void)startSigninSpinner {
+  [self.defaultAccountViewController startSpinner];
+}
+
+- (void)stopSigninSpinner {
+  [self.defaultAccountViewController stopSpinner];
+}
+
 #pragma mark - Properties
 
 - (UIViewController*)viewController {

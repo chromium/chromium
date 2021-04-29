@@ -36,6 +36,11 @@
 @property(nonatomic, weak) id<ConsistencyDefaultAccountActionDelegate>
     actionDelegate;
 
+// Starts the spinner and disables buttons.
+- (void)startSpinner;
+// Stops the spinner and enables buttons.
+- (void)stopSpinner;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_CONSISTENCY_PROMO_SIGNIN_CONSISTENCY_DEFAULT_ACCOUNT_CONSISTENCY_DEFAULT_ACCOUNT_VIEW_CONTROLLER_H_

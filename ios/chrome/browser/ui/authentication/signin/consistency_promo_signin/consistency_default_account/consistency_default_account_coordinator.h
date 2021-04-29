@@ -36,6 +36,11 @@
 // This property can be used only after the coordinator is started.
 @property(nonatomic, strong) ChromeIdentity* selectedIdentity;
 
+// Starts the spinner and disables buttons.
+- (void)startSigninSpinner;
+// Stops the spinner and enables buttons.
+- (void)stopSigninSpinner;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_CONSISTENCY_PROMO_SIGNIN_CONSISTENCY_DEFAULT_ACCOUNT_CONSISTENCY_DEFAULT_ACCOUNT_COORDINATOR_H_

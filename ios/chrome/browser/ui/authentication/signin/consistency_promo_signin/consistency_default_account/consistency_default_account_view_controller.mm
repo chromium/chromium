@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
 #import "ios/chrome/common/ui/util/button_util.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -40,10 +41,43 @@ constexpr CGFloat kTitleSubtitleMargin = 0.;
 @property(nonatomic, strong) IdentityButtonControl* identityButtonControl;
 // Button to confirm the default identity and sign-in.
 @property(nonatomic, strong) UIButton* continueAsButton;
+// Title for |self.continueAsButton|. This property is needed to hide the title
+// the activity indicator is shown.
+@property(nonatomic, strong) NSString* continueAsTitle;
+// Activity indicator on top of |self.continueAsButton|.
+@property(nonatomic, strong) UIActivityIndicatorView* activityIndicatorView;
 
 @end
 
 @implementation ConsistencyDefaultAccountViewController
+
+- (void)startSpinner {
+  // Add spinner.
+  DCHECK(!self.activityIndicatorView);
+  self.activityIndicatorView = [[UIActivityIndicatorView alloc] init];
+  self.activityIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.activityIndicatorView.color = UIColor.whiteColor;
+  [self.continueAsButton addSubview:self.activityIndicatorView];
+  AddSameCenterConstraints(self.activityIndicatorView, self.continueAsButton);
+  [self.activityIndicatorView startAnimating];
+  // Disable buttons.
+  self.identityButtonControl.enabled = NO;
+  self.continueAsButton.enabled = NO;
+  [self.continueAsButton setTitle:@"" forState:UIControlStateNormal];
+}
+
+- (void)stopSpinner {
+  // Remove spinner.
+  DCHECK(self.activityIndicatorView);
+  [self.activityIndicatorView removeFromSuperview];
+  self.activityIndicatorView = nil;
+  // Enable buttons.
+  self.identityButtonControl.enabled = YES;
+  self.continueAsButton.enabled = YES;
+  DCHECK(self.continueAsTitle);
+  [self.continueAsButton setTitle:self.continueAsTitle
+                         forState:UIControlStateNormal];
+}
 
 #pragma mark - UIViewController
 
@@ -195,9 +229,10 @@ constexpr CGFloat kTitleSubtitleMargin = 0.;
     // Load the view.
     [self view];
   }
-  NSString* buttonTitle = l10n_util::GetNSStringF(
+  self.continueAsTitle = l10n_util::GetNSStringF(
       IDS_IOS_SIGNIN_PROMO_CONTINUE_AS, base::SysNSStringToUTF16(givenName));
-  [self.continueAsButton setTitle:buttonTitle forState:UIControlStateNormal];
+  [self.continueAsButton setTitle:self.continueAsTitle
+                         forState:UIControlStateNormal];
   [self.identityButtonControl setIdentityName:fullName email:email];
 }
 
