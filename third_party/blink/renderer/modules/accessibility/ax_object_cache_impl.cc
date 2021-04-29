@@ -2455,7 +2455,8 @@ void AXObjectCacheImpl::HandleRoleChangeWithCleanLayout(Node* node) {
     // because some roles allow aria-owns and others don't.
     // In addition, any owned objects need to reset their parent_ to point
     // to the new object.
-    relation_cache_->UpdateAriaOwnsWithCleanLayout(GetOrCreate(node), true);
+    if (AXObject* new_object = GetOrCreate(node))
+      relation_cache_->UpdateAriaOwnsWithCleanLayout(new_object, true);
   }
 }
 
