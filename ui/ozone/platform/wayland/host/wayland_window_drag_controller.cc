@@ -372,11 +372,8 @@ void WaylandWindowDragController::HandleMotionEvent(MouseEvent* event) {
 
   // Update current cursor position, so it can be retrieved later on through
   // |Screen::GetCursorScreenPoint| API.
-  int32_t scale = dragged_window_->buffer_scale();
-  gfx::PointF scaled_location =
-      gfx::ScalePoint(event->location_f(), scale, scale);
   connection_->wayland_cursor_position()->OnCursorPositionChanged(
-      gfx::ToFlooredPoint(scaled_location));
+      event->location());
 
   // Notify listeners about window bounds change (i.e: re-positioning) event.
   // To do so, set the new bounds as per the motion event location and the drag

@@ -726,6 +726,73 @@ TEST_P(WaylandWindowDragControllerTest, MotionEventsSkippedWhileReattaching) {
   EXPECT_EQ(State::kIdle, drag_controller()->state());
 }
 
+// Test that cursor position is using DIP coordinates and is updated correctly
+// on DragMotion event.
+TEST_P(WaylandWindowDragControllerTest, CursorPositionIsUpdatedOnMotion) {
+  // Creating an output with scale 1.
+  wl::TestOutput* output1 = server_.CreateAndInitializeOutput();
+  output1->SetRect(gfx::Rect(0, 0, 1920, 1080));
+  output1->SetScale(1);
+  Sync();
+
+  // Creating an output with scale 2.
+  wl::TestOutput* output2 = server_.CreateAndInitializeOutput();
+  output2->SetRect(gfx::Rect(0, 0, 1920, 1080));
+  output2->SetScale(2);
+  Sync();
+
+  std::vector<wl::TestOutput*> outputs = {output1, output2};
+
+  // Start a window drag session.
+  SendPointerEnter(window_.get(), &delegate_);
+  SendPointerPress(window_.get(), &delegate_, BTN_LEFT);
+  SendPointerMotion(window_.get(), &delegate_, {10, 10});
+  EXPECT_EQ(gfx::Point(10, 10), screen_->GetCursorScreenPoint());
+
+  auto* wayland_extension = GetWaylandExtension(*window_);
+  wayland_extension->StartWindowDraggingSessionIfNeeded();
+  EXPECT_EQ(State::kAttached, drag_controller()->state());
+
+  auto* move_loop_handler = GetWmMoveLoopHandler(*window_);
+  ASSERT_TRUE(move_loop_handler);
+  auto test = [](WaylandWindowDragControllerTest* self, WaylandScreen* screen,
+                 wl::TestWaylandServerThread* server, WaylandWindow* window,
+                 std::vector<wl::TestOutput*>* outputs,
+                 WmMoveLoopHandler* move_loop_handler) {
+    for (auto* output : *outputs) {
+      // Resetting cursor to the initial position.
+      self->SendDndMotion({10, 10});
+      self->Sync();
+      EXPECT_EQ(gfx::Point(10, 10), screen->GetCursorScreenPoint());
+
+      // Send the window to |output|.
+      wl::MockSurface* surface = server->GetObject<wl::MockSurface>(
+          window->root_surface()->GetSurfaceId());
+      ASSERT_TRUE(surface);
+      wl_surface_send_enter(surface->resource(), output->resource());
+      self->Sync();
+      EXPECT_EQ(output->GetScale(), window->buffer_scale());
+
+      self->SendDndMotion({20, 20});
+      self->Sync();
+
+      // GetCursorScreenPoint should return the same value regardless of buffer
+      // scale.
+      EXPECT_EQ(gfx::Point(20, 20), screen->GetCursorScreenPoint());
+      wl_surface_send_leave(surface->resource(), output->resource());
+    }
+
+    move_loop_handler->EndMoveLoop();
+  };
+
+  ScheduleTestTask(base::BindOnce(
+      test, base::Unretained(this), base::Unretained(screen_.get()),
+      base::Unretained(&server_), base::Unretained(window_.get()),
+      base::Unretained(&outputs), base::Unretained(move_loop_handler)));
+  EXPECT_CALL(delegate(), DispatchEvent(_)).Times(::testing::AtLeast(1));
+  move_loop_handler->RunMoveLoop({});
+}
+
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandWindowDragControllerTest,
                          ::testing::Values(kXdgShellStable));

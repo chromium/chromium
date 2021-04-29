@@ -22,6 +22,7 @@ class TestOutput : public GlobalObject {
 
   const gfx::Rect GetRect() { return rect_; }
   void SetRect(const gfx::Rect& rect);
+  int32_t GetScale() const { return scale_; }
   void SetScale(int32_t factor);
 
   void Flush();
