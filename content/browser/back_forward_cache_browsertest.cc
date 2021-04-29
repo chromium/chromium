@@ -10735,8 +10735,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheOptInBrowserTest,
   ExpectRestored(FROM_HERE);
 }
 
+// TODO(crbug.com/1204027): This test is flaky.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheOptInBrowserTest,
-                       NoCacheIfHeaderOnlyPresentOnDestinationPage) {
+                       DISABLED_NoCacheIfHeaderOnlyPresentOnDestinationPage) {
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
                                                       "/opt_in_document");
   ASSERT_TRUE(embedded_test_server()->Start());
