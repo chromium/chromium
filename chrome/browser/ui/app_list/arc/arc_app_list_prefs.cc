@@ -37,7 +37,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_default_app_list.h"
 #include "chrome/browser/ui/app_list/arc/arc_package_syncable_service.h"
 #include "chrome/browser/ui/app_list/arc/arc_pai_starter.h"
-#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/arc/arc_prefs.h"

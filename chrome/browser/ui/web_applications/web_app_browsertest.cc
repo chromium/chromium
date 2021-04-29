@@ -75,7 +75,7 @@
 #include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #endif
 
 #if defined(OS_MAC)

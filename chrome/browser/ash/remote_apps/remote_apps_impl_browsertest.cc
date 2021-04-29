@@ -28,7 +28,7 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
-#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/user_manager/user.h"

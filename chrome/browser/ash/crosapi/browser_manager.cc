@@ -49,7 +49,7 @@
 #include "chrome/browser/component_updater/cros_component_manager.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/startup/startup_switches.h"
 #include "components/prefs/pref_service.h"

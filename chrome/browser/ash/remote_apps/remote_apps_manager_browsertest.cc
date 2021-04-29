@@ -30,7 +30,7 @@
 #include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
-#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"

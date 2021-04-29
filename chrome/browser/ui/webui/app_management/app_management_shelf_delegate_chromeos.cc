@@ -11,9 +11,9 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/chrome_shelf_prefs.h"
-#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
-#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller_util.h"
-#include "chrome/browser/ui/ash/launcher/shelf_controller_helper.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
+#include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 

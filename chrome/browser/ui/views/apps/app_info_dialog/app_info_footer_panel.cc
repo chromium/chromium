@@ -28,8 +28,8 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // gn check complains on Linux Ozone.
 #include "ash/public/cpp/shelf_model.h"  // nogncheck
-#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
-#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller_util.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #endif
 
 AppInfoFooterPanel::AppInfoFooterPanel(Profile* profile,

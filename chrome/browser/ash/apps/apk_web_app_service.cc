@@ -12,7 +12,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/apps/apk_web_app_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/components/install_finalizer.h"

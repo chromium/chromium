@@ -34,8 +34,8 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ui/ash/launcher/chrome_shelf_controller.h"
-#include "chrome/browser/ui/ash/launcher/shelf_controller_helper.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -19,7 +19,7 @@
 #include "extensions/browser/extension_registry_observer.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/ash/launcher/shelf_extension_app_updater.h"
+#include "chrome/browser/ui/ash/shelf/shelf_extension_app_updater.h"
 #endif
 
 namespace content {
