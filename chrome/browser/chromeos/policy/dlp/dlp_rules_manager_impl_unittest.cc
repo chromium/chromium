@@ -60,13 +60,13 @@ base::Value GenerateClipboardCopyDisallowedRule() {
   return rules;
 }
 
-}  // namespace
-
 class MockDlpRulesManager : public DlpRulesManagerImpl {
  public:
   explicit MockDlpRulesManager(PrefService* local_state)
       : DlpRulesManagerImpl(local_state) {}
 };
+
+}  // namespace
 
 class DlpRulesManagerImplTest : public testing::Test {
  protected:
