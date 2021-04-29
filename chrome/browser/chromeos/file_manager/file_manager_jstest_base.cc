@@ -74,6 +74,24 @@ class TestFilesDataSource : public content::URLDataSource {
     base::FilePath gen_file_path =
         gen_root_.Append(base::FilePath::FromUTF8Unsafe(path));
 
+    // File manager sets up the embedded test server with a specific base path,
+    // and the server assumes all paths are relative to this path without
+    // checking for absolute URLs. Hence, absolute URLS are transformed to
+    // requests for <some_base_path>/chrome://resources/<path_to_resource>.
+    // Strip off the assumed base path and replace chrome://resources with
+    // ui/webui/resources in this case.
+    const char kResourcesUrl[] = "chrome://resources";
+    size_t url_pos = path.find(kResourcesUrl);
+    if (url_pos != std::string::npos) {
+      std::string new_path =
+          "ui/webui/resources" +
+          path.substr(url_pos + base::size(kResourcesUrl) - 1);
+      src_file_path =
+          source_root_.Append(base::FilePath::FromUTF8Unsafe(new_path));
+      gen_file_path =
+          gen_root_.Append(base::FilePath::FromUTF8Unsafe(new_path));
+    }
+
     // Do some basic validation of the file extension.
     CHECK(src_file_path.Extension() == ".html" ||
           src_file_path.Extension() == ".js" ||

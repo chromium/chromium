@@ -16,7 +16,7 @@
 
 /** @type {!LoadTimeData} */
 // eslint-disable-next-line no-var
-/* #export */ var loadTimeData;
+export var loadTimeData;
 
 class LoadTimeData {
   constructor() {
@@ -207,9 +207,8 @@ class LoadTimeData {
   expect(!loadTimeData, 'should only include this file once');
   loadTimeData = new LoadTimeData;
 
-  // Expose |loadTimeData| directly on |window|. This is only necessary by the
-  // auto-generated load_time_data.m.js, since within a JS module the scope is
-  // local.
+  // Expose |loadTimeData| directly on |window|, since within a JS module the
+  // scope is local and not all files have been updated to import the exported
+  // |loadTimeData| explicitly.
   window.loadTimeData = loadTimeData;
 
-/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');

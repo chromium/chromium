@@ -31,7 +31,7 @@ I18nProcessTest.prototype = {
    */
   extraLibraries: [
     '//ui/webui/resources/js/i18n_template_no_process.js',
-    '//ui/webui/resources/js/load_time_data.js',
+    '//ROOT_GEN_DIR/ui/webui/resources/js/load_time_data.js',
     '//third_party/mocha/mocha.js',
     '//chrome/test/data/webui/mocha_adapter.js',
   ],

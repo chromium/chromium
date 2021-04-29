@@ -16,7 +16,6 @@
 // <include src="../../../webui/resources/js/cr.js">
 // <include src="../../../webui/resources/js/assert.js">
 // <include src="../../../webui/resources/js/util.js">
-// <include src="../../../webui/resources/js/load_time_data.js">
 
 // <include src="../../../webui/resources/js/event_tracker.js">
 
@@ -27,7 +26,6 @@
 (function() {
 'use strict';
 
-// <include src="../../../webui/resources/js/load_time_data.js">
 
 // <include src="../../file_manager/common/js/async_util.js">
 // <include src="../../file_manager/common/js/file_type.js">

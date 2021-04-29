@@ -64,7 +64,19 @@ void JavaScriptBrowserTest::BuildJavascriptLibraries(
        ++user_libraries_iterator) {
     std::string library_content;
     base::FilePath library_absolute_path;
-    if (user_libraries_iterator->IsAbsolute()) {
+    std::vector<base::FilePath::StringType> components;
+    user_libraries_iterator->GetComponents(&components);
+    if (components[0] == FILE_PATH_LITERAL("ROOT_GEN_DIR")) {
+      base::FilePath exe_dir;
+      base::PathService::Get(base::DIR_EXE, &exe_dir);
+      library_absolute_path = exe_dir.AppendASCII("gen");
+      for (size_t i = 1; i < components.size(); i++)
+        library_absolute_path = library_absolute_path.Append(components[i]);
+      library_absolute_path = library_absolute_path.NormalizePathSeparators();
+      ASSERT_TRUE(
+          base::ReadFileToString(library_absolute_path, &library_content))
+          << user_libraries_iterator->value();
+    } else if (user_libraries_iterator->IsAbsolute()) {
       library_absolute_path = *user_libraries_iterator;
       ASSERT_TRUE(
           base::ReadFileToString(library_absolute_path, &library_content))

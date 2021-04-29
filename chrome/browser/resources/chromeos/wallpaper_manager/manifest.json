@@ -32,7 +32,7 @@
         "js/event_page.js"
       ]
     },
-    "content_security_policy": "img-src 'self' blob: filesystem: data: chrome://resources;"
+    "content_security_policy": "img-src 'self' blob: filesystem: data: chrome://resources; script-src 'self' chrome://resources"
   },
   "display_in_launcher": false
 }

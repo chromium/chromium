@@ -105,6 +105,7 @@ if (include_js_tests) {
       "//chrome/browser/ui",
       "//services/network/public/cpp",
       "//skia",
+      "//ui/webui/resources/js:unmodulize",
     ]
 
     if (is_chromeos_ash) {
@@ -182,6 +183,7 @@ if (include_js_tests) {
       "$root_gen_dir/chrome/test/data/webui/test_browser_proxy.m.js",
       "$root_gen_dir/chrome/test/data/webui/test_store.m.js",
       "$root_gen_dir/chrome/test/data/webui/test_util.m.js",
+      "$root_gen_dir/ui/webui/resources/js/load_time_data.js",
     ]
 
     if (enable_print_preview) {

@@ -7,6 +7,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("../tools/js_modulizer.gni")
+import("../tools/js_unmodulizer.gni")
 
 preprocess_folder = "$root_gen_dir/ui/webui/resources/preprocessed/js"
 preprocess_gen_manifest = "preprocessed_gen_manifest.json"
@@ -45,7 +46,7 @@ preprocess_if_expr("preprocess_src") {
     "cr.m.js",
     "custom_element.js",
     "i18n_template_no_process.js",
-    "load_time_data.js",
+    "load_time_data.m.js",
     "plural_string_proxy.js",
     "search_highlight_utils.js",
     "test_loader.js",
@@ -95,7 +96,10 @@ preprocess_if_expr("preprocess_src_ts") {
 }
 
 preprocess_if_expr("preprocess_generated") {
-  deps = [ ":modulize" ]
+  deps = [
+    ":modulize",
+    ":unmodulize",
+  ]
   in_folder = target_gen_dir
   out_folder = "$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
@@ -105,7 +109,7 @@ preprocess_if_expr("preprocess_generated") {
     "cr/ui.m.js",
     "event_tracker.m.js",
     "icon.m.js",
-    "load_time_data.m.js",
+    "load_time_data.js",
     "parse_html_subset.m.js",
     "promise_resolver.m.js",
     "util.m.js",
@@ -197,6 +201,8 @@ js_library("list_property_update_behavior") {
 }
 
 js_library("load_time_data") {
+  sources = [ "$root_gen_dir/ui/webui/resources/js/load_time_data.js" ]
+  extra_deps = [ ":unmodulize" ]
 }
 
 js_library("parse_html_subset") {
@@ -235,7 +241,6 @@ js_modulizer("modulize_local") {
     "icon.js",
     "i18n_behavior.js",
     "list_property_update_behavior.js",
-    "load_time_data.js",
     "parse_html_subset.js",
     "promise_resolver.js",
     "util.js",
@@ -245,6 +250,11 @@ js_modulizer("modulize_local") {
     "cr.search_highlight_utils.Range|Range",
     "Polymer.ArraySplice.calculateSplices|calculateSplices",
   ]
+}
+
+js_unmodulizer("unmodulize") {
+  input_files = [ "load_time_data.m.js" ]
+  output_files = [ "load_time_data.js" ]
 }
 
 group("closure_compile_modules") {
@@ -321,8 +331,6 @@ js_library("list_property_update_behavior.m") {
 }
 
 js_library("load_time_data.m") {
-  sources = [ "$root_gen_dir/ui/webui/resources/js/load_time_data.m.js" ]
-  extra_deps = [ ":modulize_local" ]
 }
 
 js_library("parse_html_subset.m") {
