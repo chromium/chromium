@@ -138,7 +138,8 @@ void LinkToTextMenuObserver::OverrideGeneratedSelectorForTesting(
 
 bool LinkToTextMenuObserver::ShouldPreemptivelyGenerateLink() {
   return base::FeatureList::IsEnabled(
-      shared_highlighting::kPreemptiveLinkToTextGeneration);
+             shared_highlighting::kPreemptiveLinkToTextGeneration) &&
+         !highlight_exists_;
 }
 
 void LinkToTextMenuObserver::RequestLinkGeneration() {

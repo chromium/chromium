@@ -628,20 +628,8 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
 
   // If there is a text fragment at the same location as the click indicate that
   // the context menu is being opened from an existing highlight.
-  DocumentMarkerController& marker_controller =
-      selected_frame->GetDocument()->Markers();
-  PositionWithAffinity pos_with_affinity = result.GetPosition();
-  const Position marker_position = pos_with_affinity.GetPosition();
-  auto markers = marker_controller.MarkersAroundPosition(
-      ToPositionInFlatTree(marker_position),
-      DocumentMarker::MarkerTypes::TextFragment());
-  if (!markers.IsEmpty()) {
-    for (const auto& marker : markers) {
-      if (marker.second->GetType() == DocumentMarker::kTextFragment) {
-        data.opened_from_highlight = true;
-        break;
-      }
-    }
+  if (TextFragmentHandler::IsOverTextFragment(result)) {
+    data.opened_from_highlight = true;
   }
 
   if (result.IsContentEditable()) {

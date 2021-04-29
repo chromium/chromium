@@ -6,6 +6,9 @@
 
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/renderer/core/editing/markers/document_marker.h"
+#include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
+#include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 
 namespace blink {
@@ -44,6 +47,18 @@ void TextFragmentHandler::RemoveFragments() {
       ->GetFrame()
       ->View()
       ->DismissFragmentAnchor();
+}
+
+// static
+bool TextFragmentHandler::IsOverTextFragment(HitTestResult result) {
+  DocumentMarkerController& marker_controller =
+      result.InnerNodeFrame()->GetDocument()->Markers();
+  PositionWithAffinity pos_with_affinity = result.GetPosition();
+  const Position marker_position = pos_with_affinity.GetPosition();
+  auto markers = marker_controller.MarkersAroundPosition(
+      ToPositionInFlatTree(marker_position),
+      DocumentMarker::MarkerTypes::TextFragment());
+  return !markers.IsEmpty();
 }
 
 void TextFragmentHandler::Trace(Visitor* visitor) const {

@@ -124,17 +124,14 @@ IN_PROC_BROWSER_TEST_P(LinkToTextMenuObserverTest, AddsCopyAndRemoveMenuItems) {
   EXPECT_EQ(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, item.command_id);
   EXPECT_FALSE(item.checked);
   EXPECT_FALSE(item.hidden);
-  if (ShouldPreemptivelyGenerateLink()) {
-    EXPECT_FALSE(item.enabled);
-  } else {
-    EXPECT_TRUE(item.enabled);
-  }
+  EXPECT_TRUE(item.enabled);
 
   // Check Remove item.
   menu()->GetMenuItem(1, &item);
   EXPECT_EQ(IDC_CONTENT_CONTEXT_REMOVELINKTOTEXT, item.command_id);
   EXPECT_FALSE(item.checked);
   EXPECT_FALSE(item.hidden);
+  EXPECT_TRUE(item.enabled);
 }
 
 IN_PROC_BROWSER_TEST_P(LinkToTextMenuObserverTest, CopiesLinkToText) {

@@ -6,9 +6,12 @@
 #include "build/build_config.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_mouse_event_init.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
+#include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -17,9 +20,11 @@
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
+#include "third_party/blink/renderer/core/input/context_menu_allowed_scope.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
+#include "third_party/blink/renderer/core/page/context_menu_controller.h"
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_finder.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
@@ -2292,6 +2297,86 @@ TEST_F(TextFragmentAnchorTest, IsInSameUninterruptedBlock_BlockInterruption) {
             PlainText(EphemeralRangeInFlatTree(start, end)));
 
   EXPECT_FALSE(TextFragmentFinder::IsInSameUninterruptedBlock(start, end));
+}
+
+TEST_F(TextFragmentAnchorTest, OpenedFromHighlightDoesNotSelectAdditionalText) {
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndEnableFeature(
+      shared_highlighting::kSharedHighlightingV2);
+  SimRequest request("https://www.test.com/#:~:text=First%20test,page%20three",
+                     "text/html");
+  LoadURL("https://www.test.com/#:~:text=First%20test,page%20three");
+  request.Complete(R"HTML(
+      <!DOCTYPE html>
+      <style>
+      p {
+        font-size: 12px;
+      }
+      </style>
+      <p id="one">First test page one</p>
+      <p id="two">Second test page two</p>
+      <p id="three">Third test page three</p>
+      <p id="four">Fourth test page four</p>
+      </html>)HTML");
+  RunAsyncMatchingTasks();
+
+  // Render two frames to handle the async step added by the beforematch event.
+  Compositor().BeginFrame();
+  Compositor().BeginFrame();
+
+  Element* middle_element = GetDocument().getElementById("two");
+  Element* last_element = GetDocument().getElementById("four");
+
+  WebView().GetSettings()->SetEditingBehavior(
+      mojom::EditingBehavior::kEditingMacBehavior);
+
+  // Create a mouse event in the middle of <p> two.
+  WebMouseEvent mouse_down_event(WebInputEvent::Type::kMouseDown,
+                                 WebInputEvent::kNoModifiers,
+                                 WebInputEvent::GetStaticTimeStampForTests());
+  const DOMRect* middle_rect = middle_element->getBoundingClientRect();
+  gfx::PointF middle_elem_point(((middle_rect->left() + 1)),
+                                ((middle_rect->top() + 1)));
+  mouse_down_event.SetPositionInWidget(middle_elem_point.x(),
+                                       middle_elem_point.y());
+  mouse_down_event.SetPositionInScreen(middle_elem_point.x(),
+                                       middle_elem_point.y());
+  mouse_down_event.click_count = 1;
+  mouse_down_event.button = WebMouseEvent::Button::kRight;
+
+  // Corresponding release event (Windows shows context menu on release).
+  WebMouseEvent mouse_up_event(mouse_down_event);
+  mouse_up_event.SetType(WebInputEvent::Type::kMouseUp);
+
+  WebView().MainFrameViewWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(mouse_down_event, ui::LatencyInfo()));
+  WebView().MainFrameViewWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(mouse_up_event, ui::LatencyInfo()));
+
+  // No additional text should be selected.
+  FrameSelection& selection = GetDocument().GetFrame()->Selection();
+  EXPECT_TRUE(selection.SelectedText().IsEmpty());
+
+  // Create a mouse event at the center of <p> four.
+  const DOMRect* last_rect = last_element->getBoundingClientRect();
+  gfx::PointF last_elem_point(((last_rect->left() + 1)),
+                              ((last_rect->top() + 1)));
+  mouse_down_event.SetPositionInWidget(last_elem_point.x(),
+                                       last_elem_point.y());
+  mouse_down_event.SetPositionInScreen(last_elem_point.x(),
+                                       last_elem_point.y());
+
+  // Corresponding release event (Windows shows context menu on release).
+  WebMouseEvent last_mouse_up_event(mouse_down_event);
+  last_mouse_up_event.SetType(WebInputEvent::Type::kMouseUp);
+
+  WebView().MainFrameViewWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(mouse_down_event, ui::LatencyInfo()));
+  WebView().MainFrameViewWidget()->HandleInputEvent(
+      WebCoalescedInputEvent(last_mouse_up_event, ui::LatencyInfo()));
+
+  // The text underneath the cursor should be selected.
+  EXPECT_FALSE(selection.SelectedText().IsEmpty());
 }
 
 }  // namespace
