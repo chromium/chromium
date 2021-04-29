@@ -14,6 +14,7 @@ source_set("soda") {
     "soda_async_impl.h",
     "soda_client.cc",
     "soda_client.h",
+    "soda_test_paths.h",
   ]
 
   deps = [
@@ -40,7 +41,15 @@ source_set("unit_tests") {
   if (enable_soda) {
     sources = [ "soda_client_unittest.cc" ]
 
-    data_deps = [ "//third_party/soda:soda_resources" ]
+    if (is_mac) {
+      data_deps = [ "//third_party/soda-mac:soda_resources" ]
+    } else if (is_win && target_cpu == "x86") {
+      data_deps = [ "//third_party/soda-win32:soda_resources" ]
+    } else if (is_win && target_cpu == "x64") {
+      data_deps = [ "//third_party/soda-win64:soda_resources" ]
+    } else {
+      data_deps = [ "//third_party/soda:soda_resources" ]
+    }
 
     deps = [
       ":soda",

@@ -223,6 +223,9 @@
 /smhasher/src
 /snappy/src
 /soda
+/soda-mac64
+/soda-win32
+/soda-win64
 /speex
 /sqlite/src
 /sqlite4java/lib/

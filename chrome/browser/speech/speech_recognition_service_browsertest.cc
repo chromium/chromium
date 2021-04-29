@@ -16,6 +16,7 @@
 #include "chrome/browser/speech/chrome_speech_recognition_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/services/speech/soda/soda_test_paths.h"
 #include "chrome/services/speech/speech_recognition_recognizer_impl.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
@@ -38,19 +39,7 @@ using testing::StrictMock;
 
 namespace speech {
 
-constexpr base::FilePath::CharType kSodaResourcesDir[] =
-    FILE_PATH_LITERAL("third_party/soda/resources");
-
-constexpr base::FilePath::CharType kSodaLanguagePackRelativePath[] =
-    FILE_PATH_LITERAL("en_us");
-
-constexpr base::FilePath::CharType kSodaTestAudioRelativePath[] =
-    FILE_PATH_LITERAL("hey_google.wav");
-
 constexpr int kExpectedChannelCount = 1;
-
-constexpr base::FilePath::CharType kSodaBinaryForTestingRelativePath[] =
-    FILE_PATH_LITERAL("libsoda_for_testing.so");
 
 // TODO: Should be a way to generate this, this seems way too brittle.
 const size_t kShMemSize = 82240;
@@ -260,20 +249,21 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, RecognizePhrase) {
   base::HistogramTester histograms;
   g_browser_process->local_state()->SetFilePath(
       prefs::kSodaBinaryPath,
-      test_data_dir_.Append(base::FilePath(kSodaResourcesDir))
-          .Append(kSodaBinaryForTestingRelativePath));
+      test_data_dir_.Append(base::FilePath(soda::kSodaResourcePath))
+          .Append(soda::kSodaTestBinaryRelativePath));
   g_browser_process->local_state()->SetFilePath(
       prefs::kSodaEnUsConfigPath,
-      test_data_dir_.Append(base::FilePath(kSodaResourcesDir))
-          .Append(kSodaLanguagePackRelativePath));
+      test_data_dir_.Append(base::FilePath(soda::kSodaResourcePath))
+          .Append(soda::kSodaLanguagePackRelativePath));
 
   PrefService* profile_prefs = browser()->profile()->GetPrefs();
   profile_prefs->SetBoolean(prefs::kLiveCaptionEnabled, true);
   LaunchService();
 
   std::string buffer;
-  auto audio_file = test_data_dir_.Append(base::FilePath(kSodaResourcesDir))
-                        .Append(base::FilePath(kSodaTestAudioRelativePath));
+  auto audio_file =
+      test_data_dir_.Append(base::FilePath(soda::kSodaResourcePath))
+          .Append(base::FilePath(soda::kSodaTestAudioRelativePath));
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     ASSERT_TRUE(base::PathExists(audio_file));
@@ -345,12 +335,12 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, CreateAudioSourceFetcher) {
   base::HistogramTester histograms;
   g_browser_process->local_state()->SetFilePath(
       prefs::kSodaBinaryPath,
-      test_data_dir_.Append(base::FilePath(kSodaResourcesDir))
-          .Append(kSodaBinaryForTestingRelativePath));
+      test_data_dir_.Append(base::FilePath(soda::kSodaResourcePath))
+          .Append(soda::kSodaTestBinaryRelativePath));
   g_browser_process->local_state()->SetFilePath(
       prefs::kSodaEnUsConfigPath,
-      test_data_dir_.Append(base::FilePath(kSodaResourcesDir))
-          .Append(kSodaLanguagePackRelativePath));
+      test_data_dir_.Append(base::FilePath(soda::kSodaResourcePath))
+          .Append(soda::kSodaLanguagePackRelativePath));
 
   PrefService* profile_prefs = browser()->profile()->GetPrefs();
   // TODO(crbug.com/1173135): Disconnect from kLiveCaptionEnabled.
