@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/first_run/welcome_screen_coordinator.h"
+#import "ios/chrome/browser/ui/first_run/welcome/welcome_screen_coordinator.h"
 
 #include "base/mac/bundle_locations.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ios/chrome/browser/main/browser.h"
-#include "ios/chrome/browser/ui/first_run/static_file_view_controller.h"
-#import "ios/chrome/browser/ui/first_run/welcome_screen_view_controller.h"
+#include "ios/chrome/browser/ui/first_run/welcome/static_file_view_controller.h"
+#include "ios/chrome/browser/ui/first_run/welcome/welcome_screen_view_controller.h"
 #include "ios/chrome/browser/ui/util/terms_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"

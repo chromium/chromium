@@ -28,7 +28,7 @@
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #include "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/first_run/location_permissions_field_trial.h"
-#include "ios/chrome/browser/ui/first_run/static_file_view_controller.h"
+#include "ios/chrome/browser/ui/first_run/welcome/static_file_view_controller.h"
 #import "ios/chrome/browser/ui/first_run/welcome_to_chrome_view.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/browser/ui/util/terms_util.h"

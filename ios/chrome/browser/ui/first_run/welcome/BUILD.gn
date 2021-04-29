@@ -1,0 +1,55 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("welcome") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "welcome_screen_coordinator.h",
+    "welcome_screen_coordinator.mm",
+  ]
+  deps = [
+    ":static_file_ui",
+    ":welcome_ui",
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/first_run:screen_delegate",
+    "//ios/chrome/browser/ui/util:terms_util",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("welcome_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "welcome_screen_view_controller.h",
+    "welcome_screen_view_controller.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/ui/first_run:first_run_ui",
+    #    "//ios/chrome/browser/ui/first_run:screen_delegate",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("static_file_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "static_file_view_controller.h",
+    "static_file_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/ui/icons",
+    "//ios/chrome/browser/ui/material_components",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/third_party/material_components_ios",
+    "//ios/web/common:web_view_creation_util",
+  ]
+}
