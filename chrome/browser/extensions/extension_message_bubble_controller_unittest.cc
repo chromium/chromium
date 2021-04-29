@@ -29,6 +29,8 @@
 #include "chrome/browser/extensions/suspicious_extension_bubble_delegate.h"
 #include "chrome/browser/extensions/test_extension_message_bubble_delegate.h"
 #include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
 #include "chrome/common/chrome_features.h"
@@ -362,6 +364,11 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
         std::make_unique<base::CommandLine>(base::CommandLine::NO_PROGRAM);
     ExtensionMessageBubbleController::set_should_ignore_learn_more_for_testing(
         true);
+    // Prevent the Profile from getting deleted before TearDown() is complete,
+    // since WaitForStorageCleanup() relies on an active Profile. See the
+    // DestroyProfileOnBrowserClose flag.
+    profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
+        profile(), ProfileKeepAliveOrigin::kBrowserWindow);
   }
 
   void TearDown() override {
@@ -378,6 +385,7 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
       SettingsApiBubbleDelegate(profile(), type).ClearProfileSetForTesting();
     }
     SuspiciousExtensionBubbleDelegate(profile()).ClearProfileSetForTesting();
+    profile_keep_alive_.reset();
     BrowserWithTestWindowTest::TearDown();
   }
 
@@ -422,6 +430,7 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
 
  private:
   std::unique_ptr<base::CommandLine> command_line_;
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionMessageBubbleTest);
 };
