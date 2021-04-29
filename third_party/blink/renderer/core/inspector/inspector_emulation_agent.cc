@@ -331,6 +331,12 @@ Response InspectorEmulationAgent::setFocusEmulationEnabled(bool enabled) {
   Response response = AssertPage();
   if (!response.IsSuccess())
     return response;
+
+  // Changing focus state will fire event listeners and execute script.
+  if (ScriptForbiddenScope::IsScriptForbidden()) {
+    return Response::ServerError("Script execution is forbidden");
+  }
+
   emulate_focus_.Set(enabled);
   GetWebViewImpl()->GetPage()->GetFocusController().SetFocusEmulationEnabled(
       enabled);
