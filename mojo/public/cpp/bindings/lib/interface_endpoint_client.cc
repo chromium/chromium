@@ -381,10 +381,11 @@ void ThreadSafeInterfaceEndpointClientProxy::SendMessageWithResponder(
     sync_calls->pending_responses.push_back(response.get());
   }
 
+  SyncCallRestrictions::AssertSyncCallAllowed();
+
   if (allow_interrupt) {
     // In the common case where interrupts are allowed, we watch cooperatively
     // with other potential endpoints on the same thread.
-    SyncCallRestrictions::AssertSyncCallAllowed();
     bool signaled = false;
     auto set_flag = [](bool* flag) { *flag = true; };
     SyncEventWatcher watcher(&response->event,

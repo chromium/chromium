@@ -175,7 +175,7 @@ void GpuChannelHost::VerifyFlush(uint32_t deferred_message_id) {
   InternalFlush(deferred_message_id);
 
   if (deferred_message_id > verified_deferred_message_id_) {
-    base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
+    mojo::SyncCallRestrictions::ScopedAllowSyncCall allow_sync;
     GetGpuChannel().Flush();
     verified_deferred_message_id_ = flushed_deferred_message_id_;
   }

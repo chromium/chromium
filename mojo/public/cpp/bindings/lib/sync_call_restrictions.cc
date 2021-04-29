@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
+#include "base/threading/sequence_local_storage_map.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "mojo/public/c/system/core.h"
 
@@ -50,12 +51,23 @@ size_t& GetSequenceLocalScopedAllowCount() {
   return count->GetOrCreateValue();
 }
 
+// Sometimes sync calls need to be made while sequence-local storage is not
+// initialized. In particular this can occur during thread tear-down while TLS
+// objects (including SequenceLocalStorageMap itself) are being destroyed. We
+// can't track a sequence-local policy in such cases, so we don't enforce one.
+bool SyncCallRestrictionsEnforceable() {
+  return base::internal::SequenceLocalStorageMap::IsSetForCurrentThread();
+}
+
 }  // namespace
 
 // static
 void SyncCallRestrictions::AssertSyncCallAllowed() {
-  if (GetGlobalSettings().sync_call_allowed_by_default())
+  if (GetGlobalSettings().sync_call_allowed_by_default() ||
+      !SyncCallRestrictionsEnforceable()) {
     return;
+  }
+
   if (GetSequenceLocalScopedAllowCount() > 0)
     return;
 
@@ -73,11 +85,17 @@ void SyncCallRestrictions::DisallowSyncCall() {
 
 // static
 void SyncCallRestrictions::IncreaseScopedAllowCount() {
+  if (!SyncCallRestrictionsEnforceable())
+    return;
+
   ++GetSequenceLocalScopedAllowCount();
 }
 
 // static
 void SyncCallRestrictions::DecreaseScopedAllowCount() {
+  if (!SyncCallRestrictionsEnforceable())
+    return;
+
   DCHECK_GT(GetSequenceLocalScopedAllowCount(), 0u);
   --GetSequenceLocalScopedAllowCount();
 }

@@ -31,6 +31,11 @@ class BASE_EXPORT SequenceLocalStorageMap {
   // ScopedSetSequenceLocalStorageForCurrentThread.
   static SequenceLocalStorageMap& GetForCurrentThread();
 
+  // Indicates whether the current thread has a SequenceLocalStorageMap
+  // available and thus whether it can safely call GetForCurrentThread and
+  // dereference SequenceLocalStorageSlots.
+  static bool IsSetForCurrentThread();
+
   // Holds a pointer to a value alongside a destructor for this pointer.
   // Calls the destructor on the value upon destruction.
   class BASE_EXPORT ValueDestructorPair {

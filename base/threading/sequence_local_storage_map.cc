@@ -34,6 +34,7 @@ ScopedSetSequenceLocalStorageMapForCurrentThread::
   tls_current_sequence_local_storage.Get().Set(nullptr);
 }
 
+// static
 SequenceLocalStorageMap& SequenceLocalStorageMap::GetForCurrentThread() {
   SequenceLocalStorageMap* current_sequence_local_storage =
       tls_current_sequence_local_storage.Get().Get();
@@ -45,6 +46,11 @@ SequenceLocalStorageMap& SequenceLocalStorageMap::GetForCurrentThread() {
          "SequenceLocalStorageMap object in TLS.";
 
   return *current_sequence_local_storage;
+}
+
+// static
+bool SequenceLocalStorageMap::IsSetForCurrentThread() {
+  return tls_current_sequence_local_storage.Get().Get() != nullptr;
 }
 
 void* SequenceLocalStorageMap::Get(int slot_id) {
