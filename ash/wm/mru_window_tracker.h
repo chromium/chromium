@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "base/macros.h"
-#include "base/observer_list.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
@@ -41,12 +40,6 @@ class ASH_EXPORT MruWindowTracker : public ::wm::ActivationChangeObserver,
                                     public aura::EnvObserver {
  public:
   using WindowList = std::vector<aura::Window*>;
-
-  class Observer : public base::CheckedObserver {
-   public:
-    // Invoked when a tracked window is destroyed,
-    virtual void OnWindowUntracked(aura::Window* untracked_window) {}
-  };
 
   MruWindowTracker();
   ~MruWindowTracker() override;
@@ -99,10 +92,6 @@ class ASH_EXPORT MruWindowTracker : public ::wm::ActivationChangeObserver,
   // used window across all desks.
   void OnWindowMovedOutFromRemovingDesk(aura::Window* window);
 
-  // Add/Remove observers.
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
-
   const std::vector<aura::Window*>& GetMruWindowsForTesting() {
     return mru_windows_;
   }
@@ -126,8 +115,6 @@ class ASH_EXPORT MruWindowTracker : public ::wm::ActivationChangeObserver,
   // List of windows that have been activated in containers that we cycle
   // through, sorted such that the most recently used window comes last.
   std::vector<aura::Window*> mru_windows_;
-
-  base::ObserverList<Observer, true> observers_;
 
   bool ignore_window_activations_ = false;
 

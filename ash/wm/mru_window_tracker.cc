@@ -269,14 +269,6 @@ void MruWindowTracker::OnWindowMovedOutFromRemovingDesk(aura::Window* window) {
   mru_windows_.insert(mru_windows_.begin(), window);
 }
 
-void MruWindowTracker::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void MruWindowTracker::RemoveObserver(Observer* observer) {
-  observers_.RemoveObserver(observer);
-}
-
 //////////////////////////////////////////////////////////////////////////////
 // MruWindowTracker, private:
 
@@ -312,9 +304,6 @@ void MruWindowTracker::OnWindowDestroyed(aura::Window* window) {
   // else we may end up with a deleted window in |mru_windows_|.
   base::Erase(mru_windows_, window);
   window->RemoveObserver(this);
-
-  for (auto& observer : observers_)
-    observer.OnWindowUntracked(window);
 }
 
 void MruWindowTracker::OnWindowInitialized(aura::Window* window) {
