@@ -79,8 +79,11 @@ ASH_PUBLIC_EXPORT extern const base::Feature kEnableOmniboxRichEntities;
 // Enables normalization of search results in the launcher.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableLauncherSearchNormalization;
 
-// Enables normalization of search results in the launcher.
+// Enables categorical search in the launcher.
 ASH_PUBLIC_EXPORT extern const base::Feature kCategoricalSearch;
+
+// Enables search query highlighting in the launcher.
+ASH_PUBLIC_EXPORT extern const base::Feature kLauncherQueryHighlighting;
 
 bool ASH_PUBLIC_EXPORT IsAppDataSearchEnabled();
 bool ASH_PUBLIC_EXPORT IsAppListSearchAutocompleteEnabled();
@@ -101,6 +104,7 @@ bool ASH_PUBLIC_EXPORT IsNewDragSpecInLauncherEnabled();
 bool ASH_PUBLIC_EXPORT IsOmniboxRichEntitiesEnabled();
 bool ASH_PUBLIC_EXPORT IsLauncherSearchNormalizationEnabled();
 bool ASH_PUBLIC_EXPORT IsCategoricalSearchEnabled();
+bool ASH_PUBLIC_EXPORT IsLauncherQueryHighlightingEnabled();
 
 std::string ASH_PUBLIC_EXPORT AnswerServerUrl();
 std::string ASH_PUBLIC_EXPORT AnswerServerQuerySuffix();

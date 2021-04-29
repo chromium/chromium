@@ -45834,6 +45834,7 @@ from previous Chrome versions.
   <int value="-793383355" label="StrictOriginIsolation:enabled"/>
   <int value="-792785226" label="TemporaryUnexpireFlagsM78:disabled"/>
   <int value="-792079435" label="EnableAppsGridGapFeature:disabled"/>
+  <int value="-791778534" label="LauncherQueryHighlighting:enabled"/>
   <int value="-790900615" label="NtpShoppingTasksModule:disabled"/>
   <int value="-790036192" label="overscroll-start-threshold"/>
   <int value="-787969387" label="HTTPSServerPreviewsUsingURLLoader:enabled"/>
@@ -47033,6 +47034,7 @@ from previous Chrome versions.
       label="AutofillImportNonFocusableCreditCardForms:enabled"/>
   <int value="313253630" label="AutofillRefreshStyleAndroid:enabled"/>
   <int value="313303258" label="WebPaymentsModifiers:disabled"/>
+  <int value="315602034" label="LauncherQueryHighlighting:disabled"/>
   <int value="316182183" label="MediaDocumentDownloadButton:disabled"/>
   <int value="317432596" label="DisplayLocking:disabled"/>
   <int value="317889969" label="AutofillAddressProfileSavePrompt:disabled"/>

@@ -3387,6 +3387,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "launcher-query-highlighting",
+    "owners": ["wrong", "tby", "thanhdng"],
+    "expiry_milestone": 95
+  },
+  {
     "name": "launcher-search-normalization",
     "owners": ["adafang", "wrong", "tby"],
     "expiry_milestone": 92

@@ -7274,6 +7274,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(password_manager::features::kBiometricTouchToFill)},
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"launcher-query-highlighting",
+     flag_descriptions::kLauncherQueryHighlightingName,
+     flag_descriptions::kLauncherQueryHighlightingDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(app_list_features::kLauncherQueryHighlighting)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
