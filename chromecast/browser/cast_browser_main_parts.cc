@@ -616,6 +616,9 @@ int CastBrowserMainParts::PreMainMessageLoopRun() {
         std::make_unique<RoundedWindowCornersManager>(window_manager_.get());
   }
 
+  display_change_observer_ = std::make_unique<DisplayConfiguratorObserver>(
+      cast_browser_process_->display_configurator(), window_manager_.get());
+
 #if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
   cast_browser_process_->SetAccessibilityManager(
       std::make_unique<AccessibilityManagerImpl>(window_manager_.get()));
@@ -765,13 +768,18 @@ void CastBrowserMainParts::PostMainMessageLoopRun() {
   // Android does not use native main MessageLoop.
   NOTREACHED();
 #else
-  cast_browser_process_->cast_service()->Finalize();
-  cast_browser_process_->cast_browser_metrics()->Finalize();
-  cast_browser_process_.reset();
 
 #if defined(USE_AURA)
   rounded_window_corners_manager_.reset();
+  // Reset display change observer here to ensure it is deleted before
+  // display_configurator since display_configurator is deleted when
+  // cast_browser_process is reset below.
+  display_change_observer_.reset();
 #endif
+
+  cast_browser_process_->cast_service()->Finalize();
+  cast_browser_process_->cast_browser_metrics()->Finalize();
+  cast_browser_process_.reset();
 
   window_manager_.reset();
 #if defined(USE_AURA)

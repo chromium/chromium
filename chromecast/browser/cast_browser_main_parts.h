@@ -12,6 +12,7 @@
 #include "base/util/memory_pressure/multi_source_memory_pressure_monitor.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "chromecast/browser/display_configurator_observer.h"
 #include "chromecast/chromecast_buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_main_parts.h"
@@ -105,6 +106,7 @@ class CastBrowserMainParts : public content::BrowserMainParts {
   std::unique_ptr<CastScreen> cast_screen_;
   std::unique_ptr<CastWindowManagerAura> window_manager_;
   std::unique_ptr<RoundedWindowCornersManager> rounded_window_corners_manager_;
+  std::unique_ptr<DisplayConfiguratorObserver> display_change_observer_;
 #else
   std::unique_ptr<CastWindowManager> window_manager_;
 #endif  //  defined(USE_AURA)

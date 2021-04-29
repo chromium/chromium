@@ -310,6 +310,8 @@ cast_source_set("browser_base") {
       "cast_content_window_aura.cc",
       "cast_content_window_aura.h",
       "cast_web_service_aura.cc",
+      "display_configurator_observer.cc",
+      "display_configurator_observer.h",
     ]
 
     deps += [
