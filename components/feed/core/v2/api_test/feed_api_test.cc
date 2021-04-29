@@ -61,7 +61,7 @@ std::unique_ptr<StreamModelUpdateRequest> StoredModelData(
     result = std::move(task_result);
   };
   LoadStreamFromStoreTask load_task(
-      LoadStreamFromStoreTask::LoadType::kFullLoad, stream_type, store,
+      LoadStreamFromStoreTask::LoadType::kFullLoad, nullptr, stream_type, store,
       /*missed_last_refresh=*/false, base::BindLambdaForTesting(complete));
   // We want to load the data no matter how stale.
   load_task.IgnoreStalenessForTesting();
@@ -656,6 +656,9 @@ void FeedApiTest::SetUp() {
   // `use_feed_query_requests_for_web_feeds` is a temporary option for
   // debugging, setting it to false tests the preferred endpoint.
   config.use_feed_query_requests_for_web_feeds = false;
+  // Disable refreshing the Web Feed stream after the for-you stream is loaded,
+  // to simplify tests unrelated to this feature.
+  config.refresh_web_feed_after_for_you_feed_loads = false;
   SetFeedConfigForTesting(config);
 
   feed::prefs::RegisterFeedSharedProfilePrefs(profile_prefs_.registry());

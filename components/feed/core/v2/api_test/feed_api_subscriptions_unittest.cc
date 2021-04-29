@@ -8,6 +8,8 @@
 #include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/feed_stream.h"
+#include "components/feed/core/v2/feedstore_util.h"
+#include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/public/web_feed_subscriptions.h"
 #include "components/feed/core/v2/test/callback_receiver.h"
@@ -178,6 +180,7 @@ TEST_F(FeedApiSubscriptionsTest, FollowWebFeedSuccess) {
       "WebFeedMetadata{ id=id_cats title=Title cats "
       "publisher_url=https://cats.com/ status=kSubscribed }",
       PrintToString(callback.RunAndGetResult().web_feed_metadata));
+  EXPECT_TRUE(feedstore::IsKnownStale(stream_->GetMetadata(), kWebFeedStream));
 }
 
 TEST_F(FeedApiSubscriptionsTest, FollowRecommendedWebFeedById) {
@@ -279,6 +282,7 @@ TEST_F(FeedApiSubscriptionsTest, CantFollowWebFeedWhileOffline) {
 TEST_F(FeedApiSubscriptionsTest, FollowWebFeedNetworkError) {
   network_.InjectFollowResponse(MakeFailedResponse());
   CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> callback;
+  EXPECT_FALSE(feedstore::IsKnownStale(stream_->GetMetadata(), kWebFeedStream));
 
   subscriptions().FollowWebFeed(MakeWebFeedPageInformation("http://cats.com"),
                                 callback.Bind());
@@ -286,6 +290,7 @@ TEST_F(FeedApiSubscriptionsTest, FollowWebFeedNetworkError) {
   EXPECT_EQ(WebFeedSubscriptionRequestStatus::kFailedUnknownError,
             callback.RunAndGetResult().request_status);
   EXPECT_EQ("{}", PrintToString(CheckAllSubscriptions()));
+  EXPECT_FALSE(feedstore::IsKnownStale(stream_->GetMetadata(), kWebFeedStream));
 }
 
 // Follow and then unfollow a web feed successfully.
@@ -295,7 +300,8 @@ TEST_F(FeedApiSubscriptionsTest, UnfollowAFollowedWebFeed) {
   subscriptions().FollowWebFeed(MakeWebFeedPageInformation("http://cats.com"),
                                 follow_callback.Bind());
   follow_callback.RunUntilCalled();
-
+  // Un-mark stream as stale, to verify unsubscribe also marks stream as stale.
+  stream_->SetStreamStale(kWebFeedStream, false);
   CallbackReceiver<WebFeedSubscriptions::UnfollowWebFeedResult>
       unfollow_callback;
   network_.InjectResponse(SuccessfulUnfollowResponse());
@@ -308,6 +314,7 @@ TEST_F(FeedApiSubscriptionsTest, UnfollowAFollowedWebFeed) {
   EXPECT_EQ(WebFeedSubscriptionRequestStatus::kSuccess,
             unfollow_callback.GetResult()->request_status);
   EXPECT_EQ("{}", PrintToString(CheckAllSubscriptions()));
+  EXPECT_TRUE(feedstore::IsKnownStale(stream_->GetMetadata(), kWebFeedStream));
 }
 
 TEST_F(FeedApiSubscriptionsTest, UnfollowAFollowedWebFeedTwiceAtOnce) {
@@ -349,6 +356,8 @@ TEST_F(FeedApiSubscriptionsTest, UnfollowNetworkFailure) {
   CallbackReceiver<WebFeedSubscriptions::UnfollowWebFeedResult>
       unfollow_callback;
   network_.InjectUnfollowResponse(MakeFailedResponse());
+  // Un-mark stream as stale, to verify unsubscribe also marks stream as stale.
+  stream_->SetStreamStale(kWebFeedStream, false);
   subscriptions().UnfollowWebFeed(
       follow_callback.GetResult()->web_feed_metadata.web_feed_id,
       unfollow_callback.Bind());
@@ -361,6 +370,7 @@ TEST_F(FeedApiSubscriptionsTest, UnfollowNetworkFailure) {
       "{ WebFeedMetadata{ id=id_cats title=Title cats "
       "publisher_url=https://cats.com/ status=kSubscribed } }",
       PrintToString(CheckAllSubscriptions()));
+  EXPECT_FALSE(feedstore::IsKnownStale(stream_->GetMetadata(), kWebFeedStream));
 }
 
 TEST_F(FeedApiSubscriptionsTest, UnfollowWhileOffline) {

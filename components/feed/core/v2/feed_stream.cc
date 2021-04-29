@@ -34,6 +34,7 @@
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/feed_stream_surface.h"
 #include "components/feed/core/v2/public/refresh_task_scheduler.h"
+#include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/public/unread_content_observer.h"
 #include "components/feed/core/v2/scheduling.h"
@@ -210,8 +211,10 @@ void FeedStream::TriggerStreamLoad(const StreamType& stream_type) {
   stream.model_loading_in_progress = true;
 
   stream.surface_updater->LoadStreamStarted();
+  LoadStreamTask::Options options;
+  options.stream_type = stream_type;
   task_queue_.AddTask(std::make_unique<LoadStreamTask>(
-      LoadStreamTask::LoadType::kInitialLoad, stream_type, this,
+      options, this,
       base::BindOnce(&FeedStream::InitialStreamLoadComplete,
                      base::Unretained(this))));
 }
@@ -246,6 +249,24 @@ void FeedStream::InitialStreamLoadComplete(LoadStreamTask::Result result) {
                                              result.final_status);
 
   LoadTaskComplete(result);
+
+  // When done loading the for-you feed, try to refresh the web-feed if there's
+  // no unread content.
+  if (base::FeatureList::IsEnabled(kWebFeed) &&
+      GetFeedConfig().refresh_web_feed_after_for_you_feed_loads) {
+    if (result.stream_type.IsForYou()) {
+      if (!HasUnreadContent(kWebFeedStream)) {
+        LoadStreamTask::Options options;
+        options.load_type = LoadStreamTask::LoadType::kBackgroundRefresh;
+        options.stream_type = kWebFeedStream;
+        options.abort_if_unread_content = true;
+        task_queue_.AddTask(std::make_unique<LoadStreamTask>(
+            options, this,
+            base::BindOnce(&FeedStream::BackgroundRefreshComplete,
+                           base::Unretained(this))));
+      }
+    }
+  }
 }
 
 void FeedStream::OnEnterBackground() {
@@ -274,10 +295,29 @@ void FeedStream::UpdateIsActivityLoggingEnabled(const StreamType& stream_type) {
 std::string FeedStream::GetSessionId() const {
   return metadata_.session_id().token();
 }
+
+const feedstore::Metadata& FeedStream::GetMetadata() const {
+  DCHECK(metadata_populated_)
+      << "Metadata is not yet populated. This function should only be called "
+         "after the WaitForStoreInitialize task is complete.";
+  return metadata_;
+}
+
 void FeedStream::SetMetadata(feedstore::Metadata metadata) {
   metadata_ = std::move(metadata);
   store_->WriteMetadata(metadata_, base::DoNothing());
 }
+
+void FeedStream::SetStreamStale(const StreamType& stream_type, bool is_stale) {
+  feedstore::Metadata metadata = GetMetadata();
+  feedstore::Metadata::StreamMetadata& stream_metadata =
+      feedstore::MetadataForStream(metadata, stream_type);
+  if (stream_metadata.is_known_stale() != is_stale) {
+    stream_metadata.set_is_known_stale(is_stale);
+    SetMetadata(metadata);
+  }
+}
+
 bool FeedStream::SetMetadata(base::Optional<feedstore::Metadata> metadata) {
   if (metadata) {
     SetMetadata(std::move(*metadata));
@@ -814,8 +854,11 @@ void FeedStream::ExecuteRefreshTask(RefreshTaskId task_id) {
     return;
   }
 
+  LoadStreamTask::Options options;
+  options.stream_type = stream_type;
+  options.load_type = LoadStreamTask::LoadType::kBackgroundRefresh;
   task_queue_.AddTask(std::make_unique<LoadStreamTask>(
-      LoadStreamTask::LoadType::kBackgroundRefresh, stream_type, this,
+      options, this,
       base::BindOnce(&FeedStream::BackgroundRefreshComplete,
                      base::Unretained(this))));
 }
@@ -850,12 +893,20 @@ void FeedStream::LoadTaskComplete(const LoadStreamTask::Result& result) {
   if (!result.last_added_time.is_null())
     GetStream(result.stream_type).last_updated_time = result.last_added_time;
   if (result.loaded_new_content_from_network) {
+    SetStreamStale(result.stream_type, false);
     if (result.stream_type.IsForYou())
       UpdateExperiments(result.experiments);
   }
 
   MaybeNotifyHasUnreadContent(result.stream_type);
   MaybeReportNewSuggestionsAvailable(result);
+}
+
+bool FeedStream::HasUnreadContent(const StreamType& stream_type) {
+  Stream& stream = GetStream(stream_type);
+  return !stream.last_updated_time.is_null() &&
+         feedstore::GetStreamViewTime(metadata_, stream_type) !=
+             stream.last_updated_time;
 }
 
 void FeedStream::MaybeReportNewSuggestionsAvailable(

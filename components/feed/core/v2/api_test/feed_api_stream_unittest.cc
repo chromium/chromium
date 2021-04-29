@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -14,6 +16,7 @@
 #include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/feed_service.h"
+#include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/core/v2/test/callback_receiver.h"
 #include "components/feed/core/v2/test/stream_builder.h"
 #include "components/feed/feed_feature_list.h"
@@ -2087,6 +2090,72 @@ TEST_F(FeedApiTest, ReliabilityLoggingId_ChangeOnMetricsIdChange) {
   profile_prefs_.ClearPref(prefs::kReliabilityLoggingIdSalt);
   EXPECT_NE(first_id, FeedService::GetReliabilityLoggingId(kSomeMetricsId,
                                                            &profile_prefs_));
+}
+
+TEST_F(FeedApiTest, HasUnreadContentIsFalseAfterSliceView) {
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+  EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  ASSERT_TRUE(stream_->HasUnreadContent(kForYouStream));
+  stream_->ReportSliceViewed(
+      surface.GetSurfaceId(), surface.GetStreamType(),
+      surface.initial_state->updated_slices(1).slice().slice_id());
+
+  EXPECT_FALSE(stream_->HasUnreadContent(kForYouStream));
+}
+
+TEST_F(FeedApiTest,
+       LoadingForYouStreamTriggersWebFeedRefreshIfNoUnreadContent) {
+  Config config = GetFeedConfig();
+  config.refresh_web_feed_after_for_you_feed_loads = true;
+  SetFeedConfigForTesting(config);
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(kWebFeed);
+
+  // Both streams should be fetched.
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+  ASSERT_EQ(2, network_.send_query_call_count);
+  EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  EXPECT_EQ(LoadStreamStatus::kLoadedFromNetwork,
+            metrics_reporter_->load_stream_status);
+
+  // Attach a Web Feed surface, and verify content is loaded from the store.
+  TestWebFeedSurface web_feed_surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  EXPECT_EQ("loading -> 2 slices", web_feed_surface.DescribeUpdates());
+  EXPECT_EQ(LoadStreamStatus::kLoadedFromStore,
+            metrics_reporter_->load_stream_status);
+}
+
+TEST_F(
+    FeedApiTest,
+    LoadForYouStreamDoesNotTriggerWebFeedRefreshContentIfIsAlreadyAvailable) {
+  Config config = GetFeedConfig();
+  config.refresh_web_feed_after_for_you_feed_loads = true;
+  SetFeedConfigForTesting(config);
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(kWebFeed);
+
+  // Both streams should be fetched because there is no unread web-feed content.
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+  ASSERT_EQ(2, network_.send_query_call_count);
+
+  // Detach and re-attach the surface. The for-you feed should be loaded again,
+  // but this time the web-feed is not refreshed.
+  surface.Detach();
+  UnloadModel(surface.GetStreamType());
+  surface.Attach(stream_.get());
+  WaitForIdleTaskQueue();
+  // Neither stream type should be refreshed.
+  ASSERT_EQ(2, network_.send_query_call_count);
 }
 
 // Keep instantiations at the bottom.

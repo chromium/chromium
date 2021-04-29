@@ -16,6 +16,7 @@
 #include "components/offline_pages/task/task.h"
 
 namespace feed {
+class FeedStream;
 struct StreamModelUpdateRequest;
 
 // Attempts to load stream data from persistent storage.
@@ -48,6 +49,7 @@ class LoadStreamFromStoreTask : public offline_pages::Task {
   };
 
   LoadStreamFromStoreTask(LoadType load_type,
+                          FeedStream* feed_stream,
                           const StreamType& stream_type,
                           FeedStore* store,
                           bool missed_last_refresh,
@@ -72,6 +74,7 @@ class LoadStreamFromStoreTask : public offline_pages::Task {
 
   LoadStreamStatus stale_reason_ = LoadStreamStatus::kNoStatus;
   LoadType load_type_;
+  FeedStream* feed_stream_;
   StreamType stream_type_;
   FeedStore* store_;  // Unowned.
   bool ignore_staleness_ = false;

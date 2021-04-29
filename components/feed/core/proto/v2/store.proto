@@ -79,6 +79,9 @@ message Metadata {
     // 'StreamData.last_added_time_millis' value of that stream. This is used to
     // determine whether the user has already seen a stored stream's data.
     int64 view_time_millis = 2;
+    // Whether the stream data is known to be stale. This can happen in the
+    // WebFeed stream if the subscription list changes.
+    bool is_known_stale = 3;
   }
 
   // Token used to read or write to the same storage.

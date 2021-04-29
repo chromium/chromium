@@ -65,6 +65,8 @@ std::ostream& operator<<(std::ostream& out, LoadStreamStatus value) {
       return out << "kDataInStoreIsForAnotherUser";
     case LoadStreamStatus::kAbortWithPendingClearAll:
       return out << "kAbortWithPendingClearAll";
+    case LoadStreamStatus::kAlreadyHaveUnreadContent:
+      return out << "kAlreadyHaveUnreadContent";
   }
 #else
   return out << (static_cast<int>(value));

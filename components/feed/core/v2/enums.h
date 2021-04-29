@@ -63,7 +63,8 @@ enum class LoadStreamStatus {
   kDataInStoreIsExpired = 22,
   kDataInStoreIsForAnotherUser = 23,
   kAbortWithPendingClearAll = 24,
-  kMaxValue = kAbortWithPendingClearAll,
+  kAlreadyHaveUnreadContent = 25,
+  kMaxValue = kAlreadyHaveUnreadContent,
 };
 
 std::ostream& operator<<(std::ostream& out, LoadStreamStatus value);

@@ -31,6 +31,7 @@ class StreamType {
   bool operator==(const StreamType& rhs) const { return type_ == rhs.type_; }
   bool IsForYou() const { return type_ == Type::kForYou; }
   bool IsWebFeed() const { return type_ == Type::kWebFeed; }
+  bool IsValid() const { return type_ != Type::kUnspecified; }
 
   // Returns a human-readable value, for debugging/DCHECK prints.
   std::string ToString() const;

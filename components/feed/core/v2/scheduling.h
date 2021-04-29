@@ -14,6 +14,9 @@
 namespace base {
 class Value;
 }
+namespace feedstore {
+class Metadata;
+}
 namespace feed {
 constexpr base::TimeDelta kSuppressRefreshDuration =
     base::TimeDelta::FromMinutes(30);
@@ -40,7 +43,8 @@ RequestSchedule RequestScheduleFromValue(const base::Value&);
 base::Time NextScheduledRequestTime(base::Time now, RequestSchedule* schedule);
 
 // Returns whether we should wait for new content before showing stream content.
-bool ShouldWaitForNewContent(const StreamType& stream_type,
+bool ShouldWaitForNewContent(const feedstore::Metadata& metadata,
+                             const StreamType& stream_type,
                              bool has_content,
                              base::TimeDelta content_age);
 }  // namespace feed

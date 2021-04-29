@@ -8,6 +8,7 @@
 #include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "components/feed/core/v2/config.h"
+#include "components/feed/core/v2/feedstore_util.h"
 
 namespace feed {
 namespace {
@@ -86,11 +87,17 @@ base::Time NextScheduledRequestTime(base::Time now, RequestSchedule* schedule) {
   return now + GetFeedConfig().default_background_refresh_interval;
 }
 
-bool ShouldWaitForNewContent(const StreamType& stream_type,
+bool ShouldWaitForNewContent(const feedstore::Metadata& metadata,
+                             const StreamType& stream_type,
                              bool has_content,
                              base::TimeDelta content_age) {
-  return !has_content ||
-         content_age > GetFeedConfig().GetStalenessThreshold(stream_type);
+  if (!has_content)
+    return true;
+  const feedstore::Metadata::StreamMetadata* stream_metadata =
+      feedstore::FindMetadataForStream(metadata, stream_type);
+  if (stream_metadata && stream_metadata->is_known_stale())
+    return true;
+  return content_age > GetFeedConfig().GetStalenessThreshold(stream_type);
 }
 
 }  // namespace feed

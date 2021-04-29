@@ -31,6 +31,8 @@ base::Time GetLastAddedTime(const feedstore::StreamData& data);
 base::Time GetSessionIdExpiryTime(const feedstore::Metadata& metadata);
 base::Time GetStreamViewTime(const Metadata& metadata,
                              const feed::StreamType& stream_type);
+bool IsKnownStale(const Metadata& metadata,
+                  const feed::StreamType& stream_type);
 feedstore::Metadata MakeMetadata(const std::string& gaia);
 
 // Mutations of Metadata. Metadata will need stored again after being changed,
@@ -42,7 +44,11 @@ base::Optional<Metadata> MaybeUpdateSessionId(
     const feedstore::Metadata& metadata,
     base::Optional<std::string> token);
 feed::LocalActionId GetNextActionId(feedstore::Metadata& metadata);
-const feedstore::Metadata::StreamMetadata* FindMetadataForStream(
+const Metadata::StreamMetadata* FindMetadataForStream(
+    const Metadata& metadata,
+    const feed::StreamType& stream_type);
+Metadata::StreamMetadata& MetadataForStream(
+    Metadata& metadata,
     const feed::StreamType& stream_type);
 base::Optional<Metadata> SetStreamViewTime(const Metadata& metadata,
                                            const feed::StreamType& stream_type,

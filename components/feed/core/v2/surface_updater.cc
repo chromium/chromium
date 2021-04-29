@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/feed/core/proto/v2/xsurface.pb.h"
+#include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_stream.h"
 #include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/public/feed_stream_surface.h"
@@ -165,6 +166,7 @@ feedui::ZeroStateSlice::Type GetZeroStateType(LoadStreamStatus status) {
     case LoadStreamStatus::kDataInStoreIsExpired:
     case LoadStreamStatus::kDataInStoreIsForAnotherUser:
     case LoadStreamStatus::kAbortWithPendingClearAll:
+    case LoadStreamStatus::kAlreadyHaveUnreadContent:
       break;
   }
   return feedui::ZeroStateSlice::NO_CARDS_AVAILABLE;

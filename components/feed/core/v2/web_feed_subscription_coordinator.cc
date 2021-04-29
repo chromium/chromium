@@ -17,6 +17,7 @@
 #include "components/feed/core/v2/feed_stream.h"
 #include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/metrics_reporter.h"
+#include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/web_feed_subscriptions/subscribe_to_web_feed_task.h"
 #include "components/feed/feed_feature_list.h"
@@ -293,6 +294,7 @@ void WebFeedSubscriptionCoordinator::FollowWebFeedComplete(
   DequeueInflightChange();
   if (result.request_status == WebFeedSubscriptionRequestStatus::kSuccess) {
     model_->OnSubscribed(result.web_feed_info);
+    feed_stream_->SetStreamStale(kWebFeedStream, true);
   }
   SubscriptionInfo info =
       model_->GetSubscriptionInfo(result.followed_web_feed_id);
@@ -338,6 +340,7 @@ void WebFeedSubscriptionCoordinator::UnfollowWebFeedComplete(
     UnsubscribeFromWebFeedTask::Result result) {
   if (!result.unsubscribed_feed_name.empty()) {
     model_->OnUnsubscribed(result.unsubscribed_feed_name);
+    feed_stream_->SetStreamStale(kWebFeedStream, true);
   }
   DequeueInflightChange();
   UnfollowWebFeedResult callback_result;

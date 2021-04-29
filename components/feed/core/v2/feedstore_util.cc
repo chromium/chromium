@@ -112,6 +112,13 @@ base::Time GetStreamViewTime(const Metadata& metadata,
   return result;
 }
 
+bool IsKnownStale(const Metadata& metadata,
+                  const feed::StreamType& stream_type) {
+  const Metadata::StreamMetadata* sm =
+      FindMetadataForStream(metadata, stream_type);
+  return sm ? sm->is_known_stale() : false;
+}
+
 feedstore::Metadata MakeMetadata(const std::string& gaia) {
   feedstore::Metadata md;
   md.set_stream_schema_version(feed::FeedStore::kCurrentStreamSchemaVersion);

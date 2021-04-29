@@ -54,14 +54,13 @@ Result::~Result() = default;
 Result::Result(Result&&) = default;
 Result& Result::operator=(Result&&) = default;
 
-LoadStreamTask::LoadStreamTask(LoadType load_type,
-                               const StreamType& stream_type,
+LoadStreamTask::LoadStreamTask(const Options& options,
                                FeedStream* stream,
                                base::OnceCallback<void(Result)> done_callback)
-    : load_type_(load_type),
-      stream_type_(stream_type),
+    : options_(options),
       stream_(stream),
       done_callback_(std::move(done_callback)) {
+  DCHECK(options.stream_type.IsValid()) << "A stream type must be chosen";
   latencies_ = std::make_unique<LoadLatencyTimes>();
 }
 
@@ -80,21 +79,27 @@ void LoadStreamTask::Run() {
 
   // First, ensure we still should load the model.
   LoadStreamStatus should_not_attempt_reason =
-      stream_->ShouldAttemptLoad(stream_type_,
+      stream_->ShouldAttemptLoad(options_.stream_type,
                                  /*model_loading=*/true);
   if (should_not_attempt_reason != LoadStreamStatus::kNoStatus) {
     return Done(should_not_attempt_reason);
   }
 
-  // Use |kConsistencyTokenOnly| to short-circuit loading from store if we don't
+  if (options_.abort_if_unread_content &&
+      stream_->HasUnreadContent(options_.stream_type)) {
+    Done(LoadStreamStatus::kAlreadyHaveUnreadContent);
+    return;
+  }
+
+  // Use |kPendingActionsOnly| to short-circuit loading from store if we don't
   // need the full stream state.
   auto load_from_store_type =
-      (load_type_ == LoadType::kInitialLoad)
+      (options_.load_type == LoadType::kInitialLoad)
           ? LoadStreamFromStoreTask::LoadType::kFullLoad
           : LoadStreamFromStoreTask::LoadType::kPendingActionsOnly;
   load_from_store_task_ = std::make_unique<LoadStreamFromStoreTask>(
-      load_from_store_type, stream_type_, stream_->GetStore(),
-      stream_->MissedLastRefresh(stream_type_),
+      load_from_store_type, stream_, options_.stream_type, stream_->GetStore(),
+      stream_->MissedLastRefresh(options_.stream_type),
       base::BindOnce(&LoadStreamTask::LoadFromStoreComplete, GetWeakPtr()));
   load_from_store_task_->Execute(base::DoNothing());
 }
@@ -110,25 +115,26 @@ void LoadStreamTask::LoadFromStoreComplete(
   //  - If loading from store works, update the model.
   //  - Otherwise, try to load from the network.
 
-  if (load_type_ == LoadType::kInitialLoad &&
+  if (options_.load_type == LoadType::kInitialLoad &&
       result.status == LoadStreamStatus::kLoadedFromStore) {
     update_request_ = std::move(result.update_request);
     Done(LoadStreamStatus::kLoadedFromStore);
     return;
   }
 
-  // If data in store is stale, we'll continue with a network request, but keep
-  // the stale model data in case we fail to load a fresh feed.
-  if (load_type_ == LoadType::kInitialLoad &&
+  const bool store_is_stale =
       (result.status == LoadStreamStatus::kDataInStoreStaleMissedLastRefresh ||
        result.status == LoadStreamStatus::kDataInStoreIsStale ||
-       result.status ==
-           LoadStreamStatus::kDataInStoreIsStaleTimestampInFuture)) {
+       result.status == LoadStreamStatus::kDataInStoreIsStaleTimestampInFuture);
+
+  // If data in store is stale, we'll continue with a network request, but keep
+  // the stale model data in case we fail to load a fresh feed.
+  if (options_.load_type == LoadType::kInitialLoad && store_is_stale) {
     stale_store_state_ = std::move(result.update_request);
   }
 
   LoadStreamStatus final_status =
-      stream_->ShouldMakeFeedQueryRequest(stream_type_);
+      stream_->ShouldMakeFeedQueryRequest(options_.stream_type);
   if (final_status != LoadStreamStatus::kNoStatus) {
     Done(final_status);
     return;
@@ -143,23 +149,25 @@ void LoadStreamTask::LoadFromStoreComplete(
 
 void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
   bool force_signed_out_request =
-      stream_->ShouldForceSignedOutFeedQueryRequest(stream_type_);
+      stream_->ShouldForceSignedOutFeedQueryRequest(options_.stream_type);
   upload_actions_result_ =
       std::make_unique<UploadActionsTask::Result>(std::move(result));
   latencies_->StepComplete(LoadLatencyTimes::kUploadActions);
 
   feedwire::Request request = CreateFeedQueryRefreshRequest(
-      stream_type_, GetRequestReason(stream_type_, load_type_),
-      stream_->GetRequestMetadata(stream_type_, /*is_for_next_page=*/false),
+      options_.stream_type,
+      GetRequestReason(options_.stream_type, options_.load_type),
+      stream_->GetRequestMetadata(options_.stream_type,
+                                  /*is_for_next_page=*/false),
       stream_->GetMetadata().consistency_token());
 
   const std::string gaia =
       force_signed_out_request ? std::string() : stream_->GetSyncSignedInGaia();
 
-  if (stream_type_.IsForYou() ||
+  if (options_.stream_type.IsForYou() ||
       GetFeedConfig().use_feed_query_requests_for_web_feeds) {
     if (base::FeatureList::IsEnabled(kDiscoFeedEndpoint)) {
-      switch (load_type_) {
+      switch (options_.load_type) {
         case LoadType::kInitialLoad:
           stream_->GetNetwork()
               ->SendApiRequest<QueryInteractiveFeedDiscoverApi>(
@@ -180,7 +188,7 @@ void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
           base::BindOnce(&LoadStreamTask::QueryRequestComplete, GetWeakPtr()));
     }
   } else {
-    DCHECK(stream_type_.IsWebFeed());
+    DCHECK(options_.stream_type.IsWebFeed());
     stream_->GetNetwork()->SendApiRequest<WebFeedListContentsDiscoverApi>(
         std::move(request), gaia,
         base::BindOnce(&LoadStreamTask::QueryApiRequestComplete, GetWeakPtr()));
@@ -204,7 +212,7 @@ void LoadStreamTask::ProcessNetworkResponse(
     NetworkResponseInfo response_info) {
   latencies_->StepComplete(LoadLatencyTimes::kQueryRequest);
 
-  DCHECK(!stream_->GetModel(stream_type_));
+  DCHECK(!stream_->GetModel(options_.stream_type));
 
   network_response_info_ = response_info;
 
@@ -230,7 +238,7 @@ void LoadStreamTask::ProcessNetworkResponse(
       response_data.model_update_request->stream_data);
 
   stream_->GetStore()->OverwriteStream(
-      stream_type_,
+      options_.stream_type,
       std::make_unique<StreamModelUpdateRequest>(
           *response_data.model_update_request),
       base::DoNothing());
@@ -250,7 +258,7 @@ void LoadStreamTask::ProcessNetworkResponse(
   if (response_data.experiments)
     experiments_ = *response_data.experiments;
 
-  if (load_type_ != LoadType::kBackgroundRefresh) {
+  if (options_.load_type != LoadType::kBackgroundRefresh) {
     update_request_ = std::move(response_data.model_update_request);
   }
 
@@ -267,12 +275,12 @@ void LoadStreamTask::Done(LoadStreamStatus status) {
     status = LoadStreamStatus::kLoadedStaleDataFromStoreDueToNetworkFailure;
   }
   Result result;
-  result.stream_type = stream_type_;
+  result.stream_type = options_.stream_type;
   result.load_from_store_status = load_from_store_status_;
   result.stored_content_age = stored_content_age_;
   result.last_added_time = last_added_time_;
   result.final_status = status;
-  result.load_type = load_type_;
+  result.load_type = options_.load_type;
   result.update_request = std::move(update_request_);
   result.request_schedule = std::move(request_schedule_);
   result.network_response_info = network_response_info_;
