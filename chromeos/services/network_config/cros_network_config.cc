@@ -1991,12 +1991,6 @@ void CrosNetworkConfig::GetManagedProperties(
     return;
   }
 
-  // If network is not known by Shill, there are no properties to fetch.
-  if (network->IsNonProfileType()) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
-
   network_configuration_handler_->GetManagedProperties(
       chromeos::LoginState::Get()->primary_user_hash(), network->path(),
       base::BindOnce(&CrosNetworkConfig::OnGetManagedProperties,
