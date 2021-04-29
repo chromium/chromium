@@ -170,8 +170,8 @@ void WaylandWindow::SetPointerFocus(bool focus) {
   // Whenever the window gets the pointer focus back, the cursor shape must be
   // updated. Otherwise, it is invalidated upon wl_pointer::leave and is not
   // restored by the Wayland compositor.
-  if (has_pointer_focus_ && bitmap_)
-    UpdateCursorShape(bitmap_);
+  if (has_pointer_focus_ && cursor_)
+    UpdateCursorShape(cursor_);
 }
 
 bool WaylandWindow::StartDrag(const ui::OSExchangeData& data,
@@ -315,7 +315,7 @@ bool WaylandWindow::ShouldUseNativeFrame() const {
 void WaylandWindow::SetCursor(scoped_refptr<PlatformCursor> platform_cursor) {
   DCHECK(platform_cursor);
 
-  if (bitmap_ == platform_cursor)
+  if (cursor_ == platform_cursor)
     return;
 
   UpdateCursorShape(BitmapCursorOzone::FromPlatformCursor(platform_cursor));
@@ -886,7 +886,7 @@ void WaylandWindow::UpdateCursorShape(scoped_refptr<BitmapCursorOzone> cursor) {
   }
   // The new cursor needs to be stored last to avoid deleting the old cursor
   // while it's still in use.
-  bitmap_ = cursor;
+  cursor_ = cursor;
 }
 
 }  // namespace ui

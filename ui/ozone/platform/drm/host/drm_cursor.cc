@@ -72,7 +72,7 @@ void DrmCursor::ResetDrmCursorProxy() {
 }
 
 gfx::Point DrmCursor::GetBitmapLocationLocked() {
-  return gfx::ToFlooredPoint(location_) - bitmap_->hotspot().OffsetFromOrigin();
+  return gfx::ToFlooredPoint(location_) - cursor_->hotspot().OffsetFromOrigin();
 }
 
 void DrmCursor::SetCursor(gfx::AcceleratedWidget window,
@@ -84,10 +84,10 @@ void DrmCursor::SetCursor(gfx::AcceleratedWidget window,
 
   base::AutoLock lock(lock_);
 
-  if (window_ != window || bitmap_ == platform_cursor)
+  if (window_ != window || cursor_ == platform_cursor)
     return;
 
-  bitmap_ = platform_cursor;
+  cursor_ = platform_cursor;
 
   SendCursorShowLocked();
 }
@@ -209,7 +209,7 @@ void DrmCursor::MoveCursor(const gfx::Vector2dF& delta) {
 
 bool DrmCursor::IsCursorVisible() {
   base::AutoLock lock(lock_);
-  return bitmap_ != nullptr && bitmap_->type() != CursorType::kNone;
+  return cursor_ != nullptr && cursor_->type() != CursorType::kNone;
 }
 
 gfx::PointF DrmCursor::GetLocation() {
@@ -242,13 +242,13 @@ void DrmCursor::SetCursorLocationLocked(const gfx::PointF& location) {
 }
 
 void DrmCursor::SendCursorShowLocked() {
-  if (!bitmap_ || bitmap_->type() == CursorType::kNone) {
+  if (!cursor_ || cursor_->type() == CursorType::kNone) {
     SendCursorHideLocked();
     return;
   }
 
-  CursorSetLockTested(window_, bitmap_->bitmaps(), GetBitmapLocationLocked(),
-                      bitmap_->frame_delay());
+  CursorSetLockTested(window_, cursor_->bitmaps(), GetBitmapLocationLocked(),
+                      cursor_->frame_delay());
 }
 
 void DrmCursor::SendCursorHideLocked() {
@@ -257,7 +257,7 @@ void DrmCursor::SendCursorHideLocked() {
 }
 
 void DrmCursor::SendCursorMoveLocked() {
-  if (!bitmap_ || bitmap_->type() == CursorType::kNone)
+  if (!cursor_ || cursor_->type() == CursorType::kNone)
     return;
 
   MoveLockTested(window_, GetBitmapLocationLocked());

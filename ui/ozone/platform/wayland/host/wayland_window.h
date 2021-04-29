@@ -296,7 +296,7 @@ class WaylandWindow : public PlatformWindow,
   std::list<WaylandSubsurface*> subsurface_stack_below_;
 
   // The current cursor bitmap (immutable).
-  scoped_refptr<BitmapCursorOzone> bitmap_;
+  scoped_refptr<BitmapCursorOzone> cursor_;
 
   // Current bounds of the platform window. This is either initialized, or the
   // requested size by the Wayland compositor. When this is set in SetBounds(),

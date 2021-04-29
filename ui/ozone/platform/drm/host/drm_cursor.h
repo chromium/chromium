@@ -102,7 +102,7 @@ class DrmCursor : public CursorDelegateEvdev {
   gfx::Point GetBitmapLocationLocked();
 
   // The current cursor bitmap (immutable).
-  scoped_refptr<BitmapCursorOzone> bitmap_;
+  scoped_refptr<BitmapCursorOzone> cursor_;
 
   // The window under the cursor.
   gfx::AcceleratedWidget window_;
