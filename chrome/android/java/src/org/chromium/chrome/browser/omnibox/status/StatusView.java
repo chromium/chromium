@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.widget.Toast;
 
 import java.lang.annotation.Retention;
@@ -153,7 +154,9 @@ public class StatusView extends LinearLayout {
         // This is to prevent the visibility of the view being changed both implicitly here and
         // explicitly in setStatusIconShown. The visibility should only be set here through code not
         // related to the dse icon.
-        if (mLocationBarDataProvider != null
+        // Since the tablet never adjusts the alpha manually we want the implicit behavior.
+        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())
+                && mLocationBarDataProvider != null
                 && mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
                         mLocationBarDataProvider.isIncognito())) {
             return;
