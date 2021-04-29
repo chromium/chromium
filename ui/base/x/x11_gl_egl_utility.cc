@@ -21,6 +21,10 @@
 #define EGL_PLATFORM_ANGLE_NATIVE_PLATFORM_TYPE_ANGLE 0x348F
 #endif
 
+#ifndef EGL_PLATFORM_ANGLE_DEVICE_TYPE_SWIFTSHADER_ANGLE
+#define EGL_PLATFORM_ANGLE_DEVICE_TYPE_SWIFTSHADER_ANGLE 0x3487
+#endif
+
 #ifndef EGL_ANGLE_platform_angle
 #define EGL_ANGLE_platform_angle 1
 #define EGL_PLATFORM_ANGLE_NATIVE_PLATFORM_TYPE_ANGLE 0x348F
@@ -35,9 +39,12 @@ namespace ui {
 
 void GetPlatformExtraDisplayAttribs(EGLenum platform_type,
                                     std::vector<EGLAttrib>* attributes) {
-  // ANGLE_NULL doesn't use the visual, and may run without X11 where we can't
-  // get it anyway.
-  if (platform_type != EGL_PLATFORM_ANGLE_TYPE_NULL_ANGLE) {
+  // ANGLE_NULL and SwiftShader backends don't use the visual,
+  // and may run without X11 where we can't get it anyway.
+  if ((platform_type != EGL_PLATFORM_ANGLE_TYPE_NULL_ANGLE) &&
+      (std::find(attributes->begin(), attributes->end(),
+                 EGL_PLATFORM_ANGLE_DEVICE_TYPE_SWIFTSHADER_ANGLE) ==
+       attributes->end())) {
     x11::VisualId visual_id;
     XVisualManager::GetInstance()->ChooseVisualForWindow(
         true, &visual_id, nullptr, nullptr, nullptr);

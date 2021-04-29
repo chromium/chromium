@@ -182,7 +182,8 @@ GLImplementationParts GetSoftwareGLImplementation() {
 }
 
 GLImplementationParts GetSoftwareGLForTestsImplementation() {
-#if defined(OS_WIN)
+#if defined(OS_WIN) || \
+    (defined(OS_LINUX) && !defined(OS_FUCHSIA) && !defined(USE_OZONE))
   return GetSoftwareGLImplementation();
 #else
   return GetLegacySoftwareGLImplementation();
