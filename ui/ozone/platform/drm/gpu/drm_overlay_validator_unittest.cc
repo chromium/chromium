@@ -89,7 +89,7 @@ class DrmOverlayValidatorTest : public testing::Test {
     bool status = drm_->plane_manager()->Commit(std::move(commit_request),
                                                 DRM_MODE_ATOMIC_ALLOW_MODESET);
 
-    for (const ui::CrtcCommitRequest& crtc_request : commit_request)
+    for (const ui::CrtcCommitRequest& crtc_request : request_for_update)
       controller->UpdateState(crtc_request);
 
     return status;
