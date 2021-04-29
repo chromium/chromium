@@ -195,6 +195,8 @@ void ScriptedIdleTaskController::RunCallback(
   IdleTask* idle_task = idle_task_iter->value;
   DCHECK(idle_task);
 
+  recordreplay::Assert("ScriptedIdleTaskController::RunCallback #1");
+
   base::TimeDelta allotted_time =
       std::max(deadline - base::TimeTicks::Now(), base::TimeDelta());
 
