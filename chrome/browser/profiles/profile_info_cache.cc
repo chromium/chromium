@@ -559,12 +559,10 @@ void ProfileInfoCache::LoadGAIAPictureIfNeeded() {
 
 ProfileAttributesEntry* ProfileInfoCache::InitEntryWithKey(
     const std::string& key) {
-  // TODO(https://crbug.com/1195784): revert CHECKs back to DCHECKs after the
-  // crash is investigated.
-  CHECK(!base::Contains(keys_, key));
+  DCHECK(!base::Contains(keys_, key));
   keys_.push_back(key);
   base::FilePath path = user_data_dir_.AppendASCII(key);
-  CHECK(!base::Contains(profile_attributes_entries_, path.value()));
+  DCHECK(!base::Contains(profile_attributes_entries_, path.value()));
   auto new_entry = std::make_unique<ProfileAttributesEntry>();
   auto* new_entry_raw = new_entry.get();
   new_entry->Initialize(this, path, prefs_);
