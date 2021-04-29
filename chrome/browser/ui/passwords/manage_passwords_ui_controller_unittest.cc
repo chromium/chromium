@@ -1358,6 +1358,37 @@ TEST_F(ManagePasswordsUIControllerTest, AuthenticateUserToRevealPasswords) {
 #endif
 }
 
+TEST_F(ManagePasswordsUIControllerTest, SaveBubbleAfterLeakCheck) {
+  std::vector<const PasswordForm*> matches;
+  auto test_form_manager = CreateFormManagerWithBestMatches(&matches);
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
+  controller()->OnPasswordSubmitted(std::move(test_form_manager));
+  EXPECT_TRUE(controller()->opened_automatic_bubble());
+
+  // Leak detection dialog hides the bubble.
+  PasswordLeakDialogMock dialog_prompt;
+  CredentialLeakDialogController* dialog_controller = nullptr;
+  EXPECT_CALL(*controller(), CreateCredentialLeakPrompt)
+      .WillOnce(DoAll(SaveArg<0>(&dialog_controller), Return(&dialog_prompt)));
+  EXPECT_CALL(dialog_prompt, ShowCredentialLeakPrompt);
+  controller()->OnCredentialLeak(
+      password_manager::CreateLeakType(password_manager::IsSaved(false),
+                                       password_manager::IsReused(false),
+                                       password_manager::IsSyncing(false)),
+      GURL(kExampleUrl));
+  // The bubble is gone.
+  EXPECT_FALSE(controller()->opened_bubble());
+
+  // Close the dialog.
+  EXPECT_CALL(dialog_prompt, ControllerGone);
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
+  dialog_controller->OnAcceptDialog();
+
+  // The save bubble is back.
+  EXPECT_TRUE(controller()->opened_automatic_bubble());
+  ExpectIconAndControllerStateIs(password_manager::ui::PENDING_PASSWORD_STATE);
+}
+
 TEST_F(ManagePasswordsUIControllerTest, UpdateBubbleAfterLeakCheck) {
   std::vector<const PasswordForm*> matches = {&test_local_form()};
   auto test_form_manager = CreateFormManagerWithBestMatches(&matches);

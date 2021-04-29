@@ -634,7 +634,8 @@ void ManagePasswordsUIController::OnDialogHidden() {
 
 void ManagePasswordsUIController::OnLeakDialogHidden() {
   dialog_controller_.reset();
-  if (GetState() == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE) {
+  if (GetState() == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
+      GetState() == password_manager::ui::PENDING_PASSWORD_STATE) {
     bubble_status_ = BubbleStatus::SHOULD_POP_UP;
     UpdateBubbleAndIconVisibility();
   }
