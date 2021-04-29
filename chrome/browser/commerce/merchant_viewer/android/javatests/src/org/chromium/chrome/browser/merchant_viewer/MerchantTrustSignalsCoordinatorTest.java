@@ -25,11 +25,13 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.MessageClearReason;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.messages.DismissReason;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
@@ -77,6 +79,9 @@ public class MerchantTrustSignalsCoordinatorTest {
     @Mock
     private DisplayAndroid mMockDisplayAndroid;
 
+    @Mock
+    private MerchantTrustMetrics mMockMetrics;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -96,7 +101,8 @@ public class MerchantTrustSignalsCoordinatorTest {
         coordinator.maybeDisplayMessage(
                 new MerchantTrustMessageContext("fake_host", mMockWebContents));
 
-        verify(mMockMerchantMessageScheduler, times(1)).clear();
+        verify(mMockMerchantMessageScheduler, times(1))
+                .clear(eq(MessageClearReason.NAVIGATE_TO_DIFFERENT_DOMAIN));
 
         // TODO: validate PropertyModel once it's populated.
         verify(mMockMerchantMessageScheduler, times(1))
@@ -115,7 +121,8 @@ public class MerchantTrustSignalsCoordinatorTest {
         coordinator.maybeDisplayMessage(
                 new MerchantTrustMessageContext("fake_host", mMockWebContents));
 
-        verify(mMockMerchantMessageScheduler, times(1)).clear();
+        verify(mMockMerchantMessageScheduler, times(1))
+                .clear(eq(MessageClearReason.NAVIGATE_TO_SAME_DOMAIN));
 
         // TODO: validate PropertyModel once it's populated.
         verify(mMockMerchantMessageScheduler, times(1))
@@ -134,7 +141,8 @@ public class MerchantTrustSignalsCoordinatorTest {
         coordinator.maybeDisplayMessage(
                 new MerchantTrustMessageContext("fake_host", mMockWebContents));
 
-        verify(mMockMerchantMessageScheduler, times(1)).clear();
+        verify(mMockMerchantMessageScheduler, times(1))
+                .clear(eq(MessageClearReason.NAVIGATE_TO_DIFFERENT_DOMAIN));
 
         // TODO: validate PropertyModel once it's populated.
         verify(mMockMerchantMessageScheduler, times(1))
@@ -142,9 +150,23 @@ public class MerchantTrustSignalsCoordinatorTest {
                         eq(MerchantTrustSignalsCoordinator.MESSAGE_ENQUEUE_DELAY_MILLIS));
     }
 
+    @Test
+    public void testOnMessageTapped() {
+        MerchantTrustSignalsCoordinator coordinator = getCoordinatorUnderTest();
+        coordinator.onMessageTapped();
+        verify(mMockMetrics, times(1)).recordMetricsForMessageTapped();
+    }
+
+    @Test
+    public void testOnMessageDismissed() {
+        MerchantTrustSignalsCoordinator coordinator = getCoordinatorUnderTest();
+        coordinator.onMessageDismissed(DismissReason.TIMER);
+        verify(mMockMetrics, times(1)).recordMetricsForMessageDismissed(eq(DismissReason.TIMER));
+    }
+
     private MerchantTrustSignalsCoordinator getCoordinatorUnderTest() {
         return new MerchantTrustSignalsCoordinator(mMockContext, mMockWindowAndroid,
                 mMockBottomSheetController, mMockDecorView, mMockTabModelSelector,
-                mMockMerchantMessageScheduler, mMockTabProvider);
+                mMockMerchantMessageScheduler, mMockTabProvider, mMockMetrics);
     }
 }

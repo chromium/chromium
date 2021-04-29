@@ -9,6 +9,7 @@ import android.os.Handler;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.MessageClearReason;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageScopeType;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -18,16 +19,22 @@ public class MerchantTrustMessageScheduler {
     public static final long MESSAGE_ENQUEUE_NO_DELAY = 0;
 
     private final MessageDispatcher mMessageDispatcher;
+    private final MerchantTrustMetrics mMetrics;
     private Handler mEnqueueMessageTimer;
     private MerchantTrustMessageContext mScheduledMessageContext;
 
-    public MerchantTrustMessageScheduler(MessageDispatcher messageDispatcher) {
+    public MerchantTrustMessageScheduler(
+            MessageDispatcher messageDispatcher, MerchantTrustMetrics metrics) {
         mEnqueueMessageTimer = new Handler(ThreadUtils.getUiThreadLooper());
         mMessageDispatcher = messageDispatcher;
+        mMetrics = metrics;
     }
 
     /** Cancels any scheduled messages. */
-    void clear() {
+    void clear(@MessageClearReason int clearReason) {
+        if (mScheduledMessageContext != null) {
+            mMetrics.recordMetricsForMessageCleared(clearReason);
+        }
         mEnqueueMessageTimer.removeCallbacksAndMessages(null);
         setScheduledMessageContext(null);
     }
@@ -36,10 +43,12 @@ public class MerchantTrustMessageScheduler {
     void schedule(
             PropertyModel model, MerchantTrustMessageContext messageContext, long delayInMillis) {
         setScheduledMessageContext(messageContext);
+        mMetrics.recordMetricsForMessagePrepared();
         mEnqueueMessageTimer.postDelayed(() -> {
             if (messageContext.isValid()) {
                 mMessageDispatcher.enqueueMessage(
                         model, messageContext.getWebContents(), MessageScopeType.NAVIGATION);
+                mMetrics.recordMetricsForMessageShown();
             }
             setScheduledMessageContext(null);
         }, delayInMillis);
@@ -55,7 +64,8 @@ public class MerchantTrustMessageScheduler {
         mEnqueueMessageTimer = handler;
     }
 
-    private void setScheduledMessageContext(MerchantTrustMessageContext messageContext) {
+    @VisibleForTesting
+    void setScheduledMessageContext(MerchantTrustMessageContext messageContext) {
         synchronized (mEnqueueMessageTimer) {
             mScheduledMessageContext = messageContext;
         }

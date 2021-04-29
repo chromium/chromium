@@ -13,6 +13,8 @@ import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.embedder_support.view.ContentView;
@@ -29,6 +31,7 @@ public class MerchantTrustDetailsTabCoordinator implements View.OnLayoutChangeLi
     private final Supplier<Tab> mTabSupplier;
     private final View mLayoutView;
     private final MerchantTrustDetailsTabMediator mMediator;
+    private final MerchantTrustMetrics mMetrics;
 
     private WebContents mWebContents;
     private ContentView mWebContentView;
@@ -45,19 +48,20 @@ public class MerchantTrustDetailsTabCoordinator implements View.OnLayoutChangeLi
      * @param layoutView decor view.
      */
     public MerchantTrustDetailsTabCoordinator(Context context, WindowAndroid windowAndroid,
-            BottomSheetController bottomSheetController, Supplier<Tab> tabSupplier,
-            View layoutView) {
+            BottomSheetController bottomSheetController, Supplier<Tab> tabSupplier, View layoutView,
+            MerchantTrustMetrics metrics) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mTabSupplier = tabSupplier;
         mBottomSheetController = bottomSheetController;
         mLayoutView = layoutView;
+        mMetrics = metrics;
 
         float topControlsHeight =
                 mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
                 / mWindowAndroid.getDisplay().getDipScale();
         mMediator = new MerchantTrustDetailsTabMediator(
-                mBottomSheetController, (int) topControlsHeight);
+                mBottomSheetController, (int) topControlsHeight, mMetrics);
     }
 
     /** Displays the details tab sheet. */
@@ -116,11 +120,40 @@ public class MerchantTrustDetailsTabCoordinator implements View.OnLayoutChangeLi
 
         // TODO: Observe changes and log metrics.
         mBottomSheetObserver = new EmptyBottomSheetObserver() {
+            private int mCloseReason;
+
             @Override
             public void onSheetContentChanged(BottomSheetContent newContent) {
                 if (newContent != mSheetContent) {
+                    mMetrics.recordMetricsForBottomSheetClosed(mCloseReason);
                     destroyWebContents();
                 }
+            }
+
+            @Override
+            public void onSheetOpened(@StateChangeReason int reason) {
+                mMetrics.recordMetricsForBottomSheetHalfOpened();
+            }
+
+            @Override
+            public void onSheetStateChanged(int newState) {
+                if (mSheetContent == null) return;
+                switch (newState) {
+                    case SheetState.PEEK:
+                        mMetrics.recordMetricsForBottomSheetPeeked();
+                        break;
+                    case SheetState.HALF:
+                        mMetrics.recordMetricsForBottomSheetHalfOpened();
+                        break;
+                    case SheetState.FULL:
+                        mMetrics.recordMetricsForBottomSheetFullyOpened();
+                        break;
+                }
+            }
+
+            @Override
+            public void onSheetClosed(int reason) {
+                mCloseReason = reason;
             }
         };
 

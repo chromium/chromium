@@ -51680,6 +51680,24 @@ Called by update_use_counter_css.py.-->
   <int value="7" label="Could not identify the source language"/>
 </enum>
 
+<enum name="MerchantTrustMessageClearReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Navigate to same domain"/>
+  <int value="2" label="Navigate to different domain"/>
+</enum>
+
+<enum name="MessageDismissReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Primary action"/>
+  <int value="2" label="Secondary action"/>
+  <int value="3" label="Timer"/>
+  <int value="4" label="Gesture"/>
+  <int value="5" label="Tab switched"/>
+  <int value="6" label="Tab destroyed"/>
+  <int value="7" label="Activity destroyed"/>
+  <int value="8" label="Scope destroyed"/>
+</enum>
+
 <enum name="MessageLoopProblems">
   <int value="0" label="Message Post"/>
   <int value="1" label="Completion Post"/>

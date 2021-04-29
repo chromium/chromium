@@ -12,6 +12,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustDetailsTabMediator.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustMessageContext.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustMessageScheduler.java",
+    "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustMetrics.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustSignalsCoordinator.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustSignalsEvent.java",
     "java/src/org/chromium/chrome/browser/merchant_viewer/MerchantTrustSignalsEventStorage.java",

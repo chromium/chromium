@@ -9400,6 +9400,107 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="MerchantTrust.BottomSheet.CloseReason"
+    enum="BottomSheet.StateChangeReason" expires_after="M95">
+  <owner>ayman@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the reason that the merchant trust bottom sheet is closed. Recorded
+    when the bottom sheet is closed. Implemented for Android.
+  </summary>
+</histogram>
+
+<histogram name="MerchantTrust.BottomSheet.DurationFullyOpened" units="ms"
+    expires_after="M95">
+  <owner>ayman@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the duration in milliseconds that the merchant trust bottom sheet is
+    left fully expanded. Implemented for Android.
+  </summary>
+</histogram>
+
+<histogram name="MerchantTrust.BottomSheet.DurationHalfOpened" units="ms"
+    expires_after="M95">
+  <owner>ayman@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the duration in milliseconds that the merchant trust bottom sheet is
+    left half expanded. Implemented for Android.
+  </summary>
+</histogram>
+
+<histogram name="MerchantTrust.BottomSheet.DurationPeeked" units="ms"
+    expires_after="M95">
+  <owner>ayman@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the duration in milliseconds that the merchant trust bottom sheet is
+    peeking. Implemented for Android.
+  </summary>
+</histogram>
+
+<histogram name="MerchantTrust.BottomSheet.IsFullyViewed" enum="Boolean"
+    expires_after="M95">
+  <owner>ayman@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records whether the merchant trust bottom sheet is fully expanded. Recorded
+    when the bottom sheet is closed. Implemented for Android.
+  </summary>
+</histogram>
+
+<histogram name="MerchantTrust.BottomSheet.IsHalfViewed" enum="Boolean"
+    expires_after="M95">
+  <owner>ayman@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records whether the merchant trust bottom sheet is half expanded. Recorded
+    when the bottom sheet is closed. Implemented for Android.
+  </summary>
+</histogram>
+
+<histogram name="MerchantTrust.Message.ClearReason"
+    enum="MerchantTrustMessageClearReason" expires_after="M95">
+  <owner>ayman@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the reason that the merchant trust message is cleared in the
+    MessageDispatcher queue. Right now we only record message being cleared when
+    user navigates away from current page. Implemented for Android.
+  </summary>
+</histogram>
+
+<histogram name="MerchantTrust.Message.DismissReason"
+    enum="MessageDismissReason" expires_after="M95">
+  <owner>ayman@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the reason that the merchant trust message is dismissed. Implemented
+    for Android.
+  </summary>
+</histogram>
+
+<histogram name="MerchantTrust.Message.DurationPrepared" units="ms"
+    expires_after="M95">
+  <owner>ayman@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the duration in milliseconds that the merchant trust message is in
+    the MessageDispatcher queue. Implemented for Android.
+  </summary>
+</histogram>
+
+<histogram name="MerchantTrust.Message.DurationShown" units="ms"
+    expires_after="M95">
+  <owner>ayman@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the duration in milliseconds that the merchant trust message is
+    shown. Implemented for Android.
+  </summary>
+</histogram>
+
 <histogram name="Mist.SwitchResult" enum="MistSwitchResult" expires_after="M77">
   <owner>akhouderchah@chromium.org</owner>
   <owner>benchan@chromium.org</owner>

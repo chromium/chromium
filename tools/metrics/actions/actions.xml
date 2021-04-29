@@ -13117,6 +13117,23 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="MerchantTrust.BottomSheet.NavigateLink">
+  <owner>ayman@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Triggered when user navigates to a new link on the merchant trust bottom
+    sheet.
+  </description>
+</action>
+
+<action name="MerchantTrust.Message.Tapped">
+  <owner>ayman@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Triggered when user taps the merchant trust message.
+  </description>
+</action>
+
 <action name="MiddleClickedBookmarkBarFolder">
   <owner>dfried@chromium.org</owner>
   <description>
