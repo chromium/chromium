@@ -31,7 +31,7 @@ bool GpuMemoryBufferImageCopy::EnsureMemoryBuffer(int width, int height) {
 
     gpu_memory_buffer_ = gpu_memory_buffer_manager->CreateGpuMemoryBuffer(
         gfx::Size(width, height), gfx::BufferFormat::RGBA_8888,
-        gfx::BufferUsage::SCANOUT, gpu::kNullSurfaceHandle);
+        gfx::BufferUsage::SCANOUT, gpu::kNullSurfaceHandle, nullptr);
     if (!gpu_memory_buffer_)
       return false;
 

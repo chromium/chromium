@@ -67,10 +67,12 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
  public:
   ZeroCopyRasterBufferImpl(
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
+      base::WaitableEvent* shutdown_event,
       const ResourcePool::InUsePoolResource& in_use_resource,
       ZeroCopyGpuBacking* backing)
       : backing_(backing),
         gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
+        shutdown_event_(shutdown_event),
         resource_size_(in_use_resource.size()),
         resource_format_(in_use_resource.format()),
         resource_color_space_(in_use_resource.color_space()),
@@ -124,7 +126,7 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
     if (!gpu_memory_buffer_) {
       gpu_memory_buffer_ = gpu_memory_buffer_manager_->CreateGpuMemoryBuffer(
           resource_size_, viz::BufferFormat(resource_format_), kBufferUsage,
-          gpu::kNullSurfaceHandle);
+          gpu::kNullSurfaceHandle, shutdown_event_);
       // Note that GpuMemoryBuffer allocation can fail.
       // https://crbug.com/554541
       if (!gpu_memory_buffer_)
@@ -156,6 +158,7 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
 
   // These fields are for use on the worker thread.
   gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager_;
+  base::WaitableEvent* shutdown_event_;
   gfx::Size resource_size_;
   viz::ResourceFormat resource_format_;
   gfx::ColorSpace resource_color_space_;
@@ -201,8 +204,8 @@ ZeroCopyRasterBufferProvider::AcquireBufferForRaster(
   ZeroCopyGpuBacking* backing =
       static_cast<ZeroCopyGpuBacking*>(resource.gpu_backing());
 
-  return std::make_unique<ZeroCopyRasterBufferImpl>(gpu_memory_buffer_manager_,
-                                                    resource, backing);
+  return std::make_unique<ZeroCopyRasterBufferImpl>(
+      gpu_memory_buffer_manager_, shutdown_event_, resource, backing);
 }
 
 void ZeroCopyRasterBufferProvider::Flush() {}
@@ -232,6 +235,11 @@ uint64_t ZeroCopyRasterBufferProvider::SetReadyToDrawCallback(
     uint64_t pending_callback_id) const {
   // Zero-copy resources are immediately ready to draw.
   return 0;
+}
+
+void ZeroCopyRasterBufferProvider::SetShutdownEvent(
+    base::WaitableEvent* shutdown_event) {
+  shutdown_event_ = shutdown_event;
 }
 
 void ZeroCopyRasterBufferProvider::Shutdown() {}

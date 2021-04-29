@@ -255,7 +255,7 @@ FastInkHost::FastInkHost(aura::Window* host_window,
                                   SK_B32_SHIFT ? gfx::BufferFormat::RGBA_8888
                                                : gfx::BufferFormat::BGRA_8888,
                                   gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
-                                  gpu::kNullSurfaceHandle);
+                                  gpu::kNullSurfaceHandle, nullptr);
   LOG_IF(ERROR, !gpu_memory_buffer_) << "Failed to create GPU memory buffer";
 
   if (ash::switches::ShouldClearFastInkBuffer()) {

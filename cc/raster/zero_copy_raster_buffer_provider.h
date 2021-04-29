@@ -15,6 +15,7 @@
 #include "cc/raster/raster_buffer_provider.h"
 
 namespace base {
+class WaitableEvent;
 namespace trace_event {
 class ConvertableToTraceFormat;
 }
@@ -56,6 +57,7 @@ class CC_EXPORT ZeroCopyRasterBufferProvider : public RasterBufferProvider {
       const std::vector<const ResourcePool::InUsePoolResource*>& resources,
       base::OnceClosure callback,
       uint64_t pending_callback_id) const override;
+  void SetShutdownEvent(base::WaitableEvent* shutdown_event) override;
   void Shutdown() override;
 
  private:
@@ -63,6 +65,7 @@ class CC_EXPORT ZeroCopyRasterBufferProvider : public RasterBufferProvider {
       const;
 
   gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager_;
+  base::WaitableEvent* shutdown_event_ = nullptr;
   viz::ContextProvider* compositor_context_provider_;
   viz::ResourceFormat tile_format_;
 };

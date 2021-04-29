@@ -131,7 +131,8 @@ ClientGpuMemoryBufferManager::CreateGpuMemoryBuffer(
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
-    gpu::SurfaceHandle surface_handle) {
+    gpu::SurfaceHandle surface_handle,
+    base::WaitableEvent* shutdown_event) {
   // Note: this can be called from multiple threads at the same time. Some of
   // those threads may not have a TaskRunner set.
   DCHECK_EQ(gpu::kNullSurfaceHandle, surface_handle);

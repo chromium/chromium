@@ -396,7 +396,7 @@ class CameraDeviceDelegateTest : public ::testing::Test {
                 CreateGpuMemoryBuffer(
                     _, gfx::BufferFormat::YUV_420_BIPLANAR,
                     gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
-                    gpu::kNullSurfaceHandle))
+                    gpu::kNullSurfaceHandle, nullptr))
         .Times(1)
         .WillOnce(Invoke(&unittest_internal::MockGpuMemoryBufferManager::
                              CreateFakeGpuMemoryBuffer));
@@ -404,7 +404,7 @@ class CameraDeviceDelegateTest : public ::testing::Test {
         mock_gpu_memory_buffer_manager_,
         CreateGpuMemoryBuffer(_, gfx::BufferFormat::R_8,
                               gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE,
-                              gpu::kNullSurfaceHandle))
+                              gpu::kNullSurfaceHandle, nullptr))
         .Times(AtMost(1))
         .WillOnce(Invoke(&unittest_internal::MockGpuMemoryBufferManager::
                              CreateFakeGpuMemoryBuffer));
@@ -413,7 +413,7 @@ class CameraDeviceDelegateTest : public ::testing::Test {
                     gfx::Size(kDefaultWidth, kDefaultHeight),
                     gfx::BufferFormat::YUV_420_BIPLANAR,
                     gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
-                    gpu::kNullSurfaceHandle))
+                    gpu::kNullSurfaceHandle, nullptr))
         .Times(1)
         .WillOnce(Invoke(&unittest_internal::MockGpuMemoryBufferManager::
                              CreateFakeGpuMemoryBuffer));
@@ -421,7 +421,7 @@ class CameraDeviceDelegateTest : public ::testing::Test {
                 CreateGpuMemoryBuffer(
                     gfx::Size(kJpegMaxBufferSize, 1), gfx::BufferFormat::R_8,
                     gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE,
-                    gpu::kNullSurfaceHandle))
+                    gpu::kNullSurfaceHandle, nullptr))
         .Times(AtMost(1))
         .WillOnce(Invoke(&unittest_internal::MockGpuMemoryBufferManager::
                              CreateFakeGpuMemoryBuffer));

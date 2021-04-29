@@ -57,7 +57,8 @@ InProcessGpuMemoryBufferManager::CreateGpuMemoryBuffer(
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
-    gpu::SurfaceHandle surface_handle) {
+    gpu::SurfaceHandle surface_handle,
+    base::WaitableEvent* shutdown_event) {
   gfx::GpuMemoryBufferId id(next_gpu_memory_id_++);
   gfx::GpuMemoryBufferHandle buffer_handle =
       gpu_memory_buffer_factory_->CreateGpuMemoryBuffer(

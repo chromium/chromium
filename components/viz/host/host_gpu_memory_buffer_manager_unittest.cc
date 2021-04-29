@@ -295,18 +295,17 @@ class HostGpuMemoryBufferManagerTest : public ::testing::Test {
     std::unique_ptr<gfx::GpuMemoryBuffer> buffer;
     base::RunLoop run_loop;
     diff_thread.task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(
-                       [](HostGpuMemoryBufferManager* manager,
-                          std::unique_ptr<gfx::GpuMemoryBuffer>* out_buffer,
-                          base::OnceClosure callback) {
-                         *out_buffer = manager->CreateGpuMemoryBuffer(
-                             gfx::Size(64, 64), gfx::BufferFormat::YVU_420,
-                             gfx::BufferUsage::GPU_READ,
-                             gpu::kNullSurfaceHandle);
-                         std::move(callback).Run();
-                       },
-                       gpu_memory_buffer_manager_.get(), &buffer,
-                       run_loop.QuitClosure()));
+        FROM_HERE,
+        base::BindOnce(
+            [](HostGpuMemoryBufferManager* manager,
+               std::unique_ptr<gfx::GpuMemoryBuffer>* out_buffer,
+               base::OnceClosure callback) {
+              *out_buffer = manager->CreateGpuMemoryBuffer(
+                  gfx::Size(64, 64), gfx::BufferFormat::YVU_420,
+                  gfx::BufferUsage::GPU_READ, gpu::kNullSurfaceHandle, nullptr);
+              std::move(callback).Run();
+            },
+            gpu_memory_buffer_manager_.get(), &buffer, run_loop.QuitClosure()));
     run_loop.Run();
     return buffer;
   }

@@ -24,7 +24,7 @@ CameraBufferFactory::CreateGpuMemoryBuffer(const gfx::Size& size,
     return nullptr;
   }
   return buf_manager->CreateGpuMemoryBuffer(size, format, usage,
-                                            gpu::kNullSurfaceHandle);
+                                            gpu::kNullSurfaceHandle, nullptr);
 }
 
 // There's no good way to resolve the HAL pixel format to the platform-specific

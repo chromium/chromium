@@ -72,6 +72,7 @@ HostGpuMemoryBufferManager::HostGpuMemoryBufferManager(
       client_id_(client_id),
       gpu_memory_buffer_support_(std::move(gpu_memory_buffer_support)),
       pool_(base::MakeRefCounted<base::UnsafeSharedMemoryPool>()),
+      runs_on_ui_thread_(task_runner->BelongsToCurrentThread()),
       task_runner_(std::move(task_runner)) {
   if (!WillGetGmbConfigFromGpu()) {
     native_configurations_ = gpu::GetNativeGpuMemoryBufferConfigurations(
@@ -205,20 +206,33 @@ HostGpuMemoryBufferManager::CreateGpuMemoryBuffer(
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
-    gpu::SurfaceHandle surface_handle) {
+    gpu::SurfaceHandle surface_handle,
+    base::WaitableEvent* shutdown_event) {
   gfx::GpuMemoryBufferId id(next_gpu_memory_id_++);
   gfx::GpuMemoryBufferHandle handle;
   base::WaitableEvent wait_event(
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
   DCHECK(!task_runner_->BelongsToCurrentThread());
+
+  // A refcounted wrapper around a bool so that if the thread waiting on a
+  // PostTask to the main thread is quit due to shutdown and the task runs
+  // later on the message loop, it can detect this and not use the
+  // now deleted |handle| and |wait_event|. A boolean is fine since if it
+  // is set on the worker thread that means the main thread is blocked, and
+  // would only run once the worker thread set the boolean.
+  auto cancelled = base::MakeRefCounted<base::RefCountedData<bool>>(false);
+
   auto reply_callback = base::BindOnce(
-      [](gfx::GpuMemoryBufferHandle* handle, base::WaitableEvent* wait_event,
+      [](scoped_refptr<base::RefCountedData<bool>> cancelled,
+         gfx::GpuMemoryBufferHandle* handle, base::WaitableEvent* wait_event,
          gfx::GpuMemoryBufferHandle allocated_buffer_handle) {
+        if (cancelled->data)
+          return;
         *handle = std::move(allocated_buffer_handle);
         wait_event->Signal();
       },
-      &handle, &wait_event);
+      cancelled, &handle, &wait_event);
   // We block with a WaitableEvent until the callback is run. So using
   // base::Unretained() is safe here.
   auto allocate_callback =
@@ -228,7 +242,21 @@ HostGpuMemoryBufferManager::CreateGpuMemoryBuffer(
   task_runner_->PostTask(FROM_HERE, std::move(allocate_callback));
   base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope
       allow_base_sync_primitives;
-  wait_event.Wait();
+  if (runs_on_ui_thread_ && shutdown_event) {
+    // If this class is running on the UI thread then
+    // TileManager::FinishTasksAndCleanUp could block on the worker thread where
+    // this task is running. That could in turn block on a task posted to the UI
+    // thread. We avoid this deadlock by having an event that TileManager can
+    // set to cancel this wait.
+    base::WaitableEvent* waitables[] = {&wait_event, shutdown_event};
+    size_t index =
+        base::WaitableEvent::WaitMany(waitables, base::size(waitables));
+    if (index == 1)
+      cancelled->data = true;
+  } else {
+    wait_event.Wait();
+  }
+
   if (handle.is_null())
     return nullptr;
   // The destruction callback can be called on any thread. So use an

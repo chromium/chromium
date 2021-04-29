@@ -79,7 +79,8 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
-      gpu::SurfaceHandle surface_handle) override;
+      gpu::SurfaceHandle surface_handle,
+      base::WaitableEvent* shutdown_event) override;
   void SetDestructionSyncToken(gfx::GpuMemoryBuffer* buffer,
                                const gpu::SyncToken& sync_token) override;
   void CopyGpuMemoryBufferAsync(
@@ -153,6 +154,8 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
 
   gpu::GpuMemoryBufferConfigurationSet native_configurations_;
   base::AtomicFlag native_configurations_initialized_;
+
+  const bool runs_on_ui_thread_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::WeakPtr<HostGpuMemoryBufferManager> weak_ptr_;

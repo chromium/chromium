@@ -365,7 +365,8 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
 
     gpu_memory_buffer_ = gpu_memory_buffer_manager->CreateGpuMemoryBuffer(
         gfx::Size(size), ColorParams().GetBufferFormat(),
-        gfx::BufferUsage::SCANOUT_CPU_READ_WRITE, gpu::kNullSurfaceHandle);
+        gfx::BufferUsage::SCANOUT_CPU_READ_WRITE, gpu::kNullSurfaceHandle,
+        nullptr);
     if (!gpu_memory_buffer_)
       return;
 

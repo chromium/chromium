@@ -78,7 +78,7 @@ ArcGhostWindowShellSurface::ArcGhostWindowShellSurface(
           ->GetGpuMemoryBufferManager()
           ->CreateGpuMemoryBuffer({1, 1}, gfx::BufferFormat::RGBA_8888,
                                   gfx::BufferUsage::GPU_READ,
-                                  gpu::kNullSurfaceHandle));
+                                  gpu::kNullSurfaceHandle, nullptr));
   controller_surface_->Attach(buffer_.get());
   controller_surface_->SetFrame(exo::SurfaceFrameType::NORMAL);
   controller_surface_->Commit();

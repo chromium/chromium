@@ -18,6 +18,10 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
+namespace base {
+class WaitableEvent;
+}
+
 namespace cc {
 class Resource;
 
@@ -87,6 +91,12 @@ class CC_EXPORT RasterBufferProvider {
       const std::vector<const ResourcePool::InUsePoolResource*>& resources,
       base::OnceClosure callback,
       uint64_t pending_callback_id) const = 0;
+
+  // Sets an event, guaranteed to live past this object's lifetime, that is
+  // signalled when the TileManger is cancelling tasks. Subclasses can use
+  // this as an argument to GpuMemoryBufferManager::CreateGpuMemoryBuffer to
+  // avoid deadlocks when TileManager is cancelling tasks.
+  virtual void SetShutdownEvent(base::WaitableEvent* shutdown_event) {}
 
   // Shutdown for doing cleanup.
   virtual void Shutdown() = 0;

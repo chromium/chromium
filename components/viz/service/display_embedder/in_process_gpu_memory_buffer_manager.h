@@ -42,7 +42,8 @@ class VIZ_SERVICE_EXPORT InProcessGpuMemoryBufferManager
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
-      gpu::SurfaceHandle surface_handle) override;
+      gpu::SurfaceHandle surface_handle,
+      base::WaitableEvent* shutdown_event) override;
   void SetDestructionSyncToken(gfx::GpuMemoryBuffer* buffer,
                                const gpu::SyncToken& sync_token) override;
   void CopyGpuMemoryBufferAsync(

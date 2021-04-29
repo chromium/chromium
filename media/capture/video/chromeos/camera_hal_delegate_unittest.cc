@@ -232,7 +232,7 @@ TEST_F(CameraHalDelegateTest, GetBuiltinCameraInfo) {
               CreateGpuMemoryBuffer(
                   _, gfx::BufferFormat::YUV_420_BIPLANAR,
                   gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
-                  gpu::kNullSurfaceHandle))
+                  gpu::kNullSurfaceHandle, nullptr))
       .Times(1)
       .WillOnce(Invoke(&unittest_internal::MockGpuMemoryBufferManager::
                            CreateFakeGpuMemoryBuffer));

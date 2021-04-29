@@ -1703,7 +1703,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
       // round-trip to the browser process here.
       gpu_memory_buffer = gpu_memory_buffer_manager->CreateGpuMemoryBuffer(
           gfx::Size(size), buffer_format, gfx::BufferUsage::SCANOUT,
-          gpu::kNullSurfaceHandle);
+          gpu::kNullSurfaceHandle, nullptr);
 
       if (gpu_memory_buffer) {
         back_buffer_mailbox = sii->CreateSharedImage(

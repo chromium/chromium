@@ -280,7 +280,8 @@ ViewTreeHostRootView::ObtainResource() {
       buffer_size_,
       SK_B32_SHIFT ? gfx::BufferFormat::RGBA_8888
                    : gfx::BufferFormat::BGRA_8888,
-      gfx::BufferUsage::SCANOUT_CPU_READ_WRITE, gpu::kNullSurfaceHandle);
+      gfx::BufferUsage::SCANOUT_CPU_READ_WRITE, gpu::kNullSurfaceHandle,
+      nullptr);
   if (!resource->gpu_memory_buffer) {
     LOG(ERROR) << "Failed to create GPU memory buffer";
     return nullptr;

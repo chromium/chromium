@@ -394,7 +394,7 @@ GpuVideoAcceleratorFactoriesImpl::CreateGpuMemoryBuffer(
     gfx::BufferFormat format,
     gfx::BufferUsage usage) {
   return gpu_memory_buffer_manager_->CreateGpuMemoryBuffer(
-      size, format, usage, gpu::kNullSurfaceHandle);
+      size, format, usage, gpu::kNullSurfaceHandle, nullptr);
 }
 bool GpuVideoAcceleratorFactoriesImpl::ShouldUseGpuMemoryBuffersForVideoFrames(
     bool for_media_stream) const {

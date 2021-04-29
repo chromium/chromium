@@ -36,7 +36,7 @@ struct Holder {
             ->GetGpuMemoryBufferManager()
             ->CreateGpuMemoryBuffer(size, buffer_format,
                                     gfx::BufferUsage::GPU_READ,
-                                    gpu::kNullSurfaceHandle));
+                                    gpu::kNullSurfaceHandle, nullptr));
     auto surface = std::make_unique<exo::Surface>();
     surface->Attach(buffer.get());
     root_surface = surface.get();
@@ -51,7 +51,7 @@ struct Holder {
             ->GetGpuMemoryBufferManager()
             ->CreateGpuMemoryBuffer(bounds.size(), gfx::BufferFormat::RGBA_8888,
                                     gfx::BufferUsage::GPU_READ,
-                                    gpu::kNullSurfaceHandle));
+                                    gpu::kNullSurfaceHandle, nullptr));
 
     auto surface = std::make_unique<exo::Surface>();
     surface->Attach(buffer.get());

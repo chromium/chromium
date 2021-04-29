@@ -65,7 +65,8 @@ class FakeCameraBufferFactory : public CameraBufferFactory {
       gfx::BufferFormat format,
       gfx::BufferUsage usage) override {
     return unittest_internal::MockGpuMemoryBufferManager::
-        CreateFakeGpuMemoryBuffer(size, format, usage, gpu::kNullSurfaceHandle);
+        CreateFakeGpuMemoryBuffer(size, format, usage, gpu::kNullSurfaceHandle,
+                                  nullptr);
   }
 
   ChromiumPixelFormat ResolveStreamBufferFormat(

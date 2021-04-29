@@ -244,7 +244,8 @@ LocalGpuMemoryBufferManager::CreateGpuMemoryBuffer(
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
-    gpu::SurfaceHandle surface_handle) {
+    gpu::SurfaceHandle surface_handle,
+    base::WaitableEvent* shutdown_event) {
   if (!gbm_device_) {
     LOG(ERROR) << "Invalid GBM device";
     return nullptr;

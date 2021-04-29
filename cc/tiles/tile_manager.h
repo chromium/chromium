@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/sequenced_task_runner.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/values.h"
 #include "cc/base/unique_notifier.h"
 #include "cc/raster/raster_buffer_provider.h"
@@ -498,6 +499,14 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient {
   // has completed.
   bool has_pending_queries_ = false;
   base::CancelableOnceClosure check_pending_tile_queries_callback_;
+
+  // Signaled inside FinishTasksAndCleanUp() to avoid deadlock.
+  // FinishTasksAndCleanUp() may block waiting for worker thread tasks to finish
+  // and worker thread tasks may block on this thread causing deadlock. Worker
+  // thread tasks can use WaitableEvent::WaitMany() to wait on two events, one
+  // for the original task completion plus this event to cancel waiting on
+  // completion when FinishTasksAndCleanUp() runs.
+  base::WaitableEvent shutdown_event_;
 
   // We need two WeakPtrFactory objects as the invalidation pattern of each is
   // different. The |task_set_finished_weak_ptr_factory_| is invalidated any

@@ -342,7 +342,8 @@ MjpegDecodeAcceleratorTestEnvironment::CreateDmaBufVideoFrame(
   }
   std::unique_ptr<gfx::GpuMemoryBuffer> gmb =
       gpu_memory_buffer_manager_->CreateGpuMemoryBuffer(
-          coded_size, *gfx_format, kBufferUsage, gpu::kNullSurfaceHandle);
+          coded_size, *gfx_format, kBufferUsage, gpu::kNullSurfaceHandle,
+          nullptr);
   if (!gmb) {
     LOG(ERROR) << "Failed to create GpuMemoryBuffer";
     return nullptr;
@@ -436,7 +437,7 @@ base::ScopedFD MjpegDecodeAcceleratorTestEnvironment::CreateDmaBufFd(
   std::unique_ptr<gfx::GpuMemoryBuffer> gmb =
       gpu_memory_buffer_manager_->CreateGpuMemoryBuffer(
           gfx::Size(base::checked_cast<int>(size), 1), gfx::BufferFormat::R_8,
-          kBufferUsage, gpu::kNullSurfaceHandle);
+          kBufferUsage, gpu::kNullSurfaceHandle, nullptr);
   if (!gmb) {
     LOG(ERROR) << "Failed to create GpuMemoryBuffer";
     return base::ScopedFD();

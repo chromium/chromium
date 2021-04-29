@@ -133,7 +133,7 @@ std::unique_ptr<gfx::GpuMemoryBuffer> ExoTestHelper::CreateGpuMemoryBuffer(
       ->context_factory()
       ->GetGpuMemoryBufferManager()
       ->CreateGpuMemoryBuffer(size, format, gfx::BufferUsage::GPU_READ,
-                              gpu::kNullSurfaceHandle);
+                              gpu::kNullSurfaceHandle, nullptr);
 }
 
 std::unique_ptr<ClientControlledShellSurface>
