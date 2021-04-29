@@ -11,13 +11,16 @@ struct Product {
   url.mojom.Url image_url;
   // The product name.
   string name;
+  // The product ID.
+  string product_id;
 };
 
 // This service is implemented in the browser process and is used by the
 // renderer to notify the CommerceHint events.
 interface CommerceHintObserver {
-  // Add-to-cart action is detected. |cart_url| is provided if found.
-  OnAddToCart(url.mojom.Url? cart_url);
+  // Add-to-cart action is detected. |cart_url| and |product_id|
+  // provided if found.
+  OnAddToCart(url.mojom.Url? cart_url, string product_id);
 
   // Shopping cart page is visited.
   OnVisitCart();

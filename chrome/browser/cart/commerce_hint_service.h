@@ -25,7 +25,8 @@ class CommerceHintService
       mojo::PendingReceiver<mojom::CommerceHintObserver> receiver);
   content::WebContents* WebContents();
   void OnAddToCart(const GURL& navigation_url,
-                   const base::Optional<GURL>& cart_url);
+                   const base::Optional<GURL>& cart_url,
+                   const std::string& product_id = std::string());
   void OnRemoveCart(const GURL& url);
   void OnCartUpdated(const GURL& cart_url,
                      std::vector<mojom::ProductPtr> products);
@@ -39,9 +40,6 @@ class CommerceHintService
                    bool success,
                    std::vector<CartDB::KeyAndValue> proto_pairs);
   void OnOperationFinished(const std::string& operation, bool success);
-  void ConstructCartProto(cart_db::ChromeCartContentProto* proto,
-                          const GURL& navigation_url,
-                          std::vector<mojom::ProductPtr> products);
 
   content::WebContents* web_contents_;
   CartService* service_;

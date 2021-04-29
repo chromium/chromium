@@ -460,20 +460,40 @@ void CartService::OnAddCart(const std::string& domain,
   if (existing_proto.is_removed()) {
     return;
   }
-  // If the new proto has no product images, keep the existing proto while
-  // update timestamp and hidden status; otherwise add the new proto.
-  if (proto.product_image_urls().size() == 0) {
-    existing_proto.set_is_hidden(false);
-    existing_proto.set_timestamp(proto.timestamp());
-    if (cart_url) {
-      existing_proto.set_merchant_cart_url(cart_url->spec());
-    }
-    cart_db_->AddCart(domain, std::move(existing_proto),
-                      base::BindOnce(&CartService::OnOperationFinished,
-                                     weak_ptr_factory_.GetWeakPtr()));
-  } else {
+  // If the new proto has product images, we can add it to the database without
+  // worrying about overwriting as it reflects the latest state; if not, we keep
+  // the existing proto while updating timestamp, hidden status and product
+  // information if any.
+  if (proto.product_image_urls().size()) {
     cart_db_->AddCart(domain, std::move(proto),
                       base::BindOnce(&CartService::OnOperationFinished,
                                      weak_ptr_factory_.GetWeakPtr()));
+    return;
   }
+  existing_proto.set_is_hidden(false);
+  existing_proto.set_timestamp(proto.timestamp());
+  if (cart_url) {
+    existing_proto.set_merchant_cart_url(cart_url->spec());
+  }
+  // If no product images, this addition comes from AddToCart detection and
+  // should have only one product (if any). Add this product to the existing
+  // cart if not included already.
+  if (proto.product_infos().size()) {
+    DCHECK_EQ(1, proto.product_infos().size());
+    auto new_product_info = std::move(proto.product_infos().at(0));
+    bool is_included = false;
+    for (auto product_proto : existing_proto.product_infos()) {
+      is_included |=
+          (product_proto.product_id() == new_product_info.product_id());
+      if (is_included)
+        break;
+    }
+    if (!is_included) {
+      auto* added_product = existing_proto.add_product_infos();
+      *added_product = std::move(new_product_info);
+    }
+  }
+  cart_db_->AddCart(domain, std::move(existing_proto),
+                    base::BindOnce(&CartService::OnOperationFinished,
+                                   weak_ptr_factory_.GetWeakPtr()));
 }

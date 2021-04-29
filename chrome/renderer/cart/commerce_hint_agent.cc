@@ -48,6 +48,11 @@ constexpr base::FeatureParam<std::string> kSkipPattern{
     // This regex does not match anything.
     "\\b\\B"};
 
+constexpr base::FeatureParam<std::string> kPartnerMerchantPattern{
+    &ntp_features::kNtpChromeCartModule, "partner-merchant-pattern",
+    // This regex does not match anything.
+    "\\b\\B"};
+
 std::string eTLDPlusOne(const GURL& url) {
   return net::registry_controlled_domains::GetDomainAndRegistry(
       url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
@@ -121,10 +126,11 @@ base::Optional<GURL> ScanCartURL(content::RenderFrame* render_frame) {
   return best;
 }
 
-void OnAddToCart(content::RenderFrame* render_frame) {
+void OnAddToCart(content::RenderFrame* render_frame,
+                 const std::string& product_id = std::string()) {
   mojo::Remote<mojom::CommerceHintObserver> observer =
       GetObserver(render_frame);
-  observer->OnAddToCart(ScanCartURL(render_frame));
+  observer->OnAddToCart(ScanCartURL(render_frame), product_id);
 }
 
 void OnVisitCart(content::RenderFrame* render_frame) {
@@ -154,6 +160,12 @@ void OnPurchase(content::RenderFrame* render_frame) {
 
 bool PartialMatch(base::StringPiece str, const re2::RE2& re) {
   return RE2::PartialMatch(re2::StringPiece(str.data(), str.size()), re);
+}
+
+bool GetPartialMatchString(base::StringPiece str,
+                           const re2::RE2& re,
+                           std::string* res) {
+  return RE2::PartialMatch(re2::StringPiece(str.data(), str.size()), re, res);
 }
 
 // This is based on top 30 US shopping sites.
@@ -282,6 +294,32 @@ const re2::RE2& GetPurchaseTextPattern() {
   return *instance;
 }
 
+const re2::RE2& GetProductIdPatternFromRequest() {
+  re2::RE2::Options options;
+  options.set_case_sensitive(false);
+  static base::NoDestructor<re2::RE2> instance("product_id=(\\w+)", options);
+  return *instance;
+}
+
+const re2::RE2& GetProductIdPatternFromURL() {
+  re2::RE2::Options options;
+  options.set_case_sensitive(false);
+  static base::NoDestructor<re2::RE2> instance("(\\w+)-\\d+-medium", options);
+  return *instance;
+}
+
+const re2::RE2& GetPartnerMerchantPattern() {
+  re2::RE2::Options options;
+  options.set_case_sensitive(false);
+  static base::NoDestructor<re2::RE2> instance(kPartnerMerchantPattern.Get(),
+                                               options);
+  return *instance;
+}
+
+bool IsPartnerMerchant(const GURL& url) {
+  return PartialMatch(url.spec(), GetPartnerMerchantPattern());
+}
+
 bool IsSameDomainXHR(const std::string& host,
                      const blink::WebURLRequest& request) {
   // Only handle XHR POST requests here.
@@ -354,11 +392,16 @@ void DetectAddToCart(content::RenderFrame* render_frame,
       return;
 
     if (CommerceHintAgent::IsAddToCart(str)) {
+      std::string product_id;
+      if (IsPartnerMerchant(url)) {
+        GetPartialMatchString(str.substr(0, kLengthLimit),
+                              GetProductIdPatternFromRequest(), &product_id);
+      }
       RecordCommerceEvent(CommerceEvent::kAddToCartByForm);
       DVLOG(2) << "Matched add-to-cart. Request from \"" << navigation_url
                << "\" to \"" << url << "\" with payload (size = " << str.size()
                << ") \"" << str << "\"";
-      OnAddToCart(render_frame);
+      OnAddToCart(render_frame, std::move(product_id));
       return;
     }
   }
@@ -482,6 +525,8 @@ void CommerceHintAgent::OnProductsExtracted(
   // that the cart is not loaded.
   if (!results->is_list())
     return;
+  bool is_partner = IsPartnerMerchant(
+      GURL(render_frame()->GetWebFrame()->GetDocument().Url()));
   std::vector<mojom::ProductPtr> products;
   for (const auto& product : results->GetList()) {
     if (!product.is_dict())
@@ -496,6 +541,13 @@ void CommerceHintAgent::OnProductsExtracted(
     if (ShouldSkip(product_ptr->name)) {
       DVLOG(1) << "skipped";
       continue;
+    }
+    std::string product_id;
+    if (is_partner &&
+        GetPartialMatchString(image_url->GetString().substr(0, kLengthLimit),
+                              GetProductIdPatternFromURL(), &product_id)) {
+      DVLOG(1) << "product_id = " << product_id;
+      product_ptr->product_id = std::move(product_id);
     }
     products.push_back(std::move(product_ptr));
   }

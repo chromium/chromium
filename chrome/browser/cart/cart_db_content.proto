@@ -8,9 +8,17 @@ option optimize_for = LITE_RUNTIME;
 
 package cart_db;
 
+// Used for storing the discount information of this cart.
 message ChromeCartDiscountProto {
   // String indicating the content of the discount on this cart (e.g. 15% off).
   string discount_text = 1;
+}
+
+// Used for storing information of products within the cart.
+message ChromeCartProductProto {
+  // String indicating the ID of the product. The format of IDs may vary among
+  // different merchants.
+  string product_id = 1;
 }
 
 // Used for storing ChromeCart Content.
@@ -40,4 +48,7 @@ message ChromeCartContentProto {
 
   // Information about current discount on the cart.
   ChromeCartDiscountProto discount_info = 8;
+
+  // Information of products within the cart.
+  repeated ChromeCartProductProto product_infos = 9;
 }

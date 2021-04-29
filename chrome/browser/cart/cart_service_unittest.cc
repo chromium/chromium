@@ -27,6 +27,13 @@ cart_db::ChromeCartContentProto BuildProto(const char* domain,
   return proto;
 }
 
+cart_db::ChromeCartProductProto BuildProductProto(
+    const std::string& product_id) {
+  cart_db::ChromeCartProductProto proto;
+  proto.set_product_id(product_id);
+  return proto;
+}
+
 constexpr char kFakeDataPrefix[] = "Fake:";
 const char kMockMerchantA[] = "foo.com";
 const char kMockMerchantURLA[] = "https://www.foo.com";
@@ -40,6 +47,7 @@ const cart_db::ChromeCartContentProto kMockProtoB =
     BuildProto(kMockMerchantB, kMockMerchantURLB);
 using ShoppingCarts =
     std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>;
+using ProductInfos = std::vector<cart_db::ChromeCartProductProto>;
 const ShoppingCarts kExpectedA = {{kMockMerchantA, kMockProtoA}};
 const ShoppingCarts kExpectedB = {{kMockMerchantB, kMockProtoB}};
 const ShoppingCarts kExpectedAB = {
@@ -137,6 +145,20 @@ class CartServiceTest : public testing::Test {
                                   ShoppingCarts found) {
     EXPECT_EQ(1U, found.size());
     EXPECT_EQ(expect_timestamp, found[0].second.timestamp());
+    std::move(closure).Run();
+  }
+
+  void GetEvaluationProductInfo(base::OnceClosure closure,
+                                ProductInfos expected_products,
+                                bool result,
+                                ShoppingCarts found_carts) {
+    EXPECT_EQ(1U, found_carts.size());
+    auto found_products = found_carts[0].second.product_infos();
+    EXPECT_EQ((size_t)found_products.size(), expected_products.size());
+    for (size_t i = 0; i < expected_products.size(); i++) {
+      EXPECT_EQ(found_products.at(i).product_id(),
+                expected_products[i].product_id());
+    }
     std::move(closure).Run();
   }
 
@@ -310,6 +332,64 @@ TEST_F(CartServiceTest, TestAddRemovedCart) {
       base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
                      run_loop[2].QuitClosure(), result));
   run_loop[2].Run();
+}
+
+TEST_F(CartServiceTest, TestAddCartWithProductInfo) {
+  base::RunLoop run_loop[6];
+  CartDB* cart_db_ = service_->GetDB();
+  cart_db::ChromeCartContentProto merchant_proto =
+      BuildProto(kMockMerchantA, kMockMerchantURLA);
+  merchant_proto.set_timestamp(0);
+  merchant_proto.add_product_image_urls("https://image1.com");
+  service_->AddCart(kMockMerchantA, base::nullopt, merchant_proto);
+  task_environment_.RunUntilIdle();
+
+  // Adding a new proto with new product infos should reflect in storage.
+  cart_db::ChromeCartContentProto new_proto =
+      BuildProto(kMockMerchantA, kMockMerchantURLA);
+  const auto& product_info = BuildProductProto("id_foo");
+  auto* added_product = new_proto.add_product_infos();
+  *added_product = product_info;
+  new_proto.set_timestamp(1);
+  service_->AddCart(kMockMerchantA, base::nullopt, new_proto);
+  task_environment_.RunUntilIdle();
+
+  cart_db_->LoadCart(
+      kMockMerchantA,
+      base::BindOnce(&CartServiceTest::GetEvaluationCartTimeStamp,
+                     base::Unretained(this), run_loop[1].QuitClosure(), 1));
+  run_loop[1].Run();
+  const ShoppingCarts& expected_carts = {{kMockMerchantA, merchant_proto}};
+  cart_db_->LoadCart(
+      kMockMerchantA,
+      base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
+                     run_loop[2].QuitClosure(), expected_carts));
+  run_loop[2].Run();
+  const ProductInfos& expected_products = {product_info};
+  cart_db_->LoadCart(
+      kMockMerchantA,
+      base::BindOnce(&CartServiceTest::GetEvaluationProductInfo,
+                     base::Unretained(this), run_loop[3].QuitClosure(),
+                     expected_products));
+  run_loop[3].Run();
+
+  // Adding a new proto with same product infos shouldn't change the current
+  // storage about product infos.
+  new_proto.set_timestamp(2);
+  service_->AddCart(kMockMerchantA, base::nullopt, new_proto);
+  task_environment_.RunUntilIdle();
+
+  cart_db_->LoadCart(
+      kMockMerchantA,
+      base::BindOnce(&CartServiceTest::GetEvaluationCartTimeStamp,
+                     base::Unretained(this), run_loop[4].QuitClosure(), 2));
+  run_loop[4].Run();
+  cart_db_->LoadCart(
+      kMockMerchantA,
+      base::BindOnce(&CartServiceTest::GetEvaluationProductInfo,
+                     base::Unretained(this), run_loop[5].QuitClosure(),
+                     expected_products));
+  run_loop[5].Run();
 }
 
 // Tests deleting one cart from the service.

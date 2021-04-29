@@ -42,6 +42,12 @@ cart_db::ChromeCartContentProto BuildProto(const char* domain,
   return proto;
 }
 
+cart_db::ChromeCartProductProto BuildProductInfoProto(const char* product_id) {
+  cart_db::ChromeCartProductProto proto;
+  proto.set_product_id(product_id);
+  return proto;
+}
+
 cart_db::ChromeCartContentProto BuildProtoWithProducts(
     const char* domain,
     const char* cart_url,
@@ -51,6 +57,24 @@ cart_db::ChromeCartContentProto BuildProtoWithProducts(
   proto.set_merchant_cart_url(cart_url);
   for (const auto* const v : product_urls) {
     proto.add_product_image_urls(v);
+  }
+  return proto;
+}
+
+cart_db::ChromeCartContentProto BuildProtoWithProducts(
+    const char* domain,
+    const char* cart_url,
+    const std::vector<const char*>& product_urls,
+    const std::vector<const char*>& product_ids) {
+  cart_db::ChromeCartContentProto proto;
+  proto.set_key(domain);
+  proto.set_merchant_cart_url(cart_url);
+  for (const auto* const url : product_urls) {
+    proto.add_product_image_urls(url);
+  }
+  for (const auto* const id : product_ids) {
+    auto* added_product = proto.add_product_infos();
+    *added_product = BuildProductInfoProto(id);
   }
   return proto;
 }
@@ -80,8 +104,8 @@ const cart_db::ChromeCartContentProto kMockExampleProtoWithProducts =
     BuildProtoWithProducts(
         kMockExample,
         kMockExampleURL,
-        {"https://static.guitarcenter.com/product-image/123.png",
-         "https://static.guitarcenter.com/product-image/456.png"});
+        {"https://static.guitarcenter.com/product-image/foo_123-0-medium",
+         "https://static.guitarcenter.com/product-image/bar_456-0-medium"});
 
 const char kMockAmazon[] = "amazon.com";
 const char kMockAmazonURL[] = "https://www.amazon.com/gp/cart/view.html";
@@ -280,12 +304,22 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
                 expected[i].second.merchant_cart_url());
       bool same_size = found[i].second.product_image_urls_size() ==
                        expected[i].second.product_image_urls_size();
-      if (!same_size)
+      if (!same_size) {
         fail = true;
-      if (same_size) {
+      } else {
         for (int j = 0; j < found[i].second.product_image_urls_size(); j++) {
           EXPECT_EQ(found[i].second.product_image_urls(j),
                     expected[i].second.product_image_urls(j));
+        }
+      }
+      same_size = found[i].second.product_infos_size() ==
+                  expected[i].second.product_infos_size();
+      if (!same_size) {
+        fail = true;
+      } else {
+        for (int j = 0; j < found[i].second.product_infos_size(); j++) {
+          EXPECT_EQ(found[i].second.product_infos(j).product_id(),
+                    expected[i].second.product_infos(j).product_id());
         }
       }
     }
@@ -481,6 +515,43 @@ IN_PROC_BROWSER_TEST_F(CommerceHintCacaoTest, DISABLED_Rejected) {
   NavigateToURL("https://www.walmart.com/");
   SendXHR("/add-to-cart", "product: 123");
   WaitForCartCount(kEmptyExpected);
+}
+
+class CommerceHintProductInfoTest : public CommerceHintAgentTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        ntp_features::kNtpChromeCartModule,
+        {{"partner-merchant-pattern", "(guitarcenter.com)"},
+         {"product-skip-pattern", "(^|\\W)(?i)(skipped)(\\W|$)"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(CommerceHintProductInfoTest, AddToCartByForm_CaptureId) {
+  NavigateToURL("https://www.guitarcenter.com/product.html");
+  SendXHR("/cart/update", "product_id=id_foo&add_to_cart=true");
+
+  const cart_db::ChromeCartContentProto expected_cart_protos =
+      BuildProtoWithProducts(kMockExample, kMockExampleLinkURL, {}, {"id_foo"});
+  const ShoppingCarts expected_carts = {{kMockExample, expected_cart_protos}};
+  WaitForProductCount(expected_carts);
+}
+
+IN_PROC_BROWSER_TEST_F(CommerceHintProductInfoTest, ExtractCart_CaptureId) {
+  // This page has two products.
+  NavigateToURL("https://www.guitarcenter.com/cart.html");
+
+  const cart_db::ChromeCartContentProto expected_cart_protos =
+      BuildProtoWithProducts(
+          kMockExample, kMockExampleURL,
+          {"https://static.guitarcenter.com/product-image/foo_123-0-medium",
+           "https://static.guitarcenter.com/product-image/bar_456-0-medium"},
+          {"foo_123", "bar_456"});
+  const ShoppingCarts expected_carts = {{kMockExample, expected_cart_protos}};
+  WaitForProductCount(expected_carts);
 }
 
 }  // namespace

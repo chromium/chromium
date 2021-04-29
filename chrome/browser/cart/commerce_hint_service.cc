@@ -32,6 +32,28 @@ std::string GetDomain(const GURL& url) {
       url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 }
 
+void ConstructCartProto(cart_db::ChromeCartContentProto* proto,
+                        const GURL& navigation_url,
+                        std::vector<mojom::ProductPtr> products) {
+  const std::string& domain = GetDomain(navigation_url);
+  proto->set_key(domain);
+  proto->set_merchant(domain);
+  proto->set_merchant_cart_url(navigation_url.spec());
+  proto->set_timestamp(base::Time::Now().ToDoubleT());
+  for (auto& product : products) {
+    if (product->image_url.spec().size() != 0) {
+      proto->add_product_image_urls(product->image_url.spec());
+    }
+    if (product->product_id.size() != 0) {
+      cart_db::ChromeCartProductProto product_proto;
+      product_proto.set_product_id(std::move(product->product_id));
+      cart_db::ChromeCartProductProto* added_product =
+          proto->add_product_infos();
+      *added_product = std::move(product_proto);
+    }
+  }
+}
+
 }  // namespace
 
 // Implementation of the Mojo CommerceHintObserver. This is called by the
@@ -49,12 +71,13 @@ class CommerceHintObserverImpl
 
   ~CommerceHintObserverImpl() override = default;
 
-  void OnAddToCart(const base::Optional<GURL>& cart_url) override {
+  void OnAddToCart(const base::Optional<GURL>& cart_url,
+                   const std::string& product_id) override {
     DVLOG(1) << "Received OnAddToCart in the browser process on "
              << binding_url_;
     if (!service_ || !binding_url_.SchemeIsHTTPOrHTTPS())
       return;
-    service_->OnAddToCart(binding_url_, cart_url);
+    service_->OnAddToCart(binding_url_, cart_url, product_id);
   }
 
   void OnVisitCart() override {
@@ -138,7 +161,8 @@ bool CommerceHintService::ShouldSkip(const GURL& url) {
 }
 
 void CommerceHintService::OnAddToCart(const GURL& navigation_url,
-                                      const base::Optional<GURL>& cart_url) {
+                                      const base::Optional<GURL>& cart_url,
+                                      const std::string& product_id) {
   if (ShouldSkip(navigation_url))
     return;
   base::Optional<GURL> validated_cart = cart_url;
@@ -148,6 +172,11 @@ void CommerceHintService::OnAddToCart(const GURL& navigation_url,
   }
   cart_db::ChromeCartContentProto proto;
   std::vector<mojom::ProductPtr> products;
+  if (!product_id.empty()) {
+    mojom::ProductPtr product_ptr(mojom::Product::New());
+    product_ptr->product_id = product_id;
+    products.push_back(std::move(product_ptr));
+  }
   ConstructCartProto(&proto, navigation_url, std::move(products));
   service_->AddCart(GetDomain(navigation_url), validated_cart,
                     std::move(proto));
@@ -165,20 +194,6 @@ void CommerceHintService::OnCartUpdated(
   cart_db::ChromeCartContentProto proto;
   ConstructCartProto(&proto, cart_url, std::move(products));
   service_->AddCart(proto.key(), cart_url, std::move(proto));
-}
-
-void CommerceHintService::ConstructCartProto(
-    cart_db::ChromeCartContentProto* proto,
-    const GURL& navigation_url,
-    std::vector<mojom::ProductPtr> products) {
-  const std::string& domain = GetDomain(navigation_url);
-  proto->set_key(domain);
-  proto->set_merchant(domain);
-  proto->set_merchant_cart_url(navigation_url.spec());
-  proto->set_timestamp(base::Time::Now().ToDoubleT());
-  for (auto& product : products) {
-    proto->add_product_image_urls(product->image_url.spec());
-  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(CommerceHintService)
