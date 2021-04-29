@@ -251,8 +251,8 @@ void WebrtcVideoStream::OnCaptureResult(
   if (encoder_) {
     current_frame_stats_->encode_started_time = base::TimeTicks::Now();
     encoder_->Encode(std::move(frame), frame_params,
-                     base::BindOnce(&WebrtcVideoStream::OnFrameEncoded,
-                                    base::Unretained(this)));
+                     base::BindOnce(&WebrtcVideoStream::EncodeCallback,
+                                    weak_factory_.GetWeakPtr()));
   }
 }
 
@@ -279,7 +279,7 @@ void WebrtcVideoStream::CaptureNextFrame() {
 
 void WebrtcVideoStream::OnFrameEncoded(
     WebrtcVideoEncoder::EncodeResult encode_result,
-    std::unique_ptr<WebrtcVideoEncoder::EncodedFrame> frame) {
+    WebrtcVideoEncoder::EncodedFrame* frame) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   current_frame_stats_->encode_ended_time = base::TimeTicks::Now();
@@ -294,7 +294,7 @@ void WebrtcVideoStream::OnFrameEncoded(
     current_frame_stats_->frame_quality = (63 - frame->quantizer) * 100 / 63;
   }
 
-  scheduler_->OnFrameEncoded(frame.get());
+  scheduler_->OnFrameEncoded(encode_result, frame);
 
   if (encode_result != WebrtcVideoEncoder::EncodeResult::SUCCEEDED) {
     LOG(ERROR) << "Video encoder returns error "
@@ -319,6 +319,16 @@ void WebrtcVideoStream::OnFrameEncoded(
   frame->encode_finish = current_frame_stats_->encode_ended_time;
   webrtc::EncodedImageCallback::Result result =
       webrtc_transport_->video_encoder_factory()->SendEncodedFrame(*frame);
+
+  // Directly call the handler to send the FrameStats message.
+  // TODO(crbug.com/1192865): Remove this when standard encoding pipeline is
+  // implemented - the encoder will be responsible for sending the frame.
+  OnEncodedFrameSent(result, *frame);
+}
+
+void WebrtcVideoStream::OnEncodedFrameSent(
+    webrtc::EncodedImageCallback::Result result,
+    const WebrtcVideoEncoder::EncodedFrame& frame) {
   if (result.error != webrtc::EncodedImageCallback::Result::OK) {
     // TODO(sergeyu): Stop the stream.
     LOG(ERROR) << "Failed to send video frame.";
@@ -332,7 +342,7 @@ void WebrtcVideoStream::OnFrameEncoded(
     // Get bandwidth, RTT and send_pending_delay into |stats|.
     scheduler_->GetSchedulerStats(stats);
 
-    stats.frame_size = frame ? frame->data.size() : 0;
+    stats.frame_size = frame.data.size();
 
     if (!current_frame_stats_->input_event_timestamps.is_null()) {
       stats.capture_pending_delay =
@@ -362,6 +372,12 @@ void WebrtcVideoStream::OnFrameEncoded(
 
     video_stats_dispatcher_.OnVideoFrameStats(result.frame_id, stats);
   }
+}
+
+void WebrtcVideoStream::EncodeCallback(
+    WebrtcVideoEncoder::EncodeResult encode_result,
+    std::unique_ptr<WebrtcVideoEncoder::EncodedFrame> frame) {
+  OnFrameEncoded(encode_result, frame.get());
 }
 
 void WebrtcVideoStream::OnEncoderCreated(

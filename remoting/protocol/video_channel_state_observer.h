@@ -6,6 +6,8 @@
 #define REMOTING_PROTOCOL_VIDEO_CHANNEL_STATE_OBSERVER_H_
 
 #include "base/time/time.h"
+#include "remoting/codec/webrtc_video_encoder.h"
+#include "third_party/webrtc/api/video_codecs/video_encoder.h"
 
 namespace remoting {
 namespace protocol {
@@ -19,6 +21,22 @@ class VideoChannelStateObserver {
   virtual void OnKeyFrameRequested() = 0;
   virtual void OnTargetBitrateChanged(int bitrate_kbps) = 0;
   virtual void OnRttUpdate(base::TimeDelta rtt) = 0;
+
+  // Called when the encoder has finished encoding a frame, and before it is
+  // passed to WebRTC's registered callback. |frame| is non-const so that
+  // WebrtcVideoStream can add timestamps to it before sending.
+  // TODO(crbug.com/1192865): Make |frame| const when standard encoding pipeline
+  // is implemented.
+  virtual void OnFrameEncoded(WebrtcVideoEncoder::EncodeResult encode_result,
+                              WebrtcVideoEncoder::EncodedFrame* frame) = 0;
+
+  // Called after the encoded frame is sent via the WebRTC registered callback.
+  // The result contains the frame ID assigned by WebRTC if successfully sent.
+  // This is only called if the encoder successfully returned a non-null
+  // frame. |result| is the result returned by the registered callback.
+  virtual void OnEncodedFrameSent(
+      webrtc::EncodedImageCallback::Result result,
+      const WebrtcVideoEncoder::EncodedFrame& frame) = 0;
 
  protected:
   virtual ~VideoChannelStateObserver() = default;

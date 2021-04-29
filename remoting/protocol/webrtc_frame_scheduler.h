@@ -37,12 +37,6 @@ class WebrtcFrameScheduler : public VideoChannelStateObserver {
   virtual bool OnFrameCaptured(const webrtc::DesktopFrame* frame,
                                WebrtcVideoEncoder::FrameParams* params_out) = 0;
 
-  // Called after a frame has been encoded and passed to the sender.
-  // |encoded_frame| may be nullptr. If |frame_stats| is not null then sets
-  // send_pending_delay, rtt_estimate and bandwidth_estimate_kbps fields.
-  virtual void OnFrameEncoded(
-      const WebrtcVideoEncoder::EncodedFrame* encoded_frame) = 0;
-
   // Writes the following bandwidth-related statistics to |frame_stats_out|:
   // * bandwidth_estimate_kbps
   // * rtt_estimate

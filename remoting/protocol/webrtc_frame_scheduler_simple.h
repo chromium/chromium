@@ -37,14 +37,17 @@ class WebrtcFrameSchedulerSimple : public WebrtcFrameScheduler {
   void OnKeyFrameRequested() override;
   void OnTargetBitrateChanged(int bitrate_kbps) override;
   void OnRttUpdate(base::TimeDelta rtt) override;
+  void OnFrameEncoded(WebrtcVideoEncoder::EncodeResult encode_result,
+                      WebrtcVideoEncoder::EncodedFrame* encoded_frame) override;
+  void OnEncodedFrameSent(
+      webrtc::EncodedImageCallback::Result result,
+      const WebrtcVideoEncoder::EncodedFrame& frame) override;
 
   // WebrtcFrameScheduler implementation.
   void Start(const base::RepeatingClosure& capture_callback) override;
   void Pause(bool pause) override;
   bool OnFrameCaptured(const webrtc::DesktopFrame* frame,
                        WebrtcVideoEncoder::FrameParams* params_out) override;
-  void OnFrameEncoded(
-      const WebrtcVideoEncoder::EncodedFrame* encoded_frame) override;
   void GetSchedulerStats(HostFrameStats& frame_stats_out) const override;
 
   // Allows unit-tests to provide a mock clock.

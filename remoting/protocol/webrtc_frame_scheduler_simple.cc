@@ -211,7 +211,8 @@ bool WebrtcFrameSchedulerSimple::OnFrameCaptured(
 }
 
 void WebrtcFrameSchedulerSimple::OnFrameEncoded(
-    const WebrtcVideoEncoder::EncodedFrame* encoded_frame) {
+    WebrtcVideoEncoder::EncodeResult encode_result,
+    WebrtcVideoEncoder::EncodedFrame* encoded_frame) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(frame_pending_);
   frame_pending_ = false;
@@ -239,6 +240,10 @@ void WebrtcFrameSchedulerSimple::OnFrameEncoded(
 
   bandwidth_estimator_->OnSendingFrame(*encoded_frame);
 }
+
+void WebrtcFrameSchedulerSimple::OnEncodedFrameSent(
+    webrtc::EncodedImageCallback::Result result,
+    const WebrtcVideoEncoder::EncodedFrame& frame) {}
 
 void WebrtcFrameSchedulerSimple::GetSchedulerStats(
     HostFrameStats& frame_stats_out) const {

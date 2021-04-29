@@ -63,6 +63,11 @@ class WebrtcVideoStream : public VideoStream,
   void OnKeyFrameRequested() override;
   void OnTargetBitrateChanged(int bitrate_kbps) override;
   void OnRttUpdate(base::TimeDelta rtt) override;
+  void OnFrameEncoded(WebrtcVideoEncoder::EncodeResult encode_result,
+                      WebrtcVideoEncoder::EncodedFrame* frame) override;
+  void OnEncodedFrameSent(
+      webrtc::EncodedImageCallback::Result result,
+      const WebrtcVideoEncoder::EncodedFrame& frame) override;
 
  private:
   struct FrameStats;
@@ -78,7 +83,12 @@ class WebrtcVideoStream : public VideoStream,
   // Called by the |scheduler_|.
   void CaptureNextFrame();
 
-  void OnFrameEncoded(WebrtcVideoEncoder::EncodeResult encode_result,
+  // Callback passed to encoder_->Encode(). This just passes the parameters to
+  // OnFrameEncoded().
+  // TODO(crbug.com/1192865): Remove this (and OnEncoderCreated() below) when
+  // standard encoding pipeline is implemented - this object will no longer
+  // drive the encoder.
+  void EncodeCallback(WebrtcVideoEncoder::EncodeResult encode_result,
                       std::unique_ptr<WebrtcVideoEncoder::EncodedFrame> frame);
 
   void OnEncoderCreated(webrtc::VideoCodecType codec_type,
