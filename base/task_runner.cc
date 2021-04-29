@@ -32,6 +32,48 @@ static void RecordReplayAssert(const char* aFormat, ...) {
   va_end(ap);
 }
 
+static void (*gRecordReplayRegisterPointerFn)(void*);
+
+static void RecordReplayRegisterPointer(void* ptr) {
+  if (!gRecordReplayRegisterPointerFn) {
+    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayRegisterPointer");
+    if (!fnptr) {
+      return;
+    }
+    gRecordReplayRegisterPointerFn = reinterpret_cast<void(*)(void*)>(fnptr);
+  }
+
+  gRecordReplayRegisterPointerFn(ptr);
+}
+
+static void (*gRecordReplayUnregisterPointerFn)(void*);
+
+static void RecordReplayUnregisterPointer(void* ptr) {
+  if (!gRecordReplayUnregisterPointerFn) {
+    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayUnregisterPointer");
+    if (!fnptr) {
+      return;
+    }
+    gRecordReplayUnregisterPointerFn = reinterpret_cast<void(*)(void*)>(fnptr);
+  }
+
+  gRecordReplayUnregisterPointerFn(ptr);
+}
+
+static size_t (*gRecordReplayPointerIdFn)(void*);
+
+static size_t RecordReplayPointerId(void* ptr) {
+  if (!gRecordReplayPointerIdFn) {
+    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayPointerId");
+    if (!fnptr) {
+      return 0;
+    }
+    gRecordReplayPointerIdFn = reinterpret_cast<size_t(*)(void*)>(fnptr);
+  }
+
+  return gRecordReplayPointerIdFn(ptr);
+}
+
 namespace base {
 
 namespace {
@@ -63,7 +105,7 @@ bool PostTaskAndReplyTaskRunner::PostTask(const Location& from_here,
 }  // namespace
 
 bool TaskRunner::PostTask(const Location& from_here, OnceClosure task) {
-  RecordReplayAssert("TaskRunner::PostTask Start");
+  RecordReplayAssert("TaskRunner::PostTask Start %lu", RecordReplayPointerId(this));
   bool rv = PostDelayedTask(from_here, std::move(task), base::TimeDelta());
   RecordReplayAssert("TaskRunner::PostTask Done %d", rv);
   return rv;
@@ -76,9 +118,13 @@ bool TaskRunner::PostTaskAndReply(const Location& from_here,
       from_here, std::move(task), std::move(reply));
 }
 
-TaskRunner::TaskRunner() = default;
+TaskRunner::TaskRunner() {
+  RecordReplayRegisterPointer(this);
+}
 
-TaskRunner::~TaskRunner() = default;
+TaskRunner::~TaskRunner() {
+  RecordReplayUnregisterPointer(this);
+}
 
 void TaskRunner::OnDestruct() const {
   delete this;
