@@ -18,4 +18,29 @@ const testcases = [
   {config_input: {}, value: "<button formaction=' javascript:evil.com'>Click.</button>", result: "<button>Click.</button>", message: "HTMLButtonElement with javascript formaction start with space"},
   {config_input: {}, value: "<button formaction='http:evil.com'>Click.</button>", result: "<button formaction=\"http:evil.com\">Click.</button>", message: "HTMLButtonElement"},
   {config_input: {}, value: "<p>Some text</p></body><!-- 1 --></html><!-- 2 --><p>Some more text</p>", result: "<p>Some text</p><!-- 1 --><!-- 2 --><p>Some more text</p>", message: "malformed HTML"},
+
+  // Test cases from issue WICG/sanitizer-api#84
+  {
+    config_input: {"allowElements":["svg","use"], "allowAttributes":{"xlink:href":["use"]}},
+    value: `<svg><use xlink:href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="x" viewBox="0 0 100 50" width="100%" height="100%"><a href="javascript:alert(1)"><circle r="100" /></a></svg>#x'/></svg>`,
+    result: "",
+    message: "Regression test for WICG/sanitizer-api#84."
+  },
+  // Test cases from issue WICG/sanitizer-api#85
+  {
+    config_input: {
+      "allowElements": ["svg","set"],
+      "allowAttributes": { "onend": ["set"], "dur":["set"] }
+    },
+    value: `<svg><set onend="alert(1)" dur="1"/></svg>`,
+    result: "",
+    message: "Regression test for WICG/sanitizer-api#85."
+  },
+  // Test cases from issue WICG/sanitizer-api#86
+  {
+    config_input: {},
+    value: `<noscript><img title="</noscript><iframe onload=alert(1)>"></noscript>`,
+    result: "",
+    message: "Regression test for WICG/sanitizer-api#86."
+  },
 ];

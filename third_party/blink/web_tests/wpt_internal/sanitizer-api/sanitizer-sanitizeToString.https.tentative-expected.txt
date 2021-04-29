@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 59 tests; 52 PASS, 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 68 tests; 61 PASS, 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS SanitizerAPI sanitize function without argument should throw an error.
 PASS SanitizerAPI sanitizeToString function for null.
 FAIL SanitizerAPI config: plaintext, sanitizeToString from string function for plaintext assert_equals: expected "" but got "&lt;p&gt;text&lt;/p&gt;"
@@ -21,6 +21,9 @@ PASS SanitizerAPI config: HTMLButtonElement with javascript formaction, sanitize
 PASS SanitizerAPI config: HTMLButtonElement with javascript formaction start with space, sanitizeToString from string function for HTMLButtonElement with javascript formaction start with space
 PASS SanitizerAPI config: HTMLButtonElement, sanitizeToString from string function for HTMLButtonElement
 PASS SanitizerAPI config: malformed HTML, sanitizeToString from string function for malformed HTML
+PASS SanitizerAPI config: Regression test for WICG/sanitizer-api#84., sanitizeToString from string function for Regression test for WICG/sanitizer-api#84.
+PASS SanitizerAPI config: Regression test for WICG/sanitizer-api#85., sanitizeToString from string function for Regression test for WICG/sanitizer-api#85.
+PASS SanitizerAPI config: Regression test for WICG/sanitizer-api#86., sanitizeToString from string function for Regression test for WICG/sanitizer-api#86.
 FAIL SanitizerAPI with config: plaintext, sanitizeToString from document function for plaintext assert_equals: expected "" but got "&lt;p&gt;text&lt;/p&gt;"
 FAIL SanitizerAPI with config: xmp, sanitizeToString from document function for xmp assert_equals: expected "" but got "TEXT"
 PASS SanitizerAPI with config: Template element, sanitizeToString from document function for Template element
@@ -40,6 +43,9 @@ PASS SanitizerAPI with config: HTMLButtonElement with javascript formaction, san
 PASS SanitizerAPI with config: HTMLButtonElement with javascript formaction start with space, sanitizeToString from document function for HTMLButtonElement with javascript formaction start with space
 PASS SanitizerAPI with config: HTMLButtonElement, sanitizeToString from document function for HTMLButtonElement
 FAIL SanitizerAPI with config: malformed HTML, sanitizeToString from document function for malformed HTML assert_equals: expected "<p>Some text</p><!-- 1 --><!-- 2 --><p>Some more text</p>" but got "<p>Some text</p><p>Some more text</p>"
+PASS SanitizerAPI with config: Regression test for WICG/sanitizer-api#84., sanitizeToString from document function for Regression test for WICG/sanitizer-api#84.
+PASS SanitizerAPI with config: Regression test for WICG/sanitizer-api#85., sanitizeToString from document function for Regression test for WICG/sanitizer-api#85.
+PASS SanitizerAPI with config: Regression test for WICG/sanitizer-api#86., sanitizeToString from document function for Regression test for WICG/sanitizer-api#86.
 FAIL SanitizerAPI with config: plaintext, sanitizeToString from document fragment function for plaintext assert_equals: expected "" but got "&lt;p&gt;text&lt;/p&gt;"
 FAIL SanitizerAPI with config: xmp, sanitizeToString from document fragment function for xmp assert_equals: expected "" but got "TEXT"
 PASS SanitizerAPI with config: Template element, sanitizeToString from document fragment function for Template element
@@ -59,5 +65,8 @@ PASS SanitizerAPI with config: HTMLButtonElement with javascript formaction, san
 PASS SanitizerAPI with config: HTMLButtonElement with javascript formaction start with space, sanitizeToString from document fragment function for HTMLButtonElement with javascript formaction start with space
 PASS SanitizerAPI with config: HTMLButtonElement, sanitizeToString from document fragment function for HTMLButtonElement
 PASS SanitizerAPI with config: malformed HTML, sanitizeToString from document fragment function for malformed HTML
+PASS SanitizerAPI with config: Regression test for WICG/sanitizer-api#84., sanitizeToString from document fragment function for Regression test for WICG/sanitizer-api#84.
+PASS SanitizerAPI with config: Regression test for WICG/sanitizer-api#85., sanitizeToString from document fragment function for Regression test for WICG/sanitizer-api#85.
+PASS SanitizerAPI with config: Regression test for WICG/sanitizer-api#86., sanitizeToString from document fragment function for Regression test for WICG/sanitizer-api#86.
 Harness: the test ran to completion.
 
