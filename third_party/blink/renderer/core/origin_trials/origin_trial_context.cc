@@ -6,6 +6,7 @@
 
 #include <ostream>
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "services/network/public/cpp/features.h"
@@ -433,6 +434,10 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
   }
   if (trial_name == "AppCache" &&
       !base::FeatureList::IsEnabled(features::kAppCache)) {
+    return false;
+  }
+  if (trial_name == "FledgeInterestGroupAPI" &&
+      !base::FeatureList::IsEnabled(features::kFledgeInterestGroups)) {
     return false;
   }
   if (trial_name == "TrustTokens" &&

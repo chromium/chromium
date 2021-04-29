@@ -385,6 +385,10 @@ BLINK_COMMON_EXPORT extern const base::Feature kJXL;
 BLINK_COMMON_EXPORT extern const base::Feature
     kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes;
 
+// Master control for Fledge Interest Group feature
+BLINK_COMMON_EXPORT extern const base::Feature kFledgeInterestGroups;
+BLINK_COMMON_EXPORT extern const base::Feature kFledgeInterestGroupAPI;
+
 }  // namespace features
 }  // namespace blink
 

@@ -14,17 +14,20 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace interest_group {
 
 class FledgePermissionsBrowserTest : public InProcessBrowserTest {
  public:
   FledgePermissionsBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kFledgeInterestGroups);
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kFledgeInterestGroups,
+         blink::features::kFledgeInterestGroupAPI},
+        {});
   }
 
   void SetUpOnMainThread() override {
@@ -238,7 +241,8 @@ class FledgePermissionBrowserTestBaseFeatureDisabled
  public:
   FledgePermissionBrowserTestBaseFeatureDisabled() {
     scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndDisableFeature(features::kFledgeInterestGroups);
+    scoped_feature_list_.InitAndDisableFeature(
+        blink::features::kFledgeInterestGroups);
   }
 };
 

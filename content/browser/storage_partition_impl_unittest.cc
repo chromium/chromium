@@ -822,9 +822,9 @@ class StoragePartitionImplTest : public testing::Test {
     // Configures the Conversion API to run in memory to speed up it's
     // initialization and avoid timeouts. See https://crbug.com/1080764.
     ConversionManagerImpl::RunInMemoryForTesting();
-    feature_list_.InitWithFeatures(
-        {features::kConversionMeasurement, features::kFledgeInterestGroups},
-        {});
+    feature_list_.InitWithFeatures({features::kConversionMeasurement,
+                                    blink::features::kFledgeInterestGroups},
+                                   {});
   }
 
   storage::MockQuotaManager* GetMockManager() {

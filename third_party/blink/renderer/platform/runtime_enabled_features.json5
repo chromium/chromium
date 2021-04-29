@@ -952,8 +952,8 @@
       status: "experimental",
     },
     {
-      name: "FledgeInterestGroups",
-      origin_trial_feature_name: "FledgeInterestGroups",
+      name: "FledgeInterestGroupAPI",
+      origin_trial_feature_name: "FledgeInterestGroupAPI",
     },
     {
       name: "FocuslessSpatialNavigation",
