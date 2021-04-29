@@ -3474,6 +3474,9 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_MULTIPASTE_ZERO_STATE_CONTEXTUAL_NUDGE" desc="The label used for the zero state multipaste nudge, to be seen when there are no items on the clipboard and the user press the keyboard shortcut for multipaste.">
         Access your clipboard history by pressing <ph name="SHORTCUT_KEY_NAME">$1<ex>Launcher</ex></ph> + V to view your clipboard. Copy an item to get started.
       </message>
+      <message name="IDS_ASH_MULTIPASTE_SCREENSHOT_NOTIFICATION_NUDGE" desc="The label used to show the keyboard shortcut for multipaste, to be seen aside the screenshot notification banner which notifies the user that the screenshot has been copied to clipboard.">
+        + V
+      </message>
 
       <message name="IDS_APP_LIST_BLOCKED_APP" desc="The spoken feedback text when a focused app is blocked.">
         Blocked

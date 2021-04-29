@@ -19,6 +19,9 @@ enum ClipboardNudgeType {
   kZeroStateNudge = 1,
   // Blue new feature badge for clipboard history's context menu option.
   kNewFeatureBadge = 2,
+  // Shows the keyboard shortcut for clipboard history in the screenshot
+  // notification nudge.
+  kScreenshotNotificationNudge = 3,
 };
 
 const char kOnboardingNudge_ShowCount[] =
@@ -39,6 +42,13 @@ const char kNewBadge_OpenTime[] =
     "Ash.ClipboardHistory.Nudges.NewFeatureBadge.ToFeatureOpenTime";
 const char kNewBadge_PasteTime[] =
     "Ash.ClipboardHistory.Nudges.NewFeatureBadge.ToFeaturePasteTime";
+const char kScreenshotNotification_ShowCount[] =
+    "Ash.ClipboardHistory.Nudges.ScreenshotNotificationNudge.ShownCount";
+const char kScreenshotNotification_OpenTime[] =
+    "Ash.ClipboardHistory.Nudges.ScreenshotNotificationNudge.ToFeatureOpenTime";
+const char kScreenshotNotification_PasteTime[] =
+    "Ash.ClipboardHistory.Nudges.ScreenshotNotificationNudge."
+    "ToFeaturePasteTime";
 
 constexpr int kNotificationLimit = 3;
 constexpr int kContextMenuBadgeShowLimit = 3;

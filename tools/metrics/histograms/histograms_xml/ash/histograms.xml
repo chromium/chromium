@@ -611,6 +611,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <token key="NudgeType">
     <variant name="NewFeatureBadge" summary="new feature badge"/>
     <variant name="OnboardingNudge" summary="onboarding nudge"/>
+    <variant name="ScreenshotNotificationNudge"
+        summary="screenshot notification nudge"/>
     <variant name="ZeroStateNudge" summary="zero state nudge"/>
   </token>
 </histogram>
@@ -627,6 +629,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <token key="NudgeType">
     <variant name="NewFeatureBadge" summary="new feature badge"/>
     <variant name="OnboardingNudge" summary="onboarding nudge"/>
+    <variant name="ScreenshotNotificationNudge"
+        summary="screenshot notification nudge"/>
     <variant name="ZeroStateNudge" summary="zero state nudge"/>
   </token>
   <token key="Action">

@@ -37,6 +37,40 @@ constexpr int kMaxSeconds = 61;
 
 // Clock that can be overridden for testing.
 base::Clock* g_clock_override = nullptr;
+
+base::Time GetTime() {
+  if (g_clock_override)
+    return g_clock_override->Now();
+  return base::Time::Now();
+}
+
+bool LogFeatureOpenTime(
+    const ClipboardNudgeController::TimeMetricHelper& metric_show_time,
+    const std::string& open_histogram) {
+  if (!metric_show_time.ShouldLogFeatureOpenTime())
+    return false;
+  base::TimeDelta time_since_shown =
+      metric_show_time.GetTimeSinceShown(GetTime());
+  // Tracks the amount of time between showing the user a nudge and
+  // the user opening the ClipboardHistory menu.
+  base::UmaHistogramExactLinear(open_histogram, time_since_shown.InSeconds(),
+                                kMaxSeconds);
+  return true;
+}
+
+bool LogFeatureUsedTime(
+    const ClipboardNudgeController::TimeMetricHelper& metric_show_time,
+    const std::string& paste_histogram) {
+  if (!metric_show_time.ShouldLogFeatureUsedTime())
+    return false;
+  base::TimeDelta time_since_shown =
+      metric_show_time.GetTimeSinceShown(GetTime());
+  // Tracks the amount of time between showing the user a nudge and
+  // the user opening the ClipboardHistory menu.
+  base::UmaHistogramExactLinear(paste_histogram, time_since_shown.InSeconds(),
+                                kMaxSeconds);
+  return true;
+}
 }  // namespace
 
 // A class for observing the clipboard nudge fade out animation. Once the fade
@@ -137,6 +171,19 @@ void ClipboardNudgeController::MarkNewFeatureBadgeShown() {
                                   kMaxSeconds);
   }
   new_feature_last_shown_time_.ResetTime();
+}
+
+void ClipboardNudgeController::MarkScreenshotNotificationNudgeShown() {
+  base::UmaHistogramBoolean(kScreenshotNotification_ShowCount, true);
+  if (screenshot_notification_last_shown_time_.ShouldLogFeatureOpenTime()) {
+    base::UmaHistogramExactLinear(kScreenshotNotification_OpenTime, kMaxSeconds,
+                                  kMaxSeconds);
+  }
+  if (screenshot_notification_last_shown_time_.ShouldLogFeatureUsedTime()) {
+    base::UmaHistogramExactLinear(kScreenshotNotification_PasteTime,
+                                  kMaxSeconds, kMaxSeconds);
+  }
+  screenshot_notification_last_shown_time_.ResetTime();
 }
 
 bool ClipboardNudgeController::ShouldShowNewFeatureBadge() {
@@ -300,77 +347,40 @@ void ClipboardNudgeController::HandleNudgeShown() {
 
 void ClipboardNudgeController::OnClipboardHistoryMenuShown(
     crosapi::mojom::ClipboardHistoryControllerShowSource show_source) {
-  if (last_shown_time_.ShouldLogFeatureOpenTime()) {
-    base::TimeDelta time_since_shown =
-        last_shown_time_.GetTimeSinceShown(GetTime());
-
-    // Tracks the amount of time between showing the user a nudge and the user
-    // opening the ClipboardHistory menu.
-    base::UmaHistogramExactLinear(kOnboardingNudge_OpenTime,
-                                  time_since_shown.InSeconds(), kMaxSeconds);
+  if (LogFeatureOpenTime(last_shown_time_, kOnboardingNudge_OpenTime))
     last_shown_time_.set_was_logged_as_opened();
-  }
-  if (new_feature_last_shown_time_.ShouldLogFeatureOpenTime()) {
-    switch (show_source) {
-      case crosapi::mojom::ClipboardHistoryControllerShowSource::kAccelerator:
-      case crosapi::mojom::ClipboardHistoryControllerShowSource::
-          kVirtualKeyboard:
-      case crosapi::mojom::ClipboardHistoryControllerShowSource::kUnknown:
-        break;
-      case crosapi::mojom::ClipboardHistoryControllerShowSource::
-          kRenderViewContextMenu:
-      case crosapi::mojom::ClipboardHistoryControllerShowSource::
-          kTextfieldContextMenu:
-        base::TimeDelta time_since_shown =
-            new_feature_last_shown_time_.GetTimeSinceShown(GetTime());
-        // Tracks the amount of time between showing the user the new badge and
-        // the user opening the ClipboardHistory menu.
-        base::UmaHistogramExactLinear(
-            kNewBadge_OpenTime, time_since_shown.InSeconds(), kMaxSeconds);
+  switch (show_source) {
+    case crosapi::mojom::ClipboardHistoryControllerShowSource::kAccelerator:
+    case crosapi::mojom::ClipboardHistoryControllerShowSource::kVirtualKeyboard:
+    case crosapi::mojom::ClipboardHistoryControllerShowSource::kUnknown:
+      break;
+    case crosapi::mojom::ClipboardHistoryControllerShowSource::
+        kRenderViewContextMenu:
+    case crosapi::mojom::ClipboardHistoryControllerShowSource::
+        kTextfieldContextMenu:
+      if (LogFeatureOpenTime(new_feature_last_shown_time_, kNewBadge_OpenTime))
         new_feature_last_shown_time_.set_was_logged_as_opened();
-        break;
-    }
   }
-  if (zero_state_last_shown_time_.ShouldLogFeatureOpenTime()) {
-    base::TimeDelta time_since_shown =
-        zero_state_last_shown_time_.GetTimeSinceShown(GetTime());
-    // Tracks the amount of time between showing the user a zero state nudge and
-    // the user opening the ClipboardHistory menu.
-    base::UmaHistogramExactLinear(kZeroStateNudge_OpenTime,
-                                  time_since_shown.InSeconds(), kMaxSeconds);
+  if (LogFeatureOpenTime(zero_state_last_shown_time_, kZeroStateNudge_OpenTime))
     zero_state_last_shown_time_.set_was_logged_as_opened();
+  if (LogFeatureOpenTime(screenshot_notification_last_shown_time_,
+                         kScreenshotNotification_OpenTime)) {
+    screenshot_notification_last_shown_time_.set_was_logged_as_opened();
   }
 }
 
 void ClipboardNudgeController::OnClipboardHistoryPasted() {
-  if (last_shown_time_.ShouldLogFeatureUsedTime()) {
-    base::TimeDelta time_since_shown =
-        last_shown_time_.GetTimeSinceShown(GetTime());
-
-    // Tracks the amount of time between showing the user a nudge and the user
-    // using the ClipboardHistory feature.
-    base::UmaHistogramExactLinear(kOnboardingNudge_PasteTime,
-                                  time_since_shown.InSeconds(), kMaxSeconds);
+  if (LogFeatureUsedTime(last_shown_time_, kOnboardingNudge_PasteTime))
     last_shown_time_.set_was_logged_as_used();
-  }
-  if (new_feature_last_shown_time_.ShouldLogFeatureUsedTime()) {
-    base::TimeDelta time_since_shown =
-        new_feature_last_shown_time_.GetTimeSinceShown(GetTime());
-    // Tracks the amount of time between showing the user a new badge and the
-    // user using the ClipboardHistory feature.
-    base::UmaHistogramExactLinear(kNewBadge_PasteTime,
-                                  time_since_shown.InSeconds(), kMaxSeconds);
+  if (LogFeatureUsedTime(new_feature_last_shown_time_, kNewBadge_PasteTime))
     new_feature_last_shown_time_.set_was_logged_as_used();
-  }
-  if (zero_state_last_shown_time_.ShouldLogFeatureUsedTime()) {
-    base::TimeDelta time_since_shown =
-        zero_state_last_shown_time_.GetTimeSinceShown(GetTime());
-
-    // Tracks the amount of time between showing the user a nudge and the user
-    // using the ClipboardHistory feature.
-    base::UmaHistogramExactLinear(kZeroStateNudge_PasteTime,
-                                  time_since_shown.InSeconds(), kMaxSeconds);
+  if (LogFeatureUsedTime(zero_state_last_shown_time_,
+                         kZeroStateNudge_PasteTime)) {
     zero_state_last_shown_time_.set_was_logged_as_used();
+  }
+  if (LogFeatureUsedTime(screenshot_notification_last_shown_time_,
+                         kScreenshotNotification_PasteTime)) {
+    screenshot_notification_last_shown_time_.set_was_logged_as_used();
   }
 }
 

@@ -4,11 +4,15 @@
 
 #include "ash/capture_mode/capture_mode_notification_view.h"
 
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/assistant/assistant_state.h"
+#include "ash/public/cpp/clipboard_history_controller.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/scoped_light_mode_as_default.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/events/keyboard_layout_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/box_layout.h"
@@ -30,6 +34,65 @@ constexpr int kPlayIconSizeDip = 24;
 constexpr int kPlayIconBackgroundCornerRadiusDip = 20;
 constexpr gfx::Size kPlayIconViewSize{40, 40};
 
+// The size of the keyboard shortcut icon.
+constexpr int kKeyboardShortcutIconSize = 14;
+
+bool IsAssistantAvailable() {
+  AssistantStateBase* state = AssistantState::Get();
+  return state->allowed_state() ==
+             chromeos::assistant::AssistantAllowedState::ALLOWED &&
+         state->settings_enabled().value_or(false);
+}
+
+gfx::ImageSkia GetShortcutIcon(SkColor icon_color) {
+  // Set the keyboard shortcut icon depending on whether search button or
+  // launcher button is being used.
+  const bool use_launcher_key = ui::DeviceUsesKeyboardLayout2();
+
+  if (!use_launcher_key) {
+    return gfx::CreateVectorIcon(kClipboardSearchIcon,
+                                 kKeyboardShortcutIconSize, icon_color);
+  }
+
+  if (IsAssistantAvailable()) {
+    return gfx::CreateVectorIcon(gfx::IconDescription(
+        kClipboardLauncherOuterIcon, kKeyboardShortcutIconSize, icon_color,
+        &kClipboardLauncherInnerIcon));
+  }
+
+  return gfx::CreateVectorIcon(kClipboardLauncherNoAssistantIcon,
+                               kKeyboardShortcutIconSize, icon_color);
+}
+
+std::unique_ptr<views::View> CreateClipboardShortcutView() {
+  std::unique_ptr<views::View> clipboard_shortcut_view =
+      std::make_unique<views::View>();
+
+  auto* color_provider = AshColorProvider::Get();
+  const SkColor background_color = color_provider->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kControlBackgroundColorActive);
+  // The text and icon are showing on the background with |background_color|
+  // so its color is same with kButtonLabelColorPrimary although they're
+  // not theoretically showing on a button.
+  const SkColor text_icon_color = color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kButtonLabelColorPrimary);
+  clipboard_shortcut_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal));
+
+  gfx::ImageSkia shortcut_icon = GetShortcutIcon(text_icon_color);
+  auto* keyboard_shortcut_icon = clipboard_shortcut_view->AddChildView(
+      std::make_unique<views::ImageView>());
+  keyboard_shortcut_icon->SetImage(shortcut_icon);
+
+  views::Label* shortcut_label = clipboard_shortcut_view->AddChildView(
+      std::make_unique<views::Label>(l10n_util::GetStringUTF16(
+          IDS_ASH_MULTIPASTE_SCREENSHOT_NOTIFICATION_NUDGE)));
+  shortcut_label->SetBackgroundColor(background_color);
+  shortcut_label->SetEnabledColor(text_icon_color);
+  ClipboardHistoryController::Get()->MarkScreenshotNotificationNudgeShown();
+  return clipboard_shortcut_view;
+}
+
 // Creates the banner view that will show on top of the notification image.
 std::unique_ptr<views::View> CreateBannerView() {
   std::unique_ptr<views::View> banner_view = std::make_unique<views::View>();
@@ -46,11 +109,11 @@ std::unique_ptr<views::View> CreateBannerView() {
   // not theoretically showing on a button.
   const SkColor text_icon_color = color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kButtonLabelColorPrimary);
-  auto layout = std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(kBannerVerticalInsetDip, kBannerHorizontalInsetDip),
-      kBannerIconTextSpacingDip);
-  banner_view->SetLayoutManager(std::move(layout));
+  auto* layout =
+      banner_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal,
+          gfx::Insets(kBannerVerticalInsetDip, kBannerHorizontalInsetDip),
+          kBannerIconTextSpacingDip));
   banner_view->SetBackground(views::CreateSolidBackground(background_color));
 
   views::ImageView* icon =
@@ -62,7 +125,13 @@ std::unique_ptr<views::View> CreateBannerView() {
       std::make_unique<views::Label>(l10n_util::GetStringUTF16(
           IDS_ASH_SCREEN_CAPTURE_SCREENSHOT_COPIED_TO_CLIPBOARD)));
   label->SetBackgroundColor(background_color);
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetEnabledColor(text_icon_color);
+
+  if (features::IsClipboardHistoryScreenshotNudgeEnabled()) {
+    banner_view->AddChildView(CreateClipboardShortcutView());
+    layout->SetFlexForView(label, 1);
+  }
 
   return banner_view;
 }

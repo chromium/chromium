@@ -402,6 +402,11 @@ const base::Feature kClipboardHistoryNudgeSessionReset{
 const base::Feature kClipboardHistoryContextMenuNudge{
     "ClipboardHistoryContextMenuNudge", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, the clipboard history shortcut will appear in screenshot
+// notifications.
+const base::Feature kClipboardHistoryScreenshotNudge{
+    "ClipboardHistoryScreenshotNudge", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables copying an image to the system clipboard to support pasting onto
 // different surfaces
 const base::Feature kEnableFilesAppCopyImage{"EnableFilesAppCopyImage",
@@ -861,6 +866,10 @@ bool IsClipboardHistoryNudgeSessionResetEnabled() {
 
 bool IsClipboardHistoryContextMenuNudgeEnabled() {
   return base::FeatureList::IsEnabled(kClipboardHistoryContextMenuNudge);
+}
+
+bool IsClipboardHistoryScreenshotNudgeEnabled() {
+  return base::FeatureList::IsEnabled(kClipboardHistoryScreenshotNudge);
 }
 
 bool IsPciguardUiEnabled() {

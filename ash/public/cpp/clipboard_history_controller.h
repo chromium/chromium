@@ -69,6 +69,9 @@ class ASH_PUBLIC_EXPORT ClipboardHistoryController {
   // Increment the 'new' feature badge shown count.
   virtual void MarkNewFeatureBadgeShown() = 0;
 
+  // Increment the screenshot notification nudge shown count.
+  virtual void MarkScreenshotNotificationNudgeShown() = 0;
+
   // Creates a ScopedClipboardHistoryPause, which pauses ClipboardHistory for
   // its lifetime.
   virtual std::unique_ptr<ScopedClipboardHistoryPause> CreateScopedPause() = 0;

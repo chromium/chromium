@@ -287,6 +287,10 @@ void ClipboardHistoryControllerImpl::MarkNewFeatureBadgeShown() {
   nudge_controller_->MarkNewFeatureBadgeShown();
 }
 
+void ClipboardHistoryControllerImpl::MarkScreenshotNotificationNudgeShown() {
+  nudge_controller_->MarkScreenshotNotificationNudgeShown();
+}
+
 bool ClipboardHistoryControllerImpl::CanShowMenu() const {
   return !IsEmpty() && ClipboardHistoryUtil::IsEnabledInCurrentMode();
 }

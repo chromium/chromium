@@ -110,6 +110,7 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   bool CanShowMenu() const override;
   bool ShouldShowNewFeatureBadge() const override;
   void MarkNewFeatureBadgeShown() override;
+  void MarkScreenshotNotificationNudgeShown() override;
   std::unique_ptr<ScopedClipboardHistoryPause> CreateScopedPause() override;
   base::Value GetHistoryValues(
       const std::set<std::string>& item_id_filter) const override;
