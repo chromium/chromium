@@ -111,10 +111,11 @@ class RASTER_EXPORT RasterImplementationGLES : public RasterInterface {
   void ReadbackARGBPixelsAsync(
       const gpu::Mailbox& source_mailbox,
       GLenum source_target,
-      const gfx::Size& dst_size,
+      GrSurfaceOrigin source_origin,
+      const SkImageInfo& dst_info,
+      GLuint dst_row_bytes,
       unsigned char* out,
-      GLenum format,
-      base::OnceCallback<void(bool)> callback) override;
+      base::OnceCallback<void(GrSurfaceOrigin, bool)> readback_done) override;
 
   void ReadbackYUVPixelsAsync(
       const gpu::Mailbox& source_mailbox,
@@ -167,9 +168,11 @@ class RASTER_EXPORT RasterImplementationGLES : public RasterInterface {
 
  private:
   GLHelper* GetGLHelper();
-  void OnReadARGBPixelsAsync(GLuint texture_id,
-                             base::OnceCallback<void(bool)> callback,
-                             bool success);
+  void OnReadARGBPixelsAsync(
+      GLuint texture_id,
+      base::OnceCallback<void(GrSurfaceOrigin, bool)> callback,
+      GrSurfaceOrigin result_origin,
+      bool success);
   void OnReadYUVPixelsAsync(GLuint copy_texture_id,
                             base::OnceCallback<void()> on_release_mailbox,
                             base::OnceCallback<void(bool)> readback_done,

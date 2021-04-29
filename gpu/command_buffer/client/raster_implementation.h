@@ -160,10 +160,11 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
   void ReadbackARGBPixelsAsync(
       const gpu::Mailbox& source_mailbox,
       GLenum source_target,
-      const gfx::Size& dst_size,
+      GrSurfaceOrigin source_origin,
+      const SkImageInfo& dst_info,
+      GLuint dst_row_bytes,
       unsigned char* out,
-      GLenum format,
-      base::OnceCallback<void(bool)> readback_done) override;
+      base::OnceCallback<void(GrSurfaceOrigin, bool)> readback_done) override;
   void ReadbackYUVPixelsAsync(
       const gpu::Mailbox& source_mailbox,
       GLenum source_target,
@@ -347,6 +348,20 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
       bool needs_mips,
       SyncToken* decode_sync_token,
       ClientDiscardableHandle handle);
+
+  void ReadbackImagePixelsINTERNAL(
+      const gpu::Mailbox& source_mailbox,
+      const SkImageInfo& dst_info,
+      GLuint dst_row_bytes,
+      int src_x,
+      int src_y,
+      base::OnceCallback<void(GrSurfaceOrigin, bool)> readback_done,
+      void* dst_pixels);
+
+  struct AsyncReadbackRequest;
+  void OnAsyncReadbackDone(AsyncReadbackRequest* request);
+  void CancelRequests();
+  base::queue<std::unique_ptr<AsyncReadbackRequest>> request_queue_;
 
 // Set to 1 to have the client fail when a GL error is generated.
 // This helps find bugs in the renderer since the debugger stops on the error.

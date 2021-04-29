@@ -426,12 +426,12 @@ TEST_F(RasterFormatTest, ReadbackImagePixelsINTERNALImmediate) {
   };
   cmds::ReadbackImagePixelsINTERNALImmediate& cmd =
       *GetBufferAs<cmds::ReadbackImagePixelsINTERNALImmediate>();
-  void* next_cmd = cmd.Set(
-      &cmd, static_cast<GLint>(11), static_cast<GLint>(12),
-      static_cast<GLuint>(13), static_cast<GLuint>(14), static_cast<GLuint>(15),
-      static_cast<GLuint>(16), static_cast<GLuint>(17), static_cast<GLint>(18),
-      static_cast<GLuint>(19), static_cast<GLuint>(20), static_cast<GLint>(21),
-      static_cast<GLuint>(22), data);
+  void* next_cmd = cmd.Set(&cmd, static_cast<GLint>(11), static_cast<GLint>(12),
+                           static_cast<GLuint>(13), static_cast<GLuint>(14),
+                           static_cast<GLuint>(15), static_cast<GLuint>(16),
+                           static_cast<GLuint>(17), static_cast<GLint>(18),
+                           static_cast<GLuint>(19), static_cast<GLuint>(20),
+                           static_cast<GLuint>(21), data);
   EXPECT_EQ(
       static_cast<uint32_t>(cmds::ReadbackImagePixelsINTERNALImmediate::kCmdId),
       cmd.header.command);
@@ -446,9 +446,8 @@ TEST_F(RasterFormatTest, ReadbackImagePixelsINTERNALImmediate) {
   EXPECT_EQ(static_cast<GLuint>(17), cmd.dst_sk_alpha_type);
   EXPECT_EQ(static_cast<GLint>(18), cmd.shm_id);
   EXPECT_EQ(static_cast<GLuint>(19), cmd.shm_offset);
-  EXPECT_EQ(static_cast<GLuint>(20), cmd.pixels_offset);
-  EXPECT_EQ(static_cast<GLint>(21), cmd.result_shm_id);
-  EXPECT_EQ(static_cast<GLuint>(22), cmd.result_shm_offset);
+  EXPECT_EQ(static_cast<GLuint>(20), cmd.color_space_offset);
+  EXPECT_EQ(static_cast<GLuint>(21), cmd.pixels_offset);
   CheckBytesWrittenMatchesExpectedSize(
       next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
 }

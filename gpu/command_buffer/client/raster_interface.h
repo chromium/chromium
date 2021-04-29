@@ -14,6 +14,7 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
+#include "third_party/skia/include/gpu/GrTypes.h"
 
 namespace cc {
 class DisplayItemList;
@@ -105,18 +106,19 @@ class RasterInterface : public InterfaceBase {
       bool needs_mips) = 0;
 
   // Starts an asynchronous readback of |source_mailbox| into caller-owned
-  // memory |out|. Currently supports the GL_RGBA format and GL_BGRA_EXT format
-  // with the GL_EXT_read_format_bgra GL extension. |out| must remain valid
-  // until |readback_done| is called with a bool indicating if the readback was
-  // successful. On success |out| will contain the pixel data copied back from
-  // the GPU process.
+  // memory |out|. Currently supports the kRGBA_8888_SkColorType and
+  // kBGRA_8888_SkColorType color types. |out| must remain valid
+  // until |readback_done| is called with the origin of the pixels in |out| and
+  // a bool indicating if the readback was successful. On success |out| will
+  // contain the pixel data copied back from the GPU process.
   virtual void ReadbackARGBPixelsAsync(
       const gpu::Mailbox& source_mailbox,
       GLenum source_target,
-      const gfx::Size& dst_size,
+      GrSurfaceOrigin source_origin,
+      const SkImageInfo& dst_info,
+      GLuint dst_row_bytes,
       unsigned char* out,
-      GLenum format,
-      base::OnceCallback<void(bool)> readback_done) = 0;
+      base::OnceCallback<void(GrSurfaceOrigin, bool)> readback_done) = 0;
 
   // Starts an asynchronus readback and translation of RGBA |source_mailbox|
   // into caller-owned |[yuv]_plane_data|. All provided pointers must remain

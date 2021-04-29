@@ -307,10 +307,10 @@ void CanvasCaptureHandler::ReadARGBPixelsAsync(
   DCHECK(context_provider);
 
   const base::TimeTicks timestamp = base::TimeTicks::Now();
-  const gfx::Size image_size(image->width(), image->height());
   const bool is_opaque = image->CurrentFrameKnownToBeOpaque();
   const media::VideoPixelFormat temp_argb_pixel_format =
       media::VideoPixelFormatFromSkColorType(kN32_SkColorType, is_opaque);
+  const gfx::Size image_size(image->width(), image->height());
   scoped_refptr<media::VideoFrame> temp_argb_frame = frame_pool_.CreateFrame(
       temp_argb_pixel_format, image_size, gfx::Rect(image_size), image_size,
       base::TimeDelta());
@@ -323,13 +323,20 @@ void CanvasCaptureHandler::ReadARGBPixelsAsync(
                     kN32_SkColorType == kBGRA_8888_SkColorType,
                 "CanvasCaptureHandler::ReadARGBPixelsAsync supports only "
                 "kRGBA_8888_SkColorType and kBGRA_8888_SkColorType.");
-  // This mapping also matches the behavior of the non-public helper function
-  // media::(anonymous namespace)::GetSkiaAndGlColorTypesForPlane.
-  GLenum format;
-  if (kN32_SkColorType == kRGBA_8888_SkColorType)
-    format = GL_RGBA;
-  else
-    format = GL_BGRA_EXT;
+  SkImageInfo info = SkImageInfo::MakeN32(
+      image_size.width(), image_size.height(),
+      is_opaque ? kOpaque_SkAlphaType : kUnpremul_SkAlphaType);
+  GLuint row_bytes;
+  if (!base::CheckedNumeric<size_t>(info.minRowBytes())
+           .AssignIfValid(&row_bytes)) {
+    DLOG(ERROR) << "Row stride must fit in GLuint (32 bits), given stride: "
+                << info.minRowBytes();
+    return;
+  }
+
+  GrSurfaceOrigin image_origin = image->IsOriginTopLeft()
+                                     ? kTopLeft_GrSurfaceOrigin
+                                     : kBottomLeft_GrSurfaceOrigin;
 
   IncrementOngoingAsyncPixelReadouts();
   gpu::MailboxHolder mailbox_holder = image->GetMailboxHolder();
@@ -337,11 +344,11 @@ void CanvasCaptureHandler::ReadARGBPixelsAsync(
   context_provider->RasterInterface()->WaitSyncTokenCHROMIUM(
       mailbox_holder.sync_token.GetConstData());
   context_provider->RasterInterface()->ReadbackARGBPixelsAsync(
-      mailbox_holder.mailbox, mailbox_holder.texture_target, image_size,
-      temp_argb_frame->visible_data(media::VideoFrame::kARGBPlane), format,
+      mailbox_holder.mailbox, mailbox_holder.texture_target, image_origin, info,
+      row_bytes, temp_argb_frame->visible_data(media::VideoFrame::kARGBPlane),
       WTF::Bind(&CanvasCaptureHandler::OnARGBPixelsReadAsync,
                 weak_ptr_factory_.GetWeakPtr(), image, temp_argb_frame,
-                timestamp, !image->IsOriginTopLeft()));
+                timestamp));
 }
 
 void CanvasCaptureHandler::ReadYUVPixelsAsync(
@@ -386,7 +393,7 @@ void CanvasCaptureHandler::OnARGBPixelsReadAsync(
     scoped_refptr<StaticBitmapImage> image,
     scoped_refptr<media::VideoFrame> temp_argb_frame,
     base::TimeTicks this_frame_ticks,
-    bool flip,
+    GrSurfaceOrigin result_origin,
     bool success) {
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
   DecrementOngoingAsyncPixelReadouts();
@@ -400,6 +407,7 @@ void CanvasCaptureHandler::OnARGBPixelsReadAsync(
   // Let |image| fall out of scope after we are done reading.
   const auto color_space = GetImageYUVColorSpace(image);
 
+  bool flip = result_origin == kBottomLeft_GrSurfaceOrigin;
   SendFrame(ConvertToYUVFrame(std::move(temp_argb_frame), flip),
             this_frame_ticks, color_space);
   if (num_ongoing_async_pixel_readouts_ == 0 && deferred_request_refresh_frame_)

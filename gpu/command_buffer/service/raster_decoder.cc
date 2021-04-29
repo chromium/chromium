@@ -611,9 +611,8 @@ class RasterDecoderImpl final : public RasterDecoder,
                                      GLuint dst_sk_alpha_type,
                                      GLint shm_id,
                                      GLuint shm_offset,
+                                     GLuint color_space_offset,
                                      GLuint pixels_offset,
-                                     GLint result_shm_id,
-                                     GLuint result_shm_offset,
                                      const volatile GLbyte* mailbox);
   void DoConvertYUVAMailboxesToRGBINTERNAL(GLenum yuv_color_space,
                                            GLenum plane_config,
@@ -2630,9 +2629,8 @@ void RasterDecoderImpl::DoReadbackImagePixelsINTERNAL(
     GLuint dst_sk_alpha_type,
     GLint shm_id,
     GLuint shm_offset,
+    GLuint color_space_offset,
     GLuint pixels_offset,
-    GLint result_shm_id,
-    GLuint result_shm_offset,
     const volatile GLbyte* mailbox) {
   if (dst_sk_color_type > kLastEnum_SkColorType) {
     LOCAL_SET_GL_ERROR(GL_INVALID_ENUM, "ReadbackImagePixels",
@@ -2657,19 +2655,26 @@ void RasterDecoderImpl::DoReadbackImagePixelsINTERNAL(
     return;
   }
 
-  // If present, the color space is serialized into shared memory before the
-  // pixel data.
+  // If present, the color space is serialized into shared memory after the
+  // result and before the pixel data.
+  if (color_space_offset > pixels_offset) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glReadbackImagePixels",
+                       "|pixels_offset| must be >= |color_space_offset|");
+    return;
+  }
+  unsigned int color_space_size = pixels_offset - color_space_offset;
+
   sk_sp<SkColorSpace> dst_color_space;
-  if (pixels_offset > 0) {
-    void* color_space_bytes =
-        GetSharedMemoryAs<void*>(shm_id, shm_offset, pixels_offset);
+  if (color_space_size) {
+    void* color_space_bytes = GetSharedMemoryAs<void*>(
+        shm_id, shm_offset + color_space_offset, color_space_size);
     if (!color_space_bytes) {
       LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackImagePixels",
                          "Failed to retrieve serialized SkColorSpace.");
       return;
     }
     dst_color_space =
-        SkColorSpace::Deserialize(color_space_bytes, pixels_offset);
+        SkColorSpace::Deserialize(color_space_bytes, color_space_size);
     if (!dst_color_space) {
       LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackImagePixels",
                          "Failed to deserialize expected SkColorSpace");
@@ -2723,27 +2728,29 @@ void RasterDecoderImpl::DoReadbackImagePixelsINTERNAL(
     return;
   }
 
-  void* shm_address =
+  void* pixel_address =
       GetSharedMemoryAs<void*>(shm_id, shm_offset + pixels_offset, byte_size);
-  if (!shm_address) {
+  if (!pixel_address) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackImagePixels",
-                       "Failed to retrieve memory for readPixels");
+                       "Failed to retrieve memory for readPixels output");
     return;
   }
 
   typedef cmds::ReadbackImagePixelsINTERNALImmediate::Result Result;
-  Result* result = nullptr;
-  if (result_shm_id != 0) {
-    result = GetSharedMemoryAs<Result*>(result_shm_id, result_shm_offset,
-                                        sizeof(*result));
+  Result* result =
+      GetSharedMemoryAs<Result*>(shm_id, shm_offset, sizeof(Result));
+  if (!result) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackImagePixels",
+                       "Failed to retrieve memory for readPixels result");
+    return;
   }
 
   bool success =
-      sk_image->readPixels(dst_info, shm_address, row_bytes, src_x, src_y);
+      sk_image->readPixels(dst_info, pixel_address, row_bytes, src_x, src_y);
   if (!success) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackImagePixels",
                        "Failed to read pixels from SkImage");
-  } else if (result != nullptr) {
+  } else {
     *result = 1;
   }
 }

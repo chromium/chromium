@@ -236,9 +236,8 @@ void ReadbackImagePixelsINTERNALImmediate(GLint src_x,
                                           GLuint dst_sk_alpha_type,
                                           GLint shm_id,
                                           GLuint shm_offset,
+                                          GLuint color_space_offset,
                                           GLuint pixels_offset,
-                                          GLint result_shm_id,
-                                          GLuint result_shm_offset,
                                           const GLbyte* mailbox) {
   const uint32_t size =
       raster::cmds::ReadbackImagePixelsINTERNALImmediate::ComputeSize();
@@ -247,8 +246,8 @@ void ReadbackImagePixelsINTERNALImmediate(GLint src_x,
           raster::cmds::ReadbackImagePixelsINTERNALImmediate>(size);
   if (c) {
     c->Init(src_x, src_y, dst_width, dst_height, row_bytes, dst_sk_color_type,
-            dst_sk_alpha_type, shm_id, shm_offset, pixels_offset, result_shm_id,
-            result_shm_offset, mailbox);
+            dst_sk_alpha_type, shm_id, shm_offset, color_space_offset,
+            pixels_offset, mailbox);
   }
 }
 

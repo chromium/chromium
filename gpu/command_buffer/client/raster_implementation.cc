@@ -359,6 +359,37 @@ RasterImplementation::SingleThreadChecker::~SingleThreadChecker() {
   CHECK_EQ(0, raster_implementation_->use_count_);
 }
 
+struct RasterImplementation::AsyncReadbackRequest {
+  AsyncReadbackRequest(void* dst_pixels,
+                       GLuint dst_size,
+                       GLuint pixels_offset,
+                       GLuint finished_query,
+                       std::unique_ptr<ScopedMappedMemoryPtr> shared_memory,
+                       base::OnceCallback<void(GrSurfaceOrigin, bool)> callback)
+      : dst_pixels(dst_pixels),
+        dst_size(dst_size),
+        pixels_offset(pixels_offset),
+        shared_memory(std::move(shared_memory)),
+        callback(std::move(callback)),
+        query(finished_query),
+        done(false),
+        readback_successful(false) {}
+  ~AsyncReadbackRequest() {
+    // RasterDecoder::ReadbackImagePixels always stores the result pixels with
+    // top left origin.
+    std::move(callback).Run(kTopLeft_GrSurfaceOrigin, readback_successful);
+  }
+
+  void* dst_pixels;
+  GLuint dst_size;
+  GLuint pixels_offset;
+  std::unique_ptr<ScopedMappedMemoryPtr> shared_memory;
+  base::OnceCallback<void(GrSurfaceOrigin, bool)> callback;
+  GLuint query;
+  bool done;
+  bool readback_successful;
+};
+
 RasterImplementation::RasterImplementation(
     RasterCmdHelper* helper,
     TransferBufferInterface* transfer_buffer,
@@ -406,6 +437,9 @@ RasterImplementation::~RasterImplementation() {
   // shared will fail and abort (ie, it will stop running).
   WaitForCmd();
 
+  // Run callbacks for all pending AsyncReadbackRequests to inform them of the
+  // failure
+  CancelRequests();
   query_tracker_.reset();
 
   // Make sure the commands make it the service.
@@ -1123,11 +1157,12 @@ void RasterImplementation::WritePixels(const gpu::Mailbox& dest_mailbox,
   GLuint total_size =
       pixels_offset + base::bits::Align(src_size, sizeof(uint64_t));
 
-  ScopedSharedMemoryPtr scoped_shared_memory(total_size, transfer_buffer_,
-                                             mapped_memory_.get(), helper());
-  GLint shm_id = scoped_shared_memory.shm_id();
-  GLuint shm_offset = scoped_shared_memory.offset();
-  void* address = scoped_shared_memory.address();
+  std::unique_ptr<ScopedSharedMemoryPtr> scoped_shared_memory =
+      std::make_unique<ScopedSharedMemoryPtr>(total_size, transfer_buffer_,
+                                              mapped_memory_.get(), helper());
+  GLint shm_id = scoped_shared_memory->shm_id();
+  GLuint shm_offset = scoped_shared_memory->offset();
+  void* address = scoped_shared_memory->address();
 
   if (src_info.colorSpace()) {
     size_t bytes_written = src_info.colorSpace()->writeToMemory(address);
@@ -1274,14 +1309,157 @@ SyncToken RasterImplementation::ScheduleImageDecode(
   return decode_sync_token;
 }
 
+void RasterImplementation::ReadbackImagePixelsINTERNAL(
+    const gpu::Mailbox& source_mailbox,
+    const SkImageInfo& dst_info,
+    GLuint dst_row_bytes,
+    int src_x,
+    int src_y,
+    base::OnceCallback<void(GrSurfaceOrigin, bool)> readback_done,
+    void* dst_pixels) {
+  DCHECK_GE(dst_row_bytes, dst_info.minRowBytes());
+
+  // We can't use GetResultAs<>() to store our result because it uses
+  // TransferBuffer under the hood and this function is potentially
+  // asynchronous. Instead, store the result at the beginning of the shared
+  // memory we allocate to transfer pixels.
+  GLuint color_space_offset = base::bits::AlignUp(
+      sizeof(cmds::ReadbackImagePixelsINTERNALImmediate::Result),
+      sizeof(uint64_t));
+
+  // Add the size of the SkColorSpace while maintaining 8-byte alignment.
+  GLuint pixels_offset = color_space_offset;
+  if (dst_info.colorSpace()) {
+    pixels_offset = base::bits::AlignUp(
+        color_space_offset + dst_info.colorSpace()->writeToMemory(nullptr),
+        sizeof(uint64_t));
+  }
+
+  GLuint dst_size = dst_info.computeByteSize(dst_row_bytes);
+  GLuint total_size =
+      pixels_offset + base::bits::Align(dst_size, sizeof(uint64_t));
+
+  std::unique_ptr<ScopedMappedMemoryPtr> scoped_shared_memory =
+      std::make_unique<ScopedMappedMemoryPtr>(total_size, helper(),
+                                              mapped_memory_.get());
+  GLint shm_id = scoped_shared_memory->shm_id();
+  GLuint shm_offset = scoped_shared_memory->offset();
+  void* shm_address = scoped_shared_memory->address();
+
+  // Readback success/failure result is stored at the beginning of the shared
+  // memory region. Client is responsible for initialization so we do so here.
+  auto* readback_result =
+      static_cast<cmds::ReadbackImagePixelsINTERNALImmediate::Result*>(
+          shm_address);
+  *readback_result = 0;
+
+  if (dst_info.colorSpace()) {
+    size_t bytes_written = dst_info.colorSpace()->writeToMemory(
+        static_cast<uint8_t*>(shm_address) + color_space_offset);
+    DCHECK_LE(bytes_written + color_space_offset, pixels_offset);
+  }
+
+  bool is_async = !!readback_done;
+
+  GLuint query;
+  if (is_async) {
+    GenQueriesEXT(1, &query);
+
+    // This query is currently sufficient because the readback implementation in
+    // RasterDecoder is synchronous. If that call is changed to be asynchronous
+    // later we'll need to implement a more sophisticated query.
+    BeginQueryEXT(GL_COMMANDS_ISSUED_CHROMIUM, query);
+  }
+
+  helper_->ReadbackImagePixelsINTERNALImmediate(
+      src_x, src_y, dst_info.width(), dst_info.height(), dst_row_bytes,
+      dst_info.colorType(), dst_info.alphaType(), shm_id, shm_offset,
+      color_space_offset, pixels_offset, source_mailbox.name);
+
+  if (is_async) {
+    EndQueryEXT(GL_COMMANDS_ISSUED_CHROMIUM);
+
+    auto request = std::make_unique<AsyncReadbackRequest>(
+        dst_pixels, dst_size, pixels_offset, query,
+        std::move(scoped_shared_memory), std::move(readback_done));
+    auto* request_ptr = request.get();
+    request_queue_.push(std::move(request));
+    SignalQuery(query,
+                base::BindOnce(&RasterImplementation::OnAsyncReadbackDone,
+                               base::Unretained(this), request_ptr));
+  } else {
+    WaitForCmd();
+
+    if (!*readback_result)
+      return;
+
+    memcpy(dst_pixels, static_cast<uint8_t*>(shm_address) + pixels_offset,
+           dst_size);
+  }
+}
+
+void RasterImplementation::OnAsyncReadbackDone(
+    AsyncReadbackRequest* finished_request) {
+  finished_request->done = true;
+
+  // Only process requests in the order they were sent, regardless of when they
+  // finish.
+  while (!request_queue_.empty()) {
+    auto& request = request_queue_.front();
+    if (!request->done)
+      break;
+
+    // Readback success/failure is stored at the beginning of the shared memory
+    // region.
+    auto* result =
+        static_cast<cmds::ReadbackImagePixelsINTERNALImmediate::Result*>(
+            request->shared_memory->address());
+    if (*result) {
+      memcpy(request->dst_pixels,
+             static_cast<uint8_t*>(request->shared_memory->address()) +
+                 request->pixels_offset,
+             request->dst_size);
+      request->readback_successful = true;
+    }
+
+    if (request_queue_.front()->query)
+      DeleteQueriesEXT(1, &request->query);
+
+    request_queue_.pop();
+  }
+}
+
+void RasterImplementation::CancelRequests() {
+  while (!request_queue_.empty()) {
+    if (request_queue_.front()->query)
+      DeleteQueriesEXT(1, &request_queue_.front()->query);
+
+    request_queue_.pop();
+  }
+}
+
 void RasterImplementation::ReadbackARGBPixelsAsync(
     const gpu::Mailbox& source_mailbox,
     GLenum source_target,
-    const gfx::Size& dst_size,
+    GrSurfaceOrigin source_origin,
+    const SkImageInfo& dst_info,
+    GLuint dst_row_bytes,
     unsigned char* out,
-    GLenum format,
-    base::OnceCallback<void(bool)> readback_done) {
-  NOTREACHED();
+    base::OnceCallback<void(GrSurfaceOrigin, bool)> readback_done) {
+  DCHECK(!!readback_done);
+  // Note: It's possible the GL implementation supports other readback
+  // types. However, as of this writing, no caller of this method will
+  // request a different |color_type| (i.e., requiring using some other GL
+  // format).
+  if (dst_info.colorType() != kRGBA_8888_SkColorType &&
+      dst_info.colorType() != kBGRA_8888_SkColorType) {
+    std::move(readback_done)
+        .Run(kTopLeft_GrSurfaceOrigin, /*readback_sucess=*/false);
+    return;
+  }
+
+  ReadbackImagePixelsINTERNAL(source_mailbox, dst_info, dst_row_bytes, 0, 0,
+                              std::move(readback_done), out);
 }
 
 void RasterImplementation::ReadbackYUVPixelsAsync(
@@ -1309,43 +1487,9 @@ void RasterImplementation::ReadbackImagePixels(
     int src_x,
     int src_y,
     void* dst_pixels) {
-  DCHECK_GE(dst_row_bytes, dst_info.minRowBytes());
-
-  // Get the size of the SkColorSpace while maintaining 8-byte alignment.
-  GLuint pixels_offset = 0;
-  if (dst_info.colorSpace()) {
-    pixels_offset = base::bits::Align(
-        dst_info.colorSpace()->writeToMemory(nullptr), sizeof(uint64_t));
-  }
-
-  GLuint dst_size = dst_info.computeByteSize(dst_row_bytes);
-  GLuint total_size =
-      pixels_offset + base::bits::Align(dst_size, sizeof(uint64_t));
-
-  ScopedSharedMemoryPtr scoped_shared_memory(total_size, transfer_buffer_,
-                                             mapped_memory_.get(), helper());
-  GLint shm_id = scoped_shared_memory.shm_id();
-  GLuint shm_offset = scoped_shared_memory.offset();
-  void* address = scoped_shared_memory.address();
-  auto result =
-      GetResultAs<cmds::ReadbackImagePixelsINTERNALImmediate::Result>();
-  *result = 0;
-
-  if (dst_info.colorSpace()) {
-    size_t bytes_written = dst_info.colorSpace()->writeToMemory(address);
-    DCHECK_LE(bytes_written, pixels_offset);
-  }
-
-  helper_->ReadbackImagePixelsINTERNALImmediate(
-      src_x, src_y, dst_info.width(), dst_info.height(), dst_row_bytes,
-      dst_info.colorType(), dst_info.alphaType(), shm_id, shm_offset,
-      pixels_offset, GetResultShmId(), result.offset(), source_mailbox.name);
-  WaitForCmd();
-
-  if (!*result)
-    return;
-
-  memcpy(dst_pixels, static_cast<uint8_t*>(address) + pixels_offset, dst_size);
+  ReadbackImagePixelsINTERNAL(
+      source_mailbox, dst_info, dst_row_bytes, src_x, src_y,
+      base::OnceCallback<void(GrSurfaceOrigin, bool)>(), dst_pixels);
 }
 
 void RasterImplementation::IssueImageDecodeCacheEntryCreation(
