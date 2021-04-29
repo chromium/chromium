@@ -71,6 +71,13 @@ void PositionView(UIView* view, CGPoint point) {
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
+    // The background color must be set to avoid the corners behind the rounded
+    // layer from showing when dragging and dropping. Unfortunately, using
+    // |UIColor.clearColor| here will not remain transparent, so a solid color
+    // must be chosen. Using the grid color prevents the corners from showing
+    // while it transitions to the presented context menu/dragging state.
+    self.backgroundColor = [UIColor colorNamed:kGridBackgroundColor];
+
     [self setupSelectedBackgroundView];
     UIView* contentView = self.contentView;
     contentView.layer.cornerRadius = kGridCellCornerRadius;
@@ -182,10 +189,6 @@ void PositionView(UIView* view, CGPoint point) {
 - (void)setTheme:(GridTheme)theme {
   if (_theme == theme)
     return;
-
-  // This background color must be set to avoid the corners behind the rounded
-  // layer from showing when dragging and dropping.
-  self.backgroundColor = [UIColor clearColor];
 
   self.iconView.backgroundColor = UIColor.clearColor;
   switch (theme) {
