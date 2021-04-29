@@ -78,6 +78,7 @@ export const DeviceReportingType = {
   LOGS: 'logs',
   PRINT: 'print',
   PRINT_JOBS: 'print jobs',
+  DLP_EVENTS: 'dlp events',
   CROSTINI: 'crostini',
   USERNAME: 'username',
   EXTENSION: 'extension',

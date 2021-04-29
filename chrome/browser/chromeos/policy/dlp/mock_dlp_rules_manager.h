@@ -1,0 +1,43 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_MOCK_DLP_RULES_MANAGER_H_
+#define CHROME_BROWSER_CHROMEOS_POLICY_DLP_MOCK_DLP_RULES_MANAGER_H_
+
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace policy {
+class MockDlpRulesManager : public DlpRulesManager {
+ public:
+  MockDlpRulesManager();
+  ~MockDlpRulesManager() override;
+
+  MOCK_CONST_METHOD2(IsRestricted,
+                     Level(const GURL& source, Restriction restriction));
+
+  MOCK_CONST_METHOD3(IsRestrictedDestination,
+                     Level(const GURL& source,
+                           const GURL& destination,
+                           Restriction restriction));
+
+  MOCK_CONST_METHOD3(IsRestrictedComponent,
+                     Level(const GURL& source,
+                           const Component& destination,
+                           Restriction restriction));
+
+  MOCK_CONST_METHOD3(IsRestrictedAnyOfComponents,
+                     Level(const GURL& source,
+                           const std::vector<Component>& destinations,
+                           Restriction restriction));
+
+  MOCK_CONST_METHOD0(IsReportingEnabled, bool());
+
+  MOCK_CONST_METHOD0(GetReportingManager, DlpReportingManager*());
+};
+
+}  // namespace policy
+
+#endif  // CHROME_BROWSER_CHROMEOS_POLICY_DLP_MOCK_DLP_RULES_MANAGER_H_

@@ -4108,6 +4108,8 @@ source_set("unit_tests") {
     "policy/dlp/dlp_rules_manager_test_utils.h",
     "policy/dlp/mock_dlp_content_manager.cc",
     "policy/dlp/mock_dlp_content_manager.h",
+    "policy/dlp/mock_dlp_rules_manager.cc",
+    "policy/dlp/mock_dlp_rules_manager.h",
     "policy/dm_token_storage_unittest.cc",
     "policy/extension_cache_unittest.cc",
     "policy/extension_install_event_log_collector_unittest.cc",

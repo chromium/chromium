@@ -50,6 +50,8 @@
 #include "chrome/browser/chromeos/crostini/crostini_pref_names.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/policy/device_cloud_policy_manager_chromeos.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/minimum_version_policy_handler.h"
 #include "chrome/browser/chromeos/policy/policy_cert_service.h"
 #include "chrome/browser/chromeos/policy/policy_cert_service_factory.h"
@@ -172,6 +174,7 @@ const char kManagementReportExtensions[] = "managementReportExtensions";
 const char kManagementReportAndroidApplications[] =
     "managementReportAndroidApplications";
 const char kManagementReportPrintJobs[] = "managementReportPrintJobs";
+const char kManagementReportDlpEvents[] = "managementReportDlpEvents";
 const char kManagementPrinting[] = "managementPrinting";
 const char kManagementCrostini[] = "managementCrostini";
 const char kManagementCrostiniContainerConfiguration[] =
@@ -219,7 +222,8 @@ enum class DeviceReportingType {
   kCrostini,
   kUsername,
   kExtensions,
-  kAndroidApplication
+  kAndroidApplication,
+  kDlpEvents
 };
 
 // Corresponds to DeviceReportingType in management_browser_proxy.js
@@ -251,6 +255,8 @@ std::string ToJSDeviceReportingType(const DeviceReportingType& type) {
       return "extension";
     case DeviceReportingType::kAndroidApplication:
       return "android application";
+    case DeviceReportingType::kDlpEvents:
+      return "dlp events";
     default:
       NOTREACHED() << "Unknown device reporting type";
       return "device";
@@ -529,6 +535,10 @@ ManagementUIHandler::GetDeviceCloudPolicyManager() const {
   return connector->GetDeviceCloudPolicyManager();
 }
 
+const policy::DlpRulesManager* ManagementUIHandler::GetDlpRulesManager() const {
+  return policy::DlpRulesManagerFactory::GetForPrimaryProfile();
+}
+
 void ManagementUIHandler::AddDeviceReportingInfo(
     base::Value* report_sources,
     const policy::StatusCollector* collector,
@@ -583,6 +593,11 @@ void ManagementUIHandler::AddDeviceReportingInfo(
   if (report_print_username && !report_print_jobs) {
     AddDeviceReportingElement(report_sources, kManagementPrinting,
                               DeviceReportingType::kPrint);
+  }
+
+  if (GetDlpRulesManager() && GetDlpRulesManager()->IsReportingEnabled()) {
+    AddDeviceReportingElement(report_sources, kManagementReportDlpEvents,
+                              DeviceReportingType::kDlpEvents);
   }
 
   if (crostini::CrostiniFeatures::Get()->IsAllowedNow(profile)) {

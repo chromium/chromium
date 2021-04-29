@@ -11,7 +11,7 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -31,34 +31,6 @@ namespace {
 
 constexpr char kExample1Url[] = "https://www.example1.com";
 constexpr char kExample2Url[] = "https://www.example2.com";
-
-class MockDlpRulesManager : public DlpRulesManager {
- public:
-  MockDlpRulesManager() = default;
-  ~MockDlpRulesManager() override = default;
-
-  MOCK_CONST_METHOD2(IsRestricted,
-                     Level(const GURL& source, Restriction restriction));
-
-  MOCK_CONST_METHOD3(IsRestrictedDestination,
-                     Level(const GURL& source,
-                           const GURL& destination,
-                           Restriction restriction));
-
-  MOCK_CONST_METHOD3(IsRestrictedComponent,
-                     Level(const GURL& source,
-                           const Component& destination,
-                           Restriction restriction));
-
-  MOCK_CONST_METHOD3(IsRestrictedAnyOfComponents,
-                     Level(const GURL& source,
-                           const std::vector<Component>& destinations,
-                           Restriction restriction));
-
-  MOCK_CONST_METHOD0(IsReportingEnabled, bool());
-
-  MOCK_CONST_METHOD0(GetReportingManager, DlpReportingManager*());
-};
 
 class MockDlpController : public DataTransferDlpController {
  public:

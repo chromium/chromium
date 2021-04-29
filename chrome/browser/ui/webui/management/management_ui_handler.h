@@ -35,6 +35,7 @@ extern const char kManagementReportUsers[];
 extern const char kManagementReportCrashReports[];
 extern const char kManagementReportAppInfoAndActivity[];
 extern const char kManagementReportPrintJobs[];
+extern const char kManagementReportDlpEvents[];
 extern const char kManagementPrinting[];
 extern const char kManagementCrostini[];
 extern const char kManagementCrostiniContainerConfiguration[];
@@ -73,6 +74,7 @@ extern const char kPolicyKeyReportMachineIdData[];
 extern const char kPolicyKeyReportUserIdData[];
 extern const char kPolicyKeyReportVersionData[];
 extern const char kPolicyKeyReportPolicyData[];
+extern const char kPolicyKeyReportDlpEvents[];
 extern const char kPolicyKeyReportExtensionsData[];
 extern const char kPolicyKeyReportSystemTelemetryData[];
 extern const char kPolicyKeyReportUserBrowsingData[];
@@ -93,6 +95,7 @@ class Extension;
 
 namespace policy {
 class DeviceCloudPolicyManagerChromeOS;
+class DlpRulesManager;
 class PolicyService;
 class StatusCollector;
 class SystemLogUploader;
@@ -147,6 +150,7 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
   virtual const std::string GetDeviceManager() const;
   virtual const policy::DeviceCloudPolicyManagerChromeOS*
   GetDeviceCloudPolicyManager() const;
+  virtual const policy::DlpRulesManager* GetDlpRulesManager() const;
   void AddDeviceReportingInfo(base::Value* report_sources,
                               const policy::StatusCollector* collector,
                               const policy::SystemLogUploader* uploader,

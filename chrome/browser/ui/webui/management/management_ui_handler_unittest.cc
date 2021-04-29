@@ -50,6 +50,8 @@
 #include "chrome/browser/chromeos/policy/device_cloud_policy_initializer.h"
 #include "chrome/browser/chromeos/policy/device_cloud_policy_manager_chromeos.h"
 #include "chrome/browser/chromeos/policy/device_cloud_policy_store_chromeos.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/status_collector/device_status_collector.h"
 #include "chrome/browser/chromeos/policy/status_collector/status_collector.h"
 #include "chrome/browser/chromeos/policy/status_uploader.h"
@@ -193,8 +195,17 @@ class TestManagementUIHandler : public ManagementUIHandler {
  public:
   TestManagementUIHandler() = default;
   explicit TestManagementUIHandler(policy::PolicyService* policy_service)
-      : policy_service_(policy_service) {}
+      : policy_service_(policy_service) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    dlp_rules_manager_ = new policy::MockDlpRulesManager();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ~TestManagementUIHandler() override { delete dlp_rules_manager_; }
+#else
   ~TestManagementUIHandler() override = default;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   void EnableUpdateRequiredEolInfo(bool enable) {
     update_required_eol_ = enable;
@@ -238,6 +249,9 @@ class TestManagementUIHandler : public ManagementUIHandler {
   }
 
   const std::string GetDeviceManager() const override { return device_domain; }
+  const policy::DlpRulesManager* GetDlpRulesManager() const override {
+    return dlp_rules_manager_;
+  }
   void SetDeviceDomain(const std::string& domain) { device_domain = domain; }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -245,11 +259,14 @@ class TestManagementUIHandler : public ManagementUIHandler {
   policy::PolicyService* policy_service_ = nullptr;
   bool update_required_eol_ = false;
   std::string device_domain = "devicedomain.com";
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  policy::DlpRulesManager* dlp_rules_manager_ = nullptr;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 // We need to use a different base class for ChromeOS and non ChromeOS case.
-// TODO(marcgrimme): refactor so that ChromeOS and non ChromeOS part is better
-// separated.
+// TODO(1071436, marcgrimme): refactor so that ChromeOS and non ChromeOS part is
+// better separated.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 using TestingBaseClass = chromeos::DeviceSettingsTestBase;
 #else
@@ -344,6 +361,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     bool report_hw_status;
     bool report_crash_info;
     bool report_app_info_and_activity;
+    bool report_dlp_events;
     bool upload_enabled;
     bool printing_send_username_and_filename;
     bool crostini_report_usage;
@@ -365,6 +383,7 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     setup_config_.report_hw_status = default_value;
     setup_config_.report_crash_info = default_value;
     setup_config_.report_app_info_and_activity = default_value;
+    setup_config_.report_dlp_events = default_value;
     setup_config_.upload_enabled = default_value;
     setup_config_.printing_send_username_and_filename = default_value;
     setup_config_.crostini_report_usage = default_value;
@@ -448,7 +467,10 @@ class ManagementUIHandlerTests : public TestingBaseClass {
                                       /*task_runner=*/task_runner_);
     ON_CALL(testing::Const(handler_), GetDeviceCloudPolicyManager())
         .WillByDefault(Return(manager_.get()));
-
+    EXPECT_CALL(*static_cast<const policy::MockDlpRulesManager*>(
+                    handler_.GetDlpRulesManager()),
+                IsReportingEnabled)
+        .WillRepeatedly(testing::Return(GetTestConfig().report_dlp_events));
     return handler_.GetDeviceReportingInfo(manager_.get(), status_collector,
                                            system_uploader, GetProfile());
   }
@@ -584,26 +606,41 @@ AssertionResult MessagesToBeEQ(const char* infolist_expr,
                                const char* expected_infolist_expr,
                                base::Value::ConstListView infolist,
                                const std::set<std::string>& expected_messages) {
-  if (infolist.size() != expected_messages.size()) {
-    return AssertionFailure()
-           << " " << infolist_expr << " and " << expected_infolist_expr
-           << " don't have the same size. (" << infolist.size() << ", "
-           << expected_messages.size() << ")";
-  }
   std::set<std::string> tmp_expected(expected_messages);
-  for (const base::Value& info : infolist) {
-    const std::string* message_id = info.FindStringKey("messageId");
-    if (message_id) {
-      if (tmp_expected.erase(*message_id) != 1u) {
-        return AssertionFailure() << " message " << *message_id << " is not in "
-                                  << expected_infolist_expr;
+  std::vector<std::string> tmp_info_messages;
+  for (const base::Value& tmp_info : infolist) {
+    const std::string* message = tmp_info.FindStringKey("messageId");
+    if (message) {
+      if (tmp_expected.erase(*message) != 1u) {
+        tmp_info_messages.push_back(*message);
       }
     }
   }
   if (!tmp_expected.empty()) {
+    AssertionResult result = AssertionFailure();
+    result << "Expected messages from " << expected_infolist_expr
+           << " has more contents than " << infolist_expr << std::endl
+           << "Messages missing from test: ";
+    for (const std::string& message : tmp_expected) {
+      result << message << ", ";
+    }
+    return result;
+  }
+  if (!tmp_info_messages.empty()) {
+    AssertionResult result = AssertionFailure();
+    result << "Recieved messages from " << infolist_expr
+           << " has more contents than " << expected_infolist_expr << std::endl
+           << "Additional messages not expected: ";
+    for (const std::string& message : tmp_info_messages) {
+      result << message << ", ";
+    }
+    return result;
+  }
+  if (infolist.size() != expected_messages.size()) {
     return AssertionFailure()
            << " " << infolist_expr << " and " << expected_infolist_expr
-           << " have different contents " << infolist.data();
+           << " don't have the same size. (info: " << infolist.size()
+           << ", expected: " << expected_messages.size() << ")";
   }
   return AssertionSuccess();
 }
@@ -614,12 +651,6 @@ AssertionResult ReportingElementsToBeEQ(
     const char* expected_elements_expr,
     base::Value::ConstListView elements,
     const std::map<std::string, std::string> expected_elements) {
-  if (elements.size() != expected_elements.size()) {
-    return AssertionFailure()
-           << elements_expr << " and " << expected_elements_expr
-           << " don't have the same size. (" << elements.size() << ", "
-           << expected_elements.size() << ")";
-  }
   std::map<std::string, std::string> tmp_expected(expected_elements);
   for (const base::Value& element : elements) {
     const std::string* message_id = element.FindStringKey("messageId");
@@ -655,6 +686,12 @@ AssertionResult ReportingElementsToBeEQ(
     }
     result << "}";
     return result;
+  }
+  if (elements.size() != expected_elements.size()) {
+    return AssertionFailure()
+           << elements_expr << " and " << expected_elements_expr
+           << " don't have the same size. (" << elements.size() << ", "
+           << expected_elements.size() << ")";
   }
   return AssertionSuccess();
 }
@@ -995,7 +1032,8 @@ TEST_F(ManagementUIHandlerTests, AllEnabledDeviceReportingInfo) {
       {kManagementCrostini, "crostini"},
       {kManagementExtensionReportUsername, "username"},
       {kManagementReportExtensions, "extension"},
-      {kManagementReportAndroidApplications, "android application"}};
+      {kManagementReportAndroidApplications, "android application"},
+      {kManagementReportDlpEvents, "dlp events"}};
 
   ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info.GetList(),
                       expected_elements);
@@ -1004,6 +1042,7 @@ TEST_F(ManagementUIHandlerTests, AllEnabledDeviceReportingInfo) {
 TEST_F(ManagementUIHandlerTests,
        AllEnabledCrostiniAnsiblePlaybookDeviceReportingInfo) {
   ResetTestConfig(true);
+  GetTestConfig().report_dlp_events = false;
   GetTestConfig().crostini_ansible_playbook_filepath = base::FilePath("/tmp/");
   const base::Value info = SetUpForReportingInfo();
   const std::map<std::string, std::string> expected_elements = {
@@ -1018,6 +1057,17 @@ TEST_F(ManagementUIHandlerTests,
       {kManagementExtensionReportUsername, "username"},
       {kManagementReportExtensions, "extension"},
       {kManagementReportAndroidApplications, "android application"}};
+
+  ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info.GetList(),
+                      expected_elements);
+}
+
+TEST_F(ManagementUIHandlerTests, OnlyReportDlpEvents) {
+  ResetTestConfig(false);
+  GetTestConfig().report_dlp_events = true;
+  base::Value info = SetUpForReportingInfo();
+  const std::map<std::string, std::string> expected_elements = {
+      {kManagementReportDlpEvents, "dlp events"}};
 
   ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info.GetList(),
                       expected_elements);
@@ -1137,6 +1187,7 @@ TEST_F(ManagementUIHandlerTests, CloudReportingPolicy) {
                       handler_.GetExtensionReportingInfo().GetList(),
                       expected_messages);
 }
+
 TEST_F(ManagementUIHandlerTests, ExtensionReportingInfoPoliciesMerge) {
   policy::PolicyMap on_prem_reporting_extension_beta_policies;
   policy::PolicyMap on_prem_reporting_extension_stable_policies;

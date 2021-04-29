@@ -279,6 +279,8 @@ Polymer({
         return 'cr:print';
       case DeviceReportingType.PRINT_JOBS:
         return 'cr:print';
+      case DeviceReportingType.DLP_EVENTS:
+        return 'management:policy';
       case DeviceReportingType.CROSTINI:
         return 'management:linux';
       case DeviceReportingType.USERNAME:

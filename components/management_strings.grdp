@@ -116,6 +116,9 @@
     <message name="IDS_MANAGEMENT_REPORT_PRINT_JOBS" desc="Message stating that administrators can see printing history associated with user, device, and printer.">
       Printing history
     </message>
+    <message name="IDS_MANAGEMENT_REPORT_DLP_EVENTS" desc="Message show the users of DLP reporting enabled devices that events are being reported.">
+      Actions taken with data flagged as confidential
+    </message>
     <message name="IDS_MANAGEMENT_CROSTINI" desc="Message stating that administrators can see Crostini usage">
       Linux apps installed and when they were last used
     </message>
