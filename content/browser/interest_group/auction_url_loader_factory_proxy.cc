@@ -8,20 +8,23 @@
 
 #include <utility>
 
+#include "base/callback.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/escape.h"
 #include "net/base/isolation_info.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
@@ -30,13 +33,17 @@
 namespace content {
 
 AuctionURLLoaderFactoryProxy::AuctionURLLoaderFactoryProxy(
-    scoped_refptr<network::SharedURLLoaderFactory> wrapped_factory,
-    base::StringPiece publisher_hostname,
+    mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver,
+    GetUrlLoaderFactoryCallback get_url_loader_factory_callback,
+    const url::Origin& frame_origin,
     const blink::mojom::AuctionAdConfig& auction_config,
     const std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>& bidders)
-    : wrapped_factory_(std::move(wrapped_factory)),
+    : receiver_(this, std::move(pending_receiver)),
+      get_url_loader_factory_callback_(
+          std::move(get_url_loader_factory_callback)),
+      frame_origin_(frame_origin),
       expected_query_prefix_(
-          "hostname=" + net::EscapeQueryParamValue(publisher_hostname, true) +
+          "hostname=" + net::EscapeQueryParamValue(frame_origin.host(), true) +
           "&keys=") {
   script_urls_.insert(auction_config.decision_logic_url);
   for (const auto& bidder : bidders) {
@@ -65,13 +72,16 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
   std::string accept_header;
   if (!url_request.headers.GetHeader(net::HttpRequestHeaders::kAccept,
                                      &accept_header)) {
+    receiver_.ReportBadMessage("Missing accept header");
     return;
   }
 
   if (accept_header == "application/javascript") {
     // Only `script_urls_` may be requested with the Javascript Accept header.
-    if (script_urls_.find(url_request.url) == script_urls_.end())
+    if (script_urls_.find(url_request.url) == script_urls_.end()) {
+      receiver_.ReportBadMessage("Unexpected Javascript request url");
       return;
+    }
   } else if (accept_header == "application/json") {
     GURL::Replacements replacements;
     replacements.ClearQuery();
@@ -79,22 +89,28 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
     // Only `realtime_data_urls_` may be requested with the JSON Accept header.
     if (realtime_data_urls_.find(url_without_query) ==
         realtime_data_urls_.end()) {
+      receiver_.ReportBadMessage("Unexpected JSON request url");
       return;
     }
 
     // Make sure the query string starts with the correct prefix.
     if (!base::StartsWith(url_request.url.query_piece(),
-                          expected_query_prefix_))
+                          expected_query_prefix_)) {
+      receiver_.ReportBadMessage("JSON query string missing expected prefix");
       return;
+    }
 
     // This should contain the keys value of the query string.
     base::StringPiece keys =
         url_request.url.query_piece().substr(expected_query_prefix_.size());
     // The keys value should be the last value of the query string.
-    if (keys.find('&') != base::StringPiece::npos)
+    if (keys.find('&') != base::StringPiece::npos) {
+      receiver_.ReportBadMessage(
+          "JSON query string has unexpected additional parameter");
       return;
+    }
   } else {
-    // Reject requests without accept header.
+    receiver_.ReportBadMessage("Accept header has unexpected value");
     return;
   }
 
@@ -109,6 +125,7 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
                                 accept_header);
   new_request.redirect_mode = network::mojom::RedirectMode::kError;
   new_request.credentials_mode = network::mojom::CredentialsMode::kOmit;
+  new_request.request_initiator = frame_origin_;
 
   // Treat this as a subresource request from the owner's origin.
   //
@@ -127,7 +144,7 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
   // TODO(mmenke): Investigate whether `client_security_state` should be
   // populated.
 
-  wrapped_factory_->CreateLoaderAndStart(
+  get_url_loader_factory_callback_.Run()->CreateLoaderAndStart(
       std::move(receiver),
       // These are browser-initiated requests, so give them a browser request
       // ID. Extension APIs may expect these to be unique.

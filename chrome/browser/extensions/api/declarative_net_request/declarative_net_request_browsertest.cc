@@ -31,7 +31,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/test_timeouts.h"
+#include "base/thread_annotations.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -72,6 +75,7 @@
 #include "content/public/test/simple_url_loader_test_helper.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "content/public/test/url_loader_monitor.h"
 #include "extensions/browser/api/declarative_net_request/action_tracker.h"
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
@@ -110,6 +114,7 @@
 #include "ipc/ipc_message.h"
 #include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -174,18 +179,24 @@ class DeclarativeNetRequestBrowserTest
       public ::testing::WithParamInterface<ExtensionLoadType> {
  public:
   DeclarativeNetRequestBrowserTest() {
+    feature_list_.InitAndEnableFeature(features::kFledgeInterestGroups);
     net::test_server::RegisterDefaultHandlers(embedded_test_server());
+  }
+
+  // Returns the path of the files served by the EmbeddedTestServer.
+  static base::FilePath GetHttpServerPath() {
+    base::FilePath test_root_path;
+    base::PathService::Get(chrome::DIR_TEST_DATA, &test_root_path);
+    test_root_path = test_root_path.AppendASCII("extensions")
+                         .AppendASCII("declarative_net_request");
+    return test_root_path;
   }
 
   // ExtensionBrowserTest overrides:
   void SetUpOnMainThread() override {
     ExtensionBrowserTest::SetUpOnMainThread();
 
-    base::FilePath test_root_path;
-    base::PathService::Get(chrome::DIR_TEST_DATA, &test_root_path);
-    test_root_path = test_root_path.AppendASCII("extensions")
-                         .AppendASCII("declarative_net_request");
-    embedded_test_server()->ServeFilesFromDirectory(test_root_path);
+    embedded_test_server()->ServeFilesFromDirectory(GetHttpServerPath());
 
     embedded_test_server()->RegisterRequestMonitor(
         base::BindRepeating(&DeclarativeNetRequestBrowserTest::MonitorRequest,
@@ -207,6 +218,19 @@ class DeclarativeNetRequestBrowserTest
     ruleset_manager_observer_.reset();
 
     ExtensionBrowserTest::TearDownOnMainThread();
+  }
+
+  // Handler to monitor the requests which reach the EmbeddedTestServer. This
+  // will be run on EmbeddedTestServers' IO threads. Public so it can be bound
+  // in test bodies.
+  void MonitorRequest(const net::test_server::HttpRequest& request) {
+    base::AutoLock lock(requests_to_server_lock_);
+    requests_to_server_.insert(request.GetURL());
+    if (url_to_wait_for_ == request.GetURL()) {
+      ASSERT_TRUE(wait_for_request_run_loop_);
+      url_to_wait_for_ = GURL();
+      wait_for_request_run_loop_->Quit();
+    }
   }
 
  protected:
@@ -528,6 +552,26 @@ class DeclarativeNetRequestBrowserTest
     return results;
   }
 
+  // Waits until MonitorRequest() has observed `url_to_wait_for` at least once
+  // since the last time GetAndResetRequestsToServer() was invoked. Returns
+  // instantly if `url_to_wait_for` has already been observed.
+  void WaitForRequest(const GURL& url_to_wait_for) {
+    {
+      base::AutoLock lock(requests_to_server_lock_);
+
+      DCHECK(url_to_wait_for_.is_empty());
+      DCHECK(!wait_for_request_run_loop_);
+
+      if (requests_to_server_.count(url_to_wait_for))
+        return;
+      url_to_wait_for_ = url_to_wait_for;
+      wait_for_request_run_loop_ = std::make_unique<base::RunLoop>();
+    }
+
+    wait_for_request_run_loop_->Run();
+    wait_for_request_run_loop_.reset();
+  }
+
   TestRule CreateModifyHeadersRule(
       int id,
       int priority,
@@ -595,13 +639,6 @@ class DeclarativeNetRequestBrowserTest
         static_cast<const base::Value&>(*rules_to_add_builder.Build()),
         static_cast<const base::Value&>(*rule_ids_to_remove_value));
     ASSERT_EQ("success", ExecuteScriptInBackgroundPage(extension_id, script));
-  }
-
-  // Handler to monitor the requests which reach the EmbeddedTestServer. This
-  // will be run on the EmbeddedTestServer's IO thread.
-  void MonitorRequest(const net::test_server::HttpRequest& request) {
-    base::AutoLock lock(requests_to_server_lock_);
-    requests_to_server_.insert(request.GetURL());
   }
 
   // Helper to load an extension. |has_dynamic_ruleset| should be true if the
@@ -748,14 +785,19 @@ class DeclarativeNetRequestBrowserTest
     return ExecuteScriptInBackgroundPage(extension_id, script);
   }
 
+  base::test::ScopedFeatureList feature_list_;
   base::ScopedTempDir temp_dir_;
 
   unsigned flags_ = ConfigFlag::kConfig_None;
 
   // Requests observed by the EmbeddedTestServer. This is accessed on both the
   // UI and the EmbeddedTestServer's IO thread. Access is protected by
-  // |requests_to_server_lock_|.
-  std::set<GURL> requests_to_server_;
+  // `requests_to_server_lock_`.
+  std::set<GURL> requests_to_server_ GUARDED_BY(requests_to_server_lock_);
+  // URL that `wait_for_request_run_loop_` is currently waiting to observe.
+  GURL url_to_wait_for_ GUARDED_BY(requests_to_server_lock_);
+  // RunLoop to quit when a request for `url_to_wait_for_` is observed.
+  std::unique_ptr<base::RunLoop> wait_for_request_run_loop_;
 
   base::Lock requests_to_server_lock_;
 
@@ -5754,6 +5796,154 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
     EXPECT_EQ(test_case.expected_blocked_request_methods,
               actual_blocked_request_methods);
   }
+}
+
+// Tests that FLEDGE requests can be blocked by the declarativeNetRequest API,
+// and that if they try to redirect requests, the request is blocked, instead of
+// being redirected.
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, FledgeAuctionScripts) {
+  const char kAddedHeaderName[] = "Header-Name";
+  const char kAddedHeaderValue[] = "Header-Value";
+
+  net::EmbeddedTestServer https_server(
+      net::test_server::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  https_server.AddDefaultHandlers();
+  https_server.ServeFilesFromDirectory(GetHttpServerPath());
+  https_server.RegisterRequestMonitor(
+      base::BindRepeating(&DeclarativeNetRequestBrowserTest::MonitorRequest,
+                          base::Unretained(this)));
+  ASSERT_TRUE(https_server.Start());
+
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), https_server.GetURL("/echo")));
+
+  GURL bidding_logic_url =
+      https_server.GetURL("/interest_group/bidding_logic.js");
+  GURL decision_logic_url =
+      https_server.GetURL("/interest_group/decision_logic.js");
+  GURL bidder_report_url = https_server.GetURL("/echo?bidder_report");
+  GURL decision_report_url = https_server.GetURL("/echo?decision_report");
+
+  // Add an interest group.
+  EXPECT_EQ("done", content::EvalJs(
+                        web_contents(),
+                        content::JsReplace(
+                            R"(
+                              (function() {
+                                navigator.joinAdInterestGroup({
+                                  name: 'cars',
+                                  owner: $1,
+                                  biddingLogicUrl: $2,
+                                  userBiddingSignals: [],
+                                  ads: [{
+                                    renderUrl: 'https://example.com/render',
+                                    metadata: {ad: 'metadata', here: [1, 2, 3]}
+                                  }]
+                                }, /*joinDurationSec=*/ 300);
+                                return 'done';
+                              })();
+                            )",
+                            url::Origin::Create(bidding_logic_url).Serialize(),
+                            bidding_logic_url.spec())));
+
+  // Create an extension to add a header to all requests.
+  TestRule custom_response_header_rule = CreateModifyHeadersRule(
+      1 /* id */, 1 /* priority */, "*",
+      // request_headers
+      std::vector<TestHeaderInfo>(
+          {TestHeaderInfo(kAddedHeaderName, "set", kAddedHeaderValue)}),
+      base::nullopt);
+  // CreateModifyHeadersRule() applies to subframes only by default, so clear
+  // that.
+  custom_response_header_rule.condition->resource_types = base::nullopt;
+
+  ASSERT_NO_FATAL_FAILURE(
+      LoadExtensionWithRules({custom_response_header_rule}, "test_extension",
+                             {URLPattern::kAllUrlsPattern}));
+
+  content::URLLoaderMonitor monitor;
+
+  std::string run_auction_command = content::JsReplace(
+      R"(
+         (async function() {
+           return await navigator.runAdAuction({
+             seller: $1,
+             decisionLogicUrl: $2,
+             interestGroupBuyers: [$1],
+           });
+         })()
+      )",
+      url::Origin::Create(decision_logic_url).Serialize(),
+      decision_logic_url.spec());
+
+  // Unfortunately, there's a race between adding an interest group and running
+  // an auction, with no API in Javascript currently available to wait until an
+  // interest group has been added, so can only run the auction until there's a
+  // result, which means the interest group has been added.
+  while ("https://example.com/render" !=
+         content::EvalJs(web_contents(), run_auction_command)) {
+  }
+
+  // Wait to see both the report request of both worklets.
+  WaitForRequest(bidder_report_url);
+  WaitForRequest(decision_report_url);
+  // Clear observed URLs.
+  GetAndResetRequestsToServer();
+
+  // Make sure the add headers rule was applied to all requests related to the
+  // auction.
+  for (const GURL& expected_url : {bidding_logic_url, decision_logic_url,
+                                   bidder_report_url, decision_report_url}) {
+    base::Optional<network::ResourceRequest> request =
+        monitor.GetRequestInfo(expected_url);
+    ASSERT_TRUE(request);
+    std::string header_value;
+    ASSERT_TRUE(request->headers.GetHeader(kAddedHeaderName, &header_value));
+    EXPECT_EQ(kAddedHeaderValue, header_value);
+  }
+
+  // Now there are no pending requests for the auction. Add a rule to block the
+  // bidder's report URL.
+  TestRule block_report_rule = CreateGenericRule();
+  block_report_rule.condition->url_filter = bidder_report_url.spec() + "^";
+  block_report_rule.id = 2;
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
+      {block_report_rule}, "test_extension2", {URLPattern::kAllUrlsPattern}));
+
+  // Running the auction again should result in the same URL winning.
+  EXPECT_EQ("https://example.com/render",
+            content::EvalJs(web_contents(), run_auction_command));
+  // Wait for the decision script's report URL to be requested.
+  WaitForRequest(decision_report_url);
+  // The bidder script should be blocked. Unfortunately, there's no way to wait
+  // for the bidder script to not be requested. Instead, just wait for an
+  // addition "tiny timeout" delay, and make sure it was not requested.
+  base::RunLoop run_loop;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
+  run_loop.Run();
+  EXPECT_EQ(0u, GetAndResetRequestsToServer().count(bidder_report_url));
+
+  // Load a second extension which redirects requests for the bidding script to
+  // a URL that serves an identical bidding script.
+  TestRule redirect_bidding_logic_rule = CreateGenericRule();
+  redirect_bidding_logic_rule.condition->url_filter =
+      bidding_logic_url.spec() + "^";
+  redirect_bidding_logic_rule.id = 3;
+  redirect_bidding_logic_rule.action->type = "redirect";
+  redirect_bidding_logic_rule.action->redirect.emplace();
+  redirect_bidding_logic_rule.action->redirect->url =
+      https_server.GetURL("/interest_group/bidding_logic2.js").spec();
+
+  ASSERT_NO_FATAL_FAILURE(
+      LoadExtensionWithRules({redirect_bidding_logic_rule}, "test_extension3",
+                             {URLPattern::kAllUrlsPattern}));
+
+  // Redirecting a bidder script, even to another bidder script, should cause
+  // the request to fail, which causes the entire auction to fail, since there's
+  // only one bidder script.
+  EXPECT_EQ(nullptr, content::EvalJs(web_contents(), run_auction_command));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -10,19 +10,17 @@
 #include <set>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "base/callback_forward.h"
 #include "base/strings/string_piece_forward.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-forward.h"
 #include "url/gurl.h"
-
-namespace network {
-class SharedURLLoaderFactory;
-}
 
 namespace content {
 
@@ -31,11 +29,18 @@ namespace content {
 class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
     : public network::mojom::URLLoaderFactory {
  public:
+  using GetUrlLoaderFactoryCallback =
+      base::RepeatingCallback<network::mojom::URLLoaderFactory*()>;
+
+  // `get_url_loader_factory_callback` must be safe to call at any time during
+  // the lifetime of the AuctionURLLoaderFactoryProxy.
+  //
   // URLs that may be requested are extracted from `auction_config` and
   // `bidders`. Any other requested URL will result in failure.
   AuctionURLLoaderFactoryProxy(
-      scoped_refptr<network::SharedURLLoaderFactory> wrapped_factory,
-      base::StringPiece publisher_hostname,
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver,
+      GetUrlLoaderFactoryCallback get_url_loader_factory_callback,
+      const url::Origin& frame_origin,
       const blink::mojom::AuctionAdConfig& auction_config,
       const std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>&
           bidders);
@@ -57,7 +62,11 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
       override;
 
  private:
-  scoped_refptr<network::SharedURLLoaderFactory> wrapped_factory_;
+  mojo::Receiver<network::mojom::URLLoaderFactory> receiver_;
+
+  const GetUrlLoaderFactoryCallback get_url_loader_factory_callback_;
+
+  const url::Origin frame_origin_;
 
   // URLs of worklet scripts. Requested URLs may match these URLs exactly.
   std::set<GURL> script_urls_;
