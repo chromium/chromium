@@ -111,14 +111,15 @@ size_t DnsResourceRecord::CalculateRecordSize() const {
          (owned_rdata.empty() ? rdata.size() : owned_rdata.size());
 }
 
-DnsRecordParser::DnsRecordParser()
-    : packet_(nullptr), length_(0), cur_(nullptr) {}
+DnsRecordParser::DnsRecordParser() = default;
 
 DnsRecordParser::DnsRecordParser(const void* packet,
                                  size_t length,
-                                 size_t offset)
+                                 size_t offset,
+                                 size_t num_records)
     : packet_(reinterpret_cast<const char*>(packet)),
       length_(length),
+      num_records_(num_records),
       cur_(packet_ + offset) {
   DCHECK_LE(offset, length);
 }
@@ -224,6 +225,11 @@ unsigned DnsRecordParser::ReadName(const void* const vpos,
 
 bool DnsRecordParser::ReadRecord(DnsResourceRecord* out) {
   DCHECK(packet_);
+
+  // Disallow parsing any more than the claimed number of records.
+  if (num_records_parsed_ >= num_records_)
+    return false;
+
   size_t consumed = ReadName(cur_, &out->name);
   if (!consumed)
     return false;
@@ -236,6 +242,7 @@ bool DnsRecordParser::ReadRecord(DnsResourceRecord* out) {
       reader.ReadU16(&rdlen) &&
       reader.ReadPiece(&out->rdata, rdlen)) {
     cur_ = reader.ptr();
+    ++num_records_parsed_;
     return true;
   }
   return false;
@@ -356,7 +363,10 @@ DnsResponse::DnsResponse(size_t length)
 DnsResponse::DnsResponse(const void* data, size_t length, size_t answer_offset)
     : io_buffer_(base::MakeRefCounted<IOBufferWithSize>(length)),
       io_buffer_size_(length),
-      parser_(io_buffer_->data(), length, answer_offset) {
+      parser_(io_buffer_->data(),
+              length,
+              answer_offset,
+              std::numeric_limits<size_t>::max()) {
   DCHECK(data);
   memcpy(io_buffer_->data(), data, length);
 }
@@ -403,9 +413,15 @@ bool DnsResponse::InitParse(size_t nbytes, const DnsQuery& query) {
   dotted_qnames_.push_back(std::move(dotted_qname).value());
   qtypes_.push_back(query.qtype());
 
-  // Construct the parser.
+  size_t num_records = base::NetToHost16(header()->ancount) +
+                       base::NetToHost16(header()->nscount) +
+                       base::NetToHost16(header()->arcount);
+
+  // Construct the parser. Only allow parsing up to `num_records` records. If
+  // more records are present in the buffer, it's just garbage extra data after
+  // the formal end of the response and should be ignored.
   parser_ = DnsRecordParser(io_buffer_->data(), nbytes,
-                            kHeaderSize + question.size());
+                            kHeaderSize + question.size(), num_records);
   return true;
 }
 
@@ -419,7 +435,14 @@ bool DnsResponse::InitParseWithoutQuery(size_t nbytes) {
   if ((base::NetToHost16(header()->flags) & dns_protocol::kFlagResponse) == 0)
     return false;
 
-  parser_ = DnsRecordParser(io_buffer_->data(), nbytes, kHeaderSize);
+  size_t num_records = base::NetToHost16(header()->ancount) +
+                       base::NetToHost16(header()->nscount) +
+                       base::NetToHost16(header()->arcount);
+  // Only allow parsing up to `num_records` records. If more records are present
+  // in the buffer, it's just garbage extra data after the formal end of the
+  // response and should be ignored.
+  parser_ =
+      DnsRecordParser(io_buffer_->data(), nbytes, kHeaderSize, num_records);
 
   unsigned qdcount = base::NetToHost16(header()->qdcount);
   for (unsigned i = 0; i < qdcount; ++i) {

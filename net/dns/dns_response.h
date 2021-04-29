@@ -70,9 +70,15 @@ class NET_EXPORT_PRIVATE DnsRecordParser {
   // Construct an uninitialized iterator.
   DnsRecordParser();
 
-  // Construct an iterator to process the |packet| of given |length|.
-  // |offset| points to the beginning of the answer section.
-  DnsRecordParser(const void* packet, size_t length, size_t offset);
+  // Construct an iterator to process the `packet` of given `length`.
+  // `offset` points to the beginning of the answer section. `ReadRecord()` will
+  // fail if called more than `num_records` times, no matter whether or not
+  // there is additional data at the end of the buffer that may appear to be a
+  // valid record.
+  DnsRecordParser(const void* packet,
+                  size_t length,
+                  size_t offset,
+                  size_t num_records);
 
   // Returns |true| if initialized.
   bool IsValid() const { return packet_ != nullptr; }
@@ -101,10 +107,12 @@ class NET_EXPORT_PRIVATE DnsRecordParser {
   bool ReadQuestion(std::string& out_dotted_qname, uint16_t& out_qtype);
 
  private:
-  const char* packet_;
-  size_t length_;
+  const char* packet_ = nullptr;
+  size_t length_ = 0;
+  size_t num_records_ = 0;
+  size_t num_records_parsed_ = 0;
   // Current offset within the packet.
-  const char* cur_;
+  const char* cur_ = nullptr;
 };
 
 // Buffer-holder for the DNS response allowing easy access to the header fields

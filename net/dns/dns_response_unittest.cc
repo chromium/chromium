@@ -32,11 +32,11 @@ TEST(DnsRecordParserTest, Constructor) {
   const char data[] = { 0 };
 
   EXPECT_FALSE(DnsRecordParser().IsValid());
-  EXPECT_TRUE(DnsRecordParser(data, 1, 0).IsValid());
-  EXPECT_TRUE(DnsRecordParser(data, 1, 1).IsValid());
+  EXPECT_TRUE(DnsRecordParser(data, 1, 0, 0).IsValid());
+  EXPECT_TRUE(DnsRecordParser(data, 1, 1, 0).IsValid());
 
-  EXPECT_FALSE(DnsRecordParser(data, 1, 0).AtEnd());
-  EXPECT_TRUE(DnsRecordParser(data, 1, 1).AtEnd());
+  EXPECT_FALSE(DnsRecordParser(data, 1, 0, 0).AtEnd());
+  EXPECT_TRUE(DnsRecordParser(data, 1, 1, 0).AtEnd());
 }
 
 TEST(DnsRecordParserTest, ReadName) {
@@ -56,7 +56,7 @@ TEST(DnsRecordParserTest, ReadName) {
   };
 
   std::string out;
-  DnsRecordParser parser(data, sizeof(data), 0);
+  DnsRecordParser parser(data, sizeof(data), 0, /*num_records=*/0);
   ASSERT_TRUE(parser.IsValid());
 
   EXPECT_EQ(0x11u, parser.ReadName(data + 0x00, &out));
@@ -79,7 +79,7 @@ TEST(DnsRecordParserTest, ReadName) {
   EXPECT_EQ(0x2u, parser.ReadName(data + 0x17, nullptr));
 
   // Check that it works even if initial position is different.
-  parser = DnsRecordParser(data, sizeof(data), 0x12);
+  parser = DnsRecordParser(data, sizeof(data), 0x12, /*num_records=*/0);
   EXPECT_EQ(0x6u, parser.ReadName(data + 0x11, nullptr));
 }
 
@@ -97,7 +97,7 @@ TEST(DnsRecordParserTest, ReadNameFail) {
       0x02, 'x', 'x',
   };
 
-  DnsRecordParser parser(data, sizeof(data), 0);
+  DnsRecordParser parser(data, sizeof(data), 0, /*num_records=*/0);
   ASSERT_TRUE(parser.IsValid());
 
   std::string out;
@@ -176,7 +176,7 @@ TEST(DnsRecordParserTest, ReadNameGoodLength) {
     ASSERT_EQ(data_vector.size(), name_len + 1);
     const uint8_t* data = data_vector.data();
 
-    DnsRecordParser parser(data, data_vector.size(), 0);
+    DnsRecordParser parser(data, data_vector.size(), 0, /*num_records=*/0);
     ASSERT_TRUE(parser.IsValid());
 
     std::string out;
@@ -185,6 +185,9 @@ TEST(DnsRecordParserTest, ReadNameGoodLength) {
   }
 }
 
+// Tests against incorrect name length validation, which is anti-pattern #3 from
+// the "NAME:WRECK" report:
+// https://www.forescout.com/company/resources/namewreck-breaking-and-fixing-dns-implementations/
 TEST(DnsRecordParserTest, ReadNameTooLongFail) {
   const size_t name_len_cases[] = {256, 257, 258, 300, 10000};
 
@@ -195,12 +198,108 @@ TEST(DnsRecordParserTest, ReadNameTooLongFail) {
     ASSERT_EQ(data_vector.size(), name_len + 1);
     const uint8_t* data = data_vector.data();
 
-    DnsRecordParser parser(data, data_vector.size(), 0);
+    DnsRecordParser parser(data, data_vector.size(), 0, /*num_records=*/0);
     ASSERT_TRUE(parser.IsValid());
 
     std::string out;
     EXPECT_EQ(0u, parser.ReadName(data, &out));
   }
+}
+
+// Tests against incorrect name compression pointer validation, which is anti-
+// pattern #6 from the "NAME:WRECK" report:
+// https://www.forescout.com/company/resources/namewreck-breaking-and-fixing-dns-implementations/
+TEST(DnsRecordParserTest, RejectsNamesWithLoops) {
+  const char kData[] =
+      "\003www\007example\300\031"  // www.example with pointer to byte 25
+      "aaaaaaaaaaa"                 // Garbage data to spread things out.
+      "\003foo\300\004";            // foo with pointer to byte 4.
+
+  DnsRecordParser parser(kData, /*length=*/sizeof(kData) - 1, /*offset=*/0,
+                         /*num_records=*/0);
+  ASSERT_TRUE(parser.IsValid());
+
+  std::string out;
+  EXPECT_EQ(0u, parser.ReadName(kData, &out));
+}
+
+// Tests against incorrect name compression pointer validation, which is anti-
+// pattern #6 from the "NAME:WRECK" report:
+// https://www.forescout.com/company/resources/namewreck-breaking-and-fixing-dns-implementations/
+TEST(DnsRecordParserTest, RejectsNamesPointingOutsideData) {
+  const char kData[] =
+      "\003www\007example\300\031";  // www.example with pointer to byte 25
+
+  DnsRecordParser parser(kData, /*length=*/sizeof(kData) - 1, /*offset=*/0,
+                         /*num_records=*/0);
+  ASSERT_TRUE(parser.IsValid());
+
+  std::string out;
+  EXPECT_EQ(0u, parser.ReadName(kData, &out));
+}
+
+TEST(DnsRecordParserTest, ParsesValidPointer) {
+  const char kData[] =
+      "\003www\007example\300\022"  // www.example with pointer to byte 25.
+      "aaaa"                        // Garbage data to spread things out.
+      "\004test\000";               // .test
+
+  DnsRecordParser parser(kData, /*length=*/sizeof(kData) - 1, /*offset=*/0,
+                         /*num_records=*/0);
+  ASSERT_TRUE(parser.IsValid());
+
+  std::string out;
+  EXPECT_EQ(14u, parser.ReadName(kData, &out));
+  EXPECT_EQ(out, "www.example.test");
+}
+
+// Per RFC 1035, section 4.1.4, the first 2 bits of a DNS name label determine
+// if it is a length label (if the bytes are 00) or a pointer label (if the
+// bytes are 11). It is a common DNS parsing bug to treat 01 or 10 as pointer
+// labels, but these are reserved and invalid. Such labels should always result
+// in DnsRecordParser rejecting the name.
+//
+// Tests against incorrect name compression pointer validation, which is anti-
+// pattern #6 from the "NAME:WRECK" report:
+// https://www.forescout.com/company/resources/namewreck-breaking-and-fixing-dns-implementations/
+TEST(DnsRecordParserTest, RejectsNamesWithInvalidLabelTypeAsPointer) {
+  const char kData[] =
+      "\003www\007example\200\022"  // www.example with invalid label as pointer
+      "aaaa"                        // Garbage data to spread things out.
+      "\004test\000";               // .test
+
+  DnsRecordParser parser(kData, /*length=*/sizeof(kData) - 1, /*offset=*/0,
+                         /*num_records=*/0);
+  ASSERT_TRUE(parser.IsValid());
+
+  std::string out;
+  EXPECT_EQ(0u, parser.ReadName(kData, &out));
+}
+
+// Per RFC 1035, section 4.1.4, the first 2 bits of a DNS name label determine
+// if it is a length label (if the bytes are 00) or a pointer label (if the
+// bytes are 11). Such labels should always result in DnsRecordParser rejecting
+// the name.
+//
+// Tests against incorrect name compression pointer validation, which is anti-
+// pattern #6 from the "NAME:WRECK" report:
+// https://www.forescout.com/company/resources/namewreck-breaking-and-fixing-dns-implementations/
+TEST(DnsRecordParserTest, RejectsNamesWithInvalidLabelTypeAsLength) {
+  const char kData[] =
+      "\003www\007example\104"  // www.example with invalid label as length
+      "test\000";  // test. (in case \104 is interpreted as length=4)
+
+  // Append a bunch of zeroes to the buffer in case \104 is interpreted as a
+  // long length.
+  std::string data(kData, sizeof(kData) - 1);
+  data.append(256, '\000');
+
+  DnsRecordParser parser(data.data(), data.size(), /*offset=*/0,
+                         /*num_records=*/0);
+  ASSERT_TRUE(parser.IsValid());
+
+  std::string out;
+  EXPECT_EQ(0u, parser.ReadName(data.data(), &out));
 }
 
 TEST(DnsRecordParserTest, ReadRecord) {
@@ -223,7 +322,7 @@ TEST(DnsRecordParserTest, ReadRecord) {
   };
 
   std::string out;
-  DnsRecordParser parser(data, sizeof(data), 0);
+  DnsRecordParser parser(data, sizeof(data), 0, /*num_records=*/2);
 
   DnsResourceRecord record;
   EXPECT_TRUE(parser.ReadRecord(&record));
@@ -246,7 +345,7 @@ TEST(DnsRecordParserTest, ReadRecord) {
   EXPECT_TRUE(parser.AtEnd());
 
   // Test truncated record.
-  parser = DnsRecordParser(data, sizeof(data) - 2, 0);
+  parser = DnsRecordParser(data, sizeof(data) - 2, 0, /*num_records=*/2);
   EXPECT_TRUE(parser.ReadRecord(&record));
   EXPECT_FALSE(parser.AtEnd());
   EXPECT_FALSE(parser.ReadRecord(&record));
@@ -267,12 +366,15 @@ TEST(DnsRecordParserTest, ReadsRecordWithLongName) {
       "\xc0\xa8\x00\x01",  // 192.168.0.1
       14);
 
-  DnsRecordParser parser(data.data(), data.size(), 0);
+  DnsRecordParser parser(data.data(), data.size(), 0, /*num_records=*/1);
 
   DnsResourceRecord record;
   EXPECT_TRUE(parser.ReadRecord(&record));
 }
 
+// Tests against incorrect name length validation, which is anti-pattern #3 from
+// the "NAME:WRECK" report:
+// https://www.forescout.com/company/resources/namewreck-breaking-and-fixing-dns-implementations/
 TEST(DnsRecordParserTest, RejectRecordWithTooLongName) {
   std::string dotted_name;
   const std::vector<uint8_t> dns_name =
@@ -288,9 +390,102 @@ TEST(DnsRecordParserTest, RejectRecordWithTooLongName) {
       "\xc0\xa8\x00\x01",  // 192.168.0.1
       14);
 
-  DnsRecordParser parser(data.data(), data.size(), 0);
+  DnsRecordParser parser(data.data(), data.size(), 0, /*num_records=*/1);
 
   DnsResourceRecord record;
+  EXPECT_FALSE(parser.ReadRecord(&record));
+}
+
+// Test that a record cannot be parsed with a name extending past the end of the
+// data.
+// Tests against incorrect name length validation, which is anti-pattern #3 from
+// the "NAME:WRECK" report:
+// https://www.forescout.com/company/resources/namewreck-breaking-and-fixing-dns-implementations/
+TEST(DnsRecordParserTest, RejectRecordWithNonendedName) {
+  const char kNonendedName[] = "\003www\006google\006www";
+
+  DnsRecordParser parser(kNonendedName, sizeof(kNonendedName) - 1, 0,
+                         /*num_records=*/1);
+
+  DnsResourceRecord record;
+  EXPECT_FALSE(parser.ReadRecord(&record));
+}
+
+// Test that a record cannot be parsed with a name without final null
+// termination. Parsing should assume the name has not ended and find the first
+// byte of the TYPE field instead, making the remainder of the record
+// unparsable.
+// Tests against incorrect name null termination, which is anti-pattern #4 from
+// the "NAME:WRECK" report:
+// https://www.forescout.com/company/resources/namewreck-breaking-and-fixing-dns-implementations/
+TEST(DnsRecordParserTest, RejectRecordNameMissingNullTermination) {
+  const char kData[] =
+      "\003www\006google\004test"  // Name without termination.
+      "\x00\x01"                   // TYPE=A
+      "\x00\x01"                   // CLASS=IN
+      "\x00\x01\x51\x80"           // TTL=1 day
+      "\x00\x04"                   // RDLENGTH=4 bytes
+      "\xc0\xa8\x00\x01";          // 192.168.0.1
+
+  DnsRecordParser parser(kData, sizeof(kData) - 1, 0, /*num_records=*/1);
+
+  DnsResourceRecord record;
+  EXPECT_FALSE(parser.ReadRecord(&record));
+}
+
+// Test that no more records can be parsed once the claimed number of records
+// have been parsed.
+TEST(DnsRecordParserTest, RejectReadingTooManyRecords) {
+  const char kData[] =
+      "\003www\006google\004test\000"
+      "\x00\x01"          // TYPE=A
+      "\x00\x01"          // CLASS=IN
+      "\x00\x01\x51\x80"  // TTL=1 day
+      "\x00\x04"          // RDLENGTH=4 bytes
+      "\xc0\xa8\x00\x01"  // 192.168.0.1
+      "\003www\010chromium\004test\000"
+      "\x00\x01"           // TYPE=A
+      "\x00\x01"           // CLASS=IN
+      "\x00\x01\x51\x80"   // TTL=1 day
+      "\x00\x04"           // RDLENGTH=4 bytes
+      "\xc0\xa8\x00\x02";  // 192.168.0.2
+
+  DnsRecordParser parser(
+      kData, /*length=*/sizeof(kData) - 1, /*offset=*/0,
+      /*num_records=*/1);  // Claim 1 record despite there being 2 in `kData`.
+
+  DnsResourceRecord record1;
+  EXPECT_TRUE(parser.ReadRecord(&record1));
+
+  // Expect second record cannot be parsed because only 1 was expected.
+  DnsResourceRecord record2;
+  EXPECT_FALSE(parser.ReadRecord(&record2));
+}
+
+// Test that no more records can be parsed once the end of the buffer is
+// reached, even if more records are claimed.
+TEST(DnsRecordParserTest, RejectReadingPastEnd) {
+  const char kData[] =
+      "\003www\006google\004test\000"
+      "\x00\x01"          // TYPE=A
+      "\x00\x01"          // CLASS=IN
+      "\x00\x01\x51\x80"  // TTL=1 day
+      "\x00\x04"          // RDLENGTH=4 bytes
+      "\xc0\xa8\x00\x01"  // 192.168.0.1
+      "\003www\010chromium\004test\000"
+      "\x00\x01"           // TYPE=A
+      "\x00\x01"           // CLASS=IN
+      "\x00\x01\x51\x80"   // TTL=1 day
+      "\x00\x04"           // RDLENGTH=4 bytes
+      "\xc0\xa8\x00\x02";  // 192.168.0.2
+
+  DnsRecordParser parser(
+      kData, /*length=*/sizeof(kData) - 1, /*offset=*/0,
+      /*num_records=*/3);  // Claim 3 record despite there being 2 in `kData`.
+
+  DnsResourceRecord record;
+  EXPECT_TRUE(parser.ReadRecord(&record));
+  EXPECT_TRUE(parser.ReadRecord(&record));
   EXPECT_FALSE(parser.ReadRecord(&record));
 }
 
@@ -447,6 +642,62 @@ TEST(DnsResponseTest, InitParseInvalidFlags) {
   EXPECT_FALSE(resp.InitParse(sizeof(response_data), *query));
   EXPECT_FALSE(resp.IsValid());
   EXPECT_THAT(resp.id(), testing::Optional(0xcafe));
+}
+
+TEST(DnsResponseTest, InitParseRejectsResponseWithoutQuestions) {
+  const char kResponse[] =
+      "\x02\x45"                       // ID=581
+      "\x81\x80"                       // Standard query response, RA, no error
+      "\x00\x00"                       // 0 questions
+      "\x00\x01"                       // 1 answers
+      "\x00\x00"                       // 0 authority records
+      "\x00\x00"                       // 0 additional records
+      "\003www\006google\004test\000"  // www.google.test
+      "\x00\x01"                       // TYPE=A
+      "\x00\x01"                       // CLASS=IN
+      "\x00\x00\x2a\x30"               // TTL=3 hours
+      "\x00\x04"                       // RDLENGTH=4 bytes
+      "\xa0\xa0\xa0\xa0";              // 10.10.10.10
+
+  DnsResponse resp;
+  memcpy(resp.io_buffer()->data(), kResponse, sizeof(kResponse) - 1);
+
+  // Validate that the response is fine if not matching against a query.
+  ASSERT_TRUE(resp.InitParseWithoutQuery(sizeof(kResponse) - 1));
+
+  const char kQueryName[] = "\003www\006google\004test\000";
+  DnsQuery query(
+      /*id=*/581, base::StringPiece(kQueryName, sizeof(kQueryName) - 1),
+      dns_protocol::kTypeA);
+  EXPECT_FALSE(resp.InitParse(sizeof(kResponse) - 1, query));
+}
+
+TEST(DnsResponseTest, InitParseRejectsResponseWithTooManyQuestions) {
+  const char kResponse[] =
+      "\x02\x46"                       // ID=582
+      "\x81\x80"                       // Standard query response, RA, no error
+      "\x00\x02"                       // 2 questions
+      "\x00\x00"                       // 0 answers
+      "\x00\x00"                       // 0 authority records
+      "\x00\x00"                       // 0 additional records
+      "\003www\006google\004test\000"  // www.google.test
+      "\x00\x01"                       // TYPE=A
+      "\x00\x01"                       // CLASS=IN
+      "\003www\010chromium\004test\000"  // www.chromium.test
+      "\x00\x01"                         // TYPE=A
+      "\x00\x01";                        // CLASS=IN
+
+  DnsResponse resp;
+  memcpy(resp.io_buffer()->data(), kResponse, sizeof(kResponse) - 1);
+
+  // Validate that the response is fine if not matching against a query.
+  ASSERT_TRUE(resp.InitParseWithoutQuery(sizeof(kResponse) - 1));
+
+  const char kQueryName[] = "\003www\006google\004test\000";
+  DnsQuery query(
+      /*id=*/582, base::StringPiece(kQueryName, sizeof(kQueryName) - 1),
+      dns_protocol::kTypeA);
+  EXPECT_FALSE(resp.InitParse(sizeof(kResponse) - 1, query));
 }
 
 TEST(DnsResponseTest, InitParseWithoutQuery) {
@@ -720,9 +971,12 @@ TEST(DnsResponseTest, InitParseAllowsQuestionWithLongName) {
   EXPECT_TRUE(resp2.InitParse(response_data.size(), query));
 }
 
+// Tests against incorrect name length validation, which is anti-pattern #3 from
+// the "NAME:WRECK" report:
+// https://www.forescout.com/company/resources/namewreck-breaking-and-fixing-dns-implementations/
 TEST(DnsResponseTest, InitParseRejectsQuestionWithTooLongName) {
   const char kResponseHeader[] =
-      "\x02\x45"   // ID
+      "\x02\x45"   // ID=581
       "\x81\x80"   // Standard query response, RA, no error
       "\x00\x01"   // 1 question
       "\x00\x00"   // 0 answers
@@ -744,11 +998,231 @@ TEST(DnsResponseTest, InitParseRejectsQuestionWithTooLongName) {
   DnsResponse resp;
   memcpy(resp.io_buffer()->data(), response_data.data(), response_data.size());
 
-  // Need to use InitParseWithoutQuery because DnsQuery disallows being created
-  // with too long of a name, so `InitParse(query)` could only ever test that
-  // responses are rejected when the contained question doesn't match the
-  // expected query.
   EXPECT_FALSE(resp.InitParseWithoutQuery(response_data.size()));
+
+  // Note that `DnsQuery` disallows construction without a valid name, so
+  // `InitParse()` can never be tested with a `query` that matches against a
+  // too-long name in the response. Test with an arbitrary valid query name to
+  // ensure no issues if this code is exercised after receiving a response with
+  // a too-long name.
+  const char kQueryName[] = "\005query\004test\000";
+  DnsQuery query(
+      /*id=*/581, base::StringPiece(kQueryName, sizeof(kQueryName) - 1),
+      dns_protocol::kTypeA);
+  EXPECT_FALSE(resp.InitParse(response_data.size(), query));
+}
+
+// Test that `InitParse[...]()` rejects a response with a question name
+// extending past the end of the response.
+// Tests against incorrect name length validation, which is anti-pattern #3 from
+// the "NAME:WRECK" report:
+// https://www.forescout.com/company/resources/namewreck-breaking-and-fixing-dns-implementations/
+TEST(DnsResponseTest, InitParseRejectsQuestionWithNonendedName) {
+  const char kResponse[] =
+      "\x02\x45"                    // ID
+      "\x81\x80"                    // Standard query response, RA, no error
+      "\x00\x01"                    // 1 question
+      "\x00\x00"                    // 0 answers
+      "\x00\x00"                    // 0 authority records
+      "\x00\x00"                    // 0 additional records
+      "\003www\006google\006test";  // Name extending past the end.
+
+  DnsResponse resp;
+  memcpy(resp.io_buffer()->data(), kResponse, sizeof(kResponse) - 1);
+
+  EXPECT_FALSE(resp.InitParseWithoutQuery(sizeof(kResponse) - 1));
+
+  const char kQueryName[] = "\003www\006google\006testtt\000";
+  DnsQuery query(
+      /*id=*/581, base::StringPiece(kQueryName, sizeof(kQueryName) - 1),
+      dns_protocol::kTypeA);
+  EXPECT_FALSE(resp.InitParse(sizeof(kResponse) - 1, query));
+}
+
+// Test that `InitParse[...]()` rejects responses that do not contain at least
+// the claimed number of questions.
+// Tests against incorrect record count field validation, which is anti-pattern
+// #5 from the "NAME:WRECK" report:
+// https://www.forescout.com/company/resources/namewreck-breaking-and-fixing-dns-implementations/
+TEST(DnsResponseTest, InitParseRejectsResponseWithMissingQuestions) {
+  const char kResponse[] =
+      "\x02\x45"                       // ID
+      "\x81\x80"                       // Standard query response, RA, no error
+      "\x00\x03"                       // 3 questions
+      "\x00\x00"                       // 0 answers
+      "\x00\x00"                       // 0 authority records
+      "\x00\x00"                       // 0 additional records
+      "\003www\006google\004test\000"  // www.google.test
+      "\x00\x01"                       // TYPE=A
+      "\x00\x01"                       // CLASS=IN
+      "\003www\010chromium\004test\000"  // www.chromium.test
+      "\x00\x01"                         // TYPE=A
+      "\x00\x01";                        // CLASS=IN
+  // Missing third question.
+
+  DnsResponse resp;
+  memcpy(resp.io_buffer()->data(), kResponse, sizeof(kResponse) - 1);
+
+  EXPECT_FALSE(resp.InitParseWithoutQuery(sizeof(kResponse) - 1));
+
+  const char kQueryName[] = "\003www\006google\004test\000";
+  DnsQuery query(
+      /*id=*/581, base::StringPiece(kQueryName, sizeof(kQueryName) - 1),
+      dns_protocol::kTypeA);
+  EXPECT_FALSE(resp.InitParse(sizeof(kResponse) - 1, query));
+}
+
+// Test that a parsed DnsResponse only allows parsing the number of records
+// claimed in the response header.
+// Tests against incorrect record count field validation, which is anti-pattern
+// #5 from the "NAME:WRECK" report:
+// https://www.forescout.com/company/resources/namewreck-breaking-and-fixing-dns-implementations/
+TEST(DnsResponseTest, ParserLimitedToNumClaimedRecords) {
+  const char kResponse[] =
+      "\x02\x45"  // ID
+      "\x81\x80"  // Standard query response, RA, no error
+      "\x00\x01"  // 1 question
+      "\x00\x01"  // 1 answers
+      "\x00\x02"  // 2 authority records
+      "\x00\x01"  // 1 additional records
+      "\003www\006google\004test\000"
+      "\x00\x01"  // TYPE=A
+      "\x00\x01"  // CLASS=IN
+      // 6 total records.
+      "\003www\006google\004test\000"
+      "\x00\x01"          // TYPE=A
+      "\x00\x01"          // CLASS=IN
+      "\x00\x01\x51\x80"  // TTL=1 day
+      "\x00\x04"          // RDLENGTH=4 bytes
+      "\xc0\xa8\x00\x01"  // 192.168.0.1
+      "\003www\010chromium\004test\000"
+      "\x00\x01"          // TYPE=A
+      "\x00\x01"          // CLASS=IN
+      "\x00\x01\x51\x80"  // TTL=1 day
+      "\x00\x04"          // RDLENGTH=4 bytes
+      "\xc0\xa8\x00\x02"  // 192.168.0.2
+      "\003www\007google1\004test\000"
+      "\x00\x01"          // TYPE=A
+      "\x00\x01"          // CLASS=IN
+      "\x00\x01\x51\x80"  // TTL=1 day
+      "\x00\x04"          // RDLENGTH=4 bytes
+      "\xc0\xa8\x00\x03"  // 192.168.0.3
+      "\003www\011chromium1\004test\000"
+      "\x00\x01"          // TYPE=A
+      "\x00\x01"          // CLASS=IN
+      "\x00\x01\x51\x80"  // TTL=1 day
+      "\x00\x04"          // RDLENGTH=4 bytes
+      "\xc0\xa8\x00\x04"  // 192.168.0.4
+      "\003www\007google2\004test\000"
+      "\x00\x01"          // TYPE=A
+      "\x00\x01"          // CLASS=IN
+      "\x00\x01\x51\x80"  // TTL=1 day
+      "\x00\x04"          // RDLENGTH=4 bytes
+      "\xc0\xa8\x00\x05"  // 192.168.0.5
+      "\003www\011chromium2\004test\000"
+      "\x00\x01"           // TYPE=A
+      "\x00\x01"           // CLASS=IN
+      "\x00\x01\x51\x80"   // TTL=1 day
+      "\x00\x04"           // RDLENGTH=4 bytes
+      "\xc0\xa8\x00\x06";  // 192.168.0.6
+
+  DnsResponse resp1;
+  memcpy(resp1.io_buffer()->data(), kResponse, sizeof(kResponse) - 1);
+
+  ASSERT_TRUE(resp1.InitParseWithoutQuery(sizeof(kResponse) - 1));
+  DnsRecordParser parser1 = resp1.Parser();
+  ASSERT_TRUE(parser1.IsValid());
+
+  // Response header only claims 4 records, so expect parser to only allow
+  // parsing that many, ignoring extra records in the data.
+  DnsResourceRecord record;
+  EXPECT_TRUE(parser1.ReadRecord(&record));
+  EXPECT_TRUE(parser1.ReadRecord(&record));
+  EXPECT_TRUE(parser1.ReadRecord(&record));
+  EXPECT_TRUE(parser1.ReadRecord(&record));
+  EXPECT_FALSE(parser1.ReadRecord(&record));
+  EXPECT_FALSE(parser1.ReadRecord(&record));
+
+  // Repeat using InitParse()
+  DnsResponse resp2;
+  memcpy(resp2.io_buffer()->data(), kResponse, sizeof(kResponse) - 1);
+
+  const char kQueryName[] = "\003www\006google\004test\000";
+  DnsQuery query(
+      /*id=*/581, base::StringPiece(kQueryName, sizeof(kQueryName) - 1),
+      dns_protocol::kTypeA);
+
+  ASSERT_TRUE(resp2.InitParse(sizeof(kResponse) - 1, query));
+  DnsRecordParser parser2 = resp2.Parser();
+  ASSERT_TRUE(parser2.IsValid());
+
+  // Response header only claims 4 records, so expect parser to only allow
+  // parsing that many, ignoring extra records in the data.
+  EXPECT_TRUE(parser2.ReadRecord(&record));
+  EXPECT_TRUE(parser2.ReadRecord(&record));
+  EXPECT_TRUE(parser2.ReadRecord(&record));
+  EXPECT_TRUE(parser2.ReadRecord(&record));
+  EXPECT_FALSE(parser2.ReadRecord(&record));
+  EXPECT_FALSE(parser2.ReadRecord(&record));
+}
+
+// Test that a parsed DnsResponse does not allow parsing past the end of the
+// input, even if more records are claimed in the response header.
+// Tests against incorrect record count field validation, which is anti-pattern
+// #5 from the "NAME:WRECK" report:
+// https://www.forescout.com/company/resources/namewreck-breaking-and-fixing-dns-implementations/
+TEST(DnsResponseTest, ParserLimitedToBufferSize) {
+  const char kResponse[] =
+      "\x02\x45"  // ID
+      "\x81\x80"  // Standard query response, RA, no error
+      "\x00\x01"  // 1 question
+      "\x00\x01"  // 1 answers
+      "\x00\x02"  // 2 authority records
+      "\x00\x01"  // 1 additional records
+      "\003www\006google\004test\000"
+      "\x00\x01"  // TYPE=A
+      "\x00\x01"  // CLASS=IN
+      // 2 total records.
+      "\003www\006google\004test\000"
+      "\x00\x01"          // TYPE=A
+      "\x00\x01"          // CLASS=IN
+      "\x00\x01\x51\x80"  // TTL=1 day
+      "\x00\x04"          // RDLENGTH=4 bytes
+      "\xc0\xa8\x00\x01"  // 192.168.0.1
+      "\003www\010chromium\004test\000"
+      "\x00\x01"           // TYPE=A
+      "\x00\x01"           // CLASS=IN
+      "\x00\x01\x51\x80"   // TTL=1 day
+      "\x00\x04"           // RDLENGTH=4 bytes
+      "\xc0\xa8\x00\x02";  // 192.168.0.2
+
+  DnsResponse resp1;
+  memcpy(resp1.io_buffer()->data(), kResponse, sizeof(kResponse) - 1);
+
+  ASSERT_TRUE(resp1.InitParseWithoutQuery(sizeof(kResponse) - 1));
+  DnsRecordParser parser1 = resp1.Parser();
+  ASSERT_TRUE(parser1.IsValid());
+
+  // Response header claims 4 records, but only 2 present in input.
+  DnsResourceRecord record;
+  EXPECT_TRUE(parser1.ReadRecord(&record));
+  EXPECT_TRUE(parser1.ReadRecord(&record));
+  EXPECT_FALSE(parser1.ReadRecord(&record));
+  EXPECT_FALSE(parser1.ReadRecord(&record));
+
+  // Repeat using InitParse()
+  DnsResponse resp2;
+  memcpy(resp2.io_buffer()->data(), kResponse, sizeof(kResponse) - 1);
+
+  ASSERT_TRUE(resp2.InitParseWithoutQuery(sizeof(kResponse) - 1));
+  DnsRecordParser parser2 = resp2.Parser();
+  ASSERT_TRUE(parser2.IsValid());
+
+  // Response header claims 4 records, but only 2 present in input.
+  EXPECT_TRUE(parser2.ReadRecord(&record));
+  EXPECT_TRUE(parser2.ReadRecord(&record));
+  EXPECT_FALSE(parser2.ReadRecord(&record));
+  EXPECT_FALSE(parser2.ReadRecord(&record));
 }
 
 TEST(DnsResponseWriteTest, SingleARecordAnswer) {

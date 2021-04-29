@@ -6,6 +6,9 @@
 #include <stdint.h>
 
 #include <memory>
+#include <vector>
+
+#include <fuzzer/FuzzedDataProvider.h>
 
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -29,7 +32,12 @@ void InitLogging() {
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   InitLogging();
 
-  net::DnsRecordParser parser(data, size, 0);
+  FuzzedDataProvider data_provider(data, size);
+  size_t num_records = data_provider.ConsumeIntegral<size_t>();
+  std::vector<uint8_t> packet = data_provider.ConsumeRemainingBytes<uint8_t>();
+
+  net::DnsRecordParser parser(packet.data(), packet.size(), /*offset=*/0,
+                              num_records);
   if (!parser.IsValid()) {
     return 0;
   }

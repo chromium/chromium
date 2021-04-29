@@ -14,6 +14,7 @@
 #include "base/base64url.h"
 #include "base/bind.h"
 #include "base/containers/circular_deque.h"
+#include "base/numerics/safe_math.h"
 #include "base/optional.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
@@ -70,10 +71,27 @@ base::TimeDelta kFallbackPeriod = base::TimeDelta::FromSeconds(1);
 
 const char kMockHostname[] = "mock.http";
 
-std::string DomainFromDot(const base::StringPiece& dotted) {
-  std::string out;
-  EXPECT_TRUE(DNSDomainFromDot(dotted, &out));
-  return out;
+// Like `net::DNSDomainFromDot()` except allows converting more names than
+// accepted by that utility.
+std::string DomainFromDot(base::StringPiece dotted_name) {
+  std::string dns_name;
+
+  while (true) {
+    size_t next_dot = dotted_name.find('.');
+    if (next_dot == base::StringPiece::npos) {
+      dns_name.append(1, base::checked_cast<base::StringPiece::value_type>(
+                             dotted_name.size()));
+      dns_name.append(static_cast<std::string>(dotted_name));
+      dns_name.append(1, 0);
+      return dns_name;
+    } else {
+      dns_name.append(
+          1, base::checked_cast<base::StringPiece::value_type>(next_dot));
+      dns_name.append(
+          static_cast<std::string>(dotted_name.substr(0, next_dot)));
+      dotted_name = dotted_name.substr(next_dot + 1);
+    }
+  }
 }
 
 enum class Transport { UDP, TCP, HTTPS };
@@ -1118,6 +1136,10 @@ TEST_F(DnsTransactionTest, MismatchedResponseAsync) {
   helper0.RunUntilComplete();
 }
 
+// Test that responses are not accepted when only the response ID mismatches.
+// Tests against incorrect transaction ID validation, which is anti-pattern #1
+// from the "NAME:WRECK" report:
+// https://www.forescout.com/company/resources/namewreck-breaking-and-fixing-dns-implementations/
 TEST_F(DnsTransactionTest, MismatchedResponseFail) {
   ConfigureFactory();
 
@@ -3873,6 +3895,24 @@ TEST_F(DnsTransactionTestWithMockTime, FastProbeRestart) {
   FastForwardBy(scheduled_delay);
   EXPECT_TRUE(resolve_context_->GetDohServerAvailability(
       0u /* doh_server_index */, session_.get()));
+}
+
+// Test that queries cannot be sent when they contain a too-long name.
+// Tests against incorrect name length validation, which is anti-pattern #3 from
+// the "NAME:WRECK" report:
+// https://www.forescout.com/company/resources/namewreck-breaking-and-fixing-dns-implementations/
+TEST_F(DnsTransactionTestWithMockTime, RejectsQueryingLongNames) {
+  std::string long_dotted_name;
+  while (long_dotted_name.size() <= dns_protocol::kMaxNameLength) {
+    long_dotted_name.append("naaaaaamelabel.");
+  }
+  long_dotted_name.append("test");
+
+  TransactionHelper helper0(ERR_INVALID_ARGUMENT);
+  helper0.StartTransaction(transaction_factory_.get(), long_dotted_name.c_str(),
+                           dns_protocol::kTypeA, false /* secure */,
+                           resolve_context_.get());
+  helper0.RunUntilComplete();
 }
 
 }  // namespace

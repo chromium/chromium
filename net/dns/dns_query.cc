@@ -183,8 +183,9 @@ bool DnsQuery::Parse(size_t valid_bytes) {
   if (header.flags & dns_protocol::kFlagResponse) {
     return false;
   }
-  if (header.qdcount > 1) {
-    VLOG(1) << "Not supporting parsing a DNS query with multiple questions.";
+  if (header.qdcount != 1) {
+    VLOG(1) << "Not supporting parsing a DNS query with multiple (or zero) "
+               "questions.";
     return false;
   }
   std::string qname;
