@@ -171,6 +171,7 @@ DlpRulesManagerImpl::~DlpRulesManagerImpl() {
 
 // static
 void DlpRulesManagerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(policy_prefs::kDlpReportingEnabled, false);
   registry->RegisterListPref(policy_prefs::kDlpRulesList);
 }
 
@@ -246,7 +247,8 @@ DlpRulesManagerImpl::DlpRulesManagerImpl(PrefService* local_state) {
 }
 
 bool DlpRulesManagerImpl::IsReportingEnabled() const {
-  return true;
+  return g_browser_process->local_state()->GetBoolean(
+      policy_prefs::kDlpReportingEnabled);
 }
 
 DlpReportingManager* DlpRulesManagerImpl::GetReportingManager() const {

@@ -24326,6 +24326,7 @@ Called by update_document_policy_enum.py.-->
   <int value="853" label="LensCameraAssistedSearchEnabled"/>
   <int value="854" label="RelaunchWindow"/>
   <int value="855" label="LacrosAvailability"/>
+  <int value="856" label="DataLeakPreventionReportingEnabled"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

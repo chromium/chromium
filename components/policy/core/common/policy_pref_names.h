@@ -13,6 +13,7 @@ namespace policy_prefs {
 
 POLICY_EXPORT extern const char kCloudManagementEnrollmentMandatory[];
 POLICY_EXPORT extern const char kCloudPolicyOverridesPlatformPolicy[];
+POLICY_EXPORT extern const char kDlpReportingEnabled[];
 POLICY_EXPORT extern const char kDlpRulesList[];
 POLICY_EXPORT extern const char kLastPolicyStatisticsUpdate[];
 POLICY_EXPORT extern const char kNativeWindowOcclusionEnabled[];

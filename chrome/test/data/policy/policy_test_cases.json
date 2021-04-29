@@ -8373,6 +8373,16 @@
       }
     ]
   },
+  "DataLeakPreventionReportingEnabled": {
+    "os": ["chromeos"],
+    "can_be_recommended": false,
+    "policy_pref_mapping_tests": [
+      {
+        "policies": { "DataLeakPreventionReportingEnabled": true },
+        "prefs": { "policy.dlp_reporting_enabled": { "location": "local_state" } }
+      }
+    ]
+  },
   "DataLeakPreventionRulesList": {
     "os": ["chromeos"],
     "policy_pref_mapping_tests": [

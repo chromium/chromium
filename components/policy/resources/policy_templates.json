@@ -24451,6 +24451,38 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       Setting this policy to Disabled or leaving it unset will result in privet printers not appearing in print preview, as this printing method is deprecated.''',
     },
     {
+      'name': 'DataLeakPreventionReportingEnabled',
+      'owners': ['file://chrome/browser/chromeos/policy/dlp/OWNERS', 'jkopanski@google.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome_os:92-'],
+      'features': {
+        'can_be_recommended': False,
+        # TODO(crbug.com/1203390): Enable dynamic refresh
+        'dynamic_refresh': False,
+        'per_profile': False,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable reporting of data leak prevention events',
+        },
+        {
+          'value': False,
+          'caption': 'Disable reporting of data leak prevention events',
+        },
+      ],
+      'example_value': True,
+      'default': False,
+      'id': 856,
+      'caption': '''Enable data leak prevention reporting''',
+      'tags': [],
+      'desc': '''This policy is a general switch for all rules defined in the DataLeakPreventionRulesList policy.
+      Setting this policy to True will switch on real-time reporting of data leak prevention events.
+      Setting this policy to False or leaving it unset will switch off the reporting.
+      Rules defined with ALLOW level restrictions in DataLeakPreventionRulesList will not report events in both cases.'''
+    },
+    {
       'name': 'DataLeakPreventionRulesList',
       'owners': ['file://chrome/browser/chromeos/policy/dlp/OWNERS', 'ayaelattar@chromium.org'],
       'type': 'dict',
@@ -26680,6 +26712,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 855,
+  'highest_id_currently_used': 856,
   'highest_atomic_group_id_currently_used': 40
 }

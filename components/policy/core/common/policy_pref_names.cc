@@ -43,6 +43,9 @@ const char kCloudManagementEnrollmentMandatory[] =
 // machine policy.
 const char kCloudPolicyOverridesPlatformPolicy[] = "policy.cloud_override";
 
+// Boolean policy preference to enable reporting of data leak prevention events.
+const char kDlpReportingEnabled[] = "policy.dlp_reporting_enabled";
+
 // A list of Data leak prevention rules.
 const char kDlpRulesList[] = "policy.dlp_rules_list";
 

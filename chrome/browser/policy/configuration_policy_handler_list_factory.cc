@@ -1394,6 +1394,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kPdfAnnotationsEnabled,
     prefs::kPdfAnnotationsEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kDataLeakPreventionReportingEnabled,
+    policy_prefs::kDlpReportingEnabled,
+    base::Value::Type::BOOLEAN },
 #endif
 };
 // clang-format on

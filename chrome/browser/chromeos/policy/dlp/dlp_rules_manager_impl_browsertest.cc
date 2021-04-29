@@ -62,4 +62,34 @@ IN_PROC_BROWSER_TEST_F(DlpRulesPolicyTest, ParsePolicyPref) {
                 GURL(kUrlStr1), DlpRulesManager::Restriction::kScreenshot));
 }
 
+IN_PROC_BROWSER_TEST_F(DlpRulesPolicyTest, ReportingEnabled) {
+  base::DictionaryValue policy;
+  policy.SetBoolKey(key::kDataLeakPreventionReportingEnabled, true);
+  user_policy_helper()->SetPolicy(policy,
+                                  /*recommended=*/base::DictionaryValue());
+
+  SkipToLoginScreen();
+  LogIn(kAccountId, kAccountPassword, kEmptyServices);
+
+  DlpRulesManager* rules_manager =
+      DlpRulesManagerFactory::GetForPrimaryProfile();
+  EXPECT_TRUE(rules_manager->IsReportingEnabled());
+  EXPECT_NE(rules_manager->GetReportingManager(), nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(DlpRulesPolicyTest, ReportingDisabled) {
+  base::DictionaryValue policy;
+  policy.SetBoolKey(key::kDataLeakPreventionReportingEnabled, false);
+  user_policy_helper()->SetPolicy(policy,
+                                  /*recommended=*/base::DictionaryValue());
+
+  SkipToLoginScreen();
+  LogIn(kAccountId, kAccountPassword, kEmptyServices);
+
+  DlpRulesManager* rules_manager =
+      DlpRulesManagerFactory::GetForPrimaryProfile();
+  EXPECT_FALSE(rules_manager->IsReportingEnabled());
+  EXPECT_EQ(rules_manager->GetReportingManager(), nullptr);
+}
+
 }  // namespace policy
