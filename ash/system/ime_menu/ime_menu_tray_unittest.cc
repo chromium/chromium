@@ -19,6 +19,10 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/base/ime/text_input_flags.h"
+#include "ui/display/test/display_manager_test_api.h"
+#include "ui/events/devices/device_data_manager_test_api.h"
+#include "ui/events/devices/input_device.h"
+#include "ui/events/devices/touchscreen_device.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/label.h"
 
@@ -109,6 +113,12 @@ class ImeMenuTrayTest : public AshTestBase {
         ui::TextInputClient::FOCUS_REASON_OTHER,
         false /* should_do_learning */);
     ui::IMEBridge::Get()->SetCurrentInputContext(input_context);
+  }
+
+  bool MenuHasOnScreenKeyboardToggle() const {
+    if (!GetTray()->ime_list_view_)
+      return false;
+    return ImeListViewTestApi(GetTray()->ime_list_view_).GetToggleView();
   }
 
  private:
@@ -345,6 +355,67 @@ TEST_F(ImeMenuTrayTest, ShouldShowBottomButtonsSeperate) {
   EXPECT_TRUE(IsEmojiEnabled());
   EXPECT_FALSE(IsHandwritingEnabled());
   EXPECT_FALSE(IsVoiceEnabled());
+}
+
+TEST_F(ImeMenuTrayTest, ShowOnScreenKeyboardToggle) {
+  Shell::Get()->ime_controller()->ShowImeMenuOnShelf(true);
+  ASSERT_TRUE(IsVisible());
+  ASSERT_FALSE(IsTrayBackgroundActive());
+
+  ui::GestureEvent tap(0, 0, 0, base::TimeTicks(),
+                       ui::GestureEventDetails(ui::ET_GESTURE_TAP));
+  GetTray()->PerformAction(tap);
+  EXPECT_TRUE(IsTrayBackgroundActive());
+  EXPECT_TRUE(IsBubbleShown());
+
+  EXPECT_FALSE(MenuHasOnScreenKeyboardToggle());
+
+  // The on-screen keyboard toggle should show if the device has a touch
+  // screen, and does not have an internal keyboard.
+  std::vector<ui::TouchscreenDevice> screens;
+  screens.push_back(
+      ui::TouchscreenDevice(1, ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+                            "Touchscreen", gfx::Size(1024, 768), 0));
+  ui::DeviceDataManagerTestApi().SetTouchscreenDevices(screens);
+
+  std::vector<ui::InputDevice> keyboard_devices;
+  keyboard_devices.push_back(ui::InputDevice(
+      1, ui::InputDeviceType::INPUT_DEVICE_USB, "external keyboard"));
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices(keyboard_devices);
+
+  // Bubble gets closed when the keyboard suppression state changes.
+  EXPECT_FALSE(IsBubbleShown());
+
+  GetTray()->PerformAction(ui::GestureEvent(
+      0, 0, 0, base::TimeTicks(), ui::GestureEventDetails(ui::ET_GESTURE_TAP)));
+  EXPECT_TRUE(IsBubbleShown());
+
+  EXPECT_TRUE(MenuHasOnScreenKeyboardToggle());
+
+  // The toggle should not be removed on IME device refresh.
+  ImeInfo info;
+  info.id = "ime";
+  info.name = u"English UK";
+  info.short_name = u"UK";
+  info.third_party = true;
+
+  SetCurrentIme("ime", {info});
+  EXPECT_TRUE(MenuHasOnScreenKeyboardToggle());
+
+  // The toggle should be hidden with internal keyboard.
+  keyboard_devices.push_back(ui::InputDevice(
+      1, ui::InputDeviceType::INPUT_DEVICE_USB, "external keyboard"));
+  keyboard_devices.push_back(ui::InputDevice(
+      1, ui::InputDeviceType::INPUT_DEVICE_INTERNAL, "internal keyboard"));
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices(keyboard_devices);
+
+  // Bubble gets closed when the keyboard suppression state changes.
+  EXPECT_FALSE(IsBubbleShown());
+
+  GetTray()->PerformAction(ui::GestureEvent(
+      0, 0, 0, base::TimeTicks(), ui::GestureEventDetails(ui::ET_GESTURE_TAP)));
+  EXPECT_TRUE(IsBubbleShown());
+  EXPECT_FALSE(MenuHasOnScreenKeyboardToggle());
 }
 
 }  // namespace ash

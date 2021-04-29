@@ -383,6 +383,8 @@ ImeListViewTestApi::ImeListViewTestApi(ImeListView* ime_list_view)
 ImeListViewTestApi::~ImeListViewTestApi() = default;
 
 views::View* ImeListViewTestApi::GetToggleView() const {
+  if (!ime_list_view_->keyboard_status_row_)
+    return nullptr;
   return ime_list_view_->keyboard_status_row_->toggle();
 }
 
