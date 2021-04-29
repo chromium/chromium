@@ -277,6 +277,9 @@ __gCrWeb.form.getFormElementFromIdentifier = function(name) {
  * @return {HTMLFormElement} The original form element, if it can be determined.
  */
 __gCrWeb.form.getFormElementFromUniqueFormId = function(identifier) {
+  if (identifier.toString() === __gCrWeb.fill.RENDERER_ID_NOT_SET) {
+    return null;
+  }
   const forms = document.forms;
   for (let i = 0; i < forms.length; i++) {
     const form = forms[i];
