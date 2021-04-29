@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/image_decoder_external.h"
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
@@ -20,6 +21,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/graphics/bitmap_image_metrics.h"
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
@@ -154,6 +156,8 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
     consumer_ = MakeGarbageCollected<ReadableStreamBytesConsumer>(
         script_state, init->data().GetAsReadableStream());
 
+    construction_succeeded_ = true;
+
     // We need one initial call to OnStateChange() to start reading, but
     // thereafter calls will be driven by the ReadableStreamBytesConsumer.
     consumer_->SetClient(this);
@@ -185,6 +189,7 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
     return;
   }
 
+  construction_succeeded_ = true;
   data_complete_ = true;
   decoder_ = std::make_unique<WTF::SequenceBound<ImageDecoderCore>>(
       task_runner, mime_type_, std::move(segment_reader), data_complete_,
@@ -195,6 +200,9 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
 
 ImageDecoderExternal::~ImageDecoderExternal() {
   DVLOG(1) << __func__;
+
+  if (construction_succeeded_)
+    base::UmaHistogramBoolean("Blink.WebCodecs.ImageDecoder.Success", !failed_);
 
   // See OnContextDestroyed(); WeakPtrs must be invalidated ahead of GC.
   DCHECK_EQ(pending_metadata_requests_, 0);

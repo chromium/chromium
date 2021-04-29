@@ -19,10 +19,8 @@
 
 namespace blink {
 
-namespace {
-
-BitmapImageMetrics::DecodedImageType StringToDecodedImageType(
-    const String& type) {
+BitmapImageMetrics::DecodedImageType
+BitmapImageMetrics::StringToDecodedImageType(const String& type) {
   if (type == "jpg")
     return BitmapImageMetrics::DecodedImageType::kJPEG;
   if (type == "png")
@@ -45,8 +43,6 @@ BitmapImageMetrics::DecodedImageType StringToDecodedImageType(
 #endif
   return BitmapImageMetrics::DecodedImageType::kUnknown;
 }
-
-}  // namespace
 
 void BitmapImageMetrics::CountDecodedImageType(const String& type) {
   UMA_HISTOGRAM_ENUMERATION("Blink.DecodedImageType",

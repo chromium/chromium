@@ -2929,6 +2929,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Blink.WebCodecs.ImageDecoder.Success" enum="BooleanSuccess"
+    expires_after="2022-02-01">
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Whether a given JavaScript ImageDecoder instance completed operation
+    successfully or not. Logged upon destruction of the instance.
+  </summary>
+</histogram>
+
+<histogram name="Blink.WebCodecs.ImageDecoder.Type" enum="DecodedImageType"
+    expires_after="2022-02-01">
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Image codec provided to JavaScript ImageDecoder constructor. Logged once per
+    successful construction upon completion of construction.
+  </summary>
+</histogram>
+
 <histogram name="Blink.WindowOpen.FromAdState" enum="WindowOpenFromAdState"
     expires_after="2019-08-30">
   <owner>yaoxia@chromium.org</owner>

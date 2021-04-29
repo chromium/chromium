@@ -56,6 +56,9 @@ class PLATFORM_EXPORT BitmapImageMetrics {
   };
 
   // |type| is the return value of ImageDecoder::FilenameExtension().
+  static DecodedImageType StringToDecodedImageType(const String& type);
+
+  // |type| is the return value of ImageDecoder::FilenameExtension().
   static void CountDecodedImageType(const String& type);
   // |type| is the return value of ImageDecoder::FilenameExtension().
   // |use_counter| may be a null pointer.

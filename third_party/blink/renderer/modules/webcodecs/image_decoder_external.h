@@ -129,6 +129,9 @@ class MODULES_EXPORT ImageDecoderExternal final
   // List of tracks in this image. Filled in during OnMetadata().
   Member<ImageTrackList> tracks_;
 
+  // Set to true if we make it out of the constructor without an exception.
+  bool construction_succeeded_ = false;
+
   // Pending decode() requests.
   struct DecodeRequest : public GarbageCollected<DecodeRequest> {
     DecodeRequest(ScriptPromiseResolver* resolver,

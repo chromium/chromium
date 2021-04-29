@@ -5,10 +5,12 @@
 #include "third_party/blink/renderer/modules/webcodecs/image_decoder_core.h"
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
+#include "third_party/blink/renderer/platform/graphics/bitmap_image_metrics.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -99,6 +101,10 @@ ImageDecoderCore::ImageDecoderCore(
   }
 
   Reinitialize(animation_option_);
+
+  base::UmaHistogramEnumeration("Blink.WebCodecs.ImageDecoder.Type",
+                                BitmapImageMetrics::StringToDecodedImageType(
+                                    decoder_->FilenameExtension()));
 }
 
 ImageDecoderCore::~ImageDecoderCore() = default;
