@@ -418,6 +418,7 @@ void PasswordSaveUpdateView::ReplaceWithPromo() {
   } else {
     NOTREACHED();
   }
+  set_close_on_deactivate(true);
   GetWidget()->UpdateWindowIcon();
   SetTitle(controller_.GetTitle());
   UpdateBubbleUIElements();
