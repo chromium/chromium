@@ -13,7 +13,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
-import org.chromium.url.GURL;
 
 /** Responsible for detecting candidate events for publishing the merchant trust message. */
 class MerchantTrustSignalsMediator {
@@ -44,12 +43,8 @@ class MerchantTrustSignalsMediator {
                 return;
             }
 
-            if (!hasMerchantTrustSignals(navigation.getUrl())) {
-                return;
-            }
-
-            mDelegate.maybeDisplayMessage(new MerchantTrustMessageContext(
-                    navigation.getUrl().getHost(), mCurrentWebContents));
+            mDelegate.maybeDisplayMessage(
+                    new MerchantTrustMessageContext(navigation.getUrl(), mCurrentWebContents));
         }
     };
 
@@ -57,6 +52,7 @@ class MerchantTrustSignalsMediator {
             TabModelSelector tabModelSelector, MerchantTrustSignalsCallback delegate) {
         mTabModelSelector = tabModelSelector;
         mDelegate = delegate;
+
         mTabModelObserver = new TabModelObserver() {
             @Override
             public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
@@ -72,6 +68,13 @@ class MerchantTrustSignalsMediator {
         };
 
         mTabModelSelector.getTabModelFilterProvider().addTabModelFilterObserver(mTabModelObserver);
+
+        // Listen on the initial tab's changes.
+        mTab = tabModelSelector.getCurrentTab();
+        if (mTab != null) {
+            mCurrentWebContents = mTab.getWebContents();
+            mCurrentWebContents.addObserver(mWebContentsObserver);
+        }
     }
 
     void destroy() {
@@ -79,9 +82,5 @@ class MerchantTrustSignalsMediator {
             mTabModelSelector.getTabModelFilterProvider().removeTabModelFilterObserver(
                     mTabModelObserver);
         }
-    }
-
-    private boolean hasMerchantTrustSignals(GURL url) {
-        return true;
     }
 }

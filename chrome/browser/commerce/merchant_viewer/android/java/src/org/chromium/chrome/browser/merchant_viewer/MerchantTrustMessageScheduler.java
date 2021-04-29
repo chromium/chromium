@@ -5,11 +5,14 @@
 package org.chromium.chrome.browser.merchant_viewer;
 
 import android.os.Handler;
+import android.util.Pair;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.MessageClearReason;
+import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageScopeType;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -21,7 +24,7 @@ public class MerchantTrustMessageScheduler {
     private final MessageDispatcher mMessageDispatcher;
     private final MerchantTrustMetrics mMetrics;
     private Handler mEnqueueMessageTimer;
-    private MerchantTrustMessageContext mScheduledMessageContext;
+    private Pair<MerchantTrustMessageContext, PropertyModel> mScheduledMessage;
 
     public MerchantTrustMessageScheduler(
             MessageDispatcher messageDispatcher, MerchantTrustMetrics metrics) {
@@ -32,31 +35,58 @@ public class MerchantTrustMessageScheduler {
 
     /** Cancels any scheduled messages. */
     void clear(@MessageClearReason int clearReason) {
-        if (mScheduledMessageContext != null) {
+        if (mScheduledMessage != null) {
             mMetrics.recordMetricsForMessageCleared(clearReason);
         }
         mEnqueueMessageTimer.removeCallbacksAndMessages(null);
-        setScheduledMessageContext(null);
+        if (mScheduledMessage != null && mScheduledMessage.second != null) {
+            mMessageDispatcher.dismissMessage(
+                    mScheduledMessage.second, DismissReason.SCOPE_DESTROYED);
+        }
+        setScheduledMessage(null);
     }
 
     /** Adds a message to the underlying {@link MessageDispatcher} queue. */
-    void schedule(
-            PropertyModel model, MerchantTrustMessageContext messageContext, long delayInMillis) {
-        setScheduledMessageContext(messageContext);
+    void schedule(PropertyModel model, MerchantTrustMessageContext messageContext,
+            long delayInMillis, Callback<MerchantTrustMessageContext> messageEnqueuedCallback) {
+        setScheduledMessage(
+                new Pair<MerchantTrustMessageContext, PropertyModel>(messageContext, model));
         mMetrics.recordMetricsForMessagePrepared();
         mEnqueueMessageTimer.postDelayed(() -> {
             if (messageContext.isValid()) {
                 mMessageDispatcher.enqueueMessage(
                         model, messageContext.getWebContents(), MessageScopeType.NAVIGATION);
                 mMetrics.recordMetricsForMessageShown();
+                messageEnqueuedCallback.onResult(messageContext);
+            } else {
+                messageEnqueuedCallback.onResult(null);
             }
-            setScheduledMessageContext(null);
+            setScheduledMessage(null);
         }, delayInMillis);
+    }
+
+    /**
+     * Forces the currently scheduled message (if any) to be enqueued through the {@link
+     * MessageDispatcher} right away without having to wait for the original time. This is achieved
+     * by calling MerchantTrustMessageScheduler#schedule with no delay time. This is a NOP if there
+     * isn't a scheduled message.
+     */
+    void expedite(Callback<MerchantTrustMessageContext> callback) {
+        if (mScheduledMessage == null) {
+            callback.onResult(null);
+            return;
+        }
+
+        Pair<MerchantTrustMessageContext, PropertyModel> replacement =
+                new Pair<MerchantTrustMessageContext, PropertyModel>(
+                        mScheduledMessage.first, mScheduledMessage.second);
+        clear(MessageClearReason.NAVIGATE_TO_SAME_DOMAIN);
+        schedule(replacement.second, replacement.first, MESSAGE_ENQUEUE_NO_DELAY, callback);
     }
 
     /** Returns the currently scheduled message. */
     MerchantTrustMessageContext getScheduledMessageContext() {
-        return mScheduledMessageContext;
+        return mScheduledMessage == null ? null : mScheduledMessage.first;
     }
 
     @VisibleForTesting
@@ -65,9 +95,9 @@ public class MerchantTrustMessageScheduler {
     }
 
     @VisibleForTesting
-    void setScheduledMessageContext(MerchantTrustMessageContext messageContext) {
+    void setScheduledMessage(Pair<MerchantTrustMessageContext, PropertyModel> pair) {
         synchronized (mEnqueueMessageTimer) {
-            mScheduledMessageContext = messageContext;
+            mScheduledMessage = pair;
         }
     }
 }

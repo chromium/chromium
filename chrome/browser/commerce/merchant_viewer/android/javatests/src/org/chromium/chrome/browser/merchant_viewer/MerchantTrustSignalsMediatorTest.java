@@ -198,6 +198,20 @@ public class MerchantTrustSignalsMediatorTest {
         verify(mMockDelegate, never()).maybeDisplayMessage(any(MerchantTrustMessageContext.class));
     }
 
+    @Test
+    public void testInitialTabSelection() {
+        doReturn(mMockPrimaryTab).when(mMockTabModelSelector).getCurrentTab();
+        MerchantTrustSignalsMediator mediator = getMediatorUnderTest(null);
+        verify(mMockWebContents, times(1)).addObserver(mWebContentsObserver.capture());
+    }
+
+    @Test
+    public void testInitialTabEmpty() {
+        doReturn(null).when(mMockTabModelSelector).getCurrentTab();
+        MerchantTrustSignalsMediator mediator = getMediatorUnderTest(null);
+        verify(mMockWebContents, never()).addObserver(mWebContentsObserver.capture());
+    }
+
     private MerchantTrustSignalsMediator getMediatorUnderTest(TabImpl tabToSelect) {
         MerchantTrustSignalsMediator mediator =
                 new MerchantTrustSignalsMediator(mMockTabModelSelector, mMockDelegate);

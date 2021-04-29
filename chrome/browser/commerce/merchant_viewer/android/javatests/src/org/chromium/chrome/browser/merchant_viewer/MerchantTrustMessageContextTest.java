@@ -20,6 +20,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 
 /**
  * Tests for {@link MerchantTrustMessageContext}.
@@ -29,19 +30,24 @@ import org.chromium.content_public.browser.WebContents;
 public class MerchantTrustMessageContextTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
+
+    @Mock
+    private GURL mMockGurl;
 
     @Mock
     private WebContents mMockWebContents;
+
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+        doReturn("fake_host").when(mMockGurl).getHost();
+    }
 
     @Test
     public void testIsValid() {
         doReturn(false).when(mMockWebContents).isDestroyed();
         MerchantTrustMessageContext context =
-                new MerchantTrustMessageContext("fake_host", mMockWebContents);
+                new MerchantTrustMessageContext(mMockGurl, mMockWebContents);
         assertTrue(context.isValid());
     }
 
@@ -49,14 +55,16 @@ public class MerchantTrustMessageContextTest {
     public void testIsValidDestroyedWebContents() {
         doReturn(true).when(mMockWebContents).isDestroyed();
         MerchantTrustMessageContext context =
-                new MerchantTrustMessageContext("fake_host", mMockWebContents);
+                new MerchantTrustMessageContext(mMockGurl, mMockWebContents);
         assertFalse(context.isValid());
     }
 
     @Test
     public void testIsValidEmptyHostname() {
-        doReturn(true).when(mMockWebContents).isDestroyed();
-        MerchantTrustMessageContext context = new MerchantTrustMessageContext("", mMockWebContents);
+        doReturn(false).when(mMockWebContents).isDestroyed();
+        doReturn(true).when(mMockGurl).isEmpty();
+        MerchantTrustMessageContext context =
+                new MerchantTrustMessageContext(mMockGurl, mMockWebContents);
         assertFalse(context.isValid());
     }
 
@@ -70,7 +78,7 @@ public class MerchantTrustMessageContextTest {
 
     @Test
     public void testIsValidNullWebContents() {
-        MerchantTrustMessageContext context = new MerchantTrustMessageContext("fake_host", null);
+        MerchantTrustMessageContext context = new MerchantTrustMessageContext(mMockGurl, null);
         assertFalse(context.isValid());
     }
 }
