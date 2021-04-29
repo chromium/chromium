@@ -10,8 +10,8 @@
 
 #include <functional>
 #include <initializer_list>
+#include <iosfwd>
 #include <memory>
-#include <ostream>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>

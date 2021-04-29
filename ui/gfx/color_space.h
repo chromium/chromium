@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include <ostream>
+#include <iosfwd>
 #include <string>
 #include <vector>
 
