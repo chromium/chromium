@@ -2542,7 +2542,7 @@ Press an assigned switch to remove assignment.
     Show device EID and QR code popup
   </message>
   <message name="IDS_SETTINGS_INTERNET_ESIM_NO_CONNECTION_ERROR_TOAST" desc="Message in toast displayed when user tries to perform an eSIM operation when not connected to a non-cellular network.">
-    Establish an internet connection first
+    Connect to Wi-Fi or Ethernet to set up eSIM
   </message>
   <message name="IDS_SETTINGS_INTERNET_ESIM_MOBILE_DATA_NOT_ENABLED_ERROR_TOAST" desc="Message in toast displayed when user tries to set up an eSIM profile when mobile data is not enabled.">
     Enable mobile data to install an eSIM profile
