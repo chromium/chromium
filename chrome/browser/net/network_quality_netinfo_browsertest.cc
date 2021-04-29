@@ -96,26 +96,22 @@ class NetInfoBrowserTest : public InProcessBrowserTest {
     }
   }
 
-  double RunScriptExtractDouble(const std::string& script) {
-    double data = 0.0;
-    EXPECT_TRUE(ExecuteScriptAndExtractDouble(
-        browser()->tab_strip_model()->GetActiveWebContents(), script, &data));
-    return data;
+  std::string RunScriptExtractString(const std::string& script) {
+    return content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                           script, content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+        .ExtractString();
   }
 
- private:
-  std::string RunScriptExtractString(const std::string& script) {
-    std::string data;
-    EXPECT_TRUE(ExecuteScriptAndExtractString(
-        browser()->tab_strip_model()->GetActiveWebContents(), script, &data));
-    return data;
+  double RunScriptExtractDouble(const std::string& script) {
+    return content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                           script, content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+        .ExtractDouble();
   }
 
   int RunScriptExtractInt(const std::string& script) {
-    int data = 0;
-    EXPECT_TRUE(ExecuteScriptAndExtractInt(
-        browser()->tab_strip_model()->GetActiveWebContents(), script, &data));
-    return data;
+    return content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                           script, content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+        .ExtractInt();
   }
 };
 

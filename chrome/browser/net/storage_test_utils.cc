@@ -37,11 +37,7 @@ constexpr char kHasStorageAccess[] =
 
 void ExpectFrameContent(content::RenderFrameHost* frame,
                         const std::string& expected) {
-  std::string content;
-  ASSERT_TRUE(ExecuteScriptAndExtractString(
-      frame, "window.domAutomationController.send(document.body.textContent)",
-      &content));
-  EXPECT_EQ(expected, content);
+  EXPECT_EQ(expected, content::EvalJs(frame, "document.body.textContent"));
 }
 
 void ExpectCookiesOnHost(content::BrowserContext* context,
@@ -52,45 +48,45 @@ void ExpectCookiesOnHost(content::BrowserContext* context,
 
 void SetStorageForFrame(content::RenderFrameHost* frame) {
   for (const auto& data_type : kStorageTypesForFrame) {
-    bool data = false;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        frame, "set" + data_type + "()", &data));
+    bool data = content::EvalJs(frame, "set" + data_type + "()",
+                                content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                    .ExtractBool();
     EXPECT_TRUE(data) << "SetStorageForFrame for " << data_type;
   }
 }
 
 void SetStorageForWorker(content::RenderFrameHost* frame) {
   for (const auto& data_type : kStorageTypesForWorker) {
-    bool data = false;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        frame, "set" + data_type + "()", &data));
+    bool data = content::EvalJs(frame, "set" + data_type + "()",
+                                content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                    .ExtractBool();
     EXPECT_TRUE(data) << "SetStorageForWorker for " << data_type;
   }
 }
 
 void ExpectStorageForFrame(content::RenderFrameHost* frame, bool expected) {
   for (const auto& data_type : kStorageTypesForFrame) {
-    bool data = false;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        frame, "has" + data_type + "();", &data));
+    bool data = content::EvalJs(frame, "has" + data_type + "();",
+                                content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                    .ExtractBool();
     EXPECT_EQ(expected, data) << "ExpectStorageForFrame for " << data_type;
   }
 }
 
 void ExpectStorageForWorker(content::RenderFrameHost* frame, bool expected) {
   for (const auto& data_type : kStorageTypesForWorker) {
-    bool data = false;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        frame, "has" + data_type + "();", &data));
+    bool data = content::EvalJs(frame, "has" + data_type + "();",
+                                content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                    .ExtractBool();
     EXPECT_EQ(expected, data) << "ExpectStorageForWorker for " << data_type;
   }
 }
 
 void SetCrossTabInfoForFrame(content::RenderFrameHost* frame) {
   for (const auto& data_type : kCrossTabCommunicationTypes) {
-    bool data = false;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        frame, "set" + data_type + "()", &data));
+    bool data = content::EvalJs(frame, "set" + data_type + "()",
+                                content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                    .ExtractBool();
     EXPECT_TRUE(data) << data_type;
   }
 }
@@ -98,26 +94,26 @@ void SetCrossTabInfoForFrame(content::RenderFrameHost* frame) {
 void ExpectCrossTabInfoForFrame(content::RenderFrameHost* frame,
                                 bool expected) {
   for (const auto& data_type : kCrossTabCommunicationTypes) {
-    bool data = false;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-        frame, "has" + data_type + "();", &data));
+    bool data = content::EvalJs(frame, "has" + data_type + "();",
+                                content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                    .ExtractBool();
     EXPECT_EQ(expected, data) << data_type;
   }
 }
 
 void RequestStorageAccessForFrame(content::RenderFrameHost* frame,
                                   bool should_resolve) {
-  bool data = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(frame, kRequestStorageAccess,
-                                                   &data));
+  bool data = content::EvalJs(frame, kRequestStorageAccess,
+                              content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                  .ExtractBool();
   EXPECT_EQ(should_resolve, data) << "document.requestStorageAccess()";
 }
 
 void CheckStorageAccessForFrame(content::RenderFrameHost* frame,
                                 bool access_expected) {
-  bool data = false;
-  EXPECT_TRUE(
-      content::ExecuteScriptAndExtractBool(frame, kHasStorageAccess, &data));
+  bool data = content::EvalJs(frame, kHasStorageAccess,
+                              content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+                  .ExtractBool();
   EXPECT_EQ(access_expected, data) << "document.hasStorageAccess()";
 }
 

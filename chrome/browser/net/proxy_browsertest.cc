@@ -54,14 +54,12 @@ void VerifyProxyScript(Browser* browser) {
   ui_test_utils::NavigateToURL(browser, GURL("http://google.com"));
 
   // Verify we get the ERR_PROXY_CONNECTION_FAILED screen.
-  bool result = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      browser->tab_strip_model()->GetActiveWebContents(),
-      "var textContent = document.body.textContent;"
-      "var hasError = textContent.indexOf('ERR_PROXY_CONNECTION_FAILED') >= 0;"
-      "domAutomationController.send(hasError);",
-      &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, content::EvalJs(
+                      browser->tab_strip_model()->GetActiveWebContents(),
+                      "var textContent = document.body.textContent;"
+                      "var hasError = "
+                      "textContent.indexOf('ERR_PROXY_CONNECTION_FAILED') >= 0;"
+                      "hasError;"));
 }
 
 // This class observes chrome::NOTIFICATION_AUTH_NEEDED and supplies

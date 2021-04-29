@@ -184,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(FtpBrowserTest, DirectoryListingNavigation) {
       ftp_server_.GetURLWithUserAndPassword("", "chrome", "chrome"));
 
   // Navigate to directory dir1/ without needing to re-authenticate
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       browser()->tab_strip_model()->GetActiveWebContents(),
       "(function() {"
       "  function navigate() {"
@@ -209,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(FtpBrowserTest, DirectoryListingNavigation) {
       content::BrowserContext::GetDownloadManager(browser()->profile()), 1,
       content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_IGNORE);
 
-  EXPECT_TRUE(content::ExecuteScript(
+  EXPECT_TRUE(content::ExecJs(
       browser()->tab_strip_model()->GetActiveWebContents(),
       "(function() {"
       "  function navigate() {"

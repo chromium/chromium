@@ -118,13 +118,10 @@ IsDisplayingText(content::RenderFrameHost* render_frame_host,
     }
     var node = document.evaluate("//*[contains(text(),'%s')]", document,
       null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-    domAutomationController.send(isNodeVisible(node));
+    isNodeVisible(node);
   )", text.c_str());
   // clang-format on
-  bool result = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(render_frame_host, command,
-                                                   &result));
-  return result;
+  return content::EvalJs(render_frame_host, command).ExtractBool();
 }
 
 bool WARN_UNUSED_RESULT IsDisplayingText(Browser* browser,
@@ -135,20 +132,19 @@ bool WARN_UNUSED_RESULT IsDisplayingText(Browser* browser,
 
 // Expands the more box on the currently displayed error page.
 void ToggleHelpBox(Browser* browser) {
-  EXPECT_TRUE(content::ExecuteScript(
-      browser->tab_strip_model()->GetActiveWebContents(),
-      "document.getElementById('details-button').click();"));
+  EXPECT_TRUE(
+      content::ExecJs(browser->tab_strip_model()->GetActiveWebContents(),
+                      "document.getElementById('details-button').click();"));
 }
 
 // Returns true if the diagnostics link suggestion is displayed.
 bool WARN_UNUSED_RESULT IsDisplayingDiagnosticsLink(Browser* browser) {
   std::string command = base::StringPrintf(
       "var diagnose_link = document.getElementById('diagnose-link');"
-      "domAutomationController.send(diagnose_link != null);");
-  bool result = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      browser->tab_strip_model()->GetActiveWebContents(), command, &result));
-  return result;
+      "diagnose_link != null;");
+  return content::EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
+                         command)
+      .ExtractBool();
 }
 
 // Checks that the error page is being displayed with the specified error
@@ -613,19 +609,14 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, CheckEasterEgg) {
   // Check for no disabled message container.
   std::string command = base::StringPrintf(
       "var hasDisableContainer = document.querySelectorAll('.snackbar').length;"
-      "domAutomationController.send(hasDisableContainer);");
-  int32_t result;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-               web_contents, command, &result));
-  EXPECT_EQ(0, result);
+      "hasDisableContainer;");
+  EXPECT_EQ(0, content::EvalJs(web_contents, command));
 
   // Presence of the canvas container.
   command = base::StringPrintf(
-    "var runnerCanvas = document.querySelectorAll('.runner-canvas').length;"
-    "domAutomationController.send(runnerCanvas);");
-  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-               web_contents, command, &result));
-  EXPECT_EQ(1, result);
+      "var runnerCanvas = document.querySelectorAll('.runner-canvas').length;"
+      "runnerCanvas;");
+  EXPECT_EQ(1, content::EvalJs(web_contents, command));
 }
 
 // Test error page in incognito mode. The only difference is that no network
@@ -885,13 +876,9 @@ class ErrorPageOfflineTest : public ErrorPageTest {
 
     std::string command = base::StringPrintf(
         "var hasText = document.querySelector('.snackbar');"
-        "domAutomationController.send(hasText ? hasText.innerText : '');");
+        "hasText ? hasText.innerText : '';");
 
-    std::string result;
-    EXPECT_TRUE(
-        content::ExecuteScriptAndExtractString(web_contents, command, &result));
-
-    return result;
+    return content::EvalJs(web_contents, command).ExtractString();
   }
 
   // Whether to set AllowDinosaurEasterEgg policy
