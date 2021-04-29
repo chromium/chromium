@@ -7304,6 +7304,8 @@ crbug.com/1203345 [ Mac ] external/wpt/websockets/Send-unicode-data.any.worker.h
 crbug.com/1203345 [ Mac ] external/wpt/websockets/Send-unpaired-surrogates.any.html?wpt_flags=h2 [ Pass Failure Timeout ]
 
 # Sheriff 2021-04-29
+crbug.com/1203345 [ Mac10.14 ] external/wpt/websockets/Close-server-initiated-close.any.html?wpt_flags=h2 [ Pass Failure Timeout ]
+crbug.com/1203345 [ Mac10.14 ] external/wpt/websockets/binaryType-wrong-value.any.html?wpt_flags=h2 [ Pass Failure Timeout ]
 crbug.com/1203963 [ Mac10.14 ] external/wpt/css/css-paint-api/idlharness.html [ Pass Failure Timeout ]
 crbug.com/1203963 [ Mac10.14 ] external/wpt/css/css-shapes/parsing/shape-outside-computed.html [ Pass Failure Timeout ]
 crbug.com/1203963 [ Mac10.14 ] external/wpt/css/css-sizing/aspect-ratio/grid-aspect-ratio-021.html [ Pass Failure Timeout ]
