@@ -31,7 +31,6 @@ AppPlatformMetricsService::AppPlatformMetricsService(Profile* profile)
 }
 
 AppPlatformMetricsService::~AppPlatformMetricsService() {
-  observers_.Clear();
   timer_.Stop();
 }
 
@@ -46,21 +45,17 @@ int AppPlatformMetricsService::GetDayIdForTesting(base::Time time) {
   return GetDayId(time);
 }
 
-void AppPlatformMetricsService::Start() {
+void AppPlatformMetricsService::Start(
+    apps::AppRegistryCache& app_registry_cache) {
+  app_platform_app_metrics_ =
+      std::make_unique<AppPlatformMetrics>(profile_, app_registry_cache);
+
   day_id_ = profile_->GetPrefs()->GetInteger(kAppPlatformMetricsDayId);
   CheckForNewDay();
 
   // Check for a new day every |kTimerInterval| as well.
   timer_.Start(FROM_HERE, kTimerInterval, this,
                &AppPlatformMetricsService::CheckForNewDay);
-}
-
-void AppPlatformMetricsService::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void AppPlatformMetricsService::RemoveObserver(Observer* observer) {
-  observers_.RemoveObserver(observer);
 }
 
 void AppPlatformMetricsService::CheckForNewDay() {
@@ -70,9 +65,7 @@ void AppPlatformMetricsService::CheckForNewDay() {
   // time zone changes.
   if (day_id_ < GetDayId(now)) {
     day_id_ = GetDayId(now);
-    for (Observer& observer : observers_) {
-      observer.OnNewDay();
-    }
+    app_platform_app_metrics_->OnNewDay();
     profile_->GetPrefs()->SetInteger(kAppPlatformMetricsDayId, day_id_);
   }
 }

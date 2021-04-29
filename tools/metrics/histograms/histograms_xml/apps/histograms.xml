@@ -1355,6 +1355,31 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Apps.AppsCount.{AppType}" units="Apps"
+    expires_after="2021-10-28">
+  <owner>dominickn@chromium.org</owner>
+  <owner>nancylingwang@chromium.org</owner>
+  <summary>
+    The total number of installed {AppType} for each app type in Chrome OS. This
+    is logged when more than 24 hours pass after last log, or during the system
+    startup phase if more than 24 hours passed after last log. This histogram is
+    capped at 1000; values above this go into the overflow bucket.
+  </summary>
+  <token key="AppType">
+    <variant name="Arc" summary="Android apps"/>
+    <variant name="Borealis" summary="Borealis apps"/>
+    <variant name="BuiltIn" summary="BuiltIn apps"/>
+    <variant name="ChromeApp" summary="Chrome apps"/>
+    <variant name="Crostini" summary="Crostini apps"/>
+    <variant name="MacOs" summary="MacOs apps"/>
+    <variant name="PluginVm" summary="Plugin VM app"/>
+    <variant name="RemoteApp" summary="Remote apps"/>
+    <variant name="StandaloneBrowser" summary="Standalone browser"/>
+    <variant name="SystemWebApp" summary="System web apps"/>
+    <variant name="WebApp" summary="Web apps"/>
+  </token>
+</histogram>
+
 <histogram name="Apps.AppShimErrorVersion" units="units" expires_after="M78">
   <owner>jackhou@chromium.org</owner>
   <summary>

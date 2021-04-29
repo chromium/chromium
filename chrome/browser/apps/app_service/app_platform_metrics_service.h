@@ -5,13 +5,17 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_APP_PLATFORM_METRICS_SERVICE_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_APP_PLATFORM_METRICS_SERVICE_H_
 
-#include "base/observer_list.h"
+#include <utility>
+
 #include "base/timer/timer.h"
+#include "chrome/browser/apps/app_service/app_platform_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 
 class PrefRegistrySimple;
 
 namespace apps {
+
+class AppRegistryCache;
 
 extern const char kAppPlatformMetricsDayId[];
 
@@ -19,13 +23,6 @@ extern const char kAppPlatformMetricsDayId[];
 // Chrome OS.
 class AppPlatformMetricsService {
  public:
-  // Interface for observing events on the AppPlatformMetricsService.
-  class Observer : public base::CheckedObserver {
-   public:
-    // Called when we detect a new day.
-    virtual void OnNewDay() {}
-  };
-
   explicit AppPlatformMetricsService(Profile* profile);
   AppPlatformMetricsService(const AppPlatformMetricsService&) = delete;
   AppPlatformMetricsService& operator=(const AppPlatformMetricsService&) =
@@ -38,23 +35,20 @@ class AppPlatformMetricsService {
   static int GetDayIdForTesting(base::Time time);
 
   // Start the timer and check if a new day has arrived.
-  void Start();
-
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
+  void Start(apps::AppRegistryCache& app_registry_cache);
 
  private:
   // Helper function to check if a new day has arrived.
   void CheckForNewDay();
 
-  Profile* profile_;
+  Profile* const profile_;
 
   int day_id_;
 
   // A periodic timer that checks if a new day has arrived.
   base::RepeatingTimer timer_;
 
-  base::ObserverList<Observer> observers_;
+  std::unique_ptr<AppPlatformMetrics> app_platform_app_metrics_;
 };
 
 }  // namespace apps
