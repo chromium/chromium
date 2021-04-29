@@ -100,7 +100,8 @@ class BackForwardCacheMetrics
     kForegroundCacheLimit = 46,
     kBrowsingInstanceNotSwapped = 47,
     kBackForwardCacheDisabledForDelegate = 48,
-    kMaxValue = kBackForwardCacheDisabledForDelegate,
+    kOptInUnloadHeaderNotPresent = 49,
+    kMaxValue = kOptInUnloadHeaderNotPresent,
   };
 
   using NotRestoredReasons =

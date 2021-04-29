@@ -6799,6 +6799,9 @@ others/histograms.xml -->
   <int value="46" label="Foreground cache limit"/>
   <int value="47" label="Browsing instance not swapped"/>
   <int value="48" label="Disabled for delegate"/>
+  <int value="49"
+      label="BFCache-Opt-In header not present, or does not include `unload`
+             token, and an experimental config which requires it is active"/>
 </enum>
 
 <enum name="BackForwardCacheReloadsAfterHistoryNavigation">

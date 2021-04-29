@@ -109,6 +109,14 @@ bool IsFileSystemSupported() {
   return file_system_api_supported.Get();
 }
 
+bool IsOptInHeaderRequired() {
+  if (!IsBackForwardCacheEnabled())
+    return false;
+  static constexpr base::FeatureParam<bool> opt_in_header_required(
+      &features::kBackForwardCache, "opt_in_header_required", false);
+  return opt_in_header_required.Get();
+}
+
 uint64_t SupportedFeaturesBitmaskImpl() {
   if (!IsBackForwardCacheEnabled())
     return 0;
@@ -529,6 +537,25 @@ BackForwardCacheImpl::CanPotentiallyStorePageLater(RenderFrameHostImpl* rfh) {
   // Only store documents that have URLs allowed through experiment.
   if (!IsAllowed(rfh->GetLastCommittedURL()))
     result.No(BackForwardCacheMetrics::NotRestoredReason::kDomainNotAllowed);
+
+  // TODO(crbug.com/1201653): Also implement a variant that checks for the
+  // existance of an `unload` handler.
+  if (IsOptInHeaderRequired()) {
+    const network::mojom::URLResponseHeadPtr& response_head =
+        rfh->last_response_head();
+    if (!response_head) {
+      // For the cases without `response_head`, we should have already bailed
+      // out of BFCache for other reasons.
+      DCHECK(!result.CanStore());
+    } else {
+      const network::mojom::ParsedHeadersPtr& headers =
+          response_head->parsed_headers;
+      if (!headers || !headers->bfcache_opt_in_unload) {
+        result.No(BackForwardCacheMetrics::NotRestoredReason::
+                      kOptInUnloadHeaderNotPresent);
+      }
+    }
+  }
 
   CanStoreRenderFrameHostLater(&result, rfh);
 

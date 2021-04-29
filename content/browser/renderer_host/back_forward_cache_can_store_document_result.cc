@@ -157,6 +157,9 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
       return "Browsing instance is not swapped";
     case Reason::kBackForwardCacheDisabledForDelegate:
       return "BackForwardCache is not supported by delegate";
+    case Reason::kOptInUnloadHeaderNotPresent:
+      return "BFCache-Opt-In header not present, or does not include `unload` "
+             "token, and an experimental config which requires it is active.";
   }
 }
 
