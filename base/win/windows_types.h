@@ -122,6 +122,8 @@ typedef struct _SP_DEVINFO_DATA SP_DEVINFO_DATA;
 
 typedef PVOID PSID;
 
+typedef HANDLE HLOCAL;
+
 // Declare Chrome versions of some Windows structures. These are needed for
 // when we need a concrete type but don't want to pull in Windows.h. We can't
 // declare the Windows types so we declare our types and cast to the Windows
@@ -238,6 +240,9 @@ WINBASEAPI VOID WINAPI SetLastError(_In_ DWORD dwErrCode);
 
 WINBASEAPI BOOL WINAPI TerminateProcess(_In_ HANDLE hProcess,
                                         _In_ UINT uExitCode);
+
+// Support for a deleter for LocalAlloc memory.
+WINBASEAPI HLOCAL WINAPI LocalFree(_In_ HLOCAL hMem);
 
 #ifdef __cplusplus
 }
