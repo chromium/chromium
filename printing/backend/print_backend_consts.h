@@ -7,22 +7,22 @@
 
 #include "base/component_export.h"
 
-COMPONENT_EXPORT(PRINTING) extern const char kCUPSBlocking[];
-COMPONENT_EXPORT(PRINTING) extern const char kCUPSEncryption[];
-COMPONENT_EXPORT(PRINTING) extern const char kCUPSEnterprisePrinter[];
-COMPONENT_EXPORT(PRINTING) extern const char kCUPSPrintServerURL[];
-COMPONENT_EXPORT(PRINTING) extern const char kDriverInfoTagName[];
-COMPONENT_EXPORT(PRINTING) extern const char kDriverNameTagName[];
-COMPONENT_EXPORT(PRINTING) extern const char kLocationTagName[];
-COMPONENT_EXPORT(PRINTING) extern const char kValueFalse[];
-COMPONENT_EXPORT(PRINTING) extern const char kValueTrue[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kCUPSBlocking[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kCUPSEncryption[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kCUPSEnterprisePrinter[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kCUPSPrintServerURL[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kDriverInfoTagName[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kDriverNameTagName[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kLocationTagName[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kValueFalse[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kValueTrue[];
 
 // CUPS destination option names.
-COMPONENT_EXPORT(PRINTING) extern const char kCUPSOptDeviceUri[];
-COMPONENT_EXPORT(PRINTING) extern const char kCUPSOptPrinterInfo[];
-COMPONENT_EXPORT(PRINTING) extern const char kCUPSOptPrinterLocation[];
-COMPONENT_EXPORT(PRINTING) extern const char kCUPSOptPrinterMakeAndModel[];
-COMPONENT_EXPORT(PRINTING) extern const char kCUPSOptPrinterState[];
-COMPONENT_EXPORT(PRINTING) extern const char kCUPSOptPrinterType[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kCUPSOptDeviceUri[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kCUPSOptPrinterInfo[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kCUPSOptPrinterLocation[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kCUPSOptPrinterMakeAndModel[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kCUPSOptPrinterState[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kCUPSOptPrinterType[];
 
 #endif  // PRINTING_BACKEND_PRINT_BACKEND_CONSTS_H_

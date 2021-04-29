@@ -20,7 +20,7 @@ namespace printing {
 struct PrinterBasicInfo;
 
 // Provides information regarding cups options.
-class COMPONENT_EXPORT(PRINTING) CupsOptionProvider {
+class COMPONENT_EXPORT(PRINT_BACKEND) CupsOptionProvider {
  public:
   virtual ~CupsOptionProvider() = default;
 
@@ -48,7 +48,7 @@ class COMPONENT_EXPORT(PRINTING) CupsOptionProvider {
 // Retrieves information from CUPS printer objects as requested.  This class
 // is only valid as long as the CupsConnection which created it exists as they
 // share an http connection which the CupsConnection closes on destruction.
-class COMPONENT_EXPORT(PRINTING) CupsPrinter : public CupsOptionProvider {
+class COMPONENT_EXPORT(PRINT_BACKEND) CupsPrinter : public CupsOptionProvider {
  public:
   // Represents the margins that CUPS reports for some given media.
   // Its members are valued in PWG units (100ths of mm).

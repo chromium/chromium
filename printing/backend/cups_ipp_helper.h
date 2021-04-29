@@ -19,17 +19,18 @@ namespace printing {
 using ScopedIppPtr = std::unique_ptr<ipp_t, void (*)(ipp_t*)>;
 
 // Returns the default paper setting for `printer`.
+COMPONENT_EXPORT(PRINT_BACKEND)
 PrinterSemanticCapsAndDefaults::Paper DefaultPaper(
     const CupsOptionProvider& printer);
 
 // Populates the `printer_info` object with attributes retrieved using IPP from
 // `printer`.
-COMPONENT_EXPORT(PRINTING)
+COMPONENT_EXPORT(PRINT_BACKEND)
 void CapsAndDefaultsFromPrinter(const CupsOptionProvider& printer,
                                 PrinterSemanticCapsAndDefaults* printer_info);
 
 // Wraps `ipp` in unique_ptr with appropriate deleter
-COMPONENT_EXPORT(PRINTING) ScopedIppPtr WrapIpp(ipp_t* ipp);
+COMPONENT_EXPORT(PRINT_BACKEND) ScopedIppPtr WrapIpp(ipp_t* ipp);
 
 }  // namespace printing
 

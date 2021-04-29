@@ -17,8 +17,10 @@ namespace printing {
 
 namespace internal {
 
-COMPONENT_EXPORT(PRINTING) uint8_t* GetDriverInfo(HANDLE printer, int level);
-COMPONENT_EXPORT(PRINTING) uint8_t* GetPrinterInfo(HANDLE printer, int level);
+COMPONENT_EXPORT(PRINT_BACKEND)
+uint8_t* GetDriverInfo(HANDLE printer, int level);
+COMPONENT_EXPORT(PRINT_BACKEND)
+uint8_t* GetPrinterInfo(HANDLE printer, int level);
 
 // This class is designed to work with PRINTER_INFO_X structures
 // and calls GetPrinter internally with correctly allocated buffer.

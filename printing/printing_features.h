@@ -17,27 +17,32 @@ namespace features {
 // documented with descriptions of their behaviors in the .cc file.
 
 #if defined(OS_MAC)
-COMPONENT_EXPORT(PRINTING) extern const base::Feature kCupsIppPrintingBackend;
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const base::Feature kCupsIppPrintingBackend;
 #endif  // defined(OS_MAC)
 
 #if defined(OS_WIN)
-COMPONENT_EXPORT(PRINTING)
+COMPONENT_EXPORT(PRINTING_BASE)
 extern const base::Feature kPrintWithReducedRasterization;
-COMPONENT_EXPORT(PRINTING) extern const base::Feature kUseXpsForPrinting;
-COMPONENT_EXPORT(PRINTING) extern const base::Feature kUseXpsForPrintingFromPdf;
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const base::Feature kUseXpsForPrinting;
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const base::Feature kUseXpsForPrintingFromPdf;
 
 // Helper function to determine if there is any print path which could require
 // the use of XPS print capabilities.
-COMPONENT_EXPORT(PRINTING) bool IsXpsPrintCapabilityRequired();
+COMPONENT_EXPORT(PRINTING_BASE) bool IsXpsPrintCapabilityRequired();
 
 // Helper function to determine if printing of a document from a particular
 // source should be done using XPS printing API instead of with GDI.
-COMPONENT_EXPORT(PRINTING) bool ShouldPrintUsingXps(bool source_is_pdf);
+COMPONENT_EXPORT(PRINTING_BASE)
+bool ShouldPrintUsingXps(bool source_is_pdf);
 #endif  // defined(OS_WIN)
 
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS)
-COMPONENT_EXPORT(PRINTING) extern const base::Feature kEnableOopPrintDrivers;
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const base::Feature kEnableOopPrintDrivers;
 #endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) ||
         // defined(OS_CHROMEOS)
 

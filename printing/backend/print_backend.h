@@ -28,7 +28,7 @@ namespace printing {
 
 using PrinterBasicInfoOptions = std::map<std::string, std::string>;
 
-struct COMPONENT_EXPORT(PRINTING) PrinterBasicInfo {
+struct COMPONENT_EXPORT(PRINT_BACKEND) PrinterBasicInfo {
   PrinterBasicInfo();
   PrinterBasicInfo(const std::string& printer_name,
                    const std::string& display_name,
@@ -58,7 +58,7 @@ using PrinterList = std::vector<PrinterBasicInfo>;
 
 #if defined(OS_CHROMEOS)
 
-struct COMPONENT_EXPORT(PRINTING) AdvancedCapabilityValue {
+struct COMPONENT_EXPORT(PRINT_BACKEND) AdvancedCapabilityValue {
   AdvancedCapabilityValue();
   AdvancedCapabilityValue(const std::string& name,
                           const std::string& display_name);
@@ -74,7 +74,7 @@ struct COMPONENT_EXPORT(PRINTING) AdvancedCapabilityValue {
   std::string display_name;
 };
 
-struct COMPONENT_EXPORT(PRINTING) AdvancedCapability {
+struct COMPONENT_EXPORT(PRINT_BACKEND) AdvancedCapability {
   enum class Type : uint8_t { kBoolean, kFloat, kInteger, kString };
 
   AdvancedCapability();
@@ -109,7 +109,7 @@ using AdvancedCapabilities = std::vector<AdvancedCapability>;
 
 #endif  // defined(OS_CHROMEOS)
 
-struct COMPONENT_EXPORT(PRINTING) PrinterSemanticCapsAndDefaults {
+struct COMPONENT_EXPORT(PRINT_BACKEND) PrinterSemanticCapsAndDefaults {
   PrinterSemanticCapsAndDefaults();
   PrinterSemanticCapsAndDefaults(const PrinterSemanticCapsAndDefaults& other);
   ~PrinterSemanticCapsAndDefaults();
@@ -130,7 +130,7 @@ struct COMPONENT_EXPORT(PRINTING) PrinterSemanticCapsAndDefaults {
   mojom::ColorModel color_model = mojom::ColorModel::kUnknownColorModel;
   mojom::ColorModel bw_model = mojom::ColorModel::kUnknownColorModel;
 
-  struct COMPONENT_EXPORT(PRINTING) Paper {
+  struct COMPONENT_EXPORT(PRINT_BACKEND) Paper {
     std::string display_name;
     std::string vendor_id;
     gfx::Size size_um;
@@ -151,7 +151,7 @@ struct COMPONENT_EXPORT(PRINTING) PrinterSemanticCapsAndDefaults {
 #endif  // defined(OS_CHROMEOS)
 };
 
-struct COMPONENT_EXPORT(PRINTING) PrinterCapsAndDefaults {
+struct COMPONENT_EXPORT(PRINT_BACKEND) PrinterCapsAndDefaults {
   PrinterCapsAndDefaults();
   PrinterCapsAndDefaults(const PrinterCapsAndDefaults& other);
   ~PrinterCapsAndDefaults();
@@ -169,7 +169,7 @@ struct COMPONENT_EXPORT(PRINTING) PrinterCapsAndDefaults {
 // print system specific. For example, CUPS is available on both Linux and Mac,
 // but not available on ChromeOS, etc. This design allows us to add more
 // functionality on some platforms, while reusing core (CUPS) functions.
-class COMPONENT_EXPORT(PRINTING) PrintBackend
+class COMPONENT_EXPORT(PRINT_BACKEND) PrintBackend
     : public base::RefCountedThreadSafe<PrintBackend> {
  public:
   // Enumerates the list of installed local and network printers.

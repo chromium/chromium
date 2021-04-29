@@ -19,7 +19,7 @@ struct PrinterSemanticCapsAndDefaults;
 
 // Helper wrapper around http_t structure, with connection and cleanup
 // functionality.
-class COMPONENT_EXPORT(PRINTING) HttpConnectionCUPS {
+class COMPONENT_EXPORT(PRINT_BACKEND) HttpConnectionCUPS {
  public:
   HttpConnectionCUPS(const GURL& print_server_url,
                      http_encryption_t encryption,
@@ -34,7 +34,7 @@ class COMPONENT_EXPORT(PRINTING) HttpConnectionCUPS {
 
 // Helper function to parse and convert PPD capabilitites to
 // semantic options.
-COMPONENT_EXPORT(PRINTING)
+COMPONENT_EXPORT(PRINT_BACKEND)
 bool ParsePpdCapabilities(cups_dest_t* dest,
                           base::StringPiece locale,
                           base::StringPiece printer_capabilities,

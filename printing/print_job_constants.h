@@ -11,105 +11,165 @@
 
 namespace printing {
 
-COMPONENT_EXPORT(PRINTING) extern const char kIsFirstRequest[];
-COMPONENT_EXPORT(PRINTING) extern const char kPreviewRequestID[];
-COMPONENT_EXPORT(PRINTING) extern const char kPreviewUIID[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingCapabilities[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingCloudPrintId[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingCollate[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingColor[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingSetColorAsDefault[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingContentHeight[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingContentWidth[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingCopies[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingDeviceName[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingDisableScaling[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingDpiDefault[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingDpiHorizontal[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingDpiVertical[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingDuplexMode[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingFitToPageScaling[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingHeaderFooterEnabled[];
-COMPONENT_EXPORT(PRINTING) extern const float kSettingHeaderFooterInterstice;
-COMPONENT_EXPORT(PRINTING) extern const char kSettingHeaderFooterDate[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingHeaderFooterTitle[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingHeaderFooterURL[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingLandscape[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingMediaSize[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingMediaSizeHeightMicrons[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingMediaSizeWidthMicrons[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingMediaSizeVendorId[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingMediaSizeIsDefault[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingMarginBottom[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingMarginLeft[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingMarginRight[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingMarginTop[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingMarginsCustom[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingMarginsType[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingPreviewPageCount[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingPageRange[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingPageRangeFrom[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingPageRangeTo[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingPageWidth[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingPageHeight[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingPagesPerSheet[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingPinValue[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingPolicies[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingPreviewIsFromArc[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingPreviewIsPdf[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingPreviewModifiable[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingPrintToGoogleDrive[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingPrintableAreaHeight[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingPrintableAreaWidth[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingPrintableAreaX[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingPrintableAreaY[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingPrinterDescription[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingPrinterName[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingPrinterOptions[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingPrinterType[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingRasterizePdf[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingScaleFactor[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingScalingType[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingTicket[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingSendUserInfo[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingShouldPrintBackgrounds[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingShouldPrintSelectionOnly[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingShowSystemDialog[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingUsername[];
-COMPONENT_EXPORT(PRINTING) extern const char kSettingAdvancedSettings[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kIsFirstRequest[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kPreviewRequestID[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kPreviewUIID[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingCapabilities[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingCloudPrintId[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kSettingCollate[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kSettingColor[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingSetColorAsDefault[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingContentHeight[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingContentWidth[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kSettingCopies[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingDeviceName[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingDisableScaling[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingDpiDefault[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingDpiHorizontal[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingDpiVertical[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingDuplexMode[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingFitToPageScaling[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingHeaderFooterEnabled[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const float kSettingHeaderFooterInterstice;
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingHeaderFooterDate[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingHeaderFooterTitle[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingHeaderFooterURL[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingLandscape[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingMediaSize[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingMediaSizeHeightMicrons[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingMediaSizeWidthMicrons[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingMediaSizeVendorId[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingMediaSizeIsDefault[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingMarginBottom[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingMarginLeft[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingMarginRight[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingMarginTop[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingMarginsCustom[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingMarginsType[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingPreviewPageCount[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingPageRange[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingPageRangeFrom[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingPageRangeTo[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingPageWidth[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingPageHeight[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingPagesPerSheet[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kSettingPinValue[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kSettingPolicies[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingPreviewIsFromArc[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingPreviewIsPdf[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingPreviewModifiable[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingPrintToGoogleDrive[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingPrintableAreaHeight[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingPrintableAreaWidth[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingPrintableAreaX[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingPrintableAreaY[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingPrinterDescription[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingPrinterName[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingPrinterOptions[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingPrinterType[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingRasterizePdf[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingScaleFactor[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingScalingType[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kSettingTicket[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingSendUserInfo[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingShouldPrintBackgrounds[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingShouldPrintSelectionOnly[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingShowSystemDialog[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kSettingUsername[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingAdvancedSettings[];
 
-COMPONENT_EXPORT(PRINTING) extern const int FIRST_PAGE_INDEX;
-COMPONENT_EXPORT(PRINTING) extern const int COMPLETE_PREVIEW_DOCUMENT_INDEX;
-COMPONENT_EXPORT(PRINTING) extern const char kSettingOpenPDFInPreview[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const int FIRST_PAGE_INDEX;
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const int COMPLETE_PREVIEW_DOCUMENT_INDEX;
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingOpenPDFInPreview[];
 
-COMPONENT_EXPORT(PRINTING) extern const uint32_t kInvalidPageIndex;
-COMPONENT_EXPORT(PRINTING) extern const uint32_t kMaxPageCount;
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const uint32_t kInvalidPageIndex;
+COMPONENT_EXPORT(PRINTING_BASE) extern const uint32_t kMaxPageCount;
 
 #if defined(USE_CUPS)
 // Printer color models
-COMPONENT_EXPORT(PRINTING) extern const char kBlack[];
-COMPONENT_EXPORT(PRINTING) extern const char kCMYK[];
-COMPONENT_EXPORT(PRINTING) extern const char kKCMY[];
-COMPONENT_EXPORT(PRINTING) extern const char kCMY_K[];
-COMPONENT_EXPORT(PRINTING) extern const char kCMY[];
-COMPONENT_EXPORT(PRINTING) extern const char kColor[];
-COMPONENT_EXPORT(PRINTING) extern const char kEpsonColor[];
-COMPONENT_EXPORT(PRINTING) extern const char kEpsonMono[];
-COMPONENT_EXPORT(PRINTING) extern const char kFullColor[];
-COMPONENT_EXPORT(PRINTING) extern const char kGray[];
-COMPONENT_EXPORT(PRINTING) extern const char kGrayscale[];
-COMPONENT_EXPORT(PRINTING) extern const char kGreyscale[];
-COMPONENT_EXPORT(PRINTING) extern const char kMono[];
-COMPONENT_EXPORT(PRINTING) extern const char kMonochrome[];
-COMPONENT_EXPORT(PRINTING) extern const char kNormal[];
-COMPONENT_EXPORT(PRINTING) extern const char kNormalGray[];
-COMPONENT_EXPORT(PRINTING) extern const char kRGB[];
-COMPONENT_EXPORT(PRINTING) extern const char kRGBA[];
-COMPONENT_EXPORT(PRINTING) extern const char kRGB16[];
-COMPONENT_EXPORT(PRINTING) extern const char kSharpCMColor[];
-COMPONENT_EXPORT(PRINTING) extern const char kSharpCMBW[];
-COMPONENT_EXPORT(PRINTING) extern const char kXeroxAutomatic[];
-COMPONENT_EXPORT(PRINTING) extern const char kXeroxBW[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kBlack[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kCMYK[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kKCMY[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kCMY_K[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kCMY[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kColor[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kEpsonColor[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kEpsonMono[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kFullColor[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kGray[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kGrayscale[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kGreyscale[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kMono[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kMonochrome[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kNormal[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kNormalGray[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kRGB[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kRGBA[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kRGB16[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kSharpCMColor[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kSharpCMBW[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kXeroxAutomatic[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kXeroxBW[];
 #endif
 
 // Specifies the horizontal alignment of the headers and footers.

@@ -40,12 +40,12 @@ enum class PinModeRestriction {
 // Dictionary key for printing policies.
 // Must coincide with the name of field in `print_preview.Policies` in
 // chrome/browser/resources/print_preview/data/destination.js
-COMPONENT_EXPORT(PRINTING) extern const char kAllowedColorModes[];
-COMPONENT_EXPORT(PRINTING) extern const char kAllowedDuplexModes[];
-COMPONENT_EXPORT(PRINTING) extern const char kAllowedPinModes[];
-COMPONENT_EXPORT(PRINTING) extern const char kDefaultColorMode[];
-COMPONENT_EXPORT(PRINTING) extern const char kDefaultDuplexMode[];
-COMPONENT_EXPORT(PRINTING) extern const char kDefaultPinMode[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kAllowedColorModes[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kAllowedDuplexModes[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kAllowedPinModes[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kDefaultColorMode[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kDefaultDuplexMode[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kDefaultPinMode[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Allowed background graphics modes.
@@ -57,11 +57,11 @@ enum class BackgroundGraphicsModeRestriction {
 };
 
 // Dictionary keys to be used with `kPrintingPaperSizeDefault` policy.
-COMPONENT_EXPORT(PRINTING) extern const char kPaperSizeName[];
-COMPONENT_EXPORT(PRINTING) extern const char kPaperSizeNameCustomOption[];
-COMPONENT_EXPORT(PRINTING) extern const char kPaperSizeCustomSize[];
-COMPONENT_EXPORT(PRINTING) extern const char kPaperSizeWidth[];
-COMPONENT_EXPORT(PRINTING) extern const char kPaperSizeHeight[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kPaperSizeName[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kPaperSizeNameCustomOption[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kPaperSizeCustomSize[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kPaperSizeWidth[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kPaperSizeHeight[];
 
 }  // namespace printing
 

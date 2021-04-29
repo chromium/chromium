@@ -11,29 +11,29 @@
 namespace printing {
 
 // property names
-COMPONENT_EXPORT(PRINTING) extern const char kIppCollate[];
-COMPONENT_EXPORT(PRINTING) extern const char kIppCopies[];
-COMPONENT_EXPORT(PRINTING) extern const char kIppColor[];
-COMPONENT_EXPORT(PRINTING) extern const char kIppMedia[];
-COMPONENT_EXPORT(PRINTING) extern const char kIppDuplex[];
-COMPONENT_EXPORT(PRINTING) extern const char kIppRequestingUserName[];
-COMPONENT_EXPORT(PRINTING) extern const char kIppResolution[];
-COMPONENT_EXPORT(PRINTING) extern const char kIppPin[];
-COMPONENT_EXPORT(PRINTING) extern const char kIppPinEncryption[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppCollate[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppCopies[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppColor[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppMedia[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppDuplex[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppRequestingUserName[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppResolution[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppPin[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppPinEncryption[];
 
 // collation values
-COMPONENT_EXPORT(PRINTING) extern const char kCollated[];
-COMPONENT_EXPORT(PRINTING) extern const char kUncollated[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kCollated[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kUncollated[];
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
-COMPONENT_EXPORT(PRINTING) extern const char kIppDocumentAttributes[];
-COMPONENT_EXPORT(PRINTING) extern const char kIppJobAttributes[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppDocumentAttributes[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kIppJobAttributes[];
 
-COMPONENT_EXPORT(PRINTING) extern const char kPinEncryptionNone[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kPinEncryptionNone[];
 
-COMPONENT_EXPORT(PRINTING) extern const char kOptionFalse[];
-COMPONENT_EXPORT(PRINTING) extern const char kOptionTrue[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kOptionFalse[];
+COMPONENT_EXPORT(PRINT_BACKEND) extern const char kOptionTrue[];
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

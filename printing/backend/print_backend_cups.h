@@ -25,10 +25,10 @@ class PrintBackendCUPS : public PrintBackend {
                    const std::string& locale);
 
   // These static functions are exposed here for use in the tests.
-  COMPONENT_EXPORT(PRINTING)
+  COMPONENT_EXPORT(PRINT_BACKEND)
   static bool PrinterBasicInfoFromCUPS(const cups_dest_t& printer,
                                        PrinterBasicInfo* printer_info);
-  COMPONENT_EXPORT(PRINTING)
+  COMPONENT_EXPORT(PRINT_BACKEND)
   static std::string PrinterDriverInfoFromCUPS(const cups_dest_t& printer);
 
  private:

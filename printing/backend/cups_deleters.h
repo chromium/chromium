@@ -12,19 +12,19 @@
 
 namespace printing {
 
-struct COMPONENT_EXPORT(PRINTING) HttpDeleter {
+struct COMPONENT_EXPORT(PRINT_BACKEND) HttpDeleter {
   void operator()(http_t* http) const;
 };
 
-struct COMPONENT_EXPORT(PRINTING) DestinationDeleter {
+struct COMPONENT_EXPORT(PRINT_BACKEND) DestinationDeleter {
   void operator()(cups_dest_t* dest) const;
 };
 
-struct COMPONENT_EXPORT(PRINTING) DestInfoDeleter {
+struct COMPONENT_EXPORT(PRINT_BACKEND) DestInfoDeleter {
   void operator()(cups_dinfo_t* info) const;
 };
 
-struct COMPONENT_EXPORT(PRINTING) OptionDeleter {
+struct COMPONENT_EXPORT(PRINT_BACKEND) OptionDeleter {
   void operator()(cups_option_t* option) const;
 };
 

@@ -15,9 +15,6 @@ if (is_mac) {
 if (is_android) {
   import("//build/config/android/rules.gni")
 }
-if (use_cups && is_chromeos_ash) {
-  import("//printing/backend/tools/code_generator.gni")
-}
 
 assert(enable_basic_printing)
 
@@ -28,20 +25,44 @@ if (is_win || enable_print_preview) {
              "set enable_pdf=true.")
 }
 
-# Enable the CUPS IPP printing backend.
-# TODO(crbug.com/226176): Remove this after CUPS PPD API calls are removed.
-declare_args() {
-  use_cups_ipp = use_cups && !(is_linux || is_chromeos_lacros)
-}
-
-if (use_cups_ipp && is_chromeos_ash) {
-  ipp_handler_map_path = "$target_gen_dir/backend/ipp_handler_map.cc"
-
-  ipp_code_generate("ipp_handlers_generate") {
-    outputs = [ ipp_handler_map_path ]
-    args = [ "--ipp-handler-map=" +
-             rebase_path(ipp_handler_map_path, root_build_dir) ]
+# Lower-dependency base printing files which are needed by both :printing and
+# //printing/backend without incurring deeper UI dependencies (e.g.,
+# //ui/accessibility).  New files should normally be added to :printing, and
+# only be moved here if they are also required by //printing/backend.
+component("printing_base") {
+  sources = [
+    "print_job_constants.cc",
+    "print_job_constants.h",
+    "printing_features.cc",
+    "printing_features.h",
+    "printing_utils.cc",
+    "printing_utils.h",
+    "units.cc",
+    "units.h",
+  ]
+  if (use_cups_ipp || is_chromeos_ash) {
+    sources += [
+      "printer_query_result.h",
+      "printer_status.cc",
+      "printer_status.h",
+    ]
   }
+
+  if (use_cups) {
+    configs += [ ":cups" ]
+  }
+
+  configs += [ "//build/config/compiler:noshadowing" ]
+  cflags = []
+  defines = [ "IS_PRINTING_BASE_IMPL" ]
+
+  public_deps = [ "//build:chromeos_buildflags" ]
+  deps = [
+    "//base",
+    "//third_party/icu",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+  ]
 }
 
 if (is_linux || is_chromeos) {
@@ -61,15 +82,6 @@ if (is_linux || is_chromeos) {
 
 component("printing") {
   sources = [
-    "backend/print_backend.cc",
-    "backend/print_backend.h",
-    "backend/print_backend_consts.cc",
-    "backend/print_backend_consts.h",
-    "backend/print_backend_dummy.cc",
-    "backend/print_backend_utils.cc",
-    "backend/print_backend_utils.h",
-    "backend/printing_restrictions.cc",
-    "backend/printing_restrictions.h",
     "metafile.cc",
     "metafile.h",
     "metafile_skia.cc",
@@ -85,8 +97,6 @@ component("printing") {
     "page_setup.h",
     "pdf_render_settings.h",
     "print_dialog_gtk_interface.h",
-    "print_job_constants.cc",
-    "print_job_constants.h",
     "print_settings.cc",
     "print_settings.h",
     "print_settings_conversion.cc",
@@ -95,20 +105,18 @@ component("printing") {
     "printed_document.h",
     "printing_context.cc",
     "printing_context.h",
-    "printing_features.cc",
-    "printing_features.h",
-    "printing_utils.cc",
-    "printing_utils.h",
     "pwg_raster_settings.h",
-    "units.cc",
-    "units.h",
   ]
 
   configs += [ "//build/config/compiler:noshadowing" ]
   cflags = []
   defines = [ "IS_PRINTING_IMPL" ]
 
-  public_deps = [ "//printing/buildflags" ]
+  public_deps = [
+    ":printing_base",
+    "//printing/backend",
+    "//printing/buildflags",
+  ]
   deps = [
     "//base",
     "//base:i18n",
@@ -139,10 +147,7 @@ component("printing") {
   }
 
   if (is_chromeos_ash) {
-    defines += [ "PRINT_BACKEND_AVAILABLE" ]
-
     sources += [
-      "backend/print_backend_chromeos.cc",
       "printed_document_chromeos.cc",
       "printing_context_no_system_dialog.cc",
       "printing_context_no_system_dialog.h",
@@ -175,18 +180,14 @@ component("printing") {
       "CoreFoundation.framework",
       "CoreGraphics.framework",
     ]
+
+    # TODO(crbug.com/1203935) Modernize macOS system API usage so that this
+    # flag can be removed.
+    cflags += [ "-Wno-deprecated-declarations" ]
   }
 
   if (is_win) {
-    # PRINT_BACKEND_AVAILABLE disables the default dummy implementation of the
-    # print backend and enables a custom implementation instead.
-    defines += [ "PRINT_BACKEND_AVAILABLE" ]
     sources += [
-      "backend/print_backend_win.cc",
-      "backend/printing_info_win.cc",
-      "backend/printing_info_win.h",
-      "backend/win_helper.cc",
-      "backend/win_helper.h",
       "emf_win.cc",
       "emf_win.h",
       "print_settings_initializer_win.cc",
@@ -208,83 +209,12 @@ component("printing") {
   if (use_cups) {
     configs += [ ":cups" ]
 
-    if (is_linux || is_chromeos) {
-      # CUPS 1.6 deprecated the PPD APIs, but we will stay with this API
-      # for now as the suitability of the replacement is unclear.
-      # More info: crbug.com/226176
-      cflags += [ "-Wno-deprecated-declarations" ]
-    }
-
-    if (is_mac) {
-      # CUPS 1.6 deprecated the PPD APIs. We need to evaluate the
-      # effect of migrating Mac. More info: crbug.com/226176
-      cflags += [ "-Wno-deprecated-declarations" ]
-    }
-
-    # PRINT_BACKEND_AVAILABLE disables the default dummy implementation
-    # of the print backend and enables a custom implementation instead.
-    defines += [ "PRINT_BACKEND_AVAILABLE" ]
-
-    if (use_cups_ipp) {
-      sources += [
-        "backend/cups_connection.cc",
-        "backend/cups_connection.h",
-        "backend/cups_deleters.cc",
-        "backend/cups_deleters.h",
-        "backend/cups_ipp_constants.cc",
-        "backend/cups_ipp_constants.h",
-        "backend/cups_ipp_helper.cc",
-        "backend/cups_ipp_helper.h",
-        "backend/cups_ipp_utils.cc",
-        "backend/cups_ipp_utils.h",
-        "backend/cups_jobs.cc",
-        "backend/cups_jobs.h",
-        "backend/cups_printer.cc",
-        "backend/cups_printer.h",
-        "backend/print_backend_cups_ipp.cc",
-        "backend/print_backend_cups_ipp.h",
-      ]
-    }
-
     if (is_chromeos_ash) {
-      deps += [ ":ipp_handlers_generate" ]
-
       sources += [
-        "backend/ipp_handler_map.h",
-        "backend/ipp_handlers.cc",
-        "backend/ipp_handlers.h",
         "printing_context_chromeos.cc",
         "printing_context_chromeos.h",
-        ipp_handler_map_path,
       ]
-    } else {
-      # TODO(crbug.com/1062136): Remove the original CUPS backend for macOS
-      # when Cloud Print support is terminated. Follow up after Jan 1, 2021.
-      sources += [
-        "backend/cups_helper.cc",
-        "backend/cups_helper.h",
-        "backend/print_backend_cups.cc",
-        "backend/print_backend_cups.h",
-      ]
-
-      # We still build the utils for fuzzing if not already built.
-      if (use_fuzzing_engine && !use_cups_ipp) {
-        sources += [
-          "backend/cups_ipp_constants.cc",
-          "backend/cups_ipp_constants.h",
-          "backend/cups_ipp_helper.cc",
-          "backend/cups_ipp_helper.h",
-        ]
-      }
     }
-  }
-
-  if (use_cups_ipp || is_chromeos_ash) {
-    sources += [
-      "printer_query_result.h",
-      "printer_status.cc",
-      "printer_status.h",
-    ]
   }
 
   if (is_linux || is_chromeos) {
@@ -295,8 +225,6 @@ component("printing") {
 static_library("test_support") {
   testonly = true
   sources = [
-    "backend/test_print_backend.cc",
-    "backend/test_print_backend.h",
     "image.cc",
     "image.h",
   ]
@@ -304,6 +232,7 @@ static_library("test_support") {
   configs += [ "//build/config/compiler:noshadowing" ]
   public_deps = [
     "//printing",
+    "//printing/backend:test_support",
     "//ui/gfx/geometry",
   ]
   deps = [
@@ -353,6 +282,8 @@ test("printing_unittests") {
     "//build:chromeos_buildflags",
     "//mojo/core/test:run_all_unittests",
     "//mojo/public/cpp/test_support:test_utils",
+    "//printing/backend",
+    "//printing/backend:test_support",
     "//printing/backend/mojom",
     "//printing/common",
     "//printing/mojom",

@@ -11,12 +11,11 @@ import("//build/config/sanitizers/sanitizers.gni")
 declare_args() {
   # Enable basic printing support and UI.
   enable_basic_printing = !is_chromecast && !is_ios && !is_fuchsia
+}
 
-  # Enable printing with print preview. It implies enable_basic_printing.
-  # Note: It would be convenient to not repeat many of the same conditions in
-  # enable_basic_printing below. However, GN does not allow the use of
-  # enable_basic_printing within the same declare_args() block.
-  enable_print_preview = !is_android && !is_chromecast && !is_ios && !is_fuchsia
+declare_args() {
+  # Enable printing with print preview.
+  enable_print_preview = enable_basic_printing && !is_android
 
   # Enable exporting to tagged PDF.
   enable_tagged_pdf = !is_android && !is_chromecast && !is_ios && !is_fuchsia
@@ -28,4 +27,10 @@ declare_args() {
     use_cups = (is_chromeos_device || (is_linux || is_chromeos_lacros) ||
                 is_mac) && !is_chromecast && !is_fuchsia
   }
+}
+
+declare_args() {
+  # Enable the CUPS IPP printing backend.
+  # TODO(crbug.com/226176): Remove this after CUPS PPD API calls are removed.
+  use_cups_ipp = use_cups && !(is_linux || is_chromeos_lacros)
 }

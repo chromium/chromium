@@ -13,7 +13,7 @@ namespace printing {
 // This enum is used to record UMA histogram values and should not be
 // reordered. Please keep in sync with PrinterStatusQueryResult in
 // src/tools/metrics/histograms/enums.xml.
-enum class COMPONENT_EXPORT(PRINTING) PrinterQueryResult {
+enum class COMPONENT_EXPORT(PRINTING_BASE) PrinterQueryResult {
   kUnknownFailure = 0,      // catchall error
   kSuccess = 1,             // successful
   kUnreachable = 2,         // failed to reach the host

@@ -11,7 +11,7 @@
 
 namespace printing {
 
-COMPONENT_EXPORT(PRINTING)
+COMPONENT_EXPORT(PRINT_BACKEND)
 PrinterSemanticCapsAndDefaults::Paper ParsePaper(base::StringPiece value);
 
 }  // namespace printing

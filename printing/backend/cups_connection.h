@@ -22,7 +22,7 @@
 namespace printing {
 
 // Represents the status of a printer queue.
-struct COMPONENT_EXPORT(PRINTING) QueueStatus {
+struct COMPONENT_EXPORT(PRINT_BACKEND) QueueStatus {
   QueueStatus();
   QueueStatus(const QueueStatus& other);
   ~QueueStatus();
@@ -32,7 +32,7 @@ struct COMPONENT_EXPORT(PRINTING) QueueStatus {
 };
 
 // Represents a connection to a CUPS server.
-class COMPONENT_EXPORT(PRINTING) CupsConnection {
+class COMPONENT_EXPORT(PRINT_BACKEND) CupsConnection {
  public:
   virtual ~CupsConnection() = default;
 
