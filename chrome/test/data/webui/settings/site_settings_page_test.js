@@ -87,16 +87,24 @@ suite('SiteSettingsPage', function() {
     const notificationsLinkRow = /** @type {!CrLinkRowElement} */ (
         page.$$('#basicPermissionsList').$$('#notifications'));
 
-    page.set('prefs.generated.notification.value', NotificationSetting.ASK);
+    page.set('prefs.generated.notification.value', NotificationSetting.BLOCK);
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString('siteSettingsBlocked'),
+        notificationsLinkRow.subLabel);
+
+    page.set(
+        'prefs.generated.notification.value',
+        NotificationSetting.QUIETER_MESSAGING);
     await flushTasks();
     assertEquals(
         loadTimeData.getString('siteSettingsAskBeforeSending'),
         notificationsLinkRow.subLabel);
 
-    page.set('prefs.generated.notification.value', NotificationSetting.BLOCK);
+    page.set('prefs.generated.notification.value', NotificationSetting.ASK);
     await flushTasks();
     assertEquals(
-        loadTimeData.getString('siteSettingsBlocked'),
+        loadTimeData.getString('siteSettingsAskBeforeSending'),
         notificationsLinkRow.subLabel);
   });
 
@@ -107,6 +115,12 @@ suite('SiteSettingsPage', function() {
 
     const notificationsLinkRow = /** @type {!CrLinkRowElement} */ (
         page.$$('#basicPermissionsList').$$('#notifications'));
+
+    page.set('prefs.generated.notification.value', NotificationSetting.BLOCK);
+    await flushTasks();
+    assertEquals(
+        loadTimeData.getString('siteSettingsNotificationsBlocked'),
+        notificationsLinkRow.subLabel);
 
     page.set(
         'prefs.generated.notification.value',
@@ -120,12 +134,6 @@ suite('SiteSettingsPage', function() {
     await flushTasks();
     assertEquals(
         loadTimeData.getString('siteSettingsNotificationsAllowed'),
-        notificationsLinkRow.subLabel);
-
-    page.set('prefs.generated.notification.value', NotificationSetting.BLOCK);
-    await flushTasks();
-    assertEquals(
-        loadTimeData.getString('siteSettingsNotificationsBlocked'),
         notificationsLinkRow.subLabel);
   });
 
