@@ -28,7 +28,11 @@ bool FakeSuggestionHandler::SetSuggestion(
 
 bool FakeSuggestionHandler::AcceptSuggestion(int context_id,
                                              std::string* error) {
-  return false;
+  showing_suggestion_ = false;
+  accepted_suggestion_ = true;
+  suggestion_text_ = u"";
+  confirmed_length_ = 0;
+  return true;
 }
 
 void FakeSuggestionHandler::OnSuggestionsChanged(

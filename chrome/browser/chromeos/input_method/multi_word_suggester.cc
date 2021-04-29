@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/input_method/ui/suggestion_details.h"
 #include "chromeos/services/ime/public/cpp/suggestions.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 
 namespace chromeos {
 namespace {
@@ -52,12 +53,17 @@ void MultiWordSuggester::OnExternalSuggestionsUpdated(
 }
 
 SuggestionStatus MultiWordSuggester::HandleKeyEvent(const ui::KeyEvent& event) {
-  if (suggestion_shown_) {
-    DismissSuggestion();
-    return SuggestionStatus::kDismiss;
-  }
+  if (!suggestion_shown_)
+    return SuggestionStatus::kNotHandled;
 
-  return SuggestionStatus::kNotHandled;
+  switch (event.code()) {
+    case ui::DomCode::TAB:
+      AcceptSuggestion();
+      return SuggestionStatus::kAccept;
+    default:
+      DismissSuggestion();
+      return SuggestionStatus::kDismiss;
+  }
 }
 
 bool MultiWordSuggester::Suggest(const std::u16string& text) {
@@ -65,7 +71,15 @@ bool MultiWordSuggester::Suggest(const std::u16string& text) {
 }
 
 bool MultiWordSuggester::AcceptSuggestion(size_t index) {
-  return false;
+  std::string error;
+  suggestion_handler_->AcceptSuggestion(focused_context_id_, &error);
+  if (!error.empty()) {
+    LOG(ERROR) << "suggest: failed to accept suggestion - " << error;
+    return false;
+  }
+
+  suggestion_shown_ = false;
+  return true;
 }
 
 void MultiWordSuggester::DismissSuggestion() {

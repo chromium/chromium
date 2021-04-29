@@ -47,6 +47,7 @@ class FakeSuggestionHandler : public SuggestionHandlerInterface {
   std::u16string GetSuggestionText() { return suggestion_text_; }
   size_t GetConfirmedLength() { return confirmed_length_; }
   bool GetShowingSuggestion() { return showing_suggestion_; }
+  bool GetAcceptedSuggestion() { return accepted_suggestion_; }
   bool GetDismissedSuggestion() { return dismissed_suggestion_; }
 
  private:
@@ -54,6 +55,7 @@ class FakeSuggestionHandler : public SuggestionHandlerInterface {
   std::u16string suggestion_text_;
   size_t confirmed_length_ = 0;
   bool showing_suggestion_ = false;
+  bool accepted_suggestion_ = false;
   bool dismissed_suggestion_ = false;
 };
 

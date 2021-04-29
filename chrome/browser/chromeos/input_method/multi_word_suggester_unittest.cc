@@ -76,7 +76,7 @@ TEST(MultiWordSuggesterTest, DisplaysRelevantExternalSuggestions) {
   EXPECT_EQ(suggestion_handler.GetSuggestionText(), u"hello there!");
 }
 
-TEST(MultiWordSuggesterTest, ImmediatelyDismissesSuggestionOnKeyEvent) {
+TEST(MultiWordSuggesterTest, AcceptsSuggestionOnTabPress) {
   FakeSuggestionHandler suggestion_handler;
   MultiWordSuggester suggester(&suggestion_handler);
   int focused_context_id = 5;
@@ -92,7 +92,29 @@ TEST(MultiWordSuggesterTest, ImmediatelyDismissesSuggestionOnKeyEvent) {
   SendKeyEvent(&suggester, ui::DomCode::TAB);
 
   EXPECT_FALSE(suggestion_handler.GetShowingSuggestion());
+  EXPECT_FALSE(suggestion_handler.GetDismissedSuggestion());
+  EXPECT_TRUE(suggestion_handler.GetAcceptedSuggestion());
+  EXPECT_EQ(suggestion_handler.GetSuggestionText(), u"");
+}
+
+TEST(MultiWordSuggesterTest, DismissesSuggestionOnNonTabKeypress) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+  int focused_context_id = 5;
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "hi there!"},
+  };
+
+  suggester.OnFocus(focused_context_id);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+  SendKeyEvent(&suggester, ui::DomCode::ARROW_DOWN);
+
+  EXPECT_FALSE(suggestion_handler.GetShowingSuggestion());
   EXPECT_TRUE(suggestion_handler.GetDismissedSuggestion());
+  EXPECT_FALSE(suggestion_handler.GetAcceptedSuggestion());
   EXPECT_EQ(suggestion_handler.GetSuggestionText(), u"");
 }
 

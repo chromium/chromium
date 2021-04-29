@@ -323,12 +323,14 @@ void AssistiveSuggester::OnFocus(int context_id) {
   context_id_ = context_id;
   personal_info_suggester_.OnFocus(context_id_);
   emoji_suggester_.OnFocus(context_id_);
+  multi_word_suggester_.OnFocus(context_id_);
 }
 
 void AssistiveSuggester::OnBlur() {
   context_id_ = -1;
   personal_info_suggester_.OnBlur();
   emoji_suggester_.OnBlur();
+  multi_word_suggester_.OnBlur();
 }
 
 bool AssistiveSuggester::OnKeyEvent(const ui::KeyEvent& event) {
