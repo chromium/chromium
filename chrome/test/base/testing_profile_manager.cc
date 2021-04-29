@@ -8,11 +8,13 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_file_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_info_cache.h"
@@ -114,6 +116,7 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
   entry->SetLocalProfileName(user_name, entry->IsUsingDefaultName());
 
   testing_profiles_.insert(std::make_pair(profile_name, profile_ptr));
+  profile_observations_.AddObservation(profile_ptr);
 
   return profile_ptr;
 }
@@ -157,6 +160,7 @@ TestingProfile* TestingProfileManager::CreateGuestProfile() {
   profile_manager_->SetNonPersonalProfilePrefs(profile_ptr);
 
   testing_profiles_.insert(std::make_pair(kGuestProfileName, profile_ptr));
+  profile_observations_.AddObservation(profile_ptr);
 
   return profile_ptr;
 }
@@ -184,16 +188,19 @@ void TestingProfileManager::DeleteTestingProfile(const std::string& name) {
   DCHECK(called_set_up_);
 
   auto it = testing_profiles_.find(name);
-  DCHECK(it != testing_profiles_.end());
+  if (it == testing_profiles_.end()) {
+    // Profile was already deleted, probably due to the
+    // DestroyProfileOnBrowserClose flag.
+    DCHECK(
+        base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose));
+    return;
+  }
 
   TestingProfile* profile = it->second;
 
   profile_manager_->GetProfileAttributesStorage().RemoveProfile(
       profile->GetPath());
-
   profile_manager_->profiles_info_.erase(profile->GetPath());
-
-  testing_profiles_.erase(it);
 }
 
 void TestingProfileManager::DeleteAllTestingProfiles() {
@@ -210,6 +217,7 @@ void TestingProfileManager::DeleteAllTestingProfiles() {
     storage.RemoveProfile(profile->GetPath());
   }
   testing_profiles_.clear();
+  profile_observations_.RemoveAllObservations();
 }
 
 
@@ -259,6 +267,11 @@ ProfileInfoCache* TestingProfileManager::profile_info_cache() {
 
 ProfileAttributesStorage* TestingProfileManager::profile_attributes_storage() {
   return profile_info_cache();
+}
+
+void TestingProfileManager::OnProfileWillBeDestroyed(Profile* profile) {
+  testing_profiles_.erase(profile->GetProfileUserName());
+  profile_observations_.RemoveObservation(profile);
 }
 
 void TestingProfileManager::SetUpInternal(const base::FilePath& profiles_path) {

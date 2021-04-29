@@ -42,6 +42,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/profile_deletion_observer.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/feature_engagement/test/test_tracker.h"
@@ -1243,6 +1244,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerIntegratedEnterpriseCreationFlowBrowserTest,
                        Cancel) {
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   Profile* profile_being_created = StartSigninFlow();
+  base::FilePath profile_path = profile_being_created->GetPath();
 
   // Consumer-looking gmail address avoids code that forces the sync service to
   // actually start which would add overhead in mocking further stuff.
@@ -1255,6 +1257,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerIntegratedEnterpriseCreationFlowBrowserTest,
   WaitForFirstPaint(web_contents(),
                     GURL("chrome://enterprise-profile-welcome/"));
 
+  ProfileDeletionObserver observer;
   ExpectEnterpriseScreenTypeAndProceed(
       /*expected_type=*/EnterpriseProfileWelcomeUI::ScreenType::
           kEntepriseAccountSyncEnabled,
@@ -1262,12 +1265,13 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerIntegratedEnterpriseCreationFlowBrowserTest,
 
   // As the profile creation flow was opened directly, the window is closed now.
   WaitForPickerClosed();
+  observer.Wait();
 
   // The profile entry is deleted
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile_being_created->GetPath());
+          .GetProfileAttributesWithPath(profile_path);
   EXPECT_EQ(entry, nullptr);
 }
 

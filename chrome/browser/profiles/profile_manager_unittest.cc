@@ -1716,7 +1716,10 @@ TEST_P(ProfileManagerGuestTest, LastProfileDeletedWithGuestActiveProfile) {
   base::FilePath profile_path2 =
       temp_dir_.GetPath().AppendASCII(profile_basename2);
 
-  EXPECT_EQ(3u, profile_manager->GetLoadedProfiles().size());
+  if (base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose))
+    EXPECT_EQ(2u, profile_manager->GetLoadedProfiles().size());
+  else
+    EXPECT_EQ(3u, profile_manager->GetLoadedProfiles().size());
   ASSERT_EQ(1u, storage.GetNumberOfProfiles());
   EXPECT_EQ(profile_path2, storage.GetAllProfilesAttributes()[0]->GetPath());
 }

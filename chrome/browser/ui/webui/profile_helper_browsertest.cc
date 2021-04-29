@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/webui/profile_helper.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/profile_deletion_observer.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/test/browser_test.h"
@@ -95,32 +96,6 @@ class BrowserAddedObserver : public BrowserListObserver {
 
  private:
   Browser* browser_;
-  base::RunLoop run_loop_;
-};
-
-class ProfileDeletionObserver : public ProfileAttributesStorage::Observer {
- public:
-  ProfileDeletionObserver() {
-    g_browser_process->profile_manager()
-        ->GetProfileAttributesStorage()
-        .AddObserver(this);
-  }
-
-  ~ProfileDeletionObserver() override {
-    g_browser_process->profile_manager()
-        ->GetProfileAttributesStorage()
-        .RemoveObserver(this);
-  }
-
-  void Wait() { run_loop_.Run(); }
-
-  // ProfileAttributesStorage::Observer:
-  void OnProfileWasRemoved(const base::FilePath& profile_path,
-                           const std::u16string& profile_name) override {
-    run_loop_.Quit();
-  }
-
- private:
   base::RunLoop run_loop_;
 };
 

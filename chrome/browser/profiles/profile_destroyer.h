@@ -49,7 +49,11 @@ class ProfileDestroyer : public content::RenderProcessHostObserver {
   // Fetch the list of render process hosts that still point to |profile_ptr|.
   // |profile_ptr| is a void* because the Profile object may be freed. Only
   // pointer comparison is allowed, it will never be dereferenced as a Profile.
-  static HostSet GetHostsForProfile(void* const profile_ptr);
+  //
+  // If |include_spare_rph| is true, include spare render process hosts in the
+  // output.
+  static HostSet GetHostsForProfile(void* const profile_ptr,
+                                    bool include_spare_rph = false);
 
   // Destroys an Original (non-off-the-record) profile immediately.
   static void DestroyOriginalProfileNow(Profile* const profile);

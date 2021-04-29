@@ -1783,6 +1783,12 @@ void ProfileManager::OnLoadProfileForProfileDeletion(
     Profile* profile) {
   ProfileAttributesStorage& storage = GetProfileAttributesStorage();
 
+  if (!IsProfileDirectoryMarkedForDeletion(profile_dir)) {
+    // Ensure RemoveProfile() knows to nuke the profile directory after it's
+    // done.
+    MarkProfileDirectoryForDeletion(profile_dir);
+  }
+
   if (profile) {
     // TODO(estade): Migrate additional code in this block to observe
     // ProfileManager instead of handling shutdown here.
@@ -1855,9 +1861,10 @@ void ProfileManager::FinishDeletingProfile(
       profile_dir, false,
       base::BindOnce(&ProfileManager::OnLoadProfileForProfileDeletion,
                      base::Unretained(this), profile_dir));
-
-  // Prevents CreateProfileAsync from re-creating the profile.
-  MarkProfileDirectoryForDeletion(profile_dir);
+  if (!IsProfileDirectoryMarkedForDeletion(profile_dir)) {
+    // Prevents CreateProfileAsync from re-creating the profile.
+    MarkProfileDirectoryForDeletion(profile_dir);
+  }
 }
 
 base::Optional<base::FilePath> ProfileManager::FindLastActiveProfile(
