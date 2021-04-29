@@ -20,6 +20,7 @@
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "components/services/storage/public/cpp/storage_key.h"
 #include "components/services/storage/public/mojom/service_worker_database.mojom.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
@@ -83,21 +84,21 @@ class ServiceWorkerDatabase {
                              int64_t* next_avail_version_id,
                              int64_t* next_avail_resource_id);
 
-  // Reads origins that have one or more than one registration from the
+  // Reads keys that have one or more registration from the
   // database. Returns OK if they are successfully read or not found.
   // Otherwise, returns an error.
-  Status GetOriginsWithRegistrations(std::set<url::Origin>* origins);
+  Status GetStorageKeysWithRegistrations(std::set<StorageKey>* key);
 
-  // Reads registrations for |origin| from the database. Returns OK if they are
+  // Reads registrations for |key| from the database. Returns OK if they are
   // successfully read or not found. Otherwise, returns an error.
-  Status GetRegistrationsForOrigin(
-      const url::Origin& origin,
+  Status GetRegistrationsForStorageKey(
+      const StorageKey& key,
       std::vector<mojom::ServiceWorkerRegistrationDataPtr>* registrations,
       std::vector<std::vector<mojom::ServiceWorkerResourceRecordPtr>>*
           opt_resources_list);
 
-  // Reads the total resource size stored in the database for |origin|.
-  Status GetUsageForOrigin(const url::Origin& origin, int64_t& out_usage);
+  // Reads the total resource size stored in the database for |key|.
+  Status GetUsageForStorageKey(const StorageKey& key, int64_t& out_usage);
 
   // Reads all registrations from the database. Returns OK if successfully read
   // or not found. Otherwise, returns an error.
@@ -114,14 +115,14 @@ class ServiceWorkerDatabase {
   // Otherwise, returns an error.
   Status ReadRegistration(
       int64_t registration_id,
-      const GURL& origin,
+      const StorageKey& key,
       mojom::ServiceWorkerRegistrationDataPtr* registration,
       std::vector<mojom::ServiceWorkerResourceRecordPtr>* resources);
 
-  // Looks up the origin for the registration with |registration_id|. Returns OK
+  // Looks up the key for the registration with |registration_id|. Returns OK
   // if a registration was found and read successfully. Otherwise, returns an
   // error.
-  Status ReadRegistrationOrigin(int64_t registration_id, GURL* origin);
+  Status ReadRegistrationStorageKey(int64_t registration_id, StorageKey* key);
 
   // Writes |registration| and |resources| into the database and does following
   // things:
@@ -138,21 +139,21 @@ class ServiceWorkerDatabase {
 
   // Updates a registration for |registration_id| to an active state. Returns OK
   // if it's successfully updated. Otherwise, returns an error.
-  Status UpdateVersionToActive(int64_t registration_id, const GURL& origin);
+  Status UpdateVersionToActive(int64_t registration_id, const StorageKey& key);
 
   // Updates last check time of a registration for |registration_id| by |time|.
   // Returns OK if it's successfully updated. Otherwise, returns an error.
   Status UpdateLastCheckTime(int64_t registration_id,
-                             const GURL& origin,
+                             const StorageKey& key,
                              const base::Time& time);
 
   // Updates the navigation preload state for the specified registration.
   // Returns OK if it's successfully updated. Otherwise, returns an error.
   Status UpdateNavigationPreloadEnabled(int64_t registration_id,
-                                        const GURL& origin,
+                                        const StorageKey& key,
                                         bool enable);
   Status UpdateNavigationPreloadHeader(int64_t registration_id,
-                                       const GURL& origin,
+                                       const StorageKey& key,
                                        const std::string& value);
 
   // Deletes a registration for |registration_id| and moves resource records
@@ -162,7 +163,7 @@ class ServiceWorkerDatabase {
   // Returns OK if it's successfully deleted or not found in the database.
   // Otherwise, returns an error.
   Status DeleteRegistration(int64_t registration_id,
-                            const GURL& origin,
+                            const StorageKey& key,
                             DeletedVersion* deleted_version);
 
   // Reads user data for |registration_id| and |user_data_names| from the
@@ -192,7 +193,7 @@ class ServiceWorkerDatabase {
   // registration specified by |registration_id| does not exist in the database.
   Status WriteUserData(
       int64_t registration_id,
-      const url::Origin& origin,
+      const StorageKey& key,
       const std::vector<mojom::ServiceWorkerUserDataPtr>& user_data);
 
   // Deletes user data for |registration_id| and |user_data_names| from the
@@ -260,12 +261,12 @@ class ServiceWorkerDatabase {
   // returns an error.
   Status PurgeUncommittedResourceIds(const std::vector<int64_t>& ids);
 
-  // Deletes all data for |origins|, namely, unique origin, registrations and
+  // Deletes all data for |keys|, namely, unique origin, registrations and
   // resource records. Resources are moved to the purgeable list. Returns OK if
   // they are successfully deleted or not found in the database. Otherwise,
   // returns an error.
-  Status DeleteAllDataForOrigins(
-      const std::set<GURL>& origins,
+  Status DeleteAllDataForStorageKeys(
+      const std::set<StorageKey>& keys,
       std::vector<int64_t>* newly_purgeable_resources);
 
   // Completely deletes the contents of the database.
@@ -293,7 +294,7 @@ class ServiceWorkerDatabase {
   // if successfully reads. Otherwise, returns an error.
   Status ReadRegistrationData(
       int64_t registration_id,
-      const url::Origin& origin,
+      const StorageKey& key,
       mojom::ServiceWorkerRegistrationDataPtr* registration);
 
   // Parses |serialized| as a RegistrationData object and pushes it into |out|.
