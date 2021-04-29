@@ -43,13 +43,13 @@ public class MessageDispatcherImpl implements ManagedMessageDispatcher {
 
     @Override
     public void enqueueMessage(PropertyModel messageProperties, WebContents webContents,
-            @MessageScopeType int scopeType) {
+            @MessageScopeType int scopeType, boolean highPriority) {
         MessageStateHandler messageStateHandler = new SingleActionMessage(mMessageContainer,
                 messageProperties, this::dismissMessage, mMessageMaxTranslationSupplier,
                 mAutodismissDurationMs, mAnimatorStartCallback);
         ScopeKey scopeKey = new ScopeKey(scopeType, webContents);
         mMessageQueueManager.enqueueMessage(
-                messageStateHandler, messageProperties, scopeType, scopeKey);
+                messageStateHandler, messageProperties, scopeKey, highPriority);
     }
 
     @Override

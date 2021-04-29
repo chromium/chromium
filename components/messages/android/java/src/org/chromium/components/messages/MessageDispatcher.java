@@ -17,9 +17,10 @@ public interface MessageDispatcher {
      * @param messageProperties The PropertyModel with message's visual properties.
      * @param webContents The webContents the message is associated with.
      * @param scopeType The {@link MessageScopeType} of the message.
+     * @param highPriority True if the message should be displayed ASAP.
      */
     void enqueueMessage(PropertyModel messageProperties, WebContents webContents,
-            @MessageScopeType int scopeType);
+            @MessageScopeType int scopeType, boolean highPriority);
 
     /**
      * Dismisses a message referenced by its PropertyModel. Hides the message if it is currently

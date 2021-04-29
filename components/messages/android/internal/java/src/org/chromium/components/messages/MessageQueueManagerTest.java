@@ -100,13 +100,13 @@ public class MessageQueueManagerTest {
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
         MessageStateHandler m2 = Mockito.spy(new EmptyMessageStateHandler());
 
-        queueManager.enqueueMessage(m1, m1, SCOPE_TYPE, SCOPE_INSTANCE_ID);
+        queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
         verify(m1).show();
         queueManager.dismissMessage(m1, DismissReason.TIMER);
         verify(m1).hide(anyBoolean(), any());
         verify(m1).dismiss(DismissReason.TIMER);
 
-        queueManager.enqueueMessage(m2, m2, SCOPE_TYPE, SCOPE_INSTANCE_ID);
+        queueManager.enqueueMessage(m2, m2, SCOPE_INSTANCE_ID, false);
         verify(m2).show();
         queueManager.dismissMessage(m2, DismissReason.TIMER);
         verify(m2).hide(anyBoolean(), any());
@@ -125,9 +125,9 @@ public class MessageQueueManagerTest {
         MessageStateHandler m2 = Mockito.spy(new EmptyMessageStateHandler());
         MessageStateHandler m3 = Mockito.spy(new EmptyMessageStateHandler());
 
-        queueManager.enqueueMessage(m1, m1, SCOPE_TYPE, SCOPE_INSTANCE_ID);
-        queueManager.enqueueMessage(m2, m2, SCOPE_TYPE, SCOPE_INSTANCE_ID);
-        queueManager.enqueueMessage(m3, m3, SCOPE_TYPE, SCOPE_INSTANCE_ID_A);
+        queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
+        queueManager.enqueueMessage(m2, m2, SCOPE_INSTANCE_ID, false);
+        queueManager.enqueueMessage(m3, m3, SCOPE_INSTANCE_ID_A, false);
 
         queueManager.dismissAllMessages(DismissReason.ACTIVITY_DESTROYED);
         verify(m1).dismiss(DismissReason.ACTIVITY_DESTROYED);
@@ -150,8 +150,8 @@ public class MessageQueueManagerTest {
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
         MessageStateHandler m2 = Mockito.spy(new EmptyMessageStateHandler());
 
-        queueManager.enqueueMessage(m1, m1, SCOPE_TYPE, SCOPE_INSTANCE_ID);
-        queueManager.enqueueMessage(m2, m2, SCOPE_TYPE, SCOPE_INSTANCE_ID);
+        queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
+        queueManager.enqueueMessage(m2, m2, SCOPE_INSTANCE_ID, false);
         queueManager.onScopeChange(
                 new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.ACTIVE));
         verify(m1).show();
@@ -175,8 +175,8 @@ public class MessageQueueManagerTest {
         MessageStateHandler m1 = Mockito.mock(MessageStateHandler.class);
         MessageStateHandler m2 = Mockito.mock(MessageStateHandler.class);
 
-        queueManager.enqueueMessage(m1, m1, SCOPE_TYPE, SCOPE_INSTANCE_ID);
-        queueManager.enqueueMessage(m2, m2, SCOPE_TYPE, SCOPE_INSTANCE_ID);
+        queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
+        queueManager.enqueueMessage(m2, m2, SCOPE_INSTANCE_ID, false);
         verify(m1).show();
         verify(m2, never()).show();
 
@@ -201,8 +201,8 @@ public class MessageQueueManagerTest {
         MessageStateHandler m2 = Mockito.mock(MessageStateHandler.class);
         Object key = new Object();
 
-        queueManager.enqueueMessage(m1, key, SCOPE_TYPE, SCOPE_INSTANCE_ID);
-        queueManager.enqueueMessage(m2, key, SCOPE_TYPE, SCOPE_INSTANCE_ID);
+        queueManager.enqueueMessage(m1, key, SCOPE_INSTANCE_ID, false);
+        queueManager.enqueueMessage(m2, key, SCOPE_INSTANCE_ID, false);
         queueManager.onScopeChange(
                 new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.ACTIVE));
     }
@@ -216,7 +216,7 @@ public class MessageQueueManagerTest {
         MessageQueueManager queueManager = new MessageQueueManager();
         queueManager.setDelegate(mEmptyDelegate);
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
-        queueManager.enqueueMessage(m1, m1, SCOPE_TYPE, SCOPE_INSTANCE_ID);
+        queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
         queueManager.dismissMessage(m1, DismissReason.TIMER);
         queueManager.dismissMessage(m1, DismissReason.TIMER);
         verify(m1, times(1)).dismiss(DismissReason.TIMER);
@@ -234,7 +234,7 @@ public class MessageQueueManagerTest {
         queueManager.setDelegate(delegate);
         int token = queueManager.suspend();
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
-        queueManager.enqueueMessage(m1, m1, SCOPE_TYPE, SCOPE_INSTANCE_ID);
+        queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
         verify(delegate, never()).onStartShowing(any());
         verify(delegate, never()).onFinishHiding();
         verify(m1, never()).show();
@@ -261,7 +261,7 @@ public class MessageQueueManagerTest {
         queueManager.setDelegate(delegate);
         queueManager.suspend();
         MessageStateHandler m1 = Mockito.mock(MessageStateHandler.class);
-        queueManager.enqueueMessage(m1, m1, SCOPE_TYPE, SCOPE_INSTANCE_ID);
+        queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
         verify(delegate, never()).onStartShowing(any());
         verify(delegate, never()).onFinishHiding();
         verify(m1, never()).show();
@@ -289,10 +289,10 @@ public class MessageQueueManagerTest {
         final ScopeKey inactiveScopeKey = new ScopeKey(SCOPE_TYPE, new InactiveMockWebContents());
         final ScopeKey inactiveScopeKey2 = new ScopeKey(SCOPE_TYPE, new InactiveMockWebContents());
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
-        queueManager.enqueueMessage(m1, m1, SCOPE_TYPE, inactiveScopeKey2);
+        queueManager.enqueueMessage(m1, m1, inactiveScopeKey2, false);
 
         MessageStateHandler m2 = Mockito.spy(new EmptyMessageStateHandler());
-        queueManager.enqueueMessage(m2, m2, SCOPE_TYPE, inactiveScopeKey);
+        queueManager.enqueueMessage(m2, m2, inactiveScopeKey, false);
 
         queueManager.onScopeChange(
                 new MessageScopeChange(SCOPE_TYPE, inactiveScopeKey, ChangeType.ACTIVE));
@@ -340,10 +340,10 @@ public class MessageQueueManagerTest {
                 new ScopeKey(MessageScopeType.WEB_CONTENTS, new MockWindowAndroidWebContents());
 
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
-        queueManager.enqueueMessage(m1, m1, MessageScopeType.NAVIGATION, navScopeKey);
+        queueManager.enqueueMessage(m1, m1, navScopeKey, false);
 
         MessageStateHandler m2 = Mockito.spy(new EmptyMessageStateHandler());
-        queueManager.enqueueMessage(m2, m2, MessageScopeType.WINDOW, windowScopeKey);
+        queueManager.enqueueMessage(m2, m2, windowScopeKey, false);
 
         verify(m1, description("A message should be shown when the associated scope is active"))
                 .show();
@@ -388,7 +388,7 @@ public class MessageQueueManagerTest {
         MessageQueueManager queueManager = new MessageQueueManager();
         queueManager.setDelegate(delegate);
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
-        queueManager.enqueueMessage(m1, m1, SCOPE_TYPE, SCOPE_INSTANCE_ID);
+        queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
         queueManager.onScopeChange(
                 new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.INACTIVE, true));
 
@@ -419,7 +419,7 @@ public class MessageQueueManagerTest {
         queueManager.setDelegate(delegate);
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
 
-        queueManager.enqueueMessage(m1, m1, SCOPE_TYPE, SCOPE_INSTANCE_ID);
+        queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
         verify(m1,
                 description("The message should show when its target scope instance is activated."))
                 .show();
@@ -448,19 +448,19 @@ public class MessageQueueManagerTest {
         MessageStateHandler m2 = Mockito.spy(new EmptyMessageStateHandler());
         MessageStateHandler m3 = Mockito.spy(new EmptyMessageStateHandler());
 
-        queueManager.enqueueMessage(m1, m1, SCOPE_TYPE, SCOPE_INSTANCE_ID);
+        queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
         verify(controller,
                 description(
                         "ScopeChangeController should be notified when the queue of scope gets its first message"))
                 .firstMessageEnqueued(SCOPE_INSTANCE_ID);
 
-        queueManager.enqueueMessage(m2, m2, SCOPE_TYPE, SCOPE_INSTANCE_ID);
+        queueManager.enqueueMessage(m2, m2, SCOPE_INSTANCE_ID, false);
         verify(controller,
                 times(1).description(
                         "ScopeChangeController should be notified **only** when the queue of scope gets its first message"))
                 .firstMessageEnqueued(SCOPE_INSTANCE_ID);
 
-        queueManager.enqueueMessage(m3, m3, SCOPE_TYPE, SCOPE_INSTANCE_ID_A);
+        queueManager.enqueueMessage(m3, m3, SCOPE_INSTANCE_ID_A, false);
         verify(controller,
                 times(1).description(
                         "ScopeChangeController should be notified **only** when the queue of scope gets its first message"))
@@ -490,5 +490,28 @@ public class MessageQueueManagerTest {
                 description(
                         "ScopeChangeController should be notified when the queue of scope is empty."))
                 .lastMessageDismissed(SCOPE_INSTANCE_ID);
+    }
+
+    /**
+     * Test that the higher priority message is displayed when being enqueued.
+     */
+    @Test
+    @SmallTest
+    public void testEnqueueHigherPriorityMessage() {
+        MessageQueueManager queueManager = new MessageQueueManager();
+        queueManager.setDelegate(mEmptyDelegate);
+        MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
+        MessageStateHandler m2 = Mockito.spy(new EmptyMessageStateHandler());
+
+        queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
+        verify(m1).show();
+
+        queueManager.enqueueMessage(m2, m2, SCOPE_INSTANCE_ID, true);
+        verify(m1).hide(anyBoolean(), any());
+        verify(m2).show();
+        queueManager.dismissMessage(m2, DismissReason.TIMER);
+        verify(m2).hide(anyBoolean(), any());
+        verify(m2).dismiss(DismissReason.TIMER);
+        verify(m1, times(2)).show();
     }
 }

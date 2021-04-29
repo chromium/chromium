@@ -55,7 +55,7 @@ public class MerchantTrustMessageScheduler {
         mEnqueueMessageTimer.postDelayed(() -> {
             if (messageContext.isValid()) {
                 mMessageDispatcher.enqueueMessage(
-                        model, messageContext.getWebContents(), MessageScopeType.NAVIGATION);
+                        model, messageContext.getWebContents(), MessageScopeType.NAVIGATION, false);
                 mMetrics.recordMetricsForMessageShown();
                 messageEnqueuedCallback.onResult(messageContext);
             } else {

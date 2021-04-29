@@ -95,7 +95,7 @@ public class MerchantTrustMessageSchedulerTest {
         verify(mMockHandler, times(1)).postDelayed(any(Runnable.class), eq(2000L));
         verify(mMockMessageDispatcher, times(1))
                 .enqueueMessage(eq(mockPropteryModel), eq(mMockWebContents),
-                        eq(MessageScopeType.NAVIGATION));
+                        eq(MessageScopeType.NAVIGATION), eq(false));
         verify(mMockMetrics, times(1)).recordMetricsForMessagePrepared();
         verify(mMockMetrics, times(1)).recordMetricsForMessageShown();
     }
@@ -124,7 +124,7 @@ public class MerchantTrustMessageSchedulerTest {
 
         verify(mMockMessageDispatcher, never())
                 .enqueueMessage(eq(mockPropteryModel), eq(mMockWebContents),
-                        eq(MessageScopeType.NAVIGATION));
+                        eq(MessageScopeType.NAVIGATION), eq(false));
     }
 
     @Test
@@ -175,7 +175,7 @@ public class MerchantTrustMessageSchedulerTest {
         Assert.assertNull(scheduler.getScheduledMessageContext());
         verify(mMockMessageDispatcher, times(1))
                 .enqueueMessage(eq(mockPropteryModel), eq(mMockWebContents),
-                        eq(MessageScopeType.NAVIGATION));
+                        eq(MessageScopeType.NAVIGATION), eq(false));
     }
 
     @Test
@@ -199,7 +199,7 @@ public class MerchantTrustMessageSchedulerTest {
         Assert.assertNull(scheduler.getScheduledMessageContext());
         verify(mMockMessageDispatcher, never())
                 .enqueueMessage(eq(mockPropteryModel), eq(mMockWebContents),
-                        eq(MessageScopeType.NAVIGATION));
+                        eq(MessageScopeType.NAVIGATION), eq(false));
     }
 
     @Test

@@ -40,7 +40,7 @@ void MessageDispatcherBridge::EnqueueMessage(MessageWrapper* message,
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_MessageDispatcherBridge_enqueueMessage(
       env, message->GetJavaMessageWrapper(), web_contents->GetJavaWebContents(),
-      static_cast<int>(scopeType));
+      static_cast<int>(scopeType), false);
 }
 
 void MessageDispatcherBridge::DismissMessage(MessageWrapper* message,

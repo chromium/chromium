@@ -59,11 +59,11 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
      * message. Displays the message if there is no other message shown.
      * @param message The message to enqueue
      * @param messageKey The key to associate with this message.
-     * @param scopeType The type of scope.
      * @param scopeKey The key of a scope instance.
+     * @param highPriority True if the message should be displayed ASAP.
      */
-    public void enqueueMessage(
-            MessageStateHandler message, Object messageKey, int scopeType, ScopeKey scopeKey) {
+    public void enqueueMessage(MessageStateHandler message, Object messageKey, ScopeKey scopeKey,
+            boolean highPriority) {
         if (mMessages.containsKey(messageKey)) {
             throw new IllegalStateException("Message with the given key has already been enqueued");
         }
@@ -75,7 +75,7 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
             mScopeChangeController.firstMessageEnqueued(scopeKey);
         }
 
-        MessageState messageState = new MessageState(scopeKey, messageKey, message);
+        MessageState messageState = new MessageState(scopeKey, messageKey, message, highPriority);
         messageQueue.add(messageState);
         mMessages.put(messageKey, messageState);
 
@@ -114,12 +114,8 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
         }
 
         if (mCurrentDisplayedMessage == messageState) {
-            mCurrentDisplayedMessage.handler.hide(updateCurrentMessage, () -> {
-                mMessageQueueDelegate.onFinishHiding();
-                mCurrentDisplayedMessage = null;
-                message.dismiss(dismissReason);
-                if (updateCurrentMessage) updateCurrentDisplayedMessage();
-            });
+            hideMessage(updateCurrentMessage,
+                    () -> message.dismiss(dismissReason), updateCurrentMessage);
         } else {
             message.dismiss(dismissReason);
         }
@@ -148,8 +144,7 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
             if (messages != null) {
                 while (!messages.isEmpty()) {
                     // message will be removed from messages list.
-                    dismissMessage(messages.get(0).messageKey,
-                            org.chromium.components.messages.DismissReason.SCOPE_DESTROYED);
+                    dismissMessage(messages.get(0).messageKey, DismissReason.SCOPE_DESTROYED);
                 }
             }
         } else if (change.changeType == ChangeType.INACTIVE) {
@@ -180,15 +175,10 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
                 mMessageQueueDelegate.onStartShowing(mCurrentDisplayedMessage.handler::show);
             }
         } else if (mCurrentDisplayedMessage != null) {
-            // Scope state may be removed if it has been destroyed.
-            boolean isScopeActive = mScopeStates.containsKey(mCurrentDisplayedMessage.scopeKey)
-                    && mScopeStates.get(mCurrentDisplayedMessage.scopeKey);
-            if (isQueueSuspended() || !isScopeActive) {
-                mCurrentDisplayedMessage.handler.hide(
-                        !isQueueSuspended() && animateTransition, () -> {
-                            mMessageQueueDelegate.onFinishHiding();
-                            mCurrentDisplayedMessage = null;
-                        });
+            MessageState candidate = getNextMessage();
+            // Another higher priority message has been enqueued.
+            if (candidate != mCurrentDisplayedMessage || isQueueSuspended()) {
+                hideMessage(!isQueueSuspended() && animateTransition, null, !isQueueSuspended());
             }
         }
     }
@@ -208,6 +198,16 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
         return mMessages;
     }
 
+    private void hideMessage(
+            boolean animate, Runnable dismissAfterHiding, boolean updateCurrentMessage) {
+        mCurrentDisplayedMessage.handler.hide(animate, () -> {
+            mMessageQueueDelegate.onFinishHiding();
+            mCurrentDisplayedMessage = null;
+            if (dismissAfterHiding != null) dismissAfterHiding.run();
+            if (updateCurrentMessage) updateCurrentDisplayedMessage(true);
+        });
+    }
+
     /**
      * Iterate the queues of each scope to get the next messages. If multiple messages meet the
      * requirements, which can show in the given scope, then the message queued earliest will be
@@ -217,10 +217,14 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
         MessageState nextMessage = null;
         for (List<MessageState> queue : mMessageQueues.values()) {
             if (queue.isEmpty()) continue;
-            MessageState candidate = queue.get(0);
-            Boolean isActive = mScopeStates.get(candidate.scopeKey);
+            Boolean isActive = mScopeStates.get(queue.get(0).scopeKey);
             if (isActive == null || !isActive) continue;
-            if (nextMessage == null || candidate.id < nextMessage.id) nextMessage = candidate;
+            for (MessageState candidate : queue) {
+                if (nextMessage == null || (candidate.highPriority && !nextMessage.highPriority)
+                        || candidate.id < nextMessage.id) {
+                    nextMessage = candidate;
+                }
+            }
         }
         return nextMessage;
     }
@@ -233,11 +237,14 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
         public final ScopeKey scopeKey;
         public final Object messageKey;
         public final MessageStateHandler handler;
+        public final boolean highPriority;
 
-        MessageState(ScopeKey scopeKey, Object messageKey, MessageStateHandler handler) {
+        MessageState(ScopeKey scopeKey, Object messageKey, MessageStateHandler handler,
+                boolean highPriority) {
             this.scopeKey = scopeKey;
             this.messageKey = messageKey;
             this.handler = handler;
+            this.highPriority = highPriority;
             id = sIdNext++;
         }
     }

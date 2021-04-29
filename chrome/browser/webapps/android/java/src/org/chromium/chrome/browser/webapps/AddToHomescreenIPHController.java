@@ -172,7 +172,8 @@ public class AddToHomescreenIPHController {
                         .with(MessageBannerProperties.ON_PRIMARY_ACTION,
                                 () -> onMessageAddButtonClicked(tab))
                         .build();
-        mMessageDispatcher.enqueueMessage(model, tab.getWebContents(), MessageScopeType.NAVIGATION);
+        mMessageDispatcher.enqueueMessage(
+                model, tab.getWebContents(), MessageScopeType.NAVIGATION, false);
         RecordUserAction.record("Android.AddToHomescreenIPH.Message.Shown");
     }
 
