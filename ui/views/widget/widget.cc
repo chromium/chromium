@@ -929,6 +929,9 @@ FocusTraversable* Widget::GetFocusTraversable() {
 
 void Widget::ThemeChanged() {
   root_view_->ThemeChanged();
+
+  for (WidgetObserver& observer : observers_)
+    observer.OnWidgetThemeChanged(this);
 }
 
 void Widget::DeviceScaleFactorChanged(float old_device_scale_factor,

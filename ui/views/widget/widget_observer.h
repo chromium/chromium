@@ -49,6 +49,8 @@ class VIEWS_EXPORT WidgetObserver : public base::CheckedObserver {
   virtual void OnWidgetBoundsChanged(Widget* widget,
                                      const gfx::Rect& new_bounds) {}
 
+  virtual void OnWidgetThemeChanged(Widget* widget) {}
+
  protected:
   ~WidgetObserver() override = default;
 };
