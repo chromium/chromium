@@ -106,8 +106,9 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
                                                ->GetDefaultStoragePartition())
             ->GetInterestGroupStorage();
     content_browser_client_.SetAllowList(
-        {url::Origin::Create(https_server_->GetURL("a.test", "/echo")),
-         url::Origin::Create(https_server_->GetURL("b.test", "/echo"))});
+        {url::Origin::Create(https_server_->GetURL("a.test", "/")),
+         url::Origin::Create(https_server_->GetURL("b.test", "/")),
+         url::Origin::Create(https_server_->GetURL("c.test", "/"))});
     old_content_browser_client_ =
         SetBrowserClientForTesting(&content_browser_client_);
   }
@@ -1111,16 +1112,17 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithWinner) {
   const struct ExpectedRequest {
     GURL url;
     const char* accept_header;
+    bool expect_trusted_params;
   } kExpectedRequests[] = {
       {https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
-       "application/javascript"},
+       "application/javascript", true /* expect_trusted_params */},
       {https_server_->GetURL(
            "a.test",
            "/interest_group/"
            "trusted_bidding_signals.json?hostname=a.test&keys=key1"),
-       "application/json"},
+       "application/json", true /* expect_trusted_params */},
       {https_server_->GetURL("a.test", "/interest_group/decision_logic.js"),
-       "application/javascript"},
+       "application/javascript", false /* expect_trusted_params */},
   };
   for (const auto& expected_request : kExpectedRequests) {
     SCOPED_TRACE(expected_request.url);
@@ -1139,15 +1141,27 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithWinner) {
                                            &accept_value));
     EXPECT_EQ(expected_request.accept_header, accept_value);
 
-    ASSERT_TRUE(request->trusted_params);
-    const net::IsolationInfo& isolation_info =
-        request->trusted_params->isolation_info;
-    EXPECT_EQ(net::IsolationInfo::RequestType::kOther,
-              isolation_info.request_type());
-    url::Origin expected_origin = url::Origin::Create(expected_request.url);
-    EXPECT_EQ(expected_origin, isolation_info.top_frame_origin());
-    EXPECT_EQ(expected_origin, isolation_info.frame_origin());
-    EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
+    EXPECT_EQ(expected_request.expect_trusted_params,
+              request->trusted_params.has_value());
+    if (!request->trusted_params) {
+      // Requests for render-provided URLs use an empty trusted params value and
+      // enable CORS (and should use the RenderFrameHosts's URLLoaderFactory,
+      // which is validated in the next test).
+      EXPECT_EQ(network::mojom::RequestMode::kCors, request->mode);
+    } else {
+      // Requests for interest-group provided URLs are cross-origin, and set
+      // trusted params to use the right cache shard, since they use a trusted
+      // URLLoaderFactory.
+      EXPECT_EQ(network::mojom::RequestMode::kNoCors, request->mode);
+      const net::IsolationInfo& isolation_info =
+          request->trusted_params->isolation_info;
+      EXPECT_EQ(net::IsolationInfo::RequestType::kOther,
+                isolation_info.request_type());
+      url::Origin expected_origin = url::Origin::Create(expected_request.url);
+      EXPECT_EQ(expected_origin, isolation_info.top_frame_origin());
+      EXPECT_EQ(expected_origin, isolation_info.frame_origin());
+      EXPECT_TRUE(isolation_info.site_for_cookies().IsNull());
+    }
   }
 
   // Check ResourceRequest structs of report requests.
@@ -1183,6 +1197,82 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithWinner) {
                 ->trusted_params->isolation_info.network_isolation_key(),
             url_loader_monitor.GetRequestInfo(kExpectedReportUrls[1])
                 ->trusted_params->isolation_info.network_isolation_key());
+}
+
+// Use different origins for publisher, bidder, and seller, and make sure
+// everything works as expected.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, CrossOrigin) {
+  const char kPublisher[] = "a.test";
+  const char kBidder[] = "b.test";
+  const char kSeller[] = "c.test";
+
+  // Navigate to bidder site, and add an interest group.
+  GURL bidder_url = https_server_->GetURL(kBidder, "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), bidder_url));
+  std::string ads =
+      "[{renderUrl : 'https://example.com/render',"
+      "metadata : {ad:'metadata', here : [ 1, 2 ]}}]";
+  EXPECT_TRUE(JoinInterestGroupAndWait(
+      blink::mojom::InterestGroup::New(
+          /* expiry */ base::Time(),
+          /* owner= */ url::Origin::Create(bidder_url.GetOrigin()),
+          /* name = */ "cars",
+          /* bidding_url = */
+          https_server_->GetURL(kBidder, "/interest_group/bidding_logic.js"),
+          /* update_url  = */ base::nullopt,
+          /* trusted_bidding_signals_url = */
+          https_server_->GetURL(kBidder,
+                                "/interest_group/trusted_bidding_signals.json"),
+          /* trusted_bidding_signals_keys = */ base::nullopt,
+          /* user_bidding_signals = */ "{some: 'json', data: {here: [1, 2]}}",
+          /* ads = */ base::nullopt),
+      ads, "['key1']"));
+
+  // Navigate to publisher.
+  ASSERT_TRUE(
+      NavigateToURL(shell(), https_server_->GetURL(kPublisher, "/echo")));
+
+  // Run auction with a seller script missing an "Access-Control-Allow-Origin"
+  // header. The request for the seller script should fail, and so should the
+  // auction.
+  GURL seller_logic_url =
+      https_server_->GetURL(kSeller, "/interest_group/decision_logic.js");
+  EXPECT_EQ(nullptr,
+            RunAuctionAndWait(JsReplace(
+                R"(
+{
+  seller: $1,
+  decisionLogicUrl: $2,
+  interestGroupBuyers: [$3],
+  auctionSignals: {x: 1},
+  sellerSignals: {yet: 'more', info: 1},
+  perBuyerSignals: {$3: {even: 'more', x: 4.5}}
+}
+)",
+                url::Origin::Create(seller_logic_url), seller_logic_url.spec(),
+                url::Origin::Create(bidder_url))));
+
+  // Run auction with a seller script with an "Access-Control-Allow-Origin"
+  // header. The auction should succeed.
+  seller_logic_url = https_server_->GetURL(
+      kSeller, "/interest_group/decision_logic_cross_origin.js");
+  ASSERT_EQ("https://example.com/render",
+            RunAuctionAndWait(JsReplace(
+                R"(
+{
+  seller: $1,
+  decisionLogicUrl: $2,
+  interestGroupBuyers: [$3],
+  auctionSignals: {x: 1},
+  sellerSignals: {yet: 'more', info: 1},
+  perBuyerSignals: {$3: {even: 'more', x: 4.5}}
+}
+)",
+                url::Origin::Create(seller_logic_url), seller_logic_url.spec(),
+                url::Origin::Create(bidder_url))));
+  // Reporting urls should be fetched after an auction succeeded.
+  WaitForURL(https_server_->GetURL("/echoall?report_seller"));
+  WaitForURL(https_server_->GetURL("/echoall?report_bidder"));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,

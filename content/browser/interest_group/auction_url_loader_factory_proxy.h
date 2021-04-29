@@ -32,14 +32,35 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
   using GetUrlLoaderFactoryCallback =
       base::RepeatingCallback<network::mojom::URLLoaderFactory*()>;
 
-  // `get_url_loader_factory_callback` must be safe to call at any time during
-  // the lifetime of the AuctionURLLoaderFactoryProxy.
+  // Passed in callbacks must be safe to call at any time during the lifetime of
+  // the AuctionURLLoaderFactoryProxy.
+  //
+  // `get_publisher_frame_url_loader_factory` returns a URLLoaderFactory
+  // configured to behave like the URLLoaderFactory in use by the frame running
+  // the auction. It uses the same network partition, request initiator lock
+  // etc. This is used to request resources specified by the publisher page
+  // (currently, just the the `decision_logic_url`). This is needed to protect
+  // against a V8 compromise being used to access arbitrary resources by setting
+  // the `decision_logic_url` to a target site. URLs associated with interest
+  // groups already have first-party opt in, so don't need this, but the seller
+  // URLs do not. If `decision_logic_url` matches any bidding script URL, the
+  // frame factory is used for all requests for that URL. Bidder JSON requests
+  // are distinguishable via their accept header, so always use the trusted
+  // factory.
+  //
+  // `get_trusted_url_loader_factory` returns a trusted URLLoaderFactory that
+  // can request arbitrary URLs. This is used to request interest groups with
+  // the appropriate network partition. Each interest group URL request needs to
+  // use the partition of the associated interest group to avoid leaking the
+  // fetched URLs to the publisher, since interest groups are roughly analogous
+  // to more restricted third party cookies.
   //
   // URLs that may be requested are extracted from `auction_config` and
   // `bidders`. Any other requested URL will result in failure.
   AuctionURLLoaderFactoryProxy(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver,
-      GetUrlLoaderFactoryCallback get_url_loader_factory_callback,
+      GetUrlLoaderFactoryCallback get_publisher_frame_url_loader_factory,
+      GetUrlLoaderFactoryCallback get_trusted_url_loader_factory,
       const url::Origin& frame_origin,
       const blink::mojom::AuctionAdConfig& auction_config,
       const std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>&
@@ -64,12 +85,19 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
  private:
   mojo::Receiver<network::mojom::URLLoaderFactory> receiver_;
 
-  const GetUrlLoaderFactoryCallback get_url_loader_factory_callback_;
+  const GetUrlLoaderFactoryCallback get_publisher_frame_url_loader_factory_;
+  const GetUrlLoaderFactoryCallback get_trusted_url_loader_factory_;
 
   const url::Origin frame_origin_;
 
-  // URLs of worklet scripts. Requested URLs may match these URLs exactly.
-  std::set<GURL> script_urls_;
+  // URL of the seller script. Requested URLs may match these URLs exactly.
+  // Unlike `bidding_urls_`, requests for this URL must use the publisher
+  // frame's more restricted URLLoaderFactory. See constructor for more details.
+  GURL decision_logic_url_;
+
+  // URLs of worklet bidder scripts. Requested URLs may match these URLs
+  // exactly.
+  std::set<GURL> bidding_urls_;
 
   // URLs for real-time bidding data. Requests may match these with the query
   // parameter removed.

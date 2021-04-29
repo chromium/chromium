@@ -34,21 +34,24 @@ namespace content {
 
 AuctionURLLoaderFactoryProxy::AuctionURLLoaderFactoryProxy(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver,
-    GetUrlLoaderFactoryCallback get_url_loader_factory_callback,
+    GetUrlLoaderFactoryCallback get_publisher_frame_url_loader_factory,
+    GetUrlLoaderFactoryCallback get_trusted_url_loader_factory,
     const url::Origin& frame_origin,
     const blink::mojom::AuctionAdConfig& auction_config,
     const std::vector<auction_worklet::mojom::BiddingInterestGroupPtr>& bidders)
     : receiver_(this, std::move(pending_receiver)),
-      get_url_loader_factory_callback_(
-          std::move(get_url_loader_factory_callback)),
+      get_publisher_frame_url_loader_factory_(
+          std::move(get_publisher_frame_url_loader_factory)),
+      get_trusted_url_loader_factory_(
+          std::move(get_trusted_url_loader_factory)),
       frame_origin_(frame_origin),
       expected_query_prefix_(
           "hostname=" + net::EscapeQueryParamValue(frame_origin.host(), true) +
           "&keys=") {
-  script_urls_.insert(auction_config.decision_logic_url);
+  decision_logic_url_ = auction_config.decision_logic_url;
   for (const auto& bidder : bidders) {
     if (bidder->group->bidding_url)
-      script_urls_.insert(*bidder->group->bidding_url);
+      bidding_urls_.insert(*bidder->group->bidding_url);
     if (bidder->group->trusted_bidding_signals_url) {
       // Base trusted bidding signals URLs can't have query strings, since
       // running an auction will create URLs by adding query strings to them.
@@ -76,9 +79,21 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
     return;
   }
 
+  // True if the more restricted publisher RenderFrameHost's URLLoader should be
+  // used to load a resource. False if the global factory should be used
+  // instead, setting the ResourceRequest::TrustedParams field to use the
+  // correct network shard.
+  bool use_publisher_frame_loader = true;
+
   if (accept_header == "application/javascript") {
-    // Only `script_urls_` may be requested with the Javascript Accept header.
-    if (script_urls_.find(url_request.url) == script_urls_.end()) {
+    // Only script_urls may be requested with the Javascript Accept header.
+    if (url_request.url == decision_logic_url_) {
+      // Nothing more to do.
+    } else if (bidding_urls_.find(url_request.url) != bidding_urls_.end()) {
+      // This is safe, because `bidding_urls_` can only be registered by
+      // calling `joinAdInterestGroup` from the URL's origin.
+      use_publisher_frame_loader = false;
+    } else {
       receiver_.ReportBadMessage("Unexpected Javascript request url");
       return;
     }
@@ -109,6 +124,9 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
           "JSON query string has unexpected additional parameter");
       return;
     }
+    // This is safe, because `realtime_data_urls_` can only be registered by
+    // calling `joinAdInterestGroup` from the URL's origin.
+    use_publisher_frame_loader = false;
   } else {
     receiver_.ReportBadMessage("Accept header has unexpected value");
     return;
@@ -127,24 +145,33 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
   new_request.credentials_mode = network::mojom::CredentialsMode::kOmit;
   new_request.request_initiator = frame_origin_;
 
-  // Treat this as a subresource request from the owner's origin.
-  //
-  // TODO(mmenke): This leaks information to the third party that made the
-  // request (both the URL itself leaks information, and using the origin's NIK
-  // leaks information). These leaks need to be fixed.
-  new_request.trusted_params = network::ResourceRequest::TrustedParams();
-  url::Origin origin = url::Origin::Create(url_request.url);
-  new_request.trusted_params->isolation_info =
-      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
-                                 origin, origin, net::SiteForCookies());
+  network::mojom::URLLoaderFactory* url_loader_factory = nullptr;
+  if (use_publisher_frame_loader) {
+    url_loader_factory = get_publisher_frame_url_loader_factory_.Run();
+    new_request.mode = network::mojom::RequestMode::kCors;
+  } else {
+    // Treat this as a subresource request from the owner's origin, using the
+    // trusted URLLoaderFactory.
+    //
+    // TODO(mmenke): This leaks information to the third party that made the
+    // request (both the URL itself leaks information, and using the origin's
+    // NIK leaks information). These leaks need to be fixed.
+    url_loader_factory = get_trusted_url_loader_factory_.Run();
+    new_request.mode = network::mojom::RequestMode::kNoCors;
+    new_request.trusted_params = network::ResourceRequest::TrustedParams();
+    url::Origin origin = url::Origin::Create(url_request.url);
+    new_request.trusted_params->isolation_info =
+        net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                   origin, origin, net::SiteForCookies());
+
+    // TODO(mmenke): Investigate whether `client_security_state` should be
+    // populated.
+  }
 
   // TODO(mmenke): Investigate whether `devtools_observer` or
   // `report_raw_headers` should be set when devtools is open.
 
-  // TODO(mmenke): Investigate whether `client_security_state` should be
-  // populated.
-
-  get_url_loader_factory_callback_.Run()->CreateLoaderAndStart(
+  url_loader_factory->CreateLoaderAndStart(
       std::move(receiver),
       // These are browser-initiated requests, so give them a browser request
       // ID. Extension APIs may expect these to be unique.

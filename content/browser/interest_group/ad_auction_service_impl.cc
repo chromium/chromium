@@ -281,7 +281,9 @@ void AdAuctionServiceImpl::StartAuction(
   auto url_loader_factory_proxy =
       std::make_unique<AuctionURLLoaderFactoryProxy>(
           url_loader_factory.InitWithNewPipeAndPassReceiver(),
-          base::BindRepeating(&AdAuctionServiceImpl::GetURLLoaderFactory,
+          base::BindRepeating(&AdAuctionServiceImpl::GetFrameURLLoaderFactory,
+                              base::Unretained(this)),
+          base::BindRepeating(&AdAuctionServiceImpl::GetTrustedURLLoaderFactory,
                               base::Unretained(this)),
           browser_signals->top_frame_origin, *config, bidders);
 
@@ -342,7 +344,7 @@ void AdAuctionServiceImpl::WorkletComplete(
                                                       bidder->group->name);
   }
 
-  network::mojom::URLLoaderFactory* factory = GetURLLoaderFactory();
+  network::mojom::URLLoaderFactory* factory = GetTrustedURLLoaderFactory();
   if (bidder_report->report_requested && bidder_report->report_url.is_valid() &&
       bidder_report->report_url.SchemeIs(url::kHttpsScheme)) {
     FetchReport(factory, bidder_report->report_url, origin());
@@ -353,11 +355,23 @@ void AdAuctionServiceImpl::WorkletComplete(
   }
 }
 
-network::mojom::URLLoaderFactory* AdAuctionServiceImpl::GetURLLoaderFactory() {
-  if (!url_loader_factory_ || !url_loader_factory_.is_connected()) {
-    url_loader_factory_.reset();
+network::mojom::URLLoaderFactory*
+AdAuctionServiceImpl::GetFrameURLLoaderFactory() {
+  if (!frame_url_loader_factory_ || !frame_url_loader_factory_.is_connected()) {
+    frame_url_loader_factory_.reset();
+    render_frame_host()->CreateNetworkServiceDefaultFactory(
+        frame_url_loader_factory_.BindNewPipeAndPassReceiver());
+  }
+  return frame_url_loader_factory_.get();
+}
+
+network::mojom::URLLoaderFactory*
+AdAuctionServiceImpl::GetTrustedURLLoaderFactory() {
+  if (!trusted_url_loader_factory_ ||
+      !trusted_url_loader_factory_.is_connected()) {
+    trusted_url_loader_factory_.reset();
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver =
-        url_loader_factory_.BindNewPipeAndPassReceiver();
+        trusted_url_loader_factory_.BindNewPipeAndPassReceiver();
 
     // TODO(mmenke): Should this have its own URLLoaderFactoryType? FLEDGE
     // requests are very different from subresource requests.
@@ -378,7 +392,7 @@ network::mojom::URLLoaderFactory* AdAuctionServiceImpl::GetURLLoaderFactory() {
         ->GetURLLoaderFactoryForBrowserProcess()
         ->Clone(std::move(factory_receiver));
   }
-  return url_loader_factory_.get();
+  return trusted_url_loader_factory_.get();
 }
 
 void AdAuctionServiceImpl::AuctionComplete() {
