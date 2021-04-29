@@ -492,7 +492,8 @@ PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunnerManager(
     TrackedRef<TaskTracker> task_tracker,
     DelayedTaskManager* delayed_task_manager)
     : task_tracker_(std::move(task_tracker)),
-      delayed_task_manager_(delayed_task_manager) {
+      delayed_task_manager_(delayed_task_manager),
+      lock_("PooledSingleThreadTaskRunnerManager.lock_") {
   DCHECK(task_tracker_);
   DCHECK(delayed_task_manager_);
 #if defined(OS_WIN)
