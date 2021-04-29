@@ -369,15 +369,14 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   str << "]";
   VLOG(1) << "Configuring scaled resolutions: " << str.str();
   _scaledFrameTransformers.clear();
-  for (size_t i = 0; i < resolutions.size(); ++i) {
-    DCHECK(i == 0 || resolutions[i - 1].height() > resolutions[i].height());
+  for (const auto& resolution : resolutions) {
     // Configure the transformer to and from NV12 pixel buffers - we only want
     // to pay scaling costs, not conversion costs.
     auto scaledFrameTransformer = media::SampleBufferTransformer::Create();
     scaledFrameTransformer->Reconfigure(
         media::SampleBufferTransformer::
             kBestTransformerForPixelBufferToNv12Output,
-        kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange, resolutions[i],
+        kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange, resolution,
         kPixelBufferPoolSize);
     _scaledFrameTransformers.push_back(std::move(scaledFrameTransformer));
   }
@@ -769,10 +768,8 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
         scaledFrameSize == captureFormat.frame_size) {
       continue;
     }
-    CVPixelBufferRef bufferToScale =
-        !scaledPixelBuffers.empty() ? scaledPixelBuffers.back() : pixelBuffer;
     base::ScopedCFTypeRef<CVPixelBufferRef> scaledPixelBuffer =
-        scaledFrameTransformer->Transform(bufferToScale);
+        scaledFrameTransformer->Transform(pixelBuffer);
     if (!scaledPixelBuffer) {
       LOG(ERROR) << "Failed to downscale frame, skipping resolution "
                  << scaledFrameSize.ToString();
