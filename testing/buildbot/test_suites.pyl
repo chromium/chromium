@@ -4131,12 +4131,12 @@
       },
     },
 
+    # TODO(crbug.com/1204231): Re-enable vaapi_unittest.
     'lacros_device_or_vm_gtests': {
       'aura_unittests': {},
       'cc_unittests': {},
       'interactive_ui_tests': {},
       'ozone_unittests': {},
-      'vaapi_unittest': {},
     },
 
     'lacros_skylab_poc': {
