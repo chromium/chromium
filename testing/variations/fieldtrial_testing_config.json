@@ -1526,6 +1526,21 @@
             ]
         }
     ],
+    "ChromeCleanupResetShortcuts": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ChromeCleanupResetShortcuts"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeLabs": [
         {
             "platforms": [
