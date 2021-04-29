@@ -414,7 +414,7 @@ std::ostream& operator<<(std::ostream& out, const WebApp& app) {
 
   out << "  manifest_url: " << app.manifest_url_ << std::endl;
 
-  if (!app.manifest_id_.has_value())
+  if (app.manifest_id_.has_value())
     out << "  manifest_id: " << app.manifest_id_.value() << std::endl;
 
   return out;
