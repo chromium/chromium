@@ -58,6 +58,8 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
                                                    uint32_t fragment_end)>;
   using ReadSvgCallback = base::OnceCallback<void(std::u16string result)>;
   using ReadRTFCallback = base::OnceCallback<void(std::string result)>;
+  using ReadPngCallback =
+      base::OnceCallback<void(const std::vector<uint8_t>& result)>;
   using ReadImageCallback = base::OnceCallback<void(const SkBitmap& result)>;
   using ReadCustomDataCallback =
       base::OnceCallback<void(std::u16string result)>;
@@ -179,6 +181,11 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   virtual void ReadRTF(ClipboardBuffer buffer,
                        const DataTransferEndpoint* data_dst,
                        ReadRTFCallback callback) const;
+
+  // Reads a png from the clipboard, if available.
+  virtual void ReadPng(ClipboardBuffer buffer,
+                       const DataTransferEndpoint* data_dst,
+                       ReadPngCallback callback) const = 0;
 
   // Reads an image from the clipboard, if available.
   virtual void ReadImage(ClipboardBuffer buffer,

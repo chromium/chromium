@@ -57,6 +57,9 @@ class HeadlessClipboard : public ui::Clipboard {
   void ReadRTF(ui::ClipboardBuffer buffer,
                const ui::DataTransferEndpoint* data_dst,
                std::string* result) const override;
+  void ReadPng(ui::ClipboardBuffer buffer,
+               const ui::DataTransferEndpoint* data_dst,
+               ReadPngCallback callback) const override;
   void ReadImage(ui::ClipboardBuffer buffer,
                  const ui::DataTransferEndpoint* data_dst,
                  ReadImageCallback callback) const override;

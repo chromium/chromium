@@ -151,6 +151,15 @@ void HeadlessClipboard::ReadRTF(ui::ClipboardBuffer buffer,
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
+void HeadlessClipboard::ReadPng(ui::ClipboardBuffer buffer,
+                                const ui::DataTransferEndpoint* data_dst,
+                                ReadPngCallback callback) const {
+  // TODO(crbug.com/1201018): Implement this.
+  NOTIMPLEMENTED();
+}
+
+// |data_dst| is not used. It's only passed to be consistent with other
+// platforms.
 void HeadlessClipboard::ReadImage(ui::ClipboardBuffer buffer,
                                   const ui::DataTransferEndpoint* data_dst,
                                   ReadImageCallback callback) const {

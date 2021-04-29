@@ -502,6 +502,15 @@ void ClipboardWin::ReadRTF(ClipboardBuffer buffer,
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
+void ClipboardWin::ReadPng(ClipboardBuffer buffer,
+                           const DataTransferEndpoint* data_dst,
+                           ReadPngCallback callback) const {
+  // TODO(crbug.com/1201018): Implement this.
+  NOTIMPLEMENTED();
+}
+
+// |data_dst| is not used. It's only passed to be consistent with other
+// platforms.
 void ClipboardWin::ReadImage(ClipboardBuffer buffer,
                              const DataTransferEndpoint* data_dst,
                              ReadImageCallback callback) const {

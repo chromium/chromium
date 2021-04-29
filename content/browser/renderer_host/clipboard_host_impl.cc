@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/pickle.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
@@ -311,6 +312,39 @@ void ClipboardHostImpl::ReadRtf(ui::ClipboardBuffer clipboard_buffer,
                            std::move(result), std::move(callback)));
 }
 
+void ClipboardHostImpl::ReadPng(ui::ClipboardBuffer clipboard_buffer,
+                                ReadPngCallback callback) {
+  if (!IsRendererPasteAllowed(render_frame_routing_id_)) {
+    std::move(callback).Run(mojo_base::BigBuffer());
+    return;
+  }
+  auto data_dst = CreateDataEndpoint();
+  clipboard_->ReadPng(clipboard_buffer, data_dst.get(),
+                      base::BindOnce(&ClipboardHostImpl::OnReadPng,
+                                     weak_ptr_factory_.GetWeakPtr(),
+                                     clipboard_buffer, std::move(callback)));
+}
+
+void ClipboardHostImpl::OnReadPng(ui::ClipboardBuffer clipboard_buffer,
+                                  ReadPngCallback callback,
+                                  const std::vector<uint8_t>& data) {
+  std::string string_data(
+      reinterpret_cast<const char*>(data.data(), data.data() + data.size()));
+  // TODO(crbug.com/1201018): Create GetPngType() and use it here.
+  PasteIfPolicyAllowed(
+      clipboard_buffer, ui::ClipboardFormatType::GetBitmapType(),
+      std::move(string_data),
+      base::BindOnce(
+          [](std::vector<uint8_t> data, ReadPngCallback callback,
+             ClipboardPasteContentAllowed allowed) {
+            if (!allowed) {
+              std::move(callback).Run(mojo_base::BigBuffer());
+              return;
+            }
+            std::move(callback).Run(mojo_base::BigBuffer(data));
+          },
+          std::move(data), std::move(callback)));
+}
 void ClipboardHostImpl::ReadImage(ui::ClipboardBuffer clipboard_buffer,
                                   ReadImageCallback callback) {
   if (!IsRendererPasteAllowed(render_frame_routing_id_)) {

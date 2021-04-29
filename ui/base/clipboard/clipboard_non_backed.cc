@@ -604,6 +604,14 @@ void ClipboardNonBacked::ReadRTF(ClipboardBuffer buffer,
 #endif
 }
 
+void ClipboardNonBacked::ReadPng(ClipboardBuffer buffer,
+                                 const DataTransferEndpoint* data_dst,
+                                 ReadPngCallback callback) const {
+  DCHECK(CalledOnValidThread());
+  // TODO(crbug.com/1201018): Implement this.
+  NOTIMPLEMENTED();
+}
+
 void ClipboardNonBacked::ReadImage(ClipboardBuffer buffer,
                                    const DataTransferEndpoint* data_dst,
                                    ReadImageCallback callback) const {

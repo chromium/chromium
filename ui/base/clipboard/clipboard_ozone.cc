@@ -15,6 +15,7 @@
 #include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -461,6 +462,14 @@ void ClipboardOzone::ReadRTF(ClipboardBuffer buffer,
   auto clipboard_data =
       async_clipboard_ozone_->ReadClipboardDataAndWait(buffer, kMimeTypeRTF);
   result->assign(clipboard_data.begin(), clipboard_data.end());
+}
+
+// TODO(crbug.com/1103194): |data_dst| should be supported.
+void ClipboardOzone::ReadPng(ClipboardBuffer buffer,
+                             const DataTransferEndpoint* data_dst,
+                             ReadPngCallback callback) const {
+  // TODO(crbug.com/1201018): Implement this.
+  NOTIMPLEMENTED();
 }
 
 // TODO(crbug.com/1103194): |data_dst| should be supported.

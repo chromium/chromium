@@ -17,6 +17,7 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -275,6 +276,15 @@ void ClipboardMac::ReadRTF(ClipboardBuffer buffer,
   RecordRead(ClipboardFormatMetric::kRtf);
 
   return ReadData(ClipboardFormatType::GetRtfType(), data_dst, result);
+}
+
+// |data_dst| is not used. It's only passed to be consistent with other
+// platforms.
+void ClipboardMac::ReadPng(ClipboardBuffer buffer,
+                           const DataTransferEndpoint* data_dst,
+                           ReadPngCallback callback) const {
+  // TODO(crbug.com/1201018): Implement this.
+  NOTIMPLEMENTED();
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other

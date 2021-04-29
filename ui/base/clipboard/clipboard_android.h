@@ -88,6 +88,9 @@ class ClipboardAndroid : public Clipboard {
   void ReadRTF(ClipboardBuffer buffer,
                const DataTransferEndpoint* data_dst,
                std::string* result) const override;
+  void ReadPng(ClipboardBuffer buffer,
+               const DataTransferEndpoint* data_dst,
+               ReadPngCallback callback) const override;
   void ReadImage(ClipboardBuffer buffer,
                  const DataTransferEndpoint* data_dst,
                  ReadImageCallback callback) const override;

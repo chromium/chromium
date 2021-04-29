@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
@@ -17,6 +18,7 @@
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -143,6 +145,9 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost {
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplScanTest,
                            PerformPasteIfContentAllowed);
 
+  // TODO(crbug.com/1201018): Integrate this with mojo.
+  using ReadPngCallback = base::OnceCallback<void(mojo_base::BigBuffer)>;
+
   // mojom::ClipboardHost
   void GetSequenceNumber(ui::ClipboardBuffer clipboard_buffer,
                          GetSequenceNumberCallback callback) override;
@@ -159,6 +164,7 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost {
                ReadSvgCallback callback) override;
   void ReadRtf(ui::ClipboardBuffer clipboard_buffer,
                ReadRtfCallback callback) override;
+  void ReadPng(ui::ClipboardBuffer clipboard_buffer, ReadPngCallback callback);
   void ReadImage(ui::ClipboardBuffer clipboard_buffer,
                  ReadImageCallback callback) override;
   void ReadFiles(ui::ClipboardBuffer clipboard_buffer,
@@ -197,6 +203,9 @@ class CONTENT_EXPORT ClipboardHostImpl : public blink::mojom::ClipboardHost {
       IsClipboardPasteContentAllowedCallback callback,
       bool is_allowed);
 
+  void OnReadPng(ui::ClipboardBuffer clipboard_buffer,
+                 ReadPngCallback callback,
+                 const std::vector<uint8_t>& data);
   void OnReadImage(ui::ClipboardBuffer clipboard_buffer,
                    ReadImageCallback callback,
                    const SkBitmap& bitmap);

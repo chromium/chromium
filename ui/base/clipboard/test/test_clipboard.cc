@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -227,6 +228,13 @@ void TestClipboard::ReadRTF(ClipboardBuffer buffer,
   auto it = store.data.find(ClipboardFormatType::GetRtfType());
   if (it != store.data.end())
     *result = it->second;
+}
+
+void TestClipboard::ReadPng(ClipboardBuffer buffer,
+                            const DataTransferEndpoint* data_dst,
+                            ReadPngCallback callback) const {
+  // TODO(crbug.com/1201018): Implement this.
+  NOTIMPLEMENTED();
 }
 
 void TestClipboard::ReadImage(ClipboardBuffer buffer,

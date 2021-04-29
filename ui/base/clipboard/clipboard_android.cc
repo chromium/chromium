@@ -18,6 +18,7 @@
 #include "base/containers/contains.h"
 #include "base/lazy_instance.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/post_task.h"
@@ -63,6 +64,7 @@ namespace {
 
 constexpr char kPngExtension[] = ".png";
 
+using ReadPngCallback = ClipboardAndroid::ReadPngCallback;
 using ReadImageCallback = ClipboardAndroid::ReadImageCallback;
 
 // Fetching image data from Java.
@@ -566,6 +568,16 @@ void ClipboardAndroid::ReadRTF(ClipboardBuffer buffer,
                                const DataTransferEndpoint* data_dst,
                                std::string* result) const {
   DCHECK(CalledOnValidThread());
+  NOTIMPLEMENTED();
+}
+
+// |data_dst| is not used. It's only passed to be consistent with other
+// platforms.
+void ClipboardAndroid::ReadPng(ClipboardBuffer buffer,
+                               const DataTransferEndpoint* data_dst,
+                               ReadPngCallback callback) const {
+  DCHECK(CalledOnValidThread());
+  // TODO(crbug.com/1201018): Implement this.
   NOTIMPLEMENTED();
 }
 

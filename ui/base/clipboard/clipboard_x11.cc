@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
@@ -203,6 +204,15 @@ void ClipboardX11::ReadRTF(ClipboardBuffer buffer,
                   ClipboardFormatType::GetRtfType())));
   if (data.IsValid())
     data.AssignTo(result);
+}
+
+// |data_dst| is not used. It's only passed to be consistent with other
+// platforms.
+void ClipboardX11::ReadPng(ClipboardBuffer buffer,
+                           const DataTransferEndpoint* data_dst,
+                           ReadPngCallback callback) const {
+  // TODO(crbug.com/1201018): Implement this.
+  NOTIMPLEMENTED();
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
