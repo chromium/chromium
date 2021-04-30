@@ -93,3 +93,32 @@ TEST_F(
         mockFeedback.replay();
       });
     });
+
+// Ensures behavior when IME candidates are selected.
+TEST_F('ChromeVoxDesktopAutomationHandlerTest', 'ImeCandidate', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `<button>First</button><button>Second</button>`;
+  this.runWithLoadedTree(site, function(root) {
+    const candidates = root.findAll({role: RoleType.BUTTON});
+    const first = candidates[0];
+    const second = candidates[1];
+    assertNotNullNorUndefined(first);
+    assertNotNullNorUndefined(second);
+    // Fake roles to imitate IME candidates.
+    Object.defineProperty(first, 'role', {get: () => RoleType.IME_CANDIDATE});
+    Object.defineProperty(second, 'role', {get: () => RoleType.IME_CANDIDATE});
+    const selectFirst = new CustomAutomationEvent(EventType.SELECTION, first);
+    const selectSecond = new CustomAutomationEvent(EventType.SELECTION, second);
+    mockFeedback.call(() => this.handler_.onSelection(selectFirst))
+        .expectSpeech('First')
+        .expectSpeech('F: foxtrot, i: india, r: romeo, s: sierra, t: tango')
+        .call(() => this.handler_.onSelection(selectSecond))
+        .expectSpeech('Second')
+        .expectSpeech(
+            'S: sierra, e: echo, c: charlie, o: oscar, n: november, d: delta')
+        .call(() => this.handler_.onSelection(selectFirst))
+        .expectSpeech('First')
+        .expectSpeech(/foxtrot/)
+        .replay();
+  });
+});

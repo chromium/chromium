@@ -675,6 +675,9 @@ gfx::Rect BubbleDialogDelegate::GetBubbleBounds() {
 }
 
 ax::mojom::Role BubbleDialogDelegate::GetAccessibleWindowRole() {
+  if (WidgetDelegate::GetAccessibleWindowRole() == ax::mojom::Role::kNone)
+    return ax::mojom::Role::kNone;
+
   // If something in the dialog has initial focus, use the dialog role.
   // Screen readers understand what to announce when focus moves within one.
   if (GetInitiallyFocusedView())

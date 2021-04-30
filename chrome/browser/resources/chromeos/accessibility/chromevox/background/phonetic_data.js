@@ -66,7 +66,7 @@ PhoneticData.forText = function(text, locale) {
   const chars = [...text];
   for (const char of chars) {
     const phoneticText = PhoneticData.forCharacter(char, locale);
-    result.push(char + phoneticText);
+    result.push(char + ': ' + phoneticText);
   }
   return result.join(', ');
 };

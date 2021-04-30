@@ -3330,4 +3330,7 @@
   <message desc="Text content for the congratulations page in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_COMPLETE_MORE_TUTORIALS_TEXT">
     You can always view tutorials by opening the menus with a four-finger tap. Then activate the tutorial under the “ChromeVox” section.
   </message>
+  <message desc="Spoken to describe a candidate in the IME conversion window." name="IDS_CHROMEVOX_IME_CANDIDATE" is_accessibility_with_no_ui="true">
+    Text conversion candidate
+  </message>
 </grit-part>

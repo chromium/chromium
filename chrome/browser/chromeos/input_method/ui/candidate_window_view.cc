@@ -157,6 +157,8 @@ CandidateWindowView::CandidateWindowView(gfx::NativeView parent)
   DCHECK(parent);
   set_parent_window(parent);
   set_margins(gfx::Insets());
+  // Ignore this role for accessibility purposes.
+  SetAccessibleRole(ax::mojom::Role::kNone);
 
   // When BubbleDialogDelegateView creates its frame view it will create a
   // bubble border with a non-zero corner radius by default.

@@ -2509,6 +2509,7 @@ Output.ROLE_INFO_ = {
   image: {
     msgId: 'role_img',
   },
+  imeCandidate: {msgId: 'ime_candidate', ignoreAncestry: true},
   inputTime: {msgId: 'input_type_time', inherits: 'abstractContainer'},
   link: {msgId: 'role_link', earconId: 'LINK'},
   list: {msgId: 'role_list', inherits: 'abstractList'},
