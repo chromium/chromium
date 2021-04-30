@@ -25,7 +25,6 @@
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/image/image_skia.h"
@@ -841,13 +840,6 @@ class SearchBoxViewAutocompleteTest : public SearchBoxViewTest {
   SearchBoxViewAutocompleteTest() = default;
   ~SearchBoxViewAutocompleteTest() override = default;
 
-  // Overridden from testing::Test
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {app_list_features::kEnableAppListSearchAutocomplete}, {});
-    SearchBoxViewTest::SetUp();
-  }
-
   // Expect the entire autocomplete suggestion if |should_autocomplete| is true,
   // expect only typed characters otherwise.
   void ExpectAutocompleteSuggestion(bool should_autocomplete) {
@@ -952,8 +944,6 @@ class SearchBoxViewAutocompleteTest : public SearchBoxViewTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   DISALLOW_COPY_AND_ASSIGN(SearchBoxViewAutocompleteTest);
 };
 

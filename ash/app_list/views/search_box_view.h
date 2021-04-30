@@ -176,9 +176,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   AppListView* app_list_view_;
   ContentsView* contents_view_ = nullptr;
 
-  // True if app list search autocomplete is enabled.
-  const bool is_app_list_search_autocomplete_enabled_;
-
   // Whether tablet mode is active.
   bool is_tablet_mode_ = false;
 

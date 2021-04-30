@@ -21,9 +21,6 @@ namespace app_list_features {
 // Enables in-app data search.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableAppDataSearch;
 
-// Enables the feature to autocomplete text typed in the AppList search box.
-ASH_PUBLIC_EXPORT extern const base::Feature kEnableAppListSearchAutocomplete;
-
 // Enable app ranking models.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableAppRanker;
 
@@ -86,7 +83,6 @@ ASH_PUBLIC_EXPORT extern const base::Feature kCategoricalSearch;
 ASH_PUBLIC_EXPORT extern const base::Feature kLauncherQueryHighlighting;
 
 bool ASH_PUBLIC_EXPORT IsAppDataSearchEnabled();
-bool ASH_PUBLIC_EXPORT IsAppListSearchAutocompleteEnabled();
 bool ASH_PUBLIC_EXPORT IsAppRankerEnabled();
 bool ASH_PUBLIC_EXPORT IsZeroStateAppsRankerEnabled();
 bool ASH_PUBLIC_EXPORT IsQueryBasedMixedTypesRankerEnabled();

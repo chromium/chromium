@@ -4178,12 +4178,6 @@ const char kEnableAppGridGhostName[] = "App Grid Ghosting";
 const char kEnableAppGridGhostDescription[] =
     "Enables ghosting during an item drag in launcher.";
 
-const char kEnableAppListSearchAutocompleteName[] =
-    "App List Search Autocomplete";
-const char kEnableAppListSearchAutocompleteDescription[] =
-    "Allow App List search box to autocomplete queries for Google searches and "
-    "apps.";
-
 const char kEnableArcUnifiedAudioFocusName[] =
     "Enable unified audio focus on ARC";
 const char kEnableArcUnifiedAudioFocusDescription[] =

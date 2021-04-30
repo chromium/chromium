@@ -89,9 +89,7 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
                              AppListView* app_list_view)
     : SearchBoxViewBase(delegate),
       view_delegate_(view_delegate),
-      app_list_view_(app_list_view),
-      is_app_list_search_autocomplete_enabled_(
-          app_list_features::IsAppListSearchAutocompleteEnabled()) {}
+      app_list_view_(app_list_view) {}
 
 SearchBoxView::~SearchBoxView() {
   search_model_->search_box()->RemoveObserver(this);
@@ -805,8 +803,7 @@ void SearchBoxView::ShowAssistantChanged() {
 bool SearchBoxView::ShouldProcessAutocomplete() {
   // IME sets composition text while the user is typing, so avoid handle
   // autocomplete in this case to avoid conflicts.
-  return is_app_list_search_autocomplete_enabled_ &&
-         !(search_box()->IsIMEComposing() && highlight_range_.is_empty());
+  return !(search_box()->IsIMEComposing() && highlight_range_.is_empty());
 }
 
 void SearchBoxView::ResetHighlightRange() {

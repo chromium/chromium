@@ -2408,9 +2408,6 @@ extern const char kEnableAppDataSearchDescription[];
 extern const char kEnableAppGridGhostName[];
 extern const char kEnableAppGridGhostDescription[];
 
-extern const char kEnableAppListSearchAutocompleteName[];
-extern const char kEnableAppListSearchAutocompleteDescription[];
-
 extern const char kEnableAppReinstallZeroStateName[];
 extern const char kEnableAppReinstallZeroStateDescription[];
 
