@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ACCESSIBILITY_CAPTION_CONTROLLER_H_
 
 #include <memory>
-#include <unordered_map>
 
 #include "chrome/browser/accessibility/soda_installer.h"
 #include "chrome/common/caption.mojom.h"

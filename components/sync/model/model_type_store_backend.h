@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <string>
-#include <unordered_map>
 
 #include "base/files/file_path.h"
 #include "base/macros.h"

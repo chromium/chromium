@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <string>
-#include <unordered_map>
 
 #include "base/macros.h"
 #include "chrome/browser/profiles/profile.h"

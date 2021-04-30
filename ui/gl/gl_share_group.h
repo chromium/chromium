@@ -6,7 +6,6 @@
 #define UI_GL_GL_SHARE_GROUP_H_
 
 #include <set>
-#include <unordered_map>
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"

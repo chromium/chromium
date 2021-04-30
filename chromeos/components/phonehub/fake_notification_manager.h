@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_PHONEHUB_FAKE_NOTIFICATION_MANAGER_H_
 #define CHROMEOS_COMPONENTS_PHONEHUB_FAKE_NOTIFICATION_MANAGER_H_
 
-#include <unordered_map>
 #include <vector>
 
 #include "base/containers/flat_set.h"

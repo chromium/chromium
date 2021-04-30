@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_VIZ_SERVICE_FRAME_SINKS_VIDEO_DETECTOR_H_
 #define COMPONENTS_VIZ_SERVICE_FRAME_SINKS_VIDEO_DETECTOR_H_
 
-#include <unordered_map>
-
 #include "base/sequenced_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/timer/timer.h"

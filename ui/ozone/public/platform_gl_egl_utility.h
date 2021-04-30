@@ -6,7 +6,6 @@
 #define UI_OZONE_PUBLIC_PLATFORM_GL_EGL_UTILITY_H_
 
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "base/component_export.h"

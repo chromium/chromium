@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_METRICS_PAGELOAD_FOREGROUND_DURATION_TAB_HELPER_H_
 
 #include <memory>
-#include <unordered_map>
 
 #include "base/scoped_observer.h"
 #include "base/time/time.h"

@@ -9,7 +9,6 @@
 #include <stdint.h>
 
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "ui/accessibility/ax_base_export.h"

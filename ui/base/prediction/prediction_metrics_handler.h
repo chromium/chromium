@@ -7,7 +7,6 @@
 
 #include <deque>
 #include <string>
-#include <unordered_map>
 
 #include "base/component_export.h"
 #include "base/optional.h"

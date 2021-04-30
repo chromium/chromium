@@ -6,7 +6,6 @@
 #define CONTENT_RENDERER_ACCESSIBILITY_RENDER_ACCESSIBILITY_IMPL_H_
 
 #include <memory>
-#include <unordered_map>
 #include <vector>
 
 #include "base/macros.h"

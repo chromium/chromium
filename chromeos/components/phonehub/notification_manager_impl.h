@@ -5,8 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_PHONEHUB_NOTIFICATION_MANAGER_IMPL_H_
 #define CHROMEOS_COMPONENTS_PHONEHUB_NOTIFICATION_MANAGER_IMPL_H_
 
-#include <unordered_map>
-
 #include "chromeos/components/phonehub/notification.h"
 #include "chromeos/components/phonehub/notification_manager.h"
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"

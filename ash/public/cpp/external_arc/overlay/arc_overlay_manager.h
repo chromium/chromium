@@ -5,8 +5,6 @@
 #ifndef ASH_PUBLIC_CPP_EXTERNAL_ARC_OVERLAY_ARC_OVERLAY_MANAGER_H_
 #define ASH_PUBLIC_CPP_EXTERNAL_ARC_OVERLAY_ARC_OVERLAY_MANAGER_H_
 
-#include <unordered_map>
-
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"

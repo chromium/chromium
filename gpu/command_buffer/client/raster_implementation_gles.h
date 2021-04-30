@@ -5,8 +5,6 @@
 #ifndef GPU_COMMAND_BUFFER_CLIENT_RASTER_IMPLEMENTATION_GLES_H_
 #define GPU_COMMAND_BUFFER_CLIENT_RASTER_IMPLEMENTATION_GLES_H_
 
-#include <unordered_map>
-
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/optional.h"

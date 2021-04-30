@@ -10,7 +10,6 @@
 #include <xf86drmMode.h>
 #include <map>
 #include <memory>
-#include <unordered_map>
 #include <vector>
 
 #include "base/callback.h"

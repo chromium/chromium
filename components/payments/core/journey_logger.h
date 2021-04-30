@@ -6,7 +6,6 @@
 #define COMPONENTS_PAYMENTS_CORE_JOURNEY_LOGGER_H_
 
 #include <string>
-#include <unordered_map>
 
 #include "base/macros.h"
 #include "base/time/time.h"

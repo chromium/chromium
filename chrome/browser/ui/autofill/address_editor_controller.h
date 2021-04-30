@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_AUTOFILL_ADDRESS_EDITOR_CONTROLLER_H_
 
 #include <memory>
-#include <unordered_map>
 #include <vector>
 
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
