@@ -221,9 +221,11 @@ void HostChildURLLoaderFactoryBundle::AddObserver(
 
 void HostChildURLLoaderFactoryBundle::RemoveObserver(
     TrackedChildURLLoaderFactoryBundle* observer) {
+  recordreplay::Assert("HostChildURLLoaderFactoryBundle::RemoveObserver Start");
   DCHECK(IsMainThread()) << "Should run in the main renderer thread";
   DCHECK(observer_list_);
   observer_list_->erase(observer);
+  recordreplay::Assert("HostChildURLLoaderFactoryBundle::RemoveObserver Done");
 }
 
 void HostChildURLLoaderFactoryBundle::NotifyUpdateOnMainOrWorkerThread(
