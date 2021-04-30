@@ -94,24 +94,29 @@ bool DlpContentManager::IsPrintingRestricted(
   web_contents =
       guest_view ? guest_view->embedder_web_contents() : web_contents;
 
-  const bool restricted = GetConfidentialRestrictions(web_contents)
-                              .HasRestriction(DlpContentRestriction::kPrint);
-  DlpBooleanHistogram(dlp::kPrintingBlockedUMA, restricted);
-  if (restricted) {
+  const DlpRulesManager::Level level =
+      GetConfidentialRestrictions(web_contents)
+          .GetRestriction(DlpContentRestriction::kPrint);
+  DlpBooleanHistogram(dlp::kPrintingBlockedUMA,
+                      level == DlpRulesManager::Level::kBlock);
+  if (level == DlpRulesManager::Level::kBlock ||
+      level == DlpRulesManager::Level::kReport) {
     SYSLOG(INFO) << "DLP blocked printing";
 
-    reporting_manager_->ReportPrintingEvent(web_contents,
-                                            DlpRulesManager::Level::kBlock);
+    if (reporting_manager_)
+      reporting_manager_->ReportPrintingEvent(web_contents,
+                                              DlpRulesManager::Level::kBlock);
   }
 
-  return restricted;
+  return level == DlpRulesManager::Level::kBlock;
 }
 
 bool DlpContentManager::IsScreenCaptureRestricted(
     const content::DesktopMediaID& media_id) const {
   if (media_id.type == content::DesktopMediaID::Type::TYPE_SCREEN) {
-    const bool restricted = GetOnScreenPresentRestrictions().HasRestriction(
-        DlpContentRestriction::kScreenShare);
+    const bool restricted = GetOnScreenPresentRestrictions().GetRestriction(
+                                DlpContentRestriction::kScreenShare) ==
+                            DlpRulesManager::Level::kBlock;
     if (restricted)
       SYSLOG(INFO) << "DLP blocked screen sharing";
     DlpBooleanHistogram(dlp::kScreenShareBlockedUMA, restricted);
@@ -127,7 +132,8 @@ bool DlpContentManager::IsScreenCaptureRestricted(
   if (media_id.type == content::DesktopMediaID::Type::TYPE_WEB_CONTENTS) {
     const bool restricted =
         GetConfidentialRestrictions(web_contents)
-            .HasRestriction(DlpContentRestriction::kScreenShare);
+            .GetRestriction(DlpContentRestriction::kScreenShare) ==
+        DlpRulesManager::Level::kBlock;
     if (restricted)
       SYSLOG(INFO) << "DLP blocked screen sharing";
     DlpBooleanHistogram(dlp::kScreenShareBlockedUMA, restricted);
@@ -142,7 +148,8 @@ bool DlpContentManager::IsScreenCaptureRestricted(
   }
   for (auto& entry : confidential_web_contents_) {
     aura::Window* web_contents_window = entry.first->GetNativeView();
-    if (entry.second.HasRestriction(DlpContentRestriction::kScreenShare) &&
+    if (entry.second.GetRestriction(DlpContentRestriction::kScreenShare) ==
+            DlpRulesManager::Level::kBlock &&
         window->Contains(web_contents_window)) {
       SYSLOG(INFO) << "DLP blocked screen sharing";
       DlpBooleanHistogram(dlp::kScreenShareBlockedUMA, true);
@@ -169,10 +176,12 @@ void DlpContentManager::OnVideoCaptureStopped() {
 }
 
 bool DlpContentManager::IsCaptureModeInitRestricted() const {
-  const bool restricted = GetOnScreenPresentRestrictions().HasRestriction(
-                              DlpContentRestriction::kScreenshot) ||
-                          GetOnScreenPresentRestrictions().HasRestriction(
-                              DlpContentRestriction::kVideoCapture);
+  const bool restricted = GetOnScreenPresentRestrictions().GetRestriction(
+                              DlpContentRestriction::kScreenshot) ==
+                              DlpRulesManager::Level::kBlock ||
+                          GetOnScreenPresentRestrictions().GetRestriction(
+                              DlpContentRestriction::kVideoCapture) ==
+                              DlpRulesManager::Level::kBlock;
   if (restricted)
     SYSLOG(INFO) << "DLP blocked taking a screen capture";
   DlpBooleanHistogram(dlp::kCaptureModeInitBlockedUMA, restricted);
@@ -306,10 +315,12 @@ DlpContentRestrictionSet DlpContentManager::GetRestrictionSetForURL(
                               DlpContentRestriction::kScreenShare}}};
 
   for (const auto& restriction : kRestrictionsArray) {
-    if (dlp_rules_manager->IsRestricted(url, restriction.first) ==
-        DlpRulesManager::Level::kBlock) {
-      set.SetRestriction(restriction.second);
-    }
+    DlpRulesManager::Level level =
+        dlp_rules_manager->IsRestricted(url, restriction.first);
+    if (level == DlpRulesManager::Level::kNotSet ||
+        level == DlpRulesManager::Level::kAllow)
+      continue;
+    set.SetRestriction(restriction.second, level);
   }
 
   return set;
@@ -349,19 +360,23 @@ void DlpContentManager::MaybeChangeOnScreenRestrictions() {
 void DlpContentManager::OnScreenRestrictionsChanged(
     const DlpContentRestrictionSet& added_restrictions,
     const DlpContentRestrictionSet& removed_restrictions) const {
-  DCHECK(!(added_restrictions.HasRestriction(
-               DlpContentRestriction::kPrivacyScreen) &&
-           removed_restrictions.HasRestriction(
-               DlpContentRestriction::kPrivacyScreen)));
-  if (added_restrictions.HasRestriction(
-          DlpContentRestriction::kPrivacyScreen)) {
+  DCHECK(!(added_restrictions.GetRestriction(
+               DlpContentRestriction::kPrivacyScreen) ==
+               DlpRulesManager::Level::kBlock &&
+           removed_restrictions.GetRestriction(
+               DlpContentRestriction::kPrivacyScreen) ==
+               DlpRulesManager::Level::kBlock));
+  if (added_restrictions.GetRestriction(
+          DlpContentRestriction::kPrivacyScreen) ==
+      DlpRulesManager::Level::kBlock) {
     SYSLOG(INFO) << "DLP enforced privacy screen";
     DlpBooleanHistogram(dlp::kPrivacyScreenEnforcedUMA, true);
     ash::PrivacyScreenDlpHelper::Get()->SetEnforced(true);
   }
 
-  if (removed_restrictions.HasRestriction(
-          DlpContentRestriction::kPrivacyScreen)) {
+  if (removed_restrictions.GetRestriction(
+          DlpContentRestriction::kPrivacyScreen) ==
+      DlpRulesManager::Level::kBlock) {
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&DlpContentManager::MaybeRemovePrivacyScreenEnforcement,
@@ -371,8 +386,9 @@ void DlpContentManager::OnScreenRestrictionsChanged(
 }
 
 void DlpContentManager::MaybeRemovePrivacyScreenEnforcement() const {
-  if (!GetOnScreenPresentRestrictions().HasRestriction(
-          DlpContentRestriction::kPrivacyScreen)) {
+  if (GetOnScreenPresentRestrictions().GetRestriction(
+          DlpContentRestriction::kPrivacyScreen) !=
+      DlpRulesManager::Level::kBlock) {
     SYSLOG(INFO) << "DLP removed enforcement of privacy screen";
     DlpBooleanHistogram(dlp::kPrivacyScreenEnforcedUMA, false);
     ash::PrivacyScreenDlpHelper::Get()->SetEnforced(false);
@@ -384,7 +400,8 @@ bool DlpContentManager::IsAreaRestricted(
     DlpContentRestriction restriction) const {
   // Fullscreen - restricted if any confidential data is visible.
   if (area.type == ScreenshotType::kAllRootWindows) {
-    return GetOnScreenPresentRestrictions().HasRestriction(restriction);
+    return GetOnScreenPresentRestrictions().GetRestriction(restriction) ==
+           DlpRulesManager::Level::kBlock;
   }
 
   // Window - restricted if the window contains confidential data.
@@ -392,7 +409,8 @@ bool DlpContentManager::IsAreaRestricted(
     DCHECK(area.window);
     for (auto& entry : confidential_web_contents_) {
       aura::Window* web_contents_window = entry.first->GetNativeView();
-      if (entry.second.HasRestriction(restriction) &&
+      if (entry.second.GetRestriction(restriction) ==
+              DlpRulesManager::Level::kBlock &&
           area.window->Contains(web_contents_window)) {
         return true;
       }
@@ -407,7 +425,8 @@ bool DlpContentManager::IsAreaRestricted(
   // with the area.
   for (auto& entry : confidential_web_contents_) {
     if (entry.first->GetVisibility() != content::Visibility::VISIBLE ||
-        !entry.second.HasRestriction(restriction)) {
+        entry.second.GetRestriction(restriction) !=
+            DlpRulesManager::Level::kBlock) {
       continue;
     }
     aura::Window* web_contents_window = entry.first->GetNativeView();

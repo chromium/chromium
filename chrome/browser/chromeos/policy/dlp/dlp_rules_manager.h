@@ -53,13 +53,14 @@ class DlpRulesManager : public KeyedService {
   };
 
   // The enforcement level of the restriction set by DataLeakPreventionRulesList
-  // policy.
+  // policy. Should be listed in the order of increased priority.
   enum class Level {
-    kNotSet,  // Restriction level is not set.
-    kBlock,   // Sets the restriction level to block the user on every action.
-    kAllow,   // Sets the restriction level to allow (no restriction).
-    kWarn,    // Sets the restriction level to warn the user on every action.
-    kMaxValue = kWarn
+    kNotSet = 0,  // Restriction level is not set.
+    kReport = 1,  // Restriction level to only report on every action.
+    kWarn = 2,    // Restriction level to warn the user on every action.
+    kBlock = 3,   // Restriction level to block the user on every action.
+    kAllow = 4,   // Restriction level to allow (no restriction).
+    kMaxValue = kAllow
   };
 
   ~DlpRulesManager() override = default;

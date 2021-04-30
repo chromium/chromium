@@ -77,22 +77,6 @@ DlpRulesManager::Component GetComponentMapping(const std::string& component) {
              : it->second;
 }
 
-uint8_t GetPriorityMapping(const DlpRulesManager::Level level) {
-  static constexpr auto kPrioritiesMap =
-      base::MakeFixedFlatMap<DlpRulesManager::Level, uint8_t>(
-          {{DlpRulesManager::Level::kNotSet, 0},
-           {DlpRulesManager::Level::kWarn, 1},
-           {DlpRulesManager::Level::kBlock, 2},
-           {DlpRulesManager::Level::kAllow, 3}});
-  return kPrioritiesMap.at(level);
-}
-
-DlpRulesManager::Level GetMaxLevel(const DlpRulesManager::Level& level_1,
-                                   const DlpRulesManager::Level& level_2) {
-  return GetPriorityMapping(level_1) > GetPriorityMapping(level_2) ? level_1
-                                                                   : level_2;
-}
-
 // Creates `urls` conditions, saves patterns strings mapping in
 // `patterns_mapping`, and saves conditions ids to rules ids mapping in `map`.
 void AddUrlConditions(url_matcher::URLMatcher* matcher,
@@ -157,6 +141,7 @@ void OnSetDlpFilesPolicy(const ::dlp::SetDlpFilesPolicyResponse response) {
   static constexpr auto kLevelsMap =
       base::MakeFixedFlatMap<DlpRulesManager::Level, ::dlp::DlpRuleLevel>(
           {{DlpRulesManager::Level::kNotSet, ::dlp::DlpRuleLevel::UNSPECIFIED},
+           {DlpRulesManager::Level::kReport, ::dlp::DlpRuleLevel::UNSPECIFIED},
            {DlpRulesManager::Level::kWarn, ::dlp::DlpRuleLevel::UNSPECIFIED},
            {DlpRulesManager::Level::kBlock, ::dlp::DlpRuleLevel::BLOCK},
            {DlpRulesManager::Level::kAllow, ::dlp::DlpRuleLevel::ALLOW}});
@@ -419,7 +404,7 @@ DlpRulesManager::Level DlpRulesManagerImpl::GetMaxJoinRestrictionLevel(
     if (restriction_level_it == restriction_levels.end()) {
       continue;
     }
-    max_level = GetMaxLevel(max_level, restriction_level_it->second);
+    max_level = std::max(max_level, restriction_level_it->second);
   }
 
   if (max_level == Level::kNotSet)

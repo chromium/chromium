@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_CONTENT_RESTRICTION_SET_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_CONTENT_RESTRICTION_SET_H_
 
-#include <stdint.h>
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+
+#include <array>
 
 namespace policy {
 
@@ -14,24 +16,26 @@ namespace policy {
 // correspond to the type in which the mask is stored.
 enum DlpContentRestriction {
   // Do not allow any screenshots of the corresponding content.
-  kScreenshot = 1 << 0,
+  kScreenshot = 0,
   // Enforce ePrivacy screen when content is visible.
-  kPrivacyScreen = 1 << 1,
+  kPrivacyScreen = 1,
   // Do not allow printing.
-  kPrint = 1 << 2,
+  kPrint = 2,
   // Do not allow video capturing of the content.
-  kVideoCapture = 1 << 3,
+  kVideoCapture = 3,
   // Do not allow screen share.
-  kScreenShare = 1 << 4,
+  kScreenShare = 4,
+  // Should be equal to the last restriction.
+  kMaxValue = kScreenShare,
 };
 
-// Represents set of restrictions applied to on-screen content.
-// Internally stores it in a single integer bitmask.
+// Represents set of levels of all restrictions applied to on-screen content.
 // Allowed to be copied and assigned.
 class DlpContentRestrictionSet {
  public:
   DlpContentRestrictionSet();
-  explicit DlpContentRestrictionSet(DlpContentRestriction restriction);
+  DlpContentRestrictionSet(DlpContentRestriction restriction,
+                           DlpRulesManager::Level level);
 
   DlpContentRestrictionSet(const DlpContentRestrictionSet& restriction_set);
   DlpContentRestrictionSet& operator=(const DlpContentRestrictionSet&);
@@ -41,16 +45,18 @@ class DlpContentRestrictionSet {
   bool operator==(const DlpContentRestrictionSet& other) const;
   bool operator!=(const DlpContentRestrictionSet& other) const;
 
-  // Adds the restriction to the set if not yet.
-  void SetRestriction(DlpContentRestriction restriction);
+  // Sets the |restriction| to the |level| if not set to a higher one yet.
+  void SetRestriction(DlpContentRestriction restriction,
+                      DlpRulesManager::Level level);
 
-  // Returns whether the restriction is present in the set.
-  bool HasRestriction(DlpContentRestriction restriction) const;
+  // Returns the level for the |restriction|.
+  DlpRulesManager::Level GetRestriction(
+      DlpContentRestriction restriction) const;
 
   // Returns whether no restrictions should be applied.
-  bool IsEmpty() const { return restriction_mask_ == 0; }
+  bool IsEmpty() const;
 
-  // Adds all the restrictions from |other| to this.
+  // Sets all the restrictions to the highest level from |other| and this.
   void UnionWith(const DlpContentRestrictionSet& other);
 
   // Returns a new set that contains restrictions that exist in this, but not in
@@ -59,10 +65,9 @@ class DlpContentRestrictionSet {
       const DlpContentRestrictionSet& other) const;
 
  private:
-  explicit DlpContentRestrictionSet(uint8_t mask);
-
-  // Bitmask of the restrictions.
-  uint8_t restriction_mask_ = 0;
+  // The current level of each of the restrictions.
+  std::array<DlpRulesManager::Level, DlpContentRestriction::kMaxValue + 1>
+      restrictions_;
 };
 
 }  // namespace policy

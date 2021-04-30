@@ -27,7 +27,7 @@ class DlpContentManagerTestHelper {
   ~DlpContentManagerTestHelper();
 
   void ChangeConfidentiality(content::WebContents* web_contents,
-                             DlpContentRestrictionSet restrictions);
+                             const DlpContentRestrictionSet& restrictions);
 
   void ChangeVisibility(content::WebContents* web_contents);
 

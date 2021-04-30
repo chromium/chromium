@@ -22,7 +22,8 @@ using testing::Return;
 namespace {
 const DlpContentRestrictionSet kEmptyRestrictionSet;
 const DlpContentRestrictionSet kNonEmptyRestrictionSet(
-    DlpContentRestriction::kScreenshot);
+    DlpContentRestriction::kScreenshot,
+    DlpRulesManager::Level::kBlock);
 }  // namespace
 
 class DlpContentTabHelperTest : public ChromeRenderViewHostTestHarness {

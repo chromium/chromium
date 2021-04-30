@@ -28,7 +28,8 @@ namespace {
 
 const DlpContentRestrictionSet kEmptyRestrictionSet;
 const DlpContentRestrictionSet kScreenshotRestrictionSet(
-    DlpContentRestriction::kScreenshot);
+    DlpContentRestriction::kScreenshot,
+    DlpRulesManager::Level::kBlock);
 
 }  // namespace
 

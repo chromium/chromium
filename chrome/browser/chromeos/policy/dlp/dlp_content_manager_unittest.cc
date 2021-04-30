@@ -31,12 +31,15 @@ namespace policy {
 namespace {
 const DlpContentRestrictionSet kEmptyRestrictionSet;
 const DlpContentRestrictionSet kScreenshotRestricted(
-    DlpContentRestriction::kScreenshot);
+    DlpContentRestriction::kScreenshot,
+    DlpRulesManager::Level::kBlock);
 const DlpContentRestrictionSet kNonEmptyRestrictionSet = kScreenshotRestricted;
 const DlpContentRestrictionSet kPrivacyScreenEnforced(
-    DlpContentRestriction::kPrivacyScreen);
+    DlpContentRestriction::kPrivacyScreen,
+    DlpRulesManager::Level::kBlock);
 const DlpContentRestrictionSet kPrintingRestricted(
-    DlpContentRestriction::kPrint);
+    DlpContentRestriction::kPrint,
+    DlpRulesManager::Level::kBlock);
 
 class MockPrivacyScreenHelper : public ash::PrivacyScreenDlpHelper {
  public:

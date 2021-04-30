@@ -22,7 +22,7 @@ DlpContentManagerTestHelper::~DlpContentManagerTestHelper() {
 
 void DlpContentManagerTestHelper::ChangeConfidentiality(
     content::WebContents* web_contents,
-    DlpContentRestrictionSet restrictions) {
+    const DlpContentRestrictionSet& restrictions) {
   DCHECK(manager_);
   manager_->OnConfidentialityChanged(web_contents, restrictions);
 }

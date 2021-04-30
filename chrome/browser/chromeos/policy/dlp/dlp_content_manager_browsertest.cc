@@ -41,14 +41,19 @@ namespace policy {
 namespace {
 const DlpContentRestrictionSet kEmptyRestrictionSet;
 const DlpContentRestrictionSet kScreenshotRestricted(
-    DlpContentRestriction::kScreenshot);
+    DlpContentRestriction::kScreenshot,
+    DlpRulesManager::Level::kBlock);
 const DlpContentRestrictionSet kPrivacyScreenEnforced(
-    DlpContentRestriction::kPrivacyScreen);
-const DlpContentRestrictionSet kPrintRestricted(DlpContentRestriction::kPrint);
+    DlpContentRestriction::kPrivacyScreen,
+    DlpRulesManager::Level::kBlock);
+const DlpContentRestrictionSet kPrintRestricted(DlpContentRestriction::kPrint,
+                                                DlpRulesManager::Level::kBlock);
 const DlpContentRestrictionSet kVideoCaptureRestricted(
-    DlpContentRestriction::kVideoCapture);
+    DlpContentRestriction::kVideoCapture,
+    DlpRulesManager::Level::kBlock);
 const DlpContentRestrictionSet kScreenShareRestricted(
-    DlpContentRestriction::kScreenShare);
+    DlpContentRestriction::kScreenShare,
+    DlpRulesManager::Level::kBlock);
 
 constexpr char kScreenCapturePausedNotificationId[] =
     "screen_capture_dlp_paused-label";
@@ -460,7 +465,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerPolicyBrowserTest,
 
   DlpContentRestrictionSet screenshot_and_videocapture(kScreenshotRestricted);
   screenshot_and_videocapture.SetRestriction(
-      DlpContentRestriction::kVideoCapture);
+      DlpContentRestriction::kVideoCapture, DlpRulesManager::Level::kBlock);
   EXPECT_EQ(screenshot_and_videocapture,
             helper_.GetRestrictionSetForURL(GURL(kUrl1)));
   EXPECT_EQ(kPrivacyScreenEnforced,

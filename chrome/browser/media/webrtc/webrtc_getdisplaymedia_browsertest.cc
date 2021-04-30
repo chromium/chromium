@@ -177,7 +177,8 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
   EXPECT_EQ(result, "unmuted");
 
   const policy::DlpContentRestrictionSet kScreenShareRestricted(
-      policy::DlpContentRestriction::kScreenShare);
+      policy::DlpContentRestriction::kScreenShare,
+      policy::DlpRulesManager::Level::kBlock);
 
   helper.ChangeConfidentiality(tab, kScreenShareRestricted);
   content::WaitForLoadStop(tab);
