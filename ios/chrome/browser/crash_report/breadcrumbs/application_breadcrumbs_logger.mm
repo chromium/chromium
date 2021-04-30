@@ -6,9 +6,9 @@
 
 #include "base/bind.h"
 #include "base/strings/stringprintf.h"
+#include "components/breadcrumbs/core/application_breadcrumbs_not_user_action.inc"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "components/breadcrumbs/core/breadcrumb_persistent_storage_manager.h"
-#include "ios/chrome/browser/crash_report/breadcrumbs/application_breadcrumbs_not_user_action.inc"
 #import "ios/chrome/browser/crash_report/crash_report_helper.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
