@@ -66,6 +66,7 @@ class NearbyShareApiCallFlowImpl : public NearbyShareApiCallFlow,
 
   // google_apis::OAuth2ApiCallFlow:
   GURL CreateApiCallUrl() override;
+  net::HttpRequestHeaders CreateApiCallHeaders() override;
   std::string CreateApiCallBody() override;
   std::string CreateApiCallBodyContentType() override;
   std::string GetRequestTypeForBody(const std::string& body) override;

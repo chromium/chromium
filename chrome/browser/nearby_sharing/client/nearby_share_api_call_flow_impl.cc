@@ -21,6 +21,8 @@ const char kPost[] = "POST";
 const char kProtobufContentType[] = "application/x-protobuf";
 const char kQueryParameterAlternateOutputKey[] = "alt";
 const char kQueryParameterAlternateOutputProto[] = "proto";
+const char kPlatformTypeHeaderName[] = "X-Sharing-Platform-Type";
+const char kPlatformTypeHeaderValue[] = "OSType.CHROME_OS";
 
 }  // namespace
 
@@ -95,6 +97,14 @@ GURL NearbyShareApiCallFlowImpl::CreateApiCallUrl() {
   }
   NS_LOG(VERBOSE) << "Creating Nearby Share HTTP URL: " << request_url_;
   return request_url_;
+}
+
+net::HttpRequestHeaders NearbyShareApiCallFlowImpl::CreateApiCallHeaders() {
+  // Inform the server that Chrome OS is making the request; this helps with
+  // diagnostics.
+  net::HttpRequestHeaders headers;
+  headers.SetHeader(kPlatformTypeHeaderName, kPlatformTypeHeaderValue);
+  return headers;
 }
 
 std::string NearbyShareApiCallFlowImpl::CreateApiCallBody() {
