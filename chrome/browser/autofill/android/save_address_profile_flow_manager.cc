@@ -37,7 +37,7 @@ void SaveAddressProfileFlowManager::OfferSave(
   } else {
     // Fallback to the default behavior without confirmation.
     std::move(callback).Run(
-        AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted,
+        AutofillClient::SaveAddressProfileOfferUserDecision::kUserNotAsked,
         profile);
   }
 }
