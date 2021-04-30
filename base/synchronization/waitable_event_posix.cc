@@ -165,8 +165,8 @@ void WaitableEvent::Wait() {
 }
 
 bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
-  recordreplay::Assert("WaitableEvent::TimedWait Start %lu %d",
-                       recordreplay::PointerId(this), wait_delta.is_max());
+  recordreplay::Assert("WaitableEvent::TimedWait Start %lu %ld",
+                       recordreplay::PointerId(this), wait_delta.ToInternalValue());
 
   if (wait_delta <= TimeDelta()) {
     return IsSignaled();
@@ -214,7 +214,7 @@ bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
       wait_delta.is_max() ? TimeTicks::Max()
                           : subtle::TimeTicksNowIgnoringOverride() + wait_delta;
 
-  recordreplay::Assert("WaitableEvent::TimedWait #1");
+  recordreplay::Assert("WaitableEvent::TimedWait #1 %ld", end_time.ToInternalValue());
 
   for (TimeDelta remaining = wait_delta; remaining > TimeDelta() && !sw.fired();) {
     recordreplay::Assert("WaitableEvent::TimedWait #2 %d", end_time.is_max());
@@ -225,7 +225,8 @@ bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
     remaining = end_time.is_max()
                     ? TimeDelta::Max()
                     : end_time - subtle::TimeTicksNowIgnoringOverride();
-    recordreplay::Assert("WaitableEvent::TimedWait #2.1 %d %d", remaining > TimeDelta(), sw.fired());
+    recordreplay::Assert("WaitableEvent::TimedWait #2.1 %ld %d %d",
+                         remaining.ToInternalValue(), remaining > TimeDelta(), sw.fired());
   }
 
   recordreplay::Assert("WaitableEvent::TimedWait #3");
