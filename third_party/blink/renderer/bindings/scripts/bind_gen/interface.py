@@ -2272,11 +2272,14 @@ def make_no_alloc_direct_call_for_testing_callback_def(cg_context,
         make_v8_set_return_value(cg_context),
     ])
 
-    return ListNode([
+    node = ListNode([
         TextNode("#if DCHECK_IS_ON()"),
         func_def,
         TextNode("#endif  // DCHECK_IS_ON()"),
     ])
+    node.accumulate(
+        CodeGenAccumulator.require_include_headers(["base/dcheck_is_on.h"]))
+    return node
 
 
 def make_no_alloc_direct_call_for_testing_call(cg_context):
