@@ -38,6 +38,7 @@
 #include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/layer_observer.h"
 #include "ui/compositor/layer_owner.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/compositor/paint_cache.h"
 #include "ui/events/event.h"
 #include "ui/events/event_target.h"

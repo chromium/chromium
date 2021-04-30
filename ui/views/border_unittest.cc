@@ -19,6 +19,7 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/skia_util.h"
 #include "ui/views/painter.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"

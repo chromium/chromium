@@ -4,6 +4,7 @@
 
 #include "ui/views/animation/ink_drop.h"
 
+#include "ui/compositor/layer.h"
 #include "ui/views/animation/ink_drop_observer.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 

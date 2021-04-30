@@ -18,6 +18,7 @@
 #include "ui/aura/window_targeter.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/hit_test.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/native/native_view_host.h"

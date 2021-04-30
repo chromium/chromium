@@ -15,6 +15,7 @@
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/base/default_style.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/color_utils.h"

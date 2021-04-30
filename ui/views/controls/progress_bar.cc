@@ -20,6 +20,7 @@
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/skia_util.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"

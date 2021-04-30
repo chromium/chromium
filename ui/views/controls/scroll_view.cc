@@ -16,6 +16,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/overscroll/scroll_input_handler.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
