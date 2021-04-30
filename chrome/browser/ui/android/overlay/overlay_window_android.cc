@@ -82,7 +82,7 @@ void OverlayWindowAndroid::Destroy(JNIEnv* env) {
     window_android_ = nullptr;
   }
 
-  controller_->CloseAndFocusInitiator();
+  controller_->FocusInitiator();
   controller_->OnWindowDestroyed(/*should_pause_video=*/true);
 }
 

@@ -27,6 +27,7 @@ class TestPictureInPictureWindowController
 
   // PictureInPictureWindowController:
   void Show() override {}
+  void FocusInitiator() override {}
   void Close(bool) override {}
   void CloseAndFocusInitiator() override {}
   void OnWindowDestroyed(bool) override {}

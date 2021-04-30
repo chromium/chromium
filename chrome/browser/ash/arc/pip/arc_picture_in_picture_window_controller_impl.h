@@ -31,6 +31,7 @@ class ArcPictureInPictureWindowControllerImpl
 
   // PictureInPictureWindowController:
   void Show() override;
+  void FocusInitiator() override;
   void Close(bool should_pause_video) override;
   void CloseAndFocusInitiator() override;
   void OnWindowDestroyed(bool should_pause_video) override;

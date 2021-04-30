@@ -21,6 +21,10 @@ void ArcPictureInPictureWindowControllerImpl::Show() {
   // Should be a no-op on ARC. This is managed on the Android side.
 }
 
+void ArcPictureInPictureWindowControllerImpl::FocusInitiator() {
+  // Should be a no-op on ARC. This is managed on the Android side.
+}
+
 void ArcPictureInPictureWindowControllerImpl::Close(bool should_pause_video) {
   // TODO(edcourtney): Currently, |should_pause_video| will always be false
   // here, but if that changes, we should pause the video on the Android side.
