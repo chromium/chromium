@@ -406,8 +406,13 @@ TEST_F(AutofillWalletSyncBridgeTest,
   CreditCard card1 = test::GetMaskedServerCard();
   // Set the card issuer to Google.
   card1.set_card_issuer(CreditCard::Issuer::GOOGLE);
+  card1.set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::UNENROLLED);
+  card1.set_card_art_url(GURL("https://www.example.com/card.png"));
   CreditCard card2 = test::GetMaskedServerCardAmex();
   CreditCard card_with_nickname = test::GetMaskedServerCardWithNickname();
+  card2.set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::ENROLLED);
   table()->SetServerCreditCards({card1, card2, card_with_nickname});
   PaymentsCustomerData customer_data{/*customer_id=*/kCustomerDataId};
   table()->SetPaymentsCustomerData(&customer_data);
@@ -444,6 +449,14 @@ TEST_F(AutofillWalletSyncBridgeTest,
             card_specifics1.masked_card().card_issuer().issuer());
   EXPECT_EQ(sync_pb::CardIssuer::ISSUER_UNKNOWN,
             card_specifics2.masked_card().card_issuer().issuer());
+  EXPECT_EQ(sync_pb::WalletMaskedCreditCard::UNENROLLED,
+            card_specifics1.masked_card().virtual_card_enrollment_state());
+  EXPECT_EQ(sync_pb::WalletMaskedCreditCard::ENROLLED,
+            card_specifics2.masked_card().virtual_card_enrollment_state());
+  EXPECT_EQ("https://www.example.com/card.png",
+            card_specifics1.masked_card().card_art_url());
+  EXPECT_TRUE(card_specifics2.masked_card().card_art_url().empty());
+
   // Read local Wallet Data from Autofill table, and compare with expected
   // wallet specifics.
   EXPECT_THAT(
@@ -488,6 +501,9 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeSyncData_NewWalletAddressAndCard) {
   AutofillProfile address1 = test::GetServerProfile();
   table()->SetServerProfiles({address1});
   CreditCard card1 = test::GetMaskedServerCard();
+  card1.set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::UNENROLLED);
+  card1.set_card_art_url(GURL("https://www.example.com/card.png"));
   table()->SetServerCreditCards({card1});
   PaymentsCustomerData customer_data{/*customer_id=*/kCustomerDataId};
   table()->SetPaymentsCustomerData(&customer_data);
@@ -500,6 +516,9 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeSyncData_NewWalletAddressAndCard) {
   AutofillWalletSpecifics profile_specifics2;
   SetAutofillWalletSpecificsFromServerProfile(address2, &profile_specifics2);
   CreditCard card2 = test::GetMaskedServerCardAmex();
+  card2.set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::ENROLLED);
+  card2.set_card_art_url(GURL("https://www.test.com/card.png"));
   AutofillWalletSpecifics card_specifics2;
   SetAutofillWalletSpecificsFromServerCard(card2, &card_specifics2);
   AutofillWalletSpecifics customer_data_specifics;
@@ -714,6 +733,9 @@ TEST_F(AutofillWalletSyncBridgeTest,
   AutofillProfile profile = test::GetServerProfile();
   table()->SetServerProfiles({profile});
   CreditCard card = test::GetMaskedServerCard();
+  card.set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::UNENROLLED);
+  card.set_card_art_url(GURL("https://www.example.com/card.png"));
   table()->SetServerCreditCards({card});
   PaymentsCustomerData customer_data{/*customer_id=*/kCustomerDataId};
   table()->SetPaymentsCustomerData(&customer_data);
@@ -856,6 +878,9 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeSyncData_SetsAllWalletCardData) {
   card.SetNickname(u"Grocery card");
   // Set the card issuer to Google.
   card.set_card_issuer(CreditCard::Issuer::GOOGLE);
+  card.set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::UNENROLLED);
+  card.set_card_art_url(GURL("https://www.example.com/card.png"));
   AutofillWalletSpecifics card_specifics;
   SetAutofillWalletSpecificsFromServerCard(card, &card_specifics);
 
@@ -882,6 +907,9 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeSyncData_SetsAllWalletCardData) {
   EXPECT_EQ(card.nickname(), cards[0]->nickname());
   EXPECT_EQ(card.card_issuer(), cards[0]->card_issuer());
   EXPECT_EQ(card.instrument_id(), cards[0]->instrument_id());
+  EXPECT_EQ(card.virtual_card_enrollment_state(),
+            cards[0]->virtual_card_enrollment_state());
+  EXPECT_EQ(card.card_art_url(), cards[0]->card_art_url());
 
   // Also make sure that those types are not empty, to exercice all the code
   // paths.

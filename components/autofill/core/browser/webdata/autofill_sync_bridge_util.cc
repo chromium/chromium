@@ -100,11 +100,38 @@ CreditCard CardFromSpecifics(const sync_pb::WalletMaskedCreditCard& card) {
   result.SetExpirationMonth(card.exp_month());
   result.SetExpirationYear(card.exp_year());
   result.set_billing_address_id(card.billing_address_id());
-  result.set_card_issuer(
-      static_cast<CreditCard::Issuer>(card.card_issuer().issuer()));
+
+  CreditCard::Issuer issuer = CreditCard::ISSUER_UNKNOWN;
+  switch (card.card_issuer().issuer()) {
+    case sync_pb::CardIssuer::ISSUER_UNKNOWN:
+      issuer = CreditCard::ISSUER_UNKNOWN;
+      break;
+    case sync_pb::CardIssuer::GOOGLE:
+      issuer = CreditCard::GOOGLE;
+      break;
+  }
+  result.set_card_issuer(issuer);
+
   if (!card.nickname().empty())
     result.SetNickname(base::UTF8ToUTF16(card.nickname()));
   result.set_instrument_id(card.instrument_id());
+
+  CreditCard::VirtualCardEnrollmentState state = CreditCard::UNSPECIFIED;
+  switch (card.virtual_card_enrollment_state()) {
+    case sync_pb::WalletMaskedCreditCard::UNENROLLED:
+      state = CreditCard::UNENROLLED;
+      break;
+    case sync_pb::WalletMaskedCreditCard::ENROLLED:
+      state = CreditCard::ENROLLED;
+      break;
+    case sync_pb::WalletMaskedCreditCard::UNSPECIFIED:
+      state = CreditCard::UNSPECIFIED;
+      break;
+  }
+  result.set_virtual_card_enrollment_state(state);
+
+  if (!card.card_art_url().empty())
+    result.set_card_art_url(GURL(card.card_art_url()));
   return result;
 }
 
@@ -247,9 +274,37 @@ void SetAutofillWalletSpecificsFromServerCard(
   wallet_card->set_exp_year(card.expiration_year());
   if (!card.nickname().empty())
     wallet_card->set_nickname(base::UTF16ToUTF8(card.nickname()));
-  wallet_card->mutable_card_issuer()->set_issuer(
-      static_cast<sync_pb::CardIssuer::Issuer>(card.card_issuer()));
+
+  sync_pb::CardIssuer::Issuer issuer = sync_pb::CardIssuer::ISSUER_UNKNOWN;
+  switch (card.card_issuer()) {
+    case CreditCard::ISSUER_UNKNOWN:
+      issuer = sync_pb::CardIssuer::ISSUER_UNKNOWN;
+      break;
+    case CreditCard::GOOGLE:
+      issuer = sync_pb::CardIssuer::GOOGLE;
+      break;
+  }
+  wallet_card->mutable_card_issuer()->set_issuer(issuer);
+
   wallet_card->set_instrument_id(card.instrument_id());
+
+  sync_pb::WalletMaskedCreditCard::VirtualCardEnrollmentState state =
+      sync_pb::WalletMaskedCreditCard::UNSPECIFIED;
+  switch (card.virtual_card_enrollment_state()) {
+    case CreditCard::UNENROLLED:
+      state = sync_pb::WalletMaskedCreditCard::UNENROLLED;
+      break;
+    case CreditCard::ENROLLED:
+      state = sync_pb::WalletMaskedCreditCard::ENROLLED;
+      break;
+    case CreditCard::UNSPECIFIED:
+      state = sync_pb::WalletMaskedCreditCard::UNSPECIFIED;
+      break;
+  }
+  wallet_card->set_virtual_card_enrollment_state(state);
+
+  if (!card.card_art_url().is_empty())
+    wallet_card->set_card_art_url(card.card_art_url().spec());
 }
 
 void SetAutofillWalletSpecificsFromPaymentsCustomerData(

@@ -85,6 +85,9 @@ TEST_F(AutofillSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
       CreateAutofillWalletSpecificsForCard(
           /*id=*/credit_card_id_1,
           /*billing_address_id=*/address_id);
+  wallet_specifics_card1.mutable_masked_card()
+      ->set_virtual_card_enrollment_state(
+          sync_pb::WalletMaskedCreditCard::UNENROLLED);
   // Add the second card that has nickname.
   std::string nickname("Grocery card");
   sync_pb::AutofillWalletSpecifics wallet_specifics_card2 =
@@ -95,6 +98,11 @@ TEST_F(AutofillSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
   wallet_specifics_card2.mutable_masked_card()
       ->mutable_card_issuer()
       ->set_issuer(sync_pb::CardIssuer::GOOGLE);
+  wallet_specifics_card2.mutable_masked_card()
+      ->set_virtual_card_enrollment_state(
+          sync_pb::WalletMaskedCreditCard::ENROLLED);
+  wallet_specifics_card2.mutable_masked_card()->set_card_art_url(
+      "https://www.example.com/card.png");
   entity_data.push_back(EntityChange::CreateAdd(
       credit_card_id_1,
       SpecificsToEntity(wallet_specifics_card1, /*client_tag=*/"card-card1")));
@@ -141,6 +149,17 @@ TEST_F(AutofillSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
   // Verify that the card_issuer is set correctly.
   EXPECT_EQ(wallet_cards.front().card_issuer(), CreditCard::ISSUER_UNKNOWN);
   EXPECT_EQ(wallet_cards.back().card_issuer(), CreditCard::GOOGLE);
+
+  // Verify that the virtual_card_enrollment_state is set correctly.
+  EXPECT_EQ(wallet_cards.front().virtual_card_enrollment_state(),
+            CreditCard::UNENROLLED);
+  EXPECT_EQ(wallet_cards.back().virtual_card_enrollment_state(),
+            CreditCard::ENROLLED);
+
+  // Verify that the card_art_url is set correctly.
+  EXPECT_TRUE(wallet_cards.front().card_art_url().is_empty());
+  EXPECT_EQ(wallet_cards.back().card_art_url().spec(),
+            "https://www.example.com/card.png");
 }
 
 // Verify that the billing address id from the card saved on disk is kept if it
