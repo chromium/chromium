@@ -732,6 +732,13 @@ def UnixName(name):
   if IsCPlusPlusKeyword(name):
     name = name + '_'
 
+  # Prepend an extra underscore to the |name|'s start if it doesn't start with a
+  # letter or underscore to ensure the generated unix name follows C++
+  # identifier rules.
+  assert(name)
+  if name[0].isdigit():
+    name = '_' + name
+
   unix_name = []
   for i, c in enumerate(name):
     if c.isupper() and i > 0 and name[i - 1] != '_':

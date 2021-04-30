@@ -9,6 +9,11 @@
         "enum": ["one", "two", "three"]
       },
       {
+        "id": "3D",
+        "type": "string",
+        "enum": ["yes", "no"]
+      },
+      {
         "id": "TestType",
         "type": "object",
         "properties": {
@@ -87,6 +92,10 @@
         "items": {
           "$ref": "TestEnum"
         }
+      },
+      "3d_key": {
+        "optional": true,
+        "$ref": "3D"
       }
     },
     "functions": [

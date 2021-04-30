@@ -408,7 +408,8 @@ TEST(JsonSchemaCompilerSimpleTest, ManifestKeyParsing_Success_AllKeys) {
       "obj_optional_enum_array": ["three"]
     },
     "key_enum": "one",
-    "key_enum_array": ["two", "one"]
+    "key_enum_array": ["two", "one"],
+    "3d_key": "yes"
   })";
 
   simple_api::ManifestKeys manifest_keys;
@@ -439,6 +440,7 @@ TEST(JsonSchemaCompilerSimpleTest, ManifestKeyParsing_Success_AllKeys) {
   EXPECT_THAT(manifest_keys.key_enum_array,
               ::testing::ElementsAre(simple_api::TEST_ENUM_TWO,
                                      simple_api::TEST_ENUM_ONE));
+  EXPECT_EQ(simple_api::_3D_YES, manifest_keys._3d_key);
 }
 
 // Ensure leaving out optional keys is not a manifest parse error.
@@ -470,4 +472,5 @@ TEST(JsonSchemaCompilerSimpleTest,
   EXPECT_EQ(32, manifest_keys.key_ref.integer);
   EXPECT_FALSE(manifest_keys.key_ref.array);
   EXPECT_EQ(enums::ENUMERATION_NONE, manifest_keys.key_ref.opt_external_enum);
+  EXPECT_EQ(simple_api::_3D_NONE, manifest_keys._3d_key);
 }
