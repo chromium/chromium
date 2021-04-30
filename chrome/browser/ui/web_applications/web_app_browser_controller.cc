@@ -43,7 +43,7 @@ WebAppBrowserController::WebAppBrowserController(Browser* browser)
     : AppBrowserController(browser,
                            GetAppIdFromApplicationName(browser->app_name())),
       provider_(*WebAppProvider::Get(browser->profile())) {
-  registrar_observer_.Add(&provider_.registrar());
+  registrar_observation_.Observe(&provider_.registrar());
   PerformDigitalAssetLinkVerification(browser);
 }
 
@@ -102,7 +102,7 @@ void WebAppBrowserController::OnWebAppUninstalled(const AppId& app_id) {
 }
 
 void WebAppBrowserController::OnAppRegistrarDestroyed() {
-  registrar_observer_.RemoveAll();
+  registrar_observation_.Reset();
 }
 
 void WebAppBrowserController::SetReadIconCallbackForTesting(

@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
@@ -113,7 +113,8 @@ class WebAppBrowserController : public AppBrowserController,
       asset_link_handler_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  ScopedObserver<AppRegistrar, AppRegistrarObserver> registrar_observer_{this};
+  base::ScopedObservation<AppRegistrar, AppRegistrarObserver>
+      registrar_observation_{this};
 
   base::OnceClosure callback_for_testing_;
   mutable base::WeakPtrFactory<WebAppBrowserController> weak_ptr_factory_{this};
