@@ -21,6 +21,7 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
  public:
   AutofillSaveUpdateAddressProfileDelegateIOS(
       const AutofillProfile& profile,
+      const AutofillProfile* original_profile,
       AutofillClient::AddressProfileSavePromptCallback callback);
   AutofillSaveUpdateAddressProfileDelegateIOS(
       const AutofillSaveUpdateAddressProfileDelegateIOS&) = delete;
@@ -58,6 +59,10 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
 
   // The profile that will be saved if the user accepts.
   AutofillProfile profile_;
+
+  // The original profile that will be updated if the user accepts the update
+  // prompt. NULL if saving a new profile.
+  base::Optional<AutofillProfile> original_profile_;
 
   // The callback to run once the user makes a decision.
   AutofillClient::AddressProfileSavePromptCallback

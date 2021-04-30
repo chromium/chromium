@@ -15,8 +15,10 @@
 MockAutofillSaveUpdateAddressProfileDelegateIOS::
     MockAutofillSaveUpdateAddressProfileDelegateIOS(
         const autofill::AutofillProfile& profile,
+        const autofill::AutofillProfile* original_profile,
         autofill::AutofillClient::AddressProfileSavePromptCallback callback)
     : AutofillSaveUpdateAddressProfileDelegateIOS(profile,
+                                                  original_profile,
                                                   std::move(callback)) {}
 
 MockAutofillSaveUpdateAddressProfileDelegateIOS::
@@ -36,5 +38,6 @@ MockAutofillSaveUpdateAddressProfileDelegateIOSFactory::
     CreateMockAutofillSaveUpdateAddressProfileDelegateIOSFactory(
         autofill::AutofillProfile profile) {
   return std::make_unique<MockAutofillSaveUpdateAddressProfileDelegateIOS>(
-      profile, autofill::AutofillClient::AddressProfileSavePromptCallback());
+      profile, /*original_profile=*/nullptr,
+      autofill::AutofillClient::AddressProfileSavePromptCallback());
 }

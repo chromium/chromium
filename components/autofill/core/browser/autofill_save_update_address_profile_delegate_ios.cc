@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/grit/components_scaled_resources.h"
@@ -19,8 +20,10 @@ namespace autofill {
 AutofillSaveUpdateAddressProfileDelegateIOS::
     AutofillSaveUpdateAddressProfileDelegateIOS(
         const AutofillProfile& profile,
+        const AutofillProfile* original_profile,
         AutofillClient::AddressProfileSavePromptCallback callback)
     : profile_(profile),
+      original_profile_(base::OptionalFromPtr(original_profile)),
       address_profile_save_prompt_callback_(std::move(callback)) {}
 
 AutofillSaveUpdateAddressProfileDelegateIOS::

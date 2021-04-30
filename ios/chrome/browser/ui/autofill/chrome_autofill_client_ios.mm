@@ -330,7 +330,7 @@ void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
   if (IsInfobarOverlayUIEnabled()) {
     auto delegate =
         std::make_unique<AutofillSaveUpdateAddressProfileDelegateIOS>(
-            profile, std::move(callback));
+            profile, original_profile, std::move(callback));
     infobar_manager_->AddInfoBar(std::make_unique<InfoBarIOS>(
         InfobarType::kInfobarTypeSaveAutofillAddressProfile,
         std::move(delegate)));

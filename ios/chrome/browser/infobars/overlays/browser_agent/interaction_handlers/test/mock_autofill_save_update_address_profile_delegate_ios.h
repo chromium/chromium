@@ -19,6 +19,7 @@ class MockAutofillSaveUpdateAddressProfileDelegateIOS
  public:
   MockAutofillSaveUpdateAddressProfileDelegateIOS(
       const autofill::AutofillProfile& profile,
+      const autofill::AutofillProfile* original_profile,
       autofill::AutofillClient::AddressProfileSavePromptCallback callback);
   ~MockAutofillSaveUpdateAddressProfileDelegateIOS() override;
 

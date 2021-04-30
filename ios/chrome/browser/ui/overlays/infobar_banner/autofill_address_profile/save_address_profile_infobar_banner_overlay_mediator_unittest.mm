@@ -37,7 +37,7 @@ TEST_F(SaveAddressProfileInfobarBannerOverlayMediatorTest, SetUpConsumer) {
   std::unique_ptr<autofill::AutofillSaveUpdateAddressProfileDelegateIOS>
       passed_delegate = std::make_unique<
           autofill::AutofillSaveUpdateAddressProfileDelegateIOS>(
-          profile,
+          profile, /*original_profile=*/nullptr,
           base::BindOnce(
               ^(autofill::AutofillClient::SaveAddressProfileOfferUserDecision
                     user_decision,

@@ -18,7 +18,7 @@ TEST(AutofillSaveUpdateAddressProfileDelegateIOSTest,
   AutofillProfile profile = test::GetFullProfile();
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
   auto delegate = std::make_unique<AutofillSaveUpdateAddressProfileDelegateIOS>(
-      profile, callback.Get());
+      profile, /*original_profile=*/nullptr, callback.Get());
 
   EXPECT_CALL(
       callback,
