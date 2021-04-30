@@ -64,6 +64,7 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
         mModel.set(VideoPlayerProperties.CALLBACK_TRY_NOW, this::tryNow);
         mModel.set(VideoPlayerProperties.CALLBACK_SHARE, this::share);
         mModel.set(VideoPlayerProperties.CALLBACK_CLOSE, this::close);
+        mModel.set(VideoPlayerProperties.CALLBACK_PLAY_BUTTON, () -> startVideo(mTutorial));
     }
 
     /** Called when the player is getting destroyed. */
@@ -130,6 +131,7 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
         mModel.set(VideoPlayerProperties.WATCH_STATE_FOR_TRY_NOW, State.PAUSED);
         mModel.set(VideoPlayerProperties.SHOW_SHARE, enableShare());
         mModel.set(VideoPlayerProperties.SHOW_CLOSE, true);
+        mModel.set(VideoPlayerProperties.SHOW_PLAY_BUTTON, false);
     }
 
     @Override
@@ -142,6 +144,7 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
         mModel.set(VideoPlayerProperties.WATCH_STATE_FOR_TRY_NOW, State.ENDED);
         mModel.set(VideoPlayerProperties.SHOW_SHARE, enableShare());
         mModel.set(VideoPlayerProperties.SHOW_CLOSE, true);
+        mModel.set(VideoPlayerProperties.SHOW_PLAY_BUTTON, true);
     }
 
     @Override
@@ -213,6 +216,7 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
         mModel.set(VideoPlayerProperties.SHOW_CHANGE_LANGUAGE, false);
         mModel.set(VideoPlayerProperties.SHOW_SHARE, enableShare());
         mModel.set(VideoPlayerProperties.SHOW_CLOSE, true);
+        mModel.set(VideoPlayerProperties.SHOW_PLAY_BUTTON, false);
     }
 
     private boolean enableShare() {

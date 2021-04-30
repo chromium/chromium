@@ -48,6 +48,11 @@ class VideoPlayerViewBinder implements ViewBinder<PropertyModel, VideoPlayerView
                     .setVisibility(model.get(VideoPlayerProperties.SHOW_CHANGE_LANGUAGE)
                                     ? View.VISIBLE
                                     : View.GONE);
+        } else if (propertyKey == VideoPlayerProperties.SHOW_PLAY_BUTTON) {
+            view.getView()
+                    .findViewById(R.id.play_button)
+                    .setVisibility(model.get(VideoPlayerProperties.SHOW_PLAY_BUTTON) ? View.VISIBLE
+                                                                                     : View.GONE);
         } else if (propertyKey == VideoPlayerProperties.CHANGE_LANGUAGE_BUTTON_TEXT) {
             TextView textView = view.getView().findViewById(R.id.change_language);
             textView.setText(model.get(VideoPlayerProperties.CHANGE_LANGUAGE_BUTTON_TEXT));
@@ -70,6 +75,10 @@ class VideoPlayerViewBinder implements ViewBinder<PropertyModel, VideoPlayerView
         } else if (propertyKey == VideoPlayerProperties.CALLBACK_CHANGE_LANGUAGE) {
             view.getView().findViewById(R.id.change_language).setOnClickListener(v -> {
                 model.get(VideoPlayerProperties.CALLBACK_CHANGE_LANGUAGE).run();
+            });
+        } else if (propertyKey == VideoPlayerProperties.CALLBACK_PLAY_BUTTON) {
+            view.getView().findViewById(R.id.play_button).setOnClickListener(v -> {
+                model.get(VideoPlayerProperties.CALLBACK_PLAY_BUTTON).run();
             });
         } else if (propertyKey == VideoPlayerProperties.WATCH_STATE_FOR_TRY_NOW) {
             view.setTryNowButtonPosition(model.get(VideoPlayerProperties.WATCH_STATE_FOR_TRY_NOW));

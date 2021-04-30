@@ -22,6 +22,8 @@ interface VideoPlayerProperties {
     WritableBooleanPropertyKey SHOW_CLOSE = new WritableBooleanPropertyKey();
     WritableBooleanPropertyKey SHOW_WATCH_NEXT = new WritableBooleanPropertyKey();
     WritableBooleanPropertyKey SHOW_CHANGE_LANGUAGE = new WritableBooleanPropertyKey();
+    WritableBooleanPropertyKey SHOW_PLAY_BUTTON = new WritableBooleanPropertyKey();
+    WritableObjectPropertyKey<Runnable> CALLBACK_PLAY_BUTTON = new WritableObjectPropertyKey();
     WritableObjectPropertyKey<String> CHANGE_LANGUAGE_BUTTON_TEXT =
             new WritableObjectPropertyKey<>();
     WritableObjectPropertyKey<Runnable> CALLBACK_WATCH_NEXT = new WritableObjectPropertyKey<>();
@@ -34,6 +36,7 @@ interface VideoPlayerProperties {
 
     PropertyKey[] ALL_KEYS = new PropertyKey[] {SHOW_LOADING_SCREEN, SHOW_LANGUAGE_PICKER,
             SHOW_TRY_NOW, SHOW_SHARE, SHOW_CLOSE, SHOW_WATCH_NEXT, SHOW_CHANGE_LANGUAGE,
-            CHANGE_LANGUAGE_BUTTON_TEXT, CALLBACK_WATCH_NEXT, CALLBACK_CHANGE_LANGUAGE,
-            CALLBACK_TRY_NOW, CALLBACK_SHARE, CALLBACK_CLOSE, WATCH_STATE_FOR_TRY_NOW};
+            SHOW_PLAY_BUTTON, CALLBACK_PLAY_BUTTON, CHANGE_LANGUAGE_BUTTON_TEXT,
+            CALLBACK_WATCH_NEXT, CALLBACK_CHANGE_LANGUAGE, CALLBACK_TRY_NOW, CALLBACK_SHARE,
+            CALLBACK_CLOSE, WATCH_STATE_FOR_TRY_NOW};
 }

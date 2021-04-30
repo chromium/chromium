@@ -148,6 +148,7 @@ public class VideoPlayerMediatorUnitTest {
         assertThat(mModel.get(VideoPlayerProperties.SHOW_CLOSE), equalTo(true));
         assertThat(mModel.get(VideoPlayerProperties.SHOW_WATCH_NEXT), equalTo(false));
         assertThat(mModel.get(VideoPlayerProperties.SHOW_CHANGE_LANGUAGE), equalTo(false));
+        assertThat(mModel.get(VideoPlayerProperties.SHOW_PLAY_BUTTON), equalTo(false));
     }
 
     @Test
@@ -157,10 +158,12 @@ public class VideoPlayerMediatorUnitTest {
         mMediator.onPlay();
         assertThat(mModel.get(VideoPlayerProperties.SHOW_WATCH_NEXT), equalTo(false));
         assertThat(mModel.get(VideoPlayerProperties.SHOW_CHANGE_LANGUAGE), equalTo(false));
+        assertThat(mModel.get(VideoPlayerProperties.SHOW_PLAY_BUTTON), equalTo(false));
 
         mMediator.onEnded();
         assertThat(mModel.get(VideoPlayerProperties.SHOW_WATCH_NEXT), equalTo(true));
         assertThat(mModel.get(VideoPlayerProperties.SHOW_CHANGE_LANGUAGE), equalTo(true));
+        assertThat(mModel.get(VideoPlayerProperties.SHOW_PLAY_BUTTON), equalTo(true));
     }
 
     @Test
