@@ -704,7 +704,10 @@ crbug.com/957807 [ chromeos ] deqp/data/gles2/shaders/conversions.html [ Skip ]
 crbug.com/957807 [ chromeos ] deqp/data/gles2/shaders/swizzles.html [ Skip ]
 # There is a crash, likely in this test, causing the root partition to become
 # read-only.
-crbug.com/1043953 [ chromeos ] conformance/textures/misc/texture-size-limit.html [ RetryOnFailure ]
+crbug.com/1043953 [ chromeos chromeos-board-kevin ] conformance/textures/misc/texture-size-limit.html [ RetryOnFailure ]
+# Skip test that breaks subsequent tests.
+crbug.com/1043953 [ chromeos chromeos-board-amd64-generic ] conformance/textures/misc/texture-size-limit.html [ Skip ]
+
 
 # Texture compression is only expected to be available on desktop GPUs.
 crbug.com/1080360 [ chromeos chromeos-board-kevin ] WebglExtension_EXT_texture_compression_bptc [ Skip ]
