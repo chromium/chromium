@@ -196,6 +196,14 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
             std::move(input_parameters));
         break;
       }
+      case FilterOperation::COLOR_MATRIX: {
+        Vector<float> input_parameters =
+            To<ColorMatrixFilterOperation>(filter_operation)->Values();
+        effect = MakeGarbageCollected<FEColorMatrix>(
+            parent_filter, FECOLORMATRIX_TYPE_MATRIX,
+            std::move(input_parameters));
+        break;
+      }
       case FilterOperation::INVERT: {
         BasicComponentTransferFilterOperation* component_transfer_operation =
             To<BasicComponentTransferFilterOperation>(filter_operation);
@@ -353,6 +361,12 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
           default:
             NOTREACHED();
         }
+        break;
+      }
+      case FilterOperation::COLOR_MATRIX: {
+        Vector<float> matrix_values =
+            To<ColorMatrixFilterOperation>(*op).Values();
+        filters.AppendColorMatrixFilter(matrix_values);
         break;
       }
       case FilterOperation::INVERT:

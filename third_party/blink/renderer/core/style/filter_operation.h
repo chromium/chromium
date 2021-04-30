@@ -59,6 +59,7 @@ class CORE_EXPORT FilterOperation : public GarbageCollected<FilterOperation> {
     BLUR,
     DROP_SHADOW,
     BOX_REFLECT,
+    COLOR_MATRIX,
     NONE
   };
 
@@ -74,6 +75,7 @@ class CORE_EXPORT FilterOperation : public GarbageCollected<FilterOperation> {
       case CONTRAST:
       case BLUR:
       case DROP_SHADOW:
+      case COLOR_MATRIX:
         return true;
       case REFERENCE:
       case BOX_REFLECT:
@@ -173,6 +175,26 @@ class CORE_EXPORT BasicColorMatrixFilterOperation : public FilterOperation {
   double amount_;
 };
 
+// Generic color matrices
+class CORE_EXPORT ColorMatrixFilterOperation : public FilterOperation {
+ public:
+  ColorMatrixFilterOperation(Vector<float> values, OperationType type)
+      : FilterOperation(type), values_(std::move(values)) {}
+
+  const Vector<float>& Values() const { return values_; }
+
+ private:
+  bool operator==(const FilterOperation& o) const override {
+    if (!IsSameType(o))
+      return false;
+    const ColorMatrixFilterOperation* other =
+        static_cast<const ColorMatrixFilterOperation*>(&o);
+    return values_ == other->values_;
+  }
+
+  Vector<float> values_;
+};
+
 inline bool IsBasicColorMatrixFilterOperation(
     const FilterOperation& operation) {
   FilterOperation::OperationType type = operation.GetType();
@@ -185,6 +207,13 @@ template <>
 struct DowncastTraits<BasicColorMatrixFilterOperation> {
   static bool AllowFrom(const FilterOperation& op) {
     return IsBasicColorMatrixFilterOperation(op);
+  }
+};
+
+template <>
+struct DowncastTraits<ColorMatrixFilterOperation> {
+  static bool AllowFrom(const FilterOperation& op) {
+    return op.GetType() == FilterOperation::COLOR_MATRIX;
   }
 };
 

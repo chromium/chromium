@@ -100,6 +100,9 @@ static void CountFilterUse(FilterOperation::OperationType operation_type,
     case FilterOperation::HUE_ROTATE:
       feature = WebFeature::kCSSFilterHueRotate;
       break;
+    case FilterOperation::COLOR_MATRIX:
+      feature = WebFeature::kCSSFilterColorMatrix;
+      break;
     case FilterOperation::INVERT:
       feature = WebFeature::kCSSFilterInvert;
       break;

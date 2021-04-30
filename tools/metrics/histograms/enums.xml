@@ -32351,6 +32351,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3886" label="NewCanvas2DAPI"/>
   <int value="3887" label="ServiceWorkerSubresourceFilter"/>
   <int value="3888" label="WebGPU"/>
+  <int value="3889" label="CSSFilterColorMatrix"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

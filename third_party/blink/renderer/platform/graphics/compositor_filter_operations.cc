@@ -35,6 +35,15 @@ void CompositorFilterOperations::AppendHueRotateFilter(float amount) {
   filter_operations_.Append(cc::FilterOperation::CreateHueRotateFilter(amount));
 }
 
+void CompositorFilterOperations::AppendColorMatrixFilter(Vector<float> values) {
+  DCHECK_EQ(values.size(), 20u);
+  cc::FilterOperation::Matrix matrix = {};
+  for (WTF::wtf_size_t i = 0; i < values.size(); ++i)
+    matrix[i] = values[i];
+  filter_operations_.Append(
+      cc::FilterOperation::CreateColorMatrixFilter(matrix));
+}
+
 void CompositorFilterOperations::AppendInvertFilter(float amount) {
   filter_operations_.Append(cc::FilterOperation::CreateInvertFilter(amount));
 }

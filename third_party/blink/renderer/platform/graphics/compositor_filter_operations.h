@@ -26,6 +26,7 @@ class PLATFORM_EXPORT CompositorFilterOperations {
   void AppendSepiaFilter(float amount);
   void AppendSaturateFilter(float amount);
   void AppendHueRotateFilter(float amount);
+  void AppendColorMatrixFilter(Vector<float> value);
   void AppendInvertFilter(float amount);
   void AppendBrightnessFilter(float amount);
   void AppendContrastFilter(float amount);
