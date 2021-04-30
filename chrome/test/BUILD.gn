@@ -2651,6 +2651,8 @@ if (!is_android) {
         "../browser/ash/login/test/guest_session_mixin.h",
         "../browser/ash/login/test/hid_controller_mixin.cc",
         "../browser/ash/login/test/hid_controller_mixin.h",
+        "../browser/ash/login/test/kiosk_apps_mixin.cc",
+        "../browser/ash/login/test/kiosk_apps_mixin.h",
         "../browser/ash/login/test/kiosk_test_helpers.cc",
         "../browser/ash/login/test/kiosk_test_helpers.h",
         "../browser/ash/login/test/network_portal_detector_mixin.cc",

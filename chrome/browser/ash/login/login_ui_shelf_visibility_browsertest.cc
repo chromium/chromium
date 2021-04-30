@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include "ash/public/cpp/login_screen_test_api.h"
+#include "chrome/browser/ash/login/login_manager_test.h"
+#include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/embedded_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
+#include "chrome/browser/ash/login/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_auth_page_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
@@ -82,6 +85,41 @@ IN_PROC_BROWSER_TEST_F(LoginUIShelfVisibilityTest, PostLoginScreen) {
 
   EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
   EXPECT_FALSE(ash::LoginScreenTestApi::IsAddUserButtonShown());
+}
+
+class SamlInterstitialTest : public LoginManagerTest {
+ public:
+  // LoginManagerTest:
+  void SetUpInProcessBrowserTestFixture() override {
+    auto device_policy_update = device_state_.RequestDevicePolicyUpdate();
+
+    device_policy_update->policy_payload()
+        ->mutable_login_authentication_behavior()
+        ->set_login_authentication_behavior(
+            enterprise_management::
+                LoginAuthenticationBehaviorProto_LoginBehavior_SAML_INTERSTITIAL);
+
+    KioskAppsMixin::AppendKioskAccount(device_policy_update->policy_payload());
+
+    device_policy_update.reset();
+
+    device_state_.RequestDeviceLocalAccountPolicyUpdate(
+        KioskAppsMixin::kEnterpriseKioskAccountId);
+    LoginManagerTest::SetUpInProcessBrowserTestFixture();
+  }
+
+ private:
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+  KioskAppsMixin kiosk_apps_{&mixin_host_, embedded_test_server()};
+};
+
+// Verifies that Apps and Guest buttons are visible when login flow starts from
+// the SAML interstitial step.
+IN_PROC_BROWSER_TEST_F(SamlInterstitialTest, AppsGuestButton) {
+  KioskAppsMixin::WaitForAppsButton();
+  EXPECT_TRUE(ash::LoginScreenTestApi::IsAppsButtonShown());
+  EXPECT_TRUE(ash::LoginScreenTestApi::IsGuestButtonShown());
 }
 
 }  // namespace chromeos

@@ -7,7 +7,6 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
-#include "chrome/browser/ash/app_mode/fake_cws.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
@@ -15,6 +14,7 @@
 #include "chrome/browser/ash/login/test/dialog_window_waiter.h"
 #include "chrome/browser/ash/login/test/embedded_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
+#include "chrome/browser/ash/login/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
@@ -37,18 +37,9 @@
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace em = enterprise_management;
-
 namespace chromeos {
 
 namespace {
-
-// This is a simple test app that creates an app window and immediately closes
-// it again. Webstore data json is in
-//   chrome/test/data/chromeos/app_mode/webstore/inlineinstall/
-//       detail/ggaeimfdpnmlhdhpcikgoblffmkckdmn
-constexpr char kTestKioskAppId[] = "ggaeimfdpnmlhdhpcikgoblffmkckdmn";
-constexpr char kTestKioskAccountId[] = "enterprise-kiosk-app@localhost";
 
 constexpr char kWifiServiceName[] = "stub_wifi";
 constexpr char kWifiNetworkName[] = "wifi-test-network";
@@ -273,10 +264,6 @@ class KioskErrorScreenTest : public MixinBasedInProcessBrowserTest {
     network_wait_override_ = KioskLaunchController::SetNetworkWaitForTesting(
         base::TimeDelta::FromSeconds(0));
 
-    fake_cws_.Init(embedded_test_server());
-    fake_cws_.SetUpdateCrx(kTestKioskAppId,
-                           base::StrCat({kTestKioskAppId, ".crx"}), "1.0.0");
-
     AddKioskAppToDevicePolicy();
 
     MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
@@ -302,21 +289,11 @@ class KioskErrorScreenTest : public MixinBasedInProcessBrowserTest {
   void AddKioskAppToDevicePolicy() {
     std::unique_ptr<ScopedDevicePolicyUpdate> device_policy_update =
         device_state_.RequestDevicePolicyUpdate();
-    em::DeviceLocalAccountsProto* const device_local_accounts =
-        device_policy_update->policy_payload()->mutable_device_local_accounts();
-
-    em::DeviceLocalAccountInfoProto* const account =
-        device_local_accounts->add_account();
-    account->set_account_id(kTestKioskAccountId);
-    account->set_type(em::DeviceLocalAccountInfoProto::ACCOUNT_TYPE_KIOSK_APP);
-    account->mutable_kiosk_app()->set_app_id(kTestKioskAppId);
-
+    KioskAppsMixin::AppendKioskAccount(device_policy_update->policy_payload());
     device_policy_update.reset();
 
-    std::unique_ptr<ScopedUserPolicyUpdate> device_local_account_policy_update =
-        device_state_.RequestDeviceLocalAccountPolicyUpdate(
-            kTestKioskAccountId);
-    device_local_account_policy_update.reset();
+    device_state_.RequestDeviceLocalAccountPolicyUpdate(
+        KioskAppsMixin::kEnterpriseKioskAccountId);
   }
 
   std::unique_ptr<NetworkStateTestHelper> network_helper_;
@@ -324,13 +301,12 @@ class KioskErrorScreenTest : public MixinBasedInProcessBrowserTest {
   std::unique_ptr<base::AutoReset<bool>> skip_splash_wait_override_;
   std::unique_ptr<base::AutoReset<base::TimeDelta>> network_wait_override_;
 
-  FakeCWS fake_cws_;
-
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 
   EmbeddedTestServerSetupMixin embedded_test_server_setup_{
       &mixin_host_, embedded_test_server()};
+  KioskAppsMixin kiosk_apps_{&mixin_host_, embedded_test_server()};
 
   LoginManagerMixin login_manager_{&mixin_host_, {}};
 
@@ -339,12 +315,9 @@ class KioskErrorScreenTest : public MixinBasedInProcessBrowserTest {
 
 // Verify that certificate manager dialog opens.
 IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest, OpenCertificateConfig) {
-  while (!ash::LoginScreenTestApi::IsAppsButtonShown()) {
-    int ui_update_count = ash::LoginScreenTestApi::GetUiUpdateCount();
-    ash::LoginScreenTestApi::WaitForUiUpdate(ui_update_count);
-  }
+  KioskAppsMixin::WaitForAppsButton();
   EXPECT_TRUE(ash::LoginScreenTestApi::IsAppsButtonShown());
-  ASSERT_TRUE(ash::LoginScreenTestApi::LaunchApp(kTestKioskAppId));
+  ASSERT_TRUE(ash::LoginScreenTestApi::LaunchApp(KioskAppsMixin::kKioskAppId));
 
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
   EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());

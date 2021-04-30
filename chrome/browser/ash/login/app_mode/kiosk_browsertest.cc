@@ -43,6 +43,7 @@
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
+#include "chrome/browser/ash/login/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/test/kiosk_test_helpers.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -141,12 +142,6 @@ const test::UIPath kAutolaunchConfirmButton = {"autolaunch", "confirmButton"};
 const test::UIPath kAutolaunchCancelButton = {"autolaunch", "cancelButton"};
 const test::UIPath kErrorMessageContinueButton = {"error-message",
                                                   "continueButton"};
-
-// This is a simple test app that creates an app window and immediately closes
-// it again. Webstore data json is in
-//   chrome/test/data/chromeos/app_mode/webstore/inlineinstall/
-//       detail/ggaeimfdpnmlhdhpcikgoblffmkckdmn
-const char kTestKioskApp[] = "ggaeimfdpnmlhdhpcikgoblffmkckdmn";
 
 // This app creates a window and declares usage of the identity API in its
 // manifest, so we can test device robot token minting via the identity API.
@@ -503,11 +498,11 @@ class KioskTest : public OobeBaseTest {
     KioskAppData::SetIgnoreKioskAppDataLoadFailuresForTesting(true);
   }
 
-  ~KioskTest() override {}
+  ~KioskTest() override = default;
 
  protected:
   void SetUp() override {
-    test_app_id_ = kTestKioskApp;
+    test_app_id_ = KioskAppsMixin::kKioskAppId;
     set_test_app_version("1.0.0");
     set_test_crx_file(test_app_id() + ".crx");
     needs_background_networking_ = true;

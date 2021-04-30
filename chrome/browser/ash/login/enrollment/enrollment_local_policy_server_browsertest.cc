@@ -8,7 +8,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/ash/app_mode/fake_cws.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_check_screen.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/ash/login/test/enrollment_ui_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
+#include "chrome/browser/ash/login/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/test/kiosk_test_helpers.h"
 #include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/network_portal_detector_mixin.h"
@@ -969,18 +969,10 @@ IN_PROC_BROWSER_TEST_F(EnrollmentLocalPolicyServerBase, SwitchToViewsLocales) {
   histogram_tester.ExpectTotalCount("OOBE.WebUIToViewsSwitch.Duration", 1);
 }
 
-namespace {
-
-// Test kiosk app that creates a window and closes it.
-const char kTestAppId[] = "ggaeimfdpnmlhdhpcikgoblffmkckdmn";
-const char kTestAppFile[] = "ggaeimfdpnmlhdhpcikgoblffmkckdmn.crx";
-const char kTestAppVersion[] = "1.0.0";
-
-}  // namespace
-
 class KioskEnrollmentTest : public EnrollmentLocalPolicyServerBase {
  public:
-  KioskEnrollmentTest() : fake_cws_(new FakeCWS) {}
+  KioskEnrollmentTest() = default;
+
   // EnrollmentLocalPolicyServerBase:
   void SetUp() override {
     needs_background_networking_ = true;
@@ -989,19 +981,14 @@ class KioskEnrollmentTest : public EnrollmentLocalPolicyServerBase {
     EnrollmentLocalPolicyServerBase::SetUp();
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    EnrollmentLocalPolicyServerBase::SetUpCommandLine(command_line);
-    fake_cws_->Init(embedded_test_server());
-  }
-
   void SetupAutoLaunchApp(FakeOwnerSettingsService* service) {
-    fake_cws_->SetUpdateCrx(kTestAppId, kTestAppFile, kTestAppVersion);
-    KioskAppManager::Get()->AddApp(kTestAppId, service);
-    KioskAppManager::Get()->SetAutoLaunchApp(kTestAppId, service);
+    KioskAppManager::Get()->AddApp(KioskAppsMixin::kKioskAppId, service);
+    KioskAppManager::Get()->SetAutoLaunchApp(KioskAppsMixin::kKioskAppId,
+                                             service);
   }
 
  private:
-  std::unique_ptr<FakeCWS> fake_cws_;
+  KioskAppsMixin kiosk_apps_{&mixin_host_, embedded_test_server()};
   std::unique_ptr<base::AutoReset<bool>> skip_splash_wait_override_;
 };
 

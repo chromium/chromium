@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/embedded_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/policy/device_local_account.h"
@@ -49,12 +50,6 @@ namespace chromeos {
 
 namespace {
 
-// This is a simple test app that creates an app window and immediately closes
-// it again. Webstore data json is in
-//   chrome/test/data/chromeos/app_mode/webstore/inlineinstall/
-//       detail/ggaeimfdpnmlhdhpcikgoblffmkckdmn
-constexpr char kTestKioskApp[] = "ggaeimfdpnmlhdhpcikgoblffmkckdmn";
-
 // This is a simple test that only sends an extension message when app launch is
 // requested. Webstore data json is in
 //   chrome/test/data/chromeos/app_mode/webstore/inlineinstall/
@@ -84,8 +79,6 @@ constexpr char kTestManagementApiKioskApp[] =
 //   chrome/test/data/chromeos/app_mode/management_api/secondary_app/
 constexpr char kTestManagementApiSecondaryApp[] =
     "kajpgkhinciaiihghpdamekpjpldgpfi";
-
-constexpr char kTestAccountId[] = "enterprise-kiosk-app@localhost";
 
 // Used to listen for app termination notification.
 class TerminationObserver : public content::NotificationObserver {
@@ -125,7 +118,9 @@ class AutoLaunchedKioskTest : public MixinBasedInProcessBrowserTest {
 
   ~AutoLaunchedKioskTest() override = default;
 
-  virtual std::string GetTestAppId() const { return kTestKioskApp; }
+  virtual std::string GetTestAppId() const {
+    return KioskAppsMixin::kKioskAppId;
+  }
   virtual std::vector<std::string> GetTestSecondaryAppIds() const {
     return std::vector<std::string>();
   }
@@ -162,18 +157,20 @@ class AutoLaunchedKioskTest : public MixinBasedInProcessBrowserTest {
         device_state_.RequestDevicePolicyUpdate();
     em::DeviceLocalAccountsProto* const device_local_accounts =
         device_policy_update->policy_payload()->mutable_device_local_accounts();
-    device_local_accounts->set_auto_login_id(kTestAccountId);
+    device_local_accounts->set_auto_login_id(
+        KioskAppsMixin::kEnterpriseKioskAccountId);
 
     em::DeviceLocalAccountInfoProto* const account =
         device_local_accounts->add_account();
-    account->set_account_id(kTestAccountId);
+    account->set_account_id(KioskAppsMixin::kEnterpriseKioskAccountId);
     account->set_type(em::DeviceLocalAccountInfoProto::ACCOUNT_TYPE_KIOSK_APP);
     account->mutable_kiosk_app()->set_app_id(GetTestAppId());
 
     device_policy_update.reset();
 
     std::unique_ptr<ScopedUserPolicyUpdate> device_local_account_policy_update =
-        device_state_.RequestDeviceLocalAccountPolicyUpdate(kTestAccountId);
+        device_state_.RequestDeviceLocalAccountPolicyUpdate(
+            KioskAppsMixin::kEnterpriseKioskAccountId);
     device_local_account_policy_update.reset();
 
     MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
@@ -205,7 +202,8 @@ class AutoLaunchedKioskTest : public MixinBasedInProcessBrowserTest {
 
   const std::string GetTestAppUserId() const {
     return policy::GenerateDeviceLocalAccountUserId(
-        kTestAccountId, policy::DeviceLocalAccount::TYPE_KIOSK_APP);
+        KioskAppsMixin::kEnterpriseKioskAccountId,
+        policy::DeviceLocalAccount::TYPE_KIOSK_APP);
   }
 
   bool CloseAppWindow(const std::string& app_id) {
@@ -287,9 +285,9 @@ IN_PROC_BROWSER_TEST_F(AutoLaunchedKioskTest, PRE_CrashRestore) {
 
   EXPECT_TRUE(app_window_loaded_listener_->WaitUntilSatisfied());
 
-  EXPECT_TRUE(IsKioskAppAutoLaunched(kTestKioskApp));
+  EXPECT_TRUE(IsKioskAppAutoLaunched(KioskAppsMixin::kKioskAppId));
 
-  ASSERT_TRUE(CloseAppWindow(kTestKioskApp));
+  ASSERT_TRUE(CloseAppWindow(KioskAppsMixin::kKioskAppId));
 }
 
 IN_PROC_BROWSER_TEST_F(AutoLaunchedKioskTest, CrashRestore) {
@@ -302,9 +300,9 @@ IN_PROC_BROWSER_TEST_F(AutoLaunchedKioskTest, CrashRestore) {
 
   EXPECT_TRUE(app_window_loaded_listener_->WaitUntilSatisfied());
 
-  EXPECT_TRUE(IsKioskAppAutoLaunched(kTestKioskApp));
+  EXPECT_TRUE(IsKioskAppAutoLaunched(KioskAppsMixin::kKioskAppId));
 
-  ASSERT_TRUE(CloseAppWindow(kTestKioskApp));
+  ASSERT_TRUE(CloseAppWindow(KioskAppsMixin::kKioskAppId));
 }
 
 // Used to test app auto-launch flow when the launched app is not kiosk enabled.
