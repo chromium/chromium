@@ -8,35 +8,33 @@
 
 #include <memory>
 
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/safety_check/android/jni_headers/SafetyCheckBridge_jni.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/identity_manager_provider.h"
+#include "components/embedder_support/android/browser_context/browser_context_handle.h"
 #include "components/password_manager/core/browser/leak_detection/authenticated_leak_check.h"
 #include "components/safety_check/safety_check.h"
+#include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/browser_context.h"
 
 static jlong JNI_SafetyCheckBridge_Init(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jobject>& j_safety_check_observer) {
   return reinterpret_cast<intptr_t>(
-      new SafetyCheckBridge(env, j_safety_check_observer));
+      new SafetyCheckBridge(j_safety_check_observer));
 }
 
-static jboolean JNI_SafetyCheckBridge_UserSignedIn(JNIEnv* env) {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(
-          ProfileManager::GetLastUsedProfile());
+static jboolean JNI_SafetyCheckBridge_UserSignedIn(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jhandle) {
   return password_manager::AuthenticatedLeakCheck::HasAccountForRequest(
-      identity_manager);
+      signin::GetIdentityManagerForBrowserContext(
+          browser_context::BrowserContextFromJavaHandle(jhandle)));
 }
 
 SafetyCheckBridge::SafetyCheckBridge(
-    JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_safety_check_observer)
-    : pref_service_(ProfileManager::GetActiveUserProfile()
-                        ->GetOriginalProfile()
-                        ->GetPrefs()),
-      j_safety_check_observer_(j_safety_check_observer) {
+    : j_safety_check_observer_(j_safety_check_observer) {
   safety_check_ = std::make_unique<safety_check::SafetyCheck>(this);
 }
 
@@ -49,8 +47,10 @@ void SafetyCheckBridge::Destroy(
 
 void SafetyCheckBridge::CheckSafeBrowsing(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj) {
-  safety_check_->CheckSafeBrowsing(pref_service_);
+    const base::android::JavaParamRef<jobject>& jobj,
+    const base::android::JavaParamRef<jobject>& jhandle) {
+  safety_check_->CheckSafeBrowsing(user_prefs::UserPrefs::Get(
+      browser_context::BrowserContextFromJavaHandle(jhandle)));
 }
 
 void SafetyCheckBridge::OnSafeBrowsingCheckResult(

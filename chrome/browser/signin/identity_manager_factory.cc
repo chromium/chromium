@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
+#include "chrome/browser/signin/identity_manager_provider.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -60,6 +61,11 @@ IdentityManagerFactory::IdentityManagerFactory()
   DependsOn(WebDataServiceFactory::GetInstance());
 #endif
   DependsOn(ChromeSigninClientFactory::GetInstance());
+
+  signin::SetIdentityManagerProvider(
+      base::BindRepeating([](content::BrowserContext* context) {
+        return GetForProfile(Profile::FromBrowserContext(context));
+      }));
 }
 
 IdentityManagerFactory::~IdentityManagerFactory() {}

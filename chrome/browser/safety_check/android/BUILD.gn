@@ -17,9 +17,12 @@ source_set("android") {
   ]
   deps = [
     ":jni_headers",
-    "//chrome/common:buildflags",
+    "//chrome/browser/signin:identity_manager_provider",
+    "//components/embedder_support/android:browser_context",
     "//components/prefs",
     "//components/safety_check",
+    "//components/user_prefs",
+    "//content/public/browser",
   ]
 }
 
@@ -42,10 +45,12 @@ android_library("java") {
     "//chrome/browser/password_check/android:password_check_java_enums",
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/safe_browsing/android:java",
     "//chrome/browser/settings:java",
     "//chrome/browser/signin/ui/android:java",
     "//components/browser_ui/settings/android:java",
+    "//components/embedder_support/android:browser_context_java",
     "//components/password_manager/core/browser:password_manager_java_enums",
     "//components/signin/public/android:java",
     "//content/public/android:content_java",
@@ -92,10 +97,7 @@ android_library("junit") {
   # Skip platform checks since Robolectric depends on requires_android targets.
   bypass_platform_checks = true
   testonly = true
-  sources = [
-    "javatests/src/org/chromium/chrome/browser/safety_check/SafetyCheckBridgeTest.java",
-    "javatests/src/org/chromium/chrome/browser/safety_check/SafetyCheckMediatorTest.java",
-  ]
+  sources = [ "javatests/src/org/chromium/chrome/browser/safety_check/SafetyCheckMediatorTest.java" ]
   deps = [
     ":java",
     "//base:base_java",
@@ -105,6 +107,7 @@ android_library("junit") {
     "//chrome/browser/flags:java",
     "//chrome/browser/password_check:public_java",
     "//chrome/browser/password_check/android:password_check_java_enums",
+    "//chrome/browser/profiles/android:java",
 
     # Robolectric needs the full PasswordCheckFactory implementation.
     "//chrome/browser/password_check/android/internal:internal_factory_java",
@@ -113,6 +116,7 @@ android_library("junit") {
     "//chrome/browser/signin/ui/android:java",
     "//chrome/test/android:chrome_java_test_support",
     "//components/browser_ui/settings/android:java",
+    "//components/embedder_support/android:browser_context_java",
     "//third_party/android_deps:robolectric_all_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",

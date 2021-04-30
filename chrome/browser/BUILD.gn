@@ -1965,6 +1965,7 @@ static_library("browser") {
     "//chrome/browser/search/task_module:mojo_bindings",
     "//chrome/browser/sharing:buildflags",
     "//chrome/browser/sharing/proto",
+    "//chrome/browser/signin:identity_manager_provider",
     "//chrome/browser/storage_access_api:permissions",
     "//chrome/browser/thumbnail",
     "//chrome/browser/touch_to_fill",
