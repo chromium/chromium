@@ -32,8 +32,6 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.video_tutorials.VideoTutorialShareHelper;
-import org.chromium.chrome.browser.attribution_reporting.AttributionIntentHandler;
-import org.chromium.chrome.browser.attribution_reporting.AttributionIntentHandlerFactory;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.trustedwebactivity.TwaSplashController;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
@@ -79,10 +77,9 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
     private static final int MAX_NUM_TASKS = 100;
 
     private final Activity mActivity;
-    private Intent mIntent;
+    private final Intent mIntent;
     private final boolean mIsCustomTabIntent;
     private final boolean mIsVrIntent;
-    private final AttributionIntentHandler mAttributionIntentHandler;
 
     @IntDef({Action.CONTINUE, Action.FINISH_ACTIVITY, Action.FINISH_ACTIVITY_REMOVE_TASK})
     @Retention(RetentionPolicy.SOURCE)
@@ -133,7 +130,6 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
     private LaunchIntentDispatcher(Activity activity, Intent intent) {
         mActivity = activity;
         mIntent = IntentUtils.sanitizeIntent(intent);
-        mAttributionIntentHandler = AttributionIntentHandlerFactory.create();
 
         // Needs to be called as early as possible, to accurately capture the
         // time at which the intent was received.
@@ -158,10 +154,6 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
         // show homepage, which might require reading PartnerBrowserCustomizations provider.
         PartnerBrowserCustomizations.getInstance().initializeAsync(
                 mActivity.getApplicationContext());
-
-        // Must come before processing other intents, as we may un-wrap |mIntent| to another type of
-        // Intent.
-        if (handleAppAttributionIntent()) return Action.FINISH_ACTIVITY;
 
         int tabId = IntentHandler.getBringTabToFrontId(mIntent);
         boolean incognito =
@@ -541,13 +533,5 @@ public class LaunchIntentDispatcher implements IntentHandler.IntentHandlerDelega
         // For now we expose this risky change only to TWAs.
         return IntentUtils.safeGetBooleanExtra(
                 intent, TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, false);
-    }
-
-    private boolean handleAppAttributionIntent() {
-        if (mAttributionIntentHandler.handleOuterAttributionIntent(mIntent)) return true;
-
-        Intent launchIntent = mAttributionIntentHandler.handleInnerAttributionIntent(mIntent);
-        if (launchIntent != null) mIntent = IntentUtils.sanitizeIntent(launchIntent);
-        return false;
     }
 }

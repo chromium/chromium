@@ -19,7 +19,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.chrome.browser.attribution_reporting.AttributionConstants;
 
 /**
  * Unit tests for Intent Filters in chrome/android/java/AndroidManifest.xml
@@ -196,12 +195,5 @@ public class IntentFilterUnitTest {
         verifyIntent(true);
         mIntent.addCategory(Intent.CATEGORY_BROWSABLE);
         verifyIntent(false);
-    }
-
-    @Test
-    @SmallTest
-    public void testAttributionIntent() {
-        mIntent.setAction(AttributionConstants.ACTION_APP_ATTRIBUTION);
-        verifyIntent(true);
     }
 }

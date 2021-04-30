@@ -1,9 +1,0 @@
-import("//build/config/android/rules.gni")
-
-android_library("java") {
-  sources = [
-    "java/src/org/chromium/chrome/browser/attribution_reporting/AttributionIntentHandlerFactory.java",
-    "java/src/org/chromium/chrome/browser/attribution_reporting/NoopAttributionIntentHandler.java",
-  ]
-  deps = [ "//chrome/browser/attribution_reporting/android:java" ]
-}
