@@ -44,6 +44,43 @@ bool TransferMetadata::IsFinalStatus(Status status) {
 }
 
 // static
+TransferMetadata::Result TransferMetadata::ToResult(Status status) {
+  switch (status) {
+    case Status::kComplete:
+      return Result::kSuccess;
+    case Status::kUnknown:
+    case Status::kAwaitingRemoteAcceptanceFailed:
+    case Status::kFailed:
+    case Status::kDecodeAdvertisementFailed:
+    case Status::kMissingTransferUpdateCallback:
+    case Status::kMissingShareTarget:
+    case Status::kMissingEndpointId:
+    case Status::kMissingPayloads:
+    case Status::kPairedKeyVerificationFailed:
+    case Status::kInvalidIntroductionFrame:
+    case Status::kIncompletePayloads:
+    case Status::kFailedToCreateShareTarget:
+    case Status::kFailedToInitiateOutgoingConnection:
+    case Status::kFailedToReadOutgoingConnectionResponse:
+    case Status::kUnexpectedDisconnection:
+      return Result::kFailure;
+    case Status::kConnecting:
+    case Status::kAwaitingLocalConfirmation:
+    case Status::kAwaitingRemoteAcceptance:
+    case Status::kInProgress:
+    case Status::kRejected:
+    case Status::kCancelled:
+    case Status::kTimedOut:
+    case Status::kMediaUnavailable:
+    case Status::kMediaDownloading:
+    case Status::kNotEnoughSpace:
+    case Status::kUnsupportedAttachmentType:
+    case Status::kExternalProviderLaunched:
+      return Result::kIndeterminate;
+  }
+}
+
+// static
 std::string TransferMetadata::StatusToString(Status status) {
   switch (status) {
     case Status::kConnecting:

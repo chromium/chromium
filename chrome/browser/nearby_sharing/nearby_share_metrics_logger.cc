@@ -400,6 +400,12 @@ void RecordNearbyShareEstablishConnectionMetrics(
   }
   base::UmaHistogramEnumeration(
       "Nearby.Share.Connection.EstablishOutgoingConnectionStatus", status);
+
+  // Log a high-level success/failure metric, ignoring cancellations.
+  if (!cancelled) {
+    base::UmaHistogramBoolean(
+        "Nearby.Share.Connection.EstablishOutgoingConnection.Success", success);
+  }
 }
 
 void RecordNearbyShareTimeFromInitiateSendToRemoteDeviceNotificationMetric(
@@ -562,12 +568,38 @@ void RecordNearbyShareTransferFinalStatusMetric(
   base::UmaHistogramEnumeration("Nearby.Share.DeviceType" + send_or_receive,
                                 type);
 
-  TransferFinalStatus final_status =
-      TransferMetadataStatusToTransferFinalStatus(status);
+  // Log the detailed transfer final status enum.
+  {
+    TransferFinalStatus final_status =
+        TransferMetadataStatusToTransferFinalStatus(status);
+    const std::string prefix = "Nearby.Share.Transfer.FinalStatus";
+    base::UmaHistogramEnumeration(prefix, final_status);
+    base::UmaHistogramEnumeration(prefix + send_or_receive, final_status);
+    base::UmaHistogramEnumeration(prefix + share_target_type, final_status);
+    base::UmaHistogramEnumeration(prefix + contact_or_not, final_status);
+  }
 
-  const std::string prefix = "Nearby.Share.Transfer.FinalStatus";
-  base::UmaHistogramEnumeration(prefix, final_status);
-  base::UmaHistogramEnumeration(prefix + send_or_receive, final_status);
-  base::UmaHistogramEnumeration(prefix + share_target_type, final_status);
-  base::UmaHistogramEnumeration(prefix + contact_or_not, final_status);
+  // Log the transfer success/failure for high-level success and Critical User
+  // Journey (CUJ) metrics.
+  {
+    base::Optional<bool> success;
+    switch (TransferMetadata::ToResult(status)) {
+      case TransferMetadata::Result::kSuccess:
+        success = true;
+        break;
+      case TransferMetadata::Result::kFailure:
+        success = false;
+        break;
+      case TransferMetadata::Result::kIndeterminate:
+        success.reset();
+        break;
+    }
+    if (success.has_value()) {
+      const std::string prefix = "Nearby.Share.Transfer.Success";
+      base::UmaHistogramBoolean(prefix, *success);
+      base::UmaHistogramBoolean(
+          prefix + send_or_receive + share_target_type + contact_or_not,
+          *success);
+    }
+  }
 }
