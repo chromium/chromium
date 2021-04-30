@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_SAVE_ADDRESS_PROFILE_DELEGATE_IOS_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_SAVE_ADDRESS_PROFILE_DELEGATE_IOS_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_SAVE_UPDATE_ADDRESS_PROFILE_DELEGATE_IOS_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_SAVE_UPDATE_ADDRESS_PROFILE_DELEGATE_IOS_H_
 
 #include <memory>
 
@@ -16,20 +16,21 @@ namespace autofill {
 
 // A delegate for the prompt that enables the user to allow or deny storing
 // an address profile gathered from a form submission. Only used on iOS.
-class AutofillSaveAddressProfileDelegateIOS : public ConfirmInfoBarDelegate {
+class AutofillSaveUpdateAddressProfileDelegateIOS
+    : public ConfirmInfoBarDelegate {
  public:
-  AutofillSaveAddressProfileDelegateIOS(
+  AutofillSaveUpdateAddressProfileDelegateIOS(
       const AutofillProfile& profile,
       AutofillClient::AddressProfileSavePromptCallback callback);
-  AutofillSaveAddressProfileDelegateIOS(
-      const AutofillSaveAddressProfileDelegateIOS&) = delete;
-  AutofillSaveAddressProfileDelegateIOS& operator=(
-      const AutofillSaveAddressProfileDelegateIOS&) = delete;
-  ~AutofillSaveAddressProfileDelegateIOS() override;
+  AutofillSaveUpdateAddressProfileDelegateIOS(
+      const AutofillSaveUpdateAddressProfileDelegateIOS&) = delete;
+  AutofillSaveUpdateAddressProfileDelegateIOS& operator=(
+      const AutofillSaveUpdateAddressProfileDelegateIOS&) = delete;
+  ~AutofillSaveUpdateAddressProfileDelegateIOS() override;
 
-  // Returns |delegate| as an AutofillSaveAddressProfileDelegateIOS, or nullptr
-  // if it is of another type.
-  static AutofillSaveAddressProfileDelegateIOS* FromInfobarDelegate(
+  // Returns |delegate| as an AutofillSaveUpdateAddressProfileDelegateIOS, or
+  // nullptr if it is of another type.
+  static AutofillSaveUpdateAddressProfileDelegateIOS* FromInfobarDelegate(
       infobars::InfoBarDelegate* delegate);
 
   std::u16string GetMessageDescriptionText() const;
@@ -71,4 +72,4 @@ class AutofillSaveAddressProfileDelegateIOS : public ConfirmInfoBarDelegate {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_SAVE_ADDRESS_PROFILE_DELEGATE_IOS_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_SAVE_UPDATE_ADDRESS_PROFILE_DELEGATE_IOS_H_

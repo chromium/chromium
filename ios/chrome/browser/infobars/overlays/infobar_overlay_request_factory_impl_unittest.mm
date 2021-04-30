@@ -14,8 +14,8 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/translate/core/browser/mock_translate_infobar_delegate.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
-#include "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/test/mock_autofill_save_address_profile_delegate_ios.h"
 #include "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/test/mock_autofill_save_card_infobar_delegate_mobile.h"
+#include "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/test/mock_autofill_save_update_address_profile_delegate_ios.h"
 #include "ios/chrome/browser/infobars/test/mock_infobar_delegate.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/confirm_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/save_address_profile_infobar_banner_overlay_request_config.h"
@@ -177,8 +177,9 @@ TEST_F(InfobarOverlayRequestFactoryImplTest, SaveAddressProfile) {
   GURL url("https://chromium.test");
   InfoBarIOS infobar(
       InfobarType::kInfobarTypeSaveAutofillAddressProfile,
-      MockAutofillSaveAddressProfileDelegateIOSFactory::
-          CreateMockAutofillSaveAddressProfileDelegateIOSFactory(profile_));
+      MockAutofillSaveUpdateAddressProfileDelegateIOSFactory::
+          CreateMockAutofillSaveUpdateAddressProfileDelegateIOSFactory(
+              profile_));
 
   // Test banner request creation.
   std::unique_ptr<OverlayRequest> banner_request =

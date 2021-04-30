@@ -6,7 +6,7 @@
 
 #include "base/check.h"
 #include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/browser/autofill_save_address_profile_delegate_ios.h"
+#include "components/autofill/core/browser/autofill_save_update_address_profile_delegate_ios.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
 
@@ -22,8 +22,8 @@ SaveAddressProfileModalRequestConfig::SaveAddressProfileModalRequestConfig(
     InfoBarIOS* infobar)
     : infobar_(infobar) {
   DCHECK(infobar_);
-  autofill::AutofillSaveAddressProfileDelegateIOS* delegate =
-      static_cast<autofill::AutofillSaveAddressProfileDelegateIOS*>(
+  autofill::AutofillSaveUpdateAddressProfileDelegateIOS* delegate =
+      static_cast<autofill::AutofillSaveUpdateAddressProfileDelegateIOS*>(
           infobar_->delegate());
   profile_ = delegate->GetProfile();
   current_address_profile_saved_ = infobar->accepted();

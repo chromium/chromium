@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/autofill_address_profile/save_address_profile_infobar_modal_interaction_handler.h"
 
-#include "components/autofill/core/browser/autofill_save_address_profile_delegate_ios.h"
+#include "components/autofill/core/browser/autofill_save_update_address_profile_delegate_ios.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/autofill_address_profile/save_address_profile_infobar_modal_overlay_request_callback_installer.h"
 #include "ios/chrome/browser/main/browser.h"
@@ -52,12 +52,12 @@ SaveAddressProfileInfobarModalInteractionHandler::CreateModalInstaller() {
       SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller>(this);
 }
 
-autofill::AutofillSaveAddressProfileDelegateIOS*
+autofill::AutofillSaveUpdateAddressProfileDelegateIOS*
 SaveAddressProfileInfobarModalInteractionHandler::GetInfoBarDelegate(
     InfoBarIOS* infobar) {
-  autofill::AutofillSaveAddressProfileDelegateIOS* delegate =
-      autofill::AutofillSaveAddressProfileDelegateIOS::FromInfobarDelegate(
-          infobar->delegate());
+  autofill::AutofillSaveUpdateAddressProfileDelegateIOS* delegate =
+      autofill::AutofillSaveUpdateAddressProfileDelegateIOS::
+          FromInfobarDelegate(infobar->delegate());
   DCHECK(delegate);
   return delegate;
 }

@@ -17,7 +17,7 @@ class InfoBar;
 namespace save_address_profile_infobar_overlays {
 
 // Configuration object for OverlayRequests for the banner UI for an InfoBar
-// with a AutofillSaveAddressProfileDelegateIOS.
+// with a AutofillSaveUpdateAddressProfileDelegateIOS.
 class SaveAddressProfileBannerRequestConfig
     : public OverlayRequestConfig<SaveAddressProfileBannerRequestConfig> {
  public:

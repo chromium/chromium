@@ -5,10 +5,10 @@
 source_set("test") {
   testonly = true
   sources = [
-    "mock_autofill_save_address_profile_delegate_ios.h",
-    "mock_autofill_save_address_profile_delegate_ios.mm",
     "mock_autofill_save_card_infobar_delegate_mobile.h",
     "mock_autofill_save_card_infobar_delegate_mobile.mm",
+    "mock_autofill_save_update_address_profile_delegate_ios.h",
+    "mock_autofill_save_update_address_profile_delegate_ios.mm",
     "mock_infobar_interaction_handler.h",
     "mock_infobar_interaction_handler.mm",
     "mock_save_card_banner_infobar_interaction_handler.h",

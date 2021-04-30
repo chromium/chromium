@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/common/infobar_banner_interaction_handler.h"
 
 namespace autofill {
-class AutofillSaveAddressProfileDelegateIOS;
+class AutofillSaveUpdateAddressProfileDelegateIOS;
 }
 
 // Helper object that updates the model layer for interaction events with the
@@ -29,7 +29,7 @@ class SaveAddressProfileInfobarBannerInteractionHandler
 
  private:
   // Returns the SaveAddressProfile delegate from |infobar|.
-  autofill::AutofillSaveAddressProfileDelegateIOS* GetInfobarDelegate(
+  autofill::AutofillSaveUpdateAddressProfileDelegateIOS* GetInfobarDelegate(
       InfoBarIOS* infobar);
 };
 

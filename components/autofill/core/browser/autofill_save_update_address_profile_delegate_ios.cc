@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/autofill_save_address_profile_delegate_ios.h"
+#include "components/autofill/core/browser/autofill_save_update_address_profile_delegate_ios.h"
 
 #include <utility>
 
@@ -16,49 +16,51 @@
 
 namespace autofill {
 
-AutofillSaveAddressProfileDelegateIOS::AutofillSaveAddressProfileDelegateIOS(
-    const AutofillProfile& profile,
-    AutofillClient::AddressProfileSavePromptCallback callback)
+AutofillSaveUpdateAddressProfileDelegateIOS::
+    AutofillSaveUpdateAddressProfileDelegateIOS(
+        const AutofillProfile& profile,
+        AutofillClient::AddressProfileSavePromptCallback callback)
     : profile_(profile),
       address_profile_save_prompt_callback_(std::move(callback)) {}
 
-AutofillSaveAddressProfileDelegateIOS::
-    ~AutofillSaveAddressProfileDelegateIOS() = default;
+AutofillSaveUpdateAddressProfileDelegateIOS::
+    ~AutofillSaveUpdateAddressProfileDelegateIOS() = default;
 
 // static
-AutofillSaveAddressProfileDelegateIOS*
-AutofillSaveAddressProfileDelegateIOS::FromInfobarDelegate(
+AutofillSaveUpdateAddressProfileDelegateIOS*
+AutofillSaveUpdateAddressProfileDelegateIOS::FromInfobarDelegate(
     infobars::InfoBarDelegate* delegate) {
   return delegate->GetIdentifier() ==
                  AUTOFILL_ADDRESS_PROFILE_INFOBAR_DELEGATE_IOS
-             ? static_cast<AutofillSaveAddressProfileDelegateIOS*>(delegate)
+             ? static_cast<AutofillSaveUpdateAddressProfileDelegateIOS*>(
+                   delegate)
              : nullptr;
 }
 
 std::u16string
-AutofillSaveAddressProfileDelegateIOS::GetMessageDescriptionText() const {
+AutofillSaveUpdateAddressProfileDelegateIOS::GetMessageDescriptionText() const {
   // TODO(crbug.com/1167062): Replace with proper localized string.
   return std::u16string(u"Fill forms faster in Chrome");
 }
 
-std::u16string AutofillSaveAddressProfileDelegateIOS::GetMessageActionText()
-    const {
+std::u16string
+AutofillSaveUpdateAddressProfileDelegateIOS::GetMessageActionText() const {
   // TODO(crbug.com/1167062): Replace with proper localized string.
   return std::u16string(u"Save...");
 }
 
 const autofill::AutofillProfile*
-AutofillSaveAddressProfileDelegateIOS::GetProfile() const {
+AutofillSaveUpdateAddressProfileDelegateIOS::GetProfile() const {
   return &profile_;
 }
 
-bool AutofillSaveAddressProfileDelegateIOS::Accept() {
+bool AutofillSaveUpdateAddressProfileDelegateIOS::Accept() {
   RunSaveAddressProfilePromptCallback(
       AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted);
   return true;
 }
 
-void AutofillSaveAddressProfileDelegateIOS::InfoBarDismissed() {
+void AutofillSaveUpdateAddressProfileDelegateIOS::InfoBarDismissed() {
   // If the address profile modal dialog is presented, the user will be asked to
   // save or cancel the address profile. In case the user cancels, then
   // InfoBarDismissed() will be called.
@@ -69,39 +71,40 @@ void AutofillSaveAddressProfileDelegateIOS::InfoBarDismissed() {
       AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined);
 }
 
-bool AutofillSaveAddressProfileDelegateIOS::Cancel() {
+bool AutofillSaveUpdateAddressProfileDelegateIOS::Cancel() {
   RunSaveAddressProfilePromptCallback(
       AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined);
   return true;
 }
 
-int AutofillSaveAddressProfileDelegateIOS::GetIconId() const {
+int AutofillSaveUpdateAddressProfileDelegateIOS::GetIconId() const {
   // TODO(crbug.com/1167062): Replace with proper icon.
   return IDR_INFOBAR_AUTOFILL_CC;
 }
 
-std::u16string AutofillSaveAddressProfileDelegateIOS::GetMessageText() const {
+std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetMessageText()
+    const {
   // TODO(crbug.com/1167062): Replace with proper localized string.
   return std::u16string(u"Save address?");
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier
-AutofillSaveAddressProfileDelegateIOS::GetIdentifier() const {
+AutofillSaveUpdateAddressProfileDelegateIOS::GetIdentifier() const {
   return AUTOFILL_ADDRESS_PROFILE_INFOBAR_DELEGATE_IOS;
 }
 
-bool AutofillSaveAddressProfileDelegateIOS::ShouldExpire(
+bool AutofillSaveUpdateAddressProfileDelegateIOS::ShouldExpire(
     const NavigationDetails& details) const {
   // Expire the Infobar unless the navigation was triggered by the form that
   // presented the Infobar, or the navigation is a redirect.
   return !details.is_form_submission && !details.is_redirect;
 }
 
-int AutofillSaveAddressProfileDelegateIOS::GetButtons() const {
+int AutofillSaveUpdateAddressProfileDelegateIOS::GetButtons() const {
   return BUTTON_OK | BUTTON_CANCEL;
 }
 
-std::u16string AutofillSaveAddressProfileDelegateIOS::GetButtonLabel(
+std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetButtonLabel(
     InfoBarButton button) const {
   if (button == BUTTON_OK) {
     // TODO(crbug.com/1167062): Replace with proper localized string.
@@ -117,8 +120,9 @@ std::u16string AutofillSaveAddressProfileDelegateIOS::GetButtonLabel(
   return std::u16string();
 }
 
-void AutofillSaveAddressProfileDelegateIOS::RunSaveAddressProfilePromptCallback(
-    AutofillClient::SaveAddressProfileOfferUserDecision decision) {
+void AutofillSaveUpdateAddressProfileDelegateIOS::
+    RunSaveAddressProfilePromptCallback(
+        AutofillClient::SaveAddressProfileOfferUserDecision decision) {
   std::move(address_profile_save_prompt_callback_).Run(decision, profile_);
 
   // Reset the modal dialog flags.

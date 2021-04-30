@@ -6,7 +6,7 @@
 
 #include "base/guid.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
-#include "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/test/mock_autofill_save_address_profile_delegate_ios.h"
+#include "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/test/mock_autofill_save_update_address_profile_delegate_ios.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
 #import "ios/chrome/browser/infobars/test/fake_infobar_ios.h"
 #include "ios/chrome/browser/infobars/test/mock_infobar_delegate.h"
@@ -26,18 +26,19 @@ class SaveAddressProfileInfobarBannerInteractionHandlerTest
         profile_(base::GenerateGUID(), "https://www.example.com/") {
     infobar_ = std::make_unique<InfoBarIOS>(
         InfobarType::kInfobarTypeSaveAutofillAddressProfile,
-        MockAutofillSaveAddressProfileDelegateIOSFactory::
-            CreateMockAutofillSaveAddressProfileDelegateIOSFactory(profile_));
+        MockAutofillSaveUpdateAddressProfileDelegateIOSFactory::
+            CreateMockAutofillSaveUpdateAddressProfileDelegateIOSFactory(
+                profile_));
   }
 
-  MockAutofillSaveAddressProfileDelegateIOS& mock_delegate() {
-    return *static_cast<MockAutofillSaveAddressProfileDelegateIOS*>(
+  MockAutofillSaveUpdateAddressProfileDelegateIOS& mock_delegate() {
+    return *static_cast<MockAutofillSaveUpdateAddressProfileDelegateIOS*>(
         infobar_->delegate());
   }
 
  protected:
   SaveAddressProfileInfobarBannerInteractionHandler handler_;
-  MockAutofillSaveAddressProfileDelegateIOSFactory delegate_factory_;
+  MockAutofillSaveUpdateAddressProfileDelegateIOSFactory delegate_factory_;
   autofill::AutofillProfile profile_;
   std::unique_ptr<InfoBarIOS> infobar_;
 };

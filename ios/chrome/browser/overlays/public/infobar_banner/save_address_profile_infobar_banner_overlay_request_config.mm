@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/overlays/public/infobar_banner/save_address_profile_infobar_banner_overlay_request_config.h"
 
-#include "components/autofill/core/browser/autofill_save_address_profile_delegate_ios.h"
+#include "components/autofill/core/browser/autofill_save_update_address_profile_delegate_ios.h"
 #include "components/infobars/core/infobar.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_type.h"
@@ -24,9 +24,9 @@ SaveAddressProfileBannerRequestConfig::SaveAddressProfileBannerRequestConfig(
     infobars::InfoBar* infobar)
     : infobar_(infobar) {
   DCHECK(infobar_);
-  autofill::AutofillSaveAddressProfileDelegateIOS* delegate =
-      autofill::AutofillSaveAddressProfileDelegateIOS::FromInfobarDelegate(
-          infobar_->delegate());
+  autofill::AutofillSaveUpdateAddressProfileDelegateIOS* delegate =
+      autofill::AutofillSaveUpdateAddressProfileDelegateIOS::
+          FromInfobarDelegate(infobar_->delegate());
   message_text_ = delegate->GetMessageText();
   button_label_text_ = delegate->GetMessageActionText();
   message_sub_text_ = delegate->GetMessageDescriptionText();

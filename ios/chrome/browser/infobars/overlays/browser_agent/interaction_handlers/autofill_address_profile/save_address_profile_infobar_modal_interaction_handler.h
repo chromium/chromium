@@ -11,7 +11,7 @@ class Browser;
 class InfoBarIOS;
 
 namespace autofill {
-class AutofillSaveAddressProfileDelegateIOS;
+class AutofillSaveUpdateAddressProfileDelegateIOS;
 }
 
 // Helper object that updates the model layer for interaction events with the
@@ -37,7 +37,7 @@ class SaveAddressProfileInfobarModalInteractionHandler
   CreateModalInstaller() override;
 
   // Returns the SaveAddressProfile delegate from |infobar|.
-  autofill::AutofillSaveAddressProfileDelegateIOS* GetInfoBarDelegate(
+  autofill::AutofillSaveUpdateAddressProfileDelegateIOS* GetInfoBarDelegate(
       InfoBarIOS* infobar);
 
   // The Browser passed on initialization.

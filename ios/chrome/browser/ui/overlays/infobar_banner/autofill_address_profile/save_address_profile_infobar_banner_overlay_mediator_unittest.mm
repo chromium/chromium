@@ -9,7 +9,7 @@
 #include "base/guid.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_save_address_profile_delegate_ios.h"
+#include "components/autofill/core/browser/autofill_save_update_address_profile_delegate_ios.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
@@ -34,16 +34,16 @@ using SaveAddressProfileInfobarBannerOverlayMediatorTest = PlatformTest;
 TEST_F(SaveAddressProfileInfobarBannerOverlayMediatorTest, SetUpConsumer) {
   autofill::AutofillProfile profile(base::GenerateGUID(),
                                     "https://www.example.com/");
-  std::unique_ptr<autofill::AutofillSaveAddressProfileDelegateIOS>
-      passed_delegate =
-          std::make_unique<autofill::AutofillSaveAddressProfileDelegateIOS>(
-              profile,
-              base::BindOnce(^(
-                  autofill::AutofillClient::SaveAddressProfileOfferUserDecision
-                      user_decision,
-                  autofill::AutofillProfile profile){
+  std::unique_ptr<autofill::AutofillSaveUpdateAddressProfileDelegateIOS>
+      passed_delegate = std::make_unique<
+          autofill::AutofillSaveUpdateAddressProfileDelegateIOS>(
+          profile,
+          base::BindOnce(
+              ^(autofill::AutofillClient::SaveAddressProfileOfferUserDecision
+                    user_decision,
+                autofill::AutofillProfile profile){
               }));
-  autofill::AutofillSaveAddressProfileDelegateIOS* delegate =
+  autofill::AutofillSaveUpdateAddressProfileDelegateIOS* delegate =
       passed_delegate.get();
   InfoBarIOS infobar(InfobarType::kInfobarTypeSaveAutofillAddressProfile,
                      std::move(passed_delegate));
