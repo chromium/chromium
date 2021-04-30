@@ -12,7 +12,6 @@ For each dependency in `build.gradle`:
   - Generate a README.chromium file
   - Generate a GN target in BUILD.gn
   - Generate .info files for AAR libraries
-  - Generate CIPD yaml files describing the packages
   - Generate a 'deps' entry in DEPS.
 """
 
@@ -417,36 +416,6 @@ def PrintPackageList(packages, list_name):
     print('\n'.join('    - ' + p for p in packages))
 
 
-def _GenerateCipdUploadCommands(android_deps_dir, cipd_pkg_infos):
-    """Generates a shell command to upload missing packages."""
-
-    def cipd_describe(info):
-        pkg_name, pkg_tag = info[1:]
-        result = subprocess.call(
-            ['cipd', 'describe', pkg_name, '-version', pkg_tag],
-            stdout=subprocess.DEVNULL)
-        return info, result
-
-    # Re-run the describe step to prevent mistakes if run multiple times.
-    TEMPLATE = ('(cd "{0}"; '
-                'cipd describe "{1}" -version "{2}" || '
-                'cipd create --pkg-def cipd.yaml -tag "{2}")')
-    cmds = []
-    # max_workers chosen arbitrarily.
-    with concurrent.futures.ThreadPoolExecutor(max_workers=80) as executor:
-        for info, result in executor.map(cipd_describe, cipd_pkg_infos):
-            if result:
-                pkg_path, pkg_name, pkg_tag = info
-                # pkg_path is implicitly relative to _CHROMIUM_SRC, make it
-                # explicit.
-                pkg_path = os.path.join(_CHROMIUM_SRC, android_deps_dir,
-                                        pkg_path)
-                # Now make pkg_path relative to os.curdir.
-                pkg_path = os.path.relpath(pkg_path)
-                cmds.append(TEMPLATE.format(pkg_path, pkg_name, pkg_tag))
-    return cmds
-
-
 def _CreateAarInfos(aar_files):
     jobs = []
 
@@ -596,12 +565,6 @@ def main():
 
         new_packages = sorted(set(build_packages) - set(existing_packages))
 
-        # Generate CIPD package upload commands.
-        logging.info('Querying %d CIPD packages', len(build_packages))
-        cipd_commands = _GenerateCipdUploadCommands(
-            args.android_deps_dir,
-            (build_packages[pkg] for pkg in build_packages))
-
         # Copy updated DEPS and BUILD.gn to build directory.
         update_cmds = []
         Copy(build_android_deps_dir,
@@ -633,14 +596,6 @@ def main():
             PrintPackageList(updated_packages, 'updated')
         if deleted_packages:
             PrintPackageList(deleted_packages, 'deleted')
-
-        if cipd_commands:
-            print('Run the following to upload CIPD packages:')
-            print('-------------------- cut here ------------------------')
-            print('\n'.join(cipd_commands))
-            print('-------------------- cut here ------------------------')
-        else:
-            print('Done. All packages were already up-to-date on CIPD')
 
 
 if __name__ == "__main__":
