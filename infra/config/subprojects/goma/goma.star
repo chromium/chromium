@@ -340,11 +340,9 @@ def goma_windows_builder(
         *,
         name,
         goma_enable_ats = True,
-        cores = 32,
         **kwargs):
     return goma_builder(
         name = name,
-        cores = cores,
         goma_enable_ats = goma_enable_ats,
         os = os.WINDOWS_DEFAULT,
         **kwargs
@@ -353,14 +351,35 @@ def goma_windows_builder(
 goma_windows_builder(
     name = "Chromium Win Goma RBE Staging",
     goma_backend = goma.backend.RBE_STAGING,
+    goma_enable_ats = False,
 )
 
 goma_windows_builder(
     name = "Chromium Win Goma RBE Staging (clobber)",
     goma_backend = goma.backend.RBE_STAGING,
+    goma_enable_ats = False,
 )
 
 goma_windows_builder(
     name = "Chromium Win Goma RBE ToT",
     goma_backend = goma.backend.RBE_TOT,
+    goma_enable_ats = False,
+)
+
+goma_windows_builder(
+    name = "Chromium Win Goma RBE ATS Staging",
+    goma_backend = goma.backend.RBE_STAGING,
+    goma_enable_ats = True,
+)
+
+goma_windows_builder(
+    name = "Chromium Win Goma RBE ATS Staging (clobber)",
+    goma_backend = goma.backend.RBE_STAGING,
+    goma_enable_ats = True,
+)
+
+goma_windows_builder(
+    name = "Chromium Win Goma RBE ATS ToT",
+    goma_backend = goma.backend.RBE_TOT,
+    goma_enable_ats = True,
 )

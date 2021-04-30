@@ -108,6 +108,33 @@
       "use_goma": true
     }
   },
+  "Chromium Win Goma RBE ATS Staging": {
+    "gn_args": {
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "target_cpu": "x86",
+      "use_goma": true
+    }
+  },
+  "Chromium Win Goma RBE ATS Staging (clobber)": {
+    "gn_args": {
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "target_cpu": "x86",
+      "use_goma": true
+    }
+  },
+  "Chromium Win Goma RBE ATS ToT": {
+    "gn_args": {
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "target_cpu": "x86",
+      "use_goma": true
+    }
+  },
   "Chromium Win Goma RBE Staging": {
     "gn_args": {
       "is_component_build": false,

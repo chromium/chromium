@@ -431,6 +431,9 @@
       'Chromium Win Goma RBE ToT': 'release_bot_x86_minimal_symbols',
       'Chromium Win Goma RBE Staging': 'release_bot_x86_minimal_symbols',
       'Chromium Win Goma RBE Staging (clobber)': 'release_bot_x86_minimal_symbols',
+      'Chromium Win Goma RBE ATS ToT': 'release_bot_x86_minimal_symbols',
+      'Chromium Win Goma RBE ATS Staging': 'release_bot_x86_minimal_symbols',
+      'Chromium Win Goma RBE ATS Staging (clobber)': 'release_bot_x86_minimal_symbols',
 
       'Chromium Android ARM 32-bit Goma RBE ToT': 'android_release_bot_minimal_symbols',
       # TODO(b/167942918): re-enable java goma?
